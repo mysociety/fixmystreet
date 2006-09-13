@@ -7,7 +7,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: pnmtilesplit.c,v 1.2 2006-09-13 19:26:14 chris Exp $";
+static const char rcsid[] = "$Id: pnmtilesplit.c,v 1.3 2006-09-13 19:33:33 chris Exp $";
 
 #include <sys/types.h>
 
@@ -205,7 +205,7 @@ int main(int argc, char *argv[]) {
             img_pam.width, tile_w);
     else if (img_pam.width % tile_w) {
         err("warning: tile width does not divide image width exactly");
-        err("last %d columns of image will not be included in any tile",
+        err("warning: last %d columns of image will not be included in any tile",
             img_pam.width % tile_w);
     }
     cols = img_pam.width / tile_w;
