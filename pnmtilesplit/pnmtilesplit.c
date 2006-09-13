@@ -7,7 +7,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: pnmtilesplit.c,v 1.1 2006-09-13 18:40:29 chris Exp $";
+static const char rcsid[] = "$Id: pnmtilesplit.c,v 1.2 2006-09-13 19:26:14 chris Exp $";
 
 #include <sys/types.h>
 
@@ -24,14 +24,17 @@ static const char rcsid[] = "$Id: pnmtilesplit.c,v 1.1 2006-09-13 18:40:29 chris
 #define err(...)    do { fprintf(stderr, "pnmtilesplit: "); fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n"); } while (0)
 #define die(...)    do { err(__VA_ARGS__); exit(1); } while (0)
 
+static int verbose;
+#define debug(...)  if (verbose) fprintf(stderr, __VA_ARGS__)
+
 /* open_output_file FORMAT PIPE I J [PID]
  * Open a new output file, constructing it from FORMAT and the column- and
  * row-index values I and J. If PIPE is non-NULL, open the file via a pipe
  * through the shell. Returns a stdio file handle on success or abort on
  * failure. If PIPE is non-NULL then the process ID of the child process is
  * saved in *PID. */
-FILE *open_output_file(const char *fmt, const char *pipe_via,
-                        const int i, const int j, pid_t *child_pid) {
+static FILE *open_output_file(const char *fmt, const char *pipe_via,
+                                 const int i, const int j, pid_t *child_pid) {
     FILE *fp;
     char *filename;
     filename = malloc(strlen(fmt) + 64);
@@ -52,6 +55,11 @@ FILE *open_output_file(const char *fmt, const char *pipe_via,
         else if (0 == p) {
             /* run the pipe command via /bin/sh */
             char *argv[4] = {"/bin/sh", "-c", 0};
+            char si[40], sj[40];
+            sprintf(si, "TILECOL=%d", i);
+            putenv(si);
+            sprintf(sj, "TILEROW=%d", j);
+            putenv(sj);
             close(0);
             close(1);
             close(pp[1]);
@@ -60,13 +68,21 @@ FILE *open_output_file(const char *fmt, const char *pipe_via,
             dup(fd);        /* standard output */
             close(fd);
             argv[2] = (char*)pipe_via;
-            execve("/bin/sh", argv, NULL);
+            execv(argv[0], argv);
             err("%s: %s", pipe_via, strerror(errno));
             _exit(1);
         } else if (child_pid)
             *child_pid = p;
-    } else if (!(fp = fopen(filename, "w")))
+
+        close(pp[0]);
+        close(fd);
+
+        debug("forked child process %d for pipe to \"%s\", write fd = %d\n",
+                (int)p, filename, pp[1]);
+    } else if (!(fp = fopen(filename, "w"))) {
         die("%s: open: %s", filename, strerror(errno));
+        debug("opened file \"%s\"\n", filename);
+    }
 
     free(filename);
 
@@ -89,13 +105,20 @@ void usage(FILE *fp) {
 "\n"
 "Options:\n"
 "\n"
-"    -h          Display this help message on standard output\n"
+"    -h          Display this help message on standard output.\n"
+"\n"
+"    -v          Output debugging information on standard error.\n"
+"\n"
+"    -P          Display progress information on standard error (implied by\n"
+"                -v).\n"
 "\n"
 "    -f FORMAT   Use the printf-style FORMAT for the name of the output file,\n"
 "                instead of \"%%d,%%d.pnm\".\n"
 "\n"
 "    -p COMMAND  Don't write files directly, but pipe them via COMMAND. The\n"
-"                COMMAND is interpreted by the shell.\n"
+"                COMMAND is interpreted by the shell. The variables TILECOL\n"
+"                and TILEROW in the environment of the command are set to\n"
+"                the column and row indices of the tile being generated.\n"
 "\n"
 "Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.\n"
 "Email: chris@mysociety.org; WWW: http://www.mysociety.org/\n"
@@ -113,8 +136,8 @@ int main(int argc, char *argv[]) {
     pid_t *tile_pid;
     char *outfile_format = "%d,%d.pnm", *pipe_via = NULL;
     extern int opterr, optopt, optind;
-    static const char optstr[] = "hf:p:";
-    int i, j, c;
+    static const char optstr[] = "hvPf:p:";
+    int i, j, c, progress;
     tuple *img_row, *tile_row = NULL;
 
     pnm_init(&argc, argv);
@@ -125,6 +148,14 @@ int main(int argc, char *argv[]) {
             case 'h':
                 usage(stdout);
                 return 0;
+
+            case 'v':
+                verbose = 1;
+                /* fall through */
+
+            case 'P':
+                progress = 1;
+                break;
 
             case 'f':
                 outfile_format = optarg;
@@ -188,6 +219,9 @@ int main(int argc, char *argv[]) {
             img_pam.height % tile_h);
     }
     rows = img_pam.height / tile_h;
+
+    debug("input image is %d by %d pixels\n", img_pam.width, img_pam.height);
+    debug(" = %d by %d tiles of %d by %d", cols, rows, tile_w, tile_h);
  
     tile_fp = malloc(cols * sizeof *tile_fp);
     tile_pam = malloc(cols * sizeof *tile_pam);
@@ -200,6 +234,7 @@ int main(int argc, char *argv[]) {
         int y;
 
         /* Create output files. */
+        debug("creating output files for row %d/%d...\n", j, rows);
         for (i = 0; i < cols; ++i) {
             tile_pam[i] = img_pam;
             tile_pam[i].file = tile_fp[i]
@@ -223,16 +258,30 @@ int main(int argc, char *argv[]) {
                 pnm_writepamrow(tile_pam + i, tile_row);
                 fflush(tile_fp[i]);
             }
+            if (progress)
+                fprintf(stderr, "\r%d/%d", j * tile_h + y, img_pam.height);
         }
 
         /* Close the output files and check status. */
+        debug("\rclosing output files for row %d/%d...\n", j, rows);
         for (i = 0; i < cols; ++i) {
+            debug("closing fd %d... ", fileno(tile_fp[i]));
             if (-1 == fclose(tile_fp[i]))
                 die("while writing tile (%d, %d): %s", i, j, strerror(errno));
-            if (pipe_via) {
+            debug("done\n");
+        }
+
+            /* XXX I think there is a bug here, since if you close fd i, then
+             * wait for child process i, the wait hangs. But I can't see the
+             * problem at the moment. */
+        if (pipe_via) {
+            debug("waiting for termination of child processes\n");
+            for (i = 0; i < cols; ++i) {
                 /* Collect exit status of child process. */
                 pid_t p;
                 int st;
+                debug("waiting for termination of process %d... ",
+                        (int)tile_pid[i]);
                 if (-1 == (p = waitpid(tile_pid[i], &st, 0)))
                     die("waitpid: %s", strerror(errno));
                 else if (st) {
@@ -243,8 +292,12 @@ int main(int argc, char *argv[]) {
                         die("child process for tile (%d, %d) killed by "
                             "signal %d", i, j, WTERMSIG(st));
                 }
+                debug("exited\n");
             }
         }
+
     }
+    if (progress)
+        fprintf(stderr, "\r%d/%d\n", img_pam.height, img_pam.height);
     return 0;
 }
