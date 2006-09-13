@@ -7,7 +7,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: pnmtilesplit.c,v 1.3 2006-09-13 19:33:33 chris Exp $";
+static const char rcsid[] = "$Id: pnmtilesplit.c,v 1.4 2006-09-13 19:38:16 chris Exp $";
 
 #include <sys/types.h>
 
@@ -21,7 +21,13 @@ static const char rcsid[] = "$Id: pnmtilesplit.c,v 1.3 2006-09-13 19:33:33 chris
 
 #include <sys/wait.h>
 
-#define err(...)    do { fprintf(stderr, "pnmtilesplit: "); fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n"); } while (0)
+#define err(...)    \
+            do {    \
+                fprintf(stderr, "pnmtilesplit: ");  \
+                fprintf(stderr, __VA_ARGS__);   \
+                fprintf(stderr, "\n");  \
+            } while (0)
+
 #define die(...)    do { err(__VA_ARGS__); exit(1); } while (0)
 
 static int verbose;
