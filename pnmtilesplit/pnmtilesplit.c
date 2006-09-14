@@ -7,7 +7,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: pnmtilesplit.c,v 1.5 2006-09-14 14:20:56 chris Exp $";
+static const char rcsid[] = "$Id: pnmtilesplit.c,v 1.6 2006-09-14 16:26:05 chris Exp $";
 
 #include <sys/types.h>
 
@@ -149,7 +149,7 @@ int main(int argc, char *argv[]) {
     extern int opterr, optopt, optind;
     static const char optstr[] = "hvPf:p:";
     int i, j, c, progress;
-    tuple *img_row, *tile_row = NULL;
+    tuple *img_row;
 
     pnm_init(&argc, argv);
     opterr = 0;
@@ -254,19 +254,13 @@ int main(int argc, char *argv[]) {
             tile_pam[i].width = tile_w;
             tile_pam[i].height = tile_h;
             pnm_writepaminit(tile_pam + i);
-
-            if (!tile_row && !(tile_row = pnm_allocpamrow(tile_pam + i)))
-                die("unable to allocate storage for output row");
         }
 
         /* Copy the image into the various tiles. */
         for (y = 0; y < tile_h; ++y) {
-            int x;
             pnm_readpamrow(&img_pam, img_row);
             for (i = 0; i < cols; ++i) {
-                for (x = 0; x < tile_w; ++x)
-                    tile_row[x] = img_row[x + i * tile_w];
-                pnm_writepamrow(tile_pam + i, tile_row);
+                pnm_writepamrow(tile_pam + i, img_row + i * tile_w);
                 fflush(tile_fp[i]);
             }
             if (progress)
