@@ -5,10 +5,10 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: chris@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Makefile,v 1.1 2006-09-13 18:40:29 chris Exp $
+# $Id: Makefile,v 1.2 2006-09-14 17:21:03 chris Exp $
 #
 
-CFLAGS = -Wall -g
+CFLAGS = -Wall -g -O99
 LDFLAGS =
 LDLIBS = -lnetpbm		# is this a debianism?
 
