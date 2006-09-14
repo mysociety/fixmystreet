@@ -7,7 +7,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: pnmtilesplit.c,v 1.6 2006-09-14 16:26:05 chris Exp $";
+static const char rcsid[] = "$Id: pnmtilesplit.c,v 1.7 2006-09-14 16:52:24 chris Exp $";
 
 #include <sys/types.h>
 
@@ -148,7 +148,7 @@ int main(int argc, char *argv[]) {
     char *outfile_format = "%d,%d.pnm", *pipe_via = NULL;
     extern int opterr, optopt, optind;
     static const char optstr[] = "hvPf:p:";
-    int i, j, c, progress;
+    int i, j, c, progress = 0;
     tuple *img_row;
 
     pnm_init(&argc, argv);
