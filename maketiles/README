@@ -1,0 +1,28 @@
+File formats and structures
+
+Tiles are generated as PNG files. At the moment these are full-colour PNGs but
+in due course we will probably want to use dithered images with a limited
+palette. Generated tiles are named for their own SHA1 checksums, so that we
+can eliminate duplicate tiles. The first-stage output of these scripts,
+therefore, consists of a set of PNG files named by SHA1 and a text index which
+maps tile locations to SHA1s. These are arranged as:
+
+    toplevel/index                  text index of tiles
+    toplevel/tiles/0/0/0            location for images with SHA1s beginning
+                                    000
+    toplevel/tiles/0/0/0/00000000000000000000.png
+                                    first possible image file
+
+This format is not really acceptable for final deployment because many of the
+image files won't be much larger than a filesystem block, so a large amount of
+disk space would be wasted in storing them. Nor is the text index from tile
+location to SHA1 acceptable. So a second program packs the image files into
+catenated files with an index from SHA1 to offset and length in each file.
+Separately, the index from tile location to SHA1 is turned into another index.
+Both indices use Bernstein-style CDB files.
+
+    toplevel/index.cdb              binary index from tile location to SHA1
+    toplevel/tiles/0/0/0/packed     catenated file of images with SHA1s
+                                    beginning 000
+    toplevel/tiles/0/0/0/index.cdb  index of images in packed
+
