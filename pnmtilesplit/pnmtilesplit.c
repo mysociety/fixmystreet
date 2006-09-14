@@ -7,7 +7,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: pnmtilesplit.c,v 1.4 2006-09-13 19:38:16 chris Exp $";
+static const char rcsid[] = "$Id: pnmtilesplit.c,v 1.5 2006-09-14 14:20:56 chris Exp $";
 
 #include <sys/types.h>
 
@@ -125,6 +125,11 @@ void usage(FILE *fp) {
 "                COMMAND is interpreted by the shell. The variables TILECOL\n"
 "                and TILEROW in the environment of the command are set to\n"
 "                the column and row indices of the tile being generated.\n"
+"\n"
+"Note that you can specify -f /dev/null and use the pipe command to create\n"
+"the output images, for instance with a command like,\n"
+"    pnmtilesplit -p 'pnmtopng > $TILEROW,$TILECOL.png' -f /dev/null 256 256\n"
+"if you want to exchange the column and row indices.\n"
 "\n"
 "Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.\n"
 "Email: chris@mysociety.org; WWW: http://www.mysociety.org/\n"
