@@ -7,7 +7,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: pnmtilesplit.c,v 1.7 2006-09-14 16:52:24 chris Exp $";
+static const char rcsid[] = "$Id: pnmtilesplit.c,v 1.8 2006-09-14 17:21:49 chris Exp $";
 
 #include <sys/types.h>
 
@@ -33,6 +33,16 @@ static const char rcsid[] = "$Id: pnmtilesplit.c,v 1.7 2006-09-14 16:52:24 chris
 static int verbose;
 #define debug(...)  if (verbose) fprintf(stderr, __VA_ARGS__)
 
+/* xmalloc LEN
+ * Allocate LEN bytes, returning the allocated buffer on success or dying on
+ * failure. */
+static void *xmalloc(const size_t s) {
+    void *v;
+    if (!(v = malloc(s)))
+        die("malloc(%u): %s", (unsigned)s, strerror(errno));
+    return v;
+}
+
 /* open_output_file FORMAT PIPE I J [PID]
  * Open a new output file, constructing it from FORMAT and the column- and
  * row-index values I and J. If PIPE is non-NULL, open the file via a pipe
@@ -43,7 +53,7 @@ static FILE *open_output_file(const char *fmt, const char *pipe_via,
                                  const int i, const int j, pid_t *child_pid) {
     FILE *fp;
     char *filename;
-    filename = malloc(strlen(fmt) + 64);
+    filename = xmalloc(strlen(fmt) + 64);
     sprintf(filename, fmt, i, j);
     /* XXX consider creating directories if they don't already exist? */
     if (pipe_via) {
@@ -126,6 +136,11 @@ void usage(FILE *fp) {
 "                and TILEROW in the environment of the command are set to\n"
 "                the column and row indices of the tile being generated.\n"
 "\n"
+"    -s          Use a slow but more correct implementation, which processes\n"
+"                the image files only through netpbm's own API, rather than\n"
+"                copying pixel data directly between input and output\n"
+"                images.\n"
+"\n"
 "Note that you can specify -f /dev/null and use the pipe command to create\n"
 "the output images, for instance with a command like,\n"
 "    pnmtilesplit -p 'pnmtopng > $TILEROW,$TILECOL.png' -f /dev/null 256 256\n"
@@ -147,9 +162,11 @@ int main(int argc, char *argv[]) {
     pid_t *tile_pid;
     char *outfile_format = "%d,%d.pnm", *pipe_via = NULL;
     extern int opterr, optopt, optind;
-    static const char optstr[] = "hvPf:p:";
-    int i, j, c, progress = 0;
-    tuple *img_row;
+    static const char optstr[] = "hvPsf:p:";
+    int i, j, c, progress = 0, fast_and_ugly = 1;
+    tuple *img_row = NULL;  /* suppress bogus "might be used uninitialised" */
+    unsigned char *buf = NULL;
+    size_t img_rowlen = 0, tile_rowlen = 0;
 
     pnm_init(&argc, argv);
     opterr = 0;
@@ -174,6 +191,10 @@ int main(int argc, char *argv[]) {
 
             case 'p':
                 pipe_via = optarg;
+                break;
+
+            case 's':
+                fast_and_ugly = 0;
                 break;
 
             case '?':
@@ -233,12 +254,18 @@ int main(int argc, char *argv[]) {
 
     debug("input image is %d by %d pixels\n", img_pam.width, img_pam.height);
     debug(" = %d by %d tiles of %d by %d", cols, rows, tile_w, tile_h);
+    debug("each pixel contains %d planes, %d bytes per sample",
+            img_pam.depth, img_pam.bytes_per_sample);
  
-    tile_fp = malloc(cols * sizeof *tile_fp);
-    tile_pam = malloc(cols * sizeof *tile_pam);
-    tile_pid = malloc(cols * sizeof *tile_pid);
+    tile_fp = xmalloc(cols * sizeof *tile_fp);
+    tile_pam = xmalloc(cols * sizeof *tile_pam);
+    tile_pid = xmalloc(cols * sizeof *tile_pid);
  
-    if (!(img_row = pnm_allocpamrow(&img_pam)))
+    if (fast_and_ugly) {
+        img_rowlen = img_pam.width * img_pam.depth * img_pam.bytes_per_sample;
+        buf = xmalloc(img_rowlen);
+        tile_rowlen = tile_w * img_pam.depth * img_pam.bytes_per_sample;
+    } else if (!(img_row = pnm_allocpamrow(&img_pam)))
         die("unable to allocate storage for input row");
     
     for (j = 0; j < rows; ++j) {
@@ -258,10 +285,34 @@ int main(int argc, char *argv[]) {
 
         /* Copy the image into the various tiles. */
         for (y = 0; y < tile_h; ++y) {
-            pnm_readpamrow(&img_pam, img_row);
-            for (i = 0; i < cols; ++i) {
-                pnm_writepamrow(tile_pam + i, img_row + i * tile_w);
-                fflush(tile_fp[i]);
+            /* Ugly. libpnm is pretty slow, so for large images it is much
+             * quicker to copy bytes from input to output streams using
+             * straight stdio calls. If fast_and_ugly is true (the default)
+             * then we use such an implementation; but it makes assumptions
+             * about the format of the input PNM file which might not be
+             * accurate. So we make this optional. */
+            if (fast_and_ugly) {
+                size_t n;
+                if (img_rowlen != (n = fread(buf, 1, img_rowlen, img_fp))) {
+                    if (feof(img_fp))
+                        die("%s: premature EOF", img_name);
+                    else
+                        die("%s: %s", img_name, strerror(errno));
+                }
+                for (i = 0; i < cols; ++i) {
+                    if (tile_rowlen
+                            != (n = fwrite(buf + i * tile_rowlen,
+                                            1, tile_rowlen, tile_fp[i]))) {
+                        die("while writing tile (%d, %d): %s", i, j,
+                            strerror(errno));
+                    }
+                }
+            } else {
+                pnm_readpamrow(&img_pam, img_row);
+                for (i = 0; i < cols; ++i) {
+                    pnm_writepamrow(tile_pam + i, img_row + i * tile_w);
+                    fflush(tile_fp[i]);
+                }
             }
             if (progress)
                 fprintf(stderr, "\r%d/%d", j * tile_h + y, img_pam.height);
