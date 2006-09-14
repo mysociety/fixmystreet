@@ -1,0 +1,159 @@
+#!/usr/bin/perl -w
+#
+# 10kfull:
+# Turn the 1:10,000 Ordnance Survey map tiles into 254-by-254 pixmaps at full
+# resolution.
+#
+# Copyright (c) 2005 UK Citizens Online Democracy. All rights reserved.
+# Email: chris@mysociety.org; WWW: http://www.mysociety.org/
+#
+
+my $rcsid = ''; $rcsid .= '$Id: 10kfull,v 1.1 2006-09-14 17:45:08 chris Exp $';
+
+use strict;
+
+use Digest::SHA1;
+use Errno;
+use File::stat;
+use Geography::NationalGrid;
+use IO::Dir;
+use IO::File;
+
+use constant TILE_SIZE_PX => 7874;
+use constant TILE_SIZE_M => 5000;
+
+use constant SUBTILE_SIZE_PX => 254;
+use constant SUBTILES_PER_TILE => (TILE_SIZE_PX / SUBTILE_SIZE_PX);
+
+sub debug (@) {
+    print STDERR @_;
+}
+
+sub System (@) {
+    debug("executing command: ", @_, "\n");
+    system(@_);
+    die "command failed with status $?" if ($?);
+}
+
+die "arguments are directory containing input tiles in TIFF format and directory to which output tiles are to be written"
+    if (2 != @ARGV);
+
+my ($inputdir, $outputdir) = @ARGV;
+$inputdir =~ s#/$##;
+$outputdir =~ s#/$##;
+die "$inputdir: not a directory" if (!-d $inputdir);
+die "$outputdir: not a directory" if (!-d $outputdir);
+
+#
+# Within the output directory we create a subdirectory tiles/ containing tile
+# images named for their SHA1 checksums, and a text file mapping tile
+# coordinates to the SHA1 sums.
+#
+
+die "$outputdir/tiles: $!"
+    if (!mkdir("$outputdir/tiles", 0755) && !$!{EEXIST});
+
+my $index = new IO::File("$outputdir/index", O_WRONLY | O_CREAT | O_TRUNC, 0644)
+    or die "$outputdir/index: $!";
+
+$index->print(<<EOF);
+# This index file connects individual tiles of the 1:10,000 Ordnance Survey
+# maps at their full resolution (0.635m/px). Each such tile is 254 by 254
+# pixels. The tiles are indexed according to their coordinates within the full
+# Ordnance Survey grid, with (0, 0) being the tile at the SW corner of the grid
+# (immediately NE of the origin), (1, 0) being the tile to its east, and (0, 1)
+# the tile immediately to its north. Note that not all tiles are present. For
+# each such tile position this file lists the SHA1 message-digest of the image
+# file which represents the tile.
+EOF
+
+my $d = new IO::Dir($inputdir)
+    or die "$inputdir: $!";
+
+my $total_input_size = 0;   # KB
+my $total_output_size = 0;  # KB
+while (my $name = $d->read()) {
+    next unless ($name =~ /\.tiff?$/i);
+    debug("have image file $inputdir/$name\n");
+
+    my ($gridsq, $offset, $quadrant)
+        = map { uc($_) } ($name =~ /^([A-Z]{2})(\d{2})([NS][EW])\./i);
+
+    if (!$gridsq) {
+        debug(" -> doesn't seem to be a valid 1:10,000 image tile; ignoring\n");
+        next;
+    }
+
+    my $st = stat("$inputdir/$name");
+    my $input_tile_size = $st->size();
+    debug("    tile size = $input_tile_size bytes\n");
+    $total_input_size += $input_tile_size / 1024.;
+
+    debug(" -> grid square = $gridsq; offset = $offset; quadrant = $quadrant\n");
+    my $p = new Geography::NationalGrid('GB',
+                            GridReference => "$gridsq $offset");
+    
+    my ($E, $N) = ($p->easting(), $p->northing());
+    debug(" -> SW corner of grid square is at ($E, $N)\n");
+
+    $N += TILE_SIZE_M if ($quadrant =~ /^N/);
+    $E += TILE_SIZE_M if ($quadrant =~ /E$/);
+    debug(" => SW corner of tile is at ($E, $N)\n");
+
+    # Figure out the tile offsets.
+    my $x = ($E / TILE_SIZE_M) * SUBTILES_PER_TILE;
+    my $y = ($N / TILE_SIZE_M) * SUBTILES_PER_TILE;
+    debug(" => subtile col/row for SW-most subtile is ($x, $y)\n");
+
+    # Now split this tile into subtiles.
+    System("tifftopnm $inputdir/$name |"
+            . " pnmtilesplit -P -f '$outputdir/%d,%d.png'"
+            . " -p 'pnmtopng -compression 9 2>/dev/null' 254 254");
+
+    # Consider each of the subtiles.
+    debug("finding SHA1 digests of tiles and adding them to index...\n");
+    my $nduplicates = 0;
+    my $nnew = 0;
+    my $size = 0;
+    for (my $j = 0; $j < SUBTILES_PER_TILE; ++$j) {
+        debug("\r$j/", SUBTILES_PER_TILE);
+        for (my $i = 0; $i < SUBTILES_PER_TILE; ++$i) {
+            my $fn = "$outputdir/$i,$j.png";
+            my $f = new IO::File($fn, O_RDONLY)
+                        or die "$fn: $!";
+            my $sha = new Digest::SHA1();
+            $sha->addfile($f);
+            $sha = $sha->hexdigest();
+            $f->close();
+            $index->printf("%d %d %s\n", $x + $i, $y + $j, $sha);
+            my ($n1, $n2, $n3) = ($sha =~ /^(.)(.)(.)/);
+            mkdir("$outputdir/tiles/$n1");
+            mkdir("$outputdir/tiles/$n1/$n2");
+            mkdir("$outputdir/tiles/$n1/$n2/$n3");
+            my $fn2 = "$outputdir/tiles/$n1/$n2/$n3/$sha.png";
+            if (-e $fn2) {
+                unlink($fn);
+                ++$nduplicates;
+            } else {
+                rename($fn, $fn2) or die "rename: $!";
+                ++$nnew;
+                my $st = stat($fn2);
+                $size += $st->size();
+            }
+        }
+    }
+    debug("\r", SUBTILES_PER_TILE, "/", SUBTILES_PER_TILE, "\n");
+    debug("had $nduplicates duplicate tiles + $nnew new, $size bytes\n");
+    debug("    output subtiles are ",
+            sprintf('%.1f%%', 100 * $size / $input_tile_size),
+            " of input tile size for this tile\n");
+    $total_output_size += $size / 1024.;
+    debug("    so far total input size ",
+            sprintf('%.1fKB', $total_input_size), "\n");
+    debug("    so far total output size ",
+            sprintf('%.1fKB', $total_output_size), "\n");
+    debug("    output subtiles are ",
+            sprintf('%.1f%%', 100 * $total_output_size / $total_input_size),
+            " of input tile size so far overall\n");
+    $index->flush();
+}
