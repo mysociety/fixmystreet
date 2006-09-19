@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.3 2006-09-19 16:57:44 francis Exp $
+# $Id: Page.pm,v 1.4 2006-09-19 17:20:19 francis Exp $
 #
 
 package Page;
@@ -14,6 +14,7 @@ package Page;
 use strict;
 use Carp;
 use CGI::Fast qw(-no_xhtml);
+use HTML::Entities;
 use Error qw(:try);
 
 sub do_fastcgi {
@@ -30,10 +31,14 @@ sub do_fastcgi {
         warn "aborting";
         encode_entities($msg);
         print "Status: 500\nContent-Type: text/html; charset=iso-8859-1\n\n",
-                q(<p>Unfortunately, something went wrong. The text of the error
-                        was:</p>),
+                q(<html><head><title>Sorry! Something's gone wrong.</title></head></html>),
+                q(<body>),
+                q(<h1>Sorry! Something's gone wrong.</h1>),
+                q(<p>Please try again later, or <a href="mailto:team@neighbourhoodfixit.com">email us</a> to let us know.</p>),
+                q(<hr>),
+                q(<p>The text of the error was:</p>),
                 qq(<blockquote class="errortext">$msg</blockquote>),
-                q(<p>Please try again later.);
+                q(</body></html);
     };
 }
 
