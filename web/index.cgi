@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w -I../perllib -I../../perllib
+#!/usr/bin/perl -w
 
 # index.pl:
 # Main code for BCI - not really.
@@ -6,10 +6,23 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.5 2006-09-19 16:57:44 francis Exp $
+# $Id: index.cgi,v 1.6 2006-09-19 23:32:55 matthew Exp $
 
 use strict;
+require 5.8.0;
+
+# Horrible boilerplate to set up appropriate library paths.
+use FindBin;
+use lib "$FindBin::Bin/../perllib";
+use lib "$FindBin::Bin/../../perllib";
+
 use Page;
+use mySociety::Config;
+BEGIN {
+    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+}
+use mySociety::MaPit;
+mySociety::MaPit::configure();
 
 # Main code for index.cgi
 sub main {
@@ -46,6 +59,17 @@ EOF
 # This should use postcode, not x/y!
 sub display {
     my $q = shift;
+    my $pc = $q->param('pc');
+
+    my $areas = mySociety::MaPit::get_voting_areas($pc);
+    # XXX Check for error
+    return 'Uncovered area' if (!$areas || !$areas->{LBO});
+
+    my $lbo = $areas->{LBO};
+    return 'Not covered London borough' unless ($lbo == 2510 || $lbo == 2492);
+    my $area_info = mySociety::MaPit::get_voting_area_info($lbo);
+    my $name = $area_info->{name};
+
     my $x = $q->param('x') || 62;
     my $y = $q->param('y') || 171;
     my $dir = 'tl/';

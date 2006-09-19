@@ -14,7 +14,7 @@
  * Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: general-example,v 1.1 2006-09-19 16:10:44 francis Exp $
+ * $Id: general-example,v 1.2 2006-09-19 23:32:55 matthew Exp $
  * 
  */
 
@@ -24,5 +24,7 @@ define('OPTION_BCI_DB_PORT', '5432');
 define('OPTION_BCI_DB_NAME', 'bci');
 define('OPTION_BCI_DB_USER', 'bci');
 define('OPTION_BCI_DB_PASS', '');
+
+define('OPTION_MAPIT_URL', 'http://services.mysociety.org/mapit');
 
 ?>
