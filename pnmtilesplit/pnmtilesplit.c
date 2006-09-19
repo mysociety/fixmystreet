@@ -7,7 +7,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: pnmtilesplit.c,v 1.9 2006-09-19 11:24:42 chris Exp $";
+static const char rcsid[] = "$Id: pnmtilesplit.c,v 1.10 2006-09-19 11:27:30 chris Exp $";
 
 #include <sys/types.h>
 
@@ -331,7 +331,11 @@ int main(int argc, char *argv[]) {
 
             /* XXX I think there is a bug here, since if you close fd i, then
              * wait for child process i, the wait hangs. But I can't see the
-             * problem at the moment. */
+             * problem at the moment. Actually calling wait synchronously here
+             * is bogus anyway, since we could collect the notification when we
+             * receive SIGCHLD, though that would risk spawning a vast number
+             * of processes; at the moment we maintain as many child processes
+             * as there are columns of tiles in the output. */
         if (pipe_via) {
             debug("waiting for termination of child processes\n");
             for (i = 0; i < cols; ++i) {
