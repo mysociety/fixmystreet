@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.4 2006-09-19 17:20:19 francis Exp $
+# $Id: Page.pm,v 1.5 2006-09-19 23:45:33 matthew Exp $
 #
 
 package Page;
@@ -16,13 +16,16 @@ use Carp;
 use CGI::Fast qw(-no_xhtml);
 use HTML::Entities;
 use Error qw(:try);
+use mySociety::WatchUpdate;
 
 sub do_fastcgi {
     my $func = shift;
 
     try {
+        my $W = new mySociety::WatchUpdate();
         while (my $q = new CGI::Fast()) {
             &$func($q);
+            $W->exit_if_changed();
         }
     } catch Error::Simple with {
         my $E = shift;
