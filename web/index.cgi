@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.3 2006-09-19 16:31:09 matthew Exp $
+# $Id: index.cgi,v 1.4 2006-09-19 16:34:24 matthew Exp $
 
 use strict;
 use CGI::Fast qw(-no_xhtml);
@@ -26,7 +26,7 @@ try {
             $out = front_page();
         }
 
-        print $q->header();
+        print $q->header(-charset=>'utf-8');
         print Page::header($q, '');
         print $out;
         print Page::footer($q);

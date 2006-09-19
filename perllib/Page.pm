@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.1 2006-09-19 16:31:09 matthew Exp $
+# $Id: Page.pm,v 1.2 2006-09-19 16:34:24 matthew Exp $
 #
 
 package Page;
@@ -16,7 +16,7 @@ use Carp;
 
 sub url {
     my ($x, $y) = @_;
-    return '?x=' . $x . '&amp;y=' . $y;
+    return '?x=' . $x . ';y=' . $y;
 }
 
 =item header Q TITLE [PARAM VALUE ...]
