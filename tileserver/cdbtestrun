@@ -1,0 +1,149 @@
+#!/usr/bin/perl -w
+#
+# cdbtestrun:
+# Run the CDB test program.
+#
+# Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
+# Email: chris@mysociety.org; WWW: http://www.mysociety.org/
+#
+
+my $rcsid = ''; $rcsid .= '$Id: cdbtestrun,v 1.1 2006-09-19 18:26:35 chris Exp $';
+
+use strict;
+
+use CDB_File;
+use IO::Pipe;
+use POSIX qw();
+
+sub random_string ($) {
+    my $len = shift;
+    my $x = '';
+    while (length($x) < $len) {
+        $x .= pack('N', int(rand(0xffffffff)));
+    }
+    return substr($x, 0, $len);
+}
+
+my %h;
+my $C = new CDB_File("test.cdb", "test.tmp")
+    or die "test.tmp: $!";
+
+my $nkeys = shift(@ARGV);
+$nkeys ||= 100000;
+die "'$nkeys' is not a valid number of keys" if ($nkeys !~ /^[1-9]\d*$/);
+
+for (my $i = 0; $i < $nkeys; ++$i) {
+    my $key;
+    do {
+        $key = random_string(1 + int(rand(16)));
+    } while (exists($h{$key}));
+    my $val = random_string(int(rand(100)));
+
+    $h{$key} = $val;
+    $C->insert($key, $val);
+
+    printf STDERR "\rwriting keys: %d/%d", $i, $nkeys
+        if (0 == ($i % 100));
+}
+
+print STDERR "\rwriting keys: $nkeys/$nkeys\n";
+print STDERR "finalising database... ";
+$C->finish();
+print STDERR "done\n";
+
+# Make a pipe to the test program and fork it.
+my $p1 = new IO::Pipe();    # parent writes to this
+my $p2 = new IO::Pipe();    # and reads from this.
+
+my $pid = fork();
+if (!defined($pid)) {
+    die "fork: $!";
+} elsif (0 == $pid) {
+    $p1->reader();
+    POSIX::close(0);
+    POSIX::dup($p1->fileno());
+    $p2->writer();
+    POSIX::close(1);
+    POSIX::dup($p2->fileno());
+
+#    { exec("valgrind", "./cdbtest", "test.cdb"); }
+    { exec("./cdbtest", "test.cdb"); }
+
+    print STDERR "exec ./cdbtest: $!\n";
+    POSIX::_exit(255);
+}
+
+sub netstring_read ($) {
+    my $h = shift;
+    my $len = 0;
+    while (defined(my $c = $h->getc())) {
+        if ($c eq 'X' && $len == 0) {
+            return undef;
+        } elsif ($c eq ':') {
+            last;
+        } elsif ($c !~ /^\d$/) {
+            die "bad character '$c' in netstring length";
+        } else {
+            $len = $len * 10 + ord($c) - ord('0');
+        }
+    }
+
+    my $buf = '';
+    $h->read($buf, $len, 0);
+
+    if ($h->getc() ne ',') {
+        die "bad character at netstring trailer";
+    }
+
+    return $buf;
+}
+
+sub netstring_write ($$) {
+    my $h = shift;
+    $h->printf('%d:', length($_[0]));
+    $h->print($_[0]);
+    $h->print(',');
+    $h->flush();
+}
+
+$p1->writer();
+$p2->reader();
+
+print STDERR "child pid = $pid... press enter to continue\n";
+<STDIN>;
+
+my $n = 0;
+foreach my $key (keys(%h)) {
+    if (rand() < 0.05) {
+        my $key;
+        do {
+            $key = random_string(1 + int(rand(16)));
+        } while (exists($h{$key}));
+        netstring_write($p1, $key);
+        my $val = netstring_read($p2);
+        if (defined($val)) {
+            die "test code said value present when it wasn't";
+        }
+    }
+
+    netstring_write($p1, $key);
+    my $val = netstring_read($p2);
+    if (!defined($val)) {
+        die "test code said val was not present when it was";
+    } elsif ($val ne $h{$key}) {
+        print "GOT=$val\n";
+        print "WANTED=$val\n";
+        die "value mismatch";
+    }
+
+    ++$n;
+    printf STDERR "\rtesting %d/%d", $n, $nkeys
+        if (0 == ($n % 100));
+}
+print STDERR "\rtesting $n/$nkeys\n";
+
+$p1->write('X');
+$p1->flush();
+wait();
+
+print STDERR "completed with no errors\n";
