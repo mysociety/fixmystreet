@@ -6,45 +6,32 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.4 2006-09-19 16:34:24 matthew Exp $
+# $Id: index.cgi,v 1.5 2006-09-19 16:57:44 francis Exp $
 
 use strict;
-use CGI::Fast qw(-no_xhtml);
-use Error qw(:try);
 use Page;
 
-my $q;
+# Main code for index.cgi
+sub main {
+    my $q = shift;
 
-try {
-    while ($q = new CGI::Fast()) {
-        my $out = '';
-        if ($q->param('pc')) {
-            $out = display($q);
-        } elsif ($q->param('map')) {
-            $out = map_clicked($q);
-        } else {
-            $out = front_page();
-        }
-
-        print $q->header(-charset=>'utf-8');
-        print Page::header($q, '');
-        print $out;
-        print Page::footer($q);
-
+    my $out = '';
+    if ($q->param('pc')) {
+        $out = display($q);
+    } elsif ($q->param('map')) {
+        $out = map_clicked($q);
+    } else {
+        $out = front_page();
     }
-} catch Error::Simple with {
-    my $E = shift;
-    my $msg = sprintf('%s:%d: %s', $E->file(), $E->line(), $E->text());
-    warn "caught fatal exception: $msg";
-    warn "aborting";
-    encode_entities($msg);
-    print "Status: 500\nContent-Type: text/html; charset=iso-8859-1\n\n",
-            q(<p>Unfortunately, something went wrong. The text of the error
-                    was:</p>),
-            qq(<blockquote class="errortext">$msg</blockquote>),
-            q(<p>Please try again later.);
-};
 
+    print $q->header(-charset=>'utf-8');
+    print Page::header($q, '');
+    print $out;
+    print Page::footer($q);
+}
+Page::do_fastcgi(\&main);
+
+# Display front page
 sub front_page {
     return <<EOF;
 <p>Welcome to Neighbourhood Fix-It.</p>

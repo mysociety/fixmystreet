@@ -6,13 +6,36 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.2 2006-09-19 16:34:24 matthew Exp $
+# $Id: Page.pm,v 1.3 2006-09-19 16:57:44 francis Exp $
 #
 
 package Page;
 
 use strict;
 use Carp;
+use CGI::Fast qw(-no_xhtml);
+use Error qw(:try);
+
+sub do_fastcgi {
+    my $func = shift;
+
+    try {
+        while (my $q = new CGI::Fast()) {
+            &$func($q);
+        }
+    } catch Error::Simple with {
+        my $E = shift;
+        my $msg = sprintf('%s:%d: %s', $E->file(), $E->line(), $E->text());
+        warn "caught fatal exception: $msg";
+        warn "aborting";
+        encode_entities($msg);
+        print "Status: 500\nContent-Type: text/html; charset=iso-8859-1\n\n",
+                q(<p>Unfortunately, something went wrong. The text of the error
+                        was:</p>),
+                qq(<blockquote class="errortext">$msg</blockquote>),
+                q(<p>Please try again later.);
+    };
+}
 
 sub url {
     my ($x, $y) = @_;
