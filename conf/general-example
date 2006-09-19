@@ -1,0 +1,28 @@
+<?php
+/*
+ * general-example:
+ * Example values for the "general" config file.
+ *
+ * Configuration parameters, in PHP syntax. Configuration parameters are set
+ * using the PHP define('OPTION_...', '...') function. Both perl and PHP code
+ * parse this properly, so you can use comments and conditionals and whatnot,
+ * but unless essential it's better to keep it simple....
+ *
+ * Copy this file to one called "general" in the same directory.  Or
+ * have multiple config files and use a symlink to change between them.
+ * 
+ * Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
+ * Email: francis@mysociety.org; WWW: http://www.mysociety.org
+ *
+ * $Id: general-example,v 1.1 2006-09-19 16:10:44 francis Exp $
+ * 
+ */
+
+// PostgreSQL database for BCI
+define('OPTION_BCI_DB_HOST', 'localhost');
+define('OPTION_BCI_DB_PORT', '5432');
+define('OPTION_BCI_DB_NAME', 'bci');
+define('OPTION_BCI_DB_USER', 'bci');
+define('OPTION_BCI_DB_PASS', '');
+
+?>
