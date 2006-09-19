@@ -8,7 +8,7 @@
 # Email: chris@mysociety.org; WWW: http://www.mysociety.org/
 #
 
-my $rcsid = ''; $rcsid .= '$Id: 10kfull,v 1.1 2006-09-14 17:45:08 chris Exp $';
+my $rcsid = ''; $rcsid .= '$Id: 10kfull,v 1.2 2006-09-19 15:36:57 chris Exp $';
 
 use strict;
 
@@ -35,14 +35,30 @@ sub System (@) {
     die "command failed with status $?" if ($?);
 }
 
-die "arguments are directory containing input tiles in TIFF format and directory to which output tiles are to be written"
-    if (2 != @ARGV);
+
+die "arguments are directories containing input tiles in TIFF format and\n"
+    . "to which output tiles are to be written, and optional eastings and\n"
+    . "northings ranges, in the order west, east, south, north\n"
+    if (@ARGV != 2 && @ARGV != 6);
 
 my ($inputdir, $outputdir) = @ARGV;
 $inputdir =~ s#/$##;
 $outputdir =~ s#/$##;
 die "$inputdir: not a directory" if (!-d $inputdir);
 die "$outputdir: not a directory" if (!-d $outputdir);
+
+my $inarea = 0;
+my ($west, $east, $south, $north);
+
+if (@ARGV == 6) {
+    $inarea = 1;
+    foreach (@ARGV[2 .. 5]) {
+        die "'$_' is not a valid number\n" if (!/^[1-9]\d*$/);
+    }
+    ($west, $east, $south, $north) = @ARGV[2 .. 5];
+    die "EAST must be greater than WEST" unless ($east > $west);
+    die "NORTH must be greater than SOUTH" unless ($north > $south);
+}
 
 #
 # Within the output directory we create a subdirectory tiles/ containing tile
@@ -95,6 +111,19 @@ while (my $name = $d->read()) {
     
     my ($E, $N) = ($p->easting(), $p->northing());
     debug(" -> SW corner of grid square is at ($E, $N)\n");
+
+    if ($inarea) {
+        my $tE = $E + TILE_SIZE_M;
+        my $tW = $E;
+        my $tN = $N + TILE_SIZE_M;
+        my $tS = $N;
+
+        if ($tE < $west || $tW > $east
+            || $tN < $south || $tS > $north) {
+            debug("    tile is outside area of interest; skipping");
+            next;
+        }
+    }
 
     $N += TILE_SIZE_M if ($quadrant =~ /^N/);
     $E += TILE_SIZE_M if ($quadrant =~ /E$/);
