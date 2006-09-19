@@ -5,7 +5,7 @@
  * Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: cdb.h,v 1.1 2006-09-19 18:26:35 chris Exp $
+ * $Id: cdb.h,v 1.2 2006-09-19 21:09:19 chris Exp $
  *
  */
 
@@ -13,7 +13,9 @@
 #define __CDB_H_
 
 #include <sys/types.h>
+
 #include <stdint.h>
+#include <stdio.h>
 
 typedef int cdb_result_t;
 typedef uint32_t cdb_hash_t;
@@ -44,13 +46,14 @@ extern
 
 /* cdb.c */
 cdb_hash_t cdb_hash(const unsigned char *buf, const size_t len);
-cdb_hash_t cdb_hashz(const char *s);
+cdb_hash_t cdb_hash_str(const char *s);
 cdb_hash_t cdb_hash_datum(const cdb_datum d);
 cdb cdb_open_fp(FILE *fp);
 cdb_datum cdb_datum_alloc(const size_t len);
 void cdb_datum_free(cdb_datum d);
 cdb cdb_open(const char *name);
 cdb_datum cdb_get(cdb C, const cdb_datum key);
+cdb_datum cdb_get_str(cdb C, const char *str);
 char *cdb_strerror(const cdb_result_t e);
 
 #endif /* __CDB_H_ */

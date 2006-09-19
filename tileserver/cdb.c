@@ -9,7 +9,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: cdb.c,v 1.1 2006-09-19 18:26:35 chris Exp $";
+static const char rcsid[] = "$Id: cdb.c,v 1.2 2006-09-19 21:09:19 chris Exp $";
 
 #include <sys/types.h>
 
@@ -54,6 +54,8 @@ static size_t do_fread(FILE *fp, void *buf, const size_t len) {
     return fread(buf, 1, len, fp);
 }
 
+/* cdb_hash BUF LEN
+ * Return the hash value of the LEN bytes at BUF. */
 cdb_hash_t cdb_hash(const unsigned char *buf, const size_t len) {
     uint32_t h = 5381;
     size_t i;
@@ -63,10 +65,14 @@ cdb_hash_t cdb_hash(const unsigned char *buf, const size_t len) {
     return h;
 }
 
+/* cdb_hash_str STRING
+ * Return the hash value of the given STRING. */
 cdb_hash_t cdb_hash_str(const char *s) {
     return cdb_hash((unsigned char*)s, strlen(s));
 }
 
+/* cdb_hash_datum D
+ * Return the hash value of the DATUM. */
 cdb_hash_t cdb_hash_datum(const cdb_datum d) {
     return cdb_hash(d->cd_buf, d->cd_len);
 }
@@ -281,9 +287,12 @@ cdb_datum cdb_get(cdb C, const cdb_datum key) {
 
                 if (i == key->cd_len) {
                     /* Got it. */
-                    if (!(val = cdb_datum_alloc(vallen)))
+                    if (!(val = cdb_datum_alloc(vallen + 1)))
                         FAIL(CDB_OUT_OF_MEMORY);
-                    else if (val->cd_len != do_fread(C->c_fp, val->cd_buf,
+                    /* Ensure NUL-terminated. */
+                    ((char*)val->cd_buf)[vallen] = 0;
+                    val->cd_len--;
+                    if (val->cd_len != do_fread(C->c_fp, val->cd_buf,
                                                         val->cd_len)) {
                         if (feof(C->c_fp))
                             FAIL(CDB_FILE_TRUNCATED);
@@ -305,6 +314,15 @@ fail:
     return NULL;
 
 #undef FAIL
+}
+
+/* cdb_get_string C, STRING
+ * As for cdb_get, but construct the KEY datum from STRING. */
+cdb_datum cdb_get_string(cdb C, const char *s) {
+    struct cdb_datum d;
+    d.cd_len = strlen(s);
+    d.cd_buf = (void*)s;
+    return cdb_get(C, &d);
 }
 
 /* cdb_strerror E
