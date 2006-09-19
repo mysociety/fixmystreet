@@ -7,7 +7,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: pnmtilesplit.c,v 1.8 2006-09-14 17:21:49 chris Exp $";
+static const char rcsid[] = "$Id: pnmtilesplit.c,v 1.9 2006-09-19 11:24:42 chris Exp $";
 
 #include <sys/types.h>
 
@@ -281,6 +281,7 @@ int main(int argc, char *argv[]) {
             tile_pam[i].width = tile_w;
             tile_pam[i].height = tile_h;
             pnm_writepaminit(tile_pam + i);
+            fflush(tile_fp[i]);
         }
 
         /* Copy the image into the various tiles. */
@@ -306,6 +307,7 @@ int main(int argc, char *argv[]) {
                         die("while writing tile (%d, %d): %s", i, j,
                             strerror(errno));
                     }
+                    fflush(tile_fp[i]);
                 }
             } else {
                 pnm_readpamrow(&img_pam, img_row);
@@ -351,8 +353,8 @@ int main(int argc, char *argv[]) {
                 debug("exited\n");
             }
         }
-
     }
+
     if (progress)
         fprintf(stderr, "\r%d/%d\n", img_pam.height, img_pam.height);
     return 0;
