@@ -8,7 +8,7 @@
 # Email: chris@mysociety.org; WWW: http://www.mysociety.org/
 #
 
-my $rcsid = ''; $rcsid .= '$Id: 10kfull,v 1.3 2006-09-19 15:39:36 chris Exp $';
+my $rcsid = ''; $rcsid .= '$Id: 10kfull,v 1.4 2006-09-19 15:48:11 chris Exp $';
 
 use strict;
 
@@ -59,7 +59,7 @@ if (@ARGV == 6) {
     die "EAST must be greater than WEST" unless ($east > $west);
     die "NORTH must be greater than SOUTH" unless ($north > $south);
 
-    debug("area of interest: west $west, east $east, south $south, north $north");
+    debug("area of interest: west $west, east $east, south $south, north $north\n");
 }
 
 #
@@ -102,17 +102,16 @@ while (my $name = $d->read()) {
         next;
     }
 
-    my $st = stat("$inputdir/$name");
-    my $input_tile_size = $st->size();
-    debug("    tile size = $input_tile_size bytes\n");
-    $total_input_size += $input_tile_size / 1024.;
-
     debug(" -> grid square = $gridsq; offset = $offset; quadrant = $quadrant\n");
     my $p = new Geography::NationalGrid('GB',
                             GridReference => "$gridsq $offset");
     
     my ($E, $N) = ($p->easting(), $p->northing());
     debug(" -> SW corner of grid square is at ($E, $N)\n");
+
+    $N += TILE_SIZE_M if ($quadrant =~ /^N/);
+    $E += TILE_SIZE_M if ($quadrant =~ /E$/);
+    debug(" => SW corner of tile is at ($E, $N)\n");
 
     if ($inarea) {
         my $tE = $E + TILE_SIZE_M;
@@ -122,14 +121,17 @@ while (my $name = $d->read()) {
 
         if ($tE < $west || $tW > $east
             || $tN < $south || $tS > $north) {
-            debug("    tile is outside area of interest; skipping");
+            debug("    tile is outside area of interest; skipping\n");
             next;
         }
     }
 
-    $N += TILE_SIZE_M if ($quadrant =~ /^N/);
-    $E += TILE_SIZE_M if ($quadrant =~ /E$/);
-    debug(" => SW corner of tile is at ($E, $N)\n");
+    my $st = stat("$inputdir/$name");
+    my $input_tile_size = $st->size();
+    debug("    tile size = $input_tile_size bytes\n");
+    $total_input_size += $input_tile_size / 1024.;
+
+
 
     # Figure out the tile offsets.
     my $x = ($E / TILE_SIZE_M) * SUBTILES_PER_TILE;
