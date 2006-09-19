@@ -1,0 +1,40 @@
+body {
+    font-family: "Gill Sans", "Gill Sans MT", sans-serif;
+}
+h1 {
+    text-align: right;
+    border-bottom: solid 1px #999999;
+    margin: 0;
+}
+#map {
+    border: solid 1px #000000;
+    width: 500px;
+    height: 500px;
+    position: relative;
+    top: 0;
+    left: 5em;
+    overflow: hidden;
+}
+#drag {
+    width: 1em;
+    height: 1em;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+#drag img {
+    position: absolute;
+}
+#log {
+    border: solid 1px #ff0000;
+    padding: 3px;
+    font-size: 83%;
+}
+#wrap {
+}
+#column {
+    float: left;
+}
+#compass img {
+    border: 0;
+}
