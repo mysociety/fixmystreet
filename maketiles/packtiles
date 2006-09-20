@@ -8,7 +8,7 @@
 # Email: chris@mysociety.org; WWW: http://www.mysociety.org/
 #
 
-my $rcsid = ''; $rcsid .= '$Id: packtiles,v 1.1 2006-09-20 11:25:09 chris Exp $';
+my $rcsid = ''; $rcsid .= '$Id: packtiles,v 1.2 2006-09-20 13:30:48 chris Exp $';
 
 use strict;
 
@@ -101,6 +101,7 @@ $f->close();
 
 debug("writing index blocks to index.cdb... ");
 my $C = new CDB_File("$outputdir/index.cdb", "$outputdir/index.new");
+$C->insert(blocking => BLOCKING);
 foreach (keys(%index)) {
     $C->insert($_, $index{$_});
 }
