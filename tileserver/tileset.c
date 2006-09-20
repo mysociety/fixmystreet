@@ -7,7 +7,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: tileset.c,v 1.1 2006-09-20 10:25:14 chris Exp $";
+static const char rcsid[] = "$Id: tileset.c,v 1.2 2006-09-20 13:24:38 chris Exp $";
 
 /*
  * Tile sets are stored in directory trees which contain indices of tile
@@ -24,9 +24,11 @@ static const char rcsid[] = "$Id: tileset.c,v 1.1 2006-09-20 10:25:14 chris Exp 
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "cdb.h"
 #include "tileset.h"
+#include "util.h"
 
 #define TILEID_LEN  20
 
@@ -56,9 +58,6 @@ struct tileset {
  * failure. */
 tileset tileset_open(const char *path) {
     struct tileset *T, Tz = {0};
-    static char *path;
-    static size_t pathlen;
-    size_t l;
     cdb_datum d = NULL;
     char *s;
     int i;
@@ -88,7 +87,7 @@ tileset tileset_open(const char *path) {
     return T;
     
 fail:
-    tileset_free(T);
+    tileset_close(T);
     if (d) cdb_datum_free(d);
     return NULL;
 }
@@ -132,8 +131,7 @@ bool tileset_get_tileid(tileset T, const unsigned x, const unsigned y,
         if (T->t_block) cdb_datum_free(T->t_block);
         
         sprintf(buf, "%u,%u", x / T->t_blocking, y / T->t_blocking);
-        T->t_block = cdb_get_string(T->t_tileid_idx, buf);
-        if (!T->block)
+        if (!(T->t_block = cdb_get_string(T->t_tileid_idx, buf)))
             return 0;
     }
 
@@ -165,7 +163,7 @@ void *tileset_get_tile(tileset T, const uint8_t *id, size_t *len) {
     cdb idx = NULL;
     cdb_datum d = NULL;
     void *ret = NULL;
-    unsigned off, len;
+    unsigned off;
     FILE *fp = NULL;
 
     sprintf(T->t_pathbuf, "%s/%x/%x/%x/index.cdb",
@@ -178,7 +176,7 @@ void *tileset_get_tile(tileset T, const uint8_t *id, size_t *len) {
     if (!(d = cdb_get_string(idx, T->t_pathbuf)))
         goto fail;
 
-    if (2 != sscanf((char*)d->cd_buf, "%x:%x", &off, &len))
+    if (2 != sscanf((char*)d->cd_buf, "%x:%x", &off, len))
         goto fail;
 
     sprintf(T->t_pathbuf, "%s/%x/%x/%x/tiles",
@@ -189,8 +187,8 @@ void *tileset_get_tile(tileset T, const uint8_t *id, size_t *len) {
     else if (-1 == fseek(fp, off, SEEK_SET))
         goto fail;
 
-    ret = xmalloc(len);
-    if (len != fread(ret, 1, len, fp)) {
+    ret = xmalloc(*len);
+    if (*len != fread(ret, 1, *len, fp)) {
         xfree(ret);
         goto fail;
     }
