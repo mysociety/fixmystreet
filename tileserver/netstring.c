@@ -7,7 +7,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: netstring.c,v 1.1 2006-09-20 10:25:14 chris Exp $";
+static const char rcsid[] = "$Id: netstring.c,v 1.2 2006-09-20 13:24:08 chris Exp $";
 
 #include <sys/types.h>
 #include <stdio.h>
@@ -20,9 +20,9 @@ size_t netstring_write(char *out, const void *buf, const size_t len) {
     size_t l = 0;
     char dummy[32];
     l += sprintf(out ? out : dummy, "%u:", (unsigned)len);
-    if (out) memcpy(p, buf, len);
+    if (out) memcpy(out + l, buf, len);
     l += len;
-    if (out) buf[l] = ',';
+    if (out) out[l] = ',';
     ++l;
     return l;
 }
