@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.7 2006-09-20 14:16:21 matthew Exp $
+# $Id: Page.pm,v 1.8 2006-09-20 16:47:51 matthew Exp $
 #
 
 package Page;
@@ -114,14 +114,14 @@ sub error_page ($$) {
 
 sub compass ($$$) {
     my ($pc, $x, $y) = @_;
-    my $nw = url($pc, $x-1, $y-1);
-    my $n = url($pc, $x, $y-1);
-    my $ne = url($pc, $x+1, $y-1);
+    my $nw = url($pc, $x-1, $y+1);
+    my $n = url($pc, $x, $y+1);
+    my $ne = url($pc, $x+1, $y+1);
     my $w = url($pc, $x-1,$y);
     my $e = url($pc, $x+1,$y);
-    my $sw = url($pc, $x-1, $y+1);
-    my $s = url($pc, $x, $y+1);
-    my $se = url($pc, $x+1, $y+1);
+    my $sw = url($pc, $x-1, $y-1);
+    my $s = url($pc, $x, $y-1);
+    my $se = url($pc, $x+1, $y-1);
     return <<EOF;
 <table cellpadding="0" cellspacing="0" border="0" id="compass">
 <tr valign="bottom">

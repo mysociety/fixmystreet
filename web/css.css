@@ -46,8 +46,8 @@ a:hover, a:active {
 
 #map {
     border: solid 1px #000000;
-    width: 500px;
-    height: 500px;
+    width: 508px;
+    height: 508px;
     position: relative;
     top: 0;
     overflow: hidden;

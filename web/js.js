@@ -13,9 +13,9 @@ function Map(m) {
     this.pos = YAHOO.util.Dom.getXY(this.map);
     this.width = this.map.offsetWidth - 2;
     this.height = this.map.offsetHeight - 2;
-    this.tilewidth = 250;
-    this.tileheight = 250;
-    if (this.width != 500 || this.height != 500) {
+    this.tilewidth = 254;
+    this.tileheight = 254;
+    if (this.width != 508 || this.height != 508) {
         return false;
     }
     this.point = new Point();
@@ -82,11 +82,11 @@ function Map(m) {
 
     function image_rotate(img, x, y) {
         if (x) {
-            img.style.left = (img.offsetLeft + x*250) + 'px';
+            img.style.left = (img.offsetLeft + x*254) + 'px';
             img.xx += x;
         }
         if (y) {
-            img.style.top = (img.offsetTop + y*250) + 'px';
+            img.style.top = (img.offsetTop + y*254) + 'px';
             img.yy += y;
         }
         var url = img.xx + '.' + img.yy + '.png';
@@ -121,13 +121,13 @@ function Map(m) {
                     if (!img.xx) { img.xx = xx; }
                     if (!img.yy) { img.yy = yy; }
                     if (!img.galleryimg) { img.galleryimg = false; }
-                    if (drag_x + img.offsetLeft > 750) {
+                    if (drag_x + img.offsetLeft > 762) {
                         image_rotate(img, -6, 0);
-                    } else if (drag_x + img.offsetLeft < -500) {
+                    } else if (drag_x + img.offsetLeft < -508) {
                         image_rotate(img, 6, 0);
-                    } else if (drag_y + img.offsetTop > 750) {
+                    } else if (drag_y + img.offsetTop > 762) {
                         image_rotate(img, 0, -6);
-                    } else if (drag_y + img.offsetTop < -500) {
+                    } else if (drag_y + img.offsetTop < -508) {
                         image_rotate(img, 0, 6);
                     }
                     continue;
