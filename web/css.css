@@ -1,11 +1,16 @@
 body {
-    font-family: "Gill Sans", "Gill Sans MT", sans-serif;
+    font-family: "Gill Sans", "Gill Sans MT", Helvetica, Arial, sans-serif;
 }
 h1 {
-    text-align: right;
     border-bottom: solid 1px #999999;
     margin: 0;
 }
+
+#error {
+    color: #cc0000;
+    font-size: larger;
+}
+
 #map {
     border: solid 1px #000000;
     width: 500px;
@@ -22,7 +27,7 @@ h1 {
     top: 0;
     left: 0;
 }
-#drag img {
+#drag input {
     position: absolute;
 }
 #log {

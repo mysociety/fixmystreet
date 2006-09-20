@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.6 2006-09-19 23:32:55 matthew Exp $
+# $Id: index.cgi,v 1.7 2006-09-20 10:49:30 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -46,14 +46,30 @@ Page::do_fastcgi(\&main);
 
 # Display front page
 sub front_page {
-    return <<EOF;
-<p>Welcome to Neighbourhood Fix-It.</p>
+    my $error = shift;
+    my $out = '';
+    $out .= '<p id="error">' . $error . '</p>' if ($error);
+    $out .= <<EOF;
+<p>Welcome to Neighbourhood Fix-It, where you can report a problem with
+a lamppost or something to your local council.</p>
+
+<p><strong>This is currently only for Newham and Lewisham Councils</strong></p>
+
+<p>It&rsquo;s very simple:</p>
+
+<ol>
+<li>Enter postcode
+<li>Find problem on map
+<li>Enter details of problem
+<li>Send!
+</ol>
 
 <form action="./" method="get">
 <p>Enter your postcode: <input type="text" name="pc" value="">
 <input type="submit" value="Go">
 </form>
 EOF
+    return $out;
 }
 
 # This should use postcode, not x/y!
@@ -63,25 +79,37 @@ sub display {
 
     my $areas = mySociety::MaPit::get_voting_areas($pc);
     # XXX Check for error
-    return 'Uncovered area' if (!$areas || !$areas->{LBO});
 
+    # Check for London Borough
+    return front_page('I\'m afraid that postcode isn\'t in our covered area') if (!$areas || !$areas->{LBO});
+
+    # Check for Lewisham or Newham
     my $lbo = $areas->{LBO};
-    return 'Not covered London borough' unless ($lbo == 2510 || $lbo == 2492);
+    return front_page('I\'m afraid that postcode isn\'t in our covered London boroughs') unless ($lbo == 2510 || $lbo == 2492);
+
     my $area_info = mySociety::MaPit::get_voting_area_info($lbo);
     my $name = $area_info->{name};
 
-    my $x = $q->param('x') || 62;
-    my $y = $q->param('y') || 171;
-    my $dir = 'tl/';
-    my $tl = $dir.$x.'.'.$y.'.png';
-    my $tr = $dir.($x+1).'.'.$y.'.png';
-    my $bl = $dir.$x.'.'.($y+1).'.png';
-    my $br = $dir.($x+1).'.'.($y+1).'.png';
-    my $out = Page::compass($x, $y);
+    my $out = '<h2>' . $name . '</h2>';
+
+    my $x = $q->param('x') || 620;
+    my $y = $q->param('y') || 1710;
+    my $dir = mySociety::Config::get('TILES_URL');
+    my $tl = $x.'.'.$y.'.png';
+    my $tr = ($x+1).'.'.$y.'.png';
+    my $bl = $x.'.'.($y+1).'.png';
+    my $br = ($x+1).'.'.($y+1).'.png';
+    my $tl_src = $dir.$tl;
+    my $tr_src = $dir.$tr;
+    my $bl_src = $dir.$bl;
+    my $br_src = $dir.$br;
+    $out .= Page::compass($x, $y);
     $out .= <<EOF;
         <div id="map">
             <div id="drag">
-                <img id="2.2" nm="$tl" src="$tl" style="top:0px; left:0px;"><img id="3.2" nm="$tr" src="$tr" style="top:0px; left:250px;"><br><img id="2.3" nm="$bl" src="$bl" style="top:250px; left:0px;"><img id="3.3" nm="$br" src="$br" style="top:250px; left:250px;">
+	    <form action"=./" method="get">
+                <input type="image" id="2.2" name="$tl" src="$tl_src" style="top:0px; left:0px;"><input type="image" id="3.2" name="$tr" src="$tr_src" style="top:0px; left:250px;"><br><input type="image" id="2.3" name="$bl" src="$bl_src" style="top:250px; left:0px;"><input type="image" id="3.3" name="$br" src="$br_src" style="top:250px; left:250px;">
+            </form>
             </div>
         </div>
 EOF
