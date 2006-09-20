@@ -7,7 +7,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: tileset.c,v 1.5 2006-09-20 15:45:44 chris Exp $";
+static const char rcsid[] = "$Id: tileset.c,v 1.6 2006-09-20 16:44:53 chris Exp $";
 
 /*
  * Tile sets are stored in directory trees which contain indices of tile
@@ -101,6 +101,12 @@ void tileset_close(tileset T) {
     xfree(T->t_path);
     xfree(T->t_pathbuf);
     xfree(T);
+}
+
+/* tileset_path T
+ * Return the path used to open T. */
+char *tileset_path(tileset T) {
+    return T->t_path;
 }
 
 static size_t blockmap_bitmap_len(const unsigned blocking) {
