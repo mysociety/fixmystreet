@@ -5,12 +5,14 @@
  * Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: tileset.h,v 1.1 2006-09-20 10:25:14 chris Exp $
+ * $Id: tileset.h,v 1.2 2006-09-20 13:24:58 chris Exp $
  *
  */
 
 #ifndef __TILESET_H_ /* include guard */
 #define __TILESET_H_
+
+#include <sys/types.h>
 
 #include <stdbool.h>
 #include <stdint.h>
