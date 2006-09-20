@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.7 2006-09-20 10:49:30 matthew Exp $
+# $Id: index.cgi,v 1.8 2006-09-20 12:47:27 francis Exp $
 
 use strict;
 require 5.8.0;
@@ -50,8 +50,9 @@ sub front_page {
     my $out = '';
     $out .= '<p id="error">' . $error . '</p>' if ($error);
     $out .= <<EOF;
-<p>Welcome to Neighbourhood Fix-It, where you can report a problem with
-a lamppost or something to your local council.</p>
+<p>Report a problem with refuse, recycling, fly tipping, pest control,
+abandoned vechicles, street lighting, graffiti, street cleaning, litter or
+similar to your local council.</p>
 
 <p><strong>This is currently only for Newham and Lewisham Councils</strong></p>
 
