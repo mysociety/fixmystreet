@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.1 2006-09-19 17:31:28 matthew Exp $
+-- $Id: schema.sql,v 1.2 2006-09-20 12:43:58 francis Exp $
 --
 
 -- secret
@@ -12,6 +12,57 @@
 create table secret (
     secret text not null
 );
+
+-- If a row is present, that is date which is "today".  Used for debugging
+-- to advance time without having to wait.
+create table debugdate (
+    override_today date
+);
+
+-- Returns the date of "today", which can be overriden for testing.
+create function ms_current_date()
+    returns date as '
+    declare
+        today date;
+    begin
+        today = (select override_today from debugdate);
+        if today is not null then
+           return today;
+        else
+           return current_date;
+        end if;
+
+    end;
+' language 'plpgsql' stable;
+
+-- Returns the timestamp of current time, but with possibly overriden "today".
+create function ms_current_timestamp()
+    returns timestamp as '
+    declare
+        today date;
+    begin
+        today = (select override_today from debugdate);
+        if today is not null then
+           return today + current_time;
+        else
+           return current_timestamp;
+        end if;
+    end;
+' language 'plpgsql';
+
+
+-- users, but call the table person rather than user so we don't have to quote
+-- its name in every statement....
+create table person (
+    id serial not null primary key,
+    name text,
+    email text not null,
+    password text,
+    website text,
+    numlogins integer not null default 0
+);
+
+create unique index person_email_idx on person(email);
 
 -- categories in which problems can lie
 -- create table category (
@@ -37,19 +88,6 @@ create table contacts (
     area_id integer not null,
     email text not null
 );
-
--- users, but call the table person rather than user so we don't have to quote
--- its name in every statement....
-create table person (
-    id serial not null primary key,
-    name text,
-    email text not null,
-    password text,
-    website text,
-    numlogins integer not null default 0
-);
-
-create unique index person_email_idx on person(email);
 
 -- angle_between A1 A2
 -- Given two angles A1 and A2 on a circle expressed in radians, return the
@@ -122,14 +160,14 @@ create table message (
     problem_id integer not null references problem(id),
     circumstance text not null,
     circumstance_count int not null default 0,
-    whencreated timestamp not null default current_timestamp(),
+    whencreated timestamp not null default ms_current_timestamp(),
     fromaddress text not null default 'bci'
         check (fromaddress in ('bci', 'creator')),
 
     -- content of message
     emailtemplatename text,
     emailsubject text,
-    emailbody text,
+    emailbody text
 );
 
 create unique index message_problem_id_circumstance_idx on message(problem_id, circumstance, circumstance_count);
@@ -143,7 +181,7 @@ create table comment (
     name text not null,
 
     website text,
-    whenposted timestamp not null default current_timestamp(),
+    whenposted timestamp not null default ms_current_timestamp(),
     text text not null,                     -- as entered by comment author
     ishidden boolean not null default false -- hidden from view
     -- other fields? one to indicate whether this was written by the council
@@ -173,7 +211,7 @@ create table alert (
     latitude double precision,
     longitude double precision,
 
-    whensubscribed timestamp not null default current_timestamp(),
+    whensubscribed timestamp not null default ms_current_timestamp(),
     whendisabled timestamp default null -- set if alert has been turned off
 );
 
@@ -191,7 +229,7 @@ create table alert_sent (
     -- which comment for event code "/comments"
     comment_id integer references comment(id),
 
-    whenqueued timestamp not null default current_timestamp()
+    whenqueued timestamp not null default ms_current_timestamp()
 );
 
 create index alert_sent_alert_id_idx on alert_sent(alert_id);
