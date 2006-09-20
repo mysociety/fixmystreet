@@ -7,7 +7,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: tileserver.c,v 1.8 2006-09-20 16:38:29 chris Exp $";
+static const char rcsid[] = "$Id: tileserver.c,v 1.9 2006-09-20 16:42:45 chris Exp $";
 
 /* 
  * This is slightly complicated by the fact that we indirect tile references
@@ -244,6 +244,7 @@ void handle_request(void) {
     if (!(T = tileset_open(path))) {
         error(404, "Tileset not found");
             /* XXX assumption about the nature of the error */
+        request_free(R);
         return;
     }
 
@@ -256,6 +257,7 @@ void handle_request(void) {
             "Date: %s\r\n"
             "\r\n", date);
         tileset_close(T);
+        request_free(R);
         return;
     }
 
@@ -491,6 +493,7 @@ void handle_request(void) {
     }
 
     tileset_close(T);
+    request_free(R);
 }
 
 int main(int argc, char *argv[]) {
