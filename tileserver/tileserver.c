@@ -7,7 +7,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: tileserver.c,v 1.4 2006-09-20 15:44:00 chris Exp $";
+static const char rcsid[] = "$Id: tileserver.c,v 1.5 2006-09-20 16:24:33 chris Exp $";
 
 /* 
  * This is slightly complicated by the fact that we indirect tile references
@@ -291,6 +291,24 @@ void handle_request(void) {
                 strcpy(p,
                     "<html><head><title>tileserver test</title></head><body>");
                 p += strlen(p);
+
+                if (R->r_west > 0)
+                    p += sprintf(p, "<a href=\"../%u-%u,%u-%u/html\">west</a> ",
+                                R->r_west - 1, R->r_east - 1,
+                                R->r_south, R->r_north);
+                p += sprintf(p, "<a href=\"../%u-%u,%u-%u/html\">east</a> ",
+                            R->r_west + 1, R->r_east + 1,
+                            R->r_south, R->r_north);
+
+                p += sprintf(p, "<a href=\"../%u-%u,%u-%u/html\">north</a> ",
+                            R->r_west, R->r_east,
+                            R->r_south + 1, R->r_north + 1);
+                if (R->r_south > 0)
+                    p += sprintf(p, "<a href=\"../%u-%u,%u-%u/html\">south</a> ",
+                                R->r_west, R->r_east,
+                                R->r_south - 1, R->r_north - 1);
+                p += sprintf(p, "<br>");
+                break;
         }
 
         /* Iterate over tile IDs. */
@@ -329,11 +347,12 @@ void handle_request(void) {
 
                 switch (R->r_format) {
                     case F_RABX:
-                        if (isnull) {
+                        if (isnull)
+                            *(p++) = 'N';
+                        else {
                             *(p++) = 'T';
                             p += netstring_write_string(p, idb64);
-                        } else
-                            *(p++) = 'N';
+                        }
                         break;
 
                     case F_JSON:
