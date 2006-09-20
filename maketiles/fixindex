@@ -7,7 +7,7 @@
 # Email: chris@mysociety.org; WWW: http://www.mysociety.org/
 #
 
-my $rcsid = ''; $rcsid .= '$Id: fixindex,v 1.1 2006-09-20 15:07:58 chris Exp $';
+my $rcsid = ''; $rcsid .= '$Id: fixindex,v 1.2 2006-09-20 15:20:30 chris Exp $';
 
 use strict;
 
@@ -17,7 +17,7 @@ while (defined(my $line = <STDIN>)) {
     chomp($line);
     if ($line =~ /^(0|[1-9]\d*) (0|[1-9]\d*) ([0-9a-f]+)$/) {
         my ($x, $y, $id) = ($1, $2, $3);
-        $y = int($y / SUBTILES_PER_TILE)
+        $y = int($y / SUBTILES_PER_TILE) * SUBTILES_PER_TILE
                     + SUBTILES_PER_TILE - 1 - ($y % SUBTILES_PER_TILE);
         print "$x $y $id\n";
     } else {
