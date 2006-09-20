@@ -8,7 +8,7 @@
 # Email: chris@mysociety.org; WWW: http://www.mysociety.org/
 #
 
-my $rcsid = ''; $rcsid .= '$Id: 10kfull,v 1.4 2006-09-19 15:48:11 chris Exp $';
+my $rcsid = ''; $rcsid .= '$Id: 10kfull,v 1.5 2006-09-20 15:01:56 chris Exp $';
 
 use strict;
 
@@ -34,7 +34,6 @@ sub System (@) {
     system(@_);
     die "command failed with status $?" if ($?);
 }
-
 
 die "arguments are directories containing input tiles in TIFF format and\n"
     . "to which output tiles are to be written, and optional eastings and\n"
@@ -150,8 +149,9 @@ while (my $name = $d->read()) {
     my $size = 0;
     for (my $j = 0; $j < SUBTILES_PER_TILE; ++$j) {
         debug("\r$j/", SUBTILES_PER_TILE);
+        my $j2 = SUBTILES_PER_TILE - 1 - $j;
         for (my $i = 0; $i < SUBTILES_PER_TILE; ++$i) {
-            my $fn = "$outputdir/$i,$j.png";
+            my $fn = "$outputdir/$i,$j2.png";
             my $f = new IO::File($fn, O_RDONLY)
                         or die "$fn: $!";
             my $sha = new Digest::SHA1();
