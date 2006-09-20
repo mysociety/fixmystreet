@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.10 2006-09-20 14:51:00 matthew Exp $
+# $Id: index.cgi,v 1.11 2006-09-20 16:12:06 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -103,6 +103,8 @@ sub display {
     my $area_info = mySociety::MaPit::get_voting_area_info($lbo);
     my $name = $area_info->{name};
 
+    my $location = mySociety::MaPit::get_location($pc);
+
     my $out = <<EOF;
 <h2>$name</h2>
 <p>Now, please select the location of the problem on the map below.
@@ -126,17 +128,9 @@ EOF
     my $bl_src = $dir . $bl . '.png';
     my $br_src = $dir . $br . '.png';
     $pc = encode_entities($pc);
-    $out .= Page::compass($pc, $x, $y);
     $out .= <<EOF;
-    <div style="float: right">
-    <div>
-    <h2>Current problems</h2>
-    </div>
-    <div>
-    <h2>Recently fixed problems</h2>
-    </div>
-    </div>
             <form action"=./" method="get">
+    <div id="relativediv">
         <div id="map">
 	    <input type="hidden" name="x" value="$x">
 	    <input type="hidden" name="y" value="$y">
@@ -144,7 +138,54 @@ EOF
 	    <input type="hidden" name="lbo" value="$lbo">
                 <input type="image" id="2.2" name="$tl" src="$tl_src" style="top:0px; left:0px;"><input type="image" id="3.2" name="$tr" src="$tr_src" style="top:0px; left:250px;"><br><input type="image" id="2.3" name="$bl" src="$bl_src" style="top:250px; left:0px;"><input type="image" id="3.3" name="$br" src="$br_src" style="top:250px; left:250px;">
         </div>
+EOF
+    $out .= Page::compass($pc, $x, $y);
+    $out .= <<EOF;
+    <div>
+    <h2>Current problems</h2>
+    <ul id="current">
+EOF
+    my %current = (
+        1 => 'Broken lamppost',
+        2 => 'Shards of glass',
+        3 => 'Abandoned car',
+    );
+    my %fixed = (
+        4 => 'Broken lamppost',
+        5 => 'Shards of glass',
+        6 => 'Abandoned car',
+    );
+    foreach (sort keys %current) {
+        my $px = int(rand(500)) - 6;
+        my $py = int(rand(500)) - 20;
+        $out .= '<li><a href="/?id=' . $_ . '">';
+	$out .= '<img src="/i/pin_red.png" alt="Problem"';
+	$out .= ' style="top:'.$py.'px; right:'.$px.'px">';
+	$out .= $current{$_};
+	$out .= '</a></li>';
+    }
+    $out .= <<EOF;
+    </ul>
+    <h2>Recently fixed problems</h2>
+    <ul>
+EOF
+    foreach (sort keys %fixed) {
+        $out .= '<li><a href="/?id=' . $_ . '">';
+	#$out .= '<img src="/i/pin_red.png" alt="Problem">';
+	$out .= $fixed{$_};
+	$out .= '</a></li>';
+    }
+    $out .= <<EOF;
+    </ul>
+    </div>
+
+</div>
             </form>
+
+<p>If you cannot see a map &ndash; if you have images turned off,
+or are using a text only browser, for example &ndash; please
+<a href="./?skippedmap=1">skip this step</a> and we will ask you
+to describe the location of your problem instead.</p>
 EOF
     return $out;
 }

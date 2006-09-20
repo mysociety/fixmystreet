@@ -6,8 +6,15 @@ body {
 }
 
 h1 {
-    border-bottom: solid 1px #999999;
-    margin: 0 0 1em 0;
+    border-bottom: solid 2px #999999;
+    margin: 0;
+}
+
+a {
+    color: #0000ff;
+}
+a:hover, a:active {
+    color: #ff0000;
 }
 
 .v { display: none; }
@@ -20,21 +27,19 @@ h1 {
 /* Site-wide layout */
 
 #container {
-    margin-left: -8em;
-    width: 100%;
-    float: right;
 }
 #content {
-    margin-left: 8em;
 }
-#content > *:first-child {
-    margin-top: 0;
-}
+
 #navigation {
-    width: 5em;
-    float: left;
-    padding: 0 1em 0 0;
-    margin: 0 0 1em 2em;
+    position: absolute;
+    top: 1em;
+    right: 1em;
+    padding: 0.5em 1em 1em;
+    background-color: #eeeeee;
+    border: solid 2px #999999;
+    margin: 0;
+    list-style-type: none;
 }
 
 /* Individual pages */
@@ -45,8 +50,8 @@ h1 {
     height: 500px;
     position: relative;
     top: 0;
-    margin-left: 5em;
     overflow: hidden;
+    float: right;
 }
 /*#drag {
     width: 1em;
@@ -66,8 +71,18 @@ h1 {
     font-size: 83%;
 }
 #compass {
-    float: left;
+    float: right;
+    margin: 0 1em 1em;
 }
 #compass img {
     border: 0;
+}
+
+#relativediv {
+    position: relative;
+}
+
+ul#current img {
+    position: absolute;
+    border: none;
 }
