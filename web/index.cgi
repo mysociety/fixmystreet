@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.9 2006-09-20 14:16:22 matthew Exp $
+# $Id: index.cgi,v 1.10 2006-09-20 14:51:00 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -128,17 +128,23 @@ EOF
     $pc = encode_entities($pc);
     $out .= Page::compass($pc, $x, $y);
     $out .= <<EOF;
-        <div id="map">
-            <div id="drag">
+    <div style="float: right">
+    <div>
+    <h2>Current problems</h2>
+    </div>
+    <div>
+    <h2>Recently fixed problems</h2>
+    </div>
+    </div>
             <form action"=./" method="get">
+        <div id="map">
 	    <input type="hidden" name="x" value="$x">
 	    <input type="hidden" name="y" value="$y">
 	    <input type="hidden" name="pc" value="$pc">
 	    <input type="hidden" name="lbo" value="$lbo">
                 <input type="image" id="2.2" name="$tl" src="$tl_src" style="top:0px; left:0px;"><input type="image" id="3.2" name="$tr" src="$tr_src" style="top:0px; left:250px;"><br><input type="image" id="2.3" name="$bl" src="$bl_src" style="top:250px; left:0px;"><input type="image" id="3.3" name="$br" src="$br_src" style="top:250px; left:250px;">
-            </form>
-            </div>
         </div>
+            </form>
 EOF
     return $out;
 }
