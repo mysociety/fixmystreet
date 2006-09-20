@@ -7,7 +7,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: tileserver.c,v 1.3 2006-09-20 14:59:26 chris Exp $";
+static const char rcsid[] = "$Id: tileserver.c,v 1.4 2006-09-20 15:44:00 chris Exp $";
 
 /* 
  * This is slightly complicated by the fact that we indirect tile references
@@ -439,6 +439,8 @@ void handle_request(void) {
 
         fwrite(buf, 1, p - buf, stdout);
     }
+
+    tileset_close(T);
 }
 
 int main(int argc, char *argv[]) {
