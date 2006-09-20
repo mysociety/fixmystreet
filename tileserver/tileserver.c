@@ -7,7 +7,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: tileserver.c,v 1.7 2006-09-20 16:34:21 chris Exp $";
+static const char rcsid[] = "$Id: tileserver.c,v 1.8 2006-09-20 16:38:29 chris Exp $";
 
 /* 
  * This is slightly complicated by the fact that we indirect tile references
@@ -214,6 +214,7 @@ void handle_request(void) {
     struct tm *tm;
     char date[32];
     const char *last_modified = "Wed, 20 Sep 2006 17:27:40 GMT";
+    const unsigned cache_max_age = 365 * 86400;
 
     /* Date: header is required if we give a 304 Not Modified response. */
     time(&now);
@@ -246,6 +247,9 @@ void handle_request(void) {
         return;
     }
 
+    /* XXX this is poor -- if the client sends If-Modified-Since: we just
+     * assume that it hasn't been. We might want to do something more clever at
+     * some point. */
     if (getenv("HTTP_IF_MODIFIED_SINCE")) {
         printf(
             "Status: 304 Not Modified\r\n"
@@ -267,7 +271,9 @@ void handle_request(void) {
                 "Content-Type: image/png\r\n"
                 "Content-Length: %u\r\n"
                 "Last-Modified: %s\r\n"
-                "\r\n", len, last_modified);
+                "Date: %s\r\n"
+                "Cache-Control: max-age=%u\r\n"
+                "\r\n", len, last_modified, date, cache_max_age);
             fwrite(buf, 1, len, stdout);
             xfree(buf);
         } else
@@ -476,8 +482,10 @@ void handle_request(void) {
         printf("\r\n"
             "Content-Length: %u\r\n"
             "Last-Modified: %s\r\n"
+            "Date: %s\r\n"
+            "Cache-Control: max-age=%u\r\n"
             "\r\n",
-            (unsigned)(p - buf), last_modified);
+            (unsigned)(p - buf), last_modified, date, cache_max_age);
 
         fwrite(buf, 1, p - buf, stdout);
     }
