@@ -7,7 +7,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: tileserver.c,v 1.1 2006-09-20 10:25:14 chris Exp $";
+static const char rcsid[] = "$Id: tileserver.c,v 1.2 2006-09-20 14:29:23 chris Exp $";
 
 /* 
  * This is slightly complicated by the fact that we indirect tile references
@@ -23,9 +23,25 @@ static const char rcsid[] = "$Id: tileserver.c,v 1.1 2006-09-20 10:25:14 chris E
  *      and NE corner (E, N) in the given FORMAT.
  * 
  * What FORMATS should we support? RABX and JSON are the obvious ones I guess.
+ * Add TEXT for debugging.
  */
 
+#include <sys/types.h>
+
+#include <errno.h>
+#ifndef NO_FASTCGI
+#include <fcgi_stdio.h>
+#endif
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <sys/stat.h>
+
+#include "base64.h"
+#include "netstring.h"
 #include "tileset.h"
+#include "util.h"
 
 /* tileset_path
  * The configured path to tilesets. */
@@ -39,19 +55,6 @@ char *tileset_path;
 #define HTTP_NOT_IMPLEMENTED        501
 #define HTTP_SERVICE_UNAVAILABLE    503
 
-/* err FORMAT [ARG ...]
- * Write an error message to standard error. */
-#define err(...)    \
-        do { \
-            fprintf(stderr, "tileserver: "); \
-            fprintf(stderr, __VA_ARGS__); \
-            fprintf(stderr, "\n"); \
-        } while (0)
-
-/* die FORMAT [ARG ...]
- * Write an error message to standard error and exit unsuccessfully. */
-#define die(...) do { err(__VA_ARGS__); exit(1); } while (0)
-
 /* error STATUS TEXT
  * Send an error to the client with the given HTTP STATUS and TEXT. */
 void error(int status, const char *s) {
@@ -64,7 +67,8 @@ void error(int status, const char *s) {
         "\r\n"
         "%s\n",
         status,
-        strlen(s) + 1);
+        strlen(s) + 1,
+        s);
 }
 
 /* struct request
@@ -76,7 +80,7 @@ struct request {
         FN_GET_TILEIDS
     } r_function;
 
-    uint8_t r_tilehash[TILEHASH_LEN];
+    uint8_t r_tileid[TILEID_LEN];
 
     int r_west, r_east, r_south, r_north;
     enum {
@@ -87,6 +91,8 @@ struct request {
 
     char *r_buf;
 };
+
+void request_free(struct request *R);
 
 /* request_parse PATHINFO
  * Parse a request from PATHINFO. Returns a request on success or NULL on
@@ -167,7 +173,7 @@ struct request *request_parse(const char *path_info) {
 
         /* Decode it. Really this is "base64ish", so that we don't have to
          * deal with '+' or '/' in the URL. */
-        base64_decode(p, R->r_tilehash, &l, 1);
+        base64_decode(p, R->r_tileid, &l, 1);
         if (l != TILEID_LEN)
             goto fail;
 
@@ -179,6 +185,8 @@ fail:
     return NULL;
 }
 
+/* request_free R
+ * Free storage allocated for R. */
 void request_free(struct request *R) {
     if (!R) return;
     xfree(R->r_buf);
@@ -192,9 +200,6 @@ void handle_request(void) {
     static size_t pathlen;
     size_t l;
     tileset T;
-    time_t when;
-    struct tm tm;
-    char timebuf[32];
 
     /* All requests are given via PATH_INFO. */
     if (!(path_info = getenv("PATH_INFO"))) {
@@ -210,7 +215,7 @@ void handle_request(void) {
     /* So we have a valid request. */
     l = strlen(R->r_tileset) + strlen(tileset_path) + 2;
     if (pathlen < l)
-        pathlen = xrealloc(path, pathlen = l);
+        path = xrealloc(path, pathlen = l);
     sprintf(path, "%s/%s", tileset_path, R->r_tileset);
     
     if (!(T = tileset_open(path))) {
@@ -226,17 +231,17 @@ void handle_request(void) {
         void *buf;
         size_t len;
 
-        if ((buf = tileset_get_tile(T, T->r_tileid, &len))) {
+        if ((buf = tileset_get_tile(T, R->r_tileid, &len))) {
             printf(
                 "Content-Type: image/png\r\n"
                 "Content-Length: %u\r\n"
-                "\r\n");
-            fwrite(stdout, 1, buf, len);
+                "\r\n", len);
+            fwrite(buf, 1, len, stdout);
             xfree(buf);
         } else
             error(404, "Tile not found");
                 /* XXX error assumption */
-    } else if (FN_GET_TILEIDS = R->r_function) {
+    } else if (FN_GET_TILEIDS == R->r_function) {
         /*
          * Send one or more tile IDs to the client, in some useful format.
          */
@@ -289,14 +294,13 @@ void handle_request(void) {
                 uint8_t id[TILEID_LEN];
                 char idb64[TILEID_LEN_B64 + 1];
                 bool isnull = 0;
-                size_t l;
                 
                 if (!(tileset_get_tileid(T, x, y, id)))
                     isnull = 1;
                 else
                     base64_encode(id, TILEID_LEN, idb64, 1, 1);
 
-                if (p + 256 > buflen) {
+                if (p + 256 > buf + buflen) {
                     size_t n;
                     n = p - buf;
                     buf = xrealloc(buf, buflen *= 2);
@@ -307,7 +311,7 @@ void handle_request(void) {
                     case F_RABX:
                         if (isnull) {
                             *(p++) = 'T';
-                            p += netstring_write(p, idb64);
+                            p += netstring_write_string(p, idb64);
                         } else
                             *(p++) = 'N';
                         break;
@@ -365,7 +369,6 @@ void handle_request(void) {
                 break;
                 
             case F_TEXT:
-                *(p++) = '\n';
                 break;
         }
         *(p++) = 0;
@@ -399,18 +402,27 @@ void handle_request(void) {
 
 int main(int argc, char *argv[]) {
     struct stat st;
-    
-    if (2 != argc) {
-        die("single argument is path to tile sets");
-    }
-    tileset_path = argv[1];
-    if (-1 == stat(tileset_path, &st))
-        die("%s: stat: %s", tileset_path, strerror(errno));
-    else if (!S_ISDIR(st.st_mode))
-        die("%s: Not a directory", tileset_path);
+    bool initialised = 0;
 
+#ifndef NO_FASTCGI
     while (FCGI_Accept() >= 0)
+#endif
+                               {
+        /* Stupid order since with fcgi_stdio if we haven't called FCGI_Accept
+         * we don't get any stderr output.... */
+        if (!initialised) {
+            if (argc != 2)
+                die("single argument is path to tile sets");
+            tileset_path = argv[1];
+            if (-1 == stat(tileset_path, &st))
+                die("%s: stat: %s", tileset_path, strerror(errno));
+            else if (!S_ISDIR(st.st_mode))
+                die("%s: Not a directory", tileset_path);
+            initialised = 1;
+        }
+
         handle_request();
+    }
 
     return 0;
 }

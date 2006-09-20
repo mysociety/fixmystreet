@@ -7,7 +7,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: tileset.c,v 1.3 2006-09-20 14:25:31 chris Exp $";
+static const char rcsid[] = "$Id: tileset.c,v 1.4 2006-09-20 14:29:23 chris Exp $";
 
 /*
  * Tile sets are stored in directory trees which contain indices of tile
@@ -23,6 +23,7 @@ static const char rcsid[] = "$Id: tileset.c,v 1.3 2006-09-20 14:25:31 chris Exp 
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
