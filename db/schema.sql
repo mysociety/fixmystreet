@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.2 2006-09-20 12:43:58 francis Exp $
+-- $Id: schema.sql,v 1.3 2006-09-20 15:49:16 francis Exp $
 --
 
 -- secret
@@ -86,8 +86,48 @@ create table problem (
 -- Who to send problems for a specific MaPit area ID to
 create table contacts (
     area_id integer not null,
-    email text not null
+    email text not null,
+
+    -- last editor
+    editor text not null,
+    -- time of last change
+    whenedited timestamp not null, 
+    -- what the last change was for: author's notes
+    note text not null
 );
+
+-- History of changes to contacts - automatically updated
+-- whenever contacts is changed, using trigger below.
+create table contacts_history (
+    contacts_history_id serial not null primary key,
+
+    area_id integer not null,
+    email text not null,
+
+    -- editor
+    editor text not null,
+    -- time of entry
+    whenedited timestamp not null, 
+    -- what the change was for: author's notes
+    note text not null
+);
+
+-- Create a trigger to update the last-change-time for the pledge on any
+-- update to the table. This should cover manual edits only; anything else
+-- (signers, comments, ...) should be covered by pledge_last_change_time or by
+-- the individual implementing functions.
+create function contacts_updated()
+    returns trigger as '
+    begin
+        insert into contacts_history (area_id, email, editor, whenedited, note) values (new.area_id, new.email, new.editor, new.whenedited, new.note);
+        return new;
+    end;
+' language 'plpgsql';
+
+create trigger contacts_update_trigger after update on contacts
+    for each row execute procedure contacts_updated();
+create trigger contacts_insert_trigger after insert on contacts
+    for each row execute procedure contacts_updated();
 
 -- angle_between A1 A2
 -- Given two angles A1 and A2 on a circle expressed in radians, return the
