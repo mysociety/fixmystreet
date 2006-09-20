@@ -7,7 +7,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: tileserver.c,v 1.6 2006-09-20 16:25:20 chris Exp $";
+static const char rcsid[] = "$Id: tileserver.c,v 1.7 2006-09-20 16:34:21 chris Exp $";
 
 /* 
  * This is slightly complicated by the fact that we indirect tile references
@@ -35,6 +35,7 @@ static const char rcsid[] = "$Id: tileserver.c,v 1.6 2006-09-20 16:25:20 chris E
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include <sys/stat.h>
 
@@ -209,7 +210,16 @@ void handle_request(void) {
     static size_t pathlen;
     size_t l;
     tileset T;
+    time_t now;
+    struct tm *tm;
+    char date[32];
+    const char *last_modified = "Wed, 20 Sep 2006 17:27:40 GMT";
 
+    /* Date: header is required if we give a 304 Not Modified response. */
+    time(&now);
+    tm = gmtime(&now);
+    strftime(date, sizeof date, "%a, %d %b %Y %H:%M:%S GMT", tm);
+    
     /* All requests are given via PATH_INFO. */
     if (!(path_info = getenv("PATH_INFO"))) {
         error(400, "No request path supplied");
@@ -236,6 +246,15 @@ void handle_request(void) {
         return;
     }
 
+    if (getenv("HTTP_IF_MODIFIED_SINCE")) {
+        printf(
+            "Status: 304 Not Modified\r\n"
+            "Date: %s\r\n"
+            "\r\n", date);
+        tileset_close(T);
+        return;
+    }
+
     if (FN_GET_TILE == R->r_function) {
         /* 
          * Send a single tile image to the client.
@@ -247,7 +266,8 @@ void handle_request(void) {
             printf(
                 "Content-Type: image/png\r\n"
                 "Content-Length: %u\r\n"
-                "\r\n", len);
+                "Last-Modified: %s\r\n"
+                "\r\n", len, last_modified);
             fwrite(buf, 1, len, stdout);
             xfree(buf);
         } else
@@ -455,8 +475,9 @@ void handle_request(void) {
         }
         printf("\r\n"
             "Content-Length: %u\r\n"
+            "Last-Modified: %s\r\n"
             "\r\n",
-            (unsigned)(p - buf));
+            (unsigned)(p - buf), last_modified);
 
         fwrite(buf, 1, p - buf, stdout);
     }
