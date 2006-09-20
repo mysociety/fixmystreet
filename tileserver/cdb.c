@@ -9,7 +9,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: cdb.c,v 1.3 2006-09-20 12:46:29 chris Exp $";
+static const char rcsid[] = "$Id: cdb.c,v 1.4 2006-09-20 14:24:10 chris Exp $";
 
 #include <sys/types.h>
 
@@ -318,12 +318,21 @@ fail:
 #undef FAIL
 }
 
-/* cdb_get_string C, STRING
+/* cdb_get_string C STRING
  * As for cdb_get, but construct the KEY datum from STRING. */
 cdb_datum cdb_get_string(cdb C, const char *s) {
     struct cdb_datum d;
     d.cd_len = strlen(s);
     d.cd_buf = (void*)s;
+    return cdb_get(C, &d);
+}
+
+/* cdb_get_buf C BUF LEN
+ * As for cdb_get, buf construct the KEY datum from BUF and LEN. */
+cdb_datum cdb_get_buf(cdb C, const void *buf, const size_t len) {
+    struct cdb_datum d;
+    d.cd_len = len;
+    d.cd_buf = (void*)buf;
     return cdb_get(C, &d);
 }
 

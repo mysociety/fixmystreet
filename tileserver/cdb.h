@@ -5,7 +5,7 @@
  * Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
- * $Id: cdb.h,v 1.3 2006-09-20 13:23:17 chris Exp $
+ * $Id: cdb.h,v 1.4 2006-09-20 14:24:10 chris Exp $
  *
  */
 
@@ -55,6 +55,7 @@ cdb_datum cdb_datum_alloc(const size_t len);
 void cdb_datum_free(cdb_datum d);
 cdb_datum cdb_get(cdb C, const cdb_datum key);
 cdb_datum cdb_get_string(cdb C, const char *str);
+cdb_datum cdb_get_buf(cdb C, const void *buf, const size_t len);
 char *cdb_strerror(const cdb_result_t e);
 
 #endif /* __CDB_H_ */
