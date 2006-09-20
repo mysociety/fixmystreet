@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.3 2006-09-20 15:49:16 francis Exp $
+-- $Id: schema.sql,v 1.4 2006-09-20 16:56:54 francis Exp $
 --
 
 -- secret
@@ -192,26 +192,6 @@ create function problem_find_nearby(double precision, double precision, double p
 ' language sql; -- should be "stable" rather than volatile per default?
 
 
--- Messages sent to problem creators and councils, and commenters.  This is
--- used with message_creator_recipient and message_signer_recipient to make
--- sure that messages are sent exactly once.
-create table message (
-    id serial not null primary key,
-    problem_id integer not null references problem(id),
-    circumstance text not null,
-    circumstance_count int not null default 0,
-    whencreated timestamp not null default ms_current_timestamp(),
-    fromaddress text not null default 'bci'
-        check (fromaddress in ('bci', 'creator')),
-
-    -- content of message
-    emailtemplatename text,
-    emailsubject text,
-    emailbody text
-);
-
-create unique index message_problem_id_circumstance_idx on message(problem_id, circumstance, circumstance_count);
-
 -- Comments/q&a on problems.
 create table comment (
     id serial not null primary key,
@@ -232,49 +212,4 @@ create index comment_problem_id_idx on comment(problem_id);
 create index comment_problem_id_whenposted_idx on comment(problem_id, whenposted);
 create index comment_ishidden_idx on comment(ishidden);
 
--- Alerts and notifications
-
--- get emailed when various events happen
-create table alert (
-    id serial not null primary key,
-    person_id integer not null references person(id),
-    event_code text not null,
-
-    check (
-            event_code = 'comments/problem' or    -- new comments on a particular problem
-            event_code = 'problem/local'   -- new problem near a particular area
-    ),
-
-    -- extra parameters for different types of alert
-    problem_id integer references problem(id), -- specific problem for ".../problem" event codes
-    -- specific location for ".../local" event codes
-    latitude double precision,
-    longitude double precision,
-
-    whensubscribed timestamp not null default ms_current_timestamp(),
-    whendisabled timestamp default null -- set if alert has been turned off
-);
-
-create index alert_person_id_idx on alert(person_id);
-create index alert_event_code_idx on alert(event_code);
-create index alert_problem_id_idx on alert(problem_id);
-create index alert_whendisabled_idx on alert(whendisabled);
-create unique index alert_unique_idx on alert(person_id, event_code, problem_id, latitude, longitude);
-
-create table alert_sent (
-    alert_id integer not null references alert(id),
-    
-    -- which pledge for event codes "pledges/"
-    problem_id integer references problem(id),
-    -- which comment for event code "/comments"
-    comment_id integer references comment(id),
-
-    whenqueued timestamp not null default ms_current_timestamp()
-);
-
-create index alert_sent_alert_id_idx on alert_sent(alert_id);
-create index alert_sent_problem_id_idx on alert_sent(problem_id);
-create index alert_sent_comment_id_idx on alert_sent(comment_id);
-create unique index alert_sent_problem_unique_idx on alert_sent(alert_id, problem_id);
-create unique index alert_sent_comment_unique_idx on alert_sent(alert_id, comment_id);
 
