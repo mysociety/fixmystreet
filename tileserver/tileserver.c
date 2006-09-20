@@ -7,7 +7,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: tileserver.c,v 1.2 2006-09-20 14:29:23 chris Exp $";
+static const char rcsid[] = "$Id: tileserver.c,v 1.3 2006-09-20 14:59:26 chris Exp $";
 
 /* 
  * This is slightly complicated by the fact that we indirect tile references
@@ -86,7 +86,8 @@ struct request {
     enum {
         F_RABX,
         F_JSON,
-        F_TEXT
+        F_TEXT,
+        F_HTML
     } r_format;
 
     char *r_buf;
@@ -102,8 +103,10 @@ struct request *request_parse(const char *path_info) {
     struct request *R = NULL, Rz = {0};
 
     /* Some trivial syntax checks. */
-    if (!*path_info || *path_info == '/' || !strchr(path_info, '/'))
+    if (!*path_info || *path_info == '/' || !strchr(path_info, '/')) {
+        err("PATH_INFO of \"%s\" is not a valid request", path_info);
         return NULL;
+    }
     
    
     /* 
@@ -145,22 +148,28 @@ struct request *request_parse(const char *path_info) {
             R->r_format = F_JSON;
         else if (!strcmp(q, "text"))
             R->r_format = F_TEXT;
-        else
+        else if (!strcmp(q, "html"))
+            R->r_format = F_HTML;
+        else {
+            err("request for unknown tile ID result format \"%s\"", q);
             goto fail;
+        }
 
         if (4 == sscanf(p, "%d-%d,%d-%d",
                         &R->r_west, &R->r_east, &R->r_south, &R->r_north)) {
             if (R->r_west < 0 || R->r_south < 0
-                || R->r_east < R->r_west || R->r_north < R->r_south)
+                || R->r_east < R->r_west || R->r_north < R->r_south) {
+                err("area range query has invalid coordinates or order");
                 goto fail;
-            else
+            } else
                 return R;
         } else if (2 == sscanf(p, "%d,%d", &R->r_west, &R->r_south)) {
             R->r_east = R->r_west;
             R->r_north = R->r_south;
-            if (R->r_west < 0 || R->r_south < 0)
+            if (R->r_west < 0 || R->r_south < 0) {
+                err("tile ID query has negative coordinates");
                 goto fail;
-            else
+            } else
                 return R;
         }
     } else {
@@ -206,6 +215,9 @@ void handle_request(void) {
         error(400, "No request path supplied");
         return;
     }
+
+    if ('/' == *path_info)
+        ++path_info;
 
     if (!(R = request_parse(path_info))) {
         error(400, "Bad request");
@@ -274,10 +286,15 @@ void handle_request(void) {
             case F_TEXT:
                 /* Space and LF separated matrix so no special leader. */
                 break;
+
+            case F_HTML:
+                strcpy(p,
+                    "<html><head><title>tileserver test</title></head><body>");
+                p += strlen(p);
         }
 
         /* Iterate over tile IDs. */
-        for (y = R->r_south; y <= R->r_north; ++y) {
+        for (y = R->r_north; y >= R->r_south; --y) {
             switch (R->r_format) {
                 case F_RABX:
                     *(p++) = 'L';
@@ -287,6 +304,9 @@ void handle_request(void) {
                     *(p++) = '[';
 
                 case F_TEXT:
+                    break;  /* nothing */
+
+                case F_HTML:
                     break;  /* nothing */
             }
             
@@ -340,6 +360,16 @@ void handle_request(void) {
                         if (x < R->r_east)
                             *(p++) = ' ';
                         break;
+
+                    case F_HTML:
+                        if (isnull)
+                            ;   /* not much we can do without the tile sizes */
+                        else
+                            p += sprintf(p,
+                                    "<img title=\"%u,%u\" src=\"../%s\">",
+                                    x, y,
+                                    idb64);
+                        break;
                 }
             }
 
@@ -356,6 +386,10 @@ void handle_request(void) {
                 case F_TEXT:
                     *(p++) = '\n';
                     break;
+
+                case F_HTML:
+                    p += sprintf(p, "<br>");
+                    break;
             }
         }
 
@@ -370,8 +404,11 @@ void handle_request(void) {
                 
             case F_TEXT:
                 break;
+
+            case F_HTML:
+                p += sprintf(p, "</body></html>");
         }
-        *(p++) = 0;
+        /* NB no terminating NUL */
 
         /* Actually send it. */
         printf("Content-Type: ");
@@ -389,6 +426,10 @@ void handle_request(void) {
 
             case F_TEXT:
                 printf("text/plain; charset=us-ascii");
+                break;
+
+            case F_HTML:
+                printf("text/html; charset=us-ascii");
                 break;
         }
         printf("\r\n"
