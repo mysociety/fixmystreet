@@ -7,7 +7,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: tileset.c,v 1.4 2006-09-20 14:29:23 chris Exp $";
+static const char rcsid[] = "$Id: tileset.c,v 1.5 2006-09-20 15:45:44 chris Exp $";
 
 /*
  * Tile sets are stored in directory trees which contain indices of tile
@@ -68,7 +68,7 @@ tileset tileset_open(const char *path) {
 
     T->t_first = 1;
     T->t_path = xstrdup(path);
-    T->t_pathbuf = xmalloc(strlen(path) + sizeof "tiles/a/b/c/tiles.cdb");
+    T->t_pathbuf = xmalloc(strlen(path) + sizeof "/tiles/a/b/c/tiles.cdb");
     
     /* Open the tile ID index. */
     sprintf(T->t_pathbuf, "%s/index.cdb", T->t_path);
