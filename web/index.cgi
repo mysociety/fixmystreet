@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.8 2006-09-20 12:47:27 francis Exp $
+# $Id: index.cgi,v 1.9 2006-09-20 14:16:22 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -15,6 +15,8 @@ require 5.8.0;
 use FindBin;
 use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../../perllib";
+use Error qw(:try);
+use HTML::Entities;
 
 use Page;
 use mySociety::Config;
@@ -31,8 +33,6 @@ sub main {
     my $out = '';
     if ($q->param('pc')) {
         $out = display($q);
-    } elsif ($q->param('map')) {
-        $out = map_clicked($q);
     } else {
         $out = front_page();
     }
@@ -78,37 +78,63 @@ sub display {
     my $q = shift;
     my $pc = $q->param('pc');
 
-    my $areas = mySociety::MaPit::get_voting_areas($pc);
-    # XXX Check for error
+    my $areas;
+    my $error;
+    try {
+        $areas = mySociety::MaPit::get_voting_areas($pc);
+    } catch RABX::Error with {
+        my $e = shift;
+        if ($e->value() == mySociety::MaPit::BAD_POSTCODE
+            || $e->value() == mySociety::MaPit::POSTCODE_NOT_FOUND) {
+            $error = 'That postcode was not recognised, sorry.';
+        } else {
+	    $e->throw();
+	}
+    };
+    return front_page($error) if ($error);
 
     # Check for London Borough
-    return front_page('I\'m afraid that postcode isn\'t in our covered area') if (!$areas || !$areas->{LBO});
+    return front_page('I\'m afraid that postcode isn\'t in our covered area.') if (!$areas || !$areas->{LBO});
 
     # Check for Lewisham or Newham
     my $lbo = $areas->{LBO};
-    return front_page('I\'m afraid that postcode isn\'t in our covered London boroughs') unless ($lbo == 2510 || $lbo == 2492);
+    return front_page('I\'m afraid that postcode isn\'t in our covered London boroughs.') unless ($lbo == 2510 || $lbo == 2492);
 
     my $area_info = mySociety::MaPit::get_voting_area_info($lbo);
     my $name = $area_info->{name};
 
-    my $out = '<h2>' . $name . '</h2>';
-
-    my $x = $q->param('x') || 620;
-    my $y = $q->param('y') || 1710;
+    my $out = <<EOF;
+<h2>$name</h2>
+<p>Now, please select the location of the problem on the map below.
+Use the arrows to the left of the map to scroll around.</p>
+EOF
+    my @ps = $q->param;
+    foreach (@ps) {
+        my $x = $q->param($_) if /\.x$/;
+        my $y = $q->param($_) if /\.y$/;
+    }
+    
+    my $x = $q->param('x') || 628;
+    my $y = $q->param('y') || 1724;
     my $dir = mySociety::Config::get('TILES_URL');
-    my $tl = $x.'.'.$y.'.png';
-    my $tr = ($x+1).'.'.$y.'.png';
-    my $bl = $x.'.'.($y+1).'.png';
-    my $br = ($x+1).'.'.($y+1).'.png';
-    my $tl_src = $dir.$tl;
-    my $tr_src = $dir.$tr;
-    my $bl_src = $dir.$bl;
-    my $br_src = $dir.$br;
-    $out .= Page::compass($x, $y);
+    my $tl = $x . '.' . $y;
+    my $tr = ($x+1) . '.' . $y;
+    my $bl = $x . '.' . ($y+1);
+    my $br = ($x+1) . '.' . ($y+1);
+    my $tl_src = $dir . $tl . '.png';
+    my $tr_src = $dir . $tr . '.png';
+    my $bl_src = $dir . $bl . '.png';
+    my $br_src = $dir . $br . '.png';
+    $pc = encode_entities($pc);
+    $out .= Page::compass($pc, $x, $y);
     $out .= <<EOF;
         <div id="map">
             <div id="drag">
-	    <form action"=./" method="get">
+            <form action"=./" method="get">
+	    <input type="hidden" name="x" value="$x">
+	    <input type="hidden" name="y" value="$y">
+	    <input type="hidden" name="pc" value="$pc">
+	    <input type="hidden" name="lbo" value="$lbo">
                 <input type="image" id="2.2" name="$tl" src="$tl_src" style="top:0px; left:0px;"><input type="image" id="3.2" name="$tr" src="$tr_src" style="top:0px; left:250px;"><br><input type="image" id="2.3" name="$bl" src="$bl_src" style="top:250px; left:0px;"><input type="image" id="3.3" name="$br" src="$br_src" style="top:250px; left:250px;">
             </form>
             </div>

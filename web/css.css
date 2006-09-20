@@ -57,6 +57,7 @@ h1 {
 }
 #drag input {
     position: absolute;
+    cursor: crosshair;
 }
 #log {
     border: solid 1px #ff0000;

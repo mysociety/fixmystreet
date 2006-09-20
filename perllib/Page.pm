@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.6 2006-09-20 12:25:05 matthew Exp $
+# $Id: Page.pm,v 1.7 2006-09-20 14:16:21 matthew Exp $
 #
 
 package Page;
@@ -15,6 +15,7 @@ use strict;
 use Carp;
 use CGI::Fast qw(-no_xhtml);
 use HTML::Entities;
+use URI::Escape;
 use Error qw(:try);
 use mySociety::WatchUpdate;
 
@@ -46,8 +47,9 @@ sub do_fastcgi {
 }
 
 sub url {
-    my ($x, $y) = @_;
-    return '?x=' . $x . ';y=' . $y;
+    my ($pc, $x, $y) = @_;
+    return '?pc=' . uri_escape($pc) . ';x=' . uri_escape($x)
+        . ';y=' . uri_escape($y);
 }
 
 =item header Q TITLE [PARAM VALUE ...]
@@ -110,16 +112,16 @@ sub error_page ($$) {
     print $q->header(-content_length => length($html)), $html;
 }
 
-sub compass ($$) {
-    my ($x, $y) = @_;
-    my $nw = url($x-1, $y-1);
-    my $n = url($x, $y-1);
-    my $ne = url($x+1, $y-1);
-    my $w = url($x-1,$y);
-    my $e = url($x+1,$y);
-    my $sw = url($x-1, $y+1);
-    my $s = url($x, $y+1);
-    my $se = url($x+1, $y+1);
+sub compass ($$$) {
+    my ($pc, $x, $y) = @_;
+    my $nw = url($pc, $x-1, $y-1);
+    my $n = url($pc, $x, $y-1);
+    my $ne = url($pc, $x+1, $y-1);
+    my $w = url($pc, $x-1,$y);
+    my $e = url($pc, $x+1,$y);
+    my $sw = url($pc, $x-1, $y+1);
+    my $s = url($pc, $x, $y+1);
+    my $se = url($pc, $x+1, $y+1);
     return <<EOF;
 <table cellpadding="0" cellspacing="0" border="0" id="compass">
 <tr valign="bottom">
