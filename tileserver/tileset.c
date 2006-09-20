@@ -7,7 +7,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: tileset.c,v 1.2 2006-09-20 13:24:38 chris Exp $";
+static const char rcsid[] = "$Id: tileset.c,v 1.3 2006-09-20 14:25:31 chris Exp $";
 
 /*
  * Tile sets are stored in directory trees which contain indices of tile
@@ -67,7 +67,7 @@ tileset tileset_open(const char *path) {
 
     T->t_first = 1;
     T->t_path = xstrdup(path);
-    T->t_pathbuf = xmalloc(strlen(path) + sizeof "/a/b/c/index.cdb");
+    T->t_pathbuf = xmalloc(strlen(path) + sizeof "tiles/a/b/c/tiles.cdb");
     
     /* Open the tile ID index. */
     sprintf(T->t_pathbuf, "%s/index.cdb", T->t_path);
@@ -166,20 +166,20 @@ void *tileset_get_tile(tileset T, const uint8_t *id, size_t *len) {
     unsigned off;
     FILE *fp = NULL;
 
-    sprintf(T->t_pathbuf, "%s/%x/%x/%x/index.cdb",
+    sprintf(T->t_pathbuf, "%s/tiles/%x/%x/%x/tiles.cdb",
                 T->t_path, (unsigned)(id[0] >> 4),
                 (unsigned)(id[0] & 0xf), (unsigned)(id[1] >> 4));
     if (!(idx = cdb_open(T->t_pathbuf)))
         return NULL;
         /* also maybe report bogus index */
     
-    if (!(d = cdb_get_string(idx, T->t_pathbuf)))
+    if (!(d = cdb_get_buf(idx, id, TILEID_LEN)))
         goto fail;
 
     if (2 != sscanf((char*)d->cd_buf, "%x:%x", &off, len))
         goto fail;
 
-    sprintf(T->t_pathbuf, "%s/%x/%x/%x/tiles",
+    sprintf(T->t_pathbuf, "%s/tiles/%x/%x/%x/tiles",
                 T->t_path, (unsigned)(id[0] >> 4),
                 (unsigned)(id[0] & 0xf), (unsigned)(id[1] >> 4));
     if (!(fp = fopen(T->t_pathbuf, "rb")))
