@@ -9,7 +9,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: cdb.c,v 1.2 2006-09-19 21:09:19 chris Exp $";
+static const char rcsid[] = "$Id: cdb.c,v 1.3 2006-09-20 12:46:29 chris Exp $";
 
 #include <sys/types.h>
 
@@ -97,6 +97,8 @@ cdb cdb_open_fp(FILE *fp) {
     if (!(C = malloc(sizeof *C)))
         FAIL(CDB_OUT_OF_MEMORY);
 
+    /* XXX this will give a warning if we compile with 32-bit off_t; need to
+     * add an appropriate conditional. */
     if (st.st_size > 0xffffffffll)
         FAIL(CDB_FILE_TOO_BIG);
 
