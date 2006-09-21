@@ -24,6 +24,13 @@ a:hover, a:active {
     font-size: larger;
 }
 
+label {
+    float: left;
+    text-align: right;
+    padding-right: 4px;
+    width: 4em;
+}
+
 /* Site-wide layout */
 
 #container {
@@ -43,6 +50,10 @@ a:hover, a:active {
 }
 
 /* Individual pages */
+
+#report_form div {
+    margin-top: 2px;
+}
 
 #map {
     border: solid 1px #000000;

@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.4 2006-09-20 16:56:54 francis Exp $
+-- $Id: schema.sql,v 1.5 2006-09-21 18:09:19 matthew Exp $
 --
 
 -- secret
@@ -74,8 +74,8 @@ create unique index person_email_idx on person(email);
 create table problem (
     id serial not null primary key,
     postcode text not null,
-    latitude double precision not null,
-    longitude double precision not null,
+    easting double precision not null,
+    northing double precision not null,
     title text not null,
     detail text not null,
     -- category integer not null references category(id),
