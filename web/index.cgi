@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.14 2006-09-21 18:20:39 matthew Exp $
+# $Id: index.cgi,v 1.15 2006-09-21 21:22:12 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -33,7 +33,7 @@ sub main {
     my $q = shift;
 
     my $out = '';
-    if ($q->param('submit_form')) {
+    if ($q->param('submit_problem')) {
         $out = submit_form($q);
     } elsif ($q->param('map')) {
         $out = display_form($q);
@@ -95,11 +95,15 @@ sub display_form {
     my @ps = $q->param;
     foreach (@ps) {
         ($pin_tile_x, $pin_tile_y, $pin_x) = ($1, $2, $q->param($_)) if /^tile_(\d+)\.(\d+)\.x$/;
-        $pin_y = 254 - $q->param($_) if /\.y$/;
+        $pin_y = $q->param($_) if /\.y$/;
     }
     return display($q) unless defined($skipped) || (defined($pin_x) && defined($pin_y));
 
     my $out = '';
+    $pin_x -= 254 while $pin_x > 254;
+    $pin_y -= 254 while $pin_y > 254;
+    $pin_y = 254 - $pin_y;
+
     my $hidden = '';
     $out .= '<h2>Reporting a problem</h2>';
     if ($skipped) {
@@ -114,19 +118,19 @@ sub display_form {
         $out .= '<p>You have located the problem at the location marked with a yellow pin on the map. If this is not the correct location, simply click on the map again. Please fill in details of the problem below:</p>';
         $out .= display_map($q, $x_tile, $y_tile, 1, 0);
         $out .= display_pin($px, $py, 'yellow');
-        $out .= '</p></div></form>';
+        $out .= '</div></form>';
     }
     my $pc_enc = ent($pc);
     $out .= <<EOF;
 <form action="./" method="post" id="report_form">
-<input type="hidden" name="submit_form" value="1">
+<input type="hidden" name="submit_problem" value="1">
 <input type="hidden" name="pc" value="$pc_enc">
 $hidden
-<div><label for="form_title">Title:</label> <input type="text" value="" name="title" id="form_title" size="30">
+<div><label for="form_title">Title:</label> <input type="text" value="" name="title" id="form_title" size="30"></div>
 <div><label for="form_detail">Details:</label>
-<textarea name="detail" id="form_detail" rows="7" cols="30"></textarea>
-<div><label for="form_name">Name:</label> <input type="text" value="" name="name" id="form_name" size="30">
-<div><label for="form_email">Email:</label> <input type="text" value="" name="email" id="form_email" size="30">
+<textarea name="detail" id="form_detail" rows="7" cols="30"></textarea></div>
+<div><label for="form_name">Name:</label> <input type="text" value="" name="name" id="form_name" size="30"></div>
+<div><label for="form_email">Email:</label> <input type="text" value="" name="email" id="form_email" size="30"></div>
 <input type="submit" value="Submit">
 </form>
 EOF
@@ -248,6 +252,16 @@ sub display_problem {
     # Display comments
     $out .= '<h3>Comments</h3>';
     $out .= '<p>Will go here</p>';
+    $out .= '<h3>Add Comment</h3>';
+    $out .= <<EOF;
+<form method="post" action="./" id="report_form">
+<input type="hidden" name="submit_comment" value="1">
+<div><label for="form_name">Name:</label> <input type="text" name="name" id="form_name" value="" size="30"></div>
+<div><label for="form_email">Email:</label> <input type="text" name="email" id="form_email" value="" size="30"></div>
+<div><label for="form_comment">Comment:</label> <textarea name="comment" id="form_comment" rows="7" cols="30"></textarea></div>
+<input type="submit" value="Post">
+</form>
+EOF
 
     return $out;
 }
@@ -276,7 +290,7 @@ sub display_map {
     if ($type) {
         my $pc_enc = ent($q->param('pc'));
         $out .= <<EOF;
-<form action"=./" method="get">
+<form action="./" method="get">
 <input type="hidden" name="map" value="1">
 <input type="hidden" name="x" value="$x">
 <input type="hidden" name="y" value="$y">

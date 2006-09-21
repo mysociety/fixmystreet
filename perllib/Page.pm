@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.10 2006-09-21 18:20:39 matthew Exp $
+# $Id: Page.pm,v 1.11 2006-09-21 21:22:12 matthew Exp $
 #
 
 package Page;
@@ -63,6 +63,9 @@ sub header ($$%) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en-gb">
     <head>
+        <!--[if lt IE 7.]>
+        <script defer type="text/javascript" src="pngfix.js"></script>
+	<![endif]-->
         <title>Neighbourhood Fix-It</title>
         <style type="text/css">\@import url("css.css");</style>
     </head>
