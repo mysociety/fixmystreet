@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.9 2006-09-21 18:09:19 matthew Exp $
+# $Id: Page.pm,v 1.10 2006-09-21 18:20:39 matthew Exp $
 #
 
 package Page;
@@ -68,7 +68,7 @@ sub header ($$%) {
     </head>
     <body>
         <h1>Neighbourhood Fix-It</h1>
-	<div id="container"><div id="content">
+        <div id="container"><div id="content">
 EOF
     return $html;
 }
@@ -111,8 +111,8 @@ sub compass ($$$) {
     my @compass;
     for (my $i=$x-1; $i<=$x+1; $i++) {
         for (my $j=$y-1; $j<=$y+1; $j++) {
-	    $compass[$i][$j] = NewURL($q, x=>$i, y=>$j);
-	}
+            $compass[$i][$j] = NewURL($q, x=>$i, y=>$j);
+        }
     }
     return <<EOF;
 <table cellpadding="0" cellspacing="0" border="0" id="compass">

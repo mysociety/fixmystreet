@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.13 2006-09-21 18:09:20 matthew Exp $
+# $Id: index.cgi,v 1.14 2006-09-21 18:20:39 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -112,14 +112,15 @@ sub display_form {
         $hidden .= '<input type="hidden" name="easting" value="' . $easting . '">
 <input type="hidden" name="northing" value="' . $northing . '">';
         $out .= '<p>You have located the problem at the location marked with a yellow pin on the map. If this is not the correct location, simply click on the map again. Please fill in details of the problem below:</p>';
-        $out .= display_map($q, $x_tile, $y_tile, 0, 0);
+        $out .= display_map($q, $x_tile, $y_tile, 1, 0);
         $out .= display_pin($px, $py, 'yellow');
-        $out .= '</p></div>';
+        $out .= '</p></div></form>';
     }
+    my $pc_enc = ent($pc);
     $out .= <<EOF;
 <form action="./" method="post" id="report_form">
 <input type="hidden" name="submit_form" value="1">
-<input type="hidden" name="pc" value="$pc">
+<input type="hidden" name="pc" value="$pc_enc">
 $hidden
 <div><label for="form_title">Title:</label> <input type="text" value="" name="title" id="form_title" size="30">
 <div><label for="form_detail">Details:</label>
@@ -136,9 +137,9 @@ sub display {
     my $q = shift;
 
     my $pc = $q->param('pc');
-    my($error, $lbo, $x, $y, $name);
+    my($error, $x, $y, $name);
     try {
-        ($lbo, $name, $x, $y) = postcode_check($q, $pc);
+        ($name, $x, $y) = postcode_check($q, $pc);
     } catch RABX::Error with {
         my $e = shift;
         if ($e->value() == mySociety::MaPit::BAD_POSTCODE
@@ -157,15 +158,6 @@ Use the arrows to the left of the map to scroll around.</p>
 <p>Or just view existing problems that have already been reported.</p>
 EOF
 
-    my $pc_enc = ent($pc);
-    $out .= <<EOF;
-<form action"=./" method="get">
-<input type="hidden" name="map" value="1">
-<input type="hidden" name="x" value="$x">
-<input type="hidden" name="y" value="$y">
-<input type="hidden" name="pc" value="$pc_enc">
-<input type="hidden" name="lbo" value="$lbo">
-EOF
     $out .= display_map($q, $x, $y, 1, 1);
     $out .= <<EOF;
     <div>
@@ -279,8 +271,22 @@ sub display_map {
     my $bl_src = $url . $tileids->[1][0];
     my $br_src = $url . $tileids->[1][1];
 
-    my $img_type = $type ? '<input type="image"' : '<img';
-    my $out = <<EOF;
+    my $out = '';
+    my $img_type;
+    if ($type) {
+        my $pc_enc = ent($q->param('pc'));
+        $out .= <<EOF;
+<form action"=./" method="get">
+<input type="hidden" name="map" value="1">
+<input type="hidden" name="x" value="$x">
+<input type="hidden" name="y" value="$y">
+<input type="hidden" name="pc" value="$pc_enc">
+EOF
+        $img_type = '<input type="image"';
+    } else {
+        $img_type = '<img';
+    }
+    $out .= <<EOF;
 <div id="relativediv">
     <div id="map">
         $img_type id="2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0px;">$img_type id="3.2" name="tile_$tr" src="$tr_src" style="top:0px; left:254px;"><br>$img_type id="2.3" name="tile_$bl" src="$bl_src" style="top:254px; left:0px;">$img_type id="3.3" name="tile_$br" src="$br_src" style="top:254px; left:254px;">
@@ -318,6 +324,6 @@ sub postcode_check {
         $x = int($easting / (5000/31));
         $y = int($northing/ (5000/31));
     }
-    return ($lbo, $name, $x, $y);
+    return ($name, $x, $y);
 }
 
