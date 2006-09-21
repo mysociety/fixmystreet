@@ -2,14 +2,18 @@
  * cdb.c:
  * Read data from Dan-Bernstein-style CDB files.
  *
- * See: http://cr.yp.to/cdb/cdb.txt
+ * See: http://cr.yp.to/cdb/cdb.txt -- but note also the statement in
+ * http://cr.yp.to/cdb/reading.html that, "There may be several records under a
+ * single key. You can use cdb_findnext to find the next record under this
+ * key." We don't support (or use) this mode, but it should probably be added
+ * to the code for completeness.
  *
  * Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
  * Email: chris@mysociety.org; WWW: http://www.mysociety.org/
  *
  */
 
-static const char rcsid[] = "$Id: cdb.c,v 1.4 2006-09-20 14:24:10 chris Exp $";
+static const char rcsid[] = "$Id: cdb.c,v 1.5 2006-09-21 09:10:03 chris Exp $";
 
 #include <sys/types.h>
 
