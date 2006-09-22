@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.16 2006-09-22 14:05:49 matthew Exp $
+# $Id: index.cgi,v 1.17 2006-09-22 14:30:16 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -35,6 +35,8 @@ sub main {
     my $out = '';
     if ($q->param('submit_problem')) {
         $out = submit_problem($q);
+    } elsif ($q->param('submit_comment')) {
+        $out = submit_comment($q);
     } elsif ($q->param('map')) {
         $out = display_form($q);
     } elsif ($q->param('pc')) {
@@ -80,6 +82,29 @@ EOF
     return $out;
 }
 
+sub submit_comment {
+    my $q = shift;
+    my @vars = qw(id name email comment updates);
+    my %input = map { $_ => $q->param($_) } @vars;
+    my @errors;
+    push(@errors, 'Please enter a comment') unless $input{comment};
+    push(@errors, 'Please enter your name') unless $input{name};
+    push(@errors, 'Please enter your email') unless $input{email};
+    return display_problem($q, @errors) if (@errors);
+
+    # Send confirmation email
+
+    my $out = <<EOF;
+<h2>Nearly Done! Now check your email...</h2>
+<p>The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.</p>
+<p>If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.</p>
+<p>You must now click on the link within the email we've just sent you -
+<br>if you do not, your comment will not be posted.</p>
+<p>(Don't worry - we'll hang on to your comment while you're checking your email.)</p>
+EOF
+    return $out;
+}
+
 sub submit_problem {
     my $q = shift;
     my @vars = qw(title detail name email pc easting northing updates);
@@ -97,7 +122,8 @@ sub submit_problem {
 <h2>Nearly Done! Now check your email...</h2>
 <p>The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.</p>
 <p>If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.</p>
-<p>You must now click on the link within the email we've just sent you -<br>if you do not, your message to your council will not be sent.</p>
+<p>You must now click on the link within the email we've just sent you -
+<br>if you do not, your problem will not be posted on the site.</p>
 <p>(Don't worry - we'll hang on to your message while you're checking your email.)</p>
 EOF
     return $out;
@@ -138,9 +164,9 @@ sub display_form {
 	    $easting = $input_h{easting};
 	    $northing = $input_h{northing};
 	}
+        $out .= display_map($q, $input{x}, $input{y}, 1, 0);
         $out .= '<p>You have located the problem at the location marked with a yellow pin on the map. If this is not the correct location, simply click on the map again.</p>
 <p>Please fill in details of the problem below:</p>';
-        $out .= display_map($q, $input{x}, $input{y}, 1, 0);
         $out .= display_pin($px, $py, 'yellow');
         $out .= '<input type="hidden" name="easting" value="' . $easting . '">
 <input type="hidden" name="northing" value="' . $northing . '">';
@@ -165,7 +191,7 @@ sub display_form {
 <div class="checkbox"><input type="submit" name="submit_problem" value="Submit"></div>
 </fieldset>
 EOF
-    $out .= display_map_end();
+    $out .= display_map_end(1);
     return $out;
 }
 
@@ -187,14 +213,13 @@ sub display {
     };
     return front_page($error) if ($error);
 
-    my $out = <<EOF;
-<h2>$name</h2>
+    my $out = "<h2>$name</h2>";
+    $out .= display_map($q, $x, $y, 1, 1);
+    $out .= <<EOF;
 <p>To report a problem, please select the location of it on the map below.
 Use the arrows to the left of the map to scroll around.</p>
 <p>Or just view existing problems that have already been reported.</p>
 EOF
-
-    $out .= display_map($q, $x, $y, 1, 1);
     $out .= <<EOF;
     <div>
     <h2>Current problems</h2>
@@ -230,7 +255,7 @@ EOF
     }
     my $skipurl = NewURL($q, 'map'=>1, skipped=>1);
     $out .= '</ul></div>';
-    $out .= display_map_end();
+    $out .= display_map_end(1);
     $out .= <<EOF;
 <p>If you cannot see a map &ndash; if you have images turned off,
 or are using a text only browser, for example &ndash; please
@@ -248,22 +273,26 @@ sub display_pin {
 }
 
 sub display_problem {
-    my $q = shift;
+    my ($q, @errors) = @_;
 
-    my $id = $q->param('id');
-
-    my $q_x = $q->param('x') || 0; $q_x += 0;
-    my $q_y = $q->param('y') || 0; $q_y += 0;
+    my @vars = qw(id name email comment updates x y);
+    my %input = map { $_ => $q->param($_) } @vars;
+    my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
+    $input{x} += 0;
+    $input{y} += 0;
 
     # Get all information from database
     my $title = 'Broken lamppost';
     my $desc = 'The bulb has clearly gone. This is a shame, as there are no other lampposts nearby, so the whole area is dark.';
+    my $name = 'Matthew Somerville';
+    my $time = '5.30pm, yesterday';
     my $easting = 541120;
     my $northing = 185450;
     my $x = $easting / (5000/31);
     my $y = $northing / (5000/31);
-    my $x_tile = $q_x || int($x);
-    my $y_tile = $q_y || int($y);
+    my $x_tile = $input{x} || int($x);
+    my $y_tile = $input{y} || int($y);
+    my $created = time();
 
     my $py = 508 - 254 * ($y - $y_tile);
     my $px = 508 - 254 * ($x - $x_tile);
@@ -275,24 +304,39 @@ sub display_problem {
     # Display information about problem
     $out .= '<p>';
     $out .= display_pin($px, $py);
+    $out .= '<em>Reported by ' . $name . ' at ' . $time;
+    $out .= '</em></p> <p>';
     $out .= ent($desc);
     $out .= '</p>';
-    $out .= display_map_end();
 
     # Display comments
-    $out .= '<h3>Comments</h3>';
-    $out .= '<p>Will go here</p>';
+    my $comments = '';
+    if ($comments) {
+        $out .= '<h3>Comments</h3>';
+    }
     $out .= '<h3>Add Comment</h3>';
+    if (@errors) {
+        $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
+    }
+    my $updates = $input{updates} ? ' checked' : '';
     $out .= <<EOF;
-<form method="post" action="./" id="report_form">
+<form method="post" action="./">
+<fieldset>
 <input type="hidden" name="submit_comment" value="1">
-<div><label for="form_name">Name:</label> <input type="text" name="name" id="form_name" value="" size="30"></div>
-<div><label for="form_email">Email:</label> <input type="text" name="email" id="form_email" value="" size="30"> (needed?)</div>
-<div><label for="form_comment">Comment:</label> <textarea name="comment" id="form_comment" rows="7" cols="30"></textarea></div>
-<input type="submit" value="Post">
+<input type="hidden" name="id" value="$input_h{id}">
+<div><label for="form_name">Name:</label>
+<input type="text" name="name" id="form_name" value="$input_h{name}" size="30"></div>
+<div><label for="form_email">Email:</label>
+<input type="text" name="email" id="form_email" value="$input_h{email}" size="30"> (needed?)</div>
+<div><label for="form_comment">Comment:</label>
+<textarea name="comment" id="form_comment" rows="7" cols="30">$input_h{comment}</textarea></div>
+<div class="checkbox"><input type="checkbox" name="updates" id="form_updates" value="1"$updates>
+<label for="form_updates">Receive updates about this problem</label></div>
+<div class="checkbox"><input type="submit" value="Post"></div>
+</fieldset>
 </form>
 EOF
-
+    $out .= display_map_end(0);
     return $out;
 }
 
@@ -342,11 +386,9 @@ EOF
 }
 
 sub display_map_end {
-    my $out = <<EOF;
-</div>
-</div>
-</form>
-EOF
+    my ($type) = @_;
+    my $out = '</div></div>';
+    $out .= '</form>' if ($type);
     return $out;
 }
 
