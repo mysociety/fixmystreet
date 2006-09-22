@@ -7,7 +7,7 @@
  *
  */
 
-static const char rcsid[] = "$Id: tileserver.c,v 1.9 2006-09-20 16:42:45 chris Exp $";
+static const char rcsid[] = "$Id: tileserver.c,v 1.10 2006-09-22 12:25:43 chris Exp $";
 
 /* 
  * This is slightly complicated by the fact that we indirect tile references
@@ -44,9 +44,9 @@ static const char rcsid[] = "$Id: tileserver.c,v 1.9 2006-09-20 16:42:45 chris E
 #include "tileset.h"
 #include "util.h"
 
-/* tileset_path
+/* tiles_basedir
  * The configured path to tilesets. */
-char *tileset_path;
+static char *tiles_basedir;
 
 #define HTTP_BAD_REQUEST            400
 #define HTTP_UNAUTHORIZED           401
@@ -236,11 +236,11 @@ void handle_request(void) {
     }
 
     /* So we have a valid request. */
-    l = strlen(R->r_tileset) + strlen(tileset_path) + 2;
+    l = strlen(R->r_tileset) + strlen(tiles_basedir) + 2;
     if (pathlen < l)
         path = xrealloc(path, pathlen = l);
-    sprintf(path, "%s/%s", tileset_path, R->r_tileset);
-    
+    sprintf(path, "%s/%s", tiles_basedir, R->r_tileset);
+   
     if (!(T = tileset_open(path))) {
         error(404, "Tileset not found");
             /* XXX assumption about the nature of the error */
@@ -509,11 +509,11 @@ int main(int argc, char *argv[]) {
         if (!initialised) {
             if (argc != 2)
                 die("single argument is path to tile sets");
-            tileset_path = argv[1];
-            if (-1 == stat(tileset_path, &st))
-                die("%s: stat: %s", tileset_path, strerror(errno));
+            tiles_basedir = argv[1];
+            if (-1 == stat(tiles_basedir, &st))
+                die("%s: stat: %s", tiles_basedir, strerror(errno));
             else if (!S_ISDIR(st.st_mode))
-                die("%s: Not a directory", tileset_path);
+                die("%s: Not a directory", tiles_basedir);
             initialised = 1;
         }
 
