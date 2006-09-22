@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.5 2006-09-21 18:09:19 matthew Exp $
+-- $Id: schema.sql,v 1.6 2006-09-22 17:21:36 matthew Exp $
 --
 
 -- secret
@@ -53,16 +53,16 @@ create function ms_current_timestamp()
 
 -- users, but call the table person rather than user so we don't have to quote
 -- its name in every statement....
-create table person (
-    id serial not null primary key,
-    name text,
-    email text not null,
-    password text,
-    website text,
-    numlogins integer not null default 0
-);
-
-create unique index person_email_idx on person(email);
+-- create table person (
+--     id serial not null primary key,
+--     name text,
+--     email text not null,
+--     password text,
+--     website text,
+--     numlogins integer not null default 0
+-- );
+-- 
+-- create unique index person_email_idx on person(email);
 
 -- categories in which problems can lie
 -- create table category (
@@ -79,8 +79,15 @@ create table problem (
     title text not null,
     detail text not null,
     -- category integer not null references category(id),
-    person_id integer not null references person(id),
-    created timestamp not null
+    name text not null,
+    email text not null,
+    created timestamp not null,
+    state text not null check (
+        state = 'unconfirmed'
+	or state = 'confirmed'
+	or state = 'fixed'
+	or state = 'hidden'
+    )
 );
 
 -- Who to send problems for a specific MaPit area ID to
@@ -112,8 +119,8 @@ create table contacts_history (
     note text not null
 );
 
--- Create a trigger to update the last-change-time for the pledge on any
--- update to the table. This should cover manual edits only; anything else
+-- Create a trigger to update the contacts history on any update
+-- to the contacts table. This should cover manual edits only; anything else
 -- (signers, comments, ...) should be covered by pledge_last_change_time or by
 -- the individual implementing functions.
 create function contacts_updated()
@@ -203,13 +210,15 @@ create table comment (
     website text,
     whenposted timestamp not null default ms_current_timestamp(),
     text text not null,                     -- as entered by comment author
-    ishidden boolean not null default false -- hidden from view
+    state text not null check (
+        state = 'unconfirmed'
+	or state = 'confirmed'
+	or state = 'hidden'
+    )
     -- other fields? one to indicate whether this was written by the council
     -- and should be highlighted in the display?
 );
 
 create index comment_problem_id_idx on comment(problem_id);
 create index comment_problem_id_whenposted_idx on comment(problem_id, whenposted);
-create index comment_ishidden_idx on comment(ishidden);
-
 

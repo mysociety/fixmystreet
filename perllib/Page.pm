@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.12 2006-09-22 14:05:47 matthew Exp $
+# $Id: Page.pm,v 1.13 2006-09-22 17:21:36 matthew Exp $
 #
 
 package Page;
@@ -83,10 +83,10 @@ sub footer ($) {
     return <<EOF;
 <h2 class="v">Navigation</h2>
 <ul id="navigation">
-<li><a href="/">Home</a>
-<li><a href="/about">About</a>
-<li><a href="/faq">FAQ</a>
 <li><a href="/contact">Contact</a>
+<li><a href="/faq">FAQ</a>
+<li><a href="/about">About</a>
+<li><a href="/">Home</a>
 </ul>
 
 <p id="footer"></p>

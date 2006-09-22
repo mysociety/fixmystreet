@@ -40,15 +40,13 @@ ul#error {
     position: absolute;
     top: 2em;
     right: 1em;
-    padding: 0.5em;
-    background-color: #eeeeee;
-    border: solid 2px #999999;
+    padding: 0;
     margin: 0;
     list-style-type: none;
 }
 #navigation li {
     float: right;
-    padding: 0 0.5em;
+    padding: 0 2em;
 }
 
 /* Forms */
@@ -110,6 +108,8 @@ fieldset div.checkbox label {
     font-size: 83%;
 }
 #compass {
+    background-color: #ffffff;
+    color: #000000;
     float: right;
     margin: 0 1em 1em;
 }

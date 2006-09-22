@@ -1,12 +1,12 @@
 #!/usr/bin/perl -w
 
 # index.pl:
-# Main code for BCI - not really.
+# Main code for Neighbourhood Fix-It
 #
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.17 2006-09-22 14:30:16 matthew Exp $
+# $Id: index.cgi,v 1.18 2006-09-22 17:21:37 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -18,15 +18,33 @@ use lib "$FindBin::Bin/../../perllib";
 use Error qw(:try);
 use LWP::Simple;
 use RABX;
+use POSIX qw(strftime);
 
 use Page;
 use mySociety::Config;
+use mySociety::DBHandle qw(dbh select_all);
+use mySociety::Util;
+use mySociety::MaPit;
+use mySociety::Web qw(ent NewURL);
+
 BEGIN {
     mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+    mySociety::DBHandle::configure(
+	Name => mySociety::Config::get('BCI_DB_NAME'),
+	User => mySociety::Config::get('BCI_DB_USER'),
+	Password => mySociety::Config::get('BCI_DB_PASS'),
+	Host => mySociety::Config::get('BCI_DB_HOST', undef),
+	Port => mySociety::Config::get('BCI_DB_PORT', undef)
+    );
+
+    if (!dbh()->selectrow_array('select secret from secret for update of secret')) {
+	local dbh()->{HandleError};
+	dbh()->do('insert into secret (secret) values (?)', {}, unpack('h*', mySociety::Util::random_bytes(32)));
+    }
+    dbh()->commit();
+
+    mySociety::MaPit::configure();
 }
-use mySociety::MaPit;
-mySociety::MaPit::configure();
-use mySociety::Web qw(ent NewURL);
 
 # Main code for index.cgi
 sub main {
@@ -39,10 +57,10 @@ sub main {
         $out = submit_comment($q);
     } elsif ($q->param('map')) {
         $out = display_form($q);
-    } elsif ($q->param('pc')) {
-        $out = display($q);
     } elsif ($q->param('id')) {
         $out = display_problem($q);
+    } elsif ($q->param('pc')) {
+        $out = display($q);
     } else {
         $out = front_page();
     }
@@ -59,13 +77,15 @@ sub front_page {
     my $out = '';
     $out .= '<p id="error">' . $error . '</p>' if ($error);
     $out .= <<EOF;
-<p>Report a problem with refuse, recycling, fly tipping, pest control,
+<p>You can use this site to <strong>report</strong> or <strong>view</strong> problems
+with refuse, recycling, fly tipping, pest control,
 abandoned vechicles, street lighting, graffiti, street cleaning, litter or
-similar to your local council. Or view reports other people have made.</p>
+similar, with reports going direct to your local council.</p>
 
-<p><strong>This is currently only for Newham and Lewisham Councils</strong></p>
+<p><em>This is currently only for Newham and Lewisham Councils</em></p>
 
-<p>It&rsquo;s very simple:</p>
+<p>To just view reports from your local area, simply enter a postcode.
+Reporting a problem is hopefully just as simple:</p>
 
 <ol>
 <li>Enter a postcode;
@@ -73,6 +93,7 @@ similar to your local council. Or view reports other people have made.</p>
 <li>Enter details of the problem;
 <li>Submit to your council.
 </ol>
+
 
 <form action="./" method="get">
 <p>Enter your postcode: <input type="text" name="pc" value="">
@@ -151,16 +172,18 @@ sub display_form {
     } else {
         my ($px, $py, $easting, $northing);
         if ($pin_x && $pin_y) {
+	    # Map was clicked on
             $pin_x -= 254 while $pin_x > 254;
             $pin_y -= 254 while $pin_y > 254;
             $pin_y = 254 - $pin_y;
-            $px = 508 - ($pin_tile_x - $input{x})*254 - $pin_x;
-            $py = 508 - ($pin_tile_y - $input{y})*254 - $pin_y;
+            $px = 508 - 254 * ($pin_tile_x - $input{x}) - $pin_x;
+            $py = 508 - 254 * ($pin_tile_y - $input{y}) - $pin_y;
             $easting = 5000/31 * ($pin_tile_x + $pin_x/254);
             $northing = 5000/31 * ($pin_tile_y + $pin_y/254);
         } else {
-            $px = 508 - ($input{easting} / (5000/31) - $input{x})*254;
-	    $py = 508 - ($input{northing} / (5000/31) - $input{y})*254;
+	    # Normal form submission
+            $px = os_to_px($input{easting}, $input{x});
+	    $py = os_to_px($input{northing}, $input{y});
 	    $easting = $input_h{easting};
 	    $northing = $input_h{northing};
 	}
@@ -196,7 +219,7 @@ EOF
 }
 
 sub display {
-    my $q = shift;
+    my ($q, @errors) = @_;
 
     my $pc = $q->param('pc');
     my($error, $x, $y, $name);
@@ -215,43 +238,49 @@ sub display {
 
     my $out = "<h2>$name</h2>";
     $out .= display_map($q, $x, $y, 1, 1);
+    if (@errors) {
+        $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
+    }
     $out .= <<EOF;
-<p>To report a problem, please select the location of it on the map below.
+<p>To <strong>report a problem</strong>, please select the location of it on the map.
 Use the arrows to the left of the map to scroll around.</p>
-<p>Or just view existing problems that have already been reported.</p>
 EOF
+
+    # These lists are currently global; should presumably be local to map!
     $out .= <<EOF;
     <div>
-    <h2>Current problems</h2>
+    <h2>Problems already reported</h2>
     <ul id="current">
 EOF
-    my %current = (
-        1 => 'Broken lamppost',
-        2 => 'Shards of glass',
-        3 => 'Abandoned car',
-    );
-    my %fixed = (
-        4 => 'Broken lamppost',
-        5 => 'Shards of glass',
-        6 => 'Abandoned car',
-    );
-    foreach (sort keys %current) {
-        my $px = int(rand(508));
-        my $py = int(rand(508));
-        $out .= '<li><a href="/?id=' . $_ . '">';
+    my $current = select_all(
+        "select id,title,easting,northing from problem where state='confirmed'
+	 order by created desc limit 3");
+    foreach (@$current) {
+        my $px = os_to_px($_->{easting}, $x);
+        my $py = os_to_px($_->{northing}, $y);
+        $out .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
         $out .= display_pin($px, $py);
-        $out .= $current{$_};
+        $out .= $_->{title};
         $out .= '</a></li>';
+    }
+    unless (@$current) {
+        $out .= '<li>No problems have been reported yet.</li>';
     }
     $out .= <<EOF;
     </ul>
     <h2>Recently fixed problems</h2>
     <ul>
 EOF
-    foreach (sort keys %fixed) {
-        $out .= '<li><a href="/?id=' . $_ . '">';
-        $out .= $fixed{$_};
+    my $fixed = select_all(
+        "select id,title from problem where state='fixed'
+	 order by created desc limit 3");
+    foreach (@$fixed) {
+        $out .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
+        $out .= $_->{title};
         $out .= '</a></li>';
+    }
+    unless (@$fixed) {
+        $out .= '<li>No problems have been fixed yet</li>';
     }
     my $skipurl = NewURL($q, 'map'=>1, skipped=>1);
     $out .= '</ul></div>';
@@ -282,20 +311,19 @@ sub display_problem {
     $input{y} += 0;
 
     # Get all information from database
-    my $title = 'Broken lamppost';
-    my $desc = 'The bulb has clearly gone. This is a shame, as there are no other lampposts nearby, so the whole area is dark.';
-    my $name = 'Matthew Somerville';
-    my $time = '5.30pm, yesterday';
-    my $easting = 541120;
-    my $northing = 185450;
+    my $problem = dbh()->selectrow_arrayref(
+        "select easting, northing, title, detail, name, extract(epoch from created)
+	 from problem where id=? and state='confirmed'", {}, $input{id});
+    return display($q, 'Unknown problem ID') unless $problem;
+    my ($easting, $northing, $title, $desc, $name, $time) = @$problem;
     my $x = $easting / (5000/31);
     my $y = $northing / (5000/31);
     my $x_tile = $input{x} || int($x);
     my $y_tile = $input{y} || int($y);
     my $created = time();
 
-    my $py = 508 - 254 * ($y - $y_tile);
-    my $px = 508 - 254 * ($x - $x_tile);
+    my $px = os_to_px($easting, $x_tile);
+    my $py = os_to_px($northing, $y_tile);
 
     my $out = '';
     $out .= "<h2>$title</h2>";
@@ -304,15 +332,21 @@ sub display_problem {
     # Display information about problem
     $out .= '<p>';
     $out .= display_pin($px, $py);
-    $out .= '<em>Reported by ' . $name . ' at ' . $time;
+    $out .= '<em>Reported by ' . $name . ' at ' . prettify_epoch($time);
     $out .= '</em></p> <p>';
     $out .= ent($desc);
     $out .= '</p>';
 
     # Display comments
-    my $comments = '';
-    if ($comments) {
+    my $comments = select_all(
+        "select id, name, whenposted, text
+	 from comment where problem_id = ? and state='confirmed'
+	 order by whenposted desc", $input{id});
+    if (@$comments) {
         $out .= '<h3>Comments</h3>';
+	foreach my $row (@$comments) {
+	    $out .= "$row->{name} $row->{text}";
+	}
     }
     $out .= '<h3>Add Comment</h3>';
     if (@errors) {
@@ -422,4 +456,29 @@ sub postcode_check {
     }
     return ($name, $x, $y);
 }
+
+# P is easting or northing
+# BL is bottom left tile reference of displayed map
+sub os_to_px {
+    my ($p, $bl) = @_;
+    return 508 - 254 * ($p / (5000/31) - $bl);
+}
+
+sub prettify_epoch {
+    my $s = shift;
+    my @s = localtime($s);
+    my $tt = strftime('%H:%M', @s);
+    my @t = localtime();
+    if (strftime('%Y%m%d', @s) eq strftime('%Y%m%d', @t)) {
+        $tt = "$tt " . 'today';
+    } elsif (strftime('%U', @s) eq strftime('%U', @t)) {
+        $tt = "$tt, " . strftime('%A', @s);
+    } elsif (strftime('%Y', @s) eq strftime('%Y', @t)) {
+        $tt = "$tt, " . strftime('%A %e %B', @s);
+    } else {
+        $tt = "$tt, " . strftime('%a %e %B %Y', @s);
+    }
+    return $tt;
+}
+	   
 
