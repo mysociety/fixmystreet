@@ -24,19 +24,15 @@ a:hover, a:active {
     font-size: larger;
 }
 
-label {
-    float: left;
-    text-align: right;
-    padding-right: 4px;
-    width: 5em;
+ul#error {
+    color: #cc0000;
+    background-color: #ffeeee;
+    margin:0;
+    padding: 0 0 0 1.5em;
+    border: solid 1px #cc0000;
 }
 
 /* Site-wide layout */
-
-#container {
-}
-#content {
-}
 
 #navigation {
     position: absolute;
@@ -49,11 +45,32 @@ label {
     list-style-type: none;
 }
 
-/* Individual pages */
+/* Forms */
 
-#report_form div {
+label {
+    float: left;
+    text-align: right;
+    padding-right: 0.5em;
+    width: 5em;
+}
+fieldset {
+    border: none;
+    padding: 0.5em;
+}
+fieldset div {
     margin-top: 2px;
 }
+fieldset div.checkbox {
+    padding-left: 5.5em;
+}
+fieldset div.checkbox label {
+    float: none;
+    text-align: left;
+    padding-right: 0;
+    width: auto;
+}
+
+/* Individual pages */
 
 #map {
     border: solid 1px #000000;
@@ -64,6 +81,11 @@ label {
     overflow: hidden;
     float: right;
 }
+
+#content {
+    margin-right: 530px;
+}
+
 /*#drag {
     width: 1em;
     height: 1em;

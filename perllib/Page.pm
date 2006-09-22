@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.11 2006-09-21 21:22:12 matthew Exp $
+# $Id: Page.pm,v 1.12 2006-09-22 14:05:47 matthew Exp $
 #
 
 package Page;
@@ -71,7 +71,6 @@ sub header ($$%) {
     </head>
     <body>
         <h1>Neighbourhood Fix-It</h1>
-        <div id="container"><div id="content">
 EOF
     return $html;
 }
@@ -82,7 +81,6 @@ EOF
 sub footer ($) {
     my ($q) = @_;
     return <<EOF;
-</div></div>
 <h2 class="v">Navigation</h2>
 <ul id="navigation">
 <li><a href="/">Home</a>

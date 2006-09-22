@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.15 2006-09-21 21:22:12 matthew Exp $
+# $Id: index.cgi,v 1.16 2006-09-22 14:05:49 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -34,7 +34,7 @@ sub main {
 
     my $out = '';
     if ($q->param('submit_problem')) {
-        $out = submit_form($q);
+        $out = submit_problem($q);
     } elsif ($q->param('map')) {
         $out = display_form($q);
     } elsif ($q->param('pc')) {
@@ -80,60 +80,92 @@ EOF
     return $out;
 }
 
-sub submit_form {
+sub submit_problem {
     my $q = shift;
-    return 'foo';
+    my @vars = qw(title detail name email pc easting northing updates);
+    my %input = map { $_ => $q->param($_) } @vars;
+    my @errors;
+    push(@errors, 'Please enter a title') unless $input{title};
+    push(@errors, 'Please enter some details') unless $input{detail};
+    push(@errors, 'Please enter your name') unless $input{name};
+    push(@errors, 'Please enter your email') unless $input{email};
+    return display_form($q, @errors) if (@errors);
+
+    # Send confirmation email
+
+    my $out = <<EOF;
+<h2>Nearly Done! Now check your email...</h2>
+<p>The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.</p>
+<p>If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.</p>
+<p>You must now click on the link within the email we've just sent you -<br>if you do not, your message to your council will not be sent.</p>
+<p>(Don't worry - we'll hang on to your message while you're checking your email.)</p>
+EOF
+    return $out;
 }
 
 sub display_form {
-    my $q = shift;
+    my ($q, @errors) = @_;
     my ($pin_x, $pin_y, $pin_tile_x, $pin_tile_y);
-    my $pc = $q->param('pc');
-    my $x_tile = $q->param('x');
-    my $y_tile = $q->param('y');
-    my $skipped = $q->param('skipped');
+    my @vars = qw(title detail name email updates pc easting northing x y skipped);
+    my %input = map { $_ => $q->param($_) || '' } @vars;
+    my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
     my @ps = $q->param;
     foreach (@ps) {
         ($pin_tile_x, $pin_tile_y, $pin_x) = ($1, $2, $q->param($_)) if /^tile_(\d+)\.(\d+)\.x$/;
         $pin_y = $q->param($_) if /\.y$/;
     }
-    return display($q) unless defined($skipped) || (defined($pin_x) && defined($pin_y));
+    return display($q)
+        unless $input{skipped} || ($pin_x && $pin_y)
+	    || ($input{easting} && $input{northing});
 
     my $out = '';
-    $pin_x -= 254 while $pin_x > 254;
-    $pin_y -= 254 while $pin_y > 254;
-    $pin_y = 254 - $pin_y;
-
-    my $hidden = '';
     $out .= '<h2>Reporting a problem</h2>';
-    if ($skipped) {
+    if ($input{skipped}) {
         $out .= '<p>Please fill in the form below with details of the problem:</p>';
     } else {
-        my $py = 508 - ($pin_tile_y - $y_tile)*254 - $pin_y;
-        my $px = 508 - ($pin_tile_x - $x_tile)*254 - $pin_x;
-        my $easting = 5000/31 * $pin_tile_x + $pin_x/254;
-        my $northing = 5000/31 * $pin_tile_y + $pin_y/254;
-        $hidden .= '<input type="hidden" name="easting" value="' . $easting . '">
-<input type="hidden" name="northing" value="' . $northing . '">';
-        $out .= '<p>You have located the problem at the location marked with a yellow pin on the map. If this is not the correct location, simply click on the map again. Please fill in details of the problem below:</p>';
-        $out .= display_map($q, $x_tile, $y_tile, 1, 0);
+        my ($px, $py, $easting, $northing);
+        if ($pin_x && $pin_y) {
+            $pin_x -= 254 while $pin_x > 254;
+            $pin_y -= 254 while $pin_y > 254;
+            $pin_y = 254 - $pin_y;
+            $px = 508 - ($pin_tile_x - $input{x})*254 - $pin_x;
+            $py = 508 - ($pin_tile_y - $input{y})*254 - $pin_y;
+            $easting = 5000/31 * ($pin_tile_x + $pin_x/254);
+            $northing = 5000/31 * ($pin_tile_y + $pin_y/254);
+        } else {
+            $px = 508 - ($input{easting} / (5000/31) - $input{x})*254;
+	    $py = 508 - ($input{northing} / (5000/31) - $input{y})*254;
+	    $easting = $input_h{easting};
+	    $northing = $input_h{northing};
+	}
+        $out .= '<p>You have located the problem at the location marked with a yellow pin on the map. If this is not the correct location, simply click on the map again.</p>
+<p>Please fill in details of the problem below:</p>';
+        $out .= display_map($q, $input{x}, $input{y}, 1, 0);
         $out .= display_pin($px, $py, 'yellow');
-        $out .= '</div></form>';
+        $out .= '<input type="hidden" name="easting" value="' . $easting . '">
+<input type="hidden" name="northing" value="' . $northing . '">';
     }
-    my $pc_enc = ent($pc);
+
+    if (@errors) {
+        $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
+    }
+    my $updates = $input{updates} ? ' checked' : '';
     $out .= <<EOF;
-<form action="./" method="post" id="report_form">
-<input type="hidden" name="submit_problem" value="1">
-<input type="hidden" name="pc" value="$pc_enc">
-$hidden
-<div><label for="form_title">Title:</label> <input type="text" value="" name="title" id="form_title" size="30"></div>
+<fieldset>
+<div><label for="form_title">Title:</label>
+<input type="text" value="$input_h{title}" name="title" id="form_title" size="30"> (work out from details?)</div>
 <div><label for="form_detail">Details:</label>
-<textarea name="detail" id="form_detail" rows="7" cols="30"></textarea></div>
-<div><label for="form_name">Name:</label> <input type="text" value="" name="name" id="form_name" size="30"></div>
-<div><label for="form_email">Email:</label> <input type="text" value="" name="email" id="form_email" size="30"></div>
-<input type="submit" value="Submit">
-</form>
+<textarea name="detail" id="form_detail" rows="7" cols="30">$input_h{detail}</textarea></div>
+<div><label for="form_name">Name:</label>
+<input type="text" value="$input_h{name}" name="name" id="form_name" size="30"></div>
+<div><label for="form_email">Email:</label>
+<input type="text" value="$input_h{email}" name="email" id="form_email" size="30"></div>
+<div class="checkbox"><input type="checkbox" name="updates" id="form_updates" value="1"$updates>
+<label for="form_updates">Receive updates about this problem</label></div>
+<div class="checkbox"><input type="submit" name="submit_problem" value="Submit"></div>
+</fieldset>
 EOF
+    $out .= display_map_end();
     return $out;
 }
 
@@ -197,12 +229,9 @@ EOF
         $out .= '</a></li>';
     }
     my $skipurl = NewURL($q, 'map'=>1, skipped=>1);
+    $out .= '</ul></div>';
+    $out .= display_map_end();
     $out .= <<EOF;
-    </ul>
-    </div>
-</div>
-</form>
-
 <p>If you cannot see a map &ndash; if you have images turned off,
 or are using a text only browser, for example &ndash; please
 <a href="$skipurl">skip this step</a> and we will ask you
@@ -247,7 +276,8 @@ sub display_problem {
     $out .= '<p>';
     $out .= display_pin($px, $py);
     $out .= ent($desc);
-    $out .= '</p></div>';
+    $out .= '</p>';
+    $out .= display_map_end();
 
     # Display comments
     $out .= '<h3>Comments</h3>';
@@ -257,7 +287,7 @@ sub display_problem {
 <form method="post" action="./" id="report_form">
 <input type="hidden" name="submit_comment" value="1">
 <div><label for="form_name">Name:</label> <input type="text" name="name" id="form_name" value="" size="30"></div>
-<div><label for="form_email">Email:</label> <input type="text" name="email" id="form_email" value="" size="30"></div>
+<div><label for="form_email">Email:</label> <input type="text" name="email" id="form_email" value="" size="30"> (needed?)</div>
 <div><label for="form_comment">Comment:</label> <textarea name="comment" id="form_comment" rows="7" cols="30"></textarea></div>
 <input type="submit" value="Post">
 </form>
@@ -307,6 +337,16 @@ EOF
     </div>
 EOF
     $out .= Page::compass($q, $x, $y) if $compass;
+    $out .= '<div id="content">';
+    return $out;
+}
+
+sub display_map_end {
+    my $out = <<EOF;
+</div>
+</div>
+</form>
+EOF
     return $out;
 }
 
