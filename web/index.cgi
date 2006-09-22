@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.19 2006-09-22 17:38:01 matthew Exp $
+# $Id: index.cgi,v 1.20 2006-09-22 18:07:14 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -115,8 +115,9 @@ sub submit_comment {
 
     dbh()->do("insert into comment
         (problem_id, name, email, website, text, state)
-        values (?, ?, ?, ?, ?, 'unconfirmed')",
+        values (?, ?, ?, ?, ?, 'unconfirmed')", {},
         $input{id}, $input{name}, $input{email}, '', $input{comment});
+    dbh()->commit();
 
     # Send confirmation email
 
@@ -144,10 +145,12 @@ sub submit_problem {
 
     dbh()->do("insert into problem
         (postcode, easting, northing, title, detail, name, email, state)
-	values
-	($input{pc}, $input{easting}, $input{northing}, $input{title},
-	$input{detail}, $input{name}, $input{email}, 'unconfirmed')",
-	);
+        values
+        (?, ?, ?, ?, ?, ?, ?, 'unconfirmed')", {},
+        $input{pc}, $input{easting}, $input{northing}, $input{title},
+        $input{detail}, $input{name}, $input{email}
+    );
+    dbh()->commit();
 
     # Send confirmation email
 
@@ -157,7 +160,7 @@ sub submit_problem {
 <p>If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.</p>
 <p>You must now click on the link within the email we've just sent you -
 <br>if you do not, your problem will not be posted on the site.</p>
-<p>(Don't worry - we'll hang on to your message while you're checking your email.)</p>
+<p>(Don't worry - we'll hang on to your information while you're checking your email.)</p>
 EOF
     return $out;
 }
@@ -210,7 +213,7 @@ sub display_form {
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
-    my $updates = $input{updates} ? ' checked' : '';
+    my $updates = (!defined($q->param('updates')) || $input{updates}) ? ' checked' : '';
     $out .= <<EOF;
 <fieldset>
 <div><label for="form_title">Title:</label>
@@ -411,7 +414,7 @@ sub display_map {
     if ($type) {
         my $pc_enc = ent($q->param('pc'));
         $out .= <<EOF;
-<form action="./" method="get">
+<form action="./" method="post">
 <input type="hidden" name="map" value="1">
 <input type="hidden" name="x" value="$x">
 <input type="hidden" name="y" value="$y">
