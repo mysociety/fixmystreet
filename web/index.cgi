@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.18 2006-09-22 17:21:37 matthew Exp $
+# $Id: index.cgi,v 1.19 2006-09-22 17:38:01 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -30,16 +30,16 @@ use mySociety::Web qw(ent NewURL);
 BEGIN {
     mySociety::Config::set_file("$FindBin::Bin/../conf/general");
     mySociety::DBHandle::configure(
-	Name => mySociety::Config::get('BCI_DB_NAME'),
-	User => mySociety::Config::get('BCI_DB_USER'),
-	Password => mySociety::Config::get('BCI_DB_PASS'),
-	Host => mySociety::Config::get('BCI_DB_HOST', undef),
-	Port => mySociety::Config::get('BCI_DB_PORT', undef)
+        Name => mySociety::Config::get('BCI_DB_NAME'),
+        User => mySociety::Config::get('BCI_DB_USER'),
+        Password => mySociety::Config::get('BCI_DB_PASS'),
+        Host => mySociety::Config::get('BCI_DB_HOST', undef),
+        Port => mySociety::Config::get('BCI_DB_PORT', undef)
     );
 
     if (!dbh()->selectrow_array('select secret from secret for update of secret')) {
-	local dbh()->{HandleError};
-	dbh()->do('insert into secret (secret) values (?)', {}, unpack('h*', mySociety::Util::random_bytes(32)));
+        local dbh()->{HandleError};
+        dbh()->do('insert into secret (secret) values (?)', {}, unpack('h*', mySociety::Util::random_bytes(32)));
     }
     dbh()->commit();
 
@@ -113,6 +113,11 @@ sub submit_comment {
     push(@errors, 'Please enter your email') unless $input{email};
     return display_problem($q, @errors) if (@errors);
 
+    dbh()->do("insert into comment
+        (problem_id, name, email, website, text, state)
+        values (?, ?, ?, ?, ?, 'unconfirmed')",
+        $input{id}, $input{name}, $input{email}, '', $input{comment});
+
     # Send confirmation email
 
     my $out = <<EOF;
@@ -136,6 +141,13 @@ sub submit_problem {
     push(@errors, 'Please enter your name') unless $input{name};
     push(@errors, 'Please enter your email') unless $input{email};
     return display_form($q, @errors) if (@errors);
+
+    dbh()->do("insert into problem
+        (postcode, easting, northing, title, detail, name, email, state)
+	values
+	($input{pc}, $input{easting}, $input{northing}, $input{title},
+	$input{detail}, $input{name}, $input{email}, 'unconfirmed')",
+	);
 
     # Send confirmation email
 
@@ -163,7 +175,7 @@ sub display_form {
     }
     return display($q)
         unless $input{skipped} || ($pin_x && $pin_y)
-	    || ($input{easting} && $input{northing});
+            || ($input{easting} && $input{northing});
 
     my $out = '';
     $out .= '<h2>Reporting a problem</h2>';
@@ -172,7 +184,7 @@ sub display_form {
     } else {
         my ($px, $py, $easting, $northing);
         if ($pin_x && $pin_y) {
-	    # Map was clicked on
+            # Map was clicked on
             $pin_x -= 254 while $pin_x > 254;
             $pin_y -= 254 while $pin_y > 254;
             $pin_y = 254 - $pin_y;
@@ -181,12 +193,12 @@ sub display_form {
             $easting = 5000/31 * ($pin_tile_x + $pin_x/254);
             $northing = 5000/31 * ($pin_tile_y + $pin_y/254);
         } else {
-	    # Normal form submission
+            # Normal form submission
             $px = os_to_px($input{easting}, $input{x});
-	    $py = os_to_px($input{northing}, $input{y});
-	    $easting = $input_h{easting};
-	    $northing = $input_h{northing};
-	}
+            $py = os_to_px($input{northing}, $input{y});
+            $easting = $input_h{easting};
+            $northing = $input_h{northing};
+        }
         $out .= display_map($q, $input{x}, $input{y}, 1, 0);
         $out .= '<p>You have located the problem at the location marked with a yellow pin on the map. If this is not the correct location, simply click on the map again.</p>
 <p>Please fill in details of the problem below:</p>';
@@ -254,7 +266,7 @@ EOF
 EOF
     my $current = select_all(
         "select id,title,easting,northing from problem where state='confirmed'
-	 order by created desc limit 3");
+         order by created desc limit 3");
     foreach (@$current) {
         my $px = os_to_px($_->{easting}, $x);
         my $py = os_to_px($_->{northing}, $y);
@@ -273,7 +285,7 @@ EOF
 EOF
     my $fixed = select_all(
         "select id,title from problem where state='fixed'
-	 order by created desc limit 3");
+         order by created desc limit 3");
     foreach (@$fixed) {
         $out .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
         $out .= $_->{title};
@@ -313,7 +325,7 @@ sub display_problem {
     # Get all information from database
     my $problem = dbh()->selectrow_arrayref(
         "select easting, northing, title, detail, name, extract(epoch from created)
-	 from problem where id=? and state='confirmed'", {}, $input{id});
+         from problem where id=? and state='confirmed'", {}, $input{id});
     return display($q, 'Unknown problem ID') unless $problem;
     my ($easting, $northing, $title, $desc, $name, $time) = @$problem;
     my $x = $easting / (5000/31);
@@ -340,19 +352,20 @@ sub display_problem {
     # Display comments
     my $comments = select_all(
         "select id, name, whenposted, text
-	 from comment where problem_id = ? and state='confirmed'
-	 order by whenposted desc", $input{id});
+         from comment where problem_id = ? and state='confirmed'
+         order by whenposted desc", $input{id});
     if (@$comments) {
         $out .= '<h3>Comments</h3>';
-	foreach my $row (@$comments) {
-	    $out .= "$row->{name} $row->{text}";
-	}
+        foreach my $row (@$comments) {
+            $out .= "$row->{name} $row->{text}";
+        }
     }
     $out .= '<h3>Add Comment</h3>';
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
     my $updates = $input{updates} ? ' checked' : '';
+    # XXX: Should we have website too?
     $out .= <<EOF;
 <form method="post" action="./">
 <fieldset>
@@ -480,5 +493,4 @@ sub prettify_epoch {
     }
     return $tt;
 }
-	   
 

@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.6 2006-09-22 17:21:36 matthew Exp $
+-- $Id: schema.sql,v 1.7 2006-09-22 17:38:00 matthew Exp $
 --
 
 -- secret
@@ -81,12 +81,12 @@ create table problem (
     -- category integer not null references category(id),
     name text not null,
     email text not null,
-    created timestamp not null,
+    created timestamp not null default ms_current_timestamp(),
     state text not null check (
         state = 'unconfirmed'
-	or state = 'confirmed'
-	or state = 'fixed'
-	or state = 'hidden'
+        or state = 'confirmed'
+        or state = 'fixed'
+        or state = 'hidden'
     )
 );
 
@@ -203,17 +203,15 @@ create function problem_find_nearby(double precision, double precision, double p
 create table comment (
     id serial not null primary key,
     problem_id integer not null references problem(id),
-
-    person_id integer references person(id),
     name text not null,
-
+    email text not null,
     website text,
     whenposted timestamp not null default ms_current_timestamp(),
     text text not null,                     -- as entered by comment author
     state text not null check (
         state = 'unconfirmed'
-	or state = 'confirmed'
-	or state = 'hidden'
+        or state = 'confirmed'
+        or state = 'hidden'
     )
     -- other fields? one to indicate whether this was written by the council
     -- and should be highlighted in the display?
