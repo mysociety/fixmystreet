@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.20 2006-09-22 18:07:14 matthew Exp $
+# $Id: index.cgi,v 1.21 2006-09-22 18:31:25 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -188,13 +188,12 @@ sub display_form {
         my ($px, $py, $easting, $northing);
         if ($pin_x && $pin_y) {
             # Map was clicked on
-            $pin_x -= 254 while $pin_x > 254;
-            $pin_y -= 254 while $pin_y > 254;
-            $pin_y = 254 - $pin_y;
-            $px = 508 - 254 * ($pin_tile_x - $input{x}) - $pin_x;
-            $py = 508 - 254 * ($pin_tile_y - $input{y}) - $pin_y;
-            $easting = 5000/31 * ($pin_tile_x + $pin_x/254);
-            $northing = 5000/31 * ($pin_tile_y + $pin_y/254);
+	    $pin_x = click_to_tile($pin_tile_x, $pin_x);
+	    $pin_y = click_to_tile($pin_tile_y, $pin_y, 1);
+            $px = tile_to_px($pin_x, $input{x});
+            $py = tile_to_px($pin_y, $input{y});
+            $easting = tile_to_os($pin_x);
+            $northing = tile_to_os($pin_y);
         } else {
             # Normal form submission
             $px = os_to_px($input{easting}, $input{x});
@@ -331,8 +330,8 @@ sub display_problem {
          from problem where id=? and state='confirmed'", {}, $input{id});
     return display($q, 'Unknown problem ID') unless $problem;
     my ($easting, $northing, $title, $desc, $name, $time) = @$problem;
-    my $x = $easting / (5000/31);
-    my $y = $northing / (5000/31);
+    my $x = os_to_tile($easting);
+    my $y = os_to_tile($northing);
     my $x_tile = $input{x} || int($x);
     my $y_tile = $input{y} || int($y);
     my $created = time();
@@ -467,8 +466,8 @@ sub postcode_check {
         my $location = mySociety::MaPit::get_location($pc);
         my $northing = $location->{northing};
         my $easting = $location->{easting};
-        $x = int($easting / (5000/31));
-        $y = int($northing/ (5000/31));
+        $x = int(os_to_tile($easting));
+        $y = int(os_to_tile($northing));
     }
     return ($name, $x, $y);
 }
@@ -477,7 +476,30 @@ sub postcode_check {
 # BL is bottom left tile reference of displayed map
 sub os_to_px {
     my ($p, $bl) = @_;
-    return 508 - 254 * ($p / (5000/31) - $bl);
+    return tile_to_px(os_to_tile($p), $bl);
+}
+
+# Convert tile co-ordinates to pixel co-ordinates from top right of map
+# BL is bottom left tile reference of displayed map
+sub tile_to_px {
+    my ($p, $bl) = @_;
+    return 508 - 254 * ($p - $bl);
+}
+
+# Tile co-ordinates are linear scale of OS E/N
+# Will need more generalising when more zooms appear
+sub os_to_tile {
+    return $_[0] / (5000/31);
+}
+sub tile_to_os {
+    return $_[0] * (5000/31);
+}
+
+sub click_to_tile {
+    my ($pin_tile, $pin, $invert) = @_;
+    $pin -= 254 while $pin > 254;
+    $pin = 254 - $pin if $invert; # image submits measured from top down
+    return $pin_tile + $pin / 254;
 }
 
 sub prettify_epoch {
