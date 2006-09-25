@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.22 2006-09-25 16:08:06 francis Exp $
+# $Id: index.cgi,v 1.23 2006-09-25 18:12:56 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -63,29 +63,34 @@ sub main {
     } elsif ($q->param('pc')) {
         $out = display($q);
     } else {
-        $out = front_page();
+        $out = front_page($q);
     }
     print Page::header($q, '');
     print $out;
-    print Page::footer($q);
+    print Page::footer();
 }
 Page::do_fastcgi(\&main);
 
 # Display front page
 sub front_page {
-    my $error = shift;
-    my $out = '';
-    $out .= '<p id="error">' . $error . '</p>' if ($error);
+    my ($q, $error) = @_;
+    my $pc_h = ent($q->param('pc') || '');
+    my $out = '<div id="relativediv">';
     $out .= <<EOF;
-<p>You can use this site to <strong>report</strong> or <strong>view</strong> problems
-with refuse, recycling, fly tipping, pest control,
-abandoned vechicles, street lighting, graffiti, street cleaning, litter or
-similar, with reports going direct to your local council.</p>
+<p style="text-align: center; font-size: 150%; margin: 2em; font-weight: bolder;">Report or view local problems
+like graffiti, fly tipping, broken paving slabs, or street lighting</p>
+EOF
+    $out .= '<p id="error">' . $error . 'Please try again.</p>' if ($error);
+    $out .= <<EOF;
+<form action="./" method="get" id="postcodeForm">
+<label for="pc">Enter your postcode:</label>
+<input type="text" name="pc" value="$pc_h" id="pc" size="10" maxlength="10">
+<input type="submit" value="Go">
+</form>
 
-<p><em>This is currently only for Newham and Lewisham Councils</em></p>
+<p>Reports are sent directly to your local council &ndash; at the moment, we only cover <em>Newham, Lewisham, and Islington</em> councils.</p>
 
-<p>To just view reports from your local area, simply enter a postcode.
-Reporting a problem is hopefully just as simple:</p>
+<p>Reporting a problem is hopefully very simple:</p>
 
 <ol>
 <li>Enter a postcode;
@@ -94,11 +99,7 @@ Reporting a problem is hopefully just as simple:</p>
 <li>Submit to your council.
 </ol>
 
-
-<form action="./" method="get">
-<p>Enter your postcode: <input type="text" name="pc" value="">
-<input type="submit" value="Go">
-</form>
+</div>
 EOF
     return $out;
 }
@@ -243,12 +244,15 @@ sub display {
         my $e = shift;
         if ($e->value() == mySociety::MaPit::BAD_POSTCODE
            || $e->value() == mySociety::MaPit::POSTCODE_NOT_FOUND) {
-            $error = 'That postcode was not recognised, sorry.';
+            $error = 'That postcode was not recognised, sorry. ';
         } else {
             $error = $e;
         }
+    } catch Error::Simple with {
+        my $e = shift;
+	$error = $e;
     };
-    return front_page($error) if ($error);
+    return front_page($q, $error) if ($error);
 
     my $out = "<h2>$name</h2>";
     $out .= display_map($q, $x, $y, 1, 1);
@@ -298,13 +302,13 @@ EOF
     }
     my $skipurl = NewURL($q, 'map'=>1, skipped=>1);
     $out .= '</ul></div>';
-    $out .= display_map_end(1);
     $out .= <<EOF;
 <p>If you cannot see a map &ndash; if you have images turned off,
 or are using a text only browser, for example &ndash; please
 <a href="$skipurl">skip this step</a> and we will ask you
 to describe the location of your problem instead.</p>
 EOF
+    $out .= display_map_end(1);
     return $out;
 }
 
@@ -398,7 +402,7 @@ sub display_map {
     my $url = mySociety::Config::get('TILES_URL');
     my $tiles_url = $url . $x . '-' . ($x+1) . ',' . $y . '-' . ($y+1) . '/RABX';
     my $tiles = LWP::Simple::get($tiles_url);
-    throw Error::Simple("Unable to get tiles from URL $tiles_url") if !$tiles;
+    throw Error::Simple("Unable to get tiles from URL $tiles_url\n") if !$tiles;
     my $tileids = RABX::unserialise($tiles);
     my $tl = $x . '.' . ($y+1);
     my $tr = ($x+1) . '.' . ($y+1);
@@ -450,11 +454,11 @@ sub postcode_check {
     $areas = mySociety::MaPit::get_voting_areas($pc);
 
     # Check for London Borough
-    throw Error::Simple("I'm afraid that postcode isn't in our covered area.", 123456) if (!$areas || !$areas->{LBO});
+    throw Error::Simple("I'm afraid that postcode isn't in our covered area.\n") if (!$areas || !$areas->{LBO});
 
     # Check for Lewisham or Newham
     my $lbo = $areas->{LBO};
-    throw Error::Simple("I'm afraid that postcode isn't in our covered London boroughs.", 123457) unless ($lbo == 2510 || $lbo == 2492);
+    throw Error::Simple("I'm afraid that postcode isn't in our covered London boroughs.\n") unless ($lbo == 2510 || $lbo == 2492 || $lbo == 2507);
 
     my $area_info = mySociety::MaPit::get_voting_area_info($lbo);
     my $name = $area_info->{name};
@@ -484,7 +488,9 @@ sub os_to_px {
 # BL is bottom left tile reference of displayed map
 sub tile_to_px {
     my ($p, $bl) = @_;
-    return 508 - 254 * ($p - $bl);
+    $p = 508 - 254 * ($p - $bl);
+    $p = int($p + .5 * ($p <=> 0));
+    return $p;
 }
 
 # Tile co-ordinates are linear scale of OS E/N

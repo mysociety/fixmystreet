@@ -4,16 +4,42 @@
 body {
     font-family: "Gill Sans", "Gill Sans MT", Helvetica, Arial, sans-serif;
     margin: 0;
-    padding: 1em;
+    padding: 0;
+    dcolor: #a9aeb0;
 }
 
 h1 {
-    border-bottom: solid 2px #999999;
-    margin: 0;
+    font-size: 175%;
 }
 
-a {
+#header {
+    font-size: 200%;
+    font-weight: bold;
+    border-bottom: solid 2px #968d63;
+    margin: 0;
+    padding: 5px 0.5em;
+    background-color: #e3d595;
+    color: #968d63;
+}
+
+#header a:link, #header a:visited {
+    color: #968d63;
+    background-color: #e3d595;
+    text-decoration: none;
+}
+#header a:active, #header a:hover {
+    text-decoration: underline;
+}
+
+h2 {
+    margin-left: 1em;
+}
+
+a:link {
     color: #0000ff;
+}
+a:visited {
+    color: #000099;
 }
 a:hover, a:active {
     color: #ff0000;
@@ -22,6 +48,7 @@ a:hover, a:active {
 .v { display: none; }
 
 #error {
+    text-align: center;
     color: #cc0000;
     font-size: larger;
 }
@@ -38,7 +65,7 @@ ul#error {
 
 #navigation {
     position: absolute;
-    top: 2em;
+    top: 1em;
     right: 1em;
     padding: 0;
     margin: 0;
@@ -46,10 +73,45 @@ ul#error {
 }
 #navigation li {
     float: right;
-    padding: 0 2em;
+    padding: 0;
+    margin: 0;
+}
+
+#navigation a:link, #navigation a:visited {
+    color: #968d63;
+    background-color: #e3d595;
+    padding: 5px 2em;
+}
+#navigation a:hover, #navigation a:active {
+    background-color: #968d63;
+    color: #e3d595;
+}
+
+#footer {
+    text-align: right;
+    font-size: 83%;
+    border-top: solid 1px #968d63;
+    display: table;
+    margin: 1em 0 1em auto;
+    padding: 2px 4px;
 }
 
 /* Forms */
+
+input {
+    font-size: 100%;
+}
+
+#postcodeForm {
+    display: table;
+    font-size: 150%;
+    margin: 2em auto;
+}
+
+#postcodeForm label {
+    float: none;
+    padding-right: 0;
+}
 
 label {
     float: left;
@@ -118,6 +180,7 @@ fieldset div.checkbox label {
 }
 
 #relativediv {
+    margin: 0 2em 0 3em;
     position: relative;
 }
 

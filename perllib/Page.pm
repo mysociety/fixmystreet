@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.14 2006-09-22 17:38:00 matthew Exp $
+# $Id: Page.pm,v 1.15 2006-09-25 18:12:56 matthew Exp $
 #
 
 package Page;
@@ -52,7 +52,9 @@ Return HTML for the top of the page, given the TITLE text and optional PARAMs.
 =cut
 sub header ($$%) {
     my ($q, $title, %params) = @_;
-    
+    $title = '' unless $title;
+    $title .= ' - ' if $title;
+
     my %permitted_params = map { $_ => 1 } qw();
     foreach (keys %params) {
         croak "bad parameter '$_'" if (!exists($permitted_params{$_}));
@@ -66,20 +68,21 @@ sub header ($$%) {
         <!--[if lt IE 7.]>
         <script defer type="text/javascript" src="pngfix.js"></script>
         <![endif]-->
-        <title>Neighbourhood Fix-It</title>
+        <title>${title}Neighbourhood Fix-It</title>
         <style type="text/css">\@import url("css.css");</style>
     </head>
     <body>
-        <h1>Neighbourhood Fix-It</h1>
 EOF
+    $html .= ($title) ? '<div id="header"><a href="/">' : '<h1 id="header">';
+    $html .= 'Neighbourhood Fix-It';
+    $html .= $title ? '</a></div>' : '</h1>';
     return $html;
 }
 
-=item footer Q
+=item footer
 
 =cut
-sub footer ($) {
-    my ($q) = @_;
+sub footer {
     return <<EOF;
 <h2 class="v">Navigation</h2>
 <ul id="navigation">
@@ -89,7 +92,7 @@ sub footer ($) {
 <li><a href="/">Home</a>
 </ul>
 
-<p id="footer"></p>
+<p id="footer">Built by <a href="http://www.mysociety.org/">mySociety</a>. Using lots of <a href="http://www.ordnancesurvey.co.uk/">Ordnance Survey</a> data. And some <a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/bci">very clever code</a>.</p>
 
 </body>
 </html>
@@ -103,7 +106,7 @@ sub error_page ($$) {
     my ($q, $message);
     my $html = header($q, "Error")
             . $q->p($message)
-            . footer($q);
+            . footer();
     print $q->header(-content_length => length($html)), $html;
 }
 
