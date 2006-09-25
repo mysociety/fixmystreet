@@ -14,7 +14,7 @@
  * Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: general-example,v 1.4 2006-09-22 18:19:37 francis Exp $
+ * $Id: general-example,v 1.5 2006-09-25 22:59:06 matthew Exp $
  * 
  */
 
@@ -24,6 +24,9 @@ define('OPTION_BCI_DB_PORT', '5432');
 define('OPTION_BCI_DB_NAME', 'bci');
 define('OPTION_BCI_DB_USER', 'bci');
 define('OPTION_BCI_DB_PASS', '');
+
+define('OPTION_BASE_URL', 'http://www.example.org');
+define('OPTION_CONTACT_EMAIL', 'team@example.org');
 
 define('OPTION_MAPIT_URL', 'http://services.mysociety.org/mapit');
 define('OPTION_TILES_URL', 'http://tilma.mysociety.org/tileserver/10k-full-london');

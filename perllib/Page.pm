@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.16 2006-09-25 18:39:54 matthew Exp $
+# $Id: Page.pm,v 1.17 2006-09-25 22:59:06 matthew Exp $
 #
 
 package Page;
@@ -66,10 +66,10 @@ sub header ($$%) {
 <html lang="en-gb">
     <head>
         <!--[if lt IE 7.]>
-        <script defer type="text/javascript" src="pngfix.js"></script>
+        <script defer type="text/javascript" src="/pngfix.js"></script>
         <![endif]-->
         <title>${title}Neighbourhood Fix-It</title>
-        <style type="text/css">\@import url("css.css");</style>
+        <style type="text/css">\@import url("/css.css");</style>
     </head>
     <body>
 EOF
@@ -86,6 +86,7 @@ EOF
 =cut
 sub footer {
     return <<EOF;
+</div>
 <h2 class="v">Navigation</h2>
 <ul id="navigation">
 <li><a href="/contact">Contact</a>

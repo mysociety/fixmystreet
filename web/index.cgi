@@ -6,7 +6,10 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.24 2006-09-25 18:39:54 matthew Exp $
+# $Id: index.cgi,v 1.25 2006-09-25 22:59:07 matthew Exp $
+
+# TODO
+# Nothing is done about the update checkboxes - not stored anywhere on anything!
 
 use strict;
 require 5.8.0;
@@ -16,14 +19,17 @@ use FindBin;
 use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../../perllib";
 use Error qw(:try);
+use File::Slurp;
 use LWP::Simple;
 use RABX;
 use POSIX qw(strftime);
 use CGI::Carp;
 
 use Page;
+use mySociety::AuthToken;
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh select_all);
+use mySociety::Email;
 use mySociety::Util;
 use mySociety::MaPit;
 use mySociety::Web qw(ent NewURL);
@@ -54,8 +60,10 @@ sub main {
     my $out = '';
     my $title = '';
     if ($q->param('submit_problem')) {
+        $title = 'Submitting your problem';
         $out = submit_problem($q);
     } elsif ($q->param('submit_comment')) {
+        $title = 'Submitting your comment';
         $out = submit_comment($q);
     } elsif ($q->param('map')) {
         $title = 'Reporting a problem';
@@ -117,13 +125,30 @@ sub submit_comment {
     push(@errors, 'Please enter your email') unless $input{email};
     return display_problem($q, @errors) if (@errors);
 
+    my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/comment-confirm");
+
+    my $id = dbh()->selectrow_array("select nextval('comment_id_seq');");
     dbh()->do("insert into comment
-        (problem_id, name, email, website, text, state)
-        values (?, ?, ?, ?, ?, 'unconfirmed')", {},
-        $input{id}, $input{name}, $input{email}, '', $input{comment});
+        (id, problem_id, name, email, website, text, state)
+        values (?, ?, ?, ?, ?, ?, 'unconfirmed')", {},
+        $id, $input{id}, $input{name}, $input{email}, '', $input{comment});
+    my %h = ();
+    $h{comment} = $input{comment};
+    $h{name} = $input{name};
+    $h{url} = mySociety::Config::get('BASE_URL') . '/C/' . mySociety::AuthToken::store('comment', $id);
     dbh()->commit();
 
-    # Send confirmation email
+    my $email = mySociety::Email::construct_email({
+	_template_ => $template,
+	_parameters_ => \%h,
+    	From => [mySociety::Config::get('CONTACT_EMAIL'), 'Heighbourhood Fix-It'],
+	To => [[$input{email}, $input{name}]],
+    });
+    my $result = mySociety::Util::send_email($email, mySociety::Config::get('CONTACT_EMAIL'), $input{email});
+    if ($result == mySociety::Util::EMAIL_SUCCESS) {
+    } elsif ($result == mySociety::Util::EMAIL_SOFT_ERROR) {
+    } else {
+    }
 
     my $out = <<EOF;
 <h1>Nearly Done! Now check your email...</h1>
@@ -147,6 +172,9 @@ sub submit_problem {
     push(@errors, 'Please enter your email') unless $input{email};
     return display_form($q, @errors) if (@errors);
 
+    my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/problem-confirm");
+
+    my $id = dbh()->selectrow_array("select nextval('problem_id_seq');");
     dbh()->do("insert into problem
         (postcode, easting, northing, title, detail, name, email, state)
         values
@@ -154,9 +182,24 @@ sub submit_problem {
         $input{pc}, $input{easting}, $input{northing}, $input{title},
         $input{detail}, $input{name}, $input{email}
     );
+    my %h = ();
+    $h{title} = $input{title};
+    $h{detail} = $input{detail};
+    $h{name} = $input{name};
+    $h{url} = mySociety::Config::get('BASE_URL') . '/P/' . mySociety::AuthToken::store('problem', $id);
     dbh()->commit();
 
-    # Send confirmation email
+    my $email = mySociety::Email::construct_email({
+	_template_ => $template,
+	_parameters_ => \%h,
+    	From => [mySociety::Config::get('CONTACT_EMAIL'), 'Heighbourhood Fix-It'],
+	To => [[$input{email}, $input{name}]],
+    });
+    my $result = mySociety::Util::send_email($email, mySociety::Config::get('CONTACT_EMAIL'), $input{email});
+    if ($result == mySociety::Util::EMAIL_SUCCESS) {
+    } elsif ($result == mySociety::Util::EMAIL_SOFT_ERROR) {
+    } else {
+    }
 
     my $out = <<EOF;
 <h1>Nearly Done! Now check your email...</h1>
@@ -367,20 +410,22 @@ sub display_problem {
 
     # Display comments
     my $comments = select_all(
-        "select id, name, whenposted, text
+        "select id, name, extract(epoch from whenposted) as whenposted, text
          from comment where problem_id = ? and state='confirmed'
          order by whenposted desc", $input{id});
     if (@$comments) {
-        $out .= '<h3>Comments</h3>';
+        $out .= '<div id="comments"> <h3>Comments</h3>';
         foreach my $row (@$comments) {
-            $out .= "$row->{name} $row->{text}";
+            $out .= "<div><em>Posted by $row->{name} at " . prettify_epoch($row->{whenposted}) . '</em>';
+	    $out .= '<br>' . $row->{text} . '</div>';
         }
+	$out .= '</div>';
     }
     $out .= '<h3>Add Comment</h3>';
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
-    my $updates = $input{updates} ? ' checked' : '';
+    my $updates = (!defined($q->param('updates')) || $input{updates}) ? ' checked' : '';
     # XXX: Should we have website too?
     $out .= <<EOF;
 <form method="post" action="./">
@@ -450,7 +495,7 @@ EOF
 
 sub display_map_end {
     my ($type) = @_;
-    my $out = '</div></div>';
+    my $out = '</div>';
     $out .= '</form>' if ($type);
     return $out;
 }

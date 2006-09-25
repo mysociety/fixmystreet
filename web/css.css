@@ -185,3 +185,7 @@ ul#current img {
     position: absolute;
     border: none;
 }
+
+#comments div em {
+    border-bottom: dotted 1px #968d63;
+}

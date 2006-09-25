@@ -1,0 +1,17 @@
+Subject: Confirm your problem on Neighbourhood Fix-It
+
+Hi <?=$values['name']?>,
+
+Please click on the link below to confirm the problem you just
+added to Neighbourhood Fix-It:
+
+<?=$values['url']?>
+
+Your problem had the title:
+<?=$values['title']?>
+
+And details:
+<?=$values['detail']?>
+
+-- 
+The Neighbourhood Fix-It team

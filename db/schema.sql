@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.7 2006-09-22 17:38:00 matthew Exp $
+-- $Id: schema.sql,v 1.8 2006-09-25 22:59:06 matthew Exp $
 --
 
 -- secret
@@ -219,4 +219,13 @@ create table comment (
 
 create index comment_problem_id_idx on comment(problem_id);
 create index comment_problem_id_whenposted_idx on comment(problem_id, whenposted);
+
+-- Tokens for confirmations
+create table token (
+    scope text not null,
+    token text not null,
+    data bytea not null,
+    created timestamp not null default ms_current_timestamp(),
+    primary key (scope, token)
+);
 
