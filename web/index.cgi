@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.21 2006-09-22 18:31:25 matthew Exp $
+# $Id: index.cgi,v 1.22 2006-09-25 16:08:06 francis Exp $
 
 use strict;
 require 5.8.0;
@@ -19,6 +19,7 @@ use Error qw(:try);
 use LWP::Simple;
 use RABX;
 use POSIX qw(strftime);
+use CGI::Carp;
 
 use Page;
 use mySociety::Config;
@@ -64,7 +65,6 @@ sub main {
     } else {
         $out = front_page();
     }
-
     print Page::header($q, '');
     print $out;
     print Page::footer($q);
@@ -396,8 +396,9 @@ EOF
 sub display_map {
     my ($q, $x, $y, $type, $compass) = @_;
     my $url = mySociety::Config::get('TILES_URL');
-    my $tiles = $url . $x . '-' . ($x+1) . ',' . $y . '-' . ($y+1) . '/RABX';
-    $tiles = LWP::Simple::get($tiles);
+    my $tiles_url = $url . $x . '-' . ($x+1) . ',' . $y . '-' . ($y+1) . '/RABX';
+    my $tiles = LWP::Simple::get($tiles_url);
+    throw Error::Simple("Unable to get tiles from URL $tiles_url") if !$tiles;
     my $tileids = RABX::unserialise($tiles);
     my $tl = $x . '.' . ($y+1);
     my $tr = ($x+1) . '.' . ($y+1);
@@ -449,11 +450,11 @@ sub postcode_check {
     $areas = mySociety::MaPit::get_voting_areas($pc);
 
     # Check for London Borough
-    throw RABX::Error("I'm afraid that postcode isn't in our covered area.", 123456) if (!$areas || !$areas->{LBO});
+    throw Error::Simple("I'm afraid that postcode isn't in our covered area.", 123456) if (!$areas || !$areas->{LBO});
 
     # Check for Lewisham or Newham
     my $lbo = $areas->{LBO};
-    throw RABX::Error("I'm afraid that postcode isn't in our covered London boroughs.", 123457) unless ($lbo == 2510 || $lbo == 2492);
+    throw Error::Simple("I'm afraid that postcode isn't in our covered London boroughs.", 123457) unless ($lbo == 2510 || $lbo == 2492);
 
     my $area_info = mySociety::MaPit::get_voting_area_info($lbo);
     my $name = $area_info->{name};
