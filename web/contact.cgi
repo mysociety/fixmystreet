@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.1 2006-09-25 18:12:56 matthew Exp $
+# $Id: contact.cgi,v 1.2 2006-09-25 18:39:54 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -41,7 +41,7 @@ sub contact_submit {
     push(@errors, 'Please give your name') unless $input{email};
     push(@errors, 'Please write a message') unless $input{message};
     return contact_page($q, @errors) if @errors;
-
+    print '<p>Submit form!</p>';
 }
 
 sub contact_page {
@@ -50,7 +50,7 @@ sub contact_page {
     my %input = map { $_ => $q->param($_) } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 
-    my $out = '<div id="relativediv"> <h1>Contact</h1>';
+    my $out = '<h1>Contact</h1>';
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }

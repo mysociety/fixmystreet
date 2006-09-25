@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.15 2006-09-25 18:12:56 matthew Exp $
+# $Id: Page.pm,v 1.16 2006-09-25 18:39:54 matthew Exp $
 #
 
 package Page;
@@ -73,9 +73,11 @@ sub header ($$%) {
     </head>
     <body>
 EOF
-    $html .= ($title) ? '<div id="header"><a href="/">' : '<h1 id="header">';
+    my $home = !$title && $ENV{SCRIPT_NAME} eq '/index.cgi' && !$ENV{QUERY_STRING};
+    $html .= $home ? '<h1 id="header">' : '<div id="header"><a href="/">';
     $html .= 'Neighbourhood Fix-It';
-    $html .= $title ? '</a></div>' : '</h1>';
+    $html .= $home ? '</h1>' : '</a></div>';
+    $html .= '<div id="content">';
     return $html;
 }
 

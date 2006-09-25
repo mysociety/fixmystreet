@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.23 2006-09-25 18:12:56 matthew Exp $
+# $Id: index.cgi,v 1.24 2006-09-25 18:39:54 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -52,20 +52,24 @@ sub main {
     my $q = shift;
 
     my $out = '';
+    my $title = '';
     if ($q->param('submit_problem')) {
         $out = submit_problem($q);
     } elsif ($q->param('submit_comment')) {
         $out = submit_comment($q);
     } elsif ($q->param('map')) {
+        $title = 'Reporting a problem';
         $out = display_form($q);
     } elsif ($q->param('id')) {
+        $title = 'Viewing a problem';
         $out = display_problem($q);
     } elsif ($q->param('pc')) {
+        $title = 'Map';
         $out = display($q);
     } else {
         $out = front_page($q);
     }
-    print Page::header($q, '');
+    print Page::header($q, $title);
     print $out;
     print Page::footer();
 }
@@ -75,8 +79,7 @@ Page::do_fastcgi(\&main);
 sub front_page {
     my ($q, $error) = @_;
     my $pc_h = ent($q->param('pc') || '');
-    my $out = '<div id="relativediv">';
-    $out .= <<EOF;
+    my $out = <<EOF;
 <p style="text-align: center; font-size: 150%; margin: 2em; font-weight: bolder;">Report or view local problems
 like graffiti, fly tipping, broken paving slabs, or street lighting</p>
 EOF
@@ -123,7 +126,7 @@ sub submit_comment {
     # Send confirmation email
 
     my $out = <<EOF;
-<h2>Nearly Done! Now check your email...</h2>
+<h1>Nearly Done! Now check your email...</h1>
 <p>The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.</p>
 <p>If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.</p>
 <p>You must now click on the link within the email we've just sent you -
@@ -156,7 +159,7 @@ sub submit_problem {
     # Send confirmation email
 
     my $out = <<EOF;
-<h2>Nearly Done! Now check your email...</h2>
+<h1>Nearly Done! Now check your email...</h1>
 <p>The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.</p>
 <p>If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.</p>
 <p>You must now click on the link within the email we've just sent you -
@@ -182,9 +185,14 @@ sub display_form {
             || ($input{easting} && $input{northing});
 
     my $out = '';
-    $out .= '<h2>Reporting a problem</h2>';
     if ($input{skipped}) {
-        $out .= '<p>Please fill in the form below with details of the problem:</p>';
+        $out .= <<EOF;
+<form action="./" method="post">
+<input type="hidden" name="map" value="1">
+<input type="hidden" name="pc" value="$input_h{pc}">
+<h1>Reporting a problem</h1>
+<p>Please fill in the form below with details of the problem:</p>
+EOF
     } else {
         my ($px, $py, $easting, $northing);
         if ($pin_x && $pin_y) {
@@ -203,6 +211,7 @@ sub display_form {
             $northing = $input_h{northing};
         }
         $out .= display_map($q, $input{x}, $input{y}, 1, 0);
+        $out .= '<h1>Reporting a problem</h1>';
         $out .= '<p>You have located the problem at the location marked with a yellow pin on the map. If this is not the correct location, simply click on the map again.</p>
 <p>Please fill in details of the problem below:</p>';
         $out .= display_pin($px, $py, 'yellow');
@@ -254,8 +263,9 @@ sub display {
     };
     return front_page($q, $error) if ($error);
 
-    my $out = "<h2>$name</h2>";
+    my $out = '';
     $out .= display_map($q, $x, $y, 1, 1);
+    $out .= "<h1>$name</h1>";
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
@@ -264,7 +274,7 @@ sub display {
 Use the arrows to the left of the map to scroll around.</p>
 EOF
 
-    # These lists are currently global; should presumably be local to map!
+    # XXX: These lists are currently global; should presumably be local to map!
     $out .= <<EOF;
     <div>
     <h2>Problems already reported</h2>
@@ -344,8 +354,8 @@ sub display_problem {
     my $py = os_to_px($northing, $y_tile);
 
     my $out = '';
-    $out .= "<h2>$title</h2>";
     $out .= display_map($q, $x_tile, $y_tile, 0, 1);
+    $out .= "<h1>$title</h1>";
 
     # Display information about problem
     $out .= '<p>';
@@ -429,13 +439,12 @@ EOF
         $img_type = '<img';
     }
     $out .= <<EOF;
-<div id="relativediv">
     <div id="map">
         $img_type id="2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0px;">$img_type id="3.2" name="tile_$tr" src="$tr_src" style="top:0px; left:254px;"><br>$img_type id="2.3" name="tile_$bl" src="$bl_src" style="top:254px; left:0px;">$img_type id="3.3" name="tile_$br" src="$br_src" style="top:254px; left:254px;">
     </div>
 EOF
     $out .= Page::compass($q, $x, $y) if $compass;
-    $out .= '<div id="content">';
+    $out .= '<div id="side">';
     return $out;
 }
 
