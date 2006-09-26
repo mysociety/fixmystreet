@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.26 2006-09-26 16:11:51 matthew Exp $
+# $Id: index.cgi,v 1.27 2006-09-26 17:20:19 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -146,11 +146,7 @@ sub submit_comment {
     });
     my $result = mySociety::Util::send_email($email, mySociety::Config::get('CONTACT_EMAIL'), $input{email});
     if ($result == mySociety::Util::EMAIL_SUCCESS) {
-    } elsif ($result == mySociety::Util::EMAIL_SOFT_ERROR) {
-    } else {
-    }
-
-    my $out = <<EOF;
+        my $out = <<EOF;
 <h1>Nearly Done! Now check your email...</h1>
 <p>The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.</p>
 <p>If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.</p>
@@ -158,6 +154,12 @@ sub submit_comment {
 <br>if you do not, your comment will not be posted.</p>
 <p>(Don't worry - we'll hang on to your comment while you're checking your email.)</p>
 EOF
+    } else {
+        my $out = <<EOF;
+<p>I'm afraid something went wrong when we tried to send your email. Please click Back, check your details, and try again.</p>
+EOF
+    }
+
     return $out;
 }
 
@@ -197,11 +199,7 @@ sub submit_problem {
     });
     my $result = mySociety::Util::send_email($email, mySociety::Config::get('CONTACT_EMAIL'), $input{email});
     if ($result == mySociety::Util::EMAIL_SUCCESS) {
-    } elsif ($result == mySociety::Util::EMAIL_SOFT_ERROR) {
-    } else {
-    }
-
-    my $out = <<EOF;
+        my $out = <<EOF;
 <h1>Nearly Done! Now check your email...</h1>
 <p>The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.</p>
 <p>If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.</p>
@@ -209,6 +207,12 @@ sub submit_problem {
 <br>if you do not, your problem will not be posted on the site.</p>
 <p>(Don't worry - we'll hang on to your information while you're checking your email.)</p>
 EOF
+    } else {
+        my $out = <<EOF;
+<p>I'm afraid something went wrong when we tried to send your email. Please click Back, check your details, and try again.</p>
+EOF
+    }
+
     return $out;
 }
 
@@ -234,7 +238,8 @@ sub display_form {
 <input type="hidden" name="map" value="1">
 <input type="hidden" name="pc" value="$input_h{pc}">
 <h1>Reporting a problem</h1>
-<p>Please fill in the form below with details of the problem:</p>
+<p>Please fill in the form below with details of the problem, and
+describe the location in the details box.</p>
 EOF
     } else {
         my ($px, $py, $easting, $northing);

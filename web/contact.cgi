@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.3 2006-09-26 16:11:51 matthew Exp $
+# $Id: contact.cgi,v 1.4 2006-09-26 17:20:19 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -16,6 +16,13 @@ use FindBin;
 use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../../perllib";
 use Page;
+use mySociety::Config;
+use mySociety::Email;
+use mySociety::Util;
+
+BEGIN {
+    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+}
 
 # Main code for index.cgi
 sub main {
@@ -41,7 +48,25 @@ sub contact_submit {
     push(@errors, 'Please give your name') unless $input{email};
     push(@errors, 'Please write a message') unless $input{message};
     return contact_page($q, @errors) if @errors;
-    print '<p>Submit form!</p>';
+
+    my $message = str_replace("\r\n", "\n", $input{message});
+    my $postfix = '[ Sent by contact.cgi on ' .
+        $ENV{'HTTP_HOST'} . '. ' .
+        "IP address " . $ENV{'REMOTE_ADDR'} .
+        ($ENV{'HTTP_X_FORWARDED_FOR'} ? ' (forwarded from '.$ENV{'HTTP_X_FORWARDED_FOR'}.')' : '') . '. ' .
+        ' ]';
+    my $email = mySociety::Email::construct_email({
+        _body_ => "$message\n\n$postfix",
+        From => [$input{email}, $input{name}],
+        To => [[mySociety::Config::get('CONTACT_EMAIL'), 'Neighbourhood Fix-It']],
+        Subject => 'Message from Neighbourhood Fix-It'
+    });
+    my $result = mySociety::Util::send_email($email, $input{email}, mySociety::Config::get('CONTACT_EMAIL'));
+    if ($result == mySociety::Util::EMAIL_SUCCESS) {
+        return '<p>Thanks for your feedback.  We\'ll get back to you as soon as we can!</p>';
+    } else {
+        return '<p>Failed to send message.  Please try again, or <a href="' . mySociety::Config::get('CONTACT_EMAIL') . '">email us</a>.</p>';
+    }
 }
 
 sub contact_page {
