@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.25 2006-09-25 22:59:07 matthew Exp $
+# $Id: index.cgi,v 1.26 2006-09-26 16:11:51 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -88,18 +88,18 @@ sub front_page {
     my ($q, $error) = @_;
     my $pc_h = ent($q->param('pc') || '');
     my $out = <<EOF;
-<p style="text-align: center; font-size: 150%; margin: 2em; font-weight: bolder;">Report or view local problems
+<p id="expl">Report, view, or discuss local problems
 like graffiti, fly tipping, broken paving slabs, or street lighting</p>
 EOF
     $out .= '<p id="error">' . $error . 'Please try again.</p>' if ($error);
     $out .= <<EOF;
 <form action="./" method="get" id="postcodeForm">
-<label for="pc">Enter your postcode:</label>
-<input type="text" name="pc" value="$pc_h" id="pc" size="10" maxlength="10">
-<input type="submit" value="Go">
+<label for="pc">Enter a postcode:</label>
+&nbsp;<input type="text" name="pc" value="$pc_h" id="pc" size="10" maxlength="10">
+&nbsp;<input type="submit" value="Go">
 </form>
 
-<p>Reports are sent directly to your local council &ndash; at the moment, we only cover <em>Newham, Lewisham, and Islington</em> councils.</p>
+<p>Reports are sent directly to the local council &ndash; at the moment, we only cover <em>Newham, Lewisham, and Islington</em> councils.</p>
 
 <p>Reporting a problem is hopefully very simple:</p>
 
@@ -118,7 +118,7 @@ EOF
 sub submit_comment {
     my $q = shift;
     my @vars = qw(id name email comment updates);
-    my %input = map { $_ => $q->param($_) } @vars;
+    my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
     push(@errors, 'Please enter a comment') unless $input{comment};
     push(@errors, 'Please enter your name') unless $input{name};
@@ -139,10 +139,10 @@ sub submit_comment {
     dbh()->commit();
 
     my $email = mySociety::Email::construct_email({
-	_template_ => $template,
-	_parameters_ => \%h,
-    	From => [mySociety::Config::get('CONTACT_EMAIL'), 'Heighbourhood Fix-It'],
-	To => [[$input{email}, $input{name}]],
+        _template_ => $template,
+        _parameters_ => \%h,
+            From => [mySociety::Config::get('CONTACT_EMAIL'), 'Heighbourhood Fix-It'],
+        To => [[$input{email}, $input{name}]],
     });
     my $result = mySociety::Util::send_email($email, mySociety::Config::get('CONTACT_EMAIL'), $input{email});
     if ($result == mySociety::Util::EMAIL_SUCCESS) {
@@ -164,7 +164,7 @@ EOF
 sub submit_problem {
     my $q = shift;
     my @vars = qw(title detail name email pc easting northing updates);
-    my %input = map { $_ => $q->param($_) } @vars;
+    my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
     push(@errors, 'Please enter a title') unless $input{title};
     push(@errors, 'Please enter some details') unless $input{detail};
@@ -190,10 +190,10 @@ sub submit_problem {
     dbh()->commit();
 
     my $email = mySociety::Email::construct_email({
-	_template_ => $template,
-	_parameters_ => \%h,
-    	From => [mySociety::Config::get('CONTACT_EMAIL'), 'Heighbourhood Fix-It'],
-	To => [[$input{email}, $input{name}]],
+        _template_ => $template,
+        _parameters_ => \%h,
+            From => [mySociety::Config::get('CONTACT_EMAIL'), 'Heighbourhood Fix-It'],
+        To => [[$input{email}, $input{name}]],
     });
     my $result = mySociety::Util::send_email($email, mySociety::Config::get('CONTACT_EMAIL'), $input{email});
     if ($result == mySociety::Util::EMAIL_SUCCESS) {
@@ -240,8 +240,8 @@ EOF
         my ($px, $py, $easting, $northing);
         if ($pin_x && $pin_y) {
             # Map was clicked on
-	    $pin_x = click_to_tile($pin_tile_x, $pin_x);
-	    $pin_y = click_to_tile($pin_tile_y, $pin_y, 1);
+            $pin_x = click_to_tile($pin_tile_x, $pin_x);
+            $pin_y = click_to_tile($pin_tile_y, $pin_y, 1);
             $px = tile_to_px($pin_x, $input{x});
             $py = tile_to_px($pin_y, $input{y});
             $easting = tile_to_os($pin_x);
@@ -288,10 +288,13 @@ EOF
 sub display {
     my ($q, @errors) = @_;
 
-    my $pc = $q->param('pc');
+    my @vars = qw(pc x y);
+    my %input = map { $_ => $q->param($_) || '' } @vars;
+    my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
+
     my($error, $x, $y, $name);
     try {
-        ($name, $x, $y) = postcode_check($q, $pc);
+        ($name, $x, $y) = postcode_check($input{pc}, $input{x}, $input{y});
     } catch RABX::Error with {
         my $e = shift;
         if ($e->value() == mySociety::MaPit::BAD_POSTCODE
@@ -302,36 +305,67 @@ sub display {
         }
     } catch Error::Simple with {
         my $e = shift;
-	$error = $e;
+        $error = $e;
     };
     return front_page($q, $error) if ($error);
 
     my $out = '';
     $out .= display_map($q, $x, $y, 1, 1);
-    $out .= "<h1>$name</h1>";
+    if (!$input{x} && !$input{y}) {
+        $out .= "<h1>That postcode is in $name</h1>";
+    } else {
+        $out .= '<h1>Reporting a problem</h1>';
+    }
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
     $out .= <<EOF;
 <p>To <strong>report a problem</strong>, please select the location of it on the map.
 Use the arrows to the left of the map to scroll around.</p>
+<div>
+<h2>Recent problems reported on this map</h2>
+<ul id="current">
 EOF
-
-    # XXX: These lists are currently global; should presumably be local to map!
-    $out .= <<EOF;
-    <div>
-    <h2>Problems already reported</h2>
-    <ul id="current">
-EOF
-    my $current = select_all(
+    my $min_e = tile_to_os($x);
+    my $min_n = tile_to_os($y);
+    my $mid_e = tile_to_os($x+1);
+    my $mid_n = tile_to_os($y+1);
+    my $max_e = tile_to_os($x+2);
+    my $max_n = tile_to_os($y+2);
+    my $current_map = select_all(
         "select id,title,easting,northing from problem where state='confirmed'
-         order by created desc limit 3");
-    foreach (@$current) {
+         and easting>=? and easting<? and northing>=? and northing<?
+         order by created desc limit 3", $min_e, $max_e, $min_n, $max_n);
+    my @ids = ();
+    foreach (@$current_map) {
+        push(@ids, $_->{id});
         my $px = os_to_px($_->{easting}, $x);
         my $py = os_to_px($_->{northing}, $y);
         $out .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
         $out .= display_pin($px, $py);
         $out .= $_->{title};
+        $out .= '</a></li>';
+    }
+    unless (@$current_map) {
+        $out .= '<li>No problems have been reported yet.</li>';
+    }
+    $out .= <<EOF;
+    </ul>
+    <h2>Recent problems reported within 10km</h2>
+    <ul id="current">
+EOF
+    my $current = select_all(
+        "select id, title, easting, northing, distance
+            from problem_find_nearby(?, ?, 10) as nearby, problem
+            where nearby.problem_id = problem.id
+            and state = 'confirmed'" . (@ids ? ' and id not in (' . join(',' , @ids) . ')' : '') . "
+         order by created desc limit 3", $mid_e, $mid_n);
+    foreach (@$current) {
+        my $px = os_to_px($_->{easting}, $x);
+        my $py = os_to_px($_->{northing}, $y);
+        $out .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
+        $out .= display_pin($px, $py);
+        $out .= $_->{title} . ' (' . int($_->{distance}+.5) . 'm)';
         $out .= '</a></li>';
     }
     unless (@$current) {
@@ -357,7 +391,8 @@ EOF
     $out .= '</ul></div>';
     $out .= <<EOF;
 <p>If you cannot see a map &ndash; if you have images turned off,
-or are using a text only browser, for example &ndash; please
+or are using a text only browser, for example &ndash; and you
+wish to report a problem, please
 <a href="$skipurl">skip this step</a> and we will ask you
 to describe the location of your problem instead.</p>
 EOF
@@ -376,7 +411,7 @@ sub display_problem {
     my ($q, @errors) = @_;
 
     my @vars = qw(id name email comment updates x y);
-    my %input = map { $_ => $q->param($_) } @vars;
+    my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
     $input{x} += 0;
     $input{y} += 0;
@@ -417,9 +452,9 @@ sub display_problem {
         $out .= '<div id="comments"> <h3>Comments</h3>';
         foreach my $row (@$comments) {
             $out .= "<div><em>Posted by $row->{name} at " . prettify_epoch($row->{whenposted}) . '</em>';
-	    $out .= '<br>' . $row->{text} . '</div>';
+            $out .= '<br>' . $row->{text} . '</div>';
         }
-	$out .= '</div>';
+        $out .= '</div>';
     }
     $out .= '<h3>Add Comment</h3>';
     if (@errors) {
@@ -473,7 +508,7 @@ sub display_map {
     if ($type) {
         my $pc_enc = ent($q->param('pc'));
         $out .= <<EOF;
-<form action="./" method="post">
+<form action="./" method="get">
 <input type="hidden" name="map" value="1">
 <input type="hidden" name="x" value="$x">
 <input type="hidden" name="y" value="$y">
@@ -503,7 +538,7 @@ sub display_map_end {
 # Checks the postcode is in one of the two London boroughs
 # and sets default X/Y co-ordinates if not provided in the URI
 sub postcode_check {
-    my ($q, $pc) = @_;
+    my ($pc, $x, $y) = @_;
     my $areas;
     $areas = mySociety::MaPit::get_voting_areas($pc);
 
@@ -517,10 +552,8 @@ sub postcode_check {
     my $area_info = mySociety::MaPit::get_voting_area_info($lbo);
     my $name = $area_info->{name};
 
-    my $x = $q->param('x') || 0;
-    my $y = $q->param('y') || 0;
-    $x += 0;
-    $y += 0;
+    $x ||= 0; $x += 0;
+    $y ||= 0; $y += 0;
     if (!$x && !$y) {
         my $location = mySociety::MaPit::get_location($pc);
         my $northing = $location->{northing};

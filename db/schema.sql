@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.8 2006-09-25 22:59:06 matthew Exp $
+-- $Id: schema.sql,v 1.9 2006-09-26 16:11:50 matthew Exp $
 --
 
 -- secret
@@ -160,41 +160,25 @@ create type problem_nearby_match as (
     distance double precision   -- km
 );
 
--- problem_find_nearby LATITUDE LONGITUDE DISTANCE
--- Find problems within DISTANCE (km) of (LATITUDE, LONGITUDE).
+-- problem_find_nearby EASTING NORTHING DISTANCE
+-- Find problems within DISTANCE (km) of (EASTING, NORTHING).
 create function problem_find_nearby(double precision, double precision, double precision)
     returns setof problem_nearby_match as
     -- Write as SQL function so that we don't have to construct a temporary
     -- table or results set in memory. That means we can't check the values of
     -- the parameters, sadly.
-    -- Through sheer laziness, just use great-circle distance; that'll be off
-    -- by ~0.1%:
-    --  http://www.ga.gov.au/nmd/geodesy/datums/distance.jsp
-    -- We index locations on lat/lon so that we can select the locations which lie
-    -- within a wedge of side about 2 * DISTANCE. That cuts down substantially
-    -- on the amount of work we have to do.
 '
     -- trunc due to inaccuracies in floating point arithmetic
     select problem.id,
-           R_e() * acos(trunc(
-                (sin(radians($1)) * sin(radians(latitude))
-                + cos(radians($1)) * cos(radians(latitude))
-                    * cos(radians($2 - longitude)))::numeric, 14)
-            ) as distance
+           sqrt(($1 - easting) ^ 2
+                + ($2 - northing) ^ 2)
+            as distance
         from problem
         where
-            longitude is not null and latitude is not null
-            and radians(latitude) > radians($1) - ($3 / R_e())
-            and radians(latitude) < radians($1) + ($3 / R_e())
-            and (abs(radians($1)) + ($3 / R_e()) > pi() / 2     -- case where search pt is near pole
-                    or angle_between(radians(longitude), radians($2))
-                            < $3 / (R_e() * cos(radians($1 + $3 / R_e()))))
             -- ugly -- unable to use attribute name "distance" here, sadly
-            and R_e() * acos(trunc(
-                (sin(radians($1)) * sin(radians(latitude))
-                + cos(radians($1)) * cos(radians(latitude))
-                    * cos(radians($2 - longitude)))::numeric, 14)
-                ) < $3
+            sqrt(($1 - easting) ^ 2
+                + ($2 - northing) ^ 2)
+                < $3 * 1000
         order by distance desc
 ' language sql; -- should be "stable" rather than volatile per default?
 

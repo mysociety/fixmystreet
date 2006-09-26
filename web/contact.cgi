@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.2 2006-09-25 18:39:54 matthew Exp $
+# $Id: contact.cgi,v 1.3 2006-09-26 16:11:51 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -23,9 +23,9 @@ sub main {
     print Page::header($q, 'Contact');
     my $out = '';
     if ($q->param('submit_form')) {
-    	$out = contact_submit($q);
+        $out = contact_submit($q);
     } else {
-    	$out = contact_page($q);
+        $out = contact_page($q);
     }
     print $out;
     print Page::footer();
