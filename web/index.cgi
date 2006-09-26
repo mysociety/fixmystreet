@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.28 2006-09-26 18:31:54 matthew Exp $
+# $Id: index.cgi,v 1.29 2006-09-26 22:21:55 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -271,6 +271,8 @@ EOF
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
     my $updates = (!defined($q->param('updates')) || $input{updates}) ? ' checked' : '';
+    my $back = NewURL($q, map => undef, "tile_$pin_tile_x.$pin_tile_y.x" => undef,
+        "tile_$pin_tile_x.$pin_tile_y.y" => undef);
     $out .= <<EOF;
 <fieldset>
 <div><label for="form_title">Title:</label>
@@ -285,6 +287,8 @@ EOF
 <label for="form_updates">Receive updates about this problem</label></div>
 <div class="checkbox"><input type="submit" name="submit_problem" value="Submit"></div>
 </fieldset>
+
+<p align="right"><a href="$back">Back to listings</a></p>
 EOF
     $out .= display_map_end(1);
     return $out;
@@ -370,7 +374,7 @@ EOF
         my $py = os_to_px($_->{northing}, $y);
         $out .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
         $out .= display_pin($px, $py);
-        $out .= $_->{title} . ' (' . int($_->{distance}+.5) . 'm)';
+        $out .= $_->{title} . ' (c. ' . int($_->{distance}/100+.5)/10 . 'km)';
         $out .= '</a></li>';
     }
     unless (@$current) {
@@ -447,6 +451,9 @@ sub display_problem {
     $out .= '</em></p> <p>';
     $out .= ent($desc);
     $out .= '</p>';
+
+    my $back = NewURL($q, id=>undef);
+    $out .= '<p align="right"><a href="' . $back . '">Back to listings</a></p>';
 
     # Display comments
     my $comments = select_all(
