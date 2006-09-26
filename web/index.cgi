@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.27 2006-09-26 17:20:19 matthew Exp $
+# $Id: index.cgi,v 1.28 2006-09-26 18:31:54 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -145,8 +145,9 @@ sub submit_comment {
         To => [[$input{email}, $input{name}]],
     });
     my $result = mySociety::Util::send_email($email, mySociety::Config::get('CONTACT_EMAIL'), $input{email});
+    my $out;
     if ($result == mySociety::Util::EMAIL_SUCCESS) {
-        my $out = <<EOF;
+        $out = <<EOF;
 <h1>Nearly Done! Now check your email...</h1>
 <p>The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.</p>
 <p>If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.</p>
@@ -155,11 +156,10 @@ sub submit_comment {
 <p>(Don't worry - we'll hang on to your comment while you're checking your email.)</p>
 EOF
     } else {
-        my $out = <<EOF;
+        $out = <<EOF;
 <p>I'm afraid something went wrong when we tried to send your email. Please click Back, check your details, and try again.</p>
 EOF
     }
-
     return $out;
 }
 
@@ -198,8 +198,9 @@ sub submit_problem {
         To => [[$input{email}, $input{name}]],
     });
     my $result = mySociety::Util::send_email($email, mySociety::Config::get('CONTACT_EMAIL'), $input{email});
+    my $out;
     if ($result == mySociety::Util::EMAIL_SUCCESS) {
-        my $out = <<EOF;
+        $out = <<EOF;
 <h1>Nearly Done! Now check your email...</h1>
 <p>The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.</p>
 <p>If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.</p>
@@ -208,11 +209,10 @@ sub submit_problem {
 <p>(Don't worry - we'll hang on to your information while you're checking your email.)</p>
 EOF
     } else {
-        my $out = <<EOF;
+        $out = <<EOF;
 <p>I'm afraid something went wrong when we tried to send your email. Please click Back, check your details, and try again.</p>
 EOF
     }
-
     return $out;
 }
 
