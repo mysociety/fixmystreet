@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.29 2006-09-26 22:21:55 matthew Exp $
+# $Id: index.cgi,v 1.30 2006-09-27 13:51:23 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -32,6 +32,7 @@ use mySociety::DBHandle qw(dbh select_all);
 use mySociety::Email;
 use mySociety::Util;
 use mySociety::MaPit;
+use mySociety::VotingArea;
 use mySociety::Web qw(ent NewURL);
 
 BEGIN {
@@ -99,7 +100,7 @@ EOF
 &nbsp;<input type="submit" value="Go">
 </form>
 
-<p>Reports are sent directly to the local council &ndash; at the moment, we only cover <em>Newham, Lewisham, and Islington</em> councils.</p>
+<p>Reports are sent directly to the local council &ndash; at the moment, we only cover <em>Newham, Lewisham, and Islington</em> councils. The rest of the UK is coming soon!</p>
 
 <p>Reporting a problem is hopefully very simple:</p>
 
@@ -239,7 +240,7 @@ sub display_form {
 <input type="hidden" name="pc" value="$input_h{pc}">
 <h1>Reporting a problem</h1>
 <p>Please fill in the form below with details of the problem, and
-describe the location in the details box.</p>
+describe the location as precisely as possible in the details box.</p>
 EOF
     } else {
         my ($px, $py, $easting, $northing);
@@ -258,10 +259,17 @@ EOF
             $easting = $input_h{easting};
             $northing = $input_h{northing};
         }
+        # XXX: How to do this for not London?
+	# And needs to use polygon, not box
+        my $council = mySociety::MaPit::get_voting_area_by_location_en($easting, $northing, 'box', 'LBO');
+        my $areas_info = mySociety::MaPit::get_voting_areas_info($council);
+	$council = join(', ', map { $areas_info->{$_}->{name} } @$council);
         $out .= display_map($q, $input{x}, $input{y}, 1, 0);
         $out .= '<h1>Reporting a problem</h1>';
-        $out .= '<p>You have located the problem at the location marked with a yellow pin on the map. If this is not the correct location, simply click on the map again.</p>
-<p>Please fill in details of the problem below:</p>';
+        $out .= '<p>You have located the problem at the location marked with a yellow pin on the map, which is in the bounding box of '.$council.'. If this is not the correct location, simply click on the map again.</p>
+<p>Please fill in details of the problem below. Your council won\'t be able
+to help unless you leave as much detail as you can, so please describe the
+exact location of the problem (ie. on a wall or the floor), and so on.</p>';
         $out .= display_pin($px, $py, 'yellow');
         $out .= '<input type="hidden" name="easting" value="' . $easting . '">
 <input type="hidden" name="northing" value="' . $northing . '">';
@@ -554,14 +562,26 @@ sub postcode_check {
     my $areas;
     $areas = mySociety::MaPit::get_voting_areas($pc);
 
-    # Check for London Borough
-    throw Error::Simple("I'm afraid that postcode isn't in our covered area.\n") if (!$areas || !$areas->{LBO});
+    my @councils_allowed = (2510, 2492, 2507);
+    my @councils_no_email = (2288,2402,2390,2252,2351,2430,2375,2285,2377,2374,2330,2454,2284,2378,2294,2312,2419,2386,2363,2353,2296,2300,2291,2268,2512,2504,2495,# 2510
+    2530,2516,2531,2545,2586,2554,2574,2580,2615,2596,2599,2601,2648,2563,2652,2607,2582,14287,14317,14328,2223,2225,2242,2222,2248,2246,2235,2224,2244,2236);
+    my ($valid_councils, $invalid_councils);
+    grep (vec($valid_councils, $_, 1) = 1, @councils_allowed);
+    grep (vec($invalid_councils, $_, 1) = 1, @councils_no_email);
 
-    # Check for Lewisham or Newham
-    my $lbo = $areas->{LBO};
-    throw Error::Simple("I'm afraid that postcode isn't in our covered London boroughs.\n") unless ($lbo == 2510 || $lbo == 2492 || $lbo == 2507);
+    # Cheltenham example: CTY=2226 DIS=2326
+    # Check for covered council
+    my @councils;
+    my $types = $mySociety::VotingArea::council_parent_types;
+    foreach my $type (@$types) {
+	push(@councils, $type) if ($areas->{$type} && !vec($invalid_councils, $areas->{$type}, 1));
+    }
+    throw Error::Simple("I'm afraid that postcode isn't yet covered by us.\n") unless $areas && @councils;
 
-    my $area_info = mySociety::MaPit::get_voting_area_info($lbo);
+    my $council = $areas->{$councils[0]};
+    throw Error::Simple("I'm afraid that postcode isn't in our covered London boroughs.\n") if (@councils_allowed && !vec($valid_councils, $council, 1));
+
+    my $area_info = mySociety::MaPit::get_voting_area_info($council);
     my $name = $area_info->{name};
 
     $x ||= 0; $x += 0;

@@ -88,6 +88,8 @@ ul#error {
 #content {
     width: 100%; /* Must specify a width or IE goes crazy wrong! */
     position: relative;
+    margin: 0 auto;
+    max-width: 60em;
 }
 
 /* Can't put the margin in #content because of above IE craziness */

@@ -1,0 +1,14 @@
+Subject: <?=$values['title']?>
+
+Dear Council,
+
+A user of Neighbourhood Fix-It, <?=$values['name']?>, has submitted the following report:
+
+<?=$values['detail']?>
+
+To view a map of the precise location of this issue, please visit the following link:
+
+<?=$values['url']?>
+
+Yours,
+The Neighbourhood Fix-It team
