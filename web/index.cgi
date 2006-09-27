@@ -6,10 +6,11 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.30 2006-09-27 13:51:23 matthew Exp $
+# $Id: index.cgi,v 1.31 2006-09-27 23:51:45 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
+# Nothing is done with fixed checkbox either
 
 use strict;
 require 5.8.0;
@@ -63,9 +64,9 @@ sub main {
     if ($q->param('submit_problem')) {
         $title = 'Submitting your problem';
         $out = submit_problem($q);
-    } elsif ($q->param('submit_comment')) {
-        $title = 'Submitting your comment';
-        $out = submit_comment($q);
+    } elsif ($q->param('submit_update')) {
+        $title = 'Submitting your update';
+        $out = submit_update($q);
     } elsif ($q->param('map')) {
         $title = 'Reporting a problem';
         $out = display_form($q);
@@ -116,27 +117,27 @@ EOF
     return $out;
 }
 
-sub submit_comment {
+sub submit_update {
     my $q = shift;
-    my @vars = qw(id name email comment updates);
+    my @vars = qw(id name email update updates);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
-    push(@errors, 'Please enter a comment') unless $input{comment};
+    push(@errors, 'Please enter a message') unless $input{update};
     push(@errors, 'Please enter your name') unless $input{name};
     push(@errors, 'Please enter your email') unless $input{email};
     return display_problem($q, @errors) if (@errors);
 
-    my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/comment-confirm");
+    my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/update-confirm");
 
     my $id = dbh()->selectrow_array("select nextval('comment_id_seq');");
     dbh()->do("insert into comment
         (id, problem_id, name, email, website, text, state)
         values (?, ?, ?, ?, ?, ?, 'unconfirmed')", {},
-        $id, $input{id}, $input{name}, $input{email}, '', $input{comment});
+        $id, $input{id}, $input{name}, $input{email}, '', $input{update});
     my %h = ();
-    $h{comment} = $input{comment};
+    $h{update} = $input{update};
     $h{name} = $input{name};
-    $h{url} = mySociety::Config::get('BASE_URL') . '/C/' . mySociety::AuthToken::store('comment', $id);
+    $h{url} = mySociety::Config::get('BASE_URL') . '/C/' . mySociety::AuthToken::store('update', $id);
     dbh()->commit();
 
     my $email = mySociety::Email::construct_email({
@@ -153,8 +154,8 @@ sub submit_comment {
 <p>The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.</p>
 <p>If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.</p>
 <p>You must now click on the link within the email we've just sent you -
-<br>if you do not, your comment will not be posted.</p>
-<p>(Don't worry - we'll hang on to your comment while you're checking your email.)</p>
+<br>if you do not, your update will not be posted.</p>
+<p>(Don't worry - we'll hang on to your update while you're checking your email.)</p>
 EOF
     } else {
         $out = <<EOF;
@@ -261,6 +262,8 @@ EOF
         }
         # XXX: How to do this for not London?
 	# And needs to use polygon, not box
+	# Needs to return all council types, so passing in an array of types would be good
+	# And then display choice to user
         my $council = mySociety::MaPit::get_voting_area_by_location_en($easting, $northing, 'box', 'LBO');
         my $areas_info = mySociety::MaPit::get_voting_areas_info($council);
 	$council = join(', ', map { $areas_info->{$_}->{name} } @$council);
@@ -292,7 +295,7 @@ exact location of the problem (ie. on a wall or the floor), and so on.</p>';
 <div><label for="form_email">Email:</label>
 <input type="text" value="$input_h{email}" name="email" id="form_email" size="30"></div>
 <div class="checkbox"><input type="checkbox" name="updates" id="form_updates" value="1"$updates>
-<label for="form_updates">Receive updates about this problem</label></div>
+<label for="form_updates">Receive email when updates are left on this problem</label></div>
 <div class="checkbox"><input type="submit" name="submit_problem" value="Submit"></div>
 </fieldset>
 
@@ -390,6 +393,7 @@ EOF
     }
     $out .= <<EOF;
     </ul>
+    <h2>Recent updates to problems?</h2>
     <h2>Recently fixed problems</h2>
     <ul>
 EOF
@@ -421,13 +425,13 @@ sub display_pin {
     my ($px, $py, $col) = @_;
     $col = 'red' unless $col;
     return '' if ($px<0 || $px>508 || $py<0 || $py>508);
-    return '<img src="/i/pin_'.$col.'.png" alt="Problem" style="top:' . ($py-20) . 'px; right:' . ($px-6) . 'px; position: absolute;">';
+    return '<img class="pin" src="/i/pin_'.$col.'.png" alt="Problem" style="top:' . ($py-20) . 'px; right:' . ($px-6) . 'px; position: absolute;">';
 }
 
 sub display_problem {
     my ($q, @errors) = @_;
 
-    my @vars = qw(id name email comment updates x y);
+    my @vars = qw(id name email update updates x y);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
     $input{x} += 0;
@@ -463,20 +467,20 @@ sub display_problem {
     my $back = NewURL($q, id=>undef);
     $out .= '<p align="right"><a href="' . $back . '">Back to listings</a></p>';
 
-    # Display comments
-    my $comments = select_all(
+    # Display updates
+    my $updates = select_all(
         "select id, name, extract(epoch from whenposted) as whenposted, text
          from comment where problem_id = ? and state='confirmed'
          order by whenposted desc", $input{id});
-    if (@$comments) {
-        $out .= '<div id="comments"> <h3>Comments</h3>';
-        foreach my $row (@$comments) {
+    if (@$updates) {
+        $out .= '<div id="updates"> <h2>Updates</h2>';
+        foreach my $row (@$updates) {
             $out .= "<div><em>Posted by $row->{name} at " . prettify_epoch($row->{whenposted}) . '</em>';
             $out .= '<br>' . $row->{text} . '</div>';
         }
         $out .= '</div>';
     }
-    $out .= '<h3>Add Comment</h3>';
+    $out .= '<h2>Provide an update</h2>';
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
@@ -485,16 +489,18 @@ sub display_problem {
     $out .= <<EOF;
 <form method="post" action="./">
 <fieldset>
-<input type="hidden" name="submit_comment" value="1">
+<input type="hidden" name="submit_update" value="1">
 <input type="hidden" name="id" value="$input_h{id}">
 <div><label for="form_name">Name:</label>
 <input type="text" name="name" id="form_name" value="$input_h{name}" size="30"></div>
 <div><label for="form_email">Email:</label>
 <input type="text" name="email" id="form_email" value="$input_h{email}" size="30"> (needed?)</div>
-<div><label for="form_comment">Comment:</label>
-<textarea name="comment" id="form_comment" rows="7" cols="30">$input_h{comment}</textarea></div>
+<div><label for="form_update">Update:</label>
+<textarea name="updatet" id="form_update" rows="7" cols="30">$input_h{update}</textarea></div>
+<div class="checkbox"><input type="checkbox" name="fixed" id="form_fixed" value="1">
+<label for="form_fixed">Has the problem been fixed?</label></div>
 <div class="checkbox"><input type="checkbox" name="updates" id="form_updates" value="1"$updates>
-<label for="form_updates">Receive updates about this problem</label></div>
+<label for="form_updates">Receive email when updates are left on this problem</label></div>
 <div class="checkbox"><input type="submit" value="Post"></div>
 </fieldset>
 </form>
@@ -528,7 +534,7 @@ sub display_map {
     if ($type) {
         my $pc_enc = ent($q->param('pc'));
         $out .= <<EOF;
-<form action="./" method="get">
+<form action="./" method="get" id="mapForm">
 <input type="hidden" name="map" value="1">
 <input type="hidden" name="x" value="$x">
 <input type="hidden" name="y" value="$y">
@@ -539,9 +545,9 @@ EOF
         $img_type = '<img';
     }
     $out .= <<EOF;
-    <div id="map">
-        $img_type id="2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0px;">$img_type id="3.2" name="tile_$tr" src="$tr_src" style="top:0px; left:254px;"><br>$img_type id="2.3" name="tile_$bl" src="$bl_src" style="top:254px; left:0px;">$img_type id="3.3" name="tile_$br" src="$br_src" style="top:254px; left:254px;">
-    </div>
+    <div id="map"><div id="drag">
+        $img_type id="2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0px;">$img_type id="2.3" name="tile_$tr" src="$tr_src" style="top:0px; left:254px;"><br>$img_type id="3.2" name="tile_$bl" src="$bl_src" style="top:254px; left:0px;">$img_type id="3.3" name="tile_$br" src="$br_src" style="top:254px; left:254px;">
+    </div></div>
 EOF
     $out .= Page::compass($q, $x, $y) if $compass;
     $out .= '<div id="side">';
@@ -578,6 +584,7 @@ sub postcode_check {
     }
     throw Error::Simple("I'm afraid that postcode isn't yet covered by us.\n") unless $areas && @councils;
 
+    # XXX: Pick first council, hmm
     my $council = $areas->{$councils[0]};
     throw Error::Simple("I'm afraid that postcode isn't in our covered London boroughs.\n") if (@councils_allowed && !vec($valid_councils, $council, 1));
 

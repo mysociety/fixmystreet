@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.4 2006-09-26 17:20:19 matthew Exp $
+# $Id: contact.cgi,v 1.5 2006-09-27 23:51:45 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -27,7 +27,7 @@ BEGIN {
 # Main code for index.cgi
 sub main {
     my $q = shift;
-    print Page::header($q, 'Contact');
+    print Page::header($q, 'Contact Us');
     my $out = '';
     if ($q->param('submit_form')) {
         $out = contact_submit($q);
@@ -75,7 +75,7 @@ sub contact_page {
     my %input = map { $_ => $q->param($_) } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 
-    my $out = '<h1>Contact</h1>';
+    my $out = '<h1>Contact the team</h1>';
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }

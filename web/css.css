@@ -26,8 +26,8 @@ form {
     margin: 0;
 }
 
-input {
-    font-size: 100%;
+select, input, textarea {
+    font-size: 99%;
 }
 
 label {
@@ -192,6 +192,9 @@ fieldset div.checkbox label {
 */
 #map input {
     cursor: crosshair;
+}
+#map input, #map img {
+    position: absolute;
 }
 
 #compass {

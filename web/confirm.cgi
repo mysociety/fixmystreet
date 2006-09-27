@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.2 2006-09-26 16:11:51 matthew Exp $
+# $Id: confirm.cgi,v 1.3 2006-09-27 23:51:45 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -40,11 +40,11 @@ sub main {
     my $type = $q->param('type');
     my $id = mySociety::AuthToken::retrieve($type, $token);
     if ($id) {
-        if ($type eq 'comment') {
+        if ($type eq 'update') {
             dbh()->do("update comment set state='confirmed' where id=?", {}, $id);
             my $id = dbh()->selectrow_array("select problem_id from comment where id=?", {}, $id);
             $out = <<EOF;
-<p>You have successfully confirmed your comment and you can now <a href="/?id=$id">view it on the site</a>.</p>
+<p>You have successfully confirmed your update and you can now <a href="/?id=$id">view it on the site</a>.</p>
 EOF
         } elsif ($type eq 'problem') {
             dbh()->do("update problem set state='confirmed' where id=?", {}, $id);
@@ -55,7 +55,7 @@ EOF
         dbh()->commit();
     } else {
         $out = <<EOF;
-<p>Thank you for trying to confirm your comment or problem. We seem to have a
+<p>Thank you for trying to confirm your update or problem. We seem to have a
 problem ourselves though, so <a href="/contact">please let us know what went on</a>
 and we'll look into it.
 EOF
