@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.32 2006-09-28 11:06:43 matthew Exp $
+# $Id: index.cgi,v 1.33 2006-09-28 11:10:57 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -534,6 +534,9 @@ sub display_map {
     if ($type) {
         my $pc_enc = ent($q->param('pc'));
         $out .= <<EOF;
+<script type="text/javascript">
+x = $x - 2; y = $y - 2;
+</script>
 <form action="./" method="get" id="mapForm">
 <input type="hidden" name="map" value="1">
 <input type="hidden" name="x" value="$x">

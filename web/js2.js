@@ -13,7 +13,6 @@
 window.onload = onLoad;
 
 // I love the global
-var x, y;
 var tile_x, tile_y;
 var tilewidth = 254;
 var tileheight = 254;
@@ -34,8 +33,12 @@ function onLoad() {
     }
 
     var form = document.getElementById('mapForm');
-    x = parseInt(form.x.value, 10) - 2; /* Bottom left corner X,Y */
-    y = parseInt(form.y.value, 10) - 2;
+    form.onsubmit = function() {
+        this.x.value = x + 2;
+        this.y.value = y + 2;
+	return true;
+    }
+
     tile_x = 0;
     tile_y = 0;
     var url = '/tilma/tileserver/10k-full-london/' + x + '-' + (x+5) + ',' + y + '-' + (y+5) + '/JSON?';
@@ -106,10 +109,6 @@ function update_tiles(dx, dy) {
     var vertical = floor(vertical/6);
     y -= vertical;
     tile_y = mod((tile_y + vertical), 6);
-
-    var form = document.getElementById('mapForm');
-    form.x.value = x + 2;
-    form.y.value = y + 2;
 
     var url = '/tilma/tileserver/10k-full-london/' + x + '-' + (x+5) + ',' + y + '-' + (y+5) + '/JSON';
     var req = YAHOO.util.Connect.asyncRequest('GET', url, urls_loaded, null);
