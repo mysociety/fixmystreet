@@ -1,11 +1,5 @@
 window.onload = init;
-var mapFOO;
-var log;
-function init() {
-    log = new Log('log');
-    log.log('<em>Debug log</em>');
-    map = new Map('map');
-}
+function init() { map = new Map('map'); }
 
 function Map(m) {
     // Public variables
@@ -33,53 +27,6 @@ function Map(m) {
     this.map.onclick = associateObjWithEvent(this, 'add_pin');
     document.onmouseout = associateObjWithEvent(this, 'drag_end_out');
 
-    // Set up event handlers on links
-    var points = document.getElementById('compass').getElementsByTagName('a');
-    points[1].onclick = function() { self.pan(0,self.tileheight); return false; };
-    points[3].onclick = function() { self.pan(self.tilewidth,0); return false; };
-    points[4].onclick = function() { self.pan(-self.tilewidth,0); return false; };
-    points[6].onclick = function() { self.pan(0,-self.tileheight); return false; };
-    points[0].onclick = function() { self.pan(self.tilewidth,self.tileheight); return false; };
-    points[2].onclick = function() { self.pan(-self.tilewidth,self.tileheight); return false; };
-    points[5].onclick = function() { self.pan(self.tilewidth,-self.tileheight); return false; };
-    points[7].onclick = function() { self.pan(-self.tilewidth,-self.tileheight); return false; };
-
-    var zoom = document.getElementById('zoom').getElementsByTagName('img')[0];
-    if (zoom.alt == 'Zoom out') {
-        this.zoomed = true;
-    }
-    zoom.onclick = function() {
-        if (!self.zoomed) {
-            this.src = 'i/zoomout.gif';
-            self.zoomed = true;
-            self.zoom_change(10);
-        } else {
-            self.zoomed = false;
-            this.src = 'i/zoomin.gif';
-            self.zoom_change(0.1);
-        }
-        return false;
-    };
-
-    /*
-    points[0].style.top = (this.pos[1]-13) + 'px'
-    points[1].style.top = (this.pos[1]-13) + 'px'
-    points[2].style.top = (this.pos[1]-13) + 'px'
-    points[0].style.left = (this.pos[0]-13) + 'px'
-    points[3].style.left = (this.pos[0]-13) + 'px'
-    points[5].style.left = (this.pos[0]-13) + 'px'
-    points[1].style.left = (this.pos[0]+this.width/2-6) + 'px'
-    points[6].style.left = (this.pos[0]+this.width/2-6) + 'px'
-    points[3].style.top = (this.pos[1]+this.height/2) + 'px'
-    points[4].style.top = (this.pos[1]+this.height/2) + 'px'
-    points[2].style.left = (this.pos[0]+this.width) + 'px'
-    points[4].style.left = (this.pos[0]+this.width) + 'px'
-    points[7].style.left = (this.pos[0]+this.width) + 'px'
-    points[5].style.top = (this.pos[1]+this.height) + 'px'
-    points[6].style.top = (this.pos[1]+this.height) + 'px'
-    points[7].style.top = (this.pos[1]+this.height) + 'px'
-    */
-
     function image_rotate(img, x, y) {
         if (x) {
             img.style.left = (img.offsetLeft + x*254) + 'px';
@@ -90,11 +37,7 @@ function Map(m) {
             img.yy += y;
         }
         var url = img.xx + '.' + img.yy + '.png';
-        if (self.zoomed) {
-            url = 'tl/' + url;
-        } else {
-            url = 't/' + url;
-        }
+        url = 't/' + url;
         img.src = url;
     }
 
@@ -102,10 +45,8 @@ function Map(m) {
     this.update = function(dx, dy, noMove) {
         drag_x += dx;
         drag_y += dy;
-        //log.log(drag_x + ' ' + drag_y);
         this.point.x = x + 1 - drag_x/this.tilewidth;
         this.point.y = y + 1 - drag_y/this.tileheight;
-        //log.log(this.point);
         if (!noMove) {
             this.drag.style.left = drag_x + 'px';
             this.drag.style.top = drag_y + 'px';
@@ -151,41 +92,8 @@ function Map(m) {
     };
     this.update(0,0);
 
-    this.zoom_change = function(factor) {
-        self.point.x *= factor;
-        self.point.y *= factor;
-        //log.log(self.point)
-        var rx = Math.floor(self.point.x);
-        var ry = Math.floor(self.point.y);
-        var dx = rx - self.point.x;
-        var dy = ry - self.point.y;
-        x = rx - 1;
-        y = ry - 1;
-        drag_x = dx*self.tilewidth;
-        drag_y = dy*self.tileheight;
-        this.drag.style.left = drag_x + 'px';
-        this.drag.style.top = drag_y + 'px';
-        for (var i=0; i<6; i++) {
-            for (var j=0; j<6; j++) {
-                var id = i+'.'+j
-                var xx = x+i-2;
-                var yy = y+j-2;
-                var img = document.getElementById(id);
-                if (img) {
-                    img.style.left = ((i-2)*self.tilewidth) + 'px';
-                    img.style.top = ((j-2)*self.tileheight) + 'px';
-                    img.xx = xx;
-                    img.yy = yy;
-                    image_rotate(img, 0, 0);
-                }
-            }
-        }
-    }
-
     this.add_pin = function(e, point) {
         if (this.in_drag) { this.in_drag = false; return false; }
-        //log.log('click')
-        //log.log(point)
         if (!point) point = new Point();
         m = new Pin(point.x-this.pos[0]-drag_x, point.y-this.pos[1]-drag_y);
         this.drag.appendChild(m.pin);
@@ -202,7 +110,6 @@ Map.prototype = {
     },
 
     centre : function(e, point){
-        //log.log('dblclick')
         var x = -point.x + this.width/2 + this.pos[0];
         var y = -point.y + this.height/2 + this.pos[1];
         this.pan(x,y);
@@ -223,7 +130,6 @@ Map.prototype = {
         return false;
     },
     drag_start : function(e, point){
-        //log.log('mousedown')
         this.mouse_pos = point;
         this.setCursor('move');
         document.onmousemove = associateObjWithEvent(this, 'drag_move');
@@ -231,7 +137,6 @@ Map.prototype = {
         return false;
     },
     drag_end : function(e){
-        //log.log('mouseup')
         document.onmousemove = null;
         document.onmouseup = null;
         this.setCursor('auto');
@@ -281,16 +186,6 @@ function associateObjWithEvent(obj, methodName) {
         var point = get_posn(e);
         return obj[methodName](e, point);
     });
-}
-
-function Log(el) {
-    var logging = true;
-    var logdiv = document.getElementById(el);
-    this.log = function(s) {
-        if (logging) {
-            logdiv.innerHTML += s + '<br>';
-        }
-    };
 }
 
 function Point(x,y) {
