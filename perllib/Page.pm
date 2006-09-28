@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.22 2006-09-28 11:06:43 matthew Exp $
+# $Id: Page.pm,v 1.23 2006-09-28 16:36:08 matthew Exp $
 #
 
 package Page;
@@ -76,10 +76,10 @@ EOF
 	<script type="text/javascript" src="yui/build/dom/dom-min.js"></script>
 	<script type="text/javascript" src="yui/build/event/event-min.js"></script>
 	<script type="text/javascript" src="yui/build/animation/animation-min.js"></script>
-	<script type="text/javascript" src="yui/build/connection/connection-min.js"></script>
 	<script type="text/javascript" src="yui/build/dragdrop/dragdrop-min.js"></script>
 	<script type="text/javascript" src="yui/build/logger/logger-min.js"></script>
 	<script type="text/javascript" src="js2.js"></script>
+	<script type="text/javascript" src="/jslib/utils.js"></script>
         <title>${title}Neighbourhood Fix-It</title>
         <style type="text/css">\@import url("/css.css");</style>
     </head>

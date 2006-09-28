@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.33 2006-09-28 11:10:57 matthew Exp $
+# $Id: index.cgi,v 1.34 2006-09-28 16:36:17 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -266,14 +266,14 @@ EOF
         my $council = mySociety::MaPit::get_voting_area_by_location_en($easting, $northing, 'polygon', 'LBO');
         my $areas_info = mySociety::MaPit::get_voting_areas_info($council);
 	$council = join(', ', map { $areas_info->{$_}->{name} } @$council);
-        $out .= display_map($q, $input{x}, $input{y}, 1, 0);
+        my $pins = display_pin($px, $py, 'yellow');
+        $out .= display_map($q, $input{x}, $input{y}, 1, 0, $pins);
         $out .= '<h1>Reporting a problem</h1>';
         $out .= '<p>You have located the problem at the location marked with a yellow pin on the map, which is within '
 	    . $council . '. If this is not the correct location, simply click on the map again.</p>
 <p>Please fill in details of the problem below. Your council won\'t be able
 to help unless you leave as much detail as you can, so please describe the
 exact location of the problem (ie. on a wall or the floor), and so on.</p>';
-        $out .= display_pin($px, $py, 'yellow');
         $out .= '<input type="hidden" name="easting" value="' . $easting . '">
 <input type="hidden" name="northing" value="' . $northing . '">';
     }
@@ -329,23 +329,7 @@ sub display {
     };
     return front_page($q, $error) if ($error);
 
-    my $out = '';
-    $out .= display_map($q, $x, $y, 1, 1);
-    if (!$input{x} && !$input{y}) {
-        $out .= "<h1>That postcode is in $name</h1>";
-    } else {
-        $out .= '<h1>Reporting a problem</h1>';
-    }
-    if (@errors) {
-        $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
-    }
-    $out .= <<EOF;
-<p>To <strong>report a problem</strong>, please select the location of it on the map.
-Use the arrows to the left of the map to scroll around.</p>
-<div>
-<h2>Recent problems reported on this map</h2>
-<ul id="current">
-EOF
+    my $pins = '';
     my $min_e = tile_to_os($x);
     my $min_n = tile_to_os($y);
     my $mid_e = tile_to_os($x+1);
@@ -361,8 +345,39 @@ EOF
         push(@ids, $_->{id});
         my $px = os_to_px($_->{easting}, $x);
         my $py = os_to_px($_->{northing}, $y);
+        $pins .= display_pin($px, $py);
+    }
+    my $current = select_all(
+        "select id, title, easting, northing, distance
+            from problem_find_nearby(?, ?, 10) as nearby, problem
+            where nearby.problem_id = problem.id
+            and state = 'confirmed'" . (@ids ? ' and id not in (' . join(',' , @ids) . ')' : '') . "
+         order by created desc limit 3", $mid_e, $mid_n);
+    foreach (@$current) {
+        my $px = os_to_px($_->{easting}, $x);
+        my $py = os_to_px($_->{northing}, $y);
+        $pins .= display_pin($px, $py);
+    }
+
+    my $out = '';
+    $out .= display_map($q, $x, $y, 1, 1, $pins);
+    if (!$input{x} && !$input{y}) {
+        $out .= "<h1>That postcode is in $name</h1>";
+    } else {
+        $out .= '<h1>Reporting a problem</h1>';
+    }
+    if (@errors) {
+        $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
+    }
+    $out .= <<EOF;
+<p>To <strong>report a problem</strong>, please select the location of it on the map.
+Use the arrows to the left of the map to scroll around.</p>
+<div>
+<h2>Recent problems reported on this map</h2>
+<ul id="current">
+EOF
+    foreach (@$current_map) {
         $out .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
-        $out .= display_pin($px, $py);
         $out .= $_->{title};
         $out .= '</a></li>';
     }
@@ -374,17 +389,8 @@ EOF
     <h2>Recent problems reported within 10km</h2>
     <ul id="current">
 EOF
-    my $current = select_all(
-        "select id, title, easting, northing, distance
-            from problem_find_nearby(?, ?, 10) as nearby, problem
-            where nearby.problem_id = problem.id
-            and state = 'confirmed'" . (@ids ? ' and id not in (' . join(',' , @ids) . ')' : '') . "
-         order by created desc limit 3", $mid_e, $mid_n);
     foreach (@$current) {
-        my $px = os_to_px($_->{easting}, $x);
-        my $py = os_to_px($_->{northing}, $y);
         $out .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
-        $out .= display_pin($px, $py);
         $out .= $_->{title} . ' (c. ' . int($_->{distance}/100+.5)/10 . 'km)';
         $out .= '</a></li>';
     }
@@ -453,13 +459,12 @@ sub display_problem {
     my $py = os_to_px($northing, $y_tile);
 
     my $out = '';
-    $out .= display_map($q, $x_tile, $y_tile, 0, 1);
+    my $pins = display_pin($px, $py);
+    $out .= display_map($q, $x_tile, $y_tile, 0, 1, $pins);
     $out .= "<h1>$title</h1>";
 
     # Display information about problem
-    $out .= '<p>';
-    $out .= display_pin($px, $py);
-    $out .= '<em>Reported by ' . $name . ' at ' . prettify_epoch($time);
+    $out .= '<p><em>Reported by ' . $name . ' at ' . prettify_epoch($time);
     $out .= '</em></p> <p>';
     $out .= ent($desc);
     $out .= '</p>';
@@ -509,12 +514,14 @@ EOF
     return $out;
 }
 
-# display_map Q X Y TYPE COMPASS
+# display_map Q X Y TYPE COMPASS PINS
 # X,Y is bottom left tile of 2x2 grid
 # TYPE is 1 if the map is clickable, 0 if not
 # COMPASS is 1 to show the compass, 0 to not
+# PINS is HTML of pins to show
 sub display_map {
-    my ($q, $x, $y, $type, $compass) = @_;
+    my ($q, $x, $y, $type, $compass, $pins) = @_;
+    $pins ||= '';
     my $url = mySociety::Config::get('TILES_URL');
     my $tiles_url = $url . $x . '-' . ($x+1) . ',' . $y . '-' . ($y+1) . '/RABX';
     my $tiles = LWP::Simple::get($tiles_url);
@@ -549,7 +556,8 @@ EOF
     }
     $out .= <<EOF;
     <div id="map"><div id="drag">
-        $img_type id="2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0px;">$img_type id="2.3" name="tile_$tr" src="$tr_src" style="top:0px; left:254px;"><br>$img_type id="3.2" name="tile_$bl" src="$bl_src" style="top:254px; left:0px;">$img_type id="3.3" name="tile_$br" src="$br_src" style="top:254px; left:254px;">
+        $img_type id="t2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0px;">$img_type id="t2.3" name="tile_$tr" src="$tr_src" style="top:0px; left:254px;"><br>$img_type id="t3.2" name="tile_$bl" src="$bl_src" style="top:254px; left:0px;">$img_type id="t3.3" name="tile_$br" src="$br_src" style="top:254px; left:254px;">
+	$pins
     </div></div>
 EOF
     $out .= Page::compass($q, $x, $y) if $compass;

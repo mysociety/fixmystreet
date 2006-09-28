@@ -202,6 +202,9 @@ fieldset div.checkbox label {
     position: absolute;
     background-color: #cccccc;
 }
+#drag img.pin {
+    background-color: inherit;
+}
 
 #compass {
     background-color: #ffffff;

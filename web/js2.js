@@ -18,7 +18,7 @@ var tilewidth = 254;
 var tileheight = 254;
 
 function onLoad() {
-    //var Log = new YAHOO.widget.LogReader();
+    // var Log = new YAHOO.widget.LogReader();
     var compass = document.getElementById('compass');
     if (compass) {
         var points = compass.getElementsByTagName('a');
@@ -41,8 +41,8 @@ function onLoad() {
 
     tile_x = 0;
     tile_y = 0;
-    var url = '/tilma/tileserver/10k-full-london/' + x + '-' + (x+5) + ',' + y + '-' + (y+5) + '/JSON?';
-    var req = YAHOO.util.Connect.asyncRequest('GET', url, urls_loaded, null);
+    var url = '/tilma/tileserver/10k-full-london/' + x + '-' + (x+5) + ',' + y + '-' + (y+5) + '/JSON';
+    var req = mySociety.asyncRequest(url, urls_loaded);
 }
 
 function image_rotate(img, x, y) {
@@ -60,13 +60,8 @@ var myAnim;
 function pan(x, y) {
     if (!myAnim || !myAnim.isAnimated()) {
         update_tiles(x, y);
-	var pins = YAHOO.util.Dom.getElementsByClassName('pin', 'img', 'content');
         myAnim = new YAHOO.util.Motion('drag', { points:{by:[x,y]} }, 1, YAHOO.util.Easing.easeBoth);
 	myAnim.animate();
-	for (var p in pins) {
-            var a = new YAHOO.util.Anim(pins[p], { right:{by:-x}, top:{by:y} }, 1, YAHOO.util.Easing.easeBoth);
-            a.animate();
-	}
     }
 }
 
@@ -76,15 +71,14 @@ function update_tiles(dx, dy) {
     drag_x += dx;
     drag_y += dy;
 
-    var newcols = {};
     var horizontal = 0;
     var vertical = 0;
     for (var i=0; i<6; i++) {
         for (var j=0; j<6; j++) {
-	    var id = i+'.'+j;
+	    var id = 't'+i+'.'+j;
 	    var img = document.getElementById(id);
             if (drag_x + img.offsetLeft > 762) {
-                //img.src = '/i/grey.gif';
+                img.src = '/i/grey.gif';
 	        image_rotate(img, -6, 0);
 		horizontal--;
 	    } else if (drag_x + img.offsetLeft < -508) {
@@ -111,47 +105,46 @@ function update_tiles(dx, dy) {
     tile_y = mod((tile_y + vertical), 6);
 
     var url = '/tilma/tileserver/10k-full-london/' + x + '-' + (x+5) + ',' + y + '-' + (y+5) + '/JSON';
-    var req = YAHOO.util.Connect.asyncRequest('GET', url, urls_loaded, null);
+    var req = mySociety.asyncRequest(url, urls_loaded);
 }
 
 // Load 6x6 grid of tiles around current 2x2
-var urls_loaded = {
-    success: function(o) {
-        var tiles = eval(o.responseText);
-	var drag = document.getElementById('drag');
-	for (var i=0; i<6; i++) {
-	    var ii = (i + tile_y) % 6;
-	    for (var j=0; j<6; j++) {
-	        var jj = (j + tile_x) % 6;
-	        var id = ii+'.'+jj;
-		var xx = x+j;
-		var yy = y+5-i;
-		var img = document.getElementById(id);
-		if (img) {
-		    if (!img.galleryimg) { img.galleryimg = false; }
-                    img.src = 'http://tilma.mysociety.org/tileserver/10k-full-london/' + tiles[i][j];
-		    img.name = 'tile_' + xx + '.' + yy;
-		    //if (!img.xx) img.xx = xx;
-		    //if (!img.yy) img.yy = yy;
-		    continue;
-		}
-		img = document.createElement('input');
-		img.type = 'image';
+function urls_loaded(o) {
+    if (o.readyState != 4) return;
+    var tiles = eval(o.responseText);
+    var drag = document.getElementById('drag');
+    for (var i=0; i<6; i++) {
+        var ii = (i + tile_y) % 6;
+        for (var j=0; j<6; j++) {
+            var jj = (j + tile_x) % 6;
+	    var id = 't'+ii+'.'+jj;
+	    var xx = x+j;
+	    var yy = y+5-i;
+	    var img = document.getElementById(id);
+	    if (img) {
+		if (!img.galleryimg) { img.galleryimg = false; }
                 img.src = 'http://tilma.mysociety.org/tileserver/10k-full-london/' + tiles[i][j];
-		img.name = 'tile_' + xx + '.' + yy;
-		img.id = id;
-		img.style.position = 'absolute';
-		img.style.width = tilewidth + 'px';
-		img.style.height = tileheight + 'px';
-		img.style.top = ((ii-2)*tileheight) + 'px';
-		img.style.left = ((jj-2)*tilewidth) + 'px';
-		img.galleryimg = false;
-		//img.xx = xx;
-		//img.yy = yy;
-		img.alt = 'Loading...';
-		drag.appendChild(img);
+	        img.name = 'tile_' + xx + '.' + yy;
+	        //if (!img.xx) img.xx = xx;
+	        //if (!img.yy) img.yy = yy;
+	        continue;
 	    }
-	}
+	    img = document.createElement('input');
+	    img.type = 'image';
+            img.src = 'http://tilma.mysociety.org/tileserver/10k-full-london/' + tiles[i][j];
+	    img.name = 'tile_' + xx + '.' + yy;
+	    img.id = id;
+	    img.style.position = 'absolute';
+	    img.style.width = tilewidth + 'px';
+	    img.style.height = tileheight + 'px';
+	    img.style.top = ((ii-2)*tileheight) + 'px';
+	    img.style.left = ((jj-2)*tilewidth) + 'px';
+	    img.galleryimg = false;
+	    //img.xx = xx;
+	    //img.yy = yy;
+	    img.alt = 'Loading...';
+            drag.appendChild(img);
+        }
     }
 }
 
