@@ -172,10 +172,15 @@ fieldset div.checkbox label {
     border: solid 1px #000000;
     width: 508px;
     height: 508px;
-    position: relative;
-    dtop: 0;
     overflow: hidden;
     float: right;
+    position: relative;
+}
+
+#drag {
+    position: relative;
+    width: 508px;
+    height: 508px;
 }
 
 #side {
@@ -190,11 +195,12 @@ fieldset div.checkbox label {
     left: 0;
 }
 */
-#map input {
+#drag input {
     cursor: crosshair;
 }
-#map input, #map img {
+#drag input, #drag img {
     position: absolute;
+    background-color: #cccccc;
 }
 
 #compass {

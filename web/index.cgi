@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.31 2006-09-27 23:51:45 matthew Exp $
+# $Id: index.cgi,v 1.32 2006-09-28 11:06:43 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -261,15 +261,15 @@ EOF
             $northing = $input_h{northing};
         }
         # XXX: How to do this for not London?
-	# And needs to use polygon, not box
 	# Needs to return all council types, so passing in an array of types would be good
 	# And then display choice to user
-        my $council = mySociety::MaPit::get_voting_area_by_location_en($easting, $northing, 'box', 'LBO');
+        my $council = mySociety::MaPit::get_voting_area_by_location_en($easting, $northing, 'polygon', 'LBO');
         my $areas_info = mySociety::MaPit::get_voting_areas_info($council);
 	$council = join(', ', map { $areas_info->{$_}->{name} } @$council);
         $out .= display_map($q, $input{x}, $input{y}, 1, 0);
         $out .= '<h1>Reporting a problem</h1>';
-        $out .= '<p>You have located the problem at the location marked with a yellow pin on the map, which is in the bounding box of '.$council.'. If this is not the correct location, simply click on the map again.</p>
+        $out .= '<p>You have located the problem at the location marked with a yellow pin on the map, which is within '
+	    . $council . '. If this is not the correct location, simply click on the map again.</p>
 <p>Please fill in details of the problem below. Your council won\'t be able
 to help unless you leave as much detail as you can, so please describe the
 exact location of the problem (ie. on a wall or the floor), and so on.</p>';
@@ -424,8 +424,8 @@ EOF
 sub display_pin {
     my ($px, $py, $col) = @_;
     $col = 'red' unless $col;
-    return '' if ($px<0 || $px>508 || $py<0 || $py>508);
-    return '<img class="pin" src="/i/pin_'.$col.'.png" alt="Problem" style="top:' . ($py-20) . 'px; right:' . ($px-6) . 'px; position: absolute;">';
+    # return '' if ($px<0 || $px>508 || $py<0 || $py>508);
+    return '<img class="pin" src="/i/pin_'.$col.'.gif" alt="Problem" style="top:' . ($py-20) . 'px; right:' . ($px-6) . 'px; position: absolute;">';
 }
 
 sub display_problem {
@@ -631,6 +631,7 @@ sub tile_to_os {
 sub click_to_tile {
     my ($pin_tile, $pin, $invert) = @_;
     $pin -= 254 while $pin > 254;
+    $pin += 254 while $pin < 0;
     $pin = 254 - $pin if $invert; # image submits measured from top down
     return $pin_tile + $pin / 254;
 }

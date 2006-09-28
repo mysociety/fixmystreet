@@ -27,20 +27,6 @@ function Map(m) {
     this.map.onclick = associateObjWithEvent(this, 'add_pin');
     document.onmouseout = associateObjWithEvent(this, 'drag_end_out');
 
-    function image_rotate(img, x, y) {
-        if (x) {
-            img.style.left = (img.offsetLeft + x*254) + 'px';
-            img.xx += x;
-        }
-        if (y) {
-            img.style.top = (img.offsetTop + y*254) + 'px';
-            img.yy += y;
-        }
-        var url = img.xx + '.' + img.yy + '.png';
-        url = 't/' + url;
-        img.src = url;
-    }
-
     // Moving the map, loading more tiles as necessary
     this.update = function(dx, dy, noMove) {
         drag_x += dx;
@@ -50,43 +36,6 @@ function Map(m) {
         if (!noMove) {
             this.drag.style.left = drag_x + 'px';
             this.drag.style.top = drag_y + 'px';
-        }
-
-        for (var i=0; i<6; i++) {
-            for (var j=0; j<6; j++) {
-                var id = i+'.'+j;
-                var xx = x+i-2;
-                var yy = y+j-2;
-                var img = document.getElementById(id);
-                if (img) {
-                    if (!img.xx) { img.xx = xx; }
-                    if (!img.yy) { img.yy = yy; }
-                    if (!img.galleryimg) { img.galleryimg = false; }
-                    if (drag_x + img.offsetLeft > 762) {
-                        image_rotate(img, -6, 0);
-                    } else if (drag_x + img.offsetLeft < -508) {
-                        image_rotate(img, 6, 0);
-                    } else if (drag_y + img.offsetTop > 762) {
-                        image_rotate(img, 0, -6);
-                    } else if (drag_y + img.offsetTop < -508) {
-                        image_rotate(img, 0, 6);
-                    }
-                    continue;
-                }
-                img = document.createElement('img');
-                img.id = id;
-                img.style.position = 'absolute';
-                img.style.width = this.tilewidth + 'px';
-                img.style.height = this.tileheight + 'px';
-                img.style.left = ((i-2)*self.tilewidth) + 'px';
-                img.style.top = ((j-2)*self.tileheight) + 'px';
-                img.galleryimg = false;
-                img.xx = xx;
-                img.yy = yy;
-                image_rotate(img, 0, 0);
-                img.alt = 'Loading...';
-                this.drag.appendChild(img);
-            }
         }
         return false;
     };
@@ -115,13 +64,6 @@ Map.prototype = {
         this.pan(x,y);
     },
 
-    pan : function(x,y) {
-        if (!this.myAnim || !this.myAnim.isAnimated()) {
-            this.update(x,y, true);
-            this.myAnim = new YAHOO.util.Motion('drag', {points: { by:[x,y] } }, 0.5, YAHOO.util.Easing.easeBoth);
-            this.myAnim.animate();
-        }
-    },
     drag_move : function(e, point){
         this.in_drag = true;
         this.last_mouse_pos = this.mouse_pos;

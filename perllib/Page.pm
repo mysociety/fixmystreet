@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.21 2006-09-28 00:01:41 matthew Exp $
+# $Id: Page.pm,v 1.22 2006-09-28 11:06:43 matthew Exp $
 #
 
 package Page;
@@ -65,9 +65,12 @@ sub header ($$%) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en-gb">
     <head>
-        <!--[if lt IE 7.]>
-        <script defer type="text/javascript" src="/pngfix.js"></script>
-        <![endif]-->
+EOF
+# Causes onLoad never to fire in IE...
+# <!--[if lt IE 7.]>
+# <script defer type="text/javascript" src="/pngfix.js"></script>
+# <![endif]-->
+    $html .= <<EOF;
 	<link type="text/css" rel="stylesheet" href="yui/build/logger/assets/logger.css">
 	<script type="text/javascript" src="yui/build/yahoo/yahoo-min.js"></script>
 	<script type="text/javascript" src="yui/build/dom/dom-min.js"></script>
