@@ -13,7 +13,8 @@
 window.onload = onLoad;
 
 // I love the global
-var tile_x, tile_y;
+var tile_x = 0;
+var tile_y = 0;
 var tilewidth = 254;
 var tileheight = 254;
 
@@ -33,16 +34,15 @@ function onLoad() {
     }
 
     var form = document.getElementById('mapForm');
-    form.onsubmit = function() {
-        this.x.value = x + 2;
-        this.y.value = y + 2;
-	return true;
+    if (form) {
+        form.onsubmit = function() {
+            this.x.value = x + 2;
+            this.y.value = y + 2;
+            return true;
+        }
+        var url = '/tilma/tileserver/10k-full-london/' + x + '-' + (x+5) + ',' + y + '-' + (y+5) + '/JSON';
+        var req = mySociety.asyncRequest(url, urls_loaded);
     }
-
-    tile_x = 0;
-    tile_y = 0;
-    var url = '/tilma/tileserver/10k-full-london/' + x + '-' + (x+5) + ',' + y + '-' + (y+5) + '/JSON';
-    var req = mySociety.asyncRequest(url, urls_loaded);
 }
 
 function image_rotate(img, x, y) {
