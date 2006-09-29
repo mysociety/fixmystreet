@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.35 2006-09-29 10:01:48 matthew Exp $
+# $Id: index.cgi,v 1.36 2006-09-29 16:48:48 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -361,18 +361,12 @@ sub display {
 
     my $out = '';
     $out .= display_map($q, $x, $y, 1, 1, $pins);
-    if (!$input{x} && !$input{y}) {
-        $out .= "<h1>That postcode is in $name</h1>";
-    } else {
-        $out .= '<h1>Reporting a problem</h1>';
-    }
+    $out .= '<h1>Click on the map to report a problem</h1>';
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
     $out .= <<EOF;
-<p>To <strong>report a problem</strong>, please select the location of it on the map.
-Use the arrows to the left of the map to scroll around.</p>
-<div>
+<div style="font-size: 83%">
 <h2>Recent problems reported on this map</h2>
 <ul id="current">
 EOF
@@ -503,7 +497,7 @@ sub display_problem {
 <div><label for="form_name">Name:</label>
 <input type="text" name="name" id="form_name" value="$input_h{name}" size="30"></div>
 <div><label for="form_email">Email:</label>
-<input type="text" name="email" id="form_email" value="$input_h{email}" size="30"> (needed?)</div>
+<input type="text" name="email" id="form_email" value="$input_h{email}" size="30"></div>
 <div><label for="form_update">Update:</label>
 <textarea name="updatet" id="form_update" rows="7" cols="30">$input_h{update}</textarea></div>
 <div class="checkbox"><input type="checkbox" name="fixed" id="form_fixed" value="1">

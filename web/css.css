@@ -197,13 +197,14 @@ fieldset div.checkbox label {
 */
 #drag input {
     cursor: crosshair;
+    background-color: #cccccc;
 }
 #drag input, #drag img {
     position: absolute;
-    background-color: #cccccc;
     border: none;
 }
 #drag img.pin {
+    z-index: 100;
     background-color: inherit;
 }
 
