@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.34 2006-09-28 16:36:17 matthew Exp $
+# $Id: index.cgi,v 1.35 2006-09-29 10:01:48 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -266,7 +266,7 @@ EOF
         my $council = mySociety::MaPit::get_voting_area_by_location_en($easting, $northing, 'polygon', 'LBO');
         my $areas_info = mySociety::MaPit::get_voting_areas_info($council);
 	$council = join(', ', map { $areas_info->{$_}->{name} } @$council);
-        my $pins = display_pin($px, $py, 'yellow');
+        my $pins = display_pin($q, $px, $py, 'yellow');
         $out .= display_map($q, $input{x}, $input{y}, 1, 0, $pins);
         $out .= '<h1>Reporting a problem</h1>';
         $out .= '<p>You have located the problem at the location marked with a yellow pin on the map, which is within '
@@ -345,7 +345,7 @@ sub display {
         push(@ids, $_->{id});
         my $px = os_to_px($_->{easting}, $x);
         my $py = os_to_px($_->{northing}, $y);
-        $pins .= display_pin($px, $py);
+        $pins .= display_pin($q, $px, $py, 'red', 1);
     }
     my $current = select_all(
         "select id, title, easting, northing, distance
@@ -356,7 +356,7 @@ sub display {
     foreach (@$current) {
         my $px = os_to_px($_->{easting}, $x);
         my $py = os_to_px($_->{northing}, $y);
-        $pins .= display_pin($px, $py);
+        $pins .= display_pin($q, $px, $py, 'red', 1);
     }
 
     my $out = '';
@@ -428,10 +428,14 @@ EOF
 }
 
 sub display_pin {
-    my ($px, $py, $col) = @_;
-    $col = 'red' unless $col;
+    my ($q, $px, $py, $col, $id) = @_;
+    $id = 0 unless $id;
     # return '' if ($px<0 || $px>508 || $py<0 || $py>508);
-    return '<img class="pin" src="/i/pin_'.$col.'.gif" alt="Problem" style="top:' . ($py-20) . 'px; right:' . ($px-6) . 'px; position: absolute;">';
+    my $out = '<img class="pin" src="/i/pin_'.$col.'.gif" alt="Problem" style="top:' . ($py-20) . 'px; right:' . ($px-6) . 'px; position: absolute;">';
+    return $out unless $id;
+    my $url = NewURL($q, id=>$_->{id}, x=>undef, y=>undef);
+    $out = '<a href="' . $url . '">' . $out . '</a>';
+    return $out;
 }
 
 sub display_problem {
@@ -459,7 +463,7 @@ sub display_problem {
     my $py = os_to_px($northing, $y_tile);
 
     my $out = '';
-    my $pins = display_pin($px, $py);
+    my $pins = display_pin($q, $px, $py, 'red');
     $out .= display_map($q, $x_tile, $y_tile, 0, 1, $pins);
     $out .= "<h1>$title</h1>";
 

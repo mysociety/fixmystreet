@@ -201,6 +201,7 @@ fieldset div.checkbox label {
 #drag input, #drag img {
     position: absolute;
     background-color: #cccccc;
+    border: none;
 }
 #drag img.pin {
     background-color: inherit;
