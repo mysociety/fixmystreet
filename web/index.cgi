@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.36 2006-09-29 16:48:48 matthew Exp $
+# $Id: index.cgi,v 1.37 2006-10-06 15:58:28 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -180,10 +180,10 @@ sub submit_problem {
 
     my $id = dbh()->selectrow_array("select nextval('problem_id_seq');");
     dbh()->do("insert into problem
-        (postcode, easting, northing, title, detail, name, email, state)
+        (id, postcode, easting, northing, title, detail, name, email, state)
         values
-        (?, ?, ?, ?, ?, ?, ?, 'unconfirmed')", {},
-        $input{pc}, $input{easting}, $input{northing}, $input{title},
+        (@, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed')", {},
+        $id, $input{pc}, $input{easting}, $input{northing}, $input{title},
         $input{detail}, $input{name}, $input{email}
     );
     my %h = ();
