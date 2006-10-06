@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.37 2006-10-06 15:58:28 matthew Exp $
+# $Id: index.cgi,v 1.38 2006-10-06 16:15:38 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -182,7 +182,7 @@ sub submit_problem {
     dbh()->do("insert into problem
         (id, postcode, easting, northing, title, detail, name, email, state)
         values
-        (@, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed')", {},
+        (?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed')", {},
         $id, $input{pc}, $input{easting}, $input{northing}, $input{title},
         $input{detail}, $input{name}, $input{email}
     );
