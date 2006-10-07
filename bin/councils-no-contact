@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: councils-no-contact,v 1.1 2006-09-27 13:51:22 matthew Exp $
+# $Id: councils-no-contact,v 1.2 2006-10-07 21:06:31 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -93,12 +93,12 @@ foreach my $type (@$types) {
     my $areas_info = mySociety::MaPit::get_voting_areas_info($areas);
     foreach my $id (keys %$areas_info) {
         my $area_info = $areas_info->{$id};
-	my $name = $area_info->{name};
-	foreach my $council (@councils_no_email) {
-	    if ($name =~ /^$council( ((Borough|City|District|County) )*Council)?$/) {
+        my $name = $area_info->{name};
+        foreach my $council (@councils_no_email) {
+            if ($name =~ /^$council( ((Borough|City|District|County) )*Council)?$/) {
                 push(@out, $id);
-	    }
-	}
+            }
+        }
     }
 }
 

@@ -38,12 +38,12 @@ function onLoad() {
     if (form) {
         form.onsubmit = form_submit;
 
-	var drag = document.getElementById('drag');
-	var inputs = drag.getElementsByTagName('input');
-	for (var i=0; i<inputs.length; i++) {
-		inputs[i].onclick = drag_check;
-	}
-	
+        var drag = document.getElementById('drag');
+        var inputs = drag.getElementsByTagName('input');
+        for (var i=0; i<inputs.length; i++) {
+                inputs[i].onclick = drag_check;
+        }
+        
         var url = '/tilma/tileserver/10k-full-london/' + x + '-' + (x+5) + ',' + y + '-' + (y+5) + '/JSON';
         var req = mySociety.asyncRequest(url, urls_loaded);
 
@@ -69,15 +69,14 @@ function form_submit() {
     return true;
 }
 
-function image_rotate(img, x, y) {
-    if (x) {
+function image_rotate(i, j, x, y) {
+    var id = 't' + i + '.' + j;
+    var img = document.getElementById(id);
+    img.src = '/i/grey.gif';
+    if (x)
         img.style.left = (img.offsetLeft + x*tilewidth) + 'px';
-	//img.xx += x;
-    }
-    if (y) {
+    if (y)
         img.style.top = (img.offsetTop + y*tileheight) + 'px';
-	//img.yy += y;
-    }
 }
 
 var myAnim;
@@ -85,13 +84,17 @@ function pan(x, y) {
     if (!myAnim || !myAnim.isAnimated()) {
         update_tiles(x, y, true);
         myAnim = new YAHOO.util.Motion('drag', { points:{by:[x,y]} }, 1, YAHOO.util.Easing.easeBoth);
-	myAnim.animate();
+        myAnim.animate();
     }
 }
 
 var drag_x = 0;
 var drag_y = 0;
 function update_tiles(dx, dy, noMove) {
+    if (!dx && !dy) return;
+
+    var old_drag_x = drag_x;
+    var old_drag_y = drag_y;
     drag_x += dx;
     drag_y += dy;
 
@@ -101,35 +104,23 @@ function update_tiles(dx, dy, noMove) {
         drag.style.top = drag_y + 'px';
     }
 
-    var horizontal = 0;
-    var vertical = 0;
-    for (var i=0; i<6; i++) {
-        for (var j=0; j<6; j++) {
-	    var id = 't'+i+'.'+j;
-	    var img = document.getElementById(id);
-            if (drag_x + img.offsetLeft > 762) {
-                img.src = '/i/grey.gif';
-	        image_rotate(img, -6, 0);
-		horizontal--;
-	    } else if (drag_x + img.offsetLeft < -508) {
-                img.src = '/i/grey.gif';
-	        image_rotate(img, 6, 0);
-		horizontal++;
-	    }
-	    if (drag_y + img.offsetTop > 762) {
-                img.src = '/i/grey.gif';
-	        image_rotate(img, 0, -6);
-		vertical--;
-	    } else if (drag_y + img.offsetTop < -508) {
-                img.src = '/i/grey.gif';
-	        image_rotate(img, 0, 6);
-		vertical++;
-	    }
-	}
-    }
-    var horizontal = floor(horizontal/6);
-    var vertical = floor(vertical/6);
+    var horizontal = Math.floor(old_drag_x/tilewidth) - Math.floor(drag_x/tilewidth);
+    var vertical = Math.floor(old_drag_y/tileheight) - Math.floor(drag_y/tileheight);
     if (!horizontal && !vertical) return;
+
+    for (var j=0; j<horizontal; j++) {
+        for (var i=0; i<6; i++) { image_rotate(i, mod(j + tile_x, 6),  6, 0); }
+    }
+    for (var j=horizontal; j<0; j++) {
+        for (var i=0; i<6; i++) { image_rotate(i, mod(j + tile_x, 6), -6, 0); }
+    }
+    for (var i=0; i<vertical; i++) {
+        for (var j=0; j<6; j++) { image_rotate(mod(i + tile_y, 6), j, 0,  6); }
+    }
+    for (var i=vertical; i<0; i++) {
+        for (var j=0; j<6; j++) { image_rotate(mod(i + tile_y, 6), j, 0, -6); }
+    }
+
     x += horizontal;
     tile_x = mod((tile_x + horizontal), 6);
     y -= vertical;
@@ -148,33 +139,29 @@ function urls_loaded(o) {
         var ii = (i + tile_y) % 6;
         for (var j=0; j<6; j++) {
             var jj = (j + tile_x) % 6;
-	    var id = 't'+ii+'.'+jj;
-	    var xx = x+j;
-	    var yy = y+5-i;
-	    var img = document.getElementById(id);
-	    if (img) {
-		if (!img.galleryimg) { img.galleryimg = false; }
+            var id = 't'+ii+'.'+jj;
+            var xx = x+j;
+            var yy = y+5-i;
+            var img = document.getElementById(id);
+            if (img) {
+                if (!img.galleryimg) { img.galleryimg = false; }
                 img.src = 'http://tilma.mysociety.org/tileserver/10k-full-london/' + tiles[i][j];
-	        img.name = 'tile_' + xx + '.' + yy;
-	        //if (!img.xx) img.xx = xx;
-	        //if (!img.yy) img.yy = yy;
-	        continue;
-	    }
-	    img = document.createElement('input');
-	    img.type = 'image';
+                img.name = 'tile_' + xx + '.' + yy;
+                continue;
+            }
+            img = document.createElement('input');
+            img.type = 'image';
             img.src = 'http://tilma.mysociety.org/tileserver/10k-full-london/' + tiles[i][j];
-	    img.name = 'tile_' + xx + '.' + yy;
-	    img.id = id;
-	    img.onclick = drag_check;
-	    img.style.position = 'absolute';
-	    img.style.width = tilewidth + 'px';
-	    img.style.height = tileheight + 'px';
-	    img.style.top = ((ii-2)*tileheight) + 'px';
-	    img.style.left = ((jj-2)*tilewidth) + 'px';
-	    img.galleryimg = false;
-	    //img.xx = xx;
-	    //img.yy = yy;
-	    img.alt = 'Loading...';
+            img.name = 'tile_' + xx + '.' + yy;
+            img.id = id;
+            img.onclick = drag_check;
+            img.style.position = 'absolute';
+            img.style.width = tilewidth + 'px';
+            img.style.height = tileheight + 'px';
+            img.style.top = ((ii-2)*tileheight) + 'px';
+            img.style.left = ((jj-2)*tilewidth) + 'px';
+            img.galleryimg = false;
+            img.alt = 'Loading...';
             drag.appendChild(img);
         }
     }
@@ -196,38 +183,36 @@ function mod(m, n) {
 
 var last_mouse_pos = {};
 var mouse_pos = {};
+
 function drag_move(e) {
     if (!e) var e = window.event;
-    //if (e.stopPropagation) e.stopPropagation();
     var point = get_posn(e);
+    if (point == mouse_pos) return false;
     in_drag = true;
     last_mouse_pos = mouse_pos;
     mouse_pos = point;
-    YAHOO.log('Updating with '+(mouse_pos.x-last_mouse_pos.x)+','+(mouse_pos.y-last_mouse_pos.y));
-    update_tiles(mouse_pos.x-last_mouse_pos.x, mouse_pos.y-last_mouse_pos.y);
+    var dx = mouse_pos.x-last_mouse_pos.x;
+    var dy = mouse_pos.y-last_mouse_pos.y;
+    update_tiles(dx, dy);
     return false;
 }
 
 function drag_check() {
     if (in_drag) {
         in_drag=false;
-	return false;
+        return false;
     }
     return true;
 }
 
 function drag_start(e) {
-    YAHOO.log('drag start');
     if (!e) var e = window.event;
-    //if (e.stopPropagation) e.stopPropagation();
-    var point = get_posn(e);
-    mouse_pos = point;
+    mouse_pos = get_posn(e);
     setCursor('move');
     document.onmousemove = drag_move;
     document.onmouseup = drag_end;
     return false;
 }
-
 
 function drag_end(e) {
     if (!e) var e = window.event;
@@ -240,7 +225,6 @@ function drag_end(e) {
 
 function drag_end_out(e) {
     if (!e) var e = window.event;
-    //if (e.stopPropagation) e.stopPropagation();
     var relTarg;
     if (e.relatedTarget) { relTarg = e.relatedTarget; }
     else if (e.toElement) { relTarg = e.toElement; }
@@ -253,26 +237,26 @@ function drag_end_out(e) {
     return false;
 }
 
-function get_posn(e) {
+/* Called every mousemove, so on first call, overwrite itself with quicker version */
+function get_posn(ev) {
     var posx, posy;
-    if (e.pageX || e.pageY) {
-        posx = e.pageX;
-        posy = e.pageY;
-    } else if (e.clientX || e.clientY) {
-        posx = e.clientX;
-        if (document.documentElement && document.documentElement.scrollLeft) {
-            posx += document.documentElement.scrollLeft;
-        } else {
-            posx += document.body.scrollLeft;
-        }
-        posy = e.clientY;
-        if (document.documentElement && document.documentElement.scrollTop) {
-            posy += document.documentElement.scrollTop;
-        } else {
-            posy += document.body.scrollTop;
-        }
+    if (ev.pageX || ev.pageY) {
+        get_posn = function(e) {
+            return { x: e.pageX, y: e.pageY };
+        };
+    } else if (ev.clientX || ev.clientY) {
+        get_posn = function(e) {
+            return {
+                x: e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft,
+                y: e.clientY + document.body.scrollTop + document.documentElement.scrollTop
+            };
+        };
+    } else {
+        get_posn = function(e) {
+            return { x: undef, y: undef };
+        };
     }
-    return { x:posx, y:posy };
+    return get_posn(ev);
 }
 
 function setCursor(s) {

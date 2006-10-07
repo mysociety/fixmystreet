@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.25 2006-10-06 15:58:28 matthew Exp $
+# $Id: Page.pm,v 1.26 2006-10-07 21:06:31 matthew Exp $
 #
 
 package Page;
@@ -71,15 +71,15 @@ EOF
 # <script defer type="text/javascript" src="/pngfix.js"></script>
 # <![endif]-->
     $html .= <<EOF;
-	<link type="text/css" rel="stylesheet" href="/yui/logger.css">
-	<script type="text/javascript" src="/yui/yahoo-min.js"></script>
-	<script type="text/javascript" src="/yui/dom-min.js"></script>
-	<script type="text/javascript" src="/yui/event-min.js"></script>
-	<script type="text/javascript" src="/yui/animation-min.js"></script>
-	<script type="text/javascript" src="/yui/dragdrop-min.js"></script>
-	<script type="text/javascript" src="/yui/logger-min.js"></script>
-	<script type="text/javascript" src="/js2.js"></script>
-	<script type="text/javascript" src="/jslib/utils.js"></script>
+        <link type="text/css" rel="stylesheet" href="/yui/logger.css">
+        <script type="text/javascript" src="/yui/yahoo-min.js"></script>
+        <script type="text/javascript" src="/yui/dom-min.js"></script>
+        <script type="text/javascript" src="/yui/event-min.js"></script>
+        <script type="text/javascript" src="/yui/animation-min.js"></script>
+        <script type="text/javascript" src="/yui/dragdrop-min.js"></script>
+        <script type="text/javascript" src="/yui/logger-min.js"></script>
+        <script type="text/javascript" src="/js2.js"></script>
+        <script type="text/javascript" src="/jslib/utils.js"></script>
         <title>${title}Neighbourhood Fix-It</title>
         <style type="text/css">\@import url("/css.css");</style>
     </head>

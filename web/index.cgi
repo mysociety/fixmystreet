@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.39 2006-10-07 17:55:10 matthew Exp $
+# $Id: index.cgi,v 1.40 2006-10-07 21:06:32 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -261,16 +261,16 @@ EOF
             $northing = $input_h{northing};
         }
         # XXX: How to do this for not London?
-	# Needs to return all council types, so passing in an array of types would be good
-	# And then display choice to user
+        # Needs to return all council types, so passing in an array of types would be good
+        # And then display choice to user
         my $council = mySociety::MaPit::get_voting_area_by_location_en($easting, $northing, 'polygon', 'LBO');
         my $areas_info = mySociety::MaPit::get_voting_areas_info($council);
-	$council = join(', ', map { $areas_info->{$_}->{name} } @$council);
+        $council = join(', ', map { $areas_info->{$_}->{name} } @$council);
         my $pins = display_pin($q, $px, $py, 'yellow');
         $out .= display_map($q, $input{x}, $input{y}, 1, 0, $pins);
         $out .= '<h1>Reporting a problem</h1>';
         $out .= '<p>You have located the problem at the location marked with a yellow pin on the map, which is within '
-	    . $council . '. If this is not the correct location, simply click on the map again.</p>
+            . $council . '. If this is not the correct location, simply click on the map again.</p>
 <p>Please fill in details of the problem below. Your council won\'t be able
 to help unless you leave as much detail as you can, so please describe the
 exact location of the problem (ie. on a wall or the floor), and so on.</p>';
@@ -557,7 +557,7 @@ EOF
     $out .= <<EOF;
     <div id="map"><div id="drag">
         $img_type id="t2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0px;">$img_type id="t2.3" name="tile_$tr" src="$tr_src" style="top:0px; left:$imgw;"><br>$img_type id="t3.2" name="tile_$bl" src="$bl_src" style="top:$imgh; left:0px;">$img_type id="t3.3" name="tile_$br" src="$br_src" style="top:$imgh; left:$imgw;">
-	$pins
+        $pins
     </div></div>
 EOF
     $out .= Page::compass($q, $x, $y) if $compass;
@@ -591,7 +591,7 @@ sub postcode_check {
     my @councils;
     my $types = $mySociety::VotingArea::council_parent_types;
     foreach my $type (@$types) {
-	push(@councils, $type) if ($areas->{$type} && !vec($invalid_councils, $areas->{$type}, 1));
+        push(@councils, $type) if ($areas->{$type} && !vec($invalid_councils, $areas->{$type}, 1));
     }
     throw Error::Simple("I'm afraid that postcode isn't yet covered by us.\n") unless $areas && @councils;
 
