@@ -128,9 +128,10 @@ function update_tiles(dx, dy, noMove) {
 	}
     }
     var horizontal = floor(horizontal/6);
+    var vertical = floor(vertical/6);
+    if (!horizontal && !vertical) return;
     x += horizontal;
     tile_x = mod((tile_x + horizontal), 6);
-    var vertical = floor(vertical/6);
     y -= vertical;
     tile_y = mod((tile_y + vertical), 6);
 
@@ -202,6 +203,7 @@ function drag_move(e) {
     in_drag = true;
     last_mouse_pos = mouse_pos;
     mouse_pos = point;
+    YAHOO.log('Updating with '+(mouse_pos.x-last_mouse_pos.x)+','+(mouse_pos.y-last_mouse_pos.y));
     update_tiles(mouse_pos.x-last_mouse_pos.x, mouse_pos.y-last_mouse_pos.y);
     return false;
 }
@@ -215,6 +217,7 @@ function drag_check() {
 }
 
 function drag_start(e) {
+    YAHOO.log('drag start');
     if (!e) var e = window.event;
     //if (e.stopPropagation) e.stopPropagation();
     var point = get_posn(e);

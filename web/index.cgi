@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.38 2006-10-06 16:15:38 matthew Exp $
+# $Id: index.cgi,v 1.39 2006-10-07 17:55:10 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -552,9 +552,11 @@ EOF
     } else {
         $img_type = '<img';
     }
+    my $imgw = '254px';
+    my $imgh = '254px';
     $out .= <<EOF;
     <div id="map"><div id="drag">
-        $img_type id="t2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0px;">$img_type id="t2.3" name="tile_$tr" src="$tr_src" style="top:0px; left:254px;"><br>$img_type id="t3.2" name="tile_$bl" src="$bl_src" style="top:254px; left:0px;">$img_type id="t3.3" name="tile_$br" src="$br_src" style="top:254px; left:254px;">
+        $img_type id="t2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0px;">$img_type id="t2.3" name="tile_$tr" src="$tr_src" style="top:0px; left:$imgw;"><br>$img_type id="t3.2" name="tile_$bl" src="$bl_src" style="top:$imgh; left:0px;">$img_type id="t3.3" name="tile_$br" src="$br_src" style="top:$imgh; left:$imgw;">
 	$pins
     </div></div>
 EOF
