@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.41 2006-10-09 15:29:52 matthew Exp $
+# $Id: index.cgi,v 1.42 2006-10-09 17:30:38 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -169,7 +169,7 @@ EOF
 
 sub submit_problem {
     my $q = shift;
-    my @vars = qw(title detail name email pc easting northing updates);
+    my @vars = qw(title detail name email phone pc easting northing updates);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
     push(@errors, 'Please enter a title') unless $input{title};
@@ -182,11 +182,11 @@ sub submit_problem {
 
     my $id = dbh()->selectrow_array("select nextval('problem_id_seq');");
     dbh()->do("insert into problem
-        (id, postcode, easting, northing, title, detail, name, email, state)
+        (id, postcode, easting, northing, title, detail, name, email, phone, state)
         values
-        (?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed')", {},
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed')", {},
         $id, $input{pc}, $input{easting}, $input{northing}, $input{title},
-        $input{detail}, $input{name}, $input{email}
+        $input{detail}, $input{name}, $input{email}, $input{phone}
     );
     my %h = ();
     $h{title} = $input{title};
@@ -223,7 +223,7 @@ EOF
 sub display_form {
     my ($q, @errors) = @_;
     my ($pin_x, $pin_y, $pin_tile_x, $pin_tile_y);
-    my @vars = qw(title detail name email updates pc easting northing x y skipped);
+    my @vars = qw(title detail name email phone updates pc easting northing x y skipped);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
     my @ps = $q->param;
@@ -303,6 +303,9 @@ exact location of the problem (ie. on a wall or the floor), and so on.</p>';
 <input type="text" value="$input_h{name}" name="name" id="form_name" size="30"></div>
 <div><label for="form_email">Email:</label>
 <input type="text" value="$input_h{email}" name="email" id="form_email" size="30"></div>
+<div><label for="form_phone">Phone:</label>
+<input type="text" value="$input_h{phone}" name="phone" id="form_phone" size="20">
+<small>(optional, so the council can get in touch)</small></div>
 <div class="checkbox"><input type="checkbox" name="updates" id="form_updates" value="1"$updates>
 <label for="form_updates">Receive email when updates are left on this problem</label></div>
 <div class="checkbox"><input type="submit" name="submit_problem" value="Submit"></div>

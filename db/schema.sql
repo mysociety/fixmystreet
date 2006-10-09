@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.9 2006-09-26 16:11:50 matthew Exp $
+-- $Id: schema.sql,v 1.10 2006-10-09 17:30:38 matthew Exp $
 --
 
 -- secret
@@ -81,6 +81,7 @@ create table problem (
     -- category integer not null references category(id),
     name text not null,
     email text not null,
+    phone text not null,
     created timestamp not null default ms_current_timestamp(),
     state text not null check (
         state = 'unconfirmed'
