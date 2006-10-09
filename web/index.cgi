@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.40 2006-10-07 21:06:32 matthew Exp $
+# $Id: index.cgi,v 1.41 2006-10-09 15:29:52 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -25,12 +25,14 @@ use LWP::Simple;
 use RABX;
 use POSIX qw(strftime);
 use CGI::Carp;
+use Digest::MD5 qw(md5_hex);
 
 use Page;
 use mySociety::AuthToken;
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh select_all);
 use mySociety::Email;
+use mySociety::GeoUtil;
 use mySociety::Util;
 use mySociety::MaPit;
 use mySociety::VotingArea;
@@ -96,17 +98,17 @@ EOF
     $out .= '<p id="error">' . $error . 'Please try again.</p>' if ($error);
     $out .= <<EOF;
 <form action="./" method="get" id="postcodeForm">
-<label for="pc">Enter a postcode:</label>
-&nbsp;<input type="text" name="pc" value="$pc_h" id="pc" size="10" maxlength="10">
+<label for="pc">Enter a nearby postcode or street name:</label>
+&nbsp;<input type="text" name="pc" value="$pc_h" id="pc" size="10" maxlength="200">
 &nbsp;<input type="submit" value="Go">
 </form>
 
 <p>Reports are sent directly to the local council &ndash; at the moment, we only cover <em>Newham, Lewisham, and Islington</em> councils. The rest of the UK is coming soon!</p>
 
-<p>Reporting a problem is hopefully very simple:</p>
+<p>Reporting a problem is very simple:</p>
 
 <ol>
-<li>Enter a postcode;
+<li>Enter a postcode or street name;
 <li>Locate the problem on a high-scale map;
 <li>Enter details of the problem;
 <li>Submit to your council.
@@ -143,7 +145,7 @@ sub submit_update {
     my $email = mySociety::Email::construct_email({
         _template_ => $template,
         _parameters_ => \%h,
-            From => [mySociety::Config::get('CONTACT_EMAIL'), 'Heighbourhood Fix-It'],
+            From => [mySociety::Config::get('CONTACT_EMAIL'), 'Neighbourhood Fix-It'],
         To => [[$input{email}, $input{name}]],
     });
     my $result = mySociety::Util::send_email($email, mySociety::Config::get('CONTACT_EMAIL'), $input{email});
@@ -196,7 +198,7 @@ sub submit_problem {
     my $email = mySociety::Email::construct_email({
         _template_ => $template,
         _parameters_ => \%h,
-            From => [mySociety::Config::get('CONTACT_EMAIL'), 'Heighbourhood Fix-It'],
+            From => [mySociety::Config::get('CONTACT_EMAIL'), 'Neighbourhood Fix-It'],
         To => [[$input{email}, $input{name}]],
     });
     my $result = mySociety::Util::send_email($email, mySociety::Config::get('CONTACT_EMAIL'), $input{email});
@@ -266,8 +268,15 @@ EOF
         my $council = mySociety::MaPit::get_voting_area_by_location_en($easting, $northing, 'polygon', 'LBO');
         my $areas_info = mySociety::MaPit::get_voting_areas_info($council);
         $council = join(', ', map { $areas_info->{$_}->{name} } @$council);
-        my $pins = display_pin($q, $px, $py, 'yellow');
-        $out .= display_map($q, $input{x}, $input{y}, 1, 0, $pins);
+        my $pins = display_pin($q, $px, $py, 'purple');
+        $out .= display_map($q, $input{x}, $input{y}, 1, 1, $pins);
+	if ($px && $py) {
+	    $out .= <<EOF;
+<script type="text/javascript">
+drag_x = $px - 254; drag_y = 254 - $py;
+</script>
+EOF
+	}
         $out .= '<h1>Reporting a problem</h1>';
         $out .= '<p>You have located the problem at the location marked with a yellow pin on the map, which is within '
             . $council . '. If this is not the correct location, simply click on the map again.</p>
@@ -314,7 +323,40 @@ sub display {
 
     my($error, $x, $y, $name);
     try {
-        ($name, $x, $y) = postcode_check($input{pc}, $input{x}, $input{y});
+        if (mySociety::Util::is_valid_postcode($input{pc})) {
+            ($name, $x, $y) = postcode_check($input{pc}, $input{x}, $input{y});
+	} else {
+	    $x = $input{x}; $y = $input{y};
+            $x ||= 0; $x += 0;
+            $y ||= 0; $y += 0;
+            if (!$x && !$y) {
+	        my @loc = split /\s*,\s*/, $input{pc};
+ 	        #if (2 == @loc) {
+		#    my $url = 'http://geo.localsearchmaps.com/?country=UK&cb=cb&cbe=cbe&address='.$loc[0].'&city='.$loc[1];
+	        #    my $js = LWP::Simple::get($url);
+		my $cache_dir = '/data/vhost/matthew.bci.mysociety.org/cache/';
+	        if (1 == @loc) {
+	            my $url = 'http://geo.localsearchmaps.com/?country=UK&cb=cb&cbe=cbe&address='.$loc[0].'&city=London';
+		    my $cache_file = $cache_dir . md5_hex($url);
+		    my $js;
+		    if (-e $cache_file) {
+    			$js = File::Slurp::read_file($cache_file);
+		    } else {
+	                $js = LWP::Simple::get($url);
+			File::Slurp::write_file($cache_file, $js);
+		    }
+		    if ($js =~ /^cb\((.*?),(.*?),/) {
+		        my $lat = $1; my $lon = $2;
+		        my ($easting,$northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
+		        $x = int(os_to_tile($easting))-1;
+		        $y = int(os_to_tile($northing))-1;
+		    }
+		} else {
+		    $error = 'Could not understand that, sorry. ';
+		}
+
+	    }
+	}
     } catch RABX::Error with {
         my $e = shift;
         if ($e->value() == mySociety::MaPit::BAD_POSTCODE
@@ -339,7 +381,7 @@ sub display {
     my $current_map = select_all(
         "select id,title,easting,northing from problem where state='confirmed'
          and easting>=? and easting<? and northing>=? and northing<?
-         order by created desc limit 3", $min_e, $max_e, $min_n, $max_n);
+         order by created desc limit 5", $min_e, $max_e, $min_n, $max_n);
     my @ids = ();
     foreach (@$current_map) {
         push(@ids, $_->{id});
@@ -352,11 +394,19 @@ sub display {
             from problem_find_nearby(?, ?, 10) as nearby, problem
             where nearby.problem_id = problem.id
             and state = 'confirmed'" . (@ids ? ' and id not in (' . join(',' , @ids) . ')' : '') . "
-         order by created desc limit 3", $mid_e, $mid_n);
+         order by created desc limit 5", $mid_e, $mid_n);
     foreach (@$current) {
         my $px = os_to_px($_->{easting}, $x);
         my $py = os_to_px($_->{northing}, $y);
         $pins .= display_pin($q, $px, $py, 'red', 1);
+    }
+    my $fixed = select_all(
+        "select id,title from problem where state='fixed'
+         order by created desc limit 5");
+    foreach (@$fixed) {
+        my $px = os_to_px($_->{easting}, $x);
+        my $py = os_to_px($_->{northing}, $y);
+        $pins .= display_pin($q, $px, $py, 'green');
     }
 
     my $out = '';
@@ -397,9 +447,6 @@ EOF
     <h2>Recently fixed problems</h2>
     <ul>
 EOF
-    my $fixed = select_all(
-        "select id,title from problem where state='fixed'
-         order by created desc limit 3");
     foreach (@$fixed) {
         $out .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
         $out .= $_->{title};
@@ -425,7 +472,10 @@ sub display_pin {
     my ($q, $px, $py, $col, $id) = @_;
     $id = 0 unless $id;
     # return '' if ($px<0 || $px>508 || $py<0 || $py>508);
-    my $out = '<img class="pin" src="/i/pin_'.$col.'.gif" alt="Problem" style="top:' . ($py-20) . 'px; right:' . ($px-6) . 'px; position: absolute;">';
+    my $r = int(rand(5));
+    my @r = qw(red orange green blue pink);
+    my $out = '<img class="pin" src="/i/pin3' . $col . '.gif" alt="Problem" style="top:'
+        . ($py-59) . 'px; right:' . ($px-31) . 'px; position: absolute;">';
     return $out unless $id;
     my $url = NewURL($q, id=>$_->{id}, x=>undef, y=>undef);
     $out = '<a href="' . $url . '">' . $out . '</a>';
@@ -460,6 +510,11 @@ sub display_problem {
     my $pins = display_pin($q, $px, $py, 'red');
     $out .= display_map($q, $x_tile, $y_tile, 0, 1, $pins);
     $out .= "<h1>$title</h1>";
+    $out .= <<EOF;
+<script type="text/javascript">
+drag_x = $px - 254; drag_y = 254 - $py;
+</script>
+EOF
 
     # Display information about problem
     $out .= '<p><em>Reported by ' . $name . ' at ' . prettify_epoch($time);
@@ -499,7 +554,7 @@ sub display_problem {
 <div><label for="form_email">Email:</label>
 <input type="text" name="email" id="form_email" value="$input_h{email}" size="30"></div>
 <div><label for="form_update">Update:</label>
-<textarea name="updatet" id="form_update" rows="7" cols="30">$input_h{update}</textarea></div>
+<textarea name="update" id="form_update" rows="7" cols="30">$input_h{update}</textarea></div>
 <div class="checkbox"><input type="checkbox" name="fixed" id="form_fixed" value="1">
 <label for="form_fixed">Has the problem been fixed?</label></div>
 <div class="checkbox"><input type="checkbox" name="updates" id="form_updates" value="1"$updates>
@@ -539,9 +594,6 @@ sub display_map {
     if ($type) {
         my $pc_enc = ent($q->param('pc'));
         $out .= <<EOF;
-<script type="text/javascript">
-x = $x - 2; y = $y - 2;
-</script>
 <form action="./" method="get" id="mapForm">
 <input type="hidden" name="map" value="1">
 <input type="hidden" name="x" value="$x">
@@ -555,6 +607,10 @@ EOF
     my $imgw = '254px';
     my $imgh = '254px';
     $out .= <<EOF;
+<script type="text/javascript">
+var x = $x - 2; var y = $y - 2;
+var drag_x = 0; var drag_y = 0;
+</script>
     <div id="map"><div id="drag">
         $img_type id="t2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0px;">$img_type id="t2.3" name="tile_$tr" src="$tr_src" style="top:0px; left:$imgw;"><br>$img_type id="t3.2" name="tile_$bl" src="$bl_src" style="top:$imgh; left:0px;">$img_type id="t3.3" name="tile_$br" src="$br_src" style="top:$imgh; left:$imgw;">
         $pins
@@ -608,8 +664,12 @@ sub postcode_check {
         my $location = mySociety::MaPit::get_location($pc);
         my $northing = $location->{northing};
         my $easting = $location->{easting};
-        $x = int(os_to_tile($easting));
-        $y = int(os_to_tile($northing));
+	my $xx = os_to_tile($easting);
+	my $yy = os_to_tile($northing);
+        $x = int($xx);
+        $y = int($yy);
+	$x -= 1 if ($xx - $x < 0.5);
+	$y -= 1 if ($yy - $y < 0.5);
     }
     return ($name, $x, $y);
 }

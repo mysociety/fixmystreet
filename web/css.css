@@ -106,18 +106,19 @@ ul#error {
     list-style-type: none;
 }
 #navigation li {
-    float: right;
+    display: inline;
     padding: 0;
     margin: 0;
 }
 
 #navigation a {
-    display: block;
+    display: -moz-inline-box;
+    display: inline-block;
+    padding: 0.5em 2em;
 }
 #navigation a:link, #navigation a:visited {
     color: #968d63;
     background-color: #e3d595;
-    padding: 0.5em 2em;
 }
 #navigation a:hover, #navigation a:active {
     background-color: #968d63;
@@ -199,6 +200,9 @@ fieldset div.checkbox label {
     cursor: crosshair;
     background-color: #cccccc;
 }
+#drag img {
+    cursor: move;
+}
 #drag input, #drag img {
     position: absolute;
     border: none;
@@ -206,6 +210,8 @@ fieldset div.checkbox label {
 #drag img.pin {
     z-index: 100;
     background-color: inherit;
+    cursor: pointer;
+    cursor: hand;
 }
 
 #compass {

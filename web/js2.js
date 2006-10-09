@@ -34,23 +34,15 @@ function onLoad() {
         points[7].onclick = function() { pan(-tilewidth, -tileheight); return false; };
     }
 
+    var drag = document.getElementById('drag');
     var form = document.getElementById('mapForm');
-    if (form) {
-        form.onsubmit = form_submit;
-
-        var drag = document.getElementById('drag');
+    if (form) form.onsubmit = form_submit;
+    if (drag) {
         var inputs = drag.getElementsByTagName('input');
-        for (var i=0; i<inputs.length; i++) {
-                inputs[i].onclick = drag_check;
-        }
-        
-        var url = '/tilma/tileserver/10k-full-london/' + x + '-' + (x+5) + ',' + y + '-' + (y+5) + '/JSON';
-        var req = mySociety.asyncRequest(url, urls_loaded);
-
+        update_tiles(0, 0, false, true);
         var map = document.getElementById('map');
         map.onmousedown = drag_start;
         document.onmouseout = drag_end_out;
-
     }
 }
 
@@ -82,16 +74,14 @@ function image_rotate(i, j, x, y) {
 var myAnim;
 function pan(x, y) {
     if (!myAnim || !myAnim.isAnimated()) {
-        update_tiles(x, y, true);
+        update_tiles(x, y, true, false);
         myAnim = new YAHOO.util.Motion('drag', { points:{by:[x,y]} }, 1, YAHOO.util.Easing.easeBoth);
         myAnim.animate();
     }
 }
 
-var drag_x = 0;
-var drag_y = 0;
-function update_tiles(dx, dy, noMove) {
-    if (!dx && !dy) return;
+function update_tiles(dx, dy, noMove, force) {
+    if (!dx && !dy && !force) return;
 
     var old_drag_x = drag_x;
     var old_drag_y = drag_y;
@@ -106,7 +96,7 @@ function update_tiles(dx, dy, noMove) {
 
     var horizontal = Math.floor(old_drag_x/tilewidth) - Math.floor(drag_x/tilewidth);
     var vertical = Math.floor(old_drag_y/tileheight) - Math.floor(drag_y/tileheight);
-    if (!horizontal && !vertical) return;
+    if (!horizontal && !vertical && !force) return;
 
     for (var j=0; j<horizontal; j++) {
         for (var i=0; i<6; i++) { image_rotate(i, mod(j + tile_x, 6),  6, 0); }
@@ -145,6 +135,7 @@ function urls_loaded(o) {
             var img = document.getElementById(id);
             if (img) {
                 if (!img.galleryimg) { img.galleryimg = false; }
+		img.onclick = drag_check;
                 img.src = 'http://tilma.mysociety.org/tileserver/10k-full-london/' + tiles[i][j];
                 img.name = 'tile_' + xx + '.' + yy;
                 continue;
@@ -193,7 +184,7 @@ function drag_move(e) {
     mouse_pos = point;
     var dx = mouse_pos.x-last_mouse_pos.x;
     var dy = mouse_pos.y-last_mouse_pos.y;
-    update_tiles(dx, dy);
+    update_tiles(dx, dy, false, false);
     return false;
 }
 
