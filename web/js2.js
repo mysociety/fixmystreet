@@ -64,7 +64,7 @@ function form_submit() {
 function image_rotate(i, j, x, y) {
     var id = 't' + i + '.' + j;
     var img = document.getElementById(id);
-    img.src = '/i/grey.gif';
+    // img.src = '/i/grey.gif';
     if (x)
         img.style.left = (img.offsetLeft + x*tilewidth) + 'px';
     if (y)
@@ -136,7 +136,8 @@ function urls_loaded(o) {
             if (img) {
                 if (!img.galleryimg) { img.galleryimg = false; }
                 img.onclick = drag_check;
-                img.src = 'http://tilma.mysociety.org/tileserver/10k-full-london/' + tiles[i][j];
+		var new_src = 'http://tilma.mysociety.org/tileserver/10k-full-london/' + tiles[i][j];
+		if (img.src != new_src) img.src = new_src;
                 img.name = 'tile_' + xx + '.' + yy;
                 continue;
             }

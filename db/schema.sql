@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.11 2006-10-10 15:53:04 matthew Exp $
+-- $Id: schema.sql,v 1.12 2006-10-10 20:45:08 matthew Exp $
 --
 
 -- secret
@@ -198,7 +198,9 @@ create table comment (
         state = 'unconfirmed'
         or state = 'confirmed'
         or state = 'hidden'
-    )
+    ),
+    mark_fixed boolean not null,
+    mark_open boolean not null
     -- other fields? one to indicate whether this was written by the council
     -- and should be highlighted in the display?
 );

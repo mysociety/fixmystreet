@@ -6,11 +6,10 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.44 2006-10-10 17:59:56 matthew Exp $
+# $Id: index.cgi,v 1.45 2006-10-10 20:45:09 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
-# Nothing is done with fixed checkbox either
 
 use strict;
 require 5.8.0;
@@ -122,7 +121,7 @@ EOF
 
 sub submit_update {
     my $q = shift;
-    my @vars = qw(id name email update updates fixed);
+    my @vars = qw(id name email update updates fixed reopen);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
     push(@errors, 'Please enter a message') unless $input{update};
@@ -134,9 +133,10 @@ sub submit_update {
 
     my $id = dbh()->selectrow_array("select nextval('comment_id_seq');");
     dbh()->do("insert into comment
-        (id, problem_id, name, email, website, text, state)
-        values (?, ?, ?, ?, ?, ?, 'unconfirmed')", {},
-        $id, $input{id}, $input{name}, $input{email}, '', $input{update});
+        (id, problem_id, name, email, website, text, state, mark_fixed, mark_open)
+        values (?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?)", {},
+        $id, $input{id}, $input{name}, $input{email}, '', $input{update},
+	$input{fixed}?'t':'f', $input{reopen}?'t':'f');
     my %h = ();
     $h{update} = $input{update};
     $h{name} = $input{name};
@@ -525,7 +525,7 @@ sub display_pin {
 sub display_problem {
     my ($q, @errors) = @_;
 
-    my @vars = qw(id name email update updates fixed x y);
+    my @vars = qw(id name email update updates fixed reopen x y);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
     $input{x} = oct($input{x});
@@ -533,10 +533,10 @@ sub display_problem {
 
     # Get all information from database
     my $problem = dbh()->selectrow_arrayref(
-        "select easting, northing, title, detail, name, extract(epoch from created), photo
-         from problem where id=? and state='confirmed'", {}, $input{id});
+        "select state, easting, northing, title, detail, name, extract(epoch from created), photo
+         from problem where id=? and state in ('confirmed','fixed')", {}, $input{id});
     return display($q, 'Unknown problem ID') unless $problem;
-    my ($easting, $northing, $title, $desc, $name, $time, $photo) = @$problem;
+    my ($state, $easting, $northing, $title, $desc, $name, $time, $photo) = @$problem;
     my $x = os_to_tile($easting);
     my $y = os_to_tile($northing);
     my $x_tile = $input{x} || int($x);
@@ -547,7 +547,8 @@ sub display_problem {
     my $py = os_to_px($northing, $y_tile);
 
     my $out = '';
-    my $pins = display_pin($q, $px, $py, 'red');
+    my $col = ($state eq 'fixed') ? 'green' : 'red';
+    my $pins = display_pin($q, $px, $py, $col);
     $out .= display_map($q, $x_tile, $y_tile, 0, 1, $pins);
     $out .= "<h1>$title</h1>";
     $out .= <<EOF;
@@ -571,13 +572,15 @@ EOF
 
     # Display updates
     my $updates = select_all(
-        "select id, name, extract(epoch from whenposted) as whenposted, text
+        "select id, name, extract(epoch from whenposted) as whenposted, text, mark_fixed
          from comment where problem_id = ? and state='confirmed'
          order by whenposted desc", $input{id});
     if (@$updates) {
         $out .= '<div id="updates"> <h2>Updates</h2>';
         foreach my $row (@$updates) {
-            $out .= "<div><em>Posted by $row->{name} at " . prettify_epoch($row->{whenposted}) . '</em>';
+            $out .= "<div><em>Posted by $row->{name} at " . prettify_epoch($row->{whenposted});
+	    $out .= ', marked fixed' if ($row->{mark_fixed});
+	    $out .= '</em>';
             $out .= '<br>' . $row->{text} . '</div>';
         }
         $out .= '</div>';
@@ -589,7 +592,14 @@ EOF
 
     $updates = (!defined($q->param('updates')) || $input{updates}) ? ' checked' : '';
     my $fixed = ($input{fixed}) ? ' checked' : '';
-    # XXX: Should we have website too?
+    my $reopen = ($input{reopen}) ? ' checked' : '';
+    my $fixedline = $state eq 'fixed' ? qq{
+<div class="checkbox"><input type="checkbox" name="reopen" id="form_reopen" value="1"$reopen>
+<label for="form_reopen">Is this problem still present?</label></div>
+} : qq{
+<div class="checkbox"><input type="checkbox" name="fixed" id="form_fixed" value="1"$fixed>
+<label for="form_fixed">Has the problem been fixed?</label></div>
+};
     $out .= <<EOF;
 <form method="post" action="./">
 <fieldset>
@@ -601,8 +611,7 @@ EOF
 <input type="text" name="email" id="form_email" value="$input_h{email}" size="30"></div>
 <div><label for="form_update">Update:</label>
 <textarea name="update" id="form_update" rows="7" cols="30">$input_h{update}</textarea></div>
-<div class="checkbox"><input disabled type="checkbox" name="fixed" id="form_fixed" value="1"$fixed>
-<label for="form_fixed"><s>Has the problem been fixed?</s></label></div>
+$fixedline
 <div class="checkbox"><input type="checkbox" disabled name="updates" id="form_updates" value="1"$updates>
 <label for="form_updates"><s>Receive email when updates are left on this problem</s></label></div>
 <div class="checkbox"><input type="submit" value="Post"></div>

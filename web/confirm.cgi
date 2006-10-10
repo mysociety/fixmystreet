@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.4 2006-10-09 15:29:52 matthew Exp $
+# $Id: confirm.cgi,v 1.5 2006-10-10 20:45:09 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -42,7 +42,12 @@ sub main {
     if ($id) {
         if ($type eq 'update') {
             dbh()->do("update comment set state='confirmed' where id=?", {}, $id);
-            my $id = dbh()->selectrow_array("select problem_id from comment where id=?", {}, $id);
+            my ($id, $fixed, $reopen) = dbh()->selectrow_array("select problem_id,mark_fixed,mark_open from comment where id=?", {}, $id);
+            if ($fixed) {
+                dbh()->do("update problem set state='fixed' where id=? and state='confirmed'", {}, $id);
+            } elsif ($reopen) {
+                dbh()->do("update problem set state='confirmed' where id=? and state='fixed'", {}, $id);
+            }
             $out = <<EOF;
 <p>You have successfully confirmed your update and you can now <a href="/?id=$id">view it on the site</a>.</p>
 EOF
