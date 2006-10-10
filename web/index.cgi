@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.45 2006-10-10 20:45:09 matthew Exp $
+# $Id: index.cgi,v 1.46 2006-10-10 20:47:26 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -444,7 +444,7 @@ sub display {
         $pins .= display_pin($q, $px, $py, 'red');
     }
     my $fixed = select_all(
-        "select easting, northing from problem where state='fixed'
+        "select id, title, easting, northing from problem where state='fixed'
          order by created desc limit 5");
     foreach (@$fixed) {
         my $px = os_to_px($_->{easting}, $x);
@@ -572,7 +572,7 @@ EOF
 
     # Display updates
     my $updates = select_all(
-        "select id, name, extract(epoch from whenposted) as whenposted, text, mark_fixed
+        "select id, name, extract(epoch from whenposted) as whenposted, text, mark_fixed, mark_open
          from comment where problem_id = ? and state='confirmed'
          order by whenposted desc", $input{id});
     if (@$updates) {
@@ -580,6 +580,7 @@ EOF
         foreach my $row (@$updates) {
             $out .= "<div><em>Posted by $row->{name} at " . prettify_epoch($row->{whenposted});
 	    $out .= ', marked fixed' if ($row->{mark_fixed});
+	    $out .= ', reopened' if ($row->{mark_open});
 	    $out .= '</em>';
             $out .= '<br>' . $row->{text} . '</div>';
         }
