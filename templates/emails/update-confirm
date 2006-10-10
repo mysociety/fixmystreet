@@ -1,0 +1,14 @@
+Subject: Confirm your update on Neighbourhood Fix-It
+
+Hi <?=$values['name']?>,
+
+Please click on the link below to confirm the update you just wrote:
+
+<?=$values['url']?>
+
+Your update reads:
+
+<?=$values['update']?>
+
+-- 
+The Neighbourhood Fix-It team

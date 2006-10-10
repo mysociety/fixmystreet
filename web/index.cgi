@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.42 2006-10-09 17:30:38 matthew Exp $
+# $Id: index.cgi,v 1.43 2006-10-10 15:53:05 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -21,6 +21,7 @@ use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../../perllib";
 use Error qw(:try);
 use File::Slurp;
+use Image::Magick;
 use LWP::Simple;
 use RABX;
 use POSIX qw(strftime);
@@ -181,13 +182,39 @@ sub submit_problem {
     my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/problem-confirm");
 
     my $id = dbh()->selectrow_array("select nextval('problem_id_seq');");
-    dbh()->do("insert into problem
-        (id, postcode, easting, northing, title, detail, name, email, phone, state)
+
+    my $image;
+    if (my $fh = $q->upload('photo')) {
+        my $ct = $q->uploadInfo($fh)->{'Content-Type'};
+        my $cd = $q->uploadInfo($fh)->{'Content-Disposition'};
+        $q->delete('photo');
+        return display_form($q, ('Please upload an image only')) unless
+            ($ct eq 'image/jpeg' || $ct eq 'image/pjpeg');
+        $image = Image::Magick->new;
+        $image->Read(file=>$fh);
+        close $fh;
+        $image->Scale(geometry=>"250x250>");
+        my @blobs = $image->ImageToBlob();
+        undef $image;
+        $image = $blobs[0];
+    }
+
+    # This is horrid
+    my $s = dbh()->prepare("insert into problem
+        (id, postcode, easting, northing, title, detail, name, email, phone, photo, state)
         values
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed')", {},
-        $id, $input{pc}, $input{easting}, $input{northing}, $input{title},
-        $input{detail}, $input{name}, $input{email}, $input{phone}
-    );
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed')");
+    $s->bind_param(1, $id);
+    $s->bind_param(2, $input{pc});
+    $s->bind_param(3, $input{easting});
+    $s->bind_param(4, $input{northing});
+    $s->bind_param(5, $input{title});
+    $s->bind_param(6, $input{detail});
+    $s->bind_param(7, $input{name});
+    $s->bind_param(8, $input{email});
+    $s->bind_param(9, $input{phone});
+    $s->bind_param(10, $image, { pg_type => DBD::Pg::PG_BYTEA });
+    $s->execute();
     my %h = ();
     $h{title} = $input{title};
     $h{detail} = $input{detail};
@@ -269,14 +296,14 @@ EOF
         my $areas_info = mySociety::MaPit::get_voting_areas_info($council);
         $council = join(', ', map { $areas_info->{$_}->{name} } @$council);
         my $pins = display_pin($q, $px, $py, 'purple');
-        $out .= display_map($q, $input{x}, $input{y}, 1, 1, $pins);
-	if ($px && $py) {
-	    $out .= <<EOF;
+        $out .= display_map($q, $input{x}, $input{y}, 2, 1, $pins);
+        if ($px && $py) {
+            $out .= <<EOF;
 <script type="text/javascript">
 drag_x = $px - 254; drag_y = 254 - $py;
 </script>
 EOF
-	}
+        }
         $out .= '<h1>Reporting a problem</h1>';
         $out .= '<p>You have located the problem at the location marked with a yellow pin on the map, which is within '
             . $council . '. If this is not the correct location, simply click on the map again.</p>
@@ -306,6 +333,8 @@ exact location of the problem (ie. on a wall or the floor), and so on.</p>';
 <div><label for="form_phone">Phone:</label>
 <input type="text" value="$input_h{phone}" name="phone" id="form_phone" size="20">
 <small>(optional, so the council can get in touch)</small></div>
+<div><label for="form_photo">Photo:</label>
+<input type="file" name="photo" id="form_photo"></div>
 <div class="checkbox"><input type="checkbox" name="updates" id="form_updates" value="1"$updates>
 <label for="form_updates">Receive email when updates are left on this problem</label></div>
 <div class="checkbox"><input type="submit" name="submit_problem" value="Submit"></div>
@@ -328,38 +357,38 @@ sub display {
     try {
         if (mySociety::Util::is_valid_postcode($input{pc})) {
             ($name, $x, $y) = postcode_check($input{pc}, $input{x}, $input{y});
-	} else {
-	    $x = $input{x}; $y = $input{y};
+        } else {
+            $x = $input{x}; $y = $input{y};
             $x ||= 0; $x += 0;
             $y ||= 0; $y += 0;
             if (!$x && !$y) {
-	        my @loc = split /\s*,\s*/, $input{pc};
- 	        #if (2 == @loc) {
-		#    my $url = 'http://geo.localsearchmaps.com/?country=UK&cb=cb&cbe=cbe&address='.$loc[0].'&city='.$loc[1];
-	        #    my $js = LWP::Simple::get($url);
-		my $cache_dir = '/data/vhost/matthew.bci.mysociety.org/cache/';
-	        if (1 == @loc) {
-	            my $url = 'http://geo.localsearchmaps.com/?country=UK&cb=cb&cbe=cbe&address='.$loc[0].'&city=London';
-		    my $cache_file = $cache_dir . md5_hex($url);
-		    my $js;
-		    if (-e $cache_file) {
-    			$js = File::Slurp::read_file($cache_file);
-		    } else {
-	                $js = LWP::Simple::get($url);
-			File::Slurp::write_file($cache_file, $js);
-		    }
-		    if ($js =~ /^cb\((.*?),(.*?),/) {
-		        my $lat = $1; my $lon = $2;
-		        my ($easting,$northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
-		        $x = int(os_to_tile($easting))-1;
-		        $y = int(os_to_tile($northing))-1;
-		    }
-		} else {
-		    $error = 'Could not understand that, sorry. ';
-		}
+                my @loc = split /\s*,\s*/, $input{pc};
+                 #if (2 == @loc) {
+                #    my $url = 'http://geo.localsearchmaps.com/?country=UK&cb=cb&cbe=cbe&address='.$loc[0].'&city='.$loc[1];
+                #    my $js = LWP::Simple::get($url);
+                my $cache_dir = mySociety::Config::get('GEO_CACHE');
+                if (1 == @loc) {
+                    my $url = 'http://geo.localsearchmaps.com/?country=UK&cb=cb&cbe=cbe&address='.$loc[0].'&city=London';
+                    my $cache_file = $cache_dir . md5_hex($url);
+                    my $js;
+                    if (-e $cache_file) {
+                            $js = File::Slurp::read_file($cache_file);
+                    } else {
+                        $js = LWP::Simple::get($url);
+                        File::Slurp::write_file($cache_file, $js);
+                    }
+                    if ($js =~ /^cb\((.*?),(.*?),/) {
+                        my $lat = $1; my $lon = $2;
+                        my ($easting,$northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
+                        $x = int(os_to_tile($easting))-1;
+                        $y = int(os_to_tile($northing))-1;
+                    }
+                } else {
+                    $error = 'Could not understand that, sorry. ';
+                }
 
-	    }
-	}
+            }
+        }
     } catch RABX::Error with {
         my $e = shift;
         if ($e->value() == mySociety::MaPit::BAD_POSTCODE
@@ -496,10 +525,10 @@ sub display_problem {
 
     # Get all information from database
     my $problem = dbh()->selectrow_arrayref(
-        "select easting, northing, title, detail, name, extract(epoch from created)
+        "select easting, northing, title, detail, name, extract(epoch from created), photo
          from problem where id=? and state='confirmed'", {}, $input{id});
     return display($q, 'Unknown problem ID') unless $problem;
-    my ($easting, $northing, $title, $desc, $name, $time) = @$problem;
+    my ($easting, $northing, $title, $desc, $name, $time, $photo) = @$problem;
     my $x = os_to_tile($easting);
     my $y = os_to_tile($northing);
     my $x_tile = $input{x} || int($x);
@@ -524,6 +553,10 @@ EOF
     $out .= '</em></p> <p>';
     $out .= ent($desc);
     $out .= '</p>';
+
+    if ($photo) {
+        $out .= '<p align="center"><img src="/photo?id=' . $input{id} . '"></p>';
+    }
 
     my $back = NewURL($q, id=>undef);
     $out .= '<p align="right"><a href="' . $back . '">Back to listings</a></p>';
@@ -595,9 +628,11 @@ sub display_map {
     my $out = '';
     my $img_type;
     if ($type) {
+        my $encoding = '';
+        $encoding = ' enctype="multipart/form-data"' if ($type==2);
         my $pc_enc = ent($q->param('pc'));
         $out .= <<EOF;
-<form action="./" method="get" id="mapForm">
+<form action="./" method="post" id="mapForm"$encoding>
 <input type="hidden" name="map" value="1">
 <input type="hidden" name="x" value="$x">
 <input type="hidden" name="y" value="$y">
@@ -667,12 +702,12 @@ sub postcode_check {
         my $location = mySociety::MaPit::get_location($pc);
         my $northing = $location->{northing};
         my $easting = $location->{easting};
-	my $xx = os_to_tile($easting);
-	my $yy = os_to_tile($northing);
+        my $xx = os_to_tile($easting);
+        my $yy = os_to_tile($northing);
         $x = int($xx);
         $y = int($yy);
-	$x -= 1 if ($xx - $x < 0.5);
-	$y -= 1 if ($yy - $y < 0.5);
+        $x -= 1 if ($xx - $x < 0.5);
+        $y -= 1 if ($yy - $y < 0.5);
     }
     return ($name, $x, $y);
 }

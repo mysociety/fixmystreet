@@ -135,7 +135,7 @@ function urls_loaded(o) {
             var img = document.getElementById(id);
             if (img) {
                 if (!img.galleryimg) { img.galleryimg = false; }
-		img.onclick = drag_check;
+                img.onclick = drag_check;
                 img.src = 'http://tilma.mysociety.org/tileserver/10k-full-london/' + tiles[i][j];
                 img.name = 'tile_' + xx + '.' + yy;
                 continue;

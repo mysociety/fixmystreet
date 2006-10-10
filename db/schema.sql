@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.10 2006-10-09 17:30:38 matthew Exp $
+-- $Id: schema.sql,v 1.11 2006-10-10 15:53:04 matthew Exp $
 --
 
 -- secret
@@ -78,6 +78,7 @@ create table problem (
     northing double precision not null,
     title text not null,
     detail text not null,
+    photo bytea,
     -- category integer not null references category(id),
     name text not null,
     email text not null,

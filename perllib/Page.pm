@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.27 2006-10-09 15:29:52 matthew Exp $
+# $Id: Page.pm,v 1.28 2006-10-10 15:53:05 matthew Exp $
 #
 
 package Page;
@@ -15,6 +15,7 @@ use strict;
 use Carp;
 use CGI::Fast qw(-no_xhtml);
 use Error qw(:try);
+use mySociety::Config;
 use mySociety::WatchUpdate;
 use mySociety::Web qw(ent NewURL);
 
@@ -90,6 +91,9 @@ EOF
     $html .= 'Neighbourhood Fix-It';
     $html .= $home ? '</h1>' : '</a></div>';
     $html .= '<div id="wrapper"><div id="content">';
+    if (mySociety::Config::get('STAGING_SITE')) {
+        $html .= '<p id="error">This is a developer site, things might break at any time.</p>';
+    }
     return $html;
 }
 
