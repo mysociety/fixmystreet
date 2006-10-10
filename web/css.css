@@ -210,6 +210,8 @@ fieldset div.checkbox label {
 #drag img.pin {
     z-index: 100;
     background-color: inherit;
+}
+#drag a img.pin {
     cursor: pointer;
     cursor: hand;
 }

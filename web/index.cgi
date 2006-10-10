@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.43 2006-10-10 15:53:05 matthew Exp $
+# $Id: index.cgi,v 1.44 2006-10-10 17:59:56 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -70,7 +70,7 @@ sub main {
     } elsif ($q->param('submit_update')) {
         $title = 'Submitting your update';
         $out = submit_update($q);
-    } elsif ($q->param('map')) {
+    } elsif ($q->param('submit_map')) {
         $title = 'Reporting a problem';
         $out = display_form($q);
     } elsif ($q->param('id')) {
@@ -122,7 +122,7 @@ EOF
 
 sub submit_update {
     my $q = shift;
-    my @vars = qw(id name email update updates);
+    my @vars = qw(id name email update updates fixed);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
     push(@errors, 'Please enter a message') unless $input{update};
@@ -266,7 +266,6 @@ sub display_form {
     if ($input{skipped}) {
         $out .= <<EOF;
 <form action="./" method="post">
-<input type="hidden" name="map" value="1">
 <input type="hidden" name="pc" value="$input_h{pc}">
 <h1>Reporting a problem</h1>
 <p>Please fill in the form below with details of the problem, and
@@ -335,8 +334,8 @@ exact location of the problem (ie. on a wall or the floor), and so on.</p>';
 <small>(optional, so the council can get in touch)</small></div>
 <div><label for="form_photo">Photo:</label>
 <input type="file" name="photo" id="form_photo"></div>
-<div class="checkbox"><input type="checkbox" name="updates" id="form_updates" value="1"$updates>
-<label for="form_updates">Receive email when updates are left on this problem</label></div>
+<div class="checkbox"><input disabled type="checkbox" name="updates" id="form_updates" value="1"$updates>
+<label for="form_updates"><s>Receive email when updates are left on this problem</s></label></div>
 <div class="checkbox"><input type="submit" name="submit_problem" value="Submit"></div>
 </fieldset>
 
@@ -368,7 +367,7 @@ sub display {
                 #    my $js = LWP::Simple::get($url);
                 my $cache_dir = mySociety::Config::get('GEO_CACHE');
                 if (1 == @loc) {
-                    my $url = 'http://geo.localsearchmaps.com/?country=UK&cb=cb&cbe=cbe&address='.$loc[0].'&city=London';
+                    my $url = 'http://geo.localsearchmaps.com/?country=UK&format=xml&address='.$loc[0].'&city=London';
                     my $cache_file = $cache_dir . md5_hex($url);
                     my $js;
                     if (-e $cache_file) {
@@ -377,14 +376,26 @@ sub display {
                         $js = LWP::Simple::get($url);
                         File::Slurp::write_file($cache_file, $js);
                     }
-                    if ($js =~ /^cb\((.*?),(.*?),/) {
-                        my $lat = $1; my $lon = $2;
-                        my ($easting,$northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
-                        $x = int(os_to_tile($easting))-1;
-                        $y = int(os_to_tile($northing))-1;
-                    }
+                    if ($js =~ /^<response>\s+(.*?)\s+<\/response>$/s) {
+		        my $response = $1;
+			my ($e) = $response =~ /<error>(.*?)<\/error>/;
+			my ($lat) = $response =~ /<latitude>(.*?)<\/latitude>/;
+			my ($lon) = $response =~ /<longitude>(.*?)<\/longitude>/;
+			my ($level) = $response =~ /<matchlevel>(.*?)<\/matchlevel>/;
+			if ($e) {
+			    $error = $e;
+			} elsif ($level =~ /city/i) {
+			    $error = 'Could not understand that currently, sorry. ';
+			} else {
+                            my ($easting,$northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
+                            $x = int(os_to_tile($easting))-1;
+                            $y = int(os_to_tile($northing))-1;
+			}
+                    } else {
+		        $error = 'Could not understand that currently, sorry. ';
+		    }
                 } else {
-                    $error = 'Could not understand that, sorry. ';
+                    $error = 'Could not understand that currently, sorry. ';
                 }
 
             }
@@ -419,7 +430,7 @@ sub display {
         push(@ids, $_->{id});
         my $px = os_to_px($_->{easting}, $x);
         my $py = os_to_px($_->{northing}, $y);
-        $pins .= display_pin($q, $px, $py, 'red', 1);
+        $pins .= display_pin($q, $px, $py, 'red');
     }
     my $current = select_all(
         "select id, title, easting, northing, distance
@@ -430,10 +441,10 @@ sub display {
     foreach (@$current) {
         my $px = os_to_px($_->{easting}, $x);
         my $py = os_to_px($_->{northing}, $y);
-        $pins .= display_pin($q, $px, $py, 'red', 1);
+        $pins .= display_pin($q, $px, $py, 'red');
     }
     my $fixed = select_all(
-        "select id,title from problem where state='fixed'
+        "select easting, northing from problem where state='fixed'
          order by created desc limit 5");
     foreach (@$fixed) {
         my $px = os_to_px($_->{easting}, $x);
@@ -447,8 +458,16 @@ sub display {
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
+    my $skipurl = NewURL($q, 'submit_map'=>1, skipped=>1);
     $out .= <<EOF;
-<div style="font-size: 83%">
+<p style="font-size:83%">If you cannot see a map &ndash; if you have images turned off,
+or are using a text only browser, for example &ndash; and you
+wish to report a problem, please
+<a href="$skipurl">skip this step</a> and we will ask you
+to describe the location of your problem instead.</p>
+EOF
+    $out .= <<EOF;
+<div>
 <h2>Recent problems reported on this map</h2>
 <ul id="current">
 EOF
@@ -487,41 +506,30 @@ EOF
     unless (@$fixed) {
         $out .= '<li>No problems have been fixed yet</li>';
     }
-    my $skipurl = NewURL($q, 'map'=>1, skipped=>1);
     $out .= '</ul></div>';
-    $out .= <<EOF;
-<p>If you cannot see a map &ndash; if you have images turned off,
-or are using a text only browser, for example &ndash; and you
-wish to report a problem, please
-<a href="$skipurl">skip this step</a> and we will ask you
-to describe the location of your problem instead.</p>
-EOF
     $out .= display_map_end(1);
     return $out;
 }
 
 sub display_pin {
-    my ($q, $px, $py, $col, $id) = @_;
-    $id = 0 unless $id;
+    my ($q, $px, $py, $col) = @_;
     # return '' if ($px<0 || $px>508 || $py<0 || $py>508);
-    my $r = int(rand(5));
-    my @r = qw(red orange green blue pink);
     my $out = '<img class="pin" src="/i/pin3' . $col . '.gif" alt="Problem" style="top:'
         . ($py-59) . 'px; right:' . ($px-31) . 'px; position: absolute;">';
-    return $out unless $id;
+    return $out unless $_->{id};
     my $url = NewURL($q, id=>$_->{id}, x=>undef, y=>undef);
-    $out = '<a href="' . $url . '">' . $out . '</a>';
+    $out = '<a title="' . $_->{title} . '" href="' . $url . '">' . $out . '</a>';
     return $out;
 }
 
 sub display_problem {
     my ($q, @errors) = @_;
 
-    my @vars = qw(id name email update updates x y);
+    my @vars = qw(id name email update updates fixed x y);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
-    $input{x} += 0;
-    $input{y} += 0;
+    $input{x} = oct($input{x});
+    $input{y} = oct($input{y});
 
     # Get all information from database
     my $problem = dbh()->selectrow_arrayref(
@@ -578,7 +586,9 @@ EOF
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
-    my $updates = (!defined($q->param('updates')) || $input{updates}) ? ' checked' : '';
+
+    $updates = (!defined($q->param('updates')) || $input{updates}) ? ' checked' : '';
+    my $fixed = ($input{fixed}) ? ' checked' : '';
     # XXX: Should we have website too?
     $out .= <<EOF;
 <form method="post" action="./">
@@ -591,10 +601,10 @@ EOF
 <input type="text" name="email" id="form_email" value="$input_h{email}" size="30"></div>
 <div><label for="form_update">Update:</label>
 <textarea name="update" id="form_update" rows="7" cols="30">$input_h{update}</textarea></div>
-<div class="checkbox"><input type="checkbox" name="fixed" id="form_fixed" value="1">
-<label for="form_fixed">Has the problem been fixed?</label></div>
-<div class="checkbox"><input type="checkbox" name="updates" id="form_updates" value="1"$updates>
-<label for="form_updates">Receive email when updates are left on this problem</label></div>
+<div class="checkbox"><input disabled type="checkbox" name="fixed" id="form_fixed" value="1"$fixed>
+<label for="form_fixed"><s>Has the problem been fixed?</s></label></div>
+<div class="checkbox"><input type="checkbox" disabled name="updates" id="form_updates" value="1"$updates>
+<label for="form_updates"><s>Receive email when updates are left on this problem</s></label></div>
 <div class="checkbox"><input type="submit" value="Post"></div>
 </fieldset>
 </form>
@@ -633,7 +643,7 @@ sub display_map {
         my $pc_enc = ent($q->param('pc'));
         $out .= <<EOF;
 <form action="./" method="post" id="mapForm"$encoding>
-<input type="hidden" name="map" value="1">
+<input type="hidden" name="submit_map" value="1">
 <input type="hidden" name="x" value="$x">
 <input type="hidden" name="y" value="$y">
 <input type="hidden" name="pc" value="$pc_enc">
