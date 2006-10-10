@@ -136,8 +136,8 @@ function urls_loaded(o) {
             if (img) {
                 if (!img.galleryimg) { img.galleryimg = false; }
                 img.onclick = drag_check;
-		var new_src = 'http://tilma.mysociety.org/tileserver/10k-full-london/' + tiles[i][j];
-		if (img.src != new_src) img.src = new_src;
+                var new_src = 'http://tilma.mysociety.org/tileserver/10k-full-london/' + tiles[i][j];
+                if (img.src != new_src) img.src = new_src;
                 img.name = 'tile_' + xx + '.' + yy;
                 continue;
             }

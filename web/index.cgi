@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.46 2006-10-10 20:47:26 matthew Exp $
+# $Id: index.cgi,v 1.47 2006-10-10 22:02:51 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -136,7 +136,7 @@ sub submit_update {
         (id, problem_id, name, email, website, text, state, mark_fixed, mark_open)
         values (?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?)", {},
         $id, $input{id}, $input{name}, $input{email}, '', $input{update},
-	$input{fixed}?'t':'f', $input{reopen}?'t':'f');
+        $input{fixed}?'t':'f', $input{reopen}?'t':'f');
     my %h = ();
     $h{update} = $input{update};
     $h{name} = $input{name};
@@ -360,45 +360,7 @@ sub display {
             $x = $input{x}; $y = $input{y};
             $x ||= 0; $x += 0;
             $y ||= 0; $y += 0;
-            if (!$x && !$y) {
-                my @loc = split /\s*,\s*/, $input{pc};
-                 #if (2 == @loc) {
-                #    my $url = 'http://geo.localsearchmaps.com/?country=UK&cb=cb&cbe=cbe&address='.$loc[0].'&city='.$loc[1];
-                #    my $js = LWP::Simple::get($url);
-                my $cache_dir = mySociety::Config::get('GEO_CACHE');
-                if (1 == @loc) {
-                    my $url = 'http://geo.localsearchmaps.com/?country=UK&format=xml&address='.$loc[0].'&city=London';
-                    my $cache_file = $cache_dir . md5_hex($url);
-                    my $js;
-                    if (-e $cache_file) {
-                            $js = File::Slurp::read_file($cache_file);
-                    } else {
-                        $js = LWP::Simple::get($url);
-                        File::Slurp::write_file($cache_file, $js);
-                    }
-                    if ($js =~ /^<response>\s+(.*?)\s+<\/response>$/s) {
-		        my $response = $1;
-			my ($e) = $response =~ /<error>(.*?)<\/error>/;
-			my ($lat) = $response =~ /<latitude>(.*?)<\/latitude>/;
-			my ($lon) = $response =~ /<longitude>(.*?)<\/longitude>/;
-			my ($level) = $response =~ /<matchlevel>(.*?)<\/matchlevel>/;
-			if ($e) {
-			    $error = $e;
-			} elsif ($level =~ /city/i) {
-			    $error = 'Could not understand that currently, sorry. ';
-			} else {
-                            my ($easting,$northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
-                            $x = int(os_to_tile($easting))-1;
-                            $y = int(os_to_tile($northing))-1;
-			}
-                    } else {
-		        $error = 'Could not understand that currently, sorry. ';
-		    }
-                } else {
-                    $error = 'Could not understand that currently, sorry. ';
-                }
-
-            }
+            ($x, $y, $error) = geocode($input{pc}) if (!$x && !$y);
         }
     } catch RABX::Error with {
         my $e = shift;
@@ -414,46 +376,8 @@ sub display {
     };
     return front_page($q, $error) if ($error);
 
-    my $pins = '';
-    my $min_e = tile_to_os($x);
-    my $min_n = tile_to_os($y);
-    my $mid_e = tile_to_os($x+1);
-    my $mid_n = tile_to_os($y+1);
-    my $max_e = tile_to_os($x+2);
-    my $max_n = tile_to_os($y+2);
-    my $current_map = select_all(
-        "select id,title,easting,northing from problem where state='confirmed'
-         and easting>=? and easting<? and northing>=? and northing<?
-         order by created desc limit 5", $min_e, $max_e, $min_n, $max_n);
-    my @ids = ();
-    foreach (@$current_map) {
-        push(@ids, $_->{id});
-        my $px = os_to_px($_->{easting}, $x);
-        my $py = os_to_px($_->{northing}, $y);
-        $pins .= display_pin($q, $px, $py, 'red');
-    }
-    my $current = select_all(
-        "select id, title, easting, northing, distance
-            from problem_find_nearby(?, ?, 10) as nearby, problem
-            where nearby.problem_id = problem.id
-            and state = 'confirmed'" . (@ids ? ' and id not in (' . join(',' , @ids) . ')' : '') . "
-         order by created desc limit 5", $mid_e, $mid_n);
-    foreach (@$current) {
-        my $px = os_to_px($_->{easting}, $x);
-        my $py = os_to_px($_->{northing}, $y);
-        $pins .= display_pin($q, $px, $py, 'red');
-    }
-    my $fixed = select_all(
-        "select id, title, easting, northing from problem where state='fixed'
-         order by created desc limit 5");
-    foreach (@$fixed) {
-        my $px = os_to_px($_->{easting}, $x);
-        my $py = os_to_px($_->{northing}, $y);
-        $pins .= display_pin($q, $px, $py, 'green');
-    }
-
-    my $out = '';
-    $out .= display_map($q, $x, $y, 1, 1, $pins);
+    my ($pins, $current_map, $current, $fixed) = map_pins($q, $x, $y);
+    my $out = display_map($q, $x, $y, 1, 1, $pins);
     $out .= '<h1>Click on the map to report a problem</h1>';
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
@@ -511,25 +435,14 @@ EOF
     return $out;
 }
 
-sub display_pin {
-    my ($q, $px, $py, $col) = @_;
-    # return '' if ($px<0 || $px>508 || $py<0 || $py>508);
-    my $out = '<img class="pin" src="/i/pin3' . $col . '.gif" alt="Problem" style="top:'
-        . ($py-59) . 'px; right:' . ($px-31) . 'px; position: absolute;">';
-    return $out unless $_->{id};
-    my $url = NewURL($q, id=>$_->{id}, x=>undef, y=>undef);
-    $out = '<a title="' . $_->{title} . '" href="' . $url . '">' . $out . '</a>';
-    return $out;
-}
-
 sub display_problem {
     my ($q, @errors) = @_;
 
     my @vars = qw(id name email update updates fixed reopen x y);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
-    $input{x} = oct($input{x});
-    $input{y} = oct($input{y});
+    $input{x} = $input{x} + 0;
+    $input{y} = $input{y} + 0;
 
     # Get all information from database
     my $problem = dbh()->selectrow_arrayref(
@@ -541,15 +454,12 @@ sub display_problem {
     my $y = os_to_tile($northing);
     my $x_tile = $input{x} || int($x);
     my $y_tile = $input{y} || int($y);
-    my $created = time();
 
     my $px = os_to_px($easting, $x_tile);
     my $py = os_to_px($northing, $y_tile);
 
-    my $out = '';
-    my $col = ($state eq 'fixed') ? 'green' : 'red';
-    my $pins = display_pin($q, $px, $py, $col);
-    $out .= display_map($q, $x_tile, $y_tile, 0, 1, $pins);
+    my ($pins) = map_pins($q, $x_tile, $y_tile, $input{id});
+    my $out = display_map($q, $x_tile, $y_tile, 0, 1, $pins);
     $out .= "<h1>$title</h1>";
     $out .= <<EOF;
 <script type="text/javascript">
@@ -579,9 +489,9 @@ EOF
         $out .= '<div id="updates"> <h2>Updates</h2>';
         foreach my $row (@$updates) {
             $out .= "<div><em>Posted by $row->{name} at " . prettify_epoch($row->{whenposted});
-	    $out .= ', marked fixed' if ($row->{mark_fixed});
-	    $out .= ', reopened' if ($row->{mark_open});
-	    $out .= '</em>';
+            $out .= ', marked fixed' if ($row->{mark_fixed});
+            $out .= ', reopened' if ($row->{mark_open});
+            $out .= '</em>';
             $out .= '<br>' . $row->{text} . '</div>';
         }
         $out .= '</div>';
@@ -620,6 +530,61 @@ $fixedline
 </form>
 EOF
     $out .= display_map_end(0);
+    return $out;
+}
+
+sub map_pins {
+    my ($q, $x, $y, $id) = @_;
+
+    my $pins = '';
+    my $min_e = tile_to_os($x);
+    my $min_n = tile_to_os($y);
+    my $mid_e = tile_to_os($x+1);
+    my $mid_n = tile_to_os($y+1);
+    my $max_e = tile_to_os($x+2);
+    my $max_n = tile_to_os($y+2);
+
+    my $current_map = select_all(
+        "select id,title,easting,northing from problem where state='confirmed'
+         and easting>=? and easting<? and northing>=? and northing<?
+         order by created desc limit 5", $min_e, $max_e, $min_n, $max_n);
+    my @ids = ();
+    foreach (@$current_map) {
+        push(@ids, $_->{id});
+        my $px = os_to_px($_->{easting}, $x);
+        my $py = os_to_px($_->{northing}, $y);
+        $pins .= display_pin($q, $px, $py, $_->{id}==$id ? 'blue' : 'red');
+    }
+    my $current = select_all(
+        "select id, title, easting, northing, distance
+            from problem_find_nearby(?, ?, 10) as nearby, problem
+            where nearby.problem_id = problem.id
+            and state = 'confirmed'" . (@ids ? ' and id not in (' . join(',' , @ids) . ')' : '') . "
+         order by created desc limit 5", $mid_e, $mid_n);
+    foreach (@$current) {
+        my $px = os_to_px($_->{easting}, $x);
+        my $py = os_to_px($_->{northing}, $y);
+        $pins .= display_pin($q, $px, $py, $_->{id}==$id ? 'blue' : 'red');
+    }
+    my $fixed = select_all(
+        "select id, title, easting, northing from problem where state='fixed'
+         order by created desc limit 5");
+    foreach (@$fixed) {
+        my $px = os_to_px($_->{easting}, $x);
+        my $py = os_to_px($_->{northing}, $y);
+        $pins .= display_pin($q, $px, $py, $_->{id}==$id ? 'blue' : 'green');
+    }
+    return ($pins, $current_map, $current, $fixed);
+}
+
+sub display_pin {
+    my ($q, $px, $py, $col) = @_;
+    # return '' if ($px<0 || $px>508 || $py<0 || $py>508);
+    my $out = '<img class="pin" src="/i/pin3' . $col . '.gif" alt="Problem" style="top:'
+        . ($py-59) . 'px; right:' . ($px-31) . 'px; position: absolute;">';
+    return $out unless $_->{id} && $col ne 'blue';
+    my $url = NewURL($q, id=>$_->{id}, x=>undef, y=>undef);
+    $out = '<a title="' . $_->{title} . '" href="' . $url . '">' . $out . '</a>';
     return $out;
 }
 
@@ -684,6 +649,48 @@ sub display_map_end {
     my $out = '</div>';
     $out .= '</form>' if ($type);
     return $out;
+}
+
+sub geocode {
+    my ($s) = @_;
+    my ($x, $y, $error);
+    my @loc = split /\s*,\s*/, $s;
+    #if (2 == @loc) {
+    #    my $url = 'http://geo.localsearchmaps.com/?country=UK&cb=cb&cbe=cbe&address='.$loc[0].'&city='.$loc[1];
+    #    my $js = LWP::Simple::get($url);
+    my $cache_dir = mySociety::Config::get('GEO_CACHE');
+    if (1 == @loc) {
+        my $url = 'http://geo.localsearchmaps.com/?country=UK&format=xml&address='.$loc[0].'&city=London';
+        my $cache_file = $cache_dir . md5_hex($url);
+        my $js;
+        if (-e $cache_file) {
+                $js = File::Slurp::read_file($cache_file);
+        } else {
+            $js = LWP::Simple::get($url);
+            File::Slurp::write_file($cache_file, $js);
+        }
+        if ($js =~ /^<response>\s+(.*?)\s+<\/response>$/s) {
+            my $response = $1;
+            my ($e) = $response =~ /<error>(.*?)<\/error>/;
+            my ($lat) = $response =~ /<latitude>(.*?)<\/latitude>/;
+            my ($lon) = $response =~ /<longitude>(.*?)<\/longitude>/;
+            my ($level) = $response =~ /<matchlevel>(.*?)<\/matchlevel>/;
+            if ($e) {
+                $error = $e;
+            } elsif ($level =~ /city/i) {
+                $error = 'Could not understand that currently, sorry. ';
+            } else {
+                my ($easting,$northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
+                $x = int(os_to_tile($easting))-1;
+                $y = int(os_to_tile($northing))-1;
+            }
+        } else {
+            $error = 'Could not understand that currently, sorry. ';
+        }
+    } else {
+        $error = 'Could not understand that currently, sorry. ';
+    }
+    return ($x, $y, $error);
 }
 
 # Checks the postcode is in one of the two London boroughs
