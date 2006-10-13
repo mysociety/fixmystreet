@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.47 2006-10-10 22:02:51 matthew Exp $
+# $Id: index.cgi,v 1.48 2006-10-13 15:37:49 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -304,8 +304,8 @@ drag_x = $px - 254; drag_y = 254 - $py;
 EOF
         }
         $out .= '<h1>Reporting a problem</h1>';
-        $out .= '<p>You have located the problem at the location marked with a yellow pin on the map, which is within '
-            . $council . '. If this is not the correct location, simply click on the map again.</p>
+        $out .= '<p>You have located the problem at the location marked with a purple pin on the map. If this is not the correct location, simply click on the map again.</p>
+<p>This problem will be reported to <strong>' . $council . '</strong>.</p>
 <p>Please fill in details of the problem below. Your council won\'t be able
 to help unless you leave as much detail as you can, so please describe the
 exact location of the problem (ie. on a wall or the floor), and so on.</p>';
@@ -702,7 +702,7 @@ sub postcode_check {
 
     my @councils_allowed = (2510, 2492, 2507);
     my @councils_no_email = (2288,2402,2390,2252,2351,2430,2375,2285,2377,2374,2330,2454,2284,2378,2294,2312,2419,2386,2363,2353,2296,2300,2291,2268,2512,2504,2495,# 2510
-    2530,2516,2531,2545,2586,2554,2574,2580,2615,2596,2599,2601,2648,2563,2652,2607,2582,14287,14317,14328,2223,2225,2242,2222,2248,2246,2235,2224,2244,2236);
+    2530,2516,2531,2545,2586,2554,2574,2580,2615,2596,2599,2601,2648,2652,2607,2582,14287,14317,14328,2225,2242,2222,2248,2246,2235,2224,2244,2236);
     my ($valid_councils, $invalid_councils);
     grep (vec($valid_councils, $_, 1) = 1, @councils_allowed);
     grep (vec($invalid_councils, $_, 1) = 1, @councils_no_email);

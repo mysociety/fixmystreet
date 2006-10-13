@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.28 2006-10-10 15:53:05 matthew Exp $
+# $Id: Page.pm,v 1.29 2006-10-13 15:37:49 matthew Exp $
 #
 
 package Page;
@@ -18,6 +18,9 @@ use Error qw(:try);
 use mySociety::Config;
 use mySociety::WatchUpdate;
 use mySociety::Web qw(ent NewURL);
+BEGIN {
+    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+}
 
 sub do_fastcgi {
     my $func = shift;
@@ -92,7 +95,7 @@ EOF
     $html .= $home ? '</h1>' : '</a></div>';
     $html .= '<div id="wrapper"><div id="content">';
     if (mySociety::Config::get('STAGING_SITE')) {
-        $html .= '<p id="error">This is a developer site, things might break at any time.</p>';
+        $html .= '<p id="error">This is a developer site; things might break at any time, and councils are not sent emails (they\'d get annoyed!).</p>';
     }
     return $html;
 }

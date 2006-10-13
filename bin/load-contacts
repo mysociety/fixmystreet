@@ -1,0 +1,48 @@
+#!/usr/bin/perl -w
+
+# canonicalise-csv:
+# Convert provided CSV file into one with standard names for MaPit
+#
+# Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
+# Email: matthew@mysociety.org. WWW: http://www.mysociety.org
+#
+# $Id: load-contacts,v 1.1 2006-10-13 15:37:48 matthew Exp $
+
+use strict;
+require 5.8.0;
+
+# Horrible boilerplate to set up appropriate library paths.
+use FindBin;
+use lib "$FindBin::Bin/../perllib";
+use lib "$FindBin::Bin/../../perllib";
+
+use mySociety::Config;
+use mySociety::DBHandle qw(dbh select_all);
+
+BEGIN {
+    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+    mySociety::DBHandle::configure(
+        Name => mySociety::Config::get('BCI_DB_NAME'),
+        User => mySociety::Config::get('BCI_DB_USER'),
+        Password => mySociety::Config::get('BCI_DB_PASS'),
+        Host => mySociety::Config::get('BCI_DB_HOST', undef),
+        Port => mySociety::Config::get('BCI_DB_PORT', undef)
+    );
+
+    if (!dbh()->selectrow_array('select secret from secret for update of secret')) {
+        local dbh()->{HandleError};
+        dbh()->do('insert into secret (secret) values (?)', {}, unpack('h*', mySociety::Util::random_bytes(32)));
+    }
+    dbh()->commit();
+}
+
+open(FP, "$FindBin::Bin/../data/councils_canonical.csv");
+while (<FP>) {
+    s/\r?\n//g;
+    my ($id, $email) = split /,/;
+    dbh()->do("INSERT INTO contacts (area_id, email, editor, whenedited, note)
+        VALUES (?, ?, 'import', ms_current_timestamp(), 'Initial import')",
+	{}, $id, $email);
+}
+dbh()->commit();
+close(FP);

@@ -1,0 +1,110 @@
+#!/usr/bin/perl -w
+
+# canonicalise-csv:
+# Convert provided CSV file into one with standard names for MaPit
+#
+# Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
+# Email: matthew@mysociety.org. WWW: http://www.mysociety.org
+#
+# $Id: canonicalise-csv,v 1.1 2006-10-13 15:37:48 matthew Exp $
+
+use strict;
+require 5.8.0;
+
+# Horrible boilerplate to set up appropriate library paths.
+use FindBin;
+use lib "$FindBin::Bin/../perllib";
+use lib "$FindBin::Bin/../../perllib";
+
+use mySociety::Config;
+use mySociety::MaPit;
+use mySociety::VotingArea;
+
+BEGIN {
+    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+    mySociety::MaPit::configure();
+}
+
+my %councils;
+open(FP, "$FindBin::Bin/../data/councils.csv");
+while (<FP>) {
+    s/\r?\n//g;
+    my ($name, $email) = split /,/;
+    $email ||= '';
+
+    # Canonicalise
+    next if $name eq 'Londonderry'; # Dupe of Derry
+    next if $name eq 'Kingston upon Hull'; # Dupe of Hull
+    next if $name eq 'London' || $name eq 'Greater London'; # Untrustworthy
+
+    # Different
+    $name = 'Corporation of London' if $name eq 'City of London';
+    $name = "Renfrewsh'r" if $name eq 'Renfrewshire';
+    # Shorter
+    $name = 'Blackburn' if $name eq 'Blackburn with Darwen';
+    $name = 'Dungannon' if $name eq 'Dungannon & South Tyrone';
+    $name = 'Staffordshire' if $name eq 'Staffordshire County';
+    $name = 'Armagh' if $name eq 'Armagh City';
+    # Longer
+    $name = 'Kingston upon Hull' if $name eq 'Hull';
+    $name = "City of $name" if $name =~ /^(Edinburgh|Glasgow|York)$/;
+    $name .= ' Islands' if $name eq 'Shetland';
+    $name .= ' & Chelsea' if $name eq 'Kensington';
+    # Wrong
+    $name =~ s/King's Lynn/Kings Lynn/;
+    $name = 'Surrey Heath' if $name eq 'Surrey Health';
+    $name = 'Barking & Dagenham' if $name eq 'Barking-Dagenham';
+    $name = 'Newtownabbey' if $name eq 'Newtonabbey';
+    $name = 'Isles of Scilly' if $name eq 'Isle of Scilly';
+    # Compass
+    $name =~ s/North East /N. E. /;
+    $name =~ s/^North West /N. W. /;
+    $name =~ s/^North (?!Lincolnshire|Norfolk|Somerset)/N. /;
+    $name =~ s/^South (?!Shropshire|Staffordshire|Somerset)/S. /;
+    $name =~ s/^East (?!Staffordshire)/E. /;
+    $name =~ s/^West(ern)? (?!Berkshire|Wiltshire)/W. /;
+    $name =~ s/ W / W. /;
+    # Various
+    $name =~ s/^Great /Gt. /;
+    $name =~ s/^St /St. /;
+    $name =~ s/ and / & /;
+    $name =~ s/ ?Royal$//;
+    $name =~ s/ Borough$//;
+    $name =~ s/-(upon|on|le)-/ $1 /;
+    $councils{$name} = $email;
+}
+close(FP);
+
+my $types = $mySociety::VotingArea::council_parent_types;
+my (%out, @missing);
+foreach my $type (@$types) {
+    my $areas = mySociety::MaPit::get_areas_by_type($type);
+    my $areas_info = mySociety::MaPit::get_voting_areas_info($areas);
+    foreach my $id (keys %$areas_info) {
+        my $area_info = $areas_info->{$id};
+	my $name = $area_info->{name};
+	if ($name eq 'Durham City Council') {
+	    $out{$id} = $councils{'Durham City'};
+	    next;
+	} elsif ($name eq 'Durham County Council') {
+	    $out{$id} = $councils{'Durham County'};
+	    next;
+	}
+	$name =~ s/( (Borough|City|District|County))* Council//;
+        if ($councils{$name} && $councils{$name} =~ /@/) {
+	    $out{$id} = $councils{$name};
+	} elsif ($councils{$name} || exists($councils{$name})) {
+	    push @missing, $id;
+	}
+    }
+}
+
+# Output missing IDs to STDOUT
+print join(',', @missing) . "\n";
+
+# Output emails to canonical CSV
+open(FP, ">$FindBin::Bin/../data/councils_canonical.csv");
+foreach (sort keys %out) {
+    print FP "$_," . $out{$_} . "\n";
+}
+close FP;
