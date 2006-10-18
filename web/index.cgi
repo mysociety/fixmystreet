@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.48 2006-10-13 15:37:49 matthew Exp $
+# $Id: index.cgi,v 1.49 2006-10-18 19:18:31 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -173,6 +173,16 @@ sub submit_problem {
     my @vars = qw(title detail name email phone pc easting northing updates);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
+
+    my $fh = $q->upload('photo');
+    if ($fh) {
+        my $ct = $q->uploadInfo($fh)->{'Content-Type'};
+        my $cd = $q->uploadInfo($fh)->{'Content-Disposition'};
+        $q->delete('photo');
+        push (@errors, 'Please upload a JPEG image only') unless
+            ($ct eq 'image/jpeg' || $ct eq 'image/pjpeg');
+    }
+
     push(@errors, 'Please enter a title') unless $input{title};
     push(@errors, 'Please enter some details') unless $input{detail};
     push(@errors, 'Please enter your name') unless $input{name};
@@ -184,12 +194,7 @@ sub submit_problem {
     my $id = dbh()->selectrow_array("select nextval('problem_id_seq');");
 
     my $image;
-    if (my $fh = $q->upload('photo')) {
-        my $ct = $q->uploadInfo($fh)->{'Content-Type'};
-        my $cd = $q->uploadInfo($fh)->{'Content-Disposition'};
-        $q->delete('photo');
-        return display_form($q, ('Please upload an image only')) unless
-            ($ct eq 'image/jpeg' || $ct eq 'image/pjpeg');
+    if ($fh) {
         $image = Image::Magick->new;
         $image->Read(file=>$fh);
         close $fh;
