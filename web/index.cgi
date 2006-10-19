@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.49 2006-10-18 19:18:31 matthew Exp $
+# $Id: index.cgi,v 1.50 2006-10-19 15:01:30 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -398,7 +398,7 @@ EOF
     $out .= <<EOF;
 <div>
 <h2>Recent problems reported on this map</h2>
-<ul id="current">
+<ol id="current">
 EOF
     foreach (@$current_map) {
         $out .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
@@ -408,10 +408,11 @@ EOF
     unless (@$current_map) {
         $out .= '<li>No problems have been reported yet.</li>';
     }
+    my $list_start = @$current_map + 1;
     $out .= <<EOF;
-    </ul>
+    </ol>
     <h2>Recent problems reported within 10km</h2>
-    <ul id="current">
+    <ol id="current" start="$list_start">
 EOF
     foreach (@$current) {
         $out .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
@@ -422,10 +423,10 @@ EOF
         $out .= '<li>No problems have been reported yet.</li>';
     }
     $out .= <<EOF;
-    </ul>
+    </ol>
     <h2>Recent updates to problems?</h2>
     <h2>Recently fixed problems</h2>
-    <ul>
+    <ol>
 EOF
     foreach (@$fixed) {
         $out .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
@@ -435,7 +436,7 @@ EOF
     unless (@$fixed) {
         $out .= '<li>No problems have been fixed yet</li>';
     }
-    $out .= '</ul></div>';
+    $out .= '</ol></div>';
     $out .= display_map_end(1);
     return $out;
 }
@@ -552,41 +553,61 @@ sub map_pins {
     my $current_map = select_all(
         "select id,title,easting,northing from problem where state='confirmed'
          and easting>=? and easting<? and northing>=? and northing<?
-         order by created desc limit 5", $min_e, $max_e, $min_n, $max_n);
+         order by created desc limit 9", $min_e, $max_e, $min_n, $max_n);
     my @ids = ();
+    my $count_prob = 1;
+    my $count_fixed = 1;
     foreach (@$current_map) {
         push(@ids, $_->{id});
         my $px = os_to_px($_->{easting}, $x);
         my $py = os_to_px($_->{northing}, $y);
-        $pins .= display_pin($q, $px, $py, $_->{id}==$id ? 'blue' : 'red');
+        if ($_->{id}==$id) {
+            $pins .= display_pin($q, $px, $py, 'blue');
+        } else {
+            $pins .= display_pin($q, $px, $py, 'red', $count_prob++);
+        }
     }
-    my $current = select_all(
-        "select id, title, easting, northing, distance
-            from problem_find_nearby(?, ?, 10) as nearby, problem
-            where nearby.problem_id = problem.id
-            and state = 'confirmed'" . (@ids ? ' and id not in (' . join(',' , @ids) . ')' : '') . "
-         order by created desc limit 5", $mid_e, $mid_n);
-    foreach (@$current) {
-        my $px = os_to_px($_->{easting}, $x);
-        my $py = os_to_px($_->{northing}, $y);
-        $pins .= display_pin($q, $px, $py, $_->{id}==$id ? 'blue' : 'red');
+    my $current = [];
+    if (@$current_map < 9) {
+        my $limit = 9 - @$current_map;
+        $current = select_all(
+            "select id, title, easting, northing, distance
+                from problem_find_nearby(?, ?, 10) as nearby, problem
+                where nearby.problem_id = problem.id
+                and state = 'confirmed'" . (@ids ? ' and id not in (' . join(',' , @ids) . ')' : '') . "
+             order by distance limit $limit", $mid_e, $mid_n);
+        foreach (@$current) {
+            my $px = os_to_px($_->{easting}, $x);
+            my $py = os_to_px($_->{northing}, $y);
+            if ($_->{id}==$id) {
+                $pins .= display_pin($q, $px, $py, 'blue');
+            } else {
+                $pins .= display_pin($q, $px, $py, 'red', $count_prob++);
+            }
+        }
     }
     my $fixed = select_all(
         "select id, title, easting, northing from problem where state='fixed'
-         order by created desc limit 5");
+         order by created desc limit 9");
     foreach (@$fixed) {
         my $px = os_to_px($_->{easting}, $x);
         my $py = os_to_px($_->{northing}, $y);
-        $pins .= display_pin($q, $px, $py, $_->{id}==$id ? 'blue' : 'green');
+        if ($_->{id}==$id) {
+            $pins .= display_pin($q, $px, $py, 'blue');
+        } else {
+            $pins .= display_pin($q, $px, $py, 'green', $count_fixed++);
+        }
     }
     return ($pins, $current_map, $current, $fixed);
 }
 
 sub display_pin {
-    my ($q, $px, $py, $col) = @_;
-    # return '' if ($px<0 || $px>508 || $py<0 || $py>508);
-    my $out = '<img class="pin" src="/i/pin3' . $col . '.gif" alt="Problem" style="top:'
-        . ($py-59) . 'px; right:' . ($px-31) . 'px; position: absolute;">';
+    my ($q, $px, $py, $col, $num) = @_;
+    $num = '' unless $num;
+    my %cols = (red=>'R', green=>'G', blue=>'B', purple=>'P');
+    my $out = '<img class="pin" src="/i/pin' . $cols{$col}
+        . $num . '.gif" alt="Problem" style="top:' . ($py-59)
+        . 'px; right:' . ($px-31) . 'px; position: absolute;">';
     return $out unless $_->{id} && $col ne 'blue';
     my $url = NewURL($q, id=>$_->{id}, x=>undef, y=>undef);
     $out = '<a title="' . $_->{title} . '" href="' . $url . '">' . $out . '</a>';

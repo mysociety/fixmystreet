@@ -230,10 +230,12 @@ fieldset div.checkbox label {
     border: 0;
 }
 
-ul#current img {
+/*
+ol#current img {
     position: absolute;
     border: none;
 }
+*/
 
 #expl {
     text-align: center;
