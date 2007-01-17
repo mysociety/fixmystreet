@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.50 2006-10-19 15:01:30 matthew Exp $
+# $Id: index.cgi,v 1.51 2007-01-17 23:58:30 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -103,7 +103,7 @@ EOF
 &nbsp;<input type="submit" value="Go">
 </form>
 
-<p>Reports are sent directly to the local council &ndash; at the moment, we only cover <em>Newham, Lewisham, and Islington</em> councils. The rest of the UK is coming soon!</p>
+<p>Reports are sent directly to the local council, apart from a few councils where we're missing details.</p>
 
 <p>Reporting a problem is very simple:</p>
 
@@ -726,11 +726,9 @@ sub postcode_check {
     my $areas;
     $areas = mySociety::MaPit::get_voting_areas($pc);
 
-    my @councils_allowed = (2510, 2492, 2507);
     my @councils_no_email = (2288,2402,2390,2252,2351,2430,2375,2285,2377,2374,2330,2454,2284,2378,2294,2312,2419,2386,2363,2353,2296,2300,2291,2268,2512,2504,2495,# 2510
     2530,2516,2531,2545,2586,2554,2574,2580,2615,2596,2599,2601,2648,2652,2607,2582,14287,14317,14328,2225,2242,2222,2248,2246,2235,2224,2244,2236);
-    my ($valid_councils, $invalid_councils);
-    grep (vec($valid_councils, $_, 1) = 1, @councils_allowed);
+    my ($invalid_councils);
     grep (vec($invalid_councils, $_, 1) = 1, @councils_no_email);
 
     # Cheltenham example: CTY=2226 DIS=2326
@@ -744,7 +742,6 @@ sub postcode_check {
 
     # XXX: Pick first council, hmm
     my $council = $areas->{$councils[0]};
-    throw Error::Simple("I'm afraid that postcode isn't in our covered London boroughs.\n") if (@councils_allowed && !vec($valid_councils, $council, 1));
 
     my $area_info = mySociety::MaPit::get_voting_area_info($council);
     my $name = $area_info->{name};

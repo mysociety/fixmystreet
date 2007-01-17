@@ -1,164 +1,269 @@
-window.onload = init;
-function init() { map = new Map('map'); }
+/*
+ * js.js
+ * Neighbourhood Fix-It JavaScript
+ * 
+ * TODO
+ * Run all this onDocumentReady rather than onLoad
+ * Investigate jQuery
+ * Stop annoying flickers/map spasms when dragging
+ * Tidy it all up
+ * Selection of pin doesn't really need a server request, but I don't really care
+ * 
+ */
 
-function Map(m) {
-    // Public variables
-    this.map = document.getElementById(m);
-    this.pos = YAHOO.util.Dom.getXY(this.map);
-    this.width = this.map.offsetWidth - 2;
-    this.height = this.map.offsetHeight - 2;
-    this.tilewidth = 254;
-    this.tileheight = 254;
-    if (this.width != 508 || this.height != 508) {
-        return false;
+
+window.onload = onLoad;
+
+// I love the global
+var tile_x = 0;
+var tile_y = 0;
+var tilewidth = 254;
+var tileheight = 254;
+
+var in_drag;
+function onLoad() {
+    var compass = document.getElementById('compass');
+    if (compass) {
+        var points = compass.getElementsByTagName('a');
+        points[1].onclick = function() { pan(0, tileheight); return false; };
+        points[3].onclick = function() { pan(tilewidth, 0); return false; };
+        points[4].onclick = function() { pan(-tilewidth, 0); return false; };
+        points[6].onclick = function() { pan(0, -tileheight); return false; };
+        points[0].onclick = function() { pan(tilewidth, tileheight); return false; };
+        points[2].onclick = function() { pan(-tilewidth, tileheight); return false; };
+        points[5].onclick = function() { pan(tilewidth, -tileheight); return false; };
+        points[7].onclick = function() { pan(-tilewidth, -tileheight); return false; };
     }
-    this.point = new Point();
-    this.zoomed = false;
-    this.drag = this.map.getElementsByTagName('div')[0];
 
-    // Private variables
-    var drag_x = 0;
-    var drag_y = 0;
-    var self = this;
-
-    // Event handlers
-    this.map.onmousedown = associateObjWithEvent(this, 'drag_start');
-//    this.map.ondblclick = associateObjWithEvent(this, 'centre');
-    this.map.onclick = associateObjWithEvent(this, 'add_pin');
-    document.onmouseout = associateObjWithEvent(this, 'drag_end_out');
-
-    // Moving the map, loading more tiles as necessary
-    this.update = function(dx, dy, noMove) {
-        drag_x += dx;
-        drag_y += dy;
-        this.point.x = x + 1 - drag_x/this.tilewidth;
-        this.point.y = y + 1 - drag_y/this.tileheight;
-        if (!noMove) {
-            this.drag.style.left = drag_x + 'px';
-            this.drag.style.top = drag_y + 'px';
-        }
-        return false;
-    };
-    this.update(0,0);
-
-    this.add_pin = function(e, point) {
-        if (this.in_drag) { this.in_drag = false; return false; }
-        if (!point) point = new Point();
-        m = new Pin(point.x-this.pos[0]-drag_x, point.y-this.pos[1]-drag_y);
-        this.drag.appendChild(m.pin);
-        return false;
+    var drag = document.getElementById('drag');
+    var form = document.getElementById('mapForm');
+    if (form) form.onsubmit = form_submit;
+    if (drag) {
+        var inputs = drag.getElementsByTagName('input');
+        update_tiles(0, 0, false, true);
+        var map = document.getElementById('map');
+        map.onmousedown = drag_start;
+        document.onmouseout = drag_end_out;
     }
 }
 
-Map.prototype = {
-    myAnim : null,
-    in_drag : false,
+/*
+    var targ = '';
+    if (!e) e = window.event;
+    if (e.target) targ = e.target;
+    else if (e.srcElement) targ = e.srcElement;
+    if (targ.nodeType == 3) // defeat Safari bug
+        targ = targ.parentNode;
+*/
 
-    setCursor : function(s) {
-        this.map.style.cursor = s;
-    },
+function form_submit() {
+    this.x.value = x + 2;
+    this.y.value = y + 2;
+    return true;
+}
 
-    centre : function(e, point){
-        var x = -point.x + this.width/2 + this.pos[0];
-        var y = -point.y + this.height/2 + this.pos[1];
-        this.pan(x,y);
-    },
+function image_rotate(i, j, x, y) {
+    var id = 't' + i + '.' + j;
+    var img = document.getElementById(id);
+    // img.src = '/i/grey.gif';
+    if (x)
+        img.style.left = (img.offsetLeft + x*tilewidth) + 'px';
+    if (y)
+        img.style.top = (img.offsetTop + y*tileheight) + 'px';
+}
 
-    drag_move : function(e, point){
-        this.in_drag = true;
-        this.last_mouse_pos = this.mouse_pos;
-        this.mouse_pos = point;
-        this.update(this.mouse_pos.x-this.last_mouse_pos.x, this.mouse_pos.y-this.last_mouse_pos.y);
+var myAnim;
+function pan(x, y) {
+    if (!myAnim || !myAnim.isAnimated()) {
+        update_tiles(x, y, true, false);
+        myAnim = new YAHOO.util.Motion('drag', { points:{by:[x,y]} }, 1, YAHOO.util.Easing.easeBoth);
+        myAnim.animate();
+    }
+}
+
+function update_tiles(dx, dy, noMove, force) {
+    if (!dx && !dy && !force) return;
+
+    var old_drag_x = drag_x;
+    var old_drag_y = drag_y;
+    drag_x += dx;
+    drag_y += dy;
+
+    if (!noMove) {
+        var drag = document.getElementById('drag');
+        drag.style.left = drag_x + 'px';
+        drag.style.top = drag_y + 'px';
+    }
+
+    var horizontal = Math.floor(old_drag_x/tilewidth) - Math.floor(drag_x/tilewidth);
+    var vertical = Math.floor(old_drag_y/tileheight) - Math.floor(drag_y/tileheight);
+    if (!horizontal && !vertical && !force) return;
+
+    for (var j=0; j<horizontal; j++) {
+        for (var i=0; i<6; i++) { image_rotate(i, mod(j + tile_x, 6),  6, 0); }
+    }
+    for (var j=horizontal; j<0; j++) {
+        for (var i=0; i<6; i++) { image_rotate(i, mod(j + tile_x, 6), -6, 0); }
+    }
+    for (var i=0; i<vertical; i++) {
+        for (var j=0; j<6; j++) { image_rotate(mod(i + tile_y, 6), j, 0,  6); }
+    }
+    for (var i=vertical; i<0; i++) {
+        for (var j=0; j<6; j++) { image_rotate(mod(i + tile_y, 6), j, 0, -6); }
+    }
+
+    x += horizontal;
+    tile_x = mod((tile_x + horizontal), 6);
+    y -= vertical;
+    tile_y = mod((tile_y + vertical), 6);
+
+    var url = '/tilma/tileserver/10k-full-london/' + x + '-' + (x+5) + ',' + y + '-' + (y+5) + '/JSON';
+    var req = YAHOO.util.Connect.asyncRequest('GET', url, async_response);
+}
+
+var async_response = {
+    success: urls_loaded,
+    failure: urls_not_loaded
+};
+
+function urls_not_loaded(o) {
+}
+
+// Load 6x6 grid of tiles around current 2x2
+function urls_loaded(o) {
+    var tiles = eval(o.responseText);
+    var drag = document.getElementById('drag');
+    for (var i=0; i<6; i++) {
+        var ii = (i + tile_y) % 6;
+        for (var j=0; j<6; j++) {
+            var jj = (j + tile_x) % 6;
+            var id = 't'+ii+'.'+jj;
+            var xx = x+j;
+            var yy = y+5-i;
+            var img = document.getElementById(id);
+            if (img) {
+                if (!img.galleryimg) { img.galleryimg = false; }
+                img.onclick = drag_check;
+                var new_src = 'http://tilma.mysociety.org/tileserver/10k-full-london/' + tiles[i][j];
+                if (img.src != new_src) img.src = new_src;
+                img.name = 'tile_' + xx + '.' + yy;
+                continue;
+            }
+            img = document.createElement('input');
+            img.type = 'image';
+            img.src = 'http://tilma.mysociety.org/tileserver/10k-full-london/' + tiles[i][j];
+            img.name = 'tile_' + xx + '.' + yy;
+            img.id = id;
+            img.onclick = drag_check;
+            img.style.position = 'absolute';
+            img.style.width = tilewidth + 'px';
+            img.style.height = tileheight + 'px';
+            img.style.top = ((ii-2)*tileheight) + 'px';
+            img.style.left = ((jj-2)*tilewidth) + 'px';
+            img.galleryimg = false;
+            img.alt = 'Loading...';
+            drag.appendChild(img);
+        }
+    }
+}
+
+// Floor always closer to 0
+function floor(n) {
+    if (n>=0) return Math.floor(n);
+    return Math.ceil(n);
+}
+
+// Mod always to positive result
+function mod(m, n) {
+    if (m>=0) return m % n;
+    return (m % n) + n;
+}
+
+/* Dragging */
+
+var last_mouse_pos = {};
+var mouse_pos = {};
+
+function drag_move(e) {
+    if (!e) var e = window.event;
+    var point = get_posn(e);
+    if (point == mouse_pos) return false;
+    in_drag = true;
+    last_mouse_pos = mouse_pos;
+    mouse_pos = point;
+    var dx = mouse_pos.x-last_mouse_pos.x;
+    var dy = mouse_pos.y-last_mouse_pos.y;
+    update_tiles(dx, dy, false, false);
+    return false;
+}
+
+function drag_check() {
+    if (in_drag) {
+        in_drag=false;
         return false;
-    },
-    drag_start : function(e, point){
-        this.mouse_pos = point;
-        this.setCursor('move');
-        document.onmousemove = associateObjWithEvent(this, 'drag_move');
-        document.onmouseup = associateObjWithEvent(this, 'drag_end');
-        return false;
-    },
-    drag_end : function(e){
+    }
+    return true;
+}
+
+function drag_start(e) {
+    if (!e) var e = window.event;
+    mouse_pos = get_posn(e);
+    setCursor('move');
+    document.onmousemove = drag_move;
+    document.onmouseup = drag_end;
+    return false;
+}
+
+function drag_end(e) {
+    if (!e) var e = window.event;
+    if (e.stopPropagation) e.stopPropagation();
+    document.onmousemove = null;
+    document.onmouseup = null;
+    setCursor('crosshair');
+    //if (in_drag) return false; // XXX I don't understand!
+}
+
+function drag_end_out(e) {
+    if (!e) var e = window.event;
+    var relTarg;
+    if (e.relatedTarget) { relTarg = e.relatedTarget; }
+    else if (e.toElement) { relTarg = e.toElement; }
+    if (!relTarg) {
+        // mouse out to unknown = left the window?
         document.onmousemove = null;
         document.onmouseup = null;
-        this.setCursor('auto');
-//        this.in_drag = false;
-        return false;
-    },
-    drag_end_out : function(e){
-        var relTarg;
-        if (e.relatedTarget) { relTarg = e.relatedTarget; }
-        else if (e.toElement) { relTarg = e.toElement; }
-        if (!relTarg) {
-            // mouse out to unknown = left the window?
-            document.onmousemove = null;
-            document.onmouseup = null;
-            this.setCursor('auto');
-        }
-        return false;
+        setCursor('crosshair');
     }
+    return false;
+}
 
-};
-
-function get_posn(e) {
+/* Called every mousemove, so on first call, overwrite itself with quicker version */
+function get_posn(ev) {
     var posx, posy;
-    if (e.pageX || e.pageY) {
-        posx = e.pageX;
-        posy = e.pageY;
-    } else if (e.clientX || e.clientY) {
-        posx = e.clientX;
-        if (document.documentElement && document.documentElement.scrollLeft) {
-            posx += document.documentElement.scrollLeft;
-        } else {
-            posx += document.body.scrollLeft;
-        }
-        posy = e.clientY;
-        if (document.documentElement && document.documentElement.scrollTop) {
-            posy += document.documentElement.scrollTop;
-        } else {
-            posy += document.body.scrollTop;
-        }
+    if (ev.pageX || ev.pageY) {
+        get_posn = function(e) {
+            return { x: e.pageX, y: e.pageY };
+        };
+    } else if (ev.clientX || ev.clientY) {
+        get_posn = function(e) {
+            return {
+                x: e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft,
+                y: e.clientY + document.body.scrollTop + document.documentElement.scrollTop
+            };
+        };
+    } else {
+        get_posn = function(e) {
+            return { x: undef, y: undef };
+        };
     }
-    return new Point(posx, posy);
+    return get_posn(ev);
 }
 
-function associateObjWithEvent(obj, methodName) {
-    return (function(e) {
-        e = e || window.event;
-        var point = get_posn(e);
-        return obj[methodName](e, point);
-    });
+function setCursor(s) {
+    var drag = document.getElementById('drag');
+    var inputs = drag.getElementsByTagName('input');
+    for (var i=0; i<inputs.length; i++) {
+        inputs[i].style.cursor = s;
+    }
 }
 
-function Point(x,y) {
-    this.x = x || 0;
-    this.y = y || 0;
-}
-Point.prototype.toString = function(){
-    return "("+this.x+", "+this.y+")";
-};
-
-function Pin(x,y) {
-    this.x = x || 0;
-    this.y = y || 0;
-    this.x -= 6;
-    this.y -= 20;
-    pin = document.createElement('div');
-    pin.style.position = 'absolute';
-    pin.style.top = this.y + 'px';
-    pin.style.left = this.x + 'px';
-    shadow = document.createElement('img');
-    shadow.style.top = '0px';
-    shadow.style.left = '0px';
-    shadow.src = 'i/pin_shadow.png';
-    pin.appendChild(shadow);
-    img = document.createElement('img');
-    img.style.top = '0px';
-    img.style.left = '0px';
-    img.src = 'i/pin_yellow.png';
-    pin.appendChild(img);
-    this.pin = pin;
-}
-Pin.prototype.toString = function() {
-    return "("+this.x+", "+this.y+")";
-}

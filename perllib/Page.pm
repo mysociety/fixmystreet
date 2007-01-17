@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.29 2006-10-13 15:37:49 matthew Exp $
+# $Id: Page.pm,v 1.30 2007-01-17 23:58:30 matthew Exp $
 #
 
 package Page;
@@ -75,15 +75,8 @@ EOF
 # <script defer type="text/javascript" src="/pngfix.js"></script>
 # <![endif]-->
     $html .= <<EOF;
-        <link type="text/css" rel="stylesheet" href="/yui/logger.css">
-        <script type="text/javascript" src="/yui/yahoo-min.js"></script>
-        <script type="text/javascript" src="/yui/dom-min.js"></script>
-        <script type="text/javascript" src="/yui/event-min.js"></script>
-        <script type="text/javascript" src="/yui/animation-min.js"></script>
-        <script type="text/javascript" src="/yui/dragdrop-min.js"></script>
-        <script type="text/javascript" src="/yui/logger-min.js"></script>
-        <script type="text/javascript" src="/js2.js"></script>
-        <script type="text/javascript" src="/jslib/utils.js"></script>
+        <script type="text/javascript" src="/yui/utilities.js"></script>
+        <script type="text/javascript" src="/js.js"></script>
         <title>${title}Neighbourhood Fix-It</title>
         <style type="text/css">\@import url("/css.css");</style>
     </head>
