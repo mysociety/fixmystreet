@@ -3,16 +3,38 @@
  * Neighbourhood Fix-It JavaScript
  * 
  * TODO
- * Run all this onDocumentReady rather than onLoad
  * Investigate jQuery
- * Stop annoying flickers/map spasms when dragging
  * Tidy it all up
+ * Don't wrap around tiles as it's quite confusing if the tile server is slow to respond
  * Selection of pin doesn't really need a server request, but I don't really care
  * 
  */
 
+YAHOO.util.Event.onContentReady('compass', function() {
+    var points = this.getElementsByTagName('a');
+    points[1].onclick = function() { pan(0, tileheight); return false; };
+    points[3].onclick = function() { pan(tilewidth, 0); return false; };
+    points[4].onclick = function() { pan(-tilewidth, 0); return false; };
+    points[6].onclick = function() { pan(0, -tileheight); return false; };
+    points[0].onclick = function() { pan(tilewidth, tileheight); return false; };
+    points[2].onclick = function() { pan(-tilewidth, tileheight); return false; };
+    points[5].onclick = function() { pan(tilewidth, -tileheight); return false; };
+    points[7].onclick = function() { pan(-tilewidth, -tileheight); return false; };
+});
 
-window.onload = onLoad;
+YAHOO.util.Event.onContentReady('mapForm', function() {
+    this.onsubmit = function() {
+        this.x.value = x + 2;
+        this.y.value = y + 2;
+        return true;
+    }
+});
+
+var in_drag;
+YAHOO.util.Event.onContentReady('drag', function() {
+    var dragO = new YAHOO.util.DDMap('map');
+    update_tiles(0, 0, false, true);
+});
 
 // I love the global
 var tile_x = 0;
@@ -20,52 +42,17 @@ var tile_y = 0;
 var tilewidth = 254;
 var tileheight = 254;
 
-var in_drag;
-function onLoad() {
-    var compass = document.getElementById('compass');
-    if (compass) {
-        var points = compass.getElementsByTagName('a');
-        points[1].onclick = function() { pan(0, tileheight); return false; };
-        points[3].onclick = function() { pan(tilewidth, 0); return false; };
-        points[4].onclick = function() { pan(-tilewidth, 0); return false; };
-        points[6].onclick = function() { pan(0, -tileheight); return false; };
-        points[0].onclick = function() { pan(tilewidth, tileheight); return false; };
-        points[2].onclick = function() { pan(-tilewidth, tileheight); return false; };
-        points[5].onclick = function() { pan(tilewidth, -tileheight); return false; };
-        points[7].onclick = function() { pan(-tilewidth, -tileheight); return false; };
+function drag_check(e) {
+    if (in_drag) {
+        in_drag=false;
+        return false;
     }
-
-    var drag = document.getElementById('drag');
-    var form = document.getElementById('mapForm');
-    if (form) form.onsubmit = form_submit;
-    if (drag) {
-        var inputs = drag.getElementsByTagName('input');
-        update_tiles(0, 0, false, true);
-        var map = document.getElementById('map');
-        map.onmousedown = drag_start;
-        document.onmouseout = drag_end_out;
-    }
-}
-
-/*
-    var targ = '';
-    if (!e) e = window.event;
-    if (e.target) targ = e.target;
-    else if (e.srcElement) targ = e.srcElement;
-    if (targ.nodeType == 3) // defeat Safari bug
-        targ = targ.parentNode;
-*/
-
-function form_submit() {
-    this.x.value = x + 2;
-    this.y.value = y + 2;
     return true;
 }
 
 function image_rotate(i, j, x, y) {
     var id = 't' + i + '.' + j;
     var img = document.getElementById(id);
-    // img.src = '/i/grey.gif';
     if (x)
         img.style.left = (img.offsetLeft + x*tilewidth) + 'px';
     if (y)
@@ -76,7 +63,8 @@ var myAnim;
 function pan(x, y) {
     if (!myAnim || !myAnim.isAnimated()) {
         update_tiles(x, y, true, false);
-        myAnim = new YAHOO.util.Motion('drag', { points:{by:[x,y]} }, 1, YAHOO.util.Easing.easeBoth);
+        myAnim = new YAHOO.util.Motion('drag', { points:{by:[x,y]} }, 10, YAHOO.util.Easing.easeOut);
+        myAnim.useSeconds = false;
         myAnim.animate();
     }
 }
@@ -167,74 +155,10 @@ function urls_loaded(o) {
     }
 }
 
-// Floor always closer to 0
-function floor(n) {
-    if (n>=0) return Math.floor(n);
-    return Math.ceil(n);
-}
-
 // Mod always to positive result
 function mod(m, n) {
     if (m>=0) return m % n;
     return (m % n) + n;
-}
-
-/* Dragging */
-
-var last_mouse_pos = {};
-var mouse_pos = {};
-
-function drag_move(e) {
-    if (!e) var e = window.event;
-    var point = get_posn(e);
-    if (point == mouse_pos) return false;
-    in_drag = true;
-    last_mouse_pos = mouse_pos;
-    mouse_pos = point;
-    var dx = mouse_pos.x-last_mouse_pos.x;
-    var dy = mouse_pos.y-last_mouse_pos.y;
-    update_tiles(dx, dy, false, false);
-    return false;
-}
-
-function drag_check() {
-    if (in_drag) {
-        in_drag=false;
-        return false;
-    }
-    return true;
-}
-
-function drag_start(e) {
-    if (!e) var e = window.event;
-    mouse_pos = get_posn(e);
-    setCursor('move');
-    document.onmousemove = drag_move;
-    document.onmouseup = drag_end;
-    return false;
-}
-
-function drag_end(e) {
-    if (!e) var e = window.event;
-    if (e.stopPropagation) e.stopPropagation();
-    document.onmousemove = null;
-    document.onmouseup = null;
-    setCursor('crosshair');
-    //if (in_drag) return false; // XXX I don't understand!
-}
-
-function drag_end_out(e) {
-    if (!e) var e = window.event;
-    var relTarg;
-    if (e.relatedTarget) { relTarg = e.relatedTarget; }
-    else if (e.toElement) { relTarg = e.toElement; }
-    if (!relTarg) {
-        // mouse out to unknown = left the window?
-        document.onmousemove = null;
-        document.onmouseup = null;
-        setCursor('crosshair');
-    }
-    return false;
 }
 
 /* Called every mousemove, so on first call, overwrite itself with quicker version */
@@ -267,3 +191,34 @@ function setCursor(s) {
     }
 }
 
+var mouse_pos = {};
+YAHOO.util.DDMap = function(id, sGroup, config) {
+    if (id) {
+        this.init(id, sGroup, config);
+    }
+};
+YAHOO.extend(YAHOO.util.DDMap, YAHOO.util.DD, {
+    scroll: false,
+    b4MouseDown: function(e) { },
+    b4StartDrag: function(x, y) { },
+    startDrag: function(x, y) {
+        mouse_pos = { x: x, y: y };
+        setCursor('move');
+        in_drag = true;
+    },
+    onDrag: function(e) {
+        var point = get_posn(e);
+        if (point == mouse_pos) return false;
+        var dx = point.x-mouse_pos.x;
+        var dy = point.y-mouse_pos.y;
+        mouse_pos = point;
+        update_tiles(dx, dy, false, false);
+    },
+    b4EndDrag: function(e) { },
+    endDrag: function(e) {
+        setCursor('crosshair');
+    },
+    toString: function() {
+        return ("DDMap " + this.id);
+    }
+});

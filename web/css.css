@@ -181,12 +181,15 @@ fieldset div.checkbox label, label.n {
     overflow: hidden;
     float: right;
     position: relative;
+    background-color: #f1f1f1;
 }
 
 #drag {
-    position: relative;
+    position: absolute;
     width: 508px;
     height: 508px;
+    left: 0;
+    top: 0;
 }
 
 #side {

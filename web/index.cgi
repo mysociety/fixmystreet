@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.52 2007-01-19 16:57:28 matthew Exp $
+# $Id: index.cgi,v 1.53 2007-01-19 23:16:54 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -97,7 +97,7 @@ like graffiti, fly tipping, broken paving slabs, or street lighting</p>
 EOF
     $out .= '<p id="error">' . $error . 'Please try again.</p>' if ($error);
     $out .= <<EOF;
-<form action="./" method="get" id="postcodeForm">
+<form action="./" method="post" id="postcodeForm">
 <label for="pc">Enter a nearby postcode or street name:</label>
 &nbsp;<input type="text" name="pc" value="$pc_h" id="pc" size="10" maxlength="200">
 &nbsp;<input type="submit" value="Go">
