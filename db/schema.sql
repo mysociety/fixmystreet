@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.12 2006-10-10 20:45:08 matthew Exp $
+-- $Id: schema.sql,v 1.13 2007-01-19 16:57:28 matthew Exp $
 --
 
 -- secret
@@ -73,16 +73,23 @@ create function ms_current_timestamp()
 -- Problems reported by users of site
 create table problem (
     id serial not null primary key,
+
+    -- Problem details
     postcode text not null,
     easting double precision not null,
     northing double precision not null,
+    council integer not null,
     title text not null,
     detail text not null,
     photo bytea,
     -- category integer not null references category(id),
+
+    -- User's details
     name text not null,
     email text not null,
     phone text not null,
+
+    -- Metadata
     created timestamp not null default ms_current_timestamp(),
     state text not null check (
         state = 'unconfirmed'

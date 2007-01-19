@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.51 2007-01-17 23:58:30 matthew Exp $
+# $Id: index.cgi,v 1.52 2007-01-19 16:57:28 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -126,7 +126,11 @@ sub submit_update {
     my @errors;
     push(@errors, 'Please enter a message') unless $input{update};
     push(@errors, 'Please enter your name') unless $input{name};
-    push(@errors, 'Please enter your email') unless $input{email};
+    if (!$input{email}) {
+        push(@errors, 'Please enter your email');
+    } elsif (!mySociety::Util::is_valid_email($input{email})) {
+        push(@errors, 'Please enter a valid email');
+    }
     return display_problem($q, @errors) if (@errors);
 
     my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/update-confirm");
@@ -170,7 +174,7 @@ EOF
 
 sub submit_problem {
     my $q = shift;
-    my @vars = qw(title detail name email phone pc easting northing updates);
+    my @vars = qw(council title detail name email phone pc easting northing updates);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
 
@@ -178,15 +182,31 @@ sub submit_problem {
     if ($fh) {
         my $ct = $q->uploadInfo($fh)->{'Content-Type'};
         my $cd = $q->uploadInfo($fh)->{'Content-Disposition'};
+        # Must delete photo param, otherwise display functions get confused
         $q->delete('photo');
         push (@errors, 'Please upload a JPEG image only') unless
             ($ct eq 'image/jpeg' || $ct eq 'image/pjpeg');
     }
 
+    push(@errors, 'No council selected') unless $input{council} && $input{council} =~ /^\d+$/;
     push(@errors, 'Please enter a title') unless $input{title};
     push(@errors, 'Please enter some details') unless $input{detail};
     push(@errors, 'Please enter your name') unless $input{name};
-    push(@errors, 'Please enter your email') unless $input{email};
+    if (!$input{email}) {
+        push(@errors, 'Please enter your email');
+    } elsif (!mySociety::Util::is_valid_email($input{email})) {
+        push(@errors, 'Please enter a valid email');
+    }
+
+    if ($input{easting} && $input{northing}) {
+        my $councils = mySociety::MaPit::get_voting_area_by_location_en($input{easting}, $input{northing}, 'polygon', $mySociety::VotingArea::council_parent_types);
+        my %councils = map { $_ => 1 } @$councils;
+        push(@errors, 'That location is not part of that council') unless $councils{$input{council}};
+        push(@errors, 'We do not yet have details for that council!') unless is_valid_council($input{council});
+    } elsif ($input{easting} || $input{northing}) {
+        push(@errors, 'Somehow, you only have one co-ordinate. Please try again.');
+    }
+    
     return display_form($q, @errors) if (@errors);
 
     my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/problem-confirm");
@@ -206,9 +226,9 @@ sub submit_problem {
 
     # This is horrid
     my $s = dbh()->prepare("insert into problem
-        (id, postcode, easting, northing, title, detail, name, email, phone, photo, state)
+        (id, postcode, easting, northing, title, detail, name, email, phone, photo, state, council)
         values
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed')");
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?)");
     $s->bind_param(1, $id);
     $s->bind_param(2, $input{pc});
     $s->bind_param(3, $input{easting});
@@ -219,6 +239,7 @@ sub submit_problem {
     $s->bind_param(8, $input{email});
     $s->bind_param(9, $input{phone});
     $s->bind_param(10, $image, { pg_type => DBD::Pg::PG_BYTEA });
+    $s->bind_param(11, $input{council});
     $s->execute();
     my %h = ();
     $h{title} = $input{title};
@@ -255,7 +276,7 @@ EOF
 sub display_form {
     my ($q, @errors) = @_;
     my ($pin_x, $pin_y, $pin_tile_x, $pin_tile_y);
-    my @vars = qw(title detail name email phone updates pc easting northing x y skipped);
+    my @vars = qw(title detail name email phone updates pc easting northing x y skipped council);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
     my @ps = $q->param;
@@ -293,12 +314,8 @@ EOF
             $easting = $input_h{easting};
             $northing = $input_h{northing};
         }
-        # XXX: How to do this for not London?
-        # Needs to return all council types, so passing in an array of types would be good
-        # And then display choice to user
-        my $council = mySociety::MaPit::get_voting_area_by_location_en($easting, $northing, 'polygon', 'LBO');
-        my $areas_info = mySociety::MaPit::get_voting_areas_info($council);
-        $council = join(', ', map { $areas_info->{$_}->{name} } @$council);
+        my $councils = mySociety::MaPit::get_voting_area_by_location_en($easting, $northing, 'polygon', $mySociety::VotingArea::council_parent_types);
+        my $areas_info = mySociety::MaPit::get_voting_areas_info($councils);
         my $pins = display_pin($q, $px, $py, 'purple');
         $out .= display_map($q, $input{x}, $input{y}, 2, 1, $pins);
         if ($px && $py) {
@@ -309,9 +326,27 @@ drag_x = $px - 254; drag_y = 254 - $py;
 EOF
         }
         $out .= '<h1>Reporting a problem</h1>';
-        $out .= '<p>You have located the problem at the location marked with a purple pin on the map. If this is not the correct location, simply click on the map again.</p>
-<p>This problem will be reported to <strong>' . $council . '</strong>.</p>
-<p>Please fill in details of the problem below. Your council won\'t be able
+        $out .= '<p>You have located the problem at the point marked with a purple pin on the map.
+        If this is not the correct location, simply click on the map again.</p>';
+        if (@$councils > 1) {
+            $out .= '<p>This spot lies in more than one council area; if you want, please choose which
+                council you wish to send the report to below:</p>';
+            $out .= '<ul style="list-style-type:none">';
+            my $c = 0;
+            # XXX: We don't know the order of display here!
+            foreach my $council (@$councils) {
+                $out .= '<li><input type="radio" name="council" value="' . $council . '"';
+                $out .= ' checked' if ($input{council}==$council || (!$input{council} && !$c++));
+                $out .= ' id="council' . $council . '"> <label class="n" for="council'
+                    . $council . '">' . $areas_info->{$council}->{name} . '</label></li>';
+            }
+            $out .= '</ul>';
+        } else {
+            $out .= '<p>This problem will be reported to <strong>'
+                . $areas_info->{$councils->[0]}->{name} . '</strong>.</p>';
+            $out .= '<input type="hidden" name="council" value="' . $councils->[0] . '">';
+        }
+        $out .= '<p>Please fill in details of the problem below. Your council won\'t be able
 to help unless you leave as much detail as you can, so please describe the
 exact location of the problem (ie. on a wall or the floor), and so on.</p>';
         $out .= '<input type="hidden" name="easting" value="' . $easting . '">
@@ -357,10 +392,10 @@ sub display {
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 
-    my($error, $x, $y, $name);
+    my($error, $x, $y);
     try {
         if (mySociety::Util::is_valid_postcode($input{pc})) {
-            ($name, $x, $y) = postcode_check($input{pc}, $input{x}, $input{y});
+            ($x, $y) = postcode_check($input{pc}, $input{x}, $input{y});
         } else {
             $x = $input{x}; $y = $input{y};
             $x ||= 0; $x += 0;
@@ -719,32 +754,13 @@ sub geocode {
     return ($x, $y, $error);
 }
 
-# Checks the postcode is in one of the two London boroughs
+# Checks the postcode is in a valid area
 # and sets default X/Y co-ordinates if not provided in the URI
 sub postcode_check {
     my ($pc, $x, $y) = @_;
-    my $areas;
-    $areas = mySociety::MaPit::get_voting_areas($pc);
-
-    my @councils_no_email = (2288,2402,2390,2252,2351,2430,2375,2285,2377,2374,2330,2454,2284,2378,2294,2312,2419,2386,2363,2353,2296,2300,2291,2268,2512,2504,2495,# 2510
-    2530,2516,2531,2545,2586,2554,2574,2580,2615,2596,2599,2601,2648,2652,2607,2582,14287,14317,14328,2225,2242,2222,2248,2246,2235,2224,2244,2236);
-    my ($invalid_councils);
-    grep (vec($invalid_councils, $_, 1) = 1, @councils_no_email);
-
-    # Cheltenham example: CTY=2226 DIS=2326
-    # Check for covered council
-    my @councils;
-    my $types = $mySociety::VotingArea::council_parent_types;
-    foreach my $type (@$types) {
-        push(@councils, $type) if ($areas->{$type} && !vec($invalid_councils, $areas->{$type}, 1));
-    }
-    throw Error::Simple("I'm afraid that postcode isn't yet covered by us.\n") unless $areas && @councils;
-
-    # XXX: Pick first council, hmm
-    my $council = $areas->{$councils[0]};
-
-    my $area_info = mySociety::MaPit::get_voting_area_info($council);
-    my $name = $area_info->{name};
+    my $areas = mySociety::MaPit::get_voting_areas($pc);
+    my $valid = remove_invalid_councils($areas);
+    throw Error::Simple("I'm afraid that postcode isn't yet covered by us.\n") unless $areas && $valid;
 
     $x ||= 0; $x += 0;
     $y ||= 0; $y += 0;
@@ -759,7 +775,29 @@ sub postcode_check {
         $x -= 1 if ($xx - $x < 0.5);
         $y -= 1 if ($yy - $y < 0.5);
     }
-    return ($name, $x, $y);
+    return ($x, $y);
+}
+
+sub remove_invalid_councils {
+    my $areas = shift;
+    my @councils_no_email = (2288,2402,2390,2252,2351,2430,2375,2285,2377,2374,2330,2454,2284,2378,2294,2312,2419,2386,2363,2353,2296,2300,2291,2268,2512,2504,2495,# 2510
+    2530,2516,2531,2545,2586,2554,2574,2580,2615,2596,2599,2601,2648,2652,2607,2582,14287,14317,14328,2225,2242,2222,2248,2246,2235,2224,2244,2236);
+    my $invalid_councils;
+    grep (vec($invalid_councils, $_, 1) = 1, @councils_no_email);
+
+    # Cheltenham example: CTY=2226 DIS=2326
+    # Check for covered council
+    my $return = 0;
+    foreach my $type (@$mySociety::VotingArea::council_parent_types) {
+        $return = 1 if ($areas->{$type} && !vec($invalid_councils, $areas->{$type}, 1));
+    }
+    return $return;
+}
+
+sub is_valid_council {
+    my $council = shift;
+    # COI is just any valid key
+    return remove_invalid_councils({ COI => $council });
 }
 
 # P is easting or northing

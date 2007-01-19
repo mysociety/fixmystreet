@@ -163,11 +163,13 @@ fieldset div {
 fieldset div.checkbox {
     padding-left: 5.5em;
 }
-fieldset div.checkbox label {
+fieldset div.checkbox label, label.n {
     float: none;
     text-align: left;
     padding-right: 0;
     width: auto;
+    cursor: pointer;
+    cursor: hand;
 }
 
 /* Map */
