@@ -22,6 +22,11 @@ YAHOO.util.Event.onContentReady('compass', function() {
     points[7].onclick = function() { pan(-tilewidth, -tileheight); return false; };
 });
 
+YAHOO.util.Event.onContentReady('map', function() {
+    var dragO = new YAHOO.util.DDMap('map');
+    update_tiles(0, 0, false, true);
+});
+
 YAHOO.util.Event.onContentReady('mapForm', function() {
     this.onsubmit = function() {
         this.x.value = x + 2;
@@ -30,25 +35,11 @@ YAHOO.util.Event.onContentReady('mapForm', function() {
     }
 });
 
-var in_drag;
-YAHOO.util.Event.onContentReady('drag', function() {
-    var dragO = new YAHOO.util.DDMap('map');
-    update_tiles(0, 0, false, true);
-});
-
 // I love the global
 var tile_x = 0;
 var tile_y = 0;
 var tilewidth = 254;
 var tileheight = 254;
-
-function drag_check(e) {
-    if (in_drag) {
-        in_drag=false;
-        return false;
-    }
-    return true;
-}
 
 function image_rotate(i, j, x, y) {
     var id = 't' + i + '.' + j;
@@ -189,6 +180,15 @@ function setCursor(s) {
     for (var i=0; i<inputs.length; i++) {
         inputs[i].style.cursor = s;
     }
+}
+
+var in_drag = false;
+function drag_check(e) {
+    if (in_drag) {
+        in_drag = false;
+        return false;
+    }
+    return true;
 }
 
 var mouse_pos = {};
