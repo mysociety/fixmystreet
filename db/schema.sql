@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.13 2007-01-19 16:57:28 matthew Exp $
+-- $Id: schema.sql,v 1.14 2007-01-20 00:51:49 matthew Exp $
 --
 
 -- secret
@@ -96,7 +96,8 @@ create table problem (
         or state = 'confirmed'
         or state = 'fixed'
         or state = 'hidden'
-    )
+    ),
+    whensent timestamp
 );
 
 -- Who to send problems for a specific MaPit area ID to

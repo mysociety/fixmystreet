@@ -1,0 +1,73 @@
+#!/usr/bin/perl -w
+
+# send-reports:
+# Send new problem reports to councils (and email updates on problems?)
+#
+# Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
+# Email: matthew@mysociety.org. WWW: http://www.mysociety.org
+#
+# $Id: send-reports,v 1.1 2007-01-20 00:51:49 matthew Exp $
+
+use strict;
+require 5.8.0;
+
+# Horrible boilerplate to set up appropriate library paths.
+use FindBin;
+use lib "$FindBin::Bin/../perllib";
+use lib "$FindBin::Bin/../../perllib";
+use File::Slurp;
+
+use mySociety::Config;
+use mySociety::DBHandle qw(dbh select_all);
+use mySociety::Email;
+use mySociety::MaPit;
+use mySociety::Util;
+
+BEGIN {
+    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+    mySociety::DBHandle::configure(
+        Name => mySociety::Config::get('BCI_DB_NAME'),
+        User => mySociety::Config::get('BCI_DB_USER'),
+        Password => mySociety::Config::get('BCI_DB_PASS'),
+        Host => mySociety::Config::get('BCI_DB_HOST', undef),
+        Port => mySociety::Config::get('BCI_DB_PORT', undef)
+    );
+}
+
+my $unsent = dbh()->selectall_arrayref(
+    "SELECT id, council, title, detail, created, name, email, phone
+    FROM problem WHERE state = 'confirmed' AND whensent IS NULL", { Slice => {} });
+foreach my $row (@$unsent) {
+    # XXX Needs locks!
+    print 'Need to send problem #' . $row->{id} . ' to council ' . $row->{council} . "\n";
+    my $council_email = dbh()->selectrow_array('SELECT email FROM contacts WHERE area_id=?', {}, $row->{council});
+    throw Error::Simple('Missing email!') unless $council_email;
+    my $area_info = mySociety::MaPit::get_voting_area_info($row->{council});
+
+    my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/submit-council");
+    my %h = map { $_ => $row->{$_} } qw/title detail/;
+    $h{user_details} = $row->{name} . ' <' . $row->{email} . '>';
+    $h{user_details} .= ' (' . $row->{phone} . ')' if $row->{phone};
+    $h{url} = mySociety::Config::get('BASE_URL') . '/?id=' . $row->{id};
+    $h{council_name} = $area_info->{name};
+    my $email = mySociety::Email::construct_email({
+        _template_ => $template,
+        _parameters_ => \%h,
+            From => [mySociety::Config::get('CONTACT_EMAIL'), 'Neighbourhood Fix-It'],
+        To => [[$council_email, $area_info->{name}]],
+    });
+
+    my $result;
+    if (mySociety::Config::get('STAGING_SITE')) {
+        $result = -1;
+    } else {
+        $result = mySociety::Util::send_email($email, mySociety::Config::get('CONTACT_EMAIL'), $council_email);
+    }
+    if ($result == mySociety::Util::EMAIL_SUCCESS) {
+        dbh()->do('UPDATE problem SET whensent=ms_current_timestamp() WHERE id=?', {}, $row->{id});
+        dbh()->commit();
+    } else {
+        dbh()->rollback();
+    }
+}
+
