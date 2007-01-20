@@ -5,7 +5,6 @@
  * TODO
  * Investigate jQuery
  * Tidy it all up
- * Don't wrap around tiles as it's quite confusing if the tile server is slow to respond
  * Selection of pin doesn't really need a server request, but I don't really care
  * 
  */
@@ -23,8 +22,8 @@ YAHOO.util.Event.onContentReady('compass', function() {
 });
 
 YAHOO.util.Event.onContentReady('map', function() {
-    var dragO = new YAHOO.util.DDMap('map');
-    update_tiles(0, 0, false, true);
+    new YAHOO.util.DDMap('map');
+    update_tiles(0, 0, true);
 });
 
 YAHOO.util.Event.onContentReady('mapForm', function() {
@@ -41,26 +40,19 @@ var tile_y = 0;
 var tilewidth = 254;
 var tileheight = 254;
 
-function image_rotate(i, j, x, y) {
-    var id = 't' + i + '.' + j;
-    var img = document.getElementById(id);
-    if (x)
-        img.style.left = (img.offsetLeft + x*tilewidth) + 'px';
-    if (y)
-        img.style.top = (img.offsetTop + y*tileheight) + 'px';
-}
-
 var myAnim;
 function pan(x, y) {
     if (!myAnim || !myAnim.isAnimated()) {
-        update_tiles(x, y, true, false);
         myAnim = new YAHOO.util.Motion('drag', { points:{by:[x,y]} }, 10, YAHOO.util.Easing.easeOut);
         myAnim.useSeconds = false;
+        myAnim.onTween.subscribe(function(){ update_tiles(x/10, y/10, false); });
+        myAnim.onComplete.subscribe(function(){ cleanCache(); });
         myAnim.animate();
     }
 }
 
-function update_tiles(dx, dy, noMove, force) {
+function update_tiles(dx, dy, force) {
+    dx = getInt(dx); dy = getInt(dy);
     if (!dx && !dy && !force) return;
 
     var old_drag_x = drag_x;
@@ -68,33 +60,18 @@ function update_tiles(dx, dy, noMove, force) {
     drag_x += dx;
     drag_y += dy;
 
-    if (!noMove) {
-        var drag = document.getElementById('drag');
-        drag.style.left = drag_x + 'px';
-        drag.style.top = drag_y + 'px';
-    }
+    var drag = document.getElementById('drag');
+    drag.style.left = drag_x + 'px';
+    drag.style.top = drag_y + 'px';
 
     var horizontal = Math.floor(old_drag_x/tilewidth) - Math.floor(drag_x/tilewidth);
     var vertical = Math.floor(old_drag_y/tileheight) - Math.floor(drag_y/tileheight);
     if (!horizontal && !vertical && !force) return;
 
-    for (var j=0; j<horizontal; j++) {
-        for (var i=0; i<6; i++) { image_rotate(i, mod(j + tile_x, 6),  6, 0); }
-    }
-    for (var j=horizontal; j<0; j++) {
-        for (var i=0; i<6; i++) { image_rotate(i, mod(j + tile_x, 6), -6, 0); }
-    }
-    for (var i=0; i<vertical; i++) {
-        for (var j=0; j<6; j++) { image_rotate(mod(i + tile_y, 6), j, 0,  6); }
-    }
-    for (var i=vertical; i<0; i++) {
-        for (var j=0; j<6; j++) { image_rotate(mod(i + tile_y, 6), j, 0, -6); }
-    }
-
     x += horizontal;
-    tile_x = mod((tile_x + horizontal), 6);
+    tile_x += horizontal;
     y -= vertical;
-    tile_y = mod((tile_y + vertical), 6);
+    tile_y += vertical;
 
     var url = '/tilma/tileserver/10k-full-london/' + x + '-' + (x+5) + ',' + y + '-' + (y+5) + '/JSON';
     var req = YAHOO.util.Connect.asyncRequest('GET', url, async_response);
@@ -105,17 +82,16 @@ var async_response = {
     failure: urls_not_loaded
 };
 
-function urls_not_loaded(o) {
-}
+function urls_not_loaded(o) { /* Nothing yet */ }
 
 // Load 6x6 grid of tiles around current 2x2
 function urls_loaded(o) {
     var tiles = eval(o.responseText);
     var drag = document.getElementById('drag');
     for (var i=0; i<6; i++) {
-        var ii = (i + tile_y) % 6;
+        var ii = (i + tile_y);
         for (var j=0; j<6; j++) {
-            var jj = (j + tile_x) % 6;
+            var jj = (j + tile_x);
             var id = 't'+ii+'.'+jj;
             var xx = x+j;
             var yy = y+5-i;
@@ -123,33 +99,52 @@ function urls_loaded(o) {
             if (img) {
                 if (!img.galleryimg) { img.galleryimg = false; }
                 img.onclick = drag_check;
-                var new_src = 'http://tilma.mysociety.org/tileserver/10k-full-london/' + tiles[i][j];
-                if (img.src != new_src) img.src = new_src;
-                img.name = 'tile_' + xx + '.' + yy;
+                tileCache[id] = { x: xx, y: yy, t: img };
                 continue;
             }
-            img = document.createElement('input');
-            img.type = 'image';
-            img.src = 'http://tilma.mysociety.org/tileserver/10k-full-london/' + tiles[i][j];
-            img.name = 'tile_' + xx + '.' + yy;
-            img.id = id;
-            img.onclick = drag_check;
-            img.style.position = 'absolute';
-            img.style.width = tilewidth + 'px';
-            img.style.height = tileheight + 'px';
+            img = cloneNode();
             img.style.top = ((ii-2)*tileheight) + 'px';
             img.style.left = ((jj-2)*tilewidth) + 'px';
-            img.galleryimg = false;
-            img.alt = 'Loading...';
+            img.name = 'tile_' + xx + '.' + yy;
+            img.id = id;
+            if (browser) {
+                img.style.visibility = 'hidden';
+                img.onload=function() { this.style.visibility = 'visible'; }
+            }
+            img.src = 'http://tilma.mysociety.org/tileserver/10k-full-london/' + tiles[i][j];
+            tileCache[id] = { x: xx, y: yy, t: img };
             drag.appendChild(img);
         }
     }
 }
 
-// Mod always to positive result
-function mod(m, n) {
-    if (m>=0) return m % n;
-    return (m % n) + n;
+var imgElCache;
+function cloneNode() {
+    var img = null;
+    if (!imgElCache) {
+        img = imgElCache = document.createElement('input');
+        img.type = 'image';
+        img.onclick = drag_check;
+        img.style.position = 'absolute';
+        img.style.width = tilewidth + 'px';
+        img.style.height = tileheight + 'px';
+        img.galleryimg = false;
+        img.alt = 'Loading...';
+    } else {
+        img = imgElCache.cloneNode(true);
+    }
+    return img;
+}
+
+var tileCache=[];
+function cleanCache() {
+    for (var i in tileCache) {
+        if (tileCache[i].x < x || tileCache[i].x > x+5 || tileCache[i].y < y || tileCache[i].y > y+5) {
+            var t = tileCache[i].t;
+            t.parentNode.removeChild(t); // de-leak?
+            delete tileCache[i];
+        }
+    }
 }
 
 /* Called every mousemove, so on first call, overwrite itself with quicker version */
@@ -191,16 +186,14 @@ function drag_check(e) {
     return true;
 }
 
+/* Simpler version of DDProxy */
 var mouse_pos = {};
 YAHOO.util.DDMap = function(id, sGroup, config) {
-    if (id) {
-        this.init(id, sGroup, config);
-    }
+    this.init(id, sGroup, config);
 };
 YAHOO.extend(YAHOO.util.DDMap, YAHOO.util.DD, {
     scroll: false,
     b4MouseDown: function(e) { },
-    b4StartDrag: function(x, y) { },
     startDrag: function(x, y) {
         mouse_pos = { x: x, y: y };
         setCursor('move');
@@ -212,13 +205,26 @@ YAHOO.extend(YAHOO.util.DDMap, YAHOO.util.DD, {
         var dx = point.x-mouse_pos.x;
         var dy = point.y-mouse_pos.y;
         mouse_pos = point;
-        update_tiles(dx, dy, false, false);
+        update_tiles(dx, dy, false);
     },
-    b4EndDrag: function(e) { },
     endDrag: function(e) {
         setCursor('crosshair');
+        cleanCache();
     },
     toString: function() {
         return ("DDMap " + this.id);
     }
 });
+
+/* From Yahoo!'s code */
+var browser = 9;
+var ua=navigator.userAgent.toLowerCase();
+if(/opera/.test(ua)) browser=3;
+else if(/safari/.test(ua)) browser=2;
+else if(/gecko/.test(ua)) browser=1;
+else if(typeof document.all!='undefined') browser=0;
+
+function getInt(n) {
+    n = parseInt(n); return (isNaN(n) ? 0 : n);
+}
+
