@@ -199,6 +199,7 @@ YAHOO.extend(YAHOO.util.DDMap, YAHOO.util.DD, {
         setCursor('move');
         in_drag = true;
     },
+    b4Drag: function(e) { },
     onDrag: function(e) {
         var point = get_posn(e);
         if (point == mouse_pos) return false;
