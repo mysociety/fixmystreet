@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.4 2006-09-27 13:51:23 matthew Exp $
+# $Id: faq.cgi,v 1.5 2007-01-23 23:59:08 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -42,7 +42,7 @@ path; anything like that that could be usefully reported to your council
 to be fixed.</dd>
 
 <dt>How does it work?</dt>
-<dd>After entering a postcode, users are presented with a map of that
+<dd>After entering a postcode or location, users are presented with a map of that
 area. They can view problems already reported in that area, or report
 ones of their own simply by clicking on the map at the location of the
 problem.</dd>
@@ -50,11 +50,11 @@ problem.</dd>
 <dt>Is it free?</dt>
 <dd>The site is free to use, yes. Neighbourhood Fix-It
 is run by a charitable organisation, though, so if you want to make
-a contribution, please contact us.</dd>
+a contribution, <a href="https://secure.mysociety.org/donate/">please do</a>.</dd>
 </dl>
 
 <dt>Do you remove silly or illegal content?</dt>
-<dd>We reserve the right to remove any problems or comments which we
+<dd>We reserve the right to remove any problems or updates which we
 consider to be inappropriate.</dd>
 
 <h2>Privacy Questions</h2>
@@ -64,7 +64,7 @@ consider to be inappropriate.</dd>
 <dd>If you submit a problem, we (do we?) pass on your name, email address, and details
 of the problem to the council contact responsible for the area where you
 located the problem. Your name is displayed upon the site, but not your email address;
-similarly with comments.
+similarly with updates.
 
 We will never give or sell your
 email address to anyone else, unless we are obliged to by law.
@@ -72,10 +72,9 @@ email address to anyone else, unless we are obliged to by law.
 </dd>
 
 <dt>Will you send nasty, brutish spam to my email address?</dt>
-<dd>Never.  If you opt to when adding a problem or comment, you will receive emails 
+<dd>Never.  If you opt to when adding a problem or update, you will receive emails 
 about updates to that problem, but that's it.
 </dd>
-
 
 </dl>
 
@@ -85,7 +84,7 @@ about updates to that problem, but that's it.
 
 <dt>Who built Neighbourhood Fix-It?</dt>
 <dd>This site was built by <a href="http://www.mysociety.org">mySociety</a>. 
-mySociety is a charitable organisation which has grown out of this community of
+mySociety is a charitable organisation which has grown out of the community of
 volunteers who built sites like <a href="http://www.theyworkforyou.com/">TheyWorkForYou.com</a>. 
 mySociety's primary
 mission is to build Internet projects which give people simple, tangible

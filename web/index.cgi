@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.54 2007-01-19 23:26:32 matthew Exp $
+# $Id: index.cgi,v 1.55 2007-01-23 23:59:08 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -26,6 +26,7 @@ use RABX;
 use POSIX qw(strftime);
 use CGI::Carp;
 use Digest::MD5 qw(md5_hex);
+use URI::Escape;
 
 use Page;
 use mySociety::AuthToken;
@@ -95,20 +96,20 @@ sub front_page {
 <p id="expl">Report, view, or discuss local problems
 like graffiti, fly tipping, broken paving slabs, or street lighting</p>
 EOF
-    $out .= '<p id="error">' . $error . 'Please try again.</p>' if ($error);
+    $out .= '<p id="error">' . $error . '</p>' if ($error);
     $out .= <<EOF;
 <form action="./" method="get" id="postcodeForm">
-<label for="pc">Enter a nearby postcode or street name:</label>
+<label for="pc">Enter a nearby postcode, or street name and area:</label>
 &nbsp;<input type="text" name="pc" value="$pc_h" id="pc" size="10" maxlength="200">
 &nbsp;<input type="submit" value="Go">
 </form>
 
-<p>Reports are sent directly to the local council, apart from a few councils where we're missing details.</p>
+<p>Reports are sent directly to the local council, apart from a few councils where we&rsquo;re missing details.</p>
 
 <p>Reporting a problem is very simple:</p>
 
 <ol>
-<li>Enter a postcode or street name;
+<li>Enter a postcode or street name and area;
 <li>Locate the problem on a high-scale map;
 <li>Enter details of the problem;
 <li>Submit to your council.
@@ -406,7 +407,7 @@ sub display {
         my $e = shift;
         if ($e->value() == mySociety::MaPit::BAD_POSTCODE
            || $e->value() == mySociety::MaPit::POSTCODE_NOT_FOUND) {
-            $error = 'That postcode was not recognised, sorry. ';
+            $error = 'That postcode was not recognised, sorry.';
         } else {
             $error = $e;
         }
@@ -414,6 +415,7 @@ sub display {
         my $e = shift;
         $error = $e;
     };
+    return geocode_choice($error) if (ref($error) eq 'ARRAY');
     return front_page($q, $error) if ($error);
 
     my ($pins, $current_map, $current, $fixed) = map_pins($q, $x, $y);
@@ -622,8 +624,10 @@ sub map_pins {
         }
     }
     my $fixed = select_all(
-        "select id, title, easting, northing from problem where state='fixed'
-         order by created desc limit 9");
+        "select id, title, easting, northing, distance
+            from problem_find_nearby(?, ?, 10) as nearby, problem
+            where nearby.problem_id = problem.id and state='fixed'
+         order by created desc limit 9", $mid_e, $mid_n);
     foreach (@$fixed) {
         my $px = os_to_px($_->{easting}, $x);
         my $py = os_to_px($_->{northing}, $y);
@@ -712,44 +716,51 @@ sub display_map_end {
     return $out;
 }
 
+sub geocode_choice {
+    my $choices = shift;
+    my $out = '<p>We found more than one match for that location:</p> <ul>';
+    foreach my $choice (@$choices) {
+        my $qs = $choice->[0];
+        my $text = $choice->[1];
+        $text =~ s/<\/?(?:b|i)>//g;
+        $text =~ s/, United Kingdom//;
+        $qs =~ s/,\+United\+Kingdom//;
+        $out .= '<li><a href="/?pc=' . $qs . '">' . $text . "</a></li>\n";
+    }
+    $out .= '</ul>';
+    return $out;
+}
+
 sub geocode {
     my ($s) = @_;
     my ($x, $y, $error);
-    my @loc = split /\s*,\s*/, $s;
-    #if (2 == @loc) {
-    #    my $url = 'http://geo.localsearchmaps.com/?country=UK&cb=cb&cbe=cbe&address='.$loc[0].'&city='.$loc[1];
-    #    my $js = LWP::Simple::get($url);
+    $s = lc($s);
+    $s =~ s/[^-&0-9a-z ']//g;
+    $s = uri_escape($s);
+    $s =~ s/%20/+/g;
+    my $url = 'http://maps.google.co.uk/maps?output=js&q=' . $s;
     my $cache_dir = mySociety::Config::get('GEO_CACHE');
-    if (1 == @loc) {
-        my $url = 'http://geo.localsearchmaps.com/?country=UK&format=xml&address='.$loc[0].'&city=London';
-        my $cache_file = $cache_dir . md5_hex($url);
-        my $js;
-        if (-e $cache_file) {
-                $js = File::Slurp::read_file($cache_file);
-        } else {
-            $js = LWP::Simple::get($url);
-            File::Slurp::write_file($cache_file, $js);
-        }
-        if ($js =~ /^<response>\s+(.*?)\s+<\/response>$/s) {
-            my $response = $1;
-            my ($e) = $response =~ /<error>(.*?)<\/error>/;
-            my ($lat) = $response =~ /<latitude>(.*?)<\/latitude>/;
-            my ($lon) = $response =~ /<longitude>(.*?)<\/longitude>/;
-            my ($level) = $response =~ /<matchlevel>(.*?)<\/matchlevel>/;
-            if ($e) {
-                $error = $e;
-            } elsif ($level =~ /city/i) {
-                $error = 'Could not understand that currently, sorry. ';
-            } else {
-                my ($easting,$northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
-                $x = int(os_to_tile($easting))-1;
-                $y = int(os_to_tile($northing))-1;
-            }
-        } else {
-            $error = 'Could not understand that currently, sorry. ';
+    my $cache_file = $cache_dir . md5_hex($url);
+    my $js;
+    if (-s $cache_file) {
+        $js = File::Slurp::read_file($cache_file);
+    } else {
+        $js = LWP::Simple::get($url);
+        File::Slurp::write_file($cache_file, $js);
+    }
+    if ($js =~ /panel: '(.*?)'/ && $js =~ /We could not understand/) {
+        $error = $1;
+    } elsif ($js =~ /panel: '(.*?)'/) {
+        my $refine = $1;
+        while ($refine =~ /<div class=\\042ref\\042><a href=\\042\/maps\?q=(.*?)&.*?>(.*?)<\/a><\/div>/g) {
+            push (@$error, [ $1, $2 ]);
         }
     } else {
-        $error = 'Could not understand that currently, sorry. ';
+        $js =~ /center: {lat: (.*?),lng: (.*?)}/;
+        my $lat = $1; my $lon = $2;
+        my ($easting,$northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
+        $x = int(os_to_tile($easting))-1;
+        $y = int(os_to_tile($northing))-1;
     }
     return ($x, $y, $error);
 }
@@ -760,7 +771,7 @@ sub postcode_check {
     my ($pc, $x, $y) = @_;
     my $areas = mySociety::MaPit::get_voting_areas($pc);
     my $valid = remove_invalid_councils($areas);
-    throw Error::Simple("I'm afraid that postcode isn't yet covered by us.\n") unless $areas && $valid;
+    throw Error::Simple("We don't have the details for the council for this area.") unless $areas && $valid;
 
     $x ||= 0; $x += 0;
     $y ||= 0; $y += 0;

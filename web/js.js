@@ -73,14 +73,12 @@ function update_tiles(dx, dy, force) {
     y -= vertical;
     tile_y += vertical;
 
-    var url = '/tilma/tileserver/10k-full-london/' + x + '-' + (x+5) + ',' + y + '-' + (y+5) + '/JSON';
-    var req = YAHOO.util.Connect.asyncRequest('GET', url, async_response);
+    var url = '/tilma/tileserver/10k-full/' + x + '-' + (x+5) + ',' + y + '-' + (y+5) + '/JSON';
+    var req = YAHOO.util.Connect.asyncRequest('GET', url, {
+        success: urls_loaded, failure: urls_not_loaded,
+        argument: [tile_x, tile_y]
+    });
 }
-
-var async_response = {
-    success: urls_loaded,
-    failure: urls_not_loaded
-};
 
 function urls_not_loaded(o) { /* Nothing yet */ }
 
@@ -89,9 +87,9 @@ function urls_loaded(o) {
     var tiles = eval(o.responseText);
     var drag = document.getElementById('drag');
     for (var i=0; i<6; i++) {
-        var ii = (i + tile_y);
+        var ii = (i + o.argument[1]);
         for (var j=0; j<6; j++) {
-            var jj = (j + tile_x);
+            var jj = (j + o.argument[0]);
             var id = 't'+ii+'.'+jj;
             var xx = x+j;
             var yy = y+5-i;
@@ -111,7 +109,7 @@ function urls_loaded(o) {
                 img.style.visibility = 'hidden';
                 img.onload=function() { this.style.visibility = 'visible'; }
             }
-            img.src = 'http://tilma.mysociety.org/tileserver/10k-full-london/' + tiles[i][j];
+            img.src = 'http://tilma.mysociety.org/tileserver/10k-full/' + tiles[i][j];
             tileCache[id] = { x: xx, y: yy, t: img };
             drag.appendChild(img);
         }

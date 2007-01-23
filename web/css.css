@@ -72,15 +72,15 @@ ul#error {
 #header {
     font-size: 200%;
     font-weight: bold;
-    border-bottom: solid 2px #968d63;
+    border-bottom: solid 2px #5e552b;
     margin: 0;
     padding: 5px 0.5em;
     background-color: #e3d595;
-    color: #968d63;
+    color: #5e552b;
 }
 
 #header a:link, #header a:visited {
-    color: #968d63;
+    color: #5e552b;
     background-color: #e3d595;
     text-decoration: none;
 }
@@ -120,11 +120,11 @@ ul#error {
     padding: 0.5em 2em;
 }
 #navigation a:link, #navigation a:visited {
-    color: #968d63;
+    color: #5e552b;
     background-color: #e3d595;
 }
 #navigation a:hover, #navigation a:active {
-    background-color: #968d63;
+    background-color: #5e552b;
     color: #e3d595;
 }
 
@@ -132,7 +132,7 @@ ul#error {
     clear: both;
     text-align: right;
     font-size: 83%;
-    border-top: solid 1px #968d63;
+    border-top: solid 1px #5e552b;
     display: table;
     margin: 1em 0 1em auto;
     padding: 2px 4px;
@@ -182,6 +182,7 @@ fieldset div.checkbox label, label.n {
     float: right;
     position: relative;
     background-color: #f1f1f1;
+    margin-bottom: 1em;
 }
 
 #drag {
@@ -250,5 +251,5 @@ ol#current img {
 }
 
 #comments div em {
-    border-bottom: dotted 1px #968d63;
+    border-bottom: dotted 1px #5e552b;
 }
