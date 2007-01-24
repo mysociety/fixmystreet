@@ -62,7 +62,7 @@ ul#error {
     color: #cc0000;
     background-color: #ffeeee;
     margin: 0;
-    padding: 0 0 0 1.5em;
+    padding: 0 4px 0 1.5em;
     border: solid 1px #cc0000;
     text-align: left;
 }

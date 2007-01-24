@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.14 2007-01-20 00:51:49 matthew Exp $
+-- $Id: schema.sql,v 1.15 2007-01-24 20:55:30 matthew Exp $
 --
 
 -- secret
@@ -78,7 +78,7 @@ create table problem (
     postcode text not null,
     easting double precision not null,
     northing double precision not null,
-    council integer not null,
+    council integer references contacts(area_id),
     title text not null,
     detail text not null,
     photo bytea,
@@ -99,6 +99,7 @@ create table problem (
     ),
     whensent timestamp
 );
+create index problem_state_easting_northing_idx on problem(state, easting, northing);
 
 -- Who to send problems for a specific MaPit area ID to
 create table contacts (
@@ -112,6 +113,7 @@ create table contacts (
     -- what the last change was for: author's notes
     note text not null
 );
+create index contacts_area_id_idx on contacts(area_id);
 
 -- History of changes to contacts - automatically updated
 -- whenever contacts is changed, using trigger below.
