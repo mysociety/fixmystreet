@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.15 2007-01-24 20:55:30 matthew Exp $
+-- $Id: schema.sql,v 1.16 2007-01-26 01:01:23 matthew Exp $
 --
 
 -- secret
@@ -202,7 +202,7 @@ create table comment (
     name text not null,
     email text not null,
     website text,
-    whenposted timestamp not null default ms_current_timestamp(),
+    created timestamp not null default ms_current_timestamp(),
     text text not null,                     -- as entered by comment author
     state text not null check (
         state = 'unconfirmed'
@@ -216,7 +216,7 @@ create table comment (
 );
 
 create index comment_problem_id_idx on comment(problem_id);
-create index comment_problem_id_whenposted_idx on comment(problem_id, whenposted);
+create index comment_problem_id_created_idx on comment(problem_id, created);
 
 -- Tokens for confirmations
 create table token (
@@ -225,5 +225,40 @@ create table token (
     data bytea not null,
     created timestamp not null default ms_current_timestamp(),
     primary key (scope, token)
+);
+
+-- Alerts
+
+create table alert_type (
+    ref text not null primary key,
+    head_sql_query text not null,
+    head_table text not null,
+    head_title text not null,
+    head_link text not null,
+    head_description text not null,
+    item_table text not null,
+    item_where text not null,
+    item_order text not null,
+    item_title text not null,
+    item_link text not null,
+    item_description text not null
+);
+
+create table alert (
+    id serial not null primary key,
+    alert_type text not null references alert_type(ref),
+    parameter text, -- e.g. Problem ID for new updates
+    parameter2 text, -- e.g. Latitude for local problem alerts
+    email text not null,
+    confirmed integer not null default 0,
+    whensubscribed timestamp not null default ms_current_timestamp(),
+    whendisabled timestamp default null
+);
+-- Possible indexes - email, alert_type, whendisabled, unique (alert_type,email,parameter)
+
+create table alert_sent (
+    alert_id integer not null references alert(id),
+    parameter text, -- e.g. Update ID for new updates
+    whenqueued timestamp not null default ms_current_timestamp()
 );
 

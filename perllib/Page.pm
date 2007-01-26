@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.32 2007-01-24 20:55:30 matthew Exp $
+# $Id: Page.pm,v 1.33 2007-01-26 01:01:23 matthew Exp $
 #
 
 package Page;
@@ -15,7 +15,10 @@ use strict;
 use Carp;
 use CGI::Fast qw(-no_xhtml);
 use Error qw(:try);
+use File::Slurp;
 use mySociety::Config;
+use mySociety::Email;
+use mySociety::Util;
 use mySociety::WatchUpdate;
 use mySociety::Web qw(ent NewURL);
 BEGIN {
@@ -154,6 +157,36 @@ sub compass ($$$) {
 </tr>
 </table>
 EOF
+}
+
+# send_email TO (NAME) TEMPLATE-NAME PARAMETERS
+sub send_email {
+    my ($email, $name, $template, %h) = @_;
+    $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/$template");
+    my $to = $name ? [[$email, $name]] : $email;
+    my $message = mySociety::Email::construct_email({
+        _template_ => $template,
+        _parameters_ => \%h,
+        From => [mySociety::Config::get('CONTACT_EMAIL'), 'Neighbourhood Fix-It'],
+        To => $to,
+    });
+    my $result = mySociety::Util::send_email($message, mySociety::Config::get('CONTACT_EMAIL'), $email);
+    my $out;
+    if ($result == mySociety::Util::EMAIL_SUCCESS) {
+        $out = <<EOF;
+<h1>Nearly Done! Now check your email...</h1>
+<p>The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.</p>
+<p>If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.</p>
+<p>You must now click on the link within the email we've just sent you -
+<br>if you do not, your update will not be posted.</p>
+<p>(Don't worry - we'll hang on to your update while you're checking your email.)</p>
+EOF
+    } else {
+        $out = <<EOF;
+<p>I'm afraid something went wrong when we tried to send your email. Please click Back, check your details, and try again.</p>
+EOF
+    }
+    return $out;
 }
 
 1;

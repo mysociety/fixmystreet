@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.56 2007-01-24 20:55:30 matthew Exp $
+# $Id: index.cgi,v 1.57 2007-01-26 01:01:23 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -32,7 +32,6 @@ use Page;
 use mySociety::AuthToken;
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh select_all);
-use mySociety::Email;
 use mySociety::GeoUtil;
 use mySociety::Util;
 use mySociety::MaPit;
@@ -76,7 +75,7 @@ sub main {
     } elsif ($q->param('id')) {
         $title = 'Viewing a problem';
         $out = display_problem($q);
-    } elsif ($q->param('pc')) {
+    } elsif ($q->param('pc') || ($q->param('x') && $q->param('y'))) {
         $title = 'Viewing a location';
         $out = display_location($q);
     } else {
@@ -122,7 +121,7 @@ EOF
 
 sub submit_update {
     my $q = shift;
-    my @vars = qw(id name email update updates fixed reopen);
+    my @vars = qw(id name email update fixed reopen);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
     push(@errors, 'Please enter a message') unless $input{update};
@@ -133,8 +132,6 @@ sub submit_update {
         push(@errors, 'Please enter a valid email');
     }
     return display_problem($q, @errors) if (@errors);
-
-    my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/update-confirm");
 
     my $id = dbh()->selectrow_array("select nextval('comment_id_seq');");
     dbh()->do("insert into comment
@@ -148,34 +145,13 @@ sub submit_update {
     $h{url} = mySociety::Config::get('BASE_URL') . '/C/' . mySociety::AuthToken::store('update', $id);
     dbh()->commit();
 
-    my $email = mySociety::Email::construct_email({
-        _template_ => $template,
-        _parameters_ => \%h,
-        From => [mySociety::Config::get('CONTACT_EMAIL'), 'Neighbourhood Fix-It'],
-        To => [[$input{email}, $input{name}]],
-    });
-    my $result = mySociety::Util::send_email($email, mySociety::Config::get('CONTACT_EMAIL'), $input{email});
-    my $out;
-    if ($result == mySociety::Util::EMAIL_SUCCESS) {
-        $out = <<EOF;
-<h1>Nearly Done! Now check your email...</h1>
-<p>The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.</p>
-<p>If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.</p>
-<p>You must now click on the link within the email we've just sent you -
-<br>if you do not, your update will not be posted.</p>
-<p>(Don't worry - we'll hang on to your update while you're checking your email.)</p>
-EOF
-    } else {
-        $out = <<EOF;
-<p>I'm afraid something went wrong when we tried to send your email. Please click Back, check your details, and try again.</p>
-EOF
-    }
+    my $out = Page::send_email($input{email}, $input{name}, 'update-confirm', %h);
     return $out;
 }
 
 sub submit_problem {
     my $q = shift;
-    my @vars = qw(council title detail name email phone pc easting northing updates);
+    my @vars = qw(council title detail name email phone pc easting northing);
     my %input = map { $_ => scalar $q->param($_) } @vars;
     my @errors;
 
@@ -211,8 +187,6 @@ sub submit_problem {
     }
     
     return display_form($q, @errors) if (@errors);
-
-    my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/problem-confirm");
 
     my $id = dbh()->selectrow_array("select nextval('problem_id_seq');");
 
@@ -253,35 +227,14 @@ sub submit_problem {
     $h{url} = mySociety::Config::get('BASE_URL') . '/P/' . mySociety::AuthToken::store('problem', $id);
     dbh()->commit();
 
-    my $email = mySociety::Email::construct_email({
-        _template_ => $template,
-        _parameters_ => \%h,
-        From => [mySociety::Config::get('CONTACT_EMAIL'), 'Neighbourhood Fix-It'],
-        To => [[$input{email}, $input{name}]],
-    });
-    my $result = mySociety::Util::send_email($email, mySociety::Config::get('CONTACT_EMAIL'), $input{email});
-    my $out;
-    if ($result == mySociety::Util::EMAIL_SUCCESS) {
-        $out = <<EOF;
-<h1>Nearly Done! Now check your email...</h1>
-<p>The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.</p>
-<p>If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.</p>
-<p>You must now click on the link within the email we've just sent you -
-<br>if you do not, your problem will not be posted on the site.</p>
-<p>(Don't worry - we'll hang on to your information while you're checking your email.)</p>
-EOF
-    } else {
-        $out = <<EOF;
-<p>I'm afraid something went wrong when we tried to send your email. Please click Back, check your details, and try again.</p>
-EOF
-    }
+    my $out = Page::send_email($input{email}, $input{name}, 'problem-confirm', %h);
     return $out;
 }
 
 sub display_form {
     my ($q, @errors) = @_;
     my ($pin_x, $pin_y, $pin_tile_x, $pin_tile_y);
-    my @vars = qw(title detail name email phone updates pc easting northing x y skipped council);
+    my @vars = qw(title detail name email phone pc easting northing x y skipped council);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
     my @ps = $q->param;
@@ -355,7 +308,7 @@ EOF
             . $areas_info->{$councils[0]}->{name} . '</strong>.</p>';
         $out .= '<input type="hidden" name="council" value="' . $councils[0] . '">';
     } else {
-        my $e = 'team@neighbourhoodfixit.com'; # XXX from config
+        my $e = mySociety::Config::get('CONTACT_EMAIL');
         my $list = join(', ', map { $areas_info->{$_}->{name} } @$all_councils);
         my $n = @$all_councils;
         $out .= '<p>We do not yet have details for the council';
@@ -380,7 +333,6 @@ exact location of the problem (ie. on a wall or the floor), and so on.</p>';
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
-    my $updates = (!defined($q->param('updates')) || $input{updates}) ? ' checked' : '';
     my $back = NewURL($q, submit_map => undef, "tile_$pin_tile_x.$pin_tile_y.x" => undef,
         "tile_$pin_tile_x.$pin_tile_y.y" => undef, skipped => undef);
     $out .= <<EOF;
@@ -398,8 +350,6 @@ exact location of the problem (ie. on a wall or the floor), and so on.</p>';
 <small>(optional, so the council can get in touch)</small></div>
 <div><label for="form_photo">Photo:</label>
 <input type="file" name="photo" id="form_photo"></div>
-<div class="checkbox"><input disabled type="checkbox" name="updates" id="form_updates" value="1"$updates>
-<label for="form_updates"><s>Receive email when updates are left on this problem</s></label></div>
 <div class="checkbox"><input type="submit" name="submit_problem" value="Submit"></div>
 </fieldset>
 
@@ -461,6 +411,7 @@ EOF
     $out .= <<EOF;
     </ol>
     <h2>Recent problems reported within 10km</h2>
+    <p><a href="/rss/$x,$y?choose=1">RSS feed</a></p>
     <ol id="current" start="$list_start">
 EOF
     foreach (@$current) {
@@ -493,11 +444,11 @@ EOF
 sub display_problem {
     my ($q, @errors) = @_;
 
-    my @vars = qw(id name email update updates fixed reopen x y);
+    my @vars = qw(id name email update fixed reopen x y);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
-    $input{x} = $input{x} + 0;
-    $input{y} = $input{y} + 0;
+    $input{x} += 0;
+    $input{y} += 0;
 
     # Get all information from database
     my $problem = dbh()->selectrow_arrayref(
@@ -532,18 +483,18 @@ EOF
         $out .= '<p align="center"><img src="/photo?id=' . $input{id} . '"></p>';
     }
 
-    my $back = NewURL($q, id=>undef);
+    my $back = NewURL($q, id=>undef, x=>$x_tile, y=>$y_tile);
     $out .= '<p align="right"><a href="' . $back . '">Back to listings</a></p>';
 
     # Display updates
     my $updates = select_all(
-        "select id, name, extract(epoch from whenposted) as whenposted, text, mark_fixed, mark_open
+        "select id, name, extract(epoch from created) as created, text, mark_fixed, mark_open
          from comment where problem_id = ? and state='confirmed'
-         order by whenposted desc", $input{id});
+         order by created desc", $input{id});
     if (@$updates) {
         $out .= '<div id="updates"> <h2>Updates</h2>';
         foreach my $row (@$updates) {
-            $out .= "<div><em>Posted by $row->{name} at " . prettify_epoch($row->{whenposted});
+            $out .= "<div><em>Posted by $row->{name} at " . prettify_epoch($row->{created});
             $out .= ', marked fixed' if ($row->{mark_fixed});
             $out .= ', reopened' if ($row->{mark_open});
             $out .= '</em>';
@@ -551,12 +502,25 @@ EOF
         }
         $out .= '</div>';
     }
+    $out .= <<EOF;
+<h2>Follow this problem</h2>
+<ul>
+<li><a href="/rss/$input_h{id}?choose=1">RSS feed of updates on this problem</a>
+<li>Receive email when updates are left on this problem.
+<form action="alert" method="post">
+<label class="n" for="alert_email">Email:</label>
+<input type="text" name="email" id="alert_email" value="$input_h{email}" size="30">
+<input type="hidden" name="id" value="$input_h{id}">
+<input type="hidden" name="type" value="updates">
+<input type="submit" value="Subscribe">
+</form>
+</ul>
+EOF
     $out .= '<h2>Provide an update</h2>';
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
 
-    $updates = (!defined($q->param('updates')) || $input{updates}) ? ' checked' : '';
     my $fixed = ($input{fixed}) ? ' checked' : '';
     my $reopen = ($input{reopen}) ? ' checked' : '';
     my $fixedline = $state eq 'fixed' ? qq{
@@ -578,8 +542,6 @@ EOF
 <div><label for="form_update">Update:</label>
 <textarea name="update" id="form_update" rows="7" cols="30">$input_h{update}</textarea></div>
 $fixedline
-<div class="checkbox"><input type="checkbox" disabled name="updates" id="form_updates" value="1"$updates>
-<label for="form_updates"><s>Receive email when updates are left on this problem</s></label></div>
 <div class="checkbox"><input type="submit" value="Post"></div>
 </fieldset>
 </form>
