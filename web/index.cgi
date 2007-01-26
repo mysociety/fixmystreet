@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.57 2007-01-26 01:01:23 matthew Exp $
+# $Id: index.cgi,v 1.58 2007-01-26 14:19:42 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -411,7 +411,7 @@ EOF
     $out .= <<EOF;
     </ol>
     <h2>Recent problems reported within 10km</h2>
-    <p><a href="/rss/$x,$y?choose=1">RSS feed</a></p>
+    <p><a href="/rss/$x,$y"><img align="right" src="/i/feed.gif" width="16" height="16" alt="RSS feed" border="0"></a></p>
     <ol id="current" start="$list_start">
 EOF
     foreach (@$current) {
@@ -466,6 +466,7 @@ sub display_problem {
 
     my ($pins) = map_pins($q, $x_tile, $y_tile, $input{id});
     my $out = display_map($q, $x_tile, $y_tile, 0, 1, $pins);
+
     $out .= "<h1>$title</h1>";
     $out .= <<EOF;
 <script type="text/javascript">
@@ -484,7 +485,7 @@ EOF
     }
 
     my $back = NewURL($q, id=>undef, x=>$x_tile, y=>$y_tile);
-    $out .= '<p align="right"><a href="' . $back . '">Back to listings</a></p>';
+    $out .= '<p style="padding-bottom: 0.5em; border-bottom: dotted 1px #999999;" align="right"><a href="' . $back . '">Back to listings</a></p>';
 
     # Display updates
     my $updates = select_all(
@@ -492,7 +493,9 @@ EOF
          from comment where problem_id = ? and state='confirmed'
          order by created desc", $input{id});
     if (@$updates) {
-        $out .= '<div id="updates"> <h2>Updates</h2>';
+        $out .= '<div id="updates">';
+        $out .= '<a href="/rss/'.$input_h{id}.'"><img align="right" src="/i/feed.gif" width="16" height="16" alt="RSS feed of updates to this problem" border="0"></a>';
+	$out .= '<h2>Updates</h2>';
         foreach my $row (@$updates) {
             $out .= "<div><em>Posted by $row->{name} at " . prettify_epoch($row->{created});
             $out .= ', marked fixed' if ($row->{mark_fixed});
@@ -505,7 +508,6 @@ EOF
     $out .= <<EOF;
 <h2>Follow this problem</h2>
 <ul>
-<li><a href="/rss/$input_h{id}?choose=1">RSS feed of updates on this problem</a>
 <li>Receive email when updates are left on this problem.
 <form action="alert" method="post">
 <label class="n" for="alert_email">Email:</label>

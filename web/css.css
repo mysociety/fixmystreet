@@ -58,11 +58,15 @@ dt {
     font-size: larger;
 }
 
+ul {
+    padding: 0 0 0 1.5em;
+    margin: 0;
+}
+
 ul#error {
     color: #cc0000;
     background-color: #ffeeee;
-    margin: 0;
-    padding: 0 4px 0 1.5em;
+    padding-right: 4px;
     border: solid 1px #cc0000;
     text-align: left;
 }
@@ -229,7 +233,7 @@ fieldset div.checkbox label, label.n {
     background-color: #ffffff;
     color: #000000;
     float: right;
-    margin: 0 1em 1em;
+    margin: 0 1em 0.5em;
 }
 
 #compass img {
@@ -253,3 +257,20 @@ ol#current img {
 #comments div em {
     border-bottom: dotted 1px #5e552b;
 }
+
+#rss_items {
+    width:62%;
+    float:left;
+}
+#rss_rhs {
+    border-left:1px dashed #999;
+    width:36%;
+    float:right;
+    padding: 0 0 0 0.5em;
+    margin: 0 0 1em 0.5em;
+}
+#rss_box {
+    padding:10px;
+    border:1px solid #999999;
+}
+
