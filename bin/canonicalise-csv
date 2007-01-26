@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: canonicalise-csv,v 1.1 2006-10-13 15:37:48 matthew Exp $
+# $Id: canonicalise-csv,v 1.2 2007-01-26 22:48:30 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -82,20 +82,20 @@ foreach my $type (@$types) {
     my $areas_info = mySociety::MaPit::get_voting_areas_info($areas);
     foreach my $id (keys %$areas_info) {
         my $area_info = $areas_info->{$id};
-	my $name = $area_info->{name};
-	if ($name eq 'Durham City Council') {
-	    $out{$id} = $councils{'Durham City'};
-	    next;
-	} elsif ($name eq 'Durham County Council') {
-	    $out{$id} = $councils{'Durham County'};
-	    next;
-	}
-	$name =~ s/( (Borough|City|District|County))* Council//;
+        my $name = $area_info->{name};
+        if ($name eq 'Durham City Council') {
+            $out{$id} = $councils{'Durham City'};
+            next;
+        } elsif ($name eq 'Durham County Council') {
+            $out{$id} = $councils{'Durham County'};
+            next;
+        }
+        $name =~ s/( (Borough|City|District|County))* Council//;
         if ($councils{$name} && $councils{$name} =~ /@/) {
-	    $out{$id} = $councils{$name};
-	} elsif ($councils{$name} || exists($councils{$name})) {
-	    push @missing, $id;
-	}
+            $out{$id} = $councils{$name};
+        } elsif ($councils{$name} || exists($councils{$name})) {
+            push @missing, $id;
+        }
     }
 }
 

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.58 2007-01-26 14:19:42 matthew Exp $
+# $Id: index.cgi,v 1.59 2007-01-26 22:48:31 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -411,7 +411,7 @@ EOF
     $out .= <<EOF;
     </ol>
     <h2>Recent problems reported within 10km</h2>
-    <p><a href="/rss/$x,$y"><img align="right" src="/i/feed.gif" width="16" height="16" alt="RSS feed" border="0"></a></p>
+    <p><a href="/rss/$x,$y"><img align="right" src="/i/feed.png" width="16" height="16" title="RSS feed of recent local problems" alt="RSS feed" border="0"></a></p>
     <ol id="current" start="$list_start">
 EOF
     foreach (@$current) {
@@ -487,6 +487,19 @@ EOF
     my $back = NewURL($q, id=>undef, x=>$x_tile, y=>$y_tile);
     $out .= '<p style="padding-bottom: 0.5em; border-bottom: dotted 1px #999999;" align="right"><a href="' . $back . '">Back to listings</a></p>';
 
+    $out .= '<a href="/rss/'.$input_h{id}.'"><img align="right" src="/i/feed.png" width="16" height="16" title="RSS feed" alt="RSS feed of updates to this problem" border="0"></a> ';
+    $out .= '<a id="email_alert" href="/alert?type=updates;id='.$input_h{id}.'"><img align="right" src="/i/email.png" width="16" height="16" title="Email alerts" alt="Email alerts of updates to this problem" border="0"></a>';
+    $out .= <<EOF;
+<form action="alert" method="post" id="email_alert_box">
+<p>Receive email when updates are left on this problem</p>
+<label class="n" for="alert_email">Email:</label>
+<input type="text" name="email" id="alert_email" value="$input_h{email}" size="30">
+<input type="hidden" name="id" value="$input_h{id}">
+<input type="hidden" name="type" value="updates">
+<input type="submit" value="Subscribe">
+</form>
+EOF
+
     # Display updates
     my $updates = select_all(
         "select id, name, extract(epoch from created) as created, text, mark_fixed, mark_open
@@ -494,10 +507,9 @@ EOF
          order by created desc", $input{id});
     if (@$updates) {
         $out .= '<div id="updates">';
-        $out .= '<a href="/rss/'.$input_h{id}.'"><img align="right" src="/i/feed.gif" width="16" height="16" alt="RSS feed of updates to this problem" border="0"></a>';
-	$out .= '<h2>Updates</h2>';
+        $out .= '<h2>Updates</h2>';
         foreach my $row (@$updates) {
-            $out .= "<div><em>Posted by $row->{name} at " . prettify_epoch($row->{created});
+            $out .= "<div><a name=\"update_$row->{id}\"></a><em>Posted by $row->{name} at " . prettify_epoch($row->{created});
             $out .= ', marked fixed' if ($row->{mark_fixed});
             $out .= ', reopened' if ($row->{mark_open});
             $out .= '</em>';
@@ -505,19 +517,6 @@ EOF
         }
         $out .= '</div>';
     }
-    $out .= <<EOF;
-<h2>Follow this problem</h2>
-<ul>
-<li>Receive email when updates are left on this problem.
-<form action="alert" method="post">
-<label class="n" for="alert_email">Email:</label>
-<input type="text" name="email" id="alert_email" value="$input_h{email}" size="30">
-<input type="hidden" name="id" value="$input_h{id}">
-<input type="hidden" name="type" value="updates">
-<input type="submit" value="Subscribe">
-</form>
-</ul>
-EOF
     $out .= '<h2>Provide an update</h2>';
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';

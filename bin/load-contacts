@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: load-contacts,v 1.1 2006-10-13 15:37:48 matthew Exp $
+# $Id: load-contacts,v 1.2 2007-01-26 22:48:30 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -42,7 +42,7 @@ while (<FP>) {
     my ($id, $email) = split /,/;
     dbh()->do("INSERT INTO contacts (area_id, email, editor, whenedited, note)
         VALUES (?, ?, 'import', ms_current_timestamp(), 'Initial import')",
-	{}, $id, $email);
+        {}, $id, $email);
 }
 dbh()->commit();
 close(FP);

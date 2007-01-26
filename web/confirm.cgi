@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.6 2007-01-26 01:05:35 matthew Exp $
+# $Id: confirm.cgi,v 1.7 2007-01-26 22:48:31 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -15,11 +15,13 @@ require 5.8.0;
 use FindBin;
 use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../../perllib";
+use Digest::SHA1 qw(sha1_hex);
 
 use Page;
 use mySociety::AuthToken;
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh select_all);
+use mySociety::Util qw(random_bytes);
 
 BEGIN {
     mySociety::Config::set_file("$FindBin::Bin/../conf/general");
@@ -42,22 +44,49 @@ sub main {
     if ($id) {
         if ($type eq 'update') {
             dbh()->do("update comment set state='confirmed' where id=?", {}, $id);
-            my ($id, $fixed, $reopen) = dbh()->selectrow_array("select problem_id,mark_fixed,mark_open from comment where id=?", {}, $id);
+            my ($email) = dbh()->selectrow_array("select email from comment where id=?", {}, $id);
+            my ($problem_id, $fixed, $reopen) = dbh()->selectrow_array("select problem_id,mark_fixed,mark_open from comment where id=?", {}, $id);
             if ($fixed) {
-                dbh()->do("update problem set state='fixed' where id=? and state='confirmed'", {}, $id);
+                dbh()->do("update problem set state='fixed' where id=? and state='confirmed'", {}, $problem_id);
             } elsif ($reopen) {
-                dbh()->do("update problem set state='confirmed' where id=? and state='fixed'", {}, $id);
+                dbh()->do("update problem set state='confirmed' where id=? and state='fixed'", {}, $problem_id);
             }
-	    # XXX: Ask about email alert here, and RSS feed? Or should the form have another checkbox?
+            my $salt = unpack('h*', random_bytes(8));
+            my $secret = scalar(dbh()->selectrow_array('select secret from secret'));
+            my $signed_email = sha1_hex("$problem_id-$email-$salt-$secret");
             $out = <<EOF;
-<p>You have successfully confirmed your update and you can now <a href="/?id=$id">view it on the site</a>.</p>
+<form action="/alert" method="post">
+<p>You have successfully confirmed your update and you can now <a href="/?id=$problem_id#update_$id">view it on the site</a>.</p>
+<p>You could also
+<a href="/rss/$problem_id">subscribe to the RSS feed</a> of updates on this problem,
+or
+<input type="hidden" name="signed_email" value="$salt,$signed_email">
+<input type="hidden" name="email" value="$email">
+<input type="hidden" name="id" value="$problem_id">
+<input type="hidden" name="type" value="updates">
+<input type="submit" value="sign up"> if you wish to receive updates by email.
+</p>
+</form>
 EOF
         } elsif ($type eq 'problem') {
             dbh()->do("update problem set state='confirmed' where id=?", {}, $id);
-            my $pc = dbh()->selectrow_array("select postcode from problem where id=?", {}, $id);
-	    # Ask about email alert here, and RSS feed?
+	    my $email = dbh()->selectrow_array("select email from problem where id=?", {}, $id);
+            my $salt = unpack('h*', random_bytes(8));
+            my $secret = scalar(dbh()->selectrow_array('select secret from secret'));
+            my $signed_email = sha1_hex("$id-$email-$salt-$secret");
             $out = <<EOF;
-<p>You have successfully confirmed your problem and you can now <a href="/?id=$id;pc=$pc">view it on the site</a>.</p>
+<form action="/alert" method="post">
+<p>You have successfully confirmed your problem and you can now <a href="/?id=$id">view it on the site</a>.</p>
+<p>You could also
+<a href="/rss/$id">subscribe to the RSS feed</a> of updates on this problem,
+or
+<input type="hidden" name="signed_email" value="$salt,$signed_email">
+<input type="hidden" name="email" value="$email">
+<input type="hidden" name="id" value="$id">
+<input type="hidden" name="type" value="updates">
+<input type="submit" value="sign up"> if you wish to receive updates by email.
+</p>
+</form>
 EOF
         }
         dbh()->commit();

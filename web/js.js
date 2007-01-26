@@ -34,6 +34,22 @@ YAHOO.util.Event.onContentReady('mapForm', function() {
     }
 });
 
+YAHOO.util.Event.onContentReady('email_alert', function() {
+    this.onclick = function() {
+        if (this.on) {
+            YAHOO.util.Dom.setStyle('email_alert_box', 'display', 'none');
+            this.on = false;
+        } else {
+            var pos = YAHOO.util.Dom.getXY(this);
+            pos[0] -= 20; pos[1] += 20;
+            YAHOO.util.Dom.setStyle('email_alert_box', 'display', 'block');
+            YAHOO.util.Dom.setXY('email_alert_box', pos);
+            this.on = true;
+        }
+        return false;
+    }
+});
+
 // I love the global
 var tile_x = 0;
 var tile_y = 0;

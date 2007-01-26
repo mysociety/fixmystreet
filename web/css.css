@@ -254,8 +254,21 @@ ol#current img {
     font-weight: bolder;
 }
 
-#comments div em {
+#updates div em {
     border-bottom: dotted 1px #5e552b;
+}
+
+#email_alert_box {
+    display:none;
+    position: absolute;
+    padding: 3px;
+    font-size:83%;
+    border:solid 1px #7399C3;
+    background-color: #eeeeff;
+    color: #000000;
+}
+#email_alert_box p {
+    margin: 0;
 }
 
 #rss_items {
