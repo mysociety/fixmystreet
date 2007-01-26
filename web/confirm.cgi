@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.5 2006-10-10 20:45:09 matthew Exp $
+# $Id: confirm.cgi,v 1.6 2007-01-26 01:05:35 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -48,12 +48,14 @@ sub main {
             } elsif ($reopen) {
                 dbh()->do("update problem set state='confirmed' where id=? and state='fixed'", {}, $id);
             }
+	    # XXX: Ask about email alert here, and RSS feed? Or should the form have another checkbox?
             $out = <<EOF;
 <p>You have successfully confirmed your update and you can now <a href="/?id=$id">view it on the site</a>.</p>
 EOF
         } elsif ($type eq 'problem') {
             dbh()->do("update problem set state='confirmed' where id=?", {}, $id);
             my $pc = dbh()->selectrow_array("select postcode from problem where id=?", {}, $id);
+	    # Ask about email alert here, and RSS feed?
             $out = <<EOF;
 <p>You have successfully confirmed your problem and you can now <a href="/?id=$id;pc=$pc">view it on the site</a>.</p>
 EOF
