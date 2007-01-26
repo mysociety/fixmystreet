@@ -41,7 +41,7 @@ href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code<
                 </div>
 
                 <p>Below is the latest content available from this feed,
-                <a href="#" class="item"><img height="16" hspace="5" vspace="0" border="0" width="16" alt="RSS News feeds" src="/i/feed.gif" title="RSS News feeds" /><xsl:value-of select="$title"/></a>.</p>
+                <a href="#" class="item"><img height="16" hspace="5" vspace="0" border="0" width="16" alt="RSS News feeds" src="/i/feed.png" title="RSS News feeds" /><xsl:value-of select="$title"/></a>.</p>
 
                 <div id="rss_items"><ul><xsl:apply-templates select="item"/></ul></div>
                 <div id="rss_rhs">
