@@ -11,14 +11,14 @@
 
 YAHOO.util.Event.onContentReady('compass', function() {
     var points = this.getElementsByTagName('a');
-    points[1].onclick = function() { pan(0, tileheight); return false; };
-    points[3].onclick = function() { pan(tilewidth, 0); return false; };
-    points[4].onclick = function() { pan(-tilewidth, 0); return false; };
-    points[6].onclick = function() { pan(0, -tileheight); return false; };
-    points[0].onclick = function() { pan(tilewidth, tileheight); return false; };
-    points[2].onclick = function() { pan(-tilewidth, tileheight); return false; };
-    points[5].onclick = function() { pan(tilewidth, -tileheight); return false; };
-    points[7].onclick = function() { pan(-tilewidth, -tileheight); return false; };
+    YAHOO.util.Event.addListener(points[1], 'click', function() { pan(0, tileheight); return false; });
+    YAHOO.util.Event.addListener(points[3], 'click', function() { pan(tilewidth, 0); return false; });
+    YAHOO.util.Event.addListener(points[4], 'click', function() { pan(-tilewidth, 0); return false; });
+    YAHOO.util.Event.addListener(points[6], 'click', function() { pan(0, -tileheight); return false; });
+    YAHOO.util.Event.addListener(points[0], 'click', function() { pan(tilewidth, tileheight); return false; });
+    YAHOO.util.Event.addListener(points[2], 'click', function() { pan(-tilewidth, tileheight); return false; });
+    YAHOO.util.Event.addListener(points[5], 'click', function() { pan(tilewidth, -tileheight); return false; });
+    YAHOO.util.Event.addListener(points[7], 'click', function() { pan(-tilewidth, -tileheight); return false; });
 });
 
 YAHOO.util.Event.onContentReady('map', function() {
@@ -105,6 +105,7 @@ function urls_loaded(o) {
     for (var i=0; i<6; i++) {
         var ii = (i + o.argument[1]);
         for (var j=0; j<6; j++) {
+	    if (tiles[i][j] == null) continue;
             var jj = (j + o.argument[0]);
             var id = 't'+ii+'.'+jj;
             var xx = x+j;
