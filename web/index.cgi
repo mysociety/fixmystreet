@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.60 2007-01-30 16:10:06 matthew Exp $
+# $Id: index.cgi,v 1.61 2007-01-30 17:56:33 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -335,7 +335,7 @@ exact location of the problem (ie. on a wall or the floor), and so on.</p>';
     my $back = NewURL($q, submit_map => undef, "tile_$pin_tile_x.$pin_tile_y.x" => undef,
         "tile_$pin_tile_x.$pin_tile_y.y" => undef, skipped => undef);
     $out .= <<EOF;
-<fieldset>
+<fieldset><legend>Problem details</legend>
 <div><label for="form_title">Title:</label>
 <input type="text" value="$input_h{title}" name="title" id="form_title" size="30"></div>
 <div><label for="form_detail">Details:</label>
@@ -411,7 +411,7 @@ EOF
     </ol>
     <h2>Recent problems reported within 10km</h2>
     <p><a href="/rss/$x,$y"><img align="right" src="/i/feed.png" width="16" height="16" title="RSS feed of recent local problems" alt="RSS feed" border="0"></a></p>
-    <ol id="current" start="$list_start">
+    <ol id="current_near" start="$list_start">
 EOF
     foreach (@$current) {
         $out .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
@@ -532,7 +532,7 @@ EOF
 };
     $out .= <<EOF;
 <form method="post" action="./">
-<fieldset>
+<fieldset><legend>Update details</legend>
 <input type="hidden" name="submit_update" value="1">
 <input type="hidden" name="id" value="$input_h{id}">
 <div><label for="form_name">Name:</label>
@@ -635,6 +635,8 @@ sub display_pin {
 sub display_map {
     my ($q, $x, $y, $type, $compass, $pins) = @_;
     $pins ||= '';
+    $x = 0 if ($x<0);
+    $y = 0 if ($y<0);
     my $url = mySociety::Config::get('TILES_URL');
     my $tiles_url = $url . $x . '-' . ($x+1) . ',' . $y . '-' . ($y+1) . '/RABX';
     my $tiles = LWP::Simple::get($tiles_url);
@@ -644,6 +646,7 @@ sub display_map {
     my $tr = ($x+1) . '.' . ($y+1);
     my $bl = $x . '.' . $y;
     my $br = ($x+1) . '.' . $y;
+    return '<div id="side">' if (!$tileids->[0][0] || !$tileids->[0][1] || !$tileids->[1][0] || !$tileids->[1][1]);
     my $tl_src = $url . $tileids->[0][0];
     my $tr_src = $url . $tileids->[0][1];
     my $bl_src = $url . $tileids->[1][0];
@@ -674,7 +677,7 @@ var x = $x - 2; var y = $y - 2;
 var drag_x = 0; var drag_y = 0;
 </script>
     <div id="map"><div id="drag">
-        $img_type id="t2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0px;">$img_type id="t2.3" name="tile_$tr" src="$tr_src" style="top:0px; left:$imgw;"><br>$img_type id="t3.2" name="tile_$bl" src="$bl_src" style="top:$imgh; left:0px;">$img_type id="t3.3" name="tile_$br" src="$br_src" style="top:$imgh; left:$imgw;">
+        $img_type alt="NW map tile" id="t2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0px;">$img_type alt="NE map tile" id="t2.3" name="tile_$tr" src="$tr_src" style="top:0px; left:$imgw;"><br>$img_type alt="SW map tile" id="t3.2" name="tile_$bl" src="$bl_src" style="top:$imgh; left:0px;">$img_type alt="SE map tile" id="t3.3" name="tile_$br" src="$br_src" style="top:$imgh; left:$imgw;">
         $pins
     </div></div>
 EOF

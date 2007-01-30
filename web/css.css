@@ -45,6 +45,10 @@ fieldset {
     padding: 0.5em;
 }
 
+legend {
+    display: none;
+}
+
 dt {
     font-weight: bold;
     margin-top: 0.5em;

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.33 2007-01-26 01:01:23 matthew Exp $
+# $Id: Page.pm,v 1.34 2007-01-30 17:56:32 matthew Exp $
 #
 
 package Page;
@@ -147,7 +147,7 @@ sub compass ($$$) {
 </tr>
 <tr>
 <td><a href="${compass[$x-1][$y]}"><img src="i/arrow-west.gif" hspace="3" alt="W"></a></td>
-<td align="center"><img src="i/rose.gif" alt=""></a></td>
+<td align="center"><img src="i/rose.gif" alt=""></td>
 <td><a href="${compass[$x+1][$y]}"><img src="i/arrow-east.gif" hspace="3" alt="E"></a></td>
 </tr>
 <tr valign="top">
