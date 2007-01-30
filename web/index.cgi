@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.59 2007-01-26 22:48:31 matthew Exp $
+# $Id: index.cgi,v 1.60 2007-01-30 16:10:06 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -114,7 +114,6 @@ EOF
 <li>Submit to your council.
 </ol>
 
-</div>
 EOF
     return $out;
 }
@@ -447,8 +446,8 @@ sub display_problem {
     my @vars = qw(id name email update fixed reopen x y);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
-    $input{x} += 0;
-    $input{y} += 0;
+    $input{x} ||= 0; $input{x} += 0;
+    $input{y} ||= 0; $input{y} += 0;
 
     # Get all information from database
     my $problem = dbh()->selectrow_arrayref(

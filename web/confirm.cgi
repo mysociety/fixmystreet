@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.7 2007-01-26 22:48:31 matthew Exp $
+# $Id: confirm.cgi,v 1.8 2007-01-30 16:10:06 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -58,7 +58,7 @@ sub main {
 <form action="/alert" method="post">
 <p>You have successfully confirmed your update and you can now <a href="/?id=$problem_id#update_$id">view it on the site</a>.</p>
 <p>You could also
-<a href="/rss/$problem_id">subscribe to the RSS feed</a> of updates on this problem,
+<a href="/rss/$problem_id">subscribe to the RSS feed</a> of updates by other local people on this problem,
 or
 <input type="hidden" name="signed_email" value="$salt,$signed_email">
 <input type="hidden" name="email" value="$email">
@@ -78,7 +78,7 @@ EOF
 <form action="/alert" method="post">
 <p>You have successfully confirmed your problem and you can now <a href="/?id=$id">view it on the site</a>.</p>
 <p>You could also
-<a href="/rss/$id">subscribe to the RSS feed</a> of updates on this problem,
+<a href="/rss/$id">subscribe to the RSS feed</a> of updates by other local people on this problem,
 or
 <input type="hidden" name="signed_email" value="$salt,$signed_email">
 <input type="hidden" name="email" value="$email">
