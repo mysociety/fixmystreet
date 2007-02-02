@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.5 2007-01-23 23:59:08 matthew Exp $
+# $Id: faq.cgi,v 1.6 2007-02-02 17:51:58 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -34,7 +34,7 @@ sub faq {
 
 <dt>What is Neighbourhood Fix-It for?</dt>
 <dd>Neighbourhood Fix-It is a site to help people report, view, or discuss local problems
-they've found to their local council by simply locating them on a map.</dd>
+they&rsquo;ve found to their local council by simply locating them on a map.</dd>
 
 <dt>Can you give me some examples?</dt>
 <dd>Sure. Graffiti, unlit lampposts, abandoned beds, broken glass on a cycle
@@ -49,7 +49,7 @@ problem.</dd>
 
 <dt>Is it free?</dt>
 <dd>The site is free to use, yes. Neighbourhood Fix-It
-is run by a charitable organisation, though, so if you want to make
+is run by a registered charity, though, so if you want to make
 a contribution, <a href="https://secure.mysociety.org/donate/">please do</a>.</dd>
 </dl>
 
@@ -61,8 +61,8 @@ consider to be inappropriate.</dd>
 <dl>
 
 <dt>Who gets to see my email address?</dt>
-<dd>If you submit a problem, we (do we?) pass on your name, email address, and details
-of the problem to the council contact responsible for the area where you
+<dd>If you submit a problem, we pass on your details, and details
+of the problem, to the council contact or contacts responsible for the area where you
 located the problem. Your name is displayed upon the site, but not your email address;
 similarly with updates.
 
@@ -73,7 +73,7 @@ email address to anyone else, unless we are obliged to by law.
 
 <dt>Will you send nasty, brutish spam to my email address?</dt>
 <dd>Never.  If you opt to when adding a problem or update, you will receive emails 
-about updates to that problem, but that's it.
+about updates to that problem, but that&rsquo;s it.
 </dd>
 
 </dl>
@@ -84,9 +84,9 @@ about updates to that problem, but that's it.
 
 <dt>Who built Neighbourhood Fix-It?</dt>
 <dd>This site was built by <a href="http://www.mysociety.org">mySociety</a>. 
-mySociety is a charitable organisation which has grown out of the community of
+mySociety is the project of a reigstered charity which has grown out of the community of
 volunteers who built sites like <a href="http://www.theyworkforyou.com/">TheyWorkForYou.com</a>. 
-mySociety's primary
+mySociety&rsquo;s primary
 mission is to build Internet projects which give people simple, tangible
 benefits in the civic and community aspects of their lives. Our first project
 was <a href="http://www.writetothem.com/">WriteToThem.com</a>, where you can write to any of your
@@ -102,11 +102,11 @@ has put in some spare resources to cover wider parts of the UK.
 <dd>Yes, we can use help in all sorts of ways, technical or non-technical.
 Please see our <a href="http://www.mysociety.org/volunteertasks">volunteers page</a>.</dd>
 
-<dt>Where's the "source code" to this site?</dt>
+<dt>Where&rsquo;s the "source code" to this site?</dt>
 <dd>The software behind this site is open source, and available to you
 mainly under the Affero GPL software license. You can <a
 href="https://secure.mysociety.org/cvstrac/dir?d=mysociety">download the source
-code</a> (look under 'bci') and help us develop it. You're welcome to use it
+code</a> (look under &lsquo;bci&rsquo;) and help us develop it. You&rsquo;re welcome to use it
 in your own projects, although you must also make available the source code to
 any such projects.
 </dd>
@@ -122,12 +122,13 @@ Tom Steinberg.
 
 Thanks also to
 <a href="http://www.ordnancesurvey.co.uk">Ordnance Survey</a> (for the maps and UK postcodes),
-the entire free software community (FreeBSD, Linux, PHP, Perl, Python, Apache,
-MySQL, PostgreSQL, we love and use you all!) and
+Yahoo! for their JavaScript libraries, 
+the entire free software community (this particular project was brought to you by
+Perl, PostgreSQL, and the number 161.290) and
 <a href="http://www.easynet.net/publicsector/">Easynet</a> (who kindly host all
 our servers).
 
-Let us know if we've missed anyone.
+Let us know if we&rsquo;ve missed anyone.
 </dd>
 
 </dl>

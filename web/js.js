@@ -235,13 +235,10 @@ YAHOO.extend(YAHOO.util.DDMap, YAHOO.util.DD, {
     }
 });
 
-/* From Yahoo!'s code */
-var browser = 9;
+var browser = 1;
 var ua=navigator.userAgent.toLowerCase();
-if(/opera/.test(ua)) browser=3;
-else if(/safari/.test(ua)) browser=2;
-else if(/gecko/.test(ua)) browser=1;
-else if(typeof document.all!='undefined') browser=0;
+if (!/opera|safari|gecko/.test(ua) && typeof document.all!='undefined')
+    browser=0;
 
 function getInt(n) {
     n = parseInt(n); return (isNaN(n) ? 0 : n);
