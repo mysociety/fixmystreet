@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.17 2007-02-02 11:57:50 matthew Exp $
+-- $Id: schema.sql,v 1.18 2007-02-02 16:31:52 matthew Exp $
 --
 
 -- secret
@@ -129,6 +129,7 @@ create table problem (
     title text not null,
     detail text not null,
     photo bytea,
+    used_map boolean not null,
     -- category integer not null references category(id),
 
     -- User's details

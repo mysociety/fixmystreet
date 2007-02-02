@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.64 2007-02-02 16:17:18 matthew Exp $
+# $Id: index.cgi,v 1.65 2007-02-02 16:31:53 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -148,7 +148,7 @@ sub submit_update {
 
 sub submit_problem {
     my $q = shift;
-    my @vars = qw(council title detail name email phone pc easting northing);
+    my @vars = qw(council title detail name email phone pc easting northing skipped);
     my %input = map { $_ => scalar $q->param($_) } @vars;
     my @errors;
 
@@ -208,12 +208,14 @@ sub submit_problem {
     }
 
     delete $input{council} if $input{council} == -1;
+    my $used_map = $input{skipped} ? 'f' : 't';
 
     # This is horrid
     my $s = dbh()->prepare("insert into problem
-        (id, postcode, easting, northing, title, detail, name, email, phone, photo, state, council)
+        (id, postcode, easting, northing, title, detail, name,
+	 email, phone, photo, state, council, used_map)
         values
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?)");
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?)");
     $s->bind_param(1, $id);
     $s->bind_param(2, $input{pc});
     $s->bind_param(3, $input{easting});
@@ -225,6 +227,7 @@ sub submit_problem {
     $s->bind_param(9, $input{phone});
     $s->bind_param(10, $image, { pg_type => DBD::Pg::PG_BYTEA });
     $s->bind_param(11, $input{council});
+    $s->bind_param(12, $used_map);
     $s->execute();
     my %h = ();
     $h{title} = $input{title};

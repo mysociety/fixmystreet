@@ -13,8 +13,7 @@ has submitted the following report:
 
 ----------
 
-To view a map of the precise location of this issue, or to provide an update
-on the problem, please visit the following link:
+<?=$values['fuzzy']?>, or to provide an update on the problem, please visit the following link:
 
     <?=$values['url']?>
 

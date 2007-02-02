@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.4 2007-02-02 16:17:17 matthew Exp $
+# $Id: send-reports,v 1.5 2007-02-02 16:31:52 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -35,7 +35,7 @@ BEGIN {
 }
 
 my $unsent = dbh()->selectall_arrayref(
-    "SELECT id, council, title, detail, created, name, email, phone
+    "SELECT id, council, title, detail, created, name, email, phone, used_map
     FROM problem WHERE state = 'confirmed' AND whensent IS NULL", { Slice => {} });
 foreach my $row (@$unsent) {
     # XXX Needs locks!
@@ -56,6 +56,8 @@ foreach my $row (@$unsent) {
     $h{user_details} .= ' (' . $row->{phone} . ')' if $row->{phone};
     $h{url} = mySociety::Config::get('BASE_URL') . '/?id=' . $row->{id};
     $h{councils_name} = join(' and ', map { $areas_info->{$_}->{name} } @councils);
+    $h{fuzzy} = $row->{used_map} ? 'To view a map of the precise location of this issue'
+        : 'The user could not locate the problem on a map, but to see the area around the location they entered';
     my $email = mySociety::Email::construct_email({
         _template_ => $template,
         _parameters_ => \%h,
