@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.66 2007-02-02 22:01:45 matthew Exp $
+# $Id: index.cgi,v 1.67 2007-02-02 23:24:01 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -142,7 +142,7 @@ sub submit_update {
     $h{url} = mySociety::Config::get('BASE_URL') . '/C/' . mySociety::AuthToken::store('update', $id);
     dbh()->commit();
 
-    my $out = Page::send_email($input{email}, $input{name}, 'update-confirm', %h);
+    my $out = Page::send_email($input{email}, $input{name}, 'update', %h);
     return $out;
 }
 
@@ -236,7 +236,7 @@ sub submit_problem {
     $h{url} = mySociety::Config::get('BASE_URL') . '/P/' . mySociety::AuthToken::store('problem', $id);
     dbh()->commit();
 
-    my $out = Page::send_email($input{email}, $input{name}, 'problem-confirm', %h);
+    my $out = Page::send_email($input{email}, $input{name}, 'problem', %h);
     return $out;
 }
 

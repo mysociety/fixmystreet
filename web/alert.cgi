@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.2 2007-01-26 22:48:31 matthew Exp $
+# $Id: alert.cgi,v 1.3 2007-02-02 23:24:01 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -89,7 +89,7 @@ EOF
             $h{url} = mySociety::Config::get('BASE_URL') . '/A/'
                 . mySociety::AuthToken::store('alert', { id => $alert_id, type => 'subscribe' } );
             dbh()->commit();
-            $out = Page::send_email($email, undef, 'alert-confirm', %h);
+            $out = Page::send_email($email, undef, 'alert', %h);
         }
     } elsif ($q->param('id')) {
         $out = display_form($q);

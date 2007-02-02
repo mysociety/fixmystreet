@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.35 2007-02-02 16:17:18 matthew Exp $
+# $Id: Page.pm,v 1.36 2007-02-02 23:24:01 matthew Exp $
 #
 
 package Page;
@@ -161,7 +161,8 @@ EOF
 
 # send_email TO (NAME) TEMPLATE-NAME PARAMETERS
 sub send_email {
-    my ($email, $name, $template, %h) = @_;
+    my ($email, $name, $thing, %h) = @_;
+    my $template = "$thing-confirm";
     $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/$template");
     my $to = $name ? [[$email, $name]] : $email;
     my $message = mySociety::Email::construct_email({
@@ -172,14 +173,15 @@ sub send_email {
     });
     my $result = mySociety::Util::send_email($message, mySociety::Config::get('CONTACT_EMAIL'), $email);
     my $out;
+    my $action = ($thing eq 'alert') ? 'confirmed' : 'posted';
     if ($result == mySociety::Util::EMAIL_SUCCESS) {
         $out = <<EOF;
 <h1>Nearly Done! Now check your email...</h1>
 <p>The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.</p>
 <p>If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.</p>
-<p>You must now click on the link within the email we've just sent you -
-<br>if you do not, your update will not be posted.</p>
-<p>(Don't worry - we'll hang on to your update while you're checking your email.)</p>
+<p>You must now click on the link within the email we've just sent you &mdash;
+if you do not, your $thing will not be $action.</p>
+<p>(Don't worry &mdash; we'll hang on to your $thing while you're checking your email.)</p>
 EOF
     } else {
         $out = <<EOF;
