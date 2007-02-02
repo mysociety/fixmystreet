@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.62 2007-02-02 12:23:07 matthew Exp $
+# $Id: index.cgi,v 1.63 2007-02-02 13:43:32 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -484,8 +484,8 @@ EOF
     my $back = NewURL($q, id=>undef, x=>$x_tile, y=>$y_tile);
     $out .= '<p style="padding-bottom: 0.5em; border-bottom: dotted 1px #999999;" align="right"><a href="' . $back . '">Back to listings</a></p>';
 
-    $out .= '<a href="/rss/'.$input_h{id}.'"><img align="right" src="/i/feed.png" width="16" height="16" title="RSS feed" alt="RSS feed of updates to this problem" border="0"></a> ';
-    $out .= '<a id="email_alert" href="/alert?type=updates;id='.$input_h{id}.'"><img align="right" src="/i/email.png" width="16" height="16" title="Email alerts" alt="Email alerts of updates to this problem" border="0"></a>';
+    $out .= '<a href="/rss/'.$input_h{id}.'"><img align="right" src="/i/feed.png" width="16" height="16" title="RSS feed" alt="RSS feed of updates to this problem" border="0" hspace="4"></a> ';
+    $out .= '<a id="email_alert" href="/alert?type=updates;id='.$input_h{id}.'"><img src="/i/email.png" width="16" height="16" title="Email alerts" alt="Email alerts of updates to this problem" border="0"></a>';
     $out .= <<EOF;
 <form action="alert" method="post" id="email_alert_box">
 <p>Receive email when updates are left on this problem</p>

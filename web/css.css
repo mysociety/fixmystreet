@@ -261,6 +261,9 @@ ol#current img {
     border-bottom: dotted 1px #5e552b;
 }
 
+#email_alert {
+    float: right;
+}
 #email_alert_box {
     display:none;
     position: absolute;
