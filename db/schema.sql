@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.16 2007-01-26 01:01:23 matthew Exp $
+-- $Id: schema.sql,v 1.17 2007-02-02 11:57:50 matthew Exp $
 --
 
 -- secret
@@ -70,37 +70,6 @@ create function ms_current_timestamp()
 --     name text not null
 -- );
 
--- Problems reported by users of site
-create table problem (
-    id serial not null primary key,
-
-    -- Problem details
-    postcode text not null,
-    easting double precision not null,
-    northing double precision not null,
-    council integer references contacts(area_id),
-    title text not null,
-    detail text not null,
-    photo bytea,
-    -- category integer not null references category(id),
-
-    -- User's details
-    name text not null,
-    email text not null,
-    phone text not null,
-
-    -- Metadata
-    created timestamp not null default ms_current_timestamp(),
-    state text not null check (
-        state = 'unconfirmed'
-        or state = 'confirmed'
-        or state = 'fixed'
-        or state = 'hidden'
-    ),
-    whensent timestamp
-);
-create index problem_state_easting_northing_idx on problem(state, easting, northing);
-
 -- Who to send problems for a specific MaPit area ID to
 create table contacts (
     area_id integer not null,
@@ -113,7 +82,7 @@ create table contacts (
     -- what the last change was for: author's notes
     note text not null
 );
-create index contacts_area_id_idx on contacts(area_id);
+create unique index contacts_area_id_idx on contacts(area_id);
 
 -- History of changes to contacts - automatically updated
 -- whenever contacts is changed, using trigger below.
@@ -147,6 +116,37 @@ create trigger contacts_update_trigger after update on contacts
     for each row execute procedure contacts_updated();
 create trigger contacts_insert_trigger after insert on contacts
     for each row execute procedure contacts_updated();
+
+-- Problems reported by users of site
+create table problem (
+    id serial not null primary key,
+
+    -- Problem details
+    postcode text not null,
+    easting double precision not null,
+    northing double precision not null,
+    council integer references contacts(area_id),
+    title text not null,
+    detail text not null,
+    photo bytea,
+    -- category integer not null references category(id),
+
+    -- User's details
+    name text not null,
+    email text not null,
+    phone text not null,
+
+    -- Metadata
+    created timestamp not null default ms_current_timestamp(),
+    state text not null check (
+        state = 'unconfirmed'
+        or state = 'confirmed'
+        or state = 'fixed'
+        or state = 'hidden'
+    ),
+    whensent timestamp
+);
+create index problem_state_easting_northing_idx on problem(state, easting, northing);
 
 -- angle_between A1 A2
 -- Given two angles A1 and A2 on a circle expressed in radians, return the
@@ -241,7 +241,8 @@ create table alert_type (
     item_order text not null,
     item_title text not null,
     item_link text not null,
-    item_description text not null
+    item_description text not null,
+    template text not null
 );
 
 create table alert (
