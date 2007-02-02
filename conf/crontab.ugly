@@ -1,0 +1,18 @@
+# crontab.ugly:
+# Timed tasks for Nrighbourhood Fix-It. Template file.
+#
+# Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
+# Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
+#
+# $Id: crontab.ugly,v 1.1 2007-02-02 11:40:02 matthew Exp $
+
+PATH=/usr/local/bin:/usr/bin:/bin
+!!(* if ($vhost eq "matthew.bci.mysociety.org") { *)!!
+MAILTO=matthew@mysociety.org
+!!(* } else {*)!!
+MAILTO=team@neighbourhoodfixit.com
+!!(* } *)!!
+
+0-59/5 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-reports || echo "stalled?"
+2 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-alerts.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-alerts || echo "stalled?"
+
