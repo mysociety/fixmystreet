@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.63 2007-02-02 13:43:32 matthew Exp $
+# $Id: index.cgi,v 1.64 2007-02-02 16:17:18 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -162,7 +162,7 @@ sub submit_problem {
             ($ct eq 'image/jpeg' || $ct eq 'image/pjpeg');
     }
 
-    push(@errors, 'No council selected') unless $input{council} && $input{council} =~ /^(?:-1|\d+)$/;
+    push(@errors, 'No council selected') unless $input{council} && $input{council} =~ /^(?:-1|[\d,]+)$/;
     push(@errors, 'Please enter a title') unless $input{title};
     push(@errors, 'Please enter some details') unless $input{detail};
     push(@errors, 'Please enter your name') unless $input{name};
@@ -176,8 +176,17 @@ sub submit_problem {
         if ($input{council} != -1) {
             my $councils = mySociety::MaPit::get_voting_area_by_location_en($input{easting}, $input{northing}, 'polygon', $mySociety::VotingArea::council_parent_types);
             my %councils = map { $_ => 1 } @$councils;
-            push(@errors, 'That location is not part of that council') unless $councils{$input{council}};
-            push(@errors, 'We do not yet have details for the council that covers that location') unless is_valid_council($input{council});
+	    my @input_councils = split /,/, $input{council};
+	    foreach (@input_councils) {
+                if (!$councils{$_}) {
+                    push(@errors, 'That location is not part of that council');
+		    last;
+		}
+	    }
+	    my @valid_councils = is_valid_council(\@input_councils);
+            push(@errors, 'We do not yet have details for the council that covers that location') unless @valid_councils;
+	    $input{council} = join(',', @valid_councils);
+
         }
     } elsif ($input{easting} || $input{northing}) {
         push(@errors, 'Somehow, you only have one co-ordinate. Please try again.');
@@ -287,23 +296,11 @@ EOF
         $out .= '<p>You have located the problem at the point marked with a purple pin on the map.
         If this is not the correct location, simply click on the map again.</p>';
     }
-    if (@councils > 1) {
-        $out .= '<p>This spot lies in more than one council area; if you want, please choose which
-                council you wish to send the report to below:</p>';
-        $out .= '<ul style="list-style-type:none">';
-        my $c = 0;
-        # XXX: We don't know the order of display here!
-        foreach my $council (@councils) {
-            $out .= '<li><input type="radio" name="council" value="' . $council . '"';
-            $out .= ' checked' if ($input{council}==$council || (!$input{council} && !$c++));
-            $out .= ' id="council' . $council . '"> <label class="n" for="council'
-                . $council . '">' . $areas_info->{$council}->{name} . '</label></li>';
-        }
-        $out .= '</ul>';
-    } elsif (@councils == 1) {
+    if (@councils > 0) {
         $out .= '<p>This problem will be reported to <strong>'
-            . $areas_info->{$councils[0]}->{name} . '</strong>.</p>';
-        $out .= '<input type="hidden" name="council" value="' . $councils[0] . '">';
+	    . join('</strong> and <strong>', map { $areas_info->{$_}->{name} } @councils)
+            . '</strong>.</p>';
+        $out .= '<input type="hidden" name="council" value="' . join(',',@councils) . '">';
     } else {
         my $e = mySociety::Config::get('CONTACT_EMAIL');
         my $list = join(', ', map { $areas_info->{$_}->{name} } @$all_councils);

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.34 2007-01-30 17:56:32 matthew Exp $
+# $Id: Page.pm,v 1.35 2007-02-02 16:17:18 matthew Exp $
 #
 
 package Page;
@@ -87,7 +87,7 @@ EOF
 EOF
     my $home = !$title && $ENV{SCRIPT_NAME} eq '/index.cgi' && !$ENV{QUERY_STRING};
     $html .= $home ? '<h1 id="header">' : '<div id="header"><a href="/">';
-    $html .= 'Neighbourhood Fix-It';
+    $html .= 'Neighbourhood Fix-It <span id="beta">Beta</span>';
     $html .= $home ? '</h1>' : '</a></div>';
     $html .= '<div id="wrapper"><div id="content">';
     if (mySociety::Config::get('STAGING_SITE')) {

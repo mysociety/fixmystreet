@@ -1,6 +1,6 @@
 Subject: Problem Report: <?=$values['title']?>
 
-Dear <?=$values['council_name']?>,
+Dear <?=$values['councils_name']?>,
 
 A user of Neighbourhood Fix-It, <?=$values['user_details']?>,
 has submitted the following report:

@@ -87,6 +87,11 @@ ul#error {
     color: #5e552b;
 }
 
+#beta {
+    font-size: 50%;
+    font-style: italic;
+}
+
 #header a:link, #header a:visited {
     color: #5e552b;
     background-color: #e3d595;
