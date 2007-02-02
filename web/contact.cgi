@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.6 2007-02-02 22:01:45 matthew Exp $
+# $Id: contact.cgi,v 1.7 2007-02-02 23:31:39 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -49,7 +49,7 @@ sub contact_submit {
     push(@errors, 'Please write a message') unless $input{message};
     return contact_page($q, @errors) if @errors;
 
-    my $message = str_replace("\r\n", "\n", $input{message});
+    (my $message = $input{message}) =~ s/\r\n/\n/g;
     my $postfix = '[ Sent by contact.cgi on ' .
         $ENV{'HTTP_HOST'} . '. ' .
         "IP address " . $ENV{'REMOTE_ADDR'} .
