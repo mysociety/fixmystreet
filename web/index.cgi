@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.65 2007-02-02 16:31:53 matthew Exp $
+# $Id: index.cgi,v 1.66 2007-02-02 22:01:45 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -173,7 +173,7 @@ sub submit_problem {
     }
 
     if ($input{easting} && $input{northing}) {
-        if ($input{council} != -1) {
+        if ($input{council} ne '-1') {
             my $councils = mySociety::MaPit::get_voting_area_by_location_en($input{easting}, $input{northing}, 'polygon', $mySociety::VotingArea::council_parent_types);
             my %councils = map { $_ => 1 } @$councils;
 	    my @input_councils = split /,/, $input{council};
@@ -207,7 +207,7 @@ sub submit_problem {
         $image = $blobs[0];
     }
 
-    delete $input{council} if $input{council} == -1;
+    delete $input{council} if $input{council} eq '-1';
     my $used_map = $input{skipped} ? 'f' : 't';
 
     # This is horrid
@@ -347,7 +347,8 @@ exact location of the problem (ie. on a wall or the floor), and so on.</p>';
 <small>(optional, so the council can get in touch)</small></div>
 <div><label for="form_photo">Photo:</label>
 <input type="file" name="photo" id="form_photo"></div>
-<div class="checkbox"><input type="submit" name="submit_problem" value="Submit"></div>
+<div class="checkbox"><input type="submit" value="Submit"></div>
+<input type="hidden" name="submit_problem" value="1">
 </fieldset>
 
 <p align="right"><a href="$back">Back to listings</a></p>
@@ -775,7 +776,7 @@ sub is_valid_council {
     my @councils_no_email = (2288,2402,2390,2252,2351,2430,2375,2285,2377,2374,2330,2454,2284,2378,2294,2312,2419,2386,2363,2353,2296,2300,2291,2268,2512,2504,2495,2510,
     2530,2516,2531,2545,2586,2554,2574,2580,2615,2596,2599,2601,2648,2652,2607,2582,14287,14317,14328,2225,2242,2222,2248,2246,2235,2224,2244,2236);
 
-    my $invalid_councils;
+    my $invalid_councils = '';
     grep (vec($invalid_councils, $_, 1) = 1, @councils_no_email);
 
     # Cheltenham example: CTY=2226 DIS=2326

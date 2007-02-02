@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.5 2006-09-27 23:51:45 matthew Exp $
+# $Id: contact.cgi,v 1.6 2007-02-02 22:01:45 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -42,7 +42,7 @@ Page::do_fastcgi(\&main);
 sub contact_submit {
     my $q = shift;
     my @vars = qw(name email message);
-    my %input = map { $_ => $q->param($_) } @vars;
+    my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
     push(@errors, 'Please give your name') unless $input{name};
     push(@errors, 'Please give your name') unless $input{email};
@@ -72,7 +72,7 @@ sub contact_submit {
 sub contact_page {
     my ($q, @errors) = @_;
     my @vars = qw(name email message);
-    my %input = map { $_ => $q->param($_) } @vars;
+    my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 
     my $out = '<h1>Contact the team</h1>';
