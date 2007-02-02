@@ -9,16 +9,21 @@
  * 
  */
 
+function compass_pan(e, a) {
+    YAHOO.util.Event.preventDefault(e);
+    pan(a.x, a.y);
+}
+
 YAHOO.util.Event.onContentReady('compass', function() {
     var points = this.getElementsByTagName('a');
-    YAHOO.util.Event.addListener(points[1], 'click', function() { pan(0, tileheight); return false; });
-    YAHOO.util.Event.addListener(points[3], 'click', function() { pan(tilewidth, 0); return false; });
-    YAHOO.util.Event.addListener(points[4], 'click', function() { pan(-tilewidth, 0); return false; });
-    YAHOO.util.Event.addListener(points[6], 'click', function() { pan(0, -tileheight); return false; });
-    YAHOO.util.Event.addListener(points[0], 'click', function() { pan(tilewidth, tileheight); return false; });
-    YAHOO.util.Event.addListener(points[2], 'click', function() { pan(-tilewidth, tileheight); return false; });
-    YAHOO.util.Event.addListener(points[5], 'click', function() { pan(tilewidth, -tileheight); return false; });
-    YAHOO.util.Event.addListener(points[7], 'click', function() { pan(-tilewidth, -tileheight); return false; });
+    YAHOO.util.Event.addListener(points[1], 'click', compass_pan, { x:0, y:tileheight });
+    YAHOO.util.Event.addListener(points[3], 'click', compass_pan, { x:tilewidth, y:0 });
+    YAHOO.util.Event.addListener(points[4], 'click', compass_pan, { x:-tilewidth, y:0 });
+    YAHOO.util.Event.addListener(points[6], 'click', compass_pan, { x:0, y:-tileheight });
+    YAHOO.util.Event.addListener(points[0], 'click', compass_pan, { x:tilewidth, y:tileheight });
+    YAHOO.util.Event.addListener(points[2], 'click', compass_pan, { x:-tilewidth, y:tileheight });
+    YAHOO.util.Event.addListener(points[5], 'click', compass_pan, { x:tilewidth, y:-tileheight });
+    YAHOO.util.Event.addListener(points[7], 'click', compass_pan, { x:-tilewidth, y:-tileheight });
 });
 
 YAHOO.util.Event.onContentReady('map', function() {
@@ -105,7 +110,7 @@ function urls_loaded(o) {
     for (var i=0; i<6; i++) {
         var ii = (i + o.argument[1]);
         for (var j=0; j<6; j++) {
-	    if (tiles[i][j] == null) continue;
+            if (tiles[i][j] == null) continue;
             var jj = (j + o.argument[0]);
             var id = 't'+ii+'.'+jj;
             var xx = x+j;
