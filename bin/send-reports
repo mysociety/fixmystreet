@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.5 2007-02-02 16:31:52 matthew Exp $
+# $Id: send-reports,v 1.6 2007-02-03 00:11:04 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -42,7 +42,8 @@ foreach my $row (@$unsent) {
     print 'Need to send problem #' . $row->{id} . ' to council ' . $row->{council} . "\n";
     my @councils = split ',', $row->{council};
     my $areas_info = mySociety::MaPit::get_voting_areas_info(\@councils);
-    my (@to, @recips);
+    my @to;
+    my @recips = (mySociety::Config::get('CONTACT_EMAIL'));
     foreach my $council (@councils) {
         my $council_email = dbh()->selectrow_array('SELECT email FROM contacts WHERE area_id=?', {}, $council);
         throw Error::Simple('Missing email!') unless $council_email;
