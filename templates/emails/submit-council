@@ -3,7 +3,8 @@ Subject: Problem Report: <?=$values['title']?>
 Dear <?=$values['councils_name']?>,
 
 A user of Neighbourhood Fix-It, <?=$values['user_details']?>,
-has submitted the following report:
+has submitted the following report of a local problem that
+they believe requires your attention:
 
 ----------
 
@@ -13,12 +14,12 @@ has submitted the following report:
 
 ----------
 
-<?=$values['fuzzy']?>, or to provide an update on the problem, please visit the following link:
+<?=$values['fuzzy']?>, or to provide an update on the problem,
+please visit the following link:
 
     <?=$values['url']?>
 
-Yours,
-The Neighbourhood Fix-It team
+Yours, The Neighbourhood Fix-It team
 
 [ This message was sent via NeighbourhoodFixIt.com, a project of
 UKCOD, registered charity number 1076346. If there is a more
