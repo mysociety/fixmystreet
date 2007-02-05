@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.6 2007-02-03 00:11:04 matthew Exp $
+# $Id: send-reports,v 1.7 2007-02-05 11:57:08 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -33,6 +33,10 @@ BEGIN {
         Port => mySociety::Config::get('BCI_DB_PORT', undef)
     );
 }
+
+die "No arguments or specify --nomail" if (@ARGV>1);
+my $nomail = 0;
+$nomail = 1 if (@ARGV==1 && $ARGV[0] eq '--nomail');
 
 my $unsent = dbh()->selectall_arrayref(
     "SELECT id, council, title, detail, created, name, email, phone, used_map
@@ -65,9 +69,10 @@ foreach my $row (@$unsent) {
         From => [ mySociety::Config::get('CONTACT_EMAIL'), mySociety::Config::get('CONTACT_NAME') ],
         To => \@to,
     });
+    print $email if $nomail;
 
     my $result;
-    if (mySociety::Config::get('STAGING_SITE')) {
+    if (mySociety::Config::get('STAGING_SITE') || $nomail) {
         $result = -1;
     } else {
         $result = mySociety::Util::send_email($email, mySociety::Config::get('CONTACT_EMAIL'), @recips);
