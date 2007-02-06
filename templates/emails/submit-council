@@ -19,6 +19,8 @@ please visit the following link:
 
     <?=$values['url']?>
 
+Replies to this email will go to the user who submitted the problem.
+
 Yours, The Neighbourhood Fix-It team
 
 [ This message was sent via NeighbourhoodFixIt.com, a project of
