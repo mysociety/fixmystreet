@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.67 2007-02-02 23:24:01 matthew Exp $
+# $Id: index.cgi,v 1.68 2007-02-06 10:32:04 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -176,20 +176,21 @@ sub submit_problem {
         if ($input{council} ne '-1') {
             my $councils = mySociety::MaPit::get_voting_area_by_location_en($input{easting}, $input{northing}, 'polygon', $mySociety::VotingArea::council_parent_types);
             my %councils = map { $_ => 1 } @$councils;
-	    my @input_councils = split /,/, $input{council};
-	    foreach (@input_councils) {
+            my @input_councils = split /,/, $input{council};
+            foreach (@input_councils) {
                 if (!$councils{$_}) {
                     push(@errors, 'That location is not part of that council');
-		    last;
-		}
-	    }
-	    my @valid_councils = is_valid_council(\@input_councils);
+                    last;
+                }
+            }
+            my @valid_councils = is_valid_council(\@input_councils);
             push(@errors, 'We do not yet have details for the council that covers that location') unless @valid_councils;
-	    $input{council} = join(',', @valid_councils);
-
+            $input{council} = join(',', @valid_councils);
         }
     } elsif ($input{easting} || $input{northing}) {
         push(@errors, 'Somehow, you only have one co-ordinate. Please try again.');
+    } else {
+        push(@errors, 'You haven\'t specified any sort of co-ordinates. Please try again.');
     }
     
     return display_form($q, @errors) if (@errors);
@@ -213,7 +214,7 @@ sub submit_problem {
     # This is horrid
     my $s = dbh()->prepare("insert into problem
         (id, postcode, easting, northing, title, detail, name,
-	 email, phone, photo, state, council, used_map)
+         email, phone, photo, state, council, used_map)
         values
         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?)");
     $s->bind_param(1, $id);
@@ -301,12 +302,12 @@ EOF
     }
     if (@councils > 0) {
         $out .= '<p>This problem will be reported to <strong>'
-	    . join('</strong> and <strong>', map { $areas_info->{$_}->{name} } @councils)
+            . join('</strong> and <strong>', map { $areas_info->{$_}->{name} } @councils)
             . '</strong>.</p>';
         $out .= '<input type="hidden" name="council" value="' . join(',',@councils) . '">';
     } else {
         my $e = mySociety::Config::get('CONTACT_EMAIL');
-        my $list = join(', ', map { $areas_info->{$_}->{name} } @$all_councils);
+        my $list = join(' and ', map { $areas_info->{$_}->{name} } @$all_councils);
         my $n = @$all_councils;
         $out .= '<p>We do not yet have details for the council';
         $out .= ($n>1) ? 's that cover' : ' that covers';

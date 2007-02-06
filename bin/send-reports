@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.9 2007-02-06 09:42:44 matthew Exp $
+# $Id: send-reports,v 1.10 2007-02-06 10:32:04 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -39,21 +39,27 @@ my $nomail = 0;
 $nomail = 1 if (@ARGV==1 && $ARGV[0] eq '--nomail');
 
 my $unsent = dbh()->selectall_arrayref(
-    "SELECT id, council, title, detail, created, name, email, phone, used_map
+    "SELECT id, council, title, detail, name, email, phone, used_map
     FROM problem WHERE state = 'confirmed' AND whensent IS NULL", { Slice => {} });
 foreach my $row (@$unsent) {
     # XXX Needs locks!
     my @councils = split ',', $row->{council};
     my $areas_info = mySociety::MaPit::get_voting_areas_info(\@councils);
-    my @to;
-    my @recips = (mySociety::Config::get('CONTACT_EMAIL'));
+    my (@to, @recips);
     foreach my $council (@councils) {
+        my $name = $areas_info->{$council}->{name};
         my $council_email = dbh()->selectrow_array('SELECT email FROM contacts WHERE area_id=?', {}, $council);
-        throw Error::Simple('Missing email!') unless $council_email;
-        push @to, [ $council_email, $areas_info->{$council}->{name} ];
+        next unless $council_email; # Ignore missing councils
+        push @to, [ $council_email, $name ];
         push @recips, $council_email;
     }
     print 'Need to send problem #' . $row->{id} . ' to council(s) ' . join(',',@recips) . "\n";
+    if (!@to) {
+        print "  ...but we have no contact details for any of them!\n";
+        next;
+    }
+
+    push @recips, mySociety::Config::get('CONTACT_EMAIL');
 
     my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/submit-council");
     my %h = map { $_ => $row->{$_} } qw/title detail/;
@@ -68,7 +74,7 @@ foreach my $row (@$unsent) {
         _parameters_ => \%h,
         From => [ mySociety::Config::get('CONTACT_EMAIL'), mySociety::Config::get('CONTACT_NAME') ],
         To => \@to,
-	'Reply-To' => [ [ $row->{email}, $row->{name} ] ]
+        'Reply-To' => [ [ $row->{email}, $row->{name} ] ]
     });
 
     my $result;
