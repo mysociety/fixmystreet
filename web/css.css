@@ -262,7 +262,9 @@ ol#current img {
     font-weight: bolder;
 }
 
-#updates div em {
+#updates div {
+    padding: 0 0 0.5em;
+    margin: 0 0 0.25em;
     border-bottom: dotted 1px #5e552b;
 }
 
