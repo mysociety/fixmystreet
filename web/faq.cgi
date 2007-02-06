@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.6 2007-02-02 17:51:58 matthew Exp $
+# $Id: faq.cgi,v 1.7 2007-02-06 14:35:53 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -34,7 +34,8 @@ sub faq {
 
 <dt>What is Neighbourhood Fix-It for?</dt>
 <dd>Neighbourhood Fix-It is a site to help people report, view, or discuss local problems
-they&rsquo;ve found to their local council by simply locating them on a map.</dd>
+they&rsquo;ve found to their local council by simply locating them on a map.
+It launched in beta early February 2007.</dd>
 
 <dt>Can you give me some examples?</dt>
 <dd>Sure. Graffiti, unlit lampposts, abandoned beds, broken glass on a cycle
