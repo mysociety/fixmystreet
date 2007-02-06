@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.69 2007-02-06 15:10:34 matthew Exp $
+# $Id: index.cgi,v 1.70 2007-02-06 19:21:44 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -243,7 +243,7 @@ sub submit_problem {
 
 sub display_form {
     my ($q, @errors) = @_;
-    my ($pin_x, $pin_y, $pin_tile_x, $pin_tile_y);
+    my ($pin_x, $pin_y, $pin_tile_x, $pin_tile_y) = (0,0,0,0);
     my @vars = qw(title detail name email phone pc easting northing x y skipped council);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
@@ -552,6 +552,7 @@ EOF
 
 sub map_pins {
     my ($q, $x, $y, $id) = @_;
+    $id ||= 0;
 
     my $pins = '';
     my $min_e = tile_to_os($x);
@@ -657,7 +658,8 @@ sub display_map {
     if ($type) {
         my $encoding = '';
         $encoding = ' enctype="multipart/form-data"' if ($type==2);
-        my $pc_enc = ent($q->param('pc'));
+        my $pc = $q->param('pc') || '';
+        my $pc_enc = ent($pc);
         $out .= <<EOF;
 <form action="./" method="post" id="mapForm"$encoding>
 <input type="hidden" name="submit_map" value="1">
