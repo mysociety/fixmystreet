@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.70 2007-02-06 19:21:44 matthew Exp $
+# $Id: index.cgi,v 1.71 2007-02-07 09:56:15 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -752,6 +752,7 @@ sub geocode_string {
     if (-s $cache_file) {
         $js = File::Slurp::read_file($cache_file);
     } else {
+        $url .= ',+United+Kingdom' unless $url =~ /United\+Kingdom$/;
         $js = LWP::Simple::get($url);
         File::Slurp::write_file($cache_file, $js);
     }

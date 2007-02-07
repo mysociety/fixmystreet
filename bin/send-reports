@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.10 2007-02-06 10:32:04 matthew Exp $
+# $Id: send-reports,v 1.11 2007-02-07 09:56:15 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -69,6 +69,8 @@ foreach my $row (@$unsent) {
     $h{councils_name} = join(' and ', map { $areas_info->{$_}->{name} } @councils);
     $h{fuzzy} = $row->{used_map} ? 'To view a map of the precise location of this issue'
         : 'The user could not locate the problem on a map, but to see the area around the location they entered';
+    $h{multiple} = @councils>1 ? "This email has been sent to both councils covering the location of the problem; please ignore it if you're not the correct council to deal with the issue.\n\n"
+        : '';
     my $email = mySociety::Email::construct_email({
         _template_ => $template,
         _parameters_ => \%h,
@@ -76,6 +78,7 @@ foreach my $row (@$unsent) {
         To => \@to,
         'Reply-To' => [ [ $row->{email}, $row->{name} ] ]
     });
+    print $email if $nomail;
 
     my $result;
     if (mySociety::Config::get('STAGING_SITE') || $nomail) {

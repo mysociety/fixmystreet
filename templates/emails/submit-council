@@ -2,9 +2,10 @@ Subject: Problem Report: <?=$values['title']?>
 
 Dear <?=$values['councils_name']?>,
 
-A user of Neighbourhood Fix-It, <?=$values['user_details']?>,
+<?=$values['multiple'?>A user
+of Neighbourhood Fix-It, <?=$values['user_details']?>,
 has submitted the following report of a local problem that
-they believe requires your attention:
+they believe might require your attention:
 
 ----------
 
