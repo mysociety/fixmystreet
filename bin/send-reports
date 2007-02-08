@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.13 2007-02-08 14:24:53 matthew Exp $
+# $Id: send-reports,v 1.14 2007-02-08 15:44:08 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -46,7 +46,7 @@ foreach my $row (@$unsent) {
     # XXX Needs locks!
     my @councils = split ',', $row->{council};
     my $areas_info = mySociety::MaPit::get_voting_areas_info(\@councils);
-    my (@to, @recips);
+    my (@to, %recips);
     my $all_confirmed = 1;
     foreach my $council (@councils) {
         my $name = $areas_info->{$council}->{name};
@@ -55,8 +55,9 @@ foreach my $row (@$unsent) {
         next unless $council_email; # Ignore missing councils
         $all_confirmed = 0 unless $confirmed;
         push @to, [ $council_email, $name ];
-        push @recips, $council_email;
+        $recips{$council_email} = 1;
     }
+    my @recips = keys %recips;
     print 'Need to send problem #' . $row->{id} . ' to council(s) ' . join(',',@recips) . "\n";
     if (!@to) {
         print "  ...but we have no contact details for any of them!\n";
