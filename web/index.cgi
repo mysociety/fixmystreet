@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.76 2007-02-08 16:33:38 matthew Exp $
+# $Id: index.cgi,v 1.77 2007-02-08 19:53:25 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -360,8 +360,7 @@ exact location of the problem (ie. on a wall or the floor), and so on.</p>';
 <small>(optional, so the council can get in touch)</small></div>
 <div><label for="form_photo">Photo:</label>
 <input type="file" name="photo" id="form_photo"></div>
-<div class="checkbox"><input type="submit" value="Submit"></div>
-<input type="hidden" name="submit_problem" value="1">
+<div class="checkbox"><input type="submit" name="submit_problem" value="Submit"></div>
 </fieldset>
 
 <p align="right"><a href="$back">Back to listings</a></p>
