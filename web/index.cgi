@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.75 2007-02-08 15:50:10 matthew Exp $
+# $Id: index.cgi,v 1.76 2007-02-08 16:33:38 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -254,14 +254,21 @@ sub display_form {
         $pin_y = $q->param($_) if /\.y$/;
     }
     return display_location($q)
-        unless $input{skipped} || ($pin_x && $pin_y)
-            || ($input{easting} && $input{northing});
+        unless ($pin_x && $pin_y)
+            || ($input{easting} && $input{northing})
+            || ($input{skipped} && $input{x} && $input{y})
+            || ($input{skipped} && $input{pc});
 
     my $out = '';
     my ($px, $py, $easting, $northing);
     if ($input{skipped}) {
-        my ($x, $y, $e, $n, $error) = geocode($input{pc});
-        $easting = $e; $northing = $n;
+        if ($input{x} && $input{y}) {
+            $easting = tile_to_os($input{x});
+            $northing = tile_to_os($input{y});
+        } else {
+            my ($x, $y, $e, $n, $error) = geocode($input{pc});
+            $easting = $e; $northing = $n;
+        }
     } elsif ($pin_x && $pin_y) {
         # Map was clicked on
         $pin_x = click_to_tile($pin_tile_x, $pin_x);
@@ -761,9 +768,11 @@ sub geocode_string {
     } else {
         $url .= ',+United+Kingdom' unless $url =~ /United\+Kingdom$/;
         $js = LWP::Simple::get($url);
-        File::Slurp::write_file($cache_file, $js);
+        File::Slurp::write_file($cache_file, $js) if $js;
     }
-    if ($js =~ /panel: '(.*?)'/ && $js =~ /We could not understand/) {
+    if (!$js) {
+        $error = 'Sorry, we had a problem parsing that location. Please try again.';
+    } elsif ($js =~ /panel: '(.*?)'/ && $js =~ /We could not understand/) {
         $error = $1;
     } elsif ($js =~ /panel: '(.*?)'/) {
         my $refine = $1;
