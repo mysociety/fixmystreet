@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.74 2007-02-08 14:06:28 matthew Exp $
+# $Id: index.cgi,v 1.75 2007-02-08 15:50:10 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -302,7 +302,7 @@ EOF
         If this is not the correct location, simply click on the map again.</p>';
     }
     if (@councils > 0) {
-        $out .= '<p>This problem will be reported to <strong>'
+        $out .= '<p>All the details you provide here will be sent to <strong>'
             . join('</strong> and <strong>', map { $areas_info->{$_}->{name} } @councils)
             . '</strong>.</p>';
         $out .= '<input type="hidden" name="council" value="' . join(',',@councils) . '">';
