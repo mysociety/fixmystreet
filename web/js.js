@@ -39,17 +39,36 @@ YAHOO.util.Event.onContentReady('mapForm', function() {
     }
 });
 
+var timer;
+function email_alert_close() {
+    YAHOO.util.Dom.setStyle('email_alert_box', 'display', 'none');
+}
 YAHOO.util.Event.onContentReady('email_alert', function() {
     YAHOO.util.Event.addListener(this, 'click', function(e) {
         YAHOO.util.Event.preventDefault(e);
         if (YAHOO.util.Dom.getStyle('email_alert_box', 'display') == 'block') {
-            YAHOO.util.Dom.setStyle('email_alert_box', 'display', 'none');
+            email_alert_close();
         } else {
             var pos = YAHOO.util.Dom.getXY(this);
             pos[0] -= 20; pos[1] += 20;
             YAHOO.util.Dom.setStyle('email_alert_box', 'display', 'block');
             YAHOO.util.Dom.setXY('email_alert_box', pos);
+            document.getElementById('alert_email').focus();
         }
+    });
+    YAHOO.util.Event.addListener(this, 'mouseout', function(e) {
+        timer = window.setTimeout(email_alert_close, 2000);        
+    });
+    YAHOO.util.Event.addListener(this, 'mouseover', function(e) {
+        window.clearTimeout(timer);
+    });
+});
+YAHOO.util.Event.onContentReady('email_alert_box', function() {
+    YAHOO.util.Event.addListener(this, 'mouseout', function(e) {
+        timer = window.setTimeout(email_alert_close, 2000);        
+    });
+    YAHOO.util.Event.addListener(this, 'mouseover', function(e) {
+        window.clearTimeout(timer);
     });
 });
 
