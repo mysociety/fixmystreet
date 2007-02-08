@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.72 2007-02-08 13:59:10 matthew Exp $
+# $Id: index.cgi,v 1.73 2007-02-08 14:03:20 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -229,7 +229,7 @@ sub submit_problem {
     $s->bind_param(10, $image, { pg_type => DBD::Pg::PG_BYTEA });
     $s->bind_param(11, $input{council});
     $s->bind_param(12, $used_map);
-    $s->bind_param(13, $input{anonymous} ? 't': 'f');
+    $s->bind_param(13, $input{anonymous} ? 'f': 't');
     $s->execute();
     my %h = ();
     $h{title} = $input{title};
