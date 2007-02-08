@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.20 2007-02-02 21:43:13 matthew Exp $
+-- $Id: schema.sql,v 1.21 2007-02-08 13:59:07 matthew Exp $
 --
 
 -- secret
@@ -136,6 +136,7 @@ create table problem (
     name text not null,
     email text not null,
     phone text not null,
+    anonymous boolean not null,
 
     -- Metadata
     created timestamp not null default ms_current_timestamp(),

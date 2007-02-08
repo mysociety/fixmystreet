@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.71 2007-02-07 09:56:15 matthew Exp $
+# $Id: index.cgi,v 1.72 2007-02-08 13:59:10 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -148,7 +148,7 @@ sub submit_update {
 
 sub submit_problem {
     my $q = shift;
-    my @vars = qw(council title detail name email phone pc easting northing skipped);
+    my @vars = qw(council title detail name email phone pc easting northing skipped anonymous);
     my %input = map { $_ => scalar $q->param($_) } @vars;
     my @errors;
 
@@ -214,9 +214,9 @@ sub submit_problem {
     # This is horrid
     my $s = dbh()->prepare("insert into problem
         (id, postcode, easting, northing, title, detail, name,
-         email, phone, photo, state, council, used_map)
+         email, phone, photo, state, council, used_map, anonymous)
         values
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?)");
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?, ?)");
     $s->bind_param(1, $id);
     $s->bind_param(2, $input{pc});
     $s->bind_param(3, $input{easting});
@@ -229,6 +229,7 @@ sub submit_problem {
     $s->bind_param(10, $image, { pg_type => DBD::Pg::PG_BYTEA });
     $s->bind_param(11, $input{council});
     $s->bind_param(12, $used_map);
+    $s->bind_param(13, $input{anonymous} ? 't': 'f');
     $s->execute();
     my %h = ();
     $h{title} = $input{title};
@@ -244,7 +245,7 @@ sub submit_problem {
 sub display_form {
     my ($q, @errors) = @_;
     my ($pin_x, $pin_y, $pin_tile_x, $pin_tile_y) = (0,0,0,0);
-    my @vars = qw(title detail name email phone pc easting northing x y skipped council);
+    my @vars = qw(title detail name email phone pc easting northing x y skipped council anonymous);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
     my @ps = $q->param;
@@ -333,6 +334,7 @@ exact location of the problem (ie. on a wall or the floor), and so on.</p>';
     }
     my $back = NewURL($q, submit_map => undef, "tile_$pin_tile_x.$pin_tile_y.x" => undef,
         "tile_$pin_tile_x.$pin_tile_y.y" => undef, skipped => undef);
+    my $anon = ($input{anonymous}) ? ' checked' : ($input{title} ? '' : ' checked');
     $out .= <<EOF;
 <fieldset><legend>Problem details</legend>
 <div><label for="form_title">Title:</label>
@@ -341,6 +343,9 @@ exact location of the problem (ie. on a wall or the floor), and so on.</p>';
 <textarea name="detail" id="form_detail" rows="7" cols="30">$input_h{detail}</textarea></div>
 <div><label for="form_name">Name:</label>
 <input type="text" value="$input_h{name}" name="name" id="form_name" size="30"></div>
+<div class="checkbox"><input type="checkbox" name="anonymous" id="form_anonymous" value="1"$anon>
+<label for="form_anonymous">Can we show your name on the site?</label>
+<small>(we never show your email address or phone number)</small></div>
 <div><label for="form_email">Email:</label>
 <input type="text" value="$input_h{email}" name="email" id="form_email" size="30"></div>
 <div><label for="form_phone">Phone:</label>
@@ -451,10 +456,10 @@ sub display_problem {
 
     # Get all information from database
     my $problem = dbh()->selectrow_arrayref(
-        "select state, easting, northing, title, detail, name, extract(epoch from created), photo
+        "select state, easting, northing, title, detail, name, extract(epoch from created), photo, anonymous
          from problem where id=? and state in ('confirmed','fixed')", {}, $input{id});
     return display_location($q, 'Unknown problem ID') unless $problem;
-    my ($state, $easting, $northing, $title, $desc, $name, $time, $photo) = @$problem;
+    my ($state, $easting, $northing, $title, $desc, $name, $time, $photo, $anonymous) = @$problem;
     my $x = os_to_tile($easting);
     my $y = os_to_tile($northing);
     my $x_tile = $input{x} || int($x);
@@ -474,7 +479,9 @@ drag_x = $px - 254; drag_y = 254 - $py;
 EOF
 
     # Display information about problem
-    $out .= '<p><em>Reported by ' . $name . ' at ' . prettify_epoch($time);
+    $out .= '<p><em>Reported ';
+    $out .= ($anonymous eq 't') ? 'anonymously' : "by $name";
+    $out .= ' at ' . prettify_epoch($time);
     $out .= '</em></p> <p>';
     $out .= ent($desc);
     $out .= '</p>';
