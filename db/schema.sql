@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.21 2007-02-08 13:59:07 matthew Exp $
+-- $Id: schema.sql,v 1.22 2007-02-08 14:21:42 matthew Exp $
 --
 
 -- secret
@@ -74,6 +74,7 @@ create function ms_current_timestamp()
 create table contacts (
     area_id integer not null,
     email text not null,
+    confirmed boolean not null,
 
     -- last editor
     editor text not null,
@@ -91,6 +92,7 @@ create table contacts_history (
 
     area_id integer not null,
     email text not null,
+    confirmed boolean not null,
 
     -- editor
     editor text not null,
@@ -107,7 +109,7 @@ create table contacts_history (
 create function contacts_updated()
     returns trigger as '
     begin
-        insert into contacts_history (area_id, email, editor, whenedited, note) values (new.area_id, new.email, new.editor, new.whenedited, new.note);
+        insert into contacts_history (area_id, email, editor, whenedited, note, confirmed) values (new.area_id, new.email, new.editor, new.whenedited, new.note, new.confirmed);
         return new;
     end;
 ' language 'plpgsql';
