@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.12 2007-02-08 14:21:41 matthew Exp $
+# $Id: send-reports,v 1.13 2007-02-08 14:24:53 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -40,7 +40,8 @@ $nomail = 1 if (@ARGV==1 && $ARGV[0] eq '--nomail');
 
 my $unsent = dbh()->selectall_arrayref(
     "SELECT id, council, title, detail, name, email, phone, used_map
-    FROM problem WHERE state in ('confirmed','fixed') AND whensent IS NULL", { Slice => {} });
+    FROM problem WHERE state in ('confirmed','fixed') AND whensent IS NULL
+    AND council IS NOT NULL", { Slice => {} });
 foreach my $row (@$unsent) {
     # XXX Needs locks!
     my @councils = split ',', $row->{council};
@@ -50,9 +51,9 @@ foreach my $row (@$unsent) {
     foreach my $council (@councils) {
         my $name = $areas_info->{$council}->{name};
         my ($council_email,$confirmed) = dbh()->selectrow_array(
-	    'SELECT email,confirmed FROM contacts WHERE area_id=?', {}, $council);
+            'SELECT email,confirmed FROM contacts WHERE area_id=?', {}, $council);
         next unless $council_email; # Ignore missing councils
-	$all_confirmed = 0 unless $confirmed;
+        $all_confirmed = 0 unless $confirmed;
         push @to, [ $council_email, $name ];
         push @recips, $council_email;
     }
@@ -62,8 +63,8 @@ foreach my $row (@$unsent) {
         next;
     }
     if (!$all_confirmed) {
-        print "  ...but email addresses have not been confirmed for any of them\n";
-	next;
+        print "  ...but one or more email addresses have not been confirmed\n";
+        next;
     }
 
     push @recips, mySociety::Config::get('CONTACT_EMAIL');
