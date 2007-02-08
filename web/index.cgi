@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.73 2007-02-08 14:03:20 matthew Exp $
+# $Id: index.cgi,v 1.74 2007-02-08 14:06:28 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -480,7 +480,7 @@ EOF
 
     # Display information about problem
     $out .= '<p><em>Reported ';
-    $out .= ($anonymous eq 't') ? 'anonymously' : "by $name";
+    $out .= ($anonymous) ? 'anonymously' : "by $name";
     $out .= ' at ' . prettify_epoch($time);
     $out .= '</em></p> <p>';
     $out .= ent($desc);
