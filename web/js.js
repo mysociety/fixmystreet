@@ -140,8 +140,13 @@ var imgElCache;
 function cloneNode() {
     var img = null;
     if (!imgElCache) {
-        img = imgElCache = document.createElement('input');
-        img.type = 'image';
+        var form = document.getElementById('mapForm');
+        if (form) {
+            img = imgElCache = document.createElement('input');
+            img.type = 'image';
+        } else {
+            img = imgElCache = document.createElement('img');
+        }
         img.onclick = drag_check;
         img.style.position = 'absolute';
         img.style.width = tilewidth + 'px';
