@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.79 2007-02-09 12:20:05 matthew Exp $
+# $Id: index.cgi,v 1.80 2007-02-09 14:09:20 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -82,6 +82,7 @@ sub main {
     print Page::header($q, $title);
     print $out;
     print Page::footer();
+    dbh()->rollback();
 }
 Page::do_fastcgi(\&main);
 
@@ -813,7 +814,7 @@ sub is_valid_council {
     my $councils = shift;
     $councils = [ $councils ] unless ref($councils) eq 'ARRAY';
     my @councils_no_email = (2288,2402,2390,2252,2351,2430,2375,2285,2377,2374,2330,2454,2284,2378,2294,2312,2419,2386,2363,2353,2296,2300,2291,2268,2512,2504,2495,2510,
-    2530,2516,2531,2545,2586,2554,2574,2580,2615,2596,2599,2601,2648,2652,2607,2582,14287,14317,14328,2225,2222,2248,2246,2235,2224,2244,2236);
+    2530,2516,2531,2545,2586,2554,2574,2580,2615,2596,2599,2601,2648,2652,2607,2582,14287,14317,14328,2225,2222,2248,2246,2224,2244,2236);
 
     my $invalid_councils = '';
     grep (vec($invalid_councils, $_, 1) = 1, @councils_no_email);
