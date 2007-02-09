@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.78 2007-02-09 11:32:53 matthew Exp $
+# $Id: index.cgi,v 1.79 2007-02-09 12:20:05 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -605,10 +605,13 @@ sub map_pins {
         my $py = os_to_px($_->{northing}, $y);
         if ($_->{id}==$id) {
             $pins .= display_pin($q, $px, $py, 'blue');
-        } else {
+        } elsif (!$id) {
             $pins .= display_pin($q, $px, $py, 'red', $count_prob++);
         }
     }
+
+    return ($pins) if $id;
+
     my $current = [];
     if (@$current_map < 9) {
         my $limit = 9 - @$current_map;
