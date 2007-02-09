@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.77 2007-02-08 19:53:25 matthew Exp $
+# $Id: index.cgi,v 1.78 2007-02-09 11:32:53 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -308,10 +308,27 @@ EOF
         $out .= '<p>You have located the problem at the point marked with a purple pin on the map.
         If this is not the correct location, simply click on the map again.</p>';
     }
-    if (@councils > 0) {
+    if (@councils == @$all_councils) {
         $out .= '<p>All the details you provide here will be sent to <strong>'
             . join('</strong> and <strong>', map { $areas_info->{$_}->{name} } @councils)
             . '</strong>.</p>';
+        $out .= '<input type="hidden" name="council" value="' . join(',',@councils) . '">';
+    } elsif (@councils > 0) {
+        my $e = mySociety::Config::get('CONTACT_EMAIL');
+        my %councils = map { $_ => 1 } @councils;
+        my @missing;
+        foreach (@$all_councils) {
+            push @missing, $_ unless $councils{$_};
+        }
+        my $n = @missing;
+        my $list = join(' and ', map { $areas_info->{$_}->{name} } @missing);
+        $out .= '<p>All the details you provide here will be sent to <strong>'
+            . join('</strong> and <strong>', map { $areas_info->{$_}->{name} } @councils)
+            . '</strong>.';
+        $out .= ' We do not yet have details for the other council';
+        $out .= ($n>1) ? 's that cover' : ' that covers';
+        $out .= " this location. You can help us by finding a contact email address for local
+problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.</p>";
         $out .= '<input type="hidden" name="council" value="' . join(',',@councils) . '">';
     } else {
         my $e = mySociety::Config::get('CONTACT_EMAIL');
