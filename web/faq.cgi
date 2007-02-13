@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.7 2007-02-06 14:35:53 matthew Exp $
+# $Id: faq.cgi,v 1.8 2007-02-13 10:06:52 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -52,11 +52,11 @@ problem.</dd>
 <dd>The site is free to use, yes. Neighbourhood Fix-It
 is run by a registered charity, though, so if you want to make
 a contribution, <a href="https://secure.mysociety.org/donate/">please do</a>.</dd>
-</dl>
 
 <dt>Do you remove silly or illegal content?</dt>
 <dd>We reserve the right to remove any problems or updates which we
 consider to be inappropriate.</dd>
+</dl>
 
 <h2>Privacy Questions</h2>
 <dl>
