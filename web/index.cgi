@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.80 2007-02-09 14:09:20 matthew Exp $
+# $Id: index.cgi,v 1.81 2007-02-15 21:33:18 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -492,7 +492,7 @@ sub display_problem {
     my $px = os_to_px($easting, $x_tile);
     my $py = os_to_px($northing, $y_tile);
 
-    my ($pins) = map_pins($q, $x_tile, $y_tile, $input{id});
+    my $pins = display_pin($q, $px, $py, 'blue');
     my $out = display_map($q, $x_tile, $y_tile, 0, 1, $pins);
 
     $out .= "<h1>$title</h1>";
@@ -582,8 +582,7 @@ EOF
 }
 
 sub map_pins {
-    my ($q, $x, $y, $id) = @_;
-    $id ||= 0;
+    my ($q, $x, $y) = @_;
 
     my $pins = '';
     my $min_e = tile_to_os($x);
@@ -604,14 +603,8 @@ sub map_pins {
         push(@ids, $_->{id});
         my $px = os_to_px($_->{easting}, $x);
         my $py = os_to_px($_->{northing}, $y);
-        if ($_->{id}==$id) {
-            $pins .= display_pin($q, $px, $py, 'blue');
-        } elsif (!$id) {
-            $pins .= display_pin($q, $px, $py, 'red', $count_prob++);
-        }
+        $pins .= display_pin($q, $px, $py, 'red', $count_prob++);
     }
-
-    return ($pins) if $id;
 
     my $current = [];
     if (@$current_map < 9) {
@@ -625,11 +618,7 @@ sub map_pins {
         foreach (@$current) {
             my $px = os_to_px($_->{easting}, $x);
             my $py = os_to_px($_->{northing}, $y);
-            if ($_->{id}==$id) {
-                $pins .= display_pin($q, $px, $py, 'blue');
-            } else {
-                $pins .= display_pin($q, $px, $py, 'red', $count_prob++);
-            }
+            $pins .= display_pin($q, $px, $py, 'red', $count_prob++);
         }
     }
     my $fixed = select_all(
@@ -640,11 +629,7 @@ sub map_pins {
     foreach (@$fixed) {
         my $px = os_to_px($_->{easting}, $x);
         my $py = os_to_px($_->{northing}, $y);
-        if ($_->{id}==$id) {
-            $pins .= display_pin($q, $px, $py, 'blue');
-        } else {
-            $pins .= display_pin($q, $px, $py, 'green', $count_fixed++);
-        }
+        $pins .= display_pin($q, $px, $py, 'green', $count_fixed++);
     }
     return ($pins, $current_map, $current, $fixed);
 }
