@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.8 2007-02-13 10:06:52 matthew Exp $
+# $Id: faq.cgi,v 1.9 2007-02-20 17:48:50 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -56,6 +56,15 @@ a contribution, <a href="https://secure.mysociety.org/donate/">please do</a>.</d
 <dt>Do you remove silly or illegal content?</dt>
 <dd>We reserve the right to remove any problems or updates which we
 consider to be inappropriate.</dd>
+
+<dt>Why doesn't dragging the map work on reporting-a-problem pages in Safari?</dt>
+<dd>
+There's a bug in Safari to do with setting images on form submits, which the map
+is when reporting a problem. It's fixed in the latest nightly build of Safari, so
+will presumably be fixed in the next release. Until then, I've sadly had to disable
+dragging to avoid people dragging an empty square.
+</dd>
+
 </dl>
 
 <h2>Privacy Questions</h2>
