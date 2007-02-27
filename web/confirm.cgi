@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.9 2007-02-03 01:24:47 matthew Exp $
+# $Id: confirm.cgi,v 1.10 2007-02-27 01:36:09 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -77,7 +77,7 @@ EOF
             $out = <<EOF;
 <form action="/alert" method="post">
 <p>You have successfully confirmed your problem and
-<strong>we will now send it to your council</strong>.
+<strong>we will now send it to the council</strong>.
 you can <a href="/?id=$id">view the problem on this site</a>.</p>
 <p>You could also
 <a href="/rss/$id">subscribe to the RSS feed</a> of updates by other local people on this problem,

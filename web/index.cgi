@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.81 2007-02-15 21:33:18 matthew Exp $
+# $Id: index.cgi,v 1.82 2007-02-27 01:36:09 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -110,7 +110,7 @@ EOF
 <li>Enter a postcode or street name and area;
 <li>Locate the problem on a high-scale map;
 <li>Enter details of the problem;
-<li>Submit to your council.
+<li>Submit to the council.
 </ol>
 
 EOF
@@ -338,7 +338,7 @@ problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.</p>";
         $out .= '<p>We do not yet have details for the council';
         $out .= ($n>1) ? 's that cover' : ' that covers';
         $out .= " this location. If you submit a problem here it will be
-left on the site, but <strong>not</strong> reported to your council.
+left on the site, but <strong>not</strong> reported to the council.
 You can help us by finding a contact email address for local
 problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.</p>";
         $out .= '<input type="hidden" name="council" value="-1">';
