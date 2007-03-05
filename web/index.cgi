@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.83 2007-02-27 01:41:41 matthew Exp $
+# $Id: index.cgi,v 1.84 2007-03-05 12:18:33 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -312,7 +312,8 @@ EOF
     if (@councils == @$all_councils) {
         $out .= '<p>All the details you provide here will be sent to <strong>'
             . join('</strong> and <strong>', map { $areas_info->{$_}->{name} } @councils)
-            . '</strong>.</p>';
+            . '</strong>. We show the title and details of the problem on
+	    the site, along with your name if you give us permission.</p>';
         $out .= '<input type="hidden" name="council" value="' . join(',',@councils) . '">';
     } elsif (@councils > 0) {
         my $e = mySociety::Config::get('CONTACT_EMAIL');
@@ -325,7 +326,8 @@ EOF
         my $list = join(' and ', map { $areas_info->{$_}->{name} } @missing);
         $out .= '<p>All the details you provide here will be sent to <strong>'
             . join('</strong> and <strong>', map { $areas_info->{$_}->{name} } @councils)
-            . '</strong>.';
+            . '</strong>. We show the title and details of the problem on
+	    the site, along with your name if you give us permission.</p>';
         $out .= ' We do not yet have details for the other council';
         $out .= ($n>1) ? 's that cover' : ' that covers';
         $out .= " this location. You can help us by finding a contact email address for local
