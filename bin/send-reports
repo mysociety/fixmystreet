@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.14 2007-02-08 15:44:08 matthew Exp $
+# $Id: send-reports,v 1.15 2007-03-05 16:40:12 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -83,9 +83,9 @@ foreach my $row (@$unsent) {
     my $email = mySociety::Email::construct_email({
         _template_ => $template,
         _parameters_ => \%h,
-        From => [ mySociety::Config::get('CONTACT_EMAIL'), mySociety::Config::get('CONTACT_NAME') ],
+        Sender => [ mySociety::Config::get('CONTACT_EMAIL'), mySociety::Config::get('CONTACT_NAME') ],
         To => \@to,
-        'Reply-To' => [ [ $row->{email}, $row->{name} ] ]
+        From => [ $row->{email}, $row->{name} ]
     });
 
     my $result;
