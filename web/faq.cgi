@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.9 2007-02-20 17:48:50 matthew Exp $
+# $Id: faq.cgi,v 1.10 2007-03-06 11:15:38 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -103,9 +103,8 @@ was <a href="http://www.writetothem.com/">WriteToThem.com</a>, where you can wri
 elected representatives, for free.</dd>
 
 <dt>Who pays for it?</dt>
-<dd>Neighbourhood Fix-It for Newham and Lewisham was paid for via the
-Department for Constitutional Affairs Innovations Fund. mySociety itself
-has put in some spare resources to cover wider parts of the UK.
+<dd>Neighbourhood Fix-It was paid for via the
+Department for Constitutional Affairs Innovations Fund.
 </dd>
 
 <dt>Do you need any help with the project?</dt>
