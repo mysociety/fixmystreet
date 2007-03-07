@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.7 2007-02-02 23:31:39 matthew Exp $
+# $Id: contact.cgi,v 1.8 2007-03-07 16:18:30 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -19,6 +19,7 @@ use Page;
 use mySociety::Config;
 use mySociety::Email;
 use mySociety::Util;
+use mySociety::Web qw(ent);
 
 BEGIN {
     mySociety::Config::set_file("$FindBin::Bin/../conf/general");
