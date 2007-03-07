@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.8 2007-03-07 16:18:30 matthew Exp $
+# $Id: contact.cgi,v 1.9 2007-03-07 16:38:22 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -45,9 +45,13 @@ sub contact_submit {
     my @vars = qw(name email message);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
-    push(@errors, 'Please give your name') unless $input{name};
-    push(@errors, 'Please give your name') unless $input{email};
-    push(@errors, 'Please write a message') unless $input{message};
+    push(@errors, 'Please give your name') unless $input{name} =~ /\S/;
+    if ($input{email} !~ /\S/) {
+        push(@errors, 'Please give your email');
+    } elsif (!mySociety::Util::is_valid_email($input{email})) {
+        push(@errors, 'Please give a valid email address');
+    }
+    push(@errors, 'Please write a message') unless $input{message} =~ /\S/;
     return contact_page($q, @errors) if @errors;
 
     (my $message = $input{message}) =~ s/\r\n/\n/g;
@@ -66,7 +70,7 @@ sub contact_submit {
     if ($result == mySociety::Util::EMAIL_SUCCESS) {
         return '<p>Thanks for your feedback.  We\'ll get back to you as soon as we can!</p>';
     } else {
-        return '<p>Failed to send message.  Please try again, or <a href="' . mySociety::Config::get('CONTACT_EMAIL') . '">email us</a>.</p>';
+        return '<p>Failed to send message.  Please try again, or <a href="mailto:' . mySociety::Config::get('CONTACT_EMAIL') . '">email us</a>.</p>';
     }
 }
 
