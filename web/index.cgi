@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.85 2007-03-07 12:11:28 matthew Exp $
+# $Id: index.cgi,v 1.86 2007-03-07 13:19:15 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -261,14 +261,14 @@ sub display_form {
             || ($input{skipped} && $input{pc});
 
     my $out = '';
-    my ($px, $py, $easting, $northing);
+    my ($px, $py, $easting, $northing, $island);
     if ($input{skipped}) {
         if ($input{x} && $input{y}) {
             $easting = tile_to_os($input{x});
             $northing = tile_to_os($input{y});
         } else {
-            my ($x, $y, $e, $n, $error) = geocode($input{pc});
-            $easting = $e; $northing = $n;
+            my ($x, $y, $e, $n, $i, $error) = geocode($input{pc});
+            $easting = $e; $northing = $n; $island = $i;
         }
     } elsif ($pin_x && $pin_y) {
         # Map was clicked on
@@ -309,11 +309,11 @@ EOF
         $out .= '<p>You have located the problem at the point marked with a purple pin on the map.
         If this is not the correct location, simply click on the map again.</p>';
     }
-    if (@councils == @$all_councils) {
+    if (@councils > 0 && @councils == @$all_councils) {
         $out .= '<p>All the details you provide here will be sent to <strong>'
             . join('</strong> and <strong>', map { $areas_info->{$_}->{name} } @councils)
             . '</strong>. We show the title and details of the problem on
-	    the site, along with your name if you give us permission.</p>';
+            the site, along with your name if you give us permission.</p>';
         $out .= '<input type="hidden" name="council" value="' . join(',',@councils) . '">';
     } elsif (@councils > 0) {
         my $e = mySociety::Config::get('CONTACT_EMAIL');
@@ -327,7 +327,7 @@ EOF
         $out .= '<p>All the details you provide here will be sent to <strong>'
             . join('</strong> and <strong>', map { $areas_info->{$_}->{name} } @councils)
             . '</strong>. We show the title and details of the problem on
-	    the site, along with your name if you give us permission.</p>';
+            the site, along with your name if you give us permission.</p>';
         $out .= ' We do not yet have details for the other council';
         $out .= ($n>1) ? 's that cover' : ' that covers';
         $out .= " this location. You can help us by finding a contact email address for local
@@ -396,13 +396,13 @@ sub display_location {
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 
-    my($error, $easting, $northing);
+    my($error, $easting, $northing, $island);
     my $x = $input{x}; my $y = $input{y};
     $x ||= 0; $x += 0;
     $y ||= 0; $y += 0;
     if (!$x && !$y) {
         try {
-            ($x, $y, $easting, $northing, $error) = geocode($input{pc});
+            ($x, $y, $easting, $northing, $island, $error) = geocode($input{pc});
         } catch Error::Simple with {
             $error = shift;
         };
@@ -657,8 +657,8 @@ sub display_pin {
 sub display_map {
     my ($q, $x, $y, $type, $compass, $pins) = @_;
     $pins ||= '';
-    $x = 0 if ($x<0);
-    $y = 0 if ($y<0);
+    $x = 0 if ($x<=0);
+    $y = 0 if ($y<=0);
     my $url = mySociety::Config::get('TILES_URL');
     my $tiles_url = $url . $x . '-' . ($x+1) . ',' . $y . '-' . ($y+1) . '/RABX';
     my $tiles = LWP::Simple::get($tiles_url);
@@ -733,10 +733,12 @@ sub geocode_choice {
 
 sub geocode {
     my ($s) = @_;
-    my ($x, $y, $easting, $northing, $error);
+    my ($x, $y, $easting, $northing, $island, $error);
     if (mySociety::Util::is_valid_postcode($s)) {
         try {
             my $location = mySociety::MaPit::get_location($s);
+            $island = $location->{coordsyst};
+            throw RABX::Error("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.") if $island eq 'I';
             $easting = $location->{easting};
             $northing = $location->{northing};
             my $xx = os_to_tile($easting);
@@ -757,7 +759,7 @@ sub geocode {
     } else {
         ($x, $y, $easting, $northing, $error) = geocode_string($s);
     }
-    return ($x, $y, $easting, $northing, $error);
+    return ($x, $y, $easting, $northing, $island, $error);
 }
 
 sub geocode_string {
@@ -787,6 +789,9 @@ sub geocode_string {
             push (@$error, [ $1, $2 ]);
         }
         $error = 'We could not understand that location.' unless $error;
+    } elsif ($js =~ /BT\d/) {
+        # Northern Ireland, hopefully
+        $error = "We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.";
     } else {
         $js =~ /center: {lat: (.*?),lng: (.*?)}/;
         my $lat = $1; my $lon = $2;
