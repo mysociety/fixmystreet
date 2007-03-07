@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.84 2007-03-05 12:18:33 matthew Exp $
+# $Id: index.cgi,v 1.85 2007-03-07 12:11:28 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -122,9 +122,9 @@ sub submit_update {
     my @vars = qw(id name email update fixed reopen);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
-    push(@errors, 'Please enter a message') unless $input{update};
-    push(@errors, 'Please enter your name') unless $input{name};
-    if (!$input{email}) {
+    push(@errors, 'Please enter a message') unless $input{update} =~ /\S/;
+    push(@errors, 'Please enter your name') unless $input{name} =~ /\S/;
+    if ($input{email} !~ /\S/) {
         push(@errors, 'Please enter your email');
     } elsif (!mySociety::Util::is_valid_email($input{email})) {
         push(@errors, 'Please enter a valid email');
@@ -164,10 +164,10 @@ sub submit_problem {
     }
 
     push(@errors, 'No council selected') unless $input{council} && $input{council} =~ /^(?:-1|[\d,]+)$/;
-    push(@errors, 'Please enter a title') unless $input{title};
-    push(@errors, 'Please enter some details') unless $input{detail};
-    push(@errors, 'Please enter your name') unless $input{name};
-    if (!$input{email}) {
+    push(@errors, 'Please enter a title') unless $input{title} =~ /\S/;
+    push(@errors, 'Please enter some details') unless $input{detail} =~ /\S/;
+    push(@errors, 'Please enter your name') unless $input{name} =~ /\S/;
+    if ($input{email} !~ /\S/) {
         push(@errors, 'Please enter your email');
     } elsif (!mySociety::Util::is_valid_email($input{email})) {
         push(@errors, 'Please enter a valid email');
@@ -364,7 +364,7 @@ exact location of the problem (ie. on a wall or the floor), and so on.</p>';
     my $anon = ($input{anonymous}) ? ' checked' : ($input{title} ? '' : ' checked');
     $out .= <<EOF;
 <fieldset><legend>Problem details</legend>
-<div><label for="form_title">Title:</label>
+<div><label for="form_title">Subject:</label>
 <input type="text" value="$input_h{title}" name="title" id="form_title" size="30"></div>
 <div><label for="form_detail">Details:</label>
 <textarea name="detail" id="form_detail" rows="7" cols="30">$input_h{detail}</textarea></div>
