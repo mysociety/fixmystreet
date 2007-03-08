@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.17 2007-03-08 14:10:38 matthew Exp $
+# $Id: send-reports,v 1.18 2007-03-08 14:40:31 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -38,6 +38,7 @@ die "No arguments or specify --nomail" if (@ARGV>1);
 my $nomail = 0;
 $nomail = 1 if (@ARGV==1 && $ARGV[0] eq '--nomail');
 
+my %notgot;
 my $unsent = dbh()->selectall_arrayref(
     "SELECT id, council, title, detail, name, email, phone, used_map
     FROM problem WHERE state in ('confirmed','fixed') AND whensent IS NULL
@@ -46,28 +47,27 @@ foreach my $row (@$unsent) {
     # XXX Needs locks!
     my @councils = split ',', $row->{council};
     my $areas_info = mySociety::MaPit::get_voting_areas_info(\@councils);
-    my (@to, %recips, @notgot);
+    my (@to, %recips);
+    my $all_confirmed = 1;
     foreach my $council (@councils) {
         my $name = $areas_info->{$council}->{name};
         my ($council_email,$confirmed) = dbh()->selectrow_array(
             'SELECT email,confirmed FROM contacts WHERE area_id=?', {}, $council);
         next unless $council_email; # Ignore missing councils
         unless ($confirmed) {
-            push @notgot, $council_email;
+            $all_confirmed = 0;
+            $notgot{$council_email} = 1;
         }
         push @to, [ $council_email, $name ];
         $recips{$council_email} = 1;
     }
     my @recips = keys %recips;
-    print 'Need to send problem #' . $row->{id} . ' to council(s) ' . join(',',@recips) . "\n";
     if (!@to) {
+        print 'Need to send problem #' . $row->{id} . ' to council(s) ' . join(',',@recips) . "\n";
         print "  ...but we have no contact details for any of them!\n";
         next;
     }
-    if (@notgot) {
-        print "  ...but these addresses have not been confirmed: " . join(',',@notgot) . "\n";
-        next;
-    }
+    next unless ($all_confirmed);
 
     push @recips, mySociety::Config::get('CONTACT_EMAIL');
 
@@ -102,3 +102,5 @@ foreach my $row (@$unsent) {
     }
 }
 
+print "Council email addresses that need checking:\n  ";
+print join ("\n  ", keys %notgot) . "\n";
