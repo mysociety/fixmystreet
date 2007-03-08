@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.15 2007-03-05 16:40:12 matthew Exp $
+# $Id: send-reports,v 1.16 2007-03-08 11:37:42 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -46,14 +46,15 @@ foreach my $row (@$unsent) {
     # XXX Needs locks!
     my @councils = split ',', $row->{council};
     my $areas_info = mySociety::MaPit::get_voting_areas_info(\@councils);
-    my (@to, %recips);
-    my $all_confirmed = 1;
+    my (@to, %recips, @notgot);
     foreach my $council (@councils) {
         my $name = $areas_info->{$council}->{name};
         my ($council_email,$confirmed) = dbh()->selectrow_array(
             'SELECT email,confirmed FROM contacts WHERE area_id=?', {}, $council);
         next unless $council_email; # Ignore missing councils
-        $all_confirmed = 0 unless $confirmed;
+        unless ($confirmed) {
+            push @notgot, $council_email;
+        }
         push @to, [ $council_email, $name ];
         $recips{$council_email} = 1;
     }
@@ -63,8 +64,8 @@ foreach my $row (@$unsent) {
         print "  ...but we have no contact details for any of them!\n";
         next;
     }
-    if (!$all_confirmed) {
-        print "  ...but one or more email addresses have not been confirmed\n";
+    if (@notgot) {
+        print "  ...but these addresses have not been confirmed: " . join(',',@notgot) . "\n";
         next;
     }
 
