@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.1 2007-03-08 13:59:34 francis Exp $
+# $Id: index.cgi,v 1.2 2007-03-08 16:14:48 francis Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.1 2007-03-08 13:59:34 francis Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.2 2007-03-08 16:14:48 francis Exp $';
 
 use strict;
 
@@ -28,6 +28,8 @@ use DBI;
 
 use mySociety::WatchUpdate;
 use mySociety::Config;
+use mySociety::MaPit;
+use mySociety::VotingArea;
 
 mySociety::Config::set_file("../conf/general");
 my $W = new mySociety::WatchUpdate();
@@ -116,36 +118,74 @@ sub do_summary ($) {
     )));
 
     print $q->h3("Council contacts status");
-    my $edit_activity = $dbh->selectall_arrayref("select count(*) as c, confirmed from contacts group by confirmed order by c desc");
+    my $statuses = $dbh->selectall_arrayref("select count(*) as c, confirmed from contacts group by confirmed order by c desc");
     print $q->p(join($q->br(), 
-        map { $_->[0] . " " . ($_->[1] ? 'confirmed' : 'unconfirmed') } @$edit_activity 
+        map { $_->[0] . " " . ($_->[1] ? 'confirmed' : 'unconfirmed') } @$statuses 
     ));
 
     print $q->h3("Problem status");
-    my $edit_activity = $dbh->selectall_arrayref("select count(*) as c, state from problem group by state order by c desc");
+    $statuses = $dbh->selectall_arrayref("select count(*) as c, state from problem group by state order by c desc");
     print $q->p(join($q->br(), 
-        map { $_->[0] . " " . $_->[1] } @$edit_activity 
+        map { $_->[0] . " " . $_->[1] } @$statuses 
     ));
 
     print $q->h3("Comment status");
-    my $edit_activity = $dbh->selectall_arrayref("select count(*) as c, state from comment group by state order by c desc");
+    $statuses = $dbh->selectall_arrayref("select count(*) as c, state from comment group by state order by c desc");
     print $q->p(join($q->br(), 
-        map { $_->[0] . " " . $_->[1] } @$edit_activity 
+        map { $_->[0] . " " . $_->[1] } @$statuses 
     ));
 
     print $q->h3("Alert status");
-    my $edit_activity = $dbh->selectall_arrayref("select count(*) as c, confirmed from alert group by confirmed order by c desc");
+    $statuses = $dbh->selectall_arrayref("select count(*) as c, confirmed from alert group by confirmed order by c desc");
     print $q->p(join($q->br(), 
-        map { $_->[0] . " " . ($_->[1] ? 'confirmed' : 'unconfirmed') } @$edit_activity 
+        map { $_->[0] . " " . ($_->[1] ? 'confirmed' : 'unconfirmed') } @$statuses 
     ));
 
     print html_tail($q);
 }
 
-# do_council_contacts CGI 
-# Display page with information about all councils, allow editing.
+# do_council_contacts CGI
 sub do_council_contacts ($) {
     my ($q) = @_;
+
+    print html_head($q, "Council contacts");
+    print $q->h2("Council contacts");
+
+    # Table of editors
+    print $q->h3("Diligency prize league table");
+    my $edit_activity = $dbh->selectall_arrayref("select count(*) as c, editor from contacts_history group by editor order by c desc");
+    print $q->p(join($q->br(), 
+        map { $_->[0] . " edits by " . $_->[1] } @$edit_activity 
+    ));
+
+    # Table of councils
+    print $q->h3("Councils");
+    my @councils;
+    foreach my $type (@$mySociety::VotingArea::council_parent_types) {
+        my $areas = mySociety::MaPit::get_areas_by_type($type);
+        push @councils, @$areas;
+    }
+    my $councils = mySociety::MaPit::get_voting_areas_info(\@councils);
+    my @councils_ids = keys %$councils;
+    @councils_ids = sort { $councils->{$a}->{name} cmp $councils->{$b}->{name} } @councils_ids;
+    my $bci_info = $dbh->selectall_hashref("select * from contacts", 'area_id');
+    print $q->p(join($q->br(), 
+        map { 
+            $q->a({href=>build_url($q, $q->url('relative'=>1), 
+              {'area_id' => $_, 'page' => 'counciledit',})}, 
+              $councils->{$_}->{name}) . " " .  
+                ($bci_info->{$_} ? ($bci_info->{$_}->{email} . " " .
+                    ($bci_info->{$_}->{confirmed} ? 'confirmed' : $q->strong('unconfirmed'))
+                ) : $q->strong('no info at all'))
+        } @councils_ids));
+
+    print html_tail($q);
+}
+
+
+# do_council_edit CGI AREA_ID
+sub do_council_edit ($$) {
+    my ($q, $area_id) = @_;
 
     # Altered URL
     if ($q->param('posted_extra_data') and $q->param) {
@@ -169,16 +209,15 @@ sub do_council_contacts ($) {
     #    }
     #}
 
-    print html_head($q, 'Council contacts');
-    print $q->h2("Council contacts");
+    my $bci_data = $dbh->selectall_arrayref("select * from contacts where area_id = ?", {}, $area_id);
+    my $bci_history = $dbh->selectall_arrayref("select * from contacts_history where area_id = ?", {}, $area_id);
+    my $mapit_data = mySociety::MaPit::get_voting_area_info($area_id);
 
-    # Table of editors
-    print $q->h3("Diligency prize league table");
-    my $edit_activity = $dbh->selectall_arrayref("select count(*) as c, editor from contacts_history group by editor order by c desc");
-    print $q->p(join($q->br(), 
-        map { $_->[0] . " edits by " . $_->[1] } @$edit_activity 
-    ));
-
+    print html_head($q, 'Council edit');
+    print $q->h2("Council edit");
+    print $q->pre(Dumper($mapit_data));
+    print $q->pre(Dumper($bci_data));
+    print $q->pre(Dumper($bci_history));
 
 =comment
     # Google links
@@ -365,10 +404,12 @@ try {
 
         my $page = $q->param('page');
         $page = "summary" if !$page;
-        #$area_id = $q->param('area_id');
+        my $area_id = $q->param('area_id');
 
         if ($page eq "councilcontacts") {
             do_council_contacts($q);
+        } elsif ($page eq "counciledit") {
+            do_council_edit($q, $area_id);
         } else {
             do_summary($q);
         }
