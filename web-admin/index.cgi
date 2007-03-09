@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.2 2007-03-08 16:14:48 francis Exp $
+# $Id: index.cgi,v 1.3 2007-03-09 12:42:48 francis Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.2 2007-03-08 16:14:48 francis Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.3 2007-03-09 12:42:48 francis Exp $';
 
 use strict;
 
@@ -187,37 +187,82 @@ sub do_council_contacts ($) {
 sub do_council_edit ($$) {
     my ($q, $area_id) = @_;
 
-    # Altered URL
-    if ($q->param('posted_extra_data') and $q->param) {
-#        $d_dbh->do(q#delete
-#            from raw_council_extradata where council_id = ?#, {}, $area_id);
-#        $d_dbh->do(q#insert
-#            into raw_council_extradata (council_id, councillors_url, make_live) values (?,?,?)#, 
-#            {}, $area_id, $q->param('councillors_url'), defined($q->param('make_live')) ? 't' : 'f');
-#        $d_dbh->commit();
-#        print $q->redirect($q->param('r'));
-#        return;
+    # Submit form
+    my $updated = '';
+    if ($q->param('posted')) {
+        $dbh->do("update contacts set
+            email = ?,
+            confirmed = ?,
+            editor = ?,
+            whenedited = ms_current_timestamp(),
+            note = ?
+            where area_id = ?
+            ", {}, 
+            $q->param('email'), ($q->param('confirmed') ? 1 : 0),
+            ($q->remote_user() || "*unknown*"), $q->param('note'),
+            $area_id
+            );
+        $dbh->commit();
+
+        $updated = $q->p($q->em("Values updated"));
     }
  
-    #if ($status_data->{status} eq "made-live") {
+    # Get all the data
+    my $bci_data = $dbh->selectall_hashref("select * from contacts where area_id = ?", 'area_id', {}, $area_id)->{$area_id};
+    my $bci_history = $dbh->selectall_arrayref("select * from contacts_history where area_id = ? order by contacts_history_id", {}, $area_id);
+    my $mapit_data = mySociety::MaPit::get_voting_area_info($area_id);
+    
+    # Title
+    my $title = 'Council contact for ' . $mapit_data->{name};
+    print html_head($q, $title);
+    print $q->h2($title);
+    print $updated;
+
+    # Display form for editing details
+    print $q->start_form(-method => 'POST', -action => $q->url('relative'=>1));
+    print $q->strong("Email: ");
+    $q->param("email", $bci_data->{email});
+    $q->param("confirmed", $bci_data->{confirmed});
+    print $q->textfield(-name => "email", -size => 30) . " ";
+    print $q->checkbox(-name => "confirmed", -value => 1, -label => "Confirmed") . " ";
+    print $q->br();
+    print $q->strong("Note: ");
+    print $q->textarea(-name => "note", -rows => 3, -columns=>40) . " ";
+    print $q->br();
+    print $q->hidden('area_id');
+    print $q->hidden('posted', 'true');
+    print $q->hidden('page', 'counciledit');
+    print $q->submit('Save changes');
+    print $q->end_form();
+
     #    my $example_postcode = MaPit::get_example_postcode($area_id);
     #    if ($example_postcode) {
-    #        print $q->p("Example postcode to test on WriteToThem.com: ",
-    #            $q->a({href => build_url($q, "http://www.writetothem.com/",
+    #        print $q->p("Example postcode to test on NeighbourHoodFixit.com: ",
+    #            $q->a({href => build_url($q, "http://www.neighbourhoodfixit.com/",
     #                    { 'pc' => $example_postcode}) }, 
     #                $example_postcode));
     #    }
-    #}
 
-    my $bci_data = $dbh->selectall_arrayref("select * from contacts where area_id = ?", {}, $area_id);
-    my $bci_history = $dbh->selectall_arrayref("select * from contacts_history where area_id = ?", {}, $area_id);
-    my $mapit_data = mySociety::MaPit::get_voting_area_info($area_id);
-
-    print html_head($q, 'Council edit');
-    print $q->h2("Council edit");
-    print $q->pre(Dumper($mapit_data));
-    print $q->pre(Dumper($bci_data));
-    print $q->pre(Dumper($bci_history));
+    print $q->h3('History');
+    print $q->start_table({border=>1});
+    print $q->th({}, ["whenedited", "email", "confirmed", "editor", "note"]);
+    my $html = '';
+    my $prev = undef;
+    foreach my $h (@$bci_history) {
+        $h->[6] = $h->[6] ? "yes" : "no",
+        my $emailchanged = ($prev && $h->[2] ne $prev->[2]) ? 1 : 0;
+        my $confirmedchanged = ($prev && $h->[6] ne $prev->[6]) ? 1 : 0;
+        $html .= $q->Tr({}, $q->td([ 
+                $h->[4] =~ m/^(.+)\.\d+$/,
+                $emailchanged ? $q->strong($h->[2]) : $h->[2],
+                $confirmedchanged ? $q->strong($h->[6]) : $h->[6],
+                $h->[3],
+                $h->[5]
+            ]));
+        $prev = $h;
+    }
+    print $html;
+    print $q->end_table();
 
 =comment
     # Google links
@@ -241,160 +286,8 @@ sub do_council_edit ($$) {
     );
 =cut
 
-    # History
-    #print $q->h2("Change History");
-    #my @cols = qw#editor key alteration ward_name rep_first rep_last rep_party rep_email rep_fax#;
-    #$sth = $d_dbh->prepare(q#select * from raw_input_data_edited where council_id = ? 
-    #        order by order_id#);
-    #$sth->execute($area_id);
-    #while (my $row = $sth->fetchrow_hashref()) { 
-    #    push @history, $row;
-    #} 
-    #print $q->start_table({border=>1});
-    #print $q->th({}, ["whenedited", @cols]);
-    #print $q->end_table();
- 
     print html_tail($q);
 }
-
-=comment
-# do_council_edit CGI 
-# Form for editing all councillors in a council.
-sub do_council_edit ($) {
-    my ($q) = @_;
-    my $newreptext = "Edit this for new rep";
-
-    if ($q->param('posted')) {
-        if ($q->param('Cancel')) {
-            print $q->redirect($q->param('r'));
-            return;
-        }
-        
-        # Construct complete dataset of council
-        my @newdata;
-        my $c = 1;
-        while ($q->param("key$c")) {
-            if ($q->param("ward_name$c")) {
-                my $rep;
-                foreach my $fieldname qw(key ward_name rep_first rep_last rep_party rep_email rep_fax) {
-                    $rep->{$fieldname}= $q->param($fieldname . $c);
-                }
-                push @newdata, $rep;
-            } else { print "MOOOO"; }
-            $c++;
-        }
-        # ... add new ward
-        if ($q->param("ward_namenew") ne $newreptext) {
-            my $rep;
-            foreach my $fieldname qw(key ward_name rep_first rep_last rep_party rep_email rep_fax) {
-                $rep->{$fieldname}= $q->param($fieldname . "new");
-            }
-            push @newdata, $rep;
-        }
-    
-        # Make alteration
-        CouncilMatch::edit_raw_data($area_id, 
-                $name_data->{'name'}, $area_data->{'type'}, $area_data->{'ons_code'},
-                \@newdata, $q->remote_user() || "*unknown*");
-        $d_dbh->commit();
-
-        # Regenerate stuff
-        my $result = CouncilMatch::process_ge_data($area_id, 0);
-
-        # Redirect if it's Save and Done
-        if ($q->param('Save and Done')) {
-            print $q->redirect($q->param('r'));
-            return;
-        }
-    } 
-    
-    # Fetch data from database
-    my @reps = CouncilMatch::get_raw_data($area_id);
-    my $sort_by = $q->param("sort_by") || "ward_name";
-    @reps = sort { $a->{$sort_by} cmp $b->{$sort_by}  } @reps;
-    my $c = 1;
-    foreach my $rep (@reps) {
-        foreach my $fieldname qw(key ward_name rep_first rep_last rep_party rep_email rep_fax) {
-            $q->param($fieldname . $c, $rep->{$fieldname});
-        }
-        $c++;
-    }
-    $q->delete("key$c");
-    my $reps_count = $c-1;
-
-    # Display header
-    my $name = $name_data->{'name'};
-    print html_head($q, $name . " - Edit");
-    print $q->h1($name . " $area_id &mdash; Edit $reps_count Reps");
-    print $q->p($q->b("Note:"), "Data entered here", $q->b("will"), "be
-        returned to GovEval (if we ever get round to writing the script).
-        Please do not enter information which a councillor wishes to remain
-        private.  Leave email and fax blank and the councillor
-        will be contacted via Democratic Services.");
-
-    # Large form for editing council details
-    print $q->start_form(-method => 'POST', -action => $q->url('relative'=>1));
-    print $q->submit('Save and Done'); 
-    print $q->submit('Save');
-    print "&nbsp;";
-    print $q->submit('Cancel');
-
-    print $q->start_table();
-    my $r = $q->param('r') || '';
-    print $q->Tr({}, $q->th({}, [map 
-        { $_->[1] eq $sort_by ? $_->[0] :
-                    $q->a({href=>build_url($q, $q->url('relative'=>1), 
-                      {'area_id' => $area_id, 'page' => 'counciledit',
-                      'r' => $r, 'sort_by' => $_->[1]})}, $_->[0]) 
-        } 
-        (['Key', 'key'],
-        ['Ward (erase to del rep)', 'ward_name'],
-        ['First', 'rep_first'],
-        ['Last', 'rep_last'],
-        ['Party', 'rep_party'],
-        ['Email', 'rep_email'],
-        ['Fax', 'rep_fax'])
-    ]));
-
-    my $printrow = sub {
-        my $c = shift;
-        print $q->hidden(-name => "key$c", -size => 30);
-        print $q->Tr({}, $q->td([ 
-            $q->param("key$c"),
-            $q->textfield(-name => "ward_name$c", -size => 30),
-            $q->textfield(-name => "rep_first$c", -size => 15),
-            $q->textfield(-name => "rep_last$c", -size => 15),
-            $q->textfield(-name => "rep_party$c", -size => 10),
-            $q->textfield(-name => "rep_email$c", -size => 20),
-            $q->textfield(-name => "rep_fax$c", -size => 15)
-        ]));
-    };
-
-    $q->param("ward_namenew", $newreptext);
-    $q->param("keynew", "");
-    &$printrow("new");
-    $c = 1;
-    while ($q->param("key$c")) {
-        &$printrow($c);
-        $c++;
-    }
-    
-    print $q->end_table();
-    print $q->hidden('page', 'counciledit');
-    print $q->hidden('area_id');
-    print $q->hidden('r');
-    print $q->hidden('posted', 'true');
-
-    print $q->submit('Save and Done'); 
-    print $q->submit('Save');
-    print "&nbsp;";
-    print $q->submit('Cancel');
-
-    print $q->end_form();
-
-    print html_tail($q);
-}
-=cut
 
 # Main loop, handles FastCGI requests
 my $q;
