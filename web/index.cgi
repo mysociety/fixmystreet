@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.91 2007-03-09 13:13:50 matthew Exp $
+# $Id: index.cgi,v 1.92 2007-03-09 16:56:51 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -749,8 +749,8 @@ sub geocode {
             $y -= 1 if ($yy - $y < 0.5);
         } catch RABX::Error with {
             my $e = shift;
-            if ($e->value() == mySociety::MaPit::BAD_POSTCODE
-               || $e->value() == mySociety::MaPit::POSTCODE_NOT_FOUND) {
+            if ($e->value() && ($e->value() == mySociety::MaPit::BAD_POSTCODE
+               || $e->value() == mySociety::MaPit::POSTCODE_NOT_FOUND)) {
                 $error = 'That postcode was not recognised, sorry.';
             } else {
                 $error = $e;
