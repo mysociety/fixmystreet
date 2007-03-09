@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.7 2007-03-09 15:17:24 matthew Exp $
+# $Id: index.cgi,v 1.8 2007-03-09 15:24:34 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.7 2007-03-09 15:17:24 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.8 2007-03-09 15:24:34 matthew Exp $';
 
 use strict;
 
@@ -208,7 +208,7 @@ sub do_council_edit ($$) {
             ($q->remote_user() || "*unknown*"), $q->param('note'),
             $area_id
             );
-        if (!$update) {
+        unless ($update > 0) {
             dbh()->do('insert into contacts
                 (area_id, email, editor, whenedited, note, confirmed)
                 values
