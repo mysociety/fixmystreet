@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.3 2007-03-09 12:42:48 francis Exp $
+# $Id: index.cgi,v 1.4 2007-03-09 12:52:35 francis Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.3 2007-03-09 12:42:48 francis Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.4 2007-03-09 12:52:35 francis Exp $';
 
 use strict;
 
@@ -190,6 +190,7 @@ sub do_council_edit ($$) {
     # Submit form
     my $updated = '';
     if ($q->param('posted')) {
+        # History is automatically stored by a trigger in the database
         $dbh->do("update contacts set
             email = ?,
             confirmed = ?,
@@ -235,14 +236,16 @@ sub do_council_edit ($$) {
     print $q->submit('Save changes');
     print $q->end_form();
 
-    #    my $example_postcode = MaPit::get_example_postcode($area_id);
-    #    if ($example_postcode) {
-    #        print $q->p("Example postcode to test on NeighbourHoodFixit.com: ",
-    #            $q->a({href => build_url($q, "http://www.neighbourhoodfixit.com/",
-    #                    { 'pc' => $example_postcode}) }, 
-    #                $example_postcode));
-    #    }
+    # Example postcode
+    my $example_postcode = mySociety::MaPit::get_example_postcode($area_id);
+    if ($example_postcode) {
+        print $q->p("Example postcode to test on NeighbourHoodFixit.com: ",
+            $q->a({href => build_url($q, "http://www.neighbourhoodfixit.com/",
+                    { 'pc' => $example_postcode}) }, 
+                $example_postcode));
+    }
 
+    # Display history of changes
     print $q->h3('History');
     print $q->start_table({border=>1});
     print $q->th({}, ["whenedited", "email", "confirmed", "editor", "note"]);
