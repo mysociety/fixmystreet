@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.6 2007-03-09 14:44:51 matthew Exp $
+# $Id: index.cgi,v 1.7 2007-03-09 15:17:24 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.6 2007-03-09 14:44:51 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.7 2007-03-09 15:17:24 matthew Exp $';
 
 use strict;
 
@@ -33,11 +33,11 @@ use mySociety::VotingArea;
 BEGIN {
     mySociety::Config::set_file("$FindBin::Bin/../conf/general");
     mySociety::DBHandle::configure(
-	Name => mySociety::Config::get('BCI_DB_NAME'),
-	User => mySociety::Config::get('BCI_DB_USER'),
-	Password => mySociety::Config::get('BCI_DB_PASS'),
-	Host => mySociety::Config::get('BCI_DB_HOST', undef),
-	Port => mySociety::Config::get('BCI_DB_PORT', undef)
+        Name => mySociety::Config::get('BCI_DB_NAME'),
+        User => mySociety::Config::get('BCI_DB_USER'),
+        Password => mySociety::Config::get('BCI_DB_PASS'),
+        Host => mySociety::Config::get('BCI_DB_HOST', undef),
+        Port => mySociety::Config::get('BCI_DB_PORT', undef)
     );
 }
 
@@ -196,7 +196,7 @@ sub do_council_edit ($$) {
     my $updated = '';
     if ($q->param('posted')) {
         # History is automatically stored by a trigger in the database
-        dbh()->do("update contacts set
+        my $update = dbh()->do("update contacts set
             email = ?,
             confirmed = ?,
             editor = ?,
@@ -208,6 +208,15 @@ sub do_council_edit ($$) {
             ($q->remote_user() || "*unknown*"), $q->param('note'),
             $area_id
             );
+        if (!$update) {
+            dbh()->do('insert into contacts
+                (area_id, email, editor, whenedited, note, confirmed)
+                values
+                (?, ?, ?, ms_current_timestamp(), ?, ?)', {},
+                $area_id, $q->param('email'), ($q->remote_user() || '*unknown*'),
+                $q->param('note'), ($q->param('confirmed') ? 1 : 0)
+            );
+        }
         dbh()->commit();
 
         $updated = $q->p($q->em("Values updated"));
