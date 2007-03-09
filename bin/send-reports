@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.18 2007-03-08 14:40:31 matthew Exp $
+# $Id: send-reports,v 1.19 2007-03-09 12:12:43 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -56,7 +56,7 @@ foreach my $row (@$unsent) {
         next unless $council_email; # Ignore missing councils
         unless ($confirmed) {
             $all_confirmed = 0;
-            $notgot{$council_email} = 1;
+            $notgot{$council_email}++;
         }
         push @to, [ $council_email, $name ];
         $recips{$council_email} = 1;
@@ -103,4 +103,6 @@ foreach my $row (@$unsent) {
 }
 
 print "Council email addresses that need checking:\n  ";
-print join ("\n  ", keys %notgot) . "\n";
+foreach (keys %notgot) {
+    print $notgot{$_} . ' ' . $_ . "\n";
+}
