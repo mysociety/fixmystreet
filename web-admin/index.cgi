@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w -I../perllib -I../../perllib 
+#!/usr/bin/perl -w
 #
 # index.cgi
 #
@@ -7,44 +7,39 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.4 2007-03-09 12:52:35 francis Exp $
+# $Id: index.cgi,v 1.5 2007-03-09 13:09:13 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.4 2007-03-09 12:52:35 francis Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.5 2007-03-09 13:09:13 matthew Exp $';
 
 use strict;
 
-use CGI::Fast qw(-no_xhtml);
-#use CGI::Pretty;
-#$CGI::Pretty::AutoloadClass = 'CGI::Fast';
-#@CGI::Pretty::ISA = qw( CGI::Fast );
+# Horrible boilerplate to set up appropriate library paths.
+use FindBin;
+use lib "$FindBin::Bin/../perllib";
+use lib "$FindBin::Bin/../../perllib";
 
 use CGI::Carp;
-use HTML::Entities;
 use Error qw(:try);
-use Data::Dumper;
 use POSIX;
 use DBI;
 
-use mySociety::WatchUpdate;
+use Page;
 use mySociety::Config;
+use mySociety::DBHandle qw(dbh);
 use mySociety::MaPit;
 use mySociety::VotingArea;
 
-mySociety::Config::set_file("../conf/general");
-my $W = new mySociety::WatchUpdate();
-
-# Connect to database
-my $host = mySociety::Config::get('BCI_DB_HOST', undef);
-my $port = mySociety::Config::get('BCI_DB_PORT', undef);
-my $connstr = 'dbi:Pg:dbname=' . mySociety::Config::get('BCI_DB_NAME');
-$connstr .= ";host=$host" if (defined($host));
-$connstr .= ";port=$port" if (defined($port));
-my $dbh = DBI->connect($connstr,
-                    mySociety::Config::get('BCI_DB_USER'),
-                    mySociety::Config::get('BCI_DB_PASS'),
-                    { RaiseError => 1, AutoCommit => 0 });
-
+BEGIN {
+    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+    mySociety::DBHandle::configure(
+	Name => mySociety::Config::get('BCI_DB_NAME'),
+	User => mySociety::Config::get('BCI_DB_USER'),
+	Password => mySociety::Config::get('BCI_DB_PASS'),
+	Host => mySociety::Config::get('BCI_DB_HOST', undef),
+	Port => mySociety::Config::get('BCI_DB_PORT', undef)
+    );
+}
 
 sub html_head($$) {
     my ($q, $title) = @_;
@@ -110,7 +105,7 @@ sub do_summary ($) {
     print $q->h2("Summary");
 
     print $q->p(join($q->br(), 
-        map { $dbh->selectrow_array($_->[0]) . " " . $_->[1] } ( 
+        map { dbh()->selectrow_array($_->[0]) . " " . $_->[1] } ( 
             ['select count(*) from contacts', 'contacts'],
             ['select count(*) from problem', 'problems'],
             ['select count(*) from comment', 'comments'],
@@ -118,25 +113,25 @@ sub do_summary ($) {
     )));
 
     print $q->h3("Council contacts status");
-    my $statuses = $dbh->selectall_arrayref("select count(*) as c, confirmed from contacts group by confirmed order by c desc");
+    my $statuses = dbh()->selectall_arrayref("select count(*) as c, confirmed from contacts group by confirmed order by c desc");
     print $q->p(join($q->br(), 
         map { $_->[0] . " " . ($_->[1] ? 'confirmed' : 'unconfirmed') } @$statuses 
     ));
 
     print $q->h3("Problem status");
-    $statuses = $dbh->selectall_arrayref("select count(*) as c, state from problem group by state order by c desc");
+    $statuses = dbh()->selectall_arrayref("select count(*) as c, state from problem group by state order by c desc");
     print $q->p(join($q->br(), 
         map { $_->[0] . " " . $_->[1] } @$statuses 
     ));
 
     print $q->h3("Comment status");
-    $statuses = $dbh->selectall_arrayref("select count(*) as c, state from comment group by state order by c desc");
+    $statuses = dbh()->selectall_arrayref("select count(*) as c, state from comment group by state order by c desc");
     print $q->p(join($q->br(), 
         map { $_->[0] . " " . $_->[1] } @$statuses 
     ));
 
     print $q->h3("Alert status");
-    $statuses = $dbh->selectall_arrayref("select count(*) as c, confirmed from alert group by confirmed order by c desc");
+    $statuses = dbh()->selectall_arrayref("select count(*) as c, confirmed from alert group by confirmed order by c desc");
     print $q->p(join($q->br(), 
         map { $_->[0] . " " . ($_->[1] ? 'confirmed' : 'unconfirmed') } @$statuses 
     ));
@@ -153,7 +148,7 @@ sub do_council_contacts ($) {
 
     # Table of editors
     print $q->h3("Diligency prize league table");
-    my $edit_activity = $dbh->selectall_arrayref("select count(*) as c, editor from contacts_history group by editor order by c desc");
+    my $edit_activity = dbh()->selectall_arrayref("select count(*) as c, editor from contacts_history group by editor order by c desc");
     print $q->p(join($q->br(), 
         map { $_->[0] . " edits by " . $_->[1] } @$edit_activity 
     ));
@@ -168,7 +163,7 @@ sub do_council_contacts ($) {
     my $councils = mySociety::MaPit::get_voting_areas_info(\@councils);
     my @councils_ids = keys %$councils;
     @councils_ids = sort { $councils->{$a}->{name} cmp $councils->{$b}->{name} } @councils_ids;
-    my $bci_info = $dbh->selectall_hashref("select * from contacts", 'area_id');
+    my $bci_info = dbh()->selectall_hashref("select * from contacts", 'area_id');
     print $q->p(join($q->br(), 
         map { 
             $q->a({href=>build_url($q, $q->url('relative'=>1), 
@@ -191,7 +186,7 @@ sub do_council_edit ($$) {
     my $updated = '';
     if ($q->param('posted')) {
         # History is automatically stored by a trigger in the database
-        $dbh->do("update contacts set
+        dbh()->do("update contacts set
             email = ?,
             confirmed = ?,
             editor = ?,
@@ -203,14 +198,14 @@ sub do_council_edit ($$) {
             ($q->remote_user() || "*unknown*"), $q->param('note'),
             $area_id
             );
-        $dbh->commit();
+        dbh()->commit();
 
         $updated = $q->p($q->em("Values updated"));
     }
  
     # Get all the data
-    my $bci_data = $dbh->selectall_hashref("select * from contacts where area_id = ?", 'area_id', {}, $area_id)->{$area_id};
-    my $bci_history = $dbh->selectall_arrayref("select * from contacts_history where area_id = ? order by contacts_history_id", {}, $area_id);
+    my $bci_data = dbh()->selectall_hashref("select * from contacts where area_id = ?", 'area_id', {}, $area_id)->{$area_id};
+    my $bci_history = dbh()->selectall_arrayref("select * from contacts_history where area_id = ? order by contacts_history_id", {}, $area_id);
     my $mapit_data = mySociety::MaPit::get_voting_area_info($area_id);
     
     # Title
@@ -292,40 +287,18 @@ sub do_council_edit ($$) {
     print html_tail($q);
 }
 
-# Main loop, handles FastCGI requests
-my $q;
-try {
-    while ($q = new CGI::Fast()) {
-        #print Dumper($q->Vars);
+sub main {
+    my $q = shift;
+    my $page = $q->param('page');
+    $page = "summary" if !$page;
+    my $area_id = $q->param('area_id');
 
-        my $page = $q->param('page');
-        $page = "summary" if !$page;
-        my $area_id = $q->param('area_id');
-
-        if ($page eq "councilcontacts") {
-            do_council_contacts($q);
-        } elsif ($page eq "counciledit") {
-            do_council_edit($q, $area_id);
-        } else {
-            do_summary($q);
-        }
-
-        $W->exit_if_changed();
+    if ($page eq "councilcontacts") {
+        do_council_contacts($q);
+    } elsif ($page eq "counciledit") {
+        do_council_edit($q, $area_id);
+    } else {
+        do_summary($q);
     }
-} catch Error::Simple with {
-    my $E = shift;
-    my $msg = sprintf('%s:%d: %s', $E->file(), $E->line(), $E->text());
-    warn "caught fatal exception: $msg";
-    warn "aborting";
-    encode_entities($msg);
-    print "Status: 500\nContent-Type: text/html; charset=iso-8859-1\n\n",
-            html_head($q, 'Error'),
-            q(<p>Unfortunately, something went wrong. The text of the error
-                    was:</p>),
-            qq(<blockquote class="errortext">$msg</blockquote>),
-            q(<p>Please try again later.),
-            html_tail($q);
-};
-
-#$dbh->disconnect();
-
+}
+Page::do_fastcgi(\&main);
