@@ -5,7 +5,12 @@ Dear <?=$values['councils_name']?>,
 <?=$values['multiple']?>A user
 of Neighbourhood Fix-It, <?=$values['user_details']?>,
 has submitted the following report of a local problem that
-they believe might require your attention:
+they believe might require your attention.
+
+<?=$values['fuzzy']?>, or to provide an update on the problem,
+please visit the following link:
+
+    <?=$values['url']?>
 
 ----------
 
@@ -14,11 +19,6 @@ they believe might require your attention:
 <?=$values['detail']?>
 
 ----------
-
-<?=$values['fuzzy']?>, or to provide an update on the problem,
-please visit the following link:
-
-    <?=$values['url']?>
 
 Replies to this email will go to the user who submitted the problem.
 
