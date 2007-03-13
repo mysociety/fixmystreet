@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.93 2007-03-12 23:12:23 matthew Exp $
+# $Id: index.cgi,v 1.94 2007-03-13 13:11:55 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -346,13 +346,16 @@ problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.</p>";
         $out .= '<input type="hidden" name="council" value="-1">';
     }
     if ($input{skipped}) {
-        $out .= '<p>Please fill in the form below with details of the problem, and
-describe the location as precisely as possible in the details box.</p>';
+        $out .= $q->p('Please fill in the form below with details of the problem, and
+describe the location as precisely as possible in the details box.');
     } else {
-        $out .= '<p>Please fill in details of the problem below. Your council won\'t be able
+        $out .= $q->p('Please fill in details of the problem below. Your council won\'t be able
 to help unless you leave as much detail as you can, so please describe the
-exact location of the problem (ie. on a wall or the floor), and so on.</p>';
+exact location of the problem (ie. on a wall or the floor), and so on.');
     }
+    $out .= $q->p($q->strong('Unfortunately, currently Edinburgh council cannot view the map, so
+    <em>please</em> also give the street name and location of the problem.'))
+        if (join('', @councils) == 2651);
     $out .= '<input type="hidden" name="easting" value="' . $easting . '">
 <input type="hidden" name="northing" value="' . $northing . '">';
 
