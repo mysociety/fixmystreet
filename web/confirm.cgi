@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.10 2007-02-27 01:36:09 matthew Exp $
+# $Id: confirm.cgi,v 1.11 2007-03-13 22:56:14 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -43,7 +43,7 @@ sub main {
     my $id = mySociety::AuthToken::retrieve($type, $token);
     if ($id) {
         if ($type eq 'update') {
-            dbh()->do("update comment set state='confirmed' where id=?", {}, $id);
+            dbh()->do("update comment set state='confirmed' where id=? and state='unconfirmed'", {}, $id);
             my ($email) = dbh()->selectrow_array("select email from comment where id=?", {}, $id);
             my ($problem_id, $fixed, $reopen) = dbh()->selectrow_array("select problem_id,mark_fixed,mark_open from comment where id=?", {}, $id);
             if ($fixed) {
@@ -69,7 +69,7 @@ or
 </form>
 EOF
         } elsif ($type eq 'problem') {
-            dbh()->do("update problem set state='confirmed' where id=?", {}, $id);
+            dbh()->do("update problem set state='confirmed' where id=? and state='unconfirmed'", {}, $id);
 	    my $email = dbh()->selectrow_array("select email from problem where id=?", {}, $id);
             my $salt = unpack('h*', random_bytes(8));
             my $secret = scalar(dbh()->selectrow_array('select secret from secret'));
