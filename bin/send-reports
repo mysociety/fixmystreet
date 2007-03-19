@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.20 2007-03-19 10:03:25 matthew Exp $
+# $Id: send-reports,v 1.21 2007-03-19 11:46:51 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -83,9 +83,11 @@ foreach my $row (@$unsent) {
         : 'The user could not locate the problem on a map, but to see the area around the location they entered';
     $h{multiple} = @councils>1 ? "This email has been sent to both councils covering the location of the problem; please ignore it if you're not the correct council to deal with the issue.\n\n"
         : '';
-    $h{closest_address} = mySociety::Dress::find_nearest($row->{easting}, $row->{northing});
-    $h{closest_address} = "The closest address to the location of this problem is: $h{closest_address}\n\n"
-        if ($h{closest_address});
+
+    $h{closest_address} = '';
+    my ($address, $distance) = mySociety::Dress::find_nearest($row->{easting}, $row->{northing});
+    $h{closest_address} = sprintf("The closest address to the location of this problem, %.0fm away, is: %s\n\n",
+        $distance, $address) if ($address);
     my $email = mySociety::Email::construct_email({
         _template_ => $template,
         _parameters_ => \%h,
