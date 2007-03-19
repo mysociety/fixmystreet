@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.19 2007-03-09 12:12:43 matthew Exp $
+# $Id: send-reports,v 1.20 2007-03-19 10:03:25 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -34,15 +34,18 @@ BEGIN {
     );
 }
 
+use mySociety::Dress;
+
 die "No arguments or specify --nomail" if (@ARGV>1);
 my $nomail = 0;
 $nomail = 1 if (@ARGV==1 && $ARGV[0] eq '--nomail');
 
 my %notgot;
 my $unsent = dbh()->selectall_arrayref(
-    "SELECT id, council, title, detail, name, email, phone, used_map
+    "SELECT id, council, title, detail, name, email, phone, used_map, easting, northing
     FROM problem WHERE state in ('confirmed','fixed') AND whensent IS NULL
     AND council IS NOT NULL", { Slice => {} });
+
 foreach my $row (@$unsent) {
     # XXX Needs locks!
     my @councils = split ',', $row->{council};
@@ -72,15 +75,17 @@ foreach my $row (@$unsent) {
     push @recips, mySociety::Config::get('CONTACT_EMAIL');
 
     my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/submit-council");
-    my %h = map { $_ => $row->{$_} } qw/title detail/;
-    $h{user_details} = $row->{name} . ' <' . $row->{email} . '>';
-    $h{user_details} .= ' (' . $row->{phone} . ')' if $row->{phone};
+    my %h = map { $_ => $row->{$_} } qw/title detail name email phone/;
+    $h{phone} = "Phone: $h{phone}\n\n" if $h{phone};
     $h{url} = mySociety::Config::get('BASE_URL') . '/?id=' . $row->{id};
     $h{councils_name} = join(' and ', map { $areas_info->{$_}->{name} } @councils);
     $h{fuzzy} = $row->{used_map} ? 'To view a map of the precise location of this issue'
         : 'The user could not locate the problem on a map, but to see the area around the location they entered';
     $h{multiple} = @councils>1 ? "This email has been sent to both councils covering the location of the problem; please ignore it if you're not the correct council to deal with the issue.\n\n"
         : '';
+    $h{closest_address} = mySociety::Dress::find_nearest($row->{easting}, $row->{northing});
+    $h{closest_address} = "The closest address to the location of this problem is: $h{closest_address}\n\n"
+        if ($h{closest_address});
     my $email = mySociety::Email::construct_email({
         _template_ => $template,
         _parameters_ => \%h,
@@ -102,7 +107,7 @@ foreach my $row (@$unsent) {
     }
 }
 
-print "Council email addresses that need checking:\n  ";
+print "Council email addresses that need checking:\n";
 foreach (keys %notgot) {
     print $notgot{$_} . ' ' . $_ . "\n";
 }

@@ -2,8 +2,7 @@ Subject: Problem Report: <?=$values['title']?>
 
 Dear <?=$values['councils_name']?>,
 
-<?=$values['multiple']?>A user
-of Neighbourhood Fix-It, <?=$values['user_details']?>,
+<?=$values['multiple']?>A user of Neighbourhood Fix-It
 has submitted the following report of a local problem that
 they believe might require your attention.
 
@@ -14,11 +13,15 @@ please visit the following link:
 
 ----------
 
-<?=$values['title']?>
+Name: <?=$values['name']?>
 
-<?=$values['detail']?>
+Email: <?=$values['email']?>
 
-----------
+<?=$values['phone']?>Subject: <?=$values['title']?>
+
+Details: <?=$values['detail']?>
+
+<?=$values['closest_address']?>----------
 
 Replies to this email will go to the user who submitted the problem.
 
