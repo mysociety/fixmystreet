@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.95 2007-03-14 13:57:30 matthew Exp $
+# $Id: index.cgi,v 1.96 2007-03-19 11:24:33 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -353,9 +353,6 @@ describe the location as precisely as possible in the details box.');
 to help unless you leave as much detail as you can, so please describe the
 exact location of the problem (ie. on a wall or the floor), and so on.');
     }
-    $out .= $q->p($q->strong('Unfortunately, currently Edinburgh council cannot view the map, so
-    <em>please</em> also give the street name and location of the problem.'))
-        if (join('', @councils) == 2651);
     $out .= '<input type="hidden" name="easting" value="' . $easting . '">
 <input type="hidden" name="northing" value="' . $northing . '">';
 
