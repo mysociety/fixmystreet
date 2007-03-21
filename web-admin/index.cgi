@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.14 2007-03-21 15:48:31 matthew Exp $
+# $Id: index.cgi,v 1.15 2007-03-21 23:03:57 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.14 2007-03-21 15:48:31 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.15 2007-03-21 23:03:57 matthew Exp $';
 
 use strict;
 
@@ -308,6 +308,7 @@ sub do_council_edit ($$$) {
     # Display form for editing details
     print $q->start_form(-method => 'POST', -action => $q->url('relative'=>1));
     map { $q->param($_, $bci_data->{$_}) } qw/category email confirmed deleted/;
+    $q->param('page', 'councilcontacts');
     print $q->strong("Category: ") . $bci_data->{category};
     print $q->hidden("category");
     print $q->strong(" Email: ");
@@ -320,7 +321,7 @@ sub do_council_edit ($$$) {
     print $q->br();
     print $q->hidden('area_id');
     print $q->hidden('posted', 'true');
-    print $q->hidden('page', 'councilcontacts');
+    print $q->hidden('page');
     print $q->submit('Save changes');
     print $q->end_form();
 
