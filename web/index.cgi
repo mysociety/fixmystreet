@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.96 2007-03-19 11:24:33 matthew Exp $
+# $Id: index.cgi,v 1.97 2007-03-21 11:05:51 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -805,7 +805,7 @@ sub geocode_string {
 sub is_valid_council {
     my $councils = shift;
     $councils = [ $councils ] unless ref($councils) eq 'ARRAY';
-    my @councils_no_email = (2288,2402,2252,2351,2430,2375,2285,2284,2378,2294,2312,2386,2363,2296,2300,2291,2504,2510,
+    my @councils_no_email = (2288,2402,2252,2351,2430,2375,2285,2284,2378,2294,2312,2386,2363,2296,2300,2291,2504,
     2530,2531,2545,2586,2574,2580,2599,2601,2652,2607,2582,14287,14317,14328,2225,2222,2248,2246,2236);
 
     my $invalid_councils = '';
