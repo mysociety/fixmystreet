@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: import-categories,v 1.1 2007-03-21 15:48:31 matthew Exp $
+# $Id: import-categories,v 1.2 2007-03-21 16:04:39 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -63,7 +63,7 @@ foreach my $id (keys %$councils) {
         add_categories($id, $email, $confirmed, @district_cats, @county_cats);
     }
 }
-# dbh()->commit();
+dbh()->commit();
 
 sub add_categories {
     my ($id, $email, $confirmed, @cats) = @_;
@@ -71,7 +71,7 @@ sub add_categories {
         dbh()->do("insert into contacts
             (area_id, category, email, editor, whenedited, note, confirmed, deleted)
             values
-            (?, ?, ?, 'import', ms_current_timestamp(), 'Initial copy', ?, 0)", {},
+            (?, ?, ?, 'import', ms_current_timestamp(), 'Initial copy', ?, 'f')", {},
             $id, $_, $email, ($confirmed ? 1 : 0)
         );
     }
