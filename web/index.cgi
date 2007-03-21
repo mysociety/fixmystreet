@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.97 2007-03-21 11:05:51 matthew Exp $
+# $Id: index.cgi,v 1.98 2007-03-21 21:53:51 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -149,7 +149,7 @@ sub submit_update {
 
 sub submit_problem {
     my $q = shift;
-    my @vars = qw(council title detail name email phone pc easting northing skipped anonymous);
+    my @vars = qw(council title detail name email phone pc easting northing skipped anonymous category);
     my %input = map { $_ => scalar $q->param($_) } @vars;
     my @errors;
 
@@ -163,7 +163,7 @@ sub submit_problem {
             ($ct eq 'image/jpeg' || $ct eq 'image/pjpeg');
     }
 
-    push(@errors, 'No council selected') unless $input{council} && $input{council} =~ /^(?:-1|[\d,]+)$/;
+    push(@errors, 'No council selected') unless ($input{council} && $input{council} =~ /^(?:-1|[\d,]+(?:\|[\d,]+)?)$/);
     push(@errors, 'Please enter a title') unless $input{title} =~ /\S/;
     push(@errors, 'Please enter some details') unless $input{detail} =~ /\S/;
     push(@errors, 'Please enter your name') unless $input{name} =~ /\S/;
@@ -172,21 +172,45 @@ sub submit_problem {
     } elsif (!mySociety::Util::is_valid_email($input{email})) {
         push(@errors, 'Please enter a valid email');
     }
-
+    unless ($input{category} ne '-- Pick a category --') {
+        push (@errors, 'Please choose a category');
+        $input{category} = '';
+    }
+ 
     if ($input{easting} && $input{northing}) {
-        if ($input{council} ne '-1') {
+        if ($input{council} =~ /^[\d,]+(\|[\d,]+)?$/) {
+            my $no_details = $1 || '';
             my $councils = mySociety::MaPit::get_voting_area_by_location_en($input{easting}, $input{northing}, 'polygon', $mySociety::VotingArea::council_parent_types);
             my %councils = map { $_ => 1 } @$councils;
-            my @input_councils = split /,/, $input{council};
+            my @input_councils = split /,|\|/, $input{council};
             foreach (@input_councils) {
                 if (!$councils{$_}) {
                     push(@errors, 'That location is not part of that council');
                     last;
                 }
             }
-            my @valid_councils = is_valid_council(\@input_councils);
-            push(@errors, 'We do not yet have details for the council that covers that location') unless @valid_councils;
-            $input{council} = join(',', @valid_councils);
+
+            if ($no_details) {
+                $input{council} =~ s/\Q$no_details\E//;
+                @input_councils = split /,/, $input{council};
+            }
+
+            # Check category here, won't be present if council is -1
+            my @valid_councils = @input_councils;
+            if ($input{category}) {
+                my $categories = select_all("select area_id from contacts
+                    where deleted='f' and area_id in ("
+                    . $input{council} . ') and category = ?', $input{category});
+                push (@errors, 'Please choose a category') unless @$categories;
+                @valid_councils = map { $_->{area_id} } @$categories;
+                foreach my $c (@valid_councils) {
+                    if ($no_details =~ /$c/) {
+                        push(@errors, 'We have details for that council');
+			$no_details =~ s/,?$c//;
+                    }
+                }
+            }
+            $input{council} = join(',', @valid_councils) . $no_details;
         }
     } elsif ($input{easting} || $input{northing}) {
         push(@errors, 'Somehow, you only have one co-ordinate. Please try again.');
@@ -211,13 +235,14 @@ sub submit_problem {
 
     delete $input{council} if $input{council} eq '-1';
     my $used_map = $input{skipped} ? 'f' : 't';
+    $input{category} = 'Other' unless $input{category};
 
     # This is horrid
     my $s = dbh()->prepare("insert into problem
         (id, postcode, easting, northing, title, detail, name,
-         email, phone, photo, state, council, used_map, anonymous)
+         email, phone, photo, state, council, used_map, anonymous, category)
         values
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?, ?)");
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?, ?, ?)");
     $s->bind_param(1, $id);
     $s->bind_param(2, $input{pc});
     $s->bind_param(3, $input{easting});
@@ -231,6 +256,7 @@ sub submit_problem {
     $s->bind_param(11, $input{council});
     $s->bind_param(12, $used_map);
     $s->bind_param(13, $input{anonymous} ? 'f': 't');
+    $s->bind_param(14, $input{category});
     $s->execute();
     my %h = ();
     $h{title} = $input{title};
@@ -263,6 +289,7 @@ sub display_form {
     my $out = '';
     my ($px, $py, $easting, $northing, $island);
     if ($input{skipped}) {
+        # Map is being skipped
         if ($input{x} && $input{y}) {
             $easting = tile_to_os($input{x});
             $northing = tile_to_os($input{y});
@@ -285,9 +312,41 @@ sub display_form {
         $easting = $input_h{easting};
         $northing = $input_h{northing};
     }
-    my $all_councils = mySociety::MaPit::get_voting_area_by_location_en($easting, $northing, 'polygon', $mySociety::VotingArea::council_parent_types);
+
+    my $all_councils = mySociety::MaPit::get_voting_area_by_location_en($easting, $northing,
+        'polygon', $mySociety::VotingArea::council_parent_types);
     my $areas_info = mySociety::MaPit::get_voting_areas_info($all_councils);
-    my @councils = is_valid_council($all_councils);
+
+    # Look up categories for this council or councils
+    my $category = '';
+    my %council_ok;
+    my $categories = select_all("select area_id, category from contacts
+        where deleted='f' and area_id in (" . join(',', @$all_councils) . ')');
+    @$categories = sort { $a->{category} cmp $b->{category} } @$categories;
+    my @categories;
+    foreach (@$categories) {
+        $council_ok{$_->{area_id}} = 1;
+        next if $_->{category} eq 'Other';
+        push @categories, ent($_->{category});
+    }
+    if (@categories) {
+        @categories = ('-- Pick a category --', @categories, 'Other');
+        $category = $q->div($q->label({'for'=>'form_category'}, 'Category:'), 
+            $q->popup_menu(-name=>'category', -values=>\@categories,
+                -attributes=>{id=>'form_category'})
+        );
+    }
+
+    my @councils = keys %council_ok;
+    my $details;
+    if (@councils == @$all_councils) {
+        $details = 'all';
+    } elsif (@councils == 0) {
+        $details = 'none';
+    } else {
+        $details = 'some';
+    }
+
     if ($input{skipped}) {
         $out .= <<EOF;
 <form action="./" method="post">
@@ -309,13 +368,14 @@ EOF
         $out .= '<p>You have located the problem at the point marked with a purple pin on the map.
         If this is not the correct location, simply click on the map again.</p>';
     }
-    if (@councils > 0 && @councils == @$all_councils) {
+
+    if ($details eq 'all') {
         $out .= '<p>All the details you provide here will be sent to <strong>'
-            . join('</strong> and <strong>', map { $areas_info->{$_}->{name} } @councils)
-            . '</strong>. We show the title and details of the problem on
+            . join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @$all_councils)
+            . '</strong>. We show the subject and details of the problem on
             the site, along with your name if you give us permission.</p>';
-        $out .= '<input type="hidden" name="council" value="' . join(',',@councils) . '">';
-    } elsif (@councils > 0) {
+        $out .= '<input type="hidden" name="council" value="' . join(',',@$all_councils) . '">';
+    } elsif ($details eq 'some') {
         my $e = mySociety::Config::get('CONTACT_EMAIL');
         my %councils = map { $_ => 1 } @councils;
         my @missing;
@@ -323,19 +383,20 @@ EOF
             push @missing, $_ unless $councils{$_};
         }
         my $n = @missing;
-        my $list = join(' and ', map { $areas_info->{$_}->{name} } @missing);
+        my $list = join(' or ', map { $areas_info->{$_}->{name} } @missing);
         $out .= '<p>All the details you provide here will be sent to <strong>'
-            . join('</strong> and <strong>', map { $areas_info->{$_}->{name} } @councils)
-            . '</strong>. We show the title and details of the problem on
+            . join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @councils)
+            . '</strong>. We show the subject and details of the problem on
             the site, along with your name if you give us permission.</p>';
         $out .= ' We do not yet have details for the other council';
         $out .= ($n>1) ? 's that cover' : ' that covers';
         $out .= " this location. You can help us by finding a contact email address for local
 problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.</p>";
-        $out .= '<input type="hidden" name="council" value="' . join(',',@councils) . '">';
+        $out .= '<input type="hidden" name="council" value="' . join(',', @councils)
+            . '|' . join(',', @missing) . '">';
     } else {
         my $e = mySociety::Config::get('CONTACT_EMAIL');
-        my $list = join(' and ', map { $areas_info->{$_}->{name} } @$all_councils);
+        my $list = join(' or ', map { $areas_info->{$_}->{name} } @$all_councils);
         my $n = @$all_councils;
         $out .= '<p>We do not yet have details for the council';
         $out .= ($n>1) ? 's that cover' : ' that covers';
@@ -348,10 +409,12 @@ problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.</p>";
     if ($input{skipped}) {
         $out .= $q->p('Please fill in the form below with details of the problem, and
 describe the location as precisely as possible in the details box.');
-    } else {
-        $out .= $q->p('Please fill in details of the problem below. Your council won\'t be able
+    } elsif ($details ne 'none') {
+        $out .= $q->p('Please fill in details of the problem below. The council won\'t be able
 to help unless you leave as much detail as you can, so please describe the
 exact location of the problem (ie. on a wall or the floor), and so on.');
+    } else {
+        $out .= $q->p('Please fill in details of the problem below.');
     }
     $out .= '<input type="hidden" name="easting" value="' . $easting . '">
 <input type="hidden" name="northing" value="' . $northing . '">';
@@ -364,6 +427,7 @@ exact location of the problem (ie. on a wall or the floor), and so on.');
     my $anon = ($input{anonymous}) ? ' checked' : ($input{title} ? '' : ' checked');
     $out .= <<EOF;
 <fieldset><legend>Problem details</legend>
+$category
 <div><label for="form_title">Subject:</label>
 <input type="text" value="$input_h{title}" name="title" id="form_title" size="30"></div>
 <div><label for="form_detail">Details:</label>
@@ -643,7 +707,7 @@ sub display_pin {
     my $out = '<img class="pin" src="/i/pin' . $cols{$col}
         . $num . '.gif" alt="Problem" style="top:' . ($py-59)
         . 'px; right:' . ($px-31) . 'px; position: absolute;">';
-    return $out unless $_->{id} && $col ne 'blue';
+    return $out unless $_ && $_->{id} && $col ne 'blue';
     my $url = NewURL($q, id=>$_->{id}, x=>undef, y=>undef);
     $out = '<a title="' . $_->{title} . '" href="' . $url . '">' . $out . '</a>';
     return $out;
@@ -800,24 +864,6 @@ sub geocode_string {
         $y = int(os_to_tile($northing))-1;
     }
     return ($x, $y, $easting, $northing, $error);
-}
-
-sub is_valid_council {
-    my $councils = shift;
-    $councils = [ $councils ] unless ref($councils) eq 'ARRAY';
-    my @councils_no_email = (2288,2402,2252,2351,2430,2375,2285,2284,2378,2294,2312,2386,2363,2296,2300,2291,2504,
-    2530,2531,2545,2586,2574,2580,2599,2601,2652,2607,2582,14287,14317,14328,2225,2222,2248,2246,2236);
-
-    my $invalid_councils = '';
-    grep (vec($invalid_councils, $_, 1) = 1, @councils_no_email);
-
-    # Cheltenham example: CTY=2226 DIS=2326
-    # Check for covered council
-    my @return;
-    foreach my $council (@$councils) {
-        push @return, $council unless vec($invalid_councils, $council, 1);
-    }
-    return @return;
 }
 
 # P is easting or northing
