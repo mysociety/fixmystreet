@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.24 2007-03-21 16:34:46 matthew Exp $
+# $Id: send-reports,v 1.25 2007-03-21 16:38:40 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -80,8 +80,13 @@ foreach my $row (@$unsent) {
     my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/submit-council");
     my %h = map { $_ => $row->{$_} } qw/title detail name email phone category/;
     $h{phone} = "Phone: $h{phone}\n\n" if $h{phone};
-    $h{category} = ($h{category} eq 'Other' ? '' : "Category: $h{category}\n\n");
-    $h{category_footer} = ($h{category} ? $h{category} : 'local problems');
+    if ($h{category} eq 'Other') {
+        $h{category_footer} = 'local problems';
+        $h{category} = '';
+    } else {
+        $h{category_footer} = "'" . $h{category} . "'";
+        $h{category} = "Category: $h{category}\n\n";
+    }
     $h{url} = mySociety::Config::get('BASE_URL') . '/?id=' . $row->{id};
     $h{councils_name} = join(' and ', @dear);
     $h{fuzzy} = $row->{used_map} ? 'To view a map of the precise location of this issue'
