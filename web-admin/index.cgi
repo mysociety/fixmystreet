@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.8 2007-03-09 15:24:34 matthew Exp $
+# $Id: index.cgi,v 1.9 2007-03-21 13:59:47 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.8 2007-03-09 15:24:34 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.9 2007-03-21 13:59:47 matthew Exp $';
 
 use strict;
 
@@ -149,8 +149,8 @@ sub canonicalise_council {
     return $c;
 }
 
-# do_council_contacts CGI
-sub do_council_contacts ($) {
+# do_councils_list CGI
+sub do_councils_list ($) {
     my ($q) = @_;
 
     print html_head($q, "Council contacts");
@@ -173,48 +173,103 @@ sub do_council_contacts ($) {
     my $councils = mySociety::MaPit::get_voting_areas_info(\@councils);
     my @councils_ids = keys %$councils;
     @councils_ids = sort { canonicalise_council($councils->{$a}->{name}) cmp canonicalise_council($councils->{$b}->{name}) } @councils_ids;
-    my $bci_info = dbh()->selectall_hashref("select * from contacts", 'area_id');
+    my $bci_info = dbh()->selectall_hashref("select area_id, max(email) as email, count(*) as c from contacts group by area_id", 'area_id');
     print $q->p(join($q->br(), 
         map { 
             $q->a({href=>build_url($q, $q->url('relative'=>1), 
               {'area_id' => $_, 'page' => 'counciledit',})}, 
-              canonicalise_council($councils->{$_}->{name})) . " " .  
-                ($bci_info->{$_} ? ($bci_info->{$_}->{email} . " " .
-                    ($bci_info->{$_}->{confirmed} ? 'confirmed' : $q->strong('unconfirmed'))
-                ) : $q->strong('no info at all'))
+              canonicalise_council($councils->{$_}->{name})) . " " .
+                ($bci_info->{$_} ?
+                    ($bci_info->{$_}->{c} > 1 ? $bci_info->{$_}->{c} . ' addresses'
+                    : "1 address (" . $bci_info->{$_}->{email} . ")")
+                : $q->strong('no info at all') )
         } @councils_ids));
 
     print html_tail($q);
 }
 
+# do_council_contacts CGI AREA_ID
+sub do_council_contacts ($$) {
+    my ($q, $area_id) = @_;
+    my $bci_data = dbh()->select_all("select * from contacts where area_id = ? order by category", 'area_id', $area_id);
+    my $mapit_data = mySociety::MaPit::get_voting_area_info($area_id);
+    
+    # Title
+    my $title = 'Council contact for ' . $mapit_data->{name};
+    print html_head($q, $title);
+    print $q->h2($title);
 
-# do_council_edit CGI AREA_ID
-sub do_council_edit ($$) {
+    print $q->start_table({border=>1});
+    print $q->th({}, ["category", "email", "confirmed", "deleted", "editor", "note", "whenedited"]);
+    foreach my $l (@$bci_data) {
+        print $q->Tr($q->td([
+	    $l->{category}, $l->{email}, $l->{confirmed}, $l->{deleted},
+	    $l->{editor}, $l->{note}, $l->{whenedited}
+	]));
+    }
+    print $q->end_table();
+
+    # Display form for adding new category
+    print $q->start_form(-method => 'POST', -action => $q->url('relative'=>1));
+    print $q->strong("Category: ");
+    print $q->textfield(-name => "category", -size => 30) . " ";
+    print $q->strong("Email: ");
+    print $q->textfield(-name => "email", -size => 30) . " ";
+    print $q->checkbox(-name => "confirmed", -value => 1, -label => "Confirmed") . " ";
+    print $q->checkbox(-name => "deleted", -value => 1, -label => "Deleted") . " ";
+    print $q->br();
+    print $q->strong("Note: ");
+    print $q->textarea(-name => "note", -rows => 3, -columns=>40) . " ";
+    print $q->br();
+    print $q->hidden('area_id');
+    print $q->hidden('posted_new_cat', 'true');
+    print $q->hidden('page', 'counciledit');
+    print $q->submit('Save changes');
+    print $q->end_form();
+
+    # Example postcode
+    my $example_postcode = mySociety::MaPit::get_example_postcode($area_id);
+    if ($example_postcode) {
+        print $q->p("Example postcode to test on NeighbourHoodFixit.com: ",
+            $q->a({href => build_url($q, "http://www.neighbourhoodfixit.com/",
+                    { 'pc' => $example_postcode}) }, 
+                $example_postcode));
+    }
+
+    print html_tail($q);
+}
+
+# do_council_edit CGI AREA_ID CATEGORY
+sub do_council_edit ($$$) {
     my ($q, $area_id) = @_;
 
     # Submit form
     my $updated = '';
     if ($q->param('posted')) {
+        die "Broken for now!";
         # History is automatically stored by a trigger in the database
         my $update = dbh()->do("update contacts set
             email = ?,
             confirmed = ?,
+            deleted = ?,
             editor = ?,
             whenedited = ms_current_timestamp(),
             note = ?
             where area_id = ?
             ", {}, 
             $q->param('email'), ($q->param('confirmed') ? 1 : 0),
+            ($q->param('deleted') ? 1 : 0),
             ($q->remote_user() || "*unknown*"), $q->param('note'),
             $area_id
             );
         unless ($update > 0) {
             dbh()->do('insert into contacts
-                (area_id, email, editor, whenedited, note, confirmed)
+                (area_id, email, editor, whenedited, note, confirmed, deleted)
                 values
                 (?, ?, ?, ms_current_timestamp(), ?, ?)', {},
                 $area_id, $q->param('email'), ($q->remote_user() || '*unknown*'),
-                $q->param('note'), ($q->param('confirmed') ? 1 : 0)
+                $q->param('note'), ($q->param('confirmed') ? 1 : 0),
+                ($q->param('deleted') ? 1 : 0)
             );
         }
         dbh()->commit();
@@ -223,8 +278,8 @@ sub do_council_edit ($$) {
     }
  
     # Get all the data
-    my $bci_data = dbh()->selectall_hashref("select * from contacts where area_id = ?", 'area_id', {}, $area_id)->{$area_id};
-    my $bci_history = dbh()->selectall_arrayref("select * from contacts_history where area_id = ? order by contacts_history_id", {}, $area_id);
+    my $bci_data = dbh()->select_all("select * from contacts where area_id = ? order by category", 'area_id', $area_id);
+    my $bci_history = dbh()->select_all("select * from contacts_history where area_id = ? order by contacts_history_id", $area_id);
     my $mapit_data = mySociety::MaPit::get_voting_area_info($area_id);
     
     # Title
@@ -235,12 +290,17 @@ sub do_council_edit ($$) {
 
     # Display form for editing details
     print $q->start_form(-method => 'POST', -action => $q->url('relative'=>1));
-    print $q->strong("Email: ");
-    $q->param("email", $bci_data->{email});
-    $q->param("confirmed", $bci_data->{confirmed});
-    print $q->textfield(-name => "email", -size => 30) . " ";
-    print $q->checkbox(-name => "confirmed", -value => 1, -label => "Confirmed") . " ";
-    print $q->br();
+    foreach my $l (@$bci_data) {
+        my $id = $l->{id};
+        map { $q->param($_, $l->{$_}) } qw/category email confirmed deleted/;
+        print $q->strong("Category: ");
+        print $q->textfield(-name => "category", -size => 30) . " ";
+        print $q->strong("Email: ");
+        print $q->textfield(-name => "email", -size => 30) . " ";
+        print $q->checkbox(-name => "confirmed", -value => 1, -label => "Confirmed") . " ";
+        print $q->checkbox(-name => "deleted", -value => 1, -label => "Deleted") . " ";
+        print $q->br();
+    }
     print $q->strong("Note: ");
     print $q->textarea(-name => "note", -rows => 3, -columns=>40) . " ";
     print $q->br();
@@ -262,19 +322,22 @@ sub do_council_edit ($$) {
     # Display history of changes
     print $q->h3('History');
     print $q->start_table({border=>1});
-    print $q->th({}, ["whenedited", "email", "confirmed", "editor", "note"]);
+    print $q->th({}, ["whenedited", "email", "confirmed", "deleted", "editor", "note"]);
     my $html = '';
     my $prev = undef;
     foreach my $h (@$bci_history) {
-        $h->[6] = $h->[6] ? "yes" : "no",
-        my $emailchanged = ($prev && $h->[2] ne $prev->[2]) ? 1 : 0;
-        my $confirmedchanged = ($prev && $h->[6] ne $prev->[6]) ? 1 : 0;
+        $h->{confirmed} = $h->{confirmed} ? "yes" : "no",
+        $h->{deleted} = $h->{deleted} ? "yes" : "no",
+        my $emailchanged = ($prev && $h->{email} ne $prev->{email}) ? 1 : 0;
+        my $confirmedchanged = ($prev && $h->{confirmed} ne $prev->{confirmed}) ? 1 : 0;
+        my $deletedchanged = ($prev && $h->{deleted} ne $prev->{deleted}) ? 1 : 0;
         $html .= $q->Tr({}, $q->td([ 
-                $h->[4] =~ m/^(.+)\.\d+$/,
-                $emailchanged ? $q->strong($h->[2]) : $h->[2],
-                $confirmedchanged ? $q->strong($h->[6]) : $h->[6],
-                $h->[3],
-                $h->[5]
+                $h->{whenedited} =~ m/^(.+)\.\d+$/,
+                $emailchanged ? $q->strong($h->{email}) : $h->{email},
+                $confirmedchanged ? $q->strong($h->{confirmed}) : $h->{confirmed},
+                $deletedchanged ? $q->strong($h->{deleted}) : $h->{deleted},
+                $h->{editor},
+                $h->{note}
             ]));
         $prev = $h;
     }
@@ -312,7 +375,9 @@ sub main {
     $page = "summary" if !$page;
     my $area_id = $q->param('area_id');
 
-    if ($page eq "councilcontacts") {
+    if ($page eq "councilslist") {
+        do_councils_list($q);
+    } elsif ($page eq "councilcontacts") {
         do_council_contacts($q);
     } elsif ($page eq "counciledit") {
         do_council_edit($q, $area_id);

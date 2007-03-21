@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.22 2007-02-08 14:21:42 matthew Exp $
+-- $Id: schema.sql,v 1.23 2007-03-21 13:59:47 matthew Exp $
 --
 
 -- secret
@@ -64,17 +64,13 @@ create function ms_current_timestamp()
 -- 
 -- create unique index person_email_idx on person(email);
 
--- categories in which problems can lie
--- create table category (
---     id serial not null primary key,
---     name text not null
--- );
-
 -- Who to send problems for a specific MaPit area ID to
 create table contacts (
     area_id integer not null,
+    category text not null default 'Other',
     email text not null,
     confirmed boolean not null,
+    deleted boolean not null,
 
     -- last editor
     editor text not null,
@@ -83,7 +79,7 @@ create table contacts (
     -- what the last change was for: author's notes
     note text not null
 );
-create unique index contacts_area_id_idx on contacts(area_id);
+create unique index contacts_area_id_category_idx on contacts(area_id, category);
 
 -- History of changes to contacts - automatically updated
 -- whenever contacts is changed, using trigger below.
@@ -91,8 +87,10 @@ create table contacts_history (
     contacts_history_id serial not null primary key,
 
     area_id integer not null,
+    category text not null default 'Other',
     email text not null,
     confirmed boolean not null,
+    deleted boolean not null,
 
     -- editor
     editor text not null,
@@ -109,7 +107,7 @@ create table contacts_history (
 create function contacts_updated()
     returns trigger as '
     begin
-        insert into contacts_history (area_id, email, editor, whenedited, note, confirmed) values (new.area_id, new.email, new.editor, new.whenedited, new.note, new.confirmed);
+        insert into contacts_history (area_id, category, email, editor, whenedited, note, confirmed, deleted) values (new.area_id, new.category, new.email, new.editor, new.whenedited, new.note, new.confirmed, new.deleted);
         return new;
     end;
 ' language 'plpgsql';
@@ -128,11 +126,11 @@ create table problem (
     easting double precision not null,
     northing double precision not null,
     council text, -- integer references contacts(area_id),
+    category text not null default 'Other',
     title text not null,
     detail text not null,
     photo bytea,
     used_map boolean not null,
-    -- category integer not null references category(id),
 
     -- User's details
     name text not null,
