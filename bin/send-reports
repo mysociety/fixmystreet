@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.27 2007-03-21 21:59:35 matthew Exp $
+# $Id: send-reports,v 1.28 2007-03-21 22:41:48 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -98,9 +98,9 @@ foreach my $row (@$unsent) {
     $h{missing} = ''; 
     if ($missing) {
         my $name = $areas_info->{$missing}->{name};
-	$h{missing} = 'We realise this problem might be the responsibility of ' . $name
-	    . "; however, we don't have any contact details for them. If you know of an
-	    appropriate contact address, please get in touch.\n\n";
+        $h{missing} = 'We realise this problem might be the responsibility of ' . $name
+            . "; however, we don't currently have any contact details for them.
+If you know of an appropriate contact address, please do get in touch.\n\n";
     }
 
     $h{closest_address} = '';

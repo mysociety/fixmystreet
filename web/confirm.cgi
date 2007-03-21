@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.11 2007-03-13 22:56:14 matthew Exp $
+# $Id: confirm.cgi,v 1.12 2007-03-21 22:41:48 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -70,15 +70,15 @@ or
 EOF
         } elsif ($type eq 'problem') {
             dbh()->do("update problem set state='confirmed' where id=? and state='unconfirmed'", {}, $id);
-	    my $email = dbh()->selectrow_array("select email from problem where id=?", {}, $id);
+	    my ($email, $council) = dbh()->selectrow_array("select email, council from problem where id=?", {}, $id);
+	    $council = $council ? ' and <strong>we will now send it to the council</strong>' : '';
             my $salt = unpack('h*', random_bytes(8));
             my $secret = scalar(dbh()->selectrow_array('select secret from secret'));
             my $signed_email = sha1_hex("$id-$email-$salt-$secret");
             $out = <<EOF;
 <form action="/alert" method="post">
-<p>You have successfully confirmed your problem and
-<strong>we will now send it to the council</strong>.
-you can <a href="/?id=$id">view the problem on this site</a>.</p>
+<p>You have successfully confirmed your problem$council.
+You can <a href="/?id=$id">view the problem on this site</a>.</p>
 <p>You could also
 <a href="/rss/$id">subscribe to the RSS feed</a> of updates by other local people on this problem,
 or
