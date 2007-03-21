@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.98 2007-03-21 21:53:51 matthew Exp $
+# $Id: index.cgi,v 1.99 2007-03-21 21:59:35 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -164,7 +164,7 @@ sub submit_problem {
     }
 
     push(@errors, 'No council selected') unless ($input{council} && $input{council} =~ /^(?:-1|[\d,]+(?:\|[\d,]+)?)$/);
-    push(@errors, 'Please enter a title') unless $input{title} =~ /\S/;
+    push(@errors, 'Please enter a subject') unless $input{title} =~ /\S/;
     push(@errors, 'Please enter some details') unless $input{detail} =~ /\S/;
     push(@errors, 'Please enter your name') unless $input{name} =~ /\S/;
     if ($input{email} !~ /\S/) {

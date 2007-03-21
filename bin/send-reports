@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.26 2007-03-21 21:53:51 matthew Exp $
+# $Id: send-reports,v 1.27 2007-03-21 21:59:35 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -49,10 +49,9 @@ my $unsent = dbh()->selectall_arrayref(
 
 foreach my $row (@$unsent) {
     # XXX Needs locks!
-    my @all_councils = split /,\|/, $row->{council};
+    my @all_councils = split /,|\|/, $row->{council};
     my ($councils, $missing) = $row->{council} =~ /^([\d,]+)(?:\|([\d,]+))?/;
     my @councils = split /,/, $councils;
-    my @missing = split /,/, $missing;
     my $areas_info = mySociety::MaPit::get_voting_areas_info(\@all_councils);
     my (@to, @dear, %recips);
     my $all_confirmed = 1;
