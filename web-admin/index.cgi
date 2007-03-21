@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.9 2007-03-21 13:59:47 matthew Exp $
+# $Id: index.cgi,v 1.10 2007-03-21 14:01:32 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.9 2007-03-21 13:59:47 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.10 2007-03-21 14:01:32 matthew Exp $';
 
 use strict;
 
@@ -241,7 +241,7 @@ sub do_council_contacts ($$) {
 
 # do_council_edit CGI AREA_ID CATEGORY
 sub do_council_edit ($$$) {
-    my ($q, $area_id) = @_;
+    my ($q, $area_id, $category) = @_;
 
     # Submit form
     my $updated = '';
@@ -374,13 +374,14 @@ sub main {
     my $page = $q->param('page');
     $page = "summary" if !$page;
     my $area_id = $q->param('area_id');
+    my $category = $q->param('category');
 
     if ($page eq "councilslist") {
         do_councils_list($q);
     } elsif ($page eq "councilcontacts") {
-        do_council_contacts($q);
+        do_council_contacts($q, $area_id);
     } elsif ($page eq "counciledit") {
-        do_council_edit($q, $area_id);
+        do_council_edit($q, $area_id, $category);
     } else {
         do_summary($q);
     }
