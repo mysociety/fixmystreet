@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.36 2007-02-02 23:24:01 matthew Exp $
+# $Id: Page.pm,v 1.37 2007-03-21 11:58:13 matthew Exp $
 #
 
 package Page;
@@ -185,7 +185,7 @@ if you do not, your $thing will not be $action.</p>
 EOF
     } else {
         $out = <<EOF;
-<p>I'm afraid something went wrong when we tried to send your email. Please click Back, check your details, and try again.</p>
+<p>I'm afraid something went wrong when we tried to send you a confirmation email for your $thing. Please click Back, check your details, and try again.</p>
 EOF
     }
     return $out;
