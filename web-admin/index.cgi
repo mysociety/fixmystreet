@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.10 2007-03-21 14:01:32 matthew Exp $
+# $Id: index.cgi,v 1.11 2007-03-21 14:03:52 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.10 2007-03-21 14:01:32 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.11 2007-03-21 14:03:52 matthew Exp $';
 
 use strict;
 
@@ -26,7 +26,7 @@ use DBI;
 
 use Page;
 use mySociety::Config;
-use mySociety::DBHandle qw(dbh);
+use mySociety::DBHandle qw(dbh select_all);
 use mySociety::MaPit;
 use mySociety::VotingArea;
 
@@ -60,7 +60,7 @@ END
     
     my $pages = {
         'summary' => 'Summary',
-        'councilcontacts' => 'Council contacts'
+        'councilslist' => 'Council contacts'
     };
     $ret .= $q->p(
         $q->strong("Neighbourhood Fix-it admin:"), 
@@ -177,7 +177,7 @@ sub do_councils_list ($) {
     print $q->p(join($q->br(), 
         map { 
             $q->a({href=>build_url($q, $q->url('relative'=>1), 
-              {'area_id' => $_, 'page' => 'counciledit',})}, 
+              {'area_id' => $_, 'page' => 'councilcontacts',})}, 
               canonicalise_council($councils->{$_}->{name})) . " " .
                 ($bci_info->{$_} ?
                     ($bci_info->{$_}->{c} > 1 ? $bci_info->{$_}->{c} . ' addresses'
