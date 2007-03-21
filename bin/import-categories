@@ -1,0 +1,79 @@
+#!/usr/bin/perl -w
+
+# import-categories:
+# Initial choice of categories for councils. Most likely wrong.
+#
+# Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
+# Email: matthew@mysociety.org. WWW: http://www.mysociety.org
+#
+# $Id: import-categories,v 1.1 2007-03-21 15:48:31 matthew Exp $
+
+use strict;
+require 5.8.0;
+
+# Horrible boilerplate to set up appropriate library paths.
+use FindBin;
+use lib "$FindBin::Bin/../perllib";
+use lib "$FindBin::Bin/../../perllib";
+
+use mySociety::Config;
+use mySociety::DBHandle qw(dbh select_all);
+use mySociety::MaPit;
+use mySociety::Util;
+use mySociety::VotingArea;
+
+BEGIN {
+    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+    mySociety::DBHandle::configure(
+        Name => mySociety::Config::get('BCI_DB_NAME'),
+        User => mySociety::Config::get('BCI_DB_USER'),
+        Password => mySociety::Config::get('BCI_DB_PASS'),
+        Host => mySociety::Config::get('BCI_DB_HOST', undef),
+        Port => mySociety::Config::get('BCI_DB_PORT', undef)
+    );
+}
+
+my @district_cats = (
+    'Abandoned vehicles', 'Car parking', 'Dog fouling', 'Flyposting', 'Flytipping',
+    'Graffiti', 'Parks/landscapes', 'Public toilets', 'Rubbish (refuse and recycling)',
+    'Street nameplates', 'Street cleaning', 'Trees'
+);
+my @county_cats = (
+    'Bus stops', 'Pavements/footpaths', 'Potholes', 'Roads/highways',
+    'Road traffic signs', 'Street lighting', 'Traffic lights'
+);
+
+my @councils;
+foreach my $type (@$mySociety::VotingArea::council_parent_types) {
+    my $areas = mySociety::MaPit::get_areas_by_type($type);
+    push @councils, @$areas;
+}
+my $councils = mySociety::MaPit::get_voting_areas_info(\@councils);
+foreach my $id (keys %$councils) {
+    my $type = $councils->{$id}->{type};
+    my ($email,$confirmed) = dbh()->selectrow_array(
+        "SELECT email,confirmed FROM contacts WHERE deleted='f'
+            and area_id=? AND category='Other'", {}, $id);
+    next unless $email;
+    if ($type eq 'DIS') {
+        add_categories($id, $email, $confirmed, @district_cats);
+    } elsif ($type eq 'CTY') {
+        add_categories($id, $email, $confirmed, @county_cats);
+    } else {
+        add_categories($id, $email, $confirmed, @district_cats, @county_cats);
+    }
+}
+# dbh()->commit();
+
+sub add_categories {
+    my ($id, $email, $confirmed, @cats) = @_;
+    foreach (@cats) {
+        dbh()->do("insert into contacts
+            (area_id, category, email, editor, whenedited, note, confirmed, deleted)
+            values
+            (?, ?, ?, 'import', ms_current_timestamp(), 'Initial copy', ?, 0)", {},
+            $id, $_, $email, ($confirmed ? 1 : 0)
+        );
+    }
+}
+

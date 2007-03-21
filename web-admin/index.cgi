@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.13 2007-03-21 14:45:45 matthew Exp $
+# $Id: index.cgi,v 1.14 2007-03-21 15:48:31 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.13 2007-03-21 14:45:45 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.14 2007-03-21 15:48:31 matthew Exp $';
 
 use strict;
 
@@ -245,7 +245,7 @@ sub do_council_contacts ($$) {
     }
 
     print $q->start_table({border=>1});
-    print $q->th({}, ["Category", "Email", "Confirmed", "Deleted", "Editor", "Note", "When edited"]);
+    print $q->th({}, ["Category", "Email", "Confirmed", "Deleted", "Last editor", "Note", "When edited"]);
     foreach my $l (@$bci_data) {
         print $q->Tr($q->td([
             $q->a({href=>build_url($q, $q->url('relative'=>1),
@@ -258,6 +258,7 @@ sub do_council_contacts ($$) {
     print $q->end_table();
 
     # Display form for adding new category
+    print $q->h3('Add new category');
     print $q->start_form(-method => 'POST', -action => $q->url('relative'=>1));
     print $q->p($q->strong("Category: "),
         $q->textfield(-name => "category", -size => 30));
@@ -309,7 +310,7 @@ sub do_council_edit ($$$) {
     map { $q->param($_, $bci_data->{$_}) } qw/category email confirmed deleted/;
     print $q->strong("Category: ") . $bci_data->{category};
     print $q->hidden("category");
-    print $q->strong("Email: ");
+    print $q->strong(" Email: ");
     print $q->textfield(-name => "email", -size => 30) . " ";
     print $q->checkbox(-name => "confirmed", -value => 1, -label => "Confirmed") . " ";
     print $q->checkbox(-name => "deleted", -value => 1, -label => "Deleted");
