@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.12 2007-03-21 14:39:47 matthew Exp $
+# $Id: index.cgi,v 1.13 2007-03-21 14:45:45 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.12 2007-03-21 14:39:47 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.13 2007-03-21 14:45:45 matthew Exp $';
 
 use strict;
 
@@ -259,20 +259,22 @@ sub do_council_contacts ($$) {
 
     # Display form for adding new category
     print $q->start_form(-method => 'POST', -action => $q->url('relative'=>1));
-    print $q->strong("Category: ");
-    print $q->textfield(-name => "category", -size => 30) . " ";
-    print $q->strong("Email: ");
-    print $q->textfield(-name => "email", -size => 30) . " ";
-    print $q->checkbox(-name => "confirmed", -value => 1, -label => "Confirmed") . " ";
-    print $q->checkbox(-name => "deleted", -value => 1, -label => "Deleted") . " ";
-    print $q->br();
-    print $q->strong("Note: ");
-    print $q->textarea(-name => "note", -rows => 3, -columns=>40) . " ";
-    print $q->br();
-    print $q->hidden('area_id');
-    print $q->hidden('posted', 'true');
-    print $q->hidden('page', 'councilcontacts');
-    print $q->submit('Save changes');
+    print $q->p($q->strong("Category: "),
+        $q->textfield(-name => "category", -size => 30));
+    print $q->p($q->strong("Email: "),
+        $q->textfield(-name => "email", -size => 30));
+    print $q->p(
+        $q->checkbox(-name => "confirmed", -value => 1, -label => "Confirmed"), " ",
+        $q->checkbox(-name => "deleted", -value => 1, -label => "Deleted")
+    );
+    print $q->p($q->strong("Note: "),
+        $q->textarea(-name => "note", -rows => 3, -columns=>40));
+    print $q->p(
+        $q->hidden('area_id'),
+        $q->hidden('posted', 'true'),
+        $q->hidden('page', 'councilcontacts'),
+        $q->submit('Save changes')
+    );
     print $q->end_form();
 
     print html_tail($q);
@@ -305,8 +307,8 @@ sub do_council_edit ($$$) {
     # Display form for editing details
     print $q->start_form(-method => 'POST', -action => $q->url('relative'=>1));
     map { $q->param($_, $bci_data->{$_}) } qw/category email confirmed deleted/;
-    print $q->strong("Category: ");
-    print $q->textfield(-name => "category", -size => 30) . " ";
+    print $q->strong("Category: ") . $bci_data->{category};
+    print $q->hidden("category");
     print $q->strong("Email: ");
     print $q->textfield(-name => "email", -size => 30) . " ";
     print $q->checkbox(-name => "confirmed", -value => 1, -label => "Confirmed") . " ";
