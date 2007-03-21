@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.21 2007-03-19 11:46:51 matthew Exp $
+# $Id: send-reports,v 1.22 2007-03-21 14:39:47 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -42,7 +42,8 @@ $nomail = 1 if (@ARGV==1 && $ARGV[0] eq '--nomail');
 
 my %notgot;
 my $unsent = dbh()->selectall_arrayref(
-    "SELECT id, council, title, detail, name, email, phone, used_map, easting, northing
+    "SELECT id, council, category, title, detail, name, email, phone, used_map,
+    easting, northing
     FROM problem WHERE state in ('confirmed','fixed') AND whensent IS NULL
     AND council IS NOT NULL", { Slice => {} });
 
@@ -55,7 +56,8 @@ foreach my $row (@$unsent) {
     foreach my $council (@councils) {
         my $name = $areas_info->{$council}->{name};
         my ($council_email,$confirmed) = dbh()->selectrow_array(
-            'SELECT email,confirmed FROM contacts WHERE area_id=?', {}, $council);
+            "SELECT email,confirmed FROM contacts WHERE deleted='f'
+                and area_id=? AND category='Other'", {}, $council);
         next unless $council_email; # Ignore missing councils
         unless ($confirmed) {
             $all_confirmed = 0;
