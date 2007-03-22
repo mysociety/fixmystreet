@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.10 2007-03-06 11:15:38 matthew Exp $
+# $Id: faq.cgi,v 1.11 2007-03-22 19:45:56 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -82,8 +82,8 @@ email address to anyone else, unless we are obliged to by law.
 </dd>
 
 <dt>Will you send nasty, brutish spam to my email address?</dt>
-<dd>Never.  If you opt to when adding a problem or update, you will receive emails 
-about updates to that problem, but that&rsquo;s it.
+<dd>Never. We will email you a month after you submit a problem, asking for a status
+update. You can also opt in to receive emails about updates to a particular problem.
 </dd>
 
 </dl>
