@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.99 2007-03-21 21:59:35 matthew Exp $
+# $Id: index.cgi,v 1.100 2007-03-23 14:44:31 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -23,7 +23,6 @@ use File::Slurp;
 use Image::Magick;
 use LWP::Simple;
 use RABX;
-use POSIX qw(strftime);
 use CGI::Carp;
 use Digest::MD5 qw(md5_hex);
 use URI::Escape;
@@ -570,8 +569,8 @@ EOF
 
     # Display information about problem
     $out .= '<p><em>Reported ';
-    $out .= ($anonymous) ? 'anonymously' : "by $name";
-    $out .= ' at ' . prettify_epoch($time);
+    $out .= ($anonymous) ? 'anonymously' : "by " . ent($name);
+    $out .= ' at ' . Page::prettify_epoch($time);
     $out .= '</em></p> <p>';
     $out .= ent($desc);
     $out .= '</p>';
@@ -580,6 +579,9 @@ EOF
         $out .= '<p align="center"><img src="/photo?id=' . $input{id} . '"></p>';
     }
 
+    $out .= $q->p({align=>'right'},
+        $q->a({href => '/contact?id=' . $input{id}}, $q->small('Offensive? Unsuitable? Tell us'))
+    );
     my $back = NewURL($q, id=>undef, x=>$x_tile, y=>$y_tile);
     $out .= '<p style="padding-bottom: 0.5em; border-bottom: dotted 1px #999999;" align="right"><a href="' . $back . '">Back to listings</a></p>';
 
@@ -605,7 +607,7 @@ EOF
         $out .= '<div id="updates">';
         $out .= '<h2>Updates</h2>';
         foreach my $row (@$updates) {
-            $out .= "<div><a name=\"update_$row->{id}\"></a><em>Posted by $row->{name} at " . prettify_epoch($row->{created});
+            $out .= "<div><a name=\"update_$row->{id}\"></a><em>Posted by $row->{name} at " . Page::prettify_epoch($row->{created});
             $out .= ', marked fixed' if ($row->{mark_fixed});
             $out .= ', reopened' if ($row->{mark_open});
             $out .= '</em>';
@@ -899,20 +901,4 @@ sub click_to_tile {
     return $pin_tile + $pin / 254;
 }
 
-sub prettify_epoch {
-    my $s = shift;
-    my @s = localtime($s);
-    my $tt = strftime('%H:%M', @s);
-    my @t = localtime();
-    if (strftime('%Y%m%d', @s) eq strftime('%Y%m%d', @t)) {
-        $tt = "$tt " . 'today';
-    } elsif (strftime('%U', @s) eq strftime('%U', @t)) {
-        $tt = "$tt, " . strftime('%A', @s);
-    } elsif (strftime('%Y', @s) eq strftime('%Y', @t)) {
-        $tt = "$tt, " . strftime('%A %e %B', @s);
-    } else {
-        $tt = "$tt, " . strftime('%a %e %B %Y', @s);
-    }
-    return $tt;
-}
 

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.10 2007-03-12 16:42:20 matthew Exp $
+# $Id: contact.cgi,v 1.11 2007-03-23 14:44:31 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -17,6 +17,7 @@ use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../../perllib";
 use Page;
 use mySociety::Config;
+use mySociety::DBHandle qw(dbh);
 use mySociety::Email;
 use mySociety::Util;
 use mySociety::Web qw(ent);
@@ -42,7 +43,7 @@ Page::do_fastcgi(\&main);
 
 sub contact_submit {
     my $q = shift;
-    my @vars = qw(name email subject message);
+    my @vars = qw(name email subject message id);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
     push(@errors, 'Please give your name') unless $input{name} =~ /\S/;
@@ -53,10 +54,14 @@ sub contact_submit {
     }
     push(@errors, 'Please give a subject') unless $input{subject} =~ /\S/;
     push(@errors, 'Please write a message') unless $input{message} =~ /\S/;
+    push(@errors, 'Illegal ID') if $input{id} && $input{id} !~ /^[1-9]\d*$/;
     return contact_page($q, @errors) if @errors;
 
     (my $message = $input{message}) =~ s/\r\n/\n/g;
     (my $subject = $input{subject}) =~ s/\r|\n/ /g;
+    $message .= "\n\n[ Complaint about report $input{id} - "
+        . mySociety::Config::get('BASE_URL') . "/?id=$input{id} ]"
+        if $input{id};
     my $postfix = '[ Sent by contact.cgi on ' .
         $ENV{'HTTP_HOST'} . '. ' .
         "IP address " . $ENV{'REMOTE_ADDR'} .
@@ -86,14 +91,43 @@ sub contact_page {
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
-    $out .= <<EOF;
+    $out .= '<form method="post">';
+
+    my $id = $q->param('id');
+    $id = undef unless $id =~ /^[1-9]\d*$/;
+    if ($id) {
+        mySociety::DBHandle::configure(
+            Name => mySociety::Config::get('BCI_DB_NAME'),
+            User => mySociety::Config::get('BCI_DB_USER'),
+            Password => mySociety::Config::get('BCI_DB_PASS'),
+            Host => mySociety::Config::get('BCI_DB_HOST', undef),
+            Port => mySociety::Config::get('BCI_DB_PORT', undef)
+        );
+        my $p = dbh()->selectrow_hashref(
+	    'select title,detail,name,anonymous,extract(epoch from created) as created
+	    from problem where id=?', {}, $id);
+        $out .= $q->p('You are reporting the following problem report for being abusive, containing personal information, or similar:');
+        $out .= $q->blockquote(
+	    $q->h2(ent($p->{title})),
+	    $q->p($q->em(
+         'Reported ',
+         ($p->{anonymous}) ? 'anonymously' : "by " . ent($p->{name}),
+         ' at ' . Page::prettify_epoch($p->{created}),
+	    )),
+	    $q->p(ent($p->{detail}))
+	);
+        $out .= '<input type="hidden" name="id" value="' . $id . '">';
+    } else {
+        $out .= <<EOF;
 <p>We'd love to hear what you think about this site. Just fill in the form:</p>
-<form method="post">
+EOF
+    }
+    $out .= <<EOF;
 <fieldset>
 <input type="hidden" name="submit_form" value="1">
-<div><label for="form_name">Name:</label>
+<div><label for="form_name">Your name:</label>
 <input type="text" name="name" id="form_name" value="$input_h{name}" size="30"></div>
-<div><label for="form_email">Email:</label>
+<div><label for="form_email">Your email:</label>
 <input type="text" name="email" id="form_email" value="$input_h{email}" size="30"></div>
 <div><label for="form_subject">Subject:</label>
 <input type="text" name="subject" id="form_subject" value="$input_h{subject}" size="30"></div>

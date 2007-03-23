@@ -25,6 +25,14 @@ a:hover, a:active {
     color: #ff0000;
 }
 
+blockquote {
+    border-left: solid 4px #5e552b;
+    padding-left: 0.5em;
+}
+blockquote h2, blockquote p {
+    margin: 0;
+}
+
 form {
     margin: 0;
 }

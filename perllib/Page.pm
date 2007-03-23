@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.37 2007-03-21 11:58:13 matthew Exp $
+# $Id: Page.pm,v 1.38 2007-03-23 14:44:31 matthew Exp $
 #
 
 package Page;
@@ -16,6 +16,7 @@ use Carp;
 use CGI::Fast qw(-no_xhtml);
 use Error qw(:try);
 use File::Slurp;
+use POSIX qw(strftime);
 use mySociety::Config;
 use mySociety::Email;
 use mySociety::Util;
@@ -189,6 +190,23 @@ EOF
 EOF
     }
     return $out;
+}
+
+sub prettify_epoch {
+    my $s = shift;
+    my @s = localtime($s);
+    my $tt = strftime('%H:%M', @s);
+    my @t = localtime();
+    if (strftime('%Y%m%d', @s) eq strftime('%Y%m%d', @t)) {
+        $tt = "$tt " . 'today';
+    } elsif (strftime('%U', @s) eq strftime('%U', @t)) {
+        $tt = "$tt, " . strftime('%A', @s);
+    } elsif (strftime('%Y', @s) eq strftime('%Y', @t)) {
+        $tt = "$tt, " . strftime('%A %e %B', @s);
+    } else {
+        $tt = "$tt, " . strftime('%a %e %B %Y', @s);
+    }
+    return $tt;
 }
 
 1;
