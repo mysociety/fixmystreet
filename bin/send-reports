@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.28 2007-03-21 22:41:48 matthew Exp $
+# $Id: send-reports,v 1.29 2007-03-23 09:50:29 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -83,7 +83,7 @@ foreach my $row (@$unsent) {
     my %h = map { $_ => $row->{$_} } qw/title detail name email phone category/;
     $h{phone} = "Phone: $h{phone}\n\n" if $h{phone};
     if ($h{category} eq 'Other') {
-        $h{category_footer} = 'local problems';
+        $h{category_footer} = 'this type of local problem';
         $h{category} = '';
     } else {
         $h{category_footer} = "'" . $h{category} . "'";
@@ -93,14 +93,14 @@ foreach my $row (@$unsent) {
     $h{councils_name} = join(' and ', @dear);
     $h{fuzzy} = $row->{used_map} ? 'To view a map of the precise location of this issue'
         : 'The user could not locate the problem on a map, but to see the area around the location they entered';
-    $h{multiple} = @dear>1 ? "This email has been sent to both councils covering the location of the problem; please ignore it if you're not the correct council to deal with the issue.\n\n"
+    $h{multiple} = @dear>1 ? "[ This email has been sent to both councils covering the location of the problem, as the user did not categorise it; please ignore it if you're not the correct council to deal with the issue, or let us know what category of problem this is so we can add it to our system. ]\n\n"
         : '';
     $h{missing} = ''; 
     if ($missing) {
         my $name = $areas_info->{$missing}->{name};
-        $h{missing} = 'We realise this problem might be the responsibility of ' . $name
+        $h{missing} = '[ We realise this problem might be the responsibility of ' . $name
             . "; however, we don't currently have any contact details for them.
-If you know of an appropriate contact address, please do get in touch.\n\n";
+If you know of an appropriate contact address, please do get in touch. ]\n\n";
     }
 
     $h{closest_address} = '';
