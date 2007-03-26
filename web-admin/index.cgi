@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.19 2007-03-26 16:28:59 matthew Exp $
+# $Id: index.cgi,v 1.20 2007-03-26 16:55:31 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.19 2007-03-26 16:28:59 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.20 2007-03-26 16:55:31 matthew Exp $';
 
 use strict;
 
@@ -274,10 +274,13 @@ sub do_council_contacts ($$) {
         ]));
     }
     print $q->end_table();
+    # XXX
+    $q->param('page', 'councilcontacts');
+    $q->param('posted', 'update');
     print $q->p(
         $q->hidden('area_id'),
-        $q->hidden('posted', 'update'),
-        $q->hidden('page', 'councilcontacts'),
+        $q->hidden('posted'),
+        $q->hidden('page'),
         $q->submit('Update statuses')
     );
     print $q->end_form();
@@ -295,10 +298,11 @@ sub do_council_contacts ($$) {
     );
     print $q->p($q->strong("Note: "),
         $q->textarea(-name => "note", -rows => 3, -columns=>40));
+    $q->param('posted', 'new');
     print $q->p(
         $q->hidden('area_id'),
-        $q->hidden('posted', 'new'),
-        $q->hidden('page', 'councilcontacts'),
+        $q->hidden('posted'),
+        $q->hidden('page'),
         $q->submit('Create category')
     );
     print $q->end_form();
@@ -334,6 +338,7 @@ sub do_council_edit ($$$) {
     print $q->start_form(-method => 'POST', -action => $q->url('relative'=>1));
     map { $q->param($_, $bci_data->{$_}) } qw/category email confirmed deleted/;
     $q->param('page', 'councilcontacts');
+    $q->param('posted', 'new');
     print $q->strong("Category: ") . $bci_data->{category};
     print $q->hidden("category");
     print $q->strong(" Email: ");
@@ -345,7 +350,7 @@ sub do_council_edit ($$$) {
     print $q->textarea(-name => "note", -rows => 3, -columns=>40) . " ";
     print $q->br();
     print $q->hidden('area_id');
-    print $q->hidden('posted', 'new');
+    print $q->hidden('posted');
     print $q->hidden('page');
     print $q->submit('Save changes');
     print $q->end_form();
