@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.17 2007-03-26 16:22:11 matthew Exp $
+# $Id: index.cgi,v 1.18 2007-03-26 16:26:33 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.17 2007-03-26 16:22:11 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.18 2007-03-26 16:26:33 matthew Exp $';
 
 use strict;
 
@@ -228,7 +228,7 @@ sub do_council_contacts ($$) {
         my @cats = $q->param('confirmed');
         foreach my $cat (@cats) {
             my $update = dbh()->do("update contacts set
-                confirmed = 1, editor = ?,
+                confirmed = 't', editor = ?,
                 whenedited = ms_current_timestamp(),
                 note = 'Confirmed'
                 where area_id = ?
