@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.15 2007-03-21 23:03:57 matthew Exp $
+# $Id: index.cgi,v 1.16 2007-03-26 16:14:03 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.15 2007-03-21 23:03:57 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.16 2007-03-26 16:14:03 matthew Exp $';
 
 use strict;
 
@@ -194,7 +194,7 @@ sub do_council_contacts ($$) {
 
     # Submit form
     my $updated = '';
-    if ($q->param('posted')) {
+    if ($q->param('posted') eq 'new') {
         # History is automatically stored by a trigger in the database
         my $update = dbh()->do("update contacts set
             email = ?,
@@ -224,6 +224,8 @@ sub do_council_contacts ($$) {
             $updated = $q->p($q->em("New category contact added"));
         }
         dbh()->commit();
+    } elsif ($q->param('posted') eq 'update') {
+        $updated = $q->p($q->em(join('', $q->param('confirmed'))));
     }
  
     my $bci_data = select_all("select * from contacts where area_id = ? order by category", $area_id);
@@ -244,6 +246,7 @@ sub do_council_contacts ($$) {
                 $example_postcode));
     }
 
+    print $q->start_form(-method => 'POST', -action => $q->url('relative'=>1));
     print $q->start_table({border=>1});
     print $q->th({}, ["Category", "Email", "Confirmed", "Deleted", "Last editor", "Note", "When edited"]);
     foreach my $l (@$bci_data) {
@@ -253,9 +256,17 @@ sub do_council_contacts ($$) {
                 $l->{category}), $l->{email}, $l->{confirmed} ? 'Yes' : 'No',
             $l->{deleted} ? 'Yes' : 'No', $l->{editor}, $l->{note},
             $l->{whenedited} =~ m/^(.+)\.\d+$/,
+	    $q->checkbox(-name => 'confirmed', -checked => $l->{confirmed}, -value => $l->{category}, -label => '')
         ]));
     }
     print $q->end_table();
+    print $q->p(
+        $q->hidden('area_id'),
+        $q->hidden('posted', 'update'),
+        $q->hidden('page', 'councilcontacts'),
+        $q->submit('Update statuses')
+    );
+    print $q->end_form();
 
     # Display form for adding new category
     print $q->h3('Add new category');
@@ -272,9 +283,9 @@ sub do_council_contacts ($$) {
         $q->textarea(-name => "note", -rows => 3, -columns=>40));
     print $q->p(
         $q->hidden('area_id'),
-        $q->hidden('posted', 'true'),
+        $q->hidden('posted', 'new'),
         $q->hidden('page', 'councilcontacts'),
-        $q->submit('Save changes')
+        $q->submit('Create category')
     );
     print $q->end_form();
 
