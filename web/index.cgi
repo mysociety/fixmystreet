@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.100 2007-03-23 14:44:31 matthew Exp $
+# $Id: index.cgi,v 1.101 2007-03-26 13:48:31 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -205,7 +205,7 @@ sub submit_problem {
                 foreach my $c (@valid_councils) {
                     if ($no_details =~ /$c/) {
                         push(@errors, 'We have details for that council');
-			$no_details =~ s/,?$c//;
+                        $no_details =~ s/,?$c//;
                     }
                 }
             }
@@ -217,25 +217,30 @@ sub submit_problem {
         push(@errors, 'You haven\'t specified any sort of co-ordinates. Please try again.');
     }
     
-    return display_form($q, @errors) if (@errors);
-
-    my $id = dbh()->selectrow_array("select nextval('problem_id_seq');");
-
     my $image;
     if ($fh) {
-        $image = Image::Magick->new;
-        $image->Read(file=>$fh);
-        close $fh;
-        $image->Scale(geometry=>"250x250>");
-        my @blobs = $image->ImageToBlob();
-        undef $image;
-        $image = $blobs[0];
+        try {
+            $image = Image::Magick->new;
+            my $err = $image->Read(file=>$fh);
+            close $fh;
+            throw Error::Simple('Read failed') if "$err";
+            $err = $image->Scale(geometry=>"250x250>");
+            throw Error::Simple('Resize failed') if "$err";
+            my @blobs = $image->ImageToBlob();
+            undef $image;
+            $image = $blobs[0];
+        } catch Error::Simple with {
+            push(@errors, "That image doesn't appear to have uploaded correctly, please try again.");
+        };
     }
+
+    return display_form($q, @errors) if (@errors);
 
     delete $input{council} if $input{council} eq '-1';
     my $used_map = $input{skipped} ? 'f' : 't';
     $input{category} = 'Other' unless $input{category};
 
+    my $id = dbh()->selectrow_array("select nextval('problem_id_seq');");
     # This is horrid
     my $s = dbh()->prepare("insert into problem
         (id, postcode, easting, northing, title, detail, name,
