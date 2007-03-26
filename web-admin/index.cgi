@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.18 2007-03-26 16:26:33 matthew Exp $
+# $Id: index.cgi,v 1.19 2007-03-26 16:28:59 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.18 2007-03-26 16:26:33 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.19 2007-03-26 16:28:59 matthew Exp $';
 
 use strict;
 
@@ -345,7 +345,7 @@ sub do_council_edit ($$$) {
     print $q->textarea(-name => "note", -rows => 3, -columns=>40) . " ";
     print $q->br();
     print $q->hidden('area_id');
-    print $q->hidden('posted', 'true');
+    print $q->hidden('posted', 'new');
     print $q->hidden('page');
     print $q->submit('Save changes');
     print $q->end_form();
