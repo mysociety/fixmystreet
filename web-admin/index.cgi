@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.16 2007-03-26 16:14:03 matthew Exp $
+# $Id: index.cgi,v 1.17 2007-03-26 16:22:11 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.16 2007-03-26 16:14:03 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.17 2007-03-26 16:22:11 matthew Exp $';
 
 use strict;
 
@@ -204,7 +204,7 @@ sub do_council_contacts ($$) {
             whenedited = ms_current_timestamp(),
             note = ?
             where area_id = ?
-	    and category = ?
+            and category = ?
             ", {}, 
             $q->param('email'), ($q->param('confirmed') ? 1 : 0),
             ($q->param('deleted') ? 1 : 0),
@@ -225,7 +225,21 @@ sub do_council_contacts ($$) {
         }
         dbh()->commit();
     } elsif ($q->param('posted') eq 'update') {
-        $updated = $q->p($q->em(join('', $q->param('confirmed'))));
+        my @cats = $q->param('confirmed');
+        foreach my $cat (@cats) {
+            my $update = dbh()->do("update contacts set
+                confirmed = 1, editor = ?,
+                whenedited = ms_current_timestamp(),
+                note = 'Confirmed'
+                where area_id = ?
+                and category = ?
+                ", {}, 
+                ($q->remote_user() || "*unknown*"),
+                $area_id, $cat
+            );
+        }
+        $updated = $q->p($q->em("Values updated"));
+        dbh()->commit();
     }
  
     my $bci_data = select_all("select * from contacts where area_id = ? order by category", $area_id);
@@ -248,7 +262,7 @@ sub do_council_contacts ($$) {
 
     print $q->start_form(-method => 'POST', -action => $q->url('relative'=>1));
     print $q->start_table({border=>1});
-    print $q->th({}, ["Category", "Email", "Confirmed", "Deleted", "Last editor", "Note", "When edited"]);
+    print $q->th({}, ["Category", "Email", "Confirmed", "Deleted", "Last editor", "Note", "When edited", 'Confirm']);
     foreach my $l (@$bci_data) {
         print $q->Tr($q->td([
             $q->a({href=>build_url($q, $q->url('relative'=>1),
@@ -256,7 +270,7 @@ sub do_council_contacts ($$) {
                 $l->{category}), $l->{email}, $l->{confirmed} ? 'Yes' : 'No',
             $l->{deleted} ? 'Yes' : 'No', $l->{editor}, $l->{note},
             $l->{whenedited} =~ m/^(.+)\.\d+$/,
-	    $q->checkbox(-name => 'confirmed', -checked => $l->{confirmed}, -value => $l->{category}, -label => '')
+            $q->checkbox(-name => 'confirmed', -checked => $l->{confirmed}, -value => $l->{category}, -label => '')
         ]));
     }
     print $q->end_table();
