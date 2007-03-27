@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.102 2007-03-27 21:33:36 matthew Exp $
+# $Id: index.cgi,v 1.103 2007-03-27 21:44:27 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -221,11 +221,11 @@ sub submit_problem {
     if ($fh) {
         try {
             $image = Image::Magick->new;
-            my $err = $image->Read(file=>$fh);
+            my $err = $image->Read(file => \*$fh); # Mustn't be stringified
             close $fh;
-            throw Error::Simple('read failed') if "$err";
-            $err = $image->Scale(geometry=>"250x250>");
-            throw Error::Simple('resize failed') if "$err";
+            throw Error::Simple("read failed: $err") if "$err";
+            $err = $image->Scale(geometry => "250x250>");
+            throw Error::Simple("resize failed: $err") if "$err";
             my @blobs = $image->ImageToBlob();
             undef $image;
             $image = $blobs[0];
