@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.11 2007-03-23 14:44:31 matthew Exp $
+# $Id: contact.cgi,v 1.12 2007-03-27 17:43:25 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -94,7 +94,7 @@ sub contact_page {
     $out .= '<form method="post">';
 
     my $id = $q->param('id');
-    $id = undef unless $id =~ /^[1-9]\d*$/;
+    $id = undef unless $id && $id =~ /^[1-9]\d*$/;
     if ($id) {
         mySociety::DBHandle::configure(
             Name => mySociety::Config::get('BCI_DB_NAME'),
