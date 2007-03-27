@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.21 2007-03-27 14:50:07 matthew Exp $
+# $Id: index.cgi,v 1.22 2007-03-27 14:54:33 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.21 2007-03-27 14:50:07 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.22 2007-03-27 14:54:33 matthew Exp $';
 
 use strict;
 
@@ -235,26 +235,30 @@ sub do_council_contacts ($$) {
             my $confirmed = $l->{confirmed};
             if ($cats{$cat} && !$confirmed) {
                 $l->{confirmed} = 1;
+                $l->{note} = 'Confirmed';
+                $l->{editor} = $q->remote_user() || "*unknown*";
+                $l->{whenedited} = 'Now';
                 dbh()->do("update contacts set
                     confirmed = 't', editor = ?,
                     whenedited = ms_current_timestamp(),
                     note = 'Confirmed'
                     where area_id = ?
                     and category = ?
-                    ", {}, 
-                    ($q->remote_user() || "*unknown*"),
+                    ", {}, $l->{editor},
                     $area_id, $cat
                 );
             } elsif (!$cats{$cat} && $confirmed) {
                 $l->{confirmed} = undef;
+                $l->{note} = 'Unconfirmed';
+                $l->{editor} = $q->remote_user() || "*unknown*";
+                $l->{whenedited} = 'Now';
                 dbh()->do("update contacts set
                     confirmed = 'f', editor = ?,
                     whenedited = ms_current_timestamp(),
                     note = 'Unconfirmed'
                     where area_id = ?
                     and category = ?
-                    ", {}, 
-                    ($q->remote_user() || "*unknown*"),
+                    ", {},  $l->{editor},
                     $area_id, $cat
                 );
             }
