@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.38 2007-03-23 14:44:31 matthew Exp $
+# $Id: Page.pm,v 1.39 2007-03-30 12:03:36 matthew Exp $
 #
 
 package Page;
@@ -110,9 +110,8 @@ sub footer {
 <li><a href="/contact">Contact</a></li>
 </ul>
 
-<p id="footer">Built by <a href="http://www.mysociety.org/">mySociety</a>.
-Using lots of <a href="http://www.ordnancesurvey.co.uk/">Ordnance Survey</a> data, under licence,
-and some <a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/bci">clever</a> <a
+<p id="footer">Built by <a href="http://www.mysociety.org/">mySociety</a>,
+using some <a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/bci">clever</a> <a
 href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.</p>
 
 </body>
