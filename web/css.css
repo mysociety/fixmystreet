@@ -194,15 +194,24 @@ fieldset div.checkbox label, label.n {
 
 /* Map */
 
+#map_box {
+    float:right;
+    width: 510px;
+}
+
+#map_box p {
+    float: right;
+    margin: 0 0 1em 0;
+    font-size: 78%;
+}
+
 #map {
     border: solid 1px #000000;
     width: 508px;
     height: 508px;
     overflow: hidden;
-    float: right;
     position: relative;
     background-color: #f1f1f1;
-    margin-bottom: 1em;
 }
 
 #drag {

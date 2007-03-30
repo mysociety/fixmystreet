@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.103 2007-03-27 21:44:27 matthew Exp $
+# $Id: index.cgi,v 1.104 2007-03-30 11:59:52 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -487,11 +487,11 @@ sub display_location {
     }
     my $skipurl = NewURL($q, 'submit_map'=>1, skipped=>1);
     $out .= <<EOF;
-<p style="font-size:83%">If you cannot see a map &ndash; if you have images turned off,
+<p><small>If you cannot see a map &ndash; if you have images turned off,
 or are using a text only browser, for example &ndash; and you
 wish to report a problem, please
 <a href="$skipurl">skip this step</a> and we will ask you
-to describe the location of your problem instead.</p>
+to describe the location of your problem instead.</small></p>
 EOF
     $out .= <<EOF;
 <div>
@@ -771,10 +771,14 @@ EOF
 var x = $x - 2; var y = $y - 2;
 var drag_x = 0; var drag_y = 0;
 </script>
+<div id="map_box">
     <div id="map"><div id="drag">
         $img_type alt="NW map tile" id="t2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0px;">$img_type alt="NE map tile" id="t2.3" name="tile_$tr" src="$tr_src" style="top:0px; left:$imgw;"><br>$img_type alt="SW map tile" id="t3.2" name="tile_$bl" src="$bl_src" style="top:$imgh; left:0px;">$img_type alt="SE map tile" id="t3.3" name="tile_$br" src="$br_src" style="top:$imgh; left:$imgw;">
         $pins
     </div></div>
+    <p>&copy; Crown copyright.  All rights reserved.
+    Department for Constitutional Affairs 1000378819&nbsp;2007</p>
+    </div>
 EOF
     $out .= Page::compass($q, $x, $y) if $compass;
     $out .= '<div id="side">';

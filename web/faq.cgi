@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.11 2007-03-22 19:45:56 matthew Exp $
+# $Id: faq.cgi,v 1.12 2007-03-30 11:59:52 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -130,8 +130,10 @@ and
 Tom Steinberg.
 
 Thanks also to
-<a href="http://www.ordnancesurvey.co.uk">Ordnance Survey</a> (for the maps and UK postcodes),
-Yahoo! for their JavaScript libraries, 
+<a href="http://www.ordnancesurvey.co.uk">Ordnance Survey</a> (for the maps, UK postcodes, and
+UK addresses &ndash; data &copy; Crown copyright, all rights reserved, Department for
+Constitutional Affairs 1000378819&nbsp;2007),
+Yahoo! for their BSD-licensed JavaScript libraries, 
 the entire free software community (this particular project was brought to you by
 Perl, PostgreSQL, and the number 161.290) and
 <a href="http://www.easynet.net/publicsector/">Easynet</a> (who kindly host all
