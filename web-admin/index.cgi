@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.22 2007-03-27 14:54:33 matthew Exp $
+# $Id: index.cgi,v 1.23 2007-04-03 16:29:34 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.22 2007-03-27 14:54:33 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.23 2007-04-03 16:29:34 matthew Exp $';
 
 use strict;
 
@@ -192,9 +192,6 @@ sub do_councils_list ($) {
 sub do_council_contacts ($$) {
     my ($q, $area_id) = @_;
 
-    my $bci_data = select_all("select * from contacts where area_id = ? order by category", $area_id);
-    my $mapit_data = mySociety::MaPit::get_voting_area_info($area_id);
-
     # Submit form
     my $updated = '';
     if ($q->param('posted') eq 'new') {
@@ -229,44 +226,25 @@ sub do_council_contacts ($$) {
         dbh()->commit();
     } elsif ($q->param('posted') eq 'update') {
         my @cats = $q->param('confirmed');
-        my %cats = map { $_ => 1 } @cats;
-        foreach my $l (@$bci_data) {
-            my $cat = $l->{category};
-            my $confirmed = $l->{confirmed};
-            if ($cats{$cat} && !$confirmed) {
-                $l->{confirmed} = 1;
-                $l->{note} = 'Confirmed';
-                $l->{editor} = $q->remote_user() || "*unknown*";
-                $l->{whenedited} = 'Now';
-                dbh()->do("update contacts set
-                    confirmed = 't', editor = ?,
-                    whenedited = ms_current_timestamp(),
-                    note = 'Confirmed'
-                    where area_id = ?
-                    and category = ?
-                    ", {}, $l->{editor},
-                    $area_id, $cat
-                );
-            } elsif (!$cats{$cat} && $confirmed) {
-                $l->{confirmed} = undef;
-                $l->{note} = 'Unconfirmed';
-                $l->{editor} = $q->remote_user() || "*unknown*";
-                $l->{whenedited} = 'Now';
-                dbh()->do("update contacts set
-                    confirmed = 'f', editor = ?,
-                    whenedited = ms_current_timestamp(),
-                    note = 'Unconfirmed'
-                    where area_id = ?
-                    and category = ?
-                    ", {},  $l->{editor},
-                    $area_id, $cat
-                );
-            }
+        foreach my $cat (@cats) {
+            dbh()->do("update contacts set
+                confirmed = 't', editor = ?,
+                whenedited = ms_current_timestamp(),
+                note = 'Confirmed'
+                where area_id = ?
+                and category = ?
+                ", {},
+                ($q->remote_user() || "*unknown*"),
+                $area_id, $cat
+            );
         }
         $updated = $q->p($q->em("Values updated"));
         dbh()->commit();
     }
  
+    my $bci_data = select_all("select * from contacts where area_id = ? order by category", $area_id);
+    my $mapit_data = mySociety::MaPit::get_voting_area_info($area_id);
+
     # Title
     my $title = 'Council contacts for ' . $mapit_data->{name};
     print html_head($q, $title);
