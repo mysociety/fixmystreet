@@ -10,7 +10,7 @@
  */
 
 YAHOO.util.Event.onContentReady('pc', function() {
-    if (this.value != this.defaultValue) {
+    if (this.value == this.defaultValue) {
         this.focus();
     }
 });
