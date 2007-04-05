@@ -9,6 +9,12 @@
  * 
  */
 
+YAHOO.util.Event.onContentReady('pc', function() {
+    if (this.value != this.defaultValue) {
+        this.focus();
+    }
+});
+
 function compass_pan(e, a) {
     YAHOO.util.Event.preventDefault(e);
     pan(a.x, a.y);
