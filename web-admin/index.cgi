@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.23 2007-04-03 16:29:34 matthew Exp $
+# $Id: index.cgi,v 1.24 2007-04-06 14:12:58 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.23 2007-04-03 16:29:34 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.24 2007-04-06 14:12:58 matthew Exp $';
 
 use strict;
 
@@ -241,7 +241,8 @@ sub do_council_contacts ($$) {
         $updated = $q->p($q->em("Values updated"));
         dbh()->commit();
     }
- 
+    $q->delete_all(); # No need for state!
+
     my $bci_data = select_all("select * from contacts where area_id = ? order by category", $area_id);
     my $mapit_data = mySociety::MaPit::get_voting_area_info($area_id);
 
@@ -275,12 +276,10 @@ sub do_council_contacts ($$) {
     }
     print $q->end_table();
     # XXX
-    $q->param('page', 'councilcontacts');
-    $q->param('posted', 'update');
     print $q->p(
-        $q->hidden('area_id'),
-        $q->hidden('posted'),
-        $q->hidden('page'),
+        $q->hidden('area_id', $area_id),
+        $q->hidden('posted', 'update'),
+        $q->hidden('page', 'councilcontacts'),
         $q->submit('Update statuses')
     );
     print $q->end_form();
