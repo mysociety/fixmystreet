@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.104 2007-03-30 11:59:52 matthew Exp $
+# $Id: index.cgi,v 1.105 2007-04-10 11:42:59 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -417,7 +417,7 @@ describe the location as precisely as possible in the details box.');
     } elsif ($details ne 'none') {
         $out .= $q->p('Please fill in details of the problem below. The council won\'t be able
 to help unless you leave as much detail as you can, so please describe the
-exact location of the problem (ie. on a wall or the floor), and so on.');
+exact location of the problem (e.g. on a wall or the floor), and so on.');
     } else {
         $out .= $q->p('Please fill in details of the problem below.');
     }
