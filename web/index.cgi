@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.106 2007-04-10 13:50:51 matthew Exp $
+# $Id: index.cgi,v 1.107 2007-04-10 13:53:54 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -860,8 +860,7 @@ sub geocode_string {
     } elsif ($js =~ /suggest noprint/ && $js =~ /We could not understand/) {
         $error = $1;
     } elsif ($js =~ /suggest noprint/) {
-        my $refine = $1;
-        while ($refine =~ /<div class=\\042ref\\042><a href=\\042\/maps\?q=(.*?)&.*?>(.*?)<\/a><\/div>/g) {
+        while ($js =~ /<div class=\\042ref\\042><a href=\\042\/maps\?q=(.*?)&.*?>(.*?)<\/a><\/div>/g) {
             push (@$error, [ $1, $2 ]);
         }
         $error = 'We could not understand that location.' unless $error;
