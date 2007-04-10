@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.105 2007-04-10 11:42:59 matthew Exp $
+# $Id: index.cgi,v 1.106 2007-04-10 13:50:51 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -857,9 +857,9 @@ sub geocode_string {
     }
     if (!$js) {
         $error = 'Sorry, we had a problem parsing that location. Please try again.';
-    } elsif ($js =~ /panel: '(.*?)'/ && $js =~ /We could not understand/) {
+    } elsif ($js =~ /suggest noprint/ && $js =~ /We could not understand/) {
         $error = $1;
-    } elsif ($js =~ /panel: '(.*?)'/) {
+    } elsif ($js =~ /suggest noprint/) {
         my $refine = $1;
         while ($refine =~ /<div class=\\042ref\\042><a href=\\042\/maps\?q=(.*?)&.*?>(.*?)<\/a><\/div>/g) {
             push (@$error, [ $1, $2 ]);
