@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.30 2007-03-26 17:00:12 matthew Exp $
+# $Id: send-reports,v 1.31 2007-04-11 19:40:01 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -129,7 +129,7 @@ If you know of an appropriate contact address, please do get in touch. ]\n\n";
     }
 }
 
-print "Council email addresses that need checking:\n";
+print "Council email addresses that need checking:\n" if keys %notgot;
 foreach my $e (keys %notgot) {
     foreach my $c (keys %{$notgot{$e}}) {
         print $notgot{$e}{$c} . " problem, to $e category $c (" . $note{$e}{$c}. ")\n";
