@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.39 2007-03-30 12:03:36 matthew Exp $
+# $Id: Page.pm,v 1.40 2007-04-11 10:34:48 matthew Exp $
 #
 
 package Page;
@@ -18,8 +18,7 @@ use Error qw(:try);
 use File::Slurp;
 use POSIX qw(strftime);
 use mySociety::Config;
-use mySociety::Email;
-use mySociety::Util;
+use mySociety::EvEl;
 use mySociety::WatchUpdate;
 use mySociety::Web qw(ent NewURL);
 BEGIN {
@@ -165,17 +164,15 @@ sub send_email {
     my $template = "$thing-confirm";
     $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/$template");
     my $to = $name ? [[$email, $name]] : $email;
-    my $message = mySociety::Email::construct_email({
+    mySociety::EvEl::send({
         _template_ => $template,
         _parameters_ => \%h,
         From => [mySociety::Config::get('CONTACT_EMAIL'), 'Neighbourhood Fix-It'],
         To => $to,
-    });
-    my $result = mySociety::Util::send_email($message, mySociety::Config::get('CONTACT_EMAIL'), $email);
+    }, $email);
     my $out;
     my $action = ($thing eq 'alert') ? 'confirmed' : 'posted';
-    if ($result == mySociety::Util::EMAIL_SUCCESS) {
-        $out = <<EOF;
+    $out = <<EOF;
 <h1>Nearly Done! Now check your email...</h1>
 <p>The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.</p>
 <p>If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.</p>
@@ -183,11 +180,6 @@ sub send_email {
 if you do not, your $thing will not be $action.</p>
 <p>(Don't worry &mdash; we'll hang on to your $thing while you're checking your email.)</p>
 EOF
-    } else {
-        $out = <<EOF;
-<p>I'm afraid something went wrong when we tried to send you a confirmation email for your $thing. Please click Back, check your details, and try again.</p>
-EOF
-    }
     return $out;
 }
 

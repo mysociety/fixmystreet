@@ -14,7 +14,7 @@
  * Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: general-example,v 1.9 2007-03-19 10:03:25 matthew Exp $
+ * $Id: general-example,v 1.10 2007-04-11 10:34:48 matthew Exp $
  * 
  */
 
@@ -40,6 +40,7 @@ define('OPTION_GEO_CACHE', '/cache/');
 
 define('OPTION_MAPIT_URL', 'http://services.mysociety.org/mapit');
 define('OPTION_TILES_URL', 'http://tilma.mysociety.org/tileserver/10k-full-london');
+define('OPTION_EVEL_URL', 'http://services.mysociety.org/evel');
 
 define('OPTION_SMTP_SMARTHOST', 'localhost');
 
