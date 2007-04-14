@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.108 2007-04-14 12:52:53 matthew Exp $
+# $Id: index.cgi,v 1.109 2007-04-14 15:49:43 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -631,10 +631,10 @@ EOF
     my $reopen = ($input{reopen}) ? ' checked' : '';
     my $fixedline = $state eq 'fixed' ? qq{
 <div class="checkbox"><input type="checkbox" name="reopen" id="form_reopen" value="1"$reopen>
-<label for="form_reopen">Is this problem still present?</label></div>
+<label for="form_reopen">This problem is still present</label></div>
 } : qq{
 <div class="checkbox"><input type="checkbox" name="fixed" id="form_fixed" value="1"$fixed>
-<label for="form_fixed">Has the problem been fixed?</label></div>
+<label for="form_fixed">This problem has been fixed</label></div>
 };
     $out .= <<EOF;
 <form method="post" action="./">
