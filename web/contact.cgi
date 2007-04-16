@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.12 2007-03-27 17:43:25 matthew Exp $
+# $Id: contact.cgi,v 1.13 2007-04-16 10:49:22 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -119,6 +119,10 @@ sub contact_page {
         $out .= '<input type="hidden" name="id" value="' . $id . '">';
     } else {
         $out .= <<EOF;
+<p>Do <strong>not</strong> report problems through this form; messages go to
+the team behind Neighbourhood Fix-It, not a council. To report a problem,
+please <a href="/">go to the front page</a> and follow the instructions.</p>
+
 <p>We'd love to hear what you think about this site. Just fill in the form:</p>
 EOF
     }
