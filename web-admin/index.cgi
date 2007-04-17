@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.26 2007-04-17 18:33:51 matthew Exp $
+# $Id: index.cgi,v 1.27 2007-04-17 21:36:48 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.26 2007-04-17 18:33:51 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.27 2007-04-17 21:36:48 matthew Exp $';
 
 use strict;
 
@@ -193,12 +193,12 @@ sub do_councils_list ($) {
 
     print $q->h3('No info at all');
     print &$list_part(grep { !$bci_info->{$_} } @councils_ids);
-    print $q->h3('Currently deleted');
-    print &$list_part(grep { $bci_info->{$_}->{deleted} == $bci_info->{$_}->{c} } @councils_ids);
+    print $q->h3('Currently has 1+ deleted');
+    print &$list_part(grep { $bci_info->{$_} && $bci_info->{$_}->{deleted} } @councils_ids);
     print $q->h3('Some unconfirmeds');
-    print &$list_part(grep { $bci_info->{$_}->{confirmed} != $bci_info->{$_}->{c} } @councils_ids);
+    print &$list_part(grep { $bci_info->{$_} && !$bci_info->{$_}->{deleted} && $bci_info->{$_}->{confirmed} != $bci_info->{$_}->{c} } @councils_ids);
     print $q->h3('All confirmed');
-    print &$list_part(grep { $bci_info->{$_}->{confirmed} == $bci_info->{$_}->{c} } @councils_ids);
+    print &$list_part(grep { $bci_info->{$_} && !$bci_info->{$_}->{deleted} && $bci_info->{$_}->{confirmed} == $bci_info->{$_}->{c} } @councils_ids);
     print html_tail($q);
 }
 
