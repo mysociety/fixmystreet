@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.25 2007-04-11 10:46:29 matthew Exp $
+# $Id: index.cgi,v 1.26 2007-04-17 18:33:51 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.25 2007-04-11 10:46:29 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.26 2007-04-17 18:33:51 matthew Exp $';
 
 use strict;
 
@@ -154,17 +154,17 @@ sub do_councils_list ($) {
     my ($q) = @_;
 
     print html_head($q, "Council contacts");
-    print $q->h2("Council contacts");
+    print $q->h1("Council contacts");
 
     # Table of editors
-    print $q->h3("Diligency prize league table");
+    print $q->h2("Diligency prize league table");
     my $edit_activity = dbh()->selectall_arrayref("select count(*) as c, editor from contacts_history group by editor order by c desc");
     print $q->p(join($q->br(), 
         map { $_->[0] . " edits by " . $_->[1] } @$edit_activity 
     ));
 
     # Table of councils
-    print $q->h3("Councils");
+    print $q->h2("Councils");
     my @councils;
     foreach my $type (@$mySociety::VotingArea::council_parent_types) {
         my $areas = mySociety::MaPit::get_areas_by_type($type);
@@ -173,18 +173,32 @@ sub do_councils_list ($) {
     my $councils = mySociety::MaPit::get_voting_areas_info(\@councils);
     my @councils_ids = keys %$councils;
     @councils_ids = sort { canonicalise_council($councils->{$a}->{name}) cmp canonicalise_council($councils->{$b}->{name}) } @councils_ids;
-    my $bci_info = dbh()->selectall_hashref("select area_id, max(email) as email, count(*) as c from contacts group by area_id", 'area_id');
-    print $q->p(join($q->br(), 
-        map { 
-            $q->a({href=>build_url($q, $q->url('relative'=>1), 
-              {'area_id' => $_, 'page' => 'councilcontacts',})}, 
-              canonicalise_council($councils->{$_}->{name})) . " " .
-                ($bci_info->{$_} ?
-                    ($bci_info->{$_}->{c} > 1 ? $bci_info->{$_}->{c} . ' addresses'
-                    : "1 address (" . $bci_info->{$_}->{email} . ")")
-                : $q->strong('no info at all') )
-        } @councils_ids));
+    my $bci_info = dbh()->selectall_hashref("
+        select area_id, count(*) as c, count(case when deleted then 1 else null end) as deleted,
+	    count(case when confirmed then 1 else null end) as confirmed
+        from contacts group by area_id", 'area_id');
 
+    my $list_part = sub {
+        my @ids = @_;
+        print $q->p(join($q->br(), 
+            map { 
+                $q->a({href=>build_url($q, $q->url('relative'=>1), 
+                  {'area_id' => $_, 'page' => 'councilcontacts',})}, 
+                  canonicalise_council($councils->{$_}->{name})) . " " .
+                    ($bci_info->{$_} ?
+                        $bci_info->{$_}->{c} . ' addresses'
+                    : '')
+            } @ids));
+    };
+
+    print $q->h3('No info at all');
+    print &$list_part(grep { !$bci_info->{$_} } @councils_ids);
+    print $q->h3('Currently deleted');
+    print &$list_part(grep { $bci_info->{$_}->{deleted} == $bci_info->{$_}->{c} } @councils_ids);
+    print $q->h3('Some unconfirmeds');
+    print &$list_part(grep { $bci_info->{$_}->{confirmed} != $bci_info->{$_}->{c} } @councils_ids);
+    print $q->h3('All confirmed');
+    print &$list_part(grep { $bci_info->{$_}->{confirmed} == $bci_info->{$_}->{c} } @councils_ids);
     print html_tail($q);
 }
 
