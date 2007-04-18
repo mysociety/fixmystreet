@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.109 2007-04-14 15:49:43 matthew Exp $
+# $Id: index.cgi,v 1.110 2007-04-18 09:26:08 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -778,7 +778,7 @@ var drag_x = 0; var drag_y = 0;
         $pins
     </div></div>
     <p>&copy; Crown copyright.  All rights reserved.
-    Department for Constitutional Affairs 1000378819&nbsp;2007</p>
+    Department for Constitutional Affairs 100037819&nbsp;2007</p>
     </div>
 EOF
     $out .= Page::compass($q, $x, $y) if $compass;
