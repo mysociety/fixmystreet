@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.110 2007-04-18 09:26:08 matthew Exp $
+# $Id: index.cgi,v 1.111 2007-04-19 11:44:17 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -609,7 +609,7 @@ EOF
     my $updates = select_all(
         "select id, name, extract(epoch from created) as created, text, mark_fixed, mark_open
          from comment where problem_id = ? and state='confirmed'
-         order by created desc", $input{id});
+         order by created", $input{id});
     if (@$updates) {
         $out .= '<div id="updates">';
         $out .= '<h2>Updates</h2>';
