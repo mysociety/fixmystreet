@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.27 2007-04-17 21:36:48 matthew Exp $
+# $Id: index.cgi,v 1.28 2007-04-19 12:08:54 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.27 2007-04-17 21:36:48 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.28 2007-04-19 12:08:54 matthew Exp $';
 
 use strict;
 
@@ -311,11 +311,10 @@ sub do_council_contacts ($$) {
     );
     print $q->p($q->strong("Note: "),
         $q->textarea(-name => "note", -rows => 3, -columns=>40));
-    $q->param('posted', 'new');
     print $q->p(
-        $q->hidden('area_id'),
-        $q->hidden('posted'),
-        $q->hidden('page'),
+        $q->hidden('area_id', $area_id),
+        $q->hidden('posted', 'new'),
+        $q->hidden('page', 'councilcontacts'),
         $q->submit('Create category')
     );
     print $q->end_form();

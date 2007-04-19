@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.31 2007-04-11 19:40:01 matthew Exp $
+# $Id: send-reports,v 1.32 2007-04-19 12:08:53 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -60,7 +60,6 @@ foreach my $row (@$unsent) {
         my ($council_email, $confirmed, $note) = dbh()->selectrow_array(
             "SELECT email,confirmed,note FROM contacts WHERE deleted='f'
                 and area_id=? AND category=?", {}, $council, $row->{category});
-        next unless $council_email; # Ignore missing councils, or non-responsible councils
         unless ($confirmed) {
             $all_confirmed = 0;
             $notgot{$council_email}{$row->{category}}++;
