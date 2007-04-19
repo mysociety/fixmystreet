@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.1 2007-04-19 11:44:17 matthew Exp $
+# $Id: report.cgi,v 1.2 2007-04-19 11:49:54 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -40,6 +40,7 @@ sub main {
     my $problem = select_all(
         "select id, title, detail, council, state from problem
         where state in ('confirmed', 'fixed') and council is not null
+	order by council, created
     ");
     foreach my $row (@$problem) {
         my $council = $row->{council};
