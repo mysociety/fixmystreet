@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.3 2007-04-19 11:52:07 matthew Exp $
+# $Id: report.cgi,v 1.4 2007-04-19 12:44:44 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -39,7 +39,7 @@ sub main {
     my %out;
     my $problem = select_all(
         "select id, title, detail, council, state from problem
-        where state in ('confirmed', 'fixed') and council is not null
+        where state in ('confirmed', 'fixed') and whensent is not null
 	order by id
     ");
     foreach my $row (@$problem) {
