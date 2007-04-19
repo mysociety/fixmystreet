@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.32 2007-04-19 12:08:53 matthew Exp $
+# $Id: send-reports,v 1.33 2007-04-19 14:35:41 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -36,9 +36,12 @@ BEGIN {
 
 use mySociety::Dress;
 
-die "No arguments or specify --nomail" if (@ARGV>1);
+die "Either no arguments, --nomail or --verbose" if (@ARGV>1);
 my $nomail = 0;
+my $verbose = 0;
 $nomail = 1 if (@ARGV==1 && $ARGV[0] eq '--nomail');
+$verbose = 1 if (@ARGV==1 && $ARGV[0] eq '--verbose');
+$verbose = 1 if $nomail;
 
 my (%notgot, %note);
 my $unsent = dbh()->selectall_arrayref(
@@ -71,8 +74,10 @@ foreach my $row (@$unsent) {
     }
     my @recips = keys %recips;
     if (!@to) {
-        print 'Need to send problem #' . $row->{id} . ' to council(s) ' . join(',',@recips) . "\n";
-        print "  ...but we have no contact details for any of them!\n";
+        if ($verbose) {
+            print 'Need to send problem #' . $row->{id} . ' to council(s) ' . join(',',@recips) . "\n";
+            print "  ...but we have no contact details for any of them!\n";
+        }
         next;
     }
     next unless ($all_confirmed);
@@ -128,9 +133,11 @@ If you know of an appropriate contact address, please do get in touch. ]\n\n";
     }
 }
 
-print "Council email addresses that need checking:\n" if keys %notgot;
-foreach my $e (keys %notgot) {
-    foreach my $c (keys %{$notgot{$e}}) {
-        print $notgot{$e}{$c} . " problem, to $e category $c (" . $note{$e}{$c}. ")\n";
+if ($verbose) {
+    print "Council email addresses that need checking:\n" if keys %notgot;
+    foreach my $e (keys %notgot) {
+        foreach my $c (keys %{$notgot{$e}}) {
+            print $notgot{$e}{$c} . " problem, to $e category $c (" . $note{$e}{$c}. ")\n";
+        }
     }
 }

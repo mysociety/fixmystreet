@@ -4,7 +4,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
 #
-# $Id: crontab.ugly,v 1.4 2007-03-08 11:37:42 matthew Exp $
+# $Id: crontab.ugly,v 1.5 2007-04-19 14:35:44 matthew Exp $
 
 PATH=/usr/local/bin:/usr/bin:/bin
 !!(* if ($vhost eq "matthew.bci.mysociety.org") { *)!!
@@ -13,6 +13,7 @@ MAILTO=matthew@mysociety.org
 MAILTO=team@neighbourhoodfixit.com
 !!(* } *)!!
 
-30 6-23 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-reports || echo "stalled?"
+*/5 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-reports || echo "stalled?"
+3 5 * * * !!(*= $user *)!! run-with-lockfile -n "/data/vhost/!!(*= $vhost *)!!/send-reports.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-reports --verbose" || echo "stalled?"
 2 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-alerts.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-alerts || echo "stalled?"
 
