@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.2 2007-04-19 11:49:54 matthew Exp $
+# $Id: report.cgi,v 1.3 2007-04-19 11:52:07 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -40,7 +40,7 @@ sub main {
     my $problem = select_all(
         "select id, title, detail, council, state from problem
         where state in ('confirmed', 'fixed') and council is not null
-	order by council, created
+	order by id
     ");
     foreach my $row (@$problem) {
         my $council = $row->{council};
@@ -50,12 +50,12 @@ sub main {
             push @{$out{$_}{$row->{state}}}, [ $row->{id}, $row->{title}, $row->{detail} ];
         }
     }
-    my $a = mySociety::MaPit::get_voting_areas_info([keys %out]);
+    my $areas_info = mySociety::MaPit::get_voting_areas_info([keys %out]);
     print Page::header($q, 'Summary reports');
     print $q->p('This page currently simply shows a summary of all reports on this site.
 In the future, we hope to increase the functionality of this section.');
-    foreach (keys %out) {
-        print '<h2>' . $a->{$_}->{name} . "</h2>\n";
+    foreach (sort { $areas_info->{$a}->{name} cmp $areas_info->{$b}->{name} } keys %out) {
+        print '<h2>' . $areas_info->{$_}->{name} . "</h2>\n";
 	list_problems('Problems', $out{$_}{confirmed}, $all) if $out{$_}{confirmed};
         list_problems('Fixed', $out{$_}{fixed}, $all) if $out{$_}{fixed};
     }
