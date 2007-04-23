@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.13 2007-04-18 09:26:08 matthew Exp $
+# $Id: faq.cgi,v 1.14 2007-04-23 17:00:33 francis Exp $
 
 use strict;
 require 5.8.0;
@@ -42,16 +42,34 @@ It launched in beta early February 2007.</dd>
 path; anything like that that could be usefully reported to your council
 to be fixed.</dd>
 
-<dt>How does it work?</dt>
-<dd>After entering a postcode or location, users are presented with a map of that
-area. They can view problems already reported in that area, or report
-ones of their own simply by clicking on the map at the location of the
+<dt>How do I use the site?</dt>
+<dd>After entering a postcode or location, you are presented with a map of that
+area. You can view problems already reported in that area, or report
+ones of your own simply by clicking on the map at the location of the
 problem.</dd>
+
+<dt>How are the problems solved?</dt>
+<dd>They are reported to the relevant council by email. The council can
+then resolve the problem the way they normally would. Alternatively, you 
+can discuss the problem on the website with others, and then together lobby
+the council to fix it, or fix it directly yourselves.
+</dd>
 
 <dt>Is it free?</dt>
 <dd>The site is free to use, yes. Neighbourhood Fix-It
 is run by a registered charity, though, so if you want to make
 a contribution, <a href="https://secure.mysociety.org/donate/">please do</a>.</dd>
+
+</dl>
+
+<h2>Practical Questions</h2>
+<dl>
+
+<dt>I'm from a council, where do you send the reports?</dt>
+<dd>You can either leave a test report or <a href="/contact">contact us</a>
+to find out where reports go at the moment. Also <a href="contact">contact us</a>
+to update the address.
+</dd>
 
 <dt>Do you remove silly or illegal content?</dt>
 <dd>We reserve the right to remove any problems or updates which we
@@ -64,6 +82,7 @@ is when reporting a problem. It's fixed in the latest nightly build of Safari, s
 will presumably be fixed in the next release. Until then, I've sadly had to disable
 dragging to avoid people dragging an empty square.
 </dd>
+
 
 </dl>
 
