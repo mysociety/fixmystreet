@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.13 2007-04-16 10:49:22 matthew Exp $
+# $Id: contact.cgi,v 1.14 2007-04-23 17:02:02 francis Exp $
 
 use strict;
 require 5.8.0;
@@ -136,7 +136,7 @@ EOF
 <div><label for="form_subject">Subject:</label>
 <input type="text" name="subject" id="form_subject" value="$input_h{subject}" size="30"></div>
 <div><label for="form_message">Message:</label>
-<textarea name="message" id="form_message" rows="7" cols="30">$input_h{message}</textarea></div>
+<textarea name="message" id="form_message" rows="7" cols="60">$input_h{message}</textarea></div>
 <div class="checkbox"><input type="submit" value="Post"></div>
 </fieldset>
 </form>
