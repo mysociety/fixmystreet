@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.23 2007-03-21 13:59:47 matthew Exp $
+-- $Id: schema.sql,v 1.24 2007-04-23 17:44:15 francis Exp $
 --
 
 -- secret
@@ -101,9 +101,7 @@ create table contacts_history (
 );
 
 -- Create a trigger to update the contacts history on any update
--- to the contacts table. This should cover manual edits only; anything else
--- (signers, comments, ...) should be covered by pledge_last_change_time or by
--- the individual implementing functions.
+-- to the contacts table. 
 create function contacts_updated()
     returns trigger as '
     begin
