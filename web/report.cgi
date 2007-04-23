@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.4 2007-04-19 12:44:44 matthew Exp $
+# $Id: report.cgi,v 1.5 2007-04-23 18:15:40 francis Exp $
 
 use strict;
 require 5.8.0;
@@ -20,7 +20,7 @@ use Page;
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh select_all);
 use mySociety::MaPit;
-use mySociety::Web qw(ent);
+use mySociety::Web qw(ent NewURL);
 
 BEGIN {
     mySociety::Config::set_file("$FindBin::Bin/../conf/general");
@@ -36,12 +36,20 @@ BEGIN {
 sub main {
     my $q = shift;
     my $all = $q->param('all') || 0;
+    my $one_council = $q->param('council');
+    my @params;
+    my $where_extra;
+    if ($one_council) {
+        push @params, $one_council;
+        $where_extra = "and council = ?";
+    }
     my %out;
     my $problem = select_all(
         "select id, title, detail, council, state from problem
         where state in ('confirmed', 'fixed') and whensent is not null
-	order by id
-    ");
+        $where_extra
+        order by id
+    ", @params);
     foreach my $row (@$problem) {
         my $council = $row->{council};
         $council =~ s/\|.*//;
@@ -52,11 +60,19 @@ sub main {
     }
     my $areas_info = mySociety::MaPit::get_voting_areas_info([keys %out]);
     print Page::header($q, 'Summary reports');
-    print $q->p('This page currently simply shows a summary of all reports on this site.
-In the future, we hope to increase the functionality of this section.');
+    if (!$one_council) {
+        print $q->p('This is a summary of all reports on this site, select \'show only\' to see the reports for just one council..');
+    } else {
+        print $q->p('This is a summary of all reports for one council.',
+            $q->a({href => NewURL($q, 'council'=>undef) }, 'Show all councils.'));
+    }
     foreach (sort { $areas_info->{$a}->{name} cmp $areas_info->{$b}->{name} } keys %out) {
-        print '<h2>' . $areas_info->{$_}->{name} . "</h2>\n";
-	list_problems('Problems', $out{$_}{confirmed}, $all) if $out{$_}{confirmed};
+        print '<h2>' . $areas_info->{$_}->{name};
+        if (!$one_council) {
+            print ' ' . $q->small('('.$q->a({href => NewURL($q, 'council'=>$_) }, 'show only').')');
+        }
+        print "</h2>\n";
+        list_problems('Problems', $out{$_}{confirmed}, $all) if $out{$_}{confirmed};
         list_problems('Fixed', $out{$_}{fixed}, $all) if $out{$_}{fixed};
     }
     print Page::footer();
