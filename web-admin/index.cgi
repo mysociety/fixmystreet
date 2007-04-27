@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.28 2007-04-19 12:08:54 matthew Exp $
+# $Id: index.cgi,v 1.29 2007-04-27 17:44:38 francis Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.28 2007-04-19 12:08:54 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.29 2007-04-27 17:44:38 francis Exp $';
 
 use strict;
 
@@ -266,15 +266,20 @@ sub do_council_contacts ($$) {
     print $q->h2($title);
     print $updated;
 
-    # Example postcode
+    # Example postcode, link to list of problem reports
+    my $links_html;
     my $example_postcode = mySociety::MaPit::get_example_postcode($area_id);
     if ($example_postcode) {
-        print $q->p("Example postcode to test on NeighbourHoodFixit.com: ",
-            $q->a({href => build_url($q, "http://www.neighbourhoodfixit.com/",
+        $links_html .= $q->a({href => build_url($q, mySociety::Config::get('BASE_URL'),
                     { 'pc' => $example_postcode}) }, 
-                $example_postcode));
+                "Example postcode " . $example_postcode) . " | ";
     }
+    $links_html .= ' '  . 
+            $q->a({href => build_url($q, mySociety::Config::get('BASE_URL') . "/report",
+                    { 'council' => $area_id}) }, " List all reported problems");
+    print $q->p($links_html);
 
+    # Display of addresses / update statuses form
     print $q->start_form(-method => 'POST', -action => $q->url('relative'=>1));
     print $q->start_table({border=>1});
     print $q->th({}, ["Category", "Email", "Confirmed", "Deleted", "Last editor", "Note", "When edited", 'Confirm']);
