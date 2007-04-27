@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.14 2007-04-23 17:00:33 francis Exp $
+# $Id: faq.cgi,v 1.15 2007-04-27 19:37:29 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -67,8 +67,8 @@ a contribution, <a href="https://secure.mysociety.org/donate/">please do</a>.</d
 
 <dt>I'm from a council, where do you send the reports?</dt>
 <dd>You can either leave a test report or <a href="/contact">contact us</a>
-to find out where reports go at the moment. Also <a href="contact">contact us</a>
-to update the address.
+to find out where reports go at the moment. Also <a href="/contact">contact us</a>
+to update the address or addresses we use.
 </dd>
 
 <dt>Do you remove silly or illegal content?</dt>
