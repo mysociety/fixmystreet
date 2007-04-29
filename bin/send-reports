@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.34 2007-04-29 18:00:28 matthew Exp $
+# $Id: send-reports,v 1.35 2007-04-29 18:06:18 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -65,10 +65,11 @@ foreach my $row (@$unsent) {
                 and area_id=? AND category=?", {}, $council, $row->{category});
         unless ($confirmed) {
             $all_confirmed = 0;
-            my $cat = $row->{category} or 'N/A';
-            $note = 'Council category deleted' unless $note;
-            $notgot{$council_email}{$cat}++;
-            $note{$council_email}{$cat} = $note;
+            $note = 'Council ' . $row->{council} . ' deleted'
+                unless $note;
+            $council_email = 'N/A' unless $council_email;
+            $notgot{$council_email}{$row->{category}}++;
+            $note{$council_email}{$row->{category}} = $note;
         }
         push @to, [ $council_email, $name ];
         push @dear, $name;
