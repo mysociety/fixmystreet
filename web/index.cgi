@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.112 2007-04-30 16:19:19 francis Exp $
+# $Id: index.cgi,v 1.113 2007-04-30 17:05:46 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -393,7 +393,7 @@ EOF
             . join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @councils)
             . '</strong>. We show the subject and details of the problem on
             the site, along with your name if you give us permission.</p>';
-        $out .= ' We do not yet have details for the other council';
+        $out .= ' We do <strong>not</strong> yet have details for the other council';
         $out .= ($n>1) ? 's that cover' : ' that covers';
         $out .= " this location. You can help us by finding a contact email address for local
 problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.</p>";
@@ -647,8 +647,8 @@ EOF
 <fieldset><legend>Update details</legend>
 <input type="hidden" name="submit_update" value="1">
 <input type="hidden" name="id" value="$input_h{id}">
-<div><label for="form_name">Name: (optional)</label>
-<input type="text" name="name" id="form_name" value="$input_h{name}" size="30"></div>
+<div><label for="form_name">Name:</label>
+<input type="text" name="name" id="form_name" value="$input_h{name}" size="30"> (optional)</div>
 <div><label for="form_email">Email:</label>
 <input type="text" name="email" id="form_email" value="$input_h{email}" size="30"></div>
 <div><label for="form_update">Update:</label>
