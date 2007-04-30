@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.30 2007-04-30 10:52:19 francis Exp $
+# $Id: index.cgi,v 1.31 2007-04-30 10:55:09 francis Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.30 2007-04-30 10:52:19 francis Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.31 2007-04-30 10:55:09 francis Exp $';
 
 use strict;
 
@@ -288,7 +288,7 @@ sub do_council_contacts ($$) {
             $q->a({href=>build_url($q, $q->url('relative'=>1),
                 { 'area_id' => $area_id, 'category' => $l->{category}, 'page' => 'counciledit'})},
                 $l->{category}), $l->{email}, $l->{confirmed} ? 'Yes' : 'No',
-            $l->{deleted} ? 'Yes' : 'No', $l->{editor}, $q->escape($l->{note}),
+            $l->{deleted} ? 'Yes' : 'No', $l->{editor}, ent($l->{note}),
             $l->{whenedited} =~ m/^(.+)\.\d+$/,
             $q->checkbox(-name => 'confirmed', -value => $l->{category}, -label => '')
         ]));
