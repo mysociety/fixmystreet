@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.111 2007-04-19 11:44:17 matthew Exp $
+# $Id: index.cgi,v 1.112 2007-04-30 16:19:19 francis Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -122,7 +122,7 @@ sub submit_update {
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
     push(@errors, 'Please enter a message') unless $input{update} =~ /\S/;
-    push(@errors, 'Please enter your name') unless $input{name} =~ /\S/;
+    $input{name} = undef unless $input{name} =~ /\S/;
     if ($input{email} !~ /\S/) {
         push(@errors, 'Please enter your email');
     } elsif (!mySociety::Util::is_valid_email($input{email})) {
@@ -138,7 +138,7 @@ sub submit_update {
         $input{fixed}?'t':'f', $input{reopen}?'t':'f');
     my %h = ();
     $h{update} = $input{update};
-    $h{name} = $input{name};
+    $h{name} = $input{name} ? $input{name} : "Anonymous";
     $h{url} = mySociety::Config::get('BASE_URL') . '/C/' . mySociety::AuthToken::store('update', $id);
     dbh()->commit();
 
@@ -614,7 +614,13 @@ EOF
         $out .= '<div id="updates">';
         $out .= '<h2>Updates</h2>';
         foreach my $row (@$updates) {
-            $out .= "<div><a name=\"update_$row->{id}\"></a><em>Posted by $row->{name} at " . Page::prettify_epoch($row->{created});
+            $out .= "<div><a name=\"update_$row->{id}\"></a><em>";
+            if ($row->{name}) {
+                $out .= "Posted by $row->{name}";
+            } else {
+                $out .= "Posted anonymously";
+            }
+            $out .= " at " . Page::prettify_epoch($row->{created});
             $out .= ', marked fixed' if ($row->{mark_fixed});
             $out .= ', reopened' if ($row->{mark_open});
             $out .= '</em>';
@@ -641,7 +647,7 @@ EOF
 <fieldset><legend>Update details</legend>
 <input type="hidden" name="submit_update" value="1">
 <input type="hidden" name="id" value="$input_h{id}">
-<div><label for="form_name">Name:</label>
+<div><label for="form_name">Name: (optional)</label>
 <input type="text" name="name" id="form_name" value="$input_h{name}" size="30"></div>
 <div><label for="form_email">Email:</label>
 <input type="text" name="email" id="form_email" value="$input_h{email}" size="30"></div>

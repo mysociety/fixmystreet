@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.24 2007-04-23 17:44:15 francis Exp $
+-- $Id: schema.sql,v 1.25 2007-04-30 16:19:19 francis Exp $
 --
 
 -- secret
@@ -199,7 +199,7 @@ create function problem_find_nearby(double precision, double precision, double p
 create table comment (
     id serial not null primary key,
     problem_id integer not null references problem(id),
-    name text not null,
+    name text, -- null means anonymous
     email text not null,
     website text,
     created timestamp not null default ms_current_timestamp(),
