@@ -2,13 +2,13 @@ Subject: Confirm your alert on Neighbourhood Fix-It
 
 Hi,
 
-Please click on the link below to confirm the alert you just^r
+Please click on the link below to confirm the alert you just
 asked to subscribe to on Neighbourhood Fix-It:
 
     <?=$values['url']?>
 
-If you can't click the link, copy and paste it to the address
-bar of your web browser.
+If you can't click the link, please copy and paste it to the
+address bar of your web browser.
 
 -- 
 The Neighbourhood Fix-It team
