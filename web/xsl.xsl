@@ -22,9 +22,8 @@
 <li><a href="/contact">Contact</a></li>
 </ul>
 
-<p id="footer">Built by <a href="http://www.mysociety.org/">mySociety</a>.
-Using lots of <a href="http://www.ordnancesurvey.co.uk/">Ordnance Survey</a> data, under licence,
-and some <a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/bci">clever</a> <a
+<p id="footer">Built by <a href="http://www.mysociety.org/">mySociety</a>,
+using some <a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/bci">clever</a> <a
 href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.</p>
 
 </body>

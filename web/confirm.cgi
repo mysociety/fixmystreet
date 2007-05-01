@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.12 2007-03-21 22:41:48 matthew Exp $
+# $Id: confirm.cgi,v 1.13 2007-05-01 16:24:40 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -54,53 +54,49 @@ sub main {
             my $salt = unpack('h*', random_bytes(8));
             my $secret = scalar(dbh()->selectrow_array('select secret from secret'));
             my $signed_email = sha1_hex("$problem_id-$email-$salt-$secret");
-            $out = <<EOF;
-<form action="/alert" method="post">
-<p>You have successfully confirmed your update and you can now <a href="/?id=$problem_id#update_$id">view it on the site</a>.</p>
-<p>You could also
-<a href="/rss/$problem_id">subscribe to the RSS feed</a> of updates by other local people on this problem,
-or
+            $out = '<form action="/alert" method="post">';
+            $out .= $q->p(sprintf(_('You have successfully confirmed your update and you can now <a href="%s">view it on the site</a>.'), "/?id=$problem_id#update_$id"));
+            my $signup = <<EOF;
 <input type="hidden" name="signed_email" value="$salt,$signed_email">
 <input type="hidden" name="email" value="$email">
 <input type="hidden" name="id" value="$problem_id">
 <input type="hidden" name="type" value="updates">
-<input type="submit" value="sign up"> if you wish to receive updates by email.
-</p>
-</form>
 EOF
+            $signup .= '<input type="submit" value="' . _('sign up') . '">';
+            $out .= $q->p(sprintf(_('You could also <a href="%s">subscribe to the RSS feed</a> of updates by other local people on this problem, or %s if you wish to receive updates by email.'), "/rss/$problem_id", $signup));
+            $out .= '</form>';
         } elsif ($type eq 'problem') {
             dbh()->do("update problem set state='confirmed' where id=? and state='unconfirmed'", {}, $id);
-	    my ($email, $council) = dbh()->selectrow_array("select email, council from problem where id=?", {}, $id);
-	    $council = $council ? ' and <strong>we will now send it to the council</strong>' : '';
+            my ($email, $council) = dbh()->selectrow_array("select email, council from problem where id=?", {}, $id);
             my $salt = unpack('h*', random_bytes(8));
             my $secret = scalar(dbh()->selectrow_array('select secret from secret'));
             my $signed_email = sha1_hex("$id-$email-$salt-$secret");
-            $out = <<EOF;
-<form action="/alert" method="post">
-<p>You have successfully confirmed your problem$council.
-You can <a href="/?id=$id">view the problem on this site</a>.</p>
-<p>You could also
-<a href="/rss/$id">subscribe to the RSS feed</a> of updates by other local people on this problem,
-or
+            $out = '<form action="/alert" method="post">';
+            $out .= $q->p(
+                _('You have successfully confirmed your problem')
+                . ($council ? _(' and <strong>we will now send it to the council</strong>') : '')
+                . sprintf(_('You can <a href="%s">view the problem on this site</a>.'), "/?id=$id")
+            );
+            my $signup = <<EOF;
 <input type="hidden" name="signed_email" value="$salt,$signed_email">
 <input type="hidden" name="email" value="$email">
 <input type="hidden" name="id" value="$id">
 <input type="hidden" name="type" value="updates">
-<input type="submit" value="sign up"> if you wish to receive updates by email.
-</p>
-</form>
 EOF
+            $signup .= '<input type="submit" value="' . _('sign up') . '">';
+            $out .= $q->p(sprintf(_('You could also <a href="%s">subscribe to the RSS feed</a> of updates by other local people on this problem, or %s if you wish to receive updates by email.'), "/rss/$id", $signup));
+            $out .= '</form>';
         }
         dbh()->commit();
     } else {
-        $out = <<EOF;
-<p>Thank you for trying to confirm your update or problem. We seem to have a
+        $out = $q->p(_(<<EOF));
+Thank you for trying to confirm your update or problem. We seem to have a
 problem ourselves though, so <a href="/contact">please let us know what went on</a>
 and we'll look into it.
 EOF
     }
 
-    print Page::header($q, 'Confirmation');
+    print Page::header($q, _('Confirmation'));
     print $out;
     print Page::footer();
 }

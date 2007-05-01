@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.3 2007-02-02 23:24:01 matthew Exp $
+# $Id: alert.cgi,v 1.4 2007-05-01 16:24:40 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -47,9 +47,9 @@ sub main {
         if ($signed_email eq sha1_hex("$id-$email-$salt-$secret")) {
             my $alert_id = mySociety::Alert::create($email, 'new_updates', $id);
             mySociety::Alert::confirm($alert_id);
-            $out .= '<p>You have successfully subscribed to that alert.</p>';
+            $out .= $q->p(_('You have successfully subscribed to that alert.'));
         } else {
-            $out = '<p>We could not validate that alert.</p>';
+            $out = $q->p(_('We could not validate that alert.'));
         }
     } elsif (my $token = $q->param('token')) {
         my $data = mySociety::AuthToken::retrieve('alert', $token);
@@ -57,21 +57,21 @@ sub main {
             my $type = $data->{type};
             if ($type eq 'subscribe') {
                 mySociety::Alert::confirm($id);
-                $out = '<p>You have successfully confirmed your alert.</p>';
+                $out = $q->p(_('You have successfully confirmed your alert.'));
             } elsif ($type eq 'unsubscribe') {
                 mySociety::Alert::delete($id);
-                $out = '<p>You have successfully deleted your alert.</p>';
+                $out = $q->p(_('You have successfully deleted your alert.'));
             }
         } else {
-            $out = <<EOF;
-<p>Thank you for trying to confirm your update or problem. We seem to have a
+            $out = $q->p(_(<<EOF));
+Thank you for trying to confirm your update or problem. We seem to have a
 problem ourselves though, so <a href="/contact">please let us know what went on</a>
 and we'll look into it.
 EOF
         }
     } elsif (my $email = $q->param('email')) {
         my @errors;
-        push @errors, 'Please enter a valid email address' unless is_valid_email($email);
+        push @errors, _('Please enter a valid email address') unless is_valid_email($email);
         if (@errors) {
             $out = display_form($q, @errors);
         } else {
@@ -94,10 +94,10 @@ EOF
     } elsif ($q->param('id')) {
         $out = display_form($q);
     } else {
-        $out = '<p>Subscribe from a problem page!</p>';
+        $out = $q->p(_('Subscribe from a problem page!'));
     }
 
-    print Page::header($q, 'Confirmation');
+    print Page::header($q, _('Confirmation'));
     print $out;
     print Page::footer();
 }
@@ -113,14 +113,16 @@ sub display_form {
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
+    $out .= $q->p(_('Receive email when updates are left on this problem.'));
+    my $label = _('Email:');
+    my $subscribe = _('Subscribe');
     $out .= <<EOF;
-<p>Receive email when updates are left on this problem.
 <form action="alert" method="post">
-<label class="n" for="alert_email">Email:</label>
+<label class="n" for="alert_email">$label</label>
 <input type="text" name="email" id="alert_email" value="$input_h{email}" size="30">
 <input type="hidden" name="id" value="$input_h{id}">
 <input type="hidden" name="type" value="updates">
-<input type="submit" value="Subscribe">
+<input type="submit" value="$subscribe">
 </form>
 EOF
     return $out;

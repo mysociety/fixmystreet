@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.5 2007-04-23 18:15:40 francis Exp $
+# $Id: report.cgi,v 1.6 2007-05-01 16:24:40 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -61,7 +61,7 @@ sub main {
     my $areas_info = mySociety::MaPit::get_voting_areas_info([keys %out]);
     print Page::header($q, 'Summary reports');
     if (!$one_council) {
-        print $q->p('This is a summary of all reports on this site, select \'show only\' to see the reports for just one council..');
+        print $q->p('This is a summary of all reports on this site, select \'show only\' to see the reports for just one council.');
     } else {
         print $q->p('This is a summary of all reports for one council.',
             $q->a({href => NewURL($q, 'council'=>undef) }, 'Show all councils.'));

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.40 2007-04-11 10:34:48 matthew Exp $
+# $Id: Page.pm,v 1.41 2007-05-01 16:24:40 matthew Exp $
 #
 
 package Page;
@@ -87,7 +87,7 @@ EOF
 EOF
     my $home = !$title && $ENV{SCRIPT_NAME} eq '/index.cgi' && !$ENV{QUERY_STRING};
     $html .= $home ? '<h1 id="header">' : '<div id="header"><a href="/">';
-    $html .= 'Neighbourhood Fix-It <span id="beta">Beta</span>';
+    $html .= 'Neighbourhood Fix-It <span id="beta">' . _('Beta') . '</span>';
     $html .= $home ? '</h1>' : '</a></div>';
     $html .= '<div id="wrapper"><div id="content">';
     if (mySociety::Config::get('STAGING_SITE')) {
@@ -200,4 +200,8 @@ sub prettify_epoch {
     return $tt;
 }
 
+# Simply so I can gettext the code without making the locale stuff all work
+sub _ {
+    return $_[0];
+}
 1;

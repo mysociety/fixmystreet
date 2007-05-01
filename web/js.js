@@ -37,7 +37,7 @@ YAHOO.util.Event.onContentReady('compass', function() {
 
 YAHOO.util.Event.onContentReady('map', function() {
     var ua=navigator.userAgent.toLowerCase();
-    if (document.getElementById('mapForm') && /safari/.test(ua)) return;
+    if (document.getElementById('mapForm') && (/safari/.test(ua) || /Konqueror/.test(ua))) return;
 
     new YAHOO.util.DDMap('map');
     update_tiles(0, 0, true);
