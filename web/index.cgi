@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.113 2007-04-30 17:05:46 matthew Exp $
+# $Id: index.cgi,v 1.114 2007-05-02 14:28:07 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -552,9 +552,11 @@ sub display_problem {
     # Get all information from database
     my $problem = dbh()->selectrow_arrayref(
         "select state, easting, northing, title, detail, name, extract(epoch from created), photo, anonymous
+         extract(epoch from whensent), council
          from problem where id=? and state in ('confirmed','fixed', 'hidden')", {}, $input{id});
     return display_location($q, 'Unknown problem ID') unless $problem;
-    my ($state, $easting, $northing, $title, $desc, $name, $time, $photo, $anonymous) = @$problem;
+    my ($state, $easting, $northing, $title, $desc, $name, $time,
+        $photo, $anonymous, $whensent, $council) = @$problem;
     return front_page($q, 'That problem has been removed') if $state eq 'hidden';
     my $x = os_to_tile($easting);
     my $y = os_to_tile($northing);
@@ -578,6 +580,8 @@ EOF
     $out .= '<p><em>Reported ';
     $out .= ($anonymous) ? 'anonymously' : "by " . ent($name);
     $out .= ' at ' . Page::prettify_epoch($time);
+    $out .= '<br>Sent to council at ' . Page::prettify_epoch($whensent) if $whensent;
+    $out .= '<br>Not reported to council' unless $council;
     $out .= '</em></p> <p>';
     $out .= ent($desc);
     $out .= '</p>';
