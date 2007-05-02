@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.116 2007-05-02 15:35:40 matthew Exp $
+# $Id: index.cgi,v 1.117 2007-05-02 17:30:32 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -118,7 +118,7 @@ EOF
 
 sub submit_update {
     my $q = shift;
-    my @vars = qw(id name email update fixed reopen);
+    my @vars = qw(id name email update fixed);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
     push(@errors, 'Please enter a message') unless $input{update} =~ /\S/;
@@ -133,9 +133,9 @@ sub submit_update {
     my $id = dbh()->selectrow_array("select nextval('comment_id_seq');");
     dbh()->do("insert into comment
         (id, problem_id, name, email, website, text, state, mark_fixed, mark_open)
-        values (?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?)", {},
+        values (?, ?, ?, ?, ?, ?, 'unconfirmed', ?, 'f')", {},
         $id, $input{id}, $input{name}, $input{email}, '', $input{update},
-        $input{fixed}?'t':'f', $input{reopen}?'t':'f');
+        $input{fixed}?'t':'f');
     my %h = ();
     $h{update} = $input{update};
     $h{name} = $input{name} ? $input{name} : "Anonymous";
@@ -543,7 +543,7 @@ EOF
 sub display_problem {
     my ($q, @errors) = @_;
 
-    my @vars = qw(id name email update fixed reopen x y);
+    my @vars = qw(id name email update fixed x y);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
     $input{x} ||= 0; $input{x} += 0;
@@ -580,8 +580,17 @@ EOF
     $out .= '<p><em>Reported ';
     $out .= ($anonymous) ? 'anonymously' : "by " . ent($name);
     $out .= ' at ' . Page::prettify_epoch($time);
-    $out .= '<br>Sent to council at ' . Page::prettify_epoch($whensent) if $whensent;
-    $out .= '<br>Not reported to council' unless $council;
+    if ($council) {
+        if ($whensent) {
+            $council =~ s/\|.*//g;
+            my @councils = split /,/, $council;
+            my $areas_info = mySociety::MaPit::get_voting_areas_info(\@councils);
+            $council = join(' and ', map { $areas_info->{$_}->{name} } @councils);
+            $out .= $q->br() . $q->small('Sent to ' . $council . ' at ' . Page::prettify_epoch($whensent));
+        }
+    } else {
+        $out .= $q->br() . $q->small('Not reported to council');
+    }
     $out .= '</em></p> <p>';
     $out .= ent($desc);
     $out .= '</p>';
@@ -638,11 +647,7 @@ EOF
     }
 
     my $fixed = ($input{fixed}) ? ' checked' : '';
-    my $reopen = ($input{reopen}) ? ' checked' : '';
-    my $fixedline = $state eq 'fixed' ? qq{
-<div class="checkbox"><input type="checkbox" name="reopen" id="form_reopen" value="1"$reopen>
-<label for="form_reopen">This problem is still present</label></div>
-} : qq{
+    my $fixedline = $state eq 'fixed' ? '' : qq{
 <div class="checkbox"><input type="checkbox" name="fixed" id="form_fixed" value="1"$fixed>
 <label for="form_fixed">This problem has been fixed</label></div>
 };
