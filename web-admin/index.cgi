@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.32 2007-04-30 10:56:31 francis Exp $
+# $Id: index.cgi,v 1.33 2007-05-02 17:02:14 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.32 2007-04-30 10:56:31 francis Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.33 2007-05-02 17:02:14 matthew Exp $';
 
 use strict;
 
@@ -167,7 +167,8 @@ sub do_councils_list ($) {
     # Table of councils
     print $q->h2("Councils");
     my @councils;
-    foreach my $type (@$mySociety::VotingArea::council_parent_types) {
+    my @types = grep { !/LGD/ } @$mySociety::VotingArea::council_parent_types;
+    foreach my $type (@types) {
         my $areas = mySociety::MaPit::get_areas_by_type($type);
         push @councils, @$areas;
     }
