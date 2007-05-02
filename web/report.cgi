@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.6 2007-05-01 16:24:40 matthew Exp $
+# $Id: report.cgi,v 1.7 2007-05-02 09:58:20 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -37,6 +37,7 @@ sub main {
     my $q = shift;
     my $all = $q->param('all') || 0;
     my $one_council = $q->param('council');
+    $all = 0 unless $one_council;
     my @params;
     my $where_extra;
     if ($one_council) {
@@ -55,7 +56,7 @@ sub main {
         $council =~ s/\|.*//;
         my @council = split /,/, $council;
         foreach (@council) {
-            push @{$out{$_}{$row->{state}}}, [ $row->{id}, $row->{title}, $row->{detail} ];
+            push @{$out{$_}{$row->{state}}}, [ $row->{id}, $row->{title}, $row->{detail}, @council>1 ];
         }
     }
     my $areas_info = mySociety::MaPit::get_voting_areas_info([keys %out]);
@@ -63,8 +64,11 @@ sub main {
     if (!$one_council) {
         print $q->p('This is a summary of all reports on this site, select \'show only\' to see the reports for just one council.');
     } else {
-        print $q->p('This is a summary of all reports for one council.',
-            $q->a({href => NewURL($q, 'council'=>undef) }, 'Show all councils.'));
+        print $q->p('This is a summary of all reports for one council.'),
+            $q->ul(
+                $q->li($q->a({href => NewURL($q, all=>1) }, 'Show more details')),
+                $q->li($q->a({href => NewURL($q, 'council'=>undef) }, 'Show all councils'))
+            );
     }
     foreach (sort { $areas_info->{$a}->{name} cmp $areas_info->{$b}->{name} } keys %out) {
         print '<h2>' . $areas_info->{$_}->{name};
@@ -86,6 +90,7 @@ sub list_problems {
         print '<li><a href="/?id=' . $_->[0] . '">';
         print ent($_->[1]);
         print '</a>';
+        print ' <small>(sent to both)</small>' if $_->[3];
         print '<br><small>' . ent($_->[2]) . '</small>' if $all;
         print '</li>';
     }
