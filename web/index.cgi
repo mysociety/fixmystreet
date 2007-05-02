@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.115 2007-05-02 14:28:50 matthew Exp $
+# $Id: index.cgi,v 1.116 2007-05-02 15:35:40 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -332,7 +332,7 @@ sub display_form {
     foreach (@$categories) {
         $council_ok{$_->{area_id}} = 1;
         next if $_->{category} eq 'Other';
-        push @categories, ent($_->{category});
+        push @categories, $_->{category};
     }
     if (@categories) {
         @categories = ('-- Pick a category --', @categories, 'Other');
