@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.114 2007-05-02 14:28:07 matthew Exp $
+# $Id: index.cgi,v 1.115 2007-05-02 14:28:50 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -551,7 +551,7 @@ sub display_problem {
 
     # Get all information from database
     my $problem = dbh()->selectrow_arrayref(
-        "select state, easting, northing, title, detail, name, extract(epoch from created), photo, anonymous
+        "select state, easting, northing, title, detail, name, extract(epoch from created), photo, anonymous,
          extract(epoch from whensent), council
          from problem where id=? and state in ('confirmed','fixed', 'hidden')", {}, $input{id});
     return display_location($q, 'Unknown problem ID') unless $problem;
