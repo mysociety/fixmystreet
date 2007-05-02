@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.8 2007-05-02 10:02:09 matthew Exp $
+# $Id: report.cgi,v 1.9 2007-05-02 10:31:42 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -64,10 +64,10 @@ sub main {
     if (!$one_council) {
         print $q->p('This is a summary of all reports on this site, select \'show only\' to see the reports for just one council.');
     } else {
-        print $q->p('This is a summary of all reports for one council. You can ',
-            $q->a({href => NewURL($q, all=>1) }, 'see more details'),
-            ' or go back and ',
-            $q->a({href => NewURL($q, all=>undef, council=>undef) }, 'show all councils'),
+        print $q->p('This is a summary of all reports for one council. You can ' .
+            $q->a({href => NewURL($q, all=>1) }, 'see more details') .
+            ' or go back and ' .
+            $q->a({href => NewURL($q, all=>undef, council=>undef) }, 'show all councils') .
             '.');
     }
     foreach (sort { $areas_info->{$a}->{name} cmp $areas_info->{$b}->{name} } keys %out) {
