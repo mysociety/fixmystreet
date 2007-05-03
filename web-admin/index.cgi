@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.33 2007-05-02 17:02:14 matthew Exp $
+# $Id: index.cgi,v 1.34 2007-05-03 09:34:23 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.33 2007-05-02 17:02:14 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.34 2007-05-03 09:34:23 matthew Exp $';
 
 use strict;
 
@@ -177,7 +177,7 @@ sub do_councils_list ($) {
     @councils_ids = sort { canonicalise_council($councils->{$a}->{name}) cmp canonicalise_council($councils->{$b}->{name}) } @councils_ids;
     my $bci_info = dbh()->selectall_hashref("
         select area_id, count(*) as c, count(case when deleted then 1 else null end) as deleted,
-	    count(case when confirmed then 1 else null end) as confirmed
+            count(case when confirmed then 1 else null end) as confirmed
         from contacts group by area_id", 'area_id');
 
     my $list_part = sub {
@@ -440,5 +440,6 @@ sub main {
     } else {
         do_summary($q);
     }
+    dbh()->rollback();
 }
 Page::do_fastcgi(\&main);

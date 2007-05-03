@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.25 2007-04-30 16:19:19 francis Exp $
+-- $Id: schema.sql,v 1.26 2007-05-03 09:34:20 matthew Exp $
 --
 
 -- secret
@@ -138,6 +138,7 @@ create table problem (
 
     -- Metadata
     created timestamp not null default ms_current_timestamp(),
+    confirmed timestamp,
     state text not null check (
         state = 'unconfirmed'
         or state = 'confirmed'
