@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.117 2007-05-02 17:30:32 matthew Exp $
+# $Id: index.cgi,v 1.118 2007-05-03 09:21:31 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -552,7 +552,7 @@ sub display_problem {
     # Get all information from database
     my $problem = dbh()->selectrow_arrayref(
         "select state, easting, northing, title, detail, name, extract(epoch from created), photo, anonymous,
-         extract(epoch from whensent), council
+         extract(epoch from whensent-created), council
          from problem where id=? and state in ('confirmed','fixed', 'hidden')", {}, $input{id});
     return display_location($q, 'Unknown problem ID') unless $problem;
     my ($state, $easting, $northing, $title, $desc, $name, $time,
@@ -586,7 +586,8 @@ EOF
             my @councils = split /,/, $council;
             my $areas_info = mySociety::MaPit::get_voting_areas_info(\@councils);
             $council = join(' and ', map { $areas_info->{$_}->{name} } @councils);
-            $out .= $q->br() . $q->small('Sent to ' . $council . ' at ' . Page::prettify_epoch($whensent));
+            $out .= $q->br() . $q->small('Sent to ' . $council . ' ' .
+                Page::prettify_duration($whensent) . ' later');
         }
     } else {
         $out .= $q->br() . $q->small('Not reported to council');

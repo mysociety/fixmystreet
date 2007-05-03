@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.41 2007-05-01 16:24:40 matthew Exp $
+# $Id: Page.pm,v 1.42 2007-05-03 09:21:31 matthew Exp $
 #
 
 package Page;
@@ -198,6 +198,25 @@ sub prettify_epoch {
         $tt = "$tt, " . strftime('%a %e %B %Y', @s);
     }
     return $tt;
+}
+
+# argument is duration in seconds, rounds to the nearest minute
+sub prettify_duration {
+    my $s = shift;
+    $s = int(($s+30)/60)*60;
+    my @out = ();
+    _part(\$s, 60*60*24, 'day', \@out);
+    _part(\$s, 60*60, 'hour', \@out);
+    _part(\$s, 60, 'minute', \@out);
+    return join(', ', @out);
+}
+sub _part {
+    my ($s, $m, $w, $o) = @_;
+    if ($$s > $m) {
+        my $i = int($$s / $m);
+	push @$o, "$i $w" . ($i != 1 ? 's' : '');
+	$$s -= $i * $m;
+    }
 }
 
 # Simply so I can gettext the code without making the locale stuff all work
