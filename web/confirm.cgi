@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.14 2007-05-03 09:34:22 matthew Exp $
+# $Id: confirm.cgi,v 1.15 2007-05-03 09:40:05 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -76,7 +76,7 @@ EOF
             $out .= $q->p(
                 _('You have successfully confirmed your problem')
                 . ($council ? _(' and <strong>we will now send it to the council</strong>') : '')
-                . sprintf(_('You can <a href="%s">view the problem on this site</a>.'), "/?id=$id")
+                . sprintf(_('. You can <a href="%s">view the problem on this site</a>.'), "/?id=$id")
             );
             my $signup = <<EOF;
 <input type="hidden" name="signed_email" value="$salt,$signed_email">
