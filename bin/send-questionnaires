@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-questionnaires,v 1.1 2007-05-04 14:36:55 matthew Exp $
+# $Id: send-questionnaires,v 1.2 2007-05-04 15:14:29 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -52,7 +52,7 @@ my $unsent = select_all(
         and whensent is not null
         and whensent < ms_current_timestamp() - '4 weeks'::interval
         and send_questionnaire = 't'
-        and ( (select max(whenanswered) from questionnaire where problem.id=problem_id) is null
+        and ( (select max(whensent) from questionnaire where problem.id=problem_id) is null
             or (select max(whenanswered) from questionnaire where problem.id=problem_id) < ms_current_timestamp() - '4 weeks'::interval)
 ");
 
