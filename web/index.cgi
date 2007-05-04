@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.123 2007-05-04 14:36:56 matthew Exp $
+# $Id: index.cgi,v 1.124 2007-05-04 17:30:18 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -168,7 +168,7 @@ sub submit_problem {
     } elsif (!mySociety::Util::is_valid_email($input{email})) {
         push(@errors, 'Please enter a valid email');
     }
-    unless ($input{category} ne '-- Pick a category --') {
+    if ($input{category} && $input{category} eq '-- Pick a category --') {
         push (@errors, 'Please choose a category');
         $input{category} = '';
     }
