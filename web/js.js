@@ -61,9 +61,6 @@ YAHOO.util.Event.onContentReady('another_qn', function() {
     YAHOO.util.Event.addListener('been_fixed_yes', 'click', function(e) {
         YAHOO.util.Dom.setStyle('another_qn', 'display', 'none');
     });
-    YAHOO.util.Event.addListener('been_fixed_na', 'click', function(e) {
-        YAHOO.util.Dom.setStyle('another_qn', 'display', 'none');
-    });
 });
 
 var timer;
