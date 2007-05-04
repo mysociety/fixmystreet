@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.1 2007-05-04 14:36:56 matthew Exp $
+# $Id: questionnaire.cgi,v 1.2 2007-05-04 15:24:43 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -135,7 +135,7 @@ EOF
 sub display_questionnaire {
     my ($q, @errors) = @_;
     my @vars = qw(token id been_fixed reported update another);
-    my %input = map { $_ => scalar $q->param($_) } @vars;
+    my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 
     my ($error, $questionnaire, $prev_questionnaire, $problem);
