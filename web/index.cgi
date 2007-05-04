@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.121 2007-05-04 00:16:51 matthew Exp $
+# $Id: index.cgi,v 1.122 2007-05-04 00:19:59 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -509,7 +509,7 @@ EOF
     my $list_start = @$current_map + 1;
     $out .= <<EOF;
     </ol>
-    <h2>Problems reported within 10km</h2>
+    <h2>Closest problems within 10km</h2>
     <p><a href="/rss/$x,$y"><img align="right" src="/i/feed.png" width="16" height="16" title="RSS feed of recent local problems" alt="RSS feed" border="0"></a></p>
     <ol id="current_near" start="$list_start">
 EOF
