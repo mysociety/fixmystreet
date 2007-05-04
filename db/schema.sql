@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.26 2007-05-03 09:34:20 matthew Exp $
+-- $Id: schema.sql,v 1.27 2007-05-04 14:36:55 matthew Exp $
 --
 
 -- secret
@@ -145,9 +145,18 @@ create table problem (
         or state = 'fixed'
         or state = 'hidden'
     ),
-    whensent timestamp
+    whensent timestamp,
+    send_questionnaire boolean not null default 't'
 );
 create index problem_state_easting_northing_idx on problem(state, easting, northing);
+
+create table questionnaire (
+    id serial not null primary key,
+    problem_id integer not null references problem(id),
+    whensent timestamp not null,
+    whenanswered timestamp,
+    ever_reported boolean
+);
 
 -- angle_between A1 A2
 -- Given two angles A1 and A2 on a circle expressed in radians, return the

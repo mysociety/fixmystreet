@@ -1,0 +1,97 @@
+#!/usr/bin/perl -w
+
+# send-questionnaires:
+# Send out creator questionnaires
+#
+# Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
+# Email: matthew@mysociety.org. WWW: http://www.mysociety.org
+#
+# $Id: send-questionnaires,v 1.1 2007-05-04 14:36:55 matthew Exp $
+
+use strict;
+require 5.8.0;
+
+# Horrible boilerplate to set up appropriate library paths.
+use FindBin;
+use lib "$FindBin::Bin/../perllib";
+use lib "$FindBin::Bin/../../perllib";
+use File::Slurp;
+
+use Page;
+use mySociety::AuthToken;
+use mySociety::Config;
+use mySociety::DBHandle qw(dbh select_all);
+use mySociety::Email;
+use mySociety::MaPit;
+use mySociety::EmailUtil;
+
+BEGIN {
+    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+    mySociety::DBHandle::configure(
+        Name => mySociety::Config::get('BCI_DB_NAME'),
+        User => mySociety::Config::get('BCI_DB_USER'),
+        Password => mySociety::Config::get('BCI_DB_PASS'),
+        Host => mySociety::Config::get('BCI_DB_HOST', undef),
+        Port => mySociety::Config::get('BCI_DB_PORT', undef)
+    );
+}
+
+die "Either no arguments, --nomail or --verbose" if (@ARGV>1);
+my $nomail = 0;
+my $verbose = 0;
+$nomail = 1 if (@ARGV==1 && $ARGV[0] eq '--nomail');
+$verbose = 1 if (@ARGV==1 && $ARGV[0] eq '--verbose');
+$verbose = 1 if $nomail;
+
+# Select all problems that need a questionnaire email sending
+my $unsent = select_all(
+    "select id, council, category, title, detail, name, email,
+        extract(epoch from ms_current_timestamp()-created) as created
+    from problem
+    where state in ('confirmed','fixed')
+        and whensent is not null
+        and whensent < ms_current_timestamp() - '4 weeks'::interval
+        and send_questionnaire = 't'
+        and ( (select max(whenanswered) from questionnaire where problem.id=problem_id) is null
+            or (select max(whenanswered) from questionnaire where problem.id=problem_id) < ms_current_timestamp() - '4 weeks'::interval)
+");
+
+foreach my $row (@$unsent) {
+    my @all_councils = split /,|\|/, $row->{council};
+    my ($councils, $missing) = $row->{council} =~ /^([\d,]+)(?:\|([\d,]+))?/;
+    my @councils = split /,/, $councils;
+    my $areas_info = mySociety::MaPit::get_voting_areas_info(\@all_councils);
+    my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/questionnaire");
+
+    my %h = map { $_ => $row->{$_} } qw/name title detail category/;
+    $h{created} = Page::prettify_duration($row->{created}, 'day');
+    $h{councils} = join(' and ', map { $areas_info->{$_}->{name} } @councils);
+
+    my $id = dbh()->selectrow_array("select nextval('questionnaire_id_seq');");
+    dbh()->do('insert into questionnaire (id, problem_id, whensent)
+        values (?, ?, ms_current_timestamp())', {}, $id, $row->{id});
+    dbh()->do("update problem set send_questionnaire = 'f' where id=?", {}, $row->{id});
+
+    $h{url} = mySociety::Config::get('BASE_URL') . '/Q/' . mySociety::AuthToken::store('questionnaire', $id);
+
+    my $email = mySociety::Email::construct_email({
+        _template_ => $template,
+        _parameters_ => \%h,
+        To => [ [ $row->{email}, $row->{name} ] ],
+        From => [ mySociety::Config::get('CONTACT_EMAIL'), 'Neighbourhood Fix-It' ],
+    });
+
+    my $result;
+    if (mySociety::Config::get('STAGING_SITE') || $nomail) {
+        $result = -1;
+        print $email;
+    } else {
+        $result = mySociety::EmailUtil::send_email($email, mySociety::Config::get('CONTACT_EMAIL'), $row->{email});
+    }
+    if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
+        dbh()->commit();
+    } else {
+        dbh()->rollback();
+    }
+}
+

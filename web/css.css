@@ -200,7 +200,7 @@ fieldset div.checkbox label, label.n {
     width: 510px;
 }
 
-#map_box p {
+p#copyright {
     float: right;
     margin: 0 0 1em 0;
     font-size: 78%;

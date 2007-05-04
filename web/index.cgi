@@ -6,10 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.122 2007-05-04 00:19:59 matthew Exp $
-
-# TODO
-# Nothing is done about the update checkboxes - not stored anywhere on anything!
+# $Id: index.cgi,v 1.123 2007-05-04 14:36:56 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -296,24 +293,24 @@ sub display_form {
     if ($input{skipped}) {
         # Map is being skipped
         if ($input{x} && $input{y}) {
-            $easting = tile_to_os($input{x});
-            $northing = tile_to_os($input{y});
+            $easting = Page::tile_to_os($input{x});
+            $northing = Page::tile_to_os($input{y});
         } else {
             my ($x, $y, $e, $n, $i, $error) = geocode($input{pc});
             $easting = $e; $northing = $n; $island = $i;
         }
     } elsif ($pin_x && $pin_y) {
         # Map was clicked on
-        $pin_x = click_to_tile($pin_tile_x, $pin_x);
-        $pin_y = click_to_tile($pin_tile_y, $pin_y, 1);
-        $px = tile_to_px($pin_x, $input{x});
-        $py = tile_to_px($pin_y, $input{y});
-        $easting = tile_to_os($pin_x);
-        $northing = tile_to_os($pin_y);
+        $pin_x = Page::click_to_tile($pin_tile_x, $pin_x);
+        $pin_y = Page::click_to_tile($pin_tile_y, $pin_y, 1);
+        $px = Page::tile_to_px($pin_x, $input{x});
+        $py = Page::tile_to_px($pin_y, $input{y});
+        $easting = Page::tile_to_os($pin_x);
+        $northing = Page::tile_to_os($pin_y);
     } else {
         # Normal form submission
-        $px = os_to_px($input{easting}, $input{x});
-        $py = os_to_px($input{northing}, $input{y});
+        $px = Page::os_to_px($input{easting}, $input{x});
+        $py = Page::os_to_px($input{northing}, $input{y});
         $easting = $input_h{easting};
         $northing = $input_h{northing};
     }
@@ -360,15 +357,9 @@ sub display_form {
 <h1>Reporting a problem</h1>
 EOF
     } else {
-        my $pins = display_pin($q, $px, $py, 'purple');
-        $out .= display_map($q, $input{x}, $input{y}, 2, 1, $pins);
-        if ($px && $py) {
-            $out .= <<EOF;
-<script type="text/javascript">
-drag_x = $px - 254; drag_y = 254 - $py;
-</script>
-EOF
-        }
+        my $pins = Page::display_pin($q, $px, $py, 'purple');
+        $out .= Page::display_map($q, x => $input{x}, y => $input{y}, type => 2,
+	    pins => $pins, px => $px, py => $py );
         $out .= '<h1>Reporting a problem</h1>';
         $out .= '<p>You have located the problem at the point marked with a purple pin on the map.
         If this is not the correct location, simply click on the map again.</p>';
@@ -454,7 +445,7 @@ $category
 
 <p align="right"><a href="$back">Back to listings</a></p>
 EOF
-    $out .= display_map_end(1);
+    $out .= Page::display_map_end(1);
     return $out;
 }
 
@@ -480,7 +471,7 @@ sub display_location {
     return front_page($q, $error) if ($error);
 
     my ($pins, $current_map, $current, $fixed) = map_pins($q, $x, $y);
-    my $out = display_map($q, $x, $y, 1, 1, $pins);
+    my $out = Page::display_map($q, x => $x, y => $y, type => 1, pins => $pins );
     $out .= '<h1>Click on the map to report a problem</h1>';
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
@@ -535,7 +526,7 @@ EOF
         $out .= '<li>No problems have been fixed yet</li>';
     }
     $out .= '</ol></div>';
-    $out .= display_map_end(1);
+    $out .= Page::display_map_end(1);
     return $out;
 }
 
@@ -549,58 +540,26 @@ sub display_problem {
     $input{y} ||= 0; $input{y} += 0;
 
     # Get all information from database
-    my $problem = dbh()->selectrow_arrayref(
-        "select state, easting, northing, title, detail, name, extract(epoch from confirmed), photo, anonymous,
-         extract(epoch from whensent-confirmed), council
+    my $problem = dbh()->selectrow_hashref(
+        "select state, easting, northing, title, detail, name, extract(epoch from confirmed) as time, photo, anonymous,
+         extract(epoch from whensent-confirmed) as whensent, council, id
          from problem where id=? and state in ('confirmed','fixed', 'hidden')", {}, $input{id});
     return display_location($q, 'Unknown problem ID') unless $problem;
-    my ($state, $easting, $northing, $title, $desc, $name, $time,
-        $photo, $anonymous, $whensent, $council) = @$problem;
-    return front_page($q, 'That problem has been removed') if $state eq 'hidden';
-    my $x = os_to_tile($easting);
-    my $y = os_to_tile($northing);
+    return front_page($q, 'That problem has been removed') if $problem->{state} eq 'hidden';
+    my $x = Page::os_to_tile($problem->{easting});
+    my $y = Page::os_to_tile($problem->{northing});
     my $x_tile = $input{x} || int($x);
     my $y_tile = $input{y} || int($y);
+    my $px = Page::os_to_px($problem->{easting}, $x_tile);
+    my $py = Page::os_to_px($problem->{northing}, $y_tile);
 
-    my $px = os_to_px($easting, $x_tile);
-    my $py = os_to_px($northing, $y_tile);
-
-    my $pins = display_pin($q, $px, $py, 'blue');
-    my $out = display_map($q, $x_tile, $y_tile, 0, 1, $pins);
-
-    $out .= "<h1>$title</h1>";
-    $out .= <<EOF;
-<script type="text/javascript">
-drag_x = $px - 254; drag_y = 254 - $py;
-</script>
-EOF
-
-    # Display information about problem
-    $out .= '<p><em>Reported ';
-    $out .= ($anonymous) ? 'anonymously' : "by " . ent($name);
-    $out .= ' at ' . Page::prettify_epoch($time);
-    if ($council) {
-        if ($whensent) {
-            $council =~ s/\|.*//g;
-            my @councils = split /,/, $council;
-            my $areas_info = mySociety::MaPit::get_voting_areas_info(\@councils);
-            $council = join(' and ', map { $areas_info->{$_}->{name} } @councils);
-            $out .= $q->br() . $q->small('Sent to ' . $council . ' ' .
-                Page::prettify_duration($whensent) . ' later');
-        }
-    } else {
-        $out .= $q->br() . $q->small('Not reported to council');
-    }
-    $out .= '</em></p> <p>';
-    $out .= ent($desc);
-    $out .= '</p>';
-
-    if ($photo) {
-        $out .= '<p align="center"><img src="/photo?id=' . $input{id} . '"></p>';
-    }
+    my $pins = Page::display_pin($q, $px, $py, 'blue');
+    my $out = Page::display_map($q, x => $x_tile, y => $y_tile, type => 0,
+        pins => $pins, px => $px, py => $py );
+    $out .= Page::display_problem_text($q, $problem);
 
     $out .= $q->p({align=>'right'},
-        $q->a({href => '/contact?id=' . $input{id}}, $q->small('Offensive? Unsuitable? Tell us'))
+        $q->small($q->a({href => '/contact?id=' . $input{id}}, 'Offensive? Unsuitable? Tell us'))
     );
     my $back = NewURL($q, id=>undef, x=>$x_tile, y=>$y_tile);
     $out .= '<p style="padding-bottom: 0.5em; border-bottom: dotted 1px #999999;" align="right"><a href="' . $back . '">Back to listings</a></p>';
@@ -647,7 +606,7 @@ EOF
     }
 
     my $fixed = ($input{fixed}) ? ' checked' : '';
-    my $fixedline = $state eq 'fixed' ? '' : qq{
+    my $fixedline = $problem->{state} eq 'fixed' ? '' : qq{
 <div class="checkbox"><input type="checkbox" name="fixed" id="form_fixed" value="1"$fixed>
 <label for="form_fixed">This problem has been fixed</label></div>
 };
@@ -667,7 +626,7 @@ $fixedline
 </fieldset>
 </form>
 EOF
-    $out .= display_map_end(0);
+    $out .= Page::display_map_end(0);
     return $out;
 }
 
@@ -675,12 +634,12 @@ sub map_pins {
     my ($q, $x, $y) = @_;
 
     my $pins = '';
-    my $min_e = tile_to_os($x);
-    my $min_n = tile_to_os($y);
-    my $mid_e = tile_to_os($x+1);
-    my $mid_n = tile_to_os($y+1);
-    my $max_e = tile_to_os($x+2);
-    my $max_n = tile_to_os($y+2);
+    my $min_e = Page::tile_to_os($x);
+    my $min_n = Page::tile_to_os($y);
+    my $mid_e = Page::tile_to_os($x+1);
+    my $mid_n = Page::tile_to_os($y+1);
+    my $max_e = Page::tile_to_os($x+2);
+    my $max_n = Page::tile_to_os($y+2);
 
     my $current_map = select_all(
         "select id,title,easting,northing from problem where state='confirmed'
@@ -691,9 +650,9 @@ sub map_pins {
     my $count_fixed = 1;
     foreach (@$current_map) {
         push(@ids, $_->{id});
-        my $px = os_to_px($_->{easting}, $x);
-        my $py = os_to_px($_->{northing}, $y);
-        $pins .= display_pin($q, $px, $py, 'red', $count_prob++);
+        my $px = Page::os_to_px($_->{easting}, $x);
+        my $py = Page::os_to_px($_->{northing}, $y);
+        $pins .= Page::display_pin($q, $px, $py, 'red', $count_prob++);
     }
 
     my $current = [];
@@ -706,9 +665,9 @@ sub map_pins {
                 and state = 'confirmed'" . (@ids ? ' and id not in (' . join(',' , @ids) . ')' : '') . "
              order by distance, created desc limit $limit", $mid_e, $mid_n);
         foreach (@$current) {
-            my $px = os_to_px($_->{easting}, $x);
-            my $py = os_to_px($_->{northing}, $y);
-            $pins .= display_pin($q, $px, $py, 'red', $count_prob++);
+            my $px = Page::os_to_px($_->{easting}, $x);
+            my $py = Page::os_to_px($_->{northing}, $y);
+            $pins .= Page::display_pin($q, $px, $py, 'red', $count_prob++);
         }
     }
     my $fixed = select_all(
@@ -717,95 +676,11 @@ sub map_pins {
             where nearby.problem_id = problem.id and state='fixed'
          order by created desc limit 9", $mid_e, $mid_n);
     foreach (@$fixed) {
-        my $px = os_to_px($_->{easting}, $x);
-        my $py = os_to_px($_->{northing}, $y);
-        $pins .= display_pin($q, $px, $py, 'green', $count_fixed++);
+        my $px = Page::os_to_px($_->{easting}, $x);
+        my $py = Page::os_to_px($_->{northing}, $y);
+        $pins .= Page::display_pin($q, $px, $py, 'green', $count_fixed++);
     }
     return ($pins, $current_map, $current, $fixed);
-}
-
-sub display_pin {
-    my ($q, $px, $py, $col, $num) = @_;
-    $num = '' unless $num;
-    my %cols = (red=>'R', green=>'G', blue=>'B', purple=>'P');
-    my $out = '<img class="pin" src="/i/pin' . $cols{$col}
-        . $num . '.gif" alt="Problem" style="top:' . ($py-59)
-        . 'px; right:' . ($px-31) . 'px; position: absolute;">';
-    return $out unless $_ && $_->{id} && $col ne 'blue';
-    my $url = NewURL($q, id=>$_->{id}, x=>undef, y=>undef);
-    $out = '<a title="' . $_->{title} . '" href="' . $url . '">' . $out . '</a>';
-    return $out;
-}
-
-# display_map Q X Y TYPE COMPASS PINS
-# X,Y is bottom left tile of 2x2 grid
-# TYPE is 1 if the map is clickable, 0 if not
-# COMPASS is 1 to show the compass, 0 to not
-# PINS is HTML of pins to show
-sub display_map {
-    my ($q, $x, $y, $type, $compass, $pins) = @_;
-    $pins ||= '';
-    $x = 0 if ($x<=0);
-    $y = 0 if ($y<=0);
-    my $url = mySociety::Config::get('TILES_URL');
-    my $tiles_url = $url . $x . '-' . ($x+1) . ',' . $y . '-' . ($y+1) . '/RABX';
-    my $tiles = LWP::Simple::get($tiles_url);
-    throw Error::Simple("Unable to get tiles from URL $tiles_url\n") if !$tiles;
-    my $tileids = RABX::unserialise($tiles);
-    my $tl = $x . '.' . ($y+1);
-    my $tr = ($x+1) . '.' . ($y+1);
-    my $bl = $x . '.' . $y;
-    my $br = ($x+1) . '.' . $y;
-    return '<div id="side">' if (!$tileids->[0][0] || !$tileids->[0][1] || !$tileids->[1][0] || !$tileids->[1][1]);
-    my $tl_src = $url . $tileids->[0][0];
-    my $tr_src = $url . $tileids->[0][1];
-    my $bl_src = $url . $tileids->[1][0];
-    my $br_src = $url . $tileids->[1][1];
-
-    my $out = '';
-    my $img_type;
-    if ($type) {
-        my $encoding = '';
-        $encoding = ' enctype="multipart/form-data"' if ($type==2);
-        my $pc = $q->param('pc') || '';
-        my $pc_enc = ent($pc);
-        $out .= <<EOF;
-<form action="./" method="post" id="mapForm"$encoding>
-<input type="hidden" name="submit_map" value="1">
-<input type="hidden" name="x" value="$x">
-<input type="hidden" name="y" value="$y">
-<input type="hidden" name="pc" value="$pc_enc">
-EOF
-        $img_type = '<input type="image"';
-    } else {
-        $img_type = '<img';
-    }
-    my $imgw = '254px';
-    my $imgh = '254px';
-    $out .= <<EOF;
-<script type="text/javascript">
-var x = $x - 2; var y = $y - 2;
-var drag_x = 0; var drag_y = 0;
-</script>
-<div id="map_box">
-    <div id="map"><div id="drag">
-        $img_type alt="NW map tile" id="t2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0px;">$img_type alt="NE map tile" id="t2.3" name="tile_$tr" src="$tr_src" style="top:0px; left:$imgw;"><br>$img_type alt="SW map tile" id="t3.2" name="tile_$bl" src="$bl_src" style="top:$imgh; left:0px;">$img_type alt="SE map tile" id="t3.3" name="tile_$br" src="$br_src" style="top:$imgh; left:$imgw;">
-        $pins
-    </div></div>
-    <p>&copy; Crown copyright.  All rights reserved.
-    Department for Constitutional Affairs 100037819&nbsp;2007</p>
-    </div>
-EOF
-    $out .= Page::compass($q, $x, $y) if $compass;
-    $out .= '<div id="side">';
-    return $out;
-}
-
-sub display_map_end {
-    my ($type) = @_;
-    my $out = '</div>';
-    $out .= '</form>' if ($type);
-    return $out;
 }
 
 sub geocode_choice {
@@ -833,8 +708,8 @@ sub geocode {
             throw RABX::Error("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.") if $island eq 'I';
             $easting = $location->{easting};
             $northing = $location->{northing};
-            my $xx = os_to_tile($easting);
-            my $yy = os_to_tile($northing);
+            my $xx = Page::os_to_tile($easting);
+            my $yy = Page::os_to_tile($northing);
             $x = int($xx);
             $y = int($yy);
             $x -= 1 if ($xx - $x < 0.5);
@@ -887,43 +762,9 @@ sub geocode_string {
         $js =~ /center: {lat: (.*?),lng: (.*?)}/;
         my $lat = $1; my $lon = $2;
         ($easting,$northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
-        $x = int(os_to_tile($easting))-1;
-        $y = int(os_to_tile($northing))-1;
+        $x = int(Page::os_to_tile($easting))-1;
+        $y = int(Page::os_to_tile($northing))-1;
     }
     return ($x, $y, $easting, $northing, $error);
 }
-
-# P is easting or northing
-# BL is bottom left tile reference of displayed map
-sub os_to_px {
-    my ($p, $bl) = @_;
-    return tile_to_px(os_to_tile($p), $bl);
-}
-
-# Convert tile co-ordinates to pixel co-ordinates from top right of map
-# BL is bottom left tile reference of displayed map
-sub tile_to_px {
-    my ($p, $bl) = @_;
-    $p = 508 - 254 * ($p - $bl);
-    $p = int($p + .5 * ($p <=> 0));
-    return $p;
-}
-
-# Tile co-ordinates are linear scale of OS E/N
-# Will need more generalising when more zooms appear
-sub os_to_tile {
-    return $_[0] / (5000/31);
-}
-sub tile_to_os {
-    return $_[0] * (5000/31);
-}
-
-sub click_to_tile {
-    my ($pin_tile, $pin, $invert) = @_;
-    $pin -= 254 while $pin > 254;
-    $pin += 254 while $pin < 0;
-    $pin = 254 - $pin if $invert; # image submits measured from top down
-    return $pin_tile + $pin / 254;
-}
-
 

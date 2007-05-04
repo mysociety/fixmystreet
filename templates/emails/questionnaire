@@ -1,0 +1,20 @@
+Subject: Questionnaire about your problem on Neighbourhood Fix-It
+
+Hi <?=$values['name']?>,
+
+<?=$values['created']?> ago, you left a problem on Neighbourhood Fix-It
+with the details provided at the end of this email. To keep our
+site up to date and relevant, we'd appreciate it if you could fill in
+this short questionnaire updating the status of your problem:
+
+    <?=$values['url']?>
+
+Yours,
+The Neighbourhood Fix-It team
+
+Your problem was as follows:
+
+<?=$values['title']?>
+
+<?=$values['detail']?>
+

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.42 2007-05-03 09:21:31 matthew Exp $
+# $Id: Page.pm,v 1.43 2007-05-04 14:36:56 matthew Exp $
 #
 
 package Page;
@@ -16,8 +16,10 @@ use Carp;
 use CGI::Fast qw(-no_xhtml);
 use Error qw(:try);
 use File::Slurp;
+use LWP::Simple;
 use POSIX qw(strftime);
 use mySociety::Config;
+use mySociety::DBHandle qw/select_all/;
 use mySociety::EvEl;
 use mySociety::WatchUpdate;
 use mySociety::Web qw(ent NewURL);
@@ -129,6 +131,99 @@ sub error_page ($$) {
     print $q->header(-content_length => length($html)), $html;
 }
 
+# display_map Q PARAMS
+# PARAMS include:
+# X,Y is bottom left tile of 2x2 grid
+# TYPE is 1 if the map is clickable, 2 if clickable and has a form upload,
+#     0 if not clickable
+# PINS is HTML of pins to show
+# PX,PY are coordinates of pin
+# PRE/POST are HTML to show above/below map
+sub display_map {
+    my ($q, %params) = @_;
+    $params{pins} ||= '';
+    $params{pre} ||= '';
+    $params{post} ||= '';
+    my $px = defined($params{px}) ? $params{px}-254 : 0;
+    my $py = defined($params{py}) ? 254-$params{py} : 0;
+    my $x = $params{x}<=0 ? 0 : $params{x};
+    my $y = $params{y}<=0 ? 0 : $params{y};
+    my $url = mySociety::Config::get('TILES_URL');
+    my $tiles_url = $url . $x . '-' . ($x+1) . ',' . $y . '-' . ($y+1) . '/RABX';
+    my $tiles = LWP::Simple::get($tiles_url);
+    throw Error::Simple("Unable to get tiles from URL $tiles_url\n") if !$tiles;
+    my $tileids = RABX::unserialise($tiles);
+    my $tl = $x . '.' . ($y+1);
+    my $tr = ($x+1) . '.' . ($y+1);
+    my $bl = $x . '.' . $y;
+    my $br = ($x+1) . '.' . $y;
+    return '<div id="side">' if (!$tileids->[0][0] || !$tileids->[0][1] || !$tileids->[1][0] || !$tileids->[1][1]);
+    my $tl_src = $url . $tileids->[0][0];
+    my $tr_src = $url . $tileids->[0][1];
+    my $bl_src = $url . $tileids->[1][0];
+    my $br_src = $url . $tileids->[1][1];
+
+    my $out = '';
+    my $img_type;
+    if ($params{type}) {
+        my $encoding = '';
+        $encoding = ' enctype="multipart/form-data"' if ($params{type}==2);
+        my $pc = $q->param('pc') || '';
+        my $pc_enc = ent($pc);
+        $out .= <<EOF;
+<form action="./" method="post" id="mapForm"$encoding>
+<input type="hidden" name="submit_map" value="1">
+<input type="hidden" name="x" value="$x">
+<input type="hidden" name="y" value="$y">
+<input type="hidden" name="pc" value="$pc_enc">
+EOF
+        $img_type = '<input type="image"';
+    } else {
+        $img_type = '<img';
+    }
+    my $imgw = '254px';
+    my $imgh = '254px';
+    $out .= <<EOF;
+<script type="text/javascript">
+var x = $x - 2; var y = $y - 2;
+var drag_x = $px; var drag_y = $py;
+</script>
+<div id="map_box">
+$params{pre}
+    <div id="map"><div id="drag">
+        $img_type alt="NW map tile" id="t2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0px;">$img_type alt="NE map tile" id="t2.3" name="tile_$tr" src="$tr_src" style="top:0px; left:$imgw;"><br>$img_type alt="SW map tile" id="t3.2" name="tile_$bl" src="$bl_src" style="top:$imgh; left:0px;">$img_type alt="SE map tile" id="t3.3" name="tile_$br" src="$br_src" style="top:$imgh; left:$imgw;">
+        $params{pins}
+    </div></div>
+    <p id="copyright">&copy; Crown copyright.  All rights reserved.
+    Department for Constitutional Affairs 100037819&nbsp;2007</p>
+$params{post}
+    </div>
+EOF
+    $out .= Page::compass($q, $x, $y);
+    $out .= '<div id="side">';
+    return $out;
+}
+
+sub display_map_end {
+    my ($type) = @_;
+    my $out = '</div>';
+    $out .= '</form>' if ($type);
+    return $out;
+}
+
+sub display_pin {
+    my ($q, $px, $py, $col, $num) = @_;
+    $num = '' unless $num;
+    my %cols = (red=>'R', green=>'G', blue=>'B', purple=>'P');
+    my $out = '<img class="pin" src="/i/pin' . $cols{$col}
+        . $num . '.gif" alt="Problem" style="top:' . ($py-59)
+        . 'px; right:' . ($px-31) . 'px; position: absolute;">';
+    return $out unless $_ && $_->{id} && $col ne 'blue';
+    my $url = NewURL($q, id=>$_->{id}, x=>undef, y=>undef);
+    $out = '<a title="' . $_->{title} . '" href="' . $url . '">' . $out . '</a>';
+    return $out;
+}
+
 sub compass ($$$) {
     my ($q, $x, $y) = @_;
     my @compass;
@@ -140,22 +235,55 @@ sub compass ($$$) {
     return <<EOF;
 <table cellpadding="0" cellspacing="0" border="0" id="compass">
 <tr valign="bottom">
-<td align="right"><a href="${compass[$x-1][$y+1]}"><img src="i/arrow-northwest.gif" alt="NW"></a></td>
-<td align="center"><a href="${compass[$x][$y+1]}"><img src="i/arrow-north.gif" vspace="3" alt="N"></a></td>
-<td><a href="${compass[$x+1][$y+1]}"><img src="i/arrow-northeast.gif" alt="NE"></a></td>
+<td align="right"><a href="${compass[$x-1][$y+1]}"><img src="/i/arrow-northwest.gif" alt="NW"></a></td>
+<td align="center"><a href="${compass[$x][$y+1]}"><img src="/i/arrow-north.gif" vspace="3" alt="N"></a></td>
+<td><a href="${compass[$x+1][$y+1]}"><img src="/i/arrow-northeast.gif" alt="NE"></a></td>
 </tr>
 <tr>
-<td><a href="${compass[$x-1][$y]}"><img src="i/arrow-west.gif" hspace="3" alt="W"></a></td>
-<td align="center"><img src="i/rose.gif" alt=""></td>
-<td><a href="${compass[$x+1][$y]}"><img src="i/arrow-east.gif" hspace="3" alt="E"></a></td>
+<td><a href="${compass[$x-1][$y]}"><img src="/i/arrow-west.gif" hspace="3" alt="W"></a></td>
+<td align="center"><img src="/i/rose.gif" alt=""></td>
+<td><a href="${compass[$x+1][$y]}"><img src="/i/arrow-east.gif" hspace="3" alt="E"></a></td>
 </tr>
 <tr valign="top">
-<td align="right"><a href="${compass[$x-1][$y-1]}"><img src="i/arrow-southwest.gif" alt="SW"></a></td>
-<td align="center"><a href="${compass[$x][$y-1]}"><img src="i/arrow-south.gif" vspace="3" alt="S"></a></td>
-<td><a href="${compass[$x+1][$y-1]}"><img src="i/arrow-southeast.gif" alt="SE"></a></td>
+<td align="right"><a href="${compass[$x-1][$y-1]}"><img src="/i/arrow-southwest.gif" alt="SW"></a></td>
+<td align="center"><a href="${compass[$x][$y-1]}"><img src="/i/arrow-south.gif" vspace="3" alt="S"></a></td>
+<td><a href="${compass[$x+1][$y-1]}"><img src="/i/arrow-southeast.gif" alt="SE"></a></td>
 </tr>
 </table>
 EOF
+}
+
+# P is easting or northing
+# BL is bottom left tile reference of displayed map
+sub os_to_px {
+    my ($p, $bl) = @_;
+    return tile_to_px(os_to_tile($p), $bl);
+}
+
+# Convert tile co-ordinates to pixel co-ordinates from top right of map
+# BL is bottom left tile reference of displayed map
+sub tile_to_px {
+    my ($p, $bl) = @_;
+    $p = 508 - 254 * ($p - $bl);
+    $p = int($p + .5 * ($p <=> 0));
+    return $p;
+}
+
+# Tile co-ordinates are linear scale of OS E/N
+# Will need more generalising when more zooms appear
+sub os_to_tile {
+    return $_[0] / (5000/31);
+}
+sub tile_to_os {
+    return $_[0] * (5000/31);
+}
+
+sub click_to_tile {
+    my ($pin_tile, $pin, $invert) = @_;
+    $pin -= 254 while $pin > 254;
+    $pin += 254 while $pin < 0;
+    $pin = 254 - $pin if $invert; # image submits measured from top down
+    return $pin_tile + $pin / 254;
 }
 
 # send_email TO (NAME) TEMPLATE-NAME PARAMETERS
@@ -202,9 +330,19 @@ sub prettify_epoch {
 
 # argument is duration in seconds, rounds to the nearest minute
 sub prettify_duration {
-    my $s = shift;
-    $s = int(($s+30)/60)*60;
+    my ($s, $nearest) = @_;
+    if ($nearest eq 'week') {
+        $s = int(($s+60*60*24*3.5)/60/60/24/7)*60*60*24*7;
+    } elsif ($nearest eq 'day') {
+        $s = int(($s+60*60*12)/60/60/24)*60*60*24;
+    } elsif ($nearest eq 'hour') {
+        $s = int(($s+60*30)/60/60)*60*60;
+    } elsif ($nearest eq 'minute') {
+        $s = int(($s+30)/60)*60;
+	return 'less than a minute' if $s == 0;
+    }
     my @out = ();
+    _part(\$s, 60*60*24*7, 'week', \@out);
     _part(\$s, 60*60*24, 'day', \@out);
     _part(\$s, 60*60, 'hour', \@out);
     _part(\$s, 60, 'minute', \@out);
@@ -223,4 +361,65 @@ sub _part {
 sub _ {
     return $_[0];
 }
+
+sub display_problem_text {
+    my ($q, $problem) = @_;
+    my $out = "<h1>$problem->{title}</h1>";
+
+    # Display information about problem
+    $out .= '<p><em>Reported ';
+    $out .= ($problem->{anonymous}) ? 'anonymously' : "by " . ent($problem->{name});
+    $out .= ' at ' . Page::prettify_epoch($problem->{time});
+    if ($problem->{council}) {
+        if ($problem->{whensent}) {
+            $problem->{council} =~ s/\|.*//g;
+            my @councils = split /,/, $problem->{council};
+            my $areas_info = mySociety::MaPit::get_voting_areas_info(\@councils);
+            my $council = join(' and ', map { $areas_info->{$_}->{name} } @councils);
+            $out .= $q->br() . $q->small('Sent to ' . $council . ' ' .
+                Page::prettify_duration($problem->{whensent}, 'minute') . ' later');
+        }
+    } else {
+        $out .= $q->br() . $q->small('Not reported to council');
+    }
+    $out .= '</em></p> <p>';
+    $out .= ent($problem->{detail});
+    $out .= '</p>';
+
+    if ($problem->{photo}) {
+        $out .= '<p align="center"><img src="/photo?id=' . $problem->{id} . '"></p>';
+    }
+
+    return $out;
+}
+
+# Display updates
+sub display_problem_updates {
+    my $id = shift;
+    my $updates = select_all(
+        "select id, name, extract(epoch from created) as created, text, mark_fixed, mark_open
+         from comment where problem_id = ? and state='confirmed'
+         order by created", $id);
+    my $out = '';
+    if (@$updates) {
+        $out .= '<div id="updates">';
+        $out .= '<h2>Updates</h2>';
+        foreach my $row (@$updates) {
+            $out .= "<div><a name=\"update_$row->{id}\"></a><em>";
+            if ($row->{name}) {
+                $out .= "Posted by $row->{name}";
+            } else {
+                $out .= "Posted anonymously";
+            }
+            $out .= " at " . Page::prettify_epoch($row->{created});
+            $out .= ', marked fixed' if ($row->{mark_fixed});
+            $out .= ', reopened' if ($row->{mark_open});
+            $out .= '</em>';
+            $out .= '<br>' . $row->{text} . '</div>';
+        }
+        $out .= '</div>';
+    }
+    return $out;
+}
+
 1;

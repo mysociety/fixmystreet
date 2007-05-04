@@ -51,6 +51,21 @@ YAHOO.util.Event.onContentReady('mapForm', function() {
     }
 });
 
+YAHOO.util.Event.onContentReady('another_qn', function() {
+    if (!document.getElementById('been_fixed_no').checked) {
+        YAHOO.util.Dom.setStyle(this, 'display', 'none');
+    }
+    YAHOO.util.Event.addListener('been_fixed_no', 'click', function(e) {
+        YAHOO.util.Dom.setStyle('another_qn', 'display', 'block');
+    });
+    YAHOO.util.Event.addListener('been_fixed_yes', 'click', function(e) {
+        YAHOO.util.Dom.setStyle('another_qn', 'display', 'none');
+    });
+    YAHOO.util.Event.addListener('been_fixed_na', 'click', function(e) {
+        YAHOO.util.Dom.setStyle('another_qn', 'display', 'none');
+    });
+});
+
 var timer;
 function email_alert_close() {
     YAHOO.util.Dom.setStyle('email_alert_box', 'display', 'none');
