@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.119 2007-05-03 09:40:05 matthew Exp $
+# $Id: index.cgi,v 1.120 2007-05-04 00:12:59 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -705,7 +705,7 @@ sub map_pins {
                 from problem_find_nearby(?, ?, 10) as nearby, problem
                 where nearby.problem_id = problem.id
                 and state = 'confirmed'" . (@ids ? ' and id not in (' . join(',' , @ids) . ')' : '') . "
-             order by distance limit $limit", $mid_e, $mid_n);
+             order by created desc limit $limit", $mid_e, $mid_n);
         foreach (@$current) {
             my $px = os_to_px($_->{easting}, $x);
             my $py = os_to_px($_->{northing}, $y);
