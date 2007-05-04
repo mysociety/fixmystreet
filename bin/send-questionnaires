@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-questionnaires,v 1.2 2007-05-04 15:14:29 matthew Exp $
+# $Id: send-questionnaires,v 1.3 2007-05-04 15:57:43 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -54,6 +54,7 @@ my $unsent = select_all(
         and send_questionnaire = 't'
         and ( (select max(whensent) from questionnaire where problem.id=problem_id) is null
             or (select max(whenanswered) from questionnaire where problem.id=problem_id) < ms_current_timestamp() - '4 weeks'::interval)
+    order by created desc
 ");
 
 foreach my $row (@$unsent) {
@@ -64,7 +65,7 @@ foreach my $row (@$unsent) {
     my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/questionnaire");
 
     my %h = map { $_ => $row->{$_} } qw/name title detail category/;
-    $h{created} = Page::prettify_duration($row->{created}, 'day');
+    $h{created} = Page::prettify_duration($row->{created}, 'week');
     $h{councils} = join(' and ', map { $areas_info->{$_}->{name} } @councils);
 
     my $id = dbh()->selectrow_array("select nextval('questionnaire_id_seq');");
@@ -82,7 +83,7 @@ foreach my $row (@$unsent) {
     });
 
     my $result;
-    if (mySociety::Config::get('STAGING_SITE') || $nomail) {
+    if ($nomail) {
         $result = -1;
         print $email;
     } else {
