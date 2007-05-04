@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.120 2007-05-04 00:12:59 matthew Exp $
+# $Id: index.cgi,v 1.121 2007-05-04 00:16:51 matthew Exp $
 
 # TODO
 # Nothing is done about the update checkboxes - not stored anywhere on anything!
@@ -509,7 +509,7 @@ EOF
     my $list_start = @$current_map + 1;
     $out .= <<EOF;
     </ol>
-    <h2>Recent problems reported within 10km</h2>
+    <h2>Problems reported within 10km</h2>
     <p><a href="/rss/$x,$y"><img align="right" src="/i/feed.png" width="16" height="16" title="RSS feed of recent local problems" alt="RSS feed" border="0"></a></p>
     <ol id="current_near" start="$list_start">
 EOF
@@ -523,7 +523,6 @@ EOF
     }
     $out .= <<EOF;
     </ol>
-    <h2>Recent updates to problems?</h2>
     <h2>Recently fixed problems within 10km</h2>
     <ol>
 EOF
@@ -705,7 +704,7 @@ sub map_pins {
                 from problem_find_nearby(?, ?, 10) as nearby, problem
                 where nearby.problem_id = problem.id
                 and state = 'confirmed'" . (@ids ? ' and id not in (' . join(',' , @ids) . ')' : '') . "
-             order by created desc limit $limit", $mid_e, $mid_n);
+             order by distance, created desc limit $limit", $mid_e, $mid_n);
         foreach (@$current) {
             my $px = os_to_px($_->{easting}, $x);
             my $py = os_to_px($_->{northing}, $y);
