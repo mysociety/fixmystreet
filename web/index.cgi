@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.124 2007-05-04 17:30:18 matthew Exp $
+# $Id: index.cgi,v 1.125 2007-05-08 21:32:16 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -588,7 +588,7 @@ EOF
         foreach my $row (@$updates) {
             $out .= "<div><a name=\"update_$row->{id}\"></a><em>";
             if ($row->{name}) {
-                $out .= "Posted by $row->{name}";
+                $out .= "Posted by " . ent($row->{name});
             } else {
                 $out .= "Posted anonymously";
             }
@@ -596,7 +596,7 @@ EOF
             $out .= ', marked fixed' if ($row->{mark_fixed});
             $out .= ', reopened' if ($row->{mark_open});
             $out .= '</em>';
-            $out .= '<br>' . $row->{text} . '</div>';
+            $out .= '<br>' . ent($row->{text}) . '</div>';
         }
         $out .= '</div>';
     }
