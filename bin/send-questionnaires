@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-questionnaires,v 1.3 2007-05-04 15:57:43 matthew Exp $
+# $Id: send-questionnaires,v 1.4 2007-05-08 18:16:34 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -73,7 +73,8 @@ foreach my $row (@$unsent) {
         values (?, ?, ms_current_timestamp())', {}, $id, $row->{id});
     dbh()->do("update problem set send_questionnaire = 'f' where id=?", {}, $row->{id});
 
-    $h{url} = mySociety::Config::get('BASE_URL') . '/Q/' . mySociety::AuthToken::store('questionnaire', $id);
+    my $token = mySociety::AuthToken::store('questionnaire', $id);
+    $h{url} = mySociety::Config::get('BASE_URL') . '/Q/' . $token;
 
     my $email = mySociety::Email::construct_email({
         _template_ => $template,
@@ -82,16 +83,19 @@ foreach my $row (@$unsent) {
         From => [ mySociety::Config::get('CONTACT_EMAIL'), 'Neighbourhood Fix-It' ],
     });
 
+    print "Sending questionnaire $id, problem $row->{id}, token $token to $row->{email}\n" if $verbose;
+
     my $result;
     if ($nomail) {
         $result = -1;
-        print $email;
     } else {
         $result = mySociety::EmailUtil::send_email($email, mySociety::Config::get('CONTACT_EMAIL'), $row->{email});
     }
     if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
+        print "  ...success\n" if $verbose;
         dbh()->commit();
     } else {
+        print " ...failed\n" if $verbose;
         dbh()->rollback();
     }
 }
