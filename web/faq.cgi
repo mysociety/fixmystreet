@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.16 2007-05-01 16:24:40 matthew Exp $
+# $Id: faq.cgi,v 1.17 2007-05-08 11:30:31 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -80,8 +80,9 @@ site, but not your email address; similarly with updates.  We will
 never give or sell your email address to anyone else, unless we are
 obliged to by law.')),
         $q->dt(_('Will you send nasty, brutish spam to my email address?')),
-        $q->dd(_('Never. We will email you a month after you submit a
-problem, asking for a status update. You can also opt in to receive emails
+        $q->dd(_('Never. We will email you four weeks after you submit a
+problem, asking for a status update, and we\'ll only ever send you emails
+in relation to your problem. You can opt in to receive emails
 about updates to a particular problem.'))
     );
     $out .= $q->h2(_('Organisation Questions'));
