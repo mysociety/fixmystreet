@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.35 2007-05-09 11:13:40 francis Exp $
+# $Id: index.cgi,v 1.36 2007-05-09 11:14:40 francis Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.35 2007-05-09 11:13:40 francis Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.36 2007-05-09 11:14:40 francis Exp $';
 
 use strict;
 
@@ -110,7 +110,7 @@ sub do_summary ($) {
             ['select count(*) from contacts', 'contacts'],
             ['select count(*) from problem', 'problems'],
             ['select count(*) from comment', 'comments'],
-            ['select count(*) from alert', 'questionnaire'],
+            ['select count(*) from alert', 'questionnaires'],
             ['select count(*) from alert', 'alerts']
     )));
 
