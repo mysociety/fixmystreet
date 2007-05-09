@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.15 2007-05-09 19:10:02 matthew Exp $
+# $Id: report.cgi,v 1.16 2007-05-09 19:13:41 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -44,7 +44,7 @@ sub main {
         push @params, $one_council;
         $where_extra = "and council like '%'||?||'%'";
     }
-    my (%fixed, %open);
+    my (%fixed, %open, %councils);
     my $problem = select_all(
         "select id, title, detail, council, state, laststatechange, whensent,
         extract(epoch from ms_current_timestamp()-confirmed) as age,
@@ -67,9 +67,10 @@ sub main {
                 if $row->{state} eq 'fixed';
             push @{$open{$_}{$age}{$duration}}, $row
                 if $row->{state} eq 'confirmed';
+            $councils{$_} = 1;
         }
     }
-    my $areas_info = mySociety::MaPit::get_voting_areas_info([keys %out]);
+    my $areas_info = mySociety::MaPit::get_voting_areas_info([keys %councils]);
     print Page::header($q, 'Summary reports');
     if (!$one_council) {
         print $q->p('This is a summary of all reports on this site that have been sent to a council; select \'show only\' to see the reports for just one council.');
@@ -80,15 +81,15 @@ sub main {
             $q->a({href => NewURL($q, all=>undef, council=>undef) }, 'show all councils') .
             '.');
     }
-    foreach (sort { $areas_info->{$a}->{name} cmp $areas_info->{$b}->{name} } keys %out) {
+    foreach (sort { $areas_info->{$a}->{name} cmp $areas_info->{$b}->{name} } keys %councils) {
         print '<h2>' . $areas_info->{$_}->{name};
         if (!$one_council) {
             print ' ' . $q->small('('.$q->a({href => NewURL($q, 'council'=>$_) }, 'show only').')');
         }
         print "</h2>\n";
         list_problems('New problems', $open{$_}{new}{new}, $all) if $open{$_}{new}{new};
-        list_problems('Old problems, still present', $open{$_}{old}{new}, $all) if $out{$_}{old}{new};
-        list_problems('Old problems, state unknown', $open{$_}{old}{old}, $all) if $out{$_}{old}{old};
+        list_problems('Old problems, still present', $open{$_}{old}{new}, $all) if $open{$_}{old}{new};
+        list_problems('Old problems, state unknown', $open{$_}{old}{old}, $all) if $open{$_}{old}{old};
         list_problems('Recently fixed', $fixed{$_}{new}, $all) if $fixed{$_}{new};
         list_problems('Old fixed', $fixed{$_}{old}, $all) if $fixed{$_}{old};
     }
