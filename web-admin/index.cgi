@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.34 2007-05-03 09:34:23 matthew Exp $
+# $Id: index.cgi,v 1.35 2007-05-09 11:13:40 francis Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.34 2007-05-03 09:34:23 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.35 2007-05-09 11:13:40 francis Exp $';
 
 use strict;
 
@@ -110,6 +110,7 @@ sub do_summary ($) {
             ['select count(*) from contacts', 'contacts'],
             ['select count(*) from problem', 'problems'],
             ['select count(*) from comment', 'comments'],
+            ['select count(*) from alert', 'questionnaire'],
             ['select count(*) from alert', 'alerts']
     )));
 
@@ -129,6 +130,12 @@ sub do_summary ($) {
     $statuses = dbh()->selectall_arrayref("select count(*) as c, state from comment group by state order by c desc");
     print $q->p(join($q->br(), 
         map { $_->[0] . " " . $_->[1] } @$statuses 
+    ));
+
+    print $q->h3("Questionnaire status");
+    $statuses = dbh()->selectall_arrayref("select count(*) as c, (whenanswered is null) from questionnaire group by (whenanswered is null) order by c desc");
+    print $q->p(join($q->br(), 
+        map { $_->[0] . " " . ($_->[1] ? 'answered' : 'unanswered') } @$statuses 
     ));
 
     print $q->h3("Alert status");
