@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.5 2007-05-09 16:30:36 matthew Exp $
+# $Id: questionnaire.cgi,v 1.6 2007-05-09 16:54:48 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -114,7 +114,9 @@ sub submit_questionnaire {
     my $reported = $input{reported} eq 'Yes' ? 't' :
         ($input{reported} eq 'No' ? 'f' : undef);
     dbh()->do('update questionnaire set whenanswered=ms_current_timestamp(),
-        ever_reported=? where id=?', {}, $reported, $questionnaire->{id});
+        ever_reported=?, old_state=?, new_state=? where id=?', {},
+        $reported, $problem->{state}, $new_state ? $new_state : $problem->{state},
+        $questionnaire->{id});
 
     # Record an update if they've given one, or if there's a state change
     my $name = $problem->{anonymous} ? undef : $problem->{name};

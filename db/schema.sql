@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.29 2007-05-09 11:13:39 francis Exp $
+-- $Id: schema.sql,v 1.30 2007-05-09 16:54:48 matthew Exp $
 --
 
 -- secret
@@ -158,7 +158,10 @@ create table questionnaire (
     whenanswered timestamp,
 
     -- whether have ever previously reported a problem to a council or not
-    ever_reported boolean
+    ever_reported boolean,
+    -- problem state before and after questionnaire
+    old_state text,
+    new_state text
 );
 
 -- angle_between A1 A2
