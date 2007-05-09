@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.12 2007-05-09 16:35:04 matthew Exp $
+# $Id: report.cgi,v 1.13 2007-05-09 16:36:04 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -47,7 +47,7 @@ sub main {
     my %out;
     my $problem = select_all(
         "select id, title, detail, council, state, laststatechange, whensent,
-        extract(epoch from ms_current_timestamp()-confirmed) as age
+        extract(epoch from ms_current_timestamp()-confirmed) as age,
         extract(epoch from ms_current_timestamp()-laststatechange) as duration
         from problem
         where state in ('confirmed', 'fixed')
