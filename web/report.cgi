@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.17 2007-05-09 19:15:35 matthew Exp $
+# $Id: report.cgi,v 1.18 2007-05-09 19:26:09 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -39,7 +39,7 @@ sub main {
     my $one_council = $q->param('council');
     $all = 0 unless $one_council;
     my @params;
-    my $where_extra;
+    my $where_extra = '';
     if ($one_council) {
         push @params, $one_council;
         $where_extra = "and council like '%'||?||'%'";
@@ -74,29 +74,43 @@ sub main {
     print Page::header($q, 'Summary reports');
     if (!$one_council) {
         print $q->p('This is a summary of all reports on this site that have been sent to a council; select \'show only\' to see the reports for just one council.');
+        print '<table>';
+        print '<tr><th>Name</th><th>New problems</th><th>Old problems, still present</th>
+<th>Old problems, state unknown</th><th>Recently fixed</th><th>Old fixed</th></tr>';
+        foreach (sort { $areas_info->{$a}->{name} cmp $areas_info->{$b}->{name} } keys %councils) {
+            print '<tr><td><a href="report?council=' . $_ . '">' . $areas_info->{$_}->{name} . '</a></td>';
+	    summary_cell(\@{$open{$_}{new}{new}});
+	    summary_cell(\@{$open{$_}{old}{new}});
+	    summary_cell(\@{$open{$_}{old}{old}});
+	    summary_cell(\@{$fixed{$_}{new}});
+	    summary_cell(\@{$fixed{$_}{old}});
+            print "</tr>\n";
+        }
+        print '</table>';
     } else {
         print $q->p('This is a summary of all reports for one council. You can ' .
             $q->a({href => NewURL($q, all=>1) }, 'see more details') .
             ' or go back and ' .
             $q->a({href => NewURL($q, all=>undef, council=>undef) }, 'show all councils') .
             '.');
-    }
-    foreach (sort { $areas_info->{$a}->{name} cmp $areas_info->{$b}->{name} } keys %councils) {
-        print '<h2>' . $areas_info->{$_}->{name};
-        if (!$one_council) {
-            print ' ' . $q->small('('.$q->a({href => NewURL($q, 'council'=>$_) }, 'show only').')');
+        foreach (sort { $areas_info->{$a}->{name} cmp $areas_info->{$b}->{name} } keys %councils) {
+            print '<h2>' . $areas_info->{$_}->{name} . "</h2>\n";
+            list_problems('New problems', $open{$_}{new}{new}, $all) if $open{$_}{new}{new};
+            list_problems('Old problems, still present', $open{$_}{old}{new}, $all) if $open{$_}{old}{new};
+            list_problems('Old problems, state unknown', $open{$_}{old}{old}, $all) if $open{$_}{old}{old};
+            list_problems('Recently fixed', $fixed{$_}{new}, $all) if $fixed{$_}{new};
+            list_problems('Old fixed', $fixed{$_}{old}, $all) if $fixed{$_}{old};
         }
-        print "</h2>\n";
-        list_problems('New problems', $open{$_}{new}{new}, $all) if $open{$_}{new}{new};
-        list_problems('Old problems, still present', $open{$_}{old}{new}, $all) if $open{$_}{old}{new};
-        list_problems('Old problems, state unknown', $open{$_}{old}{old}, $all) if $open{$_}{old}{old};
-        list_problems('Recently fixed', $fixed{$_}{new}, $all) if $fixed{$_}{new};
-        list_problems('Old fixed', $fixed{$_}{old}, $all) if $fixed{$_}{old};
     }
     print Page::footer();
     dbh()->rollback();
 }
 Page::do_fastcgi(\&main);
+
+sub summary_cell {
+    my $c = shift;
+    print $c ? '<td>' . scalar @$c . '</td>' : '<td>0</td>';
+}
 
 sub list_problems {
     my ($title, $problems, $all) = @_;
