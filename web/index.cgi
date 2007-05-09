@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.127 2007-05-09 20:07:01 matthew Exp $
+# $Id: index.cgi,v 1.128 2007-05-09 22:18:57 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -359,7 +359,7 @@ EOF
     } else {
         my $pins = Page::display_pin($q, $px, $py, 'purple');
         $out .= Page::display_map($q, x => $input{x}, y => $input{y}, type => 2,
-	    pins => $pins, px => $px, py => $py );
+            pins => $pins, px => $px, py => $py );
         $out .= '<h1>Reporting a problem</h1>';
         $out .= '<p>You have located the problem at the point marked with a purple pin on the map.
         If this is not the correct location, simply click on the map again.</p>';
@@ -487,45 +487,49 @@ EOF
     $out .= <<EOF;
 <div>
 <h2>Recent problems reported on this map</h2>
-<ol id="current">
 EOF
+    my $list = '';
     foreach (@$current_map) {
-        $out .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
-        $out .= $_->{title};
-        $out .= '</a></li>';
+        $list .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
+        $list .= $_->{title};
+        $list .= '</a></li>';
     }
-    unless (@$current_map) {
-        $out .= '<li>No problems have been reported yet.</li>';
+    if (@$current_map) {
+        $out .= '<ol id="current">' . $list . '</ol>';
+    } else {
+        $out .= '<p>No problems have been reported yet.</p>';
     }
-    my $list_start = @$current_map + 1;
     $out .= <<EOF;
-    </ol>
     <h2>Closest problems within 10km</h2>
     <p><a href="/rss/$x,$y"><img align="right" src="/i/feed.png" width="16" height="16" title="RSS feed of recent local problems" alt="RSS feed" border="0"></a></p>
-    <ol id="current_near" start="$list_start">
 EOF
+    $list = '';
     foreach (@$current) {
-        $out .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
-        $out .= $_->{title} . ' (c. ' . int($_->{distance}/100+.5)/10 . 'km)';
-        $out .= '</a></li>';
+        $list .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
+        $list .= $_->{title} . ' (c. ' . int($_->{distance}/100+.5)/10 . 'km)';
+        $list .= '</a></li>';
     }
-    unless (@$current) {
-        $out .= '<li>No problems have been reported yet.</li>';
+    if (@$current) {
+        my $list_start = @$current_map + 1;
+        $out .= '<ol id="current_near" start="' . $list_start . '">' . $list . '</ol>';
+    } else {
+        $out .= '<p>No problems have been reported yet.</p>';
     }
     $out .= <<EOF;
-    </ol>
     <h2>Recently fixed problems within 10km</h2>
-    <ol>
 EOF
+    $list = '';
     foreach (@$fixed) {
-        $out .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
-        $out .= $_->{title} . ' (c. ' . int($_->{distance}/100+.5)/10 . 'km)';
-        $out .= '</a></li>';
+        $list .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
+        $list .= $_->{title} . ' (c. ' . int($_->{distance}/100+.5)/10 . 'km)';
+        $list .= '</a></li>';
     }
-    unless (@$fixed) {
-        $out .= '<li>No problems have been fixed yet</li>';
+    if (@$fixed) {
+        $out .= "<ol>$list</ol>\n";
+    } else {
+        $out .= '<p>No problems have been fixed yet</p>';
     }
-    $out .= '</ol></div>';
+    $out .= '</div>';
     $out .= Page::display_map_end(1);
     return $out;
 }
@@ -656,6 +660,8 @@ sub map_pins {
         $pins .= Page::display_pin($q, $px, $py, 'red', $count_prob++);
     }
 
+    # XXX: Change to only show problems with extract(epoch from ms_current_timestamp()-laststatechange) < 8 weeks
+    # And somehow display/link to old problems somewhere else...
     my $current = [];
     if (@$current_map < 9) {
         my $limit = 9 - @$current_map;
