@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.125 2007-05-08 21:32:16 matthew Exp $
+# $Id: index.cgi,v 1.126 2007-05-09 16:16:59 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -601,6 +601,7 @@ EOF
         $out .= '</div>';
     }
     $out .= '<h2>Provide an update</h2>';
+    $out .= $q->p($q->small('Please note that updates are not sent to the council.'));
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
