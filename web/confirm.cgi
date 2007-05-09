@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.15 2007-05-03 09:40:05 matthew Exp $
+# $Id: confirm.cgi,v 1.16 2007-05-09 11:01:44 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -47,9 +47,11 @@ sub main {
             my ($email) = dbh()->selectrow_array("select email from comment where id=?", {}, $id);
             my ($problem_id, $fixed, $reopen) = dbh()->selectrow_array("select problem_id,mark_fixed,mark_open from comment where id=?", {}, $id);
             if ($fixed) {
-                dbh()->do("update problem set state='fixed' where id=? and state='confirmed'", {}, $problem_id);
+                dbh()->do("update problem set state='fixed', laststatechange = ms_current_timestamp()
+                    where id=? and state='confirmed'", {}, $problem_id);
             } elsif ($reopen) {
-                dbh()->do("update problem set state='confirmed' where id=? and state='fixed'", {}, $problem_id);
+                dbh()->do("update problem set state='confirmed', laststatechange = ms_current_timestamp()
+                    where id=? and state='fixed'", {}, $problem_id);
             }
             my $salt = unpack('h*', random_bytes(8));
             my $secret = scalar(dbh()->selectrow_array('select secret from secret'));
@@ -66,7 +68,7 @@ EOF
             $out .= $q->p(sprintf(_('You could also <a href="%s">subscribe to the RSS feed</a> of updates by other local people on this problem, or %s if you wish to receive updates by email.'), "/rss/$problem_id", $signup));
             $out .= '</form>';
         } elsif ($type eq 'problem') {
-            dbh()->do("update problem set state='confirmed',confirmed=ms_current_timestamp()
+            dbh()->do("update problem set state='confirmed', confirmed=ms_current_timestamp(), laststatechange=ms_current_timestamp()
                 where id=? and state='unconfirmed'", {}, $id);
             my ($email, $council) = dbh()->selectrow_array("select email, council from problem where id=?", {}, $id);
             my $salt = unpack('h*', random_bytes(8));

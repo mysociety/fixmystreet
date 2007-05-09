@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.3 2007-05-08 12:17:43 matthew Exp $
+# $Id: questionnaire.cgi,v 1.4 2007-05-09 11:01:44 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -66,7 +66,7 @@ sub check_stuff {
 
     my $problem = dbh()->selectrow_hashref(
         "select *, extract(epoch from confirmed) as time, extract(epoch from whensent-confirmed) as whensent
-	    from problem where id=? and state in ('confirmed','fixed')", {}, $problem_id);
+            from problem where id=? and state in ('confirmed','fixed')", {}, $problem_id);
     throw Error::Simple("I'm afraid we couldn't locate your problem in the database.\n") unless $problem;
 
     return ($questionnaire, $prev_questionnaire, $problem);
@@ -83,7 +83,7 @@ sub submit_questionnaire {
         ($questionnaire, $prev_questionnaire, $problem) = check_stuff($q);
     } catch Error::Simple with {
         my $e = shift;
-	$error = $e;
+        $error = $e;
     };
     return $error if $error;
 
@@ -101,7 +101,8 @@ sub submit_questionnaire {
     $new_state = 'confirmed' if $input{been_fixed} eq 'No' && $problem->{state} eq 'fixed';
 
     # Record state change, if there was one
-    dbh()->do("update problem set state=? where id=?", {}, $new_state, $problem->{id})
+    dbh()->do("update problem set state=?, laststatechange=ms_current_timestamp()
+        where id=?", {}, $new_state, $problem->{id})
         if $new_state;
 
     # Record questionnaire response
@@ -143,7 +144,7 @@ sub display_questionnaire {
         ($questionnaire, $prev_questionnaire, $problem) = check_stuff($q);
     } catch Error::Simple with {
         my $e = shift;
-	$error = $e;
+        $error = $e;
     };
     return $error if $error;
 

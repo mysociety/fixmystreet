@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.27 2007-05-04 14:36:55 matthew Exp $
+-- $Id: schema.sql,v 1.28 2007-05-09 11:01:43 matthew Exp $
 --
 
 -- secret
@@ -145,6 +145,7 @@ create table problem (
         or state = 'fixed'
         or state = 'hidden'
     ),
+    laststatechange timestamp not null default ms_current_timestamp(),
     whensent timestamp,
     send_questionnaire boolean not null default 't'
 );
