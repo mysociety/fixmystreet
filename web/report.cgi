@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.20 2007-05-09 20:07:01 matthew Exp $
+# $Id: report.cgi,v 1.21 2007-05-09 22:05:55 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -47,26 +47,29 @@ sub main {
     my (%fixed, %open, %councils);
     my $problem = select_all(
         "select id, title, detail, council, state, laststatechange, whensent,
-        extract(epoch from ms_current_timestamp()-confirmed) as age,
-        extract(epoch from ms_current_timestamp()-laststatechange) as duration
+        extract(epoch from ms_current_timestamp()-laststatechange) as duration,
+        extract(epoch from laststatechange-confirmed) as laststateage
         from problem
         where state in ('confirmed', 'fixed')
             and whensent is not null
         $where_extra
         order by id
     ", @params);
+    my $fourweeks = 4*7*24*60*60;
     foreach my $row (@$problem) {
         my $council = $row->{council};
         $council =~ s/\|.*//;
         my @council = split /,/, $council;
-        my $age = ($row->{age} > 4*7*24*60*60) ? 'old' : 'new';
-        my $duration = ($row->{duration} > 4*7*24*60*60) ? 'old' : 'new';
+        my $type = ($row->{duration} > 2 * $fourweeks)
+            ? 'unknown'
+            : ($row->{laststateage} > $fourweeks ? 'ongoing' : 'new');
+        my $duration = ($row->{duration} > 2 * $fourweeks) ? 'old' : 'new';
         foreach (@council) {
-	    next if $one_council && $_ != $one_council;
+            next if $one_council && $_ != $one_council;
             my $entry = [ $row->{id}, $row->{title}, $row->{detail}, scalar @council ];
             push @{$fixed{$_}{$duration}}, $entry
                 if $row->{state} eq 'fixed';
-            push @{$open{$_}{$age}{$duration}}, $entry
+            push @{$open{$_}{$type}}, $entry
                 if $row->{state} eq 'confirmed';
             $councils{$_} = 1;
         }
@@ -76,16 +79,16 @@ sub main {
     if (!$one_council) {
         print $q->p('This is a summary of all reports on this site that have been sent to a council; select \'show only\' to see the reports for just one council.');
         print '<table>';
-        print '<tr><th>Name</th><th>New problems</th><th>Old problems, still present</th>
+        print '<tr><th>Name</th><th>New problems</th><th>Ongoing problems</th>
 <th>Old problems, state unknown</th><th>Recently fixed</th><th>Old fixed</th></tr>';
         foreach (sort { Page::canonicalise_council($areas_info->{$a}->{name}) cmp Page::canonicalise_council($areas_info->{$b}->{name}) } keys %councils) {
             print '<tr><td><a href="report?council=' . $_ . '">' .
-	        Page::canonicalise_council($areas_info->{$_}->{name}) . '</a></td>';
-	    summary_cell(\@{$open{$_}{new}{new}});
-	    summary_cell(\@{$open{$_}{old}{new}});
-	    summary_cell(\@{$open{$_}{old}{old}});
-	    summary_cell(\@{$fixed{$_}{new}});
-	    summary_cell(\@{$fixed{$_}{old}});
+                Page::canonicalise_council($areas_info->{$_}->{name}) . '</a></td>';
+            summary_cell(\@{$open{$_}{new}});
+            summary_cell(\@{$open{$_}{ongoing}});
+            summary_cell(\@{$open{$_}{unknown}});
+            summary_cell(\@{$fixed{$_}{new}});
+            summary_cell(\@{$fixed{$_}{old}});
             print "</tr>\n";
         }
         print '</table>';
@@ -97,9 +100,9 @@ sub main {
             '.');
         foreach (sort { Page::canonicalise_council($areas_info->{$a}->{name}) cmp Page::canonicalise_council($areas_info->{$b}->{name}) } keys %councils) {
             print '<h2>' . Page::canonicalise_council($areas_info->{$_}->{name}) . "</h2>\n";
-            list_problems('New problems', $open{$_}{new}{new}, $all) if $open{$_}{new}{new};
-            list_problems('Old problems, still present', $open{$_}{old}{new}, $all) if $open{$_}{old}{new};
-            list_problems('Old problems, state unknown', $open{$_}{old}{old}, $all) if $open{$_}{old}{old};
+            list_problems('New problems', $open{$_}{new}, $all) if $open{$_}{new};
+            list_problems('Ongoing problems', $open{$_}{ongoing}, $all) if $open{$_}{ongoing};
+            list_problems('Old problems, state unknown', $open{$_}{unknown}, $all) if $open{$_}{unknown};
             list_problems('Recently fixed', $fixed{$_}{new}, $all) if $fixed{$_}{new};
             list_problems('Old fixed', $fixed{$_}{old}, $all) if $fixed{$_}{old};
         }
