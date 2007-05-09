@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.43 2007-05-04 14:36:56 matthew Exp $
+# $Id: Page.pm,v 1.44 2007-05-09 13:31:07 matthew Exp $
 #
 
 package Page;
@@ -350,7 +350,7 @@ sub prettify_duration {
 }
 sub _part {
     my ($s, $m, $w, $o) = @_;
-    if ($$s > $m) {
+    if ($$s >= $m) {
         my $i = int($$s / $m);
 	push @$o, "$i $w" . ($i != 1 ? 's' : '');
 	$$s -= $i * $m;
