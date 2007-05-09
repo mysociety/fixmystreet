@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.14 2007-05-09 18:50:09 matthew Exp $
+# $Id: report.cgi,v 1.15 2007-05-09 19:10:02 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -44,34 +44,35 @@ sub main {
         push @params, $one_council;
         $where_extra = "and council like '%'||?||'%'";
     }
-    my %out;
+    my (%fixed, %open);
     my $problem = select_all(
         "select id, title, detail, council, state, laststatechange, whensent,
         extract(epoch from ms_current_timestamp()-confirmed) as age,
         extract(epoch from ms_current_timestamp()-laststatechange) as duration
         from problem
         where state in ('confirmed', 'fixed')
+            and whensent is not null
         $where_extra
         order by id
     ", @params);
     foreach my $row (@$problem) {
-        my $council = $row->{council} || '';
+        my $council = $row->{council};
         $council =~ s/\|.*//;
         my @council = split /,/, $council;
         my $age = ($row->{age} > 4*7*24*60*60) ? 'old' : 'new';
         my $duration = ($row->{duration} > 4*7*24*60*60) ? 'old' : 'new';
         foreach (@council) {
             my $row = [ $row->{id}, $row->{title}, $row->{detail}, scalar @council ];
-            push @{$out{$_}{fixed}{$duration}}, $row
+            push @{$fixed{$_}{$duration}}, $row
                 if $row->{state} eq 'fixed';
-            push @{$out{$_}{confirmed}{$age}{$duration}}, $row
+            push @{$open{$_}{$age}{$duration}}, $row
                 if $row->{state} eq 'confirmed';
         }
     }
     my $areas_info = mySociety::MaPit::get_voting_areas_info([keys %out]);
     print Page::header($q, 'Summary reports');
     if (!$one_council) {
-        print $q->p('This is a summary of all reports on this site, select \'show only\' to see the reports for just one council.');
+        print $q->p('This is a summary of all reports on this site that have been sent to a council; select \'show only\' to see the reports for just one council.');
     } else {
         print $q->p('This is a summary of all reports for one council. You can ' .
             $q->a({href => NewURL($q, all=>1) }, 'see more details') .
@@ -85,12 +86,11 @@ sub main {
             print ' ' . $q->small('('.$q->a({href => NewURL($q, 'council'=>$_) }, 'show only').')');
         }
         print "</h2>\n";
-        list_problems('New problems', $out{$_}{confirmed}{new}{new}, $all) if $out{$_}{confirmed}{new}{new};
-        # list_problems('Old problems', $out{$_}{confirmed}{new}{old}, $all) if $out{$_}{confirmed};
-        list_problems('Old, still present problems', $out{$_}{confirmed}{old}{new}, $all) if $out{$_}{confirmed}{old}{new};
-        list_problems('Old unknown problems', $out{$_}{confirmed}{old}{old}, $all) if $out{$_}{confirmed}{old}{old};
-        list_problems('Recently fixed', $out{$_}{fixed}{new}, $all) if $out{$_}{fixed}{new};
-        list_problems('Old fixed', $out{$_}{fixed}{old}, $all) if $out{$_}{fixed}{old};
+        list_problems('New problems', $open{$_}{new}{new}, $all) if $open{$_}{new}{new};
+        list_problems('Old problems, still present', $open{$_}{old}{new}, $all) if $out{$_}{old}{new};
+        list_problems('Old problems, state unknown', $open{$_}{old}{old}, $all) if $out{$_}{old}{old};
+        list_problems('Recently fixed', $fixed{$_}{new}, $all) if $fixed{$_}{new};
+        list_problems('Old fixed', $fixed{$_}{old}, $all) if $fixed{$_}{old};
     }
     print Page::footer();
     dbh()->rollback();
