@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.16 2007-05-09 19:13:41 matthew Exp $
+# $Id: report.cgi,v 1.17 2007-05-09 19:15:35 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -62,10 +62,10 @@ sub main {
         my $age = ($row->{age} > 4*7*24*60*60) ? 'old' : 'new';
         my $duration = ($row->{duration} > 4*7*24*60*60) ? 'old' : 'new';
         foreach (@council) {
-            my $row = [ $row->{id}, $row->{title}, $row->{detail}, scalar @council ];
-            push @{$fixed{$_}{$duration}}, $row
+            my $entry = [ $row->{id}, $row->{title}, $row->{detail}, scalar @council ];
+            push @{$fixed{$_}{$duration}}, $entry
                 if $row->{state} eq 'fixed';
-            push @{$open{$_}{$age}{$duration}}, $row
+            push @{$open{$_}{$age}{$duration}}, $entry
                 if $row->{state} eq 'confirmed';
             $councils{$_} = 1;
         }
