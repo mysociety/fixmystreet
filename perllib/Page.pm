@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.44 2007-05-09 13:31:07 matthew Exp $
+# $Id: Page.pm,v 1.45 2007-05-09 20:07:00 matthew Exp $
 #
 
 package Page;
@@ -199,7 +199,7 @@ $params{pre}
 $params{post}
     </div>
 EOF
-    $out .= Page::compass($q, $x, $y);
+    $out .= compass($q, $x, $y);
     $out .= '<div id="side">';
     return $out;
 }
@@ -369,15 +369,15 @@ sub display_problem_text {
     # Display information about problem
     $out .= '<p><em>Reported ';
     $out .= ($problem->{anonymous}) ? 'anonymously' : "by " . ent($problem->{name});
-    $out .= ' at ' . Page::prettify_epoch($problem->{time});
+    $out .= ' at ' . prettify_epoch($problem->{time});
     if ($problem->{council}) {
         if ($problem->{whensent}) {
             $problem->{council} =~ s/\|.*//g;
             my @councils = split /,/, $problem->{council};
             my $areas_info = mySociety::MaPit::get_voting_areas_info(\@councils);
-            my $council = join(' and ', map { $areas_info->{$_}->{name} } @councils);
+            my $council = join(' and ', map { canonicalise_council($areas_info->{$_}->{name}) } @councils);
             $out .= $q->br() . $q->small('Sent to ' . $council . ' ' .
-                Page::prettify_duration($problem->{whensent}, 'minute') . ' later');
+                prettify_duration($problem->{whensent}, 'minute') . ' later');
         }
     } else {
         $out .= $q->br() . $q->small('Not reported to council');
@@ -411,7 +411,7 @@ sub display_problem_updates {
             } else {
                 $out .= "Posted anonymously";
             }
-            $out .= " at " . Page::prettify_epoch($row->{created});
+            $out .= " at " . prettify_epoch($row->{created});
             $out .= ', marked fixed' if ($row->{mark_fixed});
             $out .= ', reopened' if ($row->{mark_open});
             $out .= '</em>';
@@ -420,6 +420,16 @@ sub display_problem_updates {
         $out .= '</div>';
     }
     return $out;
+}
+
+sub canonicalise_council {
+    my $c = shift;
+    $c =~ s/City of //;
+    $c =~ s/N\. /North /;
+    $c =~ s/E\. /East /;
+    $c =~ s/W\. /West /;
+    $c =~ s/S\. /South /;
+    return $c;
 }
 
 1;

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.126 2007-05-09 16:16:59 matthew Exp $
+# $Id: index.cgi,v 1.127 2007-05-09 20:07:01 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -367,7 +367,7 @@ EOF
 
     if ($details eq 'all') {
         $out .= '<p>All the details you provide here will be sent to <strong>'
-            . join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @$all_councils)
+            . join('</strong> or <strong>', map { Page::canonicalise_council($areas_info->{$_}->{name}) } @$all_councils)
             . '</strong>. We show the subject and details of the problem on
             the site, along with your name if you give us permission.</p>';
         $out .= '<input type="hidden" name="council" value="' . join(',',@$all_councils) . '">';
@@ -379,9 +379,9 @@ EOF
             push @missing, $_ unless $councils{$_};
         }
         my $n = @missing;
-        my $list = join(' or ', map { $areas_info->{$_}->{name} } @missing);
+        my $list = join(' or ', map { Page::canonicalise_council($areas_info->{$_}->{name}) } @missing);
         $out .= '<p>All the details you provide here will be sent to <strong>'
-            . join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @councils)
+            . join('</strong> or <strong>', map { Page::canonicalise_council($areas_info->{$_}->{name}) } @councils)
             . '</strong>. We show the subject and details of the problem on
             the site, along with your name if you give us permission.</p>';
         $out .= ' We do <strong>not</strong> yet have details for the other council';
@@ -392,7 +392,7 @@ problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.</p>";
             . '|' . join(',', @missing) . '">';
     } else {
         my $e = mySociety::Config::get('CONTACT_EMAIL');
-        my $list = join(' or ', map { $areas_info->{$_}->{name} } @$all_councils);
+        my $list = join(' or ', map { Page::canonicalise_council($areas_info->{$_}->{name}) } @$all_councils);
         my $n = @$all_councils;
         $out .= '<p>We do not yet have details for the council';
         $out .= ($n>1) ? 's that cover' : ' that covers';

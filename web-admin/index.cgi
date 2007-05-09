@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.39 2007-05-09 11:39:44 matthew Exp $
+# $Id: index.cgi,v 1.40 2007-05-09 20:07:01 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.39 2007-05-09 11:39:44 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.40 2007-05-09 20:07:01 matthew Exp $';
 
 use strict;
 
@@ -147,16 +147,6 @@ sub do_summary ($) {
     print html_tail($q);
 }
 
-sub canonicalise_council {
-    my $c = shift;
-    $c =~ s/City of //;
-    $c =~ s/N\. /North /;
-    $c =~ s/E\. /East /;
-    $c =~ s/W\. /West /;
-    $c =~ s/S\. /South /;
-    return $c;
-}
-
 # do_councils_list CGI
 sub do_councils_list ($) {
     my ($q) = @_;
@@ -181,7 +171,7 @@ sub do_councils_list ($) {
     }
     my $councils = mySociety::MaPit::get_voting_areas_info(\@councils);
     my @councils_ids = keys %$councils;
-    @councils_ids = sort { canonicalise_council($councils->{$a}->{name}) cmp canonicalise_council($councils->{$b}->{name}) } @councils_ids;
+    @councils_ids = sort { Page::canonicalise_council($councils->{$a}->{name}) cmp Page::canonicalise_council($councils->{$b}->{name}) } @councils_ids;
     my $bci_info = dbh()->selectall_hashref("
         select area_id, count(*) as c, count(case when deleted then 1 else null end) as deleted,
             count(case when confirmed then 1 else null end) as confirmed
@@ -193,7 +183,7 @@ sub do_councils_list ($) {
             map { 
                 $q->a({href=>build_url($q, $q->url('relative'=>1), 
                   {'area_id' => $_, 'page' => 'councilcontacts',})}, 
-                  canonicalise_council($councils->{$_}->{name})) . " " .
+                  Page::canonicalise_council($councils->{$_}->{name})) . " " .
                     ($bci_info->{$_} ?
                         $bci_info->{$_}->{c} . ' addresses'
                     : '')

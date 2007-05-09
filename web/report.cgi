@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.19 2007-05-09 19:59:04 matthew Exp $
+# $Id: report.cgi,v 1.20 2007-05-09 20:07:01 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -78,8 +78,9 @@ sub main {
         print '<table>';
         print '<tr><th>Name</th><th>New problems</th><th>Old problems, still present</th>
 <th>Old problems, state unknown</th><th>Recently fixed</th><th>Old fixed</th></tr>';
-        foreach (sort { $areas_info->{$a}->{name} cmp $areas_info->{$b}->{name} } keys %councils) {
-            print '<tr><td><a href="report?council=' . $_ . '">' . $areas_info->{$_}->{name} . '</a></td>';
+        foreach (sort { Page::canonicalise_council($areas_info->{$a}->{name}) cmp Page::canonicalise_council($areas_info->{$b}->{name}) } keys %councils) {
+            print '<tr><td><a href="report?council=' . $_ . '">' .
+	        Page::canonicalise_council($areas_info->{$_}->{name}) . '</a></td>';
 	    summary_cell(\@{$open{$_}{new}{new}});
 	    summary_cell(\@{$open{$_}{old}{new}});
 	    summary_cell(\@{$open{$_}{old}{old}});
@@ -94,8 +95,8 @@ sub main {
             ' or go back and ' .
             $q->a({href => NewURL($q, all=>undef, council=>undef) }, 'show all councils') .
             '.');
-        foreach (sort { $areas_info->{$a}->{name} cmp $areas_info->{$b}->{name} } keys %councils) {
-            print '<h2>' . $areas_info->{$_}->{name} . "</h2>\n";
+        foreach (sort { Page::canonicalise_council($areas_info->{$a}->{name}) cmp Page::canonicalise_council($areas_info->{$b}->{name}) } keys %councils) {
+            print '<h2>' . Page::canonicalise_council($areas_info->{$_}->{name}) . "</h2>\n";
             list_problems('New problems', $open{$_}{new}{new}, $all) if $open{$_}{new}{new};
             list_problems('Old problems, still present', $open{$_}{old}{new}, $all) if $open{$_}{old}{new};
             list_problems('Old problems, state unknown', $open{$_}{old}{old}, $all) if $open{$_}{old}{old};
