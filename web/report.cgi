@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.10 2007-05-09 11:18:36 matthew Exp $
+# $Id: report.cgi,v 1.11 2007-05-09 16:30:36 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -42,21 +42,28 @@ sub main {
     my $where_extra;
     if ($one_council) {
         push @params, $one_council;
-        $where_extra = "and council = ?";
+        $where_extra = "and council like '%'||?||'%'";
     }
     my %out;
     my $problem = select_all(
-        "select id, title, detail, council, state from problem
-        where state in ('confirmed', 'fixed') and whensent is not null
+        "select id, title, detail, council, state, laststatechange, whensent,
+        extract(epoch from ms_current_timestamp()-confirmed) as age
+        extract(epoch from ms_current_timestamp()-laststatechange) as duration
+        from problem
+        where state in ('confirmed', 'fixed')
         $where_extra
         order by id
     ", @params);
     foreach my $row (@$problem) {
-        my $council = $row->{council};
+        my $council = $row->{council} || '';
         $council =~ s/\|.*//;
         my @council = split /,/, $council;
+        my $duration = $row->{duration};
+        $age = ($age > 4*7*24*60*60) ? 'old' : 'new';
+        $duration = ($duration > 4*7*24*60*60) ? 'old' : 'new';
         foreach (@council) {
-            push @{$out{$_}{$row->{state}}}, [ $row->{id}, $row->{title}, $row->{detail}, @council>1 ];
+            push @{$out{$_}{$row->{state}}{$age}{$duration}},
+                [ $row->{id}, $row->{title}, $row->{detail}, scalar @council ];
         }
     }
     my $areas_info = mySociety::MaPit::get_voting_areas_info([keys %out]);
@@ -76,8 +83,14 @@ sub main {
             print ' ' . $q->small('('.$q->a({href => NewURL($q, 'council'=>$_) }, 'show only').')');
         }
         print "</h2>\n";
-        list_problems('Problems', $out{$_}{confirmed}, $all) if $out{$_}{confirmed};
-        list_problems('Fixed', $out{$_}{fixed}, $all) if $out{$_}{fixed};
+        list_problems('New problems', $out{$_}{confirmed}{new}{new}, $all) if $out{$_}{confirmed}{new}{new};
+        # list_problems('Old problems', $out{$_}{confirmed}{new}{old}, $all) if $out{$_}{confirmed};
+        list_problems('New problems, already fixed', $out{$_}{fixed}{new}{new}, $all) if $out{$_}{fixed}{new}{new};
+        # list_problems('Old fixed', $out{$_}{fixed}{new}{old}, $all) if $out{$_}{fixed};
+        list_problems('Old, still present problems', $out{$_}{confirmed}{old}{new}, $all) if $out{$_}{confirmed}{old}{new};
+        list_problems('Old unknown problems', $out{$_}{confirmed}{old}{old}, $all) if $out{$_}{confirmed}{old}{old};
+        list_problems('Old problem on site, recently fixed', $out{$_}{fixed}{old}{new}, $all) if $out{$_}{fixed}{old}{new};
+        list_problems('Old fixed', $out{$_}{fixed}{old}{old}, $all) if $out{$_}{fixed}{old}{old};
     }
     print Page::footer();
     dbh()->rollback();
@@ -91,7 +104,8 @@ sub list_problems {
         print '<li><a href="/?id=' . $_->[0] . '">';
         print ent($_->[1]);
         print '</a>';
-        print ' <small>(sent to both)</small>' if $_->[3];
+        print ' <small>(sent to both)</small>' if $_->[3]>1;
+        print ' <small>(sent to none)</small>' if $_->[3]==0;
         print '<br><small>' . ent($_->[2]) . '</small>' if $all;
         print '</li>';
     }
