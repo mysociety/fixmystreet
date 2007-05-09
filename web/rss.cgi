@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: rss.cgi,v 1.3 2007-01-26 22:48:31 matthew Exp $
+# $Id: rss.cgi,v 1.4 2007-05-09 11:18:36 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -53,6 +53,7 @@ sub main {
     } else {
         throw Error::Simple('Unknown alert type') unless $type;
     }
+    dbh()->rollback();
 }
 Page::do_fastcgi(\&main);
 

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: photo.cgi,v 1.2 2007-03-26 12:12:46 matthew Exp $
+# $Id: photo.cgi,v 1.3 2007-05-09 11:18:36 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -44,6 +44,7 @@ sub main {
     return unless $problem;
     my $photo = $problem->[0];
     print $photo;
+    dbh()->rollback();
 }
 Page::do_fastcgi(\&main);
 
