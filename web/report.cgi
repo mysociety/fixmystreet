@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.22 2007-05-11 09:20:50 matthew Exp $
+# $Id: report.cgi,v 1.23 2007-05-11 09:45:03 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -57,7 +57,10 @@ sub main {
     ", @params);
     my $fourweeks = 4*7*24*60*60;
     foreach my $row (@$problem) {
-        my ($council, $missing) = $row->{council} =~ /^(.*?)\|(.*)$/;
+        my $council = $row->{council};
+	$council =~ s/\|.*//;
+	my $missing;
+        # my ($council, $missing) = $row->{council} =~ /^(.*?)\|(.*)$/;
         my @council = split /,/, $council;
         my $type = ($row->{duration} > 2 * $fourweeks)
             ? 'unknown'
