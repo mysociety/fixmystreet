@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.24 2007-05-11 09:47:10 matthew Exp $
+# $Id: report.cgi,v 1.25 2007-05-11 09:51:28 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -125,7 +125,6 @@ sub list_problems {
         print '</a>';
         print ' <small>(sent to both)</small>' if $_->[3]>1;
         print ' <small>(sent to none)</small>' if $_->[3]==0;
-        print ' <small>(no details for other)</small>' if $_->[4];
         print '<br><small>' . ent($_->[2]) . '</small>' if $all;
         print '</li>';
     }
