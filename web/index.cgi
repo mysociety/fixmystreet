@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.128 2007-05-09 22:18:57 matthew Exp $
+# $Id: index.cgi,v 1.129 2007-05-14 10:35:10 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -549,7 +549,7 @@ sub display_problem {
          extract(epoch from whensent-confirmed) as whensent, council, id
          from problem where id=? and state in ('confirmed','fixed', 'hidden')", {}, $input{id});
     return display_location($q, 'Unknown problem ID') unless $problem;
-    return front_page($q, 'That problem has been removed') if $problem->{state} eq 'hidden';
+    return front_page($q, 'That problem has been hidden from public view as it contained inappropriate public details') if $problem->{state} eq 'hidden';
     my $x = Page::os_to_tile($problem->{easting});
     my $y = Page::os_to_tile($problem->{northing});
     my $x_tile = $input{x} || int($x);
