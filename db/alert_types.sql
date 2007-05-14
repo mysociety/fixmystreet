@@ -35,7 +35,7 @@ insert into alert_type
     item_title, item_link, item_description, template)
 values ('council_problems', '', '',
     'New local problems on Neighbourhood Fix-It', '/report', 'The latest local problems reported by users',
-    'problem', 'problem.state in (\'confirmed\', \'fixed\') and council=?', 'created desc',
+    'problem', 'problem.state in (\'confirmed\', \'fixed\') and council like \'%\'||?||\'%\'', 'created desc',
     '{{title}}', '/?id={{id}}', '{{detail}}', 'alert-problem'
 );
 
