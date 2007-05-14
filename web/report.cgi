@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.27 2007-05-14 21:21:44 matthew Exp $
+# $Id: report.cgi,v 1.28 2007-05-14 21:32:32 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -37,6 +37,7 @@ sub main {
     my $q = shift;
     my $all = $q->param('all') || 0;
     my $one_council = $q->param('council');
+    $one_council =~ s/\D//g;
     $all = 0 unless $one_council;
     my @params;
     my $where_extra = '';
@@ -92,7 +93,7 @@ sub main {
         }
         print '</table>';
     } else {
-        print Page::header($q, 'Summary reports', rss => ('Problems in this council, Neighbourhood Fix-It' => "/rss/council/$one_council"));
+        print Page::header($q, 'Summary reports', rss => [ 'Problems in this council, Neighbourhood Fix-It', "/rss/council/$one_council" ]);
         print $q->p(
 	    $q->a({href => "/rss/council/$one_council"}, '<img align="right" src="/i/feed.png" width="16" height="16" title="RSS feed" alt="RSS feed of problems in this council" border="0" hspace="4">'),
 	    'This is a summary of all reports for one council. You can ' .

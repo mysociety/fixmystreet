@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.46 2007-05-14 21:21:44 matthew Exp $
+# $Id: Page.pm,v 1.47 2007-05-14 21:32:32 matthew Exp $
 #
 
 package Page;
@@ -86,10 +86,8 @@ EOF
         <style type="text/css">\@import url("/css.css");</style>
 EOF
     if ($params{rss}) {
-        foreach (keys %{$params{rss}}) {
-            print '<link rel="alternate" type="application/rss+xml" title="'
-                . $_ . '" href="' . $params{rss}{$_} . '">';
-        }
+        $html .= '<link rel="alternate" type="application/rss+xml" title="'
+            . $params{rss}[0] . '" href="' . $params{rss}[1] . '">';
     }
     $html .= <<EOF;
     </head>

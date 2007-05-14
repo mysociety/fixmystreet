@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.130 2007-05-14 21:21:44 matthew Exp $
+# $Id: index.cgi,v 1.131 2007-05-14 21:32:32 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -534,7 +534,7 @@ EOF
     $out .= Page::display_map_end(1);
 
     my %params = (
-        'Recent local problems, Neighbourhood Fix-It' => "/rss/$x,$y"
+        rss => [ 'Recent local problems, Neighbourhood Fix-It', "/rss/$x,$y" ]
     );
 
     return ($out, %params);
@@ -640,7 +640,7 @@ EOF
     $out .= Page::display_map_end(0);
 
     my %params = (
-        'Updates to this problem, Neighbourhood Fix-It' => "/rss/$input_h{id}"
+        rss => [ 'Updates to this problem, Neighbourhood Fix-It', "/rss/$input_h{id}" ]
     );
     return ($out, %params);
 }
