@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.129 2007-05-14 10:35:10 matthew Exp $
+# $Id: index.cgi,v 1.130 2007-05-14 21:21:44 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -57,6 +57,7 @@ sub main {
 
     my $out = '';
     my $title = '';
+    my %params;
     if ($q->param('submit_problem')) {
         $title = 'Submitting your problem';
         $out = submit_problem($q);
@@ -68,14 +69,14 @@ sub main {
         $out = display_form($q);
     } elsif ($q->param('id')) {
         $title = 'Viewing a problem';
-        $out = display_problem($q);
+        ($out, %params) = display_problem($q);
     } elsif ($q->param('pc') || ($q->param('x') && $q->param('y'))) {
         $title = 'Viewing a location';
-        $out = display_location($q);
+        ($out, %params) = display_location($q);
     } else {
         $out = front_page($q);
     }
-    print Page::header($q, $title);
+    print Page::header($q, $title, %params);
     print $out;
     print Page::footer();
     dbh()->rollback();
@@ -531,7 +532,12 @@ EOF
     }
     $out .= '</div>';
     $out .= Page::display_map_end(1);
-    return $out;
+
+    my %params = (
+        'Recent local problems, Neighbourhood Fix-It' => "/rss/$x,$y"
+    );
+
+    return ($out, %params);
 }
 
 sub display_problem {
@@ -632,7 +638,11 @@ $fixedline
 </form>
 EOF
     $out .= Page::display_map_end(0);
-    return $out;
+
+    my %params = (
+        'Updates to this problem, Neighbourhood Fix-It' => "/rss/$input_h{id}"
+    );
+    return ($out, %params);
 }
 
 sub map_pins {

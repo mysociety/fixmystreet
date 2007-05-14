@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.45 2007-05-09 20:07:00 matthew Exp $
+# $Id: Page.pm,v 1.46 2007-05-14 21:21:44 matthew Exp $
 #
 
 package Page;
@@ -64,7 +64,7 @@ sub header ($$%) {
     $title = '' unless $title;
     $title .= ' - ' if $title;
 
-    my %permitted_params = map { $_ => 1 } qw();
+    my %permitted_params = map { $_ => 1 } qw(rss);
     foreach (keys %params) {
         croak "bad parameter '$_'" if (!exists($permitted_params{$_}));
     }
@@ -84,6 +84,14 @@ EOF
         <script type="text/javascript" src="/js.js"></script>
         <title>${title}Neighbourhood Fix-It</title>
         <style type="text/css">\@import url("/css.css");</style>
+EOF
+    if ($params{rss}) {
+        foreach (keys %{$params{rss}}) {
+            print '<link rel="alternate" type="application/rss+xml" title="'
+                . $_ . '" href="' . $params{rss}{$_} . '">';
+        }
+    }
+    $html .= <<EOF;
     </head>
     <body>
 EOF
@@ -339,7 +347,7 @@ sub prettify_duration {
         $s = int(($s+60*30)/60/60)*60*60;
     } elsif ($nearest eq 'minute') {
         $s = int(($s+30)/60)*60;
-	return 'less than a minute' if $s == 0;
+        return 'less than a minute' if $s == 0;
     }
     my @out = ();
     _part(\$s, 60*60*24*7, 'week', \@out);
@@ -352,8 +360,8 @@ sub _part {
     my ($s, $m, $w, $o) = @_;
     if ($$s >= $m) {
         my $i = int($$s / $m);
-	push @$o, "$i $w" . ($i != 1 ? 's' : '');
-	$$s -= $i * $m;
+        push @$o, "$i $w" . ($i != 1 ? 's' : '');
+        $$s -= $i * $m;
     }
 }
 

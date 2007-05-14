@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.26 2007-05-14 18:28:24 matthew Exp $
+# $Id: report.cgi,v 1.27 2007-05-14 21:21:44 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -74,8 +74,8 @@ sub main {
         }
     }
     my $areas_info = mySociety::MaPit::get_voting_areas_info([keys %councils]);
-    print Page::header($q, 'Summary reports');
     if (!$one_council) {
+        print Page::header($q, 'Summary reports');
         print $q->p('This is a summary of all reports on this site that have been sent to a council; select \'show only\' to see the reports for just one council.');
         print '<table>';
         print '<tr><th>Name</th><th>New problems</th><th>Ongoing problems</th>
@@ -92,6 +92,7 @@ sub main {
         }
         print '</table>';
     } else {
+        print Page::header($q, 'Summary reports', rss => ('Problems in this council, Neighbourhood Fix-It' => "/rss/council/$one_council"));
         print $q->p(
 	    $q->a({href => "/rss/council/$one_council"}, '<img align="right" src="/i/feed.png" width="16" height="16" title="RSS feed" alt="RSS feed of problems in this council" border="0" hspace="4">'),
 	    'This is a summary of all reports for one council. You can ' .
