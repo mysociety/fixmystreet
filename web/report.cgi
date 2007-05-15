@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.29 2007-05-15 13:43:21 matthew Exp $
+# $Id: report.cgi,v 1.30 2007-05-15 14:43:26 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -49,7 +49,7 @@ sub main {
     my $problem = select_all(
         "select id, title, detail, council, state,
         extract(epoch from ms_current_timestamp()-lastupdate) as duration,
-        extract(epoch from lastupdate-confirmed) as timetolastupdate
+        extract(epoch from ms_current_timestamp()-confirmed) as age
         from problem
         where state in ('confirmed', 'fixed')
             and whensent is not null
@@ -62,7 +62,7 @@ sub main {
         my @council = split /,/, $council;
         my $type = ($row->{duration} > 2 * $fourweeks)
             ? 'unknown'
-            : ($row->{timetolastupdate} > $fourweeks ? 'ongoing' : 'new');
+            : ($row->{age} > $fourweeks ? 'older' : 'new');
         my $duration = ($row->{duration} > 2 * $fourweeks) ? 'old' : 'new';
         foreach (@council) {
             next if $one_council && $_ != $one_council;
@@ -79,13 +79,13 @@ sub main {
         print Page::header($q, 'Summary reports');
         print $q->p('This is a summary of all reports on this site that have been sent to a council; select \'show only\' to see the reports for just one council.');
         print '<table>';
-        print '<tr><th>Name</th><th>New problems</th><th>Ongoing problems</th>
+        print '<tr><th>Name</th><th>New problems</th><th>Older problems</th>
 <th>Old problems, state unknown</th><th>Recently fixed</th><th>Old fixed</th></tr>';
         foreach (sort { Page::canonicalise_council($areas_info->{$a}->{name}) cmp Page::canonicalise_council($areas_info->{$b}->{name}) } keys %councils) {
             print '<tr><td><a href="report?council=' . $_ . '">' .
                 Page::canonicalise_council($areas_info->{$_}->{name}) . '</a></td>';
             summary_cell(\@{$open{$_}{new}});
-            summary_cell(\@{$open{$_}{ongoing}});
+            summary_cell(\@{$open{$_}{older}});
             summary_cell(\@{$open{$_}{unknown}});
             summary_cell(\@{$fixed{$_}{new}});
             summary_cell(\@{$fixed{$_}{old}});
@@ -104,7 +104,7 @@ sub main {
         foreach (sort { Page::canonicalise_council($areas_info->{$a}->{name}) cmp Page::canonicalise_council($areas_info->{$b}->{name}) } keys %councils) {
             print '<h2>' . Page::canonicalise_council($areas_info->{$_}->{name}) . "</h2>\n";
             list_problems('New problems', $open{$_}{new}, $all) if $open{$_}{new};
-            list_problems('Ongoing problems', $open{$_}{ongoing}, $all) if $open{$_}{ongoing};
+            list_problems('Older problems', $open{$_}{older}, $all) if $open{$_}{older};
             list_problems('Old problems, state unknown', $open{$_}{unknown}, $all) if $open{$_}{unknown};
             list_problems('Recently fixed', $fixed{$_}{new}, $all) if $fixed{$_}{new};
             list_problems('Old fixed', $fixed{$_}{old}, $all) if $fixed{$_}{old};
