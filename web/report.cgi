@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.31 2007-05-15 15:12:22 matthew Exp $
+# $Id: report.cgi,v 1.32 2007-05-15 15:14:49 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -78,11 +78,14 @@ sub main {
     if (!$one_council) {
         print Page::header($q, 'Summary reports');
         print $q->p(_('This is a summary of all reports on this site that have been sent to a council; select a particular council to see the reports sent there.'));
-        print '<table>';
+	my $c = 0;
+        print '<table cellpadding="4" cellspacing="0" border="0">';
         print '<tr><th>Name</th><th>New problems</th><th>Older problems</th>
 <th>Old problems,<br>state unknown</th><th>Recently fixed</th><th>Old fixed</th></tr>';
         foreach (sort { Page::canonicalise_council($areas_info->{$a}->{name}) cmp Page::canonicalise_council($areas_info->{$b}->{name}) } keys %councils) {
-            print '<tr><td><a href="report?council=' . $_ . '">' .
+            print '<tr';
+	    print ' class="a"' if ($c++%2);
+	    print '><td><a href="report?council=' . $_ . '">' .
                 Page::canonicalise_council($areas_info->{$_}->{name}) . '</a></td>';
             summary_cell(\@{$open{$_}{new}});
             summary_cell(\@{$open{$_}{older}});

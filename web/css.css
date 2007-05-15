@@ -64,6 +64,11 @@ dt {
 
 .v { display: none; }
 
+.a {
+    color: #000000;
+    background-color: #f3e5a5;
+}
+
 #error {
     text-align: center;
     color: #cc0000;
