@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.17 2007-05-15 13:43:21 matthew Exp $
+# $Id: confirm.cgi,v 1.18 2007-05-15 13:56:03 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -49,10 +49,11 @@ sub main {
             if ($fixed) {
                 dbh()->do("update problem set state='fixed', lastupdate = ms_current_timestamp()
                     where id=? and state='confirmed'", {}, $problem_id);
-            } else {
+            } else { 
+                # Only want to refresh problem if not already fixed
                 dbh()->do("update problem set lastupdate = ms_current_timestamp()
-                    where id=?", {}, $problem_id);
-	    }
+                    where id=? and state='confirmed'", {}, $problem_id);
+            }
             my $salt = unpack('h*', random_bytes(8));
             my $secret = scalar(dbh()->selectrow_array('select secret from secret'));
             my $signed_email = sha1_hex("$problem_id-$email-$salt-$secret");
