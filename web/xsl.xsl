@@ -17,8 +17,9 @@
 
 <h2 class="v">Navigation</h2>
 <ul id="navigation">
-<li><a href="/">Home</a></li>
-<li><a href="/faq">Information</a></li>
+<li><a href="/">Report a problem</a></li>
+<li><a href="/report">All reports</a></li>
+<li><a href="/faq">Help</a></li>
 <li><a href="/contact">Contact</a></li>
 </ul>
 
@@ -79,7 +80,7 @@ href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code<
         <xsl:template match="item">
             <li>
                <a href="{link}" class="item"><xsl:value-of select="title"/></a><br/>
-               <div><xsl:value-of select="description" /></div>
+               <div><xsl:value-of disable-output-escaping="yes" select="description" /></div>
             </li>
         </xsl:template>
 
