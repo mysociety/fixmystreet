@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.30 2007-05-15 14:43:26 matthew Exp $
+# $Id: report.cgi,v 1.31 2007-05-15 15:12:22 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -77,10 +77,10 @@ sub main {
     my $areas_info = mySociety::MaPit::get_voting_areas_info([keys %councils]);
     if (!$one_council) {
         print Page::header($q, 'Summary reports');
-        print $q->p('This is a summary of all reports on this site that have been sent to a council; select \'show only\' to see the reports for just one council.');
+        print $q->p(_('This is a summary of all reports on this site that have been sent to a council; select a particular council to see the reports sent there.'));
         print '<table>';
         print '<tr><th>Name</th><th>New problems</th><th>Older problems</th>
-<th>Old problems, state unknown</th><th>Recently fixed</th><th>Old fixed</th></tr>';
+<th>Old problems,<br>state unknown</th><th>Recently fixed</th><th>Old fixed</th></tr>';
         foreach (sort { Page::canonicalise_council($areas_info->{$a}->{name}) cmp Page::canonicalise_council($areas_info->{$b}->{name}) } keys %councils) {
             print '<tr><td><a href="report?council=' . $_ . '">' .
                 Page::canonicalise_council($areas_info->{$_}->{name}) . '</a></td>';
@@ -93,7 +93,8 @@ sub main {
         }
         print '</table>';
     } else {
-        print Page::header($q, 'Summary reports', rss => [ 'Problems in this council, Neighbourhood Fix-It', "/rss/council/$one_council" ]);
+        my $name = Page::canonicalise_council($areas_info->{$one_council}->{name});
+        print Page::header($q, "$name - Summary reports", rss => [ "Problems within $name, Neighbourhood Fix-It", "/rss/council/$one_council" ]);
         print $q->p(
 	    $q->a({href => "/rss/council/$one_council"}, '<img align="right" src="/i/feed.png" width="16" height="16" title="RSS feed" alt="RSS feed of problems in this council" border="0" hspace="4">'),
 	    'This is a summary of all reports for one council. You can ' .
@@ -101,14 +102,12 @@ sub main {
             ' or go back and ' .
             $q->a({href => NewURL($q, all=>undef, council=>undef) }, 'show all councils') .
             '.');
-        foreach (sort { Page::canonicalise_council($areas_info->{$a}->{name}) cmp Page::canonicalise_council($areas_info->{$b}->{name}) } keys %councils) {
-            print '<h2>' . Page::canonicalise_council($areas_info->{$_}->{name}) . "</h2>\n";
-            list_problems('New problems', $open{$_}{new}, $all) if $open{$_}{new};
-            list_problems('Older problems', $open{$_}{older}, $all) if $open{$_}{older};
-            list_problems('Old problems, state unknown', $open{$_}{unknown}, $all) if $open{$_}{unknown};
-            list_problems('Recently fixed', $fixed{$_}{new}, $all) if $fixed{$_}{new};
-            list_problems('Old fixed', $fixed{$_}{old}, $all) if $fixed{$_}{old};
-        }
+        print "<h2>$name</h2>\n";
+        list_problems('New problems', $open{$one_council}{new}, $all) if $open{$one_council}{new};
+        list_problems('Older problems', $open{$one_council}{older}, $all) if $open{$one_council}{older};
+        list_problems('Old problems, state unknown', $open{$one_council}{unknown}, $all) if $open{$one_council}{unknown};
+        list_problems('Recently fixed', $fixed{$one_council}{new}, $all) if $fixed{$one_council}{new};
+        list_problems('Old fixed', $fixed{$one_council}{old}, $all) if $fixed{$one_council}{old};
     }
     print Page::footer();
     dbh()->rollback();

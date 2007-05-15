@@ -138,7 +138,7 @@ ul#error {
 #navigation a {
     display: -moz-inline-box;
     display: inline-block;
-    padding: 0.5em 2em;
+    padding: 0.5em 1em;
 }
 #navigation a:link, #navigation a:visited {
     color: #5e552b;

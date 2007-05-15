@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.16 2007-05-09 11:18:36 matthew Exp $
+# $Id: contact.cgi,v 1.17 2007-05-15 15:12:22 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -24,6 +24,13 @@ use mySociety::Web qw(ent);
 
 BEGIN {
     mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+    mySociety::DBHandle::configure(
+        Name => mySociety::Config::get('BCI_DB_NAME'),
+        User => mySociety::Config::get('BCI_DB_USER'),
+        Password => mySociety::Config::get('BCI_DB_PASS'),
+        Host => mySociety::Config::get('BCI_DB_HOST', undef),
+        Port => mySociety::Config::get('BCI_DB_PORT', undef)
+    );
 }
 
 # Main code for index.cgi

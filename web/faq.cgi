@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.18 2007-05-15 13:43:21 matthew Exp $
+# $Id: faq.cgi,v 1.19 2007-05-15 15:12:22 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -76,7 +76,7 @@ dragging an empty square."))
         $q->dd(_('If you submit a problem, we pass on your details, and details
 of the problem, to the council contact or contacts responsible for the
 area where you located the problem. Your name is displayed upon the
-site, but not your email address; similarly with updates.  We will
+site if you let us, but not your email address; similarly with updates.  We will
 never give or sell your email address to anyone else, unless we are
 obliged to by law.')),
         $q->dt(_('Will you send nasty, brutish spam to my email address?')),
