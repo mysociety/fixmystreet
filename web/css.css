@@ -196,8 +196,9 @@ fieldset div.checkbox label, label.n {
 /* Map */
 
 #map_box {
-    float:right;
+    float: right;
     width: 510px;
+    position: relative;
 }
 
 p#copyright {
@@ -257,9 +258,11 @@ p#copyright {
 
 #compass {
     background-color: #ffffff;
+    border: solid 1px #000000;
     color: #000000;
-    float: right;
-    margin: 0 1em 0.5em;
+    position: absolute;
+    top: 0px;
+    right: 439px;
 }
 
 #compass img {
@@ -316,4 +319,19 @@ ol#current img {
 #rss_box {
     padding:10px;
     border:1px solid #999999;
+}
+
+#fixed, #unknown {
+    margin: 1em auto;
+    width: 80%;
+    padding: 5px;
+    text-align: center;
+}
+#fixed {
+    background-color: #ccffcc;
+    border: solid 2px #009900;
+}
+#unknown {
+    background-color: #ffcccc;
+    border: solid 2px #990000;
 }

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.47 2007-05-14 21:32:32 matthew Exp $
+# $Id: Page.pm,v 1.48 2007-05-15 12:40:48 matthew Exp $
 #
 
 package Page;
@@ -63,6 +63,7 @@ sub header ($$%) {
     my ($q, $title, %params) = @_;
     $title = '' unless $title;
     $title .= ' - ' if $title;
+    $title = ent($title);
 
     my %permitted_params = map { $_ => 1 } qw(rss);
     foreach (keys %params) {
@@ -203,9 +204,9 @@ $params{pre}
     <p id="copyright">&copy; Crown copyright.  All rights reserved.
     Department for Constitutional Affairs 100037819&nbsp;2007</p>
 $params{post}
-    </div>
 EOF
     $out .= compass($q, $x, $y);
+    $out .= '</div>';
     $out .= '<div id="side">';
     return $out;
 }
@@ -370,7 +371,7 @@ sub _ {
 
 sub display_problem_text {
     my ($q, $problem) = @_;
-    my $out = "<h1>$problem->{title}</h1>";
+    my $out = $q->h1(ent($problem->{title}));
 
     # Display information about problem
     $out .= '<p><em>Reported ';

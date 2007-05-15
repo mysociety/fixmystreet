@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.131 2007-05-14 21:32:32 matthew Exp $
+# $Id: index.cgi,v 1.132 2007-05-15 12:40:51 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -63,13 +63,13 @@ sub main {
         $out = submit_problem($q);
     } elsif ($q->param('submit_update')) {
         $title = 'Submitting your update';
-        $out = submit_update($q);
+        ($out) = submit_update($q);
     } elsif ($q->param('submit_map')) {
         $title = 'Reporting a problem';
         $out = display_form($q);
     } elsif ($q->param('id')) {
-        $title = 'Viewing a problem';
-        ($out, %params) = display_problem($q);
+        ($out, $title, %params) = display_problem($q);
+        $title .= ' - Viewing a problem';
     } elsif ($q->param('pc') || ($q->param('x') && $q->param('y'))) {
         $title = 'Viewing a location';
         ($out, %params) = display_location($q);
@@ -552,7 +552,8 @@ sub display_problem {
     # Get all information from database
     my $problem = dbh()->selectrow_hashref(
         "select state, easting, northing, title, detail, name, extract(epoch from confirmed) as time, photo, anonymous,
-         extract(epoch from whensent-confirmed) as whensent, council, id
+         extract(epoch from whensent-confirmed) as whensent, council, id,
+         extract(epoch from ms_current_timestamp()-laststatechange) as duration
          from problem where id=? and state in ('confirmed','fixed', 'hidden')", {}, $input{id});
     return display_location($q, 'Unknown problem ID') unless $problem;
     return front_page($q, 'That problem has been hidden from public view as it contained inappropriate public details') if $problem->{state} eq 'hidden';
@@ -563,9 +564,15 @@ sub display_problem {
     my $px = Page::os_to_px($problem->{easting}, $x_tile);
     my $py = Page::os_to_px($problem->{northing}, $y_tile);
 
+    my $out = '';
+
     my $pins = Page::display_pin($q, $px, $py, 'blue');
-    my $out = Page::display_map($q, x => $x_tile, y => $y_tile, type => 0,
+    $out .= Page::display_map($q, x => $x_tile, y => $y_tile, type => 0,
         pins => $pins, px => $px, py => $py );
+    $out .= $q->p({id => 'unknown'}, _('This problem is old and of unknown status.'))
+        if $problem->{state} eq 'confirmed' && $problem->{duration} > 8*7*24*60*60;
+    $out .= $q->p({id => 'fixed'}, _('This problem has been fixed.'))
+        if $problem->{state} eq 'fixed';
     $out .= Page::display_problem_text($q, $problem);
 
     $out .= $q->p({align=>'right'},
@@ -627,9 +634,9 @@ EOF
 <input type="hidden" name="submit_update" value="1">
 <input type="hidden" name="id" value="$input_h{id}">
 <div><label for="form_name">Name:</label>
-<input type="text" name="name" id="form_name" value="$input_h{name}" size="30"> (optional)</div>
+<input type="text" name="name" id="form_name" value="$input_h{name}" size="20"> (optional)</div>
 <div><label for="form_email">Email:</label>
-<input type="text" name="email" id="form_email" value="$input_h{email}" size="30"></div>
+<input type="text" name="email" id="form_email" value="$input_h{email}" size="20"></div>
 <div><label for="form_update">Update:</label>
 <textarea name="update" id="form_update" rows="7" cols="30">$input_h{update}</textarea></div>
 $fixedline
@@ -642,7 +649,7 @@ EOF
     my %params = (
         rss => [ 'Updates to this problem, Neighbourhood Fix-It', "/rss/$input_h{id}" ]
     );
-    return ($out, %params);
+    return ($out, $problem->{title}, %params);
 }
 
 sub map_pins {
