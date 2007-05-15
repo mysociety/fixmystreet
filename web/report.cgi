@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.28 2007-05-14 21:32:32 matthew Exp $
+# $Id: report.cgi,v 1.29 2007-05-15 13:43:21 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -47,9 +47,9 @@ sub main {
     }
     my (%fixed, %open, %councils);
     my $problem = select_all(
-        "select id, title, detail, council, state, laststatechange, whensent,
-        extract(epoch from ms_current_timestamp()-laststatechange) as duration,
-        extract(epoch from laststatechange-confirmed) as laststateage
+        "select id, title, detail, council, state,
+        extract(epoch from ms_current_timestamp()-lastupdate) as duration,
+        extract(epoch from lastupdate-confirmed) as timetolastupdate
         from problem
         where state in ('confirmed', 'fixed')
             and whensent is not null
@@ -62,7 +62,7 @@ sub main {
         my @council = split /,/, $council;
         my $type = ($row->{duration} > 2 * $fourweeks)
             ? 'unknown'
-            : ($row->{laststateage} > $fourweeks ? 'ongoing' : 'new');
+            : ($row->{timetolastupdate} > $fourweeks ? 'ongoing' : 'new');
         my $duration = ($row->{duration} > 2 * $fourweeks) ? 'old' : 'new';
         foreach (@council) {
             next if $one_council && $_ != $one_council;

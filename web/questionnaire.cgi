@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.7 2007-05-15 11:04:02 matthew Exp $
+# $Id: questionnaire.cgi,v 1.8 2007-05-15 13:43:21 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -101,12 +101,12 @@ sub submit_questionnaire {
     $new_state = 'confirmed' if $input{been_fixed} eq 'No' && $problem->{state} eq 'fixed';
 
     # Record state change, if there was one
-    dbh()->do("update problem set state=?, laststatechange=ms_current_timestamp()
+    dbh()->do("update problem set state=?, lastupdate=ms_current_timestamp()
         where id=?", {}, $new_state, $problem->{id})
         if $new_state;
 
     # If it's not fixed and they say it's still not been fixed, record time update
-    dbh()->do("update problem set laststatechange=ms_current_timestamp()
+    dbh()->do("update problem set lastupdate=ms_current_timestamp()
         where id=?", {}, $problem->{id})
         if $input{been_fixed} eq 'No' && $problem->{state} eq 'confirmed';
 

@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.30 2007-05-09 16:54:48 matthew Exp $
+-- $Id: schema.sql,v 1.31 2007-05-15 13:43:20 matthew Exp $
 --
 
 -- secret
@@ -145,7 +145,7 @@ create table problem (
         or state = 'fixed'
         or state = 'hidden'
     ),
-    laststatechange timestamp not null default ms_current_timestamp(),
+    lastupdate timestamp not null default ms_current_timestamp(),
     whensent timestamp,
     send_questionnaire boolean not null default 't'
 );
@@ -226,7 +226,7 @@ create table comment (
         or state = 'hidden'
     ),
     mark_fixed boolean not null,
-    mark_open boolean not null
+    mark_open boolean not null default 'f'
     -- other fields? one to indicate whether this was written by the council
     -- and should be highlighted in the display?
 );

@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.37 2007-05-11 09:02:53 matthew Exp $
+# $Id: send-reports,v 1.38 2007-05-15 13:43:20 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -131,7 +131,7 @@ If you know of an appropriate contact address, please do get in touch. ]\n\n";
     }
     if ($result == mySociety::Util::EMAIL_SUCCESS) {
         dbh()->do('UPDATE problem SET whensent=ms_current_timestamp(),
-            laststatechange=ms_current_timestamp() WHERE id=?', {}, $row->{id});
+            lastupdate=ms_current_timestamp() WHERE id=?', {}, $row->{id});
         dbh()->commit();
     } else {
         dbh()->rollback();

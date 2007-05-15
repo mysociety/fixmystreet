@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.17 2007-05-08 11:30:31 matthew Exp $
+# $Id: faq.cgi,v 1.18 2007-05-15 13:43:21 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -63,9 +63,9 @@ to update the address or addresses we use.')),
         $q->dt(_('Do you remove silly or illegal content?')),
         $q->dd(_('We reserve the right to remove any problems or updates
 which we consider to be inappropriate.')),
-        $q->dt(_("Why doesn't dragging the map work on reporting-a-problem pages in Safari?")),
-        $q->dd(_("There's a bug in Safari to do with setting images on form
-submits, which the map is when reporting a problem. It's fixed in the
+        $q->dt(_("Why doesn't dragging the map work on reporting-a-problem pages in Safari or Konqueror?")),
+        $q->dd(_("There's a bug in these two browsers to do with setting images on form
+submit buttons, which the map uses when reporting a problem. It's fixed in the
 latest nightly build of Safari, so will presumably be fixed in the next
 release. Until then, I've sadly had to disable dragging to avoid people
 dragging an empty square."))

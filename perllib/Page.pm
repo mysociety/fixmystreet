@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.48 2007-05-15 12:40:48 matthew Exp $
+# $Id: Page.pm,v 1.49 2007-05-15 13:43:21 matthew Exp $
 #
 
 package Page;
@@ -414,7 +414,7 @@ sub display_problem_updates {
         foreach my $row (@$updates) {
             $out .= "<div><a name=\"update_$row->{id}\"></a><em>";
             if ($row->{name}) {
-                $out .= "Posted by $row->{name}";
+                $out .= 'Posted by ' . ent($row->{name});
             } else {
                 $out .= "Posted anonymously";
             }
@@ -422,7 +422,7 @@ sub display_problem_updates {
             $out .= ', marked fixed' if ($row->{mark_fixed});
             $out .= ', reopened' if ($row->{mark_open});
             $out .= '</em>';
-            $out .= '<br>' . $row->{text} . '</div>';
+            $out .= '<br>' . ent($row->{text}) . '</div>';
         }
         $out .= '</div>';
     }

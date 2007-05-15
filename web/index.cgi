@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.132 2007-05-15 12:40:51 matthew Exp $
+# $Id: index.cgi,v 1.133 2007-05-15 13:43:21 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -130,8 +130,8 @@ sub submit_update {
 
     my $id = dbh()->selectrow_array("select nextval('comment_id_seq');");
     dbh()->do("insert into comment
-        (id, problem_id, name, email, website, text, state, mark_fixed, mark_open)
-        values (?, ?, ?, ?, ?, ?, 'unconfirmed', ?, 'f')", {},
+        (id, problem_id, name, email, website, text, state, mark_fixed)
+        values (?, ?, ?, ?, ?, ?, 'unconfirmed', ?)", {},
         $id, $input{id}, $input{name}, $input{email}, '', $input{update},
         $input{fixed}?'t':'f');
     my %h = ();
@@ -553,7 +553,7 @@ sub display_problem {
     my $problem = dbh()->selectrow_hashref(
         "select state, easting, northing, title, detail, name, extract(epoch from confirmed) as time, photo, anonymous,
          extract(epoch from whensent-confirmed) as whensent, council, id,
-         extract(epoch from ms_current_timestamp()-laststatechange) as duration
+         extract(epoch from ms_current_timestamp()-lastupdate) as duration
          from problem where id=? and state in ('confirmed','fixed', 'hidden')", {}, $input{id});
     return display_location($q, 'Unknown problem ID') unless $problem;
     return front_page($q, 'That problem has been hidden from public view as it contained inappropriate public details') if $problem->{state} eq 'hidden';
@@ -594,29 +594,7 @@ sub display_problem {
 </form>
 EOF
 
-    # Display updates
-    my $updates = select_all(
-        "select id, name, extract(epoch from created) as created, text, mark_fixed, mark_open
-         from comment where problem_id = ? and state='confirmed'
-         order by created", $input{id});
-    if (@$updates) {
-        $out .= '<div id="updates">';
-        $out .= '<h2>Updates</h2>';
-        foreach my $row (@$updates) {
-            $out .= "<div><a name=\"update_$row->{id}\"></a><em>";
-            if ($row->{name}) {
-                $out .= "Posted by " . ent($row->{name});
-            } else {
-                $out .= "Posted anonymously";
-            }
-            $out .= " at " . Page::prettify_epoch($row->{created});
-            $out .= ', marked fixed' if ($row->{mark_fixed});
-            $out .= ', reopened' if ($row->{mark_open});
-            $out .= '</em>';
-            $out .= '<br>' . ent($row->{text}) . '</div>';
-        }
-        $out .= '</div>';
-    }
+    $out .= Page::display_problem_updates($input{id});
     $out .= '<h2>Provide an update</h2>';
     $out .= $q->p($q->small('Please note that updates are not sent to the council.'));
     if (@errors) {
@@ -677,7 +655,7 @@ sub map_pins {
         $pins .= Page::display_pin($q, $px, $py, 'red', $count_prob++);
     }
 
-    # XXX: Change to only show problems with extract(epoch from ms_current_timestamp()-laststatechange) < 8 weeks
+    # XXX: Change to only show problems with extract(epoch from ms_current_timestamp()-lastupdate) < 8 weeks
     # And somehow display/link to old problems somewhere else...
     my $current = [];
     if (@$current_map < 9) {
