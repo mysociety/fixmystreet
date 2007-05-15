@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.17 2007-05-15 15:12:22 matthew Exp $
+# $Id: contact.cgi,v 1.18 2007-05-15 15:17:06 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -112,18 +112,18 @@ sub contact_page {
             Port => mySociety::Config::get('BCI_DB_PORT', undef)
         );
         my $p = dbh()->selectrow_hashref(
-	    'select title,detail,name,anonymous,extract(epoch from created) as created
-	    from problem where id=?', {}, $id);
+            'select title,detail,name,anonymous,extract(epoch from created) as created
+            from problem where id=?', {}, $id);
         $out .= $q->p('You are reporting the following problem report for being abusive, containing personal information, or similar:');
         $out .= $q->blockquote(
-	    $q->h2(ent($p->{title})),
-	    $q->p($q->em(
+            $q->h2(ent($p->{title})),
+            $q->p($q->em(
          'Reported ',
          ($p->{anonymous}) ? 'anonymously' : "by " . ent($p->{name}),
          ' at ' . Page::prettify_epoch($p->{created}),
-	    )),
-	    $q->p(ent($p->{detail}))
-	);
+            )),
+            $q->p(ent($p->{detail}))
+        );
         $out .= '<input type="hidden" name="id" value="' . $id . '">';
     } else {
         $out .= <<EOF;

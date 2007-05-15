@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.32 2007-05-15 15:14:49 matthew Exp $
+# $Id: report.cgi,v 1.33 2007-05-15 15:17:06 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -78,14 +78,14 @@ sub main {
     if (!$one_council) {
         print Page::header($q, 'Summary reports');
         print $q->p(_('This is a summary of all reports on this site that have been sent to a council; select a particular council to see the reports sent there.'));
-	my $c = 0;
-        print '<table cellpadding="4" cellspacing="0" border="0">';
+        my $c = 0;
+        print '<table cellpadding="3" cellspacing="1" border="0">';
         print '<tr><th>Name</th><th>New problems</th><th>Older problems</th>
 <th>Old problems,<br>state unknown</th><th>Recently fixed</th><th>Old fixed</th></tr>';
         foreach (sort { Page::canonicalise_council($areas_info->{$a}->{name}) cmp Page::canonicalise_council($areas_info->{$b}->{name}) } keys %councils) {
-            print '<tr';
-	    print ' class="a"' if ($c++%2);
-	    print '><td><a href="report?council=' . $_ . '">' .
+            print '<tr align="center"';
+            print ' class="a"' if (++$c%2);
+            print '><td align="right"><a href="report?council=' . $_ . '">' .
                 Page::canonicalise_council($areas_info->{$_}->{name}) . '</a></td>';
             summary_cell(\@{$open{$_}{new}});
             summary_cell(\@{$open{$_}{older}});
@@ -99,8 +99,8 @@ sub main {
         my $name = Page::canonicalise_council($areas_info->{$one_council}->{name});
         print Page::header($q, "$name - Summary reports", rss => [ "Problems within $name, Neighbourhood Fix-It", "/rss/council/$one_council" ]);
         print $q->p(
-	    $q->a({href => "/rss/council/$one_council"}, '<img align="right" src="/i/feed.png" width="16" height="16" title="RSS feed" alt="RSS feed of problems in this council" border="0" hspace="4">'),
-	    'This is a summary of all reports for one council. You can ' .
+            $q->a({href => "/rss/council/$one_council"}, '<img align="right" src="/i/feed.png" width="16" height="16" title="RSS feed" alt="RSS feed of problems in this council" border="0" hspace="4">'),
+            'This is a summary of all reports for one council. You can ' .
             $q->a({href => NewURL($q, all=>1) }, 'see more details') .
             ' or go back and ' .
             $q->a({href => NewURL($q, all=>undef, council=>undef) }, 'show all councils') .
