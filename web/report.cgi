@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.33 2007-05-15 15:17:06 matthew Exp $
+# $Id: report.cgi,v 1.34 2007-05-15 15:28:05 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -85,7 +85,7 @@ sub main {
         foreach (sort { Page::canonicalise_council($areas_info->{$a}->{name}) cmp Page::canonicalise_council($areas_info->{$b}->{name}) } keys %councils) {
             print '<tr align="center"';
             print ' class="a"' if (++$c%2);
-            print '><td align="right"><a href="report?council=' . $_ . '">' .
+            print '><td align="left"><a href="report?council=' . $_ . '">' .
                 Page::canonicalise_council($areas_info->{$_}->{name}) . '</a></td>';
             summary_cell(\@{$open{$_}{new}});
             summary_cell(\@{$open{$_}{older}});
@@ -106,11 +106,19 @@ sub main {
             $q->a({href => NewURL($q, all=>undef, council=>undef) }, 'show all councils') .
             '.');
         print "<h2>$name</h2>\n";
-        list_problems('New problems', $open{$one_council}{new}, $all) if $open{$one_council}{new};
-        list_problems('Older problems', $open{$one_council}{older}, $all) if $open{$one_council}{older};
-        list_problems('Old problems, state unknown', $open{$one_council}{unknown}, $all) if $open{$one_council}{unknown};
-        list_problems('Recently fixed', $fixed{$one_council}{new}, $all) if $fixed{$one_council}{new};
-        list_problems('Old fixed', $fixed{$one_council}{old}, $all) if $fixed{$one_council}{old};
+        if ($open{$one_council}) {
+            print '<div id="col_problems">';
+            list_problems('New problems', $open{$one_council}{new}, $all);
+            list_problems('Older problems', $open{$one_council}{older}, $all);
+            list_problems('Old problems, state unknown', $open{$one_council}{unknown}, $all);
+            print '</div>';
+        }
+        if ($fixed{$one_council}) {
+            print '<div id="col_fixed">';
+            list_problems('Recently fixed', $fixed{$one_council}{new}, $all);
+            list_problems('Old fixed', $fixed{$one_council}{old}, $all);
+            print '</div>';
+        }
     }
     print Page::footer();
     dbh()->rollback();
@@ -124,6 +132,7 @@ sub summary_cell {
 
 sub list_problems {
     my ($title, $problems, $all) = @_;
+    return unless $problems;
     print "<h3>$title</h3>\n<ul>";
     foreach (@$problems) {
         print '<li><a href="/?id=' . $_->[0] . '">';

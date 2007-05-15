@@ -340,3 +340,8 @@ ol#current img {
     background-color: #ffcccc;
     border: solid 2px #990000;
 }
+
+#col_problems, #col_fixed {
+    float: left;
+    width: 48%;
+}
