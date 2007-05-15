@@ -344,4 +344,5 @@ ol#current img {
 #col_problems, #col_fixed {
     float: left;
     width: 48%;
+    margin-right: 1em;
 }
