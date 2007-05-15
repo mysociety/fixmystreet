@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.6 2007-05-09 16:54:48 matthew Exp $
+# $Id: questionnaire.cgi,v 1.7 2007-05-15 11:04:02 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -205,7 +205,7 @@ EOF
 </p>
 EOF
     $out .= <<EOF unless $prev_questionnaire;
-<p>Have you ever reported a problem to your council before?</p>
+<p>Have you ever reported a problem to a council before?</p>
 <p align="center">
 <input type="radio" name="reported" id="reported_yes" value="Yes"$reported{yes}>
 <label for="reported_yes">Yes</label>
