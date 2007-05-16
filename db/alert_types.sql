@@ -25,7 +25,7 @@ insert into alert_type
     item_title, item_link, item_description, template)
 values ('local_problems', '', '',
     'New local problems on Neighbourhood Fix-It', '/', 'The latest local problems reported by users',
-    'problem_find_nearby(?, ?, 10) as nearby,problem', 'nearby.problem_id = problem.id and problem.state in (\'confirmed\', \'fixed\')', 'created desc',
+    'problem_find_nearby(?, ?, ?) as nearby,problem', 'nearby.problem_id = problem.id and problem.state in (\'confirmed\', \'fixed\')', 'created desc',
     '{{title}}', '/?id={{id}}', '{{detail}}', 'alert-problem');
 
 insert into alert_type
