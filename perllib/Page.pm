@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.50 2007-05-15 15:12:22 matthew Exp $
+# $Id: Page.pm,v 1.51 2007-05-16 10:55:46 matthew Exp $
 #
 
 package Page;
@@ -376,8 +376,11 @@ sub display_problem_text {
 
     # Display information about problem
     $out .= '<p><em>Reported ';
+    $out .= 'in the ' . ent($problem->{category}) . ' category '
+        if $problem->{category} && $problem->{category} ne 'Other';
     $out .= ($problem->{anonymous}) ? 'anonymously' : "by " . ent($problem->{name});
     $out .= ' at ' . prettify_epoch($problem->{time});
+    $out .= '; the map was not used so pin location may be inaccurate' unless ($problem->{used_map});
     if ($problem->{council}) {
         if ($problem->{whensent}) {
             $problem->{council} =~ s/\|.*//g;

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.133 2007-05-15 13:43:21 matthew Exp $
+# $Id: index.cgi,v 1.134 2007-05-16 10:55:46 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -551,9 +551,10 @@ sub display_problem {
 
     # Get all information from database
     my $problem = dbh()->selectrow_hashref(
-        "select state, easting, northing, title, detail, name, extract(epoch from confirmed) as time, photo, anonymous,
-         extract(epoch from whensent-confirmed) as whensent, council, id,
-         extract(epoch from ms_current_timestamp()-lastupdate) as duration
+        "select id, easting, northing, council, category, title, detail, photo,
+             used_map, name, anonymous, extract(epoch from confirmed) as time,
+             state, extract(epoch from whensent-confirmed) as whensent,
+             extract(epoch from ms_current_timestamp()-lastupdate) as duration
          from problem where id=? and state in ('confirmed','fixed', 'hidden')", {}, $input{id});
     return display_location($q, 'Unknown problem ID') unless $problem;
     return front_page($q, 'That problem has been hidden from public view as it contained inappropriate public details') if $problem->{state} eq 'hidden';
