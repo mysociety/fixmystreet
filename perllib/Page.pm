@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.52 2007-05-17 10:07:20 matthew Exp $
+# $Id: Page.pm,v 1.53 2007-05-17 10:10:37 matthew Exp $
 #
 
 package Page;
@@ -435,7 +435,11 @@ sub display_problem_updates {
 
 sub canonicalise_council {
     my $c = shift;
-    $c =~ s/City of // unless $c =~ /London/;
+    if ($c =~ /City of London/) {
+        $c = "the $c";
+    } else {
+        $c =~ s/City of //;
+    }
     $c =~ s/N\. /North /;
     $c =~ s/E\. /East /;
     $c =~ s/W\. /West /;
