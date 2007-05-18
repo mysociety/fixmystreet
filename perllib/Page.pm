@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.53 2007-05-17 10:10:37 matthew Exp $
+# $Id: Page.pm,v 1.54 2007-05-18 20:05:07 matthew Exp $
 #
 
 package Page;
@@ -201,12 +201,15 @@ $params{pre}
     <div id="map"><div id="drag">
         $img_type alt="NW map tile" id="t2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0px;">$img_type alt="NE map tile" id="t2.3" name="tile_$tr" src="$tr_src" style="top:0px; left:$imgw;"><br>$img_type alt="SW map tile" id="t3.2" name="tile_$bl" src="$bl_src" style="top:$imgh; left:0px;">$img_type alt="SE map tile" id="t3.3" name="tile_$br" src="$br_src" style="top:$imgh; left:$imgw;">
         $params{pins}
-    </div></div>
+    </div>
+EOF
+    $out .= compass($q, $x, $y);
+    $out .= <<EOF;
+    </div>
     <p id="copyright">&copy; Crown copyright.  All rights reserved.
     Department for Constitutional Affairs 100037819&nbsp;2007</p>
 $params{post}
 EOF
-    $out .= compass($q, $x, $y);
     $out .= '</div>';
     $out .= '<div id="side">';
     return $out;

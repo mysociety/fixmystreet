@@ -264,6 +264,7 @@ p#copyright {
 #compass {
     background-color: #ffffff;
     border: solid 1px #000000;
+    border-width: 0 1px 1px 1px;
     color: #000000;
     position: absolute;
     top: 0px;
