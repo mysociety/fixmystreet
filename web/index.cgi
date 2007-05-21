@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.134 2007-05-16 10:55:46 matthew Exp $
+# $Id: index.cgi,v 1.135 2007-05-21 17:42:52 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -356,21 +356,22 @@ sub display_form {
 <input type="hidden" name="pc" value="$input_h{pc}">
 <input type="hidden" name="skipped" value="1">
 <h1>Reporting a problem</h1>
+<ul>
 EOF
     } else {
         my $pins = Page::display_pin($q, $px, $py, 'purple');
         $out .= Page::display_map($q, x => $input{x}, y => $input{y}, type => 2,
             pins => $pins, px => $px, py => $py );
-        $out .= '<h1>Reporting a problem</h1>';
-        $out .= '<p>You have located the problem at the point marked with a purple pin on the map.
-        If this is not the correct location, simply click on the map again.</p>';
+        $out .= '<h1>Reporting a problem</h1> <ul>';
+        $out .= '<li>You have located the problem at the point marked with a purple pin on the map.
+If this is not the correct location, simply click on the map again. ';
     }
 
     if ($details eq 'all') {
-        $out .= '<p>All the details you provide here will be sent to <strong>'
+        $out .= '<li>All the details you provide here will be sent to <strong>'
             . join('</strong> or <strong>', map { Page::canonicalise_council($areas_info->{$_}->{name}) } @$all_councils)
             . '</strong>. We show the subject and details of the problem on
-            the site, along with your name if you give us permission.</p>';
+            the site, along with your name if you give us permission.';
         $out .= '<input type="hidden" name="council" value="' . join(',',@$all_councils) . '">';
     } elsif ($details eq 'some') {
         my $e = mySociety::Config::get('CONTACT_EMAIL');
@@ -381,46 +382,45 @@ EOF
         }
         my $n = @missing;
         my $list = join(' or ', map { Page::canonicalise_council($areas_info->{$_}->{name}) } @missing);
-        $out .= '<p>All the details you provide here will be sent to <strong>'
+        $out .= '<li>All the details you provide here will be sent to <strong>'
             . join('</strong> or <strong>', map { Page::canonicalise_council($areas_info->{$_}->{name}) } @councils)
             . '</strong>. We show the subject and details of the problem on
-            the site, along with your name if you give us permission.</p>';
+            the site, along with your name if you give us permission.';
         $out .= ' We do <strong>not</strong> yet have details for the other council';
         $out .= ($n>1) ? 's that cover' : ' that covers';
         $out .= " this location. You can help us by finding a contact email address for local
-problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.</p>";
+problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.";
         $out .= '<input type="hidden" name="council" value="' . join(',', @councils)
             . '|' . join(',', @missing) . '">';
     } else {
         my $e = mySociety::Config::get('CONTACT_EMAIL');
         my $list = join(' or ', map { Page::canonicalise_council($areas_info->{$_}->{name}) } @$all_councils);
         my $n = @$all_councils;
-        $out .= '<p>We do not yet have details for the council';
+        $out .= '<li>We do not yet have details for the council';
         $out .= ($n>1) ? 's that cover' : ' that covers';
         $out .= " this location. If you submit a problem here it will be
 left on the site, but <strong>not</strong> reported to the council.
 You can help us by finding a contact email address for local
-problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.</p>";
+problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.";
         $out .= '<input type="hidden" name="council" value="-1">';
     }
     if ($input{skipped}) {
-        $out .= $q->p('Please fill in the form below with details of the problem, and
-describe the location as precisely as possible in the details box.');
+        $out .= '<li>Please fill in the form below with details of the problem, and
+describe the location as precisely as possible in the details box.';
     } elsif ($details ne 'none') {
-        $out .= $q->p('Please fill in details of the problem below. The council won\'t be able
-to help unless you leave as much detail as you can, so please describe the
-exact location of the problem (e.g. on a wall or the floor), and so on.');
+        $out .= '<li>Please fill in details of the problem below. The council won\'t be able
+to help unless you leave as much detail as you can, so please describe the exact location of
+the problem (e.g. on a wall), what it is, how long it has been there, a description, etc.';
     } else {
-        $out .= $q->p('Please fill in details of the problem below.');
+        $out .= '<li>Please fill in details of the problem below.';
     }
-    $out .= '<input type="hidden" name="easting" value="' . $easting . '">
+    $out .= '</ul>
+<input type="hidden" name="easting" value="' . $easting . '">
 <input type="hidden" name="northing" value="' . $northing . '">';
 
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
-    my $back = NewURL($q, submit_map => undef, "tile_$pin_tile_x.$pin_tile_y.x" => undef,
-        "tile_$pin_tile_x.$pin_tile_y.y" => undef, skipped => undef);
     my $anon = ($input{anonymous}) ? ' checked' : ($input{title} ? '' : ' checked');
     $out .= <<EOF;
 <fieldset><legend>Problem details</legend>
@@ -428,7 +428,7 @@ $category
 <div><label for="form_title">Subject:</label>
 <input type="text" value="$input_h{title}" name="title" id="form_title" size="30"></div>
 <div><label for="form_detail">Details:</label>
-<textarea name="detail" id="form_detail" rows="7" cols="30">$input_h{detail}</textarea></div>
+<textarea name="detail" id="form_detail" rows="7" cols="27">$input_h{detail}</textarea></div>
 <div><label for="form_name">Name:</label>
 <input type="text" value="$input_h{name}" name="name" id="form_name" size="30"></div>
 <div class="checkbox"><input type="checkbox" name="anonymous" id="form_anonymous" value="1"$anon>
@@ -441,10 +441,19 @@ $category
 <small>(optional, so the council can get in touch)</small></div>
 <div><label for="form_photo">Photo:</label>
 <input type="file" name="photo" id="form_photo"></div>
-<div class="checkbox"><input type="submit" name="submit_problem" value="Submit"></div>
+<p>Please note:</p>
+<ul>
+<li>Please be polite, concise and to the point.
+<li>Please do not be abusive &mdash; abusing your council devalues the service for all users.
+<li>Writing your message entirely in block capitals makes it hard to read,
+as does a lack of punctuation.
+<li>Remember that Neighbourhood Fix-It is primarily for reporting physical
+problems that can be fixed. If your problem is not appropriate for
+submission via this site remember that you can contact your council
+directly using their own website.
+</ul>
+<p align="right"><input type="submit" name="submit_problem" value="Submit"></p>
 </fieldset>
-
-<p align="right"><a href="$back">Back to listings</a></p>
 EOF
     $out .= Page::display_map_end(1);
     return $out;
