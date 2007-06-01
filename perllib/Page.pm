@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.54 2007-05-18 20:05:07 matthew Exp $
+# $Id: Page.pm,v 1.55 2007-06-01 14:24:41 matthew Exp $
 #
 
 package Page;
@@ -54,21 +54,22 @@ sub do_fastcgi {
     };
 }
 
-=item header Q TITLE [PARAM VALUE ...]
+=item header Q [PARAM VALUE ...]
 
-Return HTML for the top of the page, given the TITLE text and optional PARAMs.
+Return HTML for the top of the page, given PARAMs (TITLE is required).
 
 =cut
-sub header ($$%) {
-    my ($q, $title, %params) = @_;
-    $title = '' unless $title;
-    $title .= ' - ' if $title;
-    $title = ent($title);
+sub header ($%) {
+    my ($q, %params) = @_;
 
-    my %permitted_params = map { $_ => 1 } qw(rss);
+    my %permitted_params = map { $_ => 1 } qw(title rss);
     foreach (keys %params) {
         croak "bad parameter '$_'" if (!exists($permitted_params{$_}));
     }
+
+    my $title = $param{title} || '';
+    $title .= ' - ' if $title;
+    $title = ent($title);
 
     print $q->header(-charset=>'utf-8');
     my $html = <<EOF;
@@ -133,7 +134,7 @@ EOF
 =cut
 sub error_page ($$) {
     my ($q, $message);
-    my $html = header($q, "Error")
+    my $html = header($q, title=>"Error")
             . $q->p($message)
             . footer();
     print $q->header(-content_length => length($html)), $html;

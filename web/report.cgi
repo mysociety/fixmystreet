@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.34 2007-05-15 15:28:05 matthew Exp $
+# $Id: report.cgi,v 1.35 2007-06-01 14:24:41 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -76,7 +76,7 @@ sub main {
     }
     my $areas_info = mySociety::MaPit::get_voting_areas_info([keys %councils]);
     if (!$one_council) {
-        print Page::header($q, 'Summary reports');
+        print Page::header($q, title=>'Summary reports');
         print $q->p(_('This is a summary of all reports on this site that have been sent to a council; select a particular council to see the reports sent there.'));
         my $c = 0;
         print '<table cellpadding="3" cellspacing="1" border="0">';
@@ -97,7 +97,7 @@ sub main {
         print '</table>';
     } else {
         my $name = Page::canonicalise_council($areas_info->{$one_council}->{name});
-        print Page::header($q, "$name - Summary reports", rss => [ "Problems within $name, Neighbourhood Fix-It", "/rss/council/$one_council" ]);
+        print Page::header($q, title=>"$name - Summary reports", rss => [ "Problems within $name, Neighbourhood Fix-It", "/rss/council/$one_council" ]);
         print $q->p(
             $q->a({href => "/rss/council/$one_council"}, '<img align="right" src="/i/feed.png" width="16" height="16" title="RSS feed" alt="RSS feed of problems in this council" border="0" hspace="4">'),
             'This is a summary of all reports for one council. You can ' .

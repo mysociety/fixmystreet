@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.18 2007-05-15 13:56:03 matthew Exp $
+# $Id: confirm.cgi,v 1.19 2007-06-01 14:24:41 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -100,7 +100,7 @@ and we'll look into it.
 EOF
     }
 
-    print Page::header($q, _('Confirmation'));
+    print Page::header($q, title=>_('Confirmation'));
     print $out;
     print Page::footer();
     dbh()->rollback();

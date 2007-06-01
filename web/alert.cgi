@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.5 2007-05-09 11:18:36 matthew Exp $
+# $Id: alert.cgi,v 1.6 2007-06-01 14:24:41 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -97,7 +97,7 @@ EOF
         $out = $q->p(_('Subscribe from a problem page!'));
     }
 
-    print Page::header($q, _('Confirmation'));
+    print Page::header($q, title=>_('Confirmation'));
     print $out;
     print Page::footer();
     dbh()->rollback();

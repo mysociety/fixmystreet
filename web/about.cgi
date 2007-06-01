@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: about.cgi,v 1.2 2006-09-25 18:39:54 matthew Exp $
+# $Id: about.cgi,v 1.3 2007-06-01 14:24:41 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -20,7 +20,7 @@ use Page;
 # Main code for index.cgi
 sub main {
     my $q = shift;
-    print Page::header($q, 'About');
+    print Page::header($q, title=>'About');
     print about_page();
     print Page::footer();
 }

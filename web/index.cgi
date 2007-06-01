@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.135 2007-05-21 17:42:52 matthew Exp $
+# $Id: index.cgi,v 1.136 2007-06-01 14:24:41 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -56,27 +56,26 @@ sub main {
     my $q = shift;
 
     my $out = '';
-    my $title = '';
     my %params;
     if ($q->param('submit_problem')) {
-        $title = 'Submitting your problem';
+        $params{title} = 'Submitting your problem';
         $out = submit_problem($q);
     } elsif ($q->param('submit_update')) {
-        $title = 'Submitting your update';
+        $params{title} = 'Submitting your update';
         ($out) = submit_update($q);
     } elsif ($q->param('submit_map')) {
-        $title = 'Reporting a problem';
+        $params{title} = 'Reporting a problem';
         $out = display_form($q);
     } elsif ($q->param('id')) {
-        ($out, $title, %params) = display_problem($q);
-        $title .= ' - Viewing a problem';
+        ($out, %params) = display_problem($q);
+        $params{title} .= ' - Viewing a problem';
     } elsif ($q->param('pc') || ($q->param('x') && $q->param('y'))) {
-        $title = 'Viewing a location';
         ($out, %params) = display_location($q);
+        $params{title} = 'Viewing a location';
     } else {
         $out = front_page($q);
     }
-    print Page::header($q, $title, %params);
+    print Page::header($q, %params);
     print $out;
     print Page::footer();
     dbh()->rollback();
@@ -635,9 +634,10 @@ EOF
     $out .= Page::display_map_end(0);
 
     my %params = (
-        rss => [ 'Updates to this problem, Neighbourhood Fix-It', "/rss/$input_h{id}" ]
+        rss => [ 'Updates to this problem, Neighbourhood Fix-It', "/rss/$input_h{id}" ],
+	title => $problem->{title}
     );
-    return ($out, $problem->{title}, %params);
+    return ($out, %params);
 }
 
 sub map_pins {
