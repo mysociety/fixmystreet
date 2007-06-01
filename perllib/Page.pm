@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.55 2007-06-01 14:24:41 matthew Exp $
+# $Id: Page.pm,v 1.56 2007-06-01 14:29:32 matthew Exp $
 #
 
 package Page;
@@ -67,7 +67,7 @@ sub header ($%) {
         croak "bad parameter '$_'" if (!exists($permitted_params{$_}));
     }
 
-    my $title = $param{title} || '';
+    my $title = $params{title} || '';
     $title .= ' - ' if $title;
     $title = ent($title);
 
