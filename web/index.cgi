@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.136 2007-06-01 14:24:41 matthew Exp $
+# $Id: index.cgi,v 1.137 2007-06-01 14:27:31 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -469,6 +469,7 @@ sub display_location {
     my $x = $input{x}; my $y = $input{y};
     $x ||= 0; $x += 0;
     $y ||= 0; $y += 0;
+    return front_page($q, @errors) unless $x || $y || $input{pc};
     if (!$x && !$y) {
         try {
             ($x, $y, $easting, $northing, $island, $error) = geocode($input{pc});
