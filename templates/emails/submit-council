@@ -11,7 +11,7 @@ please visit the following link:
 
     <?=$values['url']?>
 
-----------
+<?=$values['has_photo']?>----------
 
 Name: <?=$values['name']?>
 

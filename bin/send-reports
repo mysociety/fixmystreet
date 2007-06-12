@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.39 2007-05-16 10:55:45 matthew Exp $
+# $Id: send-reports,v 1.40 2007-06-12 22:43:27 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -46,7 +46,7 @@ $verbose = 1 if $nomail;
 my (%notgot, %note);
 my $unsent = dbh()->selectall_arrayref(
     "SELECT id, council, category, title, detail, name, email, phone, used_map,
-    easting, northing
+    easting, northing, (photo is not null) as has_photo
     FROM problem WHERE state in ('confirmed','fixed') AND whensent IS NULL
     AND council IS NOT NULL", { Slice => {} });
 
@@ -89,8 +89,9 @@ foreach my $row (@$unsent) {
     push @recips, mySociety::Config::get('CONTACT_EMAIL');
 
     my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/submit-council");
-    my %h = map { $_ => $row->{$_} } qw/title detail name email phone category/;
+    my %h = map { $_ => $row->{$_} } qw/title detail name email phone category has_photo/;
     $h{phone} = "Phone: $h{phone}\n\n" if $h{phone};
+    $h{has_photo} = "This web page also contains a photo of the problem, provided by the user.\n\n" if $h{has_photo};
     if ($h{category} eq 'Other') {
         $h{category_footer} = 'this type of local problem';
         $h{category} = '';
