@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.35 2007-06-01 14:24:41 matthew Exp $
+# $Id: report.cgi,v 1.36 2007-06-13 15:23:10 francis Exp $
 
 use strict;
 require 5.8.0;
@@ -97,27 +97,34 @@ sub main {
         print '</table>';
     } else {
         my $name = Page::canonicalise_council($areas_info->{$one_council}->{name});
-        print Page::header($q, title=>"$name - Summary reports", rss => [ "Problems within $name, Neighbourhood Fix-It", "/rss/council/$one_council" ]);
-        print $q->p(
-            $q->a({href => "/rss/council/$one_council"}, '<img align="right" src="/i/feed.png" width="16" height="16" title="RSS feed" alt="RSS feed of problems in this council" border="0" hspace="4">'),
-            'This is a summary of all reports for one council. You can ' .
-            $q->a({href => NewURL($q, all=>1) }, 'see more details') .
-            ' or go back and ' .
-            $q->a({href => NewURL($q, all=>undef, council=>undef) }, 'show all councils') .
-            '.');
-        print "<h2>$name</h2>\n";
-        if ($open{$one_council}) {
-            print '<div id="col_problems">';
-            list_problems('New problems', $open{$one_council}{new}, $all);
-            list_problems('Older problems', $open{$one_council}{older}, $all);
-            list_problems('Old problems, state unknown', $open{$one_council}{unknown}, $all);
-            print '</div>';
-        }
-        if ($fixed{$one_council}) {
-            print '<div id="col_fixed">';
-            list_problems('Recently fixed', $fixed{$one_council}{new}, $all);
-            list_problems('Old fixed', $fixed{$one_council}{old}, $all);
-            print '</div>';
+        if (!$name) {
+            print Page::header($q, title=>"Summary reports");
+            print "Council with identifier " . ent($one_council). " not found. ";
+            print $q->a({href => NewURL($q, all=>undef, council=>undef) }, 'Show all councils');
+            print ".";
+        } else {
+            print Page::header($q, title=>"$name - Summary reports", rss => [ "Problems within $name, Neighbourhood Fix-It", "/rss/council/$one_council" ]);
+            print $q->p(
+                $q->a({href => "/rss/council/$one_council"}, '<img align="right" src="/i/feed.png" width="16" height="16" title="RSS feed" alt="RSS feed of problems in this council" border="0" hspace="4">'),
+                'This is a summary of all reports for one council. You can ' .
+                $q->a({href => NewURL($q, all=>1) }, 'see more details') .
+                ' or go back and ' .
+                $q->a({href => NewURL($q, all=>undef, council=>undef) }, 'show all councils') .
+                '.');
+            print "<h2>$name</h2>\n";
+            if ($open{$one_council}) {
+                print '<div id="col_problems">';
+                list_problems('New problems', $open{$one_council}{new}, $all);
+                list_problems('Older problems', $open{$one_council}{older}, $all);
+                list_problems('Old problems, state unknown', $open{$one_council}{unknown}, $all);
+                print '</div>';
+            }
+            if ($fixed{$one_council}) {
+                print '<div id="col_fixed">';
+                list_problems('Recently fixed', $fixed{$one_council}{new}, $all);
+                list_problems('Old fixed', $fixed{$one_council}{old}, $all);
+                print '</div>';
+            }
         }
     }
     print Page::footer();
