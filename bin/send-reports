@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.40 2007-06-12 22:43:27 matthew Exp $
+# $Id: send-reports,v 1.41 2007-06-13 09:34:32 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -89,9 +89,10 @@ foreach my $row (@$unsent) {
     push @recips, mySociety::Config::get('CONTACT_EMAIL');
 
     my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/submit-council");
-    my %h = map { $_ => $row->{$_} } qw/title detail name email phone category has_photo/;
+    my %h = map { $_ => $row->{$_} } qw/title detail name email phone category/;
     $h{phone} = "Phone: $h{phone}\n\n" if $h{phone};
-    $h{has_photo} = "This web page also contains a photo of the problem, provided by the user.\n\n" if $h{has_photo};
+    $h{has_photo} = '';
+    $h{has_photo} = "This web page also contains a photo of the problem, provided by the user.\n\n" if $row->{has_photo};
     if ($h{category} eq 'Other') {
         $h{category_footer} = 'this type of local problem';
         $h{category} = '';
