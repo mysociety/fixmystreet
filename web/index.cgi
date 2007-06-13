@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.137 2007-06-01 14:27:31 matthew Exp $
+# $Id: index.cgi,v 1.138 2007-06-13 14:56:19 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -91,25 +91,60 @@ sub front_page {
 like graffiti, fly tipping, broken paving slabs, or street lighting</p>
 EOF
     $out .= '<p id="error">' . $error . '</p>' if ($error);
+    my $fixed = dbh()->selectrow_array("select count(*) from problem where state='fixed' and lastupdate>ms_current_timestamp()-'1 month'::interval");
+    my $updates = dbh()->selectrow_array("select count(*) from comment where state='confirmed'");
+    my $new = dbh()->selectrow_array("select count(*) from problem where state in ('confirmed','fixed') and confirmed>ms_current_timestamp()-'1 week'::interval");
     $out .= <<EOF;
 <form action="./" method="get" id="postcodeForm">
 <label for="pc">Enter a nearby postcode, or street name and area:</label>
 &nbsp;<input type="text" name="pc" value="$pc_h" id="pc" size="10" maxlength="200">
-&nbsp;<input type="submit" value="Go">
+&nbsp;<input type="submit" value="Go" id="submit">
 </form>
 
-<p>Reports are sent directly to the local council, apart from a few councils where we&rsquo;re missing details.</p>
+<div id="front_intro">
 
-<p>Reporting a problem is very simple:</p>
+<div id="front_stats">
+<div><big>$new</big> reports in past week</div>
+<div><big>$fixed</big> fixed in past month</div>
+<div><big>$updates</big> problem updates</div>
+</div>
+
+<p>Reports are sent directly to the local council.
+Reporting a problem is very simple:</p>
 
 <ol>
-<li>Enter a postcode or street name and area;
+<li>Enter a postcode or street name and area above;
 <li>Locate the problem on a high-scale map;
 <li>Enter details of the problem;
 <li>Submit to the council.
 </ol>
 
+</div>
+
+<div id="front_recent">
 EOF
+
+    my $probs = select_all("select id, title from problem
+        where state in ('confirmed', 'fixed') and photo is not null
+        order by confirmed desc limit 3");
+    $out .= '<h2>Recently reported photos</h2>' if @$probs;
+    foreach (@$probs) {
+        my $title = ent($_->{title});
+        $out .= '<a href="/?id=' . $_->{id} .
+            '"><img border="0" src="/photo?tn=1;id=' . $_->{id} .
+            '" alt="' . $title . '" title="' . $title . '"></a>';
+    }
+    $probs = select_all("select id,title from problem
+        where state in ('confirmed', 'fixed')
+        order by confirmed desc limit 5");
+    $out .= '<h2>Recently reported problems</h2> <ul>' if @$probs;
+    foreach (@$probs) {
+        $out .= '<li><a href="/?id=' . $_->{id} . '">'. ent($_->{title});
+        $out .= '</a>';
+    }
+    $out .= '</ul>' if @$probs;
+    $out .= '</div>';
+
     return $out;
 }
 
@@ -589,7 +624,7 @@ sub display_problem {
         $q->small($q->a({href => '/contact?id=' . $input{id}}, 'Offensive? Unsuitable? Tell us'))
     );
     my $back = NewURL($q, id=>undef, x=>$x_tile, y=>$y_tile);
-    $out .= '<p style="padding-bottom: 0.5em; border-bottom: dotted 1px #999999;" align="right"><a href="' . $back . '">Back to listings</a></p>';
+    $out .= '<p style="padding-bottom: 0.5em; border-bottom: dotted 1px #999999;" align="right"><a href="' . $back . '">More problems nearby</a></p>';
 
     $out .= '<a href="/rss/'.$input_h{id}.'"><img align="right" src="/i/feed.png" width="16" height="16" title="RSS feed" alt="RSS feed of updates to this problem" border="0" hspace="4"></a> ';
     $out .= '<a id="email_alert" href="/alert?type=updates;id='.$input_h{id}.'"><img src="/i/email.png" width="16" height="16" title="Email alerts" alt="Email alerts of updates to this problem" border="0"></a>';
@@ -636,7 +671,7 @@ EOF
 
     my %params = (
         rss => [ 'Updates to this problem, Neighbourhood Fix-It', "/rss/$input_h{id}" ],
-	title => $problem->{title}
+        title => $problem->{title}
     );
     return ($out, %params);
 }

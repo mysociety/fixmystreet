@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: photo.cgi,v 1.3 2007-05-09 11:18:36 matthew Exp $
+# $Id: photo.cgi,v 1.4 2007-06-13 14:56:19 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -43,6 +43,17 @@ sub main {
             and photo is not null", {}, $id);
     return unless $problem;
     my $photo = $problem->[0];
+    if ($q->param('tn')) {
+        use Image::Magick;
+        my $image = Image::Magick->new;
+        $image->BlobToImage($photo);
+        my $err = $image->Scale(geometry => "x100>");
+        throw Error::Simple("resize failed: $err") if "$err";
+        my @blobs = $image->ImageToBlob();
+        undef $image;
+        $photo = $blobs[0];
+    }
+
     print $photo;
     dbh()->rollback();
 }

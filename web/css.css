@@ -163,11 +163,18 @@ ul#error {
     padding: 2px 4px;
 }
 
-/* Forms */
+/* Front page */
+
+#expl {
+    text-align: center;
+    font-size: 150%;
+    margin: 0 2em;
+    font-weight: bolder;
+}
 
 #postcodeForm {
     display: table;
-    _width: 18em;
+    _width: 31em;
     text-align: center;
     font-size: 150%;
     margin: 1em auto;
@@ -181,6 +188,54 @@ ul#error {
     float: none;
     padding-right: 0;
 }
+
+#postcodeForm #submit {
+    font-size: 83%;
+}
+
+#front_intro {
+    float: left;
+    width: 48%;
+}
+
+#front_intro p {
+    clear: both;
+    margin-top: 0;
+}
+
+#front_stats {
+    margin: 0.5em auto 0;
+    width: 20em;
+}
+
+#front_stats div {
+    text-align: center;
+    width: 5.5em;
+    background-color: #e3d595;
+    -moz-border-radius: 0.5em;
+    border-radius: 0.5em;
+    float: left;
+    margin: 0 0.5em 1em;
+}
+
+#front_stats div big {
+    font-size: 150%;
+    display: block;
+}
+
+#front_recent {
+    float: right;
+    width: 48%;
+}
+#front_recent img {
+    margin-right: 0.25em;
+    margin-bottom: 0.25em;
+}
+#front_recent > h2:first-child {
+    margin-top: 0;
+}
+
+/* Forms */
 
 fieldset div {
     margin-top: 2px;
@@ -233,14 +288,6 @@ p#copyright {
     margin-right: 530px;
 }
 
-/*#drag {
-    width: 1em;
-    height: 1em;
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-*/
 #drag input {
     cursor: crosshair;
     background-color: #cccccc;
@@ -282,11 +329,21 @@ ol#current img {
 }
 */
 
-#expl {
+/* Problem pages */
+
+#fixed, #unknown {
+    margin: 1em auto;
+    width: 80%;
+    padding: 5px;
     text-align: center;
-    font-size: 150%;
-    margin: 2em;
-    font-weight: bolder;
+}
+#fixed {
+    background-color: #ccffcc;
+    border: solid 2px #009900;
+}
+#unknown {
+    background-color: #ffcccc;
+    border: solid 2px #990000;
 }
 
 #updates div {
@@ -311,6 +368,8 @@ ol#current img {
     margin: 0;
 }
 
+/* RSS feed XSL */
+
 #rss_items {
     width:62%;
     float:left;
@@ -327,20 +386,7 @@ ol#current img {
     border:1px solid #999999;
 }
 
-#fixed, #unknown {
-    margin: 1em auto;
-    width: 80%;
-    padding: 5px;
-    text-align: center;
-}
-#fixed {
-    background-color: #ccffcc;
-    border: solid 2px #009900;
-}
-#unknown {
-    background-color: #ffcccc;
-    border: solid 2px #990000;
-}
+/* Report page */
 
 #col_problems, #col_fixed {
     float: left;
