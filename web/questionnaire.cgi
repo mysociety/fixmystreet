@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.10 2007-06-01 14:24:41 matthew Exp $
+# $Id: questionnaire.cgi,v 1.11 2007-06-15 23:25:30 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -96,7 +96,7 @@ sub submit_questionnaire {
         if $input{been_fixed} eq 'No' && $problem->{state} eq 'fixed' && !$input{update};
     return display_questionnaire($q, @errors) if @errors;
 
-    my $new_state;
+    my $new_state = '';
     $new_state = 'fixed' if $input{been_fixed} eq 'Yes' && $problem->{state} eq 'confirmed';
     $new_state = 'confirmed' if $input{been_fixed} eq 'No' && $problem->{state} eq 'fixed';
 
