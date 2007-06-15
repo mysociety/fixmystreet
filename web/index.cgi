@@ -1,12 +1,12 @@
 #!/usr/bin/perl -w
 
 # index.cgi:
-# Main code for Neighbourhood Fix-It
+# Main code for FixMyStreet
 #
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.138 2007-06-13 14:56:19 matthew Exp $
+# $Id: index.cgi,v 1.139 2007-06-15 14:57:52 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -28,6 +28,7 @@ use Page;
 use mySociety::AuthToken;
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh select_all);
+use mySociety::Gaze;
 use mySociety::GeoUtil;
 use mySociety::Util;
 use mySociety::MaPit;
@@ -87,8 +88,8 @@ sub front_page {
     my ($q, $error) = @_;
     my $pc_h = ent($q->param('pc') || '');
     my $out = <<EOF;
-<p id="expl">Report, view, or discuss local problems
-like graffiti, fly tipping, broken paving slabs, or street lighting</p>
+<p id="expl"><strong>Report, view, or discuss local problems</strong>
+<br><small>(like graffiti, fly tipping, broken paving slabs, or street lighting)</small></p>
 EOF
     $out .= '<p id="error">' . $error . '</p>' if ($error);
     my $fixed = dbh()->selectrow_array("select count(*) from problem where state='fixed' and lastupdate>ms_current_timestamp()-'1 month'::interval");
@@ -103,21 +104,22 @@ EOF
 
 <div id="front_intro">
 
+<h2>How to report a problem</h2>
+
+<ol>
+<li>Enter a nearby postcode, or street name and area
+<li>Locate the problem on a map of the area
+<li>Enter details of the problem
+<li>We send it to the council on your behalf
+</ol>
+
+<h2>FixMyStreet updates</h2>
+
 <div id="front_stats">
 <div><big>$new</big> reports in past week</div>
 <div><big>$fixed</big> fixed in past month</div>
 <div><big>$updates</big> problem updates</div>
 </div>
-
-<p>Reports are sent directly to the local council.
-Reporting a problem is very simple:</p>
-
-<ol>
-<li>Enter a postcode or street name and area above;
-<li>Locate the problem on a high-scale map;
-<li>Enter details of the problem;
-<li>Submit to the council.
-</ol>
 
 </div>
 
@@ -403,7 +405,7 @@ If this is not the correct location, simply click on the map again. ';
 
     if ($details eq 'all') {
         $out .= '<li>All the details you provide here will be sent to <strong>'
-            . join('</strong> or <strong>', map { Page::canonicalise_council($areas_info->{$_}->{name}) } @$all_councils)
+            . join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @$all_councils)
             . '</strong>. We show the subject and details of the problem on
             the site, along with your name if you give us permission.';
         $out .= '<input type="hidden" name="council" value="' . join(',',@$all_councils) . '">';
@@ -415,9 +417,9 @@ If this is not the correct location, simply click on the map again. ';
             push @missing, $_ unless $councils{$_};
         }
         my $n = @missing;
-        my $list = join(' or ', map { Page::canonicalise_council($areas_info->{$_}->{name}) } @missing);
+        my $list = join(' or ', map { $areas_info->{$_}->{name} } @missing);
         $out .= '<li>All the details you provide here will be sent to <strong>'
-            . join('</strong> or <strong>', map { Page::canonicalise_council($areas_info->{$_}->{name}) } @councils)
+            . join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @councils)
             . '</strong>. We show the subject and details of the problem on
             the site, along with your name if you give us permission.';
         $out .= ' We do <strong>not</strong> yet have details for the other council';
@@ -428,7 +430,7 @@ problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.";
             . '|' . join(',', @missing) . '">';
     } else {
         my $e = mySociety::Config::get('CONTACT_EMAIL');
-        my $list = join(' or ', map { Page::canonicalise_council($areas_info->{$_}->{name}) } @$all_councils);
+        my $list = join(' or ', map { $areas_info->{$_}->{name} } @$all_councils);
         my $n = @$all_councils;
         $out .= '<li>We do not yet have details for the council';
         $out .= ($n>1) ? 's that cover' : ' that covers';
@@ -481,7 +483,7 @@ $category
 <li>Please do not be abusive &mdash; abusing your council devalues the service for all users.
 <li>Writing your message entirely in block capitals makes it hard to read,
 as does a lack of punctuation.
-<li>Remember that Neighbourhood Fix-It is primarily for reporting physical
+<li>Remember that FixMyStreet is primarily for reporting physical
 problems that can be fixed. If your problem is not appropriate for
 submission via this site remember that you can contact your council
 directly using their own website.
@@ -515,15 +517,17 @@ sub display_location {
     return geocode_choice($error) if (ref($error) eq 'ARRAY');
     return front_page($q, $error) if ($error);
 
-    my ($pins, $current_map, $current, $fixed) = map_pins($q, $x, $y);
+    my ($pins, $current_map, $current, $fixed, $dist) = map_pins($q, $x, $y);
     my $out = Page::display_map($q, x => $x, y => $y, type => 1, pins => $pins );
-    $out .= '<h1>Click on the map to report a problem</h1>';
+    $out .= '<h1>Problems in this area</h1>';
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
     my $skipurl = NewURL($q, 'submit_map'=>1, skipped=>1);
     $out .= <<EOF;
-<p><small>If you cannot see a map &ndash; if you have images turned off,
+<p id="text_map">To report a problem, simply <strong>click on the map</strong> at the correct location.</p>
+
+<p id="text_no_map"><small>If you cannot see a map &ndash; if you have images turned off,
 or are using a text only browser, for example &ndash; and you
 wish to report a problem, please
 <a href="$skipurl">skip this step</a> and we will ask you
@@ -531,7 +535,7 @@ to describe the location of your problem instead.</small></p>
 EOF
     $out .= <<EOF;
 <div>
-<h2>Recent problems reported on this map</h2>
+<h2>Recent problems reported near here</h2>
 EOF
     my $list = '';
     foreach (@$current_map) {
@@ -545,7 +549,7 @@ EOF
         $out .= '<p>No problems have been reported yet.</p>';
     }
     $out .= <<EOF;
-    <h2>Closest problems within 10km</h2>
+    <h2>Closest problems within ${dist}km</h2>
     <p><a href="/rss/$x,$y"><img align="right" src="/i/feed.png" width="16" height="16" title="RSS feed of recent local problems" alt="RSS feed" border="0"></a></p>
 EOF
     $list = '';
@@ -561,7 +565,7 @@ EOF
         $out .= '<p>No problems have been reported yet.</p>';
     }
     $out .= <<EOF;
-    <h2>Recently fixed problems within 10km</h2>
+    <h2>Recently fixed problems within ${dist}km</h2>
 EOF
     $list = '';
     foreach (@$fixed) {
@@ -578,7 +582,7 @@ EOF
     $out .= Page::display_map_end(1);
 
     my %params = (
-        rss => [ 'Recent local problems, Neighbourhood Fix-It', "/rss/$x,$y" ]
+        rss => [ 'Recent local problems, FixMyStreet', "/rss/$x,$y" ]
     );
 
     return ($out, %params);
@@ -623,6 +627,10 @@ sub display_problem {
     $out .= $q->p({align=>'right'},
         $q->small($q->a({href => '/contact?id=' . $input{id}}, 'Offensive? Unsuitable? Tell us'))
     );
+
+    # Try and have pin near centre of map
+    $x_tile -= 1 if $x - $x_tile < 0.5;
+    $y_tile -= 1 if $y - $y_tile < 0.5;
     my $back = NewURL($q, id=>undef, x=>$x_tile, y=>$y_tile);
     $out .= '<p style="padding-bottom: 0.5em; border-bottom: dotted 1px #999999;" align="right"><a href="' . $back . '">More problems nearby</a></p>';
 
@@ -670,7 +678,7 @@ EOF
     $out .= Page::display_map_end(0);
 
     my %params = (
-        rss => [ 'Updates to this problem, Neighbourhood Fix-It', "/rss/$input_h{id}" ],
+        rss => [ 'Updates to this problem, FixMyStreet', "/rss/$input_h{id}" ],
         title => $problem->{title}
     );
     return ($out, %params);
@@ -680,12 +688,12 @@ sub map_pins {
     my ($q, $x, $y) = @_;
 
     my $pins = '';
-    my $min_e = Page::tile_to_os($x);
-    my $min_n = Page::tile_to_os($y);
+    my $min_e = Page::tile_to_os($x-1);
+    my $min_n = Page::tile_to_os($y-1);
     my $mid_e = Page::tile_to_os($x+1);
     my $mid_n = Page::tile_to_os($y+1);
-    my $max_e = Page::tile_to_os($x+2);
-    my $max_n = Page::tile_to_os($y+2);
+    my $max_e = Page::tile_to_os($x+3);
+    my $max_n = Page::tile_to_os($y+3);
 
     my $current_map = select_all(
         "select id,title,easting,northing from problem where state='confirmed'
@@ -701,6 +709,10 @@ sub map_pins {
         $pins .= Page::display_pin($q, $px, $py, 'red', $count_prob++);
     }
 
+    my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($mid_e, $mid_n, 'G');
+    my $dist = mySociety::Gaze::get_radius_containing_population($lat, $lon, 200000);
+    $dist = int($dist*10+0.5)/10;
+
     # XXX: Change to only show problems with extract(epoch from ms_current_timestamp()-lastupdate) < 8 weeks
     # And somehow display/link to old problems somewhere else...
     my $current = [];
@@ -708,7 +720,7 @@ sub map_pins {
         my $limit = 9 - @$current_map;
         $current = select_all(
             "select id, title, easting, northing, distance
-                from problem_find_nearby(?, ?, 10) as nearby, problem
+                from problem_find_nearby(?, ?, $dist) as nearby, problem
                 where nearby.problem_id = problem.id
                 and state = 'confirmed'" . (@ids ? ' and id not in (' . join(',' , @ids) . ')' : '') . "
              order by distance, created desc limit $limit", $mid_e, $mid_n);
@@ -720,7 +732,7 @@ sub map_pins {
     }
     my $fixed = select_all(
         "select id, title, easting, northing, distance
-            from problem_find_nearby(?, ?, 10) as nearby, problem
+            from problem_find_nearby(?, ?, $dist) as nearby, problem
             where nearby.problem_id = problem.id and state='fixed'
          order by created desc limit 9", $mid_e, $mid_n);
     foreach (@$fixed) {
@@ -728,7 +740,7 @@ sub map_pins {
         my $py = Page::os_to_px($_->{northing}, $y);
         $pins .= Page::display_pin($q, $px, $py, 'green', $count_fixed++);
     }
-    return ($pins, $current_map, $current, $fixed);
+    return ($pins, $current_map, $current, $fixed, $dist);
 }
 
 sub geocode_choice {

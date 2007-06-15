@@ -1,6 +1,6 @@
 /*
  * js.js
- * Neighbourhood Fix-It JavaScript
+ * FixMyStreet JavaScript
  * 
  * TODO
  * Investigate jQuery

@@ -1,12 +1,12 @@
 #!/usr/bin/perl -w
 
 # report.cgi:
-# Display summary reports for Neighbourhood Fix-It
+# Display summary reports for FixMyStreet
 #
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.37 2007-06-15 09:34:45 francis Exp $
+# $Id: report.cgi,v 1.38 2007-06-15 14:57:52 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -82,11 +82,11 @@ sub main {
         print '<table cellpadding="3" cellspacing="1" border="0">';
         print '<tr><th>Name</th><th>New problems</th><th>Older problems</th>
 <th>Old problems,<br>state unknown</th><th>Recently fixed</th><th>Old fixed</th></tr>';
-        foreach (sort { Page::canonicalise_council($areas_info->{$a}->{name}) cmp Page::canonicalise_council($areas_info->{$b}->{name}) } keys %councils) {
+        foreach (sort { $areas_info->{$a}->{name} cmp $areas_info->{$b}->{name} } keys %councils) {
             print '<tr align="center"';
             print ' class="a"' if (++$c%2);
             print '><td align="left"><a href="report?council=' . $_ . '">' .
-                Page::canonicalise_council($areas_info->{$_}->{name}) . '</a></td>';
+                $areas_info->{$_}->{name} . '</a></td>';
             summary_cell(\@{$open{$_}{new}});
             summary_cell(\@{$open{$_}{older}});
             summary_cell(\@{$open{$_}{unknown}});
@@ -96,14 +96,14 @@ sub main {
         }
         print '</table>';
     } else {
-        my $name = Page::canonicalise_council($areas_info->{$one_council}->{name});
+        my $name = $areas_info->{$one_council}->{name};
         if (!$name) {
             print Page::header($q, title=>"Summary reports");
             print "Council with identifier " . ent($one_council). " not found. ";
             print $q->a({href => NewURL($q, all=>undef, council=>undef) }, 'Show all councils');
             print ".";
         } else {
-            print Page::header($q, title=>"$name - Summary reports", rss => [ "Problems within $name, Neighbourhood Fix-It", "/rss/council/$one_council" ]);
+            print Page::header($q, title=>"$name - Summary reports", rss => [ "Problems within $name, FixMyStreet", "/rss/council/$one_council" ]);
             print $q->p(
                 $q->a({href => "/rss/council/$one_council"}, '<img align="right" src="/i/feed.png" width="16" height="16" title="RSS feed" alt="RSS feed of problems in this council" border="0" hspace="4">'),
                 'This is a summary of all reports for one council. You can ' .

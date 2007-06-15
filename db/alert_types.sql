@@ -14,7 +14,7 @@ insert into alert_type
     item_table, item_where, item_order,
     item_title, item_link, item_description, template)
 values ('new_problems', '', '',
-    'New problems on Neighbourhood Fix-It', '/', 'The latest problems reported by users',
+    'New problems on FixMyStreet', '/', 'The latest problems reported by users',
     'problem', 'problem.state in (\'confirmed\', \'fixed\')', 'created desc',
     '{{title}}', '/?id={{id}}', '{{detail}}', 'alert-problem');
 
@@ -24,7 +24,7 @@ insert into alert_type
     item_table, item_where, item_order,
     item_title, item_link, item_description, template)
 values ('local_problems', '', '',
-    'New local problems on Neighbourhood Fix-It', '/', 'The latest local problems reported by users',
+    'New local problems on FixMyStreet', '/', 'The latest local problems reported by users',
     'problem_find_nearby(?, ?, ?) as nearby,problem', 'nearby.problem_id = problem.id and problem.state in (\'confirmed\', \'fixed\')', 'created desc',
     '{{title}}', '/?id={{id}}', '{{detail}}', 'alert-problem');
 
@@ -34,7 +34,7 @@ insert into alert_type
     item_table, item_where, item_order,
     item_title, item_link, item_description, template)
 values ('council_problems', '', '',
-    'New local problems on Neighbourhood Fix-It', '/report', 'The latest local problems reported by users',
+    'New local problems on FixMyStreet', '/report', 'The latest local problems reported by users',
     'problem', 'problem.state in (\'confirmed\', \'fixed\') and council like \'%\'||?||\'%\'', 'created desc',
     '{{title}}', '/?id={{id}}', '{{detail}}', 'alert-problem'
 );

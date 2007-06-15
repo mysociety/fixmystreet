@@ -10,7 +10,7 @@
         <link rel="stylesheet" href="/css.css"/>
     </head>
     <body>
-    <div id="header"><a href="/">Neighbourhood Fix-It</a></div>
+    <div id="header"><a href="/">FixMyStreet</a></div>
     <div id="wrapper"><div id="content">
         <xsl:apply-templates select="rss/channel"/>
     </div></div>
@@ -34,7 +34,7 @@ href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code<
             <xsl:template match="channel">
                 <div id="rss_box">
                     <h1>What is this page?</h1>
-                    <p>This is an RSS feed from the Neighbourhood Fix-It website. RSS feeds allow you to stay up to date with the latest changes and additions to the site.
+                    <p>This is an RSS feed from the FixMyStreet website. RSS feeds allow you to stay up to date with the latest changes and additions to the site.
                     To subscribe to it, you will need a News Reader or other similar device.
                     <br/>
                     <a href="http://news.bbc.co.uk/1/hi/help/3223484.stm#whatisrss"><strong>Help</strong>, I don't know what a news reader is and still don't know what this is about (from the BBC).</a></p>

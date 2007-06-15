@@ -1,10 +1,10 @@
 -- schema.sql:
--- Schema for Neighbourhood Fix-It database.
+-- Schema for FixMyStreet database.
 --
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.31 2007-05-15 13:43:20 matthew Exp $
+-- $Id: schema.sql,v 1.32 2007-06-15 14:57:51 matthew Exp $
 --
 
 -- secret

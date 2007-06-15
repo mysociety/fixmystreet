@@ -1,12 +1,12 @@
 #!/usr/bin/perl -w
 
 # faq.cgi:
-# FAQ page for Neighbourhood Fix-It
+# FAQ page for FixMyStreet
 #
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.20 2007-06-01 14:24:41 matthew Exp $
+# $Id: faq.cgi,v 1.21 2007-06-15 14:57:52 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -30,8 +30,8 @@ sub faq {
     my $q = shift;
     my $out = $q->h1(_('Frequently Asked Questions'));
     $out .= $q->dl(
-        $q->dt(_('What is Neighbourhood Fix-It for?')),
-        $q->dd(_('Neighbourhood Fix-It is a site to help people report, view,
+        $q->dt(_('What is FixMyStreet for?')),
+        $q->dd(_('FixMyStreet is a site to help people report, view,
 or discuss local problems they&rsquo;ve found to their local council by
 simply locating them on a map. It launched in beta early February
 2007.')),
@@ -50,7 +50,7 @@ council can then resolve the problem the way they normally would.
 Alternatively, you can discuss the problem on the website with others, and
 then together lobby the council to fix it, or fix it directly yourselves.')),
         $q->dt(_('Is it free?')),
-        $q->dd(_('The site is free to use, yes. Neighbourhood Fix-It is run
+        $q->dd(_('The site is free to use, yes. FixMyStreet is run
 by a registered charity, though, so if you want to make a contribution, <a
 href="https://secure.mysociety.org/donate/">please do</a>.')),
     );
@@ -87,17 +87,20 @@ about updates to a particular problem.'))
     );
     $out .= $q->h2(_('Organisation Questions'));
     $out .= $q->dl(
-        $q->dt(_('Who built Neighbourhood Fix-It?')),
+        $q->dt(_('Who built FixMyStreet?')),
         $q->dd(_('This site was built by <a href="http://www.mysociety.org">mySociety</a>. 
 mySociety is the project of a registered charity which has grown out of the community of
 volunteers who built sites like <a href="http://www.theyworkforyou.com/">TheyWorkForYou.com</a>. 
 mySociety&rsquo;s primary mission is to build Internet projects which give people simple, tangible
 benefits in the civic and community aspects of their lives. Our first project
-was <a href="http://www.writetothem.com/">WriteToThem.com</a>, where you can write to any of your
+was <a href="http://www.writetothem.com/">WriteToThem</a>, where you can write to any of your
 elected representatives, for free.')),
         $q->dt(_('Who pays for it?')),
-        $q->dd(_('Neighbourhood Fix-It was paid for via the Department for
+        $q->dd(_('FixMyStreet was paid for via the Department for
 Constitutional Affairs Innovations Fund.')),
+        $q->dt(_('<a name="nfi"></a>Wasn\'t this site called Neighbourhood Fix-It?')),
+        $q->dd(_('Yes, we changed the name mid June 2007. We decided
+Neighbourhood Fix-It was a bit of a mouthful, hard to spell, and hard to publicise (does the URL have a dash in it or not?). The domain FixMyStreet became available recently, and everyone liked the name.')),
         $q->dt(_('Do you need any help with the project?')),
         $q->dd(_('Yes, we can use help in all sorts of ways, technical or
 non-technical.  Please see our <a

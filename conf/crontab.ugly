@@ -4,13 +4,13 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
 #
-# $Id: crontab.ugly,v 1.8 2007-05-08 18:16:35 matthew Exp $
+# $Id: crontab.ugly,v 1.9 2007-06-15 14:57:51 matthew Exp $
 
 PATH=/usr/local/bin:/usr/bin:/bin
 !!(* if ($vhost eq "matthew.bci.mysociety.org") { *)!!
 MAILTO=matthew@mysociety.org
 !!(* } else {*)!!
-MAILTO=team@neighbourhoodfixit.com
+MAILTO=team@fixmystreet.com
 !!(* } *)!!
 
 */5 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-reports || echo "stalled?"

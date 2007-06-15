@@ -1,11 +1,11 @@
-Subject: New problems on Neighbourhood Fix-It
+Subject: New problems on FixMyStreet
 
 The following new problems have been added:
 
 <?=$values['data']?>
 
 -- 
-The Neighbourhood Fix-It team
+The FixMyStreet team
 
 To stop receiving emails when there are new comments on this problem,
 please follow this link: <?=$values['unsubscribe_url']?>

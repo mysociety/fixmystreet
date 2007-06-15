@@ -1,12 +1,12 @@
 #!/usr/bin/perl -w
 
 # alert.cgi:
-# Alert code for Neighbourhood Fix-It
+# Alert code for FixMyStreet
 #
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.6 2007-06-01 14:24:41 matthew Exp $
+# $Id: alert.cgi,v 1.7 2007-06-15 14:57:52 matthew Exp $
 
 use strict;
 require 5.8.0;

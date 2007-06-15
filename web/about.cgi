@@ -1,12 +1,12 @@
 #!/usr/bin/perl -w
 
 # about.cgi:
-# About page for Neighbourhood Fix-It
+# About page for FixMyStreet
 #
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: about.cgi,v 1.3 2007-06-01 14:24:41 matthew Exp $
+# $Id: about.cgi,v 1.4 2007-06-15 14:57:52 matthew Exp $
 
 use strict;
 require 5.8.0;

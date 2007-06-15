@@ -14,7 +14,7 @@
  * Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: general-example,v 1.10 2007-04-11 10:34:48 matthew Exp $
+ * $Id: general-example,v 1.11 2007-06-15 14:57:51 matthew Exp $
  * 
  */
 
@@ -33,7 +33,7 @@ define('OPTION_DRESS_DB_PASS', '');
 
 define('OPTION_BASE_URL', 'http://www.example.org');
 define('OPTION_CONTACT_EMAIL', 'team@example.org');
-define('OPTION_CONTACT_NAME', 'Neighbourhood Fix-It');
+define('OPTION_CONTACT_NAME', 'FixMyStreet');
 define('OPTION_STAGING_SITE', 1);
 
 define('OPTION_GEO_CACHE', '/cache/');
@@ -41,6 +41,7 @@ define('OPTION_GEO_CACHE', '/cache/');
 define('OPTION_MAPIT_URL', 'http://services.mysociety.org/mapit');
 define('OPTION_TILES_URL', 'http://tilma.mysociety.org/tileserver/10k-full-london');
 define('OPTION_EVEL_URL', 'http://services.mysociety.org/evel');
+define('OPTION_GAZE_URL', 'http://gaze.mysociety.org/gaze');
 
 define('OPTION_SMTP_SMARTHOST', 'localhost');
 

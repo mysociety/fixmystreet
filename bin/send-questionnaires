@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-questionnaires,v 1.4 2007-05-08 18:16:34 matthew Exp $
+# $Id: send-questionnaires,v 1.5 2007-06-15 14:57:51 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -80,7 +80,7 @@ foreach my $row (@$unsent) {
         _template_ => $template,
         _parameters_ => \%h,
         To => [ [ $row->{email}, $row->{name} ] ],
-        From => [ mySociety::Config::get('CONTACT_EMAIL'), 'Neighbourhood Fix-It' ],
+        From => [ mySociety::Config::get('CONTACT_EMAIL'), 'FixMyStreet' ],
     });
 
     print "Sending questionnaire $id, problem $row->{id}, token $token to $row->{email}\n" if $verbose;

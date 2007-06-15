@@ -1,4 +1,4 @@
-Subject: Confirm your update on Neighbourhood Fix-It
+Subject: Confirm your update on FixMyStreet
 
 Hi <?=$values['name']?>,
 
@@ -11,4 +11,4 @@ Your update reads:
 <?=$values['update']?>
 
 -- 
-The Neighbourhood Fix-It team
+The FixMyStreet team

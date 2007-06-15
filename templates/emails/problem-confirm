@@ -1,9 +1,9 @@
-Subject: Confirm your problem on Neighbourhood Fix-It
+Subject: Confirm your problem on FixMyStreet
 
 Hi <?=$values['name']?>,
 
 Please click on the link below to confirm the problem you just
-added to Neighbourhood Fix-It:
+added to FixMyStreet:
 
 <?=$values['url']?>
 
@@ -14,4 +14,4 @@ And details:
 <?=$values['detail']?>
 
 -- 
-The Neighbourhood Fix-It team
+The FixMyStreet team

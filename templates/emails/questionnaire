@@ -1,8 +1,8 @@
-Subject: Questionnaire about your problem on Neighbourhood Fix-It
+Subject: Questionnaire about your problem on FixMyStreet
 
 Hi <?=$values['name']?>,
 
-<?=$values['created']?> ago, you left a problem on Neighbourhood Fix-It
+<?=$values['created']?> ago, you left a problem on FixMyStreet
 with the details provided at the end of this email. To keep our
 site up to date and relevant, we'd appreciate it if you could fill in
 this short questionnaire updating the status of your problem:
@@ -10,7 +10,7 @@ this short questionnaire updating the status of your problem:
     <?=$values['url']?>
 
 Yours,
-The Neighbourhood Fix-It team
+The FixMyStreet team
 
 Your problem was as follows:
 

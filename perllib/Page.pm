@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.56 2007-06-01 14:29:32 matthew Exp $
+# $Id: Page.pm,v 1.57 2007-06-15 14:57:52 matthew Exp $
 #
 
 package Page;
@@ -46,7 +46,7 @@ sub do_fastcgi {
                 q(<html><head><title>Sorry! Something's gone wrong.</title></head></html>),
                 q(<body>),
                 q(<h1>Sorry! Something's gone wrong.</h1>),
-                q(<p>Please try again later, or <a href="mailto:team@neighbourhoodfixit.com">email us</a> to let us know.</p>),
+                q(<p>Please try again later, or <a href="mailto:team@fixmystreet.com">email us</a> to let us know.</p>),
                 q(<hr>),
                 q(<p>The text of the error was:</p>),
                 qq(<blockquote class="errortext">$msg</blockquote>),
@@ -84,7 +84,7 @@ EOF
     $html .= <<EOF;
         <script type="text/javascript" src="/yui/utilities.js"></script>
         <script type="text/javascript" src="/js.js"></script>
-        <title>${title}Neighbourhood Fix-It</title>
+        <title>${title}FixMyStreet</title>
         <style type="text/css">\@import url("/css.css");</style>
 EOF
     if ($params{rss}) {
@@ -97,11 +97,11 @@ EOF
 EOF
     my $home = !$title && $ENV{SCRIPT_NAME} eq '/index.cgi' && !$ENV{QUERY_STRING};
     $html .= $home ? '<h1 id="header">' : '<div id="header"><a href="/">';
-    $html .= 'Neighbourhood Fix-It <span id="beta">' . _('Beta') . '</span>';
+    $html .= 'Fix<span id="my">My</span>Street <span id="beta">' . _('Beta') . '</span>';
     $html .= $home ? '</h1>' : '</a></div>';
     $html .= '<div id="wrapper"><div id="content">';
     if (mySociety::Config::get('STAGING_SITE')) {
-        $html .= '<p id="error">This is a developer site; things might break at any time, and councils are not sent emails (they\'d get annoyed!).</p>';
+        #$html .= '<p id="error">This is a developer site; things might break at any time, and councils are not sent emails (they\'d get annoyed!).</p>';
     }
     return $html;
 }
@@ -122,7 +122,7 @@ sub footer {
 
 <p id="footer">Built by <a href="http://www.mysociety.org/">mySociety</a>,
 using some <a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/bci">clever</a> <a
-href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.</p>
+href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>. Formerly <a href="/faq#nfi">Neighbourhood Fix-It</a>.</p>
 
 </body>
 </html>
@@ -307,7 +307,7 @@ sub send_email {
     mySociety::EvEl::send({
         _template_ => $template,
         _parameters_ => \%h,
-        From => [mySociety::Config::get('CONTACT_EMAIL'), 'Neighbourhood Fix-It'],
+        From => [mySociety::Config::get('CONTACT_EMAIL'), 'FixMyStreet'],
         To => $to,
     }, $email);
     my $out;
@@ -390,7 +390,7 @@ sub display_problem_text {
             $problem->{council} =~ s/\|.*//g;
             my @councils = split /,/, $problem->{council};
             my $areas_info = mySociety::MaPit::get_voting_areas_info(\@councils);
-            my $council = join(' and ', map { canonicalise_council($areas_info->{$_}->{name}) } @councils);
+            my $council = join(' and ', map { $areas_info->{$_}->{name} } @councils);
             $out .= $q->br() . $q->small('Sent to ' . $council . ' ' .
                 prettify_duration($problem->{whensent}, 'minute') . ' later');
         }
@@ -435,20 +435,6 @@ sub display_problem_updates {
         $out .= '</div>';
     }
     return $out;
-}
-
-sub canonicalise_council {
-    my $c = shift;
-    if ($c =~ /City of London/) {
-        $c = "the $c";
-    } else {
-        $c =~ s/City of //;
-    }
-    $c =~ s/N\. /North /;
-    $c =~ s/E\. /East /;
-    $c =~ s/W\. /West /;
-    $c =~ s/S\. /South /;
-    return $c;
 }
 
 1;

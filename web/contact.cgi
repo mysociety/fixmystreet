@@ -1,12 +1,12 @@
 #!/usr/bin/perl -w
 
 # contact.cgi:
-# Contact page for Neighbourhood Fix-It
+# Contact page for FixMyStreet
 #
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.19 2007-06-01 14:24:41 matthew Exp $
+# $Id: contact.cgi,v 1.20 2007-06-15 14:57:52 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -78,8 +78,8 @@ sub contact_submit {
     my $email = mySociety::Email::construct_email({
         _body_ => "$message\n\n$postfix",
         From => [$input{email}, $input{name}],
-        To => [[mySociety::Config::get('CONTACT_EMAIL'), 'Neighbourhood Fix-It']],
-        Subject => 'NFI message: ' . $subject
+        To => [[mySociety::Config::get('CONTACT_EMAIL'), 'FixMyStreet']],
+        Subject => 'FMS message: ' . $subject
     });
     my $result = mySociety::Util::send_email($email, $input{email}, mySociety::Config::get('CONTACT_EMAIL'));
     if ($result == mySociety::Util::EMAIL_SUCCESS) {
@@ -128,7 +128,7 @@ sub contact_page {
     } else {
         $out .= <<EOF;
 <p>Please do <strong>not</strong> report problems through this form; messages go to
-the team behind Neighbourhood Fix-It, not a council. To report a problem,
+the team behind FixMyStreet, not a council. To report a problem,
 please <a href="/">go to the front page</a> and follow the instructions.</p>
 
 <p>We'd love to hear what you think about this site. Just fill in the form:</p>

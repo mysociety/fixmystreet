@@ -2,15 +2,15 @@
 #
 # index.cgi
 #
-# Administration interface for Neighbourhood Fix-It
+# Administration interface for FixMyStreet
 #
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.42 2007-06-15 10:03:35 francis Exp $
+# $Id: index.cgi,v 1.43 2007-06-15 14:57:53 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.42 2007-06-15 10:03:35 francis Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.43 2007-06-15 14:57:53 matthew Exp $';
 
 use strict;
 
@@ -49,7 +49,7 @@ sub html_head($$) {
     $ret .= <<END;
 <html>
 <head>
-<title>$title - Neighbourhood Fix-it administration</title>
+<title>$title - FixMyStreet administration</title>
 <style type="text/css"><!--
 input { font-size: 9pt; margin: 0px; padding: 0px  }
 table { margin: 0px; padding: 0px }
@@ -65,7 +65,7 @@ END
         'councilslist' => 'Council contacts'
     };
     $ret .= $q->p(
-        $q->strong("Neighbourhood Fix-it admin:"), 
+        $q->strong("FixMyStreet admin:"), 
         map { $q->a( {href=>build_url($q, $q->url('relative'=>1), { page => $_ })}, $pages->{$_}) } keys %$pages
     ); 
 
@@ -172,7 +172,7 @@ sub do_councils_list ($) {
     }
     my $councils = mySociety::MaPit::get_voting_areas_info(\@councils);
     my @councils_ids = keys %$councils;
-    @councils_ids = sort { Page::canonicalise_council($councils->{$a}->{name}) cmp Page::canonicalise_council($councils->{$b}->{name}) } @councils_ids;
+    @councils_ids = sort { $councils->{$a}->{name} cmp $councils->{$b}->{name} } @councils_ids;
     my $bci_info = dbh()->selectall_hashref("
         select area_id, count(*) as c, count(case when deleted then 1 else null end) as deleted,
             count(case when confirmed then 1 else null end) as confirmed
@@ -191,7 +191,7 @@ sub do_councils_list ($) {
             map { 
                 $q->a({href=>build_url($q, $q->url('relative'=>1), 
                   {'area_id' => $_, 'page' => 'councilcontacts',})}, 
-                  Page::canonicalise_council($councils->{$_}->{name})) . " " .
+                  $councils->{$_}->{name}) . " " .
                     ($bci_info->{$_} ?
                         $bci_info->{$_}->{c} . ' addresses'
                     : '')
@@ -352,8 +352,8 @@ sub do_council_edit ($$$) {
     # Example postcode
     my $example_postcode = mySociety::MaPit::get_example_postcode($area_id);
     if ($example_postcode) {
-        print $q->p("Example postcode to test on NeighbourHoodFixit.com: ",
-            $q->a({href => build_url($q, "http://www.neighbourhoodfixit.com/",
+        print $q->p("Example postcode to test on FixMyStreet.com: ",
+            $q->a({href => build_url($q, "http://www.fixmystreet.com/",
                     { 'pc' => $example_postcode}) }, 
                 $example_postcode));
     }

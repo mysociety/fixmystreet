@@ -1,12 +1,12 @@
 #!/usr/bin/perl -w
 
 # rss.cgi:
-# RSS for Neighbourhood Fix-It
+# RSS for FixMyStreet
 #
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: rss.cgi,v 1.7 2007-05-16 17:51:21 matthew Exp $
+# $Id: rss.cgi,v 1.8 2007-06-15 14:57:52 matthew Exp $
 
 use strict;
 require 5.8.0;

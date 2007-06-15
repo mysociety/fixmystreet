@@ -1,9 +1,9 @@
-Subject: Confirm your alert on Neighbourhood Fix-It
+Subject: Confirm your alert on FixMyStreet
 
 Hi,
 
 Please click on the link below to confirm the alert you just
-asked to subscribe to on Neighbourhood Fix-It:
+asked to subscribe to on FixMyStreet:
 
     <?=$values['url']?>
 
@@ -11,4 +11,4 @@ If you can't click the link, please copy and paste it to the
 address bar of your web browser.
 
 -- 
-The Neighbourhood Fix-It team
+The FixMyStreet team

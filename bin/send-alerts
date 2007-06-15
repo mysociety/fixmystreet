@@ -1,12 +1,12 @@
 #!/usr/bin/perl -w
 
 # send-alerts:
-# Email alerts for Neighbourhood Fix-It
+# Email alerts for FixMyStreet
 #
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-alerts,v 1.1 2007-01-26 01:01:22 matthew Exp $
+# $Id: send-alerts,v 1.2 2007-06-15 14:57:51 matthew Exp $
 
 use strict;
 require 5.8.0;

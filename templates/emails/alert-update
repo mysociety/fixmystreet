@@ -7,7 +7,7 @@ The following updates have been left on this problem:
 View or reply to these updates: <?=$values['problem_url']?>
 
 -- 
-The Neighbourhood Fix-It team
+The FixMyStreet team
 
 To stop receiving emails when there are new comments on this problem,
 please follow this link: <?=$values['unsubscribe_url']?>

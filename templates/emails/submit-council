@@ -3,7 +3,7 @@ Subject: Problem Report: <?=$values['title']?>
 Dear <?=$values['councils_name']?>,
 
 <?=$values['missing']?><?=$values['multiple']?>A user of
-Neighbourhood Fix-It has submitted the following report
+FixMyStreet has submitted the following report
 of a local problem that they believe might require your attention.
 
 <?=$values['fuzzy']?>, or to provide an update on the problem,
@@ -25,12 +25,12 @@ Details: <?=$values['detail']?>
 
 Replies to this email will go to the user who submitted the problem.
 
-Yours, The Neighbourhood Fix-It team
+Yours, The FixMyStreet team
 
-[ This message was sent via NeighbourhoodFixIt.com, a project of
-UKCOD, registered charity number 1076346. If there is a more
-appropriate email address for messages about <?=$values['category_footer']?>,
-please let us know by sending an email to <team@neighbourhoodfixit.com>.
-This will help improve the service for local people. We also welcome
-any other feedback you may have. ]
+[ This message was sent via FixMyStreet (the new name for Neighbourhood
+Fix-It), a project of UKCOD, registered charity number 1076346. If there
+is a more appropriate email address for messages about
+<?=$values['category_footer']?>, please let us know by sending an email
+to <team@fixmystreet.com>. This will help improve the service for local
+people. We also welcome any other feedback you may have. ]
 

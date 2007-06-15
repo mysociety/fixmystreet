@@ -1,12 +1,12 @@
 #!/usr/bin/perl -w
 
 # photo.cgi:
-# Display a photo for Neighbourhood Fix-It
+# Display a photo for FixMyStreet
 #
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: photo.cgi,v 1.4 2007-06-13 14:56:19 matthew Exp $
+# $Id: photo.cgi,v 1.5 2007-06-15 14:57:52 matthew Exp $
 
 use strict;
 require 5.8.0;

@@ -100,7 +100,13 @@ ul#error {
     color: #5e552b;
 }
 
+#my {
+    color: #4e451b;
+    background-color: #e3d595;
+}
 #beta {
+    color: #6e653b;
+    background-color: #e3d595;
     font-size: 50%;
     font-style: italic;
 }
@@ -159,7 +165,7 @@ ul#error {
     font-size: 83%;
     border-top: solid 1px #5e552b;
     display: table;
-    margin: 1em 0 1em auto;
+    margin: 2em 0 1em auto;
     padding: 2px 4px;
 }
 
@@ -169,7 +175,6 @@ ul#error {
     text-align: center;
     font-size: 150%;
     margin: 0 2em;
-    font-weight: bolder;
 }
 
 #postcodeForm {
@@ -203,11 +208,6 @@ ul#error {
     margin-top: 0;
 }
 
-#front_stats {
-    margin: 0.5em auto 0;
-    width: 20em;
-}
-
 #front_stats div {
     text-align: center;
     width: 5.5em;
@@ -215,7 +215,7 @@ ul#error {
     -moz-border-radius: 0.5em;
     border-radius: 0.5em;
     float: left;
-    margin: 0 0.5em 1em;
+    margin: 0 1em 1em;
 }
 
 #front_stats div big {
@@ -231,7 +231,7 @@ ul#error {
     margin-right: 0.25em;
     margin-bottom: 0.25em;
 }
-#front_recent > h2:first-child {
+#front_recent > h2:first-child, #front_intro > h2:first-child {
     margin-top: 0;
 }
 
@@ -320,6 +320,14 @@ p#copyright {
 
 #compass img {
     border: 0;
+}
+
+#text_map {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+#text_no_map {
+    margin-top: 0;
 }
 
 /*
