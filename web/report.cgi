@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.38 2007-06-15 14:57:52 matthew Exp $
+# $Id: report.cgi,v 1.39 2007-06-15 23:13:58 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -36,7 +36,7 @@ BEGIN {
 sub main {
     my $q = shift;
     my $all = $q->param('all') || 0;
-    my $one_council = $q->param('council');
+    my $one_council = $q->param('council') || '';
     $one_council =~ s/\D//g;
     $all = 0 unless $one_council;
     my @params;
