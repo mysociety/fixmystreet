@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.40 2007-05-09 20:07:01 matthew Exp $
+# $Id: index.cgi,v 1.41 2007-06-15 09:32:38 francis Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.40 2007-05-09 20:07:01 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.41 2007-06-15 09:32:38 francis Exp $';
 
 use strict;
 
@@ -23,6 +23,7 @@ use CGI::Carp;
 use Error qw(:try);
 use POSIX;
 use DBI;
+use Data::Dumper;
 
 use Page;
 use mySociety::Config;
@@ -176,14 +177,22 @@ sub do_councils_list ($) {
         select area_id, count(*) as c, count(case when deleted then 1 else null end) as deleted,
             count(case when confirmed then 1 else null end) as confirmed
         from contacts group by area_id", 'area_id');
+#    print Dumper($bci_info);
+#    print Dumper(\@councils_ids);
 
     my $list_part = sub {
         my @ids = @_;
+        # print Dumper(\@ids);
+        if (!scalar(@ids)) {
+            print "None";
+            return;
+        }
         print $q->p(join($q->br(), 
             map { 
                 $q->a({href=>build_url($q, $q->url('relative'=>1), 
                   {'area_id' => $_, 'page' => 'councilcontacts',})}, 
-                  Page::canonicalise_council($councils->{$_}->{name})) . " " .
+                  #Page::canonicalise_council($councils->{$_}->{name})) . " " .
+                  ($councils->{$_}->{name})) . " " .
                     ($bci_info->{$_} ?
                         $bci_info->{$_}->{c} . ' addresses'
                     : '')
@@ -191,13 +200,13 @@ sub do_councils_list ($) {
     };
 
     print $q->h3('No info at all');
-    print &$list_part(grep { !$bci_info->{$_} } @councils_ids);
+    &$list_part(grep { !$bci_info->{$_} } @councils_ids);
     print $q->h3('Currently has 1+ deleted');
-    print &$list_part(grep { $bci_info->{$_} && $bci_info->{$_}->{deleted} } @councils_ids);
+    &$list_part(grep { $bci_info->{$_} && $bci_info->{$_}->{deleted} } @councils_ids);
     print $q->h3('Some unconfirmeds');
-    print &$list_part(grep { $bci_info->{$_} && !$bci_info->{$_}->{deleted} && $bci_info->{$_}->{confirmed} != $bci_info->{$_}->{c} } @councils_ids);
+    &$list_part(grep { $bci_info->{$_} && !$bci_info->{$_}->{deleted} && $bci_info->{$_}->{confirmed} != $bci_info->{$_}->{c} } @councils_ids);
     print $q->h3('All confirmed');
-    print &$list_part(grep { $bci_info->{$_} && !$bci_info->{$_}->{deleted} && $bci_info->{$_}->{confirmed} == $bci_info->{$_}->{c} } @councils_ids);
+    &$list_part(grep { $bci_info->{$_} && !$bci_info->{$_}->{deleted} && $bci_info->{$_}->{confirmed} == $bci_info->{$_}->{c} } @councils_ids);
     print html_tail($q);
 }
 
