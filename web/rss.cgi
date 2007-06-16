@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: rss.cgi,v 1.9 2007-06-16 14:20:07 francis Exp $
+# $Id: rss.cgi,v 1.10 2007-06-16 14:28:36 francis Exp $
 
 use strict;
 require 5.8.0;
@@ -43,8 +43,7 @@ sub main {
         if (!$x && !$y) {
             my $lat = $q->param('lat');
             my $lon = $q->param('lon');
-            warn $lat, $lon;
-            if ($lat && $lon) {
+            if (defined $lat && defined $lon) {
                 ($x, $y) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
             }
         }
