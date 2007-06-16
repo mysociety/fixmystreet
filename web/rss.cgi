@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: rss.cgi,v 1.8 2007-06-15 14:57:52 matthew Exp $
+# $Id: rss.cgi,v 1.9 2007-06-16 14:20:07 francis Exp $
 
 use strict;
 require 5.8.0;
@@ -40,11 +40,21 @@ sub main {
     if ($type eq 'local_problems') {
         my $x = $q->param('x');
         my $y = $q->param('y');
+        if (!$x && !$y) {
+            my $lat = $q->param('lat');
+            my $lon = $q->param('lon');
+            warn $lat, $lon;
+            if ($lat && $lon) {
+                ($x, $y) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
+            }
+        }
+        die "Missing x/y or lat/lon parameter in RSS feed" if (!$x && !$y);
         my $qs = 'x='.$x.';y='.$y;
-	my $d = $q->param('d');
-	$qs .= ";d=$d" if $d;
-	$d = 10 unless $d;
-	$d = 100 if $d > 100;
+
+        my $d = $q->param('d');
+        $qs .= ";d=$d" if $d;
+        $d = 10 unless $d;
+        $d = 100 if $d > 100;
         $x = ($x * 5000 / 31);
         $y = ($y * 5000 / 31);
         mySociety::Alert::generate_rss($type, $qs, $x, $y, $d);
