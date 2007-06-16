@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.139 2007-06-15 14:57:52 matthew Exp $
+# $Id: index.cgi,v 1.140 2007-06-16 19:42:25 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -118,7 +118,7 @@ EOF
 <div id="front_stats">
 <div><big>$new</big> reports in past week</div>
 <div><big>$fixed</big> fixed in past month</div>
-<div><big>$updates</big> problem updates</div>
+<div><big>$updates</big> updates on reports</div>
 </div>
 
 </div>
@@ -129,7 +129,7 @@ EOF
     my $probs = select_all("select id, title from problem
         where state in ('confirmed', 'fixed') and photo is not null
         order by confirmed desc limit 3");
-    $out .= '<h2>Recently reported photos</h2>' if @$probs;
+    $out .= '<h2>Photos of recent reports</h2>' if @$probs;
     foreach (@$probs) {
         my $title = ent($_->{title});
         $out .= '<a href="/?id=' . $_->{id} .
