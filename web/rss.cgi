@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: rss.cgi,v 1.12 2007-06-16 20:05:52 matthew Exp $
+# $Id: rss.cgi,v 1.13 2007-06-16 21:55:42 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -45,6 +45,8 @@ sub main {
             my $lon = $q->param('lon');
             if (defined $lat && defined $lon) {
                 ($x, $y) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
+		$x = Page::os_to_tile($x);
+		$y = Page::os_to_tile($y);
             }
         }
         die "Missing x/y or lat/lon parameter in RSS feed" if (!$x && !$y);
