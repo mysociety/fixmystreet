@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.141 2007-06-17 09:40:51 matthew Exp $
+# $Id: index.cgi,v 1.142 2007-06-17 10:09:55 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -298,10 +298,10 @@ sub submit_problem {
     if (my $token = $input{flickr}) {
         my $id = mySociety::AuthToken::retrieve('flickr', $token);
         if ($id) {
-            dbh()->do("update problem set easting=?, northing=?, title=?, detail=?,
+            dbh()->do("update problem set postcode=?, easting=?, northing=?, title=?, detail=?,
                 name=?, email=?, phone=?, state='confirmed', council=?, used_map='t',
                 anonymous=?, category=?, confirmed=ms_current_timestamp(),
-                lastupdate=ms_current_timestamp() where id=?", {}, $input{easting}, $input{northing},
+                lastupdate=ms_current_timestamp() where id=?", {}, $input{pc}, $input{easting}, $input{northing},
                 $input{title}, $input{detail}, $input{name}, $input{email},
                 $input{phone}, $input{council}, $input{anonymous} ? 'f' : 't',
                 $input{category}, $id);
