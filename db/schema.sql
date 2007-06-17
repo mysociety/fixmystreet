@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.33 2007-06-17 09:40:51 matthew Exp $
+-- $Id: schema.sql,v 1.34 2007-06-17 10:14:52 matthew Exp $
 --
 
 -- secret
@@ -144,6 +144,7 @@ create table problem (
         or state = 'confirmed'
         or state = 'fixed'
         or state = 'hidden'
+        or state = 'flickr'
     ),
     lastupdate timestamp not null default ms_current_timestamp(),
     whensent timestamp,
