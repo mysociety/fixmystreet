@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: flickr.cgi,v 1.2 2007-06-17 10:13:39 matthew Exp $
+# $Id: flickr.cgi,v 1.3 2007-06-17 11:12:32 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -48,6 +48,7 @@ sub main {
             $url = 'http://api.flickr.com/services/rest/?method=flickr.people.getInfo&api_key='.$key.'&user_id='.$nsid;
             $result = get($url);
             my ($name) = $result =~ /<realname>(.*?)<\/realname>/;
+	    $name ||= '';
 
             my $id = dbh()->selectrow_array("select nextval('flickr_id_seq');");
             dbh()->do("insert into flickr (id, nsid, name, email) values (?, ?, ?, ?)", {},
