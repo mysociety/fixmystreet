@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: import-flickr,v 1.1 2007-06-17 09:40:50 matthew Exp $
+# $Id: import-flickr,v 1.2 2007-06-17 10:28:41 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -71,9 +71,9 @@ sub problem_create {
     # This is horrid
     my $s = dbh()->prepare("insert into problem
         (id, postcode, easting, northing, title, detail, name,
-         email, phone, photo, state, council, used_map, anonymous, category)
+         email, phone, photo, state, used_map, anonymous, category)
         values
-        (?, '', ?, ?, ?, '', ?, ?, '', ?, 'flickr', '', 't', 'f', '')");
+        (?, '', ?, ?, ?, '', ?, ?, '', ?, 'flickr', 't', 'f', '')");
     $s->bind_param(1, $id);
     $s->bind_param(2, $easting);
     $s->bind_param(3, $northing);
