@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: flickr.cgi,v 1.3 2007-06-17 11:12:32 matthew Exp $
+# $Id: flickr.cgi,v 1.4 2007-06-17 11:46:42 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -95,8 +95,8 @@ to report problems to your council:</p>
 <ol>
 <li>Register that you're going to be using Flickr here, so we know to check your photos.
 <li>Upload your photo to Flickr, for example via camera phone on location
-<li>Tag the photo with FixMyStreet when uploading, or afterwards;
-<li>Locate the problem on Flickr's map (if you have GPS, this should be done automatically :) )
+<li>Tag the photo with FixMyStreet when uploading, or afterwards
+<li>Locate the problem on Flickr's map (if you have GPS, this might be done automatically :) )
 <li>FixMyStreet will find the photo, and ask you to add/ check the details;
 <li>The report is then sent to the council.
 </ol>
