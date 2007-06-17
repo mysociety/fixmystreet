@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: import-flickr,v 1.2 2007-06-17 10:28:41 matthew Exp $
+# $Id: import-flickr,v 1.3 2007-06-17 12:48:40 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -63,6 +63,7 @@ sub problem_create {
     my ($photo_id, $owner, $title, $lat, $lon, $image) = @_;
     my ($name, $email) = dbh()->selectrow_array('select name, email from flickr where nsid=?', {}, $owner);
     my ($easting, $northing) = (0,0);
+    $name ||= '';
     if ($lat && $lon) {
 	# XXX This appears to be going wrong :(
         ($easting, $northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
@@ -95,7 +96,7 @@ sub problem_create {
     my $body = mySociety::Email::construct_email({
         _template_ => $template,
         _parameters_ => \%h,
-        To => [ [ $email, $name ] ],
+        To => $name ? [ [ $email, $name ] ] : $email,
         From => [ mySociety::Config::get('CONTACT_EMAIL'), 'FixMyStreet' ],
     });
 
