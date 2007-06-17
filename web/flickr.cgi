@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: flickr.cgi,v 1.1 2007-06-17 09:40:51 matthew Exp $
+# $Id: flickr.cgi,v 1.2 2007-06-17 10:13:39 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -87,7 +87,8 @@ EOF
         }
     } else {
         $out .= <<EOF;
-<p><strong>Very alpha status</strong></p>
+<p><strong>This feature was added for HackDay London 2007, and might not be of production quality.</strong>
+Please <a href="/contact">send bug reports to us</a>.</p>
 <p>Using the Flickr API, FixMyStreet can utilise all the methods of uploading photos to Flickr
 to report problems to your council:</p>
 <ol>
