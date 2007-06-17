@@ -1,0 +1,14 @@
+Subject: Confirm your email address on FixMyStreet
+
+Hi,
+
+Please click on the link below to confirm the email address
+you just gave to FixMyStreet:
+
+<?=$values['url']?>
+
+This is so we can look up the photos you tag with FixMyStreet,
+and send you an email letting you know about your new problems.
+
+-- 
+The FixMyStreet team

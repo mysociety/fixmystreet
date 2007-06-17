@@ -1,0 +1,116 @@
+#!/usr/bin/perl -w
+
+# flickr.cgi:
+# Register for Flickr usage, and update photos
+#
+# Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
+# Email: matthew@mysociety.org. WWW: http://www.mysociety.org
+#
+# $Id: flickr.cgi,v 1.1 2007-06-17 09:40:51 matthew Exp $
+
+use strict;
+require 5.8.0;
+
+# Horrible boilerplate to set up appropriate library paths.
+use FindBin;
+use lib "$FindBin::Bin/../perllib";
+use lib "$FindBin::Bin/../../perllib";
+use LWP::Simple;
+use mySociety::AuthToken;
+use mySociety::DBHandle qw(dbh);
+use mySociety::Email;
+use mySociety::EmailUtil;
+
+use Page;
+
+BEGIN {
+    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+    mySociety::DBHandle::configure(
+        Name => mySociety::Config::get('BCI_DB_NAME'),
+        User => mySociety::Config::get('BCI_DB_USER'),
+        Password => mySociety::Config::get('BCI_DB_PASS'),
+        Host => mySociety::Config::get('BCI_DB_HOST', undef),
+        Port => mySociety::Config::get('BCI_DB_PORT', undef)
+    );
+}
+
+sub main {
+    my $q = shift;
+    print Page::header($q, title=>'Flickr photo upload');
+    my $out = '';
+    if (my $token = $q->param('token')) {
+        my $email = mySociety::AuthToken::retrieve('flickr', $token);
+        if ($email) {
+            my $key = mySociety::Config::get('FLICKR_API');
+            my $url = 'http://api.flickr.com/services/rest/?method=flickr.people.findByEmail&api_key='.$key.'&find_email='.$email;
+            my $result = get($url);
+            my ($nsid) = $result =~ /nsid="([^"]*)"/;
+            $url = 'http://api.flickr.com/services/rest/?method=flickr.people.getInfo&api_key='.$key.'&user_id='.$nsid;
+            $result = get($url);
+            my ($name) = $result =~ /<realname>(.*?)<\/realname>/;
+
+            my $id = dbh()->selectrow_array("select nextval('flickr_id_seq');");
+            dbh()->do("insert into flickr (id, nsid, name, email) values (?, ?, ?, ?)", {},
+                $id, $nsid, $name, $email);
+            dbh()->commit();
+            $out .= $q->p('Thanks for confirming your email address. Please now tag
+your photos with FixMyStreet (and geo-tag them if you want/can, automatically if possible!)
+for us to pick them up.');
+        } else {
+            $out = $q->p(_(<<EOF));
+Thank you for trying to register for your Flickr photos. We seem to have a
+problem ourselves though, so <a href="/contact">please let us know what went on</a>
+and we'll look into it.
+EOF
+        }
+    } elsif (my $email = $q->param('email')) {
+        my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/flickr-confirm");
+        my %h = ();
+        my $token = mySociety::AuthToken::store('flickr', $email);
+        $h{url} = mySociety::Config::get('BASE_URL') . '/F/' . $token;
+
+        my $body = mySociety::Email::construct_email({
+            _template_ => $template,
+            _parameters_ => \%h,
+            To => $email,
+            From => [ mySociety::Config::get('CONTACT_EMAIL'), 'FixMyStreet' ],
+        });
+
+        my $result;
+        $result = mySociety::EmailUtil::send_email($body, mySociety::Config::get('CONTACT_EMAIL'), $email);
+        if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
+            $out = 'Thanks, we\'ve sent you a confirmation email!';
+            dbh()->commit();
+        } else {
+            $out = 'Sorry, something went wrong - very alpha!';
+            dbh()->rollback();
+        }
+    } else {
+        $out .= <<EOF;
+<p><strong>Very alpha status</strong></p>
+<p>Using the Flickr API, FixMyStreet can utilise all the methods of uploading photos to Flickr
+to report problems to your council:</p>
+<ol>
+<li>Register that you're going to be using Flickr here, so we know to check your photos.
+<li>Upload your photo to Flickr, for example via camera phone on location
+<li>Tag the photo with FixMyStreet when uploading, or afterwards;
+<li>Locate the problem on Flickr's map (if you have GPS, this should be done automatically :) )
+<li>FixMyStreet will find the photo, and ask you to add/ check the details;
+<li>The report is then sent to the council.
+</ol>
+
+<form method="post">
+<p>To begin, please enter your Flickr email address, both so we know the account to watch and
+so we can email you when you upload FixMyStreet photos with a link to check and confirm
+the details: <input type="text" name="email" value="" size="30">
+<input type="submit" value="Go">
+</p></form>
+EOF
+    }
+
+    print $out;
+    print Page::footer();
+    dbh()->rollback();
+}
+Page::do_fastcgi(\&main);
+

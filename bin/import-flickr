@@ -1,0 +1,108 @@
+#!/usr/bin/perl -w
+
+# import-flickr:
+# Get new Flickr photos (uploaded from cameras, hopefully!)
+#
+# Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
+# Email: matthew@mysociety.org. WWW: http://www.mysociety.org
+#
+# $Id: import-flickr,v 1.1 2007-06-17 09:40:50 matthew Exp $
+
+use strict;
+require 5.8.0;
+
+# Horrible boilerplate to set up appropriate library paths.
+use FindBin;
+use lib "$FindBin::Bin/../perllib";
+use lib "$FindBin::Bin/../../perllib";
+use File::Slurp;
+use LWP::Simple;
+
+use mySociety::AuthToken;
+use mySociety::Config;
+use mySociety::DBHandle qw(dbh select_all);
+use mySociety::EmailUtil;
+use mySociety::Email;
+use mySociety::GeoUtil;
+
+BEGIN {
+    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+    mySociety::DBHandle::configure(
+        Name => mySociety::Config::get('BCI_DB_NAME'),
+        User => mySociety::Config::get('BCI_DB_USER'),
+        Password => mySociety::Config::get('BCI_DB_PASS'),
+        Host => mySociety::Config::get('BCI_DB_HOST', undef),
+        Port => mySociety::Config::get('BCI_DB_PORT', undef)
+    );
+}
+
+my $key = mySociety::Config::get('FLICKR_API');
+my $url = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&tags=fixmystreet&extras=geo&api_key=' . $key . '&user_id=';
+my $ids = select_all('select nsid from flickr');
+my $result = '';
+foreach (@$ids) {
+    $result .= get($url . $_->{nsid});
+}
+
+my %ids;
+my $st = select_all('select id from flickr_imported');
+foreach (@$st) {
+    $ids{$_->{id}} = 1;
+}
+
+# XXX: Hmm... Use format=perl now Cal has added it for me! :)
+while ($result =~ /<photo id="([^"]*)" owner="([^"]*)" secret="([^"]*)" server="([^"]*)" farm="([^"]*)" title="([^"]*)".*?latitude="([^"]*)" longitude="([^"]*)"/g) {
+    my ($id, $owner, $secret, $server, $farm, $title, $lat, $lon) = ($1, $2, $3, $4, $5, $6, $7, $8);
+    next if $ids{$id};
+    my $url = "http://farm$farm.static.flickr.com/$server/".$id.'_'.$secret.'_m.jpg';
+    my $image = get($url);
+    problem_create($id, $owner, $title, $lat, $lon, $image);
+}
+
+sub problem_create {
+    my ($photo_id, $owner, $title, $lat, $lon, $image) = @_;
+    my ($name, $email) = dbh()->selectrow_array('select name, email from flickr where nsid=?', {}, $owner);
+    my ($easting, $northing) = (0,0);
+    if ($lat && $lon) {
+	# XXX This appears to be going wrong :(
+        ($easting, $northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
+    }
+    my $id = dbh()->selectrow_array("select nextval('problem_id_seq')");
+    # This is horrid
+    my $s = dbh()->prepare("insert into problem
+        (id, postcode, easting, northing, title, detail, name,
+         email, phone, photo, state, council, used_map, anonymous, category)
+        values
+        (?, '', ?, ?, ?, '', ?, ?, '', ?, 'flickr', '', 't', 'f', '')");
+    $s->bind_param(1, $id);
+    $s->bind_param(2, $easting);
+    $s->bind_param(3, $northing);
+    $s->bind_param(4, $title);
+    $s->bind_param(5, $name);
+    $s->bind_param(6, $email);
+    $s->bind_param(7, $image, { pg_type => DBD::Pg::PG_BYTEA });
+    $s->execute();
+
+    dbh()->do('insert into flickr_imported (id) values (?)', {}, $photo_id);
+
+    # XXX: Needs to only send email once to user per batch of photos, not one per photo?
+    my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/flickr-submit");
+    my %h = ();
+    my $token = mySociety::AuthToken::store('flickr', $id);
+    $h{name} = $name;
+    $h{url} = mySociety::Config::get('BASE_URL') . '/L/' . $token;
+
+    my $body = mySociety::Email::construct_email({
+        _template_ => $template,
+        _parameters_ => \%h,
+        To => [ [ $email, $name ] ],
+        From => [ mySociety::Config::get('CONTACT_EMAIL'), 'FixMyStreet' ],
+    });
+
+    my $result = mySociety::EmailUtil::send_email($body, mySociety::Config::get('CONTACT_EMAIL'), $email);
+    if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
+        dbh()->commit();
+    } else {
+        dbh()->rollback();
+    }
+}

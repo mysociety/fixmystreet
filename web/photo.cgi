@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: photo.cgi,v 1.5 2007-06-15 14:57:52 matthew Exp $
+# $Id: photo.cgi,v 1.6 2007-06-17 09:40:51 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -39,7 +39,7 @@ sub main {
         -expires => '+1y' );
     my $id = $q->param('id') || return;
     my $problem = dbh()->selectrow_arrayref(
-        "select photo from problem where id=? and state in ('confirmed', 'fixed')
+        "select photo from problem where id=? and state in ('confirmed', 'fixed', 'flickr')
             and photo is not null", {}, $id);
     return unless $problem;
     my $photo = $problem->[0];

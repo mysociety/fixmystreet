@@ -1,0 +1,14 @@
+Subject: New photo pulled from Flickr to FixMyStreet
+
+Hi <?=$values['name']?>,
+
+We've fetched a photo you uploaded to Flickr and tagged with
+FixMyStreet. To check the details we have, and to add any more,
+please visit the following URL:
+
+<?=$values['url']?>
+
+Then we can send your photo to the council. Thanks!
+
+-- 
+The FixMyStreet team

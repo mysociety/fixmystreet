@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.140 2007-06-16 19:42:25 matthew Exp $
+# $Id: index.cgi,v 1.141 2007-06-17 09:40:51 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -95,8 +95,27 @@ EOF
     my $fixed = dbh()->selectrow_array("select count(*) from problem where state='fixed' and lastupdate>ms_current_timestamp()-'1 month'::interval");
     my $updates = dbh()->selectrow_array("select count(*) from comment where state='confirmed'");
     my $new = dbh()->selectrow_array("select count(*) from problem where state in ('confirmed','fixed') and confirmed>ms_current_timestamp()-'1 week'::interval");
+    $out .= '<form action="./" method="get" id="postcodeForm">';
+    if (my $token = $q->param('flickr')) {
+        my $id = mySociety::AuthToken::retrieve('flickr', $token);
+        if ($id) {
+            my $name = ent($q->param('name'));
+            my $email = ent($q->param('email'));
+            my $title = ent($q->param('title'));
+            $out .= <<EOF;
+<p style="margin-top:0;color: #cc0000;">Thanks for uploading your photo via Flickr! We need to locate your problem,
+so please enter a nearby street name or postcode in the box below...</p>
+
+<input type="hidden" name="flickr" value="$token">
+<input type="hidden" name="submit_map" value="1">
+<input type="hidden" name="name" value="$name">
+<input type="hidden" name="email" value="$email">
+<input type="hidden" name="title" value="$title">
+<input type="hidden" name="anonymous" value="1">
+EOF
+        }
+    }
     $out .= <<EOF;
-<form action="./" method="get" id="postcodeForm">
 <label for="pc">Enter a nearby postcode, or street name and area:</label>
 &nbsp;<input type="text" name="pc" value="$pc_h" id="pc" size="10" maxlength="200">
 &nbsp;<input type="submit" value="Go" id="submit">
@@ -182,7 +201,7 @@ sub submit_update {
 
 sub submit_problem {
     my $q = shift;
-    my @vars = qw(council title detail name email phone pc easting northing skipped anonymous category);
+    my @vars = qw(council title detail name email phone pc easting northing skipped anonymous category flickr);
     my %input = map { $_ => scalar $q->param($_) } @vars;
     my @errors;
 
@@ -275,43 +294,61 @@ sub submit_problem {
     my $used_map = $input{skipped} ? 'f' : 't';
     $input{category} = 'Other' unless $input{category};
 
-    my $id = dbh()->selectrow_array("select nextval('problem_id_seq');");
-    # This is horrid
-    my $s = dbh()->prepare("insert into problem
-        (id, postcode, easting, northing, title, detail, name,
-         email, phone, photo, state, council, used_map, anonymous, category)
-        values
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?, ?, ?)");
-    $s->bind_param(1, $id);
-    $s->bind_param(2, $input{pc});
-    $s->bind_param(3, $input{easting});
-    $s->bind_param(4, $input{northing});
-    $s->bind_param(5, $input{title});
-    $s->bind_param(6, $input{detail});
-    $s->bind_param(7, $input{name});
-    $s->bind_param(8, $input{email});
-    $s->bind_param(9, $input{phone});
-    $s->bind_param(10, $image, { pg_type => DBD::Pg::PG_BYTEA });
-    $s->bind_param(11, $input{council});
-    $s->bind_param(12, $used_map);
-    $s->bind_param(13, $input{anonymous} ? 'f': 't');
-    $s->bind_param(14, $input{category});
-    $s->execute();
-    my %h = ();
-    $h{title} = $input{title};
-    $h{detail} = $input{detail};
-    $h{name} = $input{name};
-    $h{url} = mySociety::Config::get('BASE_URL') . '/P/' . mySociety::AuthToken::store('problem', $id);
-    dbh()->commit();
+    my ($id, $out);
+    if (my $token = $input{flickr}) {
+        my $id = mySociety::AuthToken::retrieve('flickr', $token);
+        if ($id) {
+            dbh()->do("update problem set easting=?, northing=?, title=?, detail=?,
+                name=?, email=?, phone=?, state='confirmed', council=?, used_map='t',
+                anonymous=?, category=?, confirmed=ms_current_timestamp(),
+                lastupdate=ms_current_timestamp() where id=?", {}, $input{easting}, $input{northing},
+                $input{title}, $input{detail}, $input{name}, $input{email},
+                $input{phone}, $input{council}, $input{anonymous} ? 'f' : 't',
+                $input{category}, $id);
+            dbh()->commit();
+            $out = $q->p(sprintf(_('You have successfully confirmed your problem and you can now <a href="%s">view it on the site</a>.'), "/?id=$id"));
+        } else {
+            $out = $q->p('There appears to have been a problem.');
+        }
+    } else {
+        $id = dbh()->selectrow_array("select nextval('problem_id_seq');");
+        # This is horrid
+        my $s = dbh()->prepare("insert into problem
+            (id, postcode, easting, northing, title, detail, name,
+             email, phone, photo, state, council, used_map, anonymous, category)
+            values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?, ?, ?)");
+        $s->bind_param(1, $id);
+        $s->bind_param(2, $input{pc});
+        $s->bind_param(3, $input{easting});
+        $s->bind_param(4, $input{northing});
+        $s->bind_param(5, $input{title});
+        $s->bind_param(6, $input{detail});
+        $s->bind_param(7, $input{name});
+        $s->bind_param(8, $input{email});
+        $s->bind_param(9, $input{phone});
+        $s->bind_param(10, $image, { pg_type => DBD::Pg::PG_BYTEA });
+        $s->bind_param(11, $input{council});
+        $s->bind_param(12, $used_map);
+        $s->bind_param(13, $input{anonymous} ? 'f': 't');
+        $s->bind_param(14, $input{category});
+        $s->execute();
+        my %h = ();
+        $h{title} = $input{title};
+        $h{detail} = $input{detail};
+        $h{name} = $input{name};
+        $h{url} = mySociety::Config::get('BASE_URL') . '/P/' . mySociety::AuthToken::store('problem', $id);
+        dbh()->commit();
 
-    my $out = Page::send_email($input{email}, $input{name}, 'problem', %h);
+        $out = Page::send_email($input{email}, $input{name}, 'problem', %h);
+    }
     return $out;
 }
 
 sub display_form {
     my ($q, @errors) = @_;
     my ($pin_x, $pin_y, $pin_tile_x, $pin_tile_y) = (0,0,0,0);
-    my @vars = qw(title detail name email phone pc easting northing x y skipped council anonymous);
+    my @vars = qw(title detail name email phone pc easting northing x y skipped council anonymous flickr);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
     my @ps = $q->param;
@@ -323,7 +360,8 @@ sub display_form {
         unless ($pin_x && $pin_y)
             || ($input{easting} && $input{northing})
             || ($input{skipped} && $input{x} && $input{y})
-            || ($input{skipped} && $input{pc});
+            || ($input{skipped} && $input{pc})
+            || ($input{flickr} && $input{pc});
 
     my $out = '';
     my ($px, $py, $easting, $northing, $island);
@@ -344,8 +382,17 @@ sub display_form {
         $py = Page::tile_to_px($pin_y, $input{y});
         $easting = Page::tile_to_os($pin_x);
         $northing = Page::tile_to_os($pin_y);
+    } elsif ($input{flickr} && $input{pc} && !$input{easting} && !$input{northing}) {
+        my ($x, $y, $e, $n, $i, $error) = geocode($input{pc});
+        $easting = $e; $northing = $n; $island = $i;
+        $input{x} = int(Page::os_to_tile($easting));
+        $input{y} = int(Page::os_to_tile($northing));
+        $px = Page::os_to_px($easting, $input{x});
+        $py = Page::os_to_px($northing, $input{y});
     } else {
         # Normal form submission
+        $input{x} = int(Page::os_to_tile($input{easting}));
+        $input{y} = int(Page::os_to_tile($input{northing}));
         $px = Page::os_to_px($input{easting}, $input{x});
         $py = Page::os_to_px($input{northing}, $input{y});
         $easting = $input_h{easting};
@@ -475,8 +522,20 @@ $category
 <div><label for="form_phone">Phone:</label>
 <input type="text" value="$input_h{phone}" name="phone" id="form_phone" size="20">
 <small>(optional, so the council can get in touch)</small></div>
+EOF
+    if (my $token = $input{flickr}) {
+        my $id = mySociety::AuthToken::retrieve('flickr', $token);
+        if ($id) {
+            $out .= '<p>The photo you uploaded was:</p> <input type="hidden" name="flickr" value="' . $token . '">';
+            $out .= '<p align="center"><img src="/photo?id=' . $id . '"></p>';
+        }
+    } else {
+        $out .= <<EOF;
 <div><label for="form_photo">Photo:</label>
 <input type="file" name="photo" id="form_photo"></div>
+EOF
+    }
+    $out .= <<EOF;
 <p>Please note:</p>
 <ul>
 <li>Please be polite, concise and to the point.
