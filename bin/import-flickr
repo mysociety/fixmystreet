@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: import-flickr,v 1.3 2007-06-17 12:48:40 matthew Exp $
+# $Id: import-flickr,v 1.4 2007-06-18 14:27:55 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -37,7 +37,7 @@ BEGIN {
 }
 
 my $key = mySociety::Config::get('FLICKR_API');
-my $url = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&tags=fixmystreet&extras=geo&api_key=' . $key . '&user_id=';
+my $url = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&tags=fixmystreet&extras=geo,machine_tags&api_key=' . $key . '&user_id=';
 my $ids = select_all('select nsid from flickr');
 my $result = '';
 foreach (@$ids) {
@@ -51,9 +51,16 @@ foreach (@$st) {
 }
 
 # XXX: Hmm... Use format=perl now Cal has added it for me! :)
-while ($result =~ /<photo id="([^"]*)" owner="([^"]*)" secret="([^"]*)" server="([^"]*)" farm="([^"]*)" title="([^"]*)".*?latitude="([^"]*)" longitude="([^"]*)"/g) {
-    my ($id, $owner, $secret, $server, $farm, $title, $lat, $lon) = ($1, $2, $3, $4, $5, $6, $7, $8);
+while ($result =~ /<photo id="([^"]*)" owner="([^"]*)" secret="([^"]*)" server="([^"]*)" farm="([^"]*)" title="([^"]*)".*?latitude="([^"]*)" longitude="([^"]*)".*?machine_tags="([^"]*)"/g) {
+    my ($id, $owner, $secret, $server, $farm, $title, $lat, $lon, $machine) = ($1, $2, $3, $4, $5, $6, $7, $8, $9);
     next if $ids{$id};
+    if ($machine =~ /geo:/ && !$lat && !$lon) {
+        # Have to fetch raw tags, as otherwise can't tell if it's negative, or how many decimal places
+        my $url = 'http://api.flickr.com/services/rest/?method=flickr.tags.getListPhoto&api_key=' . $key . '&photo_id=' . $id;
+        my $tags = get($url);
+        ($lon) = $tags =~ /raw="geo:lon=([^"]*)"/i;
+        ($lat) = $tags =~ /raw="geo:lat=([^"]*)"/i;
+    }
     my $url = "http://farm$farm.static.flickr.com/$server/".$id.'_'.$secret.'_m.jpg';
     my $image = get($url);
     problem_create($id, $owner, $title, $lat, $lon, $image);
@@ -65,7 +72,7 @@ sub problem_create {
     my ($easting, $northing) = (0,0);
     $name ||= '';
     if ($lat && $lon) {
-	# XXX This appears to be going wrong :(
+        # XXX This appears to be going wrong :(
         ($easting, $northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
     }
     my $id = dbh()->selectrow_array("select nextval('problem_id_seq')");
