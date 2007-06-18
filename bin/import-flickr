@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: import-flickr,v 1.4 2007-06-18 14:27:55 matthew Exp $
+# $Id: import-flickr,v 1.5 2007-06-18 15:31:00 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -91,7 +91,7 @@ sub problem_create {
     $s->bind_param(7, $image, { pg_type => DBD::Pg::PG_BYTEA });
     $s->execute();
 
-    dbh()->do('insert into flickr_imported (id) values (?)', {}, $photo_id);
+    dbh()->do('insert into flickr_imported (id, problem_id) values (?, ?)', {}, $photo_id, $id);
 
     # XXX: Needs to only send email once to user per batch of photos, not one per photo?
     my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/flickr-submit");
