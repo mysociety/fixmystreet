@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.143 2007-06-18 12:21:17 francis Exp $
+# $Id: index.cgi,v 1.144 2007-06-18 14:22:33 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -881,7 +881,7 @@ sub geocode_string {
         # Northern Ireland, hopefully
         $error = "We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.";
     } else {
-        $js =~ /center: {lat: (.*?),lng: (.*?)}/;
+        $js =~ /center:\s*{lat:\s*(.*?),lng:\s*(.*?)}/;
         my $lat = $1; my $lon = $2;
         ($easting,$northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
         $x = int(Page::os_to_tile($easting))-1;
