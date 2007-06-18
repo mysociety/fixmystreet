@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.142 2007-06-17 10:09:55 matthew Exp $
+# $Id: index.cgi,v 1.143 2007-06-18 12:21:17 francis Exp $
 
 use strict;
 require 5.8.0;
@@ -677,10 +677,12 @@ sub display_problem {
     my $pins = Page::display_pin($q, $px, $py, 'blue');
     $out .= Page::display_map($q, x => $x_tile, y => $y_tile, type => 0,
         pins => $pins, px => $px, py => $py );
-    $out .= $q->p({id => 'unknown'}, _('This problem is old and of unknown status.'))
-        if $problem->{state} eq 'confirmed' && $problem->{duration} > 8*7*24*60*60;
-    $out .= $q->p({id => 'fixed'}, _('This problem has been fixed.'))
-        if $problem->{state} eq 'fixed';
+    if ($problem->{state} eq 'confirmed' && $problem->{duration} > 8*7*24*60*60) {
+        $out .= $q->p({id => 'unknown'}, _('This problem is old and of unknown status.'))
+    }
+    if ($problem->{state} eq 'fixed') {
+        $out .= $q->p({id => 'fixed'}, _('This problem has been fixed.'))
+    }
     $out .= Page::display_problem_text($q, $problem);
 
     $out .= $q->p({align=>'right'},
@@ -692,9 +694,8 @@ sub display_problem {
     $y_tile -= 1 if $y - $y_tile < 0.5;
     my $back = NewURL($q, id=>undef, x=>$x_tile, y=>$y_tile);
     $out .= '<p style="padding-bottom: 0.5em; border-bottom: dotted 1px #999999;" align="right"><a href="' . $back . '">More problems nearby</a></p>';
-
-    $out .= '<a href="/rss/'.$input_h{id}.'"><img align="right" src="/i/feed.png" width="16" height="16" title="RSS feed" alt="RSS feed of updates to this problem" border="0" hspace="4"></a> ';
-    $out .= '<a id="email_alert" href="/alert?type=updates;id='.$input_h{id}.'"><img src="/i/email.png" width="16" height="16" title="Email alerts" alt="Email alerts of updates to this problem" border="0"></a>';
+    $out .= '<div id="alert_links">';
+    $out .= '<a id="email_alert" href="/alert?type=updates;id='.$input_h{id}.'">Email me updates</a>';
     $out .= <<EOF;
 <form action="alert" method="post" id="email_alert_box">
 <p>Receive email when updates are left on this problem</p>
@@ -705,6 +706,8 @@ sub display_problem {
 <input type="submit" value="Subscribe">
 </form>
 EOF
+    $out .= '<span id="rss_link"><a href="/rss/'.$input_h{id}.'"><img src="/i/feed.png" width="16" height="16" title="RSS feed" alt="RSS feed of updates to this problem" border="0" hspace="4"></a></span>';
+    $out .= '</div>';
 
     $out .= Page::display_problem_updates($input{id});
     $out .= '<h2>Provide an update</h2>';

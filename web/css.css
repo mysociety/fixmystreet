@@ -359,9 +359,12 @@ ol#current img {
     margin: 0 0 0.25em;
     border-bottom: dotted 1px #5e552b;
 }
-
-#email_alert {
+#alert_links {
     float: right;
+}
+#rss_link {
+}
+#email_alert {
 }
 #email_alert_box {
     display:none;
