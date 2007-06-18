@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.144 2007-06-18 14:22:33 matthew Exp $
+# $Id: index.cgi,v 1.145 2007-06-18 14:52:27 francis Exp $
 
 use strict;
 require 5.8.0;
@@ -706,7 +706,7 @@ sub display_problem {
 <input type="submit" value="Subscribe">
 </form>
 EOF
-    $out .= '<span id="rss_link"><a href="/rss/'.$input_h{id}.'"><img src="/i/feed.png" width="16" height="16" title="RSS feed" alt="RSS feed of updates to this problem" border="0" hspace="4"></a></span>';
+    $out .= ' | <span id="rss_link"><a href="/rss/'.$input_h{id}.'"><img src="/i/feed.png" width="16" height="16" title="RSS feed" alt="RSS feed of updates to this problem" border="0" style="vertical-align: sub"></a></span>';
     $out .= '</div>';
 
     $out .= Page::display_problem_updates($input{id});
