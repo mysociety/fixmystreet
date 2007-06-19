@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.39 2007-06-15 23:13:58 matthew Exp $
+# $Id: report.cgi,v 1.40 2007-06-19 15:54:24 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -108,7 +108,7 @@ sub main {
                 $q->a({href => "/rss/council/$one_council"}, '<img align="right" src="/i/feed.png" width="16" height="16" title="RSS feed" alt="RSS feed of problems in this council" border="0" hspace="4">'),
                 'This is a summary of all reports for one council. You can ' .
                 ($all ? 
-                    $q->a({href => NewURL($q, all=>undef) }, 'see less details') :
+                    $q->a({href => NewURL($q, all=>undef) }, 'see less detail') :
                     $q->a({href => NewURL($q, all=>1) }, 'see more details')) .
                 ' or go back and ' .
                 $q->a({href => NewURL($q, all=>undef, council=>undef) }, 'show all councils') .
