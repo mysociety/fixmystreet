@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.41 2007-06-13 09:34:32 matthew Exp $
+# $Id: send-reports,v 1.42 2007-06-20 10:34:17 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -64,6 +64,7 @@ foreach my $row (@$unsent) {
             "SELECT email,confirmed,note FROM contacts WHERE deleted='f'
                 and area_id=? AND category=?", {}, $council, $row->{category});
         $council_email = essex_contact($row->{easting}, $row->{northing}) if $council == 2225;
+        $council_email = notts_contact($row->{easting}, $row->{northing}) if $council == 2236;
         unless ($confirmed) {
             $all_confirmed = 0;
             $note = 'Council ' . $row->{council} . ' deleted'
@@ -163,4 +164,18 @@ sub essex_contact {
     $email = 'westarea' if $district == 2309 || $district == 2311 || $district == 2318 || $district == 2313;
     die "Returned district $district which is not in Essex!" unless $email;
     return "highways.$email\@essexcc.gov.uk";
+}
+
+# Notts has different contact addresses depending upon the district
+sub notts_contact {
+    my ($E, $N) = @_;
+    my $district = mySociety::MaPit::get_voting_area_by_location_en($E, $N, 'polygon', 'DIS');
+    $district = $district->[0];
+    my $email;
+    $email = 'cshighsouth.en' if $district == 2411 || $district == 2412 || $district == 2415;
+    $email = 'etwall' if $district == 2413 || $district == 2416;
+    $email = 'bassetlawao' if $district == 2410;
+    $email = 'newarkao' if $district == 2414;
+    die "Returned district $district which is not in Nottinghamshire!" unless $email;
+    return "$email\@nottscc.gov.uk";
 }
