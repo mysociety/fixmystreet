@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.20 2007-06-15 14:57:52 matthew Exp $
+# $Id: confirm.cgi,v 1.21 2007-06-20 12:59:21 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -82,7 +82,7 @@ sub confirm_update {
     }
     my $out = '<form action="/alert" method="post">';
     $out .= $q->p(sprintf(_('You have successfully confirmed your update and you can now <a href="%s">view it on the site</a>.'), "/?id=$problem_id#update_$id"));
-    return ($problem_id, $out);
+    return ($out, $problem_id);
 }
 
 sub confirm_problem {
