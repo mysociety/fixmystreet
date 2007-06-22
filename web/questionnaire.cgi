@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.11 2007-06-15 23:25:30 matthew Exp $
+# $Id: questionnaire.cgi,v 1.12 2007-06-22 14:20:45 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -181,9 +181,8 @@ sub display_questionnaire {
         no => $input{another} eq 'No' ? ' checked' : '', 
     );
     $out .= <<EOF;
-    <style type="text/css">label { float:none;}</style>
 <h1>Questionnaire</h1>
-<form method="post" action="/questionnaire">
+<form method="post" action="/questionnaire" id="questionnaire">
 <input type="hidden" name="token" value="$input_h{token}">
 
 <p>The details of your problem are available on the right hand side of this page.

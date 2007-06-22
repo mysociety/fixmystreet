@@ -253,6 +253,10 @@ fieldset div.checkbox label, label.n {
     cursor: hand;
 }
 
+#questionnaire label {
+    float: none;
+}
+
 /* Map */
 
 #map_box {

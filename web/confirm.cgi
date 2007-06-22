@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.22 2007-06-22 13:39:10 matthew Exp $
+# $Id: confirm.cgi,v 1.23 2007-06-22 14:20:45 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -40,7 +40,8 @@ sub main {
     my $out = '';
     my $token = $q->param('token');
     my $type = $q->param('type');
-    my $id = mySociety::AuthToken::retrieve($type, $token);
+    my $tokentype = $type eq 'questionnaire' ? 'update' : $type;
+    my $id = mySociety::AuthToken::retrieve($tokentype, $token);
     if ($id) {
         if ($type eq 'update') {
             my ($o, $problem_id, $email, $creator_fixed) = confirm_update($q, $id);
@@ -129,7 +130,7 @@ EOF
 sub ask_questionnaire {
     my ($token) = @_;
     my $out = <<EOF;
-<form action="/confirm" method="post">
+<form action="/confirm" method="post" id="questionnaire">
 <input type="hidden" name="type" value="questionnaire">
 <input type="hidden" name="token" value="$token">
 <p>Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?</p>
@@ -145,16 +146,20 @@ EOF
     return $out;
 }
 
-sub add_questionnarie {
+sub add_questionnaire {
     my ($q, $id, $token) = @_;
     my $problem_id = dbh()->selectrow_array("select problem_id from comment where id=?", {}, $id);
     my $reported = $q->param('reported');
     $reported = $reported eq 'Yes' ? 't' : ($reported eq 'No' ? 'f' : undef);
     return ask_questionnaire($token) unless $reported;
+    my $already = dbh()->selectrow_array("select id from questionnaire
+        where problem_id=? and old_state='confirmed' and new_state='fixed'",
+        {}, $problem_id);
     dbh()->do("insert into questionnaire (problem_id, whensent, whenanswered,
         ever_reported, old_state, new_state) values (?, ms_current_timestamp(),
-        ms_current_timestamp(), ?, 'confirmed', 'fixed');", {}, $problem_id, $reported);
-    my $out = $q->p(sprintf('Thank you - <a href="%s">view your problem</a>.', "/?id=$problem_id"));
+        ms_current_timestamp(), ?, 'confirmed', 'fixed');", {}, $problem_id, $reported)
+        unless $already;
+    my $out = $q->p(sprintf('Thank you &mdash; you can <a href="%s">view your updated problem</a> on the site.', "/?id=$problem_id"));
     return $out;
 }
 
