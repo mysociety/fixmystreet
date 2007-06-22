@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.145 2007-06-18 14:52:27 francis Exp $
+# $Id: index.cgi,v 1.146 2007-06-22 13:39:10 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -95,6 +95,11 @@ EOF
     my $fixed = dbh()->selectrow_array("select count(*) from problem where state='fixed' and lastupdate>ms_current_timestamp()-'1 month'::interval");
     my $updates = dbh()->selectrow_array("select count(*) from comment where state='confirmed'");
     my $new = dbh()->selectrow_array("select count(*) from problem where state in ('confirmed','fixed') and confirmed>ms_current_timestamp()-'1 week'::interval");
+    my $new_text = 'in past week';
+    if ($new > $fixed) {
+        $new = dbh()->selectrow_array("select count(*) from problem where state in ('confirmed','fixed') and confirmed>ms_current_timestamp()-'1 day'::interval");
+        $new_text = 'recently';
+    }
     $out .= '<form action="./" method="get" id="postcodeForm">';
     if (my $token = $q->param('flickr')) {
         my $id = mySociety::AuthToken::retrieve('flickr', $token);
@@ -135,7 +140,7 @@ EOF
 <h2>FixMyStreet updates</h2>
 
 <div id="front_stats">
-<div><big>$new</big> reports in past week</div>
+<div><big>$new</big> reports $new_text</div>
 <div><big>$fixed</big> fixed in past month</div>
 <div><big>$updates</big> updates on reports</div>
 </div>

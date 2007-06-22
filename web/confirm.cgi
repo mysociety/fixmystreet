@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.21 2007-06-20 12:59:21 matthew Exp $
+# $Id: confirm.cgi,v 1.22 2007-06-22 13:39:10 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -43,14 +43,17 @@ sub main {
     my $id = mySociety::AuthToken::retrieve($type, $token);
     if ($id) {
         if ($type eq 'update') {
-            my $problem_id;
-            ($out, $problem_id) = confirm_update($q, $id);
-            my $email = dbh()->selectrow_array("select email from comment where id=?", {}, $id);
-            $out .= advertise_updates($q, $problem_id, $email);
+            my ($o, $problem_id, $email, $creator_fixed) = confirm_update($q, $id);
+            if ($creator_fixed) {
+                $out = ask_questionnaire($token);
+            } else {
+                $out = $o . advertise_updates($q, $problem_id, $email);
+            }
         } elsif ($type eq 'problem') {
-            $out = confirm_problem($q, $id);
-            my $email = dbh()->selectrow_array("select email from problem where id=?", {}, $id);
-            $out .= advertise_updates($q, $id, $email);
+            my ($o, $email) = confirm_problem($q, $id);
+            $out = $o . advertise_updates($q, $id, $email);
+        } elsif ($type eq 'questionnaire') {
+            $out = add_questionnaire($q, $id, $token);
         }
         dbh()->commit();
     } else {
@@ -71,32 +74,39 @@ Page::do_fastcgi(\&main);
 sub confirm_update {
     my ($q, $id) = @_;
     dbh()->do("update comment set state='confirmed' where id=? and state='unconfirmed'", {}, $id);
-    my ($problem_id, $fixed) = dbh()->selectrow_array("select problem_id,mark_fixed from comment where id=?", {}, $id);
+    my ($problem_id, $fixed, $email) = dbh()->selectrow_array(
+        "select problem_id, mark_fixed, email from comment where id=?", {}, $id);
+    my $creator_fixed;
     if ($fixed) {
         dbh()->do("update problem set state='fixed', lastupdate = ms_current_timestamp()
             where id=? and state='confirmed'", {}, $problem_id);
+        # If a problem reporter is marking their own problem as fixed, turn off questionnaire sending
+        $creator_fixed = dbh()->do("update problem set send_questionnaire='f' where id=? and email=?", {}, $problem_id, $email);
     } else { 
         # Only want to refresh problem if not already fixed
         dbh()->do("update problem set lastupdate = ms_current_timestamp()
             where id=? and state='confirmed'", {}, $problem_id);
     }
-    my $out = '<form action="/alert" method="post">';
-    $out .= $q->p(sprintf(_('You have successfully confirmed your update and you can now <a href="%s">view it on the site</a>.'), "/?id=$problem_id#update_$id"));
-    return ($out, $problem_id);
+    my $out = '';
+    if (!$creator_fixed) {
+        $out .= '<form action="/alert" method="post">';
+        $out .= $q->p(sprintf(_('You have successfully confirmed your update and you can now <a href="%s">view it on the site</a>.'), "/?id=$problem_id#update_$id"));
+    }
+    return ($out, $problem_id, $email, $creator_fixed);
 }
 
 sub confirm_problem {
     my ($q, $id) = @_;
     dbh()->do("update problem set state='confirmed', confirmed=ms_current_timestamp(), lastupdate=ms_current_timestamp()
         where id=? and state='unconfirmed'", {}, $id);
-    my $council = dbh()->selectrow_array("select council from problem where id=?", {}, $id);
+    my ($council, $email) = dbh()->selectrow_array("select council, email from problem where id=?", {}, $id);
     my $out = '<form action="/alert" method="post">';
     $out .= $q->p(
         _('You have successfully confirmed your problem')
         . ($council ? _(' and <strong>we will now send it to the council</strong>') : '')
         . sprintf(_('. You can <a href="%s">view the problem on this site</a>.'), "/?id=$id")
     );
-    return $out;
+    return ($out, $email);
 }
 
 sub advertise_updates {
@@ -113,6 +123,38 @@ EOF
     $signup .= '<input type="submit" value="' . _('sign up') . '">';
     my $out = $q->p(sprintf(_('You could also <a href="%s">subscribe to the RSS feed</a> of updates by other local people on this problem, or %s if you wish to receive updates by email.'), "/rss/$problem_id", $signup));
     $out .= '</form>';
+    return $out;
+}
+
+sub ask_questionnaire {
+    my ($token) = @_;
+    my $out = <<EOF;
+<form action="/confirm" method="post">
+<input type="hidden" name="type" value="questionnaire">
+<input type="hidden" name="token" value="$token">
+<p>Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?</p>
+<p align="center">
+<input type="radio" name="reported" id="reported_yes" value="Yes">
+<label for="reported_yes">Yes</label>
+<input type="radio" name="reported" id="reported_no" value="No">
+<label for="reported_no">No</label>
+<input type="submit" value="Go">
+</p>
+</form>
+EOF
+    return $out;
+}
+
+sub add_questionnarie {
+    my ($q, $id, $token) = @_;
+    my $problem_id = dbh()->selectrow_array("select problem_id from comment where id=?", {}, $id);
+    my $reported = $q->param('reported');
+    $reported = $reported eq 'Yes' ? 't' : ($reported eq 'No' ? 'f' : undef);
+    return ask_questionnaire($token) unless $reported;
+    dbh()->do("insert into questionnaire (problem_id, whensent, whenanswered,
+        ever_reported, old_state, new_state) values (?, ms_current_timestamp(),
+        ms_current_timestamp(), ?, 'confirmed', 'fixed');", {}, $problem_id, $reported);
+    my $out = $q->p(sprintf('Thank you - <a href="%s">view your problem</a>.', "/?id=$problem_id"));
     return $out;
 }
 
