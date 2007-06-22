@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.23 2007-06-22 14:20:45 matthew Exp $
+# $Id: confirm.cgi,v 1.24 2007-06-22 14:24:47 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -45,7 +45,7 @@ sub main {
     if ($id) {
         if ($type eq 'update') {
             my ($o, $problem_id, $email, $creator_fixed) = confirm_update($q, $id);
-            if ($creator_fixed) {
+            if ($creator_fixed > 0) {
                 $out = ask_questionnaire($token);
             } else {
                 $out = $o . advertise_updates($q, $problem_id, $email);
@@ -82,14 +82,15 @@ sub confirm_update {
         dbh()->do("update problem set state='fixed', lastupdate = ms_current_timestamp()
             where id=? and state='confirmed'", {}, $problem_id);
         # If a problem reporter is marking their own problem as fixed, turn off questionnaire sending
-        $creator_fixed = dbh()->do("update problem set send_questionnaire='f' where id=? and email=?", {}, $problem_id, $email);
+        $creator_fixed = dbh()->do("update problem set send_questionnaire='f' where id=? and email=?
+	    and send_questionnaire='t'", {}, $problem_id, $email);
     } else { 
         # Only want to refresh problem if not already fixed
         dbh()->do("update problem set lastupdate = ms_current_timestamp()
             where id=? and state='confirmed'", {}, $problem_id);
     }
     my $out = '';
-    if (!$creator_fixed) {
+    unless ($creator_fixed > 0) {
         $out .= '<form action="/alert" method="post">';
         $out .= $q->p(sprintf(_('You have successfully confirmed your update and you can now <a href="%s">view it on the site</a>.'), "/?id=$problem_id#update_$id"));
     }
