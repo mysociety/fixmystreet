@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.147 2007-06-26 14:32:42 matthew Exp $
+# $Id: index.cgi,v 1.148 2007-06-26 14:46:37 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -223,8 +223,11 @@ sub submit_problem {
     push(@errors, 'No council selected') unless ($input{council} && $input{council} =~ /^(?:-1|[\d,]+(?:\|[\d,]+)?)$/);
     push(@errors, 'Please enter a subject') unless $input{title} =~ /\S/;
     push(@errors, 'Please enter some details') unless $input{detail} =~ /\S/;
-    push(@errors, 'Please enter your name') unless $input{name} =~ /\S/;
-    push(@errors, 'Please enter your full name - if you do not wish your name to be shown on the site, untick the box') if length($input{name}) < 5 || $input{name} !~ /\s/ || $input{name} =~ /\banon(ymous)?\b/i
+    if ($input{name} !~ /\S/) {
+        push @errors, 'Please enter your name';
+    } elsif (length($input{name}) < 5 || $input{name} !~ /\s/ || $input{name} =~ /\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i) {
+        push @errors, 'Please enter your full name, councils need this information - if you do not wish your name to be shown on the site, untick the box';
+    }
     if ($input{email} !~ /\S/) {
         push(@errors, 'Please enter your email');
     } elsif (!mySociety::Util::is_valid_email($input{email})) {
