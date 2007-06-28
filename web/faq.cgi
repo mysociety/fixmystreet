@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.21 2007-06-15 14:57:52 matthew Exp $
+# $Id: faq.cgi,v 1.22 2007-06-28 14:17:33 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -69,6 +69,8 @@ submit buttons, which the map uses when reporting a problem. It's fixed in the
 latest nightly build of Safari, so will presumably be fixed in the next
 release. Until then, I've sadly had to disable dragging to avoid people
 dragging an empty square."))
+	$q->dt(_('Do you have any publicity material?')),
+	$q->dd(_('Sure, we have a whole <a href="posters/">array of posters and flyers</a>.')),
     );
     $out .= $q->h2(_('Privacy Questions'));
     $out .= $q->dl(
@@ -113,7 +115,7 @@ source code</a> (look under &lsquo;bci&rsquo;) and help us develop it.
 You&rsquo;re welcome to use it in your own projects, although you must also
 make available the source code to any such projects.')),
         $q->dt(_('People build things, not organisations. Who <em>actually</em> built it?')),
-        $q->dd(_('OK, we are Francis Irving, Chris Lightfoot, Richard Pope,
+        $q->dd(_('OK, we are Francis Irving, Deborah Kerr, Chris Lightfoot, Richard Pope,
 Matthew Somerville, and Tom Steinberg.
 
 Thanks also to
