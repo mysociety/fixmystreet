@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.1 2007-06-28 14:17:33 matthew Exp $
+# $Id: index.cgi,v 1.2 2007-06-28 14:23:57 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -17,7 +17,11 @@ use lib "$FindBin::Bin/../../perllib";
 use lib "$FindBin::Bin/../../../perllib";
 use Page;
 
-# Main code for index.cgi
+# XXX: Ugh, as we're in a subdirectory
+BEGIN {
+    mySociety::Config::set_file("$FindBin::Bin/../../conf/general");
+}
+
 sub main {
     my $q = shift;
     print Page::header($q, title=>_('Publicity material'));
@@ -29,9 +33,9 @@ Page::do_fastcgi(\&main);
 sub body {
     my $q = shift;
     return $q->h1(_('Publicity Material')) .
+	'<img align="right" hspace="5" src="poster.png" alt="Example poster">' .
         $q->p(_('Here are some posters you can use to publicise FixMyStreet.')) .
         $q->h2(_('Posters')) .
-	'<img align="right" hspace="5" src="poster.png" alt="Example poster">' .
         $q->ul(
             $q->li($q->a({href=>'fixmystreet-poster-a4.pdf'}, _('A4, colour'))),
             $q->li($q->a({href=>'fixmystreet-poster-a4-bw.pdf'}, _('A4, black and white'))),
@@ -39,7 +43,6 @@ sub body {
             $q->li($q->a({href=>'fixmystreet-poster-a4-bw-outlined.pdf'}, _('A4, black and white, outlined'))),
         ) .
         $q->h2(_('Posters with tags')) . 
-	'<img align="right" hspace="5" src="tags.png" alt="Example poster with tags">' .
         $q->ul(
             $q->li($q->a({href=>'fixmystreet-poster-tags.pdf'}, _('A4, colour'))) .
             $q->li($q->a({href=>'fixmystreet-poster-tags-bw.pdf'}, _('A4, black and white'))) .

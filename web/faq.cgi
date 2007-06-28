@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.22 2007-06-28 14:17:33 matthew Exp $
+# $Id: faq.cgi,v 1.23 2007-06-28 14:23:57 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -68,7 +68,7 @@ which we consider to be inappropriate.')),
 submit buttons, which the map uses when reporting a problem. It's fixed in the
 latest nightly build of Safari, so will presumably be fixed in the next
 release. Until then, I've sadly had to disable dragging to avoid people
-dragging an empty square."))
+dragging an empty square.")),
 	$q->dt(_('Do you have any publicity material?')),
 	$q->dd(_('Sure, we have a whole <a href="posters/">array of posters and flyers</a>.')),
     );
