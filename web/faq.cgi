@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.23 2007-06-28 14:23:57 matthew Exp $
+# $Id: faq.cgi,v 1.24 2007-06-29 08:03:02 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -115,8 +115,10 @@ source code</a> (look under &lsquo;bci&rsquo;) and help us develop it.
 You&rsquo;re welcome to use it in your own projects, although you must also
 make available the source code to any such projects.')),
         $q->dt(_('People build things, not organisations. Who <em>actually</em> built it?')),
-        $q->dd(_('OK, we are Francis Irving, Deborah Kerr, Chris Lightfoot, Richard Pope,
-Matthew Somerville, and Tom Steinberg.
+        $q->dd(_('Matthew Somerville and Francis Irving wrote the site,
+Chris Lightfoot wrote the tileserver and map cutter, Richard Pope created
+our pins, Deborah Kerr keeps things up-to-date and does user support,
+Ayesha Garrett designed our posters, and Tom Steinberg managed it all.
 
 Thanks also to
 <a href="http://www.ordnancesurvey.co.uk">Ordnance Survey</a> (for the maps,
