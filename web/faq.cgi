@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.24 2007-06-29 08:03:02 matthew Exp $
+# $Id: faq.cgi,v 1.25 2007-07-04 14:17:26 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -90,7 +90,7 @@ about updates to a particular problem.'))
     $out .= $q->h2(_('Organisation Questions'));
     $out .= $q->dl(
         $q->dt(_('Who built FixMyStreet?')),
-        $q->dd(_('This site was built by <a href="http://www.mysociety.org">mySociety</a>. 
+        $q->dd(_('This site was built by <a href="http://www.mysociety.org/">mySociety</a>, in conjunction with the <a href="http://www.youngfoundation.org.uk/">Young Foundation</a>. 
 mySociety is the project of a registered charity which has grown out of the community of
 volunteers who built sites like <a href="http://www.theyworkforyou.com/">TheyWorkForYou.com</a>. 
 mySociety&rsquo;s primary mission is to build Internet projects which give people simple, tangible
