@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.149 2007-07-07 11:32:45 matthew Exp $
+# $Id: index.cgi,v 1.150 2007-07-07 11:35:36 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -862,6 +862,7 @@ sub geocode_string {
     my $s = shift;
     $s = lc($s);
     $s =~ s/[^-&0-9a-z ']/ /g;
+    $s =~ s/\s+/ /g;
     $s = uri_escape($s);
     $s =~ s/%20/+/g;
     my $url = 'http://maps.google.com/maps/geo?q=' . $s;
