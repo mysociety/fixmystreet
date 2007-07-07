@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.150 2007-07-07 11:35:36 matthew Exp $
+# $Id: index.cgi,v 1.151 2007-07-07 11:39:41 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -816,11 +816,12 @@ sub map_pins {
 
 sub geocode_choice {
     my $choices = shift;
-    my $out = '<p>We found more than one match for that location:</p> <ul>';
+    my $out = '<p>We found more than one match for that location. We show up to ten matches, please try a different search if yours is not here.</p> <ul>';
     foreach my $choice (@$choices) {
         $choice =~ s/, United Kingdom//;
         $choice =~ s/, UK//;
         my $url = uri_escape($choice);
+	$url =~ s/%20/+/g;
         $out .= '<li><a href="/?pc=' . $url . '">' . $choice . "</a></li>\n";
     }
     $out .= '</ul>';
