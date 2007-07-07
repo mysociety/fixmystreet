@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.148 2007-06-26 14:46:37 matthew Exp $
+# $Id: index.cgi,v 1.149 2007-07-07 11:32:45 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -818,12 +818,10 @@ sub geocode_choice {
     my $choices = shift;
     my $out = '<p>We found more than one match for that location:</p> <ul>';
     foreach my $choice (@$choices) {
-        my $qs = $choice->[0];
-        my $text = $choice->[1];
-        $text =~ s/<\/?(?:b|i)>//g;
-        $text =~ s/, United Kingdom//;
-        $qs =~ s/,\+United\+Kingdom//;
-        $out .= '<li><a href="/?pc=' . $qs . '">' . $text . "</a></li>\n";
+        $choice =~ s/, United Kingdom//;
+        $choice =~ s/, UK//;
+        my $url = uri_escape($choice);
+        $out .= '<li><a href="/?pc=' . $url . '">' . $choice . "</a></li>\n";
     }
     $out .= '</ul>';
     return $out;
@@ -866,35 +864,42 @@ sub geocode_string {
     $s =~ s/[^-&0-9a-z ']/ /g;
     $s = uri_escape($s);
     $s =~ s/%20/+/g;
-    my $url = 'http://maps.google.co.uk/maps?output=js&q=' . $s;
+    my $url = 'http://maps.google.com/maps/geo?q=' . $s;
     my $cache_dir = mySociety::Config::get('GEO_CACHE');
     my $cache_file = $cache_dir . md5_hex($url);
     my ($js, $error, $x, $y, $easting, $northing);
     if (-s $cache_file) {
         $js = File::Slurp::read_file($cache_file);
     } else {
-        $url .= ',+United+Kingdom' unless $url =~ /United\+Kingdom$/;
+        $url .= ',+United+Kingdom' unless $url =~ /united\++kingdom$/ || $url =~ /uk$/i;
+        $url .= '&key=' . mySociety::Config::get('GOOGLE_MAPS_API_KEY');
         $js = LWP::Simple::get($url);
         File::Slurp::write_file($cache_file, $js) if $js;
     }
+
     if (!$js) {
         $error = 'Sorry, we had a problem parsing that location. Please try again.';
-    } elsif ($js =~ /suggest noprint/ && $js =~ /We could not understand/) {
-        $error = $1;
-    } elsif ($js =~ /suggest noprint/) {
-        while ($js =~ /<div class=\\042ref\\042><a href=\\042\/maps\?q=(.*?)&.*?>(.*?)<\/a><\/div>/g) {
-            push (@$error, [ $1, $2 ]);
-        }
-        $error = 'We could not understand that location.' unless $error;
     } elsif ($js =~ /BT\d/) {
         # Northern Ireland, hopefully
         $error = "We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.";
+    } elsif ($js !~ /"code":200/) {
+        $error = 'Sorry, we could not understand that location.';
+    } elsif ($js =~ /},{/) { # Multiple
+        while ($js =~ /"address":"(.*?)"/g) {
+            push (@$error, $1);
+        }
+        $error = 'Sorry, we could not understand that location.' unless $error;
     } else {
-        $js =~ /center:\s*{lat:\s*(.*?),lng:\s*(.*?)}/;
-        my $lat = $1; my $lon = $2;
-        ($easting,$northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
-        $x = int(Page::os_to_tile($easting))-1;
-        $y = int(Page::os_to_tile($northing))-1;
+        my ($accuracy) = $js =~ /"Accuracy": (\d)/;
+        if ($accuracy < 5) {
+            $error = 'Sorry, that location appears to be too general; please be more specific.';
+        } else {
+            $js =~ /"coordinates":\[(.*?),(.*?),/;
+            my $lon = $1; my $lat = $2;
+            ($easting, $northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
+            $x = int(Page::os_to_tile($easting))-1;
+            $y = int(Page::os_to_tile($northing))-1;
+        }
     }
     return ($x, $y, $easting, $northing, $error);
 }
