@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.151 2007-07-07 11:39:41 matthew Exp $
+# $Id: index.cgi,v 1.152 2007-07-07 11:47:22 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -899,8 +899,12 @@ sub geocode_string {
             $js =~ /"coordinates":\[(.*?),(.*?),/;
             my $lon = $1; my $lat = $2;
             ($easting, $northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
-            $x = int(Page::os_to_tile($easting))-1;
-            $y = int(Page::os_to_tile($northing))-1;
+            my $xx = Page::os_to_tile($easting);
+            my $yy = Page::os_to_tile($northing);
+            $x = int($xx);
+            $y = int($yy);
+            $x -= 1 if ($xx - $x < 0.5);
+            $y -= 1 if ($yy - $y < 0.5);
         }
     }
     return ($x, $y, $easting, $northing, $error);
