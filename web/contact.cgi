@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.20 2007-06-15 14:57:52 matthew Exp $
+# $Id: contact.cgi,v 1.21 2007-07-09 17:40:29 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -15,6 +15,7 @@ require 5.8.0;
 use FindBin;
 use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../../perllib";
+use CrossSell;
 use Page;
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh);
@@ -83,7 +84,9 @@ sub contact_submit {
     });
     my $result = mySociety::Util::send_email($email, $input{email}, mySociety::Config::get('CONTACT_EMAIL'));
     if ($result == mySociety::Util::EMAIL_SUCCESS) {
-        return $q->p("Thanks for your feedback.  We'll get back to you as soon as we can!");
+        my $out = $q->p("Thanks for your feedback.  We'll get back to you as soon as we can!");
+        $out .= CrossSell::display_advert($input{email}, $input{name});
+        return $out;
     } else {
         return $q->p('Failed to send message.  Please try again, or <a href="mailto:' . mySociety::Config::get('CONTACT_EMAIL') . '">email us</a>.');
     }

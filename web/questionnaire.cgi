@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.12 2007-06-22 14:20:45 matthew Exp $
+# $Id: questionnaire.cgi,v 1.13 2007-07-09 17:40:29 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -17,6 +17,7 @@ use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../../perllib";
 use Error qw(:try);
 
+use CrossSell;
 use Page;
 use mySociety::AuthToken;
 use mySociety::Config;
@@ -134,10 +135,20 @@ sub submit_questionnaire {
         if $input{been_fixed} eq 'No' && $input{another} eq 'Yes';
 
     dbh()->commit();
-    return <<EOF;
-<p>Thank you very much for filling in our questionnaire.
-<a href="/?id=$problem->{id}">View your report on the site</a></p>
+    if ($new_state eq 'confirmed' || (!$new_state && $problem->{state} eq 'confirmed')) {
+        return <<EOF;
+<p style="font-size:200%">We're sorry to hear that. We have two suggestions: why not try
+<a href="http://www.writetothem.com/">writing direct to your councillor(s)</a>
+or, if it's a problem that could be fixed by lcaol people working together
+why not <a href="http://www.pledgebank.com/new">make and publicise a pledge</a>?
+</p>
 EOF
+    } else {
+        my $out = <<EOF;
+<p>Thank you very much for filling in our questionnaire; glad to hear it's been fixed.</p>
+EOF
+        $out .= CrossSell::display_advert($problem->{email}, $problem->{name});
+    }
 }
 
 sub display_questionnaire {

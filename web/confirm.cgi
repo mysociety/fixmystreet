@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.24 2007-06-22 14:24:47 matthew Exp $
+# $Id: confirm.cgi,v 1.25 2007-07-09 17:40:29 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -17,6 +17,7 @@ use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../../perllib";
 use Digest::SHA1 qw(sha1_hex);
 
+use CrossSell;
 use Page;
 use mySociety::AuthToken;
 use mySociety::Config;
@@ -149,7 +150,7 @@ EOF
 
 sub add_questionnaire {
     my ($q, $id, $token) = @_;
-    my $problem_id = dbh()->selectrow_array("select problem_id from comment where id=?", {}, $id);
+    my ($problem_id, $email, $name) = dbh()->selectrow_array("select problem_id, email, name from comment where id=?", {}, $id);
     my $reported = $q->param('reported');
     $reported = $reported eq 'Yes' ? 't' : ($reported eq 'No' ? 'f' : undef);
     return ask_questionnaire($token) unless $reported;
@@ -161,6 +162,7 @@ sub add_questionnaire {
         ms_current_timestamp(), ?, 'confirmed', 'fixed');", {}, $problem_id, $reported)
         unless $already;
     my $out = $q->p(sprintf('Thank you &mdash; you can <a href="%s">view your updated problem</a> on the site.', "/?id=$problem_id"));
+    $out .= CrossSell::display_advert($email, $name);
     return $out;
 }
 

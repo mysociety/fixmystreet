@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.7 2007-06-15 14:57:52 matthew Exp $
+# $Id: alert.cgi,v 1.8 2007-07-09 17:40:29 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -17,6 +17,7 @@ use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../../perllib";
 use Digest::SHA1 qw(sha1_hex);
 
+use CrossSell;
 use Page;
 use mySociety::Alert;
 use mySociety::AuthToken;
@@ -48,6 +49,7 @@ sub main {
             my $alert_id = mySociety::Alert::create($email, 'new_updates', $id);
             mySociety::Alert::confirm($alert_id);
             $out .= $q->p(_('You have successfully subscribed to that alert.'));
+	    $out .= CrossSell::display_advert($email);
         } else {
             $out = $q->p(_('We could not validate that alert.'));
         }
@@ -55,12 +57,15 @@ sub main {
         my $data = mySociety::AuthToken::retrieve('alert', $token);
         if (my $id = $data->{id}) {
             my $type = $data->{type};
+	    my $email = $data->{email};
             if ($type eq 'subscribe') {
                 mySociety::Alert::confirm($id);
                 $out = $q->p(_('You have successfully confirmed your alert.'));
+	        $out .= CrossSell::display_advert($email);
             } elsif ($type eq 'unsubscribe') {
                 mySociety::Alert::delete($id);
                 $out = $q->p(_('You have successfully deleted your alert.'));
+	        $out .= CrossSell::display_advert($email);
             }
         } else {
             $out = $q->p(_(<<EOF));
@@ -87,7 +92,7 @@ EOF
             }
             my %h = ();
             $h{url} = mySociety::Config::get('BASE_URL') . '/A/'
-                . mySociety::AuthToken::store('alert', { id => $alert_id, type => 'subscribe' } );
+                . mySociety::AuthToken::store('alert', { id => $alert_id, type => 'subscribe', email => $email } );
             dbh()->commit();
             $out = Page::send_email($email, undef, 'alert', %h);
         }
