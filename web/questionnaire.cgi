@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.13 2007-07-09 17:40:29 matthew Exp $
+# $Id: questionnaire.cgi,v 1.14 2007-07-09 19:32:44 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -139,7 +139,7 @@ sub submit_questionnaire {
         return <<EOF;
 <p style="font-size:200%">We're sorry to hear that. We have two suggestions: why not try
 <a href="http://www.writetothem.com/">writing direct to your councillor(s)</a>
-or, if it's a problem that could be fixed by lcaol people working together
+or, if it's a problem that could be fixed by local people working together,
 why not <a href="http://www.pledgebank.com/new">make and publicise a pledge</a>?
 </p>
 EOF
