@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.43 2007-07-11 16:28:13 matthew Exp $
+# $Id: send-reports,v 1.44 2007-07-11 16:39:02 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -54,6 +54,7 @@ foreach my $row (@$unsent) {
 
     if (dbh()->selectrow_array('select email from abuse where lower(email)=?', {}, lc($row->{email}))) {
         dbh()->do("update problem set state='hidden' where id=?", {}, $row->{id});
+	dbh()->commit();
         next;
     }
     # XXX Needs locks!

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.25 2007-07-09 17:40:29 matthew Exp $
+# $Id: confirm.cgi,v 1.26 2007-07-11 16:39:02 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -100,9 +100,15 @@ sub confirm_update {
 
 sub confirm_problem {
     my ($q, $id) = @_;
-    dbh()->do("update problem set state='confirmed', confirmed=ms_current_timestamp(), lastupdate=ms_current_timestamp()
-        where id=? and state='unconfirmed'", {}, $id);
+
     my ($council, $email) = dbh()->selectrow_array("select council, email from problem where id=?", {}, $id);
+
+    if (dbh()->selectrow_array('select email from abuse where lower(email)=?', {}, lc($email))) {
+        dbh()->do("update problem set state='hidden', lastupdate=ms_current_timestamp() where id=?", {}, $id);
+    } else {
+        dbh()->do("update problem set state='confirmed', confirmed=ms_current_timestamp(), lastupdate=ms_current_timestamp()
+            where id=? and state='unconfirmed'", {}, $id);
+    }
     my $out = '<form action="/alert" method="post">';
     $out .= $q->p(
         _('You have successfully confirmed your problem')
