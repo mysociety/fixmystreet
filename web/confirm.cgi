@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.26 2007-07-11 16:39:02 matthew Exp $
+# $Id: confirm.cgi,v 1.27 2007-07-11 18:04:08 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -45,15 +45,9 @@ sub main {
     my $id = mySociety::AuthToken::retrieve($tokentype, $token);
     if ($id) {
         if ($type eq 'update') {
-            my ($o, $problem_id, $email, $creator_fixed) = confirm_update($q, $id);
-            if ($creator_fixed > 0) {
-                $out = ask_questionnaire($token);
-            } else {
-                $out = $o . advertise_updates($q, $problem_id, $email);
-            }
+            $out = confirm_update($q, $id);
         } elsif ($type eq 'problem') {
-            my ($o, $email) = confirm_problem($q, $id);
-            $out = $o . advertise_updates($q, $id, $email);
+            $out = confirm_problem($q, $id);
         } elsif ($type eq 'questionnaire') {
             $out = add_questionnaire($q, $id, $token);
         }
@@ -76,26 +70,34 @@ Page::do_fastcgi(\&main);
 sub confirm_update {
     my ($q, $id) = @_;
     dbh()->do("update comment set state='confirmed' where id=? and state='unconfirmed'", {}, $id);
-    my ($problem_id, $fixed, $email) = dbh()->selectrow_array(
-        "select problem_id, mark_fixed, email from comment where id=?", {}, $id);
-    my $creator_fixed;
+    my ($problem_id, $fixed, $email, $name) = dbh()->selectrow_array(
+        "select problem_id, mark_fixed, email, name from comment where id=?", {}, $id);
+    my $creator_fixed = 0;
     if ($fixed) {
         dbh()->do("update problem set state='fixed', lastupdate = ms_current_timestamp()
             where id=? and state='confirmed'", {}, $problem_id);
         # If a problem reporter is marking their own problem as fixed, turn off questionnaire sending
         $creator_fixed = dbh()->do("update problem set send_questionnaire='f' where id=? and email=?
-	    and send_questionnaire='t'", {}, $problem_id, $email);
+            and send_questionnaire='t'", {}, $problem_id, $email);
     } else { 
         # Only want to refresh problem if not already fixed
         dbh()->do("update problem set lastupdate = ms_current_timestamp()
             where id=? and state='confirmed'", {}, $problem_id);
     }
     my $out = '';
-    unless ($creator_fixed > 0) {
-        $out .= '<form action="/alert" method="post">';
+    if ($creator_fixed > 0) {
+        $out = ask_questionnaire($q->param('token'));
+    } else {
+        $out = '<form action="/alert" method="post">';
         $out .= $q->p(sprintf(_('You have successfully confirmed your update and you can now <a href="%s">view it on the site</a>.'), "/?id=$problem_id#update_$id"));
+        if ($fixed) {
+            $out .= CrossSell::display_advert($email, $name);
+        } else {
+            $out .= advertise_updates($q, $problem_id, $email);
+        }
     }
-    return ($out, $problem_id, $email, $creator_fixed);
+
+    return $out;
 }
 
 sub confirm_problem {
@@ -115,7 +117,8 @@ sub confirm_problem {
         . ($council ? _(' and <strong>we will now send it to the council</strong>') : '')
         . sprintf(_('. You can <a href="%s">view the problem on this site</a>.'), "/?id=$id")
     );
-    return ($out, $email);
+    $out .= advertise_updates($q, $id, $email);
+    return $out;
 }
 
 sub advertise_updates {
