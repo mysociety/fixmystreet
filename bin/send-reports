@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.42 2007-06-20 10:34:17 matthew Exp $
+# $Id: send-reports,v 1.43 2007-07-11 16:28:13 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -51,6 +51,11 @@ my $unsent = dbh()->selectall_arrayref(
     AND council IS NOT NULL", { Slice => {} });
 
 foreach my $row (@$unsent) {
+
+    if (dbh()->selectrow_array('select email from abuse where lower(email)=?', {}, lc($row->{email}))) {
+        dbh()->do("update problem set state='hidden' where id=?", {}, $row->{id});
+        next;
+    }
     # XXX Needs locks!
     my @all_councils = split /,|\|/, $row->{council};
     my ($councils, $missing) = $row->{council} =~ /^([\d,]+)(?:\|([\d,]+))?/;

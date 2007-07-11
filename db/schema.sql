@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.35 2007-06-18 15:31:00 matthew Exp $
+-- $Id: schema.sql,v 1.36 2007-07-11 16:28:13 matthew Exp $
 --
 
 -- secret
@@ -293,3 +293,9 @@ create table flickr_imported (
     problem_id integer not null references problem(id)
 );
 create unique index flickr_imported_id_idx on flickr_imported(id);
+
+create table abuse (
+    email text not null
+);
+create unique index abuse_email_idx on abuse(lower(email));
+
