@@ -408,3 +408,10 @@ ol#current img {
     width: 48%;
     margin-right: 1em;
 }
+
+/* Printign */
+@media print {
+    #map_box { float: none; margin: 0 auto; }
+    #content { max-width: none; }
+    #side { margin-right: 0; }
+}
