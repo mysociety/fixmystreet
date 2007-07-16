@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.3 2007-06-28 17:29:03 matthew Exp $
+# $Id: index.cgi,v 1.4 2007-07-16 15:07:55 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -51,9 +51,9 @@ sub body {
         ) .
         $q->h2(_('Flyers')) .
         $q->ul(
-            $q->li($q->a({href=>'fixmystreet-flyers-colour.pdf'}, _('4 x A5, colour'))),
-            $q->li($q->a({href=>'fixmystreet-flyers-bw-outlined.pdf'}, _('4 x A5, black and white, outlined'))),
-            $q->li($q->a({href=>'fixmystreet-flyers-bw-low-ink.pdf'}, _('4 x A5, black and white, low ink')))
+            $q->li($q->a({href=>'fixmystreet-flyers-colour.pdf'}, _('4 x A6, colour'))),
+            $q->li($q->a({href=>'fixmystreet-flyers-bw-outlined.pdf'}, _('4 x A6, black and white, outlined'))),
+            $q->li($q->a({href=>'fixmystreet-flyers-bw-low-ink.pdf'}, _('4 x A6, black and white, low ink')))
         )
     ;
 }
