@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.152 2007-07-07 11:47:22 matthew Exp $
+# $Id: index.cgi,v 1.153 2007-07-19 13:27:54 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -58,7 +58,7 @@ sub main {
 
     my $out = '';
     my %params;
-    if ($q->param('submit_problem')) {
+    if ($q->param('submit_problem') || $q->param('submit_map')==2) {
         $params{title} = 'Submitting your problem';
         $out = submit_problem($q);
     } elsif ($q->param('submit_update')) {
