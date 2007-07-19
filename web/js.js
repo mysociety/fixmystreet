@@ -45,6 +45,7 @@ YAHOO.util.Event.onContentReady('map', function() {
 
 YAHOO.util.Event.onContentReady('mapForm', function() {
     this.onsubmit = function() {
+        this.submit_problem.disabled = true;
         this.x.value = x + 2;
         this.y.value = y + 2;
         return true;
