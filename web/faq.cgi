@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.25 2007-07-04 14:17:26 matthew Exp $
+# $Id: faq.cgi,v 1.26 2007-08-01 11:27:37 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -69,8 +69,8 @@ submit buttons, which the map uses when reporting a problem. It's fixed in the
 latest nightly build of Safari, so will presumably be fixed in the next
 release. Until then, I've sadly had to disable dragging to avoid people
 dragging an empty square.")),
-	$q->dt(_('Do you have any publicity material?')),
-	$q->dd(_('Sure, we have a whole <a href="posters/">array of posters and flyers</a>.')),
+        $q->dt(_('Do you have any publicity material?')),
+        $q->dd(_('Sure, we have a whole <a href="posters/">array of posters and flyers</a>.')),
     );
     $out .= $q->h2(_('Privacy Questions'));
     $out .= $q->dl(
@@ -97,7 +97,8 @@ mySociety&rsquo;s primary mission is to build Internet projects which give peopl
 benefits in the civic and community aspects of their lives. Our first project
 was <a href="http://www.writetothem.com/">WriteToThem</a>, where you can write to any of your
 elected representatives, for free.')),
-        $q->dt(_('Who pays for it?')),
+        $q->dt('<img src="/i/moj.png" align="right" alt="Ministry of Justice" hspace="10">' .
+            _('Who pays for it?')),
         $q->dd(_('FixMyStreet was paid for via the Department for
 Constitutional Affairs Innovations Fund.')),
         $q->dt(_('<a name="nfi"></a>Wasn\'t this site called Neighbourhood Fix-It?')),
