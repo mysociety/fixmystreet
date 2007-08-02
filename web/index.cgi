@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.153 2007-07-19 13:27:54 matthew Exp $
+# $Id: index.cgi,v 1.154 2007-08-02 11:45:06 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -28,10 +28,12 @@ use Page;
 use mySociety::AuthToken;
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh select_all);
+use mySociety::EmailUtil;
 use mySociety::Gaze;
 use mySociety::GeoUtil;
-use mySociety::Util;
 use mySociety::MaPit;
+use mySociety::PostcodeUtil;
+use mySociety::Random;
 use mySociety::VotingArea;
 use mySociety::Web qw(ent NewURL);
 
@@ -47,7 +49,7 @@ BEGIN {
 
     if (!dbh()->selectrow_array('select secret from secret for update of secret')) {
         local dbh()->{HandleError};
-        dbh()->do('insert into secret (secret) values (?)', {}, unpack('h*', mySociety::Util::random_bytes(32)));
+        dbh()->do('insert into secret (secret) values (?)', {}, unpack('h*', mySociety::Random::random_bytes(32)));
     }
     dbh()->commit();
 }
@@ -183,7 +185,7 @@ sub submit_update {
     $input{name} = undef unless $input{name} =~ /\S/;
     if ($input{email} !~ /\S/) {
         push(@errors, 'Please enter your email');
-    } elsif (!mySociety::Util::is_valid_email($input{email})) {
+    } elsif (!mySociety::EmailUtil::is_valid_email($input{email})) {
         push(@errors, 'Please enter a valid email');
     }
     return display_problem($q, @errors) if (@errors);
@@ -230,7 +232,7 @@ sub submit_problem {
     }
     if ($input{email} !~ /\S/) {
         push(@errors, 'Please enter your email');
-    } elsif (!mySociety::Util::is_valid_email($input{email})) {
+    } elsif (!mySociety::EmailUtil::is_valid_email($input{email})) {
         push(@errors, 'Please enter a valid email');
     }
     if ($input{category} && $input{category} eq '-- Pick a category --') {
@@ -831,7 +833,7 @@ sub geocode_choice {
 sub geocode {
     my ($s) = @_;
     my ($x, $y, $easting, $northing, $island, $error);
-    if (mySociety::Util::is_valid_postcode($s)) {
+    if (mySociety::PostcodeUtil::is_valid_postcode($s)) {
         try {
             my $location = mySociety::MaPit::get_location($s);
             $island = $location->{coordsyst};

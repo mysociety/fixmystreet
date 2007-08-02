@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.8 2007-07-09 17:40:29 matthew Exp $
+# $Id: alert.cgi,v 1.9 2007-08-02 11:45:06 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -23,7 +23,7 @@ use mySociety::Alert;
 use mySociety::AuthToken;
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh select_all);
-use mySociety::Util qw(is_valid_email);
+use mySociety::EmailUtil qw(is_valid_email);
 use mySociety::Web qw(ent);
 
 BEGIN {

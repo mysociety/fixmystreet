@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.44 2007-07-11 16:39:02 matthew Exp $
+# $Id: send-reports,v 1.45 2007-08-02 11:44:59 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -20,8 +20,8 @@ use File::Slurp;
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh select_all);
 use mySociety::Email;
+use mySociety::EmailUtil;
 use mySociety::MaPit;
-use mySociety::Util;
 
 BEGIN {
     mySociety::Config::set_file("$FindBin::Bin/../conf/general");
@@ -136,9 +136,9 @@ If you know of an appropriate contact address, please do get in touch. ]\n\n";
     if (mySociety::Config::get('STAGING_SITE') || $nomail) {
         $result = -1;
     } else {
-        $result = mySociety::Util::send_email($email, mySociety::Config::get('CONTACT_EMAIL'), @recips);
+        $result = mySociety::EmailUtil::send_email($email, mySociety::Config::get('CONTACT_EMAIL'), @recips);
     }
-    if ($result == mySociety::Util::EMAIL_SUCCESS) {
+    if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
         dbh()->do('UPDATE problem SET whensent=ms_current_timestamp(),
             lastupdate=ms_current_timestamp() WHERE id=?', {}, $row->{id});
         dbh()->commit();

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: load-contacts,v 1.2 2007-01-26 22:48:30 matthew Exp $
+# $Id: load-contacts,v 1.3 2007-08-02 11:44:59 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -18,6 +18,7 @@ use lib "$FindBin::Bin/../../perllib";
 
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh select_all);
+use mySociety::Random;
 
 BEGIN {
     mySociety::Config::set_file("$FindBin::Bin/../conf/general");
@@ -31,7 +32,7 @@ BEGIN {
 
     if (!dbh()->selectrow_array('select secret from secret for update of secret')) {
         local dbh()->{HandleError};
-        dbh()->do('insert into secret (secret) values (?)', {}, unpack('h*', mySociety::Util::random_bytes(32)));
+        dbh()->do('insert into secret (secret) values (?)', {}, unpack('h*', mySociety::Random::random_bytes(32)));
     }
     dbh()->commit();
 }

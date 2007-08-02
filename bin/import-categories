@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: import-categories,v 1.2 2007-03-21 16:04:39 matthew Exp $
+# $Id: import-categories,v 1.3 2007-08-02 11:44:59 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -19,7 +19,6 @@ use lib "$FindBin::Bin/../../perllib";
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh select_all);
 use mySociety::MaPit;
-use mySociety::Util;
 use mySociety::VotingArea;
 
 BEGIN {

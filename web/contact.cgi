@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.21 2007-07-09 17:40:29 matthew Exp $
+# $Id: contact.cgi,v 1.22 2007-08-02 11:45:06 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -20,7 +20,7 @@ use Page;
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh);
 use mySociety::Email;
-use mySociety::Util;
+use mySociety::EmailUtil;
 use mySociety::Web qw(ent);
 
 BEGIN {
@@ -58,7 +58,7 @@ sub contact_submit {
     push(@errors, 'Please give your name') unless $input{name} =~ /\S/;
     if ($input{email} !~ /\S/) {
         push(@errors, 'Please give your email');
-    } elsif (!mySociety::Util::is_valid_email($input{email})) {
+    } elsif (!mySociety::EmailUtil::is_valid_email($input{email})) {
         push(@errors, 'Please give a valid email address');
     }
     push(@errors, 'Please give a subject') unless $input{subject} =~ /\S/;
@@ -82,8 +82,8 @@ sub contact_submit {
         To => [[mySociety::Config::get('CONTACT_EMAIL'), 'FixMyStreet']],
         Subject => 'FMS message: ' . $subject
     });
-    my $result = mySociety::Util::send_email($email, $input{email}, mySociety::Config::get('CONTACT_EMAIL'));
-    if ($result == mySociety::Util::EMAIL_SUCCESS) {
+    my $result = mySociety::EmailUtil::send_email($email, $input{email}, mySociety::Config::get('CONTACT_EMAIL'));
+    if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
         my $out = $q->p("Thanks for your feedback.  We'll get back to you as soon as we can!");
         $out .= CrossSell::display_advert($input{email}, $input{name});
         return $out;
