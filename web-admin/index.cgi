@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.43 2007-06-15 14:57:53 matthew Exp $
+# $Id: index.cgi,v 1.44 2007-08-15 19:21:47 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.43 2007-06-15 14:57:53 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.44 2007-08-15 19:21:47 matthew Exp $';
 
 use strict;
 
@@ -215,7 +215,8 @@ sub do_council_contacts ($$) {
 
     # Submit form
     my $updated = '';
-    if ($q->param('posted') eq 'new') {
+    my $posted = $q->param('posted') || '';
+    if ($posted eq 'new') {
         # History is automatically stored by a trigger in the database
         my $update = dbh()->do("update contacts set
             email = ?,
@@ -245,7 +246,7 @@ sub do_council_contacts ($$) {
             $updated = $q->p($q->em("New category contact added"));
         }
         dbh()->commit();
-    } elsif ($q->param('posted') eq 'update') {
+    } elsif ($posted eq 'update') {
         my @cats = $q->param('confirmed');
         foreach my $cat (@cats) {
             dbh()->do("update contacts set
