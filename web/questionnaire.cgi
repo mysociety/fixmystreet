@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.14 2007-07-09 19:32:44 matthew Exp $
+# $Id: questionnaire.cgi,v 1.15 2007-08-15 12:37:47 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -112,8 +112,9 @@ sub submit_questionnaire {
         if $input{been_fixed} eq 'No' && $problem->{state} eq 'confirmed';
 
     # Record questionnaire response
-    my $reported = $input{reported} eq 'Yes' ? 't' :
-        ($input{reported} eq 'No' ? 'f' : undef);
+    my $reported = $input{reported}
+        ? ($input{reported} eq 'Yes' ? 't' : ($input{reported} eq 'No' ? 'f' : undef))
+        : undef;
     dbh()->do('update questionnaire set whenanswered=ms_current_timestamp(),
         ever_reported=?, old_state=?, new_state=? where id=?', {},
         $reported, $problem->{state}, $new_state ? $new_state : $problem->{state},
