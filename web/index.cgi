@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.155 2007-08-15 11:31:45 matthew Exp $
+# $Id: index.cgi,v 1.156 2007-08-17 11:38:07 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -703,7 +703,7 @@ sub display_problem {
     # Try and have pin near centre of map
     $x_tile -= 1 if $x - $x_tile < 0.5;
     $y_tile -= 1 if $y - $y_tile < 0.5;
-    my $back = NewURL($q, id=>undef, x=>$x_tile, y=>$y_tile);
+    my $back = NewURL($q, id=>undef, x=>$x_tile, y=>$y_tile, submit_update=>undef);
     $out .= '<p style="padding-bottom: 0.5em; border-bottom: dotted 1px #999999;" align="right"><a href="' . $back . '">More problems nearby</a></p>';
     $out .= '<div id="alert_links">';
     $out .= '<a id="email_alert" href="/alert?type=updates;id='.$input_h{id}.'">Email me updates</a>';
