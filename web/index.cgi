@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.156 2007-08-17 11:38:07 matthew Exp $
+# $Id: index.cgi,v 1.157 2007-08-18 09:58:01 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -668,6 +668,7 @@ sub display_problem {
     $input{y} ||= 0; $input{y} += 0;
 
     # Get all information from database
+    return display_location($q, 'Unknown problem ID') if $input{id} =~ /\D/;
     my $problem = dbh()->selectrow_hashref(
         "select id, easting, northing, council, category, title, detail, photo,
              used_map, name, anonymous, extract(epoch from confirmed) as time,
