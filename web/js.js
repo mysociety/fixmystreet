@@ -17,6 +17,10 @@ YAHOO.util.Event.onContentReady('pc', function() {
 
 function compass_pan(e, a) {
     YAHOO.util.Event.preventDefault(e);
+    if (a.home) {
+        a.x = a.orig_x-drag_x;
+        a.y = a.orig_y-drag_y;
+    }
     pan(a.x, a.y);
 }
 
@@ -27,12 +31,13 @@ YAHOO.util.Event.onContentReady('compass', function() {
     var points = this.getElementsByTagName('a');
     YAHOO.util.Event.addListener(points[1], 'click', compass_pan, { x:0, y:tileheight });
     YAHOO.util.Event.addListener(points[3], 'click', compass_pan, { x:tilewidth, y:0 });
-    YAHOO.util.Event.addListener(points[4], 'click', compass_pan, { x:-tilewidth, y:0 });
-    YAHOO.util.Event.addListener(points[6], 'click', compass_pan, { x:0, y:-tileheight });
+    YAHOO.util.Event.addListener(points[5], 'click', compass_pan, { x:-tilewidth, y:0 });
+    YAHOO.util.Event.addListener(points[7], 'click', compass_pan, { x:0, y:-tileheight });
     YAHOO.util.Event.addListener(points[0], 'click', compass_pan, { x:tilewidth, y:tileheight });
     YAHOO.util.Event.addListener(points[2], 'click', compass_pan, { x:-tilewidth, y:tileheight });
-    YAHOO.util.Event.addListener(points[5], 'click', compass_pan, { x:tilewidth, y:-tileheight });
-    YAHOO.util.Event.addListener(points[7], 'click', compass_pan, { x:-tilewidth, y:-tileheight });
+    YAHOO.util.Event.addListener(points[6], 'click', compass_pan, { x:tilewidth, y:-tileheight });
+    YAHOO.util.Event.addListener(points[8], 'click', compass_pan, { x:-tilewidth, y:-tileheight });
+    YAHOO.util.Event.addListener(points[4], 'click', compass_pan, { home:1, orig_x:drag_x, orig_y:drag_y });
 });
 
 YAHOO.util.Event.onContentReady('map', function() {
@@ -111,8 +116,11 @@ function pan(x, y) {
     if (!myAnim || !myAnim.isAnimated()) {
         myAnim = new YAHOO.util.Motion('drag', { points:{by:[x,y]} }, 10, YAHOO.util.Easing.easeOut);
         myAnim.useSeconds = false;
-        myAnim.onTween.subscribe(function(){ update_tiles(x/10, y/10, false); });
-        myAnim.onComplete.subscribe(function(){ cleanCache(); });
+        //myAnim.onTween.subscribe(function(){ update_tiles(x/10, y/10, false); });
+        myAnim.onComplete.subscribe(function(){
+            update_tiles(x, y, false);
+            cleanCache();
+        });
         myAnim.animate();
     }
 }

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.58 2007-06-22 14:20:45 matthew Exp $
+# $Id: Page.pm,v 1.59 2007-08-20 10:39:30 matthew Exp $
 #
 
 package Page;
@@ -244,6 +244,7 @@ sub compass ($$$) {
             $compass[$i][$j] = NewURL($q, x=>$i, y=>$j);
         }
     }
+    my $recentre = NewURL($q, x=>undef, y=>undef);
     return <<EOF;
 <table cellpadding="0" cellspacing="0" border="0" id="compass">
 <tr valign="bottom">
@@ -253,7 +254,7 @@ sub compass ($$$) {
 </tr>
 <tr>
 <td><a href="${compass[$x-1][$y]}"><img src="/i/arrow-west.gif" hspace="3" alt="W"></a></td>
-<td align="center"><img src="/i/rose.gif" alt=""></td>
+<td align="center"><a href="$recentre"><img src="/i/rose.gif" alt="Recentre"></a></td>
 <td><a href="${compass[$x+1][$y]}"><img src="/i/arrow-east.gif" hspace="3" alt="E"></a></td>
 </tr>
 <tr valign="top">
