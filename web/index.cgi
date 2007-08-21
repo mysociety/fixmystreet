@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.157 2007-08-18 09:58:01 matthew Exp $
+# $Id: index.cgi,v 1.158 2007-08-21 02:20:56 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -62,13 +62,13 @@ sub main {
     my %params;
     if ($q->param('submit_problem') || ($q->param('submit_map') && $q->param('submit_map')==2)) {
         $params{title} = 'Submitting your problem';
-        $out = submit_problem($q);
+        ($out) = submit_problem($q);
     } elsif ($q->param('submit_update')) {
         $params{title} = 'Submitting your update';
         ($out) = submit_update($q);
     } elsif ($q->param('submit_map')) {
         $params{title} = 'Reporting a problem';
-        $out = display_form($q);
+        ($out) = display_form($q);
     } elsif ($q->param('id')) {
         ($out, %params) = display_problem($q);
         $params{title} .= ' - Viewing a problem';
@@ -412,6 +412,7 @@ sub display_form {
 
     my $all_councils = mySociety::MaPit::get_voting_area_by_location_en($easting, $northing,
         'polygon', $mySociety::VotingArea::council_parent_types);
+    return display_location($q, 'That spot does not appear to be covered by a council - if it is past the shoreline, for example, please specify the closest point on land.') unless @$all_councils;
     my $areas_info = mySociety::MaPit::get_voting_areas_info($all_councils);
 
     # Look up categories for this council or councils
