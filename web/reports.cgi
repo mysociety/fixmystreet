@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.2 2007-08-23 11:49:14 matthew Exp $
+# $Id: reports.cgi,v 1.3 2007-08-23 11:54:17 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -40,6 +40,7 @@ sub main {
     my $all = $q->param('all') || 0;
     my $one_council = $q->param('council') || '';
     if ($one_council =~ /\D/) {
+        $one_council =~ s/ and / & /;
         $one_council = mySociety::MaPit::get_voting_area_by_name("$one_council ", $mySociety::VotingArea::council_parent_types);
         if (keys %$one_council == 1) {
             ($one_council) = keys %$one_council;
@@ -174,5 +175,6 @@ sub short_name {
     $name =~ s/ Council$//;
     $name = uri_escape($name);
     $name =~ s/%20/+/g;
+    $name =~ s/ & / and /;
     return $name;
 }
