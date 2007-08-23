@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.1 2007-08-23 11:45:44 matthew Exp $
+# $Id: reports.cgi,v 1.2 2007-08-23 11:49:14 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -40,7 +40,7 @@ sub main {
     my $all = $q->param('all') || 0;
     my $one_council = $q->param('council') || '';
     if ($one_council =~ /\D/) {
-        $one_council = mySociety::MaPit::get_voting_area_by_name($one_council, $mySociety::VotingArea::council_parent_types);
+        $one_council = mySociety::MaPit::get_voting_area_by_name("$one_council ", $mySociety::VotingArea::council_parent_types);
         if (keys %$one_council == 1) {
             ($one_council) = keys %$one_council;
         } else {
@@ -167,6 +167,9 @@ sub list_problems {
 
 sub short_name {
     my $name = shift;
+    # Special case Durham as it's the only place with two councils of the same name
+    return 'Durham+County' if ($name eq 'Durham County Council');
+    return 'Durham+City' if ($name eq 'Durham City Council');
     $name =~ s/ (Borough|City|District|County) Council$//;
     $name =~ s/ Council$//;
     $name = uri_escape($name);
