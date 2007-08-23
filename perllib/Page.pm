@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.59 2007-08-20 10:39:30 matthew Exp $
+# $Id: Page.pm,v 1.60 2007-08-23 11:45:44 matthew Exp $
 #
 
 package Page;
@@ -115,7 +115,7 @@ sub footer {
 <h2 class="v">Navigation</h2>
 <ul id="navigation">
 <li><a href="/">Report a problem</a></li>
-<li><a href="/report">All reports</a></li>
+<li><a href="/reports">All reports</a></li>
 <li><a href="/faq">Help</a></li>
 <li><a href="/contact">Contact</a></li>
 </ul>

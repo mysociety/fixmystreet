@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.44 2007-08-15 19:21:47 matthew Exp $
+# $Id: index.cgi,v 1.45 2007-08-23 11:45:44 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.44 2007-08-15 19:21:47 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.45 2007-08-23 11:45:44 matthew Exp $';
 
 use strict;
 
@@ -283,7 +283,7 @@ sub do_council_contacts ($$) {
                 "Example postcode " . $example_postcode) . " | ";
     }
     $links_html .= ' '  . 
-            $q->a({href => build_url($q, mySociety::Config::get('BASE_URL') . "/report",
+            $q->a({href => build_url($q, mySociety::Config::get('BASE_URL') . "/reports",
                     { 'council' => $area_id}) }, " List all reported problems");
     print $q->p($links_html);
 

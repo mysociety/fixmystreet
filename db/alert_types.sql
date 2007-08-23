@@ -34,7 +34,7 @@ insert into alert_type
     item_table, item_where, item_order,
     item_title, item_link, item_description, template)
 values ('council_problems', '', '',
-    'New local problems on FixMyStreet', '/report', 'The latest local problems reported by users',
+    'New local problems on FixMyStreet', '/reports', 'The latest local problems reported by users',
     'problem', 'problem.state in (\'confirmed\', \'fixed\') and council like \'%\'||?||\'%\'', 'created desc',
     '{{title}}', '/?id={{id}}', '{{detail}}', 'alert-problem'
 );

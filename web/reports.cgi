@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: report.cgi,v 1.40 2007-06-19 15:54:24 matthew Exp $
+# $Id: reports.cgi,v 1.1 2007-08-23 11:45:44 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -15,12 +15,14 @@ require 5.8.0;
 use FindBin;
 use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../../perllib";
+use URI::Escape;
 
 use Page;
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh select_all);
 use mySociety::MaPit;
 use mySociety::Web qw(ent NewURL);
+use mySociety::VotingArea;
 
 BEGIN {
     mySociety::Config::set_file("$FindBin::Bin/../conf/general");
@@ -37,7 +39,14 @@ sub main {
     my $q = shift;
     my $all = $q->param('all') || 0;
     my $one_council = $q->param('council') || '';
-    $one_council =~ s/\D//g;
+    if ($one_council =~ /\D/) {
+        $one_council = mySociety::MaPit::get_voting_area_by_name($one_council, $mySociety::VotingArea::council_parent_types);
+        if (keys %$one_council == 1) {
+            ($one_council) = keys %$one_council;
+        } else {
+            $one_council = undef;
+        }
+    }
     $all = 0 unless $one_council;
     my @params;
     my $where_extra = '';
@@ -85,7 +94,8 @@ sub main {
         foreach (sort { $areas_info->{$a}->{name} cmp $areas_info->{$b}->{name} } keys %councils) {
             print '<tr align="center"';
             print ' class="a"' if (++$c%2);
-            print '><td align="left"><a href="report?council=' . $_ . '">' .
+            my $url = short_name($areas_info->{$_}->{name});
+            print '><td align="left"><a href="/reports/' . $url . '">' .
                 $areas_info->{$_}->{name} . '</a></td>';
             summary_cell(\@{$open{$_}{new}});
             summary_cell(\@{$open{$_}{older}});
@@ -100,7 +110,7 @@ sub main {
         if (!$name) {
             print Page::header($q, title=>"Summary reports");
             print "Council with identifier " . ent($one_council). " not found. ";
-            print $q->a({href => NewURL($q, all=>undef, council=>undef) }, 'Show all councils');
+            print $q->a({href => '/reports' }, 'Show all councils');
             print ".";
         } else {
             print Page::header($q, title=>"$name - Summary reports", rss => [ "Problems within $name, FixMyStreet", "/rss/council/$one_council" ]);
@@ -108,10 +118,10 @@ sub main {
                 $q->a({href => "/rss/council/$one_council"}, '<img align="right" src="/i/feed.png" width="16" height="16" title="RSS feed" alt="RSS feed of problems in this council" border="0" hspace="4">'),
                 'This is a summary of all reports for one council. You can ' .
                 ($all ? 
-                    $q->a({href => NewURL($q, all=>undef) }, 'see less detail') :
-                    $q->a({href => NewURL($q, all=>1) }, 'see more details')) .
+                    $q->a({href => NewURL($q, council=>undef, all=>undef) }, 'see less detail') :
+                    $q->a({href => NewURL($q, council=>undef, all=>1) }, 'see more details')) .
                 ' or go back and ' .
-                $q->a({href => NewURL($q, all=>undef, council=>undef) }, 'show all councils') .
+                $q->a({href => '/reports' }, 'show all councils') .
                 '.');
             print "<h2>$name</h2>\n";
             if ($open{$one_council}) {
@@ -153,4 +163,13 @@ sub list_problems {
         print '</li>';
     }
     print '</ul>';
+}
+
+sub short_name {
+    my $name = shift;
+    $name =~ s/ (Borough|City|District|County) Council$//;
+    $name =~ s/ Council$//;
+    $name = uri_escape($name);
+    $name =~ s/%20/+/g;
+    return $name;
 }

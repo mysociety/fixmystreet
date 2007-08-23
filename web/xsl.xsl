@@ -18,7 +18,7 @@
 <h2 class="v">Navigation</h2>
 <ul id="navigation">
 <li><a href="/">Report a problem</a></li>
-<li><a href="/report">All reports</a></li>
+<li><a href="/reports">All reports</a></li>
 <li><a href="/faq">Help</a></li>
 <li><a href="/contact">Contact</a></li>
 </ul>
