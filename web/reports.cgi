@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.3 2007-08-23 11:54:17 matthew Exp $
+# $Id: reports.cgi,v 1.4 2007-08-23 11:58:07 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -173,8 +173,8 @@ sub short_name {
     return 'Durham+City' if ($name eq 'Durham City Council');
     $name =~ s/ (Borough|City|District|County) Council$//;
     $name =~ s/ Council$//;
+    $name =~ s/ & / and /;
     $name = uri_escape($name);
     $name =~ s/%20/+/g;
-    $name =~ s/ & / and /;
     return $name;
 }
