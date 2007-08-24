@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.45 2007-08-02 11:44:59 matthew Exp $
+# $Id: send-reports,v 1.46 2007-08-24 12:27:30 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -161,8 +161,8 @@ if ($verbose) {
 # Will do for now :)
 sub essex_contact {
     my ($E, $N) = @_;
-    my $district = mySociety::MaPit::get_voting_area_by_location_en($E, $N, 'polygon', 'DIS');
-    $district = $district->[0];
+    my $district = mySociety::MaPit::get_voting_areas_by_location({easting=>$E, northing=>$N}, 'polygon', 'DIS');
+    ($district) = keys %$district;
     my $email;
     $email = 'eastarea' if $district == 2315 || $district == 2312;
     $email = 'midarea' if $district == 2317 || $district == 2314 || $district == 2316;
@@ -175,8 +175,8 @@ sub essex_contact {
 # Notts has different contact addresses depending upon the district
 sub notts_contact {
     my ($E, $N) = @_;
-    my $district = mySociety::MaPit::get_voting_area_by_location_en($E, $N, 'polygon', 'DIS');
-    $district = $district->[0];
+    my $district = mySociety::MaPit::get_voting_areas_by_location({easting=>$E, northing=>$N}, 'polygon', 'DIS');
+    ($district) = keys %$district;
     my $email;
     $email = 'cshighsouth.en' if $district == 2411 || $district == 2412 || $district == 2415;
     $email = 'etwall' if $district == 2413 || $district == 2416;

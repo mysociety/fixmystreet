@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.159 2007-08-24 00:24:15 matthew Exp $
+# $Id: index.cgi,v 1.160 2007-08-24 12:27:30 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -242,12 +242,14 @@ sub submit_problem {
  
     my $areas;
     if ($input{easting} && $input{northing}) {
-        $areas = mySociety::MaPit::get_voting_area_by_location_en($input{easting}, $input{northing}, 'polygon');
-        $areas = ',' . join(',', @$areas) . ',';
+        $areas = mySociety::MaPit::get_voting_areas_by_location({easting=>$input{easting}, northing=>$input{northing}}, 'polygon');
         if ($input{council} =~ /^[\d,]+(\|[\d,]+)?$/) {
             my $no_details = $1 || '';
-            my $councils = mySociety::MaPit::get_voting_area_by_location_en($input{easting}, $input{northing}, 'polygon', $mySociety::VotingArea::council_parent_types);
-            my %councils = map { $_ => 1 } @$councils;
+            my %va = map { $_ => 1 } @$mySociety::VotingArea::council_parent_types;
+            my %councils;
+            foreach (keys %$areas) {
+                $councils{$_} = 1 if $va{$areas->{$_}};
+            }
             my @input_councils = split /,|\|/, $input{council};
             foreach (@input_councils) {
                 if (!$councils{$_}) {
@@ -278,6 +280,7 @@ sub submit_problem {
             }
             $input{council} = join(',', @valid_councils) . $no_details;
         }
+        $areas = ',' . join(',', sort keys %$areas) . ',';
     } elsif ($input{easting} || $input{northing}) {
         push(@errors, 'Somehow, you only have one co-ordinate. Please try again.');
     } else {
@@ -414,8 +417,10 @@ sub display_form {
         $northing = $input_h{northing};
     }
 
-    my $all_councils = mySociety::MaPit::get_voting_area_by_location_en($easting, $northing,
+    my $all_councils = mySociety::MaPit::get_voting_areas_by_location(
+        { easting => $easting, northing => $northing },
         'polygon', $mySociety::VotingArea::council_parent_types);
+    $all_councils = [ keys %$all_councils ];
     return display_location($q, 'That spot does not appear to be covered by a council - if it is past the shoreline, for example, please specify the closest point on land.') unless @$all_councils;
     my $areas_info = mySociety::MaPit::get_voting_areas_info($all_councils);
 
