@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.5 2007-08-24 23:37:15 matthew Exp $
+# $Id: reports.cgi,v 1.6 2007-08-24 23:43:52 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -105,7 +105,8 @@ sub main {
         %councils = ( $one_council => 1 );
     } else {
         # Show all councils on main report page
-        %councils = map { $_ => 1 } @{mySociety::MaPit::get_areas_by_type($mySociety::VotingArea::council_parent_types)};
+	my @types = grep { !/LGD/ } @$mySociety::VotingArea::council_parent_types;
+        %councils = map { $_ => 1 } @{mySociety::MaPit::get_areas_by_type(\@types)};
     }
 
     my @params;
@@ -235,7 +236,7 @@ sub summary_cell {
 
 sub list_problems {
     my ($title, $problems, $all) = @_;
-    return unless $problems;
+    return unless @$problems;
     print "<h3>$title</h3>\n<ul>";
     foreach (@$problems) {
         print '<li><a href="/?id=' . $_->[0] . '">';
