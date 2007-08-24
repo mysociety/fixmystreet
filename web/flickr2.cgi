@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: flickr2.cgi,v 1.1 2007-06-17 09:40:51 matthew Exp $
+# $Id: flickr2.cgi,v 1.2 2007-08-24 22:35:51 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -49,7 +49,7 @@ sub main {
                 $title = uri_escape($title);
 		# XXX: Look up some of this stuff at the destination instead???
                 print $q->redirect("/?flickr=$token;submit_map=1;easting=$e;northing=$n;name=$name;email=$email;title=$title;anonymous=1");
-                exit;
+                return;
             }
             $out = $q->p("That report appears to have been checked already.");
         } else {

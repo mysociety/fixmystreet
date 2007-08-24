@@ -37,7 +37,7 @@ href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code<
                     <p>This is an RSS feed from the FixMyStreet website. RSS feeds allow you to stay up to date with the latest changes and additions to the site.
                     To subscribe to it, you will need a News Reader or other similar device.
                     <br/>
-                    <a href="http://news.bbc.co.uk/1/hi/help/3223484.stm#whatisrss"><strong>Help</strong>, I don't know what a news reader is and still don't know what this is about (from the BBC).</a></p>
+                    <a href="http://news.bbc.co.uk/1/hi/help/3223484.stm#whatisrss"><strong>Help</strong>, I don't know what a news reader is and still don't know what this is about <small>(from the BBC)</small>.</a></p>
                 </div>
 
                 <p>Below is the latest content available from this feed,

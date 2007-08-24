@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: rss.cgi,v 1.15 2007-06-18 20:13:22 matthew Exp $
+# $Id: rss.cgi,v 1.16 2007-08-24 22:35:51 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -56,7 +56,7 @@ sub main {
         } else {
             die "Missing x/y or lat/lon parameter in RSS feed";
         }
-        my $qs = "x=$x;y=$y";
+        my $qs = "?x=$x;y=$y";
 
         my $d = $q->param('d');
         if ($d) {
@@ -70,13 +70,17 @@ sub main {
         mySociety::Alert::generate_rss($type, $qs, $e, $n, $d);
     } elsif ($type eq 'new_updates') {
         my $id = $q->param('id');
-        my $qs = 'id='.$id;
+        my $qs = '?id='.$id;
         mySociety::Alert::generate_rss($type, $qs, $id);
     } elsif ($type eq 'new_problems') {
         mySociety::Alert::generate_rss($type, '');
     } elsif ($type eq 'council_problems') {
         my $id = $q->param('id');
-        my $qs = 'council='.$id;
+        my $qs = '/'.$id;
+        mySociety::Alert::generate_rss($type, $qs, $id);
+    } elsif ($type eq 'area_problems') {
+        my $id = $q->param('id');
+        my $qs = '/'.$id;
         mySociety::Alert::generate_rss($type, $qs, $id);
     } elsif ($type eq 'all_problems') {
         mySociety::Alert::generate_rss($type, '');
