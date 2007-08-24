@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.7 2007-08-24 23:47:40 matthew Exp $
+# $Id: reports.cgi,v 1.8 2007-08-24 23:48:47 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -236,7 +236,7 @@ sub summary_cell {
 
 sub list_problems {
     my ($title, $problems, $all) = @_;
-    return unless @$problems;
+    return unless $problems;
     print "<h3>$title</h3>\n<ul>";
     foreach (@$problems) {
         print '<li><a href="/?id=' . $_->[0] . '">';
