@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.6 2007-08-24 23:43:52 matthew Exp $
+# $Id: reports.cgi,v 1.7 2007-08-24 23:47:40 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -81,7 +81,7 @@ sub main {
     # RSS - reports for sent reports, area for all problems in area
     if ($rss && $one_council) {
         if ($rss eq 'area' && $area_type ne 'DIS' && $area_type ne 'CTY') {
-	    # Two possibilites are the same for one-tier councils, so redirect one to the other
+            # Two possibilites are the same for one-tier councils, so redirect one to the other
             print $q->redirect('/rss/reports/' . short_name($q_council) . ($ward ? '/' . short_name($q_ward) : ''));
             return;
         }
@@ -105,7 +105,7 @@ sub main {
         %councils = ( $one_council => 1 );
     } else {
         # Show all councils on main report page
-	my @types = grep { !/LGD/ } @$mySociety::VotingArea::council_parent_types;
+        my @types = grep { !/LGD/ } @$mySociety::VotingArea::council_parent_types;
         %councils = map { $_ => 1 } @{mySociety::MaPit::get_areas_by_type(\@types)};
     }
 
@@ -128,35 +128,21 @@ sub main {
         order by id desc
     ", @params);
 
-    our $fourweeks = 4*7*24*60*60;
-    our (%fixed, %open);
-    sub add_row {
-        my ($row, $councils, $council) = @_;
-        my $duration = ($row->{duration} > 2 * $fourweeks) ? 'old' : 'new';
-        my $type = ($row->{duration} > 2 * $fourweeks)
-            ? 'unknown'
-            : ($row->{age} > $fourweeks ? 'older' : 'new');
-        my $entry = [ $row->{id}, $row->{title}, $row->{detail}, $councils ];
-	# Fixed problems are either old or new
-        push @{$fixed{$council}{$duration}}, $entry if $row->{state} eq 'fixed';
-	# Open problems are either unknown, older, or new
-        push @{$open{$council}{$type}}, $entry if $row->{state} eq 'confirmed';
-    }
-
+    my (%fixed, %open);
     my $re_councils = join('|', keys %councils);
     foreach my $row (@$problem) {
         if (!$row->{council}) {
-	    # Problem was not sent to any council, add to possible councils
+            # Problem was not sent to any council, add to possible councils
             while ($row->{areas} =~ /,($re_councils)(?=,)/go) {
-                add_row($row, 0, $1);
+                add_row($row, 0, $1, \%fixed, \%open);
             }
         } else {
-	    # Add to councils it was sent to
+            # Add to councils it was sent to
             $row->{council} =~ s/\|.*$//;
             my @council = split /,/, $row->{council};
             foreach (@council) {
                 next if $one_council && $_ != $one_council;
-                add_row($row, scalar @council, $_);
+                add_row($row, scalar @council, $_, \%fixed, \%open);
             }
         }
     }
@@ -228,6 +214,20 @@ sub main {
     dbh()->rollback();
 }
 Page::do_fastcgi(\&main);
+
+sub add_row {
+    my ($row, $councils, $council, $fixed, $open) = @_;
+    my $fourweeks = 4*7*24*60*60;
+    my $duration = ($row->{duration} > 2 * $fourweeks) ? 'old' : 'new';
+    my $type = ($row->{duration} > 2 * $fourweeks)
+        ? 'unknown'
+        : ($row->{age} > $fourweeks ? 'older' : 'new');
+    my $entry = [ $row->{id}, $row->{title}, $row->{detail}, $councils ];
+    #Fixed problems are either old or new
+    push @{$fixed->{$council}{$duration}}, $entry if $row->{state} eq 'fixed';
+    # Open problems are either unknown, older, or new
+    push @{$open->{$council}{$type}}, $entry if $row->{state} eq 'confirmed';
+}
 
 sub summary_cell {
     my $c = shift;
