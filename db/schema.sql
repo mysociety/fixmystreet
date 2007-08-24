@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.36 2007-07-11 16:28:13 matthew Exp $
+-- $Id: schema.sql,v 1.37 2007-08-24 00:24:14 matthew Exp $
 --
 
 -- secret
@@ -123,7 +123,8 @@ create table problem (
     postcode text not null,
     easting double precision not null,
     northing double precision not null,
-    council text, -- integer references contacts(area_id),
+    council text, -- the council(s) we'll report this problem to
+    areas text not null, -- the voting areas this location is in
     category text not null default 'Other',
     title text not null,
     detail text not null,

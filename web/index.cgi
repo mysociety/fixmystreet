@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.158 2007-08-21 02:20:56 matthew Exp $
+# $Id: index.cgi,v 1.159 2007-08-24 00:24:15 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -240,7 +240,10 @@ sub submit_problem {
         $input{category} = '';
     }
  
+    my $areas;
     if ($input{easting} && $input{northing}) {
+        $areas = mySociety::MaPit::get_voting_area_by_location_en($input{easting}, $input{northing}, 'polygon');
+        $areas = ',' . join(',', @$areas) . ',';
         if ($input{council} =~ /^[\d,]+(\|[\d,]+)?$/) {
             my $no_details = $1 || '';
             my $councils = mySociety::MaPit::get_voting_area_by_location_en($input{easting}, $input{northing}, 'polygon', $mySociety::VotingArea::council_parent_types);
@@ -326,9 +329,9 @@ sub submit_problem {
         # This is horrid
         my $s = dbh()->prepare("insert into problem
             (id, postcode, easting, northing, title, detail, name,
-             email, phone, photo, state, council, used_map, anonymous, category)
+             email, phone, photo, state, council, used_map, anonymous, category, areas)
             values
-            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?, ?, ?)");
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?, ?, ?, ?)");
         $s->bind_param(1, $id);
         $s->bind_param(2, $input{pc});
         $s->bind_param(3, $input{easting});
@@ -343,6 +346,7 @@ sub submit_problem {
         $s->bind_param(12, $used_map);
         $s->bind_param(13, $input{anonymous} ? 'f': 't');
         $s->bind_param(14, $input{category});
+        $s->bind_param(15, $areas);
         $s->execute();
         my %h = ();
         $h{title} = $input{title};
@@ -825,7 +829,7 @@ sub geocode_choice {
         $choice =~ s/, United Kingdom//;
         $choice =~ s/, UK//;
         my $url = uri_escape($choice);
-	$url =~ s/%20/+/g;
+        $url =~ s/%20/+/g;
         $out .= '<li><a href="/?pc=' . $url . '">' . $choice . "</a></li>\n";
     }
     $out .= '</ul>';
