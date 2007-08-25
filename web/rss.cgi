@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: rss.cgi,v 1.16 2007-08-24 22:35:51 matthew Exp $
+# $Id: rss.cgi,v 1.17 2007-08-25 00:17:30 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -21,6 +21,7 @@ use Page;
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh);
 use mySociety::Alert;
+use mySociety::MaPit;
 use mySociety::Web;
 use mySociety::GeoUtil;
 use mySociety::Gaze;
@@ -67,21 +68,22 @@ sub main {
             $d = int($d*10+0.5)/10;
         }
 
-        mySociety::Alert::generate_rss($type, $qs, $e, $n, $d);
+        mySociety::Alert::generate_rss($type, $qs, [$e, $n, $d]);
     } elsif ($type eq 'new_updates') {
         my $id = $q->param('id');
         my $qs = '?id='.$id;
-        mySociety::Alert::generate_rss($type, $qs, $id);
+        mySociety::Alert::generate_rss($type, $qs, [$id]);
     } elsif ($type eq 'new_problems') {
         mySociety::Alert::generate_rss($type, '');
     } elsif ($type eq 'council_problems') {
         my $id = $q->param('id');
         my $qs = '/'.$id;
-        mySociety::Alert::generate_rss($type, $qs, $id);
+        mySociety::Alert::generate_rss($type, $qs, [$id]);
     } elsif ($type eq 'area_problems') {
         my $id = $q->param('id');
+        my $va_info = mySociety::MaPit::get_voting_area_info($id);
         my $qs = '/'.$id;
-        mySociety::Alert::generate_rss($type, $qs, $id);
+        mySociety::Alert::generate_rss($type, $qs, [$id], { NAME => $va_info->{name} });
     } elsif ($type eq 'all_problems') {
         mySociety::Alert::generate_rss($type, '');
     } else {

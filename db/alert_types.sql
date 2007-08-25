@@ -38,7 +38,7 @@ insert into alert_type
     item_table, item_where, item_order,
     item_title, item_link, item_description, template)
 values ('council_problems', '', '',
-    'New local problems on FixMyStreet', '/reports', 'The latest local problems reported by users',
+    'New problems to {{COUNCIL}} on FixMyStreet', '/reports', 'The latest problems for {{COUNCIL}} reported by users',
     'problem', 'problem.state in (\'confirmed\', \'fixed\') and (council like \'%\'||?||\'%\'
         or (council is null and areas like \'%,\'||?||\',%\'))', 'created desc',
     '{{title}}', '/?id={{id}}', '{{detail}}', 'alert-problem'
@@ -51,7 +51,8 @@ insert into alert_type
     item_table, item_where, item_order,
     item_title, item_link, item_description, template)
 values ('ward_problems', '', '',
-    'New local problems on FixMyStreet', '/reports', 'The latest local problems reported by users',
+    'New problems for {{COUNCIL}} within {{WARD}} ward on FixMyStreet', '/reports',
+    'The latest problems for {{COUNCIL}} within {{WARD}} ward reported by users',
     'problem', 'problem.state in (\'confirmed\', \'fixed\') and (council like \'%\'||?||\'%\'
         or council is null) and areas like \'%,\'||?||\',%\'', 'created desc',
     '{{title}}', '/?id={{id}}', '{{detail}}', 'alert-problem'
@@ -64,8 +65,9 @@ insert into alert_type
     item_table, item_where, item_order,
     item_title, item_link, item_description, template)
 values ('area_problems', '', '',
-    'New local problems on FixMyStreet', '/reports', 'The latest local problems reported by users',
-    'problem', 'problem.state in (\'confirmed\', \'fixed\') and areas like \'%,\'||?||\',%\'', 'created desc',
+    'New problems within {{NAME}}\'s boundary on FixMyStreet', '/reports',
+    'The latest problems within {{NAME}}\'s boundary reported by users', 'problem',
+    'problem.state in (\'confirmed\', \'fixed\') and areas like \'%,\'||?||\',%\'', 'created desc',
     '{{title}}', '/?id={{id}}', '{{detail}}', 'alert-problem'
 );
 

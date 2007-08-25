@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.8 2007-08-24 23:48:47 matthew Exp $
+# $Id: reports.cgi,v 1.9 2007-08-25 00:17:30 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -44,13 +44,14 @@ sub main {
 
     # Look up council name, if given
     my $q_council = $q->param('council') || '';
-    my ($one_council, $area_type);
+    my ($one_council, $area_type, $area_name);
     if ($q_council =~ /\D/) {
         (my $qc = $q_council) =~ s/ and / & /;
         $qc = mySociety::MaPit::get_voting_area_by_name("$qc ", $mySociety::VotingArea::council_parent_types);
         if (keys %$qc == 1) {
             ($one_council) = keys %$qc;
             $area_type = $qc->{$one_council}->{type};
+            $area_name = $qc->{$one_council}->{name};
         }
         if (!$one_council) { # Given a false council name
             print $q->redirect('/reports');
@@ -58,6 +59,8 @@ sub main {
         }
     } elsif ($q_council =~ /^\d+$/) {
         $one_council = $q_council;
+        my $va_info = mySociety::MaPit::get_voting_area_info($q_council);
+        $area_name = $va_info->{name};
     }
     $all = 0 unless $one_council;
 
@@ -86,17 +89,20 @@ sub main {
             return;
         }
         my $type = 'council_problems'; # Problems sent to a council
-        my @params;
+        my (@params, %title_params);
+        $title_params{COUNCIL} = $area_name;
         push @params, $one_council if $rss eq 'reports';
         push @params, $ward ? $ward : $one_council;
         if ($ward && $rss eq 'reports') {
             $type = 'ward_problems'; # Problems sent to a council, restricted to a ward
+            $title_params{WARD} = $q_ward;
         } elsif ($rss eq 'area') {
+            $title_params{NAME} = $ward ? $q_ward : $q_council;
             $type = 'area_problems'; # Problems within an area
         }
         my $url = short_name($q_council);
         $url .= '/' . short_name($q_ward) if $ward;
-        mySociety::Alert::generate_rss($type, "/$url", @params);
+        mySociety::Alert::generate_rss($type, "/$url", \@params, \%title_params);
         return;
     }
 
