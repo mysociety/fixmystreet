@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.61 2007-08-27 11:40:38 matthew Exp $
+# $Id: Page.pm,v 1.62 2007-08-27 11:47:55 matthew Exp $
 #
 
 package Page;
@@ -377,7 +377,7 @@ sub _ {
 
 sub display_problem_text {
     my ($q, $problem) = @_;
-    my $out = $q->h1(ent(ucfirst $problem->{title}));
+    my $out = $q->h1(ent($problem->{title}));
 
     # Display information about problem
     $out .= '<p><em>Reported ';
