@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.160 2007-08-24 12:27:30 matthew Exp $
+# $Id: index.cgi,v 1.161 2007-08-27 11:40:39 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -210,6 +210,8 @@ sub submit_problem {
     my $q = shift;
     my @vars = qw(council title detail name email phone pc easting northing skipped anonymous category flickr);
     my %input = map { $_ => scalar $q->param($_) } @vars;
+    $input{title} = lc $input{title} if $input{title} !~ /[a-z]/;
+    $input{detail} = lc $input{detail} if $input{detail} !~ /[a-z]/;
     my @errors;
 
     my $fh = $q->upload('photo');

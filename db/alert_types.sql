@@ -18,7 +18,7 @@ insert into alert_type
 values ('new_problems', '', '',
     'New problems on FixMyStreet', '/', 'The latest problems reported by users',
     'problem', 'problem.state in (\'confirmed\', \'fixed\')', 'created desc',
-    '{{title}}', '/?id={{id}}', '{{detail}}', 'alert-problem');
+    '{{title}}, {{confirmed}}', '/?id={{id}}', '{{detail}}', 'alert-problem');
 
 -- New problems around a location
 insert into alert_type
@@ -29,7 +29,7 @@ insert into alert_type
 values ('local_problems', '', '',
     'New local problems on FixMyStreet', '/', 'The latest local problems reported by users',
     'problem_find_nearby(?, ?, ?) as nearby,problem', 'nearby.problem_id = problem.id and problem.state in (\'confirmed\', \'fixed\')', 'created desc',
-    '{{title}}', '/?id={{id}}', '{{detail}}', 'alert-problem');
+    '{{title}}, {{confirmed}}', '/?id={{id}}', '{{detail}}', 'alert-problem');
 
 -- New problems sent to a particular council
 insert into alert_type
@@ -41,7 +41,7 @@ values ('council_problems', '', '',
     'New problems to {{COUNCIL}} on FixMyStreet', '/reports', 'The latest problems for {{COUNCIL}} reported by users',
     'problem', 'problem.state in (\'confirmed\', \'fixed\') and (council like \'%\'||?||\'%\'
         or (council is null and areas like \'%,\'||?||\',%\'))', 'created desc',
-    '{{title}}', '/?id={{id}}', '{{detail}}', 'alert-problem'
+    '{{title}}, {{confirmed}}', '/?id={{id}}', '{{detail}}', 'alert-problem'
 );
 
 -- New problems within a particular ward sent to a particular council
@@ -55,7 +55,7 @@ values ('ward_problems', '', '',
     'The latest problems for {{COUNCIL}} within {{WARD}} ward reported by users',
     'problem', 'problem.state in (\'confirmed\', \'fixed\') and (council like \'%\'||?||\'%\'
         or council is null) and areas like \'%,\'||?||\',%\'', 'created desc',
-    '{{title}}', '/?id={{id}}', '{{detail}}', 'alert-problem'
+    '{{title}}, {{confirmed}}', '/?id={{id}}', '{{detail}}', 'alert-problem'
 );
 
 -- New problems within a particular voting area (ward, constituency, whatever)
@@ -68,6 +68,6 @@ values ('area_problems', '', '',
     'New problems within {{NAME}}\'s boundary on FixMyStreet', '/reports',
     'The latest problems within {{NAME}}\'s boundary reported by users', 'problem',
     'problem.state in (\'confirmed\', \'fixed\') and areas like \'%,\'||?||\',%\'', 'created desc',
-    '{{title}}', '/?id={{id}}', '{{detail}}', 'alert-problem'
+    '{{title}}, {{confirmed}}', '/?id={{id}}', '{{detail}}', 'alert-problem'
 );
 
