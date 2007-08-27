@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.9 2007-08-25 00:17:30 matthew Exp $
+# $Id: reports.cgi,v 1.10 2007-08-27 20:29:34 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -83,9 +83,11 @@ sub main {
 
     # RSS - reports for sent reports, area for all problems in area
     if ($rss && $one_council) {
+        my $url = short_name($q_council);
+        $url .= '/' . short_name($q_ward) if $ward;
         if ($rss eq 'area' && $area_type ne 'DIS' && $area_type ne 'CTY') {
             # Two possibilites are the same for one-tier councils, so redirect one to the other
-            print $q->redirect('/rss/reports/' . short_name($q_council) . ($ward ? '/' . short_name($q_ward) : ''));
+            print $q->redirect('/rss/reports/' . $url);
             return;
         }
         my $type = 'council_problems'; # Problems sent to a council
@@ -100,8 +102,6 @@ sub main {
             $title_params{NAME} = $ward ? $q_ward : $q_council;
             $type = 'area_problems'; # Problems within an area
         }
-        my $url = short_name($q_council);
-        $url .= '/' . short_name($q_ward) if $ward;
         mySociety::Alert::generate_rss($type, "/$url", \@params, \%title_params);
         return;
     }
@@ -237,7 +237,8 @@ sub add_row {
 
 sub summary_cell {
     my $c = shift;
-    print $c ? '<td>' . scalar @$c . '</td>' : '<td>0</td>';
+    $c ||= [];
+    print '<td>' . scalar @$c . '</td>';
 }
 
 sub list_problems {

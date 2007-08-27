@@ -7,5 +7,5 @@ The following new problems have been added:
 -- 
 The FixMyStreet team
 
-To stop receiving emails when there are new comments on this problem,
+To stop receiving emails when there are new problems,
 please follow this link: <?=$values['unsubscribe_url']?>

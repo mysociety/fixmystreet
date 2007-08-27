@@ -40,7 +40,7 @@ insert into alert_type
 values ('council_problems', '', '',
     'New problems to {{COUNCIL}} on FixMyStreet', '/reports', 'The latest problems for {{COUNCIL}} reported by users',
     'problem', 'problem.state in (\'confirmed\', \'fixed\') and (council like \'%\'||?||\'%\'
-        or (council is null and areas like \'%,\'||?||\',%\'))', 'created desc',
+        or council is null) and areas like \'%,\'||?||\',%\'', 'created desc',
     '{{title}}, {{confirmed}}', '/?id={{id}}', '{{detail}}', 'alert-problem'
 );
 
