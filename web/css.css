@@ -160,7 +160,7 @@ ul#error {
 }
 
 #nav_new a {
-    background-image: url("http://upload.wikimedia.org/wikipedia/en/1/1a/New.png");
+    background-image: url("/i/new.png");
     background-repeat: no-repeat;
     background-position: 100% 0;
 }
