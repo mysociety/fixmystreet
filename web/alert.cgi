@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.10 2007-08-29 23:03:16 matthew Exp $
+# $Id: alert.cgi,v 1.11 2007-08-29 23:05:07 matthew Exp $
 
 use strict;
 use Standard;
@@ -118,7 +118,7 @@ sub alert_list {
             [ 'area', $county->{area_id}.':'.$c_ward->{area_id}, Page::short_name($county->{name}) . '/'
               . Page::short_name($c_ward->{name}), "$c_ward->{name} ward, $county->{name}" ];
         $options = '<div id="rss_list">';
-        $options .= $q->p($q->strong('Feed of problems within:')) .
+        $options .= $q->p($q->strong('Problems within the boundary of:')) .
             $q->ul(alert_list_options($q, @options));
         @options = ();
         push @options,
@@ -128,7 +128,7 @@ sub alert_list {
             [ 'council', $county->{area_id}, Page::short_name($county->{name}), $county->{name} ],
             [ 'ward', $county->{area_id}.':'.$c_ward->{area_id}, Page::short_name($county->{name}) . '/'
               . Page::short_name($c_ward->{name}), "$county->{name}, within $c_ward->{name} ward" ];
-        $options .= $q->p($q->strong('Problems reported to:')) .
+        $options .= $q->p($q->strong('Or problems reported to:')) .
             $q->ul(alert_list_options($q, @options));
         $options .= '</div>
 <div id="rss_buttons">
