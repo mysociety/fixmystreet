@@ -233,6 +233,7 @@ ul#error {
 #front_recent {
     float: right;
     width: 48%;
+    margin-bottom: 1em;
 }
 #front_recent img {
     margin-right: 0.25em;
