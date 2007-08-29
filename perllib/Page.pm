@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.62 2007-08-27 11:47:55 matthew Exp $
+# $Id: Page.pm,v 1.63 2007-08-29 23:03:16 matthew Exp $
 #
 
 package Page;
@@ -17,10 +17,14 @@ use CGI::Fast qw(-no_xhtml);
 use Error qw(:try);
 use File::Slurp;
 use LWP::Simple;
+use Digest::MD5 qw(md5_hex);
 use POSIX qw(strftime);
+use URI::Escape;
 use mySociety::Config;
-use mySociety::DBHandle qw/select_all/;
+use mySociety::DBHandle qw/dbh select_all/;
 use mySociety::EvEl;
+use mySociety::MaPit;
+use mySociety::PostcodeUtil;
 use mySociety::WatchUpdate;
 use mySociety::Web qw(ent NewURL);
 BEGIN {
@@ -52,6 +56,7 @@ sub do_fastcgi {
                 qq(<blockquote class="errortext">$msg</blockquote>),
                 q(</body></html);
     };
+    dbh()->rollback() if $mySociety::DBHandle::conf_ok;
 }
 
 =item header Q [PARAM VALUE ...]
@@ -110,12 +115,19 @@ EOF
 
 =cut
 sub footer {
+    my $q = shift;
+    my $pc = '';
+    if ($q) {
+        $pc = $q->param('pc') || '';
+        $pc = "?pc=" . ent($pc) if $pc;
+    }
     return <<EOF;
 </div></div>
 <h2 class="v">Navigation</h2>
 <ul id="navigation">
 <li><a href="/">Report a problem</a></li>
 <li><a href="/reports">All reports</a></li>
+<li id="nav_new"><a href="/alert$pc">Local alerts</a></li>
 <li><a href="/faq">Help</a></li>
 <li><a href="/contact">Contact</a></li>
 </ul>
@@ -436,6 +448,110 @@ sub display_problem_updates {
         $out .= '</div>';
     }
     return $out;
+}
+
+# geocode STRING
+# Given a user-inputted string, try and convert it into co-ordinates using either
+# MaPit if it's a postcode, or Google Maps API otherwise. Returns an array of
+# data, including an error if there is one (which includes a location being in 
+# Northern Ireland).
+sub geocode {
+    my ($s) = @_;
+    my ($x, $y, $easting, $northing, $error);
+    if (mySociety::PostcodeUtil::is_valid_postcode($s)) {
+        try {
+            my $location = mySociety::MaPit::get_location($s);
+            my $island = $location->{coordsyst};
+            throw RABX::Error("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.") if $island eq 'I';
+            $easting = $location->{easting};
+            $northing = $location->{northing};
+            my $xx = Page::os_to_tile($easting);
+            my $yy = Page::os_to_tile($northing);
+            $x = int($xx);
+            $y = int($yy);
+            $x -= 1 if ($xx - $x < 0.5);
+            $y -= 1 if ($yy - $y < 0.5);
+        } catch RABX::Error with {
+            my $e = shift;
+            if ($e->value() && ($e->value() == mySociety::MaPit::BAD_POSTCODE
+               || $e->value() == mySociety::MaPit::POSTCODE_NOT_FOUND)) {
+                $error = 'That postcode was not recognised, sorry.';
+            } else {
+                $error = $e;
+            }
+        }
+    } else {
+        ($x, $y, $easting, $northing, $error) = geocode_string($s);
+    }
+    return ($x, $y, $easting, $northing, $error);
+}
+
+# geocode_string STRING
+# Canonicalises, looks up on Google Maps API, and caches, a user-inputted location.
+# Returns array of (TILE_X, TILE_Y, EASTING, NORTHING, ERROR), where ERROR is
+# either undef, a string, or an array of matches if there are more than one.
+sub geocode_string {
+    my $s = shift;
+    $s = lc($s);
+    $s =~ s/[^-&0-9a-z ']/ /g;
+    $s =~ s/\s+/ /g;
+    $s = uri_escape($s);
+    $s =~ s/%20/+/g;
+    my $url = 'http://maps.google.com/maps/geo?q=' . $s;
+    my $cache_dir = mySociety::Config::get('GEO_CACHE');
+    my $cache_file = $cache_dir . md5_hex($url);
+    my ($js, $error, $x, $y, $easting, $northing);
+    if (-s $cache_file) {
+        $js = File::Slurp::read_file($cache_file);
+    } else {
+        $url .= ',+United+Kingdom' unless $url =~ /united\++kingdom$/ || $url =~ /uk$/i;
+        $url .= '&key=' . mySociety::Config::get('GOOGLE_MAPS_API_KEY');
+        $js = LWP::Simple::get($url);
+        File::Slurp::write_file($cache_file, $js) if $js;
+    }
+
+    if (!$js) {
+        $error = 'Sorry, we had a problem parsing that location. Please try again.';
+    } elsif ($js =~ /BT\d/) {
+        # Northern Ireland, hopefully
+        $error = "We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.";
+    } elsif ($js !~ /"code":200/) {
+        $error = 'Sorry, we could not understand that location.';
+    } elsif ($js =~ /},{/) { # Multiple
+        while ($js =~ /"address":"(.*?)"/g) {
+            push (@$error, $1);
+        }
+        $error = 'Sorry, we could not understand that location.' unless $error;
+    } else {
+        my ($accuracy) = $js =~ /"Accuracy": (\d)/;
+        if ($accuracy < 5) {
+            $error = 'Sorry, that location appears to be too general; please be more specific.';
+        } else {
+            $js =~ /"coordinates":\[(.*?),(.*?),/;
+            my $lon = $1; my $lat = $2;
+            ($easting, $northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
+            my $xx = Page::os_to_tile($easting);
+            my $yy = Page::os_to_tile($northing);
+            $x = int($xx);
+            $y = int($yy);
+            $x -= 1 if ($xx - $x < 0.5);
+            $y -= 1 if ($yy - $y < 0.5);
+        }
+    }
+    return ($x, $y, $easting, $northing, $error);
+}
+
+sub short_name {
+    my $name = shift;
+    # Special case Durham as it's the only place with two councils of the same name
+    return 'Durham+County' if ($name eq 'Durham County Council');
+    return 'Durham+City' if ($name eq 'Durham City Council');
+    $name =~ s/ (Borough|City|District|County) Council$//;
+    $name =~ s/ Council$//;
+    $name =~ s/ & / and /;
+    $name = uri_escape($name);
+    $name =~ s/%20/+/g;
+    return $name;
 }
 
 1;

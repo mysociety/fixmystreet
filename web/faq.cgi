@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl -w -I../perllib
 
 # faq.cgi:
 # FAQ page for FixMyStreet
@@ -6,16 +6,10 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.26 2007-08-01 11:27:37 matthew Exp $
+# $Id: faq.cgi,v 1.27 2007-08-29 23:03:16 matthew Exp $
 
 use strict;
-require 5.8.0;
-
-# Horrible boilerplate to set up appropriate library paths.
-use FindBin;
-use lib "$FindBin::Bin/../perllib";
-use lib "$FindBin::Bin/../../perllib";
-use Page;
+use Standard -db;
 
 # Main code for index.cgi
 sub main {

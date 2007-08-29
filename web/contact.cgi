@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl -w -I../perllib
 
 # contact.cgi:
 # Contact page for FixMyStreet
@@ -6,33 +6,14 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.22 2007-08-02 11:45:06 matthew Exp $
+# $Id: contact.cgi,v 1.23 2007-08-29 23:03:16 matthew Exp $
 
 use strict;
-require 5.8.0;
-
-# Horrible boilerplate to set up appropriate library paths.
-use FindBin;
-use lib "$FindBin::Bin/../perllib";
-use lib "$FindBin::Bin/../../perllib";
+use Standard;
 use CrossSell;
-use Page;
-use mySociety::Config;
-use mySociety::DBHandle qw(dbh);
 use mySociety::Email;
 use mySociety::EmailUtil;
 use mySociety::Web qw(ent);
-
-BEGIN {
-    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
-    mySociety::DBHandle::configure(
-        Name => mySociety::Config::get('BCI_DB_NAME'),
-        User => mySociety::Config::get('BCI_DB_USER'),
-        Password => mySociety::Config::get('BCI_DB_PASS'),
-        Host => mySociety::Config::get('BCI_DB_HOST', undef),
-        Port => mySociety::Config::get('BCI_DB_PORT', undef)
-    );
-}
 
 # Main code for index.cgi
 sub main {
@@ -46,7 +27,6 @@ sub main {
     }
     print $out;
     print Page::footer();
-    dbh()->rollback();
 }
 Page::do_fastcgi(\&main);
 

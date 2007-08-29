@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl -w -I../perllib
 
 # questionnaire.cgi:
 # Questionnaire for problem creators
@@ -6,35 +6,16 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.16 2007-08-17 10:33:24 matthew Exp $
+# $Id: questionnaire.cgi,v 1.17 2007-08-29 23:03:16 matthew Exp $
 
 use strict;
-require 5.8.0;
-
-# Horrible boilerplate to set up appropriate library paths.
-use FindBin;
-use lib "$FindBin::Bin/../perllib";
-use lib "$FindBin::Bin/../../perllib";
+use Standard;
 use Error qw(:try);
-
 use CrossSell;
-use Page;
 use mySociety::AuthToken;
-use mySociety::Config;
-use mySociety::DBHandle qw(dbh select_all);
 use mySociety::MaPit;
 use mySociety::Web qw(ent);
 
-BEGIN {
-    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
-    mySociety::DBHandle::configure(
-        Name => mySociety::Config::get('BCI_DB_NAME'),
-        User => mySociety::Config::get('BCI_DB_USER'),
-        Password => mySociety::Config::get('BCI_DB_PASS'),
-        Host => mySociety::Config::get('BCI_DB_HOST', undef),
-        Port => mySociety::Config::get('BCI_DB_PORT', undef)
-    );
-}
 
 sub main {
     my $q = shift;
@@ -47,7 +28,6 @@ sub main {
     print Page::header($q, title=>_('Questionnaire'));
     print $out;
     print Page::footer();
-    dbh()->rollback();
 }
 Page::do_fastcgi(\&main);
 

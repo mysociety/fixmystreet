@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl -w -I../perllib
 
 # index.cgi:
 # Main code for FixMyStreet
@@ -6,28 +6,22 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.162 2007-08-27 11:47:55 matthew Exp $
+# $Id: index.cgi,v 1.163 2007-08-29 23:03:16 matthew Exp $
 
 use strict;
-require 5.8.0;
+use Standard;
 
-# Horrible boilerplate to set up appropriate library paths.
-use FindBin;
-use lib "$FindBin::Bin/../perllib";
-use lib "$FindBin::Bin/../../perllib";
 use Error qw(:try);
 use File::Slurp;
 use Image::Magick;
 use LWP::Simple;
 use RABX;
 use CGI::Carp;
-use Digest::MD5 qw(md5_hex);
 use URI::Escape;
 
-use Page;
 use mySociety::AuthToken;
 use mySociety::Config;
-use mySociety::DBHandle qw(dbh select_all);
+use mySociety::DBHandle qw(select_all);
 use mySociety::EmailUtil;
 use mySociety::Gaze;
 use mySociety::GeoUtil;
@@ -38,15 +32,6 @@ use mySociety::VotingArea;
 use mySociety::Web qw(ent NewURL);
 
 BEGIN {
-    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
-    mySociety::DBHandle::configure(
-        Name => mySociety::Config::get('BCI_DB_NAME'),
-        User => mySociety::Config::get('BCI_DB_USER'),
-        Password => mySociety::Config::get('BCI_DB_PASS'),
-        Host => mySociety::Config::get('BCI_DB_HOST', undef),
-        Port => mySociety::Config::get('BCI_DB_PORT', undef)
-    );
-
     if (!dbh()->selectrow_array('select secret from secret for update of secret')) {
         local dbh()->{HandleError};
         dbh()->do('insert into secret (secret) values (?)', {}, unpack('h*', mySociety::Random::random_bytes(32)));
@@ -80,8 +65,7 @@ sub main {
     }
     print Page::header($q, %params);
     print $out;
-    print Page::footer();
-    dbh()->rollback();
+    print Page::footer($q);
 }
 Page::do_fastcgi(\&main);
 
@@ -386,15 +370,15 @@ sub display_form {
             || ($input{flickr} && $input{pc});
 
     my $out = '';
-    my ($px, $py, $easting, $northing, $island);
+    my ($px, $py, $easting, $northing);
     if ($input{skipped}) {
         # Map is being skipped
         if ($input{x} && $input{y}) {
             $easting = Page::tile_to_os($input{x});
             $northing = Page::tile_to_os($input{y});
         } else {
-            my ($x, $y, $e, $n, $i, $error) = geocode($input{pc});
-            $easting = $e; $northing = $n; $island = $i;
+            my ($x, $y, $e, $n, $error) = Page::geocode($input{pc});
+            $easting = $e; $northing = $n;
         }
     } elsif ($pin_x && $pin_y) {
         # Map was clicked on
@@ -405,8 +389,8 @@ sub display_form {
         $easting = Page::tile_to_os($pin_x);
         $northing = Page::tile_to_os($pin_y);
     } elsif ($input{flickr} && $input{pc} && !$input{easting} && !$input{northing}) {
-        my ($x, $y, $e, $n, $i, $error) = geocode($input{pc});
-        $easting = $e; $northing = $n; $island = $i;
+        my ($x, $y, $e, $n, $error) = Page::geocode($input{pc});
+        $easting = $e; $northing = $n;
         $input{x} = int(Page::os_to_tile($easting));
         $input{y} = int(Page::os_to_tile($northing));
         $px = Page::os_to_px($easting, $input{x});
@@ -586,14 +570,14 @@ sub display_location {
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 
-    my($error, $easting, $northing, $island);
+    my($error, $easting, $northing);
     my $x = $input{x}; my $y = $input{y};
     $x ||= 0; $x += 0;
     $y ||= 0; $y += 0;
     return front_page($q, @errors) unless $x || $y || $input{pc};
     if (!$x && !$y) {
         try {
-            ($x, $y, $easting, $northing, $island, $error) = geocode($input{pc});
+            ($x, $y, $easting, $northing, $error) = Page::geocode($input{pc});
         } catch Error::Simple with {
             $error = shift;
         };
@@ -843,87 +827,5 @@ sub geocode_choice {
     }
     $out .= '</ul>';
     return $out;
-}
-
-sub geocode {
-    my ($s) = @_;
-    my ($x, $y, $easting, $northing, $island, $error);
-    if (mySociety::PostcodeUtil::is_valid_postcode($s)) {
-        try {
-            my $location = mySociety::MaPit::get_location($s);
-            $island = $location->{coordsyst};
-            throw RABX::Error("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.") if $island eq 'I';
-            $easting = $location->{easting};
-            $northing = $location->{northing};
-            my $xx = Page::os_to_tile($easting);
-            my $yy = Page::os_to_tile($northing);
-            $x = int($xx);
-            $y = int($yy);
-            $x -= 1 if ($xx - $x < 0.5);
-            $y -= 1 if ($yy - $y < 0.5);
-        } catch RABX::Error with {
-            my $e = shift;
-            if ($e->value() && ($e->value() == mySociety::MaPit::BAD_POSTCODE
-               || $e->value() == mySociety::MaPit::POSTCODE_NOT_FOUND)) {
-                $error = 'That postcode was not recognised, sorry.';
-            } else {
-                $error = $e;
-            }
-        }
-    } else {
-        ($x, $y, $easting, $northing, $error) = geocode_string($s);
-    }
-    return ($x, $y, $easting, $northing, $island, $error);
-}
-
-sub geocode_string {
-    my $s = shift;
-    $s = lc($s);
-    $s =~ s/[^-&0-9a-z ']/ /g;
-    $s =~ s/\s+/ /g;
-    $s = uri_escape($s);
-    $s =~ s/%20/+/g;
-    my $url = 'http://maps.google.com/maps/geo?q=' . $s;
-    my $cache_dir = mySociety::Config::get('GEO_CACHE');
-    my $cache_file = $cache_dir . md5_hex($url);
-    my ($js, $error, $x, $y, $easting, $northing);
-    if (-s $cache_file) {
-        $js = File::Slurp::read_file($cache_file);
-    } else {
-        $url .= ',+United+Kingdom' unless $url =~ /united\++kingdom$/ || $url =~ /uk$/i;
-        $url .= '&key=' . mySociety::Config::get('GOOGLE_MAPS_API_KEY');
-        $js = LWP::Simple::get($url);
-        File::Slurp::write_file($cache_file, $js) if $js;
-    }
-
-    if (!$js) {
-        $error = 'Sorry, we had a problem parsing that location. Please try again.';
-    } elsif ($js =~ /BT\d/) {
-        # Northern Ireland, hopefully
-        $error = "We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.";
-    } elsif ($js !~ /"code":200/) {
-        $error = 'Sorry, we could not understand that location.';
-    } elsif ($js =~ /},{/) { # Multiple
-        while ($js =~ /"address":"(.*?)"/g) {
-            push (@$error, $1);
-        }
-        $error = 'Sorry, we could not understand that location.' unless $error;
-    } else {
-        my ($accuracy) = $js =~ /"Accuracy": (\d)/;
-        if ($accuracy < 5) {
-            $error = 'Sorry, that location appears to be too general; please be more specific.';
-        } else {
-            $js =~ /"coordinates":\[(.*?),(.*?),/;
-            my $lon = $1; my $lat = $2;
-            ($easting, $northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
-            my $xx = Page::os_to_tile($easting);
-            my $yy = Page::os_to_tile($northing);
-            $x = int($xx);
-            $y = int($yy);
-            $x -= 1 if ($xx - $x < 0.5);
-            $y -= 1 if ($yy - $y < 0.5);
-        }
-    }
-    return ($x, $y, $easting, $northing, $error);
 }
 

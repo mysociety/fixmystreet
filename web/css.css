@@ -159,6 +159,13 @@ ul#error {
     color: #e3d595;
 }
 
+#nav_new a {
+    background-image: url("http://upload.wikimedia.org/wikipedia/en/1/1a/New.png");
+    background-repeat: no-repeat;
+    background-position: 100% 0;
+}
+
+
 #footer {
     clear: both;
     text-align: right;
@@ -253,7 +260,7 @@ fieldset div.checkbox label, label.n {
     cursor: hand;
 }
 
-#questionnaire label {
+#questionnaire label, #alerts label {
     float: none;
 }
 
@@ -399,6 +406,40 @@ ol#current img {
 #rss_box {
     padding:10px;
     border:1px solid #999999;
+}
+
+/* Alerts */
+#rss_feed {
+    list-style-type: none;
+    margin-bottom: 2em;
+}
+#rss_feed li {
+    margin-bottom: 1em;
+}
+#alert_or {
+    font-style: italic;
+    font-size: 125%;
+    margin: 0;
+}
+#rss_list {
+    float: left;
+    width: 47%;
+}
+#rss_list ul {
+    list-style-type: none;
+}
+#rss_buttons {
+    float: right;
+    width: 47%;
+    text-align: center;
+    margin-bottom: 2em;
+}
+#rss_local {
+    margin-left: 3em;
+    margin-bottom: 0;
+}
+#rss_local_alt {
+    margin: 0 0 2em 6em;
 }
 
 /* Report page */

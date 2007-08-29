@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl -w -I../perllib
 
 # confirm.cgi:
 # Confirmation code for FixMyStreet
@@ -6,34 +6,14 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.28 2007-08-02 11:45:06 matthew Exp $
+# $Id: confirm.cgi,v 1.29 2007-08-29 23:03:16 matthew Exp $
 
 use strict;
-require 5.8.0;
-
-# Horrible boilerplate to set up appropriate library paths.
-use FindBin;
-use lib "$FindBin::Bin/../perllib";
-use lib "$FindBin::Bin/../../perllib";
+use Standard;
 use Digest::SHA1 qw(sha1_hex);
-
 use CrossSell;
-use Page;
 use mySociety::AuthToken;
-use mySociety::Config;
-use mySociety::DBHandle qw(dbh select_all);
 use mySociety::Random qw(random_bytes);
-
-BEGIN {
-    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
-    mySociety::DBHandle::configure(
-        Name => mySociety::Config::get('BCI_DB_NAME'),
-        User => mySociety::Config::get('BCI_DB_USER'),
-        Password => mySociety::Config::get('BCI_DB_PASS'),
-        Host => mySociety::Config::get('BCI_DB_HOST', undef),
-        Port => mySociety::Config::get('BCI_DB_PORT', undef)
-    );
-}
 
 sub main {
     my $q = shift;
@@ -63,7 +43,6 @@ EOF
     print Page::header($q, title=>_('Confirmation'));
     print $out;
     print Page::footer();
-    dbh()->rollback();
 }
 Page::do_fastcgi(\&main);
 

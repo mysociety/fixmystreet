@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl -w -I../perllib
 
 # photo.cgi:
 # Display a photo for FixMyStreet
@@ -6,32 +6,12 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: photo.cgi,v 1.6 2007-06-17 09:40:51 matthew Exp $
+# $Id: photo.cgi,v 1.7 2007-08-29 23:03:16 matthew Exp $
 
 use strict;
-require 5.8.0;
-
-# Horrible boilerplate to set up appropriate library paths.
-use FindBin;
-use lib "$FindBin::Bin/../perllib";
-use lib "$FindBin::Bin/../../perllib";
+use Standard;
 use Error qw(:try);
 use CGI::Carp;
-
-use Page;
-use mySociety::Config;
-use mySociety::DBHandle qw(dbh select_all);
-
-BEGIN {
-    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
-    mySociety::DBHandle::configure(
-        Name => mySociety::Config::get('BCI_DB_NAME'),
-        User => mySociety::Config::get('BCI_DB_USER'),
-        Password => mySociety::Config::get('BCI_DB_PASS'),
-        Host => mySociety::Config::get('BCI_DB_HOST', undef),
-        Port => mySociety::Config::get('BCI_DB_PORT', undef)
-    );
-}
 
 sub main {
     my $q = shift;
@@ -55,7 +35,6 @@ sub main {
     }
 
     print $photo;
-    dbh()->rollback();
 }
 Page::do_fastcgi(\&main);
 

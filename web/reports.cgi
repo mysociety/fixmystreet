@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl -w -I../perllib
 
 # report.cgi:
 # Display summary reports for FixMyStreet
@@ -7,35 +7,16 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.10 2007-08-27 20:29:34 matthew Exp $
+# $Id: reports.cgi,v 1.11 2007-08-29 23:03:16 matthew Exp $
 
 use strict;
-require 5.8.0;
-
-# Horrible boilerplate to set up appropriate library paths.
-use FindBin;
-use lib "$FindBin::Bin/../perllib";
-use lib "$FindBin::Bin/../../perllib";
+use Standard;
 use URI::Escape;
-
-use Page;
 use mySociety::Alert;
-use mySociety::Config;
-use mySociety::DBHandle qw(dbh select_all);
+use mySociety::DBHandle qw(select_all);
 use mySociety::MaPit;
 use mySociety::Web qw(ent NewURL);
 use mySociety::VotingArea;
-
-BEGIN {
-    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
-    mySociety::DBHandle::configure(
-        Name => mySociety::Config::get('BCI_DB_NAME'),
-        User => mySociety::Config::get('BCI_DB_USER'),
-        Password => mySociety::Config::get('BCI_DB_PASS'),
-        Host => mySociety::Config::get('BCI_DB_HOST', undef),
-        Port => mySociety::Config::get('BCI_DB_PORT', undef)
-    );
-}
 
 sub main {
     my $q = shift;
@@ -76,15 +57,15 @@ sub main {
             }
         }
         if (!$ward) { # Given a false ward name
-            print $q->redirect('/reports/' . short_name($q_council));
+            print $q->redirect('/reports/' . Page::short_name($q_council));
             return;
         }
     }
 
     # RSS - reports for sent reports, area for all problems in area
     if ($rss && $one_council) {
-        my $url = short_name($q_council);
-        $url .= '/' . short_name($q_ward) if $ward;
+        my $url = Page::short_name($q_council);
+        $url .= '/' . Page::short_name($q_ward) if $ward;
         if ($rss eq 'area' && $area_type ne 'DIS' && $area_type ne 'CTY') {
             # Two possibilites are the same for one-tier councils, so redirect one to the other
             print $q->redirect('/rss/reports/' . $url);
@@ -164,7 +145,7 @@ sub main {
         foreach (sort { $areas_info->{$a}->{name} cmp $areas_info->{$b}->{name} } keys %councils) {
             print '<tr align="center"';
             print ' class="a"' if (++$c%2);
-            my $url = short_name($areas_info->{$_}->{name});
+            my $url = Page::short_name($areas_info->{$_}->{name});
             print '><td align="left"><a href="/reports/' . $url . '">' .
                 $areas_info->{$_}->{name} . '</a></td>';
             summary_cell(\@{$open{$_}{new}});
@@ -183,10 +164,10 @@ sub main {
             print $q->a({href => '/reports' }, 'Show all councils');
             print ".";
         } else {
-            my $rss_url = '/rss/reports/' . short_name($name);
+            my $rss_url = '/rss/reports/' . Page::short_name($name);
             my $thing = 'council';
             if ($ward) {
-                $rss_url .= '/' . short_name($q_ward);
+                $rss_url .= '/' . Page::short_name($q_ward);
                 $thing = 'ward';
                 $name = ent($q_ward) . ", $name";
             }
@@ -217,7 +198,6 @@ sub main {
         }
     }
     print Page::footer();
-    dbh()->rollback();
 }
 Page::do_fastcgi(\&main);
 
@@ -255,18 +235,5 @@ sub list_problems {
         print '</li>';
     }
     print '</ul>';
-}
-
-sub short_name {
-    my $name = shift;
-    # Special case Durham as it's the only place with two councils of the same name
-    return 'Durham+County' if ($name eq 'Durham County Council');
-    return 'Durham+City' if ($name eq 'Durham City Council');
-    $name =~ s/ (Borough|City|District|County) Council$//;
-    $name =~ s/ Council$//;
-    $name =~ s/ & / and /;
-    $name = uri_escape($name);
-    $name =~ s/%20/+/g;
-    return $name;
 }
 

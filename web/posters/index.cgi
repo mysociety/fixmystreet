@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl -w -I../../perllib -I../../../perllib
 
 # posters/index.cgi:
 # List of publicity stuff on FixMyStreet
@@ -6,16 +6,11 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.4 2007-07-16 15:07:55 matthew Exp $
+# $Id: index.cgi,v 1.5 2007-08-29 23:03:17 matthew Exp $
 
 use strict;
-require 5.8.0;
-
-# Horrible boilerplate to set up appropriate library paths.
-use FindBin;
-use lib "$FindBin::Bin/../../perllib";
-use lib "$FindBin::Bin/../../../perllib";
-use Page;
+use Standard -db;
+use mySociety::Config;
 
 # XXX: Ugh, as we're in a subdirectory
 BEGIN {
