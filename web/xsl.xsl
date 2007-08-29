@@ -2,7 +2,7 @@
 <xsl:stylesheet version="1.1" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <xsl:output method="html" />
         <xsl:variable name="title" select="/rss/channel/title"/>
-        <xsl:variable name="self" select="/rss/channel/uri"/>
+        <xsl:variable name="uri" select="/rss/channel/uri"/>
             <xsl:template match="/">
 <html lang="en-gb">
     <head>
