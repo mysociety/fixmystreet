@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.11 2007-08-29 23:05:07 matthew Exp $
+# $Id: alert.cgi,v 1.12 2007-08-29 23:37:34 matthew Exp $
 
 use strict;
 use Standard;
@@ -61,7 +61,7 @@ Page::do_fastcgi(\&main);
 sub alert_list {
     my ($q, @errors) = @_;
     my %input = map { $_ => scalar $q->param($_) } qw(pc email);
-    my %input_h = map { $_ => ent($q->param($_)) } qw(pc email);
+    my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } qw(pc email);
     my ($x, $y, $e, $n, $error) = Page::geocode($input{pc});
     return alert_front_page($q, $error) if $error;
 
@@ -186,12 +186,13 @@ EOF
 sub alert_list_options {
     my $q = shift;
     my $out = '';
+    my $feed = $q->param('feed') || '';
     foreach (@_) {
         my ($type, $vals, $rss, $text) = @$_;
         (my $vals2 = $rss) =~ tr{/+}{:_};
         my $id = $type . ':' . $vals . ':' . $vals2;
         $out .= '<li><input type="radio" name="feed" id="' . $id . '" ';
-	$out .= 'checked ' if ($q->param('feed') eq $id);
+	$out .= 'checked ' if $feed eq $id;
         $out .= 'value="' . $id . '"> <label for="' . $id . '">' . $text
 	    . '</label> <a href="/rss/';
         $out .= $type eq 'area' ? 'area' : 'reports';
