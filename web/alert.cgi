@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.13 2007-09-03 20:56:31 matthew Exp $
+# $Id: alert.cgi,v 1.14 2007-09-03 21:03:31 matthew Exp $
 
 use strict;
 use Standard;
@@ -49,7 +49,7 @@ EOF
         $out = alert_list($q);
     } else {
         $title = 'Local RSS feeds and email alerts';
-        $out = alert_front_page();
+        $out = alert_front_page($q);
     }
 
     print Page::header($q, title => $title);
@@ -203,11 +203,18 @@ title="RSS feed of recent local problems" alt="RSS feed" border="0"></a>';
 }
 
 sub alert_front_page {
+    my $q = shift;
+    my $error = shift;
+    my $errors = '';
+    $errors = '<ul id="error"><li>' . $error . '</li></ul>' if $error;
+
+    my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } qw(pc);
     my $out = <<EOF;
 <h1>Local RSS feeds and email alerts</h1>
+$errors
 <form method="get" action="/alert">
 <p>To find out what local alerts we have, please enter your UK postcode or street name here:
-<input type="text" name="pc" value="">
+<input type="text" name="pc" value="$input_h{pc}">
 <input type="submit" value="Look up">
 </form>
 EOF

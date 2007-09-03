@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.64 2007-09-03 20:56:30 matthew Exp $
+# $Id: Page.pm,v 1.65 2007-09-03 21:03:31 matthew Exp $
 #
 
 package Page;
@@ -537,8 +537,10 @@ sub geocode_string {
                 $y = int($yy);
                 $x -= 1 if ($xx - $x < 0.5);
                 $y -= 1 if ($yy - $y < 0.5);
-            } catch {
+            } catch Error::Simple with {
                 $error = shift;
+                $error = "That location doesn't appear to be in Britain; please try again."
+                    if $error =~ /out of the area covered/;
             }
         }
     }
