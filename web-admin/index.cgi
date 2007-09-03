@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.45 2007-08-23 11:45:44 matthew Exp $
+# $Id: index.cgi,v 1.46 2007-09-03 20:56:31 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.45 2007-08-23 11:45:44 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.46 2007-09-03 20:56:31 matthew Exp $';
 
 use strict;
 
@@ -446,6 +446,5 @@ sub main {
     } else {
         do_summary($q);
     }
-    dbh()->rollback();
 }
 Page::do_fastcgi(\&main);

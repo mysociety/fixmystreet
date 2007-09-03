@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.12 2007-08-29 23:37:34 matthew Exp $
+# $Id: alert.cgi,v 1.13 2007-09-03 20:56:31 matthew Exp $
 
 use strict;
 use Standard;
@@ -206,7 +206,7 @@ sub alert_front_page {
     my $out = <<EOF;
 <h1>Local RSS feeds and email alerts</h1>
 <form method="get" action="/alert">
-<p>To find out what local alerts we have, please enter your postcode or street name here:
+<p>To find out what local alerts we have, please enter your UK postcode or street name here:
 <input type="text" name="pc" value="">
 <input type="submit" value="Look up">
 </form>

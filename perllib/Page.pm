@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.63 2007-08-29 23:03:16 matthew Exp $
+# $Id: Page.pm,v 1.64 2007-09-03 20:56:30 matthew Exp $
 #
 
 package Page;
@@ -529,13 +529,17 @@ sub geocode_string {
         } else {
             $js =~ /"coordinates":\[(.*?),(.*?),/;
             my $lon = $1; my $lat = $2;
-            ($easting, $northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
-            my $xx = Page::os_to_tile($easting);
-            my $yy = Page::os_to_tile($northing);
-            $x = int($xx);
-            $y = int($yy);
-            $x -= 1 if ($xx - $x < 0.5);
-            $y -= 1 if ($yy - $y < 0.5);
+            try {
+                ($easting, $northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
+                my $xx = Page::os_to_tile($easting);
+                my $yy = Page::os_to_tile($northing);
+                $x = int($xx);
+                $y = int($yy);
+                $x -= 1 if ($xx - $x < 0.5);
+                $y -= 1 if ($yy - $y < 0.5);
+            } catch {
+                $error = shift;
+            }
         }
     }
     return ($x, $y, $easting, $northing, $error);
