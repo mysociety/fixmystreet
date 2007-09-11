@@ -1,0 +1,12 @@
+Subject: New problems reported to <?=$values['area_name']?> on FixMyStreet
+
+The following new problems have been reported to <?=$values['area_name']?>:
+
+<?=$values['data']?>
+
+-- 
+The FixMyStreet team
+
+To stop receiving emails when there are new problems reported to
+<?=$values['area_name']?>, please follow this link: 
+<?=$values['unsubscribe_url']?>
