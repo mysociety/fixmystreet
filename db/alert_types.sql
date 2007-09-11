@@ -68,6 +68,6 @@ values ('area_problems', '', '',
     'New problems within {{NAME}}\'s boundary on FixMyStreet', '/reports',
     'The latest problems within {{NAME}}\'s boundary reported by users', 'problem',
     'problem.state in (\'confirmed\', \'fixed\') and areas like \'%,\'||?||\',%\'', 'created desc',
-    '{{title}}, {{confirmed}}', '/?id={{id}}', '{{detail}}', 'alert-problem'
+    '{{title}}, {{confirmed}}', '/?id={{id}}', '{{detail}}', 'alert-problem-area'
 );
 
