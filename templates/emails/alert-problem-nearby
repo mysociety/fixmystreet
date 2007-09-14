@@ -1,0 +1,11 @@
+Subject: New nearby problems on FixMyStreet
+
+The following nearby problems have been added:
+
+<?=$values['data']?>
+
+-- 
+The FixMyStreet team
+
+To stop receiving emails when there are nearby problems,
+please follow this link: <?=$values['unsubscribe_url']?>

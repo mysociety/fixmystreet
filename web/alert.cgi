@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.14 2007-09-03 21:03:31 matthew Exp $
+# $Id: alert.cgi,v 1.15 2007-09-14 13:57:51 matthew Exp $
 
 use strict;
 use Standard;
@@ -146,15 +146,20 @@ sub alert_list {
     <<EOF;
 <h1>Local RSS feeds and email alerts for &lsquo;$input_h{pc}&rsquo;</h1>
 
+<form id="alerts" method="post" action="/alert">
+<input type="hidden" name="type" value="local">
+<input type="hidden" name="pc" value="$input_h{pc}">
+
 <p>We have a variety of RSS feeds for local problems. The easiest is our simple geographic one:</p>
 
-<p id="rss_local"><a href="/rss/$x,$y"><img
-src="/i/feed.png" width="16" height="16" title="RSS feed of recent local problems" alt="RSS feed" border="0"></a>
-<a href="/rss/$x,$y">Problems within ${dist}km of this location</a> (a default
+<p id="rss_local">
+<input type="radio" name="feed" id="local:$x:$y" value="local:$x:$y">
+<label for="local:$x:$y">Problems within ${dist}km of this location</label> (a default
 distance which covers roughly 200,000 people)
+<a href="/rss/$x,$y"><img src="/i/feed.png" width="16" height="16" title="RSS feed of nearby problems" alt="RSS feed" border="0"></a>
 </p>
 <p id="rss_local_alt">
-(alternatively within <a href="/rss/$x,$y/2">2km</a> / <a href="/rss/$x,$y/5">5km</a>
+(alternatively the RSS feed can be customised, within <a href="/rss/$x,$y/2">2km</a> / <a href="/rss/$x,$y/5">5km</a>
 / <a href="/rss/$x,$y/10">10km</a> / <a href="/rss/$x,$y/20">20km</a>)
 </ul>
 
@@ -162,10 +167,6 @@ distance which covers roughly 200,000 people)
 select which feed you&rsquo;d like and click the button. If you&rsquo;d prefer,
 these feeds are also available as email alerts &ndash; just enter your email
 address below.</p>
-
-<form id="alerts" method="post" action="/alert">
-<input type="hidden" name="type" value="local">
-<input type="hidden" name="pc" value="$input_h{pc}">
 
 $options
 
@@ -197,7 +198,7 @@ sub alert_list_options {
 	    . '</label> <a href="/rss/';
         $out .= $type eq 'area' ? 'area' : 'reports';
         $out .= '/' . $rss . '"><img src="/i/feed.png" width="16" height="16"
-title="RSS feed of recent local problems" alt="RSS feed" border="0"></a>';
+title="RSS feed of local problems at ' . $text . '" alt="RSS feed" border="0"></a>';
     }
     return $out;
 }
@@ -232,6 +233,9 @@ sub alert_rss {
     } elsif ($feed =~ /^(?:council|ward):(?:\d+:)+(.*)$/) {
         (my $id = $1) =~ tr{:_}{/+};
         print $q->redirect('/rss/reports/' . $id);
+        return;
+    } elsif ($feed =~ /^local:(\d+):(\d+)$/) {
+        print $q->redirect('/rss/' . $1 . ',' . $2);
         return;
     } else {
         return alert_list($q, 'Illegal feed selection');
@@ -326,6 +330,8 @@ sub alert_do_subscribe {
 	    $alert_id = mySociety::Alert::create($email, 'council_problems', $1, $1);
         } elsif ($feed =~ /^ward:(\d+):(\d+)/) {
 	    $alert_id = mySociety::Alert::create($email, 'ward_problems', $1, $2);
+        } elsif ($feed =~ /^local:(\d+):(\d+)/) {
+	    $alert_id = mySociety::Alert::create($email, 'local_problems', $1, $2);
 	}
     } else {
         throw mySociety::Alert::Error('Invalid type');

@@ -29,7 +29,7 @@ insert into alert_type
 values ('local_problems', '', '',
     'New local problems on FixMyStreet', '/', 'The latest local problems reported by users',
     'problem_find_nearby(?, ?, ?) as nearby,problem', 'nearby.problem_id = problem.id and problem.state in (\'confirmed\', \'fixed\')', 'created desc',
-    '{{title}}, {{confirmed}}', '/?id={{id}}', '{{detail}}', 'alert-problem');
+    '{{title}}, {{confirmed}}', '/?id={{id}}', '{{detail}}', 'alert-problem-nearby');
 
 -- New problems sent to a particular council
 insert into alert_type

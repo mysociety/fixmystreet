@@ -436,11 +436,11 @@ ol#current img {
     margin-bottom: 2em;
 }
 #rss_local {
-    margin-left: 3em;
+    margin-left: 1.5em;
     margin-bottom: 0;
 }
 #rss_local_alt {
-    margin: 0 0 2em 6em;
+    margin: 0 0 2em 4em;
 }
 
 /* Report page */
