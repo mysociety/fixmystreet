@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.65 2007-09-03 21:03:31 matthew Exp $
+# $Id: Page.pm,v 1.66 2007-09-18 08:27:05 matthew Exp $
 #
 
 package Page;
@@ -545,6 +545,22 @@ sub geocode_string {
         }
     }
     return ($x, $y, $easting, $northing, $error);
+}
+
+# geocode_choice
+# Prints response if there's more than one possible result
+sub geocode_choice {
+    my ($choices, $page) = @_;
+    my $out = '<p>We found more than one match for that location. We show up to ten matches, please try a different search if yours is not here.</p> <ul>';
+    foreach my $choice (@$choices) {
+        $choice =~ s/, United Kingdom//;
+        $choice =~ s/, UK//;
+        my $url = uri_escape($choice);
+        $url =~ s/%20/+/g;
+        $out .= '<li><a href="' . $page . '?pc=' . $url . '">' . $choice . "</a></li>\n";
+    }
+    $out .= '</ul>';
+    return $out;
 }
 
 sub short_name {

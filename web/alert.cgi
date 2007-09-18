@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.15 2007-09-14 13:57:51 matthew Exp $
+# $Id: alert.cgi,v 1.16 2007-09-18 08:27:05 matthew Exp $
 
 use strict;
 use Standard;
@@ -63,6 +63,7 @@ sub alert_list {
     my %input = map { $_ => scalar $q->param($_) } qw(pc email);
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } qw(pc email);
     my ($x, $y, $e, $n, $error) = Page::geocode($input{pc});
+    return Page::geocode_choice($error, '/alert') if ref($error) eq 'ARRAY';
     return alert_front_page($q, $error) if $error;
 
     my $errors = '';
