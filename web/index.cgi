@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.166 2007-09-25 11:53:04 matthew Exp $
+# $Id: index.cgi,v 1.167 2007-09-25 11:55:05 matthew Exp $
 
 use strict;
 use Standard;
@@ -139,7 +139,7 @@ EOF
     my $recent_photos = Page::recent_photos(3);
     $out .= "<h2>Photos of recent reports</h2>$recent_photos" if $recent_photos;
 
-    $probs = select_all("select id,title from problem
+    my $probs = select_all("select id,title from problem
         where state in ('confirmed', 'fixed')
         order by confirmed desc limit 5");
     $out .= '<h2>Recently reported problems</h2> <ul>' if @$probs;

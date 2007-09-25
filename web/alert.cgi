@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.19 2007-09-25 11:53:04 matthew Exp $
+# $Id: alert.cgi,v 1.20 2007-09-25 11:55:05 matthew Exp $
 
 use strict;
 use Standard;
@@ -154,7 +154,7 @@ but will only appear in the "Within the boundary" alert for the county council.'
     $checked = ' checked' if $q->param('feed') && $q->param('feed') eq "local:$x:$y";
 
     my $pics = Page::recent_photos(5, $e, $n, $dist);
-    $out .= '<div id="alert_photos"><h2>Photos of recent nearby reports</h2>' . $pics . '</div>' if $pics;
+    $pics = '<div id="alert_photos"><h2>Photos of recent nearby reports</h2>' . $pics . '</div>' if $pics;
 
     <<EOF;
 <h1>Local RSS feeds and email alerts for &lsquo;$input_h{pc}&rsquo;</h1>
