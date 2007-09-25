@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.164 2007-09-18 08:27:05 matthew Exp $
+# $Id: index.cgi,v 1.165 2007-09-25 11:19:29 matthew Exp $
 
 use strict;
 use Standard;
@@ -618,7 +618,10 @@ EOF
     }
     $out .= <<EOF;
     <h2>Closest problems within ${dist}km</h2>
-    <p><a href="/rss/$x,$y"><img align="right" src="/i/feed.png" width="16" height="16" title="RSS feed of recent local problems" alt="RSS feed" border="0"></a></p>
+    <div id="alert_links">
+    <a id="email_alert" href="/alert?pc=$input_h{pc};type=local;feed=local:$x:$y;alert=Subscribe">Email me problems</a>
+     &nbsp; <span id="rss_link"><a href="/rss/$x,$y"><img src="/i/feed.png" width="16" height="16" title="RSS feed of recent local problems" alt="RSS feed" border="0" style="vertical-align: middle"></a></span>
+    </div>
 EOF
     $list = '';
     foreach (@$current) {
@@ -716,7 +719,7 @@ sub display_problem {
 <input type="submit" value="Subscribe">
 </form>
 EOF
-    $out .= ' | <span id="rss_link"><a href="/rss/'.$input_h{id}.'"><img src="/i/feed.png" width="16" height="16" title="RSS feed" alt="RSS feed of updates to this problem" border="0" style="vertical-align: sub"></a></span>';
+    $out .= ' &nbsp; <span id="rss_link"><a href="/rss/'.$input_h{id}.'"><img src="/i/feed.png" width="16" height="16" title="RSS feed" alt="RSS feed of updates to this problem" border="0" style="vertical-align: middle"></a></span>';
     $out .= '</div>';
 
     $out .= Page::display_problem_updates($input{id});

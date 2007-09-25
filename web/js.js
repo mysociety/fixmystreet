@@ -78,6 +78,8 @@ function email_alert_close() {
 }
 YAHOO.util.Event.onContentReady('email_alert', function() {
     YAHOO.util.Event.addListener(this, 'click', function(e) {
+        if (!document.getElementById('email_alert_box'))
+            return true;
         YAHOO.util.Event.preventDefault(e);
         if (YAHOO.util.Dom.getStyle('email_alert_box', 'display') == 'block') {
             email_alert_close();

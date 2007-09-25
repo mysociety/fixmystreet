@@ -443,6 +443,16 @@ ol#current img {
     margin: 0 0 2em 4em;
 }
 
+#alert_photos {
+    text-align: center;
+    float: right;
+    width: 150px;
+    margin-left: 0.5em;
+}
+#alert_photos h2 {
+    font-size: 100%;
+}
+
 /* Report page */
 
 #col_problems, #col_fixed {

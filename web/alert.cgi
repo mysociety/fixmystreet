@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.17 2007-09-25 09:44:19 matthew Exp $
+# $Id: alert.cgi,v 1.18 2007-09-25 11:19:29 matthew Exp $
 
 use strict;
 use Standard;
@@ -15,6 +15,7 @@ use CrossSell;
 use mySociety::Alert;
 use mySociety::AuthToken;
 use mySociety::Config;
+use mySociety::DBHandle qw(select_all);
 use mySociety::EmailUtil qw(is_valid_email);
 use mySociety::Gaze;
 use mySociety::MaPit;
@@ -131,7 +132,7 @@ sub alert_list {
               . Page::short_name($c_ward->{name}), "$county->{name}, within $c_ward->{name} ward" ];
         $options .= $q->p($q->strong('Or problems reported to:')) .
             $q->ul(alert_list_options($q, @options));
-        $options .= $q->p($q->small('We send different categories of problem
+        $options .= $q->p($q->small('FixMyStreet sends different categories of problem
 to the appropriate council, so problems within the boundary of a particular council
 might not match the problems sent to that council. For example, a graffiti report
 will be sent to the district council, so will appear in both that council\'s alerts,
@@ -149,6 +150,11 @@ but will only appear in the "Within the boundary" alert for the county council.'
     my $dist = mySociety::Gaze::get_radius_containing_population($lat, $lon, 200000);
     $dist = int($dist*10+0.5)/10;
 
+    my $checked = '';
+    $checked = ' checked' if $q->param('feed') && $q->param('feed') eq "local:$x:$y";
+
+    my $pics = alert_recent_photos($e, $n, $dist);
+
     <<EOF;
 <h1>Local RSS feeds and email alerts for &lsquo;$input_h{pc}&rsquo;</h1>
 
@@ -156,16 +162,18 @@ but will only appear in the "Within the boundary" alert for the county council.'
 <input type="hidden" name="type" value="local">
 <input type="hidden" name="pc" value="$input_h{pc}">
 
-<p>We have a variety of RSS feeds and email alerts for local problems. Simply
-select which type of alert you&rsquo;d like and click the button, or enter
-your email address to subscribe to an email alert.</p>
+$pics
+
+<p>Here are the types of local problem alerts for &lsquo;$input_h{pc}&rsquo;.
+Select which type of alert you&rsquo;d like and click the button for an RSS
+feed, or enter your email address to subscribe to an email alert.</p>
 
 $errors
 
-<p>The easiest alert is our simple geographic one:</p>
+<p>The simplest alert is our geographic one:</p>
 
 <p id="rss_local">
-<input type="radio" name="feed" id="local:$x:$y" value="local:$x:$y">
+<input type="radio" name="feed" id="local:$x:$y" value="local:$x:$y"$checked>
 <label for="local:$x:$y">Problems within ${dist}km of this location</label> (a default
 distance which covers roughly 200,000 people)
 <a href="/rss/$x,$y"><img src="/i/feed.png" width="16" height="16" title="RSS feed of nearby problems" alt="RSS feed" border="0"></a>
@@ -173,7 +181,7 @@ distance which covers roughly 200,000 people)
 <p id="rss_local_alt">
 (alternatively the RSS feed can be customised, within <a href="/rss/$x,$y/2">2km</a> / <a href="/rss/$x,$y/5">5km</a>
 / <a href="/rss/$x,$y/10">10km</a> / <a href="/rss/$x,$y/20">20km</a>)
-</ul>
+</p>
 
 <p>Or you can subscribe to an alert based upon what ward or council you&rsquo;re in:</p>
 
@@ -219,18 +227,31 @@ sub alert_front_page {
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } qw(pc);
     my $out = <<EOF;
 <h1>Local RSS feeds and email alerts</h1>
-<p>We have a variety of RSS feeds and email alerts for local problems, including
+<p>FixMyStreet has a variety of RSS feeds and email alerts for local problems, including
 alerts for all problems within a particular ward or council, or all problems
 within a certain distance of a particular location.</p>
 
 $errors
 <form method="get" action="/alert">
 <p>To find out what local alerts we have for you, please enter your UK
-postcode or street name here:
+postcode or street name and area:
 <input type="text" name="pc" value="$input_h{pc}">
 <input type="submit" value="Look up">
 </form>
 EOF
+
+    return $out if $q->referer() =~ /fixmystreet\.com/;
+
+    my $probs = select_all("select id, title from problem
+        where state in ('confirmed', 'fixed') and photo is not null
+        order by confirmed desc limit 8");
+    $out .= '<h2>Some photos of recent reports</h2>' if @$probs;
+    foreach (@$probs) {
+        my $title = ent($_->{title});
+        $out .= '<img border="0" src="/photo?tn=1;id=' . $_->{id} .
+            '" alt="' . $title . '" title="' . $title . '"> ';
+    }
+
     return $out;
 }
 
@@ -354,5 +375,23 @@ sub alert_do_subscribe {
         . mySociety::AuthToken::store('alert', { id => $alert_id, type => 'subscribe', email => $email } );
     dbh()->commit();
     return Page::send_email($email, undef, 'alert', %h);
+}
+
+sub alert_recent_photos {
+    my ($e, $n, $dist) = @_;
+    my $probs = select_all("select id, title
+        from problem_find_nearby(?, ?, ?) as nearby, problem
+        where nearby.problem_id = problem.id
+	and state in ('confirmed', 'fixed') and photo is not null
+        order by confirmed desc limit 5", $e, $n, $dist);
+    my $out = '';
+    $out .= '<div id="alert_photos"><h2>Photos of recent nearby reports</h2>' if @$probs;
+    foreach (@$probs) {
+        my $title = ent($_->{title});
+        $out .= '<img border="0" src="/photo?tn=1;id=' . $_->{id} .
+            '" alt="' . $title . '" title="' . $title . '"> ';
+    }
+    $out .= '</div>' if @$probs;
+    return $out;
 }
 
