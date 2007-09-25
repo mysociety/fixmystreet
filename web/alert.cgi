@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.16 2007-09-18 08:27:05 matthew Exp $
+# $Id: alert.cgi,v 1.17 2007-09-25 09:44:19 matthew Exp $
 
 use strict;
 use Standard;
@@ -131,6 +131,11 @@ sub alert_list {
               . Page::short_name($c_ward->{name}), "$county->{name}, within $c_ward->{name} ward" ];
         $options .= $q->p($q->strong('Or problems reported to:')) .
             $q->ul(alert_list_options($q, @options));
+        $options .= $q->p($q->small('We send different categories of problem
+to the appropriate council, so problems within the boundary of a particular council
+might not match the problems sent to that council. For example, a graffiti report
+will be sent to the district council, so will appear in both that council\'s alerts,
+but will only appear in the "Within the boundary" alert for the county council.'));
         $options .= '</div>
 <div id="rss_buttons">
 ';
@@ -151,7 +156,13 @@ sub alert_list {
 <input type="hidden" name="type" value="local">
 <input type="hidden" name="pc" value="$input_h{pc}">
 
-<p>We have a variety of RSS feeds for local problems. The easiest is our simple geographic one:</p>
+<p>We have a variety of RSS feeds and email alerts for local problems. Simply
+select which type of alert you&rsquo;d like and click the button, or enter
+your email address to subscribe to an email alert.</p>
+
+$errors
+
+<p>The easiest alert is our simple geographic one:</p>
 
 <p id="rss_local">
 <input type="radio" name="feed" id="local:$x:$y" value="local:$x:$y">
@@ -164,14 +175,9 @@ distance which covers roughly 200,000 people)
 / <a href="/rss/$x,$y/10">10km</a> / <a href="/rss/$x,$y/20">20km</a>)
 </ul>
 
-<p>Or you can subscribe to a feed based upon what ward or council you&rsquo;re in. Simply
-select which feed you&rsquo;d like and click the button. If you&rsquo;d prefer,
-these feeds are also available as email alerts &ndash; just enter your email
-address below.</p>
+<p>Or you can subscribe to an alert based upon what ward or council you&rsquo;re in:</p>
 
 $options
-
-$errors
 
 <p><input type="submit" name="rss" value="Give me an RSS feed"></p>
 
@@ -194,9 +200,9 @@ sub alert_list_options {
         (my $vals2 = $rss) =~ tr{/+}{:_};
         my $id = $type . ':' . $vals . ':' . $vals2;
         $out .= '<li><input type="radio" name="feed" id="' . $id . '" ';
-	$out .= 'checked ' if $feed eq $id;
+        $out .= 'checked ' if $feed eq $id;
         $out .= 'value="' . $id . '"> <label for="' . $id . '">' . $text
-	    . '</label> <a href="/rss/';
+            . '</label> <a href="/rss/';
         $out .= $type eq 'area' ? 'area' : 'reports';
         $out .= '/' . $rss . '"><img src="/i/feed.png" width="16" height="16"
 title="RSS feed of local problems at ' . $text . '" alt="RSS feed" border="0"></a>';
@@ -213,9 +219,14 @@ sub alert_front_page {
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } qw(pc);
     my $out = <<EOF;
 <h1>Local RSS feeds and email alerts</h1>
+<p>We have a variety of RSS feeds and email alerts for local problems, including
+alerts for all problems within a particular ward or council, or all problems
+within a certain distance of a particular location.</p>
+
 $errors
 <form method="get" action="/alert">
-<p>To find out what local alerts we have, please enter your UK postcode or street name here:
+<p>To find out what local alerts we have for you, please enter your UK
+postcode or street name here:
 <input type="text" name="pc" value="$input_h{pc}">
 <input type="submit" value="Look up">
 </form>
@@ -310,7 +321,7 @@ sub alert_do_subscribe {
 
     my @errors;
     push @errors, _('Please enter a valid email address') unless is_valid_email($email);
-    push @errors, _('Please select the feed you want') if $type eq 'local' && !$q->param('feed');
+    push @errors, _('Please select the type of alert you want') if $type eq 'local' && !$q->param('feed');
     if (@errors) {
         return alert_updates_form($q, @errors) if $type eq 'updates';
         return alert_list($q, @errors) if $type eq 'local';
@@ -326,14 +337,14 @@ sub alert_do_subscribe {
     } elsif ($type eq 'local') {
         my $feed = $q->param('feed');
         if ($feed =~ /^area:(?:\d+:)?(\d+)/) {
-	    $alert_id = mySociety::Alert::create($email, 'area_problems', $1);
+            $alert_id = mySociety::Alert::create($email, 'area_problems', $1);
         } elsif ($feed =~ /^council:(\d+)/) {
-	    $alert_id = mySociety::Alert::create($email, 'council_problems', $1, $1);
+            $alert_id = mySociety::Alert::create($email, 'council_problems', $1, $1);
         } elsif ($feed =~ /^ward:(\d+):(\d+)/) {
-	    $alert_id = mySociety::Alert::create($email, 'ward_problems', $1, $2);
+            $alert_id = mySociety::Alert::create($email, 'ward_problems', $1, $2);
         } elsif ($feed =~ /^local:(\d+):(\d+)/) {
-	    $alert_id = mySociety::Alert::create($email, 'local_problems', $1, $2);
-	}
+            $alert_id = mySociety::Alert::create($email, 'local_problems', $1, $2);
+        }
     } else {
         throw mySociety::Alert::Error('Invalid type');
     }
