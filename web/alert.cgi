@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.20 2007-09-25 11:55:05 matthew Exp $
+# $Id: alert.cgi,v 1.21 2007-09-25 13:30:21 matthew Exp $
 
 use strict;
 use Standard;
@@ -241,7 +241,7 @@ postcode or street name and area:
 </form>
 EOF
 
-    return $out if $q->referer() =~ /fixmystreet\.com/;
+    return $out if $q->referer() && $q->referer() =~ /fixmystreet\.com/;
 
     my $recent_photos = Page::recent_photos(10);
     $out .= "<div id='alert_recent'><h2>Some photos of recent reports</h2>$recent_photos</div>" if $recent_photos;

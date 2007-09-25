@@ -9,7 +9,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: CrossSell.pm,v 1.1 2007-07-09 17:40:28 matthew Exp $
+# $Id: CrossSell.pm,v 1.2 2007-09-25 13:30:21 matthew Exp $
 
 # Config parameters site needs set to call these functions:
 # OPTION_AUTH_SHARED_SECRET
@@ -32,7 +32,7 @@ sub display_hfymp_advert ($;$$) {
     my $url = mySociety::Config::get('HEARFROMYOURMP_BASE_URL');
     my $already_signed = get($url . '/authed?email=' . uri_escape($user_email) . "&sign=" . uri_escape($auth_signature));
     # Different from PHP version; display this advert if e.g. connection problem
-    return '' if $already_signed eq 'already signed';
+    return '' if $already_signed && $already_signed eq 'already signed';
 
     # If not, display advert
     $url .= '/?email=' . uri_escape($user_email) . '&sign=' . uri_escape($auth_signature);
