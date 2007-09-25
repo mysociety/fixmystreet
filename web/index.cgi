@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.165 2007-09-25 11:19:29 matthew Exp $
+# $Id: index.cgi,v 1.166 2007-09-25 11:53:04 matthew Exp $
 
 use strict;
 use Standard;
@@ -136,16 +136,9 @@ EOF
 <div id="front_recent">
 EOF
 
-    my $probs = select_all("select id, title from problem
-        where state in ('confirmed', 'fixed') and photo is not null
-        order by confirmed desc limit 3");
-    $out .= '<h2>Photos of recent reports</h2>' if @$probs;
-    foreach (@$probs) {
-        my $title = ent($_->{title});
-        $out .= '<a href="/?id=' . $_->{id} .
-            '"><img border="0" src="/photo?tn=1;id=' . $_->{id} .
-            '" alt="' . $title . '" title="' . $title . '"></a>';
-    }
+    my $recent_photos = Page::recent_photos(3);
+    $out .= "<h2>Photos of recent reports</h2>$recent_photos" if $recent_photos;
+
     $probs = select_all("select id,title from problem
         where state in ('confirmed', 'fixed')
         order by confirmed desc limit 5");

@@ -235,7 +235,7 @@ ul#error {
     width: 48%;
     margin-bottom: 1em;
 }
-#front_recent img {
+#front_recent img, #alert_recent img {
     margin-right: 0.25em;
     margin-bottom: 0.25em;
 }

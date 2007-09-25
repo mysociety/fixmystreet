@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.18 2007-09-25 11:19:29 matthew Exp $
+# $Id: alert.cgi,v 1.19 2007-09-25 11:53:04 matthew Exp $
 
 use strict;
 use Standard;
@@ -153,7 +153,8 @@ but will only appear in the "Within the boundary" alert for the county council.'
     my $checked = '';
     $checked = ' checked' if $q->param('feed') && $q->param('feed') eq "local:$x:$y";
 
-    my $pics = alert_recent_photos($e, $n, $dist);
+    my $pics = Page::recent_photos(5, $e, $n, $dist);
+    $out .= '<div id="alert_photos"><h2>Photos of recent nearby reports</h2>' . $pics . '</div>' if $pics;
 
     <<EOF;
 <h1>Local RSS feeds and email alerts for &lsquo;$input_h{pc}&rsquo;</h1>
@@ -242,16 +243,8 @@ EOF
 
     return $out if $q->referer() =~ /fixmystreet\.com/;
 
-    my $probs = select_all("select id, title from problem
-        where state in ('confirmed', 'fixed') and photo is not null
-        order by confirmed desc limit 8");
-    $out .= '<h2>Some photos of recent reports</h2>' if @$probs;
-    foreach (@$probs) {
-        my $title = ent($_->{title});
-        $out .= '<img border="0" src="/photo?tn=1;id=' . $_->{id} .
-            '" alt="' . $title . '" title="' . $title . '"> ';
-    }
-
+    my $recent_photos = Page::recent_photos(10);
+    $out .= "<div id='alert_recent'><h2>Some photos of recent reports</h2>$recent_photos</div>" if $recent_photos;
     return $out;
 }
 
@@ -375,23 +368,5 @@ sub alert_do_subscribe {
         . mySociety::AuthToken::store('alert', { id => $alert_id, type => 'subscribe', email => $email } );
     dbh()->commit();
     return Page::send_email($email, undef, 'alert', %h);
-}
-
-sub alert_recent_photos {
-    my ($e, $n, $dist) = @_;
-    my $probs = select_all("select id, title
-        from problem_find_nearby(?, ?, ?) as nearby, problem
-        where nearby.problem_id = problem.id
-	and state in ('confirmed', 'fixed') and photo is not null
-        order by confirmed desc limit 5", $e, $n, $dist);
-    my $out = '';
-    $out .= '<div id="alert_photos"><h2>Photos of recent nearby reports</h2>' if @$probs;
-    foreach (@$probs) {
-        my $title = ent($_->{title});
-        $out .= '<img border="0" src="/photo?tn=1;id=' . $_->{id} .
-            '" alt="' . $title . '" title="' . $title . '"> ';
-    }
-    $out .= '</div>' if @$probs;
-    return $out;
 }
 
