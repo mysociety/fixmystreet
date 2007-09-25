@@ -452,6 +452,9 @@ ol#current img {
 #alert_photos h2 {
     font-size: 100%;
 }
+#alert_photos img {
+    margin-bottom: 0.25em;
+}
 
 /* Report page */
 
