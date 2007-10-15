@@ -1,10 +1,10 @@
 # crontab.ugly:
-# Timed tasks for Nrighbourhood Fix-It. Template file.
+# Timed tasks for FixMyStreet. Template file.
 #
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
 #
-# $Id: crontab.ugly,v 1.10 2007-06-17 09:40:50 matthew Exp $
+# $Id: crontab.ugly,v 1.11 2007-10-15 14:37:17 francis Exp $
 
 PATH=/usr/local/bin:/usr/bin:/bin
 !!(* if ($vhost eq "matthew.bci.mysociety.org") { *)!!
