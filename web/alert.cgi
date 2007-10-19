@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.21 2007-09-25 13:30:21 matthew Exp $
+# $Id: alert.cgi,v 1.22 2007-10-19 20:48:51 matthew Exp $
 
 use strict;
 use Standard;
@@ -75,6 +75,8 @@ sub alert_list {
 
     my $areas = mySociety::MaPit::get_voting_areas_by_location({easting=>$e, northing=>$n}, 'polygon', \@types);
     $areas = mySociety::MaPit::get_voting_areas_info([ keys %$areas ]);
+
+    return alert_front_page($q, 'That location does not appear to be covered by a council, perhaps it is offshore - please try somewhere more specific.') if keys %$areas == 0;
 
     my ($options);
     if (keys %$areas == 2) {
