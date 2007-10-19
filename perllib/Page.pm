@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.67 2007-09-25 11:53:03 matthew Exp $
+# $Id: Page.pm,v 1.68 2007-10-19 19:20:31 matthew Exp $
 #
 
 package Page;
@@ -167,8 +167,8 @@ sub display_map {
     $params{post} ||= '';
     my $px = defined($params{px}) ? $params{px}-254 : 0;
     my $py = defined($params{py}) ? 254-$params{py} : 0;
-    my $x = $params{x}<=0 ? 0 : $params{x};
-    my $y = $params{y}<=0 ? 0 : $params{y};
+    my $x = int($params{x})<=0 ? 0 : $params{x};
+    my $y = int($params{y})<=0 ? 0 : $params{y};
     my $url = mySociety::Config::get('TILES_URL');
     my $tiles_url = $url . $x . '-' . ($x+1) . ',' . $y . '-' . ($y+1) . '/RABX';
     my $tiles = LWP::Simple::get($tiles_url);
