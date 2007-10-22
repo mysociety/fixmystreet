@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.23 2007-08-29 23:03:16 matthew Exp $
+# $Id: contact.cgi,v 1.24 2007-10-22 18:00:04 matthew Exp $
 
 use strict;
 use Standard;
@@ -14,6 +14,7 @@ use CrossSell;
 use mySociety::Email;
 use mySociety::EmailUtil;
 use mySociety::Web qw(ent);
+use mySociety::Random qw(random_bytes);
 
 # Main code for index.cgi
 sub main {
@@ -60,7 +61,8 @@ sub contact_submit {
         _body_ => "$message\n\n$postfix",
         From => [$input{email}, $input{name}],
         To => [[mySociety::Config::get('CONTACT_EMAIL'), 'FixMyStreet']],
-        Subject => 'FMS message: ' . $subject
+        Subject => 'FMS message: ' . $subject,
+        'Message-ID' => sprintf('<contact-%s-%s@mysociety.org>', time(), unpack('h*', random_bytes(5))),
     });
     my $result = mySociety::EmailUtil::send_email($email, $input{email}, mySociety::Config::get('CONTACT_EMAIL'));
     if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {

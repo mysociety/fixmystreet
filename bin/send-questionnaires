@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-questionnaires,v 1.5 2007-06-15 14:57:51 matthew Exp $
+# $Id: send-questionnaires,v 1.6 2007-10-22 18:00:04 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -24,6 +24,7 @@ use mySociety::DBHandle qw(dbh select_all);
 use mySociety::Email;
 use mySociety::MaPit;
 use mySociety::EmailUtil;
+use mySociety::Random qw(random_bytes);
 
 BEGIN {
     mySociety::Config::set_file("$FindBin::Bin/../conf/general");
@@ -81,6 +82,7 @@ foreach my $row (@$unsent) {
         _parameters_ => \%h,
         To => [ [ $row->{email}, $row->{name} ] ],
         From => [ mySociety::Config::get('CONTACT_EMAIL'), 'FixMyStreet' ],
+        'Message-ID' => sprintf('<ques-%s-%s@mysociety.org>', time(), unpack('h*', random_bytes(5))),
     });
 
     print "Sending questionnaire $id, problem $row->{id}, token $token to $row->{email}\n" if $verbose;

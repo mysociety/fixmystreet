@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: flickr.cgi,v 1.5 2007-08-29 23:03:16 matthew Exp $
+# $Id: flickr.cgi,v 1.6 2007-10-22 18:00:04 matthew Exp $
 
 use strict;
 use Standard;
@@ -14,6 +14,7 @@ use LWP::Simple;
 use mySociety::AuthToken;
 use mySociety::Email;
 use mySociety::EmailUtil;
+use mySociety::Random qw(random_bytes);
 
 sub main {
     my $q = shift;
@@ -29,7 +30,7 @@ sub main {
             $url = 'http://api.flickr.com/services/rest/?method=flickr.people.getInfo&api_key='.$key.'&user_id='.$nsid;
             $result = get($url);
             my ($name) = $result =~ /<realname>(.*?)<\/realname>/;
-	    $name ||= '';
+            $name ||= '';
 
             my $id = dbh()->selectrow_array("select nextval('flickr_id_seq');");
             dbh()->do("insert into flickr (id, nsid, name, email) values (?, ?, ?, ?)", {},
@@ -56,6 +57,7 @@ EOF
             _parameters_ => \%h,
             To => $email,
             From => [ mySociety::Config::get('CONTACT_EMAIL'), 'FixMyStreet' ],
+            'Message-ID' => sprintf('<flickr-%s-%s@mysociety.org>', time(), unpack('h*', random_bytes(5))),
         });
 
         my $result;

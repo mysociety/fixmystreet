@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.47 2007-10-18 16:34:08 matthew Exp $
+# $Id: send-reports,v 1.48 2007-10-22 18:00:04 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -22,6 +22,7 @@ use mySociety::DBHandle qw(dbh select_all);
 use mySociety::Email;
 use mySociety::EmailUtil;
 use mySociety::MaPit;
+use mySociety::Random qw(random_bytes);
 
 BEGIN {
     mySociety::Config::set_file("$FindBin::Bin/../conf/general");
@@ -54,7 +55,7 @@ foreach my $row (@$unsent) {
 
     if (dbh()->selectrow_array('select email from abuse where lower(email)=?', {}, lc($row->{email}))) {
         dbh()->do("update problem set state='hidden' where id=?", {}, $row->{id});
-	dbh()->commit();
+        dbh()->commit();
         next;
     }
     # XXX Needs locks!
@@ -129,7 +130,8 @@ If you know of an appropriate contact address, please do get in touch. ]\n\n";
         _template_ => $template,
         _parameters_ => \%h,
         To => \@to,
-        From => [ $row->{email}, $row->{name} ]
+        From => [ $row->{email}, $row->{name} ],
+        'Message-ID' => sprintf('<report-%s-%s@mysociety.org>', time(), unpack('h*', random_bytes(5))),
     });
 
     my $result;
