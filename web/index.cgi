@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.167 2007-09-25 11:55:05 matthew Exp $
+# $Id: index.cgi,v 1.168 2007-10-30 09:23:02 matthew Exp $
 
 use strict;
 use Standard;
@@ -107,7 +107,7 @@ EOF
         }
     }
     $out .= <<EOF;
-<label for="pc">Enter a nearby postcode, or street name and area:</label>
+<label for="pc">Enter a nearby UK postcode, or street name and area:</label>
 &nbsp;<input type="text" name="pc" value="$pc_h" id="pc" size="10" maxlength="200">
 &nbsp;<input type="submit" value="Go" id="submit">
 </form>
@@ -117,7 +117,7 @@ EOF
 <h2>How to report a problem</h2>
 
 <ol>
-<li>Enter a nearby postcode, or street name and area
+<li>Enter a nearby UK postcode, or street name and area
 <li>Locate the problem on a map of the area
 <li>Enter details of the problem
 <li>We send it to the council on your behalf
