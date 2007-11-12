@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.29 2007-08-29 23:03:16 matthew Exp $
+# $Id: confirm.cgi,v 1.30 2007-11-12 18:31:00 matthew Exp $
 
 use strict;
 use Standard;
@@ -20,7 +20,7 @@ sub main {
 
     my $out = '';
     my $token = $q->param('token');
-    my $type = $q->param('type');
+    my $type = $q->param('type') || '';
     my $tokentype = $type eq 'questionnaire' ? 'update' : $type;
     my $id = mySociety::AuthToken::retrieve($tokentype, $token);
     if ($id) {
