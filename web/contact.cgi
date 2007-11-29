@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.24 2007-10-22 18:00:04 matthew Exp $
+# $Id: contact.cgi,v 1.25 2007-11-29 15:56:41 matthew Exp $
 
 use strict;
 use Standard;
@@ -33,13 +33,13 @@ Page::do_fastcgi(\&main);
 
 sub contact_submit {
     my $q = shift;
-    my @vars = qw(name email subject message id);
+    my @vars = qw(name em subject message id);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
     push(@errors, 'Please give your name') unless $input{name} =~ /\S/;
-    if ($input{email} !~ /\S/) {
+    if ($input{em} !~ /\S/) {
         push(@errors, 'Please give your email');
-    } elsif (!mySociety::EmailUtil::is_valid_email($input{email})) {
+    } elsif (!mySociety::EmailUtil::is_valid_email($input{em})) {
         push(@errors, 'Please give a valid email address');
     }
     push(@errors, 'Please give a subject') unless $input{subject} =~ /\S/;
@@ -59,15 +59,15 @@ sub contact_submit {
         ' ]';
     my $email = mySociety::Email::construct_email({
         _body_ => "$message\n\n$postfix",
-        From => [$input{email}, $input{name}],
+        From => [$input{em}, $input{name}],
         To => [[mySociety::Config::get('CONTACT_EMAIL'), 'FixMyStreet']],
         Subject => 'FMS message: ' . $subject,
         'Message-ID' => sprintf('<contact-%s-%s@mysociety.org>', time(), unpack('h*', random_bytes(5))),
     });
-    my $result = mySociety::EmailUtil::send_email($email, $input{email}, mySociety::Config::get('CONTACT_EMAIL'));
+    my $result = mySociety::EmailUtil::send_email($email, $input{em}, mySociety::Config::get('CONTACT_EMAIL'));
     if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
         my $out = $q->p("Thanks for your feedback.  We'll get back to you as soon as we can!");
-        $out .= CrossSell::display_advert($input{email}, $input{name});
+        $out .= CrossSell::display_advert($input{em}, $input{name});
         return $out;
     } else {
         return $q->p('Failed to send message.  Please try again, or <a href="mailto:' . mySociety::Config::get('CONTACT_EMAIL') . '">email us</a>.');
@@ -76,7 +76,7 @@ sub contact_submit {
 
 sub contact_page {
     my ($q, @errors) = @_;
-    my @vars = qw(name email subject message);
+    my @vars = qw(name em subject message);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 
@@ -124,8 +124,8 @@ EOF
 <input type="hidden" name="submit_form" value="1">
 <div><label for="form_name">Your name:</label>
 <input type="text" name="name" id="form_name" value="$input_h{name}" size="30"></div>
-<div><label for="form_email">Your email:</label>
-<input type="text" name="email" id="form_email" value="$input_h{email}" size="30"></div>
+<div><label for="form_email">Your&nbsp;email:</label>
+<input type="text" name="em" id="form_email" value="$input_h{em}" size="30"></div>
 <div><label for="form_subject">Subject:</label>
 <input type="text" name="subject" id="form_subject" value="$input_h{subject}" size="30"></div>
 <div><label for="form_message">Message:</label>
