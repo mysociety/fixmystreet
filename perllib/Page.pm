@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.68 2007-10-19 19:20:31 matthew Exp $
+# $Id: Page.pm,v 1.69 2007-12-15 18:07:28 matthew Exp $
 #
 
 package Page;
@@ -524,7 +524,7 @@ sub geocode_string {
         $error = 'Sorry, we could not understand that location.' unless $error;
     } else {
         my ($accuracy) = $js =~ /"Accuracy": (\d)/;
-        if ($accuracy < 5) {
+        if ($accuracy < 4) {
             $error = 'Sorry, that location appears to be too general; please be more specific.';
         } else {
             $js =~ /"coordinates":\[(.*?),(.*?),/;
