@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.69 2007-12-15 18:07:28 matthew Exp $
+# $Id: Page.pm,v 1.70 2008-01-03 15:00:23 matthew Exp $
 #
 
 package Page;
@@ -512,16 +512,16 @@ sub geocode_string {
 
     if (!$js) {
         $error = 'Sorry, we had a problem parsing that location. Please try again.';
-    } elsif ($js =~ /BT\d/) {
-        # Northern Ireland, hopefully
-        $error = "We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.";
     } elsif ($js !~ /"code":200/) {
         $error = 'Sorry, we could not understand that location.';
     } elsif ($js =~ /},{/) { # Multiple
         while ($js =~ /"address":"(.*?)"/g) {
-            push (@$error, $1);
+            push (@$error, $1) unless $1 =~ /BT\d/;
         }
         $error = 'Sorry, we could not understand that location.' unless $error;
+    } elsif ($js =~ /BT\d/) {
+        # Northern Ireland, hopefully
+        $error = "We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.";
     } else {
         my ($accuracy) = $js =~ /"Accuracy": (\d)/;
         if ($accuracy < 4) {

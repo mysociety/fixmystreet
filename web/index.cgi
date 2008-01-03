@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.168 2007-10-30 09:23:02 matthew Exp $
+# $Id: index.cgi,v 1.169 2008-01-03 15:00:23 matthew Exp $
 
 use strict;
 use Standard;
@@ -523,7 +523,7 @@ $category
 <input type="text" value="$input_h{email}" name="email" id="form_email" size="30"></div>
 <div><label for="form_phone">Phone:</label>
 <input type="text" value="$input_h{phone}" name="phone" id="form_phone" size="20">
-<small>(optional, so the council can get in touch)</small></div>
+<small>(optional)</small></div>
 EOF
     if (my $token = $input{flickr}) {
         my $id = mySociety::AuthToken::retrieve('flickr', $token);
