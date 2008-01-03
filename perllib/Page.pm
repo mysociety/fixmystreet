@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.70 2008-01-03 15:00:23 matthew Exp $
+# $Id: Page.pm,v 1.71 2008-01-03 15:06:01 matthew Exp $
 #
 
 package Page;
@@ -507,18 +507,18 @@ sub geocode_string {
         $url .= ',+United+Kingdom' unless $url =~ /united\++kingdom$/ || $url =~ /uk$/i;
         $url .= '&key=' . mySociety::Config::get('GOOGLE_MAPS_API_KEY');
         $js = LWP::Simple::get($url);
-        File::Slurp::write_file($cache_file, $js) if $js;
+        File::Slurp::write_file($cache_file, $js) if $js && $js !~ /"code":6[12]0/;
     }
 
     if (!$js) {
         $error = 'Sorry, we had a problem parsing that location. Please try again.';
     } elsif ($js !~ /"code":200/) {
-        $error = 'Sorry, we could not understand that location.';
+        $error = 'Sorry, we could not find that location.';
     } elsif ($js =~ /},{/) { # Multiple
         while ($js =~ /"address":"(.*?)"/g) {
             push (@$error, $1) unless $1 =~ /BT\d/;
         }
-        $error = 'Sorry, we could not understand that location.' unless $error;
+        $error = 'Sorry, we could not find that location.' unless $error;
     } elsif ($js =~ /BT\d/) {
         # Northern Ireland, hopefully
         $error = "We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.";
