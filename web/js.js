@@ -149,7 +149,7 @@ function update_tiles(dx, dy, force) {
     y -= vertical;
     tile_y += vertical;
 
-    var url = '/tilma/tileserver/10k-full/' + x + '-' + (x+5) + ',' + y + '-' + (y+5) + '/JSON';
+    var url = [ '/tilma/tileserver/10k-full/', x, '-', (x+5), ',', y, '-', (y+5), '/JSON' ].join('');
     var req = YAHOO.util.Connect.asyncRequest('GET', url, {
         success: urls_loaded, failure: urls_not_loaded,
         argument: [tile_x, tile_y]
@@ -167,7 +167,7 @@ function urls_loaded(o) {
         for (var j=0; j<6; j++) {
             if (tiles[i][j] == null) continue;
             var jj = (j + o.argument[0]);
-            var id = 't'+ii+'.'+jj;
+            var id = [ 't', ii, '.', jj ].join('');
             var xx = x+j;
             var yy = y+5-i;
             var img = document.getElementById(id);
@@ -180,7 +180,7 @@ function urls_loaded(o) {
             img = cloneNode();
             img.style.top = ((ii-2)*tileheight) + 'px';
             img.style.left = ((jj-2)*tilewidth) + 'px';
-            img.name = 'tile_' + xx + '.' + yy;
+            img.name = [ 'tile_', xx, '.', yy ].join('')
             img.id = id;
             if (browser) {
                 img.style.visibility = 'hidden';

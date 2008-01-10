@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.169 2008-01-03 15:00:23 matthew Exp $
+# $Id: index.cgi,v 1.170 2008-01-10 14:05:20 matthew Exp $
 
 use strict;
 use Standard;
@@ -83,7 +83,7 @@ EOF
     my $new = dbh()->selectrow_array("select count(*) from problem where state in ('confirmed','fixed') and confirmed>ms_current_timestamp()-'1 week'::interval");
     my $new_text = 'in past week';
     if ($new > $fixed) {
-        $new = dbh()->selectrow_array("select count(*) from problem where state in ('confirmed','fixed') and confirmed>ms_current_timestamp()-'1 day'::interval");
+        $new = dbh()->selectrow_array("select count(*) from problem where state in ('confirmed','fixed') and confirmed>ms_current_timestamp()-'3 days'::interval");
         $new_text = 'recently';
     }
     $out .= '<form action="./" method="get" id="postcodeForm">';
