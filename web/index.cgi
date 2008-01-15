@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.170 2008-01-10 14:05:20 matthew Exp $
+# $Id: index.cgi,v 1.171 2008-01-15 09:55:07 matthew Exp $
 
 use strict;
 use Standard;
@@ -619,7 +619,7 @@ EOF
     $list = '';
     foreach (@$current) {
         $list .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
-        $list .= $_->{title} . ' (c. ' . int($_->{distance}/100+.5)/10 . 'km)';
+        $list .= $_->{title} . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
         $list .= '</a></li>';
     }
     if (@$current) {
@@ -634,7 +634,7 @@ EOF
     $list = '';
     foreach (@$fixed) {
         $list .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
-        $list .= $_->{title} . ' (c. ' . int($_->{distance}/100+.5)/10 . 'km)';
+        $list .= $_->{title} . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
         $list .= '</a></li>';
     }
     if (@$fixed) {
