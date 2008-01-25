@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.173 2008-01-25 17:05:00 matthew Exp $
+# $Id: index.cgi,v 1.174 2008-01-25 17:07:57 matthew Exp $
 
 use strict;
 use Standard;
@@ -221,6 +221,8 @@ sub submit_problem {
         $input{category} = '';
     }
  
+    return display_form($q, @errors) if (@errors); # Short circuit
+
     my $areas;
     if ($input{easting} && $input{northing}) {
         $areas = mySociety::MaPit::get_voting_areas_by_location({easting=>$input{easting}, northing=>$input{northing}}, 'polygon');
