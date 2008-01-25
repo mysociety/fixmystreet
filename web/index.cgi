@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.172 2008-01-25 17:02:29 matthew Exp $
+# $Id: index.cgi,v 1.173 2008-01-25 17:05:00 matthew Exp $
 
 use strict;
 use Standard;
@@ -377,8 +377,8 @@ sub display_form {
         # Map was clicked on
         $pin_x = Page::click_to_tile($pin_tile_x, $pin_x);
         $pin_y = Page::click_to_tile($pin_tile_y, $pin_y, 1);
-        $input{x} ||= $pin_x-1;
-        $input{y} ||= $pin_y-1;
+        $input{x} ||= int($pin_x) - 1;
+        $input{y} ||= int($pin_y) - 1;
         $px = Page::tile_to_px($pin_x, $input{x});
         $py = Page::tile_to_px($pin_y, $input{y});
         $easting = Page::tile_to_os($pin_x);
