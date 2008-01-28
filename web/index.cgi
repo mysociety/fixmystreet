@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.175 2008-01-28 17:27:00 matthew Exp $
+# $Id: index.cgi,v 1.176 2008-01-28 17:31:29 matthew Exp $
 
 use strict;
 use Standard;
@@ -227,7 +227,7 @@ sub submit_problem {
     if ($input{easting} && $input{northing}) {
         $areas = mySociety::MaPit::get_voting_areas_by_location(
             { easting=>$input{easting}, northing=>$input{northing} },
-            'polygon', [qw(WMC CTY CED DIS DIW MTD MTW COI COP LGD LGE UTA UTE UTW LBO LBW GLA LAC SPC SPE WAC WAE NIE)]
+            'polygon', [qw(WMC CTY CED DIS DIW MTD MTW COI COP LGD LGE UTA UTE UTW LBO LBW LAC SPC WAC NIE)]
         );
         if ($input{council} =~ /^[\d,]+(\|[\d,]+)?$/) {
             my $no_details = $1 || '';
