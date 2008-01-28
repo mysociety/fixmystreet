@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.31 2008-01-28 15:27:00 matthew Exp $
+# $Id: confirm.cgi,v 1.32 2008-01-28 16:29:46 matthew Exp $
 
 use strict;
 use Standard;
@@ -19,6 +19,7 @@ sub main {
     my $q = shift;
 
     my $out = '';
+    my $extra;
     my $token = $q->param('token');
     my $type = $q->param('type') || '';
     my $tokentype = $type eq 'questionnaire' ? 'update' : $type;
@@ -28,6 +29,7 @@ sub main {
             $out = confirm_update($q, $id);
         } elsif ($type eq 'problem') {
             $out = confirm_problem($q, $id);
+	    $extra = 'added-problem';
         } elsif ($type eq 'questionnaire') {
             $out = add_questionnaire($q, $id, $token);
         }
@@ -42,7 +44,7 @@ EOF
 
     print Page::header($q, title=>_('Confirmation'));
     print $out;
-    print Page::footer($q);
+    print Page::footer($q, $extra);
 }
 Page::do_fastcgi(\&main);
 
