@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.17 2007-08-29 23:03:16 matthew Exp $
+# $Id: questionnaire.cgi,v 1.18 2008-01-28 15:27:00 matthew Exp $
 
 use strict;
 use Standard;
@@ -27,7 +27,7 @@ sub main {
     }
     print Page::header($q, title=>_('Questionnaire'));
     print $out;
-    print Page::footer();
+    print Page::footer($q);
 }
 Page::do_fastcgi(\&main);
 

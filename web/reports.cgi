@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.13 2007-09-09 09:42:10 matthew Exp $
+# $Id: reports.cgi,v 1.14 2008-01-28 15:27:00 matthew Exp $
 
 use strict;
 use Standard;
@@ -205,7 +205,7 @@ sub main {
             }
         }
     }
-    print Page::footer();
+    print Page::footer($q);
 }
 Page::do_fastcgi(\&main);
 

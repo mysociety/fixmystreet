@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: fun.cgi,v 1.1 2007-11-07 15:24:07 matthew Exp $
+# $Id: fun.cgi,v 1.2 2008-01-28 15:27:00 matthew Exp $
 
 use strict;
 use Standard -db;
@@ -16,7 +16,7 @@ sub main {
     my $q = shift;
     print Page::header($q, title=>_('Weird and Wonderful reports'));
     print fun($q);
-    print Page::footer();
+    print Page::footer($q);
 }
 Page::do_fastcgi(\&main);
 

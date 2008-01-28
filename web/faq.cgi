@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.27 2007-08-29 23:03:16 matthew Exp $
+# $Id: faq.cgi,v 1.28 2008-01-28 15:27:00 matthew Exp $
 
 use strict;
 use Standard -db;
@@ -16,7 +16,7 @@ sub main {
     my $q = shift;
     print Page::header($q, title=>_('FAQ'));
     print faq($q);
-    print Page::footer();
+    print Page::footer($q);
 }
 Page::do_fastcgi(\&main);
 

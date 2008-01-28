@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: flickr.cgi,v 1.6 2007-10-22 18:00:04 matthew Exp $
+# $Id: flickr.cgi,v 1.7 2008-01-28 15:27:00 matthew Exp $
 
 use strict;
 use Standard;
@@ -94,7 +94,7 @@ EOF
     }
 
     print $out;
-    print Page::footer();
+    print Page::footer($q);
 }
 Page::do_fastcgi(\&main);
 

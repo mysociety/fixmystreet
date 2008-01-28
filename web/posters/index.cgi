@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.5 2007-08-29 23:03:17 matthew Exp $
+# $Id: index.cgi,v 1.6 2008-01-28 15:27:01 matthew Exp $
 
 use strict;
 use Standard -db;
@@ -21,7 +21,7 @@ sub main {
     my $q = shift;
     print Page::header($q, title=>_('Publicity material'));
     print body($q);
-    print Page::footer();
+    print Page::footer($q);
 }
 Page::do_fastcgi(\&main);
 

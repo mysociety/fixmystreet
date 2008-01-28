@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.25 2007-11-29 15:56:41 matthew Exp $
+# $Id: contact.cgi,v 1.26 2008-01-28 15:27:00 matthew Exp $
 
 use strict;
 use Standard;
@@ -27,7 +27,7 @@ sub main {
         $out = contact_page($q);
     }
     print $out;
-    print Page::footer();
+    print Page::footer($q);
 }
 Page::do_fastcgi(\&main);
 

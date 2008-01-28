@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: flickr2.cgi,v 1.3 2007-08-29 23:03:16 matthew Exp $
+# $Id: flickr2.cgi,v 1.4 2008-01-28 15:27:00 matthew Exp $
 
 use strict;
 use Standard;
@@ -45,6 +45,6 @@ EOF
 
     print Page::header($q, title=>'Flickr photo upload');
     print $out;
-    print Page::footer();
+    print Page::footer($q);
 }
 Page::do_fastcgi(\&main);

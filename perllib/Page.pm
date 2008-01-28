@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.71 2008-01-03 15:06:01 matthew Exp $
+# $Id: Page.pm,v 1.72 2008-01-28 15:27:00 matthew Exp $
 #
 
 package Page;
@@ -25,6 +25,7 @@ use mySociety::DBHandle qw/dbh select_all/;
 use mySociety::EvEl;
 use mySociety::MaPit;
 use mySociety::PostcodeUtil;
+use mySociety::Tracking;
 use mySociety::WatchUpdate;
 use mySociety::Web qw(ent NewURL);
 BEGIN {
@@ -115,12 +116,10 @@ EOF
 
 =cut
 sub footer {
-    my $q = shift;
-    my $pc = '';
-    if ($q) {
-        $pc = $q->param('pc') || '';
-        $pc = "?pc=" . ent($pc) if $pc;
-    }
+    my ($q, $extra) = @_;
+    my $pc = $q->param('pc') || '';
+    $pc = "?pc=" . ent($pc) if $pc;
+    my $track = mySociety::Tracking::code($q, $extra);
     return <<EOF;
 </div></div>
 <h2 class="v">Navigation</h2>
@@ -136,6 +135,8 @@ sub footer {
 using some <a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/bci">clever</a> <a
 href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>. Formerly <a href="/faq#nfi">Neighbourhood Fix-It</a>.</p>
 
+$track
+
 </body>
 </html>
 EOF
@@ -148,7 +149,7 @@ sub error_page ($$) {
     my ($q, $message);
     my $html = header($q, title=>"Error")
             . $q->p($message)
-            . footer();
+            . footer($q);
     print $q->header(-content_length => length($html)), $html;
 }
 
