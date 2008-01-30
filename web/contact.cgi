@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.26 2008-01-28 15:27:00 matthew Exp $
+# $Id: contact.cgi,v 1.27 2008-01-30 18:27:48 matthew Exp $
 
 use strict;
 use Standard;
@@ -67,7 +67,7 @@ sub contact_submit {
     my $result = mySociety::EmailUtil::send_email($email, $input{em}, mySociety::Config::get('CONTACT_EMAIL'));
     if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
         my $out = $q->p("Thanks for your feedback.  We'll get back to you as soon as we can!");
-        $out .= CrossSell::display_advert($input{em}, $input{name});
+        $out .= CrossSell::display_advert($q, $input{em}, $input{name});
         return $out;
     } else {
         return $q->p('Failed to send message.  Please try again, or <a href="mailto:' . mySociety::Config::get('CONTACT_EMAIL') . '">email us</a>.');

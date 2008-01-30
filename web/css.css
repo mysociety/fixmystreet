@@ -176,6 +176,11 @@ ul#error {
     padding: 2px 4px;
 }
 
+#advert_thin {
+    width: 50%;
+    margin: 0 auto;
+}
+
 /* Front page */
 
 #expl {
@@ -464,7 +469,7 @@ ol#current img {
     margin-right: 1em;
 }
 
-/* Printign */
+/* Printing */
 @media print {
     #map_box { float: none; margin: 0 auto; }
     #content { max-width: none; }

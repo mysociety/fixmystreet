@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.32 2008-01-28 16:29:46 matthew Exp $
+# $Id: confirm.cgi,v 1.33 2008-01-30 18:27:48 matthew Exp $
 
 use strict;
 use Standard;
@@ -72,7 +72,7 @@ sub confirm_update {
         $out = '<form action="/alert" method="post">';
         $out .= $q->p(sprintf(_('You have successfully confirmed your update and you can now <a href="%s">view it on the site</a>.'), "/?id=$problem_id#update_$id"));
         if ($fixed) {
-            $out .= CrossSell::display_advert($email, $name);
+            $out .= CrossSell::display_advert($q, $email, $name);
         } else {
             $out .= advertise_updates($q, $problem_id, $email);
         }
@@ -152,7 +152,7 @@ sub add_questionnaire {
         ms_current_timestamp(), ?, 'confirmed', 'fixed');", {}, $problem_id, $reported)
         unless $already;
     my $out = $q->p(sprintf('Thank you &mdash; you can <a href="%s">view your updated problem</a> on the site.', "/?id=$problem_id"));
-    $out .= CrossSell::display_advert($email, $name);
+    $out .= CrossSell::display_advert($q, $email, $name);
     return $out;
 }
 

@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.18 2008-01-28 15:27:00 matthew Exp $
+# $Id: questionnaire.cgi,v 1.19 2008-01-30 18:27:48 matthew Exp $
 
 use strict;
 use Standard;
@@ -128,7 +128,8 @@ EOF
         my $out = <<EOF;
 <p>Thank you very much for filling in our questionnaire; glad to hear it's been fixed.</p>
 EOF
-        $out .= CrossSell::display_advert($problem->{email}, $problem->{name});
+        $out .= CrossSell::display_advert($q, $problem->{email}, $problem->{name},
+            council => $problem->{council});
     }
 }
 

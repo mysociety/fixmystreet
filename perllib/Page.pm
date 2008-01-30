@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.72 2008-01-28 15:27:00 matthew Exp $
+# $Id: Page.pm,v 1.73 2008-01-30 18:27:47 matthew Exp $
 #
 
 package Page;
@@ -119,6 +119,7 @@ sub footer {
     my ($q, $extra) = @_;
     my $pc = $q->param('pc') || '';
     $pc = "?pc=" . ent($pc) if $pc;
+    $extra = $q->scratch() if $q->scratch(); # Overrides
     my $track = mySociety::Tracking::code($q, $extra);
     return <<EOF;
 </div></div>
