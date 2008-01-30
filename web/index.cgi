@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.176 2008-01-28 17:31:29 matthew Exp $
+# $Id: index.cgi,v 1.177 2008-01-30 18:46:29 matthew Exp $
 
 use strict;
 use Standard;
@@ -446,6 +446,8 @@ sub display_form {
         $out .= <<EOF;
 <form action="./" method="post">
 <input type="hidden" name="pc" value="$input_h{pc}">
+<input type="hidden" name="x" value="$input_h{x}">
+<input type="hidden" name="y" value="$input_h{y}">
 <input type="hidden" name="skipped" value="1">
 <h1>Reporting a problem</h1>
 <ul>
