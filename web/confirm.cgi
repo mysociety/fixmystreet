@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.33 2008-01-30 18:27:48 matthew Exp $
+# $Id: confirm.cgi,v 1.34 2008-01-31 12:26:11 matthew Exp $
 
 use strict;
 use Standard;
@@ -69,8 +69,7 @@ sub confirm_update {
     if ($creator_fixed > 0) {
         $out = ask_questionnaire($q->param('token'));
     } else {
-        $out = '<form action="/alert" method="post">';
-        $out .= $q->p(sprintf(_('You have successfully confirmed your update and you can now <a href="%s">view it on the site</a>.'), "/?id=$problem_id#update_$id"));
+        $out = $q->p(sprintf(_('You have successfully confirmed your update and you can now <a href="%s">view it on the site</a>.'), "/?id=$problem_id#update_$id"));
         if ($fixed) {
             $out .= CrossSell::display_advert($q, $email, $name);
         } else {
@@ -92,8 +91,7 @@ sub confirm_problem {
         dbh()->do("update problem set state='confirmed', confirmed=ms_current_timestamp(), lastupdate=ms_current_timestamp()
             where id=? and state='unconfirmed'", {}, $id);
     }
-    my $out = '<form action="/alert" method="post">';
-    $out .= $q->p(
+    my $out = $q->p(
         _('You have successfully confirmed your problem')
         . ($council ? _(' and <strong>we will now send it to the council</strong>') : '')
         . sprintf(_('. You can <a href="%s">view the problem on this site</a>.'), "/?id=$id")
@@ -114,7 +112,8 @@ sub advertise_updates {
 <input type="hidden" name="type" value="updates">
 EOF
     $signup .= '<input type="submit" value="' . _('sign up') . '">';
-    my $out = $q->p(sprintf(_('You could also <a href="%s">subscribe to the RSS feed</a> of updates by other local people on this problem, or %s if you wish to receive updates by email.'), "/rss/$problem_id", $signup));
+    my $out = '<form action="/alert" method="post">';
+    $out .= $q->p(sprintf(_('You could also <a href="%s">subscribe to the RSS feed</a> of updates by other local people on this problem, or %s if you wish to receive updates by email.'), "/rss/$problem_id", $signup));
     $out .= '</form>';
     return $out;
 }
