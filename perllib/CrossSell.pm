@@ -9,7 +9,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: CrossSell.pm,v 1.4 2008-01-31 10:30:37 matthew Exp $
+# $Id: CrossSell.pm,v 1.5 2008-01-31 22:06:14 matthew Exp $
 
 # Config parameters site needs set to call these functions:
 # OPTION_AUTH_SHARED_SECRET
@@ -122,7 +122,7 @@ sub display_advert ($$;$%) {
     }
 
     my @adverts = (
-        [ 'gny', '<h2>Are you a member of a local group&hellip;</h2> &hellip;which uses the internet to coordinate itself, such as a neighbourhood watch? If so, please help the charity that runs WriteToThem by <a href="http://www.groupsnearyou.com/">adding some information about it</a> to our new site, GroupsNearYou.' ],
+        [ 'gny', '<h2>Are you a member of a local group&hellip;</h2> &hellip;which uses the internet to coordinate itself, such as a neighbourhood watch? If so, please help the charity that runs FixMyStreet by <a href="http://www.groupsnearyou.com/">adding some information about it</a> to our new site, GroupsNearYou.' ],
         #  Since you're interested in your local area, why not
         #  start a long term relationship with your MP?
         [ 'hfymp', '<h2 style="margin-bottom:0">Get email from your MP in the future</h2> <p style="font-size:120%;margin-top:0;">and have a chance to discuss what they say in a public forum [form]Sign up to HearFromYourMP[/form]' ],
