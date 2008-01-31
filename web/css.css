@@ -178,7 +178,12 @@ ul#error {
 
 #advert_thin {
     width: 50%;
-    margin: 0 auto;
+    margin: 1em auto;
+    border-top: dotted 1px #999999;
+}
+#advert_hfymp {
+    border-top: dotted 1px #999999;
+    text-align: center;
 }
 
 /* Front page */

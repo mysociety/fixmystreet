@@ -9,7 +9,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: CrossSell.pm,v 1.3 2008-01-30 18:27:47 matthew Exp $
+# $Id: CrossSell.pm,v 1.4 2008-01-31 10:30:37 matthew Exp $
 
 # Config parameters site needs set to call these functions:
 # OPTION_AUTH_SHARED_SECRET
@@ -22,6 +22,7 @@ use LWP::Simple qw($ua get);
 $ua->timeout(5);
 use URI::Escape;
 use mySociety::AuthToken;
+use mySociety::Web qw(ent);
 
 sub display_random_hfymp_advert {
     my ($email, $name, $text) = @_;
@@ -43,7 +44,7 @@ sub display_random_hfymp_advert {
 <h2><input style="font-size:100%" type="submit" value="#;
     $text =~ s#\[/form\]#"></h2>#;
 
-    return '<div style="text-align:center">' . $text . '</div>';
+    return '<div id="advert_hfymp">' . $text . '</div>';
 }
 
 sub display_random_gny_advert {
@@ -58,7 +59,7 @@ sub display_random_twfy_alerts_advert {
 <input type="hidden" name="email" value="$email">
 <input type="hidden" name="sign" value="$auth_signature">
 <input type="hidden" name="site" value="fms">
-<input style="font-size:150%" type="submit" value="'#;
+<input style="font-size:150%" type="submit" value="#;
     $text =~ s#\[/button\]#"></p>#;
     return '<div id="advert_thin" style="text-align:center">' . $text . '</div>';
 }
@@ -141,17 +142,19 @@ sub display_advert ($$;$%) {
 
         my @new_adverts;
         foreach my $advert (@adverts) {
-            push @new_adverts, $advert if $advert_site != $advert->[0];
+            push @new_adverts, $advert if $advert_site ne $advert->[0];
         }
         @adverts = @new_adverts;
     }
 
     $q->{scratch} = 'pb';
     return <<EOF;
-<h2 style="padding: 1em; font-size: 200%" align="center">
+<div id="advert_thin" style="text-align:center">
+<h2 style="font-size: 150%">
 If you're interested in improving your local area,
 <a href="http://www.pledgebank.com/">use PledgeBank</a> to
 do so with other people!</h2>
+</div>
 EOF
 }
 
