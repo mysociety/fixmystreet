@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.74 2008-01-31 10:30:37 matthew Exp $
+# $Id: Page.pm,v 1.75 2008-02-01 00:19:29 matthew Exp $
 #
 
 package Page;
@@ -32,14 +32,28 @@ BEGIN {
     mySociety::Config::set_file("$FindBin::Bin/../conf/general");
 }
 
+# FastCGI signal handling
+
+my $exit_requested = 0;
+my $handling_request = 0;
+
+$SIG{TERM} = $SIG{USR1} = sub {
+    $exit_requested = 1;
+    exit(0) unless $handling_request;
+}
+
 sub do_fastcgi {
     my $func = shift;
 
     try {
         my $W = new mySociety::WatchUpdate();
         while (my $q = new CGI::Fast()) {
+            $handling_request = 1;
             &$func($q);
+            dbh()->rollback() if $mySociety::DBHandle::conf_ok;
             $W->exit_if_changed();
+            $handling_request = 0;
+            last if $exit_requested;
         }
     } catch Error::Simple with {
         my $E = shift;
@@ -58,6 +72,7 @@ sub do_fastcgi {
                 q(</body></html);
     };
     dbh()->rollback() if $mySociety::DBHandle::conf_ok;
+    exit(0);
 }
 
 =item header Q [PARAM VALUE ...]
@@ -585,7 +600,7 @@ sub recent_photos {
         $probs = select_all("select id, title
             from problem_find_nearby(?, ?, ?) as nearby, problem
             where nearby.problem_id = problem.id
-	    and state in ('confirmed', 'fixed') and photo is not null
+            and state in ('confirmed', 'fixed') and photo is not null
             order by confirmed desc limit $num", $e, $n, $dist);
     } else {
         $probs = select_all("select id, title from problem
