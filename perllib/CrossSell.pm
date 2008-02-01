@@ -9,7 +9,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: CrossSell.pm,v 1.6 2008-02-01 12:10:06 matthew Exp $
+# $Id: CrossSell.pm,v 1.7 2008-02-01 13:35:32 matthew Exp $
 
 # Config parameters site needs set to call these functions:
 # OPTION_AUTH_SHARED_SECRET
@@ -116,7 +116,7 @@ sub display_advert ($$;$%) {
     if (defined $data{council} && $data{council} eq '2326') {
         my ($out, $ad) = display_hfyc_cheltenham_advert($email, $name);
         if ($out) {
-            $q->{scratch} = $ad;
+            $q->{scratch} = "advert=$ad";
             return $out;
         }
     }
@@ -136,7 +136,7 @@ sub display_advert ($$;$%) {
         my $out = &$func($email, $name, $advert_text);
         use strict 'refs';
         if ($out) {
-            $q->{scratch} = $advert_site . $rand;
+            $q->{scratch} = "advert=$advert_site$rand";
             return $out;
         }
 
@@ -147,7 +147,7 @@ sub display_advert ($$;$%) {
         @adverts = @new_adverts;
     }
 
-    $q->{scratch} = 'pb';
+    $q->{scratch} = 'advert=pb';
     return <<EOF;
 <div id="advert_thin" style="text-align:center">
 <h2 style="font-size: 150%">
