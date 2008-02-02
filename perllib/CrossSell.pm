@@ -9,7 +9,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: CrossSell.pm,v 1.7 2008-02-01 13:35:32 matthew Exp $
+# $Id: CrossSell.pm,v 1.8 2008-02-02 12:54:40 matthew Exp $
 
 # Config parameters site needs set to call these functions:
 # OPTION_AUTH_SHARED_SECRET
@@ -26,6 +26,7 @@ use mySociety::Web qw(ent);
 
 sub display_random_hfymp_advert {
     my ($email, $name, $text) = @_;
+    $name ||= '';
     my $auth_signature = mySociety::AuthToken::sign_with_shared_secret($email, mySociety::Config::get('AUTH_SHARED_SECRET'));
 
     # See if already signed up
@@ -66,6 +67,7 @@ sub display_random_twfy_alerts_advert {
 
 sub display_hfyc_cheltenham_advert {
     my ($email, $name) = @_;
+    $name ||= '';
     my $auth_signature = mySociety::AuthToken::sign_with_shared_secret($email, mySociety::Config::get('AUTH_SHARED_SECRET'));
 
     # See if already signed up
