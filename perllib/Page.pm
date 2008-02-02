@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.77 2008-02-01 15:14:47 matthew Exp $
+# $Id: Page.pm,v 1.78 2008-02-02 19:55:27 matthew Exp $
 #
 
 package Page;
@@ -37,10 +37,10 @@ BEGIN {
 my $exit_requested = 0;
 my $handling_request = 0;
 
-$SIG{TERM} = $SIG{USR1} = sub {
-    $exit_requested = 1;
-    # exit(0) unless $handling_request;
-};
+#$SIG{TERM} = $SIG{USR1} = sub {
+#    $exit_requested = 1;
+#    # exit(0) unless $handling_request;
+#};
 
 sub do_fastcgi {
     my $func = shift;
