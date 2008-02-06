@@ -9,7 +9,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: CrossSell.pm,v 1.8 2008-02-02 12:54:40 matthew Exp $
+# $Id: CrossSell.pm,v 1.9 2008-02-06 15:28:23 matthew Exp $
 
 # Config parameters site needs set to call these functions:
 # OPTION_AUTH_SHARED_SECRET
@@ -132,6 +132,7 @@ sub display_advert ($$;$%) {
     );
     while (@adverts) {
         my $rand = int(rand(scalar @adverts));
+        next unless $adverts[$rand];
         my ($advert_site, $advert_text) = @{$adverts[$rand]};
         my $func = "display_random_${advert_site}_advert";
         no strict 'refs';
@@ -142,11 +143,9 @@ sub display_advert ($$;$%) {
             return $out;
         }
 
-        my @new_adverts;
-        foreach my $advert (@adverts) {
-            push @new_adverts, $advert if $advert_site ne $advert->[0];
+        for (my $i=0; $i<@adverts; $i++) {
+            delete $adverts[$i] if $advert_site eq $adverts[$i][0];
         }
-        @adverts = @new_adverts;
     }
 
     $q->{scratch} = 'advert=pb';
