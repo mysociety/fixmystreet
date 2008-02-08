@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.28 2008-01-28 15:27:00 matthew Exp $
+# $Id: faq.cgi,v 1.29 2008-02-08 17:30:12 francis Exp $
 
 use strict;
 use Standard -db;
@@ -104,7 +104,7 @@ non-technical.  Please see our <a
 href="http://www.mysociety.org/volunteertasks">volunteers page</a>.')),
         $q->dt(_('Where&rsquo;s the "source code" to this site?')),
         $q->dd(_('The software behind this site is open source, and available
-to you mainly under the Affero GPL software license. You can <a
+to you mainly under the GNU Affero GPL software license. You can <a
 href="https://secure.mysociety.org/cvstrac/dir?d=mysociety">download the
 source code</a> (look under &lsquo;bci&rsquo;) and help us develop it.
 You&rsquo;re welcome to use it in your own projects, although you must also
