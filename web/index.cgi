@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.177 2008-01-30 18:46:29 matthew Exp $
+# $Id: index.cgi,v 1.178 2008-02-11 14:39:03 matthew Exp $
 
 use strict;
 use Standard;
@@ -504,7 +504,8 @@ describe the location as precisely as possible in the details box.';
     } elsif ($details ne 'none') {
         $out .= '<li>Please fill in details of the problem below. The council won\'t be able
 to help unless you leave as much detail as you can, so please describe the exact location of
-the problem (e.g. on a wall), what it is, how long it has been there, a description, etc.';
+the problem (e.g. on a wall), what it is, how long it has been there, a description (and a
+photo of the problem if you have one), etc.';
     } else {
         $out .= '<li>Please fill in details of the problem below.';
     }
@@ -523,16 +524,6 @@ $category
 <input type="text" value="$input_h{title}" name="title" id="form_title" size="30"></div>
 <div><label for="form_detail">Details:</label>
 <textarea name="detail" id="form_detail" rows="7" cols="27">$input_h{detail}</textarea></div>
-<div><label for="form_name">Name:</label>
-<input type="text" value="$input_h{name}" name="name" id="form_name" size="30"></div>
-<div class="checkbox"><input type="checkbox" name="anonymous" id="form_anonymous" value="1"$anon>
-<label for="form_anonymous">Can we show your name on the site?</label>
-<small>(we never show your email address or phone number)</small></div>
-<div><label for="form_email">Email:</label>
-<input type="text" value="$input_h{email}" name="email" id="form_email" size="30"></div>
-<div><label for="form_phone">Phone:</label>
-<input type="text" value="$input_h{phone}" name="phone" id="form_phone" size="20">
-<small>(optional)</small></div>
 EOF
     if (my $token = $input{flickr}) {
         my $id = mySociety::AuthToken::retrieve('flickr', $token);
@@ -547,6 +538,16 @@ EOF
 EOF
     }
     $out .= <<EOF;
+<div><label for="form_name">Name:</label>
+<input type="text" value="$input_h{name}" name="name" id="form_name" size="30"></div>
+<div class="checkbox"><input type="checkbox" name="anonymous" id="form_anonymous" value="1"$anon>
+<label for="form_anonymous">Can we show your name on the site?</label>
+<small>(we never show your email address or phone number)</small></div>
+<div><label for="form_email">Email:</label>
+<input type="text" value="$input_h{email}" name="email" id="form_email" size="30"></div>
+<div><label for="form_phone">Phone:</label>
+<input type="text" value="$input_h{phone}" name="phone" id="form_phone" size="20">
+<small>(optional)</small></div>
 <p>Please note:</p>
 <ul>
 <li>Please be polite, concise and to the point.
