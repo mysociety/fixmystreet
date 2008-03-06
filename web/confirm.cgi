@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.34 2008-01-31 12:26:11 matthew Exp $
+# $Id: confirm.cgi,v 1.35 2008-03-06 12:07:35 matthew Exp $
 
 use strict;
 use Standard;
@@ -29,7 +29,7 @@ sub main {
             $out = confirm_update($q, $id);
         } elsif ($type eq 'problem') {
             $out = confirm_problem($q, $id);
-	    $extra = 'added-problem';
+            $extra = 'added-problem';
         } elsif ($type eq 'questionnaire') {
             $out = add_questionnaire($q, $id, $token);
         }
@@ -50,7 +50,12 @@ Page::do_fastcgi(\&main);
 
 sub confirm_update {
     my ($q, $id) = @_;
-    dbh()->do("update comment set state='confirmed' where id=? and state='unconfirmed'", {}, $id);
+    if (dbh()->selectrow_array('select email from abuse where lower(email)=?', {}, lc($email))) {
+        dbh()->do("update comment set state='hidden' where id=?", {}, $id);
+        return $q->p('Sorry, there has been an error confirming your update.');
+    } else {
+        dbh()->do("update comment set state='confirmed' where id=? and state='unconfirmed'", {}, $id);
+    }
     my ($problem_id, $fixed, $email, $name) = dbh()->selectrow_array(
         "select problem_id, mark_fixed, email, name from comment where id=?", {}, $id);
     my $creator_fixed = 0;
@@ -87,6 +92,7 @@ sub confirm_problem {
 
     if (dbh()->selectrow_array('select email from abuse where lower(email)=?', {}, lc($email))) {
         dbh()->do("update problem set state='hidden', lastupdate=ms_current_timestamp() where id=?", {}, $id);
+        return $q->p('Sorry, there has been an error confirming your problem.');
     } else {
         dbh()->do("update problem set state='confirmed', confirmed=ms_current_timestamp(), lastupdate=ms_current_timestamp()
             where id=? and state='unconfirmed'", {}, $id);

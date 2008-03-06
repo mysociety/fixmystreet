@@ -5,8 +5,7 @@ Hi <?=$values['name']?>,
 <?=$values['created']?> ago, you left a problem on FixMyStreet
 with the details provided at the end of this email. To keep our
 site up to date and relevant, we'd appreciate it if you could fill in
-this short questionnaire updating the status of your problem if
-you have any new information:
+this short questionnaire updating the status of your problem:
 
     <?=$values['url']?>
 

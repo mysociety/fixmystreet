@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.20 2008-03-06 11:52:33 matthew Exp $
+# $Id: questionnaire.cgi,v 1.21 2008-03-06 12:07:35 matthew Exp $
 
 use strict;
 use Standard;
@@ -72,7 +72,7 @@ sub submit_questionnaire {
     push @errors, 'Please state whether or not the problem has been fixed' unless $input{been_fixed};
     push @errors, 'Please say whether you\'ve ever reported a problem to your council before' unless $input{reported} || $prev_questionnaire;
     push @errors, 'Please indicate whether you\'d like to receive another questionnaire'
-        if $input{been_fixed} eq 'No' && !$input{another};
+        if ($input{been_fixed} eq 'No' || $input{been_fixed} eq 'Unknown') && !$input{another};
     push @errors, 'Please provide some explanation as to why you\'re reopening this report'
         if $input{been_fixed} eq 'No' && $problem->{state} eq 'fixed' && !$input{update};
     return display_questionnaire($q, @errors) if @errors;
@@ -97,7 +97,9 @@ sub submit_questionnaire {
         : undef;
     dbh()->do('update questionnaire set whenanswered=ms_current_timestamp(),
         ever_reported=?, old_state=?, new_state=? where id=?', {},
-        $reported, $problem->{state}, $new_state ? $new_state : $problem->{state},
+        $reported, $problem->{state}, $input{been_fixed} eq 'Unknown'
+            ? 'unknown'
+            : ($new_state ? $new_state : $problem->{state}),
         $questionnaire->{id});
 
     # Record an update if they've given one, or if there's a state change
@@ -113,9 +115,16 @@ sub submit_questionnaire {
 
     # If they've said they want another questionnaire, mark as such
     dbh()->do("update problem set send_questionnaire = 't' where id=?", {}, $problem->{id})
-        if $input{been_fixed} eq 'No' && $input{another} eq 'Yes';
+        if ($input{been_fixed} eq 'No' || $input{been_fixed} eq 'Unknown') && $input{another} eq 'Yes';
 
     dbh()->commit();
+    my $out;
+    if ($input{been_fixed} eq 'Unknown') {
+        $out = <<EOF;
+<p style="font-size:200%">Thank you very much for filling in our questionnaire; if you
+get some more information about the status of your problem, please come back to the
+site and leave an update.</p>
+EOF
     if ($new_state eq 'confirmed' || (!$new_state && $problem->{state} eq 'confirmed')) {
         return <<EOF;
 <p style="font-size:200%">We're sorry to hear that. We have two suggestions: why not try
@@ -125,12 +134,13 @@ why not <a href="http://www.pledgebank.com/new">make and publicise a pledge</a>?
 </p>
 EOF
     } else {
-        my $out = <<EOF;
-<p>Thank you very much for filling in our questionnaire; glad to hear it's been fixed.</p>
+        $out = <<EOF;
+<p style="font-size:200%">Thank you very much for filling in our questionnaire; glad to hear it's been fixed.</p>
 EOF
-        $out .= CrossSell::display_advert($q, $problem->{email}, $problem->{name},
-            council => $problem->{council});
     }
+    $out .= CrossSell::display_advert($q, $problem->{email}, $problem->{name},
+        council => $problem->{council});
+    return $out;
 }
 
 sub display_questionnaire {
@@ -164,6 +174,7 @@ sub display_questionnaire {
     my %been_fixed = (
         yes => $input{been_fixed} eq 'Yes' ? ' checked' : '',
         no => $input{been_fixed} eq 'No' ? ' checked' : '',
+        unknown => $input{been_fixed} eq 'Unknown' ? ' checked' : '',
     );
     my %reported = (
         yes => $input{reported} eq 'Yes' ? ' checked' : '',
@@ -194,9 +205,9 @@ EOF
 <label for="been_fixed_yes">Yes</label>
 <input type="radio" name="been_fixed" id="been_fixed_no" value="No"$been_fixed{no}>
 <label for="been_fixed_no">No</label>
+<input type="radio" name="been_fixed" id="been_fixed_unknown" value="Unknown"$been_fixed{unknown}>
+<label for="been_fixed_unknown">Don&rsquo;t know</label>
 </p>
-<p><strong>Note:</strong> If you do not know the status of your problem, please just
-ignore this questionnaire.</p>
 EOF
     $out .= <<EOF unless $prev_questionnaire;
 <p>Have you ever reported a problem to a council before?</p>
