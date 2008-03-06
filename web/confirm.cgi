@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.35 2008-03-06 12:07:35 matthew Exp $
+# $Id: confirm.cgi,v 1.36 2008-03-06 14:00:09 matthew Exp $
 
 use strict;
 use Standard;
@@ -50,12 +50,12 @@ Page::do_fastcgi(\&main);
 
 sub confirm_update {
     my ($q, $id) = @_;
-    if (dbh()->selectrow_array('select email from abuse where lower(email)=?', {}, lc($email))) {
-        dbh()->do("update comment set state='hidden' where id=?", {}, $id);
-        return $q->p('Sorry, there has been an error confirming your update.');
-    } else {
+    #if (dbh()->selectrow_array('select email from abuse where lower(email)=?', {}, lc($email))) {
+    #    dbh()->do("update comment set state='hidden' where id=?", {}, $id);
+    #    return $q->p('Sorry, there has been an error confirming your update.');
+    #} else {
         dbh()->do("update comment set state='confirmed' where id=? and state='unconfirmed'", {}, $id);
-    }
+    #}
     my ($problem_id, $fixed, $email, $name) = dbh()->selectrow_array(
         "select problem_id, mark_fixed, email, name from comment where id=?", {}, $id);
     my $creator_fixed = 0;
