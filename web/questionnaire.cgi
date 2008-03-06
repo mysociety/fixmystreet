@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.21 2008-03-06 12:07:35 matthew Exp $
+# $Id: questionnaire.cgi,v 1.22 2008-03-06 12:40:28 matthew Exp $
 
 use strict;
 use Standard;
@@ -121,11 +121,11 @@ sub submit_questionnaire {
     my $out;
     if ($input{been_fixed} eq 'Unknown') {
         $out = <<EOF;
-<p style="font-size:200%">Thank you very much for filling in our questionnaire; if you
+<p>Thank you very much for filling in our questionnaire; if you
 get some more information about the status of your problem, please come back to the
 site and leave an update.</p>
 EOF
-    if ($new_state eq 'confirmed' || (!$new_state && $problem->{state} eq 'confirmed')) {
+    } elsif ($new_state eq 'confirmed' || (!$new_state && $problem->{state} eq 'confirmed')) {
         return <<EOF;
 <p style="font-size:200%">We're sorry to hear that. We have two suggestions: why not try
 <a href="http://www.writetothem.com/">writing direct to your councillor(s)</a>
