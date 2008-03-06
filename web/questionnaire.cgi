@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.19 2008-01-30 18:27:48 matthew Exp $
+# $Id: questionnaire.cgi,v 1.20 2008-03-06 11:52:33 matthew Exp $
 
 use strict;
 use Standard;
@@ -195,6 +195,8 @@ EOF
 <input type="radio" name="been_fixed" id="been_fixed_no" value="No"$been_fixed{no}>
 <label for="been_fixed_no">No</label>
 </p>
+<p><strong>Note:</strong> If you do not know the status of your problem, please just
+ignore this questionnaire.</p>
 EOF
     $out .= <<EOF unless $prev_questionnaire;
 <p>Have you ever reported a problem to a council before?</p>

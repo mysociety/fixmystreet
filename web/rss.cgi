@@ -6,14 +6,13 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: rss.cgi,v 1.19 2008-01-25 17:02:29 matthew Exp $
+# $Id: rss.cgi,v 1.20 2008-03-06 11:52:33 matthew Exp $
 
 use strict;
 use Standard;
 use URI::Escape;
 use mySociety::Alert;
 use mySociety::MaPit;
-use mySociety::Web;
 use mySociety::GeoUtil;
 use mySociety::Gaze;
 
