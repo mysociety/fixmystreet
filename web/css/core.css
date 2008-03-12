@@ -1,32 +1,7 @@
 /* Generics */
 
-body {
-    font-family: "Gill Sans", "Gill Sans MT", Helvetica, Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    /* color: #a9aeb0; */
-}
-
-h1 {
-    margin: 0;
-    font-size: 175%;
-}
-h2 {
-    font-size: 140%;
-}
-
-a:link {
-    color: #0000ff;
-}
-a:visited {
-    color: #000099;
-}
-a:hover, a:active {
-    color: #ff0000;
-}
-
 blockquote {
-    border-left: solid 4px #5e552b;
+    border-left: solid 4px #666666;
     padding-left: 0.5em;
 }
 blockquote h2, blockquote p {
@@ -48,7 +23,7 @@ label {
     width: 5em;
 }
 
-fieldset {
+#fieldset {
     border: none;
     padding: 0.5em;
 }
@@ -63,11 +38,6 @@ dt {
 }
 
 .v { display: none; }
-
-.a {
-    color: #000000;
-    background-color: #f3e5a5;
-}
 
 #error {
     text-align: center;
@@ -89,92 +59,6 @@ ul#error {
 }
 
 /* Site-wide layout */
-
-#header {
-    font-size: 200%;
-    font-weight: bold;
-    border-bottom: solid 2px #5e552b;
-    margin: 0;
-    padding: 5px 0.5em;
-    background-color: #e3d595;
-    color: #5e552b;
-}
-
-#my {
-    color: #4e451b;
-    background-color: #e3d595;
-}
-#beta {
-    color: #6e653b;
-    background-color: #e3d595;
-    font-size: 50%;
-    font-style: italic;
-}
-
-#header a:link, #header a:visited {
-    color: #5e552b;
-    background-color: #e3d595;
-    text-decoration: none;
-}
-#header a:active, #header a:hover {
-    text-decoration: underline;
-}
-
-#content {
-    width: 100%; /* Must specify a width or IE goes crazy wrong! */
-    position: relative;
-    margin: 0 auto;
-    max-width: 60em;
-}
-
-/* Can't put the margin in #content because of above IE craziness */
-#wrapper {
-    margin: 2em;
-}
-
-#navigation {
-    position: absolute;
-    top: 1em;
-    right: 1em;
-    padding: 0;
-    margin: 0;
-    list-style-type: none;
-}
-#navigation li {
-    display: inline;
-    padding: 0;
-    margin: 0;
-}
-
-#navigation a {
-    display: -moz-inline-box;
-    display: inline-block;
-    padding: 0.5em 1em;
-}
-#navigation a:link, #navigation a:visited {
-    color: #5e552b;
-}
-#navigation a:hover, #navigation a:active {
-    background-color: #5e552b;
-    color: #e3d595;
-}
-
-#nav_new a {
-    background-image: url("/i/new.png");
-    background-repeat: no-repeat;
-    background-position: 100% 0;
-}
-
-
-#footer {
-    clear: both;
-    text-align: right;
-    font-size: 83%;
-    border-top: solid 1px #5e552b;
-    display: table;
-    margin: 2em 0 1em auto;
-    padding: 2px 4px;
-}
 
 #advert_thin {
     width: 50%;
@@ -201,7 +85,6 @@ ul#error {
     font-size: 150%;
     margin: 1em auto;
     padding: 1em;
-    background-color: #e3d595;
     -moz-border-radius: 1em;
     border-radius: 1em;
 }
@@ -228,7 +111,6 @@ ul#error {
 #front_stats div {
     text-align: center;
     width: 5.5em;
-    background-color: #e3d595;
     -moz-border-radius: 0.5em;
     border-radius: 0.5em;
     float: left;
@@ -255,14 +137,14 @@ ul#error {
 
 /* Forms */
 
-fieldset div {
+#fieldset div {
     margin-top: 2px;
     clear: left;
 }
-fieldset div.checkbox {
+#fieldset div.checkbox {
     padding-left: 5.5em;
 }
-fieldset div.checkbox label, label.n {
+#fieldset div.checkbox label, label.n {
     float: none;
     text-align: left;
     padding-right: 0;
@@ -281,6 +163,7 @@ fieldset div.checkbox label, label.n {
     float: right;
     width: 510px;
     position: relative;
+    margin-left: 20px;
 }
 
 p#copyright {
@@ -302,12 +185,8 @@ p#copyright {
     position: absolute;
     width: 508px;
     height: 508px;
-    left: 0;
+    right: 0;
     top: 0;
-}
-
-#side {
-    margin-right: 530px;
 }
 
 #drag input {
@@ -351,13 +230,6 @@ p#copyright {
 #text_no_map {
     margin-top: 0;
 }
-
-/*
-ol#current img {
-    position: absolute;
-    border: none;
-}
-*/
 
 /* Problem pages */
 

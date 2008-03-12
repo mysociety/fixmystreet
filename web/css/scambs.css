@@ -1,0 +1,1110 @@
+/************************************************/
+/* scambs_web.css                  		*/
+/* Use for website and ActiveEdit		*/
+/************************************************/
+
+/***********************************************/
+/* HTML tag styles                             */
+/***********************************************/ 
+
+html {
+	margin: 0px 10px;
+	background: #E3E3CB;
+	border-left: #999 solid 1px;
+	border-right: #999 solid 1px;
+}
+/*added an extra pixel to make sure the background lines are seen in all browsers, especialy Opera*/
+
+body {
+	margin: 0px;
+	color: #333;
+	padding: 0px;
+	min-height: 100%;
+	background: #fff;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+* html body {
+	margin: 0px 10px;
+	border-left: #999 solid 1px;
+	border-right: #999 solid 1px;
+	height: 100%;
+}
+
+a {
+	color: #336699;
+	text-decoration: none;
+}
+
+a:link{
+	color: #336699;
+	text-decoration: none;
+}
+
+a:visited{
+	color: #336699;
+	text-decoration: none;
+}
+
+a:hover{
+	color: #666;
+	text-decoration: underline;
+}
+
+a:active, a:focus {
+	color: #fff;
+	background: #660000;
+}
+
+form {
+	margin: 0px;
+}
+
+h1 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	color: #003366;
+	text-transform: uppercase;
+	font-weight: bold;
+	letter-spacing: 0.1em;
+}
+
+h2{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	line-height: 1.2em;
+	font-weight: bold;
+	color: #006699;
+}
+
+h3{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	line-height: 1.1em;
+	color: #003366;
+}
+
+h4{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	line-height: 1em;
+	color: #000000;
+}
+
+ul li {
+	list-style-type: disc;
+	font-size: 1em;	
+}
+
+
+ol li {
+	list-style-type: decimal;
+}
+
+img {
+	border: 0px;
+}
+
+th {
+	color: #000000;
+	text-align: left;
+}
+
+/* Structured Pages Styles */
+
+#menupanel span.year {
+	font-size: 1.2em;
+}
+
+#centrepanel table.listings {
+	border: 1px solid #006699;
+	width: 100%;
+}
+
+#centrepanel th {
+	color: #003366;
+	text-align: left;
+	border-bottom: 1px solid #006699;
+}
+
+#centrepanel th.day {
+	width: 40px;
+}
+
+#centrepanel th.date {
+	width: 100px;
+}
+
+#centrepanel th.type {
+	width: 60px;
+}
+
+.lefttop
+{
+	text-align: left;
+	vertical-align:top;
+}
+
+/*** Search Result Styles***/
+
+table.searchresults td {
+	text-align: left;
+	vertical-align: top;
+}
+
+tr.resultrow td {
+	background: #eee;
+}
+
+tr.result td {
+	padding-bottom: 20px;
+}
+
+span.resultdate {
+	color: #006699;
+	font-style: italic;
+}
+
+/***********************************************/
+/* Layout Divs                                 */
+/***********************************************/
+/* Skip content links*/
+a.skip {
+	float: left;
+	position: absolute; left: -500em; width: 20em;
+}
+
+.test {
+	background: url(http://www.scambs.gov.uk/system/images/scambs/bgdots.gif) repeat-y 180px 0px;
+	min-height: 1000px;
+	height: 100%;
+	clear: both;
+	}
+	
+/*allcontent*/
+#content{
+	background: url(http://www.scambs.gov.uk/system/images/scambs/bgdots_right.gif) repeat-y top right;
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	clear: both;
+}
+
+#contentnodots{
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	clear: both;
+}
+
+/*top layer*/
+#top {
+	clear: both;
+	height: 1.7em;
+	padding: 0px 0px 0px 0px;
+	border-bottom: 1px solid #fff;
+	background: #013B63 url(http://www.scambs.gov.uk/system/images/scambs/topbck.jpg) repeat-y;
+}
+
+#topnav {
+	padding: 4px 10px 0px 15px;
+	font-family: "trebuchet MS", Helvetica, sans-serif;
+	font-weight: bold;
+	font-size: 0.7em;
+	text-align: right;
+	color: #fff;
+}
+
+#topnav a:link {
+	color: #fff;
+}
+
+#topnav a:visited {
+	color: #fff;
+}
+#topnav a:hover {
+	color: #CCCCCC;
+}
+
+#topnav a:active, #topnav a:focus {
+	color: #fff;
+}
+
+#topnav ul, #topnav li {
+	display: inline;
+	margin: 0px;
+	}
+
+/***********************************************/
+
+.floatleft {
+	float: left;
+}
+
+.floatright {
+	float: right;
+}
+
+.block {
+	display: block;
+}
+
+.clear {
+	clear: both;
+}
+
+/*use for hidden text */
+.hide {
+	display: none;
+}
+
+.uline {
+	text-decoration: underline;
+}
+
+.italic {
+	text-decoration: italic;
+}
+
+.dotted {
+background: url(http://www.scambs.gov.uk/system/images/scambs/bgdots.gif) repeat-x left center;
+height: 1px;
+}
+
+.dottedgreyback {
+background: #f7f7f7 url(http://www.scambs.gov.uk/system/images/scambs/bgdots.gif) repeat-x left center;
+height: 1px;
+}
+
+.greyback {
+background: #f7f7f7;
+}
+
+.dkgreyback {
+background: #efefef;
+}
+
+.blueback { 
+background: #e0f1ff;
+}
+
+.pinkback {
+background: #ffe0e6;
+}
+
+.yellowback {
+background: #ffffd0;
+}
+
+.blackback {
+background: #000000;
+}
+
+.purpleback {
+background: #813f62;
+}
+
+.greenback {
+background: #008000;
+}
+
+.redtext {
+color: red;
+}
+
+.whitetext {
+color: white;
+}
+
+.bluetext {
+color: #006699;
+}
+
+.centertext {
+text-align: center
+}
+
+.AZ  {
+	padding-right: 2px;
+	padding-left: 2px;
+	border: 1px solid gray; 
+	font-weight: bold;
+	float: left;
+	margin: 1px;
+	width: 10px;
+	text-align: center;
+}
+
+.AZselected  {
+	padding-right: 2px;
+	padding-left: 2px;
+	border: 1px solid gray; 
+	font-weight: bold;
+	float: left;
+	margin: 1px;
+	text-decoration: underline;
+}
+
+/*job vacancies styles*/
+#jobvacs div {
+	/*float: left;*/
+	/*width: 240px;*/
+	padding-right: 5px;
+}
+
+#jobvacs span {
+	/*float: left;*/
+}
+
+#jobvacs div div {
+	width: 100px;
+	font-weight: bold;
+	float: left;
+}
+
+#jobvacs br {
+	/*clear: left;*/
+}
+
+/***********************************************/
+
+/*masthead*/
+#masthead {
+	clear: both;
+	display: block;
+	height: 150px;
+	width: 100%;
+	border-bottom: 1px solid #fff;
+	background: #013B63;
+}
+
+#bannerimage {
+	height: 150px;
+	background: url(http://www.scambs.gov.uk/images/southcambridgeshiredistrictcouncil/headers/defaultBg.jpg) no-repeat top left;
+}
+
+#Housingbannerimage {
+	height: 150px;
+	background: url(http://www.scambs.gov.uk/images/southcambridgeshiredistrictcouncil/headers/housing.jpg) no-repeat top left;
+}
+
+#homeimage {
+	display: block;
+	float:left;
+	height: 150px;
+	width:420px;
+	margin: 0;
+}
+
+#homeimage img {
+	display: inline;
+	float:left;
+}
+
+#logo{
+	display: block;
+	float:right;
+	height: 150px;
+	margin: 0px;
+	border-left: 2px solid #fff;
+}
+
+/***********************************************/
+
+/*header layer*/
+#header {
+	clear: both;
+	display: block;
+	height: 1.9em;
+	background: #427499 url(http://www.scambs.gov.uk/system/images/scambs/headerbck.jpg) repeat-y;
+}
+
+/*Header navigation*/
+#headernav {
+	display: block;
+	float: left;
+	padding: 7px 10px 0px 15px;
+	font-family: "trebuchet MS", Helvetica, sans-serif;
+	font-weight: bold;
+	font-size: 0.8em;
+	text-align: left;
+	color: #fff;
+}
+
+#headernav a:link {
+	color: #fff;
+}
+
+#headernav a:visited {
+	color: #fff;
+}
+#headernav a:hover {
+	color: #CCCCCC;
+}
+
+#headernav a:active, #headernav a:focus {
+	color: #fff;
+}
+
+/*Search navigation*/
+#headersearch {
+	padding: 2px 10px 0px 5px;
+	display: block;
+	float: right;
+	width: 300px;
+	height: 27px;
+	font-family: "trebuchet MS", Helvetica, sans-serif;
+	font-weight: bold;
+	font-size: 0.7em;
+	text-align: right;
+	color: #fff;
+}
+
+#headersearch a:link {
+	color: #fff;
+}
+
+#headersearch a:visited {
+	color: #fff;
+}
+#headersearch a:hover {
+	color: #CCCCCC;
+}
+
+#headersearch a:active, #headersearch a:focus {
+	color: #fff;
+}
+
+.form {
+	padding: 0px 5px 0px 5px;
+}
+
+/***********************************************/
+
+
+/*Breadcrumb layer*/
+#breadcrumb {
+	clear: both;
+	width: 100%;
+	height: 1.9em;
+	margin: 0px;
+	background: url(http://www.scambs.gov.uk/system/images/scambs/breadcrumb.jpg) repeat-y;
+}
+
+/*Breadcrumb navigation*/
+#breadcrumbtext {
+	display: block;
+	float: left;
+	padding: 7px 10px 0px 15px;
+	font-family: "trebuchet MS", Helvetica, sans-serif;
+	font-weight: bold;
+	font-size: 0.7em;
+	text-align: left;
+	color: #006699;
+}
+
+#breadcrumbtext a:link {
+	color: #003366;
+}
+
+#breadcrumbtext a:visited {
+	color: #003366;
+}
+
+#breadcrumbtext a:hover {
+	color: #333;
+}
+
+#breadcrumbtext a:active, #breadcrumbtext a:focus {
+	color: #fff;
+}
+
+/*************************/
+/*Content layer*/
+/* mySociety commented out
+#maintext img {
+  	border: 1px solid #999;
+  	padding: 2px;
+	margin: 0px;
+}
+*/
+
+#maintext {
+	display: block;
+	margin: 20px 0px 0px 0px;
+	padding: 5px 15px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	line-height: 1.4em;
+	font-weight: normal;
+	color: #333;
+	height: 100%;
+}
+
+#maintext h1 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	color: #003366;
+	text-transform: uppercase;
+	font-weight: bold;
+	letter-spacing: 0.1em;
+}
+
+/*Use for subheadings*/
+#maintext h2{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	line-height: 1.2em;
+	font-weight: bold;
+	color: #006699;
+}
+
+/*Use for textheadings*/
+#maintext h3{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 0.9em;
+	line-height: 1em;
+	color: #003366;
+}
+
+/* mySociety commented out
+#maintext ul, #maintext ol {
+	margin: 0;
+	padding: 0px 0px 0px 15px;
+	border: none;
+}
+*/
+
+/* Style for unordered list*/
+/* mySociety commented out
+#maintext ul li {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	color: #333;
+	line-height: 1.4em;
+	padding: 0;
+	list-style-type: disc;
+}
+*/
+
+/* Style for ordered list*/
+/* mySociety commented out
+#maintext ol li {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	color: #333;
+	line-height: 1.4em;
+	padding: 0;
+	list-style-type: decimal;
+}
+*/
+
+#formtable img {
+	border: 0px;
+	padding: 5px;
+}
+
+#maintext ul.hlist, #maintext ul.hlist li {
+	display: block;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+#maintext ul.hlist li {
+	float: left;
+}
+
+#maintext ul.eventdate-year, #maintext ul.eventdate-month {
+	height: 30px;
+}
+
+#maintext ul.eventdate-year {
+	font-size: 1em;
+}
+
+#maintext ul.eventdate-year li, #maintext ul.eventdate-month li {
+	margin: 0 5px 0 0;
+}
+
+#maintext ul.eventdate-year li strong, #maintext ul.eventdate-month li strong {
+	margin: 0 0 0 5px;
+}
+
+#maintext ul.eventdate-year li a, #maintext ul.eventdate-month li a {
+	margin: 0 0 0 5px;
+}
+
+#maintext ul.eventdate-year li a strong, #maintext ul.eventdate-month li a strong {
+	margin: 0;
+}
+
+/***********************************************/
+
+/*Content Left Column layer*/
+#left{
+	float: left; 
+	width: 183px; 
+	height: 100%;
+	background: url(http://www.scambs.gov.uk/system/images/scambs/bgdots.gif) repeat-y right top;
+}
+
+#sectiontitle {
+	display: block;
+	height: 25px;
+	background: #003366;
+	margin-right: 1px;
+}
+
+#sectiontitle ul{
+	font-family: "trebuchet MS", Helvetica, sans-serif;
+	font-weight: normal;
+	font-size: 0.8em;
+	color: #fff;
+	padding: 5px 0px 0px 15px;
+	margin: 0px;
+}
+
+#sectiontitle ul li {
+	list-style-type: none;
+}
+
+#sectiontitle a:link {
+	color: #fff;
+	text-decoration: none;	
+}
+
+#sectiontitle a:visited {
+	color: #fff;
+	text-decoration: none;	
+}
+
+#sectiontitle a:hover {
+	color: #cccccc;
+	text-decoration: underline;	
+}
+
+#sectiontitle a:active, #sectiontitle a:focus {
+	color: #fff;
+}
+
+#leftnav ul {
+	margin: 0;
+	padding: 0;
+	border: none;
+	display: block;
+	clear: both;
+	background: url(http://www.scambs.gov.uk/system/images/scambs/bgdots.gif) repeat-x left bottom;
+}
+
+#leftnav ul li {
+	list-style-type: none;
+}
+
+/*First level headings*/
+#leftnav ul li.first{
+	padding: 6px 5px 10px 15px;
+	font-family: "trebuchet MS", Helvetica, sans-serif;
+	font-weight: bold;
+	font-size: 0.8em;
+	color: #003366;
+	background-image: url(http://www.scambs.gov.uk/system/images/scambs/menu1_arrow.gif);
+	background-repeat: no-repeat;
+}
+
+#leftnav ul li a:link {
+	color: #003366;
+}
+
+#leftnav ul li a:visited {
+	color: #003366;
+}
+
+#leftnav ul li a:hover {
+	color: #666;
+}
+
+#leftnav ul li a:active, #leftnav ul li a:focus {
+	color: #fff;
+}
+
+/*Second level headings*/
+#leftnav ul li ul.second{
+	font-family: "trebuchet MS", Helvetica, sans-serif;
+	font-weight: normal;
+	line-height: 1.1em;
+	text-align: left;
+	margin: 0;
+	padding: 0;
+	border: none;
+	color: #663300;
+	background: url(http://www.scambs.gov.uk/system/images/scambs/blank.gif) repeat-x left bottom;
+}
+
+#leftnav ul li ul li
+{
+	padding-right: 0px;
+	padding-left: 15px;
+	background-image: url(http://www.scambs.gov.uk/system/images/scambs/menu2_arrow.gif);
+	padding-bottom: 0px;
+	padding-top: 0px;
+	background-repeat: no-repeat;
+}
+
+#leftnav ul li ul a:link {
+	color: #663300;
+}
+
+#leftnav ul li ul a:visited {
+	color: #663300;
+}
+
+#leftnav ul li ul a:hover {
+	color: #666;
+	text-decoration: underline;
+}
+
+#leftnav ul li ul a:active, #leftnav ul li ul a:focus {
+	color: #fff;
+}
+
+/***********************************************/
+/*Content Middle Column layer*/
+
+#middle{
+	padding: 0px 0px 30px 0px;
+	/* margin: 0px 235px 0px 182px; mySociety changed */
+	margin: 0 0 0 182px;
+	height: 100%;
+	background: #fff;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 0.7em;
+}
+
+#middle .padding {
+	padding: 0px 10px 10px 10px;
+}
+
+#middletop h1, #middleleft h1, #middleright h1 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	color: #003366;
+	text-transform: uppercase;
+	font-weight: bold;
+	letter-spacing: 0.1em;
+	font-size: 1em;
+}
+
+#middle a:link {
+	color: #006699;
+	text-decoration: none;
+}
+
+#middle a:visited {
+	color: #006699;
+	text-decoration: none;
+}
+
+#middle a:hover {
+	color: #666;
+	text-decoration: underline;
+}
+
+#middle a:active, #middle a:focus {
+	color: #fff;
+}
+
+/*************************/
+/*Content Middle Top layer*/
+#middletop {
+	padding-top: 22px;
+	margin: 0px;
+	height: 1px;
+}
+
+#middletop p {
+	color: #000000;
+	line-height: 1.2em;
+}
+
+#mtfeature1, #mtfeature2, #mtfeature3, #mtfeature4, .mtfeature {
+	display: block;
+}
+
+#mtimage1, #mtimage2, #mtimage3, #mtimage4, .mtimage {
+	display:block;
+	float: left;
+}
+
+#mtimage1 img, #mtimage2 img, #mtimage3, #mtimage4 img, .mtimage img{
+  	border: 1px solid #999;
+  	padding: 2px;
+	margin: 0px 10px 0px 0px;
+}
+
+#mttext1, #mttext2, #mttext3, #mttext4, .mttext {
+	display: block;
+}
+
+
+#middletop h2{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	line-height: 1em;
+	font-weight:bold;
+	color: #003366;
+	margin: 0px;
+}
+
+
+/*************************/
+/*Content Middle left layer*/
+
+#middleleft a:link, #middleright a:link, #middlebottom a:link {
+	text-decoration: none;
+}
+
+#middleleft {
+	width: 49%;
+	float: left;
+	padding: 10px;
+	margin: 0px;
+	margin-right: -10px;
+	height: 1%;
+}
+
+#middleleft ul {
+	margin: 0;
+	padding: 0px 0px 0px 15px;
+	border: none;
+	clear: both;
+}
+
+#middleleft ul li{
+	color: #000000;
+	line-height: 1.5em;
+	padding: 0px 10px 0px 0px;
+	list-style-image: url(http://www.scambs.gov.uk/system/images/scambs/arrow2.gif) ;
+}
+
+
+/*************************/
+/*Content Middle right layer*/
+
+#middleright {
+	margin-left: 49%;
+	background: url(http://www.scambs.gov.uk/system/images/scambs/bgdots.gif) repeat-y left top;
+	padding: 10px;
+	height: 1%;
+}
+
+#middleright ul {
+	margin: 0;
+	padding: 0;
+	border: none;
+}
+
+#middleright ul li{
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+
+
+/*************************/
+/*Content Middle bottom layer*/
+
+#middlebottom, .middlebottom {
+	margin-top: 10px;
+	padding: 2px;
+	background: url(http://www.scambs.gov.uk/system/images/scambs/bgdots.gif) repeat-x;
+	height: 1%;
+}
+
+/***********************************************/
+/*Content Right Column layer*/
+
+#right{
+	float: right;
+	width: 235px;
+	background: #fff url(http://www.scambs.gov.uk/system/images/scambs/bgdots.gif) repeat-y left top;
+	height: 100%;
+	margin: 0px;
+}
+
+.rightcontent{
+	padding: 0px 3px 10px 8px;
+}
+
+.rightcontent h1 { 
+	color: #663300;
+	font-weight: bold;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 0.7em;
+}
+
+#right .title {
+	font-family: "trebuchet MS", Helvetica, sans-serif;
+	font-size: 1em;
+	color: #663300;
+	text-transform: uppercase;
+	font-weight: bold;
+	letter-spacing: 0.1em;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 0.7em;
+	line-height: 0.8em;
+}
+
+.rightcontent ul {
+	margin: 0px;
+	padding: 0px 0px 0px 17px;
+	border: none;
+}
+
+.rightcontent ul li {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 0.7em;
+	line-height: 1.5em;
+	padding: 0px;
+	list-style-image: url(http://www.scambs.gov.uk/system/images/scambs/arrow2.gif) ;
+}
+
+/**Right Content 1**/
+#rightcontent1, #address, div.address {
+	padding: 5px 3px 10px 8px;
+	background: url(http://www.scambs.gov.uk/system/images/scambs/bgdots.gif) repeat-x left bottom;
+}
+
+#rightcontent1 h1, #address h1, div.address h1 { 
+	font-family: "trebuchet MS", Helvetica, sans-serif;
+	font-size: 1em;
+	color: #663300;
+	text-transform: uppercase;
+	font-weight: bold;
+	letter-spacing: 0.1em;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 0.7em;
+	line-height: 0.8em;
+}
+
+#rightcontent1 h2, #address h2, div.address h2{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 0.7em;
+	color: #333;
+	margin: 0px;
+	padding: 0px;
+	line-height: 0.8em;
+}
+
+
+#rightcontent1 p, #address p, div.address p {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 0.7em;
+	color: #000000;
+	line-height: 1.2em;
+}
+
+
+/**Right Content 2**/
+#rightcontent2 {
+	padding: 0px 3px 10px 8px;
+	background: url(http://www.scambs.gov.uk/system/images/scambs/bgdots.gif) repeat-x left bottom;
+}
+#rightcontent2 h1{ font-family: "trebuchet MS", Helvetica, sans-serif;
+	color: #663300;
+	font-weight: bold;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 0.7em;
+	line-height: 1em;
+}
+
+#rightcontent2 ul, #rightcontent3 ul {
+	margin: 0px;
+	padding: 0px 0px 0px 17px;
+	border: none;
+}
+
+#rightcontent2 ul li, #rightcontent3 ul li {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 0.7em;
+	line-height: 1.5em;
+	padding: 0px;
+	list-style-image: url(http://www.scambs.gov.uk/system/images/scambs/arrow2.gif) ;
+}
+
+/**Right Content 3**/
+#rightcontent3 {
+	padding: 0px 3px 10px 8px;
+}
+#rightcontent3 h1{ 
+	color: #663300;
+	font-weight: bold;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 0.7em;
+}
+
+#bottominfo {
+	margin: -40px 235px 0px 200px;
+	display: block;
+	clear: both;
+	height: 30px;
+	text-align: right;
+	font-size: 0.7em;
+	padding: 5px;
+}
+
+#bottominfo img {
+	width: 15px;
+	height: 15px;
+	margin-left: 5px;
+}
+
+#bottominfo ul {
+	margin: 0px;
+	padding: 2px;
+}
+
+#bottominfo ul li {
+	list-style-type: none;
+	display: inline;
+}
+
+/***********************************************/
+/*Footer layer*/
+#footer{
+	display: block;
+	width: 100%;
+	height: 30px;
+	background: #427499 url(http://www.scambs.gov.uk/system/images/scambs/headerbck.jpg) no-repeat;
+}
+
+#footertext{
+	padding: 5px 0px 0px 15px;
+	font-family: "trebuchet MS", Helvetica, sans-serif;
+	font-weight: bold;
+	font-size: 0.7em;
+	text-align: left;
+	color: #fff;
+}
+
+#footertext a:link {
+	color: #fff;
+}
+
+#footertext a:visited {
+	color: #fff;
+}
+#footertext a:hover {
+	color: #CCCCCC;
+}
+
+#footertext a:active, #footertext a:focus {
+	color: #fff;
+}
+
+#centrepanel img {
+	border: 0px;
+	padding: 0px;
+}
+
+/***********************************************/
+
+.aligncentre{
+	text-align: center; 
+}

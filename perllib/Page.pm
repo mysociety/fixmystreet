@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.79 2008-02-03 19:23:51 matthew Exp $
+# $Id: Page.pm,v 1.80 2008-03-12 17:06:56 matthew Exp $
 #
 
 package Page;
@@ -38,6 +38,7 @@ sub do_fastcgi {
     try {
         my $W = new mySociety::WatchUpdate();
         while (my $q = new mySociety::CGIFast()) {
+            microsite($q);
             &$func($q);
             dbh()->rollback() if $mySociety::DBHandle::conf_ok;
             $W->exit_if_changed();
@@ -62,6 +63,18 @@ sub do_fastcgi {
     exit(0);
 }
 
+=item microsite Q
+
+Work out what site we're on, template appropriately
+
+=cut
+sub microsite {
+    my $q = shift;
+    my $host = $ENV{HTTP_HOST} || '';
+    $q->{site} = 'fixmystreet';
+    $q->{site} = 'scambs' if $host =~ /scambs/;
+}
+
 =item header Q [PARAM VALUE ...]
 
 Return HTML for the top of the page, given PARAMs (TITLE is required).
@@ -79,35 +92,37 @@ sub header ($%) {
     $title .= ' - ' if $title;
     $title = ent($title);
 
-    print $q->header(-charset=>'utf-8');
-    my $html = <<EOF;
+    my $home = !$title && $ENV{SCRIPT_NAME} eq '/index.cgi' && !$ENV{QUERY_STRING};
+
+    print $q->header(-charset => 'utf-8');
+
+    my $html;
+    if ($q->{site} eq 'scambs') {
+        open FP, '../templates/website/scambs-header';
+        $html = join('', <FP>);
+        close FP;
+        $html =~ s#<!-- TITLE -->#$title#;
+    } else {
+        $html = <<EOF;
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en-gb">
     <head>
-EOF
-# Causes onLoad never to fire in IE...
-# <!--[if lt IE 7.]>
-# <script defer type="text/javascript" src="/pngfix.js"></script>
-# <![endif]-->
-    $html .= <<EOF;
         <script type="text/javascript" src="/yui/utilities.js"></script>
         <script type="text/javascript" src="/js.js"></script>
         <title>${title}FixMyStreet</title>
-        <style type="text/css">\@import url("/css.css");</style>
-EOF
-    if ($params{rss}) {
-        $html .= '<link rel="alternate" type="application/rss+xml" title="'
-            . $params{rss}[0] . '" href="' . $params{rss}[1] . '">';
-    }
-    $html .= <<EOF;
+        <style type="text/css">\@import url("/css/core.css"); \@import url("/css/main.css");</style>
+        <!-- RSS -->
     </head>
     <body>
 EOF
-    my $home = !$title && $ENV{SCRIPT_NAME} eq '/index.cgi' && !$ENV{QUERY_STRING};
-    $html .= $home ? '<h1 id="header">' : '<div id="header"><a href="/">';
-    $html .= 'Fix<span id="my">My</span>Street <span id="beta">' . _('Beta') . '</span>';
-    $html .= $home ? '</h1>' : '</a></div>';
-    $html .= '<div id="wrapper"><div id="content">';
+        $html .= $home ? '<h1 id="header">' : '<div id="header"><a href="/">';
+        $html .= 'Fix<span id="my">My</span>Street <span id="beta">' . _('Beta') . '</span>';
+        $html .= $home ? '</h1>' : '</a></div>';
+        $html .= '<div id="wrapper"><div id="content">';
+    }
+    if ($params{rss}) {
+        $html =~ s#<!-- RSS -->#<link rel="alternate" type="application/rss+xml" title="'{$params{rss}[0]}" href="{$params{rss}[1]}">#;
+    }
     if (mySociety::Config::get('STAGING_SITE')) {
         $html .= '<p id="error">This is a developer site; things might break at any time, and councils are not sent emails (they\'d get annoyed!).</p>';
     }
@@ -119,6 +134,14 @@ EOF
 =cut
 sub footer {
     my ($q, $extra) = @_;
+
+    if ($q->{site} eq 'scambs') {
+        open FP, '../templates/website/scambs-footer';
+        my $html = join('', <FP>);
+        close FP;
+        return $html;
+    }
+
     my $pc = $q->param('pc') || '';
     $pc = "?pc=" . ent($pc) if $pc;
     $extra = $q->{scratch} if $q->{scratch}; # Overrides
@@ -129,7 +152,7 @@ sub footer {
 <ul id="navigation">
 <li><a href="/">Report a problem</a></li>
 <li><a href="/reports">All reports</a></li>
-<li id="nav_new"><a href="/alert$pc">Local alerts</a></li>
+<li><a href="/alert$pc">Local alerts</a></li>
 <li><a href="/faq">Help</a></li>
 <li><a href="/contact">Contact</a></li>
 </ul>
@@ -169,7 +192,7 @@ sub display_map {
     $params{pins} ||= '';
     $params{pre} ||= '';
     $params{post} ||= '';
-    my $px = defined($params{px}) ? $params{px}-254 : 0;
+    my $px = defined($params{px}) ? 254-$params{px} : 0;
     my $py = defined($params{py}) ? 254-$params{py} : 0;
     my $x = int($params{x})<=0 ? 0 : $params{x};
     my $y = int($params{y})<=0 ? 0 : $params{y};
@@ -216,7 +239,7 @@ var drag_x = $px; var drag_y = $py;
 <div id="map_box">
 $params{pre}
     <div id="map"><div id="drag">
-        $img_type alt="NW map tile" id="t2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0px;">$img_type alt="NE map tile" id="t2.3" name="tile_$tr" src="$tr_src" style="top:0px; left:$imgw;"><br>$img_type alt="SW map tile" id="t3.2" name="tile_$bl" src="$bl_src" style="top:$imgh; left:0px;">$img_type alt="SE map tile" id="t3.3" name="tile_$br" src="$br_src" style="top:$imgh; left:$imgw;">
+        $img_type alt="NW map tile" id="t2.2" name="tile_$tl" src="$tl_src" style="top:0px; right:$imgw;">$img_type alt="NE map tile" id="t2.3" name="tile_$tr" src="$tr_src" style="top:0px; right:0;"><br>$img_type alt="SW map tile" id="t3.2" name="tile_$bl" src="$bl_src" style="top:$imgh; right:$imgw;">$img_type alt="SE map tile" id="t3.3" name="tile_$br" src="$br_src" style="top:$imgh; right:0;">
         $params{pins}
     </div>
 EOF

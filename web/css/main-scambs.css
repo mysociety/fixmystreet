@@ -1,0 +1,19 @@
+blockquote {
+    border-left: solid 4px #013B63;
+}
+
+.a {
+    color: #000000;
+    background-color: #427499;
+}
+
+#postcodeForm, #front_stats div {
+    background-color: #427499;
+    color: #ffffff;
+}
+
+#front_stats div {
+    padding: 0.5em 0;
+    width: 7em;
+}
+

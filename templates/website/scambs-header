@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en-gb">
+<head>
+<title><!-- TITLE -->Envirocrime - South Cambridgeshire District Council</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<script type="text/javascript" src="/yui/utilities.js"></script>
+<script type="text/javascript" src="/js.js"></script>
+<style type="text/css" media="screen, projection">
+@import "/css/core.css";
+@import "/css/main-scambs.css";
+@import "/css/scambs.css";
+</style>
+<link rel="stylesheet" type="text/css" href="http://www.scambs.gov.uk/system/css/print.css" media="print">
+<script type="text/javascript" src="http://www.scambs.gov.uk/system/js/external.js"></script>
+<!-- RSS -->
+</head>
+<body>
+
+<div class="test">
+
+<div id="top">
+    <div id="topnav">
+        <ul style="float: right;"><li style="float: left; padding-top: 2px;"><a href="#start" title="Accessibility: bypass navigation bar" accesskey="s">Skip to Content</a>&nbsp;|&nbsp;</li><li style="float: left; padding-top: 2px;"><a href="http://www.scambs.gov.uk/accesskeys.htm" title="Accessibility" accesskey="0">Accessibility</a>&nbsp;|&nbsp;</li><li style="float: left;"><a target="_blank" style="float: left;" href="http://spoxy4.insipio.com/generator/en/www.scambs.gov.uk/default.htm" class="ISI_REMOVE" accesskey="5" rel="external"><img style="float: left;" src="http://www.scambs.gov.uk/system/images/speakericon.gif" alt="Listen to this Page" height="20" width="23"><span style="padding: 2px 0pt 0pt 2px; display: block;">&nbsp;Listen to page</span><span class="hide"> (This link will open in a new window)</span></a></li></ul>
+    </div>
+</div>
+
+<div id="masthead">
+    <div id="bannerimage">
+        <div id="logo"><a href="http://www.scambs.gov.uk/default.htm"><img src="http://www.scambs.gov.uk/system/images/scambs/banner_right.gif" alt="South Cambridgeshire District Council Logo" height="150" width="327"></a></div>
+    </div>
+</div>
+
+<div id="header">
+    <div id="headernav">
+        <a href="http://www.scambs.gov.uk/" title="South Cambridgeshire District Council Home Page" accesskey="1">Home</a> | 
+        <a href="http://search2.openobjects.com/kbroker/cambridgeshire/scambs/a2z/search.a2z?letter=a&amp;action=browseEntries&amp;servlet=search.lsim&amp;provider=6" title="A to Z listing of council services" accesskey="3">A-Z</a> | 
+        <a href="http://www.scambs.gov.uk/siteindex/default.htm?flat=1" title="Site map">Site Map</a> | 
+        <a href="http://www.scambs.gov.uk/form_builder/default.asp?mode=10&amp;sid=33&amp;pid=64" title="Feedback" accesskey="4">Contact us</a> | 
+        <a href="http://www.scambs.gov.uk/events/" title="Listing of current events">Events</a> | 
+        <a href="http://www.scambs.gov.uk/pressreleases/" title="News releases">News releases</a>
+    </div>
+    <form id="search" action="http://search2.openobjects.com/kbroker/cambridgeshire/scambs/search/search.lsim" method="get">
+        <noscript><div class="floatright"><input type="submit" value="Go" /></div></noscript>
+        <div id="headersearch">
+            <img src="http://www.scambs.gov.uk/system/images/scambs/search.gif" alt="Search the South Cambridgeshire website" height="21" width="32"><a href="http://search2.openobjects.com/kbroker/cambridgeshire/scambs/search/asearch.jsp" title="Search site using advance functions" accesskey="2">Advanced Search</a> | <label class="n" for="q">Search: <input size="12" class="form" name="qt" id="q" value="enter text " type="text"></label><input value="R" name="order" type="hidden">
+            <input name="sr" value="0" type="hidden">
+            <input name="nh" value="10" type="hidden">
+            <input name="cs" value="iso-8859-1" type="hidden">
+            <input name="sc" value="scambs" type="hidden">
+            <input name="sm" value="0" type="hidden">
+            <input name="sf" value="" type="hidden">
+            <input name="mt" value="1" type="hidden">
+            <input name="ha" value="1115" type="hidden">
+        </div>
+    </form>
+</div>
+
+<div id="breadcrumb">
+    <div id="breadcrumbtext">
+        <a title="Breadcrumb link: Home" href="http://www.scambs.gov.uk/">Home</a> &gt; <a href="/">Envirocrime</a>
+    </div>
+</div>
+
+<div id="content">
+    <a name="start" id="start"></a>
+    <div id="left">
+        <div id="leftnav">
+	<ul>
+	<li class="first"><a href="/">Report a problem</a>
+	<li class="first">About
+	<li class="first">Recent successes
+	<li class="first">Name and shame
+	<li class="first">Contact
+	<li class="first">Help
+	</ul>
+	</div>
+    </div>
+    <!-- <div id="right"></div> --> <!-- OPTIONAL -->
+    <div id="middle"><div id="maintext">
