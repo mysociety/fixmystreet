@@ -140,7 +140,7 @@ function update_tiles(dx, dy, force) {
     drag_y += dy;
 
     var drag = document.getElementById('drag');
-    drag.style.right = drag_x + 'px';
+    drag.style.left = drag_x + 'px';
     drag.style.top = drag_y + 'px';
 
     var horizontal = Math.floor(old_drag_x/tilewidth) - Math.floor(drag_x/tilewidth);
@@ -182,7 +182,7 @@ function urls_loaded(o) {
             }
             img = cloneNode();
             img.style.top = ((ii-2)*tileheight) + 'px';
-            img.style.right = ((3-jj)*tilewidth) + 'px';
+            img.style.left = ((jj-2)*tilewidth) + 'px';
             img.name = [ 'tile_', xx, '.', yy ].join('')
             img.id = id;
             if (browser) {

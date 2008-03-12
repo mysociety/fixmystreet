@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.80 2008-03-12 17:06:56 matthew Exp $
+# $Id: Page.pm,v 1.81 2008-03-12 17:26:21 matthew Exp $
 #
 
 package Page;
@@ -192,7 +192,7 @@ sub display_map {
     $params{pins} ||= '';
     $params{pre} ||= '';
     $params{post} ||= '';
-    my $px = defined($params{px}) ? 254-$params{px} : 0;
+    my $px = defined($params{px}) ? $params{px}-254 : 0;
     my $py = defined($params{py}) ? 254-$params{py} : 0;
     my $x = int($params{x})<=0 ? 0 : $params{x};
     my $y = int($params{y})<=0 ? 0 : $params{y};
@@ -239,7 +239,7 @@ var drag_x = $px; var drag_y = $py;
 <div id="map_box">
 $params{pre}
     <div id="map"><div id="drag">
-        $img_type alt="NW map tile" id="t2.2" name="tile_$tl" src="$tl_src" style="top:0px; right:$imgw;">$img_type alt="NE map tile" id="t2.3" name="tile_$tr" src="$tr_src" style="top:0px; right:0;"><br>$img_type alt="SW map tile" id="t3.2" name="tile_$bl" src="$bl_src" style="top:$imgh; right:$imgw;">$img_type alt="SE map tile" id="t3.3" name="tile_$br" src="$br_src" style="top:$imgh; right:0;">
+        $img_type alt="NW map tile" id="t2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0;">$img_type alt="NE map tile" id="t2.3" name="tile_$tr" src="$tr_src" style="top:0px; left:$imgw;"><br>$img_type alt="SW map tile" id="t3.2" name="tile_$bl" src="$bl_src" style="top:$imgh; left:0;">$img_type alt="SE map tile" id="t3.3" name="tile_$br" src="$br_src" style="top:$imgh; left:$imgw;">
         $params{pins}
     </div>
 EOF
