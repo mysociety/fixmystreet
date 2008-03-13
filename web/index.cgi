@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.179 2008-03-12 17:06:56 matthew Exp $
+# $Id: index.cgi,v 1.180 2008-03-13 18:40:33 matthew Exp $
 
 use strict;
 use Standard;
@@ -744,7 +744,7 @@ EOF
 };
     $out .= <<EOF;
 <form method="post" action="./">
-<fieldset><legend>Update details</legend>
+<div id="fieldset"><legend>Update details</legend>
 <input type="hidden" name="submit_update" value="1">
 <input type="hidden" name="id" value="$input_h{id}">
 <div><label for="form_name">Name:</label>
@@ -755,7 +755,7 @@ EOF
 <textarea name="update" id="form_update" rows="7" cols="30">$input_h{update}</textarea></div>
 $fixedline
 <div class="checkbox"><input type="submit" value="Post"></div>
-</fieldset>
+</div>
 </form>
 EOF
     $out .= Page::display_map_end(0);
