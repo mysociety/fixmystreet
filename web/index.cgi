@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.180 2008-03-13 18:40:33 matthew Exp $
+# $Id: index.cgi,v 1.181 2008-03-14 09:55:44 matthew Exp $
 
 use strict;
 use Standard;
@@ -408,6 +408,12 @@ sub display_form {
     my $all_councils = mySociety::MaPit::get_voting_areas_by_location(
         { easting => $easting, northing => $northing },
         'polygon', $mySociety::VotingArea::council_parent_types);
+    if ($q->{site} eq 'scambs') {
+        #delete $all_councils->{2218};
+        #@categories = ('Abandoned vehicles', 'Discarded hypodermic needles',
+        #'Dog fouling', 'Flytipping', 'Graffiti', 'Lighting (e.g. security lights)',
+        #'Litter', 'Neighbourhood noise');
+    }
     $all_councils = [ keys %$all_councils ];
     return display_location($q, 'That spot does not appear to be covered by a council - if it is past the shoreline, for example, please specify the closest point on land.') unless @$all_councils;
     my $areas_info = mySociety::MaPit::get_voting_areas_info($all_councils);
@@ -423,11 +429,6 @@ sub display_form {
         $council_ok{$_->{area_id}} = 1;
         next if $_->{category} eq 'Other';
         push @categories, $_->{category};
-    }
-    if ($q->{site} eq 'scambs') {
-        @categories = ('Abandoned vehicles', 'Discarded hypodermic needles',
-        'Dog fouling', 'Flytipping', 'Graffiti', 'Lighting (e.g. security lights)',
-        'Litter', 'Neighbourhood noise');
     }
     if (@categories) {
         @categories = ('-- Pick a category --', @categories, 'Other');
@@ -743,8 +744,7 @@ EOF
 <label for="form_fixed">This problem has been fixed</label></div>
 };
     $out .= <<EOF;
-<form method="post" action="./">
-<div id="fieldset"><legend>Update details</legend>
+<form method="post" action="./" id="fieldset">
 <input type="hidden" name="submit_update" value="1">
 <input type="hidden" name="id" value="$input_h{id}">
 <div><label for="form_name">Name:</label>
@@ -755,7 +755,6 @@ EOF
 <textarea name="update" id="form_update" rows="7" cols="30">$input_h{update}</textarea></div>
 $fixedline
 <div class="checkbox"><input type="submit" value="Post"></div>
-</div>
 </form>
 EOF
     $out .= Page::display_map_end(0);
