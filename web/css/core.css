@@ -235,7 +235,7 @@ p#copyright {
 /* Problem pages */
 
 #fixed, #unknown {
-    margin: 1em 530px 1em 0;
+    margin: 0 530px 1em 0;
     padding: 5px;
     text-align: center;
     position: relative;
