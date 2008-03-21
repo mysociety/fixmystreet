@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.23 2008-03-21 13:11:22 matthew Exp $
+# $Id: questionnaire.cgi,v 1.24 2008-03-21 14:11:14 matthew Exp $
 
 use strict;
 use Standard;
@@ -127,7 +127,7 @@ site and leave an update.</p>
 EOF
     } elsif ($new_state eq 'confirmed' || (!$new_state && $problem->{state} eq 'confirmed')) {
         return <<EOF;
-<p style="font-size:200%">We're sorry to hear that. We have two suggestions: why not try
+<p style="font-size:150%">We're sorry to hear that. We have two suggestions: why not try
 <a href="http://www.writetothem.com/">writing direct to your councillor(s)</a>
 or, if it's a problem that could be fixed by local people working together,
 why not <a href="http://www.pledgebank.com/new">make and publicise a pledge</a>?
@@ -135,7 +135,7 @@ why not <a href="http://www.pledgebank.com/new">make and publicise a pledge</a>?
 EOF
     } else {
         $out = <<EOF;
-<p style="font-size:200%">Thank you very much for filling in our questionnaire; glad to hear it's been fixed.</p>
+<p style="font-size:150%">Thank you very much for filling in our questionnaire; glad to hear it's been fixed.</p>
 EOF
     }
     $out .= CrossSell::display_advert($q, $problem->{email}, $problem->{name},

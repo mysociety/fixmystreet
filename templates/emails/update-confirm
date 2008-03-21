@@ -6,9 +6,12 @@ Please click on the link below to confirm the update you just wrote:
 
 <?=$values['url']?>
 
+If you can't click the link, please copy and paste it to the
+address bar of your web browser.
+
 Your update reads:
 
 <?=$values['update']?>
 
--- 
+Yours,
 The FixMyStreet team
