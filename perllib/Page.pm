@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.81 2008-03-12 17:26:21 matthew Exp $
+# $Id: Page.pm,v 1.82 2008-03-21 14:31:39 matthew Exp $
 #
 
 package Page;
@@ -344,10 +344,12 @@ sub send_email {
     my $template = "$thing-confirm";
     $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/$template");
     my $to = $name ? [[$email, $name]] : $email;
+    my $sender = mySociety::Config::get('CONTACT_EMAIL');
+    $sender =~ s/team/fms-DO-NOT-REPLY/;
     mySociety::EvEl::send({
         _template_ => $template,
         _parameters_ => \%h,
-        From => [mySociety::Config::get('CONTACT_EMAIL'), 'FixMyStreet'],
+        From => [ $sender, 'FixMyStreet'],
         To => $to,
     }, $email);
     my $out;

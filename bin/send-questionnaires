@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-questionnaires,v 1.6 2007-10-22 18:00:04 matthew Exp $
+# $Id: send-questionnaires,v 1.7 2008-03-21 14:31:39 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -77,11 +77,13 @@ foreach my $row (@$unsent) {
     my $token = mySociety::AuthToken::store('questionnaire', $id);
     $h{url} = mySociety::Config::get('BASE_URL') . '/Q/' . $token;
 
+    my $sender = mySociety::Config::get('CONTACT_EMAIL');
+    $sender =~ s/team/fms-DO-NOT-REPLY/;
     my $email = mySociety::Email::construct_email({
         _template_ => $template,
         _parameters_ => \%h,
         To => [ [ $row->{email}, $row->{name} ] ],
-        From => [ mySociety::Config::get('CONTACT_EMAIL'), 'FixMyStreet' ],
+        From => [ $sender, 'FixMyStreet' ],
         'Message-ID' => sprintf('<ques-%s-%s@mysociety.org>', time(), unpack('h*', random_bytes(5))),
     });
 
@@ -91,7 +93,7 @@ foreach my $row (@$unsent) {
     if ($nomail) {
         $result = -1;
     } else {
-        $result = mySociety::EmailUtil::send_email($email, mySociety::Config::get('CONTACT_EMAIL'), $row->{email});
+        $result = mySociety::EmailUtil::send_email($email, $sender, $row->{email});
     }
     if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
         print "  ...success\n" if $verbose;
