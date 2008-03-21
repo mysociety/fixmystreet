@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.22 2008-03-06 12:40:28 matthew Exp $
+# $Id: questionnaire.cgi,v 1.23 2008-03-21 13:11:22 matthew Exp $
 
 use strict;
 use Standard;
@@ -222,7 +222,7 @@ EOF
 <p>If you wish to leave a public update on the problem, please enter it here
 (please note it will not be sent to the council). For example, what was
 your experience of getting the problem fixed?</p>
-<p><textarea name="update" style="width:90%" rows="7" cols="30">$input_h{update}</textarea></p>
+<p><textarea name="update" style="max-width:90%" rows="7" cols="30">$input_h{update}</textarea></p>
 
 <div id="another_qn">
 <p>Would you like to receive another questionnaire in 4 weeks, reminding you to check the status?</p>
