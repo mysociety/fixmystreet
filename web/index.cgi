@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.181 2008-03-14 09:55:44 matthew Exp $
+# $Id: index.cgi,v 1.182 2008-03-26 23:10:53 matthew Exp $
 
 use strict;
 use Standard;
@@ -468,10 +468,10 @@ If this is not the correct location, simply click on the map again. ';
     }
 
     if ($details eq 'all') {
-        $out .= '<p>All the details you provide here will be sent to <strong>'
+        $out .= '<p>All the information you provide here will be sent to <strong>'
             . join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @$all_councils)
-            . '</strong>. We show the subject and details of the problem on
-            the site, along with your name if you give us permission.';
+            . '</strong>. On the site, we will show the subject and details of the problem,
+            plus your name if you give us permission.';
         $out .= '<input type="hidden" name="council" value="' . join(',',@$all_councils) . '">';
     } elsif ($details eq 'some') {
         my $e = mySociety::Config::get('CONTACT_EMAIL');
@@ -482,10 +482,10 @@ If this is not the correct location, simply click on the map again. ';
         }
         my $n = @missing;
         my $list = join(' or ', map { $areas_info->{$_}->{name} } @missing);
-        $out .= '<p>All the details you provide here will be sent to <strong>'
+        $out .= '<p>All the information you provide here will be sent to <strong>'
             . join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @councils)
-            . '</strong>. We show the subject and details of the problem on
-            the site, along with your name if you give us permission.';
+            . '</strong>. On the site, we will show the subject and details of the problem,
+            plus your name if you give us permission.';
         $out .= ' We do <strong>not</strong> yet have details for the other council';
         $out .= ($n>1) ? 's that cover' : ' that covers';
         $out .= " this location. You can help us by finding a contact email address for local
