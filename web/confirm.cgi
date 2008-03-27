@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.36 2008-03-06 14:00:09 matthew Exp $
+# $Id: confirm.cgi,v 1.37 2008-03-27 01:02:23 matthew Exp $
 
 use strict;
 use Standard;
@@ -90,7 +90,8 @@ sub confirm_problem {
 
     my ($council, $email) = dbh()->selectrow_array("select council, email from problem where id=?", {}, $id);
 
-    if (dbh()->selectrow_array('select email from abuse where lower(email)=?', {}, lc($email))) {
+    (my $domain = $email) =~ s/^.*\@//;
+    if (dbh()->selectrow_array('select email from abuse where lower(email)=? or lower(email)=?', {}, lc($email), lc($domain))) {
         dbh()->do("update problem set state='hidden', lastupdate=ms_current_timestamp() where id=?", {}, $id);
         return $q->p('Sorry, there has been an error confirming your problem.');
     } else {
