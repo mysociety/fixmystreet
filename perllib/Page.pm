@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.82 2008-03-21 14:31:39 matthew Exp $
+# $Id: Page.pm,v 1.83 2008-03-28 16:36:47 matthew Exp $
 #
 
 package Page;
@@ -72,7 +72,7 @@ sub microsite {
     my $q = shift;
     my $host = $ENV{HTTP_HOST} || '';
     $q->{site} = 'fixmystreet';
-    $q->{site} = 'scambs' if $host =~ /scambs/;
+    $q->{site} = 'scambs' if $host =~ /scambs/ || $q->param('scamb');
 }
 
 =item header Q [PARAM VALUE ...]
@@ -454,7 +454,8 @@ sub display_problem_text {
 sub display_problem_updates {
     my $id = shift;
     my $updates = select_all(
-        "select id, name, extract(epoch from created) as created, text, mark_fixed, mark_open
+        "select id, name, extract(epoch from created) as created, text,
+         mark_fixed, mark_open, (photo is not null) as has_photo
          from comment where problem_id = ? and state='confirmed'
          order by created", $id);
     my $out = '';
@@ -462,7 +463,7 @@ sub display_problem_updates {
         $out .= '<div id="updates">';
         $out .= '<h2>Updates</h2>';
         foreach my $row (@$updates) {
-            $out .= "<div><a name=\"update_$row->{id}\"></a><em>";
+            $out .= "<div><p><a name=\"update_$row->{id}\"></a><em>";
             if ($row->{name}) {
                 $out .= 'Posted by ' . ent($row->{name});
             } else {
@@ -471,8 +472,12 @@ sub display_problem_updates {
             $out .= " at " . prettify_epoch($row->{created});
             $out .= ', marked fixed' if ($row->{mark_fixed});
             $out .= ', reopened' if ($row->{mark_open});
-            $out .= '</em>';
-            $out .= '<br>' . ent($row->{text}) . '</div>';
+            $out .= '</em></p>';
+            $out .= '<p>' . ent($row->{text}) . '</p>';
+            if ($row->{has_photo}) {
+                $out .= '<p align="center"><img src="/photo?tn=1;c=' . $row->{id} . '"></p>';
+            }
+            $out .= '</div>';
         }
         $out .= '</div>';
     }

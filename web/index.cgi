@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.183 2008-03-28 15:11:48 matthew Exp $
+# $Id: index.cgi,v 1.184 2008-03-28 16:36:48 matthew Exp $
 
 use strict;
 use Standard;
@@ -205,7 +205,7 @@ sub submit_update {
 sub workaround_pg_bytea {
     my ($st, $img_idx, @elements) = @_;
     my $s = dbh()->prepare($st);
-    for ($i=1; $i<=@elements; $i++) {
+    for (my $i=1; $i<=@elements; $i++) {
         if ($i == $img_idx) {
             $s->bind_param($i, $elements[$i-1], { pg_type => DBD::Pg::PG_BYTEA });
         } else {
@@ -687,7 +687,7 @@ sub display_problem {
     # Get all information from database
     return display_location($q, 'Unknown problem ID') if $input{id} =~ /\D/;
     my $problem = dbh()->selectrow_hashref(
-        "select id, easting, northing, council, category, title, detail, photo,
+        "select id, easting, northing, council, category, title, detail, (photo is not null) as photo,
              used_map, name, anonymous, extract(epoch from confirmed) as time,
              state, extract(epoch from whensent-confirmed) as whensent,
              extract(epoch from ms_current_timestamp()-lastupdate) as duration
