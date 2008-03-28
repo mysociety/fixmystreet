@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.37 2007-08-24 00:24:14 matthew Exp $
+-- $Id: schema.sql,v 1.38 2008-03-28 15:11:47 matthew Exp $
 --
 
 -- secret
@@ -222,6 +222,7 @@ create table comment (
     website text,
     created timestamp not null default ms_current_timestamp(),
     text text not null,                     -- as entered by comment author
+    photo bytea,
     state text not null check (
         state = 'unconfirmed'
         or state = 'confirmed'

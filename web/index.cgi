@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.182 2008-03-26 23:10:53 matthew Exp $
+# $Id: index.cgi,v 1.183 2008-03-28 15:11:48 matthew Exp $
 
 use strict;
 use Standard;
@@ -158,6 +158,13 @@ sub submit_update {
     my @vars = qw(id name email update fixed);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
+
+    my $fh = $q->upload('photo');
+    if ($fh) {
+        my $err = check_photo($q, $fh);
+        push @errors, $err if $err;
+    }
+
     push(@errors, 'Please enter a message') unless $input{update} =~ /\S/;
     $input{name} = undef unless $input{name} =~ /\S/;
     if ($input{email} !~ /\S/) {
@@ -165,14 +172,26 @@ sub submit_update {
     } elsif (!mySociety::EmailUtil::is_valid_email($input{email})) {
         push(@errors, 'Please enter a valid email');
     }
+
+    my $image;
+    if ($fh) {
+        try {
+            $image = process_photo($fh);
+        } catch Error::Simple with {
+            my $e = shift;
+            push(@errors, "That image doesn't appear to have uploaded correctly ($e), please try again.");
+        };
+    }
+
     return display_problem($q, @errors) if (@errors);
 
     my $id = dbh()->selectrow_array("select nextval('comment_id_seq');");
-    dbh()->do("insert into comment
-        (id, problem_id, name, email, website, text, state, mark_fixed)
-        values (?, ?, ?, ?, ?, ?, 'unconfirmed', ?)", {},
-        $id, $input{id}, $input{name}, $input{email}, '', $input{update},
-        $input{fixed}?'t':'f');
+    workaround_pg_bytea("insert into comment
+        (id, problem_id, name, email, website, text, state, mark_fixed, photo)
+        values (?, ?, ?, ?, '', ?, 'unconfirmed', ?, ?)", 7,
+        $id, $input{id}, $input{name}, $input{email}, $input{update},
+        $input{fixed} ? 't' : 'f', $image);
+
     my %h = ();
     $h{update} = $input{update};
     $h{name} = $input{name} ? $input{name} : "Anonymous";
@@ -181,6 +200,19 @@ sub submit_update {
 
     my $out = Page::send_email($input{email}, $input{name}, 'update', %h);
     return $out;
+}
+
+sub workaround_pg_bytea {
+    my ($st, $img_idx, @elements) = @_;
+    my $s = dbh()->prepare($st);
+    for ($i=1; $i<=@elements; $i++) {
+        if ($i == $img_idx) {
+            $s->bind_param($i, $elements[$i-1], { pg_type => DBD::Pg::PG_BYTEA });
+        } else {
+            $s->bind_param($i, $elements[$i-1]);
+        }
+    }
+    $s->execute();
 }
 
 sub submit_problem {
@@ -195,12 +227,8 @@ sub submit_problem {
 
     my $fh = $q->upload('photo');
     if ($fh) {
-        my $ct = $q->uploadInfo($fh)->{'Content-Type'};
-        my $cd = $q->uploadInfo($fh)->{'Content-Disposition'};
-        # Must delete photo param, otherwise display functions get confused
-        $q->delete('photo');
-        push (@errors, 'Please upload a JPEG image only') unless
-            ($ct eq 'image/jpeg' || $ct eq 'image/pjpeg');
+        my $err = check_photo($q, $fh);
+        push @errors, $err if $err;
     }
 
     push(@errors, 'No council selected') unless ($input{council} && $input{council} =~ /^(?:-1|[\d,]+(?:\|[\d,]+)?)$/);
@@ -276,15 +304,7 @@ sub submit_problem {
     my $image;
     if ($fh) {
         try {
-            $image = Image::Magick->new;
-            my $err = $image->Read(file => \*$fh); # Mustn't be stringified
-            close $fh;
-            throw Error::Simple("read failed: $err") if "$err";
-            $err = $image->Scale(geometry => "250x250>");
-            throw Error::Simple("resize failed: $err") if "$err";
-            my @blobs = $image->ImageToBlob();
-            undef $image;
-            $image = $blobs[0];
+            $image = process_photo($fh);
         } catch Error::Simple with {
             my $e = shift;
             push(@errors, "That image doesn't appear to have uploaded correctly ($e), please try again.");
@@ -315,28 +335,15 @@ sub submit_problem {
         }
     } else {
         $id = dbh()->selectrow_array("select nextval('problem_id_seq');");
-        # This is horrid
-        my $s = dbh()->prepare("insert into problem
+        workaround_pg_bytea("insert into problem
             (id, postcode, easting, northing, title, detail, name,
              email, phone, photo, state, council, used_map, anonymous, category, areas)
             values
-            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?, ?, ?, ?)");
-        $s->bind_param(1, $id);
-        $s->bind_param(2, $input{pc});
-        $s->bind_param(3, $input{easting});
-        $s->bind_param(4, $input{northing});
-        $s->bind_param(5, $input{title});
-        $s->bind_param(6, $input{detail});
-        $s->bind_param(7, $input{name});
-        $s->bind_param(8, $input{email});
-        $s->bind_param(9, $input{phone});
-        $s->bind_param(10, $image, { pg_type => DBD::Pg::PG_BYTEA });
-        $s->bind_param(11, $input{council});
-        $s->bind_param(12, $used_map);
-        $s->bind_param(13, $input{anonymous} ? 'f': 't');
-        $s->bind_param(14, $input{category});
-        $s->bind_param(15, $areas);
-        $s->execute();
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?, ?, ?, ?)", 10,
+            $id, $input{pc}, $input{easting}, $input{northing}, $input{title},
+            $input{detail}, $input{name}, $input{email}, $input{phone}, $image,
+            $input{council}, $used_map, $input{anonymous} ? 'f': 't', $input{category},
+            $areas);
         my %h = ();
         $h{title} = $input{title};
         $h{detail} = $input{detail};
@@ -754,6 +761,8 @@ EOF
 <div><label for="form_update">Update:</label>
 <textarea name="update" id="form_update" rows="7" cols="30">$input_h{update}</textarea></div>
 $fixedline
+<div><label for="form_photo">Photo:</label>
+<input type="file" name="photo" id="form_photo"></div>
 <div class="checkbox"><input type="submit" value="Post"></div>
 </form>
 EOF
@@ -823,5 +832,30 @@ sub map_pins {
         $pins .= Page::display_pin($q, $px, $py, 'green', $count_fixed++);
     }
     return ($pins, $current_map, $current, $fixed, $dist);
+}
+
+sub check_photo {
+    my ($q, $fh) = @_;
+    my $ct = $q->uploadInfo($fh)->{'Content-Type'};
+    my $cd = $q->uploadInfo($fh)->{'Content-Disposition'};
+    # Must delete photo param, otherwise display functions get confused
+    $q->delete('photo');
+    return 'Please upload a JPEG image only' unless
+        ($ct eq 'image/jpeg' || $ct eq 'image/pjpeg');
+    return '';
+}
+
+sub process_photo {
+    my $fh = shift;
+    my $photo = Image::Magick->new;
+    my $err = $photo->Read(file => \*$fh); # Mustn't be stringified
+    close $fh;
+    throw Error::Simple("read failed: $err") if "$err";
+    $err = $photo->Scale(geometry => "250x250>");
+    throw Error::Simple("resize failed: $err") if "$err";
+    my @blobs = $photo->ImageToBlob();
+    undef $photo;
+    $photo = $blobs[0];
+    return $photo;
 }
 
