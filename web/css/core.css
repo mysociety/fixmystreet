@@ -357,3 +357,54 @@ p#copyright {
     #content { max-width: none; }
     #side { margin-right: 0; }
 }
+
+/* File upload */
+.progressContainer {
+    margin: 5px;
+    padding: 4px;
+    width: 357px;
+    border: solid 1px #E8E8E8;
+    background-color: #F7F7F7;
+    overflow: hidden;
+}
+.red {   border: solid 1px #B50000; background-color: #FFEBEB; }
+.green { border: solid 1px #DDF0DD; background-color: #EBFFEB; }
+.blue {  border: solid 1px #CEE2F2; background-color: #F0F5FF; }
+
+.progressName {
+    font-size: 8pt;
+    font-weight: bold;
+    color: #555555;
+    width: 323px;
+    height: 14px;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.progressBarInProgress, .progressBarComplete, .progressBarError {
+    font-size: 0px;
+    width: 0%;
+    height: 2px;
+    background-color: blue;
+    margin-top: 2px;
+}
+.progressBarComplete {
+    width: 100%;
+    background-color: green;
+    visibility: hidden;
+}
+.progressBarError {
+    width: 100%;
+    background-color: red;
+    visibility: hidden;
+}
+.progressBarStatus {
+    margin-top: 2px;
+    width: 337px;
+    font-size: 7pt;
+    font-family: Verdana;
+    text-align: left;
+    white-space: nowrap;
+}
+
+

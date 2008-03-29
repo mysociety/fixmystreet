@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.184 2008-03-28 16:36:48 matthew Exp $
+# $Id: index.cgi,v 1.185 2008-03-29 03:03:35 matthew Exp $
 
 use strict;
 use Standard;
@@ -155,7 +155,7 @@ EOF
 
 sub submit_update {
     my $q = shift;
-    my @vars = qw(id name email update fixed);
+    my @vars = qw(id name email update fixed upload_fileid);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
 
@@ -181,6 +181,12 @@ sub submit_update {
             my $e = shift;
             push(@errors, "That image doesn't appear to have uploaded correctly ($e), please try again.");
         };
+    }
+
+    if ($input{upload_fileid}) {
+        open FP, mySociety::Config::get('UPLOAD_CACHE') . $input{upload_fileid};
+        $image = join('', <FP>);
+        close FP;
     }
 
     return display_problem($q, @errors) if (@errors);
@@ -217,7 +223,7 @@ sub workaround_pg_bytea {
 
 sub submit_problem {
     my $q = shift;
-    my @vars = qw(council title detail name email phone pc easting northing skipped anonymous category flickr);
+    my @vars = qw(council title detail name email phone pc easting northing skipped anonymous category flickr upload_fileid);
     my %input = map { $_ => scalar $q->param($_) } @vars;
     for (qw(title detail)) {
         $input{$_} = lc $input{$_} if $input{$_} !~ /[a-z]/;
@@ -311,6 +317,12 @@ sub submit_problem {
         };
     }
 
+    if ($input{upload_fileid}) {
+        open FP, mySociety::Config::get('UPLOAD_CACHE') . $input{upload_fileid};
+        $image = join('', <FP>);
+        close FP;
+    }
+
     return display_form($q, @errors) if (@errors);
 
     delete $input{council} if $input{council} eq '-1';
@@ -359,7 +371,7 @@ sub submit_problem {
 sub display_form {
     my ($q, @errors) = @_;
     my ($pin_x, $pin_y, $pin_tile_x, $pin_tile_y) = (0,0,0,0);
-    my @vars = qw(title detail name email phone pc easting northing x y skipped council anonymous flickr);
+    my @vars = qw(title detail name email phone pc easting northing x y skipped council anonymous flickr upload_fileid);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
     my @ps = $q->param;
@@ -546,8 +558,16 @@ EOF
         }
     } else {
         $out .= <<EOF;
-<div><label for="form_photo">Photo:</label>
-<input type="file" name="photo" id="form_photo"></div>
+<div id="fileupload_flashUI" style="display:none">
+<label for="form_photo">Photo:</label>
+<input type="text" id="txtfilename" disabled="true" style="background-color: #ffffff;">
+<input type="button" value="Browse..." onclick="document.getElementById('txtfilename').value=''; swfu.cancelUpload(); swfu.selectFile();">
+<input type="hidden" name="upload_fileid" id="upload_fileid" value="$input_h{upload_fileid}">
+</div>
+<div id="fileupload_normalUI">
+<label for="form_photo">Photo:</label>
+<input type="file" name="photo" id="form_photo">
+</div>
 EOF
     }
     $out .= <<EOF;
@@ -576,6 +596,11 @@ directly using their own website.
 </div>
 EOF
     $out .= Page::display_map_end(1);
+    $out .= <<EOF;
+<script type="text/javascript">
+swfu = new SWFUpload(swfu_settings);
+</script>
+EOF
     return $out;
 }
 
@@ -678,7 +703,7 @@ EOF
 sub display_problem {
     my ($q, @errors) = @_;
 
-    my @vars = qw(id name email update fixed x y);
+    my @vars = qw(id name email update fixed upload_fileid x y);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
     $input{x} ||= 0; $input{x} += 0;
@@ -761,12 +786,25 @@ EOF
 <div><label for="form_update">Update:</label>
 <textarea name="update" id="form_update" rows="7" cols="30">$input_h{update}</textarea></div>
 $fixedline
-<div><label for="form_photo">Photo:</label>
-<input type="file" name="photo" id="form_photo"></div>
-<div class="checkbox"><input type="submit" value="Post"></div>
+<div id="fileupload_flashUI" style="display:none">
+<label for="form_photo">Photo:</label>
+<input type="text" id="txtfilename" disabled="true" style="background-color: #ffffff;">
+<input type="button" value="Browse..." onclick="document.getElementById('txtfilename').value=''; swfu.cancelUpload(); swfu.selectFile();">
+<input type="hidden" name="upload_fileid" id="upload_fileid" value="$input_h{upload_fileid}">
+</div>
+<div id="fileupload_normalUI">
+<label for="form_photo">Photo:</label>
+<input type="file" name="photo" id="form_photo">
+</div>
+<div class="checkbox"><input type="submit" id="update_post" value="Post"></div>
 </form>
 EOF
     $out .= Page::display_map_end(0);
+    $out .= <<EOF;
+<script type="text/javascript">
+swfu = new SWFUpload(swfu_settings);
+</script>
+EOF
 
     my %params = (
         rss => [ 'Updates to this problem, FixMyStreet', "/rss/$input_h{id}" ],
