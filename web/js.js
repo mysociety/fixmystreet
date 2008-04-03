@@ -115,6 +115,7 @@ YAHOO.util.Event.onContentReady('email_alert_box', function() {
 });
 
 /* File upload */
+/*
 function doSubmit(e) {
     e = e || window.event;
     if (e.stopPropagation) e.stopPropagation();
@@ -153,8 +154,7 @@ var swfu_settings = {
     file_queued_handler : function(obj) {
         document.getElementById('txtfilename').value = obj.name;
     },
-//file_queue_error_handler : fileQueueError,
-    // file_dialog_complete_handler : fileDialogComplete,
+    file_queue_error_handler : fileQueueError,
 //upload_start_handler : uploadStartEventHandler,
     upload_progress_handler : function(obj, bytesLoaded, bytesTotal) {
         var percent = Math.ceil((bytesLoaded / bytesTotal) * 100);
@@ -189,7 +189,7 @@ var swfu_settings = {
 	}
         
     },
-//upload_error_handler : uploadError,
+    upload_error_handler : uploadError,
 
     swfupload_element_id : "fileupload_flashUI",
     degraded_element_id : "fileupload_normalUI",
@@ -198,6 +198,7 @@ var swfu_settings = {
         progress_target : 'fileupload_flashUI'
     }
 };
+*/
 
 // I love the global
 var tile_x = 0;

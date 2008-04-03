@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.85 2008-04-03 16:18:37 matthew Exp $
+# $Id: Page.pm,v 1.86 2008-04-03 17:06:20 matthew Exp $
 #
 
 package Page;
@@ -108,9 +108,12 @@ sub header ($%) {
 <html lang="en-gb">
     <head>
         <script type="text/javascript" src="/yui/utilities.js"></script>
+<!-- 
         <script type="text/javascript" src="/jslib/swfupload/swfupload.js"></script>
         <script type="text/javascript" src="/jslib/swfupload/FileProgress.js"></script>
         <script type="text/javascript" src="/jslib/swfupload/swfupload.graceful_degradation.js"></script>
+        <script type="text/javascript" src="/jslib/swfupload/swfupload_handlers.js"></script>
+-->
         <script type="text/javascript" src="/js.js"></script>
         <title>${title}FixMyStreet</title>
         <style type="text/css">\@import url("/css/core.css"); \@import url("/css/main.css");</style>
@@ -139,6 +142,7 @@ sub footer {
     my ($q, %params) = @_;
     my $extra = $params{extra};
     my $js = $params{js} || '';
+    $js = ''; # Don't use fileupload JS at the moment
 
     if ($q->{site} eq 'scambs') {
         open FP, '../templates/website/scambs-footer';
