@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.186 2008-04-03 16:18:37 matthew Exp $
+# $Id: index.cgi,v 1.187 2008-04-03 17:28:43 matthew Exp $
 
 use strict;
 use Standard;
@@ -230,6 +230,7 @@ sub submit_problem {
     for (qw(title detail)) {
         $input{$_} = lc $input{$_} if $input{$_} !~ /[a-z]/;
         $input{$_} = ucfirst $input{$_};
+	$input{$_} =~ s/\b(dog\s*)shit\b/$1poo/ig;
     }
     my @errors;
 
