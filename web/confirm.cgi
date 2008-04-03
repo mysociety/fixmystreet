@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.37 2008-03-27 01:02:23 matthew Exp $
+# $Id: confirm.cgi,v 1.38 2008-04-03 16:18:37 matthew Exp $
 
 use strict;
 use Standard;
@@ -44,7 +44,7 @@ EOF
 
     print Page::header($q, title=>_('Confirmation'));
     print $out;
-    print Page::footer($q, $extra);
+    print Page::footer($q, extra => $extra);
 }
 Page::do_fastcgi(\&main);
 

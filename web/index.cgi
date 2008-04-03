@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.185 2008-03-29 03:03:35 matthew Exp $
+# $Id: index.cgi,v 1.186 2008-04-03 16:18:37 matthew Exp $
 
 use strict;
 use Standard;
@@ -53,7 +53,7 @@ sub main {
         ($out) = submit_update($q);
     } elsif ($q->param('submit_map')) {
         $params{title} = 'Reporting a problem';
-        ($out) = display_form($q);
+        ($out, %params) = display_form($q);
     } elsif ($q->param('id')) {
         ($out, %params) = display_problem($q);
         $params{title} .= ' - Viewing a problem';
@@ -65,7 +65,9 @@ sub main {
     }
     print Page::header($q, %params);
     print $out;
-    print Page::footer($q);
+    my %footerparams;
+    $footerparams{js} = $params{js} if $params{js};
+    print Page::footer($q, %footerparams);
 }
 Page::do_fastcgi(\&main);
 
@@ -596,12 +598,14 @@ directly using their own website.
 </div>
 EOF
     $out .= Page::display_map_end(1);
-    $out .= <<EOF;
-<script type="text/javascript">
+    my %params = (
+        js => <<EOF
+<script type="text/javascript" defer>
 swfu = new SWFUpload(swfu_settings);
 </script>
 EOF
-    return $out;
+    );
+    return ($out, %params);
 }
 
 sub display_location {
@@ -800,14 +804,15 @@ $fixedline
 </form>
 EOF
     $out .= Page::display_map_end(0);
-    $out .= <<EOF;
-<script type="text/javascript">
+    my $js = <<EOF;
+<script type="text/javascript" defer>
 swfu = new SWFUpload(swfu_settings);
 </script>
 EOF
 
     my %params = (
         rss => [ 'Updates to this problem, FixMyStreet', "/rss/$input_h{id}" ],
+        js => $js,
         title => $problem->{title}
     );
     return ($out, %params);

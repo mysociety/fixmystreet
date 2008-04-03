@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.84 2008-03-29 03:03:35 matthew Exp $
+# $Id: Page.pm,v 1.85 2008-04-03 16:18:37 matthew Exp $
 #
 
 package Page;
@@ -57,7 +57,7 @@ sub do_fastcgi {
                 q(<hr>),
                 q(<p>The text of the error was:</p>),
                 qq(<blockquote class="errortext">$msg</blockquote>),
-                q(</body></html);
+                q(</body></html>);
     };
     dbh()->rollback() if $mySociety::DBHandle::conf_ok;
     exit(0);
@@ -83,7 +83,7 @@ Return HTML for the top of the page, given PARAMs (TITLE is required).
 sub header ($%) {
     my ($q, %params) = @_;
 
-    my %permitted_params = map { $_ => 1 } qw(title rss);
+    my %permitted_params = map { $_ => 1 } qw(title rss js);
     foreach (keys %params) {
         croak "bad parameter '$_'" if (!exists($permitted_params{$_}));
     }
@@ -136,7 +136,9 @@ EOF
 
 =cut
 sub footer {
-    my ($q, $extra) = @_;
+    my ($q, %params) = @_;
+    my $extra = $params{extra};
+    my $js = $params{js} || '';
 
     if ($q->{site} eq 'scambs') {
         open FP, '../templates/website/scambs-footer';
@@ -165,6 +167,8 @@ using some <a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/bci">cl
 href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>. Formerly <a href="/faq#nfi">Neighbourhood Fix-It</a>.</p>
 
 $track
+
+$js
 
 </body>
 </html>
