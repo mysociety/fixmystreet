@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.187 2008-04-03 17:28:43 matthew Exp $
+# $Id: index.cgi,v 1.188 2008-04-08 11:33:43 matthew Exp $
 
 use strict;
 use Standard;
@@ -781,7 +781,7 @@ EOF
 <label for="form_fixed">This problem has been fixed</label></div>
 };
     $out .= <<EOF;
-<form method="post" action="./" id="fieldset">
+<form method="post" action="./" id="fieldset" enctype="multipart/form-data">
 <input type="hidden" name="submit_update" value="1">
 <input type="hidden" name="id" value="$input_h{id}">
 <div><label for="form_name">Name:</label>
