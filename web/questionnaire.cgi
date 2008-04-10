@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.25 2008-04-10 19:07:39 matthew Exp $
+# $Id: questionnaire.cgi,v 1.26 2008-04-10 19:19:10 matthew Exp $
 
 use strict;
 use Standard;
@@ -203,7 +203,7 @@ sub display_questionnaire {
     );
     $out .= <<EOF;
 <h1>Questionnaire</h1>
-<form method="post" action="/questionnaire" id="questionnaire">
+<form method="post" action="/questionnaire" id="questionnaire" enctype="multipart/form-data">
 <input type="hidden" name="token" value="$input_h{token}">
 
 <p>The details of your problem are available on the right hand side of this page.
