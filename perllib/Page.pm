@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.87 2008-04-10 11:06:14 matthew Exp $
+# $Id: Page.pm,v 1.88 2008-04-10 19:07:38 matthew Exp $
 #
 
 package Page;
@@ -16,6 +16,7 @@ use Carp;
 use mySociety::CGIFast qw(-no_xhtml);
 use Error qw(:try);
 use File::Slurp;
+use Image::Magick;
 use LWP::Simple;
 use Digest::MD5 qw(md5_hex);
 use POSIX qw(strftime);
@@ -643,6 +644,44 @@ sub recent_photos {
             '" alt="' . $title . '" title="' . $title . '"></a>';
     }
     return $out;
+}
+
+sub check_photo {
+    my ($q, $fh) = @_;
+    my $ct = $q->uploadInfo($fh)->{'Content-Type'};
+    my $cd = $q->uploadInfo($fh)->{'Content-Disposition'};
+    # Must delete photo param, otherwise display functions get confused
+    $q->delete('photo');
+    return 'Please upload a JPEG image only' unless
+        ($ct eq 'image/jpeg' || $ct eq 'image/pjpeg');
+    return '';
+}
+
+sub process_photo {
+    my $fh = shift;
+    my $photo = Image::Magick->new;
+    my $err = $photo->Read(file => \*$fh); # Mustn't be stringified
+    close $fh;
+    throw Error::Simple("read failed: $err") if "$err";
+    $err = $photo->Scale(geometry => "250x250>");
+    throw Error::Simple("resize failed: $err") if "$err";
+    my @blobs = $photo->ImageToBlob();
+    undef $photo;
+    $photo = $blobs[0];
+    return $photo;
+}
+
+sub workaround_pg_bytea {
+    my ($st, $img_idx, @elements) = @_;
+    my $s = dbh()->prepare($st);
+    for (my $i=1; $i<=@elements; $i++) {
+        if ($i == $img_idx) {
+            $s->bind_param($i, $elements[$i-1], { pg_type => DBD::Pg::PG_BYTEA });
+        } else {
+            $s->bind_param($i, $elements[$i-1]);
+        }
+    }
+    $s->execute();
 }
 
 1;

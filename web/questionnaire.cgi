@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.24 2008-03-21 14:11:14 matthew Exp $
+# $Id: questionnaire.cgi,v 1.25 2008-04-10 19:07:39 matthew Exp $
 
 use strict;
 use Standard;
@@ -77,6 +77,22 @@ sub submit_questionnaire {
         if $input{been_fixed} eq 'No' && $problem->{state} eq 'fixed' && !$input{update};
     return display_questionnaire($q, @errors) if @errors;
 
+    my $fh = $q->upload('photo');
+    my $image;
+    if ($fh) {
+        my $err = Page::check_photo($q, $fh);
+        push @errors, $err if $err;
+        try {
+            $image = Page::process_photo($fh) unless $err;
+        } catch Error::Simple with {
+            my $e = shift;
+            push(@errors, "That image doesn't appear to have uploaded correctly ($e), please try again.");
+        };
+    }
+    push @errors, 'Please provide some text as well as a photo'
+        if $image && !$input{update};
+    return display_questionnaire($q, @errors) if @errors;
+
     my $new_state = '';
     $new_state = 'fixed' if $input{been_fixed} eq 'Yes' && $problem->{state} eq 'confirmed';
     $new_state = 'confirmed' if $input{been_fixed} eq 'No' && $problem->{state} eq 'fixed';
@@ -105,19 +121,20 @@ sub submit_questionnaire {
     # Record an update if they've given one, or if there's a state change
     my $name = $problem->{anonymous} ? undef : $problem->{name};
     my $update = $input{update} ? $input{update} : 'Questionnaire filled in by problem reporter';
-    dbh()->do("insert into comment
-        (problem_id, name, email, website, text, state, mark_fixed, mark_open)
-        values (?, ?, ?, ?, ?, 'confirmed', ?, ?)", {},
-        $problem->{id}, $name, $problem->{email}, '', $update,
-        $new_state eq 'fixed' ? 't' : 'f', $new_state eq 'confirmed' ? 't' : 'f'
+    Page::workaround_pg_bytea("insert into comment
+        (problem_id, name, email, website, text, state, mark_fixed, mark_open, photo)
+        values (?, ?, ?, '', ?, 'confirmed', ?, ?, ?)", 7,
+        $problem->{id}, $name, $problem->{email}, $update,
+        $new_state eq 'fixed' ? 't' : 'f', $new_state eq 'confirmed' ? 't' : 'f',
+        $image
     )
         if $new_state || $input{update};
 
     # If they've said they want another questionnaire, mark as such
     dbh()->do("update problem set send_questionnaire = 't' where id=?", {}, $problem->{id})
         if ($input{been_fixed} eq 'No' || $input{been_fixed} eq 'Unknown') && $input{another} eq 'Yes';
-
     dbh()->commit();
+
     my $out;
     if ($input{been_fixed} eq 'Unknown') {
         $out = <<EOF;
@@ -223,6 +240,17 @@ EOF
 (please note it will not be sent to the council). For example, what was
 your experience of getting the problem fixed?</p>
 <p><textarea name="update" style="max-width:90%" rows="7" cols="30">$input_h{update}</textarea></p>
+
+<div id="fileupload_flashUI" style="display:none">
+<label for="form_photo">Photo:</label>
+<input type="text" id="txtfilename" disabled="true" style="background-color: #ffffff;">
+<input type="button" value="Browse..." onclick="document.getElementById('txtfilename').value=''; swfu.cancelUpload(); swfu.selectFile();">
+<input type="hidden" name="upload_fileid" id="upload_fileid" value="">
+</div>
+<div id="fileupload_normalUI">
+<label for="form_photo">Photo:</label>
+<input type="file" name="photo" id="form_photo">
+</div>
 
 <div id="another_qn">
 <p>Would you like to receive another questionnaire in 4 weeks, reminding you to check the status?</p>

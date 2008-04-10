@@ -6,14 +6,13 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.188 2008-04-08 11:33:43 matthew Exp $
+# $Id: index.cgi,v 1.189 2008-04-10 19:07:39 matthew Exp $
 
 use strict;
 use Standard;
 
 use Error qw(:try);
 use File::Slurp;
-use Image::Magick;
 use LWP::Simple;
 use RABX;
 use CGI::Carp;
@@ -163,7 +162,7 @@ sub submit_update {
 
     my $fh = $q->upload('photo');
     if ($fh) {
-        my $err = check_photo($q, $fh);
+        my $err = Page::check_photo($q, $fh);
         push @errors, $err if $err;
     }
 
@@ -178,7 +177,7 @@ sub submit_update {
     my $image;
     if ($fh) {
         try {
-            $image = process_photo($fh);
+            $image = Page::process_photo($fh);
         } catch Error::Simple with {
             my $e = shift;
             push(@errors, "That image doesn't appear to have uploaded correctly ($e), please try again.");
@@ -194,7 +193,7 @@ sub submit_update {
     return display_problem($q, @errors) if (@errors);
 
     my $id = dbh()->selectrow_array("select nextval('comment_id_seq');");
-    workaround_pg_bytea("insert into comment
+    Page::workaround_pg_bytea("insert into comment
         (id, problem_id, name, email, website, text, state, mark_fixed, photo)
         values (?, ?, ?, ?, '', ?, 'unconfirmed', ?, ?)", 7,
         $id, $input{id}, $input{name}, $input{email}, $input{update},
@@ -210,19 +209,6 @@ sub submit_update {
     return $out;
 }
 
-sub workaround_pg_bytea {
-    my ($st, $img_idx, @elements) = @_;
-    my $s = dbh()->prepare($st);
-    for (my $i=1; $i<=@elements; $i++) {
-        if ($i == $img_idx) {
-            $s->bind_param($i, $elements[$i-1], { pg_type => DBD::Pg::PG_BYTEA });
-        } else {
-            $s->bind_param($i, $elements[$i-1]);
-        }
-    }
-    $s->execute();
-}
-
 sub submit_problem {
     my $q = shift;
     my @vars = qw(council title detail name email phone pc easting northing skipped anonymous category flickr upload_fileid);
@@ -236,7 +222,7 @@ sub submit_problem {
 
     my $fh = $q->upload('photo');
     if ($fh) {
-        my $err = check_photo($q, $fh);
+        my $err = Page::check_photo($q, $fh);
         push @errors, $err if $err;
     }
 
@@ -313,7 +299,7 @@ sub submit_problem {
     my $image;
     if ($fh) {
         try {
-            $image = process_photo($fh);
+            $image = Page::process_photo($fh);
         } catch Error::Simple with {
             my $e = shift;
             push(@errors, "That image doesn't appear to have uploaded correctly ($e), please try again.");
@@ -350,7 +336,7 @@ sub submit_problem {
         }
     } else {
         $id = dbh()->selectrow_array("select nextval('problem_id_seq');");
-        workaround_pg_bytea("insert into problem
+        Page::workaround_pg_bytea("insert into problem
             (id, postcode, easting, northing, title, detail, name,
              email, phone, photo, state, council, used_map, anonymous, category, areas)
             values
@@ -876,30 +862,5 @@ sub map_pins {
         $pins .= Page::display_pin($q, $px, $py, 'green', $count_fixed++);
     }
     return ($pins, $current_map, $current, $fixed, $dist);
-}
-
-sub check_photo {
-    my ($q, $fh) = @_;
-    my $ct = $q->uploadInfo($fh)->{'Content-Type'};
-    my $cd = $q->uploadInfo($fh)->{'Content-Disposition'};
-    # Must delete photo param, otherwise display functions get confused
-    $q->delete('photo');
-    return 'Please upload a JPEG image only' unless
-        ($ct eq 'image/jpeg' || $ct eq 'image/pjpeg');
-    return '';
-}
-
-sub process_photo {
-    my $fh = shift;
-    my $photo = Image::Magick->new;
-    my $err = $photo->Read(file => \*$fh); # Mustn't be stringified
-    close $fh;
-    throw Error::Simple("read failed: $err") if "$err";
-    $err = $photo->Scale(geometry => "250x250>");
-    throw Error::Simple("resize failed: $err") if "$err";
-    my @blobs = $photo->ImageToBlob();
-    undef $photo;
-    $photo = $blobs[0];
-    return $photo;
 }
 
