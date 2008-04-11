@@ -1,0 +1,61 @@
+#!/bin/bash
+# reports-filed-graph
+# Plot graph of FixMyStreet report creation rate.
+#
+# Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
+# Email: francis@mysociety.org. WWW: http://www.mysociety.org/
+# 
+# $Id: reports-filed-graph,v 1.1 2008-04-11 10:10:06 francis Exp $
+
+GPLOT_OUTPUT="set terminal png font 'Vera.ttf' 9 size 1200,600"
+EXTENSION=".png"
+#GPLOT_OUTPUT="set terminal fig color big thickness 1"
+#EXTENSION=".fig"
+#GPLOT_OUTPUT="set terminal svg size 800 250"
+#EXTENSION=".svg"
+
+cd `dirname $0`
+cd ../../
+source shlib/deployfns
+
+read_conf bci/conf/general
+
+SOURCEO=/tmp/bci-report-rate-graph-data-nonwmc-$RANDOM$RANDOM
+GPSCRIPT=/tmp/bci-report-rate-graph-script-$RANDOM$RANDOM
+
+echo "select 
+    date(created), count(*)
+    from problem 
+    where state not in ('unconfirmed', 'hidden') 
+    group by date(created)
+    order by date(created)
+    ;" | psql --host $OPTION_BCI_DB_HOST --port $OPTION_BCI_DB_PORT -A -F " " $OPTION_BCI_DB_NAME $OPTION_BCI_DB_USER | egrep -v "date|rows" >$SOURCEO
+#echo "source $SOURCEO"
+
+cat >$GPSCRIPT <<END 
+    unset border
+    $GPLOT_OUTPUT
+
+    set xdata time;
+    set timefmt "%Y-%m-%d";
+    # set xrange ["2005-01-01":"2006-01-01"];
+    set format x "%b %Y"
+    # set xlabel "WriteToThem.com in 2005"
+    unset xlabel
+    #set nokey
+
+    #set ylabel "cumulative messages"
+    set ylabel "reports filed / calendar day"
+    set xtics nomirror
+    set ytics nomirror
+    # set y2tics nomirror tc lt 3
+
+    n = 0
+    plot "$SOURCEO" using 1:2 with lines axes x1y2 lt 3 title "FixMyStreet problem reports" 
+#    "< awk 'BEGIN { n = 0 } { n += \$2; print \$1, \$2, n; }' $SOURCE" using 1:3 with lines lt 2 title "cumulative messages created",
+END
+#echo "gpscript $GPSCRIPT"
+
+export GDFONTPATH=/usr/share/fonts/truetype/ttf-bitstream-vera
+gnuplot < $GPSCRIPT > bci/web/bci-live-signups$EXTENSION
+
