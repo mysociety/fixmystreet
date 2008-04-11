@@ -1,11 +1,11 @@
 #!/bin/bash
-# reports-filed-graph
-# Plot graph of FixMyStreet report creation rate.
+# problems-filed-graph
+# Plot graph of FixMyStreet problem report creation rate.
 #
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org. WWW: http://www.mysociety.org/
 # 
-# $Id: reports-filed-graph,v 1.1 2008-04-11 10:10:06 francis Exp $
+# $Id: problems-filed-graph,v 1.1 2008-04-11 11:00:17 francis Exp $
 
 GPLOT_OUTPUT="set terminal png font 'Vera.ttf' 9 size 1200,600"
 EXTENSION=".png"
@@ -45,7 +45,7 @@ cat >$GPSCRIPT <<END
     #set nokey
 
     #set ylabel "cumulative messages"
-    set ylabel "reports filed / calendar day"
+    set ylabel "problems filed / calendar day"
     set xtics nomirror
     set ytics nomirror
     # set y2tics nomirror tc lt 3

@@ -1,0 +1,93 @@
+#!/bin/bash
+# problem-creation-graph
+# Plot graph of rate of problem creation
+#
+# Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
+# Email: francis@mysociety.org. WWW: http://www.mysociety.org/
+# 
+# $Id: problem-creation-graph,v 1.1 2008-04-11 11:00:17 francis Exp $
+
+GPLOT_OUTPUT="set terminal png font 'Vera.ttf' 9 size 1200,400"
+EXTENSION=".png"
+#GPLOT_OUTPUT="set terminal fig color big thickness 1"
+#EXTENSION=".fig"
+#GPLOT_OUTPUT="set terminal svg size 800 250"
+#EXTENSION=".svg"
+
+cd `dirname $0`
+cd ../../
+source shlib/deployfns
+
+read_conf bci/conf/general
+
+SOURCEA=/tmp/bci-creation-rate-graph-data-$RANDOM$RANDOM
+SOURCEB=/tmp/bci-creation-rate-graph-data-$RANDOM$RANDOM
+SOURCEC=/tmp/bci-creation-rate-graph-data-$RANDOM$RANDOM
+SOURCED=/tmp/bci-creation-rate-graph-data-$RANDOM$RANDOM
+SOURCEE=/tmp/bci-creation-rate-graph-data-$RANDOM$RANDOM
+GPSCRIPT=/tmp/bci-creation-rate-graph-script-$RANDOM$RANDOM
+
+#    where status in ('draft') 
+
+function grab_data {
+    echo "select 
+        date(created), count(*)
+        from problem 
+        $1
+        group by date(created)
+        order by date(created)
+        ;" | psql --host $OPTION_BCI_DB_HOST --port $OPTION_BCI_DB_PORT -A -F " " $OPTION_BCI_DB_NAME $OPTION_BCI_DB_USER | egrep -v "date|rows" >$2
+}
+
+# rather nastily, work out the cumulative heights in reverse, so can plot impulses on top of each other
+grab_data "" $SOURCEA
+grab_data "where status not in ('unconfirmed')" $SOURCEB
+grab_data "where status not in ('unconfirmed', 'confirmed')" $SOURCEC
+grab_data "where status not in ('unconfirmed', 'confirmed', 'fixed')" $SOURCED
+grab_data "where status not in ('unconfirmed', 'confirmed', 'fixed', 'hidden')" $SOURCEE
+
+
+state = 'unconfirmed'
+or state = 'confirmed'
+or state = 'fixed'
+or state = 'hidden'
+or state = 'flickr'
+
+
+cat >$GPSCRIPT <<END 
+    unset border
+    unset arrow
+    set key left
+    set tics out
+    $GPLOT_OUTPUT
+
+    set xdata time
+    set timefmt "%Y-%m-%d"
+    set xrange ["2007-02-01":]
+    set format x "%d %b %Y"
+    set xtics nomirror
+    set xlabel "status of problems that were created on each calendar day"
+
+    set ytics nomirror 
+    set ylabel "number of problems created on the calendar day" 
+    set y2tics tc lt 2
+    set y2label "cumulative total number of problems" tc lt 2
+    set format y2 "%.0f"
+
+#    set arrow 1 from '2005-02-14', 0 to '2005-02-14', 900 lt 0 nohead
+#    set label 1 'launch of beta' at '2005-02-17', 900
+
+    n = 0
+    plot "$SOURCEA" using 1:2 with impulses lt 3 lw 15 title "unconfirmed",\
+         "$SOURCEB" using 1:2 with impulses lt 4 lw 15 title "confirmed",\
+         "$SOURCEC" using 1:2 with impulses lt 5 lw 15 title "fixed",\
+         "$SOURCED" using 1:2 with impulses lt 6 lw 15 title "hidden",\
+         "$SOURCEE" using 1:2 with impulses lt 7 lw 15 title "flickr (and any new ones)",\
+    "< awk 'BEGIN { n = 0 } { n += \$2; print \$1, \$2, n; }' $SOURCEA" using 1:3 axes x1y2 with lines lt 2 title "cumulative total number of problems"
+END
+#echo "gpscript $GPSCRIPT"
+
+export GDFONTPATH=/usr/share/fonts/truetype/ttf-bitstream-vera
+gnuplot < $GPSCRIPT > pet/web-admin/bci-live-creation$EXTENSION
+
+
