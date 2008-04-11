@@ -5,7 +5,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org. WWW: http://www.mysociety.org/
 # 
-# $Id: problem-creation-graph,v 1.2 2008-04-11 11:03:13 francis Exp $
+# $Id: problem-creation-graph,v 1.3 2008-04-11 11:27:32 francis Exp $
 
 GPLOT_OUTPUT="set terminal png font 'Vera.ttf' 9 size 1200,400"
 EXTENSION=".png"
@@ -82,7 +82,7 @@ cat >$GPSCRIPT <<END
          "$SOURCEB" using 1:2 with impulses lt 4 lw 15 title "confirmed",\
          "$SOURCEC" using 1:2 with impulses lt 5 lw 15 title "fixed",\
          "$SOURCED" using 1:2 with impulses lt 6 lw 15 title "hidden",\
-         "$SOURCEE" using 1:2 with impulses lt 7 lw 15 title "flickr (and any new ones)",\
+         "$SOURCEE" using 1:2 with impulses lt 7 lw 15 title "flickr (and any other types)",\
     "< awk 'BEGIN { n = 0 } { n += \$2; print \$1, \$2, n; }' $SOURCEA" using 1:3 axes x1y2 with lines lt 2 title "cumulative total number of problems"
 END
 #echo "gpscript $GPSCRIPT"
