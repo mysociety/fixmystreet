@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#thing!/usr/bin/perl -w
 #
 # index.cgi
 #
@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.46 2007-09-03 20:56:31 matthew Exp $
+# $Id: index.cgi,v 1.47 2008-04-11 11:35:56 francis Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.46 2007-09-03 20:56:31 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.47 2008-04-11 11:35:56 francis Exp $';
 
 use strict;
 
@@ -114,6 +114,9 @@ sub do_summary ($) {
             ['select count(*) from questionnaire', 'questionnaires'],
             ['select count(*) from alert', 'alerts']
     )));
+
+    print $q->p( $q->a({href => "http://www.fixmystreet.com/bci-live-creation.png" }, 
+            "Graph of problem creation by status over time" ));
 
     print $q->h3("Council contacts status");
     my $statuses = dbh()->selectall_arrayref("select count(*) as c, confirmed from contacts group by confirmed order by c desc");
