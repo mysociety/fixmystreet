@@ -1,4 +1,4 @@
-#thing!/usr/bin/perl -w
+#!/usr/bin/perl -w
 #
 # index.cgi
 #
@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.47 2008-04-11 11:35:56 francis Exp $
+# $Id: index.cgi,v 1.48 2008-04-11 11:38:08 francis Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.47 2008-04-11 11:35:56 francis Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.48 2008-04-11 11:38:08 francis Exp $';
 
 use strict;
 
