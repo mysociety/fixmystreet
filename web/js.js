@@ -45,7 +45,7 @@ YAHOO.util.Event.onContentReady('map', function() {
     if (document.getElementById('mapForm') && (/safari/.test(ua) || /Konqueror/.test(ua))) return;
 
     new YAHOO.util.DDMap('map');
-    update_tiles(0, 0, true);
+    update_tiles(start_x, start_y, true);
 });
 
 YAHOO.util.Event.onContentReady('mapForm', function() {
@@ -222,6 +222,8 @@ function pan(x, y) {
     }
 }
 
+var drag_x = 0;
+var drag_y = 0;
 function update_tiles(dx, dy, force) {
     dx = getInt(dx); dy = getInt(dy);
     if (!dx && !dy && !force) return;

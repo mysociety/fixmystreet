@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.89 2008-04-14 16:05:57 matthew Exp $
+# $Id: Page.pm,v 1.90 2008-04-14 17:10:51 matthew Exp $
 #
 
 package Page;
@@ -257,7 +257,7 @@ EOF
     $out .= <<EOF;
 <script type="text/javascript">
 var x = $x - 2; var y = $y - 2;
-var drag_x = $px; var drag_y = $py;
+var start_x = $px; var start_y = $py;
 </script>
 <div id="map_box">
 $params{pre}
