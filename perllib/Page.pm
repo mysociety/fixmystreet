@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.88 2008-04-10 19:07:38 matthew Exp $
+# $Id: Page.pm,v 1.89 2008-04-14 16:05:57 matthew Exp $
 #
 
 package Page;
@@ -73,7 +73,8 @@ sub microsite {
     my $q = shift;
     my $host = $ENV{HTTP_HOST} || '';
     $q->{site} = 'fixmystreet';
-    $q->{site} = 'scambs' if $host =~ /scambs/ || $q->param('scamb');
+    $q->{site} = 'scambs' if $host =~ /scambs/;
+    $q->{site} = 'emptyhomes' if $host =~ /emptyhomes/;
 }
 
 =item header Q [PARAM VALUE ...]
@@ -100,6 +101,11 @@ sub header ($%) {
     my $html;
     if ($q->{site} eq 'scambs') {
         open FP, '../templates/website/scambs-header';
+        $html = join('', <FP>);
+        close FP;
+        $html =~ s#<!-- TITLE -->#$title#;
+    } elsif ($q->{site} eq 'emptyhomes') {
+        open FP, '../templates/website/emptyhomes-header';
         $html = join('', <FP>);
         close FP;
         $html =~ s#<!-- TITLE -->#$title#;
@@ -147,6 +153,11 @@ sub footer {
 
     if ($q->{site} eq 'scambs') {
         open FP, '../templates/website/scambs-footer';
+        my $html = join('', <FP>);
+        close FP;
+        return $html;
+    } elsif ($q->{site} eq 'emptyhomes') {
+        open FP, '../templates/website/emptyhomes-footer';
         my $html = join('', <FP>);
         close FP;
         return $html;
@@ -204,7 +215,7 @@ sub display_map {
     $params{pins} ||= '';
     $params{pre} ||= '';
     $params{post} ||= '';
-    my $px = defined($params{px}) ? $params{px}-254 : 0;
+    my $px = defined($params{px}) ? 254-$params{px} : 0;
     my $py = defined($params{py}) ? 254-$params{py} : 0;
     my $x = int($params{x})<=0 ? 0 : $params{x};
     my $y = int($params{y})<=0 ? 0 : $params{y};
@@ -280,7 +291,7 @@ sub display_pin {
     my %cols = (red=>'R', green=>'G', blue=>'B', purple=>'P');
     my $out = '<img class="pin" src="/i/pin' . $cols{$col}
         . $num . '.gif" alt="Problem" style="top:' . ($py-59)
-        . 'px; right:' . ($px-31) . 'px; position: absolute;">';
+        . 'px; left:' . ($px) . 'px; position: absolute;">';
     return $out unless $_ && $_->{id} && $col ne 'blue';
     my $url = NewURL($q, id=>$_->{id}, x=>undef, y=>undef);
     $out = '<a title="' . $_->{title} . '" href="' . $url . '">' . $out . '</a>';
@@ -320,15 +331,16 @@ EOF
 # P is easting or northing
 # BL is bottom left tile reference of displayed map
 sub os_to_px {
-    my ($p, $bl) = @_;
-    return tile_to_px(os_to_tile($p), $bl);
+    my ($p, $bl, $invert) = @_;
+    return tile_to_px(os_to_tile($p), $bl, $invert);
 }
 
-# Convert tile co-ordinates to pixel co-ordinates from top right of map
+# Convert tile co-ordinates to pixel co-ordinates from top left of map
 # BL is bottom left tile reference of displayed map
 sub tile_to_px {
-    my ($p, $bl) = @_;
-    $p = 508 - 254 * ($p - $bl);
+    my ($p, $bl, $invert) = @_;
+    $p = 254 * ($p - $bl);
+    $p = 508 - $p if $invert;
     $p = int($p + .5 * ($p <=> 0));
     return $p;
 }

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.189 2008-04-10 19:07:39 matthew Exp $
+# $Id: index.cgi,v 1.190 2008-04-14 16:06:03 matthew Exp $
 
 use strict;
 use Standard;
@@ -51,8 +51,8 @@ sub main {
         $params{title} = 'Submitting your update';
         ($out) = submit_update($q);
     } elsif ($q->param('submit_map')) {
-        $params{title} = 'Reporting a problem';
         ($out, %params) = display_form($q);
+        $params{title} = 'Reporting a problem';
     } elsif ($q->param('id')) {
         ($out, %params) = display_problem($q);
         $params{title} .= ' - Viewing a problem';
@@ -393,7 +393,7 @@ sub display_form {
         $input{x} ||= int($pin_x) - 1;
         $input{y} ||= int($pin_y) - 1;
         $px = Page::tile_to_px($pin_x, $input{x});
-        $py = Page::tile_to_px($pin_y, $input{y});
+        $py = Page::tile_to_px($pin_y, $input{y}, 1);
         $easting = Page::tile_to_os($pin_x);
         $northing = Page::tile_to_os($pin_y);
     } elsif ($input{flickr} && $input{pc} && !$input{easting} && !$input{northing}) {
@@ -402,13 +402,13 @@ sub display_form {
         $input{x} = int(Page::os_to_tile($easting));
         $input{y} = int(Page::os_to_tile($northing));
         $px = Page::os_to_px($easting, $input{x});
-        $py = Page::os_to_px($northing, $input{y});
+        $py = Page::os_to_px($northing, $input{y}, 1);
     } else {
         # Normal form submission
         $input{x} = int(Page::os_to_tile($input{easting}));
         $input{y} = int(Page::os_to_tile($input{northing}));
         $px = Page::os_to_px($input{easting}, $input{x});
-        $py = Page::os_to_px($input{northing}, $input{y});
+        $py = Page::os_to_px($input{northing}, $input{y}, 1);
         $easting = $input_h{easting};
         $northing = $input_h{northing};
     }
@@ -715,7 +715,7 @@ sub display_problem {
     my $x_tile = $input{x} || int($x);
     my $y_tile = $input{y} || int($y);
     my $px = Page::os_to_px($problem->{easting}, $x_tile);
-    my $py = Page::os_to_px($problem->{northing}, $y_tile);
+    my $py = Page::os_to_px($problem->{northing}, $y_tile, 1);
 
     my $out = '';
 
@@ -826,7 +826,7 @@ sub map_pins {
     foreach (@$current_map) {
         push(@ids, $_->{id});
         my $px = Page::os_to_px($_->{easting}, $x);
-        my $py = Page::os_to_px($_->{northing}, $y);
+        my $py = Page::os_to_px($_->{northing}, $y, 1);
         $pins .= Page::display_pin($q, $px, $py, 'red', $count_prob++);
     }
 
@@ -847,7 +847,7 @@ sub map_pins {
              order by distance, created desc limit $limit", $mid_e, $mid_n);
         foreach (@$current) {
             my $px = Page::os_to_px($_->{easting}, $x);
-            my $py = Page::os_to_px($_->{northing}, $y);
+            my $py = Page::os_to_px($_->{northing}, $y, 1);
             $pins .= Page::display_pin($q, $px, $py, 'red', $count_prob++);
         }
     }
@@ -858,7 +858,7 @@ sub map_pins {
          order by created desc limit 9", $mid_e, $mid_n);
     foreach (@$fixed) {
         my $px = Page::os_to_px($_->{easting}, $x);
-        my $py = Page::os_to_px($_->{northing}, $y);
+        my $py = Page::os_to_px($_->{northing}, $y, 1);
         $pins .= Page::display_pin($q, $px, $py, 'green', $count_fixed++);
     }
     return ($pins, $current_map, $current, $fixed, $dist);

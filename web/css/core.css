@@ -39,7 +39,7 @@ dt {
 
 .v { display: none; }
 
-#error {
+p#error {
     text-align: center;
     color: #cc0000;
     font-size: larger;
@@ -56,6 +56,7 @@ ul#error {
     padding-right: 4px;
     border: solid 1px #cc0000;
     text-align: left;
+    font-size: larger;
 }
 
 /* Site-wide layout */
@@ -213,11 +214,11 @@ p#copyright {
 #compass {
     background-color: #ffffff;
     border: solid 1px #000000;
-    border-width: 0 1px 1px 1px;
+    border-width: 0 1px 1px 0;
     color: #000000;
     position: absolute;
     top: 0px;
-    right: 439px;
+    left: 0px;
 }
 
 #compass img {

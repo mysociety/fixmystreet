@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.26 2008-04-10 19:19:10 matthew Exp $
+# $Id: questionnaire.cgi,v 1.27 2008-04-14 16:06:03 matthew Exp $
 
 use strict;
 use Standard;
@@ -180,7 +180,7 @@ sub display_questionnaire {
     my $x_tile = int($x);
     my $y_tile = int($y);
     my $px = Page::os_to_px($problem->{easting}, $x_tile);
-    my $py = Page::os_to_px($problem->{northing}, $y_tile);
+    my $py = Page::os_to_px($problem->{northing}, $y_tile, 1);
 
     my $pins = Page::display_pin($q, $px, $py, $problem->{state} eq 'fixed'?'green':'red');
     my $problem_text = Page::display_problem_text($q, $problem);
