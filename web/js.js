@@ -56,10 +56,12 @@ YAHOO.util.Event.onContentReady('mapForm', function() {
         }
         this.x.value = x + 2;
         this.y.value = y + 2;
+	/*
 	if (swfu && swfu.getStats().files_queued > 0) {
 	    swfu.startUpload();
 	    return false;
 	}
+	*/
         return true;
     }
 });
