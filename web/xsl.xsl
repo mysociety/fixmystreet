@@ -7,7 +7,8 @@
 <html lang="en-gb">
     <head>
         <title><xsl:value-of select="$title"/> XML Feed</title>
-        <link rel="stylesheet" href="/css.css"/>
+        <link rel="stylesheet" href="/css/core.css"/>
+        <link rel="stylesheet" href="/css/main.css"/>
     </head>
     <body>
     <div id="header"><a href="/">FixMyStreet</a></div>
