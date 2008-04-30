@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.27 2008-04-14 16:06:03 matthew Exp $
+# $Id: questionnaire.cgi,v 1.28 2008-04-30 12:47:20 matthew Exp $
 
 use strict;
 use Standard;
@@ -215,9 +215,9 @@ EOF
     }
     $out .= '<p>';
     $out .= 'An update marked this problem as fixed. ' if $problem->{state} eq 'fixed';
-    $out .= 'Has the problem been fixed?</p>';
+    $out .= 'Has this problem been fixed?</p>';
     $out .= <<EOF;
-<p align="center">
+<p>
 <input type="radio" name="been_fixed" id="been_fixed_yes" value="Yes"$been_fixed{yes}>
 <label for="been_fixed_yes">Yes</label>
 <input type="radio" name="been_fixed" id="been_fixed_no" value="No"$been_fixed{no}>
@@ -227,8 +227,8 @@ EOF
 </p>
 EOF
     $out .= <<EOF unless $prev_questionnaire;
-<p>Have you ever reported a problem to a council before?</p>
-<p align="center">
+<p>Have you ever reported a problem to a council before, or is this your first time?</p>
+<p>
 <input type="radio" name="reported" id="reported_yes" value="Yes"$reported{yes}>
 <label for="reported_yes">Yes</label>
 <input type="radio" name="reported" id="reported_no" value="No"$reported{no}>
@@ -254,7 +254,7 @@ your experience of getting the problem fixed?</p>
 
 <div id="another_qn">
 <p>Would you like to receive another questionnaire in 4 weeks, reminding you to check the status?</p>
-<p align="center">
+<p>
 <input type="radio" name="another" id="another_yes" value="Yes"$another{yes}>
 <label for="another_yes">Yes</label>
 <input type="radio" name="another" id="another_no" value="No"$another{no}>
