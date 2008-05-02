@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: import-flickr,v 1.5 2007-06-18 15:31:00 matthew Exp $
+# $Id: import-flickr,v 1.6 2008-05-02 13:45:18 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -41,7 +41,9 @@ my $url = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&tags
 my $ids = select_all('select nsid from flickr');
 my $result = '';
 foreach (@$ids) {
-    $result .= get($url . $_->{nsid});
+    my $api_lookup = get($url . $_->{nsid});
+    next unless $api_lookup;
+    $result .= $api_lookup;
 }
 
 my %ids;
