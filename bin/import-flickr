@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: import-flickr,v 1.6 2008-05-02 13:45:18 matthew Exp $
+# $Id: import-flickr,v 1.7 2008-05-06 14:21:43 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -73,17 +73,23 @@ sub problem_create {
     my ($name, $email) = dbh()->selectrow_array('select name, email from flickr where nsid=?', {}, $owner);
     my ($easting, $northing) = (0,0);
     $name ||= '';
+    my $areas = '';
     if ($lat && $lon) {
         # XXX This appears to be going wrong :(
         ($easting, $northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
+        $areas = mySociety::MaPit::get_voting_areas_by_location(
+            { easting=>$easting, northing=>$northing },
+            'polygon', [qw(WMC CTY CED DIS DIW MTD MTW COI COP LGD LGE UTA UTE UTW LBO LBW LAC SPC WAC NIE)]
+        );
+        $areas = ',' . join(',', sort keys %$areas) . ',';
     }
     my $id = dbh()->selectrow_array("select nextval('problem_id_seq')");
     # This is horrid
     my $s = dbh()->prepare("insert into problem
         (id, postcode, easting, northing, title, detail, name,
-         email, phone, photo, state, used_map, anonymous, category)
+         email, phone, photo, state, used_map, anonymous, category, areas)
         values
-        (?, '', ?, ?, ?, '', ?, ?, '', ?, 'flickr', 't', 'f', '')");
+        (?, '', ?, ?, ?, '', ?, ?, '', ?, 'flickr', 't', 'f', '', ?)");
     $s->bind_param(1, $id);
     $s->bind_param(2, $easting);
     $s->bind_param(3, $northing);
@@ -91,6 +97,7 @@ sub problem_create {
     $s->bind_param(5, $name);
     $s->bind_param(6, $email);
     $s->bind_param(7, $image, { pg_type => DBD::Pg::PG_BYTEA });
+    $s->bind_param(8, $areas);
     $s->execute();
 
     dbh()->do('insert into flickr_imported (id, problem_id) values (?, ?)', {}, $photo_id, $id);
@@ -116,3 +123,4 @@ sub problem_create {
         dbh()->rollback();
     }
 }
+
