@@ -160,6 +160,15 @@ ul#error {
 
 /* Map */
 
+#watermark {
+    background: url("/mojwatermark5.png");
+    height: 508px;
+    width: 508px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
 #map_box {
     float: right;
     width: 510px;

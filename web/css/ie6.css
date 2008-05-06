@@ -1,0 +1,4 @@
+#watermark {
+    background: none;
+    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/mojwatermark5.png',sizingMethod='scale');
+}

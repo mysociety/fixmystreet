@@ -8,10 +8,7 @@
 <link href="http://www.emptyhomes.com/eha2.css" rel="stylesheet" type="text/css">
 <style type="text/css" media="screen, projection">
 @import "/css/core.css";
-@import "/css/main-emptyhomes.css";
-/*
-@import "/css/scambs.css";
-*/
+@import "/css/emptyhomes.css";
 </style>
 <!-- RSS -->
 </head>

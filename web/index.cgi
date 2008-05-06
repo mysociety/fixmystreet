@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.190 2008-04-14 16:06:03 matthew Exp $
+# $Id: index.cgi,v 1.191 2008-05-06 10:01:31 matthew Exp $
 
 use strict;
 use Standard;
@@ -45,20 +45,20 @@ sub main {
     my $out = '';
     my %params;
     if ($q->param('submit_problem') || ($q->param('submit_map') && $q->param('submit_map')==2)) {
-        $params{title} = 'Submitting your problem';
+        $params{title} = _('Submitting your report');
         ($out) = submit_problem($q);
     } elsif ($q->param('submit_update')) {
-        $params{title} = 'Submitting your update';
+        $params{title} = _('Submitting your update');
         ($out) = submit_update($q);
     } elsif ($q->param('submit_map')) {
         ($out, %params) = display_form($q);
-        $params{title} = 'Reporting a problem';
+        $params{title} = _('Reporting a problem');
     } elsif ($q->param('id')) {
         ($out, %params) = display_problem($q);
-        $params{title} .= ' - Viewing a problem';
+        $params{title} .= ' - ' . _('Viewing a problem');
     } elsif ($q->param('pc') || ($q->param('x') && $q->param('y'))) {
         ($out, %params) = display_location($q);
-        $params{title} = 'Viewing a location';
+        $params{title} = _('Viewing a location');
     } else {
         $out = front_page($q);
     }
@@ -74,10 +74,8 @@ Page::do_fastcgi(\&main);
 sub front_page {
     my ($q, $error) = @_;
     my $pc_h = ent($q->param('pc') || '');
-    my $out = <<EOF;
-<p id="expl"><strong>Report, view, or discuss local problems</strong>
-<br><small>(like graffiti, fly tipping, broken paving slabs, or street lighting)</small></p>
-EOF
+    my $out = '<p id="expl"><strong>' . _('Report, view, or discuss local problems') . '</strong>
+<br><small>' . _('(like graffiti, fly tipping, broken paving slabs, or street lighting)') . '</small></p>';
     $out .= '<p id="error">' . $error . '</p>' if ($error);
     my $fixed = dbh()->selectrow_array("select count(*) from problem where state='fixed' and lastupdate>ms_current_timestamp()-'1 month'::interval");
     my $updates = dbh()->selectrow_array("select count(*) from comment where state='confirmed'");
@@ -114,17 +112,17 @@ EOF
 </form>
 
 <div id="front_intro">
+EOF
+    $out .= $q->h2(_('How to report a problem'));
+    $out .= $q->ol(
+        $q->li(_('Enter a nearby UK postcode, or street name and area')),
+	$q->li(_('Locate the problem on a map of the area')),
+	$q->li(_('Enter details of the problem')),
+	$q->li(_('We send it to the council on your behalf'))
+    );
 
-<h2>How to report a problem</h2>
-
-<ol>
-<li>Enter a nearby UK postcode, or street name and area
-<li>Locate the problem on a map of the area
-<li>Enter details of the problem
-<li>We send it to the council on your behalf
-</ol>
-
-<h2>FixMyStreet updates</h2>
+    $out .= $q->h2(_('FixMyStreet updates'));
+    $out .= <<EOF;
 
 <div id="front_stats">
 <div><big>$new</big> reports $new_text</div>
@@ -138,12 +136,12 @@ EOF
 EOF
 
     my $recent_photos = Page::recent_photos(3);
-    $out .= "<h2>Photos of recent reports</h2>$recent_photos" if $recent_photos;
+    $out .= $q->h2(_('Photos of recent reports')) . $recent_photos if $recent_photos;
 
     my $probs = select_all("select id,title from problem
         where state in ('confirmed', 'fixed')
         order by confirmed desc limit 5");
-    $out .= '<h2>Recently reported problems</h2> <ul>' if @$probs;
+    $out .= $q->h2(_('Recently reported problems')) . ' <ul>' if @$probs;
     foreach (@$probs) {
         $out .= '<li><a href="/?id=' . $_->{id} . '">'. ent($_->{title});
         $out .= '</a>';
@@ -180,7 +178,7 @@ sub submit_update {
             $image = Page::process_photo($fh);
         } catch Error::Simple with {
             my $e = shift;
-            push(@errors, "That image doesn't appear to have uploaded correctly ($e), please try again.");
+            push(@errors, sprintf(_("That image doesn't appear to have uploaded correctly (%s), please try again."), $e));
         };
     }
 
@@ -201,7 +199,7 @@ sub submit_update {
 
     my %h = ();
     $h{update} = $input{update};
-    $h{name} = $input{name} ? $input{name} : "Anonymous";
+    $h{name} = $input{name} ? $input{name} : _("Anonymous");
     $h{url} = mySociety::Config::get('BASE_URL') . '/C/' . mySociety::AuthToken::store('update', $id);
     dbh()->commit();
 
@@ -216,7 +214,7 @@ sub submit_problem {
     for (qw(title detail)) {
         $input{$_} = lc $input{$_} if $input{$_} !~ /[a-z]/;
         $input{$_} = ucfirst $input{$_};
-	$input{$_} =~ s/\b(dog\s*)shit\b/$1poo/ig;
+        $input{$_} =~ s/\b(dog\s*)shit\b/$1poo/ig;
     }
     my @errors;
 
@@ -226,21 +224,21 @@ sub submit_problem {
         push @errors, $err if $err;
     }
 
-    push(@errors, 'No council selected') unless ($input{council} && $input{council} =~ /^(?:-1|[\d,]+(?:\|[\d,]+)?)$/);
-    push(@errors, 'Please enter a subject') unless $input{title} =~ /\S/;
-    push(@errors, 'Please enter some details') unless $input{detail} =~ /\S/;
+    push(@errors, _('No council selected')) unless ($input{council} && $input{council} =~ /^(?:-1|[\d,]+(?:\|[\d,]+)?)$/);
+    push(@errors, _('Please enter a subject')) unless $input{title} =~ /\S/;
+    push(@errors, _('Please enter some details')) unless $input{detail} =~ /\S/;
     if ($input{name} !~ /\S/) {
-        push @errors, 'Please enter your name';
+        push @errors, _('Please enter your name');
     } elsif (length($input{name}) < 5 || $input{name} !~ /\s/ || $input{name} =~ /\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i) {
-        push @errors, 'Please enter your full name, councils need this information - if you do not wish your name to be shown on the site, untick the box';
+        push @errors, _('Please enter your full name, councils need this information - if you do not wish your name to be shown on the site, untick the box');
     }
     if ($input{email} !~ /\S/) {
-        push(@errors, 'Please enter your email');
+        push(@errors, _('Please enter your email'));
     } elsif (!mySociety::EmailUtil::is_valid_email($input{email})) {
-        push(@errors, 'Please enter a valid email');
+        push(@errors, _('Please enter a valid email'));
     }
     if ($input{category} && $input{category} eq '-- Pick a category --') {
-        push (@errors, 'Please choose a category');
+        push (@errors, _('Please choose a category'));
         $input{category} = '';
     }
  
@@ -262,7 +260,7 @@ sub submit_problem {
             my @input_councils = split /,|\|/, $input{council};
             foreach (@input_councils) {
                 if (!$councils{$_}) {
-                    push(@errors, 'That location is not part of that council');
+                    push(@errors, _('That location is not part of that council'));
                     last;
                 }
             }
@@ -282,7 +280,7 @@ sub submit_problem {
                 @valid_councils = map { $_->{area_id} } @$categories;
                 foreach my $c (@valid_councils) {
                     if ($no_details =~ /$c/) {
-                        push(@errors, 'We have details for that council');
+                        push(@errors, _('We have details for that council'));
                         $no_details =~ s/,?$c//;
                     }
                 }
@@ -291,9 +289,9 @@ sub submit_problem {
         }
         $areas = ',' . join(',', sort keys %$areas) . ',';
     } elsif ($input{easting} || $input{northing}) {
-        push(@errors, 'Somehow, you only have one co-ordinate. Please try again.');
+        push(@errors, _('Somehow, you only have one co-ordinate. Please try again.'));
     } else {
-        push(@errors, 'You haven\'t specified any sort of co-ordinates. Please try again.');
+        push(@errors, _('You haven\'t specified any sort of co-ordinates. Please try again.'));
     }
     
     my $image;
@@ -302,7 +300,7 @@ sub submit_problem {
             $image = Page::process_photo($fh);
         } catch Error::Simple with {
             my $e = shift;
-            push(@errors, "That image doesn't appear to have uploaded correctly ($e), please try again.");
+            push(@errors, sprintf(_("That image doesn't appear to have uploaded correctly (%s), please try again."), $e));
         };
     }
 
@@ -316,7 +314,7 @@ sub submit_problem {
 
     delete $input{council} if $input{council} eq '-1';
     my $used_map = $input{skipped} ? 'f' : 't';
-    $input{category} = 'Other' unless $input{category};
+    $input{category} = _('Other') unless $input{category};
 
     my ($id, $out);
     if (my $token = $input{flickr}) {
@@ -330,9 +328,9 @@ sub submit_problem {
                 $input{phone}, $input{council}, $input{anonymous} ? 'f' : 't',
                 $input{category}, $id);
             dbh()->commit();
-            $out = $q->p(sprintf(_('You have successfully confirmed your problem and you can now <a href="%s">view it on the site</a>.'), "/?id=$id"));
+            $out = $q->p(sprintf(_('You have successfully confirmed your report and you can now <a href="%s">view it on the site</a>.'), "/?id=$id"));
         } else {
-            $out = $q->p('There appears to have been a problem.');
+            $out = $q->p(_('There appears to have been a problem.'));
         }
     } else {
         $id = dbh()->selectrow_array("select nextval('problem_id_seq');");
@@ -405,10 +403,10 @@ sub display_form {
         $py = Page::os_to_px($northing, $input{y}, 1);
     } else {
         # Normal form submission
-        $input{x} = int(Page::os_to_tile($input{easting}));
-        $input{y} = int(Page::os_to_tile($input{northing}));
-        $px = Page::os_to_px($input{easting}, $input{x});
-        $py = Page::os_to_px($input{northing}, $input{y}, 1);
+	my ($x, $y, $tile_x, $tile_y);
+	($x, $y, $tile_x, $tile_y, $px, $py) = Page::os_to_px_with_adjust($q, $input{easting}, $input{northing}, undef, undef);
+	$input{x} = $tile_x;
+	$input{y} = $tile_y;
         $easting = $input_h{easting};
         $northing = $input_h{northing};
     }
@@ -423,27 +421,29 @@ sub display_form {
         #'Litter', 'Neighbourhood noise');
     }
     $all_councils = [ keys %$all_councils ];
-    return display_location($q, 'That spot does not appear to be covered by a council - if it is past the shoreline, for example, please specify the closest point on land.') unless @$all_councils;
+    return display_location($q, _('That spot does not appear to be covered by a council - if it is past the shoreline, for example, please specify the closest point on land.')) unless @$all_councils;
     my $areas_info = mySociety::MaPit::get_voting_areas_info($all_councils);
 
     # Look up categories for this council or councils
     my $category = '';
     my %council_ok;
-    my $categories = select_all("select area_id, category from contacts
-        where deleted='f' and area_id in (" . join(',', @$all_councils) . ')');
-    @$categories = sort { $a->{category} cmp $b->{category} } @$categories;
-    my @categories;
-    foreach (@$categories) {
-        $council_ok{$_->{area_id}} = 1;
-        next if $_->{category} eq 'Other';
-        push @categories, $_->{category};
-    }
-    if (@categories) {
-        @categories = ('-- Pick a category --', @categories, 'Other');
-        $category = $q->div($q->label({'for'=>'form_category'}, 'Category:'), 
-            $q->popup_menu(-name=>'category', -values=>\@categories,
-                -attributes=>{id=>'form_category'})
-        );
+    if ($q->{site} ne 'emptyhomes') { # No category
+        my $categories = select_all("select area_id, category from contacts
+            where deleted='f' and area_id in (" . join(',', @$all_councils) . ')');
+        @$categories = sort { $a->{category} cmp $b->{category} } @$categories;
+        my @categories;
+        foreach (@$categories) {
+            $council_ok{$_->{area_id}} = 1;
+            next if $_->{category} eq _('Other');
+            push @categories, $_->{category};
+        }
+        if (@categories) {
+            @categories = ('-- Pick a category --', @categories, _('Other'));
+            $category = $q->div($q->label({'for'=>'form_category'}, _('Category:')), 
+                $q->popup_menu(-name=>'category', -values=>\@categories,
+                    -attributes=>{id=>'form_category'})
+            );
+        }
     }
 
     my @councils = keys %council_ok;
@@ -463,65 +463,66 @@ sub display_form {
 <input type="hidden" name="x" value="$input_h{x}">
 <input type="hidden" name="y" value="$input_h{y}">
 <input type="hidden" name="skipped" value="1">
-<h1>Reporting a problem</h1>
-<ul>
 EOF
+        $out .= $q->h1(_('Reporting a problem')) . '<ul>';
     } else {
         my $pins = Page::display_pin($q, $px, $py, 'purple');
         $out .= Page::display_map($q, x => $input{x}, y => $input{y}, type => 2,
             pins => $pins, px => $px, py => $py );
-        $out .= '<h1>Reporting a problem</h1> ';
-        $out .= '<p>You have located the problem at the point marked with a purple pin on the map.
-If this is not the correct location, simply click on the map again. ';
+        $out .= $q->h1(_('Reporting a problem')) . ' ';
+        $out .= $q->p(_('You have located the problem at the point marked with a purple pin on the map.
+If this is not the correct location, simply click on the map again. '));
     }
 
-    if ($details eq 'all') {
-        $out .= '<p>All the information you provide here will be sent to <strong>'
-            . join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @$all_councils)
-            . '</strong>. On the site, we will show the subject and details of the problem,
-            plus your name if you give us permission.';
-        $out .= '<input type="hidden" name="council" value="' . join(',',@$all_councils) . '">';
-    } elsif ($details eq 'some') {
-        my $e = mySociety::Config::get('CONTACT_EMAIL');
-        my %councils = map { $_ => 1 } @councils;
-        my @missing;
-        foreach (@$all_councils) {
-            push @missing, $_ unless $councils{$_};
-        }
-        my $n = @missing;
-        my $list = join(' or ', map { $areas_info->{$_}->{name} } @missing);
-        $out .= '<p>All the information you provide here will be sent to <strong>'
-            . join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @councils)
-            . '</strong>. On the site, we will show the subject and details of the problem,
-            plus your name if you give us permission.';
-        $out .= ' We do <strong>not</strong> yet have details for the other council';
-        $out .= ($n>1) ? 's that cover' : ' that covers';
-        $out .= " this location. You can help us by finding a contact email address for local
+    if ($q->{site} ne 'emptyhomes') { # No "send to council" blurb
+        if ($details eq 'all') {
+            $out .= '<p>All the information you provide here will be sent to <strong>'
+                . join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @$all_councils)
+                . '</strong>. On the site, we will show the subject and details of the problem,
+                plus your name if you give us permission.';
+            $out .= '<input type="hidden" name="council" value="' . join(',',@$all_councils) . '">';
+        } elsif ($details eq 'some') {
+            my $e = mySociety::Config::get('CONTACT_EMAIL');
+            my %councils = map { $_ => 1 } @councils;
+            my @missing;
+            foreach (@$all_councils) {
+                push @missing, $_ unless $councils{$_};
+            }
+            my $n = @missing;
+            my $list = join(' or ', map { $areas_info->{$_}->{name} } @missing);
+            $out .= '<p>All the information you provide here will be sent to <strong>'
+                . join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @councils)
+                . '</strong>. On the site, we will show the subject and details of the problem,
+                plus your name if you give us permission.';
+            $out .= ' We do <strong>not</strong> yet have details for the other council';
+            $out .= ($n>1) ? 's that cover' : ' that covers';
+            $out .= " this location. You can help us by finding a contact email address for local
 problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.";
-        $out .= '<input type="hidden" name="council" value="' . join(',', @councils)
-            . '|' . join(',', @missing) . '">';
-    } else {
-        my $e = mySociety::Config::get('CONTACT_EMAIL');
-        my $list = join(' or ', map { $areas_info->{$_}->{name} } @$all_councils);
-        my $n = @$all_councils;
-        $out .= '<p>We do not yet have details for the council';
-        $out .= ($n>1) ? 's that cover' : ' that covers';
-        $out .= " this location. If you submit a problem here it will be
+            $out .= '<input type="hidden" name="council" value="' . join(',', @councils)
+                . '|' . join(',', @missing) . '">';
+        } else {
+            my $e = mySociety::Config::get('CONTACT_EMAIL');
+            my $list = join(' or ', map { $areas_info->{$_}->{name} } @$all_councils);
+            my $n = @$all_councils;
+            $out .= '<p>We do not yet have details for the council';
+            $out .= ($n>1) ? 's that cover' : ' that covers';
+            $out .= " this location. If you submit a problem here it will be
 left on the site, but <strong>not</strong> reported to the council.
 You can help us by finding a contact email address for local
 problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.";
-        $out .= '<input type="hidden" name="council" value="-1">';
+            $out .= '<input type="hidden" name="council" value="-1">';
+        }
     }
     if ($input{skipped}) {
-        $out .= '<p>Please fill in the form below with details of the problem, and
-describe the location as precisely as possible in the details box.';
+        $out .= $q->p(_('Please fill in the form below with details of the problem,
+and describe the location as precisely as possible in the details box.'));
     } elsif ($details ne 'none') {
         $out .= '<p>Please fill in details of the problem below. The council won\'t be able
 to help unless you leave as much detail as you can, so please describe the exact location of
 the problem (e.g. on a wall), what it is, how long it has been there, a description (and a
 photo of the problem if you have one), etc.';
     } else {
-        $out .= '<p>Please fill in details of the problem below.';
+        $out .= $q->p(_('Please fill in details of the problem below.'));
     }
     $out .= '
 <input type="hidden" name="easting" value="' . $easting . '">
@@ -534,10 +535,14 @@ photo of the problem if you have one), etc.';
     $out .= <<EOF;
 <div id="fieldset">
 $category
+EOF
+    $out .= <<EOF unless $q->{site} eq 'emptyhomes'; # No Subject
 <div><label for="form_title">Subject:</label>
 <input type="text" value="$input_h{title}" name="title" id="form_title" size="30"></div>
+EOF
+    $out .= <<EOF;
 <div><label for="form_detail">Details:</label>
-<textarea name="detail" id="form_detail" rows="7" cols="27">$input_h{detail}</textarea></div>
+<textarea name="detail" id="form_detail" rows="7" cols="15">$input_h{detail}</textarea></div>
 EOF
     if (my $token = $input{flickr}) {
         my $id = mySociety::AuthToken::retrieve('flickr', $token);
@@ -568,8 +573,10 @@ EOF
 <div><label for="form_email">Email:</label>
 <input type="text" value="$input_h{email}" name="email" id="form_email" size="30"></div>
 <div><label for="form_phone">Phone:</label>
-<input type="text" value="$input_h{phone}" name="phone" id="form_phone" size="20">
+<input type="text" value="$input_h{phone}" name="phone" id="form_phone" size="15">
 <small>(optional)</small></div>
+EOF
+    $out .= <<EOF unless $q->{site} eq 'emptyhomes'; # No notes
 <p>Please note:</p>
 <ul>
 <li>Please be polite, concise and to the point.
@@ -581,6 +588,8 @@ problems that can be fixed. If your problem is not appropriate for
 submission via this site remember that you can contact your council
 directly using their own website.
 </ul>
+EOF
+    $out .= <<EOF;
 <p align="right"><input type="submit" name="submit_problem" value="Submit"></p>
 </div>
 EOF
@@ -619,24 +628,18 @@ sub display_location {
 
     my ($pins, $current_map, $current, $fixed, $dist) = map_pins($q, $x, $y);
     my $out = Page::display_map($q, x => $x, y => $y, type => 1, pins => $pins );
-    $out .= '<h1>Problems in this area</h1>';
+    $out .= $q->h1(_('Problems in this area'));
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
     my $skipurl = NewURL($q, 'submit_map'=>1, skipped=>1);
-    $out .= <<EOF;
-<p id="text_map">To report a problem, simply <strong>click on the map</strong> at the correct location.</p>
-
-<p id="text_no_map"><small>If you cannot see a map &ndash; if you have images turned off,
+    $out .= $q->p({-id=>'text_map'}, _('To report a problem, simply <strong>click on the map</strong> at the correct location.'));
+    $out .= $q->p({-id=>'text_no_map'}, sprintf(_("<small>If you cannot see a map &ndash; if you have images turned off,
 or are using a text only browser, for example &ndash; and you
 wish to report a problem, please
-<a href="$skipurl">skip this step</a> and we will ask you
-to describe the location of your problem instead.</small></p>
-EOF
-    $out .= <<EOF;
-<div>
-<h2>Recent problems reported near here</h2>
-EOF
+<a href='%s'>skip this step</a> and we will ask you
+to describe the location of the problem instead.</small>"), $skipurl));
+    $out .= '<div' . $q->h2(_('Recent problems reported near here'));
     my $list = '';
     foreach (@$current_map) {
         $list .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
@@ -646,13 +649,16 @@ EOF
     if (@$current_map) {
         $out .= '<ol id="current">' . $list . '</ol>';
     } else {
-        $out .= '<p>No problems have been reported yet.</p>';
+        $out .= $q->p(_('No problems have been reported yet.'));
     }
+    $out .= $q->h2(sprintf(_('Closest problems within %skm'), $dist));
+    my $email_me = _('Email me problems');
+    my $rss_title = _('RSS feed of recent local problems');
+    my $rss_alt = _('RSS feed');
     $out .= <<EOF;
-    <h2>Closest problems within ${dist}km</h2>
     <div id="alert_links">
-    <a id="email_alert" href="/alert?pc=$input_h{pc};type=local;feed=local:$x:$y;alert=Subscribe">Email me problems</a>
-     &nbsp; <span id="rss_link"><a href="/rss/$x,$y"><img src="/i/feed.png" width="16" height="16" title="RSS feed of recent local problems" alt="RSS feed" border="0" style="vertical-align: middle"></a></span>
+    <a id="email_alert" href="/alert?pc=$input_h{pc};type=local;feed=local:$x:$y;alert=Subscribe">$email_me</a>
+     &nbsp; <span id="rss_link"><a href="/rss/$x,$y"><img src="/i/feed.png" width="16" height="16" title="$rss_title" alt="$rss_alt" border="0" style="vertical-align: middle"></a></span>
     </div>
 EOF
     $list = '';
@@ -665,11 +671,9 @@ EOF
         my $list_start = @$current_map + 1;
         $out .= '<ol id="current_near" start="' . $list_start . '">' . $list . '</ol>';
     } else {
-        $out .= '<p>No problems have been reported yet.</p>';
+        $out .= $q->p(_('No problems have been reported yet.'));
     }
-    $out .= <<EOF;
-    <h2>Recently fixed problems within ${dist}km</h2>
-EOF
+    $out .= $q->h2(sprintf(_('Recently fixed problems within %skm'), $dist));
     $list = '';
     foreach (@$fixed) {
         $list .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
@@ -679,13 +683,13 @@ EOF
     if (@$fixed) {
         $out .= "<ol>$list</ol>\n";
     } else {
-        $out .= '<p>No problems have been fixed yet</p>';
+        $out .= $q->p(_('No problems have been fixed yet'));
     }
     $out .= '</div>';
     $out .= Page::display_map_end(1);
 
     my %params = (
-        rss => [ 'Recent local problems, FixMyStreet', "/rss/$x,$y" ]
+        rss => [ _('Recent local problems, FixMyStreet'), "/rss/$x,$y" ]
     );
 
     return ($out, %params);
@@ -710,12 +714,7 @@ sub display_problem {
          from problem where id=? and state in ('confirmed','fixed', 'hidden')", {}, $input{id});
     return display_location($q, 'Unknown problem ID') unless $problem;
     return front_page($q, 'That problem has been hidden from public view as it contained inappropriate public details') if $problem->{state} eq 'hidden';
-    my $x = Page::os_to_tile($problem->{easting});
-    my $y = Page::os_to_tile($problem->{northing});
-    my $x_tile = $input{x} || int($x);
-    my $y_tile = $input{y} || int($y);
-    my $px = Page::os_to_px($problem->{easting}, $x_tile);
-    my $py = Page::os_to_px($problem->{northing}, $y_tile, 1);
+    my ($x, $y, $x_tile, $y_tile, $px, $py) = Page::os_to_px_with_adjust($q, $problem->{easting}, $problem->{northing}, $input{x}, $input{y});
 
     my $out = '';
 
@@ -738,9 +737,10 @@ sub display_problem {
     $x_tile -= 1 if $x - $x_tile < 0.5;
     $y_tile -= 1 if $y - $y_tile < 0.5;
     my $back = NewURL($q, id=>undef, x=>$x_tile, y=>$y_tile, submit_update=>undef);
-    $out .= '<p style="padding-bottom: 0.5em; border-bottom: dotted 1px #999999;" align="right"><a href="' . $back . '">More problems nearby</a></p>';
+    $out .= '<p style="padding-bottom: 0.5em; border-bottom: dotted 1px #999999;" align="right"><a href="'
+        . $back . '">' . _('More problems nearby') . '</a></p>';
     $out .= '<div id="alert_links">';
-    $out .= '<a id="email_alert" href="/alert?type=updates;id='.$input_h{id}.'">Email me updates</a>';
+    $out .= '<a id="email_alert" href="/alert?type=updates;id='.$input_h{id}.'">' . _('Email me updates') . '</a>';
     $out .= <<EOF;
 <form action="alert" method="post" id="email_alert_box">
 <p>Receive email when updates are left on this problem</p>
@@ -751,12 +751,13 @@ sub display_problem {
 <input type="submit" value="Subscribe">
 </form>
 EOF
-    $out .= ' &nbsp; <span id="rss_link"><a href="/rss/'.$input_h{id}.'"><img src="/i/feed.png" width="16" height="16" title="RSS feed" alt="RSS feed of updates to this problem" border="0" style="vertical-align: middle"></a></span>';
+    $out .= ' &nbsp; <span id="rss_link"><a href="/rss/'.$input_h{id}.'"><img src="/i/feed.png" width="16" height="16" title="' . _('RSS feed') . '" alt="' . _('RSS feed of updates to this problem') . '" border="0" style="vertical-align: middle"></a></span>';
     $out .= '</div>';
 
     $out .= Page::display_problem_updates($input{id});
-    $out .= '<h2>Provide an update</h2>';
-    $out .= $q->p($q->small('Please note that updates are not sent to the council.'));
+    $out .= $q->h2(_('Provide an update'));
+    $out .= $q->p($q->small(_('Please note that updates are not sent to the council.')))
+        unless $q->{site} eq 'emptyhomes'; # No council blurb
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
@@ -764,7 +765,7 @@ EOF
     my $fixed = ($input{fixed}) ? ' checked' : '';
     my $fixedline = $problem->{state} eq 'fixed' ? '' : qq{
 <div class="checkbox"><input type="checkbox" name="fixed" id="form_fixed" value="1"$fixed>
-<label for="form_fixed">This problem has been fixed</label></div>
+<label for="form_fixed">} . _('This problem has been fixed') . qq{</label></div>
 };
     $out .= <<EOF;
 <form method="post" action="./" id="fieldset" enctype="multipart/form-data">
@@ -798,7 +799,7 @@ swfu = new SWFUpload(swfu_settings);
 EOF
 
     my %params = (
-        rss => [ 'Updates to this problem, FixMyStreet', "/rss/$input_h{id}" ],
+        rss => [ 'Updates to this ' . $q->{thing} . ', FixMyStreet', "/rss/$input_h{id}" ],
         js => $js,
         title => $problem->{title}
     );

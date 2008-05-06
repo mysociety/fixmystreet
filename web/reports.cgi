@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.14 2008-01-28 15:27:00 matthew Exp $
+# $Id: reports.cgi,v 1.15 2008-05-06 10:01:31 matthew Exp $
 
 use strict;
 use Standard;
@@ -148,8 +148,12 @@ sub main {
         print $q->p(_('This is a summary of all reports on this site; select a particular council to see the reports sent there.'));
         my $c = 0;
         print '<table cellpadding="3" cellspacing="1" border="0">';
-        print '<tr><th>Name</th><th>New problems</th><th>Older problems</th>
-<th>Old problems,<br>state unknown</th><th>Recently fixed</th><th>Old fixed</th></tr>';
+        print '<tr><th>Name</th><th>' . _('New problems') . '</th><th>' . _('Older problems') . '</th>';
+        if ($q->{site} eq 'emptyhomes') {
+            print '<th>Recently in use</th><th>Old in use</th></tr>';
+        } else {
+            print '<th>Old problems,<br>state unknown</th><th>Recently fixed</th><th>Old fixed</th></tr>';
+        }
         foreach (sort { $areas_info->{$a}->{name} cmp $areas_info->{$b}->{name} } keys %councils) {
             print '<tr align="center"';
             print ' class="a"' if (++$c%2);
@@ -157,8 +161,15 @@ sub main {
             print '><td align="left"><a href="/reports/' . $url . '">' .
                 $areas_info->{$_}->{name} . '</a></td>';
             summary_cell(\@{$open{$_}{new}});
-            summary_cell(\@{$open{$_}{older}});
-            summary_cell(\@{$open{$_}{unknown}});
+            if ($q->{site} eq 'emptyhomes') {
+                my $c = 0;
+                $c += @{$open{$_}{older}} if $open{$_}{older};
+                $c += @{$open{$_}{unknown}} if $open{$_}{unknown};
+                summary_cell($c);
+            } else {
+                summary_cell(\@{$open{$_}{older}});
+                summary_cell(\@{$open{$_}{unknown}});
+            }
             summary_cell(\@{$fixed{$_}{new}});
             summary_cell(\@{$fixed{$_}{old}});
             print "</tr>\n";
@@ -180,8 +191,10 @@ sub main {
                 $name = ent($q_ward) . ", $name";
             }
             print Page::header($q, title=>"$name - Summary reports", rss => [ "Problems within $name, FixMyStreet", $rss_url ]);
+	    my $rss_title = _('RSS feed');
+	    my $rss_alt = _('RSS feed of problems in this %s');
             print $q->p(
-                $q->a({ href => $rss_url }, '<img align="right" src="/i/feed.png" width="16" height="16" title="RSS feed" alt="RSS feed of problems in this ' . $thing . '" border="0" hspace="4">'),
+                $q->a({ href => $rss_url }, '<img align="right" src="/i/feed.png" width="16" height="16" title="' . $rss_title . '" alt="' . sprintf($rss_alt, $thing) . '" border="0" hspace="4">'),
                 'This is a summary of all reports for one ' . $thing . '. You can ' .
                 ($all ? 
                     $q->a({href => NewURL($q, council=>undef, ward=>undef, all=>undef) }, 'see less detail') :
@@ -192,9 +205,16 @@ sub main {
             print "<h2>$name</h2>\n";
             if ($open{$one_council}) {
                 print '<div id="col_problems">';
-                list_problems('New problems', $open{$one_council}{new}, $all);
-                list_problems('Older problems', $open{$one_council}{older}, $all);
-                list_problems('Old problems, state unknown', $open{$one_council}{unknown}, $all);
+                list_problems(_('New problems'), $open{$one_council}{new}, $all);
+                if ($q->{site} eq 'emptyhomes') {
+                    my @old = ();
+                    push @old, @{$open{$one_council}{older}} if $open{$one_council}{older};
+                    push @old, @{$open{$one_council}{unknown}} if $open{$one_council}{unknown};
+                    list_problems('Older empty properties', \@old, $all);
+                } else {
+                    list_problems('Older problems', $open{$one_council}{older}, $all);
+                    list_problems('Old problems, state unknown', $open{$one_council}{unknown}, $all);
+                }
                 print '</div>';
             }
             if ($fixed{$one_council}) {
@@ -225,8 +245,9 @@ sub add_row {
 
 sub summary_cell {
     my $c = shift;
-    $c ||= [];
-    print '<td>' . scalar @$c . '</td>';
+    $c = 0 unless defined $c;
+    $c = @$c if ref($c) eq 'ARRAY';
+    print '<td>' . $c . '</td>';
 }
 
 sub list_problems {

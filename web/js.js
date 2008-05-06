@@ -26,7 +26,8 @@ function compass_pan(e, a) {
 
 YAHOO.util.Event.onContentReady('compass', function() {
     var ua=navigator.userAgent.toLowerCase();
-    if (document.getElementById('mapForm') && /safari/.test(ua)) return;
+    if (document.getElementById('mapForm') && (/safari/.test(ua) || /Konqueror/.test(ua))) return;
+    if (document.getElementById('map').offsetWidth > 510) return;
 
     var points = this.getElementsByTagName('a');
     YAHOO.util.Event.addListener(points[1], 'click', compass_pan, { x:0, y:tileheight });
@@ -43,6 +44,7 @@ YAHOO.util.Event.onContentReady('compass', function() {
 YAHOO.util.Event.onContentReady('map', function() {
     var ua=navigator.userAgent.toLowerCase();
     if (document.getElementById('mapForm') && (/safari/.test(ua) || /Konqueror/.test(ua))) return;
+    if (document.getElementById('map').offsetWidth > 510) return;
 
     new YAHOO.util.DDMap('map');
     update_tiles(start_x, start_y, true);

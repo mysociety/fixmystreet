@@ -1,3 +1,11 @@
+label {
+    width: 3em;
+}
+
+#alert_links {
+    float: none;
+}
+
 #map_box {
     width: 380px;
 }
@@ -10,12 +18,16 @@
     margin-top: 0.5em;
 }
 #middle {
-    width: 570px;
+    width: 620px;
 }
 #middle p {
-    width: 580px;
+    width: 620px;
 }
 #middle p#copyright {
+    width: auto;
+}
+p#fixed, p#unknown {
+    margin-right: 400px;
     width: auto;
 }
 
@@ -49,7 +61,7 @@ blockquote {
 
 .a {
     color: #000000;
-    background-color: #427499;
+    background-color: #DCDCED; /* #427499; */
 }
 
 #postcodeForm, #front_stats div {

@@ -17,3 +17,11 @@ blockquote {
     width: 7em;
 }
 
+#map_box {
+    width: 380px;
+}
+#map, #drag {
+    width: 378px;
+    height: 378px;
+}
+

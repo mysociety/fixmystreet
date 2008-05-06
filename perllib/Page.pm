@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.91 2008-04-15 13:54:53 matthew Exp $
+# $Id: Page.pm,v 1.92 2008-05-06 10:01:30 matthew Exp $
 #
 
 package Page;
@@ -24,6 +24,7 @@ use URI::Escape;
 use mySociety::Config;
 use mySociety::DBHandle qw/dbh select_all/;
 use mySociety::EvEl;
+use mySociety::Locale;
 use mySociety::MaPit;
 use mySociety::PostcodeUtil;
 use mySociety::Tracking;
@@ -75,6 +76,16 @@ sub microsite {
     $q->{site} = 'fixmystreet';
     $q->{site} = 'scambs' if $host =~ /scambs/;
     $q->{site} = 'emptyhomes' if $host =~ /emptyhomes/;
+
+    if ($q->{site} eq 'emptyhomes') {
+        $q->{thing} = 'empty property';
+	mySociety::Locale::negotiate_language('en-gb,English,en_GB', 'en-gb');
+	mySociety::Locale::gettext_domain('FixMyStreet-EmptyHomes');
+	mySociety::Locale::change();
+    } else {
+        $q->{thing} = 'problem';
+	mySociety::Locale::gettext_domain('FixMyStreet');
+    }
 }
 
 =item header Q [PARAM VALUE ...]
@@ -124,6 +135,10 @@ sub header ($%) {
         <script type="text/javascript" src="/js.js"></script>
         <title>${title}FixMyStreet</title>
         <style type="text/css">\@import url("/css/core.css"); \@import url("/css/main.css");</style>
+<!--[if LT IE 7]>
+<style type="text/css">\@import url("/css/ie6.css");</style>
+<![endif]-->
+
         <!-- RSS -->
     </head>
     <body>
@@ -215,8 +230,12 @@ sub display_map {
     $params{pins} ||= '';
     $params{pre} ||= '';
     $params{post} ||= '';
-    my $px = defined($params{px}) ? 254-$params{px} : 0;
-    my $py = defined($params{py}) ? 254-$params{py} : 0;
+    my $mid_point = 254;
+    if ($q->{site} eq 'emptyhomes' || $q->{site} eq 'scambs') { # Map is c. 380px wide
+        $mid_point = 189;
+    }
+    my $px = defined($params{px}) ? $mid_point - $params{px} : 0;
+    my $py = defined($params{py}) ? $mid_point - $params{py} : 0;
     my $x = int($params{x})<=0 ? 0 : $params{x};
     my $y = int($params{y})<=0 ? 0 : $params{y};
     my $url = mySociety::Config::get('TILES_URL');
@@ -266,6 +285,7 @@ $params{pre}
         $params{pins}
     </div>
 EOF
+    $out .= '<div id="watermark"></div>';
     $out .= compass($q, $x, $y);
     $out .= <<EOF;
     </div>
@@ -290,7 +310,7 @@ sub display_pin {
     $num = '' unless $num;
     my %cols = (red=>'R', green=>'G', blue=>'B', purple=>'P');
     my $out = '<img class="pin" src="/i/pin' . $cols{$col}
-        . $num . '.gif" alt="Problem" style="top:' . ($py-59)
+        . $num . '.gif" alt="' . _('Problem') . '" style="top:' . ($py-59)
         . 'px; left:' . ($px) . 'px; position: absolute;">';
     return $out unless $_ && $_->{id} && $col ne 'blue';
     my $url = NewURL($q, id=>$_->{id}, x=>undef, y=>undef);
@@ -362,6 +382,28 @@ sub click_to_tile {
     return $pin_tile + $pin / 254;
 }
 
+sub os_to_px_with_adjust {
+    my ($q, $easting, $northing, $in_x, $in_y) = @_;
+
+    my $x = Page::os_to_tile($easting);
+    my $y = Page::os_to_tile($northing);
+    my $x_tile = $in_x || int($x);
+    my $y_tile = $in_y || int($y);
+    my $px = Page::os_to_px($easting, $x_tile);
+    my $py = Page::os_to_px($northing, $y_tile, 1);
+    if ($q->{site} eq 'emptyhomes' || $q->{site} eq 'scambs') { # Map is 380px
+        if ($py > 380) {
+            $y_tile--;
+            $py = Page::os_to_px($northing, $y_tile, 1);
+        }
+        if ($px > 380) {
+            $x_tile--;
+            $px = Page::os_to_px($easting, $x_tile);
+        }
+    }
+    return ($x, $y, $x_tile, $y_tile, $px, $py);
+}
+
 # send_email TO (NAME) TEMPLATE-NAME PARAMETERS
 sub send_email {
     my ($email, $name, $thing, %h) = @_;
@@ -373,7 +415,7 @@ sub send_email {
     mySociety::EvEl::send({
         _template_ => $template,
         _parameters_ => \%h,
-        From => [ $sender, 'FixMyStreet'],
+        From => [ $sender, _('FixMyStreet')],
         To => $to,
     }, $email);
     my $out;
@@ -433,11 +475,6 @@ sub _part {
         push @$o, "$i $w" . ($i != 1 ? 's' : '');
         $$s -= $i * $m;
     }
-}
-
-# Simply so I can gettext the code without making the locale stuff all work
-sub _ {
-    return $_[0];
 }
 
 sub display_problem_text {
