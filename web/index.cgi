@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.191 2008-05-06 10:01:31 matthew Exp $
+# $Id: index.cgi,v 1.192 2008-05-06 10:06:13 matthew Exp $
 
 use strict;
 use Standard;
@@ -799,7 +799,7 @@ swfu = new SWFUpload(swfu_settings);
 EOF
 
     my %params = (
-        rss => [ 'Updates to this ' . $q->{thing} . ', FixMyStreet', "/rss/$input_h{id}" ],
+        rss => [ _('Updates to this problem, FixMyStreet'), "/rss/$input_h{id}" ],
         js => $js,
         title => $problem->{title}
     );

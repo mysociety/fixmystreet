@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.92 2008-05-06 10:01:30 matthew Exp $
+# $Id: Page.pm,v 1.93 2008-05-06 10:06:13 matthew Exp $
 #
 
 package Page;
@@ -78,13 +78,11 @@ sub microsite {
     $q->{site} = 'emptyhomes' if $host =~ /emptyhomes/;
 
     if ($q->{site} eq 'emptyhomes') {
-        $q->{thing} = 'empty property';
-	mySociety::Locale::negotiate_language('en-gb,English,en_GB', 'en-gb');
-	mySociety::Locale::gettext_domain('FixMyStreet-EmptyHomes');
-	mySociety::Locale::change();
+        mySociety::Locale::negotiate_language('en-gb,English,en_GB', 'en-gb');
+        mySociety::Locale::gettext_domain('FixMyStreet-EmptyHomes');
+        mySociety::Locale::change();
     } else {
-        $q->{thing} = 'problem';
-	mySociety::Locale::gettext_domain('FixMyStreet');
+        mySociety::Locale::gettext_domain('FixMyStreet');
     }
 }
 
