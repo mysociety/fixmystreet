@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.93 2008-05-06 10:06:13 matthew Exp $
+# $Id: Page.pm,v 1.94 2008-05-06 10:13:22 matthew Exp $
 #
 
 package Page;
@@ -283,7 +283,7 @@ $params{pre}
         $params{pins}
     </div>
 EOF
-    $out .= '<div id="watermark"></div>';
+    #$out .= '<div id="watermark"></div>';
     $out .= compass($q, $x, $y);
     $out .= <<EOF;
     </div>
