@@ -161,12 +161,12 @@ ul#error {
 /* Map */
 
 #watermark {
-    background: url("/mojwatermark5.png");
-    height: 508px;
-    width: 508px;
+    background: url("/i/mojwatermark6.png");
+    height: 113px;
+    width: 231px;
     position: absolute;
-    top: 0;
-    left: 0;
+    bottom: 0;
+    right: 0;
 }
 
 #map_box {
