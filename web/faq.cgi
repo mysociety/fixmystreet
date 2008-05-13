@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.29 2008-02-08 17:30:12 francis Exp $
+# $Id: faq.cgi,v 1.30 2008-05-13 12:39:17 matthew Exp $
 
 use strict;
 use Standard -db;
@@ -118,7 +118,7 @@ Ayesha Garrett designed our posters, and Tom Steinberg managed it all.
 Thanks also to
 <a href="http://www.ordnancesurvey.co.uk">Ordnance Survey</a> (for the maps,
 UK postcodes, and UK addresses &ndash; data &copy; Crown copyright, all
-rights reserved, Department for Constitutional Affairs 100037819&nbsp;2007),
+rights reserved, Ministry of Justice 100037819&nbsp;2008),
 Yahoo! for their BSD-licensed JavaScript libraries, the entire free software
 community (this particular project was brought to you by Perl, PostgreSQL,
 and the number 161.290) and <a

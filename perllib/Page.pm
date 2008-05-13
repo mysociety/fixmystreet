@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.95 2008-05-06 10:38:25 matthew Exp $
+# $Id: Page.pm,v 1.96 2008-05-13 12:39:17 matthew Exp $
 #
 
 package Page;
@@ -288,7 +288,7 @@ EOF
     $out .= <<EOF;
     </div>
     <p id="copyright">&copy; Crown copyright.  All rights reserved.
-    Department for Constitutional Affairs 100037819&nbsp;2007</p>
+    Ministry of Justice 100037819&nbsp;2008</p>
 $params{post}
 EOF
     $out .= '</div>';
