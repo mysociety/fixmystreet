@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.24 2008-01-30 18:27:48 matthew Exp $
+# $Id: alert.cgi,v 1.25 2008-05-13 16:00:14 matthew Exp $
 
 use strict;
 use Standard;
@@ -25,7 +25,7 @@ use mySociety::Web qw(ent);
 sub main {
     my $q = shift;
     my $out = '';
-    my $title = 'Confirmation';
+    my $title = _('Confirmation');
     if ($q->param('signed_email')) {
         $out = alert_signed_input($q);
     } elsif (my $token = $q->param('token')) {
@@ -46,10 +46,10 @@ EOF
     } elsif ($q->param('id')) {
         $out = alert_updates_form($q);
     } elsif ($q->param('pc')) {
-        $title = 'Local RSS feeds and email alerts';
+        $title = _('Local RSS feeds and email alerts');
         $out = alert_list($q);
     } else {
-        $title = 'Local RSS feeds and email alerts';
+        $title = _('Local RSS feeds and email alerts');
         $out = alert_front_page($q);
     }
 
@@ -76,7 +76,7 @@ sub alert_list {
     my $areas = mySociety::MaPit::get_voting_areas_by_location({easting=>$e, northing=>$n}, 'polygon', \@types);
     $areas = mySociety::MaPit::get_voting_areas_info([ keys %$areas ]);
 
-    return alert_front_page($q, 'That location does not appear to be covered by a council, perhaps it is offshore - please try somewhere more specific.') if keys %$areas == 0;
+    return alert_front_page($q, _('That location does not appear to be covered by a council, perhaps it is offshore - please try somewhere more specific.')) if keys %$areas == 0;
 
     my ($options);
     if (keys %$areas == 2) {
@@ -91,9 +91,9 @@ sub alert_list {
             }
         }
         push @options, [ 'council', $council->{area_id}, Page::short_name($council->{name}),
-            "Problems within $council->{name}" ];
+            sprintf(_("Problems within %s"), $council->{name}) ];
         push @options, [ 'ward', $council->{area_id}.':'.$ward->{area_id}, Page::short_name($council->{name}) . '/'
-            . Page::short_name($ward->{name}), "Problems within $ward->{name} ward" ];
+            . Page::short_name($ward->{name}), sprintf(_("Problems within %s ward"), $ward->{name}) ];
 
         $options = '<div>' . $q->ul({id=>'rss_feed'},
             alert_list_options($q, @options)
@@ -122,7 +122,7 @@ sub alert_list {
             [ 'area', $county->{area_id}.':'.$c_ward->{area_id}, Page::short_name($county->{name}) . '/'
               . Page::short_name($c_ward->{name}), "$c_ward->{name} ward, $county->{name}" ];
         $options = '<div id="rss_list">';
-        $options .= $q->p($q->strong('Problems within the boundary of:')) .
+        $options .= $q->p($q->strong(_('Problems within the boundary of:'))) .
             $q->ul(alert_list_options($q, @options));
         @options = ();
         push @options,
@@ -132,13 +132,13 @@ sub alert_list {
             [ 'council', $county->{area_id}, Page::short_name($county->{name}), $county->{name} ],
             [ 'ward', $county->{area_id}.':'.$c_ward->{area_id}, Page::short_name($county->{name}) . '/'
               . Page::short_name($c_ward->{name}), "$county->{name}, within $c_ward->{name} ward" ];
-        $options .= $q->p($q->strong('Or problems reported to:')) .
+        $options .= $q->p($q->strong(_('Or problems reported to:'))) .
             $q->ul(alert_list_options($q, @options));
-        $options .= $q->p($q->small('FixMyStreet sends different categories of problem
+        $options .= $q->p($q->small(_('FixMyStreet sends different categories of problem
 to the appropriate council, so problems within the boundary of a particular council
 might not match the problems sent to that council. For example, a graffiti report
 will be sent to the district council, so will appear in both that council\'s alerts,
-but will only appear in the "Within the boundary" alert for the county council.'));
+but will only appear in the "Within the boundary" alert for the county council.')));
         $options .= '</div>
 <div id="rss_buttons">
 ';
@@ -156,50 +156,46 @@ but will only appear in the "Within the boundary" alert for the county council.'
     $checked = ' checked' if $q->param('feed') && $q->param('feed') eq "local:$x:$y";
 
     my $pics = Page::recent_photos(5, $e, $n, $dist);
-    $pics = '<div id="alert_photos"><h2>Photos of recent nearby reports</h2>' . $pics . '</div>' if $pics;
+    $pics = '<div id="alert_photos">' . $q->h2(_('Photos of recent nearby reports')) . $pics . '</div>' if $pics;
 
-    <<EOF;
-<h1>Local RSS feeds and email alerts for &lsquo;$input_h{pc}&rsquo;</h1>
-
+    my $out = $q->h1(sprintf(_('Local RSS feeds and email alerts for &lsquo;%s&rsquo;'), $input_h{pc}));
+    $out .= <<EOF;
 <form id="alerts" method="post" action="/alert">
 <input type="hidden" name="type" value="local">
 <input type="hidden" name="pc" value="$input_h{pc}">
 
 $pics
 
-<p>Here are the types of local problem alerts for &lsquo;$input_h{pc}&rsquo;.
+EOF
+    $out .= $q->p(sprintf(_('Here are the types of local problem alerts for &lsquo;%s&rsquo;.
 Select which type of alert you&rsquo;d like and click the button for an RSS
-feed, or enter your email address to subscribe to an email alert.</p>
-
-$errors
-
-<p>The simplest alert is our geographic one:</p>
-
+feed, or enter your email address to subscribe to an email alert.'), $input_h{pc}));
+    $out .= $errors;
+    $out .= $q->p(_('The simplest alert is our geographic one:'));
+    my $label = sprintf(_('Problems within %skm of this location'), $dist);
+    $out .= <<EOF;
 <p id="rss_local">
 <input type="radio" name="feed" id="local:$x:$y" value="local:$x:$y"$checked>
-<label for="local:$x:$y">Problems within ${dist}km of this location</label> (a default
-distance which covers roughly 200,000 people)
-<a href="/rss/$x,$y"><img src="/i/feed.png" width="16" height="16" title="RSS feed of nearby problems" alt="RSS feed" border="0"></a>
-</p>
-<p id="rss_local_alt">
-(alternatively the RSS feed can be customised, within <a href="/rss/$x,$y/2">2km</a> / <a href="/rss/$x,$y/5">5km</a>
+<label for="local:$x:$y">$label</label>
+EOF
+    $out .= _('(a default distance which covers roughly 200,000 people)');
+    $out .= " <a href='/rss/$x,$y'><img src='/i/feed.png' width='16' height='16' title='"
+        . _('RSS feed of nearby problems') . "' alt='" . _('RSS feed') . "' border='0'></a>";
+    $out .= '</p> <p id="rss_local_alt">' . _('(alternatively the RSS feed can be customised, within');
+    $out .= <<EOF;
+ <a href="/rss/$x,$y/2">2km</a> / <a href="/rss/$x,$y/5">5km</a>
 / <a href="/rss/$x,$y/10">10km</a> / <a href="/rss/$x,$y/20">20km</a>)
 </p>
-
-<p>Or you can subscribe to an alert based upon what ward or council you&rsquo;re in:</p>
-
-$options
-
-<p><input type="submit" name="rss" value="Give me an RSS feed"></p>
-
-<p id="alert_or">or</p>
-
-<p>Your email: <input type="text" id="email" name="email" value="$input_h{email}" size="30"></p>
-<p><input type="submit" name="alert" value="Subscribe me to an email alert"></p>
-
-</div>
-</form>
 EOF
+    $out .= $q->p(_('Or you can subscribe to an alert based upon what ward or council you&rsquo;re in:'));
+    $out .= $options;
+    $out .= $q->p('<input type="submit" name="rss" value="' . _('Give me an RSS feed') . '">');
+    $out .= $q->p({-id=>'alert_or'}, _('or'));
+    $out .= '<p>' . _('Your email:') . ' <input type="text" id="email" name="email" value="' . $input_h{email} . '" size="30"></p>
+<p><input type="submit" name="alert" value="' . _('Subscribe me to an email alert') . '"></p>
+</div>
+</form>';
+    return $out;
 }
 
 sub alert_list_options {
@@ -216,7 +212,7 @@ sub alert_list_options {
             . '</label> <a href="/rss/';
         $out .= $type eq 'area' ? 'area' : 'reports';
         $out .= '/' . $rss . '"><img src="/i/feed.png" width="16" height="16"
-title="RSS feed of local problems at ' . $text . '" alt="RSS feed" border="0"></a>';
+title="' . sprintf(_('RSS feed of local problems at %s'), $text) . '" alt="' . _('RSS feed') . '" border="0"></a>';
     }
     return $out;
 }
@@ -228,32 +224,27 @@ sub alert_front_page {
     $errors = '<ul id="error"><li>' . $error . '</li></ul>' if $error;
 
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } qw(pc);
-    my $out = <<EOF;
-<h1>Local RSS feeds and email alerts</h1>
-<p>FixMyStreet has a variety of RSS feeds and email alerts for local problems, including
+    my $out = $q->h1(_('Local RSS feeds and email alerts'));
+    $out .= $q->p(_('FixMyStreet has a variety of RSS feeds and email alerts for local problems, including
 alerts for all problems within a particular ward or council, or all problems
-within a certain distance of a particular location.</p>
-
-$errors
-<form method="get" action="/alert">
-<p>To find out what local alerts we have for you, please enter your UK
-postcode or street name and area:
-<input type="text" name="pc" value="$input_h{pc}">
-<input type="submit" value="Look up">
-</form>
-EOF
+within a certain distance of a particular location.'));
+    $out .= $errors . '<form method="get" action="/alert">';
+    $out .= $q->p(_('To find out what local alerts we have for you, please enter your UK
+postcode or street name and area:'), '<input type="text" name="pc" value="' . $input_h{pc} . '">
+<input type="submit" value="Look up">');
+    $out .= '</form>';
 
     return $out if $q->referer() && $q->referer() =~ /fixmystreet\.com/;
 
     my $recent_photos = Page::recent_photos(10);
-    $out .= "<div id='alert_recent'><h2>Some photos of recent reports</h2>$recent_photos</div>" if $recent_photos;
+    $out .= '<div id="alert_recent">' . $q->h2(_('Some photos of recent reports')) . $recent_photos . '</div>' if $recent_photos;
     return $out;
 }
 
 sub alert_rss {
     my $q = shift;
     my $feed = $q->param('feed');
-    return alert_list($q, 'Please select the feed you want') unless $feed;
+    return alert_list($q, _('Please select the feed you want')) unless $feed;
     if ($feed =~ /^area:(?:\d+:)+(.*)$/) {
         (my $id = $1) =~ tr{:_}{/+};
         print $q->redirect('/rss/area/' . $id);
@@ -266,7 +257,7 @@ sub alert_rss {
         print $q->redirect('/rss/' . $1 . ',' . $2);
         return;
     } else {
-        return alert_list($q, 'Illegal feed selection');
+        return alert_list($q, _('Illegal feed selection'));
     }
 }
 

@@ -5,7 +5,7 @@
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <script type="text/javascript" src="/yui/utilities.js"></script>
 <script type="text/javascript" src="/js.js"></script>
-<link href="http://www.emptyhomes.com/eha2.css" rel="stylesheet" type="text/css">
+<link href="/css/cache-eha2.css" rel="stylesheet" type="text/css">
 <style type="text/css" media="screen, projection">
 @import "/css/core.css";
 @import "/css/emptyhomes.css";

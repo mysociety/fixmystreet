@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.192 2008-05-06 10:06:13 matthew Exp $
+# $Id: index.cgi,v 1.193 2008-05-13 16:00:14 matthew Exp $
 
 use strict;
 use Standard;
@@ -164,12 +164,12 @@ sub submit_update {
         push @errors, $err if $err;
     }
 
-    push(@errors, 'Please enter a message') unless $input{update} =~ /\S/;
+    push(@errors, _('Please enter a message')) unless $input{update} =~ /\S/;
     $input{name} = undef unless $input{name} =~ /\S/;
     if ($input{email} !~ /\S/) {
-        push(@errors, 'Please enter your email');
+        push(@errors, _('Please enter your email'));
     } elsif (!mySociety::EmailUtil::is_valid_email($input{email})) {
-        push(@errors, 'Please enter a valid email');
+        push(@errors, _('Please enter a valid email'));
     }
 
     my $image;

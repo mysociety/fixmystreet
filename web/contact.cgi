@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.27 2008-01-30 18:27:48 matthew Exp $
+# $Id: contact.cgi,v 1.28 2008-05-13 16:00:14 matthew Exp $
 
 use strict;
 use Standard;
@@ -19,7 +19,7 @@ use mySociety::Random qw(random_bytes);
 # Main code for index.cgi
 sub main {
     my $q = shift;
-    print Page::header($q, title=>'Contact Us');
+    print Page::header($q, title=>_('Contact Us'));
     my $out = '';
     if ($q->param('submit_form')) {
         $out = contact_submit($q);
@@ -36,15 +36,15 @@ sub contact_submit {
     my @vars = qw(name em subject message id);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
-    push(@errors, 'Please give your name') unless $input{name} =~ /\S/;
+    push(@errors, _('Please give your name')) unless $input{name} =~ /\S/;
     if ($input{em} !~ /\S/) {
-        push(@errors, 'Please give your email');
+        push(@errors, _('Please give your email'));
     } elsif (!mySociety::EmailUtil::is_valid_email($input{em})) {
-        push(@errors, 'Please give a valid email address');
+        push(@errors, _('Please give a valid email address'));
     }
-    push(@errors, 'Please give a subject') unless $input{subject} =~ /\S/;
-    push(@errors, 'Please write a message') unless $input{message} =~ /\S/;
-    push(@errors, 'Illegal ID') if $input{id} && $input{id} !~ /^[1-9]\d*$/;
+    push(@errors, _('Please give a subject')) unless $input{subject} =~ /\S/;
+    push(@errors, _('Please write a message')) unless $input{message} =~ /\S/;
+    push(@errors, _('Illegal ID')) if $input{id} && $input{id} !~ /^[1-9]\d*$/;
     return contact_page($q, @errors) if @errors;
 
     (my $message = $input{message}) =~ s/\r\n/\n/g;
@@ -60,13 +60,13 @@ sub contact_submit {
     my $email = mySociety::Email::construct_email({
         _body_ => "$message\n\n$postfix",
         From => [$input{em}, $input{name}],
-        To => [[mySociety::Config::get('CONTACT_EMAIL'), 'FixMyStreet']],
+        To => [[mySociety::Config::get('CONTACT_EMAIL'), _('FixMyStreet')]],
         Subject => 'FMS message: ' . $subject,
         'Message-ID' => sprintf('<contact-%s-%s@mysociety.org>', time(), unpack('h*', random_bytes(5))),
     });
     my $result = mySociety::EmailUtil::send_email($email, $input{em}, mySociety::Config::get('CONTACT_EMAIL'));
     if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
-        my $out = $q->p("Thanks for your feedback.  We'll get back to you as soon as we can!");
+        my $out = $q->p(_("Thanks for your feedback.  We'll get back to you as soon as we can!"));
         $out .= CrossSell::display_advert($q, $input{em}, $input{name});
         return $out;
     } else {
@@ -80,7 +80,7 @@ sub contact_page {
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 
-    my $out = $q->h1('Contact the team');
+    my $out = $q->h1(_('Contact the team'));
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
@@ -99,7 +99,7 @@ sub contact_page {
         my $p = dbh()->selectrow_hashref(
             'select title,detail,name,anonymous,extract(epoch from created) as created
             from problem where id=?', {}, $id);
-        $out .= $q->p('You are reporting the following problem report for being abusive, containing personal information, or similar:');
+        $out .= $q->p(_('You are reporting the following problem report for being abusive, containing personal information, or similar:'));
         $out .= $q->blockquote(
             $q->h2(ent($p->{title})),
             $q->p($q->em(
@@ -111,26 +111,28 @@ sub contact_page {
         );
         $out .= '<input type="hidden" name="id" value="' . $id . '">';
     } else {
-        $out .= <<EOF;
-<p>Please do <strong>not</strong> report problems through this form; messages go to
+        $out .= $q->p(_('Please do <strong>not</strong> report problems through this form; messages go to
 the team behind FixMyStreet, not a council. To report a problem,
-please <a href="/">go to the front page</a> and follow the instructions.</p>
-
-<p>We'd love to hear what you think about this site. Just fill in the form:</p>
-EOF
+please <a href="/">go to the front page</a> and follow the instructions.'));
+        $out .= $q->p(_("We'd love to hear what you think about this site. Just fill in the form:"));
     }
+    my $label_name = _('Your name:');
+    my $label_email = _('Your&nbsp;email:');
+    my $label_subject = _('Subject:');
+    my $label_message = _('Message:');
+    my $label_submit = _('Post');
     $out .= <<EOF;
 <fieldset>
 <input type="hidden" name="submit_form" value="1">
-<div><label for="form_name">Your name:</label>
+<div><label for="form_name">$label_name</label>
 <input type="text" name="name" id="form_name" value="$input_h{name}" size="30"></div>
-<div><label for="form_email">Your&nbsp;email:</label>
+<div><label for="form_email">$label_email</label>
 <input type="text" name="em" id="form_email" value="$input_h{em}" size="30"></div>
-<div><label for="form_subject">Subject:</label>
+<div><label for="form_subject">$label_subject</label>
 <input type="text" name="subject" id="form_subject" value="$input_h{subject}" size="30"></div>
-<div><label for="form_message">Message:</label>
+<div><label for="form_message">$label_message</label>
 <textarea name="message" id="form_message" rows="7" cols="60">$input_h{message}</textarea></div>
-<div class="checkbox"><input type="submit" value="Post"></div>
+<div class="checkbox"><input type="submit" value="$label_submit"></div>
 </fieldset>
 </form>
 </div>
