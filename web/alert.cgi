@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.25 2008-05-13 16:00:14 matthew Exp $
+# $Id: alert.cgi,v 1.26 2008-05-13 16:13:20 matthew Exp $
 
 use strict;
 use Standard;
@@ -66,6 +66,10 @@ sub alert_list {
     my ($x, $y, $e, $n, $error) = Page::geocode($input{pc});
     return Page::geocode_choice($error, '/alert') if ref($error) eq 'ARRAY';
     return alert_front_page($q, $error) if $error;
+
+    my $pretty_pc = $input_h{pc};
+    $pretty_pc = mySociety::PostcodeUtil::canonicalise_postcode($input{pc})
+        if mySociety::PostcodeUtil::is_valid_postcode($input{pc});
 
     my $errors = '';
     $errors = '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>' if @errors;
@@ -158,7 +162,7 @@ but will only appear in the "Within the boundary" alert for the county council.'
     my $pics = Page::recent_photos(5, $e, $n, $dist);
     $pics = '<div id="alert_photos">' . $q->h2(_('Photos of recent nearby reports')) . $pics . '</div>' if $pics;
 
-    my $out = $q->h1(sprintf(_('Local RSS feeds and email alerts for &lsquo;%s&rsquo;'), $input_h{pc}));
+    my $out = $q->h1(sprintf(_('Local RSS feeds and email alerts for &lsquo;%s&rsquo;'), $pretty_pc));
     $out .= <<EOF;
 <form id="alerts" method="post" action="/alert">
 <input type="hidden" name="type" value="local">
@@ -169,7 +173,7 @@ $pics
 EOF
     $out .= $q->p(sprintf(_('Here are the types of local problem alerts for &lsquo;%s&rsquo;.
 Select which type of alert you&rsquo;d like and click the button for an RSS
-feed, or enter your email address to subscribe to an email alert.'), $input_h{pc}));
+feed, or enter your email address to subscribe to an email alert.'), $pretty_pc));
     $out .= $errors;
     $out .= $q->p(_('The simplest alert is our geographic one:'));
     my $label = sprintf(_('Problems within %skm of this location'), $dist);
