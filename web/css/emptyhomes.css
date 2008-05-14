@@ -1,7 +1,3 @@
-label {
-    width: 3em;
-}
-
 #alert_links {
     float: none;
 }
@@ -18,12 +14,12 @@ label {
     margin-top: 0.5em;
 }
 #middle {
-    width: 620px;
+    width: 600px;
 }
 #middle p {
-    width: 620px;
+    width: auto;
 }
-#middle p#copyright {
+#middle h1 {
     width: auto;
 }
 p#fixed, p#unknown {
@@ -68,9 +64,16 @@ blockquote {
     background-color: #80AE7D;
     color: #000000;
 }
+#postcodeForm {
+    _width: 500px;
+}
+
 
 #front_stats div {
     padding: 0.5em 0;
     width: 6em;
 }
 
+#update_form, #problem_form {
+    clear: both; 
+}

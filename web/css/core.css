@@ -138,7 +138,7 @@ ul#error {
 
 /* Forms */
 
-#fieldset div {
+fieldset div, #fieldset div {
     margin-top: 2px;
     clear: left;
 }

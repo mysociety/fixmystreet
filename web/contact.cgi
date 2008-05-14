@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.28 2008-05-13 16:00:14 matthew Exp $
+# $Id: contact.cgi,v 1.29 2008-05-14 14:24:12 matthew Exp $
 
 use strict;
 use Standard;
@@ -131,7 +131,7 @@ please <a href="/">go to the front page</a> and follow the instructions.'));
 <div><label for="form_subject">$label_subject</label>
 <input type="text" name="subject" id="form_subject" value="$input_h{subject}" size="30"></div>
 <div><label for="form_message">$label_message</label>
-<textarea name="message" id="form_message" rows="7" cols="60">$input_h{message}</textarea></div>
+<textarea name="message" id="form_message" rows="7" cols="50">$input_h{message}</textarea></div>
 <div class="checkbox"><input type="submit" value="$label_submit"></div>
 </fieldset>
 </form>

@@ -10,6 +10,9 @@
 @import "/css/core.css";
 @import "/css/emptyhomes.css";
 </style>
+<!--[if LT IE 7]>
+<style type="text/css">@import url("/css/ie6.css");</style>
+<![endif]-->
 <!-- RSS -->
 </head>
 <body>
@@ -54,6 +57,7 @@ www.emptyhomes.com</small></p>
 <li><a href="http://www.emptyhomes.com/resources/papers_publications/publications.html">Papers &amp; Publications </a></li>
 </ul>
 
+<!-- 
 <div id="toptitle">See Also</div>
 <div id="topbox">
 <ul>
@@ -66,6 +70,7 @@ www.emptyhomes.com</small></p>
 <li><a href="http://www.emptyhomes.com/resources/useful_contacts.html">Useful Contacts</a></li>
 </ul>
 </div>
+-->
 
 </div>
 

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.98 2008-05-14 11:18:35 matthew Exp $
+# $Id: Page.pm,v 1.99 2008-05-14 14:24:11 matthew Exp $
 #
 
 package Page;
@@ -416,9 +416,9 @@ sub send_email {
         From => [ $sender, _('FixMyStreet')],
         To => $to,
     }, $email);
-    my $out;
+
     my $action = ($thing eq 'alert') ? 'confirmed' : 'posted';
-    $out = <<EOF;
+    my $out = <<EOF;
 <h1>Nearly Done! Now check your email...</h1>
 <p>The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.</p>
 <p>If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.</p>
@@ -495,7 +495,7 @@ sub display_problem_text {
             $out .= $q->br() . $q->small('Sent to ' . $council . ' ' .
                 prettify_duration($problem->{whensent}, 'minute') . ' later');
         }
-    } else {
+    } elsif ($q->{site} ne 'emptyhomes') {
         $out .= $q->br() . $q->small('Not reported to council');
     }
     $out .= '</em></p> <p>';

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.193 2008-05-13 16:00:14 matthew Exp $
+# $Id: index.cgi,v 1.194 2008-05-14 14:24:12 matthew Exp $
 
 use strict;
 use Standard;
@@ -74,8 +74,10 @@ Page::do_fastcgi(\&main);
 sub front_page {
     my ($q, $error) = @_;
     my $pc_h = ent($q->param('pc') || '');
-    my $out = '<p id="expl"><strong>' . _('Report, view, or discuss local problems') . '</strong>
-<br><small>' . _('(like graffiti, fly tipping, broken paving slabs, or street lighting)') . '</small></p>';
+    my $out = '<p id="expl"><strong>' . _('Report, view, or discuss local problems') . '</strong>';
+    my $subhead = _('(like graffiti, fly tipping, broken paving slabs, or street lighting)');
+    $out .= '<br><small>' . $subhead . '</small>' if $subhead ne ' ';
+    $out .= '</p>';
     $out .= '<p id="error">' . $error . '</p>' if ($error);
     my $fixed = dbh()->selectrow_array("select count(*) from problem where state='fixed' and lastupdate>ms_current_timestamp()-'1 month'::interval");
     my $updates = dbh()->selectrow_array("select count(*) from comment where state='confirmed'");
@@ -116,20 +118,19 @@ EOF
     $out .= $q->h2(_('How to report a problem'));
     $out .= $q->ol(
         $q->li(_('Enter a nearby UK postcode, or street name and area')),
-	$q->li(_('Locate the problem on a map of the area')),
-	$q->li(_('Enter details of the problem')),
-	$q->li(_('We send it to the council on your behalf'))
+        $q->li(_('Locate the problem on a map of the area')),
+        $q->li(_('Enter details of the problem')),
+        $q->li(_('We send it to the council on your behalf'))
     );
 
     $out .= $q->h2(_('FixMyStreet updates'));
+    $out .= $q->div({-id => 'front_stats'},
+        $q->div("<big>$new</big> reports $new_text"),
+        ($q->{site} ne 'emptyhomes' && $q->div("<big>$fixed</big> fixed in past month")),
+        $q->div("<big>$updates</big> updates on reports"),
+    );
+
     $out .= <<EOF;
-
-<div id="front_stats">
-<div><big>$new</big> reports $new_text</div>
-<div><big>$fixed</big> fixed in past month</div>
-<div><big>$updates</big> updates on reports</div>
-</div>
-
 </div>
 
 <div id="front_recent">
@@ -350,7 +351,8 @@ sub submit_problem {
         $h{url} = mySociety::Config::get('BASE_URL') . '/P/' . mySociety::AuthToken::store('problem', $id);
         dbh()->commit();
 
-        $out = Page::send_email($input{email}, $input{name}, 'problem', %h);
+        $out = Page::send_email($input{email}, $input{name}, _('problem'), %h);
+
     }
     return $out;
 }
@@ -403,10 +405,10 @@ sub display_form {
         $py = Page::os_to_px($northing, $input{y}, 1);
     } else {
         # Normal form submission
-	my ($x, $y, $tile_x, $tile_y);
-	($x, $y, $tile_x, $tile_y, $px, $py) = Page::os_to_px_with_adjust($q, $input{easting}, $input{northing}, undef, undef);
-	$input{x} = $tile_x;
-	$input{y} = $tile_y;
+        my ($x, $y, $tile_x, $tile_y);
+        ($x, $y, $tile_x, $tile_y, $px, $py) = Page::os_to_px_with_adjust($q, $input{easting}, $input{northing}, undef, undef);
+        $input{x} = $tile_x;
+        $input{y} = $tile_y;
         $easting = $input_h{easting};
         $northing = $input_h{northing};
     }
@@ -521,6 +523,13 @@ and describe the location as precisely as possible in the details box.'));
 to help unless you leave as much detail as you can, so please describe the exact location of
 the problem (e.g. on a wall), what it is, how long it has been there, a description (and a
 photo of the problem if you have one), etc.';
+    } elsif ($q->{site} eq 'emptyhomes') {
+        $out .= <<EOF;
+<p>Please fill in details of the empty property below, giving the state of the
+property, what type of property is and any other information you feel is relevant.
+Please be polite, concise and to the point; writing your message entirely in
+block capitals makes it hard to read, as does a lack of punctuation.</p>
+EOF
     } else {
         $out .= $q->p(_('Please fill in details of the problem below.'));
     }
@@ -532,17 +541,19 @@ photo of the problem if you have one), etc.';
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
     my $anon = ($input{anonymous}) ? ' checked' : ($input{title} ? '' : ' checked');
+    $out .= '<div id="problem_form">';
+    $out .= $q->h2('Empty property details form') if $q->{site} eq 'emptyhomes';
     $out .= <<EOF;
 <div id="fieldset">
 $category
 EOF
-    $out .= <<EOF unless $q->{site} eq 'emptyhomes'; # No Subject
+    $out .= <<EOF;
 <div><label for="form_title">Subject:</label>
 <input type="text" value="$input_h{title}" name="title" id="form_title" size="30"></div>
 EOF
     $out .= <<EOF;
 <div><label for="form_detail">Details:</label>
-<textarea name="detail" id="form_detail" rows="7" cols="15">$input_h{detail}</textarea></div>
+<textarea name="detail" id="form_detail" rows="7" cols="26">$input_h{detail}</textarea></div>
 EOF
     if (my $token = $input{flickr}) {
         my $id = mySociety::AuthToken::retrieve('flickr', $token);
@@ -592,6 +603,7 @@ EOF
     $out .= <<EOF;
 <p align="right"><input type="submit" name="submit_problem" value="Submit"></p>
 </div>
+</div>
 EOF
     $out .= Page::display_map_end(1);
     my %params = (
@@ -639,7 +651,7 @@ or are using a text only browser, for example &ndash; and you
 wish to report a problem, please
 <a href='%s'>skip this step</a> and we will ask you
 to describe the location of the problem instead.</small>"), $skipurl));
-    $out .= '<div' . $q->h2(_('Recent problems reported near here'));
+    $out .= '<div>' . $q->h2(_('Recent problems reported near here'));
     my $list = '';
     foreach (@$current_map) {
         $list .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
@@ -721,11 +733,11 @@ sub display_problem {
     my $pins = Page::display_pin($q, $px, $py, 'blue');
     $out .= Page::display_map($q, x => $x_tile, y => $y_tile, type => 0,
         pins => $pins, px => $px, py => $py );
-    if ($problem->{state} eq 'confirmed' && $problem->{duration} > 8*7*24*60*60) {
+    if ($q->{site} ne 'emptyhomes' && $problem->{state} eq 'confirmed' && $problem->{duration} > 8*7*24*60*60) {
         $out .= $q->p({id => 'unknown'}, _('This problem is old and of unknown status.'))
     }
     if ($problem->{state} eq 'fixed') {
-        $out .= $q->p({id => 'fixed'}, _('This problem has been fixed.'))
+        $out .= $q->p({id => 'fixed'}, _('This problem has been fixed') . '.')
     }
     $out .= Page::display_problem_text($q, $problem);
 
@@ -755,6 +767,7 @@ EOF
     $out .= '</div>';
 
     $out .= Page::display_problem_updates($input{id});
+    $out .= '<div id="update_form">';
     $out .= $q->h2(_('Provide an update'));
     $out .= $q->p($q->small(_('Please note that updates are not sent to the council.')))
         unless $q->{site} eq 'emptyhomes'; # No council blurb
@@ -790,6 +803,7 @@ $fixedline
 </div>
 <div class="checkbox"><input type="submit" id="update_post" value="Post"></div>
 </form>
+</div>
 EOF
     $out .= Page::display_map_end(0);
     my $js = <<EOF;

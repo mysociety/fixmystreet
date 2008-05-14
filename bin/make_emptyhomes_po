@@ -63,8 +63,11 @@ while(<MAINPO>) {
         $buffer =~ s/\bproblems\b/empty properties/g;
         $buffer =~ s/\bProblems\b/Empty properties/g;
 	$buffer =~ s/a empty/an empty/g;
+	$buffer =~ s/fixed/put back into use/g;
 
-        $buffer =~ s/^\(like graffiti.*/ /;
+	$buffer =~ s/Recently put back into use empty properties/Recent empty properties put back into use/;
+
+        $buffer =~ s/\(like graffiti.*\)/ /;
 
         print NEWPO $buffer;
         $buffer = "";
