@@ -1,3 +1,7 @@
+p#expl {
+    font-size: 130%;
+}
+
 #alert_links {
     float: none;
 }
@@ -77,3 +81,14 @@ blockquote {
 #update_form, #problem_form {
     clear: both; 
 }
+
+#watermark {
+    background: url("/i/mojwatermark-378.png");
+    height: 84px;
+    width: 171px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+

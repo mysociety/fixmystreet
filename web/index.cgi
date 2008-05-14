@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.194 2008-05-14 14:24:12 matthew Exp $
+# $Id: index.cgi,v 1.195 2008-05-14 15:02:28 matthew Exp $
 
 use strict;
 use Standard;
@@ -663,13 +663,14 @@ to describe the location of the problem instead.</small>"), $skipurl));
     } else {
         $out .= $q->p(_('No problems have been reported yet.'));
     }
-    $out .= $q->h2(sprintf(_('Closest problems within %skm'), $dist));
+    $out .= $q->h2({-id => 'closest_problems'}, sprintf(_('Closest problems within %skm'), $dist));
     my $email_me = _('Email me problems');
     my $rss_title = _('RSS feed of recent local problems');
     my $rss_alt = _('RSS feed');
+    my $u_pc = uri_escape($input{pc});
     $out .= <<EOF;
     <div id="alert_links">
-    <a id="email_alert" href="/alert?pc=$input_h{pc};type=local;feed=local:$x:$y;alert=Subscribe">$email_me</a>
+    <a id="email_alert" href="/alert?pc=$u_pc;type=local;feed=local:$x:$y;alert=Subscribe">$email_me</a>
      &nbsp; <span id="rss_link"><a href="/rss/$x,$y"><img src="/i/feed.png" width="16" height="16" title="$rss_title" alt="$rss_alt" border="0" style="vertical-align: middle"></a></span>
     </div>
 EOF

@@ -11,7 +11,7 @@
 @import "/css/scambs.css";
 </style>
 <!--[if LT IE 7]>
-<style type="text/css">@import url("/css/ie6.css");</style>
+<style type="text/css">@import url("/css/ie6-378.css");</style>
 <![endif]-->
 <link rel="stylesheet" type="text/css" href="http://www.scambs.gov.uk/system/css/print.css" media="print">
 <script type="text/javascript" src="http://www.scambs.gov.uk/system/js/external.js"></script>

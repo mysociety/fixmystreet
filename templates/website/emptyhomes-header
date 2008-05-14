@@ -11,7 +11,7 @@
 @import "/css/emptyhomes.css";
 </style>
 <!--[if LT IE 7]>
-<style type="text/css">@import url("/css/ie6.css");</style>
+<style type="text/css">@import url("/css/ie6-378.css");</style>
 <![endif]-->
 <!-- RSS -->
 </head>

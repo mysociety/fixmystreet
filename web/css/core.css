@@ -23,7 +23,7 @@ label {
     width: 5em;
 }
 
-#fieldset {
+fieldset, #fieldset {
     border: none;
     padding: 0.5em;
 }
@@ -73,7 +73,7 @@ ul#error {
 
 /* Front page */
 
-#expl {
+p#expl {
     text-align: center;
     font-size: 150%;
     margin: 0 2em;
@@ -268,6 +268,9 @@ p#copyright {
     margin: 0;
 }
 
+#closest_problems {
+    margin-bottom: 0;
+}
 #alert_links {
     float: right;
 }
