@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: photo.cgi,v 1.9 2008-05-15 09:26:56 matthew Exp $
+# $Id: photo.cgi,v 1.10 2008-05-15 16:15:32 matthew Exp $
 
 use strict;
 use Standard;
@@ -34,7 +34,7 @@ sub main {
     if ($q->param('tn')) {
         $photo = resize($photo, 'x100');
     } elsif ($q->{site} eq 'emptyhomes') {
-        $photo = resize($photo, '200x');
+        $photo = resize($photo, '195x');
     }
 
     print $photo;
