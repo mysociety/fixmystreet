@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.99 2008-05-14 14:24:11 matthew Exp $
+# $Id: Page.pm,v 1.100 2008-05-15 09:26:56 matthew Exp $
 #
 
 package Page;
@@ -411,13 +411,14 @@ sub send_email {
     my $sender = mySociety::Config::get('CONTACT_EMAIL');
     $sender =~ s/team/fms-DO-NOT-REPLY/;
     mySociety::EvEl::send({
-        _template_ => $template,
+        _template_ => _($template),
         _parameters_ => \%h,
         From => [ $sender, _('FixMyStreet')],
         To => $to,
     }, $email);
 
     my $action = ($thing eq 'alert') ? 'confirmed' : 'posted';
+    $thing .= ' report' if $thing eq _('problem');
     my $out = <<EOF;
 <h1>Nearly Done! Now check your email...</h1>
 <p>The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.</p>
@@ -524,13 +525,13 @@ sub display_problem_updates {
         foreach my $row (@$updates) {
             $out .= "<div><p><a name=\"update_$row->{id}\"></a><em>";
             if ($row->{name}) {
-                $out .= 'Posted by ' . ent($row->{name});
+                $out .= sprintf(_('Posted by %s'), ent($row->{name}));
             } else {
-                $out .= "Posted anonymously";
+                $out .= _("Posted anonymously");
             }
             $out .= " at " . prettify_epoch($row->{created});
-            $out .= ', marked fixed' if ($row->{mark_fixed});
-            $out .= ', reopened' if ($row->{mark_open});
+            $out .= ', ' . _('marked as fixed') if ($row->{mark_fixed});
+            $out .= ', ' . _('reopened') if ($row->{mark_open});
             $out .= '</em></p>';
             $out .= '<p>' . ent($row->{text}) . '</p>';
             if ($row->{has_photo}) {

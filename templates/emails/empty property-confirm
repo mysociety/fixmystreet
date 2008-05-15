@@ -1,0 +1,20 @@
+Subject: Confirm your empty property
+
+Hi <?=$values['name']?>,
+
+Please click on the link below to confirm the empty property
+you just added to the site:
+
+<?=$values['url']?>
+
+If your email program does not let you click on this link,
+copy and paste it into your web browser and press return.
+
+Your report had the subject:
+<?=$values['title']?>
+
+And details:
+<?=$values['detail']?>
+
+Yours,
+The Empty Homes Agency team

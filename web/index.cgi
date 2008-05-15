@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.195 2008-05-14 15:02:28 matthew Exp $
+# $Id: index.cgi,v 1.196 2008-05-15 09:26:56 matthew Exp $
 
 use strict;
 use Standard;
@@ -120,7 +120,7 @@ EOF
         $q->li(_('Enter a nearby UK postcode, or street name and area')),
         $q->li(_('Locate the problem on a map of the area')),
         $q->li(_('Enter details of the problem')),
-        $q->li(_('We send it to the council on your behalf'))
+        ($q->{site} ne 'emptyhomes' && $q->li(_('We send it to the council on your behalf')))
     );
 
     $out .= $q->h2(_('FixMyStreet updates'));
@@ -201,7 +201,9 @@ sub submit_update {
     my %h = ();
     $h{update} = $input{update};
     $h{name} = $input{name} ? $input{name} : _("Anonymous");
-    $h{url} = mySociety::Config::get('BASE_URL') . '/C/' . mySociety::AuthToken::store('update', $id);
+    my $base = mySociety::Config::get('BASE_URL');
+    $base =~ s/matthew/emptyhomes.matthew/ if $q->{site} eq 'emptyhomes'; # XXX Temp
+    $h{url} = $base . '/C/' . mySociety::AuthToken::store('update', $id);
     dbh()->commit();
 
     my $out = Page::send_email($input{email}, $input{name}, 'update', %h);
@@ -224,6 +226,8 @@ sub submit_problem {
         my $err = Page::check_photo($q, $fh);
         push @errors, $err if $err;
     }
+
+    $input{council} = -1 if $q->{site} eq 'emptyhomes'; # Not sent to council
 
     push(@errors, _('No council selected')) unless ($input{council} && $input{council} =~ /^(?:-1|[\d,]+(?:\|[\d,]+)?)$/);
     push(@errors, _('Please enter a subject')) unless $input{title} =~ /\S/;
@@ -348,7 +352,9 @@ sub submit_problem {
         $h{title} = $input{title};
         $h{detail} = $input{detail};
         $h{name} = $input{name};
-        $h{url} = mySociety::Config::get('BASE_URL') . '/P/' . mySociety::AuthToken::store('problem', $id);
+        my $base = mySociety::Config::get('BASE_URL');
+        $base =~ s/matthew/emptyhomes.matthew/ if $q->{site} eq 'emptyhomes'; # XXX Temp
+        $h{url} = $base . '/P/' . mySociety::AuthToken::store('problem', $id);
         dbh()->commit();
 
         $out = Page::send_email($input{email}, $input{name}, _('problem'), %h);

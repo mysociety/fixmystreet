@@ -68,6 +68,7 @@ while(<MAINPO>) {
 	$buffer =~ s/Recently put back into use empty properties/Recent empty properties put back into use/;
 
         $buffer =~ s/\(like graffiti.*\)/ /;
+	$buffer =~ s/(Please enter your full name).*? -/$1 -/;
 
         print NEWPO $buffer;
         $buffer = "";

@@ -7,7 +7,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: gettext-extract,v 1.1 2008-05-06 10:01:23 matthew Exp $
+# $Id: gettext-extract,v 1.2 2008-05-15 09:26:56 matthew Exp $
 
 if [ -e ../../locale ]
 then
@@ -25,6 +25,15 @@ fi
 fi
 fi
 
+# Take chunk of text and escape each line in it for putting in catalogue
+function plain_gettext_escape() {
+    IFS=""
+    while read LINE
+    do
+        LINE=${LINE//\"/\\\"}
+        echo \"$LINE\\n\"
+    done
+}
 
 # File to write to, clear it to start with
 PO=locale/FixMyStreet.po
@@ -50,4 +59,22 @@ mv $TEMP $PO
 
 # XXX: Email templates - should be in >1 language...
 # And the XSL page too.
+
+# Extract email templates
+echo >> $PO
+echo '#. Please leave the first word "Subject:" untranslated' >> $PO
+for X in bci/templates/emails/*
+do
+    # TODO: Should check for "*~" type filenames too, and do the *-livesimply case
+    # with wildcards rather than checking per template
+    if [ "$X" != "bci/templates/emails/CVS" -a "$X" != "bci/templates/emails/empty property-confirm" ]
+    then
+        echo >> $PO
+        echo "#: $X" >> $PO
+        echo msgid \"\" >> $PO
+        cat $X | plain_gettext_escape >> $PO
+        echo msgstr \"\" >> $PO
+    fi
+done
+
 

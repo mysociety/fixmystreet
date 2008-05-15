@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.48 2007-10-22 18:00:04 matthew Exp $
+# $Id: send-reports,v 1.49 2008-05-15 09:26:56 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -127,7 +127,7 @@ If you know of an appropriate contact address, please do get in touch. ]\n\n";
     $h{closest_address} = sprintf("The closest address, as the crow flies, to the location of this problem, %.0fm away, is: %s - please note that this is automatically generated, so ensure that you check it against the details provided by the user and, if possible, the map.\n\n",
         $distance, $address) if ($address);
     my $email = mySociety::Email::construct_email({
-        _template_ => $template,
+        _template_ => _($template),
         _parameters_ => \%h,
         To => \@to,
         From => [ $row->{email}, $row->{name} ],

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: photo.cgi,v 1.8 2008-03-28 16:36:48 matthew Exp $
+# $Id: photo.cgi,v 1.9 2008-05-15 09:26:56 matthew Exp $
 
 use strict;
 use Standard;
@@ -32,17 +32,23 @@ sub main {
     return unless $photo;
     $photo = $photo->[0];
     if ($q->param('tn')) {
-        use Image::Magick;
-        my $image = Image::Magick->new;
-        $image->BlobToImage($photo);
-        my $err = $image->Scale(geometry => "x100>");
-        throw Error::Simple("resize failed: $err") if "$err";
-        my @blobs = $image->ImageToBlob();
-        undef $image;
-        $photo = $blobs[0];
+        $photo = resize($photo, 'x100');
+    } elsif ($q->{site} eq 'emptyhomes') {
+        $photo = resize($photo, '200x');
     }
 
     print $photo;
 }
 Page::do_fastcgi(\&main);
 
+sub resize {
+    my ($photo, $size) = @_;
+    use Image::Magick;
+    my $image = Image::Magick->new;
+    $image->BlobToImage($photo);
+    my $err = $image->Scale(geometry => "$size>");
+    throw Error::Simple("resize failed: $err") if "$err";
+    my @blobs = $image->ImageToBlob();
+    undef $image;
+    return $blobs[0];
+}
