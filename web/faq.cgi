@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.30 2008-05-13 12:39:17 matthew Exp $
+# $Id: faq.cgi,v 1.31 2008-05-15 16:09:52 matthew Exp $
 
 use strict;
 use Standard -db;
@@ -15,7 +15,11 @@ use Standard -db;
 sub main {
     my $q = shift;
     print Page::header($q, title=>_('FAQ'));
-    print faq($q);
+    if ($q->{site} eq 'emptyhomes') {
+        print emptyhomes_faq($q);
+    } else {
+        print faq($q);
+    }
     print Page::footer($q);
 }
 Page::do_fastcgi(\&main);
@@ -116,6 +120,76 @@ our pins, Deborah Kerr keeps things up-to-date and does user support,
 Ayesha Garrett designed our posters, and Tom Steinberg managed it all.
 
 Thanks also to
+<a href="http://www.ordnancesurvey.co.uk">Ordnance Survey</a> (for the maps,
+UK postcodes, and UK addresses &ndash; data &copy; Crown copyright, all
+rights reserved, Ministry of Justice 100037819&nbsp;2008),
+Yahoo! for their BSD-licensed JavaScript libraries, the entire free software
+community (this particular project was brought to you by Perl, PostgreSQL,
+and the number 161.290) and <a
+href="http://www.easynet.net/publicsector/">Easynet</a> (who kindly host all
+our servers).
+
+Let us know if we&rsquo;ve missed anyone.'))
+    );
+    return $out;
+}
+
+sub emptyhomes_faq {
+    my $q = shift;
+    my $out = $q->h1('Frequently Asked Questions');
+    $out .= $q->dl(
+        $q->dt('What is this site for?'),
+        $q->dd('This site is to help provide a public record of
+empty properties in Great Britain. It expands upon our telephone hotline
+for empty homes in the London area, and allows local authorities, related
+organisations and the public to view reported empty homes and update
+their status, and report new empty properties.'),
+        $q->dt(_('How do I use the site?')),
+        $q->dd(_('After entering a postcode or location, you are presented
+with a map of that area. You can view problems already reported in that area,
+or report ones of your own simply by clicking on the map at the location of
+the problem.')),
+        $q->dt('Is it free?'),
+        $q->dd('The site is free to use, yes. The Empty Homes Agency is
+a registered charity, though, so if you want to make a contribution,
+please do.'),
+        $q->dt(_('Do you remove silly or illegal content?')),
+        $q->dd(_('We reserve the right to remove any reports or updates
+which we consider to be inappropriate.')),
+    );
+    $out .= $q->h2(_('Privacy Questions'));
+    $out .= $q->dl(
+        $q->dt('Who gets to see my email address?'),
+        $q->dd('If you submit an empty property, your details are obviously provided to us.
+Your name is displayed upon the site if you let us, but not your email address;
+similarly with updates.  We will never give or sell your email address to
+anyone else, unless we are obliged to by law.'),
+        $q->dt('Will you send nasty, brutish spam to my email address?'),
+	$q->dd('Never. We\'ll only ever send you emails in relation to your
+problem. You can opt in to receive emails about updates to a particular
+problem.')
+    );
+    $out .= $q->h2(_('Organisation Questions'));
+    $out .= $q->dl(
+        $q->dt('Who built this site?'),
+        $q->dd('This site was built by <a href="http://www.mysociety.org/">mySociety</a>. 
+mySociety is the project of a registered charity which has grown out of the community of
+volunteers who built sites like <a href="http://www.theyworkforyou.com/">TheyWorkForYou</a>. 
+mySociety&rsquo;s primary mission is to build Internet projects which give people simple, tangible
+benefits in the civic and community aspects of their lives. Our first project
+was <a href="http://www.writetothem.com/">WriteToThem</a>, where you can write to any of your
+elected representatives, for free.
+<a href="https://secure.mysociety.org/donate/">Donate to mySociety</a>'),
+        $q->dt(_('Where&rsquo;s the "source code" to this site?')),
+        $q->dd(_('The software behind this site is open source, and available
+to you mainly under the GNU Affero GPL software license. You can <a
+href="https://secure.mysociety.org/cvstrac/dir?d=mysociety">download the
+source code</a> (look under &lsquo;bci&rsquo;) and help us develop it.
+You&rsquo;re welcome to use it in your own projects, although you must also
+make available the source code to any such projects.')),
+        $q->dt(_('People build things, not organisations. Who <em>actually</em> built it?')),
+        $q->dd(_('This adaptation of FixMyStreet was written by Matthew Somerville.
+Thanks go to
 <a href="http://www.ordnancesurvey.co.uk">Ordnance Survey</a> (for the maps,
 UK postcodes, and UK addresses &ndash; data &copy; Crown copyright, all
 rights reserved, Ministry of Justice 100037819&nbsp;2008),

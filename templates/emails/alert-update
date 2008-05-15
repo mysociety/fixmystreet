@@ -9,5 +9,5 @@ View or reply to these updates: <?=$values['problem_url']?>
 -- 
 The FixMyStreet team
 
-To stop receiving emails when there are new comments on this problem,
+To stop receiving emails when there are new updates on this problem,
 please follow this link: <?=$values['unsubscribe_url']?>

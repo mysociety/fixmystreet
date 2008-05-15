@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.15 2008-05-06 10:01:31 matthew Exp $
+# $Id: reports.cgi,v 1.16 2008-05-15 16:09:52 matthew Exp $
 
 use strict;
 use Standard;
@@ -144,13 +144,13 @@ sub main {
 
     my $areas_info = mySociety::MaPit::get_voting_areas_info([keys %councils]);
     if (!$one_council) {
-        print Page::header($q, title=>'Summary reports');
+        print Page::header($q, title=>_('Summary reports'));
         print $q->p(_('This is a summary of all reports on this site; select a particular council to see the reports sent there.'));
         my $c = 0;
         print '<table cellpadding="3" cellspacing="1" border="0">';
         print '<tr><th>Name</th><th>' . _('New problems') . '</th><th>' . _('Older problems') . '</th>';
         if ($q->{site} eq 'emptyhomes') {
-            print '<th>Recently in use</th><th>Old in use</th></tr>';
+            print '<th>Recently returned to use</th><th>Older returned to use</th></tr>';
         } else {
             print '<th>Old problems,<br>state unknown</th><th>Recently fixed</th><th>Old fixed</th></tr>';
         }
@@ -205,22 +205,22 @@ sub main {
             print "<h2>$name</h2>\n";
             if ($open{$one_council}) {
                 print '<div id="col_problems">';
-                list_problems(_('New problems'), $open{$one_council}{new}, $all);
+                list_problems($q, _('New problems'), $open{$one_council}{new}, $all);
                 if ($q->{site} eq 'emptyhomes') {
                     my @old = ();
                     push @old, @{$open{$one_council}{older}} if $open{$one_council}{older};
                     push @old, @{$open{$one_council}{unknown}} if $open{$one_council}{unknown};
-                    list_problems('Older empty properties', \@old, $all);
+                    list_problems($q, 'Older empty properties', \@old, $all);
                 } else {
-                    list_problems('Older problems', $open{$one_council}{older}, $all);
-                    list_problems('Old problems, state unknown', $open{$one_council}{unknown}, $all);
+                    list_problems($q, _('Older problems'), $open{$one_council}{older}, $all);
+                    list_problems($q, _('Old problems, state unknown'), $open{$one_council}{unknown}, $all);
                 }
                 print '</div>';
             }
             if ($fixed{$one_council}) {
                 print '<div id="col_fixed">';
-                list_problems('Recently fixed', $fixed{$one_council}{new}, $all);
-                list_problems('Old fixed', $fixed{$one_council}{old}, $all);
+                list_problems($q, _('Recently fixed'), $fixed{$one_council}{new}, $all);
+                list_problems($q, _('Old fixed'), $fixed{$one_council}{old}, $all);
                 print '</div>';
             }
         }
@@ -251,7 +251,7 @@ sub summary_cell {
 }
 
 sub list_problems {
-    my ($title, $problems, $all) = @_;
+    my ($q, $title, $problems, $all) = @_;
     return unless $problems;
     print "<h3>$title</h3>\n<ul>";
     foreach (@$problems) {
@@ -259,7 +259,7 @@ sub list_problems {
         print ent($_->[1]);
         print '</a>';
         print ' <small>(sent to both)</small>' if $_->[3]>1;
-        print ' <small>(not sent to council)</small>' if $_->[3]==0;
+        print ' <small>(not sent to council)</small>' if $_->[3]==0 && $q->{site} ne 'emptyhomes';
         print '<br><small>' . ent($_->[2]) . '</small>' if $all;
         print '</li>';
     }

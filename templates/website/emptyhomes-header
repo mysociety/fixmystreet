@@ -43,17 +43,20 @@ www.emptyhomes.com</small></p>
 <a href="http://www.emptyhomes.com/">Home</a> | <a href="http://www.emptyhomes.com/contact_us.html">Contact Us</a> | <a href="http://www.emptyhomes.com/sitemap.html">Site Map</a> | <a href="http://www.emptyhomes.com/disclaimer.html">Disclaimer</a> </div>
 <div id="main"><div id="left">
 <ul>
-<li><a href="http://www.emptyhomes.com/aboutus/about_us.html">What We Do </a></li>
+<li><a href="http://www.emptyhomes.com/aboutus/whatwedo/what_we_do.html">What We Do </a></li>
+<li><a href="http://www.emptyhomes.com/rescue/buying_empties.html">Rescue An Empty Property</a>
 <ol>
-<li><a href="http://www.emptyhomes.com/aboutus/whatwedo/what_we_do.html">What We Do</a></li>
-<li><a href="http://www.emptyhomes.com/aboutus/projects.html">Projects</a></li>
-<li><a href="http://www.emptyhomes.com/aboutus/latestnews/latest_news.html">Latest News</a></li>
-<li><a href="http://www.emptyhomes.com/aboutus/events.html">Events</a></li>
-<li><a href="http://www.emptyhomes.com/aboutus/jobs.html">Jobs</a></li>
-<li><a href="http://www.emptyhomes.com/aboutus/volunteer.html">Volunteer</a></li>
-<li><a href="http://www.emptyhomes.com/aboutus/finance.html">Finance</a></li>
-</ol>
-<li><a href="http://www.emptyhomes.com/rescue/buying_empties.html">Rescue An Empty Property</a></li>
+      <li><a href="http://www.emptyhomes.com/rescue/buying_empties.html">Buying Empty Homes</a></li>
+      <li><a href="http://www.emptyhomes.com/rescue/owning_an_empty.html">Owning Empty Homes</a></li>
+      <li><a href="http://www.emptyhomes.com/rescue/campaigning_on_empties.html">Campaigning On Empty Homes</a></li>
+      <li><a href="/">Report an Empty Home</a>
+      <ul>
+      <li><a href="/reports">All reports</a></li>
+      <li><a href="/alert">Local alerts</a></li>
+      <li><a href="/faq">Help</a></li>
+      </ul>
+      </li>
+</ol></li>
 <li><a href="http://www.emptyhomes.com/resources/papers_publications/publications.html">Papers &amp; Publications </a></li>
 </ul>
 

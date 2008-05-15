@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.49 2008-05-15 09:26:56 matthew Exp $
+# $Id: send-reports,v 1.50 2008-05-15 16:09:51 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -18,7 +18,7 @@ use lib "$FindBin::Bin/../../perllib";
 use File::Slurp;
 
 use mySociety::Config;
-use mySociety::DBHandle qw(dbh select_all);
+use mySociety::DBHandle qw(dbh);
 use mySociety::Email;
 use mySociety::EmailUtil;
 use mySociety::MaPit;
@@ -44,13 +44,24 @@ $nomail = 1 if (@ARGV==1 && $ARGV[0] eq '--nomail');
 $verbose = 1 if (@ARGV==1 && $ARGV[0] eq '--verbose');
 $verbose = 1 if $nomail;
 
-my (%notgot, %note);
-my $unsent = dbh()->selectall_arrayref(
-    "SELECT id, council, category, title, detail, name, email, phone, used_map,
-    easting, northing, (photo is not null) as has_photo
-    FROM problem WHERE state in ('confirmed','fixed') AND whensent IS NULL
-    AND council IS NOT NULL", { Slice => {} });
+my $base_url = mySociety::Config::get('BASE_URL');
+my $site = 'fixmystreet';
+$site = 'emptyhomes' if $base_url =~ 'emptyhomes' || $base_url eq 'http://matthew.fixmystreet.com'; # XXX
 
+my $query;
+if ($site eq 'emptyhomes') {
+    $query = "SELECT id, title, detail, name, email, phone, used_map, easting,
+    northing, (photo is not null) as has_photo
+    FROM problem WHERE state in ('confirmed','fixed') AND whensent IS NULL";
+} else {
+    $query = "SELECT id, council, category, title, detail, name, email, phone,
+    used_map, easting, northing, (photo is not null) as has_photo
+    FROM problem WHERE state in ('confirmed','fixed') AND whensent IS NULL
+    AND council IS NOT NULL";
+}
+my $unsent = dbh()->selectall_arrayref($query, { Slice => {} });
+
+my (%notgot, %note);
 foreach my $row (@$unsent) {
 
     if (dbh()->selectrow_array('select email from abuse where lower(email)=?', {}, lc($row->{email}))) {
@@ -58,76 +69,88 @@ foreach my $row (@$unsent) {
         dbh()->commit();
         next;
     }
-    # XXX Needs locks!
-    my @all_councils = split /,|\|/, $row->{council};
-    my ($councils, $missing) = $row->{council} =~ /^([\d,]+)(?:\|([\d,]+))?/;
-    my @councils = split /,/, $councils;
-    my $areas_info = mySociety::MaPit::get_voting_areas_info(\@all_councils);
-    my (@to, @dear, %recips);
-    my $all_confirmed = 1;
-    foreach my $council (@councils) {
-        my $name = $areas_info->{$council}->{name};
-        my ($council_email, $confirmed, $note) = dbh()->selectrow_array(
-            "SELECT email,confirmed,note FROM contacts WHERE deleted='f'
-                and area_id=? AND category=?", {}, $council, $row->{category});
-        $council_email = essex_contact($row->{easting}, $row->{northing}) if $council == 2225;
-        $council_email = notts_contact($row->{easting}, $row->{northing}) if $council == 2236;
-        unless ($confirmed) {
-            $all_confirmed = 0;
-            $note = 'Council ' . $row->{council} . ' deleted'
-                unless $note;
-            $council_email = 'N/A' unless $council_email;
-            $notgot{$council_email}{$row->{category}}++;
-            $note{$council_email}{$row->{category}} = $note;
-        }
-        push @to, [ $council_email, $name ];
-        push @dear, $name;
-        $recips{$council_email} = 1;
-    }
-    my @recips = keys %recips;
-    if (!@to) {
-        if ($verbose) {
-            print 'Need to send problem #' . $row->{id} . ' to council(s) ' . join(',',@recips) . "\n";
-            print "  ...but we have no contact details for any of them!\n";
-        }
-        next;
-    }
-    next unless ($all_confirmed);
 
-    push @recips, mySociety::Config::get('CONTACT_EMAIL');
-
-    my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/submit-council");
+    # Template variables for the email
     my %h = map { $_ => $row->{$_} } qw/title detail name email phone category/;
     $h{phone} = "Phone: $h{phone}\n\n" if $h{phone};
     $h{has_photo} = '';
     $h{has_photo} = "This web page also contains a photo of the problem, provided by the user.\n\n" if $row->{has_photo};
-    if ($h{category} eq 'Other') {
-        $h{category_footer} = 'this type of local problem';
-        $h{category} = '';
-    } else {
-        $h{category_footer} = "'" . $h{category} . "'";
-        $h{category} = "Category: $h{category}\n\n";
-    }
-    $h{url} = mySociety::Config::get('BASE_URL') . '/?id=' . $row->{id};
-    $h{councils_name} = join(' and ', @dear);
+    $h{url} = $base_url . '/?id=' . $row->{id};
     $h{fuzzy} = $row->{used_map} ? 'To view a map of the precise location of this issue'
         : 'The user could not locate the problem on a map, but to see the area around the location they entered';
-    $h{multiple} = @dear>1 ? "[ This email has been sent to both councils covering the location of the problem, as the user did not categorise it; please ignore it if you're not the correct council to deal with the issue, or let us know what category of problem this is so we can add it to our system. ]\n\n"
-        : '';
-    $h{missing} = ''; 
-    if ($missing) {
-        my $name = $areas_info->{$missing}->{name};
-        $h{missing} = '[ We realise this problem might be the responsibility of ' . $name
-            . "; however, we don't currently have any contact details for them.
-If you know of an appropriate contact address, please do get in touch. ]\n\n";
-    }
-
     $h{closest_address} = '';
     my ($address, $distance) = mySociety::Dress::find_nearest($row->{easting}, $row->{northing});
     $h{closest_address} = sprintf("The closest address, as the crow flies, to the location of this problem, %.0fm away, is: %s - please note that this is automatically generated, so ensure that you check it against the details provided by the user and, if possible, the map.\n\n",
-        $distance, $address) if ($address);
+        $distance, $address) if $address;
+
+    my (@to, @recips, $template);
+    if ($site eq 'emptyhomes') {
+        @to = ( [ 'matthew@mysociety.org', 'Empty Homes Agency' ] );
+        @recips = ('matthew@mysociety.org');
+        $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/submit-eha");
+    } else {
+        # XXX Needs locks!
+        my @all_councils = split /,|\|/, $row->{council};
+        my ($councils, $missing) = $row->{council} =~ /^([\d,]+)(?:\|([\d,]+))?/;
+        my @councils = split /,/, $councils;
+        my $areas_info = mySociety::MaPit::get_voting_areas_info(\@all_councils);
+        my (@dear, %recips);
+        my $all_confirmed = 1;
+        foreach my $council (@councils) {
+            my $name = $areas_info->{$council}->{name};
+            my ($council_email, $confirmed, $note) = dbh()->selectrow_array(
+                "SELECT email,confirmed,note FROM contacts WHERE deleted='f'
+                    and area_id=? AND category=?", {}, $council, $row->{category});
+            $council_email = essex_contact($row->{easting}, $row->{northing}) if $council == 2225;
+            $council_email = notts_contact($row->{easting}, $row->{northing}) if $council == 2236;
+            unless ($confirmed) {
+                $all_confirmed = 0;
+                $note = 'Council ' . $row->{council} . ' deleted'
+                    unless $note;
+                $council_email = 'N/A' unless $council_email;
+                $notgot{$council_email}{$row->{category}}++;
+                $note{$council_email}{$row->{category}} = $note;
+            }
+            push @to, [ $council_email, $name ];
+            push @dear, $name;
+            $recips{$council_email} = 1;
+        }
+        my @recips = keys %recips;
+        if (!@to) {
+            if ($verbose) {
+                print 'Need to send problem #' . $row->{id} . ' to council(s) ' . join(',',@recips) . "\n";
+                print "  ...but we have no contact details for any of them!\n";
+            }
+            next;
+        }
+        next unless ($all_confirmed);
+
+        $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/submit-council");
+
+        if ($h{category} eq 'Other') {
+            $h{category_footer} = 'this type of local problem';
+            $h{category} = '';
+        } else {
+            $h{category_footer} = "'" . $h{category} . "'";
+            $h{category} = "Category: $h{category}\n\n";
+        }
+
+        $h{councils_name} = join(' and ', @dear);
+        $h{multiple} = @dear>1 ? "[ This email has been sent to both councils covering the location of the problem, as the user did not categorise it; please ignore it if you're not the correct council to deal with the issue, or let us know what category of problem this is so we can add it to our system. ]\n\n"
+            : '';
+        $h{missing} = ''; 
+        if ($missing) {
+            my $name = $areas_info->{$missing}->{name};
+            $h{missing} = '[ We realise this problem might be the responsibility of ' . $name
+                . "; however, we don't currently have any contact details for them.
+If you know of an appropriate contact address, please do get in touch. ]\n\n";
+        }
+    }
+
+    push @recips, mySociety::Config::get('CONTACT_EMAIL');
+
     my $email = mySociety::Email::construct_email({
-        _template_ => _($template),
+        _template_ => $template,
         _parameters_ => \%h,
         To => \@to,
         From => [ $row->{email}, $row->{name} ],
@@ -135,7 +158,7 @@ If you know of an appropriate contact address, please do get in touch. ]\n\n";
     });
 
     my $result;
-    if (mySociety::Config::get('STAGING_SITE') || $nomail) {
+    if ($nomail) {
         $result = -1;
     } else {
         $result = mySociety::EmailUtil::send_email($email, mySociety::Config::get('CONTACT_EMAIL'), @recips);

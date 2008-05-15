@@ -6,6 +6,7 @@ p#expl {
     float: none;
 }
 
+/* Smaller map */
 #map_box {
     width: 380px;
 }
@@ -13,9 +14,21 @@ p#expl {
     width: 378px;
     height: 378px;
 }
+#watermark {
+    background: url("/i/mojwatermark-378.png");
+    height: 84px;
+    width: 171px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
 
 #toptitle {
     margin-top: 0.5em;
+}
+
+#left {
+    width: auto;
 }
 #middle {
     width: 600px;
@@ -51,6 +64,7 @@ p#fixed, p#unknown {
     margin: 0.5em 0 0.25em;
 }
 
+/* So IE and Firefox match */
 #left ol {
     padding: 0;
 }
@@ -72,7 +86,6 @@ blockquote {
     _width: 500px;
 }
 
-
 #front_stats div {
     padding: 0.5em 0;
     width: 6em;
@@ -82,13 +95,21 @@ blockquote {
     clear: both; 
 }
 
-#watermark {
-    background: url("/i/mojwatermark-378.png");
-    height: 84px;
-    width: 171px;
-    position: absolute;
-    bottom: 0;
-    right: 0;
+/* Slightly narrower so it fits */
+#col_problems, #col_fixed {
+    width: 45%;
 }
 
+/* Sub nav for the internal bits */
+#left ol ul {
+    font-size: 90%;
+}
+#left ol ul a {
+    padding: 4px 0 4px 20px;
+    background-color: #ffffff;
+}
+#left ol ul a:hover {
+    background-color: #B1BECF;
+    background-color: #DCDCED;
+}
 

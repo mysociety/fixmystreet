@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.196 2008-05-15 09:26:56 matthew Exp $
+# $Id: index.cgi,v 1.197 2008-05-15 16:09:52 matthew Exp $
 
 use strict;
 use Standard;
@@ -76,6 +76,7 @@ sub front_page {
     my $pc_h = ent($q->param('pc') || '');
     my $out = '<p id="expl"><strong>' . _('Report, view, or discuss local problems') . '</strong>';
     my $subhead = _('(like graffiti, fly tipping, broken paving slabs, or street lighting)');
+    $subhead = '(like graffiti, fly tipping, or neighbourhood noise)' if $q->{site} eq 'scambs';
     $out .= '<br><small>' . $subhead . '</small>' if $subhead ne ' ';
     $out .= '</p>';
     $out .= '<p id="error">' . $error . '</p>' if ($error);
@@ -116,18 +117,22 @@ EOF
 <div id="front_intro">
 EOF
     $out .= $q->h2(_('How to report a problem'));
+    my $step4 = $q->li(_('We send it to the council on your behalf'));
+    $step4 = '' if $q->{site} eq 'emptyhomes';
+    $step4 = $q->li('The council receives your report and acts upon it')
+        if $q->{site} eq 'scambs';
     $out .= $q->ol(
         $q->li(_('Enter a nearby UK postcode, or street name and area')),
         $q->li(_('Locate the problem on a map of the area')),
         $q->li(_('Enter details of the problem')),
-        ($q->{site} ne 'emptyhomes' && $q->li(_('We send it to the council on your behalf')))
+        $step4
     );
 
     $out .= $q->h2(_('FixMyStreet updates'));
     $out .= $q->div({-id => 'front_stats'},
-        $q->div("<big>$new</big> reports $new_text"),
+        $q->div("<big>$new</big> report" . ($new!=1?'s':''), $new_text),
         ($q->{site} ne 'emptyhomes' && $q->div("<big>$fixed</big> fixed in past month")),
-        $q->div("<big>$updates</big> updates on reports"),
+        $q->div("<big>$updates</big> update" . ($updates!=1?'s':''), "on reports"),
     );
 
     $out .= <<EOF;
@@ -341,13 +346,13 @@ sub submit_problem {
         $id = dbh()->selectrow_array("select nextval('problem_id_seq');");
         Page::workaround_pg_bytea("insert into problem
             (id, postcode, easting, northing, title, detail, name,
-             email, phone, photo, state, council, used_map, anonymous, category, areas)
+             email, phone, photo, state, council, used_map, anonymous, category, areas, send_questionnaire)
             values
-            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?, ?, ?, ?)", 10,
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?, ?, ?, ?, ?)", 10,
             $id, $input{pc}, $input{easting}, $input{northing}, $input{title},
             $input{detail}, $input{name}, $input{email}, $input{phone}, $image,
             $input{council}, $used_map, $input{anonymous} ? 'f': 't', $input{category},
-            $areas);
+            $areas, $q->{site} eq 'emptyhomes' ? 'f' : 't');
         my %h = ();
         $h{title} = $input{title};
         $h{detail} = $input{detail};
@@ -422,11 +427,9 @@ sub display_form {
     my $all_councils = mySociety::MaPit::get_voting_areas_by_location(
         { easting => $easting, northing => $northing },
         'polygon', $mySociety::VotingArea::council_parent_types);
+
     if ($q->{site} eq 'scambs') {
-        #delete $all_councils->{2218};
-        #@categories = ('Abandoned vehicles', 'Discarded hypodermic needles',
-        #'Dog fouling', 'Flytipping', 'Graffiti', 'Lighting (e.g. security lights)',
-        #'Litter', 'Neighbourhood noise');
+        delete $all_councils->{2218};
     }
     $all_councils = [ keys %$all_councils ];
     return display_location($q, _('That spot does not appear to be covered by a council - if it is past the shoreline, for example, please specify the closest point on land.')) unless @$all_councils;
@@ -444,6 +447,11 @@ sub display_form {
             $council_ok{$_->{area_id}} = 1;
             next if $_->{category} eq _('Other');
             push @categories, $_->{category};
+        }
+        if ($q->{site} eq 'scambs') {
+            @categories = ('Abandoned vehicles', 'Discarded hypodermic needles',
+            'Dog fouling', 'Flytipping', 'Graffiti', 'Lighting (e.g. security lights)',
+            'Litter', 'Neighbourhood noise');
         }
         if (@categories) {
             @categories = ('-- Pick a category --', @categories, _('Other'));
@@ -524,6 +532,11 @@ problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.";
     if ($input{skipped}) {
         $out .= $q->p(_('Please fill in the form below with details of the problem,
 and describe the location as precisely as possible in the details box.'));
+    } elsif ($q->{site} eq 'scambs') {
+        $out .= '<p>Please fill in details of the problem below. We won\'t be able
+to help unless you leave as much detail as you can, so please describe the exact location of
+the problem (e.g. on a wall), what it is, how long it has been there, a description (and a
+photo of the problem if you have one), etc.';
     } elsif ($details ne 'none') {
         $out .= '<p>Please fill in details of the problem below. The council won\'t be able
 to help unless you leave as much detail as you can, so please describe the exact location of
@@ -593,7 +606,18 @@ EOF
 <input type="text" value="$input_h{phone}" name="phone" id="form_phone" size="15">
 <small>(optional)</small></div>
 EOF
-    $out .= <<EOF unless $q->{site} eq 'emptyhomes'; # No notes
+    if ($q->{site} eq 'scambs') {
+        $out .= <<EOF;
+<p>Please note:</p>
+<ul>
+<li>Please be polite, concise and to the point.
+<li>Please do not be abusive.
+<li>Writing your message entirely in block capitals makes it hard to read,
+as does a lack of punctuation.
+</ul>
+EOF
+    } elsif ($q->{site} ne 'emptyhomes') {
+        $out .= <<EOF;
 <p>Please note:</p>
 <ul>
 <li>Please be polite, concise and to the point.
@@ -606,6 +630,7 @@ submission via this site remember that you can contact your council
 directly using their own website.
 </ul>
 EOF
+    }
     $out .= <<EOF;
 <p align="right"><input type="submit" name="submit_problem" value="Submit"></p>
 </div>

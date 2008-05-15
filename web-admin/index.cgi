@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.48 2008-04-11 11:38:08 francis Exp $
+# $Id: index.cgi,v 1.49 2008-05-15 16:09:53 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.48 2008-04-11 11:38:08 francis Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.49 2008-05-15 16:09:53 matthew Exp $';
 
 use strict;
 
@@ -110,7 +110,7 @@ sub do_summary ($) {
         map { dbh()->selectrow_array($_->[0]) . " " . $_->[1] } ( 
             ['select count(*) from contacts', 'contacts'],
             ['select count(*) from problem', 'problems'],
-            ['select count(*) from comment', 'comments'],
+            ['select count(*) from comment', 'updates'],
             ['select count(*) from questionnaire', 'questionnaires'],
             ['select count(*) from alert', 'alerts']
     )));

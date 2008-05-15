@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.100 2008-05-15 09:26:56 matthew Exp $
+# $Id: Page.pm,v 1.101 2008-05-15 16:09:51 matthew Exp $
 #
 
 package Page;
@@ -150,7 +150,7 @@ EOF
         $html =~ s#<!-- RSS -->#<link rel="alternate" type="application/rss+xml" title="$params{rss}[0]" href="$params{rss}[1]">#;
     }
     if (mySociety::Config::get('STAGING_SITE')) {
-        $html .= '<p id="error">This is a developer site; things might break at any time, and councils are not sent emails (they\'d get annoyed!).</p>';
+        $html .= '<p id="error">This is a developer site; things might break at any time.</p>';
     }
     return $html;
 }

@@ -17,11 +17,21 @@ blockquote {
     width: 7em;
 }
 
+/* Smaller map */
 #map_box {
     width: 380px;
 }
 #map, #drag {
     width: 378px;
     height: 378px;
+}
+#watermark {
+    display: none;
+    background: url("/i/mojwatermark-378.png");
+    height: 84px;
+    width: 171px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
 
