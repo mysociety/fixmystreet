@@ -1,0 +1,29 @@
+Subject: Empty property report
+
+Dear Empty Homes Agency,
+
+A user of the empty property reporting website has submitted the
+following report of an empty property.
+
+<?=$values['fuzzy']?>, or to provide an update on the report,
+please visit the following link:
+
+    <?=$values['url']?>
+
+<?=$values['has_photo']?>----------
+
+Name: <?=$values['name']?>
+
+Email: <?=$values['email']?>
+
+<?=$values['phone']?>Subject: <?=$values['title']?>
+
+Details: <?=$values['detail']?>
+
+<?=$values['closest_address']?>----------
+
+Replies to this email will go to the user who submitted the report, if
+you would like to ask for any further information.
+
+[ This message was sent via the EHA empty property reporting website. ]
+
