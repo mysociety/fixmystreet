@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.26 2008-05-13 16:13:20 matthew Exp $
+# $Id: alert.cgi,v 1.27 2008-05-20 14:39:01 matthew Exp $
 
 use strict;
 use Standard;
@@ -159,7 +159,7 @@ but will only appear in the "Within the boundary" alert for the county council.'
     my $checked = '';
     $checked = ' checked' if $q->param('feed') && $q->param('feed') eq "local:$x:$y";
 
-    my $pics = Page::recent_photos(5, $e, $n, $dist);
+    my $pics = Problems::recent_photos(5, $e, $n, $dist);
     $pics = '<div id="alert_photos">' . $q->h2(_('Photos of recent nearby reports')) . $pics . '</div>' if $pics;
 
     my $out = $q->h1(sprintf(_('Local RSS feeds and email alerts for &lsquo;%s&rsquo;'), $pretty_pc));
@@ -240,7 +240,7 @@ postcode or street name and area:'), '<input type="text" name="pc" value="' . $i
 
     return $out if $q->referer() && $q->referer() =~ /fixmystreet\.com/;
 
-    my $recent_photos = Page::recent_photos(10);
+    my $recent_photos = Problems::recent_photos(10);
     $out .= '<div id="alert_recent">' . $q->h2(_('Some photos of recent reports')) . $recent_photos . '</div>' if $recent_photos;
     return $out;
 }

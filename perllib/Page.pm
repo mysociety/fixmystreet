@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.101 2008-05-15 16:09:51 matthew Exp $
+# $Id: Page.pm,v 1.102 2008-05-20 14:39:01 matthew Exp $
 #
 
 package Page;
@@ -21,6 +21,7 @@ use LWP::Simple;
 use Digest::MD5 qw(md5_hex);
 use POSIX qw(strftime);
 use URI::Escape;
+use Problems;
 use mySociety::Config;
 use mySociety::DBHandle qw/dbh select_all/;
 use mySociety::EvEl;
@@ -83,6 +84,10 @@ sub microsite {
         mySociety::Locale::change();
     } else {
         mySociety::Locale::gettext_domain('FixMyStreet');
+    }
+
+    if ($q->{site} eq 'scambs') {
+        Problems::set_site_restriction('scambs');
     }
 }
 
@@ -668,30 +673,6 @@ sub short_name {
     $name = uri_escape($name);
     $name =~ s/%20/+/g;
     return $name;
-}
-
-sub recent_photos {
-    my ($num, $e, $n, $dist) = @_;
-    my $probs;
-    if ($e) {
-        $probs = select_all("select id, title
-            from problem_find_nearby(?, ?, ?) as nearby, problem
-            where nearby.problem_id = problem.id
-            and state in ('confirmed', 'fixed') and photo is not null
-            order by confirmed desc limit $num", $e, $n, $dist);
-    } else {
-        $probs = select_all("select id, title from problem
-            where state in ('confirmed', 'fixed') and photo is not null
-            order by confirmed desc limit $num");
-    }
-    my $out = '';
-    foreach (@$probs) {
-        my $title = ent($_->{title});
-        $out .= '<a href="/?id=' . $_->{id} .
-            '"><img border="0" src="/photo?tn=1;id=' . $_->{id} .
-            '" alt="' . $title . '" title="' . $title . '"></a>';
-    }
-    return $out;
 }
 
 sub check_photo {

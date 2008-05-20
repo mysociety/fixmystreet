@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.197 2008-05-15 16:09:52 matthew Exp $
+# $Id: index.cgi,v 1.198 2008-05-20 14:39:01 matthew Exp $
 
 use strict;
 use Standard;
@@ -80,12 +80,12 @@ sub front_page {
     $out .= '<br><small>' . $subhead . '</small>' if $subhead ne ' ';
     $out .= '</p>';
     $out .= '<p id="error">' . $error . '</p>' if ($error);
-    my $fixed = dbh()->selectrow_array("select count(*) from problem where state='fixed' and lastupdate>ms_current_timestamp()-'1 month'::interval");
-    my $updates = dbh()->selectrow_array("select count(*) from comment where state='confirmed'");
-    my $new = dbh()->selectrow_array("select count(*) from problem where state in ('confirmed','fixed') and confirmed>ms_current_timestamp()-'1 week'::interval");
+    my $fixed = Problems::recent_fixed();
+    my $updates = Problems::number_comments();
+    my $new = Problems::recent_new('1 week');
     my $new_text = 'in past week';
     if ($new > $fixed) {
-        $new = dbh()->selectrow_array("select count(*) from problem where state in ('confirmed','fixed') and confirmed>ms_current_timestamp()-'3 days'::interval");
+        $new = Problems::recent_new('3 days');
         $new_text = 'recently';
     }
     $out .= '<form action="./" method="get" id="postcodeForm">';
@@ -141,12 +141,10 @@ EOF
 <div id="front_recent">
 EOF
 
-    my $recent_photos = Page::recent_photos(3);
+    my $recent_photos = Problems::recent_photos(3);
     $out .= $q->h2(_('Photos of recent reports')) . $recent_photos if $recent_photos;
 
-    my $probs = select_all("select id,title from problem
-        where state in ('confirmed', 'fixed')
-        order by confirmed desc limit 5");
+    my $probs = Problems::recent();
     $out .= $q->h2(_('Recently reported problems')) . ' <ul>' if @$probs;
     foreach (@$probs) {
         $out .= '<li><a href="/?id=' . $_->{id} . '">'. ent($_->{title});
@@ -233,6 +231,7 @@ sub submit_problem {
     }
 
     $input{council} = -1 if $q->{site} eq 'emptyhomes'; # Not sent to council
+    $input{council} = 2260 if $q->{site} eq 'scambs'; # All reports go to S. Cambs
 
     push(@errors, _('No council selected')) unless ($input{council} && $input{council} =~ /^(?:-1|[\d,]+(?:\|[\d,]+)?)$/);
     push(@errors, _('Please enter a subject')) unless $input{title} =~ /\S/;
@@ -430,6 +429,7 @@ sub display_form {
 
     if ($q->{site} eq 'scambs') {
         delete $all_councils->{2218};
+        return display_location($q, _('That location is not within the boundary of South Cambridgeshire District Council - you can report problems elsewhere in Great Britain using <a href="http://www.fixmystreet.com/">FixMyStreet</a>.')) unless $all_councils->{2260};
     }
     $all_councils = [ keys %$all_councils ];
     return display_location($q, _('That spot does not appear to be covered by a council - if it is past the shoreline, for example, please specify the closest point on land.')) unless @$all_councils;
@@ -750,12 +750,7 @@ sub display_problem {
 
     # Get all information from database
     return display_location($q, 'Unknown problem ID') if $input{id} =~ /\D/;
-    my $problem = dbh()->selectrow_hashref(
-        "select id, easting, northing, council, category, title, detail, (photo is not null) as photo,
-             used_map, name, anonymous, extract(epoch from confirmed) as time,
-             state, extract(epoch from whensent-confirmed) as whensent,
-             extract(epoch from ms_current_timestamp()-lastupdate) as duration
-         from problem where id=? and state in ('confirmed','fixed', 'hidden')", {}, $input{id});
+    my $problem = Problems::fetch_problem($input{id});
     return display_location($q, 'Unknown problem ID') unless $problem;
     return front_page($q, 'That problem has been hidden from public view as it contained inappropriate public details') if $problem->{state} eq 'hidden';
     my ($x, $y, $x_tile, $y_tile, $px, $py) = Page::os_to_px_with_adjust($q, $problem->{easting}, $problem->{northing}, $input{x}, $input{y});
@@ -863,10 +858,7 @@ sub map_pins {
     my $max_e = Page::tile_to_os($x+3);
     my $max_n = Page::tile_to_os($y+3);
 
-    my $current_map = select_all(
-        "select id,title,easting,northing from problem where state='confirmed'
-         and easting>=? and easting<? and northing>=? and northing<?
-         order by created desc limit 9", $min_e, $max_e, $min_n, $max_n);
+    my $current_map = Problems::current_on_map($min_e, $max_e, $min_n, $max_n);
     my @ids = ();
     my $count_prob = 1;
     my $count_fixed = 1;
@@ -886,23 +878,14 @@ sub map_pins {
     my $current = [];
     if (@$current_map < 9) {
         my $limit = 9 - @$current_map;
-        $current = select_all(
-            "select id, title, easting, northing, distance
-                from problem_find_nearby(?, ?, $dist) as nearby, problem
-                where nearby.problem_id = problem.id
-                and state = 'confirmed'" . (@ids ? ' and id not in (' . join(',' , @ids) . ')' : '') . "
-             order by distance, created desc limit $limit", $mid_e, $mid_n);
+        $current = Problems::current_nearby($dist, join(',', @ids), $limit, $mid_e, $mid_n);
         foreach (@$current) {
             my $px = Page::os_to_px($_->{easting}, $x);
             my $py = Page::os_to_px($_->{northing}, $y, 1);
             $pins .= Page::display_pin($q, $px, $py, 'red', $count_prob++);
         }
     }
-    my $fixed = select_all(
-        "select id, title, easting, northing, distance
-            from problem_find_nearby(?, ?, $dist) as nearby, problem
-            where nearby.problem_id = problem.id and state='fixed'
-         order by created desc limit 9", $mid_e, $mid_n);
+    my $fixed = Problems::fixed_nearby($dist, $mid_e, $mid_n);
     foreach (@$fixed) {
         my $px = Page::os_to_px($_->{easting}, $x);
         my $py = Page::os_to_px($_->{northing}, $y, 1);

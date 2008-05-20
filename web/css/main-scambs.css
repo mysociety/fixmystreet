@@ -1,3 +1,8 @@
+ul#error {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
 blockquote {
     border-left: solid 4px #013B63;
 }
@@ -33,5 +38,9 @@ blockquote {
     position: absolute;
     bottom: 0;
     right: 0;
+}
+
+#fixed, #unknown {
+    margin-right: 400px;
 }
 

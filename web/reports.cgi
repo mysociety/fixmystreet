@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.16 2008-05-15 16:09:52 matthew Exp $
+# $Id: reports.cgi,v 1.17 2008-05-20 14:39:01 matthew Exp $
 
 use strict;
 use Standard;
@@ -25,6 +25,9 @@ sub main {
 
     # Look up council name, if given
     my $q_council = $q->param('council') || '';
+
+    $q_council = 2260 if $q->{site} eq 'scambs';
+
     my ($one_council, $area_type, $area_name);
     if ($q_council =~ /\D/) {
         (my $qc = $q_council) =~ s/ and / & /;
@@ -199,8 +202,9 @@ sub main {
                 ($all ? 
                     $q->a({href => NewURL($q, council=>undef, ward=>undef, all=>undef) }, 'see less detail') :
                     $q->a({href => NewURL($q, council=>undef, ward=>undef, all=>1) }, 'see more details')) .
+		($q->{site} eq 'scambs' ? '' :
                 ' or go back and ' .
-                $q->a({href => '/reports' }, 'show all councils') .
+                $q->a({href => '/reports' }, 'show all councils') ) .
                 '.');
             print "<h2>$name</h2>\n";
             if ($open{$one_council}) {
