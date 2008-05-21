@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.39 2008-05-13 16:00:14 matthew Exp $
+# $Id: confirm.cgi,v 1.40 2008-05-21 15:48:07 matthew Exp $
 
 use strict;
 use Standard;
@@ -98,11 +98,19 @@ sub confirm_problem {
         dbh()->do("update problem set state='confirmed', confirmed=ms_current_timestamp(), lastupdate=ms_current_timestamp()
             where id=? and state='unconfirmed'", {}, $id);
     }
-    my $out = $q->p(
-        _('You have successfully confirmed your problem')
-        . ($council ? _(' and <strong>we will now send it to the council</strong>') : '')
-        . sprintf(_('. You can <a href="%s">view the problem on this site</a>.'), "/?id=$id")
-    );
+    my $out;
+    if ($q->{site} eq 'scambs') {
+        $out = $q->p($q->big(
+            'You have successfully confirmed your problem, and we will be in contact with you about it shortly. '
+            . sprintf(' <a href="%s">View the problem on this site</a>.', "/?id=$id")
+        ));
+    } else {
+        $out = $q->p(
+            _('You have successfully confirmed your problem')
+            . ($council ? _(' and <strong>we will now send it to the council</strong>') : '')
+            . sprintf(_('. You can <a href="%s">view the problem on this site</a>.'), "/?id=$id")
+        );
+    }
     $out .= advertise_updates($q, $id, $email);
     return $out;
 }
@@ -120,7 +128,7 @@ sub advertise_updates {
 EOF
     $signup .= '<input type="submit" value="' . _('sign up') . '">';
     my $out = '<form action="/alert" method="post">';
-    $out .= $q->p(sprintf(_('You could also <a href="%s">subscribe to the RSS feed</a> of updates by other local people on this problem, or %s if you wish to receive updates by email.'), "/rss/$problem_id", $signup));
+    $out .= $q->p(sprintf(_('You can also <a href="%s">subscribe to the RSS feed</a> of updates by other local people on this problem, or %s if you wish to receive updates by email.'), "/rss/$problem_id", $signup));
     $out .= '</form>';
     return $out;
 }

@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Problems.pm,v 1.1 2008-05-20 14:39:01 matthew Exp $
+# $Id: Problems.pm,v 1.2 2008-05-21 15:48:06 matthew Exp $
 #
 
 package Problems;
@@ -18,7 +18,10 @@ use mySociety::Web qw/ent/;
 my $site_restriction = '';
 sub set_site_restriction {
     my $site = shift;
-    $site_restriction = ' and council=2260 '
+    $site_restriction = " and council=2260 and category in
+	('Abandoned vehicles', 'Discarded hypodermic needles', 'Dog fouling',
+	'Flytipping', 'Graffiti', 'Lighting (e.g. security lights)', 'Litter',
+	'Neighbourhood noise') "
         if $site eq 'scambs';
 }
 
