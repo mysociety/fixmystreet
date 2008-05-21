@@ -2,3 +2,16 @@
     background: none;
     filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/i/mojwatermark6.png',sizingMethod='scale');
 }
+
+#logo {
+    display: none;
+}
+
+#logoie {
+    width: 133px;
+    height: 26px;
+    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/i/mysociety-dark.png',sizingMethod='scale');
+    position: absolute;
+    top: 4em;
+    right: 10px;
+}

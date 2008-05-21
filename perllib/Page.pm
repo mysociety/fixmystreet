@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.102 2008-05-20 14:39:01 matthew Exp $
+# $Id: Page.pm,v 1.103 2008-05-21 16:13:12 matthew Exp $
 #
 
 package Page;
@@ -195,6 +195,8 @@ sub footer {
 <li><a href="/faq">Help</a></li>
 <li><a href="/contact">Contact</a></li>
 </ul>
+
+<a href="http://www.mysociety.org/"><img id="logo" src="/i/mysociety-dark.png" alt="View mySociety.org"><span id="logoie"></span></a>
 
 <p id="footer">Built by <a href="http://www.mysociety.org/">mySociety</a>,
 using some <a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/bci">clever</a> <a

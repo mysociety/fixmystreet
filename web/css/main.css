@@ -111,6 +111,13 @@ blockquote {
     background-position: 100% 0;
 }
 
+#logo {
+    border: none;
+    position: absolute;
+    top: 4em;
+    right: 10px;
+}
+
 #footer {
     clear: both;
     text-align: right;
