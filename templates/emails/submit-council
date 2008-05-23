@@ -27,10 +27,9 @@ Replies to this email will go to the user who submitted the problem.
 
 Yours, The FixMyStreet team
 
-[ This message was sent via FixMyStreet (the new name for Neighbourhood
-Fix-It), a project of UKCOD, registered charity number 1076346. If there
-is a more appropriate email address for messages about
-<?=$values['category_footer']?>, please let us know by sending an email
-to <team@fixmystreet.com>. This will help improve the service for local
-people. We also welcome any other feedback you may have. ]
+[ This message was sent via FixMyStreet, a project of UKCOD, registered charity
+number 1076346. If there is a more appropriate email address for messages about
+<?=$values['category_footer']?>, please let us know by sending an email to
+<team@fixmystreet.com>. This will help improve the service for local people. We
+also welcome any other feedback you may have. ]
 

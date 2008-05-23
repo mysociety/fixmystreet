@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.103 2008-05-21 16:13:12 matthew Exp $
+# $Id: Page.pm,v 1.104 2008-05-23 09:53:10 matthew Exp $
 #
 
 package Page;
@@ -411,9 +411,10 @@ sub os_to_px_with_adjust {
 
 # send_email TO (NAME) TEMPLATE-NAME PARAMETERS
 sub send_email {
-    my ($email, $name, $thing, %h) = @_;
+    my ($q, $email, $name, $thing, %h) = @_;
     my $template = "$thing-confirm";
     $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/$template");
+    $template =~ s/FixMyStreet/Envirocrime/ if $q->{site} eq 'scambs';
     my $to = $name ? [[$email, $name]] : $email;
     my $sender = mySociety::Config::get('CONTACT_EMAIL');
     $sender =~ s/team/fms-DO-NOT-REPLY/;
@@ -713,6 +714,12 @@ sub workaround_pg_bytea {
         }
     }
     $s->execute();
+}
+
+sub scambs_categories {
+    return ('Abandoned vehicles', 'Discarded hypodermic needles',
+            'Dog fouling', 'Flytipping', 'Graffiti', 'Lighting (e.g. security lights)',
+            'Litter', 'Neighbourhood noise');
 }
 
 1;

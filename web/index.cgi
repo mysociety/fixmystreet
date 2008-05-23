@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.198 2008-05-20 14:39:01 matthew Exp $
+# $Id: index.cgi,v 1.199 2008-05-23 09:53:10 matthew Exp $
 
 use strict;
 use Standard;
@@ -206,10 +206,11 @@ sub submit_update {
     $h{name} = $input{name} ? $input{name} : _("Anonymous");
     my $base = mySociety::Config::get('BASE_URL');
     $base =~ s/matthew/emptyhomes.matthew/ if $q->{site} eq 'emptyhomes'; # XXX Temp
+    $base =~ s/matthew/scambs.matthew/ if $q->{site} eq 'scambs'; # XXX Temp
     $h{url} = $base . '/C/' . mySociety::AuthToken::store('update', $id);
     dbh()->commit();
 
-    my $out = Page::send_email($input{email}, $input{name}, 'update', %h);
+    my $out = Page::send_email($q, $input{email}, $input{name}, 'update', %h);
     return $out;
 }
 
@@ -358,10 +359,11 @@ sub submit_problem {
         $h{name} = $input{name};
         my $base = mySociety::Config::get('BASE_URL');
         $base =~ s/matthew/emptyhomes.matthew/ if $q->{site} eq 'emptyhomes'; # XXX Temp
+        $base =~ s/matthew/scambs.matthew/ if $q->{site} eq 'scambs'; # XXX Temp
         $h{url} = $base . '/P/' . mySociety::AuthToken::store('problem', $id);
         dbh()->commit();
 
-        $out = Page::send_email($input{email}, $input{name}, _('problem'), %h);
+        $out = Page::send_email($q, $input{email}, $input{name}, _('problem'), %h);
 
     }
     return $out;
@@ -449,9 +451,7 @@ sub display_form {
             push @categories, $_->{category};
         }
         if ($q->{site} eq 'scambs') {
-            @categories = ('Abandoned vehicles', 'Discarded hypodermic needles',
-            'Dog fouling', 'Flytipping', 'Graffiti', 'Lighting (e.g. security lights)',
-            'Litter', 'Neighbourhood noise');
+            @categories = Page::scambs_categories();
         }
         if (@categories) {
             @categories = ('-- Pick a category --', @categories, _('Other'));

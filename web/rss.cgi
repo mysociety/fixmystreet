@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: rss.cgi,v 1.20 2008-03-06 11:52:33 matthew Exp $
+# $Id: rss.cgi,v 1.21 2008-05-23 09:53:10 matthew Exp $
 
 use strict;
 use Standard;
@@ -19,29 +19,35 @@ use mySociety::Gaze;
 sub main {
     my $q = shift;
     my $type = $q->param('type') || '';
+    my $out;
     if ($type eq 'local_problems') {
-        rss_local_problems($q);
+        $out = rss_local_problems($q);
     } elsif ($type eq 'new_updates') {
         my $id = $q->param('id');
         my $qs = '?id='.$id;
-        mySociety::Alert::generate_rss($type, $qs, [$id]);
+        $out = mySociety::Alert::generate_rss($type, $qs, [$id]);
     } elsif ($type eq 'new_problems') {
-        mySociety::Alert::generate_rss($type, '');
+        $out = mySociety::Alert::generate_rss($type, '');
     } elsif ($type eq 'council_problems') {
         my $id = $q->param('id');
         my $qs = '/'.$id;
-        mySociety::Alert::generate_rss($type, $qs, [$id]);
+        $out = mySociety::Alert::generate_rss($type, $qs, [$id]);
     } elsif ($type eq 'area_problems') {
         my $id = $q->param('id');
         my $va_info = mySociety::MaPit::get_voting_area_info($id);
         my $qs = '/'.$id;
-        mySociety::Alert::generate_rss($type, $qs, [$id], { NAME => $va_info->{name} });
+        $out = mySociety::Alert::generate_rss($type, $qs, [$id], { NAME => $va_info->{name} });
     } elsif ($type eq 'all_problems') {
-        mySociety::Alert::generate_rss($type, '');
+        $out = mySociety::Alert::generate_rss($type, '');
     } else {
         print $q->redirect('http://www.fixmystreet.com/alert');
         exit;
     }
+    print $q->header( -type => 'application/xml; charset=utf-8' );
+    $out =~ s/FixMyStreet/EnviroCrime/g if $q->{site} eq 'scambs';
+    $out =~ s/matthew.fixmystreet/scambs.matthew.fixmystreet/g if $q->{site} eq 'scambs'; # XXX Temp
+    $out =~ s/matthew.fixmystreet/emptyhomes.matthew.fixmystreet/g if $q->{site} eq 'emptyhomes';
+    print $out;
 }
 Page::do_fastcgi(\&main);
 
@@ -72,6 +78,6 @@ sub rss_local_problems {
         $d = mySociety::Gaze::get_radius_containing_population($lat, $lon, 200000);
         $d = int($d*10+0.5)/10;
     }
-    mySociety::Alert::generate_rss('local_problems', $qs, [$e, $n, $d]);
+    return mySociety::Alert::generate_rss('local_problems', $qs, [$e, $n, $d]);
 }
 

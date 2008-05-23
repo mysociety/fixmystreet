@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.17 2008-05-20 14:39:01 matthew Exp $
+# $Id: reports.cgi,v 1.18 2008-05-23 09:53:10 matthew Exp $
 
 use strict;
 use Standard;
@@ -94,7 +94,12 @@ sub main {
             $title_params{NAME} = $ward ? $q_ward : $q_council;
             $type = 'area_problems'; # Problems within an area
         }
-        mySociety::Alert::generate_rss($type, "/$url", \@params, \%title_params);
+        print $q->header( -type => 'application/xml; charset=utf-8' );
+        my $out = mySociety::Alert::generate_rss($type, "/$url", \@params, \%title_params);
+        $out =~ s/FixMyStreet/EnviroCrime/g if $q->{site} eq 'scambs';
+        $out =~ s/matthew.fixmystreet/scambs.matthew.fixmystreet/g if $q->{site} eq 'scambs'; # XXX Temp
+        $out =~ s/matthew.fixmystreet/emptyhomes.matthew.fixmystreet/g if $q->{site} eq 'emptyhomes';
+        print $out;
         return;
     }
 
@@ -194,15 +199,15 @@ sub main {
                 $name = ent($q_ward) . ", $name";
             }
             print Page::header($q, title=>"$name - Summary reports", rss => [ "Problems within $name, FixMyStreet", $rss_url ]);
-	    my $rss_title = _('RSS feed');
-	    my $rss_alt = _('RSS feed of problems in this %s');
+            my $rss_title = _('RSS feed');
+            my $rss_alt = _('RSS feed of problems in this %s');
             print $q->p(
                 $q->a({ href => $rss_url }, '<img align="right" src="/i/feed.png" width="16" height="16" title="' . $rss_title . '" alt="' . sprintf($rss_alt, $thing) . '" border="0" hspace="4">'),
                 'This is a summary of all reports for one ' . $thing . '. You can ' .
                 ($all ? 
                     $q->a({href => NewURL($q, council=>undef, ward=>undef, all=>undef) }, 'see less detail') :
                     $q->a({href => NewURL($q, council=>undef, ward=>undef, all=>1) }, 'see more details')) .
-		($q->{site} eq 'scambs' ? '' :
+                ($q->{site} eq 'scambs' ? '' :
                 ' or go back and ' .
                 $q->a({href => '/reports' }, 'show all councils') ) .
                 '.');
