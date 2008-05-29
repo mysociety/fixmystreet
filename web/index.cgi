@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.200 2008-05-29 11:03:35 matthew Exp $
+# $Id: index.cgi,v 1.201 2008-05-29 11:06:26 matthew Exp $
 
 use strict;
 use Standard;
@@ -657,7 +657,7 @@ sub display_location {
     my($error, $easting, $northing);
     my $x = $input{x}; my $y = $input{y};
     if ($y =~ /favicon/) {
-        $q->header('Location: http://www.fixmystreet.com/favicon.ico');
+        print $q->redirect(-location => 'http://www.fixmystreet.com/favicon.ico', -status => 301);
         return '';
     }
     $x ||= 0; $x += 0;
