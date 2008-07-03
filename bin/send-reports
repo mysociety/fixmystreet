@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.50 2008-05-15 16:09:51 matthew Exp $
+# $Id: send-reports,v 1.51 2008-07-03 16:13:07 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -115,7 +115,7 @@ foreach my $row (@$unsent) {
             push @dear, $name;
             $recips{$council_email} = 1;
         }
-        my @recips = keys %recips;
+        @recips = keys %recips;
         if (!@to) {
             if ($verbose) {
                 print 'Need to send problem #' . $row->{id} . ' to council(s) ' . join(',',@recips) . "\n";
