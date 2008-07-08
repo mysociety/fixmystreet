@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.51 2008-07-03 16:13:07 matthew Exp $
+# $Id: send-reports,v 1.52 2008-07-08 11:49:26 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -71,7 +71,7 @@ foreach my $row (@$unsent) {
     }
 
     # Template variables for the email
-    my %h = map { $_ => $row->{$_} } qw/title detail name email phone category/;
+    my %h = map { $_ => $row->{$_} } qw/title detail name email phone category easting northing/;
     $h{phone} = "Phone: $h{phone}\n\n" if $h{phone};
     $h{has_photo} = '';
     $h{has_photo} = "This web page also contains a photo of the problem, provided by the user.\n\n" if $row->{has_photo};
@@ -80,8 +80,12 @@ foreach my $row (@$unsent) {
         : 'The user could not locate the problem on a map, but to see the area around the location they entered';
     $h{closest_address} = '';
     my ($address, $distance) = mySociety::Dress::find_nearest($row->{easting}, $row->{northing});
-    $h{closest_address} = sprintf("The closest address, as the crow flies, to the location of this problem, %.0fm away, is: %s - please note that this is automatically generated, so ensure that you check it against the details provided by the user and, if possible, the map.\n\n",
-        $distance, $address) if $address;
+    if ($address) {
+        $h{closest_address} = sprintf("The closest address, as the crow flies, to the location of this problem, %.0fm away, is: %s - please note that this is automatically generated, so ensure that you check it against the details provided by the user and, if possible, the map.\n\n",
+            $distance, $address)
+        ($h{closest_address_machine} = $h{closest_address}) =~ s/is: /is:\n\n/;
+        $h{closest_address_machine} =~ s/ - please note/\n\n - please note/;
+    }
 
     my (@to, @recips, $template);
     if ($site eq 'emptyhomes') {
@@ -125,7 +129,9 @@ foreach my $row (@$unsent) {
         }
         next unless ($all_confirmed);
 
-        $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/submit-council");
+        $template = 'submit-council';
+        $template = 'submit-brent' if $row->{council} eq 2488;
+        $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/$template");
 
         if ($h{category} eq 'Other') {
             $h{category_footer} = 'this type of local problem';
@@ -147,6 +153,9 @@ If you know of an appropriate contact address, please do get in touch. ]\n\n";
         }
     }
 
+    unless (@recips) {
+        die 'Email not going anywhere for ID ' . $row->{id} . '!';
+    }
     push @recips, mySociety::Config::get('CONTACT_EMAIL');
 
     my $email = mySociety::Email::construct_email({
