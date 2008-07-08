@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.52 2008-07-08 11:49:26 matthew Exp $
+# $Id: send-reports,v 1.53 2008-07-08 12:28:07 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -82,7 +82,7 @@ foreach my $row (@$unsent) {
     my ($address, $distance) = mySociety::Dress::find_nearest($row->{easting}, $row->{northing});
     if ($address) {
         $h{closest_address} = sprintf("The closest address, as the crow flies, to the location of this problem, %.0fm away, is: %s - please note that this is automatically generated, so ensure that you check it against the details provided by the user and, if possible, the map.\n\n",
-            $distance, $address)
+            $distance, $address);
         ($h{closest_address_machine} = $h{closest_address}) =~ s/is: /is:\n\n/;
         $h{closest_address_machine} =~ s/ - please note/\n\n - please note/;
     }
