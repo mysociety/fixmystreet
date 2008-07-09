@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.18 2008-05-23 09:53:10 matthew Exp $
+# $Id: reports.cgi,v 1.19 2008-07-09 12:02:38 matthew Exp $
 
 use strict;
 use Standard;
@@ -136,7 +136,7 @@ sub main {
     foreach my $row (@$problem) {
         if (!$row->{council}) {
             # Problem was not sent to any council, add to possible councils
-            while ($row->{areas} =~ /,($re_councils)(?=,)/go) {
+            while ($row->{areas} =~ /,($re_councils)(?=,)/g) {
                 add_row($row, 0, $1, \%fixed, \%open);
             }
         } else {
