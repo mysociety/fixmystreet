@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.201 2008-05-29 11:06:26 matthew Exp $
+# $Id: index.cgi,v 1.202 2008-07-10 09:09:23 matthew Exp $
 
 use strict;
 use Standard;
@@ -428,6 +428,9 @@ sub display_form {
     my $all_councils = mySociety::MaPit::get_voting_areas_by_location(
         { easting => $easting, northing => $northing },
         'polygon', $mySociety::VotingArea::council_parent_types);
+
+    # Ipswich & St Edmundsbury are responsible for everything in their areas, no Suffolk
+    delete $all_councs->{2241} if $all_councils->{2446} || $all_councils->{2443};
 
     if ($q->{site} eq 'scambs') {
         delete $all_councils->{2218};
