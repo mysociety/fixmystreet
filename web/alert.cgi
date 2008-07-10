@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.28 2008-05-23 09:53:10 matthew Exp $
+# $Id: alert.cgi,v 1.29 2008-07-10 21:20:02 matthew Exp $
 
 use strict;
 use Standard;
@@ -98,6 +98,20 @@ sub alert_list {
             sprintf(_("Problems within %s"), $council->{name}) ];
         push @options, [ 'ward', $council->{area_id}.':'.$ward->{area_id}, Page::short_name($council->{name}) . '/'
             . Page::short_name($ward->{name}), sprintf(_("Problems within %s ward"), $ward->{name}) ];
+
+        $options = '<div>' . $q->ul({id=>'rss_feed'},
+            alert_list_options($q, @options)
+        );
+
+    } elsif (keys %$areas == 1) {
+
+        # One-tier council, no ward
+        my (@options, $council);
+        foreach (values %$areas) {
+            $council = $_;
+        }
+        push @options, [ 'council', $council->{area_id}, Page::short_name($council->{name}),
+            sprintf(_("Problems within %s"), $council->{name}) ];
 
         $options = '<div>' . $q->ul({id=>'rss_feed'},
             alert_list_options($q, @options)
