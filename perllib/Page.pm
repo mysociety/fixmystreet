@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.104 2008-05-23 09:53:10 matthew Exp $
+# $Id: Page.pm,v 1.105 2008-07-29 07:21:06 matthew Exp $
 #
 
 package Page;
@@ -246,7 +246,7 @@ sub display_map {
     my $url = mySociety::Config::get('TILES_URL');
     my $tiles_url = $url . $x . '-' . ($x+1) . ',' . $y . '-' . ($y+1) . '/RABX';
     my $tiles = LWP::Simple::get($tiles_url);
-    throw Error::Simple("Unable to get tiles from URL $tiles_url\n") if !$tiles;
+    return '<div id="map_box"> <div id="map"><div id="drag"> </div></div></div><div id="side">' if !$tiles;
     my $tileids = RABX::unserialise($tiles);
     my $tl = $x . '.' . ($y+1);
     my $tr = ($x+1) . '.' . ($y+1);
