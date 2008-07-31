@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.203 2008-07-10 09:10:52 matthew Exp $
+# $Id: index.cgi,v 1.204 2008-07-31 10:49:03 matthew Exp $
 
 use strict;
 use Standard;
@@ -754,6 +754,13 @@ sub display_problem {
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
     $input{x} ||= 0; $input{x} += 0;
     $input{y} ||= 0; $input{y} += 0;
+
+    # Some council with bad email software
+    if ($input{id} =~ /^3D\d+$/) {
+        $input{id} =~ s/^3D//;
+        print $q->redirect(-location => 'http://www.fixmystreet.com/?id=' . $input{id}, -status => 301);
+        return '';
+    }
 
     # Get all information from database
     return display_location($q, 'Unknown problem ID') if $input{id} =~ /\D/;
