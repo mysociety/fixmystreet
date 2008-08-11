@@ -6,11 +6,12 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: flickr.cgi,v 1.7 2008-01-28 15:27:00 matthew Exp $
+# $Id: flickr.cgi,v 1.8 2008-08-11 08:27:14 matthew Exp $
 
 use strict;
 use Standard;
 use LWP::Simple;
+use URI::Escape;
 use mySociety::AuthToken;
 use mySociety::Email;
 use mySociety::EmailUtil;
@@ -24,10 +25,10 @@ sub main {
         my $email = mySociety::AuthToken::retrieve('flickr', $token);
         if ($email) {
             my $key = mySociety::Config::get('FLICKR_API');
-            my $url = 'http://api.flickr.com/services/rest/?method=flickr.people.findByEmail&api_key='.$key.'&find_email='.$email;
+            my $url = 'http://api.flickr.com/services/rest/?method=flickr.people.findByEmail&api_key='.$key.'&find_email=' . uri_escape($email);
             my $result = get($url);
             my ($nsid) = $result =~ /nsid="([^"]*)"/;
-            $url = 'http://api.flickr.com/services/rest/?method=flickr.people.getInfo&api_key='.$key.'&user_id='.$nsid;
+            $url = 'http://api.flickr.com/services/rest/?method=flickr.people.getInfo&api_key='.$key.'&user_id=' . uri_escape($nsid);
             $result = get($url);
             my ($name) = $result =~ /<realname>(.*?)<\/realname>/;
             $name ||= '';
