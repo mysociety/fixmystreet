@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.105 2008-07-29 07:21:06 matthew Exp $
+# $Id: Page.pm,v 1.106 2008-08-27 10:27:47 francis Exp $
 #
 
 package Page;
@@ -185,6 +185,28 @@ sub footer {
     $pc = "?pc=" . ent($pc) if $pc;
     $extra = $q->{scratch} if $q->{scratch}; # Overrides
     my $track = mySociety::Tracking::code($q, $extra);
+
+    my $piwik = "";
+    if (mySociety::Config::get('BASE_URL') eq "http://www.fixmystreet.com") {
+        $piwik = <<EOF;
+<!-- Piwik -->
+<script type="text/javascript">
+var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.mysociety.org/" : "http://piwik.mysociety.org/");
+document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+<!--
+piwik_action_name = '';
+piwik_idsite = 8;
+piwik_url = pkBaseURL + "piwik.php";
+piwik_log(piwik_action_name, piwik_idsite, piwik_url);
+//-->
+</script>
+<noscript><img src="http://piwik.mysociety.org/piwik.php?i=1" style="border:0" alt=""></noscript>
+<!-- /Piwik -->
+EOF
+    }
+
     return <<EOF;
 </div></div>
 <h2 class="v">Navigation</h2>
@@ -205,6 +227,8 @@ href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code<
 $track
 
 $js
+
+$piwik
 
 </body>
 </html>
