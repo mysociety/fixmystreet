@@ -20,6 +20,17 @@ values ('new_problems', '', '',
     'problem', 'problem.state in (\'confirmed\', \'fixed\')', 'created desc',
     '{{title}}, {{confirmed}}', '/?id={{id}}', '{{detail}}', 'alert-problem');
 
+-- New fixed problems anywhere on the site
+insert into alert_type
+(ref, head_sql_query, head_table,
+    head_title, head_link, head_description,
+    item_table, item_where, item_order,
+    item_title, item_link, item_description, template)
+values ('new_fixed_problems', '', '',
+    'Problems recently reported fixed on FixMyStreet', '/', 'The latest problems reported fixed by users',
+    'problem', 'problem.state in (\'fixed\')', 'lastupdate desc',
+    '{{title}}, {{confirmed}}', '/?id={{id}}', '{{detail}}', 'alert-problem');
+
 -- New problems around a location
 insert into alert_type
 (ref, head_sql_query, head_table,
