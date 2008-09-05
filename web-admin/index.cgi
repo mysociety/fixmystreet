@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.49 2008-05-15 16:09:53 matthew Exp $
+# $Id: index.cgi,v 1.50 2008-09-05 10:47:11 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.49 2008-05-15 16:09:53 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.50 2008-09-05 10:47:11 matthew Exp $';
 
 use strict;
 
@@ -220,6 +220,8 @@ sub do_council_contacts ($$) {
     my $updated = '';
     my $posted = $q->param('posted') || '';
     if ($posted eq 'new') {
+        my $email = trim($q->param('email'));
+        my $category = trim($q->param('category'));
         # History is automatically stored by a trigger in the database
         my $update = dbh()->do("update contacts set
             email = ?,
@@ -231,10 +233,10 @@ sub do_council_contacts ($$) {
             where area_id = ?
             and category = ?
             ", {}, 
-            $q->param('email'), ($q->param('confirmed') ? 1 : 0),
+            $email, ($q->param('confirmed') ? 1 : 0),
             ($q->param('deleted') ? 1 : 0),
             ($q->remote_user() || "*unknown*"), $q->param('note'),
-            $area_id, $q->param('category')
+            $area_id, $category
             );
         $updated = $q->p($q->em("Values updated"));
         unless ($update > 0) {
@@ -242,7 +244,7 @@ sub do_council_contacts ($$) {
                 (area_id, category, email, editor, whenedited, note, confirmed, deleted)
                 values
                 (?, ?, ?, ?, ms_current_timestamp(), ?, ?, ?)', {},
-                $area_id, $q->param('category'), $q->param('email'),
+                $area_id, $category, $email,
                 ($q->remote_user() || '*unknown*'), $q->param('note'),
                 ($q->param('confirmed') ? 1 : 0), ($q->param('deleted') ? 1 : 0)
             );
@@ -451,3 +453,10 @@ sub main {
     }
 }
 Page::do_fastcgi(\&main);
+
+sub trim {
+    my $e = shift;
+    $e =~ s/^\s+//;
+    $e =~ s/\s+$//;
+    return $e;
+}
