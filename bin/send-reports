@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.53 2008-07-08 12:28:07 matthew Exp $
+# $Id: send-reports,v 1.54 2008-09-05 18:05:58 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -157,6 +157,14 @@ If you know of an appropriate contact address, please do get in touch. ]\n\n";
         die 'Email not going anywhere for ID ' . $row->{id} . '!';
     }
     push @recips, mySociety::Config::get('CONTACT_EMAIL');
+
+    # Special case for this parish council
+    if ($address && $address =~ /Sprowston/ && $row->{council} == 2233 && $row->{category} eq 'Street lighting') {
+        $h{councils_name} = 'Sprowston Parish Council';
+        my $e = 'parishclerk' . '@' . 'sprowston-pc.gov.uk';
+        @to = ( [ $e, $h{councils_name} ] );
+        @recips = ($e);
+    }
 
     my $email = mySociety::Email::construct_email({
         _template_ => $template,
