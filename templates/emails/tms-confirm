@@ -1,0 +1,14 @@
+Subject: Confirm your expression of interest in TextMyStreet
+
+Hi,
+
+Please click on the link below to confirm your expression of
+interest in TextMyStreet:
+
+    <?=$values['url']?>
+
+If you can't click the link, please copy and paste it to the
+address bar of your web browser.
+
+Yours,
+The FixMyStreet team

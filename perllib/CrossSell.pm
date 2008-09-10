@@ -9,7 +9,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: CrossSell.pm,v 1.11 2008-03-13 12:40:10 matthew Exp $
+# $Id: CrossSell.pm,v 1.12 2008-09-10 18:06:30 matthew Exp $
 
 # Config parameters site needs set to call these functions:
 # OPTION_AUTH_SHARED_SECRET
@@ -110,6 +110,38 @@ EOF
     return ($out, "cheltenhamhfyc$rand");
 }
 
+sub display_tms_form {
+    my (%input) = @_;
+    my %input_h = map { $_ => $input{$_} ? ent($input{$_}) : '' } qw(name email postcode mobile signed_email);
+    my $auth_signature = $input_h{signed_email};
+    return <<EOF;
+<h1 style="padding-top:0.5em">Coming Soon: TextMyStreet</h1>
+
+<p>Exclusive to FixMyStreet users: Sign up for a <strong>brand new</strong>, not-yet-launched
+service which will make it easy to send short messages to other people on <strong>your
+street</strong> and just round the corner.</p>
+
+<p>Use it to borrow a strimmer, discuss the weather or report a <strong>lost cat</strong>.</p>
+
+<form action="/tms-signup" method="post">
+<input type="hidden" name="signed_email" value="$auth_signature">
+<label for="name">Name:</label>
+<input type="text" name="name" id="name" value="$input_h{name}" size="30">
+<br><label for="email">Email:</label>
+<input type="text" name="email" id="email" value="$input_h{email}" size="30">
+<br><label for="postcode">Postcode:</label> 
+<input type="text" name="postcode" id="postcode" value="$input_h{postcode}" size="11">
+<br><label for="mobile">Mobile:</label> <input type="text" name="mobile" id="mobile" value="$input_h{mobile}" size="11">
+&nbsp; <input type="submit" class="submit" value="Sign up">
+</form>
+
+<p>mySociety respects your privacy, and we'll never sell or give away your private
+details. Once we launch we'll send you some emails and perhaps some texts
+explaining how it works, and it'll never cost you a penny unless we explicitly
+say it will. You'll be able to <strong>unsubscribe</strong> at any time.</p>
+EOF
+}
+
 # Choose appropriate advert and display it.
 # $this_site is to stop a site advertising itself.
 sub display_advert ($$;$%) {
@@ -122,6 +154,15 @@ sub display_advert ($$;$%) {
             return $out;
         }
     }
+
+    $q->{scratch} = 'advert=tms';
+    my $auth_signature = '';
+    unless (defined $data{emailunvalidated} && $data{emailunvalidated}==1) {
+        $auth_signature = mySociety::AuthToken::sign_with_shared_secret($email, mySociety::Config::get('AUTH_SHARED_SECRET'));
+    }
+    return '<div style="margin: 0 5em; border-top: dotted 1px #666666;">'
+        . display_tms_form(email => $email, name => $name, signed_email => $auth_signature)
+        . '</div>';
 
     my @adverts = (
         [ 'gny0', '<h2>Are you a member of a local group&hellip;</h2> &hellip;which uses the internet to coordinate itself, such as a neighbourhood watch? If so, please help the charity that runs FixMyStreet by <a href="http://www.groupsnearyou.com/add/about/">adding some information about it</a> to our new site, GroupsNearYou.' ],

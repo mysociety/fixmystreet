@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.39 2008-05-06 15:18:24 matthew Exp $
+-- $Id: schema.sql,v 1.40 2008-09-10 18:06:30 matthew Exp $
 --
 
 -- secret
@@ -301,3 +301,9 @@ create table abuse (
 );
 create unique index abuse_email_idx on abuse(lower(email));
 
+create table textmystreet (
+    name text not null,
+    email text not null,
+    postcode text not null,
+    mobile text not null
+);
