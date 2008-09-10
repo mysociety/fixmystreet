@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.106 2008-08-27 10:27:47 francis Exp $
+# $Id: Page.pm,v 1.107 2008-09-10 11:37:36 matthew Exp $
 #
 
 package Page;
@@ -336,7 +336,7 @@ sub display_map_end {
 
 sub display_pin {
     my ($q, $px, $py, $col, $num) = @_;
-    $num = '' unless $num;
+    $num = '' if !$num || $num > 9;
     my %cols = (red=>'R', green=>'G', blue=>'B', purple=>'P');
     my $out = '<img class="pin" src="/i/pin' . $cols{$col}
         . $num . '.gif" alt="' . _('Problem') . '" style="top:' . ($py-59)

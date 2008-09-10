@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Problems.pm,v 1.3 2008-05-23 09:53:10 matthew Exp $
+# $Id: Problems.pm,v 1.4 2008-09-10 11:37:36 matthew Exp $
 #
 
 package Problems;
@@ -94,7 +94,7 @@ sub current_on_map {
         "select id,title,easting,northing from problem where state='confirmed'
         and easting>=? and easting<? and northing>=? and northing<?
         $site_restriction
-        order by created desc limit 9", $min_e, $max_e, $min_n, $max_n);
+        order by created desc", $min_e, $max_e, $min_n, $max_n);
 }
 
 sub current_nearby {
