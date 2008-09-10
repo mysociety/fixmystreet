@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.204 2008-07-31 10:49:03 matthew Exp $
+# $Id: index.cgi,v 1.205 2008-09-10 12:04:12 matthew Exp $
 
 use strict;
 use Standard;
@@ -898,6 +898,8 @@ sub map_pins {
             my $py = Page::os_to_px($_->{northing}, $y, 1);
             $pins .= Page::display_pin($q, $px, $py, 'red', $count_prob++);
         }
+    } else {
+        @$current_map = @$current_map[0..8];
     }
     my $fixed = Problems::fixed_nearby($dist, $mid_e, $mid_n);
     foreach (@$fixed) {
