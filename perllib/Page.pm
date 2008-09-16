@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.109 2008-09-16 15:48:16 matthew Exp $
+# $Id: Page.pm,v 1.110 2008-09-16 16:02:40 matthew Exp $
 #
 
 package Page;
@@ -535,7 +535,7 @@ sub prettify_epoch {
     } elsif (strftime('%Y %U', @s) eq strftime('%Y %U', @t)) {
         $tt = "$tt, " . strftime('%A', @s);
     } elsif (strftime('%Y', @s) eq strftime('%Y', @t)) {
-        $tt = "$tt, " . strftime('%A %e %B', @s);
+        $tt = "$tt, " . strftime('%A %e %B %Y', @s);
     } else {
         $tt = "$tt, " . strftime('%a %e %B %Y', @s);
     }
