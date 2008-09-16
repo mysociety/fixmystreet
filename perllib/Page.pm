@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.108 2008-09-16 15:45:09 matthew Exp $
+# $Id: Page.pm,v 1.109 2008-09-16 15:48:16 matthew Exp $
 #
 
 package Page;
@@ -384,7 +384,7 @@ sub map_pins {
     # And somehow display/link to old problems somewhere else...
     my $nearby = [];
     #if (@$current_map < 9) {
-        my $limit = 9; # - @$current_map;
+        my $limit = 20; # - @$current_map;
         $nearby = Problems::nearby($dist, join(',', @ids), $limit, $mid_e, $mid_n);
         foreach (@$nearby) {
             my $px = Page::os_to_px($_->{easting}, $sx);

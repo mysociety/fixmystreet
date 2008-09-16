@@ -13,5 +13,5 @@ Your update reads:
 
 <?=$values['update']?>
 
-Yours,
+Yours,  
 The FixMyStreet team

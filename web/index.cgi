@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.206 2008-09-16 15:45:10 matthew Exp $
+# $Id: index.cgi,v 1.207 2008-09-16 15:48:16 matthew Exp $
 
 use strict;
 use Standard;
@@ -108,7 +108,7 @@ EOF
         }
     }
     $out .= <<EOF;
-<label for="pc">Enter a nearby UK postcode, or street name and area:</label>
+<label for="pc">Enter a nearby GB postcode, or street name and area:</label>
 &nbsp;<input type="text" name="pc" value="$pc_h" id="pc" size="10" maxlength="200">
 &nbsp;<input type="submit" value="Go" id="submit">
 </form>
@@ -121,7 +121,7 @@ EOF
     $step4 = $q->li('The council receives your report and acts upon it')
         if $q->{site} eq 'scambs';
     $out .= $q->ol(
-        $q->li(_('Enter a nearby UK postcode, or street name and area')),
+        $q->li(_('Enter a nearby GB postcode, or street name and area')),
         $q->li(_('Locate the problem on a map of the area')),
         $q->li(_('Enter details of the problem')),
         $step4
