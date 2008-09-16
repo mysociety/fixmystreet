@@ -249,10 +249,30 @@ function update_tiles(dx, dy, force) {
     tile_y += vertical;
 
     var url = [ '/tilma/tileserver/10k-full/', x, '-', (x+5), ',', y, '-', (y+5), '/JSON' ].join('');
-    var req = YAHOO.util.Connect.asyncRequest('GET', url, {
+    YAHOO.util.Connect.asyncRequest('GET', url, {
         success: urls_loaded, failure: urls_not_loaded,
         argument: [tile_x, tile_y]
     });
+
+    if (force) return;
+
+    url = [ '/ajax?sx=', document.getElementById('formX').value, ';sy=',
+        document.getElementById('formY').value, ';x=', (x+2), ';y=', (y+2)
+    ].join('');
+    YAHOO.util.Connect.asyncRequest('GET', url, {
+        success: pins_loaded
+    });
+}
+
+function pins_loaded(o) {
+    var data = eval(o.responseText);
+    document.getElementById('pins').innerHTML = data.pins;
+    if (typeof(data.current) != 'undefined')
+        document.getElementById('current').innerHTML = data.current;
+    if (typeof(data.current_near) != 'undefined')
+        document.getElementById('current_near').innerHTML = data.current_near;
+    if (typeof(data.fixed_near) != 'undefined')
+        document.getElementById('fixed_near').innerHTML = data.fixed_near;
 }
 
 function urls_not_loaded(o) { /* Nothing yet */ }

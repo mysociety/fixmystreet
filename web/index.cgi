@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.205 2008-09-10 12:04:12 matthew Exp $
+# $Id: index.cgi,v 1.206 2008-09-16 15:45:10 matthew Exp $
 
 use strict;
 use Standard;
@@ -22,8 +22,6 @@ use mySociety::AuthToken;
 use mySociety::Config;
 use mySociety::DBHandle qw(select_all);
 use mySociety::EmailUtil;
-use mySociety::Gaze;
-use mySociety::GeoUtil;
 use mySociety::MaPit;
 use mySociety::PostcodeUtil;
 use mySociety::Random;
@@ -82,6 +80,7 @@ sub front_page {
     $out .= '<p id="error">' . $error . '</p>' if ($error);
     my $fixed = Problems::recent_fixed();
     my $updates = Problems::number_comments();
+    $updates =~ s/(\d\d\d)$/,$1/;
     my $new = Problems::recent_new('1 week');
     my $new_text = 'in past week';
     if ($new > $fixed) {
@@ -132,7 +131,7 @@ EOF
     $out .= $q->div({-id => 'front_stats'},
         $q->div("<big>$new</big> report" . ($new!=1?'s':''), $new_text),
         ($q->{site} ne 'emptyhomes' && $q->div("<big>$fixed</big> fixed in past month")),
-        $q->div("<big>$updates</big> update" . ($updates!=1?'s':''), "on reports"),
+        $q->div("<big>$updates</big> update" . ($updates ne '1'?'s':''), "on reports"),
     );
 
     $out .= <<EOF;
@@ -676,9 +675,19 @@ sub display_location {
     return Page::geocode_choice($error, '/') if (ref($error) eq 'ARRAY');
     return front_page($q, $error) if ($error);
 
-    my ($pins, $current_map, $current, $fixed, $dist) = map_pins($q, $x, $y);
+    my ($pins, $on_map, $around_map, $dist) = Page::map_pins($q, $x, $y, $x, $y);
     my $out = Page::display_map($q, x => $x, y => $y, type => 1, pins => $pins );
     $out .= $q->h1(_('Problems in this area'));
+    my $email_me = _('Email me new local problems');
+    my $rss_title = _('RSS feed of recent local problems');
+    my $rss_alt = _('RSS feed');
+    my $u_pc = uri_escape($input{pc});
+    $out .= <<EOF;
+    <p id="alert_links_area">
+    <a id="email_alert" href="/alert?pc=$u_pc;type=local;feed=local:$x:$y;alert=Subscribe">$email_me</a>
+    | <a href="/rss/$x,$y" id="rss_alert"><span>RSS feed</span> <img src="/i/feed.png" width="16" height="16" title="$rss_title" alt="$rss_alt" border="0" style="vertical-align: top"></a>
+    </p>
+EOF
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
@@ -689,53 +698,48 @@ or are using a text only browser, for example &ndash; and you
 wish to report a problem, please
 <a href='%s'>skip this step</a> and we will ask you
 to describe the location of the problem instead.</small>"), $skipurl));
-    $out .= '<div>' . $q->h2(_('Recent problems reported near here'));
+    $out .= '<div id="nearby_lists">' . $q->h2(_('Reports on and around the map'));
     my $list = '';
-    foreach (@$current_map) {
+    foreach (@$on_map) {
         $list .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
         $list .= $_->{title};
-        $list .= '</a></li>';
+        $list .= '</a>';
+        $list .= ' <small>(fixed)</small>' if $_->{state} eq 'fixed';
+        $list .= '</li>';
     }
-    if (@$current_map) {
-        $out .= '<ol id="current">' . $list . '</ol>';
+    if (@$on_map) {
+        $out .= '<ul id="current">' . $list . '</ul>';
     } else {
         $out .= $q->p(_('No problems have been reported yet.'));
     }
-    $out .= $q->h2({-id => 'closest_problems'}, sprintf(_('Closest problems within %skm'), $dist));
-    my $email_me = _('Email me problems');
-    my $rss_title = _('RSS feed of recent local problems');
-    my $rss_alt = _('RSS feed');
-    my $u_pc = uri_escape($input{pc});
-    $out .= <<EOF;
-    <div id="alert_links">
-    <a id="email_alert" href="/alert?pc=$u_pc;type=local;feed=local:$x:$y;alert=Subscribe">$email_me</a>
-     &nbsp; <span id="rss_link"><a href="/rss/$x,$y"><img src="/i/feed.png" width="16" height="16" title="$rss_title" alt="$rss_alt" border="0" style="vertical-align: middle"></a></span>
-    </div>
-EOF
+    $out .= $q->h2({-id => 'closest_problems'}, sprintf(_('Other nearby problems <small>within&nbsp;%skm</small>'), $dist));
     $list = '';
-    foreach (@$current) {
+    foreach (@$around_map) {
         $list .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
         $list .= $_->{title} . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
-        $list .= '</a></li>';
+        $list .= '</a>';
+        $list .= ' <small>(fixed)</small>' if $_->{state} eq 'fixed';
+        $list .= '</li>';
     }
-    if (@$current) {
-        my $list_start = @$current_map + 1;
-        $out .= '<ol id="current_near" start="' . $list_start . '">' . $list . '</ol>';
+    if (@$around_map) {
+        #my $list_start = @$on_map + 1;
+        #$out .= '<ul id="current_near" start="' . $list_start . '">' . $list . '</ul>';
+        $out .= '<ul id="current_near">' . $list . '</ul>';
     } else {
-        $out .= $q->p(_('No problems have been reported yet.'));
+        $out .= $q->p(_('No problems found.'));
     }
-    $out .= $q->h2(sprintf(_('Recently fixed problems within %skm'), $dist));
-    $list = '';
-    foreach (@$fixed) {
-        $list .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
-        $list .= $_->{title} . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
-        $list .= '</a></li>';
-    }
-    if (@$fixed) {
-        $out .= "<ol>$list</ol>\n";
-    } else {
-        $out .= $q->p(_('No problems have been fixed yet'));
-    }
+    #$out .= $q->h2(sprintf(_('Recently fixed problems within %skm'), $dist));
+    #$list = '';
+    #foreach (@$fixed) {
+    #    $list .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
+    #    $list .= $_->{title} . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
+    #    $list .= '</a></li>';
+    #}
+    #if (@$fixed) {
+    #    $out .= "<ul id='fixed_near'>$list</ul>\n";
+    #} else {
+    #    $out .= $q->p(_('No problems have been fixed yet'));
+    #}
     $out .= '</div>';
     $out .= Page::display_map_end(1);
 
@@ -804,7 +808,7 @@ sub display_problem {
 <input type="submit" value="Subscribe">
 </form>
 EOF
-    $out .= ' &nbsp; <span id="rss_link"><a href="/rss/'.$input_h{id}.'"><img src="/i/feed.png" width="16" height="16" title="' . _('RSS feed') . '" alt="' . _('RSS feed of updates to this problem') . '" border="0" style="vertical-align: middle"></a></span>';
+    $out .= ' &nbsp; <a href="/rss/'.$input_h{id}.'"><img src="/i/feed.png" width="16" height="16" title="' . _('RSS feed') . '" alt="' . _('RSS feed of updates to this problem') . '" border="0" style="vertical-align: middle"></a>';
     $out .= '</div>';
 
     $out .= Page::display_problem_updates($input{id});
@@ -859,54 +863,5 @@ EOF
         title => $problem->{title}
     );
     return ($out, %params);
-}
-
-sub map_pins {
-    my ($q, $x, $y) = @_;
-
-    my $pins = '';
-    my $min_e = Page::tile_to_os($x-1);
-    my $min_n = Page::tile_to_os($y-1);
-    my $mid_e = Page::tile_to_os($x+1);
-    my $mid_n = Page::tile_to_os($y+1);
-    my $max_e = Page::tile_to_os($x+3);
-    my $max_n = Page::tile_to_os($y+3);
-
-    my $current_map = Problems::current_on_map($min_e, $max_e, $min_n, $max_n);
-    my @ids = ();
-    my $count_prob = 1;
-    my $count_fixed = 1;
-    foreach (@$current_map) {
-        push(@ids, $_->{id});
-        my $px = Page::os_to_px($_->{easting}, $x);
-        my $py = Page::os_to_px($_->{northing}, $y, 1);
-        $pins .= Page::display_pin($q, $px, $py, 'red', $count_prob++);
-    }
-
-    my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($mid_e, $mid_n, 'G');
-    my $dist = mySociety::Gaze::get_radius_containing_population($lat, $lon, 200000);
-    $dist = int($dist*10+0.5)/10;
-
-    # XXX: Change to only show problems with extract(epoch from ms_current_timestamp()-lastupdate) < 8 weeks
-    # And somehow display/link to old problems somewhere else...
-    my $current = [];
-    if (@$current_map < 9) {
-        my $limit = 9 - @$current_map;
-        $current = Problems::current_nearby($dist, join(',', @ids), $limit, $mid_e, $mid_n);
-        foreach (@$current) {
-            my $px = Page::os_to_px($_->{easting}, $x);
-            my $py = Page::os_to_px($_->{northing}, $y, 1);
-            $pins .= Page::display_pin($q, $px, $py, 'red', $count_prob++);
-        }
-    } else {
-        @$current_map = @$current_map[0..8];
-    }
-    my $fixed = Problems::fixed_nearby($dist, $mid_e, $mid_n);
-    foreach (@$fixed) {
-        my $px = Page::os_to_px($_->{easting}, $x);
-        my $py = Page::os_to_px($_->{northing}, $y, 1);
-        $pins .= Page::display_pin($q, $px, $py, 'green', $count_fixed++);
-    }
-    return ($pins, $current_map, $current, $fixed, $dist);
 }
 

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.107 2008-09-10 11:37:36 matthew Exp $
+# $Id: Page.pm,v 1.108 2008-09-16 15:45:09 matthew Exp $
 #
 
 package Page;
@@ -25,6 +25,8 @@ use Problems;
 use mySociety::Config;
 use mySociety::DBHandle qw/dbh select_all/;
 use mySociety::EvEl;
+use mySociety::Gaze;
+use mySociety::GeoUtil;
 use mySociety::Locale;
 use mySociety::MaPit;
 use mySociety::PostcodeUtil;
@@ -221,7 +223,7 @@ EOF
 <a href="http://www.mysociety.org/"><img id="logo" src="/i/mysociety-dark.png" alt="View mySociety.org"><span id="logoie"></span></a>
 
 <p id="footer">Built by <a href="http://www.mysociety.org/">mySociety</a>,
-using some <a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/bci">clever</a> <a
+using some <a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/bci">clever</a>&nbsp;<a
 href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>. Formerly <a href="/faq#nfi">Neighbourhood Fix-It</a>.</p>
 
 $track
@@ -292,8 +294,8 @@ sub display_map {
         $out .= <<EOF;
 <form action="./" method="post" id="mapForm"$encoding>
 <input type="hidden" name="submit_map" value="1">
-<input type="hidden" name="x" value="$x">
-<input type="hidden" name="y" value="$y">
+<input type="hidden" name="x" id="formX" value="$x">
+<input type="hidden" name="y" id="formY" value="$y">
 <input type="hidden" name="pc" value="$pc_enc">
 EOF
         $img_type = '<input type="image"';
@@ -311,7 +313,7 @@ var start_x = $px; var start_y = $py;
 $params{pre}
     <div id="map"><div id="drag">
         $img_type alt="NW map tile" id="t2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0;">$img_type alt="NE map tile" id="t2.3" name="tile_$tr" src="$tr_src" style="top:0px; left:$imgw;"><br>$img_type alt="SW map tile" id="t3.2" name="tile_$bl" src="$bl_src" style="top:$imgh; left:0;">$img_type alt="SE map tile" id="t3.3" name="tile_$br" src="$br_src" style="top:$imgh; left:$imgw;">
-        $params{pins}
+        <div id="pins">$params{pins}</div>
     </div>
 EOF
     $out .= '<div id="watermark"></div>';
@@ -345,6 +347,66 @@ sub display_pin {
     my $url = NewURL($q, id=>$_->{id}, x=>undef, y=>undef);
     $out = '<a title="' . $_->{title} . '" href="' . $url . '">' . $out . '</a>';
     return $out;
+}
+
+sub map_pins {
+    my ($q, $x, $y, $sx, $sy) = @_;
+
+    my $pins = '';
+    my $min_e = Page::tile_to_os($x-2); # Extra space to left/below due to rounding, I think
+    my $min_n = Page::tile_to_os($y-2);
+    #my $map_le = Page::tile_to_os($x);
+    #my $map_ln = Page::tile_to_os($y);
+    my $mid_e = Page::tile_to_os($x+1);
+    my $mid_n = Page::tile_to_os($y+1);
+    #my $map_re = Page::tile_to_os($x+2);
+    #my $map_rn = Page::tile_to_os($y+2);
+    my $max_e = Page::tile_to_os($x+3);
+    my $max_n = Page::tile_to_os($y+3);
+
+    my $around_map = Problems::around_map($min_e, $max_e, $min_n, $max_n);
+    my @ids = ();
+    #my $count_prob = 1;
+    #my $count_fixed = 1;
+    foreach (@$around_map) {
+        push(@ids, $_->{id});
+        my $px = Page::os_to_px($_->{easting}, $sx);
+        my $py = Page::os_to_px($_->{northing}, $sy, 1);
+        my $col = $_->{state} eq 'fixed' ? 'green' : 'red';
+        $pins .= Page::display_pin($q, $px, $py, $col); # , $count_prob++);
+    }
+
+    my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($mid_e, $mid_n, 'G');
+    my $dist = mySociety::Gaze::get_radius_containing_population($lat, $lon, 200000);
+    $dist = int($dist*10+0.5)/10;
+
+    # XXX: Change to only show problems with extract(epoch from ms_current_timestamp()-lastupdate) < 8 weeks
+    # And somehow display/link to old problems somewhere else...
+    my $nearby = [];
+    #if (@$current_map < 9) {
+        my $limit = 9; # - @$current_map;
+        $nearby = Problems::nearby($dist, join(',', @ids), $limit, $mid_e, $mid_n);
+        foreach (@$nearby) {
+            my $px = Page::os_to_px($_->{easting}, $sx);
+            my $py = Page::os_to_px($_->{northing}, $sy, 1);
+            my $col = $_->{state} eq 'fixed' ? 'green' : 'red';
+            $pins .= Page::display_pin($q, $px, $py, $col); #, $count_prob++);
+        }
+    #} else {
+    #    @$current_map = @$current_map[0..8];
+    #}
+
+    #my $fixed = Problems::fixed_nearby($dist, $mid_e, $mid_n);
+    #foreach (@$fixed) {
+    #    my $px = Page::os_to_px($_->{easting}, $sx);
+    #    my $py = Page::os_to_px($_->{northing}, $sy, 1);
+    #    $pins .= Page::display_pin($q, $px, $py, 'green'); # , $count_fixed++);
+    #}
+    #if (@$fixed > 9) {
+    #    @$fixed = @$fixed[0..8];
+    #}
+
+    return ($pins, $around_map, $nearby, $dist); # , $current_map, $current, '', $dist); # $fixed, $dist);
 }
 
 sub compass ($$$) {
@@ -451,6 +513,7 @@ sub send_email {
 
     my $action = ($thing eq 'alert') ? 'confirmed' : 'posted';
     $thing .= ' report' if $thing eq _('problem');
+    $thing = 'expression of interest' if $thing eq 'tms';
     my $out = <<EOF;
 <h1>Nearly Done! Now check your email...</h1>
 <p>The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.</p>

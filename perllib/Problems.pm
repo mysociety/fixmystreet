@@ -6,49 +6,74 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Problems.pm,v 1.4 2008-09-10 11:37:36 matthew Exp $
+# $Id: Problems.pm,v 1.5 2008-09-16 15:45:09 matthew Exp $
 #
 
 package Problems;
 
 use strict;
+# use Memcached;
 use mySociety::DBHandle qw/dbh select_all/;
 use mySociety::Web qw/ent/;
 
 my $site_restriction = '';
+my $site_key = 0;
 sub set_site_restriction {
     my $site = shift;
     my @cats = Page::scambs_categories();
     my $cats = join("','", @cats);
     $site_restriction = " and council=2260 and category in
-	('$cats') "
+        ('$cats') "
         if $site eq 'scambs';
+    $site_key = 1;
 }
 
 # Front page statistics
 
 sub recent_fixed {
-    dbh()->selectrow_array("select count(*) from problem
-        where state='fixed' and lastupdate>ms_current_timestamp()-'1 month'::interval
-        $site_restriction");
+    my $result;
+    #my $key = "recent_fixed:$site_key";
+    #$result = Memcached::get($key);
+    #unless ($result) {
+        $result = dbh()->selectrow_array("select count(*) from problem
+            where state='fixed' and lastupdate>ms_current_timestamp()-'1 month'::interval
+            $site_restriction");
+    #    Memcached::set($key, $result, 3600);
+    #}
+    return $result;
 }
 
 sub number_comments {
-    if ($site_restriction) {
-        dbh()->selectrow_array("select count(*) from comment, problem
-            where comment.problem_id=problem.id and comment.state='confirmed'
-            $site_restriction");
-    } else {
-        dbh()->selectrow_array("select count(*) from comment
-            where state='confirmed'");
-    }
+    my $result;
+    #my $key = "number_comments:$site_key";
+    #$result = Memcached::get($key);
+    #unless ($result) {
+        if ($site_restriction) {
+            $result = dbh()->selectrow_array("select count(*) from comment, problem
+                where comment.problem_id=problem.id and comment.state='confirmed'
+                $site_restriction");
+        } else {
+            $result = dbh()->selectrow_array("select count(*) from comment
+                where state='confirmed'");
+        }
+    #    Memcached::set($key, $result, 3600);
+    #}
+    return $result;
 }
 
 sub recent_new {
     my $interval = shift;
-    dbh()->selectrow_array("select count(*) from problem
-        where state in ('confirmed','fixed') and confirmed>ms_current_timestamp()-'$interval'::interval
-        $site_restriction");
+    my $result;
+    #(my $key = $interval) =~ s/\s+//g;
+    #$key = "recent_new:$site_key:$key";
+    #my $result = Memcached::get($key);
+    #unless ($result) {
+        $result = dbh()->selectrow_array("select count(*) from problem
+            where state in ('confirmed','fixed') and confirmed>ms_current_timestamp()-'$interval'::interval
+            $site_restriction");
+    #    Memcached::set($key, $result, 3600);
+    #}
+    return $result;
 }
 
 # Front page recent lists
@@ -57,17 +82,27 @@ sub recent_photos {
     my ($num, $e, $n, $dist) = @_;
     my $probs;
     if ($e) {
-        $probs = select_all("select id, title
-            from problem_find_nearby(?, ?, ?) as nearby, problem
-            where nearby.problem_id = problem.id
-            and state in ('confirmed', 'fixed') and photo is not null
-            $site_restriction
-            order by confirmed desc limit $num", $e, $n, $dist);
+        #my $key = "recent_photos:$site_key:$num:$e:$n:$dist";
+        #$probs = Memcached::get($key);
+        #unless ($probs) {
+            $probs = select_all("select id, title
+                from problem_find_nearby(?, ?, ?) as nearby, problem
+                where nearby.problem_id = problem.id
+                and state in ('confirmed', 'fixed') and photo is not null
+                $site_restriction
+                order by confirmed desc limit $num", $e, $n, $dist);
+        #    Memcached::set($key, $probs, 3600);
+        #}
     } else {
-        $probs = select_all("select id, title from problem
-            where state in ('confirmed', 'fixed') and photo is not null
-            $site_restriction
-            order by confirmed desc limit $num");
+        #my $key = "recent_photos:$site_key:$num";
+        #$probs = Memcached::get($key);
+        #unless ($probs) {
+            $probs = select_all("select id, title from problem
+                where state in ('confirmed', 'fixed') and photo is not null
+                $site_restriction
+                order by confirmed desc limit $num");
+        #    Memcached::set($key, $probs, 3600);
+        #}
     }
     my $out = '';
     foreach (@$probs) {
@@ -80,30 +115,38 @@ sub recent_photos {
 }
 
 sub recent {
-    select_all("select id,title from problem
-        where state in ('confirmed', 'fixed')
-        $site_restriction
-        order by confirmed desc limit 5");
+    my $result;
+    #my $key = "recent:$site_key";
+    #$result = Memcached::get($key);
+    #unless ($result) {
+        $result = select_all("select id,title from problem
+            where state in ('confirmed', 'fixed')
+            $site_restriction
+            order by confirmed desc limit 5");
+    #    Memcached::set($key, $result, 3600);
+    #}
+    return $result;
 }
 
 # Problems around a location
 
-sub current_on_map {
+sub around_map {
     my ($min_e, $max_e, $min_n, $max_n) = @_;
     select_all(
-        "select id,title,easting,northing from problem where state='confirmed'
-        and easting>=? and easting<? and northing>=? and northing<?
+        "select id,title,easting,northing,state from problem
+        where state in ('confirmed', 'fixed')
+            and easting>=? and easting<? and northing>=? and northing<?
         $site_restriction
         order by created desc", $min_e, $max_e, $min_n, $max_n);
 }
 
-sub current_nearby {
+sub nearby {
     my ($dist, $ids, $limit, $mid_e, $mid_n) = @_;
     select_all(
-        "select id, title, easting, northing, distance
+        "select id, title, easting, northing, distance, state
         from problem_find_nearby(?, ?, $dist) as nearby, problem
         where nearby.problem_id = problem.id
-        and state = 'confirmed'" . ($ids ? ' and id not in (' . $ids . ')' : '') . "
+        and state in ('confirmed', 'fixed')" . ($ids ? ' and id not in (' . $ids . ')' : '') . "
         $site_restriction
         order by distance, created desc limit $limit", $mid_e, $mid_n);
 }
@@ -115,7 +158,7 @@ sub fixed_nearby {
         from problem_find_nearby(?, ?, $dist) as nearby, problem
         where nearby.problem_id = problem.id and state='fixed'
         $site_restriction
-        order by created desc limit 9", $mid_e, $mid_n);
+        order by lastupdate desc", $mid_e, $mid_n);
 }
 
 # Fetch an individual problem

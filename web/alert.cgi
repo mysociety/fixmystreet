@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.29 2008-07-10 21:20:02 matthew Exp $
+# $Id: alert.cgi,v 1.30 2008-09-16 15:45:10 matthew Exp $
 
 use strict;
 use Standard;
@@ -163,7 +163,7 @@ but will only appear in the "Within the boundary" alert for the county council.'
 
     } else {
         # Hopefully impossible in the UK!
-        throw Error::Simple('An area with three tiers of council? Impossible!');
+        throw Error::Simple('An area with three tiers of council? Impossible! '. $e . ' ' . $n . ' ' . join('|',keys %$areas));
     }
 
     my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($e, $n, 'G');
@@ -230,7 +230,7 @@ sub alert_list_options {
             . '</label> <a href="/rss/';
         $out .= $type eq 'area' ? 'area' : 'reports';
         $out .= '/' . $rss . '"><img src="/i/feed.png" width="16" height="16"
-title="' . sprintf(_('RSS feed of local problems at %s'), $text) . '" alt="' . _('RSS feed') . '" border="0"></a>';
+title="' . sprintf(_('RSS feed of %s'), $text) . '" alt="' . _('RSS feed') . '" border="0"></a>';
     }
     return $out;
 }

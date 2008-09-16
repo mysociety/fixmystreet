@@ -268,13 +268,25 @@ p#copyright {
     margin: 0;
 }
 
-#closest_problems {
+#nearby_lists h2 {
+    margin-top: 0.5em;
     margin-bottom: 0;
 }
 #alert_links {
     float: right;
 }
-#rss_link {
+#alert_links_area {
+    background-color: #ffeecc;
+    border: solid 1px #ff9900;
+    border-width: 1px 0;
+    padding: 3px 10px;
+    margin: 0;
+}
+#rss_alert {
+    text-decoration: none;
+}
+#rss_alert span {
+    text-decoration: underline;
 }
 #email_alert {
 }
