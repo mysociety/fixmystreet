@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.111 2008-09-17 14:55:48 matthew Exp $
+# $Id: Page.pm,v 1.112 2008-09-17 17:17:29 matthew Exp $
 #
 
 package Page;
@@ -594,9 +594,12 @@ sub display_problem_text {
     } elsif ($q->{site} ne 'emptyhomes') {
         $out .= $q->br() . $q->small('Not reported to council');
     }
-    $out .= '</em></p> <p>';
-    $out .= ent($problem->{detail});
-    $out .= '</p>';
+    $out .= '</em></p>';
+    my $detail = $problem->{detail};
+    $detail =~ s/\r//g;
+    foreach (split /\n{2,}/, $detail) {
+        $out .= '<p>' . ent($_) . '</p>';
+    }
 
     if ($problem->{photo}) {
         $out .= '<p align="center"><img src="/photo?id=' . $problem->{id} . '"></p>';
