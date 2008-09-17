@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.110 2008-09-16 16:02:40 matthew Exp $
+# $Id: Page.pm,v 1.111 2008-09-17 14:55:48 matthew Exp $
 #
 
 package Page;
@@ -344,7 +344,7 @@ sub display_pin {
         . $num . '.gif" alt="' . _('Problem') . '" style="top:' . ($py-59)
         . 'px; left:' . ($px) . 'px; position: absolute;">';
     return $out unless $_ && $_->{id} && $col ne 'blue';
-    my $url = NewURL($q, id=>$_->{id}, x=>undef, y=>undef);
+    my $url = '/?id=' . $_->{id};
     $out = '<a title="' . $_->{title} . '" href="' . $url . '">' . $out . '</a>';
     return $out;
 }

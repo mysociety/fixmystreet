@@ -6,11 +6,11 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: ajax.cgi,v 1.1 2008-09-16 15:45:10 matthew Exp $
+# $Id: ajax.cgi,v 1.2 2008-09-17 14:55:48 matthew Exp $
 
 use strict;
 use Standard;
-use mySociety::Web qw(ent NewURL);
+use mySociety::Web qw(ent);
 
 sub main {
     my $q = shift;
@@ -35,7 +35,7 @@ sub main {
 
     my $list = '';
     foreach (@$on_map) {
-        $list .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
+        $list .= '<li><a href="/?id=' . $_->{id} . '">';
         $list .= $_->{title};
         $list .= '</a>';
 	$list .= ' <small>(fixed)</small>' if $_->{state} eq 'fixed';
@@ -45,7 +45,7 @@ sub main {
 
     $list = '';
     foreach (@$around_map) {
-        $list .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
+        $list .= '<li><a href="/?id=' . $_->{id} . '">';
         $list .= $_->{title} . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
         $list .= '</a>';
 	$list .= ' <small>(fixed)</small>' if $_->{state} eq 'fixed';
