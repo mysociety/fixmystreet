@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.207 2008-09-16 15:48:16 matthew Exp $
+# $Id: index.cgi,v 1.208 2008-09-17 16:55:58 matthew Exp $
 
 use strict;
 use Standard;
@@ -157,7 +157,7 @@ EOF
 
 sub submit_update {
     my $q = shift;
-    my @vars = qw(id name email update fixed upload_fileid);
+    my @vars = qw(id name email update fixed upload_fileid add_alert);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
 
@@ -206,7 +206,7 @@ sub submit_update {
     my $base = mySociety::Config::get('BASE_URL');
     $base =~ s/matthew/emptyhomes.matthew/ if $q->{site} eq 'emptyhomes'; # XXX Temp
     $base =~ s/matthew/scambs.matthew/ if $q->{site} eq 'scambs'; # XXX Temp
-    $h{url} = $base . '/C/' . mySociety::AuthToken::store('update', $id);
+    $h{url} = $base . '/C/' . mySociety::AuthToken::store('update', { id => $id, add_alert => $input{add_alert} } );
     dbh()->commit();
 
     my $out = Page::send_email($q, $input{email}, $input{name}, 'update', %h);
@@ -846,6 +846,8 @@ $fixedline
 <label for="form_photo">Photo:</label>
 <input type="file" name="photo" id="form_photo">
 </div>
+<div class="checkbox"><input type="checkbox" name="add_alert" id="form_add_alert" value="1">
+<label for="form_add_alert">Alert me to future updates</label></div>
 <div class="checkbox"><input type="submit" id="update_post" value="Post"></div>
 </form>
 </div>

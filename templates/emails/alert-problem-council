@@ -4,7 +4,7 @@ The following new problems have been reported to <?=$values['area_name']?>:
 
 <?=$values['data']?>
 
--- 
+Yours,  
 The FixMyStreet team
 
 To stop receiving emails when there are new problems reported to

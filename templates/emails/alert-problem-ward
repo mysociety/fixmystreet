@@ -5,7 +5,7 @@ within <?=$values['ward_name']?>:
 
 <?=$values['data']?>
 
--- 
+Yours,  
 The FixMyStreet team
 
 To stop receiving emails when there are new problems reported to

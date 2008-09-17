@@ -16,5 +16,5 @@ Your report had the subject:
 And details:
 <?=$values['detail']?>
 
-Yours,
+Yours,  
 The Empty Homes Agency team

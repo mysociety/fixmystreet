@@ -6,12 +6,13 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.40 2008-05-21 15:48:07 matthew Exp $
+# $Id: confirm.cgi,v 1.41 2008-09-17 16:55:58 matthew Exp $
 
 use strict;
 use Standard;
 use Digest::SHA1 qw(sha1_hex);
 use CrossSell;
+use mySociety::Alert;
 use mySociety::AuthToken;
 use mySociety::Random qw(random_bytes);
 
@@ -23,15 +24,15 @@ sub main {
     my $token = $q->param('token');
     my $type = $q->param('type') || '';
     my $tokentype = $type eq 'questionnaire' ? 'update' : $type;
-    my $id = mySociety::AuthToken::retrieve($tokentype, $token);
-    if ($id) {
+    my $data = mySociety::AuthToken::retrieve($tokentype, $token);
+    if ($data) {
         if ($type eq 'update') {
-            $out = confirm_update($q, $id);
+            $out = confirm_update($q, $data);
         } elsif ($type eq 'problem') {
-            $out = confirm_problem($q, $id);
+            $out = confirm_problem($q, $data);
             $extra = 'added-problem';
         } elsif ($type eq 'questionnaire') {
-            $out = add_questionnaire($q, $id, $token);
+            $out = add_questionnaire($q, $data, $token);
         }
         dbh()->commit();
     } else {
@@ -49,13 +50,18 @@ EOF
 Page::do_fastcgi(\&main);
 
 sub confirm_update {
-    my ($q, $id) = @_;
+    my ($q, $data) = @_;
+
+    my $id = $data->{id};
+    my $add_alert = $data->{add_alert};
+
     #if (dbh()->selectrow_array('select email from abuse where lower(email)=?', {}, lc($email))) {
     #    dbh()->do("update comment set state='hidden' where id=?", {}, $id);
     #    return $q->p('Sorry, there has been an error confirming your update.');
     #} else {
-        dbh()->do("update comment set state='confirmed' where id=? and state='unconfirmed'", {}, $id);
+    dbh()->do("update comment set state='confirmed' where id=? and state='unconfirmed'", {}, $id);
     #}
+
     my ($problem_id, $fixed, $email, $name) = dbh()->selectrow_array(
         "select problem_id, mark_fixed, email, name from comment where id=?", {}, $id);
     my $creator_fixed = 0;
@@ -70,16 +76,23 @@ sub confirm_update {
         dbh()->do("update problem set lastupdate = ms_current_timestamp()
             where id=? and state='confirmed'", {}, $problem_id);
     }
+
     my $out = '';
     if ($creator_fixed > 0 && $q->{site} ne 'emptyhomes') {
         $out = ask_questionnaire($q->param('token'));
     } else {
         $out = $q->p(sprintf(_('You have successfully confirmed your update and you can now <a href="%s">view it on the site</a>.'), "/?id=$problem_id#update_$id"));
-        if ($fixed) {
-            $out .= CrossSell::display_advert($q, $email, $name);
-        } else {
-            $out .= advertise_updates($q, $problem_id, $email);
-        }
+        #if ($fixed) {
+        $out .= CrossSell::display_advert($q, $email, $name);
+        #} else {
+        #    $out .= advertise_updates($q, $problem_id, $email);
+        #}
+    }
+
+    # Subscribe updater to email updates if requested
+    if ($add_alert) {
+        my $alert_id = mySociety::Alert::create($email, 'new_updates', $problem_id);
+        mySociety::Alert::confirm($alert_id);
     }
 
     return $out;
@@ -111,7 +124,12 @@ sub confirm_problem {
             . sprintf(_('. You can <a href="%s">view the problem on this site</a>.'), "/?id=$id")
         );
     }
-    $out .= advertise_updates($q, $id, $email);
+
+    # Subscribe problem reporter to email updates
+    my $alert_id = mySociety::Alert::create($email, 'new_updates', $id);
+    mySociety::Alert::confirm($alert_id);
+
+    $out .= CrossSell::display_advert($q, $email);
     return $out;
 }
 

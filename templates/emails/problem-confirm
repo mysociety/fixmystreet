@@ -16,5 +16,5 @@ Your problem had the title:
 And details:
 <?=$values['detail']?>
 
-Yours,
+Yours,  
 The FixMyStreet team
