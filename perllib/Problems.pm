@@ -6,13 +6,13 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Problems.pm,v 1.5 2008-09-16 15:45:09 matthew Exp $
+# $Id: Problems.pm,v 1.6 2008-09-17 21:40:44 matthew Exp $
 #
 
 package Problems;
 
 use strict;
-# use Memcached;
+use Memcached;
 use mySociety::DBHandle qw/dbh select_all/;
 use mySociety::Web qw/ent/;
 
@@ -31,23 +31,21 @@ sub set_site_restriction {
 # Front page statistics
 
 sub recent_fixed {
-    my $result;
-    #my $key = "recent_fixed:$site_key";
-    #$result = Memcached::get($key);
-    #unless ($result) {
+    my $key = "recent_fixed:$site_key";
+    my $result = Memcached::get($key);
+    unless ($result) {
         $result = dbh()->selectrow_array("select count(*) from problem
             where state='fixed' and lastupdate>ms_current_timestamp()-'1 month'::interval
             $site_restriction");
-    #    Memcached::set($key, $result, 3600);
-    #}
+        Memcached::set($key, $result, 3600);
+    }
     return $result;
 }
 
 sub number_comments {
-    my $result;
-    #my $key = "number_comments:$site_key";
-    #$result = Memcached::get($key);
-    #unless ($result) {
+    my $key = "number_comments:$site_key";
+    my $result = Memcached::get($key);
+    unless ($result) {
         if ($site_restriction) {
             $result = dbh()->selectrow_array("select count(*) from comment, problem
                 where comment.problem_id=problem.id and comment.state='confirmed'
@@ -56,23 +54,22 @@ sub number_comments {
             $result = dbh()->selectrow_array("select count(*) from comment
                 where state='confirmed'");
         }
-    #    Memcached::set($key, $result, 3600);
-    #}
+        Memcached::set($key, $result, 3600);
+    }
     return $result;
 }
 
 sub recent_new {
     my $interval = shift;
-    my $result;
-    #(my $key = $interval) =~ s/\s+//g;
-    #$key = "recent_new:$site_key:$key";
-    #my $result = Memcached::get($key);
-    #unless ($result) {
+    (my $key = $interval) =~ s/\s+//g;
+    $key = "recent_new:$site_key:$key";
+    my $result = Memcached::get($key);
+    unless ($result) {
         $result = dbh()->selectrow_array("select count(*) from problem
             where state in ('confirmed','fixed') and confirmed>ms_current_timestamp()-'$interval'::interval
             $site_restriction");
-    #    Memcached::set($key, $result, 3600);
-    #}
+        Memcached::set($key, $result, 3600);
+    }
     return $result;
 }
 
@@ -82,27 +79,27 @@ sub recent_photos {
     my ($num, $e, $n, $dist) = @_;
     my $probs;
     if ($e) {
-        #my $key = "recent_photos:$site_key:$num:$e:$n:$dist";
-        #$probs = Memcached::get($key);
-        #unless ($probs) {
+        my $key = "recent_photos:$site_key:$num:$e:$n:$dist";
+        $probs = Memcached::get($key);
+        unless ($probs) {
             $probs = select_all("select id, title
                 from problem_find_nearby(?, ?, ?) as nearby, problem
                 where nearby.problem_id = problem.id
                 and state in ('confirmed', 'fixed') and photo is not null
                 $site_restriction
                 order by confirmed desc limit $num", $e, $n, $dist);
-        #    Memcached::set($key, $probs, 3600);
-        #}
+            Memcached::set($key, $probs, 3600);
+        }
     } else {
-        #my $key = "recent_photos:$site_key:$num";
-        #$probs = Memcached::get($key);
-        #unless ($probs) {
+        my $key = "recent_photos:$site_key:$num";
+        $probs = Memcached::get($key);
+        unless ($probs) {
             $probs = select_all("select id, title from problem
                 where state in ('confirmed', 'fixed') and photo is not null
                 $site_restriction
                 order by confirmed desc limit $num");
-        #    Memcached::set($key, $probs, 3600);
-        #}
+            Memcached::set($key, $probs, 3600);
+        }
     }
     my $out = '';
     foreach (@$probs) {
@@ -115,16 +112,15 @@ sub recent_photos {
 }
 
 sub recent {
-    my $result;
-    #my $key = "recent:$site_key";
-    #$result = Memcached::get($key);
-    #unless ($result) {
+    my $key = "recent:$site_key";
+    my $result = Memcached::get($key);
+    unless ($result) {
         $result = select_all("select id,title from problem
             where state in ('confirmed', 'fixed')
             $site_restriction
             order by confirmed desc limit 5");
-    #    Memcached::set($key, $result, 3600);
-    #}
+        Memcached::set($key, $result, 3600);
+    }
     return $result;
 }
 
