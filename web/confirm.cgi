@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.41 2008-09-17 16:55:58 matthew Exp $
+# $Id: confirm.cgi,v 1.42 2008-09-18 11:29:24 matthew Exp $
 
 use strict;
 use Standard;
@@ -52,8 +52,12 @@ Page::do_fastcgi(\&main);
 sub confirm_update {
     my ($q, $data) = @_;
 
-    my $id = $data->{id};
-    my $add_alert = $data->{add_alert};
+    my $id = $data;
+    my $add_alert = 0;
+    if (ref($data)) {
+        $id = $data->{id};
+        $add_alert = $data->{add_alert};
+    }
 
     #if (dbh()->selectrow_array('select email from abuse where lower(email)=?', {}, lc($email))) {
     #    dbh()->do("update comment set state='hidden' where id=?", {}, $id);
