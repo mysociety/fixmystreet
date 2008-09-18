@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.208 2008-09-17 16:55:58 matthew Exp $
+# $Id: index.cgi,v 1.209 2008-09-18 11:11:07 matthew Exp $
 
 use strict;
 use Standard;
@@ -87,7 +87,7 @@ sub front_page {
         $new = Problems::recent_new('3 days');
         $new_text = 'recently';
     }
-    $out .= '<form action="./" method="get" id="postcodeForm">';
+    $out .= '<form action="/" method="get" id="postcodeForm">';
     if (my $token = $q->param('flickr')) {
         my $id = mySociety::AuthToken::retrieve('flickr', $token);
         if ($id) {
@@ -476,7 +476,7 @@ sub display_form {
 
     if ($input{skipped}) {
         $out .= <<EOF;
-<form action="./" method="post">
+<form action="/" method="post">
 <input type="hidden" name="pc" value="$input_h{pc}">
 <input type="hidden" name="x" value="$input_h{x}">
 <input type="hidden" name="y" value="$input_h{y}">
@@ -799,7 +799,7 @@ sub display_problem {
     $out .= '<div id="alert_links">';
     $out .= '<a id="email_alert" href="/alert?type=updates;id='.$input_h{id}.'">' . _('Email me updates') . '</a>';
     $out .= <<EOF;
-<form action="alert" method="post" id="email_alert_box">
+<form action="/alert" method="post" id="email_alert_box">
 <p>Receive email when updates are left on this problem</p>
 <label class="n" for="alert_email">Email:</label>
 <input type="text" name="email" id="alert_email" value="$input_h{email}" size="30">
@@ -826,7 +826,7 @@ EOF
 <label for="form_fixed">} . _('This problem has been fixed') . qq{</label></div>
 };
     $out .= <<EOF;
-<form method="post" action="./" id="fieldset" enctype="multipart/form-data">
+<form method="post" action="/" id="fieldset" enctype="multipart/form-data">
 <input type="hidden" name="submit_update" value="1">
 <input type="hidden" name="id" value="$input_h{id}">
 <div><label for="form_name">Name:</label>
