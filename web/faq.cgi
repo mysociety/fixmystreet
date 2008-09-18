@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.32 2008-09-17 16:55:58 matthew Exp $
+# $Id: faq.cgi,v 1.33 2008-09-18 10:28:21 matthew Exp $
 
 use strict;
 use Standard -db;
@@ -31,7 +31,7 @@ sub faq {
         $q->dt(_('What is FixMyStreet for?')),
         $q->dd(_('FixMyStreet is a site to help people report, view,
 or discuss local problems they&rsquo;ve found to their local council by
-simply locating them on a map. It launched in beta early February
+simply locating them on a map. It launched in early February
 2007.')),
         $q->dt(_('Can you give me some examples?')),
         $q->dd(_('Sure. Graffiti, unlit lampposts, abandoned beds, broken

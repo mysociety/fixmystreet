@@ -58,12 +58,12 @@ YAHOO.util.Event.onContentReady('mapForm', function() {
         }
         this.x.value = x + 2;
         this.y.value = y + 2;
-	/*
-	if (swfu && swfu.getStats().files_queued > 0) {
-	    swfu.startUpload();
-	    return false;
-	}
-	*/
+        /*
+        if (swfu && swfu.getStats().files_queued > 0) {
+            swfu.startUpload();
+            return false;
+        }
+        */
         return true;
     }
 });
@@ -126,9 +126,9 @@ function doSubmit(e) {
     e.cancelBubble = true;
     try {
         if (swfu.getStats().files_queued > 0)
-	    swfu.startUpload();
-	else
-	    return true;
+            swfu.startUpload();
+        else
+            return true;
     } catch (e) {}
     return false;
 }
@@ -153,7 +153,7 @@ var swfu_settings = {
 
     swfupload_loaded_handler : function() {
         var d = document.getElementById("fieldset");
-	if (d) d.onsubmit = doSubmit;
+        if (d) d.onsubmit = doSubmit;
     },
     file_queued_handler : function(obj) {
         document.getElementById('txtfilename').value = obj.name;
@@ -170,27 +170,27 @@ var swfu_settings = {
     upload_success_handler : function(obj, server_data) {
         obj.id = "singlefile";
         var progress = new FileProgress(obj, this.customSettings.progress_target);
-	progress.setComplete();
+        progress.setComplete();
         progress.setStatus("Complete!");
-	if (server_data == ' ') {
-	    this.customSettings.upload_successful = false;
-	} else {
-	    this.customSettings.upload_successful = true;
-	    document.getElementById('upload_fileid').value = server_data;
-	}
+        if (server_data == ' ') {
+            this.customSettings.upload_successful = false;
+        } else {
+            this.customSettings.upload_successful = true;
+            document.getElementById('upload_fileid').value = server_data;
+        }
     },
     upload_complete_handler : function(obj) {
         if (this.customSettings.upload_successful) {
-	    var d = document.getElementById('update_post');
-	    if (d) d.disabled = 'true';
-	    uploadDone();
-	} else {
-	    obj.id = 'singlefile';
+            var d = document.getElementById('update_post');
+            if (d) d.disabled = 'true';
+            uploadDone();
+        } else {
+            obj.id = 'singlefile';
             var progress = new FileProgress(obj, this.customSettings.progress_target);
             progress.setError();
             progress.setStatus("File rejected");
-	    document.getElementById('txtfilename').value = '';
-	}
+            document.getElementById('txtfilename').value = '';
+        }
         
     },
     upload_error_handler : uploadError,
@@ -256,12 +256,14 @@ function update_tiles(dx, dy, force) {
 
     if (force) return;
 
-    url = [ '/ajax?sx=', document.getElementById('formX').value, ';sy=',
-        document.getElementById('formY').value, ';x=', (x+2), ';y=', (y+2)
-    ].join('');
-    YAHOO.util.Connect.asyncRequest('GET', url, {
-        success: pins_loaded
-    });
+    if (document.getElementById('formX')) {
+        url = [ '/ajax?sx=', document.getElementById('formX').value, ';sy=',
+            document.getElementById('formY').value, ';x=', (x+2), ';y=', (y+2)
+        ].join('');
+        YAHOO.util.Connect.asyncRequest('GET', url, {
+            success: pins_loaded
+        });
+    }
 }
 
 function pins_loaded(o) {
