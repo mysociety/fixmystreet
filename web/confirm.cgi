@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.43 2008-09-19 08:43:36 matthew Exp $
+# $Id: confirm.cgi,v 1.44 2008-09-19 10:24:55 matthew Exp $
 
 use strict;
 use Standard;
@@ -85,7 +85,7 @@ sub confirm_update {
     if ($creator_fixed > 0 && $q->{site} ne 'emptyhomes') {
         $out = ask_questionnaire($q->param('token'));
     } else {
-        $out = $q->p(sprintf(_('You have successfully confirmed your update and you can now <a href="%s">view it on the site</a>.'), "/?id=$problem_id#update_$id"));
+        $out = $q->p(sprintf(_('You have successfully confirmed your update and you can now <a href="%s">view it on the site</a>.'), "/report/$problem_id#update_$id"));
         #if ($fixed) {
         $out .= CrossSell::display_advert($q, $email, $name);
         #} else {
@@ -119,13 +119,13 @@ sub confirm_problem {
     if ($q->{site} eq 'scambs') {
         $out = $q->p($q->big(
             'You have successfully confirmed your problem, and we will be in contact with you about it shortly. '
-            . sprintf(' <a href="%s">View the problem on this site</a>.', "/?id=$id")
+            . sprintf(' <a href="%s">View the problem on this site</a>.', "/report/$id")
         ));
     } else {
         $out = $q->p(
             _('You have successfully confirmed your problem')
             . ($council ? _(' and <strong>we will now send it to the council</strong>') : '')
-            . sprintf(_('. You can <a href="%s">view the problem on this site</a>.'), "/?id=$id")
+            . sprintf(_('. You can <a href="%s">view the problem on this site</a>.'), "/report/$id")
         );
     }
 
@@ -193,7 +193,7 @@ sub add_questionnaire {
         ever_reported, old_state, new_state) values (?, ms_current_timestamp(),
         ms_current_timestamp(), ?, 'confirmed', 'fixed');", {}, $problem_id, $reported)
         unless $already;
-    my $out = $q->p(sprintf('Thank you &mdash; you can <a href="%s">view your updated problem</a> on the site.', "/?id=$problem_id"));
+    my $out = $q->p(sprintf('Thank you &mdash; you can <a href="%s">view your updated problem</a> on the site.', "/report/$problem_id"));
     $out .= CrossSell::display_advert($q, $email, $name);
     return $out;
 }

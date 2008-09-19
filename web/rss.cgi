@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: rss.cgi,v 1.22 2008-09-01 17:17:58 matthew Exp $
+# $Id: rss.cgi,v 1.23 2008-09-19 10:24:55 matthew Exp $
 
 use strict;
 use Standard;
@@ -24,7 +24,7 @@ sub main {
         $out = rss_local_problems($q);
     } elsif ($type eq 'new_updates') {
         my $id = $q->param('id');
-        my $qs = '?id='.$id;
+        my $qs = 'report/' . $id;
         $out = mySociety::Alert::generate_rss($type, $qs, [$id]);
     } elsif ($type eq 'new_problems' || $type eq 'new_fixed_problems') {
         $out = mySociety::Alert::generate_rss($type, '');

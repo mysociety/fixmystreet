@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Problems.pm,v 1.6 2008-09-17 21:40:44 matthew Exp $
+# $Id: Problems.pm,v 1.7 2008-09-19 10:24:55 matthew Exp $
 #
 
 package Problems;
@@ -104,7 +104,7 @@ sub recent_photos {
     my $out = '';
     foreach (@$probs) {
         my $title = ent($_->{title});
-        $out .= '<a href="/?id=' . $_->{id} .
+        $out .= '<a href="/report/' . $_->{id} .
             '"><img border="0" src="/photo?tn=1;id=' . $_->{id} .
             '" alt="' . $title . '" title="' . $title . '"></a>';
     }

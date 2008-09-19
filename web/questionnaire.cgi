@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.30 2008-05-06 10:01:31 matthew Exp $
+# $Id: questionnaire.cgi,v 1.31 2008-09-19 10:24:55 matthew Exp $
 
 use strict;
 use Standard;
@@ -40,7 +40,7 @@ sub check_stuff {
     my $questionnaire = dbh()->selectrow_hashref(
         'select id, problem_id, whenanswered from questionnaire where id=?', {}, $id);
     my $problem_id = $questionnaire->{problem_id};
-    throw Error::Simple("You have already answered this questionnaire. If you have a question, please <a href=/contact>get in touch</a>, or <a href=/?id=$problem_id>view your problem</a>.\n") if $questionnaire->{whenanswered};
+    throw Error::Simple("You have already answered this questionnaire. If you have a question, please <a href=/contact>get in touch</a>, or <a href=/report/$problem_id>view your problem</a>.\n") if $questionnaire->{whenanswered};
 
     my $prev_questionnaire = dbh()->selectrow_hashref(
         'select id from questionnaire where problem_id=? and whenanswered is not null', {}, $problem_id);

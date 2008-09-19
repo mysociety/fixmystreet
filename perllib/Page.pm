@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.113 2008-09-18 10:28:21 matthew Exp $
+# $Id: Page.pm,v 1.114 2008-09-19 10:24:55 matthew Exp $
 #
 
 package Page;
@@ -344,7 +344,7 @@ sub display_pin {
         . $num . '.gif" alt="' . _('Problem') . '" style="top:' . ($py-59)
         . 'px; left:' . ($px) . 'px; position: absolute;">';
     return $out unless $_ && $_->{id} && $col ne 'blue';
-    my $url = '/?id=' . $_->{id};
+    my $url = '/report/' . $_->{id};
     $out = '<a title="' . ent($_->{title}) . '" href="' . $url . '">' . $out . '</a>';
     return $out;
 }
@@ -417,7 +417,7 @@ sub compass ($$$) {
             $compass[$i][$j] = NewURL($q, x=>$i, y=>$j);
         }
     }
-    my $recentre = NewURL($q, x=>undef, y=>undef);
+    my $recentre = NewURL($q);
     return <<EOF;
 <table cellpadding="0" cellspacing="0" border="0" id="compass">
 <tr valign="bottom">

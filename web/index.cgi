@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.209 2008-09-18 11:11:07 matthew Exp $
+# $Id: index.cgi,v 1.210 2008-09-19 10:24:55 matthew Exp $
 
 use strict;
 use Standard;
@@ -146,7 +146,7 @@ EOF
     my $probs = Problems::recent();
     $out .= $q->h2(_('Recently reported problems')) . ' <ul>' if @$probs;
     foreach (@$probs) {
-        $out .= '<li><a href="/?id=' . $_->{id} . '">'. ent($_->{title});
+        $out .= '<li><a href="/report/' . $_->{id} . '">'. ent($_->{title});
         $out .= '</a>';
     }
     $out .= '</ul>' if @$probs;
@@ -337,7 +337,7 @@ sub submit_problem {
                 $input{phone}, $input{council}, $input{anonymous} ? 'f' : 't',
                 $input{category}, $id);
             dbh()->commit();
-            $out = $q->p(sprintf(_('You have successfully confirmed your report and you can now <a href="%s">view it on the site</a>.'), "/?id=$id"));
+            $out = $q->p(sprintf(_('You have successfully confirmed your report and you can now <a href="%s">view it on the site</a>.'), "/report/$id"));
         } else {
             $out = $q->p(_('There appears to have been a problem.'));
         }
@@ -691,7 +691,7 @@ EOF
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
-    my $skipurl = NewURL($q, 'submit_map'=>1, skipped=>1);
+    my $skipurl = NewURL($q, -retain=>1, 'submit_map'=>1, skipped=>1);
     $out .= $q->p({-id=>'text_map'}, _('To report a problem, simply <strong>click on the map</strong> at the correct location.'));
     $out .= $q->p({-id=>'text_no_map'}, sprintf(_("<small>If you cannot see a map &ndash; if you have images turned off,
 or are using a text only browser, for example &ndash; and you
@@ -701,7 +701,7 @@ to describe the location of the problem instead.</small>"), $skipurl));
     $out .= '<div id="nearby_lists">' . $q->h2(_('Reports on and around the map'));
     my $list = '';
     foreach (@$on_map) {
-        $list .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
+        $list .= '<li><a href="/report/' . $_->{id} . '">';
         $list .= $_->{title};
         $list .= '</a>';
         $list .= ' <small>(fixed)</small>' if $_->{state} eq 'fixed';
@@ -715,7 +715,7 @@ to describe the location of the problem instead.</small>"), $skipurl));
     $out .= $q->h2({-id => 'closest_problems'}, sprintf(_('Other nearby problems <small>within&nbsp;%skm</small>'), $dist));
     $list = '';
     foreach (@$around_map) {
-        $list .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
+        $list .= '<li><a href="/report/' . $_->{id} . '">';
         $list .= $_->{title} . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
         $list .= '</a>';
         $list .= ' <small>(fixed)</small>' if $_->{state} eq 'fixed';
@@ -731,7 +731,7 @@ to describe the location of the problem instead.</small>"), $skipurl));
     #$out .= $q->h2(sprintf(_('Recently fixed problems within %skm'), $dist));
     #$list = '';
     #foreach (@$fixed) {
-    #    $list .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
+    #    $list .= '<li><a href="' . NewURL($q, -retain=>1, id=>$_->{id}, x=>undef, y=>undef) . '">';
     #    $list .= $_->{title} . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
     #    $list .= '</a></li>';
     #}
@@ -753,7 +753,7 @@ to describe the location of the problem instead.</small>"), $skipurl));
 sub display_problem {
     my ($q, @errors) = @_;
 
-    my @vars = qw(id name email update fixed upload_fileid x y);
+    my @vars = qw(id name email update fixed add_alert upload_fileid x y submit_update);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
     $input{x} ||= 0; $input{x} += 0;
@@ -762,7 +762,15 @@ sub display_problem {
     # Some council with bad email software
     if ($input{id} =~ /^3D\d+$/) {
         $input{id} =~ s/^3D//;
-        print $q->redirect(-location => 'http://www.fixmystreet.com/?id=' . $input{id}, -status => 301);
+        my $base = mySociety::Config::get('BASE_URL');
+        print $q->redirect(-location => $base . '/report/' . $input{id}, -status => 301);
+        return '';
+    }
+
+    # Redirect old /?id=NNN URLs to /report/NNN
+    if (!@errors && $q->url(-absolute=>1) eq '/') {
+        my $base = mySociety::Config::get('BASE_URL');
+        print $q->redirect(-location => $base . '/report/' . $input{id}, -status => 301);
         return '';
     }
 
@@ -772,6 +780,16 @@ sub display_problem {
     return display_location($q, 'Unknown problem ID') unless $problem;
     return front_page($q, 'That problem has been hidden from public view as it contained inappropriate public details') if $problem->{state} eq 'hidden';
     my ($x, $y, $x_tile, $y_tile, $px, $py) = Page::os_to_px_with_adjust($q, $problem->{easting}, $problem->{northing}, $input{x}, $input{y});
+
+    # Try and have pin near centre of map
+    if (!$input{x} && $x - $x_tile < 0.5) {
+        $x_tile -= 1;
+        $px = Page::os_to_px($problem->{easting}, $x_tile);
+    }
+    if (!$input{y} && $y - $y_tile < 0.5) {
+        $y_tile -= 1;
+        $py = Page::os_to_px($problem->{northing}, $y_tile, 1);
+    }
 
     my $out = '';
 
@@ -790,10 +808,7 @@ sub display_problem {
         $q->small($q->a({href => '/contact?id=' . $input{id}}, 'Offensive? Unsuitable? Tell us'))
     );
 
-    # Try and have pin near centre of map
-    $x_tile -= 1 if $x - $x_tile < 0.5;
-    $y_tile -= 1 if $y - $y_tile < 0.5;
-    my $back = NewURL($q, id=>undef, x=>$x_tile, y=>$y_tile, submit_update=>undef);
+    my $back = NewURL($q, -url=>'/', x=>$x_tile, y=>$y_tile);
     $out .= '<p style="padding-bottom: 0.5em; border-bottom: dotted 1px #999999;" align="right"><a href="'
         . $back . '">' . _('More problems nearby') . '</a></p>';
     $out .= '<div id="alert_links">';
@@ -821,6 +836,7 @@ EOF
     }
 
     my $fixed = ($input{fixed}) ? ' checked' : '';
+    my $add_alert_checked = ($input{add_alert} || !$input{submit_update}) ? ' checked' : '';
     my $fixedline = $problem->{state} eq 'fixed' ? '' : qq{
 <div class="checkbox"><input type="checkbox" name="fixed" id="form_fixed" value="1"$fixed>
 <label for="form_fixed">} . _('This problem has been fixed') . qq{</label></div>
@@ -846,7 +862,7 @@ $fixedline
 <label for="form_photo">Photo:</label>
 <input type="file" name="photo" id="form_photo">
 </div>
-<div class="checkbox"><input type="checkbox" name="add_alert" id="form_add_alert" value="1">
+<div class="checkbox"><input type="checkbox" name="add_alert" id="form_add_alert" value="1"$add_alert_checked>
 <label for="form_add_alert">Alert me to future updates</label></div>
 <div class="checkbox"><input type="submit" id="update_post" value="Post"></div>
 </form>

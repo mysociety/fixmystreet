@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: fun.cgi,v 1.2 2008-01-28 15:27:00 matthew Exp $
+# $Id: fun.cgi,v 1.3 2008-09-19 10:24:55 matthew Exp $
 
 use strict;
 use Standard -db;
@@ -32,23 +32,23 @@ Do let us know if you find any more.');
 	    $q->h2('Dumped Piano (right)'),
 	    $q->p('The reporter of this problem summed it up with their report,
 which consisted solely of the one character &ldquo;!&rdquo;. &mdash;',
-$q->a({href=>'http://www.fixmystreet.com/?id=9468'}, 'Problem report')),
+$q->a({href=>'http://www.fixmystreet.com/report/9468'}, 'Problem report')),
 	),
         $q->li(
 	    $q->h2('Mad Seagull'),
 	    $q->p('&ldquo;A seagull is attacking various cars within this road. He starts at around 05:45 every morning and continues until around 19:30. This causes a lot of noisy banging and wakes up children.&rdquo; &mdash;',
-$q->a({href=>'http://www.fixmystreet.com/?id=2722'}, 'Problem report')),
+$q->a({href=>'http://www.fixmystreet.com/report/2722'}, 'Problem report')),
 	),
         $q->li(
 	    $q->img({src=>'http://www.fixmystreet.com/photo?id=6553', align=>'right', hspace=>8}),
 	    $q->h2('Boxes full of cheese dumped (right)'),
 	    $q->p('&ldquo;About a dozen boxes full of mozzarella cheese have been dumped opposite 3 rufford street. if it warms up we could have nasty road topping problem (seriously there is a lot of cheese)&rdquo; &mdash;',
-$q->a({href=>'http://www.fixmystreet.com/?id=6553'}, 'Problem report')),
+$q->a({href=>'http://www.fixmystreet.com/report/6553'}, 'Problem report')),
 	),
         $q->li(
 	    $q->h2('Dangerous Nivea Billboard'),
 	    $q->p('&ldquo;The Nivea \'Oxygen is a wonderful thing\' billboard here has a device on it releasing bubbles and foam. This is blowing into the road which is both distracting and dangerous to drivers. A large ball of foam hit my windscreen unexpectedly and nearly caused me to have an accident&rdquo; &mdash;',
-$q->a({href=>'http://www.fixmystreet.com/?id=7552'}, 'Problem report')),
+$q->a({href=>'http://www.fixmystreet.com/report/7552'}, 'Problem report')),
 	),
     );
     return $out;

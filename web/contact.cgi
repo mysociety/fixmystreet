@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.31 2008-09-18 11:11:07 matthew Exp $
+# $Id: contact.cgi,v 1.32 2008-09-19 10:24:55 matthew Exp $
 
 use strict;
 use Standard;
@@ -50,7 +50,7 @@ sub contact_submit {
     (my $message = $input{message}) =~ s/\r\n/\n/g;
     (my $subject = $input{subject}) =~ s/\r|\n/ /g;
     $message .= "\n\n[ Complaint about report $input{id} - "
-        . mySociety::Config::get('BASE_URL') . "/?id=$input{id} ]"
+        . mySociety::Config::get('BASE_URL') . "/report/$input{id} ]"
         if $input{id};
     my $postfix = '[ Sent by contact.cgi on ' .
         $ENV{'HTTP_HOST'} . '. ' .

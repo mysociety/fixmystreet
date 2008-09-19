@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.19 2008-07-09 12:02:38 matthew Exp $
+# $Id: reports.cgi,v 1.20 2008-09-19 10:24:55 matthew Exp $
 
 use strict;
 use Standard;
@@ -205,8 +205,8 @@ sub main {
                 $q->a({ href => $rss_url }, '<img align="right" src="/i/feed.png" width="16" height="16" title="' . $rss_title . '" alt="' . sprintf($rss_alt, $thing) . '" border="0" hspace="4">'),
                 'This is a summary of all reports for one ' . $thing . '. You can ' .
                 ($all ? 
-                    $q->a({href => NewURL($q, council=>undef, ward=>undef, all=>undef) }, 'see less detail') :
-                    $q->a({href => NewURL($q, council=>undef, ward=>undef, all=>1) }, 'see more details')) .
+                    $q->a({href => NewURL($q)  }, 'see less detail') :
+                    $q->a({href => NewURL($q, all=>1) }, 'see more details')) .
                 ($q->{site} eq 'scambs' ? '' :
                 ' or go back and ' .
                 $q->a({href => '/reports' }, 'show all councils') ) .
@@ -264,7 +264,7 @@ sub list_problems {
     return unless $problems;
     print "<h3>$title</h3>\n<ul>";
     foreach (@$problems) {
-        print '<li><a href="/?id=' . $_->[0] . '">';
+        print '<li><a href="/report/' . $_->[0] . '">';
         print ent($_->[1]);
         print '</a>';
         print ' <small>(sent to both)</small>' if $_->[3]>1;

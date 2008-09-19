@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.50 2008-09-05 10:47:11 matthew Exp $
+# $Id: index.cgi,v 1.51 2008-09-19 10:24:56 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.50 2008-09-05 10:47:11 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.51 2008-09-19 10:24:56 matthew Exp $';
 
 use strict;
 
@@ -30,7 +30,7 @@ use mySociety::Config;
 use mySociety::DBHandle qw(dbh select_all);
 use mySociety::MaPit;
 use mySociety::VotingArea;
-use mySociety::Web qw(ent NewURL);
+use mySociety::Web qw(ent);
 
 BEGIN {
     mySociety::Config::set_file("$FindBin::Bin/../conf/general");

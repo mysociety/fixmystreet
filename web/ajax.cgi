@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: ajax.cgi,v 1.2 2008-09-17 14:55:48 matthew Exp $
+# $Id: ajax.cgi,v 1.3 2008-09-19 10:24:55 matthew Exp $
 
 use strict;
 use Standard;
@@ -35,7 +35,7 @@ sub main {
 
     my $list = '';
     foreach (@$on_map) {
-        $list .= '<li><a href="/?id=' . $_->{id} . '">';
+        $list .= '<li><a href="/report/' . $_->{id} . '">';
         $list .= $_->{title};
         $list .= '</a>';
 	$list .= ' <small>(fixed)</small>' if $_->{state} eq 'fixed';
@@ -45,7 +45,7 @@ sub main {
 
     $list = '';
     foreach (@$around_map) {
-        $list .= '<li><a href="/?id=' . $_->{id} . '">';
+        $list .= '<li><a href="/report/' . $_->{id} . '">';
         $list .= $_->{title} . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
         $list .= '</a>';
 	$list .= ' <small>(fixed)</small>' if $_->{state} eq 'fixed';
@@ -55,7 +55,7 @@ sub main {
 
     #$list = '';
     #foreach (@$fixed) {
-    #    $list .= '<li><a href="' . NewURL($q, id=>$_->{id}, x=>undef, y=>undef) . '">';
+    #    $list .= '<li><a href="/report/' . $_->{id} . '">';
     #    $list .= $_->{title} . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
     #    $list .= '</a></li>';
     #}
