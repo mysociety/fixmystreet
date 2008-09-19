@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.42 2008-09-18 11:29:24 matthew Exp $
+# $Id: confirm.cgi,v 1.43 2008-09-19 08:43:36 matthew Exp $
 
 use strict;
 use Standard;
@@ -175,7 +175,13 @@ EOF
 }
 
 sub add_questionnaire {
-    my ($q, $id, $token) = @_;
+    my ($q, $data, $token) = @_;
+
+    my $id = $data;
+    if (ref($data)) {
+        $id = $data->{id};
+    }
+
     my ($problem_id, $email, $name) = dbh()->selectrow_array("select problem_id, email, name from comment where id=?", {}, $id);
     my $reported = $q->param('reported');
     $reported = $reported eq 'Yes' ? 't' : ($reported eq 'No' ? 'f' : undef);
