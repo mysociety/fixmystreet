@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.31 2008-09-19 17:47:19 matthew Exp $
+# $Id: alert.cgi,v 1.32 2008-09-19 17:58:37 matthew Exp $
 
 use strict;
 use Standard;
@@ -171,8 +171,9 @@ sub alert_list {
         $options .= $q->p($q->small(_('FixMyStreet sends different categories of problem
 to the appropriate council, so problems within the boundary of a particular council
 might not match the problems sent to that council. For example, a graffiti report
-will be sent to the district council, so will appear in both that council\'s alerts,
-but will only appear in the "Within the boundary" alert for the county council.')));
+will be sent to the district council, so will appear in both of the district
+council&rsquo;s alerts, but will only appear in the "Within the boundary" alert
+for the county council.')));
         $options .= '</div>
 <div id="rss_buttons">
 ';
