@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.210 2008-09-19 10:24:55 matthew Exp $
+# $Id: index.cgi,v 1.211 2008-09-19 17:47:19 matthew Exp $
 
 use strict;
 use Standard;
@@ -682,9 +682,10 @@ sub display_location {
     my $rss_title = _('RSS feed of recent local problems');
     my $rss_alt = _('RSS feed');
     my $u_pc = uri_escape($input{pc});
+    my $email_me_link = NewURL($q, -url=>'/alert', x=>$x, y=>$y, feed=>"local:$x:$y");
     $out .= <<EOF;
     <p id="alert_links_area">
-    <a id="email_alert" href="/alert?pc=$u_pc;type=local;feed=local:$x:$y;alert=Subscribe">$email_me</a>
+    <a id="email_alert" href="$email_me_link">$email_me</a>
     | <a href="/rss/$x,$y" id="rss_alert"><span>RSS feed</span> <img src="/i/feed.png" width="16" height="16" title="$rss_title" alt="$rss_alt" border="0" style="vertical-align: top"></a>
     </p>
 EOF

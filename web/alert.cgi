@@ -6,11 +6,12 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.30 2008-09-16 15:45:10 matthew Exp $
+# $Id: alert.cgi,v 1.31 2008-09-19 17:47:19 matthew Exp $
 
 use strict;
 use Standard;
 use Digest::SHA1 qw(sha1_hex);
+use Error qw(:try);
 use CrossSell;
 use mySociety::Alert;
 use mySociety::AuthToken;
@@ -45,7 +46,7 @@ EOF
         $out = alert_do_subscribe($q, $q->param('email'));
     } elsif ($q->param('id')) {
         $out = alert_updates_form($q);
-    } elsif ($q->param('pc')) {
+    } elsif ($q->param('pc') || ($q->param('x') && $q->param('y'))) {
         $title = _('Local RSS feeds and email alerts');
         $out = alert_list($q);
     } else {
@@ -61,9 +62,24 @@ Page::do_fastcgi(\&main);
 
 sub alert_list {
     my ($q, @errors) = @_;
-    my %input = map { $_ => scalar $q->param($_) } qw(pc email);
-    my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } qw(pc email);
-    my ($x, $y, $e, $n, $error) = Page::geocode($input{pc});
+    my @vars = qw(pc email x y);
+    my %input = map { $_ => scalar $q->param($_) } @vars;
+    my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
+
+    my($error, $e, $n);
+    my $x = $input{x}; my $y = $input{y};
+    $x ||= 0; $x += 0;
+    $y ||= 0; $y += 0;
+    if ($x || $y) {
+        $e = Page::tile_to_os($input{x});
+        $n = Page::tile_to_os($input{y});
+    } else {
+        try {
+            ($x, $y, $e, $n, $error) = Page::geocode($input{pc});
+        } catch Error::Simple with {
+            $error = shift;
+        };
+    }
     return Page::geocode_choice($error, '/alert') if ref($error) eq 'ARRAY';
     return alert_front_page($q, $error) if $error;
 
@@ -176,7 +192,8 @@ but will only appear in the "Within the boundary" alert for the county council.'
     my $pics = Problems::recent_photos(5, $e, $n, $dist);
     $pics = '<div id="alert_photos">' . $q->h2(_('Photos of recent nearby reports')) . $pics . '</div>' if $pics;
 
-    my $out = $q->h1(sprintf(_('Local RSS feeds and email alerts for &lsquo;%s&rsquo;'), $pretty_pc));
+    my $out = $q->h1('Local RSS feeds and email alerts'
+        . ($pretty_pc ? ' for &lsquo;' . $pretty_pc . '&rsquo;' : ''));
     $out .= <<EOF;
 <form id="alerts" method="post" action="/alert">
 <input type="hidden" name="type" value="local">
@@ -185,9 +202,9 @@ but will only appear in the "Within the boundary" alert for the county council.'
 $pics
 
 EOF
-    $out .= $q->p(sprintf(_('Here are the types of local problem alerts for &lsquo;%s&rsquo;.
-Select which type of alert you&rsquo;d like and click the button for an RSS
-feed, or enter your email address to subscribe to an email alert.'), $pretty_pc));
+    $out .= $q->p(($pretty_pc ? 'Here are the types of local problem alerts for &lsquo;' . $pretty_pc . '&rsquo;. '
+    : '') . 'Select which type of alert you&rsquo;d like and click the button for an RSS
+feed, or enter your email address to subscribe to an email alert.');
     $out .= $errors;
     $out .= $q->p(_('The simplest alert is our geographic one:'));
     my $label = sprintf(_('Problems within %skm of this location'), $dist);
