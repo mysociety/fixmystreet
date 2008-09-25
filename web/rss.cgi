@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: rss.cgi,v 1.23 2008-09-19 10:24:55 matthew Exp $
+# $Id: rss.cgi,v 1.24 2008-09-25 12:53:42 matthew Exp $
 
 use strict;
 use Standard;
@@ -53,6 +53,7 @@ Page::do_fastcgi(\&main);
 
 sub rss_local_problems {
     my $q = shift;
+    my $pc = $q->param('pc');
     my $x = $q->param('x');
     my $y = $q->param('y');
     my $lat = $q->param('lat');
@@ -66,8 +67,19 @@ sub rss_local_problems {
         $e = Page::tile_to_os($x);
         $n = Page::tile_to_os($y);
         ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($e, $n, 'G');
+    } elsif ($pc) {
+        my $error;
+        try {
+            ($x, $y, $e, $n, $error) = Page::geocode($input{pc});
+        } catch Error::Simple with {
+            $error = shift;
+        };
+        unless ($error) {
+            print $q->redirect(-location => "http://www.fixmystreet.com/rss/$x/$y");
+        }
+        return '';
     } else {
-        die "Missing x/y or lat/lon parameter in RSS feed";
+        die "Missing x/y, lat/lon, or postcode parameter in RSS feed";
     }
     my $qs = "?x=$x;y=$y";
     my $d = $q->param('d');
