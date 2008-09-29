@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: tms-signup.cgi,v 1.1 2008-09-10 18:06:31 matthew Exp $
+# $Id: tms-signup.cgi,v 1.2 2008-09-29 12:26:51 matthew Exp $
 
 use strict;
 use Standard;
@@ -90,11 +90,8 @@ sub tms_do_subscribe {
         if (mySociety::AuthToken::verify_with_shared_secret($input{email}, mySociety::Config::get('AUTH_SHARED_SECRET'), $input{signed_email})) {
             tms_confirm(%input);
             $out = $q->p('You have successfully registered your interest.');
-        } else {
-            my @errors = ('We could not validate that signature; please try again.');
-            $out = tms_updates_form($q, @errors);
+            return $out;
         }
-	return $out;
     }
 
     my %h = ();
