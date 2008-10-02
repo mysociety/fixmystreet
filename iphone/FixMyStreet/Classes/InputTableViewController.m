@@ -68,8 +68,8 @@
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+	// Possible section==1 heading to make summary clearer once entered?
 	return nil;
-	// Possible section==2 heading to make summary clearer once entered?
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -100,12 +100,12 @@
 	// And possible display of selected image within cell somewhere/somehow (I like how Contacts does it, but haven't
 	// managed that so far
 
-	/* if (indexPath.section == 2) {
+	if (indexPath.section == 1) {
 		CellIdentifier = @"CellText";
 		cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
 		if (cell == nil) {
 			//CGRect frame = CGRectMake(0, 0, 250, 44);
-			cell = [[[subjectTableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:CellIdentifier] autorelease];
+			cell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:CellIdentifier] autorelease];
 			//cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 			//UITextField *textField = [[UITextField alloc] initWithFrame:CGRectMake(1.0, 1.0, 250, 44)];
 			//textField.placeholder = @"Subject";
@@ -113,7 +113,7 @@
 			//cell.accessoryView = textField;
 			//[textField release];
 		}
-	} else */
+	} else {
 	/* if (indexPath.section == 0) {
 		CellIdentifier = @"CellImage";
 		cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
@@ -123,14 +123,14 @@
 		}
 	} else { */
 
-	CellIdentifier = @"Cell";
-	cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-	if (cell == nil) {
-		cell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:CellIdentifier] autorelease];
-		cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-	}
+		CellIdentifier = @"Cell";
+		cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+		if (cell == nil) {
+			cell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:CellIdentifier] autorelease];
+			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+		}
 	
-	//}
+	}
 
 	if (indexPath.section == 0) {
 		if (delegate.image) {
@@ -138,7 +138,7 @@
 		}
 		cell.text = @"Take photo";
 		actionTakePhotoCell = cell;
-	} else if (indexPath.section == 1) {
+	} else if (indexPath.section == 2) {
 		if (delegate.location) {
 			cell.accessoryView = nil;
 			cell.accessoryType = UITableViewCellAccessoryCheckmark;
@@ -150,10 +150,22 @@
 		}
 		cell.text = @"Fetch location";
 		actionFetchLocationCell = cell;
-	} else if (indexPath.section == 2) {
+	} else if (indexPath.section == 1) {
 		if (delegate.subject) {
-			cell.text = delegate.subject;
-			cell.textColor = [UIColor blackColor];
+			// Somehow don't do this every time? :)
+			UILabel* titleLabelLabel = [[UILabel alloc] initWithFrame:CGRectMake(10,0,70,40)];
+			titleLabelLabel.font = [UIFont boldSystemFontOfSize:17];
+			titleLabelLabel.text = @"Subject:";
+			UILabel* titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(80,0,190,40)];
+			titleLabel.font = [UIFont systemFontOfSize:17];
+			titleLabel.text = delegate.subject;
+			[cell.contentView addSubview:titleLabelLabel];
+			[cell.contentView addSubview:titleLabel];
+			[titleLabel release];
+			[titleLabelLabel release];
+			cell.text = nil;
+			//cell.text = delegate.subject;
+			//cell.textColor = [UIColor blackColor];
 			cell.accessoryType = UITableViewCellAccessoryCheckmark;
 		} else {
 			cell.text = @"Short summary of problem";
@@ -171,9 +183,9 @@
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 	if (indexPath.section == 0) {
 		[self addPhoto:nil];	
-	} else if (indexPath.section == 1) {
-		[[MyCLController sharedInstance].locationManager startUpdatingLocation];
 	} else if (indexPath.section == 2) {
+		[[MyCLController sharedInstance].locationManager startUpdatingLocation];
+	} else if (indexPath.section == 1) {
 		UIViewController* editSubjectViewController = [[EditSubjectViewController alloc] initWithNibName:@"EditSubjectView"	bundle:nil];
 		[self.navigationController pushViewController:editSubjectViewController animated:YES];
 		[editSubjectViewController release];
@@ -256,7 +268,7 @@
 
 -(void)newLocationUpdate:(NSString *)text {
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Hey" message:text delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-	[alert show];
+	//[alert show];
 	[alert release];
 
 	FixMyStreetAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
