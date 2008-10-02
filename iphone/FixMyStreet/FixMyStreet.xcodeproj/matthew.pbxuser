@@ -2,15 +2,15 @@
 {
 	1D3623240D0F684500981E51 /* FixMyStreetAppDelegate.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {758, 738}}";
-			sepNavSelRange = "{402, 0}";
+			sepNavIntBoundsRect = "{{0, 0}, {758, 761}}";
+			sepNavSelRange = "{551, 0}";
 			sepNavVisRange = "{0, 773}";
 		};
 	};
 	1D3623250D0F684500981E51 /* FixMyStreetAppDelegate.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {758, 753}}";
-			sepNavSelRange = "{1542, 0}";
+			sepNavIntBoundsRect = "{{0, 0}, {758, 776}}";
+			sepNavSelRange = "{1015, 0}";
 			sepNavVisRange = "{0, 1573}";
 			sepNavWindowFrame = "{{130, 510}, {750, 558}}";
 		};
@@ -61,7 +61,7 @@
 				);
 			};
 			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
-				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingDirectionKey = 1;
 				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
 				PBXFileTableDataSourceColumnWidthsKey = (
 					20,
@@ -149,6 +149,11 @@
 			346AEF9A0E95326200D751E0 = 346AEF9A0E95326200D751E0 /* PBXTextBookmark */;
 			346AEFA60E95330500D751E0 = 346AEFA60E95330500D751E0 /* PBXTextBookmark */;
 			34710D0C0E9534CF00ABBB2B /* PBXTextBookmark */ = 34710D0C0E9534CF00ABBB2B /* PBXTextBookmark */;
+			34710D240E9535C400ABBB2B /* PBXTextBookmark */ = 34710D240E9535C400ABBB2B /* PBXTextBookmark */;
+			34710D250E9535C400ABBB2B /* PBXTextBookmark */ = 34710D250E9535C400ABBB2B /* PBXTextBookmark */;
+			34710D270E9535C400ABBB2B /* PBXTextBookmark */ = 34710D270E9535C400ABBB2B /* PBXTextBookmark */;
+			34710D280E9535C400ABBB2B /* PBXTextBookmark */ = 34710D280E9535C400ABBB2B /* PBXTextBookmark */;
+			34710D380E9535E600ABBB2B /* PBXTextBookmark */ = 34710D380E9535E600ABBB2B /* PBXTextBookmark */;
 			347A02240E93D17400D716CB = 347A02240E93D17400D716CB /* PlistBookmark */;
 			347A03380E93E86100D716CB = 347A03380E93E86100D716CB /* PBXTextBookmark */;
 			347A033B0E93E86100D716CB = 347A033B0E93E86100D716CB /* PBXTextBookmark */;
@@ -386,31 +391,31 @@
 	344E0D540E91440500483FD6 /* imageCell.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {758, 761}}";
-			sepNavSelRange = "{254, 0}";
-			sepNavVisRange = "{0, 401}";
+			sepNavSelRange = "{265, 0}";
+			sepNavVisRange = "{0, 412}";
 			sepNavWindowFrame = "{{15, 615}, {750, 558}}";
 		};
 	};
 	344E0D550E91440500483FD6 /* imageCell.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {758, 966}}";
-			sepNavSelRange = "{397, 0}";
-			sepNavVisRange = "{0, 1722}";
+			sepNavIntBoundsRect = "{{0, 0}, {758, 980}}";
+			sepNavSelRange = "{408, 0}";
+			sepNavVisRange = "{174, 1898}";
 			sepNavWindowFrame = "{{38, 594}, {750, 558}}";
 		};
 	};
 	344E0E5B0E918B1000483FD6 /* Report.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {758, 761}}";
-			sepNavSelRange = "{135, 0}";
-			sepNavVisRange = "{0, 237}";
+			sepNavSelRange = "{243, 0}";
+			sepNavVisRange = "{0, 248}";
 		};
 	};
 	344E0E5C0E918B1000483FD6 /* Report.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {516, 924}}";
-			sepNavSelRange = "{219, 38}";
-			sepNavVisRange = "{194, 174}";
+			sepNavIntBoundsRect = "{{0, 0}, {758, 854}}";
+			sepNavSelRange = "{285, 0}";
+			sepNavVisRange = "{0, 1095}";
 			sepNavWindowFrame = "{{84, 552}, {750, 558}}";
 		};
 	};
@@ -442,6 +447,74 @@
 		rLoc = 0;
 		rType = 0;
 		vrLen = 6;
+		vrLoc = 0;
+	};
+	34710D240E9535C400ABBB2B /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 347A021B0E93CDA200D716CB /* MyCLController.h */;
+		name = "MyCLController.h: 27";
+		rLen = 0;
+		rLoc = 1435;
+		rType = 0;
+		vrLen = 2164;
+		vrLoc = 1176;
+	};
+	34710D250E9535C400ABBB2B /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 34710D260E9535C400ABBB2B /* matthew.pbxuser */;
+		name = "matthew.pbxuser: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 1626;
+		vrLoc = 0;
+	};
+	34710D260E9535C400ABBB2B /* matthew.pbxuser */ = {
+		isa = PBXFileReference;
+		name = matthew.pbxuser;
+		path = /Users/matthew/Projects/mySociety/iPhone/FixMyStreet/FixMyStreet.xcodeproj/matthew.pbxuser;
+		sourceTree = "<absolute>";
+	};
+	34710D270E9535C400ABBB2B /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 347A021B0E93CDA200D716CB /* MyCLController.h */;
+		name = "MyCLController.h: 27";
+		rLen = 0;
+		rLoc = 1435;
+		rType = 0;
+		vrLen = 2164;
+		vrLoc = 1176;
+	};
+	34710D280E9535C400ABBB2B /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 34710D290E9535C400ABBB2B /* matthew.pbxuser */;
+		name = "matthew.pbxuser: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 1544;
+		vrLoc = 0;
+	};
+	34710D290E9535C400ABBB2B /* matthew.pbxuser */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = text;
+		name = matthew.pbxuser;
+		path = /Users/matthew/Projects/mySociety/iPhone/FixMyStreet/FixMyStreet.xcodeproj/matthew.pbxuser;
+		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {758, 12110}}";
+			sepNavSelRange = "{207, 0}";
+			sepNavVisRange = "{0, 1626}";
+		};
+	};
+	34710D380E9535E600ABBB2B /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 347A021B0E93CDA200D716CB /* MyCLController.h */;
+		name = "MyCLController.h: 27";
+		rLen = 0;
+		rLoc = 1435;
+		rType = 0;
+		vrLen = 2716;
 		vrLoc = 0;
 	};
 	347710680E8BD7AA0051DFFD /* FixMyStreet */ = {
@@ -487,45 +560,46 @@
 	347712720E8D367F0051DFFD /* InputTableViewController.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {876, 761}}";
-			sepNavSelRange = "{529, 0}";
+			sepNavSelRange = "{1033, 77}";
 			sepNavVisRange = "{0, 1116}";
 			sepNavWindowFrame = "{{153, 489}, {750, 558}}";
 		};
 	};
 	347712730E8D367F0051DFFD /* InputTableViewController.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {758, 3990}}";
-			sepNavSelRange = "{6373, 0}";
-			sepNavVisRange = "{5523, 1952}";
+			sepNavIntBoundsRect = "{{0, 0}, {758, 3738}}";
+			sepNavSelRange = "{1921, 49}";
+			sepNavVisRange = "{437, 1858}";
 			sepNavWindowFrame = "{{61, 573}, {750, 558}}";
 		};
 	};
 	3477137E0E8D54820051DFFD /* SubjectTableViewCell.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {758, 761}}";
-			sepNavSelRange = "{265, 0}";
+			sepNavSelRange = "{0, 0}";
 			sepNavVisRange = "{0, 325}";
 		};
 	};
 	3477137F0E8D54820051DFFD /* SubjectTableViewCell.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {522, 532}}";
-			sepNavSelRange = "{233, 23}";
-			sepNavVisRange = "{161, 322}";
+			sepNavIntBoundsRect = "{{0, 0}, {758, 761}}";
+			sepNavSelRange = "{419, 446}";
+			sepNavVisRange = "{0, 1216}";
 		};
 	};
 	347A021B0E93CDA200D716CB /* MyCLController.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {758, 1022}}";
-			sepNavSelRange = "{149, 0}";
-			sepNavVisRange = "{0, 2677}";
+			sepNavIntBoundsRect = "{{0, 0}, {758, 1148}}";
+			sepNavSelRange = "{1435, 0}";
+			sepNavVisRange = "{0, 2716}";
+			sepNavWindowFrame = "{{15, 94}, {738, 1079}}";
 		};
 	};
 	347A021C0E93CDA200D716CB /* MyCLController.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {990, 2926}}";
-			sepNavSelRange = "{4301, 0}";
-			sepNavVisRange = "{0, 2600}";
+			sepNavIntBoundsRect = "{{0, 0}, {990, 2954}}";
+			sepNavSelRange = "{2695, 0}";
+			sepNavVisRange = "{1912, 1977}";
 		};
 	};
 	347A02240E93D17400D716CB /* PlistBookmark */ = {
@@ -579,6 +653,11 @@
 		name = matthew.mode1v3;
 		path = /Users/matthew/Projects/mySociety/iPhone/FixMyStreet/FixMyStreet.xcodeproj/matthew.mode1v3;
 		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {758, 20818}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{850, 1349}";
+		};
 	};
 	3499E5A30E95311A006F2DA2 /* .cvsignore */ = {
 		uiCtxt = {
@@ -629,8 +708,8 @@
 	};
 	349AFEAC0E925AAA008E83C1 /* EditSubjectViewController.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {758, 738}}";
-			sepNavSelRange = "{189, 0}";
+			sepNavIntBoundsRect = "{{0, 0}, {758, 761}}";
+			sepNavSelRange = "{0, 0}";
 			sepNavVisRange = "{0, 392}";
 			sepNavWindowFrame = "{{15, 615}, {750, 558}}";
 		};
@@ -638,8 +717,8 @@
 	349AFEAD0E925AAA008E83C1 /* EditSubjectViewController.m */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {918, 1484}}";
-			sepNavSelRange = "{1728, 0}";
-			sepNavVisRange = "{166, 1569}";
+			sepNavSelRange = "{1068, 0}";
+			sepNavVisRange = "{365, 1614}";
 			sepNavWindowFrame = "{{61, 573}, {750, 558}}";
 		};
 	};
@@ -670,7 +749,7 @@
 		rLen = 0;
 		rLoc = 243;
 		rType = 0;
-		vrLen = 468;
+		vrLen = 248;
 		vrLoc = 0;
 	};
 	34A8D8420E94013600136079 /* PBXTextBookmark */ = {
@@ -749,6 +828,11 @@
 		name = UITableViewCell.h;
 		path = /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator2.1.sdk/System/Library/Frameworks/UIKit.framework/Headers/UITableViewCell.h;
 		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {2370, 1918}}";
+			sepNavSelRange = "{4113, 64}";
+			sepNavVisRange = "{2505, 4655}";
+		};
 	};
 	34EF51CF0E93F0C400CCD166 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
@@ -777,7 +861,7 @@
 		rLen = 77;
 		rLoc = 1033;
 		rType = 0;
-		vrLen = 1213;
+		vrLen = 1116;
 		vrLoc = 0;
 	};
 }
