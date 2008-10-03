@@ -4,7 +4,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
 #
-# $Id: crontab.ugly,v 1.14 2008-10-02 22:04:47 matthew Exp $
+# $Id: crontab.ugly,v 1.15 2008-10-03 12:29:03 keith Exp $
 
 PATH=/usr/local/bin:/usr/bin:/bin
 !!(* if ($vhost eq "matthew.fixmystreet.com") { *)!!
@@ -14,7 +14,7 @@ MAILTO=team@fixmystreet.com
 !!(* } *)!!
 
 # On only one server
-!!(* if ($hostname eq "bitter") { *)!!
+!!(* if ($hostname eq "cake") { *)!!
 5,10,15,20,25,30,35,40,45,50,55 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-reports || echo "stalled?"
 0 0-8,10,11,13,14,16,17,19-23 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-reports || echo "stalled?"
 0 9,12,15,18 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock "/data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-reports --verbose" || echo "stalled?"
