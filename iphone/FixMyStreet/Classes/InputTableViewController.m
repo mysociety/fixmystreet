@@ -152,22 +152,25 @@
 		actionFetchLocationCell = cell;
 	} else if (indexPath.section == 1) {
 		if (delegate.subject) {
-			// Somehow don't do this every time? :)
-			UILabel* titleLabelLabel = [[UILabel alloc] initWithFrame:CGRectMake(10,0,70,40)];
-			titleLabelLabel.font = [UIFont boldSystemFontOfSize:17];
-			titleLabelLabel.text = @"Subject:";
-			UILabel* titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(80,0,190,40)];
-			titleLabel.font = [UIFont systemFontOfSize:17];
-			titleLabel.text = delegate.subject;
-			[cell.contentView addSubview:titleLabelLabel];
-			[cell.contentView addSubview:titleLabel];
-			[titleLabel release];
-			[titleLabelLabel release];
+			if (!titleLabelLabel) {
+				titleLabelLabel = [[UILabel alloc] initWithFrame:CGRectMake(10,0,70,40)];
+				titleLabelLabel.font = [UIFont boldSystemFontOfSize:17];
+				titleLabelLabel.text = @"Subject:";
+				[cell.contentView addSubview:titleLabelLabel];
+			}
+			titleLabelLabel.hidden = NO;
+			if (!titleLabel) {
+				titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(80,0,190,40)];
+				titleLabel.font = [UIFont systemFontOfSize:17];
+				[cell.contentView addSubview:titleLabel];
+			}
 			cell.text = nil;
-			//cell.text = delegate.subject;
-			//cell.textColor = [UIColor blackColor];
+			titleLabel.text = delegate.subject;
+			titleLabel.hidden = NO;
 			cell.accessoryType = UITableViewCellAccessoryCheckmark;
 		} else {
+			titleLabel.hidden = YES;
+			titleLabelLabel.hidden = YES;
 			cell.text = @"Short summary of problem";
 			cell.textColor = [UIColor grayColor];
 			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -243,6 +246,8 @@
 	[actionSummaryCell release];
 	[actionsToDoView release];
 	[settingsButton release];
+	[titleLabelLabel release];
+	[titleLabel release];
     [super dealloc];
 }
 

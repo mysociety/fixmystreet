@@ -19,6 +19,9 @@
 	UITableViewCell* actionTakePhotoCell;
 	UITableViewCell* actionFetchLocationCell;
 	UITableViewCell* actionSummaryCell;
+	
+	UILabel* titleLabel;
+	UILabel* titleLabelLabel;
 }
 
 -(void)enableSubmissionButton;
