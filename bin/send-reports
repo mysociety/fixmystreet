@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.56 2008-09-19 10:24:55 matthew Exp $
+# $Id: send-reports,v 1.57 2008-10-07 16:44:09 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -171,7 +171,7 @@ If you know of an appropriate contact address, please do get in touch. ]\n\n";
         _parameters_ => \%h,
         To => \@to,
         From => [ $row->{email}, $row->{name} ],
-        'Message-ID' => sprintf('<report-%s-%s@mysociety.org>', time(), unpack('h*', random_bytes(5))),
+        'Message-ID' => sprintf('<report-%s-%s@mysociety.org>', time(), unpack('h*', random_bytes(5, 1))),
     });
 
     my $result;
