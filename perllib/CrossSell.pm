@@ -9,7 +9,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: CrossSell.pm,v 1.12 2008-09-10 18:06:30 matthew Exp $
+# $Id: CrossSell.pm,v 1.13 2008-10-07 16:27:34 matthew Exp $
 
 # Config parameters site needs set to call these functions:
 # OPTION_AUTH_SHARED_SECRET
@@ -155,14 +155,16 @@ sub display_advert ($$;$%) {
         }
     }
 
-    $q->{scratch} = 'advert=tms';
-    my $auth_signature = '';
-    unless (defined $data{emailunvalidated} && $data{emailunvalidated}==1) {
-        $auth_signature = mySociety::AuthToken::sign_with_shared_secret($email, mySociety::Config::get('AUTH_SHARED_SECRET'));
+    unless (defined $data{done_tms} && $data{done_tms}==1) {
+        $q->{scratch} = 'advert=tms';
+        my $auth_signature = '';
+        unless (defined $data{emailunvalidated} && $data{emailunvalidated}==1) {
+            $auth_signature = mySociety::AuthToken::sign_with_shared_secret($email, mySociety::Config::get('AUTH_SHARED_SECRET'));
+        }
+        return '<div style="margin: 0 5em; border-top: dotted 1px #666666;">'
+            . display_tms_form(email => $email, name => $name, signed_email => $auth_signature)
+            . '</div>';
     }
-    return '<div style="margin: 0 5em; border-top: dotted 1px #666666;">'
-        . display_tms_form(email => $email, name => $name, signed_email => $auth_signature)
-        . '</div>';
 
     my @adverts = (
         [ 'gny0', '<h2>Are you a member of a local group&hellip;</h2> &hellip;which uses the internet to coordinate itself, such as a neighbourhood watch? If so, please help the charity that runs FixMyStreet by <a href="http://www.groupsnearyou.com/add/about/">adding some information about it</a> to our new site, GroupsNearYou.' ],

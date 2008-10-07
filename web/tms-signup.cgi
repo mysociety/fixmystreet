@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: tms-signup.cgi,v 1.2 2008-09-29 12:26:51 matthew Exp $
+# $Id: tms-signup.cgi,v 1.3 2008-10-07 16:27:35 matthew Exp $
 
 use strict;
 use Standard;
@@ -66,6 +66,7 @@ sub tms_token {
     if ($type eq 'subscribe') {
         tms_confirm(%$data);
         $out = $q->p('You have successfully registered your interest.');
+        $out .= CrossSell::display_advert($q, $data->{email}, $data->{name}, done_tms => 1);
     }
     return $out;
 }
