@@ -68,6 +68,7 @@ while(<MAINPO>) {
 	$buffer =~ s/Recently put back into use empty properties/Recent empty properties put back into use/;
 	$buffer =~ s/New empty properties/New empty property reports/;
 	$buffer =~ s/Older empty properties/Older empty property reports/;
+        $buffer =~ s/Report, view, or discuss local empty properties/Report and view empty properties/;
 
         $buffer =~ s/\(like graffiti.*\)/ /;
 	$buffer =~ s/(Please enter your full name).*? -/$1 -/;

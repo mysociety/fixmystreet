@@ -9,7 +9,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: CrossSell.pm,v 1.13 2008-10-07 16:27:34 matthew Exp $
+# $Id: CrossSell.pm,v 1.14 2008-10-08 16:57:35 matthew Exp $
 
 # Config parameters site needs set to call these functions:
 # OPTION_AUTH_SHARED_SECRET
@@ -146,6 +146,8 @@ EOF
 # $this_site is to stop a site advertising itself.
 sub display_advert ($$;$%) {
     my ($q, $email, $name, %data) = @_;
+
+    return '' unless $q->{site} eq 'fixmystreet';
 
     if (defined $data{council} && $data{council} eq '2326') {
         my ($out, $ad) = display_hfyc_cheltenham_advert($email, $name);

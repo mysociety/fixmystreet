@@ -1,9 +1,9 @@
-Subject: Confirm your empty property
+Subject: Confirm your empty property report
 
 Hi <?=$values['name']?>,
 
 Please click on the link below to confirm the empty property
-you just added to the site:
+report you just added to the site:
 
 <?=$values['url']?>
 
@@ -17,4 +17,4 @@ And details:
 <?=$values['detail']?>
 
 Yours,  
-The Empty Homes Agency team
+The Empty Homes Agency

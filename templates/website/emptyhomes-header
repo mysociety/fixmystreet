@@ -19,65 +19,17 @@
 
 <div id="header">
 <div id="logo"><img src="http://www.emptyhomes.com/siteimages/logo%20col%20300dpi%20copy.jpg" alt="Empty Homes Agency" width="350" height="91"></div>
-<div id="search">
-<form method="get" action="http://www.google.com/custom">
-<input name="domains" value="www.emptyhomes.com" type="hidden">
-<p id="searchbox"><input name="q" style="width: 200px;" maxlength="255" value="" type="text"><input name="sa" value="Search" type="submit"></p>
-<p>
-<input name="sitesearch" value="" checked="checked" type="radio">
-<small>Web &nbsp; 
-<input name="sitesearch" value="www.emptyhomes.com" type="radio"> 
-www.emptyhomes.com</small></p>
-<input name="client" value="pub-5676236325709660" type="hidden">
-<input name="forid" value="1" type="hidden">
-<input name="ie" value="UTF-8" type="hidden">
-<input name="oe" value="UTF-8" type="hidden">
-<input name="cof" value="GALT:#008000;GL:1;DIV:#336699;VLC:663399;AH:center;BGC:FFFFFF;LBGC:336699;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;FORID:1;" type="hidden">
-<input name="hl" value="en" type="hidden">
-
-</form>
-</div>
 </div>
 
 <div id="smallnav">
-<a href="http://www.emptyhomes.com/">Home</a> | <a href="http://www.emptyhomes.com/contact_us.html">Contact Us</a> | <a href="http://www.emptyhomes.com/sitemap.html">Site Map</a> | <a href="http://www.emptyhomes.com/disclaimer.html">Disclaimer</a> </div>
-<div id="main"><div id="left">
-<ul>
-<li><a href="http://www.emptyhomes.com/aboutus/whatwedo/what_we_do.html">What We Do </a></li>
-<li><a href="http://www.emptyhomes.com/rescue/buying_empties.html">Rescue An Empty Property</a>
-<ol>
-      <li><a href="http://www.emptyhomes.com/rescue/buying_empties.html">Buying Empty Homes</a></li>
-      <li><a href="http://www.emptyhomes.com/rescue/owning_an_empty.html">Owning Empty Homes</a></li>
-      <li><a href="http://www.emptyhomes.com/rescue/campaigning_on_empties.html">Campaigning On Empty Homes</a></li>
-      <li><a href="/">Report an Empty Home</a>
       <ul>
-      <li><a href="/reports">All reports</a></li>
-      <li><a href="/alert">Local alerts</a></li>
-      <li><a href="/faq">Help</a></li>
+      <li><a href="/">Report a property</a>
+      <li><a href="/reports">Reports</a></li>
+      <li><a href="/alert">Get local reports</a></li>
+      <li><a href="/faq">FAQs</a></li>
+      <li><a href="/about">About us</a></li>
       </ul>
-      </li>
-</ol></li>
-<li><a href="http://www.emptyhomes.com/resources/papers_publications/publications.html">Papers &amp; Publications </a></li>
-</ul>
-
-<!-- 
-<div id="toptitle">See Also</div>
-<div id="topbox">
-<ul>
-<li><a href="http://www.emptyhomes.com/aboutus/hotline.html">London Empty Property Hotline</a></li>
-</ul>
-</div>
-<div id="bottomtitle">Useful Links </div>
-<div id="bottombox">
-<ul>
-<li><a href="http://www.emptyhomes.com/resources/useful_contacts.html">Useful Contacts</a></li>
-</ul>
-</div>
--->
-
 </div>
 
-<div id="right">
-</div>
-
+<div id="main">
 <div id="middle">

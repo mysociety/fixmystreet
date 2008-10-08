@@ -1,0 +1,23 @@
+Subject: Questionnaire about your empty property report
+
+Hi <?=$values['name']?>,
+
+Four weeks ago, you reported an empty home on ReportEmptyHomes.com with the
+details provided at the end of this email. To keep our site up to date and
+relevant, I'd be grateful if you could fill in this short questionnaire to tell
+us what has happened: 
+
+    <?=$values['url']?>
+
+Please do not reply to this email; there is a public comment
+box on the questionnaire.
+
+Yours,  
+The Empty Homes Agency
+
+Your report was as follows:
+
+<?=$values['title']?>
+
+<?=$values['detail']?>
+

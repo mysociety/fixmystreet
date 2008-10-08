@@ -1,14 +1,26 @@
 Subject: Empty property report
 
-Dear Empty Homes Agency,
+Dear Empty Property Officer,
 
-A user of the empty property reporting website has submitted the
-following report of an empty property.
+This is a new referral of an empty property in your area made by a user of the
+website ReportEmptyHomes.com. The website user has been told that the case has
+been referred to you.  I would be grateful if you could do whatever you can to
+help get this property back into use. I will contact the user in a month and
+again in six months and ask them what has happened to the property.  
 
-<?=$values['fuzzy']?>, or to provide an update on the report,
-please visit the following link:
+I'd encourage you to tell us what you have done, and when the property comes
+back into use, by filling in an update against the property referral on the
+website:
 
     <?=$values['url']?>
+
+This gives useful feedback to website users and helps them understand what
+action you are taking. I will offer advice to the user on other action they
+might take if the property isn't successfully dealt with.  
+
+If you would like help or advice on getting empty properties back into use
+there is lots of useful information on the Empty Homes Agency's website
+www.EmptyHomes.com - if you have further questions please give us a call. 
 
 <?=$values['has_photo']?>----------
 
@@ -25,5 +37,6 @@ Details: <?=$values['detail']?>
 Replies to this email will go to the user who submitted the report, if
 you would like to ask for any further information.
 
-[ This message was sent via the EHA empty property reporting website. ]
+Yours,  
+The Empty Homes Agency
 
