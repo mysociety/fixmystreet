@@ -66,9 +66,14 @@ while(<MAINPO>) {
 	$buffer =~ s/fixed/returned to use/g;
 
 	$buffer =~ s/Recently put back into use empty properties/Recent empty properties put back into use/;
+	$buffer =~ s/New empty properties/New empty property reports/;
+	$buffer =~ s/Older empty properties/Older empty property reports/;
 
         $buffer =~ s/\(like graffiti.*\)/ /;
 	$buffer =~ s/(Please enter your full name).*? -/$1 -/;
+
+        $buffer =~ s/We send it to the council on your behalf/The details will be sent directly to the right person in the local council for them to take action/;
+        $buffer =~ s/To find out what local alerts we have for you/To find out what local alerts we have in your area, council or ward/;
 
         print NEWPO $buffer;
         $buffer = "";

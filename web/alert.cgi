@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.32 2008-09-19 17:58:37 matthew Exp $
+# $Id: alert.cgi,v 1.33 2008-10-08 14:38:29 matthew Exp $
 
 use strict;
 use Standard;
@@ -265,7 +265,7 @@ sub alert_front_page {
 alerts for all problems within a particular ward or council, or all problems
 within a certain distance of a particular location.'));
     $out .= $errors . '<form method="get" action="/alert">';
-    $out .= $q->p(_('To find out what local alerts we have for you, please enter your UK
+    $out .= $q->p(_('To find out what local alerts we have for you, please enter your GB
 postcode or street name and area:'), '<input type="text" name="pc" value="' . $input_h{pc} . '">
 <input type="submit" value="Look up">');
     $out .= '</form>';

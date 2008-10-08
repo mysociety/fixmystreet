@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.32 2008-09-19 10:24:55 matthew Exp $
+# $Id: contact.cgi,v 1.33 2008-10-08 14:38:29 matthew Exp $
 
 use strict;
 use Standard;
@@ -110,6 +110,10 @@ sub contact_page {
             $q->p(ent($p->{detail}))
         );
         $out .= '<input type="hidden" name="id" value="' . $id . '">';
+    } elsif ($q->{site} eq 'emptyhomes') {
+	$out .= $q->p('We&rsquo;d love to hear what you think about this
+website. Just fill in the form. Please don&rsquo;t contact us about individual empty
+homes; use the box accessed from <a href="/">the front page</a>.'); 
     } else {
         $out .= $q->p(_('Please do <strong>not</strong> report problems through this form; messages go to
 the team behind FixMyStreet, not a council. To report a problem,

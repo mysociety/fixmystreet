@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.33 2008-09-18 10:28:21 matthew Exp $
+# $Id: faq.cgi,v 1.34 2008-10-08 14:38:29 matthew Exp $
 
 use strict;
 use Standard -db;
@@ -139,23 +139,65 @@ sub emptyhomes_faq {
     my $out = $q->h1('Frequently Asked Questions');
     $out .= $q->dl(
         $q->dt('What is this site for?'),
-        $q->dd('This site is to help provide a public record of
-empty properties in Great Britain. It expands upon our telephone hotline
-for empty homes in the London area, and allows local authorities, related
-organisations and the public to view reported empty homes and update
-their status, and report new empty properties.'),
-        $q->dt(_('How do I use the site?')),
-        $q->dd(_('After entering a postcode or location, you are presented
-with a map of that area. You can view problems already reported in that area,
-or report ones of your own simply by clicking on the map at the location of
-the problem.')),
+	$q->dd('This site is to help make it as easy as possible for you to get
+empty homes in your area put back into use. It allows you, to view empty homes
+that have been reported and see what has been done about them. It makes
+councils accountable for responding and dealing with the empty homes you
+report.'),
+        $q->dt('How do I use the site?'),
+	$q->dd('Enter a postcode or address in the box on the homepage and you
+are presented with a map of that area. Click where the empty property is, fill
+in the details, upload a photo if you have one and press submit. That&rsquo;s
+it. You can also view other empty properties that have been reported and see
+what has been done about them.'),
         $q->dt('Is it free?'),
-        $q->dd('The site is free to use, yes. The Empty Homes Agency is
-a registered charity, though, so if you want to make a contribution,
-please do.'),
-        $q->dt(_('Do you remove silly or illegal content?')),
-        $q->dd(_('We reserve the right to remove any reports or updates
-which we consider to be inappropriate.')),
+	$q->dd('Yes. The costs of developing and running this site have been
+paid for by The Empty Homes Agency and through the generosity of its funders.
+The Empty Homes Agency is a charity, so if you believe in our aims and would
+like to make a contribution, <a href="http://www.emptyhomes.com/donate.html">please do</a>.'),
+	$q->dt('Do you remove silly or illegal content?'),
+        $q->dd('We reserve the right to remove any reports or updates
+which we consider to be inappropriate.'),
+        $q->dt('How do councils bring empty properties back into use?'),
+        $q->dd($q->p('All councils in England and Wales have powers to bring empty
+homes back into use. Many are very good at it, some are not. Most councils seek
+to persuade and help the owner to bring their property back into use; they only
+use legal powers such as Empty Dwelling Management Orders when help and
+persuasion have failed.'), $q->p('  
+Most empty homes are brought back into use eventually by their owner. But in
+many cases this takes years. Empty homes often decline fast &ndash; they become
+overrun with weeds and attacked by the weather. They are often used by
+squatters, fly tippers, vandals and are sometimes subject to arson. The whole
+neighbourhood suffers waiting for the owner to deal with their property.'), $q->p('
+Councils help and persuade owners to bring their properties into use faster.
+Even so the process can be slow, especially if the property is in very poor
+repair or the owner is unwilling to do anything. In most cases it takes six
+months before you can expect to see anything change, occasionally longer.  This
+doesn&rsquo;t mean the council isn&rsquo;t doing anything, which is why we encourage
+councils to update the website so you can see what is happening.'), $q->p('
+We will contact you twice (a month and six months after you report the empty
+home) so you can tell us what has happened. If the council doesn&rsquo;t do anything,
+or you think their response is inadequate we will advise you what you can do
+next.'), $q->p('
+If the empty home is owned by the government or one its agencies, councils are
+often powerless to help. However you might be able to take action directly
+yourself using a PROD:
+<a href="http://www.emptyhomes.com/usefulinformation/policy_docs/prods.html">http://www.emptyhomes.com/usefulinformation/policy_docs/prods.html</a>
+')),
+        $q->dt('Will reporting an empty home make any difference?'),
+	$q->dd($q->p('Yes. Councils can make a real difference, but they have lots of
+things to do. Many councils only deal with empty homes that are reported to
+them. If people do not report empty homes, councils may well conclude that
+other areas of work are more important.'), $q->p('
+There are over 840,000 empty homes in the UK. The Empty Homes Agency estimates
+that over half of these are unnecessarily empty. The effect of this is to
+significantly reduce the available housing stock fuelling the UK&rsquo;s housing
+crisis.  A by-product of this waste is that far greater pressure is put on
+building land as more homes are built to meet the shortfall. The Empty Homes
+Agency estimate that bringing just a quarter of the UK&rsquo;s empty homes into use
+would provide homes for 700,000 people, save 160 square kilometres of land and
+save 10 million tonnes of CO<sub>2</sub> over building the same number of new homes.
+')),
     );
     $out .= $q->h2(_('Privacy Questions'));
     $out .= $q->dl(
@@ -165,9 +207,10 @@ Your name is displayed upon the site if you let us, but not your email address;
 similarly with updates.  We will never give or sell your email address to
 anyone else, unless we are obliged to by law.'),
         $q->dt('Will you send nasty, brutish spam to my email address?'),
-	$q->dd('Never. We\'ll only ever send you emails in relation to your
-problem. You can opt in to receive emails about updates to a particular
-problem.')
+        $q->dd('Never. We will email you if someone leaves an update on a
+report you&rsquo;ve made, and send you questionnaire emails four weeks and six months
+after you submit a problem, asking for a status update; we&rsquo;ll only ever
+send you emails in relation to your problem.')
     );
     $out .= $q->h2(_('Organisation Questions'));
     $out .= $q->dl(
@@ -188,7 +231,7 @@ source code</a> (look under &lsquo;bci&rsquo;) and help us develop it.
 You&rsquo;re welcome to use it in your own projects, although you must also
 make available the source code to any such projects.')),
         $q->dt(_('People build things, not organisations. Who <em>actually</em> built it?')),
-        $q->dd(_('This adaptation of FixMyStreet was written by Matthew Somerville.
+        $q->dd(_('This adaptation of Fix&shy;MyStreet was written by Matthew Somerville.
 Thanks go to
 <a href="http://www.ordnancesurvey.co.uk">Ordnance Survey</a> (for the maps,
 UK postcodes, and UK addresses &ndash; data &copy; Crown copyright, all
