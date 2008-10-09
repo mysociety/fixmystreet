@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.57 2008-10-07 16:44:09 matthew Exp $
+# $Id: send-reports,v 1.58 2008-10-09 14:49:06 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -89,10 +89,27 @@ foreach my $row (@$unsent) {
 
     my (@to, @recips, $template);
     if ($site eq 'emptyhomes') {
-        @to = ( [ 'matthew@mysociety.org', 'Empty Homes Agency' ] );
-        @recips = ('matthew@mysociety.org');
+
+        my $council = $row->{council};
+        my $areas_info = mySociety::MaPit::get_voting_areas_info([ $council ]);
+        my $name = $areas_info->{$council}->{name};
+        my ($council_email, $confirmed, $note) = dbh()->selectrow_array(
+            "SELECT email,confirmed,note FROM contacts WHERE deleted='f'
+                and area_id=? AND category=?", {}, $council, 'Empty Property');
+        unless ($confirmed) {
+            $note = 'Council ' . $row->{council} . ' deleted' unless $note;
+            $council_email = 'N/A' unless $council_email;
+            $notgot{$council_email}{$row->{category}}++;
+            $note{$council_email}{$row->{category}} = $note;
+	    next;
+        }
+
+        push @to, [ $council_email, $name ];
+        @recips = ($council_email);
         $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/submit-eha");
+
     } else {
+
         # XXX Needs locks!
         my @all_councils = split /,|\|/, $row->{council};
         my ($councils, $missing) = $row->{council} =~ /^([\d,]+)(?:\|([\d,]+))?/;
@@ -151,6 +168,7 @@ foreach my $row (@$unsent) {
                 . "; however, we don't currently have any contact details for them.
 If you know of an appropriate contact address, please do get in touch. ]\n\n";
         }
+
     }
 
     unless (@recips) {

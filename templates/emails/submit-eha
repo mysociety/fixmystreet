@@ -30,6 +30,8 @@ Email: <?=$values['email']?>
 
 <?=$values['phone']?>Subject: <?=$values['title']?>
 
+Property type: <?=$values['category']?>
+
 Details: <?=$values['detail']?>
 
 <?=$values['closest_address']?>----------
