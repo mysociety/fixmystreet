@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.212 2008-10-09 14:20:54 matthew Exp $
+# $Id: index.cgi,v 1.213 2008-10-09 14:30:24 matthew Exp $
 
 use strict;
 use Standard;
@@ -242,7 +242,6 @@ sub submit_problem {
         push @errors, $err if $err;
     }
 
-    $input{council} = -1 if $q->{site} eq 'emptyhomes'; # Not sent to council
     $input{council} = 2260 if $q->{site} eq 'scambs'; # All reports go to S. Cambs
 
     push(@errors, _('No council selected')) unless ($input{council} && $input{council} =~ /^(?:-1|[\d,]+(?:\|[\d,]+)?)$/);
@@ -260,6 +259,9 @@ sub submit_problem {
     }
     if ($input{category} && $input{category} eq '-- Pick a category --') {
         push (@errors, _('Please choose a category'));
+        $input{category} = '';
+    } elsif ($input{category} && $input{category} eq '-- Pick a property type --') {
+        push (@errors, _('Please choose a property type'));
         $input{category} = '';
     }
  
@@ -293,7 +295,7 @@ sub submit_problem {
 
             # Check category here, won't be present if council is -1
             my @valid_councils = @input_councils;
-            if ($input{category}) {
+            if ($input{category} && $q->{site} ne 'emptyhomes') {
                 my $categories = select_all("select area_id from contacts
                     where deleted='f' and area_id in ("
                     . $input{council} . ') and category = ?', $input{category});
