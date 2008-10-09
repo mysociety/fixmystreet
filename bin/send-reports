@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.58 2008-10-09 14:49:06 matthew Exp $
+# $Id: send-reports,v 1.59 2008-10-09 15:23:08 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -48,17 +48,10 @@ my $base_url = mySociety::Config::get('BASE_URL');
 my $site = 'fixmystreet';
 $site = 'emptyhomes' if $base_url =~ 'emptyhomes' || $base_url eq 'http://matthew.fixmystreet.com'; # XXX
 
-my $query;
-if ($site eq 'emptyhomes') {
-    $query = "SELECT id, title, detail, name, email, phone, used_map, easting,
-    northing, (photo is not null) as has_photo
-    FROM problem WHERE state in ('confirmed','fixed') AND whensent IS NULL";
-} else {
-    $query = "SELECT id, council, category, title, detail, name, email, phone,
+my $query = "SELECT id, council, category, title, detail, name, email, phone,
     used_map, easting, northing, (photo is not null) as has_photo
     FROM problem WHERE state in ('confirmed','fixed') AND whensent IS NULL
     AND council IS NOT NULL";
-}
 my $unsent = dbh()->selectall_arrayref($query, { Slice => {} });
 
 my (%notgot, %note);
@@ -97,7 +90,7 @@ foreach my $row (@$unsent) {
             "SELECT email,confirmed,note FROM contacts WHERE deleted='f'
                 and area_id=? AND category=?", {}, $council, 'Empty Property');
         unless ($confirmed) {
-            $note = 'Council ' . $row->{council} . ' deleted' unless $note;
+            $note = 'Council ' . $council . ' deleted' unless $note;
             $council_email = 'N/A' unless $council_email;
             $notgot{$council_email}{$row->{category}}++;
             $note{$council_email}{$row->{category}} = $note;
@@ -174,7 +167,12 @@ If you know of an appropriate contact address, please do get in touch. ]\n\n";
     unless (@recips) {
         die 'Email not going anywhere for ID ' . $row->{id} . '!';
     }
-    push @recips, mySociety::Config::get('CONTACT_EMAIL');
+
+    if (mySociety::Config::get('STAGING_SITE')) {
+        @recips = ( mySociety::Config::get('CONTACT_EMAIL') );
+    } else {
+        push @recips, mySociety::Config::get('CONTACT_EMAIL');
+    }
 
     # Special case for this parish council
     # if ($address && $address =~ /Sprowston/ && $row->{council} == 2233 && $row->{category} eq 'Street lighting') {
