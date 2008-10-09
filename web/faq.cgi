@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.34 2008-10-08 14:38:29 matthew Exp $
+# $Id: faq.cgi,v 1.35 2008-10-09 14:20:54 matthew Exp $
 
 use strict;
 use Standard -db;
@@ -139,23 +139,23 @@ sub emptyhomes_faq {
     my $out = $q->h1('Frequently Asked Questions');
     $out .= $q->dl(
         $q->dt('What is this site for?'),
-	$q->dd('This site is to help make it as easy as possible for you to get
+        $q->dd('This site is to help make it as easy as possible for you to get
 empty homes in your area put back into use. It allows you, to view empty homes
 that have been reported and see what has been done about them. It makes
 councils accountable for responding and dealing with the empty homes you
 report.'),
         $q->dt('How do I use the site?'),
-	$q->dd('Enter a postcode or address in the box on the homepage and you
+        $q->dd('Enter a postcode or address in the box on the homepage and you
 are presented with a map of that area. Click where the empty property is, fill
 in the details, upload a photo if you have one and press submit. That&rsquo;s
 it. You can also view other empty properties that have been reported and see
 what has been done about them.'),
         $q->dt('Is it free?'),
-	$q->dd('Yes. The costs of developing and running this site have been
+        $q->dd('Yes. The costs of developing and running this site have been
 paid for by The Empty Homes Agency and through the generosity of its funders.
 The Empty Homes Agency is a charity, so if you believe in our aims and would
 like to make a contribution, <a href="http://www.emptyhomes.com/donate.html">please do</a>.'),
-	$q->dt('Do you remove silly or illegal content?'),
+        $q->dt('Do you remove silly or illegal content?'),
         $q->dd('We reserve the right to remove any reports or updates
 which we consider to be inappropriate.'),
         $q->dt('How do councils bring empty properties back into use?'),
@@ -185,7 +185,7 @@ yourself using a PROD:
 <a href="http://www.emptyhomes.com/usefulinformation/policy_docs/prods.html">http://www.emptyhomes.com/usefulinformation/policy_docs/prods.html</a>
 ')),
         $q->dt('Will reporting an empty home make any difference?'),
-	$q->dd($q->p('Yes. Councils can make a real difference, but they have lots of
+        $q->dd($q->p('Yes. Councils can make a real difference, but they have lots of
 things to do. Many councils only deal with empty homes that are reported to
 them. If people do not report empty homes, councils may well conclude that
 other areas of work are more important.'), $q->p('

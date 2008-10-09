@@ -4,7 +4,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
 #
-# $Id: crontab.ugly,v 1.16 2008-10-06 17:02:22 root Exp $
+# $Id: crontab.ugly,v 1.17 2008-10-09 14:20:53 matthew Exp $
 
 PATH=/usr/local/bin:/usr/bin:/bin
 !!(* if ($vhost eq "matthew.fixmystreet.com") { *)!!
@@ -14,13 +14,21 @@ MAILTO=team@fixmystreet.com
 !!(* } *)!!
 
 # On only one server
-!!(* if ($hostname eq "cake") { *)!!
+!!(* if ($vhost eq 'reportemptyhomes.com') { *)!!
+
+*/5 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-reports || echo "stalled?"
+2 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-alerts.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-alerts || echo "stalled?"
+0,30 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-questionnaires.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-questionnaires-eha || echo "stalled?"
+
+!!(* elsif (($hostname eq "cake" && !$staging) || ($staging && $vhost eq 'matthew.fixmystreet.com')) { *)!!
+
 5,10,15,20,25,30,35,40,45,50,55 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-reports || echo "stalled?"
 0 0-8,10,11,13,14,16,17,19-23 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-reports || echo "stalled?"
 0 9,12,15,18 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock "/data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-reports --verbose" || echo "stalled?"
 15,45 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/import-flickr.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/import-flickr || echo "stalled?"
 2 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-alerts.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-alerts || echo "stalled?"
 0,30 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-questionnaires.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-questionnaires || echo "stalled?"
+
 !!(* } *)!!
 
 # Once a day on all servers

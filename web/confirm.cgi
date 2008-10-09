@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.45 2008-10-08 16:57:56 matthew Exp $
+# $Id: confirm.cgi,v 1.46 2008-10-09 14:20:54 matthew Exp $
 
 use strict;
 use Standard;
@@ -122,7 +122,7 @@ sub confirm_problem {
             . sprintf(' <a href="%s">View the problem on this site</a>.', "/report/$id")
         ));
     } elsif ($q->{site} eq 'emptyhomes') {
-	$out = $q->p('Thank you for reporting an empty property on
+        $out = $q->p('Thank you for reporting an empty property on
 ReportEmptyHomes.com. I have emailed the empty property officer in the council
 responsible with the details and asked them to do whatever they can to get the
 empty property back into use as soon as possible.') .
@@ -155,7 +155,7 @@ to resolve the UK&rsquo;s empty homes crisis.');
 
 sub advertise_updates {
     my ($q, $problem_id, $email) = @_;
-    my $salt = unpack('h*', random_bytes(8));
+    my $salt = unpack('h*', random_bytes(8, 1));
     my $secret = scalar(dbh()->selectrow_array('select secret from secret'));
     my $signed_email = sha1_hex("$problem_id-$email-$salt-$secret");
     my $signup = <<EOF;

@@ -1,0 +1,14 @@
+Subject: Your new report on FixMyStreet
+
+Hi <?=$values['name']?>,
+
+We've stored the report you uploaded to FixMyStreet via
+<?=$values['service']?>. To check the details we have,
+and to add any more, please visit the following URL:
+
+<?=$values['url']?>
+
+Then we can send your report to the council. Thanks!
+
+Yours,  
+The FixMyStreet team

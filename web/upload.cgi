@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: upload.cgi,v 1.1 2008-03-29 03:03:35 matthew Exp $
+# $Id: upload.cgi,v 1.2 2008-10-09 14:20:54 matthew Exp $
 
 use strict;
 use Standard -db;
@@ -27,11 +27,11 @@ sub main {
         if ($fh) {
             $q->delete('photo'); # Can't check content/type when uploaded with Flash
             $image = process_photo($fh);
-	    my $name = unpack('H*', random_bytes(12));
-	    open FP, '>/data/vhost/matthew.bci.mysociety.org/photos/' . $name or throw Error::Simple('could not open file');
-	    print FP $image;
-	    close FP;
-	    $out = $name;
+            my $name = unpack('H*', random_bytes(12, 1));
+            open FP, '>/data/vhost/matthew.bci.mysociety.org/photos/' . $name or throw Error::Simple('could not open file');
+            print FP $image;
+            close FP;
+            $out = $name;
         };
     } catch Error::Simple with {
         my $e = shift;

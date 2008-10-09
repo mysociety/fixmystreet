@@ -56,22 +56,22 @@ while(<MAINPO>) {
             $buffer =~ s/^msgid "/msgstr "/;
         }
 
- 	# Basics
+         # Basics
         $buffer =~ s/FixMyStreet/Empty Homes Agency/g;
         $buffer =~ s/\bproblem\b/empty property/g;
         $buffer =~ s/\bProblem\b/Empty property/g;
         $buffer =~ s/\bproblems\b/empty properties/g;
         $buffer =~ s/\bProblems\b/Empty properties/g;
-	$buffer =~ s/a empty/an empty/g;
-	$buffer =~ s/fixed/returned to use/g;
+        $buffer =~ s/a empty/an empty/g;
+        $buffer =~ s/fixed/returned to use/g;
 
-	$buffer =~ s/Recently put back into use empty properties/Recent empty properties put back into use/;
-	$buffer =~ s/New empty properties/New empty property reports/;
-	$buffer =~ s/Older empty properties/Older empty property reports/;
+        $buffer =~ s/Recently put back into use empty properties/Recent empty properties put back into use/;
+        $buffer =~ s/New empty properties/New empty property reports/;
+        $buffer =~ s/Older empty properties/Older empty property reports/;
         $buffer =~ s/Report, view, or discuss local empty properties/Report and view empty properties/;
 
         $buffer =~ s/\(like graffiti.*\)/ /;
-	$buffer =~ s/(Please enter your full name).*? -/$1 -/;
+        $buffer =~ s/(Please enter your full name).*? -/$1 -/;
 
         $buffer =~ s/We send it to the council on your behalf/The details will be sent directly to the right person in the local council for them to take action/;
         $buffer =~ s/To find out what local alerts we have for you/To find out what local alerts we have in your area, council or ward/;

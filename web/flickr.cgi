@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: flickr.cgi,v 1.8 2008-08-11 08:27:14 matthew Exp $
+# $Id: flickr.cgi,v 1.9 2008-10-09 14:20:54 matthew Exp $
 
 use strict;
 use Standard;
@@ -33,8 +33,8 @@ sub main {
             my ($name) = $result =~ /<realname>(.*?)<\/realname>/;
             $name ||= '';
 
-            my $id = dbh()->selectrow_array("select nextval('flickr_id_seq');");
-            dbh()->do("insert into flickr (id, nsid, name, email) values (?, ?, ?, ?)", {},
+            my $id = dbh()->selectrow_array("select nextval('partial_user_id_seq');");
+            dbh()->do("insert into partial_user (id, service, nsid, name, email, phone) values (?, 'flickr', ?, ?, ?, '')", {},
                 $id, $nsid, $name, $email);
             dbh()->commit();
             $out .= $q->p('Thanks for confirming your email address. Please now tag
@@ -58,7 +58,7 @@ EOF
             _parameters_ => \%h,
             To => $email,
             From => [ mySociety::Config::get('CONTACT_EMAIL'), 'FixMyStreet' ],
-            'Message-ID' => sprintf('<flickr-%s-%s@mysociety.org>', time(), unpack('h*', random_bytes(5))),
+            'Message-ID' => sprintf('<flickr-%s-%s@mysociety.org>', time(), unpack('h*', random_bytes(5, 1))),
         });
 
         my $result;

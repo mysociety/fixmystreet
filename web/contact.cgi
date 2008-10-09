@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.33 2008-10-08 14:38:29 matthew Exp $
+# $Id: contact.cgi,v 1.34 2008-10-09 14:20:54 matthew Exp $
 
 use strict;
 use Standard;
@@ -62,7 +62,7 @@ sub contact_submit {
         From => [$input{em}, $input{name}],
         To => [[mySociety::Config::get('CONTACT_EMAIL'), _('FixMyStreet')]],
         Subject => 'FMS message: ' . $subject,
-        'Message-ID' => sprintf('<contact-%s-%s@mysociety.org>', time(), unpack('h*', random_bytes(5))),
+        'Message-ID' => sprintf('<contact-%s-%s@mysociety.org>', time(), unpack('h*', random_bytes(5, 1))),
     });
     my $result = mySociety::EmailUtil::send_email($email, $input{em}, mySociety::Config::get('CONTACT_EMAIL'));
     if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
@@ -111,7 +111,7 @@ sub contact_page {
         );
         $out .= '<input type="hidden" name="id" value="' . $id . '">';
     } elsif ($q->{site} eq 'emptyhomes') {
-	$out .= $q->p('We&rsquo;d love to hear what you think about this
+        $out .= $q->p('We&rsquo;d love to hear what you think about this
 website. Just fill in the form. Please don&rsquo;t contact us about individual empty
 homes; use the box accessed from <a href="/">the front page</a>.'); 
     } else {

@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.31 2008-09-19 10:24:55 matthew Exp $
+# $Id: questionnaire.cgi,v 1.32 2008-10-09 14:20:54 matthew Exp $
 
 use strict;
 use Standard;
@@ -121,7 +121,7 @@ sub submit_questionnaire {
     # Record an update if they've given one, or if there's a state change
     my $name = $problem->{anonymous} ? undef : $problem->{name};
     my $update = $input{update} ? $input{update} : 'Questionnaire filled in by problem reporter';
-    Page::workaround_pg_bytea("insert into comment
+    Utils::workaround_pg_bytea("insert into comment
         (problem_id, name, email, website, text, state, mark_fixed, mark_open, photo)
         values (?, ?, ?, '', ?, 'confirmed', ?, ?, ?)", 7,
         $problem->{id}, $name, $problem->{email}, $update,

@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Standard.pm,v 1.1 2007-08-29 23:03:16 matthew Exp $
+# $Id: Standard.pm,v 1.2 2008-10-09 14:20:54 matthew Exp $
 
 use strict;
 use warnings;
@@ -37,6 +37,6 @@ sub import {
             Host => mySociety::Config::get('BCI_DB_HOST', undef),
             Port => mySociety::Config::get('BCI_DB_PORT', undef)
         );
-	*main::dbh = \&dbh;
+        *main::dbh = \&dbh;
     }
 }

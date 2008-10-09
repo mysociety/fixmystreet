@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.40 2008-09-10 18:06:30 matthew Exp $
+-- $Id: schema.sql,v 1.41 2008-10-09 14:20:53 matthew Exp $
 --
 
 -- secret
@@ -145,7 +145,7 @@ create table problem (
         or state = 'confirmed'
         or state = 'fixed'
         or state = 'hidden'
-        or state = 'flickr'
+        or state = 'partial'
     ),
     lastupdate timestamp not null default ms_current_timestamp(),
     whensent timestamp,
@@ -282,14 +282,18 @@ create table alert_sent (
     whenqueued timestamp not null default ms_current_timestamp()
 );
 
-create table flickr (
+-- To record details of people who submit via Flickr/ iPhone/ etc.
+create table partial_user (
     id serial not null primary key,
+    service text not null,
     nsid text not null,
     name text not null,
-    email text not null
+    email text not null,
+    phone text not null
 );
-create unique index flickr_email_idx on flickr(email);
+create unique index partial_user_service_email_idx on partial_user(service, email);
 
+-- Record imported Flickr photos so we don't fetch them twice
 create table flickr_imported (
     id text not null,
     problem_id integer not null references problem(id)

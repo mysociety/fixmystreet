@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.114 2008-09-19 10:24:55 matthew Exp $
+# $Id: Page.pm,v 1.115 2008-10-09 14:20:54 matthew Exp $
 #
 
 package Page;
@@ -22,6 +22,7 @@ use Digest::MD5 qw(md5_hex);
 use POSIX qw(strftime);
 use URI::Escape;
 use Problems;
+use Utils;
 use mySociety::Config;
 use mySociety::DBHandle qw/dbh select_all/;
 use mySociety::EvEl;
@@ -292,7 +293,7 @@ sub display_map {
         my $pc = $q->param('pc') || '';
         my $pc_enc = ent($pc);
         $out .= <<EOF;
-<form action="./" method="post" id="mapForm"$encoding>
+<form action="/" method="post" id="mapForm"$encoding>
 <input type="hidden" name="submit_map" value="1">
 <input type="hidden" name="x" id="formX" value="$x">
 <input type="hidden" name="y" id="formY" value="$y">
@@ -791,19 +792,6 @@ sub process_photo {
     undef $photo;
     $photo = $blobs[0];
     return $photo;
-}
-
-sub workaround_pg_bytea {
-    my ($st, $img_idx, @elements) = @_;
-    my $s = dbh()->prepare($st);
-    for (my $i=1; $i<=@elements; $i++) {
-        if ($i == $img_idx) {
-            $s->bind_param($i, $elements[$i-1], { pg_type => DBD::Pg::PG_BYTEA });
-        } else {
-            $s->bind_param($i, $elements[$i-1]);
-        }
-    }
-    $s->execute();
 }
 
 sub scambs_categories {

@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: import-flickr,v 1.7 2008-05-06 14:21:43 matthew Exp $
+# $Id: import-flickr,v 1.8 2008-10-09 14:20:53 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -18,6 +18,7 @@ use lib "$FindBin::Bin/../../perllib";
 use File::Slurp;
 use LWP::Simple;
 
+use Utils;
 use mySociety::AuthToken;
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh select_all);
@@ -38,7 +39,7 @@ BEGIN {
 
 my $key = mySociety::Config::get('FLICKR_API');
 my $url = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&tags=fixmystreet&extras=geo,machine_tags&api_key=' . $key . '&user_id=';
-my $ids = select_all('select nsid from flickr');
+my $ids = select_all("select nsid from partial_user where service='flickr'");
 my $result = '';
 foreach (@$ids) {
     my $api_lookup = get($url . $_->{nsid});
@@ -70,7 +71,7 @@ while ($result =~ /<photo id="([^"]*)" owner="([^"]*)" secret="([^"]*)" server="
 
 sub problem_create {
     my ($photo_id, $owner, $title, $lat, $lon, $image) = @_;
-    my ($name, $email) = dbh()->selectrow_array('select name, email from flickr where nsid=?', {}, $owner);
+    my ($name, $email) = dbh()->selectrow_array("select name, email from partial_user where service='flickr' and nsid=?", {}, $owner);
     my ($easting, $northing) = (0,0);
     $name ||= '';
     my $areas = '';
@@ -84,28 +85,20 @@ sub problem_create {
         $areas = ',' . join(',', sort keys %$areas) . ',';
     }
     my $id = dbh()->selectrow_array("select nextval('problem_id_seq')");
-    # This is horrid
-    my $s = dbh()->prepare("insert into problem
+    Utils::workaround_pg_bytea("insert into problem
         (id, postcode, easting, northing, title, detail, name,
          email, phone, photo, state, used_map, anonymous, category, areas)
         values
-        (?, '', ?, ?, ?, '', ?, ?, '', ?, 'flickr', 't', 'f', '', ?)");
-    $s->bind_param(1, $id);
-    $s->bind_param(2, $easting);
-    $s->bind_param(3, $northing);
-    $s->bind_param(4, $title);
-    $s->bind_param(5, $name);
-    $s->bind_param(6, $email);
-    $s->bind_param(7, $image, { pg_type => DBD::Pg::PG_BYTEA });
-    $s->bind_param(8, $areas);
-    $s->execute();
+        (?, '', ?, ?, ?, '', ?, ?, '', ?, 'partial', 't', 'f', '', ?)", 7,
+        $id, $easting, $northing, $title, $name, $email, $image, $areas
+    );
 
     dbh()->do('insert into flickr_imported (id, problem_id) values (?, ?)', {}, $photo_id, $id);
 
     # XXX: Needs to only send email once to user per batch of photos, not one per photo?
     my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/flickr-submit");
     my %h = ();
-    my $token = mySociety::AuthToken::store('flickr', $id);
+    my $token = mySociety::AuthToken::store('partial', $id);
     $h{name} = $name;
     $h{url} = mySociety::Config::get('BASE_URL') . '/L/' . $token;
 

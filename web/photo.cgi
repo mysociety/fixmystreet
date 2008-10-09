@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: photo.cgi,v 1.10 2008-05-15 16:15:32 matthew Exp $
+# $Id: photo.cgi,v 1.11 2008-10-09 14:20:54 matthew Exp $
 
 use strict;
 use Standard;
@@ -26,7 +26,7 @@ sub main {
             id=? and state = 'confirmed' and photo is not null", {}, $c);
     } else {
         $photo = dbh()->selectrow_arrayref( "select photo from problem where
-            id=? and state in ('confirmed', 'fixed', 'flickr') and photo is not
+            id=? and state in ('confirmed', 'fixed', 'partial') and photo is not
             null", {}, $id);
     }
     return unless $photo;

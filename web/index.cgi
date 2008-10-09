@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.211 2008-09-19 17:47:19 matthew Exp $
+# $Id: index.cgi,v 1.212 2008-10-09 14:20:54 matthew Exp $
 
 use strict;
 use Standard;
@@ -18,6 +18,7 @@ use RABX;
 use CGI::Carp;
 use URI::Escape;
 
+use CrossSell;
 use mySociety::AuthToken;
 use mySociety::Config;
 use mySociety::DBHandle qw(select_all);
@@ -39,6 +40,25 @@ BEGIN {
 # Main code for index.cgi
 sub main {
     my $q = shift;
+
+    if (my $partial = $q->param('partial_token')) {
+        # We have a partial token, so fetch data from database and see where we're at.
+        my $id = mySociety::AuthToken::retrieve('partial', $partial);
+        if ($id) {
+            my @row = dbh()->selectrow_array(
+                "select easting, northing, name, email, title from problem where id=? and state='partial'", {}, $id);
+            if (@row) {
+                $q->param('anonymous', 1);
+                $q->param('submit_map', 1);
+                $q->param('easting', $row[0]);
+                $q->param('northing', $row[1]);
+                $q->param('name', $row[2]);
+                $q->param('email', $row[3]);
+                $q->param('title', $row[4]);
+                $q->param('partial', $partial);
+            }
+        }
+    }
 
     my $out = '';
     my %params;
@@ -88,22 +108,15 @@ sub front_page {
         $new_text = 'recently';
     }
     $out .= '<form action="/" method="get" id="postcodeForm">';
-    if (my $token = $q->param('flickr')) {
-        my $id = mySociety::AuthToken::retrieve('flickr', $token);
+    if (my $token = $q->param('partial')) {
+        my $id = mySociety::AuthToken::retrieve('partial', $token);
         if ($id) {
-            my $name = ent($q->param('name'));
-            my $email = ent($q->param('email'));
-            my $title = ent($q->param('title'));
             $out .= <<EOF;
-<p style="margin-top:0;color: #cc0000;">Thanks for uploading your photo via Flickr! We need to locate your problem,
-so please enter a nearby street name or postcode in the box below...</p>
+<p style="margin-top: 0; color: #cc0000;"><img align="right" src="/photo?id=$id" hspace="5">
+Thanks for uploading your photo. We now need to locate your problem,
+so please enter a nearby street name or postcode in the box below&nbsp;:</p>
 
-<input type="hidden" name="flickr" value="$token">
-<input type="hidden" name="submit_map" value="1">
-<input type="hidden" name="name" value="$name">
-<input type="hidden" name="email" value="$email">
-<input type="hidden" name="title" value="$title">
-<input type="hidden" name="anonymous" value="1">
+<input type="hidden" name="partial_token" value="$token">
 EOF
         }
     }
@@ -117,7 +130,6 @@ EOF
 EOF
     $out .= $q->h2(_('How to report a problem'));
     my $step4 = $q->li(_('We send it to the council on your behalf'));
-    $step4 = '' if $q->{site} eq 'emptyhomes';
     $step4 = $q->li('The council receives your report and acts upon it')
         if $q->{site} eq 'scambs';
     $out .= $q->ol(
@@ -194,7 +206,7 @@ sub submit_update {
     return display_problem($q, @errors) if (@errors);
 
     my $id = dbh()->selectrow_array("select nextval('comment_id_seq');");
-    Page::workaround_pg_bytea("insert into comment
+    Utils::workaround_pg_bytea("insert into comment
         (id, problem_id, name, email, website, text, state, mark_fixed, photo)
         values (?, ?, ?, ?, '', ?, 'unconfirmed', ?, ?)", 7,
         $id, $input{id}, $input{name}, $input{email}, $input{update},
@@ -215,7 +227,7 @@ sub submit_update {
 
 sub submit_problem {
     my $q = shift;
-    my @vars = qw(council title detail name email phone pc easting northing skipped anonymous category flickr upload_fileid);
+    my @vars = qw(council title detail name email phone pc easting northing skipped anonymous category partial upload_fileid);
     my %input = map { $_ => scalar $q->param($_) } @vars;
     for (qw(title detail)) {
         $input{$_} = lc $input{$_} if $input{$_} !~ /[a-z]/;
@@ -326,8 +338,8 @@ sub submit_problem {
     $input{category} = _('Other') unless $input{category};
 
     my ($id, $out);
-    if (my $token = $input{flickr}) {
-        my $id = mySociety::AuthToken::retrieve('flickr', $token);
+    if (my $token = $input{partial}) {
+        my $id = mySociety::AuthToken::retrieve('partial', $token);
         if ($id) {
             dbh()->do("update problem set postcode=?, easting=?, northing=?, title=?, detail=?,
                 name=?, email=?, phone=?, state='confirmed', council=?, used_map='t',
@@ -338,12 +350,14 @@ sub submit_problem {
                 $input{category}, $id);
             dbh()->commit();
             $out = $q->p(sprintf(_('You have successfully confirmed your report and you can now <a href="%s">view it on the site</a>.'), "/report/$id"));
+            $out .= CrossSell::display_advert($q, $input{email}, $input{name});
         } else {
-            $out = $q->p(_('There appears to have been a problem.'));
+            $out = $q->p('There appears to have been a problem updating the details of your report.
+Please <a href="/contact">let us know what went on</a> and we\'ll look into it.');
         }
     } else {
         $id = dbh()->selectrow_array("select nextval('problem_id_seq');");
-        Page::workaround_pg_bytea("insert into problem
+        Utils::workaround_pg_bytea("insert into problem
             (id, postcode, easting, northing, title, detail, name,
              email, phone, photo, state, council, used_map, anonymous, category, areas, send_questionnaire)
             values
@@ -371,7 +385,7 @@ sub submit_problem {
 sub display_form {
     my ($q, @errors) = @_;
     my ($pin_x, $pin_y, $pin_tile_x, $pin_tile_y) = (0,0,0,0);
-    my @vars = qw(title detail name email phone pc easting northing x y skipped council anonymous flickr upload_fileid);
+    my @vars = qw(title detail name email phone pc easting northing x y skipped council anonymous partial upload_fileid);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
     my @ps = $q->param;
@@ -384,7 +398,7 @@ sub display_form {
             || ($input{easting} && $input{northing})
             || ($input{skipped} && $input{x} && $input{y})
             || ($input{skipped} && $input{pc})
-            || ($input{flickr} && $input{pc});
+            || ($input{partial} && $input{pc});
 
     my $out = '';
     my ($px, $py, $easting, $northing);
@@ -407,7 +421,7 @@ sub display_form {
         $py = Page::tile_to_px($pin_y, $input{y}, 1);
         $easting = Page::tile_to_os($pin_x);
         $northing = Page::tile_to_os($pin_y);
-    } elsif ($input{flickr} && $input{pc} && !$input{easting} && !$input{northing}) {
+    } elsif ($input{partial} && $input{pc} && !$input{easting} && !$input{northing}) {
         my ($x, $y, $e, $n, $error) = Page::geocode($input{pc});
         $easting = $e; $northing = $n;
         $input{x} = int(Page::os_to_tile($easting));
@@ -424,9 +438,12 @@ sub display_form {
         $northing = $input_h{northing};
     }
 
+    my $parent_types = $mySociety::VotingArea::council_parent_types;
+    $parent_types = [qw(DIS LBO MTD UTA LGD COI)] # No CTY
+        if $q->{site} eq 'emptyhomes';
     my $all_councils = mySociety::MaPit::get_voting_areas_by_location(
         { easting => $easting, northing => $northing },
-        'polygon', $mySociety::VotingArea::council_parent_types);
+        'polygon', $parent_types);
 
     # Ipswich & St Edmundsbury are responsible for everything in their areas, no Suffolk
     delete $all_councils->{2241} if $all_councils->{2446} || $all_councils->{2443};
@@ -442,7 +459,7 @@ sub display_form {
     # Look up categories for this council or councils
     my $category = '';
     my %council_ok;
-    if ($q->{site} ne 'emptyhomes') { # No category
+    if ($q->{site} ne 'emptyhomes') {
         my $categories = select_all("select area_id, category from contacts
             where deleted='f' and area_id in (" . join(',', @$all_councils) . ')');
         @$categories = sort { $a->{category} cmp $b->{category} } @$categories;
@@ -462,6 +479,13 @@ sub display_form {
                     -attributes=>{id=>'form_category'})
             );
         }
+    } else {
+        my @categories = ('-- Pick a property type --', 'Empty house or bungalow', 'Empty flat or maisonette', 'Whole block of empty flats', 'Empty office or other commercial', 'Empty pub or bar', 'Empty public building - school, hospital, etc.');
+        $category = $q->div($q->label({'for'=>'form_category'}, _('Property type:')), 
+            $q->popup_menu(-name=>'category', -values=>\@categories,
+                -attributes=>{id=>'form_category'})
+        );
+        $council_ok{$all_councils->[0]} = 1;
     }
 
     my @councils = keys %council_ok;
@@ -492,45 +516,44 @@ EOF
 If this is not the correct location, simply click on the map again. '));
     }
 
-    if ($q->{site} ne 'emptyhomes') { # No "send to council" blurb
-        if ($details eq 'all') {
-            $out .= '<p>All the information you provide here will be sent to <strong>'
-                . join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @$all_councils)
-                . '</strong>. On the site, we will show the subject and details of the problem,
-                plus your name if you give us permission.';
-            $out .= '<input type="hidden" name="council" value="' . join(',',@$all_councils) . '">';
-        } elsif ($details eq 'some') {
-            my $e = mySociety::Config::get('CONTACT_EMAIL');
-            my %councils = map { $_ => 1 } @councils;
-            my @missing;
-            foreach (@$all_councils) {
-                push @missing, $_ unless $councils{$_};
-            }
-            my $n = @missing;
-            my $list = join(' or ', map { $areas_info->{$_}->{name} } @missing);
-            $out .= '<p>All the information you provide here will be sent to <strong>'
-                . join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @councils)
-                . '</strong>. On the site, we will show the subject and details of the problem,
-                plus your name if you give us permission.';
-            $out .= ' We do <strong>not</strong> yet have details for the other council';
-            $out .= ($n>1) ? 's that cover' : ' that covers';
-            $out .= " this location. You can help us by finding a contact email address for local
+    if ($details eq 'all') {
+        $out .= '<p>All the information you provide here will be sent to <strong>'
+            . join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @$all_councils)
+            . '</strong>. On the site, we will show the subject and details of the problem,
+            plus your name if you give us permission.';
+        $out .= '<input type="hidden" name="council" value="' . join(',',@$all_councils) . '">';
+    } elsif ($details eq 'some') {
+        my $e = mySociety::Config::get('CONTACT_EMAIL');
+        my %councils = map { $_ => 1 } @councils;
+        my @missing;
+        foreach (@$all_councils) {
+            push @missing, $_ unless $councils{$_};
+        }
+        my $n = @missing;
+        my $list = join(' or ', map { $areas_info->{$_}->{name} } @missing);
+        $out .= '<p>All the information you provide here will be sent to <strong>'
+            . join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @councils)
+            . '</strong>. On the site, we will show the subject and details of the problem,
+            plus your name if you give us permission.';
+        $out .= ' We do <strong>not</strong> yet have details for the other council';
+        $out .= ($n>1) ? 's that cover' : ' that covers';
+        $out .= " this location. You can help us by finding a contact email address for local
 problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.";
-            $out .= '<input type="hidden" name="council" value="' . join(',', @councils)
-                . '|' . join(',', @missing) . '">';
-        } else {
-            my $e = mySociety::Config::get('CONTACT_EMAIL');
-            my $list = join(' or ', map { $areas_info->{$_}->{name} } @$all_councils);
-            my $n = @$all_councils;
-            $out .= '<p>We do not yet have details for the council';
-            $out .= ($n>1) ? 's that cover' : ' that covers';
-            $out .= " this location. If you submit a problem here it will be
+        $out .= '<input type="hidden" name="council" value="' . join(',', @councils)
+            . '|' . join(',', @missing) . '">';
+    } else {
+        my $e = mySociety::Config::get('CONTACT_EMAIL');
+        my $list = join(' or ', map { $areas_info->{$_}->{name} } @$all_councils);
+        my $n = @$all_councils;
+        $out .= '<p>We do not yet have details for the council';
+        $out .= ($n>1) ? 's that cover' : ' that covers';
+        $out .= " this location. If you submit a problem here it will be
 left on the site, but <strong>not</strong> reported to the council.
 You can help us by finding a contact email address for local
 problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.";
-            $out .= '<input type="hidden" name="council" value="-1">';
-        }
+        $out .= '<input type="hidden" name="council" value="-1">';
     }
+
     if ($input{skipped}) {
         $out .= $q->p(_('Please fill in the form below with details of the problem,
 and describe the location as precisely as possible in the details box.'));
@@ -539,18 +562,20 @@ and describe the location as precisely as possible in the details box.'));
 to help unless you leave as much detail as you can, so please describe the exact location of
 the problem (e.g. on a wall), what it is, how long it has been there, a description (and a
 photo of the problem if you have one), etc.';
+    } elsif ($q->{site} eq 'emptyhomes') {
+        $out .= $q->p(<<EOF);
+Please fill in details of the empty property below, saying what type of
+property it is e.g. an empty home, block of flats, office etc. Tell us
+something about its condition and any other information you feel is relevant.
+There is no need for you to give the exact address. Please be polite, concise
+and to the point; writing your message entirely in block capitals makes it hard
+to read, as does a lack of punctuation.
+EOF
     } elsif ($details ne 'none') {
         $out .= '<p>Please fill in details of the problem below. The council won\'t be able
 to help unless you leave as much detail as you can, so please describe the exact location of
 the problem (e.g. on a wall), what it is, how long it has been there, a description (and a
 photo of the problem if you have one), etc.';
-    } elsif ($q->{site} eq 'emptyhomes') {
-        $out .= <<EOF;
-<p>Please fill in details of the empty property below, giving the state of the
-property, what type of property is and any other information you feel is relevant.
-Please be polite, concise and to the point; writing your message entirely in
-block capitals makes it hard to read, as does a lack of punctuation.</p>
-EOF
     } else {
         $out .= $q->p(_('Please fill in details of the problem below.'));
     }
@@ -576,11 +601,11 @@ EOF
 <div><label for="form_detail">Details:</label>
 <textarea name="detail" id="form_detail" rows="7" cols="26">$input_h{detail}</textarea></div>
 EOF
-    if (my $token = $input{flickr}) {
-        my $id = mySociety::AuthToken::retrieve('flickr', $token);
+    if (my $token = $input{partial}) {
+        my $id = mySociety::AuthToken::retrieve('partial', $token);
         if ($id) {
-            $out .= '<p>The photo you uploaded was:</p> <input type="hidden" name="flickr" value="' . $token . '">';
-            $out .= '<p align="center"><img src="/photo?id=' . $id . '"></p>';
+            $out .= '<p>The photo you uploaded was:</p> <input type="hidden" name="partial" value="' . $token . '">';
+            $out .= '<p><img src="/photo?id=' . $id . '"></p>';
         }
     } else {
         $out .= <<EOF;
