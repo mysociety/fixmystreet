@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.115 2008-10-09 14:20:54 matthew Exp $
+# $Id: Page.pm,v 1.116 2008-10-09 18:21:17 matthew Exp $
 #
 
 package Page;
@@ -577,9 +577,14 @@ sub display_problem_text {
     my $out = $q->h1(ent($problem->{title}));
 
     # Display information about problem
-    $out .= '<p><em>Reported ';
-    $out .= 'in the ' . ent($problem->{category}) . ' category '
-        if $problem->{category} && $problem->{category} ne 'Other';
+    $out .= '<p><em>';
+    if ($q->{site} eq 'emptyhomes') {
+        $out .= ent($problem->{category}) . ', reported ';
+    } else {
+        $out .= 'Reported ';
+        $out .= 'in the ' . ent($problem->{category}) . ' category '
+            if $problem->{category} && $problem->{category} ne 'Other';
+    }
     $out .= ($problem->{anonymous}) ? 'anonymously' : "by " . ent($problem->{name});
     $out .= ' at ' . prettify_epoch($problem->{time});
     $out .= '; the map was not used so pin location may be inaccurate' unless ($problem->{used_map});

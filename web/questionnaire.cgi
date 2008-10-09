@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.32 2008-10-09 14:20:54 matthew Exp $
+# $Id: questionnaire.cgi,v 1.33 2008-10-09 18:21:18 matthew Exp $
 
 use strict;
 use Standard;
@@ -200,17 +200,42 @@ sub display_questionnaire {
 <h1>Questionnaire</h1>
 <form method="post" action="/questionnaire" id="questionnaire" enctype="multipart/form-data">
 <input type="hidden" name="token" value="$input_h{token}">
-
-<p>The details of your problem are available on the right hand side of this page.
 EOF
-    $out .= 'Please take a look at the updates that have been left.' if $updates;
+    if ($q->{site} eq 'emptyhomes') {
+        if (!$prev_questionnaire) {
+            $out .= <<EOF;
+<p>Getting empty homes back into use can be difficult. You shouldn't expect
+the property to be back into use yet. But a good council will have started work
+and should have reported what they have done on the website. If you are not
+satisfied with progress or information from the council, now is the right time
+to say. You may also want to try contacting some other people who may be able
+to help.  For advice on how to do this and other useful information please
+go to <a href="http://www.emptyhomes.com/getinvolved/campaign.html">http://www.emptyhomes.com/getinvolved/campaign.html</a>.</p>
+EOF
+        } else {
+            $out .= <<EOF;
+<p>Getting empty homes back into use can be difficult, but by now a good council
+will have made a lot of progress and reported what they have done on the
+website. Even so properties can remain empty for many months if the owner is
+unwilling or the property is in very poor repair.  If nothing has happened or
+you are not satisfied with the progress the council is making, now is the right
+time to say so. We think it's a good idea to contact some other people who
+may be able to help or put pressure on the council  For advice on how to do
+this and other useful information please go to <a
+href="http://www.emptyhomes.com/getinvolved/campaign.html">http://www.emptyhomes.com/getinvolved/campaign.html</a>.</p>
+EOF
+        }
+    }
+
+    $out .= '<p>The details of your problem are available on the right hand side of this page.';
+    $out .= ' Please take a look at the updates that have been left.' if $updates;
     $out .= '</p>';
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
     $out .= '<p>';
     $out .= 'An update marked this problem as fixed. ' if $problem->{state} eq 'fixed';
-    $out .= 'Has this problem been fixed?</p>';
+    $out .= _('Has this problem been fixed?') . '</p>';
     $out .= <<EOF;
 <p>
 <input type="radio" name="been_fixed" id="been_fixed_yes" value="Yes"$been_fixed{yes}>
@@ -246,7 +271,8 @@ your experience of getting the problem fixed?</p>
 <label for="form_photo">Photo:</label>
 <input type="file" name="photo" id="form_photo">
 </div>
-
+EOF
+    $out .= <<EOF if $q->{site} ne 'emptyhomes';
 <div id="another_qn">
 <p>Would you like to receive another questionnaire in 4 weeks, reminding you to check the status?</p>
 <p>
@@ -256,7 +282,8 @@ your experience of getting the problem fixed?</p>
 <label for="another_no">No</label>
 </p>
 </div>
-
+EOF
+    $out .= <<EOF;
 <p align="right"><input type="submit" name="submit" value="Submit questionnaire"></p>
 </form>
 EOF

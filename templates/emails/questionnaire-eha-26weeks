@@ -2,7 +2,7 @@ Subject: Questionnaire about your empty property report
 
 Hi <?=$values['name']?>,
 
-Four weeks ago, you reported an empty home on ReportEmptyHomes.com with the
+Six months ago, you reported an empty home on ReportEmptyHomes.com with the
 details provided at the end of this email. To keep our site up to date and
 relevant, I'd be grateful if you could fill in this short questionnaire to tell
 us what has happened: 
@@ -18,6 +18,8 @@ The Empty Homes Agency
 Your report was as follows:
 
 <?=$values['title']?>
+
+Property type: <?=$values['category']?>
 
 <?=$values['detail']?>
 

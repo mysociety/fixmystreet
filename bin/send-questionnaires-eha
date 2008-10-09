@@ -1,0 +1,111 @@
+#!/usr/bin/perl -w
+
+# send-questionnaires-eha:
+# Send out creator questionnaires
+#
+# Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
+# Email: matthew@mysociety.org. WWW: http://www.mysociety.org
+#
+# $Id: send-questionnaires-eha,v 1.1 2008-10-09 18:21:17 matthew Exp $
+
+use strict;
+require 5.8.0;
+
+# Horrible boilerplate to set up appropriate library paths.
+use FindBin;
+use lib "$FindBin::Bin/../perllib";
+use lib "$FindBin::Bin/../../perllib";
+use File::Slurp;
+
+use Page;
+use mySociety::AuthToken;
+use mySociety::Config;
+use mySociety::DBHandle qw(dbh select_all);
+use mySociety::Email;
+use mySociety::MaPit;
+use mySociety::EmailUtil;
+use mySociety::Random qw(random_bytes);
+
+BEGIN {
+    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+    mySociety::DBHandle::configure(
+        Name => mySociety::Config::get('BCI_DB_NAME'),
+        User => mySociety::Config::get('BCI_DB_USER'),
+        Password => mySociety::Config::get('BCI_DB_PASS'),
+        Host => mySociety::Config::get('BCI_DB_HOST', undef),
+        Port => mySociety::Config::get('BCI_DB_PORT', undef)
+    );
+}
+
+die "Either no arguments, --nomail or --verbose" if (@ARGV>1);
+my $nomail = 0;
+my $verbose = 0;
+$nomail = 1 if (@ARGV==1 && $ARGV[0] eq '--nomail');
+$verbose = 1 if (@ARGV==1 && $ARGV[0] eq '--verbose');
+$verbose = 1 if $nomail;
+
+send_q('4 weeks');
+send_q('26 weeks');
+
+# ---
+
+sub send_q {
+    my ($period) = @_;
+
+    (my $template = $period) =~ s/ //;
+    $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/questionnaire-eha-$template");
+
+    my $query = "select id, category, title, detail, name, email
+        from problem
+        where state in ('confirmed', 'fixed')
+            and whensent is not null
+            and send_questionnaire = 't'
+            and whensent < ms_current_timestamp() - '$period'::interval
+            and ";
+    if ($period eq '4 weeks') {
+        $query .= '(select max(whensent) from questionnaire where problem.id=problem_id) is null';
+    } else {
+        $query .= '(select max(whensent) from questionnaire where problem.id=problem_id) is not null';
+    }
+    $query .= ' order by created desc';
+
+    my $unsent = select_all($query);
+    foreach my $row (@$unsent) {
+        my %h = map { $_ => $row->{$_} } qw/name title detail category/;
+
+        my $id = dbh()->selectrow_array("select nextval('questionnaire_id_seq');");
+        dbh()->do('insert into questionnaire (id, problem_id, whensent)
+            values (?, ?, ms_current_timestamp())', {}, $id, $row->{id});
+        dbh()->do("update problem set send_questionnaire = 'f' where id=?", {}, $row->{id})
+            if $period eq '26 weeks';
+
+        my $token = mySociety::AuthToken::store('questionnaire', $id);
+        $h{url} = mySociety::Config::get('BASE_URL') . '/Q/' . $token;
+
+        my $sender = mySociety::Config::get('CONTACT_EMAIL');
+        my $email = mySociety::Email::construct_email({
+            _template_ => $template,
+            _parameters_ => \%h,
+            To => [ [ $row->{email}, $row->{name} ] ],
+            From => [ $sender, 'Empty Homes Agency' ],
+            'Message-ID' => sprintf('<ques-%s-%s@emptyhomes.com>', time(), unpack('h*', random_bytes(5, 1))),
+        });
+
+        print "Sending questionnaire $id, problem $row->{id}, token $token to $row->{email}\n" if $verbose;
+
+        my $result;
+        if ($nomail) {
+            $result = -1;
+        } else {
+            $result = mySociety::EmailUtil::send_email($email, $sender, $row->{email});
+        }
+        if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
+            print "  ...success\n" if $verbose;
+            dbh()->commit();
+        } else {
+            print " ...failed\n" if $verbose;
+            dbh()->rollback();
+        }
+    }
+}
+
