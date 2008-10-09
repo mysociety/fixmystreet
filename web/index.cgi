@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.213 2008-10-09 14:30:24 matthew Exp $
+# $Id: index.cgi,v 1.214 2008-10-09 17:18:03 matthew Exp $
 
 use strict;
 use Standard;
@@ -46,7 +46,8 @@ sub main {
         my $id = mySociety::AuthToken::retrieve('partial', $partial);
         if ($id) {
             my @row = dbh()->selectrow_array(
-                "select easting, northing, name, email, title from problem where id=? and state='partial'", {}, $id);
+                "select easting, northing, name, email, title, (photo is not null) as has_photo
+                    from problem where id=? and state='partial'", {}, $id);
             if (@row) {
                 $q->param('anonymous', 1);
                 $q->param('submit_map', 1);
@@ -55,6 +56,7 @@ sub main {
                 $q->param('name', $row[2]);
                 $q->param('email', $row[3]);
                 $q->param('title', $row[4]);
+                $q->param('has_photo', $row[5]);
                 $q->param('partial', $partial);
             }
         }
@@ -345,11 +347,13 @@ sub submit_problem {
         if ($id) {
             dbh()->do("update problem set postcode=?, easting=?, northing=?, title=?, detail=?,
                 name=?, email=?, phone=?, state='confirmed', council=?, used_map='t',
-                anonymous=?, category=?, confirmed=ms_current_timestamp(),
+                anonymous=?, category=?, areas=?, confirmed=ms_current_timestamp(),
                 lastupdate=ms_current_timestamp() where id=?", {}, $input{pc}, $input{easting}, $input{northing},
                 $input{title}, $input{detail}, $input{name}, $input{email},
                 $input{phone}, $input{council}, $input{anonymous} ? 'f' : 't',
-                $input{category}, $id);
+                $input{category}, $areas, $id);
+            Utils::workaround_pg_bytea('update problem set photo=? where id=?', 1, $image, $id)
+                if $image;
             dbh()->commit();
             $out = $q->p(sprintf(_('You have successfully confirmed your report and you can now <a href="%s">view it on the site</a>.'), "/report/$id"));
             $out .= CrossSell::display_advert($q, $input{email}, $input{name});
@@ -361,13 +365,13 @@ Please <a href="/contact">let us know what went on</a> and we\'ll look into it.'
         $id = dbh()->selectrow_array("select nextval('problem_id_seq');");
         Utils::workaround_pg_bytea("insert into problem
             (id, postcode, easting, northing, title, detail, name,
-             email, phone, photo, state, council, used_map, anonymous, category, areas, send_questionnaire)
+             email, phone, photo, state, council, used_map, anonymous, category, areas)
             values
             (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?, ?, ?, ?, ?)", 10,
             $id, $input{pc}, $input{easting}, $input{northing}, $input{title},
             $input{detail}, $input{name}, $input{email}, $input{phone}, $image,
             $input{council}, $used_map, $input{anonymous} ? 'f': 't', $input{category},
-            $areas, $q->{site} eq 'emptyhomes' ? 'f' : 't');
+            $areas);
         my %h = ();
         $h{title} = $input{title};
         $h{detail} = $input{detail};
@@ -424,8 +428,14 @@ sub display_form {
         $easting = Page::tile_to_os($pin_x);
         $northing = Page::tile_to_os($pin_y);
     } elsif ($input{partial} && $input{pc} && !$input{easting} && !$input{northing}) {
-        my ($x, $y, $e, $n, $error) = Page::geocode($input{pc});
-        $easting = $e; $northing = $n;
+        my ($x, $y, $error);
+        try {
+            ($x, $y, $easting, $northing, $error) = Page::geocode($input{pc});
+        } catch Error::Simple with {
+            $error = shift;
+        };
+        return Page::geocode_choice($error, '/') if ref($error) eq 'ARRAY';
+        return front_page($q, $error) if $error;
         $input{x} = int(Page::os_to_tile($easting));
         $input{y} = int(Page::os_to_tile($northing));
         $px = Page::os_to_px($easting, $input{x});
@@ -603,12 +613,15 @@ EOF
 <div><label for="form_detail">Details:</label>
 <textarea name="detail" id="form_detail" rows="7" cols="26">$input_h{detail}</textarea></div>
 EOF
+    my $partial_id;
     if (my $token = $input{partial}) {
-        my $id = mySociety::AuthToken::retrieve('partial', $token);
-        if ($id) {
-            $out .= '<p>The photo you uploaded was:</p> <input type="hidden" name="partial" value="' . $token . '">';
-            $out .= '<p><img src="/photo?id=' . $id . '"></p>';
+        $partial_id = mySociety::AuthToken::retrieve('partial', $token);
+        if ($partial_id) {
+            $out .= '<input type="hidden" name="partial" value="' . $token . '">';
         }
+    }
+    if ($partial_id && $q->param('has_photo')) {
+        $out .= "<p>The photo you uploaded was:</p> <p><img src='/photo?id=$partial_id'></p>";
     } else {
         $out .= <<EOF;
 <div id="fileupload_flashUI" style="display:none">

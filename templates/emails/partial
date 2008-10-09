@@ -1,6 +1,6 @@
 Subject: Your new report on FixMyStreet
 
-Hi <?=$values['name']?>,
+Hi<?=$values['name']?>,
 
 We've stored the report you uploaded to FixMyStreet via
 <?=$values['service']?>. To check the details we have,

@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: import-flickr,v 1.8 2008-10-09 14:20:53 matthew Exp $
+# $Id: import-flickr,v 1.9 2008-10-09 17:18:02 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -74,23 +74,17 @@ sub problem_create {
     my ($name, $email) = dbh()->selectrow_array("select name, email from partial_user where service='flickr' and nsid=?", {}, $owner);
     my ($easting, $northing) = (0,0);
     $name ||= '';
-    my $areas = '';
     if ($lat && $lon) {
         # XXX This appears to be going wrong :(
         ($easting, $northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
-        $areas = mySociety::MaPit::get_voting_areas_by_location(
-            { easting=>$easting, northing=>$northing },
-            'polygon', [qw(WMC CTY CED DIS DIW MTD MTW COI COP LGD LGE UTA UTE UTW LBO LBW LAC SPC WAC NIE)]
-        );
-        $areas = ',' . join(',', sort keys %$areas) . ',';
     }
     my $id = dbh()->selectrow_array("select nextval('problem_id_seq')");
     Utils::workaround_pg_bytea("insert into problem
         (id, postcode, easting, northing, title, detail, name,
          email, phone, photo, state, used_map, anonymous, category, areas)
         values
-        (?, '', ?, ?, ?, '', ?, ?, '', ?, 'partial', 't', 'f', '', ?)", 7,
-        $id, $easting, $northing, $title, $name, $email, $image, $areas
+        (?, '', ?, ?, ?, '', ?, ?, '', ?, 'partial', 't', 'f', '', '')", 7,
+        $id, $easting, $northing, $title, $name, $email, $image
     );
 
     dbh()->do('insert into flickr_imported (id, problem_id) values (?, ?)', {}, $photo_id, $id);
