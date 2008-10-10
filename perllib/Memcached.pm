@@ -5,7 +5,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Memcached.pm,v 1.2 2008-10-10 15:44:49 matthew Exp $
+# $Id: Memcached.pm,v 1.3 2008-10-10 15:57:28 matthew Exp $
 #
 
 package Memcached;
@@ -20,7 +20,7 @@ sub set_namespace {
     $namespace = 'fms' if $namespace eq 'fixmystreet';
 }
 
-sub connect {
+sub cache_connect {
     $memcache = new Cache::Memcached {
         'servers' => [ '127.0.0.1:11211' ],
         'namespace' => $namespace,
@@ -30,12 +30,12 @@ sub connect {
 }
 
 sub get {
-    connect() unless $memcache;
+    cache_connect() unless $memcache;
     $memcache->get(@_);
 }
 
 sub set {
-    connect() unless $memcache;
+    cache_connect() unless $memcache;
     $memcache->set(@_);
 }
 
