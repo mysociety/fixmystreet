@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.214 2008-10-09 17:18:03 matthew Exp $
+# $Id: index.cgi,v 1.215 2008-10-10 13:39:18 matthew Exp $
 
 use strict;
 use Standard;
@@ -846,7 +846,7 @@ sub display_problem {
     $out .= Page::display_problem_text($q, $problem);
 
     $out .= $q->p({align=>'right'},
-        $q->small($q->a({href => '/contact?id=' . $input{id}}, 'Offensive? Unsuitable? Tell us'))
+        $q->small($q->a({rel => 'nofollow', href => '/contact?id=' . $input{id}}, 'Offensive? Unsuitable? Tell us'))
     );
 
     my $back = NewURL($q, -url=>'/', x=>$x_tile, y=>$y_tile);
