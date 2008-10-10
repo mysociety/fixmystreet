@@ -5,7 +5,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Memcached.pm,v 1.1 2008-09-16 15:45:09 matthew Exp $
+# $Id: Memcached.pm,v 1.2 2008-10-10 15:44:49 matthew Exp $
 #
 
 package Memcached;
@@ -13,18 +13,29 @@ package Memcached;
 use strict;
 use Cache::Memcached;
 
-my $memcache = new Cache::Memcached {
-    'servers' => [ '127.0.0.1:11211' ],
-    'namespace' => 'fms',
-    'debug' => 0,
-    'compress_threshold' => 10_000,
-};
+my ($memcache, $namespace);
+
+sub set_namespace {
+    $namespace = shift;
+    $namespace = 'fms' if $namespace eq 'fixmystreet';
+}
+
+sub connect {
+    $memcache = new Cache::Memcached {
+        'servers' => [ '127.0.0.1:11211' ],
+        'namespace' => $namespace,
+        'debug' => 0,
+        'compress_threshold' => 10_000,
+    };
+}
 
 sub get {
+    connect() unless $memcache;
     $memcache->get(@_);
 }
 
 sub set {
+    connect() unless $memcache;
     $memcache->set(@_);
 }
 

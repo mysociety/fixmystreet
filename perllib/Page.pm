@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.117 2008-10-10 13:38:14 matthew Exp $
+# $Id: Page.pm,v 1.118 2008-10-10 15:44:49 matthew Exp $
 #
 
 package Page;
@@ -21,6 +21,8 @@ use LWP::Simple;
 use Digest::MD5 qw(md5_hex);
 use POSIX qw(strftime);
 use URI::Escape;
+
+use Memcached;
 use Problems;
 use Utils;
 use mySociety::Config;
@@ -34,6 +36,7 @@ use mySociety::PostcodeUtil;
 use mySociety::Tracking;
 use mySociety::WatchUpdate;
 use mySociety::Web qw(ent NewURL);
+
 BEGIN {
     mySociety::Config::set_file("$FindBin::Bin/../conf/general");
 }
@@ -92,6 +95,8 @@ sub microsite {
     if ($q->{site} eq 'scambs') {
         Problems::set_site_restriction('scambs');
     }
+
+    Memcached::set_namespace($q->{site});
 }
 
 =item header Q [PARAM VALUE ...]
