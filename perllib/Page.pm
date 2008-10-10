@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.116 2008-10-09 18:21:17 matthew Exp $
+# $Id: Page.pm,v 1.117 2008-10-10 13:38:14 matthew Exp $
 #
 
 package Page;
@@ -422,19 +422,19 @@ sub compass ($$$) {
     return <<EOF;
 <table cellpadding="0" cellspacing="0" border="0" id="compass">
 <tr valign="bottom">
-<td align="right"><a href="${compass[$x-1][$y+1]}"><img src="/i/arrow-northwest.gif" alt="NW"></a></td>
-<td align="center"><a href="${compass[$x][$y+1]}"><img src="/i/arrow-north.gif" vspace="3" alt="N"></a></td>
-<td><a href="${compass[$x+1][$y+1]}"><img src="/i/arrow-northeast.gif" alt="NE"></a></td>
+<td align="right"><a rel="nofollow" href="${compass[$x-1][$y+1]}"><img src="/i/arrow-northwest.gif" alt="NW"></a></td>
+<td align="center"><a rel="nofollow" href="${compass[$x][$y+1]}"><img src="/i/arrow-north.gif" vspace="3" alt="N"></a></td>
+<td><a rel="nofollow" href="${compass[$x+1][$y+1]}"><img src="/i/arrow-northeast.gif" alt="NE"></a></td>
 </tr>
 <tr>
-<td><a href="${compass[$x-1][$y]}"><img src="/i/arrow-west.gif" hspace="3" alt="W"></a></td>
-<td align="center"><a href="$recentre"><img src="/i/rose.gif" alt="Recentre"></a></td>
-<td><a href="${compass[$x+1][$y]}"><img src="/i/arrow-east.gif" hspace="3" alt="E"></a></td>
+<td><a rel="nofollow" href="${compass[$x-1][$y]}"><img src="/i/arrow-west.gif" hspace="3" alt="W"></a></td>
+<td align="center"><a rel="nofollow" href="$recentre"><img src="/i/rose.gif" alt="Recentre"></a></td>
+<td><a rel="nofollow" href="${compass[$x+1][$y]}"><img src="/i/arrow-east.gif" hspace="3" alt="E"></a></td>
 </tr>
 <tr valign="top">
-<td align="right"><a href="${compass[$x-1][$y-1]}"><img src="/i/arrow-southwest.gif" alt="SW"></a></td>
-<td align="center"><a href="${compass[$x][$y-1]}"><img src="/i/arrow-south.gif" vspace="3" alt="S"></a></td>
-<td><a href="${compass[$x+1][$y-1]}"><img src="/i/arrow-southeast.gif" alt="SE"></a></td>
+<td align="right"><a rel="nofollow" href="${compass[$x-1][$y-1]}"><img src="/i/arrow-southwest.gif" alt="SW"></a></td>
+<td align="center"><a rel="nofollow" href="${compass[$x][$y-1]}"><img src="/i/arrow-south.gif" vspace="3" alt="S"></a></td>
+<td><a rel="nofollow" href="${compass[$x+1][$y-1]}"><img src="/i/arrow-southeast.gif" alt="SE"></a></td>
 </tr>
 </table>
 EOF
