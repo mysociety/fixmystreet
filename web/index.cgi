@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.215 2008-10-10 13:39:18 matthew Exp $
+# $Id: index.cgi,v 1.216 2008-10-11 12:37:13 matthew Exp $
 
 use strict;
 use Standard;
@@ -367,7 +367,7 @@ Please <a href="/contact">let us know what went on</a> and we\'ll look into it.'
             (id, postcode, easting, northing, title, detail, name,
              email, phone, photo, state, council, used_map, anonymous, category, areas)
             values
-            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?, ?, ?, ?, ?)", 10,
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?, ?, ?, ?)", 10,
             $id, $input{pc}, $input{easting}, $input{northing}, $input{title},
             $input{detail}, $input{name}, $input{email}, $input{phone}, $image,
             $input{council}, $used_map, $input{anonymous} ? 'f': 't', $input{category},
