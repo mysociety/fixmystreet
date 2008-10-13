@@ -33,7 +33,7 @@ body {
 
 h1 {
     margin: 0;
-    font-size: 175%;
+    font-size: 165%;
     padding: 3px;
     color: #FFFFFF;
     background-color: #9999CC;
@@ -147,7 +147,7 @@ blockquote {
     margin: 2em 0 1em 0;
     padding: 20px;
 }
-#address1 a {
+#footer a {
     color: #FFFFFF;
 }
 
@@ -168,6 +168,6 @@ blockquote {
 }
 
 #alert_links_area {
-    margin-top: 2px;
+    margin-top: 1px;
 }
 
