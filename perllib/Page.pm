@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.118 2008-10-10 15:44:49 matthew Exp $
+# $Id: Page.pm,v 1.119 2008-10-13 11:22:36 matthew Exp $
 #
 
 package Page;
@@ -137,12 +137,6 @@ sub header ($%) {
 <html lang="en-gb">
     <head>
         <script type="text/javascript" src="/yui/utilities.js"></script>
-<!-- 
-        <script type="text/javascript" src="/jslib/swfupload/swfupload.js"></script>
-        <script type="text/javascript" src="/jslib/swfupload/FileProgress.js"></script>
-        <script type="text/javascript" src="/jslib/swfupload/swfupload.graceful_degradation.js"></script>
-        <script type="text/javascript" src="/jslib/swfupload/swfupload_handlers.js"></script>
--->
         <script type="text/javascript" src="/js.js"></script>
         <title>${title}FixMyStreet</title>
         <style type="text/css">\@import url("/css/core.css"); \@import url("/css/main.css");</style>

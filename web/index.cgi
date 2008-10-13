@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.216 2008-10-11 12:37:13 matthew Exp $
+# $Id: index.cgi,v 1.217 2008-10-13 11:22:36 matthew Exp $
 
 use strict;
 use Standard;
@@ -471,9 +471,9 @@ sub display_form {
     # Look up categories for this council or councils
     my $category = '';
     my %council_ok;
+    my $categories = select_all("select area_id, category from contacts
+        where deleted='f' and area_id in (" . join(',', @$all_councils) . ')');
     if ($q->{site} ne 'emptyhomes') {
-        my $categories = select_all("select area_id, category from contacts
-            where deleted='f' and area_id in (" . join(',', @$all_councils) . ')');
         @$categories = sort { $a->{category} cmp $b->{category} } @$categories;
         my @categories;
         foreach (@$categories) {
@@ -486,19 +486,19 @@ sub display_form {
         }
         if (@categories) {
             @categories = ('-- Pick a category --', @categories, _('Other'));
-            $category = $q->div($q->label({'for'=>'form_category'}, _('Category:')), 
-                $q->popup_menu(-name=>'category', -values=>\@categories,
-                    -attributes=>{id=>'form_category'})
-            );
+            $category = _('Category:');
         }
     } else {
+        foreach (@$categories) {
+            $council_ok{$_->{area_id}} = 1;
+        }
         my @categories = ('-- Pick a property type --', 'Empty house or bungalow', 'Empty flat or maisonette', 'Whole block of empty flats', 'Empty office or other commercial', 'Empty pub or bar', 'Empty public building - school, hospital, etc.');
-        $category = $q->div($q->label({'for'=>'form_category'}, _('Property type:')), 
-            $q->popup_menu(-name=>'category', -values=>\@categories,
-                -attributes=>{id=>'form_category'})
-        );
-        $council_ok{$all_councils->[0]} = 1;
+        $category = _('Property type:');
     }
+    $category = $q->div($q->label({'for'=>'form_category'}, $category), 
+        $q->popup_menu(-name=>'category', -values=>\@categories,
+            -attributes=>{id=>'form_category'})
+    ) if $category;
 
     my @councils = keys %council_ok;
     my $details;
