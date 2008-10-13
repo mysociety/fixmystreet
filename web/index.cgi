@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.217 2008-10-13 11:22:36 matthew Exp $
+# $Id: index.cgi,v 1.218 2008-10-13 11:53:26 matthew Exp $
 
 use strict;
 use Standard;
@@ -470,12 +470,11 @@ sub display_form {
 
     # Look up categories for this council or councils
     my $category = '';
-    my %council_ok;
+    my (%council_ok, @categories);
     my $categories = select_all("select area_id, category from contacts
         where deleted='f' and area_id in (" . join(',', @$all_councils) . ')');
     if ($q->{site} ne 'emptyhomes') {
         @$categories = sort { $a->{category} cmp $b->{category} } @$categories;
-        my @categories;
         foreach (@$categories) {
             $council_ok{$_->{area_id}} = 1;
             next if $_->{category} eq _('Other');
@@ -492,7 +491,7 @@ sub display_form {
         foreach (@$categories) {
             $council_ok{$_->{area_id}} = 1;
         }
-        my @categories = ('-- Pick a property type --', 'Empty house or bungalow', 'Empty flat or maisonette', 'Whole block of empty flats', 'Empty office or other commercial', 'Empty pub or bar', 'Empty public building - school, hospital, etc.');
+        @categories = ('-- Pick a property type --', 'Empty house or bungalow', 'Empty flat or maisonette', 'Whole block of empty flats', 'Empty office or other commercial', 'Empty pub or bar', 'Empty public building - school, hospital, etc.');
         $category = _('Property type:');
     }
     $category = $q->div($q->label({'for'=>'form_category'}, $category), 
