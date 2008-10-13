@@ -1,12 +1,5 @@
-p#expl {
-    font-size: 130%;
-}
-
-#alert_links {
-    float: none;
-}
-
 /* Smaller map */
+/*
 #map_box {
     width: 380px;
 }
@@ -23,50 +16,49 @@ p#expl {
     right: 0;
 }
 
-#toptitle {
-    margin-top: 0.5em;
-}
-
-#left {
-    width: auto;
-}
-#middle {
-    width: 600px;
-}
-#middle p {
-    width: auto;
-}
-#middle h1 {
-    width: auto;
-}
 p#fixed, p#unknown {
     margin-right: 400px;
     width: auto;
 }
+*/
 
-#left #topbox a, #left #bottombox a {
-    color: #30517A;
-    font-weight: normal;
-    background-color: inherit;
-}
+/* Generics */
 
-#header, #smallnav, #main {
-    margin: 0 auto;
-}
-
-#search p {
-    text-align: right;
-    font-family: Verdana, Arial, Helvetica, sans-serif;
-    color: #000000;
+body {
+    font-family: Geneva, Helvetica, Arial, sans-serif;
     margin: 0;
-}
-#search p#searchbox {
-    margin: 0.5em 0 0.25em;
+    padding: 0;
+    /* color: #a9aeb0; */
 }
 
-/* So IE and Firefox match */
-#left ol {
-    padding: 0;
+h1 {
+    margin: 0;
+    font-size: 175%;
+    padding: 3px;
+    color: #FFFFFF;
+    background-color: #9999CC;
+    background-color: #30517A;
+
+}
+h2 {
+    font-size: 140%;
+    background-color: #B1BECF;
+    color: #30517A;
+    padding: 3px;
+}
+
+h3 {
+    color: #30517A;
+}
+
+a:link {
+    color: #30517A;
+}
+a:visited {
+    color: #354664;
+}
+a:hover, a:active {
+    background-color: #B1BECF;
 }
 
 blockquote {
@@ -76,40 +68,106 @@ blockquote {
 .a {
     color: #000000;
     background-color: #DCDCED; /* #427499; */
+    background-color: #B1BECF;
 }
 
-#postcodeForm, #front_stats div {
+/* Site layout */
+
+#header {
+    font-size: 200%;
+    font-weight: bold;
+    margin: 0;
+    padding: 5px 0.5em;
+    float: left;
+}
+
+#content {
+    width: 100%; /* Must specify a width or IE goes crazy wrong! */
+    position: relative;
+    margin: 0 auto;
+    max-width: 60em;
+}
+
+/* Can't put the margin in #content because of above IE craziness */
+#wrapper {
+    clear: both;
+    margin: 0 2em 2em;
+    padding-top: 0.5em;
+}
+
+#navigation {
+    float: right;
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+    font-size: 83%;
+}
+#navigation li {
+    display: inline;
+    padding: 0;
+    margin: 0;
+}
+
+#navigation a {
+    display: -moz-inline-box;
+    display: inline-block;
+    padding: 0.5em 1em;
+}
+#navigation a:link, #navigation a:visited {
+    color: #30517A;
+}
+#navigation a:hover, #navigation a:active {
+    background-color: #DCDCED;
+    background-color: #9999CC;
+    background-color: #B1BECF;
+
+    color: #ffffff;
+    color: #30517A;
+}
+
+#nav_new a {
+    background-image: url("/i/new.png");
+    background-repeat: no-repeat;
+    background-position: 100% 0;
+}
+
+#logo {
+    border: none;
+    position: absolute;
+    top: 4em;
+    right: 10px;
+}
+
+#footer {
+    clear: both;
+    font-size: 83%;
+    border-top: solid 2em #ffffff;
+    background-color: #80AE7D;
+    color: #FFFFFF;
+    margin: 2em 0 1em 0;
+    padding: 20px;
+}
+#address1 a {
+    color: #FFFFFF;
+}
+
+#postcodeForm {
     background-color: #80AE7D;
     color: #000000;
 }
-#postcodeForm {
-    _width: 500px;
-}
 
 #front_stats div {
-    padding: 0.5em 0;
-    width: 6em;
+    background-color: #80AE7D;
+    color: #000000;
+    /*padding: 0.5em 0;
+    width: 6em; */
 }
 
-#update_form, #problem_form {
+#problem_form {
     clear: both; 
 }
 
-/* Slightly narrower so it fits */
-#col_problems, #col_fixed {
-    width: 45%;
-}
-
-/* Sub nav for the internal bits */
-#left ol ul {
-    font-size: 90%;
-}
-#left ol ul a {
-    padding: 4px 0 4px 20px;
-    background-color: #ffffff;
-}
-#left ol ul a:hover {
-    background-color: #B1BECF;
-    background-color: #DCDCED;
+#alert_links_area {
+    margin-top: 2px;
 }
 

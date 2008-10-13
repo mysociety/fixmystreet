@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: about.cgi,v 1.6 2008-10-09 18:21:18 matthew Exp $
+# $Id: about.cgi,v 1.7 2008-10-13 14:06:44 matthew Exp $
 
 use strict;
 use Standard -db;
@@ -16,6 +16,7 @@ sub main {
     my $q = shift;
     print Page::header($q, title=>'About us');
     print <<ABOUTUS if $q->{site} eq 'emptyhomes';
+<h1>The Empty Homes Agency</h1>
 <p>The Empty Homes agency is an independent campaigning charity. We are not
 part of government, and have no formal links with local councils although we
 work in cooperation with both. We exist to highlight the waste of empty

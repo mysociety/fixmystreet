@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.119 2008-10-13 11:22:36 matthew Exp $
+# $Id: Page.pm,v 1.120 2008-10-13 14:06:44 matthew Exp $
 #
 
 package Page;
@@ -262,7 +262,7 @@ sub display_map {
     $params{pre} ||= '';
     $params{post} ||= '';
     my $mid_point = 254;
-    if ($q->{site} eq 'emptyhomes' || $q->{site} eq 'scambs') { # Map is c. 380px wide
+    if ($q->{site} eq 'scambs') { # Map is c. 380px wide
         $mid_point = 189;
     }
     my $px = defined($params{px}) ? $mid_point - $params{px} : 0;
@@ -482,7 +482,7 @@ sub os_to_px_with_adjust {
     my $y_tile = $in_y || int($y);
     my $px = Page::os_to_px($easting, $x_tile);
     my $py = Page::os_to_px($northing, $y_tile, 1);
-    if ($q->{site} eq 'emptyhomes' || $q->{site} eq 'scambs') { # Map is 380px
+    if ($q->{site} eq 'scambs') { # Map is 380px
         if ($py > 380) {
             $y_tile--;
             $py = Page::os_to_px($northing, $y_tile, 1);

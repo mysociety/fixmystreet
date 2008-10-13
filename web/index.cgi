@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.218 2008-10-13 11:53:26 matthew Exp $
+# $Id: index.cgi,v 1.219 2008-10-13 14:06:44 matthew Exp $
 
 use strict;
 use Standard;
@@ -556,12 +556,19 @@ problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.";
         my $e = mySociety::Config::get('CONTACT_EMAIL');
         my $list = join(' or ', map { $areas_info->{$_}->{name} } @$all_councils);
         my $n = @$all_councils;
-        $out .= '<p>We do not yet have details for the council';
-        $out .= ($n>1) ? 's that cover' : ' that covers';
-        $out .= " this location. If you submit a problem here it will be
+        if ($q->{site} ne 'emptyhomes') {
+            $out .= '<p>We do not yet have details for the council';
+            $out .= ($n>1) ? 's that cover' : ' that covers';
+            $out .= " this location. If you submit a problem here it will be
 left on the site, but <strong>not</strong> reported to the council.
 You can help us by finding a contact email address for local
 problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.";
+        } else {
+	    $out .= "<p>We do not yet have details for the council that covers
+this location. If you submit a report here it will be left on the site, but
+not reported to the council &ndash; please still leave your report, so that
+we can show to the council the activity in their area.";
+        }
         $out .= '<input type="hidden" name="council" value="-1">';
     }
 
