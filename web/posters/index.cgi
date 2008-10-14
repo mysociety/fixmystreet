@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.7 2008-10-09 14:20:55 matthew Exp $
+# $Id: index.cgi,v 1.8 2008-10-14 09:53:37 matthew Exp $
 
 use strict;
 use Standard -db;
@@ -28,6 +28,7 @@ Page::do_fastcgi(\&main);
 sub body {
     my $q = shift;
     return $q->h1(_('Publicity Material')) .
+        '<img align="right" hspace="5" src="/i/fms-badge.png" alt="FixMyStreet badge">' . 
         '<img align="right" hspace="5" src="poster.png" alt="Example poster">' .
         $q->p(_('Here are some posters you can use to publicise FixMyStreet.')) .
         $q->h2(_('Posters')) .

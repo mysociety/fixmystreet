@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.35 2008-10-09 14:20:54 matthew Exp $
+# $Id: faq.cgi,v 1.36 2008-10-14 09:53:30 matthew Exp $
 
 use strict;
 use Standard -db;
@@ -68,7 +68,7 @@ latest nightly build of Safari, so will presumably be fixed in the next
 release. Until then, I've sadly had to disable dragging to avoid people
 dragging an empty square.")),
         $q->dt(_('Do you have any publicity material?')),
-        $q->dd(_('Sure, we have a whole <a href="posters/">array of posters and flyers</a>.')),
+        $q->dd(_('Sure, we have a whole <a href="posters/">array of posters, flyers and badges</a>.')),
     );
     $out .= $q->h2(_('Privacy Questions'));
     $out .= $q->dl(
