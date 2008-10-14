@@ -6,11 +6,12 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.8 2008-10-14 09:53:37 matthew Exp $
+# $Id: index.cgi,v 1.9 2008-10-14 10:28:38 matthew Exp $
 
 use strict;
 use Standard -db;
 use mySociety::Config;
+use mySociety::Web qw(ent);
 
 # XXX: Ugh, as we're in a subdirectory
 BEGIN {
@@ -27,10 +28,16 @@ Page::do_fastcgi(\&main);
 
 sub body {
     my $q = shift;
+    my $badge = '<a href="http://www.fixmystreet.com/"> <img align="left" hspace="5" src="http://www.fixmystreet.com/i/fms-badge.jpeg" alt="FixMyStreet - report, view or discuss local problems" border="0"></a>';
     return $q->h1(_('Publicity Material')) .
-        '<img align="right" hspace="5" src="/i/fms-badge.png" alt="FixMyStreet badge">' . 
-        '<img align="right" hspace="5" src="poster.png" alt="Example poster">' .
-        $q->p(_('Here are some posters you can use to publicise FixMyStreet.')) .
+        $q->div({style=>'float:left; width:50%'},
+        '<p>Copy and paste the text below to add this badge to your site:</p>', $badge,
+	'<textarea onclick="this.select()" cols=37 rows=5>' . ent($badge) . '</textarea>',
+	'<p><small>(thanks to Lincolnshire Council for the image)</small></p>'
+	) .
+	$q->div({style=>'float:right; width:47%'},
+        $q->p(_('Here are some posters and flyers you can use to publicise FixMyStreet:')) .
+        '<img hspace="5" src="poster.png" alt="Example poster">' .
         $q->h2(_('Posters')) .
         $q->ul(
             $q->li($q->a({href=>'fixmystreet-poster-a4.pdf'}, _('A4, colour'))),
@@ -51,6 +58,7 @@ sub body {
             $q->li($q->a({href=>'fixmystreet-flyers-bw-outlined.pdf'}, _('4 x A6, black and white, outlined'))),
             $q->li($q->a({href=>'fixmystreet-flyers-bw-low-ink.pdf'}, _('4 x A6, black and white, low ink')))
         )
+	)
     ;
 }
 
