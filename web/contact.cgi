@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.35 2008-10-14 10:28:38 matthew Exp $
+# $Id: contact.cgi,v 1.36 2008-10-15 13:57:55 matthew Exp $
 
 use strict;
 use Standard;
@@ -119,7 +119,7 @@ homes; use the box accessed from <a href="/">the front page</a>.');
 the team behind FixMyStreet, not a council. To report a problem,
 please <a href="/">go to the front page</a> and follow the instructions.'));
         $out .= $q->p(_("We'd love to hear what you think about this site. Just fill in the form, or
-send an email to <a href='team&#64;fixmystreet.com'>team&#64;fixmystreet.com</a>:"));
+send an email to <a href='mailto:team&#64;fixmystreet.com'>team&#64;fixmystreet.com</a>:"));
     }
     my $label_name = _('Your name:');
     my $label_email = _('Your&nbsp;email:');
