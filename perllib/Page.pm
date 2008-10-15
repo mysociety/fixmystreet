@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.120 2008-10-13 14:06:44 matthew Exp $
+# $Id: Page.pm,v 1.121 2008-10-15 16:14:57 francis Exp $
 #
 
 package Page;
@@ -96,7 +96,7 @@ sub microsite {
         Problems::set_site_restriction('scambs');
     }
 
-    Memcached::set_namespace($q->{site});
+    Memcached::set_namespace(mySociety::Config::get('BCI_DB_NAME') . ":");
 }
 
 =item header Q [PARAM VALUE ...]
