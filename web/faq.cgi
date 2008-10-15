@@ -6,15 +6,16 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.36 2008-10-14 09:53:30 matthew Exp $
+# $Id: faq.cgi,v 1.37 2008-10-15 22:07:26 matthew Exp $
 
 use strict;
 use Standard -db;
 
-# Main code for index.cgi
+my $lastmodified = (stat $0)[9];
+
 sub main {
     my $q = shift;
-    print Page::header($q, title=>_('FAQ'));
+    print Page::header($q, title=>_('Frequently Asked Questions'));
     if ($q->{site} eq 'emptyhomes') {
         print emptyhomes_faq($q);
     } else {
@@ -22,7 +23,7 @@ sub main {
     }
     print Page::footer($q);
 }
-Page::do_fastcgi(\&main);
+Page::do_fastcgi(\&main, $lastmodified);
 
 sub faq {
     my $q = shift;

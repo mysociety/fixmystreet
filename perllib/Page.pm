@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.121 2008-10-15 16:14:57 francis Exp $
+# $Id: Page.pm,v 1.122 2008-10-15 22:07:25 matthew Exp $
 #
 
 package Page;
@@ -16,6 +16,7 @@ use Carp;
 use mySociety::CGIFast qw(-no_xhtml);
 use Error qw(:try);
 use File::Slurp;
+use HTTP::Date;
 use Image::Magick;
 use LWP::Simple;
 use Digest::MD5 qw(md5_hex);
@@ -41,12 +42,16 @@ BEGIN {
     mySociety::Config::set_file("$FindBin::Bin/../conf/general");
 }
 
+my $lastmodified;
+
 sub do_fastcgi {
-    my $func = shift;
+    my ($func, $lm) = @_;
 
     try {
         my $W = new mySociety::WatchUpdate();
-        while (my $q = new mySociety::CGIFast()) {
+        while (my $q = new mySociety::Web()) {
+            next if $lm && $q->Maybe304($lm);
+            $lastmodified = $lm;
             microsite($q);
             &$func($q);
             dbh()->rollback() if $mySociety::DBHandle::conf_ok;
@@ -107,7 +112,7 @@ Return HTML for the top of the page, given PARAMs (TITLE is required).
 sub header ($%) {
     my ($q, %params) = @_;
 
-    my %permitted_params = map { $_ => 1 } qw(title rss js);
+    my %permitted_params = map { $_ => 1 } qw(title rss js expires lastmodified);
     foreach (keys %params) {
         croak "bad parameter '$_'" if (!exists($permitted_params{$_}));
     }
@@ -118,7 +123,11 @@ sub header ($%) {
 
     my $home = !$title && $ENV{SCRIPT_NAME} eq '/index.cgi' && !$ENV{QUERY_STRING};
 
-    print $q->header(-charset => 'utf-8');
+    my %head = ();
+    $head{-expires} = $params{expires} if $params{expires};
+    $head{'-last-modified'} = time2str($params{lastmodified}) if $params{lastmodified};
+    $head{'-last-modified'} = time2str($lastmodified) if $lastmodified;
+    print $q->header(%head);
 
     my $html;
     if ($q->{site} eq 'scambs') {

@@ -6,10 +6,12 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: about.cgi,v 1.7 2008-10-13 14:06:44 matthew Exp $
+# $Id: about.cgi,v 1.8 2008-10-15 22:07:26 matthew Exp $
 
 use strict;
 use Standard -db;
+
+my $lastmodified = (stat $0)[9];
 
 # Main code for index.cgi
 sub main {
@@ -26,5 +28,5 @@ England. We also work in partnership with other charities across the UK.</p>
 ABOUTUS
     print Page::footer($q);
 }
-Page::do_fastcgi(\&main);
+Page::do_fastcgi(\&main, $lastmodified);
 

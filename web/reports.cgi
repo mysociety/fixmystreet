@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.20 2008-09-19 10:24:55 matthew Exp $
+# $Id: reports.cgi,v 1.21 2008-10-15 22:07:26 matthew Exp $
 
 use strict;
 use Standard;
@@ -152,7 +152,7 @@ sub main {
 
     my $areas_info = mySociety::MaPit::get_voting_areas_info([keys %councils]);
     if (!$one_council) {
-        print Page::header($q, title=>_('Summary reports'));
+        print Page::header($q, title=>_('Summary reports'), expires=>'+1h');
         print $q->p(_('This is a summary of all reports on this site; select a particular council to see the reports sent there.'));
         my $c = 0;
         print '<table cellpadding="3" cellspacing="1" border="0">';
