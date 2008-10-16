@@ -41,7 +41,7 @@ blockquote {
     font-weight: bold;
     border-bottom: solid 2px #5e552b;
     margin: 0;
-    padding: 5px 0.5em;
+    padding: 0.15em 0.5em;
     background-color: #e3d595;
     color: #5e552b;
 }
@@ -95,7 +95,7 @@ blockquote {
 #navigation a {
     display: -moz-inline-box;
     display: inline-block;
-    padding: 0.5em 1em;
+    padding: 0.4em 1em;
 }
 #navigation a:link, #navigation a:visited {
     color: #5e552b;
@@ -114,7 +114,7 @@ blockquote {
 #logo {
     border: none;
     position: absolute;
-    top: 4em;
+    top: 3.3em;
     right: 10px;
 }
 
