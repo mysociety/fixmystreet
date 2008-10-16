@@ -17,7 +17,7 @@ Name: <?=$values['name']?>
 
 Email: <?=$values['email']?>
 
-<?=$values['phone']?><?=$values['category']?>Subject: <?=$values['title']?>
+<?=$values['phone_line']?><?=$values['category_line']?>Subject: <?=$values['title']?>
 
 Details: <?=$values['detail']?>
 

@@ -28,7 +28,7 @@ Name: <?=$values['name']?>
 
 Email: <?=$values['email']?>
 
-<?=$values['phone']?>Subject: <?=$values['title']?>
+<?=$values['phone_line']?>Subject: <?=$values['title']?>
 
 Property type: <?=$values['category']?>
 
