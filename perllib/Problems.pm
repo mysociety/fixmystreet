@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Problems.pm,v 1.7 2008-09-19 10:24:55 matthew Exp $
+# $Id: Problems.pm,v 1.8 2008-10-17 18:55:16 matthew Exp $
 #
 
 package Problems;
@@ -127,22 +127,24 @@ sub recent {
 # Problems around a location
 
 sub around_map {
-    my ($min_e, $max_e, $min_n, $max_n) = @_;
+    my ($min_e, $max_e, $min_n, $max_n, $interval) = @_;
     select_all(
         "select id,title,easting,northing,state from problem
         where state in ('confirmed', 'fixed')
-            and easting>=? and easting<? and northing>=? and northing<?
-        $site_restriction
+            and easting>=? and easting<? and northing>=? and northing<? " .
+        ($interval ? " and ms_current_timestamp()-lastupdate < '$interval'::interval" : '') .
+        " $site_restriction
         order by created desc", $min_e, $max_e, $min_n, $max_n);
 }
 
 sub nearby {
-    my ($dist, $ids, $limit, $mid_e, $mid_n) = @_;
+    my ($dist, $ids, $limit, $mid_e, $mid_n, $interval) = @_;
     select_all(
         "select id, title, easting, northing, distance, state
         from problem_find_nearby(?, ?, $dist) as nearby, problem
-        where nearby.problem_id = problem.id
-        and state in ('confirmed', 'fixed')" . ($ids ? ' and id not in (' . $ids . ')' : '') . "
+        where nearby.problem_id = problem.id " .
+        ($interval ? " and ms_current_timestamp()-lastupdate < '$interval'::interval" : '') .
+        " and state in ('confirmed', 'fixed')" . ($ids ? ' and id not in (' . $ids . ')' : '') . "
         $site_restriction
         order by distance, created desc limit $limit", $mid_e, $mid_n);
 }

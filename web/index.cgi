@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.219 2008-10-13 14:06:44 matthew Exp $
+# $Id: index.cgi,v 1.220 2008-10-17 18:55:16 matthew Exp $
 
 use strict;
 use Standard;
@@ -721,7 +721,7 @@ sub display_location {
     return Page::geocode_choice($error, '/') if (ref($error) eq 'ARRAY');
     return front_page($q, $error) if ($error);
 
-    my ($pins, $on_map, $around_map, $dist) = Page::map_pins($q, $x, $y, $x, $y);
+    my ($pins, $on_map, $around_map, $dist) = Page::map_pins($q, $x, $y, $x, $y, '6 months');
     my $out = Page::display_map($q, x => $x, y => $y, type => 1, pins => $pins );
     $out .= $q->h1(_('Problems in this area'));
     my $email_me = _('Email me new local problems');

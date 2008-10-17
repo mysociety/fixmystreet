@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: ajax.cgi,v 1.4 2008-10-09 14:20:54 matthew Exp $
+# $Id: ajax.cgi,v 1.5 2008-10-17 18:55:16 matthew Exp $
 
 use strict;
 use Standard;
@@ -31,7 +31,7 @@ sub main {
     $sx ||= 0; $sx += 0;
     $sy ||= 0; $sy += 0;
 
-    my ($pins, $on_map, $around_map, $dist) = Page::map_pins($q, $x, $y, $sx, $sy);
+    my ($pins, $on_map, $around_map, $dist) = Page::map_pins($q, $x, $y, $sx, $sy, '6 months');
 
     my $list = '';
     foreach (@$on_map) {

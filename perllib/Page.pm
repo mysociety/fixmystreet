@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.122 2008-10-15 22:07:25 matthew Exp $
+# $Id: Page.pm,v 1.123 2008-10-17 18:55:16 matthew Exp $
 #
 
 package Page;
@@ -359,7 +359,7 @@ sub display_pin {
 }
 
 sub map_pins {
-    my ($q, $x, $y, $sx, $sy) = @_;
+    my ($q, $x, $y, $sx, $sy, $interval) = @_;
 
     my $pins = '';
     my $min_e = Page::tile_to_os($x-2); # Extra space to left/below due to rounding, I think
@@ -373,49 +373,30 @@ sub map_pins {
     my $max_e = Page::tile_to_os($x+3);
     my $max_n = Page::tile_to_os($y+3);
 
-    my $around_map = Problems::around_map($min_e, $max_e, $min_n, $max_n);
+    my $around_map = Problems::around_map($min_e, $max_e, $min_n, $max_n, $interval);
     my @ids = ();
-    #my $count_prob = 1;
-    #my $count_fixed = 1;
     foreach (@$around_map) {
         push(@ids, $_->{id});
         my $px = Page::os_to_px($_->{easting}, $sx);
         my $py = Page::os_to_px($_->{northing}, $sy, 1);
         my $col = $_->{state} eq 'fixed' ? 'green' : 'red';
-        $pins .= Page::display_pin($q, $px, $py, $col); # , $count_prob++);
+        $pins .= Page::display_pin($q, $px, $py, $col);
     }
 
     my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($mid_e, $mid_n, 'G');
     my $dist = mySociety::Gaze::get_radius_containing_population($lat, $lon, 200000);
     $dist = int($dist*10+0.5)/10;
 
-    # XXX: Change to only show problems with extract(epoch from ms_current_timestamp()-lastupdate) < 8 weeks
-    # And somehow display/link to old problems somewhere else...
-    my $nearby = [];
-    #if (@$current_map < 9) {
-        my $limit = 20; # - @$current_map;
-        $nearby = Problems::nearby($dist, join(',', @ids), $limit, $mid_e, $mid_n);
-        foreach (@$nearby) {
-            my $px = Page::os_to_px($_->{easting}, $sx);
-            my $py = Page::os_to_px($_->{northing}, $sy, 1);
-            my $col = $_->{state} eq 'fixed' ? 'green' : 'red';
-            $pins .= Page::display_pin($q, $px, $py, $col); #, $count_prob++);
-        }
-    #} else {
-    #    @$current_map = @$current_map[0..8];
-    #}
+    my $limit = 20; # - @$current_map;
+    my $nearby = Problems::nearby($dist, join(',', @ids), $limit, $mid_e, $mid_n, $interval);
+    foreach (@$nearby) {
+        my $px = Page::os_to_px($_->{easting}, $sx);
+        my $py = Page::os_to_px($_->{northing}, $sy, 1);
+        my $col = $_->{state} eq 'fixed' ? 'green' : 'red';
+        $pins .= Page::display_pin($q, $px, $py, $col);
+    }
 
-    #my $fixed = Problems::fixed_nearby($dist, $mid_e, $mid_n);
-    #foreach (@$fixed) {
-    #    my $px = Page::os_to_px($_->{easting}, $sx);
-    #    my $py = Page::os_to_px($_->{northing}, $sy, 1);
-    #    $pins .= Page::display_pin($q, $px, $py, 'green'); # , $count_fixed++);
-    #}
-    #if (@$fixed > 9) {
-    #    @$fixed = @$fixed[0..8];
-    #}
-
-    return ($pins, $around_map, $nearby, $dist); # , $current_map, $current, '', $dist); # $fixed, $dist);
+    return ($pins, $around_map, $nearby, $dist);
 }
 
 sub compass ($$$) {
