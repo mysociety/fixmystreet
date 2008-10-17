@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.220 2008-10-17 18:55:16 matthew Exp $
+# $Id: index.cgi,v 1.221 2008-10-17 20:19:05 matthew Exp $
 
 use strict;
 use Standard;
@@ -564,7 +564,7 @@ left on the site, but <strong>not</strong> reported to the council.
 You can help us by finding a contact email address for local
 problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.";
         } else {
-	    $out .= "<p>We do not yet have details for the council that covers
+            $out .= "<p>We do not yet have details for the council that covers
 this location. If you submit a report here it will be left on the site, but
 not reported to the council &ndash; please still leave your report, so that
 we can show to the council the activity in their area.";
@@ -698,7 +698,7 @@ EOF
 sub display_location {
     my ($q, @errors) = @_;
 
-    my @vars = qw(pc x y);
+    my @vars = qw(pc x y all_pins no_pins);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 
@@ -721,8 +721,28 @@ sub display_location {
     return Page::geocode_choice($error, '/') if (ref($error) eq 'ARRAY');
     return front_page($q, $error) if ($error);
 
-    my ($pins, $on_map, $around_map, $dist) = Page::map_pins($q, $x, $y, $x, $y, '6 months');
-    my $out = Page::display_map($q, x => $x, y => $y, type => 1, pins => $pins );
+    # Deal with pin hiding/age
+    my ($hide_link, $hide_text, $all_link, $all_text, $interval);
+    if ($input{all_pins}) {
+        $all_link = NewURL($q, -retain=>1, no_pins=>undef, all_pins=>undef);
+        $all_text = 'Hide stale reports';
+    } else {
+        $all_link = NewURL($q, -retain=>1, no_pins=>undef, all_pins=>1);
+        $all_text = 'Include stale reports';
+        $interval = '6 months';
+    }
+    my ($pins, $on_map, $around_map, $dist) = Page::map_pins($q, $x, $y, $x, $y, $interval);
+    if ($input{no_pins}) {
+        $hide_link = NewURL($q, -retain=>1, no_pins=>undef);
+        $hide_text = 'Show pins';
+        $pins = '';
+    } else {
+        $hide_link = NewURL($q, -retain=>1, no_pins=>1);
+        $hide_text = 'Hide pins';
+    }
+    my $map_links = "<p style='float:right; margin-top:0;'><a id='hide_pins_link' href='$hide_link'>$hide_text</a> | <a id='all_pins_link' href='$all_link'>$all_text</a></p> <input type='hidden' id='all_pins' name='all_pins' value='$input_h{all_pins}'>";
+
+    my $out = Page::display_map($q, x => $x, y => $y, type => 1, pins => $pins, post => $map_links );
     $out .= $q->h1(_('Problems in this area'));
     my $email_me = _('Email me new local problems');
     my $rss_title = _('RSS feed of recent local problems');
@@ -769,24 +789,10 @@ to describe the location of the problem instead.</small>"), $skipurl));
         $list .= '</li>';
     }
     if (@$around_map) {
-        #my $list_start = @$on_map + 1;
-        #$out .= '<ul id="current_near" start="' . $list_start . '">' . $list . '</ul>';
         $out .= '<ul id="current_near">' . $list . '</ul>';
     } else {
         $out .= $q->p(_('No problems found.'));
     }
-    #$out .= $q->h2(sprintf(_('Recently fixed problems within %skm'), $dist));
-    #$list = '';
-    #foreach (@$fixed) {
-    #    $list .= '<li><a href="' . NewURL($q, -retain=>1, id=>$_->{id}, x=>undef, y=>undef) . '">';
-    #    $list .= $_->{title} . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
-    #    $list .= '</a></li>';
-    #}
-    #if (@$fixed) {
-    #    $out .= "<ul id='fixed_near'>$list</ul>\n";
-    #} else {
-    #    $out .= $q->p(_('No problems have been fixed yet'));
-    #}
     $out .= '</div>';
     $out .= Page::display_map_end(1);
 

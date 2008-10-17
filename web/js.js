@@ -118,6 +118,31 @@ YAHOO.util.Event.onContentReady('email_alert_box', function() {
     });
 });
 
+YAHOO.util.Event.addListener('hide_pins_link', 'click', function(e) {
+    YAHOO.util.Event.preventDefault(e);
+    if (this.innerHTML == 'Show pins') {
+        YAHOO.util.Dom.setStyle('pins', 'display', 'block');
+        this.innerHTML = 'Hide pins';
+    } else {
+        YAHOO.util.Dom.setStyle('pins', 'display', 'none');
+        this.innerHTML = 'Show pins';
+    }
+});
+YAHOO.util.Event.addListener('all_pins_link', 'click', function(e) {
+    YAHOO.util.Event.preventDefault(e);
+    YAHOO.util.Dom.setStyle('pins', 'display', 'block');
+    document.getElementById('hide_pins_link').innerHTML = 'Hide pins';
+    if (this.innerHTML == 'Include stale reports') {
+        this.innerHTML = 'Hide stale reports';
+        document.getElementById('all_pins').value = '1';
+        load_pins(x, y);
+    } else {
+        this.innerHTML = 'Include stale reports';
+        document.getElementById('all_pins').value = '';
+        load_pins(x, y);
+    }
+});
+
 /* File upload */
 /*
 function doSubmit(e) {
@@ -256,9 +281,14 @@ function update_tiles(dx, dy, force) {
 
     if (force) return;
 
+    load_pins(x, y);
+}
+
+function load_pins(x, y) {
     if (document.getElementById('formX')) {
         url = [ '/ajax?sx=', document.getElementById('formX').value, ';sy=',
-            document.getElementById('formY').value, ';x=', (x+2), ';y=', (y+2)
+            document.getElementById('formY').value, ';x=', (x+2), ';y=', (y+2),
+            ';all_pins=', document.getElementById('all_pins').value
         ].join('');
         YAHOO.util.Connect.asyncRequest('GET', url, {
             success: pins_loaded

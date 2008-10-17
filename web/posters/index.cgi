@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.9 2008-10-14 10:28:38 matthew Exp $
+# $Id: index.cgi,v 1.10 2008-10-17 20:19:05 matthew Exp $
 
 use strict;
 use Standard -db;
@@ -32,10 +32,10 @@ sub body {
     return $q->h1(_('Publicity Material')) .
         $q->div({style=>'float:left; width:50%'},
         '<p>Copy and paste the text below to add this badge to your site:</p>', $badge,
-	'<textarea onclick="this.select()" cols=37 rows=5>' . ent($badge) . '</textarea>',
-	'<p><small>(thanks to Lincolnshire Council for the image)</small></p>'
-	) .
-	$q->div({style=>'float:right; width:47%'},
+        '<textarea onclick="this.select()" cols=37 rows=5>' . ent($badge) . '</textarea>',
+        '<p><small>(thanks to Lincolnshire Council for the image)</small></p>'
+        ) .
+        $q->div({style=>'float:right; width:47%'},
         $q->p(_('Here are some posters and flyers you can use to publicise FixMyStreet:')) .
         '<img hspace="5" src="poster.png" alt="Example poster">' .
         $q->h2(_('Posters')) .
@@ -58,7 +58,7 @@ sub body {
             $q->li($q->a({href=>'fixmystreet-flyers-bw-outlined.pdf'}, _('4 x A6, black and white, outlined'))),
             $q->li($q->a({href=>'fixmystreet-flyers-bw-low-ink.pdf'}, _('4 x A6, black and white, low ink')))
         )
-	)
+        )
     ;
 }
 

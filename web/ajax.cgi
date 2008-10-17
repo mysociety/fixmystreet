@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: ajax.cgi,v 1.5 2008-10-17 18:55:16 matthew Exp $
+# $Id: ajax.cgi,v 1.6 2008-10-17 20:19:05 matthew Exp $
 
 use strict;
 use Standard;
@@ -15,7 +15,7 @@ use mySociety::Web qw(ent);
 sub main {
     my $q = shift;
 
-    my @vars = qw(x y sx sy);
+    my @vars = qw(x y sx sy all_pins);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 
@@ -31,7 +31,11 @@ sub main {
     $sx ||= 0; $sx += 0;
     $sy ||= 0; $sy += 0;
 
-    my ($pins, $on_map, $around_map, $dist) = Page::map_pins($q, $x, $y, $sx, $sy, '6 months');
+    my $interval;
+    unless ($input{all_pins}) {
+        $interval = '6 months';
+    }
+    my ($pins, $on_map, $around_map, $dist) = Page::map_pins($q, $x, $y, $sx, $sy, $interval);
 
     my $list = '';
     foreach (@$on_map) {
