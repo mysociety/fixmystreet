@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.47 2008-10-11 12:40:38 matthew Exp $
+# $Id: confirm.cgi,v 1.48 2008-10-17 18:31:05 matthew Exp $
 
 use strict;
 use Standard;
@@ -83,14 +83,16 @@ sub confirm_update {
 
     my $out = '';
     if ($creator_fixed > 0 && $q->{site} ne 'emptyhomes') {
-        $out = ask_questionnaire($q->param('token'));
-    } else {
+        my $answered_ever_reported = dbh()->selectrow_array(
+            'select id from questionnaire where problem_id in (select id from problem where email=?) and ever_reported is not null', {}, $email);
+        if (!$answered_ever_reported) {
+            $out = ask_questionnaire($q->param('token'));
+        }
+    }
+
+    if (!$out) {
         $out = $q->p(sprintf(_('You have successfully confirmed your update and you can now <a href="%s">view it on the site</a>.'), "/report/$problem_id#update_$id"));
-        #if ($fixed) {
         $out .= CrossSell::display_advert($q, $email, $name);
-        #} else {
-        #    $out .= advertise_updates($q, $problem_id, $email);
-        #}
     }
 
     # Subscribe updater to email updates if requested
@@ -150,24 +152,6 @@ to resolve the UK&rsquo;s empty homes crisis.');
     mySociety::Alert::confirm($alert_id);
 
     $out .= CrossSell::display_advert($q, $email);
-    return $out;
-}
-
-sub advertise_updates {
-    my ($q, $problem_id, $email) = @_;
-    my $salt = unpack('h*', random_bytes(8, 1));
-    my $secret = scalar(dbh()->selectrow_array('select secret from secret'));
-    my $signed_email = sha1_hex("$problem_id-$email-$salt-$secret");
-    my $signup = <<EOF;
-<input type="hidden" name="signed_email" value="$salt,$signed_email">
-<input type="hidden" name="email" value="$email">
-<input type="hidden" name="id" value="$problem_id">
-<input type="hidden" name="type" value="updates">
-EOF
-    $signup .= '<input type="submit" value="' . _('sign up') . '">';
-    my $out = '<form action="/alert" method="post">';
-    $out .= $q->p(sprintf(_('You can also <a href="%s">subscribe to the RSS feed</a> of updates by other local people on this problem, or %s if you wish to receive updates by email.'), "/rss/$problem_id", $signup));
-    $out .= '</form>';
     return $out;
 }
 

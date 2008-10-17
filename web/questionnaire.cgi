@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.33 2008-10-09 18:21:18 matthew Exp $
+# $Id: questionnaire.cgi,v 1.34 2008-10-17 18:31:05 matthew Exp $
 
 use strict;
 use Standard;
@@ -40,17 +40,19 @@ sub check_stuff {
     my $questionnaire = dbh()->selectrow_hashref(
         'select id, problem_id, whenanswered from questionnaire where id=?', {}, $id);
     my $problem_id = $questionnaire->{problem_id};
-    throw Error::Simple("You have already answered this questionnaire. If you have a question, please <a href=/contact>get in touch</a>, or <a href=/report/$problem_id>view your problem</a>.\n") if $questionnaire->{whenanswered};
-
-    my $prev_questionnaire = dbh()->selectrow_hashref(
-        'select id from questionnaire where problem_id=? and whenanswered is not null', {}, $problem_id);
+    throw Error::Simple("You have already answered this questionnaire. If you have a question, please <a href='/contact'>get in touch</a>, or <a href='/report/$problem_id'>view your problem</a>.\n") if $questionnaire->{whenanswered};
 
     my $problem = dbh()->selectrow_hashref(
         "select *, extract(epoch from confirmed) as time, extract(epoch from whensent-confirmed) as whensent
             from problem where id=? and state in ('confirmed','fixed')", {}, $problem_id);
     throw Error::Simple("I'm afraid we couldn't locate your problem in the database.\n") unless $problem;
 
-    return ($questionnaire, $prev_questionnaire, $problem);
+    my $num_questionnaire = dbh()->selectrow_array(
+        'select count(*) from questionnaire where problem_id=?', {}, $problem_id);
+    my $answered_ever_reported = dbh()->selectrow_array(
+        'select id from questionnaire where problem_id in (select id from problem where email=?) and ever_reported is not null', {}, $problem->{email});
+
+    return ($questionnaire, $problem, $num_questionnaire, $answered_ever_reported);
 }
 
 sub submit_questionnaire {
@@ -59,9 +61,9 @@ sub submit_questionnaire {
     my %input = map { $_ => scalar $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
  
-    my ($error, $questionnaire, $prev_questionnaire, $problem);
+    my ($error, $questionnaire, $num_questionnaire, $problem, $answered_ever_reported);
     try {
-        ($questionnaire, $prev_questionnaire, $problem) = check_stuff($q);
+        ($questionnaire, $problem, $num_questionnaire, $answered_ever_reported) = check_stuff($q);
     } catch Error::Simple with {
         my $e = shift;
         $error = $e;
@@ -70,7 +72,7 @@ sub submit_questionnaire {
 
     my @errors;
     push @errors, 'Please state whether or not the problem has been fixed' unless $input{been_fixed};
-    push @errors, 'Please say whether you\'ve ever reported a problem to your council before' unless $input{reported} || $prev_questionnaire;
+    push @errors, 'Please say whether you\'ve ever reported a problem to your council before' unless $input{reported} || $answered_ever_reported;
     push @errors, 'Please indicate whether you\'d like to receive another questionnaire'
         if ($input{been_fixed} eq 'No' || $input{been_fixed} eq 'Unknown') && !$input{another};
     push @errors, 'Please provide some explanation as to why you\'re reopening this report'
@@ -166,9 +168,9 @@ sub display_questionnaire {
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 
-    my ($error, $questionnaire, $prev_questionnaire, $problem);
+    my ($error, $questionnaire, $num_questionnaire, $problem, $answered_ever_reported);
     try {
-        ($questionnaire, $prev_questionnaire, $problem) = check_stuff($q);
+        ($questionnaire, $problem, $num_questionnaire, $answered_ever_reported) = check_stuff($q);
     } catch Error::Simple with {
         my $e = shift;
         $error = $e;
@@ -202,7 +204,7 @@ sub display_questionnaire {
 <input type="hidden" name="token" value="$input_h{token}">
 EOF
     if ($q->{site} eq 'emptyhomes') {
-        if (!$prev_questionnaire) {
+        if ($num_questionnaire==1) {
             $out .= <<EOF;
 <p>Getting empty homes back into use can be difficult. You shouldn't expect
 the property to be back into use yet. But a good council will have started work
@@ -246,7 +248,7 @@ EOF
 <label for="been_fixed_unknown">Don&rsquo;t know</label>
 </p>
 EOF
-    $out .= <<EOF unless $prev_questionnaire;
+    $out .= <<EOF unless $answered_ever_reported;
 <p>Have you ever reported a problem to a council before, or is this your first time?</p>
 <p>
 <input type="radio" name="reported" id="reported_yes" value="Yes"$reported{yes}>
