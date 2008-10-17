@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.123 2008-10-17 18:55:16 matthew Exp $
+# $Id: Page.pm,v 1.124 2008-10-17 20:23:07 matthew Exp $
 #
 
 package Page;
@@ -626,7 +626,11 @@ sub display_problem_updates {
             $out .= ', ' . _('marked as fixed') if ($row->{mark_fixed});
             $out .= ', ' . _('reopened') if ($row->{mark_open});
             $out .= '</em></p>';
-            $out .= '<p>' . ent($row->{text}) . '</p>';
+            my $text = $row->{text};
+            $text =~ s/\r//g;
+            foreach (split /\n{2,}/, $text) {
+                $out .= '<p>' . ent($_) . '</p>';
+            }
             if ($row->{has_photo}) {
                 $out .= '<p align="center"><img src="/photo?tn=1;c=' . $row->{id} . '"></p>';
             }
