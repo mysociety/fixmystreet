@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: import.cgi,v 1.1 2008-10-09 17:18:03 matthew Exp $
+# $Id: import.cgi,v 1.2 2008-10-20 12:35:20 matthew Exp $
 
 use strict;
 use Standard;
@@ -16,11 +16,19 @@ use mySociety::EmailUtil;
 
 sub main {
     my $q = shift;
-    print $q->header(-charset => 'utf-8', -content_type => 'text/plain');
 
-    my @vars = qw(service title detail name email phone easting northing lat lon);
+    my @vars = qw(service subject detail name email phone easting northing lat lon);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
+
+    unless ($ENV{REQUEST_METHOD} eq 'POST') {
+        print Page::header($q, title=>'External import');
+        docs();
+        print Page::footer($q);
+        return;
+    }
+
+    print $q->header(-charset => 'utf-8', -content_type => 'text/plain');
 
     my $fh = $q->upload('photo');
     if ($fh) {
@@ -29,7 +37,7 @@ sub main {
     }
 
     push @errors, 'You must supply a service' unless $input{service};
-    push @errors, 'Please enter a subject' unless $input{title} && $input{title} =~ /\S/;
+    push @errors, 'Please enter a subject' unless $input{subject} && $input{subject} =~ /\S/;
     push @errors, 'Please enter your name' unless $input{name} && $input{name} =~ /\S/;
 
     if (!$input{email} || $input{email} !~ /\S/) {
@@ -69,7 +77,7 @@ sub main {
          email, phone, photo, state, used_map, anonymous, category, areas)
         values
         (?, '', ?, ?, ?, ?, ?, ?, ?, ?, 'partial', 't', 'f', '', '')", 9,
-        $id, $input{easting}, $input{northing}, $input{title},
+        $id, $input{easting}, $input{northing}, $input{subject},
         $input{detail}, $input{name}, $input{email}, $input{phone}, $photo);
 
     # Send checking email
@@ -99,4 +107,43 @@ sub main {
 }
 
 Page::do_fastcgi(\&main);
+
+sub docs {
+    print <<EOF;
+<p>You may inject problem reports into FixMyStreet programatically using this
+simple interface. Upon receipt, an email will be sent to the address given,
+with a link the user must click in order to check the details of their report,
+add any other information they wish, and then submit to the council.
+
+<p>This interface returns a plain text response; either <samp>SUCCESS</samp> if
+the report has been successfully received, or if not, a list of errors, one per
+line each starting with <samp>ERROR:</samp>.
+
+<p>You may submit the following information:</p>
+<dl>
+<dt>service
+<dd>
+<em>Required</em>.
+Name of application/service using this interface.
+<dt>subject
+<dd>
+<em>Required</em>. Subject of problem report.
+<dt>detail
+<dd>Main body and details of problem report.
+<dt>name
+<dd>
+<em>Required</em>. Name of problem reporter.
+<dt>email
+<dd>
+<em>Required</em>. Email address of problem reporter.
+<dt>phone
+<dd>Telephone number of problem reporter.
+<dt>easting / northing
+<dt>lat / lon
+<dd>Location of problem report. You can either supply eastings/northings, or WGS84 latitude/longitude.
+<dt>photo
+<dd>Photo of problem (JPEG only).
+</dl>
+EOF
+}
 
