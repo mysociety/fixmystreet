@@ -6,9 +6,10 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: import.cgi,v 1.2 2008-10-20 12:35:20 matthew Exp $
+# $Id: import.cgi,v 1.3 2008-10-21 23:59:32 matthew Exp $
 
 use strict;
+use Error qw(:try);
 use Standard;
 use mySociety::AuthToken;
 use mySociety::Email;
@@ -47,7 +48,12 @@ sub main {
     }
 
     if ($input{lat}) {
-        ($input{easting}, $input{northing}) = mySociety::GeoUtil::wgs84_to_national_grid($input{lat}, $input{lon}, 'G');
+        try {
+            ($input{easting}, $input{northing}) = mySociety::GeoUtil::wgs84_to_national_grid($input{lat}, $input{lon}, 'G');
+        } catch Error::Simple with { 
+            my $e = shift;
+            push @errors, "We had a problem with the supplied co-ordinates - outside the UK?";
+        };
     }
     # TODO: Get location from photo if present in EXIF data?
 
