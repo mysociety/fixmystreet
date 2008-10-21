@@ -12,21 +12,29 @@
 
 @interface FixMyStreetAppDelegate : NSObject <UIApplicationDelegate> {
     UIWindow *window;
+//	UIViewController *viewController;
 	UINavigationController *navigationController;
 
 	// The report currently being entered.
 	UIImage* image;
-	NSString* location;
+	CLLocation* location;
 	NSString* subject;
 
+	NSString* name;
+	NSString* email;
+	NSString* phone;
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, retain) UINavigationController *navigationController;
+//@property (nonatomic, retain) IBOutlet UIViewController *viewController;
 
 @property (nonatomic, retain) UIImage* image;
-@property (nonatomic, retain) NSString* location;
+@property (nonatomic, retain) CLLocation* location;
 @property (nonatomic, retain) NSString* subject;
+@property (nonatomic, retain) NSString* name;
+@property (nonatomic, retain) NSString* email;
+@property (nonatomic, retain) NSString* phone;
 
 -(void)uploadReport;
 

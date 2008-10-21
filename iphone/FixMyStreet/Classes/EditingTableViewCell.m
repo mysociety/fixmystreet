@@ -1,14 +1,14 @@
 //
-//  subjectTableViewCell.m
+//  EditingTableViewCell.m
 //  FixMyStreet
 //
-//  Created by Matthew on 26/09/2008.
+//  Created by Matthew on 20/10/2008.
 //  Copyright 2008 UK Citizens Online Democracy. All rights reserved.
 //
 
-#import "SubjectTableViewCell.h"
+#import "EditingTableViewCell.h"
 
-@implementation SubjectTableViewCell
+@implementation EditingTableViewCell
 
 @synthesize textField;
 
@@ -17,12 +17,10 @@
         textField = [[UITextField alloc] initWithFrame:CGRectZero];
 		textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
 		textField.font = [UIFont systemFontOfSize:20];
-		textField.placeholder = @"Summary";
-		textField.autocapitalizationType = UITextAutocapitalizationTypeSentences;
 		textField.clearButtonMode = UITextFieldViewModeWhileEditing;
 		textField.returnKeyType = UIReturnKeyDone;
 		[self addSubview:textField];
-    }
+	}
     return self;
 }
 

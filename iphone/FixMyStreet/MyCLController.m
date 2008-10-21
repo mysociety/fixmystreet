@@ -75,63 +75,19 @@ static MyCLController *sharedCLDelegate = nil;
 	didUpdateToLocation:(CLLocation *)newLocation
 		   fromLocation:(CLLocation *)oldLocation
 {
-	NSMutableString *update = [[[NSMutableString alloc] init] autorelease];
-	
-	// Timestamp
-	NSDateFormatter *dateFormatter = [[[NSDateFormatter alloc] init]  autorelease];
-	[dateFormatter setDateStyle:NSDateFormatterMediumStyle];
-	[dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
-	[update appendFormat:@"%@\n\n", [dateFormatter stringFromDate:newLocation.timestamp]];
-	
-	// Horizontal coordinates
-	if (signbit(newLocation.horizontalAccuracy)) {
-		// Negative accuracy means an invalid or unavailable measurement
-		[update appendString:@"Latitude / Longitude unavailable"];
-	} else {
-		// CoreLocation returns positive for North & East, negative for South & West
-		[update appendFormat:@"Location: %.4f° %@, %.4f° %@", // This format takes 4 args: 2 pairs of the form coordinate + compass direction
-			fabs(newLocation.coordinate.latitude), signbit(newLocation.coordinate.latitude) ? (@"South") : (@"North"),
-			fabs(newLocation.coordinate.longitude),	signbit(newLocation.coordinate.longitude) ? (@"West") : (@"East")];
-		[update appendString:@"\n"];
-		[update appendFormat:@"(accuracy %.0f metres)", newLocation.horizontalAccuracy];
-	}
-	[update appendString:@"\n\n"];
 
-	// Altitude
-	if (signbit(newLocation.verticalAccuracy)) {
-		// Negative accuracy means an invalid or unavailable measurement
-		[update appendString:@"Altitude Unavailable"];
-	} else {
-		// Positive and negative in altitude denote above & below sea level, respectively
-		[update appendFormat:@"Altitude: %.2f metres %@", fabs(newLocation.altitude),	(signbit(newLocation.altitude)) ? @"below sea level" : @"above sea level"];
-		[update appendString:@"\n"];
-		[update appendFormat:@"(accuracy %.0f metres)", newLocation.verticalAccuracy];
-	}
-	[update appendString:@"\n\n"];
-	
-	// Calculate disatance moved and time elapsed, but only if we have an "old" location
-	//
-	// NOTE: Timestamps are based on when queries start, not when they return. CoreLocation will query your
-	// location based on several methods. Sometimes, queries can come back in a different order from which
-	// they were placed, which means the timestamp on the "old" location can sometimes be newer than on the
-	// "new" location. For the example, we will clamp the timeElapsed to zero to avoid showing negative times
-	// in the UI.
-	//
-	if (oldLocation != nil) {
-		CLLocationDistance distanceMoved = [newLocation getDistanceFrom:oldLocation];
-		NSTimeInterval timeElapsed = [newLocation.timestamp timeIntervalSinceDate:oldLocation.timestamp];
-		
-		[update appendFormat:@"Location changed %.2f metres ", distanceMoved];
-		if (signbit(timeElapsed)) {
-			[update appendString:@"since previous measurement"];
-		} else {
-			[update appendFormat:@"in %.1f seconds", timeElapsed];
-		}
-		[update appendString:@"\n\n"];
+	// Negative accuracy means an invalid or unavailable measurement
+	if (signbit(newLocation.horizontalAccuracy)) {
+		return;
 	}
 	
-	// Send the update to our delegate
-	[self.delegate newLocationUpdate:update];
+	// If location timestamp was ages ago, it's a cached one; ignore it
+	NSTimeInterval howRecent = [newLocation.timestamp timeIntervalSinceNow];
+	if (abs(howRecent) > 5.0) {
+		return;
+	}
+
+	[self.delegate newLocationUpdate:newLocation];
 }
 
 
@@ -182,7 +138,7 @@ static MyCLController *sharedCLDelegate = nil;
 	self.updating = NO;
 	
 	// Send the update to our delegate
-	[self.delegate newLocationUpdate:errorString];
+	// [self.delegate newLocationUpdate:errorString];
 }
 
 #pragma mark ---- singleton object methods ----

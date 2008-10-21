@@ -17,10 +17,12 @@
 		344E0E5D0E918B1000483FD6 /* Report.m in Sources */ = {isa = PBXBuildFile; fileRef = 344E0E5C0E918B1000483FD6 /* Report.m */; };
 		347710950E8BDA9B0051DFFD /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 347710940E8BDA9B0051DFFD /* Icon.png */; };
 		347712740E8D367F0051DFFD /* InputTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 347712730E8D367F0051DFFD /* InputTableViewController.m */; };
-		347713800E8D54820051DFFD /* SubjectTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3477137F0E8D54820051DFFD /* SubjectTableViewCell.m */; };
 		347A01810E93B6A600D716CB /* EditSubjectView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 347A01800E93B6A600D716CB /* EditSubjectView.xib */; };
 		347A021D0E93CDA200D716CB /* MyCLController.m in Sources */ = {isa = PBXBuildFile; fileRef = 347A021C0E93CDA200D716CB /* MyCLController.m */; };
 		347A02770E93D2A800D716CB /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 347A02760E93D2A800D716CB /* CoreLocation.framework */; };
+		3481BD210EACEE3300C78F66 /* EditingTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3481BD200EACEE3300C78F66 /* EditingTableViewCell.m */; };
+		3481BD3F0EACF66C00C78F66 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3481BD3E0EACF66C00C78F66 /* RootViewController.m */; };
+		3481BD510EACF81D00C78F66 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3481BD500EACF81D00C78F66 /* SettingsViewController.m */; };
 		3499E5A40E95311A006F2DA2 /* .cvsignore in Resources */ = {isa = PBXBuildFile; fileRef = 3499E5A30E95311A006F2DA2 /* .cvsignore */; };
 		349A01770E928824008E83C1 /* MainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 349A01760E928824008E83C1 /* MainViewController.xib */; };
 		349AFEAE0E925AAA008E83C1 /* EditSubjectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 349AFEAD0E925AAA008E83C1 /* EditSubjectViewController.m */; };
@@ -44,12 +46,16 @@
 		347710940E8BDA9B0051DFFD /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
 		347712720E8D367F0051DFFD /* InputTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputTableViewController.h; sourceTree = "<group>"; };
 		347712730E8D367F0051DFFD /* InputTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InputTableViewController.m; sourceTree = "<group>"; wrapsLines = 1; };
-		3477137E0E8D54820051DFFD /* SubjectTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SubjectTableViewCell.h; sourceTree = "<group>"; };
-		3477137F0E8D54820051DFFD /* SubjectTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SubjectTableViewCell.m; sourceTree = "<group>"; };
 		347A01800E93B6A600D716CB /* EditSubjectView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EditSubjectView.xib; sourceTree = "<group>"; };
 		347A021B0E93CDA200D716CB /* MyCLController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MyCLController.h; path = ../MyCLController.h; sourceTree = "<group>"; };
 		347A021C0E93CDA200D716CB /* MyCLController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MyCLController.m; path = ../MyCLController.m; sourceTree = "<group>"; };
 		347A02760E93D2A800D716CB /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		3481BD1F0EACEE3300C78F66 /* EditingTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditingTableViewCell.h; sourceTree = "<group>"; };
+		3481BD200EACEE3300C78F66 /* EditingTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditingTableViewCell.m; sourceTree = "<group>"; };
+		3481BD3E0EACF66C00C78F66 /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RootViewController.m; path = Classes/RootViewController.m; sourceTree = "<group>"; };
+		3481BD480EACF67100C78F66 /* RootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RootViewController.h; path = Classes/RootViewController.h; sourceTree = "<group>"; };
+		3481BD4F0EACF81D00C78F66 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
+		3481BD500EACF81D00C78F66 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; wrapsLines = 1; };
 		3499E5A30E95311A006F2DA2 /* .cvsignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .cvsignore; sourceTree = "<group>"; };
 		349A01760E928824008E83C1 /* MainViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainViewController.xib; sourceTree = "<group>"; };
 		349AFEAC0E925AAA008E83C1 /* EditSubjectViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditSubjectViewController.h; sourceTree = "<group>"; };
@@ -75,14 +81,16 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				347A021B0E93CDA200D716CB /* MyCLController.h */,
-				347A021C0E93CDA200D716CB /* MyCLController.m */,
 				347712720E8D367F0051DFFD /* InputTableViewController.h */,
 				347712730E8D367F0051DFFD /* InputTableViewController.m */,
+				3481BD4F0EACF81D00C78F66 /* SettingsViewController.h */,
+				3481BD500EACF81D00C78F66 /* SettingsViewController.m */,
+				347A021B0E93CDA200D716CB /* MyCLController.h */,
+				347A021C0E93CDA200D716CB /* MyCLController.m */,
 				1D3623240D0F684500981E51 /* FixMyStreetAppDelegate.h */,
 				1D3623250D0F684500981E51 /* FixMyStreetAppDelegate.m */,
-				3477137E0E8D54820051DFFD /* SubjectTableViewCell.h */,
-				3477137F0E8D54820051DFFD /* SubjectTableViewCell.m */,
+				3481BD1F0EACEE3300C78F66 /* EditingTableViewCell.h */,
+				3481BD200EACEE3300C78F66 /* EditingTableViewCell.m */,
 				349AFEAC0E925AAA008E83C1 /* EditSubjectViewController.h */,
 				349AFEAD0E925AAA008E83C1 /* EditSubjectViewController.m */,
 			);
@@ -147,6 +155,8 @@
 		342F98810E94E3DE006935E9 /* OldStuff */ = {
 			isa = PBXGroup;
 			children = (
+				3481BD480EACF67100C78F66 /* RootViewController.h */,
+				3481BD3E0EACF66C00C78F66 /* RootViewController.m */,
 				344E0E5C0E918B1000483FD6 /* Report.m */,
 				344E0D550E91440500483FD6 /* imageCell.m */,
 				344E0E5B0E918B1000483FD6 /* Report.h */,
@@ -230,11 +240,13 @@
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				1D3623260D0F684500981E51 /* FixMyStreetAppDelegate.m in Sources */,
 				347712740E8D367F0051DFFD /* InputTableViewController.m in Sources */,
-				347713800E8D54820051DFFD /* SubjectTableViewCell.m in Sources */,
 				344E0D560E91440500483FD6 /* imageCell.m in Sources */,
 				344E0E5D0E918B1000483FD6 /* Report.m in Sources */,
 				349AFEAE0E925AAA008E83C1 /* EditSubjectViewController.m in Sources */,
 				347A021D0E93CDA200D716CB /* MyCLController.m in Sources */,
+				3481BD210EACEE3300C78F66 /* EditingTableViewCell.m in Sources */,
+				3481BD3F0EACF66C00C78F66 /* RootViewController.m in Sources */,
+				3481BD510EACF81D00C78F66 /* SettingsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

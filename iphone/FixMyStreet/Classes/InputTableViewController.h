@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "imageCell.h"
 #import "MyCLController.h"
 
 @interface InputTableViewController : UIViewController <UINavigationControllerDelegate,UIImagePickerControllerDelegate,MyCLControllerDelegate> {
@@ -20,11 +19,12 @@
 	UITableViewCell* actionFetchLocationCell;
 	UITableViewCell* actionSummaryCell;
 	
-	UILabel* titleLabel;
-	UILabel* titleLabelLabel;
+	UILabel* subjectLabel;
+	UILabel* subjectContent;
 }
 
 -(void)enableSubmissionButton;
+-(void)uploadReport;
 
 -(IBAction)addPhoto:(id) sender;
 -(IBAction)gotoSettings:(id)sender;
@@ -34,7 +34,7 @@
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker;
 
 //MyCLControllerDelegate
--(void)newLocationUpdate:(NSString *)text;
+-(void)newLocationUpdate:(CLLocation *)location;
 -(void)newError:(NSString *)text;
 
 @end

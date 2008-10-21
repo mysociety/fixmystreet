@@ -7,11 +7,9 @@
 //
 
 #import "InputTableViewController.h"
-#import "subjectTableViewCell.h"
-#import "imageCell.h"
+#import "SettingsViewController.h"
 #import "FixMyStreetAppDelegate.h"
 #import "EditSubjectViewController.h"
-#import "Report.h"
 
 @implementation InputTableViewController
 
@@ -52,7 +50,7 @@
 	self.navigationItem.backBarButtonItem = backBarButtonItem;
 	[backBarButtonItem release];
 
-	UIBarButtonItem* rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Report" style:UIBarButtonSystemItemSave target:nil action:nil];
+	UIBarButtonItem* rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Report" style:UIBarButtonSystemItemSave target:self action:@selector(uploadReport) ];
 	rightBarButtonItem.enabled = NO;
 	self.navigationItem.rightBarButtonItem = rightBarButtonItem;
 	[rightBarButtonItem release];
@@ -61,7 +59,6 @@
 	[MyCLController sharedInstance].delegate = self;
 	[[MyCLController sharedInstance] startUpdatingLocation];
 }
-
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 3;
@@ -83,7 +80,7 @@
 -(void)enableSubmissionButton {
 	[actionsToDoView reloadData];
 	FixMyStreetAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
-	if (delegate.image && delegate.location && delegate.subject) {
+	if (delegate.image && delegate.location && delegate.subject && delegate.subject.length) {
 		self.navigationItem.rightBarButtonItem.enabled = YES;
 	} else {
 		self.navigationItem.rightBarButtonItem.enabled = NO;
@@ -96,7 +93,7 @@
 	UITableViewCell *cell;
 	FixMyStreetAppDelegate* delegate = [[UIApplication sharedApplication] delegate];
 	
-	// Possible editing of subject within main view (I think I prefer it as is, though need to make display clearer somehow)
+	// Possible editing of subject within main view (I think I prefer it as is)
 	// And possible display of selected image within cell somewhere/somehow (I like how Contacts does it, but haven't
 	// managed that so far
 
@@ -151,26 +148,26 @@
 		cell.text = @"Fetch location";
 		actionFetchLocationCell = cell;
 	} else if (indexPath.section == 1) {
-		if (delegate.subject) {
-			if (!titleLabelLabel) {
-				titleLabelLabel = [[UILabel alloc] initWithFrame:CGRectMake(10,0,70,40)];
-				titleLabelLabel.font = [UIFont boldSystemFontOfSize:17];
-				titleLabelLabel.text = @"Subject:";
-				[cell.contentView addSubview:titleLabelLabel];
+		if (delegate.subject && delegate.subject.length) {
+			if (!subjectLabel) {
+				subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(10,0,70,40)];
+				subjectLabel.font = [UIFont boldSystemFontOfSize:17];
+				subjectLabel.text = @"Subject:";
+				[cell.contentView addSubview:subjectLabel];
 			}
-			titleLabelLabel.hidden = NO;
-			if (!titleLabel) {
-				titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(80,0,190,40)];
-				titleLabel.font = [UIFont systemFontOfSize:17];
-				[cell.contentView addSubview:titleLabel];
+			subjectLabel.hidden = NO;
+			if (!subjectContent) {
+				subjectContent = [[UILabel alloc] initWithFrame:CGRectMake(80,0,190,40)];
+				subjectContent.font = [UIFont systemFontOfSize:17];
+				[cell.contentView addSubview:subjectContent];
 			}
 			cell.text = nil;
-			titleLabel.text = delegate.subject;
-			titleLabel.hidden = NO;
+			subjectContent.text = delegate.subject;
+			subjectContent.hidden = NO;
 			cell.accessoryType = UITableViewCellAccessoryCheckmark;
 		} else {
-			titleLabel.hidden = YES;
-			titleLabelLabel.hidden = YES;
+			subjectContent.hidden = YES;
+			subjectLabel.hidden = YES;
 			cell.text = @"Short summary of problem";
 			cell.textColor = [UIColor grayColor];
 			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -189,7 +186,9 @@
 	} else if (indexPath.section == 2) {
 		[[MyCLController sharedInstance].locationManager startUpdatingLocation];
 	} else if (indexPath.section == 1) {
-		UIViewController* editSubjectViewController = [[EditSubjectViewController alloc] initWithNibName:@"EditSubjectView"	bundle:nil];
+		FixMyStreetAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
+		EditSubjectViewController* editSubjectViewController = [[EditSubjectViewController alloc] initWithNibName:@"EditSubjectView"	bundle:nil];
+		[editSubjectViewController setAll:delegate.subject viewTitle:@"Edit summary" placeholder:@"Summary" keyboardType:UIKeyboardTypeDefault capitalisation:UITextAutocapitalizationTypeSentences];
 		[self.navigationController pushViewController:editSubjectViewController animated:YES];
 		[editSubjectViewController release];
 	}
@@ -246,8 +245,8 @@
 	[actionSummaryCell release];
 	[actionsToDoView release];
 	[settingsButton release];
-	[titleLabelLabel release];
-	[titleLabel release];
+	[subjectLabel release];
+	[subjectContent release];
     [super dealloc];
 }
 
@@ -271,13 +270,13 @@
 
 // MyCLControllerDelegate
 
--(void)newLocationUpdate:(NSString *)text {
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Hey" message:text delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+-(void)newLocationUpdate:(CLLocation *)location {
+	//UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Hey" message:text delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
 	//[alert show];
-	[alert release];
+	//[alert release];
 
 	FixMyStreetAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
-	delegate.location = text;
+	delegate.location = location;
 	
 	[self enableSubmissionButton];
 }
@@ -285,9 +284,30 @@
 -(void)newError:(NSString *)text {
 }
 
-// Settings
+// Buttons
 
 -(IBAction)gotoSettings:(id)sender {
+	UIBarButtonItem* backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonSystemItemCancel target:nil action:nil];
+	self.navigationItem.backBarButtonItem = backBarButtonItem;
+	[backBarButtonItem release];
+		
+	UIViewController* settingsViewController = [[SettingsViewController alloc] initWithStyle:UITableViewStyleGrouped];
+	//	[self.navigationController pushViewController:settingsViewController animated:YES];
+	[UIView beginAnimations:nil context:NULL];
+	[UIView setAnimationDuration: 1];
+	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:self.navigationController.view cache:YES];
+	[self.navigationController pushViewController:settingsViewController animated:NO];
+	[UIView commitAnimations];
+	[settingsViewController release];
+}
+
+-(void)uploadReport {
+	FixMyStreetAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
+	if (!delegate.name || !delegate.email) {
+		[self gotoSettings:nil];
+	} else {
+		[delegate uploadReport];
+	}
 }
 
 @end

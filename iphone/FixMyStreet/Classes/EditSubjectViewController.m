@@ -7,10 +7,12 @@
 //
 
 #import "EditSubjectViewController.h"
-#import "SubjectTableViewCell.h"
+#import "EditingTableViewCell.h"
 #import "FixMyStreetAppDelegate.h"
 
 @implementation EditSubjectViewController
+
+@synthesize cell;
 
 /*
 - (id)initWithStyle:(UITableViewStyle)style {
@@ -21,10 +23,22 @@
 }
 */
 
+-(void)setAll:(NSString*)a viewTitle:(NSString*)b placeholder:(NSString*)c keyboardType:(UIKeyboardType)d capitalisation:(UITextAutocapitalizationType)e {
+	cell = [[EditingTableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:@"EditingCell"];
+	cell.textField.delegate = self;
+	cell.textField.placeholder = c;
+	self.title = b;
+	if (a) cell.textField.text = a;
+	cell.textField.keyboardType = d;
+	cell.textField.autocapitalizationType = e;
+}
+
 // Implement viewDidLoad to do additional setup after loading the view.
 - (void)viewDidLoad {
     [super viewDidLoad];
-	self.title = @"Edit summary";
+	self.tableView.sectionHeaderHeight = 27.0;
+	self.tableView.sectionFooterHeight = 0.0;
+//	self.title = viewTitle;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -38,25 +52,17 @@
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return subjectCell;
+    return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:indexPath animated:NO];
-	[subjectCell.textField becomeFirstResponder];
+	[cell.textField becomeFirstResponder];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     //[super viewWillAppear:animated];
-	if (!subjectCell) {
-		subjectCell = [[SubjectTableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:@"SubjectCell"];
-		subjectCell.textField.delegate = self;
-	}
-	FixMyStreetAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
-	if (delegate.subject) {
-		subjectCell.textField.text = delegate.subject;
-	}
-	[subjectCell.textField becomeFirstResponder];
+	[cell.textField becomeFirstResponder];
 }
 
 /*
@@ -67,7 +73,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
 	// On 2.0 this produces same effect as clicking Done, but not in 2.1?
-	[subjectCell.textField resignFirstResponder];
+	[cell.textField resignFirstResponder];
 }
 
 /*
@@ -81,17 +87,39 @@
 */
 
 - (void)dealloc {
-	[subjectCell release];
+	[cell release];
     [super dealloc];
 }
 
 
--(void)updateSummary:(NSString*)summary {
+-(void)updateText:(NSString*)text {
 	FixMyStreetAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
-	if (summary.length) {
-		delegate.subject = summary;
-	} else {
-		delegate.subject = nil;
+	// This is yucky, but I can't think of a better way that wouldn't just waste time.
+	NSString* placeholder = cell.textField.placeholder;
+	if (placeholder == @"Summary") {
+		if (text.length) {
+			delegate.subject = text;
+		} else {
+			delegate.subject = nil;
+		}
+	} else if (placeholder == @"Your name") {
+		if (text.length) {
+			delegate.name = text;
+		} else {
+			delegate.name = nil;
+		}
+	} else if (placeholder == @"Your email") {
+		if (text.length) {
+			delegate.email = text;
+		} else {
+			delegate.email = nil;
+		}
+	} else if (placeholder == @"Your phone number") {
+		if (text.length) {
+			delegate.phone = text;
+		} else {
+			delegate.phone = nil;
+		}
 	}
 	[self.navigationController popViewControllerAnimated:YES];
 }
@@ -99,7 +127,7 @@
 -(BOOL)textFieldShouldReturn:(UITextField*)theTextField {
 	//if (theTextField == summaryTextField) {
 	[theTextField resignFirstResponder];
-	[self updateSummary:theTextField.text];
+	[self updateText:theTextField.text];
 	//}
 	return YES;
 }

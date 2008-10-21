@@ -8,12 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
-@class SubjectTableViewCell;
+@class EditingTableViewCell;
 
 @interface EditSubjectViewController : UITableViewController <UITextFieldDelegate> {
-	SubjectTableViewCell *subjectCell;
+	EditingTableViewCell *cell;
 }
 
--(void)updateSummary:(NSString*)summary;
+@property (nonatomic, retain) EditingTableViewCell *cell;
+
+-(void)setAll:(NSString*)a viewTitle:(NSString*)b placeholder:(NSString*)c keyboardType:(UIKeyboardType)d capitalisation:(UITextAutocapitalizationType)e;
+-(void)updateText:(NSString*)text;
 
 @end
