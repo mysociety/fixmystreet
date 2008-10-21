@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.52 2008-10-21 14:20:57 matthew Exp $
+# $Id: index.cgi,v 1.53 2008-10-21 14:24:08 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.52 2008-10-21 14:20:57 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.53 2008-10-21 14:24:08 matthew Exp $';
 
 use strict;
 
@@ -195,7 +195,7 @@ sub do_councils_list ($) {
                 $q->a({href=>build_url($q, $q->url('relative'=>1), 
                   {'area_id' => $_, 'page' => 'councilcontacts',})}, 
                   $councils->{$_}->{name}) . " " .
-                    ($bci_info->{$_} ?
+                    ($bci_info->{$_} && $q->{site} ne 'emptyhomes' ?
                         $bci_info->{$_}->{c} . ' addresses'
                     : '')
             } @ids));
