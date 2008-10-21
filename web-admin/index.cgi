@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.51 2008-09-19 10:24:56 matthew Exp $
+# $Id: index.cgi,v 1.52 2008-10-21 14:20:57 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.51 2008-09-19 10:24:56 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.52 2008-10-21 14:20:57 matthew Exp $';
 
 use strict;
 
@@ -222,6 +222,7 @@ sub do_council_contacts ($$) {
     if ($posted eq 'new') {
         my $email = trim($q->param('email'));
         my $category = trim($q->param('category'));
+        $category = 'Empty Property' if $q->{site} eq 'emptyhomes';
         # History is automatically stored by a trigger in the database
         my $update = dbh()->do("update contacts set
             email = ?,
@@ -319,8 +320,10 @@ sub do_council_contacts ($$) {
     # Display form for adding new category
     print $q->h3('Add new category');
     print $q->start_form(-method => 'POST', -action => $q->url('relative'=>1));
-    print $q->p($q->strong("Category: "),
-        $q->textfield(-name => "category", -size => 30));
+    if ($q->{site} ne 'emptyhomes') {
+        print $q->p($q->strong("Category: "),
+            $q->textfield(-name => "category", -size => 30));
+    }
     print $q->p($q->strong("Email: "),
         $q->textfield(-name => "email", -size => 30));
     print $q->p(
