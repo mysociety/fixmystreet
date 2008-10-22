@@ -1,0 +1,13 @@
+Subject: New empty properties reported to <?=$values['area_name']?> within <?=$values['ward_name']?> on reportemptyhomes.com
+
+The following empty properties have been reported to <?=$values['area_name']?>
+within <?=$values['ward_name']?>:
+
+<?=$values['data']?>
+
+Yours,  
+The Empty Homes Agency
+
+To stop receiving emails when there are new properties reported to
+<?=$values['area_name']?> within <?=$values['ward_name']?>,
+please follow this link: <?=$values['unsubscribe_url']?>

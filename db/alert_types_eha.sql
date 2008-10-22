@@ -7,7 +7,7 @@ insert into alert_type
 values ('new_updates', 'select * from problem where id=?', 'problem',
     'Updates on {{title}}', '/', 'Updates on {{title}}',
     'comment', 'comment.state=\'confirmed\'', 'created desc',
-    'Update by {{name}}', '/report/{{problem_id}}#comment_{{id}}', '{{text}}', 'alert-update');
+    'Update by {{name}}', '/report/{{problem_id}}#comment_{{id}}', '{{text}}', 'eha/alert-update');
 
 -- New problems anywhere on the site
 insert into alert_type
@@ -18,7 +18,7 @@ insert into alert_type
 values ('new_problems', '', '',
     'New reports on reportemptyhomes.com', '/', 'The latest empty properties reported by users',
     'problem', 'problem.state in (\'confirmed\', \'fixed\')', 'created desc',
-    '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem');
+    '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'eha/alert-problem');
 
 -- New fixed problems anywhere on the site
 insert into alert_type
@@ -29,7 +29,7 @@ insert into alert_type
 values ('new_fixed_problems', '', '',
     'Properties recently reported as put back to use on reportemptyhomes.com', '/', 'The latest properties reported back to use by users',
     'problem', 'problem.state in (\'fixed\')', 'lastupdate desc',
-    '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem');
+    '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'eha/alert-problem');
 
 -- New problems around a location
 insert into alert_type
@@ -40,7 +40,7 @@ insert into alert_type
 values ('local_problems', '', '',
     'New local reports on reportemptyhomes.com', '/', 'The latest local reports reported by users',
     'problem_find_nearby(?, ?, ?) as nearby,problem', 'nearby.problem_id = problem.id and problem.state in (\'confirmed\', \'fixed\')', 'created desc',
-    '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-nearby');
+    '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'eha/alert-problem-nearby');
 
 -- New problems sent to a particular council
 insert into alert_type
@@ -52,7 +52,7 @@ values ('council_problems', '', '',
     'New reports to {{COUNCIL}} on reportemptyhomes.com', '/reports', 'The latest reports for {{COUNCIL}} reported by users',
     'problem', 'problem.state in (\'confirmed\', \'fixed\') and (council like \'%\'||?||\'%\'
         or council is null) and areas like \'%,\'||?||\',%\'', 'created desc',
-    '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-council'
+    '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'eha/alert-problem-council'
 );
 
 -- New problems within a particular ward sent to a particular council
@@ -66,7 +66,7 @@ values ('ward_problems', '', '',
     'The latest reports for {{COUNCIL}} within {{WARD}} ward reported by users',
     'problem', 'problem.state in (\'confirmed\', \'fixed\') and (council like \'%\'||?||\'%\'
         or council is null) and areas like \'%,\'||?||\',%\'', 'created desc',
-    '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-ward'
+    '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'eha/alert-problem-ward'
 );
 
 -- New problems within a particular voting area (ward, constituency, whatever)
@@ -79,6 +79,6 @@ values ('area_problems', '', '',
     'New reports within {{NAME}}\'s boundary on reportemptyhomes.com', '/reports',
     'The latest reports within {{NAME}}\'s boundary reported by users', 'problem',
     'problem.state in (\'confirmed\', \'fixed\') and areas like \'%,\'||?||\',%\'', 'created desc',
-    '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-area'
+    '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'eha/alert-problem-area'
 );
 

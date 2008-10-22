@@ -1,0 +1,13 @@
+Subject: New empty properties in <?=$values['area_name']?> on reportemptyhomes.com
+
+The following empty properties have been added within
+<?=$values['area_name']?>:
+
+<?=$values['data']?>
+
+Yours,  
+The Empty Homes Agency
+
+To stop receiving emails when there are new properties in
+<?=$values['area_name']?>, please follow this link: 
+<?=$values['unsubscribe_url']?>

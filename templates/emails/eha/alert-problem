@@ -1,0 +1,11 @@
+Subject: New empty properties on reportemptyhomes.com
+
+The following empty properties have been added:
+
+<?=$values['data']?>
+
+Yours,  
+The Empty Homes Agency
+
+To stop receiving emails when there are new properties,
+please follow this link: <?=$values['unsubscribe_url']?>

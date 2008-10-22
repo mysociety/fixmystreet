@@ -1,0 +1,11 @@
+Subject: New nearby empty properties on reportemptyhomes.com
+
+The following nearby empty properties have been added:
+
+<?=$values['data']?>
+
+Yours,  
+The Empty Homes Agency
+
+To stop receiving emails when there are nearby properties,
+please follow this link: <?=$values['unsubscribe_url']?>
