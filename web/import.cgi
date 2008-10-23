@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: import.cgi,v 1.4 2008-10-23 11:30:03 matthew Exp $
+# $Id: import.cgi,v 1.5 2008-10-23 12:51:42 matthew Exp $
 
 use strict;
 use Error qw(:try);
@@ -134,7 +134,8 @@ add any other information they wish, and then submit to the council.
 the report has been successfully received, or if not, a list of errors, one per
 line each starting with <samp>ERROR:</samp>.
 
-<p>You may submit the following information:</p>
+<p>You may submit the following information by POST to this URL
+(i.e. <samp>http://www.fixmystreet.com/import</samp> ):</p>
 <dl>
 <dt>service
 <dd>
