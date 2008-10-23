@@ -36,7 +36,7 @@
 @property (nonatomic, retain) NSString* email;
 @property (nonatomic, retain) NSString* phone;
 
--(void)uploadReport;
+-(BOOL)uploadReport;
 
 @end
 

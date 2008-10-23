@@ -119,6 +119,8 @@
 	if (indexPath.section == 0) {
 		if (delegate.image) {
 			cell.accessoryType = UITableViewCellAccessoryCheckmark;
+		} else {
+			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		}
 		cell.text = @"Take photo";
 		actionTakePhotoCell = cell;
@@ -131,6 +133,8 @@
 			[activityView startAnimating];
 			cell.accessoryView = activityView;
 			[activityView release];
+		} else {
+			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		}
 		cell.text = @"Fetch location";
 		actionFetchLocationCell = cell;
@@ -302,7 +306,10 @@
 	if (!delegate.name || !delegate.email) {
 		[self gotoSettings:nil firstTime:YES];
 	} else {
-		[delegate uploadReport];
+		BOOL success = [delegate uploadReport];
+		if (success)
+			imageView.image = nil;
+		[actionsToDoView reloadData];
 	}
 }
 

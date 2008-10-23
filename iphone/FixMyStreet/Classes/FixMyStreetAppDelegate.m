@@ -95,7 +95,7 @@
 }
 
 // Report stuff
--(void)uploadReport {
+-(BOOL)uploadReport {
 	// Not yet working - do something spinny here
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 //	struct CGRect rect = [UIHardware fullScreenApplicationContentRect];
@@ -191,6 +191,10 @@
 	[v release];
 //	NSLog(@"Returned string is: %s", returnString);
 
+	// Assuming success, remove the stuff
+	subject = nil;
+	self.image = nil;
+	return YES;
 }
 
 @end
