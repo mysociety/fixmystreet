@@ -267,10 +267,12 @@
 
 // Buttons
 
--(IBAction)gotoSettings:(id)sender {
+-(IBAction)gotoSettings:(id)sender firstTime:(BOOL)firstTime {
 	backButton.title = @"Done";
 		
-	UIViewController* settingsViewController = [[SettingsViewController alloc] initWithStyle:UITableViewStyleGrouped];
+	SettingsViewController* settingsViewController = [[SettingsViewController alloc] initWithStyle:UITableViewStyleGrouped];
+	if (firstTime)
+		settingsViewController.firstTime = firstTime; 
 	//	[self.navigationController pushViewController:settingsViewController animated:YES];
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration: 1];
@@ -283,7 +285,7 @@
 -(void)uploadReport {
 	FixMyStreetAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
 	if (!delegate.name || !delegate.email) {
-		[self gotoSettings:nil];
+		[self gotoSettings:nil firstTime:NO];
 	} else {
 		[delegate uploadReport];
 	}

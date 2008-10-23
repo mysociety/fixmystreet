@@ -97,6 +97,19 @@
 // Report stuff
 -(void)uploadReport {
 	// Not yet working - do something spinny here
+	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+//	struct CGRect rect = [UIHardware fullScreenApplicationContentRect];
+//	rect.origin.x = rect.origin.y = 0.0f;
+//	UIWindow *window = [[UIWindow alloc] initWithContentRect: rect];
+//	[window orderFront: self];
+//	[window makeKey: self];
+//	[window setContentView: imgView];
+//	
+//	id HUD = [[UIProgressHUD alloc] initWithWindow:window];
+//	[HUD setText:@"Downloading now..."];
+//	[HUD show:YES];
+
+	
 	// UIActivityIndicatorView *spinny = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
 	// [spinny startAnimating];
 	// [spinny release];
@@ -168,7 +181,10 @@
 	
 	NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
 	NSString *returnString = [[NSString alloc] initWithData:returnData encoding:NSASCIIStringEncoding];
-    
+
+	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+//	[HUD show:NO];
+
 	// For now, just pop up alert box with return data
 	UIAlertView *v = [[UIAlertView alloc] initWithTitle:@"Return" message:returnString delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
 	[v show];

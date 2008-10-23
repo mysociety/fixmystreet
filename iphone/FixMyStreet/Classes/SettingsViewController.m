@@ -12,6 +12,8 @@
 
 @implementation SettingsViewController
 
+@synthesize firstTime;
+
 /*
 - (id)initWithStyle:(UITableViewStyle)style {
     // Override initWithStyle: if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
@@ -36,7 +38,9 @@
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 3;
+	if (self.firstTime)
+		return 3;
+    return 4;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
@@ -47,9 +51,31 @@
     return 1;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+	if (indexPath.section == 3) {
+		return 54.0;
+	}
+	return 44.0;
+}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+
+	if (indexPath.section == 3) {
+		static NSString *CellIdentifier = @"InfoCell";
+		UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+		if (cell == nil) {
+			cell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:CellIdentifier] autorelease];
+			UITextView *blurb = [[UITextView alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
+			blurb.font = [UIFont italicSystemFontOfSize:14];
+			blurb.textAlignment = UITextAlignmentCenter;
+			blurb.editable = NO;
+			blurb.text = @"Please fill in your details, and\nwe'll remember them for next time";
+			[cell.contentView addSubview:blurb];
+			[blurb release];
+		}
+		return cell;
+	}
+
     static NSString *CellIdentifier = @"Cell";
 	FixMyStreetAppDelegate* delegate = [[UIApplication sharedApplication] delegate];
 
@@ -130,8 +156,12 @@
 
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	FixMyStreetAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
+	if (indexPath.section == 3) {
+		return;
+	}
+
+	FixMyStreetAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
 	EditSubjectViewController* editSubjectViewController = [[EditSubjectViewController alloc] initWithStyle:UITableViewStyleGrouped];
 	if (indexPath.section == 0) {
 		[editSubjectViewController setAll:delegate.name viewTitle:@"Edit name" placeholder:@"Your name" keyboardType:UIKeyboardTypeDefault capitalisation:UITextAutocapitalizationTypeWords];

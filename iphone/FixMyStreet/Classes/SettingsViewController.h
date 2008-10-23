@@ -15,6 +15,10 @@
 	UILabel *emailCurrent;
 	UILabel *phoneLabel;
 	UILabel *phoneCurrent;
+	
+	BOOL firstTime;
 }
+
+@property (nonatomic, assign) BOOL firstTime;
 
 @end
