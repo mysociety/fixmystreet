@@ -13,6 +13,7 @@
 	IBOutlet UIImageView* imageView;
 	IBOutlet UITableView* actionsToDoView;
 	IBOutlet UIButton* settingsButton;
+	UIBarButtonItem* backButton;
 
 	// Not sure what I made these for
 	UITableViewCell* actionTakePhotoCell;

@@ -37,8 +37,7 @@
 */
 
 - (void)viewWillAppear:(BOOL)animated {
-    //[super viewWillAppear:animated];
-    [self enableSubmissionButton];
+	[self enableSubmissionButton];
 }
 
 // Implement viewDidLoad to do additional setup after loading the view.
@@ -46,9 +45,8 @@
     [super viewDidLoad];
 	actionsToDoView.sectionFooterHeight = 0;
 
-	UIBarButtonItem* backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonSystemItemCancel target:nil action:nil];
-	self.navigationItem.backBarButtonItem = backBarButtonItem;
-	[backBarButtonItem release];
+	backButton = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonSystemItemCancel target:nil action:nil];
+	self.navigationItem.backBarButtonItem = backButton;
 
 	UIBarButtonItem* rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Report" style:UIBarButtonSystemItemSave target:self action:@selector(uploadReport) ];
 	rightBarButtonItem.enabled = NO;
@@ -213,16 +211,10 @@
 	[self presentModalViewController:picker animated:YES];
 }
 
-/*
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-}
-*/
-/*
 - (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
+	backButton.title = @"Cancel";
 }
-*/
+
 /*
 - (void)viewWillDisappear:(BOOL)animated {
 }
@@ -245,6 +237,7 @@
 	[actionSummaryCell release];
 	[actionsToDoView release];
 	[settingsButton release];
+	[backButton release];
 	[subjectLabel release];
 	[subjectContent release];
     [super dealloc];
@@ -287,9 +280,7 @@
 // Buttons
 
 -(IBAction)gotoSettings:(id)sender {
-	UIBarButtonItem* backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonSystemItemCancel target:nil action:nil];
-	self.navigationItem.backBarButtonItem = backBarButtonItem;
-	[backBarButtonItem release];
+	backButton.title = @"Done";
 		
 	UIViewController* settingsViewController = [[SettingsViewController alloc] initWithStyle:UITableViewStyleGrouped];
 	//	[self.navigationController pushViewController:settingsViewController animated:YES];
