@@ -41,7 +41,6 @@
 // Implement viewDidLoad to do additional setup after loading the view.
 - (void)viewDidLoad {
     [super viewDidLoad];
-//	actionsToDoView.sectionFooterHeight = 0;
 
 	backButton = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonSystemItemCancel target:nil action:nil];
 	self.navigationItem.backBarButtonItem = backButton;
@@ -281,11 +280,12 @@
 
 // Buttons
 
+// I realise this flips the navbar too, but can't seem to do it nicely with a container parent, and not really that important!
 -(IBAction)gotoAbout:(id)sender {
 	backButton.title = @"Back";
 	AboutViewController* aboutViewController = [[AboutViewController alloc] initWithNibName:@"AboutView" bundle:nil];
 	[UIView beginAnimations:nil context:NULL];
-	[UIView setAnimationDuration: 1];
+	[UIView setAnimationDuration: 0.75];
 	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:self.navigationController.view cache:YES];
 	[self.navigationController pushViewController:aboutViewController animated:NO];
 	[UIView commitAnimations];
@@ -309,7 +309,7 @@
 		BOOL success = [delegate uploadReport];
 		if (success)
 			imageView.image = nil;
-		[actionsToDoView reloadData];
+		[self enableSubmissionButton];
 	}
 }
 
