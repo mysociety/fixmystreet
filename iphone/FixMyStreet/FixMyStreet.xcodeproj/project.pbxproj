@@ -26,6 +26,9 @@
 		3499E5A40E95311A006F2DA2 /* .cvsignore in Resources */ = {isa = PBXBuildFile; fileRef = 3499E5A30E95311A006F2DA2 /* .cvsignore */; };
 		349A01770E928824008E83C1 /* MainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 349A01760E928824008E83C1 /* MainViewController.xib */; };
 		349AFEAE0E925AAA008E83C1 /* EditSubjectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 349AFEAD0E925AAA008E83C1 /* EditSubjectViewController.m */; };
+		34C17A540EB0C69800768D1C /* mysociety.png in Resources */ = {isa = PBXBuildFile; fileRef = 34C17A530EB0C69700768D1C /* mysociety.png */; };
+		34C17A5C0EB0C77E00768D1C /* AboutView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34C17A5B0EB0C77E00768D1C /* AboutView.xib */; };
+		34C17A8F0EB0CCD300768D1C /* AboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C17A8E0EB0CCD300768D1C /* AboutViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -60,6 +63,10 @@
 		349A01760E928824008E83C1 /* MainViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainViewController.xib; sourceTree = "<group>"; };
 		349AFEAC0E925AAA008E83C1 /* EditSubjectViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditSubjectViewController.h; sourceTree = "<group>"; };
 		349AFEAD0E925AAA008E83C1 /* EditSubjectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditSubjectViewController.m; sourceTree = "<group>"; };
+		34C17A530EB0C69700768D1C /* mysociety.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = mysociety.png; path = Classes/mysociety.png; sourceTree = "<group>"; };
+		34C17A5B0EB0C77E00768D1C /* AboutView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AboutView.xib; sourceTree = "<group>"; };
+		34C17A8D0EB0CCD300768D1C /* AboutViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutViewController.h; sourceTree = "<group>"; };
+		34C17A8E0EB0CCD300768D1C /* AboutViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutViewController.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -81,6 +88,8 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				34C17A8D0EB0CCD300768D1C /* AboutViewController.h */,
+				34C17A8E0EB0CCD300768D1C /* AboutViewController.m */,
 				347712720E8D367F0051DFFD /* InputTableViewController.h */,
 				347712730E8D367F0051DFFD /* InputTableViewController.m */,
 				3481BD4F0EACF81D00C78F66 /* SettingsViewController.h */,
@@ -132,6 +141,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				34C17A5B0EB0C77E00768D1C /* AboutView.xib */,
+				34C17A530EB0C69700768D1C /* mysociety.png */,
 				347710940E8BDA9B0051DFFD /* Icon.png */,
 				347A01800E93B6A600D716CB /* EditSubjectView.xib */,
 				28AD733E0D9D9553002E5188 /* MainWindow.xib */,
@@ -227,6 +238,8 @@
 				349A01770E928824008E83C1 /* MainViewController.xib in Resources */,
 				347A01810E93B6A600D716CB /* EditSubjectView.xib in Resources */,
 				3499E5A40E95311A006F2DA2 /* .cvsignore in Resources */,
+				34C17A540EB0C69800768D1C /* mysociety.png in Resources */,
+				34C17A5C0EB0C77E00768D1C /* AboutView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -247,6 +260,7 @@
 				3481BD210EACEE3300C78F66 /* EditingTableViewCell.m in Sources */,
 				3481BD3F0EACF66C00C78F66 /* RootViewController.m in Sources */,
 				3481BD510EACF81D00C78F66 /* SettingsViewController.m in Sources */,
+				34C17A8F0EB0CCD300768D1C /* AboutViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -27,7 +27,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 	self.title = @"Edit settings";
-	self.tableView.sectionHeaderHeight = 27.0;
+	self.tableView.sectionHeaderHeight = 20.0;
 	self.tableView.sectionFooterHeight = 0.0;
 	self.tableView.scrollEnabled = NO;
 	
@@ -39,8 +39,8 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 	if (self.firstTime)
-		return 3;
-    return 4;
+		return 4;
+    return 3;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {

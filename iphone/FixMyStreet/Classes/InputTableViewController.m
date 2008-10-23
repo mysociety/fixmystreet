@@ -10,6 +10,7 @@
 #import "SettingsViewController.h"
 #import "FixMyStreetAppDelegate.h"
 #import "EditSubjectViewController.h"
+#import "AboutViewController.h"
 
 @implementation InputTableViewController
 
@@ -40,7 +41,7 @@
 // Implement viewDidLoad to do additional setup after loading the view.
 - (void)viewDidLoad {
     [super viewDidLoad];
-	actionsToDoView.sectionFooterHeight = 0;
+//	actionsToDoView.sectionFooterHeight = 0;
 
 	backButton = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonSystemItemCancel target:nil action:nil];
 	self.navigationItem.backBarButtonItem = backButton;
@@ -56,7 +57,7 @@
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 3;
+    return 4;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -159,6 +160,13 @@
 			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		}
 		actionSummaryCell = cell;
+	} else if (indexPath.section == 3) {
+		if (delegate.name && delegate.name.length && delegate.email && delegate.email.length) {
+			cell.accessoryType = UITableViewCellAccessoryCheckmark;
+		} else {
+			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+		}
+		cell.text = @"Your details";
 	} else {
 		cell.text = @"Eh?";
 	}
@@ -173,10 +181,12 @@
 		[[MyCLController sharedInstance].locationManager startUpdatingLocation];
 	} else if (indexPath.section == 1) {
 		FixMyStreetAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
-		EditSubjectViewController* editSubjectViewController = [[EditSubjectViewController alloc] initWithNibName:@"EditSubjectView"	bundle:nil];
+		EditSubjectViewController* editSubjectViewController = [[EditSubjectViewController alloc] initWithNibName:@"EditSubjectView" bundle:nil];
 		[editSubjectViewController setAll:delegate.subject viewTitle:@"Edit summary" placeholder:@"Summary" keyboardType:UIKeyboardTypeDefault capitalisation:UITextAutocapitalizationTypeSentences];
 		[self.navigationController pushViewController:editSubjectViewController animated:YES];
 		[editSubjectViewController release];
+	} else if (indexPath.section == 3) {
+		[self gotoSettings:nil firstTime:NO];
 	}
 }
 
@@ -267,25 +277,30 @@
 
 // Buttons
 
--(IBAction)gotoSettings:(id)sender firstTime:(BOOL)firstTime {
-	backButton.title = @"Done";
-		
-	SettingsViewController* settingsViewController = [[SettingsViewController alloc] initWithStyle:UITableViewStyleGrouped];
-	if (firstTime)
-		settingsViewController.firstTime = firstTime; 
-	//	[self.navigationController pushViewController:settingsViewController animated:YES];
+-(IBAction)gotoAbout:(id)sender {
+	backButton.title = @"Back";
+	AboutViewController* aboutViewController = [[AboutViewController alloc] initWithNibName:@"AboutView" bundle:nil];
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration: 1];
 	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:self.navigationController.view cache:YES];
-	[self.navigationController pushViewController:settingsViewController animated:NO];
+	[self.navigationController pushViewController:aboutViewController animated:NO];
 	[UIView commitAnimations];
+	[aboutViewController release];
+}
+
+-(IBAction)gotoSettings:(id)sender firstTime:(BOOL)firstTime {
+	backButton.title = @"Done";
+	SettingsViewController* settingsViewController = [[SettingsViewController alloc] initWithStyle:UITableViewStyleGrouped];
+	if (firstTime)
+		settingsViewController.firstTime = firstTime; 
+	[self.navigationController pushViewController:settingsViewController animated:YES];
 	[settingsViewController release];
 }
 
 -(void)uploadReport {
 	FixMyStreetAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
 	if (!delegate.name || !delegate.email) {
-		[self gotoSettings:nil firstTime:NO];
+		[self gotoSettings:nil firstTime:YES];
 	} else {
 		[delegate uploadReport];
 	}

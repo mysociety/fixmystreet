@@ -29,6 +29,7 @@
 
 -(IBAction)addPhoto:(id) sender;
 -(IBAction)gotoSettings:(id)sender firstTime:(BOOL)firstTime;
+-(IBAction)gotoAbout:(id)sender;
 
 // UIImagePickerControllerDelegate
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingImage:(UIImage *)image editingInfo:(NSDictionary *)editingInfo;
