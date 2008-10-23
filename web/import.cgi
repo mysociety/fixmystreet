@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: import.cgi,v 1.3 2008-10-21 23:59:32 matthew Exp $
+# $Id: import.cgi,v 1.4 2008-10-23 11:30:03 matthew Exp $
 
 use strict;
 use Error qw(:try);
@@ -18,7 +18,7 @@ use mySociety::EmailUtil;
 sub main {
     my $q = shift;
 
-    my @vars = qw(service subject detail name email phone easting northing lat lon);
+    my @vars = qw(service subject detail name email phone easting northing lat lon id);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
 
@@ -76,6 +76,15 @@ sub main {
         return;
     }
 
+    # Store for possible future use
+    if ($input{id}) {
+        my $already = dbh()->selectrow_array('select id from partial_user where service=? and nsid=?', {}, $input{service}, $input{id});
+        unless ($already) {
+            dbh()->do('insert into partial_user (service, nsid, name, email, phone) values (?, ?, ?, ?, ?)',
+                {}, $input{service}, $input{id}, $input{name}, $input{email}, $input{phone});
+        }
+    }
+
     # Store what we have so far in the database
     my $id = dbh()->selectrow_array("select nextval('problem_id_seq')");
     Utils::workaround_pg_bytea("insert into problem
@@ -131,6 +140,9 @@ line each starting with <samp>ERROR:</samp>.
 <dd>
 <em>Required</em>.
 Name of application/service using this interface.
+<dt>id
+<dd>Unique ID of a user/device, for possible future use.
+<br><small>(e.g. used by Flickr import to know which accounts to look at)</small>
 <dt>subject
 <dd>
 <em>Required</em>. Subject of problem report.
