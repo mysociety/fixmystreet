@@ -25,23 +25,73 @@
 	[aNavigationController release];
 	[inputTableViewController release];
 //	[rootViewController release];
-	
+
+	// NSMutableArray *tempMutableCopy = [[[NSUserDefaults standardUserDefaults] objectForKey:kRestoreLocationKey] mutableCopy];
+	name = [[NSUserDefaults standardUserDefaults] stringForKey:@"Name"];
+	email = [[NSUserDefaults standardUserDefaults] stringForKey:@"Email"];
+	phone = [[NSUserDefaults standardUserDefaults] stringForKey:@"Phone"];
+	subject = [[NSUserDefaults standardUserDefaults] stringForKey:@"Subject"];
+
+//	NSData *imageData = [[[NSUserDefaults standardUserDefaults] objectForKey:@"Image"] mutableCopy];
+//	if (imageData != nil)
+//		image = (UIImage *)[NSKeyedUnarchiver unarchiveObjectWithData:imageData];
+//	[imageData release];
+
+//	NSData *locationData = [[NSUserDefaults standardUserDefaults] objectForKey:@"Location"];
+//	if (locationData != nil)
+//		location = (CLLocation *)[NSUnarchiver unarchiveObjectWithData:locationData];
+//	[locationData release];
+
 	[window addSubview:[navigationController view]];
 	[window makeKeyAndVisible];
-	
-	// Need to fetch defaults here, plus anything saved when we quit last time
+
+//	NSArray *keys = [NSArray arrayWithObjects:@"Name", @"Email", @"Phone", nil];
+//	NSArray *values = [NSArray arrayWithObjects:name, email, phone, nil];
+//	NSDictionary *dictionary = [NSDictionary dictionaryWithObjects:values forKeys:keys];
+//	[[NSUserDefaults standardUserDefaults] registerDefaults:dictionary];
+//	[[NSUserDefaults standardUserDefaults] synchronize];
+//	[keys release];
+//	[values release];
+//	[dictionary release];
 }
 
 - (void)dealloc {
     [window release];
 	[navigationController release];
 //	[viewController release];
+	[image release];
+	[subject release];
+	[location release];
+	[name release];
+	[email release];
+	[phone release];
     [super dealloc];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
 	// Save state in case they're just in the middle of a phone call...
+	[[NSUserDefaults standardUserDefaults] setObject:name forKey:@"Name"];
+	[[NSUserDefaults standardUserDefaults] setObject:email forKey:@"Email"];
+	[[NSUserDefaults standardUserDefaults] setObject:phone forKey:@"Phone"];
+	[[NSUserDefaults standardUserDefaults] setObject:subject forKey:@"Subject"];
+
+// XXX image crashes (restarting app. still has image showing?! and then quitting crashes, either way)
+// Location just doesn't seem to work
 	
+//	if (image) {
+//		NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+//		NSString *imageFile = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"saved.image"];
+//		[NSKeyedArchiver archiveRootObject:image toFile:imageFile];
+//	}
+//	NSData *imageData = [NSKeyedArchiver archivedDataWithRootObject:image];
+//	[[NSUserDefaults standardUserDefaults] setObject:imageData forKey:@"Image"];
+//	[imageData release];
+
+//	NSData *locationData = [NSKeyedArchiver archivedDataWithRootObject:location];
+//	[[NSUserDefaults standardUserDefaults] setObject:locationData forKey:@"Location"];
+//	[locationData release];
+	
+	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 // Report stuff

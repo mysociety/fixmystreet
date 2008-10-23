@@ -20,9 +20,6 @@
 - (id)initWithNibName:(NSString *)nibName bundle:(NSBundle *)nibBundle {
     if (self = [super initWithNibName:nibName bundle:nibBundle]) {
 		self.title = @"FixMyStreet";
-		// These seem to work better in viewDidLoad
-		// actionsToDoView.sectionHeaderHeight = 0.0;
-		// self.navigationItem.backBarButtonItem.title = @"Foo";
 	}
 	return self;
 }
@@ -62,18 +59,9 @@
     return 3;
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-	// Possible section==1 heading to make summary clearer once entered?
-	return nil;
-}
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	return 1;
 }
-
-//- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-//	return 44.0f;
-//}
 
 -(void)enableSubmissionButton {
 	[actionsToDoView reloadData];
