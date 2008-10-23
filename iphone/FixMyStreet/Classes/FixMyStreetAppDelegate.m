@@ -95,24 +95,19 @@
 }
 
 // Report stuff
--(BOOL)uploadReport {
-	// Not yet working - do something spinny here
+-(void)uploadReport {
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-//	struct CGRect rect = [UIHardware fullScreenApplicationContentRect];
-//	rect.origin.x = rect.origin.y = 0.0f;
-//	UIWindow *window = [[UIWindow alloc] initWithContentRect: rect];
-//	[window orderFront: self];
-//	[window makeKey: self];
-//	[window setContentView: imgView];
-//	
-//	id HUD = [[UIProgressHUD alloc] initWithWindow:window];
-//	[HUD setText:@"Downloading now..."];
-//	[HUD show:YES];
 
-	
-	// UIActivityIndicatorView *spinny = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-	// [spinny startAnimating];
-	// [spinny release];
+	uploading = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
+	UIColor *bg = [[UIColor alloc] initWithRed:0 green:0 blue:0 alpha:0.5];
+	uploading.backgroundColor = bg;
+	[bg release];
+	UIActivityIndicatorView *spinny = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+	spinny.center = CGPointMake(160, 160);
+	[uploading addSubview:spinny];
+	[spinny startAnimating];
+	[self.navigationController.view addSubview:uploading];
+	[spinny release];
 	
 	// Get the phone's unique ID
 	UIDevice *dev = [UIDevice currentDevice];
@@ -179,22 +174,40 @@
 	
 	[request setHTTPBody: postBody];
 	
-	NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+	returnData = [[NSMutableData alloc] init];
+	[NSURLConnection connectionWithRequest:request delegate:self];
+//	NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
+	[returnData appendData:data];
+}
+
+-(void)connectionDidFinishLoading:(NSURLConnection *)connection {
+	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+	[uploading removeFromSuperview];
+
 	NSString *returnString = [[NSString alloc] initWithData:returnData encoding:NSASCIIStringEncoding];
 
-	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-//	[HUD show:NO];
-
-	// For now, just pop up alert box with return data
-	UIAlertView *v = [[UIAlertView alloc] initWithTitle:@"Return" message:returnString delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
-	[v show];
-	[v release];
-//	NSLog(@"Returned string is: %s", returnString);
-
-	// Assuming success, remove the stuff
-	subject = nil;
-	self.image = nil;
-	return YES;
+	if ([returnString isEqualToString:@"SUCCESS"]) {
+		subject = nil;
+		self.image = nil;
+		[(InputTableViewController*)self.navigationController.visibleViewController reportUploaded:YES];
+		UIAlertView *v = [[UIAlertView alloc] initWithTitle:@"Your report has been received" message:@"Check your email for the next step" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+		[v show];
+		[v release];
+	} else {
+		// Pop up alert box with return error(s)
+		NSArray *errors = [returnString componentsSeparatedByString:@"ERROR:"];
+		NSString *errorString = [[NSString alloc] init];
+		for (int i=1; i<[errors count]; i++) {
+			NSString *error = [errors objectAtIndex:i];
+			errorString = [errorString stringByAppendingFormat:@"\xE2\x80\xA2 %@", error];
+		}
+		UIAlertView *v = [[UIAlertView alloc] initWithTitle:@"Upload failed" message:errorString delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+		[v show];
+		[v release];
+	}
 }
 
 @end

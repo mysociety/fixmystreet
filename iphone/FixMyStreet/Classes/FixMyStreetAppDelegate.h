@@ -23,6 +23,9 @@
 	NSString* name;
 	NSString* email;
 	NSString* phone;
+	
+	UIView *uploading;
+	NSMutableData* returnData;
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
@@ -36,7 +39,7 @@
 @property (nonatomic, retain) NSString* email;
 @property (nonatomic, retain) NSString* phone;
 
--(BOOL)uploadReport;
+-(void)uploadReport;
 
 @end
 

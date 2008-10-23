@@ -306,11 +306,14 @@
 	if (!delegate.name || !delegate.email) {
 		[self gotoSettings:nil firstTime:YES];
 	} else {
-		BOOL success = [delegate uploadReport];
-		if (success)
-			imageView.image = nil;
-		[self enableSubmissionButton];
+		[delegate uploadReport];
 	}
+}
+
+-(void)reportUploaded:(BOOL)success {
+	if (success)
+		imageView.image = nil;
+	[self enableSubmissionButton];	
 }
 
 @end

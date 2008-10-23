@@ -26,6 +26,7 @@
 
 -(void)enableSubmissionButton;
 -(void)uploadReport;
+-(void)reportUploaded:(BOOL)success;
 
 -(IBAction)addPhoto:(id) sender;
 -(IBAction)gotoSettings:(id)sender firstTime:(BOOL)firstTime;
