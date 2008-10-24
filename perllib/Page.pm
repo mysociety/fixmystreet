@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.124 2008-10-17 20:23:07 matthew Exp $
+# $Id: Page.pm,v 1.125 2008-10-24 09:52:42 matthew Exp $
 #
 
 package Page;
@@ -571,6 +571,7 @@ sub display_problem_text {
         $out .= ent($problem->{category}) . ', reported ';
     } else {
         $out .= 'Reported ';
+	$out .= 'by ' . ent($problem->{service}) . ' ' if $problem->{service}; 
         $out .= 'in the ' . ent($problem->{category}) . ' category '
             if $problem->{category} && $problem->{category} ne 'Other';
     }

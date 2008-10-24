@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: import.cgi,v 1.5 2008-10-23 12:51:42 matthew Exp $
+# $Id: import.cgi,v 1.6 2008-10-24 09:52:42 matthew Exp $
 
 use strict;
 use Error qw(:try);
@@ -88,12 +88,12 @@ sub main {
     # Store what we have so far in the database
     my $id = dbh()->selectrow_array("select nextval('problem_id_seq')");
     Utils::workaround_pg_bytea("insert into problem
-        (id, postcode, easting, northing, title, detail, name,
+        (id, postcode, easting, northing, title, detail, name, service,
          email, phone, photo, state, used_map, anonymous, category, areas)
         values
-        (?, '', ?, ?, ?, ?, ?, ?, ?, ?, 'partial', 't', 'f', '', '')", 9,
+        (?, '', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'partial', 't', 'f', '', '')", 9,
         $id, $input{easting}, $input{northing}, $input{subject},
-        $input{detail}, $input{name}, $input{email}, $input{phone}, $photo);
+        $input{detail}, $input{name}, $input{service}, $input{email}, $input{phone}, $photo);
 
     # Send checking email
     my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/partial");

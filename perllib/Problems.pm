@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Problems.pm,v 1.8 2008-10-17 18:55:16 matthew Exp $
+# $Id: Problems.pm,v 1.9 2008-10-24 09:52:42 matthew Exp $
 #
 
 package Problems;
@@ -167,7 +167,7 @@ sub fetch_problem {
         "select id, easting, northing, council, category, title, detail, (photo is not null) as photo,
         used_map, name, anonymous, extract(epoch from confirmed) as time,
         state, extract(epoch from whensent-confirmed) as whensent,
-        extract(epoch from ms_current_timestamp()-lastupdate) as duration
+        extract(epoch from ms_current_timestamp()-lastupdate) as duration, service
         from problem where id=? and state in ('confirmed','fixed', 'hidden')
         $site_restriction", {}, $id
     );
