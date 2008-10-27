@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.221 2008-10-17 20:19:05 matthew Exp $
+# $Id: index.cgi,v 1.222 2008-10-27 15:31:43 matthew Exp $
 
 use strict;
 use Standard;
@@ -394,6 +394,8 @@ sub display_form {
     my @vars = qw(title detail name email phone pc easting northing x y skipped council anonymous partial upload_fileid);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
+    ($input{x}) = $input{x} =~ /^(\d+)/; $input{x} ||= 0;
+    ($input{y}) = $input{y} =~ /^(\d+)/; $input{y} ||= 0;
     my @ps = $q->param;
     foreach (@ps) {
         ($pin_tile_x, $pin_tile_y, $pin_x) = ($1, $2, $q->param($_)) if /^tile_(\d+)\.(\d+)\.x$/;
@@ -702,14 +704,13 @@ sub display_location {
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 
-    my($error, $easting, $northing);
-    my $x = $input{x}; my $y = $input{y};
-    if ($y =~ /favicon/) {
+    if ($input{y} =~ /favicon/) {
         print $q->redirect(-location => 'http://www.fixmystreet.com/favicon.ico', -status => 301);
         return '';
     }
-    $x ||= 0; $x += 0;
-    $y ||= 0; $y += 0;
+    my($error, $easting, $northing);
+    (my $x) = $input{x} =~ /^(\d+)/; $x ||= 0;
+    (my $y) = $input{y} =~ /^(\d+)/; $y ||= 0;
     return front_page($q, @errors) unless $x || $y || $input{pc};
     if (!$x && !$y) {
         try {
@@ -809,8 +810,8 @@ sub display_problem {
     my @vars = qw(id name email update fixed add_alert upload_fileid x y submit_update);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
-    $input{x} ||= 0; $input{x} += 0;
-    $input{y} ||= 0; $input{y} += 0;
+    ($input{x}) = $input{x} =~ /^(\d+)/; $input{x} ||= 0;
+    ($input{y}) = $input{y} =~ /^(\d+)/; $input{y} ||= 0;
 
     # Some council with bad email software
     if ($input{id} =~ /^3D\d+$/) {
