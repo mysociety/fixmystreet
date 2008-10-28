@@ -21,7 +21,6 @@
 		347A021D0E93CDA200D716CB /* MyCLController.m in Sources */ = {isa = PBXBuildFile; fileRef = 347A021C0E93CDA200D716CB /* MyCLController.m */; };
 		347A02770E93D2A800D716CB /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 347A02760E93D2A800D716CB /* CoreLocation.framework */; };
 		3481BD210EACEE3300C78F66 /* EditingTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3481BD200EACEE3300C78F66 /* EditingTableViewCell.m */; };
-		3481BD3F0EACF66C00C78F66 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3481BD3E0EACF66C00C78F66 /* RootViewController.m */; };
 		3481BD510EACF81D00C78F66 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3481BD500EACF81D00C78F66 /* SettingsViewController.m */; };
 		3499E5A40E95311A006F2DA2 /* .cvsignore in Resources */ = {isa = PBXBuildFile; fileRef = 3499E5A30E95311A006F2DA2 /* .cvsignore */; };
 		349A01770E928824008E83C1 /* MainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 349A01760E928824008E83C1 /* MainViewController.xib */; };
@@ -55,8 +54,6 @@
 		347A02760E93D2A800D716CB /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		3481BD1F0EACEE3300C78F66 /* EditingTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditingTableViewCell.h; sourceTree = "<group>"; };
 		3481BD200EACEE3300C78F66 /* EditingTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditingTableViewCell.m; sourceTree = "<group>"; };
-		3481BD3E0EACF66C00C78F66 /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RootViewController.m; path = Classes/RootViewController.m; sourceTree = "<group>"; };
-		3481BD480EACF67100C78F66 /* RootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RootViewController.h; path = Classes/RootViewController.h; sourceTree = "<group>"; };
 		3481BD4F0EACF81D00C78F66 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		3481BD500EACF81D00C78F66 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; wrapsLines = 1; };
 		3499E5A30E95311A006F2DA2 /* .cvsignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .cvsignore; sourceTree = "<group>"; };
@@ -166,8 +163,6 @@
 		342F98810E94E3DE006935E9 /* OldStuff */ = {
 			isa = PBXGroup;
 			children = (
-				3481BD480EACF67100C78F66 /* RootViewController.h */,
-				3481BD3E0EACF66C00C78F66 /* RootViewController.m */,
 				344E0E5C0E918B1000483FD6 /* Report.m */,
 				344E0D550E91440500483FD6 /* imageCell.m */,
 				344E0E5B0E918B1000483FD6 /* Report.h */,
@@ -258,7 +253,6 @@
 				349AFEAE0E925AAA008E83C1 /* EditSubjectViewController.m in Sources */,
 				347A021D0E93CDA200D716CB /* MyCLController.m in Sources */,
 				3481BD210EACEE3300C78F66 /* EditingTableViewCell.m in Sources */,
-				3481BD3F0EACF66C00C78F66 /* RootViewController.m in Sources */,
 				3481BD510EACF81D00C78F66 /* SettingsViewController.m in Sources */,
 				34C17A8F0EB0CCD300768D1C /* AboutViewController.m in Sources */,
 			);

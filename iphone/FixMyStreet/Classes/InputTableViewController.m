@@ -53,6 +53,12 @@
 	// Let's start trying to find our location...
 	[MyCLController sharedInstance].delegate = self;
 	[[MyCLController sharedInstance] startUpdatingLocation];
+
+	FixMyStreetAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
+	if (delegate.image) {
+		imageView.image = delegate.image;
+	}
+
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -66,7 +72,7 @@
 -(void)enableSubmissionButton {
 	[actionsToDoView reloadData];
 	FixMyStreetAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
-	if (delegate.image && delegate.location && delegate.subject && delegate.subject.length) {
+	if (delegate.image && delegate.latitude && delegate.subject && delegate.subject.length) {
 		self.navigationItem.rightBarButtonItem.enabled = YES;
 	} else {
 		self.navigationItem.rightBarButtonItem.enabled = NO;
@@ -124,7 +130,7 @@
 		cell.text = @"Take photo";
 		actionTakePhotoCell = cell;
 	} else if (indexPath.section == 2) {
-		if (delegate.location) {
+		if (delegate.latitude) {
 			cell.accessoryView = nil;
 			cell.accessoryType = UITableViewCellAccessoryCheckmark;
 		} else if ([MyCLController sharedInstance].updating) {
@@ -270,8 +276,10 @@
 	//[alert release];
 
 	FixMyStreetAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
-	delegate.location = location;
-	
+//	delegate.location = location;
+	delegate.latitude = [NSString stringWithFormat:@"%f", location.coordinate.latitude];
+	delegate.longitude = [NSString stringWithFormat:@"%f", location.coordinate.longitude];
+
 	[self enableSubmissionButton];
 }
 

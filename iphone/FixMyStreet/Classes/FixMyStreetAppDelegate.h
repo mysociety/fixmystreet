@@ -17,7 +17,9 @@
 
 	// The report currently being entered.
 	UIImage* image;
-	CLLocation* location;
+	
+	NSString* latitude;
+	NSString* longitude;
 	NSString* subject;
 
 	NSString* name;
@@ -33,7 +35,8 @@
 //@property (nonatomic, retain) IBOutlet UIViewController *viewController;
 
 @property (nonatomic, retain) UIImage* image;
-@property (nonatomic, retain) CLLocation* location;
+@property (nonatomic, retain) NSString* latitude;
+@property (nonatomic, retain) NSString* longitude;
 @property (nonatomic, retain) NSString* subject;
 @property (nonatomic, retain) NSString* name;
 @property (nonatomic, retain) NSString* email;

@@ -12,7 +12,7 @@
 @implementation FixMyStreetAppDelegate
 
 @synthesize window, navigationController; //, viewController;
-@synthesize image, location, subject, name, email, phone;
+@synthesize image, latitude, longitude, subject, name, email, phone;
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
 	InputTableViewController *inputTableViewController = [[InputTableViewController alloc] initWithNibName:@"MainViewController" bundle:[NSBundle mainBundle]];
@@ -37,6 +37,8 @@
 //		image = (UIImage *)[NSKeyedUnarchiver unarchiveObjectWithData:imageData];
 //	[imageData release];
 
+	latitude = [[NSUserDefaults standardUserDefaults] stringForKey:@"Latitude"];
+	longitude = [[NSUserDefaults standardUserDefaults] stringForKey:@"Longitude"];
 //	NSData *locationData = [[NSUserDefaults standardUserDefaults] objectForKey:@"Location"];
 //	if (locationData != nil)
 //		location = (CLLocation *)[NSUnarchiver unarchiveObjectWithData:locationData];
@@ -60,8 +62,9 @@
 	[navigationController release];
 //	[viewController release];
 	[image release];
+	[latitude release];
+	[longitude release];
 	[subject release];
-	[location release];
 	[name release];
 	[email release];
 	[phone release];
@@ -87,6 +90,8 @@
 //	[[NSUserDefaults standardUserDefaults] setObject:imageData forKey:@"Image"];
 //	[imageData release];
 
+	[[NSUserDefaults standardUserDefaults] setObject:latitude forKey:@"Latitude"];
+	[[NSUserDefaults standardUserDefaults] setObject:longitude forKey:@"Longitude"];
 //	NSData *locationData = [NSKeyedArchiver archivedDataWithRootObject:location];
 //	[[NSUserDefaults standardUserDefaults] setObject:locationData forKey:@"Location"];
 //	[locationData release];
@@ -149,9 +154,9 @@
 	[postBody appendData:[[NSString stringWithString:@"Content-Disposition: form-data; name=\"phone\"\r\n\r\n"] dataUsingEncoding:NSASCIIStringEncoding]];
 	[postBody appendData:[phone dataUsingEncoding:NSASCIIStringEncoding]];
 	
-	if (location) {
-		NSString* latitude = [NSString stringWithFormat:@"%f", location.coordinate.latitude];
-		NSString* longitude = [NSString stringWithFormat:@"%f", location.coordinate.longitude];
+	if (latitude) {
+//		NSString* latitude = [NSString stringWithFormat:@"%f", location.coordinates.latitude];
+//		NSString* longitude = [NSString stringWithFormat:@"%f", location.coordinates.longitude];
 		[postBody appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n",stringBoundary] dataUsingEncoding:NSASCIIStringEncoding]];
 		[postBody appendData:[[NSString stringWithString:@"Content-Disposition: form-data; name=\"lat\"\r\n\r\n"] dataUsingEncoding:NSASCIIStringEncoding]];
 		[postBody appendData:[latitude dataUsingEncoding:NSASCIIStringEncoding]];
