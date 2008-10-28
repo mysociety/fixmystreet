@@ -26,7 +26,7 @@
 // Implement viewDidLoad to do additional setup after loading the view.
 - (void)viewDidLoad {
     [super viewDidLoad];
-	self.title = @"Edit settings";
+	self.title = @"Your details";
 	self.tableView.sectionHeaderHeight = 20.0;
 	self.tableView.sectionFooterHeight = 0.0;
 	self.tableView.scrollEnabled = NO;

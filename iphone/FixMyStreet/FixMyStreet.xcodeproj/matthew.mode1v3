@@ -274,7 +274,7 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>13</integer>
+									<integer>9</integer>
 									<integer>3</integer>
 									<integer>0</integer>
 								</array>
@@ -319,7 +319,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>FixMyStreetAppDelegate.m</string>
+								<string>AboutViewController.m</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -327,32 +327,32 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>FixMyStreetAppDelegate.m</string>
+										<string>AboutViewController.m</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>34D15BD00EB73F9900741406</string>
+										<string>34D15BFD0EB754F200741406</string>
 										<key>history</key>
 										<array>
 											<string>345579960EAEA273008C5D7F</string>
 											<string>34C1793E0EB0A07500768D1C</string>
 											<string>34C179430EB0A07500768D1C</string>
 											<string>34C17ADB0EB0D15300768D1C</string>
-											<string>34E450560EB12D0200881C31</string>
-											<string>34E450570EB12D0200881C31</string>
-											<string>34E4505A0EB12D0200881C31</string>
 											<string>34E4505B0EB12D0200881C31</string>
 											<string>34E4505C0EB12D0200881C31</string>
 											<string>34E450600EB12D0200881C31</string>
 											<string>34E450610EB12D0200881C31</string>
-											<string>34E450620EB12D0200881C31</string>
 											<string>34D15B450EB7306000741406</string>
 											<string>34D15B460EB7306000741406</string>
 											<string>34D15B760EB7358F00741406</string>
 											<string>34D15BA90EB73D1100741406</string>
-											<string>34D15BBF0EB73F2600741406</string>
 											<string>34D15BCD0EB73F9900741406</string>
-											<string>34D15BCE0EB73F9900741406</string>
+											<string>34D15BEF0EB754F200741406</string>
+											<string>34D15BF00EB754F200741406</string>
+											<string>34D15BF10EB754F200741406</string>
+											<string>34D15BF20EB754F200741406</string>
+											<string>34D15BF30EB754F200741406</string>
+											<string>34D15BF40EB754F200741406</string>
 										</array>
 										<key>prevStack</key>
 										<array>
@@ -422,6 +422,14 @@
 											<string>34D15BC60EB73F2600741406</string>
 											<string>34D15BC70EB73F2600741406</string>
 											<string>34D15BCF0EB73F9900741406</string>
+											<string>34D15BF50EB754F200741406</string>
+											<string>34D15BF60EB754F200741406</string>
+											<string>34D15BF70EB754F200741406</string>
+											<string>34D15BF80EB754F200741406</string>
+											<string>34D15BF90EB754F200741406</string>
+											<string>34D15BFA0EB754F200741406</string>
+											<string>34D15BFB0EB754F200741406</string>
+											<string>34D15BFC0EB754F200741406</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -854,12 +862,14 @@
 							<key>Dock</key>
 							<array>
 								<dict>
+									<key>BecomeActive</key>
+									<true/>
 									<key>ContentConfiguration</key>
 									<dict>
 										<key>PBXProjectModuleGUID</key>
 										<string>1CDD528C0622207200134675</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>InputTableViewController.m</string>
+										<string>SettingsViewController.m</string>
 										<key>StatusBarVisibility</key>
 										<true/>
 									</dict>
@@ -880,8 +890,6 @@
 							<string>396pt</string>
 						</dict>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
