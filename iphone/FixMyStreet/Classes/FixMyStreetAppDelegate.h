@@ -16,7 +16,7 @@
 	UINavigationController *navigationController;
 
 	// The report currently being entered.
-	UIImage* image;
+	NSData* image;
 	
 	NSString* latitude;
 	NSString* longitude;
@@ -34,7 +34,7 @@
 @property (nonatomic, retain) UINavigationController *navigationController;
 //@property (nonatomic, retain) IBOutlet UIViewController *viewController;
 
-@property (nonatomic, retain) UIImage* image;
+@property (nonatomic, retain) NSData* image;
 @property (nonatomic, retain) NSString* latitude;
 @property (nonatomic, retain) NSString* longitude;
 @property (nonatomic, retain) NSString* subject;

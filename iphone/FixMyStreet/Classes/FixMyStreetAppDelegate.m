@@ -32,6 +32,7 @@
 	phone = [[NSUserDefaults standardUserDefaults] stringForKey:@"Phone"];
 	subject = [[NSUserDefaults standardUserDefaults] stringForKey:@"Subject"];
 
+	image = [[NSUserDefaults standardUserDefaults] objectForKey:@"Image"];
 //	NSData *imageData = [[[NSUserDefaults standardUserDefaults] objectForKey:@"Image"] mutableCopy];
 //	if (imageData != nil)
 //		image = (UIImage *)[NSKeyedUnarchiver unarchiveObjectWithData:imageData];
@@ -89,6 +90,7 @@
 //	NSData *imageData = [NSKeyedArchiver archivedDataWithRootObject:image];
 //	[[NSUserDefaults standardUserDefaults] setObject:imageData forKey:@"Image"];
 //	[imageData release];
+	[[NSUserDefaults standardUserDefaults] setObject:image forKey:@"Image"];
 
 	[[NSUserDefaults standardUserDefaults] setObject:latitude forKey:@"Latitude"];
 	[[NSUserDefaults standardUserDefaults] setObject:longitude forKey:@"Longitude"];
@@ -167,12 +169,12 @@
 	}
 
 	if (image) {
-		NSData *imageData  = UIImageJPEGRepresentation(image, 0.8);	
+//		NSData *imageData  = UIImageJPEGRepresentation(image, 0.8);	
 		[postBody appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n",stringBoundary] dataUsingEncoding:NSASCIIStringEncoding]];
 		[postBody appendData:[[NSString stringWithString:@"Content-Disposition: form-data; name=\"photo\"; filename=\"from_phone.jpeg\"\r\n"] dataUsingEncoding:NSASCIIStringEncoding]];
 		[postBody appendData:[[NSString stringWithString:@"Content-Type: image/jpeg\r\n"] dataUsingEncoding:NSASCIIStringEncoding]];
 		[postBody appendData:[[NSString stringWithString:@"Content-Transfer-Encoding: binary\r\n\r\n"] dataUsingEncoding:NSASCIIStringEncoding]];
-		[postBody appendData:imageData];
+		[postBody appendData:image];
 	}
 
 	[postBody appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n",stringBoundary] dataUsingEncoding:NSASCIIStringEncoding]];

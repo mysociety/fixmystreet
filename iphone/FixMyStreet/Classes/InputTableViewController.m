@@ -56,7 +56,9 @@
 
 	FixMyStreetAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
 	if (delegate.image) {
-		imageView.image = delegate.image;
+		UIImage *newImage = [[UIImage alloc] initWithData:delegate.image];
+		imageView.image = newImage;
+		[newImage release];
 	}
 
 }
@@ -255,7 +257,8 @@
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingImage:(UIImage *)newImage editingInfo:(NSDictionary *)editingInfo {
 	FixMyStreetAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
-	delegate.image = newImage;
+	NSData *imageData  = UIImageJPEGRepresentation(newImage, 0.8);	
+	delegate.image = imageData;
 
 	imageView.image = newImage;
 	
