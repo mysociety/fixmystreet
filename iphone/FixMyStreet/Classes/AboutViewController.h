@@ -10,7 +10,7 @@
 
 
 @interface AboutViewController : UIViewController {
-
+	IBOutlet UIButton* donateButton;
 }
 
 -(IBAction)donate:(id)sender;

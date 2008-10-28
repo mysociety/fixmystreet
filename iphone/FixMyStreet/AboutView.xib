@@ -61,7 +61,7 @@
 					<object class="IBUILabel" id="151821449">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{20, 116}, {280, 131}}</string>
+						<string key="NSFrame">{{20, 108}, {280, 143}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">1</int>
@@ -70,10 +70,15 @@
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
-						<string type="base64-UTF8" key="IBUIText">Rml4TXlTdHJlZXQgaXMgYSBwcm9qZWN0IG9mIG15U29jaWV0eSwgaXRzZWxmIHRoZSBwcm9qZWN0IG9m
-IGEgcmVnaXN0ZXJlZCBjaGFyaXR5LiBEb25hdGlvbnMgaGVscCBrZWVwIHVzIGdvaW5nLCBzbyBpZiB5
-b3UndmUgZm91bmQgdGhpcyBhcHBsaWNhdGlvbiB1c2VmdWwsIHBsZWFzZSB0aGluayBhYm91dCBkb25h
-dGluZyB0byB1cy4</string>
+						<string type="base64-UTF8" key="IBUIText">Rml4TXlTdHJlZXQgZm9yIGlQaG9uZSB3YXMgd3JpdHRlbiBmb3IgbXlTb2NpZXR5IGJ5IE1hdHRoZXcg
+U29tZXJ2aWxsZS4gbXlTb2NpZXR5IGlzIHJ1biBieSBhIHJlZ2lzdGVyZWQgY2hhcml0eSDigJMgaWYg
+eW91IGxpa2UgdGhpcyBhcHBsaWNhdGlvbiwgcGxlYXNlIGRvbmF0ZSB0byB1cyBzbyB0aGF0IHdlIGNh
+biBidWlsZCBtb3JlIGNvb2wgdGhpbmdzIGxpa2UgdGhpcyBpbiB0aGUgZnV0dXJlLg</string>
+						<object class="NSFont" key="IBUIFont">
+							<string key="NSName">Helvetica</string>
+							<double key="NSSize">1.700000e+01</double>
+							<int key="NSfFlags">16</int>
+						</object>
 						<object class="NSColor" key="IBUITextColor">
 							<int key="NSColorSpace">1</int>
 							<bytes key="NSRGB">MCAwIDAAA</bytes>
@@ -81,7 +86,7 @@ dGluZyB0byB1cy4</string>
 						<nil key="IBUIHighlightedColor"/>
 						<int key="IBUIBaselineAdjustment">1</int>
 						<float key="IBUIMinimumFontSize">1.000000e+01</float>
-						<int key="IBUINumberOfLines">6</int>
+						<int key="IBUINumberOfLines">7</int>
 					</object>
 					<object class="IBUIButton" id="401248225">
 						<reference key="NSNextResponder" ref="191373211"/>
@@ -144,6 +149,14 @@ dGluZyB0byB1cy4</string>
 						<int key="IBEventType">7</int>
 					</object>
 					<int key="connectionID">8</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">donateButton</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="401248225"/>
+					</object>
+					<int key="connectionID">9</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -222,7 +235,7 @@ dGluZyB0byB1cy4</string>
 					<bool key="EncodedWithXMLCoder">YES</bool>
 					<string>AboutViewController</string>
 					<string>UIResponder</string>
-					<string>{{890, 228}, {320, 480}}</string>
+					<string>{{975, 228}, {320, 480}}</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -250,7 +263,7 @@ dGluZyB0byB1cy4</string>
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">8</int>
+			<int key="maxID">9</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -261,6 +274,10 @@ dGluZyB0byB1cy4</string>
 					<object class="NSMutableDictionary" key="actions">
 						<string key="NS.key.0">donate:</string>
 						<string key="NS.object.0">id</string>
+					</object>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">donateButton</string>
+						<string key="NS.object.0">UIButton</string>
 					</object>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
