@@ -1,0 +1,19 @@
+FixMyStreet iPhone application
+==============================
+
+The FixMyStreet directory contains a complete application that should open
+directly in XCode.
+
+TODO (if you're an iPhone developer or designer and wish to help mySociety,
+----      feel free to volunteer for any of these)
+
+* When you go to the About page from the front page, the navigation bar flips
+  as well as the page. For perfection, it probably shouldn't, but every time I
+  tried (presumably with a parent controller controlling the main view and the
+  about view), I failed, and it's not really /that/ important. :-)
+
+* Do the photos have EXIF data (e.g. location)? Should we use that if so in some way?
+
+* We probably need a more appropriate logo.
+
+* Need to create a default.png.
