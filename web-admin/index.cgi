@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.56 2008-11-07 10:40:29 matthew Exp $
+# $Id: index.cgi,v 1.57 2008-11-07 16:52:05 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.56 2008-11-07 10:40:29 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.57 2008-11-07 16:52:05 matthew Exp $';
 
 use strict;
 
@@ -104,7 +104,7 @@ sub admin_summary ($) {
     $questionnaires{0} ||= 0;
     $questionnaires{1} ||= 0;
     $questionnaires{total} = $questionnaires{0} + $questionnaires{1};
-    my $questionnaires_pc = $questionnaires{1} / $questionnaires{total} * 100;
+    my $questionnaires_pc = $questionnaires{total} ? $questionnaires{1} / $questionnaires{total} * 100 : 'na';
     
     print $q->ul(
         $q->li("<strong>$total_problems_live</strong> live problems"),
