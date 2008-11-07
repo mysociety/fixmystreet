@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.54 2008-11-07 01:23:22 matthew Exp $
+# $Id: index.cgi,v 1.55 2008-11-07 10:35:54 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.54 2008-11-07 01:23:22 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.55 2008-11-07 10:35:54 matthew Exp $';
 
 use strict;
 
@@ -413,6 +413,7 @@ sub admin_reports {
         print $q->start_table({border=>1, cellpadding=>2, cellspacing=>0});
         print $q->th({}, ['ID', 'Title', 'Name', 'Email', 'Council', 'Category', 'Anonymous', 'Created', 'State', 'When sent', '*']);
         foreach (@$results) {
+            my $url = mySociety::Config::get('BASE_URL') . '/report/' . $_->{id};
             my $council = $_->{council} || '&nbsp;';
             my $category = $_->{category} || '&nbsp;';
             (my $confirmed = $_->{confirmed} || '-') =~ s/ (.*?)\..*/&nbsp;$1/;
@@ -426,13 +427,20 @@ sub admin_reports {
             $state .= "<br>Last&nbsp;update:&nbsp;$lastupdate" if $_->{state} eq 'confirmed';
             $state .= '</small>';
             my $anonymous = $_->{anonymous} ? 'Yes' : 'No';
-            print $q->Tr({}, $q->td([ $_->{id}, $_->{title}, $_->{name}, $_->{email},
+            print $q->Tr({}, $q->td([ $q->a({ -href => $url }, $_->{id}), $_->{title}, $_->{name}, $_->{email},
             $q->a({ -href => NewURL($q, page=>'councilcontacts', area_id=>$council)}, $council),
             $category, $anonymous, $created, $state, $whensent,
             $q->a({ -href => NewURL($q, page=>'report_edit', id=>$_->{id}) }, 'Edit')
             ]));
         }
         print $q->end_table;
+
+        print $q->h2('Updates');
+        my $updates = select_all("select * from comment where id=? or
+        problem_id=? or email ilike '%'||?||'%' or name ilike '%'||?||'%' or
+        text ilike '%'||?||'%'", $search+0, $search+0, $search, $search,
+        $search);
+        admin_show_updates($q, $updates);
     }
 
     print html_tail($q);
@@ -523,17 +531,22 @@ EOF
 
     print $q->h2('Updates');
     my $updates = select_all('select * from comment where problem_id=?', $id);
+    admin_show_updates($q, $updates);
+    print html_tail($q);
+}
+
+sub admin_show_updates {
+    my ($q, $updates) = @_;
     print $q->start_table({border=>1, cellpadding=>2, cellspacing=>0});
     print $q->th({}, ['ID', 'State', 'Name', 'Email', 'Created', 'Text', '*']);
     foreach (@$updates) {
-        print $q->Tr({}, $q->td([ $_->{id}, $_->{state}, $_->{name},
+        my $url = mySociety::Config::get('BASE_URL') . '/report/' . $_->{problem_id} . '#' . $_->{id};
+        print $q->Tr({}, $q->td([ $q->a({ -href => $url }, $_->{id}), $_->{state}, $_->{name},
         $_->{email}, $_->{created}, $_->{text},
         $q->a({ -href => NewURL($q, page=>'update_edit', id=>$_->{id}) }, 'Edit')
         ]));
     }
     print $q->end_table;
-
-    print html_tail($q);
 }
 
 sub admin_edit_update {
