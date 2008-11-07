@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.53 2008-10-21 14:24:08 matthew Exp $
+# $Id: index.cgi,v 1.54 2008-11-07 01:23:22 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.53 2008-10-21 14:24:08 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.54 2008-11-07 01:23:22 matthew Exp $';
 
 use strict;
 
@@ -19,18 +19,12 @@ use FindBin;
 use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../../perllib";
 
-use CGI::Carp;
-use Error qw(:try);
-use POSIX;
-use DBI;
-use Data::Dumper;
-
 use Page;
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh select_all);
 use mySociety::MaPit;
 use mySociety::VotingArea;
-use mySociety::Web qw(ent);
+use mySociety::Web qw(NewURL ent);
 
 BEGIN {
     mySociety::Config::set_file("$FindBin::Bin/../conf/general");
@@ -50,23 +44,18 @@ sub html_head($$) {
 <html>
 <head>
 <title>$title - FixMyStreet administration</title>
-<style type="text/css"><!--
-input { font-size: 9pt; margin: 0px; padding: 0px  }
-table { margin: 0px; padding: 0px }
-tr { margin: 0px; padding: 0px }
-td { margin: 0px; padding: 0px; padding-right: 2pt; }
-//--></style>
 </head>
 <body>
 END
     
     my $pages = {
         'summary' => 'Summary',
+        'reports' => 'Reports',
         'councilslist' => 'Council contacts'
     };
     $ret .= $q->p(
         $q->strong("FixMyStreet admin:"), 
-        map { $q->a( {href=>build_url($q, $q->url('relative'=>1), { page => $_ })}, $pages->{$_}) } keys %$pages
+        map { $q->a( { href => NewURL($q, page => $_) }, $pages->{$_}) } keys %$pages
     ); 
 
     return $ret;
@@ -80,79 +69,69 @@ sub html_tail($) {
 END
 }
 
-# build_url CGI BASE HASH AMPERSAND
-# Makes an escaped URL, whose main part is BASE, and
-# whose parameters are the key value pairs in the hash.
-# AMPERSAND is optional, set to 1 to use & rather than ;.
-sub build_url($$$;$) {
-    my ($q, $base, $hash, $ampersand) = @_;
-    my $url = $base;
-    my $first = 1;
-    foreach my $k (keys %$hash) {
-        $url .= $first ? '?' : ($ampersand ? '&' : ';');
-        $url .= $q->escape($k);
-        $url .= "=";
-        $url .= $q->escape($hash->{$k});
-        $first = 0;
-    }
-    return $url;
+sub fetch_data {
 }
 
-# do_summary CGI
+# admin_summary CGI
 # Displays general summary of counts.
-sub do_summary ($) {
+sub admin_summary ($) {
     my ($q) = @_;
 
     print html_head($q, "Summary");
-    print $q->h2("Summary");
+    print $q->h1("Summary");
 
-    print $q->p(join($q->br(), 
-        map { dbh()->selectrow_array($_->[0]) . " " . $_->[1] } ( 
-            ['select count(*) from contacts', 'contacts'],
-            ['select count(*) from problem', 'problems'],
-            ['select count(*) from comment', 'updates'],
-            ['select count(*) from questionnaire', 'questionnaires'],
-            ['select count(*) from alert', 'alerts']
-    )));
+    my $contacts = dbh()->selectcol_arrayref("select confirmed, count(*) as c from contacts group by confirmed", { Columns => [1,2] });
+    my %contacts = @$contacts;
+    $contacts{0} ||= 0;
+    $contacts{1} ||= 0;
+    $contacts{total} = $contacts{0} + $contacts{1};
 
-    print $q->p( $q->a({href => "http://www.fixmystreet.com/bci-live-creation.png" }, 
+    my $comments = dbh()->selectcol_arrayref("select state, count(*) as c from comment group by state", { Columns => [1,2] });
+    my %comments = @$comments;
+
+    my $problems = dbh()->selectcol_arrayref("select state, count(*) as c from problem group by state", { Columns => [1,2] });
+    my %problems = @$problems;
+    %problems = map { $_ => $problems{$_} || 0 } qw(confirmed fixed unconfirmed hidden partial);
+    my $total_problems_live = $problems{confirmed} + $problems{fixed};
+    my $total_problems = 0;
+    map { $total_problems += $_ } values %problems;
+
+    my $alerts = dbh()->selectcol_arrayref("select confirmed, count(*) as c from alert group by confirmed", { Columns => [1,2] });
+    my %alerts = @$alerts; $alerts{0} ||= 0; $alerts{1} ||= 0;
+
+    my $questionnaires = dbh()->selectcol_arrayref("select (whenanswered is not null), count(*) as c from questionnaire group by (whenanswered is not null)", { Columns => [1,2] });
+    my %questionnaires = @$questionnaires;
+    $questionnaires{0} ||= 0;
+    $questionnaires{1} ||= 0;
+    $questionnaires{total} = $questionnaires{0} + $questionnaires{1};
+    my $questionnaires_pc = $questionnaires{1} / $questionnaires{total} * 100;
+    
+    print $q->ul(
+        $q->li("<strong>$total_problems_live</strong> live problems"),
+        $q->li("$comments{confirmed} live updates"),
+        $q->li("$alerts{1} confirmed alerts, $alerts{0} unconfirmed"),
+        $q->li("$questionnaires{total} questionnaires sent &ndash; $questionnaires{1} answered ($questionnaires_pc%)"),
+        $q->li("$contacts{total} council contacts &ndash; $contacts{1} confirmed, $contacts{0} unconfirmed"),
+    );
+
+    print $q->p( $q->a({ href => mySociety::Config::get('BASE_URL') . "/bci-live-creation.png" }, 
             "Graph of problem creation by status over time" ));
 
-    print $q->h3("Council contacts status");
-    my $statuses = dbh()->selectall_arrayref("select count(*) as c, confirmed from contacts group by confirmed order by c desc");
-    print $q->p(join($q->br(), 
-        map { $_->[0] . " " . ($_->[1] ? 'confirmed' : 'unconfirmed') } @$statuses 
-    ));
+    print $q->h2("Problem breakdown by state");
+    print $q->ul(
+        map { $q->li("$problems{$_} $_") } sort keys %problems 
+    );
 
-    print $q->h3("Problem status");
-    $statuses = dbh()->selectall_arrayref("select count(*) as c, state from problem group by state order by c desc");
-    print $q->p(join($q->br(), 
-        map { $_->[0] . " " . $_->[1] } @$statuses 
-    ));
-
-    print $q->h3("Comment status");
-    $statuses = dbh()->selectall_arrayref("select count(*) as c, state from comment group by state order by c desc");
-    print $q->p(join($q->br(), 
-        map { $_->[0] . " " . $_->[1] } @$statuses 
-    ));
-
-    print $q->h3("Questionnaire status");
-    $statuses = dbh()->selectall_arrayref("select count(*) as c, (whenanswered is not null) from questionnaire group by (whenanswered is not null) order by c desc");
-    print $q->p(join($q->br(), 
-        map { $_->[0] . " " . ($_->[1] ? 'answered' : 'unanswered') } @$statuses 
-    ));
-
-    print $q->h3("Alert status");
-    $statuses = dbh()->selectall_arrayref("select count(*) as c, confirmed from alert group by confirmed order by c desc");
-    print $q->p(join($q->br(), 
-        map { $_->[0] . " " . ($_->[1] ? 'confirmed' : 'unconfirmed') } @$statuses 
-    ));
+    print $q->h2("Update breakdown by state");
+    print $q->ul(
+        map { $q->li("$comments{$_} $_") } sort keys %comments
+    );
 
     print html_tail($q);
 }
 
-# do_councils_list CGI
-sub do_councils_list ($) {
+# admin_councils_list CGI
+sub admin_councils_list ($) {
     my ($q) = @_;
 
     print html_head($q, "Council contacts");
@@ -161,14 +140,14 @@ sub do_councils_list ($) {
     # Table of editors
     print $q->h2("Diligency prize league table");
     my $edit_activity = dbh()->selectall_arrayref("select count(*) as c, editor from contacts_history group by editor order by c desc");
-    print $q->p(join($q->br(), 
-        map { $_->[0] . " edits by " . $_->[1] } @$edit_activity 
-    ));
+    print $q->ul(
+        map { $q->li($_->[0] . " edits by " . $_->[1]) } @$edit_activity 
+    );
 
     # Table of councils
     print $q->h2("Councils");
     my @councils;
-    my @types = grep { !/LGD/ } @$mySociety::VotingArea::council_parent_types;
+    my @types = grep { !/LGD/ } @$mySociety::VotingArea::council_parent_types; # LGD are NI councils
     foreach my $type (@types) {
         my $areas = mySociety::MaPit::get_areas_by_type($type);
         push @councils, @$areas;
@@ -180,20 +159,16 @@ sub do_councils_list ($) {
         select area_id, count(*) as c, count(case when deleted then 1 else null end) as deleted,
             count(case when confirmed then 1 else null end) as confirmed
         from contacts group by area_id", 'area_id');
-#    print Dumper($bci_info);
-#    print Dumper(\@councils_ids);
 
     my $list_part = sub {
         my @ids = @_;
-        # print Dumper(\@ids);
         if (!scalar(@ids)) {
             print "None";
             return;
         }
         print $q->p(join($q->br(), 
             map { 
-                $q->a({href=>build_url($q, $q->url('relative'=>1), 
-                  {'area_id' => $_, 'page' => 'councilcontacts',})}, 
+                $q->a({ href => NewURL($q, area_id => $_, page => 'councilcontacts') }, 
                   $councils->{$_}->{name}) . " " .
                     ($bci_info->{$_} && $q->{site} ne 'emptyhomes' ?
                         $bci_info->{$_}->{c} . ' addresses'
@@ -212,8 +187,8 @@ sub do_councils_list ($) {
     print html_tail($q);
 }
 
-# do_council_contacts CGI AREA_ID
-sub do_council_contacts ($$) {
+# admin_council_contacts CGI AREA_ID
+sub admin_council_contacts ($$) {
     my ($q, $area_id) = @_;
 
     # Submit form
@@ -277,30 +252,27 @@ sub do_council_contacts ($$) {
     # Title
     my $title = 'Council contacts for ' . $mapit_data->{name};
     print html_head($q, $title);
-    print $q->h2($title);
+    print $q->h1($title);
     print $updated;
 
     # Example postcode, link to list of problem reports
     my $links_html;
     my $example_postcode = mySociety::MaPit::get_example_postcode($area_id);
     if ($example_postcode) {
-        $links_html .= $q->a({href => build_url($q, mySociety::Config::get('BASE_URL'),
-                    { 'pc' => $example_postcode}) }, 
+        $links_html .= $q->a({ href => mySociety::Config::get('BASE_URL') . '/?pc=' . $q->escape($example_postcode) }, 
                 "Example postcode " . $example_postcode) . " | ";
     }
     $links_html .= ' '  . 
-            $q->a({href => build_url($q, mySociety::Config::get('BASE_URL') . "/reports",
-                    { 'council' => $area_id}) }, " List all reported problems");
+            $q->a({ href => mySociety::Config::get('BASE_URL') . "/reports?council=" . $area_id }, " List all reported problems");
     print $q->p($links_html);
 
     # Display of addresses / update statuses form
     print $q->start_form(-method => 'POST', -action => $q->url('relative'=>1));
-    print $q->start_table({border=>1});
+    print $q->start_table({border=>1, cellpadding=>2, cellspacing=>0});
     print $q->th({}, ["Category", "Email", "Confirmed", "Deleted", "Last editor", "Note", "When edited", 'Confirm']);
     foreach my $l (@$bci_data) {
         print $q->Tr($q->td([
-            $q->a({href=>build_url($q, $q->url('relative'=>1),
-                { 'area_id' => $area_id, 'category' => $l->{category}, 'page' => 'counciledit'})},
+            $q->a({ href => NewURL($q, area_id => $area_id, category => $l->{category}, page => 'counciledit') },
                 $l->{category}), $l->{email}, $l->{confirmed} ? 'Yes' : 'No',
             $l->{deleted} ? 'Yes' : 'No', $l->{editor}, ent($l->{note}),
             $l->{whenedited} =~ m/^(.+)\.\d+$/,
@@ -318,7 +290,7 @@ sub do_council_contacts ($$) {
     print $q->end_form();
 
     # Display form for adding new category
-    print $q->h3('Add new category');
+    print $q->h2('Add new category');
     print $q->start_form(-method => 'POST', -action => $q->url('relative'=>1));
     if ($q->{site} ne 'emptyhomes') {
         print $q->p($q->strong("Category: "),
@@ -326,10 +298,13 @@ sub do_council_contacts ($$) {
     }
     print $q->p($q->strong("Email: "),
         $q->textfield(-name => "email", -size => 30));
+    $q->autoEscape(0);
     print $q->p(
-        $q->checkbox(-name => "confirmed", -value => 1, -label => "Confirmed"), " ",
-        $q->checkbox(-name => "deleted", -value => 1, -label => "Deleted")
+        $q->checkbox(-id => 'confirmed', -name => "confirmed", -value => 1, -label => ' ' . $q->label({-for => 'confirmed'}, 'Confirmed')),
+        ' ',
+        $q->checkbox(-id => 'deleted', -name => "deleted", -value => 1, -label => ' ' . $q->label({-for => 'deleted'}, 'Deleted'))
     );
+    $q->autoEscape(1);
     print $q->p($q->strong("Note: "),
         $q->textarea(-name => "note", -rows => 3, -columns=>40));
     print $q->p(
@@ -343,8 +318,8 @@ sub do_council_contacts ($$) {
     print html_tail($q);
 }
 
-# do_council_edit CGI AREA_ID CATEGORY
-sub do_council_edit ($$$) {
+# admin_council_edit CGI AREA_ID CATEGORY
+sub admin_council_edit ($$$) {
     my ($q, $area_id, $category) = @_;
 
     # Get all the data
@@ -356,14 +331,13 @@ sub do_council_edit ($$$) {
     # Title
     my $title = 'Council contacts for ' . $mapit_data->{name};
     print html_head($q, $title);
-    print $q->h2($title);
+    print $q->h1($title);
 
     # Example postcode
     my $example_postcode = mySociety::MaPit::get_example_postcode($area_id);
     if ($example_postcode) {
-        print $q->p("Example postcode to test on FixMyStreet.com: ",
-            $q->a({href => build_url($q, "http://www.fixmystreet.com/",
-                    { 'pc' => $example_postcode}) }, 
+        print $q->p("Example postcode: ",
+            $q->a({ href => mySociety::Config::get('BASE_URL') . '/?pc=' . $q->escape($example_postcode) }, 
                 $example_postcode));
     }
 
@@ -376,8 +350,11 @@ sub do_council_edit ($$$) {
     print $q->hidden("category");
     print $q->strong(" Email: ");
     print $q->textfield(-name => "email", -size => 30) . " ";
-    print $q->checkbox(-name => "confirmed", -value => 1, -label => "Confirmed") . " ";
-    print $q->checkbox(-name => "deleted", -value => 1, -label => "Deleted");
+    $q->autoEscape(0);
+    print $q->checkbox(-id => 'confirmed', -name => "confirmed", -value => 1, -label => ' ' . $q->label({-for => 'confirmed'}, 'Confirmed'));
+    print ' ';
+    print $q->checkbox(-id => 'deleted', -name => "deleted", -value => 1, -label => ' ' . $q->label({-for => 'deleted'}, 'Deleted'));
+    $q->autoEscape(1);
     print $q->br();
     print $q->strong("Note: ");
     print $q->textarea(-name => "note", -rows => 3, -columns=>40) . " ";
@@ -389,7 +366,7 @@ sub do_council_edit ($$$) {
     print $q->end_form();
 
     # Display history of changes
-    print $q->h3('History');
+    print $q->h2('History');
     print $q->start_table({border=>1});
     print $q->th({}, ["When edited", "Email", "Confirmed", "Deleted", "Editor", "Note"]);
     my $html = '';
@@ -412,47 +389,226 @@ sub do_council_edit ($$$) {
     }
     print $html;
     print $q->end_table();
+    print html_tail($q);
+}
 
-=comment
-    # Google links
-    print $q->p(
-        $q->a({href => build_url($q, $q->url('relative'=>1), 
-              {'area_id' => $area_id, 'page' => 'counciledit', 'r' => $q->url(-query=>1, -path=>1, -relative=>1)}) }, 
-              "Edit councils and wards"),
-        " |",
-        $q->a({href => build_url($q, $q->url('relative'=>1), 
-              {'area_id' => $area_id, 'page' => 'mapitnamesedit', 'r' => $q->url(-query=>1, -path=>1, -relative=>1)}) }, 
-              "Edit ward aliases"),
-        " |",
-        map { ( $q->a({href => build_url($q, "http://www.google.com/search", 
-                    {'q' => "$_"}, 1)},
-                  "Google" . ($_ eq "" ? " alone" : " '$_'")),
-            " (",
-            $q->a({href => build_url($q, "http://www.google.com/search", 
-                    {'q' => "$_",'btnI' => "I'm Feeling Lucky"}, 1)},
-                  "IFL"),
-            ")" ) } ("$name", "$name councillors ward", $name_data->{'name'} . " councillors")
-    );
-=cut
+sub admin_reports {
+    my $q = shift;
+    my $title = 'Reports';
+    print html_head($q, $title);
+    print $q->h1($title);
+
+    print $q->start_form(-method => 'GET', -action => './');
+    print $q->label({-for => 'search'}, 'Search:'), ' ', $q->textfield(-id => 'search', -name => "search", -size => 30);
+    print $q->hidden('page');
+    print $q->end_form;
+
+    if (my $search = $q->param('search')) {
+        my $results = select_all("select id, council, category, title, name,
+            email, anonymous, created, confirmed, state, service, lastupdate,
+            whensent, send_questionnaire from problem where id=? or email ilike
+            '%'||?||'%' or name ilike '%'||?||'%' or title ilike '%'||?||'%' or
+            detail ilike '%'||?||'%' or council like '%'||?||'%'", $search+0,
+            $search, $search, $search, $search, $search);
+        print $q->start_table({border=>1, cellpadding=>2, cellspacing=>0});
+        print $q->th({}, ['ID', 'Title', 'Name', 'Email', 'Council', 'Category', 'Anonymous', 'Created', 'State', 'When sent', '*']);
+        foreach (@$results) {
+            my $council = $_->{council} || '&nbsp;';
+            my $category = $_->{category} || '&nbsp;';
+            (my $confirmed = $_->{confirmed} || '-') =~ s/ (.*?)\..*/&nbsp;$1/;
+            (my $created = $_->{created}) =~ s/\..*//;
+            (my $lastupdate = $_->{lastupdate}) =~ s/ (.*?)\..*/&nbsp;$1/;
+            (my $whensent = $_->{whensent} || '&nbsp;') =~ s/\..*//;
+            my $state = $_->{state};
+            $state .= '<small>';
+            $state .= "<br>Confirmed:&nbsp;$confirmed" if $_->{state} eq 'confirmed' || $_->{state} eq 'fixed';
+            $state .= '<br>Fixed: ' . $lastupdate if $_->{state} eq 'fixed';
+            $state .= "<br>Last&nbsp;update:&nbsp;$lastupdate" if $_->{state} eq 'confirmed';
+            $state .= '</small>';
+            my $anonymous = $_->{anonymous} ? 'Yes' : 'No';
+            print $q->Tr({}, $q->td([ $_->{id}, $_->{title}, $_->{name}, $_->{email},
+            $q->a({ -href => NewURL($q, page=>'councilcontacts', area_id=>$council)}, $council),
+            $category, $anonymous, $created, $state, $whensent,
+            $q->a({ -href => NewURL($q, page=>'report_edit', id=>$_->{id}) }, 'Edit')
+            ]));
+        }
+        print $q->end_table;
+    }
 
     print html_tail($q);
+}
+
+sub admin_edit_report {
+    my ($q, $id) = @_;
+    my $title = "Editing problem $id";
+    print html_head($q, $title);
+    print $q->h1($title);
+
+    my $row = dbh()->selectall_arrayref('select * from problem where id=?', { Slice=>{} }, $id);
+    my %row = %{$row->[0]};
+
+    if ($q->param('resend')) {
+        dbh()->do('update problem set whensent=null where id=?', {}, $id);
+        dbh()->commit();
+        print '<p><em>That problem will now be resent.</em></p>';
+    } elsif ($q->param('submit')) {
+        my $new_state = $q->param('state');
+        my $query = 'update problem set anonymous=?, state=?, name=?, email=?, title=?, detail=?';
+        if ($q->param('remove_photo')) {
+            $query .= ', photo=null';
+        }
+        if ($new_state ne $row{state}) {
+            $query .= ', lastupdate=current_timestamp';
+        }
+        if ($new_state eq 'confirmed' and $row{state} eq 'unconfirmed') {
+            $query .= ', confirmed=current_timestamp';
+        }
+        $query .= ' where id=?';
+        dbh()->do($query, {}, $q->param('anonymous') ? 't' : 'f', $new_state,
+            $q->param('name'), $q->param('email'), $q->param('title'), $q->param('detail'), $id);
+        dbh()->commit();
+        map { $row{$_} = $q->param($_) } qw(anonymous state name email title detail);
+        print '<p><em>Updated!</em></p>';
+    }
+
+    my $council = $row{council} || '<em>None</em>';
+    (my $areas = $row{areas}) =~ s/^,(.*),$/$1/;
+    my $easting = int($row{easting}+0.5);
+    my $northing = int($row{northing}+0.5);
+    my $questionnaire = $row{send_questionnaire} ? 'Yes' : 'No';
+    my $used_map = $row{used_map} ? 'used map' : "didn't use map";
+
+    my $photo = '';
+    $photo = '<li><img align="top" src="' . mySociety::Config::get('BASE_URL') . '/photo?id=' . $row{id} . '">
+<input type="checkbox" id="remove_photo" name="remove_photo" value="1">
+<label for="remove_photo">Remove photo (can\'t be undone!)</label>' if $row{photo};
+
+    my $url = mySociety::Config::get('BASE_URL') . '/report/' . $row{id};
+
+    my $anon = $q->label({-for=>'anonymous'}, 'Anonymous:') . ' ' . $q->popup_menu(-id => 'anonymous', -name => 'anonymous', -values => { 1=>'Yes', 0=>'No' }, -default => $row{anonymous});
+    my $state = $q->label({-for=>'state'}, 'State:') . ' ' . $q->popup_menu(-id => 'state', -name => 'state', -values => { confirmed => 'Open', fixed => 'Fixed', hidden => 'Hidden', unconfirmed => 'Unconfirmed', partial => 'Partial' }, -default => $row{state});
+
+    my $resend = '';
+    $resend = '<li><input type="submit" name="resend" value="Resend report">' if $row{state} eq 'confirmed';
+
+    print $q->start_form(-method => 'POST', -action => './');
+    print $q->hidden('page');
+    print $q->hidden('id');
+    print $q->hidden('submit', 1);
+    print <<EOF;
+<ul>
+<li><a href="$url">View report on site</a>
+<li><label for="title">Subject:</label> <input size=60 type="text" id="title" name="title" value="$row{title}">
+<li><label for="detail">Details:</label><br><textarea name="detail" id="detail" cols=60 rows=10>$row{detail}</textarea>
+<li>Co-ordinates: $easting,$northing (originally entered $row{postcode}, $used_map)
+<li>For council(s): $council (other areas: $areas)
+<li>$anon
+<li>$state
+<li>Category: $row{category}
+<li>Name: <input type="text" name="name" id="name" value="$row{name}">
+<li>Email: <input type="text" id="email" name="email" value="$row{email}">
+<li>Phone: $row{phone}
+<li>Created: $row{created}
+<li>Confirmed: $row{confirmed}
+<li>Sent: $row{whensent}
+<li>Last update: $row{lastupdate}
+<li>Service: $row{service}
+<li>Going to send questionnaire? $questionnaire
+$photo
+$resend
+</ul>
+EOF
+    print $q->submit('Submit changes');
+    print $q->end_form;
+
+    print $q->h2('Updates');
+    my $updates = select_all('select * from comment where problem_id=?', $id);
+    print $q->start_table({border=>1, cellpadding=>2, cellspacing=>0});
+    print $q->th({}, ['ID', 'State', 'Name', 'Email', 'Created', 'Text', '*']);
+    foreach (@$updates) {
+        print $q->Tr({}, $q->td([ $_->{id}, $_->{state}, $_->{name},
+        $_->{email}, $_->{created}, $_->{text},
+        $q->a({ -href => NewURL($q, page=>'update_edit', id=>$_->{id}) }, 'Edit')
+        ]));
+    }
+    print $q->end_table;
+
+    print html_tail($q);
+}
+
+sub admin_edit_update {
+    my ($q, $id) = @_;
+    my $title = "Editing update $id";
+    print html_head($q, $title);
+    print $q->h1($title);
+
+    my $row = dbh()->selectall_arrayref('select * from comment where id=?', { Slice=>{} }, $id);
+    my %row = %{$row->[0]};
+
+    if ($q->param('submit')) {
+        my $query = 'update comment set state=?, name=?, email=?, text=?';
+        if ($q->param('remove_photo')) {
+            $query .= ', photo=null';
+        }
+        $query .= ' where id=?';
+        dbh()->do($query, {}, $q->param('state'), $q->param('name'), $q->param('email'), $q->param('text'), $id);
+        dbh()->commit();
+        map { $row{$_} = $q->param($_) } qw(state name email text);
+        print '<p><em>Updated!</em></p>';
+    }
+
+    my $photo = '';
+    $photo = '<li><img align="top" src="' . mySociety::Config::get('BASE_URL') . '/photo?c=' . $row{id} . '">
+<input type="checkbox" id="remove_photo" name="remove_photo" value="1">
+<label for="remove_photo">Remove photo (can\'t be undone!)</label>' if $row{photo};
+
+    my $url = mySociety::Config::get('BASE_URL') . '/report/' . $row{problem_id} . '#' . $row{id};
+
+    my $state = $q->label({-for=>'state'}, 'State:') . ' ' . $q->popup_menu(-id => 'state', -name => 'state', -values => { confirmed => 'Confirmed', hidden => 'Hidden', unconfirmed => 'Unconfirmed' }, -default => $row{state});
+
+    print $q->start_form(-method => 'POST', -action => './');
+    print $q->hidden('page');
+    print $q->hidden('id');
+    print $q->hidden('submit', 1);
+    print <<EOF;
+<ul>
+<li><a href="$url">View update on site</a>
+<li><label for="text">Text:</label><br><textarea name="text" id="text" cols=60 rows=10>$row{text}</textarea>
+<li>$state
+<li>Name: <input type="text" name="name" id="name" value="$row{name}"> (blank to go anonymous)
+<li>Email: <input type="text" id="email" name="email" value="$row{email}">
+<li>Created: $row{created}
+$photo
+</ul>
+EOF
+    print $q->submit('Submit changes');
+    print $q->end_form;
 }
 
 sub main {
     my $q = shift;
     my $page = $q->param('page');
     $page = "summary" if !$page;
+
     my $area_id = $q->param('area_id');
     my $category = $q->param('category');
 
     if ($page eq "councilslist") {
-        do_councils_list($q);
+        admin_councils_list($q);
     } elsif ($page eq "councilcontacts") {
-        do_council_contacts($q, $area_id);
+        admin_council_contacts($q, $area_id);
     } elsif ($page eq "counciledit") {
-        do_council_edit($q, $area_id, $category);
+        admin_council_edit($q, $area_id, $category);
+    } elsif ($page eq 'reports') {
+        admin_reports($q);
+    } elsif ($page eq 'report_edit') {
+        my $id = $q->param('id');
+        admin_edit_report($q, $id);
+    } elsif ($page eq 'update_edit') {
+        my $id = $q->param('id');
+        admin_edit_update($q, $id);
     } else {
-        do_summary($q);
+        admin_summary($q);
     }
 }
 Page::do_fastcgi(\&main);
