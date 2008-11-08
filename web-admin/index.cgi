@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.57 2008-11-07 16:52:05 matthew Exp $
+# $Id: index.cgi,v 1.58 2008-11-08 19:44:46 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.57 2008-11-07 16:52:05 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.58 2008-11-08 19:44:46 matthew Exp $';
 
 use strict;
 
@@ -408,7 +408,7 @@ sub admin_reports {
             email, anonymous, created, confirmed, state, service, lastupdate,
             whensent, send_questionnaire from problem where id=? or email ilike
             '%'||?||'%' or name ilike '%'||?||'%' or title ilike '%'||?||'%' or
-            detail ilike '%'||?||'%' or council like '%'||?||'%'", $search+0,
+            detail ilike '%'||?||'%' or council like '%'||?||'%'", int($search),
             $search, $search, $search, $search, $search);
         print $q->start_table({border=>1, cellpadding=>2, cellspacing=>0});
         print $q->th({}, ['ID', 'Title', 'Name', 'Email', 'Council', 'Category', 'Anonymous', 'Created', 'State', 'When sent', '*']);
@@ -440,7 +440,7 @@ sub admin_reports {
         print $q->h2('Updates');
         my $updates = select_all("select * from comment where id=? or
         problem_id=? or email ilike '%'||?||'%' or name ilike '%'||?||'%' or
-        text ilike '%'||?||'%'", $search+0, $search+0, $search, $search,
+        text ilike '%'||?||'%'", int($search), int($search), $search, $search,
         $search);
         admin_show_updates($q, $updates);
     }
