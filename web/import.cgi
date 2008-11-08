@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: import.cgi,v 1.6 2008-10-24 09:52:42 matthew Exp $
+# $Id: import.cgi,v 1.7 2008-11-08 19:38:57 matthew Exp $
 
 use strict;
 use Error qw(:try);
@@ -91,7 +91,7 @@ sub main {
         (id, postcode, easting, northing, title, detail, name, service,
          email, phone, photo, state, used_map, anonymous, category, areas)
         values
-        (?, '', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'partial', 't', 'f', '', '')", 9,
+        (?, '', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'partial', 't', 'f', '', '')", 10,
         $id, $input{easting}, $input{northing}, $input{subject},
         $input{detail}, $input{name}, $input{service}, $input{email}, $input{phone}, $photo);
 
