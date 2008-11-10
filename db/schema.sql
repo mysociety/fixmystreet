@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.42 2008-10-24 09:52:42 matthew Exp $
+-- $Id: schema.sql,v 1.43 2008-11-10 10:14:09 root Exp $
 --
 
 -- secret
@@ -166,6 +166,8 @@ create table questionnaire (
     old_state text,
     new_state text
 );
+
+create index questionnaire_problem_id_idx on questionnaire using btree (problem_id);
 
 -- angle_between A1 A2
 -- Given two angles A1 and A2 on a circle expressed in radians, return the
