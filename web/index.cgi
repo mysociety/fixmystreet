@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.224 2008-11-10 11:17:43 matthew Exp $
+# $Id: index.cgi,v 1.225 2008-11-10 13:10:56 matthew Exp $
 
 use strict;
 use Standard;
@@ -760,12 +760,11 @@ EOF
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
     my $skipurl = NewURL($q, -retain=>1, 'submit_map'=>1, skipped=>1);
-    $out .= $q->p({-id=>'text_map'}, _('To report a problem, simply <strong>click on the map</strong> at the correct location.'));
-    $out .= $q->p({-id=>'text_no_map'}, sprintf(_("<small>If you cannot see a map &ndash; if you have images turned off,
-or are using a text only browser, for example &ndash; and you
-wish to report a problem, please
-<a href='%s'>skip this step</a> and we will ask you
-to describe the location of the problem instead.</small>"), $skipurl));
+    #$out .= $q->h1('Report a problem');
+    $out .= $q->p({-id=>'text_map'}, _('To report a problem, simply
+        <strong>click on the map</strong> at the correct location.'),
+        sprintf(_("<small>If you cannot see the map, <a href='%s'>skip this
+        step</a>.</small>"), $skipurl));
     $out .= '<div id="nearby_lists">' . $q->h2(_('Reports on and around the map'));
     my $list = '';
     foreach (@$on_map) {
