@@ -142,7 +142,7 @@ fieldset div, #fieldset div {
     margin-top: 2px;
     clear: left;
 }
-#fieldset div.checkbox {
+#fieldset div.checkbox, #problem_submit {
     padding-left: 5.5em;
 }
 #fieldset div.checkbox label, label.n {

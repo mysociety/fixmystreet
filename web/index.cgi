@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.223 2008-11-10 10:31:51 matthew Exp $
+# $Id: index.cgi,v 1.224 2008-11-10 11:17:43 matthew Exp $
 
 use strict;
 use Standard;
@@ -682,7 +682,7 @@ directly using their own website.
 EOF
     }
     $out .= <<EOF;
-<p><input type="submit" name="submit_problem" value="Submit"></p>
+<p id="problem_submit"><input type="submit" name="submit_problem" value="Submit"></p>
 </div>
 </div>
 EOF
