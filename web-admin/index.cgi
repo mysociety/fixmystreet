@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.61 2008-11-11 09:57:16 matthew Exp $
+# $Id: index.cgi,v 1.62 2008-11-11 10:54:03 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.61 2008-11-11 09:57:16 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.62 2008-11-11 10:54:03 matthew Exp $';
 
 use strict;
 
@@ -505,7 +505,7 @@ sub admin_edit_report {
     my $state = $q->label({-for=>'state'}, 'State:') . ' ' . $q->popup_menu(-id => 'state', -name => 'state', -values => { confirmed => 'Open', fixed => 'Fixed', hidden => 'Hidden', unconfirmed => 'Unconfirmed', partial => 'Partial' }, -default => $row{state});
 
     my $resend = '';
-    $resend = '<li><input type="submit" name="resend" value="Resend report">' if $row{state} eq 'confirmed';
+    $resend = ' <input onclick="return confirm(\'You really want to resend?\')" type="submit" name="resend" value="Resend report">' if $row{state} eq 'confirmed';
 
     print $q->start_form(-method => 'POST', -action => './');
     print $q->hidden('page');
@@ -526,12 +526,11 @@ sub admin_edit_report {
 <li>Phone: $row{phone}
 <li>Created: $row{created}
 <li>Confirmed: $row{confirmed}
-<li>Sent: $row{whensent}
+<li>Sent: $row{whensent} $resend
 <li>Last update: $row{lastupdate}
 <li>Service: $row{service}
 <li>Going to send questionnaire? $questionnaire
 $photo
-$resend
 </ul>
 EOF
     print $q->submit('Submit changes');
