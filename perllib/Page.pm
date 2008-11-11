@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.125 2008-10-24 09:52:42 matthew Exp $
+# $Id: Page.pm,v 1.126 2008-11-11 01:00:28 matthew Exp $
 #
 
 package Page;
@@ -704,10 +704,10 @@ sub geocode_string {
 
     if (!$js) {
         $error = 'Sorry, we had a problem parsing that location. Please try again.';
-    } elsif ($js !~ /"code":200/) {
+    } elsif ($js !~ /"code": *200/) {
         $error = 'Sorry, we could not find that location.';
-    } elsif ($js =~ /},{/) { # Multiple
-        while ($js =~ /"address":"(.*?)"/g) {
+    } elsif ($js =~ /}, *{/) { # Multiple
+        while ($js =~ /"address": *"(.*?)"/g) {
             push (@$error, $1) unless $1 =~ /BT\d/;
         }
         $error = 'Sorry, we could not find that location.' unless $error;
@@ -715,11 +715,11 @@ sub geocode_string {
         # Northern Ireland, hopefully
         $error = "We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.";
     } else {
-        my ($accuracy) = $js =~ /"Accuracy": (\d)/;
+        my ($accuracy) = $js =~ /"Accuracy": *(\d)/;
         if ($accuracy < 4) {
             $error = 'Sorry, that location appears to be too general; please be more specific.';
         } else {
-            $js =~ /"coordinates":\[(.*?),(.*?),/;
+            $js =~ /"coordinates" *: *\[ *(.*?), *(.*?),/;
             my $lon = $1; my $lat = $2;
             try {
                 ($easting, $northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
