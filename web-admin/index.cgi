@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.59 2008-11-11 09:39:34 matthew Exp $
+# $Id: index.cgi,v 1.60 2008-11-11 09:52:11 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.59 2008-11-11 09:39:34 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.60 2008-11-11 09:52:11 matthew Exp $';
 
 use strict;
 
@@ -642,20 +642,24 @@ sub admin_timeline {
 
     my $updates = select_all("select *,
     extract(epoch from created) as created
-    from comment where
+    from comment where state='confirmed' and
     created>=ms_current_timestamp()-'7 days'::interval");
     foreach (@$updates) {
         push @{$time{$_->{created}}}, { type => 'update', %$_} ;
     }
 
     my $alerts = select_all("select *,
-    extract(epoch from whensubscribed) as whensubscribed,
-    extract(epoch from whendisabled) as whendisabled
+    extract(epoch from whensubscribed) as whensubscribed
     from alert where whensubscribed>=ms_current_timestamp()-'7 days'::interval
-    or whendisabled>=ms_current_timestamp()-'7 days'::interval");
+        and confirmed=1");
     foreach (@$alerts) {
         push @{$time{$_->{whensubscribed}}}, { type => 'alertSub', %$_ };
-        push @{$time{$_->{whendisabled}}}, { type => 'alertDel', %$_ } if $_->{whendisabled};
+    }
+    $alerts = select_all("select *,
+    extract(epoch from whendisabled) as whendisabled
+    from alert where whendisabled>=ms_current_timestamp()-'7 days'::interval");
+    foreach (@$alerts) {
+        push @{$time{$_->{whendisabled}}}, { type => 'alertDel', %$_ };
     }
 
     my $date = '';
@@ -670,22 +674,29 @@ sub admin_timeline {
         foreach (@{$time{$_}}) {
             my $type = $_->{type};
             if ($type eq 'problemCreated') {
-                print "Problem $_->{id} created";
+                print "Problem $_->{id} created; by $_->{name} &lt;$_->{email}&gt;, '$_->{title}'";
             } elsif ($type eq 'problemConfirmed') {
-                print "Problem $_->{id} confirmed";
+                my $url = mySociety::Config::get('BASE_URL') . "/report/$_->{id}";
+                print "Problem <a href='$url'>$_->{id}</a> confirmed; by $_->{name} &lt;$_->{email}&gt;, '$_->{title}'";
             } elsif ($type eq 'problemSent') {
-                print "Problem $_->{id} sent to council";
+                my $url = mySociety::Config::get('BASE_URL') . "/report/$_->{id}";
+                print "Problem <a href='$url'>$_->{id}</a> sent to council $_->{council}; by $_->{name} &lt;$_->{email}&gt;, '$_->{title}'";
             } elsif ($type eq 'quesSent') {
                 print "Questionnaire $_->{id} sent for problem $_->{problem_id}";
             } elsif ($type eq 'quesAnswered') {
-                print "Questionnaire $_->{id} answered for problem $_->{problem_id}";
+                print "Questionnaire $_->{id} answered for problem $_->{problem_id}, $_->{old_state} to $_->{new_state}";
             } elsif ($type eq 'update') {
-                print "Update $_->{id} created for problem $_->{problem_id}";
+                my $url = mySociety::Config::get('BASE_URL') . "/report/$_->{problem_id}#$_->{id}";
+                print "Update <a href='$url'>$_->{id}</a> created for problem $_->{problem_id}; by $_->{name} &lt;$_->{email}&gt;";
             } elsif ($type eq 'alertSub') {
-                print "Alert $_->{id} created";
+                my $param = $_->{parameter} || '';
+                my $param2 = $_->{parameter2} || '';
+                print "Alert $_->{id} created for $_->{email}, type $_->{alert_type}, parameters $param / $param2";
             } elsif ($type eq 'alertDel') {
-                print "Alert $_->{id} disabled";
+                my $sub = strftime('%H:%M:%S %e %B %Y', $_->{whensubscribed});
+                print "Alert $_->{id} disabled (created $sub)";
             }
+            print '<br>';
         }
         print "</dd>\n";
     }
