@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.58 2008-11-08 19:44:46 matthew Exp $
+# $Id: index.cgi,v 1.59 2008-11-11 09:39:34 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.58 2008-11-08 19:44:46 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.59 2008-11-11 09:39:34 matthew Exp $';
 
 use strict;
 
@@ -18,6 +18,7 @@ use strict;
 use FindBin;
 use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../../perllib";
+use POSIX qw(strftime);
 
 use Page;
 use mySociety::Config;
@@ -44,6 +45,10 @@ sub html_head($$) {
 <html>
 <head>
 <title>$title - FixMyStreet administration</title>
+<style type="text/css">
+dt { clear: left; float: left; font-weight: bold; }
+dd { margin-left: 8em; }
+</style>
 </head>
 <body>
 END
@@ -51,7 +56,8 @@ END
     my $pages = {
         'summary' => 'Summary',
         'reports' => 'Reports',
-        'councilslist' => 'Council contacts'
+        'councilslist' => 'Council contacts',
+        'timeline' => 'Timeline',
     };
     $ret .= $q->p(
         $q->strong("FixMyStreet admin:"), 
@@ -600,6 +606,91 @@ $photo
 EOF
     print $q->submit('Submit changes');
     print $q->end_form;
+    print html_tail($q);
+}
+
+sub admin_timeline {
+    my $q = shift;
+    print html_head($q, 'Timeline');
+    print $q->h1('Timeline');
+
+    my %time;
+    #my $backto_unix = time() - 60*60*24*7;
+
+    my $probs = select_all("select state,id,name,email,title,council,category,service,
+    extract(epoch from created) as created,
+    extract(epoch from confirmed) as confirmed,
+    extract(epoch from whensent) as whensent
+    from problem where created>=ms_current_timestamp()-'7 days'::interval
+    or confirmed>=ms_current_timestamp()-'7 days'::interval
+    or whensent>=ms_current_timestamp()-'7 days'::interval");
+    foreach (@$probs) {
+        push @{$time{$_->{created}}}, { type => 'problemCreated', %$_ };
+        push @{$time{$_->{confirmed}}}, { type => 'problemConfirmed', %$_ } if $_->{confirmed};
+        push @{$time{$_->{whensent}}}, { type => 'problemSent', %$_ } if $_->{whensent};
+    }
+
+    my $questionnaire = select_all("select *,
+    extract(epoch from whensent) as whensent,
+    extract(epoch from whenanswered) as whenanswered
+    from questionnaire where whensent>=ms_current_timestamp()-'7 days'::interval
+    or whenanswered>=ms_current_timestamp()-'7 days'::interval");
+    foreach (@$questionnaire) {
+        push @{$time{$_->{whensent}}}, { type => 'quesSent', %$_ };
+        push @{$time{$_->{whenanswered}}}, { type => 'quesAnswered', %$_ } if $_->{whenanswered};
+    }
+
+    my $updates = select_all("select *,
+    extract(epoch from created) as created
+    from comment where
+    created>=ms_current_timestamp()-'7 days'::interval");
+    foreach (@$updates) {
+        push @{$time{$_->{created}}}, { type => 'update', %$_} ;
+    }
+
+    my $alerts = select_all("select *,
+    extract(epoch from whensubscribed) as whensubscribed,
+    extract(epoch from whendisabled) as whendisabled
+    from alert where whensubscribed>=ms_current_timestamp()-'7 days'::interval
+    or whendisabled>=ms_current_timestamp()-'7 days'::interval");
+    foreach (@$alerts) {
+        push @{$time{$_->{whensubscribed}}}, { type => 'alertSub', %$_ };
+        push @{$time{$_->{whendisabled}}}, { type => 'alertDel', %$_ } if $_->{whendisabled};
+    }
+
+    my $date = '';
+    foreach (reverse sort keys %time) {
+        my $curdate = strftime('%A, %e %B %Y', localtime($_));
+        if ($date ne $curdate) {
+            print '</dl>' if $date;
+            print "<h2>$curdate</h2> <dl>";
+            $date = $curdate;
+        }
+        print '<dt><b>', strftime('%H:%M:%S', localtime($_)), ':</b></dt> <dd>';
+        foreach (@{$time{$_}}) {
+            my $type = $_->{type};
+            if ($type eq 'problemCreated') {
+                print "Problem $_->{id} created";
+            } elsif ($type eq 'problemConfirmed') {
+                print "Problem $_->{id} confirmed";
+            } elsif ($type eq 'problemSent') {
+                print "Problem $_->{id} sent to council";
+            } elsif ($type eq 'quesSent') {
+                print "Questionnaire $_->{id} sent for problem $_->{problem_id}";
+            } elsif ($type eq 'quesAnswered') {
+                print "Questionnaire $_->{id} answered for problem $_->{problem_id}";
+            } elsif ($type eq 'update') {
+                print "Update $_->{id} created for problem $_->{problem_id}";
+            } elsif ($type eq 'alertSub') {
+                print "Alert $_->{id} created";
+            } elsif ($type eq 'alertDel') {
+                print "Alert $_->{id} disabled";
+            }
+        }
+        print "</dd>\n";
+    }
+    print html_tail($q);
+
 }
 
 sub main {
@@ -624,6 +715,8 @@ sub main {
     } elsif ($page eq 'update_edit') {
         my $id = $q->param('id');
         admin_edit_update($q, $id);
+    } elsif ($page eq 'timeline') {
+        admin_timeline($q);
     } else {
         admin_summary($q);
     }
