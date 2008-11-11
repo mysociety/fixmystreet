@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.60 2008-11-11 09:52:11 matthew Exp $
+# $Id: index.cgi,v 1.61 2008-11-11 09:57:16 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.60 2008-11-11 09:52:11 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.61 2008-11-11 09:57:16 matthew Exp $';
 
 use strict;
 
@@ -687,13 +687,14 @@ sub admin_timeline {
                 print "Questionnaire $_->{id} answered for problem $_->{problem_id}, $_->{old_state} to $_->{new_state}";
             } elsif ($type eq 'update') {
                 my $url = mySociety::Config::get('BASE_URL') . "/report/$_->{problem_id}#$_->{id}";
-                print "Update <a href='$url'>$_->{id}</a> created for problem $_->{problem_id}; by $_->{name} &lt;$_->{email}&gt;";
+		my $name = $_->{name} || 'anonymous';
+                print "Update <a href='$url'>$_->{id}</a> created for problem $_->{problem_id}; by $name &lt;$_->{email}&gt;";
             } elsif ($type eq 'alertSub') {
                 my $param = $_->{parameter} || '';
                 my $param2 = $_->{parameter2} || '';
                 print "Alert $_->{id} created for $_->{email}, type $_->{alert_type}, parameters $param / $param2";
             } elsif ($type eq 'alertDel') {
-                my $sub = strftime('%H:%M:%S %e %B %Y', $_->{whensubscribed});
+                my $sub = strftime('%H:%M:%S %e %B %Y', localtime($_->{whensubscribed}));
                 print "Alert $_->{id} disabled (created $sub)";
             }
             print '<br>';
