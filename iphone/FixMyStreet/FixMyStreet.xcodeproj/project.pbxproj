@@ -331,7 +331,7 @@
 				GCC_PREFIX_HEADER = FixMyStreet_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				PRODUCT_NAME = FixMyStreet;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "749C7261-921C-47D2-B9C4-A5AE64102B9E";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "E31FC695-9728-4004-B218-CE5B143A1A82";
 			};
 			name = Distribution;
 		};
