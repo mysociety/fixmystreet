@@ -22,8 +22,10 @@
 		347A02770E93D2A800D716CB /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 347A02760E93D2A800D716CB /* CoreLocation.framework */; };
 		3481BD210EACEE3300C78F66 /* EditingTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3481BD200EACEE3300C78F66 /* EditingTableViewCell.m */; };
 		3481BD510EACF81D00C78F66 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3481BD500EACF81D00C78F66 /* SettingsViewController.m */; };
+		348C47900ECB12DE0030EF1C /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 348C478F0ECB12DE0030EF1C /* Entitlements.plist */; };
 		3499E5A40E95311A006F2DA2 /* .cvsignore in Resources */ = {isa = PBXBuildFile; fileRef = 3499E5A30E95311A006F2DA2 /* .cvsignore */; };
 		349A01770E928824008E83C1 /* MainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 349A01760E928824008E83C1 /* MainViewController.xib */; };
+		349A561F0ECB07DF0091BE4F /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 349A561E0ECB07DF0091BE4F /* Default.png */; };
 		349AFEAE0E925AAA008E83C1 /* EditSubjectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 349AFEAD0E925AAA008E83C1 /* EditSubjectViewController.m */; };
 		34C17A540EB0C69800768D1C /* mysociety.png in Resources */ = {isa = PBXBuildFile; fileRef = 34C17A530EB0C69700768D1C /* mysociety.png */; };
 		34C17A5C0EB0C77E00768D1C /* AboutView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34C17A5B0EB0C77E00768D1C /* AboutView.xib */; };
@@ -56,8 +58,10 @@
 		3481BD200EACEE3300C78F66 /* EditingTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditingTableViewCell.m; sourceTree = "<group>"; };
 		3481BD4F0EACF81D00C78F66 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		3481BD500EACF81D00C78F66 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; wrapsLines = 1; };
+		348C478F0ECB12DE0030EF1C /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		3499E5A30E95311A006F2DA2 /* .cvsignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .cvsignore; sourceTree = "<group>"; };
 		349A01760E928824008E83C1 /* MainViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainViewController.xib; sourceTree = "<group>"; };
+		349A561E0ECB07DF0091BE4F /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Default.png; path = Classes/Default.png; sourceTree = "<group>"; };
 		349AFEAC0E925AAA008E83C1 /* EditSubjectViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditSubjectViewController.h; sourceTree = "<group>"; };
 		349AFEAD0E925AAA008E83C1 /* EditSubjectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditSubjectViewController.m; sourceTree = "<group>"; };
 		34C17A530EB0C69700768D1C /* mysociety.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = mysociety.png; path = Classes/mysociety.png; sourceTree = "<group>"; };
@@ -138,7 +142,9 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				348C478F0ECB12DE0030EF1C /* Entitlements.plist */,
 				34C17A5B0EB0C77E00768D1C /* AboutView.xib */,
+				349A561E0ECB07DF0091BE4F /* Default.png */,
 				34C17A530EB0C69700768D1C /* mysociety.png */,
 				347710940E8BDA9B0051DFFD /* Icon.png */,
 				347A01800E93B6A600D716CB /* EditSubjectView.xib */,
@@ -235,6 +241,8 @@
 				3499E5A40E95311A006F2DA2 /* .cvsignore in Resources */,
 				34C17A540EB0C69800768D1C /* mysociety.png in Resources */,
 				34C17A5C0EB0C77E00768D1C /* AboutView.xib in Resources */,
+				349A561F0ECB07DF0091BE4F /* Default.png in Resources */,
+				348C47900ECB12DE0030EF1C /* Entitlements.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -295,6 +303,38 @@
 			};
 			name = Release;
 		};
+		349A563F0ECB108A0091BE4F /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				PREBINDING = NO;
+				SDKROOT = iphoneos2.1;
+			};
+			name = Distribution;
+		};
+		349A56400ECB108A0091BE4F /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: UK Citizens Online Democracy";
+				COPY_PHASE_STRIP = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = FixMyStreet_Prefix.pch;
+				INFOPLIST_FILE = Info.plist;
+				PRODUCT_NAME = FixMyStreet;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "749C7261-921C-47D2-B9C4-A5AE64102B9E";
+			};
+			name = Distribution;
+		};
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -330,6 +370,7 @@
 			buildConfigurations = (
 				1D6058940D05DD3E006BFB54 /* Debug */,
 				1D6058950D05DD3E006BFB54 /* Release */,
+				349A56400ECB108A0091BE4F /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -339,6 +380,7 @@
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,
 				C01FCF5008A954540054247B /* Release */,
+				349A563F0ECB108A0091BE4F /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

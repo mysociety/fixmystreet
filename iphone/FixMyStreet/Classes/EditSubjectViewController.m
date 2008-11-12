@@ -30,6 +30,9 @@
 	self.title = b;
 	if (a) cell.textField.text = a;
 	cell.textField.keyboardType = d;
+	if (d == UIKeyboardTypeEmailAddress) {
+		cell.textField.autocorrectionType = UITextAutocorrectionTypeNo;
+	}
 	cell.textField.autocapitalizationType = e;
 }
 

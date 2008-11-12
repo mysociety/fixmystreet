@@ -45,7 +45,7 @@
 	backButton = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonSystemItemCancel target:nil action:nil];
 	self.navigationItem.backBarButtonItem = backButton;
 
-	UIBarButtonItem* rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Report" style:UIBarButtonSystemItemSave target:self action:@selector(uploadReport) ];
+	UIBarButtonItem* rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Report" style:UIBarButtonItemStyleDone target:self action:@selector(uploadReport) ];
 	rightBarButtonItem.enabled = NO;
 	self.navigationItem.rightBarButtonItem = rightBarButtonItem;
 	[rightBarButtonItem release];
@@ -64,7 +64,10 @@
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 4;
+	FixMyStreetAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
+	if (delegate.name || delegate.email || delegate.phone)
+		return 4;
+	return 3;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -216,7 +219,7 @@
 		picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 	}
 	picker.delegate = self;
-	picker.allowsImageEditing = YES;
+	picker.allowsImageEditing = NO;
 	[self presentModalViewController:picker animated:YES];
 }
 
