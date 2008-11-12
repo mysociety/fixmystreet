@@ -5,7 +5,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org. WWW: http://www.mysociety.org/
 # 
-# $Id: problem-creation-graph,v 1.4 2008-10-09 14:20:53 matthew Exp $
+# $Id: problem-creation-graph,v 1.5 2008-11-12 18:01:01 matthew Exp $
 
 GPLOT_OUTPUT="set terminal png font 'Vera.ttf' 9 size 1200,400"
 EXTENSION=".png"
@@ -78,11 +78,21 @@ cat >$GPSCRIPT <<END
 #    set label 1 'launch of beta' at '2005-02-17', 900
 
     n = 0
-    plot "$SOURCEA" using 1:2 with impulses lt 3 lw 15 title "unconfirmed",\
-         "$SOURCEB" using 1:2 with impulses lt 4 lw 15 title "confirmed",\
-         "$SOURCEC" using 1:2 with impulses lt 5 lw 15 title "fixed",\
-         "$SOURCED" using 1:2 with impulses lt 6 lw 15 title "hidden",\
-         "$SOURCEE" using 1:2 with impulses lt 7 lw 15 title "partial (and any other types)",\
+END
+echo -n >>$GPSCRIPT "    plot \"$SOURCEA\" using 1:2 with impulses lt 3 lw 15 title \"unconfirmed\","
+if [ -s $SOURCEB ]; then
+echo -n >>$GPSCRIPT " \"$SOURCEB\" using 1:2 with impulses lt 4 lw 15 title \"confirmed\","
+fi
+if [ -s $SOURCEC ]; then
+echo -n >>$GPSCRIPT " \"$SOURCEC\" using 1:2 with impulses lt 5 lw 15 title \"fixed\","
+fi
+if [ -s $SOURCED ]; then
+echo -n >>$GPSCRIPT " \"$SOURCED\" using 1:2 with impulses lt 6 lw 15 title \"hidden\","
+fi
+if [ -s $SOURCEE ]; then
+echo -n >>$GPSCRIPT " \"$SOURCEE\" using 1:2 with impulses lt 7 lw 15 title \"partial (and any other types)\","
+fi
+cat >>$GPSCRIPT <<END 
     "< awk 'BEGIN { n = 0 } { n += \$2; print \$1, \$2, n; }' $SOURCEA" using 1:3 axes x1y2 with lines lt 2 title "cumulative total number of problems"
 END
 #echo "gpscript $GPSCRIPT"
