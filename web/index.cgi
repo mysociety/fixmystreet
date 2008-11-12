@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.225 2008-11-10 13:10:56 matthew Exp $
+# $Id: index.cgi,v 1.226 2008-11-12 21:59:43 matthew Exp $
 
 use strict;
 use Standard;
@@ -266,7 +266,7 @@ sub submit_problem {
         push (@errors, _('Please choose a property type'));
         $input{category} = '';
     }
- 
+
     return display_form($q, @errors) if (@errors); # Short circuit
 
     my $areas;
@@ -318,7 +318,7 @@ sub submit_problem {
     } else {
         push(@errors, _('You haven\'t specified any sort of co-ordinates. Please try again.'));
     }
-    
+
     my $image;
     if ($fh) {
         try {
@@ -496,7 +496,7 @@ sub display_form {
         @categories = ('-- Pick a property type --', 'Empty house or bungalow', 'Empty flat or maisonette', 'Whole block of empty flats', 'Empty office or other commercial', 'Empty pub or bar', 'Empty public building - school, hospital, etc.');
         $category = _('Property type:');
     }
-    $category = $q->div($q->label({'for'=>'form_category'}, $category), 
+    $category = $q->div($q->label({'for'=>'form_category'}, $category),
         $q->popup_menu(-name=>'category', -values=>\@categories,
             -attributes=>{id=>'form_category'})
     ) if $category;
@@ -524,6 +524,15 @@ EOF
         my $pins = Page::display_pin($q, $px, $py, 'purple');
         $out .= Page::display_map($q, x => $input{x}, y => $input{y}, type => 2,
             pins => $pins, px => $px, py => $py );
+        my $partial_id;
+        if (my $token = $input{partial}) {
+            $partial_id = mySociety::AuthToken::retrieve('partial', $token);
+            if ($partial_id) {
+                $out .= $q->p({id=>'unknown'}, 'Please note your report has
+                <strong>not yet been sent</strong>. Choose a category
+                and add further information below, then submit.');
+            }
+        }
         $out .= $q->h1(_('Reporting a problem')) . ' ';
         $out .= $q->p(_('You have located the problem at the point marked with a purple pin on the map.
 If this is not the correct location, simply click on the map again. '));

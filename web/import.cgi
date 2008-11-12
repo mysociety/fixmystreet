@@ -6,19 +6,19 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: import.cgi,v 1.7 2008-11-08 19:38:57 matthew Exp $
+# $Id: import.cgi,v 1.8 2008-11-12 21:59:43 matthew Exp $
 
 use strict;
 use Error qw(:try);
 use Standard;
 use mySociety::AuthToken;
-use mySociety::Email;
 use mySociety::EmailUtil;
+use mySociety::EvEl;
 
 sub main {
     my $q = shift;
 
-    my @vars = qw(service subject detail name email phone easting northing lat lon id);
+    my @vars = qw(service subject detail name email phone easting northing lat lon id phone_id);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
 
@@ -77,11 +77,12 @@ sub main {
     }
 
     # Store for possible future use
-    if ($input{id}) {
-        my $already = dbh()->selectrow_array('select id from partial_user where service=? and nsid=?', {}, $input{service}, $input{id});
+    if ($input{id} || $input{phone_id}) {
+        my $id = $input{id} || $input{phone_id};
+        my $already = dbh()->selectrow_array('select id from partial_user where service=? and nsid=?', {}, $input{service}, $id);
         unless ($already) {
             dbh()->do('insert into partial_user (service, nsid, name, email, phone) values (?, ?, ?, ?, ?)',
-                {}, $input{service}, $input{id}, $input{name}, $input{email}, $input{phone});
+                {}, $input{service}, $id, $input{name}, $input{email}, $input{phone});
         }
     }
 
@@ -104,21 +105,17 @@ sub main {
         service => $input{service},
     );
 
-    my $body = mySociety::Email::construct_email({
+    my $sender = mySociety::Config::get('CONTACT_EMAIL');
+    $sender =~ s/team/fms-DO-NOT-REPLY/;
+    mySociety::EvEl::send({
         _template_ => $template,
         _parameters_ => \%h,
         To => $input{name} ? [ [ $input{email}, $input{name} ] ] : $input{email},
-        From => [ mySociety::Config::get('CONTACT_EMAIL'), 'FixMyStreet' ],
-    });
+        From => [ $sender, 'FixMyStreet' ],
+    }, $input{email});
 
-    my $result = mySociety::EmailUtil::send_email($body, mySociety::Config::get('CONTACT_EMAIL'), $input{email});
-    if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
-        dbh()->commit();
-        print 'SUCCESS';
-    } else {
-        dbh()->rollback();
-        print 'ERROR:Could not send email';
-    }
+    dbh()->commit();
+    print 'SUCCESS';
 }
 
 Page::do_fastcgi(\&main);
