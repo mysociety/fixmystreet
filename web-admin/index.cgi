@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.62 2008-11-11 10:54:03 matthew Exp $
+# $Id: index.cgi,v 1.63 2008-11-17 17:52:16 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.62 2008-11-11 10:54:03 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.63 2008-11-17 17:52:16 matthew Exp $';
 
 use strict;
 
@@ -203,7 +203,7 @@ sub admin_council_contacts ($$) {
     if ($posted eq 'new') {
         my $email = trim($q->param('email'));
         my $category = trim($q->param('category'));
-        $category = 'Empty Property' if $q->{site} eq 'emptyhomes';
+        $category = 'Empty property' if $q->{site} eq 'emptyhomes';
         # History is automatically stored by a trigger in the database
         my $update = dbh()->do("update contacts set
             email = ?,
