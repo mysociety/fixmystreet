@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.126 2008-11-11 01:00:28 matthew Exp $
+# $Id: Page.pm,v 1.127 2008-11-17 22:58:51 matthew Exp $
 #
 
 package Page;
@@ -131,12 +131,14 @@ sub header ($%) {
 
     my $html;
     if ($q->{site} eq 'scambs') {
-        open FP, '../templates/website/scambs-header';
+        (my $file = __FILE__) =~ s{/[^/]*?$}{};
+        open FP, $file . '/../templates/website/scambs-header';
         $html = join('', <FP>);
         close FP;
         $html =~ s#<!-- TITLE -->#$title#;
     } elsif ($q->{site} eq 'emptyhomes') {
-        open FP, '../templates/website/emptyhomes-header';
+        (my $file = __FILE__) =~ s{/[^/]*?$}{};
+        open FP, $file . '/../templates/website/emptyhomes-header';
         $html = join('', <FP>);
         close FP;
         $html =~ s#<!-- TITLE -->#$title#;
@@ -181,12 +183,14 @@ sub footer {
     $js = ''; # Don't use fileupload JS at the moment
 
     if ($q->{site} eq 'scambs') {
-        open FP, '../templates/website/scambs-footer';
+        (my $file = __FILE__) =~ s{/[^/]*?$}{};
+        open FP, $file . '/../templates/website/scambs-footer';
         my $html = join('', <FP>);
         close FP;
         return $html;
     } elsif ($q->{site} eq 'emptyhomes') {
-        open FP, '../templates/website/emptyhomes-footer';
+        (my $file = __FILE__) =~ s{/[^/]*?$}{};
+        open FP, $file . '/../templates/website/emptyhomes-footer';
         my $html = join('', <FP>);
         close FP;
         return $html;
@@ -587,7 +591,7 @@ sub display_problem_text {
             $out .= $q->br() . $q->small('Sent to ' . $council . ' ' .
                 prettify_duration($problem->{whensent}, 'minute') . ' later');
         }
-    } elsif ($q->{site} ne 'emptyhomes') {
+    } else {
         $out .= $q->br() . $q->small('Not reported to council');
     }
     $out .= '</em></p>';
