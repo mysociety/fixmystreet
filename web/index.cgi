@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.226 2008-11-12 21:59:43 matthew Exp $
+# $Id: index.cgi,v 1.227 2008-11-17 12:37:17 matthew Exp $
 
 use strict;
 use Standard;
@@ -870,7 +870,7 @@ sub display_problem {
         $q->small($q->a({rel => 'nofollow', href => '/contact?id=' . $input{id}}, 'Offensive? Unsuitable? Tell us'))
     );
 
-    my $back = NewURL($q, -url=>'/', x=>$x_tile, y=>$y_tile);
+    my $back = NewURL($q, -url => '/', 'x' => $x_tile, 'y' => $y_tile );
     $out .= '<p style="padding-bottom: 0.5em; border-bottom: dotted 1px #999999;" align="right"><a href="'
         . $back . '">' . _('More problems nearby') . '</a></p>';
     $out .= '<div id="alert_links">';
