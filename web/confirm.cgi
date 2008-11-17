@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.49 2008-11-17 11:50:35 matthew Exp $
+# $Id: confirm.cgi,v 1.50 2008-11-17 22:42:12 matthew Exp $
 
 use strict;
 use Standard;
@@ -124,7 +124,8 @@ sub confirm_problem {
             . sprintf(' <a href="%s">View the problem on this site</a>.', "/report/$id")
         ));
     } elsif ($q->{site} eq 'emptyhomes') {
-        $out = $q->p('Thank you for reporting an empty property on
+        if ($council) {
+            $out = $q->p('Thank you for reporting an empty property on
 ReportEmptyHomes.com. We have emailed the empty property officer in the council
 responsible with the details and asked them to do whatever they can to get the
 empty property back into use as soon as possible.') .
@@ -138,7 +139,13 @@ $q->p('We will contact you again in a month and again after six months to ask wh
 happened. Hopefully the property will be well on the way to being brought back
 into use by then, but if not we can offer advice on what you can do next.') .
 $q->p('Thank you for using ReportEmptyHomes.com. Your action is already helping
-to resolve the UK&rsquo;s empty homes crisis.');
+to resolve the UK&rsquo;s empty homes crisis.') .
+$q->p('<a href="/report/' . $id . '">View your report</a>.');
+        } else {
+            $out = $q->p('Thank you for reporting an empty property on
+ReportEmptyHomes.com.') .
+$q->p('<a href="/report/' . $id . '">View your report</a>.');
+        }
     } else {
         $out = $q->p(
             _('You have successfully confirmed your problem')
