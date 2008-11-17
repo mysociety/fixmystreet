@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.48 2008-10-17 18:31:05 matthew Exp $
+# $Id: confirm.cgi,v 1.49 2008-11-17 11:50:35 matthew Exp $
 
 use strict;
 use Standard;
@@ -125,7 +125,7 @@ sub confirm_problem {
         ));
     } elsif ($q->{site} eq 'emptyhomes') {
         $out = $q->p('Thank you for reporting an empty property on
-ReportEmptyHomes.com. I have emailed the empty property officer in the council
+ReportEmptyHomes.com. We have emailed the empty property officer in the council
 responsible with the details and asked them to do whatever they can to get the
 empty property back into use as soon as possible.') .
 $q->p('Most councils are quite good at bringing empty properties back into use. Even
@@ -134,9 +134,9 @@ repair or the owner is unwilling to act. In most cases it takes six months
 before you can expect to see anything change. This doesn&rsquo;t mean the council
 isn&rsquo;t doing anything. We encourage councils to update the website so you can
 see what is happening.') . 
-$q->p('I will contact you again in a month and again after six months to ask what has
+$q->p('We will contact you again in a month and again after six months to ask what has
 happened. Hopefully the property will be well on the way to being brought back
-into use by then, but if not I can offer advice on what you can do next.') .
+into use by then, but if not we can offer advice on what you can do next.') .
 $q->p('Thank you for using ReportEmptyHomes.com. Your action is already helping
 to resolve the UK&rsquo;s empty homes crisis.');
     } else {
