@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.227 2008-11-17 12:37:17 matthew Exp $
+# $Id: index.cgi,v 1.228 2008-11-18 17:29:51 matthew Exp $
 
 use strict;
 use Standard;
@@ -144,7 +144,8 @@ EOF
     $out .= $q->h2(_('FixMyStreet updates'));
     $out .= $q->div({-id => 'front_stats'},
         $q->div("<big>$new</big> report" . ($new!=1?'s':''), $new_text),
-        ($q->{site} ne 'emptyhomes' && $q->div("<big>$fixed</big> fixed in past month")),
+        ($q->{site} ne 'emptyhomes' ? $q->div("<big>$fixed</big> fixed in past month")
+            : $q->div("<big>$fixed</big> back in use in past month")),
         $q->div("<big>$updates</big> update" . ($updates ne '1'?'s':''), "on reports"),
     );
 

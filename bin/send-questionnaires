@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-questionnaires,v 1.8 2008-10-07 16:44:09 matthew Exp $
+# $Id: send-questionnaires,v 1.9 2008-11-18 17:29:50 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -83,7 +83,7 @@ foreach my $row (@$unsent) {
         _template_ => $template,
         _parameters_ => \%h,
         To => [ [ $row->{email}, $row->{name} ] ],
-        From => [ $sender, 'FixMyStreet' ],
+        From => [ $sender, mySociety::Config::get('CONTACT_NAME') ],
         'Message-ID' => sprintf('<ques-%s-%s@mysociety.org>', time(), unpack('h*', random_bytes(5, 1))),
     });
 
