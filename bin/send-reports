@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.62 2008-11-18 17:29:50 matthew Exp $
+# $Id: send-reports,v 1.63 2008-11-19 19:06:02 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -180,7 +180,7 @@ If you know of an appropriate contact address, please do get in touch. ]\n\n";
 
     if (mySociety::Config::get('STAGING_SITE')) {
         @recips = ( mySociety::Config::get('CONTACT_EMAIL') );
-    } else {
+    } elsif ($site eq 'emptyhomes') {
         push @recips, mySociety::Config::get('CONTACT_EMAIL');
     }
 
