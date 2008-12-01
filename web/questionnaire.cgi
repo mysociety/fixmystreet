@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.35 2008-12-01 17:26:35 matthew Exp $
+# $Id: questionnaire.cgi,v 1.36 2008-12-01 17:36:08 matthew Exp $
 
 use strict;
 use Standard;
@@ -69,6 +69,11 @@ sub submit_questionnaire {
         $error = $e;
     };
     return $error if $error;
+
+    # EHA questionnaires done for you
+    if ($q->{site} eq 'emptyhomes') {
+        $input{another} = $num_questionnaire==1 ? 'Yes' : 'No';
+    }
 
     my @errors;
     push @errors, 'Please state whether or not the problem has been fixed' unless $input{been_fixed};
