@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.34 2008-12-01 12:19:13 matthew Exp $
+# $Id: alert.cgi,v 1.35 2008-12-01 12:21:46 matthew Exp $
 
 use strict;
 use Standard;
@@ -163,7 +163,7 @@ sub alert_list {
             [ 'council', $district->{area_id}, Page::short_name($district->{name}), $district->{name} ],
             [ 'ward', $district->{area_id}.':'.$d_ward->{area_id}, Page::short_name($district->{name}) . '/' . Page::short_name($d_ward->{name}),
               "$district->{name}, within $d_ward->{name} ward" ];
-        if ($q->site ne 'emptyhomes') {
+        if ($q->{site} ne 'emptyhomes') {
             push @options,
                 [ 'council', $county->{area_id}, Page::short_name($county->{name}), $county->{name} ],
                 [ 'ward', $county->{area_id}.':'.$c_ward->{area_id}, Page::short_name($county->{name}) . '/'
