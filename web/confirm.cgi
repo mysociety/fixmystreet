@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.50 2008-11-17 22:42:12 matthew Exp $
+# $Id: confirm.cgi,v 1.51 2008-12-01 12:19:13 matthew Exp $
 
 use strict;
 use Standard;
@@ -59,15 +59,17 @@ sub confirm_update {
         $add_alert = $data->{add_alert};
     }
 
-    #if (dbh()->selectrow_array('select email from abuse where lower(email)=?', {}, lc($email))) {
-    #    dbh()->do("update comment set state='hidden' where id=?", {}, $id);
-    #    return $q->p('Sorry, there has been an error confirming your update.');
-    #} else {
-    dbh()->do("update comment set state='confirmed' where id=? and state='unconfirmed'", {}, $id);
-    #}
-
     my ($problem_id, $fixed, $email, $name) = dbh()->selectrow_array(
         "select problem_id, mark_fixed, email, name from comment where id=?", {}, $id);
+
+    (my $domain = $email) =~ s/^.*\@//;
+    if (dbh()->selectrow_array('select email from abuse where lower(email)=? or lower(email)=?', {}, lc($email), lc($domain))) {
+        dbh()->do("update comment set state='hidden' where id=?", {}, $id);
+        return $q->p('Sorry, there has been an error confirming your update.');
+    } else {
+        dbh()->do("update comment set state='confirmed' where id=? and state='unconfirmed'", {}, $id);
+    }
+
     my $creator_fixed = 0;
     if ($fixed) {
         dbh()->do("update problem set state='fixed', lastupdate = ms_current_timestamp()

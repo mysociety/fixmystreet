@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.33 2008-10-08 14:38:29 matthew Exp $
+# $Id: alert.cgi,v 1.34 2008-12-01 12:19:13 matthew Exp $
 
 use strict;
 use Standard;
@@ -162,18 +162,21 @@ sub alert_list {
         push @options,
             [ 'council', $district->{area_id}, Page::short_name($district->{name}), $district->{name} ],
             [ 'ward', $district->{area_id}.':'.$d_ward->{area_id}, Page::short_name($district->{name}) . '/' . Page::short_name($d_ward->{name}),
-              "$district->{name}, within $d_ward->{name} ward" ],
-            [ 'council', $county->{area_id}, Page::short_name($county->{name}), $county->{name} ],
-            [ 'ward', $county->{area_id}.':'.$c_ward->{area_id}, Page::short_name($county->{name}) . '/'
-              . Page::short_name($c_ward->{name}), "$county->{name}, within $c_ward->{name} ward" ];
-        $options .= $q->p($q->strong(_('Or problems reported to:'))) .
-            $q->ul(alert_list_options($q, @options));
-        $options .= $q->p($q->small(_('FixMyStreet sends different categories of problem
+              "$district->{name}, within $d_ward->{name} ward" ];
+        if ($q->site ne 'emptyhomes') {
+            push @options,
+                [ 'council', $county->{area_id}, Page::short_name($county->{name}), $county->{name} ],
+                [ 'ward', $county->{area_id}.':'.$c_ward->{area_id}, Page::short_name($county->{name}) . '/'
+                  . Page::short_name($c_ward->{name}), "$county->{name}, within $c_ward->{name} ward" ];
+            $options .= $q->p($q->strong(_('Or problems reported to:'))) .
+                $q->ul(alert_list_options($q, @options));
+            $options .= $q->p($q->small(_('FixMyStreet sends different categories of problem
 to the appropriate council, so problems within the boundary of a particular council
 might not match the problems sent to that council. For example, a graffiti report
 will be sent to the district council, so will appear in both of the district
 council&rsquo;s alerts, but will only appear in the "Within the boundary" alert
 for the county council.')));
+        }
         $options .= '</div>
 <div id="rss_buttons">
 ';
