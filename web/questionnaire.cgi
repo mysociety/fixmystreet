@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.34 2008-10-17 18:31:05 matthew Exp $
+# $Id: questionnaire.cgi,v 1.35 2008-12-01 17:26:35 matthew Exp $
 
 use strict;
 use Standard;
@@ -286,7 +286,7 @@ EOF
 </div>
 EOF
     $out .= <<EOF;
-<p align="right"><input type="submit" name="submit" value="Submit questionnaire"></p>
+<p><input type="submit" name="submit" value="Submit questionnaire"></p>
 </form>
 EOF
     $out .= Page::display_map_end(0);
