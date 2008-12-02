@@ -8,6 +8,7 @@
 
 #import "FixMyStreetAppDelegate.h"
 #import "InputTableViewController.h"
+#import "Reachability.h"
 
 @implementation FixMyStreetAppDelegate
 
@@ -103,6 +104,15 @@
 
 // Report stuff
 -(void)uploadReport {
+	// Check internet connection status
+	NetworkStatus internetConnectionStatus	= [[Reachability sharedReachability] internetConnectionStatus];
+    if (internetConnectionStatus == NotReachable) {
+		UIAlertView *v = [[UIAlertView alloc] initWithTitle:@"Reporting failed" message:@"You need to be connected to the internet to report a problem." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+		[v show];
+		[v release];		
+		return;
+    }
+
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 
 	uploading = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];

@@ -289,7 +289,10 @@
 	[self enableSubmissionButton];
 }
 
--(void)newError:(NSString *)text {
+-(void)newLocationError:(NSString *)text {
+	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Location required" message:text delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+	[alert show];
+	[alert release];
 }
 
 // Buttons

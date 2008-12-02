@@ -38,6 +38,6 @@
 
 //MyCLControllerDelegate
 -(void)newLocationUpdate:(CLLocation *)location;
--(void)newError:(NSString *)text;
+-(void)newLocationError:(NSString *)text;
 
 @end

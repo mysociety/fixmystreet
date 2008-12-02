@@ -51,7 +51,7 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 @protocol MyCLControllerDelegate <NSObject>
 @required
 -(void)newLocationUpdate:(CLLocation *)location;
--(void)newError:(NSString *)text;
+-(void)newLocationError:(NSString *)text;
 @end
 
 

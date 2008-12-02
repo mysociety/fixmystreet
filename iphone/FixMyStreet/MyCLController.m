@@ -110,7 +110,8 @@ static MyCLController *sharedCLDelegate = nil;
 			// can reset this for all apps by going to Settings > General > Reset > Reset Location Warnings.
 			//
 			case kCLErrorDenied:
-				[errorString appendFormat:@"%@\n", NSLocalizedString(@"LocationDenied", nil)];
+				[self.locationManager stopUpdatingLocation];
+				[self.delegate newLocationError:@"FixMyStreet needs your location to know where your problem is."];
 				break;
 
 			// This error code is usually returned whenever the device has no data or WiFi connectivity,
