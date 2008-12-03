@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: ajax.cgi,v 1.7 2008-12-03 18:11:55 matthew Exp $
+# $Id: ajax.cgi,v 1.8 2008-12-03 18:21:22 matthew Exp $
 
 use strict;
 use Standard;
@@ -67,7 +67,7 @@ sub main {
 
     print $q->header(-charset => 'utf-8', -content_type => 'text/javascript');
 
-    $pins =~ s/'/\'/g;
+    $pins =~ s/'/\\'/g;
     $om_list =~ s/'/\\'/g;
     $am_list =~ s/'/\\'/g;
     #$f_list =~ s/'/\\'/g;
