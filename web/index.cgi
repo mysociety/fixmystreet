@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.229 2008-11-18 17:31:41 matthew Exp $
+# $Id: index.cgi,v 1.230 2008-12-03 18:01:49 matthew Exp $
 
 use strict;
 use Standard;
@@ -784,11 +784,9 @@ EOF
         $list .= ' <small>(fixed)</small>' if $_->{state} eq 'fixed';
         $list .= '</li>';
     }
-    if (@$on_map) {
-        $out .= '<ul id="current">' . $list . '</ul>';
-    } else {
-        $out .= $q->p(_('No problems have been reported yet.'));
-    }
+    $list = $q->li(_('No problems have been reported yet.'))
+        unless $list;
+    $out .= $q->ul({-id => 'current'}, $list);
     $out .= $q->h2({-id => 'closest_problems'}, sprintf(_('Other nearby problems <small>within&nbsp;%skm</small>'), $dist));
     $list = '';
     foreach (@$around_map) {
@@ -798,11 +796,9 @@ EOF
         $list .= ' <small>(fixed)</small>' if $_->{state} eq 'fixed';
         $list .= '</li>';
     }
-    if (@$around_map) {
-        $out .= '<ul id="current_near">' . $list . '</ul>';
-    } else {
-        $out .= $q->p(_('No problems found.'));
-    }
+    $list = $q->li(_('No problems found.'))
+        unless $list;
+    $out .= $q->ul({-id => 'current_near'}, $list);
     $out .= '</div>';
     $out .= Page::display_map_end(1);
 
