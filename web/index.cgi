@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.230 2008-12-03 18:01:49 matthew Exp $
+# $Id: index.cgi,v 1.231 2008-12-03 18:26:40 matthew Exp $
 
 use strict;
 use Standard;
@@ -787,7 +787,7 @@ EOF
     $list = $q->li(_('No problems have been reported yet.'))
         unless $list;
     $out .= $q->ul({-id => 'current'}, $list);
-    $out .= $q->h2({-id => 'closest_problems'}, sprintf(_('Other nearby problems <small>within&nbsp;%skm</small>'), $dist));
+    $out .= $q->h2({-id => 'closest_problems'}, sprintf(_('Closest nearby problems <small>(within&nbsp;%skm)</small>'), $dist));
     $list = '';
     foreach (@$around_map) {
         $list .= '<li><a href="/report/' . $_->{id} . '">';
