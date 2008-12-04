@@ -69,6 +69,10 @@ static MyCLController *sharedCLDelegate = nil;
 	[self.locationManager startUpdatingLocation];
 }
 
+-(void)stopUpdatingLocation {
+	self.updating = NO;
+	[self.locationManager stopUpdatingLocation];
+}
 
 // Called when the location is updated
 - (void)locationManager:(CLLocationManager *)manager
@@ -110,7 +114,7 @@ static MyCLController *sharedCLDelegate = nil;
 			// can reset this for all apps by going to Settings > General > Reset > Reset Location Warnings.
 			//
 			case kCLErrorDenied:
-				[self.locationManager stopUpdatingLocation];
+				[self stopUpdatingLocation];
 				[self.delegate newLocationError:@"FixMyStreet needs your location to know where your problem is."];
 				break;
 

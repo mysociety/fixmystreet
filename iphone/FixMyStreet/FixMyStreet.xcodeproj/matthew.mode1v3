@@ -228,8 +228,6 @@
 			<key>Layout</key>
 			<array>
 				<dict>
-					<key>BecomeActive</key>
-					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -279,7 +277,6 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>7</integer>
 									<integer>3</integer>
 									<integer>0</integer>
 								</array>
@@ -317,6 +314,8 @@
 					<key>Dock</key>
 					<array>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -334,15 +333,16 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>34865A570EE7F27400716A66</string>
+										<string>34865A8E0EE7FD7B00716A66</string>
 										<key>history</key>
 										<array>
 											<string>34865A1D0EE7F0B000716A66</string>
-											<string>34865A1F0EE7F0B000716A66</string>
-											<string>34865A200EE7F0B000716A66</string>
 											<string>34865A210EE7F0B000716A66</string>
-											<string>34865A4B0EE7F25E00716A66</string>
-											<string>34865A560EE7F27400716A66</string>
+											<string>34865A630EE7FB7600716A66</string>
+											<string>34865A820EE7FC8D00716A66</string>
+											<string>34865A830EE7FC8D00716A66</string>
+											<string>34865A890EE7FD2000716A66</string>
+											<string>34865A8A0EE7FD2000716A66</string>
 										</array>
 										<key>prevStack</key>
 										<array>
@@ -355,6 +355,20 @@
 											<string>34865A2D0EE7F0B000716A66</string>
 											<string>34865A2F0EE7F0B000716A66</string>
 											<string>34865A4F0EE7F25E00716A66</string>
+											<string>34865A5A0EE7F29C00716A66</string>
+											<string>34865A650EE7FB7600716A66</string>
+											<string>34865A660EE7FB7600716A66</string>
+											<string>34865A670EE7FB7600716A66</string>
+											<string>34865A680EE7FB7600716A66</string>
+											<string>34865A6C0EE7FBA600716A66</string>
+											<string>34865A750EE7FC4600716A66</string>
+											<string>34865A760EE7FC4600716A66</string>
+											<string>34865A770EE7FC4600716A66</string>
+											<string>34865A780EE7FC4600716A66</string>
+											<string>34865A790EE7FC4600716A66</string>
+											<string>34865A850EE7FC8D00716A66</string>
+											<string>34865A860EE7FC8D00716A66</string>
+											<string>34865A8B0EE7FD2000716A66</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -571,12 +585,14 @@
 					<key>Dock</key>
 					<array>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>1CD0528F0623707200166675</string>
 								<key>PBXProjectModuleLabel</key>
-								<string></string>
+								<string>FixMyStreetAppDelegate.m</string>
 								<key>StatusBarVisibility</key>
 								<true/>
 							</dict>
@@ -787,6 +803,8 @@
 							<key>Dock</key>
 							<array>
 								<dict>
+									<key>BecomeActive</key>
+									<true/>
 									<key>ContentConfiguration</key>
 									<dict>
 										<key>PBXProjectModuleGUID</key>
@@ -813,8 +831,6 @@
 							<string>396pt</string>
 						</dict>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>

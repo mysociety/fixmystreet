@@ -113,6 +113,7 @@
 		return;
     }
 
+	[[MyCLController sharedInstance] stopUpdatingLocation];
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 
 	uploading = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
@@ -208,6 +209,8 @@
 
 	if ([returnString isEqualToString:@"SUCCESS"]) {
 		subject = nil;
+		latitude = nil;
+		longitude = nil;
 		self.image = nil;
 		[(InputTableViewController*)self.navigationController.visibleViewController reportUploaded:YES];
 		UIAlertView *v = [[UIAlertView alloc] initWithTitle:@"Your report has been received" message:@"Check your email for the next step" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];

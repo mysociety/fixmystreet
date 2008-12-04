@@ -67,6 +67,7 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 @property BOOL updating;
 
 -(void)startUpdatingLocation;
+-(void)stopUpdatingLocation;
 
 - (void)locationManager:(CLLocationManager *)manager
 	didUpdateToLocation:(CLLocation *)newLocation
