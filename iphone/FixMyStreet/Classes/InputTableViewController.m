@@ -11,6 +11,7 @@
 #import "FixMyStreetAppDelegate.h"
 #import "EditSubjectViewController.h"
 #import "AboutViewController.h"
+#import "Reachability.h"
 
 @implementation InputTableViewController
 
@@ -52,7 +53,7 @@
 
 	// Let's start trying to find our location...
 	[MyCLController sharedInstance].delegate = self;
-	[[MyCLController sharedInstance] startUpdatingLocation];
+	[self startLocation];
 
 	FixMyStreetAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
 	if (delegate.image) {
@@ -192,7 +193,7 @@
 	if (indexPath.section == 0) {
 		[self addPhoto:nil];	
 	} else if (indexPath.section == 2) {
-		[[MyCLController sharedInstance].locationManager startUpdatingLocation];
+		[self startLocation];
 	} else if (indexPath.section == 1) {
 		FixMyStreetAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
 		EditSubjectViewController* editSubjectViewController = [[EditSubjectViewController alloc] initWithNibName:@"EditSubjectView" bundle:nil];
@@ -274,7 +275,18 @@
 	[picker release];
 }
 
-// MyCLControllerDelegate
+// MyCLControllerDelegate and related
+
+-(void)startLocation {
+	NetworkStatus internetConnectionStatus	= [[Reachability sharedReachability] internetConnectionStatus];
+	if (internetConnectionStatus == NotReachable) {
+		UIAlertView *v = [[UIAlertView alloc] initWithTitle:@"Location required" message:@"FixMyStreet needs some sort of connection in order to find your location." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+		[v show];
+		[v release];		
+	} else {
+		[[MyCLController sharedInstance] startUpdatingLocation];
+	}
+}
 
 -(void)newLocationUpdate:(CLLocation *)location {
 	//UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Hey" message:text delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];

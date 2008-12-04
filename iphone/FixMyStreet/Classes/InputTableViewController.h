@@ -36,6 +36,8 @@
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingImage:(UIImage *)image editingInfo:(NSDictionary *)editingInfo;
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker;
 
+-(void)startLocation;
+
 //MyCLControllerDelegate
 -(void)newLocationUpdate:(CLLocation *)location;
 -(void)newLocationError:(NSString *)text;
