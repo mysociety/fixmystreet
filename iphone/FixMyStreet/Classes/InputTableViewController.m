@@ -194,10 +194,6 @@
 		[self addPhoto:nil];	
 	} else if (indexPath.section == 2) {
 		[self startLocation];
-		UIActivityIndicatorView* activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-		[activityView startAnimating];
-		actionFetchLocationCell.accessoryView = activityView;
-		[activityView release];	
 	} else if (indexPath.section == 1) {
 		FixMyStreetAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
 		EditSubjectViewController* editSubjectViewController = [[EditSubjectViewController alloc] initWithNibName:@"EditSubjectView" bundle:nil];
@@ -289,6 +285,10 @@
 		[v release];		
 	} else {
 		[[MyCLController sharedInstance] startUpdatingLocation];
+		UIActivityIndicatorView* activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+		[activityView startAnimating];
+		actionFetchLocationCell.accessoryView = activityView;
+		[activityView release];	
 	}
 }
 
@@ -309,6 +309,7 @@
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Location required" message:text delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
 	[alert show];
 	[alert release];
+	[self enableSubmissionButton];
 }
 
 // Buttons
