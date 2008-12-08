@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.231 2008-12-03 18:26:40 matthew Exp $
+# $Id: index.cgi,v 1.232 2008-12-08 10:31:42 matthew Exp $
 
 use strict;
 use Standard;
@@ -105,7 +105,7 @@ sub front_page {
     $updates =~ s/(\d\d\d)$/,$1/;
     my $new = Problems::recent_new('1 week');
     my $new_text = 'in past week';
-    if ($new > $fixed) {
+    if ($q->{site} ne 'emptyhomes' && $new > $fixed) {
         $new = Problems::recent_new('3 days');
         $new_text = 'recently';
     }
