@@ -6,27 +6,35 @@
             <xsl:template match="/">
 <html lang="en-gb">
     <head>
-        <title><xsl:value-of select="$title"/> XML Feed</title>
+        <title><xsl:value-of select="$title"/> RSS Feed</title>
         <link rel="stylesheet" href="/css/core.css"/>
-        <link rel="stylesheet" href="/css/main.css"/>
+        <link rel="stylesheet" href="/css/emptyhomes.css"/>
     </head>
     <body>
-    <div id="header"><a href="/">FixMyStreet</a></div>
+    <div id="header"><a href="http://www.emptyhomes.com/"><img border="0" src="/i/eha.png" alt="Empty Homes Agency" width="272" height="71"/></a></div>
+    <div id="navigation">
+        <ul>
+            <li><a href="/">Report a property</a></li>
+            <li><a href="/reports">Reports</a></li>
+            <li><a href="/alert">Get local reports</a></li>
+            <li><a href="/faq">FAQs</a></li>
+            <li><a href="/about">About us</a></li>
+        </ul>
+    </div>
+
     <div id="wrapper"><div id="content">
         <xsl:apply-templates select="rss/channel"/>
     </div></div>
 
-<h2 class="v">Navigation</h2>
-<ul id="navigation">
-<li><a href="/">Report a problem</a></li>
-<li><a href="/reports">All reports</a></li>
-<li><a href="/faq">Help</a></li>
-<li><a href="/contact">Contact</a></li>
-</ul>
+<div id="footer">
+Empty Homes Agency <br/>
+Downstream Building, 1 London Bridge, London, SE1 9BG
 
-<p id="footer">Built by <a href="http://www.mysociety.org/">mySociety</a>,
-using some <a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/bci">clever</a> <a
-href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.</p>
+<br/>
+Tel: 020 7022 1870 <br/>
+Fax: 020 7681 3214 <br/>
+Email: <a href="mailto:info&#64;emptyhomes.com">info&#64;emptyhomes.com</a>
+</div>
 
 </body>
 </html>
@@ -35,7 +43,7 @@ href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code<
             <xsl:template match="channel">
                 <div id="rss_box">
                     <h1>What is this page?</h1>
-                    <p>This is an RSS feed from the FixMyStreet website. RSS feeds allow you to stay up to date with the latest changes and additions to the site.
+                    <p>This is an RSS feed from the ReportEmptyHomes website. RSS feeds allow you to stay up to date with the latest changes and additions to the site.
                     To subscribe to it, you will need a News Reader or other similar device.
                     <br/>
                     <a href="http://news.bbc.co.uk/1/hi/help/3223484.stm#whatisrss"><strong>Help</strong>, I don't know what a news reader is and still don't know what this is about <small>(from the BBC)</small>.</a></p>

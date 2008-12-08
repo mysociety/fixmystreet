@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.23 2008-11-17 18:01:26 matthew Exp $
+# $Id: reports.cgi,v 1.24 2008-12-08 10:54:16 matthew Exp $
 
 use strict;
 use Standard;
@@ -95,7 +95,8 @@ sub main {
             $type = 'area_problems'; # Problems within an area
         }
         print $q->header( -type => 'application/xml; charset=utf-8' );
-        my $out = mySociety::Alert::generate_rss($type, "/$url", \@params, \%title_params);
+        my $xsl = $q->{site} eq 'emptyhomes' ? '/xsl.eha.xsl' : '/xsl.xsl';
+        my $out = mySociety::Alert::generate_rss($type, $xsl, "/$url", \@params, \%title_params);
         $out =~ s/FixMyStreet/EnviroCrime/g if $q->{site} eq 'scambs';
         $out =~ s/matthew.fixmystreet/scambs.matthew.fixmystreet/g if $q->{site} eq 'scambs'; # XXX Temp
         $out =~ s/matthew.fixmystreet/emptyhomes.matthew.fixmystreet/g if $q->{site} eq 'emptyhomes';

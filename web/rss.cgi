@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: rss.cgi,v 1.25 2008-09-25 12:55:07 matthew Exp $
+# $Id: rss.cgi,v 1.26 2008-12-08 10:54:16 matthew Exp $
 
 use strict;
 use Error qw(:try);
@@ -20,26 +20,27 @@ use mySociety::Gaze;
 sub main {
     my $q = shift;
     my $type = $q->param('type') || '';
+    my $xsl = $q->{site} eq 'emptyhomes' ? '/xsl.eha.xsl' : '/xsl.xsl';
     my $out;
     if ($type eq 'local_problems') {
         $out = rss_local_problems($q);
     } elsif ($type eq 'new_updates') {
         my $id = $q->param('id');
         my $qs = 'report/' . $id;
-        $out = mySociety::Alert::generate_rss($type, $qs, [$id]);
+        $out = mySociety::Alert::generate_rss($type, $xsl, $qs, [$id]);
     } elsif ($type eq 'new_problems' || $type eq 'new_fixed_problems') {
-        $out = mySociety::Alert::generate_rss($type, '');
+        $out = mySociety::Alert::generate_rss($type, $xsl, '');
     } elsif ($type eq 'council_problems') {
         my $id = $q->param('id');
         my $qs = '/'.$id;
-        $out = mySociety::Alert::generate_rss($type, $qs, [$id]);
+        $out = mySociety::Alert::generate_rss($type, $xsl, $qs, [$id]);
     } elsif ($type eq 'area_problems') {
         my $id = $q->param('id');
         my $va_info = mySociety::MaPit::get_voting_area_info($id);
         my $qs = '/'.$id;
-        $out = mySociety::Alert::generate_rss($type, $qs, [$id], { NAME => $va_info->{name} });
+        $out = mySociety::Alert::generate_rss($type, $xsl, $qs, [$id], { NAME => $va_info->{name} });
     } elsif ($type eq 'all_problems') {
-        $out = mySociety::Alert::generate_rss($type, '');
+        $out = mySociety::Alert::generate_rss($type, $xsl, '');
     } else {
         print $q->redirect('http://www.fixmystreet.com/alert');
         exit;
@@ -91,6 +92,7 @@ sub rss_local_problems {
         $d = mySociety::Gaze::get_radius_containing_population($lat, $lon, 200000);
         $d = int($d*10+0.5)/10;
     }
-    return mySociety::Alert::generate_rss('local_problems', $qs, [$e, $n, $d]);
+    my $xsl = $q->{site} eq 'emptyhomes' ? '/xsl.eha.xsl' : '/xsl.xsl';
+    return mySociety::Alert::generate_rss('local_problems', $xsl, $qs, [$e, $n, $d]);
 }
 
