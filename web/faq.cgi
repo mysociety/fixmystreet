@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.37 2008-10-15 22:07:26 matthew Exp $
+# $Id: faq.cgi,v 1.38 2008-12-09 10:40:02 matthew Exp $
 
 use strict;
 use Standard -db;
@@ -232,8 +232,8 @@ source code</a> (look under &lsquo;bci&rsquo;) and help us develop it.
 You&rsquo;re welcome to use it in your own projects, although you must also
 make available the source code to any such projects.')),
         $q->dt(_('People build things, not organisations. Who <em>actually</em> built it?')),
-        $q->dd(_('This adaptation of Fix&shy;MyStreet was written by Matthew Somerville.
-Thanks go to
+        $q->dd(_('This adaptation of <a href="http://www.fixmystreet.com/">Fix&shy;MyStreet</a>
+was written by Matthew Somerville. Thanks go to
 <a href="http://www.ordnancesurvey.co.uk">Ordnance Survey</a> (for the maps,
 UK postcodes, and UK addresses &ndash; data &copy; Crown copyright, all
 rights reserved, Ministry of Justice 100037819&nbsp;2008),
