@@ -4,7 +4,11 @@ The following updates have been left on this problem:
 
 <?=$values['data']?>
 
-View or reply to these updates: <?=$values['problem_url']?>
+To view or reply to these updates, please visit the following URL:
+    <?=$values['problem_url']?>
+
+Replies to this email will go to the team behind FixMyStreet, *not*
+to anyone who left an update.
 
 Yours,  
 The FixMyStreet team

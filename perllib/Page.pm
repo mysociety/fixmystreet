@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.128 2008-12-01 12:19:13 matthew Exp $
+# $Id: Page.pm,v 1.129 2008-12-11 15:31:12 matthew Exp $
 #
 
 package Page;
@@ -791,6 +791,8 @@ sub check_photo {
 
 sub process_photo {
     my $fh = shift;
+    my $import = shift;
+
     my $photo = Image::Magick->new;
     my $err = $photo->Read(file => \*$fh); # Mustn't be stringified
     close $fh;
@@ -800,6 +802,19 @@ sub process_photo {
     my @blobs = $photo->ImageToBlob();
     undef $photo;
     $photo = $blobs[0];
+    return $photo unless $import; # Only check orientation for iPhone imports at present
+
+    # Now check if it needs orientating
+    my ($fh, $filename) = mySociety::TempFiles::named_tempfile('.jpeg');
+    print $fh $photo;
+    close $fh;
+    my $out = `jhead -se -autorot $filename`;
+    if ($out) {
+        open(FP, $filename) or die $!;
+        $photo = join('', <FP>);
+        close FP;
+    }
+    unlink $filename;
     return $photo;
 }
 
