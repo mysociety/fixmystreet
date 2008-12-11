@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: import.cgi,v 1.8 2008-11-12 21:59:43 matthew Exp $
+# $Id: import.cgi,v 1.9 2008-12-11 15:18:44 matthew Exp $
 
 use strict;
 use Error qw(:try);
@@ -60,7 +60,7 @@ sub main {
     my $photo;
     if ($fh) {
         try {
-            $photo = Page::process_photo($fh);
+            $photo = Page::process_photo($fh, 1);
         } catch Error::Simple with {
             my $e = shift;
             push @errors, "That photo doesn't appear to have uploaded correctly ($e), please try again.";

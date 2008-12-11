@@ -1,0 +1,52 @@
+#!/usr/bin/perl -w
+
+# rotate-photos:
+# Manaully fix any already-uploaded photos that are orientated wrongly.
+#
+# Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
+# Email: matthew@mysociety.org. WWW: http://www.mysociety.org
+#
+# $Id: rotate-photos,v 1.1 2008-12-11 15:18:40 matthew Exp $
+
+use strict;
+require 5.8.0;
+
+# Horrible boilerplate to set up appropriate library paths.
+use FindBin;
+use lib "$FindBin::Bin/../perllib";
+use lib "$FindBin::Bin/../../perllib";
+
+use Utils;
+use mySociety::Config;
+use mySociety::DBHandle qw(dbh select_all);
+use mySociety::TempFiles;
+
+BEGIN {
+    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+    mySociety::DBHandle::configure(
+        Name => mySociety::Config::get('BCI_DB_NAME'),
+        User => mySociety::Config::get('BCI_DB_USER'),
+        Password => mySociety::Config::get('BCI_DB_PASS'),
+        Host => mySociety::Config::get('BCI_DB_HOST', undef),
+        Port => mySociety::Config::get('BCI_DB_PORT', undef)
+    );
+}
+
+my $r = select_all("select id, photo from problem where service='iPhone'");
+foreach (@$r) {
+    my $id = $_->{id};
+    my $photo = $_->{photo};
+    my ($fh, $filename) = mySociety::TempFiles::named_tempfile('.jpeg');
+    print $fh $photo;
+    close $fh;
+    my $out = `jhead -autorot $filename`;
+    if ($out) {
+        open(FP, $filename) or die $!;
+        $photo = join('', <FP>);
+        close FP;
+        Utils::workaround_pg_bytea("update problem set photo=? where id=?", 1, $photo, $id);
+        dbh()->commit();
+    }
+    unlink $filename;
+}
+
