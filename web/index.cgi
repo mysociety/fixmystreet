@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.232 2008-12-08 10:31:42 matthew Exp $
+# $Id: index.cgi,v 1.233 2008-12-11 10:34:26 matthew Exp $
 
 use strict;
 use Standard;
@@ -99,6 +99,13 @@ sub front_page {
     $subhead = '(like graffiti, fly tipping, or neighbourhood noise)' if $q->{site} eq 'scambs';
     $out .= '<br><small>' . $subhead . '</small>' if $subhead ne ' ';
     $out .= '</p>';
+    $out .= '
+<p align="center" style="margin-bottom:0">
+<img alt="New!" src="/i/new.png" border="0">
+<a href="http://www.mysociety.org/2008/12/10/fixmystreet-iphone/">
+Get FixMyStreet on your iPhone</a>
+</p>
+';
     $out .= '<p id="error">' . $error . '</p>' if ($error);
     my $fixed = Problems::recent_fixed();
     my $updates = Problems::number_comments();
