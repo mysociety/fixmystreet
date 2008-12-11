@@ -4,7 +4,7 @@ FixMyStreet iPhone application
 The FixMyStreet directory contains a complete application that should open
 directly in XCode.
 
-TODO (if you're an iPhone developer or designer and wish to help mySociety,
+TODO (if you're an iPhone or Perl developer and wish to help mySociety,
 ----      feel free to volunteer for any of these)
 
 * When you go to the About page from the front page, the navigation bar flips
@@ -14,6 +14,6 @@ TODO (if you're an iPhone developer or designer and wish to help mySociety,
 
 * Do the photos have EXIF data (e.g. location)? Should we use that if so in some way?
 
-* We probably need a more appropriate logo.
+* Photo orientation - either auto-working it out from EXIF data/ anything else
+  provided, or letting the user rotate the submitted photo.
 
-* Need to create a default.png.
