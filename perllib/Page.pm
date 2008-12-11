@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.129 2008-12-11 15:31:12 matthew Exp $
+# $Id: Page.pm,v 1.130 2008-12-11 15:46:57 matthew Exp $
 #
 
 package Page;
@@ -34,6 +34,7 @@ use mySociety::GeoUtil;
 use mySociety::Locale;
 use mySociety::MaPit;
 use mySociety::PostcodeUtil;
+use mySociety::TempFiles;
 use mySociety::Tracking;
 use mySociety::WatchUpdate;
 use mySociety::Web qw(ent NewURL);
@@ -805,7 +806,8 @@ sub process_photo {
     return $photo unless $import; # Only check orientation for iPhone imports at present
 
     # Now check if it needs orientating
-    my ($fh, $filename) = mySociety::TempFiles::named_tempfile('.jpeg');
+    my $filename;
+    ($fh, $filename) = mySociety::TempFiles::named_tempfile('.jpeg');
     print $fh $photo;
     close $fh;
     my $out = `jhead -se -autorot $filename`;
