@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.233 2008-12-11 10:34:26 matthew Exp $
+# $Id: index.cgi,v 1.234 2008-12-12 00:00:51 matthew Exp $
 
 use strict;
 use Standard;
@@ -105,7 +105,7 @@ sub front_page {
 <a href="http://www.mysociety.org/2008/12/10/fixmystreet-iphone/">
 Get FixMyStreet on your iPhone</a>
 </p>
-';
+' if $q->{site} eq 'fixmystreet';
     $out .= '<p id="error">' . $error . '</p>' if ($error);
     my $fixed = Problems::recent_fixed();
     my $updates = Problems::number_comments();
