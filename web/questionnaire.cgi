@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.36 2008-12-01 17:36:08 matthew Exp $
+# $Id: questionnaire.cgi,v 1.37 2008-12-12 00:00:18 matthew Exp $
 
 use strict;
 use Standard;
@@ -77,7 +77,7 @@ sub submit_questionnaire {
 
     my @errors;
     push @errors, 'Please state whether or not the problem has been fixed' unless $input{been_fixed};
-    push @errors, 'Please say whether you\'ve ever reported a problem to your council before' unless $input{reported} || $answered_ever_reported;
+    push @errors, _('Please say whether you\'ve ever reported a problem to your council before') unless $input{reported} || $answered_ever_reported;
     push @errors, 'Please indicate whether you\'d like to receive another questionnaire'
         if ($input{been_fixed} eq 'No' || $input{been_fixed} eq 'Unknown') && !$input{another};
     push @errors, 'Please provide some explanation as to why you\'re reopening this report'
@@ -253,8 +253,9 @@ EOF
 <label for="been_fixed_unknown">Don&rsquo;t know</label>
 </p>
 EOF
+    $out .= $q->p(_('Have you ever reported a problem to a council before, or is this your first time?'))
+        unless $answered_ever_reported;
     $out .= <<EOF unless $answered_ever_reported;
-<p>Have you ever reported a problem to a council before, or is this your first time?</p>
 <p>
 <input type="radio" name="reported" id="reported_yes" value="Yes"$reported{yes}>
 <label for="reported_yes">Reported before</label>
@@ -262,10 +263,10 @@ EOF
 <label for="reported_no">First time</label>
 </p>
 EOF
-    $out .= <<EOF;
-<p>If you wish to leave a public update on the problem, please enter it here
+    $out .= $q->p(_('If you wish to leave a public update on the problem, please enter it here
 (please note it will not be sent to the council). For example, what was
-your experience of getting the problem fixed?</p>
+your experience of getting the problem fixed?'));
+    $out .= <<EOF;
 <p><textarea name="update" style="max-width:90%" rows="7" cols="30">$input_h{update}</textarea></p>
 
 <div id="fileupload_flashUI" style="display:none">
