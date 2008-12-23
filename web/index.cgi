@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.234 2008-12-12 00:00:51 matthew Exp $
+# $Id: index.cgi,v 1.235 2008-12-23 23:25:26 matthew Exp $
 
 use strict;
 use Standard;
@@ -46,7 +46,7 @@ sub main {
         my $id = mySociety::AuthToken::retrieve('partial', $partial);
         if ($id) {
             my @row = dbh()->selectrow_array(
-                "select easting, northing, name, email, title, (photo is not null) as has_photo
+                "select easting, northing, name, email, title, (photo is not null) as has_photo, phone
                     from problem where id=? and state='partial'", {}, $id);
             if (@row) {
                 $q->param('anonymous', 1);
@@ -57,6 +57,7 @@ sub main {
                 $q->param('email', $row[3]);
                 $q->param('title', $row[4]);
                 $q->param('has_photo', $row[5]);
+                $q->param('phone', $row[6]);
                 $q->param('partial', $partial);
             }
         }
