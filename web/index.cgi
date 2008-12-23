@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.235 2008-12-23 23:25:26 matthew Exp $
+# $Id: index.cgi,v 1.236 2008-12-23 23:29:47 matthew Exp $
 
 use strict;
 use Standard;
@@ -59,6 +59,8 @@ sub main {
                 $q->param('has_photo', $row[5]);
                 $q->param('phone', $row[6]);
                 $q->param('partial', $partial);
+            } else {
+                print $q->redirect(-location => 'http://www.fixmystreet.com/report/' . $id);
             }
         }
     }
