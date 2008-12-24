@@ -45,6 +45,9 @@
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+	if (cell.textField.placeholder == @"Subject") {
+		return 2;
+	}
     return 1;
 }
 
@@ -53,9 +56,31 @@
     return 1;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+	if (indexPath.section == 1) {
+		return 54.0;
+	}
+	return 44.0;
+}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return cell;
+	if (indexPath.section == 1) {
+		static NSString *CellIdentifier = @"InfoCell";
+		UITableViewCell *infoCell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+		if (infoCell == nil) {
+			infoCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:CellIdentifier] autorelease];
+			UITextView *blurb = [[UITextView alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
+			blurb.font = [UIFont italicSystemFontOfSize:14];
+			blurb.textAlignment = UITextAlignmentCenter;
+			blurb.editable = NO;
+			blurb.text = @"You can provide more details\nlater on at the website";
+			[infoCell.contentView addSubview:blurb];
+			[blurb release];
+		}
+		return infoCell;
+	}
+
+	return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -99,7 +124,7 @@
 	FixMyStreetAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
 	// This is yucky, but I can't think of a better way that wouldn't just waste time.
 	NSString* placeholder = cell.textField.placeholder;
-	if (placeholder == @"Summary") {
+	if (placeholder == @"Subject") {
 		if (text.length) {
 			delegate.subject = text;
 		} else {
@@ -128,7 +153,7 @@
 }
 
 -(BOOL)textFieldShouldReturn:(UITextField*)theTextField {
-	//if (theTextField == summaryTextField) {
+	//if (theTextField == subjectTextField) {
 	[theTextField resignFirstResponder];
 	[self updateText:theTextField.text];
 	//}

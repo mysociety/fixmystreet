@@ -18,7 +18,7 @@
 	// Not sure what I made these for
 	UITableViewCell* actionTakePhotoCell;
 	UITableViewCell* actionFetchLocationCell;
-	UITableViewCell* actionSummaryCell;
+	UITableViewCell* actionSubjectCell;
 	
 	UILabel* subjectLabel;
 	UILabel* subjectContent;
@@ -36,7 +36,7 @@
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingImage:(UIImage *)image editingInfo:(NSDictionary *)editingInfo;
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker;
 
--(void)startLocation;
+-(BOOL)startLocation;
 
 //MyCLControllerDelegate
 -(void)newLocationUpdate:(CLLocation *)location;

@@ -17,7 +17,7 @@
 
 //@synthesize image;
 //@synthesize imagCell;
-//@synthesize reportSummary;
+//@synthesize reportSubject;
 
 - (id)initWithNibName:(NSString *)nibName bundle:(NSBundle *)nibBundle {
     if (self = [super initWithNibName:nibName bundle:nibBundle]) {
@@ -174,7 +174,7 @@
 			cell.textColor = [UIColor grayColor];
 			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		}
-		actionSummaryCell = cell;
+		actionSubjectCell = cell;
 	} else if (indexPath.section == 3) {
 		if (delegate.name && delegate.name.length && delegate.email && delegate.email.length) {
 			cell.accessoryType = UITableViewCellAccessoryCheckmark;
@@ -193,11 +193,16 @@
 	if (indexPath.section == 0) {
 		[self addPhoto:nil];	
 	} else if (indexPath.section == 2) {
-		[self startLocation];
+		if ([self startLocation]) {
+			UIActivityIndicatorView* activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+			[activityView startAnimating];
+			actionFetchLocationCell.accessoryView = activityView;
+			[activityView release];
+		}
 	} else if (indexPath.section == 1) {
 		FixMyStreetAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
 		EditSubjectViewController* editSubjectViewController = [[EditSubjectViewController alloc] initWithNibName:@"EditSubjectView" bundle:nil];
-		[editSubjectViewController setAll:delegate.subject viewTitle:@"Edit summary" placeholder:@"Summary" keyboardType:UIKeyboardTypeDefault capitalisation:UITextAutocapitalizationTypeSentences];
+		[editSubjectViewController setAll:delegate.subject viewTitle:@"Edit subject" placeholder:@"Subject" keyboardType:UIKeyboardTypeDefault capitalisation:UITextAutocapitalizationTypeSentences];
 		[self.navigationController pushViewController:editSubjectViewController animated:YES];
 		[editSubjectViewController release];
 	} else if (indexPath.section == 3) {
@@ -247,7 +252,7 @@
 	[imageView release];
 	[actionTakePhotoCell release];
 	[actionFetchLocationCell release];
-	[actionSummaryCell release];
+	[actionSubjectCell release];
 	[actionsToDoView release];
 	[settingsButton release];
 	[backButton release];
@@ -277,18 +282,16 @@
 
 // MyCLControllerDelegate and related
 
--(void)startLocation {
+-(BOOL)startLocation {
 	NetworkStatus internetConnectionStatus	= [[Reachability sharedReachability] internetConnectionStatus];
 	if (internetConnectionStatus == NotReachable) {
 		UIAlertView *v = [[UIAlertView alloc] initWithTitle:@"Location required" message:@"FixMyStreet needs some sort of connection in order to find your location." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
 		[v show];
-		[v release];		
+		[v release];
+		return FALSE;
 	} else {
 		[[MyCLController sharedInstance] startUpdatingLocation];
-		UIActivityIndicatorView* activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-		[activityView startAnimating];
-		actionFetchLocationCell.accessoryView = activityView;
-		[activityView release];	
+		return TRUE;
 	}
 }
 
