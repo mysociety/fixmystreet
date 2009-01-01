@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.236 2008-12-23 23:29:47 matthew Exp $
+# $Id: index.cgi,v 1.237 2009-01-01 01:21:17 matthew Exp $
 
 use strict;
 use Standard;
@@ -112,7 +112,7 @@ Get FixMyStreet on your iPhone</a>
     $out .= '<p id="error">' . $error . '</p>' if ($error);
     my $fixed = Problems::recent_fixed();
     my $updates = Problems::number_comments();
-    $updates =~ s/(\d\d\d)$/,$1/;
+    $updates =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
     my $new = Problems::recent_new('1 week');
     my $new_text = 'in past week';
     if ($q->{site} ne 'emptyhomes' && $new > $fixed) {
