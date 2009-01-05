@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.130 2008-12-11 15:46:57 matthew Exp $
+# $Id: Page.pm,v 1.131 2009-01-05 22:58:31 matthew Exp $
 #
 
 package Page;
@@ -644,7 +644,7 @@ sub display_problem_updates {
                 $out .= '<p>' . ent($_) . '</p>';
             }
             if ($row->{has_photo}) {
-                $out .= '<p align="center"><img src="/photo?tn=1;c=' . $row->{id} . '"></p>';
+                $out .= '<p><img alt="" src="/photo?tn=1;c=' . $row->{id} . '"></p>';
             }
             $out .= '</div>';
         }
