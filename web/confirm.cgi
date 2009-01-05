@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.51 2008-12-01 12:19:13 matthew Exp $
+# $Id: confirm.cgi,v 1.52 2009-01-05 23:10:50 matthew Exp $
 
 use strict;
 use Standard;
@@ -93,7 +93,7 @@ sub confirm_update {
     }
 
     if (!$out) {
-        $out = $q->p(sprintf(_('You have successfully confirmed your update and you can now <a href="%s">view it on the site</a>.'), "/report/$problem_id#update_$id"));
+        $out = $q->p({class => 'confirmed'}, sprintf(_('You have successfully confirmed your update and you can now <a href="%s">view it on the site</a>.'), "/report/$problem_id#update_$id"));
         $out .= CrossSell::display_advert($q, $email, $name);
     }
 
@@ -149,18 +149,18 @@ ReportEmptyHomes.com.') .
 $q->p('<a href="/report/' . $id . '">View your report</a>.');
         }
     } else {
-        $out = $q->p(
+        $out = $q->p({class => 'confirmed'},
             _('You have successfully confirmed your problem')
             . ($council ? _(' and <strong>we will now send it to the council</strong>') : '')
             . sprintf(_('. You can <a href="%s">view the problem on this site</a>.'), "/report/$id")
         );
+        $out .= CrossSell::display_advert($q, $email);
     }
 
     # Subscribe problem reporter to email updates
     my $alert_id = mySociety::Alert::create($email, 'new_updates', $id);
     mySociety::Alert::confirm($alert_id);
 
-    $out .= CrossSell::display_advert($q, $email);
     return $out;
 }
 
@@ -202,7 +202,7 @@ sub add_questionnaire {
         ever_reported, old_state, new_state) values (?, ms_current_timestamp(),
         ms_current_timestamp(), ?, 'confirmed', 'fixed');", {}, $problem_id, $reported)
         unless $already;
-    my $out = $q->p(sprintf('Thank you &mdash; you can <a href="%s">view your updated problem</a> on the site.', "/report/$problem_id"));
+    my $out = $q->p({class => 'confirmed'}, sprintf('Thank you &mdash; you can <a href="%s">view your updated problem</a> on the site.', "/report/$problem_id"));
     $out .= CrossSell::display_advert($q, $email, $name);
     return $out;
 }

@@ -158,6 +158,13 @@ fieldset div, #fieldset div {
     float: none;
 }
 
+.confirmed {
+    background-color: #ccffcc;
+    border: solid 2px #009900;
+    padding: 5px;
+    text-align: center;
+}
+
 /* Map */
 
 #watermark {
