@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
-<svg>
+<svg xmlns="http://www.w3.org/2000/svg">
+
 <!-- Constructed by RISC OS Draw -->
 <path style="stroke-width:1.25;stroke:none;fill:#787974;" d="M 1049.865234 686.162109 L 0.994141 686.162109 L 0.994141 617.101562 L 1049.865234 617.101562 L 1049.865234 686.162109 Z " />
 <path style="stroke-width:1.25;stroke:none;fill:#AEB2B7;" d="M 1049.865234 616.771484 L 0.994141 616.771484 L 0.994141 587.939453 L 1049.865234 587.939453 L 1049.865234 616.771484 Z " />
