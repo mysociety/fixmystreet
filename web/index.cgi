@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.237 2009-01-01 01:21:17 matthew Exp $
+# $Id: index.cgi,v 1.238 2009-01-10 18:37:45 matthew Exp $
 
 use strict;
 use Standard;
@@ -772,7 +772,7 @@ sub display_location {
     my $email_me_link = NewURL($q, -url=>'/alert', x=>$x, y=>$y, feed=>"local:$x:$y");
     $out .= <<EOF;
     <p id="alert_links_area">
-    <a id="email_alert" href="$email_me_link">$email_me</a>
+    <a id="email_alert" rel="nofollow" href="$email_me_link">$email_me</a>
     | <a href="/rss/$x,$y" id="rss_alert"><span>RSS feed</span> <img src="/i/feed.png" width="16" height="16" title="$rss_title" alt="$rss_alt" border="0" style="vertical-align: top"></a>
     </p>
 EOF
@@ -783,7 +783,7 @@ EOF
     #$out .= $q->h1('Report a problem');
     $out .= $q->p({-id=>'text_map'}, _('To report a problem, simply
         <strong>click on the map</strong> at the correct location.'),
-        sprintf(_("<small>If you cannot see the map, <a href='%s'>skip this
+        sprintf(_("<small>If you cannot see the map, <a href='%s' rel='nofollow'>skip this
         step</a>.</small>"), $skipurl));
     $out .= '<div id="nearby_lists">' . $q->h2(_('Reports on and around the map'));
     my $list = '';
@@ -881,7 +881,7 @@ sub display_problem {
     $out .= '<p style="padding-bottom: 0.5em; border-bottom: dotted 1px #999999;" align="right"><a href="'
         . $back . '">' . _('More problems nearby') . '</a></p>';
     $out .= '<div id="alert_links">';
-    $out .= '<a id="email_alert" href="/alert?type=updates;id='.$input_h{id}.'">' . _('Email me updates') . '</a>';
+    $out .= '<a rel="nofollow" id="email_alert" href="/alert?type=updates;id='.$input_h{id}.'">' . _('Email me updates') . '</a>';
     $out .= <<EOF;
 <form action="/alert" method="post" id="email_alert_box">
 <p>Receive email when updates are left on this problem</p>

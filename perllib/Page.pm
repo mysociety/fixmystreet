@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.131 2009-01-05 22:58:31 matthew Exp $
+# $Id: Page.pm,v 1.132 2009-01-10 18:37:44 matthew Exp $
 #
 
 package Page;
@@ -238,7 +238,7 @@ EOF
 
 <p id="footer">Built by <a href="http://www.mysociety.org/">mySociety</a>,
 using some <a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/bci">clever</a>&nbsp;<a
-href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>. Formerly <a href="/faq#nfi">Neighbourhood Fix-It</a>.</p>
+href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.</p>
 
 $track
 
