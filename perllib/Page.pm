@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.133 2009-01-15 10:19:26 matthew Exp $
+# $Id: Page.pm,v 1.134 2009-01-15 12:04:18 matthew Exp $
 #
 
 package Page;
@@ -90,13 +90,16 @@ sub microsite {
     $q->{site} = 'fixmystreet';
     $q->{site} = 'scambs' if $host =~ /scambs/;
     $q->{site} = 'emptyhomes' if $host =~ /emptyhomes/;
+    $q->{site} = 'guardian' if $host =~ /guardian/;
 
     if ($q->{site} eq 'emptyhomes') {
         mySociety::Locale::negotiate_language('en-gb,English,en_GB', 'en-gb');
         mySociety::Locale::gettext_domain('FixMyStreet-EmptyHomes');
         mySociety::Locale::change();
     } else {
+        mySociety::Locale::negotiate_language('en-gb,English,en_GB|nb,Norwegian,nb_NO'); # XXX Testing
         mySociety::Locale::gettext_domain('FixMyStreet');
+        mySociety::Locale::change();
     }
 
     if ($q->{site} eq 'scambs') {
@@ -132,15 +135,9 @@ sub header ($%) {
     print $q->header(%head);
 
     my $html;
-    if ($q->{site} eq 'scambs') {
+    if ($q->{site} eq 'scambs' || $q->{site} eq 'emptyhomes' || $q->{site} eq 'guardian') {
         (my $file = __FILE__) =~ s{/[^/]*?$}{};
-        open FP, $file . '/../templates/website/scambs-header';
-        $html = join('', <FP>);
-        close FP;
-        $html =~ s#<!-- TITLE -->#$title#;
-    } elsif ($q->{site} eq 'emptyhomes') {
-        (my $file = __FILE__) =~ s{/[^/]*?$}{};
-        open FP, $file . '/../templates/website/emptyhomes-header';
+        open FP, $file . '/../templates/website/' . $q->{site} . '-header';
         $html = join('', <FP>);
         close FP;
         $html =~ s#<!-- TITLE -->#$title#;
@@ -184,15 +181,9 @@ sub footer {
     my $js = $params{js} || '';
     $js = ''; # Don't use fileupload JS at the moment
 
-    if ($q->{site} eq 'scambs') {
+    if ($q->{site} eq 'scambs' || $q->{site} eq 'emptyhomes' || $q->{site} eq 'guardian') {
         (my $file = __FILE__) =~ s{/[^/]*?$}{};
-        open FP, $file . '/../templates/website/scambs-footer';
-        my $html = join('', <FP>);
-        close FP;
-        return $html;
-    } elsif ($q->{site} eq 'emptyhomes') {
-        (my $file = __FILE__) =~ s{/[^/]*?$}{};
-        open FP, $file . '/../templates/website/emptyhomes-footer';
+        open FP, $file . '/../templates/website/' . $q->{site} . '-footer';
         my $html = join('', <FP>);
         close FP;
         return $html;
@@ -583,7 +574,7 @@ sub display_problem_text {
         $out .= ent($problem->{category}) . ', reported ';
     } else {
         $out .= 'Reported ';
-	$out .= 'by ' . ent($problem->{service}) . ' ' if $problem->{service}; 
+        $out .= 'by ' . ent($problem->{service}) . ' ' if $problem->{service}; 
         $out .= 'in the ' . ent($problem->{category}) . ' category '
             if $problem->{category} && $problem->{category} ne 'Other';
     }
