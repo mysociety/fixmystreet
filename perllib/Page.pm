@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.132 2009-01-10 18:37:44 matthew Exp $
+# $Id: Page.pm,v 1.133 2009-01-15 10:19:26 matthew Exp $
 #
 
 package Page;
@@ -64,11 +64,12 @@ sub do_fastcgi {
         warn "caught fatal exception: $msg";
         warn "aborting";
         ent($msg);
+        my $contact_email = mySociety::Config::get('CONTACT_EMAIL');
         print "Status: 500\nContent-Type: text/html; charset=iso-8859-1\n\n",
                 q(<html><head><title>Sorry! Something's gone wrong.</title></head></html>),
                 q(<body>),
                 q(<h1>Sorry! Something's gone wrong.</h1>),
-                q(<p>Please try again later, or <a href="mailto:team@fixmystreet.com">email us</a> to let us know.</p>),
+                qq(<p>Please try again later, or <a href="mailto:$contact_email">email us</a> to let us know.</p>),
                 q(<hr>),
                 q(<p>The text of the error was:</p>),
                 qq(<blockquote class="errortext">$msg</blockquote>),

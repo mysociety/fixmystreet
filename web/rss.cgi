@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: rss.cgi,v 1.26 2008-12-08 10:54:16 matthew Exp $
+# $Id: rss.cgi,v 1.27 2009-01-15 10:19:28 matthew Exp $
 
 use strict;
 use Error qw(:try);
@@ -42,7 +42,8 @@ sub main {
     } elsif ($type eq 'all_problems') {
         $out = mySociety::Alert::generate_rss($type, $xsl, '');
     } else {
-        print $q->redirect('http://www.fixmystreet.com/alert');
+        my $base = mySociety::Config::get('BASE_URL');
+        print $q->redirect($base . '/alert');
         exit;
     }
     print $q->header( -type => 'application/xml; charset=utf-8' );
@@ -77,7 +78,8 @@ sub rss_local_problems {
             $error = shift;
         };
         unless ($error) {
-            print $q->redirect(-location => "http://www.fixmystreet.com/rss/$x/$y");
+            my $base = mySociety::Config::get('BASE_URL');
+            print $q->redirect(-location => "$base/rss/$x/$y");
         }
         return '';
     } else {
