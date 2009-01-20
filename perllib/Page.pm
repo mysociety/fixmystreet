@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.134 2009-01-15 12:04:18 matthew Exp $
+# $Id: Page.pm,v 1.135 2009-01-20 14:58:05 matthew Exp $
 #
 
 package Page;
@@ -700,7 +700,7 @@ sub geocode_string {
         $js = File::Slurp::read_file($cache_file);
     } else {
         $url .= ',+United+Kingdom' unless $url =~ /united\++kingdom$/ || $url =~ /uk$/i;
-        $url .= '&key=' . mySociety::Config::get('GOOGLE_MAPS_API_KEY');
+        $url .= '&sensor=false&gl=uk&key=' . mySociety::Config::get('GOOGLE_MAPS_API_KEY');
         $js = LWP::Simple::get($url);
         File::Slurp::write_file($cache_file, $js) if $js && $js !~ /"code":6[12]0/;
     }
@@ -710,8 +710,11 @@ sub geocode_string {
     } elsif ($js !~ /"code": *200/) {
         $error = 'Sorry, we could not find that location.';
     } elsif ($js =~ /}, *{/) { # Multiple
-        while ($js =~ /"address": *"(.*?)"/g) {
-            push (@$error, $1) unless $1 =~ /BT\d/;
+        while ($js =~ /"address": *"(.*?)",\s*"AddressDetails":.*?"PostalCodeNumber": *"(.*?)"/g) {
+            my $address = $1;
+            my $pc = $2;
+            $address =~ s/UK/$pc, UK/;
+            push (@$error, $address) unless $address =~ /BT\d/;
         }
         $error = 'Sorry, we could not find that location.' unless $error;
     } elsif ($js =~ /BT\d/) {
