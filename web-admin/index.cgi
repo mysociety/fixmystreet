@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.64 2008-11-17 18:38:31 matthew Exp $
+# $Id: index.cgi,v 1.65 2009-01-22 10:12:40 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.64 2008-11-17 18:38:31 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.65 2009-01-22 10:12:40 matthew Exp $';
 
 use strict;
 
@@ -252,12 +252,22 @@ sub admin_council_contacts ($$) {
         $updated = $q->p($q->em("Values updated"));
         dbh()->commit();
     }
-    $q->delete_all(); # No need for state!
 
     my $bci_data = select_all("select * from contacts where area_id = ? order by category", $area_id);
-    my $mapit_data = mySociety::MaPit::get_voting_area_info($area_id);
+
+    if ($q->param('text')) {
+        print $q->header(-type => 'text/plain', -charset => 'utf-8');
+        foreach my $l (@$bci_data) {
+            next if $l->{deleted} || !$l->{confirmed};
+            print $l->{category} . "\t" . $l->{email} . "\n";
+        }
+        return;
+    }
+
+    $q->delete_all(); # No need for state!
 
     # Title
+    my $mapit_data = mySociety::MaPit::get_voting_area_info($area_id);
     my $title = 'Council contacts for ' . $mapit_data->{name};
     print html_head($q, $title);
     print $q->h1($title);
@@ -272,6 +282,8 @@ sub admin_council_contacts ($$) {
     }
     $links_html .= ' '  . 
             $q->a({ href => mySociety::Config::get('BASE_URL') . "/reports?council=" . $area_id }, " List all reported problems");
+    $links_html .= ' ' .
+            $q->a({ href => NewURL($q, area_id => $area_id, page => 'councilcontacts', text => 1) }, 'Text only version');
     print $q->p($links_html);
 
     # Display of addresses / update statuses form
@@ -688,7 +700,7 @@ sub admin_timeline {
                 print "Questionnaire $_->{id} answered for problem $_->{problem_id}, $_->{old_state} to $_->{new_state}";
             } elsif ($type eq 'update') {
                 my $url = mySociety::Config::get('BASE_URL') . "/report/$_->{problem_id}#$_->{id}";
-		my $name = $_->{name} || 'anonymous';
+                my $name = $_->{name} || 'anonymous';
                 print "Update <a href='$url'>$_->{id}</a> created for problem $_->{problem_id}; by $name &lt;$_->{email}&gt;";
             } elsif ($type eq 'alertSub') {
                 my $param = $_->{parameter} || '';
