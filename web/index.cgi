@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.240 2009-01-15 10:37:00 matthew Exp $
+# $Id: index.cgi,v 1.241 2009-01-26 14:29:35 matthew Exp $
 
 use strict;
 use Standard;
@@ -103,13 +103,18 @@ sub front_page {
     $subhead = '(like graffiti, fly tipping, or neighbourhood noise)' if $q->{site} eq 'scambs';
     $out .= '<br><small>' . $subhead . '</small>' if $subhead ne ' ';
     $out .= '</p>';
-    $out .= '
+    if (my $url = mySociety::Config::get('IPHONE_URL')) {
+        my $getiphone = _("Get FixMyStreet on your iPhone");
+        my $new = _("New!");
+        if ($q->{site} eq 'fixmystreet') {
+            $out .= <<EOF
 <p align="center" style="margin-bottom:0">
-<img alt="New!" src="/i/new.png" border="0">
-<a href="http://www.mysociety.org/2008/12/10/fixmystreet-iphone/">
-Get FixMyStreet on your iPhone</a>
+<img alt="$new" src="/i/new.png" border="0">
+<a href="$url">$getiphone</a>
 </p>
-' if $q->{site} eq 'fixmystreet';
+EOF
+        }
+    }
     $out .= '<p id="error">' . $error . '</p>' if ($error);
     my $fixed = Problems::recent_fixed();
     my $updates = Problems::number_comments();
