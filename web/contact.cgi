@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.36 2008-10-15 13:57:55 matthew Exp $
+# $Id: contact.cgi,v 1.37 2009-01-26 14:31:19 matthew Exp $
 
 use strict;
 use Standard;
@@ -115,11 +115,13 @@ sub contact_page {
 website. Just fill in the form. Please don&rsquo;t contact us about individual empty
 homes; use the box accessed from <a href="/">the front page</a>.'); 
     } else {
+        my $mailto = mySociety::Config::get('CONTACT_EMAIL');
+        $mailto =~ s/\@/&#64;/;
         $out .= $q->p(_('Please do <strong>not</strong> report problems through this form; messages go to
 the team behind FixMyStreet, not a council. To report a problem,
 please <a href="/">go to the front page</a> and follow the instructions.'));
         $out .= $q->p(_("We'd love to hear what you think about this site. Just fill in the form, or
-send an email to <a href='mailto:team&#64;fixmystreet.com'>team&#64;fixmystreet.com</a>:"));
+send an email to <a href='mailto:$mailto'>$mailto</a>:"));
     }
     my $label_name = _('Your name:');
     my $label_email = _('Your&nbsp;email:');
