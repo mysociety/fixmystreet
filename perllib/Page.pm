@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.136 2009-01-26 14:22:54 matthew Exp $
+# $Id: Page.pm,v 1.137 2009-02-02 10:59:15 matthew Exp $
 #
 
 package Page;
@@ -74,13 +74,16 @@ sub report_error {
     warn "aborting";
     ent($msg);
     my $contact_email = mySociety::Config::get('CONTACT_EMAIL');
+    my $trylater = sprintf(_("Please try again later, or <a href=\"mailto:%s\">email us</a> to let us know."), $contact_email);
+    my $somethingwrong = _("Sorry! Something's gone wrong.");
+    my $errortext = _("The text of the error was:");
     print "Status: 500\nContent-Type: text/html; charset=iso-8859-1\n\n",
-            q(<html><head><title>Sorry! Something's gone wrong.</title></head></html>),
+            qq(<html><head><title>$somethingwrong</title></head></html>),
             q(<body>),
-            q(<h1>Sorry! Something's gone wrong.</h1>),
-            qq(<p>Please try again later, or <a href="mailto:$contact_email">email us</a> to let us know.</p>),
+            qq(<h1>$somethingwrong</h1>),
+            qq(<p>$trylater</p>),
             q(<hr>),
-            q(<p>The text of the error was:</p>),
+            qq(<p>$errortext</p>),
             qq(<blockquote class="errortext">$msg</blockquote>),
             q(</body></html>);
 }
@@ -148,13 +151,14 @@ sub header ($%) {
         close FP;
         $html =~ s#<!-- TITLE -->#$title#;
     } else {
+        my $fixmystreet = _('FixMyStreet');
         $html = <<EOF;
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en-gb">
     <head>
         <script type="text/javascript" src="/yui/utilities.js"></script>
         <script type="text/javascript" src="/js.js"></script>
-        <title>${title}FixMyStreet</title>
+        <title>${title}$fixmystreet</title>
         <style type="text/css">\@import url("/css/core.css"); \@import url("/css/main.css");</style>
 <!--[if LT IE 7]>
 <style type="text/css">\@import url("/css/ie6.css");</style>
@@ -165,7 +169,7 @@ sub header ($%) {
     <body>
 EOF
         $html .= $home ? '<h1 id="header">' : '<div id="header"><a href="/">';
-        $html .= 'Fix<span id="my">My</span>Street';
+        $html .= _('Fix<span id="my">My</span>Street');
         $html .= $home ? '</h1>' : '</a></div>';
         $html .= '<div id="wrapper"><div id="content">';
     }
@@ -173,7 +177,7 @@ EOF
         $html =~ s#<!-- RSS -->#<link rel="alternate" type="application/rss+xml" title="$params{rss}[0]" href="$params{rss}[1]">#;
     }
     if (mySociety::Config::get('STAGING_SITE')) {
-        $html .= '<p id="error">This is a developer site; things might break at any time.</p>';
+        $html .= '<p id="error">' . _("This is a developer site; things might break at any time.") . '</p>';
     }
     return $html;
 }
@@ -221,22 +225,29 @@ piwik_log(piwik_action_name, piwik_idsite, piwik_url);
 EOF
     }
 
+    my $navigation = _('Navigation');
+    my $report = _("Report a problem");
+    my $reports = _("All reports");
+    my $alerts = _("Local alerts");
+    my $help = _("Help");
+    my $contact = _("Contact");
+    my $orglogo = _('<a href="http://www.mysociety.org/"><img id="logo" src="/i/mysociety-dark.png" alt="View mySociety.org"><span id="logoie"></span></a>');
+    my $creditline = _('Built by <a href="http://www.mysociety.org/">mySociety</a>, using some <a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/bci">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.');
+
     return <<EOF;
 </div></div>
-<h2 class="v">Navigation</h2>
+<h2 class="v">$navigation</h2>
 <ul id="navigation">
-<li><a href="/">Report a problem</a></li>
-<li><a href="/reports">All reports</a></li>
-<li><a href="/alert$pc">Local alerts</a></li>
-<li><a href="/faq">Help</a></li>
-<li><a href="/contact">Contact</a></li>
+<li><a href="/">$report</a></li>
+<li><a href="/reports">$reports</a></li>
+<li><a href="/alert$pc">$alerts</a></li>
+<li><a href="/faq">$help</a></li>
+<li><a href="/contact">$contact</a></li>
 </ul>
 
-<a href="http://www.mysociety.org/"><img id="logo" src="/i/mysociety-dark.png" alt="View mySociety.org"><span id="logoie"></span></a>
+$orglogo
 
-<p id="footer">Built by <a href="http://www.mysociety.org/">mySociety</a>,
-using some <a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/bci">clever</a>&nbsp;<a
-href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.</p>
+<p id="footer">$creditline</p>
 
 $track
 
@@ -284,7 +295,7 @@ sub display_map {
     my $url = mySociety::Config::get('TILES_URL');
     my $tiles_url = $url . $x . '-' . ($x+1) . ',' . $y . '-' . ($y+1) . '/RABX';
     my $tiles = LWP::Simple::get($tiles_url);
-    return '<div id="map_box"> <div id="map"><div id="drag"> </div></div></div><div id="side">' if !$tiles;
+    return '<div id="map_box"> <div id="map"><div id="drag">' . _("Unable to fetch the map tiles from the tile server.") . '</div></div></div><div id="side">' if !$tiles;
     my $tileids = RABX::unserialise($tiles);
     my $tl = $x . '.' . ($y+1);
     my $tr = ($x+1) . '.' . ($y+1);
@@ -712,9 +723,9 @@ sub geocode_string {
     }
 
     if (!$js) {
-        $error = 'Sorry, we had a problem parsing that location. Please try again.';
+        $error = _('Sorry, we had a problem parsing that location. Please try again.');
     } elsif ($js !~ /"code": *200/) {
-        $error = 'Sorry, we could not find that location.';
+        $error = _('Sorry, we could not find that location.');
     } elsif ($js =~ /}, *{/) { # Multiple
         while ($js =~ /"address": *"(.*?)",\s*"AddressDetails":.*?"PostalCodeNumber": *"(.*?)"/g) {
             my $address = $1;
@@ -722,14 +733,14 @@ sub geocode_string {
             $address =~ s/UK/$pc, UK/;
             push (@$error, $address) unless $address =~ /BT\d/;
         }
-        $error = 'Sorry, we could not find that location.' unless $error;
+        $error = _('Sorry, we could not find that location.') unless $error;
     } elsif ($js =~ /BT\d/) {
         # Northern Ireland, hopefully
         $error = "We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.";
     } else {
         my ($accuracy) = $js =~ /"Accuracy": *(\d)/;
         if ($accuracy < 4) {
-            $error = 'Sorry, that location appears to be too general; please be more specific.';
+            $error = _('Sorry, that location appears to be too general; please be more specific.');
         } else {
             $js =~ /"coordinates" *: *\[ *(.*?), *(.*?),/;
             my $lon = $1; my $lat = $2;

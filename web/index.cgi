@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.241 2009-01-26 14:29:35 matthew Exp $
+# $Id: index.cgi,v 1.242 2009-02-02 10:59:16 matthew Exp $
 
 use strict;
 use Standard;
@@ -23,6 +23,7 @@ use mySociety::AuthToken;
 use mySociety::Config;
 use mySociety::DBHandle qw(select_all);
 use mySociety::EmailUtil;
+use mySociety::Locale;
 use mySociety::MaPit;
 use mySociety::PostcodeUtil;
 use mySociety::Random;
@@ -120,28 +121,30 @@ EOF
     my $updates = Problems::number_comments();
     $updates =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
     my $new = Problems::recent_new('1 week');
-    my $new_text = 'in past week';
+    my $new_text = sprintf(mySociety::Locale::nget('<big>%s</big> report in past week', 
+        '<big>%s</big> reports in past week', $new), $new);
     if ($q->{site} ne 'emptyhomes' && $new > $fixed) {
         $new = Problems::recent_new('3 days');
-        $new_text = 'recently';
+        $new_text = sprintf(mySociety::Locale::nget('<big>%s</big> report recently', '<big%s</big> reports recently', $new), $new);
     }
     $out .= '<form action="/" method="get" id="postcodeForm">';
     if (my $token = $q->param('partial')) {
         my $id = mySociety::AuthToken::retrieve('partial', $token);
         if ($id) {
+	    my $thanks = _("Thanks for uploading your photo. We now need to locate your problem, so please enter a nearby street name or postcode in the box below&nbsp;:");
             $out .= <<EOF;
-<p style="margin-top: 0; color: #cc0000;"><img align="right" src="/photo?id=$id" hspace="5">
-Thanks for uploading your photo. We now need to locate your problem,
-so please enter a nearby street name or postcode in the box below&nbsp;:</p>
+<p style="margin-top: 0; color: #cc0000;"><img align="right" src="/photo?id=$id" hspace="5">$thanks</p>
 
 <input type="hidden" name="partial_token" value="$token">
 EOF
         }
     }
+    my $question = _("Enter a nearby GB postcode, or street name and area:");
+    my $activate = _("Go");
     $out .= <<EOF;
-<label for="pc">Enter a nearby GB postcode, or street name and area:</label>
+<label for="pc">$question</label>
 &nbsp;<input type="text" name="pc" value="$pc_h" id="pc" size="10" maxlength="200">
-&nbsp;<input type="submit" value="Go" id="submit">
+&nbsp;<input type="submit" value="$activate" id="submit">
 </form>
 
 <div id="front_intro">
@@ -159,10 +162,11 @@ EOF
 
     $out .= $q->h2(_('FixMyStreet updates'));
     $out .= $q->div({-id => 'front_stats'},
-        $q->div("<big>$new</big> report" . ($new!=1?'s':''), $new_text),
-        ($q->{site} ne 'emptyhomes' ? $q->div("<big>$fixed</big> fixed in past month")
-            : ''), # $q->div("<big>$fixed</big> back in use in past month")),
-        $q->div("<big>$updates</big> update" . ($updates ne '1'?'s':''), "on reports"),
+        $q->div($new_text),
+        ($q->{site} ne 'emptyhomes' ? $q->div(sprintf(mySociety::Locale::nget("<big>%s</big> fixed in past month", "<big>%s</big> fixed in past month", $fixed), $fixed))
+            : ''), # $q->div(sprintf(_('<big>%s</big> back in use in past month'), $fixed)),
+        $q->div(sprintf(mySociety::Locale::nget("<big>%s</big> update on reports",
+	    "<big>%s</big> updates on reports", $updates), $updates))
     );
 
     $out .= <<EOF;
@@ -881,7 +885,7 @@ sub display_problem {
     $out .= Page::display_problem_text($q, $problem);
 
     $out .= $q->p({align=>'right'},
-        $q->small($q->a({rel => 'nofollow', href => '/contact?id=' . $input{id}}, 'Offensive? Unsuitable? Tell us'))
+        $q->small($q->a({rel => 'nofollow', href => '/contact?id=' . $input{id}}, _('Offensive? Unsuitable? Tell us')))
     );
 
     my $back = NewURL($q, -url => '/', 'x' => $x_tile, 'y' => $y_tile );
