@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.24 2008-12-08 10:54:16 matthew Exp $
+# $Id: reports.cgi,v 1.25 2009-02-09 11:29:26 matthew Exp $
 
 use strict;
 use Standard;
@@ -159,11 +159,12 @@ sub main {
         print $q->p(_('This is a summary of all reports on this site; select a particular council to see the reports sent there.'));
         my $c = 0;
         print '<table cellpadding="3" cellspacing="1" border="0">';
-        print '<tr><th>Name</th><th>' . _('New problems') . '</th><th>' . _('Older problems') . '</th>';
+        print '<tr><th>' . _('Name') . '</th><th>' . _('New problems') . '</th><th>' . _('Older problems') . '</th>';
         if ($q->{site} eq 'emptyhomes') {
             print '<th>Recently returned to use</th><th>Older returned to use</th></tr>';
         } else {
-            print '<th>Old problems,<br>state unknown</th><th>Recently fixed</th><th>Old fixed</th></tr>';
+            print '<th>' . _('Old problems,<br>state unknown') . '</th><th>'
+                . _('Recently fixed') . '</th><th>' . _('Old fixed') . '</th></tr>';
         }
         foreach (sort { $areas_info->{$a}->{name} cmp $areas_info->{$b}->{name} } keys %councils) {
             print '<tr align="center"';

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.137 2009-02-02 10:59:15 matthew Exp $
+# $Id: Page.pm,v 1.138 2009-02-09 11:29:25 matthew Exp $
 #
 
 package Page;
@@ -74,7 +74,7 @@ sub report_error {
     warn "aborting";
     ent($msg);
     my $contact_email = mySociety::Config::get('CONTACT_EMAIL');
-    my $trylater = sprintf(_("Please try again later, or <a href=\"mailto:%s\">email us</a> to let us know."), $contact_email);
+    my $trylater = sprintf(_('Please try again later, or <a href="mailto:%s">email us</a> to let us know.'), $contact_email);
     my $somethingwrong = _("Sorry! Something's gone wrong.");
     my $errortext = _("The text of the error was:");
     print "Status: 500\nContent-Type: text/html; charset=iso-8859-1\n\n",
@@ -608,7 +608,7 @@ sub display_problem_text {
                 prettify_duration($problem->{whensent}, 'minute') . ' later');
         }
     } else {
-        $out .= $q->br() . $q->small('Not reported to council');
+        $out .= $q->br() . $q->small(_('Not reported to council'));
     }
     $out .= '</em></p>';
     my $detail = $problem->{detail};
@@ -754,7 +754,7 @@ sub geocode_string {
                 $y -= 1 if ($yy - $y < 0.5);
             } catch Error::Simple with {
                 $error = shift;
-                $error = "That location doesn't appear to be in Britain; please try again."
+                $error = _('That location does not appear to be in Britain; please try again.')
                     if $error =~ /out of the area covered/;
             }
         }
@@ -766,7 +766,7 @@ sub geocode_string {
 # Prints response if there's more than one possible result
 sub geocode_choice {
     my ($choices, $page) = @_;
-    my $out = '<p>We found more than one match for that location. We show up to ten matches, please try a different search if yours is not here.</p> <ul>';
+    my $out = '<p>' . _('We found more than one match for that location. We show up to ten matches, please try a different search if yours is not here.') . '</p> <ul>';
     foreach my $choice (@$choices) {
         $choice =~ s/, United Kingdom//;
         $choice =~ s/, UK//;
@@ -797,7 +797,7 @@ sub check_photo {
     my $cd = $q->uploadInfo($fh)->{'Content-Disposition'};
     # Must delete photo param, otherwise display functions get confused
     $q->delete('photo');
-    return 'Please upload a JPEG image only' unless
+    return _('Please upload a JPEG image only') unless
         ($ct eq 'image/jpeg' || $ct eq 'image/pjpeg');
     return '';
 }
@@ -824,7 +824,7 @@ sub process_photo {
     close $fh;
     my $out = `jhead -se -autorot $filename`;
     if ($out) {
-        open(FP, $filename) or die $!;
+        open(FP, $filename) or throw Error::Simple($!);
         $photo = join('', <FP>);
         close FP;
     }
