@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.65 2009-01-22 10:12:40 matthew Exp $
+# $Id: index.cgi,v 1.66 2009-02-10 12:06:16 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.65 2009-01-22 10:12:40 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.66 2009-02-10 12:06:16 matthew Exp $';
 
 use strict;
 
@@ -428,7 +428,7 @@ sub admin_reports {
             email, anonymous, created, confirmed, state, service, lastupdate,
             whensent, send_questionnaire from problem where id=? or email ilike
             '%'||?||'%' or name ilike '%'||?||'%' or title ilike '%'||?||'%' or
-            detail ilike '%'||?||'%' or council like '%'||?||'%'", int($search),
+            detail ilike '%'||?||'%' or council like '%'||?||'%' order by created", int($search),
             $search, $search, $search, $search, $search);
         print $q->start_table({border=>1, cellpadding=>2, cellspacing=>0});
         print $q->th({}, ['ID', 'Title', 'Name', 'Email', 'Council', 'Category', 'Anonymous', 'Created', 'State', 'When sent', '*']);
