@@ -1,0 +1,69 @@
+#!/usr/bin/perl -w
+#
+# handlemail:
+# Handle an individual incoming mail message.
+#
+# This script should be invoked through the .forward mechanism. It processes
+# replies to non-reply emails and auto-replies accordingly. Could deal with
+# bounces at some point too.
+#
+# Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
+# Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
+#
+
+my $rcsid = ''; $rcsid .= '$Id: handlemail,v 1.1 2009-02-11 10:53:41 matthew Exp $';
+
+use strict;
+require 5.8.0;
+
+# Horrible boilerplate to set up appropriate library paths.
+use FindBin;
+use lib "$FindBin::Bin/../perllib";
+use lib "$FindBin::Bin/../../perllib";
+
+use mySociety::Config;
+BEGIN {
+    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+}
+use mySociety::Email;
+use mySociety::EmailUtil;
+use mySociety::HandleMail;
+use mySociety::SystemMisc;
+
+# Don't print diagnostics to standard error, as this can result in bounce
+# messages being generated (only in response to non-bounce input, obviously).
+mySociety::SystemMisc::log_to_stderr(0);
+
+my %data = mySociety::HandleMail::get_message();
+
+if ($data{is_bounce_message}) {
+    #my $a = mySociety::HandleMail::get_bounce_recipient($data{message});
+    #my $token = mySociety::HandleMail::get_token($a,
+    #    'fms-', mySociety::Config::get('EMAILDOMAIN')
+    #);
+    #exit(0) if $token eq 'DO-NOT-REPLY'; # A bounce we don't care about
+    exit(0); # drop all other bounces currently
+}
+
+# Not a bounce, send an automatic response
+my $template = 'reply-autoresponse';
+open FP, "$FindBin::Bin/../templates/emails/$template" or exit 75;
+$template = join('', <FP>);
+close FP;
+
+# We generate this as a bounce.
+my $mail = mySociety::Email::construct_email({
+    Sender => '<>',
+    From => [ mySociety::Config::get('CONTACT_EMAIL'), 'FixMyStreet' ],
+    To => $data{return_path},
+    _template_ => $template,
+    _parameters_ => { },
+});
+
+if (mySociety::EmailUtil::EMAIL_SUCCESS
+        != mySociety::EmailUtil::send_email($mail, '<>', $data{return_path})) {
+    exit(75);
+}
+
+exit(0);
+
