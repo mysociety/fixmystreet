@@ -11,7 +11,7 @@
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
 
-my $rcsid = ''; $rcsid .= '$Id: handlemail,v 1.1 2009-02-11 10:53:41 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: handlemail,v 1.2 2009-02-11 11:04:48 matthew Exp $';
 
 use strict;
 require 5.8.0;
@@ -53,7 +53,6 @@ close FP;
 
 # We generate this as a bounce.
 my $mail = mySociety::Email::construct_email({
-    Sender => '<>',
     From => [ mySociety::Config::get('CONTACT_EMAIL'), 'FixMyStreet' ],
     To => $data{return_path},
     _template_ => $template,
