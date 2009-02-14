@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.138 2009-02-09 11:29:25 matthew Exp $
+# $Id: Page.pm,v 1.139 2009-02-14 11:30:49 matthew Exp $
 #
 
 package Page;
@@ -397,8 +397,10 @@ sub map_pins {
         $pins .= Page::display_pin($q, $px, $py, $col);
     }
 
+    mySociety::Locale::push('en-gb');
     my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($mid_e, $mid_n, 'G');
     my $dist = mySociety::Gaze::get_radius_containing_population($lat, $lon, 200000);
+    mySociety::Locale::pop();
     $dist = int($dist*10+0.5)/10;
 
     my $limit = 20; # - @$current_map;
