@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.242 2009-02-02 10:59:16 matthew Exp $
+# $Id: index.cgi,v 1.243 2009-02-16 15:03:01 matthew Exp $
 
 use strict;
 use Standard;
@@ -125,7 +125,7 @@ EOF
         '<big>%s</big> reports in past week', $new), $new);
     if ($q->{site} ne 'emptyhomes' && $new > $fixed) {
         $new = Problems::recent_new('3 days');
-        $new_text = sprintf(mySociety::Locale::nget('<big>%s</big> report recently', '<big%s</big> reports recently', $new), $new);
+        $new_text = sprintf(mySociety::Locale::nget('<big>%s</big> report recently', '<big>%s</big> reports recently', $new), $new);
     }
     $out .= '<form action="/" method="get" id="postcodeForm">';
     if (my $token = $q->param('partial')) {
