@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Problems.pm,v 1.10 2009-02-14 11:30:49 matthew Exp $
+# $Id: Problems.pm,v 1.11 2009-02-16 18:56:44 matthew Exp $
 #
 
 package Problems;
@@ -129,22 +129,19 @@ sub recent {
 
 sub around_map {
     my ($min_e, $max_e, $min_n, $max_n, $interval) = @_;
-    mySociety::Locale::push('en-gb');
-    my $ret = select_all(
+    mySociety::Locale::in_gb_locale { select_all(
         "select id,title,easting,northing,state from problem
         where state in ('confirmed', 'fixed')
             and easting>=? and easting<? and northing>=? and northing<? " .
         ($interval ? " and ms_current_timestamp()-lastupdate < '$interval'::interval" : '') .
         " $site_restriction
         order by created desc", $min_e, $max_e, $min_n, $max_n);
-    mySociety::Locale::pop();
-    return $ret;
+    };
 }
 
 sub nearby {
     my ($dist, $ids, $limit, $mid_e, $mid_n, $interval) = @_;
-    mySociety::Locale::push('en-gb');
-    my $ret = select_all(
+    mySociety::Locale::in_gb_locale { select_all(
         "select id, title, easting, northing, distance, state
         from problem_find_nearby(?, ?, $dist) as nearby, problem
         where nearby.problem_id = problem.id " .
@@ -152,21 +149,18 @@ sub nearby {
         " and state in ('confirmed', 'fixed')" . ($ids ? ' and id not in (' . $ids . ')' : '') . "
         $site_restriction
         order by distance, created desc limit $limit", $mid_e, $mid_n);
-    mySociety::Locale::pop();
-    return $ret;
+    }
 }
 
 sub fixed_nearby {
     my ($dist, $mid_e, $mid_n) = @_;
-    mySociety::Locale::push('en-gb');
-    my $ret = select_all(
+    mySociety::Locale::in_gb_locale { select_all(
         "select id, title, easting, northing, distance
         from problem_find_nearby(?, ?, $dist) as nearby, problem
         where nearby.problem_id = problem.id and state='fixed'
         $site_restriction
         order by lastupdate desc", $mid_e, $mid_n);
-    mySociety::Locale::pop();
-    return $ret;
+    }
 }
 
 # Fetch an individual problem
