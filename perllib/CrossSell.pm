@@ -9,7 +9,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: CrossSell.pm,v 1.15 2009-02-16 17:38:42 matthew Exp $
+# $Id: CrossSell.pm,v 1.16 2009-02-16 17:54:05 matthew Exp $
 
 # Config parameters site needs set to call these functions:
 # OPTION_AUTH_SHARED_SECRET
@@ -117,7 +117,9 @@ sub display_news_form {
     return <<EOF;
 <h1 style="padding-top:0.5em">mySociety newsletter</h1>
 
-<p>Enter your email address below and we&rsquo;ll send you occasional emails about what we&rsquo;ve been up to.</p>
+<p>Interested in hearing more about FixMyStreet successes? Enter your email
+address below and we&rsquo;ll send you occasional emails about what mySociety
+and our users have been up to.</p>
 
 <form method="post" action="https://secure.mysociety.org/admin/lists/mailman/subscribe/news">
 <label for="name">Name:</label>
@@ -126,6 +128,9 @@ sub display_news_form {
 <input type="text" name="email" id="email" value="$input_h{email}" size="30">
 &nbsp; <input type="submit" value="Add me to the list">
 </form>
+
+<p>mySociety respects your privacy, and we'll never sell or give away your private
+details. You can unsubscribe at any time.</p>
 EOF
 }
 
