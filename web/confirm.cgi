@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.52 2009-01-05 23:10:50 matthew Exp $
+# $Id: confirm.cgi,v 1.53 2009-02-16 17:38:42 matthew Exp $
 
 use strict;
 use Standard;
@@ -109,7 +109,7 @@ sub confirm_update {
 sub confirm_problem {
     my ($q, $id) = @_;
 
-    my ($council, $email) = dbh()->selectrow_array("select council, email from problem where id=?", {}, $id);
+    my ($council, $email, $name) = dbh()->selectrow_array("select council, email, name from problem where id=?", {}, $id);
 
     (my $domain = $email) =~ s/^.*\@//;
     if (dbh()->selectrow_array('select email from abuse where lower(email)=? or lower(email)=?', {}, lc($email), lc($domain))) {
@@ -154,7 +154,7 @@ $q->p('<a href="/report/' . $id . '">View your report</a>.');
             . ($council ? _(' and <strong>we will now send it to the council</strong>') : '')
             . sprintf(_('. You can <a href="%s">view the problem on this site</a>.'), "/report/$id")
         );
-        $out .= CrossSell::display_advert($q, $email);
+        $out .= CrossSell::display_advert($q, $email, $name);
     }
 
     # Subscribe problem reporter to email updates
