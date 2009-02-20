@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.66 2009-02-10 12:06:16 matthew Exp $
+# $Id: index.cgi,v 1.67 2009-02-20 18:26:48 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.66 2009-02-10 12:06:16 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.67 2009-02-20 18:26:48 matthew Exp $';
 
 use strict;
 
@@ -460,7 +460,7 @@ sub admin_reports {
         print $q->h2('Updates');
         my $updates = select_all("select * from comment where id=? or
         problem_id=? or email ilike '%'||?||'%' or name ilike '%'||?||'%' or
-        text ilike '%'||?||'%'", int($search), int($search), $search, $search,
+        text ilike '%'||?||'%' order by created", int($search), int($search), $search, $search,
         $search);
         admin_show_updates($q, $updates);
     }
