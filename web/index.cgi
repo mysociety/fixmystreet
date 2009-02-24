@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.245 2009-02-24 10:42:56 matthew Exp $
+# $Id: index.cgi,v 1.246 2009-02-24 10:44:23 matthew Exp $
 
 use strict;
 use Standard;
@@ -118,9 +118,7 @@ EOF
     }
     $out .= '<p id="error">' . $error . '</p>' if ($error);
     my $fixed = Problems::recent_fixed();
-    $fixed =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
     my $updates = Problems::number_comments();
-    $updates =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
     my $new = Problems::recent_new('1 week');
     my $new_text = sprintf(mySociety::Locale::nget('<big>%s</big> report in past week', 
         '<big>%s</big> reports in past week', $new), $new);
@@ -128,6 +126,10 @@ EOF
         $new = Problems::recent_new('3 days');
         $new_text = sprintf(mySociety::Locale::nget('<big>%s</big> report recently', '<big>%s</big> reports recently', $new), $new);
     }
+
+    # Add pretty commas for display
+    $fixed =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
+    $updates =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
     $out .= '<form action="/" method="get" id="postcodeForm">';
     if (my $token = $q->param('partial')) {
         my $id = mySociety::AuthToken::retrieve('partial', $token);
