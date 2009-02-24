@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.243 2009-02-16 15:03:01 matthew Exp $
+# $Id: index.cgi,v 1.244 2009-02-24 10:41:14 matthew Exp $
 
 use strict;
 use Standard;
@@ -192,7 +192,7 @@ EOF
 
 sub submit_update {
     my $q = shift;
-    my @vars = qw(id name email update fixed upload_fileid add_alert);
+    my @vars = qw(id name rznvy update fixed upload_fileid add_alert);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
 
@@ -204,9 +204,9 @@ sub submit_update {
 
     push(@errors, _('Please enter a message')) unless $input{update} =~ /\S/;
     $input{name} = undef unless $input{name} =~ /\S/;
-    if ($input{email} !~ /\S/) {
+    if ($input{rznvy} !~ /\S/) {
         push(@errors, _('Please enter your email'));
-    } elsif (!mySociety::EmailUtil::is_valid_email($input{email})) {
+    } elsif (!mySociety::EmailUtil::is_valid_email($input{rznvy})) {
         push(@errors, _('Please enter a valid email'));
     }
 
@@ -232,7 +232,7 @@ sub submit_update {
     Utils::workaround_pg_bytea("insert into comment
         (id, problem_id, name, email, website, text, state, mark_fixed, photo)
         values (?, ?, ?, ?, '', ?, 'unconfirmed', ?, ?)", 7,
-        $id, $input{id}, $input{name}, $input{email}, $input{update},
+        $id, $input{id}, $input{name}, $input{rznvy}, $input{update},
         $input{fixed} ? 't' : 'f', $image);
 
     my %h = ();
@@ -244,7 +244,7 @@ sub submit_update {
     $h{url} = $base . '/C/' . mySociety::AuthToken::store('update', { id => $id, add_alert => $input{add_alert} } );
     dbh()->commit();
 
-    my $out = Page::send_email($q, $input{email}, $input{name}, 'update', %h);
+    my $out = Page::send_email($q, $input{rznvy}, $input{name}, 'update', %h);
     return $out;
 }
 
@@ -833,7 +833,7 @@ EOF
 sub display_problem {
     my ($q, @errors) = @_;
 
-    my @vars = qw(id name email update fixed add_alert upload_fileid x y submit_update);
+    my @vars = qw(id name rznvy update fixed add_alert upload_fileid x y submit_update);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
     ($input{x}) = $input{x} =~ /^(\d+)/; $input{x} ||= 0;
@@ -896,8 +896,8 @@ sub display_problem {
     $out .= <<EOF;
 <form action="/alert" method="post" id="email_alert_box">
 <p>Receive email when updates are left on this problem</p>
-<label class="n" for="alert_email">Email:</label>
-<input type="text" name="email" id="alert_email" value="$input_h{email}" size="30">
+<label class="n" for="alert_rznvy">Email:</label>
+<input type="text" name="rznvy" id="alert_rznvy" value="$input_h{rznvy}" size="30">
 <input type="hidden" name="id" value="$input_h{id}">
 <input type="hidden" name="type" value="updates">
 <input type="submit" value="Subscribe">
@@ -927,8 +927,8 @@ EOF
 <input type="hidden" name="id" value="$input_h{id}">
 <div><label for="form_name">Name:</label>
 <input type="text" name="name" id="form_name" value="$input_h{name}" size="20"> (optional)</div>
-<div><label for="form_email">Email:</label>
-<input type="text" name="email" id="form_email" value="$input_h{email}" size="20"></div>
+<div><label for="form_rznvy">Email:</label>
+<input type="text" name="rznvy" id="form_rznvy" value="$input_h{rznvy}" size="20"></div>
 <div><label for="form_update">Update:</label>
 <textarea name="update" id="form_update" rows="7" cols="30">$input_h{update}</textarea></div>
 $fixedline

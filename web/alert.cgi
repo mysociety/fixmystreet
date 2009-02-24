@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.35 2008-12-01 12:21:46 matthew Exp $
+# $Id: alert.cgi,v 1.36 2009-02-24 10:41:14 matthew Exp $
 
 use strict;
 use Standard;
@@ -42,8 +42,8 @@ EOF
     } elsif ($q->param('rss')) {
         $out = alert_rss($q);
         return unless $out;
-    } elsif ($q->param('email')) {
-        $out = alert_do_subscribe($q, $q->param('email'));
+    } elsif ($q->param('rznvy')) {
+        $out = alert_do_subscribe($q, $q->param('rznvy'));
     } elsif ($q->param('id')) {
         $out = alert_updates_form($q);
     } elsif ($q->param('pc') || ($q->param('x') && $q->param('y'))) {
@@ -62,7 +62,7 @@ Page::do_fastcgi(\&main);
 
 sub alert_list {
     my ($q, @errors) = @_;
-    my @vars = qw(pc email x y);
+    my @vars = qw(pc rznvy x y);
     my %input = map { $_ => scalar $q->param($_) } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 
@@ -230,7 +230,7 @@ EOF
     $out .= $options;
     $out .= $q->p('<input type="submit" name="rss" value="' . _('Give me an RSS feed') . '">');
     $out .= $q->p({-id=>'alert_or'}, _('or'));
-    $out .= '<p>' . _('Your email:') . ' <input type="text" id="email" name="email" value="' . $input_h{email} . '" size="30"></p>
+    $out .= '<p>' . _('Your email:') . ' <input type="text" id="rznvy" name="rznvy" value="' . $input_h{rznvy} . '" size="30"></p>
 <p><input type="submit" name="alert" value="' . _('Subscribe me to an email alert') . '"></p>
 </div>
 </form>';
@@ -302,7 +302,7 @@ sub alert_rss {
 
 sub alert_updates_form {
     my ($q, @errors) = @_;
-    my @vars = qw(id email);
+    my @vars = qw(id rznvy);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
     my $out = '';
@@ -314,8 +314,8 @@ sub alert_updates_form {
     my $subscribe = _('Subscribe');
     $out .= <<EOF;
 <form action="alert" method="post">
-<label class="n" for="alert_email">$label</label>
-<input type="text" name="email" id="alert_email" value="$input_h{email}" size="30">
+<label class="n" for="alert_rznvy">$label</label>
+<input type="text" name="rznvy" id="alert_rznvy" value="$input_h{rznvy}" size="30">
 <input type="hidden" name="id" value="$input_h{id}">
 <input type="hidden" name="type" value="updates">
 <input type="submit" value="$subscribe">
@@ -327,7 +327,7 @@ EOF
 sub alert_signed_input {
     my $q = shift;
     my ($salt, $signed_email) = split /,/, $q->param('signed_email');
-    my $email = $q->param('email');
+    my $email = $q->param('rznvy');
     my $id = $q->param('id');
     my $secret = scalar(dbh()->selectrow_array('select secret from secret'));
     my $out;
