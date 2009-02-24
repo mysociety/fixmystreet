@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.244 2009-02-24 10:41:14 matthew Exp $
+# $Id: index.cgi,v 1.245 2009-02-24 10:42:56 matthew Exp $
 
 use strict;
 use Standard;
@@ -118,6 +118,7 @@ EOF
     }
     $out .= '<p id="error">' . $error . '</p>' if ($error);
     my $fixed = Problems::recent_fixed();
+    $fixed =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
     my $updates = Problems::number_comments();
     $updates =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
     my $new = Problems::recent_new('1 week');
