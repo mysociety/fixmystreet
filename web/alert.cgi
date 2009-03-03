@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.36 2009-02-24 10:41:14 matthew Exp $
+# $Id: alert.cgi,v 1.37 2009-03-03 10:08:16 matthew Exp $
 
 use strict;
 use Standard;
@@ -347,6 +347,12 @@ sub alert_token {
     my $id = $data->{id};
     my $type = $data->{type};
     my $email = $data->{email};
+
+    (my $domain = $email) =~ s/^.*\@//;
+    if (dbh()->selectrow_array('select email from abuse where lower(email)=? or lower(email)=?', {}, lc($email), lc($domain))) {
+        return $q->p('Sorry, there has been an error confirming your alert.');
+    }
+
     my $out;
     if ($type eq 'subscribe') {
         mySociety::Alert::confirm($id);
