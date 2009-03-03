@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.246 2009-02-24 10:44:23 matthew Exp $
+# $Id: index.cgi,v 1.247 2009-03-03 14:53:48 matthew Exp $
 
 use strict;
 use Standard;
@@ -537,7 +537,7 @@ sub display_form {
 
     if ($input{skipped}) {
         $out .= <<EOF;
-<form action="/" method="post">
+<form action="/" method="post" enctype="multipart/form-data">
 <input type="hidden" name="pc" value="$input_h{pc}">
 <input type="hidden" name="x" value="$input_h{x}">
 <input type="hidden" name="y" value="$input_h{y}">
