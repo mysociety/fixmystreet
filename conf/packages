@@ -21,3 +21,4 @@ perl
 perl-base
 perl-modules
 perlmagick
+libjson-perl
