@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.43 2008-11-10 10:14:09 root Exp $
+-- $Id: schema.sql,v 1.44 2009-03-10 12:25:10 matthew Exp $
 --
 
 -- secret
@@ -284,6 +284,7 @@ create table alert_sent (
     parameter text, -- e.g. Update ID for new updates
     whenqueued timestamp not null default ms_current_timestamp()
 );
+create index alert_sent_alert_id_parameter_idx on alert_sent(alert_id, parameter);
 
 -- To record details of people who submit via Flickr/ iPhone/ etc.
 create table partial_user (
