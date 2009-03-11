@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.247 2009-03-03 14:53:48 matthew Exp $
+# $Id: index.cgi,v 1.248 2009-03-11 11:18:20 matthew Exp $
 
 use strict;
 use Standard;
@@ -128,8 +128,6 @@ EOF
     }
 
     # Add pretty commas for display
-    $fixed =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
-    $updates =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
     $out .= '<form action="/" method="get" id="postcodeForm">';
     if (my $token = $q->param('partial')) {
         my $id = mySociety::AuthToken::retrieve('partial', $token);
@@ -163,13 +161,15 @@ EOF
         $step4
     );
 
+    (my $fixed_pretty = $fixed) =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
+    (my $updates_pretty = $updates) =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
     $out .= $q->h2(_('FixMyStreet updates'));
     $out .= $q->div({-id => 'front_stats'},
         $q->div($new_text),
-        ($q->{site} ne 'emptyhomes' ? $q->div(sprintf(mySociety::Locale::nget("<big>%s</big> fixed in past month", "<big>%s</big> fixed in past month", $fixed), $fixed))
+        ($q->{site} ne 'emptyhomes' ? $q->div(sprintf(mySociety::Locale::nget("<big>%s</big> fixed in past month", "<big>%s</big> fixed in past month", $fixed), $fixed_pretty))
             : ''), # $q->div(sprintf(_('<big>%s</big> back in use in past month'), $fixed)),
         $q->div(sprintf(mySociety::Locale::nget("<big>%s</big> update on reports",
-	    "<big>%s</big> updates on reports", $updates), $updates))
+	    "<big>%s</big> updates on reports", $updates), $updates_pretty))
     );
 
     $out .= <<EOF;
