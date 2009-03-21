@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.38 2008-12-09 10:40:02 matthew Exp $
+# $Id: faq.cgi,v 1.39 2009-03-21 00:40:26 matthew Exp $
 
 use strict;
 use Standard -db;
@@ -60,8 +60,11 @@ href="https://secure.mysociety.org/donate/">please do</a>.')),
 to find out where reports go at the moment. Also <a href="/contact">contact us</a>
 to update the address or addresses we use.')),
         $q->dt(_('Do you remove silly or illegal content?')),
-        $q->dd(_('We reserve the right to remove any problems or updates
-which we consider to be inappropriate.')),
+        $q->dd(_('FixMyStreet is not responsible for the content and accuracy
+of material submitted by its users. All reports are accepted on the basis that
+they contain no illegal content, and we reserve the right to remove any
+problems or updates which we consider to be inappropriate upon being informed
+by a user of the site.')),
         $q->dt(_("Why doesn't dragging the map work on reporting-a-problem pages in Safari or Konqueror?")),
         $q->dd(_("There's a bug in these two browsers to do with setting images on form
 submit buttons, which the map uses when reporting a problem. It's fixed in the
