@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.69 2009-03-24 17:12:27 matthew Exp $
+# $Id: index.cgi,v 1.70 2009-03-24 17:34:30 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.69 2009-03-24 17:12:27 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.70 2009-03-24 17:34:30 matthew Exp $';
 
 use strict;
 
@@ -289,7 +289,7 @@ sub admin_council_contacts ($$) {
     # Display of addresses / update statuses form
     print $q->start_form(-method => 'POST', -action => $q->url('relative'=>1));
     print $q->start_table({border=>1, cellpadding=>2, cellspacing=>0});
-    print $q->th({}, ["Category", "Email", "Confirmed", "Deleted", "Last editor", "Note", "When edited", 'Confirm']);
+    print $q->Tr({}, $q->th({}, ["Category", "Email", "Confirmed", "Deleted", "Last editor", "Note", "When edited", 'Confirm']));
     foreach my $l (@$bci_data) {
         print $q->Tr($q->td([
             $q->a({ href => NewURL($q, area_id => $area_id, category => $l->{category}, page => 'counciledit') },
@@ -388,7 +388,7 @@ sub admin_council_edit ($$$) {
     # Display history of changes
     print $q->h2('History');
     print $q->start_table({border=>1});
-    print $q->th({}, ["When edited", "Email", "Confirmed", "Deleted", "Editor", "Note"]);
+    print $q->Tr({}, $q->th({}, ["When edited", "Email", "Confirmed", "Deleted", "Editor", "Note"]));
     my $html = '';
     my $prev = undef;
     foreach my $h (@$bci_history) {
@@ -425,7 +425,7 @@ sub admin_reports {
 
     if (my $search = $q->param('search')) {
         my $search_n = 0;
-        my $search_n = int($search) if $search =~ /^\d+$/;
+        $search_n = int($search) if $search =~ /^\d+$/;
         my $results = select_all("select id, council, category, title, name,
             email, anonymous, created, confirmed, state, service, lastupdate,
             whensent, send_questionnaire from problem where id=? or email ilike
@@ -561,12 +561,12 @@ EOF
 sub admin_show_updates {
     my ($q, $updates) = @_;
     print $q->start_table({border=>1, cellpadding=>2, cellspacing=>0});
-    print $q->th({}, ['ID', 'State', 'Name', 'Email', 'Created', 'Text', '*']);
+    print $q->Tr({}, $q->th({}, ['ID', 'State', 'Name', 'Email', 'Created', 'Text', '*']));
     foreach (@$updates) {
         my $url = $_->{id};
         $url = $q->a({ -href => mySociety::Config::get('BASE_URL') . '/report/' . $_->{problem_id} . '#' . $_->{id} },
             $url) if $_->{state} eq 'confirmed';
-        print $q->Tr({}, $q->td([ $url, $_->{state}, $_->{name},
+        print $q->Tr({}, $q->td([ $url, $_->{state}, $_->{name} || '',
         $_->{email}, $_->{created}, $_->{text},
         $q->a({ -href => NewURL($q, page=>'update_edit', id=>$_->{id}) }, 'Edit')
         ]));
