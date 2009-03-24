@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.68 2009-03-24 16:55:11 matthew Exp $
+# $Id: index.cgi,v 1.69 2009-03-24 17:12:27 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.68 2009-03-24 16:55:11 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.69 2009-03-24 17:12:27 matthew Exp $';
 
 use strict;
 
@@ -433,7 +433,7 @@ sub admin_reports {
             detail ilike '%'||?||'%' or council like '%'||?||'%' order by created", $search_n,
             $search, $search, $search, $search, $search);
         print $q->start_table({border=>1, cellpadding=>2, cellspacing=>0});
-        print $q->th({}, ['ID', 'Title', 'Name', 'Email', 'Council', 'Category', 'Anonymous', 'Created', 'State', 'When sent', '*']);
+        print $q->Tr({}, $q->th({}, ['ID', 'Title', 'Name', 'Email', 'Council', 'Category', 'Anonymous', 'Created', 'State', 'When sent', '*']));
         foreach (@$results) {
             my $url = $_->{id};
             $url = $q->a({ -href => mySociety::Config::get('BASE_URL') . '/report/' . $_->{id} }, $url)
@@ -671,6 +671,7 @@ sub admin_timeline {
         push @{$time{$_->{whensubscribed}}}, { type => 'alertSub', %$_ };
     }
     $alerts = select_all("select *,
+    extract(epoch from whensubscribed) as whensubscribed,
     extract(epoch from whendisabled) as whendisabled
     from alert where whendisabled>=ms_current_timestamp()-'7 days'::interval");
     foreach (@$alerts) {
