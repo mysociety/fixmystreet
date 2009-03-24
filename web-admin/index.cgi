@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.67 2009-02-20 18:26:48 matthew Exp $
+# $Id: index.cgi,v 1.68 2009-03-24 16:55:11 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.67 2009-02-20 18:26:48 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.68 2009-03-24 16:55:11 matthew Exp $';
 
 use strict;
 
@@ -424,11 +424,13 @@ sub admin_reports {
     print $q->end_form;
 
     if (my $search = $q->param('search')) {
+        my $search_n = 0;
+        my $search_n = int($search) if $search =~ /^\d+$/;
         my $results = select_all("select id, council, category, title, name,
             email, anonymous, created, confirmed, state, service, lastupdate,
             whensent, send_questionnaire from problem where id=? or email ilike
             '%'||?||'%' or name ilike '%'||?||'%' or title ilike '%'||?||'%' or
-            detail ilike '%'||?||'%' or council like '%'||?||'%' order by created", int($search),
+            detail ilike '%'||?||'%' or council like '%'||?||'%' order by created", $search_n,
             $search, $search, $search, $search, $search);
         print $q->start_table({border=>1, cellpadding=>2, cellspacing=>0});
         print $q->th({}, ['ID', 'Title', 'Name', 'Email', 'Council', 'Category', 'Anonymous', 'Created', 'State', 'When sent', '*']);
@@ -460,7 +462,7 @@ sub admin_reports {
         print $q->h2('Updates');
         my $updates = select_all("select * from comment where id=? or
         problem_id=? or email ilike '%'||?||'%' or name ilike '%'||?||'%' or
-        text ilike '%'||?||'%' order by created", int($search), int($search), $search, $search,
+        text ilike '%'||?||'%' order by created", $search_n, $search_n, $search, $search,
         $search);
         admin_show_updates($q, $updates);
     }
