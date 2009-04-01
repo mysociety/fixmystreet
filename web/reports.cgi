@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.26 2009-04-01 18:04:11 matthew Exp $
+# $Id: reports.cgi,v 1.27 2009-04-01 18:22:47 matthew Exp $
 
 use strict;
 use Standard;
@@ -112,7 +112,7 @@ sub main {
         my $ignore = 'LGD';
         $ignore .= '|CTY' if $q->{site} eq 'emptyhomes';
         my @types = grep { !/$ignore/ } @$mySociety::VotingArea::council_parent_types;
-        %councils = map { $_ => 1 } @{mySociety::MaPit::get_areas_by_type(\@types)};
+        %councils = map { $_ => 1 } @{mySociety::MaPit::get_areas_by_type(\@types, 10)};
     }
 
     my @params;
