@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.25 2009-02-09 11:29:26 matthew Exp $
+# $Id: reports.cgi,v 1.26 2009-04-01 18:04:11 matthew Exp $
 
 use strict;
 use Standard;
@@ -31,7 +31,7 @@ sub main {
     my ($one_council, $area_type, $area_name);
     if ($q_council =~ /\D/) {
         (my $qc = $q_council) =~ s/ and / & /;
-        my $areas = mySociety::MaPit::get_voting_area_by_name($qc, $mySociety::VotingArea::council_parent_types);
+        my $areas = mySociety::MaPit::get_voting_area_by_name($qc, $mySociety::VotingArea::council_parent_types, 10);
         if (keys %$areas == 1) {
             ($one_council) = keys %$areas;
             $area_type = $areas->{$one_council}->{type};
