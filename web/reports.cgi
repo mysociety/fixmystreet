@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.27 2009-04-01 18:22:47 matthew Exp $
+# $Id: reports.cgi,v 1.28 2009-04-01 18:42:02 matthew Exp $
 
 use strict;
 use Standard;
@@ -60,7 +60,7 @@ sub main {
     my $q_ward = $q->param('ward') || '';
     my $ward;
     if ($one_council && $q_ward) {
-        my $qw = mySociety::MaPit::get_voting_area_by_name($q_ward, $mySociety::VotingArea::council_child_types);
+        my $qw = mySociety::MaPit::get_voting_area_by_name($q_ward, $mySociety::VotingArea::council_child_types, 10);
         foreach my $id (sort keys %$qw) {
             if ($qw->{$id}->{parent_area_id} == $one_council) {
                 $ward = $id;
@@ -156,7 +156,10 @@ sub main {
     my $areas_info = mySociety::MaPit::get_voting_areas_info([keys %councils]);
     if (!$one_council) {
         print Page::header($q, title=>_('Summary reports'), expires=>'+1h');
-        print $q->p(_('This is a summary of all reports on this site; select a particular council to see the reports sent there.'));
+        print $q->p(
+            _('This is a summary of all reports on this site; select a particular council to see the reports sent there.'), ' ',
+            _('Greyed-out lines are councils that no longer exist.')
+        );
         my $c = 0;
         print '<table cellpadding="3" cellspacing="1" border="0">';
         print '<tr><th>' . _('Name') . '</th><th>' . _('New problems') . '</th><th>' . _('Older problems') . '</th>';
@@ -168,7 +171,12 @@ sub main {
         }
         foreach (sort { $areas_info->{$a}->{name} cmp $areas_info->{$b}->{name} } keys %councils) {
             print '<tr align="center"';
-            print ' class="a"' if (++$c%2);
+            ++$c;
+            if ($areas_info->{$_}->{generation_high}==10) {
+                print ' class="gone"';
+            } elsif ($c%2) {
+                print ' class="a"';
+            }
             my $url = Page::short_name($areas_info->{$_}->{name});
             print '><td align="left"><a href="/reports/' . $url . '">' .
                 $areas_info->{$_}->{name} . '</a></td>';
