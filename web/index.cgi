@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.248 2009-03-11 11:18:20 matthew Exp $
+# $Id: index.cgi,v 1.249 2009-04-01 00:12:18 matthew Exp $
 
 use strict;
 use Standard;
@@ -491,7 +491,11 @@ sub display_form {
         return display_location($q, _('That location is not within the boundary of South Cambridgeshire District Council - you can report problems elsewhere in Great Britain using <a href="http://www.fixmystreet.com/">FixMyStreet</a>.')) unless $all_councils->{2260};
     }
     $all_councils = [ keys %$all_councils ];
-    return display_location($q, _('That spot does not appear to be covered by a council - if it is past the shoreline, for example, please specify the closest point on land.')) unless @$all_councils;
+    return display_location($q, _('That spot does not appear to be covered by a council.
+Due to the local government changes in Bedfordshire and Cheshire, we are currently unable
+to offer our service in those areas - this will hopefully be fixed as soon as possible.
+If you have tried to report an issue past the shoreline, on the other hand,
+please specify the closest point on land.')) unless @$all_councils;
     my $areas_info = mySociety::MaPit::get_voting_areas_info($all_councils);
 
     # Look up categories for this council or councils
