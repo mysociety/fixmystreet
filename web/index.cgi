@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.250 2009-04-02 17:32:34 matthew Exp $
+# $Id: index.cgi,v 1.251 2009-04-15 10:25:44 matthew Exp $
 
 use strict;
 use Standard;
@@ -485,6 +485,9 @@ sub display_form {
 
     # Ipswich & St Edmundsbury are responsible for everything in their areas, no Suffolk
     delete $all_councils->{2241} if $all_councils->{2446} || $all_councils->{2443};
+
+    # Norwich is responsible for everything in its areas, no Norfolk
+    delete $all_councils->{2233} if $all_councils->{2391};
 
     if ($q->{site} eq 'scambs') {
         delete $all_councils->{2218};
