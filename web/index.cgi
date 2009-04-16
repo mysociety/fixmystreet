@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.251 2009-04-15 10:25:44 matthew Exp $
+# $Id: index.cgi,v 1.252 2009-04-16 13:51:24 matthew Exp $
 
 use strict;
 use Standard;
@@ -110,7 +110,7 @@ sub front_page {
         if ($q->{site} eq 'fixmystreet') {
             $out .= <<EOF
 <p align="center" style="margin-bottom:0">
-<img alt="$new" src="/i/new.png" border="0">
+<img width="23" height="12" alt="$new" src="/i/new.png" border="0">
 <a href="$url">$getiphone</a>
 </p>
 EOF
