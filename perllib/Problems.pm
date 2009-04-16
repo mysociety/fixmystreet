@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Problems.pm,v 1.11 2009-02-16 18:56:44 matthew Exp $
+# $Id: Problems.pm,v 1.12 2009-04-16 13:41:48 matthew Exp $
 #
 
 package Problems;
@@ -168,7 +168,7 @@ sub fixed_nearby {
 sub fetch_problem {
     my $id = shift;
     dbh()->selectrow_hashref(
-        "select id, easting, northing, council, category, title, detail, (photo is not null) as photo,
+        "select id, easting, northing, council, category, title, detail, photo,
         used_map, name, anonymous, extract(epoch from confirmed) as time,
         state, extract(epoch from whensent-confirmed) as whensent,
         extract(epoch from ms_current_timestamp()-lastupdate) as duration, service

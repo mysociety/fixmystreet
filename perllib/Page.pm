@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.140 2009-02-16 18:56:44 matthew Exp $
+# $Id: Page.pm,v 1.141 2009-04-16 13:41:48 matthew Exp $
 #
 
 package Page;
@@ -18,6 +18,7 @@ use Error qw(:try);
 use File::Slurp;
 use HTTP::Date;
 use Image::Magick;
+use Image::Size;
 use LWP::Simple;
 use Digest::MD5 qw(md5_hex);
 use POSIX qw(strftime);
@@ -231,7 +232,7 @@ EOF
     my $alerts = _("Local alerts");
     my $help = _("Help");
     my $contact = _("Contact");
-    my $orglogo = _('<a href="http://www.mysociety.org/"><img id="logo" src="/i/mysociety-dark.png" alt="View mySociety.org"><span id="logoie"></span></a>');
+    my $orglogo = _('<a href="http://www.mysociety.org/"><img id="logo" width="133" height="26" src="/i/mysociety-dark.png" alt="View mySociety.org"><span id="logoie"></span></a>');
     my $creditline = _('Built by <a href="http://www.mysociety.org/">mySociety</a>, using some <a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/bci">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.');
 
     return <<EOF;
@@ -428,19 +429,19 @@ sub compass ($$$) {
     return <<EOF;
 <table cellpadding="0" cellspacing="0" border="0" id="compass">
 <tr valign="bottom">
-<td align="right"><a rel="nofollow" href="${compass[$x-1][$y+1]}"><img src="/i/arrow-northwest.gif" alt="NW"></a></td>
-<td align="center"><a rel="nofollow" href="${compass[$x][$y+1]}"><img src="/i/arrow-north.gif" vspace="3" alt="N"></a></td>
-<td><a rel="nofollow" href="${compass[$x+1][$y+1]}"><img src="/i/arrow-northeast.gif" alt="NE"></a></td>
+<td align="right"><a rel="nofollow" href="${compass[$x-1][$y+1]}"><img src="/i/arrow-northwest.gif" alt="NW" width=11 height=11></a></td>
+<td align="center"><a rel="nofollow" href="${compass[$x][$y+1]}"><img src="/i/arrow-north.gif" vspace="3" alt="N" width=13 height=11></a></td>
+<td><a rel="nofollow" href="${compass[$x+1][$y+1]}"><img src="/i/arrow-northeast.gif" alt="NE" width=11 height=11></a></td>
 </tr>
 <tr>
-<td><a rel="nofollow" href="${compass[$x-1][$y]}"><img src="/i/arrow-west.gif" hspace="3" alt="W"></a></td>
-<td align="center"><a rel="nofollow" href="$recentre"><img src="/i/rose.gif" alt="Recentre"></a></td>
-<td><a rel="nofollow" href="${compass[$x+1][$y]}"><img src="/i/arrow-east.gif" hspace="3" alt="E"></a></td>
+<td><a rel="nofollow" href="${compass[$x-1][$y]}"><img src="/i/arrow-west.gif" hspace="3" alt="W" width=11 height=13></a></td>
+<td align="center"><a rel="nofollow" href="$recentre"><img src="/i/rose.gif" alt="Recentre" width=35 height=34></a></td>
+<td><a rel="nofollow" href="${compass[$x+1][$y]}"><img src="/i/arrow-east.gif" hspace="3" alt="E" width=11 height=13></a></td>
 </tr>
 <tr valign="top">
-<td align="right"><a rel="nofollow" href="${compass[$x-1][$y-1]}"><img src="/i/arrow-southwest.gif" alt="SW"></a></td>
-<td align="center"><a rel="nofollow" href="${compass[$x][$y-1]}"><img src="/i/arrow-south.gif" vspace="3" alt="S"></a></td>
-<td><a rel="nofollow" href="${compass[$x+1][$y-1]}"><img src="/i/arrow-southeast.gif" alt="SE"></a></td>
+<td align="right"><a rel="nofollow" href="${compass[$x-1][$y-1]}"><img src="/i/arrow-southwest.gif" alt="SW" width=11 height=11></a></td>
+<td align="center"><a rel="nofollow" href="${compass[$x][$y-1]}"><img src="/i/arrow-south.gif" vspace="3" alt="S" width=13 height=11></a></td>
+<td><a rel="nofollow" href="${compass[$x+1][$y-1]}"><img src="/i/arrow-southeast.gif" alt="SE" width=11 height=11></a></td>
 </tr>
 </table>
 EOF
@@ -621,7 +622,8 @@ sub display_problem_text {
     }
 
     if ($problem->{photo}) {
-        $out .= '<p align="center"><img src="/photo?id=' . $problem->{id} . '"></p>';
+        my $dims = Image::Size::html_imgsize(\$problem->{photo});
+        $out .= "<p align='center'><img alt='' $dims src='/photo?id=$problem->{id}'></p>";
     }
 
     return $out;
@@ -632,7 +634,7 @@ sub display_problem_updates {
     my $id = shift;
     my $updates = select_all(
         "select id, name, extract(epoch from created) as created, text,
-         mark_fixed, mark_open, (photo is not null) as has_photo
+         mark_fixed, mark_open, photo
          from comment where problem_id = ? and state='confirmed'
          order by created", $id);
     my $out = '';
@@ -655,8 +657,9 @@ sub display_problem_updates {
             foreach (split /\n{2,}/, $text) {
                 $out .= '<p>' . ent($_) . '</p>';
             }
-            if ($row->{has_photo}) {
-                $out .= '<p><img alt="" src="/photo?tn=1;c=' . $row->{id} . '"></p>';
+            if ($row->{photo}) {
+                my $dims = Image::Size::html_imgsize(\$row->{photo});
+                $out .= "<p><img alt='' $dims src='/photo?tn=1;c=$row->{id}'></p>";
             }
             $out .= '</div>';
         }

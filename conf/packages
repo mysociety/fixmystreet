@@ -22,3 +22,4 @@ perl-base
 perl-modules
 perlmagick
 libjson-perl
+libimage-size-perl
