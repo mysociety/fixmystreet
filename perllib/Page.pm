@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.142 2009-04-16 13:51:30 matthew Exp $
+# $Id: Page.pm,v 1.143 2009-04-16 13:54:03 matthew Exp $
 #
 
 package Page;
@@ -634,7 +634,7 @@ sub display_problem_updates {
     my $id = shift;
     my $updates = select_all(
         "select id, name, extract(epoch from created) as created, text,
-         mark_fixed, mark_open, photo
+         mark_fixed, mark_open, (photo is not null) as has_photo
          from comment where problem_id = ? and state='confirmed'
          order by created", $id);
     my $out = '';
@@ -657,9 +657,8 @@ sub display_problem_updates {
             foreach (split /\n{2,}/, $text) {
                 $out .= '<p>' . ent($_) . '</p>';
             }
-            if ($row->{photo}) {
-                my $dims = Image::Size::html_imgsize(\$row->{photo});
-                $out .= "<p><img alt='' $dims src='/photo?tn=1;c=$row->{id}'></p>";
+            if ($row->{has_photo}) {
+                $out .= '<p><img alt="" height=100 src="/photo?tn=1;c=' . $row->{id} . '"></p>';
             }
             $out .= '</div>';
         }
