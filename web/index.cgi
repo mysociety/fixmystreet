@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.252 2009-04-16 13:51:24 matthew Exp $
+# $Id: index.cgi,v 1.253 2009-04-23 11:46:46 matthew Exp $
 
 use strict;
 use Standard;
@@ -120,11 +120,13 @@ EOF
     my $fixed = Problems::recent_fixed();
     my $updates = Problems::number_comments();
     my $new = Problems::recent_new('1 week');
+    (my $new_pretty = $new) =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
     my $new_text = sprintf(mySociety::Locale::nget('<big>%s</big> report in past week', 
-        '<big>%s</big> reports in past week', $new), $new);
+        '<big>%s</big> reports in past week', $new), $new_pretty);
     if ($q->{site} ne 'emptyhomes' && $new > $fixed) {
         $new = Problems::recent_new('3 days');
-        $new_text = sprintf(mySociety::Locale::nget('<big>%s</big> report recently', '<big>%s</big> reports recently', $new), $new);
+        ($new_pretty = $new) =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
+        $new_text = sprintf(mySociety::Locale::nget('<big>%s</big> report recently', '<big>%s</big> reports recently', $new), $new_pretty);
     }
 
     # Add pretty commas for display
@@ -132,7 +134,7 @@ EOF
     if (my $token = $q->param('partial')) {
         my $id = mySociety::AuthToken::retrieve('partial', $token);
         if ($id) {
-	    my $thanks = _("Thanks for uploading your photo. We now need to locate your problem, so please enter a nearby street name or postcode in the box below&nbsp;:");
+            my $thanks = _("Thanks for uploading your photo. We now need to locate your problem, so please enter a nearby street name or postcode in the box below&nbsp;:");
             $out .= <<EOF;
 <p style="margin-top: 0; color: #cc0000;"><img align="right" src="/photo?id=$id" hspace="5">$thanks</p>
 
@@ -169,7 +171,7 @@ EOF
         ($q->{site} ne 'emptyhomes' ? $q->div(sprintf(mySociety::Locale::nget("<big>%s</big> fixed in past month", "<big>%s</big> fixed in past month", $fixed), $fixed_pretty))
             : ''), # $q->div(sprintf(_('<big>%s</big> back in use in past month'), $fixed)),
         $q->div(sprintf(mySociety::Locale::nget("<big>%s</big> update on reports",
-	    "<big>%s</big> updates on reports", $updates), $updates_pretty))
+            "<big>%s</big> updates on reports", $updates), $updates_pretty))
     );
 
     $out .= <<EOF;
