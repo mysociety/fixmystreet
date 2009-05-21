@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.64 2009-01-14 12:21:08 matthew Exp $
+# $Id: send-reports,v 1.65 2009-05-21 14:32:29 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -25,6 +25,7 @@ use mySociety::Email;
 use mySociety::EmailUtil;
 use mySociety::MaPit;
 use mySociety::Random qw(random_bytes);
+use mySociety::Web qw(ent);
 
 BEGIN {
     mySociety::Config::set_file("$FindBin::Bin/../conf/general");
@@ -275,8 +276,8 @@ sub post_easthants_message {
     try {
         # ServiceName, RemoteCreatedBy, Salutation, FirstName, Name, Email, Telephone, HouseNoName, Street, Town, County, Country, Postcode, Comments, FurtherInfo, ImageURL
         my $result = $eh_service->INPUTFEEDBACK(
-            $h{category}, 'FixMyStreet', '', '', $h{name}, $h{email}, $h{phone},
-            '', '', '', '', '', '', $h{message}, 'Yes', $h{image_url}
+            $h{category}, 'FixMyStreet', '', '', ent($h{name}), $h{email}, $h{phone},
+            '', '', '', '', '', '', ent($h{message}), 'Yes', $h{image_url}
         );
         $return = 0 if $result eq 'Report received';
     } otherwise {
