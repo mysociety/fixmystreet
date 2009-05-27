@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.37 2009-03-03 10:08:16 matthew Exp $
+# $Id: alert.cgi,v 1.38 2009-05-27 13:53:53 matthew Exp $
 
 use strict;
 use Standard;
@@ -35,7 +35,7 @@ sub main {
             $out = alert_token($q, $data);
         } else {
             $out = $q->p(_(<<EOF));
-Thank you for trying to confirm your alert. We seem to have a problem ourselves
+Thank you for trying to confirm your alert. We seem to have an error ourselves
 though, so <a href="/contact">please let us know what went on</a> and we'll look into it.
 EOF
         }

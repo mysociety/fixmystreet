@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.143 2009-04-16 13:54:03 matthew Exp $
+# $Id: Page.pm,v 1.144 2009-05-27 13:53:52 matthew Exp $
 #
 
 package Page;
@@ -103,7 +103,7 @@ sub microsite {
     $q->{site} = 'guardian' if $host =~ /guardian/;
 
     if ($q->{site} eq 'emptyhomes') {
-        mySociety::Locale::negotiate_language('en-gb,English,en_GB', 'en-gb');
+        mySociety::Locale::negotiate_language('en-gb,English,en_GB|cy,Cymraeg,cy_GB');
         mySociety::Locale::gettext_domain('FixMyStreet-EmptyHomes');
         mySociety::Locale::change();
     } else {
@@ -153,9 +153,10 @@ sub header ($%) {
         $html =~ s#<!-- TITLE -->#$title#;
     } else {
         my $fixmystreet = _('FixMyStreet');
+	my $lang = $mySociety::Locale::lang;
         $html = <<EOF;
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html lang="en-gb">
+<html lang="$lang">
     <head>
         <script type="text/javascript" src="/yui/utilities.js"></script>
         <script type="text/javascript" src="/js.js"></script>
@@ -266,7 +267,7 @@ EOF
 =cut
 sub error_page ($$) {
     my ($q, $message);
-    my $html = header($q, title=>"Error")
+    my $html = header($q, title=>_("Error"))
             . $q->p($message)
             . footer($q);
     print $q->header(-content_length => length($html)), $html;
@@ -342,10 +343,10 @@ $params{pre}
 EOF
     $out .= '<div id="watermark"></div>';
     $out .= compass($q, $x, $y);
+    my $copyright = _('Crown copyright. All rights reserved. Ministry of Justice');
     $out .= <<EOF;
     </div>
-    <p id="copyright">&copy; Crown copyright.  All rights reserved.
-    Ministry of Justice 100037819&nbsp;2008</p>
+    <p id="copyright">&copy; $copyright 100037819&nbsp;2008</p>
 $params{post}
 EOF
     $out .= '</div>';
@@ -545,7 +546,7 @@ sub prettify_epoch {
     my $tt = strftime('%H:%M', @s);
     my @t = localtime();
     if (strftime('%Y%m%d', @s) eq strftime('%Y%m%d', @t)) {
-        $tt = "$tt " . 'today';
+        $tt = "$tt " . _('today');
     } elsif (strftime('%Y %U', @s) eq strftime('%Y %U', @t)) {
         $tt = "$tt, " . strftime('%A', @s);
     } elsif (strftime('%Y', @s) eq strftime('%Y', @t)) {
@@ -567,13 +568,13 @@ sub prettify_duration {
         $s = int(($s+60*30)/60/60)*60*60;
     } elsif ($nearest eq 'minute') {
         $s = int(($s+30)/60)*60;
-        return 'less than a minute' if $s == 0;
+        return _('less than a minute') if $s == 0;
     }
     my @out = ();
-    _part(\$s, 60*60*24*7, 'week', \@out);
-    _part(\$s, 60*60*24, 'day', \@out);
-    _part(\$s, 60*60, 'hour', \@out);
-    _part(\$s, 60, 'minute', \@out);
+    _part(\$s, 60*60*24*7, _('week'), \@out);
+    _part(\$s, 60*60*24, _('day'), \@out);
+    _part(\$s, 60*60, _('hour'), \@out);
+    _part(\$s, 60, _('minute'), \@out);
     return join(', ', @out);
 }
 sub _part {
@@ -592,24 +593,38 @@ sub display_problem_text {
     # Display information about problem
     $out .= '<p><em>';
     if ($q->{site} eq 'emptyhomes') {
-        $out .= ent($problem->{category}) . ', reported ';
+        if ($problem->{anonymous}) {
+            $out .= sprintf(_('%s, reported anonymously at %s'), ent($problem->{category}), prettify_epoch($problem->{time}));
+	} else {
+            $out .= sprintf(_('%s, reported by %s at %s'), ent($problem->{category}), ent($problem->{name}), prettify_epoch($problem->{time}));
+	}
     } else {
-        $out .= 'Reported ';
-        $out .= 'by ' . ent($problem->{service}) . ' ' if $problem->{service}; 
-        $out .= 'in the ' . ent($problem->{category}) . ' category '
-            if $problem->{category} && $problem->{category} ne 'Other';
+        if ($problem->{service} && $problem->{category} && $problem->{category} ne 'Other' && $problem->{anonymous}) {
+	    $out .= sprintf(_('Reported by %s in the %s category anonymously at %s'), ent($problem->{service}), ent($problem->{category}), prettify_epoch($problem->{time}));
+        } elsif ($problem->{service} && $problem->{category} && $problem->{category} ne 'Other') {
+	    $out .= sprintf(_('Reported by %s in the %s category by %s at %s'), ent($problem->{service}), ent($problem->{category}), ent($problem->{name}), prettify_epoch($problem->{time}));
+	} elsif ($problem->{service} && $problem->{anonymous}) {
+	    $out .= sprintf(_('Reported by %s anonymously at %s'), ent($problem->{service}), prettify_epoch($problem->{time}));
+	} elsif ($problem->{service}) {
+	    $out .= sprintf(_('Reported by %s by %s at %s'), ent($problem->{service}), ent($problem->{name}), prettify_epoch($problem->{time}));
+	} elsif ($problem->{category} && $problem->{category} ne 'Other' && $problem->{anonymous}) {
+	    $out .= sprintf(_('Reported in the %s category anonymously at %s'), ent($problem->{category}), prettify_epoch($problem->{time}));
+	} elsif ($problem->{category} && $problem->{category} ne 'Other') {
+	    $out .= sprintf(_('Reported in the %s category by %s at %s'), ent($problem->{category}), ent($problem->{name}), prettify_epoch($problem->{time}));
+	} elsif ($problem->{anonymous}) {
+	    $out .= sprintf(_('Reported anonymously at %s'), prettify_epoch($problem->{time}));
+	} else {
+	    $out .= sprintf(_('Reported by %s at %s'), ent($problem->{name}), prettify_epoch($problem->{time}));
+	}
     }
-    $out .= ($problem->{anonymous}) ? 'anonymously' : "by " . ent($problem->{name});
-    $out .= ' at ' . prettify_epoch($problem->{time});
-    $out .= '; the map was not used so pin location may be inaccurate' unless ($problem->{used_map});
+    $out .= '; ' . _('the map was not used so pin location may be inaccurate') unless ($problem->{used_map});
     if ($problem->{council}) {
         if ($problem->{whensent}) {
             $problem->{council} =~ s/\|.*//g;
             my @councils = split /,/, $problem->{council};
             my $areas_info = mySociety::MaPit::get_voting_areas_info(\@councils);
             my $council = join(' and ', map { $areas_info->{$_}->{name} } @councils);
-            $out .= $q->br() . $q->small('Sent to ' . $council . ' ' .
-                prettify_duration($problem->{whensent}, 'minute') . ' later');
+            $out .= $q->br() . $q->small(sprintf(_('Sent to %s %s later'), $council, prettify_duration($problem->{whensent}, 'minute')));
         }
     } else {
         $out .= $q->br() . $q->small(_('Not reported to council'));
@@ -640,15 +655,14 @@ sub display_problem_updates {
     my $out = '';
     if (@$updates) {
         $out .= '<div id="updates">';
-        $out .= '<h2>Updates</h2>';
+        $out .= '<h2>' . _('Updates') . '</h2>';
         foreach my $row (@$updates) {
             $out .= "<div><p><a name=\"update_$row->{id}\"></a><em>";
             if ($row->{name}) {
-                $out .= sprintf(_('Posted by %s'), ent($row->{name}));
+                $out .= sprintf(_('Posted by %s at %s'), ent($row->{name}), prettify_epoch($row->{created}));
             } else {
-                $out .= _("Posted anonymously");
+                $out .= sprintf(_('Posted anonymously at %s'), prettify_epoch($row->{created}));
             }
-            $out .= " at " . prettify_epoch($row->{created});
             $out .= ', ' . _('marked as fixed') if ($row->{mark_fixed});
             $out .= ', ' . _('reopened') if ($row->{mark_open});
             $out .= '</em></p>';
@@ -679,7 +693,7 @@ sub geocode {
         try {
             my $location = mySociety::MaPit::get_location($s);
             my $island = $location->{coordsyst};
-            throw RABX::Error("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.") if $island eq 'I';
+            throw RABX::Error(_("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.")) if $island eq 'I';
             $easting = $location->{easting};
             $northing = $location->{northing};
             my $xx = Page::os_to_tile($easting);
@@ -692,7 +706,7 @@ sub geocode {
             my $e = shift;
             if ($e->value() && ($e->value() == mySociety::MaPit::BAD_POSTCODE
                || $e->value() == mySociety::MaPit::POSTCODE_NOT_FOUND)) {
-                $error = 'That postcode was not recognised, sorry.';
+                $error = _('That postcode was not recognised, sorry.');
             } else {
                 $error = $e;
             }
@@ -728,7 +742,7 @@ sub geocode_string {
     }
 
     if (!$js) {
-        $error = _('Sorry, we had a problem parsing that location. Please try again.');
+        $error = _('Sorry, we could not parse that location. Please try again.');
     } elsif ($js !~ /"code": *200/) {
         $error = _('Sorry, we could not find that location.');
     } elsif ($js =~ /}, *{/) { # Multiple
@@ -741,7 +755,7 @@ sub geocode_string {
         $error = _('Sorry, we could not find that location.') unless $error;
     } elsif ($js =~ /BT\d/) {
         # Northern Ireland, hopefully
-        $error = "We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.";
+        $error = _("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.");
     } else {
         my ($accuracy) = $js =~ /"Accuracy": *(\d)/;
         if ($accuracy < 4) {

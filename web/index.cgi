@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.253 2009-04-23 11:46:46 matthew Exp $
+# $Id: index.cgi,v 1.254 2009-05-27 13:53:53 matthew Exp $
 
 use strict;
 use Standard;
@@ -493,7 +493,7 @@ sub display_form {
 
     if ($q->{site} eq 'scambs') {
         delete $all_councils->{2218};
-        return display_location($q, _('That location is not within the boundary of South Cambridgeshire District Council - you can report problems elsewhere in Great Britain using <a href="http://www.fixmystreet.com/">FixMyStreet</a>.')) unless $all_councils->{2260};
+        return display_location($q, 'That location is not within the boundary of South Cambridgeshire District Council - you can report problems elsewhere in Great Britain using <a href="http://www.fixmystreet.com/">FixMyStreet</a>.') unless $all_councils->{2260};
     }
     $all_councils = [ keys %$all_councils ];
     return display_location($q, _('That spot does not appear to be covered by a council.
@@ -524,7 +524,10 @@ please specify the closest point on land.')) unless @$all_councils;
         foreach (@$categories) {
             $council_ok{$_->{area_id}} = 1;
         }
-        @categories = ('-- Pick a property type --', 'Empty house or bungalow', 'Empty flat or maisonette', 'Whole block of empty flats', 'Empty office or other commercial', 'Empty pub or bar', 'Empty public building - school, hospital, etc.');
+        @categories = (_('-- Pick a property type --'), _('Empty house or bungalow'),
+	    _('Empty flat or maisonette'), _('Whole block of empty flats'),
+	    _('Empty office or other commercial'), _('Empty pub or bar'),
+	    _('Empty public building - school, hospital, etc.'));
         $category = _('Property type:');
     }
     $category = $q->div($q->label({'for'=>'form_category'}, $category),
@@ -570,10 +573,9 @@ If this is not the correct location, simply click on the map again. '));
     }
 
     if ($details eq 'all') {
-        $out .= '<p>All the information you provide here will be sent to <strong>'
-            . join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @$all_councils)
-            . '</strong>. On the site, we will show the subject and details of the problem,
-            plus your name if you give us permission.';
+        $out .= '<p>' . sprintf(_('All the information you provide here will be sent to <strong>%s</strong>.
+On the site, we will show the subject and details of the problem, plus your
+name if you give us permission.'), join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @$all_councils));
         $out .= '<input type="hidden" name="council" value="' . join(',',@$all_councils) . '">';
     } elsif ($details eq 'some') {
         my $e = mySociety::Config::get('CONTACT_EMAIL');
@@ -606,10 +608,10 @@ left on the site, but <strong>not</strong> reported to the council.
 You can help us by finding a contact email address for local
 problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.";
         } else {
-            $out .= "<p>We do not yet have details for the council that covers
+            $out .= _("<p>We do not yet have details for the council that covers
 this location. If you submit a report here it will be left on the site, but
 not reported to the council &ndash; please still leave your report, so that
-we can show to the council the activity in their area.";
+we can show to the council the activity in their area.");
         }
         $out .= '<input type="hidden" name="council" value="-1">';
     }
@@ -623,7 +625,7 @@ to help unless you leave as much detail as you can, so please describe the exact
 the problem (e.g. on a wall), what it is, how long it has been there, a description (and a
 photo of the problem if you have one), etc.';
     } elsif ($q->{site} eq 'emptyhomes') {
-        $out .= $q->p(<<EOF);
+        $out .= $q->p(_(<<EOF));
 Please fill in details of the empty property below, saying what type of
 property it is e.g. an empty home, block of flats, office etc. Tell us
 something about its condition and any other information you feel is relevant.
@@ -648,17 +650,26 @@ photo of the problem if you have one), etc.';
     }
     my $anon = ($input{anonymous}) ? ' checked' : ($input{title} ? '' : ' checked');
     $out .= '<div id="problem_form">';
-    $out .= $q->h2('Empty property details form') if $q->{site} eq 'emptyhomes';
+    $out .= $q->h2(_('Empty property details form')) if $q->{site} eq 'emptyhomes';
     $out .= <<EOF;
 <div id="fieldset">
 $category
 EOF
+    my $subject_label = _('Subject:');
+    my $detail_label = _('Details:');
+    my $photo_label = _('Photo:');
+    my $name_label = _('Name:');
+    my $email_label = _('Email:');
+    my $phone_label = _('Phone:');
+    my $optional = _('(optional)');
+    my $anonymous = _('Can we show your name on the site?');
+    my $anonymous2 = _('(we never show your email address or phone number)');
     $out .= <<EOF;
-<div><label for="form_title">Subject:</label>
+<div><label for="form_title">$subject_label</label>
 <input type="text" value="$input_h{title}" name="title" id="form_title" size="30"></div>
 EOF
     $out .= <<EOF;
-<div><label for="form_detail">Details:</label>
+<div><label for="form_detail">$detail_label</label>
 <textarea name="detail" id="form_detail" rows="7" cols="26">$input_h{detail}</textarea></div>
 EOF
     my $partial_id;
@@ -679,22 +690,22 @@ EOF
 <input type="hidden" name="upload_fileid" id="upload_fileid" value="$input_h{upload_fileid}">
 </div>
 <div id="fileupload_normalUI">
-<label for="form_photo">Photo:</label>
+<label for="form_photo">$photo_label</label>
 <input type="file" name="photo" id="form_photo">
 </div>
 EOF
     }
     $out .= <<EOF;
-<div><label for="form_name">Name:</label>
+<div><label for="form_name">$name_label</label>
 <input type="text" value="$input_h{name}" name="name" id="form_name" size="30"></div>
 <div class="checkbox"><input type="checkbox" name="anonymous" id="form_anonymous" value="1"$anon>
-<label for="form_anonymous">Can we show your name on the site?</label>
-<small>(we never show your email address or phone number)</small></div>
-<div><label for="form_email">Email:</label>
+<label for="form_anonymous">$anonymous</label>
+<small>$anonymous2</small></div>
+<div><label for="form_email">$email_label</label>
 <input type="text" value="$input_h{email}" name="email" id="form_email" size="30"></div>
-<div><label for="form_phone">Phone:</label>
+<div><label for="form_phone">$phone_label</label>
 <input type="text" value="$input_h{phone}" name="phone" id="form_phone" size="15">
-<small>(optional)</small></div>
+<small>$optional</small></div>
 EOF
     if ($q->{site} eq 'scambs') {
         $out .= <<EOF;
@@ -721,8 +732,9 @@ directly using their own website.
 </ul>
 EOF
     }
+    my $submit_button = _('Submit');
     $out .= <<EOF;
-<p id="problem_submit"><input type="submit" name="submit_problem" value="Submit"></p>
+<p id="problem_submit"><input type="submit" name="submit_problem" value="$submit_button"></p>
 </div>
 </div>
 EOF
@@ -767,20 +779,20 @@ sub display_location {
     my ($hide_link, $hide_text, $all_link, $all_text, $interval);
     if ($input{all_pins}) {
         $all_link = NewURL($q, -retain=>1, no_pins=>undef, all_pins=>undef);
-        $all_text = 'Hide stale reports';
+        $all_text = _('Hide stale reports');
     } else {
         $all_link = NewURL($q, -retain=>1, no_pins=>undef, all_pins=>1);
-        $all_text = 'Include stale reports';
+        $all_text = _('Include stale reports');
         $interval = '6 months';
     }
     my ($pins, $on_map, $around_map, $dist) = Page::map_pins($q, $x, $y, $x, $y, $interval);
     if ($input{no_pins}) {
         $hide_link = NewURL($q, -retain=>1, no_pins=>undef);
-        $hide_text = 'Show pins';
+        $hide_text = _('Show pins');
         $pins = '';
     } else {
         $hide_link = NewURL($q, -retain=>1, no_pins=>1);
-        $hide_text = 'Hide pins';
+        $hide_text = _('Hide pins');
     }
     my $map_links = "<p style='float:right; margin-top:0;'><a id='hide_pins_link' href='$hide_link'>$hide_text</a> | <a id='all_pins_link' href='$all_link'>$all_text</a></p> <input type='hidden' id='all_pins' name='all_pins' value='$input_h{all_pins}'>";
 
@@ -812,7 +824,7 @@ EOF
         $list .= '<li><a href="/report/' . $_->{id} . '">';
         $list .= $_->{title};
         $list .= '</a>';
-        $list .= ' <small>(fixed)</small>' if $_->{state} eq 'fixed';
+        $list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
         $list .= '</li>';
     }
     $list = $q->li(_('No problems have been reported yet.'))
@@ -824,7 +836,7 @@ EOF
         $list .= '<li><a href="/report/' . $_->{id} . '">';
         $list .= $_->{title} . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
         $list .= '</a>';
-        $list .= ' <small>(fixed)</small>' if $_->{state} eq 'fixed';
+        $list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
         $list .= '</li>';
     }
     $list = $q->li(_('No problems found.'))
@@ -865,10 +877,10 @@ sub display_problem {
     }
 
     # Get all information from database
-    return display_location($q, 'Unknown problem ID') if $input{id} =~ /\D/;
+    return display_location($q, _('Unknown problem ID')) if $input{id} =~ /\D/;
     my $problem = Problems::fetch_problem($input{id});
-    return display_location($q, 'Unknown problem ID') unless $problem;
-    return front_page($q, 'That problem has been hidden from public view as it contained inappropriate public details') if $problem->{state} eq 'hidden';
+    return display_location($q, _('Unknown problem ID')) unless $problem;
+    return front_page($q, _('That problem has been hidden from public view as it contained inappropriate public details')) if $problem->{state} eq 'hidden';
     my ($x, $y, $x_tile, $y_tile, $px, $py) = Page::os_to_px_with_adjust($q, $problem->{easting}, $problem->{northing}, $input{x}, $input{y});
 
     # Try and have pin near centre of map
@@ -903,14 +915,17 @@ sub display_problem {
         . $back . '">' . _('More problems nearby') . '</a></p>';
     $out .= '<div id="alert_links">';
     $out .= '<a rel="nofollow" id="email_alert" href="/alert?type=updates;id='.$input_h{id}.'">' . _('Email me updates') . '</a>';
+    my $email_label = _('Email:');
+    my $subscribe = _('Subscribe');
+    my $blurb = _('Receive email when updates are left on this problem');
     $out .= <<EOF;
 <form action="/alert" method="post" id="email_alert_box">
-<p>Receive email when updates are left on this problem</p>
-<label class="n" for="alert_rznvy">Email:</label>
+<p>$blurb</p>
+<label class="n" for="alert_rznvy">$email_label</label>
 <input type="text" name="rznvy" id="alert_rznvy" value="$input_h{rznvy}" size="30">
 <input type="hidden" name="id" value="$input_h{id}">
 <input type="hidden" name="type" value="updates">
-<input type="submit" value="Subscribe">
+<input type="submit" value="$subscribe">
 </form>
 EOF
     $out .= ' &nbsp; <a href="/rss/'.$input_h{id}.'"><img src="/i/feed.png" width="16" height="16" title="' . _('RSS feed') . '" alt="' . _('RSS feed of updates to this problem') . '" border="0" style="vertical-align: middle"></a>';
@@ -931,15 +946,20 @@ EOF
 <div class="checkbox"><input type="checkbox" name="fixed" id="form_fixed" value="1"$fixed>
 <label for="form_fixed">} . _('This problem has been fixed') . qq{</label></div>
 };
+    my $name_label = _('Name:');
+    my $update_label = _('Update:');
+    my $photo_label = _('Photo:');
+    my $alert_label = _('Alert me to future updates');
+    my $post_label = _('Post');
     $out .= <<EOF;
 <form method="post" action="/" id="fieldset" enctype="multipart/form-data">
 <input type="hidden" name="submit_update" value="1">
 <input type="hidden" name="id" value="$input_h{id}">
-<div><label for="form_name">Name:</label>
+<div><label for="form_name">$name_label</label>
 <input type="text" name="name" id="form_name" value="$input_h{name}" size="20"> (optional)</div>
-<div><label for="form_rznvy">Email:</label>
+<div><label for="form_rznvy">$email_label</label>
 <input type="text" name="rznvy" id="form_rznvy" value="$input_h{rznvy}" size="20"></div>
-<div><label for="form_update">Update:</label>
+<div><label for="form_update">$update_label</label>
 <textarea name="update" id="form_update" rows="7" cols="30">$input_h{update}</textarea></div>
 $fixedline
 <div id="fileupload_flashUI" style="display:none">
@@ -949,12 +969,12 @@ $fixedline
 <input type="hidden" name="upload_fileid" id="upload_fileid" value="$input_h{upload_fileid}">
 </div>
 <div id="fileupload_normalUI">
-<label for="form_photo">Photo:</label>
+<label for="form_photo">$photo_label</label>
 <input type="file" name="photo" id="form_photo">
 </div>
 <div class="checkbox"><input type="checkbox" name="add_alert" id="form_add_alert" value="1"$add_alert_checked>
-<label for="form_add_alert">Alert me to future updates</label></div>
-<div class="checkbox"><input type="submit" id="update_post" value="Post"></div>
+<label for="form_add_alert">$alert_label</label></div>
+<div class="checkbox"><input type="submit" id="update_post" value="$post_label"></div>
 </form>
 </div>
 EOF

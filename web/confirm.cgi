@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.53 2009-02-16 17:38:42 matthew Exp $
+# $Id: confirm.cgi,v 1.54 2009-05-27 13:53:53 matthew Exp $
 
 use strict;
 use Standard;
@@ -37,8 +37,8 @@ sub main {
         dbh()->commit();
     } else {
         $out = $q->p(_(<<EOF));
-Thank you for trying to confirm your update or problem. We seem to have a
-problem ourselves though, so <a href="/contact">please let us know what went on</a>
+Thank you for trying to confirm your update or problem. We seem to have an
+error ourselves though, so <a href="/contact">please let us know what went on</a>
 and we'll look into it.
 EOF
     }
@@ -127,26 +127,25 @@ sub confirm_problem {
         ));
     } elsif ($q->{site} eq 'emptyhomes') {
         if ($council) {
-            $out = $q->p('Thank you for reporting an empty property on
+            $out = $q->p(_('Thank you for reporting an empty property on
 ReportEmptyHomes.com. We have emailed the empty property officer in the council
 responsible with the details and asked them to do whatever they can to get the
-empty property back into use as soon as possible.') .
-$q->p('Most councils are quite good at bringing empty properties back into use. Even
+empty property back into use as soon as possible.')) .
+$q->p(_('Most councils are quite good at bringing empty properties back into use. Even
 so the process can sometimes be slow, especially if the property is in very poor
 repair or the owner is unwilling to act. In most cases it takes six months
 before you can expect to see anything change. This doesn&rsquo;t mean the council
 isn&rsquo;t doing anything. We encourage councils to update the website so you can
-see what is happening.') . 
-$q->p('We will contact you again in a month and again after six months to ask what has
+see what is happening.')) . 
+$q->p(_('We will contact you again in a month and again after six months to ask what has
 happened. Hopefully the property will be well on the way to being brought back
-into use by then, but if not we can offer advice on what you can do next.') .
-$q->p('Thank you for using ReportEmptyHomes.com. Your action is already helping
-to resolve the UK&rsquo;s empty homes crisis.') .
-$q->p('<a href="/report/' . $id . '">View your report</a>.');
+into use by then, but if not we can offer advice on what you can do next.')) .
+$q->p(_('Thank you for using ReportEmptyHomes.com. Your action is already helping
+to resolve the UK&rsquo;s empty homes crisis.')) .
+$q->p('<a href="/report/' . $id . '">' . _('View your report') . '</a>.');
         } else {
-            $out = $q->p('Thank you for reporting an empty property on
-ReportEmptyHomes.com.') .
-$q->p('<a href="/report/' . $id . '">View your report</a>.');
+            $out = $q->p(_('Thank you for reporting an empty property on ReportEmptyHomes.com.')) .
+$q->p('<a href="/report/' . $id . '">' . _('View your report') . '</a>.');
         }
     } else {
         $out = $q->p({class => 'confirmed'},
@@ -166,17 +165,21 @@ $q->p('<a href="/report/' . $id . '">View your report</a>.');
 
 sub ask_questionnaire {
     my ($token) = @_;
+    my $qn_thanks = _("Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?");
+    my $yes = _('Yes');
+    my $no = _('No');
+    my $go = _('Go');
     my $out = <<EOF;
 <form action="/confirm" method="post" id="questionnaire">
 <input type="hidden" name="type" value="questionnaire">
 <input type="hidden" name="token" value="$token">
-<p>Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?</p>
+<p>$qn_thanks</p>
 <p align="center">
 <input type="radio" name="reported" id="reported_yes" value="Yes">
-<label for="reported_yes">Yes</label>
+<label for="reported_yes">$yes</label>
 <input type="radio" name="reported" id="reported_no" value="No">
-<label for="reported_no">No</label>
-<input type="submit" value="Go">
+<label for="reported_no">$no</label>
+<input type="submit" value="$go">
 </p>
 </form>
 EOF
@@ -202,7 +205,7 @@ sub add_questionnaire {
         ever_reported, old_state, new_state) values (?, ms_current_timestamp(),
         ms_current_timestamp(), ?, 'confirmed', 'fixed');", {}, $problem_id, $reported)
         unless $already;
-    my $out = $q->p({class => 'confirmed'}, sprintf('Thank you &mdash; you can <a href="%s">view your updated problem</a> on the site.', "/report/$problem_id"));
+    my $out = $q->p({class => 'confirmed'}, sprintf(_('Thank you &mdash; you can <a href="%s">view your updated problem</a> on the site.'), "/report/$problem_id"));
     $out .= CrossSell::display_advert($q, $email, $name);
     return $out;
 }

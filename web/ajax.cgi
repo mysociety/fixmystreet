@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: ajax.cgi,v 1.8 2008-12-03 18:21:22 matthew Exp $
+# $Id: ajax.cgi,v 1.9 2009-05-27 13:53:53 matthew Exp $
 
 use strict;
 use Standard;
@@ -42,7 +42,7 @@ sub main {
         $list .= '<li><a href="/report/' . $_->{id} . '">';
         $list .= $_->{title};
         $list .= '</a>';
-        $list .= ' <small>(fixed)</small>' if $_->{state} eq 'fixed';
+        $list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
         $list .= '</li>';
     }
     my $om_list = $list;
@@ -52,7 +52,7 @@ sub main {
         $list .= '<li><a href="/report/' . $_->{id} . '">';
         $list .= $_->{title} . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
         $list .= '</a>';
-        $list .= ' <small>(fixed)</small>' if $_->{state} eq 'fixed';
+        $list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
         $list .= '</li>';
     }
     my $am_list = $list;

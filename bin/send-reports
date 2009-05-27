@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.65 2009-05-21 14:32:29 matthew Exp $
+# $Id: send-reports,v 1.66 2009-05-27 13:53:52 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -74,18 +74,18 @@ foreach my $row (@$unsent) {
     $h{url} = $base_url . '/report/' . $row->{id};
     $h{phone_line} = $h{phone} ? "Phone: $h{phone}\n\n" : '';
     if ($row->{has_photo}) {
-        $h{has_photo} = "This web page also contains a photo of the problem, provided by the user.\n\n";
+        $h{has_photo} = _("This web page also contains a photo of the problem, provided by the user.") . "\n\n";
         $h{image_url} = $base_url . '/photo?id=' . $row->{id};
     } else {
         $h{has_photo} = '';
         $h{image_url} = '';
     }
-    $h{fuzzy} = $row->{used_map} ? 'To view a map of the precise location of this issue'
-        : 'The user could not locate the problem on a map, but to see the area around the location they entered';
+    $h{fuzzy} = $row->{used_map} ? _('To view a map of the precise location of this issue')
+        : _('The user could not locate the problem on a map, but to see the area around the location they entered');
     $h{closest_address} = '';
     my ($address, $distance) = mySociety::Dress::find_nearest($row->{easting}, $row->{northing});
     if ($address) {
-        $h{closest_address} = sprintf("The closest address, as the crow flies, to the location of this problem, %.0fm away, is: %s - please note that this is automatically generated, so ensure that you check it against the details provided by the user and, if possible, the map.\n\n",
+        $h{closest_address} = sprintf(_("The closest address, as the crow flies, to the location of this problem, %.0fm away, is: %s - please note that this is automatically generated, so ensure that you check it against the details provided by the user and, if possible, the map.") . "\n\n",
             $distance, $address);
         ($h{closest_address_machine} = $h{closest_address}) =~ s/is: /is:\n\n/;
         $h{closest_address_machine} =~ s/ - please note/\n\n - please note/;

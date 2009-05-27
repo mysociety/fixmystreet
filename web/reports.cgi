@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.28 2009-04-01 18:42:02 matthew Exp $
+# $Id: reports.cgi,v 1.29 2009-05-27 13:53:53 matthew Exp $
 
 use strict;
 use Standard;
@@ -164,7 +164,7 @@ sub main {
         print '<table cellpadding="3" cellspacing="1" border="0">';
         print '<tr><th>' . _('Name') . '</th><th>' . _('New problems') . '</th><th>' . _('Older problems') . '</th>';
         if ($q->{site} eq 'emptyhomes') {
-            print '<th>Recently returned to use</th><th>Older returned to use</th></tr>';
+            print '<th>' . _('Recently returned to use') . '</th><th>' . _('Older returned to use') . '</th></tr>';
         } else {
             print '<th>' . _('Old problems,<br>state unknown') . '</th><th>'
                 . _('Recently fixed') . '</th><th>' . _('Old fixed') . '</th></tr>';
@@ -198,7 +198,7 @@ sub main {
     } else {
         my $name = $areas_info->{$one_council}->{name};
         if (!$name) {
-            print Page::header($q, title=>"Summary reports");
+            print Page::header($q, title=>_("Summary reports"));
             print "Council with identifier " . ent($one_council). " not found. ";
             print $q->a({href => '/reports' }, 'Show all councils');
             print ".";
@@ -210,19 +210,22 @@ sub main {
                 $thing = 'ward';
                 $name = ent($q_ward) . ", $name";
             }
-            print Page::header($q, title=>"$name - Summary reports", rss => [ "Problems within $name, FixMyStreet", $rss_url ]);
+            print Page::header($q, title=>sprintf(_('%s - Summary reports'), $name), rss => [ sprintf(_('Problems within %s, FixMyStreet'), $name), $rss_url ]);
             my $rss_title = _('RSS feed');
             my $rss_alt = _('RSS feed of problems in this %s');
+	    my $summary_line;
+	    if ($all && $q->{site} eq 'scambs') {
+                $summary_line = sprintf(_('You can <a href="%s">see less detail</a>.'), NewURL($q));
+	    } elsif ($q->{site} eq 'scambs') {
+                $summary_line = sprintf(_('You can <a href="%s">see more details</a>.'), NewURL($q, all=>1));
+	    } elsif ($all) {
+                $summary_line = sprintf(_('You can <a href="%s">see less detail</a> or go back and <a href="/reports">show all councils</a>.'), NewURL($q));
+	    } else {
+                $summary_line = sprintf(_('You can <a href="%s">see more details</a> or go back and <a href="/reports">show all councils</a>.'), NewURL($q, all=>1));
+	    }
             print $q->p(
                 $q->a({ href => $rss_url }, '<img align="right" src="/i/feed.png" width="16" height="16" title="' . $rss_title . '" alt="' . sprintf($rss_alt, $thing) . '" border="0" hspace="4">'),
-                'This is a summary of all reports for one ' . $thing . '. You can ' .
-                ($all ? 
-                    $q->a({href => NewURL($q)  }, 'see less detail') :
-                    $q->a({href => NewURL($q, all=>1) }, 'see more details')) .
-                ($q->{site} eq 'scambs' ? '' :
-                ' or go back and ' .
-                $q->a({href => '/reports' }, 'show all councils') ) .
-                '.');
+                sprintf(_('This is a summary of all reports for one %s.'), $thing) . ' ' . $summary_line);
             print "<h2>$name</h2>\n";
             if ($open{$one_council}) {
                 print '<div id="col_problems">';
@@ -231,7 +234,7 @@ sub main {
                     my @old = ();
                     push @old, @{$open{$one_council}{older}} if $open{$one_council}{older};
                     push @old, @{$open{$one_council}{unknown}} if $open{$one_council}{unknown};
-                    list_problems($q, 'Older empty properties', \@old, $all);
+                    list_problems($q, _('Older empty properties'), \@old, $all);
                 } else {
                     list_problems($q, _('Older problems'), $open{$one_council}{older}, $all);
                     list_problems($q, _('Old problems, state unknown'), $open{$one_council}{unknown}, $all);

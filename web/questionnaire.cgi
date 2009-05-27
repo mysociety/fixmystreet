@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.37 2008-12-12 00:00:18 matthew Exp $
+# $Id: questionnaire.cgi,v 1.38 2009-05-27 13:53:53 matthew Exp $
 
 use strict;
 use Standard;
@@ -35,17 +35,17 @@ sub check_stuff {
     my $q = shift;
 
     my $id = mySociety::AuthToken::retrieve('questionnaire', $q->param('token'));
-    throw Error::Simple("I'm afraid we couldn't validate that token. If you've copied the URL from an email, please check that you copied it exactly.\n") unless $id;
+    throw Error::Simple(_("I'm afraid we couldn't validate that token. If you've copied the URL from an email, please check that you copied it exactly.\n")) unless $id;
 
     my $questionnaire = dbh()->selectrow_hashref(
         'select id, problem_id, whenanswered from questionnaire where id=?', {}, $id);
     my $problem_id = $questionnaire->{problem_id};
-    throw Error::Simple("You have already answered this questionnaire. If you have a question, please <a href='/contact'>get in touch</a>, or <a href='/report/$problem_id'>view your problem</a>.\n") if $questionnaire->{whenanswered};
+    throw Error::Simple(sprintf(_("You have already answered this questionnaire. If you have a question, please <a href='/contact'>get in touch</a>, or <a href='%s'>view your problem</a>.\n"), "/report/$problem_id")) if $questionnaire->{whenanswered};
 
     my $problem = dbh()->selectrow_hashref(
         "select *, extract(epoch from confirmed) as time, extract(epoch from whensent-confirmed) as whensent
             from problem where id=? and state in ('confirmed','fixed')", {}, $problem_id);
-    throw Error::Simple("I'm afraid we couldn't locate your problem in the database.\n") unless $problem;
+    throw Error::Simple(_("I'm afraid we couldn't locate your problem in the database.\n")) unless $problem;
 
     my $num_questionnaire = dbh()->selectrow_array(
         'select count(*) from questionnaire where problem_id=?', {}, $problem_id);
@@ -76,11 +76,11 @@ sub submit_questionnaire {
     }
 
     my @errors;
-    push @errors, 'Please state whether or not the problem has been fixed' unless $input{been_fixed};
+    push @errors, _('Please state whether or not the problem has been fixed') unless $input{been_fixed};
     push @errors, _('Please say whether you\'ve ever reported a problem to your council before') unless $input{reported} || $answered_ever_reported;
-    push @errors, 'Please indicate whether you\'d like to receive another questionnaire'
+    push @errors, _('Please indicate whether you\'d like to receive another questionnaire')
         if ($input{been_fixed} eq 'No' || $input{been_fixed} eq 'Unknown') && !$input{another};
-    push @errors, 'Please provide some explanation as to why you\'re reopening this report'
+    push @errors, _('Please provide some explanation as to why you\'re reopening this report')
         if $input{been_fixed} eq 'No' && $problem->{state} eq 'fixed' && !$input{update};
     return display_questionnaire($q, @errors) if @errors;
 
@@ -96,7 +96,7 @@ sub submit_questionnaire {
             push(@errors, "That image doesn't appear to have uploaded correctly ($e), please try again.");
         };
     }
-    push @errors, 'Please provide some text as well as a photo'
+    push @errors, _('Please provide some text as well as a photo')
         if $image && !$input{update};
     return display_questionnaire($q, @errors) if @errors;
 
@@ -127,7 +127,7 @@ sub submit_questionnaire {
 
     # Record an update if they've given one, or if there's a state change
     my $name = $problem->{anonymous} ? undef : $problem->{name};
-    my $update = $input{update} ? $input{update} : 'Questionnaire filled in by problem reporter';
+    my $update = $input{update} ? $input{update} : _('Questionnaire filled in by problem reporter');
     Utils::workaround_pg_bytea("insert into comment
         (problem_id, name, email, website, text, state, mark_fixed, mark_open, photo)
         values (?, ?, ?, '', ?, 'confirmed', ?, ?, ?)", 7,
@@ -144,13 +144,13 @@ sub submit_questionnaire {
 
     my $out;
     if ($input{been_fixed} eq 'Unknown') {
-        $out = <<EOF;
+        $out = _(<<EOF);
 <p>Thank you very much for filling in our questionnaire; if you
 get some more information about the status of your problem, please come back to the
 site and leave an update.</p>
 EOF
     } elsif ($new_state eq 'confirmed' || (!$new_state && $problem->{state} eq 'confirmed')) {
-        return <<EOF;
+        return _(<<EOF);
 <p style="font-size:150%">We're sorry to hear that. We have two suggestions: why not try
 <a href="http://www.writetothem.com/">writing direct to your councillor(s)</a>
 or, if it's a problem that could be fixed by local people working together,
@@ -158,7 +158,7 @@ why not <a href="http://www.pledgebank.com/new">make and publicise a pledge</a>?
 </p>
 EOF
     } else {
-        $out = <<EOF;
+        $out = _(<<EOF);
 <p style="font-size:150%">Thank you very much for filling in our questionnaire; glad to hear it's been fixed.</p>
 EOF
     }
@@ -203,14 +203,14 @@ sub display_questionnaire {
         yes => $input{another} eq 'Yes' ? ' checked' : '',
         no => $input{another} eq 'No' ? ' checked' : '', 
     );
+    $out .= '<h1>' . _('Questionnaire') . '</h1>';
     $out .= <<EOF;
-<h1>Questionnaire</h1>
 <form method="post" action="/questionnaire" id="questionnaire" enctype="multipart/form-data">
 <input type="hidden" name="token" value="$input_h{token}">
 EOF
     if ($q->{site} eq 'emptyhomes') {
         if ($num_questionnaire==1) {
-            $out .= <<EOF;
+            $out .= _(<<EOF);
 <p>Getting empty homes back into use can be difficult. You shouldn't expect
 the property to be back into use yet. But a good council will have started work
 and should have reported what they have done on the website. If you are not
@@ -220,7 +220,7 @@ to help.  For advice on how to do this and other useful information please
 go to <a href="http://www.emptyhomes.com/getinvolved/campaign.html">http://www.emptyhomes.com/getinvolved/campaign.html</a>.</p>
 EOF
         } else {
-            $out .= <<EOF;
+            $out .= _(<<EOF);
 <p>Getting empty homes back into use can be difficult, but by now a good council
 will have made a lot of progress and reported what they have done on the
 website. Even so properties can remain empty for many months if the owner is
@@ -234,33 +234,38 @@ EOF
         }
     }
 
-    $out .= '<p>The details of your problem are available on the right hand side of this page.';
-    $out .= ' Please take a look at the updates that have been left.' if $updates;
+    $out .= '<p>' . _('The details of your problem are available on the right hand side of this page.');
+    $out .= ' ' . _('Please take a look at the updates that have been left.') if $updates;
     $out .= '</p>';
     if (@errors) {
         $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
     $out .= '<p>';
-    $out .= 'An update marked this problem as fixed. ' if $problem->{state} eq 'fixed';
+    $out .= _('An update marked this problem as fixed.') . ' ' if $problem->{state} eq 'fixed';
     $out .= _('Has this problem been fixed?') . '</p>';
+    my $yes = _('Yes');
+    my $no = _('No');
+    my $dontknow = _('Don&rsquo;t know');
     $out .= <<EOF;
 <p>
 <input type="radio" name="been_fixed" id="been_fixed_yes" value="Yes"$been_fixed{yes}>
-<label for="been_fixed_yes">Yes</label>
+<label for="been_fixed_yes">$yes</label>
 <input type="radio" name="been_fixed" id="been_fixed_no" value="No"$been_fixed{no}>
-<label for="been_fixed_no">No</label>
+<label for="been_fixed_no">$no</label>
 <input type="radio" name="been_fixed" id="been_fixed_unknown" value="Unknown"$been_fixed{unknown}>
-<label for="been_fixed_unknown">Don&rsquo;t know</label>
+<label for="been_fixed_unknown">$dontknow</label>
 </p>
 EOF
     $out .= $q->p(_('Have you ever reported a problem to a council before, or is this your first time?'))
         unless $answered_ever_reported;
+    my $before = _('Reported before');
+    my $first = _('First time');
     $out .= <<EOF unless $answered_ever_reported;
 <p>
 <input type="radio" name="reported" id="reported_yes" value="Yes"$reported{yes}>
-<label for="reported_yes">Reported before</label>
+<label for="reported_yes">$before</label>
 <input type="radio" name="reported" id="reported_no" value="No"$reported{no}>
-<label for="reported_no">First time</label>
+<label for="reported_no">$first</label>
 </p>
 EOF
     $out .= $q->p(_('If you wish to leave a public update on the problem, please enter it here
@@ -291,10 +296,7 @@ EOF
 </p>
 </div>
 EOF
-    $out .= <<EOF;
-<p><input type="submit" name="submit" value="Submit questionnaire"></p>
-</form>
-EOF
+    $out .= '<p><input type="submit" name="submit" value="' . _('Submit questionnaire') . '"></p> </form>';
     $out .= Page::display_map_end(0);
     return $out;
 }

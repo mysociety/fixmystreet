@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: about.cgi,v 1.8 2008-10-15 22:07:26 matthew Exp $
+# $Id: about.cgi,v 1.9 2009-05-27 13:53:53 matthew Exp $
 
 use strict;
 use Standard -db;
@@ -16,8 +16,8 @@ my $lastmodified = (stat $0)[9];
 # Main code for index.cgi
 sub main {
     my $q = shift;
-    print Page::header($q, title=>'About us');
-    print <<ABOUTUS if $q->{site} eq 'emptyhomes';
+    print Page::header($q, title=>_('About us'));
+    print _(<<ABOUTUS) if $q->{site} eq 'emptyhomes';
 <h1>The Empty Homes Agency</h1>
 <p>The Empty Homes agency is an independent campaigning charity. We are not
 part of government, and have no formal links with local councils although we

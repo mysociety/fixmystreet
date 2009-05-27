@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.38 2009-02-02 10:59:16 matthew Exp $
+# $Id: contact.cgi,v 1.39 2009-05-27 13:53:53 matthew Exp $
 
 use strict;
 use Standard;
@@ -111,9 +111,9 @@ sub contact_page {
         );
         $out .= '<input type="hidden" name="id" value="' . $id . '">';
     } elsif ($q->{site} eq 'emptyhomes') {
-        $out .= $q->p('We&rsquo;d love to hear what you think about this
+        $out .= $q->p(_('We&rsquo;d love to hear what you think about this
 website. Just fill in the form. Please don&rsquo;t contact us about individual empty
-homes; use the box accessed from <a href="/">the front page</a>.'); 
+homes; use the box accessed from <a href="/">the front page</a>.')); 
     } else {
         my $mailto = mySociety::Config::get('CONTACT_EMAIL');
         $mailto =~ s/\@/&#64;/;
