@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-questionnaires,v 1.9 2008-11-18 17:29:50 matthew Exp $
+# $Id: send-questionnaires,v 1.10 2009-05-27 15:27:18 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -80,7 +80,7 @@ foreach my $row (@$unsent) {
     my $sender = mySociety::Config::get('CONTACT_EMAIL');
     $sender =~ s/team/fms-DO-NOT-REPLY/;
     my $email = mySociety::Email::construct_email({
-        _template_ => $template,
+        _template_ => _($template),
         _parameters_ => \%h,
         To => [ [ $row->{email}, $row->{name} ] ],
         From => [ $sender, mySociety::Config::get('CONTACT_NAME') ],

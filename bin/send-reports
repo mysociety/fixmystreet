@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.66 2009-05-27 13:53:52 matthew Exp $
+# $Id: send-reports,v 1.67 2009-05-27 15:27:18 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -197,7 +197,7 @@ If you know of an appropriate contact address, please do get in touch. ]\n\n";
 
     if ($send_email) {
         my $email = mySociety::Email::construct_email({
-            _template_ => $template,
+            _template_ => _($template),
             _parameters_ => \%h,
             To => \@to,
             From => [ $row->{email}, $row->{name} ],
