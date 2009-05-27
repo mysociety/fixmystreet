@@ -25,7 +25,7 @@ my $buffer = "";
 my $start = 0;
 while(<MAINPO>) {
     if (!$start) {
-        s/#, fuzzy//;
+        s/#, fuzzy/#/;
     }
     if (m/"Last-Translator: FULL NAME/) {
         $_ = '"Last-Translator: mysociety/bin/make_emptyhomes_po\\n"'."\n";
@@ -91,9 +91,9 @@ while(<MAINPO>) {
     } else {
         # English text
         print NEWPO $_;
+	print EHAPO $_ unless $start;
         $buffer .= $_;
     }
-
 
 }
 

@@ -7,7 +7,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: gettext-extract,v 1.6 2009-05-27 15:27:18 matthew Exp $
+# $Id: gettext-extract,v 1.7 2009-05-27 15:48:38 matthew Exp $
 
 if [ -e ../../locale ]
 then
@@ -62,16 +62,16 @@ mv $TEMP $PO
 # Extract email templates
 echo >> $PO
 echo '#. Please leave the first word "Subject:" untranslated' >> $PO
-for X in bci/templates/emails/*
+for X in bci/templates/emails/* bci/templates/emails/eha/*
 do
     # TODO: Should check for "*~" type filenames too, and do the *-livesimply case
     # with wildcards rather than checking per template
-    if [ "$X" != "bci/templates/emails/eha" -a "$X" != "bci/templates/emails/CVS" -a "$X" != "bci/templates/emails/empty property-confirm" -a "$X" != "bci/templates/emails/submit-eha" -a "$X" != "bci/templates/emails/questionnaire-eha-4weeks" -a "$X" != "bci/templates/emails/questionnaire-eha-26weeks" ]
+    if [ "$X" != "bci/templates/emails/eha" -a "$X" != "bci/templates/emails/CVS" -a "$X" != "bci/templates/emails/eha/CVS" ]
     then
         echo >> $PO
         echo "#: $X" >> $PO
         echo msgid \"\" >> $PO
-        cat $X | plain_gettext_escape >> $PO
+        cat "$X" | plain_gettext_escape >> $PO
         echo msgstr \"\" >> $PO
     fi
 done

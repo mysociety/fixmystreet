@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.29 2009-05-27 13:53:53 matthew Exp $
+# $Id: reports.cgi,v 1.30 2009-05-27 15:48:38 matthew Exp $
 
 use strict;
 use Standard;
@@ -163,12 +163,10 @@ sub main {
         my $c = 0;
         print '<table cellpadding="3" cellspacing="1" border="0">';
         print '<tr><th>' . _('Name') . '</th><th>' . _('New problems') . '</th><th>' . _('Older problems') . '</th>';
-        if ($q->{site} eq 'emptyhomes') {
-            print '<th>' . _('Recently returned to use') . '</th><th>' . _('Older returned to use') . '</th></tr>';
-        } else {
-            print '<th>' . _('Old problems,<br>state unknown') . '</th><th>'
-                . _('Recently fixed') . '</th><th>' . _('Old fixed') . '</th></tr>';
+        if ($q->{site} ne 'emptyhomes') {
+            print '<th>' . _('Old problems,<br>state unknown') . '</th>';
         }
+        print '<th>' . _('Recently fixed') . '</th><th>' . _('Older fixed') . '</th></tr>';
         foreach (sort { $areas_info->{$a}->{name} cmp $areas_info->{$b}->{name} } keys %councils) {
             print '<tr align="center"';
             ++$c;
@@ -213,16 +211,16 @@ sub main {
             print Page::header($q, title=>sprintf(_('%s - Summary reports'), $name), rss => [ sprintf(_('Problems within %s, FixMyStreet'), $name), $rss_url ]);
             my $rss_title = _('RSS feed');
             my $rss_alt = _('RSS feed of problems in this %s');
-	    my $summary_line;
-	    if ($all && $q->{site} eq 'scambs') {
+            my $summary_line;
+            if ($all && $q->{site} eq 'scambs') {
                 $summary_line = sprintf(_('You can <a href="%s">see less detail</a>.'), NewURL($q));
-	    } elsif ($q->{site} eq 'scambs') {
+            } elsif ($q->{site} eq 'scambs') {
                 $summary_line = sprintf(_('You can <a href="%s">see more details</a>.'), NewURL($q, all=>1));
-	    } elsif ($all) {
+            } elsif ($all) {
                 $summary_line = sprintf(_('You can <a href="%s">see less detail</a> or go back and <a href="/reports">show all councils</a>.'), NewURL($q));
-	    } else {
+            } else {
                 $summary_line = sprintf(_('You can <a href="%s">see more details</a> or go back and <a href="/reports">show all councils</a>.'), NewURL($q, all=>1));
-	    }
+            }
             print $q->p(
                 $q->a({ href => $rss_url }, '<img align="right" src="/i/feed.png" width="16" height="16" title="' . $rss_title . '" alt="' . sprintf($rss_alt, $thing) . '" border="0" hspace="4">'),
                 sprintf(_('This is a summary of all reports for one %s.'), $thing) . ' ' . $summary_line);
