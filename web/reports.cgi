@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.30 2009-05-27 15:48:38 matthew Exp $
+# $Id: reports.cgi,v 1.31 2009-05-27 15:54:00 matthew Exp $
 
 use strict;
 use Standard;
@@ -228,13 +228,15 @@ sub main {
             if ($open{$one_council}) {
                 print '<div id="col_problems">';
                 list_problems($q, _('New problems'), $open{$one_council}{new}, $all);
+                my $old = [];
                 if ($q->{site} eq 'emptyhomes') {
-                    my @old = ();
-                    push @old, @{$open{$one_council}{older}} if $open{$one_council}{older};
-                    push @old, @{$open{$one_council}{unknown}} if $open{$one_council}{unknown};
-                    list_problems($q, _('Older empty properties'), \@old, $all);
+                    push @$old, @{$open{$one_council}{older}} if $open{$one_council}{older};
+                    push @$old, @{$open{$one_council}{unknown}} if $open{$one_council}{unknown};
                 } else {
-                    list_problems($q, _('Older problems'), $open{$one_council}{older}, $all);
+                    $old = $open{$one_council}{older};
+                }
+                list_problems($q, _('Older problems'), $old, $all);
+                if ($q->{site} ne 'emptyhomes') {
                     list_problems($q, _('Old problems, state unknown'), $open{$one_council}{unknown}, $all);
                 }
                 print '</div>';
