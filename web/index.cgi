@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.254 2009-05-27 13:53:53 matthew Exp $
+# $Id: index.cgi,v 1.255 2009-06-09 15:24:18 matthew Exp $
 
 use strict;
 use Standard;
@@ -481,6 +481,7 @@ sub display_form {
     my $parent_types = $mySociety::VotingArea::council_parent_types;
     $parent_types = [qw(DIS LBO MTD UTA LGD COI)] # No CTY
         if $q->{site} eq 'emptyhomes';
+    # XXX: I think we want in_gb_locale around the next line, needs testing
     my $all_councils = mySociety::MaPit::get_voting_areas_by_location(
         { easting => $easting, northing => $northing },
         'polygon', $parent_types);
