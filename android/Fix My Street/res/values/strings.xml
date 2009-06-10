@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<!-- Welcome screen -->
+    <string name="app_name">Fix My Street</string>
+    <string name="hello">Fix My Street</string>
+    <string name="confirm_location">Confirming location...</string>
+    <string name="confirm_location_done">Confirmed location</string>
+    <string name="take_a_picture">Take a picture of the problem</string>    
+    <string name="details">Add details</string>
+        <string name="report">Report</string>
+    <string name="about">About Fix My Street</string>
+    <string name="close">Close</string>
+        <string name="imageUrl">Enter a URL here</string>
+<!-- Details screen -->
+    <string name="details_screen">Tell us about the problem (all fields required):</string>
+    <string name="submit">Submit</string>
+    <!-- About screen -->
+ <string name="instructions">1. Click \'Take photo\', then on the camera button to take a photo.\n2. Click \'Add details\', then give the problem a name (e.g. \'Broken street light\'), and add your own name and email address. \n3. Click \'Report\' to upload the problem to Fix My Street. \n4. Check your email. You\'ll need to click on a link to confirm the problem and add a few more details. </string>
+</resources>
