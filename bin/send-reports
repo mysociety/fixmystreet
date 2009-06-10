@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.68 2009-06-09 15:20:35 matthew Exp $
+# $Id: send-reports,v 1.69 2009-06-10 14:27:54 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -17,6 +17,7 @@ use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../../perllib";
 use Error qw(:try);
 use File::Slurp;
+use CGI; # Trying awkward kludge
 
 use EastHantsWSDL;
 use mySociety::Config;
@@ -53,7 +54,7 @@ my $site = 'fixmystreet';
 $site = 'emptyhomes' if $base_url =~ 'emptyhomes';
 
 # First, let's pick the right language
-if ($q->{site} eq 'emptyhomes') {
+if ($site eq 'emptyhomes') {
     mySociety::Locale::negotiate_language('en-gb,English,en_GB|cy,Cymraeg,cy_GB');
     mySociety::Locale::gettext_domain('FixMyStreet-EmptyHomes');
     mySociety::Locale::change();
