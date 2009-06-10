@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-questionnaires,v 1.10 2009-05-27 15:27:18 matthew Exp $
+# $Id: send-questionnaires,v 1.11 2009-06-10 14:32:37 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -22,6 +22,7 @@ use mySociety::AuthToken;
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh select_all);
 use mySociety::Email;
+use mySociety::Locale;
 use mySociety::MaPit;
 use mySociety::EmailUtil;
 use mySociety::Random qw(random_bytes);
