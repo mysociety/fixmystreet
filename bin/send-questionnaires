@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-questionnaires,v 1.11 2009-06-10 14:32:37 matthew Exp $
+# $Id: send-questionnaires,v 1.12 2009-06-10 15:04:30 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -44,6 +44,10 @@ my $verbose = 0;
 $nomail = 1 if (@ARGV==1 && $ARGV[0] eq '--nomail');
 $verbose = 1 if (@ARGV==1 && $ARGV[0] eq '--verbose');
 $verbose = 1 if $nomail;
+
+mySociety::Locale::negotiate_language('en-gb,English,en_GB|nb,Norwegian,nb_NO'); # XXX Testing
+mySociety::Locale::gettext_domain('FixMyStreet');
+mySociety::Locale::change();
 
 # Select all problems that need a questionnaire email sending
 my $unsent = select_all(
