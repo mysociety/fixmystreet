@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.255 2009-06-09 15:24:18 matthew Exp $
+# $Id: index.cgi,v 1.256 2009-06-25 16:04:32 matthew Exp $
 
 use strict;
 use Standard;
@@ -881,7 +881,7 @@ sub display_problem {
     return display_location($q, _('Unknown problem ID')) if $input{id} =~ /\D/;
     my $problem = Problems::fetch_problem($input{id});
     return display_location($q, _('Unknown problem ID')) unless $problem;
-    return front_page($q, _('That problem has been hidden from public view as it contained inappropriate public details')) if $problem->{state} eq 'hidden';
+    return front_page($q, _('That report has been removed from FixMyStreet.')) if $problem->{state} eq 'hidden';
     my ($x, $y, $x_tile, $y_tile, $px, $py) = Page::os_to_px_with_adjust($q, $problem->{easting}, $problem->{northing}, $input{x}, $input{y});
 
     # Try and have pin near centre of map
