@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Problems.pm,v 1.14 2009-07-01 09:44:20 louise Exp $
+# $Id: Problems.pm,v 1.15 2009-07-01 12:52:41 louise Exp $
 #
 
 package Problems;
@@ -213,7 +213,8 @@ sub problems_matching_criteria{
 
 sub fixed_in_interval {
     my ($start_date, $end_date) = @_; 
-    my $criteria = "state='fixed' and date_trunc('day', lastupdate)>=$start_date and date_trunc('day',lastupdate)<=$end_date";
+    my $criteria = "where state='fixed' and date_trunc('day',lastupdate)>='$start_date' and 
+date_trunc('day',lastupdate)<='$end_date'";
     return problems_matching_criteria($criteria);
 }
 
