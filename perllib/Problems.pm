@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Problems.pm,v 1.17 2009-07-01 13:31:01 louise Exp $
+# $Id: Problems.pm,v 1.18 2009-07-01 14:55:35 louise Exp $
 #
 
 package Problems;
@@ -183,7 +183,7 @@ sub fetch_problem {
 sub problems_matching_criteria{
     my ($criteria) = @_;
     my $problems = select_all(
-        "select title, easting, northing, council, category, detail, name, anonymous,
+        "select id, title, council, category, detail, name, anonymous,
         confirmed, whensent, service
         from problem
         $criteria
