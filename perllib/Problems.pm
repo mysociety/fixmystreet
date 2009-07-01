@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Problems.pm,v 1.13 2009-04-16 13:51:30 matthew Exp $
+# $Id: Problems.pm,v 1.14 2009-07-01 09:44:20 louise Exp $
 #
 
 package Problems;
@@ -16,6 +16,7 @@ use Memcached;
 use mySociety::DBHandle qw/dbh select_all/;
 use mySociety::Locale;
 use mySociety::Web qw/ent/;
+use mySociety::MaPit;
 
 my $site_restriction = '';
 my $site_key = 0;
@@ -177,4 +178,49 @@ sub fetch_problem {
     );
 }
 
+# API functions
+
+sub problems_matching_criteria{
+    my ($criteria) = @_;
+    my $problems = select_all(
+        "select title, easting, northing, council, category, detail, name, anonymous,
+        confirmed, whensent, service
+        from problem
+        $criteria
+	$site_restriction");
+
+    my @councils;
+    foreach my $problem (@$problems){
+        if ($problem->{anonymous} == 1){
+            $problem->{name} = '';
+        }
+        if ($problem->{council}) {
+            $problem->{council} =~ s/\|.*//g;
+	    my @council_ids = split /,/, $problem->{council};
+            push(@councils, @council_ids);
+	    $problem->{council} = \@council_ids;
+	}
+    }
+    my $areas_info = mySociety::MaPit::get_voting_areas_info(\@councils);
+    foreach my $problem (@$problems){
+    	if ($problem->{council}) {
+             my @council_names = map { $areas_info->{$_}->{name}} @{$problem->{council}} ;
+	     $problem->{council} = join(' and ', @council_names);
+    	}
+    }
+    return $problems;
+}
+
+sub fixed_in_interval {
+    my ($start_date, $end_date) = @_; 
+    my $criteria = "state='fixed' and date_trunc('day', lastupdate)>=$start_date and date_trunc('day',lastupdate)<=$end_date";
+    return problems_matching_criteria($criteria);
+}
+
+sub created_in_interval {
+    my ($start_date, $end_date) = @_; 
+    my $criteria = "where state='confirmed' and date_trunc('day',created)>='$start_date' and 
+date_trunc('day',created)<='$end_date'";
+    return problems_matching_criteria($criteria);
+}
 1;
