@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Problems.pm,v 1.16 2009-07-01 13:02:07 louise Exp $
+# $Id: Problems.pm,v 1.17 2009-07-01 13:31:01 louise Exp $
 #
 
 package Problems;
@@ -194,7 +194,7 @@ sub problems_matching_criteria{
         if ($problem->{anonymous} == 1){
             $problem->{name} = '';
         }
-	if ($problem->{service} == ''){
+	if ($problem->{service} eq ''){
             $problem->{service} = 'Web interface';
         }
         if ($problem->{council}) {
