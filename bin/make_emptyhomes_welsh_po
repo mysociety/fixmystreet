@@ -14,7 +14,7 @@ mkdir("cy_GB.UTF-8");
 mkdir("cy_GB.UTF-8/LC_MESSAGES");
 
 # First read in translation and match up.
-open(INPO, shift) or die;
+open(INPO, "$FindBin::Bin/" . shift) or die $!;
 
 my $state = 'start';
 my $msgid = '';
@@ -25,6 +25,7 @@ while (<INPO>) {
         # comment or blank line
     } elsif (m/^\s+$/) {
         # blank line separates translations
+	$msgid =~ s/"\n"//g;
 	$lookup{$msgid} = $msgstr;
         $state = 'msgid';
         $msgid = "";
@@ -96,9 +97,11 @@ while(<MAINPO>) {
         $buffer =~ s/We send it to the council on your behalf/The details will be sent directly to the right person in the local council for them to take action/;
         $buffer =~ s/To find out what local alerts we have for you/To find out what local alerts we have in your area, council or ward/;
 
+	$buffer =~ s/"\n"//g;
 	if ($lookup{$buffer}) {
 	    print OUTPO $lookup{$buffer};
 	} else {
+	    print __LINE__ . "\n";
 	    die "Failed to find match with buffer: $buffer";
 	}
 
