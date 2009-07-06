@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.256 2009-06-25 16:04:32 matthew Exp $
+# $Id: index.cgi,v 1.257 2009-07-06 17:10:21 matthew Exp $
 
 use strict;
 use Standard;
@@ -104,18 +104,18 @@ sub front_page {
     $subhead = '(like graffiti, fly tipping, or neighbourhood noise)' if $q->{site} eq 'scambs';
     $out .= '<br><small>' . $subhead . '</small>' if $subhead ne ' ';
     $out .= '</p>';
-    if (my $url = mySociety::Config::get('IPHONE_URL')) {
-        my $getiphone = _("Get FixMyStreet on your iPhone");
-        my $new = _("New!");
-        if ($q->{site} eq 'fixmystreet') {
-            $out .= <<EOF
-<p align="center" style="margin-bottom:0">
-<img width="23" height="12" alt="$new" src="/i/new.png" border="0">
-<a href="$url">$getiphone</a>
-</p>
-EOF
-        }
-    }
+    #if (my $url = mySociety::Config::get('IPHONE_URL')) {
+    #    my $getiphone = _("Get FixMyStreet on your iPhone");
+    #    my $new = _("New!");
+    #    if ($q->{site} eq 'fixmystreet') {
+    #        $out .= <<EOF
+#<p align="center" style="margin-bottom:0">
+#<img width="23" height="12" alt="$new" src="/i/new.png" border="0">
+#<a href="$url">$getiphone</a>
+#</p>
+#EOF
+    #    }
+    #}
     $out .= '<p id="error">' . $error . '</p>' if ($error);
     my $fixed = Problems::recent_fixed();
     my $updates = Problems::number_comments();
