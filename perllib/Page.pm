@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.144 2009-05-27 13:53:52 matthew Exp $
+# $Id: Page.pm,v 1.145 2009-07-07 11:49:06 matthew Exp $
 #
 
 package Page;
@@ -103,7 +103,9 @@ sub microsite {
     $q->{site} = 'guardian' if $host =~ /guardian/;
 
     if ($q->{site} eq 'emptyhomes') {
-        mySociety::Locale::negotiate_language('en-gb,English,en_GB|cy,Cymraeg,cy_GB');
+        my $lang;
+        $lang = 'cy' if $host =~ /cy/;
+        mySociety::Locale::negotiate_language('en-gb,English,en_GB|cy,Cymraeg,cy_GB', $lang);
         mySociety::Locale::gettext_domain('FixMyStreet-EmptyHomes');
         mySociety::Locale::change();
     } else {
@@ -150,10 +152,19 @@ sub header ($%) {
         open FP, $file . '/../templates/website/' . $q->{site} . '-header';
         $html = join('', <FP>);
         close FP;
-        $html =~ s#<!-- TITLE -->#$title#;
+        my %vars = (
+            'report' => _('Report a problem'),
+            'reports' => _('All reports'),
+            'alert' => _('Local alerts'),
+            'faq' => _('Help'),
+            'about' => _('About us'),
+            'title' => $title,
+            'site_title' => _('Report Empty Homes'),
+        );
+        $html =~ s#{{ ([a-z_]+) }}#$vars{$1}#g;
     } else {
         my $fixmystreet = _('FixMyStreet');
-	my $lang = $mySociety::Locale::lang;
+        my $lang = $mySociety::Locale::lang;
         $html = <<EOF;
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="$lang">
@@ -595,27 +606,27 @@ sub display_problem_text {
     if ($q->{site} eq 'emptyhomes') {
         if ($problem->{anonymous}) {
             $out .= sprintf(_('%s, reported anonymously at %s'), ent($problem->{category}), prettify_epoch($problem->{time}));
-	} else {
+        } else {
             $out .= sprintf(_('%s, reported by %s at %s'), ent($problem->{category}), ent($problem->{name}), prettify_epoch($problem->{time}));
-	}
+        }
     } else {
         if ($problem->{service} && $problem->{category} && $problem->{category} ne 'Other' && $problem->{anonymous}) {
-	    $out .= sprintf(_('Reported by %s in the %s category anonymously at %s'), ent($problem->{service}), ent($problem->{category}), prettify_epoch($problem->{time}));
+            $out .= sprintf(_('Reported by %s in the %s category anonymously at %s'), ent($problem->{service}), ent($problem->{category}), prettify_epoch($problem->{time}));
         } elsif ($problem->{service} && $problem->{category} && $problem->{category} ne 'Other') {
-	    $out .= sprintf(_('Reported by %s in the %s category by %s at %s'), ent($problem->{service}), ent($problem->{category}), ent($problem->{name}), prettify_epoch($problem->{time}));
-	} elsif ($problem->{service} && $problem->{anonymous}) {
-	    $out .= sprintf(_('Reported by %s anonymously at %s'), ent($problem->{service}), prettify_epoch($problem->{time}));
-	} elsif ($problem->{service}) {
-	    $out .= sprintf(_('Reported by %s by %s at %s'), ent($problem->{service}), ent($problem->{name}), prettify_epoch($problem->{time}));
-	} elsif ($problem->{category} && $problem->{category} ne 'Other' && $problem->{anonymous}) {
-	    $out .= sprintf(_('Reported in the %s category anonymously at %s'), ent($problem->{category}), prettify_epoch($problem->{time}));
-	} elsif ($problem->{category} && $problem->{category} ne 'Other') {
-	    $out .= sprintf(_('Reported in the %s category by %s at %s'), ent($problem->{category}), ent($problem->{name}), prettify_epoch($problem->{time}));
-	} elsif ($problem->{anonymous}) {
-	    $out .= sprintf(_('Reported anonymously at %s'), prettify_epoch($problem->{time}));
-	} else {
-	    $out .= sprintf(_('Reported by %s at %s'), ent($problem->{name}), prettify_epoch($problem->{time}));
-	}
+            $out .= sprintf(_('Reported by %s in the %s category by %s at %s'), ent($problem->{service}), ent($problem->{category}), ent($problem->{name}), prettify_epoch($problem->{time}));
+        } elsif ($problem->{service} && $problem->{anonymous}) {
+            $out .= sprintf(_('Reported by %s anonymously at %s'), ent($problem->{service}), prettify_epoch($problem->{time}));
+        } elsif ($problem->{service}) {
+            $out .= sprintf(_('Reported by %s by %s at %s'), ent($problem->{service}), ent($problem->{name}), prettify_epoch($problem->{time}));
+        } elsif ($problem->{category} && $problem->{category} ne 'Other' && $problem->{anonymous}) {
+            $out .= sprintf(_('Reported in the %s category anonymously at %s'), ent($problem->{category}), prettify_epoch($problem->{time}));
+        } elsif ($problem->{category} && $problem->{category} ne 'Other') {
+            $out .= sprintf(_('Reported in the %s category by %s at %s'), ent($problem->{category}), ent($problem->{name}), prettify_epoch($problem->{time}));
+        } elsif ($problem->{anonymous}) {
+            $out .= sprintf(_('Reported anonymously at %s'), prettify_epoch($problem->{time}));
+        } else {
+            $out .= sprintf(_('Reported by %s at %s'), ent($problem->{name}), prettify_epoch($problem->{time}));
+        }
     }
     $out .= '; ' . _('the map was not used so pin location may be inaccurate') unless ($problem->{used_map});
     if ($problem->{council}) {
