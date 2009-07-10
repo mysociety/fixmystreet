@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.145 2009-07-07 11:49:06 matthew Exp $
+# $Id: Page.pm,v 1.146 2009-07-10 12:37:52 matthew Exp $
 #
 
 package Page;
@@ -147,24 +147,36 @@ sub header ($%) {
     print $q->header(%head);
 
     my $html;
+    my $lang = $mySociety::Locale::lang;
     if ($q->{site} eq 'scambs' || $q->{site} eq 'emptyhomes' || $q->{site} eq 'guardian') {
         (my $file = __FILE__) =~ s{/[^/]*?$}{};
         open FP, $file . '/../templates/website/' . $q->{site} . '-header';
         $html = join('', <FP>);
         close FP;
-        my %vars = (
-            'report' => _('Report a problem'),
-            'reports' => _('All reports'),
-            'alert' => _('Local alerts'),
-            'faq' => _('Help'),
-            'about' => _('About us'),
-            'title' => $title,
-            'site_title' => _('Report Empty Homes'),
-        );
+	my %vars;
+        if ($q->{site} eq 'emptyhomes') {
+	    my $lang_url = mySociety::Config::get('BASE_URL');
+	    if ($lang eq 'en-gb') {
+	        $lang_url =~ s{http://}{$&cy.};
+	    } else {
+	        $lang_url =~ s{http://}{$&en.};
+	    }
+            %vars = (
+                'report' => _('Report a problem'),
+                'reports' => _('All reports'),
+                'alert' => _('Local alerts'),
+                'faq' => _('Help'),
+                'about' => _('About us'),
+                'site_title' => _('Report Empty Homes'),
+                'lang_code' => $lang,
+                'lang' => $lang eq 'en-gb' ? 'Cymraeg' : 'English',
+                'lang_url' => $lang_url,
+            );
+        }
+        $vars{title} = $title;
         $html =~ s#{{ ([a-z_]+) }}#$vars{$1}#g;
     } else {
         my $fixmystreet = _('FixMyStreet');
-        my $lang = $mySociety::Locale::lang;
         $html = <<EOF;
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="$lang">

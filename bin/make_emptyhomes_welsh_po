@@ -14,27 +14,31 @@ open(INPO, shift) or die $!;
 
 my $state = 'start';
 my $msgid = '';
+my $fuzzy = 0;
 my $msgstr;
 my %lookup;
 while (<INPO>) {
-    if (m/^#/) {
+    if (m/^#, fuzzy/) {
+        $fuzzy = 1;
+    } elsif (m/^#/) {
         # comment or blank line
     } elsif (m/^\s+$/) {
         # blank line separates translations
-	$msgid =~ s/"\n"//g;
-	$lookup{$msgid} = $msgstr;
+        $msgid =~ s/"\n"//g;
+        $lookup{$msgid} = [ $msgstr, $fuzzy ];
         $state = 'msgid';
         $msgid = "";
+        $fuzzy = 0;
     } elsif ($state eq 'msgid' && (m/^msgstr "/ || m/^msgstr\[0\] "/)) {
         $msgstr = $_;
-	$state = 'msgstr';
+        $state = 'msgstr';
     } elsif ($state eq 'msgstr') {
-	$msgstr .= $_;
+        $msgstr .= $_;
     } elsif ($state eq 'msgid') {
-	$msgid .= $_;
+        $msgid .= $_;
     }
 }
-$lookup{$msgid} = $msgstr;
+$lookup{$msgid} = [ $msgstr, $fuzzy ];
 close INPO;
 
 chdir("$FindBin::Bin/../../locale");
@@ -78,17 +82,20 @@ while(<MAINPO>) {
         print OUTPO $_;
     } elsif ($start && (m/^msgstr "/ || m/^msgstr\[0\] "/)) {
         # start of translated text - translate English into Empty Homes language
+        my $new_buffer = PoChange::fixmystreet_to_reportemptyhomes($buffer);
+        $new_buffer =~ s/"\n"//g;
+
+        if ($lookup{$new_buffer} && $lookup{$new_buffer}[1]) {
+	    print OUTPO "#, fuzzy\n";
+	}
 
         print OUTPO $buffer;
-
-        $buffer = PoChange::fixmystreet_to_reportemptyhomes($buffer);
-	$buffer =~ s/"\n"//g;
-	if ($lookup{$buffer}) {
-	    print OUTPO $lookup{$buffer};
-	} else {
-	    print __LINE__ . "\n";
-	    die "Failed to find match with buffer: $buffer";
-	}
+        if ($lookup{$new_buffer}) {
+            print OUTPO $lookup{$new_buffer}[0];
+        } else {
+            print __LINE__ . "\n";
+            die "Failed to find match with buffer: $new_buffer";
+        }
 
         $buffer = "";
     } elsif (!$start) {
