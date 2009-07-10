@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.70 2009-07-10 15:17:28 matthew Exp $
+# $Id: send-reports,v 1.71 2009-07-10 17:29:04 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -72,7 +72,7 @@ foreach my $row (@$unsent) {
     # Template variables for the email
     my %h = map { $_ => $row->{$_} } qw/title detail name email phone category easting northing/;
     $h{url} = $base_url . '/report/' . $row->{id};
-    $h{phone_line} = $h{phone} ? "Phone: $h{phone}\n\n" : '';
+    $h{phone_line} = $h{phone} ? _('Phone:') . " $h{phone}\n\n" : '';
     if ($row->{has_photo}) {
         $h{has_photo} = _("This web page also contains a photo of the problem, provided by the user.") . "\n\n";
         $h{image_url} = $base_url . '/photo?id=' . $row->{id};
