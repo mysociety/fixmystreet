@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.38 2009-05-27 13:53:53 matthew Exp $
+# $Id: alert.cgi,v 1.39 2009-07-10 15:16:28 matthew Exp $
 
 use strict;
 use Standard;
@@ -196,8 +196,11 @@ for the county council.')));
     my $pics = Problems::recent_photos(5, $e, $n, $dist);
     $pics = '<div id="alert_photos">' . $q->h2(_('Photos of recent nearby reports')) . $pics . '</div>' if $pics;
 
-    my $out = $q->h1('Local RSS feeds and email alerts'
-        . ($pretty_pc ? ' for &lsquo;' . $pretty_pc . '&rsquo;' : ''));
+    my $out = $q->h1(
+        $pretty_pc
+            ? sprintf(_('Local RSS feeds and email alerts for &lsquo;%s&rsquo;'), $pretty_pc)
+            : _('Local RSS feeds and email alerts')
+    );
     $out .= <<EOF;
 <form id="alerts" method="post" action="/alert">
 <input type="hidden" name="type" value="local">
@@ -206,9 +209,9 @@ for the county council.')));
 $pics
 
 EOF
-    $out .= $q->p(($pretty_pc ? 'Here are the types of local problem alerts for &lsquo;' . $pretty_pc . '&rsquo;. '
-    : '') . 'Select which type of alert you&rsquo;d like and click the button for an RSS
-feed, or enter your email address to subscribe to an email alert.');
+    $out .= $q->p(($pretty_pc ? sprintf(_('Here are the types of local problem alerts for &lsquo;%s&rsquo;.'), $pretty_pc)
+    : '') . ' ' . _('Select which type of alert you&rsquo;d like and click the button for an RSS
+feed, or enter your email address to subscribe to an email alert.'));
     $out .= $errors;
     $out .= $q->p(_('The simplest alert is our geographic one:'));
     my $label = sprintf(_('Problems within %skm of this location'), $dist);
