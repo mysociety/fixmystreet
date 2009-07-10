@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.148 2009-07-10 15:17:59 matthew Exp $
+# $Id: Page.pm,v 1.149 2009-07-10 16:10:21 matthew Exp $
 #
 
 package Page;
@@ -552,13 +552,13 @@ sub send_email {
     }
     $thing .= ' report' if $thing eq _('problem');
     $thing = 'expression of interest' if $thing eq 'tms';
-    my $out = <<EOF;
+    my $out = sprintf(_(<<EOF), $thing, $action, $thing);
 <h1>Nearly Done! Now check your email...</h1>
 <p>The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.</p>
 <p>If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.</p>
 <p>You must now click the link in the email we've just sent you &mdash;
-if you do not, your $thing will not be $action.</p>
-<p>(Don't worry &mdash; we'll hang on to your $thing while you're checking your email.)</p>
+if you do not, your %s will not be %s.</p>
+<p>(Don't worry &mdash; we'll hang on to your %s while you're checking your email.)</p>
 EOF
     return $out;
 }

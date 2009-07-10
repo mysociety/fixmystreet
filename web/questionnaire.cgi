@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.39 2009-07-10 15:17:29 matthew Exp $
+# $Id: questionnaire.cgi,v 1.40 2009-07-10 16:10:22 matthew Exp $
 
 use strict;
 use Standard;
@@ -16,7 +16,6 @@ use mySociety::AuthToken;
 use mySociety::Locale;
 use mySociety::MaPit;
 use mySociety::Web qw(ent);
-
 
 sub main {
     my $q = shift;

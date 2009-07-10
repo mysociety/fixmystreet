@@ -6,14 +6,13 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: faq.cgi,v 1.41 2009-07-10 15:00:34 matthew Exp $
+# $Id: faq.cgi,v 1.42 2009-07-10 16:10:22 matthew Exp $
 
 use strict;
 use Standard -db;
 use mySociety::Locale;
 
 my $lastmodified = (stat $0)[9];
-
 sub main {
     my $q = shift;
     print Page::header($q, title=>_('Frequently Asked Questions'));
