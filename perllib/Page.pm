@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.147 2009-07-10 15:17:29 matthew Exp $
+# $Id: Page.pm,v 1.148 2009-07-10 15:17:59 matthew Exp $
 #
 
 package Page;
@@ -18,7 +18,7 @@ use Error qw(:try);
 use File::Slurp;
 use HTTP::Date;
 use Image::Magick;
-#use Image::Size;
+use Image::Size;
 use LWP::Simple;
 use Digest::MD5 qw(md5_hex);
 use POSIX qw(strftime);
@@ -660,8 +660,7 @@ sub display_problem_text {
     }
 
     if ($problem->{photo}) {
-        #my $dims = Image::Size::html_imgsize(\$problem->{photo});
-	my $dims = '';
+        my $dims = Image::Size::html_imgsize(\$problem->{photo});
         $out .= "<p align='center'><img alt='' $dims src='/photo?id=$problem->{id}'></p>";
     }
 
