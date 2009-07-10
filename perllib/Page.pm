@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.149 2009-07-10 16:10:21 matthew Exp $
+# $Id: Page.pm,v 1.150 2009-07-10 17:24:50 matthew Exp $
 #
 
 package Page;
@@ -153,14 +153,14 @@ sub header ($%) {
         open FP, $file . '/../templates/website/' . $q->{site} . '-header';
         $html = join('', <FP>);
         close FP;
-	my %vars;
+        my %vars;
         if ($q->{site} eq 'emptyhomes') {
-	    my $lang_url = mySociety::Config::get('BASE_URL');
-	    if ($lang eq 'en-gb') {
-	        $lang_url =~ s{http://}{$&cy.};
-	    } else {
-	        $lang_url =~ s{http://}{$&en.};
-	    }
+            my $lang_url = mySociety::Config::get('BASE_URL');
+            if ($lang eq 'en-gb') {
+                $lang_url =~ s{http://}{$&cy.};
+            } else {
+                $lang_url =~ s{http://}{$&en.};
+            }
             %vars = (
                 'report' => _('Report a problem'),
                 'reports' => _('All reports'),
@@ -528,10 +528,12 @@ sub os_to_px_with_adjust {
 }
 
 # send_email TO (NAME) TEMPLATE-NAME PARAMETERS
-# TEMPLATE-NAME is currently one of _(problem), update, alert, tms
+# TEMPLATE-NAME is currently one of problem, update, alert, tms
 sub send_email {
     my ($q, $email, $name, $thing, %h) = @_;
-    my $template = "$thing-confirm";
+    my $file_thing = $thing;
+    $file_thing = 'empty property' if $q->{site} eq 'emptyhomes' && $thing eq 'problem'; # Needs to be in English
+    my $template = "$file_thing-confirm";
     $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/$template");
     $template =~ s/FixMyStreet/Envirocrime/ if $q->{site} eq 'scambs';
     my $to = $name ? [[$email, $name]] : $email;
@@ -544,21 +546,27 @@ sub send_email {
         To => $to,
     }, $email);
 
-    my $action = 'posted'; # problem, update
-    if ($thing eq 'alert') {
-        $action = 'activated';
+    my ($action, $worry);
+    if ($thing eq 'problem') {
+        $action = _('your problem will not be posted');
+        $worry = _("we'll hang on to your problem report while you're checking your email.");
+    } elsif ($thing eq 'update') {
+        $action = _('your update will not be posted');
+        $worry = _("we'll hang on to your update while you're checking your email.");
+    } elsif ($thing eq 'alert') {
+        $action = _('your alert will not be activated');
+        $worry = _("we'll hang on to your alert while you're checking your email.");
     } elsif ($thing eq 'tms') {
-        $action = 'registered';
+        $action = 'your expression of interest will not be registered';
+        $worry = "we'll hang on to your expression of interest while you're checking your email.";
     }
-    $thing .= ' report' if $thing eq _('problem');
-    $thing = 'expression of interest' if $thing eq 'tms';
-    my $out = sprintf(_(<<EOF), $thing, $action, $thing);
+    my $out = sprintf(_(<<EOF), $action, $worry);
 <h1>Nearly Done! Now check your email...</h1>
 <p>The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.</p>
 <p>If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.</p>
 <p>You must now click the link in the email we've just sent you &mdash;
-if you do not, your %s will not be %s.</p>
-<p>(Don't worry &mdash; we'll hang on to your %s while you're checking your email.)</p>
+if you do not, %s.</p>
+<p>(Don't worry &mdash; %s)</p>
 EOF
     return $out;
 }

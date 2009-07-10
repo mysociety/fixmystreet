@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.258 2009-07-10 15:17:29 matthew Exp $
+# $Id: index.cgi,v 1.259 2009-07-10 17:24:50 matthew Exp $
 
 use strict;
 use Standard;
@@ -408,7 +408,7 @@ Please <a href="/contact">let us know what went on</a> and we\'ll look into it.'
         $h{url} = $base . '/P/' . mySociety::AuthToken::store('problem', $id);
         dbh()->commit();
 
-        $out = Page::send_email($q, $input{email}, $input{name}, _('problem'), %h);
+        $out = Page::send_email($q, $input{email}, $input{name}, 'problem', %h);
 
     }
     return $out;
@@ -807,7 +807,7 @@ sub display_location {
     $out .= <<EOF;
     <p id="alert_links_area">
     <a id="email_alert" rel="nofollow" href="$email_me_link">$email_me</a>
-    | <a href="/rss/$x,$y" id="rss_alert"><span>RSS feed</span> <img src="/i/feed.png" width="16" height="16" title="$rss_title" alt="$rss_alt" border="0" style="vertical-align: top"></a>
+    | <a href="/rss/$x,$y" id="rss_alert"><span>$rss_alt</span> <img src="/i/feed.png" width="16" height="16" title="$rss_title" alt="$rss_alt" border="0" style="vertical-align: top"></a>
     </p>
 EOF
     if (@errors) {
