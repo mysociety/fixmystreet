@@ -6,13 +6,14 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.38 2009-05-27 13:53:53 matthew Exp $
+# $Id: questionnaire.cgi,v 1.39 2009-07-10 15:17:29 matthew Exp $
 
 use strict;
 use Standard;
 use Error qw(:try);
 use CrossSell;
 use mySociety::AuthToken;
+use mySociety::Locale;
 use mySociety::MaPit;
 use mySociety::Web qw(ent);
 
@@ -129,11 +130,11 @@ sub submit_questionnaire {
     my $name = $problem->{anonymous} ? undef : $problem->{name};
     my $update = $input{update} ? $input{update} : _('Questionnaire filled in by problem reporter');
     Utils::workaround_pg_bytea("insert into comment
-        (problem_id, name, email, website, text, state, mark_fixed, mark_open, photo)
-        values (?, ?, ?, '', ?, 'confirmed', ?, ?, ?)", 7,
+        (problem_id, name, email, website, text, state, mark_fixed, mark_open, photo, lang)
+        values (?, ?, ?, '', ?, 'confirmed', ?, ?, ?, ?)", 7,
         $problem->{id}, $name, $problem->{email}, $update,
         $new_state eq 'fixed' ? 't' : 'f', $new_state eq 'confirmed' ? 't' : 'f',
-        $image
+        $image, $mySociety::Locale::lang
     )
         if $new_state || $input{update};
 

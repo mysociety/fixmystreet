@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.44 2009-03-10 12:25:10 matthew Exp $
+-- $Id: schema.sql,v 1.45 2009-07-10 15:17:28 matthew Exp $
 --
 
 -- secret
@@ -147,6 +147,7 @@ create table problem (
         or state = 'hidden'
         or state = 'partial'
     ),
+    lang text not null default 'en-gb',
     service text not null default '',
     lastupdate timestamp not null default ms_current_timestamp(),
     whensent timestamp,
@@ -231,6 +232,7 @@ create table comment (
         or state = 'confirmed'
         or state = 'hidden'
     ),
+    lang text not null default 'en-gb',
     mark_fixed boolean not null,
     mark_open boolean not null default 'f'
     -- other fields? one to indicate whether this was written by the council
@@ -274,6 +276,7 @@ create table alert (
     parameter2 text, -- e.g. Latitude for local problem alerts
     email text not null,
     confirmed integer not null default 0,
+    lang text not null default 'en-gb',
     whensubscribed timestamp not null default ms_current_timestamp(),
     whendisabled timestamp default null
 );

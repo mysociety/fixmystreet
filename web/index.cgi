@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.257 2009-07-06 17:10:21 matthew Exp $
+# $Id: index.cgi,v 1.258 2009-07-10 15:17:29 matthew Exp $
 
 use strict;
 use Standard;
@@ -235,10 +235,10 @@ sub submit_update {
 
     my $id = dbh()->selectrow_array("select nextval('comment_id_seq');");
     Utils::workaround_pg_bytea("insert into comment
-        (id, problem_id, name, email, website, text, state, mark_fixed, photo)
-        values (?, ?, ?, ?, '', ?, 'unconfirmed', ?, ?)", 7,
+        (id, problem_id, name, email, website, text, state, mark_fixed, photo, lang)
+        values (?, ?, ?, ?, '', ?, 'unconfirmed', ?, ?, ?)", 7,
         $id, $input{id}, $input{name}, $input{rznvy}, $input{update},
-        $input{fixed} ? 't' : 'f', $image);
+        $input{fixed} ? 't' : 'f', $image, $mySociety::Locale::lang);
 
     my %h = ();
     $h{update} = $input{update};
@@ -391,13 +391,13 @@ Please <a href="/contact">let us know what went on</a> and we\'ll look into it.'
         $id = dbh()->selectrow_array("select nextval('problem_id_seq');");
         Utils::workaround_pg_bytea("insert into problem
             (id, postcode, easting, northing, title, detail, name,
-             email, phone, photo, state, council, used_map, anonymous, category, areas)
+             email, phone, photo, state, council, used_map, anonymous, category, areas, lang)
             values
-            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?, ?, ?, ?)", 10,
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?, ?, ?, ?, ?)", 10,
             $id, $input{pc}, $input{easting}, $input{northing}, $input{title},
             $input{detail}, $input{name}, $input{email}, $input{phone}, $image,
             $input{council}, $used_map, $input{anonymous} ? 'f': 't', $input{category},
-            $areas);
+            $areas, $mySociety::Locale::lang);
         my %h = ();
         $h{title} = $input{title};
         $h{detail} = $input{detail};

@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-alerts,v 1.2 2007-06-15 14:57:51 matthew Exp $
+# $Id: send-alerts,v 1.3 2009-07-10 15:17:28 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -15,6 +15,7 @@ require 5.8.0;
 use FindBin;
 use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../../perllib";
+use CronFns;
 
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh);
@@ -30,6 +31,9 @@ BEGIN {
         Port => mySociety::Config::get('BCI_DB_PORT', undef)
     );
 }
+
+my $site = CronFns::site(mySociey::Config::get('BASE_URL'));
+CronFns::language($site);
 
 mySociety::Alert::email_alerts();
 

@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.69 2009-06-10 14:27:54 matthew Exp $
+# $Id: send-reports,v 1.70 2009-07-10 15:17:28 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -18,6 +18,7 @@ use lib "$FindBin::Bin/../../perllib";
 use Error qw(:try);
 use File::Slurp;
 use CGI; # Trying awkward kludge
+use CronFns;
 
 use EastHantsWSDL;
 use mySociety::Config;
@@ -42,30 +43,14 @@ BEGIN {
 
 use mySociety::Dress; # Has to come after the BEGIN, my poor coding
 
-die "Either no arguments, --nomail or --verbose" if (@ARGV>1);
-my $nomail = 0;
-my $verbose = 0;
-$nomail = 1 if (@ARGV==1 && $ARGV[0] eq '--nomail');
-$verbose = 1 if (@ARGV==1 && $ARGV[0] eq '--verbose');
-$verbose = 1 if $nomail;
-
+# Set up site, language etc.
+my ($verbose, $nomail) = CronFns::options();
 my $base_url = mySociety::Config::get('BASE_URL');
-my $site = 'fixmystreet';
-$site = 'emptyhomes' if $base_url =~ 'emptyhomes';
-
-# First, let's pick the right language
-if ($site eq 'emptyhomes') {
-    mySociety::Locale::negotiate_language('en-gb,English,en_GB|cy,Cymraeg,cy_GB');
-    mySociety::Locale::gettext_domain('FixMyStreet-EmptyHomes');
-    mySociety::Locale::change();
-} else {
-    mySociety::Locale::negotiate_language('en-gb,English,en_GB|nb,Norwegian,nb_NO'); # XXX Testing
-    mySociety::Locale::gettext_domain('FixMyStreet');
-    mySociety::Locale::change();
-}
+my $site = CronFns::site($base_url);
+CronFns::language($site);
 
 my $query = "SELECT id, council, category, title, detail, name, email, phone,
-    used_map, easting, northing, (photo is not null) as has_photo
+    used_map, easting, northing, (photo is not null) as has_photo, lang
     FROM problem WHERE state in ('confirmed','fixed') AND whensent IS NULL
     AND council IS NOT NULL";
 my $unsent = dbh()->selectall_arrayref($query, { Slice => {} });
@@ -81,6 +66,8 @@ foreach my $row (@$unsent) {
 
     my $send_email = 0;
     my $send_web = 0;
+
+    mySociety::Locale::change($row->{lang});
 
     # Template variables for the email
     my %h = map { $_ => $row->{$_} } qw/title detail name email phone category easting northing/;
