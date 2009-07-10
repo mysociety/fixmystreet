@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.39 2009-07-10 15:16:28 matthew Exp $
+# $Id: alert.cgi,v 1.40 2009-07-10 17:50:40 matthew Exp $
 
 use strict;
 use Standard;
@@ -273,7 +273,7 @@ within a certain distance of a particular location.'));
     $out .= $errors . '<form method="get" action="/alert">';
     $out .= $q->p(_('To find out what local alerts we have for you, please enter your GB
 postcode or street name and area:'), '<input type="text" name="pc" value="' . $input_h{pc} . '">
-<input type="submit" value="Look up">');
+<input type="submit" value="' . _('Go') . '">');
     $out .= '</form>';
 
     return $out if $q->referer() && $q->referer() =~ /fixmystreet\.com/;
