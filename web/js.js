@@ -123,7 +123,13 @@ YAHOO.util.Event.addListener('hide_pins_link', 'click', function(e) {
     if (this.innerHTML == 'Show pins') {
         YAHOO.util.Dom.setStyle('pins', 'display', 'block');
         this.innerHTML = 'Hide pins';
-    } else {
+    } else if (this.innerHTML == 'Dangos pinnau') {
+        YAHOO.util.Dom.setStyle('pins', 'display', 'block');
+        this.innerHTML = 'Cuddio pinnau';
+    } else if (this.innerHTML == 'Cuddio pinnau') {
+        YAHOO.util.Dom.setStyle('pins', 'display', 'none');
+        this.innerHTML = 'Dangos pinnau';
+    } else if (this.innerHTML == 'Hide pins') {
         YAHOO.util.Dom.setStyle('pins', 'display', 'none');
         this.innerHTML = 'Show pins';
     }
@@ -131,15 +137,30 @@ YAHOO.util.Event.addListener('hide_pins_link', 'click', function(e) {
 YAHOO.util.Event.addListener('all_pins_link', 'click', function(e) {
     YAHOO.util.Event.preventDefault(e);
     YAHOO.util.Dom.setStyle('pins', 'display', 'block');
-    document.getElementById('hide_pins_link').innerHTML = 'Hide pins';
+    var welsh = 0;
     if (this.innerHTML == 'Include stale reports') {
         this.innerHTML = 'Hide stale reports';
         document.getElementById('all_pins').value = '1';
         load_pins(x, y);
-    } else {
+    } else if (this.innerHTML == 'Cynnwys hen adroddiadau') {
+        this.innerHTML = 'Cuddio hen adroddiadau';
+        document.getElementById('all_pins').value = '1';
+        welsh = 1;
+        load_pins(x, y);
+    } else if (this.innerHTML == 'Cuddio hen adroddiadau') {
+        this.innerHTML = 'Cynnwys hen adroddiadau';
+        welsh = 1;
+        document.getElementById('all_pins').value = '';
+        load_pins(x, y);
+    } else if (this.innerHTML == 'Hide stale reports') {
         this.innerHTML = 'Include stale reports';
         document.getElementById('all_pins').value = '';
         load_pins(x, y);
+    }
+    if (welsh) {
+        document.getElementById('hide_pins_link').innerHTML = 'Cuddio pinnau';
+    } else {
+        document.getElementById('hide_pins_link').innerHTML = 'Hide pins';
     }
 });
 
