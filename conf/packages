@@ -23,3 +23,4 @@ perl-modules
 perlmagick
 libjson-perl
 libimage-size-perl
+libmath-bigint-gmp-perl

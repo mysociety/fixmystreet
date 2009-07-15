@@ -19,7 +19,7 @@
 #   RSS
 #   Whatever I've missed!
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.3 2009-07-15 20:54:49 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.4 2009-07-15 21:18:29 matthew Exp $';
 
 use strict;
 require 5.8.0;
@@ -88,7 +88,7 @@ foreach (@ARGV) {
 }
 if (scalar(@ARGV) == 0) {
     %action = map { $_ => 1 } keys %actions;
-    $action{all} = 1;
+    $action{'all'} = 1;
 }
 
 # Set up options
@@ -123,10 +123,12 @@ $wth->browser_set_validator("/usr/bin/validate");
 # Setup error log watching
 $wth->log_watcher_setup($httpd_error_log);
 $wth->log_watcher_self_test($base_url . "/test.cgi?error=1", "Illegal division by zero");
+sleep(1); # XXX Without this, the above/below suck in one error line but not the other?!
+my $errors = $wth->_log_watcher_get_errors(); # As Perl has two error lines.
 
 # Run the reports
 foreach (keys %action) {
-    date_print($actions{$_});
+    date_print($actions{$_}) if $actions{$_};
     do_report() if $_ eq 'report';
     do_update() if $_ eq 'update';
     do_questionnaire() if $_ eq 'questionnaire';
@@ -136,7 +138,7 @@ foreach (keys %action) {
 
 # Check for any unhandled mails or errors
 call_send_emails();
-$wth->email_check_none_left(1);
+$wth->email_check_none_left();
 $wth->log_watcher_check();
 if ($action{'all'})  {
     print "Everything completed successfully\n";
