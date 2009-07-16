@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.54 2009-05-27 13:53:53 matthew Exp $
+# $Id: confirm.cgi,v 1.55 2009-07-16 14:12:14 matthew Exp $
 
 use strict;
 use Standard;
@@ -61,9 +61,10 @@ sub confirm_update {
 
     my ($problem_id, $fixed, $email, $name) = dbh()->selectrow_array(
         "select problem_id, mark_fixed, email, name from comment where id=?", {}, $id);
+    $email = lc($email);
 
     (my $domain = $email) =~ s/^.*\@//;
-    if (dbh()->selectrow_array('select email from abuse where lower(email)=? or lower(email)=?', {}, lc($email), lc($domain))) {
+    if (dbh()->selectrow_array('select email from abuse where lower(email)=? or lower(email)=?', {}, $email, $domain)) {
         dbh()->do("update comment set state='hidden' where id=?", {}, $id);
         return $q->p('Sorry, there has been an error confirming your update.');
     } else {
@@ -75,7 +76,7 @@ sub confirm_update {
         dbh()->do("update problem set state='fixed', lastupdate = ms_current_timestamp()
             where id=? and state='confirmed'", {}, $problem_id);
         # If a problem reporter is marking their own problem as fixed, turn off questionnaire sending
-        $creator_fixed = dbh()->do("update problem set send_questionnaire='f' where id=? and email=?
+        $creator_fixed = dbh()->do("update problem set send_questionnaire='f' where id=? and lower(email)=?
             and send_questionnaire='t'", {}, $problem_id, $email);
     } else { 
         # Only want to refresh problem if not already fixed
@@ -86,7 +87,7 @@ sub confirm_update {
     my $out = '';
     if ($creator_fixed > 0 && $q->{site} ne 'emptyhomes') {
         my $answered_ever_reported = dbh()->selectrow_array(
-            'select id from questionnaire where problem_id in (select id from problem where email=?) and ever_reported is not null', {}, $email);
+            'select id from questionnaire where problem_id in (select id from problem where lower(email)=?) and ever_reported is not null', {}, $email);
         if (!$answered_ever_reported) {
             $out = ask_questionnaire($q->param('token'));
         }
