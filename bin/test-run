@@ -19,7 +19,7 @@
 #   RSS
 #   Whatever I've missed!
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.5 2009-07-16 14:16:13 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.6 2009-07-16 14:56:02 matthew Exp $';
 
 use strict;
 require 5.8.0;
@@ -30,7 +30,8 @@ mySociety::Config::set_file('../conf/general');
 use mySociety::DBHandle qw(dbh);
 use mySociety::WebTestHarness;
 
-my %actions = (
+my @actions = ('report', 'update', 'questionnaire', 'alert', 'static');
+my %actions_desc = (
     'report' => 'report a problem',
     'update' => 'leave an update on a report',
     'questionnaire' => 'receive and answer a questionnaire or two',
@@ -40,7 +41,8 @@ my %actions = (
 
 date_print("Set up web test harness...");
 my ($wth, $action, $verbose, $pause, $multispawn) = mySociety::WebTestHarness::setup({
-    actions => \%actions,
+    actions => \@actions,
+    actions_desc => \%actions_desc,
     dbname => 'BCI',
     'sql_extra' => '../db/alert_types.sql',
 });
@@ -64,8 +66,9 @@ sleep(1); # XXX Without this, the above/below suck in one error line but not the
 my $errors = $wth->_log_watcher_get_errors(); # As Perl has two error lines.
 
 # Run the reports
-foreach (keys %$action) {
-    date_print($actions{$_}) if $actions{$_};
+foreach (@actions) {
+    next unless $action->{$_};
+    date_print($actions_desc{$_}) if $actions_desc{$_};
     do_report() if $_ eq 'report';
     do_update() if $_ eq 'update';
     do_questionnaire() if $_ eq 'questionnaire';
