@@ -19,13 +19,12 @@
 #   RSS
 #   Whatever I've missed!
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.4 2009-07-15 21:18:29 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.5 2009-07-16 14:16:13 matthew Exp $';
 
 use strict;
 require 5.8.0;
 
 use FindBin;
-use Getopt::Long;
 use mySociety::Config;
 mySociety::Config::set_file('../conf/general');
 use mySociety::DBHandle qw(dbh);
@@ -39,95 +38,33 @@ my %actions = (
     'static' => 'check static pages',
 );
 
-sub help {
-    print <<END;
-
-Usage: test-run [OPTION] [ACTION]...
-
-Actions are a list of tests, run if present in this order:
-END
-    foreach (keys %actions) {
-        print "    $_ - $actions{$_}\n";
-    }
-    print <<END;
-If you specify no actions, it will run all of them.
-
-Options are:
-    --verbose=n    Choose 0 (no progress), 1 (basic actions), 2 (full debug)
-    --pause        Pause after displaying URLs read from emails
-
-END
-}
-
-# Parse command line
-our $verbose = 0; # currently 3 levels: 0, 1 and 2
-our $pause = 0;
-our $multispawn = 1; # now crontab just runs on one machines anyway, gave up
-our $help;
-if (!GetOptions(
-        'verbose=i' => \$verbose,
-        'pause' => \$pause,
-        'help' => \$help
-    )) {
-    help();
-    exit(1);
-}
-if ($help) {
-    help();
-    exit(0);
-}
-our %action;
-foreach (@ARGV) {
-    if ($actions{$_}) {
-        $action{$_} = 1;
-    } else {
-        help();
-        print "Action '$_' not known\n";
-        exit(0);
-    }
-}
-if (scalar(@ARGV) == 0) {
-    %action = map { $_ => 1 } keys %actions;
-    $action{'all'} = 1;
-}
+date_print("Set up web test harness...");
+my ($wth, $action, $verbose, $pause, $multispawn) = mySociety::WebTestHarness::setup({
+    actions => \%actions,
+    dbname => 'BCI',
+    'sql_extra' => '../db/alert_types.sql',
+});
+$multispawn = 1;
 
 # Set up options
-our $base_url = mySociety::Config::get('BASE_URL');
-our $httpd_error_log = mySociety::Config::get('HTTPD_ERROR_LOG');
-our $email_domain = mySociety::Config::get('EMAIL_DOMAIN');
-our $contact_email = mySociety::Config::get('CONTACT_EMAIL');
-our $test_email_prefix = mySociety::Config::get('TEST_EMAIL_PREFIX');
+my $base_url = mySociety::Config::get('BASE_URL');
+$base_url =~ m#^http://(.+)/?$#;
+my $email_domain = mySociety::Config::get('EMAIL_DOMAIN');
+my $contact_email = mySociety::Config::get('CONTACT_EMAIL');
+my $test_email_prefix = mySociety::Config::get('TEST_EMAIL_PREFIX');
 sub email_n { my $n = shift; return "$test_email_prefix+$n\@$email_domain"; }
 sub name_n { my $n = shift; return ($n % 100  == 0) ? "Rachel Reporter $n" : "Peter Person $n"; }
 
 #############################################################################
 # Main code
 
-# Configure test harness class
-date_print("Set up web test harness...");
-our $wth = new mySociety::WebTestHarness();
-$base_url =~ m#^http://(.+)/?$#;
-
-$wth->database_connect('BCI_');
-$wth->database_drop_reload('../db/schema.sql');
-$wth->database_load_schema('../db/alert_types.sql');
-$wth->database_cycle_sequences(200);
-# XXX As services are deployed now for Ratty, comment this out
-my $eveld_bin = "$FindBin::Bin/../../services/EvEl/bin/eveld";
-$eveld_bin = undef if ! -e $eveld_bin; # when running on servers rely on EvEl daemon, rather than calling EvEl binary directly as on Francis'' laptop XXX need more explicit way of distinguishing this case, than just checking evel isn't checked out in the same tree
-$wth->email_setup({ eveld_bin => $eveld_bin,
-                    eveld_multispawn => $multispawn,
-                    log_mailbox => "log_mailbox" });
-$wth->browser_set_validator("/usr/bin/validate");
-
 # Setup error log watching
-$wth->log_watcher_setup($httpd_error_log);
 $wth->log_watcher_self_test($base_url . "/test.cgi?error=1", "Illegal division by zero");
 sleep(1); # XXX Without this, the above/below suck in one error line but not the other?!
 my $errors = $wth->_log_watcher_get_errors(); # As Perl has two error lines.
 
 # Run the reports
-foreach (keys %action) {
+foreach (keys %$action) {
     date_print($actions{$_}) if $actions{$_};
     do_report() if $_ eq 'report';
     do_update() if $_ eq 'update';
@@ -140,7 +77,7 @@ foreach (keys %action) {
 call_send_emails();
 $wth->email_check_none_left();
 $wth->log_watcher_check();
-if ($action{'all'})  {
+if ($action->{'all'})  {
     print "Everything completed successfully\n";
 } else {
     print "Tests completed successfully\n";
