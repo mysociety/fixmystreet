@@ -7,7 +7,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: gettext-extract,v 1.9 2009-07-10 16:54:51 matthew Exp $
+# $Id: gettext-extract,v 1.10 2009-07-16 11:57:19 matthew Exp $
 
 if [ -e ../../locale ]
 then
@@ -40,7 +40,7 @@ PO=locale/FixMyStreet.po
 rm -f $PO
 
 # Extract from Perl
-xgettext --add-comments=TRANS --language=Perl --keyword=_ --keyword=nget:1,2 --from-code=utf-8 -o $PO perllib/mySociety/*.pm bci/perllib/*.pm bci/web/*.cgi bci/bin/send-reports bci/db/alert_types_eha.pl
+xgettext --add-comments=TRANS --language=Perl --keyword=_ --keyword=nget:1,2 --from-code=utf-8 -o $PO perllib/mySociety/*.pm bci/perllib/*.pm bci/web/*.cgi bci/bin/send-* bci/db/alert_types_eha.pl
 
 # Fix headers
 TEMP=`tempfile`
