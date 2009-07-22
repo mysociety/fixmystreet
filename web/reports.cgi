@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.31 2009-05-27 15:54:00 matthew Exp $
+# $Id: reports.cgi,v 1.32 2009-07-22 19:44:19 matthew Exp $
 
 use strict;
 use Standard;
@@ -27,6 +27,12 @@ sub main {
     my $q_council = $q->param('council') || '';
 
     $q_council = 2260 if $q->{site} eq 'scambs';
+
+    # Manual misspelling redirect
+    if ($q_council =~ /^rhondda cynon taff$/i) {
+        print $q->redirect('/reports/Rhondda+Cynon+Taf');
+        return;
+    }
 
     my ($one_council, $area_type, $area_name);
     if ($q_council =~ /\D/) {
