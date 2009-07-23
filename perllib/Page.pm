@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.151 2009-07-10 17:36:49 matthew Exp $
+# $Id: Page.pm,v 1.152 2009-07-23 09:59:53 matthew Exp $
 #
 
 package Page;
@@ -105,6 +105,7 @@ sub microsite {
     if ($q->{site} eq 'emptyhomes') {
         my $lang;
         $lang = 'cy' if $host =~ /cy/;
+        $lang = 'en-gb' if $host =~ /^en\./;
         mySociety::Locale::negotiate_language('en-gb,English,en_GB|cy,Cymraeg,cy_GB', $lang);
         mySociety::Locale::gettext_domain('FixMyStreet-EmptyHomes');
         mySociety::Locale::change();

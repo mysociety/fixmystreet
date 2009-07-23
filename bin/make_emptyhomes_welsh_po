@@ -9,8 +9,10 @@ use FindBin;
 use lib "$FindBin::Bin/../perllib";
 use PoChange;
 
+chdir("$FindBin::Bin/../../locale");
+
 # First read in translation and match up.
-open(INPO, shift) or die $!;
+open(INPO, 'cy_GB.UTF-8/LC_MESSAGES/EmptyHomes.po') or die $!;
 
 my $state = 'start';
 my $msgid = '';
@@ -41,7 +43,6 @@ while (<INPO>) {
 $lookup{$msgid} = [ $msgstr, $fuzzy ];
 close INPO;
 
-chdir("$FindBin::Bin/../../locale");
 mkdir("en_GB.UTF-8");
 mkdir("en_GB.UTF-8/LC_MESSAGES");
 mkdir("cy_GB.UTF-8");
