@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.32 2009-07-22 19:44:19 matthew Exp $
+# $Id: reports.cgi,v 1.33 2009-08-03 10:45:28 matthew Exp $
 
 use strict;
 use Standard;
@@ -208,7 +208,7 @@ sub main {
             print ".";
         } else {
             my $rss_url = '/rss/reports/' . Page::short_name($name);
-            my $thing = 'council';
+            my $thing = _('council');
             if ($ward) {
                 $rss_url .= '/' . Page::short_name($q_ward);
                 $thing = 'ward';
