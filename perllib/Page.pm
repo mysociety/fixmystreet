@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.152 2009-07-23 09:59:53 matthew Exp $
+# $Id: Page.pm,v 1.153 2009-08-07 21:20:37 matthew Exp $
 #
 
 package Page;
@@ -790,7 +790,7 @@ sub geocode_string {
         # Northern Ireland, hopefully
         $error = _("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.");
     } else {
-        my ($accuracy) = $js =~ /"Accuracy": *(\d)/;
+        my ($accuracy) = $js =~ /"Accuracy" *: *(\d)/;
         if ($accuracy < 4) {
             $error = _('Sorry, that location appears to be too general; please be more specific.');
         } else {
