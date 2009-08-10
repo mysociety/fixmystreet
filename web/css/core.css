@@ -257,6 +257,11 @@ p#copyright {
     padding: 4px; */
 }
 
+#sub_map_links {
+    float: right;
+    margin-top: 0;
+}
+
 /* Problem pages */
 
 #fixed, #unknown {

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.154 2009-08-10 10:59:31 matthew Exp $
+# $Id: Page.pm,v 1.155 2009-08-10 12:24:05 matthew Exp $
 #
 
 package Page;
@@ -157,7 +157,7 @@ sub header ($%) {
         my %vars;
         if ($q->{site} eq 'emptyhomes') {
             my $lang_url = mySociety::Config::get('BASE_URL');
-	    $lang_url .= $ENV{REQUEST_URI} if $ENV{REQUEST_URI};
+            $lang_url .= $ENV{REQUEST_URI} if $ENV{REQUEST_URI};
             if ($lang eq 'en-gb') {
                 $lang_url =~ s{http://}{$&cy.};
             } else {
@@ -223,6 +223,10 @@ sub footer {
         open FP, $file . '/../templates/website/' . $q->{site} . '-footer';
         my $html = join('', <FP>);
         close FP;
+        my $lang = $mySociety::Locale::lang;
+        if ($q->{site} eq 'emptyhomes' && $lang eq 'cy') {
+            $html =~ s/25 Walter Road<br>Swansea/25 Heol Walter<br>Abertawe/;
+        }
         return $html;
     }
 

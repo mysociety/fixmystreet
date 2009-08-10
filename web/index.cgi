@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.260 2009-07-17 15:03:02 matthew Exp $
+# $Id: index.cgi,v 1.261 2009-08-10 12:24:06 matthew Exp $
 
 use strict;
 use Standard;
@@ -23,6 +23,7 @@ use mySociety::AuthToken;
 use mySociety::Config;
 use mySociety::DBHandle qw(select_all);
 use mySociety::EmailUtil;
+use mySociety::GeoUtil;
 use mySociety::Locale;
 use mySociety::MaPit;
 use mySociety::PostcodeUtil;
@@ -793,7 +794,7 @@ sub display_location {
         $hide_link = NewURL($q, -retain=>1, no_pins=>1);
         $hide_text = _('Hide pins');
     }
-    my $map_links = "<p style='float:right; margin-top:0;'><a id='hide_pins_link' href='$hide_link'>$hide_text</a> | <a id='all_pins_link' href='$all_link'>$all_text</a></p> <input type='hidden' id='all_pins' name='all_pins' value='$input_h{all_pins}'>";
+    my $map_links = "<p id='sub_map_links'><a id='hide_pins_link' href='$hide_link'>$hide_text</a> | <a id='all_pins_link' href='$all_link'>$all_text</a></p> <input type='hidden' id='all_pins' name='all_pins' value='$input_h{all_pins}'>";
 
     my $out = Page::display_map($q, x => $x, y => $y, type => 1, pins => $pins, post => $map_links );
     $out .= $q->h1(_('Problems in this area'));
@@ -894,9 +895,13 @@ sub display_problem {
 
     my $out = '';
 
+    my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($problem->{easting}, $problem->{northing}, 'G');
+    my $map_links = "<p id='sub_map_links'><a href='http://maps.google.co.uk/maps?output=embed&amp;z=16&amp;q="
+        . uri_escape($problem->{title}) . "\@$lat,$lon'>View on Google Maps</a></p>";
+
     my $pins = Page::display_pin($q, $px, $py, 'blue');
     $out .= Page::display_map($q, x => $x_tile, y => $y_tile, type => 0,
-        pins => $pins, px => $px, py => $py );
+        pins => $pins, px => $px, py => $py, post => $map_links );
     if ($q->{site} ne 'emptyhomes' && $problem->{state} eq 'confirmed' && $problem->{duration} > 8*7*24*60*60) {
         $out .= $q->p({id => 'unknown'}, _('This problem is old and of unknown status.'))
     }
