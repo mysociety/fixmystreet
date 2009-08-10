@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.262 2009-08-10 15:35:48 matthew Exp $
+# $Id: index.cgi,v 1.263 2009-08-10 15:42:01 matthew Exp $
 
 use strict;
 use Standard;
@@ -262,6 +262,7 @@ sub submit_problem {
         $input{$_} = ucfirst $input{$_};
         $input{$_} =~ s/\b(dog\s*)shit\b/$1poo/ig;
         $input{$_} =~ s/\b(porta)\s*([ck]abin|loo)\b/[$1ble $2]/ig;
+        $input{$_} =~ s/kabin\]/cabin\]/ig;
     }
     my @errors;
 
