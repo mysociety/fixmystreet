@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.263 2009-08-10 15:42:01 matthew Exp $
+# $Id: index.cgi,v 1.264 2009-08-10 16:54:26 matthew Exp $
 
 use strict;
 use Standard;
@@ -864,16 +864,15 @@ sub display_problem {
     ($input{y}) = $input{y} =~ /^(\d+)/; $input{y} ||= 0;
 
     # Some council with bad email software
+    my $base = mySociety::Config::get('BASE_URL');
     if ($input{id} =~ /^3D\d+$/) {
         $input{id} =~ s/^3D//;
-        my $base = mySociety::Config::get('BASE_URL');
         print $q->redirect(-location => $base . '/report/' . $input{id}, -status => 301);
         return '';
     }
 
     # Redirect old /?id=NNN URLs to /report/NNN
     if (!@errors && $q->url(-absolute=>1) eq '/') {
-        my $base = mySociety::Config::get('BASE_URL');
         print $q->redirect(-location => $base . '/report/' . $input{id}, -status => 301);
         return '';
     }
@@ -899,7 +898,7 @@ sub display_problem {
 
     my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($problem->{easting}, $problem->{northing}, 'G');
     my $map_links = "<p id='sub_map_links'><a href='http://maps.google.co.uk/maps?output=embed&amp;z=16&amp;q="
-        . uri_escape($problem->{title}) . "\@$lat,$lon'>View on Google Maps</a></p>";
+        . uri_escape("<a href='$base/report/$id'>" . $problem->{title} . '</a>') . "\@$lat,$lon'>View on Google Maps</a></p>";
 
     my $pins = Page::display_pin($q, $px, $py, 'blue');
     $out .= Page::display_map($q, x => $x_tile, y => $y_tile, type => 0,
