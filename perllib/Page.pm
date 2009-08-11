@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.155 2009-08-10 12:24:05 matthew Exp $
+# $Id: Page.pm,v 1.156 2009-08-11 09:28:41 matthew Exp $
 #
 
 package Page;
@@ -631,9 +631,9 @@ sub display_problem_text {
     $out .= '<p><em>';
     if ($q->{site} eq 'emptyhomes') {
         if ($problem->{anonymous}) {
-            $out .= sprintf(_('%s, reported anonymously at %s'), ent($problem->{category}), prettify_epoch($problem->{time}));
+            $out .= sprintf(_('%s, reported anonymously at %s'), ent(_($problem->{category})), prettify_epoch($problem->{time}));
         } else {
-            $out .= sprintf(_('%s, reported by %s at %s'), ent($problem->{category}), ent($problem->{name}), prettify_epoch($problem->{time}));
+            $out .= sprintf(_('%s, reported by %s at %s'), ent(_($problem->{category})), ent($problem->{name}), prettify_epoch($problem->{time}));
         }
     } else {
         if ($problem->{service} && $problem->{category} && $problem->{category} ne 'Other' && $problem->{anonymous}) {

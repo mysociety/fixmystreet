@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.265 2009-08-10 16:56:30 matthew Exp $
+# $Id: index.cgi,v 1.266 2009-08-11 09:28:41 matthew Exp $
 
 use strict;
 use Standard;
@@ -290,7 +290,7 @@ sub submit_problem {
     if ($input{category} && $input{category} eq '-- Pick a category --') {
         push (@errors, _('Please choose a category'));
         $input{category} = '';
-    } elsif ($input{category} && $input{category} eq '-- Pick a property type --') {
+    } elsif ($input{category} && $input{category} eq _('-- Pick a property type --')) {
         push (@errors, _('Please choose a property type'));
         $input{category} = '';
     }
