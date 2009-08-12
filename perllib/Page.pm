@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.157 2009-08-12 11:14:21 louise Exp $
+# $Id: Page.pm,v 1.158 2009-08-12 11:55:12 matthew Exp $
 #
 
 package Page;
@@ -122,6 +122,22 @@ sub microsite {
     Memcached::set_namespace(mySociety::Config::get('BCI_DB_NAME') . ":");
 }
 
+sub base_url_with_lang {
+    my $reverse = shift;
+    my $base = mySociety::Config::get('BASE_URL');
+    my $lang = $mySociety::Locale::lang;
+    if ($reverse && $lang eq 'en-gb') {
+        $base =~ s{http://}{$&cy.};
+    } elsif ($reverse) {
+        $base =~ s{http://}{$&en.};
+    } elsif ($lang eq 'cy') {
+        $base =~ s{http://}{$&cy.};
+    } else {
+        $base =~ s{http://}{$&en.};
+    }
+    return $base;
+}
+
 =item header Q [PARAM VALUE ...]
 
 Return HTML for the top of the page, given PARAMs (TITLE is required).
@@ -156,13 +172,8 @@ sub header ($%) {
         close FP;
         my %vars;
         if ($q->{site} eq 'emptyhomes') {
-            my $lang_url = mySociety::Config::get('BASE_URL');
+            my $lang_url = base_url_with_lang(1);
             $lang_url .= $ENV{REQUEST_URI} if $ENV{REQUEST_URI};
-            if ($lang eq 'en-gb') {
-                $lang_url =~ s{http://}{$&cy.};
-            } else {
-                $lang_url =~ s{http://}{$&en.};
-            }
             %vars = (
                 'report' => _('Report a problem'),
                 'reports' => _('All reports'),
