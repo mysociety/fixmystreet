@@ -19,7 +19,7 @@
 #   RSS
 #   Whatever I've missed!
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.6 2009-07-16 14:56:02 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.7 2009-08-12 11:42:20 louise Exp $';
 
 use strict;
 require 5.8.0;
@@ -91,8 +91,7 @@ if ($action->{'all'})  {
 
 # Print log line with date
 sub date_print {
-    $_ = shift;
-    print scalar localtime() . " $_\n";
+    print scalar localtime() . ' ' . shift() . "\n";
 }
 
 # Print what we're doing
@@ -152,6 +151,30 @@ sub do_report {
 }
 
 sub do_update {
+}
+
+sub do_questionnaire {
+}
+
+sub do_alert {
+}
+
+sub do_static {
+    $wth->browser_get($base_url);
+    $wth->browser_follow_link(text => 'All reports');
+    $wth->browser_follow_link(text => 'Cheltenham Borough Council');
+    $wth->browser_follow_link(text => 'see more details');
+    $wth->browser_follow_link(text => 'Help');
+    $wth->browser_follow_link(text => 'Contact');
+    $wth->browser_submit_form(
+        with_fields => {
+            name => 'Mr Test Example',
+            em => email_n(1),
+            subject => 'This is a test message.',
+            message => 'FixMyStreet rocks!',
+        }
+    );
+    $wth->email_get_containing('%This is a test message%');
 }
 
 #browser_get(URL)
