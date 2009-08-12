@@ -19,7 +19,7 @@
 #   RSS
 #   Whatever I've missed!
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.7 2009-08-12 11:42:20 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.8 2009-08-12 12:22:46 louise Exp $';
 
 use strict;
 require 5.8.0;
@@ -30,13 +30,14 @@ mySociety::Config::set_file('../conf/general');
 use mySociety::DBHandle qw(dbh);
 use mySociety::WebTestHarness;
 
-my @actions = ('report', 'update', 'questionnaire', 'alert', 'static');
+my @actions = ('report', 'update', 'questionnaire', 'alert', 'static', 'cobrand');
 my %actions_desc = (
     'report' => 'report a problem',
     'update' => 'leave an update on a report',
     'questionnaire' => 'receive and answer a questionnaire or two',
     'alert' => 'sign up for a local alert, and an update alert, check they arrive',
     'static' => 'check static pages',
+    'cobrand' => 'check cobranding'
 );
 
 date_print("Set up web test harness...");
@@ -49,8 +50,15 @@ my ($wth, $action, $verbose, $pause, $multispawn) = mySociety::WebTestHarness::s
 $multispawn = 1;
 
 # Set up options
-my $base_url = mySociety::Config::get('BASE_URL');
-$base_url =~ m#^http://(.+)/?$#;
+sub set_base_url($) {
+    my $cobrand = shift;
+    $base_url = mySociety::Config::get('BASE_URL');
+    $base_url =~ m#^http://(.+)/?$#;
+    $base_url = "http://" . $cobrand . $base_url;
+}
+set_base_url('');
+die "domain conf not consistent" if (mySociety::Config::get('BASE_URL') ne $base_url);
+
 my $email_domain = mySociety::Config::get('EMAIL_DOMAIN');
 my $contact_email = mySociety::Config::get('CONTACT_EMAIL');
 my $test_email_prefix = mySociety::Config::get('TEST_EMAIL_PREFIX');
@@ -74,6 +82,7 @@ foreach (@actions) {
     do_questionnaire() if $_ eq 'questionnaire';
     do_alert() if $_ eq 'alert';
     do_static() if $_ eq 'static';
+    do_cobrand() if $_ eq 'cobrand';
 }
 
 # Check for any unhandled mails or errors
@@ -87,7 +96,7 @@ if ($action->{'all'})  {
 }
 
 #############################################################################
-# Functions to make and sign pledges, and so on
+# Functions to make reports, and so on
 
 # Print log line with date
 sub date_print {
@@ -117,9 +126,9 @@ sub display_url {
     }
 }
 
-# Change the date that all parts of PledgeBank think is today.  Call with no
+# Change the date that all parts of FixMyStreet think is today.  Call with no
 # parameters to reset it to the actual today.
-sub set_pb_date {
+sub set_fms_date {
     my $new_date = shift;
     if (defined($new_date)) {
         dbh()->do('delete from debugdate');
@@ -147,19 +156,30 @@ sub call_send_emails {
 #############################################################################
 
 sub do_report {
+    set_base_url('');
     $wth->browser_get($base_url);
 }
 
 sub do_update {
+    set_base_url('');
 }
 
 sub do_questionnaire {
+    set_base_url('');
 }
 
 sub do_alert {
+    set_base_url('');
+}
+
+sub do_cobrand {
+    set_base_url('emptyhomes.');
+    $wth->browser_get($base_url);
+    $wth->browser_check_contents("Empty Homes Agency");
 }
 
 sub do_static {
+    set_base_url('');
     $wth->browser_get($base_url);
     $wth->browser_follow_link(text => 'All reports');
     $wth->browser_follow_link(text => 'Cheltenham Borough Council');
