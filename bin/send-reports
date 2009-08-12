@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.72 2009-08-07 12:54:40 matthew Exp $
+# $Id: send-reports,v 1.73 2009-08-12 13:02:46 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -91,11 +91,11 @@ foreach my $row (@$unsent) {
         $h{closest_address_machine} =~ s/ - please note/\n\n - please note/;
     }
 
-    my (@to, @recips, $template);
+    my (@to, @recips, $template, $areas_info);
     if ($site eq 'emptyhomes') {
 
         my $council = $row->{council};
-        my $areas_info = mySociety::MaPit::get_voting_areas_info([ $council ]);
+        $areas_info = mySociety::MaPit::get_voting_areas_info([ $council ]);
         my $name = $areas_info->{$council}->{name};
         my ($council_email, $confirmed, $note) = dbh()->selectrow_array(
             "SELECT email,confirmed,note FROM contacts WHERE deleted='f'
@@ -119,7 +119,7 @@ foreach my $row (@$unsent) {
         my @all_councils = split /,|\|/, $row->{council};
         my ($councils, $missing) = $row->{council} =~ /^([\d,]+)(?:\|([\d,]+))?/;
         my @councils = split /,/, $councils;
-        my $areas_info = mySociety::MaPit::get_voting_areas_info(\@all_councils);
+        $areas_info = mySociety::MaPit::get_voting_areas_info(\@all_councils);
         my (@dear, %recips);
         my $all_confirmed = 1;
         foreach my $council (@councils) {
@@ -181,7 +181,14 @@ If you know of an appropriate contact address, please do get in touch. ]\n\n";
     if (mySociety::Config::get('STAGING_SITE')) {
         @recips = ( mySociety::Config::get('CONTACT_EMAIL') );
     } elsif ($site eq 'emptyhomes') {
-        push @recips, mySociety::Config::get('CONTACT_EMAIL');
+        my $council = $row->{council};
+        my $country = $areas_info->{$council}->{country};
+        if ($country eq 'W') {
+            push @recips, 'shelter@' . mySociety::Config::get('EMAIL_DOMAIN');
+        } else {
+            push @recips, 'eha@' . mySociety::Config::get('EMAIL_DOMAIN');
+        }
+        push @recips, 'matthew@' . mySociety::Config::get('EMAIL_DOMAIN');
     }
 
     # Special case for this parish council
