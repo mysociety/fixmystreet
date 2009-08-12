@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.156 2009-08-11 09:28:41 matthew Exp $
+# $Id: Page.pm,v 1.157 2009-08-12 11:14:21 louise Exp $
 #
 
 package Page;
@@ -183,6 +183,7 @@ sub header ($%) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="$lang">
     <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <script type="text/javascript" src="/yui/utilities.js"></script>
         <script type="text/javascript" src="/js.js"></script>
         <title>${title}$fixmystreet</title>
