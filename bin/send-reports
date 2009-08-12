@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.73 2009-08-12 13:02:46 matthew Exp $
+# $Id: send-reports,v 1.74 2009-08-12 13:36:00 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -203,15 +203,18 @@ If you know of an appropriate contact address, please do get in touch. ]\n\n";
     my $result = -1;
 
     if ($send_email) {
-        my $email = mySociety::Email::construct_email({
-            _template_ => _($template),
+        $template = _($template);
+        my $email = mySociety::Locale::in_gb_locale { mySociety::Email::construct_email({
+            _template_ => $template,
             _parameters_ => \%h,
             To => \@to,
             From => [ $row->{email}, $row->{name} ],
             'Message-ID' => sprintf('<report-%s-%s@mysociety.org>', time(), unpack('h*', random_bytes(5, 1))),
-        });
+        }) };
         if (!$nomail) {
             $result *= mySociety::EmailUtil::send_email($email, mySociety::Config::get('CONTACT_EMAIL'), @recips);
+        } else {
+            print $email;
         }
     }
 
