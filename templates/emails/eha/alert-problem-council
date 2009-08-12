@@ -5,7 +5,7 @@ The following empty properties have been reported to <?=$values['area_name']?>:
 <?=$values['data']?>
 
 Yours,  
-The Empty Homes Agency
+reportemptyhomes.com
 
 To stop receiving emails when there are new properties reported to
 <?=$values['area_name']?>, please follow this link: 
