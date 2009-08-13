@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.267 2009-08-12 11:55:13 matthew Exp $
+# $Id: index.cgi,v 1.268 2009-08-13 16:20:44 matthew Exp $
 
 use strict;
 use Standard;
@@ -255,7 +255,7 @@ sub submit_update {
 
 sub submit_problem {
     my $q = shift;
-    my @vars = qw(council title detail name email phone pc easting northing skipped anonymous category partial upload_fileid);
+    my @vars = qw(council title detail name email phone pc easting northing skipped anonymous category partial upload_fileid lat lon);
     my %input = map { $_ => scalar $q->param($_) } @vars;
     for (qw(title detail)) {
         $input{$_} = lc $input{$_} if $input{$_} !~ /[a-z]/;
@@ -265,6 +265,15 @@ sub submit_problem {
         $input{$_} =~ s/kabin\]/cabin\]/ig;
     }
     my @errors;
+
+    if ($input{lat}) {
+        try {
+            ($input{easting}, $input{northing}) = mySociety::GeoUtil::wgs84_to_national_grid($input{lat}, $input{lon}, 'G');
+        } catch Error::Simple with { 
+            my $e = shift;
+            push @errors, "We had a problem with the supplied co-ordinates - outside the UK?";
+        };
+    }
 
     my $fh = $q->upload('photo');
     if ($fh) {
@@ -527,9 +536,9 @@ please specify the closest point on land.')) unless @$all_councils;
             $council_ok{$_->{area_id}} = 1;
         }
         @categories = (_('-- Pick a property type --'), _('Empty house or bungalow'),
-	    _('Empty flat or maisonette'), _('Whole block of empty flats'),
-	    _('Empty office or other commercial'), _('Empty pub or bar'),
-	    _('Empty public building - school, hospital, etc.'));
+            _('Empty flat or maisonette'), _('Whole block of empty flats'),
+            _('Empty office or other commercial'), _('Empty pub or bar'),
+            _('Empty public building - school, hospital, etc.'));
         $category = _('Property type:');
     }
     $category = $q->div($q->label({'for'=>'form_category'}, $category),
