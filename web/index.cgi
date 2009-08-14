@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.268 2009-08-13 16:20:44 matthew Exp $
+# $Id: index.cgi,v 1.269 2009-08-14 11:02:50 matthew Exp $
 
 use strict;
 use Standard;
@@ -244,7 +244,7 @@ sub submit_update {
     my %h = ();
     $h{update} = $input{update};
     $h{name} = $input{name} ? $input{name} : _("Anonymous");
-    my $base = Page::base_url_with_lang();
+    my $base = Page::base_url_with_lang($q);
     $base =~ s/matthew/scambs.matthew/ if $q->{site} eq 'scambs'; # XXX Temp
     $h{url} = $base . '/C/' . mySociety::AuthToken::store('update', { id => $id, add_alert => $input{add_alert} } );
     dbh()->commit();
@@ -413,7 +413,7 @@ Please <a href="/contact">let us know what went on</a> and we\'ll look into it.'
         $h{title} = $input{title};
         $h{detail} = $input{detail};
         $h{name} = $input{name};
-        my $base = Page::base_url_with_lang();
+        my $base = Page::base_url_with_lang($q);
         $base =~ s/matthew/scambs.matthew/ if $q->{site} eq 'scambs'; # XXX Temp
         $h{url} = $base . '/P/' . mySociety::AuthToken::store('problem', $id);
         dbh()->commit();
