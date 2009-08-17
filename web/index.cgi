@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.269 2009-08-14 11:02:50 matthew Exp $
+# $Id: index.cgi,v 1.270 2009-08-17 14:48:45 matthew Exp $
 
 use strict;
 use Standard;
@@ -907,7 +907,7 @@ sub display_problem {
 
     my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($problem->{easting}, $problem->{northing}, 'G');
     my $map_links = "<p id='sub_map_links'><a href='http://maps.google.co.uk/maps?output=embed&amp;z=16&amp;q="
-        . uri_escape('<a href="' . $base . '/report/' . $problem->{id} . '">' . $problem->{title} . '</a>') . "\@$lat,$lon'>View on Google Maps</a></p>";
+        . uri_escape_utf8('<a href="' . $base . '/report/' . $problem->{id} . '">' . $problem->{title} . '</a>') . "\@$lat,$lon'>View on Google Maps</a></p>";
 
     my $pins = Page::display_pin($q, $px, $py, 'blue');
     $out .= Page::display_map($q, x => $x_tile, y => $y_tile, type => 0,

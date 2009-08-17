@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.70 2009-03-24 17:34:30 matthew Exp $
+# $Id: index.cgi,v 1.71 2009-08-17 14:48:45 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.70 2009-03-24 17:34:30 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.71 2009-08-17 14:48:45 matthew Exp $';
 
 use strict;
 
@@ -478,6 +478,7 @@ sub admin_edit_report {
 
     my $row = dbh()->selectall_arrayref('select * from problem where id=?', { Slice=>{} }, $id);
     my %row = %{$row->[0]};
+    my %row_h = map { $_ => $row{$_} ? ent($row{$_}) : '' } keys %row;
 
     if ($q->param('resend')) {
         dbh()->do('update problem set whensent=null where id=?', {}, $id);
@@ -530,16 +531,16 @@ sub admin_edit_report {
     print <<EOF;
 <ul>
 <li><a href="$url">View report on site</a>
-<li><label for="title">Subject:</label> <input size=60 type="text" id="title" name="title" value="$row{title}">
-<li><label for="detail">Details:</label><br><textarea name="detail" id="detail" cols=60 rows=10>$row{detail}</textarea>
-<li>Co-ordinates: $easting,$northing (originally entered $row{postcode}, $used_map)
+<li><label for="title">Subject:</label> <input size=60 type="text" id="title" name="title" value="$row_h{title}">
+<li><label for="detail">Details:</label><br><textarea name="detail" id="detail" cols=60 rows=10>$row_h{detail}</textarea>
+<li>Co-ordinates: $easting,$northing (originally entered $row_h{postcode}, $used_map)
 <li>For council(s): $council (other areas: $areas)
 <li>$anon
 <li>$state
 <li>Category: $row{category}
-<li>Name: <input type="text" name="name" id="name" value="$row{name}">
-<li>Email: <input type="text" id="email" name="email" value="$row{email}">
-<li>Phone: $row{phone}
+<li>Name: <input type="text" name="name" id="name" value="$row_h{name}">
+<li>Email: <input type="text" id="email" name="email" value="$row_h{email}">
+<li>Phone: $row_h{phone}
 <li>Created: $row{created}
 <li>Confirmed: $row{confirmed}
 <li>Sent: $row{whensent} $resend
