@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.271 2009-08-17 14:50:35 matthew Exp $
+# $Id: index.cgi,v 1.272 2009-08-20 17:14:25 matthew Exp $
 
 use strict;
 use Standard;
@@ -427,9 +427,21 @@ Please <a href="/contact">let us know what went on</a> and we\'ll look into it.'
 sub display_form {
     my ($q, @errors) = @_;
     my ($pin_x, $pin_y, $pin_tile_x, $pin_tile_y) = (0,0,0,0);
-    my @vars = qw(title detail name email phone pc easting northing x y skipped council anonymous partial upload_fileid);
+    my @vars = qw(title detail name email phone pc easting northing x y skipped council anonymous partial upload_fileid lat lon);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
+
+    if ($input{lat}) {
+        try {
+            ($input{easting}, $input{northing}) = mySociety::GeoUtil::wgs84_to_national_grid($input{lat}, $input{lon}, 'G');
+            $input_h{easting} = $input{easting};
+            $input_h{northing} = $input{northing};
+        } catch Error::Simple with { 
+            my $e = shift;
+            push @errors, "We had a problem with the supplied co-ordinates - outside the UK?";
+        };
+    }
+
     ($input{x}) = $input{x} =~ /^(\d+)/; $input{x} ||= 0;
     ($input{y}) = $input{y} =~ /^(\d+)/; $input{y} ||= 0;
     my @ps = $q->param;
@@ -437,7 +449,8 @@ sub display_form {
         ($pin_tile_x, $pin_tile_y, $pin_x) = ($1, $2, $q->param($_)) if /^tile_(\d+)\.(\d+)\.x$/;
         $pin_y = $q->param($_) if /\.y$/;
     }
-    return display_location($q)
+
+    return display_location($q, @errors)
         unless ($pin_x && $pin_y)
             || ($input{easting} && $input{northing})
             || ($input{skipped} && $input{x} && $input{y})

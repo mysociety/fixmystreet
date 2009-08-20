@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.71 2009-08-17 14:48:45 matthew Exp $
+# $Id: index.cgi,v 1.72 2009-08-20 17:14:24 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.71 2009-08-17 14:48:45 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.72 2009-08-20 17:14:24 matthew Exp $';
 
 use strict;
 
@@ -554,7 +554,7 @@ EOF
     print $q->end_form;
 
     print $q->h2('Updates');
-    my $updates = select_all('select * from comment where problem_id=?', $id);
+    my $updates = select_all('select * from comment where problem_id=? order by created', $id);
     admin_show_updates($q, $updates);
     print html_tail($q);
 }
