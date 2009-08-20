@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.159 2009-08-14 11:02:50 matthew Exp $
+# $Id: Page.pm,v 1.160 2009-08-20 15:41:54 louise Exp $
 #
 
 package Page;
@@ -27,6 +27,7 @@ use URI::Escape;
 use Memcached;
 use Problems;
 use Utils;
+use Cobrand;
 use mySociety::Config;
 use mySociety::DBHandle qw/dbh select_all/;
 use mySociety::EvEl;
@@ -98,9 +99,10 @@ sub microsite {
     my $q = shift;
     my $host = $ENV{HTTP_HOST} || '';
     $q->{site} = 'fixmystreet';
-    $q->{site} = 'scambs' if $host =~ /scambs/;
-    $q->{site} = 'emptyhomes' if $host =~ /emptyhomes/;
-    $q->{site} = 'guardian' if $host =~ /guardian/;
+    my $allowed_cobrands = Cobrand::get_allowed_cobrands();
+        foreach my $cobrand (@{$allowed_cobrands}){
+        $q->{site} = $cobrand if $host =~ /$cobrand/;
+    }
 
     if ($q->{site} eq 'emptyhomes') {
         my $lang;
@@ -139,6 +141,33 @@ sub base_url_with_lang {
     return $base;
 }
 
+=item template_vars QUERY LANG
+
+Return a hash of variables that can be substituted into header and footer templates.
+QUERY is the incoming request
+LANG is the language the templates will be rendered in.
+
+=cut
+
+sub template_vars ($$){
+    my ($q, $lang) = @_;
+    my %vars;
+    my $lang_url = base_url_with_lang($q, 1);
+    $lang_url .= $ENV{REQUEST_URI} if $ENV{REQUEST_URI};
+    %vars = (
+        'report' => _('Report a problem'),
+        'reports' => _('All reports'),
+        'alert' => _('Local alerts'),
+        'faq' => _('Help'),
+        'about' => _('About us'),
+        'site_title' => _('Report Empty Homes'),
+        'lang_code' => $lang,
+        'lang' => $lang eq 'en-gb' ? 'Cymraeg' : 'English',
+        'lang_url' => $lang_url,
+    );
+    return \%vars;
+}
+
 =item header Q [PARAM VALUE ...]
 
 Return HTML for the top of the page, given PARAMs (TITLE is required).
@@ -166,29 +195,14 @@ sub header ($%) {
 
     my $html;
     my $lang = $mySociety::Locale::lang;
-    if ($q->{site} eq 'scambs' || $q->{site} eq 'emptyhomes' || $q->{site} eq 'guardian') {
+    if ($q->{site} ne 'fixmystreet') {
         (my $file = __FILE__) =~ s{/[^/]*?$}{};
-        open FP, $file . '/../templates/website/' . $q->{site} . '-header';
+        open FP, $file . '/../templates/website/cobrands/' . $q->{site} . '/' . $q->{site} . '-header';
         $html = join('', <FP>);
         close FP;
-        my %vars;
-        if ($q->{site} eq 'emptyhomes') {
-            my $lang_url = base_url_with_lang($q, 1);
-            $lang_url .= $ENV{REQUEST_URI} if $ENV{REQUEST_URI};
-            %vars = (
-                'report' => _('Report a problem'),
-                'reports' => _('All reports'),
-                'alert' => _('Local alerts'),
-                'faq' => _('Help'),
-                'about' => _('About us'),
-                'site_title' => _('Report Empty Homes'),
-                'lang_code' => $lang,
-                'lang' => $lang eq 'en-gb' ? 'Cymraeg' : 'English',
-                'lang_url' => $lang_url,
-            );
-        }
-        $vars{title} = $title;
-        $html =~ s#{{ ([a-z_]+) }}#$vars{$1}#g;
+	my $vars = template_vars($q, $lang);
+        $vars->{title} = $title;
+        $html =~ s#{{ ([a-z_]+) }}#$vars->{$1}#g;
     } else {
         my $fixmystreet = _('FixMyStreet');
         $html = <<EOF;
@@ -231,9 +245,9 @@ sub footer {
     my $js = $params{js} || '';
     $js = ''; # Don't use fileupload JS at the moment
 
-    if ($q->{site} eq 'scambs' || $q->{site} eq 'emptyhomes' || $q->{site} eq 'guardian') {
+    if ($q->{site} ne 'fixmystreet') {
         (my $file = __FILE__) =~ s{/[^/]*?$}{};
-        open FP, $file . '/../templates/website/' . $q->{site} . '-footer';
+        open FP, $file . '/../templates/website/cobrands/' . $q->{site} . '/' . $q->{site} . '-footer';
         my $html = join('', <FP>);
         close FP;
         my $lang = $mySociety::Locale::lang;
@@ -688,7 +702,7 @@ sub display_problem_text {
 
     if ($problem->{photo}) {
         my $dims = Image::Size::html_imgsize(\$problem->{photo});
-        $out .= "<p align='center'><img alt='' $dims src='/photo?id=$problem->{id}'></p>";
+	$out .= "<p align='center'><img alt='' $dims src='/photo?id=$problem->{id}'></p>";
     }
 
     return $out;
