@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.160 2009-08-20 15:41:54 louise Exp $
+# $Id: Page.pm,v 1.161 2009-08-26 16:52:14 louise Exp $
 #
 
 package Page;
@@ -120,7 +120,6 @@ sub microsite {
     if ($q->{site} eq 'scambs') {
         Problems::set_site_restriction('scambs');
     }
-
     Memcached::set_namespace(mySociety::Config::get('BCI_DB_NAME') . ":");
 }
 
@@ -139,6 +138,16 @@ sub base_url_with_lang {
         $base =~ s{http://}{$&en.};
     }
     return $base;
+}
+
+=item template_root 
+
+Returns the path from which template files will be read. 
+
+=cut 
+
+sub template_root{
+    return '/../templates/website/cobrands/';
 }
 
 =item template_vars QUERY LANG
@@ -168,6 +177,43 @@ sub template_vars ($$){
     return \%vars;
 }
 
+=item template Q [PARAM VALUE ...]
+
+Return the correct template given PARAMs
+
+=cut
+sub template($%){
+    my ($q, %params) = @_;        
+    my $template;
+    if ($params{template}){
+        $template = $params{template};
+    }else{
+        $template = $q->{site};
+    }
+    return $template;
+}
+
+=item template_header TITLE TEMPLATE Q LANG 
+
+Return HTML for the templated top of a page, given a 
+title, template name, request, language and template root.
+
+=cut
+
+sub template_header{
+     
+    my ($title, $template, $q, $lang, $template_root) = @_;
+    (my $file = __FILE__) =~ s{/[^/]*?$}{};
+    open FP, $file . $template_root . $q->{site} . '/' . $template . '-header';
+    my $html = join('', <FP>);
+    close FP;
+    my $vars = template_vars($q, $lang);
+    $vars->{title} = $title;
+    $html =~ s#{{ ([a-z_]+) }}#$vars->{$1}#g;
+    return $html;
+
+}
+
 =item header Q [PARAM VALUE ...]
 
 Return HTML for the top of the page, given PARAMs (TITLE is required).
@@ -176,7 +222,7 @@ Return HTML for the top of the page, given PARAMs (TITLE is required).
 sub header ($%) {
     my ($q, %params) = @_;
 
-    my %permitted_params = map { $_ => 1 } qw(title rss js expires lastmodified);
+    my %permitted_params = map { $_ => 1 } qw(title rss js expires lastmodified template);
     foreach (keys %params) {
         croak "bad parameter '$_'" if (!exists($permitted_params{$_}));
     }
@@ -196,13 +242,8 @@ sub header ($%) {
     my $html;
     my $lang = $mySociety::Locale::lang;
     if ($q->{site} ne 'fixmystreet') {
-        (my $file = __FILE__) =~ s{/[^/]*?$}{};
-        open FP, $file . '/../templates/website/cobrands/' . $q->{site} . '/' . $q->{site} . '-header';
-        $html = join('', <FP>);
-        close FP;
-	my $vars = template_vars($q, $lang);
-        $vars->{title} = $title;
-        $html =~ s#{{ ([a-z_]+) }}#$vars->{$1}#g;
+        my $template = template($q, %params);
+        $html = template_header($title, $template, $q, $lang, template_root());
     } else {
         my $fixmystreet = _('FixMyStreet');
         $html = <<EOF;
@@ -247,7 +288,8 @@ sub footer {
 
     if ($q->{site} ne 'fixmystreet') {
         (my $file = __FILE__) =~ s{/[^/]*?$}{};
-        open FP, $file . '/../templates/website/cobrands/' . $q->{site} . '/' . $q->{site} . '-footer';
+        my $template = template($q, %params);
+        open FP, $file . template_root() . $q->{site} . '/' . $template . '-footer';
         my $html = join('', <FP>);
         close FP;
         my $lang = $mySociety::Locale::lang;
@@ -702,6 +744,7 @@ sub display_problem_text {
 
     if ($problem->{photo}) {
         my $dims = Image::Size::html_imgsize(\$problem->{photo});
+	my $dims = '';
 	$out .= "<p align='center'><img alt='' $dims src='/photo?id=$problem->{id}'></p>";
     }
 

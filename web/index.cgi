@@ -6,11 +6,10 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.272 2009-08-20 17:14:25 matthew Exp $
+# $Id: index.cgi,v 1.273 2009-08-26 16:52:14 louise Exp $
 
 use strict;
 use Standard;
-
 use Error qw(:try);
 use File::Slurp;
 use LWP::Simple;
@@ -85,6 +84,8 @@ sub main {
     } elsif ($q->param('pc') || ($q->param('x') && $q->param('y'))) {
         ($out, %params) = display_location($q);
         $params{title} = _('Viewing a location');
+    } elsif ($q->param('cobrand_page')) {
+        ($out, %params) = Cobrand::cobrand_page($q);
     } else {
         $out = front_page($q);
     }
@@ -92,6 +93,7 @@ sub main {
     print $out;
     my %footerparams;
     $footerparams{js} = $params{js} if $params{js};
+    $footerparams{template} = $params{template} if $params{template};
     print Page::footer($q, %footerparams);
 }
 Page::do_fastcgi(\&main);
