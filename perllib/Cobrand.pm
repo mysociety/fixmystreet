@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.3 2009-08-26 16:52:14 louise Exp $
+# $Id: Cobrand.pm,v 1.4 2009-08-26 17:24:39 louise Exp $
 
 package Cobrand;
 use strict;
@@ -35,7 +35,9 @@ sub cobrand_page{
     my $cobrand_class = ucfirst($cobrand);
     my $class = "Cobrands::" . $cobrand_class . "::Util";
     eval "use $class";
-    my $handle = $class->new;
+    my $handle;
+    eval{ $handle = $class->new };
+    return 0 if $@; 
     my ($out, %params) = $handle->page($q);	
     return ($out, %params);
 }
