@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.161 2009-08-26 16:52:14 louise Exp $
+# $Id: Page.pm,v 1.162 2009-08-26 16:58:21 louise Exp $
 #
 
 package Page;
@@ -744,7 +744,6 @@ sub display_problem_text {
 
     if ($problem->{photo}) {
         my $dims = Image::Size::html_imgsize(\$problem->{photo});
-	my $dims = '';
 	$out .= "<p align='center'><img alt='' $dims src='/photo?id=$problem->{id}'></p>";
     }
 
