@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.274 2009-08-26 17:24:39 louise Exp $
+# $Id: index.cgi,v 1.275 2009-08-27 14:35:01 louise Exp $
 
 use strict;
 use Standard;
@@ -241,10 +241,10 @@ sub submit_update {
 
     my $id = dbh()->selectrow_array("select nextval('comment_id_seq');");
     Utils::workaround_pg_bytea("insert into comment
-        (id, problem_id, name, email, website, text, state, mark_fixed, photo, lang)
-        values (?, ?, ?, ?, '', ?, 'unconfirmed', ?, ?, ?)", 7,
+        (id, problem_id, name, email, website, text, state, mark_fixed, photo, lang, cobrand)
+        values (?, ?, ?, ?, '', ?, 'unconfirmed', ?, ?, ?, ?)", 7,
         $id, $input{id}, $input{name}, $input{rznvy}, $input{update},
-        $input{fixed} ? 't' : 'f', $image, $mySociety::Locale::lang);
+        $input{fixed} ? 't' : 'f', $image, $mySociety::Locale::lang, $q->{site});
 
     my %h = ();
     $h{update} = $input{update};
@@ -382,18 +382,17 @@ sub submit_problem {
     delete $input{council} if $input{council} eq '-1';
     my $used_map = $input{skipped} ? 'f' : 't';
     $input{category} = _('Other') unless $input{category};
-
     my ($id, $out);
     if (my $token = $input{partial}) {
         my $id = mySociety::AuthToken::retrieve('partial', $token);
         if ($id) {
             dbh()->do("update problem set postcode=?, easting=?, northing=?, title=?, detail=?,
                 name=?, email=?, phone=?, state='confirmed', council=?, used_map='t',
-                anonymous=?, category=?, areas=?, confirmed=ms_current_timestamp(),
+                anonymous=?, category=?, areas=?, cobrand=?, confirmed=ms_current_timestamp(),
                 lastupdate=ms_current_timestamp() where id=?", {}, $input{pc}, $input{easting}, $input{northing},
                 $input{title}, $input{detail}, $input{name}, $input{email},
                 $input{phone}, $input{council}, $input{anonymous} ? 'f' : 't',
-                $input{category}, $areas, $id);
+                $input{category}, $areas, $q->{site}, $id);
             Utils::workaround_pg_bytea('update problem set photo=? where id=?', 1, $image, $id)
                 if $image;
             dbh()->commit();
@@ -407,19 +406,18 @@ Please <a href="/contact">let us know what went on</a> and we\'ll look into it.'
         $id = dbh()->selectrow_array("select nextval('problem_id_seq');");
         Utils::workaround_pg_bytea("insert into problem
             (id, postcode, easting, northing, title, detail, name,
-             email, phone, photo, state, council, used_map, anonymous, category, areas, lang)
+             email, phone, photo, state, council, used_map, anonymous, category, areas, lang, cobrand)
             values
-            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?, ?, ?, ?, ?)", 10,
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?, ?, ?, ?, ?, ?)", 10,
             $id, $input{pc}, $input{easting}, $input{northing}, $input{title},
             $input{detail}, $input{name}, $input{email}, $input{phone}, $image,
             $input{council}, $used_map, $input{anonymous} ? 'f': 't', $input{category},
-            $areas, $mySociety::Locale::lang);
+            $areas, $mySociety::Locale::lang, $q->{site});
         my %h = ();
         $h{title} = $input{title};
         $h{detail} = $input{detail};
         $h{name} = $input{name};
         my $base = Page::base_url_with_lang($q);
-        $base =~ s/matthew/scambs.matthew/ if $q->{site} eq 'scambs'; # XXX Temp
         $h{url} = $base . '/P/' . mySociety::AuthToken::store('problem', $id);
         dbh()->commit();
 
