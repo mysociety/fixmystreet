@@ -19,7 +19,7 @@
 #   RSS
 #   Whatever I've missed!
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.8 2009-08-12 12:22:46 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.9 2009-08-27 15:57:16 louise Exp $';
 
 use strict;
 require 5.8.0;
@@ -41,6 +41,7 @@ my %actions_desc = (
 );
 
 date_print("Set up web test harness...");
+
 my ($wth, $action, $verbose, $pause, $multispawn) = mySociety::WebTestHarness::setup({
     actions => \@actions,
     actions_desc => \%actions_desc,
@@ -50,10 +51,12 @@ my ($wth, $action, $verbose, $pause, $multispawn) = mySociety::WebTestHarness::s
 $multispawn = 1;
 
 # Set up options
+our $base_url;
 sub set_base_url($) {
     my $cobrand = shift;
     $base_url = mySociety::Config::get('BASE_URL');
     $base_url =~ m#^http://(.+)/?$#;
+    $base_url = $1;
     $base_url = "http://" . $cobrand . $base_url;
 }
 set_base_url('');
@@ -158,6 +161,42 @@ sub call_send_emails {
 sub do_report {
     set_base_url('');
     $wth->browser_get($base_url);
+    my $postcode = 'SW1A 0AA';
+    $wth->browser_submit_form(form_name => 'postcodeForm',
+        fields => { pc => $postcode},  
+        );
+    $wth->browser_check_contents('Problems in this area');
+    $wth->browser_submit_form(form_name => 'mapForm',
+        fields => { pc => $postcode, 
+                    x => 3287, 
+                    y => 1112, 
+                    submit_map => 1},
+        );
+    $wth->browser_check_contents('Reporting a problem');
+    $wth->browser_submit_form(form_name => 'mapForm', 
+        fields => { submit_map => 1,
+                    x => 3287, 
+                    y => 1112,
+                    pc => $postcode, 
+                    council => -1,
+                    easting => 530375.920751842, 
+                    northing => 179501.524003048,
+                    title => 'My test problem', 
+                    detail => 'Detail of my test problem', 
+                    name => name_n(1), 
+                    anonymous => 1, 
+                    email => email_n(1), 
+                    phone => '555 5555'}, 
+        );
+    $wth->browser_check_contents('Nearly done!');
+    my $confirmation_email = $wth->email_get_containing(
+            '%Subject: Confirm your problem on FixMyStreet'.
+            '%To: "'.name_n(1).'" <'.email_n(1).'>'.
+            '%to confirm the problem%');
+    die "Message confirmation link not found" if ($confirmation_email !~ m#^\s*($base_url.*$)#m);
+    print "Message confirm URL is $1\n" if $verbose > 1;
+    $wth->browser_get($1);
+    $wth->browser_check_contents('successfully confirmed your problem');
 }
 
 sub do_update {
