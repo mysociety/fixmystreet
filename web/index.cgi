@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.276 2009-08-27 16:06:44 louise Exp $
+# $Id: index.cgi,v 1.277 2009-08-27 19:40:18 louise Exp $
 
 use strict;
 use Standard;
@@ -712,7 +712,7 @@ EOF
         $out .= <<EOF;
 <div id="fileupload_flashUI" style="display:none">
 <label for="form_photo">Photo:</label>
-<input type="text" id="txtfilename" disabled="true" style="background-color: #ffffff;">
+<input type="text" id="txtfilename" disabled="disabled" style="background-color: #ffffff;">
 <input type="button" value="Browse..." onclick="document.getElementById('txtfilename').value=''; swfu.cancelUpload(); swfu.selectFile();">
 <input type="hidden" name="upload_fileid" id="upload_fileid" value="$input_h{upload_fileid}">
 </div>
