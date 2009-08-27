@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.162 2009-08-26 16:58:21 louise Exp $
+# $Id: Page.pm,v 1.163 2009-08-27 16:06:44 louise Exp $
 #
 
 package Page;
@@ -253,6 +253,7 @@ sub header ($%) {
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <script type="text/javascript" src="/yui/utilities.js"></script>
         <script type="text/javascript" src="/js.js"></script>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <title>${title}$fixmystreet</title>
         <style type="text/css">\@import url("/css/core.css"); \@import url("/css/main.css");</style>
 <!--[if LT IE 7]>
@@ -415,7 +416,7 @@ sub display_map {
         my $pc = $q->param('pc') || '';
         my $pc_enc = ent($pc);
         $out .= <<EOF;
-<form action="/" method="post" id="mapForm"$encoding>
+<form action="/" method="post" name="mapForm" id="mapForm"$encoding>
 <input type="hidden" name="submit_map" value="1">
 <input type="hidden" name="x" id="formX" value="$x">
 <input type="hidden" name="y" id="formY" value="$y">

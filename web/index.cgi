@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.275 2009-08-27 14:35:01 louise Exp $
+# $Id: index.cgi,v 1.276 2009-08-27 16:06:44 louise Exp $
 
 use strict;
 use Standard;
@@ -136,7 +136,7 @@ sub front_page {
     }
 
     # Add pretty commas for display
-    $out .= '<form action="/" method="get" id="postcodeForm">';
+    $out .= '<form action="/" method="get" name="postcodeForm" id="postcodeForm">';
     if (my $token = $q->param('partial')) {
         my $id = mySociety::AuthToken::retrieve('partial', $token);
         if ($id) {
