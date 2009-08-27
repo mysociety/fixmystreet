@@ -19,7 +19,7 @@
 #   RSS
 #   Whatever I've missed!
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.9 2009-08-27 15:57:16 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.10 2009-08-27 20:03:37 louise Exp $';
 
 use strict;
 require 5.8.0;
@@ -46,7 +46,7 @@ my ($wth, $action, $verbose, $pause, $multispawn) = mySociety::WebTestHarness::s
     actions => \@actions,
     actions_desc => \%actions_desc,
     dbname => 'BCI',
-    'sql_extra' => '../db/alert_types.sql',
+    'sql_extra' => ['../db/alert_types.sql'],
 });
 $multispawn = 1;
 
@@ -166,29 +166,40 @@ sub do_report {
         fields => { pc => $postcode},  
         );
     $wth->browser_check_contents('Problems in this area');
-    $wth->browser_submit_form(form_name => 'mapForm',
-        fields => { pc => $postcode, 
-                    x => 3287, 
-                    y => 1112, 
-                    submit_map => 1},
-        );
-    $wth->browser_check_contents('Reporting a problem');
-    $wth->browser_submit_form(form_name => 'mapForm', 
-        fields => { submit_map => 1,
-                    x => 3287, 
-                    y => 1112,
-                    pc => $postcode, 
-                    council => -1,
-                    easting => 530375.920751842, 
-                    northing => 179501.524003048,
-                    title => 'My test problem', 
-                    detail => 'Detail of my test problem', 
-                    name => name_n(1), 
-                    anonymous => 1, 
-                    email => email_n(1), 
-                    phone => '555 5555'}, 
-        );
-    $wth->browser_check_contents('Nearly done!');
+    {
+        # Writing values to hidden fields, so switching 
+        # off errors in a local context
+
+        local $^W = 0;
+
+        # WWW::Mechanize doesn't like the added tile coords, so
+        # just post them         
+        $wth->browser_post($base_url,
+                      { pc => $postcode,
+                        x => 3287,
+                        y => 1112,
+                        'tile_3287.1113.x' => 	221,
+                        'tile_3287.1113.y' => 	158,
+                        submit_map => 1});
+    
+        $wth->browser_check_contents('<h1>Reporting a problem</h1>');
+        $wth->browser_submit_form(form_name => 'mapForm', 
+            fields => { submit_map => 2,
+                        x => 3287, 
+                        y => 1112,
+                        pc => $postcode, 
+                        council => -1,
+                        easting => 530375.920751842, 
+                        northing => 179501.524003048,
+                        title => 'My test problem', 
+                        detail => 'Detail of my test problem', 
+                        anonymous => 1, 
+                        name => name_n(1),
+                        email => email_n(1), 
+                        phone => '555 5555'}, 
+         );
+   } 
+   $wth->browser_check_contents('Nearly Done!');
     my $confirmation_email = $wth->email_get_containing(
             '%Subject: Confirm your problem on FixMyStreet'.
             '%To: "'.name_n(1).'" <'.email_n(1).'>'.
