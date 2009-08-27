@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.45 2009-07-10 15:17:28 matthew Exp $
+-- $Id: schema.sql,v 1.46 2009-08-27 13:13:26 louise Exp $
 --
 
 -- secret
@@ -149,6 +149,7 @@ create table problem (
     ),
     lang text not null default 'en-gb',
     service text not null default '',
+    cobrand text not null default '', 
     lastupdate timestamp not null default ms_current_timestamp(),
     whensent timestamp,
     send_questionnaire boolean not null default 't'
@@ -232,6 +233,7 @@ create table comment (
         or state = 'confirmed'
         or state = 'hidden'
     ),
+    cobrand text not null default '', 
     lang text not null default 'en-gb',
     mark_fixed boolean not null,
     mark_open boolean not null default 'f'
