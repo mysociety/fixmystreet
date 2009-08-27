@@ -6,7 +6,7 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Cobrand.t,v 1.2 2009-08-26 17:24:40 louise Exp $
+# $Id: Cobrand.t,v 1.1 2009-08-27 08:42:46 louise Exp $
 #
 
 use strict;
