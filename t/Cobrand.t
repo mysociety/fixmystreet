@@ -6,12 +6,12 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Cobrand.t,v 1.2 2009-08-31 09:48:56 louise Exp $
+# $Id: Cobrand.t,v 1.3 2009-08-31 09:56:11 louise Exp $
 #
 
 use strict;
 use warnings;
-use Test::More tests => 3;
+use Test::More tests => 11;
 use Test::Exception;
 
 use FindBin;
@@ -23,29 +23,25 @@ use Cobrand;
 use MockQuery;
 
 sub test_site_restriction{
-    # should return result of cobrand module site_restriction function
     my $q  = new MockQuery('mysite');
     my ($site_restriction, $site_id) = Cobrand::set_site_restriction($q);
-    like($site_restriction, ' and council = 1 ');
-    like($site_id, 99);    
+    like($site_restriction, qr/ and council = 1 /, 'should return result of cobrand module site_restriction function');
+    ok($site_id == 99, 'should return result of cobrand module site_restriction function');    
     
-    # should return '' and zero if no module exists
     $q = new MockQuery('nosite');
     ($site_restriction, $site_id) = Cobrand::set_site_restriction($q);
-    like($site_restriction, '');
-    like($site_id, 0);
+    ok($site_restriction eq '', 'should return "" and zero if no module exists' );
+    ok($site_id == 0, 'should return "" and zero if no module exists');
 }
 
 sub test_cobrand_handle{
-    # should get a module handle if Util module exists for cobrand
     my $q  = new MockQuery('mysite');
     my $handle = Cobrand::cobrand_handle($q);
-    like($handle->site_name(), 'mysite');
+    like($handle->site_name(), qr/mysite/, 'should get a module handle if Util module exists for cobrand');
     
-    # should return zero if no module exists
     $q = new MockQuery('nosite');
     $handle = Cobrand::cobrand_handle($q);
-    like($handle, 0);
+    ok($handle == 0, 'should return zero if no module exists');
     
 }
 
