@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.42 2009-08-14 11:02:50 matthew Exp $
+# $Id: alert.cgi,v 1.43 2009-08-31 17:23:09 louise Exp $
 
 use strict;
 use Standard;
@@ -202,7 +202,7 @@ for the county council.')));
             : _('Local RSS feeds and email alerts')
     );
     $out .= <<EOF;
-<form id="alerts" method="post" action="/alert">
+<form id="alerts" name="alerts" method="post" action="/alert">
 <input type="hidden" name="type" value="local">
 <input type="hidden" name="pc" value="$input_h{pc}">
 
