@@ -6,7 +6,7 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Cobrand.t,v 1.1 2009-08-27 08:42:46 louise Exp $
+# $Id: Cobrand.t,v 1.2 2009-08-31 09:48:56 louise Exp $
 #
 
 use strict;
@@ -22,6 +22,33 @@ use lib "$FindBin::Bin/../../perllib";
 use Cobrand;
 use MockQuery;
 
+sub test_site_restriction{
+    # should return result of cobrand module site_restriction function
+    my $q  = new MockQuery('mysite');
+    my ($site_restriction, $site_id) = Cobrand::set_site_restriction($q);
+    like($site_restriction, ' and council = 1 ');
+    like($site_id, 99);    
+    
+    # should return '' and zero if no module exists
+    $q = new MockQuery('nosite');
+    ($site_restriction, $site_id) = Cobrand::set_site_restriction($q);
+    like($site_restriction, '');
+    like($site_id, 0);
+}
+
+sub test_cobrand_handle{
+    # should get a module handle if Util module exists for cobrand
+    my $q  = new MockQuery('mysite');
+    my $handle = Cobrand::cobrand_handle($q);
+    like($handle->site_name(), 'mysite');
+    
+    # should return zero if no module exists
+    $q = new MockQuery('nosite');
+    $handle = Cobrand::cobrand_handle($q);
+    like($handle, 0);
+    
+}
+
 sub test_cobrand_page{
     my $q  = new MockQuery('mysite');
     # should get the result of the page function in the cobrand module if one exists
@@ -36,5 +63,6 @@ sub test_cobrand_page{
 
 }
 
-
+ok(test_cobrand_handle() == 1, 'Ran all tests for the cobrand_handle function');
 ok(test_cobrand_page() == 1, 'Ran all tests for the cobrand_page function');
+ok(test_site_restriction() == 1, 'Ran all tests for the site_restriction function');

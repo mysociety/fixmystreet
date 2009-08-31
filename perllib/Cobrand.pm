@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.4 2009-08-26 17:24:39 louise Exp $
+# $Id: Cobrand.pm,v 1.5 2009-08-31 09:48:55 louise Exp $
 
 package Cobrand;
 use strict;
@@ -24,12 +24,13 @@ sub get_allowed_cobrands{
     return \@allowed_cobrands;
 }
 
-=item cobrand_page QUERY
+=item cobrand_handle Q
 
-Return a string containing the HTML to be rendered for a custom Cobranded page
+Given a query that has the name of a site set, return a handle to the Util module for that
+site, if one exists, or zero if not.
 
 =cut
-sub cobrand_page{
+sub cobrand_handle{
     my $q = shift;
     my $cobrand = $q->{site};
     my $cobrand_class = ucfirst($cobrand);
@@ -37,9 +38,38 @@ sub cobrand_page{
     eval "use $class";
     my $handle;
     eval{ $handle = $class->new };
-    return 0 if $@; 
-    my ($out, %params) = $handle->page($q);	
-    return ($out, %params);
+    return 0 if $@;
+    return $handle;
+}
+
+
+=item cobrand_page QUERY
+
+Return a string containing the HTML to be rendered for a custom Cobranded page
+
+=cut
+sub cobrand_page{
+    my $q = shift;
+    my $handle = cobrand_handle($q);
+    return 0 if $handle == 0;
+    return $handle->page($q);	
+}
+
+=item set_site_restriction Q
+
+Return a site restriction clause and a site key if the cobrand uses a subset of the FixMyStreet 
+data. Q is the query object. Returns an empty string and site key 0 if the cobrand uses all the 
+data.
+
+=cut
+sub set_site_restriction{
+    my $q = shift;
+    my $site_restriction = '';
+    my $site_id = 0;
+    my $handle = cobrand_handle($q);
+    return ($site_restriction, $site_id) if $handle == 0;
+    return $handle->site_restriction($q);
 }
 
 1;
+
