@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.277 2009-08-27 19:40:18 louise Exp $
+# $Id: index.cgi,v 1.278 2009-08-31 12:20:55 louise Exp $
 
 use strict;
 use Standard;
@@ -107,7 +107,6 @@ sub front_page {
     my $pc_h = ent($q->param('pc') || '');
     my $out = '<p id="expl"><strong>' . _('Report, view, or discuss local problems') . '</strong>';
     my $subhead = _('(like graffiti, fly tipping, broken paving slabs, or street lighting)');
-    $subhead = '(like graffiti, fly tipping, or neighbourhood noise)' if $q->{site} eq 'scambs';
     $out .= '<br><small>' . $subhead . '</small>' if $subhead ne ' ';
     $out .= '</p>';
     #if (my $url = mySociety::Config::get('IPHONE_URL')) {
@@ -159,14 +158,11 @@ EOF
 <div id="front_intro">
 EOF
     $out .= $q->h2(_('How to report a problem'));
-    my $step4 = $q->li(_('We send it to the council on your behalf'));
-    $step4 = $q->li('The council receives your report and acts upon it')
-        if $q->{site} eq 'scambs';
     $out .= $q->ol(
         $q->li(_('Enter a nearby GB postcode, or street name and area')),
         $q->li(_('Locate the problem on a map of the area')),
         $q->li(_('Enter details of the problem')),
-        $step4
+        $q->li(_('We send it to the council on your behalf'))
     );
 
     (my $fixed_pretty = $fixed) =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;

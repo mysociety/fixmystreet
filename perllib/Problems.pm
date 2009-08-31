@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Problems.pm,v 1.18 2009-07-01 14:55:35 louise Exp $
+# $Id: Problems.pm,v 1.19 2009-08-31 12:20:57 louise Exp $
 #
 
 package Problems;
@@ -21,13 +21,11 @@ use mySociety::MaPit;
 my $site_restriction = '';
 my $site_key = 0;
 sub set_site_restriction {
-    my $site = shift;
-    my @cats = Page::scambs_categories();
-    my $cats = join("','", @cats);
-    $site_restriction = " and council=2260 and category in
-        ('$cats') "
-        if $site eq 'scambs';
-    $site_key = 1;
+    my $q = shift;
+    my $site = $q->{site};
+    if ($site ne 'fixmystreet'){
+        ($site_restriction, $site_key) = Cobrand::set_site_restriction($q);
+    }
 }
 
 # Front page statistics
