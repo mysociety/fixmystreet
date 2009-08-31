@@ -19,7 +19,7 @@
 #   RSS
 #   Whatever I've missed!
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.12 2009-08-31 12:59:06 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.13 2009-08-31 18:32:13 louise Exp $';
 
 use strict;
 require 5.8.0;
@@ -159,58 +159,68 @@ sub call_send_emails {
     $wth->multi_spawn($multispawn, "./send-questionnaires " . ($verbose > 1 ? qw(--verbose) : ''), $verbose);
 }
 
-#############################################################################
-
-sub do_report {
-    set_base_url('');
+sub submit_postcode{
+    my $cobrand = shift;
+    my $postcode = shift;
+    set_base_url($cobrand);
     $wth->browser_get($base_url);
-    my $postcode = 'SW1A 0AA';
     $wth->browser_submit_form(form_name => 'postcodeForm',
         fields => { pc => $postcode},  
         );
     $wth->browser_check_contents('Problems in this area');
+}
+
+sub submit_report{
+   my ($postcode, $x, $y, $easting, $northing, $user_num ) = @_;	
+    submit_postcode('', $postcode);
     {
-        # Writing values to hidden fields, so switching 
+        # Writing values to hidden fields, so switching
         # off errors in a local context
 
         local $^W = 0;
-
+ 
         # WWW::Mechanize doesn't like the added tile coords, so
-        # just post them         
+        # just post them 
         $wth->browser_post($base_url,
                       { pc => $postcode,
-                        x => 3287,
-                        y => 1112,
-                        'tile_3287.1113.x' => 	221,
-                        'tile_3287.1113.y' => 	158,
+                        x => $x,
+                        y => $y,
+                        'tile_' . $x . '.' . $y . '.x' =>   221,
+                        'tile_' . $x . '.' . $y . '.y' =>   158,
                         submit_map => 1});
-    
         $wth->browser_check_contents('<h1>Reporting a problem</h1>');
-        $wth->browser_submit_form(form_name => 'mapForm', 
+        $wth->browser_submit_form(form_name => 'mapForm',
             fields => { submit_map => 2,
-                        x => 3287, 
-                        y => 1112,
-                        pc => $postcode, 
+                        x => $x,
+                        y => $y,
+                        pc => $postcode,
                         council => -1,
-                        easting => 530375.920751842, 
-                        northing => 179501.524003048,
-                        title => 'My test problem', 
-                        detail => 'Detail of my test problem', 
-                        anonymous => 1, 
-                        name => name_n(1),
-                        email => email_n(1), 
-                        phone => '555 5555'}, 
+                        easting => $easting,
+                        northing => $northing,
+                        title => 'My test problem',
+                        detail => 'Detail of my test problem',
+                        anonymous => 1,
+                        name => name_n($user_num),
+                        email => email_n($user_num),
+                        phone => '555 5555'},
          );
-   } 
+   }
    $wth->browser_check_contents('Nearly Done!');
     my $confirmation_email = $wth->email_get_containing(
             '%Subject: Confirm your problem on FixMyStreet'.
-            '%To: "'.name_n(1).'" <'.email_n(1).'>'.
+            '%To: "'.name_n($user_num).'" <'.email_n($user_num).'>'.
             '%to confirm the problem%');
     die "Message confirmation link not found" if ($confirmation_email !~ m#^\s*($base_url.*$)#m);
     print "Message confirm URL is $1\n" if $verbose > 1;
     $wth->browser_get($1);
     $wth->browser_check_contents('successfully confirmed your problem');
+}
+
+#############################################################################
+
+sub do_report {
+    my $postcode = 'SW1A 0AA';
+    submit_report($postcode, 3287, 1112, 530375.920751842, 179501.524003048, 1); 
 }
 
 sub do_update {
@@ -222,7 +232,38 @@ sub do_questionnaire {
 }
 
 sub do_alert {
-    set_base_url('');
+   
+    # sign up for alerts in an area
+    my $postcode = 'EH1 2NG';
+    my $x = 2015;
+    my $y = 4175;
+    submit_postcode('', $postcode);
+    $wth->browser_follow_link(text => 'Email me new local problems');
+    $wth->browser_submit_form(form_name => 'alerts',
+                              fields => {feed => "local:" . $x . ":" . $y, 
+                                         rznvy => email_n(2)} ); 
+    $wth->browser_check_contents('Nearly Done!');
+    my $confirmation_email = $wth->email_get_containing(
+            '%Subject: Confirm your alert on FixMyStreet'.
+            '%To: '.email_n(2).''.
+            '%to confirm the alert%');
+    die "Alert confirmation link not found" if ($confirmation_email !~ m#^\s*($base_url.*$)#m);
+    print "Message confirm URL is $1\n" if $verbose > 1;
+    $wth->browser_get($1);
+    $wth->browser_check_contents('successfully confirmed your alert');
+
+    # create and confirm a new problem in the area
+    submit_report($postcode, $x, $y, 325000, 673387.096774193, 3);
+
+    # run the alert script 
+    call_send_emails();
+
+    # expect an update
+    $confirmation_email = $wth->email_get_containing(
+            '%Subject: New nearby problems'.
+            '%To: '.email_n(2).
+            '%The following nearby problems%');    
+
 }
 
 sub do_cobrand {
