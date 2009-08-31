@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.5 2009-08-31 09:48:55 louise Exp $
+# $Id: Cobrand.pm,v 1.6 2009-08-31 14:19:42 louise Exp $
 
 package Cobrand;
 use strict;
@@ -36,6 +36,7 @@ sub cobrand_handle{
     my $cobrand_class = ucfirst($cobrand);
     my $class = "Cobrands::" . $cobrand_class . "::Util";
     eval "use $class";
+
     my $handle;
     eval{ $handle = $class->new };
     return 0 if $@;
@@ -69,6 +70,19 @@ sub set_site_restriction{
     my $handle = cobrand_handle($q);
     return ($site_restriction, $site_id) if $handle == 0;
     return $handle->site_restriction($q);
+}
+
+
+=item set_lang_and_domain Q HOST
+
+Set the language and domain of the site based on the query and host
+=cut
+sub set_lang_and_domain{
+  my ($q, $host) = @_;
+  my $handle = cobrand_handle($q);
+  if ($handle != 0){
+       $handle->set_lang_and_domain($q, $host);
+  }
 }
 
 1;
