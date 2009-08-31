@@ -19,7 +19,7 @@
 #   RSS
 #   Whatever I've missed!
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.10 2009-08-27 20:03:37 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.11 2009-08-31 11:37:57 louise Exp $';
 
 use strict;
 require 5.8.0;
@@ -29,15 +29,17 @@ use mySociety::Config;
 mySociety::Config::set_file('../conf/general');
 use mySociety::DBHandle qw(dbh);
 use mySociety::WebTestHarness;
+use Test::Harness;
 
-my @actions = ('report', 'update', 'questionnaire', 'alert', 'static', 'cobrand');
+my @actions = ('report', 'update', 'questionnaire', 'alert', 'static', 'cobrand', 'unit');
 my %actions_desc = (
     'report' => 'report a problem',
     'update' => 'leave an update on a report',
     'questionnaire' => 'receive and answer a questionnaire or two',
     'alert' => 'sign up for a local alert, and an update alert, check they arrive',
     'static' => 'check static pages',
-    'cobrand' => 'check cobranding'
+    'cobrand' => 'check cobranding',
+    'unit' => 'run the unit tests'
 );
 
 date_print("Set up web test harness...");
@@ -86,6 +88,7 @@ foreach (@actions) {
     do_alert() if $_ eq 'alert';
     do_static() if $_ eq 'static';
     do_cobrand() if $_ eq 'cobrand';
+    do_unit() if $_ eq 'unit'; 
 }
 
 # Check for any unhandled mails or errors
@@ -226,6 +229,19 @@ sub do_cobrand {
     set_base_url('emptyhomes.');
     $wth->browser_get($base_url);
     $wth->browser_check_contents("Empty Homes Agency");
+}
+
+sub do_unit{
+    my $testdir = '../t';
+    opendir(DIR, $testdir);
+    my @testfiles = grep(/\.t$/,readdir(DIR));
+    closedir(DIR);
+    @testfiles = map {$testdir . '/' . $_} @testfiles;
+    foreach my $file (@testfiles) {
+       print "$file\n";
+    }
+
+    runtests( @testfiles ); 
 }
 
 sub do_static {
