@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.167 2009-09-02 08:35:25 louise Exp $
+# $Id: Page.pm,v 1.168 2009-09-02 08:55:59 louise Exp $
 #
 
 package Page;
@@ -105,7 +105,10 @@ sub microsite {
     }
 
     if ($q->{site} ne 'fixmystreet') {
-        Cobrand::set_lang_and_domain($q->{site}, $host);
+        my $lang = 'en-gb';
+        $lang = 'cy' if $host =~ /cy/;
+        $lang = 'en-gb' if $host =~ /^en\./;
+        Cobrand::set_lang_and_domain($q->{site}, $lang);
     } else {
         mySociety::Locale::negotiate_language('en-gb,English,en_GB|nb,Norwegian,nb_NO'); # XXX Testing
         mySociety::Locale::gettext_domain('FixMyStreet');

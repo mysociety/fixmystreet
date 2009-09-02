@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.7 2009-09-02 08:32:00 louise Exp $
+# $Id: Cobrand.pm,v 1.8 2009-09-02 08:55:59 louise Exp $
 
 package Cobrand;
 use strict;
@@ -74,15 +74,15 @@ sub set_site_restriction{
 }
 
 
-=item set_lang_and_domain COBRAND HOST
+=item set_lang_and_domain COBRAND LANG
 
 Set the language and domain of the site based on the cobrand and host
 =cut
 sub set_lang_and_domain{
-  my ($cobrand, $host) = @_;
+  my ($cobrand, $lang) = @_;
   my $handle = cobrand_handle($cobrand);
   if ($handle != 0){
-       $handle->set_lang_and_domain($host);
+       $handle->set_lang_and_domain($lang);
   }
 }
 
