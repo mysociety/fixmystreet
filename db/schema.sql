@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.46 2009-08-27 13:13:26 louise Exp $
+-- $Id: schema.sql,v 1.47 2009-09-02 09:21:32 louise Exp $
 --
 
 -- secret
@@ -279,6 +279,7 @@ create table alert (
     email text not null,
     confirmed integer not null default 0,
     lang text not null default 'en-gb',
+    cobrand text not null default '', 
     whensubscribed timestamp not null default ms_current_timestamp(),
     whendisabled timestamp default null
 );
