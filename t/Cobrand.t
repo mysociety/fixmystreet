@@ -6,7 +6,7 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Cobrand.t,v 1.3 2009-08-31 09:56:11 louise Exp $
+# $Id: Cobrand.t,v 1.4 2009-09-02 08:32:23 louise Exp $
 #
 
 use strict;
@@ -35,12 +35,11 @@ sub test_site_restriction{
 }
 
 sub test_cobrand_handle{
-    my $q  = new MockQuery('mysite');
-    my $handle = Cobrand::cobrand_handle($q);
+    my $cobrand = 'mysite';
+    my $handle = Cobrand::cobrand_handle($cobrand);
     like($handle->site_name(), qr/mysite/, 'should get a module handle if Util module exists for cobrand');
-    
-    $q = new MockQuery('nosite');
-    $handle = Cobrand::cobrand_handle($q);
+    $cobrand = 'nosite';    
+    $handle = Cobrand::cobrand_handle($cobrand);
     ok($handle == 0, 'should return zero if no module exists');
     
 }

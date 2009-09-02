@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.6 2009-08-31 14:19:42 louise Exp $
+# $Id: Cobrand.pm,v 1.7 2009-09-02 08:32:00 louise Exp $
 
 package Cobrand;
 use strict;
@@ -31,8 +31,7 @@ site, if one exists, or zero if not.
 
 =cut
 sub cobrand_handle{
-    my $q = shift;
-    my $cobrand = $q->{site};
+    my $cobrand = shift;
     my $cobrand_class = ucfirst($cobrand);
     my $class = "Cobrands::" . $cobrand_class . "::Util";
     eval "use $class";
@@ -51,7 +50,8 @@ Return a string containing the HTML to be rendered for a custom Cobranded page
 =cut
 sub cobrand_page{
     my $q = shift;
-    my $handle = cobrand_handle($q);
+    my $cobrand = $q->{site};
+    my $handle = cobrand_handle($cobrand);
     return 0 if $handle == 0;
     return $handle->page($q);	
 }
@@ -67,21 +67,22 @@ sub set_site_restriction{
     my $q = shift;
     my $site_restriction = '';
     my $site_id = 0;
-    my $handle = cobrand_handle($q);
+    my $cobrand = $q->{site};
+    my $handle = cobrand_handle($cobrand);
     return ($site_restriction, $site_id) if $handle == 0;
     return $handle->site_restriction($q);
 }
 
 
-=item set_lang_and_domain Q HOST
+=item set_lang_and_domain COBRAND HOST
 
-Set the language and domain of the site based on the query and host
+Set the language and domain of the site based on the cobrand and host
 =cut
 sub set_lang_and_domain{
-  my ($q, $host) = @_;
-  my $handle = cobrand_handle($q);
+  my ($cobrand, $host) = @_;
+  my $handle = cobrand_handle($cobrand);
   if ($handle != 0){
-       $handle->set_lang_and_domain($q, $host);
+       $handle->set_lang_and_domain($host);
   }
 }
 

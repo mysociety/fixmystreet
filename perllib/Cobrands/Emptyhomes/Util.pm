@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Util.pm,v 1.1 2009-08-31 14:19:42 louise Exp $
+# $Id: Util.pm,v 1.2 2009-09-02 08:31:26 louise Exp $
 
 package Cobrands::Emptyhomes::Util;
 use Standard;
@@ -57,14 +57,14 @@ sub page{
    }
 }
 
-=item set_lang_and_domain Q HOST
+=item set_lang_and_domain HOST
 
-Set the language and text domain for the site based on the query and host. 
+Set the language and text domain for the site based on the host. 
 
 =cut
 
 sub set_lang_and_domain{
-    my ($self, $q, $host) = @_;
+    my ($self, $host) = @_;
     my $lang;
     $lang = 'cy' if $host =~ /cy/;
     $lang = 'en-gb' if $host =~ /^en\./;
