@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-questionnaires,v 1.12 2009-06-10 15:04:30 matthew Exp $
+# $Id: send-questionnaires,v 1.13 2009-09-02 08:32:58 louise Exp $
 
 use strict;
 require 5.8.0;
@@ -51,7 +51,7 @@ mySociety::Locale::change();
 
 # Select all problems that need a questionnaire email sending
 my $unsent = select_all(
-    "select id, council, category, title, detail, name, email,
+    "select id, council, category, title, detail, name, email, cobrand, lang,
         extract(epoch from ms_current_timestamp()-created) as created
     from problem
     where state in ('confirmed','fixed')
@@ -65,6 +65,9 @@ my $unsent = select_all(
 
 foreach my $row (@$unsent) {
     my @all_councils = split /,|\|/, $row->{council};
+    my $cobrand = $row->{cobrand};
+    my $lang = $row->{lang};
+    Cobrand::set_lang_and_domain($cobrand, $lang); 
     my ($councils, $missing) = $row->{council} =~ /^([\d,]+)(?:\|([\d,]+))?/;
     my @councils = split /,/, $councils;
     my $areas_info = mySociety::MaPit::get_voting_areas_info(\@all_councils);
