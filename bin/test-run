@@ -19,7 +19,7 @@
 #   RSS
 #   Whatever I've missed!
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.13 2009-08-31 18:32:13 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.14 2009-09-02 13:43:11 louise Exp $';
 
 use strict;
 require 5.8.0;
@@ -31,12 +31,13 @@ use mySociety::DBHandle qw(dbh);
 use mySociety::WebTestHarness;
 use Test::Harness;
 
-my @actions = ('report', 'update', 'questionnaire', 'alert', 'static', 'cobrand', 'unit');
+my @actions = ('report', 'update', 'questionnaire', 'alert', 'static', 'cobrand', 'unit', 'eha_alert');
 my %actions_desc = (
     'report' => 'report a problem',
     'update' => 'leave an update on a report',
     'questionnaire' => 'receive and answer a questionnaire or two',
     'alert' => 'sign up for a local alert, and an update alert, check they arrive',
+    'eha_alert' => 'sign up for an eha alert, cheeck cobranding and localization', 
     'static' => 'check static pages',
     'cobrand' => 'check cobranding',
     'unit' => 'run the unit tests'
@@ -89,6 +90,7 @@ foreach (@actions) {
     do_static() if $_ eq 'static';
     do_cobrand() if $_ eq 'cobrand';
     do_unit() if $_ eq 'unit'; 
+    do_eha_alert() if $_ eq 'eha_alert';
 }
 
 # Check for any unhandled mails or errors
@@ -158,6 +160,20 @@ sub call_send_emails {
     $wth->multi_spawn($multispawn, "./send-alerts", $verbose);
     $wth->multi_spawn($multispawn, "./send-questionnaires " . ($verbose > 1 ? qw(--verbose) : ''), $verbose);
 }
+
+# Load the EHA alert types
+sub load_eha_schema {
+    $wth->database_drop_reload('../db/schema.sql');
+    $wth->database_load_schema('../db/alert_types_eha.sql');
+    $wth->database_cycle_sequences(200);
+}
+
+# Load the basic alert types
+sub load_basic_schema {
+   $wth->database_drop_reload('../db/schema.sql');
+    $wth->database_load_schema('../db/alert_types.sql');
+    $wth->database_cycle_sequences(200);   
+} 
 
 sub submit_postcode{
     my $cobrand = shift;
@@ -264,6 +280,41 @@ sub do_alert {
             '%To: '.email_n(2).
             '%The following nearby problems%');    
 
+}
+
+sub do_eha_alert {
+   load_eha_schema();
+    # sign up for alerts in an area
+    my $postcode = 'EH1 2NG';
+    my $x = 2015;
+    my $y = 4175;
+    submit_postcode('emptyhomes', $postcode);
+    $wth->browser_follow_link(text => 'Email me new local problems');
+    $wth->browser_submit_form(form_name => 'alerts',
+                              fields => {feed => "local:" . $x . ":" . $y,
+                                         rznvy => email_n(2)} );
+    $wth->browser_check_contents('Nearly Done!');
+    my $confirmation_email = $wth->email_get_containing(
+            '%Subject: Confirm your alert on FixMyStreet'.
+            '%To: '.email_n(2).''.
+            '%to confirm the alert%');
+    die "Alert confirmation link not found" if ($confirmation_email !~ m#^\s*($base_url.*$)#m);
+    print "Message confirm URL is $1\n" if $verbose > 1;
+    $wth->browser_get($1);
+    $wth->browser_check_contents('successfully confirmed your alert');
+    
+    # create and confirm a new problem in the area
+    submit_report($postcode, $x, $y, 325000, 673387.096774193, 3);
+
+    # run the alert script
+    call_send_emails();
+    
+    # expect an update
+    $confirmation_email = $wth->email_get_containing(
+            '%Subject: New nearby problems'.
+            '%To: '.email_n(2).
+            '%The following nearby problems%');
+   load_basic_schema();
 }
 
 sub do_cobrand {
