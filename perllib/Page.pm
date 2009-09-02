@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.168 2009-09-02 08:55:59 louise Exp $
+# $Id: Page.pm,v 1.169 2009-09-02 09:07:26 louise Exp $
 #
 
 package Page;
@@ -105,7 +105,7 @@ sub microsite {
     }
 
     if ($q->{site} ne 'fixmystreet') {
-        my $lang = 'en-gb';
+        my $lang;
         $lang = 'cy' if $host =~ /cy/;
         $lang = 'en-gb' if $host =~ /^en\./;
         Cobrand::set_lang_and_domain($q->{site}, $lang);
