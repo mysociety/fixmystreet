@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.40 2009-07-10 16:10:22 matthew Exp $
+# $Id: questionnaire.cgi,v 1.41 2009-09-03 13:36:48 louise Exp $
 
 use strict;
 use Standard;
@@ -238,7 +238,7 @@ EOF
     $out .= ' ' . _('Please take a look at the updates that have been left.') if $updates;
     $out .= '</p>';
     if (@errors) {
-        $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
+        $out .= '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
     $out .= '<p>';
     $out .= _('An update marked this problem as fixed.') . ' ' if $problem->{state} eq 'fixed';

@@ -44,7 +44,7 @@ dt {
     background-color: #cccccc;
 }
 
-p#error {
+p.error {
     text-align: center;
     color: #cc0000;
     font-size: larger;

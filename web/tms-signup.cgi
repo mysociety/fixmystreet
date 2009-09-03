@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: tms-signup.cgi,v 1.3 2008-10-07 16:27:35 matthew Exp $
+# $Id: tms-signup.cgi,v 1.4 2009-09-03 13:36:48 louise Exp $
 
 use strict;
 use Standard;
@@ -53,7 +53,7 @@ sub tms_updates_form {
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my $out = '';
     if (@errors) {
-        $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
+        $out .= '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
     $out .= CrossSell::display_tms_form(%input);
     return $out;

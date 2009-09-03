@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.278 2009-08-31 12:20:55 louise Exp $
+# $Id: index.cgi,v 1.279 2009-09-03 13:36:47 louise Exp $
 
 use strict;
 use Standard;
@@ -121,7 +121,7 @@ sub front_page {
 #EOF
     #    }
     #}
-    $out .= '<p id="error">' . $error . '</p>' if ($error);
+    $out .= '<p class="error">' . $error . '</p>' if ($error);
     my $fixed = Problems::recent_fixed();
     my $updates = Problems::number_comments();
     my $new = Problems::recent_new('1 week');
@@ -554,7 +554,7 @@ please specify the closest point on land.')) unless @$all_councils;
         $category = _('Property type:');
     }
     $category = $q->div($q->label({'for'=>'form_category'}, $category),
-        $q->popup_menu(-name=>'category', -values=>\@categories,
+        $q->popup_menu(-name=>'category', -values=>\@categories, -id=>'form_category',
             -attributes=>{id=>'form_category'})
     ) if $category;
 
@@ -669,7 +669,7 @@ photo of the problem if you have one), etc.';
 <input type="hidden" name="northing" value="' . $northing . '">';
 
     if (@errors) {
-        $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
+        $out .= '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
     my $anon = ($input{anonymous}) ? ' checked' : ($input{title} ? '' : ' checked');
     $out .= '<div id="problem_form">';
@@ -833,7 +833,7 @@ sub display_location {
     </p>
 EOF
     if (@errors) {
-        $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
+        $out .= '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
     my $skipurl = NewURL($q, -retain=>1, 'submit_map'=>1, skipped=>1);
     #$out .= $q->h1('Report a problem');
@@ -963,7 +963,7 @@ EOF
     $out .= $q->p($q->small(_('Please note that updates are not sent to the council.')))
         unless $q->{site} eq 'emptyhomes'; # No council blurb
     if (@errors) {
-        $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
+        $out .= '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
 
     my $fixed = ($input{fixed}) ? ' checked' : '';

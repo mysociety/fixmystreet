@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.169 2009-09-02 09:07:26 louise Exp $
+# $Id: Page.pm,v 1.170 2009-09-03 13:36:47 louise Exp $
 #
 
 package Page;
@@ -121,7 +121,8 @@ sub microsite {
 
 sub base_url_with_lang {
     my ($q, $reverse) = @_;
-    my $base = mySociety::Config::get('BASE_URL');
+    my $host = $ENV{HTTP_HOST} || '';
+    my $base = "http://" . $host;
     return $base unless $q->{site} eq 'emptyhomes';
     my $lang = $mySociety::Locale::lang;
     if ($reverse && $lang eq 'en-gb') {
@@ -268,7 +269,7 @@ EOF
         $html =~ s#<!-- RSS -->#<link rel="alternate" type="application/rss+xml" title="$params{rss}[0]" href="$params{rss}[1]">#;
     }
     if (mySociety::Config::get('STAGING_SITE')) {
-        $html .= '<p id="error">' . _("This is a developer site; things might break at any time.") . '</p>';
+        $html .= '<p class="error">' . _("This is a developer site; things might break at any time.") . '</p>';
     }
     return $html;
 }

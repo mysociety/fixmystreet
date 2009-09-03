@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.43 2009-08-31 17:23:09 louise Exp $
+# $Id: alert.cgi,v 1.44 2009-09-03 13:36:47 louise Exp $
 
 use strict;
 use Standard;
@@ -88,7 +88,7 @@ sub alert_list {
         if mySociety::PostcodeUtil::is_valid_postcode($input{pc});
 
     my $errors = '';
-    $errors = '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>' if @errors;
+    $errors = '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>' if @errors;
 
     my @types = (@$mySociety::VotingArea::council_parent_types, @$mySociety::VotingArea::council_child_types);
     my %councils = map { $_ => 1 } @$mySociety::VotingArea::council_parent_types;
@@ -263,7 +263,7 @@ sub alert_front_page {
     my $q = shift;
     my $error = shift;
     my $errors = '';
-    $errors = '<ul id="error"><li>' . $error . '</li></ul>' if $error;
+    $errors = '<ul class="error"><li>' . $error . '</li></ul>' if $error;
 
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } qw(pc);
     my $out = $q->h1(_('Local RSS feeds and email alerts'));
@@ -310,7 +310,7 @@ sub alert_updates_form {
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
     my $out = '';
     if (@errors) {
-        $out .= '<ul id="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
+        $out .= '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
     $out .= $q->p(_('Receive email when updates are left on this problem.'));
     my $label = _('Email:');
