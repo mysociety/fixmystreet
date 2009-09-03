@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.170 2009-09-03 13:36:47 louise Exp $
+# $Id: Page.pm,v 1.171 2009-09-03 13:54:13 louise Exp $
 #
 
 package Page;
@@ -125,6 +125,7 @@ sub base_url_with_lang {
     my $base = "http://" . $host;
     return $base unless $q->{site} eq 'emptyhomes';
     my $lang = $mySociety::Locale::lang;
+    $base =~ s{http://(cy|en)\.}{http://};
     if ($reverse && $lang eq 'en-gb') {
         $base =~ s{http://}{$&cy.};
     } elsif ($reverse) {
