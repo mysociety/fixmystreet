@@ -19,7 +19,7 @@
 #   RSS
 #   Whatever I've missed!
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.14 2009-09-02 13:43:11 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.15 2009-09-03 12:49:42 louise Exp $';
 
 use strict;
 require 5.8.0;
@@ -37,7 +37,7 @@ my %actions_desc = (
     'update' => 'leave an update on a report',
     'questionnaire' => 'receive and answer a questionnaire or two',
     'alert' => 'sign up for a local alert, and an update alert, check they arrive',
-    'eha_alert' => 'sign up for an eha alert, cheeck cobranding and localization', 
+    'eha_alert' => 'sign up for an eha alert, check cobranding and localization', 
     'static' => 'check static pages',
     'cobrand' => 'check cobranding',
     'unit' => 'run the unit tests'
@@ -175,20 +175,32 @@ sub load_basic_schema {
     $wth->database_cycle_sequences(200);   
 } 
 
+sub english_fms_messages { 
+   my @messages = ('Problems in this area',
+                 'Reporting a problem',
+                 'Now check your email',
+                 'Confirm your problem on FixMyStreet',
+                 'to confirm the problem',
+                 'successfully confirmed your problem'); 
+   return \@messages;
+}
+
 sub submit_postcode{
     my $cobrand = shift;
     my $postcode = shift;
+    my $next_text = shift;
     set_base_url($cobrand);
     $wth->browser_get($base_url);
     $wth->browser_submit_form(form_name => 'postcodeForm',
         fields => { pc => $postcode},  
         );
-    $wth->browser_check_contents('Problems in this area');
+    $wth->browser_check_contents($next_text);
 }
 
-sub submit_report{
-   my ($postcode, $x, $y, $easting, $northing, $user_num ) = @_;	
-    submit_postcode('', $postcode);
+sub submit_report {
+   my ($postcode, $x, $y, $easting, $northing, $user_num, $texts, $cobrand ) = @_;	
+   my @messages = @{$texts}; 
+   submit_postcode($cobrand, $postcode, $messages[0]);
     {
         # Writing values to hidden fields, so switching
         # off errors in a local context
@@ -204,9 +216,8 @@ sub submit_report{
                         'tile_' . $x . '.' . $y . '.x' =>   221,
                         'tile_' . $x . '.' . $y . '.y' =>   158,
                         submit_map => 1});
-        $wth->browser_check_contents('<h1>Reporting a problem</h1>');
-        $wth->browser_submit_form(form_name => 'mapForm',
-            fields => { submit_map => 2,
+        $wth->browser_check_contents('<h1>' . $messages[1] . '</h1>');
+        my $fields = { submit_map => 2,
                         x => $x,
                         y => $y,
                         pc => $postcode,
@@ -218,25 +229,33 @@ sub submit_report{
                         anonymous => 1,
                         name => name_n($user_num),
                         email => email_n($user_num),
-                        phone => '555 5555'},
+                        phone => '555 5555'};
+
+	if ($cobrand eq 'cy.emptyhomes.'){
+          $fields->{category} = "Bloc cyfan o fflatiau gwag";
+        }
+        $wth->browser_submit_form(form_name => 'mapForm',
+            fields => $fields
          );
    }
-   $wth->browser_check_contents('Nearly Done!');
+   $wth->browser_check_contents($messages[2]);
     my $confirmation_email = $wth->email_get_containing(
-            '%Subject: Confirm your problem on FixMyStreet'.
+            '%Subject: '. $messages[3] .
             '%To: "'.name_n($user_num).'" <'.email_n($user_num).'>'.
-            '%to confirm the problem%');
+            '%' . $messages[4] . '%');
     die "Message confirmation link not found" if ($confirmation_email !~ m#^\s*($base_url.*$)#m);
     print "Message confirm URL is $1\n" if $verbose > 1;
     $wth->browser_get($1);
-    $wth->browser_check_contents('successfully confirmed your problem');
+    $wth->browser_check_contents($messages[5]);
 }
 
 #############################################################################
 
 sub do_report {
+
     my $postcode = 'SW1A 0AA';
-    submit_report($postcode, 3287, 1112, 530375.920751842, 179501.524003048, 1); 
+    my $messages = english_fms_messages();
+    submit_report($postcode, 3287, 1112, 530375.920751842, 179501.524003048, 1, $messages, ''); 
 }
 
 sub do_update {
@@ -253,7 +272,8 @@ sub do_alert {
     my $postcode = 'EH1 2NG';
     my $x = 2015;
     my $y = 4175;
-    submit_postcode('', $postcode);
+    my $messages = english_fms_messages();
+    submit_postcode('', $postcode, 'Problems in this area');
     $wth->browser_follow_link(text => 'Email me new local problems');
     $wth->browser_submit_form(form_name => 'alerts',
                               fields => {feed => "local:" . $x . ":" . $y, 
@@ -269,13 +289,13 @@ sub do_alert {
     $wth->browser_check_contents('successfully confirmed your alert');
 
     # create and confirm a new problem in the area
-    submit_report($postcode, $x, $y, 325000, 673387.096774193, 3);
+    submit_report($postcode, $x, $y, 325000, 673387.096774193, 3, $messages, '');
 
     # run the alert script 
     call_send_emails();
 
     # expect an update
-    $confirmation_email = $wth->email_get_containing(
+    my $update_email = $wth->email_get_containing(
             '%Subject: New nearby problems'.
             '%To: '.email_n(2).
             '%The following nearby problems%');    
@@ -283,38 +303,42 @@ sub do_alert {
 }
 
 sub do_eha_alert {
-   load_eha_schema();
     # sign up for alerts in an area
     my $postcode = 'EH1 2NG';
     my $x = 2015;
     my $y = 4175;
-    submit_postcode('emptyhomes', $postcode);
-    $wth->browser_follow_link(text => 'Email me new local problems');
+    my @texts = ('Eiddo gwag yn yr ardal hon', 
+                 'Adrodd am eiddo gwag', 
+                 'Nawr, gwiriwch eich e-bost', 
+                 'Cadarnhau eich adroddiad am eiddo gwag', 
+                 'Cliciwch ar y ddolen isod i gadarnhau\'r adroddiad am eiddo gwag', 
+		 'Diolch am roi gwybod am eiddo gwag');
+    submit_postcode('cy.emptyhomes.', $postcode, $texts[0]);
+    $wth->browser_follow_link(text => 'Anfonwch fanylion eiddo gwag lleol newydd ataf i drwy\'r e-bost');
     $wth->browser_submit_form(form_name => 'alerts',
                               fields => {feed => "local:" . $x . ":" . $y,
                                          rznvy => email_n(2)} );
-    $wth->browser_check_contents('Nearly Done!');
+    $wth->browser_check_contents($texts[2]);
     my $confirmation_email = $wth->email_get_containing(
-            '%Subject: Confirm your alert on FixMyStreet'.
+            '%Subject: Cadarnhau eich rhybudd'.
             '%To: '.email_n(2).''.
-            '%to confirm the alert%');
+            '%isod i gadarnhau\'r rhybudd yr ydych%');
     die "Alert confirmation link not found" if ($confirmation_email !~ m#^\s*($base_url.*$)#m);
     print "Message confirm URL is $1\n" if $verbose > 1;
     $wth->browser_get($1);
-    $wth->browser_check_contents('successfully confirmed your alert');
+    $wth->browser_check_contents('Rydych wedi cadarnhau\'ch hysbysiad yn llwyddiannus.');
     
     # create and confirm a new problem in the area
-    submit_report($postcode, $x, $y, 325000, 673387.096774193, 3);
+    submit_report($postcode, $x, $y, 325000, 673387.096774193, 3, \@texts, 'cy.emptyhomes.');
 
     # run the alert script
     call_send_emails();
     
     # expect an update
-    $confirmation_email = $wth->email_get_containing(
-            '%Subject: New nearby problems'.
+    my $update_email = $wth->email_get_containing(
+            '%Subject: Eiddo gwag cyfagos newydd ar '.
             '%To: '.email_n(2).
-            '%The following nearby problems%');
-   load_basic_schema();
+            '%Mae\'r eiddo gwag cyfagos%');
 }
 
 sub do_cobrand {
