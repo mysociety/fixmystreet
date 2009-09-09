@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.174 2009-09-09 15:29:26 louise Exp $
+# $Id: Page.pm,v 1.175 2009-09-09 19:15:54 matthew Exp $
 #
 
 package Page;
@@ -702,10 +702,12 @@ sub display_problem_text {
     # Display information about problem
     $out .= '<p><em>';
     if ($q->{site} eq 'emptyhomes') {
+        my $category = _($problem->{category});
+        utf8::decode($category); # So that Welsh to Welsh doesn't encode already-encoded UTF-8
         if ($problem->{anonymous}) {
-            $out .= sprintf(_('%s, reported anonymously at %s'), ent(_($problem->{category})), prettify_epoch($problem->{time}));
+            $out .= sprintf(_('%s, reported anonymously at %s'), ent($category), prettify_epoch($problem->{time}));
         } else {
-            $out .= sprintf(_('%s, reported by %s at %s'), ent(_($problem->{category})), ent($problem->{name}), prettify_epoch($problem->{time}));
+            $out .= sprintf(_('%s, reported by %s at %s'), ent($category), ent($problem->{name}), prettify_epoch($problem->{time}));
         }
     } else {
         if ($problem->{service} && $problem->{category} && $problem->{category} ne 'Other' && $problem->{anonymous}) {
@@ -747,7 +749,7 @@ sub display_problem_text {
 
     if ($problem->{photo}) {
         my $dims = Image::Size::html_imgsize(\$problem->{photo});
-	$out .= "<p align='center'><img alt='' $dims src='/photo?id=$problem->{id}'></p>";
+        $out .= "<p align='center'><img alt='' $dims src='/photo?id=$problem->{id}'></p>";
     }
 
     return $out;
