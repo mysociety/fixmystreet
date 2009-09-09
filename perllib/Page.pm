@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.171 2009-09-03 13:54:13 louise Exp $
+# $Id: Page.pm,v 1.172 2009-09-09 08:17:06 louise Exp $
 #
 
 package Page;
@@ -117,6 +117,14 @@ sub microsite {
 
     Problems::set_site_restriction($q);
     Memcached::set_namespace(mySociety::Config::get('BCI_DB_NAME') . ":");
+}
+
+=cut
+sub get_cobrand {
+    my $q = shift;
+    my $cobrand = '';
+    $cobrand = $q->{site} if $q->{site} ne 'fixmystreet';
+    return $cobrand;
 }
 
 sub base_url_with_lang {
