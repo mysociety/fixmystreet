@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.10 2009-09-09 10:18:01 louise Exp $
+# $Id: Cobrand.pm,v 1.11 2009-09-09 15:29:26 louise Exp $
 
 package Cobrand;
 use strict;
@@ -78,18 +78,34 @@ sub set_site_restriction{
     return $handle->site_restriction($q);
 }
 
+=item base_url COBRAND
+
+Return the base url for the cobranded version of the site
+
+=cut
+sub base_url{
+    my $cobrand = shift;
+    my $handle = cobrand_handle($cobrand);
+    return mySociety::Config::get('BASE_URL') unless $handle;
+    return $handle->base_url();
+}
 
 =item set_lang_and_domain COBRAND LANG
 
 Set the language and domain of the site based on the cobrand and host
+
 =cut
-sub set_lang_and_domain{
-  my ($cobrand, $lang) = @_;
+sub set_lang_and_domain($$;$) {
+  my ($cobrand, $lang, $unicode) = @_;
   if ($cobrand){
       my $handle = cobrand_handle($cobrand);
       if ($handle){
             $handle->set_lang_and_domain($lang);
       }
+  }else{
+        mySociety::Locale::negotiate_language('en-gb,English,en_GB|nb,Norwegian,nb_NO'); # XXX Testing
+        mySociety::Locale::gettext_domain('FixMyStreet', $unicode);
+        mySociety::Locale::change(); 
   }
 }
 

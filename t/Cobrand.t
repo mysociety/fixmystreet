@@ -6,12 +6,12 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Cobrand.t,v 1.4 2009-09-02 08:32:23 louise Exp $
+# $Id: Cobrand.t,v 1.5 2009-09-09 15:29:27 louise Exp $
 #
 
 use strict;
 use warnings;
-use Test::More tests => 11;
+use Test::More tests => 14;
 use Test::Exception;
 
 use FindBin;
@@ -58,6 +58,22 @@ sub test_cobrand_page{
 
 }
 
+sub test_base_url{
+    my $cobrand = 'mysite';
+
+    # should get the result of the page function in the cobrand module if one exists
+    my $base_url = Cobrand::base_url($cobrand);
+    is('mysite.example.com', $base_url, 'base_url returns output from cobrand module');
+
+    # should return the base url from the config if there is no cobrand module
+    $cobrand = 'nosite';
+    $base_url = Cobrand::base_url($cobrand);
+    is(mySociety::Config::get('BASE_URL'), $base_url, 'base_url returns config base url if no cobrand module');
+
+}
+
 ok(test_cobrand_handle() == 1, 'Ran all tests for the cobrand_handle function');
 ok(test_cobrand_page() == 1, 'Ran all tests for the cobrand_page function');
 ok(test_site_restriction() == 1, 'Ran all tests for the site_restriction function');
+ok(test_base_url() == 1, 'Ran all tests for the base url');
+

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.173 2009-09-09 08:27:46 louise Exp $
+# $Id: Page.pm,v 1.174 2009-09-09 15:29:26 louise Exp $
 #
 
 package Page;
@@ -104,16 +104,10 @@ sub microsite {
         $q->{site} = $cobrand if $host =~ /$cobrand/;
     }
 
-    if ($q->{site} ne 'fixmystreet') {
-        my $lang;
-        $lang = 'cy' if $host =~ /cy/;
-        $lang = 'en-gb' if $host =~ /^en\./;
-        Cobrand::set_lang_and_domain($q->{site}, $lang);
-    } else {
-        mySociety::Locale::negotiate_language('en-gb,English,en_GB|nb,Norwegian,nb_NO'); # XXX Testing
-        mySociety::Locale::gettext_domain('FixMyStreet');
-        mySociety::Locale::change();
-    }
+    my $lang;
+    $lang = 'cy' if $host =~ /cy/;
+    $lang = 'en-gb' if $host =~ /^en\./;
+    Cobrand::set_lang_and_domain(get_cobrand($q), $lang);
 
     Problems::set_site_restriction($q);
     Memcached::set_namespace(mySociety::Config::get('BCI_DB_NAME') . ":");
