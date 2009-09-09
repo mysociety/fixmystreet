@@ -19,7 +19,7 @@
 #   RSS
 #   Whatever I've missed!
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.15 2009-09-03 12:49:42 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.16 2009-09-09 10:08:01 louise Exp $';
 
 use strict;
 require 5.8.0;
@@ -300,6 +300,11 @@ sub do_alert {
             '%To: '.email_n(2).
             '%The following nearby problems%');    
 
+    # should have an unsubscribe link
+    die "Unsubscribe link not found" if ($update_email !~ m#^\s*($base_url/A/.*?)\s#m);
+    print "Message unsubscribe URL is $1\n" if $verbose > 1;
+    $wth->browser_get($1);
+    $wth->browser_check_contents('You have successfully deleted your alert.');
 }
 
 sub do_eha_alert {
@@ -317,11 +322,11 @@ sub do_eha_alert {
     $wth->browser_follow_link(text => 'Anfonwch fanylion eiddo gwag lleol newydd ataf i drwy\'r e-bost');
     $wth->browser_submit_form(form_name => 'alerts',
                               fields => {feed => "local:" . $x . ":" . $y,
-                                         rznvy => email_n(2)} );
+                                         rznvy => email_n(4)} );
     $wth->browser_check_contents($texts[2]);
     my $confirmation_email = $wth->email_get_containing(
             '%Subject: Cadarnhau eich rhybudd'.
-            '%To: '.email_n(2).''.
+            '%To: '.email_n(4).''.
             '%isod i gadarnhau\'r rhybudd yr ydych%');
     die "Alert confirmation link not found" if ($confirmation_email !~ m#^\s*($base_url.*$)#m);
     print "Message confirm URL is $1\n" if $verbose > 1;
@@ -337,7 +342,7 @@ sub do_eha_alert {
     # expect an update
     my $update_email = $wth->email_get_containing(
             '%Subject: Eiddo gwag cyfagos newydd ar '.
-            '%To: '.email_n(2).
+            '%To: '.email_n(4).
             '%Mae\'r eiddo gwag cyfagos%');
 }
 
