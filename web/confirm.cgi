@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.55 2009-07-16 14:12:14 matthew Exp $
+# $Id: confirm.cgi,v 1.56 2009-09-09 08:32:41 louise Exp $
 
 use strict;
 use Standard;
@@ -100,7 +100,8 @@ sub confirm_update {
 
     # Subscribe updater to email updates if requested
     if ($add_alert) {
-        my $alert_id = mySociety::Alert::create($email, 'new_updates', $problem_id);
+        my $cobrand = Page::get_cobrand($q);
+        my $alert_id = mySociety::Alert::create($email, 'new_updates', $cobrand, $problem_id);
         mySociety::Alert::confirm($alert_id);
     }
 
@@ -158,7 +159,8 @@ $q->p('<a href="/report/' . $id . '">' . _('View your report') . '</a>.');
     }
 
     # Subscribe problem reporter to email updates
-    my $alert_id = mySociety::Alert::create($email, 'new_updates', $id);
+    my $cobrand = Page::get_cobrand($q);
+    my $alert_id = mySociety::Alert::create($email, 'new_updates', $cobrand, $id);
     mySociety::Alert::confirm($alert_id);
 
     return $out;
