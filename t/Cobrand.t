@@ -6,7 +6,7 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Cobrand.t,v 1.5 2009-09-09 15:29:27 louise Exp $
+# $Id: Cobrand.t,v 1.6 2009-09-10 08:54:33 louise Exp $
 #
 
 use strict;
@@ -63,7 +63,7 @@ sub test_base_url{
 
     # should get the result of the page function in the cobrand module if one exists
     my $base_url = Cobrand::base_url($cobrand);
-    is('mysite.example.com', $base_url, 'base_url returns output from cobrand module');
+    is('http://mysite.example.com', $base_url, 'base_url returns output from cobrand module');
 
     # should return the base url from the config if there is no cobrand module
     $cobrand = 'nosite';

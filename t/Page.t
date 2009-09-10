@@ -6,12 +6,12 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.t,v 1.2 2009-09-03 13:54:13 louise Exp $
+# $Id: Page.t,v 1.3 2009-09-10 08:54:33 louise Exp $
 #
 
 use strict;
 use warnings; 
-use Test::More tests => 9;
+use Test::More tests => 8;
 use Test::Exception; 
 
 use FindBin;
@@ -60,23 +60,18 @@ sub test_footer(){
 }
 
 sub test_base_url_with_lang {
-    $ENV{HTTP_HOST}='test.com';
     set_lang('en-gb,English,en_GB');
     my $q = mock_query();
     my $url = Page::base_url_with_lang($q);
-    ok($url eq 'http://test.com', 'Basic url rendered ok');
+    ok($url eq 'http://mysite.example.com', 'Basic url rendered ok');
 
     $q = new MockQuery('emptyhomes'); 
     $url = Page::base_url_with_lang($q);
-    ok($url eq 'http://en.test.com', 'Empty homes url with lang returned ok');	
+    like($url, qr/http:\/\/en\.emptyhomes\./, 'Empty homes url with lang returned ok');	
 
     $url = Page::base_url_with_lang($q, 1);
-    ok($url eq 'http://cy.test.com', 'Empty homes url with lang reversed returned ok');	
+    like($url, qr/http:\/\/cy\.emptyhomes\./, 'Empty homes url with lang reversed returned ok');	
  
-    $q = new MockQuery('emptyhomes');
-    $ENV{HTTP_HOST}='en.test.com';
-    $url = Page::base_url_with_lang($q);
-    ok($url eq 'http://en.test.com', 'No extra lang part for emptyhomes url with lang part');
 }
 
 ok(test_base_url_with_lang() == 1, 'Ran all tests for base_url_with_lang');
