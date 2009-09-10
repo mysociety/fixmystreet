@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.12 2009-09-10 08:54:34 louise Exp $
+# $Id: Cobrand.pm,v 1.13 2009-09-10 09:25:04 louise Exp $
 
 package Cobrand;
 use strict;
@@ -96,17 +96,22 @@ sub base_url{
 Return the contact email for the cobranded version of the site
 
 =cut
-sub contact_email{
+sub contact_email {
     my $cobrand = shift;
+    return get_cobrand_conf($cobrand, 'CONTACT_EMAIL');
+}
+
+sub get_cobrand_conf {
+    my ($cobrand, $key) = @_;
+    my $value; 
     $cobrand = uc($cobrand);
-    my $sender;
     if ($cobrand){
-        $sender = mySociety::Config::get("CONTACT_EMAIL_" . $cobrand, undef);
+        $value = mySociety::Config::get($key . "_" . $cobrand, undef);
     }
-    if (!$sender){  
-        $sender = mySociety::Config::get('CONTACT_EMAIL');
+    if (!$value){
+        $value = mySociety::Config::get($key);
     }
-    return $sender;
+    return $value;
 }
 
 =item set_lang_and_domain COBRAND LANG
@@ -119,10 +124,10 @@ sub set_lang_and_domain($$;$) {
   if ($cobrand){
       my $handle = cobrand_handle($cobrand);
       if ($handle){
-            $handle->set_lang_and_domain($lang);
+            $handle->set_lang_and_domain($lang, $unicode);
       }
   }else{
-        mySociety::Locale::negotiate_language('en-gb,English,en_GB|nb,Norwegian,nb_NO'); # XXX Testing
+        mySociety::Locale::negotiate_language('en-gb,English,en_GB|nb,Norwegian,nb_NO', $lang); # XXX Testing
         mySociety::Locale::gettext_domain('FixMyStreet', $unicode);
         mySociety::Locale::change(); 
   }
