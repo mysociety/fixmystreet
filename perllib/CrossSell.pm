@@ -9,7 +9,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: CrossSell.pm,v 1.16 2009-02-16 17:54:05 matthew Exp $
+# $Id: CrossSell.pm,v 1.17 2009-09-10 09:36:42 matthew Exp $
 
 # Config parameters site needs set to call these functions:
 # OPTION_AUTH_SHARED_SECRET
@@ -166,6 +166,25 @@ say it will. You'll be able to <strong>unsubscribe</strong> at any time.</p>
 EOF
 }
 
+# Not currently used, needs more explanation and testing; perhaps in future.
+sub display_gny_groups {
+    my ($lon, $lat) = @_;
+    my $groups = get("http://www.groupsnearyou.com/rss.php?q=$lon,$lat&category=1&pointonly=1");
+    my $out = '';
+    my $count = 0;
+    while ($groups =~ /<item>\s*<title>New group! (.*?)<\/title>.*?<guid isPermaLink="true">(.*?)<\/guid>.*?<description>(.*?)<\/description>/gs) {
+        $out .= "<li><a href='$2'>$1</a> $3";
+        $count++;
+    }
+    return unless $out;
+    return <<EOF;
+<h1 style="padding-top:0.5em">$count local groups</h1>
+<ul>
+$out
+</ul>
+EOF
+}
+
 # Choose appropriate advert and display it.
 # $this_site is to stop a site advertising itself.
 sub display_advert ($$;$%) {
@@ -180,6 +199,15 @@ sub display_advert ($$;$%) {
             return $out;
         }
     }
+
+    #if ($data{lat}) {
+    #    my $out = display_gny_groups($data{lon}, $data{lat});
+    #    if ($out) {
+    #        $q->{scratch} = 'advert=gnygroups';
+    #        return '<div style="margin: 0 5em; border-top: dotted 1px #666666;">'
+    #            . $out . '</div>';
+    #    }
+    #}
 
     #unless (defined $data{done_tms} && $data{done_tms}==1) {
         $q->{scratch} = 'advert=news';
