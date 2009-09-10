@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-questionnaires,v 1.15 2009-09-10 10:04:18 matthew Exp $
+# $Id: send-questionnaires,v 1.16 2009-09-10 13:03:37 louise Exp $
 
 use strict;
 require 5.8.0;
@@ -78,16 +78,16 @@ foreach my $row (@$unsent) {
     dbh()->do("update problem set send_questionnaire = 'f' where id=?", {}, $row->{id});
 
     my $token = mySociety::AuthToken::store('questionnaire', $id);
-    $h{url} = mySociety::Config::get('BASE_URL') . '/Q/' . $token;
+    $h{url} = Cobrand::base_url($cobrand) . '/Q/' . $token;
 
-    my $sender = mySociety::Config::get('CONTACT_EMAIL');
+    my $sender = Cobrand::contact_email($cobrand);
     $sender =~ s/team/fms-DO-NOT-REPLY/;
     $template = _($template);
     my $email = mySociety::Locale::in_gb_locale { mySociety::Email::construct_email({
         _template_ => $template,
         _parameters_ => \%h,
         To => [ [ $row->{email}, $row->{name} ] ],
-        From => [ $sender, mySociety::Config::get('CONTACT_NAME') ],
+        From => [ $sender, _(mySociety::Config::get('CONTACT_NAME')) ],
         'Message-ID' => sprintf('<ques-%s-%s@mysociety.org>', time(), unpack('h*', random_bytes(5, 1))),
     }) };
 
