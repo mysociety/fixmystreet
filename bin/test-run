@@ -19,7 +19,7 @@
 #   RSS
 #   Whatever I've missed!
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.16 2009-09-09 10:08:01 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.17 2009-09-10 12:10:27 louise Exp $';
 
 use strict;
 require 5.8.0;
@@ -154,6 +154,13 @@ sub do_something_databasey {
     dbh()->commit();
 }
 
+sub create_fake_contact {
+    my ($area_id) = @_;
+    dbh()->do("INSERT INTO contacts (area_id, email, editor, whenedited, note, confirmed, deleted)
+        VALUES (?, ?, 'fake-import', ms_current_timestamp(), 'Fake import', 't', 'f')",
+        {}, $area_id, $contact_email);
+}
+
 # Call all the email sending scripts
 sub call_send_emails {
     $wth->multi_spawn($multispawn, "./send-reports " . ($verbose > 1 ? qw(--verbose) : ''), $verbose);
@@ -198,7 +205,7 @@ sub submit_postcode{
 }
 
 sub submit_report {
-   my ($postcode, $x, $y, $easting, $northing, $user_num, $texts, $cobrand ) = @_;	
+   my ($postcode, $x, $y, $easting, $northing, $user_num, $council, $texts, $cobrand ) = @_;	
    my @messages = @{$texts}; 
    submit_postcode($cobrand, $postcode, $messages[0]);
     {
@@ -232,7 +239,11 @@ sub submit_report {
                         phone => '555 5555'};
 
 	if ($cobrand eq 'cy.emptyhomes.'){
-          $fields->{category} = "Bloc cyfan o fflatiau gwag";
+            $fields->{category} = "Bloc cyfan o fflatiau gwag";
+        }
+ 
+        if ($council){
+            $fields->{council} = $council;
         }
         $wth->browser_submit_form(form_name => 'mapForm',
             fields => $fields
@@ -255,7 +266,7 @@ sub do_report {
 
     my $postcode = 'SW1A 0AA';
     my $messages = english_fms_messages();
-    submit_report($postcode, 3287, 1112, 530375.920751842, 179501.524003048, 1, $messages, ''); 
+    submit_report($postcode, 3287, 1112, 530375.920751842, 179501.524003048, 1, undef, $messages, ''); 
 }
 
 sub do_update {
@@ -263,7 +274,39 @@ sub do_update {
 }
 
 sub do_questionnaire {
-    set_base_url('');
+    
+    my $council_id = 2491; 
+    my $council_name =  "Southwark Borough Council";
+
+    # set up a fake contact record for a council
+    create_fake_contact($council_id);
+
+    # submit a problem report
+    set_fms_date('2004-10-01');
+    my $postcode = 'SE1';
+    my $messages = english_fms_messages();
+    submit_report($postcode, 3307, 1116, 533484.251968504, 180025.4000508, 5, $council_id, $messages, '');
+
+    # send emails (for the report)
+    call_send_emails();
+
+    # check for the report
+    my $report_email = $wth->email_get_containing(
+           '%Subject: Problem Report: My test problem'.
+           '%To: "' . $council_name . '" <' . $contact_email . '>'. 
+           '%A user of FixMyStreet has submitted the following report %');
+
+    # set the date four weeks ahead
+    set_fms_date('2004-10-30');
+
+    # send emails (for the questionnaire)
+    call_send_emails();
+ 
+    # check for a questionnaire
+    my $questionnaire_email = $wth->email_get_containing(
+           '%Subject: Questionnaire about your problem on FixMyStreet'.
+            '%To: "' . name_n(5) . '" <'.email_n(5).'>'.
+            '%you left a problem on %');
 }
 
 sub do_alert {
@@ -289,7 +332,7 @@ sub do_alert {
     $wth->browser_check_contents('successfully confirmed your alert');
 
     # create and confirm a new problem in the area
-    submit_report($postcode, $x, $y, 325000, 673387.096774193, 3, $messages, '');
+    submit_report($postcode, $x, $y, 325000, 673387.096774193, 3, undef, $messages, '');
 
     # run the alert script 
     call_send_emails();
@@ -334,7 +377,7 @@ sub do_eha_alert {
     $wth->browser_check_contents('Rydych wedi cadarnhau\'ch hysbysiad yn llwyddiannus.');
     
     # create and confirm a new problem in the area
-    submit_report($postcode, $x, $y, 325000, 673387.096774193, 3, \@texts, 'cy.emptyhomes.');
+    submit_report($postcode, $x, $y, 325000, 673387.096774193, 3, undef, \@texts, 'cy.emptyhomes.');
 
     # run the alert script
     call_send_emails();
