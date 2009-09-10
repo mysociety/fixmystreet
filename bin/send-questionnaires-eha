@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-questionnaires-eha,v 1.5 2009-07-16 11:57:19 matthew Exp $
+# $Id: send-questionnaires-eha,v 1.6 2009-09-10 09:10:56 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -86,13 +86,14 @@ sub send_q {
         $h{url} = mySociety::Config::get('BASE_URL') . '/Q/' . $token;
 
         my $sender = mySociety::Config::get('CONTACT_EMAIL');
-        my $email = mySociety::Email::construct_email({
-            _template_ => _($template),
+        $template = _($template);
+        my $email = mySociety::Locale::in_gb_locale { mySociety::Email::construct_email({
+            _template_ => $template,
             _parameters_ => \%h,
             To => [ [ $row->{email}, $row->{name} ] ],
             From => [ $sender, _('Report Empty Homes') ],
             'Message-ID' => sprintf('<ques-%s-%s@emptyhomes.com>', time(), unpack('h*', random_bytes(5, 1))),
-        });
+        }) };
 
         print "Sending questionnaire $id, problem $row->{id}, token $token to $row->{email}\n" if $verbose;
 

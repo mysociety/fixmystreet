@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-questionnaires,v 1.13 2009-09-02 08:32:58 louise Exp $
+# $Id: send-questionnaires,v 1.14 2009-09-10 09:10:55 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -16,6 +16,7 @@ use FindBin;
 use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../../perllib";
 use File::Slurp;
+use CronFns;
 
 use Page;
 use mySociety::AuthToken;
@@ -38,16 +39,9 @@ BEGIN {
     );
 }
 
-die "Either no arguments, --nomail or --verbose" if (@ARGV>1);
-my $nomail = 0;
-my $verbose = 0;
-$nomail = 1 if (@ARGV==1 && $ARGV[0] eq '--nomail');
-$verbose = 1 if (@ARGV==1 && $ARGV[0] eq '--verbose');
-$verbose = 1 if $nomail;
-
-mySociety::Locale::negotiate_language('en-gb,English,en_GB|nb,Norwegian,nb_NO'); # XXX Testing
-mySociety::Locale::gettext_domain('FixMyStreet');
-mySociety::Locale::change();
+my ($verbose, $nomail) = CronFns::options();
+my $site = CronFns::site(mySociety::Config::get('BASE_URL'));
+CronFns::language($site);
 
 # Select all problems that need a questionnaire email sending
 my $unsent = select_all(
@@ -87,13 +81,14 @@ foreach my $row (@$unsent) {
 
     my $sender = mySociety::Config::get('CONTACT_EMAIL');
     $sender =~ s/team/fms-DO-NOT-REPLY/;
-    my $email = mySociety::Email::construct_email({
-        _template_ => _($template),
+    $template = _($template);
+    my $email = mySociety::Locale::in_gb_locale { mySociety::Email::construct_email({
+        _template_ => $template,
         _parameters_ => \%h,
         To => [ [ $row->{email}, $row->{name} ] ],
         From => [ $sender, mySociety::Config::get('CONTACT_NAME') ],
         'Message-ID' => sprintf('<ques-%s-%s@mysociety.org>', time(), unpack('h*', random_bytes(5, 1))),
-    });
+    }) };
 
     print "Sending questionnaire $id, problem $row->{id}, token $token to $row->{email}\n" if $verbose;
 
