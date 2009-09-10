@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-questionnaires,v 1.14 2009-09-10 09:10:55 matthew Exp $
+# $Id: send-questionnaires,v 1.15 2009-09-10 10:04:18 matthew Exp $
 
 use strict;
 require 5.8.0;
@@ -16,6 +16,7 @@ use FindBin;
 use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../../perllib";
 use File::Slurp;
+use CGI; # XXX Awkward kludge
 use CronFns;
 
 use Page;
