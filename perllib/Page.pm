@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.175 2009-09-09 19:15:54 matthew Exp $
+# $Id: Page.pm,v 1.176 2009-09-10 12:04:19 louise Exp $
 #
 
 package Page;
@@ -126,11 +126,9 @@ sub get_cobrand {
 
 sub base_url_with_lang {
     my ($q, $reverse) = @_;
-    my $host = $ENV{HTTP_HOST} || '';
-    my $base = "http://" . $host;
+    my $base = Cobrand::base_url(get_cobrand($q));
     return $base unless $q->{site} eq 'emptyhomes';
     my $lang = $mySociety::Locale::lang;
-    $base =~ s{http://(cy|en)\.}{http://};
     if ($reverse && $lang eq 'en-gb') {
         $base =~ s{http://}{$&cy.};
     } elsif ($reverse) {
@@ -613,9 +611,8 @@ sub send_email {
     $file_thing = 'empty property' if $q->{site} eq 'emptyhomes' && $thing eq 'problem'; # Needs to be in English
     my $template = "$file_thing-confirm";
     $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/$template");
-    $template =~ s/FixMyStreet/Envirocrime/ if $q->{site} eq 'scambs';
     my $to = $name ? [[$email, $name]] : $email;
-    my $sender = mySociety::Config::get('CONTACT_EMAIL');
+    my $sender = Cobrand::contact_email(get_cobrand($q));
     $sender =~ s/team/fms-DO-NOT-REPLY/;
     mySociety::EvEl::send({
         _template_ => _($template),
