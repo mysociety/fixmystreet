@@ -3,7 +3,7 @@ Subject: Confirm your report on FixMyStreet
 Hi<?=$values['name']?>,
 
 To confirm the report you have uploaded to FixMyStreet via
-<?=$values['service'], and to check or add any details,
+<?=$values['service']?>, and to check or add any details,
 please visit the following URL:
 
 <?=$values['url']?>
