@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.13 2009-09-10 09:25:04 louise Exp $
+# $Id: Cobrand.pm,v 1.14 2009-09-14 15:08:46 louise Exp $
 
 package Cobrand;
 use strict;
@@ -133,5 +133,63 @@ sub set_lang_and_domain($$;$) {
   }
 }
 
+=item recent_photos COBRAND N [EASTING NORTHING DISTANCE]
+
+Return N recent photos. If EASTING, NORTHING and DISTANCE are supplied, the photos must be attached to problems
+within DISTANCE of the point defined by EASTING and NORTHING. 
+
+=cut
+sub recent_photos {
+    my ($cobrand, $num, $e, $n, $dist) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand); 
+    }
+    if ( !$cobrand || !$handle || ! $handle->can('recent_photos')){
+        return Problems::recent_photos($num, $e, $n, $dist);
+    } else {
+        return $handle->recent_photos($num, $e, $n, $dist);
+    }
+}
+
+=item recent
+
+Return recent problems on the site. 
+
+=cut
+sub recent {
+    my ($cobrand) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+
+    if ( !$cobrand || !$handle || ! $handle->can('recent') ){
+        return Problems::recent();
+    } else {
+        return $handle->recent();
+    }
+}
+
+=item front_stats
+
+Return a block of html for showing front stats for the site
+
+=cut
+
+sub front_stats {
+         
+    my ($cobrand, $q) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+     
+    if ( !$cobrand || !$handle || ! $handle->can('front_stats')){
+        return Problems::front_stats($q);
+    } else {
+        return $handle->front_stats();
+    }
+}
 1;
 
