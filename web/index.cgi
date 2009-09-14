@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.279 2009-09-03 13:36:47 louise Exp $
+# $Id: index.cgi,v 1.280 2009-09-14 15:14:23 louise Exp $
 
 use strict;
 use Standard;
@@ -122,17 +122,6 @@ sub front_page {
     #    }
     #}
     $out .= '<p class="error">' . $error . '</p>' if ($error);
-    my $fixed = Problems::recent_fixed();
-    my $updates = Problems::number_comments();
-    my $new = Problems::recent_new('1 week');
-    (my $new_pretty = $new) =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
-    my $new_text = sprintf(mySociety::Locale::nget('<big>%s</big> report in past week', 
-        '<big>%s</big> reports in past week', $new), $new_pretty);
-    if ($q->{site} ne 'emptyhomes' && $new > $fixed) {
-        $new = Problems::recent_new('3 days');
-        ($new_pretty = $new) =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
-        $new_text = sprintf(mySociety::Locale::nget('<big>%s</big> report recently', '<big>%s</big> reports recently', $new), $new_pretty);
-    }
 
     # Add pretty commas for display
     $out .= '<form action="/" method="get" name="postcodeForm" id="postcodeForm">';
@@ -165,34 +154,28 @@ EOF
         $q->li(_('We send it to the council on your behalf'))
     );
 
-    (my $fixed_pretty = $fixed) =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
-    (my $updates_pretty = $updates) =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
-    $out .= $q->h2(_('FixMyStreet updates'));
-    $out .= $q->div({-id => 'front_stats'},
-        $q->div($new_text),
-        ($q->{site} ne 'emptyhomes' ? $q->div(sprintf(mySociety::Locale::nget("<big>%s</big> fixed in past month", "<big>%s</big> fixed in past month", $fixed), $fixed_pretty))
-            : ''), # $q->div(sprintf(_('<big>%s</big> back in use in past month'), $fixed)),
-        $q->div(sprintf(mySociety::Locale::nget("<big>%s</big> update on reports",
-            "<big>%s</big> updates on reports", $updates), $updates_pretty))
-    );
+    
+    $out .= Cobrand::front_stats(Page::get_cobrand($q), $q);
 
     $out .= <<EOF;
 </div>
 
-<div id="front_recent">
 EOF
 
-    my $recent_photos = Problems::recent_photos(3);
-    $out .= $q->h2(_('Photos of recent reports')) . $recent_photos if $recent_photos;
+    my $recent_photos = Cobrand::recent_photos(Page::get_cobrand($q), 3);
+    my $probs = Cobrand::recent(Page::get_cobrand($q));
+    if (@$probs || $recent_photos){
+         $out .= '<div id="front_recent">';
+         $out .= $q->h2(_('Photos of recent reports')) . $recent_photos if $recent_photos;
 
-    my $probs = Problems::recent();
-    $out .= $q->h2(_('Recently reported problems')) . ' <ul>' if @$probs;
-    foreach (@$probs) {
-        $out .= '<li><a href="/report/' . $_->{id} . '">'. ent($_->{title});
-        $out .= '</a>';
-    }
-    $out .= '</ul>' if @$probs;
+         $out .= $q->h2(_('Recently reported problems')) . ' <ul>' if @$probs;
+         foreach (@$probs) {
+             $out .= '<li><a href="/report/' . $_->{id} . '">'. ent($_->{title});
+             $out .= '</a>';
+         }
+         $out .= '</ul>' if @$probs;
     $out .= '</div>';
+    }   
 
     return $out;
 }
@@ -687,6 +670,7 @@ EOF
     my $optional = _('(optional)');
     my $anonymous = _('Can we show your name on the site?');
     my $anonymous2 = _('(we never show your email address or phone number)');
+
     $out .= <<EOF;
 <div><label for="form_title">$subject_label</label>
 <input type="text" value="$input_h{title}" name="title" id="form_title" size="30"></div>
@@ -774,11 +758,9 @@ EOF
 
 sub display_location {
     my ($q, @errors) = @_;
-
     my @vars = qw(pc x y all_pins no_pins);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
-
     if ($input{y} =~ /favicon/) {
         my $base = mySociety::Config::get('BASE_URL');
         print $q->redirect(-location => $base . '/favicon.ico', -status => 301);
