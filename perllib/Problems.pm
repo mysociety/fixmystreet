@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Problems.pm,v 1.19 2009-08-31 12:20:57 louise Exp $
+# $Id: Problems.pm,v 1.20 2009-09-14 15:09:32 louise Exp $
 #
 
 package Problems;
@@ -122,6 +122,38 @@ sub recent {
         Memcached::set($key, $result, 3600);
     }
     return $result;
+}
+
+sub front_stats {
+    my ($q) = @_;
+    my $fixed = Problems::recent_fixed();
+    my $updates = Problems::number_comments();
+    my $new = Problems::recent_new('1 week');
+    (my $new_pretty = $new) =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
+    my $new_text = sprintf(mySociety::Locale::nget('<big>%s</big> report in past week',
+        '<big>%s</big> reports in past week', $new), $new_pretty);
+    if ($q->{site} ne 'emptyhomes' && $new > $fixed) {
+        $new = Problems::recent_new('3 days');
+        ($new_pretty = $new) =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
+        $new_text = sprintf(mySociety::Locale::nget('<big>%s</big> report recently', '<big>%s</big> reports recently', $new), $new_pretty);
+    }
+    (my $fixed_pretty = $fixed) =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
+    (my $updates_pretty = $updates) =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
+
+    my $out = '';
+    $out .= $q->h2(_('FixMyStreet updates'));
+    my $lastmo = '';
+    if ($q->{site} ne 'emptyhomes'){
+          $lastmo = $q->div(sprintf(mySociety::Locale::nget("<big>%s</big> fixed in past month", "<big>%s</big> fixed in past month", $fixed), $fixed), $fixed_pretty);
+    }
+    $out .= $q->div({-id => 'front_stats'},
+                    $q->div($new_text),
+                    ($q->{site} ne 'emptyhomes' ? $q->div(sprintf(mySociety::Locale::nget("<big>%s</big> fixed in past month", "<big>%s</big> fixed in past month", $fixed), $fixed_pretty)) : ''),
+                    $q->div(sprintf(mySociety::Locale::nget("<big>%s</big> update on reports",
+                    "<big>%s</big> updates on reports", $updates), $updates_pretty))
+    );
+    return $out;
+
 }
 
 # Problems around a location
