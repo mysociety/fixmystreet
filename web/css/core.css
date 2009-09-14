@@ -55,7 +55,7 @@ ul {
     margin: 0;
 }
 
-ul#error {
+ul.error {
     color: #cc0000;
     background-color: #ffeeee;
     padding-right: 4px;
