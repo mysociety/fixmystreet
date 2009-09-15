@@ -6,12 +6,12 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.t,v 1.4 2009-09-15 17:42:43 louise Exp $
+# $Id: Page.t,v 1.5 2009-09-15 18:00:39 louise Exp $
 #
 
 use strict;
 use warnings; 
-use Test::More tests => 8;
+use Test::More tests => 15;
 use Test::Exception; 
 
 use FindBin;
@@ -37,18 +37,18 @@ sub set_lang($) {
 
 sub test_geocode_string() {
     my %params = ();
-    my $q = new MockQuery('mysite', \%params);
+    my $q = new MockQuery('nosite', \%params);
     
     # geocode a straightforward string, expect success 
     my ($x, $y, $easting, $northing, $error) = Page::geocode_string('Buckingham Palace', $q);
-    ok($x == 3279, 'example x coordinate generated');
-    ok($y == 1113, 'example y coordinate generated');
-    ok($easting == 529044, 'example easting generated');
-    ok($northing == 179619, 'example northing generated');
-    
+    ok($x == 3279, 'example x coordinate generated') or diag("Got $x");
+    ok($y == 1113, 'example y coordinate generated') or diag("Got $y");;
+    ok($easting == 529044, 'example easting generated') or diag("Got $easting");
+    ok($northing == 179619, 'example northing generated') or diag("Got $northing");
+    ok(! defined($error), 'should not generate error for simple example') or diag("Got $error");
     # expect a failure message for Northern Ireland
     ($x, $y, $easting, $northing, $error) = Page::geocode_string('Falls Road, Belfast', $q);
-    ok($error eq "We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.", 'error message produced for NI location');
+    ok($error eq "We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.", 'error message produced for NI location') or diag("Got $error");
 }
 
 sub test_header() {
