@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.280 2009-09-14 15:14:23 louise Exp $
+# $Id: index.cgi,v 1.281 2009-09-15 14:01:56 louise Exp $
 
 use strict;
 use Standard;
@@ -136,7 +136,7 @@ sub front_page {
 EOF
         }
     }
-    my $question = _("Enter a nearby GB postcode, or street name and area:");
+    my $question = Cobrand::enter_postcode_text(Page::get_cobrand($q), $q);
     my $activate = _("Go");
     $out .= <<EOF;
 <label for="pc">$question</label>
@@ -148,7 +148,7 @@ EOF
 EOF
     $out .= $q->h2(_('How to report a problem'));
     $out .= $q->ol(
-        $q->li(_('Enter a nearby GB postcode, or street name and area')),
+        $q->li($question),
         $q->li(_('Locate the problem on a map of the area')),
         $q->li(_('Enter details of the problem')),
         $q->li(_('We send it to the council on your behalf'))
