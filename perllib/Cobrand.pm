@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.14 2009-09-14 15:08:46 louise Exp $
+# $Id: Cobrand.pm,v 1.15 2009-09-15 14:01:14 louise Exp $
 
 package Cobrand;
 use strict;
@@ -191,5 +191,27 @@ sub front_stats {
         return $handle->front_stats();
     }
 }
+
+=item
+
+Return the text that prompts the user to enter their postcode/place name
+
+=cut
+
+sub enter_postcode_text {
+
+    my ($cobrand, $q) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }    
+    if ( !$cobrand || !$handle || !$handle->can('enter_postcode_text')){
+        return _("Enter a nearby GB postcode, or street name and area:");
+    } else{
+        return $handle->enter_postcode_text($q);
+    }
+}
+
 1;
+
 
