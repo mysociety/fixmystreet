@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.176 2009-09-10 12:04:19 louise Exp $
+# $Id: Page.pm,v 1.177 2009-09-15 13:57:01 louise Exp $
 #
 
 package Page;
@@ -42,7 +42,8 @@ use mySociety::WatchUpdate;
 use mySociety::Web qw(ent NewURL);
 
 BEGIN {
-    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+    (my $dir = __FILE__) =~ s{/[^/]*?$}{};
+    mySociety::Config::set_file("$dir/../conf/general");
 }
 
 my $lastmodified;

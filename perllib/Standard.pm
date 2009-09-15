@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Standard.pm,v 1.2 2008-10-09 14:20:54 matthew Exp $
+# $Id: Standard.pm,v 1.3 2009-09-15 13:57:01 louise Exp $
 
 use strict;
 use warnings;
@@ -29,7 +29,8 @@ sub import {
     unless ($db && $db eq '-db') {
         use mySociety::Config;
         use mySociety::DBHandle qw(dbh);
-        mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+        (my $file = __FILE__) =~ s{/[^/]*?$}{};
+        mySociety::Config::set_file("$file/../conf/general");
         mySociety::DBHandle::configure(
             Name => mySociety::Config::get('BCI_DB_NAME'),
             User => mySociety::Config::get('BCI_DB_USER'),
