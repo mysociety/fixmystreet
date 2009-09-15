@@ -6,12 +6,12 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Cobrand.t,v 1.6 2009-09-10 08:54:33 louise Exp $
+# $Id: Cobrand.t,v 1.7 2009-09-15 17:42:43 louise Exp $
 #
 
 use strict;
 use warnings;
-use Test::More tests => 14;
+use Test::More tests => 20;
 use Test::Exception;
 
 use FindBin;
@@ -22,7 +22,7 @@ use lib "$FindBin::Bin/../../perllib";
 use Cobrand;
 use MockQuery;
 
-sub test_site_restriction{
+sub test_site_restriction { 
     my $q  = new MockQuery('mysite');
     my ($site_restriction, $site_id) = Cobrand::set_site_restriction($q);
     like($site_restriction, qr/ and council = 1 /, 'should return result of cobrand module site_restriction function');
@@ -34,7 +34,30 @@ sub test_site_restriction{
     ok($site_id == 0, 'should return "" and zero if no module exists');
 }
 
-sub test_cobrand_handle{
+sub test_form_elements {
+    my $q  = new MockQuery('mysite');
+    my $element_html = Cobrand::form_elements('mysite', 'postcodeForm', $q);
+    ok($element_html eq 'Extra html', 'should return result of cobrand module element_html function') or diag("Got $element_html");
+
+    $element_html = Cobrand::form_elements('nosite', 'postcodeForm', $q);
+    ok($element_html eq '', 'should return an empty string if no cobrand module exists') or diag("Got $element_html");
+}
+
+sub test_disambiguate_location {
+    my $q  = new MockQuery('mysite');
+    my $s = 'London Road';
+    $s = Cobrand::disambiguate_location('mysite', $s, $q);
+    ok($s eq 'Specific Location', 'should return result of cobrand module disambiguate_location function') or diag("Got $s");;
+    
+    $q = new MockQuery('nosite');
+    $s = 'London Road';
+    $s = Cobrand::disambiguate_location('nosite', $s, $q);
+    ok($s eq 'London Road', 'should return location string as passed if no cobrand module exists') or diag("Got $s");
+  
+}
+
+
+sub test_cobrand_handle {
     my $cobrand = 'mysite';
     my $handle = Cobrand::cobrand_handle($cobrand);
     like($handle->site_name(), qr/mysite/, 'should get a module handle if Util module exists for cobrand');
@@ -44,7 +67,7 @@ sub test_cobrand_handle{
     
 }
 
-sub test_cobrand_page{
+sub test_cobrand_page {
     my $q  = new MockQuery('mysite');
     # should get the result of the page function in the cobrand module if one exists
     my ($html, $params) = Cobrand::cobrand_page($q);
@@ -58,7 +81,7 @@ sub test_cobrand_page{
 
 }
 
-sub test_base_url{
+sub test_base_url {
     my $cobrand = 'mysite';
 
     # should get the result of the page function in the cobrand module if one exists
@@ -76,4 +99,5 @@ ok(test_cobrand_handle() == 1, 'Ran all tests for the cobrand_handle function');
 ok(test_cobrand_page() == 1, 'Ran all tests for the cobrand_page function');
 ok(test_site_restriction() == 1, 'Ran all tests for the site_restriction function');
 ok(test_base_url() == 1, 'Ran all tests for the base url');
-
+ok(test_disambiguate_location() == 1, 'Ran all tests for disambiguate location');
+ok(test_form_elements() == 1, 'Ran all tests for form_elements');

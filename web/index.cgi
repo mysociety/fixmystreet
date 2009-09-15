@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.281 2009-09-15 14:01:56 louise Exp $
+# $Id: index.cgi,v 1.282 2009-09-15 17:42:43 louise Exp $
 
 use strict;
 use Standard;
@@ -105,6 +105,8 @@ Page::do_fastcgi(\&main);
 sub front_page {
     my ($q, $error) = @_;
     my $pc_h = ent($q->param('pc') || '');
+    my $cobrand = Page::get_cobrand($q);
+    my $cobrand_form_elements = Cobrand::form_elements(Page::get_cobrand($q), 'postcodeForm', $q);
     my $out = '<p id="expl"><strong>' . _('Report, view, or discuss local problems') . '</strong>';
     my $subhead = _('(like graffiti, fly tipping, broken paving slabs, or street lighting)');
     $out .= '<br><small>' . $subhead . '</small>' if $subhead ne ' ';
@@ -142,6 +144,7 @@ EOF
 <label for="pc">$question</label>
 &nbsp;<input type="text" name="pc" value="$pc_h" id="pc" size="10" maxlength="200">
 &nbsp;<input type="submit" value="$activate" id="submit">
+$cobrand_form_elements
 </form>
 
 <div id="front_intro">
@@ -447,7 +450,7 @@ sub display_form {
             $easting = Page::tile_to_os($input{x});
             $northing = Page::tile_to_os($input{y});
         } else {
-            my ($x, $y, $e, $n, $error) = Page::geocode($input{pc});
+            my ($x, $y, $e, $n, $error) = Page::geocode($input{pc}, $q);
             $easting = $e; $northing = $n;
         }
     } elsif ($pin_x && $pin_y) {
@@ -463,7 +466,7 @@ sub display_form {
     } elsif ($input{partial} && $input{pc} && !$input{easting} && !$input{northing}) {
         my ($x, $y, $error);
         try {
-            ($x, $y, $easting, $northing, $error) = Page::geocode($input{pc});
+            ($x, $y, $easting, $northing, $error) = Page::geocode($input{pc}, $q);
         } catch Error::Simple with {
             $error = shift;
         };
@@ -772,7 +775,7 @@ sub display_location {
     return front_page($q, @errors) unless $x || $y || $input{pc};
     if (!$x && !$y) {
         try {
-            ($x, $y, $easting, $northing, $error) = Page::geocode($input{pc});
+            ($x, $y, $easting, $northing, $error) = Page::geocode($input{pc}, $q);
         } catch Error::Simple with {
             $error = shift;
         };

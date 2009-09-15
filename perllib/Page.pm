@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.177 2009-09-15 13:57:01 louise Exp $
+# $Id: Page.pm,v 1.178 2009-09-15 17:42:43 louise Exp $
 #
 
 package Page;
@@ -790,13 +790,14 @@ sub display_problem_updates {
     return $out;
 }
 
-# geocode STRING
+# geocode STRING QUERY
 # Given a user-inputted string, try and convert it into co-ordinates using either
 # MaPit if it's a postcode, or Google Maps API otherwise. Returns an array of
 # data, including an error if there is one (which includes a location being in 
-# Northern Ireland).
+# Northern Ireland). The information in the query may be used by cobranded versions
+# of the site to diambiguate locations.
 sub geocode {
-    my ($s) = @_;
+    my ($s, $q) = @_;
     my ($x, $y, $easting, $northing, $error);
     if (mySociety::PostcodeUtil::is_valid_postcode($s)) {
         try {
@@ -821,17 +822,20 @@ sub geocode {
             }
         }
     } else {
-        ($x, $y, $easting, $northing, $error) = geocode_string($s);
+        ($x, $y, $easting, $northing, $error) = geocode_string($s, $q);
     }
     return ($x, $y, $easting, $northing, $error);
 }
 
-# geocode_string STRING
+# geocode_string STRING QUERY
 # Canonicalises, looks up on Google Maps API, and caches, a user-inputted location.
 # Returns array of (TILE_X, TILE_Y, EASTING, NORTHING, ERROR), where ERROR is
-# either undef, a string, or an array of matches if there are more than one.
+# either undef, a string, or an array of matches if there are more than one. The 
+# information in the query may be used to disambiguate the location in cobranded versions
+# of the site. 
 sub geocode_string {
-    my $s = shift;
+    my ($s, $q) = @_;
+    $s = Cobrand::disambiguate_location(get_cobrand($q), $s, $q);
     $s = lc($s);
     $s =~ s/[^-&0-9a-z ']/ /g;
     $s =~ s/\s+/ /g;
@@ -849,7 +853,6 @@ sub geocode_string {
         $js = LWP::Simple::get($url);
         File::Slurp::write_file($cache_file, $js) if $js && $js !~ /"code":6[12]0/;
     }
-
     if (!$js) {
         $error = _('Sorry, we could not parse that location. Please try again.');
     } elsif ($js !~ /"code" *: *200/) {

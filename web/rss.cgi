@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: rss.cgi,v 1.27 2009-01-15 10:19:28 matthew Exp $
+# $Id: rss.cgi,v 1.28 2009-09-15 17:42:43 louise Exp $
 
 use strict;
 use Error qw(:try);
@@ -73,7 +73,7 @@ sub rss_local_problems {
     } elsif ($pc) {
         my $error;
         try {
-            ($x, $y, $e, $n, $error) = Page::geocode($pc);
+            ($x, $y, $e, $n, $error) = Page::geocode($pc, $q);
         } catch Error::Simple with {
             $error = shift;
         };

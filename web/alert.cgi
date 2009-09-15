@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.45 2009-09-09 08:32:41 louise Exp $
+# $Id: alert.cgi,v 1.46 2009-09-15 17:42:43 louise Exp $
 
 use strict;
 use Standard;
@@ -75,7 +75,7 @@ sub alert_list {
         $n = Page::tile_to_os($input{y});
     } else {
         try {
-            ($x, $y, $e, $n, $error) = Page::geocode($input{pc});
+            ($x, $y, $e, $n, $error) = Page::geocode($input{pc}, $q);
         } catch Error::Simple with {
             $error = shift;
         };

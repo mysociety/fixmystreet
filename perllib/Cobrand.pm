@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.15 2009-09-15 14:01:14 louise Exp $
+# $Id: Cobrand.pm,v 1.16 2009-09-15 17:42:43 louise Exp $
 
 package Cobrand;
 use strict;
@@ -210,6 +210,46 @@ sub enter_postcode_text {
     } else{
         return $handle->enter_postcode_text($q);
     }
+}
+
+=item disambiguate_location COBRAND S Q
+
+Given a string representing a location, return a string that includes any disambiguating 
+information available
+
+=cut
+
+sub disambiguate_location {
+    my ($cobrand, $s, $q) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || !$handle->can('disambiguate_location')){
+        return $s;
+    } else{
+        return $handle->disambiguate_location($s, $q);
+    }
+}
+
+=item form_elements FORM_NAME Q
+
+Return HTML for any extra needed elements for FORM_NAME
+
+=cut
+
+sub form_elements {
+    my ($cobrand, $form_name, $q) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || !$handle->can('form_elements')){
+        return '';
+    } else{
+        return $handle->form_elements($form_name, $q);
+    }   
+
 }
 
 1;

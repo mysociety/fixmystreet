@@ -6,7 +6,7 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.t,v 1.3 2009-09-10 08:54:33 louise Exp $
+# $Id: Page.t,v 1.4 2009-09-15 17:42:43 louise Exp $
 #
 
 use strict;
@@ -35,7 +35,23 @@ sub set_lang($) {
     mySociety::Locale::change();
 }
 
-sub test_header(){
+sub test_geocode_string() {
+    my %params = ();
+    my $q = new MockQuery('mysite', \%params);
+    
+    # geocode a straightforward string, expect success 
+    my ($x, $y, $easting, $northing, $error) = Page::geocode_string('Buckingham Palace', $q);
+    ok($x == 3279, 'example x coordinate generated');
+    ok($y == 1113, 'example y coordinate generated');
+    ok($easting == 529044, 'example easting generated');
+    ok($northing == 179619, 'example northing generated');
+    
+    # expect a failure message for Northern Ireland
+    ($x, $y, $easting, $northing, $error) = Page::geocode_string('Falls Road, Belfast', $q);
+    ok($error eq "We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.", 'error message produced for NI location');
+}
+
+sub test_header() {
     my $q = mock_query();
     my $html;
     my %params = (title => 'test title');
@@ -77,3 +93,4 @@ sub test_base_url_with_lang {
 ok(test_base_url_with_lang() == 1, 'Ran all tests for base_url_with_lang');
 ok(test_footer() == 1, 'Ran all tests for the footer function');
 ok(test_header() == 1, 'Ran all tests for the header function'); 
+ok(test_geocode_string() == 1, 'Ran all tests for the geocode_string function');
