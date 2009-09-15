@@ -9,6 +9,7 @@ libfile-slurp-perl
 libgeography-nationalgrid-perl
 libhtml-parser-perl
 libio-string-perl
+liblingua-en-inflect-perl
 liblocale-gettext-perl
 libsoap-lite-perl
 libstatistics-distributions-perl
