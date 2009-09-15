@@ -19,7 +19,7 @@
 #   RSS
 #   Whatever I've missed!
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.17 2009-09-10 12:10:27 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.18 2009-09-15 13:57:42 louise Exp $';
 
 use strict;
 require 5.8.0;
@@ -30,6 +30,7 @@ mySociety::Config::set_file('../conf/general');
 use mySociety::DBHandle qw(dbh);
 use mySociety::WebTestHarness;
 use Test::Harness;
+use File::Find;
 
 my @actions = ('report', 'update', 'questionnaire', 'alert', 'static', 'cobrand', 'unit', 'eha_alert');
 my %actions_desc = (
@@ -305,8 +306,9 @@ sub do_questionnaire {
     # check for a questionnaire
     my $questionnaire_email = $wth->email_get_containing(
            '%Subject: Questionnaire about your problem on FixMyStreet'.
-            '%To: "' . name_n(5) . '" <'.email_n(5).'>'.
-            '%you left a problem on %');
+           '%To: "' . name_n(5) . '" <'. email_n(5) .'>'.
+           '%From: FixMyStreet <' . $contact_email . '>'.
+           '%you left a problem on %');
 }
 
 sub do_alert {
@@ -403,17 +405,14 @@ sub do_cobrand {
 
 }
 
-sub do_unit{
-    my $testdir = '../t';
-    opendir(DIR, $testdir);
-    my @testfiles = grep(/\.t$/,readdir(DIR));
-    closedir(DIR);
-    @testfiles = map {$testdir . '/' . $_} @testfiles;
-    foreach my $file (@testfiles) {
-       print "$file\n";
-    }
+sub do_unit {
 
-    runtests( @testfiles ); 
+use File::Find;
+
+  my $localdir = '../t';
+  my @files;
+  find(sub { push(@files, $File::Find::name) if /\.t$/ }, $localdir);
+  runtests(@files);
 }
 
 sub do_static {
