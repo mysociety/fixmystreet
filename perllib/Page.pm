@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.178 2009-09-15 17:42:43 louise Exp $
+# $Id: Page.pm,v 1.179 2009-09-16 17:00:35 louise Exp $
 #
 
 package Page;
@@ -125,9 +125,21 @@ sub get_cobrand {
     return $cobrand;
 }
 
+=item base_url_with_lang Q REVERSE EMAIL
+
+Return the base URL for the site. Reverse the language component if REVERSE is set to one. If EMAIL is set to
+one, return the base URL to use in emails.
+
+=cut
+
 sub base_url_with_lang {
-    my ($q, $reverse) = @_;
-    my $base = Cobrand::base_url(get_cobrand($q));
+    my ($q, $reverse, $email) = @_;
+    my $base;
+    if ($email) {
+        $base = Cobrand::base_url_for_emails(get_cobrand($q));
+    } else {
+        $base = Cobrand::base_url(get_cobrand($q));
+    }
     return $base unless $q->{site} eq 'emptyhomes';
     my $lang = $mySociety::Locale::lang;
     if ($reverse && $lang eq 'en-gb') {

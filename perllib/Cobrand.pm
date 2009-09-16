@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.16 2009-09-15 17:42:43 louise Exp $
+# $Id: Cobrand.pm,v 1.17 2009-09-16 17:00:35 louise Exp $
 
 package Cobrand;
 use strict;
@@ -18,7 +18,7 @@ use Carp;
 Return an array reference of allowed cobrand subdomains
 
 =cut
-sub get_allowed_cobrands{
+sub get_allowed_cobrands {
     my $allowed_cobrand_string = mySociety::Config::get('ALLOWED_COBRANDS');
     my @allowed_cobrands = split(/\|/, $allowed_cobrand_string);
     return \@allowed_cobrands;
@@ -53,7 +53,7 @@ sub cobrand_handle {
 Return a string containing the HTML to be rendered for a custom Cobranded page
 
 =cut
-sub cobrand_page{
+sub cobrand_page {
     my $q = shift;
     my $cobrand = $q->{site};
     my $handle = cobrand_handle($cobrand);
@@ -68,7 +68,7 @@ data. Q is the query object. Returns an empty string and site key 0 if the cobra
 data.
 
 =cut
-sub set_site_restriction{
+sub set_site_restriction {
     my $q = shift;
     my $site_restriction = '';
     my $site_id = 0;
@@ -83,12 +83,32 @@ sub set_site_restriction{
 Return the base url for the cobranded version of the site
 
 =cut
-sub base_url{
+sub base_url {
     my $cobrand = shift;
     return mySociety::Config::get('BASE_URL') unless $cobrand;
     my $handle = cobrand_handle($cobrand);
     return mySociety::Config::get('BASE_URL') unless $handle;
     return $handle->base_url();
+}
+
+=item base_url_for_emails COBRAND
+
+Return the base url to use in links in emails for the cobranded 
+version of the site
+
+=cut
+
+sub base_url_for_emails {
+    my ($cobrand) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || ! $handle->can('base_url_for_emails')){
+        return base_url($cobrand);
+    }{
+        return $handle->base_url_for_emails();
+    }
 }
 
 =item contact_email COBRAND
@@ -104,11 +124,16 @@ sub contact_email {
 sub get_cobrand_conf {
     my ($cobrand, $key) = @_;
     my $value; 
-    $cobrand = uc($cobrand);
     if ($cobrand){
-        $value = mySociety::Config::get($key . "_" . $cobrand, undef);
+        (my $dir = __FILE__) =~ s{/[^/]*?$}{};
+        if (-e "$dir/../conf/cobrands/$cobrand/general"){
+            mySociety::Config::set_file("$dir/../conf/cobrands/$cobrand/general");            
+            $cobrand = uc($cobrand);
+            $value = mySociety::Config::get($key . "_" . $cobrand, undef);
+            mySociety::Config::set_file("$dir/../conf/general");
+        }
     }
-    if (!$value){
+    if (!defined($value)){
         $value = mySociety::Config::get($key);
     }
     return $value;

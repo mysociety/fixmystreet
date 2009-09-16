@@ -6,12 +6,12 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Cobrand.t,v 1.7 2009-09-15 17:42:43 louise Exp $
+# $Id: Cobrand.t,v 1.8 2009-09-16 17:00:35 louise Exp $
 #
 
 use strict;
 use warnings;
-use Test::More tests => 20;
+use Test::More tests => 23;
 use Test::Exception;
 
 use FindBin;
@@ -56,7 +56,6 @@ sub test_disambiguate_location {
   
 }
 
-
 sub test_cobrand_handle {
     my $cobrand = 'mysite';
     my $handle = Cobrand::cobrand_handle($cobrand);
@@ -95,9 +94,24 @@ sub test_base_url {
 
 }
 
+sub test_base_url_for_emails {
+    my $cobrand = 'mysite';    
+
+    # should get the results of the base_url_for_emails function in the cobrand module if one exists
+    my $base_url = Cobrand::base_url_for_emails($cobrand);
+    is('http://mysite.foremails.example.com', $base_url, 'base_url_for_emails returns output from cobrand module');
+
+    # should return the result of Cobrand::base_url otherwise
+    $cobrand = 'nosite';
+    $base_url = Cobrand::base_url_for_emails($cobrand);
+    is(mySociety::Config::get('BASE_URL'), $base_url, 'base_url_for_emails returns config base url if no cobrand module');
+
+}
+
 ok(test_cobrand_handle() == 1, 'Ran all tests for the cobrand_handle function');
 ok(test_cobrand_page() == 1, 'Ran all tests for the cobrand_page function');
 ok(test_site_restriction() == 1, 'Ran all tests for the site_restriction function');
 ok(test_base_url() == 1, 'Ran all tests for the base url');
 ok(test_disambiguate_location() == 1, 'Ran all tests for disambiguate location');
 ok(test_form_elements() == 1, 'Ran all tests for form_elements');
+ok(test_base_url_for_emails() == 1, 'Ran all tests for base_url_for_emails');

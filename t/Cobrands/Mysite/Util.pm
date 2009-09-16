@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Util.pm,v 1.6 2009-09-15 17:42:43 louise Exp $
+# $Id: Util.pm,v 1.7 2009-09-16 17:00:36 louise Exp $
 
 package Cobrands::Mysite::Util;
 use Page;
@@ -35,6 +35,10 @@ sub page {
 
 sub base_url {
     return 'http://mysite.example.com';
+}
+
+sub base_url_for_emails {
+    return 'http://mysite.foremails.example.com';
 }
 
 sub disambiguate_location { 
