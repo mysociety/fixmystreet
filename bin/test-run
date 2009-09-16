@@ -19,7 +19,7 @@
 #   RSS
 #   Whatever I've missed!
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.18 2009-09-15 13:57:42 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.19 2009-09-16 17:11:10 louise Exp $';
 
 use strict;
 require 5.8.0;
@@ -31,6 +31,8 @@ use mySociety::DBHandle qw(dbh);
 use mySociety::WebTestHarness;
 use Test::Harness;
 use File::Find;
+use lib "$FindBin::Bin/../perllib";
+use Cobrand;
 
 my @actions = ('report', 'update', 'questionnaire', 'alert', 'static', 'cobrand', 'unit', 'eha_alert');
 my %actions_desc = (
@@ -403,15 +405,29 @@ sub do_cobrand {
     $wth->browser_check_contents("Empty Homes Agency");
     $wth->browser_check_contents("Adrodd am eiddo gwag a gweld y rhain");
 
+    # Run tests in any TestHarness.pm files in for Cobrands
+    my $allowed_cobrands = Cobrand::get_allowed_cobrands();
+    foreach my $cobrand (@{$allowed_cobrands}){
+        my $cobrand_class = ucfirst($cobrand);
+        my $class = "Cobrands::" . $cobrand_class . "::TestHarness";
+        comment "Looking for tests for $cobrand_class";
+        eval "use $class";
+        my $test_handle;
+        eval{ $test_handle = $class->new($wth, $verbose); };
+        next if $@;
+        comment "Running tests for $cobrand_class";
+        foreach my $test_function ($test_handle->test_functions()){
+            $test_handle->$test_function();    
+	}
+    }
+
 }
 
 sub do_unit {
-
-use File::Find;
-
-  my $localdir = '../t';
+  use File::Find;
+  my $testdir = '../t';
   my @files;
-  find(sub { push(@files, $File::Find::name) if /\.t$/ }, $localdir);
+  find(sub { push(@files, $File::Find::name) if /\.t$/ }, $testdir);
   runtests(@files);
 }
 
