@@ -6,12 +6,12 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Cobrand.t,v 1.8 2009-09-16 17:00:35 louise Exp $
+# $Id: Cobrand.t,v 1.9 2009-09-22 14:54:01 louise Exp $
 #
 
 use strict;
 use warnings;
-use Test::More tests => 23;
+use Test::More tests => 32;
 use Test::Exception;
 
 use FindBin;
@@ -80,6 +80,34 @@ sub test_cobrand_page {
 
 }
 
+sub test_extra_problem_data {
+    my $cobrand = 'mysite'; 
+    my $q = new MockQuery($cobrand);
+   
+    # should get the result of the page function in the cobrand module if one exists
+    my $cobrand_data = Cobrand::extra_problem_data($cobrand, $q);
+    ok($cobrand_data eq 'Cobrand problem data', 'extra_problem_data should return data from cobrand module') or diag("Got $cobrand_data");
+
+    # should return an empty string if no cobrand module exists
+    $q = new MockQuery('nosite');
+    $cobrand_data = Cobrand::extra_problem_data('nosite', $q);
+    ok($cobrand_data eq '', 'extra_problem_data should return an empty string if there is no cobrand module') or diag("Got $cobrand_data");
+}
+
+sub test_extra_update_data {
+    my $cobrand = 'mysite';
+    my $q = new MockQuery($cobrand);
+   
+    # should get the result of the page function in the cobrand module if one exists
+    my $cobrand_data = Cobrand::extra_update_data($cobrand, $q);
+    ok($cobrand_data eq 'Cobrand update data', 'extra_update_data should return data from cobrand module') or diag("Got $cobrand_data");
+
+    # should return an empty string if no cobrand module exists
+    $q = new MockQuery('nosite');
+    $cobrand_data = Cobrand::extra_update_data('nosite', $q);
+    ok($cobrand_data eq '', 'extra_update_data should return an empty string if there is no cobrand module') or diag("Got $cobrand_data");
+}
+
 sub test_base_url {
     my $cobrand = 'mysite';
 
@@ -99,13 +127,28 @@ sub test_base_url_for_emails {
 
     # should get the results of the base_url_for_emails function in the cobrand module if one exists
     my $base_url = Cobrand::base_url_for_emails($cobrand);
-    is('http://mysite.foremails.example.com', $base_url, 'base_url_for_emails returns output from cobrand module');
+    is('http://mysite.foremails.example.com', $base_url, 'base_url_for_emails returns output from cobrand module') ;
 
     # should return the result of Cobrand::base_url otherwise
     $cobrand = 'nosite';
     $base_url = Cobrand::base_url_for_emails($cobrand);
     is(mySociety::Config::get('BASE_URL'), $base_url, 'base_url_for_emails returns config base url if no cobrand module');
 
+}
+
+sub test_extra_params { 
+    my $cobrand = 'mysite';    
+    my $q = new MockQuery($cobrand);
+
+    # should get the results of the extra_params function in the cobrand module if one exists
+    my $extra_params = Cobrand::extra_params($cobrand, $q);
+    is($extra_params, 'key=value', 'extra_params returns output from cobrand module') ;
+
+    # should return an empty string otherwise
+    $cobrand = 'nosite';
+    $extra_params = Cobrand::extra_params($cobrand, $q);
+    is($extra_params, '', 'extra_params returns an empty string if no cobrand module');
+    
 }
 
 ok(test_cobrand_handle() == 1, 'Ran all tests for the cobrand_handle function');
@@ -115,3 +158,6 @@ ok(test_base_url() == 1, 'Ran all tests for the base url');
 ok(test_disambiguate_location() == 1, 'Ran all tests for disambiguate location');
 ok(test_form_elements() == 1, 'Ran all tests for form_elements');
 ok(test_base_url_for_emails() == 1, 'Ran all tests for base_url_for_emails');
+ok(test_extra_problem_data() == 1, 'Ran all tests for extra_problem_data');
+ok(test_extra_update_data() == 1, 'Ran all tests for extra_update_data');
+ok(test_extra_params() == 1, 'Ran all tests for extra_params');

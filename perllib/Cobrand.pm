@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.17 2009-09-16 17:00:35 louise Exp $
+# $Id: Cobrand.pm,v 1.18 2009-09-22 14:54:01 louise Exp $
 
 package Cobrand;
 use strict;
@@ -275,6 +275,75 @@ sub form_elements {
         return $handle->form_elements($form_name, $q);
     }   
 
+}
+
+=item extra_problem_data COBRAND Q
+
+Return a string of extra data to be stored with a problem
+
+=cut
+
+sub extra_problem_data {
+
+    my ($cobrand, $q) = @_;
+    my $handle;   
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || !$handle->can('extra_problem_data')){
+        return '';
+    } else{
+        return $handle->extra_problem_data($q);
+    }
+} 
+
+=item extra_update_data COBRAND Q 
+
+Return a string of extra data to be stored with a problem
+
+=cut
+
+sub extra_update_data {
+    my ($cobrand, $q) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || !$handle->can('extra_update_data')){
+        return '';
+    } else{
+        return $handle->extra_update_data($q);
+    }
+}
+
+=item extra_params COBRAND Q 
+
+Given a query, return a hash of extra params to be included in 
+any URLs in links produced on the page returned by that query.
+
+=cut 
+sub extra_params {
+    my ($cobrand, $q) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || !$handle->can('extra_params')){
+        return '';
+    } else{
+        return $handle->extra_params($q);
+    }
+
+}
+
+=item url
+
+Given a URL, return a URL with any extra params needed appended to it. 
+
+=cut
+sub url {
+    my ($cobrand, $url, $q) = @_;
+    return $url . '?' . extra_params($cobrand, $q);
 }
 
 1;
