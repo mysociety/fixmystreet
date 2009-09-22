@@ -6,12 +6,12 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Cobrand.t,v 1.9 2009-09-22 14:54:01 louise Exp $
+# $Id: Cobrand.t,v 1.10 2009-09-22 15:56:44 louise Exp $
 #
 
 use strict;
 use warnings;
-use Test::More tests => 32;
+use Test::More tests => 35;
 use Test::Exception;
 
 use FindBin;
@@ -63,7 +63,6 @@ sub test_cobrand_handle {
     $cobrand = 'nosite';    
     $handle = Cobrand::cobrand_handle($cobrand);
     ok($handle == 0, 'should return zero if no module exists');
-    
 }
 
 sub test_cobrand_page {
@@ -151,6 +150,20 @@ sub test_extra_params {
     
 }
 
+sub test_header_params {
+    my $cobrand = 'mysite';
+    my $q = new MockQuery($cobrand);
+
+    # should get the results of the header_params function in the cobrand module if one exists
+    my $header_params = Cobrand::header_params($cobrand, $q);
+    is_deeply($header_params, {'key' => 'value'}, 'header_params returns output from cobrand module') ;
+
+    # should return an empty string otherwise
+    $cobrand = 'nosite';
+    $header_params = Cobrand::header_params($cobrand, $q);
+    is_deeply($header_params, {}, 'header_params returns an empty hash ref if no cobrand module');
+}
+
 ok(test_cobrand_handle() == 1, 'Ran all tests for the cobrand_handle function');
 ok(test_cobrand_page() == 1, 'Ran all tests for the cobrand_page function');
 ok(test_site_restriction() == 1, 'Ran all tests for the site_restriction function');
@@ -161,3 +174,4 @@ ok(test_base_url_for_emails() == 1, 'Ran all tests for base_url_for_emails');
 ok(test_extra_problem_data() == 1, 'Ran all tests for extra_problem_data');
 ok(test_extra_update_data() == 1, 'Ran all tests for extra_update_data');
 ok(test_extra_params() == 1, 'Ran all tests for extra_params');
+ok(test_header_params() == 1, 'Ran all tests for header_params');
