@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.179 2009-09-16 17:00:35 louise Exp $
+# $Id: Page.pm,v 1.180 2009-09-22 16:24:13 louise Exp $
 #
 
 package Page;
@@ -235,8 +235,10 @@ Return HTML for the top of the page, given PARAMs (TITLE is required).
 =cut
 sub header ($%) {
     my ($q, %params) = @_;
-
-    my %permitted_params = map { $_ => 1 } qw(title rss js expires lastmodified template);
+    my $default_params = Cobrand::header_params(get_cobrand($q));
+    my %default_params = %{$default_params};
+    %params = (%default_params, %params);
+    my %permitted_params = map { $_ => 1 } qw(title rss js expires lastmodified template cachecontrol);
     foreach (keys %params) {
         croak "bad parameter '$_'" if (!exists($permitted_params{$_}));
     }
@@ -251,6 +253,7 @@ sub header ($%) {
     $head{-expires} = $params{expires} if $params{expires};
     $head{'-last-modified'} = time2str($params{lastmodified}) if $params{lastmodified};
     $head{'-last-modified'} = time2str($lastmodified) if $lastmodified;
+    $head{'-cache-control'} = $params{cachecontrol} if $params{cachecontrol};
     print $q->header(%head);
 
     my $html;
