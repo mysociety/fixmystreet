@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.181 2009-09-23 09:27:51 louise Exp $
+# $Id: Page.pm,v 1.182 2009-09-23 13:31:46 louise Exp $
 #
 
 package Page;
@@ -175,8 +175,9 @@ LANG is the language the templates will be rendered in.
 sub template_vars ($$){
     my ($q, $lang) = @_;
     my %vars;
-    my $host = base_url_with_lang($q, 1);
-    my $lang_url .= $ENV{REQUEST_URI} if $ENV{REQUEST_URI};
+    my $host = base_url_with_lang($q, undef);
+    my $lang_url = base_url_with_lang($q, 1);
+    $lang_url .= $ENV{REQUEST_URI} if $ENV{REQUEST_URI};
     %vars = (
         'report' => _('Report a problem'),
         'reports' => _('All reports'),
@@ -426,6 +427,8 @@ sub display_map {
     my $br_src = $url . $tileids->[1][1];
 
     my $out = '';
+    my $cobrand = Page::get_cobrand($q);
+    my $root_path_pattern = Cobrand::root_path_pattern($cobrand);
     my $img_type;
     if ($params{type}) {
         my $encoding = '';
@@ -449,6 +452,7 @@ EOF
 <script type="text/javascript">
 var fms_x = $x - 2; var fms_y = $y - 2;
 var start_x = $px; var start_y = $py;
+var root_path = window.location.pathname.match($root_path_pattern) || '';
 </script>
 <div id="map_box">
 $params{pre}
@@ -480,8 +484,9 @@ sub display_map_end {
 sub display_pin {
     my ($q, $px, $py, $col, $num) = @_;
     $num = '' if !$num || $num > 9;
+    my $host = base_url_with_lang($q, undef);
     my %cols = (red=>'R', green=>'G', blue=>'B', purple=>'P');
-    my $out = '<img class="pin" src="/i/pin' . $cols{$col}
+    my $out = '<img class="pin" src="' . $host . '/i/pin' . $cols{$col}
         . $num . '.gif" alt="' . _('Problem') . '" style="top:' . ($py-59)
         . 'px; left:' . ($px) . 'px; position: absolute;">';
     return $out unless $_ && $_->{id} && $col ne 'blue';
@@ -543,22 +548,23 @@ sub compass ($$$) {
         }
     }
     my $recentre = NewURL($q);
+    my $host = base_url_with_lang($q, undef);
     return <<EOF;
 <table cellpadding="0" cellspacing="0" border="0" id="compass">
 <tr valign="bottom">
-<td align="right"><a rel="nofollow" href="${compass[$x-1][$y+1]}"><img src="/i/arrow-northwest.gif" alt="NW" width=11 height=11></a></td>
-<td align="center"><a rel="nofollow" href="${compass[$x][$y+1]}"><img src="/i/arrow-north.gif" vspace="3" alt="N" width=13 height=11></a></td>
-<td><a rel="nofollow" href="${compass[$x+1][$y+1]}"><img src="/i/arrow-northeast.gif" alt="NE" width=11 height=11></a></td>
+<td align="right"><a rel="nofollow" href="${compass[$x-1][$y+1]}"><img src="$host/i/arrow-northwest.gif" alt="NW" width=11 height=11></a></td>
+<td align="center"><a rel="nofollow" href="${compass[$x][$y+1]}"><img src="$host/i/arrow-north.gif" vspace="3" alt="N" width=13 height=11></a></td>
+<td><a rel="nofollow" href="${compass[$x+1][$y+1]}"><img src="$host/i/arrow-northeast.gif" alt="NE" width=11 height=11></a></td>
 </tr>
 <tr>
-<td><a rel="nofollow" href="${compass[$x-1][$y]}"><img src="/i/arrow-west.gif" hspace="3" alt="W" width=11 height=13></a></td>
-<td align="center"><a rel="nofollow" href="$recentre"><img src="/i/rose.gif" alt="Recentre" width=35 height=34></a></td>
-<td><a rel="nofollow" href="${compass[$x+1][$y]}"><img src="/i/arrow-east.gif" hspace="3" alt="E" width=11 height=13></a></td>
+<td><a rel="nofollow" href="${compass[$x-1][$y]}"><img src="$host/i/arrow-west.gif" hspace="3" alt="W" width=11 height=13></a></td>
+<td align="center"><a rel="nofollow" href="$recentre"><img src="$host/i/rose.gif" alt="Recentre" width=35 height=34></a></td>
+<td><a rel="nofollow" href="${compass[$x+1][$y]}"><img src="$host/i/arrow-east.gif" hspace="3" alt="E" width=11 height=13></a></td>
 </tr>
 <tr valign="top">
-<td align="right"><a rel="nofollow" href="${compass[$x-1][$y-1]}"><img src="/i/arrow-southwest.gif" alt="SW" width=11 height=11></a></td>
-<td align="center"><a rel="nofollow" href="${compass[$x][$y-1]}"><img src="/i/arrow-south.gif" vspace="3" alt="S" width=13 height=11></a></td>
-<td><a rel="nofollow" href="${compass[$x+1][$y-1]}"><img src="/i/arrow-southeast.gif" alt="SE" width=11 height=11></a></td>
+<td align="right"><a rel="nofollow" href="${compass[$x-1][$y-1]}"><img src="$host/i/arrow-southwest.gif" alt="SW" width=11 height=11></a></td>
+<td align="center"><a rel="nofollow" href="${compass[$x][$y-1]}"><img src="$host/i/arrow-south.gif" vspace="3" alt="S" width=13 height=11></a></td>
+<td><a rel="nofollow" href="${compass[$x+1][$y-1]}"><img src="$host/i/arrow-southeast.gif" alt="SE" width=11 height=11></a></td>
 </tr>
 </table>
 EOF
