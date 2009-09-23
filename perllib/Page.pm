@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.180 2009-09-22 16:24:13 louise Exp $
+# $Id: Page.pm,v 1.181 2009-09-23 09:27:51 louise Exp $
 #
 
 package Page;
@@ -175,8 +175,8 @@ LANG is the language the templates will be rendered in.
 sub template_vars ($$){
     my ($q, $lang) = @_;
     my %vars;
-    my $lang_url = base_url_with_lang($q, 1);
-    $lang_url .= $ENV{REQUEST_URI} if $ENV{REQUEST_URI};
+    my $host = base_url_with_lang($q, 1);
+    my $lang_url .= $ENV{REQUEST_URI} if $ENV{REQUEST_URI};
     %vars = (
         'report' => _('Report a problem'),
         'reports' => _('All reports'),
@@ -184,6 +184,7 @@ sub template_vars ($$){
         'faq' => _('Help'),
         'about' => _('About us'),
         'site_title' => _('Report Empty Homes'),
+        'host' => $host,
         'lang_code' => $lang,
         'lang' => $lang eq 'en-gb' ? 'Cymraeg' : 'English',
         'lang_url' => $lang_url,
@@ -446,7 +447,7 @@ EOF
     my $imgh = '254px';
     $out .= <<EOF;
 <script type="text/javascript">
-var x = $x - 2; var y = $y - 2;
+var fms_x = $x - 2; var fms_y = $y - 2;
 var start_x = $px; var start_y = $py;
 </script>
 <div id="map_box">
