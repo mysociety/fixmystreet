@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.19 2009-09-22 15:56:44 louise Exp $
+# $Id: Cobrand.pm,v 1.20 2009-09-23 11:31:31 louise Exp $
 
 package Cobrand;
 use strict;
@@ -362,6 +362,23 @@ sub header_params {
         return {};
     } else{
         return $handle->header_params($q);
+    } 
+}
+
+=item root_path_pattern COBRAND
+
+=cut
+
+sub root_path_pattern {
+   my ($cobrand) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || !$handle->can('root_path_pattern')){
+        return '//g';
+    } else{
+        return $handle->root_path_pattern();
     } 
 }
 

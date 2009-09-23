@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Util.pm,v 1.9 2009-09-22 15:56:44 louise Exp $
+# $Id: Util.pm,v 1.10 2009-09-23 11:31:32 louise Exp $
 
 package Cobrands::Mysite::Util;
 use Page;
@@ -66,4 +66,8 @@ sub header_params {
     return \%params;
 }
 
+
+sub root_path_pattern {
+   return 'root path pattern';
+}
 1;
