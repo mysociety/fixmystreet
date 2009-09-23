@@ -19,7 +19,7 @@
 #   RSS
 #   Whatever I've missed!
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.19 2009-09-16 17:11:10 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.20 2009-09-23 08:33:55 louise Exp $';
 
 use strict;
 require 5.8.0;
@@ -269,7 +269,13 @@ sub do_report {
 
     my $postcode = 'SW1A 0AA';
     my $messages = english_fms_messages();
-    submit_report($postcode, 3287, 1112, 530375.920751842, 179501.524003048, 1, undef, $messages, ''); 
+    my $x_coord = 3287;
+    my $y_coord = 1112;
+    submit_report($postcode, $x_coord, $y_coord, 530375.920751842, 179501.524003048, 1, undef, $messages, ''); 
+  
+    # Check that the report is now available through the AJAX interface 
+    $wth->browser_get($base_url . "/ajax?sx=$x_coord;sy=$y_coord;x=$x_coord;y=$y_coord;all_pins=");
+    $wth->browser_check_contents("'pins': '<a title=\"My test problem\"");
 }
 
 sub do_update {
