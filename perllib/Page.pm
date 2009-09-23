@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.182 2009-09-23 13:31:46 louise Exp $
+# $Id: Page.pm,v 1.183 2009-09-23 15:43:54 louise Exp $
 #
 
 package Page;
@@ -428,7 +428,7 @@ sub display_map {
 
     my $out = '';
     my $cobrand = Page::get_cobrand($q);
-    my $root_path_pattern = Cobrand::root_path_pattern($cobrand);
+    my $root_path_js = Cobrand::root_path_js($cobrand);
     my $img_type;
     if ($params{type}) {
         my $encoding = '';
@@ -452,7 +452,7 @@ EOF
 <script type="text/javascript">
 var fms_x = $x - 2; var fms_y = $y - 2;
 var start_x = $px; var start_y = $py;
-var root_path = window.location.pathname.match($root_path_pattern) || '';
+$root_path_js
 </script>
 <div id="map_box">
 $params{pre}

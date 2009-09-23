@@ -42,7 +42,6 @@ YAHOO.util.Event.onContentReady('compass', function() {
     YAHOO.util.Event.addListener(points[4], 'click', compass_pan, { home:1, orig_x:drag_x, orig_y:drag_y });
 });
 
-
 YAHOO.util.Event.onContentReady('map', function() {
     var ua=navigator.userAgent.toLowerCase();
     // if (document.getElementById('mapForm') && (/safari/.test(ua) || /Konqueror/.test(ua))) return;
@@ -295,8 +294,7 @@ function update_tiles(dx, dy, force) {
     tile_x += horizontal;
     fms_y -= vertical;
     tile_y += vertical;
-
-    var url = [ '/tilma/tileserver/10k-full/', fms_x, '-', (fms_x+5), ',', fms_y, '-', (fms_y+5), '/JSON' ].join('');
+    var url = [ root_path + '/tilma/tileserver/10k-full/', fms_x, '-', (fms_x+5), ',', fms_y, '-', (fms_y+5), '/JSON' ].join('');
     YAHOO.util.Connect.asyncRequest('GET', url, {
         success: urls_loaded, failure: urls_not_loaded,
         argument: [tile_x, tile_y]
@@ -308,10 +306,18 @@ function update_tiles(dx, dy, force) {
 
 function load_pins(x, y) {
     if (document.getElementById('formX')) {
-        url = [ '/ajax?sx=', document.getElementById('formX').value, ';sy=',
-            document.getElementById('formY').value, ';x=', (x+2), ';y=', (y+2),
-            ';all_pins=', document.getElementById('all_pins').value
-        ].join('');
+        var ajax_params = [ 'sx=' + document.getElementById('formX').value, 
+                            'sy=' + document.getElementById('formY').value, 
+                            'x='  + (x+2),
+                            'y='  + (y+2), 
+                            'all_pins=' +  document.getElementById('all_pins').value ];
+        var separator;
+        if (window.Cobrand){
+             separator = window.Cobrand.param_separator();
+        }else{
+             separator = ';';
+        }
+        var url = [ root_path , '/ajax?', ajax_params.join(separator)].join('');
         YAHOO.util.Connect.asyncRequest('GET', url, {
            success: pins_loaded
         });

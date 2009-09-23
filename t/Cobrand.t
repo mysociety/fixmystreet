@@ -6,7 +6,7 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Cobrand.t,v 1.11 2009-09-23 11:31:32 louise Exp $
+# $Id: Cobrand.t,v 1.12 2009-09-23 15:43:54 louise Exp $
 #
 
 use strict;
@@ -164,17 +164,17 @@ sub test_header_params {
     is_deeply($header_params, {}, 'header_params returns an empty hash ref if no cobrand module');
 }
 
-sub test_root_path_pattern {
+sub test_root_path_js {
     my $cobrand = 'mysite';
-    my $root_path_pattern = Cobrand::root_path_pattern($cobrand);
+    my $root_path_js = Cobrand::root_path_js($cobrand);
  
-    # should get the results of the root_path_pattern function in the cobrand module if one exists
-    is($root_path_pattern, 'root path pattern', 'root_path_pattern returns output from cobrand module');
+    # should get the results of the root_path_js function in the cobrand module if one exists
+    is($root_path_js, 'root path js', 'root_path_js returns output from cobrand module');
 
     # should return an empty regex string otherwise
     $cobrand = 'nosite';
-    $root_path_pattern = Cobrand::root_path_pattern($cobrand);
-    is($root_path_pattern, '//g', 'root_path_pattern returns an empty regex string if no cobrand module');
+    $root_path_js = Cobrand::root_path_js($cobrand);
+    is($root_path_js, 'var root_path = "";', 'root_path_pattern returns a string setting the root path to an empty string if no cobrand module');
 }
 
 ok(test_cobrand_handle() == 1, 'Ran all tests for the cobrand_handle function');
@@ -188,4 +188,4 @@ ok(test_extra_problem_data() == 1, 'Ran all tests for extra_problem_data');
 ok(test_extra_update_data() == 1, 'Ran all tests for extra_update_data');
 ok(test_extra_params() == 1, 'Ran all tests for extra_params');
 ok(test_header_params() == 1, 'Ran all tests for header_params');
-ok(test_root_path_pattern() == 1, 'Ran all tests for root_path_pattern');
+ok(test_root_path_js() == 1, 'Ran all tests for root_js');
