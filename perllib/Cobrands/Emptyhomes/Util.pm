@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Util.pm,v 1.4 2009-09-09 15:29:27 louise Exp $
+# $Id: Util.pm,v 1.5 2009-09-23 17:01:00 louise Exp $
 
 package Cobrands::Emptyhomes::Util;
 use Standard;
@@ -82,6 +82,17 @@ sub set_lang_and_domain{
     mySociety::Locale::negotiate_language('en-gb,English,en_GB|cy,Cymraeg,cy_GB', $lang);
     mySociety::Locale::gettext_domain('FixMyStreet-EmptyHomes', $unicode);
     mySociety::Locale::change();
+}
+
+=item site_title
+
+Return the title to be used in page heads
+
+=cut 
+
+sub site_title { 
+    my ($self) = @_;
+    return _('Report Empty Homes');
 }
 
 1;

@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.21 2009-09-23 15:43:54 louise Exp $
+# $Id: Cobrand.pm,v 1.22 2009-09-23 17:01:00 louise Exp $
 
 package Cobrand;
 use strict;
@@ -365,12 +365,14 @@ sub header_params {
     } 
 }
 
-=item root_path_pattern COBRAND
+=item root_path_js COBRAND
+ 
+Return some js to set the root path from which AJAX queries should be made
 
 =cut
 
 sub root_path_js {
-   my ($cobrand) = @_;
+    my ($cobrand) = @_;
     my $handle;
     if ($cobrand){
         $handle = cobrand_handle($cobrand);
@@ -380,6 +382,24 @@ sub root_path_js {
     } else{
         return $handle->root_path_js();
     } 
+}
+
+=item site_title COBRAND
+
+Return the title to be used in page heads.
+
+=cut
+sub site_title {
+    my ($cobrand) = @_; 
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || !$handle->can('site_title')){
+        return '';
+    } else{
+        return $handle->site_title();
+    }  
 }
 
 1;

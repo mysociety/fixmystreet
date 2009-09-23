@@ -6,12 +6,12 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Cobrand.t,v 1.12 2009-09-23 15:43:54 louise Exp $
+# $Id: Cobrand.t,v 1.13 2009-09-23 17:01:00 louise Exp $
 #
 
 use strict;
 use warnings;
-use Test::More tests => 38;
+use Test::More tests => 41;
 use Test::Exception;
 
 use FindBin;
@@ -171,10 +171,23 @@ sub test_root_path_js {
     # should get the results of the root_path_js function in the cobrand module if one exists
     is($root_path_js, 'root path js', 'root_path_js returns output from cobrand module');
 
-    # should return an empty regex string otherwise
+    # should return a js string setting the root path to an empty string otherwise
     $cobrand = 'nosite';
     $root_path_js = Cobrand::root_path_js($cobrand);
     is($root_path_js, 'var root_path = "";', 'root_path_pattern returns a string setting the root path to an empty string if no cobrand module');
+}
+
+sub test_site_title {
+    my $cobrand = 'mysite';
+    my $site_title = Cobrand::site_title($cobrand);
+
+    # should get the results of the site_title function in the cobrand module if one exists
+    is($site_title,  'Mysite Title', 'site_title returns output from cobrand module');
+
+    # should return an empty string otherwise
+    $cobrand = 'nosite';
+    $site_title = Cobrand::site_title($cobrand);
+    is($site_title, '', 'site_title returns an empty string if no site title');
 }
 
 ok(test_cobrand_handle() == 1, 'Ran all tests for the cobrand_handle function');
@@ -189,3 +202,5 @@ ok(test_extra_update_data() == 1, 'Ran all tests for extra_update_data');
 ok(test_extra_params() == 1, 'Ran all tests for extra_params');
 ok(test_header_params() == 1, 'Ran all tests for header_params');
 ok(test_root_path_js() == 1, 'Ran all tests for root_js');
+ok(test_site_title() == 1, 'Ran all tests for site_title');
+

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.183 2009-09-23 15:43:54 louise Exp $
+# $Id: Page.pm,v 1.184 2009-09-23 17:01:00 louise Exp $
 #
 
 package Page;
@@ -184,7 +184,7 @@ sub template_vars ($$){
         'alert' => _('Local alerts'),
         'faq' => _('Help'),
         'about' => _('About us'),
-        'site_title' => _('Report Empty Homes'),
+        'site_title' => Cobrand::site_title(get_cobrand($q)),
         'host' => $host,
         'lang_code' => $lang,
         'lang' => $lang eq 'en-gb' ? 'Cymraeg' : 'English',
