@@ -19,7 +19,7 @@
 #   RSS
 #   Whatever I've missed!
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.21 2009-09-24 09:25:45 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.22 2009-09-24 09:29:27 louise Exp $';
 
 use strict;
 require 5.8.0;
@@ -87,14 +87,14 @@ my $errors = $wth->_log_watcher_get_errors(); # As Perl has two error lines.
 foreach (@actions) {
     next unless $action->{$_};
     date_print($actions_desc{$_}) if $actions_desc{$_};
-    #do_report() if $_ eq 'report';
-    #do_update() if $_ eq 'update';
-    #do_questionnaire() if $_ eq 'questionnaire';
-    #do_alert() if $_ eq 'alert';
-    #do_static() if $_ eq 'static';
-    #do_cobrand() if $_ eq 'cobrand';
-    #do_unit() if $_ eq 'unit'; 
-    #do_eha_alert() if $_ eq 'eha_alert';
+    do_report() if $_ eq 'report';
+    do_update() if $_ eq 'update';
+    do_questionnaire() if $_ eq 'questionnaire';
+    do_alert() if $_ eq 'alert';
+    do_static() if $_ eq 'static';
+    do_cobrand() if $_ eq 'cobrand';
+    do_unit() if $_ eq 'unit'; 
+    do_eha_alert() if $_ eq 'eha_alert';
     do_import() if $_ eq 'import';
 }
 
