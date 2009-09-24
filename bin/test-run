@@ -19,7 +19,7 @@
 #   RSS
 #   Whatever I've missed!
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.20 2009-09-23 08:33:55 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.21 2009-09-24 09:25:45 louise Exp $';
 
 use strict;
 require 5.8.0;
@@ -34,7 +34,7 @@ use File::Find;
 use lib "$FindBin::Bin/../perllib";
 use Cobrand;
 
-my @actions = ('report', 'update', 'questionnaire', 'alert', 'static', 'cobrand', 'unit', 'eha_alert');
+my @actions = ('report', 'update', 'questionnaire', 'alert', 'static', 'cobrand', 'unit', 'eha_alert', 'import');
 my %actions_desc = (
     'report' => 'report a problem',
     'update' => 'leave an update on a report',
@@ -43,7 +43,8 @@ my %actions_desc = (
     'eha_alert' => 'sign up for an eha alert, check cobranding and localization', 
     'static' => 'check static pages',
     'cobrand' => 'check cobranding',
-    'unit' => 'run the unit tests'
+    'unit' => 'run the unit tests', 
+    'import' => 'check the ability to programmatically import a problem',
 );
 
 date_print("Set up web test harness...");
@@ -86,14 +87,15 @@ my $errors = $wth->_log_watcher_get_errors(); # As Perl has two error lines.
 foreach (@actions) {
     next unless $action->{$_};
     date_print($actions_desc{$_}) if $actions_desc{$_};
-    do_report() if $_ eq 'report';
-    do_update() if $_ eq 'update';
-    do_questionnaire() if $_ eq 'questionnaire';
-    do_alert() if $_ eq 'alert';
-    do_static() if $_ eq 'static';
-    do_cobrand() if $_ eq 'cobrand';
-    do_unit() if $_ eq 'unit'; 
-    do_eha_alert() if $_ eq 'eha_alert';
+    #do_report() if $_ eq 'report';
+    #do_update() if $_ eq 'update';
+    #do_questionnaire() if $_ eq 'questionnaire';
+    #do_alert() if $_ eq 'alert';
+    #do_static() if $_ eq 'static';
+    #do_cobrand() if $_ eq 'cobrand';
+    #do_unit() if $_ eq 'unit'; 
+    #do_eha_alert() if $_ eq 'eha_alert';
+    do_import() if $_ eq 'import';
 }
 
 # Check for any unhandled mails or errors
@@ -279,7 +281,38 @@ sub do_report {
 }
 
 sub do_update {
+    date_print("TODO: Tests for submitting an update");
     set_base_url('');
+}
+
+sub do_import { 
+    set_base_url('');
+    my $import_url = $base_url . "/import";
+    $wth->browser_get($import_url);
+    $wth->browser_check_contents("You may inject problem reports into FixMyStreet programatically");
+    $wth->browser_post($import_url,
+                       { service => "Web Test Harness",
+                         id => "Test run",  
+                         subject => "Programmatically submitted problem",
+                         detail => "This problem was submitted through the problem interface",
+                         name => name_n(6), 
+                         email => email_n(6),
+                         phone => '555 5555',
+                         easting => 530375.1, 
+                         northing => 179503 } );
+    # Check for the success response
+    $wth->browser_check_contents("SUCCESS");
+
+    my $confirmation_email = $wth->email_get_containing(
+            '%Subject: Confirm your report on FixMyStreet' .
+            '%To: "'.name_n(6).'" <'.email_n(6).'>'.
+            '%confirm the report%');
+    die "Message confirmation link not found" if ($confirmation_email !~ m#^\s*($base_url.*$)#m);
+    print "Message confirm URL is $1\n" if $verbose > 1;
+
+    $wth->browser_get($1);
+    $wth->browser_check_contents('not yet been sent');
+
 }
 
 sub do_questionnaire {
