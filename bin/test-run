@@ -19,7 +19,7 @@
 #   RSS
 #   Whatever I've missed!
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.23 2009-09-24 20:41:36 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.24 2009-09-24 21:41:02 matthew Exp $';
 
 use strict;
 require 5.8.0;
@@ -491,23 +491,23 @@ sub do_static {
     $wth->email_get_containing('%This is a test message%');
 }
 
+# Check RSS feeds redirect to the right places and so on.
+# Just checks header, doesn't check any contents.
 sub do_rss {
     $wth->browser_get($base_url . '/rss/l/52.5/-1.9');
-    print $wth->browser_uri() . "\n";
+    die "Lat/lon redirect failed" unless $wth->browser_uri() =~ m{/rss/2522/1792$};
     $wth->browser_get($base_url . '/rss/2524/1779');
-    print $wth->browser_uri() . "\n";
+    $wth->browser_check_contents('New local problems on FixMyStreet');
     $wth->browser_get($base_url . '/rss/pc/SW1A1AA');
-    print $wth->browser_uri() . "\n";
+    die "Postcode redirect failed" unless $wth->browser_uri() =~ m{/rss/3279/1113$};
     $wth->browser_get($base_url . '/rss/area/Birmingham');
-    print $wth->browser_uri() . "\n";
+    die "One-tier redirect failed" unless $wth->browser_uri() =~ m{/rss/reports/Birmingham$};
     $wth->browser_get($base_url . '/rss/reports/Birmingham');
-    print $wth->browser_uri() . "\n";
+    $wth->browser_check_contents('New problems to Birmingham City Council on FixMyStreet');
     $wth->browser_get($base_url . '/rss/reports/Birmingham/Lozells');
-    print $wth->browser_uri() . "\n";
-    $wth->browser_get($base_url . '/rss/reports/Gloucestershire');
-    print $wth->browser_uri() . "\n";
+    $wth->browser_check_contents('New problems for Birmingham City Council within Lozells ward on FixMyStreet');
     $wth->browser_get($base_url . '/rss/area/Gloucestershire');
-    print $wth->browser_uri() . "\n";
+    $wth->browser_check_contents('New problems within Gloucestershire\'s boundary on FixMyStreet');
 }
 
 #browser_get(URL)
