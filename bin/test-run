@@ -19,7 +19,7 @@
 #   RSS
 #   Whatever I've missed!
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.22 2009-09-24 09:29:27 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.23 2009-09-24 20:41:36 matthew Exp $';
 
 use strict;
 require 5.8.0;
@@ -34,7 +34,7 @@ use File::Find;
 use lib "$FindBin::Bin/../perllib";
 use Cobrand;
 
-my @actions = ('report', 'update', 'questionnaire', 'alert', 'static', 'cobrand', 'unit', 'eha_alert', 'import');
+my @actions = ('report', 'update', 'questionnaire', 'alert', 'static', 'cobrand', 'unit', 'eha_alert', 'import', 'rss');
 my %actions_desc = (
     'report' => 'report a problem',
     'update' => 'leave an update on a report',
@@ -45,6 +45,7 @@ my %actions_desc = (
     'cobrand' => 'check cobranding',
     'unit' => 'run the unit tests', 
     'import' => 'check the ability to programmatically import a problem',
+    'rss' => 'check RSS feeds',
 );
 
 date_print("Set up web test harness...");
@@ -96,6 +97,7 @@ foreach (@actions) {
     do_unit() if $_ eq 'unit'; 
     do_eha_alert() if $_ eq 'eha_alert';
     do_import() if $_ eq 'import';
+    do_rss() if $_ eq 'rss';
 }
 
 # Check for any unhandled mails or errors
@@ -487,6 +489,25 @@ sub do_static {
         }
     );
     $wth->email_get_containing('%This is a test message%');
+}
+
+sub do_rss {
+    $wth->browser_get($base_url . '/rss/l/52.5/-1.9');
+    print $wth->browser_uri() . "\n";
+    $wth->browser_get($base_url . '/rss/2524/1779');
+    print $wth->browser_uri() . "\n";
+    $wth->browser_get($base_url . '/rss/pc/SW1A1AA');
+    print $wth->browser_uri() . "\n";
+    $wth->browser_get($base_url . '/rss/area/Birmingham');
+    print $wth->browser_uri() . "\n";
+    $wth->browser_get($base_url . '/rss/reports/Birmingham');
+    print $wth->browser_uri() . "\n";
+    $wth->browser_get($base_url . '/rss/reports/Birmingham/Lozells');
+    print $wth->browser_uri() . "\n";
+    $wth->browser_get($base_url . '/rss/reports/Gloucestershire');
+    print $wth->browser_uri() . "\n";
+    $wth->browser_get($base_url . '/rss/area/Gloucestershire');
+    print $wth->browser_uri() . "\n";
 }
 
 #browser_get(URL)

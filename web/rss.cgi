@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: rss.cgi,v 1.28 2009-09-15 17:42:43 louise Exp $
+# $Id: rss.cgi,v 1.29 2009-09-24 20:41:36 matthew Exp $
 
 use strict;
 use Error qw(:try);
@@ -44,7 +44,7 @@ sub main {
     } else {
         my $base = mySociety::Config::get('BASE_URL');
         print $q->redirect($base . '/alert');
-        exit;
+        return '';
     }
     print $q->header( -type => 'application/xml; charset=utf-8' );
     $out =~ s/FixMyStreet/EnviroCrime/g if $q->{site} eq 'scambs';
@@ -66,6 +66,8 @@ sub rss_local_problems {
         ($e, $n) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
         $x = Page::os_to_tile($e);
         $y = Page::os_to_tile($n);
+	print $q->redirect(-location => "$base/rss/$x/$y");
+	return '';
     } elsif ($x && $y) {
         $e = Page::tile_to_os($x);
         $n = Page::tile_to_os($y);
