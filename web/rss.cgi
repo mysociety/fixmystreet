@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: rss.cgi,v 1.30 2009-09-24 21:11:12 matthew Exp $
+# $Id: rss.cgi,v 1.31 2009-09-24 21:27:47 matthew Exp $
 
 use strict;
 use Error qw(:try);
@@ -64,8 +64,8 @@ sub rss_local_problems {
     my ($e, $n);
     if ($lat) { # In the UK, it'll never be 0 :)
         ($e, $n) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
-        $x = Page::os_to_tile($e);
-        $y = Page::os_to_tile($n);
+        $x = int(Page::os_to_tile($e));
+        $y = int(Page::os_to_tile($n));
         my $base = mySociety::Config::get('BASE_URL');
 	print $q->redirect(-location => "$base/rss/$x/$y");
 	return '';
