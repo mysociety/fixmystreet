@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: rss.cgi,v 1.31 2009-09-24 21:27:47 matthew Exp $
+# $Id: rss.cgi,v 1.32 2009-09-24 21:32:57 matthew Exp $
 
 use strict;
 use Error qw(:try);
@@ -24,6 +24,7 @@ sub main {
     my $out;
     if ($type eq 'local_problems') {
         $out = rss_local_problems($q);
+	return unless $out;
     } elsif ($type eq 'new_updates') {
         my $id = $q->param('id');
         my $qs = 'report/' . $id;
