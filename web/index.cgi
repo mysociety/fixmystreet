@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.288 2009-09-28 11:36:22 louise Exp $
+# $Id: index.cgi,v 1.289 2009-09-28 11:45:48 louise Exp $
 
 use strict;
 use Standard;
@@ -996,6 +996,7 @@ $fixedline
 <div class="checkbox"><input type="checkbox" name="add_alert" id="form_add_alert" value="1"$add_alert_checked>
 <label for="form_add_alert">$alert_label</label></div>
 <div class="checkbox"><input type="submit" id="update_post" value="$post_label"></div>
+$cobrand_form_elements
 </form>
 </div>
 EOF
