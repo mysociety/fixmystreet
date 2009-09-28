@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.287 2009-09-28 11:26:39 louise Exp $
+# $Id: index.cgi,v 1.288 2009-09-28 11:36:22 louise Exp $
 
 use strict;
 use Standard;
@@ -928,14 +928,16 @@ sub display_problem {
         $q->small($q->a({rel => 'nofollow', href => $contact_url}, _('Offensive? Unsuitable? Tell us')))
     );
 
-    my $back = NewURL($q, -url => '/', 'x' => $x_tile, 'y' => $y_tile );
+    my $back = NewURL($q, -url => '/', 'x' => $x_tile, 'y' => $y_tile, -retain => 1, pc => undef );
     $out .= '<p style="padding-bottom: 0.5em; border-bottom: dotted 1px #999999;" align="right"><a href="'
         . $back . '">' . _('More problems nearby') . '</a></p>';
     $out .= '<div id="alert_links">';
-    $out .= '<a rel="nofollow" id="email_alert" href="/alert?type=updates;id='.$input_h{id}.'">' . _('Email me updates') . '</a>';
+    my $alert_link = NewURL($q, -url => '/alert?type=updates;id='.$input_h{id}, -retain => 1, pc => undef );
+    $out .= '<a rel="nofollow" id="email_alert" href="' . $alert_link . '">' . _('Email me updates') . '</a>';
     my $email_label = _('Email:');
     my $subscribe = _('Subscribe');
     my $blurb = _('Receive email when updates are left on this problem');
+    my $cobrand_form_elements = Cobrand::form_elements(Page::get_cobrand($q), 'alerts', $q);
     $out .= <<EOF;
 <form action="/alert" method="post" id="email_alert_box">
 <p>$blurb</p>
@@ -944,6 +946,7 @@ sub display_problem {
 <input type="hidden" name="id" value="$input_h{id}">
 <input type="hidden" name="type" value="updates">
 <input type="submit" value="$subscribe">
+$cobrand_form_elements
 </form>
 EOF
     $out .= ' &nbsp; <a href="/rss/'.$input_h{id}.'"><img src="/i/feed.png" width="16" height="16" title="' . _('RSS feed') . '" alt="' . _('RSS feed of updates to this problem') . '" border="0" style="vertical-align: middle"></a>';
