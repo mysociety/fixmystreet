@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.56 2009-09-09 08:32:41 louise Exp $
+# $Id: confirm.cgi,v 1.57 2009-09-28 15:40:56 louise Exp $
 
 use strict;
 use Standard;
@@ -59,8 +59,8 @@ sub confirm_update {
         $add_alert = $data->{add_alert};
     }
 
-    my ($problem_id, $fixed, $email, $name) = dbh()->selectrow_array(
-        "select problem_id, mark_fixed, email, name from comment where id=?", {}, $id);
+    my ($problem_id, $fixed, $email, $name, $cobrand_data) = dbh()->selectrow_array(
+        "select problem_id, mark_fixed, email, name, cobrand_data from comment where id=?", {}, $id);
     $email = lc($email);
 
     (my $domain = $email) =~ s/^.*\@//;
@@ -101,7 +101,7 @@ sub confirm_update {
     # Subscribe updater to email updates if requested
     if ($add_alert) {
         my $cobrand = Page::get_cobrand($q);
-        my $alert_id = mySociety::Alert::create($email, 'new_updates', $cobrand, $problem_id);
+        my $alert_id = mySociety::Alert::create($email, 'new_updates', $cobrand, $cobrand_data, $problem_id);
         mySociety::Alert::confirm($alert_id);
     }
 
@@ -111,7 +111,7 @@ sub confirm_update {
 sub confirm_problem {
     my ($q, $id) = @_;
 
-    my ($council, $email, $name) = dbh()->selectrow_array("select council, email, name from problem where id=?", {}, $id);
+    my ($council, $email, $name, $cobrand_data) = dbh()->selectrow_array("select council, email, name, cobrand_data from problem where id=?", {}, $id);
 
     (my $domain = $email) =~ s/^.*\@//;
     if (dbh()->selectrow_array('select email from abuse where lower(email)=? or lower(email)=?', {}, lc($email), lc($domain))) {
@@ -160,7 +160,7 @@ $q->p('<a href="/report/' . $id . '">' . _('View your report') . '</a>.');
 
     # Subscribe problem reporter to email updates
     my $cobrand = Page::get_cobrand($q);
-    my $alert_id = mySociety::Alert::create($email, 'new_updates', $cobrand, $id);
+    my $alert_id = mySociety::Alert::create($email, 'new_updates', $cobrand, $cobrand_data, $id);
     mySociety::Alert::confirm($alert_id);
 
     return $out;

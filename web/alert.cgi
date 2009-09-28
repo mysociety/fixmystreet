@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.49 2009-09-28 12:57:03 louise Exp $
+# $Id: alert.cgi,v 1.50 2009-09-28 15:40:56 louise Exp $
 
 use strict;
 use Standard;
@@ -340,7 +340,7 @@ sub alert_signed_input {
     my $out;
     my $cobrand = Page::get_cobrand($q);
     if ($signed_email eq sha1_hex("$id-$email-$salt-$secret")) {
-        my $alert_id = mySociety::Alert::create($email, 'new_updates', $cobrand, $id);
+        my $alert_id = mySociety::Alert::create($email, 'new_updates', $cobrand, '', $id);
         mySociety::Alert::confirm($alert_id);
         $out = $q->p(_('You have successfully subscribed to that alert.'));
         $out .= CrossSell::display_advert($q, $email);
@@ -390,21 +390,22 @@ sub alert_do_subscribe {
 
     my $alert_id;
     my $cobrand = Page::get_cobrand($q);
+    my $cobrand_data = Cobrand::extra_alert_data($cobrand, $q);
     if ($type eq 'updates') {
         my $id = $q->param('id');
-        $alert_id = mySociety::Alert::create($email, 'new_updates', $cobrand, $id);
+        $alert_id = mySociety::Alert::create($email, 'new_updates', $cobrand, $cobrand_data, $id);
     } elsif ($type eq 'problems') {
-        $alert_id = mySociety::Alert::create($email, 'new_problems', $cobrand);
+        $alert_id = mySociety::Alert::create($email, 'new_problems', $cobrand, $cobrand_data);
     } elsif ($type eq 'local') {
         my $feed = $q->param('feed');
         if ($feed =~ /^area:(?:\d+:)?(\d+)/) {
-            $alert_id = mySociety::Alert::create($email, 'area_problems', $cobrand, $1);
+            $alert_id = mySociety::Alert::create($email, 'area_problems', $cobrand, $cobrand_data, $1);
         } elsif ($feed =~ /^council:(\d+)/) {
-            $alert_id = mySociety::Alert::create($email, 'council_problems', $cobrand, $1, $1);
+            $alert_id = mySociety::Alert::create($email, 'council_problems', $cobrand, $cobrand_data, $1, $1);
         } elsif ($feed =~ /^ward:(\d+):(\d+)/) {
-            $alert_id = mySociety::Alert::create($email, 'ward_problems', $cobrand, $1, $2);
+            $alert_id = mySociety::Alert::create($email, 'ward_problems', $cobrand, $cobrand_data, $1, $2);
         } elsif ($feed =~ /^local:(\d+):(\d+)/) {
-            $alert_id = mySociety::Alert::create($email, 'local_problems', $cobrand, $1, $2);
+            $alert_id = mySociety::Alert::create($email, 'local_problems', $cobrand, $cobrand_data, $1, $2);
         }
     } else {
         throw mySociety::Alert::Error('Invalid type');
