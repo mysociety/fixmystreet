@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.41 2009-09-03 13:36:47 louise Exp $
+# $Id: contact.cgi,v 1.42 2009-09-28 12:29:48 louise Exp $
 
 use strict;
 use Standard;
@@ -128,6 +128,7 @@ please <a href="/">go to the front page</a> and follow the instructions.'));
     my $label_subject = _('Subject:');
     my $label_message = _('Message:');
     my $label_submit = _('Post');
+    my $cobrand_form_elements = Cobrand::form_elements(Page::get_cobrand($q), 'contactForm', $q);
     $out .= <<EOF;
 <input type="hidden" name="submit_form" value="1">
 <div><label for="form_name">$label_name</label>
@@ -139,6 +140,7 @@ please <a href="/">go to the front page</a> and follow the instructions.'));
 <div><label for="form_message">$label_message</label>
 <textarea name="message" id="form_message" rows="7" cols="50">$input_h{message}</textarea></div>
 <div class="checkbox"><input type="submit" value="$label_submit"></div>
+$cobrand_form_elements
 </form>
 EOF
     return $out;
