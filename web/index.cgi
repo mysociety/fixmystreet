@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.290 2009-09-28 12:18:54 louise Exp $
+# $Id: index.cgi,v 1.291 2009-09-28 12:57:03 louise Exp $
 
 use strict;
 use Standard;
@@ -471,7 +471,7 @@ sub display_form {
         } catch Error::Simple with {
             $error = shift;
         };
-        return Page::geocode_choice($error, '/') if ref($error) eq 'ARRAY';
+        return Page::geocode_choice($error, '/', $q) if ref($error) eq 'ARRAY';
         return front_page($q, $error) if $error;
         $input{x} = int(Page::os_to_tile($easting));
         $input{y} = int(Page::os_to_tile($northing));
@@ -783,7 +783,7 @@ sub display_location {
             $error = shift;
         };
     }
-    return Page::geocode_choice($error, '/') if (ref($error) eq 'ARRAY');
+    return Page::geocode_choice($error, '/', $q) if (ref($error) eq 'ARRAY');
     return front_page($q, $error) if ($error);
 
     # Deal with pin hiding/age

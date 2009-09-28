@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.48 2009-09-28 10:55:44 louise Exp $
+# $Id: alert.cgi,v 1.49 2009-09-28 12:57:03 louise Exp $
 
 use strict;
 use Standard;
@@ -81,7 +81,7 @@ sub alert_list {
             $error = shift;
         };
     }
-    return Page::geocode_choice($error, '/alert') if ref($error) eq 'ARRAY';
+    return Page::geocode_choice($error, '/alert', $q) if ref($error) eq 'ARRAY';
     return alert_front_page($q, $error) if $error;
 
     my $pretty_pc = $input_h{pc};
@@ -275,6 +275,7 @@ within a certain distance of a particular location.'));
     $out .= $q->p(_('To find out what local alerts we have for you, please enter your GB
 postcode or street name and area:'), '<input type="text" name="pc" value="' . $input_h{pc} . '">
 <input type="submit" value="' . _('Go') . '">');
+    $out .= Cobrand::form_elements(Page::get_cobrand($q), 'alerts', $q);
     $out .= '</form>';
 
     return $out if $q->referer() && $q->referer() =~ /fixmystreet\.com/;
@@ -309,6 +310,7 @@ sub alert_updates_form {
     my @vars = qw(id rznvy);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
+    my $cobrand_form_elements = Cobrand::form_elements(Page::get_cobrand($q), 'alerts', $q);
     my $out = '';
     if (@errors) {
         $out .= '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
@@ -323,6 +325,7 @@ sub alert_updates_form {
 <input type="hidden" name="id" value="$input_h{id}">
 <input type="hidden" name="type" value="updates">
 <input type="submit" value="$subscribe">
+$cobrand_form_elements
 </form>
 EOF
     return $out;

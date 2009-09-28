@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.186 2009-09-28 10:43:58 louise Exp $
+# $Id: Page.pm,v 1.187 2009-09-28 12:57:03 louise Exp $
 #
 
 package Page;
@@ -920,14 +920,16 @@ sub geocode_string {
 # geocode_choice
 # Prints response if there's more than one possible result
 sub geocode_choice {
-    my ($choices, $page) = @_;
+    my ($choices, $page, $q) = @_;
+    my $url;
     my $out = '<p>' . _('We found more than one match for that location. We show up to ten matches, please try a different search if yours is not here.') . '</p> <ul>';
     foreach my $choice (@$choices) {
         $choice =~ s/, United Kingdom//;
         $choice =~ s/, UK//;
-        my $url = uri_escape($choice);
-        $url =~ s/%20/+/g;
-        $out .= '<li><a href="' . $page . '?pc=' . $url . '">' . $choice . "</a></li>\n";
+        my $encoded_choice = $choice;
+        $encoded_choice =~ s/ /+/g;
+        $url = NewURL($q, -retain => 1, -url => $page, 'pc' => $encoded_choice);  
+        $out .= '<li><a href="' . $url . '">' . $choice . "</a></li>\n";
     }
     $out .= '</ul>';
     return $out;
