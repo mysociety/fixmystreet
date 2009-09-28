@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.289 2009-09-28 11:45:48 louise Exp $
+# $Id: index.cgi,v 1.290 2009-09-28 12:18:54 louise Exp $
 
 use strict;
 use Standard;
@@ -972,8 +972,9 @@ EOF
     my $photo_label = _('Photo:');
     my $alert_label = _('Alert me to future updates');
     my $post_label = _('Post');
+    $cobrand_form_elements = Cobrand::form_elements(Page::get_cobrand($q), 'updateForm', $q);
     $out .= <<EOF;
-<form method="post" action="/" id="fieldset" enctype="multipart/form-data">
+<form method="post" action="/" name="updateForm" id="fieldset" enctype="multipart/form-data">
 <input type="hidden" name="submit_update" value="1">
 <input type="hidden" name="id" value="$input_h{id}">
 <div><label for="form_name">$name_label</label>
