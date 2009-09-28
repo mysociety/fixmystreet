@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.41 2009-09-03 13:36:48 louise Exp $
+# $Id: questionnaire.cgi,v 1.42 2009-09-28 10:34:21 louise Exp $
 
 use strict;
 use Standard;
@@ -276,7 +276,7 @@ your experience of getting the problem fixed?'));
 
 <div id="fileupload_flashUI" style="display:none">
 <label for="form_photo">Photo:</label>
-<input type="text" id="txtfilename" disabled="true" style="background-color: #ffffff;">
+<input type="text" id="txtfilename" disabled style="background-color: #ffffff;">
 <input type="button" value="Browse..." onclick="document.getElementById('txtfilename').value=''; swfu.cancelUpload(); swfu.selectFile();">
 <input type="hidden" name="upload_fileid" id="upload_fileid" value="">
 </div>
