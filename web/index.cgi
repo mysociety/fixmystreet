@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.284 2009-09-28 09:46:21 louise Exp $
+# $Id: index.cgi,v 1.285 2009-09-28 09:55:17 louise Exp $
 
 use strict;
 use Standard;
@@ -220,19 +220,19 @@ sub submit_update {
     }
 
     return display_problem($q, @errors) if (@errors);
-
+    my $cobrand = Page::get_cobrand($q);
+    my $cobrand_data = Cobrand::extra_update_data($cobrand, $q);
     my $id = dbh()->selectrow_array("select nextval('comment_id_seq');");
     Utils::workaround_pg_bytea("insert into comment
-        (id, problem_id, name, email, website, text, state, mark_fixed, photo, lang, cobrand)
-        values (?, ?, ?, ?, '', ?, 'unconfirmed', ?, ?, ?, ?)", 7,
+        (id, problem_id, name, email, website, text, state, mark_fixed, photo, lang, cobrand, cobrand_data)
+        values (?, ?, ?, ?, '', ?, 'unconfirmed', ?, ?, ?, ?, ?)", 7,
         $id, $input{id}, $input{name}, $input{rznvy}, $input{update},
-        $input{fixed} ? 't' : 'f', $image, $mySociety::Locale::lang, $q->{site});
+        $input{fixed} ? 't' : 'f', $image, $mySociety::Locale::lang, $cobrand, $cobrand_data);
 
     my %h = ();
     $h{update} = $input{update};
     $h{name} = $input{name} ? $input{name} : _("Anonymous");
     my $base = Page::base_url_with_lang($q, undef, 1);
-    $base =~ s/matthew/scambs.matthew/ if $q->{site} eq 'scambs'; # XXX Temp
     $h{url} = $base . '/C/' . mySociety::AuthToken::store('update', { id => $id, add_alert => $input{add_alert} } );
     dbh()->commit();
 
@@ -365,16 +365,18 @@ sub submit_problem {
     my $used_map = $input{skipped} ? 'f' : 't';
     $input{category} = _('Other') unless $input{category};
     my ($id, $out);
+    my $cobrand = Page::get_cobrand($q);
+    my $cobrand_data = Cobrand::extra_problem_data($cobrand, $q);
     if (my $token = $input{partial}) {
         my $id = mySociety::AuthToken::retrieve('partial', $token);
         if ($id) {
             dbh()->do("update problem set postcode=?, easting=?, northing=?, title=?, detail=?,
                 name=?, email=?, phone=?, state='confirmed', council=?, used_map='t',
-                anonymous=?, category=?, areas=?, cobrand=?, confirmed=ms_current_timestamp(),
+                anonymous=?, category=?, areas=?, cobrand=?, cobrand_data=?, confirmed=ms_current_timestamp(),
                 lastupdate=ms_current_timestamp() where id=?", {}, $input{pc}, $input{easting}, $input{northing},
                 $input{title}, $input{detail}, $input{name}, $input{email},
                 $input{phone}, $input{council}, $input{anonymous} ? 'f' : 't',
-                $input{category}, $areas, $q->{site}, $id);
+                $input{category}, $areas, $cobrand, $cobrand_data, $id);
             Utils::workaround_pg_bytea('update problem set photo=? where id=?', 1, $image, $id)
                 if $image;
             dbh()->commit();
@@ -388,13 +390,13 @@ Please <a href="/contact">let us know what went on</a> and we\'ll look into it.'
         $id = dbh()->selectrow_array("select nextval('problem_id_seq');");
         Utils::workaround_pg_bytea("insert into problem
             (id, postcode, easting, northing, title, detail, name,
-             email, phone, photo, state, council, used_map, anonymous, category, areas, lang, cobrand)
+             email, phone, photo, state, council, used_map, anonymous, category, areas, lang, cobrand, cobrand_data)
             values
-            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?, ?, ?, ?, ?, ?)", 10,
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?, ?, ?, ?, ?, ?, ?)", 10,
             $id, $input{pc}, $input{easting}, $input{northing}, $input{title},
             $input{detail}, $input{name}, $input{email}, $input{phone}, $image,
             $input{council}, $used_map, $input{anonymous} ? 'f': 't', $input{category},
-            $areas, $mySociety::Locale::lang, $q->{site});
+            $areas, $mySociety::Locale::lang, $cobrand, $cobrand_data);
         my %h = ();
         $h{title} = $input{title};
         $h{detail} = $input{detail};
@@ -434,7 +436,6 @@ sub display_form {
         ($pin_tile_x, $pin_tile_y, $pin_x) = ($1, $2, $q->param($_)) if /^tile_(\d+)\.(\d+)\.x$/;
         $pin_y = $q->param($_) if /\.y$/;
     }
-
     return display_location($q, @errors)
         unless ($pin_x && $pin_y)
             || ($input{easting} && $input{northing})
@@ -803,18 +804,19 @@ sub display_location {
         $hide_text = _('Hide pins');
     }
     my $map_links = "<p id='sub_map_links'><a id='hide_pins_link' href='$hide_link'>$hide_text</a> | <a id='all_pins_link' href='$all_link'>$all_text</a></p> <input type='hidden' id='all_pins' name='all_pins' value='$input_h{all_pins}'>";
-
+   
     my $out = Page::display_map($q, x => $x, y => $y, type => 1, pins => $pins, post => $map_links );
     $out .= $q->h1(_('Problems in this area'));
     my $email_me = _('Email me new local problems');
     my $rss_title = _('RSS feed of recent local problems');
     my $rss_alt = _('RSS feed');
     my $u_pc = uri_escape($input{pc});
-    my $email_me_link = NewURL($q, -url=>'/alert', x=>$x, y=>$y, feed=>"local:$x:$y");
+    my $email_me_link = NewURL($q, -retain => 1, pc => undef, -url=>'/alert', x=>$x, y=>$y, feed=>"local:$x:$y");
+    my $rss_link = NewURL($q, -retain => 1, -url=> "/rss/$x,$y", pc => undef);
     $out .= <<EOF;
     <p id="alert_links_area">
     <a id="email_alert" rel="nofollow" href="$email_me_link">$email_me</a>
-    | <a href="/rss/$x,$y" id="rss_alert"><span>$rss_alt</span> <img src="/i/feed.png" width="16" height="16" title="$rss_title" alt="$rss_alt" border="0" style="vertical-align: top"></a>
+    | <a href="$rss_link" id="rss_alert"><span>$rss_alt</span> <img src="/i/feed.png" width="16" height="16" title="$rss_title" alt="$rss_alt" border="0" style="vertical-align: top"></a>
     </p>
 EOF
     if (@errors) {
@@ -828,8 +830,10 @@ EOF
         step</a>.</small>"), $skipurl));
     $out .= '<div id="nearby_lists">' . $q->h2(_('Reports on and around the map'));
     my $list = '';
+    my $report_url;
     foreach (@$on_map) {
-        $list .= '<li><a href="/report/' . $_->{id} . '">';
+        $report_url = NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef);  
+        $list .= '<li><a href="' . $report_url . '">';
         $list .= $_->{title};
         $list .= '</a>';
         $list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
@@ -841,7 +845,8 @@ EOF
     $out .= $q->h2({-id => 'closest_problems'}, sprintf(_('Closest nearby problems <small>(within&nbsp;%skm)</small>'), $dist));
     $list = '';
     foreach (@$around_map) {
-        $list .= '<li><a href="/report/' . $_->{id} . '">';
+        $report_url = NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef);  
+        $list .= '<li><a href="' . $report_url . '">';
         $list .= $_->{title} . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
         $list .= '</a>';
         $list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
