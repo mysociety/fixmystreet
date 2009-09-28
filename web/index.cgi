@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.286 2009-09-28 10:34:21 louise Exp $
+# $Id: index.cgi,v 1.287 2009-09-28 11:26:39 louise Exp $
 
 use strict;
 use Standard;
@@ -556,12 +556,14 @@ please specify the closest point on land.')) unless @$all_councils;
     }
 
     if ($input{skipped}) {
+        my $cobrand_form_elements = Cobrand::form_elements(Page::get_cobrand($q), 'mapSkippedForm', $q);
         $out .= <<EOF;
-<form action="/" method="post" enctype="multipart/form-data">
+<form action="/" method="post" name="mapSkippedForm" enctype="multipart/form-data">
 <input type="hidden" name="pc" value="$input_h{pc}">
 <input type="hidden" name="x" value="$input_h{x}">
 <input type="hidden" name="y" value="$input_h{y}">
 <input type="hidden" name="skipped" value="1">
+$cobrand_form_elements
 EOF
         $out .= $q->h1(_('Reporting a problem')) . '<div>';
     } else {
@@ -921,9 +923,9 @@ sub display_problem {
         $out .= $q->p({id => 'fixed'}, _('This problem has been fixed') . '.')
     }
     $out .= Page::display_problem_text($q, $problem);
-
+    my $contact_url = NewURL($q, -retain => 1, pc => undef, -url=>'/contact?id=' . $input{id});
     $out .= $q->p({align=>'right'},
-        $q->small($q->a({rel => 'nofollow', href => '/contact?id=' . $input{id}}, _('Offensive? Unsuitable? Tell us')))
+        $q->small($q->a({rel => 'nofollow', href => $contact_url}, _('Offensive? Unsuitable? Tell us')))
     );
 
     my $back = NewURL($q, -url => '/', 'x' => $x_tile, 'y' => $y_tile );
