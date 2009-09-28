@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.22 2009-09-23 17:01:00 louise Exp $
+# $Id: Cobrand.pm,v 1.23 2009-09-28 15:38:30 louise Exp $
 
 package Cobrand;
 use strict;
@@ -313,6 +313,25 @@ sub extra_update_data {
         return '';
     } else{
         return $handle->extra_update_data($q);
+    }
+}
+
+=item extra_alert_data COBRAND Q
+
+Return a string of extra data to be stored with an alert
+
+=cut
+    
+sub extra_alert_data {
+    my ($cobrand, $q) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || !$handle->can('extra_alert_data')){
+        return '';
+    } else{
+        return $handle->extra_alert_data($q);
     }
 }
 

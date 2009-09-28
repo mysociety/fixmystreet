@@ -6,12 +6,12 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Cobrand.t,v 1.13 2009-09-23 17:01:00 louise Exp $
+# $Id: Cobrand.t,v 1.14 2009-09-28 15:38:30 louise Exp $
 #
 
 use strict;
 use warnings;
-use Test::More tests => 41;
+use Test::More tests => 44;
 use Test::Exception;
 
 use FindBin;
@@ -107,6 +107,21 @@ sub test_extra_update_data {
     ok($cobrand_data eq '', 'extra_update_data should return an empty string if there is no cobrand module') or diag("Got $cobrand_data");
 }
 
+
+sub test_extra_alert_data {
+    my $cobrand = 'mysite';
+    my $q = new MockQuery($cobrand);
+
+    # should get the result of the page function in the cobrand module if one exists
+    my $cobrand_data = Cobrand::extra_alert_data($cobrand, $q);
+    ok($cobrand_data eq 'Cobrand alert data', 'extra_alert_data should return data from cobrand module') or diag("Got $cobrand_data");
+
+    # should return an empty string if no cobrand module exists
+    $q = new MockQuery('nosite');
+    $cobrand_data = Cobrand::extra_alert_data('nosite', $q);
+    ok($cobrand_data eq '', 'extra_alert_data should return an empty string if there is no cobrand module') or diag("Got $cobrand_data");
+}
+
 sub test_base_url {
     my $cobrand = 'mysite';
 
@@ -199,6 +214,7 @@ ok(test_form_elements() == 1, 'Ran all tests for form_elements');
 ok(test_base_url_for_emails() == 1, 'Ran all tests for base_url_for_emails');
 ok(test_extra_problem_data() == 1, 'Ran all tests for extra_problem_data');
 ok(test_extra_update_data() == 1, 'Ran all tests for extra_update_data');
+ok(test_extra_alert_data() == 1, 'Ran all tests for extra_alert_data');
 ok(test_extra_params() == 1, 'Ran all tests for extra_params');
 ok(test_header_params() == 1, 'Ran all tests for header_params');
 ok(test_root_path_js() == 1, 'Ran all tests for root_js');
