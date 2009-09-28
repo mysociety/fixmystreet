@@ -101,7 +101,7 @@ YAHOO.util.Event.onContentReady('email_alert', function() {
             pos[0] -= 20; pos[1] += 20;
             YAHOO.util.Dom.setStyle('email_alert_box', 'display', 'block');
             YAHOO.util.Dom.setXY('email_alert_box', pos);
-            document.getElementById('alert_email').focus();
+            document.getElementById('alert_rznvy').focus();
         }
     });
     YAHOO.util.Event.addListener(this, 'mouseout', function(e) {
