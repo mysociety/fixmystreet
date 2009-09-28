@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.283 2009-09-16 17:00:36 louise Exp $
+# $Id: index.cgi,v 1.284 2009-09-28 09:46:21 louise Exp $
 
 use strict;
 use Standard;
@@ -562,7 +562,7 @@ please specify the closest point on land.')) unless @$all_councils;
 <input type="hidden" name="y" value="$input_h{y}">
 <input type="hidden" name="skipped" value="1">
 EOF
-        $out .= $q->h1(_('Reporting a problem')) . '<ul>';
+        $out .= $q->h1(_('Reporting a problem')) . '<div>';
     } else {
         my $pins = Page::display_pin($q, $px, $py, 'purple');
         $out .= Page::display_map($q, x => $input{x}, y => $input{y}, type => 2,
@@ -721,24 +721,24 @@ EOF
         $out .= <<EOF;
 <p>Please note:</p>
 <ul>
-<li>Please be polite, concise and to the point.
-<li>Please do not be abusive.
+<li>Please be polite, concise and to the point.</li>
+<li>Please do not be abusive.</li>
 <li>Writing your message entirely in block capitals makes it hard to read,
-as does a lack of punctuation.
+as does a lack of punctuation.</li>
 </ul>
 EOF
     } elsif ($q->{site} ne 'emptyhomes') {
         $out .= <<EOF;
 <p>Please note:</p>
 <ul>
-<li>Please be polite, concise and to the point.
-<li>Please do not be abusive &mdash; abusing your council devalues the service for all users.
+<li>Please be polite, concise and to the point.</li>
+<li>Please do not be abusive &mdash; abusing your council devalues the service for all users.</li>
 <li>Writing your message entirely in block capitals makes it hard to read,
-as does a lack of punctuation.
+as does a lack of punctuation.</li>
 <li>Remember that FixMyStreet is primarily for reporting physical
 problems that can be fixed. If your problem is not appropriate for
 submission via this site remember that you can contact your council
-directly using their own website.
+directly using their own website.</li>
 </ul>
 EOF
     }
@@ -975,7 +975,7 @@ EOF
 $fixedline
 <div id="fileupload_flashUI" style="display:none">
 <label for="form_photo">Photo:</label>
-<input type="text" id="txtfilename" disabled="true" style="background-color: #ffffff;">
+<input type="text" id="txtfilename" disabled="disabled" style="background-color: #ffffff;">
 <input type="button" value="Browse..." onclick="document.getElementById('txtfilename').value=''; swfu.cancelUpload(); swfu.selectFile();">
 <input type="hidden" name="upload_fileid" id="upload_fileid" value="$input_h{upload_fileid}">
 </div>
