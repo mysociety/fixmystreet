@@ -311,6 +311,12 @@ function load_pins(x, y) {
                             'x='  + (x+2),
                             'y='  + (y+2), 
                             'all_pins=' +  document.getElementById('all_pins').value ];
+
+	if (document.getElementById('extra_param)) {
+            ajax_params.push('extra_param_name=' + document.getElementById('extra_param').name);
+            ajax_params.push('extra_param_value=' + document.getElementById('extra_param').value);
+        }            
+
         var separator;
         if (window.Cobrand){
              separator = window.Cobrand.param_separator();
