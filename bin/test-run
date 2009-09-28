@@ -16,10 +16,9 @@
 
 # TODO
 #   Admin
-#   RSS
 #   Whatever I've missed!
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.24 2009-09-24 21:41:02 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.25 2009-09-28 15:31:00 louise Exp $';
 
 use strict;
 require 5.8.0;
@@ -283,8 +282,27 @@ sub do_report {
 }
 
 sub do_update {
-    date_print("TODO: Tests for submitting an update");
     set_base_url('');
+    my $postcode = 'ME15 6RS';
+    my $messages = english_fms_messages();
+    my $x_coord = 3287;
+    my $y_coord = 1112;
+    submit_report($postcode, $x_coord, $y_coord, 530375.920751842, 179501.524003048, 1, undef, $messages, '');
+    $wth->browser_follow_link(text => 'view the problem on this site');
+    $wth->browser_submit_form(with_fields => { name => name_n(1),
+                                               rznvy => email_n(1), 
+                                               update => "my test update", 
+                                               fixed => 1 });
+    $wth->browser_check_contents('Nearly Done!');
+    my $confirmation_email = $wth->email_get_containing(
+            '%Subject: Confirm your update on FixMyStreet'.
+            '%To: "' . name_n(1) . '" <' .email_n(1).''.
+            '%to confirm the update%');
+    die "Alert confirmation link not found" if ($confirmation_email !~ m#^\s*($base_url.*$)#m);
+    print "Message confirm URL is $1\n" if $verbose > 1;
+    $wth->browser_get($1);
+    $wth->browser_check_contents("Thanks, glad to hear it's been fixed!");
+
 }
 
 sub do_import { 
