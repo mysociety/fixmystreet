@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: ajax.cgi,v 1.9 2009-05-27 13:53:53 matthew Exp $
+# $Id: ajax.cgi,v 1.10 2009-09-28 10:12:41 louise Exp $
 
 use strict;
 use Standard;
@@ -15,7 +15,7 @@ use mySociety::Web qw(ent);
 sub main {
     my $q = shift;
 
-    my @vars = qw(x y sx sy all_pins);
+    my @vars = qw(x y sx sy all_pins extra_param_name extra_param_value);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 
@@ -38,8 +38,13 @@ sub main {
     my ($pins, $on_map, $around_map, $dist) = Page::map_pins($q, $x, $y, $sx, $sy, $interval);
 
     my $list = '';
+    my $link = '';
     foreach (@$on_map) {
-        $list .= '<li><a href="/report/' . $_->{id} . '">';
+        $link = '/report/' . $_->{id};
+        if ($input{extra_param_name}){
+           $link .= '?' . $input{extra_param_name} . '=' . $input{extra_param_value};
+        }
+        $list .= '<li><a href="' . $link . '">';
         $list .= $_->{title};
         $list .= '</a>';
         $list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
@@ -49,7 +54,11 @@ sub main {
 
     $list = '';
     foreach (@$around_map) {
-        $list .= '<li><a href="/report/' . $_->{id} . '">';
+        $link = '/report/' . $_->{id};
+        if ($input{extra_param_name}){
+           $link .= '?' . $input{extra_param_name} . '=' . $input{extra_param_value};
+        }
+        $list .= '<li><a href="' . $link . '">';
         $list .= $_->{title} . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
         $list .= '</a>';
         $list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
