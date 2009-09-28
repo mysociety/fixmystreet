@@ -6,16 +6,16 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: ajax.cgi,v 1.10 2009-09-28 10:12:41 louise Exp $
+# $Id: ajax.cgi,v 1.11 2009-09-28 10:43:58 louise Exp $
 
 use strict;
 use Standard;
-use mySociety::Web qw(ent);
+use mySociety::Web qw(ent NewURL);
 
 sub main {
     my $q = shift;
 
-    my @vars = qw(x y sx sy all_pins extra_param_name extra_param_value);
+    my @vars = qw(x y sx sy all_pins);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 
@@ -40,10 +40,7 @@ sub main {
     my $list = '';
     my $link = '';
     foreach (@$on_map) {
-        $link = '/report/' . $_->{id};
-        if ($input{extra_param_name}){
-           $link .= '?' . $input{extra_param_name} . '=' . $input{extra_param_value};
-        }
+        $link = NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef);  
         $list .= '<li><a href="' . $link . '">';
         $list .= $_->{title};
         $list .= '</a>';
@@ -54,10 +51,7 @@ sub main {
 
     $list = '';
     foreach (@$around_map) {
-        $link = '/report/' . $_->{id};
-        if ($input{extra_param_name}){
-           $link .= '?' . $input{extra_param_name} . '=' . $input{extra_param_value};
-        }
+	$link = NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef);  
         $list .= '<li><a href="' . $link . '">';
         $list .= $_->{title} . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
         $list .= '</a>';

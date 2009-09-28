@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.185 2009-09-24 16:16:53 matthew Exp $
+# $Id: Page.pm,v 1.186 2009-09-28 10:43:58 louise Exp $
 #
 
 package Page;
@@ -429,6 +429,7 @@ sub display_map {
     my $out = '';
     my $cobrand = Page::get_cobrand($q);
     my $root_path_js = Cobrand::root_path_js($cobrand);
+    my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'mapForm', $q);
     my $img_type;
     if ($params{type}) {
         my $encoding = '';
@@ -441,6 +442,7 @@ sub display_map {
 <input type="hidden" name="x" id="formX" value="$x">
 <input type="hidden" name="y" id="formY" value="$y">
 <input type="hidden" name="pc" value="$pc_enc">
+$cobrand_form_elements
 EOF
         $img_type = '<input type="image"';
     } else {
@@ -490,7 +492,7 @@ sub display_pin {
         . $num . '.gif" alt="' . _('Problem') . '" style="top:' . ($py-59)
         . 'px; left:' . ($px) . 'px; position: absolute;">';
     return $out unless $_ && $_->{id} && $col ne 'blue';
-    my $url = '/report/' . $_->{id};
+    my $url = NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef);
     $out = '<a title="' . ent($_->{title}) . '" href="' . $url . '">' . $out . '</a>';
     return $out;
 }
