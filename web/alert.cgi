@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.47 2009-09-16 17:00:36 louise Exp $
+# $Id: alert.cgi,v 1.48 2009-09-28 10:55:44 louise Exp $
 
 use strict;
 use Standard;
@@ -22,6 +22,7 @@ use mySociety::Gaze;
 use mySociety::MaPit;
 use mySociety::VotingArea;
 use mySociety::Web qw(ent);
+use Cobrand;
 
 sub main {
     my $q = shift;
@@ -192,7 +193,7 @@ for the county council.')));
 
     my $checked = '';
     $checked = ' checked' if $q->param('feed') && $q->param('feed') eq "local:$x:$y";
-
+    my $cobrand_form_elements = Cobrand::form_elements(Page::get_cobrand($q), 'alerts', $q);
     my $pics = Problems::recent_photos(5, $e, $n, $dist);
     $pics = '<div id="alert_photos">' . $q->h2(_('Photos of recent nearby reports')) . $pics . '</div>' if $pics;
 
@@ -205,7 +206,7 @@ for the county council.')));
 <form id="alerts" name="alerts" method="post" action="/alert">
 <input type="hidden" name="type" value="local">
 <input type="hidden" name="pc" value="$input_h{pc}">
-
+$cobrand_form_elements
 $pics
 
 EOF
