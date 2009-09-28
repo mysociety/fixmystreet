@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.291 2009-09-28 12:57:03 louise Exp $
+# $Id: index.cgi,v 1.292 2009-09-28 15:40:28 louise Exp $
 
 use strict;
 use Standard;
@@ -834,7 +834,7 @@ EOF
     my $list = '';
     my $report_url;
     foreach (@$on_map) {
-        $report_url = NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef);  
+        $report_url = NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, y => undef);  
         $list .= '<li><a href="' . $report_url . '">';
         $list .= $_->{title};
         $list .= '</a>';
@@ -847,7 +847,7 @@ EOF
     $out .= $q->h2({-id => 'closest_problems'}, sprintf(_('Closest nearby problems <small>(within&nbsp;%skm)</small>'), $dist));
     $list = '';
     foreach (@$around_map) {
-        $report_url = NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef);  
+        $report_url = NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, y => undef);  
         $list .= '<li><a href="' . $report_url . '">';
         $list .= $_->{title} . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
         $list .= '</a>';
@@ -928,7 +928,7 @@ sub display_problem {
         $q->small($q->a({rel => 'nofollow', href => $contact_url}, _('Offensive? Unsuitable? Tell us')))
     );
 
-    my $back = NewURL($q, -url => '/', 'x' => $x_tile, 'y' => $y_tile, -retain => 1, pc => undef );
+    my $back = NewURL($q, -url => '/', 'x' => $x_tile, 'y' => $y_tile, -retain => 1, pc => undef, id => undef );
     $out .= '<p style="padding-bottom: 0.5em; border-bottom: dotted 1px #999999;" align="right"><a href="'
         . $back . '">' . _('More problems nearby') . '</a></p>';
     $out .= '<div id="alert_links">';

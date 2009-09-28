@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: ajax.cgi,v 1.11 2009-09-28 10:43:58 louise Exp $
+# $Id: ajax.cgi,v 1.12 2009-09-28 15:40:28 louise Exp $
 
 use strict;
 use Standard;
@@ -40,7 +40,15 @@ sub main {
     my $list = '';
     my $link = '';
     foreach (@$on_map) {
-        $link = NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef);  
+        $link = NewURL($q, -retain => 1, 
+                           -url => '/report/' . $_->{id}, 
+                           pc => undef, 
+                           x => undef, 
+                           y => undef, 
+                           sx => undef, 
+                           sy => undef, 
+                           all_pins => undef, 
+                           no_pins => undef);  
         $list .= '<li><a href="' . $link . '">';
         $list .= $_->{title};
         $list .= '</a>';
@@ -51,7 +59,15 @@ sub main {
 
     $list = '';
     foreach (@$around_map) {
-	$link = NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef);  
+	$link = NewURL($q, -retain => 1, 
+                           -url => '/report/' . $_->{id}, 
+                           pc => undef, 
+                           x => undef, 
+                           y => undef, 
+                           sx => undef, 
+                           sy => undef, 
+                           all_pins => undef, 
+                           no_pins => undef);  
         $list .= '<li><a href="' . $link . '">';
         $list .= $_->{title} . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
         $list .= '</a>';
