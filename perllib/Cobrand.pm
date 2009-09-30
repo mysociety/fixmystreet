@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.23 2009-09-28 15:38:30 louise Exp $
+# $Id: Cobrand.pm,v 1.24 2009-09-30 10:00:37 louise Exp $
 
 package Cobrand;
 use strict;
@@ -118,9 +118,14 @@ Return the contact email for the cobranded version of the site
 =cut
 sub contact_email {
     my $cobrand = shift;
+    
     return get_cobrand_conf($cobrand, 'CONTACT_EMAIL');
 }
+=item get_cobrand_conf COBRAND KEY
 
+Get the value for KEY from the config file for COBRAND
+
+=cut
 sub get_cobrand_conf {
     my ($cobrand, $key) = @_;
     my $value; 
