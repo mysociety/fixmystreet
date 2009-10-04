@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.292 2009-09-28 15:40:28 louise Exp $
+# $Id: index.cgi,v 1.293 2009-10-04 16:41:59 matthew Exp $
 
 use strict;
 use Standard;
@@ -891,7 +891,7 @@ sub display_problem {
     }
 
     # Get all information from database
-    return display_location($q, _('Unknown problem ID')) if $input{id} =~ /\D/;
+    return display_location($q, _('Unknown problem ID')) if !$input{id} || $input{id} =~ /\D/;
     my $problem = Problems::fetch_problem($input{id});
     return display_location($q, _('Unknown problem ID')) unless $problem;
     return front_page($q, _('That report has been removed from FixMyStreet.')) if $problem->{state} eq 'hidden';
