@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: ajax.cgi,v 1.12 2009-09-28 15:40:28 louise Exp $
+# $Id: ajax.cgi,v 1.13 2009-10-07 08:18:42 louise Exp $
 
 use strict;
 use Standard;
@@ -36,7 +36,8 @@ sub main {
         $interval = '6 months';
     }
     my ($pins, $on_map, $around_map, $dist) = Page::map_pins($q, $x, $y, $sx, $sy, $interval);
-
+    my $limit = Cobrand::on_map_list_limit(Page::get_cobrand($q));
+    ($on_map, $around_map) = Page::apply_on_map_list_limit($on_map, $around_map, $limit);
     my $list = '';
     my $link = '';
     foreach (@$on_map) {

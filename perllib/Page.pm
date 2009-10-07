@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.188 2009-09-28 16:26:55 louise Exp $
+# $Id: Page.pm,v 1.189 2009-10-07 08:18:42 louise Exp $
 #
 
 package Page;
@@ -1004,4 +1004,23 @@ sub scambs_categories {
             'Litter', 'Neighbourhood noise');
 }
 
+=item apply_on_map_list_limit ON_MAP AROUND_MAP LIMIT
+
+Apply any defined limit to the list of reports on the map, moving any extra items to the 
+'around the map' list 
+
+=cut
+sub apply_on_map_list_limit {
+    my ($on_map, $around_map, $limit) = @_;
+    my $on_map_size =  scalar @{$on_map};
+    if (!$limit || $limit >= $on_map_size){
+        return ($on_map, $around_map);
+    }
+    my @on_map = @$on_map;
+    my @around_map = @$around_map;
+    my @extras = @on_map[$limit..$on_map_size-1];
+    @on_map = @on_map[0..$limit-1];
+    push (@extras, @around_map);
+    return (\@on_map, \@extras);
+}
 1;

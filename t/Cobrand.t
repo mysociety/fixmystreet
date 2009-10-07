@@ -6,12 +6,12 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Cobrand.t,v 1.14 2009-09-28 15:38:30 louise Exp $
+# $Id: Cobrand.t,v 1.15 2009-10-07 08:18:42 louise Exp $
 #
 
 use strict;
 use warnings;
-use Test::More tests => 44;
+use Test::More tests => 47;
 use Test::Exception;
 
 use FindBin;
@@ -205,6 +205,18 @@ sub test_site_title {
     is($site_title, '', 'site_title returns an empty string if no site title');
 }
 
+sub test_on_map_list_limit {
+   my $cobrand = 'mysite';
+   my $limit = Cobrand::on_map_list_limit($cobrand);
+   
+   is($limit, 30, 'on_map_list_limit returns output from cobrand module');
+
+   $cobrand = 'nosite';
+   $limit = Cobrand::on_map_list_limit($cobrand);
+   is($limit, undef, 'on_map_list_limit returns undef if there is no limit defined by the cobrand');
+
+}
+
 ok(test_cobrand_handle() == 1, 'Ran all tests for the cobrand_handle function');
 ok(test_cobrand_page() == 1, 'Ran all tests for the cobrand_page function');
 ok(test_site_restriction() == 1, 'Ran all tests for the site_restriction function');
@@ -219,4 +231,4 @@ ok(test_extra_params() == 1, 'Ran all tests for extra_params');
 ok(test_header_params() == 1, 'Ran all tests for header_params');
 ok(test_root_path_js() == 1, 'Ran all tests for root_js');
 ok(test_site_title() == 1, 'Ran all tests for site_title');
-
+ok(test_on_map_list_limit() == 1, 'Ran all tests for on_map_list_limit');

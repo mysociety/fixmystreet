@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.24 2009-09-30 10:00:37 louise Exp $
+# $Id: Cobrand.pm,v 1.25 2009-10-07 08:18:42 louise Exp $
 
 package Cobrand;
 use strict;
@@ -424,6 +424,25 @@ sub site_title {
     } else{
         return $handle->site_title();
     }  
+}
+
+=item on_map_list_limit COBRAND
+
+Return the maximum number of items to be given in the list of reports
+on the map
+
+=cut
+sub on_map_list_limit {
+    my ($cobrand) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || !$handle->can('on_map_list_limit')){
+        return undef;
+    } else{
+        return $handle->on_map_list_limit();
+    }
 }
 
 1;

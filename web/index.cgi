@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.293 2009-10-04 16:41:59 matthew Exp $
+# $Id: index.cgi,v 1.294 2009-10-07 08:18:42 louise Exp $
 
 use strict;
 use Standard;
@@ -797,6 +797,8 @@ sub display_location {
         $interval = '6 months';
     }
     my ($pins, $on_map, $around_map, $dist) = Page::map_pins($q, $x, $y, $x, $y, $interval);
+    my $limit = Cobrand::on_map_list_limit(Page::get_cobrand($q));
+    ($on_map, $around_map) = Page::apply_on_map_list_limit($on_map, $around_map, $limit);
     if ($input{no_pins}) {
         $hide_link = NewURL($q, -retain=>1, no_pins=>undef);
         $hide_text = _('Show pins');
