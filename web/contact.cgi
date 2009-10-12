@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.43 2009-10-12 11:10:25 louise Exp $
+# $Id: contact.cgi,v 1.44 2009-10-12 13:37:02 louise Exp $
 
 use strict;
 use Standard;
@@ -76,9 +76,11 @@ sub contact_submit {
 }
 
 sub contact_details {
+    my ($q) = @_;
     my $out;
     my $sitename = _('FixMyStreet');
-    $out .= <<EOF;
+    my $contact_info = '';
+    $contact_info .= <<EOF;
 <div class="contact-details">
 <p>$sitename is a service provided by mySociety, which is the project of a 
 registered charity. The charity is called UK Citizens Online Democracy and is charity number 1076346.</p>
@@ -91,6 +93,7 @@ WC1H 9AD<br>
 UK</p>
 </div>
 EOF
+    $out .= $contact_info unless $q->{site} eq 'emptyhomes'; 
     return $out;
 }
 
@@ -162,7 +165,7 @@ please <a href="/">go to the front page</a> and follow the instructions.'));
 $cobrand_form_elements
 </form>
 EOF
-    $out .= contact_details();
+    $out .= contact_details($q);
     return $out;
 }
 
