@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.295 2009-10-12 15:01:19 louise Exp $
+# $Id: index.cgi,v 1.296 2009-10-12 15:47:49 louise Exp $
 
 use strict;
 use Standard;
@@ -592,7 +592,8 @@ name if you give us permission.';
 name if you give us permission.';
     }
     if ($details eq 'all') {
-        $out .= '<p>' . sprintf(_("All the information you provide here will be sent to <strong>%s</strong>. $privacy_text"), join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @$all_councils));
+        $out .= '<p>' . sprintf(_("All the information you provide here will be sent to <strong>%s</strong>.
+$privacy_text"), join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @$all_councils));
         $out .= '<input type="hidden" name="council" value="' . join(',',@$all_councils) . '">';
     } elsif ($details eq 'some') {
         my $e = mySociety::Config::get('CONTACT_EMAIL');
