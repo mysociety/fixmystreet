@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.294 2009-10-07 08:18:42 louise Exp $
+# $Id: index.cgi,v 1.295 2009-10-12 15:01:19 louise Exp $
 
 use strict;
 use Standard;
@@ -583,11 +583,16 @@ EOF
         $out .= $q->p(_('You have located the problem at the point marked with a purple pin on the map.
 If this is not the correct location, simply click on the map again. '));
     }
-
+    my $privacy_text = '';
+    if ($q->{site} eq 'emptyhomes'){
+        $privacy_text = 'On the site, we will show the subject and details of the problem, plus your
+name if you give us permission.';
+    } else {
+        $privacy_text = 'The subject and details of the problem will be public, plus your
+name if you give us permission.';
+    }
     if ($details eq 'all') {
-        $out .= '<p>' . sprintf(_('All the information you provide here will be sent to <strong>%s</strong>.
-On the site, we will show the subject and details of the problem, plus your
-name if you give us permission.'), join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @$all_councils));
+        $out .= '<p>' . sprintf(_("All the information you provide here will be sent to <strong>%s</strong>. $privacy_text"), join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @$all_councils));
         $out .= '<input type="hidden" name="council" value="' . join(',',@$all_councils) . '">';
     } elsif ($details eq 'some') {
         my $e = mySociety::Config::get('CONTACT_EMAIL');
@@ -600,8 +605,7 @@ name if you give us permission.'), join('</strong> or <strong>', map { $areas_in
         my $list = join(' or ', map { $areas_info->{$_}->{name} } @missing);
         $out .= '<p>All the information you provide here will be sent to <strong>'
             . join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @councils)
-            . '</strong>. On the site, we will show the subject and details of the problem,
-            plus your name if you give us permission.';
+            . '</strong>. ' . $privacy_text;
         $out .= ' We do <strong>not</strong> yet have details for the other council';
         $out .= ($n>1) ? 's that cover' : ' that covers';
         $out .= " this location. You can help us by finding a contact email address for local
@@ -615,8 +619,8 @@ problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.";
         if ($q->{site} ne 'emptyhomes') {
             $out .= '<p>We do not yet have details for the council';
             $out .= ($n>1) ? 's that cover' : ' that covers';
-            $out .= " this location. If you submit a problem here it will be
-left on the site, but <strong>not</strong> reported to the council.
+            $out .= " this location. If you submit a problem here the subject and details 
+of the problem will be public, but the problem will <strong>not</strong> be reported to the council.
 You can help us by finding a contact email address for local
 problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.";
         } else {
@@ -674,7 +678,12 @@ EOF
     my $email_label = _('Email:');
     my $phone_label = _('Phone:');
     my $optional = _('(optional)');
-    my $anonymous = _('Can we show your name on the site?');
+    my $anonymous;
+    if ($q->{site} eq 'emptyhomes') {
+        $anonymous = _('Can we show your name on the site?');
+    } else {
+        $anonymous = _('Can we show your name publicly?');
+    }
     my $anonymous2 = _('(we never show your email address or phone number)');
 
     $out .= <<EOF;
@@ -734,6 +743,8 @@ EOF
         $out .= <<EOF;
 <p>Please note:</p>
 <ul>
+<li>We will only use your personal
+information in accordance with our <a href="/faq#privacy">privacy policy.</a></li>
 <li>Please be polite, concise and to the point.</li>
 <li>Please do not be abusive &mdash; abusing your council devalues the service for all users.</li>
 <li>Writing your message entirely in block capitals makes it hard to read,
@@ -957,8 +968,9 @@ EOF
     $out .= Page::display_problem_updates($input{id});
     $out .= '<div id="update_form">';
     $out .= $q->h2(_('Provide an update'));
-    $out .= $q->p($q->small(_('Please note that updates are not sent to the council.')))
+    $out .=  $q->p($q->small(_('Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href="/faq#privacy">privacy policy</a>')))
         unless $q->{site} eq 'emptyhomes'; # No council blurb
+
     if (@errors) {
         $out .= '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
