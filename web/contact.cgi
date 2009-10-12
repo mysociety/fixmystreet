@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.42 2009-09-28 12:29:48 louise Exp $
+# $Id: contact.cgi,v 1.43 2009-10-12 11:10:25 louise Exp $
 
 use strict;
 use Standard;
@@ -73,6 +73,25 @@ sub contact_submit {
     } else {
         return $q->p('Failed to send message.  Please try again, or <a href="mailto:' . mySociety::Config::get('CONTACT_EMAIL') . '">email us</a>.');
     }
+}
+
+sub contact_details {
+    my $out;
+    my $sitename = _('FixMyStreet');
+    $out .= <<EOF;
+<div class="contact-details">
+<p>$sitename is a service provided by mySociety, which is the project of a 
+registered charity. The charity is called UK Citizens Online Democracy and is charity number 1076346.</p>
+<p>mySociety can be contacted by email at <a href="mailto:team\@mysociety.org">team\@mysociety.org</a>,
+or by post at:</p>
+<p>mySociety.org<br>
+12 Duke's Road<br>
+London<br>
+WC1H 9AD<br>
+UK</p>
+</div>
+EOF
+    return $out;
 }
 
 sub contact_page {
@@ -143,6 +162,7 @@ please <a href="/">go to the front page</a> and follow the instructions.'));
 $cobrand_form_elements
 </form>
 EOF
+    $out .= contact_details();
     return $out;
 }
 

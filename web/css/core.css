@@ -397,6 +397,12 @@ p#copyright {
     margin-right: 1em;
 }
 
+/* Contact page */
+.contact-details {
+    font-size: 80%;
+    margin-top: 2em;
+}
+
 /* Printing */
 @media print {
     #map_box { float: none; margin: 0 auto; }
