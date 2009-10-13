@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.44 2009-10-12 13:37:02 louise Exp $
+# $Id: contact.cgi,v 1.45 2009-10-13 14:57:23 louise Exp $
 
 use strict;
 use Standard;
@@ -77,7 +77,7 @@ sub contact_submit {
 
 sub contact_details {
     my ($q) = @_;
-    my $out;
+    my $out = '';
     my $sitename = _('FixMyStreet');
     my $contact_info = '';
     $contact_info .= <<EOF;
