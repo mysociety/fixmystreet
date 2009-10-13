@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.25 2009-10-07 08:18:42 louise Exp $
+# $Id: Cobrand.pm,v 1.26 2009-10-13 09:24:09 louise Exp $
 
 package Cobrand;
 use strict;
@@ -367,7 +367,16 @@ Given a URL, return a URL with any extra params needed appended to it.
 =cut
 sub url {
     my ($cobrand, $url, $q) = @_;
-    return $url . '?' . extra_params($cobrand, $q);
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || !$handle->can('url')){
+        return $url;
+    } else{
+        return $handle->url($url);
+    }
+    return $url;
 }
 
 =item header_params

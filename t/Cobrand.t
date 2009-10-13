@@ -6,12 +6,12 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Cobrand.t,v 1.15 2009-10-07 08:18:42 louise Exp $
+# $Id: Cobrand.t,v 1.16 2009-10-13 09:24:09 louise Exp $
 #
 
 use strict;
 use warnings;
-use Test::More tests => 47;
+use Test::More tests => 50;
 use Test::Exception;
 
 use FindBin;
@@ -206,15 +206,25 @@ sub test_site_title {
 }
 
 sub test_on_map_list_limit {
-   my $cobrand = 'mysite';
-   my $limit = Cobrand::on_map_list_limit($cobrand);
+    my $cobrand = 'mysite';
+    my $limit = Cobrand::on_map_list_limit($cobrand);
    
-   is($limit, 30, 'on_map_list_limit returns output from cobrand module');
+    is($limit, 30, 'on_map_list_limit returns output from cobrand module');
 
-   $cobrand = 'nosite';
-   $limit = Cobrand::on_map_list_limit($cobrand);
-   is($limit, undef, 'on_map_list_limit returns undef if there is no limit defined by the cobrand');
+    $cobrand = 'nosite';
+    $limit = Cobrand::on_map_list_limit($cobrand);
+    is($limit, undef, 'on_map_list_limit returns undef if there is no limit defined by the cobrand');
 
+}
+
+sub test_url {
+    my $cobrand = 'mysite';
+    my $url = Cobrand::url($cobrand, '/xyz');
+    is($url, '/transformed_url', 'url returns output from cobrand module');
+    
+    $cobrand = 'nosite';
+    $url = Cobrand::url($cobrand, '/xyz');
+    is($url, '/xyz', 'url returns passed url if there is no url function defined by the cobrand'); 
 }
 
 ok(test_cobrand_handle() == 1, 'Ran all tests for the cobrand_handle function');
@@ -232,3 +242,4 @@ ok(test_header_params() == 1, 'Ran all tests for header_params');
 ok(test_root_path_js() == 1, 'Ran all tests for root_js');
 ok(test_site_title() == 1, 'Ran all tests for site_title');
 ok(test_on_map_list_limit() == 1, 'Ran all tests for on_map_list_limit');
+ok(test_url() == 1, 'Ran all tests for url');
