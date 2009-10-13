@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.50 2009-09-28 15:40:56 louise Exp $
+# $Id: alert.cgi,v 1.51 2009-10-13 09:45:57 louise Exp $
 
 use strict;
 use Standard;
@@ -35,9 +35,10 @@ sub main {
         if ($data->{id}) {
             $out = alert_token($q, $data);
         } else {
+            my $contact_url = Cobrand::url(Page::get_cobrand($q), '/contact');
             $out = $q->p(_(<<EOF));
 Thank you for trying to confirm your alert. We seem to have an error ourselves
-though, so <a href="/contact">please let us know what went on</a> and we'll look into it.
+though, so <a href="$contact_url">please let us know what went on</a> and we'll look into it.
 EOF
         }
     } elsif ($q->param('rss')) {
@@ -187,13 +188,14 @@ for the county council.')));
         throw Error::Simple('An area with three tiers of council? Impossible! '. $e . ' ' . $n . ' ' . join('|',keys %$areas));
     }
 
+    my $cobrand = Page::get_cobrand($q);
     my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($e, $n, 'G');
     my $dist = mySociety::Gaze::get_radius_containing_population($lat, $lon, 200000);
     $dist = int($dist*10+0.5)/10;
 
     my $checked = '';
     $checked = ' checked' if $q->param('feed') && $q->param('feed') eq "local:$x:$y";
-    my $cobrand_form_elements = Cobrand::form_elements(Page::get_cobrand($q), 'alerts', $q);
+    my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'alerts', $q);
     my $pics = Problems::recent_photos(5, $e, $n, $dist);
     $pics = '<div id="alert_photos">' . $q->h2(_('Photos of recent nearby reports')) . $pics . '</div>' if $pics;
 
@@ -202,8 +204,9 @@ for the county council.')));
             ? sprintf(_('Local RSS feeds and email alerts for &lsquo;%s&rsquo;'), $pretty_pc)
             : _('Local RSS feeds and email alerts')
     );
+    my $form_action = Cobrand::url($cobrand, '/alert');
     $out .= <<EOF;
-<form id="alerts" name="alerts" method="post" action="/alert">
+<form id="alerts" name="alerts" method="post" action="$form_action">
 <input type="hidden" name="type" value="local">
 <input type="hidden" name="pc" value="$input_h{pc}">
 $cobrand_form_elements
@@ -221,13 +224,19 @@ feed, or enter your email address to subscribe to an email alert.'));
 <input type="radio" name="feed" id="local:$x:$y" value="local:$x:$y"$checked>
 <label for="local:$x:$y">$label</label>
 EOF
+    my $rss_feed = Cobrand::url(Page::get_cobrand($q), "/rss/$x,$y");
     $out .= _('(a default distance which covers roughly 200,000 people)');
-    $out .= " <a href='/rss/$x,$y'><img src='/i/feed.png' width='16' height='16' title='"
+    $out .= " <a href='$rss_feed'><img src='/i/feed.png' width='16' height='16' title='"
         . _('RSS feed of nearby problems') . "' alt='" . _('RSS feed') . "' border='0'></a>";
     $out .= '</p> <p id="rss_local_alt">' . _('(alternatively the RSS feed can be customised, within');
+    my $cobrand = Page::get_cobrand($q);
+    my $rss_feed_2k  = Cobrand::url($cobrand, "/rss/$x,$y/2");
+    my $rss_feed_5k  = Cobrand::url($cobrand, "/rss/$x,$y/5");
+    my $rss_feed_10k = Cobrand::url($cobrand, "/rss/$x,$y/10");
+    my $rss_feed_20k = Cobrand::url($cobrand, "/rss/$x,$y/20");
     $out .= <<EOF;
- <a href="/rss/$x,$y/2">2km</a> / <a href="/rss/$x,$y/5">5km</a>
-/ <a href="/rss/$x,$y/10">10km</a> / <a href="/rss/$x,$y/20">20km</a>)
+ <a href="$rss_feed_2k">2km</a> / <a href="$rss_feed_5k">5km</a>
+/ <a href="$rss_feed_10k">10km</a> / <a href="$rss_feed_20k">20km</a>)
 </p>
 EOF
     $out .= $q->p(_('Or you can subscribe to an alert based upon what ward or council you&rsquo;re in:'));
@@ -251,10 +260,12 @@ sub alert_list_options {
         my $id = $type . ':' . $vals . ':' . $vals2;
         $out .= '<li><input type="radio" name="feed" id="' . $id . '" ';
         $out .= 'checked ' if $feed eq $id;
+        my $url = "/rss/";
+        $url .= $type eq 'area' ? 'area' : 'reports'; 
+        $url .= '/' . $rss ;
+        my $rss_url = Cobrand::url(Page::get_cobrand($q), $url);
         $out .= 'value="' . $id . '"> <label for="' . $id . '">' . $text
-            . '</label> <a href="/rss/';
-        $out .= $type eq 'area' ? 'area' : 'reports';
-        $out .= '/' . $rss . '"><img src="/i/feed.png" width="16" height="16"
+            . '</label> <a href="' . $rss_url . '"><img src="/i/feed.png" width="16" height="16"
 title="' . sprintf(_('RSS feed of %s'), $text) . '" alt="' . _('RSS feed') . '" border="0"></a>';
     }
     return $out;
@@ -271,7 +282,8 @@ sub alert_front_page {
     $out .= $q->p(_('FixMyStreet has a variety of RSS feeds and email alerts for local problems, including
 alerts for all problems within a particular ward or council, or all problems
 within a certain distance of a particular location.'));
-    $out .= $errors . '<form method="get" action="/alert">';
+    my $form_action = Cobrand::url(Page::get_cobrand($q), '/alert');
+    $out .= $errors . qq(<form method="get" action="$form_action">);
     $out .= $q->p(_('To find out what local alerts we have for you, please enter your GB
 postcode or street name and area:'), '<input type="text" name="pc" value="' . $input_h{pc} . '">
 <input type="submit" value="' . _('Go') . '">');
@@ -318,8 +330,9 @@ sub alert_updates_form {
     $out .= $q->p(_('Receive email when updates are left on this problem.'));
     my $label = _('Email:');
     my $subscribe = _('Subscribe');
+    my $form_action = Cobrand::url(Page::get_cobrand($q), 'alert');
     $out .= <<EOF;
-<form action="alert" method="post">
+<form action="$form_action" method="post">
 <label class="n" for="alert_rznvy">$label</label>
 <input type="text" name="rznvy" id="alert_rznvy" value="$input_h{rznvy}" size="30">
 <input type="hidden" name="id" value="$input_h{id}">
