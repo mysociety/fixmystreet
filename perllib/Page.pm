@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.189 2009-10-07 08:18:42 louise Exp $
+# $Id: Page.pm,v 1.190 2009-10-15 16:51:55 louise Exp $
 #
 
 package Page;
@@ -463,7 +463,9 @@ $params{pre}
         <div id="pins">$params{pins}</div>
     </div>
 EOF
-    $out .= '<div id="watermark"></div>';
+    if (Cobrand::show_watermark($cobrand)) {
+        $out .= '<div id="watermark"></div>';
+    }
     $out .= compass($q, $x, $y);
     my $copyright = _('Crown copyright. All rights reserved. Ministry of Justice');
     $out .= <<EOF;
@@ -492,16 +494,16 @@ sub display_pin {
         . $num . '.gif" alt="' . _('Problem') . '" style="top:' . ($py-59)
         . 'px; left:' . ($px) . 'px; position: absolute;">';
     return $out unless $_ && $_->{id} && $col ne 'blue';
-    my $url = NewURL($q, -retain => 1, 
-                         -url => '/report/' . $_->{id}, 
-                         pc => undef,
-                         x => undef, 
-                         y => undef, 
-                         sx => undef, 
-                         sy => undef, 
-                         all_pins => undef, 
-                         no_pins => undef
-);
+    my $cobrand = Page::get_cobrand($q);
+    my $url = Cobrand::url($cobrand, NewURL($q, -retain => 1, 
+                                                -url => '/report/' . $_->{id}, 
+                                                pc => undef,
+                                                x => undef, 
+                                                y => undef, 
+                                                sx => undef, 
+                                                sy => undef, 
+                                                all_pins => undef, 
+                                                no_pins => undef));
     $out = '<a title="' . ent($_->{title}) . '" href="' . $url . '">' . $out . '</a>';
     return $out;
 }
