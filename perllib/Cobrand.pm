@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.26 2009-10-13 09:24:09 louise Exp $
+# $Id: Cobrand.pm,v 1.27 2009-10-15 16:34:31 louise Exp $
 
 package Cobrand;
 use strict;
@@ -360,6 +360,24 @@ sub extra_params {
 
 }
 
+=item show_watermark
+
+Returns a boolean indicating whether the map watermark should be displayed
+
+=cut
+sub show_watermark {
+    my ($cobrand) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || !$handle->can('show_watermark')){
+        return 1;
+    } else{
+        return $handle->show_watermark();
+    }
+}
+
 =item url
 
 Given a URL, return a URL with any extra params needed appended to it. 
@@ -376,7 +394,6 @@ sub url {
     } else{
         return $handle->url($url);
     }
-    return $url;
 }
 
 =item header_params

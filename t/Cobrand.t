@@ -6,12 +6,12 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Cobrand.t,v 1.16 2009-10-13 09:24:09 louise Exp $
+# $Id: Cobrand.t,v 1.17 2009-10-15 16:34:31 louise Exp $
 #
 
 use strict;
 use warnings;
-use Test::More tests => 50;
+use Test::More tests => 53;
 use Test::Exception;
 
 use FindBin;
@@ -227,6 +227,17 @@ sub test_url {
     is($url, '/xyz', 'url returns passed url if there is no url function defined by the cobrand'); 
 }
 
+sub test_show_watermark {
+    my $cobrand = 'mysite';
+    my $watermark = Cobrand::show_watermark($cobrand);
+    is($watermark, 0, 'show_watermark returns output from cobrand module');
+
+    $cobrand = 'nosite';
+    $watermark = Cobrand::show_watermark($cobrand);
+    is($watermark, 1, 'watermark returns 1 if there is no show_watermark function defined by the cobrand');
+
+}
+
 ok(test_cobrand_handle() == 1, 'Ran all tests for the cobrand_handle function');
 ok(test_cobrand_page() == 1, 'Ran all tests for the cobrand_page function');
 ok(test_site_restriction() == 1, 'Ran all tests for the site_restriction function');
@@ -243,3 +254,4 @@ ok(test_root_path_js() == 1, 'Ran all tests for root_js');
 ok(test_site_title() == 1, 'Ran all tests for site_title');
 ok(test_on_map_list_limit() == 1, 'Ran all tests for on_map_list_limit');
 ok(test_url() == 1, 'Ran all tests for url');
+ok(test_show_watermark() == 1, 'Ran all tests for show_watermark');
