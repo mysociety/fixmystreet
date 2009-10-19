@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Util.pm,v 1.16 2009-10-15 16:34:31 louise Exp $
+# $Id: Util.pm,v 1.17 2009-10-19 11:10:32 louise Exp $
 
 package Cobrands::Mysite::Util;
 use Page;
@@ -88,6 +88,10 @@ sub url {
 }
 
 sub show_watermark {
+    return 0;
+}
+
+sub allow_photo_upload {
     return 0;
 }
 1;

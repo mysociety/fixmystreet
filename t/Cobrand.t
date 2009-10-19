@@ -6,12 +6,12 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Cobrand.t,v 1.17 2009-10-15 16:34:31 louise Exp $
+# $Id: Cobrand.t,v 1.18 2009-10-19 11:10:32 louise Exp $
 #
 
 use strict;
 use warnings;
-use Test::More tests => 53;
+use Test::More tests => 56;
 use Test::Exception;
 
 use FindBin;
@@ -238,6 +238,16 @@ sub test_show_watermark {
 
 }
 
+sub test_allow_photo_upload {
+    my $cobrand = 'mysite';
+    my $photo_upload = Cobrand::allow_photo_upload($cobrand);
+    is($photo_upload, 0, 'allow_photo_upload returns output from cobrand module');
+
+    $cobrand = 'nosite';
+    $photo_upload = Cobrand::allow_photo_upload($cobrand);
+    is($photo_upload, 1, 'allow_photo_upload returns 1 if there is no allow_photo_upload function defined by the cobrand');
+}
+
 ok(test_cobrand_handle() == 1, 'Ran all tests for the cobrand_handle function');
 ok(test_cobrand_page() == 1, 'Ran all tests for the cobrand_page function');
 ok(test_site_restriction() == 1, 'Ran all tests for the site_restriction function');
@@ -255,3 +265,4 @@ ok(test_site_title() == 1, 'Ran all tests for site_title');
 ok(test_on_map_list_limit() == 1, 'Ran all tests for on_map_list_limit');
 ok(test_url() == 1, 'Ran all tests for url');
 ok(test_show_watermark() == 1, 'Ran all tests for show_watermark');
+ok(test_allow_photo_upload() == 1, 'Ran all tests for allow_photo_upload');

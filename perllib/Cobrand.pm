@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.27 2009-10-15 16:34:31 louise Exp $
+# $Id: Cobrand.pm,v 1.28 2009-10-19 11:10:32 louise Exp $
 
 package Cobrand;
 use strict;
@@ -468,6 +468,25 @@ sub on_map_list_limit {
         return undef;
     } else{
         return $handle->on_map_list_limit();
+    }
+}
+
+=item allow_photo_upload COBRAND
+
+Return a boolean indicating whether the cobrand allows photo uploads
+
+=cut
+
+sub allow_photo_upload {
+    my ($cobrand) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || !$handle->can('allow_photo_upload')){
+        return 1;
+    } else{
+        return $handle->allow_photo_upload();
     }
 }
 
