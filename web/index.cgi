@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.297 2009-10-15 16:51:55 louise Exp $
+# $Id: index.cgi,v 1.298 2009-10-19 16:27:02 louise Exp $
 
 use strict;
 use Standard;
@@ -106,7 +106,7 @@ sub front_page {
     my ($q, $error) = @_;
     my $pc_h = ent($q->param('pc') || '');
     my $cobrand = Page::get_cobrand($q);
-    my $cobrand_form_elements = Cobrand::form_elements(Page::get_cobrand($q), 'postcodeForm', $q);
+    my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'postcodeForm', $q);
     my $out = '<p id="expl"><strong>' . _('Report, view, or discuss local problems') . '</strong>';
     my $subhead = _('(like graffiti, fly tipping, broken paving slabs, or street lighting)');
     $out .= '<br><small>' . $subhead . '</small>' if $subhead ne ' ';
@@ -126,7 +126,8 @@ sub front_page {
     $out .= '<p class="error">' . $error . '</p>' if ($error);
 
     # Add pretty commas for display
-    $out .= '<form action="" method="get" name="postcodeForm" id="postcodeForm">';
+    my $form_action = Cobrand::url($cobrand, '');
+    $out .= '<form action="' . $form_action . '" method="get" name="postcodeForm" id="postcodeForm">';
     if (my $token = $q->param('partial')) {
         my $id = mySociety::AuthToken::retrieve('partial', $token);
         if ($id) {
@@ -554,9 +555,9 @@ please specify the closest point on land.')) unless @$all_councils;
     } else {
         $details = 'some';
     }
-
+    my $cobrand = Page::get_cobrand($q);
+    my $allow_photo_upload = Cobrand::allow_photo_upload($cobrand);
     if ($input{skipped}) {
-       my $cobrand = Page::get_cobrand($q);
        my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'mapSkippedForm', $q);
        my $form_action = Cobrand::url($cobrand, '/'); 
        $out .= <<EOF;
@@ -570,7 +571,13 @@ EOF
         $out .= $q->h1(_('Reporting a problem')) . '<div>';
     } else {
         my $pins = Page::display_pin($q, $px, $py, 'purple');
-        $out .= Page::display_map($q, x => $input{x}, y => $input{y}, type => 2,
+        my $type;
+        if ($allow_photo_upload) {
+            $type = 2;
+        } else {
+            $type = 1;
+        }
+        $out .= Page::display_map($q, x => $input{x}, y => $input{y}, type => $type,
             pins => $pins, px => $px, py => $py );
         my $partial_id;
         if (my $token = $input{partial}) {
@@ -673,6 +680,7 @@ photo of the problem if you have one), etc.';
     $out .= <<EOF;
 <div id="fieldset">
 $category
+
 EOF
     my $subject_label = _('Subject:');
     my $detail_label = _('Details:');
@@ -704,21 +712,25 @@ EOF
             $out .= '<input type="hidden" name="partial" value="' . $token . '">';
         }
     }
-    if ($partial_id && $q->param('has_photo')) {
-        $out .= "<p>The photo you uploaded was:</p> <p><img src='/photo?id=$partial_id'></p>";
-    } else {
-        $out .= <<EOF;
+    my $photo_input = ''; 
+    if ($allow_photo_upload) {
+         $photo_input = <<EOF;
 <div id="fileupload_flashUI" style="display:none">
 <label for="form_photo">Photo:</label>
 <input type="text" id="txtfilename" disabled style="background-color: #ffffff;">
 <input type="button" value="Browse..." onclick="document.getElementById('txtfilename').value=''; swfu.cancelUpload(); swfu.selectFile();">
 <input type="hidden" name="upload_fileid" id="upload_fileid" value="$input_h{upload_fileid}">
-</div>
+</div>   
 <div id="fileupload_normalUI">
 <label for="form_photo">$photo_label</label>
 <input type="file" name="photo" id="form_photo">
 </div>
 EOF
+    }
+    if ($partial_id && $q->param('has_photo')) {
+        $out .= "<p>The photo you uploaded was:</p> <p><img src='/photo?id=$partial_id'></p>";
+    } else {
+        $out .= $photo_input;
     }
     $out .= <<EOF;
 <div><label for="form_name">$name_label</label>
@@ -956,7 +968,7 @@ sub display_problem {
     my $email_label = _('Email:');
     my $subscribe = _('Subscribe');
     my $blurb = _('Receive email when updates are left on this problem');
-    my $cobrand_form_elements = Cobrand::form_elements(Page::get_cobrand($q), 'alerts', $q);
+    my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'alerts', $q);
     my $form_action = Cobrand::url($cobrand, '/alert');
     $out .= <<EOF;
 <form action="$form_action" method="post" id="email_alert_box">
@@ -994,19 +1006,11 @@ EOF
     my $photo_label = _('Photo:');
     my $alert_label = _('Alert me to future updates');
     my $post_label = _('Post');
-    my $cobrand = Page::get_cobrand($q);
     $cobrand_form_elements = Cobrand::form_elements($cobrand, 'updateForm', $q);
-    my $form_action = Cobrand::url($cobrand, '/');
-    $out .= <<EOF;
-<form method="post" action="$form_action" name="updateForm" id="fieldset" enctype="multipart/form-data">
-<input type="hidden" name="submit_update" value="1">
-<input type="hidden" name="id" value="$input_h{id}">
-<div><label for="form_name">$name_label</label>
-<input type="text" name="name" id="form_name" value="$input_h{name}" size="20"> (optional)</div>
-<div><label for="form_rznvy">$email_label</label>
-<input type="text" name="rznvy" id="form_rznvy" value="$input_h{rznvy}" size="20"></div>
-<div><label for="form_update">$update_label</label>
-<textarea name="update" id="form_update" rows="7" cols="30">$input_h{update}</textarea></div>
+    my $allow_photo_upload = Cobrand::allow_photo_upload($cobrand);
+    my $photo_element = '';
+    if ($allow_photo_upload) {
+        $photo_element = <<EOF;
 $fixedline
 <div id="fileupload_flashUI" style="display:none">
 <label for="form_photo">Photo:</label>
@@ -1018,6 +1022,21 @@ $fixedline
 <label for="form_photo">$photo_label</label>
 <input type="file" name="photo" id="form_photo">
 </div>
+EOF
+    }
+ 
+    $form_action = Cobrand::url($cobrand, '/');
+    $out .= <<EOF;
+<form method="post" action="$form_action" name="updateForm" id="fieldset" enctype="multipart/form-data">
+<input type="hidden" name="submit_update" value="1">
+<input type="hidden" name="id" value="$input_h{id}">
+<div><label for="form_name">$name_label</label>
+<input type="text" name="name" id="form_name" value="$input_h{name}" size="20"> (optional)</div>
+<div><label for="form_rznvy">$email_label</label>
+<input type="text" name="rznvy" id="form_rznvy" value="$input_h{rznvy}" size="20"></div>
+<div><label for="form_update">$update_label</label>
+<textarea name="update" id="form_update" rows="7" cols="30">$input_h{update}</textarea></div>
+$photo_element
 <div class="checkbox"><input type="checkbox" name="add_alert" id="form_add_alert" value="1"$add_alert_checked>
 <label for="form_add_alert">$alert_label</label></div>
 <div class="checkbox"><input type="submit" id="update_post" value="$post_label"></div>
