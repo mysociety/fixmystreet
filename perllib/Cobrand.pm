@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.28 2009-10-19 11:10:32 louise Exp $
+# $Id: Cobrand.pm,v 1.29 2009-10-19 16:44:55 louise Exp $
 
 package Cobrand;
 use strict;
@@ -489,6 +489,43 @@ sub allow_photo_upload {
         return $handle->allow_photo_upload();
     }
 }
+
+=item allow_photo_display COBRAND
+
+Return a boolean indicating whether the cobrand allows photo display
+
+=cut 
+
+sub allow_photo_display {
+    my ($cobrand) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || !$handle->can('allow_photo_display')){
+        return 1;
+    } else{
+        return $handle->allow_photo_display();
+    }
+}
+
+=item location_check COBRAND LOCATION QUERY
+
+Return a boolean indicating whether the location passed any extra location checks defined by the cobrand
+using data in the query
+=cut
+sub location_check {
+    my ($cobrand, $location, $query) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || !$handle->can('location_check')){
+        return 1;
+    } else{
+        return $handle->location_check($location, $query);
+    }
+} 
 
 1;
 

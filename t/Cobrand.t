@@ -6,12 +6,12 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Cobrand.t,v 1.18 2009-10-19 11:10:32 louise Exp $
+# $Id: Cobrand.t,v 1.19 2009-10-19 16:44:55 louise Exp $
 #
 
 use strict;
 use warnings;
-use Test::More tests => 56;
+use Test::More tests => 62;
 use Test::Exception;
 
 use FindBin;
@@ -248,6 +248,28 @@ sub test_allow_photo_upload {
     is($photo_upload, 1, 'allow_photo_upload returns 1 if there is no allow_photo_upload function defined by the cobrand');
 }
 
+sub test_allow_photo_display {
+    my $cobrand = 'mysite';
+    my $photo_display = Cobrand::allow_photo_display($cobrand);
+    is($photo_display, 0, 'allow_photo_display returns output from cobrand module');
+
+    $cobrand = 'nosite';
+    $photo_display = Cobrand::allow_photo_display($cobrand);
+    is($photo_display, 1, 'allow_photo_display returns 1 if there is no allow_photo_display function defined by the cobrand');
+}
+
+sub test_location_check {
+    my $cobrand = 'mysite';
+    my $location = 'near here';
+    my $query = new MockQuery('mysite');
+    my $check_result = Cobrand::location_check($cobrand, $location, $query);
+    is($check_result, 0, 'location_check returns output from cobrand module');
+    
+    $cobrand = 'nosite';
+    $check_result = Cobrand::location_check($cobrand, $location, $query);
+    is($check_result, 1, 'location_check returns 1 if there is no location_check function defined by the cobrand');
+}
+
 ok(test_cobrand_handle() == 1, 'Ran all tests for the cobrand_handle function');
 ok(test_cobrand_page() == 1, 'Ran all tests for the cobrand_page function');
 ok(test_site_restriction() == 1, 'Ran all tests for the site_restriction function');
@@ -266,3 +288,5 @@ ok(test_on_map_list_limit() == 1, 'Ran all tests for on_map_list_limit');
 ok(test_url() == 1, 'Ran all tests for url');
 ok(test_show_watermark() == 1, 'Ran all tests for show_watermark');
 ok(test_allow_photo_upload() == 1, 'Ran all tests for allow_photo_upload');
+ok(test_allow_photo_display() == 1, 'Ran all tests for allow_photo_display');
+ok(test_location_check() == 1, 'Ran all tests for location_check');
