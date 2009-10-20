@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.33 2009-08-03 10:45:28 matthew Exp $
+# $Id: reports.cgi,v 1.34 2009-10-20 14:37:46 louise Exp $
 
 use strict;
 use Standard;
@@ -22,11 +22,9 @@ sub main {
     my $q = shift;
     my $all = $q->param('all') || 0;
     my $rss = $q->param('rss') || '';
-
+    my $cobrand = Page::get_cobrand($q);
     # Look up council name, if given
     my $q_council = $q->param('council') || '';
-
-    $q_council = 2260 if $q->{site} eq 'scambs';
 
     # Manual misspelling redirect
     if ($q_council =~ /^rhondda cynon taff$/i) {
@@ -101,10 +99,8 @@ sub main {
             $type = 'area_problems'; # Problems within an area
         }
         print $q->header( -type => 'application/xml; charset=utf-8' );
-        my $xsl = $q->{site} eq 'emptyhomes' ? '/xsl.eha.xsl' : '/xsl.xsl';
-        my $out = mySociety::Alert::generate_rss($type, $xsl, "/$url", \@params, \%title_params);
-        $out =~ s/FixMyStreet/EnviroCrime/g if $q->{site} eq 'scambs';
-        $out =~ s/matthew.fixmystreet/scambs.matthew.fixmystreet/g if $q->{site} eq 'scambs'; # XXX Temp
+        my $xsl = Cobrand::feed_xsl($cobrand);
+        my $out = mySociety::Alert::generate_rss($type, $xsl, "/$url", \@params, \%title_params, $cobrand);
         $out =~ s/matthew.fixmystreet/emptyhomes.matthew.fixmystreet/g if $q->{site} eq 'emptyhomes';
         print $out;
         return;
