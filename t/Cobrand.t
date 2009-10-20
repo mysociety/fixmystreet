@@ -6,7 +6,7 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Cobrand.t,v 1.19 2009-10-19 16:44:55 louise Exp $
+# $Id: Cobrand.t,v 1.20 2009-10-20 11:55:50 louise Exp $
 #
 
 use strict;
@@ -258,16 +258,16 @@ sub test_allow_photo_display {
     is($photo_display, 1, 'allow_photo_display returns 1 if there is no allow_photo_display function defined by the cobrand');
 }
 
-sub test_location_check {
+sub test_council_check {
     my $cobrand = 'mysite';
-    my $location = 'near here';
+    my $councils = {};
     my $query = new MockQuery('mysite');
-    my $check_result = Cobrand::location_check($cobrand, $location, $query);
-    is($check_result, 0, 'location_check returns output from cobrand module');
+    my ($check_result, $error) = Cobrand::council_check($cobrand, $councils, $query);
+    is($check_result, 0, 'council_check returns output from cobrand module');
     
     $cobrand = 'nosite';
-    $check_result = Cobrand::location_check($cobrand, $location, $query);
-    is($check_result, 1, 'location_check returns 1 if there is no location_check function defined by the cobrand');
+    ($check_result, $error) = Cobrand::council_check($cobrand, $councils, $query);
+    is($check_result, 1, 'council_check returns 1 if there is no council_check function defined by the cobrand');
 }
 
 ok(test_cobrand_handle() == 1, 'Ran all tests for the cobrand_handle function');
@@ -289,4 +289,4 @@ ok(test_url() == 1, 'Ran all tests for url');
 ok(test_show_watermark() == 1, 'Ran all tests for show_watermark');
 ok(test_allow_photo_upload() == 1, 'Ran all tests for allow_photo_upload');
 ok(test_allow_photo_display() == 1, 'Ran all tests for allow_photo_display');
-ok(test_location_check() == 1, 'Ran all tests for location_check');
+ok(test_council_check() == 1, 'Ran all tests for council_check');

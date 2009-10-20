@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.29 2009-10-19 16:44:55 louise Exp $
+# $Id: Cobrand.pm,v 1.30 2009-10-20 11:55:50 louise Exp $
 
 package Cobrand;
 use strict;
@@ -509,21 +509,21 @@ sub allow_photo_display {
     }
 }
 
-=item location_check COBRAND LOCATION QUERY
+=item council_check COBRAND COUNCILS QUERY
 
-Return a boolean indicating whether the location passed any extra location checks defined by the cobrand
+Return a boolean indicating whether the councils for the location passed any extra checks defined by the cobrand
 using data in the query
 =cut
-sub location_check {
-    my ($cobrand, $location, $query) = @_;
+sub council_check {
+    my ($cobrand, $councils, $query, $context) = @_;
     my $handle;
     if ($cobrand){
         $handle = cobrand_handle($cobrand);
     }
-    if ( !$cobrand || !$handle || !$handle->can('location_check')){
-        return 1;
+    if ( !$cobrand || !$handle || !$handle->can('council_check')){
+        return (1, '');
     } else{
-        return $handle->location_check($location, $query);
+        return $handle->council_check($councils, $query, $context);
     }
 } 
 
