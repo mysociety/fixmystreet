@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.30 2009-10-20 11:55:50 louise Exp $
+# $Id: Cobrand.pm,v 1.31 2009-10-20 14:24:59 louise Exp $
 
 package Cobrand;
 use strict;
@@ -526,6 +526,25 @@ sub council_check {
         return $handle->council_check($councils, $query, $context);
     }
 } 
+
+=item feed_xsl
+ 
+Return an XSL to be used in rendering feeds
+
+=cut
+sub feed_xsl {
+    my ($cobrand) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || !$handle->can('feed_xsl')){
+        return '/xsl.xsl';
+    } else{
+        return $handle->feed_xsl();
+    }
+
+}
 
 1;
 

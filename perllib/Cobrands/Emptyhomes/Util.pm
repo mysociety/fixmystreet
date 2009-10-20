@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Util.pm,v 1.5 2009-09-23 17:01:00 louise Exp $
+# $Id: Util.pm,v 1.6 2009-10-20 14:24:59 louise Exp $
 
 package Cobrands::Emptyhomes::Util;
 use Standard;
@@ -93,6 +93,16 @@ Return the title to be used in page heads
 sub site_title { 
     my ($self) = @_;
     return _('Report Empty Homes');
+}
+
+=item feed_xsl
+
+Return the XSL file path to be used for feeds'
+
+=cut
+sub feed_xsl {
+    my ($self) = @_;
+    return '/xsl.eha.xsl';
 }
 
 1;
