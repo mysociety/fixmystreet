@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.299 2009-10-20 09:14:44 louise Exp $
+# $Id: index.cgi,v 1.300 2009-10-20 11:56:50 louise Exp $
 
 use strict;
 use Standard;
@@ -496,16 +496,20 @@ sub display_form {
         { easting => $easting, northing => $northing },
         'polygon', $parent_types);
 
+
+    # Let cobrand do a check
+    my $cobrand = Page::get_cobrand($q);
+    my ($success, $error_msg) = Cobrand::council_check($cobrand, $all_councils, $q, 'submit_problem');    
+    if (!$success){
+        return display_location($q, $error_msg);
+    }
+
     # Ipswich & St Edmundsbury are responsible for everything in their areas, no Suffolk
     delete $all_councils->{2241} if $all_councils->{2446} || $all_councils->{2443};
 
     # Norwich is responsible for everything in its areas, no Norfolk
     delete $all_councils->{2233} if $all_councils->{2391};
 
-    if ($q->{site} eq 'scambs') {
-        delete $all_councils->{2218};
-        return display_location($q, 'That location is not within the boundary of South Cambridgeshire District Council - you can report problems elsewhere in Great Britain using <a href="http://www.fixmystreet.com/">FixMyStreet</a>.') unless $all_councils->{2260};
-    }
     $all_councils = [ keys %$all_councils ];
     return display_location($q, _('That spot does not appear to be covered by a council.
 If you have tried to report an issue past the shoreline, for example,
@@ -555,7 +559,6 @@ please specify the closest point on land.')) unless @$all_councils;
     } else {
         $details = 'some';
     }
-    my $cobrand = Page::get_cobrand($q);
     my $allow_photo_upload = Cobrand::allow_photo_upload($cobrand);
     if ($input{skipped}) {
        my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'mapSkippedForm', $q);
