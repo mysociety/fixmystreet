@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: rss.cgi,v 1.33 2009-10-20 14:37:46 louise Exp $
+# $Id: rss.cgi,v 1.34 2009-10-20 15:10:52 louise Exp $
 
 use strict;
 use Error qw(:try);
@@ -49,9 +49,6 @@ sub main {
         return '';
     }
     print $q->header( -type => 'application/xml; charset=utf-8' );
-    $out =~ s/FixMyStreet/EnviroCrime/g if $q->{site} eq 'scambs';
-    $out =~ s/matthew.fixmystreet/scambs.matthew.fixmystreet/g if $q->{site} eq 'scambs'; # XXX Temp
-    $out =~ s/matthew.fixmystreet/emptyhomes.matthew.fixmystreet/g if $q->{site} eq 'emptyhomes';
     print $out;
 }
 Page::do_fastcgi(\&main);
