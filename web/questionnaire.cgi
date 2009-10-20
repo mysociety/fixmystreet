@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.42 2009-09-28 10:34:21 louise Exp $
+# $Id: questionnaire.cgi,v 1.43 2009-10-20 09:14:44 louise Exp $
 
 use strict;
 use Standard;
@@ -186,7 +186,7 @@ sub display_questionnaire {
 
     my $pins = Page::display_pin($q, $px, $py, $problem->{state} eq 'fixed'?'green':'red');
     my $problem_text = Page::display_problem_text($q, $problem);
-    my $updates = Page::display_problem_updates($problem->{id});
+    my $updates = Page::display_problem_updates($problem->{id}, $q);
     my $out = '';
     $out .= Page::display_map($q, x => $x_tile, y => $y_tile, pins => $pins,
         px => $px, py => $py, pre => $problem_text, post => $updates );

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.191 2009-10-19 16:27:02 louise Exp $
+# $Id: Page.pm,v 1.192 2009-10-20 09:14:43 louise Exp $
 #
 
 package Page;
@@ -780,8 +780,9 @@ sub display_problem_text {
     foreach (split /\n{2,}/, $detail) {
         $out .= '<p>' . ent($_) . '</p>';
     }
-
-    if ($problem->{photo}) {
+    my $cobrand = get_cobrand($q);
+    my $display_photos = Cobrand::allow_photo_display($cobrand);
+    if ($display_photos && $problem->{photo}) {
         my $dims = Image::Size::html_imgsize(\$problem->{photo});
         $out .= "<p align='center'><img alt='' $dims src='/photo?id=$problem->{id}'></p>";
     }
@@ -791,7 +792,7 @@ sub display_problem_text {
 
 # Display updates
 sub display_problem_updates {
-    my $id = shift;
+    my ($id, $q) = @_;
     my $updates = select_all(
         "select id, name, extract(epoch from created) as created, text,
          mark_fixed, mark_open, (photo is not null) as has_photo
@@ -816,7 +817,9 @@ sub display_problem_updates {
             foreach (split /\n{2,}/, $text) {
                 $out .= '<p>' . ent($_) . '</p>';
             }
-            if ($row->{has_photo}) {
+            my $cobrand = get_cobrand($q);
+            my $display_photos = Cobrand::allow_photo_display($cobrand);
+            if ($display_photos && $row->{has_photo}) {
                 $out .= '<p><img alt="" height=100 src="/photo?tn=1;c=' . $row->{id} . '"></p>';
             }
             $out .= '</div>';

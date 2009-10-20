@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.51 2009-10-13 09:45:57 louise Exp $
+# $Id: alert.cgi,v 1.52 2009-10-20 09:14:44 louise Exp $
 
 use strict;
 use Standard;
@@ -196,7 +196,7 @@ for the county council.')));
     my $checked = '';
     $checked = ' checked' if $q->param('feed') && $q->param('feed') eq "local:$x:$y";
     my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'alerts', $q);
-    my $pics = Problems::recent_photos(5, $e, $n, $dist);
+    my $pics = Cobrand::recent_photos($cobrand, 5, $e, $n, $dist);
     $pics = '<div id="alert_photos">' . $q->h2(_('Photos of recent nearby reports')) . $pics . '</div>' if $pics;
 
     my $out = $q->h1(
@@ -287,12 +287,13 @@ within a certain distance of a particular location.'));
     $out .= $q->p(_('To find out what local alerts we have for you, please enter your GB
 postcode or street name and area:'), '<input type="text" name="pc" value="' . $input_h{pc} . '">
 <input type="submit" value="' . _('Go') . '">');
-    $out .= Cobrand::form_elements(Page::get_cobrand($q), 'alerts', $q);
+    my $cobrand = Page::get_cobrand($q);
+    $out .= Cobrand::form_elements($cobrand, 'alerts', $q);
     $out .= '</form>';
 
     return $out if $q->referer() && $q->referer() =~ /fixmystreet\.com/;
-
-    my $recent_photos = Problems::recent_photos(10);
+    my $cobrand = Page::get_cobrand($q);
+    my $recent_photos = Cobrand::recent_photos($cobrand, 10);
     $out .= '<div id="alert_recent">' . $q->h2(_('Some photos of recent reports')) . $recent_photos . '</div>' if $recent_photos;
     return $out;
 }

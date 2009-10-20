@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.298 2009-10-19 16:27:02 louise Exp $
+# $Id: index.cgi,v 1.299 2009-10-20 09:14:44 louise Exp $
 
 use strict;
 use Standard;
@@ -985,7 +985,7 @@ EOF
     $out .= ' &nbsp; <a href="'. $rss_url .'"><img src="/i/feed.png" width="16" height="16" title="' . _('RSS feed') . '" alt="' . _('RSS feed of updates to this problem') . '" border="0" style="vertical-align: middle"></a>';
     $out .= '</div>';
 
-    $out .= Page::display_problem_updates($input{id});
+    $out .= Page::display_problem_updates($input{id}, $q);
     $out .= '<div id="update_form">';
     $out .= $q->h2(_('Provide an update'));
     $out .=  $q->p($q->small(_('Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href="/faq#privacy">privacy policy</a>')))
