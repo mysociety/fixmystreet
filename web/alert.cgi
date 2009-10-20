@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.52 2009-10-20 09:14:44 louise Exp $
+# $Id: alert.cgi,v 1.53 2009-10-20 11:57:25 louise Exp $
 
 use strict;
 use Standard;
@@ -96,6 +96,11 @@ sub alert_list {
     my %councils = map { $_ => 1 } @$mySociety::VotingArea::council_parent_types;
 
     my $areas = mySociety::MaPit::get_voting_areas_by_location({easting=>$e, northing=>$n}, 'polygon', \@types);
+    my $cobrand = Page::get_cobrand($q);
+    my ($success, $error_msg) = Cobrand::council_check($cobrand, $areas, $q, 'alert');    
+    if (!$success){
+        return alert_front_page($q, $error_msg);
+    }
     $areas = mySociety::MaPit::get_voting_areas_info([ keys %$areas ]);
 
     return alert_front_page($q, _('That location does not appear to be covered by a council, perhaps it is offshore - please try somewhere more specific.')) if keys %$areas == 0;
@@ -188,7 +193,6 @@ for the county council.')));
         throw Error::Simple('An area with three tiers of council? Impossible! '. $e . ' ' . $n . ' ' . join('|',keys %$areas));
     }
 
-    my $cobrand = Page::get_cobrand($q);
     my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($e, $n, 'G');
     my $dist = mySociety::Gaze::get_radius_containing_population($lat, $lon, 200000);
     $dist = int($dist*10+0.5)/10;
@@ -229,7 +233,6 @@ EOF
     $out .= " <a href='$rss_feed'><img src='/i/feed.png' width='16' height='16' title='"
         . _('RSS feed of nearby problems') . "' alt='" . _('RSS feed') . "' border='0'></a>";
     $out .= '</p> <p id="rss_local_alt">' . _('(alternatively the RSS feed can be customised, within');
-    my $cobrand = Page::get_cobrand($q);
     my $rss_feed_2k  = Cobrand::url($cobrand, "/rss/$x,$y/2");
     my $rss_feed_5k  = Cobrand::url($cobrand, "/rss/$x,$y/5");
     my $rss_feed_10k = Cobrand::url($cobrand, "/rss/$x,$y/10");
@@ -292,7 +295,6 @@ postcode or street name and area:'), '<input type="text" name="pc" value="' . $i
     $out .= '</form>';
 
     return $out if $q->referer() && $q->referer() =~ /fixmystreet\.com/;
-    my $cobrand = Page::get_cobrand($q);
     my $recent_photos = Cobrand::recent_photos($cobrand, 10);
     $out .= '<div id="alert_recent">' . $q->h2(_('Some photos of recent reports')) . $recent_photos . '</div>' if $recent_photos;
     return $out;
