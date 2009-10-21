@@ -6,7 +6,7 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.t,v 1.6 2009-10-07 08:18:42 louise Exp $
+# $Id: Page.t,v 1.7 2009-10-21 16:09:22 louise Exp $
 #
 
 use strict;
@@ -20,7 +20,7 @@ use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../../perllib";
 
 use Page;
-use MockQuery;
+use mySociety::MockQuery;
 use mySociety::Locale;
 
 sub mock_query(){
