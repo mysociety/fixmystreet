@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.32 2009-10-21 08:36:07 louise Exp $
+# $Id: Cobrand.pm,v 1.33 2009-10-21 14:57:48 louise Exp $
 
 package Cobrand;
 use strict;
@@ -99,7 +99,7 @@ version of the site
 =cut
 
 sub base_url_for_emails {
-    my ($cobrand) = @_;
+    my ($cobrand, $cobrand_data) = @_;
     my $handle;
     if ($cobrand){
         $handle = cobrand_handle($cobrand);
@@ -107,7 +107,7 @@ sub base_url_for_emails {
     if ( !$cobrand || !$handle || ! $handle->can('base_url_for_emails')){
         return base_url($cobrand);
     }{
-        return $handle->base_url_for_emails();
+        return $handle->base_url_for_emails($cobrand_data);
     }
 }
 
@@ -340,6 +340,25 @@ sub extra_alert_data {
     }
 }
 
+=item extra_data COBRAND Q
+
+Given a query Q, extract any extra data required by the cobrand 
+
+=cut
+
+sub extra_data {
+    my ($cobrand, $q) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    } 
+    if ( !$cobrand || !$handle || !$handle->can('extra_data')){
+        return '';
+    } else{
+        return $handle->extra_data($q);
+    }
+}
+
 =item extra_params COBRAND Q 
 
 Given a query, return a hash of extra params to be included in 
@@ -384,7 +403,7 @@ Given a URL, return a URL with any extra params needed appended to it.
 
 =cut
 sub url {
-    my ($cobrand, $url, $q) = @_;
+    my ($cobrand, $url, $q, $extra_data) = @_;
     my $handle;
     if ($cobrand){
         $handle = cobrand_handle($cobrand);
@@ -392,7 +411,7 @@ sub url {
     if ( !$cobrand || !$handle || !$handle->can('url')){
         return $url;
     } else{
-        return $handle->url($url);
+        return $handle->url($url, $q, $extra_data);
     }
 }
 
