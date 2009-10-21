@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.301 2009-10-21 10:23:28 louise Exp $
+# $Id: index.cgi,v 1.302 2009-10-21 15:11:38 louise Exp $
 
 use strict;
 use Standard;
@@ -126,7 +126,7 @@ sub front_page {
     $out .= '<p class="error">' . $error . '</p>' if ($error);
 
     # Add pretty commas for display
-    my $form_action = Cobrand::url($cobrand, '');
+    my $form_action = Cobrand::url($cobrand, '', $q);
     $out .= '<form action="' . $form_action . '" method="get" name="postcodeForm" id="postcodeForm">';
     if (my $token = $q->param('partial')) {
         my $id = mySociety::AuthToken::retrieve('partial', $token);
@@ -566,7 +566,7 @@ please specify the closest point on land.')) unless @$all_councils;
     }
     if ($input{skipped}) {
        my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'mapSkippedForm', $q);
-       my $form_action = Cobrand::url($cobrand, '/'); 
+       my $form_action = Cobrand::url($cobrand, '/', $q); 
        $out .= <<EOF;
 <form action="$form_action" method="post" name="mapSkippedForm" $enctype>
 <input type="hidden" name="pc" value="$input_h{pc}">
@@ -849,8 +849,8 @@ sub display_location {
     my $rss_title = _('RSS feed of recent local problems');
     my $rss_alt = _('RSS feed');
     my $u_pc = uri_escape($input{pc});
-    my $email_me_link = Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/alert', x=>$x, y=>$y, feed=>"local:$x:$y"));
-    my $rss_link = Cobrand::url($cobrand, NewURL($q, -retain => 1, -url=> "/rss/$x,$y", pc => undef));
+    my $email_me_link = Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/alert', x=>$x, y=>$y, feed=>"local:$x:$y"), $q);
+    my $rss_link = Cobrand::url($cobrand, NewURL($q, -retain => 1, -url=> "/rss/$x,$y", pc => undef), $q);
     $out .= <<EOF;
     <p id="alert_links_area">
     <a id="email_alert" rel="nofollow" href="$email_me_link">$email_me</a>
@@ -870,7 +870,7 @@ EOF
     my $list = '';
     my $report_url;
     foreach (@$on_map) {
-        $report_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, y => undef));  
+        $report_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, y => undef), $q);  
         $list .= '<li><a href="' . $report_url . '">';
         $list .= $_->{title};
         $list .= '</a>';
@@ -883,7 +883,7 @@ EOF
     $out .= $q->h2({-id => 'closest_problems'}, sprintf(_('Closest nearby problems <small>(within&nbsp;%skm)</small>'), $dist));
     $list = '';
     foreach (@$around_map) {
-        $report_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, y => undef));  
+        $report_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, y => undef), $q);  
         $list .= '<li><a href="' . $report_url . '">';
         $list .= $_->{title} . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
         $list .= '</a>';
@@ -945,8 +945,8 @@ sub display_problem {
     }
 
     my $out = '';
-
-    my $google_link_base = Cobrand::base_url_for_emails($cobrand);
+    my $extra_data = Cobrand::extra_data($cobrand, $q);
+    my $google_link_base = Cobrand::base_url_for_emails($cobrand, $extra_data);
     my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($problem->{easting}, $problem->{northing}, 'G');
     my $map_links = "<p id='sub_map_links'><a href='http://maps.google.co.uk/maps?output=embed&amp;z=16&amp;q="
         . URI::Escape::uri_escape_utf8('<a href="' . $google_link_base . '/report/' . $problem->{id} . '">' . $problem->{title} . '</a>') . "\@$lat,$lon'>View on Google Maps</a></p>";
@@ -961,22 +961,22 @@ sub display_problem {
         $out .= $q->p({id => 'fixed'}, _('This problem has been fixed') . '.')
     }
     $out .= Page::display_problem_text($q, $problem);
-    my $contact_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/contact?id=' . $input{id}));
+    my $contact_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/contact?id=' . $input{id}), $q);
     $out .= $q->p({align=>'right'},
         $q->small($q->a({rel => 'nofollow', href => $contact_url}, _('Offensive? Unsuitable? Tell us')))
     );
 
-    my $back = Cobrand::url($cobrand, NewURL($q, -url => '/', 'x' => $x_tile, 'y' => $y_tile, -retain => 1, pc => undef, id => undef ));
+    my $back = Cobrand::url($cobrand, NewURL($q, -url => '/', 'x' => $x_tile, 'y' => $y_tile, -retain => 1, pc => undef, id => undef ), $q);
     $out .= '<p style="padding-bottom: 0.5em; border-bottom: dotted 1px #999999;" align="right"><a href="'
         . $back . '">' . _('More problems nearby') . '</a></p>';
     $out .= '<div id="alert_links">';
-    my $alert_link = Cobrand::url($cobrand, NewURL($q, -url => '/alert?type=updates;id='.$input_h{id}, -retain => 1, pc => undef ));
+    my $alert_link = Cobrand::url($cobrand, NewURL($q, -url => '/alert?type=updates;id='.$input_h{id}, -retain => 1, pc => undef ), $q);
     $out .= '<a rel="nofollow" id="email_alert" href="' . $alert_link . '">' . _('Email me updates') . '</a>';
     my $email_label = _('Email:');
     my $subscribe = _('Subscribe');
     my $blurb = _('Receive email when updates are left on this problem');
     my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'alerts', $q);
-    my $form_action = Cobrand::url($cobrand, '/alert');
+    my $form_action = Cobrand::url($cobrand, '/alert', $q);
     $out .= <<EOF;
 <form action="$form_action" method="post" id="email_alert_box">
 <p>$blurb</p>
@@ -988,7 +988,7 @@ sub display_problem {
 $cobrand_form_elements
 </form>
 EOF
-    my $rss_url = Cobrand::url($cobrand,  NewURL($q, -retain=>1, -url => '/rss/'.$input_h{id}, pc => undef, id => undef));
+    my $rss_url = Cobrand::url($cobrand,  NewURL($q, -retain=>1, -url => '/rss/'.$input_h{id}, pc => undef, id => undef), $q);
 
     $out .= ' &nbsp; <a href="'. $rss_url .'"><img src="/i/feed.png" width="16" height="16" title="' . _('RSS feed') . '" alt="' . _('RSS feed of updates to this problem') . '" border="0" style="vertical-align: middle"></a>';
     $out .= '</div>';
@@ -1033,7 +1033,7 @@ $fixedline
 EOF
     }
  
-    $form_action = Cobrand::url($cobrand, '/');
+    $form_action = Cobrand::url($cobrand, '/', $q);
     my $enctype = '';
     if ($allow_photo_upload) {
         $enctype = 'enctype="multipart/form-data"';
