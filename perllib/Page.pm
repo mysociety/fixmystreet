@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.192 2009-10-20 09:14:43 louise Exp $
+# $Id: Page.pm,v 1.193 2009-10-21 15:02:45 louise Exp $
 #
 
 package Page;
@@ -135,10 +135,11 @@ one, return the base URL to use in emails.
 sub base_url_with_lang {
     my ($q, $reverse, $email) = @_;
     my $base;
+    my $cobrand = get_cobrand($q);
     if ($email) {
-        $base = Cobrand::base_url_for_emails(get_cobrand($q));
+        $base = Cobrand::base_url_for_emails($cobrand, Cobrand::extra_data($cobrand, $q));
     } else {
-        $base = Cobrand::base_url(get_cobrand($q));
+        $base = Cobrand::base_url($cobrand);
     }
     return $base unless $q->{site} eq 'emptyhomes';
     my $lang = $mySociety::Locale::lang;
@@ -431,7 +432,7 @@ sub display_map {
     my $root_path_js = Cobrand::root_path_js($cobrand);
     my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'mapForm', $q);
     my $img_type;
-    my $form_action = Cobrand::url($cobrand, '');
+    my $form_action = Cobrand::url($cobrand, '', $q);
     if ($params{type}) {
         my $encoding = '';
         $encoding = ' enctype="multipart/form-data"' if ($params{type}==2);
@@ -504,7 +505,7 @@ sub display_pin {
                                                 sx => undef, 
                                                 sy => undef, 
                                                 all_pins => undef, 
-                                                no_pins => undef));
+                                                no_pins => undef), $q);
     $out = '<a title="' . ent($_->{title}) . '" href="' . $url . '">' . $out . '</a>';
     return $out;
 }
