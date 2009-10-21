@@ -6,7 +6,7 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Cobrand.t,v 1.20 2009-10-20 11:55:50 louise Exp $
+# $Id: Cobrand.t,v 1.21 2009-10-21 15:03:32 louise Exp $
 #
 
 use strict;
@@ -219,11 +219,12 @@ sub test_on_map_list_limit {
 
 sub test_url {
     my $cobrand = 'mysite';
-    my $url = Cobrand::url($cobrand, '/xyz');
+    my $q = new MockQuery('mysite');
+    my $url = Cobrand::url($cobrand, '/xyz', $q);
     is($url, '/transformed_url', 'url returns output from cobrand module');
     
     $cobrand = 'nosite';
-    $url = Cobrand::url($cobrand, '/xyz');
+    $url = Cobrand::url($cobrand, '/xyz', $q);
     is($url, '/xyz', 'url returns passed url if there is no url function defined by the cobrand'); 
 }
 
