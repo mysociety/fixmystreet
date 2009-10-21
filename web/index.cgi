@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.300 2009-10-20 11:56:50 louise Exp $
+# $Id: index.cgi,v 1.301 2009-10-21 10:23:28 louise Exp $
 
 use strict;
 use Standard;
@@ -560,11 +560,15 @@ please specify the closest point on land.')) unless @$all_councils;
         $details = 'some';
     }
     my $allow_photo_upload = Cobrand::allow_photo_upload($cobrand);
+    my $enctype = '';
+    if ($allow_photo_upload) {
+         $enctype = 'enctype="multipart/form-data"';
+    }
     if ($input{skipped}) {
        my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'mapSkippedForm', $q);
        my $form_action = Cobrand::url($cobrand, '/'); 
        $out .= <<EOF;
-<form action="$form_action" method="post" name="mapSkippedForm" enctype="multipart/form-data">
+<form action="$form_action" method="post" name="mapSkippedForm" $enctype>
 <input type="hidden" name="pc" value="$input_h{pc}">
 <input type="hidden" name="x" value="$input_h{x}">
 <input type="hidden" name="y" value="$input_h{y}">
@@ -984,7 +988,8 @@ sub display_problem {
 $cobrand_form_elements
 </form>
 EOF
-    my $rss_url = Cobrand::url($cobrand, '/rss/'.$input_h{id});
+    my $rss_url = Cobrand::url($cobrand,  NewURL($q, -retain=>1, -url => '/rss/'.$input_h{id}, pc => undef, id => undef));
+
     $out .= ' &nbsp; <a href="'. $rss_url .'"><img src="/i/feed.png" width="16" height="16" title="' . _('RSS feed') . '" alt="' . _('RSS feed of updates to this problem') . '" border="0" style="vertical-align: middle"></a>';
     $out .= '</div>';
 
@@ -1029,8 +1034,12 @@ EOF
     }
  
     $form_action = Cobrand::url($cobrand, '/');
+    my $enctype = '';
+    if ($allow_photo_upload) {
+        $enctype = 'enctype="multipart/form-data"';
+    }
     $out .= <<EOF;
-<form method="post" action="$form_action" name="updateForm" id="fieldset" enctype="multipart/form-data">
+<form method="post" action="$form_action" name="updateForm" id="fieldset" $enctype>
 <input type="hidden" name="submit_update" value="1">
 <input type="hidden" name="id" value="$input_h{id}">
 <div><label for="form_name">$name_label</label>
