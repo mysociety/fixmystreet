@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.57 2009-09-28 15:40:56 louise Exp $
+# $Id: confirm.cgi,v 1.58 2009-10-21 15:10:08 louise Exp $
 
 use strict;
 use Standard;
@@ -51,7 +51,7 @@ Page::do_fastcgi(\&main);
 
 sub confirm_update {
     my ($q, $data) = @_;
-
+    my $cobrand = Page::get_cobrand($q);
     my $id = $data;
     my $add_alert = 0;
     if (ref($data)) {
@@ -89,18 +89,18 @@ sub confirm_update {
         my $answered_ever_reported = dbh()->selectrow_array(
             'select id from questionnaire where problem_id in (select id from problem where lower(email)=?) and ever_reported is not null', {}, $email);
         if (!$answered_ever_reported) {
-            $out = ask_questionnaire($q->param('token'));
+            $out = ask_questionnaire($q->param('token'), $q);
         }
     }
 
+    my $report_url = Cobrand::url($cobrand, "/report/$problem_id#update_$id", $q);
     if (!$out) {
-        $out = $q->p({class => 'confirmed'}, sprintf(_('You have successfully confirmed your update and you can now <a href="%s">view it on the site</a>.'), "/report/$problem_id#update_$id"));
+        $out = $q->p({class => 'confirmed'}, sprintf(_('You have successfully confirmed your update and you can now <a href="%s">view it on the site</a>.'), $report_url));
         $out .= CrossSell::display_advert($q, $email, $name);
     }
 
     # Subscribe updater to email updates if requested
     if ($add_alert) {
-        my $cobrand = Page::get_cobrand($q);
         my $alert_id = mySociety::Alert::create($email, 'new_updates', $cobrand, $cobrand_data, $problem_id);
         mySociety::Alert::confirm($alert_id);
     }
@@ -110,7 +110,7 @@ sub confirm_update {
 
 sub confirm_problem {
     my ($q, $id) = @_;
-
+    my $cobrand = Page::get_cobrand($q);
     my ($council, $email, $name, $cobrand_data) = dbh()->selectrow_array("select council, email, name, cobrand_data from problem where id=?", {}, $id);
 
     (my $domain = $email) =~ s/^.*\@//;
@@ -122,12 +122,7 @@ sub confirm_problem {
             where id=? and state='unconfirmed'", {}, $id);
     }
     my $out;
-    if ($q->{site} eq 'scambs') {
-        $out = $q->p($q->big(
-            'You have successfully confirmed your problem, and we will be in contact with you about it shortly. '
-            . sprintf(' <a href="%s">View the problem on this site</a>.', "/report/$id")
-        ));
-    } elsif ($q->{site} eq 'emptyhomes') {
+    if ($q->{site} eq 'emptyhomes') {
         if ($council) {
             $out = $q->p(_('Thank you for reporting an empty property on
 ReportEmptyHomes.com. We have emailed the empty property officer in the council
@@ -150,10 +145,11 @@ $q->p('<a href="/report/' . $id . '">' . _('View your report') . '</a>.');
 $q->p('<a href="/report/' . $id . '">' . _('View your report') . '</a>.');
         }
     } else {
+        my $report_url = Cobrand::url($cobrand, "/report/$id", $q);
         $out = $q->p({class => 'confirmed'},
             _('You have successfully confirmed your problem')
             . ($council ? _(' and <strong>we will now send it to the council</strong>') : '')
-            . sprintf(_('. You can <a href="%s">view the problem on this site</a>.'), "/report/$id")
+            . sprintf(_('. You can <a href="%s">view the problem on this site</a>.'), $report_url)
         );
         $out .= CrossSell::display_advert($q, $email, $name);
     }
@@ -167,13 +163,15 @@ $q->p('<a href="/report/' . $id . '">' . _('View your report') . '</a>.');
 }
 
 sub ask_questionnaire {
-    my ($token) = @_;
+    my ($token, $q) = @_;
+    my $cobrand = Page::get_cobrand($q);
     my $qn_thanks = _("Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?");
     my $yes = _('Yes');
     my $no = _('No');
     my $go = _('Go');
+    my $form_action = Cobrand::url($cobrand, "/confirm", $q);
     my $out = <<EOF;
-<form action="/confirm" method="post" id="questionnaire">
+<form action="$form_action" method="post" id="questionnaire">
 <input type="hidden" name="type" value="questionnaire">
 <input type="hidden" name="token" value="$token">
 <p>$qn_thanks</p>
@@ -196,11 +194,11 @@ sub add_questionnaire {
     if (ref($data)) {
         $id = $data->{id};
     }
-
+    my $cobrand = Page::get_cobrand($q);
     my ($problem_id, $email, $name) = dbh()->selectrow_array("select problem_id, email, name from comment where id=?", {}, $id);
     my $reported = $q->param('reported') || '';
     $reported = $reported eq 'Yes' ? 't' : ($reported eq 'No' ? 'f' : undef);
-    return ask_questionnaire($token) unless $reported;
+    return ask_questionnaire($token, $q) unless $reported;
     my $already = dbh()->selectrow_array("select id from questionnaire
         where problem_id=? and old_state='confirmed' and new_state='fixed'",
         {}, $problem_id);
@@ -208,7 +206,8 @@ sub add_questionnaire {
         ever_reported, old_state, new_state) values (?, ms_current_timestamp(),
         ms_current_timestamp(), ?, 'confirmed', 'fixed');", {}, $problem_id, $reported)
         unless $already;
-    my $out = $q->p({class => 'confirmed'}, sprintf(_('Thank you &mdash; you can <a href="%s">view your updated problem</a> on the site.'), "/report/$problem_id"));
+    my $report_url = Cobrand::url($cobrand, "/report/$problem_id", $q);
+    my $out = $q->p({class => 'confirmed'}, sprintf(_('Thank you &mdash; you can <a href="%s">view your updated problem</a> on the site.'), $report_url));
     $out .= CrossSell::display_advert($q, $email, $name);
     return $out;
 }

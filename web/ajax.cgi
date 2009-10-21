@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: ajax.cgi,v 1.14 2009-10-15 16:51:55 louise Exp $
+# $Id: ajax.cgi,v 1.15 2009-10-21 15:05:55 louise Exp $
 
 use strict;
 use Standard;
@@ -50,7 +50,7 @@ sub main {
                                                   sx => undef, 
                                                   sy => undef, 
                                                   all_pins => undef, 
-                                                  no_pins => undef));  
+                                                  no_pins => undef), $q);  
         $list .= '<li><a href="' . $link . '">';
         $list .= $_->{title};
         $list .= '</a>';
@@ -69,7 +69,7 @@ sub main {
                                                   sx => undef, 
                                                   sy => undef, 
                                                   all_pins => undef, 
-                                                  no_pins => undef));  
+                                                  no_pins => undef), $q);  
         $list .= '<li><a href="' . $link . '">';
         $list .= $_->{title} . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
         $list .= '</a>';

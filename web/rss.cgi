@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: rss.cgi,v 1.34 2009-10-20 15:10:52 louise Exp $
+# $Id: rss.cgi,v 1.35 2009-10-21 15:14:08 louise Exp $
 
 use strict;
 use Error qw(:try);
@@ -29,20 +29,20 @@ sub main {
     } elsif ($type eq 'new_updates') {
         my $id = $q->param('id');
         my $qs = 'report/' . $id;
-        $out = mySociety::Alert::generate_rss($type, $xsl, $qs, [$id], undef, $cobrand);
+        $out = mySociety::Alert::generate_rss($type, $xsl, $qs, [$id], undef, $cobrand, $q);
     } elsif ($type eq 'new_problems' || $type eq 'new_fixed_problems') {
-        $out = mySociety::Alert::generate_rss($type, $xsl, '', undef, undef, $cobrand);
+        $out = mySociety::Alert::generate_rss($type, $xsl, '', undef, undef, $cobrand, $q);
     } elsif ($type eq 'council_problems') {
         my $id = $q->param('id');
         my $qs = '/'.$id;
-        $out = mySociety::Alert::generate_rss($type, $xsl, $qs, [$id], undef, $cobrand);
+        $out = mySociety::Alert::generate_rss($type, $xsl, $qs, [$id], undef, $cobrand. $q);
     } elsif ($type eq 'area_problems') {
         my $id = $q->param('id');
         my $va_info = mySociety::MaPit::get_voting_area_info($id);
         my $qs = '/'.$id;
-        $out = mySociety::Alert::generate_rss($type, $xsl, $qs, [$id], { NAME => $va_info->{name} }, $cobrand);
+        $out = mySociety::Alert::generate_rss($type, $xsl, $qs, [$id], { NAME => $va_info->{name} }, $cobrand, $q);
     } elsif ($type eq 'all_problems') {
-        $out = mySociety::Alert::generate_rss($type, $xsl, '', undef, undef, $cobrand);
+        $out = mySociety::Alert::generate_rss($type, $xsl, '', undef, undef, $cobrand, $q);
     } else {
         my $base = mySociety::Config::get('BASE_URL');
         print $q->redirect($base . '/alert');
@@ -99,6 +99,6 @@ sub rss_local_problems {
     }
 
     my $xsl = Cobrand::feed_xsl($cobrand);
-    return mySociety::Alert::generate_rss('local_problems', $xsl, $qs, [$e, $n, $d], undef, $cobrand);
+    return mySociety::Alert::generate_rss('local_problems', $xsl, $qs, [$e, $n, $d], undef, $cobrand, $q);
 }
 

@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.53 2009-10-20 11:57:25 louise Exp $
+# $Id: alert.cgi,v 1.54 2009-10-21 15:06:31 louise Exp $
 
 use strict;
 use Standard;
@@ -35,7 +35,7 @@ sub main {
         if ($data->{id}) {
             $out = alert_token($q, $data);
         } else {
-            my $contact_url = Cobrand::url(Page::get_cobrand($q), '/contact');
+            my $contact_url = Cobrand::url(Page::get_cobrand($q), '/contact', $q);
             $out = $q->p(_(<<EOF));
 Thank you for trying to confirm your alert. We seem to have an error ourselves
 though, so <a href="$contact_url">please let us know what went on</a> and we'll look into it.
@@ -208,7 +208,7 @@ for the county council.')));
             ? sprintf(_('Local RSS feeds and email alerts for &lsquo;%s&rsquo;'), $pretty_pc)
             : _('Local RSS feeds and email alerts')
     );
-    my $form_action = Cobrand::url($cobrand, '/alert');
+    my $form_action = Cobrand::url($cobrand, '/alert', $q);
     $out .= <<EOF;
 <form id="alerts" name="alerts" method="post" action="$form_action">
 <input type="hidden" name="type" value="local">
@@ -228,15 +228,15 @@ feed, or enter your email address to subscribe to an email alert.'));
 <input type="radio" name="feed" id="local:$x:$y" value="local:$x:$y"$checked>
 <label for="local:$x:$y">$label</label>
 EOF
-    my $rss_feed = Cobrand::url(Page::get_cobrand($q), "/rss/$x,$y");
+    my $rss_feed = Cobrand::url(Page::get_cobrand($q), "/rss/$x,$y", $q);
     $out .= _('(a default distance which covers roughly 200,000 people)');
     $out .= " <a href='$rss_feed'><img src='/i/feed.png' width='16' height='16' title='"
         . _('RSS feed of nearby problems') . "' alt='" . _('RSS feed') . "' border='0'></a>";
     $out .= '</p> <p id="rss_local_alt">' . _('(alternatively the RSS feed can be customised, within');
-    my $rss_feed_2k  = Cobrand::url($cobrand, "/rss/$x,$y/2");
-    my $rss_feed_5k  = Cobrand::url($cobrand, "/rss/$x,$y/5");
-    my $rss_feed_10k = Cobrand::url($cobrand, "/rss/$x,$y/10");
-    my $rss_feed_20k = Cobrand::url($cobrand, "/rss/$x,$y/20");
+    my $rss_feed_2k  = Cobrand::url($cobrand, "/rss/$x,$y/2", $q);
+    my $rss_feed_5k  = Cobrand::url($cobrand, "/rss/$x,$y/5", $q);
+    my $rss_feed_10k = Cobrand::url($cobrand, "/rss/$x,$y/10", $q);
+    my $rss_feed_20k = Cobrand::url($cobrand, "/rss/$x,$y/20", $q);
     $out .= <<EOF;
  <a href="$rss_feed_2k">2km</a> / <a href="$rss_feed_5k">5km</a>
 / <a href="$rss_feed_10k">10km</a> / <a href="$rss_feed_20k">20km</a>)
@@ -266,7 +266,7 @@ sub alert_list_options {
         my $url = "/rss/";
         $url .= $type eq 'area' ? 'area' : 'reports'; 
         $url .= '/' . $rss ;
-        my $rss_url = Cobrand::url(Page::get_cobrand($q), $url);
+        my $rss_url = Cobrand::url(Page::get_cobrand($q), $url, $q);
         $out .= 'value="' . $id . '"> <label for="' . $id . '">' . $text
             . '</label> <a href="' . $rss_url . '"><img src="/i/feed.png" width="16" height="16"
 title="' . sprintf(_('RSS feed of %s'), $text) . '" alt="' . _('RSS feed') . '" border="0"></a>';
@@ -285,7 +285,7 @@ sub alert_front_page {
     $out .= $q->p(_('FixMyStreet has a variety of RSS feeds and email alerts for local problems, including
 alerts for all problems within a particular ward or council, or all problems
 within a certain distance of a particular location.'));
-    my $form_action = Cobrand::url(Page::get_cobrand($q), '/alert');
+    my $form_action = Cobrand::url(Page::get_cobrand($q), '/alert', $q);
     $out .= $errors . qq(<form method="get" action="$form_action">);
     $out .= $q->p(_('To find out what local alerts we have for you, please enter your GB
 postcode or street name and area:'), '<input type="text" name="pc" value="' . $input_h{pc} . '">
@@ -333,7 +333,7 @@ sub alert_updates_form {
     $out .= $q->p(_('Receive email when updates are left on this problem.'));
     my $label = _('Email:');
     my $subscribe = _('Subscribe');
-    my $form_action = Cobrand::url(Page::get_cobrand($q), 'alert');
+    my $form_action = Cobrand::url(Page::get_cobrand($q), 'alert', $q);
     $out .= <<EOF;
 <form action="$form_action" method="post">
 <label class="n" for="alert_rznvy">$label</label>

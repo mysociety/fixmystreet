@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.35 2009-10-21 08:41:09 louise Exp $
+# $Id: reports.cgi,v 1.36 2009-10-21 15:13:18 louise Exp $
 
 use strict;
 use Standard;
@@ -100,7 +100,7 @@ sub main {
         }
         print $q->header( -type => 'application/xml; charset=utf-8' );
         my $xsl = Cobrand::feed_xsl($cobrand);
-        my $out = mySociety::Alert::generate_rss($type, $xsl, "/$url", \@params, \%title_params, $cobrand);
+        my $out = mySociety::Alert::generate_rss($type, $xsl, "/$url", \@params, \%title_params, $cobrand, $q);
         $out =~ s/matthew.fixmystreet/emptyhomes.matthew.fixmystreet/g if $q->{site} eq 'emptyhomes';
         print $out;
         return;
@@ -178,7 +178,7 @@ sub main {
                 print ' class="a"';
             }
             my $url = Page::short_name($areas_info->{$_}->{name});
-            my $cobrand_url = Cobrand::url($cobrand, "/reports/$url");
+            my $cobrand_url = Cobrand::url($cobrand, "/reports/$url", $q);
             print '><td align="left"><a href="' . $cobrand_url . '">' .
                 $areas_info->{$_}->{name} . '</a></td>';
             summary_cell(\@{$open{$_}{new}});
@@ -201,7 +201,7 @@ sub main {
         if (!$name) {
             print Page::header($q, title=>_("Summary reports"));
             print "Council with identifier " . ent($one_council). " not found. ";
-            print $q->a({href => Cobrand::url($cobrand, '/reports') }, 'Show all councils');
+            print $q->a({href => Cobrand::url($cobrand, '/reports', $q) }, 'Show all councils');
             print ".";
         } else {
             my $rss_url = '/rss/reports/' . Page::short_name($name);
@@ -211,22 +211,22 @@ sub main {
                 $thing = 'ward';
                 $name = ent($q_ward) . ", $name";
             }
-            print Page::header($q, title=>sprintf(_('%s - Summary reports'), $name), rss => [ sprintf(_('Problems within %s, FixMyStreet'), $name), Cobrand::url($cobrand, $rss_url) ]);
+            print Page::header($q, title=>sprintf(_('%s - Summary reports'), $name), rss => [ sprintf(_('Problems within %s, FixMyStreet'), $name), Cobrand::url($cobrand, $rss_url, $q) ]);
             my $rss_title = _('RSS feed');
             my $rss_alt = _('RSS feed of problems in this %s');
             my $summary_line;
             my $all_councils_report = Cobrand::all_councils_report($cobrand);
             if ($all && ! $all_councils_report) {
-                $summary_line = sprintf(_('You can <a href="%s">see less detail</a>.'), Cobrand::url($cobrand, NewURL($q)));
+                $summary_line = sprintf(_('You can <a href="%s">see less detail</a>.'), Cobrand::url($cobrand, NewURL($q), $q));
             } elsif (! $all_councils_report) {
-                $summary_line = sprintf(_('You can <a href="%s">see more details</a>.'), Cobrand::url($cobrand, NewURL($q, all=>1)));
+                $summary_line = sprintf(_('You can <a href="%s">see more details</a>.'), Cobrand::url($cobrand, NewURL($q, all=>1), $q));
             } elsif ($all) {
-                $summary_line = sprintf(_('You can <a href="%s">see less detail</a> or go back and <a href="/reports">show all councils</a>.'), Cobrand::url($cobrand, NewURL($q)));
+                $summary_line = sprintf(_('You can <a href="%s">see less detail</a> or go back and <a href="/reports">show all councils</a>.'), Cobrand::url($cobrand, NewURL($q), $q));
             } else {
-                $summary_line = sprintf(_('You can <a href="%s">see more details</a> or go back and <a href="/reports">show all councils</a>.'), Cobrand::url($cobrand, NewURL($q, all=>1)));
+                $summary_line = sprintf(_('You can <a href="%s">see more details</a> or go back and <a href="/reports">show all councils</a>.'), Cobrand::url($cobrand, NewURL($q, all=>1), $q));
             }
             print $q->p(
-                $q->a({ href => Cobrand::url($cobrand, $rss_url) }, '<img align="right" src="/i/feed.png" width="16" height="16" title="' . $rss_title . '" alt="' . sprintf($rss_alt, $thing) . '" border="0" hspace="4">'),
+                $q->a({ href => Cobrand::url($cobrand, $rss_url, $q) }, '<img align="right" src="/i/feed.png" width="16" height="16" title="' . $rss_title . '" alt="' . sprintf($rss_alt, $thing) . '" border="0" hspace="4">'),
                 sprintf(_('This is a summary of all reports for one %s.'), $thing) . ' ' . $summary_line);
             print "<h2>$name</h2>\n";
             if ($open{$one_council}) {
@@ -284,7 +284,7 @@ sub list_problems {
     my $cobrand = Page::get_cobrand($q);
     print "<h3>$title</h3>\n<ul>";
     foreach (@$problems) {
-        my $url = Cobrand::url($cobrand, "/report/" .  $_->[0]); 
+        my $url = Cobrand::url($cobrand, "/report/" .  $_->[0], $q); 
         print '<li><a href="' . $url . '">';
         print ent($_->[1]);
         print '</a>';
