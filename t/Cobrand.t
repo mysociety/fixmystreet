@@ -6,7 +6,7 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Cobrand.t,v 1.21 2009-10-21 15:03:32 louise Exp $
+# $Id: Cobrand.t,v 1.22 2009-10-21 15:58:25 louise Exp $
 #
 
 use strict;
@@ -20,7 +20,7 @@ use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../../perllib";
 
 use Cobrand;
-use MockQuery;
+use mySociety::MockQuery;
 
 sub test_site_restriction { 
     my $q  = new MockQuery('mysite');
