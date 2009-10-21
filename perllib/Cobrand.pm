@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.31 2009-10-20 14:24:59 louise Exp $
+# $Id: Cobrand.pm,v 1.32 2009-10-21 08:36:07 louise Exp $
 
 package Cobrand;
 use strict;
@@ -545,6 +545,26 @@ sub feed_xsl {
     }
 
 }
+
+=item all_councils_report
+
+Return a boolean indicating whether the cobrand displays a report of all councils
+
+=cut
+
+sub all_councils_report {
+    my ($cobrand) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || !$handle->can('all_councils_report')){
+        return 1;
+    } else{
+        return $handle->all_councils_report();
+    }
+}
+
 
 1;
 
