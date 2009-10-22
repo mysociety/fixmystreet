@@ -18,7 +18,7 @@
 #   Admin
 #   Whatever I've missed!
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.25 2009-09-28 15:31:00 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.26 2009-10-22 15:10:51 matthew Exp $';
 
 use strict;
 require 5.8.0;
@@ -230,7 +230,7 @@ sub submit_report {
                         'tile_' . $x . '.' . $y . '.y' =>   158,
                         submit_map => 1});
         $wth->browser_check_contents('<h1>' . $messages[1] . '</h1>');
-        my $fields = { submit_map => 2,
+        my $fields = { submit_problem => 'Submit',
                         x => $x,
                         y => $y,
                         pc => $postcode,

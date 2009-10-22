@@ -54,10 +54,9 @@ YAHOO.util.Event.onContentReady('map', function() {
 YAHOO.util.Event.onContentReady('mapForm', function() {
     this.onsubmit = function() {
        if (this.submit_problem) {
-            this.submit_problem.disabled = true;
-            this.submit_map.value = 2;
+            this.onsubmit = function() { return false; };
         }
-        
+
         this.x.value = fms_x + 2;
         this.y.value = fms_y + 2;
         /*
