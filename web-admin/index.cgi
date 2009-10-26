@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.72 2009-08-20 17:14:24 matthew Exp $
+# $Id: index.cgi,v 1.73 2009-10-26 15:42:12 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.72 2009-08-20 17:14:24 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.73 2009-10-26 15:42:12 matthew Exp $';
 
 use strict;
 
@@ -287,7 +287,7 @@ sub admin_council_contacts ($$) {
     print $q->p($links_html);
 
     # Display of addresses / update statuses form
-    print $q->start_form(-method => 'POST', -action => $q->url('relative'=>1));
+    print $q->start_form(-method => 'POST', -action => './');
     print $q->start_table({border=>1, cellpadding=>2, cellspacing=>0});
     print $q->Tr({}, $q->th({}, ["Category", "Email", "Confirmed", "Deleted", "Last editor", "Note", "When edited", 'Confirm']));
     foreach my $l (@$bci_data) {
@@ -311,7 +311,7 @@ sub admin_council_contacts ($$) {
 
     # Display form for adding new category
     print $q->h2('Add new category');
-    print $q->start_form(-method => 'POST', -action => $q->url('relative'=>1));
+    print $q->start_form(-method => 'POST', -action => './');
     if ($q->{site} ne 'emptyhomes') {
         print $q->p($q->strong("Category: "),
             $q->textfield(-name => "category", -size => 30));
@@ -362,7 +362,7 @@ sub admin_council_edit ($$$) {
     }
 
     # Display form for editing details
-    print $q->start_form(-method => 'POST', -action => $q->url('relative'=>1));
+    print $q->start_form(-method => 'POST', -action => './');
     map { $q->param($_, $bci_data->{$_}) } qw/category email confirmed deleted/;
     $q->param('page', 'councilcontacts');
     $q->param('posted', 'new');
