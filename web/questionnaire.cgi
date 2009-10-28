@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.43 2009-10-20 09:14:44 louise Exp $
+# $Id: questionnaire.cgi,v 1.44 2009-10-28 11:38:55 louise Exp $
 
 use strict;
 use Standard;
@@ -170,6 +170,7 @@ EOF
 sub display_questionnaire {
     my ($q, @errors) = @_;
     my @vars = qw(token id been_fixed reported update another);
+    my $cobrand = Page::get_cobrand($q);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 
@@ -204,8 +205,14 @@ sub display_questionnaire {
         no => $input{another} eq 'No' ? ' checked' : '', 
     );
     $out .= '<h1>' . _('Questionnaire') . '</h1>';
+    my $allow_photo_upload = Cobrand::allow_photo_upload($cobrand);
+    my $enctype = '';
+    if ($allow_photo_upload) {
+         $enctype = 'enctype="multipart/form-data"';
+    }
+    my $form_action = Cobrand::url($cobrand, "/questionnaire", $q); 
     $out .= <<EOF;
-<form method="post" action="/questionnaire" id="questionnaire" enctype="multipart/form-data">
+<form method="post" action="$form_action" id="questionnaire" $enctype>
 <input type="hidden" name="token" value="$input_h{token}">
 EOF
     if ($q->{site} eq 'emptyhomes') {
@@ -271,9 +278,9 @@ EOF
     $out .= $q->p(_('If you wish to leave a public update on the problem, please enter it here
 (please note it will not be sent to the council). For example, what was
 your experience of getting the problem fixed?'));
-    $out .= <<EOF;
-<p><textarea name="update" style="max-width:90%" rows="7" cols="30">$input_h{update}</textarea></p>
-
+    my $photo_input = ''; 
+    if ($allow_photo_upload) {
+         $photo_input = <<EOF;
 <div id="fileupload_flashUI" style="display:none">
 <label for="form_photo">Photo:</label>
 <input type="text" id="txtfilename" disabled style="background-color: #ffffff;">
@@ -284,6 +291,11 @@ your experience of getting the problem fixed?'));
 <label for="form_photo">Photo:</label>
 <input type="file" name="photo" id="form_photo">
 </div>
+EOF
+    }
+    $out .= <<EOF;
+<p><textarea name="update" style="max-width:90%" rows="7" cols="30">$input_h{update}</textarea></p>
+$photo_input
 EOF
     $out .= <<EOF if $q->{site} ne 'emptyhomes';
 <div id="another_qn">
