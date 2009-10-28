@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.54 2009-10-21 15:06:31 louise Exp $
+# $Id: alert.cgi,v 1.55 2009-10-28 11:35:16 louise Exp $
 
 use strict;
 use Standard;
@@ -304,16 +304,18 @@ sub alert_rss {
     my $q = shift;
     my $feed = $q->param('feed');
     return alert_list($q, _('Please select the feed you want')) unless $feed;
+    my $cobrand = Page::get_cobrand($q);
+    my $base_url = Cobrand::base_url($cobrand);
     if ($feed =~ /^area:(?:\d+:)+(.*)$/) {
         (my $id = $1) =~ tr{:_}{/+};
-        print $q->redirect('/rss/area/' . $id);
+        print $q->redirect($base_url . '/rss/area/' . $id);
         return;
     } elsif ($feed =~ /^(?:council|ward):(?:\d+:)+(.*)$/) {
         (my $id = $1) =~ tr{:_}{/+};
-        print $q->redirect('/rss/reports/' . $id);
+        print $q->redirect($base_url . '/rss/reports/' . $id);
         return;
     } elsif ($feed =~ /^local:(\d+):(\d+)$/) {
-        print $q->redirect('/rss/' . $1 . ',' . $2);
+        print $q->redirect($base_url . '/rss/' . $1 . ',' . $2);
         return;
     } else {
         return alert_list($q, _('Illegal feed selection'));

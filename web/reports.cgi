@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.36 2009-10-21 15:13:18 louise Exp $
+# $Id: reports.cgi,v 1.37 2009-10-28 11:35:53 louise Exp $
 
 use strict;
 use Standard;
@@ -25,10 +25,10 @@ sub main {
     my $cobrand = Page::get_cobrand($q);
     # Look up council name, if given
     my $q_council = $q->param('council') || '';
-
+    my $base_url = Cobrand::base_url($cobrand);
     # Manual misspelling redirect
     if ($q_council =~ /^rhondda cynon taff$/i) {
-        print $q->redirect('/reports/Rhondda+Cynon+Taf');
+        print $q->redirect($base_url . '/reports/Rhondda+Cynon+Taf');
         return;
     }
 
@@ -50,7 +50,7 @@ sub main {
             }
         }
         if (!$one_council) { # Given a false council name
-            print $q->redirect('/reports');
+            print $q->redirect($base_url . '/reports');
             return;
         }
     } elsif ($q_council =~ /^\d+$/) {
@@ -72,7 +72,7 @@ sub main {
             }
         }
         if (!$ward) { # Given a false ward name
-            print $q->redirect('/reports/' . Page::short_name($q_council));
+            print $q->redirect($base_url . '/reports/' . Page::short_name($q_council));
             return;
         }
     }
@@ -83,7 +83,7 @@ sub main {
         $url .= '/' . Page::short_name($q_ward) if $ward;
         if ($rss eq 'area' && $area_type ne 'DIS' && $area_type ne 'CTY') {
             # Two possibilites are the same for one-tier councils, so redirect one to the other
-            print $q->redirect('/rss/reports/' . $url);
+            print $q->redirect($base_url . '/rss/reports/' . $url);
             return;
         }
         my $type = 'council_problems'; # Problems sent to a council
