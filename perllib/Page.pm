@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.193 2009-10-21 15:02:45 louise Exp $
+# $Id: Page.pm,v 1.194 2009-10-29 11:16:02 matthew Exp $
 #
 
 package Page;
@@ -161,36 +161,56 @@ Returns the path from which template files will be read.
 
 =cut 
 
-sub template_root{
+sub template_root($) {
+    my $q = shift;
+    return '/../templates/website/' if $q->{site} eq 'fixmystreet';
     return '/../templates/website/cobrands/';
 }
 
-=item template_vars QUERY LANG
+=item template_vars QUERY PARAMS
 
 Return a hash of variables that can be substituted into header and footer templates.
 QUERY is the incoming request
-LANG is the language the templates will be rendered in.
+PARAMS contains a few things used to generate variables, such as lang, title, and rss.
 
 =cut
 
-sub template_vars ($$){
-    my ($q, $lang) = @_;
+sub template_vars ($%) {
+    my ($q, %params) = @_;
     my %vars;
     my $host = base_url_with_lang($q, undef);
     my $lang_url = base_url_with_lang($q, 1);
     $lang_url .= $ENV{REQUEST_URI} if $ENV{REQUEST_URI};
+
+    my $site_title = $q->{site} eq 'fixmystreet'
+        ? _('FixMyStreet')
+        : Cobrand::site_title(get_cobrand($q));
+
     %vars = (
         'report' => _('Report a problem'),
         'reports' => _('All reports'),
         'alert' => _('Local alerts'),
         'faq' => _('Help'),
         'about' => _('About us'),
-        'site_title' => Cobrand::site_title(get_cobrand($q)),
+        'site_title' => $site_title,
         'host' => $host,
-        'lang_code' => $lang,
-        'lang' => $lang eq 'en-gb' ? 'Cymraeg' : 'English',
+        'lang_code' => $params{lang},
+        'lang' => $params{lang} eq 'en-gb' ? 'Cymraeg' : 'English',
         'lang_url' => $lang_url,
+        'title' => $params{title},
     );
+
+    if ($params{rss}) {
+        $vars{rss} = '<link rel="alternate" type="application/rss+xml" title="' . $params{rss}[0] . '" href="' . $params{rss}[1] . '">';
+    }
+
+    if ($q->{site} eq 'fixmystreet') {
+        my $home = !$params{title} && $ENV{SCRIPT_NAME} eq '/index.cgi' && !$ENV{QUERY_STRING};
+        $vars{heading_element_start} = $home ? '<h1 id="header">' : '<div id="header"><a href="/">';
+        $vars{heading} = _('Fix<span id="my">My</span>Street');
+        $vars{heading_element_end} = $home ? '</h1>' : '</a></div>';
+    }
+
     return \%vars;
 }
 
@@ -210,25 +230,25 @@ sub template($%){
     return $template;
 }
 
-=item template_header TITLE TEMPLATE Q LANG 
+=item template_header TEMPLATE Q ROOT PARAMS
 
 Return HTML for the templated top of a page, given a 
-title, template name, request, language and template root.
+template name, request, template root, and parameters.
 
 =cut
 
-sub template_header{
-     
-    my ($title, $template, $q, $lang, $template_root) = @_;
+sub template_header($$$%) {
+    my ($template, $q, $template_root, %params) = @_;
     (my $file = __FILE__) =~ s{/[^/]*?$}{};
-    open FP, $file . $template_root . $q->{site} . '/' . $template . '-header';
+    $file = $q->{site} eq 'fixmystreet'
+        ? $file . $template_root . 'header'
+        : $file . $template_root . $q->{site} . '/' . $template . '-header';
+    open FP, $file;
     my $html = join('', <FP>);
     close FP;
-    my $vars = template_vars($q, $lang);
-    $vars->{title} = $title;
+    my $vars = template_vars($q, %params);
     $html =~ s#{{ ([a-z_]+) }}#$vars->{$1}#g;
     return $html;
-
 }
 
 =item header Q [PARAM VALUE ...]
@@ -246,12 +266,6 @@ sub header ($%) {
         croak "bad parameter '$_'" if (!exists($permitted_params{$_}));
     }
 
-    my $title = $params{title} || '';
-    $title .= ' - ' if $title;
-    $title = ent($title);
-
-    my $home = !$title && $ENV{SCRIPT_NAME} eq '/index.cgi' && !$ENV{QUERY_STRING};
-
     my %head = ();
     $head{-expires} = $params{expires} if $params{expires};
     $head{'-last-modified'} = time2str($params{lastmodified}) if $params{lastmodified};
@@ -259,38 +273,14 @@ sub header ($%) {
     $head{'-cache-control'} = $params{cachecontrol} if $params{cachecontrol};
     print $q->header(%head);
 
-    my $html;
-    my $lang = $mySociety::Locale::lang;
-    if ($q->{site} ne 'fixmystreet') {
-        my $template = template($q, %params);
-        $html = template_header($title, $template, $q, $lang, template_root());
-    } else {
-        my $fixmystreet = _('FixMyStreet');
-        $html = <<EOF;
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html lang="$lang">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <script type="text/javascript" src="/yui/utilities.js"></script>
-        <script type="text/javascript" src="/js.js"></script>
-        <title>${title}$fixmystreet</title>
-        <style type="text/css">\@import url("/css/core.css"); \@import url("/css/main.css");</style>
-<!--[if LT IE 7]>
-<style type="text/css">\@import url("/css/ie6.css");</style>
-<![endif]-->
+    $params{title} ||= '';
+    $params{title} .= ' - ' if $params{title};
+    $params{title} = ent($params{title});
+    $params{lang} = $mySociety::Locale::lang;
 
-        <!-- RSS -->
-    </head>
-    <body>
-EOF
-        $html .= $home ? '<h1 id="header">' : '<div id="header"><a href="/">';
-        $html .= _('Fix<span id="my">My</span>Street');
-        $html .= $home ? '</h1>' : '</a></div>';
-        $html .= '<div id="wrapper"><div id="content">';
-    }
-    if ($params{rss}) {
-        $html =~ s#<!-- RSS -->#<link rel="alternate" type="application/rss+xml" title="$params{rss}[0]" href="$params{rss}[1]">#;
-    }
+    my $template = template($q, %params);
+    my $html = template_header($template, $q, template_root($q), %params);
+
     if (mySociety::Config::get('STAGING_SITE')) {
         $html .= '<p class="error">' . _("This is a developer site; things might break at any time.") . '</p>';
     }
@@ -309,7 +299,7 @@ sub footer {
     if ($q->{site} ne 'fixmystreet') {
         (my $file = __FILE__) =~ s{/[^/]*?$}{};
         my $template = template($q, %params);
-        open FP, $file . template_root() . $q->{site} . '/' . $template . '-footer';
+        open FP, $file . template_root($q) . $q->{site} . '/' . $template . '-footer';
         my $html = join('', <FP>);
         close FP;
         my $lang = $mySociety::Locale::lang;
@@ -1030,4 +1020,5 @@ sub apply_on_map_list_limit {
     push (@extras, @around_map);
     return (\@on_map, \@extras);
 }
+
 1;
