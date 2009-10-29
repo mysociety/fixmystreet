@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.33 2009-10-21 14:57:48 louise Exp $
+# $Id: Cobrand.pm,v 1.34 2009-10-29 17:55:23 matthew Exp $
 
 package Cobrand;
 use strict;
@@ -198,6 +198,22 @@ sub recent {
         return Problems::recent();
     } else {
         return $handle->recent();
+    }
+}
+
+=item front_page
+
+Return a front page of the site
+
+=cut
+
+sub front_page {
+    my ($cobrand, $q, %vars) = @_;
+    my $handle = $cobrand ? cobrand_handle($cobrand) : undef;
+    if ( !$cobrand || !$handle || ! $handle->can('front_page')){
+        return '';
+    } else {
+        return $handle->front_page($q, %vars);
     }
 }
 

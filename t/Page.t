@@ -6,7 +6,7 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.t,v 1.8 2009-10-29 11:16:03 matthew Exp $
+# $Id: Page.t,v 1.9 2009-10-29 17:55:24 matthew Exp $
 #
 
 use strict;
@@ -64,7 +64,7 @@ sub test_header() {
 
     # Test that template passed is rendered 
     $params{'template'} = 'test';    
-    $html = Page::template_header('test', $q, '/../t/templates/', title=>'My test title', lang=>'en-gb');	
+    $html = Page::template_header('test', $q, '/../t/templates/' . $q->{site} . '/', title=>'My test title', lang=>'en-gb');	
     like  ($html, qr/My test header template/, 'named template rendered ok');
  
 

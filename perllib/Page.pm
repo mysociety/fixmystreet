@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.195 2009-10-29 11:31:58 matthew Exp $
+# $Id: Page.pm,v 1.196 2009-10-29 17:55:23 matthew Exp $
 #
 
 package Page;
@@ -161,10 +161,10 @@ Returns the path from which template files will be read.
 
 =cut 
 
-sub template_root($) {
-    my $q = shift;
-    return '/../templates/website/' if $q->{site} eq 'fixmystreet';
-    return '/../templates/website/cobrands/';
+sub template_root($;$) {
+    my ($q, $fallback) = @_;
+    return '/../templates/website/' if $q->{site} eq 'fixmystreet' || $fallback;
+    return '/../templates/website/cobrands/' . $q->{site} . '/';
 }
 
 =item template_vars QUERY PARAMS
@@ -243,6 +243,24 @@ sub template_substitute($%) {
     return $template;
 }
 
+=item template_include
+
+Return HTML for a template, given a template name, request,
+template root, and any parameters needed.
+
+=cut
+
+sub template_include {
+    my ($template, $q, $template_root, %params) = @_;
+    (my $file = __FILE__) =~ s{/[^/]*?$}{};
+    my $template_file = $file . $template_root . $template;
+    $template_file = $file . template_root($q, 1) . $template unless -e $template_file;
+    open FP, $template_file;
+    my $html = join('', <FP>);
+    close FP;
+    return template_substitute($html, %params);
+}
+
 =item template_header TEMPLATE Q ROOT PARAMS
 
 Return HTML for the templated top of a page, given a 
@@ -252,15 +270,11 @@ template name, request, template root, and parameters.
 
 sub template_header($$$%) {
     my ($template, $q, $template_root, %params) = @_;
-    (my $file = __FILE__) =~ s{/[^/]*?$}{};
-    $file = $q->{site} eq 'fixmystreet'
-        ? $file . $template_root . 'header'
-        : $file . $template_root . $q->{site} . '/' . $template . '-header';
-    open FP, $file;
-    my $html = join('', <FP>);
-    close FP;
+    $template = $q->{site} eq 'fixmystreet'
+        ? 'header'
+        : $template . '-header';
     my $vars = template_vars($q, %params);
-    return template_substitute($html, %$vars);
+    return template_include($template, $q, $template_root, %$vars);
 }
 
 =item header Q [PARAM VALUE ...]
@@ -311,7 +325,7 @@ sub footer {
     if ($q->{site} ne 'fixmystreet') {
         (my $file = __FILE__) =~ s{/[^/]*?$}{};
         my $template = template($q, %params);
-        open FP, $file . template_root($q) . $q->{site} . '/' . $template . '-footer';
+        open FP, $file . template_root($q) . $template . '-footer';
         my $html = join('', <FP>);
         close FP;
         my $lang = $mySociety::Locale::lang;

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.303 2009-10-22 15:10:51 matthew Exp $
+# $Id: index.cgi,v 1.304 2009-10-29 17:55:24 matthew Exp $
 
 use strict;
 use Standard;
@@ -86,8 +86,8 @@ sub main {
         $params{title} = _('Viewing a location');
     } elsif ($q->param('cobrand_page') && ($q->{site} ne 'fixmystreet')) {
         ($out, %params) = Cobrand::cobrand_page($q);
-	if (! $out){
-           $out = front_page($q);
+        if (!$out) {
+            $out = front_page($q);
         }
     } else {
         $out = front_page($q);
@@ -105,8 +105,23 @@ Page::do_fastcgi(\&main);
 sub front_page {
     my ($q, $error) = @_;
     my $pc_h = ent($q->param('pc') || '');
+
+    # Look up various cobrand things
     my $cobrand = Page::get_cobrand($q);
     my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'postcodeForm', $q);
+    my $form_action = Cobrand::url($cobrand, '', $q);
+    my $question = Cobrand::enter_postcode_text($cobrand, $q);
+
+    my %vars = (
+        error => $error,
+        pc_h => $pc_h, 
+        cobrand_form_elements => $cobrand_form_elements,
+        form_action => $form_action,
+        question => $question,
+    );
+    my $cobrand_front_page = Cobrand::front_page($cobrand, $q, %vars);
+    return $cobrand_front_page if $cobrand_front_page;
+
     my $out = '<p id="expl"><strong>' . _('Report, view, or discuss local problems') . '</strong>';
     my $subhead = _('(like graffiti, fly tipping, broken paving slabs, or street lighting)');
     $out .= '<br><small>' . $subhead . '</small>' if $subhead ne ' ';
@@ -126,7 +141,6 @@ sub front_page {
     $out .= '<p class="error">' . $error . '</p>' if ($error);
 
     # Add pretty commas for display
-    my $form_action = Cobrand::url($cobrand, '', $q);
     $out .= '<form action="' . $form_action . '" method="get" name="postcodeForm" id="postcodeForm">';
     if (my $token = $q->param('partial')) {
         my $id = mySociety::AuthToken::retrieve('partial', $token);
@@ -139,7 +153,6 @@ sub front_page {
 EOF
         }
     }
-    my $question = Cobrand::enter_postcode_text(Page::get_cobrand($q), $q);
     my $activate = _("Go");
     $out .= <<EOF;
 <label for="pc">$question</label>
@@ -820,6 +833,7 @@ sub display_location {
     return front_page($q, $error) if ($error);
 
     my $cobrand = Page::get_cobrand($q);
+
     # Deal with pin hiding/age
     my ($hide_link, $hide_text, $all_link, $all_text, $interval);
     if ($input{all_pins}) {
@@ -831,7 +845,7 @@ sub display_location {
         $interval = '6 months';
     }
     my ($pins, $on_map, $around_map, $dist) = Page::map_pins($q, $x, $y, $x, $y, $interval);
-    my $limit = Cobrand::on_map_list_limit(Page::get_cobrand($q));
+    my $limit = Cobrand::on_map_list_limit($cobrand);
     ($on_map, $around_map) = Page::apply_on_map_list_limit($on_map, $around_map, $limit);
     if ($input{no_pins}) {
         $hide_link = NewURL($q, -retain=>1, no_pins=>undef);
@@ -843,64 +857,58 @@ sub display_location {
     }
     my $map_links = "<p id='sub_map_links'><a id='hide_pins_link' href='$hide_link'>$hide_text</a> | <a id='all_pins_link' href='$all_link'>$all_text</a></p> <input type='hidden' id='all_pins' name='all_pins' value='$input_h{all_pins}'>";
    
-    my $out = Page::display_map($q, x => $x, y => $y, type => 1, pins => $pins, post => $map_links );
-    $out .= $q->h1(_('Problems in this area'));
-    my $email_me = _('Email me new local problems');
-    my $rss_title = _('RSS feed of recent local problems');
-    my $rss_alt = _('RSS feed');
-    my $u_pc = uri_escape($input{pc});
-    my $email_me_link = Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/alert', x=>$x, y=>$y, feed=>"local:$x:$y"), $q);
-    my $rss_link = Cobrand::url($cobrand, NewURL($q, -retain => 1, -url=> "/rss/$x,$y", pc => undef), $q);
-    $out .= <<EOF;
-    <p id="alert_links_area">
-    <a id="email_alert" rel="nofollow" href="$email_me_link">$email_me</a>
-    | <a href="$rss_link" id="rss_alert"><span>$rss_alt</span> <img src="/i/feed.png" width="16" height="16" title="$rss_title" alt="$rss_alt" border="0" style="vertical-align: top"></a>
-    </p>
-EOF
-    if (@errors) {
-        $out .= '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
-    }
-    my $skipurl = NewURL($q, -retain=>1, 'submit_map'=>1, skipped=>1);
-    #$out .= $q->h1('Report a problem');
-    $out .= $q->p({-id=>'text_map'}, _('To report a problem, simply
-        <strong>click on the map</strong> at the correct location.'),
-        sprintf(_("<small>If you cannot see the map, <a href='%s' rel='nofollow'>skip this
-        step</a>.</small>"), $skipurl));
-    $out .= '<div id="nearby_lists">' . $q->h2(_('Reports on and around the map'));
-    my $list = '';
-    my $report_url;
+    my $on_list = '';
     foreach (@$on_map) {
-        $report_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, y => undef), $q);  
-        $list .= '<li><a href="' . $report_url . '">';
-        $list .= $_->{title};
-        $list .= '</a>';
-        $list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
-        $list .= '</li>';
+        my $report_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, y => undef), $q);  
+        $on_list .= '<li><a href="' . $report_url . '">';
+        $on_list .= $_->{title};
+        $on_list .= '</a>';
+        $on_list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
+        $on_list .= '</li>';
     }
-    $list = $q->li(_('No problems have been reported yet.'))
-        unless $list;
-    $out .= $q->ul({-id => 'current'}, $list);
-    $out .= $q->h2({-id => 'closest_problems'}, sprintf(_('Closest nearby problems <small>(within&nbsp;%skm)</small>'), $dist));
-    $list = '';
+    $on_list = $q->li(_('No problems have been reported yet.'))
+        unless $on_list;
+
+    my $around_list = '';
     foreach (@$around_map) {
-        $report_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, y => undef), $q);  
-        $list .= '<li><a href="' . $report_url . '">';
-        $list .= $_->{title} . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
-        $list .= '</a>';
-        $list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
-        $list .= '</li>';
+        my $report_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, y => undef), $q);  
+        $around_list .= '<li><a href="' . $report_url . '">';
+        $around_list .= $_->{title} . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
+        $around_list .= '</a>';
+        $around_list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
+        $around_list .= '</li>';
     }
-    $list = $q->li(_('No problems found.'))
-        unless $list;
-    $out .= $q->ul({-id => 'current_near'}, $list);
-    $out .= '</div>';
-    $out .= Page::display_map_end(1);
+    $around_list = $q->li(_('No problems found.'))
+        unless $around_list;
+
+    my $url_skip = NewURL($q, -retain=>1, 'submit_map'=>1, skipped=>1);
+    my %vars = (
+        'map' => Page::display_map($q, x => $x, y => $y, type => 1, pins => $pins, post => $map_links ),
+        map_end => Page::display_map_end(1),
+        url_rss => Cobrand::url($cobrand, NewURL($q, -retain => 1, -url=> "/rss/$x,$y", pc => undef), $q),
+        url_email => Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/alert', x=>$x, y=>$y, feed=>"local:$x:$y"), $q),
+        url_skip => $url_skip,
+        email_me => _('Email me new local problems'),
+        rss_alt => _('RSS feed'),
+        rss_title => _('RSS feed of recent local problems'),
+        reports_on_around => $on_list,
+        reports_nearby => $around_list,
+        heading_problems => _('Problems in this area'),
+        heading_on_around => _('Reports on and around the map'),
+        heading_closest => sprintf(_('Closest nearby problems <small>(within&nbsp;%skm)</small>'), $dist),
+        distance => $dist,
+        errors => @errors ? '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>' : '',
+        text_to_report => _('To report a problem, simply
+        <strong>click on the map</strong> at the correct location.'),
+        text_skip => sprintf(_("<small>If you cannot see the map, <a href='%s' rel='nofollow'>skip this
+        step</a>.</small>"), $url_skip),
+    );
 
     my %params = (
         rss => [ _('Recent local problems, FixMyStreet'), "/rss/$x,$y" ]
     );
 
-    return ($out, %params);
+    return (Page::template_include('map', $q, Page::template_root($q), %vars), %params);
 }
 
 sub display_problem {
