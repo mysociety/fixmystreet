@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.194 2009-10-29 11:16:02 matthew Exp $
+# $Id: Page.pm,v 1.195 2009-10-29 11:31:58 matthew Exp $
 #
 
 package Page;
@@ -198,6 +198,7 @@ sub template_vars ($%) {
         'lang' => $params{lang} eq 'en-gb' ? 'Cymraeg' : 'English',
         'lang_url' => $lang_url,
         'title' => $params{title},
+        'rss' => '',
     );
 
     if ($params{rss}) {
@@ -230,6 +231,18 @@ sub template($%){
     return $template;
 }
 
+=item template_substitute TEMPLATE VARS
+
+Substitutes the VARS into TEMPLATE.
+
+=cut
+
+sub template_substitute($%) {
+    my ($template, %vars) = @_;
+    $template =~ s#{{ ([a-z_]+) }}#$vars{$1}#g;
+    return $template;
+}
+
 =item template_header TEMPLATE Q ROOT PARAMS
 
 Return HTML for the templated top of a page, given a 
@@ -247,8 +260,7 @@ sub template_header($$$%) {
     my $html = join('', <FP>);
     close FP;
     my $vars = template_vars($q, %params);
-    $html =~ s#{{ ([a-z_]+) }}#$vars->{$1}#g;
-    return $html;
+    return template_substitute($html, %$vars);
 }
 
 =item header Q [PARAM VALUE ...]
