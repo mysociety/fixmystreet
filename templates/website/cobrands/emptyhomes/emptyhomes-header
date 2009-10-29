@@ -12,7 +12,7 @@
 <!--[if LT IE 7]>
 <style type="text/css">@import url("/css/ie6.css");</style>
 <![endif]-->
-<!-- RSS -->
+{{ rss }}
 </head>
 <body>
 
