@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.55 2009-10-28 11:35:16 louise Exp $
+# $Id: alert.cgi,v 1.56 2009-11-03 16:42:51 matthew Exp $
 
 use strict;
 use Standard;
@@ -36,9 +36,9 @@ sub main {
             $out = alert_token($q, $data);
         } else {
             my $contact_url = Cobrand::url(Page::get_cobrand($q), '/contact', $q);
-            $out = $q->p(_(<<EOF));
+            $out = $q->p(sprintf(_(<<EOF), $contact_url));
 Thank you for trying to confirm your alert. We seem to have an error ourselves
-though, so <a href="$contact_url">please let us know what went on</a> and we'll look into it.
+though, so <a href="%s">please let us know what went on</a> and we'll look into it.
 EOF
         }
     } elsif ($q->param('rss')) {
@@ -195,7 +195,8 @@ for the county council.')));
 
     my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($e, $n, 'G');
     my $dist = mySociety::Gaze::get_radius_containing_population($lat, $lon, 200000);
-    $dist = int($dist*10+0.5)/10;
+    $dist = int($dist * 10 + 0.5);
+    $dist = $dist / 10.0;
 
     my $checked = '';
     $checked = ' checked' if $q->param('feed') && $q->param('feed') eq "local:$x:$y";

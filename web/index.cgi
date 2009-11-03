@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.305 2009-10-29 18:31:19 matthew Exp $
+# $Id: index.cgi,v 1.306 2009-11-03 16:42:51 matthew Exp $
 
 use strict;
 use Standard;
@@ -457,7 +457,6 @@ sub display_form {
             || ($input{skipped} && $input{pc})
             || ($input{partial} && $input{pc});
 
-    my $out = '';
     my ($px, $py, $easting, $northing);
     if ($input{skipped}) {
         # Map is being skipped
@@ -577,6 +576,8 @@ please specify the closest point on land.')) unless @$all_councils;
     if ($allow_photo_upload) {
          $enctype = 'enctype="multipart/form-data"';
     }
+
+    my $out = '';
     if ($input{skipped}) {
        my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'mapSkippedForm', $q);
        my $form_action = Cobrand::url($cobrand, '/', $q); 
@@ -597,7 +598,7 @@ EOF
         } else {
             $type = 1;
         }
-        $out .= Page::display_map($q, x => $input{x}, y => $input{y}, type => $type,
+        $out .= Page::display_map($q, x => $input{x}, 'y' => $input{y}, type => $type,
             pins => $pins, px => $px, py => $py );
         my $partial_id;
         if (my $token = $input{partial}) {
@@ -612,17 +613,17 @@ EOF
         $out .= $q->p(_('You have located the problem at the point marked with a purple pin on the map.
 If this is not the correct location, simply click on the map again. '));
     }
-    my $privacy_text = '';
-    if ($q->{site} eq 'emptyhomes'){
-        $privacy_text = 'On the site, we will show the subject and details of the problem, plus your
-name if you give us permission.';
-    } else {
-        $privacy_text = 'The subject and details of the problem will be public, plus your
-name if you give us permission.';
-    }
     if ($details eq 'all') {
-        $out .= '<p>' . sprintf(_("All the information you provide here will be sent to <strong>%s</strong>.
-$privacy_text"), join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @$all_councils));
+        my $council_list = join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @$all_councils);
+        if ($q->{site} eq 'emptyhomes'){
+            $out .= '<p>' . sprintf(_('All the information you provide here will be sent to <strong>%s</strong>.
+On the site, we will show the subject and details of the problem, plus your
+name if you give us permission.'), $council_list);
+        } else {
+            $out .= '<p>' . sprintf(_('All the information you provide here will be sent to <strong>%s</strong>.
+The subject and details of the problem will be public, plus your
+name if you give us permission.'), $council_list);
+        }
         $out .= '<input type="hidden" name="council" value="' . join(',',@$all_councils) . '">';
     } elsif ($details eq 'some') {
         my $e = mySociety::Config::get('CONTACT_EMAIL');
@@ -635,7 +636,8 @@ $privacy_text"), join('</strong> or <strong>', map { $areas_info->{$_}->{name} }
         my $list = join(' or ', map { $areas_info->{$_}->{name} } @missing);
         $out .= '<p>All the information you provide here will be sent to <strong>'
             . join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @councils)
-            . '</strong>. ' . $privacy_text;
+            . '</strong>. The subject and details of the problem will be public, plus your
+name if you give us permission.';
         $out .= ' We do <strong>not</strong> yet have details for the other council';
         $out .= ($n>1) ? 's that cover' : ' that covers';
         $out .= " this location. You can help us by finding a contact email address for local
@@ -859,7 +861,8 @@ sub display_location {
    
     my $on_list = '';
     foreach (@$on_map) {
-        my $report_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, y => undef), $q);  
+        my $report_url = NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, 'y' => undef);
+        $report_url = Cobrand::url($cobrand, $report_url, $q);  
         $on_list .= '<li><a href="' . $report_url . '">';
         $on_list .= $_->{title};
         $on_list .= '</a>';
@@ -871,9 +874,11 @@ sub display_location {
 
     my $around_list = '';
     foreach (@$around_map) {
-        my $report_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, y => undef), $q);  
+        my $report_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, 'y' => undef), $q);  
         $around_list .= '<li><a href="' . $report_url . '">';
-        $around_list .= $_->{title} . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
+        my $dist = int($_->{distance}/100+0.5);
+        $dist = $dist / 10;
+        $around_list .= $_->{title} . ' <small>(' . $dist . 'km)</small>';
         $around_list .= '</a>';
         $around_list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
         $around_list .= '</li>';
@@ -883,10 +888,11 @@ sub display_location {
 
     my $url_skip = NewURL($q, -retain=>1, 'submit_map'=>1, skipped=>1);
     my %vars = (
-        'map' => Page::display_map($q, x => $x, y => $y, type => 1, pins => $pins, post => $map_links ),
+        'map' => Page::display_map($q, x => $x, 'y' => $y, type => 1, pins => $pins, post => $map_links ),
         map_end => Page::display_map_end(1),
+        url_home => Cobrand::url($cobrand, '/', $q),
         url_rss => Cobrand::url($cobrand, NewURL($q, -retain => 1, -url=> "/rss/$x,$y", pc => undef), $q),
-        url_email => Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/alert', x=>$x, y=>$y, feed=>"local:$x:$y"), $q),
+        url_email => Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/alert', x=>$x, 'y'=>$y, feed=>"local:$x:$y"), $q),
         url_skip => $url_skip,
         email_me => _('Email me new local problems'),
         rss_alt => _('RSS feed'),
@@ -960,7 +966,7 @@ sub display_problem {
         . URI::Escape::uri_escape_utf8('<a href="' . $google_link_base . '/report/' . $problem->{id} . '">' . $problem->{title} . '</a>') . "\@$lat,$lon'>View on Google Maps</a></p>";
 
     my $pins = Page::display_pin($q, $px, $py, 'blue');
-    $out .= Page::display_map($q, x => $x_tile, y => $y_tile, type => 0,
+    $out .= Page::display_map($q, x => $x_tile, 'y' => $y_tile, type => 0,
         pins => $pins, px => $px, py => $py, post => $map_links );
     if ($q->{site} ne 'emptyhomes' && $problem->{state} eq 'confirmed' && $problem->{duration} > 8*7*24*60*60) {
         $out .= $q->p({id => 'unknown'}, _('This problem is old and of unknown status.'))
