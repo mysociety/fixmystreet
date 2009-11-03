@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.196 2009-10-29 17:55:23 matthew Exp $
+# $Id: Page.pm,v 1.197 2009-11-03 22:53:50 matthew Exp $
 #
 
 package Page;
@@ -239,7 +239,9 @@ Substitutes the VARS into TEMPLATE.
 
 sub template_substitute($%) {
     my ($template, %vars) = @_;
-    $template =~ s#{{ ([a-z_]+) }}#$vars{$1}#g;
+    no warnings;
+    $template =~ s#{{ ([a-z_0-9]+) }}#$vars{$1}#g;
+    use warnings;
     return $template;
 }
 

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.306 2009-11-03 16:42:51 matthew Exp $
+# $Id: index.cgi,v 1.307 2009-11-03 22:53:50 matthew Exp $
 
 use strict;
 use Standard;
@@ -432,6 +432,7 @@ sub display_form {
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 
+    # Convert lat/lon to easting/northing if given
     if ($input{lat}) {
         try {
             ($input{easting}, $input{northing}) = mySociety::GeoUtil::wgs84_to_national_grid($input{lat}, $input{lon}, 'G');
@@ -443,6 +444,7 @@ sub display_form {
         };
     }
 
+    # Get tile co-ordinates if map clicked
     ($input{x}) = $input{x} =~ /^(\d+)/; $input{x} ||= 0;
     ($input{y}) = $input{y} =~ /^(\d+)/; $input{y} ||= 0;
     my @ps = $q->param;
@@ -450,6 +452,8 @@ sub display_form {
         ($pin_tile_x, $pin_tile_y, $pin_x) = ($1, $2, $q->param($_)) if /^tile_(\d+)\.(\d+)\.x$/;
         $pin_y = $q->param($_) if /\.y$/;
     }
+
+    # We need either a map click, an E/N, to be skipping the map, or be filling in a partial form
     return display_location($q, @errors)
         unless ($pin_x && $pin_y)
             || ($input{easting} && $input{northing})
@@ -457,6 +461,7 @@ sub display_form {
             || ($input{skipped} && $input{pc})
             || ($input{partial} && $input{pc});
 
+    # Work out some co-ordinates from whatever we've got
     my ($px, $py, $easting, $northing);
     if ($input{skipped}) {
         # Map is being skipped
@@ -500,6 +505,7 @@ sub display_form {
         $northing = $input_h{northing};
     }
 
+    # Look up councils and do checks for the point we've got
     my $parent_types = $mySociety::VotingArea::council_parent_types;
     $parent_types = [qw(DIS LBO MTD UTA LGD COI)] # No CTY
         if $q->{site} eq 'emptyhomes';
@@ -507,7 +513,6 @@ sub display_form {
     my $all_councils = mySociety::MaPit::get_voting_areas_by_location(
         { easting => $easting, northing => $northing },
         'polygon', $parent_types);
-
 
     # Let cobrand do a check
     my $cobrand = Page::get_cobrand($q);
@@ -562,6 +567,7 @@ please specify the closest point on land.')) unless @$all_councils;
             -attributes=>{id=>'form_category'})
     ) if $category;
 
+    # Work out what help text to show, depending on whether we have council details
     my @councils = keys %council_ok;
     my $details;
     if (@councils == @$all_councils) {
@@ -571,25 +577,31 @@ please specify the closest point on land.')) unless @$all_councils;
     } else {
         $details = 'some';
     }
+
+    # Forms that allow photos need a different enctype
     my $allow_photo_upload = Cobrand::allow_photo_upload($cobrand);
     my $enctype = '';
     if ($allow_photo_upload) {
-         $enctype = 'enctype="multipart/form-data"';
+         $enctype = ' enctype="multipart/form-data"';
     }
 
-    my $out = '';
+    my %vars;
+    foreach (keys %input_h) {
+        $vars{'input_h_'.$_} = $input_h{$_};
+    }
+
     if ($input{skipped}) {
        my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'mapSkippedForm', $q);
        my $form_action = Cobrand::url($cobrand, '/', $q); 
-       $out .= <<EOF;
-<form action="$form_action" method="post" name="mapSkippedForm" $enctype>
+       $vars{form_start} = <<EOF;
+<form action="$form_action" method="post" name="mapSkippedForm"$enctype>
 <input type="hidden" name="pc" value="$input_h{pc}">
 <input type="hidden" name="x" value="$input_h{x}">
 <input type="hidden" name="y" value="$input_h{y}">
 <input type="hidden" name="skipped" value="1">
 $cobrand_form_elements
 EOF
-        $out .= $q->h1(_('Reporting a problem')) . '<div>';
+        $vars{page_heading} = $q->h1(_('Reporting a problem')) . '<div>';
     } else {
         my $pins = Page::display_pin($q, $px, $py, 'purple');
         my $type;
@@ -598,33 +610,34 @@ EOF
         } else {
             $type = 1;
         }
-        $out .= Page::display_map($q, x => $input{x}, 'y' => $input{y}, type => $type,
+        $vars{form_start} = Page::display_map($q, x => $input{x}, 'y' => $input{y}, type => $type,
             pins => $pins, px => $px, py => $py );
         my $partial_id;
         if (my $token = $input{partial}) {
             $partial_id = mySociety::AuthToken::retrieve('partial', $token);
             if ($partial_id) {
-                $out .= $q->p({id=>'unknown'}, 'Please note your report has
+                $vars{form_start} .= $q->p({id=>'unknown'}, 'Please note your report has
                 <strong>not yet been sent</strong>. Choose a category
                 and add further information below, then submit.');
             }
         }
-        $out .= $q->h1(_('Reporting a problem')) . ' ';
-        $out .= $q->p(_('You have located the problem at the point marked with a purple pin on the map.
+        $vars{page_heading} = $q->h1(_('Reporting a problem')) . ' ';
+        $vars{text_located} = $q->p(_('You have located the problem at the point marked with a purple pin on the map.
 If this is not the correct location, simply click on the map again. '));
     }
+
     if ($details eq 'all') {
         my $council_list = join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @$all_councils);
         if ($q->{site} eq 'emptyhomes'){
-            $out .= '<p>' . sprintf(_('All the information you provide here will be sent to <strong>%s</strong>.
+            $vars{text_help} = '<p>' . sprintf(_('All the information you provide here will be sent to <strong>%s</strong>.
 On the site, we will show the subject and details of the problem, plus your
 name if you give us permission.'), $council_list);
         } else {
-            $out .= '<p>' . sprintf(_('All the information you provide here will be sent to <strong>%s</strong>.
+            $vars{text_help} = '<p>' . sprintf(_('All the information you provide here will be sent to <strong>%s</strong>.
 The subject and details of the problem will be public, plus your
 name if you give us permission.'), $council_list);
         }
-        $out .= '<input type="hidden" name="council" value="' . join(',',@$all_councils) . '">';
+        $vars{text_help} .= '<input type="hidden" name="council" value="' . join(',',@$all_councils) . '">';
     } elsif ($details eq 'some') {
         my $e = mySociety::Config::get('CONTACT_EMAIL');
         my %councils = map { $_ => 1 } @councils;
@@ -634,46 +647,46 @@ name if you give us permission.'), $council_list);
         }
         my $n = @missing;
         my $list = join(' or ', map { $areas_info->{$_}->{name} } @missing);
-        $out .= '<p>All the information you provide here will be sent to <strong>'
+        $vars{text_help} = '<p>All the information you provide here will be sent to <strong>'
             . join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @councils)
             . '</strong>. The subject and details of the problem will be public, plus your
 name if you give us permission.';
-        $out .= ' We do <strong>not</strong> yet have details for the other council';
-        $out .= ($n>1) ? 's that cover' : ' that covers';
-        $out .= " this location. You can help us by finding a contact email address for local
+        $vars{text_help} .= ' We do <strong>not</strong> yet have details for the other council';
+        $vars{text_help} .= ($n>1) ? 's that cover' : ' that covers';
+        $vars{text_help} .= " this location. You can help us by finding a contact email address for local
 problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.";
-        $out .= '<input type="hidden" name="council" value="' . join(',', @councils)
+        $vars{text_help} .= '<input type="hidden" name="council" value="' . join(',', @councils)
             . '|' . join(',', @missing) . '">';
     } else {
         my $e = mySociety::Config::get('CONTACT_EMAIL');
         my $list = join(' or ', map { $areas_info->{$_}->{name} } @$all_councils);
         my $n = @$all_councils;
         if ($q->{site} ne 'emptyhomes') {
-            $out .= '<p>We do not yet have details for the council';
-            $out .= ($n>1) ? 's that cover' : ' that covers';
-            $out .= " this location. If you submit a problem here the subject and details 
+            $vars{text_help} = '<p>We do not yet have details for the council';
+            $vars{text_help} .= ($n>1) ? 's that cover' : ' that covers';
+            $vars{text_help} .= " this location. If you submit a problem here the subject and details 
 of the problem will be public, but the problem will <strong>not</strong> be reported to the council.
 You can help us by finding a contact email address for local
 problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.";
         } else {
-            $out .= _("<p>We do not yet have details for the council that covers
+            $vars{text_help} = _("<p>We do not yet have details for the council that covers
 this location. If you submit a report here it will be left on the site, but
 not reported to the council &ndash; please still leave your report, so that
 we can show to the council the activity in their area.");
         }
-        $out .= '<input type="hidden" name="council" value="-1">';
+        $vars{text_help} .= '<input type="hidden" name="council" value="-1">';
     }
 
     if ($input{skipped}) {
-        $out .= $q->p(_('Please fill in the form below with details of the problem,
+        $vars{text_help} .= $q->p(_('Please fill in the form below with details of the problem,
 and describe the location as precisely as possible in the details box.'));
     } elsif ($q->{site} eq 'scambs') {
-        $out .= '<p>Please fill in details of the problem below. We won\'t be able
+        $vars{text_help} .= '<p>Please fill in details of the problem below. We won\'t be able
 to help unless you leave as much detail as you can, so please describe the exact location of
 the problem (e.g. on a wall), what it is, how long it has been there, a description (and a
 photo of the problem if you have one), etc.';
     } elsif ($q->{site} eq 'emptyhomes') {
-        $out .= $q->p(_(<<EOF));
+        $vars{text_help} .= $q->p(_(<<EOF));
 Please fill in details of the empty property below, saying what type of
 property it is e.g. an empty home, block of flats, office etc. Tell us
 something about its condition and any other information you feel is relevant.
@@ -682,92 +695,63 @@ and to the point; writing your message entirely in block capitals makes it hard
 to read, as does a lack of punctuation.
 EOF
     } elsif ($details ne 'none') {
-        $out .= '<p>Please fill in details of the problem below. The council won\'t be able
+        $vars{text_help} .= '<p>Please fill in details of the problem below. The council won\'t be able
 to help unless you leave as much detail as you can, so please describe the exact location of
 the problem (e.g. on a wall), what it is, how long it has been there, a description (and a
 photo of the problem if you have one), etc.';
     } else {
-        $out .= $q->p(_('Please fill in details of the problem below.'));
+        $vars{text_help} .= $q->p(_('Please fill in details of the problem below.'));
     }
-    $out .= '
+
+    $vars{text_help} .= '
 <input type="hidden" name="easting" value="' . $easting . '">
 <input type="hidden" name="northing" value="' . $northing . '">';
 
     if (@errors) {
-        $out .= '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
+        $vars{errors} = '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
+
     my $anon = ($input{anonymous}) ? ' checked' : ($input{title} ? '' : ' checked');
-    $out .= '<div id="problem_form">';
-    $out .= $q->h2(_('Empty property details form')) if $q->{site} eq 'emptyhomes';
-    $out .= <<EOF;
-<div id="fieldset">
-$category
 
-EOF
-    my $subject_label = _('Subject:');
-    my $detail_label = _('Details:');
-    my $photo_label = _('Photo:');
-    my $name_label = _('Name:');
-    my $email_label = _('Email:');
-    my $phone_label = _('Phone:');
-    my $optional = _('(optional)');
-    my $anonymous;
+    $vars{form_heading} = $q->h2(_('Empty property details form')) if $q->{site} eq 'emptyhomes';
+    $vars{subject_label} = _('Subject:');
+    $vars{detail_label} = _('Details:');
+    $vars{photo_label} = _('Photo:');
+    $vars{name_label} = _('Name:');
+    $vars{email_label} = _('Email:');
+    $vars{phone_label} = _('Phone:');
+    $vars{optional} = _('(optional)');
     if ($q->{site} eq 'emptyhomes') {
-        $anonymous = _('Can we show your name on the site?');
+        $vars{anonymous} = _('Can we show your name on the site?');
     } else {
-        $anonymous = _('Can we show your name publicly?');
+        $vars{anonymous} = _('Can we show your name publicly?');
     }
-    my $anonymous2 = _('(we never show your email address or phone number)');
+    $vars{anonymous2} = _('(we never show your email address or phone number)');
 
-    $out .= <<EOF;
-<div><label for="form_title">$subject_label</label>
-<input type="text" value="$input_h{title}" name="title" id="form_title" size="30"></div>
-EOF
-    $out .= <<EOF;
-<div><label for="form_detail">$detail_label</label>
-<textarea name="detail" id="form_detail" rows="7" cols="26">$input_h{detail}</textarea></div>
-EOF
     my $partial_id;
     if (my $token = $input{partial}) {
         $partial_id = mySociety::AuthToken::retrieve('partial', $token);
         if ($partial_id) {
-            $out .= '<input type="hidden" name="partial" value="' . $token . '">';
+            $vars{partial_field} = '<input type="hidden" name="partial" value="' . $token . '">';
         }
     }
     my $photo_input = ''; 
     if ($allow_photo_upload) {
          $photo_input = <<EOF;
-<div id="fileupload_flashUI" style="display:none">
-<label for="form_photo">Photo:</label>
-<input type="text" id="txtfilename" disabled style="background-color: #ffffff;">
-<input type="button" value="Browse..." onclick="document.getElementById('txtfilename').value=''; swfu.cancelUpload(); swfu.selectFile();">
-<input type="hidden" name="upload_fileid" id="upload_fileid" value="$input_h{upload_fileid}">
-</div>   
 <div id="fileupload_normalUI">
-<label for="form_photo">$photo_label</label>
+<label for="form_photo">$vars{photo_label}</label>
 <input type="file" name="photo" id="form_photo">
 </div>
 EOF
     }
     if ($partial_id && $q->param('has_photo')) {
-        $out .= "<p>The photo you uploaded was:</p> <p><img src='/photo?id=$partial_id'></p>";
+        $vars{photo_field} = "<p>The photo you uploaded was:</p> <p><img src='/photo?id=$partial_id'></p>";
     } else {
-        $out .= $photo_input;
+        $vars{photo_field} = $photo_input;
     }
-    $out .= <<EOF;
-<div><label for="form_name">$name_label</label>
-<input type="text" value="$input_h{name}" name="name" id="form_name" size="30"></div>
-<div class="checkbox"><input type="checkbox" name="anonymous" id="form_anonymous" value="1"$anon>
-<label for="form_anonymous">$anonymous</label>
-<small>$anonymous2</small></div>
-<div><label for="form_email">$email_label</label>
-<input type="text" value="$input_h{email}" name="email" id="form_email" size="30"></div>
-<div><label for="form_phone">$phone_label</label>
-<input type="text" value="$input_h{phone}" name="phone" id="form_phone" size="15">
-<small>$optional</small></div>
-EOF
+
     if ($q->{site} eq 'scambs') {
-        $out .= <<EOF;
+        $vars{text_notes} = <<EOF;
 <p>Please note:</p>
 <ul>
 <li>Please be polite, concise and to the point.</li>
@@ -777,7 +761,7 @@ as does a lack of punctuation.</li>
 </ul>
 EOF
     } elsif ($q->{site} ne 'emptyhomes') {
-        $out .= <<EOF;
+        $vars{text_notes} = <<EOF;
 <p>Please note:</p>
 <ul>
 <li>We will only use your personal
@@ -793,21 +777,14 @@ directly using their own website.</li>
 </ul>
 EOF
     }
-    my $submit_button = _('Submit');
-    $out .= <<EOF;
-<p id="problem_submit"><input type="submit" name="submit_problem" value="$submit_button"></p>
-</div>
-</div>
-EOF
-    $out .= Page::display_map_end(1);
-    my %params = (
-        js => <<EOF
-<script type="text/javascript" defer>
-swfu = new SWFUpload(swfu_settings);
-</script>
-EOF
+
+    %vars = (%vars, 
+        category => $category,
+        map_end => Page::display_map_end(1),
+        url_home => Cobrand::url($cobrand, '/', $q),
+        submit_button => _('Submit'),
     );
-    return ($out, %params);
+    return (Page::template_include('report-form', $q, Page::template_root($q), %vars));
 }
 
 sub display_location {
@@ -1034,12 +1011,6 @@ EOF
     if ($allow_photo_upload) {
         $photo_element = <<EOF;
 $fixedline
-<div id="fileupload_flashUI" style="display:none">
-<label for="form_photo">Photo:</label>
-<input type="text" id="txtfilename" disabled style="background-color: #ffffff;">
-<input type="button" value="Browse..." onclick="document.getElementById('txtfilename').value=''; swfu.cancelUpload(); swfu.selectFile();">
-<input type="hidden" name="upload_fileid" id="upload_fileid" value="$input_h{upload_fileid}">
-</div>
 <div id="fileupload_normalUI">
 <label for="form_photo">$photo_label</label>
 <input type="file" name="photo" id="form_photo">
@@ -1050,10 +1021,10 @@ EOF
     $form_action = Cobrand::url($cobrand, '/', $q);
     my $enctype = '';
     if ($allow_photo_upload) {
-        $enctype = 'enctype="multipart/form-data"';
+        $enctype = ' enctype="multipart/form-data"';
     }
     $out .= <<EOF;
-<form method="post" action="$form_action" name="updateForm" id="fieldset" $enctype>
+<form method="post" action="$form_action" name="updateForm" id="fieldset"$enctype>
 <input type="hidden" name="submit_update" value="1">
 <input type="hidden" name="id" value="$input_h{id}">
 <div><label for="form_name">$name_label</label>
@@ -1071,15 +1042,8 @@ $cobrand_form_elements
 </div>
 EOF
     $out .= Page::display_map_end(0);
-    my $js = <<EOF;
-<script type="text/javascript" defer>
-swfu = new SWFUpload(swfu_settings);
-</script>
-EOF
-
     my %params = (
         rss => [ _('Updates to this problem, FixMyStreet'), "/rss/$input_h{id}" ],
-        js => $js,
         title => $problem->{title}
     );
     return ($out, %params);
