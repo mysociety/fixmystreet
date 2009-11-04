@@ -1,42 +1,42 @@
-{{ form_start }}
-{{ page_heading }}
+{{ $form_start }}
+{{ $page_heading }}
 
-{{ text_located }}
+{{ $text_located }}
 
-{{ text_help }}
+{{ $text_help }}
 
-{{ errors }}
+{{ $errors }}
 
 <div id="problem_form">
-{{ form_heading }}
+{{ $form_heading }}
 <div id="fieldset">
-{{ category }}
+{{ $category }}
 
-<div><label for="form_title">{{ subject_label }}</label>
-<input type="text" value="{{ input_h_title }}" name="title" id="form_title" size="30"></div>
-<div><label for="form_detail">{{ detail_label }}</label>
-<textarea name="detail" id="form_detail" rows="7" cols="26">{{ input_h_detail }}</textarea></div>
+<div><label for="form_title">{{ $subject_label }}</label>
+<input type="text" value="{{ $input_h{title} }}" name="title" id="form_title" size="30"></div>
+<div><label for="form_detail">{{ $detail_label }}</label>
+<textarea name="detail" id="form_detail" rows="7" cols="26">{{ $input_h{detail} }}</textarea></div>
 
-{{ partial_field }}
+{{ $partial_field }}
 
-{{ photo_field }}
+{{ $photo_field }}
 
-<div><label for="form_name">{{ name_label }}</label>
-<input type="text" value="{{ input_h_name }}" name="name" id="form_name" size="30"></div>
-<div class="checkbox"><input type="checkbox" name="anonymous" id="form_anonymous" value="1"{{ anon }}>
-<label for="form_anonymous">{{ anonymous }}</label>
-<small>{{ anonymous2 }}</small></div>
-<div><label for="form_email">{{ email_label }}</label>
-<input type="text" value="{{ input_h_email }}" name="email" id="form_email" size="30"></div>
-<div><label for="form_phone">{{ phone_label }}</label>
-<input type="text" value="{{ input_h_phone }}" name="phone" id="form_phone" size="15">
-<small>{{ optional }}</small></div>
+<div><label for="form_name">{{ $name_label }}</label>
+<input type="text" value="{{ $input_h{name} }}" name="name" id="form_name" size="30"></div>
+<div class="checkbox"><input type="checkbox" name="anonymous" id="form_anonymous" value="1"{{ $anon }}>
+<label for="form_anonymous">{{ $anonymous }}</label>
+<small>{{ $anonymous2 }}</small></div>
+<div><label for="form_email">{{ $email_label }}</label>
+<input type="text" value="{{ $input_h{email} }}" name="email" id="form_email" size="30"></div>
+<div><label for="form_phone">{{ $phone_label }}</label>
+<input type="text" value="{{ $input_h{phone} }}" name="phone" id="form_phone" size="15">
+<small>{{ $optional }}</small></div>
 
-{{ text_notes }}
+{{ $text_notes }}
 
-<p id="problem_submit"><input type="submit" name="submit_problem" value="{{ submit_button }}"></p>
+<p id="problem_submit"><input type="submit" name="submit_problem" value="{{ $submit_button }}"></p>
 </div>
 </div>
 
-{{ map_end }}
+{{ $map_end }}
 

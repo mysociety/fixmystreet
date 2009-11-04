@@ -1,28 +1,28 @@
-{{ map }}
+{{ $map }}
 
-<h1>{{ heading_problems }}</h1>
+<h1>{{ $heading_problems }}</h1>
 
 <p id="alert_links_area">
-<a id="email_alert" rel="nofollow" href="{{ url_email }}">{{ email_me }}</a>
-| <a href="{{ url_rss }}" id="rss_alert"><span>{{ rss_alt }}</span> <img src="/i/feed.png" width="16" height="16" title="{{ rss_title }}" alt="{{ rss_alt }}" border="0" style="vertical-align: top"></a>
+<a id="email_alert" rel="nofollow" href="{{ $url_email }}">{{ $email_me }}</a>
+| <a href="{{ $url_rss }}" id="rss_alert"><span>{{ $rss_alt }}</span> <img src="/i/feed.png" width="16" height="16" title="{{ $rss_title }}" alt="{{ $rss_alt }}" border="0" style="vertical-align: top"></a>
 </p>
 
-{{ errors }}
+{{ $errors }}
 
-<p id="text_map">{{ text_to_report }} {{ text_skip }}</p>
+<p id="text_map">{{ $text_to_report }} {{ $text_skip }}</p>
 
 <div id="nearby_lists">
-<h2>{{ heading_on_around }}</h2>
+<h2>{{ $heading_on_around }}</h2>
 
 <ul id="current">
-{{ reports_on_around }}
+{{ $reports_on_around }}
 </ul>
 
-<h2 id="closest_problems">{{ heading_closest }}</h2>
+<h2 id="closest_problems">{{ $heading_closest }}</h2>
 
 <ul id="current_near">
-{{ reports_nearby }}
+{{ $reports_nearby }}
 </ul>
 
 </div>
-{{ map_end }}
+{{ $map_end }}

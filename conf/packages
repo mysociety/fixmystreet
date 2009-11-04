@@ -25,3 +25,4 @@ perlmagick
 libjson-perl
 libimage-size-perl
 libmath-bigint-gmp-perl
+libtext-template-perl

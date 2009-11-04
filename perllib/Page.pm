@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.197 2009-11-03 22:53:50 matthew Exp $
+# $Id: Page.pm,v 1.198 2009-11-04 13:11:06 matthew Exp $
 #
 
 package Page;
@@ -23,6 +23,7 @@ use LWP::Simple;
 use Digest::MD5 qw(md5_hex);
 use POSIX qw(strftime);
 use URI::Escape;
+use Text::Template;
 
 use Memcached;
 use Problems;
@@ -231,20 +232,6 @@ sub template($%){
     return $template;
 }
 
-=item template_substitute TEMPLATE VARS
-
-Substitutes the VARS into TEMPLATE.
-
-=cut
-
-sub template_substitute($%) {
-    my ($template, %vars) = @_;
-    no warnings;
-    $template =~ s#{{ ([a-z_0-9]+) }}#$vars{$1}#g;
-    use warnings;
-    return $template;
-}
-
 =item template_include
 
 Return HTML for a template, given a template name, request,
@@ -257,10 +244,12 @@ sub template_include {
     (my $file = __FILE__) =~ s{/[^/]*?$}{};
     my $template_file = $file . $template_root . $template;
     $template_file = $file . template_root($q, 1) . $template unless -e $template_file;
-    open FP, $template_file;
-    my $html = join('', <FP>);
-    close FP;
-    return template_substitute($html, %params);
+    
+    $template = Text::Template->new(
+        SOURCE => $template_file,
+        DELIMITERS => ['{{', '}}'],
+    );
+    return $template->fill_in(HASH => \%params);
 }
 
 =item template_header TEMPLATE Q ROOT PARAMS

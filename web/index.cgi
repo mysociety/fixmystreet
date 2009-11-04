@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.307 2009-11-03 22:53:50 matthew Exp $
+# $Id: index.cgi,v 1.308 2009-11-04 13:11:06 matthew Exp $
 
 use strict;
 use Standard;
@@ -586,9 +586,7 @@ please specify the closest point on land.')) unless @$all_councils;
     }
 
     my %vars;
-    foreach (keys %input_h) {
-        $vars{'input_h_'.$_} = $input_h{$_};
-    }
+    $vars{input_h} = \%input_h;
 
     if ($input{skipped}) {
        my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'mapSkippedForm', $q);
@@ -600,8 +598,8 @@ please specify the closest point on land.')) unless @$all_councils;
 <input type="hidden" name="y" value="$input_h{y}">
 <input type="hidden" name="skipped" value="1">
 $cobrand_form_elements
+<div>
 EOF
-        $vars{page_heading} = $q->h1(_('Reporting a problem')) . '<div>';
     } else {
         my $pins = Page::display_pin($q, $px, $py, 'purple');
         my $type;
@@ -621,10 +619,10 @@ EOF
                 and add further information below, then submit.');
             }
         }
-        $vars{page_heading} = $q->h1(_('Reporting a problem')) . ' ';
         $vars{text_located} = $q->p(_('You have located the problem at the point marked with a purple pin on the map.
 If this is not the correct location, simply click on the map again. '));
     }
+    $vars{page_heading} = $q->h1(_('Reporting a problem'));
 
     if ($details eq 'all') {
         my $council_list = join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @$all_councils);
