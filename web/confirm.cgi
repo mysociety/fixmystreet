@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.58 2009-10-21 15:10:08 louise Exp $
+# $Id: confirm.cgi,v 1.59 2009-11-04 16:28:16 matthew Exp $
 
 use strict;
 use Standard;
@@ -152,10 +152,15 @@ $q->p('<a href="/report/' . $id . '">' . _('View your report') . '</a>.');
             . sprintf(_('. You can <a href="%s">view the problem on this site</a>.'), $report_url)
         );
         $out .= CrossSell::display_advert($q, $email, $name);
+        my %vars = (
+            url_report => $report_url,
+            url_home => Cobrand::url($cobrand, '/', $q),
+        );
+        my $cobrand_page = Page::template_include('confirmed-problem', $q, Page::template_root($q), %vars);
+        $out = $cobrand_page if $cobrand_page;
     }
 
     # Subscribe problem reporter to email updates
-    my $cobrand = Page::get_cobrand($q);
     my $alert_id = mySociety::Alert::create($email, 'new_updates', $cobrand, $cobrand_data, $id);
     mySociety::Alert::confirm($alert_id);
 
