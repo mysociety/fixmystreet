@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.311 2009-11-04 18:53:38 matthew Exp $
+# $Id: index.cgi,v 1.312 2009-11-04 19:04:59 matthew Exp $
 
 use strict;
 use Standard;
@@ -953,7 +953,7 @@ sub display_problem {
     $vars{problem_title} = ent($problem->{title});
     $vars{problem_meta} = Page::display_problem_meta_line($q, $problem);
     $vars{problem_detail} = Page::display_problem_detail($problem);
-    $vars{problem_photo} = Page::display_problem_photo($problem);
+    $vars{problem_photo} = Page::display_problem_photo($q, $problem);
 
     my $contact_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/contact?id=' . $input{id}), $q);
     $vars{unsuitable} = $q->a({rel => 'nofollow', href => $contact_url}, _('Offensive? Unsuitable? Tell us'));

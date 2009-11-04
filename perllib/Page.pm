@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.200 2009-11-04 18:53:37 matthew Exp $
+# $Id: Page.pm,v 1.201 2009-11-04 19:04:58 matthew Exp $
 #
 
 package Page;
@@ -748,7 +748,7 @@ sub _part {
     }
 }
 
-sub display_problem_meta_line {
+sub display_problem_meta_line($$) {
     my ($q, $problem) = @_;
     my $out = '';
     if ($q->{site} eq 'emptyhomes') {
@@ -793,7 +793,7 @@ sub display_problem_meta_line {
     return $out;
 }
 
-sub display_problem_detail {
+sub display_problem_detail($) {
     my $problem = shift;
     (my $detail = $problem->{detail}) =~ s/\r//g;
     my $out = '';
@@ -803,7 +803,7 @@ sub display_problem_detail {
     return $out;
 }
 
-sub display_problem_photo {
+sub display_problem_photo($$) {
     my ($q, $problem) = @_;
     my $cobrand = get_cobrand($q);
     my $display_photos = Cobrand::allow_photo_display($cobrand);
@@ -815,7 +815,7 @@ sub display_problem_photo {
 }
 
 # Display information about problem
-sub display_problem_text {
+sub display_problem_text($$) {
     my ($q, $problem) = @_;
 
     my $out = $q->h1(ent($problem->{title}));
@@ -828,7 +828,7 @@ sub display_problem_text {
 }
 
 # Display updates
-sub display_problem_updates {
+sub display_problem_updates($$) {
     my ($id, $q) = @_;
     my $updates = select_all(
         "select id, name, extract(epoch from created) as created, text,
