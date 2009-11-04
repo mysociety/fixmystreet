@@ -51,6 +51,10 @@ h3 {
     color: #30517A;
 }
 
+select, input, textarea {
+    font-size: 99%;
+}
+
 a:link {
     color: #30517A;
 }

@@ -12,10 +12,6 @@ form {
     margin: 0;
 }
 
-select, input, textarea {
-    font-size: 99%;
-}
-
 label {
     float: left;
     text-align: right;

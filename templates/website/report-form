@@ -10,7 +10,7 @@
 <div id="problem_form">
 {{ $form_heading }}
 <div id="fieldset">
-{{ $category }}
+<div>{{ $category }}</div>
 
 <div><label for="form_title">{{ $subject_label }}</label>
 <input type="text" value="{{ $input_h{title} }}" name="title" id="form_title" size="30"></div>

@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.308 2009-11-04 13:11:06 matthew Exp $
+# $Id: index.cgi,v 1.309 2009-11-04 14:22:57 matthew Exp $
 
 use strict;
 use Standard;
@@ -562,10 +562,10 @@ please specify the closest point on land.')) unless @$all_councils;
             _('Empty public building - school, hospital, etc.'));
         $category = _('Property type:');
     }
-    $category = $q->div($q->label({'for'=>'form_category'}, $category),
+    $category = $q->label({'for'=>'form_category'}, $category) .
         $q->popup_menu(-name=>'category', -values=>\@categories, -id=>'form_category',
             -attributes=>{id=>'form_category'})
-    ) if $category;
+        if $category;
 
     # Work out what help text to show, depending on whether we have council details
     my @councils = keys %council_ok;
