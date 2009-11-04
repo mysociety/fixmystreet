@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.309 2009-11-04 14:22:57 matthew Exp $
+# $Id: index.cgi,v 1.310 2009-11-04 15:16:59 matthew Exp $
 
 use strict;
 use Standard;
@@ -119,7 +119,7 @@ sub front_page {
         form_action => $form_action,
         question => $question,
     );
-    my $cobrand_front_page = Cobrand::front_page($cobrand, $q, %vars);
+    my $cobrand_front_page = Page::template_include('front-page', $q, Page::template_root($q), %vars);
     return $cobrand_front_page if $cobrand_front_page;
 
     my $out = '<p id="expl"><strong>' . _('Report, view, or discuss local problems') . '</strong>';

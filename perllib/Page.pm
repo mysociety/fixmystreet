@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.198 2009-11-04 13:11:06 matthew Exp $
+# $Id: Page.pm,v 1.199 2009-11-04 15:16:58 matthew Exp $
 #
 
 package Page;
@@ -244,7 +244,8 @@ sub template_include {
     (my $file = __FILE__) =~ s{/[^/]*?$}{};
     my $template_file = $file . $template_root . $template;
     $template_file = $file . template_root($q, 1) . $template unless -e $template_file;
-    
+    return undef unless -e $template_file;
+
     $template = Text::Template->new(
         SOURCE => $template_file,
         DELIMITERS => ['{{', '}}'],
@@ -680,6 +681,7 @@ sub send_email {
         $action = 'your expression of interest will not be registered';
         $worry = "we'll hang on to your expression of interest while you're checking your email.";
     }
+
     my $out = sprintf(_(<<EOF), $action, $worry);
 <h1>Nearly Done! Now check your email...</h1>
 <p>The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.</p>
@@ -688,6 +690,15 @@ sub send_email {
 if you do not, %s.</p>
 <p>(Don't worry &mdash; %s)</p>
 EOF
+
+    my $cobrand = Page::get_cobrand($q);
+    my %vars = (
+        action => $action,
+        worry => $worry,
+        url_home => Cobrand::url($cobrand, '/', $q),
+    );
+    my $cobrand_email = Page::template_include('check-email', $q, Page::template_root($q), %vars);
+    return $cobrand_email if $cobrand_email;
     return $out;
 }
 
