@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.310 2009-11-04 15:16:59 matthew Exp $
+# $Id: index.cgi,v 1.311 2009-11-04 18:53:38 matthew Exp $
 
 use strict;
 use Standard;
@@ -933,82 +933,69 @@ sub display_problem {
         $py = Page::os_to_px($problem->{northing}, $y_tile, 1);
     }
 
-    my $out = '';
+    my %vars;
     my $extra_data = Cobrand::extra_data($cobrand, $q);
     my $google_link_base = Cobrand::base_url_for_emails($cobrand, $extra_data);
     my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($problem->{easting}, $problem->{northing}, 'G');
     my $map_links = "<p id='sub_map_links'><a href='http://maps.google.co.uk/maps?output=embed&amp;z=16&amp;q="
         . URI::Escape::uri_escape_utf8('<a href="' . $google_link_base . '/report/' . $problem->{id} . '">' . $problem->{title} . '</a>') . "\@$lat,$lon'>View on Google Maps</a></p>";
-
     my $pins = Page::display_pin($q, $px, $py, 'blue');
-    $out .= Page::display_map($q, x => $x_tile, 'y' => $y_tile, type => 0,
+    $vars{map_start} = Page::display_map($q, x => $x_tile, 'y' => $y_tile, type => 0,
         pins => $pins, px => $px, py => $py, post => $map_links );
+
     if ($q->{site} ne 'emptyhomes' && $problem->{state} eq 'confirmed' && $problem->{duration} > 8*7*24*60*60) {
-        $out .= $q->p({id => 'unknown'}, _('This problem is old and of unknown status.'))
+        $vars{banner} = $q->p({id => 'unknown'}, _('This problem is old and of unknown status.'))
     }
     if ($problem->{state} eq 'fixed') {
-        $out .= $q->p({id => 'fixed'}, _('This problem has been fixed') . '.')
+        $vars{banner} = $q->p({id => 'fixed'}, _('This problem has been fixed') . '.')
     }
-    $out .= Page::display_problem_text($q, $problem);
+
+    $vars{problem_title} = ent($problem->{title});
+    $vars{problem_meta} = Page::display_problem_meta_line($q, $problem);
+    $vars{problem_detail} = Page::display_problem_detail($problem);
+    $vars{problem_photo} = Page::display_problem_photo($problem);
+
     my $contact_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/contact?id=' . $input{id}), $q);
-    $out .= $q->p({align=>'right'},
-        $q->small($q->a({rel => 'nofollow', href => $contact_url}, _('Offensive? Unsuitable? Tell us')))
-    );
+    $vars{unsuitable} = $q->a({rel => 'nofollow', href => $contact_url}, _('Offensive? Unsuitable? Tell us'));
 
     my $back = Cobrand::url($cobrand, NewURL($q, -url => '/', 'x' => $x_tile, 'y' => $y_tile, -retain => 1, pc => undef, id => undef ), $q);
-    $out .= '<p style="padding-bottom: 0.5em; border-bottom: dotted 1px #999999;" align="right"><a href="'
-        . $back . '">' . _('More problems nearby') . '</a></p>';
-    $out .= '<div id="alert_links">';
-    my $alert_link = Cobrand::url($cobrand, NewURL($q, -url => '/alert?type=updates;id='.$input_h{id}, -retain => 1, pc => undef ), $q);
-    $out .= '<a rel="nofollow" id="email_alert" href="' . $alert_link . '">' . _('Email me updates') . '</a>';
-    my $email_label = _('Email:');
-    my $subscribe = _('Subscribe');
-    my $blurb = _('Receive email when updates are left on this problem');
-    my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'alerts', $q);
-    my $form_action = Cobrand::url($cobrand, '/alert', $q);
-    $out .= <<EOF;
-<form action="$form_action" method="post" id="email_alert_box">
-<p>$blurb</p>
-<label class="n" for="alert_rznvy">$email_label</label>
-<input type="text" name="rznvy" id="alert_rznvy" value="$input_h{rznvy}" size="30">
-<input type="hidden" name="id" value="$input_h{id}">
-<input type="hidden" name="type" value="updates">
-<input type="submit" value="$subscribe">
-$cobrand_form_elements
-</form>
-EOF
-    my $rss_url = Cobrand::url($cobrand,  NewURL($q, -retain=>1, -url => '/rss/'.$input_h{id}, pc => undef, id => undef), $q);
+    $vars{more_problems} = '<a href="' . $back . '">' . _('More problems nearby') . '</a>';
 
-    $out .= ' &nbsp; <a href="'. $rss_url .'"><img src="/i/feed.png" width="16" height="16" title="' . _('RSS feed') . '" alt="' . _('RSS feed of updates to this problem') . '" border="0" style="vertical-align: middle"></a>';
-    $out .= '</div>';
+    $vars{alert_link} = Cobrand::url($cobrand, NewURL($q, -url => '/alert?type=updates;id='.$input_h{id}, -retain => 1, pc => undef ), $q);
+    $vars{alert_text} = _('Email me updates');
+    $vars{email_label} = _('Email:');
+    $vars{subscribe} = _('Subscribe');
+    $vars{blurb} = _('Receive email when updates are left on this problem');
+    $vars{cobrand_form_elements1} = Cobrand::form_elements($cobrand, 'alerts', $q);
+    $vars{form_alert_action} = Cobrand::url($cobrand, '/alert', $q);
+    $vars{rss_url} = Cobrand::url($cobrand,  NewURL($q, -retain=>1, -url => '/rss/'.$input_h{id}, pc => undef, id => undef), $q);
+    $vars{rss_title} = _('RSS feed');
+    $vars{rss_alt} = _('RSS feed of updates to this problem');
 
-    $out .= Page::display_problem_updates($input{id}, $q);
-    $out .= '<div id="update_form">';
-    $out .= $q->h2(_('Provide an update'));
-    $out .=  $q->p($q->small(_('Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href="/faq#privacy">privacy policy</a>')))
+    $vars{problem_updates} = Page::display_problem_updates($input{id}, $q);
+    $vars{update_heading} = $q->h2(_('Provide an update'));
+    $vars{update_blurb} = $q->p($q->small(_('Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href="/faq#privacy">privacy policy</a>')))
         unless $q->{site} eq 'emptyhomes'; # No council blurb
 
     if (@errors) {
-        $out .= '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
+        $vars{errors} = '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
 
     my $fixed = ($input{fixed}) ? ' checked' : '';
-    my $add_alert_checked = ($input{add_alert} || !$input{submit_update}) ? ' checked' : '';
-    my $fixedline = $problem->{state} eq 'fixed' ? '' : qq{
-<div class="checkbox"><input type="checkbox" name="fixed" id="form_fixed" value="1"$fixed>
-<label for="form_fixed">} . _('This problem has been fixed') . qq{</label></div>
-};
-    my $name_label = _('Name:');
-    my $update_label = _('Update:');
-    my $photo_label = _('Photo:');
-    my $alert_label = _('Alert me to future updates');
-    my $post_label = _('Post');
-    $cobrand_form_elements = Cobrand::form_elements($cobrand, 'updateForm', $q);
+    $vars{add_alert_checked} = ($input{add_alert} || !$input{submit_update}) ? ' checked' : '';
+    $vars{fixedline_box} = $problem->{state} eq 'fixed' ? ''
+        : qq{<input type="checkbox" name="fixed" id="form_fixed" value="1"$fixed>};
+    $vars{fixedline_label} = $problem->{state} eq 'fixed' ? ''
+        : qq{<label for="form_fixed">} . _('This problem has been fixed') . qq{</label>};
+    $vars{name_label} = _('Name:');
+    $vars{update_label} = _('Update:');
+    $vars{alert_label} = _('Alert me to future updates');
+    $vars{post_label} = _('Post');
+    $vars{cobrand_form_elements} = Cobrand::form_elements($cobrand, 'updateForm', $q);
     my $allow_photo_upload = Cobrand::allow_photo_upload($cobrand);
-    my $photo_element = '';
     if ($allow_photo_upload) {
-        $photo_element = <<EOF;
-$fixedline
+        my $photo_label = _('Photo:');
+        $vars{photo_element} = <<EOF;
 <div id="fileupload_normalUI">
 <label for="form_photo">$photo_label</label>
 <input type="file" name="photo" id="form_photo">
@@ -1016,34 +1003,18 @@ $fixedline
 EOF
     }
  
-    $form_action = Cobrand::url($cobrand, '/', $q);
-    my $enctype = '';
+    $vars{form_action} = Cobrand::url($cobrand, '/', $q);
     if ($allow_photo_upload) {
-        $enctype = ' enctype="multipart/form-data"';
+        $vars{enctype} = ' enctype="multipart/form-data"';
     }
-    $out .= <<EOF;
-<form method="post" action="$form_action" name="updateForm" id="fieldset"$enctype>
-<input type="hidden" name="submit_update" value="1">
-<input type="hidden" name="id" value="$input_h{id}">
-<div><label for="form_name">$name_label</label>
-<input type="text" name="name" id="form_name" value="$input_h{name}" size="20"> (optional)</div>
-<div><label for="form_rznvy">$email_label</label>
-<input type="text" name="rznvy" id="form_rznvy" value="$input_h{rznvy}" size="20"></div>
-<div><label for="form_update">$update_label</label>
-<textarea name="update" id="form_update" rows="7" cols="30">$input_h{update}</textarea></div>
-$photo_element
-<div class="checkbox"><input type="checkbox" name="add_alert" id="form_add_alert" value="1"$add_alert_checked>
-<label for="form_add_alert">$alert_label</label></div>
-<div class="checkbox"><input type="submit" id="update_post" value="$post_label"></div>
-$cobrand_form_elements
-</form>
-</div>
-EOF
-    $out .= Page::display_map_end(0);
+    $vars{map_end} = Page::display_map_end(0);
     my %params = (
         rss => [ _('Updates to this problem, FixMyStreet'), "/rss/$input_h{id}" ],
         title => $problem->{title}
     );
-    return ($out, %params);
+
+    $vars{input_h} = \%input_h;
+    my $page = Page::template_include('problem', $q, Page::template_root($q), %vars);
+    return ($page, %params);
 }
 

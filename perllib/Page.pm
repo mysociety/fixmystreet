@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.199 2009-11-04 15:16:58 matthew Exp $
+# $Id: Page.pm,v 1.200 2009-11-04 18:53:37 matthew Exp $
 #
 
 package Page;
@@ -748,12 +748,9 @@ sub _part {
     }
 }
 
-sub display_problem_text {
+sub display_problem_meta_line {
     my ($q, $problem) = @_;
-    my $out = $q->h1(ent($problem->{title}));
-
-    # Display information about problem
-    $out .= '<p><em>';
+    my $out = '';
     if ($q->{site} eq 'emptyhomes') {
         my $category = _($problem->{category});
         utf8::decode($category); # So that Welsh to Welsh doesn't encode already-encoded UTF-8
@@ -793,19 +790,40 @@ sub display_problem_text {
     } else {
         $out .= $q->br() . $q->small(_('Not reported to council'));
     }
-    $out .= '</em></p>';
-    my $detail = $problem->{detail};
-    $detail =~ s/\r//g;
+    return $out;
+}
+
+sub display_problem_detail {
+    my $problem = shift;
+    (my $detail = $problem->{detail}) =~ s/\r//g;
+    my $out = '';
     foreach (split /\n{2,}/, $detail) {
         $out .= '<p>' . ent($_) . '</p>';
     }
+    return $out;
+}
+
+sub display_problem_photo {
+    my ($q, $problem) = @_;
     my $cobrand = get_cobrand($q);
     my $display_photos = Cobrand::allow_photo_display($cobrand);
     if ($display_photos && $problem->{photo}) {
         my $dims = Image::Size::html_imgsize(\$problem->{photo});
-        $out .= "<p align='center'><img alt='' $dims src='/photo?id=$problem->{id}'></p>";
+        return "<p align='center'><img alt='' $dims src='/photo?id=$problem->{id}'></p>";
     }
+    return '';
+}
 
+# Display information about problem
+sub display_problem_text {
+    my ($q, $problem) = @_;
+
+    my $out = $q->h1(ent($problem->{title}));
+    $out .= '<p><em>';
+    $out .= display_problem_meta_line($q, $problem);
+    $out .= '</em></p>';
+    $out .= display_problem_detail($problem);
+    $out .= display_problem_photo($q, $problem);
     return $out;
 }
 
