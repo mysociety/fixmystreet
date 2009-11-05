@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.44 2009-10-28 11:38:55 louise Exp $
+# $Id: questionnaire.cgi,v 1.45 2009-11-05 13:05:37 matthew Exp $
 
 use strict;
 use Standard;
@@ -188,36 +188,31 @@ sub display_questionnaire {
     my $pins = Page::display_pin($q, $px, $py, $problem->{state} eq 'fixed'?'green':'red');
     my $problem_text = Page::display_problem_text($q, $problem);
     my $updates = Page::display_problem_updates($problem->{id}, $q);
-    my $out = '';
-    $out .= Page::display_map($q, x => $x_tile, y => $y_tile, pins => $pins,
-        px => $px, py => $py, pre => $problem_text, post => $updates );
-    my %been_fixed = (
+
+    my %vars = (
+        input_h => \%input_h,
+        map_start => Page::display_map($q, x => $x_tile, y => $y_tile, pins => $pins,
+            px => $px, py => $py, pre => $problem_text, post => $updates ),
+        map_end => Page::display_map_end(0),
+        heading => _('Questionnaire'),
+        yes => _('Yes'),
+        no => _('No'),
+        dontknow => _('Don&rsquo;t know'),
+        submit => _('Submit questionnaire'),
+        form_action => Cobrand::url($cobrand, "/questionnaire", $q),
+    );
+    $vars{been_fixed} = {
         yes => $input{been_fixed} eq 'Yes' ? ' checked' : '',
         no => $input{been_fixed} eq 'No' ? ' checked' : '',
         unknown => $input{been_fixed} eq 'Unknown' ? ' checked' : '',
-    );
-    my %reported = (
-        yes => $input{reported} eq 'Yes' ? ' checked' : '',
-        no => $input{reported} eq 'No' ? ' checked' : '', 
-    );
-    my %another = (
-        yes => $input{another} eq 'Yes' ? ' checked' : '',
-        no => $input{another} eq 'No' ? ' checked' : '', 
-    );
-    $out .= '<h1>' . _('Questionnaire') . '</h1>';
+    };
     my $allow_photo_upload = Cobrand::allow_photo_upload($cobrand);
-    my $enctype = '';
     if ($allow_photo_upload) {
-         $enctype = 'enctype="multipart/form-data"';
+         $vars{enctype} = 'enctype="multipart/form-data"';
     }
-    my $form_action = Cobrand::url($cobrand, "/questionnaire", $q); 
-    $out .= <<EOF;
-<form method="post" action="$form_action" id="questionnaire" $enctype>
-<input type="hidden" name="token" value="$input_h{token}">
-EOF
     if ($q->{site} eq 'emptyhomes') {
         if ($num_questionnaire==1) {
-            $out .= _(<<EOF);
+            $vars{blurb_eh} = _(<<EOF);
 <p>Getting empty homes back into use can be difficult. You shouldn't expect
 the property to be back into use yet. But a good council will have started work
 and should have reported what they have done on the website. If you are not
@@ -227,7 +222,7 @@ to help.  For advice on how to do this and other useful information please
 go to <a href="http://www.emptyhomes.com/getinvolved/campaign.html">http://www.emptyhomes.com/getinvolved/campaign.html</a>.</p>
 EOF
         } else {
-            $out .= _(<<EOF);
+            $vars{blurb_eh} = _(<<EOF);
 <p>Getting empty homes back into use can be difficult, but by now a good council
 will have made a lot of progress and reported what they have done on the
 website. Even so properties can remain empty for many months if the owner is
@@ -241,33 +236,25 @@ EOF
         }
     }
 
-    $out .= '<p>' . _('The details of your problem are available on the right hand side of this page.');
-    $out .= ' ' . _('Please take a look at the updates that have been left.') if $updates;
-    $out .= '</p>';
+    $vars{blurb_report} = _('The details of your problem are available on the right hand side of this page.');
+    $vars{blurb_report2} = _('Please take a look at the updates that have been left.') if $updates;
+
     if (@errors) {
-        $out .= '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
+        $vars{errors} = '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
-    $out .= '<p>';
-    $out .= _('An update marked this problem as fixed.') . ' ' if $problem->{state} eq 'fixed';
-    $out .= _('Has this problem been fixed?') . '</p>';
-    my $yes = _('Yes');
-    my $no = _('No');
-    my $dontknow = _('Don&rsquo;t know');
-    $out .= <<EOF;
-<p>
-<input type="radio" name="been_fixed" id="been_fixed_yes" value="Yes"$been_fixed{yes}>
-<label for="been_fixed_yes">$yes</label>
-<input type="radio" name="been_fixed" id="been_fixed_no" value="No"$been_fixed{no}>
-<label for="been_fixed_no">$no</label>
-<input type="radio" name="been_fixed" id="been_fixed_unknown" value="Unknown"$been_fixed{unknown}>
-<label for="been_fixed_unknown">$dontknow</label>
-</p>
-EOF
-    $out .= $q->p(_('Have you ever reported a problem to a council before, or is this your first time?'))
-        unless $answered_ever_reported;
-    my $before = _('Reported before');
-    my $first = _('First time');
-    $out .= <<EOF unless $answered_ever_reported;
+    $vars{fixed_question} = '';
+    $vars{fixed_question} .= _('An update marked this problem as fixed.') . ' ' if $problem->{state} eq 'fixed';
+    $vars{fixed_question} .= _('Has this problem been fixed?') . '</p>';
+
+    unless ($answered_ever_reported) {
+        my %reported = (
+            yes => $input{reported} eq 'Yes' ? ' checked' : '',
+            no => $input{reported} eq 'No' ? ' checked' : '', 
+        );
+        my $before = _('Reported before');
+        my $first = _('First time');
+        $vars{ever_reported} = $q->p(_('Have you ever reported a problem to a council before, or is this your first time?'));
+        $vars{ever_reported} .= <<EOF;
 <p>
 <input type="radio" name="reported" id="reported_yes" value="Yes"$reported{yes}>
 <label for="reported_yes">$before</label>
@@ -275,29 +262,23 @@ EOF
 <label for="reported_no">$first</label>
 </p>
 EOF
-    $out .= $q->p(_('If you wish to leave a public update on the problem, please enter it here
+    }
+    $vars{blurb_update} = $q->p(_('If you wish to leave a public update on the problem, please enter it here
 (please note it will not be sent to the council). For example, what was
 your experience of getting the problem fixed?'));
-    my $photo_input = ''; 
     if ($allow_photo_upload) {
-         $photo_input = <<EOF;
-<div id="fileupload_flashUI" style="display:none">
-<label for="form_photo">Photo:</label>
-<input type="text" id="txtfilename" disabled style="background-color: #ffffff;">
-<input type="button" value="Browse..." onclick="document.getElementById('txtfilename').value=''; swfu.cancelUpload(); swfu.selectFile();">
-<input type="hidden" name="upload_fileid" id="upload_fileid" value="">
-</div>
+         $vars{photo_input} = <<EOF;
 <div id="fileupload_normalUI">
 <label for="form_photo">Photo:</label>
 <input type="file" name="photo" id="form_photo">
 </div>
 EOF
     }
-    $out .= <<EOF;
-<p><textarea name="update" style="max-width:90%" rows="7" cols="30">$input_h{update}</textarea></p>
-$photo_input
-EOF
-    $out .= <<EOF if $q->{site} ne 'emptyhomes';
+    my %another = (
+        yes => $input{another} eq 'Yes' ? ' checked' : '',
+        no => $input{another} eq 'No' ? ' checked' : '', 
+    );
+    $vars{another_questionnaire} = <<EOF if $q->{site} ne 'emptyhomes';
 <div id="another_qn">
 <p>Would you like to receive another questionnaire in 4 weeks, reminding you to check the status?</p>
 <p>
@@ -308,7 +289,6 @@ EOF
 </p>
 </div>
 EOF
-    $out .= '<p><input type="submit" name="submit" value="' . _('Submit questionnaire') . '"></p> </form>';
-    $out .= Page::display_map_end(0);
-    return $out;
+
+    return Page::template_include('questionnaire', $q, Page::template_root($q), %vars);
 }

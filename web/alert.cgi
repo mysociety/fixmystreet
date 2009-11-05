@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.56 2009-11-03 16:42:51 matthew Exp $
+# $Id: alert.cgi,v 1.57 2009-11-05 13:05:37 matthew Exp $
 
 use strict;
 use Standard;
@@ -86,8 +86,10 @@ sub alert_list {
     return alert_front_page($q, $error) if $error;
 
     my $pretty_pc = $input_h{pc};
-    $pretty_pc = mySociety::PostcodeUtil::canonicalise_postcode($input{pc})
-        if mySociety::PostcodeUtil::is_valid_postcode($input{pc});
+    if (mySociety::PostcodeUtil::is_valid_postcode($input{pc})) {
+        $pretty_pc = mySociety::PostcodeUtil::canonicalise_postcode($input{pc});
+        $pretty_pc =~ s/ /&nbsp;/;
+    }
 
     my $errors = '';
     $errors = '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>' if @errors;
