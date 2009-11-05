@@ -1,0 +1,12 @@
+<p><a href="{{ $rss_url }}"><img align="right" src="/i/feed.png" width="16" height="16" title="{{ $rss_title }}" alt="{{ $rss_alt }}" border="0" hspace="4"></a> {{ $summary_title }} {{ $summary_line }}
+
+<h2>{{ $name }}</h2>
+
+<div id="col_problems">
+{{ $col_problems }}
+</div>
+
+<div id="col_fixed">
+{{ $col_fixed }}
+</div>
+

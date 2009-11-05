@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.201 2009-11-04 19:04:58 matthew Exp $
+# $Id: Page.pm,v 1.202 2009-11-05 14:40:55 matthew Exp $
 #
 
 package Page;
@@ -300,7 +300,7 @@ sub header ($%) {
     my $html = template_header($template, $q, template_root($q), %params);
 
     if (mySociety::Config::get('STAGING_SITE')) {
-        $html .= '<p class="error">' . _("This is a developer site; things might break at any time.") . '</p>';
+        #$html .= '<p class="error">' . _("This is a developer site; things might break at any time.") . '</p>';
     }
     return $html;
 }
