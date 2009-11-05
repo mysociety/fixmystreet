@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.59 2009-11-04 16:28:16 matthew Exp $
+# $Id: confirm.cgi,v 1.60 2009-11-05 12:02:29 matthew Exp $
 
 use strict;
 use Standard;
@@ -97,6 +97,12 @@ sub confirm_update {
     if (!$out) {
         $out = $q->p({class => 'confirmed'}, sprintf(_('You have successfully confirmed your update and you can now <a href="%s">view it on the site</a>.'), $report_url));
         $out .= CrossSell::display_advert($q, $email, $name);
+        my %vars = (
+            url_report => $report_url,
+            url_home => Cobrand::url($cobrand, '/', $q),
+        );
+        my $cobrand_page = Page::template_include('confirmed-update', $q, Page::template_root($q), %vars);
+        $out = $cobrand_page if $cobrand_page;
     }
 
     # Subscribe updater to email updates if requested
