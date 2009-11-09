@@ -60,6 +60,16 @@ ul.error {
     font-size: larger;
 }
 
+div.error {
+    color: #cc0000;
+    margin: 5px 5px 5px 20px;
+    padding: 0 5px 0 5px;
+    width: 390px;
+    background-color: #ffeeee;
+    border: solid 1px #cc0000;
+    text-align: left;
+}
+
 /* Site-wide layout */
 
 #advert_thin {
