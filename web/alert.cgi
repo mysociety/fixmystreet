@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.57 2009-11-05 13:05:37 matthew Exp $
+# $Id: alert.cgi,v 1.58 2009-11-09 16:43:09 louise Exp $
 
 use strict;
 use Standard;
@@ -309,16 +309,24 @@ sub alert_rss {
     return alert_list($q, _('Please select the feed you want')) unless $feed;
     my $cobrand = Page::get_cobrand($q);
     my $base_url = Cobrand::base_url($cobrand);
+    my $extra_params = Cobrand::extra_params($cobrand, $q);
+    my $url;
     if ($feed =~ /^area:(?:\d+:)+(.*)$/) {
         (my $id = $1) =~ tr{:_}{/+};
-        print $q->redirect($base_url . '/rss/area/' . $id);
+        $url = $base_url . '/rss/area/' . $id;
+        $url .= "?" . $extra_params if ($extra_params);
+        print $q->redirect($url);
         return;
     } elsif ($feed =~ /^(?:council|ward):(?:\d+:)+(.*)$/) {
         (my $id = $1) =~ tr{:_}{/+};
-        print $q->redirect($base_url . '/rss/reports/' . $id);
+        $url = $base_url . '/rss/reports/' . $id;
+        $url .= "?" . $extra_params if ($extra_params);
+        print $q->redirect($url);
         return;
     } elsif ($feed =~ /^local:(\d+):(\d+)$/) {
-        print $q->redirect($base_url . '/rss/' . $1 . ',' . $2);
+        $url = $base_url . '/rss/' . $1 . ',' . $2;
+        $url .= "?" . $extra_params if ($extra_params);
+        print $q->redirect($url);
         return;
     } else {
         return alert_list($q, _('Illegal feed selection'));
