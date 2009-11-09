@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.313 2009-11-09 11:00:25 louise Exp $
+# $Id: index.cgi,v 1.314 2009-11-09 13:58:35 louise Exp $
 
 use strict;
 use Standard;
@@ -79,7 +79,7 @@ sub main {
         ($out, %params) = display_form($q, [], {});
         $params{title} = _('Reporting a problem');
     } elsif ($q->param('id')) {
-        ($out, %params) = display_problem($q);
+        ($out, %params) = display_problem($q, [], {});
         $params{title} .= ' - ' . _('Viewing a problem');
     } elsif ($q->param('pc') || ($q->param('x') && $q->param('y'))) {
         ($out, %params) = display_location($q);
@@ -202,19 +202,19 @@ sub submit_update {
     my @vars = qw(id name rznvy update fixed upload_fileid add_alert);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
+    my %field_errors;
 
     my $fh = $q->upload('photo');
     if ($fh) {
         my $err = Page::check_photo($q, $fh);
         push @errors, $err if $err;
     }
-
-    push(@errors, _('Please enter a message')) unless $input{update} =~ /\S/;
+    $field_errors{update} = _('Please enter a message') unless $input{update} =~ /\S/;
     $input{name} = undef unless $input{name} =~ /\S/;
     if ($input{rznvy} !~ /\S/) {
-        push(@errors, _('Please enter your email'));
+        $field_errors{email} = _('Please enter your email');
     } elsif (!mySociety::EmailUtil::is_valid_email($input{rznvy})) {
-        push(@errors, _('Please enter a valid email'));
+        $field_errors{email} = _('Please enter a valid email');
     }
 
     my $image;
@@ -233,7 +233,7 @@ sub submit_update {
         close FP;
     }
 
-    return display_problem($q, @errors) if (@errors);
+    return display_problem($q, \@errors, \%field_errors) if (@errors || scalar(keys(%field_errors)));
     my $cobrand = Page::get_cobrand($q);
     my $cobrand_data = Cobrand::extra_update_data($cobrand, $q);
     my $id = dbh()->selectrow_array("select nextval('comment_id_seq');");
@@ -897,7 +897,10 @@ sub display_location {
 }
 
 sub display_problem {
-    my ($q, @errors) = @_;
+    my ($q, $errors, $field_errors) = @_;
+    my @errors = @$errors;
+    my %field_errors = %{$field_errors};
+    push @errors, _('There were problems with your update. Please see below.') if (scalar keys %field_errors);
 
     my @vars = qw(id name rznvy update fixed add_alert upload_fileid x y submit_update);
     my %input = map { $_ => $q->param($_) || '' } @vars;
@@ -984,6 +987,8 @@ sub display_problem {
     if (@errors) {
         $vars{errors} = '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
+    
+    $vars{field_errors} = \%field_errors;
 
     my $fixed = ($input{fixed}) ? ' checked' : '';
     $vars{add_alert_checked} = ($input{add_alert} || !$input{submit_update}) ? ' checked' : '';
