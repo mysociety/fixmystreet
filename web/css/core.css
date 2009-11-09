@@ -60,7 +60,7 @@ ul.error {
     font-size: larger;
 }
 
-div.error {
+div.form-error {
     color: #cc0000;
     margin: 5px 5px 5px 20px;
     padding: 0 5px 0 5px;

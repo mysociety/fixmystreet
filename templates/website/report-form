@@ -14,19 +14,19 @@
 
 <div>
 {{ if ( $field_errors{category}) {
-    "<div class='error'>$field_errors{category}</div>";
+    "<div class='form-error'>$field_errors{category}</div>";
 } }}
 {{ $category }}</div>
 
 <div>
 {{ if ( $field_errors{title}) {
-    "<div class='error'>$field_errors{title}</div>";
+    "<div class='form-error'>$field_errors{title}</div>";
 } }}
 <label for="form_title">{{ $subject_label }}</label>
 <input type="text" value="{{ $input_h{title} }}" name="title" id="form_title" size="25"></div>
 <div>
 {{ if ( $field_errors{detail}) {
-    "<div class='error'>$field_errors{detail}</div>";
+    "<div class='form-error'>$field_errors{detail}</div>";
 } }}
 <label for="form_detail">{{ $detail_label }}</label>
 
@@ -38,7 +38,7 @@
 
 <div>
 {{ if ( $field_errors{name}) {
-    "<div class='error'>$field_errors{name}</div>";
+    "<div class='form-error'>$field_errors{name}</div>";
 } }}
 <label for="form_name">{{ $name_label }}</label>
 <input type="text" value="{{ $input_h{name} }}" name="name" id="form_name" size="25"></div>
@@ -47,7 +47,7 @@
 <small>{{ $anonymous2 }}</small></div>
 <div>
 {{ if ( $field_errors{email}) {
-    "<div class='error'>$field_errors{email}</div>";
+    "<div class='form-error'>$field_errors{email}</div>";
 } }}
 <label for="form_email">{{ $email_label }}</label>
 <input type="text" value="{{ $input_h{email} }}" name="email" id="form_email" size="25"></div>
