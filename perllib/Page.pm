@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.202 2009-11-05 14:40:55 matthew Exp $
+# $Id: Page.pm,v 1.203 2009-11-09 16:16:18 louise Exp $
 #
 
 package Page;
@@ -978,9 +978,9 @@ sub geocode_choice {
     foreach my $choice (@$choices) {
         $choice =~ s/, United Kingdom//;
         $choice =~ s/, UK//;
-        my $encoded_choice = $choice;
-        $encoded_choice =~ s/ /+/g;
-        $url = NewURL($q, -retain => 1, -url => $page, 'pc' => $encoded_choice);  
+        my $cobrand = Page::get_cobrand($q);
+        $url =  Cobrand::url($cobrand, NewURL($q, -retain => 1, -url => $page, 'pc' => $choice), $q);  
+        $url =~ s/%20/+/g;
         $out .= '<li><a href="' . $url . '">' . $choice . "</a></li>\n";
     }
     $out .= '</ul>';
