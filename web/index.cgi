@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.312 2009-11-04 19:04:59 matthew Exp $
+# $Id: index.cgi,v 1.313 2009-11-09 11:00:25 louise Exp $
 
 use strict;
 use Standard;
@@ -76,7 +76,7 @@ sub main {
         $params{title} = _('Submitting your update');
         ($out) = submit_update($q);
     } elsif ($q->param('submit_map')) {
-        ($out, %params) = display_form($q);
+        ($out, %params) = display_form($q, [], {});
         $params{title} = _('Reporting a problem');
     } elsif ($q->param('id')) {
         ($out, %params) = display_problem($q);
@@ -266,6 +266,7 @@ sub submit_problem {
         $input{$_} =~ s/kabin\]/cabin\]/ig;
     }
     my @errors;
+    my %field_errors;
 
     if ($input{lat}) {
         try {
@@ -283,29 +284,28 @@ sub submit_problem {
     }
 
     $input{council} = 2260 if $q->{site} eq 'scambs'; # All reports go to S. Cambs
-
     push(@errors, _('No council selected')) unless ($input{council} && $input{council} =~ /^(?:-1|[\d,]+(?:\|[\d,]+)?)$/);
-    push(@errors, _('Please enter a subject')) unless $input{title} =~ /\S/;
-    push(@errors, _('Please enter some details')) unless $input{detail} =~ /\S/;
+    $field_errors{title} = _('Please enter a subject') unless $input{title} =~ /\S/;
+    $field_errors{detail} = _('Please enter some details') unless $input{detail} =~ /\S/;
     if ($input{name} !~ /\S/) {
-        push @errors, _('Please enter your name');
+        $field_errors{name} =  _('Please enter your name');
     } elsif (length($input{name}) < 5 || $input{name} !~ /\s/ || $input{name} =~ /\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i) {
-        push @errors, _('Please enter your full name, councils need this information - if you do not wish your name to be shown on the site, untick the box');
+        $field_errors{name} = _('Please enter your full name, councils need this information - if you do not wish your name to be shown on the site, untick the box');
     }
     if ($input{email} !~ /\S/) {
-        push(@errors, _('Please enter your email'));
+        $field_errors{email} = _('Please enter your email');
     } elsif (!mySociety::EmailUtil::is_valid_email($input{email})) {
-        push(@errors, _('Please enter a valid email'));
+        $field_errors{email} = _('Please enter a valid email');
     }
     if ($input{category} && $input{category} eq '-- Pick a category --') {
-        push (@errors, _('Please choose a category'));
+        $field_errors{category} = _('Please choose a category');
         $input{category} = '';
     } elsif ($input{category} && $input{category} eq _('-- Pick a property type --')) {
-        push (@errors, _('Please choose a property type'));
+        $field_errors{category} = _('Please choose a property type');
         $input{category} = '';
     }
 
-    return display_form($q, @errors) if (@errors); # Short circuit
+    return display_form($q, \@errors, \%field_errors) if (@errors || scalar keys %field_errors); # Short circuit
 
     my $areas;
     if ($input{easting} && $input{northing}) {
@@ -339,7 +339,7 @@ sub submit_problem {
                 my $categories = select_all("select area_id from contacts
                     where deleted='f' and area_id in ("
                     . $input{council} . ') and category = ?', $input{category});
-                push (@errors, 'Please choose a category') unless @$categories;
+                $field_errors{category} = _('Please choose a category') unless @$categories;
                 @valid_councils = map { $_->{area_id} } @$categories;
                 foreach my $c (@valid_councils) {
                     if ($no_details =~ /$c/) {
@@ -373,7 +373,7 @@ sub submit_problem {
         close FP;
     }
 
-    return display_form($q, @errors) if (@errors);
+    return display_form($q, \@errors, \%field_errors) if (@errors || scalar keys %field_errors);
 
     delete $input{council} if $input{council} eq '-1';
     my $used_map = $input{skipped} ? 'f' : 't';
@@ -426,7 +426,11 @@ Please <a href="/contact">let us know what went on</a> and we\'ll look into it.'
 }
 
 sub display_form {
-    my ($q, @errors) = @_;
+    my ($q, $errors, $field_errors) = @_;
+    my @errors = @$errors;
+    my %field_errors = %{$field_errors};
+    push @errors, _('There were problems with your report. Please see below.') if (scalar keys %field_errors);
+
     my ($pin_x, $pin_y, $pin_tile_x, $pin_tile_y) = (0,0,0,0);
     my @vars = qw(title detail name email phone pc easting northing x y skipped council anonymous partial upload_fileid lat lon);
     my %input = map { $_ => $q->param($_) || '' } @vars;
@@ -587,7 +591,7 @@ please specify the closest point on land.')) unless @$all_councils;
 
     my %vars;
     $vars{input_h} = \%input_h;
-
+    $vars{field_errors} = \%field_errors;
     if ($input{skipped}) {
        my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'mapSkippedForm', $q);
        my $form_action = Cobrand::url($cobrand, '/', $q); 
@@ -780,7 +784,7 @@ EOF
         category => $category,
         map_end => Page::display_map_end(1),
         url_home => Cobrand::url($cobrand, '/', $q),
-        submit_button => _('Submit'),
+        submit_button => _('Submit')
     );
     return (Page::template_include('report-form', $q, Page::template_root($q), %vars));
 }
