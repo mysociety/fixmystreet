@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.314 2009-11-09 13:58:35 louise Exp $
+# $Id: index.cgi,v 1.315 2009-11-10 14:23:51 louise Exp $
 
 use strict;
 use Standard;
@@ -967,6 +967,8 @@ sub display_problem {
 
     my $back = Cobrand::url($cobrand, NewURL($q, -url => '/', 'x' => $x_tile, 'y' => $y_tile, -retain => 1, pc => undef, id => undef ), $q);
     $vars{more_problems} = '<a href="' . $back . '">' . _('More problems nearby') . '</a>';
+
+    $vars{url_home} = Cobrand::url($cobrand, '/', $q),
 
     $vars{alert_link} = Cobrand::url($cobrand, NewURL($q, -url => '/alert?type=updates;id='.$input_h{id}, -retain => 1, pc => undef ), $q);
     $vars{alert_text} = _('Email me updates');
