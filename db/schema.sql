@@ -4,7 +4,7 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.48 2009-09-17 10:14:37 louise Exp $
+-- $Id: schema.sql,v 1.49 2009-11-10 13:53:33 louise Exp $
 --
 
 -- secret
@@ -149,8 +149,8 @@ create table problem (
     ),
     lang text not null default 'en-gb',
     service text not null default '',
-    cobrand text not null default '', 
-    cobrand_data text not null default '', -- Extra data used in cobranded versions of the site
+    cobrand text not null default '' check (cobrand ~* '^[a-z0-9]*$'), 
+    cobrand_data text not null default '' check (cobrand_data ~* '^[a-z0-9]*$'), -- Extra data used in cobranded versions of the site
     lastupdate timestamp not null default ms_current_timestamp(),
     whensent timestamp,
     send_questionnaire boolean not null default 't'
@@ -234,9 +234,9 @@ create table comment (
         or state = 'confirmed'
         or state = 'hidden'
     ),
-    cobrand text not null default '', 
+    cobrand text not null default '' check (cobrand ~* '^[a-z0-9]*$'), 
     lang text not null default 'en-gb',
-    cobrand_data text not null default '', -- Extra data used in cobranded versions of the site
+    cobrand_data text not null default '' check (cobrand_data ~* '^[a-z0-9]*$'), -- Extra data used in cobranded versions of the site
     mark_fixed boolean not null,
     mark_open boolean not null default 'f'
     -- other fields? one to indicate whether this was written by the council
@@ -281,8 +281,8 @@ create table alert (
     email text not null,
     confirmed integer not null default 0,
     lang text not null default 'en-gb',
-    cobrand text not null default '', 
-    cobrand_data text not null default '', -- Extra data used in cobranded versions of the site
+    cobrand text not null default '' check (cobrand ~* '^[a-z0-9]*$'), 
+    cobrand_data text not null default '' check (cobrand_data ~* '^[a-z0-9]*$'), -- Extra data used in cobranded versions of the site
     whensubscribed timestamp not null default ms_current_timestamp(),
     whendisabled timestamp default null
 );
