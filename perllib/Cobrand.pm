@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.35 2009-11-04 15:16:58 matthew Exp $
+# $Id: Cobrand.pm,v 1.36 2009-11-11 13:58:15 louise Exp $
 
 package Cobrand;
 use strict;
@@ -506,6 +506,24 @@ sub allow_photo_upload {
         return 1;
     } else{
         return $handle->allow_photo_upload();
+    }
+}
+
+=item allow_crosssell_adverts COBRAND
+
+Return a boolean indicating whether the cobrand allows the display of crosssell adverts
+
+=cut
+sub allow_crosssell_adverts {
+    my ($cobrand) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || !$handle->can('allow_crosssell_adverts')){
+        return 1;
+    } else{
+        return $handle->allow_crosssell_adverts();
     }
 }
 
