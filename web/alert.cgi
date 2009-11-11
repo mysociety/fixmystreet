@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.58 2009-11-09 16:43:09 louise Exp $
+# $Id: alert.cgi,v 1.59 2009-11-11 14:21:06 louise Exp $
 
 use strict;
 use Standard;
@@ -372,7 +372,11 @@ sub alert_signed_input {
         my $alert_id = mySociety::Alert::create($email, 'new_updates', $cobrand, '', $id);
         mySociety::Alert::confirm($alert_id);
         $out = $q->p(_('You have successfully subscribed to that alert.'));
-        $out .= CrossSell::display_advert($q, $email);
+        my $cobrand = Page::get_cobrand($q);
+        my $display_advert = Cobrand::allow_crosssell_adverts($cobrand);
+        if ($display_advert) {
+            $out .= CrossSell::display_advert($q, $email);
+        }
     } else {
         $out = $q->p(_('We could not validate that alert.'));
     }
@@ -391,14 +395,20 @@ sub alert_token {
     }
 
     my $out;
+    my $cobrand = Page::get_cobrand($q);
+    my $display_advert = Cobrand::allow_crosssell_adverts($cobrand);
     if ($type eq 'subscribe') {
         mySociety::Alert::confirm($id);
         $out = $q->p(_('You have successfully confirmed your alert.'));
-        $out .= CrossSell::display_advert($q, $email);
+        if ($display_advert) {
+            $out .= CrossSell::display_advert($q, $email);
+        }
     } elsif ($type eq 'unsubscribe') {
         mySociety::Alert::delete($id);
         $out = $q->p(_('You have successfully deleted your alert.'));
-        $out .= CrossSell::display_advert($q, $email);
+        if ($display_advert) {
+            $out .= CrossSell::display_advert($q, $email);
+        }
     }
     return $out;
 }
