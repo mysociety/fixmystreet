@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.60 2009-11-05 12:02:29 matthew Exp $
+# $Id: confirm.cgi,v 1.61 2009-11-11 14:10:27 louise Exp $
 
 use strict;
 use Standard;
@@ -96,7 +96,10 @@ sub confirm_update {
     my $report_url = Cobrand::url($cobrand, "/report/$problem_id#update_$id", $q);
     if (!$out) {
         $out = $q->p({class => 'confirmed'}, sprintf(_('You have successfully confirmed your update and you can now <a href="%s">view it on the site</a>.'), $report_url));
-        $out .= CrossSell::display_advert($q, $email, $name);
+        my $display_advert = Cobrand::allow_crosssell_adverts($cobrand);
+        if ($display_advert) {
+            $out .= CrossSell::display_advert($q, $email, $name);
+        }
         my %vars = (
             url_report => $report_url,
             url_home => Cobrand::url($cobrand, '/', $q),
@@ -157,7 +160,10 @@ $q->p('<a href="/report/' . $id . '">' . _('View your report') . '</a>.');
             . ($council ? _(' and <strong>we will now send it to the council</strong>') : '')
             . sprintf(_('. You can <a href="%s">view the problem on this site</a>.'), $report_url)
         );
-        $out .= CrossSell::display_advert($q, $email, $name);
+        my $display_advert = Cobrand::allow_crosssell_adverts($cobrand);
+        if ($display_advert) {
+             $out .= CrossSell::display_advert($q, $email, $name);
+        }
         my %vars = (
             url_report => $report_url,
             url_home => Cobrand::url($cobrand, '/', $q),
@@ -219,7 +225,10 @@ sub add_questionnaire {
         unless $already;
     my $report_url = Cobrand::url($cobrand, "/report/$problem_id", $q);
     my $out = $q->p({class => 'confirmed'}, sprintf(_('Thank you &mdash; you can <a href="%s">view your updated problem</a> on the site.'), $report_url));
-    $out .= CrossSell::display_advert($q, $email, $name);
+    my $display_advert = Cobrand::allow_crosssell_advert($cobrand);
+    if ($display_advert) { 
+         $out .= CrossSell::display_advert($q, $email, $name);
+    }
     return $out;
 }
 
