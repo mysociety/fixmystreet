@@ -29,6 +29,10 @@ a:hover, a:active {
     color: #ff0000;
 }
 
+a.unsuitable-report {
+    font-size: small;
+}
+
 blockquote {
     border-left: solid 4px #5e552b;
 }
