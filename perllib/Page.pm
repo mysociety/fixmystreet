@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.203 2009-11-09 16:16:18 louise Exp $
+# $Id: Page.pm,v 1.204 2009-11-11 15:59:49 louise Exp $
 #
 
 package Page;
@@ -859,6 +859,10 @@ sub display_problem_updates($$) {
             if ($display_photos && $row->{has_photo}) {
                 $out .= '<p><img alt="" height=100 src="/photo?tn=1;c=' . $row->{id} . '"></p>';
             }
+            my $contact = '/contact?id=' . $id . ';update_id='. $row->{id};
+            my $contact_url =  Cobrand::url($cobrand, $contact, $q);
+            $out .= $q->a({rel => 'nofollow', class => 'unsuitable-report', href => $contact_url}, _('Offensive? Unsuitable? Tell us'));
+
             $out .= '</div>';
         }
         $out .= '</div>';

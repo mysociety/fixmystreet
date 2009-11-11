@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.45 2009-10-13 14:57:23 louise Exp $
+# $Id: contact.cgi,v 1.46 2009-11-11 15:59:49 louise Exp $
 
 use strict;
 use Standard;
@@ -24,7 +24,7 @@ sub main {
     if ($q->param('submit_form')) {
         $out = contact_submit($q);
     } else {
-        $out = contact_page($q);
+        $out = contact_page($q, [], {});
     }
     print $out;
     print Page::footer($q);
@@ -33,42 +33,54 @@ Page::do_fastcgi(\&main);
 
 sub contact_submit {
     my $q = shift;
-    my @vars = qw(name em subject message id);
+    my @vars = qw(name em subject message id update_id);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my @errors;
-    push(@errors, _('Please give your name')) unless $input{name} =~ /\S/;
+    my %field_errors;
+    $field_errors{name} = _('Please give your name') unless $input{name} =~ /\S/;
     if ($input{em} !~ /\S/) {
-        push(@errors, _('Please give your email'));
+        $field_errors{email} = _('Please give your email');
     } elsif (!mySociety::EmailUtil::is_valid_email($input{em})) {
-        push(@errors, _('Please give a valid email address'));
+        $field_errors{email} = _('Please give a valid email address');
     }
-    push(@errors, _('Please give a subject')) unless $input{subject} =~ /\S/;
-    push(@errors, _('Please write a message')) unless $input{message} =~ /\S/;
-    push(@errors, _('Illegal ID')) if $input{id} && $input{id} !~ /^[1-9]\d*$/;
-    return contact_page($q, @errors) if @errors;
+    $field_errors{subject} = _('Please give a subject') unless $input{subject} =~ /\S/;
+    $field_errors{message} = _('Please write a message') unless $input{message} =~ /\S/;
+    push(@errors, _('Illegal ID')) if (($input{id} && $input{id} !~ /^[1-9]\d*$/) || ($input{update_id} && $input{update_id} !~ /^[1-9]\d*$/));
+    return contact_page($q, \@errors, \%field_errors) if (@errors || scalar keys %field_errors);
 
     (my $message = $input{message}) =~ s/\r\n/\n/g;
     (my $subject = $input{subject}) =~ s/\r|\n/ /g;
-    $message .= "\n\n[ Complaint about report $input{id} - "
+    
+    if ($input{id} && $input{update_id}) {
+         $message .= "\n\n[ Complaint about update $input{update_id} on report $input{id} - "
+        . mySociety::Config::get('BASE_URL') . "/report/$input{id}#update_$input{update_id} - "
+        . "https://secure.mysociety.org/admin/bci/?page=update_edit;id=$input{update_id} ]";
+    } elsif ($input{id}) {
+         $message .= "\n\n[ Complaint about report $input{id} - "
         . mySociety::Config::get('BASE_URL') . "/report/$input{id} - "
-        . "https://secure.mysociety.org/admin/bci/?page=report_edit;id=$input{id} ]"
-        if $input{id};
+        . "https://secure.mysociety.org/admin/bci/?page=report_edit;id=$input{id} ]";
+    }
     my $postfix = '[ Sent by contact.cgi on ' .
         $ENV{'HTTP_HOST'} . '. ' .
         "IP address " . $ENV{'REMOTE_ADDR'} .
         ($ENV{'HTTP_X_FORWARDED_FOR'} ? ' (forwarded from '.$ENV{'HTTP_X_FORWARDED_FOR'}.')' : '') . '. ' .
         ' ]';
+
+    my $cobrand = Page::get_cobrand($q);
     my $email = mySociety::Email::construct_email({
         _body_ => "$message\n\n$postfix",
         From => [$input{em}, $input{name}],
-        To => [[mySociety::Config::get('CONTACT_EMAIL'), _('FixMyStreet')]],
+        To => [[Cobrand::contact_email($cobrand), _('FixMyStreet')]],
         Subject => 'FMS message: ' . $subject,
         'Message-ID' => sprintf('<contact-%s-%s@mysociety.org>', time(), unpack('h*', random_bytes(5, 1))),
     });
     my $result = mySociety::EmailUtil::send_email($email, $input{em}, mySociety::Config::get('CONTACT_EMAIL'));
     if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
         my $out = $q->p(_("Thanks for your feedback.  We'll get back to you as soon as we can!"));
-        $out .= CrossSell::display_advert($q, $input{em}, $input{name}, emailunvalidated=>1 );
+        my $display_advert = Cobrand::allow_crosssell_adverts($cobrand);
+        if ($display_advert) {
+            $out .= CrossSell::display_advert($q, $input{em}, $input{name}, emailunvalidated=>1 );
+        }
         return $out;
     } else {
         return $q->p('Failed to send message.  Please try again, or <a href="mailto:' . mySociety::Config::get('CONTACT_EMAIL') . '">email us</a>.');
@@ -98,19 +110,28 @@ EOF
 }
 
 sub contact_page {
-    my ($q, @errors) = @_;
+    my ($q, $errors, $field_errors) = @_;
+    my @errors = @$errors;
+    my %field_errors = %{$field_errors};
+    push @errors, _('There were problems with your report. Please see below.') if (scalar keys %field_errors);
     my @vars = qw(name em subject message);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
+    my $out = '';
+    my $header = $q->h1(_('Contact the team'));
+    $errors = '';
 
-    my $out = $q->h1(_('Contact the team'));
     if (@errors) {
-        $out .= '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
+        $errors = '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
-    $out .= '<form method="post" action="/contact">';
+    my $cobrand = Page::get_cobrand($q);
+    my $form_action = Cobrand::url($cobrand, '/contact', $q);
 
+    my $intro = '';
     my $id = $q->param('id');
+    my $update_id = $q->param('update_id');
     $id = undef unless $id && $id =~ /^[1-9]\d*$/;
+    $update_id = undef unless $update_id && $update_id =~ /^[1-9]\d*$/;
     if ($id) {
         mySociety::DBHandle::configure(
             Name => mySociety::Config::get('BCI_DB_NAME'),
@@ -122,49 +143,64 @@ sub contact_page {
         my $p = dbh()->selectrow_hashref(
             'select title,detail,name,anonymous,extract(epoch from created) as created
             from problem where id=?', {}, $id);
-        $out .= $q->p(_('You are reporting the following problem report for being abusive, containing personal information, or similar:'));
-        $out .= $q->blockquote(
-            $q->h2(ent($p->{title})),
-            $q->p($q->em(
-         'Reported ',
-         ($p->{anonymous}) ? 'anonymously' : "by " . ent($p->{name}),
-         ' at ' . Page::prettify_epoch($p->{created}),
-            )),
-            $q->p(ent($p->{detail}))
-        );
-        $out .= '<input type="hidden" name="id" value="' . $id . '">';
+        if ($update_id) {
+             my $u = dbh()->selectrow_hashref(
+            'select comment.text, comment.name, problem.title, extract(epoch from comment.created) as created
+            from comment, problem where comment.id=? 
+            and comment.problem_id = problem.id
+            and comment.problem_id=?', {}, $update_id ,$id);
+            $intro .= $q->p(_('You are reporting the following update for being abusive, containing personal information, or similar:'));
+            $intro .= $q->blockquote(
+               ent($u->{text}),
+               $q->p($q->em(
+               ' added ',
+               ($u->{name} eq '') ? 'anonymously' : "by " . ent($u->{name}),
+               ' at ' . Page::prettify_epoch($u->{created}),
+               )),                                                   
+               $q->p('to ' . ent($u->{title}))
+            );
+           $intro .= '<input type="hidden" name="update_id" value="' . $update_id . '">';
+        } else {
+            $intro .= $q->p(_('You are reporting the following problem report for being abusive, containing personal information, or similar:'));
+            $intro .= $q->blockquote(
+               $q->h2(ent($p->{title})),
+               $q->p($q->em(
+               'Reported ',
+               ($p->{anonymous}) ? 'anonymously' : "by " . ent($p->{name}),
+               ' at ' . Page::prettify_epoch($p->{created}),
+               )),
+               $q->p(ent($p->{detail}))
+            );
+        }
+	$intro .= '<input type="hidden" name="id" value="' . $id . '">';
     } elsif ($q->{site} eq 'emptyhomes') {
-        $out .= $q->p(_('We&rsquo;d love to hear what you think about this
+        $intro .= $q->p(_('We&rsquo;d love to hear what you think about this
 website. Just fill in the form. Please don&rsquo;t contact us about individual empty
 homes; use the box accessed from <a href="/">the front page</a>.')); 
     } else {
         my $mailto = mySociety::Config::get('CONTACT_EMAIL');
         $mailto =~ s/\@/&#64;/;
-        $out .= $q->p(_('Please do <strong>not</strong> report problems through this form; messages go to
+        $intro .= $q->p(_('Please do <strong>not</strong> report problems through this form; messages go to
 the team behind FixMyStreet, not a council. To report a problem,
 please <a href="/">go to the front page</a> and follow the instructions.'));
-        $out .= $q->p(sprintf(_("We'd love to hear what you think about this site. Just fill in the form, or send an email to <a href='mailto:%s'>%s</a>:"), $mailto, $mailto));
+        $intro .= $q->p(sprintf(_("We'd love to hear what you think about this site. Just fill in the form, or send an email to <a href='mailto:%s'>%s</a>:"), $mailto, $mailto));
     }
-    my $label_name = _('Your name:');
-    my $label_email = _('Your&nbsp;email:');
-    my $label_subject = _('Subject:');
-    my $label_message = _('Message:');
-    my $label_submit = _('Post');
     my $cobrand_form_elements = Cobrand::form_elements(Page::get_cobrand($q), 'contactForm', $q);
-    $out .= <<EOF;
-<input type="hidden" name="submit_form" value="1">
-<div><label for="form_name">$label_name</label>
-<input type="text" name="name" id="form_name" value="$input_h{name}" size="30"></div>
-<div><label for="form_email">$label_email</label>
-<input type="text" name="em" id="form_email" value="$input_h{em}" size="30"></div>
-<div><label for="form_subject">$label_subject</label>
-<input type="text" name="subject" id="form_subject" value="$input_h{subject}" size="30"></div>
-<div><label for="form_message">$label_message</label>
-<textarea name="message" id="form_message" rows="7" cols="50">$input_h{message}</textarea></div>
-<div class="checkbox"><input type="submit" value="$label_submit"></div>
-$cobrand_form_elements
-</form>
-EOF
+    my %vars = (
+      header => $header,
+      errors => $errors,
+      intro => $intro,
+      form_action => $form_action, 
+      input_h => \%input_h,
+      field_errors => \%field_errors,
+      label_name => _('Your name:'),
+      label_email => _('Your&nbsp;email:'),
+      label_subject => _('Subject:'),
+      label_message => _('Message:'),
+      label_submit => _('Post'),
+      cobrand_form_elements => $cobrand_form_elements
+    );
+    $out .= Page::template_include('contact', $q, Page::template_root($q), %vars);
     $out .= contact_details($q);
     return $out;
 }
