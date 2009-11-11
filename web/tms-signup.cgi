@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: tms-signup.cgi,v 1.4 2009-09-03 13:36:48 louise Exp $
+# $Id: tms-signup.cgi,v 1.5 2009-11-11 14:23:05 louise Exp $
 
 use strict;
 use Standard;
@@ -55,7 +55,11 @@ sub tms_updates_form {
     if (@errors) {
         $out .= '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
-    $out .= CrossSell::display_tms_form(%input);
+    my $cobrand = Page::get_cobrand($q);
+    my $display_advert = Cobrand::allow_crosssell_adverts($cobrand);
+    if ($display_advert) {
+        $out .= CrossSell::display_tms_form(%input);
+    }
     return $out;
 }
 
