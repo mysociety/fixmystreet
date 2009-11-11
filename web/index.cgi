@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.315 2009-11-10 14:23:51 louise Exp $
+# $Id: index.cgi,v 1.316 2009-11-11 14:33:01 louise Exp $
 
 use strict;
 use Standard;
@@ -395,7 +395,10 @@ sub submit_problem {
                 if $image;
             dbh()->commit();
             $out = $q->p(sprintf(_('You have successfully confirmed your report and you can now <a href="%s">view it on the site</a>.'), "/report/$id"));
-            $out .= CrossSell::display_advert($q, $input{email}, $input{name});
+            my $display_advert = Cobrand::allow_crosssell_adverts($cobrand);
+            if ($display_advert) {
+                $out .= CrossSell::display_advert($q, $input{email}, $input{name});
+            }
         } else {
             $out = $q->p('There appears to have been a problem updating the details of your report.
 Please <a href="/contact">let us know what went on</a> and we\'ll look into it.');

@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.45 2009-11-05 13:05:37 matthew Exp $
+# $Id: questionnaire.cgi,v 1.46 2009-11-11 14:30:38 louise Exp $
 
 use strict;
 use Standard;
@@ -162,8 +162,12 @@ EOF
 <p style="font-size:150%">Thank you very much for filling in our questionnaire; glad to hear it's been fixed.</p>
 EOF
     }
-    $out .= CrossSell::display_advert($q, $problem->{email}, $problem->{name},
-        council => $problem->{council});
+    my $cobrand = Page::get_cobrand($q); 
+    my $display_advert = Cobrand::allow_crosssell_adverts($cobrand);
+    if ($display_advert) {
+        $out .= CrossSell::display_advert($q, $problem->{email}, $problem->{name},
+            council => $problem->{council});
+    }
     return $out;
 }
 
