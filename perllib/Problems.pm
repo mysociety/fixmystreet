@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Problems.pm,v 1.21 2009-10-13 09:25:56 louise Exp $
+# $Id: Problems.pm,v 1.22 2009-11-12 09:36:47 louise Exp $
 #
 
 package Problems;
@@ -267,39 +267,8 @@ on other sites.
 
 sub data_sharing_notification_start {
     return 1256947200;
+    
 }
 
-=item user_notified_data_sharing 
-
-Accepts a hash reference of problem data and returns a boolean indicating whether the user who
-submitted the problem has accepted T&Cs that explicitly allow for their data to be displayed
-on other sites.
-
-=cut
-
-sub user_notified_data_sharing {
-    my ($problem, $notification_start) = @_;
-    if ($problem->{time} > $notification_start){
-         return 1;
-    } else {
-         return 0;
-    }
-}
-
-=item update_user_notified_data_sharing
-
-Accepts a hash reference of update data and returns a boolean indicating whether the user who submitted
-the update has accepted the T&Cs that explicitly allow for their data to be displayed on other sites.
-
-=cut
-
-sub update_user_notified_data_sharing {
-    my ($update, $notification_start) = @_;
-    if ($update->{created} > $notification_start){
-         return 1;
-    } else {
-         return 0;
-    }
-}
 
 1;
