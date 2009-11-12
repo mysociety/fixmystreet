@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.36 2009-11-11 13:58:15 louise Exp $
+# $Id: Cobrand.pm,v 1.37 2009-11-12 14:38:13 louise Exp $
 
 package Cobrand;
 use strict;
@@ -72,7 +72,7 @@ sub set_site_restriction {
     my $q = shift;
     my $site_restriction = '';
     my $site_id = 0;
-    my $cobrand = $q->{site};
+    my $cobrand = Page::get_cobrand($q);
     my $handle = cobrand_handle($cobrand);
     return ($site_restriction, $site_id) unless $handle;
     return $handle->site_restriction($q);
