@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.316 2009-11-11 14:33:01 louise Exp $
+# $Id: index.cgi,v 1.317 2009-11-12 14:59:35 louise Exp $
 
 use strict;
 use Standard;
@@ -109,7 +109,7 @@ sub front_page {
     # Look up various cobrand things
     my $cobrand = Page::get_cobrand($q);
     my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'postcodeForm', $q);
-    my $form_action = Cobrand::url($cobrand, '', $q);
+    my $form_action = Cobrand::url($cobrand, '/', $q);
     my $question = Cobrand::enter_postcode_text($cobrand, $q);
 
     my %vars = (
