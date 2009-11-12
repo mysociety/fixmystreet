@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Problems.pm,v 1.22 2009-11-12 09:36:47 louise Exp $
+# $Id: Problems.pm,v 1.23 2009-11-12 10:21:35 louise Exp $
 #
 
 package Problems;
@@ -266,8 +266,7 @@ on other sites.
 =cut
 
 sub data_sharing_notification_start {
-    return 1256947200;
-    
+    return 1255392000;
 }
 
 
