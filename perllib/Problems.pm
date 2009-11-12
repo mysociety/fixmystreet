@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Problems.pm,v 1.23 2009-11-12 10:21:35 louise Exp $
+# $Id: Problems.pm,v 1.24 2009-11-12 14:39:06 louise Exp $
 #
 
 package Problems;
@@ -25,6 +25,9 @@ sub set_site_restriction {
     my $site = $q->{site};
     if ($site ne 'fixmystreet'){
         ($site_restriction, $site_key) = Cobrand::set_site_restriction($q);
+    } else {
+        $site_restriction = '';
+        $site_key = 0;
     }
 }
 
