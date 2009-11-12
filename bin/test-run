@@ -18,7 +18,7 @@
 #   Admin
 #   Whatever I've missed!
 
-my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.27 2009-10-22 15:32:11 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: test-run,v 1.28 2009-11-12 14:37:25 louise Exp $';
 
 use strict;
 require 5.8.0;
@@ -345,7 +345,7 @@ sub do_questionnaire {
     create_fake_contact($council_id);
 
     # submit a problem report
-    set_fms_date('2004-10-01');
+    set_fms_date('2009-11-01');
     my $postcode = 'SE1';
     my $messages = english_fms_messages();
     submit_report($postcode, 3307, 1116, 533484.251968504, 180025.4000508, 5, $council_id, $messages, '');
@@ -360,7 +360,7 @@ sub do_questionnaire {
            '%A user of FixMyStreet has submitted the following report %');
 
     # set the date four weeks ahead
-    set_fms_date('2004-10-30');
+    set_fms_date('2009-11-30');
 
     # send emails (for the questionnaire)
     call_send_emails();
@@ -473,7 +473,7 @@ sub do_cobrand {
         comment "Looking for tests for $cobrand_class";
         eval "use $class";
         my $test_handle;
-        eval{ $test_handle = $class->new($wth, $verbose); };
+        eval{ $test_handle = $class->new($wth, $verbose, $multispawn); };
         next if $@;
         comment "Running tests for $cobrand_class";
         foreach my $test_function ($test_handle->test_functions()){
