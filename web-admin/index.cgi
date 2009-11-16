@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.75 2009-11-16 17:28:42 louise Exp $
+# $Id: index.cgi,v 1.76 2009-11-16 18:17:48 louise Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.75 2009-11-16 17:28:42 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.76 2009-11-16 18:17:48 louise Exp $';
 
 use strict;
 
@@ -438,6 +438,7 @@ sub admin_reports {
     my $q = shift;
     my $title = 'Reports';
     my $cobrand = Page::get_cobrand($q);
+    my $pages = allowed_pages($q);
     print html_head($q, $title);
     print $q->h1($title);
     print $q->start_form(-method => 'GET', -action => './');
@@ -468,8 +469,14 @@ sub admin_reports {
             my $anonymous = $_->{anonymous} ? 'Yes' : 'No';
             my $cobrand = $_->{cobrand};
             $cobrand .= "<br>" . $_->{cobrand_data};
+            my $counciltext = '';
+            if (grep {$_ eq 'councilcontacts'} keys %{$pages}) {  
+                 $counciltext = $q->a({ -href => NewURL($q, page=>'councilcontacts', area_id=>$council)}, $council);
+            } else {
+                 $counciltext = $council;
+            }
             print $q->Tr({}, $q->td([ $url, $_->{title}, $_->{name}, $_->{email},
-            $q->a({ -href => NewURL($q, page=>'councilcontacts', area_id=>$council)}, $council),
+            $counciltext,
             $category, $anonymous, $cobrand, $created, $state, $whensent,
             $q->a({ -href => NewURL($q, page=>'report_edit', id=>$_->{id}) }, 'Edit')
             ]));
