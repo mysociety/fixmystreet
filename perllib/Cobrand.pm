@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.37 2009-11-12 14:38:13 louise Exp $
+# $Id: Cobrand.pm,v 1.38 2009-11-16 17:20:37 louise Exp $
 
 package Cobrand;
 use strict;
@@ -76,6 +76,25 @@ sub set_site_restriction {
     my $handle = cobrand_handle($cobrand);
     return ($site_restriction, $site_id) unless $handle;
     return $handle->site_restriction($q);
+}
+
+=item contact_restriction COBRAND
+
+Return a contact restriction clause if the cobrand uses a subset of the FixMyStreet contact data. 
+
+=cut
+
+sub contact_restriction { 
+    my ($cobrand) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || ! $handle->can('contact_restriction')){
+        return '';
+    }{
+        return $handle->contact_restriction();
+    }   
 }
 
 =item base_url COBRAND
@@ -181,6 +200,7 @@ sub recent_photos {
         return $handle->recent_photos($num, $e, $n, $dist);
     }
 }
+
 
 =item recent
 
@@ -564,7 +584,7 @@ sub council_check {
     }
 } 
 
-=item feed_xsl
+=item feed_xsl COBRAND
  
 Return an XSL to be used in rendering feeds
 
@@ -583,7 +603,7 @@ sub feed_xsl {
 
 }
 
-=item all_councils_report
+=item all_councils_report COBRAND
 
 Return a boolean indicating whether the cobrand displays a report of all councils
 
@@ -602,6 +622,41 @@ sub all_councils_report {
     }
 }
 
+=item admin_pages COBRAND
+
+List of names of pages to display on the admin interface 
+
+=cut
+sub admin_pages {
+    my ($cobrand) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || !$handle->can('admin_pages')){
+        return 0;
+    } else{
+        return $handle->admin_pages();
+    }
+
+}
+
+=item admin_show_creation_graph COBRAND
+
+Show the problem creation graph in the admin interface
+=cut
+sub admin_show_creation_graph {
+    my ($cobrand) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    } 
+    if ( !$cobrand || !$handle || !$handle->can('admin_show_creation_graph')){
+        return 1;
+    } else{
+        return $handle->admin_show_creation_graph();
+    }
+}
 
 1;
 
