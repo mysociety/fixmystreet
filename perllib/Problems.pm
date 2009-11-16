@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Problems.pm,v 1.24 2009-11-12 14:39:06 louise Exp $
+# $Id: Problems.pm,v 1.25 2009-11-16 10:55:42 louise Exp $
 #
 
 package Problems;
@@ -20,6 +20,7 @@ use mySociety::MaPit;
 
 my $site_restriction = '';
 my $site_key = 0;
+
 sub set_site_restriction {
     my $q = shift;
     my $site = $q->{site};
@@ -162,14 +163,19 @@ sub front_stats {
 # Problems around a location
 
 sub around_map {
-    my ($min_e, $max_e, $min_n, $max_n, $interval) = @_;
+    my ($min_e, $max_e, $min_n, $max_n, $interval, $limit) = @_;
+    my $limit_clause = '';
+    if ($limit) {
+        $limit_clause = " limit $limit";
+    }
     mySociety::Locale::in_gb_locale { select_all(
         "select id,title,easting,northing,state from problem
         where state in ('confirmed', 'fixed')
             and easting>=? and easting<? and northing>=? and northing<? " .
         ($interval ? " and ms_current_timestamp()-lastupdate < '$interval'::interval" : '') .
         " $site_restriction
-        order by created desc", $min_e, $max_e, $min_n, $max_n);
+        order by created desc
+        $limit_clause", $min_e, $max_e, $min_n, $max_n);
     };
 }
 
@@ -272,5 +278,110 @@ sub data_sharing_notification_start {
     return 1255392000;
 }
 
+
+# Admin view functions
+
+=item problem_search SEARCH
+
+Returns all problems containing the search term in their name, email, title, 
+detail or council, or whose ID is the search term. Uses any site_restriction
+defined by a cobrand. 
+
+=cut
+sub problem_search {
+    my ($search) = @_;
+    my $search_n = 0;
+    $search_n = int($search) if $search =~ /^\d+$/;
+    my $problems = select_all("select id, council, category, title, name,
+                               email, anonymous, cobrand, cobrand_data, created, confirmed, state, service, lastupdate,
+                               whensent, send_questionnaire from problem where (id=? or email ilike
+                               '%'||?||'%' or name ilike '%'||?||'%' or title ilike '%'||?||'%' or
+                               detail ilike '%'||?||'%' or council like '%'||?||'%')
+                               $site_restriction 
+                               order by created", $search_n,
+                               $search, $search, $search, $search, $search);
+    return $problems; 
+}
+
+=item update_search SEARCH 
+
+Returns all updates containing the search term in their name, email or text, or whose ID 
+is the search term. Uses any site_restriction defined by a cobrand. 
+
+=cut
+sub update_search { 
+    my ($search) = @_;
+    my $search_n = 0;
+    $search_n = int($search) if $search =~ /^\d+$/;
+    my $updates = select_all("select comment.* from comment, problem where problem.id = comment.problem_id
+            and (comment.id=? or
+            problem_id=? or comment.email ilike '%'||?||'%' or comment.name ilike '%'||?||'%' or
+            comment.text ilike '%'||?||'%')
+            $site_restriction
+            order by created", $search_n, $search_n, $search, $search,
+            $search);
+}
+
+=item update_counts
+
+An array reference of updates grouped by state. Uses any site_restriction defined by a cobrand.
+
+=cut 
+
+sub update_counts {
+    return dbh()->selectcol_arrayref("select comment.state, count(comment.*) as c from comment, problem 
+                                      where problem.id = comment.problem_id 
+                                      $site_restriction 
+                                      group by comment.state", { Columns => [1,2] });
+}
+
+=item problem_counts
+
+An array reference of problems grouped by state. Uses any site_restriction defined by a cobrand.
+
+=cut
+
+sub problem_counts {
+    return dbh()->selectcol_arrayref("select state, count(*) as c from problem 
+                                      where id=id $site_restriction
+                                      group by state", { Columns => [1,2] });
+}
+
+=item 
+
+An array reference of alerts grouped by state (specific to the cobrand if there is one).
+
+=cut
+
+sub alert_counts {
+    my ($cobrand) = @_;
+    my $cobrand_clause = '';
+    if ($cobrand) {
+         $cobrand_clause = " where cobrand = '$cobrand'";
+    }
+    return dbh()->selectcol_arrayref("select confirmed, count(*) as c 
+                               from alert 
+                               $cobrand_clause
+                               group by confirmed", { Columns => [1,2] });
+}
+
+=item
+
+An array reference of questionnaires. Restricted to questionnaires related to 
+problems submitted through the cobrand if a cobrand is specified. 
+
+=cut
+sub questionnaire_counts {
+    my ($cobrand) = @_;
+    my $cobrand_clause = '';
+    if ($cobrand) {
+         $cobrand_clause = " and cobrand = '$cobrand'";
+    }
+    my $questionnaires = dbh()->selectcol_arrayref("select (whenanswered is not null), count(questionnaire.*) as c 
+                                                    from questionnaire, problem
+                                                    where problem.id = questionnaire.problem_id 
+                                                    $cobrand_clause
+                                                    group by (whenanswered is not null)", { Columns => [1,2] }); 
+}
 
 1;

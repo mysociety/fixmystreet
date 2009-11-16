@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.205 2009-11-11 16:03:26 louise Exp $
+# $Id: Page.pm,v 1.206 2009-11-16 10:55:42 louise Exp $
 #
 
 package Page;
@@ -532,8 +532,9 @@ sub map_pins {
     #my $map_rn = Page::tile_to_os($y+2);
     my $max_e = Page::tile_to_os($x+3);
     my $max_n = Page::tile_to_os($y+3);
-
-    my $around_map = Problems::around_map($min_e, $max_e, $min_n, $max_n, $interval);
+    my $cobrand = Page::get_cobrand($q);
+    my $around_limit = Cobrand::on_map_list_limit($cobrand);
+    my $around_map = Problems::around_map($min_e, $max_e, $min_n, $max_n, $interval, $around_limit);
     my @ids = ();
     foreach (@$around_map) {
         push(@ids, $_->{id});
@@ -1050,26 +1051,6 @@ sub scambs_categories {
     return ('Abandoned vehicles', 'Discarded hypodermic needles',
             'Dog fouling', 'Flytipping', 'Graffiti', 'Lighting (e.g. security lights)',
             'Litter', 'Neighbourhood noise');
-}
-
-=item apply_on_map_list_limit ON_MAP AROUND_MAP LIMIT
-
-Apply any defined limit to the list of reports on the map, moving any extra items to the 
-'around the map' list 
-
-=cut
-sub apply_on_map_list_limit {
-    my ($on_map, $around_map, $limit) = @_;
-    my $on_map_size =  scalar @{$on_map};
-    if (!$limit || $limit >= $on_map_size){
-        return ($on_map, $around_map);
-    }
-    my @on_map = @$on_map;
-    my @around_map = @$around_map;
-    my @extras = @on_map[$limit..$on_map_size-1];
-    @on_map = @on_map[0..$limit-1];
-    push (@extras, @around_map);
-    return (\@on_map, \@extras);
 }
 
 1;
