@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Problems.pm,v 1.26 2009-11-16 17:24:12 louise Exp $
+# $Id: Problems.pm,v 1.27 2009-11-16 18:00:23 louise Exp $
 #
 
 package Problems;
@@ -295,10 +295,10 @@ sub problem_search {
                                email, anonymous, cobrand, cobrand_data, created, confirmed, state, service, lastupdate,
                                whensent, send_questionnaire from problem where (id=? or email ilike
                                '%'||?||'%' or name ilike '%'||?||'%' or title ilike '%'||?||'%' or
-                               detail ilike '%'||?||'%' or council like '%'||?||'%')
+                               detail ilike '%'||?||'%' or council like '%'||?||'%' or cobrand_data like '%'||?||'%')
                                $site_restriction 
                                order by created", $search_n,
-                               $search, $search, $search, $search, $search);
+                               $search, $search, $search, $search, $search, $search);
     return $problems; 
 }
 
@@ -315,10 +315,10 @@ sub update_search {
     my $updates = select_all("select comment.* from comment, problem where problem.id = comment.problem_id
             and (comment.id=? or
             problem_id=? or comment.email ilike '%'||?||'%' or comment.name ilike '%'||?||'%' or
-            comment.text ilike '%'||?||'%')
+            comment.text ilike '%'||?||'%' or comment.cobrand_data ilike '%'||?||'%')
             $site_restriction
             order by created", $search_n, $search_n, $search, $search,
-            $search);
+            $search, $search);
 }
 
 =item update_counts
