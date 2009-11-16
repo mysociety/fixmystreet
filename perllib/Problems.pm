@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Problems.pm,v 1.25 2009-11-16 10:55:42 louise Exp $
+# $Id: Problems.pm,v 1.26 2009-11-16 17:24:12 louise Exp $
 #
 
 package Problems;
@@ -216,7 +216,6 @@ sub fetch_problem {
         $site_restriction", {}, $id
     );
 }
-
 # API functions
 
 sub problems_matching_criteria{
@@ -365,7 +364,7 @@ sub alert_counts {
                                group by confirmed", { Columns => [1,2] });
 }
 
-=item
+=item questionnaire_counts
 
 An array reference of questionnaires. Restricted to questionnaires related to 
 problems submitted through the cobrand if a cobrand is specified. 
@@ -382,6 +381,153 @@ sub questionnaire_counts {
                                                     where problem.id = questionnaire.problem_id 
                                                     $cobrand_clause
                                                     group by (whenanswered is not null)", { Columns => [1,2] }); 
+    return $questionnaires;
+}
+
+=item contact_counts COBRAND
+
+An array reference of contacts. Restricted to contacts relevant to 
+the cobrand if a cobrand is specified.
+
+=cut 
+sub contact_counts {
+    my ($cobrand) = @_;
+    my $contact_restriction = Cobrand::contact_restriction($cobrand);
+    my $contacts = dbh()->selectcol_arrayref("select confirmed, count(*) as c from contacts $contact_restriction group by confirmed", { Columns => [1,2] });
+    return $contacts; 
+}
+
+=item admin_fetch_problem ID
+
+Return an array reference of data relating to a problem, to be used in the admin interface. 
+Uses any site_restriction defined by a cobrand.
+
+=cut
+
+sub admin_fetch_problem {
+    my ($id) = @_;
+    my $problem = dbh()->selectall_arrayref("select * from problem 
+                                             where id=? 
+                                             $site_restriction", { Slice=>{} }, $id);
+    return $problem;
+}
+
+=item admin_fetch_update ID
+
+Return an array reference of data relating to an update, to be used in the admin interface. 
+Uses any site_restriction defined by a cobrand.
+
+=cut
+sub admin_fetch_update {
+    my ($id) = @_;
+    my $update = dbh()->selectall_arrayref("select comment.* from comment, problem 
+                                            where comment.id=? 
+                                            and problem.id = comment.problem_id 
+                                            $site_restriction", { Slice=>{} }, $id);
+    return $update; 
+}
+
+=item timeline_problems
+
+Return a reference to an array of problems suitable for display in the admin timeline.
+Uses any site_restriction defined by a cobrand.
+=cut
+sub timeline_problems {
+
+    my $problems = select_all("select state,id,name,email,title,council,category,service,
+                               extract(epoch from created) as created,
+                               extract(epoch from confirmed) as confirmed,
+                               extract(epoch from whensent) as whensent
+                               from problem where (created>=ms_current_timestamp()-'7 days'::interval
+                               or confirmed>=ms_current_timestamp()-'7 days'::interval
+                               or whensent>=ms_current_timestamp()-'7 days'::interval)
+                               $site_restriction");
+    return $problems;
+
+}
+
+=item timeline_updates
+
+Return a reference to an array of updates suitable for display in the admin timeline.
+Uses any site_restriction defined by a cobrand.
+
+=cut
+
+sub timeline_updates {
+    my $updates = select_all("select comment.*,
+                              extract(epoch from comment.created) as created
+                              from comment, problem 
+                              where comment.problem_id = problem.id 
+                              and comment.state='confirmed' 
+                              and comment.created>=ms_current_timestamp()-'7 days'::interval
+                              $site_restriction");
+    return $updates;
+}
+
+=item timeline_alerts COBRAND
+
+Return a reference to an array of alerts suitable for display in the admin timeline. Restricted to 
+cobranded alerts if a cobrand is specified.
+
+=cut
+sub timeline_alerts {
+    my ($cobrand) = @_;
+    my $cobrand_clause = '';
+    if ($cobrand) {
+         $cobrand_clause = " and cobrand = '$cobrand'";
+    }
+    my $alerts = select_all("select *,
+                             extract(epoch from whensubscribed) as whensubscribed
+                             from alert where whensubscribed>=ms_current_timestamp()-'7 days'::interval
+                             and confirmed=1
+                             $cobrand_clause");
+    return $alerts; 
+
+}
+
+=item timeline_deleted_alerts COBRAND
+
+Return a reference to an array of deleted alerts suitable for display in the admin timeline. Restricted to
+cobranded alerts if a cobrand is specified.
+
+=cut
+sub timeline_deleted_alerts {
+    my ($cobrand) = @_;
+    my $cobrand_clause = '';
+    if ($cobrand) {
+         $cobrand_clause = " and cobrand = '$cobrand'";
+    }
+
+    my $alerts = select_all("select *,
+                             extract(epoch from whensubscribed) as whensubscribed,
+                             extract(epoch from whendisabled) as whendisabled
+                             from alert where whendisabled>=ms_current_timestamp()-'7 days'::interval
+                             $cobrand_clause");
+    return $alerts;
+
+}
+
+=item timeline_questionnaires
+
+Return a reference to an array of questionnaires suitable for display in the admin timeline. Restricted to 
+questionnaires for cobranded problems if a cobrand is specified.
+
+=cut
+
+sub timeline_questionnaires {
+    my ($cobrand) = @_;
+    my $cobrand_clause = '';
+    if ($cobrand) {
+         $cobrand_clause = " and cobrand = '$cobrand'";
+    }
+    my $questionnaire = select_all("select questionnaire.*,
+                                    extract(epoch from questionnaire.whensent) as whensent,
+                                    extract(epoch from questionnaire.whenanswered) as whenanswered
+                                    from questionnaire, problem
+                                    where questionnaire.problem_id = problem.id 
+                                    and (questionnaire.whensent>=ms_current_timestamp()-'7 days'::interval
+                                    or questionnaire.whenanswered>=ms_current_timestamp()-'7 days'::interval)
+                                    $cobrand_clause");
 }
 
 1;
