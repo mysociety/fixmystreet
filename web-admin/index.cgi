@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.74 2009-11-12 14:03:18 louise Exp $
+# $Id: index.cgi,v 1.75 2009-11-16 17:28:42 louise Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.74 2009-11-12 14:03:18 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.75 2009-11-16 17:28:42 louise Exp $';
 
 use strict;
 
@@ -37,6 +37,31 @@ BEGIN {
         Port => mySociety::Config::get('BCI_DB_PORT', undef)
     );
 }
+	
+=item allowed_pages Q
+
+Return a hash of allowed pages, keyed on page param. The values of the hash
+are arrays of the form [link_text, link_order]. Pages without link_texts
+are not to be included in the main admin menu.
+=cut
+sub allowed_pages($) {
+    my ($q) = @_;
+    my $cobrand = Page::get_cobrand($q);
+    my $pages = Cobrand::admin_pages($cobrand);
+    if (!$pages) {
+        $pages = {
+             'summary' => ['Summary', 0],
+             'councilslist' => ['Council contacts', 1],
+             'reports' => ['Reports', 2],
+             'timeline' => ['Timeline', 3],
+             'councilcontacts' => [undef, undef],        
+             'counciledit' => [undef, undef], 
+             'report_edit' => [undef, undef], 
+             'update_edit' => [undef, undef], 
+        };
+    }
+    return $pages;
+}
 
 sub html_head($$) {
     my ($q, $title) = @_;
@@ -52,16 +77,11 @@ dd { margin-left: 8em; }
 </head>
 <body>
 END
-    
-    my $pages = {
-        'summary' => 'Summary',
-        'reports' => 'Reports',
-        'councilslist' => 'Council contacts',
-        'timeline' => 'Timeline',
-    };
+    my $pages = allowed_pages($q);    
+    my @links = sort {$pages->{$a}[1] <=> $pages->{$b}[1]}  grep {$pages->{$_}->[0] } keys %$pages;
     $ret .= $q->p(
         $q->strong("FixMyStreet admin:"), 
-        map { $q->a( { href => NewURL($q, page => $_) }, $pages->{$_}) } keys %$pages
+        map { $q->a( { href => NewURL($q, page => $_) }, $pages->{$_}->[0]) } @links
     ); 
 
     return $ret;
@@ -82,30 +102,30 @@ sub fetch_data {
 # Displays general summary of counts.
 sub admin_summary ($) {
     my ($q) = @_;
-
+    my $cobrand = Page::get_cobrand($q);
     print html_head($q, "Summary");
     print $q->h1("Summary");
 
-    my $contacts = dbh()->selectcol_arrayref("select confirmed, count(*) as c from contacts group by confirmed", { Columns => [1,2] });
+    my $contacts = Problems::contact_counts($cobrand);
     my %contacts = @$contacts;
     $contacts{0} ||= 0;
     $contacts{1} ||= 0;
     $contacts{total} = $contacts{0} + $contacts{1};
 
-    my $comments = dbh()->selectcol_arrayref("select state, count(*) as c from comment group by state", { Columns => [1,2] });
+    my $comments = Problems::update_counts();
     my %comments = @$comments;
 
-    my $problems = dbh()->selectcol_arrayref("select state, count(*) as c from problem group by state", { Columns => [1,2] });
+    my $problems = Problems::problem_counts();
     my %problems = @$problems;
     %problems = map { $_ => $problems{$_} || 0 } qw(confirmed fixed unconfirmed hidden partial);
     my $total_problems_live = $problems{confirmed} + $problems{fixed};
     my $total_problems = 0;
     map { $total_problems += $_ } values %problems;
 
-    my $alerts = dbh()->selectcol_arrayref("select confirmed, count(*) as c from alert group by confirmed", { Columns => [1,2] });
+    my $alerts = Problems::alert_counts($cobrand);
     my %alerts = @$alerts; $alerts{0} ||= 0; $alerts{1} ||= 0;
 
-    my $questionnaires = dbh()->selectcol_arrayref("select (whenanswered is not null), count(*) as c from questionnaire group by (whenanswered is not null)", { Columns => [1,2] });
+    my $questionnaires = Problems::questionnaire_counts($cobrand);
     my %questionnaires = @$questionnaires;
     $questionnaires{0} ||= 0;
     $questionnaires{1} ||= 0;
@@ -120,9 +140,11 @@ sub admin_summary ($) {
         $q->li("$contacts{total} council contacts &ndash; $contacts{1} confirmed, $contacts{0} unconfirmed"),
     );
 
-    print $q->p( $q->a({ href => mySociety::Config::get('BASE_URL') . "/bci-live-creation.png" }, 
-            "Graph of problem creation by status over time" ));
+    if (Cobrand::admin_show_creation_graph($cobrand)) {
+         print $q->p( $q->a({ href => mySociety::Config::get('BASE_URL') . "/bci-live-creation.png" }, 
+                 "Graph of problem creation by status over time" ));
 
+    }
     print $q->h2("Problem breakdown by state");
     print $q->ul(
         map { $q->li("$problems{$_} $_") } sort keys %problems 
@@ -415,23 +437,16 @@ sub admin_council_edit ($$$) {
 sub admin_reports {
     my $q = shift;
     my $title = 'Reports';
+    my $cobrand = Page::get_cobrand($q);
     print html_head($q, $title);
     print $q->h1($title);
-
     print $q->start_form(-method => 'GET', -action => './');
     print $q->label({-for => 'search'}, 'Search:'), ' ', $q->textfield(-id => 'search', -name => "search", -size => 30);
     print $q->hidden('page');
     print $q->end_form;
 
     if (my $search = $q->param('search')) {
-        my $search_n = 0;
-        $search_n = int($search) if $search =~ /^\d+$/;
-        my $results = select_all("select id, council, category, title, name,
-            email, anonymous, cobrand, cobrand_data, created, confirmed, state, service, lastupdate,
-            whensent, send_questionnaire from problem where id=? or email ilike
-            '%'||?||'%' or name ilike '%'||?||'%' or title ilike '%'||?||'%' or
-            detail ilike '%'||?||'%' or council like '%'||?||'%' order by created", $search_n,
-            $search, $search, $search, $search, $search);
+        my $results = Problems::problem_search($search);
         print $q->start_table({border=>1, cellpadding=>2, cellspacing=>0});
         print $q->Tr({}, $q->th({}, ['ID', 'Title', 'Name', 'Email', 'Council', 'Category', 'Anonymous', 'Cobrand', 'Created', 'State', 'When sent', '*']));
         foreach (@$results) {
@@ -462,10 +477,7 @@ sub admin_reports {
         print $q->end_table;
 
         print $q->h2('Updates');
-        my $updates = select_all("select * from comment where id=? or
-        problem_id=? or email ilike '%'||?||'%' or name ilike '%'||?||'%' or
-        text ilike '%'||?||'%' order by created", $search_n, $search_n, $search, $search,
-        $search);
+        my $updates = Problems::update_search($search);
         admin_show_updates($q, $updates);
     }
 
@@ -474,12 +486,13 @@ sub admin_reports {
 
 sub admin_edit_report {
     my ($q, $id) = @_;
+    my $row = Problems::admin_fetch_problem($id);
+    return not_found($q) if ! $row->[0];
     my $title = "Editing problem $id";
     print html_head($q, $title);
     print $q->h1($title);
-
-    my $row = dbh()->selectall_arrayref('select * from problem where id=?', { Slice=>{} }, $id);
     my %row = %{$row->[0]};
+    
     my %row_h = map { $_ => $row{$_} ? ent($row{$_}) : '' } keys %row;
 
     if ($q->param('resend')) {
@@ -582,11 +595,13 @@ sub admin_show_updates {
 
 sub admin_edit_update {
     my ($q, $id) = @_;
+    my $row = Problems::admin_fetch_update($id);
+    return not_found($q) if ! $row->[0];
     my $title = "Editing update $id";
+
     print html_head($q, $title);
     print $q->h1($title);
 
-    my $row = dbh()->selectall_arrayref('select * from comment where id=?', { Slice=>{} }, $id);
     my %row = %{$row->[0]};
 
     if ($q->param('submit')) {
@@ -634,54 +649,38 @@ EOF
 
 sub admin_timeline {
     my $q = shift;
+    my $cobrand = Page::get_cobrand($q);
     print html_head($q, 'Timeline');
     print $q->h1('Timeline');
 
     my %time;
     #my $backto_unix = time() - 60*60*24*7;
 
-    my $probs = select_all("select state,id,name,email,title,council,category,service,
-    extract(epoch from created) as created,
-    extract(epoch from confirmed) as confirmed,
-    extract(epoch from whensent) as whensent
-    from problem where created>=ms_current_timestamp()-'7 days'::interval
-    or confirmed>=ms_current_timestamp()-'7 days'::interval
-    or whensent>=ms_current_timestamp()-'7 days'::interval");
+    my $probs = Problems::timeline_problems();
     foreach (@$probs) {
         push @{$time{$_->{created}}}, { type => 'problemCreated', %$_ };
         push @{$time{$_->{confirmed}}}, { type => 'problemConfirmed', %$_ } if $_->{confirmed};
         push @{$time{$_->{whensent}}}, { type => 'problemSent', %$_ } if $_->{whensent};
     }
 
-    my $questionnaire = select_all("select *,
-    extract(epoch from whensent) as whensent,
-    extract(epoch from whenanswered) as whenanswered
-    from questionnaire where whensent>=ms_current_timestamp()-'7 days'::interval
-    or whenanswered>=ms_current_timestamp()-'7 days'::interval");
+    my $questionnaire = Problems::timeline_questionnaires($cobrand);
     foreach (@$questionnaire) {
         push @{$time{$_->{whensent}}}, { type => 'quesSent', %$_ };
         push @{$time{$_->{whenanswered}}}, { type => 'quesAnswered', %$_ } if $_->{whenanswered};
     }
 
-    my $updates = select_all("select *,
-    extract(epoch from created) as created
-    from comment where state='confirmed' and
-    created>=ms_current_timestamp()-'7 days'::interval");
+    my $updates = Problems::timeline_updates();
     foreach (@$updates) {
         push @{$time{$_->{created}}}, { type => 'update', %$_} ;
     }
 
-    my $alerts = select_all("select *,
-    extract(epoch from whensubscribed) as whensubscribed
-    from alert where whensubscribed>=ms_current_timestamp()-'7 days'::interval
-        and confirmed=1");
+    my $alerts = Problems::timeline_alerts($cobrand);
+
+   
     foreach (@$alerts) {
         push @{$time{$_->{whensubscribed}}}, { type => 'alertSub', %$_ };
     }
-    $alerts = select_all("select *,
-    extract(epoch from whensubscribed) as whensubscribed,
-    extract(epoch from whendisabled) as whendisabled
-    from alert where whendisabled>=ms_current_timestamp()-'7 days'::interval");
+    $alerts = Problems::timeline_deleted_alerts($cobrand);
     foreach (@$alerts) {
         push @{$time{$_->{whendisabled}}}, { type => 'alertDel', %$_ };
     }
@@ -729,6 +728,12 @@ sub admin_timeline {
 
 }
 
+sub not_found {
+    my ($q) = @_;
+    print $q->header(-status=>'404 Not Found',-type=>'text/html');
+    print "<h1>Not Found</h1>The requested URL was not found on this server.";
+}
+
 sub main {
     my $q = shift;
     my $page = $q->param('page');
@@ -736,6 +741,13 @@ sub main {
 
     my $area_id = $q->param('area_id');
     my $category = $q->param('category');
+    my $pages = allowed_pages($q);
+    my @allowed_actions = keys %$pages;
+ 
+    if (!grep {$_ eq $page} @allowed_actions) {
+        not_found($q);
+        return; 
+    }
 
     if ($page eq "councilslist") {
         admin_councils_list($q);
