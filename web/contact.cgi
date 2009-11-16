@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.46 2009-11-11 15:59:49 louise Exp $
+# $Id: contact.cgi,v 1.47 2009-11-16 17:47:18 louise Exp $
 
 use strict;
 use Standard;
@@ -113,7 +113,8 @@ sub contact_page {
     my ($q, $errors, $field_errors) = @_;
     my @errors = @$errors;
     my %field_errors = %{$field_errors};
-    push @errors, _('There were problems with your report. Please see below.') if (scalar keys %field_errors);
+    my $cobrand = Page::get_cobrand($q);
+    push @errors, _('There were problems with your report. Please see below.') if (scalar keys %field_errors && $cobrand ne 'emptyhomes');
     my @vars = qw(name em subject message);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
