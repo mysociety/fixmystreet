@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.76 2009-11-16 18:17:48 louise Exp $
+# $Id: index.cgi,v 1.77 2009-11-17 12:22:18 louise Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.76 2009-11-16 18:17:48 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.77 2009-11-17 12:22:18 louise Exp $';
 
 use strict;
 
@@ -450,9 +450,10 @@ sub admin_reports {
         my $results = Problems::problem_search($search);
         print $q->start_table({border=>1, cellpadding=>2, cellspacing=>0});
         print $q->Tr({}, $q->th({}, ['ID', 'Title', 'Name', 'Email', 'Council', 'Category', 'Anonymous', 'Cobrand', 'Created', 'State', 'When sent', '*']));
+         
         foreach (@$results) {
             my $url = $_->{id};
-            $url = $q->a({ -href => mySociety::Config::get('BASE_URL') . '/report/' . $_->{id} }, $url)
+            $url = $q->a({ -href => Cobrand::base_url_for_emails($cobrand, $_->{cobrand_data}) . '/report/' . $_->{id} }, $url)
                 if $_->{state} eq 'confirmed' || $_->{state} eq 'fixed';
             my $council = $_->{council} || '&nbsp;';
             my $category = $_->{category} || '&nbsp;';
@@ -494,6 +495,7 @@ sub admin_reports {
 sub admin_edit_report {
     my ($q, $id) = @_;
     my $row = Problems::admin_fetch_problem($id);
+    my $cobrand = Page::get_cobrand($q);
     return not_found($q) if ! $row->[0];
     my $title = "Editing problem $id";
     print html_head($q, $title);
@@ -534,11 +536,12 @@ sub admin_edit_report {
     my $used_map = $row{used_map} ? 'used map' : "didn't use map";
     
     my $photo = '';
-    $photo = '<li><img align="top" src="' . mySociety::Config::get('BASE_URL') . '/photo?id=' . $row{id} . '">
+    $photo = '<li><img align="top" src="' . Cobrand::base_url_for_emails($cobrand, $row{cobrand_data}) . '/photo?id=' . $row{id} . '">
 <input type="checkbox" id="remove_photo" name="remove_photo" value="1">
 <label for="remove_photo">Remove photo (can\'t be undone!)</label>' if $row{photo};
 
-    my $url = mySociety::Config::get('BASE_URL') . '/report/' . $row{id};
+    my $url_base = Cobrand::base_url_for_emails($cobrand, $row{cobrand_data});
+    my $url = $url_base . '/report/' . $row{id};
 
     my $anon = $q->label({-for=>'anonymous'}, 'Anonymous:') . ' ' . $q->popup_menu(-id => 'anonymous', -name => 'anonymous', -values => { 1=>'Yes', 0=>'No' }, -default => $row{anonymous});
     my $state = $q->label({-for=>'state'}, 'State:') . ' ' . $q->popup_menu(-id => 'state', -name => 'state', -values => { confirmed => 'Open', fixed => 'Fixed', hidden => 'Hidden', unconfirmed => 'Unconfirmed', partial => 'Partial' }, -default => $row{state});
@@ -585,11 +588,13 @@ EOF
 
 sub admin_show_updates {
     my ($q, $updates) = @_;
+    my $cobrand = Page::get_cobrand($q);
     print $q->start_table({border=>1, cellpadding=>2, cellspacing=>0});
     print $q->Tr({}, $q->th({}, ['ID', 'State', 'Name', 'Email', 'Created', 'Cobrand', 'Text', '*']));
+    my $base_url = ''; 
     foreach (@$updates) {
         my $url = $_->{id};
-        $url = $q->a({ -href => mySociety::Config::get('BASE_URL') . '/report/' . $_->{problem_id} . '#' . $_->{id} },
+        $url = $q->a({ -href => Cobrand::base_url_for_emails($cobrand, $_->{cobrand_data}) . '/report/' . $_->{problem_id} . '#update_' . $_->{id} },
             $url) if $_->{state} eq 'confirmed';
         my $cobrand = $_->{cobrand} . '<br>' . $_->{cobrand_data};
         print $q->Tr({}, $q->td([ $url, $_->{state}, $_->{name} || '',
@@ -606,6 +611,7 @@ sub admin_edit_update {
     return not_found($q) if ! $row->[0];
     my $title = "Editing update $id";
 
+    my $cobrand = Page::get_cobrand($q);
     print html_head($q, $title);
     print $q->h1($title);
 
@@ -624,11 +630,11 @@ sub admin_edit_update {
     }
 
     my $photo = '';
-    $photo = '<li><img align="top" src="' . mySociety::Config::get('BASE_URL') . '/photo?c=' . $row{id} . '">
+    $photo = '<li><img align="top" src="' . Cobrand::base_url_for_emails($cobrand, $row{cobrand_data})  . '/photo?c=' . $row{id} . '">
 <input type="checkbox" id="remove_photo" name="remove_photo" value="1">
 <label for="remove_photo">Remove photo (can\'t be undone!)</label>' if $row{photo};
 
-    my $url = mySociety::Config::get('BASE_URL') . '/report/' . $row{problem_id} . '#' . $row{id};
+    my $url = Cobrand::base_url_for_emails($cobrand, $row{cobrand_data}) . '/report/' . $row{problem_id} . '#update_' . $row{id};
 
     my $state = $q->label({-for=>'state'}, 'State:') . ' ' . $q->popup_menu(-id => 'state', -name => 'state', -values => { confirmed => 'Confirmed', hidden => 'Hidden', unconfirmed => 'Unconfirmed' }, -default => $row{state});
 
@@ -706,17 +712,17 @@ sub admin_timeline {
             if ($type eq 'problemCreated') {
                 print "Problem $_->{id} created; by $_->{name} &lt;$_->{email}&gt;, '$_->{title}'";
             } elsif ($type eq 'problemConfirmed') {
-                my $url = mySociety::Config::get('BASE_URL') . "/report/$_->{id}";
+                my $url = Cobrand::base_url_for_emails($cobrand, $_->{cobrand_data})  . "/report/$_->{id}";
                 print "Problem <a href='$url'>$_->{id}</a> confirmed; by $_->{name} &lt;$_->{email}&gt;, '$_->{title}'";
             } elsif ($type eq 'problemSent') {
-                my $url = mySociety::Config::get('BASE_URL') . "/report/$_->{id}";
+                my $url = Cobrand::base_url_for_emails($cobrand, $_->{cobrand_data}) . "/report/$_->{id}";
                 print "Problem <a href='$url'>$_->{id}</a> sent to council $_->{council}; by $_->{name} &lt;$_->{email}&gt;, '$_->{title}'";
             } elsif ($type eq 'quesSent') {
                 print "Questionnaire $_->{id} sent for problem $_->{problem_id}";
             } elsif ($type eq 'quesAnswered') {
                 print "Questionnaire $_->{id} answered for problem $_->{problem_id}, $_->{old_state} to $_->{new_state}";
             } elsif ($type eq 'update') {
-                my $url = mySociety::Config::get('BASE_URL') . "/report/$_->{problem_id}#$_->{id}";
+                my $url = Cobrand::base_url_for_emails($cobrand, $_->{cobrand_data}) . "/report/$_->{problem_id}#$_->{id}";
                 my $name = $_->{name} || 'anonymous';
                 print "Update <a href='$url'>$_->{id}</a> created for problem $_->{problem_id}; by $name &lt;$_->{email}&gt;";
             } elsif ($type eq 'alertSub') {
