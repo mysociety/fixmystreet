@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.47 2009-11-16 17:47:18 louise Exp $
+# $Id: contact.cgi,v 1.48 2009-11-17 12:20:50 louise Exp $
 
 use strict;
 use Standard;
@@ -35,6 +35,7 @@ sub contact_submit {
     my $q = shift;
     my @vars = qw(name em subject message id update_id);
     my %input = map { $_ => $q->param($_) || '' } @vars;
+    my $cobrand = Page::get_cobrand($q);
     my @errors;
     my %field_errors;
     $field_errors{name} = _('Please give your name') unless $input{name} =~ /\S/;
@@ -50,15 +51,20 @@ sub contact_submit {
 
     (my $message = $input{message}) =~ s/\r\n/\n/g;
     (my $subject = $input{subject}) =~ s/\r|\n/ /g;
-    
+    my $extra_data = Cobrand::extra_data($cobrand, $q);
+    my $base_url = Cobrand::base_url_for_emails($cobrand, $extra_data); 
+    my $admin_base_url = Cobrand::admin_base_url($cobrand);
+    if (!$admin_base_url) {
+        $admin_base_url = "https://secure.mysociety.org/admin/bci/";
+    }
     if ($input{id} && $input{update_id}) {
          $message .= "\n\n[ Complaint about update $input{update_id} on report $input{id} - "
-        . mySociety::Config::get('BASE_URL') . "/report/$input{id}#update_$input{update_id} - "
-        . "https://secure.mysociety.org/admin/bci/?page=update_edit;id=$input{update_id} ]";
+        . $base_url . "/report/$input{id}#update_$input{update_id} - "
+        . "$admin_base_url?page=update_edit;id=$input{update_id} ]";
     } elsif ($input{id}) {
          $message .= "\n\n[ Complaint about report $input{id} - "
-        . mySociety::Config::get('BASE_URL') . "/report/$input{id} - "
-        . "https://secure.mysociety.org/admin/bci/?page=report_edit;id=$input{id} ]";
+        . $base_url . "/report/$input{id} - "
+        . "$admin_base_url?page=report_edit;id=$input{id} ]";
     }
     my $postfix = '[ Sent by contact.cgi on ' .
         $ENV{'HTTP_HOST'} . '. ' .
@@ -66,7 +72,6 @@ sub contact_submit {
         ($ENV{'HTTP_X_FORWARDED_FOR'} ? ' (forwarded from '.$ENV{'HTTP_X_FORWARDED_FOR'}.')' : '') . '. ' .
         ' ]';
 
-    my $cobrand = Page::get_cobrand($q);
     my $email = mySociety::Email::construct_email({
         _body_ => "$message\n\n$postfix",
         From => [$input{em}, $input{name}],
