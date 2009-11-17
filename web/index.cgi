@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.319 2009-11-16 17:47:18 louise Exp $
+# $Id: index.cgi,v 1.320 2009-11-17 17:28:52 matthew Exp $
 
 use strict;
 use Standard;
@@ -945,10 +945,11 @@ sub display_problem {
 
     my %vars;
     my $extra_data = Cobrand::extra_data($cobrand, $q);
-    my $google_link_base = Cobrand::base_url_for_emails($cobrand, $extra_data);
+    my $google_link = Cobrand::base_url_for_emails($cobrand, $extra_data)
+        . '/report/' . $problem->{id};
     my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($problem->{easting}, $problem->{northing}, 'G');
     my $map_links = "<p id='sub_map_links'><a href='http://maps.google.co.uk/maps?output=embed&amp;z=16&amp;q="
-        . URI::Escape::uri_escape_utf8('<a href="' . $google_link_base . '/report/' . $problem->{id} . '">' . $problem->{title} . '</a>') . "\@$lat,$lon'>View on Google Maps</a></p>";
+        . URI::Escape::uri_escape_utf8($problem->{title} . ' - ' . $google_link) . "\@$lat,$lon'>View on Google Maps</a></p>";
     my $pins = Page::display_pin($q, $px, $py, 'blue');
     $vars{map_start} = Page::display_map($q, x => $x_tile, 'y' => $y_tile, type => 0,
         pins => $pins, px => $px, py => $py, post => $map_links );
