@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.39 2009-11-17 10:36:35 louise Exp $
+# $Id: Cobrand.pm,v 1.40 2009-11-17 13:58:47 louise Exp $
 
 package Cobrand;
 use strict;
@@ -584,6 +584,28 @@ sub allow_photo_display {
         return $handle->allow_photo_display();
     }
 }
+
+=item allow_update_reporting COBRAND
+
+Return a boolean indication whether users should see links next to updates allowing them
+to report them as offensive. 
+
+=cut 
+
+sub allow_update_reporting {
+    my ($cobrand) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || !$handle->can('allow_update_reporting')){
+        return 0;
+    } else{
+        return $handle->allow_update_reporting();
+    }
+
+}
+
 
 =item council_check COBRAND COUNCILS QUERY
 

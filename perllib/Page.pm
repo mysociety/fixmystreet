@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.207 2009-11-17 10:17:31 louise Exp $
+# $Id: Page.pm,v 1.208 2009-11-17 13:58:48 louise Exp $
 #
 
 package Page;
@@ -860,11 +860,14 @@ sub display_problem_updates($$) {
             if ($display_photos && $row->{has_photo}) {
                 $out .= '<p><img alt="" height=100 src="/photo?tn=1;c=' . $row->{id} . '"></p>';
             }
-            my $contact = '/contact?id=' . $id . ';update_id='. $row->{id};
-            my $contact_url =  Cobrand::url($cobrand, $contact, $q);
-            $out .= '<p>';
-            $out .= $q->a({rel => 'nofollow', class => 'unsuitable-report', href => $contact_url}, _('Offensive? Unsuitable? Tell us'));
-            $out .= '</p>';
+            my $allow_update_reporting = Cobrand::allow_update_reporting($cobrand);
+            if ($allow_update_reporting) {
+                my $contact = '/contact?id=' . $id . ';update_id='. $row->{id};
+                my $contact_url =  Cobrand::url($cobrand, $contact, $q);
+                $out .= '<p>';
+                $out .= $q->a({rel => 'nofollow', class => 'unsuitable-report', href => $contact_url}, _('Offensive? Unsuitable? Tell us'));
+                $out .= '</p>';
+            }
             $out .= '</div>';
         }
         $out .= '</div>';
