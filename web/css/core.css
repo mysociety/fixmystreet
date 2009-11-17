@@ -55,19 +55,21 @@ ul.error {
     color: #cc0000;
     background-color: #ffeeee;
     padding-right: 4px;
-    border: solid 1px #cc0000;
     text-align: left;
     font-size: larger;
 }
 
 div.form-error {
     color: #cc0000;
-    margin: 5px 5px 5px 20px;
-    padding: 0 5px 0 5px;
-    width: 390px;
+    margin: 5px 1em 5px 1em;
+    padding: 2px 5px 2px 5px;
+    float: left;
     background-color: #ffeeee;
-    border: solid 1px #cc0000;
     text-align: left;
+}
+
+div.form-field {
+    clear: both;
 }
 
 /* Site-wide layout */
