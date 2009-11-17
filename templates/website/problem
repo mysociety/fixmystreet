@@ -38,16 +38,16 @@
 <input type="hidden" name="id" value="{{ $input_h{id} }}">
 <div><label for="form_name">{{ $name_label }}</label>
 <input type="text" name="name" id="form_name" value="{{ $input_h{name} }}" size="20"> (optional)</div>
-<div>
 {{ if ( $field_errors{email}) {
     "<div class='form-error'>$field_errors{email}</div>";
 } }}
+<div class="form-field">
 <label for="form_rznvy">{{ $email_label }}</label>
 <input type="text" name="rznvy" id="form_rznvy" value="{{ $input_h{rznvy} }}" size="20"></div>
-<div>
 {{ if ( $field_errors{update}) {
     "<div class='form-error'>$field_errors{update}</div>";
 } }}
+<div class="form-field">
 <label for="form_update">{{ $update_label }}</label>
 <textarea name="update" id="form_update" rows="7" cols="30">{{ $input_h{update} }}</textarea></div>
 <div class="checkbox">{{ $fixedline_box }} {{ $fixedline_label }}</div>
