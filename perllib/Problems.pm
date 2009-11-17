@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Problems.pm,v 1.27 2009-11-16 18:00:23 louise Exp $
+# $Id: Problems.pm,v 1.28 2009-11-17 10:41:20 louise Exp $
 #
 
 package Problems;
@@ -434,7 +434,7 @@ Uses any site_restriction defined by a cobrand.
 =cut
 sub timeline_problems {
 
-    my $problems = select_all("select state,id,name,email,title,council,category,service,
+    my $problems = select_all("select state,id,name,email,title,council,category,service,cobrand,cobrand_data,
                                extract(epoch from created) as created,
                                extract(epoch from confirmed) as confirmed,
                                extract(epoch from whensent) as whensent
