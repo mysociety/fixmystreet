@@ -6,7 +6,7 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.t,v 1.9 2009-10-29 17:55:24 matthew Exp $
+# $Id: Page.t,v 1.10 2009-11-18 15:35:03 louise Exp $
 #
 
 use strict;
@@ -90,31 +90,8 @@ sub test_base_url_with_lang {
  
 }
 
-sub test_apply_on_map_list_limit {
-   my @original_on_map = ('a', 'b', 'c', 'd', 'e', 'f');
-   my @original_around_map = ('g', 'h', 'i', 'j', 'k');
-   my $limit = undef;
-   
-   my ($on_map, $around_map) = Page::apply_on_map_list_limit(\@original_on_map, \@original_around_map, $limit);
-   is_deeply($on_map, \@original_on_map, 'On map list should be returned unaltered if no limit is given');
-   is_deeply($around_map, \@original_around_map, 'Around map list should be returned unaltered if no limit is given');
-
-   $limit = 20;
-   ($on_map, $around_map) = Page::apply_on_map_list_limit(\@original_on_map, \@original_around_map, $limit);
-   is_deeply($on_map, \@original_on_map, 'On map list should be returned unaltered if the limit is higher than the size of the on map list') or diag("Got @$on_map for @original_on_map");
-   is_deeply($around_map, \@original_around_map, 'Around map list should be returned unaltered if the limit is higher than the size of the on map list') or diag("Got @$around_map");
-
-   $limit = 3;
-   ($on_map, $around_map) = Page::apply_on_map_list_limit(\@original_on_map, \@original_around_map, $limit);
-   my @expected_on_map = ('a', 'b' ,'c');
-   my @expected_around_map = ( 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k');
-   is_deeply($on_map, \@expected_on_map, 'On map list is cropped to limit size') or diag("Got @$on_map");
-   is_deeply($around_map, \@expected_around_map, 'Around map list has extra items prepended') or diag("Got ");
-
-}
 
 ok(test_base_url_with_lang() == 1, 'Ran all tests for base_url_with_lang');
 ok(test_footer() == 1, 'Ran all tests for the footer function');
 ok(test_header() == 1, 'Ran all tests for the header function'); 
 ok(test_geocode_string() == 1, 'Ran all tests for the geocode_string function');
-ok(test_apply_on_map_list_limit() == 1, 'Ran all tests for apply_on_map_list_limit');
