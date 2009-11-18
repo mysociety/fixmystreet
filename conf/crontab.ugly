@@ -4,7 +4,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
 #
-# $Id: crontab.ugly,v 1.18 2008-10-09 15:33:14 matthew Exp $
+# $Id: crontab.ugly,v 1.19 2009-11-18 15:45:54 louise Exp $
 
 PATH=/usr/local/bin:/usr/bin:/bin
 !!(* if ($vhost eq "matthew.fixmystreet.com") { *)!!
@@ -20,8 +20,10 @@ MAILTO=team@fixmystreet.com
 2 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-alerts.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-alerts || echo "stalled?"
 0,30 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-questionnaires.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-questionnaires-eha || echo "stalled?"
 
+# Note that the main vhost www.fixmystreet.com cron jobs send all
+# emails from the main database - both generic ones and those belonging
+# to cobranded sites (which may have their own vhosts)
 !!(* } elsif (($hostname eq "cake" && !$staging) || ($staging && $vhost eq 'matthew.fixmystreet.com')) { *)!!
-
 5,10,15,20,25,30,35,40,45,50,55 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-reports || echo "stalled?"
 0 0-8,10,11,13,14,16,17,19-23 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-reports || echo "stalled?"
 0 9,12,15,18 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock "/data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-reports --verbose" || echo "stalled?"
