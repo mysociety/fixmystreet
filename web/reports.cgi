@@ -7,13 +7,12 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.38 2009-11-05 14:40:55 matthew Exp $
+# $Id: reports.cgi,v 1.39 2009-11-18 16:43:41 louise Exp $
 
 use strict;
 use Standard;
 use URI::Escape;
 use mySociety::Alert;
-use mySociety::DBHandle qw(select_all);
 use mySociety::MaPit;
 use mySociety::Web qw(ent NewURL);
 use mySociety::VotingArea;
@@ -117,28 +116,11 @@ sub main {
         %councils = map { $_ => 1 } @{mySociety::MaPit::get_areas_by_type(\@types, 10)};
     }
 
-    my @params;
-    my $where_extra = '';
-    if ($ward) {
-        push @params, $ward;
-        $where_extra = "and areas like '%,'||?||',%'";
-    } elsif ($one_council) {
-        push @params, $one_council;
-        $where_extra = "and areas like '%,'||?||',%'";
-    }
-    my $problem = select_all(
-        "select id, title, detail, council, state, areas,
-        extract(epoch from ms_current_timestamp()-lastupdate) as duration,
-        extract(epoch from ms_current_timestamp()-confirmed) as age
-        from problem
-        where state in ('confirmed', 'fixed')
-        $where_extra
-        order by id desc
-    ", @params);
+    my $problems = Problems::council_problems($ward, $one_council); 
 
     my (%fixed, %open);
     my $re_councils = join('|', keys %councils);
-    foreach my $row (@$problem) {
+    foreach my $row (@$problems) {
         if (!$row->{council}) {
             # Problem was not sent to any council, add to possible councils
             while ($row->{areas} =~ /,($re_councils)(?=,)/g) {

@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Problems.pm,v 1.28 2009-11-17 10:41:20 louise Exp $
+# $Id: Problems.pm,v 1.29 2009-11-18 16:43:42 louise Exp $
 #
 
 package Problems;
@@ -277,6 +277,39 @@ sub data_sharing_notification_start {
     return 1255392000;
 }
 
+# Report functions
+
+=item council_problems WARD COUNCIL
+
+Returns a list of problems for a summary page. If WARD or COUNCIL area ids are given, 
+will only return problems for that area. Uses any site restriction defined by the 
+cobrand.
+
+=cut
+
+sub council_problems {
+    my ($ward, $one_council) = @_;
+    my @params;
+    my $where_extra = '';
+    if ($ward) {
+        push @params, $ward;
+        $where_extra = "and areas like '%,'||?||',%'";
+    } elsif ($one_council) {
+        push @params, $one_council;
+        $where_extra = "and areas like '%,'||?||',%'";
+    }
+    my $problems = select_all(
+        "select id, title, detail, council, state, areas,
+        extract(epoch from ms_current_timestamp()-lastupdate) as duration,
+        extract(epoch from ms_current_timestamp()-confirmed) as age
+        from problem
+        where state in ('confirmed', 'fixed')
+        $where_extra
+        $site_restriction
+        order by id desc
+    ", @params);
+    return $problems;
+}
 
 # Admin view functions
 
