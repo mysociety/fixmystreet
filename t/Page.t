@@ -6,12 +6,12 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.t,v 1.10 2009-11-18 15:35:03 louise Exp $
+# $Id: Page.t,v 1.11 2009-11-18 16:57:40 louise Exp $
 #
 
 use strict;
 use warnings; 
-use Test::More tests => 22;
+use Test::More tests => 15;
 use Test::Exception; 
 
 use FindBin;
