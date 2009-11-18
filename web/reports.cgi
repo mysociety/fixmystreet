@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.39 2009-11-18 16:43:41 louise Exp $
+# $Id: reports.cgi,v 1.40 2009-11-18 17:57:17 louise Exp $
 
 use strict;
 use Standard;
@@ -199,6 +199,7 @@ sub main {
                 rss_title => _('RSS feed'),
                 rss_alt => sprintf(_('RSS feed of problems in this %s'), $thing),
                 rss_url => Cobrand::url($cobrand, $rss_url, $q),
+                url_home => Cobrand::url($cobrand, '/', $q),
                 summary_title => $all_councils_report
                     ? sprintf(_('This is a summary of all reports for one %s.'), $thing)
                     : sprintf(_('This is a summary of all reports for this %s.'), $thing),
