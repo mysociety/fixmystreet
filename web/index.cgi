@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.320 2009-11-17 17:28:52 matthew Exp $
+# $Id: index.cgi,v 1.321 2009-11-18 10:45:27 louise Exp $
 
 use strict;
 use Standard;
@@ -523,7 +523,6 @@ sub display_form {
         'polygon', $parent_types);
 
     # Let cobrand do a check
-    my $cobrand = Page::get_cobrand($q);
     my ($success, $error_msg) = Cobrand::council_check($cobrand, $all_councils, $q, 'submit_problem');    
     if (!$success){
         return display_location($q, $error_msg);
@@ -910,7 +909,6 @@ sub display_problem {
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
     ($input{x}) = $input{x} =~ /^(\d+)/; $input{x} ||= 0;
     ($input{y}) = $input{y} =~ /^(\d+)/; $input{y} ||= 0;
-    my $cobrand = Page::get_cobrand($q);
     my $base = Cobrand::base_url($cobrand);
 
     # Some council with bad email software
