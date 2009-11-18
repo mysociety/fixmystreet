@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.78 2009-11-18 14:32:42 louise Exp $
+# $Id: index.cgi,v 1.79 2009-11-18 15:58:20 louise Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.78 2009-11-18 14:32:42 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.79 2009-11-18 15:58:20 louise Exp $';
 
 use strict;
 
@@ -534,7 +534,8 @@ sub admin_edit_report {
     my $northing = int($row{northing}+0.5);
     my $questionnaire = $row{send_questionnaire} ? 'Yes' : 'No';
     my $used_map = $row{used_map} ? 'used map' : "didn't use map";
-    
+    (my $whensent = $_->{whensent} || '&nbsp;') =~ s/\..*//;
+    (my $confirmed = $_->{confirmed} || '-') =~ s/ (.*?)\..*/&nbsp;$1/;
     my $photo = '';
     $photo = '<li><img align="top" src="' . Cobrand::base_url_for_emails($row{cobrand}, $row{cobrand_data}) . '/photo?id=' . $row{id} . '">
 <input type="checkbox" id="remove_photo" name="remove_photo" value="1">
@@ -567,8 +568,8 @@ sub admin_edit_report {
 <li>Email: <input type="text" id="email" name="email" value="$row_h{email}">
 <li>Phone: $row_h{phone}
 <li>Created: $row{created}
-<li>Confirmed: $row{confirmed}
-<li>Sent: $row{whensent} $resend
+<li>Confirmed: $confirmed
+<li>Sent: $whensent $resend
 <li>Last update: $row{lastupdate}
 <li>Service: $row{service}
 <li>Cobrand: $row{cobrand}
@@ -628,7 +629,8 @@ sub admin_edit_update {
         map { $row{$_} = $q->param($_) } qw(state name email text);
         print '<p><em>Updated!</em></p>';
     }
-
+    my $name = $row{name};
+    $name = '' unless $name;
     my $photo = '';
     $photo = '<li><img align="top" src="' . Cobrand::base_url_for_emails($row{cobrand}, $row{cobrand_data})  . '/photo?c=' . $row{id} . '">
 <input type="checkbox" id="remove_photo" name="remove_photo" value="1">
@@ -647,7 +649,7 @@ sub admin_edit_update {
 <li><a href="$url">View update on site</a>
 <li><label for="text">Text:</label><br><textarea name="text" id="text" cols=60 rows=10>$row{text}</textarea>
 <li>$state
-<li>Name: <input type="text" name="name" id="name" value="$row{name}"> (blank to go anonymous)
+<li>Name: <input type="text" name="name" id="name" value="$name"> (blank to go anonymous)
 <li>Email: <input type="text" id="email" name="email" value="$row{email}">
 <li>Cobrand: $row{cobrand}
 <li>Cobrand data: $row{cobrand_data} 
