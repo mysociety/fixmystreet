@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.209 2009-11-19 00:14:59 matthew Exp $
+# $Id: Page.pm,v 1.210 2009-11-19 15:11:52 louise Exp $
 #
 
 package Page;
@@ -659,12 +659,14 @@ sub send_email {
     my $template = "$file_thing-confirm";
     $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/$template");
     my $to = $name ? [[$email, $name]] : $email;
-    my $sender = Cobrand::contact_email(get_cobrand($q));
+    my $cobrand = get_cobrand($q);
+    my $sender = Cobrand::contact_email($cobrand);
+    my $sender_name = Cobrand::contact_name($cobrand);
     $sender =~ s/team/fms-DO-NOT-REPLY/;
     mySociety::EvEl::send({
         _template_ => _($template),
         _parameters_ => \%h,
-        From => [ $sender, _('FixMyStreet')],
+        From => [ $sender, _($sender_name)],
         To => $to,
     }, $email);
 
@@ -692,7 +694,6 @@ if you do not, %s.</p>
 <p>(Don't worry &mdash; %s)</p>
 EOF
 
-    my $cobrand = Page::get_cobrand($q);
     my %vars = (
         action => $action,
         worry => $worry,
