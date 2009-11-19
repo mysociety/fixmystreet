@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.323 2009-11-19 10:42:40 matthew Exp $
+# $Id: index.cgi,v 1.324 2009-11-19 15:31:53 louise Exp $
 
 use strict;
 use Standard;
@@ -644,7 +644,7 @@ name if you give us permission.'), $council_list);
         }
         $vars{text_help} .= '<input type="hidden" name="council" value="' . join(',',@$all_councils) . '">';
     } elsif ($details eq 'some') {
-        my $e = mySociety::Config::get('CONTACT_EMAIL');
+        my $e = Cobrand::contact_email($cobrand);
         my %councils = map { $_ => 1 } @councils;
         my @missing;
         foreach (@$all_councils) {
@@ -663,7 +663,7 @@ problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.";
         $vars{text_help} .= '<input type="hidden" name="council" value="' . join(',', @councils)
             . '|' . join(',', @missing) . '">';
     } else {
-        my $e = mySociety::Config::get('CONTACT_EMAIL');
+        my $e = Cobrand::contact_email($cobrand);
         my $list = join(' or ', map { $areas_info->{$_}->{name} } @$all_councils);
         my $n = @$all_councils;
         if ($q->{site} ne 'emptyhomes') {
