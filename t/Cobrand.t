@@ -6,7 +6,7 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Cobrand.t,v 1.22 2009-10-21 15:58:25 louise Exp $
+# $Id: Cobrand.t,v 1.23 2009-11-19 09:56:12 louise Exp $
 #
 
 use strict;
@@ -23,13 +23,11 @@ use Cobrand;
 use mySociety::MockQuery;
 
 sub test_site_restriction { 
-    my $q  = new MockQuery('mysite');
-    my ($site_restriction, $site_id) = Cobrand::set_site_restriction($q);
+    my ($site_restriction, $site_id) = Cobrand::site_restriction('mysite', 'test');
     like($site_restriction, qr/ and council = 1 /, 'should return result of cobrand module site_restriction function');
     ok($site_id == 99, 'should return result of cobrand module site_restriction function');    
     
-    $q = new MockQuery('nosite');
-    ($site_restriction, $site_id) = Cobrand::set_site_restriction($q);
+    ($site_restriction, $site_id) = Cobrand::site_restriction('nosite', 'test');
     ok($site_restriction eq '', 'should return "" and zero if no module exists' );
     ok($site_id == 0, 'should return "" and zero if no module exists');
 }

@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.40 2009-11-17 13:58:47 louise Exp $
+# $Id: Cobrand.pm,v 1.41 2009-11-19 09:56:11 louise Exp $
 
 package Cobrand;
 use strict;
@@ -61,21 +61,20 @@ sub cobrand_page {
     return $handle->page($q);	
 }
 
-=item set_site_restriction Q
+=item site_restriction COBRAND COBRAND_DATA
 
 Return a site restriction clause and a site key if the cobrand uses a subset of the FixMyStreet 
-data. Q is the query object. Returns an empty string and site key 0 if the cobrand uses all the 
-data.
+data. COBRAND_DATA is any extra data the cobrand needs. Returns an empty string and site key 0 
+if the cobrand uses all the data.
 
 =cut
-sub set_site_restriction {
-    my $q = shift;
+sub site_restriction {
+    my ($cobrand, $cobrand_data) = @_;
     my $site_restriction = '';
     my $site_id = 0;
-    my $cobrand = Page::get_cobrand($q);
     my $handle = cobrand_handle($cobrand);
     return ($site_restriction, $site_id) unless $handle;
-    return $handle->site_restriction($q);
+    return $handle->site_restriction($cobrand_data);
 }
 
 =item contact_restriction COBRAND
