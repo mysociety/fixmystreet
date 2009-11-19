@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.208 2009-11-17 13:58:48 louise Exp $
+# $Id: Page.pm,v 1.209 2009-11-19 00:14:59 matthew Exp $
 #
 
 package Page;
@@ -1024,9 +1024,15 @@ sub process_photo {
     my $fh = shift;
     my $import = shift;
 
-    my $photo = Image::Magick->new;
-    my $err = $photo->Read(file => \*$fh); # Mustn't be stringified
+    my $blob = join('', <$fh>);
     close $fh;
+    my ($handle, $filename) = mySociety::TempFiles::named_tempfile('.jpeg');
+    print $handle $blob;
+    close $handle;
+
+    my $photo = Image::Magick->new;
+    my $err = $photo->Read($filename);
+    unlink $filename;
     throw Error::Simple("read failed: $err") if "$err";
     $err = $photo->Scale(geometry => "250x250>");
     throw Error::Simple("resize failed: $err") if "$err";
@@ -1036,7 +1042,6 @@ sub process_photo {
     return $photo unless $import; # Only check orientation for iPhone imports at present
 
     # Now check if it needs orientating
-    my $filename;
     ($fh, $filename) = mySociety::TempFiles::named_tempfile('.jpeg');
     print $fh $photo;
     close $fh;
