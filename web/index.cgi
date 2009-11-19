@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.321 2009-11-18 10:45:27 louise Exp $
+# $Id: index.cgi,v 1.322 2009-11-19 10:03:58 matthew Exp $
 
 use strict;
 use Standard;
@@ -871,7 +871,7 @@ sub display_location {
         'map' => Page::display_map($q, x => $x, 'y' => $y, type => 1, pins => $pins, post => $map_links ),
         map_end => Page::display_map_end(1),
         url_home => Cobrand::url($cobrand, '/', $q),
-        url_rss => Cobrand::url($cobrand, NewURL($q, -retain => 1, -url=> "/rss/$x,$y", pc => undef), $q),
+        url_rss => Cobrand::url($cobrand, NewURL($q, -retain => 1, -url=> "/rss/$x,$y", pc => undef, x => undef, 'y' => undef), $q),
         url_email => Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/alert', x=>$x, 'y'=>$y, feed=>"local:$x:$y"), $q),
         url_skip => $url_skip,
         email_me => _('Email me new local problems'),
