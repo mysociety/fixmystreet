@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.322 2009-11-19 10:03:58 matthew Exp $
+# $Id: index.cgi,v 1.323 2009-11-19 10:42:40 matthew Exp $
 
 use strict;
 use Standard;
@@ -280,7 +280,7 @@ sub submit_problem {
     my $fh = $q->upload('photo');
     if ($fh) {
         my $err = Page::check_photo($q, $fh);
-        push @errors, $err if $err;
+        $field_errors{photo} = $err if $err;
     }
 
     $input{council} = 2260 if $q->{site} eq 'scambs'; # All reports go to S. Cambs
@@ -363,7 +363,7 @@ sub submit_problem {
             $image = Page::process_photo($fh);
         } catch Error::Simple with {
             my $e = shift;
-            push(@errors, sprintf(_("That image doesn't appear to have uploaded correctly (%s), please try again."), $e));
+            $field_errors{photo} = sprintf(_("That image doesn't appear to have uploaded correctly (%s), please try again."), $e);
         };
     }
 
@@ -919,7 +919,7 @@ sub display_problem {
     }
 
     # Redirect old /?id=NNN URLs to /report/NNN
-    if (!@errors && !scalar keys %field_errors && $q->url(-absolute=>1) eq '/') {
+    if (!@errors && !scalar keys %field_errors && $ENV{SCRIPT_URL} eq '/') {
         print $q->redirect(-location => $base . '/report/' . $input{id}, -status => 301);
         return '';
     }
