@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.48 2009-11-17 12:20:50 louise Exp $
+# $Id: contact.cgi,v 1.49 2009-11-19 15:23:54 louise Exp $
 
 use strict;
 use Standard;
@@ -72,14 +72,16 @@ sub contact_submit {
         ($ENV{'HTTP_X_FORWARDED_FOR'} ? ' (forwarded from '.$ENV{'HTTP_X_FORWARDED_FOR'}.')' : '') . '. ' .
         ' ]';
 
+    my $recipient = Cobrand::contact_email($cobrand);
+    my $recipient_name = Cobrand::contact_name($cobrand);
     my $email = mySociety::Email::construct_email({
         _body_ => "$message\n\n$postfix",
         From => [$input{em}, $input{name}],
-        To => [[Cobrand::contact_email($cobrand), _('FixMyStreet')]],
+        To => [[$recipient, _($recipient_name)]],
         Subject => 'FMS message: ' . $subject,
         'Message-ID' => sprintf('<contact-%s-%s@mysociety.org>', time(), unpack('h*', random_bytes(5, 1))),
     });
-    my $result = mySociety::EmailUtil::send_email($email, $input{em}, mySociety::Config::get('CONTACT_EMAIL'));
+    my $result = mySociety::EmailUtil::send_email($email, $input{em}, $recipient);
     if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
         my $out = $q->p(_("Thanks for your feedback.  We'll get back to you as soon as we can!"));
         my $display_advert = Cobrand::allow_crosssell_adverts($cobrand);
@@ -88,7 +90,7 @@ sub contact_submit {
         }
         return $out;
     } else {
-        return $q->p('Failed to send message.  Please try again, or <a href="mailto:' . mySociety::Config::get('CONTACT_EMAIL') . '">email us</a>.');
+        return $q->p('Failed to send message.  Please try again, or <a href="mailto:' . $recipient . '">email us</a>.');
     }
 }
 
