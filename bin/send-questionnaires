@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-questionnaires,v 1.18 2009-10-21 14:59:00 louise Exp $
+# $Id: send-questionnaires,v 1.19 2009-11-19 15:10:28 louise Exp $
 
 use strict;
 require 5.8.0;
@@ -46,7 +46,7 @@ CronFns::language($site);
 
 # Select all problems that need a questionnaire email sending
 my $unsent = select_all(
-    "select id, council, category, title, detail, name, email, cobrand, lang,
+    "select id, council, category, title, detail, name, email, cobrand, cobrand_data, lang,
         extract(epoch from ms_current_timestamp()-created) as created
     from problem
     where state in ('confirmed','fixed')
@@ -81,13 +81,14 @@ foreach my $row (@$unsent) {
     $h{url} = Cobrand::base_url_for_emails($cobrand, $row->{cobrand_data}) . '/Q/' . $token;
 
     my $sender = Cobrand::contact_email($cobrand);
+    my $sender_name = _(Cobrand::contact_name($cobrand));
     $sender =~ s/team/fms-DO-NOT-REPLY/;
     $template = _($template);
     my $email = mySociety::Locale::in_gb_locale { mySociety::Email::construct_email({
         _template_ => $template,
         _parameters_ => \%h,
         To => [ [ $row->{email}, $row->{name} ] ],
-        From => [ $sender, _(mySociety::Config::get('CONTACT_NAME')) ],
+        From => [ $sender, $sender_name ],
         'Message-ID' => sprintf('<ques-%s-%s@mysociety.org>', time(), unpack('h*', random_bytes(5, 1))),
     }) };
 
