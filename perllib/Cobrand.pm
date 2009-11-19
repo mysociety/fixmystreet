@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.42 2009-11-19 15:10:28 louise Exp $
+# $Id: Cobrand.pm,v 1.43 2009-11-19 16:41:57 louise Exp $
 
 package Cobrand;
 use strict;
@@ -446,6 +446,23 @@ sub show_watermark {
     }
 }
 
+=item extra_problem_meta_text COBRAND PROBLEM
+
+Returns any extra text to be displayed with a problem.
+
+=cut
+sub extra_problem_meta_text {
+    my ($cobrand, $problem) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || !$handle->can('extra_problem_meta_text')){
+        return '';
+    } else{
+        return $handle->extra_problem_meta_text($problem);
+    }
+}
 =item url
 
 Given a URL, return a URL with any extra params needed appended to it. 

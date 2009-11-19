@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.210 2009-11-19 15:11:52 louise Exp $
+# $Id: Page.pm,v 1.211 2009-11-19 16:41:57 louise Exp $
 #
 
 package Page;
@@ -780,6 +780,8 @@ sub display_problem_meta_line($$) {
             $out .= sprintf(_('Reported by %s at %s'), ent($problem->{name}), prettify_epoch($problem->{time}));
         }
     }
+    my $cobrand = get_cobrand($q);
+    $out .= Cobrand::extra_problem_meta_text($cobrand, $problem);
     $out .= '; ' . _('the map was not used so pin location may be inaccurate') unless ($problem->{used_map});
     if ($problem->{council}) {
         if ($problem->{whensent}) {
