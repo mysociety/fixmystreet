@@ -7,7 +7,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: gettext-extract,v 1.11 2009-11-03 16:42:53 matthew Exp $
+# $Id: gettext-extract,v 1.12 2009-11-19 10:23:40 louise Exp $
 
 if [ -e ../../locale ]
 then
@@ -66,13 +66,16 @@ for X in bci/templates/emails/* bci/templates/emails/emptyhomes/*
 do
     # TODO: Should check for "*~" type filenames too, and do the *-livesimply case
     # with wildcards rather than checking per template
-    if [ "$X" != "bci/templates/emails/emptyhomes" -a "$X" != "bci/templates/emails/CVS" -a "$X" != "bci/templates/emails/emptyhomes/CVS" ]
+    if [ ! -d "$X" ]
     then
-        echo >> $PO
-        echo "#: $X" >> $PO
-        echo msgid \"\" >> $PO
-        cat "$X" | plain_gettext_escape >> $PO
-        echo msgstr \"\" >> $PO
+        if [ "$X" != "bci/templates/emails/emptyhomes" -a "$X" != "bci/templates/emails/CVS" -a "$X" != "bci/templates/emails/emptyhomes/CVS" ]
+        then
+            echo >> $PO
+            echo "#: $X" >> $PO
+            echo msgid \"\" >> $PO
+            cat "$X" | plain_gettext_escape >> $PO
+            echo msgstr \"\" >> $PO
+        fi
     fi
 done
 

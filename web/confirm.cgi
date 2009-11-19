@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.61 2009-11-11 14:10:27 louise Exp $
+# $Id: confirm.cgi,v 1.62 2009-11-19 10:23:41 louise Exp $
 
 use strict;
 use Standard;
@@ -225,7 +225,7 @@ sub add_questionnaire {
         unless $already;
     my $report_url = Cobrand::url($cobrand, "/report/$problem_id", $q);
     my $out = $q->p({class => 'confirmed'}, sprintf(_('Thank you &mdash; you can <a href="%s">view your updated problem</a> on the site.'), $report_url));
-    my $display_advert = Cobrand::allow_crosssell_advert($cobrand);
+    my $display_advert = Cobrand::allow_crosssell_adverts($cobrand);
     if ($display_advert) { 
          $out .= CrossSell::display_advert($q, $email, $name);
     }
