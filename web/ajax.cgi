@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: ajax.cgi,v 1.16 2009-11-16 10:55:42 louise Exp $
+# $Id: ajax.cgi,v 1.17 2009-11-19 15:09:01 louise Exp $
 
 use strict;
 use Standard;
@@ -84,7 +84,9 @@ sub main {
     #}
     #my $f_list = $list;
 
-    print $q->header(-charset => 'utf-8', -content_type => 'text/javascript');
+    # For now, assume this is not cacheable - may need to be more fine-grained later
+    print $q->header(-charset => 'utf-8', -content_type => 'text/javascript', -Cache_Control => 'max-age=0');
+  
 
     $pins =~ s/'/\\'/g;
     $om_list =~ s/'/\\'/g;
