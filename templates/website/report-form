@@ -34,6 +34,9 @@
 
 {{ $partial_field }}
 
+{{ if ( $field_errors{photo}) {
+    "<div class='form-error'>$field_errors{photo}</div>";
+} }}
 {{ $photo_field }}
 
 {{ if ( $field_errors{name}) {
