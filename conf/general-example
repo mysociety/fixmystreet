@@ -14,7 +14,7 @@
  * Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
  * Email: francis@mysociety.org; WWW: http://www.mysociety.org
  *
- * $Id: general-example,v 1.19 2009-08-20 10:26:37 louise Exp $
+ * $Id: general-example,v 1.20 2009-11-23 15:39:18 louise Exp $
  * 
  */
 
@@ -36,6 +36,7 @@ define('OPTION_BASE_URL', 'http://www.example.org');
 define('OPTION_EMAIL_DOMAIN', 'example.org');
 define('OPTION_CONTACT_EMAIL', 'team@'.OPTION_EMAIL_DOMAIN);
 define('OPTION_TEST_EMAIL_PREFIX', null);
+define('OPTION_EMAIL_VHOST_CITIES', 'www.example.com');
 
 define('OPTION_CONTACT_NAME', 'FixMyStreet');
 define('OPTION_STAGING_SITE', 1);
