@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.74 2009-08-12 13:36:00 matthew Exp $
+# $Id: send-reports,v 1.75 2009-11-23 17:25:43 louise Exp $
 
 use strict;
 require 5.8.0;
@@ -21,6 +21,7 @@ use CGI; # Trying awkward kludge
 use CronFns;
 
 use EastHantsWSDL;
+use Cobrand;
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh);
 use mySociety::Email;
@@ -50,13 +51,18 @@ my $site = CronFns::site($base_url);
 CronFns::language($site);
 
 my $query = "SELECT id, council, category, title, detail, name, email, phone,
-    used_map, easting, northing, (photo is not null) as has_photo, lang
+    used_map, easting, northing, (photo is not null) as has_photo, lang, 
+    cobrand, cobrand_data
     FROM problem WHERE state in ('confirmed','fixed') AND whensent IS NULL
     AND council IS NOT NULL";
 my $unsent = dbh()->selectall_arrayref($query, { Slice => {} });
 
 my (%notgot, %note);
+my $cobrand;
 foreach my $row (@$unsent) {
+    
+    $cobrand = $row->{cobrand};
+    next unless (Cobrand::email_host($cobrand));
 
     if (dbh()->selectrow_array('select email from abuse where lower(email)=?', {}, lc($row->{email}))) {
         dbh()->do("update problem set state='hidden' where id=?", {}, $row->{id});

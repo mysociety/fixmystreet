@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-questionnaires,v 1.19 2009-11-19 15:10:28 louise Exp $
+# $Id: send-questionnaires,v 1.20 2009-11-23 17:25:43 louise Exp $
 
 use strict;
 require 5.8.0;
@@ -63,6 +63,7 @@ foreach my $row (@$unsent) {
     my $cobrand = $row->{cobrand};
     my $lang = $row->{lang};
     Cobrand::set_lang_and_domain($cobrand, $lang); 
+    next unless (Cobrand::email_host($cobrand));
     my ($councils, $missing) = $row->{council} =~ /^([\d,]+)(?:\|([\d,]+))?/;
     my @councils = split /,/, $councils;
     my $areas_info = mySociety::MaPit::get_voting_areas_info(\@all_councils);
