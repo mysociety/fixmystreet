@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.324 2009-11-19 15:31:53 louise Exp $
+# $Id: index.cgi,v 1.325 2009-11-24 16:03:52 louise Exp $
 
 use strict;
 use Standard;
@@ -700,10 +700,10 @@ and to the point; writing your message entirely in block capitals makes it hard
 to read, as does a lack of punctuation.
 EOF
     } elsif ($details ne 'none') {
-        $vars{text_help} .= '<p>Please fill in details of the problem below. The council won\'t be able
+        $vars{text_help} .= $q->p(_('Please fill in details of the problem below. The council won\'t be able
 to help unless you leave as much detail as you can, so please describe the exact location of
 the problem (e.g. on a wall), what it is, how long it has been there, a description (and a
-photo of the problem if you have one), etc.';
+photo of the problem if you have one), etc.'));
     } else {
         $vars{text_help} .= $q->p(_('Please fill in details of the problem below.'));
     }
