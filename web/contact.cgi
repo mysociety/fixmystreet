@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.49 2009-11-19 15:23:54 louise Exp $
+# $Id: contact.cgi,v 1.50 2009-11-24 16:16:26 louise Exp $
 
 use strict;
 use Standard;
@@ -163,7 +163,7 @@ sub contact_page {
                $q->p($q->em(
                ' added ',
                ($u->{name} eq '') ? 'anonymously' : "by " . ent($u->{name}),
-               ' at ' . Page::prettify_epoch($u->{created}),
+               ' at ' . Page::prettify_epoch($q, $u->{created}),
                )),                                                   
                $q->p('to ' . ent($u->{title}))
             );
@@ -175,7 +175,7 @@ sub contact_page {
                $q->p($q->em(
                'Reported ',
                ($p->{anonymous}) ? 'anonymously' : "by " . ent($p->{name}),
-               ' at ' . Page::prettify_epoch($p->{created}),
+               ' at ' . Page::prettify_epoch($q, $p->{created}),
                )),
                $q->p(ent($p->{detail}))
             );

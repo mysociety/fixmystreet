@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.211 2009-11-19 16:41:57 louise Exp $
+# $Id: Page.pm,v 1.212 2009-11-24 16:16:26 louise Exp $
 #
 
 package Page;
@@ -705,7 +705,10 @@ EOF
 }
 
 sub prettify_epoch {
-    my $s = shift;
+    my ($q, $s) = @_;
+    my $cobrand = get_cobrand($q);
+    my $cobrand_datetime = Cobrand::prettify_epoch($cobrand, $s);
+    return $cobrand_datetime if ($cobrand_datetime);
     my @s = localtime($s);
     my $tt = strftime('%H:%M', @s);
     my @t = localtime();
@@ -753,31 +756,32 @@ sub _part {
 sub display_problem_meta_line($$) {
     my ($q, $problem) = @_;
     my $out = '';
+    my $date_time = prettify_epoch($q, $problem->{time});
     if ($q->{site} eq 'emptyhomes') {
         my $category = _($problem->{category});
         utf8::decode($category); # So that Welsh to Welsh doesn't encode already-encoded UTF-8
         if ($problem->{anonymous}) {
-            $out .= sprintf(_('%s, reported anonymously at %s'), ent($category), prettify_epoch($problem->{time}));
+            $out .= sprintf(_('%s, reported anonymously at %s'), ent($category), $date_time);
         } else {
-            $out .= sprintf(_('%s, reported by %s at %s'), ent($category), ent($problem->{name}), prettify_epoch($problem->{time}));
+            $out .= sprintf(_('%s, reported by %s at %s'), ent($category), ent($problem->{name}), $date_time);
         }
     } else {
         if ($problem->{service} && $problem->{category} && $problem->{category} ne 'Other' && $problem->{anonymous}) {
-            $out .= sprintf(_('Reported by %s in the %s category anonymously at %s'), ent($problem->{service}), ent($problem->{category}), prettify_epoch($problem->{time}));
+            $out .= sprintf(_('Reported by %s in the %s category anonymously at %s'), ent($problem->{service}), ent($problem->{category}), $date_time);
         } elsif ($problem->{service} && $problem->{category} && $problem->{category} ne 'Other') {
-            $out .= sprintf(_('Reported by %s in the %s category by %s at %s'), ent($problem->{service}), ent($problem->{category}), ent($problem->{name}), prettify_epoch($problem->{time}));
+            $out .= sprintf(_('Reported by %s in the %s category by %s at %s'), ent($problem->{service}), ent($problem->{category}), ent($problem->{name}), $date_time);
         } elsif ($problem->{service} && $problem->{anonymous}) {
-            $out .= sprintf(_('Reported by %s anonymously at %s'), ent($problem->{service}), prettify_epoch($problem->{time}));
+            $out .= sprintf(_('Reported by %s anonymously at %s'), ent($problem->{service}), $date_time);
         } elsif ($problem->{service}) {
-            $out .= sprintf(_('Reported by %s by %s at %s'), ent($problem->{service}), ent($problem->{name}), prettify_epoch($problem->{time}));
+            $out .= sprintf(_('Reported by %s by %s at %s'), ent($problem->{service}), ent($problem->{name}), $date_time);
         } elsif ($problem->{category} && $problem->{category} ne 'Other' && $problem->{anonymous}) {
-            $out .= sprintf(_('Reported in the %s category anonymously at %s'), ent($problem->{category}), prettify_epoch($problem->{time}));
+            $out .= sprintf(_('Reported in the %s category anonymously at %s'), ent($problem->{category}), $date_time);
         } elsif ($problem->{category} && $problem->{category} ne 'Other') {
-            $out .= sprintf(_('Reported in the %s category by %s at %s'), ent($problem->{category}), ent($problem->{name}), prettify_epoch($problem->{time}));
+            $out .= sprintf(_('Reported in the %s category by %s at %s'), ent($problem->{category}), ent($problem->{name}), $date_time);
         } elsif ($problem->{anonymous}) {
-            $out .= sprintf(_('Reported anonymously at %s'), prettify_epoch($problem->{time}));
+            $out .= sprintf(_('Reported anonymously at %s'), $date_time);
         } else {
-            $out .= sprintf(_('Reported by %s at %s'), ent($problem->{name}), prettify_epoch($problem->{time}));
+            $out .= sprintf(_('Reported by %s at %s'), ent($problem->{name}), $date_time);
         }
     }
     my $cobrand = get_cobrand($q);
@@ -834,9 +838,10 @@ sub display_problem_text($$) {
 # Display updates
 sub display_problem_updates($$) {
     my ($id, $q) = @_;
+    my $cobrand = get_cobrand($q);
     my $updates = select_all(
         "select id, name, extract(epoch from created) as created, text,
-         mark_fixed, mark_open, (photo is not null) as has_photo
+         mark_fixed, mark_open, (photo is not null) as has_photo, cobrand
          from comment where problem_id = ? and state='confirmed'
          order by created", $id);
     my $out = '';
@@ -846,10 +851,11 @@ sub display_problem_updates($$) {
         foreach my $row (@$updates) {
             $out .= "<div><p><a name=\"update_$row->{id}\"></a><em>";
             if ($row->{name}) {
-                $out .= sprintf(_('Posted by %s at %s'), ent($row->{name}), prettify_epoch($row->{created}));
+                $out .= sprintf(_('Posted by %s at %s'), ent($row->{name}), prettify_epoch($q, $row->{created}));
             } else {
-                $out .= sprintf(_('Posted anonymously at %s'), prettify_epoch($row->{created}));
+                $out .= sprintf(_('Posted anonymously at %s'), prettify_epoch($q, $row->{created}));
             }
+            $out .= Cobrand::extra_update_meta_text($cobrand, $row);
             $out .= ', ' . _('marked as fixed') if ($row->{mark_fixed});
             $out .= ', ' . _('reopened') if ($row->{mark_open});
             $out .= '</em></p>';
