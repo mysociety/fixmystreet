@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.59 2009-11-11 14:21:06 louise Exp $
+# $Id: alert.cgi,v 1.60 2009-11-24 16:20:53 louise Exp $
 
 use strict;
 use Standard;
@@ -279,27 +279,49 @@ title="' . sprintf(_('RSS feed of %s'), $text) . '" alt="' . _('RSS feed') . '" 
 
 sub alert_front_page {
     my $q = shift;
+    my $cobrand = Page::get_cobrand($q);
     my $error = shift;
     my $errors = '';
     $errors = '<ul class="error"><li>' . $error . '</li></ul>' if $error;
 
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } qw(pc);
-    my $out = $q->h1(_('Local RSS feeds and email alerts'));
-    $out .= $q->p(_('FixMyStreet has a variety of RSS feeds and email alerts for local problems, including
+    my $header = _('Local RSS feeds and email alerts');
+    my $intro = _('FixMyStreet has a variety of RSS feeds and email alerts for local problems, including
 alerts for all problems within a particular ward or council, or all problems
-within a certain distance of a particular location.'));
+within a certain distance of a particular location.');
+    my $pc_label = _('To find out what local alerts we have for you, please enter your GB
+postcode or street name and area:');
     my $form_action = Cobrand::url(Page::get_cobrand($q), '/alert', $q);
+    my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'alerts', $q);
+    my $cobrand_extra_data = Cobrand::extra_data($cobrand, $q);
+    my $submit_text = _('Go');
+
+    my $out = $q->h1($header);
+    $out .= $q->p($intro);
     $out .= $errors . qq(<form method="get" action="$form_action">);
-    $out .= $q->p(_('To find out what local alerts we have for you, please enter your GB
-postcode or street name and area:'), '<input type="text" name="pc" value="' . $input_h{pc} . '">
-<input type="submit" value="' . _('Go') . '">');
-    my $cobrand = Page::get_cobrand($q);
-    $out .= Cobrand::form_elements($cobrand, 'alerts', $q);
+    $out .= $q->p($pc_label, '<input type="text" name="pc" value="' . $input_h{pc} . '">
+<input type="submit" value="' . $submit_text . '">');
+    $out .= $cobrand_form_elements;
     $out .= '</form>';
+
+    my %vars = (error => $error, 
+                header => $header, 
+                intro => $intro, 
+                pc_label => $pc_label, 
+                form_action => $form_action, 
+                input_h => \%input_h, 
+                submit_text => $submit_text, 
+                cobrand_form_elements => $cobrand_form_elements, 
+                cobrand_extra_data => $cobrand_extra_data, 
+                url_home => Cobrand::url($cobrand, '/', $q));
+
+    my $cobrand_page = Page::template_include('alert-front-page', $q, Page::template_root($q), %vars);
+    $out = $cobrand_page if ($cobrand_page);
 
     return $out if $q->referer() && $q->referer() =~ /fixmystreet\.com/;
     my $recent_photos = Cobrand::recent_photos($cobrand, 10);
     $out .= '<div id="alert_recent">' . $q->h2(_('Some photos of recent reports')) . $recent_photos . '</div>' if $recent_photos;
+    
     return $out;
 }
 
