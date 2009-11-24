@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.62 2009-11-19 10:23:41 louise Exp $
+# $Id: confirm.cgi,v 1.63 2009-11-24 16:05:15 louise Exp $
 
 use strict;
 use Standard;
@@ -187,6 +187,7 @@ sub ask_questionnaire {
     my $no = _('No');
     my $go = _('Go');
     my $form_action = Cobrand::url($cobrand, "/confirm", $q);
+    my $form_extra_elements = Cobrand::form_elements($cobrand, 'questionnaire', $q);
     my $out = <<EOF;
 <form action="$form_action" method="post" id="questionnaire">
 <input type="hidden" name="type" value="questionnaire">
@@ -197,10 +198,15 @@ sub ask_questionnaire {
 <label for="reported_yes">$yes</label>
 <input type="radio" name="reported" id="reported_no" value="No">
 <label for="reported_no">$no</label>
+$form_extra_elements
 <input type="submit" value="$go">
 </p>
 </form>
 EOF
+    my %vars = (form => $out,
+		url_home => Cobrand::url($cobrand, '/', $q));
+    my $cobrand_template = Page::template_include('update-questionnaire', $q, Page::template_root($q), %vars);
+    $out = $cobrand_template if $cobrand_template;
     return $out;
 }
 
