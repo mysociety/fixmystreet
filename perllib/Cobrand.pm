@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.44 2009-11-23 17:25:43 louise Exp $
+# $Id: Cobrand.pm,v 1.45 2009-11-24 16:04:22 louise Exp $
 
 package Cobrand;
 use strict;
@@ -332,6 +332,24 @@ sub disambiguate_location {
     }
 }
 
+=item prettify_epoch COBRAND EPOCHTIME
+
+=cut
+
+sub prettify_epoch {
+    my ($cobrand, $epochtime) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || !$handle->can('prettify_epoch')){
+        return 0;
+    } else{
+        return $handle->prettify_epoch($epochtime);
+    }
+
+}
+
 =item form_elements FORM_NAME Q
 
 Return HTML for any extra needed elements for FORM_NAME
@@ -484,6 +502,25 @@ sub extra_problem_meta_text {
         return $handle->extra_problem_meta_text($problem);
     }
 }
+
+=item extra_update_meta_text COBRAND PROBLEM
+
+Returns any extra text to be displayed with an update.
+
+=cut
+sub extra_update_meta_text {
+    my ($cobrand, $update) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || !$handle->can('extra_update_meta_text')){
+        return '';
+    } else{
+        return $handle->extra_update_meta_text($update);
+    }
+}
+
 =item url
 
 Given a URL, return a URL with any extra params needed appended to it. 
