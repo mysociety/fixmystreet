@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.45 2009-11-24 16:04:22 louise Exp $
+# $Id: Cobrand.pm,v 1.46 2009-11-25 18:27:25 louise Exp $
 
 package Cobrand;
 use strict;
@@ -144,6 +144,25 @@ sub admin_base_url {
         return 0;
     }{
         return $handle->admin_base_url();
+    }
+
+}
+
+=item writetothem_url COBRAND COBRAND_DATA
+
+URL for writetothem
+
+=cut
+sub writetothem_url {
+    my ($cobrand, $cobrand_data) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || ! $handle->can('writetothem_url')){
+        return 0;
+    }{
+        return $handle->writetothem_url($cobrand_data);
     }
 
 }
