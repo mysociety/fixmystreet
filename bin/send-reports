@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.75 2009-11-23 17:25:43 louise Exp $
+# $Id: send-reports,v 1.76 2009-11-26 10:04:47 louise Exp $
 
 use strict;
 require 5.8.0;
@@ -62,8 +62,9 @@ my $cobrand;
 foreach my $row (@$unsent) {
     
     $cobrand = $row->{cobrand};
-    next unless (Cobrand::email_host($cobrand));
 
+    next unless (Cobrand::email_host($cobrand));
+    Cobrand::set_lang_and_domain($cobrand, $row->{lang});
     if (dbh()->selectrow_array('select email from abuse where lower(email)=?', {}, lc($row->{email}))) {
         dbh()->do("update problem set state='hidden' where id=?", {}, $row->{id});
         dbh()->commit();
