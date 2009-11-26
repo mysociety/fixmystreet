@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.46 2009-11-11 14:30:38 louise Exp $
+# $Id: questionnaire.cgi,v 1.47 2009-11-26 10:07:27 louise Exp $
 
 use strict;
 use Standard;
@@ -57,6 +57,8 @@ sub check_stuff {
 
 sub submit_questionnaire {
     my $q = shift;
+    my $cobrand = Page::get_cobrand($q);
+    my $cobrand_data = Cobrand::extra_data($cobrand, $q);
     my @vars = qw(token id been_fixed reported update another);
     my %input = map { $_ => scalar $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
@@ -129,11 +131,11 @@ sub submit_questionnaire {
     my $name = $problem->{anonymous} ? undef : $problem->{name};
     my $update = $input{update} ? $input{update} : _('Questionnaire filled in by problem reporter');
     Utils::workaround_pg_bytea("insert into comment
-        (problem_id, name, email, website, text, state, mark_fixed, mark_open, photo, lang)
-        values (?, ?, ?, '', ?, 'confirmed', ?, ?, ?, ?)", 7,
+        (problem_id, name, email, website, text, state, mark_fixed, mark_open, photo, lang, cobrand, cobrand_data)
+        values (?, ?, ?, '', ?, 'confirmed', ?, ?, ?, ?, ?, ?)", 7,
         $problem->{id}, $name, $problem->{email}, $update,
         $new_state eq 'fixed' ? 't' : 'f', $new_state eq 'confirmed' ? 't' : 'f',
-        $image, $mySociety::Locale::lang
+        $image, $mySociety::Locale::lang, $cobrand, $cobrand_data
     )
         if $new_state || $input{update};
 
@@ -150,9 +152,12 @@ get some more information about the status of your problem, please come back to 
 site and leave an update.</p>
 EOF
     } elsif ($new_state eq 'confirmed' || (!$new_state && $problem->{state} eq 'confirmed')) {
-        return _(<<EOF);
+        my $wtt_url = Cobrand::writetothem_url($cobrand, $cobrand_data);
+        $wtt_url = 'http://www.writetothem.com' if (! $wtt_url);
+
+        return sprintf(_(<<EOF), $wtt_url);
 <p style="font-size:150%">We're sorry to hear that. We have two suggestions: why not try
-<a href="http://www.writetothem.com/">writing direct to your councillor(s)</a>
+<a href="%s">writing direct to your councillor(s)</a>
 or, if it's a problem that could be fixed by local people working together,
 why not <a href="http://www.pledgebank.com/new">make and publicise a pledge</a>?
 </p>
@@ -162,7 +167,6 @@ EOF
 <p style="font-size:150%">Thank you very much for filling in our questionnaire; glad to hear it's been fixed.</p>
 EOF
     }
-    my $cobrand = Page::get_cobrand($q); 
     my $display_advert = Cobrand::allow_crosssell_adverts($cobrand);
     if ($display_advert) {
         $out .= CrossSell::display_advert($q, $problem->{email}, $problem->{name},
@@ -203,6 +207,7 @@ sub display_questionnaire {
         no => _('No'),
         dontknow => _('Don&rsquo;t know'),
         submit => _('Submit questionnaire'),
+        cobrand_form_elements => Cobrand::form_elements($cobrand, 'questionnaireForm', $q),
         form_action => Cobrand::url($cobrand, "/questionnaire", $q),
     );
     $vars{been_fixed} = {
