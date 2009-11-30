@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.76 2009-11-26 10:04:47 louise Exp $
+# $Id: send-reports,v 1.77 2009-11-30 13:42:14 louise Exp $
 
 use strict;
 require 5.8.0;
@@ -48,7 +48,6 @@ use mySociety::Dress; # Has to come after the BEGIN, my poor coding
 my ($verbose, $nomail) = CronFns::options();
 my $base_url = mySociety::Config::get('BASE_URL');
 my $site = CronFns::site($base_url);
-CronFns::language($site);
 
 my $query = "SELECT id, council, category, title, detail, name, email, phone,
     used_map, easting, northing, (photo is not null) as has_photo, lang, 
@@ -62,7 +61,10 @@ my $cobrand;
 foreach my $row (@$unsent) {
     
     $cobrand = $row->{cobrand};
-
+    # Cobranded and non-cobranded messages can share a database. In this case, the conf file 
+    # should specify a vhost to send the reports for each cobrand, so that they don't get sent 
+    # more than once if there are multiple vhosts running off the same database. The email_host
+    # call checks if this is the host that sends mail for this cobrand.
     next unless (Cobrand::email_host($cobrand));
     Cobrand::set_lang_and_domain($cobrand, $row->{lang});
     if (dbh()->selectrow_array('select email from abuse where lower(email)=?', {}, lc($row->{email}))) {
