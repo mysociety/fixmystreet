@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.325 2009-11-24 16:03:52 louise Exp $
+# $Id: index.cgi,v 1.326 2009-11-30 14:14:03 louise Exp $
 
 use strict;
 use Standard;
@@ -525,7 +525,7 @@ sub display_form {
     # Let cobrand do a check
     my ($success, $error_msg) = Cobrand::council_check($cobrand, $all_councils, $q, 'submit_problem');    
     if (!$success){
-        return display_location($q, $error_msg);
+        return front_page($q, $error_msg);
     }
 
     # Ipswich & St Edmundsbury are responsible for everything in their areas, no Suffolk
@@ -794,6 +794,7 @@ EOF
 
 sub display_location {
     my ($q, @errors) = @_;
+    my $cobrand = Page::get_cobrand($q);
     my @vars = qw(pc x y all_pins no_pins);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
@@ -815,8 +816,14 @@ sub display_location {
     }
     return Page::geocode_choice($error, '/', $q) if (ref($error) eq 'ARRAY');
     return front_page($q, $error) if ($error);
-
-    my $cobrand = Page::get_cobrand($q);
+    my $parent_types = $mySociety::VotingArea::council_parent_types;
+    my $all_councils = mySociety::MaPit::get_voting_areas_by_location(
+        { easting => $easting, northing => $northing },
+          'polygon', $parent_types);
+    my ($success, $error_msg) = Cobrand::council_check($cobrand, $all_councils, $q, 'display_location');    
+    if (!$success){
+        return front_page($q, $error_msg);
+    }
 
     # Deal with pin hiding/age
     my ($hide_link, $hide_text, $all_link, $all_text, $interval);
