@@ -20,6 +20,7 @@ sub fixmystreet_to_reportemptyhomes($) {
     $s =~ s/New empty properties/New empty property reports/;
     $s =~ s/Older empty properties/Older empty property reports/;
     $s =~ s/Report, view, or discuss local empty properties/Report and view empty properties/;
+    $s =~ s/There were empty properties with your/There were problems with your/;
 
     $s =~ s/\(like graffiti.*\)/ /;
     $s =~ s/(Please enter your full name).*? -/$1 -/;
