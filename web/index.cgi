@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.326 2009-11-30 14:14:03 louise Exp $
+# $Id: index.cgi,v 1.327 2009-12-01 09:45:20 louise Exp $
 
 use strict;
 use Standard;
@@ -817,12 +817,14 @@ sub display_location {
     return Page::geocode_choice($error, '/', $q) if (ref($error) eq 'ARRAY');
     return front_page($q, $error) if ($error);
     my $parent_types = $mySociety::VotingArea::council_parent_types;
-    my $all_councils = mySociety::MaPit::get_voting_areas_by_location(
-        { easting => $easting, northing => $northing },
-          'polygon', $parent_types);
-    my ($success, $error_msg) = Cobrand::council_check($cobrand, $all_councils, $q, 'display_location');    
-    if (!$success){
-        return front_page($q, $error_msg);
+    if ($easting && $northing) {
+        my $all_councils = mySociety::MaPit::get_voting_areas_by_location(
+            { easting => $easting, northing => $northing },
+              'polygon', $parent_types);
+        my ($success, $error_msg) = Cobrand::council_check($cobrand, $all_councils, $q, 'display_location');    
+        if (!$success){
+             return front_page($q, $error_msg);
+        }
     }
 
     # Deal with pin hiding/age
