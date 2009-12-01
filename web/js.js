@@ -305,11 +305,15 @@ function update_tiles(dx, dy, force) {
 
 function load_pins(x, y) {
     if (document.getElementById('formX')) {
+        all_pins = '';
+        if (document.getElementById('all_pins')) {
+            all_pins = document.getElementById('all_pins').value;
+        }
         var ajax_params = [ 'sx=' + document.getElementById('formX').value, 
                             'sy=' + document.getElementById('formY').value, 
                             'x='  + (x+2),
                             'y='  + (y+2), 
-                            'all_pins=' +  document.getElementById('all_pins').value ];
+                            'all_pins=' +  all_pins ];
 
 	if (document.getElementById('extra_param')) {
             ajax_params.push(document.getElementById('extra_param').name + '=' + document.getElementById('extra_param').value);
