@@ -1,8 +1,15 @@
-{{ $header }} 
+<h1>{{ $header }}</h1>
 {{ $errors }} 
 <form method="post" action="{{ $form_action }}">
 <input type="hidden" name="submit_form" value="1">
+
 {{ $intro }} 
+{{ if ( $item_title ) {
+   "<blockquote><h2>$item_title</h2><p>$item_meta</p><p>$item_body</p></blockquote>";
+
+} }}
+
+{{ $hidden_vals }}
 {{ if ( $field_errors{name}) {
    "<div class='form-error'>$field_errors{name}</div>";
 } }}
@@ -31,3 +38,5 @@
 <div class="checkbox"><input type="submit" value="{{ $label_submit }}"></div>
 {{ $cobrand_form_elements }}
 </form>
+
+{{ $contact_details }}

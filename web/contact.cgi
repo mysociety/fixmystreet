@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.50 2009-11-24 16:16:26 louise Exp $
+# $Id: contact.cgi,v 1.51 2009-12-01 12:44:51 louise Exp $
 
 use strict;
 use Standard;
@@ -126,7 +126,7 @@ sub contact_page {
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
     my $out = '';
-    my $header = $q->h1(_('Contact the team'));
+    my $header = _('Contact the team');
     $errors = '';
 
     if (@errors) {
@@ -136,6 +136,10 @@ sub contact_page {
     my $form_action = Cobrand::url($cobrand, '/contact', $q);
 
     my $intro = '';
+    my $item_title = '';
+    my $item_body = '';
+    my $item_meta = '';
+    my $hidden_vals = '';
     my $id = $q->param('id');
     my $update_id = $q->param('update_id');
     $id = undef unless $id && $id =~ /^[1-9]\d*$/;
@@ -158,29 +162,21 @@ sub contact_page {
             and comment.problem_id = problem.id
             and comment.problem_id=?', {}, $update_id ,$id);
             $intro .= $q->p(_('You are reporting the following update for being abusive, containing personal information, or similar:'));
-            $intro .= $q->blockquote(
-               ent($u->{text}),
-               $q->p($q->em(
-               ' added ',
-               ($u->{name} eq '') ? 'anonymously' : "by " . ent($u->{name}),
-               ' at ' . Page::prettify_epoch($q, $u->{created}),
-               )),                                                   
-               $q->p('to ' . ent($u->{title}))
-            );
-           $intro .= '<input type="hidden" name="update_id" value="' . $update_id . '">';
+            $item_title =  ent($u->{title});
+            $item_meta = $q->em( 'Update below added ', ($u->{name} eq '') ? 'anonymously' : "by " . ent($u->{name}),
+                                 ' at ' . Page::prettify_epoch($q, $u->{created}));
+            $item_body = ent($u->{text});
+            $hidden_vals .= '<input type="hidden" name="update_id" value="' . $update_id . '">';
         } else {
             $intro .= $q->p(_('You are reporting the following problem report for being abusive, containing personal information, or similar:'));
-            $intro .= $q->blockquote(
-               $q->h2(ent($p->{title})),
-               $q->p($q->em(
+            $item_title = ent($p->{title});
+            $item_meta = $q->em(
                'Reported ',
                ($p->{anonymous}) ? 'anonymously' : "by " . ent($p->{name}),
-               ' at ' . Page::prettify_epoch($q, $p->{created}),
-               )),
-               $q->p(ent($p->{detail}))
-            );
+               ' at ' . Page::prettify_epoch($q, $p->{created}));
+            $item_body = ent($p->{detail});
         }
-	$intro .= '<input type="hidden" name="id" value="' . $id . '">';
+	$hidden_vals .= '<input type="hidden" name="id" value="' . $id . '">';
     } elsif ($q->{site} eq 'emptyhomes') {
         $intro .= $q->p(_('We&rsquo;d love to hear what you think about this
 website. Just fill in the form. Please don&rsquo;t contact us about individual empty
@@ -198,6 +194,10 @@ please <a href="/">go to the front page</a> and follow the instructions.'));
       header => $header,
       errors => $errors,
       intro => $intro,
+      item_title => $item_title, 
+      item_meta => $item_meta,
+      item_body => $item_body,
+      hidden_vals => $hidden_vals,
       form_action => $form_action, 
       input_h => \%input_h,
       field_errors => \%field_errors,
@@ -206,10 +206,10 @@ please <a href="/">go to the front page</a> and follow the instructions.'));
       label_subject => _('Subject:'),
       label_message => _('Message:'),
       label_submit => _('Post'),
+      contact_details => contact_details($q),
       cobrand_form_elements => $cobrand_form_elements
     );
     $out .= Page::template_include('contact', $q, Page::template_root($q), %vars);
-    $out .= contact_details($q);
     return $out;
 }
 
