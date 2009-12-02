@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.46 2009-11-25 18:27:25 louise Exp $
+# $Id: Cobrand.pm,v 1.47 2009-12-02 12:09:36 louise Exp $
 
 package Cobrand;
 use strict;
@@ -207,6 +207,24 @@ Return the contact email for the cobranded version of the site
 sub contact_email {
     my $cobrand = shift;
     return get_cobrand_conf($cobrand, 'CONTACT_EMAIL');
+}
+
+=item alert_list_options COBRAND Q OPTIONS
+
+Return HTML for a list of alert options for the cobrand.
+
+=cut
+sub alert_list_options {
+    my ($cobrand, $q, @options) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || ! $handle->can('alert_list_options')){
+        return 0;
+    }{
+        return $handle->alert_list_options($q, @options);
+    }
 }
 
 =item get_cobrand_conf COBRAND KEY
