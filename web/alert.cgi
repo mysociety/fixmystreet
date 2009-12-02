@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.60 2009-11-24 16:20:53 louise Exp $
+# $Id: alert.cgi,v 1.61 2009-12-02 12:15:00 louise Exp $
 
 use strict;
 use Standard;
@@ -48,6 +48,9 @@ EOF
         $out = alert_do_subscribe($q, $q->param('rznvy'));
     } elsif ($q->param('id')) {
         $out = alert_updates_form($q);
+    } elsif ($q->param('type') && $q->param('feed')) {
+        $title = _('Local RSS feeds and email alerts');
+        $out = alert_local_form($q);
     } elsif ($q->param('pc') || ($q->param('x') && $q->param('y'))) {
         $title = _('Local RSS feeds and email alerts');
         $out = alert_list($q);
@@ -205,12 +208,13 @@ for the county council.')));
     my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'alerts', $q);
     my $pics = Cobrand::recent_photos($cobrand, 5, $e, $n, $dist);
     $pics = '<div id="alert_photos">' . $q->h2(_('Photos of recent nearby reports')) . $pics . '</div>' if $pics;
-
-    my $out = $q->h1(
-        $pretty_pc
-            ? sprintf(_('Local RSS feeds and email alerts for &lsquo;%s&rsquo;'), $pretty_pc)
-            : _('Local RSS feeds and email alerts')
-    );
+    my $header;
+    if ($pretty_pc) {
+        $header = sprintf(_('Local RSS feeds and email alerts for &lsquo;%s&rsquo;'), $pretty_pc); 
+    } else {
+        $header = _('Local RSS feeds and email alerts');
+    }
+    my $out = $q->h1($header);
     my $form_action = Cobrand::url($cobrand, '/alert', $q);
     $out .= <<EOF;
 <form id="alerts" name="alerts" method="post" action="$form_action">
@@ -225,14 +229,16 @@ EOF
 feed, or enter your email address to subscribe to an email alert.'));
     $out .= $errors;
     $out .= $q->p(_('The simplest alert is our geographic one:'));
-    my $label = sprintf(_('Problems within %skm of this location'), $dist);
+    my $rss_label = sprintf(_('Problems within %skm of this location'), $dist);
     $out .= <<EOF;
 <p id="rss_local">
 <input type="radio" name="feed" id="local:$x:$y" value="local:$x:$y"$checked>
-<label for="local:$x:$y">$label</label>
+<label for="local:$x:$y">$rss_label</label>
 EOF
-    my $rss_feed = Cobrand::url(Page::get_cobrand($q), "/rss/$x,$y", $q);
-    $out .= _('(a default distance which covers roughly 200,000 people)');
+    my $rss_feed = Cobrand::url($cobrand, "/rss/$x,$y", $q);
+    my $default_link = Cobrand::url($cobrand, "/alert?type=local;feed=local:$x:$y", $q);
+    my $rss_details = _('(a default distance which covers roughly 200,000 people)');
+    $out .= $rss_details;
     $out .= " <a href='$rss_feed'><img src='/i/feed.png' width='16' height='16' title='"
         . _('RSS feed of nearby problems') . "' alt='" . _('RSS feed') . "' border='0'></a>";
     $out .= '</p> <p id="rss_local_alt">' . _('(alternatively the RSS feed can be customised, within');
@@ -253,6 +259,21 @@ EOF
 <p><input type="submit" name="alert" value="' . _('Subscribe me to an email alert') . '"></p>
 </div>
 </form>';
+    my %vars = (header => $header, 
+                cobrand_form_elements => $cobrand_form_elements, 
+                rss_label => $rss_label,
+                rss_feed => $rss_feed,
+                default_link => $default_link, 
+                rss_details => $rss_details, 
+                rss_feed_2k => $rss_feed_2k, 
+                rss_feed_5k => $rss_feed_5k,   
+                rss_feed_10k => $rss_feed_10k,   
+                rss_feed_20k => $rss_feed_20k, 
+                x => $x, 
+                y => $y, 
+                options => $options   );
+    my $cobrand_page = Page::template_include('alert-options', $q, Page::template_root($q), %vars);
+    $out = $cobrand_page if ($cobrand_page);
     return $out;
 }
 
@@ -260,6 +281,9 @@ sub alert_list_options {
     my $q = shift;
     my $out = '';
     my $feed = $q->param('feed') || '';
+    my $cobrand = Page::get_cobrand($q);
+    my $cobrand_list  = Cobrand::alert_list_options($cobrand, $q, @_);
+    return $cobrand_list if ($cobrand_list);
     foreach (@_) {
         my ($type, $vals, $rss, $text) = @$_;
         (my $vals2 = $rss) =~ tr{/+}{:_};
@@ -269,7 +293,7 @@ sub alert_list_options {
         my $url = "/rss/";
         $url .= $type eq 'area' ? 'area' : 'reports'; 
         $url .= '/' . $rss ;
-        my $rss_url = Cobrand::url(Page::get_cobrand($q), $url, $q);
+        my $rss_url = Cobrand::url($cobrand, $url, $q);
         $out .= 'value="' . $id . '"> <label for="' . $id . '">' . $text
             . '</label> <a href="' . $rss_url . '"><img src="/i/feed.png" width="16" height="16"
 title="' . sprintf(_('RSS feed of %s'), $text) . '" alt="' . _('RSS feed') . '" border="0"></a>';
@@ -382,6 +406,33 @@ EOF
     return $out;
 }
 
+sub alert_local_form {
+    my ($q, @errors) = @_;
+    my @vars = qw(id rznvy feed);
+    my %input = map { $_ => $q->param($_) || '' } @vars;
+    my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
+    my $cobrand_form_elements = Cobrand::form_elements(Page::get_cobrand($q), 'alerts', $q);
+    my $out = '';
+    if (@errors) {
+        $out .= '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
+    }
+    $out .= $q->p(_('Receive alerts on new local problems'));
+    my $label = _('Email:');
+    my $subscribe = _('Subscribe');
+    my $form_action = Cobrand::url(Page::get_cobrand($q), 'alert', $q);
+    $out .= <<EOF;
+<form action="$form_action" method="post">
+<label class="n" for="alert_rznvy">$label</label>
+<input type="text" name="rznvy" id="alert_rznvy" value="$input_h{rznvy}" size="30">
+<input type="hidden" name="feed" value="$input_h{feed}">
+<input type="hidden" name="type" value="local">
+<input type="submit" value="$subscribe">
+$cobrand_form_elements
+</form>
+EOF
+    return $out;
+}
+
 sub alert_signed_input {
     my $q = shift;
     my ($salt, $signed_email) = split /,/, $q->param('signed_email');
@@ -442,11 +493,11 @@ sub alert_do_subscribe {
 
     my @errors;
     push @errors, _('Please enter a valid email address') unless is_valid_email($email);
-    push @errors, _('Please select the type of alert you want') if $type eq 'local' && !$q->param('feed');
+    push @errors, _('Please select the type of alert you want') if $type && $type eq 'local' && !$q->param('feed');
     if (@errors) {
-        return alert_updates_form($q, @errors) if $type eq 'updates';
-        return alert_list($q, @errors) if $type eq 'local';
-        return 'argh';
+        return alert_updates_form($q, @errors) if $type && $type eq 'updates';
+        return alert_list($q, @errors) if $type && $type eq 'local';
+        return alert_front_page($q, @errors);
     }
 
     my $alert_id;
