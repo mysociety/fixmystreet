@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.62 2009-12-02 13:20:37 louise Exp $
+# $Id: alert.cgi,v 1.63 2009-12-02 13:44:14 louise Exp $
 
 use strict;
 use Standard;
@@ -189,7 +189,6 @@ will be sent to the district council, so will appear in both of the district
 council&rsquo;s alerts, but will only appear in the "Within the boundary" alert
 for the county council.'))) . '</div>';
         }
-    $options_end .= '<div id="rss_buttons">';
     } else {
         # Hopefully impossible in the UK!
         throw Error::Simple('An area with three tiers of council? Impossible! '. $e . ' ' . $n . ' ' . join('|',keys %$areas));
@@ -252,6 +251,7 @@ EOF
     $out .= $options_start;
     $out .= $options;
     $out .= $options_end;
+    $out .= '<div id="rss_buttons">';
     $out .= $q->p('<input type="submit" name="rss" value="' . _('Give me an RSS feed') . '">');
     $out .= $q->p({-id=>'alert_or'}, _('or'));
     $out .= '<p>' . _('Your email:') . ' <input type="text" id="rznvy" name="rznvy" value="' . $input_h{rznvy} . '" size="30"></p>
