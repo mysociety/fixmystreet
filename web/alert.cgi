@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.61 2009-12-02 12:15:00 louise Exp $
+# $Id: alert.cgi,v 1.62 2009-12-02 13:20:37 louise Exp $
 
 use strict;
 use Standard;
@@ -110,7 +110,7 @@ sub alert_list {
 
     return alert_front_page($q, _('That location does not appear to be covered by a council, perhaps it is offshore - please try somewhere more specific.')) if keys %$areas == 0;
 
-    my ($options);
+    my ($options, $options_start, $options_end);
     if (keys %$areas == 2) {
 
         # One-tier council
@@ -126,10 +126,10 @@ sub alert_list {
             sprintf(_("Problems within %s"), $council->{name}) ];
         push @options, [ 'ward', $council->{area_id}.':'.$ward->{area_id}, Page::short_name($council->{name}) . '/'
             . Page::short_name($ward->{name}), sprintf(_("Problems within %s ward"), $ward->{name}) ];
-
-        $options = '<div>' . $q->ul({id=>'rss_feed'},
-            alert_list_options($q, @options)
-        );
+        
+        $options_start = "<div><ul id='rss_feed'>";
+        $options = alert_list_options($q, @options);
+        $options_end = "</ul></div>";
 
     } elsif (keys %$areas == 1) {
 
@@ -140,10 +140,10 @@ sub alert_list {
         }
         push @options, [ 'council', $council->{area_id}, Page::short_name($council->{name}),
             sprintf(_("Problems within %s"), $council->{name}) ];
-
-        $options = '<div>' . $q->ul({id=>'rss_feed'},
-            alert_list_options($q, @options)
-        );
+        
+        $options_start = "<div><ul id='rss_feed'>"; 
+        $options = alert_list_options($q, @options);
+        $options_end = "</ul></div>";
 
     } elsif (keys %$areas == 4) {
 
@@ -167,8 +167,8 @@ sub alert_list {
             [ 'area', $county->{area_id}, Page::short_name($county->{name}), $county->{name} ],
             [ 'area', $county->{area_id}.':'.$c_ward->{area_id}, Page::short_name($county->{name}) . '/'
               . Page::short_name($c_ward->{name}), "$c_ward->{name} ward, $county->{name}" ];
-        $options = '<div id="rss_list">';
-        $options .= $q->p($q->strong(_('Problems within the boundary of:'))) .
+        $options_start = '<div id="rss_list">';
+        $options = $q->p($q->strong(_('Problems within the boundary of:'))) .
             $q->ul(alert_list_options($q, @options));
         @options = ();
         push @options,
@@ -182,17 +182,14 @@ sub alert_list {
                   . Page::short_name($c_ward->{name}), "$county->{name}, within $c_ward->{name} ward" ];
             $options .= $q->p($q->strong(_('Or problems reported to:'))) .
                 $q->ul(alert_list_options($q, @options));
-            $options .= $q->p($q->small(_('FixMyStreet sends different categories of problem
+            $options_end = $q->p($q->small(_('FixMyStreet sends different categories of problem
 to the appropriate council, so problems within the boundary of a particular council
 might not match the problems sent to that council. For example, a graffiti report
 will be sent to the district council, so will appear in both of the district
 council&rsquo;s alerts, but will only appear in the "Within the boundary" alert
-for the county council.')));
+for the county council.'))) . '</div>';
         }
-        $options .= '</div>
-<div id="rss_buttons">
-';
-
+    $options_end .= '<div id="rss_buttons">';
     } else {
         # Hopefully impossible in the UK!
         throw Error::Simple('An area with three tiers of council? Impossible! '. $e . ' ' . $n . ' ' . join('|',keys %$areas));
@@ -252,7 +249,9 @@ EOF
 </p>
 EOF
     $out .= $q->p(_('Or you can subscribe to an alert based upon what ward or council you&rsquo;re in:'));
+    $out .= $options_start;
     $out .= $options;
+    $out .= $options_end;
     $out .= $q->p('<input type="submit" name="rss" value="' . _('Give me an RSS feed') . '">');
     $out .= $q->p({-id=>'alert_or'}, _('or'));
     $out .= '<p>' . _('Your email:') . ' <input type="text" id="rznvy" name="rznvy" value="' . $input_h{rznvy} . '" size="30"></p>
