@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.63 2009-12-02 13:44:14 louise Exp $
+# $Id: alert.cgi,v 1.64 2009-12-02 13:53:24 louise Exp $
 
 use strict;
 use Standard;
@@ -129,7 +129,7 @@ sub alert_list {
         
         $options_start = "<div><ul id='rss_feed'>";
         $options = alert_list_options($q, @options);
-        $options_end = "</ul></div>";
+        $options_end = "</ul>";
 
     } elsif (keys %$areas == 1) {
 
@@ -143,7 +143,7 @@ sub alert_list {
         
         $options_start = "<div><ul id='rss_feed'>"; 
         $options = alert_list_options($q, @options);
-        $options_end = "</ul></div>";
+        $options_end = "</ul>";
 
     } elsif (keys %$areas == 4) {
 
@@ -187,7 +187,7 @@ to the appropriate council, so problems within the boundary of a particular coun
 might not match the problems sent to that council. For example, a graffiti report
 will be sent to the district council, so will appear in both of the district
 council&rsquo;s alerts, but will only appear in the "Within the boundary" alert
-for the county council.'))) . '</div>';
+for the county council.'))) . '</div><div id="rss_buttons">';
         }
     } else {
         # Hopefully impossible in the UK!
@@ -251,7 +251,6 @@ EOF
     $out .= $options_start;
     $out .= $options;
     $out .= $options_end;
-    $out .= '<div id="rss_buttons">';
     $out .= $q->p('<input type="submit" name="rss" value="' . _('Give me an RSS feed') . '">');
     $out .= $q->p({-id=>'alert_or'}, _('or'));
     $out .= '<p>' . _('Your email:') . ' <input type="text" id="rznvy" name="rznvy" value="' . $input_h{rznvy} . '" size="30"></p>
