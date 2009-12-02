@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.212 2009-11-24 16:16:26 louise Exp $
+# $Id: Page.pm,v 1.213 2009-12-02 16:06:53 louise Exp $
 #
 
 package Page;
@@ -992,16 +992,25 @@ sub geocode_string {
 sub geocode_choice {
     my ($choices, $page, $q) = @_;
     my $url;
-    my $out = '<p>' . _('We found more than one match for that location. We show up to ten matches, please try a different search if yours is not here.') . '</p> <ul>';
+    my $cobrand = Page::get_cobrand($q);
+    my $message = _('We found more than one match for that location. We show up to ten matches, please try a different search if yours is not here.');
+    my $out = '<p>' . $message . '</p>';
+    my $choice_list = '<ul>';
     foreach my $choice (@$choices) {
         $choice =~ s/, United Kingdom//;
         $choice =~ s/, UK//;
-        my $cobrand = Page::get_cobrand($q);
         $url =  Cobrand::url($cobrand, NewURL($q, -retain => 1, -url => $page, 'pc' => $choice), $q);  
         $url =~ s/%20/+/g;
-        $out .= '<li><a href="' . $url . '">' . $choice . "</a></li>\n";
+        $choice_list .= '<li><a href="' . $url . '">' . $choice . "</a></li>\n";
     }
-    $out .= '</ul>';
+    $choice_list .= '</ul>';
+    $out .= $choice_list;
+    my %vars = (message => $message, 
+                choice_list => $choice_list, 
+                header => _('More than one match'), 
+                url_home => Cobrand::url($cobrand, '/', $q));
+    my $cobrand_choice = Page::template_include('geocode-choice', $q, Page::template_root($q), %vars);
+    return $cobrand_choice if $cobrand_choice;
     return $out;
 }
 
