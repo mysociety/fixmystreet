@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.64 2009-12-02 13:53:24 louise Exp $
+# $Id: alert.cgi,v 1.65 2009-12-02 16:33:56 louise Exp $
 
 use strict;
 use Standard;
@@ -467,20 +467,28 @@ sub alert_token {
 
     my $out;
     my $cobrand = Page::get_cobrand($q);
+    my $message; 
     my $display_advert = Cobrand::allow_crosssell_adverts($cobrand);
     if ($type eq 'subscribe') {
         mySociety::Alert::confirm($id);
-        $out = $q->p(_('You have successfully confirmed your alert.'));
+        $message = _('You have successfully confirmed your alert.');
+        $out = $q->p($message);
         if ($display_advert) {
             $out .= CrossSell::display_advert($q, $email);
         }
     } elsif ($type eq 'unsubscribe') {
         mySociety::Alert::delete($id);
-        $out = $q->p(_('You have successfully deleted your alert.'));
+        $message = _('You have successfully deleted your alert.');
+        $out = $q->p($message);
         if ($display_advert) {
             $out .= CrossSell::display_advert($q, $email);
         }
     }
+ 
+    my %vars = (message => $message, 
+                url_home => Cobrand::url($cobrand, '/', $q));
+    my $confirmation = Page::template_include('confirmed-alert', $q, Page::template_root($q), %vars);
+    return $confirmation if $confirmation;
     return $out;
 }
 
