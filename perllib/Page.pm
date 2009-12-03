@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.214 2009-12-03 12:51:06 louise Exp $
+# $Id: Page.pm,v 1.215 2009-12-03 13:46:27 louise Exp $
 #
 
 package Page;
@@ -793,7 +793,7 @@ sub display_problem_meta_line($$) {
             my @councils = split /,/, $problem->{council};
             my $areas_info = mySociety::MaPit::get_voting_areas_info(\@councils);
             my $council = join(' and ', map { $areas_info->{$_}->{name} } @councils);
-            $out .= '<span class="council_sent_info">';
+            $out .= '<small class="council_sent_info">';
             $out .= $q->br() . sprintf(_('Sent to %s %s later'), $council, prettify_duration($problem->{whensent}, 'minute'));
             $out .= '</span>';
         }
