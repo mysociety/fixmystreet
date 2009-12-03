@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.48 2009-11-30 14:03:16 louise Exp $
+# $Id: questionnaire.cgi,v 1.49 2009-12-03 11:36:10 louise Exp $
 
 use strict;
 use Standard;
@@ -145,8 +145,10 @@ sub submit_questionnaire {
     dbh()->commit();
 
     my $out;
+    my $message;
+    my $advert_outcome = 1;
     if ($input{been_fixed} eq 'Unknown') {
-        $out = _(<<EOF);
+        $message = _(<<EOF);
 <p>Thank you very much for filling in our questionnaire; if you
 get some more information about the status of your problem, please come back to the
 site and leave an update.</p>
@@ -154,23 +156,28 @@ EOF
     } elsif ($new_state eq 'confirmed' || (!$new_state && $problem->{state} eq 'confirmed')) {
         my $wtt_url = Cobrand::writetothem_url($cobrand, $cobrand_data);
         $wtt_url = "http://www.writetothem.com" if (! $wtt_url);
-        return sprintf(_(<<EOF), $wtt_url);
-<p style="font-size:150%%">We're sorry to hear that. We have two suggestions: why not try
+        $message = sprintf(_(<<EOF), $wtt_url);
+<p style="font-size:150%">We're sorry to hear that. We have two suggestions: why not try
 <a href="%s">writing direct to your councillor(s)</a>
 or, if it's a problem that could be fixed by local people working together,
 why not <a href="http://www.pledgebank.com/new">make and publicise a pledge</a>?
 </p>
 EOF
+        $advert_outcome = 0;
     } else {
-        $out = _(<<EOF);
+        $message = _(<<EOF);
 <p style="font-size:150%">Thank you very much for filling in our questionnaire; glad to hear it's been fixed.</p>
 EOF
     }
+    $out = $message;
     my $display_advert = Cobrand::allow_crosssell_adverts($cobrand);
-    if ($display_advert) {
+    if ($display_advert && $advert_outcome) {
         $out .= CrossSell::display_advert($q, $problem->{email}, $problem->{name},
             council => $problem->{council});
     }
+    my %vars = (message => $message);
+    my $template_page = Page::template_include('questionnaire-completed', $q, Page::template_root($q), %vars);
+    return $template_page if ($template_page);
     return $out;
 }
 
@@ -189,7 +196,7 @@ sub display_questionnaire {
         $error = $e;
     };
     return $error if $error;
-
+    my $reported_date_time = Page::prettify_epoch($q, $problem->{time});
     my ($x, $y, $x_tile, $y_tile, $px, $py) = Page::os_to_px_with_adjust($q, $problem->{easting}, $problem->{northing}, undef, undef);
 
     my $pins = Page::display_pin($q, $px, $py, $problem->{state} eq 'fixed'?'green':'red');
@@ -208,6 +215,7 @@ sub display_questionnaire {
         submit => _('Submit questionnaire'),
         cobrand_form_elements => Cobrand::form_elements($cobrand, 'questionnaireForm', $q),
         form_action => Cobrand::url($cobrand, "/questionnaire", $q),
+        reported_date_time => $reported_date_time
     );
     $vars{been_fixed} = {
         yes => $input{been_fixed} eq 'Yes' ? ' checked' : '',
@@ -286,6 +294,8 @@ EOF
         yes => $input{another} eq 'Yes' ? ' checked' : '',
         no => $input{another} eq 'No' ? ' checked' : '', 
     );
+    $vars{another_yes} = $another{yes};
+    $vars{another_no} = $another{no};
     $vars{another_questionnaire} = <<EOF if $q->{site} ne 'emptyhomes';
 <div id="another_qn">
 <p>Would you like to receive another questionnaire in 4 weeks, reminding you to check the status?</p>
