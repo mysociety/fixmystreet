@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.327 2009-12-01 09:45:20 louise Exp $
+# $Id: index.cgi,v 1.328 2009-12-03 12:51:48 louise Exp $
 
 use strict;
 use Standard;
@@ -876,6 +876,7 @@ sub display_location {
         unless $around_list;
 
     my $url_skip = NewURL($q, -retain=>1, 'submit_map'=>1, skipped=>1);
+    my $pc_h = ent($q->param('pc') || '');
     my %vars = (
         'map' => Page::display_map($q, x => $x, 'y' => $y, type => 1, pins => $pins, post => $map_links ),
         map_end => Page::display_map_end(1),
@@ -892,6 +893,7 @@ sub display_location {
         heading_on_around => _('Reports on and around the map'),
         heading_closest => sprintf(_('Closest nearby problems <small>(within&nbsp;%skm)</small>'), $dist),
         distance => $dist,
+        pc_h => $pc_h,
         errors => @errors ? '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>' : '',
         text_to_report => _('To report a problem, simply
         <strong>click on the map</strong> at the correct location.'),
