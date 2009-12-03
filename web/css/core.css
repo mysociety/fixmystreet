@@ -332,6 +332,10 @@ p#copyright {
     margin: 0;
 }
 
+.council_sent_info {
+   font-size: small;
+}
+
 /* RSS feed XSL */
 
 #rss_items {
