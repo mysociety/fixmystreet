@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.216 2009-12-03 13:59:06 louise Exp $
+# $Id: Page.pm,v 1.217 2009-12-04 11:49:28 matthew Exp $
 #
 
 package Page;
@@ -954,7 +954,9 @@ sub geocode_string {
     } elsif ($js !~ /"code" *: *200/) {
         $error = _('Sorry, we could not find that location.');
     } elsif ($js =~ /}, *{/) { # Multiple
-        while ($js =~ /"address" *: *"(.*?)",\s*"AddressDetails" *:.*?"PostalCodeNumber" *: *"(.*?)"/gs) {
+        my @js = split /}, *{/, $js;
+        foreach (@js) {
+            next unless /"address" *: *"(.*?)",\s*"AddressDetails" *:.*?"PostalCodeNumber" *: *"(.*?)"/gs;
             my $address = $1;
             my $pc = $2;
             $address =~ s/UK/$pc, UK/;
