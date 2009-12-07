@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.51 2009-12-07 11:48:17 louise Exp $
+# $Id: questionnaire.cgi,v 1.52 2009-12-07 15:35:06 louise Exp $
 
 use strict;
 use Standard;
@@ -72,8 +72,14 @@ sub submit_questionnaire {
         my $e = shift;
         $error = $e;
     };
-    return $error if $error;
 
+    if ($error) {
+        my %vars = (heading => _('Questionnaire'), 
+                    error => $error->stringify());
+        my $template_error = Page::template_include('error', $q, Page::template_root($q), %vars);
+        return $template_error if $template_error;
+        return $error;
+    }
     # EHA questionnaires done for you
     if ($q->{site} eq 'emptyhomes') {
         $input{another} = $num_questionnaire==1 ? 'Yes' : 'No';
@@ -197,7 +203,13 @@ sub display_questionnaire {
         my $e = shift;
         $error = $e;
     };
-    return $error if $error;
+    if ($error) {
+        my %vars = (heading => _('Questionnaire'),
+                    error => $error->stringify());
+        my $template_error = Page::template_include('error', $q, Page::template_root($q), %vars);
+        return $template_error if $template_error;
+        return $error;
+    }
     my $reported_date_time = Page::prettify_epoch($q, $problem->{time});
     my ($x, $y, $x_tile, $y_tile, $px, $py) = Page::os_to_px_with_adjust($q, $problem->{easting}, $problem->{northing}, undef, undef);
 
