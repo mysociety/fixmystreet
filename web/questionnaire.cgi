@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.50 2009-12-07 11:42:51 louise Exp $
+# $Id: questionnaire.cgi,v 1.51 2009-12-07 11:48:17 louise Exp $
 
 use strict;
 use Standard;
@@ -159,7 +159,7 @@ EOF
         my $wtt_url = Cobrand::writetothem_url($cobrand, $cobrand_data);
         $wtt_url = "http://www.writetothem.com" if (! $wtt_url);
         $message = sprintf(_(<<EOF), $wtt_url);
-<p style="font-size:150%">We're sorry to hear that. We have two suggestions: why not try
+<p style="font-size:150%%">We're sorry to hear that. We have two suggestions: why not try
 <a href="%s">writing direct to your councillor(s)</a>
 or, if it's a problem that could be fixed by local people working together,
 why not <a href="http://www.pledgebank.com/new">make and publicise a pledge</a>?
