@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.49 2009-12-03 11:36:10 louise Exp $
+# $Id: questionnaire.cgi,v 1.50 2009-12-07 11:42:51 louise Exp $
 
 use strict;
 use Standard;
@@ -33,14 +33,16 @@ Page::do_fastcgi(\&main);
 
 sub check_stuff {
     my $q = shift;
-
+    my $cobrand = Page::get_cobrand($q);
     my $id = mySociety::AuthToken::retrieve('questionnaire', $q->param('token'));
     throw Error::Simple(_("I'm afraid we couldn't validate that token. If you've copied the URL from an email, please check that you copied it exactly.\n")) unless $id;
 
     my $questionnaire = dbh()->selectrow_hashref(
         'select id, problem_id, whenanswered from questionnaire where id=?', {}, $id);
     my $problem_id = $questionnaire->{problem_id};
-    throw Error::Simple(sprintf(_("You have already answered this questionnaire. If you have a question, please <a href='/contact'>get in touch</a>, or <a href='%s'>view your problem</a>.\n"), "/report/$problem_id")) if $questionnaire->{whenanswered};
+    my $problem_url = Cobrand::url($cobrand, "/report/$problem_id", $q);
+    my $contact_url = Cobrand::url($cobrand, "/contact", $q);
+    throw Error::Simple(sprintf(_("You have already answered this questionnaire. If you have a question, please <a href='%s'>get in touch</a>, or <a href='%s'>view your problem</a>.\n"), $contact_url, $problem_url)) if $questionnaire->{whenanswered};
 
     my $problem = dbh()->selectrow_hashref(
         "select *, extract(epoch from confirmed) as time, extract(epoch from whensent-confirmed) as whensent
