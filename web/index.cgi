@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.328 2009-12-03 12:51:48 louise Exp $
+# $Id: index.cgi,v 1.329 2009-12-08 10:20:38 matthew Exp $
 
 use strict;
 use Standard;
@@ -433,7 +433,7 @@ sub display_form {
     my @errors = @$errors;
     my %field_errors = %{$field_errors};
     my $cobrand = Page::get_cobrand($q);
-    push @errors, _('There were problems with your report. Please see below.') if (scalar keys %field_errors && $cobrand ne 'emptyhomes');
+    push @errors, _('There were problems with your report. Please see below.') if (scalar keys %field_errors);
 
     my ($pin_x, $pin_y, $pin_tile_x, $pin_tile_y) = (0,0,0,0);
     my @vars = qw(title detail name email phone pc easting northing x y skipped council anonymous partial upload_fileid lat lon);
@@ -913,7 +913,7 @@ sub display_problem {
     my @errors = @$errors;
     my %field_errors = %{$field_errors};
     my $cobrand = Page::get_cobrand($q);
-    push @errors, _('There were problems with your update. Please see below.') if (scalar keys %field_errors && $cobrand ne 'emptyhomes');
+    push @errors, _('There were problems with your update. Please see below.') if (scalar keys %field_errors);
 
     my @vars = qw(id name rznvy update fixed add_alert upload_fileid x y submit_update);
     my %input = map { $_ => $q->param($_) || '' } @vars;
