@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.48 2009-12-08 11:13:30 louise Exp $
+# $Id: Cobrand.pm,v 1.49 2009-12-08 17:43:13 louise Exp $
 
 package Cobrand;
 use strict;
@@ -782,6 +782,26 @@ sub all_councils_report {
         return 1;
     } else{
         return $handle->all_councils_report();
+    }
+}
+
+=item ask_ever_reported 
+
+Return a boolean indicating whether people should be asked whether this
+is the first time they've reported a problem.
+
+=cut
+
+sub ask_ever_reported {
+    my ($cobrand) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || !$handle->can('ask_ever_reported')){
+        return 1;
+    } else{
+        return $handle->ask_ever_reported();
     }
 }
 

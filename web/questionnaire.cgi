@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: questionnaire.cgi,v 1.52 2009-12-07 15:35:06 louise Exp $
+# $Id: questionnaire.cgi,v 1.53 2009-12-08 17:43:13 louise Exp $
 
 use strict;
 use Standard;
@@ -87,7 +87,10 @@ sub submit_questionnaire {
 
     my @errors;
     push @errors, _('Please state whether or not the problem has been fixed') unless $input{been_fixed};
-    push @errors, _('Please say whether you\'ve ever reported a problem to your council before') unless $input{reported} || $answered_ever_reported;
+    my $ask_ever_reported = Cobrand::ask_ever_reported($cobrand);
+    if ($ask_ever_reported) {
+        push @errors, _('Please say whether you\'ve ever reported a problem to your council before') unless $input{reported} || $answered_ever_reported;
+    }
     push @errors, _('Please indicate whether you\'d like to receive another questionnaire')
         if ($input{been_fixed} eq 'No' || $input{been_fixed} eq 'Unknown') && !$input{another};
     push @errors, _('Please provide some explanation as to why you\'re reopening this report')
