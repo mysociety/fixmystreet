@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.329 2009-12-08 10:20:38 matthew Exp $
+# $Id: index.cgi,v 1.330 2009-12-08 11:13:30 louise Exp $
 
 use strict;
 use Standard;
@@ -90,7 +90,7 @@ sub main {
             $out = front_page($q);
         }
     } else {
-        $out = front_page($q);
+        ($out, %params) = front_page($q);
     }
     print Page::header($q, %params);
     print $out;
@@ -111,7 +111,7 @@ sub front_page {
     my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'postcodeForm', $q);
     my $form_action = Cobrand::url($cobrand, '/', $q);
     my $question = Cobrand::enter_postcode_text($cobrand, $q);
-
+    my %params = ('context' => 'front-page');
     my %vars = (
         error => $error || '',
         pc_h => $pc_h, 
@@ -120,7 +120,7 @@ sub front_page {
         question => $question,
     );
     my $cobrand_front_page = Page::template_include('front-page', $q, Page::template_root($q), %vars);
-    return $cobrand_front_page if $cobrand_front_page;
+    return ($cobrand_front_page, %params) if $cobrand_front_page;
 
     my $out = '<p id="expl"><strong>' . _('Report, view, or discuss local problems') . '</strong>';
     my $subhead = _('(like graffiti, fly tipping, broken paving slabs, or street lighting)');
@@ -194,7 +194,7 @@ EOF
     $out .= '</div>';
     }   
 
-    return $out;
+    return ($out, %params);
 }
 
 sub submit_update {

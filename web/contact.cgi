@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.52 2009-12-08 10:20:38 matthew Exp $
+# $Id: contact.cgi,v 1.53 2009-12-08 11:13:30 louise Exp $
 
 use strict;
 use Standard;
@@ -19,7 +19,7 @@ use mySociety::Random qw(random_bytes);
 # Main code for index.cgi
 sub main {
     my $q = shift;
-    print Page::header($q, title=>_('Contact Us'));
+    print Page::header($q, title=>_('Contact Us'), context=>'contact');
     my $out = '';
     if ($q->param('submit_form')) {
         $out = contact_submit($q);

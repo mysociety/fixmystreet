@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.218 2009-12-04 11:53:44 matthew Exp $
+# $Id: Page.pm,v 1.219 2009-12-08 11:13:30 louise Exp $
 #
 
 package Page;
@@ -276,10 +276,11 @@ Return HTML for the top of the page, given PARAMs (TITLE is required).
 =cut
 sub header ($%) {
     my ($q, %params) = @_;
-    my $default_params = Cobrand::header_params(get_cobrand($q));
+    my  $context = $params{context};
+    my $default_params = Cobrand::header_params(get_cobrand($q), $q, %params);
     my %default_params = %{$default_params};
     %params = (%default_params, %params);
-    my %permitted_params = map { $_ => 1 } qw(title rss js expires lastmodified template cachecontrol);
+    my %permitted_params = map { $_ => 1 } qw(title rss js expires lastmodified template cachecontrol context);
     foreach (keys %params) {
         croak "bad parameter '$_'" if (!exists($permitted_params{$_}));
     }
@@ -298,7 +299,7 @@ sub header ($%) {
 
     my $template = template($q, %params);
     my $html = template_header($template, $q, template_root($q), %params);
-
+    my $cache_val = $default_params{cachecontrol};
     if (mySociety::Config::get('STAGING_SITE')) {
         #$html .= '<p class="error">' . _("This is a developer site; things might break at any time.") . '</p>';
     }

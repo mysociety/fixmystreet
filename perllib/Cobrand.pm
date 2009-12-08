@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.47 2009-12-02 12:09:36 louise Exp $
+# $Id: Cobrand.pm,v 1.48 2009-12-08 11:13:30 louise Exp $
 
 package Cobrand;
 use strict;
@@ -583,7 +583,7 @@ Return any params to be added to responses
 =cut 
 
 sub header_params { 
-    my ($cobrand, $q) = @_;
+    my ($cobrand, $q, %params) = @_;
     my $handle;
     if ($cobrand){
         $handle = cobrand_handle($cobrand);
@@ -591,7 +591,7 @@ sub header_params {
     if ( !$cobrand || !$handle || !$handle->can('header_params')){
         return {};
     } else{
-        return $handle->header_params($q);
+        return $handle->header_params($q, %params);
     } 
 }
 

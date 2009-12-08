@@ -7,7 +7,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: reports.cgi,v 1.40 2009-11-18 17:57:17 louise Exp $
+# $Id: reports.cgi,v 1.41 2009-12-08 11:13:30 louise Exp $
 
 use strict;
 use Standard;
@@ -235,8 +235,7 @@ sub main {
                 $col .= list_problems($q, _('Old fixed'), $fixed{$one_council}{old}, $all);
                 $vars{col_fixed} = $col;
             }
-
-            print Page::header($q, title=>sprintf(_('%s - Summary reports'), $name), rss => [ sprintf(_('Problems within %s, FixMyStreet'), $name), Cobrand::url($cobrand, $rss_url, $q) ]);
+            print Page::header($q, context => 'reports', title=>sprintf(_('%s - Summary reports'), $name), rss => [ sprintf(_('Problems within %s, FixMyStreet'), $name), Cobrand::url($cobrand, $rss_url, $q) ]);
             print Page::template_include('reports', $q, Page::template_root($q), %vars);
         }
     }
