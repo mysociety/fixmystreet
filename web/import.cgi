@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: import.cgi,v 1.9 2008-12-11 15:18:44 matthew Exp $
+# $Id: import.cgi,v 1.10 2009-12-09 18:08:04 matthew Exp $
 
 use strict;
 use Error qw(:try);
@@ -29,9 +29,9 @@ sub main {
         return;
     }
 
+    my $fh = $q->upload('photo'); # MUST come before $q->header, don't know why!
     print $q->header(-charset => 'utf-8', -content_type => 'text/plain');
 
-    my $fh = $q->upload('photo');
     if ($fh) {
         my $err = Page::check_photo($q, $fh);
         push @errors, $err if $err;
