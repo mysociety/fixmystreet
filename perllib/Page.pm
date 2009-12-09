@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.219 2009-12-08 11:13:30 louise Exp $
+# $Id: Page.pm,v 1.220 2009-12-09 13:33:56 louise Exp $
 #
 
 package Page;
@@ -924,6 +924,33 @@ sub geocode {
     return ($x, $y, $easting, $northing, $error);
 }
 
+sub geocoded_string_coordinates {
+    my ($js) = @_;
+    my ($x, $y, $easting, $northing, $error);
+    my ($accuracy) = $js =~ /"Accuracy" *: *(\d)/;
+    if ($accuracy < 4) {  
+        $error = _('Sorry, that location appears to be too general; please be more specific.');
+    } else {
+
+         $js =~ /"coordinates" *: *\[ *(.*?), *(.*?),/;
+         my $lon = $1; my $lat = $2;
+         try {
+              ($easting, $northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
+              my $xx = Page::os_to_tile($easting);
+              my $yy = Page::os_to_tile($northing);
+              $x = int($xx);
+              $y = int($yy);
+              $x -= 1 if ($xx - $x < 0.5);
+              $y -= 1 if ($yy - $y < 0.5);
+          } catch Error::Simple with {
+              $error = shift;
+              $error = _('That location does not appear to be in Britain; please try again.')
+                 if $error =~ /out of the area covered/;
+          }
+     }
+    return ($x, $y, $easting, $northing, $error);
+}
+
 # geocode_string STRING QUERY
 # Canonicalises, looks up on Google Maps API, and caches, a user-inputted location.
 # Returns array of (TILE_X, TILE_Y, EASTING, NORTHING, ERROR), where ERROR is
@@ -932,11 +959,11 @@ sub geocode {
 # of the site. 
 sub geocode_string {
     my ($s, $q) = @_;
-    $s = Cobrand::disambiguate_location(get_cobrand($q), $s, $q);
     $s = lc($s);
     $s =~ s/[^-&0-9a-z ']/ /g;
     $s =~ s/\s+/ /g;
     $s = uri_escape($s);
+    $s = Cobrand::disambiguate_location(get_cobrand($q), $s, $q);
     $s =~ s/%20/+/g;
     my $url = 'http://maps.google.com/maps/geo?q=' . $s;
     my $cache_dir = mySociety::Config::get('GEO_CACHE');
@@ -956,36 +983,24 @@ sub geocode_string {
         $error = _('Sorry, we could not find that location.');
     } elsif ($js =~ /}, *{/) { # Multiple
         my @js = split /}, *{/, $js;
+        my @valid_locations;
         foreach (@js) {
             next unless /"address" *: *"(.*?)"/s;
             my $address = $1;
-            push (@$error, $address) unless $address =~ /BT\d/;
+            next unless Cobrand::geocoded_string_check(get_cobrand($q), $address, $q);
+            next if $address =~ /BT\d/;
+            push (@valid_locations, $_); 
+            push (@$error, $address);
+        }
+        if (scalar @valid_locations == 1) {
+           return geocoded_string_coordinates($valid_locations[0]);
         }
         $error = _('Sorry, we could not find that location.') unless $error;
     } elsif ($js =~ /BT\d/) {
         # Northern Ireland, hopefully
         $error = _("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.");
     } else {
-        my ($accuracy) = $js =~ /"Accuracy" *: *(\d)/;
-        if ($accuracy < 4) {
-            $error = _('Sorry, that location appears to be too general; please be more specific.');
-        } else {
-            $js =~ /"coordinates" *: *\[ *(.*?), *(.*?),/;
-            my $lon = $1; my $lat = $2;
-            try {
-                ($easting, $northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
-                my $xx = Page::os_to_tile($easting);
-                my $yy = Page::os_to_tile($northing);
-                $x = int($xx);
-                $y = int($yy);
-                $x -= 1 if ($xx - $x < 0.5);
-                $y -= 1 if ($yy - $y < 0.5);
-            } catch Error::Simple with {
-                $error = shift;
-                $error = _('That location does not appear to be in Britain; please try again.')
-                    if $error =~ /out of the area covered/;
-            }
-        }
+        ($x, $y, $easting, $northing, $error) = geocoded_string_coordinates($js);
     }
     return ($x, $y, $easting, $northing, $error);
 }
