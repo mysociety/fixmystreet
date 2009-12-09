@@ -139,15 +139,15 @@
 
 	if (text) {
 		label.hidden = NO;
-		cell.text = nil;
+		cell.textLabel.text = nil;
 		current.text = text;
 		current.hidden = NO;
 		// cell.accessoryType = UITableViewCellAccessoryCheckmark;
 	} else {
 		label.hidden = YES;
 		current.hidden = YES;
-		cell.text = placeholder;
-		cell.textColor = [UIColor grayColor];
+		cell.textLabel.text = placeholder;
+		cell.textLabel.textColor = [UIColor grayColor];
 		// cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 	}
 		

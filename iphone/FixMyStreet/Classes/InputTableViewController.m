@@ -43,6 +43,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
+	settingsButton.frame = CGRectMake(255, 350, 72, 73);
+
 	backButton = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonSystemItemCancel target:nil action:nil];
 	self.navigationItem.backBarButtonItem = backButton;
 
@@ -133,7 +135,7 @@
 		} else {
 			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		}
-		cell.text = @"Take photo";
+		cell.textLabel.text = @"Take photo";
 		actionTakePhotoCell = cell;
 	} else if (indexPath.section == 2) {
 		if (delegate.latitude) {
@@ -147,7 +149,7 @@
 		} else {
 			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		}
-		cell.text = @"Fetch location";
+		cell.textLabel.text = @"Fetch location";
 		actionFetchLocationCell = cell;
 	} else if (indexPath.section == 1) {
 		if (delegate.subject && delegate.subject.length) {
@@ -163,15 +165,15 @@
 				subjectContent.font = [UIFont systemFontOfSize:17];
 				[cell.contentView addSubview:subjectContent];
 			}
-			cell.text = nil;
+			cell.textLabel.text = nil;
 			subjectContent.text = delegate.subject;
 			subjectContent.hidden = NO;
 			cell.accessoryType = UITableViewCellAccessoryCheckmark;
 		} else {
 			subjectContent.hidden = YES;
 			subjectLabel.hidden = YES;
-			cell.text = @"Short summary of problem";
-			cell.textColor = [UIColor grayColor];
+			cell.textLabel.text = @"Short summary of problem";
+			cell.textLabel.textColor = [UIColor grayColor];
 			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		}
 		actionSubjectCell = cell;
@@ -181,9 +183,9 @@
 		} else {
 			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		}
-		cell.text = @"Your details";
+		cell.textLabel.text = @"Your details";
 	} else {
-		cell.text = @"Eh?";
+		cell.textLabel.text = @"Eh?";
 	}
 	return cell;
 }
@@ -215,7 +217,7 @@
 	BOOL photosAvailable = [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary];
 	if (!cameraAvailable && !photosAvailable) {
 		UITableViewCell *cell = [actionsToDoView cellForRowAtIndexPath:0]; // XXX
-		cell.text = @"No photo mechanism available";
+		cell.textLabel.text = @"No photo mechanism available";
 		return;
 	}
 	UIImagePickerController* picker = [[UIImagePickerController alloc] init];

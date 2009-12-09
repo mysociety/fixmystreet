@@ -1,18 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<archive type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="7.02">
+<archive type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="7.03">
 	<data>
 		<int key="IBDocument.SystemTarget">528</int>
-		<string key="IBDocument.SystemVersion">9F33</string>
-		<string key="IBDocument.InterfaceBuilderVersion">672</string>
-		<string key="IBDocument.AppKitVersion">949.34</string>
-		<string key="IBDocument.HIToolboxVersion">352.00</string>
+		<string key="IBDocument.SystemVersion">9L31a</string>
+		<string key="IBDocument.InterfaceBuilderVersion">677</string>
+		<string key="IBDocument.AppKitVersion">949.54</string>
+		<string key="IBDocument.HIToolboxVersion">353.00</string>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="1"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
 			<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+		</object>
+		<object class="NSMutableDictionary" key="IBDocument.Metadata">
+			<bool key="EncodedWithXMLCoder">YES</bool>
+			<object class="NSArray" key="dict.sortedKeys">
+				<bool key="EncodedWithXMLCoder">YES</bool>
+			</object>
+			<object class="NSMutableArray" key="dict.values">
+				<bool key="EncodedWithXMLCoder">YES</bool>
+			</object>
 		</object>
 		<object class="NSMutableArray" key="IBDocument.RootObjects" id="1000">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -37,6 +45,7 @@
 								<int key="NSvFlags">292</int>
 								<string key="NSFrameSize">{320, 80}</string>
 								<reference key="NSSuperview" ref="201743607"/>
+								<reference key="NSWindow"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 								<int key="IBUIContentMode">4</int>
@@ -49,6 +58,7 @@
 						</object>
 						<string key="NSFrameSize">{341, 80}</string>
 						<reference key="NSSuperview" ref="191373211"/>
+						<reference key="NSWindow"/>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MQA</bytes>
@@ -63,6 +73,7 @@
 						<int key="NSvFlags">292</int>
 						<string key="NSFrame">{{20, 108}, {280, 143}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
+						<reference key="NSWindow"/>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">1</int>
 							<bytes key="NSRGB">MSAxIDEgMAA</bytes>
@@ -73,7 +84,8 @@
 						<string type="base64-UTF8" key="IBUIText">Rml4TXlTdHJlZXQgZm9yIGlQaG9uZSB3YXMgd3JpdHRlbiBmb3IgbXlTb2NpZXR5IGJ5IE1hdHRoZXcg
 U29tZXJ2aWxsZS4gbXlTb2NpZXR5IGlzIHJ1biBieSBhIHJlZ2lzdGVyZWQgY2hhcml0eSDigJMgaWYg
 eW91IGxpa2UgdGhpcyBhcHBsaWNhdGlvbiwgcGxlYXNlIGRvbmF0ZSB0byB1cyBzbyB0aGF0IHdlIGNh
-biBidWlsZCBtb3JlIGNvb2wgdGhpbmdzIGxpa2UgdGhpcyBpbiB0aGUgZnV0dXJlLg</string>
+biBidWlsZCBtb3JlIGNvb2wgYW5kIHVzZWZ1bCB0aGluZ3MgbGlrZSB0aGlzIGluIHRoZSBmdXR1cmUu
+A</string>
 						<object class="NSFont" key="IBUIFont">
 							<string key="NSName">Helvetica</string>
 							<double key="NSSize">1.700000e+01</double>
@@ -93,6 +105,7 @@ biBidWlsZCBtb3JlIGNvb2wgdGhpbmdzIGxpa2UgdGhpcyBpbiB0aGUgZnV0dXJlLg</string>
 						<int key="NSvFlags">292</int>
 						<string key="NSFrame">{{82, 296}, {156, 86}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
+						<reference key="NSWindow"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 						<int key="IBUIContentHorizontalAlignment">0</int>
@@ -115,10 +128,15 @@ biBidWlsZCBtb3JlIGNvb2wgdGhpbmdzIGxpa2UgdGhpcyBpbiB0aGUgZnV0dXJlLg</string>
 							<int key="NSColorSpace">1</int>
 							<bytes key="NSRGB">MC4xOTYwNzg0MyAwLjMwOTgwMzkzIDAuNTIxNTY4NjYAA</bytes>
 						</object>
+						<object class="NSColor" key="IBUINormalTitleShadowColor">
+							<int key="NSColorSpace">3</int>
+							<bytes key="NSWhite">MAA</bytes>
+						</object>
 					</object>
 				</object>
 				<string key="NSFrameSize">{320, 416}</string>
 				<reference key="NSSuperview"/>
+				<reference key="NSWindow"/>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">3</int>
 					<bytes key="NSWhite">MQA</bytes>
@@ -289,5 +307,6 @@ biBidWlsZCBtb3JlIGNvb2wgdGhpbmdzIGxpa2UgdGhpcyBpbiB0aGUgZnV0dXJlLg</string>
 		<int key="IBDocument.localizationMode">0</int>
 		<string key="IBDocument.LastKnownRelativeProjectPath">FixMyStreet.xcodeproj</string>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
+		<string key="IBCocoaTouchPluginVersion">3.0</string>
 	</data>
 </archive>

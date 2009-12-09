@@ -25,7 +25,7 @@
     [super viewDidLoad];
 	self.title = @"About";
 	self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
-	donateButton.font = [UIFont systemFontOfSize:32];
+	donateButton.titleLabel.font = [UIFont systemFontOfSize:32];
 }
 
 
