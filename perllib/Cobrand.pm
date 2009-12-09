@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.49 2009-12-08 17:43:13 louise Exp $
+# $Id: Cobrand.pm,v 1.50 2009-12-09 13:34:35 louise Exp $
 
 package Cobrand;
 use strict;
@@ -728,6 +728,24 @@ sub allow_update_reporting {
 
 }
 
+=item geocoded_string_check LOCATION QUERY
+
+Return a boolean indicating whether the string LOCATION passes the cobrands
+checks.
+
+=cut
+sub geocoded_string_check {
+    my ($cobrand, $location, $query) = @_;
+    my $handle;
+    if ($cobrand){
+        $handle = cobrand_handle($cobrand);
+    }
+    if ( !$cobrand || !$handle || !$handle->can('geocoded_string_check')){
+        return 1;
+    } else{
+        return $handle->geocoded_string_check($location, $query);
+    }
+}
 
 =item council_check COBRAND COUNCILS QUERY
 

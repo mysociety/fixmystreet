@@ -6,7 +6,7 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.t,v 1.11 2009-11-18 16:57:40 louise Exp $
+# $Id: Page.t,v 1.12 2009-12-09 13:34:36 louise Exp $
 #
 
 use strict;
@@ -49,6 +49,7 @@ sub test_geocode_string() {
     # expect a failure message for Northern Ireland
     ($x, $y, $easting, $northing, $error) = Page::geocode_string('Falls Road, Belfast', $q);
     ok($error eq "We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.", 'error message produced for NI location') or diag("Got $error");
+
 }
 
 sub test_header() {
