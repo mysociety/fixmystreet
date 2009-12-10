@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: import.cgi,v 1.10 2009-12-09 18:08:04 matthew Exp $
+# $Id: import.cgi,v 1.11 2009-12-10 16:22:49 matthew Exp $
 
 use strict;
 use Error qw(:try);
@@ -20,6 +20,8 @@ sub main {
 
     my @vars = qw(service subject detail name email phone easting northing lat lon id phone_id);
     my %input = map { $_ => $q->param($_) || '' } @vars;
+    $input{easting} ||= 0;
+    $input{northing} ||= 0;
     my @errors;
 
     unless ($ENV{REQUEST_METHOD} eq 'POST') {
