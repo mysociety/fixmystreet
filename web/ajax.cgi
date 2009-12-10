@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: ajax.cgi,v 1.17 2009-11-19 15:09:01 louise Exp $
+# $Id: ajax.cgi,v 1.18 2009-12-10 11:51:17 louise Exp $
 
 use strict;
 use Standard;
@@ -96,7 +96,7 @@ sub main {
 ({
 'pins': '$pins',
 'current': '$om_list',
-'current_near': '$am_list',
+'current_near': '$am_list'
 })
 EOF
 }
