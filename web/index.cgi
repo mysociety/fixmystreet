@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.330 2009-12-08 11:13:30 louise Exp $
+# $Id: index.cgi,v 1.331 2009-12-14 16:24:43 louise Exp $
 
 use strict;
 use Standard;
@@ -605,7 +605,7 @@ please specify the closest point on land.')) unless @$all_councils;
 <input type="hidden" name="y" value="$input_h{y}">
 <input type="hidden" name="skipped" value="1">
 $cobrand_form_elements
-<div>
+<div id="skipped-map">
 EOF
     } else {
         my $pins = Page::display_pin($q, $px, $py, 'purple');
