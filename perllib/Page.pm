@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.220 2009-12-09 13:33:56 louise Exp $
+# $Id: Page.pm,v 1.221 2009-12-15 10:16:17 louise Exp $
 #
 
 package Page;
@@ -850,9 +850,9 @@ sub display_problem_updates($$) {
     my $out = '';
     if (@$updates) {
         $out .= '<div id="updates">';
-        $out .= '<h2>' . _('Updates') . '</h2>';
+        $out .= '<h2 class="problem-update-list-header">' . _('Updates') . '</h2>';
         foreach my $row (@$updates) {
-            $out .= "<div><p><a name=\"update_$row->{id}\"></a><em>";
+            $out .= "<div><span class=\"problem-update\"><p><a name=\"update_$row->{id}\"></a><em>";
             if ($row->{name}) {
                 $out .= sprintf(_('Posted by %s at %s'), ent($row->{name}), prettify_epoch($q, $row->{created}));
             } else {
@@ -862,6 +862,17 @@ sub display_problem_updates($$) {
             $out .= ', ' . _('marked as fixed') if ($row->{mark_fixed});
             $out .= ', ' . _('reopened') if ($row->{mark_open});
             $out .= '</em></p>';
+
+            my $allow_update_reporting = Cobrand::allow_update_reporting($cobrand);
+            if ($allow_update_reporting) {
+                my $contact = '/contact?id=' . $id . ';update_id='. $row->{id};
+                my $contact_url =  Cobrand::url($cobrand, $contact, $q);
+                $out .= '<p>';
+                $out .= $q->a({rel => 'nofollow', class => 'unsuitable-problem', href => $contact_url}, _('Offensive? Unsuitable? Tell us'));
+                $out .= '</p>';
+            }
+            $out .= '</span>';
+            $out .= '<span class="update-text">';
             my $text = $row->{text};
             $text =~ s/\r//g;
             foreach (split /\n{2,}/, $text) {
@@ -872,14 +883,7 @@ sub display_problem_updates($$) {
             if ($display_photos && $row->{has_photo}) {
                 $out .= '<p><img alt="" height=100 src="/photo?tn=1;c=' . $row->{id} . '"></p>';
             }
-            my $allow_update_reporting = Cobrand::allow_update_reporting($cobrand);
-            if ($allow_update_reporting) {
-                my $contact = '/contact?id=' . $id . ';update_id='. $row->{id};
-                my $contact_url =  Cobrand::url($cobrand, $contact, $q);
-                $out .= '<p>';
-                $out .= $q->a({rel => 'nofollow', class => 'unsuitable-report', href => $contact_url}, _('Offensive? Unsuitable? Tell us'));
-                $out .= '</p>';
-            }
+            $out .= '</span>';
             $out .= '</div>';
         }
         $out .= '</div>';
@@ -925,9 +929,10 @@ sub geocode {
 }
 
 sub geocoded_string_coordinates {
-    my ($js) = @_;
+    my ($js, $q) = @_;
     my ($x, $y, $easting, $northing, $error);
     my ($accuracy) = $js =~ /"Accuracy" *: *(\d)/;
+    my $cobrand = get_cobrand($q);
     if ($accuracy < 4) {  
         $error = _('Sorry, that location appears to be too general; please be more specific.');
     } else {
@@ -993,14 +998,14 @@ sub geocode_string {
             push (@$error, $address);
         }
         if (scalar @valid_locations == 1) {
-           return geocoded_string_coordinates($valid_locations[0]);
+           return geocoded_string_coordinates($valid_locations[0], $q);
         }
         $error = _('Sorry, we could not find that location.') unless $error;
     } elsif ($js =~ /BT\d/) {
         # Northern Ireland, hopefully
         $error = _("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.");
     } else {
-        ($x, $y, $easting, $northing, $error) = geocoded_string_coordinates($js);
+        ($x, $y, $easting, $northing, $error) = geocoded_string_coordinates($js, $q);
     }
     return ($x, $y, $easting, $northing, $error);
 }
