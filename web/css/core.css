@@ -292,6 +292,13 @@ p#copyright {
     margin: 0 0 0.25em;
     border-bottom: dotted 1px #5e552b;
 }
+
+#updates div .problem-update,
+#updates div .update-text {
+   padding: 0;
+   margin: 0;
+   border-bottom: 0;
+}
 #updates p {
     margin: 0;
 }

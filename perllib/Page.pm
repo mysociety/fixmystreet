@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.223 2009-12-15 14:47:40 louise Exp $
+# $Id: Page.pm,v 1.224 2009-12-15 15:12:55 louise Exp $
 #
 
 package Page;
@@ -852,7 +852,7 @@ sub display_problem_updates($$) {
         $out .= '<div id="updates">';
         $out .= '<h2 class="problem-update-list-header">' . _('Updates') . '</h2>';
         foreach my $row (@$updates) {
-            $out .= "<div><span class=\"problem-update\"><p><a name=\"update_$row->{id}\"></a><em>";
+            $out .= "<div><div class=\"problem-update\"><p><a name=\"update_$row->{id}\"></a><em>";
             if ($row->{name}) {
                 $out .= sprintf(_('Posted by %s at %s'), ent($row->{name}), prettify_epoch($q, $row->{created}));
             } else {
@@ -871,8 +871,8 @@ sub display_problem_updates($$) {
                 $out .= $q->a({rel => 'nofollow', class => 'unsuitable-problem', href => $contact_url}, _('Offensive? Unsuitable? Tell us'));
                 $out .= '</p>';
             }
-            $out .= '</span>';
-            $out .= '<span class="update-text">';
+            $out .= '</div>';
+            $out .= '<div class="update-text">';
             my $text = $row->{text};
             $text =~ s/\r//g;
             foreach (split /\n{2,}/, $text) {
@@ -883,7 +883,7 @@ sub display_problem_updates($$) {
             if ($display_photos && $row->{has_photo}) {
                 $out .= '<p><img alt="" height=100 src="/photo?tn=1;c=' . $row->{id} . '"></p>';
             }
-            $out .= '</span>';
+            $out .= '</div>';
             $out .= '</div>';
         }
         $out .= '</div>';
