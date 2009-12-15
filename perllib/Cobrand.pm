@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.52 2009-12-15 14:55:52 louise Exp $
+# $Id: Cobrand.pm,v 1.53 2009-12-15 15:54:37 matthew Exp $
 
 package Cobrand;
 use strict;
@@ -59,7 +59,7 @@ sub site_restriction {
     my $site_restriction = '';
     my $site_id = 0;
     my $handle = cobrand_handle($cobrand);
-    return ($site_restriction, $site_id) unless $handle;
+    return ($site_restriction, $site_id) unless $handle && $handle->can('site_restriction');
     return $handle->site_restriction($cobrand_data);
 }
 
@@ -242,17 +242,15 @@ Set the language and domain of the site based on the cobrand and host
 
 =cut
 sub set_lang_and_domain($$;$) {
-  my ($cobrand, $lang, $unicode) = @_;
-  if ($cobrand){
-      my $handle = cobrand_handle($cobrand);
-      if ($handle){
-            $handle->set_lang_and_domain($lang, $unicode);
-      }
-  }else{
+    my ($cobrand, $lang, $unicode) = @_;
+    my $handle;
+    if ($cobrand && ($handle = cobrand_handle($cobrand)) && $handle->can('set_lang_and_domain')) {
+        $handle->set_lang_and_domain($lang, $unicode);
+    } else {
         mySociety::Locale::negotiate_language('en-gb,English,en_GB|nb,Norwegian,nb_NO', $lang); # XXX Testing
         mySociety::Locale::gettext_domain('FixMyStreet', $unicode);
         mySociety::Locale::change(); 
-  }
+    }
 }
 
 =item recent_photos COBRAND N [EASTING NORTHING DISTANCE]
