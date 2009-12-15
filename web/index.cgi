@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.331 2009-12-14 16:24:43 louise Exp $
+# $Id: index.cgi,v 1.332 2009-12-15 14:55:53 louise Exp $
 
 use strict;
 use Standard;
@@ -84,11 +84,6 @@ sub main {
     } elsif ($q->param('pc') || ($q->param('x') && $q->param('y'))) {
         ($out, %params) = display_location($q);
         $params{title} = _('Viewing a location');
-    } elsif ($q->param('cobrand_page') && ($q->{site} ne 'fixmystreet')) {
-        ($out, %params) = Cobrand::cobrand_page($q);
-        if (!$out) {
-            $out = front_page($q);
-        }
     } else {
         ($out, %params) = front_page($q);
     }

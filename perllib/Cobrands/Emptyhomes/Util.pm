@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Util.pm,v 1.6 2009-10-20 14:24:59 louise Exp $
+# $Id: Util.pm,v 1.7 2009-12-15 14:55:53 louise Exp $
 
 package Cobrands::Emptyhomes::Util;
 use Standard;
@@ -41,34 +41,6 @@ sub base_url {
        $base_url =~ s/http:\/\//http:\/\/emptyhomes\./g;
    }
    return $base_url;
-}
-
-=item
-
-Return the list of custom pages that can be produced by this module
-
-=cut
-
-sub pages{
-  return qw();
-}
-
-=item page Q
-
-Return HTML for the page specified by the cobrand_page parameter in 
-the query.
-
-=cut
-
-sub page{
-   my $self = shift;
-   my $q = shift;
-   my $page_requested = $q->param('cobrand_page');
-   if (grep ($_ eq $page_requested, $self->pages())){
-      return $self->$page_requested($q);
-   }else{      
-    throw Error::Simple("Unknown page");
-   }
 }
 
 =item set_lang_and_domain LANG UNICODE

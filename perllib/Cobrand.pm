@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.51 2009-12-15 14:47:40 louise Exp $
+# $Id: Cobrand.pm,v 1.52 2009-12-15 14:55:52 louise Exp $
 
 package Cobrand;
 use strict;
@@ -45,20 +45,6 @@ sub cobrand_handle {
     eval{ $handles{$cobrand} = $class->new };
     $handles{$cobrand} = 0 if $@;
     return $handles{$cobrand};
-}
-
-
-=item cobrand_page QUERY
-
-Return a string containing the HTML to be rendered for a custom Cobranded page
-
-=cut
-sub cobrand_page {
-    my $q = shift;
-    my $cobrand = $q->{site};
-    my $handle = cobrand_handle($cobrand);
-    return 0 unless $handle;
-    return $handle->page($q);	
 }
 
 =item site_restriction COBRAND COBRAND_DATA
