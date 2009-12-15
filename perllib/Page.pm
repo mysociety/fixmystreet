@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.222 2009-12-15 10:51:31 louise Exp $
+# $Id: Page.pm,v 1.223 2009-12-15 14:47:40 louise Exp $
 #
 
 package Page;
@@ -438,7 +438,7 @@ sub display_map {
 
     my $out = '';
     my $cobrand = Page::get_cobrand($q);
-    my $root_path_js = Cobrand::root_path_js($cobrand);
+    my $root_path_js = Cobrand::root_path_js($cobrand, $q);
     my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'mapForm', $q);
     my $img_type;
     my $form_action = Cobrand::url($cobrand, '', $q);

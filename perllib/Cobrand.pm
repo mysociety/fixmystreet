@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.50 2009-12-09 13:34:35 louise Exp $
+# $Id: Cobrand.pm,v 1.51 2009-12-15 14:47:40 louise Exp $
 
 package Cobrand;
 use strict;
@@ -595,14 +595,14 @@ sub header_params {
     } 
 }
 
-=item root_path_js COBRAND
+=item root_path_js COBRAND Q
  
 Return some js to set the root path from which AJAX queries should be made
-
-=cut
+based on the cobrand and current query Q
+=cut 
 
 sub root_path_js {
-    my ($cobrand) = @_;
+    my ($cobrand, $q) = @_;
     my $handle;
     if ($cobrand){
         $handle = cobrand_handle($cobrand);
@@ -610,7 +610,7 @@ sub root_path_js {
     if ( !$cobrand || !$handle || !$handle->can('root_path_js')){
         return 'var root_path = "";';
     } else{
-        return $handle->root_path_js();
+        return $handle->root_path_js($q);
     } 
 }
 
