@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: ajax.cgi,v 1.18 2009-12-10 11:51:17 louise Exp $
+# $Id: ajax.cgi,v 1.19 2009-12-15 17:53:52 louise Exp $
 
 use strict;
 use Standard;
@@ -50,7 +50,7 @@ sub main {
                                                   all_pins => undef, 
                                                   no_pins => undef), $q);  
         $list .= '<li><a href="' . $link . '">';
-        $list .= $_->{title};
+        $list .= ent($_->{title});
         $list .= '</a>';
         $list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
         $list .= '</li>';
@@ -69,7 +69,7 @@ sub main {
                                                   all_pins => undef, 
                                                   no_pins => undef), $q);  
         $list .= '<li><a href="' . $link . '">';
-        $list .= $_->{title} . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
+        $list .= ent($_->{title}) . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
         $list .= '</a>';
         $list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
         $list .= '</li>';

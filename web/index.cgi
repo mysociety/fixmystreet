@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.332 2009-12-15 14:55:53 louise Exp $
+# $Id: index.cgi,v 1.333 2009-12-15 17:53:52 louise Exp $
 
 use strict;
 use Standard;
@@ -848,7 +848,7 @@ sub display_location {
         my $report_url = NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, 'y' => undef);
         $report_url = Cobrand::url($cobrand, $report_url, $q);  
         $on_list .= '<li><a href="' . $report_url . '">';
-        $on_list .= $_->{title};
+        $on_list .= ent($_->{title});
         $on_list .= '</a>';
         $on_list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
         $on_list .= '</li>';
@@ -862,7 +862,7 @@ sub display_location {
         $around_list .= '<li><a href="' . $report_url . '">';
         my $dist = int($_->{distance}/100+0.5);
         $dist = $dist / 10;
-        $around_list .= $_->{title} . ' <small>(' . $dist . 'km)</small>';
+        $around_list .= ent($_->{title}) . ' <small>(' . $dist . 'km)</small>';
         $around_list .= '</a>';
         $around_list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
         $around_list .= '</li>';
