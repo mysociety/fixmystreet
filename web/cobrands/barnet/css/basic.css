@@ -61,3 +61,10 @@ blockquote {
     padding: 0; 
     margin: 0 10px;
     }
+
+/* FixMyStreet additions */
+
+select, input, textarea {
+    font-size: 99%;
+}
+

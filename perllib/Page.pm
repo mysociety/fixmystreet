@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.225 2009-12-15 15:53:41 matthew Exp $
+# $Id: Page.pm,v 1.226 2009-12-15 16:53:54 matthew Exp $
 #
 
 package Page;
@@ -316,11 +316,9 @@ sub footer {
     $js = ''; # Don't use fileupload JS at the moment
 
     if ($q->{site} ne 'fixmystreet') {
-        (my $file = __FILE__) =~ s{/[^/]*?$}{};
-        my $template = template($q, %params);
-        open FP, $file . template_root($q) . $template . '-footer';
-        my $html = join('', <FP>);
-        close FP;
+        my $template = template($q, %params) . '-footer';
+        my $template_root = template_root($q);
+        my $html = template_include($template, $q, $template_root, %params);
         my $lang = $mySociety::Locale::lang;
         if ($q->{site} eq 'emptyhomes' && $lang eq 'cy') {
             $html =~ s/25 Walter Road<br>Swansea/25 Heol Walter<br>Abertawe/;
@@ -414,7 +412,7 @@ sub display_map {
     $params{pre} ||= '';
     $params{post} ||= '';
     my $mid_point = 254;
-    if ($q->{site} eq 'scambs') { # Map is c. 380px wide
+    if ($q->{site} eq 'barnet') { # Map is c. 380px wide
         $mid_point = 189;
     }
     my $px = defined($params{px}) ? $mid_point - $params{px} : 0;
@@ -638,7 +636,7 @@ sub os_to_px_with_adjust {
     my $y_tile = $in_y || int($y);
     my $px = Page::os_to_px($easting, $x_tile);
     my $py = Page::os_to_px($northing, $y_tile, 1);
-    if ($q->{site} eq 'scambs') { # Map is 380px
+    if ($q->{site} eq 'barnet') { # Map is 380px
         if ($py > 380) {
             $y_tile--;
             $py = Page::os_to_px($northing, $y_tile, 1);

@@ -9,11 +9,11 @@
             <ul>
                 <li class="section"><a href="/">FixMyStreet</a>
                 <ul>
-                <li class="section"><a href="/">Report a problem</a></li>
-                <li class="section"><a href="/reports/Barnet">All reports</a></li>
-                <li class="section"><a href="/alert">Local alerts</a></li>
-                <li class="section"><a href="/faq">Help</a></li>
-                <li class="section"><a href="/contact">Contact</a>
+                <li class="section">{{ ($ENV{REQUEST_URI} eq '/') ? '<strong>Report a problem</strong>' : '<a href="/">Report a problem</a>' }}</li>
+                <li class="section">{{ ($ENV{REQUEST_URI} eq '/reports/Barnet') ? '<strong>All reports</strong>' : '<a href="/reports/Barnet">All reports</a>' }}</li>
+                <li class="section">{{ ($ENV{REQUEST_URI} eq '/alert') ? '<strong>Local alerts</strong>' : '<a href="/alert">Local alerts</a>' }}</li>
+                <li class="section">{{ ($ENV{REQUEST_URI} eq '/faq') ? '<strong>Help</strong>' : '<a href="/faq">Help</a>' }}</li>
+                <li class="section">{{ ($ENV{REQUEST_URI} eq '/contact') ? '<strong>Contact</strong>' : '<a href="/contact">Contact</a>' }}</li>
                 </ul>
             </ul>
         </div> <!-- end navigation -->
