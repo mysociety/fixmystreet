@@ -267,6 +267,7 @@ p#copyright {
 
 #sub_map_links {
     float: right;
+    clear: right;
     margin-top: 0;
 }
 
