@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.65 2009-12-15 18:16:46 louise Exp $
+# $Id: confirm.cgi,v 1.66 2009-12-15 18:26:11 louise Exp $
 
 use strict;
 use Standard;
@@ -42,8 +42,12 @@ Thank you for trying to confirm your update or problem. We seem to have an
 error ourselves though, so <a href="%s">please let us know what went on</a>
 and we'll look into it.
 EOF
-    }
 
+        my %vars = (error => $out);
+        my $cobrand_page = Page::template_include('error', $q, Page::template_root($q), %vars);
+        $out = $cobrand_page if $cobrand_page;
+    }
+    
     print Page::header($q, title=>_('Confirmation'));
     print $out;
     print Page::footer($q, extra => $extra);
