@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: confirm.cgi,v 1.63 2009-11-24 16:05:15 louise Exp $
+# $Id: confirm.cgi,v 1.64 2009-12-15 18:04:31 louise Exp $
 
 use strict;
 use Standard;
@@ -36,9 +36,10 @@ sub main {
         }
         dbh()->commit();
     } else {
-        $out = $q->p(_(<<EOF));
+        my $contact_url = Cobrand::url($cobrand, '/contact', $q);
+        $out = $q->p(sprintf(_(<<EOF), $contact_url);
 Thank you for trying to confirm your update or problem. We seem to have an
-error ourselves though, so <a href="/contact">please let us know what went on</a>
+error ourselves though, so <a href="%s">please let us know what went on</a>
 and we'll look into it.
 EOF
     }
