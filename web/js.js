@@ -319,13 +319,7 @@ function load_pins(x, y) {
             ajax_params.push(document.getElementById('extra_param').name + '=' + document.getElementById('extra_param').value);
         }            
 
-        var separator;
-        if (window.Cobrand){
-             separator = window.Cobrand.param_separator();
-        }else{
-             separator = ';';
-        }
-        var url = [ root_path , '/ajax?', ajax_params.join(separator)].join('');
+        var url = [ root_path , '/ajax?', ajax_params.join(';')].join('');
         YAHOO.util.Connect.asyncRequest('GET', url, {
            success: pins_loaded
         });
