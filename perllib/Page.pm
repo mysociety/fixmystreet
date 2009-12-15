@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.224 2009-12-15 15:12:55 louise Exp $
+# $Id: Page.pm,v 1.225 2009-12-15 15:53:41 matthew Exp $
 #
 
 package Page;
@@ -102,7 +102,7 @@ sub microsite {
     my $host = $ENV{HTTP_HOST} || '';
     $q->{site} = 'fixmystreet';
     my $allowed_cobrands = Cobrand::get_allowed_cobrands();
-        foreach my $cobrand (@{$allowed_cobrands}){
+    foreach my $cobrand (@{$allowed_cobrands}){
         $q->{site} = $cobrand if $host =~ /$cobrand/;
     }
 
@@ -301,7 +301,7 @@ sub header ($%) {
     my $html = template_header($template, $q, template_root($q), %params);
     my $cache_val = $default_params{cachecontrol};
     if (mySociety::Config::get('STAGING_SITE')) {
-        #$html .= '<p class="error">' . _("This is a developer site; things might break at any time.") . '</p>';
+        $html .= '<p class="error">' . _("This is a developer site; things might break at any time, and the database will be periodically deleted.") . '</p>';
     }
     return $html;
 }
