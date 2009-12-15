@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Util.pm,v 1.1 2009-12-15 16:07:21 matthew Exp $
+# $Id: Util.pm,v 1.2 2009-12-15 16:53:10 matthew Exp $
 
 package Cobrands::Barnet::Util;
 use Standard;
@@ -71,6 +71,11 @@ Please visit <a href='http://www.fixmystreet.com/'>the main FixMyStreet site</a>
     #     $error_msg .= "You can subscribe to alerts for this area at $main_app_link.";
     #}
     return (0, $error_msg);
+}
+
+# All reports page only has the one council.
+sub all_councils_report {
+    return 0;
 }
 
 1;
