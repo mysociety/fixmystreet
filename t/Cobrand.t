@@ -6,12 +6,12 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Cobrand.t,v 1.23 2009-11-19 09:56:12 louise Exp $
+# $Id: Cobrand.t,v 1.24 2009-12-15 17:32:21 louise Exp $
 #
 
 use strict;
 use warnings;
-use Test::More tests => 62;
+use Test::More tests => 59;
 use Test::Exception;
 
 use FindBin;
@@ -61,20 +61,6 @@ sub test_cobrand_handle {
     $cobrand = 'nosite';    
     $handle = Cobrand::cobrand_handle($cobrand);
     ok($handle == 0, 'should return zero if no module exists');
-}
-
-sub test_cobrand_page {
-    my $q  = new MockQuery('mysite');
-    # should get the result of the page function in the cobrand module if one exists
-    my ($html, $params) = Cobrand::cobrand_page($q);
-    like($html, qr/A cobrand produced page/, 'cobrand_page returns output from cobrand module'); 
-
-    # should return 0 if no cobrand module exists
-    $q  = new MockQuery('mynonexistingsite');
-    ($html, $params) = Cobrand::cobrand_page($q);
-    is($html, 0, 'cobrand_page returns 0 if there is no cobrand module'); 
-    return 1;
-
 }
 
 sub test_extra_problem_data {
@@ -270,7 +256,6 @@ sub test_council_check {
 }
 
 ok(test_cobrand_handle() == 1, 'Ran all tests for the cobrand_handle function');
-ok(test_cobrand_page() == 1, 'Ran all tests for the cobrand_page function');
 ok(test_site_restriction() == 1, 'Ran all tests for the site_restriction function');
 ok(test_base_url() == 1, 'Ran all tests for the base url');
 ok(test_disambiguate_location() == 1, 'Ran all tests for disambiguate location');
