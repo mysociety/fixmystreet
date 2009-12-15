@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.221 2009-12-15 10:16:17 louise Exp $
+# $Id: Page.pm,v 1.222 2009-12-15 10:51:31 louise Exp $
 #
 
 package Page;
@@ -977,7 +977,7 @@ sub geocode_string {
     if (-s $cache_file) {
         $js = File::Slurp::read_file($cache_file);
     } else {
-        $url .= ',+United+Kingdom' unless $url =~ /united\++kingdom$/ || $url =~ /uk$/i;
+        $url .= ',+UK' unless $url =~ /united\++kingdom$/ || $url =~ /uk$/i;
         $url .= '&sensor=false&gl=uk&key=' . mySociety::Config::get('GOOGLE_MAPS_API_KEY');
         $js = LWP::Simple::get($url);
         File::Slurp::write_file($cache_file, $js) if $js && $js !~ /"code":6[12]0/;
