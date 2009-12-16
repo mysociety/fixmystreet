@@ -6,13 +6,14 @@
 #  Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Cobrand.t,v 1.24 2009-12-15 17:32:21 louise Exp $
+# $Id: Cobrand.t,v 1.25 2009-12-16 12:43:12 matthew Exp $
 #
 
 use strict;
 use warnings;
-use Test::More tests => 59;
+use Test::More tests => 62;
 use Test::Exception;
+use Error qw(:try);
 
 use FindBin;
 use lib "$FindBin::Bin";
@@ -255,6 +256,22 @@ sub test_council_check {
     is($check_result, 1, 'council_check returns 1 if there is no council_check function defined by the cobrand');
 }
 
+sub test_recent {
+    my $cobrand = 'mysite';
+    my $check_result = Cobrand::recent($cobrand);
+    is_deeply($check_result, [ { id => 1, title => 'Title 1' }, { id => 2, title => 'Title 2' } ], 'recent returns output from cobrand module');
+
+    # Can't test default here as calls database. So test it throws a db not configured error :)
+    my $error;
+    $cobrand = 'nosite';
+    try {
+        $check_result = Cobrand::recent($cobrand);
+    } catch Error with {
+        $error = shift;
+    };
+    ok($error =~ /^configure not yet called in new_dbh/, 'Default throws a database error');
+}
+
 ok(test_cobrand_handle() == 1, 'Ran all tests for the cobrand_handle function');
 ok(test_site_restriction() == 1, 'Ran all tests for the site_restriction function');
 ok(test_base_url() == 1, 'Ran all tests for the base url');
@@ -274,3 +291,4 @@ ok(test_show_watermark() == 1, 'Ran all tests for show_watermark');
 ok(test_allow_photo_upload() == 1, 'Ran all tests for allow_photo_upload');
 ok(test_allow_photo_display() == 1, 'Ran all tests for allow_photo_display');
 ok(test_council_check() == 1, 'Ran all tests for council_check');
+ok(test_recent() == 1, 'Ran all tests for recent');
