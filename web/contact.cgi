@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.54 2009-12-15 15:07:01 matthew Exp $
+# $Id: contact.cgi,v 1.55 2009-12-16 11:31:37 louise Exp $
 
 use strict;
 use Standard;
@@ -88,6 +88,9 @@ sub contact_submit {
         if ($display_advert) {
             $out .= CrossSell::display_advert($q, $input{em}, $input{name}, emailunvalidated=>1 );
         }
+        my %vars = (message => $out);
+        my $template_out = Page::template_include('confirmed-alert', $q, Page::template_root($q), %vars);
+        return $template_out if $template_out;
         return $out;
     } else {
         return $q->p('Failed to send message.  Please try again, or <a href="mailto:' . $recipient . '">email us</a>.');
