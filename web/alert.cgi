@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.65 2009-12-02 16:33:56 louise Exp $
+# $Id: alert.cgi,v 1.66 2009-12-16 10:59:11 louise Exp $
 
 use strict;
 use Standard;
@@ -259,6 +259,7 @@ EOF
 </form>';
     my %vars = (header => $header, 
                 cobrand_form_elements => $cobrand_form_elements, 
+                error => $errors,
                 rss_label => $rss_label,
                 rss_feed => $rss_feed,
                 default_link => $default_link, 
@@ -269,7 +270,7 @@ EOF
                 rss_feed_20k => $rss_feed_20k, 
                 x => $x, 
                 y => $y, 
-                options => $options   );
+                options => $options );
     my $cobrand_page = Page::template_include('alert-options', $q, Page::template_root($q), %vars);
     $out = $cobrand_page if ($cobrand_page);
     return $out;
