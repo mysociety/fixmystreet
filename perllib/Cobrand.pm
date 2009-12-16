@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.55 2009-12-16 12:44:19 matthew Exp $
+# $Id: Cobrand.pm,v 1.56 2009-12-16 13:00:34 louise Exp $
 
 package Cobrand;
 use strict;
@@ -104,7 +104,7 @@ my %fns = (
     # COUNCILS pass any extra checks. CONTEXT is where we are on the site.
     'council_check' => { default => "[1, '']" },
     # Return an XSL to be used in rendering feeds
-    'feed_xml' => { default => "'/xsl.xsl'" },
+    'feed_xsl' => { default => "'/xsl.xsl'" },
     # Return a boolean indicating whether the cobrand displays a report of all councils
     'all_councils_report' => { default => '1' },
     # Return a boolean indicating whether people should be asked whether this

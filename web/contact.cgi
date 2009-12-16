@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.55 2009-12-16 11:31:37 louise Exp $
+# $Id: contact.cgi,v 1.56 2009-12-16 13:00:35 louise Exp $
 
 use strict;
 use Standard;
@@ -119,6 +119,24 @@ EOF
     return $out;
 }
 
+sub generic_contact_text {
+    my ($q) = @_;
+    my $intro;
+    if ($q->{site} eq 'emptyhomes') {
+        $intro .= $q->p(_('We&rsquo;d love to hear what you think about this
+website. Just fill in the form. Please don&rsquo;t contact us about individual empty
+homes; use the box accessed from <a href="/">the front page</a>.'));
+    } else {
+        my $mailto = mySociety::Config::get('CONTACT_EMAIL');
+        $mailto =~ s/\@/&#64;/;
+        $intro .= $q->p(_('Please do <strong>not</strong> report problems through this form; messages go to
+the team behind FixMyStreet, not a council. To report a problem,
+please <a href="/">go to the front page</a> and follow the instructions.'));
+        $intro .= $q->p(sprintf(_("We'd love to hear what you think about this site. Just fill in the form, or send an email to <a href='mailto:%s'>%s</a>:"), $mailto, $ma$
+    }
+    return $intro;
+}
+
 sub contact_page {
     my ($q, $errors, $field_errors) = @_;
     my @errors = @$errors;
@@ -163,33 +181,32 @@ sub contact_page {
             from comment, problem where comment.id=? 
             and comment.problem_id = problem.id
             and comment.problem_id=?', {}, $update_id ,$id);
-            $intro .= $q->p(_('You are reporting the following update for being abusive, containing personal information, or similar:'));
-            $item_title =  ent($u->{title});
-            $item_meta = $q->em( 'Update below added ', ($u->{name} eq '') ? 'anonymously' : "by " . ent($u->{name}),
-                                 ' at ' . Page::prettify_epoch($q, $u->{created}));
-            $item_body = ent($u->{text});
-            $hidden_vals .= '<input type="hidden" name="update_id" value="' . $update_id . '">';
+            if (! $u) {
+                $intro = generic_contact_text($q);
+            } else {
+                $intro .= $q->p(_('You are reporting the following update for being abusive, containing personal information, or similar:'));
+                $item_title =  ent($u->{title});
+                $item_meta = $q->em( 'Update below added ', ($u->{name} eq '') ? 'anonymously' : "by " . ent($u->{name}),
+                                     ' at ' . Page::prettify_epoch($q, $u->{created}));
+                $item_body = ent($u->{text});
+                $hidden_vals .= '<input type="hidden" name="update_id" value="' . $update_id . '">';
+            }
         } else {
-            $intro .= $q->p(_('You are reporting the following problem report for being abusive, containing personal information, or similar:'));
-            $item_title = ent($p->{title});
-            $item_meta = $q->em(
-               'Reported ',
-               ($p->{anonymous}) ? 'anonymously' : "by " . ent($p->{name}),
-               ' at ' . Page::prettify_epoch($q, $p->{created}));
-            $item_body = ent($p->{detail});
+            if (! $p) {
+                $intro = generic_contact_text($q);
+            } else {
+                $intro .= $q->p(_('You are reporting the following problem report for being abusive, containing personal information, or similar:'));
+                $item_title = ent($p->{title});
+                $item_meta = $q->em(
+                   'Reported ',
+                   ($p->{anonymous}) ? 'anonymously' : "by " . ent($p->{name}),
+                   ' at ' . Page::prettify_epoch($q, $p->{created}));
+                $item_body = ent($p->{detail});
+            }
         }
 	$hidden_vals .= '<input type="hidden" name="id" value="' . $id . '">';
-    } elsif ($q->{site} eq 'emptyhomes') {
-        $intro .= $q->p(_('We&rsquo;d love to hear what you think about this
-website. Just fill in the form. Please don&rsquo;t contact us about individual empty
-homes; use the box accessed from <a href="/">the front page</a>.')); 
     } else {
-        my $mailto = mySociety::Config::get('CONTACT_EMAIL');
-        $mailto =~ s/\@/&#64;/;
-        $intro .= $q->p(_('Please do <strong>not</strong> report problems through this form; messages go to
-the team behind FixMyStreet, not a council. To report a problem,
-please <a href="/">go to the front page</a> and follow the instructions.'));
-        $intro .= $q->p(sprintf(_("We'd love to hear what you think about this site. Just fill in the form, or send an email to <a href='mailto:%s'>%s</a>:"), $mailto, $mailto));
+        $intro = generic_contact_text($intro);
     }
     my $cobrand_form_elements = Cobrand::form_elements(Page::get_cobrand($q), 'contactForm', $q);
     my %vars = (
