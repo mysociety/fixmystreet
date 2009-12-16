@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.56 2009-12-16 13:00:35 louise Exp $
+# $Id: contact.cgi,v 1.57 2009-12-16 13:04:47 louise Exp $
 
 use strict;
 use Standard;
@@ -132,7 +132,7 @@ homes; use the box accessed from <a href="/">the front page</a>.'));
         $intro .= $q->p(_('Please do <strong>not</strong> report problems through this form; messages go to
 the team behind FixMyStreet, not a council. To report a problem,
 please <a href="/">go to the front page</a> and follow the instructions.'));
-        $intro .= $q->p(sprintf(_("We'd love to hear what you think about this site. Just fill in the form, or send an email to <a href='mailto:%s'>%s</a>:"), $mailto, $ma$
+        $intro .= $q->p(sprintf(_("We'd love to hear what you think about this site. Just fill in the form, or send an email to <a href='mailto:%s'>%s</a>:"), $mailto, $mailto));
     }
     return $intro;
 }
@@ -206,7 +206,7 @@ sub contact_page {
         }
 	$hidden_vals .= '<input type="hidden" name="id" value="' . $id . '">';
     } else {
-        $intro = generic_contact_text($intro);
+        $intro = generic_contact_text($q);
     }
     my $cobrand_form_elements = Cobrand::form_elements(Page::get_cobrand($q), 'contactForm', $q);
     my %vars = (
