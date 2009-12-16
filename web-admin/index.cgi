@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.79 2009-11-18 15:58:20 louise Exp $
+# $Id: index.cgi,v 1.80 2009-12-16 15:04:45 louise Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.79 2009-11-18 15:58:20 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.80 2009-12-16 15:04:45 louise Exp $';
 
 use strict;
 
@@ -476,7 +476,7 @@ sub admin_reports {
             } else {
                  $counciltext = $council;
             }
-            print $q->Tr({}, $q->td([ $url, $_->{title}, $_->{name}, $_->{email},
+            print $q->Tr({}, $q->td([ $url, ent($_->{title}), ent($_->{name}), ent($_->{email}),
             $counciltext,
             $category, $anonymous, $cobrand, $created, $state, $whensent,
             $q->a({ -href => NewURL($q, page=>'report_edit', id=>$_->{id}) }, 'Edit')
@@ -598,8 +598,8 @@ sub admin_show_updates {
         $url = $q->a({ -href => Cobrand::base_url_for_emails($_->{cobrand}, $_->{cobrand_data}) . '/report/' . $_->{problem_id} . '#update_' . $_->{id} },
             $url) if $_->{state} eq 'confirmed';
         my $cobrand = $_->{cobrand} . '<br>' . $_->{cobrand_data};
-        print $q->Tr({}, $q->td([ $url, $_->{state}, $_->{name} || '',
-        $_->{email}, $_->{created}, $cobrand, $_->{text},
+        print $q->Tr({}, $q->td([ $url, $_->{state}, ent($_->{name}) || '',
+        ent($_->{email}), $_->{created}, $cobrand, ent($_->{text}),
         $q->a({ -href => NewURL($q, page=>'update_edit', id=>$_->{id}) }, 'Edit')
         ]));
     }
@@ -617,6 +617,7 @@ sub admin_edit_update {
     print $q->h1($title);
 
     my %row = %{$row->[0]};
+    my %row_h = map { $_ => $row{$_} ? ent($row{$_}) : '' } keys %row;
 
     if ($q->param('submit')) {
         my $query = 'update comment set state=?, name=?, email=?, text=?';
@@ -629,7 +630,7 @@ sub admin_edit_update {
         map { $row{$_} = $q->param($_) } qw(state name email text);
         print '<p><em>Updated!</em></p>';
     }
-    my $name = $row{name};
+    my $name = $row_h{name};
     $name = '' unless $name;
     my $photo = '';
     $photo = '<li><img align="top" src="' . Cobrand::base_url_for_emails($row{cobrand}, $row{cobrand_data})  . '/photo?c=' . $row{id} . '">
@@ -647,10 +648,10 @@ sub admin_edit_update {
     print <<EOF;
 <ul>
 <li><a href="$url">View update on site</a>
-<li><label for="text">Text:</label><br><textarea name="text" id="text" cols=60 rows=10>$row{text}</textarea>
+<li><label for="text">Text:</label><br><textarea name="text" id="text" cols=60 rows=10>$row_h{text}</textarea>
 <li>$state
 <li>Name: <input type="text" name="name" id="name" value="$name"> (blank to go anonymous)
-<li>Email: <input type="text" id="email" name="email" value="$row{email}">
+<li>Email: <input type="text" id="email" name="email" value="$row_h{email}">
 <li>Cobrand: $row{cobrand}
 <li>Cobrand data: $row{cobrand_data} 
 <li>Created: $row{created}
@@ -712,25 +713,25 @@ sub admin_timeline {
         foreach (@{$time{$_}}) {
             my $type = $_->{type};
             if ($type eq 'problemCreated') {
-                print "Problem $_->{id} created; by $_->{name} &lt;$_->{email}&gt;, '$_->{title}'";
+                print "Problem $_->{id} created; by " . ent($_->{name}) . " &lt;" . ent($_->{email}) . "&gt;, '" . ent($_->{title}) . "'";
             } elsif ($type eq 'problemConfirmed') {
                 my $url = Cobrand::base_url_for_emails($_->{cobrand}, $_->{cobrand_data})  . "/report/$_->{id}";
-                print "Problem <a href='$url'>$_->{id}</a> confirmed; by $_->{name} &lt;$_->{email}&gt;, '$_->{title}'";
+                print "Problem <a href='$url'>$_->{id}</a> confirmed; by " . ent($_->{name}) ." &lt;" . ent($_->{email}) . "&gt;, '" . ent($_->{title}) ."'";
             } elsif ($type eq 'problemSent') {
                 my $url = Cobrand::base_url_for_emails($_->{cobrand}, $_->{cobrand_data}) . "/report/$_->{id}";
-                print "Problem <a href='$url'>$_->{id}</a> sent to council $_->{council}; by $_->{name} &lt;$_->{email}&gt;, '$_->{title}'";
+                print "Problem <a href='$url'>$_->{id}</a> sent to council $_->{council}; by " . ent($_->{name}) . " &lt;" . ent($_->{email}) . "&gt;, '" . ent($_->{title}) . "'";
             } elsif ($type eq 'quesSent') {
                 print "Questionnaire $_->{id} sent for problem $_->{problem_id}";
             } elsif ($type eq 'quesAnswered') {
                 print "Questionnaire $_->{id} answered for problem $_->{problem_id}, $_->{old_state} to $_->{new_state}";
             } elsif ($type eq 'update') {
                 my $url = Cobrand::base_url_for_emails($_->{cobrand}, $_->{cobrand_data}) . "/report/$_->{problem_id}#$_->{id}";
-                my $name = $_->{name} || 'anonymous';
-                print "Update <a href='$url'>$_->{id}</a> created for problem $_->{problem_id}; by $name &lt;$_->{email}&gt;";
+                my $name = ent($_->{name}) || 'anonymous';
+                print "Update <a href='$url'>$_->{id}</a> created for problem $_->{problem_id}; by $name &lt;" . ent($_->{email}) . "&gt;";
             } elsif ($type eq 'alertSub') {
                 my $param = $_->{parameter} || '';
                 my $param2 = $_->{parameter2} || '';
-                print "Alert $_->{id} created for $_->{email}, type $_->{alert_type}, parameters $param / $param2";
+                print "Alert $_->{id} created for " . ent($_->{email}) . ", type $_->{alert_type}, parameters $param / $param2";
             } elsif ($type eq 'alertDel') {
                 my $sub = strftime('%H:%M:%S %e %B %Y', localtime($_->{whensubscribed}));
                 print "Alert $_->{id} disabled (created $sub)";
