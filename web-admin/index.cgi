@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.80 2009-12-16 15:04:45 louise Exp $
+# $Id: index.cgi,v 1.81 2009-12-16 17:05:37 louise Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.80 2009-12-16 15:04:45 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.81 2009-12-16 17:05:37 louise Exp $';
 
 use strict;
 
@@ -19,6 +19,7 @@ use FindBin;
 use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../../perllib";
 use POSIX qw(strftime);
+use Digest::MD5 qw(md5_hex);
 
 use Page;
 use mySociety::Config;
@@ -36,6 +37,19 @@ BEGIN {
         Host => mySociety::Config::get('BCI_DB_HOST', undef),
         Port => mySociety::Config::get('BCI_DB_PORT', undef)
     );
+}
+
+
+=item get_token Q
+
+Generate a token based on user and secret
+
+=cut
+sub get_token {
+    my ($q) = @_;
+    my $secret = scalar(dbh()->selectrow_array('select secret from secret'));
+    my $token = md5_hex(($q->remote_user() . $secret));
+    return $token;
 }
 	
 =item allowed_pages Q
@@ -225,6 +239,7 @@ sub admin_council_contacts ($$) {
     my $updated = '';
     my $posted = $q->param('posted') || '';
     if ($posted eq 'new') {
+        return not_found($q) if $q->param('token') ne get_token($q);
         my $email = trim($q->param('email'));
         my $category = trim($q->param('category'));
         $category = 'Empty property' if $q->{site} eq 'emptyhomes';
@@ -258,6 +273,7 @@ sub admin_council_contacts ($$) {
         }
         dbh()->commit();
     } elsif ($posted eq 'update') {
+        return not_found($q) if $q->param('token') ne get_token($q);
         my @cats = $q->param('confirmed');
         foreach my $cat (@cats) {
             dbh()->do("update contacts set
@@ -326,6 +342,7 @@ sub admin_council_contacts ($$) {
     print $q->p(
         $q->hidden('area_id', $area_id),
         $q->hidden('posted', 'update'),
+        $q->hidden('token', get_token($q)),
         $q->hidden('page', 'councilcontacts'),
         $q->submit('Update statuses')
     );
@@ -352,6 +369,7 @@ sub admin_council_contacts ($$) {
     print $q->p(
         $q->hidden('area_id', $area_id),
         $q->hidden('posted', 'new'),
+        $q->hidden('token', get_token($q)),
         $q->hidden('page', 'councilcontacts'),
         $q->submit('Create category')
     );
@@ -497,18 +515,17 @@ sub admin_edit_report {
     my $row = Problems::admin_fetch_problem($id);
     my $cobrand = Page::get_cobrand($q);
     return not_found($q) if ! $row->[0];
-    my $title = "Editing problem $id";
-    print html_head($q, $title);
-    print $q->h1($title);
     my %row = %{$row->[0]};
     
     my %row_h = map { $_ => $row{$_} ? ent($row{$_}) : '' } keys %row;
-
+    my $status_message;
     if ($q->param('resend')) {
+        return not_found($q) if $q->param('token') ne get_token($q);
         dbh()->do('update problem set whensent=null where id=?', {}, $id);
         dbh()->commit();
-        print '<p><em>That problem will now be resent.</em></p>';
+        $status_message = '<p><em>That problem will now be resent.</em></p>';
     } elsif ($q->param('submit')) {
+        return not_found($q) if $q->param('token') ne get_token($q);
         my $new_state = $q->param('state');
         my $query = 'update problem set anonymous=?, state=?, name=?, email=?, title=?, detail=?';
         if ($q->param('remove_photo')) {
@@ -525,8 +542,13 @@ sub admin_edit_report {
             $q->param('name'), $q->param('email'), $q->param('title'), $q->param('detail'), $id);
         dbh()->commit();
         map { $row{$_} = $q->param($_) } qw(anonymous state name email title detail);
-        print '<p><em>Updated!</em></p>';
+        $status_message = '<p><em>Updated!</em></p>';
     }
+
+    my $title = "Editing problem $id";
+    print html_head($q, $title);
+    print $q->h1($title);
+    print $status_message;
 
     my $council = $row{council} || '<em>None</em>';
     (my $areas = $row{areas}) =~ s/^,(.*),$/$1/;
@@ -553,6 +575,7 @@ sub admin_edit_report {
     print $q->start_form(-method => 'POST', -action => './');
     print $q->hidden('page');
     print $q->hidden('id');
+    print $q->hidden('token', get_token($q));
     print $q->hidden('submit', 1);
     print <<EOF;
 <ul>
@@ -610,16 +633,13 @@ sub admin_edit_update {
     my ($q, $id) = @_;
     my $row = Problems::admin_fetch_update($id);
     return not_found($q) if ! $row->[0];
-    my $title = "Editing update $id";
-
     my $cobrand = Page::get_cobrand($q);
-    print html_head($q, $title);
-    print $q->h1($title);
 
     my %row = %{$row->[0]};
     my %row_h = map { $_ => $row{$_} ? ent($row{$_}) : '' } keys %row;
-
+    my $status_message;
     if ($q->param('submit')) {
+        return not_found($q) if $q->param('token') ne get_token($q);
         my $query = 'update comment set state=?, name=?, email=?, text=?';
         if ($q->param('remove_photo')) {
             $query .= ', photo=null';
@@ -628,8 +648,12 @@ sub admin_edit_update {
         dbh()->do($query, {}, $q->param('state'), $q->param('name'), $q->param('email'), $q->param('text'), $id);
         dbh()->commit();
         map { $row{$_} = $q->param($_) } qw(state name email text);
-        print '<p><em>Updated!</em></p>';
+        $status_message = '<p><em>Updated!</em></p>';
     }
+    my $title = "Editing update $id";
+    print html_head($q, $title);
+    print $q->h1($title);
+    print $status_message;
     my $name = $row_h{name};
     $name = '' unless $name;
     my $photo = '';
@@ -644,6 +668,7 @@ sub admin_edit_update {
     print $q->start_form(-method => 'POST', -action => './');
     print $q->hidden('page');
     print $q->hidden('id');
+    print $q->hidden('token', get_token($q));
     print $q->hidden('submit', 1);
     print <<EOF;
 <ul>
