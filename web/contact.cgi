@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: contact.cgi,v 1.57 2009-12-16 13:04:47 louise Exp $
+# $Id: contact.cgi,v 1.58 2009-12-17 14:57:34 louise Exp $
 
 use strict;
 use Standard;
@@ -83,12 +83,16 @@ sub contact_submit {
     });
     my $result = mySociety::EmailUtil::send_email($email, $input{em}, $recipient);
     if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
-        my $out = $q->p(_("Thanks for your feedback.  We'll get back to you as soon as we can!"));
+        my $message = _("Thanks for your feedback.  We'll get back to you as soon as we can!");
+        my $out = $q->p($message);
         my $display_advert = Cobrand::allow_crosssell_adverts($cobrand);
+        my $advert = '';
         if ($display_advert) {
-            $out .= CrossSell::display_advert($q, $input{em}, $input{name}, emailunvalidated=>1 );
+            $advert = CrossSell::display_advert($q, $input{em}, $input{name}, emailunvalidated=>1 );
+            $out .= $advert;
         }
-        my %vars = (message => $out);
+        my %vars = (message => $message, 
+                    advert  => $advert);
         my $template_out = Page::template_include('confirmed-alert', $q, Page::template_root($q), %vars);
         return $template_out if $template_out;
         return $out;
