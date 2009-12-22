@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Util.pm,v 1.7 2009-12-15 14:55:53 louise Exp $
+# $Id: Util.pm,v 1.8 2009-12-22 11:17:26 matthew Exp $
 
 package Cobrands::Emptyhomes::Util;
 use Standard;
@@ -18,15 +18,6 @@ use mySociety::Web qw(ent);
 sub new{
     my $class = shift;
     return bless {}, $class;
-}
-
-=item site_restriction Q
-
-Return a site restriction clause and a site key.
-
-=cut
-sub site_restriction{
-    return ('', 0);
 }
 
 =item

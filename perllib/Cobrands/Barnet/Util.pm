@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Util.pm,v 1.3 2009-12-22 11:02:47 matthew Exp $
+# $Id: Util.pm,v 1.4 2009-12-22 11:17:26 matthew Exp $
 
 package Cobrands::Barnet::Util;
 use Standard;
@@ -18,6 +18,15 @@ use mySociety::Web qw(ent);
 sub new {
     my $class = shift;
     return bless {}, $class;
+}
+
+=item site_restriction Q
+
+Return a site restriction clause and a site key.
+
+=cut
+sub site_restriction{
+    return ('and council=2489', 'barnet');
 }
 
 =item
