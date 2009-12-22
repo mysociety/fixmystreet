@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Util.pm,v 1.7 2009-12-22 11:54:51 matthew Exp $
+# $Id: Util.pm,v 1.8 2009-12-22 12:50:44 matthew Exp $
 
 package Cobrands::Barnet::Util;
 use Standard;
@@ -75,14 +75,10 @@ sub council_check {
         return 1;
     }
     my $url = 'http://www.fixmystreet.com/';
+    $url .= 'alert' if $context eq 'alert';
     $url .= '?pc=' . URI::Escape::uri_escape_utf8($q->param('pc')) if $q->param('pc');
     my $error_msg = "That location is not covered by Barnet.
 Please visit <a href='$url'>the main FixMyStreet site</a>.";
-    #if ($context eq 'submit_problem' or $context eq 'display_location') {
-    #     $error_msg .= "You can report a problem at this location at $main_app_link.";
-    #} else {
-    #     $error_msg .= "You can subscribe to alerts for this area at $main_app_link.";
-    #}
     return (0, $error_msg);
 }
 
