@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Util.pm,v 1.2 2009-12-15 16:53:10 matthew Exp $
+# $Id: Util.pm,v 1.3 2009-12-22 11:02:47 matthew Exp $
 
 package Cobrands::Barnet::Util;
 use Standard;
@@ -29,7 +29,8 @@ Return the base url for this cobranded site
 sub base_url {
    my $base_url = mySociety::Config::get('BASE_URL');
    if ($base_url !~ /barnet/) {
-       $base_url =~ s/http:\/\//http:\/\/barnet\./g;
+       $base_url =~ s/http:\/\/(?!www\.)/http:\/\/barnet\./g;
+       $base_url =~ s/http:\/\/www\./http:\/\/barnet\./g;
    }
    return $base_url;
 }
