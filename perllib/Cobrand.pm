@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.56 2009-12-16 13:00:34 louise Exp $
+# $Id: Cobrand.pm,v 1.57 2009-12-22 14:22:09 matthew Exp $
 
 package Cobrand;
 use strict;
@@ -219,11 +219,9 @@ Return the virtual host that sends email for this cobrand
 
 sub email_host {
     my ($cobrand) = @_;
-    my $email_vhost;
-    if ($cobrand eq '') {
-        $email_vhost = mySociety::Config::get('EMAIL_VHOST');
-    } else { 
-        $email_vhost = mySociety::Config::get('EMAIL_VHOST_'. uc($cobrand));
+    my $email_vhost = mySociety::Config::get('EMAIL_VHOST');
+    if ($cobrand) {
+        $email_vhost = mySociety::Config::get('EMAIL_VHOST_'. uc($cobrand), $email_vhost);
     }
     if ($email_vhost && 'http://' . $email_vhost eq mySociety::Config::get('BASE_URL')) {
         return 1;
