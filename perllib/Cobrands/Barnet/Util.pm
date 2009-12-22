@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Util.pm,v 1.8 2009-12-22 12:50:44 matthew Exp $
+# $Id: Util.pm,v 1.9 2009-12-22 13:04:05 matthew Exp $
 
 package Cobrands::Barnet::Util;
 use Standard;
@@ -99,6 +99,12 @@ sub disambiguate_location {
     $s = "ll=51.612832,-0.218169&spn=0.0563,0.09&$s";
     return $s;
 } 
+
+sub recent_photos {
+    my ($self, $num, $e, $n, $dist) = @_;
+    $num = 2 if $num == 3;
+    return Problems::recent_photos($num, $e, $n, $dist);
+}
 
 1;
 
