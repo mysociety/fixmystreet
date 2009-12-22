@@ -70,8 +70,10 @@
 
                 <form action="http://www.barnet.gov.uk/search">
                     <div class="search-input">
+                        <input type="hidden" name="col" value="lbb">
+                        <input type="hidden" name="type" value="sitesearch">
                         <label for="input-0" class="rm">Search:</label>
-                        <input type="text" value="Please enter your search" class="search">
+                        <input type="text" value="Please enter your search" name="search" class="search">
                     </div>
                     <div class="search-button">
                         <input type="submit" value="Search" class="submit" id="input-0">

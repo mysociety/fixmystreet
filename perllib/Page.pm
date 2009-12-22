@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.226 2009-12-15 16:53:54 matthew Exp $
+# $Id: Page.pm,v 1.227 2009-12-22 11:44:45 matthew Exp $
 #
 
 package Page;
@@ -966,9 +966,9 @@ sub geocode_string {
     $s =~ s/[^-&0-9a-z ']/ /g;
     $s =~ s/\s+/ /g;
     $s = uri_escape($s);
-    $s = Cobrand::disambiguate_location(get_cobrand($q), $s, $q);
+    $s = Cobrand::disambiguate_location(get_cobrand($q), "q=$s", $q);
     $s =~ s/%20/+/g;
-    my $url = 'http://maps.google.com/maps/geo?q=' . $s;
+    my $url = 'http://maps.google.com/maps/geo?' . $s;
     my $cache_dir = mySociety::Config::get('GEO_CACHE');
     my $cache_file = $cache_dir . md5_hex($url);
     my ($js, $error, $x, $y, $easting, $northing);

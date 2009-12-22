@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Util.pm,v 1.5 2009-12-22 11:21:04 matthew Exp $
+# $Id: Util.pm,v 1.6 2009-12-22 11:44:46 matthew Exp $
 
 package Cobrands::Barnet::Util;
 use Standard;
@@ -87,6 +87,19 @@ Please visit <a href='http://www.fixmystreet.com/'>the main FixMyStreet site</a>
 sub all_councils_report {
     return 0;
 }
+
+=item disambiguate_location S Q
+
+Given a string representing a location (street and area expected),
+bias the viewport to around Barnet.
+
+=cut
+ 
+sub disambiguate_location {
+    my ($self, $s, $q) = @_;
+    $s = "ll=51.612832,-0.218169&spn=0.0563,0.09&$s";
+    return $s;
+} 
 
 1;
 
