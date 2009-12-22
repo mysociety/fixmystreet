@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.81 2009-12-16 17:05:37 louise Exp $
+# $Id: index.cgi,v 1.82 2009-12-22 17:01:17 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.81 2009-12-16 17:05:37 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.82 2009-12-22 17:01:17 matthew Exp $';
 
 use strict;
 
@@ -407,6 +407,7 @@ sub admin_council_edit ($$$) {
     $q->param('page', 'councilcontacts');
     $q->param('posted', 'new');
     print $q->strong("Category: ") . $bci_data->{category};
+    print $q->hidden('token', get_token($q)),
     print $q->hidden("category");
     print $q->strong(" Email: ");
     print $q->textfield(-name => "email", -size => 30) . " ";
