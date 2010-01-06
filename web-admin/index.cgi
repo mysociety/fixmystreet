@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.82 2009-12-22 17:01:17 matthew Exp $
+# $Id: index.cgi,v 1.83 2010-01-06 10:56:51 louise Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.82 2009-12-22 17:01:17 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.83 2010-01-06 10:56:51 louise Exp $';
 
 use strict;
 
@@ -622,7 +622,7 @@ sub admin_show_updates {
         $url = $q->a({ -href => Cobrand::base_url_for_emails($_->{cobrand}, $_->{cobrand_data}) . '/report/' . $_->{problem_id} . '#update_' . $_->{id} },
             $url) if $_->{state} eq 'confirmed';
         my $cobrand = $_->{cobrand} . '<br>' . $_->{cobrand_data};
-        print $q->Tr({}, $q->td([ $url, $_->{state}, ent($_->{name}) || '',
+        print $q->Tr({}, $q->td([ $url, $_->{state}, ent($_->{name} || ''),
         ent($_->{email}), $_->{created}, $cobrand, ent($_->{text}),
         $q->a({ -href => NewURL($q, page=>'update_edit', id=>$_->{id}) }, 'Edit')
         ]));
