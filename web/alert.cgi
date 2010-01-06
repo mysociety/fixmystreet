@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: alert.cgi,v 1.66 2009-12-16 10:59:11 louise Exp $
+# $Id: alert.cgi,v 1.67 2010-01-06 10:08:22 louise Exp $
 
 use strict;
 use Standard;
@@ -188,6 +188,8 @@ might not match the problems sent to that council. For example, a graffiti repor
 will be sent to the district council, so will appear in both of the district
 council&rsquo;s alerts, but will only appear in the "Within the boundary" alert
 for the county council.'))) . '</div><div id="rss_buttons">';
+        } else {
+            $options_end = '';
         }
     } else {
         # Hopefully impossible in the UK!
