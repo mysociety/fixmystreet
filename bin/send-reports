@@ -6,7 +6,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: send-reports,v 1.78 2010-01-05 15:21:10 louise Exp $
+# $Id: send-reports,v 1.79 2010-01-06 16:50:26 louise Exp $
 
 use strict;
 require 5.8.0;
@@ -190,7 +190,12 @@ If you know of an appropriate contact address, please do get in touch. ]\n\n";
         die 'Report not going anywhere for ID ' . $row->{id} . '!';
     }
 
-    if (mySociety::Config::get('STAGING_SITE')) {
+    my $testing_email = mySociety::Config::get('TESTING_EMAIL');
+    if ($row->{email} eq $testing_email) {
+        @recips = ( $testing_email );
+        $send_web = 0;
+        $send_email = 1;
+    } elsif (mySociety::Config::get('STAGING_SITE')) {
         @recips = ( mySociety::Config::get('CONTACT_EMAIL') );
     } elsif ($site eq 'emptyhomes') {
         my $council = $row->{council};
