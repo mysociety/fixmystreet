@@ -4,7 +4,7 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
 #
-# $Id: crontab.ugly,v 1.21 2010-01-06 09:53:25 louise Exp $
+# $Id: crontab.ugly,v 1.22 2010-01-06 12:29:28 louise Exp $
 
 PATH=/usr/local/bin:/usr/bin:/bin
 !!(* if ($vhost eq "matthew.fixmystreet.com") { *)!!
@@ -20,7 +20,7 @@ MAILTO=team@fixmystreet.com
 2 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-alerts.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-alerts || echo "stalled?"
 0,30 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-questionnaires.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-questionnaires-eha || echo "stalled?"
 
-!!(* } elsif ($hostname eq 'tea' && !staging) { *)!!
+!!(* } elsif ($hostname eq 'tea' && !$staging) { *)!!
 2,7,12,17,22,27,32,37,42,47,52,57 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-reports || echo "stalled?"
 3 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-alerts.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-alerts || echo "stalled?"
 5,35 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-questionnaires.lock /data/vhost/!!(*= $vhost *)!!/mysociety/bci/bin/send-questionnaires || echo "stalled?"
