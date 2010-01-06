@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.84 2010-01-06 12:33:26 louise Exp $
+# $Id: index.cgi,v 1.85 2010-01-06 13:17:06 louise Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.84 2010-01-06 12:33:26 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.85 2010-01-06 13:17:06 louise Exp $';
 
 use strict;
 
@@ -795,7 +795,7 @@ sub admin_timeline {
             } elsif ($type eq 'update') {
                 $cobrand_data = get_cobrand_data_from_hash($cobrand, $_);
                 my $url = Cobrand::base_url_for_emails($cobrand, $cobrand_data) . "/report/$_->{problem_id}#$_->{id}";
-                my $name = ent($_->{name}) || 'anonymous';
+                my $name = ent($_->{name} || 'anonymous');
                 print "Update <a href='$url'>$_->{id}</a> created for problem $_->{problem_id}; by $name &lt;" . ent($_->{email}) . "&gt;";
             } elsif ($type eq 'alertSub') {
                 my $param = $_->{parameter} || '';
