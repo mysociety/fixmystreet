@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Problems.pm,v 1.31 2009-11-19 16:41:57 louise Exp $
+# $Id: Problems.pm,v 1.32 2010-01-06 12:33:25 louise Exp $
 #
 
 package Problems;
@@ -348,13 +348,14 @@ sub update_search {
     my ($search) = @_;
     my $search_n = 0;
     $search_n = int($search) if $search =~ /^\d+$/;
-    my $updates = select_all("select comment.* from comment, problem where problem.id = comment.problem_id
+    my $updates = select_all("select comment.*, problem.council from comment, problem where problem.id = comment.problem_id
             and (comment.id=? or
             problem_id=? or comment.email ilike '%'||?||'%' or comment.name ilike '%'||?||'%' or
             comment.text ilike '%'||?||'%' or comment.cobrand_data ilike '%'||?||'%')
             $site_restriction
             order by created", $search_n, $search_n, $search, $search,
             $search, $search);
+    return $updates;
 }
 
 =item update_counts
@@ -456,7 +457,7 @@ Uses any site_restriction defined by a cobrand.
 =cut
 sub admin_fetch_update {
     my ($id) = @_;
-    my $update = dbh()->selectall_arrayref("select comment.* from comment, problem 
+    my $update = dbh()->selectall_arrayref("select comment.*, problem.council from comment, problem 
                                             where comment.id=? 
                                             and problem.id = comment.problem_id 
                                             $site_restriction", { Slice=>{} }, $id);
@@ -491,7 +492,8 @@ Uses any site_restriction defined by a cobrand.
 
 sub timeline_updates {
     my $updates = select_all("select comment.*,
-                              extract(epoch from comment.created) as created
+                              extract(epoch from comment.created) as created, 
+                              problem.council
                               from comment, problem 
                               where comment.problem_id = problem.id 
                               and comment.state='confirmed' 

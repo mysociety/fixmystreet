@@ -7,7 +7,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: Cobrand.pm,v 1.57 2009-12-22 14:22:09 matthew Exp $
+# $Id: Cobrand.pm,v 1.58 2010-01-06 12:33:25 louise Exp $
 
 package Cobrand;
 use strict;
@@ -60,6 +60,10 @@ my %fns = (
     'prettify_epoch' => { default => '0' },
     # Parameters are FORM_NAME, QUERY. Return HTML for any extra needed elements for FORM_NAME
     'form_elements' => { default => "''" },
+    # Parameter is UPDATE_DATA, a reference to a hash of non-cobranded update data. Return cobrand extra data for the update
+    'cobrand_data_for_generic_update' => { default => "''" },
+    # Parameter is PROBLEM_DATA, a reference to a hash of non-cobranded problem data. Return cobrand extra data for the problem
+    'cobrand_data_for_generic_problem' => { default => "''" }, 
     # Parameter is QUERY. Return a string of extra data to be stored with a problem
     'extra_problem_data' => { default => "''" },
     # Parameter is QUERY. Return a string of extra data to be stored with an update

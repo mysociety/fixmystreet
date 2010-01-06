@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.83 2010-01-06 10:56:51 louise Exp $
+# $Id: index.cgi,v 1.84 2010-01-06 12:33:26 louise Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.83 2010-01-06 10:56:51 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.84 2010-01-06 12:33:26 louise Exp $';
 
 use strict;
 
@@ -469,11 +469,19 @@ sub admin_reports {
         my $results = Problems::problem_search($search);
         print $q->start_table({border=>1, cellpadding=>2, cellspacing=>0});
         print $q->Tr({}, $q->th({}, ['ID', 'Title', 'Name', 'Email', 'Council', 'Category', 'Anonymous', 'Cobrand', 'Created', 'State', 'When sent', '*']));
-         
+        my $cobrand_data;         
         foreach (@$results) {
             my $url = $_->{id};
-            $url = $q->a({ -href => Cobrand::base_url_for_emails($_->{cobrand}, $_->{cobrand_data}) . '/report/' . $_->{id} }, $url)
-                if $_->{state} eq 'confirmed' || $_->{state} eq 'fixed';
+            if ($_->{state} eq 'confirmed' || $_->{state} eq 'fixed') {
+                # if this is a cobranded admin interface, but we're looking at a generic problem, figure out enough information
+                # to create a URL to the cobranded version of the problem
+                if ($_->{cobrand}) {
+                    $cobrand_data = $_->{cobrand_data};
+                } else {	
+                    $cobrand_data = Cobrand::cobrand_data_for_generic_problem($cobrand, $_);
+                }
+                $url = $q->a({ -href => Cobrand::base_url_for_emails($cobrand, $cobrand_data) . '/report/' . $_->{id} }, $url);
+            }
             my $council = $_->{council} || '&nbsp;';
             my $category = $_->{category} || '&nbsp;';
             (my $confirmed = $_->{confirmed} || '-') =~ s/ (.*?)\..*/&nbsp;$1/;
@@ -560,11 +568,17 @@ sub admin_edit_report {
     (my $whensent = $_->{whensent} || '&nbsp;') =~ s/\..*//;
     (my $confirmed = $_->{confirmed} || '-') =~ s/ (.*?)\..*/&nbsp;$1/;
     my $photo = '';
-    $photo = '<li><img align="top" src="' . Cobrand::base_url_for_emails($row{cobrand}, $row{cobrand_data}) . '/photo?id=' . $row{id} . '">
+    my $cobrand_data;
+    if ($row{cobrand}) {
+        $cobrand_data = $row{cobrand_data};
+    } else {
+        $cobrand_data = Cobrand::cobrand_data_for_generic_problem($cobrand, \%row);
+    }
+    $photo = '<li><img align="top" src="' . Cobrand::base_url_for_emails($cobrand, $cobrand_data) . '/photo?id=' . $row{id} . '">
 <input type="checkbox" id="remove_photo" name="remove_photo" value="1">
 <label for="remove_photo">Remove photo (can\'t be undone!)</label>' if $row{photo};
-
-    my $url_base = Cobrand::base_url_for_emails($row{cobrand}, $row{cobrand_data});
+    
+    my $url_base = Cobrand::base_url_for_emails($cobrand, $cobrand_data);
     my $url = $url_base . '/report/' . $row{id};
 
     my $anon = $q->label({-for=>'anonymous'}, 'Anonymous:') . ' ' . $q->popup_menu(-id => 'anonymous', -name => 'anonymous', -values => { 1=>'Yes', 0=>'No' }, -default => $row{anonymous});
@@ -617,10 +631,18 @@ sub admin_show_updates {
     print $q->start_table({border=>1, cellpadding=>2, cellspacing=>0});
     print $q->Tr({}, $q->th({}, ['ID', 'State', 'Name', 'Email', 'Created', 'Cobrand', 'Text', '*']));
     my $base_url = ''; 
+    my $cobrand_data;
     foreach (@$updates) {
         my $url = $_->{id};
-        $url = $q->a({ -href => Cobrand::base_url_for_emails($_->{cobrand}, $_->{cobrand_data}) . '/report/' . $_->{problem_id} . '#update_' . $_->{id} },
-            $url) if $_->{state} eq 'confirmed';
+        if ( $_->{state} eq 'confirmed' ) {
+            if ($_->{cobrand}) {
+                $cobrand_data = $_->{cobrand_data};
+            } else {
+                $cobrand_data = Cobrand::cobrand_data_for_generic_update($cobrand, $_);
+            }
+            $url = $q->a({ -href => Cobrand::base_url_for_emails($cobrand, $cobrand_data) . '/report/' . $_->{problem_id} . '#update_' . $_->{id} },
+                $url);
+        }
         my $cobrand = $_->{cobrand} . '<br>' . $_->{cobrand_data};
         print $q->Tr({}, $q->td([ $url, $_->{state}, ent($_->{name} || ''),
         ent($_->{email}), $_->{created}, $cobrand, ent($_->{text}),
@@ -657,12 +679,18 @@ sub admin_edit_update {
     print $status_message;
     my $name = $row_h{name};
     $name = '' unless $name;
+    my $cobrand_data;
+    if ($row{cobrand}) {
+        $cobrand_data = $row{cobrand_data};
+    } else {
+        $cobrand_data = Cobrand::cobrand_data_for_generic_update($cobrand, \%row);
+    }
     my $photo = '';
-    $photo = '<li><img align="top" src="' . Cobrand::base_url_for_emails($row{cobrand}, $row{cobrand_data})  . '/photo?c=' . $row{id} . '">
+    $photo = '<li><img align="top" src="' . Cobrand::base_url_for_emails($cobrand, $cobrand_data)  . '/photo?c=' . $row{id} . '">
 <input type="checkbox" id="remove_photo" name="remove_photo" value="1">
 <label for="remove_photo">Remove photo (can\'t be undone!)</label>' if $row{photo};
 
-    my $url = Cobrand::base_url_for_emails($row{cobrand}, $row{cobrand_data}) . '/report/' . $row{problem_id} . '#update_' . $row{id};
+    my $url = Cobrand::base_url_for_emails($cobrand, $cobrand_data) . '/report/' . $row{problem_id} . '#update_' . $row{id};
 
     my $state = $q->label({-for=>'state'}, 'State:') . ' ' . $q->popup_menu(-id => 'state', -name => 'state', -values => { confirmed => 'Confirmed', hidden => 'Hidden', unconfirmed => 'Unconfirmed' }, -default => $row{state});
 
@@ -687,6 +715,17 @@ EOF
     print $q->submit('Submit changes');
     print $q->end_form;
     print html_tail($q);
+}
+
+sub get_cobrand_data_from_hash {
+    my ($cobrand, $data) = @_;
+    my $cobrand_data;
+    if ($data->{cobrand}) {
+        $cobrand_data = $data->{cobrand_data};
+    } else {
+        $cobrand_data = Cobrand::cobrand_data_for_generic_problem($cobrand, $data);
+    }
+    return $cobrand_data;
 }
 
 sub admin_timeline {
@@ -728,6 +767,7 @@ sub admin_timeline {
     }
 
     my $date = '';
+    my $cobrand_data;
     foreach (reverse sort keys %time) {
         my $curdate = strftime('%A, %e %B %Y', localtime($_));
         if ($date ne $curdate) {
@@ -741,17 +781,20 @@ sub admin_timeline {
             if ($type eq 'problemCreated') {
                 print "Problem $_->{id} created; by " . ent($_->{name}) . " &lt;" . ent($_->{email}) . "&gt;, '" . ent($_->{title}) . "'";
             } elsif ($type eq 'problemConfirmed') {
-                my $url = Cobrand::base_url_for_emails($_->{cobrand}, $_->{cobrand_data})  . "/report/$_->{id}";
+                $cobrand_data = get_cobrand_data_from_hash($cobrand, $_);
+                my $url = Cobrand::base_url_for_emails($cobrand, $cobrand_data)  . "/report/$_->{id}";
                 print "Problem <a href='$url'>$_->{id}</a> confirmed; by " . ent($_->{name}) ." &lt;" . ent($_->{email}) . "&gt;, '" . ent($_->{title}) ."'";
             } elsif ($type eq 'problemSent') {
-                my $url = Cobrand::base_url_for_emails($_->{cobrand}, $_->{cobrand_data}) . "/report/$_->{id}";
+                $cobrand_data = get_cobrand_data_from_hash($cobrand, $_);
+                my $url = Cobrand::base_url_for_emails($cobrand, $cobrand_data) . "/report/$_->{id}";
                 print "Problem <a href='$url'>$_->{id}</a> sent to council $_->{council}; by " . ent($_->{name}) . " &lt;" . ent($_->{email}) . "&gt;, '" . ent($_->{title}) . "'";
             } elsif ($type eq 'quesSent') {
                 print "Questionnaire $_->{id} sent for problem $_->{problem_id}";
             } elsif ($type eq 'quesAnswered') {
                 print "Questionnaire $_->{id} answered for problem $_->{problem_id}, $_->{old_state} to $_->{new_state}";
             } elsif ($type eq 'update') {
-                my $url = Cobrand::base_url_for_emails($_->{cobrand}, $_->{cobrand_data}) . "/report/$_->{problem_id}#$_->{id}";
+                $cobrand_data = get_cobrand_data_from_hash($cobrand, $_);
+                my $url = Cobrand::base_url_for_emails($cobrand, $cobrand_data) . "/report/$_->{problem_id}#$_->{id}";
                 my $name = ent($_->{name}) || 'anonymous';
                 print "Update <a href='$url'>$_->{id}</a> created for problem $_->{problem_id}; by $name &lt;" . ent($_->{email}) . "&gt;";
             } elsif ($type eq 'alertSub') {
