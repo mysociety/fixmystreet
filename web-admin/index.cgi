@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.85 2010-01-06 13:17:06 louise Exp $
+# $Id: index.cgi,v 1.86 2010-01-07 15:46:34 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.85 2010-01-06 13:17:06 louise Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.86 2010-01-07 15:46:34 matthew Exp $';
 
 use strict;
 
@@ -536,6 +536,11 @@ sub admin_edit_report {
     } elsif ($q->param('submit')) {
         return not_found($q) if $q->param('token') ne get_token($q);
         my $new_state = $q->param('state');
+        my $done = 0;
+        if ($new_state eq 'confirmed' && $row{state} eq 'unconfirmed' && $q->{site} eq 'emptyhomes') {
+            $status_message = '<p><em>I am afraid you cannot confirm unconfirmed reports.</em></p>';
+            $done = 1;
+        }
         my $query = 'update problem set anonymous=?, state=?, name=?, email=?, title=?, detail=?';
         if ($q->param('remove_photo')) {
             $query .= ', photo=null';
@@ -547,11 +552,13 @@ sub admin_edit_report {
             $query .= ', confirmed=current_timestamp';
         }
         $query .= ' where id=?';
-        dbh()->do($query, {}, $q->param('anonymous') ? 't' : 'f', $new_state,
-            $q->param('name'), $q->param('email'), $q->param('title'), $q->param('detail'), $id);
-        dbh()->commit();
-        map { $row{$_} = $q->param($_) } qw(anonymous state name email title detail);
-        $status_message = '<p><em>Updated!</em></p>';
+        unless ($done) {
+            dbh()->do($query, {}, $q->param('anonymous') ? 't' : 'f', $new_state,
+                $q->param('name'), $q->param('email'), $q->param('title'), $q->param('detail'), $id);
+            dbh()->commit();
+            map { $row{$_} = $q->param($_) } qw(anonymous state name email title detail);
+            $status_message = '<p><em>Updated!</em></p>';
+        }
     }
 
     my $title = "Editing problem $id";
