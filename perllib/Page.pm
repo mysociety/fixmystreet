@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.228 2009-12-22 11:54:50 matthew Exp $
+# $Id: Page.pm,v 1.229 2010-01-15 16:55:25 matthew Exp $
 #
 
 package Page;
@@ -290,6 +290,7 @@ sub header ($%) {
     $head{'-last-modified'} = time2str($params{lastmodified}) if $params{lastmodified};
     $head{'-last-modified'} = time2str($lastmodified) if $lastmodified;
     $head{'-Cache-Control'} = $params{cachecontrol} if $params{cachecontrol};
+    $head{'-status'} = $params{status_code} if $params{status_code};
     print $q->header(%head);
 
     $params{title} ||= '';

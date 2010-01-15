@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: index.cgi,v 1.333 2009-12-15 17:53:52 louise Exp $
+# $Id: index.cgi,v 1.334 2010-01-15 16:55:26 matthew Exp $
 
 use strict;
 use Standard;
@@ -98,7 +98,7 @@ Page::do_fastcgi(\&main);
 
 # Display front page
 sub front_page {
-    my ($q, $error) = @_;
+    my ($q, $error, $status_code) = @_;
     my $pc_h = ent($q->param('pc') || '');
 
     # Look up various cobrand things
@@ -107,6 +107,7 @@ sub front_page {
     my $form_action = Cobrand::url($cobrand, '/', $q);
     my $question = Cobrand::enter_postcode_text($cobrand, $q);
     my %params = ('context' => 'front-page');
+    $params{status_code} = $status_code if $status_code;
     my %vars = (
         error => $error || '',
         pc_h => $pc_h, 
@@ -934,7 +935,7 @@ sub display_problem {
     return display_location($q, _('Unknown problem ID')) if !$input{id} || $input{id} =~ /\D/;
     my $problem = Problems::fetch_problem($input{id});
     return display_location($q, _('Unknown problem ID')) unless $problem;
-    return front_page($q, _('That report has been removed from FixMyStreet.')) if $problem->{state} eq 'hidden';
+    return front_page($q, _('That report has been removed from FixMyStreet.'), '410 Gone') if $problem->{state} eq 'hidden';
     my ($x, $y, $x_tile, $y_tile, $px, $py) = Page::os_to_px_with_adjust($q, $problem->{easting}, $problem->{northing}, $input{x}, $input{y});
 
     # Try and have pin near centre of map
