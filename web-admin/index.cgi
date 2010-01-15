@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.86 2010-01-07 15:46:34 matthew Exp $
+# $Id: index.cgi,v 1.87 2010-01-15 11:23:55 matthew Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.86 2010-01-07 15:46:34 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.87 2010-01-15 11:23:55 matthew Exp $';
 
 use strict;
 
@@ -572,8 +572,8 @@ sub admin_edit_report {
     my $northing = int($row{northing}+0.5);
     my $questionnaire = $row{send_questionnaire} ? 'Yes' : 'No';
     my $used_map = $row{used_map} ? 'used map' : "didn't use map";
-    (my $whensent = $_->{whensent} || '&nbsp;') =~ s/\..*//;
-    (my $confirmed = $_->{confirmed} || '-') =~ s/ (.*?)\..*/&nbsp;$1/;
+    (my $whensent = $row{whensent} || '&nbsp;') =~ s/\..*//;
+    (my $confirmed = $row{confirmed} || '-') =~ s/ (.*?)\..*/&nbsp;$1/;
     my $photo = '';
     my $cobrand_data;
     if ($row{cobrand}) {
