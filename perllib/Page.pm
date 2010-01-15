@@ -6,7 +6,7 @@
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Page.pm,v 1.229 2010-01-15 16:55:25 matthew Exp $
+# $Id: Page.pm,v 1.230 2010-01-15 17:08:55 matthew Exp $
 #
 
 package Page;
@@ -280,7 +280,7 @@ sub header ($%) {
     my $default_params = Cobrand::header_params(get_cobrand($q), $q, %params);
     my %default_params = %{$default_params};
     %params = (%default_params, %params);
-    my %permitted_params = map { $_ => 1 } qw(title rss js expires lastmodified template cachecontrol context);
+    my %permitted_params = map { $_ => 1 } qw(title rss js expires lastmodified template cachecontrol context status_code);
     foreach (keys %params) {
         croak "bad parameter '$_'" if (!exists($permitted_params{$_}));
     }
