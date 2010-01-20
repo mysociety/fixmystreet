@@ -6,7 +6,7 @@
 # Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: Problems.pm,v 1.32 2010-01-06 12:33:25 louise Exp $
+# $Id: Problems.pm,v 1.33 2010-01-20 11:09:45 matthew Exp $
 #
 
 package Problems;
@@ -221,52 +221,52 @@ sub fetch_problem {
 }
 # API functions
 
-sub problems_matching_criteria{
-    my ($criteria) = @_;
+sub problems_matching_criteria {
+    my ($criteria, @params) = @_;
     my $problems = select_all(
         "select id, title, council, category, detail, name, anonymous,
         confirmed, whensent, service
         from problem
         $criteria
-	$site_restriction");
+        $site_restriction", @params);
 
     my @councils;
     foreach my $problem (@$problems){
         if ($problem->{anonymous} == 1){
             $problem->{name} = '';
         }
-	if ($problem->{service} eq ''){
+        if ($problem->{service} eq ''){
             $problem->{service} = 'Web interface';
         }
         if ($problem->{council}) {
             $problem->{council} =~ s/\|.*//g;
-	    my @council_ids = split /,/, $problem->{council};
+            my @council_ids = split /,/, $problem->{council};
             push(@councils, @council_ids);
-	    $problem->{council} = \@council_ids;
-	}
+            $problem->{council} = \@council_ids;
+        }
     }
     my $areas_info = mySociety::MaPit::get_voting_areas_info(\@councils);
     foreach my $problem (@$problems){
-    	if ($problem->{council}) {
+        if ($problem->{council}) {
              my @council_names = map { $areas_info->{$_}->{name}} @{$problem->{council}} ;
-	     $problem->{council} = join(' and ', @council_names);
-    	}
+             $problem->{council} = join(' and ', @council_names);
+        }
     }
     return $problems;
 }
 
 sub fixed_in_interval {
     my ($start_date, $end_date) = @_; 
-    my $criteria = "where state='fixed' and date_trunc('day',lastupdate)>='$start_date' and 
-date_trunc('day',lastupdate)<='$end_date'";
-    return problems_matching_criteria($criteria);
+    my $criteria = "where state='fixed' and date_trunc('day',lastupdate)>=? and 
+date_trunc('day',lastupdate)<=?";
+    return problems_matching_criteria($criteria, $start_date, $end_date);
 }
 
 sub created_in_interval {
     my ($start_date, $end_date) = @_; 
-    my $criteria = "where state='confirmed' and date_trunc('day',created)>='$start_date' and 
-date_trunc('day',created)<='$end_date'";
-    return problems_matching_criteria($criteria);
+    my $criteria = "where state='confirmed' and date_trunc('day',created)>=? and 
+date_trunc('day',created)<=?";
+    return problems_matching_criteria($criteria, $start_date, $end_date);
 }
 
 =item data_sharing_notification_start
