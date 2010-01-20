@@ -6,7 +6,7 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
-# $Id: json.cgi,v 1.3 2009-07-01 13:02:07 louise Exp $
+# $Id: json.cgi,v 1.4 2010-01-20 11:31:26 matthew Exp $
 
 use strict;
 use Error qw(:try);
@@ -19,14 +19,15 @@ sub main {
     my $type = $q->param('type') || '';
     my $start_date = $q->param('start_date') || '';
     my $end_date = $q->param('end_date') || '';
-    if ($type eq 'new_problems'){
+    if ($start_date !~ /^\d{4}-\d\d-\d\d$/ || $end_date !~ /^\d{4}-\d\d-\d\d$/) {
+        $problems = { error => 'Invalid dates supplied' };
+    } elsif ($type eq 'new_problems') {
         $problems = Problems::created_in_interval($start_date, $end_date);
     } elsif ($type eq 'fixed_problems') {
         $problems = Problems::fixed_in_interval($start_date, $end_date);
     }
     print $q->header( -type => 'application/json; charset=utf-8' );
-    my $out = JSON::to_json($problems);
-    print $out;  
+    print JSON::to_json($problems);
 }
 
 
