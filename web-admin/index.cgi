@@ -7,10 +7,10 @@
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 #
-# $Id: index.cgi,v 1.87 2010-01-15 11:23:55 matthew Exp $
+# $Id: index.cgi,v 1.88 2010-01-20 12:55:46 louise Exp $
 #
 
-my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.87 2010-01-15 11:23:55 matthew Exp $';
+my $rcsid = ''; $rcsid .= '$Id: index.cgi,v 1.88 2010-01-20 12:55:46 louise Exp $';
 
 use strict;
 
@@ -525,9 +525,8 @@ sub admin_edit_report {
     my $cobrand = Page::get_cobrand($q);
     return not_found($q) if ! $row->[0];
     my %row = %{$row->[0]};
-    
     my %row_h = map { $_ => $row{$_} ? ent($row{$_}) : '' } keys %row;
-    my $status_message;
+    my $status_message = '';
     if ($q->param('resend')) {
         return not_found($q) if $q->param('token') ne get_token($q);
         dbh()->do('update problem set whensent=null where id=?', {}, $id);
