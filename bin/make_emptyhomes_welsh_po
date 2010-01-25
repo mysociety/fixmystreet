@@ -9,7 +9,7 @@ use FindBin;
 use lib "$FindBin::Bin/../perllib";
 use PoChange;
 
-chdir("$FindBin::Bin/../../locale");
+chdir("$FindBin::Bin/../locale");
 
 # First read in translation and match up.
 open(INPO, 'cy_GB.UTF-8/LC_MESSAGES/EmptyHomes.po') or die $!;
