@@ -18,7 +18,7 @@ use Error qw(:try);
 use FindBin;
 use lib "$FindBin::Bin";
 use lib "$FindBin::Bin/../perllib";
-use lib "$FindBin::Bin/../../perllib";
+use lib "$FindBin::Bin/../commonlib/perllib";
 
 use Cobrand;
 use mySociety::MockQuery;

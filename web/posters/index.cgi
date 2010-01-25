@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w -I../../perllib -I../../../perllib
+#!/usr/bin/perl -w -I../../perllib -I../../commonlib/perllib
 
 # posters/index.cgi:
 # List of publicity stuff on FixMyStreet

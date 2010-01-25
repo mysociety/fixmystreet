@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w -I../../perllib -I../../../perllib
+#!/usr/bin/perl -w -I../../perllib -I../../commonlib/perllib
 
 # iphone/index.cgi:
 # Screenshots of the iPhone FixMyStreet application, showing the flow

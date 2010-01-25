@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w -I../../perllib
+#!/usr/bin/perl -w -I../commonlib/perllib
 #
 # test-mailin:
 # Receives incoming mail for the test harness, and stores it in the database
@@ -15,7 +15,7 @@
 # Horrible boilerplate to set up appropriate library paths.
 use FindBin;
 use lib "$FindBin::Bin/../perllib";
-use lib "$FindBin::Bin/../../perllib";
+use lib "$FindBin::Bin/../commonlib/perllib";
 chdir $FindBin::Bin;
 
 use File::Slurp;

@@ -17,7 +17,7 @@ use strict;
 # Horrible boilerplate to set up appropriate library paths.
 use FindBin;
 use lib "$FindBin::Bin/../perllib";
-use lib "$FindBin::Bin/../../perllib";
+use lib "$FindBin::Bin/../commonlib/perllib";
 use POSIX qw(strftime);
 use Digest::MD5 qw(md5_hex);
 
