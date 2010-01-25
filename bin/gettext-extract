@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# bci/bin/gettext-extract
+# fixmystreet/bin/gettext-extract
 # Generate English language .po files from the source code and email templates,
 # for FixMyStreet. Writes the output to appropriate .po files in locale/.
 #
