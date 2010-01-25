@@ -1,0 +1,3 @@
+[submodule "commonlib"]
+	path = commonlib
+	url = git://git.mysociety.org/commonlib
