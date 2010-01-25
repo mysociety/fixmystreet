@@ -25,7 +25,7 @@
 </ul>
 
 <p id="footer">Built by <a href="http://www.mysociety.org/">mySociety</a>,
-using some <a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/bci">clever</a> <a
+using some <a href="http://github.com/mysociety/fixmystreet">clever</a> <a
 href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.</p>
 
 </body>

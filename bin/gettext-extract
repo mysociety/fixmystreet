@@ -19,7 +19,7 @@ else if [ -e locale ]
 then
     cd .
 else 
-    echo "Please run with current directory bci/bin"
+    echo "Please run with current directory fixmystreet/bin"
     exit 1
 fi
 fi
@@ -40,7 +40,7 @@ PO=locale/FixMyStreet.po
 rm -f $PO
 
 # Extract from Perl
-xgettext --add-comments=TRANS --language=Perl --keyword=_ --keyword=nget:1,2 --from-code=utf-8 -o $PO perllib/mySociety/*.pm bci/perllib/*.pm bci/web/*.cgi bci/bin/send-* bci/db/alert_types_eha.pl
+xgettext --add-comments=TRANS --language=Perl --keyword=_ --keyword=nget:1,2 --from-code=utf-8 -o $PO commonlib/perllib/mySociety/*.pm perllib/*.pm web/*.cgi bin/send-* db/alert_types_eha.pl
 
 # Fix headers
 TEMP=`tempfile`
@@ -62,7 +62,7 @@ mv $TEMP $PO
 # Extract email templates
 echo >> $PO
 echo '#. Please leave the first word "Subject:" untranslated' >> $PO
-for X in bci/templates/emails/* bci/templates/emails/emptyhomes/* 
+for X in templates/emails/* templates/emails/emptyhomes/* 
 do
     # TODO: Should check for "*~" type filenames too, and do the *-livesimply case
     # with wildcards rather than checking per template
@@ -76,5 +76,5 @@ do
     fi
 done
 
-bci/bin/make_emptyhomes_po
+fixmystreet/bin/make_emptyhomes_po
 

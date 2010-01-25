@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # Page.pm:
-# Various HTML stuff for the BCI site.
+# Various HTML stuff for the FixMyStreet site.
 #
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
@@ -360,7 +360,7 @@ EOF
     my $help = _("Help");
     my $contact = _("Contact");
     my $orglogo = _('<a href="http://www.mysociety.org/"><img id="logo" width="133" height="26" src="/i/mysociety-dark.png" alt="View mySociety.org"><span id="logoie"></span></a>');
-    my $creditline = _('Built by <a href="http://www.mysociety.org/">mySociety</a>, using some <a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/bci">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.');
+    my $creditline = _('Built by <a href="http://www.mysociety.org/">mySociety</a>, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.');
 
     return <<EOF;
 </div></div>

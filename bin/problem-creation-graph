@@ -16,9 +16,9 @@ EXTENSION=".png"
 
 cd `dirname $0`
 cd ../../
-source shlib/deployfns
+source fixmystreet/commonlib/shlib/deployfns
 
-read_conf bci/conf/general
+read_conf fixmystreet/conf/general
 
 if [ $OPTION_BASE_URL = "http://reportemptyhomes.com" ]; then
     DATE="2008-10-01"
@@ -104,6 +104,6 @@ END
 #echo "gpscript $GPSCRIPT"
 
 export GDFONTPATH=/usr/share/fonts/truetype/ttf-bitstream-vera
-gnuplot < $GPSCRIPT > bci/web/bci-live-creation$EXTENSION
+gnuplot < $GPSCRIPT > fixmystreet/web/bci-live-creation$EXTENSION
 
 

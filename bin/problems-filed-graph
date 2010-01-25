@@ -16,9 +16,9 @@ EXTENSION=".png"
 
 cd `dirname $0`
 cd ../../
-source shlib/deployfns
+source fixmystreet/commonlib/shlib/deployfns
 
-read_conf bci/conf/general
+read_conf fixmystreet/conf/general
 
 SOURCEO=/tmp/bci-report-rate-graph-data-nonwmc-$RANDOM$RANDOM
 GPSCRIPT=/tmp/bci-report-rate-graph-script-$RANDOM$RANDOM
@@ -57,5 +57,5 @@ END
 #echo "gpscript $GPSCRIPT"
 
 export GDFONTPATH=/usr/share/fonts/truetype/ttf-bitstream-vera
-gnuplot < $GPSCRIPT > bci/web/bci-live-line$EXTENSION
+gnuplot < $GPSCRIPT > fixmystreet/web/bci-live-line$EXTENSION
 
