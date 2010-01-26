@@ -1,6 +1,6 @@
                    mySociety.org Software Licensing
 
-Most of the software in this directory is Copyright (c) 2004-2008 UK
+Most of the software in this directory is Copyright (c) 2004-2010 UK
 Citizens Online Democracy. 
 
 Unless otherwise stated in particular files or directories, this
