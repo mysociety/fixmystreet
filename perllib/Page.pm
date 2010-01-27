@@ -533,11 +533,20 @@ sub map_pins {
     my $max_e = Page::tile_to_os($x+3);
     my $max_n = Page::tile_to_os($y+3);
     my $cobrand = Page::get_cobrand($q);
+    # list of problems aoround map can be limited, but should show all pins
     my $around_limit = Cobrand::on_map_list_limit($cobrand);
-    my $around_map = Problems::around_map($min_e, $max_e, $min_n, $max_n, $interval, $around_limit);
+    my $around_map;
+    my $around_map_list = Problems::around_map($min_e, $max_e, $min_n, $max_n, $interval, $around_limit);
+    if ($around_limit) { 
+        $around_map = Problems::around_map($min_e, $max_e, $min_n, $max_n, $interval, undef);
+    } else {
+        $around_map = $around_map_list;
+    }
     my @ids = ();
-    foreach (@$around_map) {
+    foreach (@$around_map_list) {
         push(@ids, $_->{id});
+    } 
+    foreach (@$around_map) {
         my $px = Page::os_to_px($_->{easting}, $sx);
         my $py = Page::os_to_px($_->{northing}, $sy, 1);
         my $col = $_->{state} eq 'fixed' ? 'green' : 'red';
@@ -560,7 +569,7 @@ sub map_pins {
         $pins .= Page::display_pin($q, $px, $py, $col);
     }
 
-    return ($pins, $around_map, $nearby, $dist);
+    return ($pins, $around_map_list, $nearby, $dist);
 }
 
 sub compass ($$$) {
