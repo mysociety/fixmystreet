@@ -34,6 +34,10 @@ sub base_url {
    return $base_url;
 }
 
+sub admin_base_url {
+    return 'https://secure.mysociety.org/admin/emptyhomes/';
+}
+
 =item set_lang_and_domain LANG UNICODE
 
 Set the language and text domain for the site based on the query and host. 
