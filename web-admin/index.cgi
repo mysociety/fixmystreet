@@ -525,11 +525,11 @@ sub admin_edit_report {
     my $cobrand = Page::get_cobrand($q);
     return not_found($q) if ! $row->[0];
     my %row = %{$row->[0]};
-    my %row_h = map { $_ => $row{$_} ? ent($row{$_}) : '' } keys %row;
     my $status_message = '';
     if ($q->param('resend')) {
         return not_found($q) if $q->param('token') ne get_token($q);
         dbh()->do('update problem set whensent=null where id=?', {}, $id);
+        admin_log_edit($q, $id, 'problem', 'resend');
         dbh()->commit();
         $status_message = '<p><em>That problem will now be resent.</em></p>';
     } elsif ($q->param('submit')) {
@@ -554,12 +554,22 @@ sub admin_edit_report {
         unless ($done) {
             dbh()->do($query, {}, $q->param('anonymous') ? 't' : 'f', $new_state,
                 $q->param('name'), $q->param('email'), $q->param('title'), $q->param('detail'), $id);
+            if ($new_state ne $row{state}) {	
+                admin_log_edit($q, $id, 'problem', 'state_change');
+            }
+            if ($q->param('anonymous') ne $row{anonymous} || 
+                $q->param('name') ne $row{name} ||
+                $q->param('email') ne $row{email} || 
+                $q->param('title') ne $row{title} ||
+                $q->param('detail') ne $row{detail}) {
+               admin_log_edit($q, $id, 'problem', 'edit');
+            } 
             dbh()->commit();
             map { $row{$_} = $q->param($_) } qw(anonymous state name email title detail);
             $status_message = '<p><em>Updated!</em></p>';
         }
     }
-
+    my %row_h = map { $_ => $row{$_} ? ent($row{$_}) : '' } keys %row;
     my $title = "Editing problem $id";
     print html_head($q, $title);
     print $q->h1($title);
@@ -665,7 +675,6 @@ sub admin_edit_update {
     my $cobrand = Page::get_cobrand($q);
 
     my %row = %{$row->[0]};
-    my %row_h = map { $_ => $row{$_} ? ent($row{$_}) : '' } keys %row;
     my $status_message;
     if ($q->param('submit')) {
         return not_found($q) if $q->param('token') ne get_token($q);
@@ -675,10 +684,17 @@ sub admin_edit_update {
         }
         $query .= ' where id=?';
         dbh()->do($query, {}, $q->param('state'), $q->param('name'), $q->param('email'), $q->param('text'), $id);
+        if ($q->param('state') ne $row{state}) {
+            admin_log_edit($q, $id, 'update', 'state_change');
+        } 
+        if ($q->param('name') ne $row{name} || $q->param('email') ne $row{email} || $q->param('text') ne $row{text}) {
+            admin_log_edit($q, $id, 'update', 'edit');
+        }
         dbh()->commit();
         map { $row{$_} = $q->param($_) } qw(state name email text);
         $status_message = '<p><em>Updated!</em></p>';
     }
+   my %row_h = map { $_ => $row{$_} ? ent($row{$_}) : '' } keys %row;
     my $title = "Editing update $id";
     print html_head($q, $title);
     print $q->h1($title);
@@ -732,6 +748,13 @@ sub get_cobrand_data_from_hash {
         $cobrand_data = Cobrand::cobrand_data_for_generic_problem($cobrand, $data);
     }
     return $cobrand_data;
+}
+
+sub admin_log_edit {
+   my ($q, $id, $object_type, $action) = @_;
+   my $query = "insert into admin_log (admin_user, object_type, object_id, action)
+                values (?, ?, ?, ?);";
+   dbh()->do($query, {}, $q->remote_user(), $object_type, $id, $action);
 }
 
 sub admin_timeline {

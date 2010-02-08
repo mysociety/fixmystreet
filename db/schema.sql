@@ -324,3 +324,20 @@ create table textmystreet (
     postcode text not null,
     mobile text not null
 );
+
+-- Record basic information about edits made through the admin interface
+
+create table admin_log (
+    id serial not null primary key, 
+    admin_user text not null,
+    object_type text not null check (
+      object_type = 'problem'
+      or object_type = 'update'
+    ),
+    object_id integer not null,
+    action text not null check (
+        action = 'edit'
+        or action = 'state_change' 
+        or action = 'resend'),
+    whenedited timestamp not null default ms_current_timestamp()
+); 
