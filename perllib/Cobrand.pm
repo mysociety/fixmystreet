@@ -90,6 +90,8 @@ my %fns = (
     'root_path_js' => { default => "'var root_path = \"\";'" },
     # Return the title to be used in page heads.
     'site_title' => { default => "''" },
+    # Return the license information
+    'license_info' => { default => 'undef' }, 
     # Return the maximum number of items to be given in the list of reports on the map
     'on_map_list_limit' => { default => 'undef' },
     # Return a boolean indicating whether the cobrand allows photo uploads

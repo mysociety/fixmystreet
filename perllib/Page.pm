@@ -478,9 +478,11 @@ EOF
     }
     $out .= compass($q, $x, $y);
     my $copyright = _('Crown copyright. All rights reserved. Ministry of Justice');
+    my $license_info = Cobrand::license_info($cobrand);
+    $license_info = "100037819&nbsp;2008" unless $license_info;
     $out .= <<EOF;
     </div>
-    <p id="copyright">&copy; $copyright 100037819&nbsp;2008</p>
+    <p id="copyright">&copy; $copyright $license_info</p>
 $params{post}
 EOF
     $out .= '</div>';
