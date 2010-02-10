@@ -40,6 +40,10 @@ sub main {
 Thank you for trying to confirm your alert. We seem to have an error ourselves
 though, so <a href="%s">please let us know what went on</a> and we'll look into it.
 EOF
+            my %vars = (error => $out);
+            my $cobrand_page = Page::template_include('error', $q, Page::template_root($q), %vars);
+            $out = $cobrand_page if $cobrand_page;
+
         }
     } elsif ($q->param('rss')) {
         $out = alert_rss($q);
