@@ -684,6 +684,14 @@ sub admin_edit_update {
         }
         $query .= ' where id=?';
         dbh()->do($query, {}, $q->param('state'), $q->param('name'), $q->param('email'), $q->param('text'), $id);
+        $status_message = '<p><em>Updated!</em></p>';
+
+        # If we're hiding an update, see if it marked as fixed and unfix if so
+        if ($q->param('state') eq 'hidden' && $row{mark_fixed}) {
+            dbh()->do("update problem set state='confirmed' where state='fixed' and id=?", {}, $row{problem_id});
+            $status_message .= '<p><em>Problem marked as open.</em></p>';
+        }
+
         if ($q->param('state') ne $row{state}) {
             admin_log_edit($q, $id, 'update', 'state_change');
         } 
@@ -692,7 +700,6 @@ sub admin_edit_update {
         }
         dbh()->commit();
         map { $row{$_} = $q->param($_) } qw(state name email text);
-        $status_message = '<p><em>Updated!</em></p>';
     }
    my %row_h = map { $_ => $row{$_} ? ent($row{$_}) : '' } keys %row;
     my $title = "Editing update $id";
