@@ -126,12 +126,14 @@ EOF
 sub generic_contact_text {
     my ($q) = @_;
     my $intro;
+
     if ($q->{site} eq 'emptyhomes') {
         $intro .= $q->p(_('We&rsquo;d love to hear what you think about this
 website. Just fill in the form. Please don&rsquo;t contact us about individual empty
 homes; use the box accessed from <a href="/">the front page</a>.'));
     } else {
-        my $mailto = mySociety::Config::get('CONTACT_EMAIL');
+        my $cobrand = Page::get_cobrand($q);
+        my $mailto = Cobrand::contact_email($cobrand);
         $mailto =~ s/\@/&#64;/;
         $intro .= $q->p(_('Please do <strong>not</strong> report problems through this form; messages go to
 the team behind FixMyStreet, not a council. To report a problem,
