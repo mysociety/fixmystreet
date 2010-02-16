@@ -695,6 +695,9 @@ sub admin_edit_update {
         if ($q->param('state') ne $row{state}) {
             admin_log_edit($q, $id, 'update', 'state_change');
         } 
+        if (!defined($row{name})){
+           $row{name} = "";   
+        }
         if ($q->param('name') ne $row{name} || $q->param('email') ne $row{email} || $q->param('text') ne $row{text}) {
             admin_log_edit($q, $id, 'update', 'edit');
         }
