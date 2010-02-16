@@ -751,17 +751,7 @@ EOF
         $vars{photo_field} = $photo_input;
     }
 
-    if ($q->{site} eq 'scambs') {
-        $vars{text_notes} = <<EOF;
-<p>Please note:</p>
-<ul>
-<li>Please be polite, concise and to the point.</li>
-<li>Please do not be abusive.</li>
-<li>Writing your message entirely in block capitals makes it hard to read,
-as does a lack of punctuation.</li>
-</ul>
-EOF
-    } elsif ($q->{site} ne 'emptyhomes') {
+    if ($q->{site} ne 'emptyhomes') {
         $vars{text_notes} = <<EOF;
 <p>Please note:</p>
 <ul>
@@ -775,6 +765,12 @@ as does a lack of punctuation.</li>
 problems that can be fixed. If your problem is not appropriate for
 submission via this site remember that you can contact your council
 directly using their own website.</li>
+<li>
+FixMyStreet and the Guardian are providing this service in
+partnership in <a href="faq#privacy">certain cities</a>. In those cities, both have access to
+any information submitted, including names and email addresses, and will use it only to ensure the
+smooth running of the service, in accordance with their privacy policies.
+</li>
 </ul>
 EOF
     }
