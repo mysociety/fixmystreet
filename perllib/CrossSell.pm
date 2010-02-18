@@ -110,6 +110,13 @@ EOF
     return ($out, "cheltenhamhfyc$rand");
 }
 
+sub display_democracyclub {
+    my (%input) = @_;
+    return <<EOF;
+<h2 style="margin-bottom:0">Help make the next election the most accountable ever</h2> <p style="font-size:120%;margin-top:0.5em;text-align:center;"><a href="http://www.democracyclub.org.uk/">Join Democracy Club</a> and have fun keeping an eye on your election candidates. <a href="http://www.democracyclub.org.uk/">Sign me up</a>!
+EOF
+}
+
 sub display_news_form {
     my (%input) = @_;
     my %input_h = map { $_ => $input{$_} ? ent($input{$_}) : '' } qw(name email signed_email);
@@ -208,6 +215,11 @@ sub display_advert ($$;$%) {
     #            . $out . '</div>';
     #    }
     #}
+
+    # ALWAYS return democracy club advert for the mo
+    $q->{scratch} = 'advert=demclub0';
+    return '<div style="margin: 0 5em; border-top: dotted 1px #666666;">'
+        . display_democracyclub() . '</div>';
 
     #unless (defined $data{done_tms} && $data{done_tms}==1) {
         $q->{scratch} = 'advert=news';
