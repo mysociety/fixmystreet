@@ -304,7 +304,7 @@ create table partial_user (
     email text not null,
     phone text not null
 );
-create unique index partial_user_service_email_idx on partial_user(service, email);
+create index partial_user_service_email_idx on partial_user(service, email);
 
 -- Record imported Flickr photos so we don't fetch them twice
 create table flickr_imported (
