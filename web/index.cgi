@@ -712,7 +712,7 @@ photo of the problem if you have one), etc.'));
         $vars{errors} = '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
 
-    my $anon = ($input{anonymous}) ? ' checked' : ($input{title} ? '' : ' checked');
+    $vars{anon} = ($input{anonymous}) ? ' checked' : ($input{title} ? '' : ' checked');
 
     $vars{form_heading} = $q->h2(_('Empty property details form')) if $q->{site} eq 'emptyhomes';
     $vars{subject_label} = _('Subject:');
