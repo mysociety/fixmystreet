@@ -838,7 +838,7 @@ sub display_location {
         $hide_link = NewURL($q, -retain=>1, no_pins=>1);
         $hide_text = _('Hide pins');
     }
-    my $map_links = "<p id='sub_map_links'><a id='hide_pins_link' href='$hide_link'>$hide_text</a> | <a id='all_pins_link' href='$all_link'>$all_text</a></p> <input type='hidden' id='all_pins' name='all_pins' value='$input_h{all_pins}'>";
+    my $map_links = "<p id='sub_map_links'><a id='hide_pins_link' rel='nofollow' href='$hide_link'>$hide_text</a> | <a id='all_pins_link' rel='nofollow' href='$all_link'>$all_text</a></p> <input type='hidden' id='all_pins' name='all_pins' value='$input_h{all_pins}'>";
     my $on_list = '';
     foreach (@$on_map) {
         my $report_url = NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, 'y' => undef);
