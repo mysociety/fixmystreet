@@ -32,17 +32,15 @@ sub main {
     }
 
     my ($one_council, $area_type, $area_name);
-    if ($q_council =~ /^(\d\d[a-z]{2})[a-z]{2}$/i) {
+    if ($q_council =~ /^(\d\d)([a-z]{2})?([a-z]{2})?$/i) {
         my $va_info = mySociety::MaPit::get_voting_area_info(uc $q_council);
-        my $ward_name = $va_info->{name};
-        $va_info = mySociety::MaPit::get_voting_area_info($va_info->{parent_area_id});
-        my $council_name = $va_info->{name};
-        print $q->redirect($base_url . '/reports/' . Page::short_name($council_name) . '/' . Page::short_name($ward_name));
-        return;
-    } elsif ($q_council =~ /^(\d\d)([a-z][a-z])?$/i) {
-        my $va_info = mySociety::MaPit::get_voting_area_info(uc $q_council);
-        $area_name = $va_info->{name};
-        print $q->redirect($base_url . '/reports/' . Page::short_name($area_name));
+        $area_name = Page::short_name($va_info->{name});
+        if (length($q_council) == 6) {
+            $va_info = mySociety::MaPit::get_voting_area_info($va_info->{parent_area_id});
+            $area_name = Page::short_name($va_info->{name}) . '/' . $area_name;
+        }
+        $rss = '/rss' if $rss;
+        print $q->redirect($base_url . $rss . '/reports/' . $area_name);
         return;
     } elsif ($q_council =~ /\D/) {
         (my $qc = $q_council) =~ s/ and / & /;
