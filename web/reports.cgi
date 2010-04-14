@@ -32,7 +32,13 @@ sub main {
     }
 
     my ($one_council, $area_type, $area_name);
-    if ($q_council =~ /\D/) {
+    if ($q_council =~ /^(\d\d)([a-z][a-z])?$/i) {
+        $one_council = $q_council;
+        my $va_info = mySociety::MaPit::get_voting_area_info($q_council);
+        $area_name = $va_info->{name};
+        print $q->redirect($base_url . '/reports/' . Page::short_name($area_name));
+        return;
+    } elsif ($q_council =~ /\D/) {
         (my $qc = $q_council) =~ s/ and / & /;
         my $areas = mySociety::MaPit::get_voting_area_by_name($qc, $mySociety::VotingArea::council_parent_types, 10);
         if (keys %$areas == 1) {
@@ -56,6 +62,8 @@ sub main {
         $one_council = $q_council;
         my $va_info = mySociety::MaPit::get_voting_area_info($q_council);
         $area_name = $va_info->{name};
+        print $q->redirect($base_url . '/reports/' . Page::short_name($area_name));
+        return;
     }
     $all = 0 unless $one_council;
 
