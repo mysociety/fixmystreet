@@ -767,7 +767,7 @@ submission via this site remember that you can contact your council
 directly using their own website.</li>
 <li>
 FixMyStreet and the Guardian are providing this service in
-partnership in <a href="faq#privacy">certain cities</a>. In those cities, both have access to
+partnership in <a href="/faq#privacy">certain cities</a>. In those cities, both have access to
 any information submitted, including names and email addresses, and will use it only to ensure the
 smooth running of the service, in accordance with their privacy policies.
 </li>
