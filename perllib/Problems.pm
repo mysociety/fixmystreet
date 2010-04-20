@@ -353,7 +353,7 @@ sub update_search {
             problem_id=? or comment.email ilike '%'||?||'%' or comment.name ilike '%'||?||'%' or
             comment.text ilike '%'||?||'%' or comment.cobrand_data ilike '%'||?||'%')
             $site_restriction
-            order by (state='hidden'),created", $search_n, $search_n, $search, $search,
+            order by (comment.state='hidden'),created", $search_n, $search_n, $search, $search,
             $search, $search);
     return $updates;
 }
