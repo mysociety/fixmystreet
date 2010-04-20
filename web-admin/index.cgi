@@ -662,7 +662,7 @@ sub admin_show_updates {
         }
         my $cobrand = $_->{cobrand} . '<br>' . $_->{cobrand_data};
         my $attr = {};
-        $attr{-class} = 'hidden' if $_->{state} eq 'hidden';
+        $attr->{-class} = 'hidden' if $_->{state} eq 'hidden';
         print $q->Tr($attr, $q->td([ $url, $_->{state}, ent($_->{name} || ''),
         ent($_->{email}), $_->{created}, $cobrand, ent($_->{text}),
         $q->a({ -href => NewURL($q, page=>'update_edit', id=>$_->{id}) }, 'Edit')
