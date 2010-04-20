@@ -87,6 +87,7 @@ sub html_head($$) {
 <style type="text/css">
 dt { clear: left; float: left; font-weight: bold; }
 dd { margin-left: 8em; }
+.hidden { color: #999999; }
 </style>
 </head>
 <body>
@@ -660,7 +661,9 @@ sub admin_show_updates {
                 $url);
         }
         my $cobrand = $_->{cobrand} . '<br>' . $_->{cobrand_data};
-        print $q->Tr({}, $q->td([ $url, $_->{state}, ent($_->{name} || ''),
+        my $attr = {};
+        $attr{-class} = 'hidden' if $_->{state} eq 'hidden';
+        print $q->Tr($attr, $q->td([ $url, $_->{state}, ent($_->{name} || ''),
         ent($_->{email}), $_->{created}, $cobrand, ent($_->{text}),
         $q->a({ -href => NewURL($q, page=>'update_edit', id=>$_->{id}) }, 'Edit')
         ]));
