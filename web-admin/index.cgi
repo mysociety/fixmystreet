@@ -87,7 +87,7 @@ sub html_head($$) {
 <style type="text/css">
 dt { clear: left; float: left; font-weight: bold; }
 dd { margin-left: 8em; }
-.hidden { color: #999999; }
+.hidden { color: #666666; }
 </style>
 </head>
 <body>

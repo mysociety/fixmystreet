@@ -333,7 +333,7 @@ sub problem_search {
                                '%'||?||'%' or name ilike '%'||?||'%' or title ilike '%'||?||'%' or
                                detail ilike '%'||?||'%' or council like '%'||?||'%' or cobrand_data like '%'||?||'%')
                                $site_restriction 
-                               order by created", $search_n,
+                               order by (state='hidden'),created", $search_n,
                                $search, $search, $search, $search, $search, $search);
     return $problems; 
 }
