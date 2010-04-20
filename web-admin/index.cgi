@@ -678,7 +678,7 @@ sub admin_edit_update {
     my $cobrand = Page::get_cobrand($q);
 
     my %row = %{$row->[0]};
-    my $status_message;
+    my $status_message = '';
     if ($q->param('submit')) {
         return not_found($q) if $q->param('token') ne get_token($q);
         my $query = 'update comment set state=?, name=?, email=?, text=?';
