@@ -348,12 +348,13 @@ sub update_search {
     my ($search) = @_;
     my $search_n = 0;
     $search_n = int($search) if $search =~ /^\d+$/;
-    my $updates = select_all("select comment.*, problem.council from comment, problem where problem.id = comment.problem_id
+    my $updates = select_all("select comment.*, problem.council, problem.state as problem_state
+        from comment, problem where problem.id = comment.problem_id
             and (comment.id=? or
             problem_id=? or comment.email ilike '%'||?||'%' or comment.name ilike '%'||?||'%' or
             comment.text ilike '%'||?||'%' or comment.cobrand_data ilike '%'||?||'%')
             $site_restriction
-            order by (comment.state='hidden'),created", $search_n, $search_n, $search, $search,
+            order by (comment.state='hidden'),(problem.state='hidden'),created", $search_n, $search_n, $search, $search,
             $search, $search);
     return $updates;
 }
