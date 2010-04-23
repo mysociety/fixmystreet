@@ -734,6 +734,7 @@ photo of the problem if you have one), etc.'));
         $partial_id = mySociety::AuthToken::retrieve('partial', $token);
         if ($partial_id) {
             $vars{partial_field} = '<input type="hidden" name="partial" value="' . $token . '">';
+            $vars{partial_field} .= '<input type="hidden" name="has_photo" value="' . $q->param('has_photo') . '">';
         }
     }
     my $photo_input = ''; 
