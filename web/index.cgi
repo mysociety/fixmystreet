@@ -47,7 +47,7 @@ sub main {
         my $id = mySociety::AuthToken::retrieve('partial', $partial);
         if ($id) {
             my @row = dbh()->selectrow_array(
-                "select easting, northing, name, email, title, (photo is not null) as has_photo, phone
+                "select easting, northing, name, email, title, (photo is not null) as has_photo, phone, detail
                     from problem where id=? and state='partial'", {}, $id);
             if (@row) {
                 $q->param('anonymous', 1);
@@ -59,6 +59,7 @@ sub main {
                 $q->param('title', $row[4]);
                 $q->param('has_photo', $row[5]);
                 $q->param('phone', $row[6]);
+                $q->param('detail', $row[7]);
                 $q->param('partial', $partial);
             } else {
                 my $base = mySociety::Config::get('BASE_URL');
