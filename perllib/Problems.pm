@@ -515,9 +515,10 @@ sub timeline_alerts {
     if ($cobrand) {
          $cobrand_clause = " and cobrand = '$cobrand'";
     }
+    my $current_time = dbh()->selectrow_array('select ms_current_timestamp()');
     my $alerts = select_all("select *,
                              extract(epoch from whensubscribed) as whensubscribed
-                             from alert where whensubscribed>=ms_current_timestamp()-'7 days'::interval
+                             from alert where whensubscribed>='$current_time'-'7 days'::interval
                              and confirmed=1
                              $cobrand_clause");
     return $alerts; 
@@ -537,10 +538,11 @@ sub timeline_deleted_alerts {
          $cobrand_clause = " and cobrand = '$cobrand'";
     }
 
+    my $current_time = dbh()->selectrow_array('select ms_current_timestamp()');
     my $alerts = select_all("select *,
                              extract(epoch from whensubscribed) as whensubscribed,
                              extract(epoch from whendisabled) as whendisabled
-                             from alert where whendisabled>=ms_current_timestamp()-'7 days'::interval
+                             from alert where whendisabled>='$current_time'-'7 days'::interval
                              $cobrand_clause");
     return $alerts;
 
