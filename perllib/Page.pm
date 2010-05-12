@@ -853,10 +853,10 @@ sub display_problem_updates($$) {
     my ($id, $q) = @_;
     my $cobrand = get_cobrand($q);
     my $updates = select_all(
-        "select id, name, extract(epoch from created) as created, text,
+        "select id, name, extract(epoch from confirmed) as confirmed, text,
          mark_fixed, mark_open, (photo is not null) as has_photo, cobrand
          from comment where problem_id = ? and state='confirmed'
-         order by created", $id);
+         order by confirmed", $id);
     my $out = '';
     if (@$updates) {
         $out .= '<div id="updates">';
@@ -864,9 +864,9 @@ sub display_problem_updates($$) {
         foreach my $row (@$updates) {
             $out .= "<div><div class=\"problem-update\"><p><a name=\"update_$row->{id}\"></a><em>";
             if ($row->{name}) {
-                $out .= sprintf(_('Posted by %s at %s'), ent($row->{name}), prettify_epoch($q, $row->{created}));
+                $out .= sprintf(_('Posted by %s at %s'), ent($row->{name}), prettify_epoch($q, $row->{confirmed}));
             } else {
-                $out .= sprintf(_('Posted anonymously at %s'), prettify_epoch($q, $row->{created}));
+                $out .= sprintf(_('Posted anonymously at %s'), prettify_epoch($q, $row->{confirmed}));
             }
             $out .= Cobrand::extra_update_meta_text($cobrand, $row);
             $out .= ', ' . _('marked as fixed') if ($row->{mark_fixed});

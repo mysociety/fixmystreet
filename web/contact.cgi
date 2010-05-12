@@ -179,11 +179,11 @@ sub contact_page {
             Port => mySociety::Config::get('BCI_DB_PORT', undef)
         );
         my $p = dbh()->selectrow_hashref(
-            'select title,detail,name,anonymous,extract(epoch from created) as created
+            'select title,detail,name,anonymous,extract(epoch from confirmed) as confirmed
             from problem where id=?', {}, $id);
         if ($update_id) {
              my $u = dbh()->selectrow_hashref(
-            'select comment.text, comment.name, problem.title, extract(epoch from comment.created) as created
+            'select comment.text, comment.name, problem.title, extract(epoch from comment.confirmed) as confirmed
             from comment, problem where comment.id=? 
             and comment.problem_id = problem.id
             and comment.problem_id=?', {}, $update_id ,$id);
@@ -193,7 +193,7 @@ sub contact_page {
                 $intro .= $q->p(_('You are reporting the following update for being abusive, containing personal information, or similar:'));
                 $item_title =  ent($u->{title});
                 $item_meta = $q->em( 'Update below added ', ($u->{name} eq '') ? 'anonymously' : "by " . ent($u->{name}),
-                                     ' at ' . Page::prettify_epoch($q, $u->{created}));
+                                     ' at ' . Page::prettify_epoch($q, $u->{confirmed}));
                 $item_body = ent($u->{text});
                 $hidden_vals .= '<input type="hidden" name="update_id" value="' . $update_id . '">';
             }
@@ -206,7 +206,7 @@ sub contact_page {
                 $item_meta = $q->em(
                    'Reported ',
                    ($p->{anonymous}) ? 'anonymously' : "by " . ent($p->{name}),
-                   ' at ' . Page::prettify_epoch($q, $p->{created}));
+                   ' at ' . Page::prettify_epoch($q, $p->{confirmed}));
                 $item_body = ent($p->{detail});
             }
         }

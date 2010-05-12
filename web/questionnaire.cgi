@@ -142,8 +142,8 @@ sub submit_questionnaire {
     my $name = $problem->{anonymous} ? undef : $problem->{name};
     my $update = $input{update} ? $input{update} : _('Questionnaire filled in by problem reporter');
     Utils::workaround_pg_bytea("insert into comment
-        (problem_id, name, email, website, text, state, mark_fixed, mark_open, photo, lang, cobrand, cobrand_data)
-        values (?, ?, ?, '', ?, 'confirmed', ?, ?, ?, ?, ?, ?)", 7,
+        (problem_id, name, email, website, text, state, mark_fixed, mark_open, photo, lang, cobrand, cobrand_data, confirmed)
+        values (?, ?, ?, '', ?, 'confirmed', ?, ?, ?, ?, ?, ?, ms_current_timestamp())", 7,
         $problem->{id}, $name, $problem->{email}, $update,
         $new_state eq 'fixed' ? 't' : 'f', $new_state eq 'confirmed' ? 't' : 'f',
         $image, $mySociety::Locale::lang, $cobrand, $cobrand_data

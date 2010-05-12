@@ -227,6 +227,7 @@ create table comment (
     email text not null,
     website text,
     created timestamp not null default ms_current_timestamp(),
+    confirmed timestamp,
     text text not null,                     -- as entered by comment author
     photo bytea,
     state text not null check (

@@ -73,7 +73,7 @@ sub confirm_update {
         dbh()->do("update comment set state='hidden' where id=?", {}, $id);
         return $q->p('Sorry, there has been an error confirming your update.');
     } else {
-        dbh()->do("update comment set state='confirmed' where id=? and state='unconfirmed'", {}, $id);
+        dbh()->do("update comment set state='confirmed', confirmed=ms_current_timestamp() where id=? and state='unconfirmed'", {}, $id);
     }
 
     my $creator_fixed = 0;
