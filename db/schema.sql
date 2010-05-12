@@ -286,7 +286,11 @@ create table alert (
     whensubscribed timestamp not null default ms_current_timestamp(),
     whendisabled timestamp default null
 );
--- Possible indexes - email, alert_type, whendisabled, unique (alert_type,email,parameter)
+create index alert_email_idx on alert(email);
+create index alert_alert_type_confirmed_whendisabled_idx on alert(alert_type, confirmed, whendisabled);
+create index alert_whendisabled_cobrand_idx on alert(whendisabled, cobrand);
+create index alert_whensubscribed_confirmed_cobrand_idx on alert(whensubscribed, confirmed, cobrand);
+-- Possible indexes - unique (alert_type,email,parameter)
 
 create table alert_sent (
     alert_id integer not null references alert(id),
