@@ -870,12 +870,14 @@ sub main {
     my $timeout = $q->param('timeout');
     if ($logout) {
         if (!$timeout) {
-            $q->redirect('?logout=1&timeout=' + (time() + 7));
+            print $q->redirect(-location => '?logout=1;timeout=' . (time() + 7));
             return;
         }
         if (time() < $timeout) {
-            $q->header(-status => '401 Unauthorized');   
-            $q->header('-www-authenticate' => 'Basic realm="www.fixmystreet.com admin pages"');
+            print $q->header(
+                -status => '401 Unauthorized',
+                -www_authenticate => 'Basic realm="www.fixmystreet.com admin pages"'
+            );
             return;
         }
     }
