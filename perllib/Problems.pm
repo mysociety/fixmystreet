@@ -209,7 +209,7 @@ sub fixed_nearby {
 
 sub fetch_problem {
     my $id = shift;
-    dbh()->selectrow_hashref(
+    my $p = dbh()->selectrow_hashref(
         "select id, easting, northing, council, category, title, detail, photo,
         used_map, name, anonymous, extract(epoch from confirmed) as time,
         state, extract(epoch from whensent-confirmed) as whensent,
@@ -218,7 +218,10 @@ sub fetch_problem {
         from problem where id=? and state in ('confirmed','fixed', 'hidden')
         $site_restriction", {}, $id
     );
+    $p->{service} =~ s/_/ /g;
+    return $p;
 }
+
 # API functions
 
 sub problems_matching_criteria {
