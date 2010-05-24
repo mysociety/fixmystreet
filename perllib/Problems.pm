@@ -304,10 +304,11 @@ sub council_problems {
         push @params, $one_council;
         $where_extra = "and areas like '%,'||?||',%'";
     }
+    my $current_time = dbh()->selectrow_array('select ms_current_timestamp()');
     my $problems = select_all(
         "select id, title, detail, council, state, areas,
-        extract(epoch from ms_current_timestamp()-lastupdate) as duration,
-        extract(epoch from ms_current_timestamp()-confirmed) as age
+        extract(epoch from '$current_time'-lastupdate) as duration,
+        extract(epoch from '$current_time'-confirmed) as age
         from problem
         where state in ('confirmed', 'fixed')
         $where_extra
