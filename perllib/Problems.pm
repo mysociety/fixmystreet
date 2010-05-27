@@ -34,6 +34,11 @@ sub set_site_restriction {
     }
 }
 
+sub current_timestamp {
+    my $current_timestamp = dbh()->selectrow_array('select ms_current_timestamp()');
+    return "'$current_timestamp'::timestamp";
+}
+
 # Front page statistics
 
 sub recent_fixed {
@@ -41,7 +46,7 @@ sub recent_fixed {
     my $result = Memcached::get($key);
     unless ($result) {
         $result = dbh()->selectrow_array("select count(*) from problem
-            where state='fixed' and lastupdate>ms_current_timestamp()-'1 month'::interval
+            where state='fixed' and lastupdate>" . current_timestamp() . "-'1 month'::interval
             $site_restriction");
         Memcached::set($key, $result, 3600);
     }
@@ -72,7 +77,7 @@ sub recent_new {
     my $result = Memcached::get($key);
     unless ($result) {
         $result = dbh()->selectrow_array("select count(*) from problem
-            where state in ('confirmed','fixed') and confirmed>ms_current_timestamp()-'$interval'::interval
+            where state in ('confirmed','fixed') and confirmed>" . current_timestamp() . "-'$interval'::interval
             $site_restriction");
         Memcached::set($key, $result, 3600);
     }
@@ -304,11 +309,11 @@ sub council_problems {
         push @params, $one_council;
         $where_extra = "and areas like '%,'||?||',%'";
     }
-    my $current_time = dbh()->selectrow_array('select ms_current_timestamp()');
+    my $current_timestamp = current_timestamp();
     my $problems = select_all(
         "select id, title, detail, council, state, areas,
-        extract(epoch from '$current_time'-lastupdate) as duration,
-        extract(epoch from '$current_time'-confirmed) as age
+        extract(epoch from $current_timestamp-lastupdate) as duration,
+        extract(epoch from $current_timestamp-confirmed) as age
         from problem
         where state in ('confirmed', 'fixed')
         $where_extra
@@ -475,14 +480,14 @@ Return a reference to an array of problems suitable for display in the admin tim
 Uses any site_restriction defined by a cobrand.
 =cut
 sub timeline_problems {
-
+    my $current_timestamp = current_timestamp();
     my $problems = select_all("select state,id,name,email,title,council,category,service,cobrand,cobrand_data,
                                extract(epoch from created) as created,
                                extract(epoch from confirmed) as confirmed,
                                extract(epoch from whensent) as whensent
-                               from problem where (created>=ms_current_timestamp()-'7 days'::interval
-                               or confirmed>=ms_current_timestamp()-'7 days'::interval
-                               or whensent>=ms_current_timestamp()-'7 days'::interval)
+                               from problem where (created>=$current_timestamp-'7 days'::interval
+                               or confirmed>=$current_timestamp-'7 days'::interval
+                               or whensent>=$current_timestamp-'7 days'::interval)
                                $site_restriction");
     return $problems;
 
@@ -502,7 +507,7 @@ sub timeline_updates {
                               from comment, problem 
                               where comment.problem_id = problem.id 
                               and comment.state='confirmed' 
-                              and comment.created>=ms_current_timestamp()-'7 days'::interval
+                              and comment.created>=" . current_timestamp() . "-'7 days'::interval
                               $site_restriction");
     return $updates;
 }
@@ -519,10 +524,9 @@ sub timeline_alerts {
     if ($cobrand) {
          $cobrand_clause = " and cobrand = '$cobrand'";
     }
-    my $current_time = dbh()->selectrow_array('select ms_current_timestamp()');
     my $alerts = select_all("select *,
                              extract(epoch from whensubscribed) as whensubscribed
-                             from alert where whensubscribed>='$current_time'-'7 days'::interval
+                             from alert where whensubscribed>=" . current_timestamp() . "-'7 days'::interval
                              and confirmed=1
                              $cobrand_clause");
     return $alerts; 
@@ -542,11 +546,10 @@ sub timeline_deleted_alerts {
          $cobrand_clause = " and cobrand = '$cobrand'";
     }
 
-    my $current_time = dbh()->selectrow_array('select ms_current_timestamp()');
     my $alerts = select_all("select *,
                              extract(epoch from whensubscribed) as whensubscribed,
                              extract(epoch from whendisabled) as whendisabled
-                             from alert where whendisabled>='$current_time'-'7 days'::interval
+                             from alert where whendisabled>=" . current_timestamp() . "-'7 days'::interval
                              $cobrand_clause");
     return $alerts;
 
@@ -565,13 +568,14 @@ sub timeline_questionnaires {
     if ($cobrand) {
          $cobrand_clause = " and cobrand = '$cobrand'";
     }
+    my $current_timestamp = current_timestamp();
     my $questionnaire = select_all("select questionnaire.*,
                                     extract(epoch from questionnaire.whensent) as whensent,
                                     extract(epoch from questionnaire.whenanswered) as whenanswered
                                     from questionnaire, problem
                                     where questionnaire.problem_id = problem.id 
-                                    and (questionnaire.whensent>=ms_current_timestamp()-'7 days'::interval
-                                    or questionnaire.whenanswered>=ms_current_timestamp()-'7 days'::interval)
+                                    and (questionnaire.whensent>=$current_timestamp-'7 days'::interval
+                                    or questionnaire.whenanswered>=$current_timestamp-'7 days'::interval)
                                     $cobrand_clause");
 }
 
