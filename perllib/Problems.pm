@@ -209,7 +209,7 @@ sub fixed_nearby {
 
 sub fetch_problem {
     my $id = shift;
-    dbh()->selectrow_hashref(
+    my $p = dbh()->selectrow_hashref(
         "select id, easting, northing, council, category, title, detail, photo,
         used_map, name, anonymous, extract(epoch from confirmed) as time,
         state, extract(epoch from whensent-confirmed) as whensent,
@@ -218,7 +218,10 @@ sub fetch_problem {
         from problem where id=? and state in ('confirmed','fixed', 'hidden')
         $site_restriction", {}, $id
     );
+    $p->{service} =~ s/_/ /g;
+    return $p;
 }
+
 # API functions
 
 sub problems_matching_criteria {
@@ -301,10 +304,11 @@ sub council_problems {
         push @params, $one_council;
         $where_extra = "and areas like '%,'||?||',%'";
     }
+    my $current_time = dbh()->selectrow_array('select ms_current_timestamp()');
     my $problems = select_all(
         "select id, title, detail, council, state, areas,
-        extract(epoch from ms_current_timestamp()-lastupdate) as duration,
-        extract(epoch from ms_current_timestamp()-confirmed) as age
+        extract(epoch from '$current_time'-lastupdate) as duration,
+        extract(epoch from '$current_time'-confirmed) as age
         from problem
         where state in ('confirmed', 'fixed')
         $where_extra

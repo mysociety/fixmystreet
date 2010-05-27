@@ -865,6 +865,23 @@ sub not_found {
 
 sub main {
     my $q = shift;
+
+    my $logout = $q->param('logout');
+    my $timeout = $q->param('timeout');
+    if ($logout) {
+        if (!$timeout) {
+            print $q->redirect(-location => '?logout=1;timeout=' . (time() + 7));
+            return;
+        }
+        if (time() < $timeout) {
+            print $q->header(
+                -status => '401 Unauthorized',
+                -www_authenticate => 'Basic realm="www.fixmystreet.com admin pages"'
+            );
+            return;
+        }
+    }
+
     my $page = $q->param('page');
     $page = "summary" if !$page;
 
