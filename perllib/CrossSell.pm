@@ -218,9 +218,8 @@ sub display_advert ($$;$%) {
     #    }
     #}
 
-    # ALWAYS return democracy club advert for the mo
-    $q->{scratch} = 'advert=demclub0';
-    return display_democracyclub();
+    #$q->{scratch} = 'advert=demclub0';
+    #return display_democracyclub();
 
     #unless (defined $data{done_tms} && $data{done_tms}==1) {
         $q->{scratch} = 'advert=news';
