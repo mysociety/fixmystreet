@@ -27,9 +27,9 @@
 			android:paddingRight="5dip" android:linksClickable="true" />
 
 
-		<TextView android:id="@+id/faq" android:layout_width="fill_parent"
+		<TextView android:id="@+id/faq2" android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:text="This application is version 0.8 of Fix My Street for Android, written as a volunteer project by Anna Powell-Smith."
+			android:text=""
 			android:paddingBottom="5dip" android:paddingLeft="5dip"
 			android:paddingRight="5dip" android:linksClickable="true" />
 
