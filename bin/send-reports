@@ -15,6 +15,7 @@ require 5.8.0;
 use FindBin;
 use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../commonlib/perllib";
+use Encode;
 use Error qw(:try);
 use File::Slurp;
 use CGI; # Trying awkward kludge
@@ -315,9 +316,11 @@ sub post_easthants_message {
     $eh_service ||= EastHantsWSDL->on_fault(sub { my($soap, $res) = @_; die ref $res ? $res->faultstring : $soap->transport->status, "\n"; });
     try {
         # ServiceName, RemoteCreatedBy, Salutation, FirstName, Name, Email, Telephone, HouseNoName, Street, Town, County, Country, Postcode, Comments, FurtherInfo, ImageURL
+        my $message = ent(encode_utf8($h{message}));
+        my $name = ent(encode_utf8($h{name}));
         my $result = $eh_service->INPUTFEEDBACK(
-            $h{category}, 'FixMyStreet', '', '', ent($h{name}), $h{email}, $h{phone},
-            '', '', '', '', '', '', ent($h{message}), 'Yes', $h{image_url}
+            $h{category}, 'FixMyStreet', '', '', $name, $h{email}, $h{phone},
+            '', '', '', '', '', '', $message, 'Yes', $h{image_url}
         );
         $return = 0 if $result eq 'Report received';
     } otherwise {
