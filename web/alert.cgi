@@ -104,13 +104,12 @@ sub alert_list {
     my @types = (@$mySociety::VotingArea::council_parent_types, @$mySociety::VotingArea::council_child_types);
     my %councils = map { $_ => 1 } @$mySociety::VotingArea::council_parent_types;
 
-    my $areas = mySociety::MaPit::get_voting_areas_by_location({easting=>$e, northing=>$n}, 'polygon', \@types);
+    my $areas = mySociety::MaPit::call('point', "27700/$e,$n", type => \@types);
     my $cobrand = Page::get_cobrand($q);
     my ($success, $error_msg) = Cobrand::council_check($cobrand, $areas, $q, 'alert');    
     if (!$success){
         return alert_front_page($q, $error_msg);
     }
-    $areas = mySociety::MaPit::get_voting_areas_info([ keys %$areas ]);
 
     return alert_front_page($q, _('That location does not appear to be covered by a council, perhaps it is offshore - please try somewhere more specific.')) if keys %$areas == 0;
 

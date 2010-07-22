@@ -253,7 +253,7 @@ sub problems_matching_criteria {
             $problem->{council} = \@council_ids;
         }
     }
-    my $areas_info = mySociety::MaPit::get_voting_areas_info(\@councils);
+    my $areas_info = mySociety::MaPit::call('areas', \@councils);
     foreach my $problem (@$problems){
         if ($problem->{council}) {
              my @council_names = map { $areas_info->{$_}->{name}} @{$problem->{council}} ;

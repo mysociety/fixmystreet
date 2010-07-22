@@ -799,7 +799,7 @@ sub display_problem_meta_line($$) {
         if ($problem->{whensent}) {
             $problem->{council} =~ s/\|.*//g;
             my @councils = split /,/, $problem->{council};
-            my $areas_info = mySociety::MaPit::get_voting_areas_info(\@councils);
+            my $areas_info = mySociety::MaPit::call('areas', \@councils);
             my $council = join(' and ', map { $areas_info->{$_}->{name} } @councils);
             $out .= '<small class="council_sent_info">';
             $out .= $q->br() . sprintf(_('Sent to %s %s later'), $council, prettify_duration($problem->{whensent}, 'minute'));
@@ -898,6 +898,19 @@ sub display_problem_updates($$) {
     return $out;
 }
 
+sub mapit_check_error {
+    my $location = shift;
+    if ($location->{error}) {
+        return _('That postcode was not recognised, sorry.') if $location->{code} =~ /^4/;
+        return $location->{error};
+    }
+    my $island = $location->{coordsyst};
+    if ($island eq 'I') {
+        return _("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.");
+    }
+    return 0;
+}
+
 # geocode STRING QUERY
 # Given a user-inputted string, try and convert it into co-ordinates using either
 # MaPit if it's a postcode, or Google Maps API otherwise. Returns an array of
@@ -908,10 +921,8 @@ sub geocode {
     my ($s, $q) = @_;
     my ($x, $y, $easting, $northing, $error);
     if (mySociety::PostcodeUtil::is_valid_postcode($s)) {
-        try {
-            my $location = mySociety::MaPit::get_location($s);
-            my $island = $location->{coordsyst};
-            throw RABX::Error(_("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.")) if $island eq 'I';
+        my $location = mySociety::MaPit::call('postcode', $s);
+        unless ($error = mapit_check_error($location)) {
             $easting = $location->{easting};
             $northing = $location->{northing};
             my $xx = Page::os_to_tile($easting);
@@ -920,14 +931,6 @@ sub geocode {
             $y = int($yy);
             $x -= 1 if ($xx - $x < 0.5);
             $y -= 1 if ($yy - $y < 0.5);
-        } catch RABX::Error with {
-            my $e = shift;
-            if ($e->value() && ($e->value() == mySociety::MaPit::BAD_POSTCODE
-               || $e->value() == mySociety::MaPit::POSTCODE_NOT_FOUND)) {
-                $error = _('That postcode was not recognised, sorry.');
-            } else {
-                $error = $e;
-            }
         }
     } else {
         ($x, $y, $easting, $northing, $error) = geocode_string($s, $q);
