@@ -312,7 +312,7 @@ sub submit_problem {
             my %va = map { $_ => 1 } @$mySociety::VotingArea::council_parent_types;
             my %councils;
             foreach (keys %$areas) {
-                $councils{$_} = 1 if $va{$areas->{$_}};
+                $councils{$_} = 1 if $va{$areas->{$_}->{type}};
             }
             my @input_councils = split /,|\|/, $input{council};
             foreach (@input_councils) {
