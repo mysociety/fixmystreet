@@ -125,9 +125,9 @@ sub alert_list {
                 $ward = $_;
             }
         }
-        push @options, [ 'council', $council->{area_id}, Page::short_name($council->{name}),
+        push @options, [ 'council', $council->{id}, Page::short_name($council->{name}),
             sprintf(_("Problems within %s"), $council->{name}) ];
-        push @options, [ 'ward', $council->{area_id}.':'.$ward->{area_id}, Page::short_name($council->{name}) . '/'
+        push @options, [ 'ward', $council->{id}.':'.$ward->{id}, Page::short_name($council->{name}) . '/'
             . Page::short_name($ward->{name}), sprintf(_("Problems within %s ward"), $ward->{name}) ];
         
         $options_start = "<div><ul id='rss_feed'>";
@@ -141,7 +141,7 @@ sub alert_list {
         foreach (values %$areas) {
             $council = $_;
         }
-        push @options, [ 'council', $council->{area_id}, Page::short_name($council->{name}),
+        push @options, [ 'council', $council->{id}, Page::short_name($council->{name}),
             sprintf(_("Problems within %s"), $council->{name}) ];
         
         $options_start = "<div><ul id='rss_feed'>"; 
@@ -164,24 +164,24 @@ sub alert_list {
             }
         }
         push @options,
-            [ 'area', $district->{area_id}, Page::short_name($district->{name}), $district->{name} ],
-            [ 'area', $district->{area_id}.':'.$d_ward->{area_id}, Page::short_name($district->{name}) . '/'
+            [ 'area', $district->{id}, Page::short_name($district->{name}), $district->{name} ],
+            [ 'area', $district->{id}.':'.$d_ward->{id}, Page::short_name($district->{name}) . '/'
               . Page::short_name($d_ward->{name}), "$d_ward->{name} ward, $district->{name}" ],
-            [ 'area', $county->{area_id}, Page::short_name($county->{name}), $county->{name} ],
-            [ 'area', $county->{area_id}.':'.$c_ward->{area_id}, Page::short_name($county->{name}) . '/'
+            [ 'area', $county->{id}, Page::short_name($county->{name}), $county->{name} ],
+            [ 'area', $county->{id}.':'.$c_ward->{id}, Page::short_name($county->{name}) . '/'
               . Page::short_name($c_ward->{name}), "$c_ward->{name} ward, $county->{name}" ];
         $options_start = '<div id="rss_list">';
         $options = $q->p($q->strong(_('Problems within the boundary of:'))) .
             $q->ul(alert_list_options($q, @options));
         @options = ();
         push @options,
-            [ 'council', $district->{area_id}, Page::short_name($district->{name}), $district->{name} ],
-            [ 'ward', $district->{area_id}.':'.$d_ward->{area_id}, Page::short_name($district->{name}) . '/' . Page::short_name($d_ward->{name}),
+            [ 'council', $district->{id}, Page::short_name($district->{name}), $district->{name} ],
+            [ 'ward', $district->{id}.':'.$d_ward->{id}, Page::short_name($district->{name}) . '/' . Page::short_name($d_ward->{name}),
               "$district->{name}, within $d_ward->{name} ward" ];
         if ($q->{site} ne 'emptyhomes') {
             push @options,
-                [ 'council', $county->{area_id}, Page::short_name($county->{name}), $county->{name} ],
-                [ 'ward', $county->{area_id}.':'.$c_ward->{area_id}, Page::short_name($county->{name}) . '/'
+                [ 'council', $county->{id}, Page::short_name($county->{name}), $county->{name} ],
+                [ 'ward', $county->{id}.':'.$c_ward->{id}, Page::short_name($county->{name}) . '/'
                   . Page::short_name($c_ward->{name}), "$county->{name}, within $c_ward->{name} ward" ];
             $options .= $q->p($q->strong(_('Or problems reported to:'))) .
                 $q->ul(alert_list_options($q, @options));
