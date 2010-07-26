@@ -33,7 +33,7 @@ sub main {
 
     my ($one_council, $area_type, $area_name);
     if ($q_council =~ /^(\d\d)([a-z]{2})?([a-z]{2})?$/i) {
-        my $va_info = mySociety::MaPit::call('area/ons', uc $q_council);
+        my $va_info = mySociety::MaPit::call('area', uc $q_council);
         $area_name = Page::short_name($va_info->{name});
         if (length($q_council) == 6) {
             $va_info = mySociety::MaPit::call('area', $va_info->{parent_area});
