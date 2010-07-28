@@ -47,6 +47,11 @@ BEGIN {
     mySociety::Config::set_file("$dir/../conf/general");
 }
 
+use constant TILE_WIDTH => mySociety::Config::get('TILES_WIDTH');
+use constant TIF_SIZE_M => mySociety::Config::get('TILES_TIFF_SIZE_METRES');
+use constant TIF_SIZE_PX => mySociety::Config::get('TILES_TIFF_SIZE_PIXELS');
+use constant SCALE_FACTOR => TIF_SIZE_M / (TIF_SIZE_PX / TILE_WIDTH);
+
 my $lastmodified;
 
 sub do_fastcgi {
@@ -409,7 +414,7 @@ sub display_map {
     $params{pins} ||= '';
     $params{pre} ||= '';
     $params{post} ||= '';
-    my $mid_point = 254;
+    my $mid_point = TILE_WIDTH; # Map is 2 TILE_WIDTHs in size, square.
     if ($q->{site} eq 'barnet') { # Map is c. 380px wide
         $mid_point = 189;
     }
@@ -455,31 +460,42 @@ EOF
     } else {
         $img_type = '<img';
     }
-    my $imgw = '254px';
-    my $imgh = '254px';
+    my $imgw = TILE_WIDTH . 'px';
+    my $tile_width = TILE_WIDTH;
+    my $tile_type = mySociety::Config::get('TILES_TYPE');
     $out .= <<EOF;
 <script type="text/javascript">
-var fms_x = $x - 2; var fms_y = $y - 2;
-var start_x = $px; var start_y = $py;
 $root_path_js
+var fixmystreet = {
+    'x': $x - 2,
+    'y': $y - 2,
+    'start_x': $px,
+    'start_y': $py,
+    'tile_type': '$tile_type',
+    'tilewidth': $tile_width,
+    'tileheight': $tile_width
+};
 </script>
 <div id="map_box">
 $params{pre}
     <div id="map"><div id="drag">
-        $img_type alt="NW map tile" id="t2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0;">$img_type alt="NE map tile" id="t2.3" name="tile_$tr" src="$tr_src" style="top:0px; left:$imgw;"><br>$img_type alt="SW map tile" id="t3.2" name="tile_$bl" src="$bl_src" style="top:$imgh; left:0;">$img_type alt="SE map tile" id="t3.3" name="tile_$br" src="$br_src" style="top:$imgh; left:$imgw;">
+        $img_type alt="NW map tile" id="t2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0;">$img_type alt="NE map tile" id="t2.3" name="tile_$tr" src="$tr_src" style="top:0px; left:$imgw;"><br>$img_type alt="SW map tile" id="t3.2" name="tile_$bl" src="$bl_src" style="top:$imgw; left:0;">$img_type alt="SE map tile" id="t3.3" name="tile_$br" src="$br_src" style="top:$imgw; left:$imgw;">
         <div id="pins">$params{pins}</div>
     </div>
 EOF
-    if (Cobrand::show_watermark($cobrand)) {
+    if (Cobrand::show_watermark($cobrand) && mySociety::Config::get('TILES_TYPE') ne 'streetview') {
         $out .= '<div id="watermark"></div>';
     }
     $out .= compass($q, $x, $y);
-    my $copyright = _('Crown copyright. All rights reserved. Ministry of Justice');
-    my $license_info = Cobrand::license_info($cobrand);
-    $license_info = "100037819&nbsp;2008" unless $license_info;
+    my $copyright;
+    if (mySociety::Config::get('TILES_TYPE') eq 'streetview') {
+        $copyright = _('Map contains Ordnance Survey data &copy; Crown copyright and database right 2010.');
+    } else {
+        $copyright = _('&copy; Crown copyright. All rights reserved. Ministry of Justice 100037819&nbsp;2008.');
+    }
     $out .= <<EOF;
     </div>
-    <p id="copyright">&copy; $copyright $license_info</p>
+    <p id="copyright">$copyright</p>
 $params{post}
 EOF
     $out .= '</div>';
@@ -613,8 +629,8 @@ sub os_to_px {
 # BL is bottom left tile reference of displayed map
 sub tile_to_px {
     my ($p, $bl, $invert) = @_;
-    $p = 254 * ($p - $bl);
-    $p = 508 - $p if $invert;
+    $p = TILE_WIDTH * ($p - $bl);
+    $p = 2 * TILE_WIDTH - $p if $invert;
     $p = int($p + .5 * ($p <=> 0));
     return $p;
 }
@@ -622,18 +638,18 @@ sub tile_to_px {
 # Tile co-ordinates are linear scale of OS E/N
 # Will need more generalising when more zooms appear
 sub os_to_tile {
-    return $_[0] / (5000/31);
+    return $_[0] / SCALE_FACTOR;
 }
 sub tile_to_os {
-    return $_[0] * (5000/31);
+    return $_[0] * SCALE_FACTOR;
 }
 
 sub click_to_tile {
     my ($pin_tile, $pin, $invert) = @_;
-    $pin -= 254 while $pin > 254;
-    $pin += 254 while $pin < 0;
-    $pin = 254 - $pin if $invert; # image submits measured from top down
-    return $pin_tile + $pin / 254;
+    $pin -= TILE_WIDTH while $pin > TILE_WIDTH;
+    $pin += TILE_WIDTH while $pin < 0;
+    $pin = TILE_WIDTH - $pin if $invert; # image submits measured from top down
+    return $pin_tile + $pin / TILE_WIDTH;
 }
 
 sub os_to_px_with_adjust {

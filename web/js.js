@@ -31,14 +31,14 @@ YAHOO.util.Event.onContentReady('compass', function() {
     if (document.getElementById('map').offsetWidth > 510) return;
 
     var points = this.getElementsByTagName('a');
-    YAHOO.util.Event.addListener(points[1], 'click', compass_pan, { x:0, y:tileheight });
-    YAHOO.util.Event.addListener(points[3], 'click', compass_pan, { x:tilewidth, y:0 });
-    YAHOO.util.Event.addListener(points[5], 'click', compass_pan, { x:-tilewidth, y:0 });
-    YAHOO.util.Event.addListener(points[7], 'click', compass_pan, { x:0, y:-tileheight });
-    YAHOO.util.Event.addListener(points[0], 'click', compass_pan, { x:tilewidth, y:tileheight });
-    YAHOO.util.Event.addListener(points[2], 'click', compass_pan, { x:-tilewidth, y:tileheight });
-    YAHOO.util.Event.addListener(points[6], 'click', compass_pan, { x:tilewidth, y:-tileheight });
-    YAHOO.util.Event.addListener(points[8], 'click', compass_pan, { x:-tilewidth, y:-tileheight });
+    YAHOO.util.Event.addListener(points[1], 'click', compass_pan, { x:0, y:fixmystreet.tileheight });
+    YAHOO.util.Event.addListener(points[3], 'click', compass_pan, { x:fixmystreet.tilewidth, y:0 });
+    YAHOO.util.Event.addListener(points[5], 'click', compass_pan, { x:-fixmystreet.tilewidth, y:0 });
+    YAHOO.util.Event.addListener(points[7], 'click', compass_pan, { x:0, y:-fixmystreet.tileheight });
+    YAHOO.util.Event.addListener(points[0], 'click', compass_pan, { x:fixmystreet.tilewidth, y:fixmystreet.tileheight });
+    YAHOO.util.Event.addListener(points[2], 'click', compass_pan, { x:-fixmystreet.tilewidth, y:fixmystreet.tileheight });
+    YAHOO.util.Event.addListener(points[6], 'click', compass_pan, { x:fixmystreet.tilewidth, y:-fixmystreet.tileheight });
+    YAHOO.util.Event.addListener(points[8], 'click', compass_pan, { x:-fixmystreet.tilewidth, y:-fixmystreet.tileheight });
     YAHOO.util.Event.addListener(points[4], 'click', compass_pan, { home:1, orig_x:drag_x, orig_y:drag_y });
 });
 
@@ -47,7 +47,7 @@ YAHOO.util.Event.onContentReady('map', function() {
     // if (document.getElementById('mapForm') && (/safari/.test(ua) || /Konqueror/.test(ua))) return;
     if (document.getElementById('map').offsetWidth > 510) return;
     new YAHOO.util.DDMap('map');
-    update_tiles(start_x, start_y, true);
+    update_tiles(fixmystreet.start_x, fixmystreet.start_y, true);
 });
 
 
@@ -57,8 +57,8 @@ YAHOO.util.Event.onContentReady('mapForm', function() {
             this.onsubmit = function() { return false; };
         }
 
-        this.x.value = fms_x + 2;
-        this.y.value = fms_y + 2;
+        this.x.value = fixmystreet.x + 2;
+        this.y.value = fixmystreet.y + 2;
         /*
         if (swfu && swfu.getStats().files_queued > 0) {
             swfu.startUpload();
@@ -142,21 +142,21 @@ YAHOO.util.Event.addListener('all_pins_link', 'click', function(e) {
     if (this.innerHTML == 'Include stale reports') {
         this.innerHTML = 'Hide stale reports';
         document.getElementById('all_pins').value = '1';
-        load_pins(fms_x, fms_y);
+        load_pins(fixmystreet.x, fixmystreet.y);
     } else if (this.innerHTML == 'Cynnwys hen adroddiadau') {
         this.innerHTML = 'Cuddio hen adroddiadau';
         document.getElementById('all_pins').value = '1';
         welsh = 1;
-        load_pins(fms_x, fms_y);
+        load_pins(fixmystreet.x, fixmystreet.y);
     } else if (this.innerHTML == 'Cuddio hen adroddiadau') {
         this.innerHTML = 'Cynnwys hen adroddiadau';
         welsh = 1;
         document.getElementById('all_pins').value = '';
-        load_pins(fms_x, fms_y);
+        load_pins(fixmystreet.x, fixmystreet.y);
     } else if (this.innerHTML == 'Hide stale reports') {
         this.innerHTML = 'Include stale reports';
         document.getElementById('all_pins').value = '';
-        load_pins(fms_x, fms_y);
+        load_pins(fixmystreet.x, fixmystreet.y);
     }
     if (welsh) {
         document.getElementById('hide_pins_link').innerHTML = 'Cuddio pinnau';
@@ -254,8 +254,6 @@ var swfu_settings = {
 // I love the global
 var tile_x = 0;
 var tile_y = 0;
-var tilewidth = 254;
-var tileheight = 254;
 
 var myAnim;
 function pan(x, y) {
@@ -285,22 +283,22 @@ function update_tiles(dx, dy, force) {
     drag.style.left = drag_x + 'px';
     drag.style.top = drag_y + 'px';
 
-    var horizontal = Math.floor(old_drag_x/tilewidth) - Math.floor(drag_x/tilewidth);
-    var vertical = Math.floor(old_drag_y/tileheight) - Math.floor(drag_y/tileheight);
+    var horizontal = Math.floor(old_drag_x/fixmystreet.tilewidth) - Math.floor(drag_x/fixmystreet.tilewidth);
+    var vertical = Math.floor(old_drag_y/fixmystreet.tileheight) - Math.floor(drag_y/fixmystreet.tileheight);
     if (!horizontal && !vertical && !force) return;
-    fms_x += horizontal;
+    fixmystreet.x += horizontal;
     
     tile_x += horizontal;
-    fms_y -= vertical;
+    fixmystreet.y -= vertical;
     tile_y += vertical;
-    var url = [ root_path + '/tilma/tileserver/10k-full/', fms_x, '-', (fms_x+5), ',', fms_y, '-', (fms_y+5), '/JSON' ].join('');
+    var url = [ root_path + '/tilma/tileserver/' + fixmystreet.tile_type + '/', fixmystreet.x, '-', (fixmystreet.x+5), ',', fixmystreet.y, '-', (fixmystreet.y+5), '/JSON' ].join('');
     YAHOO.util.Connect.asyncRequest('GET', url, {
         success: urls_loaded, failure: urls_not_loaded,
         argument: [tile_x, tile_y]
     });
 
     if (force) return;
-    load_pins(fms_x, fms_y);
+    load_pins(fixmystreet.x, fixmystreet.y);
 }
 
 function load_pins(x, y) {
@@ -349,8 +347,8 @@ function urls_loaded(o) {
             if (tiles[i][j] == null) continue;
             var jj = (j + o.argument[0]);
             var id = [ 't', ii, '.', jj ].join('');
-            var xx = fms_x+j;
-            var yy = fms_y+5-i;
+            var xx = fixmystreet.x+j;
+            var yy = fixmystreet.y+5-i;
             var img = document.getElementById(id);
             if (img) {
                 if (!img.galleryimg) { img.galleryimg = false; }
@@ -359,15 +357,15 @@ function urls_loaded(o) {
                 continue;
             }
             img = cloneNode();
-            img.style.top = ((ii-2)*tileheight) + 'px';
-            img.style.left = ((jj-2)*tilewidth) + 'px';
+            img.style.top = ((ii-2)*fixmystreet.tileheight) + 'px';
+            img.style.left = ((jj-2)*fixmystreet.tilewidth) + 'px';
             img.name = [ 'tile_', xx, '.', yy ].join('')
             img.id = id;
             if (browser) {
                 img.style.visibility = 'hidden';
                 img.onload=function() { this.style.visibility = 'visible'; }
             }
-            img.src = 'http://tilma.mysociety.org/tileserver/10k-full/' + tiles[i][j];
+            img.src = 'http://tilma.mysociety.org/tileserver/' + fixmystreet.tile_type + '/' + tiles[i][j];
             tileCache[id] = { x: xx, y: yy, t: img };
             drag.appendChild(img);
         }
@@ -387,8 +385,8 @@ function cloneNode() {
         }
         img.onclick = drag_check;
         img.style.position = 'absolute';
-        img.style.width = tilewidth + 'px';
-        img.style.height = tileheight + 'px';
+        img.style.width = fixmystreet.tilewidth + 'px';
+        img.style.height = fixmystreet.tileheight + 'px';
         img.galleryimg = false;
         img.alt = 'Loading...';
     } else {
@@ -400,7 +398,7 @@ function cloneNode() {
 var tileCache=[];
 function cleanCache() {
     for (var i in tileCache) {
-        if (tileCache[i].x < fms_x || tileCache[i].x > fms_x+5 || tileCache[i].y < fms_y || tileCache[i].y > fms_y+5) {
+        if (tileCache[i].x < fixmystreet.x || tileCache[i].x > fixmystreet.x+5 || tileCache[i].y < fixmystreet.y || tileCache[i].y > fixmystreet.y+5) {
             var t = tileCache[i].t;
             t.parentNode.removeChild(t); // de-leak?
             delete tileCache[i];
