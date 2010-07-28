@@ -43,7 +43,7 @@ sub main {
         $out = mySociety::Alert::generate_rss($type, $xsl, $qs, [$id], undef, $cobrand. $q);
     } elsif ($type eq 'area_problems') {
         my $id = $q->param('id');
-        my $va_info = mySociety::MaPit::get_voting_area_info($id);
+        my $va_info = mySociety::MaPit::call('area', $id);
         my $qs = '/'.$id;
         $out = mySociety::Alert::generate_rss($type, $xsl, $qs, [$id], { NAME => $va_info->{name} }, $cobrand, $q);
     } elsif ($type eq 'all_problems') {

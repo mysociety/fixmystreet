@@ -14,7 +14,6 @@ use Error qw(:try);
 use CrossSell;
 use mySociety::AuthToken;
 use mySociety::Locale;
-use mySociety::MaPit;
 use mySociety::Web qw(ent);
 
 sub main {

@@ -191,7 +191,7 @@ fieldset div, #fieldset div {
 
 #map_box {
     float: right;
-    width: 510px;
+    width: 502px; /* Two pixels more than width of #map */
     position: relative;
     padding-left: 20px;
     background-color: #ffffff;
@@ -205,8 +205,8 @@ p#copyright {
 
 #map {
     border: solid 1px #000000;
-    width: 508px;
-    height: 508px;
+    width: 500px; /* Twice a tile width */
+    height: 500px;
     overflow: hidden;
     position: relative;
     background-color: #f1f1f1;
@@ -214,8 +214,8 @@ p#copyright {
 
 #drag {
     position: absolute;
-    width: 508px;
-    height: 508px;
+    width: 500px;
+    height: 500px;
     right: 0;
     top: 0;
 }

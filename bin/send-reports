@@ -15,6 +15,7 @@ require 5.8.0;
 use FindBin;
 use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../commonlib/perllib";
+use Encode;
 use Error qw(:try);
 use File::Slurp;
 use CGI; # Trying awkward kludge
@@ -107,7 +108,7 @@ foreach my $row (@$unsent) {
     if ($site eq 'emptyhomes') {
 
         my $council = $row->{council};
-        $areas_info = mySociety::MaPit::get_voting_areas_info([ $council ]);
+        $areas_info = mySociety::MaPit::call('areas', $council);
         my $name = $areas_info->{$council}->{name};
         my ($council_email, $confirmed, $note) = dbh()->selectrow_array(
             "SELECT email,confirmed,note FROM contacts WHERE deleted='f'
@@ -131,7 +132,7 @@ foreach my $row (@$unsent) {
         my @all_councils = split /,|\|/, $row->{council};
         my ($councils, $missing) = $row->{council} =~ /^([\d,]+)(?:\|([\d,]+))?/;
         my @councils = split /,/, $councils;
-        $areas_info = mySociety::MaPit::get_voting_areas_info(\@all_councils);
+        $areas_info = mySociety::MaPit::call('areas', \@all_councils);
         my (@dear, %recips);
         my $all_confirmed = 1;
         foreach my $council (@councils) {
@@ -266,7 +267,7 @@ if ($verbose) {
 # Will do for now :)
 sub essex_contact {
     my ($E, $N) = @_;
-    my $district = mySociety::MaPit::get_voting_areas_by_location({easting=>$E, northing=>$N}, 'polygon', 'DIS');
+    my $district = mySociety::MaPit::call('point', "27700/$E,$N", type => 'DIS');
     ($district) = keys %$district;
     my $email;
     $email = 'eastarea' if $district == 2315 || $district == 2312;
@@ -280,7 +281,7 @@ sub essex_contact {
 # Oxfordshire has different contact addresses depending upon the district
 sub oxfordshire_contact {
     my ($E, $N) = @_;
-    my $district = mySociety::MaPit::get_voting_areas_by_location({easting=>$E, northing=>$N}, 'polygon', 'DIS');
+    my $district = mySociety::MaPit::call('point', "27700/$E,$N", type => 'DIS');
     ($district) = keys %$district;
     my $email;
     $email = 'northernarea' if $district == 2419 || $district == 2420 || $district == 2421;
@@ -315,9 +316,11 @@ sub post_easthants_message {
     $eh_service ||= EastHantsWSDL->on_fault(sub { my($soap, $res) = @_; die ref $res ? $res->faultstring : $soap->transport->status, "\n"; });
     try {
         # ServiceName, RemoteCreatedBy, Salutation, FirstName, Name, Email, Telephone, HouseNoName, Street, Town, County, Country, Postcode, Comments, FurtherInfo, ImageURL
+        my $message = ent(encode_utf8($h{message}));
+        my $name = ent(encode_utf8($h{name}));
         my $result = $eh_service->INPUTFEEDBACK(
-            $h{category}, 'FixMyStreet', '', '', ent($h{name}), $h{email}, $h{phone},
-            '', '', '', '', '', '', ent($h{message}), 'Yes', $h{image_url}
+            $h{category}, 'FixMyStreet', '', '', $name, $h{email}, $h{phone},
+            '', '', '', '', '', '', $message, 'Yes', $h{image_url}
         );
         $return = 0 if $result eq 'Report received';
     } otherwise {

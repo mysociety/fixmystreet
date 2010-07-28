@@ -33,28 +33,27 @@ sub main {
 
     my ($one_council, $area_type, $area_name);
     if ($q_council =~ /^(\d\d)([a-z]{2})?([a-z]{2})?$/i) {
-        my $va_info = mySociety::MaPit::get_voting_area_info(uc $q_council);
+        my $va_info = mySociety::MaPit::call('area', uc $q_council);
         $area_name = Page::short_name($va_info->{name});
         if (length($q_council) == 6) {
-            $va_info = mySociety::MaPit::get_voting_area_info($va_info->{parent_area_id});
+            $va_info = mySociety::MaPit::call('area', $va_info->{parent_area});
             $area_name = Page::short_name($va_info->{name}) . '/' . $area_name;
         }
         $rss = '/rss' if $rss;
         print $q->redirect($base_url . $rss . '/reports/' . $area_name);
         return;
     } elsif ($q_council =~ /\D/) {
-        (my $qc = $q_council) =~ s/ and / & /;
-        my $areas = mySociety::MaPit::get_voting_area_by_name($qc, $mySociety::VotingArea::council_parent_types, 10);
+        my $areas = mySociety::MaPit::call('areas', $q_council, type => $mySociety::VotingArea::council_parent_types, min_generation=>10 );
         if (keys %$areas == 1) {
             ($one_council) = keys %$areas;
             $area_type = $areas->{$one_council}->{type};
             $area_name = $areas->{$one_council}->{name};
         } else {
             foreach (keys %$areas) {
-                if ($areas->{$_}->{name} =~ /^\Q$qc\E (Borough|City|District|County) Council$/) {
+                if ($areas->{$_}->{name} =~ /^\Q$q_council\E (Borough|City|District|County) Council$/) {
                     $one_council = $_;
                     $area_type = $areas->{$_}->{type};
-                    $area_name = $qc;
+                    $area_name = $q_council;
                 }
             }
         }
@@ -63,7 +62,7 @@ sub main {
             return;
         }
     } elsif ($q_council =~ /^\d+$/) {
-        my $va_info = mySociety::MaPit::get_voting_area_info($q_council);
+        my $va_info = mySociety::MaPit::call('area', $q_council);
         $area_name = $va_info->{name};
         print $q->redirect($base_url . '/reports/' . Page::short_name($area_name));
         return;
@@ -74,9 +73,9 @@ sub main {
     my $q_ward = $q->param('ward') || '';
     my $ward;
     if ($one_council && $q_ward) {
-        my $qw = mySociety::MaPit::get_voting_area_by_name($q_ward, $mySociety::VotingArea::council_child_types, 10);
+        my $qw = mySociety::MaPit::call('areas', $q_ward, type => $mySociety::VotingArea::council_child_types, min_generation => 10);
         foreach my $id (sort keys %$qw) {
-            if ($qw->{$id}->{parent_area_id} == $one_council) {
+            if ($qw->{$id}->{parent_area} == $one_council) {
                 $ward = $id;
                 last;
             }
@@ -116,21 +115,21 @@ sub main {
         return;
     }
 
-    my %councils;
+    my $areas_info;
     if ($one_council) {
-        %councils = ( $one_council => 1 );
+        $areas_info = mySociety::MaPit::call('areas', $one_council);
     } else {
         # Show all councils on main report page
         my $ignore = 'LGD';
         $ignore .= '|CTY' if $q->{site} eq 'emptyhomes';
         my @types = grep { !/$ignore/ } @$mySociety::VotingArea::council_parent_types;
-        %councils = map { $_ => 1 } @{mySociety::MaPit::get_areas_by_type(\@types, 10)};
+        $areas_info = mySociety::MaPit::call('areas', [ @types ], min_generation=>10 );
     }
 
     my $problems = Problems::council_problems($ward, $one_council); 
 
     my (%fixed, %open);
-    my $re_councils = join('|', keys %councils);
+    my $re_councils = join('|', keys %$areas_info);
     foreach my $row (@$problems) {
         if (!$row->{council}) {
             # Problem was not sent to any council, add to possible councils
@@ -148,7 +147,6 @@ sub main {
         }
     }
 
-    my $areas_info = mySociety::MaPit::get_voting_areas_info([keys %councils]);
     if (!$one_council) {
         print Page::header($q, title=>_('Summary reports'), expires=>'+1h');
         print $q->p(
@@ -162,7 +160,7 @@ sub main {
             print '<th>' . _('Old problems,<br>state unknown') . '</th>';
         }
         print '<th>' . _('Recently fixed') . '</th><th>' . _('Older fixed') . '</th></tr>';
-        foreach (sort { $areas_info->{$a}->{name} cmp $areas_info->{$b}->{name} } keys %councils) {
+        foreach (sort { $areas_info->{$a}->{name} cmp $areas_info->{$b}->{name} } keys %$areas_info) {
             print '<tr align="center"';
             ++$c;
             if ($areas_info->{$_}->{generation_high}==10) {

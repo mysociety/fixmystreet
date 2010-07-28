@@ -110,12 +110,12 @@ sub contact_details {
 <div class="contact-details">
 <p>$sitename is a service provided by mySociety, which is the project of a 
 registered charity. The charity is called UK Citizens Online Democracy and is charity number 1076346.</p>
-<p>mySociety can be contacted by email at <a href="mailto:team\@mysociety.org">team\@mysociety.org</a>,
+<p>mySociety can be contacted by email at <a href="mailto:hello&#64;mysociety.org">hello&#64;mysociety.org</a>,
 or by post at:</p>
-<p>mySociety.org<br>
-12 Duke's Road<br>
-London<br>
-WC1H 9AD<br>
+<p>mySociety<br>
+PO Box 839<br>
+Oxford<br>
+OX1 9LG<br>
 UK</p>
 </div>
 EOF

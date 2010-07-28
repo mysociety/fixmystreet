@@ -189,17 +189,11 @@ sub admin_councils_list ($) {
 
     # Table of councils
     print $q->h2("Councils");
-    my @councils;
     my $ignore = 'LGD';
     $ignore .= '|CTY' if $q->{site} eq 'emptyhomes';
     my @types = grep { !/$ignore/ } @$mySociety::VotingArea::council_parent_types; # LGD are NI councils
-    foreach my $type (@types) {
-        my $areas = mySociety::MaPit::get_areas_by_type($type);
-        push @councils, @$areas;
-    }
-    my $councils = mySociety::MaPit::get_voting_areas_info(\@councils);
-    my @councils_ids = keys %$councils;
-    @councils_ids = sort { $councils->{$a}->{name} cmp $councils->{$b}->{name} } @councils_ids;
+    my $areas = mySociety::MaPit::call('areas', \@types);
+    my @councils_ids = sort { $areas->{$a}->{name} cmp $areas->{$b}->{name} } keys %$areas;
     my $bci_info = dbh()->selectall_hashref("
         select area_id, count(*) as c, count(case when deleted then 1 else null end) as deleted,
             count(case when confirmed then 1 else null end) as confirmed
@@ -214,7 +208,7 @@ sub admin_councils_list ($) {
         print $q->p(join($q->br(), 
             map { 
                 $q->a({ href => NewURL($q, area_id => $_, page => 'councilcontacts') }, 
-                  $councils->{$_}->{name}) . " " .
+                  $areas->{$_}->{name}) . " " .
                     ($bci_info->{$_} && $q->{site} ne 'emptyhomes' ?
                         $bci_info->{$_}->{c} . ' addresses'
                     : '')
@@ -306,7 +300,7 @@ sub admin_council_contacts ($$) {
     $q->delete_all(); # No need for state!
 
     # Title
-    my $mapit_data = mySociety::MaPit::get_voting_area_info($area_id);
+    my $mapit_data = mySociety::MaPit::call('area', $area_id);
     my $title = 'Council contacts for ' . $mapit_data->{name};
     print html_head($q, $title);
     print $q->h1($title);
@@ -314,7 +308,7 @@ sub admin_council_contacts ($$) {
 
     # Example postcode, link to list of problem reports
     my $links_html;
-    my $example_postcode = mySociety::MaPit::get_example_postcode($area_id);
+    my $example_postcode = mySociety::MaPit::call('area/example_postcode', $area_id);
     if ($example_postcode) {
         $links_html .= $q->a({ href => mySociety::Config::get('BASE_URL') . '/?pc=' . $q->escape($example_postcode) }, 
                 "Example postcode " . $example_postcode) . " | ";
@@ -387,7 +381,7 @@ sub admin_council_edit ($$$) {
     my $bci_data = select_all("select * from contacts where area_id = ? and category = ?", $area_id, $category);
     $bci_data = $bci_data->[0];
     my $bci_history = select_all("select * from contacts_history where area_id = ? and category = ? order by contacts_history_id", $area_id, $category);
-    my $mapit_data = mySociety::MaPit::get_voting_area_info($area_id);
+    my $mapit_data = mySociety::MaPit::call('area', $area_id);
     
     # Title
     my $title = 'Council contacts for ' . $mapit_data->{name};
@@ -395,7 +389,7 @@ sub admin_council_edit ($$$) {
     print $q->h1($title);
 
     # Example postcode
-    my $example_postcode = mySociety::MaPit::get_example_postcode($area_id);
+    my $example_postcode = mySociety::MaPit::call('area/example_postcode', $area_id);
     if ($example_postcode) {
         print $q->p("Example postcode: ",
             $q->a({ href => mySociety::Config::get('BASE_URL') . '/?pc=' . $q->escape($example_postcode) }, 

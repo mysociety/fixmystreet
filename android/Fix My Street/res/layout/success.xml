@@ -25,7 +25,7 @@
 			android:layout_height="wrap_content" android:paddingBottom="5dip"
 			android:paddingTop="5dip" android:paddingLeft="5dip"
 			android:paddingRight="5dip"
-			android:text="You'll receive an email from us soon. Please click on the confirmation link, and provide a few more details." />
+			android:text="You'll receive an email from us soon. Please click on the confirmation link, check the location carefully, and provide a few more details." />
 
 		<TextView android:id="@+id/hello_text" android:layout_width="fill_parent"
 			android:layout_height="wrap_content" android:paddingBottom="5dip"
