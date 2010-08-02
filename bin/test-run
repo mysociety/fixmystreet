@@ -378,7 +378,7 @@ sub do_alert {
     # sign up for alerts in an area
     my $postcode = 'EH1 2NG';
     my $x = 2015; my $e = 325000;
-    my $y = 4175; my $n = 673533;
+    my $y = 4175; my $n = 673548;
     my $messages = english_fms_messages();
     submit_postcode('', $postcode, 'Problems in this area');
     $wth->browser_follow_link(text => 'Email me new local problems');
@@ -418,7 +418,7 @@ sub do_eha_alert {
     # sign up for alerts in an area
     my $postcode = 'EH1 2NG';
     my $x = 2015; my $e = 325000;
-    my $y = 4175; my $n = 673533;
+    my $y = 4175; my $n = 673548;
     my @texts = ('Eiddo gwag yn yr ardal hon', 
                  'Adrodd am eiddo gwag', 
                  'Nawr, gwiriwch eich e-bost', 
