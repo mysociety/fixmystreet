@@ -84,11 +84,6 @@ sub rss_local_problems {
     } elsif ($e && $n) {
         $x = int(Page::os_to_tile($e));
         $y = int(Page::os_to_tile($n));
-        print $q->redirect(-location => "$base/rss/$x/$y");
-        return '';
-    } elsif ($x && $y) {
-        $e = Page::tile_to_os($x);
-        $n = Page::tile_to_os($y);
         ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($e, $n, 'G');
     } elsif ($pc) {
         my $error;
