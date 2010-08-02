@@ -67,19 +67,24 @@ sub rss_local_problems {
     my $lon = $q->param('lon');
     my $e = $q->param('e');
     my $n = $q->param('n');
+    my $d = $q->param('d');
+    $d = '' unless $d =~ /^\d+$/;
+    my $d_str = '';
+    $d_str = "/$d" if $d;
+
     my $cobrand = Page::get_cobrand($q);
     my $base = Cobrand::base_url($cobrand);
     if ($lat) { # In the UK, it'll never be 0 :)
         ($e, $n) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
         $e = int($e + 0.5);
         $n = int($n + 0.5);
-        print $q->redirect(-location => "$base/rss/n/$e,$n");
+        print $q->redirect(-location => "$base/rss/n/$e,$n$d_str");
         return '';
     } elsif ($x && $y) {
         # 5000/31 as initial scale factor for these RSS feeds, now variable so redirect.
         $e = int( ($x * 5000/31) + 0.5 );
         $n = int( ($y * 5000/31) + 0.5 );
-        print $q->redirect(-location => "$base/rss/n/$e,$n");
+        print $q->redirect(-location => "$base/rss/n/$e,$n$d_str");
         return '';
     } elsif ($e && $n) {
         $x = int(Page::os_to_tile($e));
@@ -93,14 +98,13 @@ sub rss_local_problems {
             $error = shift;
         };
         unless ($error) {
-            print $q->redirect(-location => "$base/rss/n/$e,$n");
+            print $q->redirect(-location => "$base/rss/n/$e,$n$d_str");
         }
         return '';
     } else {
         die "Missing E/N, x/y, lat/lon, or postcode parameter in RSS feed";
     }
     my $qs = "?x=$x;y=$y";
-    my $d = $q->param('d');
     if ($d) {
         $qs .= ";d=$d";
         $d = 100 if $d > 100;
