@@ -867,7 +867,7 @@ sub display_location {
         map_end => Page::display_map_end(1),
         url_home => Cobrand::url($cobrand, '/', $q),
         url_rss => Cobrand::url($cobrand, NewURL($q, -retain => 1, -url=> "/rss/n/$easting,$northing", pc => undef, x => undef, 'y' => undef), $q),
-        url_email => Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/alert', x=>$x, 'y'=>$y, feed=>"local:$x:$y"), $q),
+        url_email => Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/alert', x=>$x, 'y'=>$y, feed=>"local:$easting:$northing"), $q),
         url_skip => $url_skip,
         email_me => _('Email me new local problems'),
         rss_alt => _('RSS feed'),

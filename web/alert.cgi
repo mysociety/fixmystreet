@@ -205,7 +205,7 @@ for the county council.'))) . '</div><div id="rss_buttons">';
     $dist = $dist / 10.0;
 
     my $checked = '';
-    $checked = ' checked' if $q->param('feed') && $q->param('feed') eq "local:$x:$y";
+    $checked = ' checked' if $q->param('feed') && $q->param('feed') eq "local:$e:$n";
     my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'alerts', $q);
     my $pics = Cobrand::recent_photos($cobrand, 5, $e, $n, $dist);
     $pics = '<div id="alert_photos">' . $q->h2(_('Photos of recent nearby reports')) . $pics . '</div>' if $pics;
@@ -233,11 +233,11 @@ feed, or enter your email address to subscribe to an email alert.'));
     my $rss_label = sprintf(_('Problems within %skm of this location'), $dist);
     $out .= <<EOF;
 <p id="rss_local">
-<input type="radio" name="feed" id="local:$x:$y" value="local:$x:$y"$checked>
-<label for="local:$x:$y">$rss_label</label>
+<input type="radio" name="feed" id="local:$e:$n" value="local:$e:$n"$checked>
+<label for="local:$e:$n">$rss_label</label>
 EOF
-    my $rss_feed = Cobrand::url($cobrand, "/rss/$x,$y", $q);
-    my $default_link = Cobrand::url($cobrand, "/alert?type=local;feed=local:$x:$y", $q);
+    my $rss_feed = Cobrand::url($cobrand, "/rss/n/$e,$n", $q);
+    my $default_link = Cobrand::url($cobrand, "/alert?type=local;feed=local:$e:$n", $q);
     my $rss_details = _('(a default distance which covers roughly 200,000 people)');
     $out .= $rss_details;
     $out .= " <a href='$rss_feed'><img src='/i/feed.png' width='16' height='16' title='"
@@ -374,7 +374,7 @@ sub alert_rss {
         print $q->redirect($url);
         return;
     } elsif ($feed =~ /^local:(\d+):(\d+)$/) {
-        $url = $base_url . '/rss/' . $1 . ',' . $2;
+        $url = $base_url . '/rss/n/' . $1 . ',' . $2;
         $url .= "?" . $extra_params if ($extra_params);
         print $q->redirect($url);
         return;
