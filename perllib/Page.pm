@@ -637,7 +637,7 @@ sub os_to_tile {
     return $_[0] / SCALE_FACTOR;
 }
 sub tile_to_os {
-    return $_[0] * SCALE_FACTOR;
+    return int($_[0] * SCALE_FACTOR + 0.5);
 }
 
 sub click_to_tile {

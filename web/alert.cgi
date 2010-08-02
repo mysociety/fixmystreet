@@ -243,10 +243,10 @@ EOF
     $out .= " <a href='$rss_feed'><img src='/i/feed.png' width='16' height='16' title='"
         . _('RSS feed of nearby problems') . "' alt='" . _('RSS feed') . "' border='0'></a>";
     $out .= '</p> <p id="rss_local_alt">' . _('(alternatively the RSS feed can be customised, within');
-    my $rss_feed_2k  = Cobrand::url($cobrand, "/rss/$x,$y/2", $q);
-    my $rss_feed_5k  = Cobrand::url($cobrand, "/rss/$x,$y/5", $q);
-    my $rss_feed_10k = Cobrand::url($cobrand, "/rss/$x,$y/10", $q);
-    my $rss_feed_20k = Cobrand::url($cobrand, "/rss/$x,$y/20", $q);
+    my $rss_feed_2k  = Cobrand::url($cobrand, "/rss/n/$e,$n/2", $q);
+    my $rss_feed_5k  = Cobrand::url($cobrand, "/rss/n/$e,$n/5", $q);
+    my $rss_feed_10k = Cobrand::url($cobrand, "/rss/n/$e,$n/10", $q);
+    my $rss_feed_20k = Cobrand::url($cobrand, "/rss/n/$e,$n/20", $q);
     $out .= <<EOF;
  <a href="$rss_feed_2k">2km</a> / <a href="$rss_feed_5k">5km</a>
 / <a href="$rss_feed_10k">10km</a> / <a href="$rss_feed_20k">20km</a>)

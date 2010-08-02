@@ -513,7 +513,7 @@ sub display_form {
     my $all_councils = mySociety::MaPit::call('point', "27700/$easting,$northing", type => $parent_types);
 
     # Let cobrand do a check
-    my ($success, $error_msg) = Cobrand::council_check($cobrand, $all_councils, $q, 'submit_problem');    
+    my ($success, $error_msg) = Cobrand::council_check($cobrand, $all_councils, $q, 'submit_problem');
     if (!$success){
         return front_page($q, $error_msg);
     }
@@ -801,14 +801,17 @@ sub display_location {
     }
     return Page::geocode_choice($error, '/', $q) if (ref($error) eq 'ARRAY');
     return front_page($q, $error) if ($error);
-    my $parent_types = $mySociety::VotingArea::council_parent_types;
-    if ($easting && $northing) {
-        my $all_councils = mySociety::MaPit::call('point', "27700/$easting,$northing", type => $parent_types);
-        my ($success, $error_msg) = Cobrand::council_check($cobrand, $all_councils, $q, 'display_location');    
-        if (!$success){
-             return front_page($q, $error_msg);
-        }
+
+    if (!$easting || !$northing) {
+        $easting = Page::tile_to_os($x);
+        $northing = Page::tile_to_os($y);
     }
+
+    # Check this location is okay to be displayed for the cobrand
+    my $parent_types = $mySociety::VotingArea::council_parent_types;
+    my $all_councils = mySociety::MaPit::call('point', "27700/$easting,$northing", type => $parent_types);
+    my ($success, $error_msg) = Cobrand::council_check($cobrand, $all_councils, $q, 'display_location');
+    return front_page($q, $error_msg) unless $success;
 
     # Deal with pin hiding/age
     my ($hide_link, $hide_text, $all_link, $all_text, $interval);
@@ -863,7 +866,7 @@ sub display_location {
         'map' => Page::display_map($q, x => $x, 'y' => $y, type => 1, pins => $pins, post => $map_links ),
         map_end => Page::display_map_end(1),
         url_home => Cobrand::url($cobrand, '/', $q),
-        url_rss => Cobrand::url($cobrand, NewURL($q, -retain => 1, -url=> "/rss/$x,$y", pc => undef, x => undef, 'y' => undef), $q),
+        url_rss => Cobrand::url($cobrand, NewURL($q, -retain => 1, -url=> "/rss/n/$easting,$northing", pc => undef, x => undef, 'y' => undef), $q),
         url_email => Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/alert', x=>$x, 'y'=>$y, feed=>"local:$x:$y"), $q),
         url_skip => $url_skip,
         email_me => _('Email me new local problems'),
@@ -884,7 +887,7 @@ sub display_location {
     );
 
     my %params = (
-        rss => [ _('Recent local problems, FixMyStreet'), "/rss/$x,$y" ]
+        rss => [ _('Recent local problems, FixMyStreet'), "/rss/n/$easting,$northing" ]
     );
 
     return (Page::template_include('map', $q, Page::template_root($q), %vars), %params);
