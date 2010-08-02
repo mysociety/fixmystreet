@@ -41,8 +41,8 @@ sub test_geocode_string() {
     
     # geocode a straightforward string, expect success 
     my ($x, $y, $easting, $northing, $error) = Page::geocode_string('Buckingham Palace', $q);
-    ok($x == 3279, 'example x coordinate generated') or diag("Got $x");
-    ok($y == 1113, 'example y coordinate generated') or diag("Got $y");;
+    ok($x == 3280, 'example x coordinate generated') or diag("Got $x");
+    ok($y == 1114, 'example y coordinate generated') or diag("Got $y");;
     ok($easting == 529044, 'example easting generated') or diag("Got $easting");
     ok($northing == 179619, 'example northing generated') or diag("Got $northing");
     ok(! defined($error), 'should not generate error for simple example') or diag("Got $error");
