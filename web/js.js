@@ -57,8 +57,8 @@ YAHOO.util.Event.onContentReady('mapForm', function() {
             this.onsubmit = function() { return false; };
         }
 
-        this.x.value = fixmystreet.x + 2;
-        this.y.value = fixmystreet.y + 2;
+        this.x.value = fixmystreet.x + 3;
+        this.y.value = fixmystreet.y + 3;
         /*
         if (swfu && swfu.getStats().files_queued > 0) {
             swfu.startUpload();
@@ -309,8 +309,8 @@ function load_pins(x, y) {
         }
         var ajax_params = [ 'sx=' + document.getElementById('formX').value, 
                             'sy=' + document.getElementById('formY').value, 
-                            'x='  + (x+2),
-                            'y='  + (y+2), 
+                            'x='  + (x+3),
+                            'y='  + (y+3), 
                             'all_pins=' +  all_pins ];
 
 	if (document.getElementById('extra_param')) {

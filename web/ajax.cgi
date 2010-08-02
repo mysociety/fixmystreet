@@ -19,7 +19,7 @@ sub main {
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 
-    # Our current X/Y bottom left of visible map
+    # Our current X/Y middle of visible map
     my $x = $input{x};
     my $y = $input{y};
     $x ||= 0; $x += 0;

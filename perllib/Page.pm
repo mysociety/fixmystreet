@@ -423,14 +423,14 @@ sub display_map {
     my $x = int($params{x})<=0 ? 0 : $params{x};
     my $y = int($params{y})<=0 ? 0 : $params{y};
     my $url = mySociety::Config::get('TILES_URL');
-    my $tiles_url = $url . $x . '-' . ($x+1) . ',' . $y . '-' . ($y+1) . '/RABX';
+    my $tiles_url = $url . ($x-1) . '-' . $x . ',' . ($y-1) . '-' . $y . '/RABX';
     my $tiles = LWP::Simple::get($tiles_url);
     return '<div id="map_box"> <div id="map"><div id="drag">' . _("Unable to fetch the map tiles from the tile server.") . '</div></div></div><div id="side">' if !$tiles;
     my $tileids = RABX::unserialise($tiles);
-    my $tl = $x . '.' . ($y+1);
-    my $tr = ($x+1) . '.' . ($y+1);
-    my $bl = $x . '.' . $y;
-    my $br = ($x+1) . '.' . $y;
+    my $tl = ($x-1) . '.' . $y;
+    my $tr = $x . '.' . $y;
+    my $bl = ($x-1) . '.' . ($y-1);
+    my $br = $x . '.' . ($y-1);
     return '<div id="side">' if (!$tileids->[0][0] || !$tileids->[0][1] || !$tileids->[1][0] || !$tileids->[1][1]);
     my $tl_src = $url . $tileids->[0][0];
     my $tr_src = $url . $tileids->[0][1];
@@ -467,8 +467,8 @@ EOF
 <script type="text/javascript">
 $root_path_js
 var fixmystreet = {
-    'x': $x - 2,
-    'y': $y - 2,
+    'x': $x - 3,
+    'y': $y - 3,
     'start_x': $px,
     'start_y': $py,
     'tile_type': '$tile_type',
@@ -537,16 +537,12 @@ sub map_pins {
     my ($q, $x, $y, $sx, $sy, $interval) = @_;
 
     my $pins = '';
-    my $min_e = Page::tile_to_os($x-2); # Extra space to left/below due to rounding, I think
-    my $min_n = Page::tile_to_os($y-2);
-    #my $map_le = Page::tile_to_os($x);
-    #my $map_ln = Page::tile_to_os($y);
-    my $mid_e = Page::tile_to_os($x+1);
-    my $mid_n = Page::tile_to_os($y+1);
-    #my $map_re = Page::tile_to_os($x+2);
-    #my $map_rn = Page::tile_to_os($y+2);
-    my $max_e = Page::tile_to_os($x+3);
-    my $max_n = Page::tile_to_os($y+3);
+    my $min_e = Page::tile_to_os($x-3); # Extra space to left/below due to rounding, I think
+    my $min_n = Page::tile_to_os($y-3);
+    my $mid_e = Page::tile_to_os($x);
+    my $mid_n = Page::tile_to_os($y);
+    my $max_e = Page::tile_to_os($x+2);
+    my $max_n = Page::tile_to_os($y+2);
     my $cobrand = Page::get_cobrand($q);
     # list of problems aoround map can be limited, but should show all pins
     my $around_limit = Cobrand::on_map_list_limit($cobrand);
@@ -619,17 +615,17 @@ EOF
 }
 
 # P is easting or northing
-# BL is bottom left tile reference of displayed map
+# C is centre tile reference of displayed map
 sub os_to_px {
-    my ($p, $bl, $invert) = @_;
-    return tile_to_px(os_to_tile($p), $bl, $invert);
+    my ($p, $c, $invert) = @_;
+    return tile_to_px(os_to_tile($p), $c, $invert);
 }
 
 # Convert tile co-ordinates to pixel co-ordinates from top left of map
-# BL is bottom left tile reference of displayed map
+# C is centre tile reference of displayed map
 sub tile_to_px {
-    my ($p, $bl, $invert) = @_;
-    $p = TILE_WIDTH * ($p - $bl);
+    my ($p, $c, $invert) = @_;
+    $p = TILE_WIDTH * ($p - $c + 1);
     $p = 2 * TILE_WIDTH - $p if $invert;
     $p = int($p + .5 * ($p <=> 0));
     return $p;
@@ -667,7 +663,7 @@ sub os_to_px_with_adjust {
             $py = Page::os_to_px($northing, $y_tile, 1);
         }
         if ($px > 380) {
-            $x_tile--;
+            $x_tile++;
             $px = Page::os_to_px($easting, $x_tile);
         }
     }
@@ -945,8 +941,8 @@ sub geocode {
             my $yy = Page::os_to_tile($northing);
             $x = int($xx);
             $y = int($yy);
-            $x -= 1 if ($xx - $x < 0.5);
-            $y -= 1 if ($yy - $y < 0.5);
+            $x += 1 if ($xx - $x > 0.5);
+            $y += 1 if ($yy - $y > 0.5);
         }
     } else {
         ($x, $y, $easting, $northing, $error) = geocode_string($s, $q);
@@ -971,8 +967,8 @@ sub geocoded_string_coordinates {
               my $yy = Page::os_to_tile($northing);
               $x = int($xx);
               $y = int($yy);
-              $x -= 1 if ($xx - $x < 0.5);
-              $y -= 1 if ($yy - $y < 0.5);
+              $x += 1 if ($xx - $x > 0.5);
+              $y += 1 if ($yy - $y > 0.5);
           } catch Error::Simple with {
               $error = shift;
               $error = _('That location does not appear to be in Britain; please try again.')

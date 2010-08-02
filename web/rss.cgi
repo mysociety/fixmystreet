@@ -25,13 +25,13 @@ sub main {
     my $out;
     if ($type eq 'local_problems') {
         $out = rss_local_problems($q);
-	return unless $out;
+        return unless $out;
     } elsif ($type eq 'new_updates') {
         my $id = $q->param('id');
         my $problem = Problems::fetch_problem($id);
         if (!$problem) {
-	   print $q->header(-status=>'404 Not Found',-type=>'text/html');
-           return;
+            print $q->header(-status=>'404 Not Found',-type=>'text/html');
+            return;
         }
         my $qs = 'report/' . $id;
         $out = mySociety::Alert::generate_rss($type, $xsl, $qs, [$id], undef, $cobrand, $q);
@@ -72,8 +72,8 @@ sub rss_local_problems {
         ($e, $n) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
         $x = int(Page::os_to_tile($e));
         $y = int(Page::os_to_tile($n));
-	print $q->redirect(-location => "$base/rss/$x/$y");
-	return '';
+        print $q->redirect(-location => "$base/rss/$x/$y");
+        return '';
     } elsif ($x && $y) {
         $e = Page::tile_to_os($x);
         $n = Page::tile_to_os($y);

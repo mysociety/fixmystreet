@@ -478,8 +478,8 @@ sub display_form {
         # Map was clicked on
         $pin_x = Page::click_to_tile($pin_tile_x, $pin_x);
         $pin_y = Page::click_to_tile($pin_tile_y, $pin_y, 1);
-        $input{x} ||= int($pin_x) - 1;
-        $input{y} ||= int($pin_y) - 1;
+        $input{x} ||= int($pin_x);
+        $input{y} ||= int($pin_y);
         $px = Page::tile_to_px($pin_x, $input{x});
         $py = Page::tile_to_px($pin_y, $input{y}, 1);
         $easting = Page::tile_to_os($pin_x);
@@ -927,12 +927,12 @@ sub display_problem {
     my ($x, $y, $x_tile, $y_tile, $px, $py) = Page::os_to_px_with_adjust($q, $problem->{easting}, $problem->{northing}, $input{x}, $input{y});
 
     # Try and have pin near centre of map
-    if (!$input{x} && $x - $x_tile < 0.5) {
-        $x_tile -= 1;
+    if (!$input{x} && $x - $x_tile > 0.5) {
+        $x_tile += 1;
         $px = Page::os_to_px($problem->{easting}, $x_tile);
     }
-    if (!$input{y} && $y - $y_tile < 0.5) {
-        $y_tile -= 1;
+    if (!$input{y} && $y - $y_tile > 0.5) {
+        $y_tile += 1;
         $py = Page::os_to_px($problem->{northing}, $y_tile, 1);
     }
 
