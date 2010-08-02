@@ -1,12 +1,10 @@
 #!/usr/bin/perl -w -I../perllib
-
+#
 # index.cgi:
 # Main code for FixMyStreet
 #
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
-#
-# $Id: index.cgi,v 1.334 2010-01-15 16:55:26 matthew Exp $
 
 use strict;
 use Standard;
