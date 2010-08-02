@@ -520,7 +520,7 @@ sub do_rss {
     $wth->browser_get($base_url . '/rss/n/407097,286935');
     $wth->browser_check_contents('New local problems on FixMyStreet');
     $wth->browser_get($base_url . '/rss/pc/SW1A1AA');
-    die "Postcode redirect failed" unless $wth->browser_uri() =~ m{/rss/529090,179645$};
+    die "Postcode redirect failed" unless $wth->browser_uri() =~ m{/rss/n/529090,179645$};
     $wth->browser_get($base_url . '/rss/area/Birmingham');
     die "One-tier redirect failed" unless $wth->browser_uri() =~ m{/rss/reports/Birmingham$};
     $wth->browser_get($base_url . '/rss/reports/Birmingham');
