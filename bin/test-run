@@ -377,13 +377,13 @@ sub do_alert {
    
     # sign up for alerts in an area
     my $postcode = 'EH1 2NG';
-    my $x = 2015;
-    my $y = 4175;
+    my $x = 2015; my $e = 325000;
+    my $y = 4175; my $n = 673533;
     my $messages = english_fms_messages();
     submit_postcode('', $postcode, 'Problems in this area');
     $wth->browser_follow_link(text => 'Email me new local problems');
     $wth->browser_submit_form(form_name => 'alerts',
-                              fields => {feed => "local:" . $x . ":" . $y, 
+                              fields => {feed => "local:" . $e . ":" . $n,
                                          rznvy => email_n(2)} ); 
     $wth->browser_check_contents('Nearly Done!');
     my $confirmation_email = $wth->email_get_containing(
@@ -417,8 +417,8 @@ sub do_alert {
 sub do_eha_alert {
     # sign up for alerts in an area
     my $postcode = 'EH1 2NG';
-    my $x = 2015;
-    my $y = 4175;
+    my $x = 2015; my $e = 325000;
+    my $y = 4175; my $n = 673533;
     my @texts = ('Eiddo gwag yn yr ardal hon', 
                  'Adrodd am eiddo gwag', 
                  'Nawr, gwiriwch eich e-bost', 
@@ -428,7 +428,7 @@ sub do_eha_alert {
     submit_postcode('cy.emptyhomes.', $postcode, $texts[0]);
     $wth->browser_follow_link(text => 'Anfonwch fanylion eiddo gwag lleol newydd ataf i drwy\'r e-bost');
     $wth->browser_submit_form(form_name => 'alerts',
-                              fields => {feed => "local:" . $x . ":" . $y,
+                              fields => {feed => "local:" . $e . ":" . $n,
                                          rznvy => email_n(4)} );
     $wth->browser_check_contents($texts[2]);
     my $confirmation_email = $wth->email_get_containing(
