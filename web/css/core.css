@@ -100,6 +100,7 @@ p#expl {
     margin: 1em auto;
     padding: 1em;
     -moz-border-radius: 1em;
+    -webkit-border-radius: 1em;
     border-radius: 1em;
 }
 
@@ -126,6 +127,7 @@ p#expl {
     text-align: center;
     width: 5.5em;
     -moz-border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
     border-radius: 0.5em;
     float: left;
     margin: 0 1em 1em;
