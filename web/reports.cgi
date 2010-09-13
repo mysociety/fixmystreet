@@ -225,7 +225,7 @@ sub main {
             }
 
             if ($open{$one_council}) {
-                my $col = list_problems($q, _('New problems'), $open{$one_council}{new}, $all);
+                my $col = list_problems($q, _('New problems'), $open{$one_council}{new}, $all, 0);
                 my $old = [];
                 if ($q->{site} eq 'emptyhomes') {
                     push @$old, @{$open{$one_council}{older}} if $open{$one_council}{older};
@@ -233,15 +233,15 @@ sub main {
                 } else {
                     $old = $open{$one_council}{older};
                 }
-                $col .= list_problems($q, _('Older problems'), $old, $all);
+                $col .= list_problems($q, _('Older problems'), $old, $all, 0);
                 if ($q->{site} ne 'emptyhomes') {
-                    $col .= list_problems($q, _('Old problems, state unknown'), $open{$one_council}{unknown}, $all);
+                    $col .= list_problems($q, _('Old problems, state unknown'), $open{$one_council}{unknown}, $all, 0);
                 }
                 $vars{col_problems} = $col;
             }
             if ($fixed{$one_council}) {
-                my $col = list_problems($q, _('Recently fixed'), $fixed{$one_council}{new}, $all);
-                $col .= list_problems($q, _('Old fixed'), $fixed{$one_council}{old}, $all);
+                my $col = list_problems($q, _('Recently fixed'), $fixed{$one_council}{new}, $all, 1);
+                $col .= list_problems($q, _('Old fixed'), $fixed{$one_council}{old}, $all, 1);
                 $vars{col_fixed} = $col;
             }
             print Page::header($q, context => 'reports', title=>sprintf(_('%s - Summary reports'), $name), rss => [ sprintf(_('Problems within %s, FixMyStreet'), $name), Cobrand::url($cobrand, $rss_url, $q) ]);
@@ -259,11 +259,11 @@ sub add_row {
     my $type = ($row->{duration} > 2 * $fourweeks)
         ? 'unknown'
         : ($row->{age} > $fourweeks ? 'older' : 'new');
-    my $entry = [ $row->{id}, $row->{title}, $row->{detail}, $councils ];
+    $row->{councils} = $councils;
     #Fixed problems are either old or new
-    push @{$fixed->{$council}{$duration}}, $entry if $row->{state} eq 'fixed';
+    push @{$fixed->{$council}{$duration}}, $row if $row->{state} eq 'fixed';
     # Open problems are either unknown, older, or new
-    push @{$open->{$council}{$type}}, $entry if $row->{state} eq 'confirmed';
+    push @{$open->{$council}{$type}}, $row if $row->{state} eq 'confirmed';
 }
 
 sub summary_cell {
@@ -274,18 +274,18 @@ sub summary_cell {
 }
 
 sub list_problems {
-    my ($q, $title, $problems, $all) = @_;
+    my ($q, $title, $problems, $all, $fixed) = @_;
     return '' unless $problems;
     my $cobrand = Page::get_cobrand($q);
     my $out = "<h3>$title</h3>\n<ul>";
-    foreach (@$problems) {
-        my $url = Cobrand::url($cobrand, "/report/" .  $_->[0], $q); 
+    foreach (sort { $fixed ? ($a->{duration} <=> $b->{duration}) : ($a->{age} <=> $b->{age}) } @$problems) {
+        my $url = Cobrand::url($cobrand, "/report/" .  $_->{id}, $q); 
         $out .= '<li><a href="' . $url . '">';
-        $out .= ent($_->[1]);
+        $out .= ent($_->{title});
         $out .= '</a>';
-        $out .= ' <small>(sent to both)</small>' if $_->[3]>1;
-        $out .= ' <small>(not sent to council)</small>' if $_->[3]==0 && $q->{site} ne 'emptyhomes';
-        $out .= '<br><small>' . ent($_->[2]) . '</small>' if $all;
+        $out .= ' <small>(sent to both)</small>' if $_->{councils}>1;
+        $out .= ' <small>(not sent to council)</small>' if $_->{councils}==0 && $q->{site} ne 'emptyhomes';
+        $out .= '<br><small>' . ent($_->{detail}) . '</small>' if $all;
         $out .= '</li>';
     }
     $out .= '</ul>';
