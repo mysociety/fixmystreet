@@ -932,7 +932,9 @@ sub mapit_check_error {
 sub geocode {
     my ($s, $q) = @_;
     my ($x, $y, $easting, $northing, $error);
-    if (mySociety::PostcodeUtil::is_valid_postcode($s)) {
+    if ($s =~ /^\d+$/) {
+        $error = 'FixMyStreet is a UK-based website that currently works in England, Scotland, and Wales. Please enter either a postcode, or a Great British street name and area.';
+    } elsif (mySociety::PostcodeUtil::is_valid_postcode($s)) {
         my $location = mySociety::MaPit::call('postcode', $s);
         unless ($error = mapit_check_error($location)) {
             $easting = $location->{easting};
@@ -954,7 +956,6 @@ sub geocoded_string_coordinates {
     my ($js, $q) = @_;
     my ($x, $y, $easting, $northing, $error);
     my ($accuracy) = $js =~ /"Accuracy" *: *(\d)/;
-    my $cobrand = get_cobrand($q);
     if ($accuracy < 4) {  
         $error = _('Sorry, that location appears to be too general; please be more specific.');
     } else {
