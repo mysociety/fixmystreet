@@ -223,7 +223,7 @@ sub fetch_problem {
         from problem where id=? and state in ('confirmed','fixed', 'hidden')
         $site_restriction", {}, $id
     );
-    $p->{service} =~ s/_/ /g;
+    $p->{service} =~ s/_/ /g if $p && $p->{service};
     return $p;
 }
 
