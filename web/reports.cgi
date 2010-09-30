@@ -34,6 +34,10 @@ sub main {
     my ($one_council, $area_type, $area_name);
     if ($q_council =~ /^(\d\d)([a-z]{2})?([a-z]{2})?$/i) {
         my $va_info = mySociety::MaPit::call('area', uc $q_council);
+        if ($va_info->{error}) { # Given a bad/old ONS code
+            print $q->redirect($base_url . '/reports');
+            return;
+        }
         $area_name = Page::short_name($va_info->{name});
         if (length($q_council) == 6) {
             $va_info = mySociety::MaPit::call('area', $va_info->{parent_area});
