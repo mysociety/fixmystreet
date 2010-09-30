@@ -67,7 +67,7 @@ sub rss_local_problems {
     my $lon = $q->param('lon');
     my $e = $q->param('e');
     my $n = $q->param('n');
-    my $d = $q->param('d');
+    my $d = $q->param('d') || '';
     $d = '' unless $d =~ /^\d+$/;
     my $d_str = '';
     $d_str = "/$d" if $d;
