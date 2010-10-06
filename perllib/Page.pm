@@ -863,7 +863,7 @@ sub display_problem_updates($$) {
     my $cobrand = get_cobrand($q);
     my $updates = select_all(
         "select id, name, extract(epoch from confirmed) as confirmed, text,
-         mark_fixed, mark_open, (photo is not null) as has_photo, cobrand
+         mark_fixed, mark_open, photo, cobrand
          from comment where problem_id = ? and state='confirmed'
          order by confirmed", $id);
     my $out = '';
@@ -899,8 +899,9 @@ sub display_problem_updates($$) {
             }
             my $cobrand = get_cobrand($q);
             my $display_photos = Cobrand::allow_photo_display($cobrand);
-            if ($display_photos && $row->{has_photo}) {
-                $out .= '<p><img alt="" height=100 src="/photo?c=' . $row->{id} . '"></p>';
+            if ($display_photos && $problem->{photo}) {
+                my $dims = Image::Size::html_imgsize(\$problem->{photo});
+                $out .= "<p><img alt='' $dims src='/photo?c=$row->{id}'></p>";
             }
             $out .= '</div>';
             $out .= '</div>';
