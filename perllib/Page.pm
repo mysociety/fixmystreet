@@ -900,7 +900,7 @@ sub display_problem_updates($$) {
             my $cobrand = get_cobrand($q);
             my $display_photos = Cobrand::allow_photo_display($cobrand);
             if ($display_photos && $row->{has_photo}) {
-                $out .= '<p><img alt="" height=100 src="/photo?tn=1;c=' . $row->{id} . '"></p>';
+                $out .= '<p><img alt="" height=100 src="/photo?c=' . $row->{id} . '"></p>';
             }
             $out .= '</div>';
             $out .= '</div>';
