@@ -899,8 +899,8 @@ sub display_problem_updates($$) {
             }
             my $cobrand = get_cobrand($q);
             my $display_photos = Cobrand::allow_photo_display($cobrand);
-            if ($display_photos && $problem->{photo}) {
-                my $dims = Image::Size::html_imgsize(\$problem->{photo});
+            if ($display_photos && $row->{photo}) {
+                my $dims = Image::Size::html_imgsize(\$row->{photo});
                 $out .= "<p><img alt='' $dims src='/photo?c=$row->{id}'></p>";
             }
             $out .= '</div>';
