@@ -7,11 +7,7 @@
 # $Id: crontab.ugly,v 1.23 2010-01-07 10:32:24 louise Exp $
 
 PATH=/usr/local/bin:/usr/bin:/bin
-!!(* if ($vhost eq "matthew.fixmystreet.com") { *)!!
-MAILTO=matthew@mysociety.org
-!!(* } else {*)!!
-MAILTO=team@fixmystreet.com
-!!(* } *)!!
+MAILTO=cron-!!(*= $site *)!!@mysociety.org
 
 # On only one server
 !!(* if ($vhost eq 'reportemptyhomes.com') { *)!!
