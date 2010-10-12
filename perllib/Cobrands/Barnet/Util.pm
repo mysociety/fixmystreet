@@ -15,6 +15,7 @@ use strict;
 use Carp;
 use URI::Escape;
 use mySociety::Web qw(ent);
+use mySociety::VotingArea;
 
 sub new {
     my $class = shift;
@@ -63,13 +64,20 @@ sub enter_postcode_text {
 
 =item council_check COUNCILS QUERY CONTEXT
 
-Return a boolean indicating whether the councils for the location passed any
-extra checks defined by the cobrand ousing data in the query
+Return a boolean indicating whether COUNCILS are okay for the location
+in the QUERY, and an error message appropriate to the CONTEXT.
 
 =cut
 
 sub council_check {
-    my ($self, $councils, $q, $context) = @_;
+    my ($self, $params, $q, $context) = @_;
+    my $councils;
+    if ($params->{all_councils}) {
+        $councils = $params->{all_councils};
+    } elsif ($params->{e}) {
+        my $parent_types = $mySociety::VotingArea::council_parent_types;
+        $councils = mySociety::MaPit::call('point', "27700/$params->{e},$params->{n}", type => $parent_types);
+    }
     my $council_match = defined $councils->{2489};
     if ($council_match) {
         return 1;

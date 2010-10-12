@@ -106,7 +106,7 @@ sub alert_list {
 
     my $areas = mySociety::MaPit::call('point', "27700/$e,$n", type => \@types);
     my $cobrand = Page::get_cobrand($q);
-    my ($success, $error_msg) = Cobrand::council_check($cobrand, $areas, $q, 'alert');    
+    my ($success, $error_msg) = Cobrand::council_check($cobrand, { all_councils => $areas }, $q, 'alert');    
     if (!$success){
         return alert_front_page($q, $error_msg);
     }
