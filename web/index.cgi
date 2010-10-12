@@ -808,7 +808,7 @@ sub display_location {
     }
 
     # Check this location is okay to be displayed for the cobrand
-    my ($success, $error_msg) = Cobrand::council_check($cobrand, { e => $easting, n => $northing }, $all_councils, $q, 'display_location');
+    my ($success, $error_msg) = Cobrand::council_check($cobrand, { e => $easting, n => $northing }, $q, 'display_location');
     return front_page($q, $error_msg) unless $success;
 
     # Deal with pin hiding/age
