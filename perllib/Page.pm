@@ -918,6 +918,9 @@ sub mapit_check_error {
         return $location->{error};
     }
     my $island = $location->{coordsyst};
+    if (!$island) {
+        return _("Sorry, that appears to be a Crown dependency postcode, which we don't cover.");
+    }
     if ($island eq 'I') {
         return _("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.");
     }

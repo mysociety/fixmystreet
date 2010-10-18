@@ -513,7 +513,7 @@ sub display_form {
     my $all_councils = mySociety::MaPit::call('point', "27700/$easting,$northing", type => $parent_types);
 
     # Let cobrand do a check
-    my ($success, $error_msg) = Cobrand::council_check($cobrand, $all_councils, $q, 'submit_problem');
+    my ($success, $error_msg) = Cobrand::council_check($cobrand, { all_councils => $all_councils }, $q, 'submit_problem');
     if (!$success){
         return front_page($q, $error_msg);
     }
@@ -808,9 +808,7 @@ sub display_location {
     }
 
     # Check this location is okay to be displayed for the cobrand
-    my $parent_types = $mySociety::VotingArea::council_parent_types;
-    my $all_councils = mySociety::MaPit::call('point', "27700/$easting,$northing", type => $parent_types);
-    my ($success, $error_msg) = Cobrand::council_check($cobrand, $all_councils, $q, 'display_location');
+    my ($success, $error_msg) = Cobrand::council_check($cobrand, { e => $easting, n => $northing }, $q, 'display_location');
     return front_page($q, $error_msg) unless $success;
 
     # Deal with pin hiding/age

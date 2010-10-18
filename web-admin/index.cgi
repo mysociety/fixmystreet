@@ -309,7 +309,7 @@ sub admin_council_contacts ($$) {
     # Example postcode, link to list of problem reports
     my $links_html;
     my $example_postcode = mySociety::MaPit::call('area/example_postcode', $area_id);
-    if ($example_postcode) {
+    if ($example_postcode && ! ref $example_postcode) {
         $links_html .= $q->a({ href => mySociety::Config::get('BASE_URL') . '/?pc=' . $q->escape($example_postcode) }, 
                 "Example postcode " . $example_postcode) . " | ";
     }
@@ -390,7 +390,7 @@ sub admin_council_edit ($$$) {
 
     # Example postcode
     my $example_postcode = mySociety::MaPit::call('area/example_postcode', $area_id);
-    if ($example_postcode) {
+    if ($example_postcode && ! ref $example_postcode) {
         print $q->p("Example postcode: ",
             $q->a({ href => mySociety::Config::get('BASE_URL') . '/?pc=' . $q->escape($example_postcode) }, 
                 $example_postcode));

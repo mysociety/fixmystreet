@@ -21,6 +21,10 @@ Email: <?=$values['email']?>
 
 Details: <?=$values['detail']?>
 
+Easting: <?=$values['easting']?>
+
+Northing: <?=$values['northing']?>
+
 <?=$values['closest_address']?>----------
 
 Replies to this email will go to the user who submitted the problem.

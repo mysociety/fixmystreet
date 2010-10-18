@@ -67,6 +67,10 @@ sub main {
         }
     } elsif ($q_council =~ /^\d+$/) {
         my $va_info = mySociety::MaPit::call('area', $q_council);
+        if ($va_info->{error}) {
+            print $q->redirect($base_url . '/reports');
+            return;
+        }
         $area_name = $va_info->{name};
         print $q->redirect($base_url . '/reports/' . Page::short_name($area_name));
         return;
