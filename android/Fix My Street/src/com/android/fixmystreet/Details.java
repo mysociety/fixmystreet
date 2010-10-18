@@ -17,7 +17,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-//import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
@@ -33,11 +32,12 @@ public class Details extends Activity {
 	private String email;
 	private View submitButton;
 	//private static final String LOG_TAG = "Details";
-	public static final String PREFS_NAME = "FMS_Settings";
+	public static final String PREFS_NAME = "Settings";
 	final int NAME_WARNING = 999;
 	final int SUBJECT_WARNING = 998;
 	final int EMAIL_WARNING = 997;
 	private Bundle extras;
+	private Boolean havePicture = false;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -66,6 +66,8 @@ public class Details extends Activity {
 		if (extras != null) {
 			// Details extras
 			subject = extras.getString("subject");
+			havePicture = extras.getBoolean("photo", havePicture);
+//			Log.d(LOG_TAG, "extras havePicture" + havePicture);
 		}
 		if (subject != null) {
 			subjectET.setText(subject);
@@ -91,6 +93,7 @@ public class Details extends Activity {
 						extras.putString("name", name);
 						extras.putString("email", email);
 						extras.putString("subject", subject);
+						extras.putBoolean("photo", havePicture);
 						i.putExtras(extras);
 						startActivity(i);
 					}

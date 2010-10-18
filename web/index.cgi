@@ -1,12 +1,10 @@
 #!/usr/bin/perl -w -I../perllib
-
+#
 # index.cgi:
 # Main code for FixMyStreet
 #
 # Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
-#
-# $Id: index.cgi,v 1.334 2010-01-15 16:55:26 matthew Exp $
 
 use strict;
 use Standard;
@@ -306,16 +304,13 @@ sub submit_problem {
 
     my $areas;
     if ($input{easting} && $input{northing}) {
-        $areas = mySociety::MaPit::get_voting_areas_by_location(
-            { easting=>$input{easting}, northing=>$input{northing} },
-            'polygon', [qw(WMC CTY CED DIS DIW MTD MTW COI COP LGD LGE UTA UTE UTW LBO LBW LAC SPC WAC NIE)]
-        );
+        $areas = mySociety::MaPit::call('point', "27700/$input{easting},$input{northing}");
         if ($input{council} =~ /^[\d,]+(\|[\d,]+)?$/) {
             my $no_details = $1 || '';
             my %va = map { $_ => 1 } @$mySociety::VotingArea::council_parent_types;
             my %councils;
             foreach (keys %$areas) {
-                $councils{$_} = 1 if $va{$areas->{$_}};
+                $councils{$_} = 1 if $va{$areas->{$_}->{type}};
             }
             my @input_councils = split /,|\|/, $input{council};
             foreach (@input_councils) {
@@ -481,8 +476,8 @@ sub display_form {
         # Map was clicked on
         $pin_x = Page::click_to_tile($pin_tile_x, $pin_x);
         $pin_y = Page::click_to_tile($pin_tile_y, $pin_y, 1);
-        $input{x} ||= int($pin_x) - 1;
-        $input{y} ||= int($pin_y) - 1;
+        $input{x} ||= int($pin_x);
+        $input{y} ||= int($pin_y);
         $px = Page::tile_to_px($pin_x, $input{x});
         $py = Page::tile_to_px($pin_y, $input{y}, 1);
         $easting = Page::tile_to_os($pin_x);
@@ -515,12 +510,10 @@ sub display_form {
     $parent_types = [qw(DIS LBO MTD UTA LGD COI)] # No CTY
         if $q->{site} eq 'emptyhomes';
     # XXX: I think we want in_gb_locale around the next line, needs testing
-    my $all_councils = mySociety::MaPit::get_voting_areas_by_location(
-        { easting => $easting, northing => $northing },
-        'polygon', $parent_types);
+    my $all_councils = mySociety::MaPit::call('point', "27700/$easting,$northing", type => $parent_types);
 
     # Let cobrand do a check
-    my ($success, $error_msg) = Cobrand::council_check($cobrand, $all_councils, $q, 'submit_problem');    
+    my ($success, $error_msg) = Cobrand::council_check($cobrand, $all_councils, $q, 'submit_problem');
     if (!$success){
         return front_page($q, $error_msg);
     }
@@ -531,17 +524,15 @@ sub display_form {
     # Norwich is responsible for everything in its areas, no Norfolk
     delete $all_councils->{2233} if $all_councils->{2391};
 
-    $all_councils = [ keys %$all_councils ];
     return display_location($q, _('That spot does not appear to be covered by a council.
 If you have tried to report an issue past the shoreline, for example,
-please specify the closest point on land.')) unless @$all_councils;
-    my $areas_info = mySociety::MaPit::get_voting_areas_info($all_councils);
+please specify the closest point on land.')) unless %$all_councils;
 
     # Look up categories for this council or councils
     my $category = '';
     my (%council_ok, @categories);
     my $categories = select_all("select area_id, category from contacts
-        where deleted='f' and area_id in (" . join(',', @$all_councils) . ')');
+        where deleted='f' and area_id in (" . join(',', keys %$all_councils) . ')');
     if ($q->{site} ne 'emptyhomes') {
         @$categories = sort { $a->{category} cmp $b->{category} } @$categories;
         foreach (@$categories) {
@@ -574,7 +565,7 @@ please specify the closest point on land.')) unless @$all_councils;
     # Work out what help text to show, depending on whether we have council details
     my @councils = keys %council_ok;
     my $details;
-    if (@councils == @$all_councils) {
+    if (@councils == scalar keys %$all_councils) {
         $details = 'all';
     } elsif (@councils == 0) {
         $details = 'none';
@@ -629,7 +620,7 @@ If this is not the correct location, simply click on the map again. '));
     $vars{page_heading} = $q->h1(_('Reporting a problem'));
 
     if ($details eq 'all') {
-        my $council_list = join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @$all_councils);
+        my $council_list = join('</strong> or <strong>', map { $_->{name} } values %$all_councils);
         if ($q->{site} eq 'emptyhomes'){
             $vars{text_help} = '<p>' . sprintf(_('All the information you provide here will be sent to <strong>%s</strong>.
 On the site, we will show the subject and details of the problem, plus your
@@ -639,18 +630,18 @@ name if you give us permission.'), $council_list);
 The subject and details of the problem will be public, plus your
 name if you give us permission.'), $council_list);
         }
-        $vars{text_help} .= '<input type="hidden" name="council" value="' . join(',',@$all_councils) . '">';
+        $vars{text_help} .= '<input type="hidden" name="council" value="' . join(',', keys %$all_councils) . '">';
     } elsif ($details eq 'some') {
         my $e = Cobrand::contact_email($cobrand);
         my %councils = map { $_ => 1 } @councils;
         my @missing;
-        foreach (@$all_councils) {
+        foreach (keys %$all_councils) {
             push @missing, $_ unless $councils{$_};
         }
         my $n = @missing;
-        my $list = join(' or ', map { $areas_info->{$_}->{name} } @missing);
+        my $list = join(' or ', map { $all_councils->{$_}->{name} } @missing);
         $vars{text_help} = '<p>All the information you provide here will be sent to <strong>'
-            . join('</strong> or <strong>', map { $areas_info->{$_}->{name} } @councils)
+            . join('</strong> or <strong>', map { $all_councils->{$_}->{name} } @councils)
             . '</strong>. The subject and details of the problem will be public, plus your
 name if you give us permission.';
         $vars{text_help} .= ' We do <strong>not</strong> yet have details for the other council';
@@ -661,8 +652,8 @@ problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.";
             . '|' . join(',', @missing) . '">';
     } else {
         my $e = Cobrand::contact_email($cobrand);
-        my $list = join(' or ', map { $areas_info->{$_}->{name} } @$all_councils);
-        my $n = @$all_councils;
+        my $list = join(' or ', map { $_->{name} } values %$all_councils);
+        my $n = scalar keys %$all_councils;
         if ($q->{site} ne 'emptyhomes') {
             $vars{text_help} = '<p>We do not yet have details for the council';
             $vars{text_help} .= ($n>1) ? 's that cover' : ' that covers';
@@ -810,16 +801,17 @@ sub display_location {
     }
     return Page::geocode_choice($error, '/', $q) if (ref($error) eq 'ARRAY');
     return front_page($q, $error) if ($error);
-    my $parent_types = $mySociety::VotingArea::council_parent_types;
-    if ($easting && $northing) {
-        my $all_councils = mySociety::MaPit::get_voting_areas_by_location(
-            { easting => $easting, northing => $northing },
-              'polygon', $parent_types);
-        my ($success, $error_msg) = Cobrand::council_check($cobrand, $all_councils, $q, 'display_location');    
-        if (!$success){
-             return front_page($q, $error_msg);
-        }
+
+    if (!$easting || !$northing) {
+        $easting = Page::tile_to_os($x);
+        $northing = Page::tile_to_os($y);
     }
+
+    # Check this location is okay to be displayed for the cobrand
+    my $parent_types = $mySociety::VotingArea::council_parent_types;
+    my $all_councils = mySociety::MaPit::call('point', "27700/$easting,$northing", type => $parent_types);
+    my ($success, $error_msg) = Cobrand::council_check($cobrand, $all_councils, $q, 'display_location');
+    return front_page($q, $error_msg) unless $success;
 
     # Deal with pin hiding/age
     my ($hide_link, $hide_text, $all_link, $all_text, $interval);
@@ -874,8 +866,8 @@ sub display_location {
         'map' => Page::display_map($q, x => $x, 'y' => $y, type => 1, pins => $pins, post => $map_links ),
         map_end => Page::display_map_end(1),
         url_home => Cobrand::url($cobrand, '/', $q),
-        url_rss => Cobrand::url($cobrand, NewURL($q, -retain => 1, -url=> "/rss/$x,$y", pc => undef, x => undef, 'y' => undef), $q),
-        url_email => Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/alert', x=>$x, 'y'=>$y, feed=>"local:$x:$y"), $q),
+        url_rss => Cobrand::url($cobrand, NewURL($q, -retain => 1, -url=> "/rss/n/$easting,$northing", pc => undef, x => undef, 'y' => undef), $q),
+        url_email => Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/alert', x=>$x, 'y'=>$y, feed=>"local:$easting:$northing"), $q),
         url_skip => $url_skip,
         email_me => _('Email me new local problems'),
         rss_alt => _('RSS feed'),
@@ -895,7 +887,7 @@ sub display_location {
     );
 
     my %params = (
-        rss => [ _('Recent local problems, FixMyStreet'), "/rss/$x,$y" ]
+        rss => [ _('Recent local problems, FixMyStreet'), "/rss/n/$easting,$northing" ]
     );
 
     return (Page::template_include('map', $q, Page::template_root($q), %vars), %params);
@@ -936,12 +928,12 @@ sub display_problem {
     my ($x, $y, $x_tile, $y_tile, $px, $py) = Page::os_to_px_with_adjust($q, $problem->{easting}, $problem->{northing}, $input{x}, $input{y});
 
     # Try and have pin near centre of map
-    if (!$input{x} && $x - $x_tile < 0.5) {
-        $x_tile -= 1;
+    if (!$input{x} && $x - $x_tile > 0.5) {
+        $x_tile += 1;
         $px = Page::os_to_px($problem->{easting}, $x_tile);
     }
-    if (!$input{y} && $y - $y_tile < 0.5) {
-        $y_tile -= 1;
+    if (!$input{y} && $y - $y_tile > 0.5) {
+        $y_tile += 1;
         $py = Page::os_to_px($problem->{northing}, $y_tile, 1);
     }
 

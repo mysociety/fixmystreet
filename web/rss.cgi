@@ -25,13 +25,13 @@ sub main {
     my $out;
     if ($type eq 'local_problems') {
         $out = rss_local_problems($q);
-	return unless $out;
+        return unless $out;
     } elsif ($type eq 'new_updates') {
         my $id = $q->param('id');
         my $problem = Problems::fetch_problem($id);
         if (!$problem) {
-	   print $q->header(-status=>'404 Not Found',-type=>'text/html');
-           return;
+            print $q->header(-status=>'404 Not Found',-type=>'text/html');
+            return;
         }
         my $qs = 'report/' . $id;
         $out = mySociety::Alert::generate_rss($type, $xsl, $qs, [$id], undef, $cobrand, $q);
@@ -43,7 +43,7 @@ sub main {
         $out = mySociety::Alert::generate_rss($type, $xsl, $qs, [$id], undef, $cobrand. $q);
     } elsif ($type eq 'area_problems') {
         my $id = $q->param('id');
-        my $va_info = mySociety::MaPit::get_voting_area_info($id);
+        my $va_info = mySociety::MaPit::call('area', $id);
         my $qs = '/'.$id;
         $out = mySociety::Alert::generate_rss($type, $xsl, $qs, [$id], { NAME => $va_info->{name} }, $cobrand, $q);
     } elsif ($type eq 'all_problems') {
@@ -65,18 +65,30 @@ sub rss_local_problems {
     my $y = $q->param('y');
     my $lat = $q->param('lat');
     my $lon = $q->param('lon');
+    my $e = $q->param('e');
+    my $n = $q->param('n');
+    my $d = $q->param('d') || '';
+    $d = '' unless $d =~ /^\d+$/;
+    my $d_str = '';
+    $d_str = "/$d" if $d;
+
     my $cobrand = Page::get_cobrand($q);
     my $base = Cobrand::base_url($cobrand);
-    my ($e, $n);
     if ($lat) { # In the UK, it'll never be 0 :)
         ($e, $n) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
+        $e = int($e + 0.5);
+        $n = int($n + 0.5);
+        print $q->redirect(-location => "$base/rss/n/$e,$n$d_str");
+        return '';
+    } elsif ($x && $y) {
+        # 5000/31 as initial scale factor for these RSS feeds, now variable so redirect.
+        $e = int( ($x * 5000/31) + 0.5 );
+        $n = int( ($y * 5000/31) + 0.5 );
+        print $q->redirect(-location => "$base/rss/n/$e,$n$d_str");
+        return '';
+    } elsif ($e && $n) {
         $x = int(Page::os_to_tile($e));
         $y = int(Page::os_to_tile($n));
-	print $q->redirect(-location => "$base/rss/$x/$y");
-	return '';
-    } elsif ($x && $y) {
-        $e = Page::tile_to_os($x);
-        $n = Page::tile_to_os($y);
         ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($e, $n, 'G');
     } elsif ($pc) {
         my $error;
@@ -86,14 +98,13 @@ sub rss_local_problems {
             $error = shift;
         };
         unless ($error) {
-            print $q->redirect(-location => "$base/rss/$x/$y");
+            print $q->redirect(-location => "$base/rss/n/$e,$n$d_str");
         }
         return '';
     } else {
-        die "Missing x/y, lat/lon, or postcode parameter in RSS feed";
+        die "Missing E/N, x/y, lat/lon, or postcode parameter in RSS feed";
     }
     my $qs = "?x=$x;y=$y";
-    my $d = $q->param('d');
     if ($d) {
         $qs .= ";d=$d";
         $d = 100 if $d > 100;

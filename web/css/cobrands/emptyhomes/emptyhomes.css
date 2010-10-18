@@ -81,6 +81,10 @@ blockquote {
     float: left;
 }
 
+#header img {
+    margin-left: 0.5em;
+}
+
 #content {
     width: 100%; /* Must specify a width or IE goes crazy wrong! */
     position: relative;

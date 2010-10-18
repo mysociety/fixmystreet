@@ -70,7 +70,7 @@ foreach my $row (@$unsent) {
     next unless (Cobrand::email_host($cobrand));
     my ($councils, $missing) = $row->{council} =~ /^([\d,]+)(?:\|([\d,]+))?/;
     my @councils = split /,/, $councils;
-    my $areas_info = mySociety::MaPit::get_voting_areas_info(\@all_councils);
+    my $areas_info = mySociety::MaPit::call('areas', \@all_councils);
     my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/questionnaire");
 
     my %h = map { $_ => $row->{$_} } qw/name title detail category/;

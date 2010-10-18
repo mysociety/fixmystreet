@@ -47,6 +47,11 @@ BEGIN {
     mySociety::Config::set_file("$dir/../conf/general");
 }
 
+use constant TILE_WIDTH => mySociety::Config::get('TILES_WIDTH');
+use constant TIF_SIZE_M => mySociety::Config::get('TILES_TIFF_SIZE_METRES');
+use constant TIF_SIZE_PX => mySociety::Config::get('TILES_TIFF_SIZE_PIXELS');
+use constant SCALE_FACTOR => TIF_SIZE_M / (TIF_SIZE_PX / TILE_WIDTH);
+
 my $lastmodified;
 
 sub do_fastcgi {
@@ -409,7 +414,7 @@ sub display_map {
     $params{pins} ||= '';
     $params{pre} ||= '';
     $params{post} ||= '';
-    my $mid_point = 254;
+    my $mid_point = TILE_WIDTH; # Map is 2 TILE_WIDTHs in size, square.
     if ($q->{site} eq 'barnet') { # Map is c. 380px wide
         $mid_point = 189;
     }
@@ -418,14 +423,14 @@ sub display_map {
     my $x = int($params{x})<=0 ? 0 : $params{x};
     my $y = int($params{y})<=0 ? 0 : $params{y};
     my $url = mySociety::Config::get('TILES_URL');
-    my $tiles_url = $url . $x . '-' . ($x+1) . ',' . $y . '-' . ($y+1) . '/RABX';
+    my $tiles_url = $url . ($x-1) . '-' . $x . ',' . ($y-1) . '-' . $y . '/RABX';
     my $tiles = LWP::Simple::get($tiles_url);
     return '<div id="map_box"> <div id="map"><div id="drag">' . _("Unable to fetch the map tiles from the tile server.") . '</div></div></div><div id="side">' if !$tiles;
     my $tileids = RABX::unserialise($tiles);
-    my $tl = $x . '.' . ($y+1);
-    my $tr = ($x+1) . '.' . ($y+1);
-    my $bl = $x . '.' . $y;
-    my $br = ($x+1) . '.' . $y;
+    my $tl = ($x-1) . '.' . $y;
+    my $tr = $x . '.' . $y;
+    my $bl = ($x-1) . '.' . ($y-1);
+    my $br = $x . '.' . ($y-1);
     return '<div id="side">' if (!$tileids->[0][0] || !$tileids->[0][1] || !$tileids->[1][0] || !$tileids->[1][1]);
     my $tl_src = $url . $tileids->[0][0];
     my $tr_src = $url . $tileids->[0][1];
@@ -455,31 +460,42 @@ EOF
     } else {
         $img_type = '<img';
     }
-    my $imgw = '254px';
-    my $imgh = '254px';
+    my $imgw = TILE_WIDTH . 'px';
+    my $tile_width = TILE_WIDTH;
+    my $tile_type = mySociety::Config::get('TILES_TYPE');
     $out .= <<EOF;
 <script type="text/javascript">
-var fms_x = $x - 2; var fms_y = $y - 2;
-var start_x = $px; var start_y = $py;
 $root_path_js
+var fixmystreet = {
+    'x': $x - 3,
+    'y': $y - 3,
+    'start_x': $px,
+    'start_y': $py,
+    'tile_type': '$tile_type',
+    'tilewidth': $tile_width,
+    'tileheight': $tile_width
+};
 </script>
 <div id="map_box">
 $params{pre}
     <div id="map"><div id="drag">
-        $img_type alt="NW map tile" id="t2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0;">$img_type alt="NE map tile" id="t2.3" name="tile_$tr" src="$tr_src" style="top:0px; left:$imgw;"><br>$img_type alt="SW map tile" id="t3.2" name="tile_$bl" src="$bl_src" style="top:$imgh; left:0;">$img_type alt="SE map tile" id="t3.3" name="tile_$br" src="$br_src" style="top:$imgh; left:$imgw;">
+        $img_type alt="NW map tile" id="t2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0;">$img_type alt="NE map tile" id="t2.3" name="tile_$tr" src="$tr_src" style="top:0px; left:$imgw;"><br>$img_type alt="SW map tile" id="t3.2" name="tile_$bl" src="$bl_src" style="top:$imgw; left:0;">$img_type alt="SE map tile" id="t3.3" name="tile_$br" src="$br_src" style="top:$imgw; left:$imgw;">
         <div id="pins">$params{pins}</div>
     </div>
 EOF
-    if (Cobrand::show_watermark($cobrand)) {
+    if (Cobrand::show_watermark($cobrand) && mySociety::Config::get('TILES_TYPE') ne 'streetview') {
         $out .= '<div id="watermark"></div>';
     }
     $out .= compass($q, $x, $y);
-    my $copyright = _('Crown copyright. All rights reserved. Ministry of Justice');
-    my $license_info = Cobrand::license_info($cobrand);
-    $license_info = "100037819&nbsp;2008" unless $license_info;
+    my $copyright;
+    if (mySociety::Config::get('TILES_TYPE') eq 'streetview') {
+        $copyright = _('Map contains Ordnance Survey data &copy; Crown copyright and database right 2010.');
+    } else {
+        $copyright = _('&copy; Crown copyright. All rights reserved. Ministry of Justice 100037819&nbsp;2008.');
+    }
     $out .= <<EOF;
     </div>
-    <p id="copyright">&copy; $copyright $license_info</p>
+    <p id="copyright">$copyright</p>
 $params{post}
 EOF
     $out .= '</div>';
@@ -521,16 +537,12 @@ sub map_pins {
     my ($q, $x, $y, $sx, $sy, $interval) = @_;
 
     my $pins = '';
-    my $min_e = Page::tile_to_os($x-2); # Extra space to left/below due to rounding, I think
-    my $min_n = Page::tile_to_os($y-2);
-    #my $map_le = Page::tile_to_os($x);
-    #my $map_ln = Page::tile_to_os($y);
-    my $mid_e = Page::tile_to_os($x+1);
-    my $mid_n = Page::tile_to_os($y+1);
-    #my $map_re = Page::tile_to_os($x+2);
-    #my $map_rn = Page::tile_to_os($y+2);
-    my $max_e = Page::tile_to_os($x+3);
-    my $max_n = Page::tile_to_os($y+3);
+    my $min_e = Page::tile_to_os($x-3); # Extra space to left/below due to rounding, I think
+    my $min_n = Page::tile_to_os($y-3);
+    my $mid_e = Page::tile_to_os($x);
+    my $mid_n = Page::tile_to_os($y);
+    my $max_e = Page::tile_to_os($x+2);
+    my $max_n = Page::tile_to_os($y+2);
     my $cobrand = Page::get_cobrand($q);
     # list of problems aoround map can be limited, but should show all pins
     my $around_limit = Cobrand::on_map_list_limit($cobrand);
@@ -603,18 +615,18 @@ EOF
 }
 
 # P is easting or northing
-# BL is bottom left tile reference of displayed map
+# C is centre tile reference of displayed map
 sub os_to_px {
-    my ($p, $bl, $invert) = @_;
-    return tile_to_px(os_to_tile($p), $bl, $invert);
+    my ($p, $c, $invert) = @_;
+    return tile_to_px(os_to_tile($p), $c, $invert);
 }
 
 # Convert tile co-ordinates to pixel co-ordinates from top left of map
-# BL is bottom left tile reference of displayed map
+# C is centre tile reference of displayed map
 sub tile_to_px {
-    my ($p, $bl, $invert) = @_;
-    $p = 254 * ($p - $bl);
-    $p = 508 - $p if $invert;
+    my ($p, $c, $invert) = @_;
+    $p = TILE_WIDTH * ($p - $c + 1);
+    $p = 2 * TILE_WIDTH - $p if $invert;
     $p = int($p + .5 * ($p <=> 0));
     return $p;
 }
@@ -622,18 +634,18 @@ sub tile_to_px {
 # Tile co-ordinates are linear scale of OS E/N
 # Will need more generalising when more zooms appear
 sub os_to_tile {
-    return $_[0] / (5000/31);
+    return $_[0] / SCALE_FACTOR;
 }
 sub tile_to_os {
-    return $_[0] * (5000/31);
+    return int($_[0] * SCALE_FACTOR + 0.5);
 }
 
 sub click_to_tile {
     my ($pin_tile, $pin, $invert) = @_;
-    $pin -= 254 while $pin > 254;
-    $pin += 254 while $pin < 0;
-    $pin = 254 - $pin if $invert; # image submits measured from top down
-    return $pin_tile + $pin / 254;
+    $pin -= TILE_WIDTH while $pin > TILE_WIDTH;
+    $pin += TILE_WIDTH while $pin < 0;
+    $pin = TILE_WIDTH - $pin if $invert; # image submits measured from top down
+    return $pin_tile + $pin / TILE_WIDTH;
 }
 
 sub os_to_px_with_adjust {
@@ -651,7 +663,7 @@ sub os_to_px_with_adjust {
             $py = Page::os_to_px($northing, $y_tile, 1);
         }
         if ($px > 380) {
-            $x_tile--;
+            $x_tile++;
             $px = Page::os_to_px($easting, $x_tile);
         }
     }
@@ -799,7 +811,7 @@ sub display_problem_meta_line($$) {
         if ($problem->{whensent}) {
             $problem->{council} =~ s/\|.*//g;
             my @councils = split /,/, $problem->{council};
-            my $areas_info = mySociety::MaPit::get_voting_areas_info(\@councils);
+            my $areas_info = mySociety::MaPit::call('areas', \@councils);
             my $council = join(' and ', map { $areas_info->{$_}->{name} } @councils);
             $out .= '<small class="council_sent_info">';
             $out .= $q->br() . sprintf(_('Sent to %s %s later'), $council, prettify_duration($problem->{whensent}, 'minute'));
@@ -851,7 +863,7 @@ sub display_problem_updates($$) {
     my $cobrand = get_cobrand($q);
     my $updates = select_all(
         "select id, name, extract(epoch from confirmed) as confirmed, text,
-         mark_fixed, mark_open, (photo is not null) as has_photo, cobrand
+         mark_fixed, mark_open, photo, cobrand
          from comment where problem_id = ? and state='confirmed'
          order by confirmed", $id);
     my $out = '';
@@ -887,8 +899,9 @@ sub display_problem_updates($$) {
             }
             my $cobrand = get_cobrand($q);
             my $display_photos = Cobrand::allow_photo_display($cobrand);
-            if ($display_photos && $row->{has_photo}) {
-                $out .= '<p><img alt="" height=100 src="/photo?tn=1;c=' . $row->{id} . '"></p>';
+            if ($display_photos && $row->{photo}) {
+                my $dims = Image::Size::html_imgsize(\$row->{photo});
+                $out .= "<p><img alt='' $dims src='/photo?c=$row->{id}'></p>";
             }
             $out .= '</div>';
             $out .= '</div>';
@@ -896,6 +909,19 @@ sub display_problem_updates($$) {
         $out .= '</div>';
     }
     return $out;
+}
+
+sub mapit_check_error {
+    my $location = shift;
+    if ($location->{error}) {
+        return _('That postcode was not recognised, sorry.') if $location->{code} =~ /^4/;
+        return $location->{error};
+    }
+    my $island = $location->{coordsyst};
+    if ($island eq 'I') {
+        return _("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.");
+    }
+    return 0;
 }
 
 # geocode STRING QUERY
@@ -907,27 +933,19 @@ sub display_problem_updates($$) {
 sub geocode {
     my ($s, $q) = @_;
     my ($x, $y, $easting, $northing, $error);
-    if (mySociety::PostcodeUtil::is_valid_postcode($s)) {
-        try {
-            my $location = mySociety::MaPit::get_location($s);
-            my $island = $location->{coordsyst};
-            throw RABX::Error(_("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.")) if $island eq 'I';
+    if ($s =~ /^\d+$/) {
+        $error = 'FixMyStreet is a UK-based website that currently works in England, Scotland, and Wales. Please enter either a postcode, or a Great British street name and area.';
+    } elsif (mySociety::PostcodeUtil::is_valid_postcode($s)) {
+        my $location = mySociety::MaPit::call('postcode', $s);
+        unless ($error = mapit_check_error($location)) {
             $easting = $location->{easting};
             $northing = $location->{northing};
             my $xx = Page::os_to_tile($easting);
             my $yy = Page::os_to_tile($northing);
             $x = int($xx);
             $y = int($yy);
-            $x -= 1 if ($xx - $x < 0.5);
-            $y -= 1 if ($yy - $y < 0.5);
-        } catch RABX::Error with {
-            my $e = shift;
-            if ($e->value() && ($e->value() == mySociety::MaPit::BAD_POSTCODE
-               || $e->value() == mySociety::MaPit::POSTCODE_NOT_FOUND)) {
-                $error = _('That postcode was not recognised, sorry.');
-            } else {
-                $error = $e;
-            }
+            $x += 1 if ($xx - $x > 0.5);
+            $y += 1 if ($yy - $y > 0.5);
         }
     } else {
         ($x, $y, $easting, $northing, $error) = geocode_string($s, $q);
@@ -939,7 +957,6 @@ sub geocoded_string_coordinates {
     my ($js, $q) = @_;
     my ($x, $y, $easting, $northing, $error);
     my ($accuracy) = $js =~ /"Accuracy" *: *(\d)/;
-    my $cobrand = get_cobrand($q);
     if ($accuracy < 4) {  
         $error = _('Sorry, that location appears to be too general; please be more specific.');
     } else {
@@ -952,8 +969,8 @@ sub geocoded_string_coordinates {
               my $yy = Page::os_to_tile($northing);
               $x = int($xx);
               $y = int($yy);
-              $x -= 1 if ($xx - $x < 0.5);
-              $y -= 1 if ($yy - $y < 0.5);
+              $x += 1 if ($xx - $x > 0.5);
+              $y += 1 if ($yy - $y > 0.5);
           } catch Error::Simple with {
               $error = shift;
               $error = _('That location does not appear to be in Britain; please try again.')

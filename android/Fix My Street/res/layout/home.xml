@@ -19,18 +19,26 @@
 
 		<View android:layout_width="1dip" android:layout_height="10dip"
 			android:src="@drawable/spacer" />
+			
+		<TextView android:paddingRight="10dip" android:paddingLeft="10dip"
+			android:layout_width="wrap_content" android:textColor="#87190f"
+			android:id="@+id/progress_text" android:layout_height="wrap_content"
+			android:text="Waiting for a GPS fix... Please make sure you can see the sky." />
 
 		<Button android:id="@+id/report_button" android:layout_width="fill_parent"
 			android:layout_height="wrap_content" android:text="Report to Fix My Street"
 			android:paddingRight="10dip" android:paddingLeft="10dip" />
-					<TextView android:layout_width="fill_parent" android:layout_weight="1"
-			android:layout_height="wrap_content" android:text=" "
-			/>
 
-		<ImageView android:id="@+id/background_image" android:scaleType="centerCrop"
-			android:layout_width="fill_parent" android:layout_gravity="bottom"
-			android:layout_height="wrap_content" android:src="@drawable/street_background_smaller"></ImageView>
+
+		<TextView android:layout_width="fill_parent"
+			android:layout_weight="1" android:layout_height="wrap_content"
+			android:text=" " />
+
+		<ImageView android:id="@+id/background_image"
+			android:scaleType="centerCrop" android:layout_width="fill_parent"
+			android:layout_gravity="bottom" android:layout_height="wrap_content"
+			android:src="@drawable/street_background_smaller"></ImageView>
 
 	</LinearLayout>
-	
+
 </ScrollView>

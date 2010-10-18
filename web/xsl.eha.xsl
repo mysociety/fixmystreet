@@ -8,7 +8,7 @@
     <head>
         <title><xsl:value-of select="$title"/> RSS Feed</title>
         <link rel="stylesheet" href="/css/core.css"/>
-        <link rel="stylesheet" href="/css/emptyhomes.css"/>
+        <link rel="stylesheet" href="/css/cobrands/emptyhomes/emptyhomes.css"/>
     </head>
     <body>
     <div id="header"><a href="http://www.emptyhomes.com/"><img border="0" src="/i/eha.png" alt="Empty Homes Agency" width="272" height="71"/></a></div>

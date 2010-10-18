@@ -2,6 +2,7 @@ package com.android.fixmystreet;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.text.util.Linkify;
 import android.view.Menu;
@@ -11,15 +12,26 @@ import android.widget.TextView;
 public class About extends Activity {
 
 	private Bundle extras = null;
+	String versionName = "";
 
 	@Override
 	protected void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		setContentView(R.layout.about);
 		extras = getIntent().getExtras();
+		
+		try {
+			versionName = getPackageManager().getPackageInfo(getPackageName(),
+					0).versionName;
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		// add links
 		TextView noteView = (TextView) findViewById(R.id.faq);
+		TextView noteView2 = (TextView) findViewById(R.id.faq2);
+		noteView2.setText("This application is version " + versionName + " of Fix My Street for Android, written by Anna Powell-Smith. Thanks to Paul for testing.");
 		Linkify.addLinks(noteView, Linkify.ALL);
 	}
 
