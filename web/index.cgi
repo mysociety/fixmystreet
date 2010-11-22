@@ -902,8 +902,6 @@ sub display_problem {
     my @vars = qw(id name rznvy update fixed add_alert upload_fileid x y submit_update);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
-    ($input{x}) = $input{x} =~ /^(\d+)/; $input{x} ||= 0;
-    ($input{y}) = $input{y} =~ /^(\d+)/; $input{y} ||= 0;
     my $base = Cobrand::base_url($cobrand);
 
     # Some council with bad email software
@@ -924,6 +922,9 @@ sub display_problem {
     my $problem = Problems::fetch_problem($input{id});
     return display_location($q, _('Unknown problem ID')) unless $problem;
     return front_page($q, _('That report has been removed from FixMyStreet.'), '410 Gone') if $problem->{state} eq 'hidden';
+
+    ($input{x}) = $input{x} =~ /^(\d+)/; $input{x} ||= 0;
+    ($input{y}) = $input{y} =~ /^(\d+)/; $input{y} ||= 0;
     my ($x, $y, $x_tile, $y_tile, $px, $py) = FixMyStreet::Map::os_to_px_with_adjust($q, $problem->{easting}, $problem->{northing}, $input{x}, $input{y});
 
     # Try and have pin near centre of map
@@ -936,7 +937,6 @@ sub display_problem {
         $py = FixMyStreet::Map::os_to_px($problem->{northing}, $y_tile, 1);
     }
 
-    my %vars;
     my $extra_data = Cobrand::extra_data($cobrand, $q);
     my $google_link = Cobrand::base_url_for_emails($cobrand, $extra_data)
         . '/report/' . $problem->{id};
@@ -944,42 +944,55 @@ sub display_problem {
     my $map_links = "<p id='sub_map_links'><a href='http://maps.google.co.uk/maps?output=embed&amp;z=16&amp;q="
         . URI::Escape::uri_escape_utf8($problem->{title} . ' - ' . $google_link) . "\@$lat,$lon'>View on Google Maps</a></p>";
     my $pins = FixMyStreet::Map::display_pin($q, $px, $py, 'blue');
-    $vars{map_start} = FixMyStreet::Map::display_map($q, x => $x_tile, 'y' => $y_tile, type => 0,
-        pins => $pins, px => $px, py => $py, post => $map_links );
 
+    my $banner;
     if ($q->{site} ne 'emptyhomes' && $problem->{state} eq 'confirmed' && $problem->{duration} > 8*7*24*60*60) {
-        $vars{banner} = $q->p({id => 'unknown'}, _('This problem is old and of unknown status.'))
+        $banner = $q->p({id => 'unknown'}, _('This problem is old and of unknown status.'));
     }
     if ($problem->{state} eq 'fixed') {
-        $vars{banner} = $q->p({id => 'fixed'}, _('This problem has been fixed') . '.')
+        $banner = $q->p({id => 'fixed'}, _('This problem has been fixed') . '.');
     }
 
-    $vars{problem_title} = ent($problem->{title});
-    $vars{problem_meta} = Page::display_problem_meta_line($q, $problem);
-    $vars{problem_detail} = Page::display_problem_detail($problem);
-    $vars{problem_photo} = Page::display_problem_photo($q, $problem);
-
     my $contact_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/contact?id=' . $input{id}), $q);
-    $vars{unsuitable} = $q->a({rel => 'nofollow', href => $contact_url}, _('Offensive? Unsuitable? Tell us'));
-
     my $back = Cobrand::url($cobrand, NewURL($q, -url => '/', 'x' => $x_tile, 'y' => $y_tile, -retain => 1, pc => undef, id => undef ), $q);
-    $vars{more_problems} = '<a href="' . $back . '">' . _('More problems nearby') . '</a>';
+    my $fixed = ($input{fixed}) ? ' checked' : '';
 
-    $vars{url_home} = Cobrand::url($cobrand, '/', $q),
+    my %vars = (
+        banner => $banner,
+        map_start => FixMyStreet::Map::display_map($q, x => $x_tile, 'y' => $y_tile, type => 0, pins => $pins, px => $px, py => $py, post => $map_links ),
+        map_end => FixMyStreet::Map::display_map_end(0),
+        problem_title => ent($problem->{title}),
+        problem_meta => Page::display_problem_meta_line($q, $problem),
+        problem_detail => Page::display_problem_detail($problem),
+        problem_photo => Page::display_problem_photo($q, $problem),
+        problem_updates => Page::display_problem_updates($input{id}, $q),
+        unsuitable => $q->a({rel => 'nofollow', href => $contact_url}, _('Offensive? Unsuitable? Tell us')),
+        more_problems => '<a href="' . $back . '">' . _('More problems nearby') . '</a>',
+        url_home => Cobrand::url($cobrand, '/', $q),
+        alert_link => Cobrand::url($cobrand, NewURL($q, -url => '/alert?type=updates;id='.$input_h{id}, -retain => 1, pc => undef ), $q),
+        alert_text => _('Email me updates'),
+        email_label => _('Email:'),
+        subscribe => _('Subscribe'),
+        blurb => _('Receive email when updates are left on this problem'),
+        cobrand_form_elements1 => Cobrand::form_elements($cobrand, 'alerts', $q),
+        form_alert_action => Cobrand::url($cobrand, '/alert', $q),
+        rss_url => Cobrand::url($cobrand,  NewURL($q, -retain=>1, -url => '/rss/'.$input_h{id}, pc => undef, id => undef), $q),
+        rss_title => _('RSS feed'),
+        rss_alt => _('RSS feed of updates to this problem'),
+        update_heading => $q->h2(_('Provide an update')),
+        field_errors => \%field_errors,
+        add_alert_checked => ($input{add_alert} || !$input{submit_update}) ? ' checked' : '',
+        fixedline_box => $problem->{state} eq 'fixed' ? '' : qq{<input type="checkbox" name="fixed" id="form_fixed" value="1"$fixed>},
+        fixedline_label => $problem->{state} eq 'fixed' ? '' : qq{<label for="form_fixed">} . _('This problem has been fixed') . qq{</label>},
+        name_label => _('Name:'),
+        update_label => _('Update:'),
+        alert_label => _('Alert me to future updates'),
+        post_label => _('Post'),
+        cobrand_form_elements => Cobrand::form_elements($cobrand, 'updateForm', $q),
+        form_action => Cobrand::url($cobrand, '/', $q),
+        input_h => \%input_h,
+    );
 
-    $vars{alert_link} = Cobrand::url($cobrand, NewURL($q, -url => '/alert?type=updates;id='.$input_h{id}, -retain => 1, pc => undef ), $q);
-    $vars{alert_text} = _('Email me updates');
-    $vars{email_label} = _('Email:');
-    $vars{subscribe} = _('Subscribe');
-    $vars{blurb} = _('Receive email when updates are left on this problem');
-    $vars{cobrand_form_elements1} = Cobrand::form_elements($cobrand, 'alerts', $q);
-    $vars{form_alert_action} = Cobrand::url($cobrand, '/alert', $q);
-    $vars{rss_url} = Cobrand::url($cobrand,  NewURL($q, -retain=>1, -url => '/rss/'.$input_h{id}, pc => undef, id => undef), $q);
-    $vars{rss_title} = _('RSS feed');
-    $vars{rss_alt} = _('RSS feed of updates to this problem');
-
-    $vars{problem_updates} = Page::display_problem_updates($input{id}, $q);
-    $vars{update_heading} = $q->h2(_('Provide an update'));
     $vars{update_blurb} = $q->p($q->small(_('Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href="/faq#privacy">privacy policy</a>')))
         unless $q->{site} eq 'emptyhomes'; # No council blurb
 
@@ -987,22 +1000,10 @@ sub display_problem {
         $vars{errors} = '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
     
-    $vars{field_errors} = \%field_errors;
-
-    my $fixed = ($input{fixed}) ? ' checked' : '';
-    $vars{add_alert_checked} = ($input{add_alert} || !$input{submit_update}) ? ' checked' : '';
-    $vars{fixedline_box} = $problem->{state} eq 'fixed' ? ''
-        : qq{<input type="checkbox" name="fixed" id="form_fixed" value="1"$fixed>};
-    $vars{fixedline_label} = $problem->{state} eq 'fixed' ? ''
-        : qq{<label for="form_fixed">} . _('This problem has been fixed') . qq{</label>};
-    $vars{name_label} = _('Name:');
-    $vars{update_label} = _('Update:');
-    $vars{alert_label} = _('Alert me to future updates');
-    $vars{post_label} = _('Post');
-    $vars{cobrand_form_elements} = Cobrand::form_elements($cobrand, 'updateForm', $q);
     my $allow_photo_upload = Cobrand::allow_photo_upload($cobrand);
     if ($allow_photo_upload) {
         my $photo_label = _('Photo:');
+        $vars{enctype} = ' enctype="multipart/form-data"';
         $vars{photo_element} = <<EOF;
 <div id="fileupload_normalUI">
 <label for="form_photo">$photo_label</label>
@@ -1011,17 +1012,11 @@ sub display_problem {
 EOF
     }
  
-    $vars{form_action} = Cobrand::url($cobrand, '/', $q);
-    if ($allow_photo_upload) {
-        $vars{enctype} = ' enctype="multipart/form-data"';
-    }
-    $vars{map_end} = FixMyStreet::Map::display_map_end(0);
     my %params = (
         rss => [ _('Updates to this problem, FixMyStreet'), "/rss/$input_h{id}" ],
         title => $problem->{title}
     );
 
-    $vars{input_h} = \%input_h;
     my $page = Page::template_include('problem', $q, Page::template_root($q), %vars);
     return ($page, %params);
 }
