@@ -13,6 +13,7 @@ use Error qw(:try);
 use Standard;
 use URI::Escape;
 use FixMyStreet::Alert;
+use FixMyStreet::Geocode;
 use mySociety::MaPit;
 use mySociety::GeoUtil;
 use mySociety::Gaze;
@@ -93,7 +94,7 @@ sub rss_local_problems {
     } elsif ($pc) {
         my $error;
         try {
-            ($x, $y, $e, $n, $error) = Page::geocode($pc, $q);
+            ($x, $y, $e, $n, $error) = FixMyStreet::Geocode::lookup($pc, $q);
         } catch Error::Simple with {
             $error = shift;
         };

@@ -16,6 +16,7 @@ use CGI::Carp;
 use URI::Escape;
 
 use CrossSell;
+use FixMyStreet::Geocode;
 use mySociety::AuthToken;
 use mySociety::Config;
 use mySociety::DBHandle qw(select_all);
@@ -469,7 +470,7 @@ sub display_form {
             $easting = FixMyStreet::Map::tile_to_os($input{x});
             $northing = FixMyStreet::Map::tile_to_os($input{y});
         } else {
-            my ($x, $y, $e, $n, $error) = Page::geocode($input{pc}, $q);
+            my ($x, $y, $e, $n, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
             $easting = $e; $northing = $n;
         }
     } elsif ($pin_x && $pin_y) {
@@ -485,11 +486,11 @@ sub display_form {
     } elsif ($input{partial} && $input{pc} && !$input{easting} && !$input{northing}) {
         my ($x, $y, $error);
         try {
-            ($x, $y, $easting, $northing, $error) = Page::geocode($input{pc}, $q);
+            ($x, $y, $easting, $northing, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
         } catch Error::Simple with {
             $error = shift;
         };
-        return Page::geocode_choice($error, '/', $q) if ref($error) eq 'ARRAY';
+        return FixMyStreet::Geocode::list_choices($error, '/', $q) if ref($error) eq 'ARRAY';
         return front_page($q, $error) if $error;
         $input{x} = int(FixMyStreet::Map::os_to_tile($easting));
         $input{y} = int(FixMyStreet::Map::os_to_tile($northing));
@@ -794,12 +795,12 @@ sub display_location {
     return front_page($q, @errors) unless $x || $y || $input{pc};
     if (!$x && !$y) {
         try {
-            ($x, $y, $easting, $northing, $error) = Page::geocode($input{pc}, $q);
+            ($x, $y, $easting, $northing, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
         } catch Error::Simple with {
             $error = shift;
         };
     }
-    return Page::geocode_choice($error, '/', $q) if (ref($error) eq 'ARRAY');
+    return FixMyStreet::Geocode::list_choices($error, '/', $q) if (ref($error) eq 'ARRAY');
     return front_page($q, $error) if ($error);
 
     if (!$easting || !$northing) {

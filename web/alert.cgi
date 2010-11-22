@@ -14,6 +14,7 @@ use Digest::SHA1 qw(sha1_hex);
 use Error qw(:try);
 use CrossSell;
 use FixMyStreet::Alert;
+use FixMyStreet::Geocode;
 use mySociety::AuthToken;
 use mySociety::Config;
 use mySociety::DBHandle qw(select_all);
@@ -84,12 +85,12 @@ sub alert_list {
         $n = FixMyStreet::Map::tile_to_os($input{y});
     } else {
         try {
-            ($x, $y, $e, $n, $error) = Page::geocode($input{pc}, $q);
+            ($x, $y, $e, $n, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
         } catch Error::Simple with {
             $error = shift;
         };
     }
-    return Page::geocode_choice($error, '/alert', $q) if ref($error) eq 'ARRAY';
+    return FixMyStreet::Geocode::list_choices($error, '/alert', $q) if ref($error) eq 'ARRAY';
     return alert_front_page($q, $error) if $error;
 
     my $pretty_pc = $input_h{pc};
