@@ -80,8 +80,8 @@ sub alert_list {
     $x ||= 0; $x += 0;
     $y ||= 0; $y += 0;
     if ($x || $y) {
-        $e = Page::tile_to_os($input{x});
-        $n = Page::tile_to_os($input{y});
+        $e = FixMyStreet::Map::tile_to_os($input{x});
+        $n = FixMyStreet::Map::tile_to_os($input{y});
     } else {
         try {
             ($x, $y, $e, $n, $error) = Page::geocode($input{pc}, $q);

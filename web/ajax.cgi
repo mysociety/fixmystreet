@@ -35,7 +35,7 @@ sub main {
     unless ($input{all_pins}) {
         $interval = '6 months';
     }
-    my ($pins, $on_map, $around_map, $dist) = Page::map_pins($q, $x, $y, $sx, $sy, $interval);
+    my ($pins, $on_map, $around_map, $dist) = FixMyStreet::Map::map_pins($q, $x, $y, $sx, $sy, $interval);
     my $cobrand = Page::get_cobrand($q);
     my $list = '';
     my $link = '';

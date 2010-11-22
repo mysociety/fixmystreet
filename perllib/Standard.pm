@@ -19,7 +19,7 @@ use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../commonlib/perllib";
 
 use Page;
-
+use FixMyStreet::Map;
 
 package Standard;
 
