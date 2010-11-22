@@ -12,7 +12,7 @@ use strict;
 use Error qw(:try);
 use Standard;
 use URI::Escape;
-use mySociety::Alert;
+use FixMyStreet::Alert;
 use mySociety::MaPit;
 use mySociety::GeoUtil;
 use mySociety::Gaze;
@@ -34,20 +34,20 @@ sub main {
             return;
         }
         my $qs = 'report/' . $id;
-        $out = mySociety::Alert::generate_rss($type, $xsl, $qs, [$id], undef, $cobrand, $q);
+        $out = FixMyStreet::Alert::generate_rss($type, $xsl, $qs, [$id], undef, $cobrand, $q);
     } elsif ($type eq 'new_problems' || $type eq 'new_fixed_problems') {
-        $out = mySociety::Alert::generate_rss($type, $xsl, '', undef, undef, $cobrand, $q);
+        $out = FixMyStreet::Alert::generate_rss($type, $xsl, '', undef, undef, $cobrand, $q);
     } elsif ($type eq 'council_problems') {
         my $id = $q->param('id');
         my $qs = '/'.$id;
-        $out = mySociety::Alert::generate_rss($type, $xsl, $qs, [$id], undef, $cobrand. $q);
+        $out = FixMyStreet::Alert::generate_rss($type, $xsl, $qs, [$id], undef, $cobrand. $q);
     } elsif ($type eq 'area_problems') {
         my $id = $q->param('id');
         my $va_info = mySociety::MaPit::call('area', $id);
         my $qs = '/'.$id;
-        $out = mySociety::Alert::generate_rss($type, $xsl, $qs, [$id], { NAME => $va_info->{name} }, $cobrand, $q);
+        $out = FixMyStreet::Alert::generate_rss($type, $xsl, $qs, [$id], { NAME => $va_info->{name} }, $cobrand, $q);
     } elsif ($type eq 'all_problems') {
-        $out = mySociety::Alert::generate_rss($type, $xsl, '', undef, undef, $cobrand, $q);
+        $out = FixMyStreet::Alert::generate_rss($type, $xsl, '', undef, undef, $cobrand, $q);
     } else {
         my $base = mySociety::Config::get('BASE_URL');
         print $q->redirect($base . '/alert');
@@ -114,6 +114,6 @@ sub rss_local_problems {
     }
 
     my $xsl = Cobrand::feed_xsl($cobrand);
-    return mySociety::Alert::generate_rss('local_problems', $xsl, $qs, [$e, $n, $d], undef, $cobrand, $q);
+    return FixMyStreet::Alert::generate_rss('local_problems', $xsl, $qs, [$e, $n, $d], undef, $cobrand, $q);
 }
 

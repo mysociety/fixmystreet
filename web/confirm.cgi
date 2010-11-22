@@ -12,7 +12,7 @@ use strict;
 use Standard;
 use Digest::SHA1 qw(sha1_hex);
 use CrossSell;
-use mySociety::Alert;
+use FixMyStreet::Alert;
 use mySociety::AuthToken;
 use mySociety::Random qw(random_bytes);
 
@@ -115,8 +115,8 @@ sub confirm_update {
 
     # Subscribe updater to email updates if requested
     if ($add_alert) {
-        my $alert_id = mySociety::Alert::create($email, 'new_updates', $cobrand, $cobrand_data, $problem_id);
-        mySociety::Alert::confirm($alert_id);
+        my $alert_id = FixMyStreet::Alert::create($email, 'new_updates', $cobrand, $cobrand_data, $problem_id);
+        FixMyStreet::Alert::confirm($alert_id);
     }
 
     return $out;
@@ -178,8 +178,8 @@ $q->p('<a href="/report/' . $id . '">' . _('View your report') . '</a>.');
     }
 
     # Subscribe problem reporter to email updates
-    my $alert_id = mySociety::Alert::create($email, 'new_updates', $cobrand, $cobrand_data, $id);
-    mySociety::Alert::confirm($alert_id);
+    my $alert_id = FixMyStreet::Alert::create($email, 'new_updates', $cobrand, $cobrand_data, $id);
+    FixMyStreet::Alert::confirm($alert_id);
 
     return $out;
 }

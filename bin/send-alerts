@@ -21,7 +21,7 @@ use CronFns;
 
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh);
-use mySociety::Alert;
+use FixMyStreet::Alert;
 
 BEGIN {
     mySociety::Config::set_file("$FindBin::Bin/../conf/general");
@@ -37,5 +37,5 @@ BEGIN {
 my $site = CronFns::site(mySociety::Config::get('BASE_URL'));
 CronFns::language($site);
 my $testing_email = mySociety::Config::get('TESTING_EMAIL');
-mySociety::Alert::email_alerts($testing_email);
+FixMyStreet::Alert::email_alerts($testing_email);
 
