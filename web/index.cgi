@@ -470,7 +470,7 @@ sub display_form {
             $easting = FixMyStreet::Map::tile_to_os($input{x});
             $northing = FixMyStreet::Map::tile_to_os($input{y});
         } else {
-            my ($x, $y, $e, $n, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
+            my ($e, $n, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
             $easting = $e; $northing = $n;
         }
     } elsif ($pin_x && $pin_y) {
@@ -484,9 +484,9 @@ sub display_form {
         $easting = FixMyStreet::Map::tile_to_os($pin_x);
         $northing = FixMyStreet::Map::tile_to_os($pin_y);
     } elsif ($input{partial} && $input{pc} && !$input{easting} && !$input{northing}) {
-        my ($x, $y, $error);
+        my $error;
         try {
-            ($x, $y, $easting, $northing, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
+            ($easting, $northing, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
         } catch Error::Simple with {
             $error = shift;
         };
@@ -795,7 +795,13 @@ sub display_location {
     return front_page($q, @errors) unless $x || $y || $input{pc};
     if (!$x && !$y) {
         try {
-            ($x, $y, $easting, $northing, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
+            ($easting, $northing, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
+            my $xx = FixMyStreet::Map::os_to_tile($easting);
+            my $yy = FixMyStreet::Map::os_to_tile($northing);
+            $x = int($xx);
+            $y = int($yy);
+            $x += 1 if ($xx - $x > 0.5);
+            $y += 1 if ($yy - $y > 0.5);
         } catch Error::Simple with {
             $error = shift;
         };
@@ -866,7 +872,7 @@ sub display_location {
         map_end => FixMyStreet::Map::display_map_end(1),
         url_home => Cobrand::url($cobrand, '/', $q),
         url_rss => Cobrand::url($cobrand, NewURL($q, -retain => 1, -url=> "/rss/n/$easting,$northing", pc => undef, x => undef, 'y' => undef), $q),
-        url_email => Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/alert', x=>$x, 'y'=>$y, feed=>"local:$easting:$northing"), $q),
+        url_email => Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/alert', e=>$easting, 'n'=>$northing, feed=>"local:$easting:$northing"), $q),
         url_skip => $url_skip,
         email_me => _('Email me new local problems'),
         rss_alt => _('RSS feed'),

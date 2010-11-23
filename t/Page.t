@@ -41,14 +41,12 @@ sub test_geocode_string() {
     my $q = new MockQuery('nosite', \%params);
     
     # geocode a straightforward string, expect success 
-    my ($x, $y, $easting, $northing, $error) = FixMyStreet::Geocode::string('Buckingham Palace', $q);
-    ok($x == 3280, 'example x coordinate generated') or diag("Got $x");
-    ok($y == 1114, 'example y coordinate generated') or diag("Got $y");;
+    my ($easting, $northing, $error) = FixMyStreet::Geocode::string('Buckingham Palace', $q);
     ok($easting == 529044, 'example easting generated') or diag("Got $easting");
     ok($northing == 179619, 'example northing generated') or diag("Got $northing");
     ok(! defined($error), 'should not generate error for simple example') or diag("Got $error");
     # expect a failure message for Northern Ireland
-    ($x, $y, $easting, $northing, $error) = FixMyStreet::Geocode::string('Falls Road, Belfast', $q);
+    ($easting, $northing, $error) = FixMyStreet::Geocode::string('Falls Road, Belfast', $q);
     ok($error eq "We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.", 'error message produced for NI location') or diag("Got $error");
 
 }

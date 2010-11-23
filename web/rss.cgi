@@ -94,7 +94,13 @@ sub rss_local_problems {
     } elsif ($pc) {
         my $error;
         try {
-            ($x, $y, $e, $n, $error) = FixMyStreet::Geocode::lookup($pc, $q);
+            ($e, $n, $error) = FixMyStreet::Geocode::lookup($pc, $q);
+            my $xx = FixMyStreet::Map::os_to_tile($e);¬
+            my $yy = FixMyStreet::Map::os_to_tile($n);¬
+            $x = int($xx);¬
+            $y = int($yy);¬
+            $x += 1 if ($xx - $x > 0.5);¬
+            $y += 1 if ($yy - $y > 0.5);¬
         } catch Error::Simple with {
             $error = shift;
         };

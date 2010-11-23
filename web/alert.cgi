@@ -72,20 +72,17 @@ Page::do_fastcgi(\&main);
 
 sub alert_list {
     my ($q, @errors) = @_;
-    my @vars = qw(pc rznvy x y);
+    my @vars = qw(pc rznvy e n);
     my %input = map { $_ => scalar $q->param($_) } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 
     my($error, $e, $n);
-    my $x = $input{x}; my $y = $input{y};
-    $x ||= 0; $x += 0;
-    $y ||= 0; $y += 0;
-    if ($x || $y) {
-        $e = FixMyStreet::Map::tile_to_os($input{x});
-        $n = FixMyStreet::Map::tile_to_os($input{y});
+    if ($input{e} || $input{n}) {
+        $e = $input{e};
+        $n = $input{n};
     } else {
         try {
-            ($x, $y, $e, $n, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
+            ($e, $n, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
         } catch Error::Simple with {
             $error = shift;
         };
@@ -274,8 +271,8 @@ EOF
                 rss_feed_5k => $rss_feed_5k,   
                 rss_feed_10k => $rss_feed_10k,   
                 rss_feed_20k => $rss_feed_20k, 
-                x => $x, 
-                y => $y, 
+                e => $e, 
+                n => $n, 
                 options => $options );
     my $cobrand_page = Page::template_include('alert-options', $q, Page::template_root($q), %vars);
     $out = $cobrand_page if ($cobrand_page);

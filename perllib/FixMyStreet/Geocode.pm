@@ -36,7 +36,7 @@ BEGIN {
 # of the site to diambiguate locations.
 sub lookup {
     my ($s, $q) = @_;
-    my ($x, $y, $easting, $northing, $error);
+    my ($easting, $northing, $error);
     if ($s =~ /^\d+$/) {
         $error = 'FixMyStreet is a UK-based website that currently works in England, Scotland, and Wales. Please enter either a postcode, or a Great British street name and area.';
     } elsif (mySociety::PostcodeUtil::is_valid_postcode($s)) {
@@ -44,22 +44,16 @@ sub lookup {
         unless ($error = Page::mapit_check_error($location)) {
             $easting = $location->{easting};
             $northing = $location->{northing};
-            my $xx = FixMyStreet::Map::os_to_tile($easting);
-            my $yy = FixMyStreet::Map::os_to_tile($northing);
-            $x = int($xx);
-            $y = int($yy);
-            $x += 1 if ($xx - $x > 0.5);
-            $y += 1 if ($yy - $y > 0.5);
         }
     } else {
-        ($x, $y, $easting, $northing, $error) = FixMyStreet::Geocode::string($s, $q);
+        ($easting, $northing, $error) = FixMyStreet::Geocode::string($s, $q);
     }
-    return ($x, $y, $easting, $northing, $error);
+    return ($easting, $northing, $error);
 }
 
 sub geocoded_string_coordinates {
     my ($js, $q) = @_;
-    my ($x, $y, $easting, $northing, $error);
+    my ($easting, $northing, $error);
     my ($accuracy) = $js =~ /"Accuracy" *: *(\d)/;
     if ($accuracy < 4) {  
         $error = _('Sorry, that location appears to be too general; please be more specific.');
@@ -69,19 +63,13 @@ sub geocoded_string_coordinates {
          my $lon = $1; my $lat = $2;
          try {
               ($easting, $northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
-              my $xx = FixMyStreet::Map::os_to_tile($easting);
-              my $yy = FixMyStreet::Map::os_to_tile($northing);
-              $x = int($xx);
-              $y = int($yy);
-              $x += 1 if ($xx - $x > 0.5);
-              $y += 1 if ($yy - $y > 0.5);
           } catch Error::Simple with {
               $error = shift;
               $error = _('That location does not appear to be in Britain; please try again.')
                  if $error =~ /out of the area covered/;
           }
      }
-    return ($x, $y, $easting, $northing, $error);
+    return ($easting, $northing, $error);
 }
 
 # string STRING QUERY
@@ -101,7 +89,7 @@ sub string {
     my $url = 'http://maps.google.com/maps/geo?' . $s;
     my $cache_dir = mySociety::Config::get('GEO_CACHE');
     my $cache_file = $cache_dir . md5_hex($url);
-    my ($js, $error, $x, $y, $easting, $northing);
+    my ($js, $error, $easting, $northing);
     if (-s $cache_file) {
         $js = File::Slurp::read_file($cache_file);
     } else {
@@ -133,9 +121,9 @@ sub string {
         # Northern Ireland, hopefully
         $error = _("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.");
     } else {
-        ($x, $y, $easting, $northing, $error) = geocoded_string_coordinates($js, $q);
+        ($easting, $northing, $error) = geocoded_string_coordinates($js, $q);
     }
-    return ($x, $y, $easting, $northing, $error);
+    return ($easting, $northing, $error);
 }
 
 # list_choices
