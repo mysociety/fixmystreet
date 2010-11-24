@@ -88,19 +88,11 @@ sub rss_local_problems {
         print $q->redirect(-location => "$base/rss/n/$e,$n$d_str");
         return '';
     } elsif ($e && $n) {
-        $x = int(FixMyStreet::Map::os_to_tile($e));
-        $y = int(FixMyStreet::Map::os_to_tile($n));
         ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($e, $n, 'G');
     } elsif ($pc) {
         my $error;
         try {
             ($e, $n, $error) = FixMyStreet::Geocode::lookup($pc, $q);
-            my $xx = FixMyStreet::Map::os_to_tile($e);¬
-            my $yy = FixMyStreet::Map::os_to_tile($n);¬
-            $x = int($xx);¬
-            $y = int($yy);¬
-            $x += 1 if ($xx - $x > 0.5);¬
-            $y += 1 if ($yy - $y > 0.5);¬
         } catch Error::Simple with {
             $error = shift;
         };
@@ -111,7 +103,7 @@ sub rss_local_problems {
     } else {
         die "Missing E/N, x/y, lat/lon, or postcode parameter in RSS feed";
     }
-    my $qs = "?x=$x;y=$y";
+    my $qs = '?e=' . int($e) . ';n=' . int($n);
     if ($d) {
         $qs .= ";d=$d";
         $d = 100 if $d > 100;

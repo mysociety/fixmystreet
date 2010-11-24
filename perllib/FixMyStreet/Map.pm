@@ -26,25 +26,39 @@ use constant SCALE_FACTOR => TIF_SIZE_M / (TIF_SIZE_PX / TILE_WIDTH);
 
 # display_map Q PARAMS
 # PARAMS include:
-# X,Y is bottom left tile of 2x2 grid
+# EASTING, NORTHING for the centre point of the map
 # TYPE is 1 if the map is clickable, 2 if clickable and has a form upload,
 #     0 if not clickable
-# PINS is HTML of pins to show
-# PX,PY are coordinates of pin
+# PINS is array of pins to show, location and colour
 # PRE/POST are HTML to show above/below map
 sub display_map {
     my ($q, %params) = @_;
-    $params{pins} ||= '';
     $params{pre} ||= '';
     $params{post} ||= '';
     my $mid_point = TILE_WIDTH; # Map is 2 TILE_WIDTHs in size, square.
     if ($q->{site} eq 'barnet') { # Map is c. 380px wide
         $mid_point = 189;
     }
-    my $px = defined($params{px}) ? $mid_point - $params{px} : 0;
-    my $py = defined($params{py}) ? $mid_point - $params{py} : 0;
-    my $x = int($params{x})<=0 ? 0 : $params{x};
-    my $y = int($params{y})<=0 ? 0 : $params{y};
+
+    # X/Y tile co-ords may be overridden in the query string
+    my @vars = qw(x y);
+    my %input = map { $_ => $q->param($_) || '' } @vars;
+    ($input{x}) = $input{x} =~ /^(\d+)/; $input{x} ||= 0;
+    ($input{y}) = $input{y} =~ /^(\d+)/; $input{y} ||= 0;
+
+    my ($x, $y, $px, $py) = FixMyStreet::Map::os_to_px_with_adjust($q, $params{easting}, $params{northing}, $input{x}, $input{y});
+
+    my $pins = '';
+    foreach my $pin (@{$params{pins}}) {
+        my $pin_x = FixMyStreet::Map::os_to_px($pin->[0], $x);
+        my $pin_y = FixMyStreet::Map::os_to_px($pin->[1], $y, 1);
+        $pins .= FixMyStreet::Map::display_pin($q, $pin_x, $pin_y, $pin->[2]);
+    }
+
+    $px = defined($px) ? $mid_point - $px : 0;
+    $py = defined($py) ? $mid_point - $py : 0;
+    $x = int($x)<=0 ? 0 : $x;
+    $y = int($y)<=0 ? 0 : $y;
     my $url = mySociety::Config::get('TILES_URL');
     my $tiles_url = $url . ($x-1) . '-' . $x . ',' . ($y-1) . '-' . $y . '/RABX';
     my $tiles = LWP::Simple::get($tiles_url);
@@ -103,7 +117,7 @@ var fixmystreet = {
 $params{pre}
     <div id="map"><div id="drag">
         $img_type alt="NW map tile" id="t2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0;">$img_type alt="NE map tile" id="t2.3" name="tile_$tr" src="$tr_src" style="top:0px; left:$imgw;"><br>$img_type alt="SW map tile" id="t3.2" name="tile_$bl" src="$bl_src" style="top:$imgw; left:0;">$img_type alt="SE map tile" id="t3.3" name="tile_$br" src="$br_src" style="top:$imgw; left:$imgw;">
-        <div id="pins">$params{pins}</div>
+        <div id="pins">$pins</div>
     </div>
 EOF
     if (Cobrand::show_watermark($cobrand) && mySociety::Config::get('TILES_TYPE') ne 'streetview') {
@@ -156,35 +170,30 @@ sub display_pin {
     return $out;
 }
 
-sub map_pins {
-    my ($q, $x, $y, $sx, $sy, $interval) = @_;
+sub map_features {
+    my ($q, $easting, $northing, $interval) = @_;
 
-    my $pins = '';
-    my $min_e = FixMyStreet::Map::tile_to_os($x-3); # Extra space to left/below due to rounding, I think
+    my $xx = FixMyStreet::Map::os_to_tile($easting);
+    my $yy = FixMyStreet::Map::os_to_tile($northing);
+    my $x = int($xx);
+    my $y = int($yy);
+    $x += 1 if ($xx - $x > 0.5);
+    $y += 1 if ($yy - $y > 0.5);
+
+    my $min_e = FixMyStreet::Map::tile_to_os($x-3); # Due to when the front-end AJAX look ups pins
     my $min_n = FixMyStreet::Map::tile_to_os($y-3);
     my $mid_e = FixMyStreet::Map::tile_to_os($x);
     my $mid_n = FixMyStreet::Map::tile_to_os($y);
     my $max_e = FixMyStreet::Map::tile_to_os($x+2);
     my $max_n = FixMyStreet::Map::tile_to_os($y+2);
-    my $cobrand = Page::get_cobrand($q);
+
     # list of problems aoround map can be limited, but should show all pins
-    my $around_limit = Cobrand::on_map_list_limit($cobrand);
-    my $around_map;
-    my $around_map_list = Problems::around_map($min_e, $max_e, $min_n, $max_n, $interval, $around_limit);
-    if ($around_limit) { 
+    my ($around_map, $around_map_list);
+    if (my $around_limit = Cobrand::on_map_list_limit(Page::get_cobrand($q))) {
+        $around_map_list = Problems::around_map($min_e, $max_e, $min_n, $max_n, $interval, $around_limit);
         $around_map = Problems::around_map($min_e, $max_e, $min_n, $max_n, $interval, undef);
     } else {
-        $around_map = $around_map_list;
-    }
-    my @ids = ();
-    foreach (@$around_map_list) {
-        push(@ids, $_->{id});
-    } 
-    foreach (@$around_map) {
-        my $px = FixMyStreet::Map::os_to_px($_->{easting}, $sx);
-        my $py = FixMyStreet::Map::os_to_px($_->{northing}, $sy, 1);
-        my $col = $_->{state} eq 'fixed' ? 'green' : 'red';
-        $pins .= FixMyStreet::Map::display_pin($q, $px, $py, $col);
+        $around_map = $around_map_list = Problems::around_map($min_e, $max_e, $min_n, $max_n, $interval, undef);
     }
 
     my $dist;
@@ -194,8 +203,28 @@ sub map_pins {
     };
     $dist = int($dist*10+0.5)/10;
 
-    my $limit = 20; # - @$current_map;
+    my $limit = 20;
+    my @ids = map { $_->{id} } @$around_map_list;
     my $nearby = Problems::nearby($dist, join(',', @ids), $limit, $mid_e, $mid_n, $interval);
+
+    return ($around_map, $around_map_list, $nearby, $dist);
+}
+
+sub map_pins {
+    my ($q, $x, $y, $sx, $sy, $interval) = @_;
+
+    my $e = FixMyStreet::Map::tile_to_os($x);
+    my $n = FixMyStreet::Map::tile_to_os($y);
+    my ($around_map, $around_map_list, $nearby, $dist) = FixMyStreet::Map::map_features($q, $e, $n, $interval);
+
+    my $pins = '';
+    foreach (@$around_map) {
+        my $px = FixMyStreet::Map::os_to_px($_->{easting}, $sx);
+        my $py = FixMyStreet::Map::os_to_px($_->{northing}, $sy, 1);
+        my $col = $_->{state} eq 'fixed' ? 'green' : 'red';
+        $pins .= FixMyStreet::Map::display_pin($q, $px, $py, $col);
+    }
+
     foreach (@$nearby) {
         my $px = FixMyStreet::Map::os_to_px($_->{easting}, $sx);
         my $py = FixMyStreet::Map::os_to_px($_->{northing}, $sy, 1);
@@ -271,6 +300,20 @@ sub click_to_tile {
     return $pin_tile + $pin / TILE_WIDTH;
 }
 
+# Given some click co-ords (the tile they were on, and where in the
+# tile they were), convert to OSGB36 and return.
+sub click_to_os {
+    my ($pin_tile_x, $pin_x, $pin_tile_y, $pin_y) = @_;
+    my $tile_x = FixMyStreet::Map::click_to_tile($pin_tile_x, $pin_x);
+    my $tile_y = FixMyStreet::Map::click_to_tile($pin_tile_y, $pin_y, 1);
+    my $easting = FixMyStreet::Map::tile_to_os($tile_x);
+    my $northing = FixMyStreet::Map::tile_to_os($tile_y);
+    return ($easting, $northing);
+}
+
+# Given (E,N) and potential override (X,Y), return the X/Y tile for the centre
+# of the map (either to get the point near the middle, or the override X,Y),
+# and the pixel co-ords of the point, relative to that map.
 sub os_to_px_with_adjust {
     my ($q, $easting, $northing, $in_x, $in_y) = @_;
 
@@ -278,19 +321,29 @@ sub os_to_px_with_adjust {
     my $y = FixMyStreet::Map::os_to_tile($northing);
     my $x_tile = $in_x || int($x);
     my $y_tile = $in_y || int($y);
+
+    # Try and have point near centre of map
+    if (!$in_x && $x - $x_tile > 0.5) {
+        $x_tile += 1;
+    }
+    if (!$in_y && $y - $y_tile > 0.5) {
+        $y_tile += 1;
+    }
+
     my $px = FixMyStreet::Map::os_to_px($easting, $x_tile);
     my $py = FixMyStreet::Map::os_to_px($northing, $y_tile, 1);
-    if ($q->{site} eq 'barnet') { # Map is 380px
-        if ($py > 380) {
-            $y_tile--;
-            $py = FixMyStreet::Map::os_to_px($northing, $y_tile, 1);
-        }
-        if ($px > 380) {
+    if ($q->{site} eq 'barnet') { # Map is 380px, so might need to adjust
+        if (!$in_x && $px > 380) {
             $x_tile++;
             $px = FixMyStreet::Map::os_to_px($easting, $x_tile);
         }
+        if (!$in_y && $py > 380) {
+            $y_tile--;
+            $py = FixMyStreet::Map::os_to_px($northing, $y_tile, 1);
+        }
     }
-    return ($x, $y, $x_tile, $y_tile, $px, $py);
+
+    return ($x_tile, $y_tile, $px, $py);
 }
 
 1;

@@ -213,16 +213,18 @@ sub display_questionnaire {
         return $error;
     }
     my $reported_date_time = Page::prettify_epoch($q, $problem->{time});
-    my ($x, $y, $x_tile, $y_tile, $px, $py) = FixMyStreet::Map::os_to_px_with_adjust($q, $problem->{easting}, $problem->{northing}, undef, undef);
-
-    my $pins = FixMyStreet::Map::display_pin($q, $px, $py, $problem->{state} eq 'fixed'?'green':'red');
     my $problem_text = Page::display_problem_text($q, $problem);
     my $updates = Page::display_problem_updates($problem->{id}, $q);
 
     my %vars = (
         input_h => \%input_h,
-        map_start => FixMyStreet::Map::display_map($q, x => $x_tile, y => $y_tile, pins => $pins,
-            px => $px, py => $py, pre => $problem_text, post => $updates ),
+        map_start => FixMyStreet::Map::display_map($q,
+            easting => $problem->{easting}, northing => $problem->{northing},
+            pins => [
+                [ $problem->{easting}, $problem->{northing}, $problem->{state} eq 'fixed'?'green':'red' ],
+            ],
+            pre => $problem_text, post => $updates
+        ),
         map_end => FixMyStreet::Map::display_map_end(0),
         heading => _('Questionnaire'),
         yes => _('Yes'),

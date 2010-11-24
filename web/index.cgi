@@ -81,7 +81,7 @@ sub main {
     } elsif ($q->param('id')) {
         ($out, %params) = display_problem($q, [], {});
         $params{title} .= ' - ' . _('Viewing a problem');
-    } elsif ($q->param('pc') || ($q->param('x') && $q->param('y'))) {
+    } elsif ($q->param('pc') || ($q->param('x') && $q->param('y')) || ($q->param('e') && $q->param('n'))) {
         ($out, %params) = display_location($q);
         $params{title} = _('Viewing a location');
     } else {
@@ -458,31 +458,23 @@ sub display_form {
     return display_location($q, @errors)
         unless ($pin_x && $pin_y)
             || ($input{easting} && $input{northing})
-            || ($input{skipped} && $input{x} && $input{y})
             || ($input{skipped} && $input{pc})
             || ($input{partial} && $input{pc});
 
     # Work out some co-ordinates from whatever we've got
-    my ($px, $py, $easting, $northing);
+    my ($easting, $northing);
     if ($input{skipped}) {
         # Map is being skipped
-        if ($input{x} && $input{y}) {
-            $easting = FixMyStreet::Map::tile_to_os($input{x});
-            $northing = FixMyStreet::Map::tile_to_os($input{y});
+        if ($input{easting} && $input{northing}) {
+            $easting = $input{easting};
+            $northing = $input{northing};
         } else {
             my ($e, $n, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
             $easting = $e; $northing = $n;
         }
     } elsif ($pin_x && $pin_y) {
-        # Map was clicked on
-        $pin_x = FixMyStreet::Map::click_to_tile($pin_tile_x, $pin_x);
-        $pin_y = FixMyStreet::Map::click_to_tile($pin_tile_y, $pin_y, 1);
-        $input{x} ||= int($pin_x);
-        $input{y} ||= int($pin_y);
-        $px = FixMyStreet::Map::tile_to_px($pin_x, $input{x});
-        $py = FixMyStreet::Map::tile_to_px($pin_y, $input{y}, 1);
-        $easting = FixMyStreet::Map::tile_to_os($pin_x);
-        $northing = FixMyStreet::Map::tile_to_os($pin_y);
+        # tilma map was clicked on
+        ($easting, $northing)  = FixMyStreet::Map::click_to_os($pin_tile_x, $pin_x, $pin_tile_y, $pin_y);
     } elsif ($input{partial} && $input{pc} && !$input{easting} && !$input{northing}) {
         my $error;
         try {
@@ -492,16 +484,8 @@ sub display_form {
         };
         return FixMyStreet::Geocode::list_choices($error, '/', $q) if ref($error) eq 'ARRAY';
         return front_page($q, $error) if $error;
-        $input{x} = int(FixMyStreet::Map::os_to_tile($easting));
-        $input{y} = int(FixMyStreet::Map::os_to_tile($northing));
-        $px = FixMyStreet::Map::os_to_px($easting, $input{x});
-        $py = FixMyStreet::Map::os_to_px($northing, $input{y}, 1);
     } else {
         # Normal form submission
-        my ($x, $y, $tile_x, $tile_y);
-        ($x, $y, $tile_x, $tile_y, $px, $py) = FixMyStreet::Map::os_to_px_with_adjust($q, $input{easting}, $input{northing}, undef, undef);
-        $input{x} = $tile_x;
-        $input{y} = $tile_y;
         $easting = $input_h{easting};
         $northing = $input_h{northing};
     }
@@ -590,22 +574,22 @@ please specify the closest point on land.')) unless %$all_councils;
        $vars{form_start} = <<EOF;
 <form action="$form_action" method="post" name="mapSkippedForm"$enctype>
 <input type="hidden" name="pc" value="$input_h{pc}">
-<input type="hidden" name="x" value="$input_h{x}">
-<input type="hidden" name="y" value="$input_h{y}">
 <input type="hidden" name="skipped" value="1">
 $cobrand_form_elements
 <div id="skipped-map">
 EOF
     } else {
-        my $pins = FixMyStreet::Map::display_pin($q, $px, $py, 'purple');
         my $type;
         if ($allow_photo_upload) {
             $type = 2;
         } else {
             $type = 1;
         }
-        $vars{form_start} = FixMyStreet::Map::display_map($q, x => $input{x}, 'y' => $input{y}, type => $type,
-            pins => $pins, px => $px, py => $py );
+        $vars{form_start} = FixMyStreet::Map::display_map($q,
+            easting => $easting, northing => $northing,
+            type => $type,
+            pins => [ [ $easting, $northing, 'purple' ] ],
+        );
         my $partial_id;
         if (my $token = $input{partial}) {
             $partial_id = mySociety::AuthToken::retrieve('partial', $token);
@@ -781,37 +765,33 @@ EOF
 sub display_location {
     my ($q, @errors) = @_;
     my $cobrand = Page::get_cobrand($q);
-    my @vars = qw(pc x y all_pins no_pins);
+    my @vars = qw(pc x y e n all_pins no_pins);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
-    if ($input{y} =~ /favicon/) {
-        my $base = mySociety::Config::get('BASE_URL');
-        print $q->redirect(-location => $base . '/favicon.ico', -status => 301);
-        return '';
-    }
-    my($error, $easting, $northing);
+
+    (my $easting) = $input{e} =~ /^(\d+)/; $easting ||= 0;
+    (my $northing) = $input{n} =~ /^(\d+)/; $northing ||= 0;
+
+    # X/Y referring to tiles old-school
     (my $x) = $input{x} =~ /^(\d+)/; $x ||= 0;
     (my $y) = $input{y} =~ /^(\d+)/; $y ||= 0;
-    return front_page($q, @errors) unless $x || $y || $input{pc};
-    if (!$x && !$y) {
+    return front_page($q, @errors) unless $x || $y || $input{pc} || $easting || $northing;
+
+    if ($x && $y) {
+        # Convert the tile co-ordinates to real ones.
+        $easting = FixMyStreet::Map::tile_to_os($x);
+        $northing = FixMyStreet::Map::tile_to_os($y);
+    } elsif ($easting && $northing) {
+        # Don't need to do anything
+    } else {
+        my $error;
         try {
             ($easting, $northing, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
-            my $xx = FixMyStreet::Map::os_to_tile($easting);
-            my $yy = FixMyStreet::Map::os_to_tile($northing);
-            $x = int($xx);
-            $y = int($yy);
-            $x += 1 if ($xx - $x > 0.5);
-            $y += 1 if ($yy - $y > 0.5);
         } catch Error::Simple with {
             $error = shift;
         };
-    }
-    return FixMyStreet::Geocode::list_choices($error, '/', $q) if (ref($error) eq 'ARRAY');
-    return front_page($q, $error) if ($error);
-
-    if (!$easting || !$northing) {
-        $easting = FixMyStreet::Map::tile_to_os($x);
-        $northing = FixMyStreet::Map::tile_to_os($y);
+        return FixMyStreet::Geocode::list_choices($error, '/', $q) if (ref($error) eq 'ARRAY');
+        return front_page($q, $error) if $error;
     }
 
     # Check this location is okay to be displayed for the cobrand
@@ -828,16 +808,12 @@ sub display_location {
         $all_text = _('Include stale reports');
         $interval = '6 months';
     }   
-    my ($pins, $on_map, $around_map, $dist) = FixMyStreet::Map::map_pins($q, $x, $y, $x, $y, $interval);
-    if ($input{no_pins}) {
-        $hide_link = NewURL($q, -retain=>1, no_pins=>undef);
-        $hide_text = _('Show pins');
-        $pins = '';
-    } else {
-        $hide_link = NewURL($q, -retain=>1, no_pins=>1);
-        $hide_text = _('Hide pins');
+
+    my ($on_map_all, $on_map, $around_map, $dist) = FixMyStreet::Map::map_features($q, $easting, $northing, $interval);
+    my @pins;
+    foreach (@$on_map_all) {
+        push @pins, [ $_->{easting}, $_->{northing}, $_->{state} eq 'fixed' ? 'green' : 'red' ];
     }
-    my $map_links = "<p id='sub_map_links'><a id='hide_pins_link' rel='nofollow' href='$hide_link'>$hide_text</a> | <a id='all_pins_link' rel='nofollow' href='$all_link'>$all_text</a></p> <input type='hidden' id='all_pins' name='all_pins' value='$input_h{all_pins}'>";
     my $on_list = '';
     foreach (@$on_map) {
         my $report_url = NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, 'y' => undef);
@@ -861,14 +837,34 @@ sub display_location {
         $around_list .= '</a>';
         $around_list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
         $around_list .= '</li>';
+        push @pins, [ $_->{easting}, $_->{northing}, $_->{state} eq 'fixed' ? 'green' : 'red' ];
     }
     $around_list = $q->li(_('No problems found.'))
         unless $around_list;
 
-    my $url_skip = NewURL($q, -retain=>1, 'submit_map'=>1, skipped=>1);
+    if ($input{no_pins}) {
+        $hide_link = NewURL($q, -retain=>1, no_pins=>undef);
+        $hide_text = _('Show pins');
+        @pins = ();
+    } else {
+        $hide_link = NewURL($q, -retain=>1, no_pins=>1);
+        $hide_text = _('Hide pins');
+    }
+    my $map_links = "<p id='sub_map_links'><a id='hide_pins_link' rel='nofollow' href='$hide_link'>$hide_text</a> | <a id='all_pins_link' rel='nofollow' href='$all_link'>$all_text</a></p> <input type='hidden' id='all_pins' name='all_pins' value='$input_h{all_pins}'>";
+
+    my $url_skip = NewURL($q, -retain=>1, pc => undef,
+        x => undef, 'y' => undef,
+        easting => $easting, northing => $northing,
+        'submit_map'=>1, skipped=>1
+    );
     my $pc_h = ent($q->param('pc') || '');
     my %vars = (
-        'map' => FixMyStreet::Map::display_map($q, x => $x, 'y' => $y, type => 1, pins => $pins, post => $map_links ),
+        'map' => FixMyStreet::Map::display_map($q,
+            easting => $easting, northing => $northing,
+            type => 1,
+            pins => \@pins,
+            post => $map_links
+        ),
         map_end => FixMyStreet::Map::display_map_end(1),
         url_home => Cobrand::url($cobrand, '/', $q),
         url_rss => Cobrand::url($cobrand, NewURL($q, -retain => 1, -url=> "/rss/n/$easting,$northing", pc => undef, x => undef, 'y' => undef), $q),
@@ -905,7 +901,7 @@ sub display_problem {
     my $cobrand = Page::get_cobrand($q);
     push @errors, _('There were problems with your update. Please see below.') if (scalar keys %field_errors);
 
-    my @vars = qw(id name rznvy update fixed add_alert upload_fileid x y submit_update);
+    my @vars = qw(id name rznvy update fixed add_alert upload_fileid submit_update);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
     my $base = Cobrand::base_url($cobrand);
@@ -929,27 +925,12 @@ sub display_problem {
     return display_location($q, _('Unknown problem ID')) unless $problem;
     return front_page($q, _('That report has been removed from FixMyStreet.'), '410 Gone') if $problem->{state} eq 'hidden';
 
-    ($input{x}) = $input{x} =~ /^(\d+)/; $input{x} ||= 0;
-    ($input{y}) = $input{y} =~ /^(\d+)/; $input{y} ||= 0;
-    my ($x, $y, $x_tile, $y_tile, $px, $py) = FixMyStreet::Map::os_to_px_with_adjust($q, $problem->{easting}, $problem->{northing}, $input{x}, $input{y});
-
-    # Try and have pin near centre of map
-    if (!$input{x} && $x - $x_tile > 0.5) {
-        $x_tile += 1;
-        $px = FixMyStreet::Map::os_to_px($problem->{easting}, $x_tile);
-    }
-    if (!$input{y} && $y - $y_tile > 0.5) {
-        $y_tile += 1;
-        $py = FixMyStreet::Map::os_to_px($problem->{northing}, $y_tile, 1);
-    }
-
     my $extra_data = Cobrand::extra_data($cobrand, $q);
     my $google_link = Cobrand::base_url_for_emails($cobrand, $extra_data)
         . '/report/' . $problem->{id};
     my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($problem->{easting}, $problem->{northing}, 'G');
     my $map_links = "<p id='sub_map_links'><a href='http://maps.google.co.uk/maps?output=embed&amp;z=16&amp;q="
         . URI::Escape::uri_escape_utf8($problem->{title} . ' - ' . $google_link) . "\@$lat,$lon'>View on Google Maps</a></p>";
-    my $pins = FixMyStreet::Map::display_pin($q, $px, $py, 'blue');
 
     my $banner;
     if ($q->{site} ne 'emptyhomes' && $problem->{state} eq 'confirmed' && $problem->{duration} > 8*7*24*60*60) {
@@ -960,12 +941,20 @@ sub display_problem {
     }
 
     my $contact_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/contact?id=' . $input{id}), $q);
-    my $back = Cobrand::url($cobrand, NewURL($q, -url => '/', 'x' => $x_tile, 'y' => $y_tile, -retain => 1, pc => undef, id => undef ), $q);
+    my $back = Cobrand::url($cobrand, NewURL($q, -url => '/',
+        'e' => int($problem->{easting}), 'n' => int($problem->{northing}),
+        -retain => 1, pc => undef, x => undef, 'y' => undef, id => undef
+    ), $q);
     my $fixed = ($input{fixed}) ? ' checked' : '';
 
     my %vars = (
         banner => $banner,
-        map_start => FixMyStreet::Map::display_map($q, x => $x_tile, 'y' => $y_tile, type => 0, pins => $pins, px => $px, py => $py, post => $map_links ),
+        map_start => FixMyStreet::Map::display_map($q,
+            easting => $problem->{easting}, northing => $problem->{northing},
+            type => 0,
+            pins => [ [ $problem->{easting}, $problem->{northing}, 'blue' ] ],
+            post => $map_links
+        ),
         map_end => FixMyStreet::Map::display_map_end(0),
         problem_title => ent($problem->{title}),
         problem_meta => Page::display_problem_meta_line($q, $problem),
