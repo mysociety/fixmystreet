@@ -24,6 +24,12 @@ use constant TIF_SIZE_M => mySociety::Config::get('TILES_TIFF_SIZE_METRES');
 use constant TIF_SIZE_PX => mySociety::Config::get('TILES_TIFF_SIZE_PIXELS');
 use constant SCALE_FACTOR => TIF_SIZE_M / (TIF_SIZE_PX / TILE_WIDTH);
 
+sub header_js {
+    return '
+<script type="text/javascript" src="/js/map-tilma.js"></script>
+';
+}
+
 # display_map Q PARAMS
 # PARAMS include:
 # EASTING, NORTHING for the centre point of the map

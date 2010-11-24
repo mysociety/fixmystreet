@@ -194,6 +194,7 @@ sub template_vars ($%) {
         'lang_url' => $lang_url,
         'title' => $params{title},
         'rss' => '',
+        map_js => FixMyStreet::Map::header_js(),
     );
 
     if ($params{rss}) {
@@ -274,7 +275,7 @@ sub header ($%) {
     my $default_params = Cobrand::header_params(get_cobrand($q), $q, %params);
     my %default_params = %{$default_params};
     %params = (%default_params, %params);
-    my %permitted_params = map { $_ => 1 } qw(title rss js expires lastmodified template cachecontrol context status_code);
+    my %permitted_params = map { $_ => 1 } qw(title rss expires lastmodified template cachecontrol context status_code);
     foreach (keys %params) {
         croak "bad parameter '$_'" if (!exists($permitted_params{$_}));
     }
@@ -307,8 +308,6 @@ sub header ($%) {
 sub footer {
     my ($q, %params) = @_;
     my $extra = $params{extra};
-    my $js = $params{js} || '';
-    $js = ''; # Don't use fileupload JS at the moment
 
     if ($q->{site} ne 'fixmystreet') {
         my $template = template($q, %params) . '-footer';
@@ -369,8 +368,6 @@ $orglogo
 <p id="footer">$creditline</p>
 
 $track
-
-$js
 
 $piwik
 
