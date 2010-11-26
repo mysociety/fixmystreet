@@ -19,7 +19,8 @@ use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../commonlib/perllib";
 
 use Page;
-use FixMyStreet::Map;
+use FixMyStreet::Map::Utils;
+use FixMyStreet::Map::Tilma::Original::1_10k;
 
 package Standard;
 

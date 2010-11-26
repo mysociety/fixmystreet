@@ -75,8 +75,6 @@ my %fns = (
     # Given a QUERY, return a hash of extra params to be included in 
     # any URLs in links produced on the page returned by that query.
     'extra_params' => { default => "''" },
-    # Returns a boolean indicating whether the map watermark should be displayed
-    'show_watermark' => { default => '1' },
     # Returns any extra text to be displayed with a PROBLEM.
     'extra_problem_meta_text' => { default => "''" },
     # Returns any extra text to be displayed with an UPDATE.

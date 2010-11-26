@@ -11,18 +11,8 @@ package FixMyStreet::Map;
 use strict;
 use LWP::Simple;
 
-use Problems;
 use Cobrand;
-use mySociety::Config;
-use mySociety::Gaze;
-use mySociety::GeoUtil;
-use mySociety::Locale;
 use mySociety::Web qw(ent NewURL);
-
-use constant TILE_WIDTH => mySociety::Config::get('TILES_WIDTH');
-use constant TIF_SIZE_M => mySociety::Config::get('TILES_TIFF_SIZE_METRES');
-use constant TIF_SIZE_PX => mySociety::Config::get('TILES_TIFF_SIZE_PIXELS');
-use constant SCALE_FACTOR => TIF_SIZE_M / (TIF_SIZE_PX / TILE_WIDTH);
 
 sub header_js {
     return '
@@ -37,7 +27,7 @@ sub header_js {
 #     0 if not clickable
 # PINS is array of pins to show, location and colour
 # PRE/POST are HTML to show above/below map
-sub display_map {
+sub _display_map {
     my ($q, %params) = @_;
     $params{pre} ||= '';
     $params{post} ||= '';
@@ -65,7 +55,7 @@ sub display_map {
     $py = defined($py) ? $mid_point - $py : 0;
     $x = int($x)<=0 ? 0 : $x;
     $y = int($y)<=0 ? 0 : $y;
-    my $url = mySociety::Config::get('TILES_URL');
+    my $url = 'http://tilma.mysociety.org/tileserver/' . TILE_TYPE . '/';
     my $tiles_url = $url . ($x-1) . '-' . $x . ',' . ($y-1) . '-' . $y . '/RABX';
     my $tiles = LWP::Simple::get($tiles_url);
     return '<div id="map_box"> <div id="map"><div id="drag">' . _("Unable to fetch the map tiles from the tile server.") . '</div></div></div><div id="side">' if !$tiles;
@@ -80,24 +70,14 @@ sub display_map {
     my $bl_src = $url . $tileids->[1][0];
     my $br_src = $url . $tileids->[1][1];
 
-    my $out = '';
     my $cobrand = Page::get_cobrand($q);
     my $root_path_js = Cobrand::root_path_js($cobrand, $q);
-    my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'mapForm', $q);
+    my $out = FixMyStreet::Map::header($q, $params{type});
     my $img_type;
-    my $form_action = Cobrand::url($cobrand, '', $q);
     if ($params{type}) {
-        my $encoding = '';
-        $encoding = ' enctype="multipart/form-data"' if ($params{type}==2);
-        my $pc = $q->param('pc') || '';
-        my $pc_enc = ent($pc);
         $out .= <<EOF;
-<form action="$form_action" method="post" name="mapForm" id="mapForm"$encoding>
-<input type="hidden" name="submit_map" value="1">
 <input type="hidden" name="x" id="formX" value="$x">
 <input type="hidden" name="y" id="formY" value="$y">
-<input type="hidden" name="pc" value="$pc_enc">
-$cobrand_form_elements
 EOF
         $img_type = '<input type="image"';
     } else {
@@ -105,7 +85,7 @@ EOF
     }
     my $imgw = TILE_WIDTH . 'px';
     my $tile_width = TILE_WIDTH;
-    my $tile_type = mySociety::Config::get('TILES_TYPE');
+    my $tile_type = TILE_TYPE;
     $out .= <<EOF;
 <script type="text/javascript">
 $root_path_js
@@ -126,23 +106,16 @@ $params{pre}
         <div id="pins">$pins</div>
     </div>
 EOF
-    if (Cobrand::show_watermark($cobrand) && mySociety::Config::get('TILES_TYPE') ne 'streetview') {
-        $out .= '<div id="watermark"></div>';
-    }
+    $out .= '<div id="watermark"></div>' if $params{watermark};
     $out .= compass($q, $x, $y);
-    my $copyright;
-    if (mySociety::Config::get('TILES_TYPE') eq 'streetview') {
-        $copyright = _('Map contains Ordnance Survey data &copy; Crown copyright and database right 2010.');
-    } else {
-        $copyright = _('&copy; Crown copyright. All rights reserved. Ministry of Justice 100037819&nbsp;2008.');
-    }
+    my $copyright = $params{copyright};
     $out .= <<EOF;
     </div>
     <p id="copyright">$copyright</p>
 $params{post}
+</div>
+<div id="side">
 EOF
-    $out .= '</div>';
-    $out .= '<div id="side">';
     return $out;
 }
 
@@ -176,46 +149,6 @@ sub display_pin {
     return $out;
 }
 
-sub map_features {
-    my ($q, $easting, $northing, $interval) = @_;
-
-    my $xx = FixMyStreet::Map::os_to_tile($easting);
-    my $yy = FixMyStreet::Map::os_to_tile($northing);
-    my $x = int($xx);
-    my $y = int($yy);
-    $x += 1 if ($xx - $x > 0.5);
-    $y += 1 if ($yy - $y > 0.5);
-
-    my $min_e = FixMyStreet::Map::tile_to_os($x-3); # Due to when the front-end AJAX look ups pins
-    my $min_n = FixMyStreet::Map::tile_to_os($y-3);
-    my $mid_e = FixMyStreet::Map::tile_to_os($x);
-    my $mid_n = FixMyStreet::Map::tile_to_os($y);
-    my $max_e = FixMyStreet::Map::tile_to_os($x+2);
-    my $max_n = FixMyStreet::Map::tile_to_os($y+2);
-
-    # list of problems aoround map can be limited, but should show all pins
-    my ($around_map, $around_map_list);
-    if (my $around_limit = Cobrand::on_map_list_limit(Page::get_cobrand($q))) {
-        $around_map_list = Problems::around_map($min_e, $max_e, $min_n, $max_n, $interval, $around_limit);
-        $around_map = Problems::around_map($min_e, $max_e, $min_n, $max_n, $interval, undef);
-    } else {
-        $around_map = $around_map_list = Problems::around_map($min_e, $max_e, $min_n, $max_n, $interval, undef);
-    }
-
-    my $dist;
-    mySociety::Locale::in_gb_locale {
-        my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($mid_e, $mid_n, 'G');
-        $dist = mySociety::Gaze::get_radius_containing_population($lat, $lon, 200000);
-    };
-    $dist = int($dist*10+0.5)/10;
-
-    my $limit = 20;
-    my @ids = map { $_->{id} } @$around_map_list;
-    my $nearby = Problems::nearby($dist, join(',', @ids), $limit, $mid_e, $mid_n, $interval);
-
-    return ($around_map, $around_map_list, $nearby, $dist);
-}
-
 sub map_pins {
     my ($q, $x, $y, $sx, $sy, $interval) = @_;
 
@@ -239,37 +172,6 @@ sub map_pins {
     }
 
     return ($pins, $around_map_list, $nearby, $dist);
-}
-
-sub compass ($$$) {
-    my ($q, $x, $y) = @_;
-    my @compass;
-    for (my $i=$x-1; $i<=$x+1; $i++) {
-        for (my $j=$y-1; $j<=$y+1; $j++) {
-            $compass[$i][$j] = NewURL($q, x=>$i, y=>$j);
-        }
-    }
-    my $recentre = NewURL($q);
-    my $host = Page::base_url_with_lang($q, undef);
-    return <<EOF;
-<table cellpadding="0" cellspacing="0" border="0" id="compass">
-<tr valign="bottom">
-<td align="right"><a rel="nofollow" href="${compass[$x-1][$y+1]}"><img src="$host/i/arrow-northwest.gif" alt="NW" width=11 height=11></a></td>
-<td align="center"><a rel="nofollow" href="${compass[$x][$y+1]}"><img src="$host/i/arrow-north.gif" vspace="3" alt="N" width=13 height=11></a></td>
-<td><a rel="nofollow" href="${compass[$x+1][$y+1]}"><img src="$host/i/arrow-northeast.gif" alt="NE" width=11 height=11></a></td>
-</tr>
-<tr>
-<td><a rel="nofollow" href="${compass[$x-1][$y]}"><img src="$host/i/arrow-west.gif" hspace="3" alt="W" width=11 height=13></a></td>
-<td align="center"><a rel="nofollow" href="$recentre"><img src="$host/i/rose.gif" alt="Recentre" width=35 height=34></a></td>
-<td><a rel="nofollow" href="${compass[$x+1][$y]}"><img src="$host/i/arrow-east.gif" hspace="3" alt="E" width=11 height=13></a></td>
-</tr>
-<tr valign="top">
-<td align="right"><a rel="nofollow" href="${compass[$x-1][$y-1]}"><img src="$host/i/arrow-southwest.gif" alt="SW" width=11 height=11></a></td>
-<td align="center"><a rel="nofollow" href="${compass[$x][$y-1]}"><img src="$host/i/arrow-south.gif" vspace="3" alt="S" width=13 height=11></a></td>
-<td><a rel="nofollow" href="${compass[$x+1][$y-1]}"><img src="$host/i/arrow-southeast.gif" alt="SE" width=11 height=11></a></td>
-</tr>
-</table>
-EOF
 }
 
 # P is easting or northing
