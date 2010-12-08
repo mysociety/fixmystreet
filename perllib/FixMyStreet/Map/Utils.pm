@@ -15,7 +15,7 @@ use Cobrand;
 use mySociety::Gaze;
 use mySociety::GeoUtil;
 use mySociety::Locale;
-use mySociety::Web qw(NewURL);
+use mySociety::Web qw(ent NewURL);
 
 sub header {
     my ($q, $type) = @_;
