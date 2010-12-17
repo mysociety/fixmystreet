@@ -26,6 +26,8 @@ use Text::Template;
 use Memcached;
 use Problems;
 use Cobrand;
+use FixMyStreet::Map::Tilma::Original::1_10k;
+
 use mySociety::Config;
 use mySociety::DBHandle qw/dbh select_all/;
 use mySociety::EvEl;
