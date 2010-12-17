@@ -56,7 +56,7 @@ EOF
     } elsif ($q->param('type') && $q->param('feed')) {
         $title = _('Local RSS feeds and email alerts');
         $out = alert_local_form($q);
-    } elsif ($q->param('pc') || ($q->param('x') && $q->param('y'))) {
+    } elsif ($q->param('pc') || ($q->param('e') && $q->param('n'))) {
         $title = _('Local RSS feeds and email alerts');
         $out = alert_list($q);
     } else {
