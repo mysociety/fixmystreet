@@ -11,7 +11,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 62;
+use Test::More tests => 59;
 use Test::Exception;
 use Error qw(:try);
 
