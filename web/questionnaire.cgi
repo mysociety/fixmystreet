@@ -10,6 +10,7 @@
 
 use strict;
 use Standard;
+use Utils;
 use Error qw(:try);
 use CrossSell;
 use mySociety::AuthToken;
