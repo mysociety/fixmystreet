@@ -154,6 +154,11 @@ blockquote {
     color: #FFFFFF;
     margin: 2em 0 1em 0;
     padding: 20px;
+    overflow: auto;
+}
+#footer div {
+    float: left;
+    margin-right: 1em;
 }
 #footer a {
     color: #FFFFFF;
