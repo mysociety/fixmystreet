@@ -146,7 +146,7 @@ blockquote {
     right: 10px;
 }
 
-#footer {
+#emptyhomes-footer {
     clear: both;
     font-size: 83%;
     border-top: solid 2em #ffffff;
@@ -156,11 +156,11 @@ blockquote {
     padding: 20px;
     overflow: auto;
 }
-#footer div {
+#emptyhomes-footer div {
     float: left;
     margin-right: 2em;
 }
-#footer a {
+#emptyhomes-footer a {
     color: #FFFFFF;
 }
 
