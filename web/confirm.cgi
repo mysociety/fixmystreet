@@ -156,7 +156,10 @@ $q->p(_('Thank you for using ReportEmptyHomes.com. Your action is already helpin
 to resolve the UK&rsquo;s empty homes crisis.')) .
 $q->p('<a href="/report/' . $id . '">' . _('View your report') . '</a>.');
         } else {
-            $out = $q->p(_('Thank you for reporting an empty property on ReportEmptyHomes.com.')) .
+            $out = $q->p(_('Thank you for reporting this empty property on ReportEmptyHomes.com.
+At present the report cannot be sent through to the council for this area. We
+are working with councils to link them into the system so that as many areas
+as possible will be covered.')) .
 $q->p('<a href="/report/' . $id . '">' . _('View your report') . '</a>.');
         }
     } else {

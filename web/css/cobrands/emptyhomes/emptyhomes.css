@@ -74,8 +74,6 @@ blockquote {
 /* Site layout */
 
 #header {
-    font-size: 200%;
-    font-weight: bold;
     margin: 0;
     padding: 5px 0;
     float: left;
@@ -83,6 +81,16 @@ blockquote {
 
 #header img {
     margin-left: 0.5em;
+}
+
+#header #eha-logo {
+    float: left;
+    margin-right: 1em;
+}
+
+#header div {
+    float: left;
+    margin-top: 0.5em;
 }
 
 #content {

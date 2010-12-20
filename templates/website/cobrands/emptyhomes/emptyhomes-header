@@ -17,8 +17,12 @@
 <body>
 
 <div id="header">
-<a href="http://www.emptyhomes.com/"><img border="0" src="/i/eha-logo.jpeg" alt="Empty Homes Agency" width="91" height="71" align="middle"></a>
-<a href="http://www.sheltercymru.org.uk/"><img border="0" src="/i/Sheltercymru47.gif" alt="Shelter Cymru" width="114" height="47" align="middle"></a>
+<a href="http://www.emptyhomes.com/"><img id="eha-logo" border="0" src="/i/eha-logo.jpeg" alt="Empty Homes Agency" width="91" height="71" align="left"></a>
+<div>
+<small><em>in conjunction with</em></small><br>
+<a href="http://www.sheltercymru.org.uk/"><img border="0" src="/i/Sheltercymru47s.png" alt="Shelter Cymru" width="80" height="33" align="bottom"></a>
+<a href="http://scotland.shelter.org.uk/housing_issues/more_homes/empty_homes"><img border="0" src="/i/SEHPlogo-bwS.png" alt="Scottish Empty Homes Partnership" width="131" height="40" align="bottom"></a>
+</div>
 </div>
 
 <div id="navigation">
