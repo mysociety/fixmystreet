@@ -890,7 +890,7 @@ sub display_location {
 
     my %params = (
         rss => [ _('Recent local problems, FixMyStreet'), "/rss/n/$easting,$northing" ],
-        robots => 'index,nofollow',
+        robots => 'noindex,nofollow',
     );
 
     return (Page::template_include('map', $q, Page::template_root($q), %vars), %params);
