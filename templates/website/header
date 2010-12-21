@@ -5,6 +5,7 @@
         <script type="text/javascript" src="/yui/utilities.js"></script>
         <script type="text/javascript" src="/js.js"></script>
         {{ $map_js }}
+        {{ $robots }}
 
         <title>{{ $title }}{{ $site_title }}</title>
         <style type="text/css">@import url("/css/core.css"); @import url("/css/main.css");</style>

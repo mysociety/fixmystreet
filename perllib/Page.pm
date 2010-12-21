@@ -205,6 +205,10 @@ sub template_vars ($%) {
         $vars{rss} = '<link rel="alternate" type="application/rss+xml" title="' . $params{rss}[0] . '" href="' . $params{rss}[1] . '">';
     }
 
+    if ($params{robots}) {
+        $vars{robots} = '<meta name="robots" content="' . $params{robots} . '">';
+    }
+
     if ($q->{site} eq 'fixmystreet') {
         my $home = !$params{title} && $ENV{SCRIPT_NAME} eq '/index.cgi' && !$ENV{QUERY_STRING};
         $vars{heading_element_start} = $home ? '<h1 id="header">' : '<div id="header"><a href="/">';
@@ -279,7 +283,7 @@ sub header ($%) {
     my $default_params = Cobrand::header_params(get_cobrand($q), $q, %params);
     my %default_params = %{$default_params};
     %params = (%default_params, %params);
-    my %permitted_params = map { $_ => 1 } qw(title rss expires lastmodified template cachecontrol context status_code);
+    my %permitted_params = map { $_ => 1 } qw(title rss expires lastmodified template cachecontrol context status_code robots);
     foreach (keys %params) {
         croak "bad parameter '$_'" if (!exists($permitted_params{$_}));
     }

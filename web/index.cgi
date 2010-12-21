@@ -1010,6 +1010,7 @@ EOF
  
     my %params = (
         rss => [ _('Updates to this problem, FixMyStreet'), "/rss/$input_h{id}" ],
+        robots => 'index, nofollow',
         title => $problem->{title}
     );
 
