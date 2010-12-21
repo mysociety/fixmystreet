@@ -941,7 +941,7 @@ sub display_problem {
         $banner = $q->p({id => 'fixed'}, _('This problem has been fixed') . '.');
     }
 
-    my $contact_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/contact?id=' . $input{id}), $q);
+    my $contact_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, x => undef, 'y' => undef, -url=>'/contact?id=' . $input{id}), $q);
     my $back = Cobrand::url($cobrand, NewURL($q, -url => '/',
         'e' => int($problem->{easting}), 'n' => int($problem->{northing}),
         -retain => 1, pc => undef, x => undef, 'y' => undef, id => undef
@@ -965,14 +965,14 @@ sub display_problem {
         unsuitable => $q->a({rel => 'nofollow', href => $contact_url}, _('Offensive? Unsuitable? Tell us')),
         more_problems => '<a href="' . $back . '">' . _('More problems nearby') . '</a>',
         url_home => Cobrand::url($cobrand, '/', $q),
-        alert_link => Cobrand::url($cobrand, NewURL($q, -url => '/alert?type=updates;id='.$input_h{id}, -retain => 1, pc => undef ), $q),
+        alert_link => Cobrand::url($cobrand, NewURL($q, -url => '/alert?type=updates;id='.$input_h{id}, -retain => 1, pc => undef, x => undef, 'y' => undef ), $q),
         alert_text => _('Email me updates'),
         email_label => _('Email:'),
         subscribe => _('Subscribe'),
         blurb => _('Receive email when updates are left on this problem'),
         cobrand_form_elements1 => Cobrand::form_elements($cobrand, 'alerts', $q),
         form_alert_action => Cobrand::url($cobrand, '/alert', $q),
-        rss_url => Cobrand::url($cobrand,  NewURL($q, -retain=>1, -url => '/rss/'.$input_h{id}, pc => undef, id => undef), $q),
+        rss_url => Cobrand::url($cobrand,  NewURL($q, -retain=>1, -url => '/rss/'.$input_h{id}, pc => undef, x => undef, 'y' => undef, id => undef), $q),
         rss_title => _('RSS feed'),
         rss_alt => _('RSS feed of updates to this problem'),
         update_heading => $q->h2(_('Provide an update')),
