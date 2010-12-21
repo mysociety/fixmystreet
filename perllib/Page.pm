@@ -26,7 +26,6 @@ use Text::Template;
 use Memcached;
 use Problems;
 use Cobrand;
-use FixMyStreet::Map::Tilma::Original::1_10k;
 
 use mySociety::Config;
 use mySociety::DBHandle qw/dbh select_all/;
@@ -42,6 +41,9 @@ BEGIN {
     (my $dir = __FILE__) =~ s{/[^/]*?$}{};
     mySociety::Config::set_file("$dir/../conf/general");
 }
+
+# Under the BEGIN so that the config has been set.
+use FixMyStreet::Map;
 
 my $lastmodified;
 

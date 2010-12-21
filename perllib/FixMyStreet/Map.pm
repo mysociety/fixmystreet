@@ -12,10 +12,21 @@ use strict;
 
 use Problems;
 use Cobrand;
+use mySociety::Config;
 use mySociety::Gaze;
 use mySociety::GeoUtil;
 use mySociety::Locale;
 use mySociety::Web qw(ent NewURL);
+
+# Run on module boot up
+load();
+
+# This is yucky, but no-one's taught me a better way
+sub load {
+    my $type = mySociety::Config::get('MAP_TYPE');
+    my $class = "FixMyStreet::Map::$type";
+    eval "use $class";
+}
 
 sub header {
     my ($q, $type) = @_;
@@ -67,31 +78,6 @@ sub map_features {
     my $nearby = Problems::nearby($dist, join(',', @ids), $limit, $mid_e, $mid_n, $interval);
 
     return ($around_map, $around_map_list, $nearby, $dist);
-}
-
-sub map_pins {
-    my ($q, $x, $y, $sx, $sy, $interval) = @_;
-
-    my $e = FixMyStreet::Map::tile_to_os($x);
-    my $n = FixMyStreet::Map::tile_to_os($y);
-    my ($around_map, $around_map_list, $nearby, $dist) = FixMyStreet::Map::map_features($q, $e, $n, $interval);
-
-    my $pins = '';
-    foreach (@$around_map) {
-        my $px = FixMyStreet::Map::os_to_px($_->{easting}, $sx);
-        my $py = FixMyStreet::Map::os_to_px($_->{northing}, $sy, 1);
-        my $col = $_->{state} eq 'fixed' ? 'green' : 'red';
-        $pins .= FixMyStreet::Map::display_pin($q, $px, $py, $col);
-    }
-
-    foreach (@$nearby) {
-        my $px = FixMyStreet::Map::os_to_px($_->{easting}, $sx);
-        my $py = FixMyStreet::Map::os_to_px($_->{northing}, $sy, 1);
-        my $col = $_->{state} eq 'fixed' ? 'green' : 'red';
-        $pins .= FixMyStreet::Map::display_pin($q, $px, $py, $col);
-    }
-
-    return ($pins, $around_map_list, $nearby, $dist);
 }
 
 sub compass ($$$) {
