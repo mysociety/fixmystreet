@@ -19,7 +19,7 @@ use mySociety::Random qw(random_bytes);
 # Main code for index.cgi
 sub main {
     my $q = shift;
-    print Page::header($q, title=>_('Contact Us'), context=>'contact');
+    print Page::header($q, title=>_('Contact Us'), context=>'contact', robots => 'noindex,nofollow');
     my $out = '';
     if ($q->param('submit_form')) {
         $out = contact_submit($q);

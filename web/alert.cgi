@@ -64,7 +64,7 @@ EOF
         $out = alert_front_page($q);
     }
 
-    print Page::header($q, title => $title);
+    print Page::header($q, title => $title, robots => 'noindex,nofollow');
     print $out;
     print Page::footer($q);
 }

@@ -760,7 +760,7 @@ EOF
         url_home => Cobrand::url($cobrand, '/', $q),
         submit_button => _('Submit')
     );
-    return (Page::template_include('report-form', $q, Page::template_root($q), %vars));
+    return (Page::template_include('report-form', $q, Page::template_root($q), %vars), robots => 'noindex,nofollow');
 }
 
 sub display_location {
@@ -889,7 +889,8 @@ sub display_location {
     );
 
     my %params = (
-        rss => [ _('Recent local problems, FixMyStreet'), "/rss/n/$easting,$northing" ]
+        rss => [ _('Recent local problems, FixMyStreet'), "/rss/n/$easting,$northing" ],
+        robots => 'index,nofollow',
     );
 
     return (Page::template_include('map', $q, Page::template_root($q), %vars), %params);
