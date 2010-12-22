@@ -72,6 +72,9 @@ sub rss_local_problems {
     $d = '' unless $d =~ /^\d+$/;
     my $d_str = '';
     $d_str = "/$d" if $d;
+    my $state = $q->param('state') || 'all';
+    $state = 'all' unless $state =~ /^(all|open|fixed)$/;
+    $state = 'confirmed' if $state eq 'open';
 
     my $cobrand = Page::get_cobrand($q);
     my $base = Cobrand::base_url($cobrand);
@@ -113,6 +116,10 @@ sub rss_local_problems {
     }
 
     my $xsl = Cobrand::feed_xsl($cobrand);
-    return FixMyStreet::Alert::generate_rss('local_problems', $xsl, $qs, [$e, $n, $d], undef, $cobrand, $q);
+    if ($state eq 'all') {
+        return FixMyStreet::Alert::generate_rss('local_problems', $xsl, $qs, [$e, $n, $d], undef, $cobrand, $q);
+    } else {
+        return FixMyStreet::Alert::generate_rss('local_problems_state', $xsl, $qs, [$e, $n, $d, $state], undef, $cobrand, $q);
+    }
 }
 
