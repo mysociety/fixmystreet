@@ -12,7 +12,7 @@
 use strict;
 use Standard;
 use URI::Escape;
-use mySociety::Alert;
+use FixMyStreet::Alert;
 use mySociety::MaPit;
 use mySociety::Web qw(ent NewURL);
 use mySociety::VotingArea;
@@ -117,7 +117,7 @@ sub main {
         }
         print $q->header( -type => 'application/xml; charset=utf-8' );
         my $xsl = Cobrand::feed_xsl($cobrand);
-        my $out = mySociety::Alert::generate_rss($type, $xsl, "/$url", \@params, \%title_params, $cobrand, $q);
+        my $out = FixMyStreet::Alert::generate_rss($type, $xsl, "/$url", \@params, \%title_params, $cobrand, $q);
         $out =~ s/matthew.fixmystreet/emptyhomes.matthew.fixmystreet/g if $q->{site} eq 'emptyhomes';
         print $out;
         return;

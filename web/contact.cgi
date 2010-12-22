@@ -19,7 +19,7 @@ use mySociety::Random qw(random_bytes);
 # Main code for index.cgi
 sub main {
     my $q = shift;
-    print Page::header($q, title=>_('Contact Us'), context=>'contact');
+    print Page::header($q, title=>_('Contact Us'), context=>'contact', robots => 'noindex,nofollow');
     my $out = '';
     if ($q->param('submit_form')) {
         $out = contact_submit($q);
@@ -192,7 +192,7 @@ sub contact_page {
             } else {
                 $intro .= $q->p(_('You are reporting the following update for being abusive, containing personal information, or similar:'));
                 $item_title =  ent($u->{title});
-                $item_meta = $q->em( 'Update below added ', ($u->{name} eq '') ? 'anonymously' : "by " . ent($u->{name}),
+                $item_meta = $q->em( 'Update below added ', (!$u->{name}) ? 'anonymously' : "by " . ent($u->{name}),
                                      ' at ' . Page::prettify_epoch($q, $u->{confirmed}));
                 $item_body = ent($u->{text});
                 $hidden_vals .= '<input type="hidden" name="update_id" value="' . $update_id . '">';

@@ -13,7 +13,8 @@ use Standard;
 use Digest::SHA1 qw(sha1_hex);
 use Error qw(:try);
 use CrossSell;
-use mySociety::Alert;
+use FixMyStreet::Alert;
+use FixMyStreet::Geocode;
 use mySociety::AuthToken;
 use mySociety::Config;
 use mySociety::DBHandle qw(select_all);
@@ -55,7 +56,7 @@ EOF
     } elsif ($q->param('type') && $q->param('feed')) {
         $title = _('Local RSS feeds and email alerts');
         $out = alert_local_form($q);
-    } elsif ($q->param('pc') || ($q->param('x') && $q->param('y'))) {
+    } elsif ($q->param('pc') || ($q->param('e') && $q->param('n'))) {
         $title = _('Local RSS feeds and email alerts');
         $out = alert_list($q);
     } else {
@@ -63,7 +64,7 @@ EOF
         $out = alert_front_page($q);
     }
 
-    print Page::header($q, title => $title);
+    print Page::header($q, title => $title, robots => 'noindex,nofollow');
     print $out;
     print Page::footer($q);
 }
@@ -71,25 +72,22 @@ Page::do_fastcgi(\&main);
 
 sub alert_list {
     my ($q, @errors) = @_;
-    my @vars = qw(pc rznvy x y);
+    my @vars = qw(pc rznvy e n);
     my %input = map { $_ => scalar $q->param($_) } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 
     my($error, $e, $n);
-    my $x = $input{x}; my $y = $input{y};
-    $x ||= 0; $x += 0;
-    $y ||= 0; $y += 0;
-    if ($x || $y) {
-        $e = Page::tile_to_os($input{x});
-        $n = Page::tile_to_os($input{y});
+    if ($input{e} || $input{n}) {
+        $e = $input{e};
+        $n = $input{n};
     } else {
         try {
-            ($x, $y, $e, $n, $error) = Page::geocode($input{pc}, $q);
+            ($e, $n, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
         } catch Error::Simple with {
             $error = shift;
         };
     }
-    return Page::geocode_choice($error, '/alert', $q) if ref($error) eq 'ARRAY';
+    return FixMyStreet::Geocode::list_choices($error, '/alert', $q) if ref($error) eq 'ARRAY';
     return alert_front_page($q, $error) if $error;
 
     my $pretty_pc = $input_h{pc};
@@ -273,8 +271,8 @@ EOF
                 rss_feed_5k => $rss_feed_5k,   
                 rss_feed_10k => $rss_feed_10k,   
                 rss_feed_20k => $rss_feed_20k, 
-                x => $x, 
-                y => $y, 
+                e => $e, 
+                n => $n, 
                 options => $options );
     my $cobrand_page = Page::template_include('alert-options', $q, Page::template_root($q), %vars);
     $out = $cobrand_page if ($cobrand_page);
@@ -446,8 +444,8 @@ sub alert_signed_input {
     my $out;
     my $cobrand = Page::get_cobrand($q);
     if ($signed_email eq sha1_hex("$id-$email-$salt-$secret")) {
-        my $alert_id = mySociety::Alert::create($email, 'new_updates', $cobrand, '', $id);
-        mySociety::Alert::confirm($alert_id);
+        my $alert_id = FixMyStreet::Alert::create($email, 'new_updates', $cobrand, '', $id);
+        FixMyStreet::Alert::confirm($alert_id);
         $out = $q->p(_('You have successfully subscribed to that alert.'));
         my $cobrand = Page::get_cobrand($q);
         my $display_advert = Cobrand::allow_crosssell_adverts($cobrand);
@@ -476,14 +474,14 @@ sub alert_token {
     my $message; 
     my $display_advert = Cobrand::allow_crosssell_adverts($cobrand);
     if ($type eq 'subscribe') {
-        mySociety::Alert::confirm($id);
+        FixMyStreet::Alert::confirm($id);
         $message = _('You have successfully confirmed your alert.');
         $out = $q->p($message);
         if ($display_advert) {
             $out .= CrossSell::display_advert($q, $email);
         }
     } elsif ($type eq 'unsubscribe') {
-        mySociety::Alert::delete($id);
+        FixMyStreet::Alert::delete($id);
         $message = _('You have successfully deleted your alert.');
         $out = $q->p($message);
         if ($display_advert) {
@@ -517,22 +515,22 @@ sub alert_do_subscribe {
     my $cobrand_data = Cobrand::extra_alert_data($cobrand, $q);
     if ($type eq 'updates') {
         my $id = $q->param('id');
-        $alert_id = mySociety::Alert::create($email, 'new_updates', $cobrand, $cobrand_data, $id);
+        $alert_id = FixMyStreet::Alert::create($email, 'new_updates', $cobrand, $cobrand_data, $id);
     } elsif ($type eq 'problems') {
-        $alert_id = mySociety::Alert::create($email, 'new_problems', $cobrand, $cobrand_data);
+        $alert_id = FixMyStreet::Alert::create($email, 'new_problems', $cobrand, $cobrand_data);
     } elsif ($type eq 'local') {
         my $feed = $q->param('feed');
         if ($feed =~ /^area:(?:\d+:)?(\d+)/) {
-            $alert_id = mySociety::Alert::create($email, 'area_problems', $cobrand, $cobrand_data, $1);
+            $alert_id = FixMyStreet::Alert::create($email, 'area_problems', $cobrand, $cobrand_data, $1);
         } elsif ($feed =~ /^council:(\d+)/) {
-            $alert_id = mySociety::Alert::create($email, 'council_problems', $cobrand, $cobrand_data, $1, $1);
+            $alert_id = FixMyStreet::Alert::create($email, 'council_problems', $cobrand, $cobrand_data, $1, $1);
         } elsif ($feed =~ /^ward:(\d+):(\d+)/) {
-            $alert_id = mySociety::Alert::create($email, 'ward_problems', $cobrand, $cobrand_data, $1, $2);
+            $alert_id = FixMyStreet::Alert::create($email, 'ward_problems', $cobrand, $cobrand_data, $1, $2);
         } elsif ($feed =~ /^local:(\d+):(\d+)/) {
-            $alert_id = mySociety::Alert::create($email, 'local_problems', $cobrand, $cobrand_data, $1, $2);
+            $alert_id = FixMyStreet::Alert::create($email, 'local_problems', $cobrand, $cobrand_data, $1, $2);
         }
     } else {
-        throw mySociety::Alert::Error('Invalid type');
+        throw FixMyStreet::Alert::Error('Invalid type');
     }
 
     my %h = ();

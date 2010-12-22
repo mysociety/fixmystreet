@@ -8,6 +8,7 @@
 
 use strict;
 use Standard;
+use Utils;
 use Error qw(:try);
 use File::Slurp;
 use LWP::Simple;
@@ -16,6 +17,7 @@ use CGI::Carp;
 use URI::Escape;
 
 use CrossSell;
+use FixMyStreet::Geocode;
 use mySociety::AuthToken;
 use mySociety::Config;
 use mySociety::DBHandle qw(select_all);
@@ -80,7 +82,7 @@ sub main {
     } elsif ($q->param('id')) {
         ($out, %params) = display_problem($q, [], {});
         $params{title} .= ' - ' . _('Viewing a problem');
-    } elsif ($q->param('pc') || ($q->param('x') && $q->param('y'))) {
+    } elsif ($q->param('pc') || ($q->param('x') && $q->param('y')) || ($q->param('e') && $q->param('n'))) {
         ($out, %params) = display_location($q);
         $params{title} = _('Viewing a location');
     } else {
@@ -457,50 +459,34 @@ sub display_form {
     return display_location($q, @errors)
         unless ($pin_x && $pin_y)
             || ($input{easting} && $input{northing})
-            || ($input{skipped} && $input{x} && $input{y})
             || ($input{skipped} && $input{pc})
             || ($input{partial} && $input{pc});
 
     # Work out some co-ordinates from whatever we've got
-    my ($px, $py, $easting, $northing);
+    my ($easting, $northing);
     if ($input{skipped}) {
         # Map is being skipped
-        if ($input{x} && $input{y}) {
-            $easting = Page::tile_to_os($input{x});
-            $northing = Page::tile_to_os($input{y});
+        if ($input{easting} && $input{northing}) {
+            $easting = $input{easting};
+            $northing = $input{northing};
         } else {
-            my ($x, $y, $e, $n, $error) = Page::geocode($input{pc}, $q);
+            my ($e, $n, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
             $easting = $e; $northing = $n;
         }
     } elsif ($pin_x && $pin_y) {
-        # Map was clicked on
-        $pin_x = Page::click_to_tile($pin_tile_x, $pin_x);
-        $pin_y = Page::click_to_tile($pin_tile_y, $pin_y, 1);
-        $input{x} ||= int($pin_x);
-        $input{y} ||= int($pin_y);
-        $px = Page::tile_to_px($pin_x, $input{x});
-        $py = Page::tile_to_px($pin_y, $input{y}, 1);
-        $easting = Page::tile_to_os($pin_x);
-        $northing = Page::tile_to_os($pin_y);
+        # tilma map was clicked on
+        ($easting, $northing)  = FixMyStreet::Map::click_to_os($pin_tile_x, $pin_x, $pin_tile_y, $pin_y);
     } elsif ($input{partial} && $input{pc} && !$input{easting} && !$input{northing}) {
-        my ($x, $y, $error);
+        my $error;
         try {
-            ($x, $y, $easting, $northing, $error) = Page::geocode($input{pc}, $q);
+            ($easting, $northing, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
         } catch Error::Simple with {
             $error = shift;
         };
-        return Page::geocode_choice($error, '/', $q) if ref($error) eq 'ARRAY';
+        return FixMyStreet::Geocode::list_choices($error, '/', $q) if ref($error) eq 'ARRAY';
         return front_page($q, $error) if $error;
-        $input{x} = int(Page::os_to_tile($easting));
-        $input{y} = int(Page::os_to_tile($northing));
-        $px = Page::os_to_px($easting, $input{x});
-        $py = Page::os_to_px($northing, $input{y}, 1);
     } else {
         # Normal form submission
-        my ($x, $y, $tile_x, $tile_y);
-        ($x, $y, $tile_x, $tile_y, $px, $py) = Page::os_to_px_with_adjust($q, $input{easting}, $input{northing}, undef, undef);
-        $input{x} = $tile_x;
-        $input{y} = $tile_y;
         $easting = $input_h{easting};
         $northing = $input_h{northing};
     }
@@ -589,22 +575,22 @@ please specify the closest point on land.')) unless %$all_councils;
        $vars{form_start} = <<EOF;
 <form action="$form_action" method="post" name="mapSkippedForm"$enctype>
 <input type="hidden" name="pc" value="$input_h{pc}">
-<input type="hidden" name="x" value="$input_h{x}">
-<input type="hidden" name="y" value="$input_h{y}">
 <input type="hidden" name="skipped" value="1">
 $cobrand_form_elements
 <div id="skipped-map">
 EOF
     } else {
-        my $pins = Page::display_pin($q, $px, $py, 'purple');
         my $type;
         if ($allow_photo_upload) {
             $type = 2;
         } else {
             $type = 1;
         }
-        $vars{form_start} = Page::display_map($q, x => $input{x}, 'y' => $input{y}, type => $type,
-            pins => $pins, px => $px, py => $py );
+        $vars{form_start} = FixMyStreet::Map::display_map($q,
+            easting => $easting, northing => $northing,
+            type => $type,
+            pins => [ [ $easting, $northing, 'purple' ] ],
+        );
         my $partial_id;
         if (my $token = $input{partial}) {
             $partial_id = mySociety::AuthToken::retrieve('partial', $token);
@@ -770,41 +756,43 @@ EOF
 
     %vars = (%vars, 
         category => $category,
-        map_end => Page::display_map_end(1),
+        map_end => FixMyStreet::Map::display_map_end(1),
         url_home => Cobrand::url($cobrand, '/', $q),
         submit_button => _('Submit')
     );
-    return (Page::template_include('report-form', $q, Page::template_root($q), %vars));
+    return (Page::template_include('report-form', $q, Page::template_root($q), %vars), robots => 'noindex,nofollow');
 }
 
 sub display_location {
     my ($q, @errors) = @_;
     my $cobrand = Page::get_cobrand($q);
-    my @vars = qw(pc x y all_pins no_pins);
+    my @vars = qw(pc x y e n all_pins no_pins);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
-    if ($input{y} =~ /favicon/) {
-        my $base = mySociety::Config::get('BASE_URL');
-        print $q->redirect(-location => $base . '/favicon.ico', -status => 301);
-        return '';
-    }
-    my($error, $easting, $northing);
+
+    (my $easting) = $input{e} =~ /^(\d+)/; $easting ||= 0;
+    (my $northing) = $input{n} =~ /^(\d+)/; $northing ||= 0;
+
+    # X/Y referring to tiles old-school
     (my $x) = $input{x} =~ /^(\d+)/; $x ||= 0;
     (my $y) = $input{y} =~ /^(\d+)/; $y ||= 0;
-    return front_page($q, @errors) unless $x || $y || $input{pc};
-    if (!$x && !$y) {
+    return front_page($q, @errors) unless $x || $y || $input{pc} || $easting || $northing;
+
+    if ($x && $y) {
+        # Convert the tile co-ordinates to real ones.
+        $easting = FixMyStreet::Map::tile_to_os($x);
+        $northing = FixMyStreet::Map::tile_to_os($y);
+    } elsif ($easting && $northing) {
+        # Don't need to do anything
+    } else {
+        my $error;
         try {
-            ($x, $y, $easting, $northing, $error) = Page::geocode($input{pc}, $q);
+            ($easting, $northing, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
         } catch Error::Simple with {
             $error = shift;
         };
-    }
-    return Page::geocode_choice($error, '/', $q) if (ref($error) eq 'ARRAY');
-    return front_page($q, $error) if ($error);
-
-    if (!$easting || !$northing) {
-        $easting = Page::tile_to_os($x);
-        $northing = Page::tile_to_os($y);
+        return FixMyStreet::Geocode::list_choices($error, '/', $q) if (ref($error) eq 'ARRAY');
+        return front_page($q, $error) if $error;
     }
 
     # Check this location is okay to be displayed for the cobrand
@@ -821,16 +809,12 @@ sub display_location {
         $all_text = _('Include stale reports');
         $interval = '6 months';
     }   
-    my ($pins, $on_map, $around_map, $dist) = Page::map_pins($q, $x, $y, $x, $y, $interval);
-    if ($input{no_pins}) {
-        $hide_link = NewURL($q, -retain=>1, no_pins=>undef);
-        $hide_text = _('Show pins');
-        $pins = '';
-    } else {
-        $hide_link = NewURL($q, -retain=>1, no_pins=>1);
-        $hide_text = _('Hide pins');
+
+    my ($on_map_all, $on_map, $around_map, $dist) = FixMyStreet::Map::map_features($q, $easting, $northing, $interval);
+    my @pins;
+    foreach (@$on_map_all) {
+        push @pins, [ $_->{easting}, $_->{northing}, $_->{state} eq 'fixed' ? 'green' : 'red' ];
     }
-    my $map_links = "<p id='sub_map_links'><a id='hide_pins_link' rel='nofollow' href='$hide_link'>$hide_text</a> | <a id='all_pins_link' rel='nofollow' href='$all_link'>$all_text</a></p> <input type='hidden' id='all_pins' name='all_pins' value='$input_h{all_pins}'>";
     my $on_list = '';
     foreach (@$on_map) {
         my $report_url = NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, 'y' => undef);
@@ -854,18 +838,38 @@ sub display_location {
         $around_list .= '</a>';
         $around_list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
         $around_list .= '</li>';
+        push @pins, [ $_->{easting}, $_->{northing}, $_->{state} eq 'fixed' ? 'green' : 'red' ];
     }
     $around_list = $q->li(_('No problems found.'))
         unless $around_list;
 
-    my $url_skip = NewURL($q, -retain=>1, 'submit_map'=>1, skipped=>1);
+    if ($input{no_pins}) {
+        $hide_link = NewURL($q, -retain=>1, no_pins=>undef);
+        $hide_text = _('Show pins');
+        @pins = ();
+    } else {
+        $hide_link = NewURL($q, -retain=>1, no_pins=>1);
+        $hide_text = _('Hide pins');
+    }
+    my $map_links = "<p id='sub_map_links'><a id='hide_pins_link' rel='nofollow' href='$hide_link'>$hide_text</a> | <a id='all_pins_link' rel='nofollow' href='$all_link'>$all_text</a></p> <input type='hidden' id='all_pins' name='all_pins' value='$input_h{all_pins}'>";
+
+    my $url_skip = NewURL($q, -retain=>1, pc => undef,
+        x => undef, 'y' => undef,
+        easting => $easting, northing => $northing,
+        'submit_map'=>1, skipped=>1
+    );
     my $pc_h = ent($q->param('pc') || '');
     my %vars = (
-        'map' => Page::display_map($q, x => $x, 'y' => $y, type => 1, pins => $pins, post => $map_links ),
-        map_end => Page::display_map_end(1),
+        'map' => FixMyStreet::Map::display_map($q,
+            easting => $easting, northing => $northing,
+            type => 1,
+            pins => \@pins,
+            post => $map_links
+        ),
+        map_end => FixMyStreet::Map::display_map_end(1),
         url_home => Cobrand::url($cobrand, '/', $q),
         url_rss => Cobrand::url($cobrand, NewURL($q, -retain => 1, -url=> "/rss/n/$easting,$northing", pc => undef, x => undef, 'y' => undef), $q),
-        url_email => Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/alert', x=>$x, 'y'=>$y, feed=>"local:$easting:$northing"), $q),
+        url_email => Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/alert', e=>$easting, 'n'=>$northing, feed=>"local:$easting:$northing"), $q),
         url_skip => $url_skip,
         email_me => _('Email me new local problems'),
         rss_alt => _('RSS feed'),
@@ -885,7 +889,8 @@ sub display_location {
     );
 
     my %params = (
-        rss => [ _('Recent local problems, FixMyStreet'), "/rss/n/$easting,$northing" ]
+        rss => [ _('Recent local problems, FixMyStreet'), "/rss/n/$easting,$northing" ],
+        robots => 'noindex,nofollow',
     );
 
     return (Page::template_include('map', $q, Page::template_root($q), %vars), %params);
@@ -898,11 +903,9 @@ sub display_problem {
     my $cobrand = Page::get_cobrand($q);
     push @errors, _('There were problems with your update. Please see below.') if (scalar keys %field_errors);
 
-    my @vars = qw(id name rznvy update fixed add_alert upload_fileid x y submit_update);
+    my @vars = qw(id name rznvy update fixed add_alert upload_fileid submit_update);
     my %input = map { $_ => $q->param($_) || '' } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
-    ($input{x}) = $input{x} =~ /^(\d+)/; $input{x} ||= 0;
-    ($input{y}) = $input{y} =~ /^(\d+)/; $input{y} ||= 0;
     my $base = Cobrand::base_url($cobrand);
 
     # Some council with bad email software
@@ -923,62 +926,70 @@ sub display_problem {
     my $problem = Problems::fetch_problem($input{id});
     return display_location($q, _('Unknown problem ID')) unless $problem;
     return front_page($q, _('That report has been removed from FixMyStreet.'), '410 Gone') if $problem->{state} eq 'hidden';
-    my ($x, $y, $x_tile, $y_tile, $px, $py) = Page::os_to_px_with_adjust($q, $problem->{easting}, $problem->{northing}, $input{x}, $input{y});
 
-    # Try and have pin near centre of map
-    if (!$input{x} && $x - $x_tile > 0.5) {
-        $x_tile += 1;
-        $px = Page::os_to_px($problem->{easting}, $x_tile);
-    }
-    if (!$input{y} && $y - $y_tile > 0.5) {
-        $y_tile += 1;
-        $py = Page::os_to_px($problem->{northing}, $y_tile, 1);
-    }
-
-    my %vars;
     my $extra_data = Cobrand::extra_data($cobrand, $q);
     my $google_link = Cobrand::base_url_for_emails($cobrand, $extra_data)
         . '/report/' . $problem->{id};
     my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($problem->{easting}, $problem->{northing}, 'G');
     my $map_links = "<p id='sub_map_links'><a href='http://maps.google.co.uk/maps?output=embed&amp;z=16&amp;q="
         . URI::Escape::uri_escape_utf8($problem->{title} . ' - ' . $google_link) . "\@$lat,$lon'>View on Google Maps</a></p>";
-    my $pins = Page::display_pin($q, $px, $py, 'blue');
-    $vars{map_start} = Page::display_map($q, x => $x_tile, 'y' => $y_tile, type => 0,
-        pins => $pins, px => $px, py => $py, post => $map_links );
 
+    my $banner;
     if ($q->{site} ne 'emptyhomes' && $problem->{state} eq 'confirmed' && $problem->{duration} > 8*7*24*60*60) {
-        $vars{banner} = $q->p({id => 'unknown'}, _('This problem is old and of unknown status.'))
+        $banner = $q->p({id => 'unknown'}, _('This problem is old and of unknown status.'));
     }
     if ($problem->{state} eq 'fixed') {
-        $vars{banner} = $q->p({id => 'fixed'}, _('This problem has been fixed') . '.')
+        $banner = $q->p({id => 'fixed'}, _('This problem has been fixed') . '.');
     }
 
-    $vars{problem_title} = ent($problem->{title});
-    $vars{problem_meta} = Page::display_problem_meta_line($q, $problem);
-    $vars{problem_detail} = Page::display_problem_detail($problem);
-    $vars{problem_photo} = Page::display_problem_photo($q, $problem);
+    my $contact_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, x => undef, 'y' => undef, -url=>'/contact?id=' . $input{id}), $q);
+    my $back = Cobrand::url($cobrand, NewURL($q, -url => '/',
+        'e' => int($problem->{easting}), 'n' => int($problem->{northing}),
+        -retain => 1, pc => undef, x => undef, 'y' => undef, id => undef
+    ), $q);
+    my $fixed = ($input{fixed}) ? ' checked' : '';
 
-    my $contact_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/contact?id=' . $input{id}), $q);
-    $vars{unsuitable} = $q->a({rel => 'nofollow', href => $contact_url}, _('Offensive? Unsuitable? Tell us'));
+    my %vars = (
+        banner => $banner,
+        map_start => FixMyStreet::Map::display_map($q,
+            easting => $problem->{easting}, northing => $problem->{northing},
+            type => 0,
+            pins => [ [ $problem->{easting}, $problem->{northing}, 'blue' ] ],
+            post => $map_links
+        ),
+        map_end => FixMyStreet::Map::display_map_end(0),
+        problem_title => ent($problem->{title}),
+        problem_meta => Page::display_problem_meta_line($q, $problem),
+        problem_detail => Page::display_problem_detail($problem),
+        problem_photo => Page::display_problem_photo($q, $problem),
+        problem_updates => Page::display_problem_updates($input{id}, $q),
+        unsuitable => $q->a({rel => 'nofollow', href => $contact_url}, _('Offensive? Unsuitable? Tell us')),
+        more_problems => '<a href="' . $back . '">' . _('More problems nearby') . '</a>',
+        url_home => Cobrand::url($cobrand, '/', $q),
+        alert_link => Cobrand::url($cobrand, NewURL($q, -url => '/alert?type=updates;id='.$input_h{id}, -retain => 1, pc => undef, x => undef, 'y' => undef ), $q),
+        alert_text => _('Email me updates'),
+        email_label => _('Email:'),
+        subscribe => _('Subscribe'),
+        blurb => _('Receive email when updates are left on this problem'),
+        cobrand_form_elements1 => Cobrand::form_elements($cobrand, 'alerts', $q),
+        form_alert_action => Cobrand::url($cobrand, '/alert', $q),
+        rss_url => Cobrand::url($cobrand,  NewURL($q, -retain=>1, -url => '/rss/'.$input_h{id}, pc => undef, x => undef, 'y' => undef, id => undef), $q),
+        rss_title => _('RSS feed'),
+        rss_alt => _('RSS feed of updates to this problem'),
+        update_heading => $q->h2(_('Provide an update')),
+        field_errors => \%field_errors,
+        add_alert_checked => ($input{add_alert} || !$input{submit_update}) ? ' checked' : '',
+        fixedline_box => $problem->{state} eq 'fixed' ? '' : qq{<input type="checkbox" name="fixed" id="form_fixed" value="1"$fixed>},
+        fixedline_label => $problem->{state} eq 'fixed' ? '' : qq{<label for="form_fixed">} . _('This problem has been fixed') . qq{</label>},
+        name_label => _('Name:'),
+        update_label => _('Update:'),
+        alert_label => _('Alert me to future updates'),
+        post_label => _('Post'),
+        cobrand_form_elements => Cobrand::form_elements($cobrand, 'updateForm', $q),
+        form_action => Cobrand::url($cobrand, '/', $q),
+        input_h => \%input_h,
+    );
 
-    my $back = Cobrand::url($cobrand, NewURL($q, -url => '/', 'x' => $x_tile, 'y' => $y_tile, -retain => 1, pc => undef, id => undef ), $q);
-    $vars{more_problems} = '<a href="' . $back . '">' . _('More problems nearby') . '</a>';
-
-    $vars{url_home} = Cobrand::url($cobrand, '/', $q),
-
-    $vars{alert_link} = Cobrand::url($cobrand, NewURL($q, -url => '/alert?type=updates;id='.$input_h{id}, -retain => 1, pc => undef ), $q);
-    $vars{alert_text} = _('Email me updates');
-    $vars{email_label} = _('Email:');
-    $vars{subscribe} = _('Subscribe');
-    $vars{blurb} = _('Receive email when updates are left on this problem');
-    $vars{cobrand_form_elements1} = Cobrand::form_elements($cobrand, 'alerts', $q);
-    $vars{form_alert_action} = Cobrand::url($cobrand, '/alert', $q);
-    $vars{rss_url} = Cobrand::url($cobrand,  NewURL($q, -retain=>1, -url => '/rss/'.$input_h{id}, pc => undef, id => undef), $q);
-    $vars{rss_title} = _('RSS feed');
-    $vars{rss_alt} = _('RSS feed of updates to this problem');
-
-    $vars{problem_updates} = Page::display_problem_updates($input{id}, $q);
-    $vars{update_heading} = $q->h2(_('Provide an update'));
     $vars{update_blurb} = $q->p($q->small(_('Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href="/faq#privacy">privacy policy</a>')))
         unless $q->{site} eq 'emptyhomes'; # No council blurb
 
@@ -986,22 +997,10 @@ sub display_problem {
         $vars{errors} = '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
     }
     
-    $vars{field_errors} = \%field_errors;
-
-    my $fixed = ($input{fixed}) ? ' checked' : '';
-    $vars{add_alert_checked} = ($input{add_alert} || !$input{submit_update}) ? ' checked' : '';
-    $vars{fixedline_box} = $problem->{state} eq 'fixed' ? ''
-        : qq{<input type="checkbox" name="fixed" id="form_fixed" value="1"$fixed>};
-    $vars{fixedline_label} = $problem->{state} eq 'fixed' ? ''
-        : qq{<label for="form_fixed">} . _('This problem has been fixed') . qq{</label>};
-    $vars{name_label} = _('Name:');
-    $vars{update_label} = _('Update:');
-    $vars{alert_label} = _('Alert me to future updates');
-    $vars{post_label} = _('Post');
-    $vars{cobrand_form_elements} = Cobrand::form_elements($cobrand, 'updateForm', $q);
     my $allow_photo_upload = Cobrand::allow_photo_upload($cobrand);
     if ($allow_photo_upload) {
         my $photo_label = _('Photo:');
+        $vars{enctype} = ' enctype="multipart/form-data"';
         $vars{photo_element} = <<EOF;
 <div id="fileupload_normalUI">
 <label for="form_photo">$photo_label</label>
@@ -1010,17 +1009,12 @@ sub display_problem {
 EOF
     }
  
-    $vars{form_action} = Cobrand::url($cobrand, '/', $q);
-    if ($allow_photo_upload) {
-        $vars{enctype} = ' enctype="multipart/form-data"';
-    }
-    $vars{map_end} = Page::display_map_end(0);
     my %params = (
         rss => [ _('Updates to this problem, FixMyStreet'), "/rss/$input_h{id}" ],
+        robots => 'index, nofollow',
         title => $problem->{title}
     );
 
-    $vars{input_h} = \%input_h;
     my $page = Page::template_include('problem', $q, Page::template_root($q), %vars);
     return ($page, %params);
 }

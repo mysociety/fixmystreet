@@ -1,0 +1,5 @@
+User-agent: msnbot
+Crawl-delay: 3
+
+User-agent: bingbot
+Crawl-delay: 3

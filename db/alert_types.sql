@@ -42,6 +42,17 @@ values ('local_problems', '', '',
     'problem_find_nearby(?, ?, ?) as nearby,problem', 'nearby.problem_id = problem.id and problem.state in (''confirmed'', ''fixed'')', 'created desc',
     '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-nearby');
 
+-- New problems around a location
+insert into alert_type
+(ref, head_sql_query, head_table,
+    head_title, head_link, head_description,
+    item_table, item_where, item_order,
+    item_title, item_link, item_description, template)
+values ('local_problems_state', '', '',
+    'New local problems on FixMyStreet', '/', 'The latest local problems reported by users',
+    'problem_find_nearby(?, ?, ?) as nearby,problem', 'nearby.problem_id = problem.id and problem.state in (?)', 'created desc',
+    '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-nearby');
+
 -- New problems sent to a particular council
 insert into alert_type
 (ref, head_sql_query, head_table,

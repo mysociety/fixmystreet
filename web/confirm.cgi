@@ -12,7 +12,7 @@ use strict;
 use Standard;
 use Digest::SHA1 qw(sha1_hex);
 use CrossSell;
-use mySociety::Alert;
+use FixMyStreet::Alert;
 use mySociety::AuthToken;
 use mySociety::Random qw(random_bytes);
 
@@ -115,8 +115,8 @@ sub confirm_update {
 
     # Subscribe updater to email updates if requested
     if ($add_alert) {
-        my $alert_id = mySociety::Alert::create($email, 'new_updates', $cobrand, $cobrand_data, $problem_id);
-        mySociety::Alert::confirm($alert_id);
+        my $alert_id = FixMyStreet::Alert::create($email, 'new_updates', $cobrand, $cobrand_data, $problem_id);
+        FixMyStreet::Alert::confirm($alert_id);
     }
 
     return $out;
@@ -139,18 +139,19 @@ sub confirm_problem {
     if ($q->{site} eq 'emptyhomes') {
         if ($council) {
             $out = $q->p(_('Thank you for reporting an empty property on
-ReportEmptyHomes.com. We have emailed the empty property officer in the council
-responsible with the details and asked them to do whatever they can to get the
+ReportEmptyHomes.com. We have emailed the lead officer for empty homes in the council
+responsible with details, and asked them to do whatever they can to get the
 empty property back into use as soon as possible.')) .
-$q->p(_('Most councils are quite good at bringing empty properties back into use. Even
-so the process can sometimes be slow, especially if the property is in very poor
-repair or the owner is unwilling to act. In most cases it takes six months
-before you can expect to see anything change. This doesn&rsquo;t mean the council
-isn&rsquo;t doing anything. We encourage councils to update the website so you can
-see what is happening.')) . 
-$q->p(_('We will contact you again in a month and again after six months to ask what has
-happened. Hopefully the property will be well on the way to being brought back
-into use by then, but if not we can offer advice on what you can do next.')) .
+$q->p(_('It is worth noting however that the process can sometimes be slow,
+especially if the property is in very poor repair or the owner is unwilling to
+act. In most cases it can take six months or more before you can expect to see
+anything change and sometimes there may be considerable barries to a property
+being brought back into use. This doesn&rsquo;t mean the council isn&rsquo;t
+doing anything. We encourage councils to update the website so you can
+see what is happening. It may be a long process, but you reporting your
+concerns about this property to the council is a valuable first step.')) . 
+$q->p(_('We may contact you periodically to ask if anything has changed
+with the property you reported.')) .
 $q->p(_('Thank you for using ReportEmptyHomes.com. Your action is already helping
 to resolve the UK&rsquo;s empty homes crisis.')) .
 $q->p('<a href="/report/' . $id . '">' . _('View your report') . '</a>.');
@@ -178,8 +179,8 @@ $q->p('<a href="/report/' . $id . '">' . _('View your report') . '</a>.');
     }
 
     # Subscribe problem reporter to email updates
-    my $alert_id = mySociety::Alert::create($email, 'new_updates', $cobrand, $cobrand_data, $id);
-    mySociety::Alert::confirm($alert_id);
+    my $alert_id = FixMyStreet::Alert::create($email, 'new_updates', $cobrand, $cobrand_data, $id);
+    FixMyStreet::Alert::confirm($alert_id);
 
     return $out;
 }

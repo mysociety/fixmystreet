@@ -3,18 +3,13 @@
 # Util.pm:
 # Barnet cobranding for FixMyStreet.
 #
-#
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
-#
-# $Id: Util.pm,v 1.9 2009-12-22 13:04:05 matthew Exp $
 
 package Cobrands::Barnet::Util;
-use Standard;
 use strict;
 use Carp;
 use URI::Escape;
-use mySociety::Web qw(ent);
 use mySociety::VotingArea;
 
 sub new {

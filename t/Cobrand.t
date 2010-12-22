@@ -11,7 +11,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 62;
+use Test::More tests => 59;
 use Test::Exception;
 use Error qw(:try);
 
@@ -213,17 +213,6 @@ sub test_url {
     is($url, '/xyz', 'url returns passed url if there is no url function defined by the cobrand'); 
 }
 
-sub test_show_watermark {
-    my $cobrand = 'mysite';
-    my $watermark = Cobrand::show_watermark($cobrand);
-    is($watermark, 0, 'show_watermark returns output from cobrand module');
-
-    $cobrand = 'nosite';
-    $watermark = Cobrand::show_watermark($cobrand);
-    is($watermark, 1, 'watermark returns 1 if there is no show_watermark function defined by the cobrand');
-
-}
-
 sub test_allow_photo_upload {
     my $cobrand = 'mysite';
     my $photo_upload = Cobrand::allow_photo_upload($cobrand);
@@ -287,7 +276,6 @@ ok(test_root_path_js() == 1, 'Ran all tests for root_js');
 ok(test_site_title() == 1, 'Ran all tests for site_title');
 ok(test_on_map_list_limit() == 1, 'Ran all tests for on_map_list_limit');
 ok(test_url() == 1, 'Ran all tests for url');
-ok(test_show_watermark() == 1, 'Ran all tests for show_watermark');
 ok(test_allow_photo_upload() == 1, 'Ran all tests for allow_photo_upload');
 ok(test_allow_photo_display() == 1, 'Ran all tests for allow_photo_display');
 ok(test_council_check() == 1, 'Ran all tests for council_check');

@@ -49,12 +49,7 @@ define('OPTION_GEO_CACHE', '/cache/');
 define('OPTION_GOOGLE_MAPS_API_KEY', '');
 
 define('OPTION_MAPIT_URL', 'http://services.mysociety.org/mapit');
-define('OPTION_TILES_TYPE', '10k-full-london');
-define('OPTION_TILES_TIFF_SIZE_METRES', 5000);
-define('OPTION_TILES_TIFF_SIZE_PIXELS', 7874);
-define('OPTION_TILES_WIDTH', 254);
-define('OPTION_TILES_URL', 'http://tilma.mysociety.org/tileserver/' . OPTION_TILES_TYPE . '/');
-
+define('OPTION_MAP_TYPE', 'Tilma::Original::1_10k');
 define('OPTION_EVEL_URL', 'http://services.mysociety.org/evel');
 define('OPTION_GAZE_URL', 'http://gaze.mysociety.org/gaze');
 
