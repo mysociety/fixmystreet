@@ -74,10 +74,11 @@ sub rss_local_problems {
     $d_str = "/$d" if $d;
     my $state = $q->param('state') || 'all';
     $state = 'all' unless $state =~ /^(all|open|fixed)$/;
-    $state = 'confirmed' if $state eq 'open';
 
     # state is getting lost in the redirects. Add it on to the end as a query
     my $state_qs = "?state=$state" unless $state eq 'all';
+
+    $state = 'confirmed' if $state eq 'open';
 
     my $cobrand = Page::get_cobrand($q);
     my $base = Cobrand::base_url($cobrand);
