@@ -33,7 +33,6 @@ use mySociety::EvEl;
 use mySociety::Locale;
 use mySociety::MaPit;
 use mySociety::TempFiles;
-use mySociety::Tracking;
 use mySociety::WatchUpdate;
 use mySociety::Web qw(ent);
 
@@ -315,7 +314,6 @@ sub header ($%) {
 =cut
 sub footer {
     my ($q, %params) = @_;
-    my $extra = $params{extra};
 
     if ($q->{site} ne 'fixmystreet') {
         my $template = template($q, %params) . '-footer';
@@ -330,8 +328,6 @@ sub footer {
 
     my $pc = $q->param('pc') || '';
     $pc = "?pc=" . ent($pc) if $pc;
-    $extra = $q->{scratch} if $q->{scratch}; # Overrides
-    my $track = mySociety::Tracking::code($q, $extra);
 
     my $piwik = "";
     if (mySociety::Config::get('BASE_URL') eq "http://www.fixmystreet.com") {
@@ -374,8 +370,6 @@ EOF
 $orglogo
 
 <p id="footer">$creditline</p>
-
-$track
 
 $piwik
 
