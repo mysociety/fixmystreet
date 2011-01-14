@@ -51,6 +51,7 @@
 <script type="text/javascript" src="/cobrands/barnet/javascript/2008-portsurf.js"></script>
 <script type="text/javascript" src="/yui/utilities.js"></script>
 <script type="text/javascript" src="/js.js"></script>
+{{ $map_js }}
 
 {{ $rss }}
 

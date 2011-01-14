@@ -12,7 +12,8 @@ use strict;
 use Error qw(:try);
 use Standard;
 use URI::Escape;
-use mySociety::Alert;
+use FixMyStreet::Alert;
+use FixMyStreet::Geocode;
 use mySociety::MaPit;
 use mySociety::GeoUtil;
 use mySociety::Gaze;
@@ -34,20 +35,20 @@ sub main {
             return;
         }
         my $qs = 'report/' . $id;
-        $out = mySociety::Alert::generate_rss($type, $xsl, $qs, [$id], undef, $cobrand, $q);
+        $out = FixMyStreet::Alert::generate_rss($type, $xsl, $qs, [$id], undef, $cobrand, $q);
     } elsif ($type eq 'new_problems' || $type eq 'new_fixed_problems') {
-        $out = mySociety::Alert::generate_rss($type, $xsl, '', undef, undef, $cobrand, $q);
+        $out = FixMyStreet::Alert::generate_rss($type, $xsl, '', undef, undef, $cobrand, $q);
     } elsif ($type eq 'council_problems') {
         my $id = $q->param('id');
         my $qs = '/'.$id;
-        $out = mySociety::Alert::generate_rss($type, $xsl, $qs, [$id], undef, $cobrand. $q);
+        $out = FixMyStreet::Alert::generate_rss($type, $xsl, $qs, [$id], undef, $cobrand. $q);
     } elsif ($type eq 'area_problems') {
         my $id = $q->param('id');
         my $va_info = mySociety::MaPit::call('area', $id);
         my $qs = '/'.$id;
-        $out = mySociety::Alert::generate_rss($type, $xsl, $qs, [$id], { NAME => $va_info->{name} }, $cobrand, $q);
+        $out = FixMyStreet::Alert::generate_rss($type, $xsl, $qs, [$id], { NAME => $va_info->{name} }, $cobrand, $q);
     } elsif ($type eq 'all_problems') {
-        $out = mySociety::Alert::generate_rss($type, $xsl, '', undef, undef, $cobrand, $q);
+        $out = FixMyStreet::Alert::generate_rss($type, $xsl, '', undef, undef, $cobrand, $q);
     } else {
         my $base = mySociety::Config::get('BASE_URL');
         print $q->redirect($base . '/alert');
@@ -71,6 +72,13 @@ sub rss_local_problems {
     $d = '' unless $d =~ /^\d+$/;
     my $d_str = '';
     $d_str = "/$d" if $d;
+    my $state = $q->param('state') || 'all';
+    $state = 'all' unless $state =~ /^(all|open|fixed)$/;
+
+    # state is getting lost in the redirects. Add it on to the end as a query
+    my $state_qs = "?state=$state" unless $state eq 'all';
+
+    $state = 'confirmed' if $state eq 'open';
 
     my $cobrand = Page::get_cobrand($q);
     my $base = Cobrand::base_url($cobrand);
@@ -78,33 +86,31 @@ sub rss_local_problems {
         ($e, $n) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
         $e = int($e + 0.5);
         $n = int($n + 0.5);
-        print $q->redirect(-location => "$base/rss/n/$e,$n$d_str");
+        print $q->redirect(-location => "$base/rss/n/$e,$n$d_str$state_qs");
         return '';
     } elsif ($x && $y) {
         # 5000/31 as initial scale factor for these RSS feeds, now variable so redirect.
         $e = int( ($x * 5000/31) + 0.5 );
         $n = int( ($y * 5000/31) + 0.5 );
-        print $q->redirect(-location => "$base/rss/n/$e,$n$d_str");
+        print $q->redirect(-location => "$base/rss/n/$e,$n$d_str$state_qs");
         return '';
     } elsif ($e && $n) {
-        $x = int(Page::os_to_tile($e));
-        $y = int(Page::os_to_tile($n));
         ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($e, $n, 'G');
     } elsif ($pc) {
         my $error;
         try {
-            ($x, $y, $e, $n, $error) = Page::geocode($pc, $q);
+            ($e, $n, $error) = FixMyStreet::Geocode::lookup($pc, $q);
         } catch Error::Simple with {
             $error = shift;
         };
         unless ($error) {
-            print $q->redirect(-location => "$base/rss/n/$e,$n$d_str");
+            print $q->redirect(-location => "$base/rss/n/$e,$n$d_str$state_qs");
         }
         return '';
     } else {
         die "Missing E/N, x/y, lat/lon, or postcode parameter in RSS feed";
     }
-    my $qs = "?x=$x;y=$y";
+    my $qs = '?e=' . int($e) . ';n=' . int($n);
     if ($d) {
         $qs .= ";d=$d";
         $d = 100 if $d > 100;
@@ -114,6 +120,10 @@ sub rss_local_problems {
     }
 
     my $xsl = Cobrand::feed_xsl($cobrand);
-    return mySociety::Alert::generate_rss('local_problems', $xsl, $qs, [$e, $n, $d], undef, $cobrand, $q);
+    if ($state eq 'all') {
+        return FixMyStreet::Alert::generate_rss('local_problems', $xsl, $qs, [$e, $n, $d], undef, $cobrand, $q);
+    } else {
+        return FixMyStreet::Alert::generate_rss('local_problems_state', $xsl, $qs, [$e, $n, $d, $state], undef, $cobrand, $q);
+    }
 }
 

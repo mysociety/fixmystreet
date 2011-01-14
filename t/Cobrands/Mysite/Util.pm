@@ -87,10 +87,6 @@ sub url {
     return '/transformed_url';
 }
 
-sub show_watermark {
-    return 0;
-}
-
 sub allow_photo_upload {
     return 0;
 }

@@ -12,7 +12,6 @@ use strict;
 use Standard;
 use Digest::SHA1 qw(sha1_hex);
 use CrossSell;
-use mySociety::Alert;
 use mySociety::AuthToken;
 use mySociety::Config;
 use mySociety::EmailUtil qw(is_valid_email);

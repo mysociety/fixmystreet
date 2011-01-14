@@ -11,6 +11,7 @@
 use strict;
 use Error qw(:try);
 use Standard;
+use Utils;
 use mySociety::AuthToken;
 use mySociety::EmailUtil;
 use mySociety::EvEl;

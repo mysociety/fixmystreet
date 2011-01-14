@@ -3,19 +3,14 @@
 # Util.pm:
 # Emptyhomes Cobranding for FixMyStreet.
 #
-#
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
-#
-# $Id: Util.pm,v 1.8 2009-12-22 11:17:26 matthew Exp $
 
 package Cobrands::Emptyhomes::Util;
-use Standard;
 use strict;
 use Carp;
-use mySociety::Web qw(ent);
 
-sub new{
+sub new {
     my $class = shift;
     return bless {}, $class;
 }
@@ -44,7 +39,7 @@ Set the language and text domain for the site based on the query and host.
 
 =cut
 
-sub set_lang_and_domain{
+sub set_lang_and_domain {
     my ($self, $lang, $unicode) = @_;
     mySociety::Locale::negotiate_language('en-gb,English,en_GB|cy,Cymraeg,cy_GB', $lang);
     mySociety::Locale::gettext_domain('FixMyStreet-EmptyHomes', $unicode);

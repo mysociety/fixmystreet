@@ -3,18 +3,13 @@
 # Util.pm:
 # Barnet cobranding for FixMyStreet.
 #
-#
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
-#
-# $Id: Util.pm,v 1.9 2009-12-22 13:04:05 matthew Exp $
 
 package Cobrands::Barnet::Util;
-use Standard;
 use strict;
 use Carp;
 use URI::Escape;
-use mySociety::Web qw(ent);
 use mySociety::VotingArea;
 
 sub new {
@@ -86,7 +81,7 @@ sub council_check {
     $url .= 'alert' if $context eq 'alert';
     $url .= '?pc=' . URI::Escape::uri_escape_utf8($q->param('pc')) if $q->param('pc');
     my $error_msg = "That location is not covered by Barnet.
-Please visit <a href='$url'>the main FixMyStreet site</a>.";
+Please visit <a href=\"$url\">the main FixMyStreet site</a>.";
     return (0, $error_msg);
 }
 

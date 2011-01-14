@@ -20,7 +20,6 @@ use lib "$FindBin::Bin/../commonlib/perllib";
 
 use Page;
 
-
 package Standard;
 
 sub import {

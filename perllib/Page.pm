@@ -16,41 +16,34 @@ use Carp;
 use mySociety::CGIFast qw(-no_xhtml);
 use Error qw(:try);
 use File::Slurp;
-use HTTP::Date;
+use HTTP::Date; # time2str
 use Image::Magick;
 use Image::Size;
-use LWP::Simple;
-use Digest::MD5 qw(md5_hex);
 use POSIX qw(strftime);
 use URI::Escape;
 use Text::Template;
 
 use Memcached;
 use Problems;
-use Utils;
 use Cobrand;
+
 use mySociety::Config;
 use mySociety::DBHandle qw/dbh select_all/;
 use mySociety::EvEl;
-use mySociety::Gaze;
-use mySociety::GeoUtil;
 use mySociety::Locale;
 use mySociety::MaPit;
-use mySociety::PostcodeUtil;
 use mySociety::TempFiles;
 use mySociety::Tracking;
 use mySociety::WatchUpdate;
-use mySociety::Web qw(ent NewURL);
+use mySociety::Web qw(ent);
 
 BEGIN {
     (my $dir = __FILE__) =~ s{/[^/]*?$}{};
     mySociety::Config::set_file("$dir/../conf/general");
 }
 
-use constant TILE_WIDTH => mySociety::Config::get('TILES_WIDTH');
-use constant TIF_SIZE_M => mySociety::Config::get('TILES_TIFF_SIZE_METRES');
-use constant TIF_SIZE_PX => mySociety::Config::get('TILES_TIFF_SIZE_PIXELS');
-use constant SCALE_FACTOR => TIF_SIZE_M / (TIF_SIZE_PX / TILE_WIDTH);
+# Under the BEGIN so that the config has been set.
+use FixMyStreet::Map;
 
 my $lastmodified;
 
@@ -205,10 +198,15 @@ sub template_vars ($%) {
         'lang_url' => $lang_url,
         'title' => $params{title},
         'rss' => '',
+        map_js => FixMyStreet::Map::header_js(),
     );
 
     if ($params{rss}) {
         $vars{rss} = '<link rel="alternate" type="application/rss+xml" title="' . $params{rss}[0] . '" href="' . $params{rss}[1] . '">';
+    }
+
+    if ($params{robots}) {
+        $vars{robots} = '<meta name="robots" content="' . $params{robots} . '">';
     }
 
     if ($q->{site} eq 'fixmystreet') {
@@ -285,7 +283,7 @@ sub header ($%) {
     my $default_params = Cobrand::header_params(get_cobrand($q), $q, %params);
     my %default_params = %{$default_params};
     %params = (%default_params, %params);
-    my %permitted_params = map { $_ => 1 } qw(title rss js expires lastmodified template cachecontrol context status_code);
+    my %permitted_params = map { $_ => 1 } qw(title rss expires lastmodified template cachecontrol context status_code robots);
     foreach (keys %params) {
         croak "bad parameter '$_'" if (!exists($permitted_params{$_}));
     }
@@ -318,8 +316,6 @@ sub header ($%) {
 sub footer {
     my ($q, %params) = @_;
     my $extra = $params{extra};
-    my $js = $params{js} || '';
-    $js = ''; # Don't use fileupload JS at the moment
 
     if ($q->{site} ne 'fixmystreet') {
         my $template = template($q, %params) . '-footer';
@@ -381,8 +377,6 @@ $orglogo
 
 $track
 
-$js
-
 $piwik
 
 </body>
@@ -399,275 +393,6 @@ sub error_page ($$) {
             . $q->p($message)
             . footer($q);
     print $q->header(-content_length => length($html)), $html;
-}
-
-# display_map Q PARAMS
-# PARAMS include:
-# X,Y is bottom left tile of 2x2 grid
-# TYPE is 1 if the map is clickable, 2 if clickable and has a form upload,
-#     0 if not clickable
-# PINS is HTML of pins to show
-# PX,PY are coordinates of pin
-# PRE/POST are HTML to show above/below map
-sub display_map {
-    my ($q, %params) = @_;
-    $params{pins} ||= '';
-    $params{pre} ||= '';
-    $params{post} ||= '';
-    my $mid_point = TILE_WIDTH; # Map is 2 TILE_WIDTHs in size, square.
-    if ($q->{site} eq 'barnet') { # Map is c. 380px wide
-        $mid_point = 189;
-    }
-    my $px = defined($params{px}) ? $mid_point - $params{px} : 0;
-    my $py = defined($params{py}) ? $mid_point - $params{py} : 0;
-    my $x = int($params{x})<=0 ? 0 : $params{x};
-    my $y = int($params{y})<=0 ? 0 : $params{y};
-    my $url = mySociety::Config::get('TILES_URL');
-    my $tiles_url = $url . ($x-1) . '-' . $x . ',' . ($y-1) . '-' . $y . '/RABX';
-    my $tiles = LWP::Simple::get($tiles_url);
-    return '<div id="map_box"> <div id="map"><div id="drag">' . _("Unable to fetch the map tiles from the tile server.") . '</div></div></div><div id="side">' if !$tiles;
-    my $tileids = RABX::unserialise($tiles);
-    my $tl = ($x-1) . '.' . $y;
-    my $tr = $x . '.' . $y;
-    my $bl = ($x-1) . '.' . ($y-1);
-    my $br = $x . '.' . ($y-1);
-    return '<div id="side">' if (!$tileids->[0][0] || !$tileids->[0][1] || !$tileids->[1][0] || !$tileids->[1][1]);
-    my $tl_src = $url . $tileids->[0][0];
-    my $tr_src = $url . $tileids->[0][1];
-    my $bl_src = $url . $tileids->[1][0];
-    my $br_src = $url . $tileids->[1][1];
-
-    my $out = '';
-    my $cobrand = Page::get_cobrand($q);
-    my $root_path_js = Cobrand::root_path_js($cobrand, $q);
-    my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'mapForm', $q);
-    my $img_type;
-    my $form_action = Cobrand::url($cobrand, '', $q);
-    if ($params{type}) {
-        my $encoding = '';
-        $encoding = ' enctype="multipart/form-data"' if ($params{type}==2);
-        my $pc = $q->param('pc') || '';
-        my $pc_enc = ent($pc);
-        $out .= <<EOF;
-<form action="$form_action" method="post" name="mapForm" id="mapForm"$encoding>
-<input type="hidden" name="submit_map" value="1">
-<input type="hidden" name="x" id="formX" value="$x">
-<input type="hidden" name="y" id="formY" value="$y">
-<input type="hidden" name="pc" value="$pc_enc">
-$cobrand_form_elements
-EOF
-        $img_type = '<input type="image"';
-    } else {
-        $img_type = '<img';
-    }
-    my $imgw = TILE_WIDTH . 'px';
-    my $tile_width = TILE_WIDTH;
-    my $tile_type = mySociety::Config::get('TILES_TYPE');
-    $out .= <<EOF;
-<script type="text/javascript">
-$root_path_js
-var fixmystreet = {
-    'x': $x - 3,
-    'y': $y - 3,
-    'start_x': $px,
-    'start_y': $py,
-    'tile_type': '$tile_type',
-    'tilewidth': $tile_width,
-    'tileheight': $tile_width
-};
-</script>
-<div id="map_box">
-$params{pre}
-    <div id="map"><div id="drag">
-        $img_type alt="NW map tile" id="t2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0;">$img_type alt="NE map tile" id="t2.3" name="tile_$tr" src="$tr_src" style="top:0px; left:$imgw;"><br>$img_type alt="SW map tile" id="t3.2" name="tile_$bl" src="$bl_src" style="top:$imgw; left:0;">$img_type alt="SE map tile" id="t3.3" name="tile_$br" src="$br_src" style="top:$imgw; left:$imgw;">
-        <div id="pins">$params{pins}</div>
-    </div>
-EOF
-    if (Cobrand::show_watermark($cobrand) && mySociety::Config::get('TILES_TYPE') ne 'streetview') {
-        $out .= '<div id="watermark"></div>';
-    }
-    $out .= compass($q, $x, $y);
-    my $copyright;
-    if (mySociety::Config::get('TILES_TYPE') eq 'streetview') {
-        $copyright = _('Map contains Ordnance Survey data &copy; Crown copyright and database right 2010.');
-    } else {
-        $copyright = _('&copy; Crown copyright. All rights reserved. Ministry of Justice 100037819&nbsp;2008.');
-    }
-    $out .= <<EOF;
-    </div>
-    <p id="copyright">$copyright</p>
-$params{post}
-EOF
-    $out .= '</div>';
-    $out .= '<div id="side">';
-    return $out;
-}
-
-sub display_map_end {
-    my ($type) = @_;
-    my $out = '</div>';
-    $out .= '</form>' if ($type);
-    return $out;
-}
-
-sub display_pin {
-    my ($q, $px, $py, $col, $num) = @_;
-    $num = '' if !$num || $num > 9;
-    my $host = base_url_with_lang($q, undef);
-    my %cols = (red=>'R', green=>'G', blue=>'B', purple=>'P');
-    my $out = '<img class="pin" src="' . $host . '/i/pin' . $cols{$col}
-        . $num . '.gif" alt="' . _('Problem') . '" style="top:' . ($py-59)
-        . 'px; left:' . ($px) . 'px; position: absolute;">';
-    return $out unless $_ && $_->{id} && $col ne 'blue';
-    my $cobrand = Page::get_cobrand($q);
-    my $url = Cobrand::url($cobrand, NewURL($q, -retain => 1, 
-                                                -url => '/report/' . $_->{id}, 
-                                                pc => undef,
-                                                x => undef, 
-                                                y => undef, 
-                                                sx => undef, 
-                                                sy => undef, 
-                                                all_pins => undef, 
-                                                no_pins => undef), $q);
-    $out = '<a title="' . ent($_->{title}) . '" href="' . $url . '">' . $out . '</a>';
-    return $out;
-}
-
-sub map_pins {
-    my ($q, $x, $y, $sx, $sy, $interval) = @_;
-
-    my $pins = '';
-    my $min_e = Page::tile_to_os($x-3); # Extra space to left/below due to rounding, I think
-    my $min_n = Page::tile_to_os($y-3);
-    my $mid_e = Page::tile_to_os($x);
-    my $mid_n = Page::tile_to_os($y);
-    my $max_e = Page::tile_to_os($x+2);
-    my $max_n = Page::tile_to_os($y+2);
-    my $cobrand = Page::get_cobrand($q);
-    # list of problems aoround map can be limited, but should show all pins
-    my $around_limit = Cobrand::on_map_list_limit($cobrand);
-    my $around_map;
-    my $around_map_list = Problems::around_map($min_e, $max_e, $min_n, $max_n, $interval, $around_limit);
-    if ($around_limit) { 
-        $around_map = Problems::around_map($min_e, $max_e, $min_n, $max_n, $interval, undef);
-    } else {
-        $around_map = $around_map_list;
-    }
-    my @ids = ();
-    foreach (@$around_map_list) {
-        push(@ids, $_->{id});
-    } 
-    foreach (@$around_map) {
-        my $px = Page::os_to_px($_->{easting}, $sx);
-        my $py = Page::os_to_px($_->{northing}, $sy, 1);
-        my $col = $_->{state} eq 'fixed' ? 'green' : 'red';
-        $pins .= Page::display_pin($q, $px, $py, $col);
-    }
-
-    my $dist;
-    mySociety::Locale::in_gb_locale {
-        my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($mid_e, $mid_n, 'G');
-        $dist = mySociety::Gaze::get_radius_containing_population($lat, $lon, 200000);
-    };
-    $dist = int($dist*10+0.5)/10;
-
-    my $limit = 20; # - @$current_map;
-    my $nearby = Problems::nearby($dist, join(',', @ids), $limit, $mid_e, $mid_n, $interval);
-    foreach (@$nearby) {
-        my $px = Page::os_to_px($_->{easting}, $sx);
-        my $py = Page::os_to_px($_->{northing}, $sy, 1);
-        my $col = $_->{state} eq 'fixed' ? 'green' : 'red';
-        $pins .= Page::display_pin($q, $px, $py, $col);
-    }
-
-    return ($pins, $around_map_list, $nearby, $dist);
-}
-
-sub compass ($$$) {
-    my ($q, $x, $y) = @_;
-    my @compass;
-    for (my $i=$x-1; $i<=$x+1; $i++) {
-        for (my $j=$y-1; $j<=$y+1; $j++) {
-            $compass[$i][$j] = NewURL($q, x=>$i, y=>$j);
-        }
-    }
-    my $recentre = NewURL($q);
-    my $host = base_url_with_lang($q, undef);
-    return <<EOF;
-<table cellpadding="0" cellspacing="0" border="0" id="compass">
-<tr valign="bottom">
-<td align="right"><a rel="nofollow" href="${compass[$x-1][$y+1]}"><img src="$host/i/arrow-northwest.gif" alt="NW" width=11 height=11></a></td>
-<td align="center"><a rel="nofollow" href="${compass[$x][$y+1]}"><img src="$host/i/arrow-north.gif" vspace="3" alt="N" width=13 height=11></a></td>
-<td><a rel="nofollow" href="${compass[$x+1][$y+1]}"><img src="$host/i/arrow-northeast.gif" alt="NE" width=11 height=11></a></td>
-</tr>
-<tr>
-<td><a rel="nofollow" href="${compass[$x-1][$y]}"><img src="$host/i/arrow-west.gif" hspace="3" alt="W" width=11 height=13></a></td>
-<td align="center"><a rel="nofollow" href="$recentre"><img src="$host/i/rose.gif" alt="Recentre" width=35 height=34></a></td>
-<td><a rel="nofollow" href="${compass[$x+1][$y]}"><img src="$host/i/arrow-east.gif" hspace="3" alt="E" width=11 height=13></a></td>
-</tr>
-<tr valign="top">
-<td align="right"><a rel="nofollow" href="${compass[$x-1][$y-1]}"><img src="$host/i/arrow-southwest.gif" alt="SW" width=11 height=11></a></td>
-<td align="center"><a rel="nofollow" href="${compass[$x][$y-1]}"><img src="$host/i/arrow-south.gif" vspace="3" alt="S" width=13 height=11></a></td>
-<td><a rel="nofollow" href="${compass[$x+1][$y-1]}"><img src="$host/i/arrow-southeast.gif" alt="SE" width=11 height=11></a></td>
-</tr>
-</table>
-EOF
-}
-
-# P is easting or northing
-# C is centre tile reference of displayed map
-sub os_to_px {
-    my ($p, $c, $invert) = @_;
-    return tile_to_px(os_to_tile($p), $c, $invert);
-}
-
-# Convert tile co-ordinates to pixel co-ordinates from top left of map
-# C is centre tile reference of displayed map
-sub tile_to_px {
-    my ($p, $c, $invert) = @_;
-    $p = TILE_WIDTH * ($p - $c + 1);
-    $p = 2 * TILE_WIDTH - $p if $invert;
-    $p = int($p + .5 * ($p <=> 0));
-    return $p;
-}
-
-# Tile co-ordinates are linear scale of OS E/N
-# Will need more generalising when more zooms appear
-sub os_to_tile {
-    return $_[0] / SCALE_FACTOR;
-}
-sub tile_to_os {
-    return int($_[0] * SCALE_FACTOR + 0.5);
-}
-
-sub click_to_tile {
-    my ($pin_tile, $pin, $invert) = @_;
-    $pin -= TILE_WIDTH while $pin > TILE_WIDTH;
-    $pin += TILE_WIDTH while $pin < 0;
-    $pin = TILE_WIDTH - $pin if $invert; # image submits measured from top down
-    return $pin_tile + $pin / TILE_WIDTH;
-}
-
-sub os_to_px_with_adjust {
-    my ($q, $easting, $northing, $in_x, $in_y) = @_;
-
-    my $x = Page::os_to_tile($easting);
-    my $y = Page::os_to_tile($northing);
-    my $x_tile = $in_x || int($x);
-    my $y_tile = $in_y || int($y);
-    my $px = Page::os_to_px($easting, $x_tile);
-    my $py = Page::os_to_px($northing, $y_tile, 1);
-    if ($q->{site} eq 'barnet') { # Map is 380px
-        if ($py > 380) {
-            $y_tile--;
-            $py = Page::os_to_px($northing, $y_tile, 1);
-        }
-        if ($px > 380) {
-            $x_tile++;
-            $px = Page::os_to_px($easting, $x_tile);
-        }
-    }
-    return ($x, $y, $x_tile, $y_tile, $px, $py);
 }
 
 # send_email TO (NAME) TEMPLATE-NAME PARAMETERS
@@ -925,143 +650,6 @@ sub mapit_check_error {
         return _("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.");
     }
     return 0;
-}
-
-# geocode STRING QUERY
-# Given a user-inputted string, try and convert it into co-ordinates using either
-# MaPit if it's a postcode, or Google Maps API otherwise. Returns an array of
-# data, including an error if there is one (which includes a location being in 
-# Northern Ireland). The information in the query may be used by cobranded versions
-# of the site to diambiguate locations.
-sub geocode {
-    my ($s, $q) = @_;
-    my ($x, $y, $easting, $northing, $error);
-    if ($s =~ /^\d+$/) {
-        $error = 'FixMyStreet is a UK-based website that currently works in England, Scotland, and Wales. Please enter either a postcode, or a Great British street name and area.';
-    } elsif (mySociety::PostcodeUtil::is_valid_postcode($s)) {
-        my $location = mySociety::MaPit::call('postcode', $s);
-        unless ($error = mapit_check_error($location)) {
-            $easting = $location->{easting};
-            $northing = $location->{northing};
-            my $xx = Page::os_to_tile($easting);
-            my $yy = Page::os_to_tile($northing);
-            $x = int($xx);
-            $y = int($yy);
-            $x += 1 if ($xx - $x > 0.5);
-            $y += 1 if ($yy - $y > 0.5);
-        }
-    } else {
-        ($x, $y, $easting, $northing, $error) = geocode_string($s, $q);
-    }
-    return ($x, $y, $easting, $northing, $error);
-}
-
-sub geocoded_string_coordinates {
-    my ($js, $q) = @_;
-    my ($x, $y, $easting, $northing, $error);
-    my ($accuracy) = $js =~ /"Accuracy" *: *(\d)/;
-    if ($accuracy < 4) {  
-        $error = _('Sorry, that location appears to be too general; please be more specific.');
-    } else {
-
-         $js =~ /"coordinates" *: *\[ *(.*?), *(.*?),/;
-         my $lon = $1; my $lat = $2;
-         try {
-              ($easting, $northing) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
-              my $xx = Page::os_to_tile($easting);
-              my $yy = Page::os_to_tile($northing);
-              $x = int($xx);
-              $y = int($yy);
-              $x += 1 if ($xx - $x > 0.5);
-              $y += 1 if ($yy - $y > 0.5);
-          } catch Error::Simple with {
-              $error = shift;
-              $error = _('That location does not appear to be in Britain; please try again.')
-                 if $error =~ /out of the area covered/;
-          }
-     }
-    return ($x, $y, $easting, $northing, $error);
-}
-
-# geocode_string STRING QUERY
-# Canonicalises, looks up on Google Maps API, and caches, a user-inputted location.
-# Returns array of (TILE_X, TILE_Y, EASTING, NORTHING, ERROR), where ERROR is
-# either undef, a string, or an array of matches if there are more than one. The 
-# information in the query may be used to disambiguate the location in cobranded versions
-# of the site. 
-sub geocode_string {
-    my ($s, $q) = @_;
-    $s = lc($s);
-    $s =~ s/[^-&0-9a-z ']/ /g;
-    $s =~ s/\s+/ /g;
-    $s = URI::Escape::uri_escape_utf8($s);
-    $s = Cobrand::disambiguate_location(get_cobrand($q), "q=$s", $q);
-    $s =~ s/%20/+/g;
-    my $url = 'http://maps.google.com/maps/geo?' . $s;
-    my $cache_dir = mySociety::Config::get('GEO_CACHE');
-    my $cache_file = $cache_dir . md5_hex($url);
-    my ($js, $error, $x, $y, $easting, $northing);
-    if (-s $cache_file) {
-        $js = File::Slurp::read_file($cache_file);
-    } else {
-        $url .= ',+UK' unless $url =~ /united\++kingdom$/ || $url =~ /uk$/i;
-        $url .= '&sensor=false&gl=uk&key=' . mySociety::Config::get('GOOGLE_MAPS_API_KEY');
-        $js = LWP::Simple::get($url);
-        File::Slurp::write_file($cache_file, $js) if $js && $js !~ /"code":6[12]0/;
-    }
-    if (!$js) {
-        $error = _('Sorry, we could not parse that location. Please try again.');
-    } elsif ($js !~ /"code" *: *200/) {
-        $error = _('Sorry, we could not find that location.');
-    } elsif ($js =~ /}, *{/) { # Multiple
-        my @js = split /}, *{/, $js;
-        my @valid_locations;
-        foreach (@js) {
-            next unless /"address" *: *"(.*?)"/s;
-            my $address = $1;
-            next unless Cobrand::geocoded_string_check(get_cobrand($q), $address, $q);
-            next if $address =~ /BT\d/;
-            push (@valid_locations, $_); 
-            push (@$error, $address);
-        }
-        if (scalar @valid_locations == 1) {
-           return geocoded_string_coordinates($valid_locations[0], $q);
-        }
-        $error = _('Sorry, we could not find that location.') unless $error;
-    } elsif ($js =~ /BT\d/) {
-        # Northern Ireland, hopefully
-        $error = _("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.");
-    } else {
-        ($x, $y, $easting, $northing, $error) = geocoded_string_coordinates($js, $q);
-    }
-    return ($x, $y, $easting, $northing, $error);
-}
-
-# geocode_choice
-# Prints response if there's more than one possible result
-sub geocode_choice {
-    my ($choices, $page, $q) = @_;
-    my $url;
-    my $cobrand = Page::get_cobrand($q);
-    my $message = _('We found more than one match for that location. We show up to ten matches, please try a different search if yours is not here.');
-    my $out = '<p>' . $message . '</p>';
-    my $choice_list = '<ul>';
-    foreach my $choice (@$choices) {
-        $choice =~ s/, United Kingdom//;
-        $choice =~ s/, UK//;
-        $url =  Cobrand::url($cobrand, NewURL($q, -retain => 1, -url => $page, 'pc' => $choice), $q);  
-        $url =~ s/%20/+/g;
-        $choice_list .= '<li><a href="' . $url . '">' . $choice . "</a></li>\n";
-    }
-    $choice_list .= '</ul>';
-    $out .= $choice_list;
-    my %vars = (message => $message, 
-                choice_list => $choice_list, 
-                header => _('More than one match'), 
-                url_home => Cobrand::url($cobrand, '/', $q));
-    my $cobrand_choice = Page::template_include('geocode-choice', $q, Page::template_root($q), %vars);
-    return $cobrand_choice if $cobrand_choice;
-    return $out;
 }
 
 sub short_name {
