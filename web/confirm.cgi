@@ -20,7 +20,6 @@ sub main {
     my $q = shift;
     my $cobrand = Page::get_cobrand($q);
     my $out = '';
-    my $extra;
     my $token = $q->param('token');
     my $type = $q->param('type') || '';
     my $tokentype = $type eq 'questionnaire' ? 'update' : $type;
@@ -30,7 +29,6 @@ sub main {
             $out = confirm_update($q, $data);
         } elsif ($type eq 'problem') {
             $out = confirm_problem($q, $data);
-            $extra = 'added-problem';
         } elsif ($type eq 'questionnaire') {
             $out = add_questionnaire($q, $data, $token);
         }
@@ -50,7 +48,7 @@ EOF
     
     print Page::header($q, title=>_('Confirmation'));
     print $out;
-    print Page::footer($q, extra => $extra);
+    print Page::footer($q);
 }
 Page::do_fastcgi(\&main);
 
