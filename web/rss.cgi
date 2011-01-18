@@ -74,6 +74,10 @@ sub rss_local_problems {
     $d_str = "/$d" if $d;
     my $state = $q->param('state') || 'all';
     $state = 'all' unless $state =~ /^(all|open|fixed)$/;
+
+    # state is getting lost in the redirects. Add it on to the end as a query
+    my $state_qs = "?state=$state" unless $state eq 'all';
+
     $state = 'confirmed' if $state eq 'open';
 
     my $cobrand = Page::get_cobrand($q);
@@ -82,13 +86,13 @@ sub rss_local_problems {
         ($e, $n) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
         $e = int($e + 0.5);
         $n = int($n + 0.5);
-        print $q->redirect(-location => "$base/rss/n/$e,$n$d_str");
+        print $q->redirect(-location => "$base/rss/n/$e,$n$d_str$state_qs");
         return '';
     } elsif ($x && $y) {
         # 5000/31 as initial scale factor for these RSS feeds, now variable so redirect.
         $e = int( ($x * 5000/31) + 0.5 );
         $n = int( ($y * 5000/31) + 0.5 );
-        print $q->redirect(-location => "$base/rss/n/$e,$n$d_str");
+        print $q->redirect(-location => "$base/rss/n/$e,$n$d_str$state_qs");
         return '';
     } elsif ($e && $n) {
         ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($e, $n, 'G');
@@ -100,7 +104,7 @@ sub rss_local_problems {
             $error = shift;
         };
         unless ($error) {
-            print $q->redirect(-location => "$base/rss/n/$e,$n$d_str");
+            print $q->redirect(-location => "$base/rss/n/$e,$n$d_str$state_qs");
         }
         return '';
     } else {
