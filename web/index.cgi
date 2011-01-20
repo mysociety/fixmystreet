@@ -820,8 +820,8 @@ sub display_location {
         my $report_url = NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, 'y' => undef);
         $report_url = Cobrand::url($cobrand, $report_url, $q);  
         $on_list .= '<li><a href="' . $report_url . '">';
-        $on_list .= ent($_->{title});
-        $on_list .= '</a>';
+        $on_list .= ent($_->{title}) . '</a> <small>(';
+        $on_list .= Page::prettify_epoch($_->{time}) . ')</small>';
         $on_list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
         $on_list .= '</li>';
     }
@@ -834,8 +834,9 @@ sub display_location {
         $around_list .= '<li><a href="' . $report_url . '">';
         my $dist = int($_->{distance}/100+0.5);
         $dist = $dist / 10;
-        $around_list .= ent($_->{title}) . ' <small>(' . $dist . 'km)</small>';
-        $around_list .= '</a>';
+        $around_list .= ent($_->{title}) . '</a> <small>(';
+        $around_list .= Page::prettify_epoch($_->{time}) . ', ';
+        $around_list .= $dist . 'km)</small>';
         $around_list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
         $around_list .= '</li>';
         push @pins, [ $_->{easting}, $_->{northing}, $_->{state} eq 'fixed' ? 'green' : 'red' ];
