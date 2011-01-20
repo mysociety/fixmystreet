@@ -50,8 +50,8 @@ sub main {
                                                   all_pins => undef, 
                                                   no_pins => undef), $q);  
         $list .= '<li><a href="' . $link . '">';
-        $list .= ent($_->{title});
-        $list .= '</a>';
+        $list .= ent($_->{title}) . '</a> <small>(';
+        $list .= Page::prettify_epoch($q, $_->{time}, 1) . ')</small>';
         $list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
         $list .= '</li>';
     }
@@ -59,6 +59,7 @@ sub main {
 
     $list = '';
     foreach (@$around_map) {
+        my $dist = int($_->{distance}/100+.5)/10;
 	$link = Cobrand::url($cobrand, NewURL($q, -retain => 1, 
                                                   -url => '/report/' . $_->{id}, 
                                                   pc => undef, 
@@ -69,8 +70,9 @@ sub main {
                                                   all_pins => undef, 
                                                   no_pins => undef), $q);  
         $list .= '<li><a href="' . $link . '">';
-        $list .= ent($_->{title}) . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
-        $list .= '</a>';
+        $list .= ent($_->{title}) . '</a> <small>(';
+        $list .= Page::prettify_epoch($q, $_->{time}, 1) . ', ';
+        $list .= $dist . 'km)</small>';
         $list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
         $list .= '</li>';
     }

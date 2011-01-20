@@ -821,7 +821,7 @@ sub display_location {
         $report_url = Cobrand::url($cobrand, $report_url, $q);  
         $on_list .= '<li><a href="' . $report_url . '">';
         $on_list .= ent($_->{title}) . '</a> <small>(';
-        $on_list .= Page::prettify_epoch($q, $_->{time}) . ')</small>';
+        $on_list .= Page::prettify_epoch($q, $_->{time}, 1) . ')</small>';
         $on_list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
         $on_list .= '</li>';
     }
@@ -835,7 +835,7 @@ sub display_location {
         my $dist = int($_->{distance}/100+0.5);
         $dist = $dist / 10;
         $around_list .= ent($_->{title}) . '</a> <small>(';
-        $around_list .= Page::prettify_epoch($q, $_->{time}) . ', ';
+        $around_list .= Page::prettify_epoch($q, $_->{time}, 1) . ', ';
         $around_list .= $dist . 'km)</small>';
         $around_list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
         $around_list .= '</li>';
