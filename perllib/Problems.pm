@@ -176,7 +176,9 @@ sub around_map {
         $limit_clause = " limit $limit";
     }
     mySociety::Locale::in_gb_locale { select_all(
-        "select id,title,easting,northing,state from problem
+        "select id,title,easting,northing,state,
+             extract(epoch from confirmed) as time
+        from problem
         where state in ('confirmed', 'fixed')
             and easting>=? and easting<? and northing>=? and northing<? " .
         ($interval ? " and ms_current_timestamp()-lastupdate < '$interval'::interval" : '') .
@@ -189,7 +191,8 @@ sub around_map {
 sub nearby {
     my ($dist, $ids, $limit, $mid_e, $mid_n, $interval) = @_;
     mySociety::Locale::in_gb_locale { select_all(
-        "select id, title, easting, northing, distance, state
+        "select id, title, easting, northing, distance, state,
+            extract(epoch from confirmed) as time
         from problem_find_nearby(?, ?, $dist) as nearby, problem
         where nearby.problem_id = problem.id " .
         ($interval ? " and ms_current_timestamp()-lastupdate < '$interval'::interval" : '') .

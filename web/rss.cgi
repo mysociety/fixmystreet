@@ -76,7 +76,8 @@ sub rss_local_problems {
     $state = 'all' unless $state =~ /^(all|open|fixed)$/;
 
     # state is getting lost in the redirects. Add it on to the end as a query
-    my $state_qs = "?state=$state" unless $state eq 'all';
+    my $state_qs = '';
+    $state_qs = "?state=$state" unless $state eq 'all';
 
     $state = 'confirmed' if $state eq 'open';
 

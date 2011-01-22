@@ -444,7 +444,7 @@ EOF
 }
 
 sub prettify_epoch {
-    my ($q, $s) = @_;
+    my ($q, $s, $short) = @_;
     my $cobrand = get_cobrand($q);
     my $cobrand_datetime = Cobrand::prettify_epoch($cobrand, $s);
     return $cobrand_datetime if ($cobrand_datetime);
@@ -455,6 +455,8 @@ sub prettify_epoch {
         $tt = "$tt " . _('today');
     } elsif (strftime('%Y %U', @s) eq strftime('%Y %U', @t)) {
         $tt = "$tt, " . strftime('%A', @s);
+    } elsif ($short) {
+        $tt = "$tt, " . strftime('%e %b %Y', @s);
     } elsif (strftime('%Y', @s) eq strftime('%Y', @t)) {
         $tt = "$tt, " . strftime('%A %e %B %Y', @s);
     } else {
