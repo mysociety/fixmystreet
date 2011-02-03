@@ -1,0 +1,19 @@
+
+=head1 NAME
+
+FixMyStreet
+
+=head1 DESCRIPTION
+
+FixMyStreet is a project that allows anyone to report an issue such as potholes,
+broken street lights, severe littering, water leaks. These issues are then
+routed to the correct body who can arrange to have them fixed.
+
+=head1 INSTALLING
+
+Installing from scratch can be a bit daunting but is fully documented in the
+notes/INSTALL file.
+
+We are hoping to make it much easier for you to try the code by letting you
+start a fully installed system with test data pre-loaded on Amazon's servers.
+More details will follow soon.

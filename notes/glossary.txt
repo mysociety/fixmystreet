@@ -1,0 +1,6 @@
+Unfamiliar terms that you may come across in the code:
+
+
+BCI: Broken Civic Infrastructure - project name before it became FixMyStreet -
+still to be found used in some config variable names
+
