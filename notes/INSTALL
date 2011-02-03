@@ -73,7 +73,9 @@ cd -
 cp conf/general-example conf/general
 nano conf/general
 
-# Really you only need to alter the database connection details - the rest should be fine
+# You only need to alter:
+#  * the database connection details
+#  * the OPTION_BASE_URL to be where your test site will run - eg 'http://localhost'
 
 
 
