@@ -64,7 +64,6 @@ sudo apache2ctl restart
 cd -
 
 # You may need to change the permissions on your files so that apache can read them
-# sudo chgrp -Rc www-data ~/fixmystreet
 
 
 # SETTING UP CONFIG FILES
@@ -76,7 +75,7 @@ nano conf/general
 # You only need to alter:
 #  * the database connection details
 #  * the OPTION_BASE_URL to be where your test site will run - eg 'http://localhost'
-
+#  * the OPTION_EVEL_URL to '' - this will cause some emails not to be sent but warned to STDERR instead - proper email handling is being worked on
 
 
 # SETTING UP THE DATABASES
@@ -90,6 +89,7 @@ exit
 createdb -E SQL_ASCII bci
 createlang plpgsql bci
 psql bci < db/schema.sql
+psql bci < db/alert_types.sql
 
 
 # LOOK AT THE SITE IN YOUR BROWSER

@@ -14,6 +14,7 @@ package Page;
 use strict;
 use Carp;
 use mySociety::CGIFast qw(-no_xhtml);
+use Data::Dumper;
 use Error qw(:try);
 use File::Slurp;
 use HTTP::Date; # time2str
@@ -402,13 +403,29 @@ sub send_email {
     my $sender = Cobrand::contact_email($cobrand);
     my $sender_name = Cobrand::contact_name($cobrand);
     $sender =~ s/team/fms-DO-NOT-REPLY/;
-    mySociety::EvEl::send({
-        _template_ => _($template),
-        _parameters_ => \%h,
-        From => [ $sender, _($sender_name)],
-        To => $to,
-    }, $email);
 
+    # only try to send via EvEl if url configured - otherwise just print a
+    # warning regarding the message contents.
+    my @evel_args = (
+        {
+            _template_   => _($template),
+            _parameters_ => \%h,
+            From         => [ $sender, _($sender_name) ],
+            To           => $to,
+        },
+        $email
+    );
+
+    if ( mySociety::Config::get('EVEL_URL') ) {
+        mySociety::EvEl::send( $evel_args[0], $evel_args[1] );   # sub is prototyped...
+    }
+    else {
+        warn "Config EVEL_URL is false - not sending email but warning instead.\n";
+        warn "These are the args to mySociety::EvEl::send(...):\n";
+        warn Dumper( \@evel_args );
+        warn "  ";    # so line number gets into error log
+    }
+    
     my ($action, $worry);
     if ($thing eq 'problem') {
         $action = _('your problem will not be posted');
