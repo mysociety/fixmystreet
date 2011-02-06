@@ -50,7 +50,7 @@ define('OPTION_GOOGLE_MAPS_API_KEY', '');
 
 define('OPTION_MAPIT_URL', 'http://mapit.mysociety.org/');
 define('OPTION_MAP_TYPE', 'Tilma::Original::1_10k');
-define('OPTION_EVEL_URL', 'http://services.mysociety.org/evel'); # FIXME - is this still alive...
+define('OPTION_EVEL_URL', 'http://services.mysociety.org/evel');
 define('OPTION_GAZE_URL', 'http://gaze.mysociety.org/gaze');
 
 // Tracking
