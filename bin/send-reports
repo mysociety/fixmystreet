@@ -190,6 +190,7 @@ If you know of an appropriate contact address, please do get in touch. ]\n\n";
         $send_web = 0;
         $send_email = 1;
     } elsif (mySociety::Config::get('STAGING_SITE')) {
+        # on a staging server send emails to ourselves rather than the councils
         @recips = ( mySociety::Config::get('CONTACT_EMAIL') );
     } elsif ($site eq 'emptyhomes') {
         my $council = $row->{council};

@@ -30,6 +30,7 @@ use Cobrand;
 
 use mySociety::Config;
 use mySociety::DBHandle qw/dbh select_all/;
+use mySociety::Email;
 use mySociety::EvEl;
 use mySociety::Locale;
 use mySociety::MaPit;
@@ -393,37 +394,53 @@ sub error_page ($$) {
 # send_email TO (NAME) TEMPLATE-NAME PARAMETERS
 # TEMPLATE-NAME is currently one of problem, update, alert, tms
 sub send_email {
-    my ($q, $email, $name, $thing, %h) = @_;
+    my ($q, $recipient_email_address, $name, $thing, %h) = @_;
     my $file_thing = $thing;
     $file_thing = 'empty property' if $q->{site} eq 'emptyhomes' && $thing eq 'problem'; # Needs to be in English
     my $template = "$file_thing-confirm";
     $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/$template");
-    my $to = $name ? [[$email, $name]] : $email;
+    my $to = $name ? [[$recipient_email_address, $name]] : $recipient_email_address;
     my $cobrand = get_cobrand($q);
     my $sender = Cobrand::contact_email($cobrand);
     my $sender_name = Cobrand::contact_name($cobrand);
     $sender =~ s/team/fms-DO-NOT-REPLY/;
 
-    # only try to send via EvEl if url configured - otherwise just print a
-    # warning regarding the message contents.
-    my @evel_args = (
-        {
-            _template_   => _($template),
-            _parameters_ => \%h,
-            From         => [ $sender, _($sender_name) ],
-            To           => $to,
-        },
-        $email
-    );
+    # Can send email either via EvEl (if configured) or via local MTA on
+    # machine. If EvEl fails (server down etc) fall back to local sending
 
-    if ( mySociety::Config::get('EVEL_URL') ) {
-        mySociety::EvEl::send( $evel_args[0], $evel_args[1] );   # sub is prototyped...
+    my $email_building_args = {
+        _template_   => _($template),
+        _parameters_ => \%h,
+        From         => [ $sender, _($sender_name) ],
+        To           => $to,
+    };
+
+    my $email_sent_successfully = 0;
+
+    if ( my $EvEl_url = mySociety::Config::get('EVEL_URL') ) {
+        eval {
+            mySociety::EvEl::send( $email_building_args, $recipient_email_address );
+            $email_sent_successfully = 1;
+        };
+
+        warn "ERROR: sending email via '$EvEl_url' failed: $@" if $@;
     }
-    else {
-        warn "Config EVEL_URL is false - not sending email but warning instead.\n";
-        warn "These are the args to mySociety::EvEl::send(...):\n";
-        warn Dumper( \@evel_args );
-        warn "  ";    # so line number gets into error log
+
+    # If not sent through EvEL, or EvEl failed
+    if ( !$email_sent_successfully ) {
+        my $email = mySociety::Locale::in_gb_locale {
+            mySociety::Email::construct_email( $email_building_args );
+        };
+
+        my $send_email_result =
+          mySociety::EmailUtil::send_email( $email, $sender, $recipient_email_address );
+        $email_sent_successfully = !$send_email_result;    # invert result
+    }
+
+    # Could not send email - die
+    if ( !$email_sent_successfully ) {
+        die "Could not send email to '$recipient_email_address' "
+          . "using either EvEl or local MTA.";
     }
     
     my ($action, $worry);

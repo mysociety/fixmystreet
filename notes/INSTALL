@@ -76,7 +76,6 @@ apt-get install mailx    # for testing email is working
 nano /etc/ssmtp/ssmtp.conf    # see http://wiki.debian.org/sSMTP for details
 mail youremail@example.com    # send a test message
 
-
 # SETTING UP CONFIG FILES
 
 # the setup is configured using the file 'conf/general' - copy the example one and then edit it
@@ -87,6 +86,8 @@ nano conf/general
 #  * the database connection details
 #  * the OPTION_BASE_URL to be where your test site will run - eg 'http://localhost'
 #  * the OPTION_EVEL_URL to '' - this will cause some emails not to be sent but warned to STDERR instead - proper email handling is being worked on
+#  * the OPTION_SMTP_SMARTHOST to '' if routing mail via ssmtp as described above - otherwise your SMTP server
+#  * set OPTION_EMAIL_VHOST to the same as OPTION_BASE_URL minus the 'http://' - eg 'localhost'
 
 
 # SETTING UP THE DATABASES
