@@ -11,6 +11,7 @@ package FixMyStreet::Geocode;
 use strict;
 use Error qw(:try);
 use File::Slurp;
+use File::Path ();
 use LWP::Simple;
 use Digest::MD5 qw(md5_hex);
 use URI::Escape;
@@ -96,6 +97,7 @@ sub string {
         $url .= ',+UK' unless $url =~ /united\++kingdom$/ || $url =~ /uk$/i;
         $url .= '&sensor=false&gl=uk&key=' . mySociety::Config::get('GOOGLE_MAPS_API_KEY');
         $js = LWP::Simple::get($url);
+        File::Path::mkpath($cache_dir);
         File::Slurp::write_file($cache_file, $js) if $js && $js !~ /"code":6[12]0/;
     }
     if (!$js) {

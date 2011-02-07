@@ -39,7 +39,7 @@ sudo apt-get install `cat conf/packages`
 
 # also install these that are available by default on mySoc boxes:
 sudo apt-get install \
-    libregexp-common-perl php5-cli perl-doc
+    libregexp-common-perl php5-cli perl-doc libtest-exception-perl
 
 
 # SETTING UP APACHE
@@ -88,6 +88,7 @@ nano conf/general
 #  * the OPTION_EVEL_URL to '' - this will cause some emails not to be sent but warned to STDERR instead - proper email handling is being worked on
 #  * the OPTION_SMTP_SMARTHOST to '' if routing mail via ssmtp as described above - otherwise your SMTP server
 #  * set OPTION_EMAIL_VHOST to the same as OPTION_BASE_URL minus the 'http://' - eg 'localhost'
+#  * set OPTION_UPLOAD_CACHE and OPTION_GEO_CACHE to your preferred values
 
 
 # SETTING UP THE DATABASES
