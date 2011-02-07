@@ -77,6 +77,11 @@ sub migrate_problem_table {
         $dbh->commit;    # every batch of updates
     }
 
+    print "make latitude, longitude columns not null\n";
+    $dbh->do("ALTER TABLE problem ALTER COLUMN $_ SET NOT NULL")
+      for qw(latitude longitude);
+    $dbh->commit;
+
     # drop old index, create new one
     print "drop and create indexes\n";
     $dbh->do("DROP INDEX problem_state_easting_northing_idx");
