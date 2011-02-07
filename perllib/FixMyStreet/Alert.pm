@@ -177,16 +177,15 @@ sub email_alerts ($) {
     $query->execute();
     while (my $alert = $query->fetchrow_hashref) {
         next unless (Cobrand::email_host($alert->{cobrand}));
-        my $e = $alert->{parameter};
-        my $n = $alert->{parameter2};
+        my $longitude = $alert->{parameter};
+        my $latitude  = $alert->{parameter2};
         $url = Cobrand::base_url_for_emails($alert->{cobrand}, $alert->{cobrand_data});
         my ($site_restriction, $site_id) = Cobrand::site_restriction($alert->{cobrand}, $alert->{cobrand_data});
-        my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($e, $n, 'G');
-        my $d = mySociety::Gaze::get_radius_containing_population($lat, $lon, 200000);
+        my $d = mySociety::Gaze::get_radius_containing_population($latitude, $longitude, 200000);
         $d = int($d*10+0.5)/10;
         my $testing_email_clause = "and problem.email <> '$testing_email'" if $testing_email;        
         my %data = ( template => $template, data => '', alert_id => $alert->{id}, alert_email => $alert->{email}, lang => $alert->{lang}, cobrand => $alert->{cobrand}, cobrand_data => $alert->{cobrand_data} );
-        my $q = "select * from problem_find_nearby_easting_northing(?, ?, ?) as nearby, problem
+        my $q = "select * from problem_find_nearby(?, ?, ?) as nearby, problem
             where nearby.problem_id = problem.id and problem.state in ('confirmed', 'fixed')
             and problem.confirmed >= ? and problem.confirmed >= ms_current_timestamp() - '7 days'::interval
             and (select whenqueued from alert_sent where alert_sent.alert_id = ? and alert_sent.parameter::integer = problem.id) is null
@@ -195,7 +194,7 @@ sub email_alerts ($) {
             $site_restriction
             order by confirmed desc";
         $q = dbh()->prepare($q);
-        $q->execute($e, $n, $d, $alert->{whensubscribed}, $alert->{id}, $alert->{email});
+        $q->execute($latitude, $longitude, $d, $alert->{whensubscribed}, $alert->{id}, $alert->{email});
         while (my $row = $q->fetchrow_hashref) {
             dbh()->do('insert into alert_sent (alert_id, parameter) values (?,?)', {}, $alert->{id}, $row->{id});
             $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}\n\n";
