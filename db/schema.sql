@@ -121,8 +121,8 @@ create table problem (
 
     -- Problem details
     postcode text not null,
-    easting double precision not null,
-    northing double precision not null,
+    latitude double precision not null,
+    longitude double precision not null,
     council text, -- the council(s) we'll report this problem to
     areas text not null, -- the voting areas this location is in
     category text not null default 'Other',
@@ -155,7 +155,7 @@ create table problem (
     whensent timestamp,
     send_questionnaire boolean not null default 't'
 );
-create index problem_state_easting_northing_idx on problem(state, easting, northing);
+create index problem_state_latitude_longitude_idx on problem(state, latitude, longitude);
 
 create table questionnaire (
     id serial not null primary key,
@@ -277,8 +277,8 @@ create table alert_type (
 create table alert (
     id serial not null primary key,
     alert_type text not null references alert_type(ref),
-    parameter text, -- e.g. Problem ID for new updates
-    parameter2 text, -- e.g. Latitude for local problem alerts
+    parameter text, -- e.g. Problem ID for new updates, Easting for local problem alerts
+    parameter2 text, -- e.g. Northing for local problem alerts
     email text not null,
     confirmed integer not null default 0,
     lang text not null default 'en-gb',
