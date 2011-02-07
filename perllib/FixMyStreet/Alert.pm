@@ -186,7 +186,7 @@ sub email_alerts ($) {
         $d = int($d*10+0.5)/10;
         my $testing_email_clause = "and problem.email <> '$testing_email'" if $testing_email;        
         my %data = ( template => $template, data => '', alert_id => $alert->{id}, alert_email => $alert->{email}, lang => $alert->{lang}, cobrand => $alert->{cobrand}, cobrand_data => $alert->{cobrand_data} );
-        my $q = "select * from problem_find_nearby(?, ?, ?) as nearby, problem
+        my $q = "select * from problem_find_nearby_easting_northing(?, ?, ?) as nearby, problem
             where nearby.problem_id = problem.id and problem.state in ('confirmed', 'fixed')
             and problem.confirmed >= ? and problem.confirmed >= ms_current_timestamp() - '7 days'::interval
             and (select whenqueued from alert_sent where alert_sent.alert_id = ? and alert_sent.parameter::integer = problem.id) is null

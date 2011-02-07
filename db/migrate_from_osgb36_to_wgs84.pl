@@ -30,6 +30,7 @@ BEGIN {
 }
 
 migrate_problem_table();
+migrate_problem_find_nearby_function();
 
 =head2 problem table
 
@@ -100,6 +101,49 @@ sub migrate_problem_table {
 
 Convert to use lat and long.
 Also swap parameter order so that it is lat,lon rather than lon,lat to be consistent with pledgebank etc
+
+=cut
+
+sub migrate_problem_find_nearby_function {
+    my $dbh = dbh();
+
+    print "drop the existing problem_find_nearby function\n";
+    $dbh->do(
+"DROP FUNCTION problem_find_nearby ( double precision, double precision, double precision)"
+    );
+
+    print "create the new one\n";
+    $dbh->do(<<'SQL_END');
+    create function problem_find_nearby(double precision, double precision, double precision)
+        returns setof problem_nearby_match as
+    '
+        -- trunc due to inaccuracies in floating point arithmetic
+        select problem.id,
+               R_e() * acos(trunc(
+                    (sin(radians($1)) * sin(radians(latitude))
+                    + cos(radians($1)) * cos(radians(latitude))
+                        * cos(radians($2 - longitude)))::numeric, 14)
+                ) as distance
+            from problem
+            where
+                longitude is not null and latitude is not null
+                and radians(latitude) > radians($1) - ($3 / R_e())
+                and radians(latitude) < radians($1) + ($3 / R_e())
+                and (abs(radians($1)) + ($3 / R_e()) > pi() / 2     -- case where search pt is near pole
+                        or angle_between(radians(longitude), radians($2))
+                                < $3 / (R_e() * cos(radians($1 + $3 / R_e()))))
+                -- ugly -- unable to use attribute name "distance" here, sadly
+                and R_e() * acos(trunc(
+                    (sin(radians($1)) * sin(radians(latitude))
+                    + cos(radians($1)) * cos(radians(latitude))
+                        * cos(radians($2 - longitude)))::numeric, 14)
+                    ) < $3
+            order by distance desc
+    ' language sql
+SQL_END
+
+    $dbh->commit;
+}
 
 =head2 alert table
 

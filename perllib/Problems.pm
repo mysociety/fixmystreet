@@ -94,7 +94,7 @@ sub recent_photos {
         $probs = Memcached::get($key);
         unless ($probs) {
             $probs = select_all("select id, title
-                from problem_find_nearby(?, ?, ?) as nearby, problem
+                from problem_find_nearby_easting_northing(?, ?, ?) as nearby, problem
                 where nearby.problem_id = problem.id
                 and state in ('confirmed', 'fixed') and photo is not null
                 $site_restriction
@@ -193,7 +193,7 @@ sub nearby {
     mySociety::Locale::in_gb_locale { select_all(
         "select id, title, easting, northing, distance, state,
             extract(epoch from confirmed) as time
-        from problem_find_nearby(?, ?, $dist) as nearby, problem
+        from problem_find_nearby_easting_northing(?, ?, $dist) as nearby, problem
         where nearby.problem_id = problem.id " .
         ($interval ? " and ms_current_timestamp()-lastupdate < '$interval'::interval" : '') .
         " and state in ('confirmed', 'fixed')" . ($ids ? ' and id not in (' . $ids . ')' : '') . "
@@ -206,7 +206,7 @@ sub fixed_nearby {
     my ($dist, $mid_e, $mid_n) = @_;
     mySociety::Locale::in_gb_locale { select_all(
         "select id, title, easting, northing, distance
-        from problem_find_nearby(?, ?, $dist) as nearby, problem
+        from problem_find_nearby_easting_northing(?, ?, $dist) as nearby, problem
         where nearby.problem_id = problem.id and state='fixed'
         $site_restriction
         order by lastupdate desc", $mid_e, $mid_n);
