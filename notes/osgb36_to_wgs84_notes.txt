@@ -5,18 +5,19 @@ Reference:
   easting  === longitude
   northing === latitude
   
-  * http://en.wikipedia.org/wiki/Ordnance_Survey_National_Grid
-  * http://en.wikipedia.org/wiki/World_Geodetic_System
+  http://en.wikipedia.org/wiki/Ordnance_Survey_National_Grid
+  http://en.wikipedia.org/wiki/World_Geodetic_System
 
 DB:
 
   * dump schema from live db and confirm it matches schema.sql (you never know...)
-  * use PledgeBank's 'nearby' logic in problem_find_nearby() SQL function
-  * in 'alerts' table convert parameter and parameter2 if alert is 'local_problems' or 'local_problems_state'
+  DONE: use PledgeBank's 'nearby' logic in problem_find_nearby() SQL function
+  DONE: in 'alerts' table convert parameter and parameter2 if alert is 'local_problems' or 'local_problems_state'
 
 CODE:
 
-  * update all calls to problem_find_nearby swapping parameter order.
+  DONE: update all calls to problem_find_nearby swapping parameter order.
+  * find all occurences of 'easting', 'northing', $e, $n etc and migrate
 
 UI maps:
 
