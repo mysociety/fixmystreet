@@ -104,9 +104,9 @@ sub disambiguate_location {
 } 
 
 sub recent_photos {
-    my ($self, $num, $e, $n, $dist) = @_;
+    my ($self, $num, $lat, $lon, $dist) = @_;
     $num = 2 if $num == 3;
-    return Problems::recent_photos($num, $e, $n, $dist);
+    return Problems::recent_photos($num, $lat, $lon, $dist);
 }
 
 1;

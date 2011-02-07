@@ -87,18 +87,18 @@ sub recent_new {
 # Front page recent lists
 
 sub recent_photos {
-    my ($num, $e, $n, $dist) = @_;
+    my ($num, $lat, $lon, $dist) = @_;
     my $probs;
-    if ($e) {
-        my $key = "recent_photos:$site_key:$num:$e:$n:$dist";
+    if (defined $lat) {
+        my $key = "recent_photos:$site_key:$num:$lat:$lon:$dist";
         $probs = Memcached::get($key);
         unless ($probs) {
             $probs = select_all("select id, title
-                from problem_find_nearby_easting_northing(?, ?, ?) as nearby, problem
+                from problem_find_nearby(?, ?, ?) as nearby, problem
                 where nearby.problem_id = problem.id
                 and state in ('confirmed', 'fixed') and photo is not null
                 $site_restriction
-                order by confirmed desc limit $num", $e, $n, $dist);
+                order by confirmed desc limit $num", $lat, $lon, $dist);
             Memcached::set($key, $probs, 3600);
         }
     } else {

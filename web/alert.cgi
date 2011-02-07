@@ -205,7 +205,7 @@ for the county council.'))) . '</div><div id="rss_buttons">';
     my $checked = '';
     $checked = ' checked' if $q->param('feed') && $q->param('feed') eq "local:$e:$n";
     my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'alerts', $q);
-    my $pics = Cobrand::recent_photos($cobrand, 5, $e, $n, $dist);
+    my $pics = Cobrand::recent_photos($cobrand, 5, $lat, $lon, $dist);
     $pics = '<div id="alert_photos">' . $q->h2(_('Photos of recent nearby reports')) . $pics . '</div>' if $pics;
     my $header;
     if ($pretty_pc) {
