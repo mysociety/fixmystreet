@@ -1,0 +1,16 @@
+These notes are for the FMS migration from OSGB36 to WGS84 coordinates.
+
+Reference:
+
+  * http://en.wikipedia.org/wiki/Ordnance_Survey_National_Grid
+  * http://en.wikipedia.org/wiki/World_Geodetic_System
+
+DB:
+
+  * use PledgeBank's 'nearby' logic in problem_find_nearby() SQL function
+
+UI maps:
+
+  * Tilma js code will still need eastings and northings
+  * All other maps should be able to switch to latlon
+
