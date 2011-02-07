@@ -29,8 +29,11 @@ BEGIN {
     );
 }
 
+my $UPDATE_BATCH_SIZE = 1;    # FIXME - should be ~ 500
+
 migrate_problem_table();
 migrate_problem_find_nearby_function();
+migrate_alert_table();
 
 =head2 problem table
 
@@ -56,7 +59,7 @@ sub migrate_problem_table {
     # create a query for rows that need converting
     my $rows_to_convert_query = $dbh->prepare(    #
         "SELECT id, easting, northing FROM problem"
-          . " WHERE latitude is NULL limit 1"     # FIXME
+          . " WHERE latitude is NULL limit $UPDATE_BATCH_SIZE"
     );
 
     # update query
@@ -152,7 +155,49 @@ NOTE: only for alert_types 'local_problems' or 'local_problems_state'
 parameter:  convert easting to longitude
 parameter2: convert nothing to latitude
 
+create a new column 'is_migrated' to use during migration in case of crash.
+
 =cut
+
+sub migrate_alert_table {
+    my $dbh = dbh();
+
+    print "Adding 'is_migrated' column\n";
+    $dbh->do("ALTER TABLE alert ADD COLUMN is_migrated bool DEFAULT false");
+    $dbh->commit;
+
+    # create a query for rows that need converting
+    my $rows_to_convert_query = $dbh->prepare(    #
+        "SELECT id, parameter, parameter2 FROM alert"
+          . "  WHERE alert_type IN ('local_problems','local_problems_state')"
+          . "  AND is_migrated = false"
+          . "  LIMIT $UPDATE_BATCH_SIZE"
+    );
+
+    # update query
+    my $update_lat_lon_query = $dbh->prepare(     #
+        "UPDATE alert SET parameter = ?, parameter2 = ?, is_migrated = true"
+          . "  WHERE id = ?"
+    );
+
+    # loop through the entries in batches updating rows that need it. Do this in
+    # Perl rather than SQL for conveniance.
+    while (1) {
+        $rows_to_convert_query->execute;
+        last unless $rows_to_convert_query->rows;
+        while ( my $r = $rows_to_convert_query->fetchrow_hashref ) {
+            my ( $latitude, $longitude ) =
+              _e_n_to_lat_lon( $r->{parameter}, $r->{parameter2} );
+            print "update alert $r->{id}: ( $latitude, $longitude )\n";
+            $update_lat_lon_query->execute( $latitude, $longitude, $r->{id} );
+        }
+        $dbh->commit;    # every batch of updates
+    }
+
+    print "drop 'is_migrated' column\n";
+    $dbh->do("ALTER TABLE alert DROP COLUMN is_migrated");
+    $dbh->commit;
+}
 
 =head2 HELPERS
 

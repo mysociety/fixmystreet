@@ -293,8 +293,8 @@ create table alert_type (
 create table alert (
     id serial not null primary key,
     alert_type text not null references alert_type(ref),
-    parameter text, -- e.g. Problem ID for new updates, Easting for local problem alerts
-    parameter2 text, -- e.g. Northing for local problem alerts
+    parameter text, -- e.g. Problem ID for new updates, Longitude for local problem alerts
+    parameter2 text, -- e.g. Latitude for local problem alerts
     email text not null,
     confirmed integer not null default 0,
     lang text not null default 'en-gb',
