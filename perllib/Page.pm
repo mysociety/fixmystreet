@@ -439,8 +439,10 @@ sub send_email {
 
     # Could not send email - die
     if ( !$email_sent_successfully ) {
-        die "Could not send email to '$recipient_email_address' "
-          . "using either EvEl or local MTA.";
+        throw Error::Simple(
+            "Could not send email to '$recipient_email_address' "
+            . "using either EvEl or local MTA."
+        );
     }
     
     my ($action, $worry);
