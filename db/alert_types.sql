@@ -39,7 +39,7 @@ insert into alert_type
     item_title, item_link, item_description, template)
 values ('local_problems', '', '',
     'New local problems on FixMyStreet', '/', 'The latest local problems reported by users',
-    'problem_find_nearby_easting_northing(?, ?, ?) as nearby,problem', 'nearby.problem_id = problem.id and problem.state in (''confirmed'', ''fixed'')', 'created desc',
+    'problem_find_nearby(?, ?, ?) as nearby,problem', 'nearby.problem_id = problem.id and problem.state in (''confirmed'', ''fixed'')', 'created desc',
     '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-nearby');
 
 -- New problems around a location
@@ -50,7 +50,7 @@ insert into alert_type
     item_title, item_link, item_description, template)
 values ('local_problems_state', '', '',
     'New local problems on FixMyStreet', '/', 'The latest local problems reported by users',
-    'problem_find_nearby_easting_northing(?, ?, ?) as nearby,problem', 'nearby.problem_id = problem.id and problem.state in (?)', 'created desc',
+    'problem_find_nearby(?, ?, ?) as nearby,problem', 'nearby.problem_id = problem.id and problem.state in (?)', 'created desc',
     '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-nearby');
 
 -- New problems sent to a particular council

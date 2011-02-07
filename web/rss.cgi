@@ -122,9 +122,9 @@ sub rss_local_problems {
 
     my $xsl = Cobrand::feed_xsl($cobrand);
     if ($state eq 'all') {
-        return FixMyStreet::Alert::generate_rss('local_problems', $xsl, $qs, [$e, $n, $d], undef, $cobrand, $q);
+        return FixMyStreet::Alert::generate_rss('local_problems', $xsl, $qs, [$lat, $lon, $d], undef, $cobrand, $q);
     } else {
-        return FixMyStreet::Alert::generate_rss('local_problems_state', $xsl, $qs, [$e, $n, $d, $state], undef, $cobrand, $q);
+        return FixMyStreet::Alert::generate_rss('local_problems_state', $xsl, $qs, [$lat, $lon, $d, $state], undef, $cobrand, $q);
     }
 }
 
