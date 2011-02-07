@@ -27,6 +27,7 @@ git clone https://github.com/mysociety/fixmystreet.git
 cd fixmystreet
 git submodule update --init
 
+
 # SETTING UP SYSTEM
 
 # change into project directory
@@ -39,8 +40,6 @@ sudo apt-get install `cat conf/packages`
 # also install these that are available by default on mySoc boxes:
 sudo apt-get install \
     libregexp-common-perl php5-cli perl-doc
-
-
 
 
 # SETTING UP APACHE
@@ -64,6 +63,18 @@ sudo apache2ctl restart
 cd -
 
 # You may need to change the permissions on your files so that apache can read them
+
+
+# SETTING UP EMAIL SENDING
+
+# FixMyStreet sends lots of email - your dev server should be able to deliver
+# them. If you're running a virtual machine consider sending all email via
+# Gmail by replacing exim with ssmtp.
+apt-get install ssmtp    # will probably uninstall existing MTA
+apt-get install mailx    # for testing email is working
+
+nano /etc/ssmtp/ssmtp.conf    # see http://wiki.debian.org/sSMTP for details
+mail youremail@example.com    # send a test message
 
 
 # SETTING UP CONFIG FILES
