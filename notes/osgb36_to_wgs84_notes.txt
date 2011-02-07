@@ -2,12 +2,21 @@ These notes are for the FMS migration from OSGB36 to WGS84 coordinates.
 
 Reference:
 
+  easting  === longitude
+  northing === latitude
+  
   * http://en.wikipedia.org/wiki/Ordnance_Survey_National_Grid
   * http://en.wikipedia.org/wiki/World_Geodetic_System
 
 DB:
 
+  * dump schema from live db and confirm it matches schema.sql (you never know...)
   * use PledgeBank's 'nearby' logic in problem_find_nearby() SQL function
+  * in 'alerts' table convert parameter and parameter2 if alert is 'local_problems' or 'local_problems_state'
+
+CODE:
+
+  * update all calls to problem_find_nearby swapping parameter order.
 
 UI maps:
 
