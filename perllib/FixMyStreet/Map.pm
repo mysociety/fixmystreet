@@ -66,16 +66,17 @@ sub map_features {
         $around_map = $around_map_list = Problems::around_map($min_e, $max_e, $min_n, $max_n, $interval, undef);
     }
 
+    my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($mid_e, $mid_n, 'G');
+
     my $dist;
     mySociety::Locale::in_gb_locale {
-        my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($mid_e, $mid_n, 'G');
         $dist = mySociety::Gaze::get_radius_containing_population($lat, $lon, 200000);
     };
     $dist = int($dist*10+0.5)/10;
 
     my $limit = 20;
     my @ids = map { $_->{id} } @$around_map_list;
-    my $nearby = Problems::nearby($dist, join(',', @ids), $limit, $mid_e, $mid_n, $interval);
+    my $nearby = Problems::nearby($dist, join(',', @ids), $limit, $mid_lat, $mid_lon, $interval);
 
     return ($around_map, $around_map_list, $nearby, $dist);
 }

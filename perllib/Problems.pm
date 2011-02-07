@@ -189,27 +189,27 @@ sub around_map {
 }
 
 sub nearby {
-    my ($dist, $ids, $limit, $mid_e, $mid_n, $interval) = @_;
+    my ($dist, $ids, $limit, $mid_lat, $mid_lon, $interval) = @_;
     mySociety::Locale::in_gb_locale { select_all(
-        "select id, title, easting, northing, distance, state,
+        "select id, title, latitude, longitude, distance, state,
             extract(epoch from confirmed) as time
-        from problem_find_nearby_easting_northing(?, ?, $dist) as nearby, problem
+        from problem_find_nearby(?, ?, $dist) as nearby, problem
         where nearby.problem_id = problem.id " .
         ($interval ? " and ms_current_timestamp()-lastupdate < '$interval'::interval" : '') .
         " and state in ('confirmed', 'fixed')" . ($ids ? ' and id not in (' . $ids . ')' : '') . "
         $site_restriction
-        order by distance, created desc limit $limit", $mid_e, $mid_n);
+        order by distance, created desc limit $limit", $mid_lat, $mid_lon);
     }
 }
 
 sub fixed_nearby {
-    my ($dist, $mid_e, $mid_n) = @_;
+    my ($dist, $mid_lat, $mid_lon) = @_;
     mySociety::Locale::in_gb_locale { select_all(
-        "select id, title, easting, northing, distance
-        from problem_find_nearby_easting_northing(?, ?, $dist) as nearby, problem
+        "select id, title, latitude, longitude, distance
+        from problem_find_nearby(?, ?, $dist) as nearby, problem
         where nearby.problem_id = problem.id and state='fixed'
         $site_restriction
-        order by lastupdate desc", $mid_e, $mid_n);
+        order by lastupdate desc", $mid_lat, $mid_lon);
     }
 }
 
