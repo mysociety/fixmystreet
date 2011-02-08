@@ -824,10 +824,6 @@ sub display_location {
         $input_h{$key} = ent( $input{$key} );
     }
 
-    use Data::Dumper;
-    local $Data::Dumper::Sortkeys = 1;
-    warn Dumper( \%input );
-
     my $latitude  = $input{lat};
     my $longitude = $input{lon};
 
@@ -866,8 +862,6 @@ sub display_location {
           if ( ref($error) eq 'ARRAY' );
         return front_page( $q, $error ) if $error;
     }
-    
-    warn "lat: $latitude, lon: $longitude";
 
     # Check this location is okay to be displayed for the cobrand
     my ($success, $error_msg) = Cobrand::council_check($cobrand, { lat => $latitude, lon => $longitude }, $q, 'display_location');
