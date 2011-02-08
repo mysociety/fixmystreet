@@ -26,6 +26,9 @@ sub load {
     my $type  = mySociety::Config::get('MAP_TYPE');
     my $class = "FixMyStreet::Map::$type";
     eval "use $class";
+
+    # If we have an error die as it is a compile error rather than runtime error
+    die $@ if $@;
 }
 
 sub header {
