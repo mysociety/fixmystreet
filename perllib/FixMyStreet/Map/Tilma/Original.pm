@@ -154,7 +154,7 @@ sub map_pins {
 
     my $e = FixMyStreet::Map::tile_to_os($x);
     my $n = FixMyStreet::Map::tile_to_os($y);
-    my ($around_map, $around_map_list, $nearby, $dist) = FixMyStreet::Map::map_features($q, $e, $n, $interval);
+    my ($around_map, $around_map_list, $nearby, $dist) = FixMyStreet::Map::map_features_easting_northing($q, $e, $n, $interval);
 
     my $pins = '';
     foreach (@$around_map) {

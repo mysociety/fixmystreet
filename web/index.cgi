@@ -307,7 +307,7 @@ sub submit_problem {
     return display_form($q, \@errors, \%field_errors) if (@errors || scalar keys %field_errors); # Short circuit
 
     my $areas;
-    if ($input{easting} && $input{northing}) {
+    if (defined $input{lat} && defined $input{lon}) {
         $areas = mySociety::MaPit::call('point', "27700/$input{easting},$input{northing}");
         if ($input{council} =~ /^[\d,]+(\|[\d,]+)?$/) {
             my $no_details = $1 || '';
@@ -347,7 +347,7 @@ sub submit_problem {
             $input{council} = join(',', @valid_councils) . $no_details;
         }
         $areas = ',' . join(',', sort keys %$areas) . ',';
-    } elsif ($input{easting} || $input{northing}) {
+    } elsif (defined $input{lat} || defined $input{lon}) {
         push(@errors, _('Somehow, you only have one co-ordinate. Please try again.'));
     } else {
         push(@errors, _('You haven\'t specified any sort of co-ordinates. Please try again.'));
@@ -812,7 +812,7 @@ sub display_location {
         $interval = '6 months';
     }   
 
-    my ($on_map_all, $on_map, $around_map, $dist) = FixMyStreet::Map::map_features($q, $easting, $northing, $interval);
+    my ($on_map_all, $on_map, $around_map, $dist) = FixMyStreet::Map::map_features_easting_northing($q, $easting, $northing, $interval);
     my @pins;
     foreach (@$on_map_all) {
         push @pins, [ $_->{easting}, $_->{northing}, $_->{state} eq 'fixed' ? 'green' : 'red' ];

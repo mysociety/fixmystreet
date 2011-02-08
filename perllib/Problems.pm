@@ -170,21 +170,21 @@ sub front_stats {
 # Problems around a location
 
 sub around_map {
-    my ($min_e, $max_e, $min_n, $max_n, $interval, $limit) = @_;
+    my ($min_lat, $max_lat, $min_lon, $max_lon, $interval, $limit) = @_;
     my $limit_clause = '';
     if ($limit) {
         $limit_clause = " limit $limit";
     }
     mySociety::Locale::in_gb_locale { select_all(
-        "select id,title,easting,northing,state,
+        "select id,title,latitude,longitude,state,
              extract(epoch from confirmed) as time
         from problem
         where state in ('confirmed', 'fixed')
-            and easting>=? and easting<? and northing>=? and northing<? " .
+            and latitude>=? and latitude<? and longitude>=? and longitude<? " .
         ($interval ? " and ms_current_timestamp()-lastupdate < '$interval'::interval" : '') .
         " $site_restriction
         order by created desc
-        $limit_clause", $min_e, $max_e, $min_n, $max_n);
+        $limit_clause", $min_lat, $max_lat, $min_lon, $max_lon);
     };
 }
 
