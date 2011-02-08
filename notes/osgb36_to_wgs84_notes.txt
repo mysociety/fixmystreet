@@ -18,6 +18,9 @@ CODE:
 
   DONE: update all calls to problem_find_nearby swapping parameter order.
   * find all occurences of 'easting', 'northing', $e, $n etc and migrate
+
+  * email me link broken on http://herring/?lat=51.4545595517093;lon=-0.23100115932431
+
   * Cobrand.pm
   * Cobrands/Barnet/Util.pm
   * Cobrands/Emptyhomes/Util.pm
@@ -63,6 +66,8 @@ CODE:
   * web/test.cgi
   * web/tms-signup.cgi
   * web/upload.cgi
+
+  DONE: all scripts checked
 
 UI maps:
 
