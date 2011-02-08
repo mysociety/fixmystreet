@@ -943,7 +943,7 @@ sub display_location {
         ),
         map_end => FixMyStreet::Map::display_map_end(1),
         url_home => Cobrand::url($cobrand, '/', $q),
-        url_rss => Cobrand::url($cobrand, NewURL($q, -retain => 1, -url=> "/rss/l/$latitude,$longitude", pc => undef, x => undef, 'y' => undef), $q),
+        url_rss => Cobrand::url($cobrand, NewURL($q, -retain => 1, -url=> "/rss/l/$latitude,$longitude", pc => undef, x => undef, y => undef, lat => undef, lon => undef ), $q),
         url_email => Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/alert', lat=>$latitude, lon=>$longitude, feed=>"local:$latitude:$longitude"), $q),
         url_skip => $url_skip,
         email_me => _('Email me new local problems'),
