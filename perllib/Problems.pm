@@ -218,7 +218,7 @@ sub fixed_nearby {
 sub fetch_problem {
     my $id = shift;
     my $p = dbh()->selectrow_hashref(
-        "select id, easting, northing, council, category, title, detail, photo,
+        "select id, latitude, longitude, council, category, title, detail, photo,
         used_map, name, anonymous, extract(epoch from confirmed) as time,
         state, extract(epoch from whensent-confirmed) as whensent,
         extract(epoch from ms_current_timestamp()-lastupdate) as duration, 
