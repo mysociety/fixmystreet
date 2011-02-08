@@ -15,6 +15,11 @@ use Cobrand;
 use mySociety::Web qw(ent NewURL);
 use mySociety::GeoUtil qw(national_grid_to_wgs84);
 
+sub _ll_to_en {
+    my ($lat, $lon) = @_;
+    return mySociety::GeoUtil::wgs84_to_national_grid( $lat, $lon, 'G' );    
+}
+
 sub header_js {
     return '
 <script type="text/javascript" src="/js/map-tilma.js"></script>
@@ -39,17 +44,14 @@ sub _display_map {
 
     # convert map center point to easting, northing
     ( $params{easting}, $params{northing} ) =
-      mySociety::GeoUtil::wgs84_to_national_grid(    #
-        $params{latitude}, $params{longitude}, 'G'
-      );
+      _ll_to_en( $params{latitude}, $params{longitude} );
 
     # FIXME - convert all pins to lat, lng
     # all the pins are currently [lat, lng, colour] - convert them
     foreach my $pin ( @{ $params{pins} ||= [] } ) {
-        my ( $e, $n ) = ( $pin->[0], $pin->[1] );
-        my ( $lat, $lon ) =
-          mySociety::GeoUtil::wgs84_to_national_grid( $e, $n, 'G' );
-        ( $pin->[0], $pin->[1] ) = ( $lat, $lon );
+        my ( $lat, $lon ) = ( $pin->[0], $pin->[1] );
+        my ( $e, $n ) = _ll_to_en( $lat, $lon );
+        ( $pin->[0], $pin->[1] ) = ( $e, $n );
     }
 
     # X/Y tile co-ords may be overridden in the query string
@@ -170,10 +172,14 @@ sub map_pins {
 
     my $e = FixMyStreet::Map::tile_to_os($x);
     my $n = FixMyStreet::Map::tile_to_os($y);
-    my ($around_map, $around_map_list, $nearby, $dist) = FixMyStreet::Map::map_features_easting_northing($q, $e, $n, $interval);
+
+    my ( $around_map, $around_map_list, $nearby, $dist ) =
+      FixMyStreet::Map::map_features_easting_northing( $q, $e, $n, $interval );
 
     my $pins = '';
     foreach (@$around_map) {
+        ( $_->{easting}, $_->{northing} ) =
+          _ll_to_en( $_->{latitude}, $_->{longitude} );
         my $px = FixMyStreet::Map::os_to_px($_->{easting}, $sx);
         my $py = FixMyStreet::Map::os_to_px($_->{northing}, $sy, 1);
         my $col = $_->{state} eq 'fixed' ? 'green' : 'red';
@@ -181,6 +187,8 @@ sub map_pins {
     }
 
     foreach (@$nearby) {
+        ( $_->{easting}, $_->{northing} ) =
+          _ll_to_en( $_->{latitude}, $_->{longitude} );
         my $px = FixMyStreet::Map::os_to_px($_->{easting}, $sx);
         my $py = FixMyStreet::Map::os_to_px($_->{northing}, $sy, 1);
         my $col = $_->{state} eq 'fixed' ? 'green' : 'red';
