@@ -47,13 +47,13 @@ sub main {
         my $id = mySociety::AuthToken::retrieve('partial', $partial);
         if ($id) {
             my @row = dbh()->selectrow_array(
-                "select easting, northing, name, email, title, (photo is not null) as has_photo, phone, detail
+                "select latitude, longitude, name, email, title, (photo is not null) as has_photo, phone, detail
                     from problem where id=? and state='partial'", {}, $id);
             if (@row) {
                 $q->param('anonymous', 1);
                 $q->param('submit_map', 1);
-                $q->param('easting', $row[0]);
-                $q->param('northing', $row[1]);
+                $q->param('latitude', $row[0]);
+                $q->param('longitude', $row[1]);
                 $q->param('name', $row[2]);
                 $q->param('email', $row[3]);
                 $q->param('title', $row[4]);
