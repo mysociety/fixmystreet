@@ -220,9 +220,9 @@ sub display_questionnaire {
     my %vars = (
         input_h => \%input_h,
         map_start => FixMyStreet::Map::display_map($q,
-            easting => $problem->{easting}, northing => $problem->{northing},
+            latitude => $problem->{latitude}, longitude => $problem->{longitude},
             pins => [
-                [ $problem->{easting}, $problem->{northing}, $problem->{state} eq 'fixed'?'green':'red' ],
+                [ $problem->{latitude}, $problem->{longitude}, $problem->{state} eq 'fixed'?'green':'red' ],
             ],
             pre => $problem_text, post => $updates
         ),

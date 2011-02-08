@@ -16,6 +16,8 @@ use RABX;
 use CGI::Carp;
 use URI::Escape;
 
+use Carp::Always;
+
 use CrossSell;
 use FixMyStreet::Geocode;
 use mySociety::AuthToken;
@@ -29,6 +31,11 @@ use mySociety::PostcodeUtil;
 use mySociety::Random;
 use mySociety::VotingArea;
 use mySociety::Web qw(ent NewURL);
+
+sub debug (@) {
+    my ( $format, @args ) = @_;
+    warn sprintf $format, map { defined $_ ? $_ : 'undef' } @args;
+}
 
 BEGIN {
     if (!dbh()->selectrow_array('select secret from secret for update of secret')) {
@@ -432,21 +439,28 @@ sub display_form {
     push @errors, _('There were problems with your report. Please see below.') if (scalar keys %field_errors);
 
     my ($pin_x, $pin_y, $pin_tile_x, $pin_tile_y) = (0,0,0,0);
-    my @vars = qw(title detail name email phone pc easting northing x y skipped council anonymous partial upload_fileid lat lon);
-    my %input = map { $_ => $q->param($_) || '' } @vars;
-    my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
+    my @vars = qw(title detail name email phone pc latitude longitude x y skipped council anonymous partial upload_fileid);
+
+    my %input   = ();
+    my %input_h = ();
+
+    foreach my $key (@vars) {
+        my $val = $q->param($key);
+        $input{$key} = defined($val) ? $val : '';   # '0' is valid for longitude
+        $input_h{$key} = ent( $input{$key} );
+    }
 
     # Convert lat/lon to easting/northing if given
-    if ($input{lat}) {
-        try {
-            ($input{easting}, $input{northing}) = mySociety::GeoUtil::wgs84_to_national_grid($input{lat}, $input{lon}, 'G');
-            $input_h{easting} = $input{easting};
-            $input_h{northing} = $input{northing};
-        } catch Error::Simple with { 
-            my $e = shift;
-            push @errors, "We had a problem with the supplied co-ordinates - outside the UK?";
-        };
-    }
+    # if ($input{lat}) {
+    #     try {
+    #         ($input{easting}, $input{northing}) = mySociety::GeoUtil::wgs84_to_national_grid($input{lat}, $input{lon}, 'G');
+    #         $input_h{easting} = $input{easting};
+    #         $input_h{northing} = $input{northing};
+    #     } catch Error::Simple with { 
+    #         my $e = shift;
+    #         push @errors, "We had a problem with the supplied co-ordinates - outside the UK?";
+    #     };
+    # }
 
     # Get tile co-ordinates if map clicked
     ($input{x}) = $input{x} =~ /^(\d+)/; $input{x} ||= 0;
@@ -460,28 +474,30 @@ sub display_form {
     # We need either a map click, an E/N, to be skipping the map, or be filling in a partial form
     return display_location($q, @errors)
         unless ($pin_x && $pin_y)
-            || ($input{easting} && $input{northing})
+            || ($input{latitude} && $input{longitude})
             || ($input{skipped} && $input{pc})
             || ($input{partial} && $input{pc});
 
     # Work out some co-ordinates from whatever we've got
-    my ($easting, $northing);
+    my ($latitude, $longitude);
     if ($input{skipped}) {
         # Map is being skipped
-        if ($input{easting} && $input{northing}) {
-            $easting = $input{easting};
-            $northing = $input{northing};
+        if ( length $input{latitude} && length $input{longitude} ) {
+            $latitude  = $input{latitude};
+            $longitude = $input{longitude};
         } else {
-            my ($e, $n, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
-            $easting = $e; $northing = $n;
+            my ( $lat, $lon, $error ) =
+              FixMyStreet::Geocode::lookup( $input{pc}, $q );
+            $latitude  = $lat;
+            $longitude = $lon;
         }
     } elsif ($pin_x && $pin_y) {
         # tilma map was clicked on
-        ($easting, $northing)  = FixMyStreet::Map::click_to_os($pin_tile_x, $pin_x, $pin_tile_y, $pin_y);
-    } elsif ($input{partial} && $input{pc} && !$input{easting} && !$input{northing}) {
+        ($latitude, $longitude)  = FixMyStreet::Map::click_to_wgs84($pin_tile_x, $pin_x, $pin_tile_y, $pin_y);
+    } elsif ( $input{partial} && $input{pc} && !length $input{latitude} && !length $input{longitude} ) {
         my $error;
         try {
-            ($easting, $northing, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
+            ($latitude, $longitude, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
         } catch Error::Simple with {
             $error = shift;
         };
@@ -489,8 +505,8 @@ sub display_form {
         return front_page($q, $error) if $error;
     } else {
         # Normal form submission
-        $easting = $input_h{easting};
-        $northing = $input_h{northing};
+        $latitude  = $input_h{latitude};
+        $longitude = $input_h{longitude};
     }
 
     # Look up councils and do checks for the point we've got
@@ -498,7 +514,7 @@ sub display_form {
     $parent_types = [qw(DIS LBO MTD UTA LGD COI)] # No CTY
         if $q->{site} eq 'emptyhomes';
     # XXX: I think we want in_gb_locale around the next line, needs testing
-    my $all_councils = mySociety::MaPit::call('point', "27700/$easting,$northing", type => $parent_types);
+    my $all_councils = mySociety::MaPit::call('point', "4326/$longitude,$latitude", type => $parent_types);
 
     # Let cobrand do a check
     my ($success, $error_msg) = Cobrand::council_check($cobrand, { all_councils => $all_councils }, $q, 'submit_problem');
@@ -506,10 +522,10 @@ sub display_form {
         return front_page($q, $error_msg);
     }
 
-    # Ipswich & St Edmundsbury are responsible for everything in their areas, no Suffolk
+    # Ipswich & St Edmundsbury are responsible for everything in their areas, not Suffolk
     delete $all_councils->{2241} if $all_councils->{2446} || $all_councils->{2443};
 
-    # Norwich is responsible for everything in its areas, no Norfolk
+    # Norwich is responsible for everything in its areas, not Norfolk
     delete $all_councils->{2233} if $all_councils->{2391};
 
     return display_location($q, _('That spot does not appear to be covered by a council.
@@ -589,9 +605,9 @@ EOF
             $type = 1;
         }
         $vars{form_start} = FixMyStreet::Map::display_map($q,
-            easting => $easting, northing => $northing,
+            latitude => $latitude, longitude => $longitude,
             type => $type,
-            pins => [ [ $easting, $northing, 'purple' ] ],
+            pins => [ [ $latitude, $longitude, 'purple' ] ],
         );
         my $partial_id;
         if (my $token = $input{partial}) {
@@ -685,8 +701,8 @@ photo of the problem if you have one), etc.'));
     }
 
     $vars{text_help} .= '
-<input type="hidden" name="easting" value="' . $easting . '">
-<input type="hidden" name="northing" value="' . $northing . '">';
+<input type="hidden" name="latitude" value="' . $latitude . '">
+<input type="hidden" name="longitude" value="' . $longitude . '">';
 
     if (@errors) {
         $vars{errors} = '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
@@ -768,37 +784,64 @@ EOF
 sub display_location {
     my ($q, @errors) = @_;
     my $cobrand = Page::get_cobrand($q);
-    my @vars = qw(pc x y e n all_pins no_pins);
-    my %input = map { $_ => $q->param($_) || '' } @vars;
-    my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
+    my @vars = qw(pc x y lat lon all_pins no_pins);
 
-    (my $easting) = $input{e} =~ /^(\d+)/; $easting ||= 0;
-    (my $northing) = $input{n} =~ /^(\d+)/; $northing ||= 0;
+    my %input   = ();
+    my %input_h = ();
+
+    foreach my $key (@vars) {
+        my $val = $q->param($key);
+        $input{$key} = defined($val) ? $val : '';   # '0' is valid for longitude
+        $input_h{$key} = ent( $input{$key} );
+    }
+
+    use Data::Dumper;
+    local $Data::Dumper::Sortkeys = 1;
+    warn Dumper( \%input );
+
+    my $latitude  = $input{lat};
+    my $longitude = $input{lon};
 
     # X/Y referring to tiles old-school
     (my $x) = $input{x} =~ /^(\d+)/; $x ||= 0;
     (my $y) = $input{y} =~ /^(\d+)/; $y ||= 0;
-    return front_page($q, @errors) unless $x || $y || $input{pc} || $easting || $northing;
 
-    if ($x && $y) {
+    return front_page( $q, @errors )
+      unless ( $x && $y )
+      || $input{pc}
+      || ( defined $latitude && defined $longitude );
+
+    if ( $x && $y ) {
+
         # Convert the tile co-ordinates to real ones.
-        $easting = FixMyStreet::Map::tile_to_os($x);
-        $northing = FixMyStreet::Map::tile_to_os($y);
-    } elsif ($easting && $northing) {
+        ( $latitude, $longitude ) =
+          FixMyStreet::Map::tile_xy_to_wgs84( $x, $y );
+    }
+    elsif ( $latitude && $longitude ) {
+
         # Don't need to do anything
-    } else {
+    }
+    else {
         my $error;
         try {
-            ($easting, $northing, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
-        } catch Error::Simple with {
+            ( $latitude, $longitude, $error ) =
+              FixMyStreet::Geocode::lookup( $input{pc}, $q );
+
+            debug 'Looked up postcode "%s": lat: "%s", lon: "%s", error: "%s"',
+              $input{pc}, $latitude, $longitude, $error;
+        }
+        catch Error::Simple with {
             $error = shift;
         };
-        return FixMyStreet::Geocode::list_choices($error, '/', $q) if (ref($error) eq 'ARRAY');
-        return front_page($q, $error) if $error;
+        return FixMyStreet::Geocode::list_choices( $error, '/', $q )
+          if ( ref($error) eq 'ARRAY' );
+        return front_page( $q, $error ) if $error;
     }
+    
+    warn "lat: $latitude, lon: $longitude";
 
     # Check this location is okay to be displayed for the cobrand
-    my ($success, $error_msg) = Cobrand::council_check($cobrand, { e => $easting, n => $northing }, $q, 'display_location');
+    my ($success, $error_msg) = Cobrand::council_check($cobrand, { lat => $latitude, lon => $longitude }, $q, 'display_location');
     return front_page($q, $error_msg) unless $success;
 
     # Deal with pin hiding/age
@@ -812,10 +855,10 @@ sub display_location {
         $interval = '6 months';
     }   
 
-    my ($on_map_all, $on_map, $around_map, $dist) = FixMyStreet::Map::map_features_easting_northing($q, $easting, $northing, $interval);
+    my ($on_map_all, $on_map, $around_map, $dist) = FixMyStreet::Map::map_features($q, $latitude, $longitude, $interval);
     my @pins;
     foreach (@$on_map_all) {
-        push @pins, [ $_->{easting}, $_->{northing}, $_->{state} eq 'fixed' ? 'green' : 'red' ];
+        push @pins, [ $_->{latitude}, $_->{longitude}, $_->{state} eq 'fixed' ? 'green' : 'red' ];
     }
     my $on_list = '';
     foreach (@$on_map) {
@@ -841,7 +884,7 @@ sub display_location {
         $around_list .= $dist . 'km)</small>';
         $around_list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
         $around_list .= '</li>';
-        push @pins, [ $_->{easting}, $_->{northing}, $_->{state} eq 'fixed' ? 'green' : 'red' ];
+        push @pins, [ $_->{latitude}, $_->{longitude}, $_->{state} eq 'fixed' ? 'green' : 'red' ];
     }
     $around_list = $q->li(_('No problems found.'))
         unless $around_list;
@@ -858,21 +901,21 @@ sub display_location {
 
     my $url_skip = NewURL($q, -retain=>1, pc => undef,
         x => undef, 'y' => undef,
-        easting => $easting, northing => $northing,
+        latitude => $latitude, longitude => $longitude,
         'submit_map'=>1, skipped=>1
     );
     my $pc_h = ent($q->param('pc') || '');
     my %vars = (
         'map' => FixMyStreet::Map::display_map($q,
-            easting => $easting, northing => $northing,
+            latitude => $latitude, longitude => $longitude,
             type => 1,
             pins => \@pins,
             post => $map_links
         ),
         map_end => FixMyStreet::Map::display_map_end(1),
         url_home => Cobrand::url($cobrand, '/', $q),
-        url_rss => Cobrand::url($cobrand, NewURL($q, -retain => 1, -url=> "/rss/n/$easting,$northing", pc => undef, x => undef, 'y' => undef), $q),
-        url_email => Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/alert', e=>$easting, 'n'=>$northing, feed=>"local:$easting:$northing"), $q),
+        url_rss => Cobrand::url($cobrand, NewURL($q, -retain => 1, -url=> "/rss/l/$latitude,$longitude", pc => undef, x => undef, 'y' => undef), $q),
+        url_email => Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/alert', lat=>$latitude, lon=>$longitude, feed=>"local:$latitude:$longitude"), $q),
         url_skip => $url_skip,
         email_me => _('Email me new local problems'),
         rss_alt => _('RSS feed'),
@@ -892,7 +935,7 @@ sub display_location {
     );
 
     my %params = (
-        rss => [ _('Recent local problems, FixMyStreet'), "/rss/n/$easting,$northing" ],
+        rss => [ _('Recent local problems, FixMyStreet'), "/rss/l/$latitude,$longitude" ],
         robots => 'noindex,nofollow',
     );
 
@@ -955,9 +998,9 @@ sub display_problem {
     my %vars = (
         banner => $banner,
         map_start => FixMyStreet::Map::display_map($q,
-            easting => $problem->{easting}, northing => $problem->{northing},
+            latitude => $problem->{latitude}, longitude => $problem->{longitude},
             type => 0,
-            pins => [ [ $problem->{easting}, $problem->{northing}, 'blue' ] ],
+            pins => [ [ $problem->{latitude}, $problem->{longitude}, 'blue' ] ],
             post => $map_links
         ),
         map_end => FixMyStreet::Map::display_map_end(0),
