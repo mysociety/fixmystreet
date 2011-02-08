@@ -260,7 +260,7 @@ sub submit_update {
 
 sub submit_problem {
     my $q = shift;
-    my @vars = qw(council title detail name email phone pc easting northing skipped anonymous category partial upload_fileid lat lon);
+    my @vars = qw(council title detail name email phone pc skipped anonymous category partial upload_fileid latitude longitude);
     my %input = map { $_ => scalar $q->param($_) } @vars;
     for (qw(title detail)) {
         $input{$_} = lc $input{$_} if $input{$_} !~ /[a-z]/;
@@ -274,9 +274,9 @@ sub submit_problem {
 
 
     # If in UK and we have a lat,lon coocdinate check it is in UK
-    if ( $input{lat} && mySociety::Config::get('COUNTRY') eq 'GB' ) {
+    if ( $input{latitude} && mySociety::Config::get('COUNTRY') eq 'GB' ) {
         try {
-            mySociety::GeoUtil::wgs84_to_national_grid($input{lat}, $input{lon}, 'G');
+            mySociety::GeoUtil::wgs84_to_national_grid($input{latitude}, $input{longitude}, 'G');
         } catch Error::Simple with { 
             my $e = shift;
             push @errors, "We had a problem with the supplied co-ordinates - outside the UK?";
@@ -314,8 +314,8 @@ sub submit_problem {
     return display_form($q, \@errors, \%field_errors) if (@errors || scalar keys %field_errors); # Short circuit
 
     my $areas;
-    if (defined $input{lat} && defined $input{lon}) {
-        $areas = mySociety::MaPit::call('point', "27700/$input{easting},$input{northing}");
+    if (defined $input{latitude} && defined $input{longitude}) {
+        $areas = mySociety::MaPit::call('point', "4326/$input{latitude},$input{longitude}");
         if ($input{council} =~ /^[\d,]+(\|[\d,]+)?$/) {
             my $no_details = $1 || '';
             my %va = map { $_ => 1 } @$mySociety::VotingArea::council_parent_types;
@@ -354,10 +354,10 @@ sub submit_problem {
             $input{council} = join(',', @valid_councils) . $no_details;
         }
         $areas = ',' . join(',', sort keys %$areas) . ',';
-    } elsif (defined $input{lat} || defined $input{lon}) {
+    } elsif (defined $input{latitude} || defined $input{longitude}) {
         push(@errors, _('Somehow, you only have one co-ordinate. Please try again.'));
     } else {
-        push(@errors, _('You haven\'t specified any sort of co-ordinates. Please try again.'));
+        push(@errors, _("You haven't specified any sort of co-ordinates. Please try again."));
     }
 
     my $image;
@@ -387,10 +387,10 @@ sub submit_problem {
     if (my $token = $input{partial}) {
         my $id = mySociety::AuthToken::retrieve('partial', $token);
         if ($id) {
-            dbh()->do("update problem set postcode=?, easting=?, northing=?, title=?, detail=?,
+            dbh()->do("update problem set postcode=?, latitude=?, longitude=?, title=?, detail=?,
                 name=?, email=?, phone=?, state='confirmed', council=?, used_map='t',
                 anonymous=?, category=?, areas=?, cobrand=?, cobrand_data=?, confirmed=ms_current_timestamp(),
-                lastupdate=ms_current_timestamp() where id=?", {}, $input{pc}, $input{easting}, $input{northing},
+                lastupdate=ms_current_timestamp() where id=?", {}, $input{pc}, $input{latitude}, $input{longitude},
                 $input{title}, $input{detail}, $input{name}, $input{email},
                 $input{phone}, $input{council}, $input{anonymous} ? 'f' : 't',
                 $input{category}, $areas, $cobrand, $cobrand_data, $id);
@@ -409,11 +409,11 @@ Please <a href="/contact">let us know what went on</a> and we\'ll look into it.'
     } else {
         $id = dbh()->selectrow_array("select nextval('problem_id_seq');");
         Utils::workaround_pg_bytea("insert into problem
-            (id, postcode, easting, northing, title, detail, name,
+            (id, postcode, latitude, longitude, title, detail, name,
              email, phone, photo, state, council, used_map, anonymous, category, areas, lang, cobrand, cobrand_data)
             values
             (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?, ?, ?, ?, ?, ?, ?)", 10,
-            $id, $input{pc}, $input{easting}, $input{northing}, $input{title},
+            $id, $input{pc}, $input{latitude}, $input{longitude}, $input{title},
             $input{detail}, $input{name}, $input{email}, $input{phone}, $image,
             $input{council}, $used_map, $input{anonymous} ? 'f': 't', $input{category},
             $areas, $mySociety::Locale::lang, $cobrand, $cobrand_data);
