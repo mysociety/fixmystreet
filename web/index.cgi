@@ -265,15 +265,17 @@ sub submit_problem {
     my @errors;
     my %field_errors;
 
-    if ($input{lat}) {
+
+    # If in UK and we have a lat,lon coocdinate check it is in UK
+    if ( $input{lat} && mySociety::Config::get('COUNTRY') eq 'GB' ) {
         try {
-            ($input{easting}, $input{northing}) = mySociety::GeoUtil::wgs84_to_national_grid($input{lat}, $input{lon}, 'G');
+            mySociety::GeoUtil::wgs84_to_national_grid($input{lat}, $input{lon}, 'G');
         } catch Error::Simple with { 
             my $e = shift;
             push @errors, "We had a problem with the supplied co-ordinates - outside the UK?";
         };
     }
-
+    
     my $fh = $q->upload('photo');
     if ($fh) {
         my $err = Page::check_photo($q, $fh);
