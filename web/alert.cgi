@@ -56,7 +56,7 @@ EOF
     } elsif ($q->param('type') && $q->param('feed')) {
         $title = _('Local RSS feeds and email alerts');
         $out = alert_local_form($q);
-    } elsif ($q->param('pc') || ($q->param('e') && $q->param('n'))) {
+    } elsif ($q->param('pc') || ($q->param('lat') || $q->param('lon'))) {
         $title = _('Local RSS feeds and email alerts');
         $out = alert_list($q);
     } else {
@@ -72,17 +72,17 @@ Page::do_fastcgi(\&main);
 
 sub alert_list {
     my ($q, @errors) = @_;
-    my @vars = qw(pc rznvy e n);
+    my @vars = qw(pc rznvy lat lon);
     my %input = map { $_ => scalar $q->param($_) } @vars;
     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 
-    my($error, $e, $n);
-    if ($input{e} || $input{n}) {
-        $e = $input{e};
-        $n = $input{n};
+    my($error, $lat, $lon);
+    if ($input{lat} || $input{lon}) {
+        $lat = $input{lat};
+        $lon = $input{lon};
     } else {
         try {
-            ($e, $n, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
+            ($lat, $lon, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
         } catch Error::Simple with {
             $error = shift;
         };
@@ -102,7 +102,7 @@ sub alert_list {
     my @types = (@$mySociety::VotingArea::council_parent_types, @$mySociety::VotingArea::council_child_types);
     my %councils = map { $_ => 1 } @$mySociety::VotingArea::council_parent_types;
 
-    my $areas = mySociety::MaPit::call('point', "27700/$e,$n", type => \@types);
+    my $areas = mySociety::MaPit::call('point', "4326/$lon,$lat", type => \@types);
     my $cobrand = Page::get_cobrand($q);
     my ($success, $error_msg) = Cobrand::council_check($cobrand, { all_councils => $areas }, $q, 'alert');    
     if (!$success){
@@ -194,16 +194,15 @@ for the county council.'))) . '</div><div id="rss_buttons">';
         }
     } else {
         # Hopefully impossible in the UK!
-        throw Error::Simple('An area with three tiers of council? Impossible! '. $e . ' ' . $n . ' ' . join('|',keys %$areas));
+        throw Error::Simple('An area with three tiers of council? Impossible! '. $lat . ' ' . $lon . ' ' . join('|',keys %$areas));
     }
 
-    my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($e, $n, 'G');
     my $dist = mySociety::Gaze::get_radius_containing_population($lat, $lon, 200000);
     $dist = int($dist * 10 + 0.5);
     $dist = $dist / 10.0;
 
     my $checked = '';
-    $checked = ' checked' if $q->param('feed') && $q->param('feed') eq "local:$e:$n";
+    $checked = ' checked' if $q->param('feed') && $q->param('feed') eq "local:$lat:$lon";
     my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'alerts', $q);
     my $pics = Cobrand::recent_photos($cobrand, 5, $lat, $lon, $dist);
     $pics = '<div id="alert_photos">' . $q->h2(_('Photos of recent nearby reports')) . $pics . '</div>' if $pics;
@@ -231,20 +230,20 @@ feed, or enter your email address to subscribe to an email alert.'));
     my $rss_label = sprintf(_('Problems within %skm of this location'), $dist);
     $out .= <<EOF;
 <p id="rss_local">
-<input type="radio" name="feed" id="local:$e:$n" value="local:$e:$n"$checked>
-<label for="local:$e:$n">$rss_label</label>
+<input type="radio" name="feed" id="local:$lat:$lon" value="local:$lat:$lon"$checked>
+<label for="local:$lat:$lon">$rss_label</label>
 EOF
-    my $rss_feed = Cobrand::url($cobrand, "/rss/n/$e,$n", $q);
-    my $default_link = Cobrand::url($cobrand, "/alert?type=local;feed=local:$e:$n", $q);
+    my $rss_feed = Cobrand::url($cobrand, "/rss/l/$lat,$lon", $q);
+    my $default_link = Cobrand::url($cobrand, "/alert?type=local;feed=local:$lat:$lon", $q);
     my $rss_details = _('(a default distance which covers roughly 200,000 people)');
     $out .= $rss_details;
     $out .= " <a href='$rss_feed'><img src='/i/feed.png' width='16' height='16' title='"
         . _('RSS feed of nearby problems') . "' alt='" . _('RSS feed') . "' border='0'></a>";
     $out .= '</p> <p id="rss_local_alt">' . _('(alternatively the RSS feed can be customised, within');
-    my $rss_feed_2k  = Cobrand::url($cobrand, "/rss/n/$e,$n/2", $q);
-    my $rss_feed_5k  = Cobrand::url($cobrand, "/rss/n/$e,$n/5", $q);
-    my $rss_feed_10k = Cobrand::url($cobrand, "/rss/n/$e,$n/10", $q);
-    my $rss_feed_20k = Cobrand::url($cobrand, "/rss/n/$e,$n/20", $q);
+    my $rss_feed_2k  = Cobrand::url($cobrand, "/rss/l/$lat,$lon/2", $q);
+    my $rss_feed_5k  = Cobrand::url($cobrand, "/rss/l/$lat,$lon/5", $q);
+    my $rss_feed_10k = Cobrand::url($cobrand, "/rss/l/$lat,$lon/10", $q);
+    my $rss_feed_20k = Cobrand::url($cobrand, "/rss/l/$lat,$lon/20", $q);
     $out .= <<EOF;
  <a href="$rss_feed_2k">2km</a> / <a href="$rss_feed_5k">5km</a>
 / <a href="$rss_feed_10k">10km</a> / <a href="$rss_feed_20k">20km</a>)
@@ -271,8 +270,8 @@ EOF
                 rss_feed_5k => $rss_feed_5k,   
                 rss_feed_10k => $rss_feed_10k,   
                 rss_feed_20k => $rss_feed_20k, 
-                e => $e, 
-                n => $n, 
+                lat => $lat,
+                lon => $lon, 
                 options => $options );
     my $cobrand_page = Page::template_include('alert-options', $q, Page::template_root($q), %vars);
     $out = $cobrand_page if ($cobrand_page);
@@ -526,8 +525,10 @@ sub alert_do_subscribe {
             $alert_id = FixMyStreet::Alert::create($email, 'council_problems', $cobrand, $cobrand_data, $1, $1);
         } elsif ($feed =~ /^ward:(\d+):(\d+)/) {
             $alert_id = FixMyStreet::Alert::create($email, 'ward_problems', $cobrand, $cobrand_data, $1, $2);
-        } elsif ($feed =~ /^local:(\d+):(\d+)/) {
-            $alert_id = FixMyStreet::Alert::create($email, 'local_problems', $cobrand, $cobrand_data, $1, $2);
+        } elsif ($feed =~ m{ \A local: ( [\+\-]? \d+ \.? \d* ) : ( [\+\-]? \d+ \.? \d* ) }xms ) {
+            my $lat = $1;
+            my $lon = $2;
+            $alert_id = FixMyStreet::Alert::create($email, 'local_problems', $cobrand, $cobrand_data, $lon, $lat);
         }
     } else {
         throw FixMyStreet::Alert::Error('Invalid type');
