@@ -24,7 +24,7 @@ use mySociety::AuthToken;
 use mySociety::Config;
 use mySociety::DBHandle qw(select_all);
 use mySociety::EmailUtil;
-use mySociety::GeoUtil;
+use mySociety::GeoUtil qw(national_grid_to_wgs84);
 use mySociety::Locale;
 use mySociety::MaPit;
 use mySociety::PostcodeUtil;
@@ -89,9 +89,11 @@ sub main {
     } elsif ($q->param('id')) {
         ($out, %params) = display_problem($q, [], {});
         $params{title} .= ' - ' . _('Viewing a problem');
-    } elsif ($q->param('pc') || ($q->param('x') && $q->param('y')) || ($q->param('e') && $q->param('n'))) {
+    } elsif ($q->param('pc') || ($q->param('x') && $q->param('y')) || ($q->param('lat') || $q->param('lon'))) {
         ($out, %params) = display_location($q);
         $params{title} = _('Viewing a location');
+    } elsif ($q->param('e') && $q->param('n')) {
+        ($out, %params) = redirect_from_osgb_to_wgs84($q);
     } else {
         ($out, %params) = front_page($q);
     }
@@ -782,6 +784,32 @@ EOF
     return (Page::template_include('report-form', $q, Page::template_root($q), %vars), robots => 'noindex,nofollow');
 }
 
+# redirect from osgb
+sub redirect_from_osgb_to_wgs84 {
+    my ($q) = @_;
+
+    my $e = $q->param('e');
+    my $n = $q->param('e');
+
+    my ( $lat, $lon ) = national_grid_to_wgs84( $e, $n, 'G' );
+
+    my $lat_lon_url = NewURL(
+        $q,
+        -retain => 1,
+        e       => undef,
+        n       => undef,
+        lat     => $lat,
+        lon     => $lon
+    );
+
+    print $q->redirect(
+        -location => $lat_lon_url,
+        -status   => 301,            # permanent
+    );
+
+    return '';
+}
+
 sub display_location {
     my ($q, @errors) = @_;
     my $cobrand = Page::get_cobrand($q);
@@ -994,7 +1022,7 @@ sub display_problem {
 
     my $contact_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, x => undef, 'y' => undef, -url=>'/contact?id=' . $input{id}), $q);
     my $back = Cobrand::url($cobrand, NewURL($q, -url => '/',
-        'e' => int($problem->{easting}), 'n' => int($problem->{northing}),
+        lat => $problem->{latitude}, lon => $problem->{longitude},
         -retain => 1, pc => undef, x => undef, 'y' => undef, id => undef
     ), $q);
     my $fixed = ($input{fixed}) ? ' checked' : '';
