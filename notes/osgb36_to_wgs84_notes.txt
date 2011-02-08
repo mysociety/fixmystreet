@@ -18,9 +18,55 @@ CODE:
 
   DONE: update all calls to problem_find_nearby swapping parameter order.
   * find all occurences of 'easting', 'northing', $e, $n etc and migrate
+  * Cobrand.pm
+  * Cobrands/Barnet/Util.pm
+  * Cobrands/Emptyhomes/Util.pm
+  * CronFns.pm
+  * CrossSell.pm
+  * EastHantsWSDL.pm
+  * FixMyStreet/Alert.pm
+  * FixMyStreet/Geocode.pm
+  * FixMyStreet/Map.pm
+  * FixMyStreet/Map/Bing.pm
+  * FixMyStreet/Map/BingOL.pm
+  * FixMyStreet/Map/Google.pm
+  * FixMyStreet/Map/OSM.pm
+  * FixMyStreet/Map/OSM/CycleMap.pm
+  * FixMyStreet/Map/OSM/StreetView.pm
+  * FixMyStreet/Map/Tilma/OL/1_10k.pm
+  * FixMyStreet/Map/Tilma/OL/StreetView.pm
+  * FixMyStreet/Map/Tilma/Original.pm
+  * FixMyStreet/Map/Tilma/Original/1_10k.pm
+  * FixMyStreet/Map/Tilma/Original/StreetView.pm
+  * Memcached.pm
+  * Page.pm
+  * PoChange.pm
+  * Problems.pm
+  * Standard.pm
+  * Utils.pm
+
+  * web/about.cgi
+  * web/ajax.cgi
+  * web/alert.cgi
+  * web/confirm.cgi
+  * web/contact.cgi
+  * web/faq.cgi
+  * web/flickr.cgi
+  * web/fun.cgi
+  * web/import.cgi
+  * web/index.cgi
+  * web/json.cgi
+  * web/photo.cgi
+  * web/questionnaire.cgi
+  * web/reports.cgi
+  * web/rss.cgi
+  * web/test.cgi
+  * web/tms-signup.cgi
+  * web/upload.cgi
 
 UI maps:
 
   * Tilma js code will still need eastings and northings
   * All other maps should be able to switch to latlon
+
 
