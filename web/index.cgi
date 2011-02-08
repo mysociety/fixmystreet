@@ -315,7 +315,8 @@ sub submit_problem {
 
     my $areas;
     if (defined $input{latitude} && defined $input{longitude}) {
-        $areas = mySociety::MaPit::call('point', "4326/$input{latitude},$input{longitude}");
+        my $mapit_query = "4326/$input{longitude},$input{latitude}";
+        $areas = mySociety::MaPit::call( 'point', $mapit_query );
         if ($input{council} =~ /^[\d,]+(\|[\d,]+)?$/) {
             my $no_details = $1 || '';
             my %va = map { $_ => 1 } @$mySociety::VotingArea::council_parent_types;
