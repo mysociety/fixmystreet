@@ -176,7 +176,7 @@ sub migrate_alert_table {
 
     # update query
     my $update_lat_lon_query = $dbh->prepare(     #
-        "UPDATE alert SET parameter = ?, parameter2 = ?, is_migrated = true"
+        "UPDATE alert SET parameter2 = ?, parameter = ?, is_migrated = true"
           . "  WHERE id = ?"
     );
 
