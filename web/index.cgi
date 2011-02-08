@@ -977,9 +977,12 @@ sub display_problem {
     my $extra_data = Cobrand::extra_data($cobrand, $q);
     my $google_link = Cobrand::base_url_for_emails($cobrand, $extra_data)
         . '/report/' . $problem->{id};
-    my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($problem->{easting}, $problem->{northing}, 'G');
-    my $map_links = "<p id='sub_map_links'><a href=\"http://maps.google.co.uk/maps?output=embed&amp;z=16&amp;q="
-        . URI::Escape::uri_escape_utf8($problem->{title} . ' - ' . $google_link) . "\@$lat,$lon\">View on Google Maps</a></p>";
+
+    my $map_links =
+        "<p id='sub_map_links'>"
+      . "<a href=\"http://maps.google.co.uk/maps?output=embed&amp;z=16&amp;q="
+      . URI::Escape::uri_escape_utf8( $problem->{title} . ' - ' . $google_link )
+      . "\@$problem->{latitude},$problem->{longitude}\">View on Google Maps</a></p>";
 
     my $banner;
     if ($q->{site} ne 'emptyhomes' && $problem->{state} eq 'confirmed' && $problem->{duration} > 8*7*24*60*60) {
