@@ -302,9 +302,8 @@ sub generate_rss ($$$;$$$$) {
         }
         $item{description} .= ent("\n<br><a href='$cobrand_url'>Report on FixMyStreet</a>");
 
-        if ($row->{easting} && $row->{northing}) {
-            my ($lat,$lon) = mySociety::GeoUtil::national_grid_to_wgs84($row->{easting}, $row->{northing}, 'G');
-            $item{georss} = { point => "$lat $lon" };
+        if ($row->{latitude} || $row->{longitude}) {
+            $item{georss} = { point => "$row->{latitude} $row->{longitude}" };
         }
         $rss->add_item( %item );
     }
