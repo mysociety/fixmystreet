@@ -97,12 +97,12 @@ sub rss_local_problems {
     } elsif ($pc) {
         my $error;
         try {
-            ($e, $n, $error) = FixMyStreet::Geocode::lookup($pc, $q);
+            ($lat, $lon, $error) = FixMyStreet::Geocode::lookup($pc, $q);
         } catch Error::Simple with {
             $error = shift;
         };
         unless ($error) {
-            print $q->redirect(-location => "$base/rss/n/$e,$n$d_str$state_qs");
+            print $q->redirect(-location => "$base/rss/l/$lat,$lon$d_str$state_qs");
         }
         return '';
     } elsif ( $lat || $lon ) { 

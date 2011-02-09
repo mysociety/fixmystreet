@@ -532,16 +532,37 @@ sub do_static {
 # Check RSS feeds redirect to the right places and so on.
 # Just checks header, doesn't check any contents.
 sub do_rss {
-    $wth->browser_get($base_url . '/rss/l/52.5/-1.9');
-    die "Lat/lon redirect failed" unless $wth->browser_uri() =~ m{/rss/n/406886,289126$};
-    $wth->browser_get($base_url . '/rss/2524/1779');
-    die "Tile redirect failed" unless $wth->browser_uri() =~ m{/rss/n/407097,286935$};
-    $wth->browser_get($base_url . '/rss/n/407097,286935');
+
+    my %redirects = (
+
+        # should always go to lat lon
+        '/rss/n/406886,289126' => '/rss/l/52.4999935999706,-1.89999324167977',
+        '/rss/2524/1779'       => '/rss/l/52.4802940052892,-1.89693098994692',
+        '/rss/pc/SW1A1AA'      => '/rss/l/51.5010096115539,-0.141587067110009',
+        '/rss/l/52.5/-1.9'     => '/rss/l/52.5/-1.9',
+
+        # go to reports
+        '/rss/area/Birmingham'         => '/rss/reports/Birmingham',
+        '/rss/area/Birmingham/Lozells' => '/rss/reports/Birmingham/Lozells',
+    );
+
+    my $error_count = 0;
+    foreach my $from ( sort keys %redirects ) {
+        my $to = $redirects{$from};
+        $wth->browser_get( $base_url . $from );
+        my ($got) = $wth->browser_uri() =~ m{(/rss/.*)$};
+
+        next if $got eq $to;
+
+        warn "RSS redirect from '$from' to '$to' failed - got '$got'";
+        $error_count++;
+    }
+
+    die "Found errors doing redirect - aborting" if $error_count;
+
+    $wth->browser_get($base_url . '/rss/l/52.5/-1.94');
     $wth->browser_check_contents('New local problems on FixMyStreet');
-    $wth->browser_get($base_url . '/rss/pc/SW1A1AA');
-    die "Postcode redirect failed" unless $wth->browser_uri() =~ m{/rss/n/529090,179645$};
-    $wth->browser_get($base_url . '/rss/area/Birmingham');
-    die "One-tier redirect failed" unless $wth->browser_uri() =~ m{/rss/reports/Birmingham$};
+
     $wth->browser_get($base_url . '/rss/reports/Birmingham');
     $wth->browser_check_contents('New problems to Birmingham City Council on FixMyStreet');
     $wth->browser_get($base_url . '/rss/reports/Birmingham/Lozells');
