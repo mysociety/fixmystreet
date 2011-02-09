@@ -16,7 +16,7 @@ use RABX;
 use CGI::Carp;
 use URI::Escape;
 
-use Carp::Always;
+# use Carp::Always;
 
 use CrossSell;
 use FixMyStreet::Geocode;
@@ -33,6 +33,7 @@ use mySociety::VotingArea;
 use mySociety::Web qw(ent NewURL);
 
 sub debug (@) {
+    return;
     my ( $format, @args ) = @_;
     warn sprintf $format, map { defined $_ ? $_ : 'undef' } @args;
 }
