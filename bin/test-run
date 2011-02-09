@@ -33,6 +33,7 @@ use Test::Harness;
 use File::Find;
 use lib "$FindBin::Bin/../perllib";
 use Cobrand;
+use FixMyStreet::Geocode;
 
 my @actions = ('report', 'update', 'questionnaire', 'alert', 'static', 'cobrand', 'unit', 'eha_alert', 'import', 'rss');
 my %actions_desc = (
@@ -383,13 +384,21 @@ sub do_alert {
    
     # sign up for alerts in an area
     my $postcode = 'EH1 2NG';
-    my $x = 2015; my $e = 325066;
-    my $y = 4175; my $n = 673533;
+
+    my $x = 2015;
+    my $y = 4175;
+
+    my $e = 325066;
+    my $n = 673533;
+    
+    # get the lat,lon from the postcode so that it matches
+    my ( $lat, $lon ) = FixMyStreet::Geocode::lookup( $postcode, undef );
+    
     my $messages = english_fms_messages();
     submit_postcode('', $postcode, 'Problems in this area');
     $wth->browser_follow_link(text => 'Email me new local problems');
     $wth->browser_submit_form(form_name => 'alerts',
-                              fields => {feed => "local:" . $e . ":" . $n,
+                              fields => {feed => "local:$lat:$lon",
                                          rznvy => email_n(2)} ); 
     $wth->browser_check_contents('Nearly Done!');
     my $confirmation_email = $wth->email_get_containing(
@@ -402,7 +411,7 @@ sub do_alert {
     $wth->browser_check_contents('successfully confirmed your alert');
 
     # create and confirm a new problem in the area
-    submit_report($postcode, $x, $y, 325000, 673387.096774193, 3, undef, $messages, '');
+    submit_report($postcode, $x, $y, $e, $n, 3, undef, $messages, '');
 
     # run the alert script 
     call_send_emails();
