@@ -27,3 +27,4 @@ libimage-size-perl
 libmath-bigint-gmp-perl
 libtext-template-perl
 gettext
+libtest-exception-perl
