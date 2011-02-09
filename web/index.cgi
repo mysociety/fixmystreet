@@ -789,7 +789,7 @@ sub redirect_from_osgb_to_wgs84 {
     my ($q) = @_;
 
     my $e = $q->param('e');
-    my $n = $q->param('e');
+    my $n = $q->param('n');
 
     my ( $lat, $lon ) = national_grid_to_wgs84( $e, $n, 'G' );
 
