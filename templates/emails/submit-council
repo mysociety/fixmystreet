@@ -21,7 +21,7 @@ Email: <?=$values['email']?>
 
 Details: <?=$values['detail']?>
 
-Latitude: <?=$values['latitude']?>
+<?=$values['easting_northing']?>Latitude: <?=$values['latitude']?>
 
 Longitude: <?=$values['longitude']?>
 
@@ -29,7 +29,7 @@ Longitude: <?=$values['longitude']?>
 
 Replies to this email will go to the user who submitted the problem.
 
-Yours,  
+Yours,
 The FixMyStreet team
 
 [ This message was sent via FixMyStreet, a project of UKCOD, registered charity

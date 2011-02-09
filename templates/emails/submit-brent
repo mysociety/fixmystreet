@@ -21,7 +21,7 @@ Email: <?=$values['email']?>
 
 Details: <?=$values['detail']?>
 
-Latitude: <?=$values['latitude']?>
+<?=$values['easting_northing']?>Latitude: <?=$values['latitude']?>
 
 Longitude: <?=$values['longitude']?>
 

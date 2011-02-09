@@ -27,6 +27,7 @@ use mySociety::Config;
 use mySociety::DBHandle qw(dbh);
 use mySociety::Email;
 use mySociety::EmailUtil;
+use mySociety::GeoUtil;
 use mySociety::Locale;
 use mySociety::MaPit;
 use mySociety::Random qw(random_bytes);
@@ -97,6 +98,21 @@ foreach my $row (@$unsent) {
         : _('The user could not locate the problem on a map, but to see the area around the location they entered');
     $h{closest_address} = '';
     $h{closest_address_machine} = '';
+    
+    # If we are in the UK include eastings and northings
+    $h{easting_northing} = '';
+    if ( mySociety::Config::get('COUNTRY') eq 'GB' ) {
+
+        ( $h{easting}, $h{northing} ) =
+          mySociety::GeoUtil::wgs84_to_national_grid(    #
+            $h{latitude}, $h{longitude}, 'G'
+          );
+
+        # email templates don't have conditionals so we need to farmat this here
+        $h{easting_northing}                             #
+          = "Easting: $h{easting}\n\n"                   #
+          . "Northing: $h{northing}\n\n";
+    }
 
     my (@to, @recips, $template, $areas_info);
     if ($site eq 'emptyhomes') {
