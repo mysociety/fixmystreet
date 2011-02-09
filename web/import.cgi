@@ -13,16 +13,16 @@ use Error qw(:try);
 use Standard;
 use Utils;
 use mySociety::AuthToken;
+use mySociety::Config;
 use mySociety::EmailUtil;
 use mySociety::EvEl;
+use mySociety::GeoUtil qw(national_grid_to_wgs84);
 
 sub main {
     my $q = shift;
 
     my @vars = qw(service subject detail name email phone easting northing lat lon id phone_id);
     my %input = map { $_ => $q->param($_) || '' } @vars;
-    $input{easting} ||= 0;
-    $input{northing} ||= 0;
     my @errors;
 
     unless ($ENV{REQUEST_METHOD} eq 'POST') {
@@ -30,6 +30,18 @@ sub main {
         docs();
         print Page::footer($q);
         return;
+    }
+
+    # If we were given easting, northing convert to lat lon now
+    my $latitude  = $input{lat} ||= 0;
+    my $longitude = $input{lon} ||= 0;
+    if (
+        !( $latitude || $longitude )    # have not been given lat or lon
+        && ( $input{easting} && $input{northing} )    # but do have e and n
+      )
+    {
+        ( $latitude, $longitude ) =
+          national_grid_to_wgs84( $input{easting}, $input{northing}, 'G' );
     }
 
     my $fh = $q->upload('photo'); # MUST come before $q->header, don't know why!
@@ -50,14 +62,17 @@ sub main {
         push @errors, 'Please enter a valid email';
     }
 
-    if ($input{lat}) {
+    if ( $latitude && mySociety::Config::get('COUNTRY') eq 'GB' ) {
         try {
-            ($input{easting}, $input{northing}) = mySociety::GeoUtil::wgs84_to_national_grid($input{lat}, $input{lon}, 'G');
-        } catch Error::Simple with { 
+            mySociety::GeoUtil::wgs84_to_national_grid( $latitude, $longitude,
+                'G' );
+        }
+        catch Error::Simple with {
             my $e = shift;
             push @errors, "We had a problem with the supplied co-ordinates - outside the UK?";
         };
     }
+
     # TODO: Get location from photo if present in EXIF data?
 
     my $photo;
@@ -70,7 +85,7 @@ sub main {
         };
     }
 
-    unless ($photo || ($input{easting} && $input{northing})) {
+    unless ( $photo || ( $latitude || $longitude ) ) {
         push @errors, 'Either a location or a photo must be provided.';
     }
 
@@ -92,11 +107,11 @@ sub main {
     # Store what we have so far in the database
     my $id = dbh()->selectrow_array("select nextval('problem_id_seq')");
     Utils::workaround_pg_bytea("insert into problem
-        (id, postcode, easting, northing, title, detail, name, service,
+        (id, postcode, latitude, longitude, title, detail, name, service,
          email, phone, photo, state, used_map, anonymous, category, areas)
         values
         (?, '', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'partial', 't', 'f', '', '')", 10,
-        $id, $input{easting}, $input{northing}, $input{subject},
+        $id, $latitude, $longitude, $input{subject},
         $input{detail}, $input{name}, $input{service}, $input{email}, $input{phone}, $photo);
 
     # Send checking email
