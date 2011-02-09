@@ -27,6 +27,7 @@ use FindBin;
 use mySociety::Config;
 mySociety::Config::set_file('../conf/general');
 use mySociety::DBHandle qw(dbh);
+use mySociety::GeoUtil;
 use mySociety::WebTestHarness;
 use Test::Harness;
 use File::Find;
@@ -213,6 +214,11 @@ sub submit_postcode{
 sub submit_report {
    my ($postcode, $x, $y, $easting, $northing, $user_num, $council, $texts, $cobrand ) = @_;	
    my @messages = @{$texts}; 
+
+   # convert easting, northing to lat lon
+   my ( $latitude, $longitude ) =
+     mySociety::GeoUtil::national_grid_to_wsg84( $easting, $northing, 'G' );
+
    submit_postcode($cobrand, $postcode, $messages[0]);
     {
         # Writing values to hidden fields, so switching
@@ -235,8 +241,8 @@ sub submit_report {
                         y => $y,
                         pc => $postcode,
                         council => -1,
-                        easting => $easting,
-                        northing => $northing,
+                        latitude => $latitude,
+                        longitude => $longitude,
                         title => 'My test problem',
                         detail => 'Detail of my test problem',
                         anonymous => 1,
