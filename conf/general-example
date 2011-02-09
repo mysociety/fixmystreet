@@ -25,12 +25,6 @@ define('OPTION_BCI_DB_NAME', 'bci');
 define('OPTION_BCI_DB_USER', 'bci');
 define('OPTION_BCI_DB_PASS', '');
 
-define('OPTION_DRESS_DB_HOST', 'localhost');
-define('OPTION_DRESS_DB_PORT', '5432');
-define('OPTION_DRESS_DB_NAME', 'dress');
-define('OPTION_DRESS_DB_USER', 'dress');
-define('OPTION_DRESS_DB_PASS', '');
-
 define('OPTION_BASE_URL', 'http://www.example.org');
 
 # Which country are you operating in? ISO3166-alpha2 code please
