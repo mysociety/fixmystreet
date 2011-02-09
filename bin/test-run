@@ -217,7 +217,7 @@ sub submit_report {
 
    # convert easting, northing to lat lon
    my ( $latitude, $longitude ) =
-     mySociety::GeoUtil::national_grid_to_wsg84( $easting, $northing, 'G' );
+     mySociety::GeoUtil::national_grid_to_wgs84( $easting, $northing, 'G' );
 
    submit_postcode($cobrand, $postcode, $messages[0]);
     {
