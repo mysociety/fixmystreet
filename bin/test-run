@@ -434,6 +434,10 @@ sub do_eha_alert {
     my $postcode = 'EH1 2NG';
     my $x = 2015; my $e = 325066;
     my $y = 4175; my $n = 673533;
+    
+    # get the lat,lon from the postcode so that it matches
+    my ( $lat, $lon ) = FixMyStreet::Geocode::lookup( $postcode, undef );
+        
     my @texts = ('Eiddo gwag yn yr ardal hon', 
                  'Adrodd am eiddo gwag', 
                  'Nawr, gwiriwch eich e-bost', 
@@ -443,7 +447,7 @@ sub do_eha_alert {
     submit_postcode('cy.emptyhomes.', $postcode, $texts[0]);
     $wth->browser_follow_link(text => 'Anfonwch fanylion eiddo gwag lleol newydd ataf i drwy\'r e-bost');
     $wth->browser_submit_form(form_name => 'alerts',
-                              fields => {feed => "local:" . $e . ":" . $n,
+                              fields => {feed => "local:$lat:$lon",
                                          rznvy => email_n(4)} );
     $wth->browser_check_contents($texts[2]);
     my $confirmation_email = $wth->email_get_containing(
@@ -456,7 +460,7 @@ sub do_eha_alert {
     $wth->browser_check_contents('Rydych wedi cadarnhau\'ch hysbysiad yn llwyddiannus.');
     
     # create and confirm a new problem in the area
-    submit_report($postcode, $x, $y, 325000, 673387.096774193, 3, undef, \@texts, 'cy.emptyhomes.');
+    submit_report($postcode, $x, $y, $e, $n, 3, undef, \@texts, 'cy.emptyhomes.');
 
     # run the alert script
     call_send_emails();
