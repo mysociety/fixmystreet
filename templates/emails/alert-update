@@ -4,6 +4,8 @@ The following updates have been left on this problem:
 
 <?=$values['data']?>
 
+<?=$values['state_message']?>
+
 To view or reply to these updates, please visit the following URL:
     <?=$values['problem_url']?>
 

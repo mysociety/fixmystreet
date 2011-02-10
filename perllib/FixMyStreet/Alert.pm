@@ -135,6 +135,13 @@ sub email_alerts ($) {
             # more than once if there are multiple vhosts running off the same database. The email_host
             # call checks if this is the host that sends mail for this cobrand.
             next unless (Cobrand::email_host($row->{alert_cobrand}));
+
+            # create problem status message for the templates
+            $data{state_message} =
+              $row->{state} eq 'fixed'
+              ? _("This report is currently marked as fixed.")
+              : _("This report is currently marked as open.");
+
             dbh()->do('insert into alert_sent (alert_id, parameter) values (?,?)', {}, $row->{alert_id}, $row->{item_id});
             if ($last_alert_id && $last_alert_id != $row->{alert_id}) {
                 _send_aggregated_alert_email(%data);
