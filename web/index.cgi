@@ -1008,11 +1008,16 @@ sub display_problem {
     my $google_link = Cobrand::base_url_for_emails($cobrand, $extra_data)
         . '/report/' . $problem->{id};
 
+    # truncate the lat,lon for nicer rss urls
+    my ( $short_lat, $short_lon ) =
+      map { Utils::truncate_coordinate($_) }    #
+      ( $problem->{latitude}, $problem->{longitude} );
+
     my $map_links =
         "<p id='sub_map_links'>"
       . "<a href=\"http://maps.google.co.uk/maps?output=embed&amp;z=16&amp;q="
       . URI::Escape::uri_escape_utf8( $problem->{title} . ' - ' . $google_link )
-      . "\@$problem->{latitude},$problem->{longitude}\">View on Google Maps</a></p>";
+      . "\@$short_lat,$short_lon\">View on Google Maps</a></p>";
 
     my $banner;
     if ($q->{site} ne 'emptyhomes' && $problem->{state} eq 'confirmed' && $problem->{duration} > 8*7*24*60*60) {
@@ -1024,7 +1029,7 @@ sub display_problem {
 
     my $contact_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, x => undef, 'y' => undef, -url=>'/contact?id=' . $input{id}), $q);
     my $back = Cobrand::url($cobrand, NewURL($q, -url => '/',
-        lat => $problem->{latitude}, lon => $problem->{longitude},
+        lat => $short_lat, lon => $short_lon,
         -retain => 1, pc => undef, x => undef, 'y' => undef, id => undef
     ), $q);
     my $fixed = ($input{fixed}) ? ' checked' : '';
