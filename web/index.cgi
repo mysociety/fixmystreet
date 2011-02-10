@@ -118,6 +118,8 @@ sub front_page {
     my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'postcodeForm', $q);
     my $form_action = Cobrand::url($cobrand, '/', $q);
     my $question = Cobrand::enter_postcode_text($cobrand, $q);
+    $question = _("Enter a nearby GB postcode, or street name and area:")
+        unless $question;
     my %params = ('context' => 'front-page');
     $params{status_code} = $status_code if $status_code;
     my %vars = (

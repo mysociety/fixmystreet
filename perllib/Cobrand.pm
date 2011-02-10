@@ -41,7 +41,7 @@ my %fns = (
     # Return the base url for the cobranded version of the site
     'base_url' => { default => "mySociety::Config::get('BASE_URL')" },
     # Return the text that prompts the user to enter their postcode/place name. Parameter is QUERY
-    'enter_postcode_text' => { default => '_("Enter a nearby GB postcode, or street name and area:")' },
+    'enter_postcode_text' => { default => '""' },
     # Set the language and domain of the site based on the cobrand and host
     'set_lang_and_domain' => { default => '\&default_set_lang_and_domain' },
     # Return HTML for a list of alert options for the cobrand, given QUERY and OPTIONS.
