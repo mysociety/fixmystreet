@@ -61,6 +61,13 @@ sub geocoded_string_coordinates {
     } elsif ( $js =~ /"coordinates" *: *\[ *(.*?), *(.*?),/ ) {
         $longitude = $1;
         $latitude  = $2;
+        try {
+            my ($easting, $northing) = mySociety::GeoUtil::wgs84_to_national_grid($latitude, $longitude, 'G');
+        } catch Error::Simple with {
+            $error = shift;
+            $error = _('That location does not appear to be in Britain; please try again.')
+                if $error =~ /out of the area covered/;
+        }
     }
     return ($latitude, $longitude, $error);
 }
