@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2009-08-12 12:28+0100\n"
+"POT-Creation-Date: 2011-02-10 20:23+0000\n"
 "PO-Revision-Date: 2009-07-10 14:20-0000\n"
 "Last-Translator: Mark Smith <Mark.Smith@trosol.co.uk>\n"
 "Language-Team: mySociety\n"
@@ -19,108 +19,101 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
-#: fixmystreet/perllib/Page.pm:78
+#: perllib/Cobrands/Emptyhomes/Util.pm:57 bin/send-questionnaires-eha:93
+msgid "Report Empty Homes"
+msgstr "Adrodd am Eiddo Gwag"
+
+#: perllib/Page.pm:80
 #, perl-format
 msgid "Please try again later, or <a href=\"mailto:%s\">email us</a> to let us know."
 msgstr "Rhowch gynnig eto'n ddiweddarach, neu <a href=\"mailto:%s\">anfonwch neges e-bost atom</a>i roi gwybod inni."
 
-#: fixmystreet/perllib/Page.pm:79
+#: perllib/Page.pm:81
 msgid "Sorry! Something's gone wrong."
 msgstr "Ymddiheuriadau! Mae rhywbeth wedi mynd o'i le."
 
-#: fixmystreet/perllib/Page.pm:80
+#: perllib/Page.pm:82
 msgid "The text of the error was:"
 msgstr "Testun y gwall oedd:"
 
-#: fixmystreet/perllib/Page.pm:167 fixmystreet/perllib/Page.pm:260
-msgid "Report a property"
-msgstr "Rhoi gwybod am eiddo"
-
-#: fixmystreet/perllib/Page.pm:168 fixmystreet/perllib/Page.pm:261
-msgid "Reports"
-msgstr "Adroddiadau"
-
-#: fixmystreet/perllib/Page.pm:169 fixmystreet/perllib/Page.pm:262
-msgid "Get local reports"
-msgstr "Gweld adroddiadau lleol"
-
-#: fixmystreet/perllib/Page.pm:170 fixmystreet/perllib/Page.pm:263
-msgid "FAQs"
-msgstr "Cwestiynau Cyffredin"
-
-#: fixmystreet/perllib/Page.pm:171 fixmystreet/web/about.cgi:19 fixmystreet/web/about.cgi:21
-msgid "About us"
-msgstr "Amdanom ni"
-
-#: fixmystreet/perllib/Page.pm:172 fixmystreet/bin/send-questionnaires-eha:93
-msgid "Report Empty Homes"
-msgstr "Adrodd am Eiddo Gwag"
-
-#: fixmystreet/perllib/Page.pm:181 fixmystreet/perllib/Page.pm:551 fixmystreet/web/contact.cgi:64
+#: perllib/Page.pm:189 web/contact.cgi:107
 msgid "reportemptyhomes.com"
 msgstr "reportemptyhomes.com"
 
-#: fixmystreet/perllib/Page.pm:199
+#: perllib/Page.pm:193 perllib/Page.pm:356
+msgid "Report a property"
+msgstr "Rhoi gwybod am eiddo"
+
+#: perllib/Page.pm:194 perllib/Page.pm:357
+msgid "Reports"
+msgstr "Adroddiadau"
+
+#: perllib/Page.pm:195 perllib/Page.pm:358
+msgid "Get local reports"
+msgstr "Gweld adroddiadau lleol"
+
+#: perllib/Page.pm:196 perllib/Page.pm:359
+msgid "FAQs"
+msgstr "Cwestiynau Cyffredin"
+
+#: perllib/Page.pm:197 web/about.cgi:19 web/about.cgi:21
+msgid "About us"
+msgstr "Amdanom ni"
+
+#: perllib/Page.pm:219
 msgid "Fix<span id=\"my\">My</span>Street"
 msgstr "Trwsio<span id=\"my\">Fy</span>Stryd"
 
-#: fixmystreet/perllib/Page.pm:207
-msgid "This is a developer site; things might break at any time."
+#: perllib/Page.pm:312
+#, fuzzy
+msgid "This is a developer site; things might break at any time, and the database will be periodically deleted."
 msgstr "Safle datblygwr yw hwn; gallai pethau dorri unrhyw bryd."
 
-#: fixmystreet/perllib/Page.pm:259
+#: perllib/Page.pm:355
 msgid "Navigation"
 msgstr "Mordwyo  "
 
-#: fixmystreet/perllib/Page.pm:264
+#: perllib/Page.pm:360
 msgid "Contact"
 msgstr "Cysylltu"
 
-#: fixmystreet/perllib/Page.pm:265
+#: perllib/Page.pm:361
 msgid "<a href=\"http://www.mysociety.org/\"><img id=\"logo\" width=\"133\" height=\"26\" src=\"/i/mysociety-dark.png\" alt=\"View mySociety.org\"><span id=\"logoie\"></span></a>"
 msgstr "<a href=\"http://www.mysociety.org/\"><img id=\"logo\" width=\"133\" height=\"26\" src=\"/i/mysociety-dark.png\" alt=\"View mySociety.org\"><span id=\"logoie\"></span></a>"
 
-#: fixmystreet/perllib/Page.pm:266
+#: perllib/Page.pm:362
 msgid "Built by <a href=\"http://www.mysociety.org/\">mySociety</a>, using some <a href=\"http://github.com/mysociety/fixmystreet\">clever</a>&nbsp;<a href=\"https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa\">code</a>."
 msgstr "Adeiladwyd gan <a href=\"http://www.mysociety.org/\">mySociety</a>, gan ddefnyddio tipyn o <a href=\"https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa\">god</a><a href=\"http://github.com/mysociety/fixmystreet\">clyfar</a>&nbsp;."
 
-#: fixmystreet/perllib/Page.pm:299
+#: perllib/Page.pm:391
 msgid "Error"
 msgstr "Gwall"
 
-#: fixmystreet/perllib/Page.pm:375
-msgid "Crown copyright. All rights reserved. Ministry of Justice"
-msgstr "Hawlfraint y Goron. Cedwir pob hawl. Y Weinyddiaeth Amddiffyn"
-
-#: fixmystreet/perllib/Page.pm:398
-msgid "Empty property"
-msgstr "Eiddo gwag"
-
-#: fixmystreet/perllib/Page.pm:557
+#: perllib/Page.pm:453
 msgid "your empty property will not be posted"
 msgstr "ni fydd eich eiddo gwag yn cael ei bostio"
 
-#: fixmystreet/perllib/Page.pm:558
+#: perllib/Page.pm:454
 msgid "we'll hang on to your empty property report while you're checking your email."
 msgstr "byddwn yn dal gafael ar eich hysbysiad am eiddo gwag wrth i chi wirio eich e-bost."
 
-#: fixmystreet/perllib/Page.pm:560
+#: perllib/Page.pm:456
 msgid "your update will not be posted"
 msgstr "ni fydd eich diweddariad yn cael ei bostio"
 
-#: fixmystreet/perllib/Page.pm:561
+#: perllib/Page.pm:457
 msgid "we'll hang on to your update while you're checking your email."
 msgstr "byddwn yn dal gafael ar eich diweddariad wrth i chi wirio eich e-bost."
 
-#: fixmystreet/perllib/Page.pm:563
+#: perllib/Page.pm:459
 msgid "your alert will not be activated"
 msgstr "ni fydd eich hysbysiad yn cael ei weithredu"
 
-#: fixmystreet/perllib/Page.pm:564
+#: perllib/Page.pm:460
 msgid "we'll hang on to your alert while you're checking your email."
 msgstr "byddwn yn dal gafael ar eich hysbysiad wrth i chi wirio eich e-bost."
 
-#: fixmystreet/perllib/Page.pm:570
+#: perllib/Page.pm:467
 #, perl-format
 msgid ""
 "<h1>Nearly Done! Now check your email...</h1>\n"
@@ -137,148 +130,232 @@ msgstr ""
 "os nad ydych, %s.</p>\n"
 "<p>(Peidiwch â phoeni &mdash; %s)</p>\n"
 
-#: fixmystreet/perllib/Page.pm:586
+#: perllib/Page.pm:494
 msgid "today"
 msgstr "heddiw"
 
-#: fixmystreet/perllib/Page.pm:608
+#: perllib/Page.pm:518
 msgid "less than a minute"
 msgstr "llai na munud"
 
-#: fixmystreet/perllib/Page.pm:611
+#: perllib/Page.pm:521
 msgid "week"
 msgstr "wythnos"
 
-#: fixmystreet/perllib/Page.pm:612
+#: perllib/Page.pm:522
 msgid "day"
 msgstr "diwrnod"
 
-#: fixmystreet/perllib/Page.pm:613
+#: perllib/Page.pm:523
 msgid "hour"
 msgstr "awr"
 
-#: fixmystreet/perllib/Page.pm:614
+#: perllib/Page.pm:524
 msgid "minute"
 msgstr "munud"
 
-#: fixmystreet/perllib/Page.pm:634
+#: perllib/Page.pm:544
 #, perl-format
 msgid "%s, reported anonymously at %s"
 msgstr "Rhoddodd %s wybod yn ddi-enw am %s"
 
-#: fixmystreet/perllib/Page.pm:636
+#: perllib/Page.pm:546
 #, perl-format
 msgid "%s, reported by %s at %s"
 msgstr "Adroddwyd am %s gan %s am %s"
 
-#: fixmystreet/perllib/Page.pm:640
+#: perllib/Page.pm:550
 #, perl-format
 msgid "Reported by %s in the %s category anonymously at %s"
 msgstr "Adroddwyd am hyn gan %s yn y categori %s yn ddi-enw, am %s"
 
-#: fixmystreet/perllib/Page.pm:642
+#: perllib/Page.pm:552
 #, perl-format
 msgid "Reported by %s in the %s category by %s at %s"
 msgstr "Adroddwyd gan %s yn y categori %s trwy %s am %s"
 
-#: fixmystreet/perllib/Page.pm:644
+#: perllib/Page.pm:554
 #, perl-format
 msgid "Reported by %s anonymously at %s"
 msgstr "Adroddwyd gan %s yn ddi-enw am %s"
 
-#: fixmystreet/perllib/Page.pm:646
+#: perllib/Page.pm:556
 #, perl-format
 msgid "Reported by %s by %s at %s"
 msgstr "Adroddwyd gan %s trwy %s am %s"
 
-#: fixmystreet/perllib/Page.pm:648
+#: perllib/Page.pm:558
 #, perl-format
 msgid "Reported in the %s category anonymously at %s"
 msgstr "Adroddiwyd yn y categori %s yn ddi-enw am %s"
 
-#: fixmystreet/perllib/Page.pm:650
+#: perllib/Page.pm:560
 #, perl-format
 msgid "Reported in the %s category by %s at %s"
 msgstr "Adroddwyd yn y categori %s gan %s am %s"
 
-#: fixmystreet/perllib/Page.pm:652
+#: perllib/Page.pm:562
 #, perl-format
 msgid "Reported anonymously at %s"
 msgstr "Adroddwyd yn ddi-enw am %s"
 
-#: fixmystreet/perllib/Page.pm:654
+#: perllib/Page.pm:564
 #, perl-format
 msgid "Reported by %s at %s"
 msgstr "Adroddwyd gan %s am %s"
 
-#: fixmystreet/perllib/Page.pm:657
+#: perllib/Page.pm:569
 msgid "the map was not used so pin location may be inaccurate"
 msgstr "ni ddefnyddiwyd y map felly mae'n bosibl na fydd lleoliad y pin yn gywir"
 
-#: fixmystreet/perllib/Page.pm:664
+#: perllib/Page.pm:577
 #, perl-format
 msgid "Sent to %s %s later"
 msgstr "Anfonwyd at %s %s yn ddiweddarach"
 
-#: fixmystreet/perllib/Page.pm:667
+#: perllib/Page.pm:581
 msgid "Not reported to council"
 msgstr "Ni roddwyd gwybod i'r cyngor am hyn"
 
-#: fixmystreet/perllib/Page.pm:696
+#: perllib/Page.pm:632
 msgid "Updates"
 msgstr "Diweddariadau"
 
-#: fixmystreet/perllib/Page.pm:700
+#: perllib/Page.pm:636
 #, perl-format
 msgid "Posted by %s at %s"
 msgstr "Cofnodwyd gan %s am %s"
 
-#: fixmystreet/perllib/Page.pm:702
+#: perllib/Page.pm:638
 #, perl-format
 msgid "Posted anonymously at %s"
 msgstr "Cofnodwyd yn ddi-enw am %s"
 
-#: fixmystreet/perllib/Page.pm:704
+#: perllib/Page.pm:641
 msgid "marked as returned to use"
 msgstr "cofnodwyd bod hyn wedi'i adfer i'w ddefnyddio"
 
-#: fixmystreet/perllib/Page.pm:705
+#: perllib/Page.pm:642
 msgid "reopened"
 msgstr "wedi'i ailagor"
 
-#: fixmystreet/perllib/Page.pm:734 fixmystreet/perllib/Page.pm:796
-msgid "We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region."
-msgstr "Nid ydym yn ymdrin â Gogledd Iwerddon, yn anffodus, gan nad yw ein trwydded yn cynnwys unrhyw fapiau ar gyfer y rhanbarth."
+#: perllib/Page.pm:650 web/index.cgi:1053
+msgid "Offensive? Unsuitable? Tell us"
+msgstr "Sarhaus? Anaddas? Rhowch wybod i ni"
 
-#: fixmystreet/perllib/Page.pm:747
+#: perllib/Page.pm:677
 msgid "That postcode was not recognised, sorry."
 msgstr "Ni chafodd y cod post hwnnw ei gydnabod, sori."
 
-#: fixmystreet/perllib/Page.pm:783
-msgid "Sorry, we could not parse that location. Please try again."
-msgstr "Sori, ni fu modd i ni ddosrannu'r lleoliad hwnnw. Rhowch gynnig arall arni."
+#: perllib/Page.pm:682
+msgid "Sorry, that appears to be a Crown dependency postcode, which we don't cover."
+msgstr ""
 
-#: fixmystreet/perllib/Page.pm:785 fixmystreet/perllib/Page.pm:793
-msgid "Sorry, we could not find that location."
-msgstr "Sori, ni fu modd i ni ddod o hyd i'r lleoliad hwnnw."
+#: perllib/Page.pm:685 perllib/FixMyStreet/Geocode.pm:123
+msgid "We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region."
+msgstr "Nid ydym yn ymdrin â Gogledd Iwerddon, yn anffodus, gan nad yw ein trwydded yn cynnwys unrhyw fapiau ar gyfer y rhanbarth."
 
-#: fixmystreet/perllib/Page.pm:800
-msgid "Sorry, that location appears to be too general; please be more specific."
-msgstr "Sori, mae'n ymddangos bod y lleoliad hwnnw'n rhy gyffredinol; rhowch gynnig arall arni."
-
-#: fixmystreet/perllib/Page.pm:814
-msgid "That location does not appear to be in Britain; please try again."
-msgstr "Nid yw'n ymddangos bod y lleoliad hwnnw ym Mhrydain; rhowch gynnig arall arni."
-
-#: fixmystreet/perllib/Page.pm:826
-msgid "We found more than one match for that location. We show up to ten matches, please try a different search if yours is not here."
-msgstr "Darganfuom fwy nag un man sy'n cyfateb i'r lleoliad hwnnw. Rydym yn dangos hyd at ddeg cyfatebiaeth, rhowch gynnig ar chwiliad gwahanol os nad yw'ch lleoliad chi yno."
-
-#: fixmystreet/perllib/Page.pm:857
+#: perllib/Page.pm:709
 msgid "Please upload a JPEG image only"
 msgstr "Dim ond llun JPEG y dylech lwytho i fyny."
 
-#: fixmystreet/web/about.cgi:24
+#: perllib/FixMyStreet/Alert.pm:142
+#, fuzzy
+msgid "This report is currently marked as returned to use."
+msgstr "Mae'r eiddo gwag hwn wedi cael ei adfer i'w ddefnyddio"
+
+#: perllib/FixMyStreet/Alert.pm:143
+msgid "This report is currently marked as open."
+msgstr ""
+
+#: perllib/FixMyStreet/Geocode.pm:60
+msgid "Sorry, that location appears to be too general; please be more specific."
+msgstr "Sori, mae'n ymddangos bod y lleoliad hwnnw'n rhy gyffredinol; rhowch gynnig arall arni."
+
+#: perllib/FixMyStreet/Geocode.pm:68
+msgid "That location does not appear to be in Britain; please try again."
+msgstr "Nid yw'n ymddangos bod y lleoliad hwnnw ym Mhrydain; rhowch gynnig arall arni."
+
+#: perllib/FixMyStreet/Geocode.pm:103
+msgid "Sorry, we could not parse that location. Please try again."
+msgstr "Sori, ni fu modd i ni ddosrannu'r lleoliad hwnnw. Rhowch gynnig arall arni."
+
+#: perllib/FixMyStreet/Geocode.pm:105 perllib/FixMyStreet/Geocode.pm:120
+msgid "Sorry, we could not find that location."
+msgstr "Sori, ni fu modd i ni ddod o hyd i'r lleoliad hwnnw."
+
+#: perllib/FixMyStreet/Geocode.pm:136
+msgid "We found more than one match for that location. We show up to ten matches, please try a different search if yours is not here."
+msgstr "Darganfuom fwy nag un man sy'n cyfateb i'r lleoliad hwnnw. Rydym yn dangos hyd at ddeg cyfatebiaeth, rhowch gynnig ar chwiliad gwahanol os nad yw'ch lleoliad chi yno."
+
+#: perllib/FixMyStreet/Geocode.pm:150
+msgid "More than one match"
+msgstr ""
+
+#: perllib/FixMyStreet/Map/Bing.pm:39
+#: perllib/FixMyStreet/Map/OSM/StreetView.pm:38
+#: perllib/FixMyStreet/Map/Google.pm:39
+#: perllib/FixMyStreet/Map/Tilma/OL/StreetView.pm:45
+#: perllib/FixMyStreet/Map/Tilma/Original/StreetView.pm:23
+msgid "Map contains Ordnance Survey data &copy; Crown copyright and database right 2010."
+msgstr ""
+
+#: perllib/FixMyStreet/Map/OSM.pm:38
+#: perllib/FixMyStreet/Map/OSM/CycleMap.pm:38
+msgid "Map &copy; <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a> and contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>"
+msgstr ""
+
+#: perllib/FixMyStreet/Map/BingOL.pm:39
+msgid "Map contains Ordnance Survey data &copy; Crown copyright and database right 2010. Microsoft"
+msgstr ""
+
+#: perllib/FixMyStreet/Map/Tilma/OL/1_10k.pm:45
+#: perllib/FixMyStreet/Map/Tilma/Original/1_10k.pm:23
+#, fuzzy
+msgid "&copy; Crown copyright. All rights reserved. Ministry of Justice 100037819&nbsp;2008."
+msgstr "Hawlfraint y Goron. Cedwir pob hawl. Y Weinyddiaeth Amddiffyn"
+
+#: perllib/FixMyStreet/Map/Tilma/Original.pm:80
+msgid "Unable to fetch the map tiles from the tile server."
+msgstr ""
+
+#: perllib/FixMyStreet/Map/Tilma/Original.pm:154
+msgid "Empty property"
+msgstr "Eiddo gwag"
+
+#: perllib/Problems.pm:144
+#, perl-format
+msgid "<big>%s</big> report in past week"
+msgid_plural "<big>%s</big> reports in past week"
+msgstr[0] "<big>%s</big> adroddiad o fewn yr wythnos ddiwethaf"
+msgstr[1] "<big>%s</big> o adroddiadau o fewn yr wythnos ddiwethaf"
+
+#: perllib/Problems.pm:149
+#, perl-format
+msgid "<big>%s</big> report recently"
+msgid_plural "<big>%s</big> reports recently"
+msgstr[0] "<big>%s</big> adroddiad yn ddiweddar"
+msgstr[1] "<big>%s</big> o adroddiadau yn ddiweddar"
+
+#: perllib/Problems.pm:155
+msgid "reportemptyhomes.com updates"
+msgstr "Diweddariadau i reportemptyhomes.com"
+
+#: perllib/Problems.pm:158 perllib/Problems.pm:162
+#, perl-format
+msgid "<big>%s</big> returned to use in past month"
+msgid_plural "<big>%s</big> returned to use in past month"
+msgstr[0] "Dychwelwyd <big>%s</big> i'w ddefnyddio yn y mis diwethaf"
+msgstr[1] "Dychwelwyd <big>%s</big> i'w defnyddio yn y mis diwethaf"
+
+#: perllib/Problems.pm:163
+#, perl-format
+msgid "<big>%s</big> update on reports"
+msgid_plural "<big>%s</big> updates on reports"
+msgstr[0] "<big>%s</big> diweddariad ar adroddiadau"
+msgstr[1] "<big>%s</big> diweddariad ar adroddiadau"
+
+#: web/about.cgi:24
 msgid ""
 "<h2>The Empty Homes Agency</h2>\n"
 "<p>The Empty Homes agency is an independent campaigning charity. We are not\n"
@@ -296,7 +373,7 @@ msgstr ""
 "eiddo gwag yn eiddo y mae pobl yn byw ynddynt eto. Rydym wedi'n lleoli yn Llundain ond\n"
 "rydym yn gweithio ledled Lloegr. Rydym hefyd yn gweithio mewn partneriaeth ag elusennau eraill ledled y DU.</p>\n"
 
-#: fixmystreet/web/about.cgi:34
+#: web/about.cgi:34
 msgid ""
 "<h2>Shelter Cymru</h2>\n"
 "Shelter Cymru is Wales&rsquo; people and homes charity and wants everyone in Wales to\n"
@@ -324,53 +401,51 @@ msgstr ""
 "<a href='http://www.sheltercymru.org.uk/shelter/cymraeg/advice/pdetail.asp?cat=20'>Gwybodaeth\n"
 "bellach am ein gwaith ar gartrefi gwag</a>.\n"
 
-#: fixmystreet/web/ajax.cgi:45 fixmystreet/web/ajax.cgi:55 fixmystreet/web/index.cgi:829
-#: fixmystreet/web/index.cgi:841
+#: web/ajax.cgi:55 web/ajax.cgi:76 web/index.cgi:897 web/index.cgi:912
 msgid "(returned to use)"
 msgstr "(wedi'i adfer i'w ddefnyddio)"
 
-#: fixmystreet/web/alert.cgi:29 fixmystreet/web/confirm.cgi:46
+#: web/alert.cgi:32 web/confirm.cgi:49
 msgid "Confirmation"
 msgstr "Cadarnhau"
 
-#: fixmystreet/web/alert.cgi:38
+#: web/alert.cgi:42
+#, perl-format
 msgid ""
-"Thank you for trying to confirm your alert. We seem to have an error "
-"ourselves\n"
-"though, so <a href=\"%s\">please let us know what went on</a> and we'll look "
-"into it.\n"
+"Thank you for trying to confirm your alert. We seem to have an error ourselves\n"
+"though, so <a href=\"%s\">please let us know what went on</a> and we'll look into it.\n"
 msgstr ""
 "Diolch am geisio cadarnhau eich rhybudd. Fodd bynnag, mae'n ymddangos bod gennym wall\n"
 "ein hunain, felly <a href=\"%s\">rhowch wybod i ni beth sydd wedi digwydd</a> ac fe wnawn ni edrych yn fanylach ar hyn.\n"
 
-#: fixmystreet/web/alert.cgi:50 fixmystreet/web/alert.cgi:53 fixmystreet/web/alert.cgi:202
-#: fixmystreet/web/alert.cgi:269
+#: web/alert.cgi:58 web/alert.cgi:61 web/alert.cgi:64 web/alert.cgi:218
+#: web/alert.cgi:318
 msgid "Local RSS feeds and email alerts"
 msgstr "Porthiannau RSS a hysbysiadau e-bost lleol"
 
-#: fixmystreet/web/alert.cgi:99
+#: web/alert.cgi:117
 msgid "That location does not appear to be covered by a council, perhaps it is offshore - please try somewhere more specific."
 msgstr "Nid yw'n ymddangos bod cyngor yn gyfrifol am y lleoliad hwnnw, efallai ei fod ar y môr - chwiliwch am fan mwy penodol."
 
-#: fixmystreet/web/alert.cgi:114 fixmystreet/web/alert.cgi:130
+#: web/alert.cgi:132 web/alert.cgi:148
 #, perl-format
 msgid "Empty properties within %s"
 msgstr "Eiddo gwag yn %s"
 
-#: fixmystreet/web/alert.cgi:116
+#: web/alert.cgi:134
 #, perl-format
 msgid "Empty properties within %s ward"
 msgstr "Eiddo gwag yn ward %s"
 
-#: fixmystreet/web/alert.cgi:159
+#: web/alert.cgi:177
 msgid "Empty properties within the boundary of:"
 msgstr "Eiddo gwag o fewn ffiniau:"
 
-#: fixmystreet/web/alert.cgi:171
+#: web/alert.cgi:189
 msgid "Or empty properties reported to:"
 msgstr "Neu eiddo gwag y rhoddwyd gwybod amdanynt i:"
 
-#: fixmystreet/web/alert.cgi:173
+#: web/alert.cgi:191
 msgid ""
 "reportemptyhomes.com sends different categories of empty property\n"
 "to the appropriate council, so empty properties within the boundary of a particular council\n"
@@ -386,21 +461,21 @@ msgstr ""
 "rhanbarth a'r cyngor, ond dim ond yn yr hysbysiad \"O fewn y ffin\" \n"
 "y bydd yn ymddangos yn achos y cyngor sir."
 
-#: fixmystreet/web/alert.cgi:197
+#: web/alert.cgi:213
 msgid "Photos of recent nearby reports"
 msgstr "Ffotograffau o adroddiadau cyfagos diweddar"
 
-#: fixmystreet/web/alert.cgi:201
+#: web/alert.cgi:216
 #, perl-format
 msgid "Local RSS feeds and email alerts for &lsquo;%s&rsquo;"
 msgstr "Porthiannau RSS lleol a hysbysiadau e-bost ar gyfer &lsquo;%s&rsquo;"
 
-#: fixmystreet/web/alert.cgi:212
+#: web/alert.cgi:230
 #, perl-format
 msgid "Here are the types of local empty property alerts for &lsquo;%s&rsquo;."
 msgstr "Dyma'r mathau o hysbysiadau am eiddo gwag lleol ar gyfer &lsquo;%s&rsquo;."
 
-#: fixmystreet/web/alert.cgi:213
+#: web/alert.cgi:231
 msgid ""
 "Select which type of alert you&rsquo;d like and click the button for an RSS\n"
 "feed, or enter your email address to subscribe to an email alert."
@@ -408,58 +483,58 @@ msgstr ""
 "Dewiswch y math o hysbysiad yr hoffech ei gael a chliciwch y botwm ar gyfer porthiant RSS,\n"
 "neu rhowch eich cyfeiriad e-bost i danysgrifio am hysbysiad e-bost."
 
-#: fixmystreet/web/alert.cgi:216
+#: web/alert.cgi:234
 msgid "The simplest alert is our geographic one:"
 msgstr "Yr hysbysiad symlaf yw ein hysbysiad daearyddol:"
 
-#: fixmystreet/web/alert.cgi:217
+#: web/alert.cgi:235
 #, perl-format
 msgid "Empty properties within %skm of this location"
 msgstr "Eiddo gwag o fewn %skm o'r lleoliad hwn"
 
-#: fixmystreet/web/alert.cgi:223
+#: web/alert.cgi:243
 msgid "(a default distance which covers roughly 200,000 people)"
 msgstr "(pellter rhagosodedig sy'n cynnwys tua 200,000 o bobl)"
 
-#: fixmystreet/web/alert.cgi:225
+#: web/alert.cgi:246
 msgid "RSS feed of nearby empty properties"
 msgstr "Porthiant RSS o eiddo gwag sydd gerllaw"
 
-#: fixmystreet/web/alert.cgi:225 fixmystreet/web/alert.cgi:257 fixmystreet/web/index.cgi:805
-#: fixmystreet/web/index.cgi:936 fixmystreet/web/reports.cgi:218
+#: web/alert.cgi:246 web/alert.cgi:305 web/index.cgi:954 web/index.cgi:1064
+#: web/reports.cgi:218
 msgid "RSS feed"
 msgstr "Porthiant RSS"
 
-#: fixmystreet/web/alert.cgi:226
+#: web/alert.cgi:247
 msgid "(alternatively the RSS feed can be customised, within"
 msgstr "(fel arall, gellir addasu'r porthiant RSS yn bersonol, o fewn"
 
-#: fixmystreet/web/alert.cgi:232
+#: web/alert.cgi:257
 msgid "Or you can subscribe to an alert based upon what ward or council you&rsquo;re in:"
 msgstr "Neu, gallwch danysgrifio am hysbysiad yn ôl pa ward neu gyngor yr ydych yn byw ynddo:"
 
-#: fixmystreet/web/alert.cgi:234
+#: web/alert.cgi:261
 msgid "Give me an RSS feed"
 msgstr "Rhowch borthiant RSS i mi"
 
-#: fixmystreet/web/alert.cgi:235
+#: web/alert.cgi:262
 msgid "or"
 msgstr "neu"
 
-#: fixmystreet/web/alert.cgi:236
+#: web/alert.cgi:263
 msgid "Your email:"
 msgstr "Eich cyfeiriad e-bost:"
 
-#: fixmystreet/web/alert.cgi:237
+#: web/alert.cgi:264
 msgid "Subscribe me to an email alert"
 msgstr "Dymunaf danysgrifio i rybuddion drwy e-bost"
 
-#: fixmystreet/web/alert.cgi:257
+#: web/alert.cgi:305
 #, perl-format
 msgid "RSS feed of %s"
 msgstr "Porthiant RSS %s"
 
-#: fixmystreet/web/alert.cgi:270
+#: web/alert.cgi:319
 msgid ""
 "reportemptyhomes.com has a variety of RSS feeds and email alerts for local empty properties, including\n"
 "alerts for all empty properties within a particular ward or council, or all empty properties\n"
@@ -469,7 +544,7 @@ msgstr ""
 "gan gynnwys hysbysiadau am bob eiddo gwag mewn ward neu gyngor penodol, neu bob eiddo gwag\n"
 "o fewn pellter penodol o leoliad penodol."
 
-#: fixmystreet/web/alert.cgi:274
+#: web/alert.cgi:322
 msgid ""
 "To find out what local alerts we have in your area, council or ward, please enter your GB\n"
 "postcode or street name and area:"
@@ -477,59 +552,65 @@ msgstr ""
 "I gael gwybod pa hysbysiadau lleol sydd gennym yn eich ardal, cyngor neu ward chi,\n"
 "cofnodwch eich cod post Prydeinig neu enw stryd ac ardal:"
 
-#: fixmystreet/web/alert.cgi:276 fixmystreet/web/confirm.cgi:172 fixmystreet/web/index.cgi:147
+#: web/alert.cgi:327 web/confirm.cgi:192 web/index.cgi:166
 msgid "Go"
 msgstr "Ewch"
 
-#: fixmystreet/web/alert.cgi:282
+#: web/alert.cgi:353
 msgid "Some photos of recent reports"
 msgstr "Rhai ffotograffau o adroddiadau diweddar"
 
-#: fixmystreet/web/alert.cgi:289
+#: web/alert.cgi:361
 msgid "Please select the feed you want"
 msgstr "Dewiswch y porthiant rydych chi eisiau ei gael"
 
-#: fixmystreet/web/alert.cgi:302
+#: web/alert.cgi:384
 msgid "Illegal feed selection"
 msgstr "Dewis porthiant annilys"
 
-#: fixmystreet/web/alert.cgi:315
+#: web/alert.cgi:398
 msgid "Receive email when updates are left on this empty property."
 msgstr "Derbyn neges e-bost pan fydd diweddariadau'n cael eu rhoi am yr eiddo gwag hwn."
 
-#: fixmystreet/web/alert.cgi:316 fixmystreet/web/index.cgi:664 fixmystreet/web/index.cgi:923
+#: web/alert.cgi:399 web/alert.cgi:426 web/index.cgi:725 web/index.cgi:1058
 msgid "Email:"
 msgstr "E-bost:"
 
-#: fixmystreet/web/alert.cgi:317 fixmystreet/web/index.cgi:924
+#: web/alert.cgi:400 web/alert.cgi:427 web/index.cgi:1059
 msgid "Subscribe"
 msgstr "Tanysgrifio"
 
-#: fixmystreet/web/alert.cgi:340
+#: web/alert.cgi:425
+#, fuzzy
+msgid "Receive alerts on new local empty properties"
+msgstr "Anfonwch fanylion eiddo gwag lleol newydd ataf i drwy'r e-bost"
+
+#: web/alert.cgi:453
 msgid "You have successfully subscribed to that alert."
 msgstr "Rydych wedi tanysgrifio'n llwyddiannus i'r hysbysiad hwnnw."
 
-#: fixmystreet/web/alert.cgi:343
+#: web/alert.cgi:460
 msgid "We could not validate that alert."
 msgstr "Ni allem ddilysu'r hysbysiad hwnnw."
 
-#: fixmystreet/web/alert.cgi:362
+#: web/alert.cgi:482
 msgid "You have successfully confirmed your alert."
 msgstr "Rydych wedi cadarnhau'ch hysbysiad yn llwyddiannus."
 
-#: fixmystreet/web/alert.cgi:366
+#: web/alert.cgi:489
 msgid "You have successfully deleted your alert."
 msgstr "Rydych wedi dileu'ch hysbysiad yn llwyddiannus."
 
-#: fixmystreet/web/alert.cgi:378
+#: web/alert.cgi:509
 msgid "Please enter a valid email address"
 msgstr "Cofnodwch gyfeiriad e-bost dilys"
 
-#: fixmystreet/web/alert.cgi:379
+#: web/alert.cgi:510
 msgid "Please select the type of alert you want"
 msgstr "Dewiswch y math o hysbysiad rydych chi eisiau ei gael"
 
-#: fixmystreet/web/confirm.cgi:40
+#: web/confirm.cgi:39
+#, perl-format
 msgid ""
 "Thank you for trying to confirm your update or empty property. We seem to have an\n"
 "error ourselves though, so <a href=\"%s\">please let us know what went on</a>\n"
@@ -539,20 +620,21 @@ msgstr ""
 "mae'n ymddangos bod gwall gennym ein hunain, felly <a href=\"%s\">rhowch wybod i ni beth ddigwyddodd</a>\n"
 "ac fe wnawn ni edrych yn fanylach i hyn.\n"
 
-#: fixmystreet/web/confirm.cgi:97
+#: web/confirm.cgi:101
 #, perl-format
 msgid "You have successfully confirmed your update and you can now <a href=\"%s\">view it on the site</a>."
 msgstr "Rydych wedi cadarnhau eich diweddariad yn llwyddiannus ac nawr gallwch <a href=\"%s\">weld hwn ar y safle</a>."
 
-#: fixmystreet/web/confirm.cgi:118
+#: web/confirm.cgi:131
 msgid "Sorry, there has been an error confirming your empty property."
 msgstr "Sori, bu gwall wrth gadarnhau eich eiddo gwag."
 
-#: fixmystreet/web/confirm.cgi:131
+#: web/confirm.cgi:139
+#, fuzzy
 msgid ""
 "Thank you for reporting an empty property on\n"
-"ReportEmptyHomes.com. We have emailed the empty property officer in the council\n"
-"responsible with the details and asked them to do whatever they can to get the\n"
+"ReportEmptyHomes.com. We have emailed the lead officer for empty homes in the council\n"
+"responsible with details, and asked them to do whatever they can to get the\n"
 "empty property back into use as soon as possible."
 msgstr ""
 "Diolch am roi gwybod am eiddo gwag ar\n"
@@ -560,14 +642,17 @@ msgstr ""
 "y cyngor cyfrifol ac wedi gofyn iddynt wneud beth bynnag y gallant i helpu adfer yr eiddo gwag\n"
 "fel ei fod yn cael ei ddefnyddio eto cyn gynted ag y bo modd."
 
-#: fixmystreet/web/confirm.cgi:135
+#: web/confirm.cgi:143
+#, fuzzy
 msgid ""
-"Most councils are quite good at bringing empty properties back into use. Even\n"
-"so the process can sometimes be slow, especially if the property is in very poor\n"
-"repair or the owner is unwilling to act. In most cases it takes six months\n"
-"before you can expect to see anything change. This doesn&rsquo;t mean the council\n"
-"isn&rsquo;t doing anything. We encourage councils to update the website so you can\n"
-"see what is happening."
+"It is worth noting however that the process can sometimes be slow,\n"
+"especially if the property is in very poor repair or the owner is unwilling to\n"
+"act. In most cases it can take six months or more before you can expect to see\n"
+"anything change and sometimes there may be considerable barries to a property\n"
+"being brought back into use. This doesn&rsquo;t mean the council isn&rsquo;t\n"
+"doing anything. We encourage councils to update the website so you can\n"
+"see what is happening. It may be a long process, but you reporting your\n"
+"concerns about this property to the council is a valuable first step."
 msgstr ""
 "Mae'r rhan fwyaf o gynghorau'n eithaf da wrth adfer eiddo gwag i'w defnydd eto. Er hynny,\n"
 "mae'r broses weithiau'n gallu bod yn araf, yn enwedig os yw cyflwr yr eiddo'n \n"
@@ -576,17 +661,13 @@ msgstr ""
 "yn gwneud unrhyw beth. Rydym yn annog cynghorau i ddiweddaru'r wefan \n"
 "fel y gallwch weld beth sy'n digwydd."
 
-#: fixmystreet/web/confirm.cgi:141
+#: web/confirm.cgi:151
 msgid ""
-"We will contact you again in a month and again after six months to ask what has\n"
-"happened. Hopefully the property will be well on the way to being brought back\n"
-"into use by then, but if not we can offer advice on what you can do next."
+"We may contact you periodically to ask if anything has changed\n"
+"with the property you reported."
 msgstr ""
-"Byddwn yn cysylltu â chi eto ymhen mis ac eto ymhen chwe mis i holi beth sydd wedi digwydd.\n"
-"Ein gobaith yw y bydd yr eiddo wrthi'n cael ei adfer i'w ddefnyddio erbyn hynny,\n"
-"ond os nad ydyw, gallwn gynnig cyngor ar yr beth y gallwch ei wneud nesaf."
 
-#: fixmystreet/web/confirm.cgi:144
+#: web/confirm.cgi:153
 msgid ""
 "Thank you for using ReportEmptyHomes.com. Your action is already helping\n"
 "to resolve the UK&rsquo;s empty homes crisis."
@@ -594,91 +675,77 @@ msgstr ""
 "Diolch am ddefnyddio ReportEmptyHomes.com. Mae eich gweithred eisoes yn helpu i \n"
 "ddatrys argyfwng tai gwag y DU."
 
-#: fixmystreet/web/confirm.cgi:146 fixmystreet/web/confirm.cgi:149
+#: web/confirm.cgi:155 web/confirm.cgi:158
 msgid "View your report"
 msgstr "Gweld eich adroddiad"
 
-#: fixmystreet/web/confirm.cgi:148
+#: web/confirm.cgi:157
 msgid "Thank you for reporting an empty property on ReportEmptyHomes.com."
 msgstr "Diolch am roi gwybod am eiddo gwag ar ReportEmptyHomes.com."
 
-#: fixmystreet/web/confirm.cgi:153
+#: web/confirm.cgi:163
 msgid "You have successfully confirmed your empty property"
 msgstr "Rydych wedi cadarnhau eich eiddo gwag yn llwyddiannus"
 
-#: fixmystreet/web/confirm.cgi:154
+#: web/confirm.cgi:164
 msgid " and <strong>we will now send it to the council</strong>"
 msgstr " a <strong>byddwn nawr yn ei anfon at y cyngor</strong>"
 
-#: fixmystreet/web/confirm.cgi:155
+#: web/confirm.cgi:165
 #, perl-format
 msgid ". You can <a href=\"%s\">view the empty property on this site</a>."
 msgstr ". Gallwch <a href=\"%s\">weld yr eiddo gwag ar y safle hwn</a>."
 
-#: fixmystreet/web/confirm.cgi:169
+#: web/confirm.cgi:189
 msgid "Thanks, glad to hear it's been returned to use! Could we just ask if you have ever reported an empty property to a council before?"
 msgstr "Diolch, falch o glywed ei fod wedi cael ei adfer i'w ddefnyddio! Fyddai modd i ni'ch holi chi, a ydych erioed wedi rhoi gwybod i'r cyngor am eiddo gwag cyn hyn?"
 
-#: fixmystreet/web/confirm.cgi:170 fixmystreet/web/questionnaire.cgi:246
+#: web/confirm.cgi:190 web/questionnaire.cgi:231
 msgid "Yes"
 msgstr "Ydw"
 
-#: fixmystreet/web/confirm.cgi:171 fixmystreet/web/questionnaire.cgi:247
+#: web/confirm.cgi:191 web/questionnaire.cgi:232
 msgid "No"
 msgstr "Nac ydw"
 
-#: fixmystreet/web/confirm.cgi:209
+#: web/confirm.cgi:237
 #, perl-format
 msgid "Thank you &mdash; you can <a href=\"%s\">view your updated empty property</a> on the site."
 msgstr "Diolch &mdash; gallwch <a href=\"%s\">weld diweddariad eich eiddo gwag</a> ar y safle."
 
-#: fixmystreet/web/contact.cgi:22
+#: web/contact.cgi:22
 msgid "Contact Us"
 msgstr "Cysylltwch â Ni"
 
-#: fixmystreet/web/contact.cgi:39
+#: web/contact.cgi:41
 msgid "Please give your name"
 msgstr "Rhowch eich enw"
 
-#: fixmystreet/web/contact.cgi:41
+#: web/contact.cgi:43
 msgid "Please give your email"
 msgstr "Rhowch eich cyfeiriad e-bost"
 
-#: fixmystreet/web/contact.cgi:43
+#: web/contact.cgi:45
 msgid "Please give a valid email address"
 msgstr "Rhowch gyfeiriad e-bost dilys"
 
-#: fixmystreet/web/contact.cgi:45
+#: web/contact.cgi:47
 msgid "Please give a subject"
 msgstr "Rhowch destun"
 
-#: fixmystreet/web/contact.cgi:46
+#: web/contact.cgi:48
 msgid "Please write a message"
 msgstr "Ysgrifennwch neges"
 
-#: fixmystreet/web/contact.cgi:47
+#: web/contact.cgi:49
 msgid "Illegal ID"
 msgstr "ID Anghyfreithlon"
 
-#: fixmystreet/web/contact.cgi:70
+#: web/contact.cgi:86
 msgid "Thanks for your feedback.  We'll get back to you as soon as we can!"
 msgstr "Diolch am eich adborth. Byddwn yn eich ateb cyn gynted ag y gallwn!"
 
-#: fixmystreet/web/contact.cgi:84
-msgid "Contact the team"
-msgstr "Cysylltu â'r tîm"
-
-#: fixmystreet/web/contact.cgi:103
-msgid "You are reporting the following empty property report for being abusive, containing personal information, or similar:"
-msgstr "Rydych yn cwyno am yr adroddiad canlynol am eiddo gwag gan ei fod yn sarhaus, neu'n cynnwys gwybodaeth bersonol, neu debyg:"
-
-#: fixmystreet/web/contact.cgi:160
-msgid ""
-"You are reporting the following update for being abusive, containing "
-"personal information, or similar:"
-msgstr ""
-
-#: fixmystreet/web/contact.cgi:115
+#: web/contact.cgi:131
 msgid ""
 "We&rsquo;d love to hear what you think about this\n"
 "website. Just fill in the form. Please don&rsquo;t contact us about individual empty\n"
@@ -688,7 +755,7 @@ msgstr ""
 "Dim ond llenwi'r ffurflen sydd angen i chi ei wneud. Peidiwch â defnyddio hwn i gysylltu â ni am dai gwag unigol;\n"
 "defnyddiwch y blwch sydd i'w gael ar y <a href=\"/\">dudalen flaen</a>."
 
-#: fixmystreet/web/contact.cgi:121
+#: web/contact.cgi:138
 msgid ""
 "Please do <strong>not</strong> report empty properties through this form; messages go to\n"
 "the team behind reportemptyhomes.com, not a council. To report an empty property,\n"
@@ -698,36 +765,52 @@ msgstr ""
 "bydd y negeseuon yn mynd at y tîm sydd y tu ôl i reportemptyhomes.com, nid at gyngor.\n"
 "I roi gwybod am eiddo gwag <a href=\"/\">ewch i'r dudalen flaen</a> a dilynwch y cyfarwyddiadau."
 
-#: fixmystreet/web/contact.cgi:124
+#: web/contact.cgi:141
 #, perl-format
 msgid "We'd love to hear what you think about this site. Just fill in the form, or send an email to <a href='mailto:%s'>%s</a>:"
 msgstr "Byddai'n dda gennym glywed eich barn am y wefan hon. Llenwch y ffurflen, neu anfonwch neges e-bost at <a href='mailto:%s'>%s</a>:"
 
-#: fixmystreet/web/contact.cgi:126
+#: web/contact.cgi:150 web/index.cgi:446
+msgid "There were problems with your report. Please see below."
+msgstr "Cafwyd anhawsterau gyda'ch adroddiad. Gweler isod."
+
+#: web/contact.cgi:155
+msgid "Contact the team"
+msgstr "Cysylltu â'r tîm"
+
+#: web/contact.cgi:193
+msgid "You are reporting the following update for being abusive, containing personal information, or similar:"
+msgstr ""
+
+#: web/contact.cgi:204
+msgid "You are reporting the following empty property report for being abusive, containing personal information, or similar:"
+msgstr "Rydych yn cwyno am yr adroddiad canlynol am eiddo gwag gan ei fod yn sarhaus, neu'n cynnwys gwybodaeth bersonol, neu debyg:"
+
+#: web/contact.cgi:229
 msgid "Your name:"
 msgstr "Eich enw:"
 
-#: fixmystreet/web/contact.cgi:127
+#: web/contact.cgi:230
 msgid "Your&nbsp;email:"
 msgstr "Eich&nbsp;cyfeiriad e-bost:"
 
-#: fixmystreet/web/contact.cgi:128 fixmystreet/web/index.cgi:660
+#: web/contact.cgi:231 web/index.cgi:721
 msgid "Subject:"
 msgstr "Pwnc:"
 
-#: fixmystreet/web/contact.cgi:129
+#: web/contact.cgi:232
 msgid "Message:"
 msgstr "Neges:"
 
-#: fixmystreet/web/contact.cgi:130 fixmystreet/web/index.cgi:958
+#: web/contact.cgi:233 web/index.cgi:1074
 msgid "Post"
 msgstr "Postio"
 
-#: fixmystreet/web/faq.cgi:18
+#: web/faq.cgi:18
 msgid "Frequently Asked Questions"
 msgstr "Cwestiynau Cyffredin"
 
-#: fixmystreet/web/flickr.cgi:45
+#: web/flickr.cgi:45
 msgid ""
 "Thank you for trying to register for your Flickr photos. We seem to have a\n"
 "empty property ourselves though, so <a href=\"/contact\">please let us know what went on</a>\n"
@@ -737,189 +820,149 @@ msgstr ""
 "ein heiddo gwag ein hunain fodd bynnag, felly <a href=\"/contact\">rhowch wybod i ni beth ddigwyddodd</a>\n"
 "ac fe wnawn ni edrych iddo.\n"
 
-#: fixmystreet/web/fun.cgi:17 fixmystreet/web/fun.cgi:25
+#: web/fun.cgi:17 web/fun.cgi:25
 msgid "Weird and Wonderful reports"
 msgstr "Adroddiadau rhyfeddol a rhagorol"
 
-#: fixmystreet/web/index.cgi:74
+#: web/index.cgi:83
 msgid "Submitting your report"
 msgstr "Cyflwyno'ch adroddiad"
 
-#: fixmystreet/web/index.cgi:77
+#: web/index.cgi:86
 msgid "Submitting your update"
 msgstr "Cyflwyno'ch diweddariad"
 
-#: fixmystreet/web/index.cgi:81 fixmystreet/web/index.cgi:558 fixmystreet/web/index.cgi:572
+#: web/index.cgi:90 web/index.cgi:631
 msgid "Reporting an empty property"
 msgstr "Adrodd am eiddo gwag"
 
-#: fixmystreet/web/index.cgi:84
+#: web/index.cgi:93
 msgid "Viewing an empty property"
 msgstr "Gweld eiddo gwag"
 
-#: fixmystreet/web/index.cgi:87
+#: web/index.cgi:96
 msgid "Viewing a location"
 msgstr "Gweld lleoliad"
 
-#: fixmystreet/web/index.cgi:103
-msgid "Report and view empty properties"
-msgstr "Adrodd am eiddo gwag a gweld y rhain"
-
-#: fixmystreet/web/index.cgi:104
-msgid " "
-msgstr " "
-
-#: fixmystreet/web/contact.cgi:124 fixmystreet/web/index.cgi:436
-msgid "There were problems with your report. Please see below."
-msgstr "Cafwyd anhawsterau gyda'ch adroddiad. Gweler isod."
-
-#: fixmystreet/web/index.cgi:125
-#, perl-format
-msgid "<big>%s</big> report in past week"
-msgid_plural "<big>%s</big> reports in past week"
-msgstr[0] "<big>%s</big> adroddiad o fewn yr wythnos ddiwethaf"
-msgstr[1] "<big>%s</big> o adroddiadau o fewn yr wythnos ddiwethaf"
-
-#: fixmystreet/web/index.cgi:130
-#, perl-format
-msgid "<big>%s</big> report recently"
-msgid_plural "<big>%s</big> reports recently"
-msgstr[0] "<big>%s</big> adroddiad yn ddiweddar"
-msgstr[1] "<big>%s</big> o adroddiadau yn ddiweddar"
-
-#: fixmystreet/web/index.cgi:138
-msgid "Thanks for uploading your photo. We now need to locate your empty property, so please enter a nearby street name or postcode in the box below&nbsp;:"
-msgstr "Diolch am lwytho'ch ffotograff i fyny. Nawr mae angen i ni ddod o hyd i leoliad eich eiddo gwag, felly rhowch enw stryd gerllaw neu god post yn y blwch isod&nbsp;:"
-
-#: fixmystreet/web/index.cgi:146
+#: web/index.cgi:121
 msgid "Enter a nearby GB postcode, or street name and area:"
 msgstr "Cofnodwch god post Prydeinig, neu enw stryd ac ardal gerllaw:"
 
-#: fixmystreet/web/index.cgi:156
+#: web/index.cgi:135
+msgid "Report and view empty properties"
+msgstr "Adrodd am eiddo gwag a gweld y rhain"
+
+#: web/index.cgi:136
+msgid " "
+msgstr " "
+
+#: web/index.cgi:158
+msgid "Thanks for uploading your photo. We now need to locate your empty property, so please enter a nearby street name or postcode in the box below&nbsp;:"
+msgstr "Diolch am lwytho'ch ffotograff i fyny. Nawr mae angen i ni ddod o hyd i leoliad eich eiddo gwag, felly rhowch enw stryd gerllaw neu god post yn y blwch isod&nbsp;:"
+
+#: web/index.cgi:176
 msgid "How to report an empty property"
 msgstr "Sut i roi gwybod am eiddo gwag"
 
-#: fixmystreet/web/index.cgi:157
-msgid "The details will be sent directly to the right person in the local council for them to take action"
-msgstr "Caiff y manylion eu hanfon yn uniongyrchol at yr unigolyn cywir yn y cyngor lleol er mwyn iddynt weithredu"
-
-#: fixmystreet/web/index.cgi:161
-msgid "Enter a nearby GB postcode, or street name and area"
-msgstr "Cofnodwch god post Prydeinig, neu enw stryd ac ardal gerllaw"
-
-#: fixmystreet/web/index.cgi:162
+#: web/index.cgi:179
 msgid "Locate the empty property on a map of the area"
 msgstr "Chwiliwch am leoliad yr eiddo gwag ar fap o'r ardal"
 
-#: fixmystreet/web/index.cgi:163
+#: web/index.cgi:180
 msgid "Enter details of the empty property"
 msgstr "Rhowch fanylion yr eiddo gwag"
 
-#: fixmystreet/web/index.cgi:169
-msgid "reportemptyhomes.com updates"
-msgstr "Diweddariadau i reportemptyhomes.com"
+#: web/index.cgi:181
+msgid "The details will be sent directly to the right person in the local council for them to take action"
+msgstr "Caiff y manylion eu hanfon yn uniongyrchol at yr unigolyn cywir yn y cyngor lleol er mwyn iddynt weithredu"
 
-#: fixmystreet/web/index.cgi:172
-#, perl-format
-msgid "<big>%s</big> returned to use in past month"
-msgid_plural "<big>%s</big> returned to use in past month"
-msgstr[0] "Dychwelwyd <big>%s</big> i'w ddefnyddio yn y mis diwethaf"
-msgstr[1] "Dychwelwyd <big>%s</big> i'w defnyddio yn y mis diwethaf"
-
-#: fixmystreet/web/index.cgi:174
-#, perl-format
-msgid "<big>%s</big> update on reports"
-msgid_plural "<big>%s</big> updates on reports"
-msgstr[0] "<big>%s</big> diweddariad ar adroddiadau"
-msgstr[1] "<big>%s</big> diweddariad ar adroddiadau"
-
-#: fixmystreet/web/index.cgi:185
+#: web/index.cgi:196
 msgid "Photos of recent reports"
 msgstr "Ffotograffau o adroddiadau diweddar"
 
-#: fixmystreet/web/index.cgi:188
+#: web/index.cgi:198
 msgid "Recently reported empty properties"
 msgstr "Eiddo gwag yr adroddwyd amdanynt yn ddiweddar"
 
-#: fixmystreet/web/index.cgi:211
+#: web/index.cgi:222
 msgid "Please enter a message"
 msgstr "Ychwanegwch neges"
 
-#: fixmystreet/web/index.cgi:214 fixmystreet/web/index.cgi:286
+#: web/index.cgi:225 web/index.cgi:308
 msgid "Please enter your email"
 msgstr "Cofnodwch eich cyfeiriad e-bost"
 
-#: fixmystreet/web/index.cgi:216 fixmystreet/web/index.cgi:288
+#: web/index.cgi:227 web/index.cgi:310
 msgid "Please enter a valid email"
 msgstr "Cofnodwch gyfeiriad e-bost dilys"
 
-#: fixmystreet/web/index.cgi:225 fixmystreet/web/index.cgi:356
+#: web/index.cgi:236 web/index.cgi:376
 #, perl-format
 msgid "That image doesn't appear to have uploaded correctly (%s), please try again."
 msgstr "Nid yw'n ymddangos bod y ddelwedd honno wedi llwytho i fyny'n gywir (%s), rhowch gynnig arni eto."
 
-#: fixmystreet/web/index.cgi:246
+#: web/index.cgi:258
 msgid "Anonymous"
 msgstr "Di-enw"
 
-#: fixmystreet/web/index.cgi:277
+#: web/index.cgi:299
 msgid "No council selected"
 msgstr "Ni ddewiswyd cyngor"
 
-#: fixmystreet/web/index.cgi:278
+#: web/index.cgi:300
 msgid "Please enter a subject"
 msgstr "Rhowch enw'r pwnc"
 
-#: fixmystreet/web/index.cgi:279
+#: web/index.cgi:301
 msgid "Please enter some details"
 msgstr "Cofnodwch fanylion"
 
-#: fixmystreet/web/index.cgi:281
+#: web/index.cgi:303
 msgid "Please enter your name"
 msgstr "Cofnodwch eich enw"
 
-#: fixmystreet/web/index.cgi:283
+#: web/index.cgi:305
 msgid "Please enter your full name - if you do not wish your name to be shown on the site, untick the box"
 msgstr "Cofnodwch eich enw llawn - os nad ydych yn dymuno bod eich enw'n cael ei ddangos ar y safle, cliciwch i ddileu'r tic o'r bocs"
 
-#: fixmystreet/web/index.cgi:291
+#: web/index.cgi:313 web/index.cgi:352
 msgid "Please choose a category"
 msgstr "Dewiswch gategori"
 
-#: fixmystreet/web/index.cgi:293 fixmystreet/web/index.cgi:529
+#: web/index.cgi:315 web/index.cgi:565
 msgid "-- Pick a property type --"
 msgstr "-- Dewiswch fath o eiddo --"
 
-#: fixmystreet/web/index.cgi:294
+#: web/index.cgi:316
 msgid "Please choose a property type"
 msgstr "Dewiswch fath o eiddo"
 
-#: fixmystreet/web/index.cgi:316
+#: web/index.cgi:336
 msgid "That location is not part of that council"
 msgstr "Nid yw'r lleoliad hwnnw'n rhan o'r cyngor hwnnw"
 
-#: fixmystreet/web/index.cgi:336
+#: web/index.cgi:356
 msgid "We have details for that council"
 msgstr "Mae gennym fanylion ar gyfer y cyngor hwnnw"
 
-#: fixmystreet/web/index.cgi:345
+#: web/index.cgi:365
 msgid "Somehow, you only have one co-ordinate. Please try again."
 msgstr "Rhywffordd neu gilydd, dim ond un cyfesuryn sydd gennych. Rhowch gynnig arni eto."
 
-#: fixmystreet/web/index.cgi:347
+#: web/index.cgi:367
 msgid "You haven't specified any sort of co-ordinates. Please try again."
 msgstr "Nid ydych wedi pennu unrhyw fath o gyfesurynnau. Rhowch gynnig arni eto."
 
-#: fixmystreet/web/index.cgi:370 fixmystreet/web/index.cgi:515 fixmystreet/web/index.cgi:522
+#: web/index.cgi:390 web/index.cgi:551 web/index.cgi:558
 msgid "Other"
 msgstr "Arall"
 
-#: fixmystreet/web/index.cgi:386
+#: web/index.cgi:407
 #, perl-format
 msgid "You have successfully confirmed your report and you can now <a href=\"%s\">view it on the site</a>."
 msgstr "Rydych wedi cadarnhau eich adroddiad yn llwyddiannus ac nawr gallwch <a href=\"%s\">weld eich adroddiad ar y safle</a>."
 
-#: fixmystreet/web/index.cgi:501
+#: web/index.cgi:538
 msgid ""
 "That spot does not appear to be covered by a council.\n"
 "If you have tried to report an issue past the shoreline, for example,\n"
@@ -929,39 +972,39 @@ msgstr ""
 "Os ydych wedi ceisio adrodd am broblem oddi ar y lân, er enghraifft,\n"
 "dylech nodi'r pwynt agosaf ar y tir."
 
-#: fixmystreet/web/index.cgi:523
+#: web/index.cgi:559
 msgid "Category:"
 msgstr "Categori:"
 
-#: fixmystreet/web/index.cgi:529
+#: web/index.cgi:565
 msgid "Empty house or bungalow"
 msgstr "Tŷ neu fyngalo gwag"
 
-#: fixmystreet/web/index.cgi:530
+#: web/index.cgi:566
 msgid "Empty flat or maisonette"
 msgstr "Fflat neu fflat deulawr gwag"
 
-#: fixmystreet/web/index.cgi:530
+#: web/index.cgi:566
 msgid "Whole block of empty flats"
 msgstr "Bloc cyfan o fflatiau gwag"
 
-#: fixmystreet/web/index.cgi:531
+#: web/index.cgi:567
 msgid "Empty office or other commercial"
 msgstr "Swyddfa wag neu fan masnachol gwag arall"
 
-#: fixmystreet/web/index.cgi:531
+#: web/index.cgi:567
 msgid "Empty pub or bar"
 msgstr "Tafarn neu far gwag"
 
-#: fixmystreet/web/index.cgi:532
+#: web/index.cgi:568
 msgid "Empty public building - school, hospital, etc."
 msgstr "Adeilad cyhoeddus gwag - ysgol, ysbyty, ac ati."
 
-#: fixmystreet/web/index.cgi:533
+#: web/index.cgi:569
 msgid "Property type:"
 msgstr "Math o eiddo:"
 
-#: fixmystreet/web/index.cgi:573
+#: web/index.cgi:628
 msgid ""
 "You have located the empty property at the point marked with a purple pin on the map.\n"
 "If this is not the correct location, simply click on the map again. "
@@ -969,7 +1012,7 @@ msgstr ""
 "Rydych wedi gosod lleoliad yr eiddo gwag wrth y pwynt sy'n cael ei ddangos gan y pin porffor ar y map.\n"
 "Os nad dyma'r lleoliad cywir, cliciwch ar y map eto. "
 
-#: fixmystreet/web/index.cgi:578
+#: web/index.cgi:636
 #, perl-format
 msgid ""
 "All the information you provide here will be sent to <strong>%s</strong>.\n"
@@ -980,7 +1023,7 @@ msgstr ""
 "Ar y safle, byddwn yn dangos pwnc a manylion yr eiddo gwag,\n"
 "ynghyd â'ch enw os ydych yn rhoi caniatâd i ni."
 
-#: fixmystreet/web/index.cgi:641
+#: web/index.cgi:640
 #, perl-format
 msgid ""
 "All the information you provide here will be sent to <strong>%s</strong>.\n"
@@ -988,7 +1031,7 @@ msgid ""
 "name if you give us permission."
 msgstr ""
 
-#: fixmystreet/web/index.cgi:613
+#: web/index.cgi:676
 msgid ""
 "<p>We do not yet have details for the council that covers\n"
 "this location. If you submit a report here it will be left on the site, but\n"
@@ -1000,7 +1043,7 @@ msgstr ""
 "ni fydd yn cael ei adrodd i'r cyngor &ndash; gadewch eich adroddiad o hyd, fel y gallwn\n"
 "ddangos i'r cyngor y gweithgarwch yn ei ardal."
 
-#: fixmystreet/web/index.cgi:622
+#: web/index.cgi:685
 msgid ""
 "Please fill in the form below with details of the empty property,\n"
 "and describe the location as precisely as possible in the details box."
@@ -1008,7 +1051,7 @@ msgstr ""
 "Llenwch y ffurflen isod gyda manylion yr eiddo gwag,\n"
 "a disgrifiwch y lleoliad mor fanwl ag y bo modd yn y blwch manylion."
 
-#: fixmystreet/web/index.cgi:631
+#: web/index.cgi:694
 msgid ""
 "Please fill in details of the empty property below, saying what type of\n"
 "property it is e.g. an empty home, block of flats, office etc. Tell us\n"
@@ -1024,89 +1067,104 @@ msgstr ""
 "ac i'r pwynt; mae ysgrifennu eich neges yn gyfan gwbl mewn priflythrennau\n"
 "yn ei gwneud hi'n anodd ei darllen, fel y mae diffyg atalnodi.\n"
 
-#: fixmystreet/web/index.cgi:703
+#: web/index.cgi:702
 msgid ""
 "Please fill in details of the empty property below. The council won't be able\n"
-"to help unless you leave as much detail as you can, so please describe the "
-"exact location of\n"
-"the empty property (e.g. on a wall), what it is, how long it has been there, a "
-"description (and a\n"
+"to help unless you leave as much detail as you can, so please describe the exact location of\n"
+"the empty property (e.g. on a wall), what it is, how long it has been there, a description (and a\n"
 "photo of the empty property if you have one), etc."
 msgstr ""
 
-#: fixmystreet/web/index.cgi:644
+#: web/index.cgi:707
 msgid "Please fill in details of the empty property below."
 msgstr "Llenwch fanylion yr eiddo gwag isod."
 
-#: fixmystreet/web/index.cgi:655
+#: web/index.cgi:720
 msgid "Empty property details form"
 msgstr "Ffurflen manylion eiddo gwag"
 
-#: fixmystreet/web/index.cgi:661
+#: web/index.cgi:722
 msgid "Details:"
 msgstr "Manylion:"
 
-#: fixmystreet/web/index.cgi:662 fixmystreet/web/index.cgi:956
+#: web/index.cgi:723 web/index.cgi:1089
 msgid "Photo:"
 msgstr "Ffotograff:"
 
-#: fixmystreet/web/index.cgi:663 fixmystreet/web/index.cgi:954
+#: web/index.cgi:724 web/index.cgi:1071
 msgid "Name:"
 msgstr "Enw:"
 
-#: fixmystreet/web/index.cgi:665 fixmystreet/bin/send-reports:75
+#: web/index.cgi:726 bin/send-reports:89
 msgid "Phone:"
 msgstr "Rhif ffôn:"
 
-#: fixmystreet/web/index.cgi:666
+#: web/index.cgi:727
 msgid "(optional)"
 msgstr "(dewisol)"
 
-#: fixmystreet/web/index.cgi:667
+#: web/index.cgi:729
 msgid "Can we show your name on the site?"
 msgstr "Allwn ni ddangos eich enw chi ar y safle?"
 
-#: fixmystreet/web/index.cgi:732 
+#: web/index.cgi:731
 msgid "Can we show your name publicly?"
 msgstr ""
 
-#: fixmystreet/web/index.cgi:668
+#: web/index.cgi:733
 msgid "(we never show your email address or phone number)"
 msgstr "(nid ydym byth yn dangos eich cyfeiriad e-bost na'ch rhif ffôn)"
 
-#: fixmystreet/web/index.cgi:737
+#: web/index.cgi:786
 msgid "Submit"
 msgstr "Anfon"
 
-#: fixmystreet/web/index.cgi:784
+#: web/index.cgi:878
 msgid "Hide stale reports"
 msgstr "Cuddio hen adroddiadau "
 
-#: fixmystreet/web/index.cgi:787
+#: web/index.cgi:881
 msgid "Include stale reports"
 msgstr "Cynnwys hen adroddiadau"
 
-#: fixmystreet/web/index.cgi:793
+#: web/index.cgi:900
+msgid "No empty properties have been reported yet."
+msgstr "Ni roddwyd gwybod eto am unrhyw eiddo gwag."
+
+#: web/index.cgi:916
+msgid "No empty properties found."
+msgstr "Ni ddaethpwyd o hyd i unrhyw eiddo gwag."
+
+#: web/index.cgi:921
 msgid "Show pins"
 msgstr "Dangos pinnau"
 
-#: fixmystreet/web/index.cgi:797
+#: web/index.cgi:925
 msgid "Hide pins"
 msgstr "Cuddio pinnau"
 
-#: fixmystreet/web/index.cgi:802
-msgid "Empty properties in this area"
-msgstr "Eiddo gwag yn yr ardal hon"
-
-#: fixmystreet/web/index.cgi:803
+#: web/index.cgi:953
 msgid "Email me new local empty properties"
 msgstr "Anfonwch fanylion eiddo gwag lleol newydd ataf i drwy'r e-bost"
 
-#: fixmystreet/web/index.cgi:804
+#: web/index.cgi:955
 msgid "RSS feed of recent local empty properties"
 msgstr "Porthiant RSS o eiddo gwag lleol diweddar"
 
-#: fixmystreet/web/index.cgi:819
+#: web/index.cgi:958
+msgid "Empty properties in this area"
+msgstr "Eiddo gwag yn yr ardal hon"
+
+#: web/index.cgi:959
+msgid "Reports on and around the map"
+msgstr "Adroddiadau ar ac yng nghyffiniau'r map"
+
+#: web/index.cgi:960
+#, perl-format
+msgid "Closest nearby empty properties <small>(within&nbsp;%skm)</small>"
+msgstr "Yr eiddo gwag cyfagos agosaf <small>(within&nbsp;%skm)</small>"
+
+#: web/index.cgi:964
 msgid ""
 "To report an empty property, simply\n"
 "        <strong>click on the map</strong> at the correct location."
@@ -1114,7 +1172,7 @@ msgstr ""
 "Er mwyn rhoi gwybod am eiddo gwag\n"
 "        <strong>cliciwch ar y map</strong> wrth y lleoliad cywir."
 
-#: fixmystreet/web/index.cgi:821
+#: web/index.cgi:966
 #, perl-format
 msgid ""
 "<small>If you cannot see the map, <a href='%s' rel='nofollow'>skip this\n"
@@ -1123,136 +1181,109 @@ msgstr ""
 "<small>Os na allwch weld y map, <a href='%s' rel='nofollow'>ewch heibio\n"
 "        i'r cam hwn</a>.</small>"
 
-#: fixmystreet/web/index.cgi:823
-msgid "Reports on and around the map"
-msgstr "Adroddiadau ar ac yng nghyffiniau'r map"
-
-#: fixmystreet/web/index.cgi:832
-msgid "No empty properties have been reported yet."
-msgstr "Ni roddwyd gwybod eto am unrhyw eiddo gwag."
-
-#: fixmystreet/web/index.cgi:835
-#, perl-format
-msgid "Closest nearby empty properties <small>(within&nbsp;%skm)</small>"
-msgstr "Yr eiddo gwag cyfagos agosaf <small>(within&nbsp;%skm)</small>"
-
-#: fixmystreet/web/index.cgi:844
-msgid "No empty properties found."
-msgstr "Ni ddaethpwyd o hyd i unrhyw eiddo gwag."
-
-#: fixmystreet/web/index.cgi:851
+#: web/index.cgi:971
 msgid "Recent local empty properties, reportemptyhomes.com"
 msgstr "Eiddo gwag lleol diweddar, reportemptyhomes.com"
 
-#: fixmystreet/web/index.cgi:881 fixmystreet/web/index.cgi:883
-msgid "Unknown empty property ID"
-msgstr "ID eiddo gwag anhysbys"
-
-#: fixmystreet/web/index.cgi:884
-msgid "That report has been removed from reportemptyhomes.com."
-msgstr "Mae'r adroddiad hwnnw wedi cael ei dynnu oddi ar reportemptyhomes.com"
-
-#: fixmystreet/web/index.cgi:907
-msgid "This empty property is old and of unknown status."
-msgstr "Mae'r eiddo gwag hwn yn hen ac nid yw ei statws yn hysbys."
-
-#: fixmystreet/web/index.cgi:910 fixmystreet/web/index.cgi:952
-msgid "This empty property has been returned to use"
-msgstr "Mae'r eiddo gwag hwn wedi cael ei adfer i'w ddefnyddio"
-
-#: fixmystreet/web/index.cgi:915
-msgid "Offensive? Unsuitable? Tell us"
-msgstr "Sarhaus? Anaddas? Rhowch wybod i ni"
-
-#: fixmystreet/web/index.cgi:920
-msgid "More empty properties nearby"
-msgstr "Mwy o eiddo gwag cyfagos"
-
-#: fixmystreet/web/index.cgi:922
-msgid "Email me updates"
-msgstr "Anfonwch ddiweddariadau ataf i drwy'r e-bost"
-
-#: fixmystreet/web/index.cgi:925
-msgid "Receive email when updates are left on this empty property"
-msgstr "Hoffwn dderbyn neges e-bost pan gaiff diweddariadau eu rhoi am yr eiddo gwag hwn"
-
-#: fixmystreet/web/index.cgi:936
-msgid "RSS feed of updates to this empty property"
-msgstr "Porthiant RSS o ddiweddariadau i'r eiddo gwag hwn"
-
-#: fixmystreet/web/index.cgi:941
-msgid "Provide an update"
-msgstr "Rhowch ddiweddariad"
-
-#: fixmystreet/web/index.cgi:942
-msgid "Please note that updates are not sent to the council."
-msgstr "Sylwer nad yw diweddariadau'n cael eu hanfon at y cyngor."
-
-#: fixmystreet/web/index.cgi:988
-msgid ""
-"Please note that updates are not sent to the council. If you leave your name "
-"it will be public. Your information will only be used in accordance with our "
-"<a href=\"/faq#privacy\">privacy policy</a>"
-msgstr ""
-
-#: fixmystreet/web/index.cgi:955
-msgid "Update:"
-msgstr "Diweddariad:"
-
-#: fixmystreet/web/index.cgi:905
+#: web/index.cgi:983
 msgid "There were problems with your update. Please see below."
 msgstr "Cafwyd anhawsterau gyda'ch diweddariad. Gweler isod"
 
-#: fixmystreet/web/index.cgi:957
+#: web/index.cgi:1004 web/index.cgi:1006
+msgid "Unknown empty property ID"
+msgstr "ID eiddo gwag anhysbys"
+
+#: web/index.cgi:1007
+msgid "That report has been removed from reportemptyhomes.com."
+msgstr "Mae'r adroddiad hwnnw wedi cael ei dynnu oddi ar reportemptyhomes.com"
+
+#: web/index.cgi:1026
+msgid "This empty property is old and of unknown status."
+msgstr "Mae'r eiddo gwag hwn yn hen ac nid yw ei statws yn hysbys."
+
+#: web/index.cgi:1029 web/index.cgi:1070
+msgid "This empty property has been returned to use"
+msgstr "Mae'r eiddo gwag hwn wedi cael ei adfer i'w ddefnyddio"
+
+#: web/index.cgi:1054
+msgid "More empty properties nearby"
+msgstr "Mwy o eiddo gwag cyfagos"
+
+#: web/index.cgi:1057
+msgid "Email me updates"
+msgstr "Anfonwch ddiweddariadau ataf i drwy'r e-bost"
+
+#: web/index.cgi:1060
+msgid "Receive email when updates are left on this empty property"
+msgstr "Hoffwn dderbyn neges e-bost pan gaiff diweddariadau eu rhoi am yr eiddo gwag hwn"
+
+#: web/index.cgi:1065
+msgid "RSS feed of updates to this empty property"
+msgstr "Porthiant RSS o ddiweddariadau i'r eiddo gwag hwn"
+
+#: web/index.cgi:1066
+msgid "Provide an update"
+msgstr "Rhowch ddiweddariad"
+
+#: web/index.cgi:1072
+msgid "Update:"
+msgstr "Diweddariad:"
+
+#: web/index.cgi:1073
 msgid "Alert me to future updates"
 msgstr "Rhowch wybod i mi am ddiweddariadau yn y dyfodol"
 
-#: fixmystreet/web/index.cgi:994
+#: web/index.cgi:1080
+msgid "Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href=\"/faq#privacy\">privacy policy</a>"
+msgstr ""
+
+#: web/index.cgi:1100
 msgid "Updates to this empty property, reportemptyhomes.com"
 msgstr "Diweddariadau i'r eiddo gwag hwn, reportemptyhomes.com"
 
-#: fixmystreet/web/questionnaire.cgi:28 fixmystreet/web/questionnaire.cgi:206
+#: web/questionnaire.cgi:28 web/questionnaire.cgi:77 web/questionnaire.cgi:210
+#: web/questionnaire.cgi:230
 msgid "Questionnaire"
 msgstr "Holiadur"
 
-#: fixmystreet/web/questionnaire.cgi:38
+#: web/questionnaire.cgi:38
 msgid "I'm afraid we couldn't validate that token. If you've copied the URL from an email, please check that you copied it exactly.\n"
 msgstr "Yn anffodus, ni fu modd i ni ddilysu'r dynodiad hwnnw. Os ydych wedi copïo'r URL o neges e-bost, gwnewch yn siwr eich bod wedi'i gopïo'n union.\n"
 
-#: fixmystreet/web/questionnaire.cgi:43
+#: web/questionnaire.cgi:45
 #, perl-format
 msgid "You have already answered this questionnaire. If you have a question, please <a href='%s'>get in touch</a>, or <a href='%s'>view your empty property</a>.\n"
 msgstr "Rydych eisoes wedi ateb yr holiadur hwn. Os oes gennych gwestiwn, <a href='%s'>cysylltwch â ni</a>, neu ewch i <a href='%s'>weld eich eiddo gwag</a>.\n"
 
-#: fixmystreet/web/questionnaire.cgi:48
+#: web/questionnaire.cgi:50
 msgid "I'm afraid we couldn't locate your empty property in the database.\n"
 msgstr "Yn anffodus ni fu modd i ni ddod o hyd i'ch eiddo gwag yn y gronfa ddata.\n"
 
-#: fixmystreet/web/questionnaire.cgi:79
+#: web/questionnaire.cgi:89
 msgid "Please state whether or not the empty property has been returned to use"
 msgstr "Cofnodwch a yw'r eiddo gwag wedi cael ei adfer i'w ddefnyddio, ai peidio"
 
-#: fixmystreet/web/questionnaire.cgi:80
+#: web/questionnaire.cgi:92
 msgid "Please say whether you've ever reported an empty property to your council before"
 msgstr "Rhowch wybod a ydych chi wedi rhoi gwybod i'ch cyngor am eiddo gwag erioed o'r blaen"
 
-#: fixmystreet/web/questionnaire.cgi:81
+#: web/questionnaire.cgi:94
 msgid "Please indicate whether you'd like to receive another questionnaire"
 msgstr "Nodwch a fyddech chi'n hoffi derbyn holiadur arall"
 
-#: fixmystreet/web/questionnaire.cgi:83
+#: web/questionnaire.cgi:96
 msgid "Please provide some explanation as to why you're reopening this report"
 msgstr "Rhowch ychydig o esboniad pam rydych yn ailagor yr adroddiad hwn"
 
-#: fixmystreet/web/questionnaire.cgi:99
+#: web/questionnaire.cgi:112
 msgid "Please provide some text as well as a photo"
 msgstr "Rhowch rywfaint o destun yn ogystal â ffotograff"
 
-#: fixmystreet/web/questionnaire.cgi:130
+#: web/questionnaire.cgi:143
 msgid "Questionnaire filled in by empty property reporter"
 msgstr "Llenwyd yr holiadur gan yr unigolyn a roddodd wybod am yr eiddo gwag"
 
-#: fixmystreet/web/questionnaire.cgi:148
+#: web/questionnaire.cgi:163
 msgid ""
 "<p>Thank you very much for filling in our questionnaire; if you\n"
 "get some more information about the status of your empty property, please come back to the\n"
@@ -1262,7 +1293,8 @@ msgstr ""
 "mwy o wybodaeth am statws eich eiddo gwag, dewch yn ôl i'r safle\n"
 "a rhowch ddiweddariad yno.</p>\n"
 
-#: fixmystreet/web/questionnaire.cgi:154
+#: web/questionnaire.cgi:171
+#, fuzzy, perl-format
 msgid ""
 "<p style=\"font-size:150%%\">We're sorry to hear that. We have two suggestions: why not try\n"
 "<a href=\"%s\">writing direct to your councillor(s)</a>\n"
@@ -1276,11 +1308,19 @@ msgstr ""
 "beth am <a href=\"http://www.pledgebank.com/new\">wneud adduned a'i chyhoeddi</a>?\n"
 "</p>\n"
 
-#: fixmystreet/web/questionnaire.cgi:162
+#: web/questionnaire.cgi:180
 msgid "<p style=\"font-size:150%\">Thank you very much for filling in our questionnaire; glad to hear it's been returned to use.</p>\n"
 msgstr "<p style=\"font-size:150%\">Diolch yn fawr am lenwi'n holiadur; rydym yn falch o glywed ei fod wedi'i adfer i'w ddefnyddio.</p>\n"
 
-#: fixmystreet/web/questionnaire.cgi:214
+#: web/questionnaire.cgi:233
+msgid "Don&rsquo;t know"
+msgstr "Ddim yn gwybod"
+
+#: web/questionnaire.cgi:234
+msgid "Submit questionnaire"
+msgstr "Anfon yr holiadur"
+
+#: web/questionnaire.cgi:251
 msgid ""
 "<p>Getting empty homes back into use can be difficult. You shouldn't expect\n"
 "the property to be back into use yet. But a good council will have started work\n"
@@ -1298,7 +1338,7 @@ msgstr ""
 "I gael cyngor ar sut i wneud hyn ac am wybodaeth ddefnyddiol arall, ewch i \n"
 "<a href=\"http://www.emptyhomes.com/getinvolved/campaign.html\">http://www.emptyhomes.com/getinvolved/campaign.html</a>.</p>\n"
 
-#: fixmystreet/web/questionnaire.cgi:224
+#: web/questionnaire.cgi:261
 msgid ""
 "<p>Getting empty homes back into use can be difficult, but by now a good council\n"
 "will have made a lot of progress and reported what they have done on the\n"
@@ -1320,39 +1360,35 @@ msgstr ""
 "a gwybodaeth ddefnyddiol arall, ewch i <a\n"
 "href=\"http://www.emptyhomes.com/getinvolved/campaign.html\">http://www.emptyhomes.com/getinvolved/campaign.html</a>.</p>\n"
 
-#: fixmystreet/web/questionnaire.cgi:237
+#: web/questionnaire.cgi:274
 msgid "The details of your empty property are available on the right hand side of this page."
 msgstr "Mae manylion eich eiddo gwag ar gael ar ochr dde'r dudalen hon."
 
-#: fixmystreet/web/questionnaire.cgi:238
+#: web/questionnaire.cgi:275
 msgid "Please take a look at the updates that have been left."
 msgstr "Ewch i fwrw golwg ar y diweddariadau sydd wedi cael eu gadael."
 
-#: fixmystreet/web/questionnaire.cgi:244
+#: web/questionnaire.cgi:281
 msgid "An update marked this empty property as returned to use."
 msgstr "Fe wnaeth diweddariad gofnodi bod yr eiddo hwn wedi cael ei adfer i'w ddefnyddio."
 
-#: fixmystreet/web/questionnaire.cgi:245
+#: web/questionnaire.cgi:282
 msgid "Has this empty property been returned to use?"
 msgstr "A yw'r eiddo gwag hwn wedi cael ei adfer i'w ddefnyddio?"
 
-#: fixmystreet/web/questionnaire.cgi:248
-msgid "Don&rsquo;t know"
-msgstr "Ddim yn gwybod"
-
-#: fixmystreet/web/questionnaire.cgi:259
-msgid "Have you ever reported an empty property to a council before, or is this your first time?"
-msgstr "Ydych chi wedi rhoi gwybod i gyngor am eiddo gwag erioed o'r blaen, neu ai dyma'ch tro cyntaf?"
-
-#: fixmystreet/web/questionnaire.cgi:261
+#: web/questionnaire.cgi:289
 msgid "Reported before"
 msgstr "Wedi adrodd o'r blaen"
 
-#: fixmystreet/web/questionnaire.cgi:262
+#: web/questionnaire.cgi:290
 msgid "First time"
 msgstr "Y tro cyntaf"
 
-#: fixmystreet/web/questionnaire.cgi:271
+#: web/questionnaire.cgi:291
+msgid "Have you ever reported an empty property to a council before, or is this your first time?"
+msgstr "Ydych chi wedi rhoi gwybod i gyngor am eiddo gwag erioed o'r blaen, neu ai dyma'ch tro cyntaf?"
+
+#: web/questionnaire.cgi:301
 msgid ""
 "If you wish to leave a public update on the empty property, please enter it here\n"
 "(please note it will not be sent to the council). For example, what was\n"
@@ -1362,186 +1398,177 @@ msgstr ""
 "(sylwer na fydd yn cael ei anfon at y cyngor). Er enghraifft, beth oedd eich profiad\n"
 "o gael yr eiddo gwag yn ôl mewn defnydd?"
 
-#: fixmystreet/web/questionnaire.cgi:299
-msgid "Submit questionnaire"
-msgstr "Anfon yr holiadur"
-
-#: fixmystreet/web/reports.cgi:164 fixmystreet/web/reports.cgi:205
+#: web/reports.cgi:161 web/reports.cgi:203
 msgid "Summary reports"
 msgstr "Adroddiadau cryno"
 
-#: fixmystreet/web/reports.cgi:166
+#: web/reports.cgi:163
 msgid "This is a summary of all reports on this site; select a particular council to see the reports sent there."
 msgstr "Dyma grynodeb o'r holl adroddiadau ar y safle hwn; dewiswch gyngor penodol i weld yr adroddiadau a anfonwyd ato."
 
-#: fixmystreet/web/reports.cgi:167
+#: web/reports.cgi:164
 msgid "Greyed-out lines are councils that no longer exist."
 msgstr "Mae'r llinellau mewn llwyd yn gynghorau nad ydynt yn bodoli mwyach."
 
-#: fixmystreet/web/reports.cgi:171
+#: web/reports.cgi:168
 msgid "Name"
 msgstr "Enw"
 
-#: fixmystreet/web/reports.cgi:171 fixmystreet/web/reports.cgi:236
+#: web/reports.cgi:168 web/reports.cgi:238
 msgid "New empty property reports"
 msgstr "Adroddiadau newydd am eiddo gwag"
 
-#: fixmystreet/web/reports.cgi:171 fixmystreet/web/reports.cgi:244
+#: web/reports.cgi:168 web/reports.cgi:246
 msgid "Older empty property reports"
 msgstr "Adroddiadau hŷn o eiddo gwag"
 
-#: fixmystreet/web/reports.cgi:173
+#: web/reports.cgi:170
 msgid "Old empty properties,<br>state unknown"
 msgstr "Hen eiddo gwag,<br>cyflwr anhysbys"
 
-#: fixmystreet/web/reports.cgi:175 fixmystreet/web/reports.cgi:252
+#: web/reports.cgi:172 web/reports.cgi:253
 msgid "Recently returned to use"
 msgstr "Wedi'u hadfer i'w defnyddio'n ddiweddar"
 
-#: fixmystreet/web/reports.cgi:175
+#: web/reports.cgi:172
 msgid "Older returned to use"
 msgstr "Wedi'u hadfer i'w defnyddio ers amser"
 
-#: fixmystreet/web/reports.cgi:211
+#: web/reports.cgi:209
 msgid "council"
 msgstr "cyngor"
 
-#: fixmystreet/web/reports.cgi:217
-#, perl-format
-msgid "%s - Summary reports"
-msgstr "%s - Adroddiadau cryno"
-
-#: fixmystreet/web/reports.cgi:217
-#, perl-format
-msgid "Empty properties within %s, reportemptyhomes.com"
-msgstr "Eiddo gwag o fewn %s, reportemptyhomes.com"
-
-#: fixmystreet/web/reports.cgi:219
+#: web/reports.cgi:219
 #, perl-format
 msgid "RSS feed of empty properties in this %s"
 msgstr "Porthiant RSS o eiddo gwag yn yr %s hwn"
 
-#: fixmystreet/web/reports.cgi:222
-#, perl-format
-msgid "You can <a href=\"%s\">see less detail</a>."
-msgstr "Gallwch <a href=\"%s\">weld llai o fanylion</a>."
-
-#: fixmystreet/web/reports.cgi:224
-#, perl-format
-msgid "You can <a href=\"%s\">see more details</a>."
-msgstr "Gallwch <a href=\"%s\">weld mwy o fanylion</a>."
-
-#: fixmystreet/web/reports.cgi:226
-#, perl-format
-msgid "You can <a href=\"%s\">see less detail</a> or go back and <a href=\"/reports\">show all councils</a>."
-msgstr "Gallwch <a href=\"%s\">weld llai o fanylion</a> neu fynd yn ôl a <a href=\"/reports\">dangos pob cyngor</a>."
-
-#: fixmystreet/web/reports.cgi:228
-#, perl-format
-msgid "You can <a href=\"%s\">see more details</a> or go back and <a href=\"/reports\">show all councils</a>."
-msgstr "Gallwch <a href=\"%s\">weld mwy o fanylion</a> neu fynd yn ôl a <a href=\"/reports\">dangos pob cyngor</a>."
-
-#: fixmystreet/web/reports.cgi:232
+#: web/reports.cgi:223
 #, perl-format
 msgid "This is a summary of all reports for one %s."
 msgstr "Dyma grynodeb o'r holl adroddiadau ar gyfer y %s."
 
-#: fixmystreet/web/reports.cgi:205
+#: web/reports.cgi:224
 #, perl-format
 msgid "This is a summary of all reports for this %s."
 msgstr ""
 
-#: fixmystreet/web/reports.cgi:246
+#: web/reports.cgi:228
+#, perl-format
+msgid "You can <a href=\"%s\">see less detail</a>."
+msgstr "Gallwch <a href=\"%s\">weld llai o fanylion</a>."
+
+#: web/reports.cgi:230
+#, perl-format
+msgid "You can <a href=\"%s\">see more details</a>."
+msgstr "Gallwch <a href=\"%s\">weld mwy o fanylion</a>."
+
+#: web/reports.cgi:232
+#, perl-format
+msgid "You can <a href=\"%s\">see less detail</a> or go back and <a href=\"/reports\">show all councils</a>."
+msgstr "Gallwch <a href=\"%s\">weld llai o fanylion</a> neu fynd yn ôl a <a href=\"/reports\">dangos pob cyngor</a>."
+
+#: web/reports.cgi:234
+#, perl-format
+msgid "You can <a href=\"%s\">see more details</a> or go back and <a href=\"/reports\">show all councils</a>."
+msgstr "Gallwch <a href=\"%s\">weld mwy o fanylion</a> neu fynd yn ôl a <a href=\"/reports\">dangos pob cyngor</a>."
+
+#: web/reports.cgi:248
 msgid "Old empty properties, state unknown"
 msgstr "Eiddo gwag hen, nid yw eu cyflwr yn hysbys"
 
-#: fixmystreet/web/reports.cgi:253
+#: web/reports.cgi:254
 msgid "Old returned to use"
 msgstr "Hen wedi'i adfer i'w ddefnyddio"
 
-#: fixmystreet/bin/send-reports:77
+#: web/reports.cgi:257
+#, perl-format
+msgid "%s - Summary reports"
+msgstr "%s - Adroddiadau cryno"
+
+#: web/reports.cgi:257
+#, perl-format
+msgid "Empty properties within %s, reportemptyhomes.com"
+msgstr "Eiddo gwag o fewn %s, reportemptyhomes.com"
+
+#: bin/send-reports:91
 msgid "This web page also contains a photo of the empty property, provided by the user."
 msgstr "Mae'r dudalen we hon hefyd yn cynnwys ffotograff o'r eiddo gwag, wedi'i ddarparu gan y defnyddiwr."
 
-#: fixmystreet/bin/send-reports:83
+#: bin/send-reports:97
 msgid "To view a map of the precise location of this issue"
 msgstr "Gweld map o union leoliad y broblem hon"
 
-#: fixmystreet/bin/send-reports:84
+#: bin/send-reports:98
 msgid "The user could not locate the empty property on a map, but to see the area around the location they entered"
 msgstr "Ni allai'r defnyddiwr leoli'r eiddo gwag ar fap, ond i weld yr ardal o gwmpas y lleoliad a gofnodwyd ganddynt "
 
-#: fixmystreet/bin/send-reports:88
-#, perl-format
-msgid "The closest address, as the crow flies, to the location of this empty property, %.0fm away, is: %s - please note that this is automatically generated, so ensure that you check it against the details provided by the user and, if possible, the map."
-msgstr "Y cyfeiriad agosaf ar draws gwlad, i leoliad yr eiddo gwag hwn, %.0fm i ffwrdd, yw: %s - sylwer bod hwn yn cael ei greu'n awtomatig, felly gwnewch yn siwr eich bod yn ei gadarnhau yn ôl y manylion sy'n cael eu rhoi gan y defnyddiwr ac, os oes modd, ei gadarnhau yn ôl y map."
-
-#: fixmystreet/db/alert_types_eha.pl:5 fixmystreet/db/alert_types_eha.pl:6
+#: db/alert_types_eha.pl:5 db/alert_types_eha.pl:6
 #, perl-brace-format
 msgid "Updates on {{title}}"
 msgstr "Diweddariadau am {{title}}"
 
-#: fixmystreet/db/alert_types_eha.pl:7
+#: db/alert_types_eha.pl:7
 #, perl-brace-format
 msgid "Update by {{name}}"
 msgstr "Diweddariadau yn ôl {{name}}"
 
-#: fixmystreet/db/alert_types_eha.pl:10
+#: db/alert_types_eha.pl:10
 msgid "New reports on reportemptyhomes.com"
 msgstr "Adroddiadau newydd ar reportemptyhomes.com"
 
-#: fixmystreet/db/alert_types_eha.pl:11
+#: db/alert_types_eha.pl:11
 msgid "The latest empty properties reported by users"
 msgstr "Yr eiddo gwag diweddaraf y mae defnyddwyr wedi rhoi gwybod amdanynt"
 
-#: fixmystreet/db/alert_types_eha.pl:14
+#: db/alert_types_eha.pl:14
 msgid "Properties recently reported as put back to use on reportemptyhomes.com"
 msgstr "Eiddo y cafwyd adroddiadau diweddar ar reportemptyhomes.com eu bod wedi cael eu hadfer i'w defnyddio"
 
-#: fixmystreet/db/alert_types_eha.pl:15
+#: db/alert_types_eha.pl:15
 msgid "The latest properties reported back to use by users"
 msgstr "Yr eiddo diweddaraf y mae defnyddwyr wedi rhoi gwybod eu bod yn ôl mewn defnyd"
 
-#: fixmystreet/db/alert_types_eha.pl:18
+#: db/alert_types_eha.pl:18
 msgid "New local reports on reportemptyhomes.com"
 msgstr "Adroddiadau lleol newydd ar reportemptyhomes.com"
 
-#: fixmystreet/db/alert_types_eha.pl:19
+#: db/alert_types_eha.pl:19
 msgid "The latest local reports reported by users"
 msgstr "Yr adroddiadau lleol diweddaraf y mae defnyddwyr wedi rhoi gwybod amdanynt"
 
-#: fixmystreet/db/alert_types_eha.pl:22
+#: db/alert_types_eha.pl:22
 #, perl-brace-format
 msgid "New reports to {{COUNCIL}} on reportemptyhomes.com"
 msgstr "Adroddiadau newydd i gyngor {{COUNCIL}} ar reportemptyhomes.com"
 
-#: fixmystreet/db/alert_types_eha.pl:23
+#: db/alert_types_eha.pl:23
 #, perl-brace-format
 msgid "The latest reports for {{COUNCIL}} reported by users"
 msgstr "Yr adroddiadau diweddaraf ar gyfer cyngor {{COUNCIL}} y mae defnyddwyr wedi rhoi gwybod amdanynt"
 
-#: fixmystreet/db/alert_types_eha.pl:26
+#: db/alert_types_eha.pl:26
 #, perl-brace-format
 msgid "New reports for {{COUNCIL}} within {{WARD}} ward on reportemptyhomes.com"
 msgstr "Adroddiadau newydd ar gyfer cyngor {{COUNCIL}}, yn ward {{WARD}} ar reportemptyhomes.com"
 
-#: fixmystreet/db/alert_types_eha.pl:27
+#: db/alert_types_eha.pl:27
 #, perl-brace-format
 msgid "The latest reports for {{COUNCIL}} within {{WARD}} ward reported by users"
 msgstr "Yr adroddiadau diweddaraf ar gyfer cyngor {{COUNCIL}}, yn ward {{WARD}} y mae defnyddwyr wedi rhoi gwybod amdanynt"
 
-#: fixmystreet/db/alert_types_eha.pl:30
+#: db/alert_types_eha.pl:30
 #, perl-brace-format
 msgid "New reports within {{NAME}}'s boundary on reportemptyhomes.com"
 msgstr "Adroddiadau newydd o fewn ffin {{NAME}} ar reportemptyhomes.com"
 
-#: fixmystreet/db/alert_types_eha.pl:31
+#: db/alert_types_eha.pl:31
 #, perl-brace-format
 msgid "The latest reports within {{NAME}}'s boundary reported by users"
 msgstr "Yr adroddiadau diweddaraf o fewn ffin {{NAME}} y mae defnyddwyr wedi rhoi gwybod amdanynt"
 
 #. Please leave the first word "Subject:" untranslated
-#: fixmystreet/templates/emails/alert-confirm
+#: templates/emails/alert-confirm
 msgid ""
 "Subject: Confirm your alert on reportemptyhomes.com\n"
 "\n"
@@ -1573,7 +1600,7 @@ msgstr ""
 "Yn gywir,  \n"
 "Tîm yr Asiantaeth Tai Gwag\n"
 
-#: fixmystreet/templates/emails/alert-problem
+#: templates/emails/alert-problem
 msgid ""
 "Subject: New empty property reports on reportemptyhomes.com\n"
 "\n"
@@ -1588,7 +1615,7 @@ msgid ""
 "please follow this link: <?=$values['unsubscribe_url']?>\n"
 msgstr ""
 
-#: fixmystreet/templates/emails/alert-problem-area
+#: templates/emails/alert-problem-area
 msgid ""
 "Subject: New empty property reports in <?=$values['area_name']?> on reportemptyhomes.com\n"
 "\n"
@@ -1605,7 +1632,7 @@ msgid ""
 "<?=$values['unsubscribe_url']?>\n"
 msgstr ""
 
-#: fixmystreet/templates/emails/alert-problem-council
+#: templates/emails/alert-problem-council
 msgid ""
 "Subject: New empty property reports reported to <?=$values['area_name']?> on reportemptyhomes.com\n"
 "\n"
@@ -1621,7 +1648,7 @@ msgid ""
 "<?=$values['unsubscribe_url']?>\n"
 msgstr ""
 
-#: fixmystreet/templates/emails/alert-problem-nearby
+#: templates/emails/alert-problem-nearby
 msgid ""
 "Subject: New nearby empty properties on reportemptyhomes.com\n"
 "\n"
@@ -1636,7 +1663,7 @@ msgid ""
 "please follow this link: <?=$values['unsubscribe_url']?>\n"
 msgstr ""
 
-#: fixmystreet/templates/emails/alert-problem-ward
+#: templates/emails/alert-problem-ward
 msgid ""
 "Subject: New empty property reports reported to <?=$values['area_name']?> within <?=$values['ward_name']?> on reportemptyhomes.com\n"
 "\n"
@@ -1653,13 +1680,16 @@ msgid ""
 "please follow this link: <?=$values['unsubscribe_url']?>\n"
 msgstr ""
 
-#: fixmystreet/templates/emails/alert-update
+#: templates/emails/alert-update
+#, fuzzy
 msgid ""
 "Subject: New updates on empty property - '<?=$values['title']?>'\n"
 "\n"
 "The following updates have been left on this empty property:\n"
 "\n"
 "<?=$values['data']?>\n"
+"\n"
+"<?=$values['state_message']?>\n"
 "\n"
 "To view or reply to these updates, please visit the following URL:\n"
 "    <?=$values['problem_url']?>\n"
@@ -1672,8 +1702,21 @@ msgid ""
 "To stop receiving emails when there are new updates on this empty property,\n"
 "please follow this link: <?=$values['unsubscribe_url']?>\n"
 msgstr ""
+"Subject: Diweddariadau newydd am eiddo gwag - '<?=$values['title']?>'\n"
+"\n"
+"Mae'r diweddariadau canlynol wedi cael eu gadael am yr eiddo gwag hwn:\n"
+"\n"
+"<?=$values['data']?>\n"
+"\n"
+"Gweld y diweddariadau hyn neu eu hateb: <?=$values['problem_url']?>\n"
+"\n"
+"Yn gywir,  \n"
+"reportemptyhomes.com\n"
+"\n"
+"I roi'r gorau i dderbyn negeseuon e-bost pan fydd diweddariadau newydd yn ymddangos am yr eiddo hwn,\n"
+"dilynwch y ddolen hon: <?=$values['unsubscribe_url']?>\n"
 
-#: fixmystreet/templates/emails/empty property-confirm
+#: templates/emails/empty property-confirm
 msgid ""
 "Subject: Confirm your empty property report\n"
 "\n"
@@ -1717,7 +1760,7 @@ msgstr ""
 "Yn gywir,  \n"
 "reportemptyhomes.com\n"
 
-#: fixmystreet/templates/emails/flickr-confirm
+#: templates/emails/flickr-confirm
 msgid ""
 "Subject: Confirm your email address on reportemptyhomes.com\n"
 "\n"
@@ -1735,7 +1778,7 @@ msgid ""
 "The reportemptyhomes.com team\n"
 msgstr ""
 
-#: fixmystreet/templates/emails/flickr-submit
+#: templates/emails/flickr-submit
 msgid ""
 "Subject: New photo pulled from Flickr to reportemptyhomes.com\n"
 "\n"
@@ -1753,7 +1796,7 @@ msgid ""
 "The reportemptyhomes.com team\n"
 msgstr ""
 
-#: fixmystreet/templates/emails/partial
+#: templates/emails/partial
 #, fuzzy
 msgid ""
 "Subject: Confirm your report on reportemptyhomes.com\n"
@@ -1786,7 +1829,7 @@ msgstr ""
 "Yn gywir,  \n"
 "Tîm yr Asiantaeth Tai Gwag\n"
 
-#: fixmystreet/templates/emails/problem-confirm
+#: templates/emails/problem-confirm
 msgid ""
 "Subject: Confirm your empty property on reportemptyhomes.com\n"
 "\n"
@@ -1810,7 +1853,7 @@ msgid ""
 "The reportemptyhomes.com team\n"
 msgstr ""
 
-#: fixmystreet/templates/emails/questionnaire
+#: templates/emails/questionnaire
 msgid ""
 "Subject: Questionnaire about your empty property on reportemptyhomes.com\n"
 "\n"
@@ -1838,7 +1881,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: fixmystreet/templates/emails/questionnaire-eha-26weeks
+#: templates/emails/questionnaire-eha-26weeks
 msgid ""
 "Subject: Questionnaire about your empty property report\n"
 "\n"
@@ -1892,7 +1935,7 @@ msgstr ""
 "<?=$values['detail']?>\n"
 "\n"
 
-#: fixmystreet/templates/emails/questionnaire-eha-4weeks
+#: templates/emails/questionnaire-eha-4weeks
 msgid ""
 "Subject: Questionnaire about your empty property report\n"
 "\n"
@@ -1946,7 +1989,7 @@ msgstr ""
 "<?=$values['detail']?>\n"
 "\n"
 
-#: fixmystreet/templates/emails/reply-autoresponse
+#: templates/emails/reply-autoresponse
 msgid ""
 "Subject: Automatic reply to your message to reportemptyhomes.com\n"
 "\n"
@@ -1973,7 +2016,7 @@ msgid ""
 "The reportemptyhomes.com team\n"
 msgstr ""
 
-#: fixmystreet/templates/emails/submit-brent
+#: templates/emails/submit-brent
 msgid ""
 "Subject: FMS Empty property Report: <?=$values['title']?>\n"
 "\n"
@@ -1998,9 +2041,9 @@ msgid ""
 "\n"
 "Details: <?=$values['detail']?>\n"
 "\n"
-"Easting: <?=$values['easting']?>\n"
+"<?=$values['easting_northing']?>Latitude: <?=$values['latitude']?>\n"
 "\n"
-"Northing: <?=$values['northing']?>\n"
+"Longitude: <?=$values['longitude']?>\n"
 "\n"
 "<?=$values['closest_address_machine']?>----------\n"
 "\n"
@@ -2017,7 +2060,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: fixmystreet/templates/emails/submit-council
+#: templates/emails/submit-council
 msgid ""
 "Subject: Empty property Report: <?=$values['title']?>\n"
 "\n"
@@ -2042,6 +2085,10 @@ msgid ""
 "\n"
 "Details: <?=$values['detail']?>\n"
 "\n"
+"<?=$values['easting_northing']?>Latitude: <?=$values['latitude']?>\n"
+"\n"
+"Longitude: <?=$values['longitude']?>\n"
+"\n"
 "<?=$values['closest_address']?>----------\n"
 "\n"
 "Replies to this email will go to the user who submitted the empty property.\n"
@@ -2057,7 +2104,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: fixmystreet/templates/emails/submit-eha
+#: templates/emails/submit-eha
 msgid ""
 "Subject: Empty property report\n"
 "\n"
@@ -2149,7 +2196,7 @@ msgstr ""
 "reportemptyhomes.com\n"
 "\n"
 
-#: fixmystreet/templates/emails/tms-confirm
+#: templates/emails/tms-confirm
 msgid ""
 "Subject: Confirm your expression of interest in TextMyStreet\n"
 "\n"
@@ -2167,7 +2214,7 @@ msgid ""
 "The reportemptyhomes.com team\n"
 msgstr ""
 
-#: fixmystreet/templates/emails/update-confirm
+#: templates/emails/update-confirm
 msgid ""
 "Subject: Confirm your update on reportemptyhomes.com\n"
 "\n"
@@ -2205,7 +2252,7 @@ msgstr ""
 "Yn gywir,  \n"
 "Tîm yr Asiantaeth Tai Gwag\n"
 
-#: fixmystreet/templates/emails/eha/alert-problem
+#: templates/emails/emptyhomes/alert-problem
 msgid ""
 "Subject: New empty property reports on reportemptyhomes.com\n"
 "\n"
@@ -2231,7 +2278,7 @@ msgstr ""
 "I roi'r gorau i dderbyn negeseuon e-bost pan fydd eiddo newydd yn ymddangos,\n"
 "dilynwch y ddolen hon: <?=$values['unsubscribe_url']?>\n"
 
-#: fixmystreet/templates/emails/eha/alert-problem-area
+#: templates/emails/emptyhomes/alert-problem-area
 msgid ""
 "Subject: New empty property reports in <?=$values['area_name']?> on reportemptyhomes.com\n"
 "\n"
@@ -2261,7 +2308,7 @@ msgstr ""
 "<?=$values['area_name']?>, dilynwch y ddolen hon: \n"
 "<?=$values['unsubscribe_url']?>\n"
 
-#: fixmystreet/templates/emails/eha/alert-problem-council
+#: templates/emails/emptyhomes/alert-problem-council
 msgid ""
 "Subject: New empty property reports reported to <?=$values['area_name']?> on reportemptyhomes.com\n"
 "\n"
@@ -2289,7 +2336,7 @@ msgstr ""
 "<?=$values['area_name']?>, dilynwch y ddolen hon: \n"
 "<?=$values['unsubscribe_url']?>\n"
 
-#: fixmystreet/templates/emails/eha/alert-problem-nearby
+#: templates/emails/emptyhomes/alert-problem-nearby
 msgid ""
 "Subject: New nearby empty properties on reportemptyhomes.com\n"
 "\n"
@@ -2315,7 +2362,7 @@ msgstr ""
 "I roi'r gorau i dderbyn negeseuon e-bost pan fydd eiddo gerllaw,\n"
 "dilynwch y ddolen hon: <?=$values['unsubscribe_url']?>\n"
 
-#: fixmystreet/templates/emails/eha/alert-problem-ward
+#: templates/emails/emptyhomes/alert-problem-ward
 msgid ""
 "Subject: New empty property reports reported to <?=$values['area_name']?> within <?=$values['ward_name']?> on reportemptyhomes.com\n"
 "\n"
@@ -2345,7 +2392,7 @@ msgstr ""
 "<?=$values['area_name']?>, o fewn ward <?=$values['ward_name']?>,\n"
 "dilynwch y ddolen hon: <?=$values['unsubscribe_url']?>\n"
 
-#: fixmystreet/templates/emails/eha/alert-update
+#: templates/emails/emptyhomes/alert-update
 msgid ""
 "Subject: New updates on empty property- '<?=$values['title']?>'\n"
 "\n"
@@ -2374,6 +2421,24 @@ msgstr ""
 "\n"
 "I roi'r gorau i dderbyn negeseuon e-bost pan fydd diweddariadau newydd yn ymddangos am yr eiddo hwn,\n"
 "dilynwch y ddolen hon: <?=$values['unsubscribe_url']?>\n"
+
+#~ msgid ""
+#~ "We will contact you again in a month and again after six months to ask what has\n"
+#~ "happened. Hopefully the property will be well on the way to being brought back\n"
+#~ "into use by then, but if not we can offer advice on what you can do next."
+#~ msgstr ""
+#~ "Byddwn yn cysylltu â chi eto ymhen mis ac eto ymhen chwe mis i holi beth sydd wedi digwydd.\n"
+#~ "Ein gobaith yw y bydd yr eiddo wrthi'n cael ei adfer i'w ddefnyddio erbyn hynny,\n"
+#~ "ond os nad ydyw, gallwn gynnig cyngor ar yr beth y gallwch ei wneud nesaf."
+
+#~ msgid "Enter a nearby GB postcode, or street name and area"
+#~ msgstr "Cofnodwch god post Prydeinig, neu enw stryd ac ardal gerllaw"
+
+#~ msgid "Please note that updates are not sent to the council."
+#~ msgstr "Sylwer nad yw diweddariadau'n cael eu hanfon at y cyngor."
+
+#~ msgid "The closest address, as the crow flies, to the location of this empty property, %.0fm away, is: %s - please note that this is automatically generated, so ensure that you check it against the details provided by the user and, if possible, the map."
+#~ msgstr "Y cyfeiriad agosaf ar draws gwlad, i leoliad yr eiddo gwag hwn, %.0fm i ffwrdd, yw: %s - sylwer bod hwn yn cael ei greu'n awtomatig, felly gwnewch yn siwr eich bod yn ei gadarnhau yn ôl y manylion sy'n cael eu rhoi gan y defnyddiwr ac, os oes modd, ei gadarnhau yn ôl y map."
 
 #~ msgid "empty property"
 #~ msgstr "eiddo gwag"
