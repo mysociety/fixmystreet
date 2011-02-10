@@ -38,17 +38,24 @@ sub set_lang($) {
 
 sub test_geocode_string() {
     my %params = ();
-    my $q = new MockQuery('nosite', \%params);
-    
-    # geocode a straightforward string, expect success 
-    my ($easting, $northing, $error) = FixMyStreet::Geocode::string('Buckingham Palace', $q);
-    ok($easting == 529068, 'example easting generated') or diag("Got $easting");
-    ok($northing == 179684, 'example northing generated') or diag("Got $northing");
-    ok(! defined($error), 'should not generate error for simple example') or diag("Got $error");
-    # expect a failure message for Northern Ireland
-    ($easting, $northing, $error) = FixMyStreet::Geocode::string('Falls Road, Belfast', $q);
-    ok($error eq "We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.", 'error message produced for NI location') or diag("Got $error");
+    my $q = new MockQuery( 'nosite', \%params );
 
+    # geocode a straightforward string, expect success
+    my ( $latitude, $longitude, $error ) =
+      FixMyStreet::Geocode::string( 'Buckingham Palace', $q );
+    is( $latitude, 51.5013639, 'example easting generated' );
+    is( $longitude, -0.1418898, 'example northing generated' );
+    is( $error, undef, 'should not generate error for simple example' );
+
+    # expect a failure message for Northern Ireland
+    ( $latitude, $longitude, $error ) =
+      FixMyStreet::Geocode::string( 'Falls Road, Belfast', $q );
+    is(
+        $error,
+        "We do not cover Northern Ireland, I'm afraid, as our licence doesn't "
+          . "include any maps for the region.",
+        'error message produced for NI location'
+    );
 }
 
 sub test_header() {

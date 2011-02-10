@@ -574,8 +574,8 @@ sub admin_edit_report {
 
     my $council = $row{council} || '<em>None</em>';
     (my $areas = $row{areas}) =~ s/^,(.*),$/$1/;
-    my $easting = int($row{easting}+0.5);
-    my $northing = int($row{northing}+0.5);
+    my $latitude  = $row{latitude};
+    my $longitude = $row{longitude};
     my $questionnaire = $row{send_questionnaire} ? 'Yes' : 'No';
     my $used_map = $row{used_map} ? 'used map' : "didn't use map";
     (my $whensent = $row{whensent} || '&nbsp;') =~ s/\..*//;
@@ -610,7 +610,7 @@ sub admin_edit_report {
 <li><a href="$url">View report on site</a>
 <li><label for="title">Subject:</label> <input size=60 type="text" id="title" name="title" value="$row_h{title}">
 <li><label for="detail">Details:</label><br><textarea name="detail" id="detail" cols=60 rows=10>$row_h{detail}</textarea>
-<li>Co-ordinates: $easting,$northing (originally entered $row_h{postcode}, $used_map)
+<li>Co-ordinates: $latitude,$longitude (originally entered $row_h{postcode}, $used_map)
 <li>For council(s): $council (other areas: $areas)
 <li>$anon
 <li>$state

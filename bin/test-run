@@ -27,11 +27,14 @@ use FindBin;
 use mySociety::Config;
 mySociety::Config::set_file('../conf/general');
 use mySociety::DBHandle qw(dbh);
+use mySociety::GeoUtil;
 use mySociety::WebTestHarness;
 use Test::Harness;
 use File::Find;
 use lib "$FindBin::Bin/../perllib";
 use Cobrand;
+use FixMyStreet::Geocode;
+use Utils;
 
 my @actions = ('report', 'update', 'questionnaire', 'alert', 'static', 'cobrand', 'unit', 'eha_alert', 'import', 'rss');
 my %actions_desc = (
@@ -213,6 +216,11 @@ sub submit_postcode{
 sub submit_report {
    my ($postcode, $x, $y, $easting, $northing, $user_num, $council, $texts, $cobrand ) = @_;	
    my @messages = @{$texts}; 
+
+    # convert easting, northing to lat lon
+    my ( $latitude, $longitude ) =
+      Utils::convert_en_to_latlon( $easting, $northing );
+    
    submit_postcode($cobrand, $postcode, $messages[0]);
     {
         # Writing values to hidden fields, so switching
@@ -235,8 +243,8 @@ sub submit_report {
                         y => $y,
                         pc => $postcode,
                         council => -1,
-                        easting => $easting,
-                        northing => $northing,
+                        latitude => $latitude,
+                        longitude => $longitude,
                         title => 'My test problem',
                         detail => 'Detail of my test problem',
                         anonymous => 1,
@@ -377,13 +385,23 @@ sub do_alert {
    
     # sign up for alerts in an area
     my $postcode = 'EH1 2NG';
-    my $x = 2015; my $e = 325066;
-    my $y = 4175; my $n = 673533;
+
+    my $x = 2015;
+    my $y = 4175;
+
+    my $e = 325066;
+    my $n = 673533;
+    
+    # get the lat,lon from the postcode so that it matches
+    my ( $lat, $lon ) =
+      map { Utils::truncate_coordinate($_) }
+      FixMyStreet::Geocode::lookup( $postcode, undef );
+    
     my $messages = english_fms_messages();
     submit_postcode('', $postcode, 'Problems in this area');
     $wth->browser_follow_link(text => 'Email me new local problems');
     $wth->browser_submit_form(form_name => 'alerts',
-                              fields => {feed => "local:" . $e . ":" . $n,
+                              fields => {feed => "local:$lat:$lon",
                                          rznvy => email_n(2)} ); 
     $wth->browser_check_contents('Nearly Done!');
     my $confirmation_email = $wth->email_get_containing(
@@ -396,7 +414,7 @@ sub do_alert {
     $wth->browser_check_contents('successfully confirmed your alert');
 
     # create and confirm a new problem in the area
-    submit_report($postcode, $x, $y, 325000, 673387.096774193, 3, undef, $messages, '');
+    submit_report($postcode, $x, $y, $e, $n, 3, undef, $messages, '');
 
     # run the alert script 
     call_send_emails();
@@ -419,6 +437,12 @@ sub do_eha_alert {
     my $postcode = 'EH1 2NG';
     my $x = 2015; my $e = 325066;
     my $y = 4175; my $n = 673533;
+    
+    # get the lat,lon from the postcode so that it matches
+    my ( $lat, $lon ) =
+      map { Utils::truncate_coordinate($_) }
+      FixMyStreet::Geocode::lookup( $postcode, undef );
+        
     my @texts = ('Eiddo gwag yn yr ardal hon', 
                  'Adrodd am eiddo gwag', 
                  'Nawr, gwiriwch eich e-bost', 
@@ -428,7 +452,7 @@ sub do_eha_alert {
     submit_postcode('cy.emptyhomes.', $postcode, $texts[0]);
     $wth->browser_follow_link(text => 'Anfonwch fanylion eiddo gwag lleol newydd ataf i drwy\'r e-bost');
     $wth->browser_submit_form(form_name => 'alerts',
-                              fields => {feed => "local:" . $e . ":" . $n,
+                              fields => {feed => "local:$lat:$lon",
                                          rznvy => email_n(4)} );
     $wth->browser_check_contents($texts[2]);
     my $confirmation_email = $wth->email_get_containing(
@@ -441,7 +465,7 @@ sub do_eha_alert {
     $wth->browser_check_contents('Rydych wedi cadarnhau\'ch hysbysiad yn llwyddiannus.');
     
     # create and confirm a new problem in the area
-    submit_report($postcode, $x, $y, 325000, 673387.096774193, 3, undef, \@texts, 'cy.emptyhomes.');
+    submit_report($postcode, $x, $y, $e, $n, 3, undef, \@texts, 'cy.emptyhomes.');
 
     # run the alert script
     call_send_emails();
@@ -513,16 +537,37 @@ sub do_static {
 # Check RSS feeds redirect to the right places and so on.
 # Just checks header, doesn't check any contents.
 sub do_rss {
-    $wth->browser_get($base_url . '/rss/l/52.5/-1.9');
-    die "Lat/lon redirect failed" unless $wth->browser_uri() =~ m{/rss/n/406886,289126$};
-    $wth->browser_get($base_url . '/rss/2524/1779');
-    die "Tile redirect failed" unless $wth->browser_uri() =~ m{/rss/n/407097,286935$};
-    $wth->browser_get($base_url . '/rss/n/407097,286935');
+
+    my %redirects = (
+
+        # should always go to lat lon
+        '/rss/n/406886,289126' => '/rss/l/52.499994,-1.899993',
+        '/rss/2524/1779'       => '/rss/l/52.480294,-1.896931',
+        '/rss/pc/SW1A1AA'      => '/rss/l/51.50101,-0.141587',
+        '/rss/l/52.5/-1.9'     => '/rss/l/52.5/-1.9',
+
+        # go to reports
+        '/rss/area/Birmingham'         => '/rss/reports/Birmingham',
+        '/rss/area/Birmingham/Lozells' => '/rss/reports/Birmingham/Lozells',
+    );
+
+    my $error_count = 0;
+    foreach my $from ( sort keys %redirects ) {
+        my $to = $redirects{$from};
+        $wth->browser_get( $base_url . $from );
+        my ($got) = $wth->browser_uri() =~ m{(/rss/.*)$};
+
+        next if $got eq $to;
+
+        warn "RSS redirect from '$from' to '$to' failed - got '$got'";
+        $error_count++;
+    }
+
+    die "Found errors doing redirect - aborting" if $error_count;
+
+    $wth->browser_get($base_url . '/rss/l/52.5/-1.94');
     $wth->browser_check_contents('New local problems on FixMyStreet');
-    $wth->browser_get($base_url . '/rss/pc/SW1A1AA');
-    die "Postcode redirect failed" unless $wth->browser_uri() =~ m{/rss/n/529090,179645$};
-    $wth->browser_get($base_url . '/rss/area/Birmingham');
-    die "One-tier redirect failed" unless $wth->browser_uri() =~ m{/rss/reports/Birmingham$};
+
     $wth->browser_get($base_url . '/rss/reports/Birmingham');
     $wth->browser_check_contents('New problems to Birmingham City Council on FixMyStreet');
     $wth->browser_get($base_url . '/rss/reports/Birmingham/Lozells');

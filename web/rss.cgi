@@ -17,6 +17,7 @@ use FixMyStreet::Geocode;
 use mySociety::MaPit;
 use mySociety::GeoUtil;
 use mySociety::Gaze;
+use Utils;
 
 sub main {
     my $q = shift;
@@ -83,35 +84,40 @@ sub rss_local_problems {
 
     my $cobrand = Page::get_cobrand($q);
     my $base = Cobrand::base_url($cobrand);
-    if ($lat) { # In the UK, it'll never be 0 :)
-        ($e, $n) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
-        $e = int($e + 0.5);
-        $n = int($n + 0.5);
-        print $q->redirect(-location => "$base/rss/n/$e,$n$d_str$state_qs");
-        return '';
-    } elsif ($x && $y) {
+    if ($x && $y) {
         # 5000/31 as initial scale factor for these RSS feeds, now variable so redirect.
         $e = int( ($x * 5000/31) + 0.5 );
         $n = int( ($y * 5000/31) + 0.5 );
-        print $q->redirect(-location => "$base/rss/n/$e,$n$d_str$state_qs");
+        ($lat, $lon) = Utils::convert_en_to_latlon_truncated($e, $n);
+        print $q->redirect(-location => "$base/rss/l/$lat,$lon$d_str$state_qs");
         return '';
     } elsif ($e && $n) {
-        ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($e, $n, 'G');
+        ($lat, $lon) = Utils::convert_en_to_latlon_truncated($e, $n);
+        print $q->redirect(-location => "$base/rss/l/$lat,$lon$d_str$state_qs");
+        return '';
     } elsif ($pc) {
         my $error;
         try {
-            ($e, $n, $error) = FixMyStreet::Geocode::lookup($pc, $q);
+            ($lat, $lon, $error) = FixMyStreet::Geocode::lookup($pc, $q);
         } catch Error::Simple with {
             $error = shift;
         };
         unless ($error) {
-            print $q->redirect(-location => "$base/rss/n/$e,$n$d_str$state_qs");
+            ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );             
+            print $q->redirect(-location => "$base/rss/l/$lat,$lon$d_str$state_qs");
         }
         return '';
+    } elsif ( $lat || $lon ) { 
+        # pass through
     } else {
         die "Missing E/N, x/y, lat/lon, or postcode parameter in RSS feed";
     }
-    my $qs = '?e=' . int($e) . ';n=' . int($n);
+    
+    # truncate the lat,lon for nicer urls
+    ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );    
+    
+    my $qs = "?lat=$lat;lon/=$lon";
+
     if ($d) {
         $qs .= ";d=$d";
         $d = 100 if $d > 100;
@@ -122,9 +128,9 @@ sub rss_local_problems {
 
     my $xsl = Cobrand::feed_xsl($cobrand);
     if ($state eq 'all') {
-        return FixMyStreet::Alert::generate_rss('local_problems', $xsl, $qs, [$e, $n, $d], undef, $cobrand, $q);
+        return FixMyStreet::Alert::generate_rss('local_problems', $xsl, $qs, [$lat, $lon, $d], undef, $cobrand, $q);
     } else {
-        return FixMyStreet::Alert::generate_rss('local_problems_state', $xsl, $qs, [$e, $n, $d, $state], undef, $cobrand, $q);
+        return FixMyStreet::Alert::generate_rss('local_problems_state', $xsl, $qs, [$lat, $lon, $d, $state], undef, $cobrand, $q);
     }
 }
 

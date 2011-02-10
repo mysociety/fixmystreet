@@ -80,6 +80,9 @@ sub report_error {
     my $trylater = sprintf(_('Please try again later, or <a href="mailto:%s">email us</a> to let us know.'), $contact_email);
     my $somethingwrong = _("Sorry! Something's gone wrong.");
     my $errortext = _("The text of the error was:");
+
+    my $msg_br = join '<br><br>', split m{\n}, $msg;
+
     print "Status: 500\nContent-Type: text/html; charset=iso-8859-1\n\n",
             qq(<html><head><title>$somethingwrong</title></head></html>),
             q(<body>),
@@ -87,7 +90,7 @@ sub report_error {
             qq(<p>$trylater</p>),
             q(<hr>),
             qq(<p>$errortext</p>),
-            qq(<blockquote class="errortext">$msg</blockquote>),
+            qq(<blockquote class="errortext">$msg_br</blockquote>),
             q(</body></html>);
 }
 

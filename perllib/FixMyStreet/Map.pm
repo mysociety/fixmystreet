@@ -14,29 +14,34 @@ use Problems;
 use Cobrand;
 use mySociety::Config;
 use mySociety::Gaze;
-use mySociety::GeoUtil;
+use mySociety::GeoUtil qw(national_grid_to_wgs84);
 use mySociety::Locale;
 use mySociety::Web qw(ent NewURL);
+use Utils;
 
 # Run on module boot up
 load();
 
 # This is yucky, but no-one's taught me a better way
 sub load {
-    my $type = mySociety::Config::get('MAP_TYPE');
+    my $type  = mySociety::Config::get('MAP_TYPE');
     my $class = "FixMyStreet::Map::$type";
     eval "use $class";
+
+    # If we have an error die as it is a compile error rather than runtime error
+    die $@ if $@;
 }
 
 sub header {
-    my ($q, $type) = @_;
+    my ( $q, $type ) = @_;
     return '' unless $type;
 
     my $cobrand = Page::get_cobrand($q);
-    my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'mapForm', $q);
-    my $form_action = Cobrand::url($cobrand, '', $q);
+    my $cobrand_form_elements =
+      Cobrand::form_elements( $cobrand, 'mapForm', $q );
+    my $form_action = Cobrand::url( $cobrand, '', $q );
     my $encoding = '';
-    $encoding = ' enctype="multipart/form-data"' if $type==2;
+    $encoding = ' enctype="multipart/form-data"' if $type == 2;
     my $pc = $q->param('pc') || '';
     my $pc_enc = ent($pc);
     return <<EOF;
@@ -47,49 +52,67 @@ $cobrand_form_elements
 EOF
 }
 
+=head2 map_features_easting_northing
+
+Wrapper around map_features which does the easting, northing to lat, lon
+conversion.
+
+=cut
+
+sub map_features_easting_northing {
+    my ( $q, $easting, $northing, $interval ) = @_;
+    my ( $lat, $lon ) = Utils::convert_en_to_latlon( $easting, $northing );
+    return map_features( $q, $lat, $lon, $interval );
+}
+
 sub map_features {
-    my ($q, $easting, $northing, $interval) = @_;
+    my ( $q, $lat, $lon, $interval ) = @_;
 
-    my $min_e = $easting - 500;
-    my $min_n = $northing - 500;
-    my $mid_e = $easting;
-    my $mid_n = $northing;
-    my $max_e = $easting + 500;
-    my $max_n = $northing + 500;
+   # TODO - be smarter about calculating the surrounding square
+   # use deltas that are roughly 500m in the UK - so we get a 1 sq km search box
+    my $lat_delta = 0.00438;
+    my $lon_delta = 0.00736;
 
-    # list of problems aoround map can be limited, but should show all pins
-    my ($around_map, $around_map_list);
-    if (my $around_limit = Cobrand::on_map_list_limit(Page::get_cobrand($q))) {
-        $around_map_list = Problems::around_map($min_e, $max_e, $min_n, $max_n, $interval, $around_limit);
-        $around_map = Problems::around_map($min_e, $max_e, $min_n, $max_n, $interval, undef);
-    } else {
-        $around_map = $around_map_list = Problems::around_map($min_e, $max_e, $min_n, $max_n, $interval, undef);
-    }
+    my $min_lat = $lat - $lat_delta;
+    my $max_lat = $lat + $lat_delta;
+
+    my $min_lon = $lon - $lon_delta;
+    my $max_lon = $lon + $lon_delta;
+
+    # list of problems around map can be limited, but should show all pins
+    my $around_limit    #
+      = Cobrand::on_map_list_limit( Page::get_cobrand($q) ) || undef;
+
+    my @around_args = ( $min_lat, $max_lat, $min_lon, $max_lon, $interval );
+    my $around_map_list = Problems::around_map( @around_args, $around_limit );
+    my $around_map      = Problems::around_map( @around_args, undef );
 
     my $dist;
     mySociety::Locale::in_gb_locale {
-        my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($mid_e, $mid_n, 'G');
-        $dist = mySociety::Gaze::get_radius_containing_population($lat, $lon, 200000);
+        $dist =
+          mySociety::Gaze::get_radius_containing_population( $lat, $lon,
+            200000 );
     };
-    $dist = int($dist*10+0.5)/10;
+    $dist = int( $dist * 10 + 0.5 ) / 10;
 
-    my $limit = 20;
-    my @ids = map { $_->{id} } @$around_map_list;
-    my $nearby = Problems::nearby($dist, join(',', @ids), $limit, $mid_e, $mid_n, $interval);
+    my $limit  = 20;
+    my @ids    = map { $_->{id} } @$around_map_list;
+    my $nearby = Problems::nearby( $dist, join( ',', @ids ),
+        $limit, $lat, $lon, $interval );
 
-    return ($around_map, $around_map_list, $nearby, $dist);
+    return ( $around_map, $around_map_list, $nearby, $dist );
 }
 
 sub compass ($$$) {
-    my ($q, $x, $y) = @_;
+    my ( $q, $x, $y ) = @_;
     my @compass;
-    for (my $i=$x-1; $i<=$x+1; $i++) {
-        for (my $j=$y-1; $j<=$y+1; $j++) {
-            $compass[$i][$j] = NewURL($q, x=>$i, y=>$j);
+    for ( my $i = $x - 1 ; $i <= $x + 1 ; $i++ ) {
+        for ( my $j = $y - 1 ; $j <= $y + 1 ; $j++ ) {
+            $compass[$i][$j] = NewURL( $q, x => $i, y => $j );
         }
     }
     my $recentre = NewURL($q);
-    my $host = Page::base_url_with_lang($q, undef);
+    my $host = Page::base_url_with_lang( $q, undef );
     return <<EOF;
 <table cellpadding="0" cellspacing="0" border="0" id="compass">
 <tr valign="bottom">

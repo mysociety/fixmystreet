@@ -13,6 +13,13 @@ use LWP::Simple;
 
 use Cobrand;
 use mySociety::Web qw(ent NewURL);
+use mySociety::GeoUtil;
+use Utils;
+
+sub _ll_to_en {
+    my ($lat, $lon) = @_;
+    return mySociety::GeoUtil::wgs84_to_national_grid( $lat, $lon, 'G' );    
+}
 
 sub header_js {
     return '
@@ -22,7 +29,7 @@ sub header_js {
 
 # display_map Q PARAMS
 # PARAMS include:
-# EASTING, NORTHING for the centre point of the map
+# latitude, longitude for the centre point of the map
 # TYPE is 1 if the map is clickable, 2 if clickable and has a form upload,
 #     0 if not clickable
 # PINS is array of pins to show, location and colour
@@ -34,6 +41,18 @@ sub _display_map {
     my $mid_point = TILE_WIDTH; # Map is 2 TILE_WIDTHs in size, square.
     if ($q->{site} eq 'barnet') { # Map is c. 380px wide
         $mid_point = 189;
+    }
+
+    # convert map center point to easting, northing
+    ( $params{easting}, $params{northing} ) =
+      _ll_to_en( $params{latitude}, $params{longitude} );
+
+    # FIXME - convert all pins to lat, lng
+    # all the pins are currently [lat, lng, colour] - convert them
+    foreach my $pin ( @{ $params{pins} ||= [] } ) {
+        my ( $lat, $lon ) = ( $pin->[0], $pin->[1] );
+        my ( $e, $n ) = _ll_to_en( $lat, $lon );
+        ( $pin->[0], $pin->[1] ) = ( $e, $n );
     }
 
     # X/Y tile co-ords may be overridden in the query string
@@ -154,10 +173,14 @@ sub map_pins {
 
     my $e = FixMyStreet::Map::tile_to_os($x);
     my $n = FixMyStreet::Map::tile_to_os($y);
-    my ($around_map, $around_map_list, $nearby, $dist) = FixMyStreet::Map::map_features($q, $e, $n, $interval);
+
+    my ( $around_map, $around_map_list, $nearby, $dist ) =
+      FixMyStreet::Map::map_features_easting_northing( $q, $e, $n, $interval );
 
     my $pins = '';
     foreach (@$around_map) {
+        ( $_->{easting}, $_->{northing} ) =
+          _ll_to_en( $_->{latitude}, $_->{longitude} );
         my $px = FixMyStreet::Map::os_to_px($_->{easting}, $sx);
         my $py = FixMyStreet::Map::os_to_px($_->{northing}, $sy, 1);
         my $col = $_->{state} eq 'fixed' ? 'green' : 'red';
@@ -165,6 +188,8 @@ sub map_pins {
     }
 
     foreach (@$nearby) {
+        ( $_->{easting}, $_->{northing} ) =
+          _ll_to_en( $_->{latitude}, $_->{longitude} );
         my $px = FixMyStreet::Map::os_to_px($_->{easting}, $sx);
         my $py = FixMyStreet::Map::os_to_px($_->{northing}, $sy, 1);
         my $col = $_->{state} eq 'fixed' ? 'green' : 'red';
@@ -196,9 +221,29 @@ sub tile_to_px {
 sub os_to_tile {
     return $_[0] / SCALE_FACTOR;
 }
+
 sub tile_to_os {
     return int($_[0] * SCALE_FACTOR + 0.5);
 }
+
+=head2 tile_xy_to_wgs84
+
+    ($lat, $lon) = tile_xy_to_wgs84( $x, $y );
+
+Takes the tile x,y and converts to lat, lon.
+
+=cut
+
+sub tile_xy_to_wgs84 {
+    my ( $x, $y ) = @_;
+
+    my $easting  = tile_to_os($x);
+    my $northing = tile_to_os($y);
+
+    my ( $lat, $lon ) = Utils::convert_en_to_latlon( $easting, $northing );
+    return ( $lat, $lon );
+}
+
 
 sub click_to_tile {
     my ($pin_tile, $pin, $invert) = @_;
@@ -217,6 +262,14 @@ sub click_to_os {
     my $easting = FixMyStreet::Map::tile_to_os($tile_x);
     my $northing = FixMyStreet::Map::tile_to_os($tile_y);
     return ($easting, $northing);
+}
+
+# Given some click co-ords (the tile they were on, and where in the
+# tile they were), convert to WGS84 and return.
+sub click_to_wgs84 {
+    my ( $easting, $northing ) = FixMyStreet::Map::click_to_os(@_);
+    my ( $lat, $lon ) = national_grid_to_wgs84( $easting, $northing, 'G' );
+    return ( $lat, $lon );
 }
 
 # Given (E,N) and potential override (X,Y), return the X/Y tile for the centre
