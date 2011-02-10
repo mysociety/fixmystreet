@@ -24,13 +24,14 @@ use mySociety::AuthToken;
 use mySociety::Config;
 use mySociety::DBHandle qw(select_all);
 use mySociety::EmailUtil;
-use mySociety::GeoUtil qw(national_grid_to_wgs84);
+use mySociety::GeoUtil;
 use mySociety::Locale;
 use mySociety::MaPit;
 use mySociety::PostcodeUtil;
 use mySociety::Random;
 use mySociety::VotingArea;
 use mySociety::Web qw(ent NewURL);
+use Utils;
 
 sub debug (@) {
     return;
@@ -792,7 +793,7 @@ sub redirect_from_osgb_to_wgs84 {
     my $e = $q->param('e');
     my $n = $q->param('n');
 
-    my ( $lat, $lon ) = national_grid_to_wgs84( $e, $n, 'G' );
+    my ( $lat, $lon ) = Utils::convert_en_to_latlon_truncated( $e, $n );
 
     my $lat_lon_url = NewURL(
         $q,
@@ -929,6 +930,12 @@ sub display_location {
         'submit_map'=>1, skipped=>1
     );
     my $pc_h = ent($q->param('pc') || '');
+    
+    # truncate the lat,lon for nicer rss urls
+    my ( $short_lat, $short_lon ) =
+      map { Utils::truncate_coordinate($_) }    #
+      ( $latitude, $longitude );    
+    
     my %vars = (
         'map' => FixMyStreet::Map::display_map($q,
             latitude => $latitude, longitude => $longitude,
@@ -938,8 +945,8 @@ sub display_location {
         ),
         map_end => FixMyStreet::Map::display_map_end(1),
         url_home => Cobrand::url($cobrand, '/', $q),
-        url_rss => Cobrand::url($cobrand, NewURL($q, -retain => 1, -url=> "/rss/l/$latitude,$longitude", pc => undef, x => undef, y => undef, lat => undef, lon => undef ), $q),
-        url_email => Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, lat => $latitude, lon => $longitude, -url=>'/alert', feed=>"local:$latitude:$longitude"), $q),
+        url_rss => Cobrand::url($cobrand, NewURL($q, -retain => 1, -url=> "/rss/l/$short_lat,$short_lon", pc => undef, x => undef, y => undef, lat => undef, lon => undef ), $q),
+        url_email => Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, lat => $short_lat, lon => $short_lon, -url=>'/alert', feed=>"local:$short_lat:$short_lon"), $q),
         url_skip => $url_skip,
         email_me => _('Email me new local problems'),
         rss_alt => _('RSS feed'),
@@ -959,7 +966,7 @@ sub display_location {
     );
 
     my %params = (
-        rss => [ _('Recent local problems, FixMyStreet'), "/rss/l/$latitude,$longitude" ],
+        rss => [ _('Recent local problems, FixMyStreet'), "/rss/l/$short_lat,$short_lon" ],
         robots => 'noindex,nofollow',
     );
 

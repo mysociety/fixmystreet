@@ -17,6 +17,7 @@ use mySociety::Gaze;
 use mySociety::GeoUtil qw(national_grid_to_wgs84);
 use mySociety::Locale;
 use mySociety::Web qw(ent NewURL);
+use Utils;
 
 # Run on module boot up
 load();
@@ -60,7 +61,7 @@ conversion.
 
 sub map_features_easting_northing {
     my ( $q, $easting, $northing, $interval ) = @_;
-    my ( $lat, $lon ) = national_grid_to_wgs84( $easting, $northing, 'G' );
+    my ( $lat, $lon ) = Utils::convert_en_to_latlon( $easting, $northing );
     return map_features( $q, $lat, $lon, $interval );
 }
 

@@ -16,7 +16,7 @@ use mySociety::AuthToken;
 use mySociety::Config;
 use mySociety::EmailUtil;
 use mySociety::EvEl;
-use mySociety::GeoUtil qw(national_grid_to_wgs84);
+use mySociety::GeoUtil;
 
 sub main {
     my $q = shift;
@@ -41,7 +41,7 @@ sub main {
       )
     {
         ( $latitude, $longitude ) =
-          national_grid_to_wgs84( $input{easting}, $input{northing}, 'G' );
+          Utils::convert_en_to_latlon( $input{easting}, $input{northing});
     }
 
     my $fh = $q->upload('photo'); # MUST come before $q->header, don't know why!

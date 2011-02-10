@@ -17,6 +17,7 @@ use FixMyStreet::Geocode;
 use mySociety::MaPit;
 use mySociety::GeoUtil;
 use mySociety::Gaze;
+use Utils;
 
 sub main {
     my $q = shift;
@@ -87,11 +88,11 @@ sub rss_local_problems {
         # 5000/31 as initial scale factor for these RSS feeds, now variable so redirect.
         $e = int( ($x * 5000/31) + 0.5 );
         $n = int( ($y * 5000/31) + 0.5 );
-        ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($e, $n, 'G');
+        ($lat, $lon) = Utils::convert_en_to_latlon($e, $n);
         print $q->redirect(-location => "$base/rss/l/$lat,$lon$d_str$state_qs");
         return '';
     } elsif ($e && $n) {
-        ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($e, $n, 'G');
+        ($lat, $lon) = Utils::convert_en_to_latlon($e, $n);
         print $q->redirect(-location => "$base/rss/l/$lat,$lon$d_str$state_qs");
         return '';
     } elsif ($pc) {
@@ -110,7 +111,10 @@ sub rss_local_problems {
     } else {
         die "Missing E/N, x/y, lat/lon, or postcode parameter in RSS feed";
     }
-
+    
+    # truncate the lat,lon for nicer urls
+    ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );    
+    
     my $qs = "?lat=$lat;lon/=$lon";
 
     if ($d) {

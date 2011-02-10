@@ -16,7 +16,7 @@ use lib "$FindBin::Bin/../commonlib/perllib";
 
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh);
-use mySociety::GeoUtil qw(national_grid_to_wgs84);
+use Utils;
 
 BEGIN {
     mySociety::Config::set_file("$FindBin::Bin/../conf/general");
@@ -74,7 +74,7 @@ sub migrate_problem_table {
         last unless $rows_to_convert_query->rows;
         while ( my $r = $rows_to_convert_query->fetchrow_hashref ) {
             my ( $latitude, $longitude ) =
-              _e_n_to_lat_lon( $r->{easting}, $r->{northing} );
+              Utils::convert_en_to_latlon( $r->{easting}, $r->{northing} );
             print "update problem $r->{id}: ( $latitude, $longitude )\n";
             $update_lat_lon_query->execute( $latitude, $longitude, $r->{id} );
         }
@@ -187,7 +187,7 @@ sub migrate_alert_table {
         last unless $rows_to_convert_query->rows;
         while ( my $r = $rows_to_convert_query->fetchrow_hashref ) {
             my ( $latitude, $longitude ) =
-              _e_n_to_lat_lon( $r->{parameter}, $r->{parameter2} );
+              Utils::convert_en_to_latlon( $r->{parameter}, $r->{parameter2} );
             print "update alert $r->{id}: ( $latitude, $longitude )\n";
             $update_lat_lon_query->execute( $latitude, $longitude, $r->{id} );
         }
@@ -199,12 +199,3 @@ sub migrate_alert_table {
     $dbh->commit;
 }
 
-=head2 HELPERS
-
-=cut
-
-sub _e_n_to_lat_lon {
-    my ( $e, $n ) = @_;
-    my ( $lat, $lon ) = national_grid_to_wgs84( $e, $n, 'G' );
-    return ( $lat, $lon );
-}

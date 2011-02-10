@@ -24,6 +24,7 @@ use mySociety::MaPit;
 use mySociety::VotingArea;
 use mySociety::Web qw(ent);
 use Cobrand;
+use Utils;
 
 sub main {
     my $q = shift;
@@ -87,6 +88,10 @@ sub alert_list {
             $error = shift;
         };
     }
+
+    # truncate the lat,lon for nicer urls
+    ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );
+    
     return FixMyStreet::Geocode::list_choices($error, '/alert', $q) if ref($error) eq 'ARRAY';
     return alert_front_page($q, $error) if $error;
 

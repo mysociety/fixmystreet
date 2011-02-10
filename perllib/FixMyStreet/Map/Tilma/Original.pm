@@ -13,7 +13,8 @@ use LWP::Simple;
 
 use Cobrand;
 use mySociety::Web qw(ent NewURL);
-use mySociety::GeoUtil qw(national_grid_to_wgs84);
+use mySociety::GeoUtil;
+use Utils;
 
 sub _ll_to_en {
     my ($lat, $lon) = @_;
@@ -239,7 +240,7 @@ sub tile_xy_to_wgs84 {
     my $easting  = tile_to_os($x);
     my $northing = tile_to_os($y);
 
-    my ( $lat, $lon ) = national_grid_to_wgs84( $easting, $northing, 'G' );
+    my ( $lat, $lon ) = Utils::convert_en_to_latlon( $easting, $northing );
     return ( $lat, $lon );
 }
 
