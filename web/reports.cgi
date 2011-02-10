@@ -22,9 +22,11 @@ sub main {
     my $all = $q->param('all') || 0;
     my $rss = $q->param('rss') || '';
     my $cobrand = Page::get_cobrand($q);
+
     # Look up council name, if given
     my $q_council = $q->param('council') || '';
     my $base_url = Cobrand::base_url($cobrand);
+
     # Manual misspelling redirect
     if ($q_council =~ /^rhondda cynon taff$/i) {
         print $q->redirect($base_url . '/reports/Rhondda+Cynon+Taf');
