@@ -924,17 +924,17 @@ sub display_location {
     }
     my $map_links = "<p id='sub_map_links'><a id='hide_pins_link' rel='nofollow' href='$hide_link'>$hide_text</a> | <a id='all_pins_link' rel='nofollow' href='$all_link'>$all_text</a></p> <input type='hidden' id='all_pins' name='all_pins' value='$input_h{all_pins}'>";
 
+    # truncate the lat,lon for nicer rss urls
+    my ( $short_lat, $short_lon ) =
+      map { Utils::truncate_coordinate($_) }    #
+      ( $latitude, $longitude );    
+    
     my $url_skip = NewURL($q, -retain=>1, pc => undef,
         x => undef, 'y' => undef,
         latitude => $short_lat, longitude => $short_lon,
         'submit_map'=>1, skipped=>1
     );
     my $pc_h = ent($q->param('pc') || '');
-    
-    # truncate the lat,lon for nicer rss urls
-    my ( $short_lat, $short_lon ) =
-      map { Utils::truncate_coordinate($_) }    #
-      ( $latitude, $longitude );    
     
     my %vars = (
         'map' => FixMyStreet::Map::display_map($q,
