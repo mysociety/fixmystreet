@@ -185,9 +185,8 @@ sub template_vars ($%) {
     my $lang_url = base_url_with_lang($q, 1);
     $lang_url .= $ENV{REQUEST_URI} if $ENV{REQUEST_URI};
 
-    my $site_title = $q->{site} eq 'fixmystreet'
-        ? _('FixMyStreet')
-        : Cobrand::site_title(get_cobrand($q));
+    my $site_title = Cobrand::site_title(get_cobrand($q));
+    $site_title = _('FixMyStreet') unless $site_title;
 
     %vars = (
         'report' => _('Report a problem'),
@@ -213,12 +212,10 @@ sub template_vars ($%) {
         $vars{robots} = '<meta name="robots" content="' . $params{robots} . '">';
     }
 
-    if ($q->{site} eq 'fixmystreet') {
-        my $home = !$params{title} && $ENV{SCRIPT_NAME} eq '/index.cgi' && !$ENV{QUERY_STRING};
-        $vars{heading_element_start} = $home ? '<h1 id="header">' : '<div id="header"><a href="/">';
-        $vars{heading} = _('Fix<span id="my">My</span>Street');
-        $vars{heading_element_end} = $home ? '</h1>' : '</a></div>';
-    }
+    my $home = !$params{title} && $ENV{SCRIPT_NAME} eq '/index.cgi' && !$ENV{QUERY_STRING};
+    $vars{heading_element_start} = $home ? '<h1 id="header">' : '<div id="header"><a href="/">';
+    $vars{heading} = _('Fix<span id="my">My</span>Street');
+    $vars{heading_element_end} = $home ? '</h1>' : '</a></div>';
 
     return \%vars;
 }
@@ -260,22 +257,6 @@ sub template_include {
     return $template->fill_in(HASH => \%params);
 }
 
-=item template_header TEMPLATE Q ROOT PARAMS
-
-Return HTML for the templated top of a page, given a 
-template name, request, template root, and parameters.
-
-=cut
-
-sub template_header($$$%) {
-    my ($template, $q, $template_root, %params) = @_;
-    $template = $q->{site} eq 'fixmystreet'
-        ? 'header'
-        : $template . '-header';
-    my $vars = template_vars($q, %params);
-    return template_include($template, $q, $template_root, %$vars);
-}
-
 =item header Q [PARAM VALUE ...]
 
 Return HTML for the top of the page, given PARAMs (TITLE is required).
@@ -305,8 +286,8 @@ sub header ($%) {
     $params{title} = ent($params{title});
     $params{lang} = $mySociety::Locale::lang;
 
-    my $template = template($q, %params);
-    my $html = template_header($template, $q, template_root($q), %params);
+    my $vars = template_vars($q, %params);
+    my $html = template_include('header', $q, template_root($q), %$vars);
     my $cache_val = $default_params{cachecontrol};
     if (mySociety::Config::get('STAGING_SITE')) {
         $html .= '<p class="error">' . _("This is a developer site; things might break at any time, and the database will be periodically deleted.") . '</p>';
@@ -320,10 +301,8 @@ sub header ($%) {
 sub footer {
     my ($q, %params) = @_;
 
-    if ($q->{site} ne 'fixmystreet') {
-        my $template = template($q, %params) . '-footer';
-        my $template_root = template_root($q);
-        my $html = template_include($template, $q, $template_root, %params);
+    my $html = template_include('footer', $q, template_root($q), %params);
+    if ($html) {
         my $lang = $mySociety::Locale::lang;
         if ($q->{site} eq 'emptyhomes' && $lang eq 'cy') {
             $html =~ s/25 Walter Road<br>Swansea/25 Heol Walter<br>Abertawe/;
