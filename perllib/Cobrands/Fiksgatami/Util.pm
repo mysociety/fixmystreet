@@ -27,7 +27,12 @@ sub enter_postcode_text {
     return _('Enter a nearby postcode, or street name and area:');
 }
 
-# XXX Will need sub disambiguate_location presumably
+# Is also adding language parameter
+sub disambiguate_location {
+    my ($self, $s, $q) = @_;
+    $s = "hl=no&gl=no&$s";
+    return $s;
+}
 
 1;
 

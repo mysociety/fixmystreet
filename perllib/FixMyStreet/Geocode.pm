@@ -39,15 +39,18 @@ BEGIN {
 sub lookup {
     my ($s, $q) = @_;
     my ($latitude, $longitude, $error);
-    if ($s =~ /^\d+$/) {
-        $error = 'FixMyStreet is a UK-based website that currently works in England, Scotland, and Wales. Please enter either a postcode, or a Great British street name and area.';
-    } elsif (mySociety::PostcodeUtil::is_valid_postcode($s)) {
-        my $location = mySociety::MaPit::call('postcode', $s);
-        unless ($error = Page::mapit_check_error($location)) {
-            $latitude  = $location->{wgs84_lat};
-            $longitude = $location->{wgs84_lon};
+    if (mySociety::Config::get('COUNTRY') eq 'GB') {
+        if ($s =~ /^\d+$/) {
+            $error = 'FixMyStreet is a UK-based website that currently works in England, Scotland, and Wales. Please enter either a postcode, or a Great British street name and area.';
+        } elsif (mySociety::PostcodeUtil::is_valid_postcode($s)) {
+            my $location = mySociety::MaPit::call('postcode', $s);
+            unless ($error = Page::mapit_check_error($location)) {
+                $latitude  = $location->{wgs84_lat};
+                $longitude = $location->{wgs84_lon};
+            }
         }
-    } else {
+    }
+    unless ($error || defined $latitude) {
         ($latitude, $longitude, $error) = FixMyStreet::Geocode::string($s, $q);
     }
     return ($latitude, $longitude, $error);
@@ -94,7 +97,8 @@ sub string {
     if (-s $cache_file) {
         $js = File::Slurp::read_file($cache_file);
     } else {
-        $url .= ',+UK' unless $url =~ /united\++kingdom$/ || $url =~ /uk$/i;
+        $url .= ',+UK' unless $url =~ /united\++kingdom$/ || $url =~ /uk$/i
+            || mySociety::Config::get('COUNTRY') ne 'GB';
         $url .= '&sensor=false&gl=uk&key=' . mySociety::Config::get('GOOGLE_MAPS_API_KEY');
         $js = LWP::Simple::get($url);
         File::Path::mkpath($cache_dir);
