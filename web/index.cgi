@@ -282,7 +282,9 @@ sub submit_problem {
     # If in UK and we have a lat,lon coocdinate check it is in UK
     if ( $input{latitude} && mySociety::Config::get('COUNTRY') eq 'GB' ) {
         try {
-            mySociety::GeoUtil::wgs84_to_national_grid($input{latitude}, $input{longitude}, 'G');
+            mySociety::Locale::in_gb_locale {
+                mySociety::GeoUtil::wgs84_to_national_grid($input{latitude}, $input{longitude}, 'G');
+            };
         } catch Error::Simple with { 
             my $e = shift;
             push @errors, "We had a problem with the supplied co-ordinates - outside the UK?";

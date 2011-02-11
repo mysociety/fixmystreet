@@ -20,6 +20,7 @@ use Cobrand;
 use Page;
 use mySociety::Config;
 use mySociety::GeoUtil;
+use mySociety::Locale;
 use mySociety::MaPit;
 use mySociety::PostcodeUtil;
 use mySociety::Web qw(NewURL);
@@ -62,7 +63,9 @@ sub geocoded_string_coordinates {
         $longitude = $1;
         $latitude  = $2;
         try {
-            my ($easting, $northing) = mySociety::GeoUtil::wgs84_to_national_grid($latitude, $longitude, 'G');
+            my ($easting, $northing) = mySociety::Locale::in_gb_locale {
+                mySociety::GeoUtil::wgs84_to_national_grid($latitude, $longitude, 'G');
+            };
         } catch Error::Simple with {
             $error = shift;
             $error = _('That location does not appear to be in Britain; please try again.')

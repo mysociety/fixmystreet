@@ -17,6 +17,7 @@ use mySociety::Config;
 use mySociety::EmailUtil;
 use mySociety::EvEl;
 use mySociety::GeoUtil;
+use mySociety::Locale;
 
 sub main {
     my $q = shift;
@@ -64,8 +65,9 @@ sub main {
 
     if ( $latitude && mySociety::Config::get('COUNTRY') eq 'GB' ) {
         try {
-            mySociety::GeoUtil::wgs84_to_national_grid( $latitude, $longitude,
-                'G' );
+            mySociety::Locale::in_gb_locale {
+                mySociety::GeoUtil::wgs84_to_national_grid( $latitude, $longitude, 'G' );
+            };
         }
         catch Error::Simple with {
             my $e = shift;
