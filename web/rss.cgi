@@ -15,7 +15,6 @@ use URI::Escape;
 use FixMyStreet::Alert;
 use FixMyStreet::Geocode;
 use mySociety::MaPit;
-use mySociety::GeoUtil;
 use mySociety::Gaze;
 use Utils;
 

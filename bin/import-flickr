@@ -24,7 +24,6 @@ use mySociety::Config;
 use mySociety::DBHandle qw(dbh select_all);
 use mySociety::EmailUtil;
 use mySociety::Email;
-use mySociety::GeoUtil;
 
 BEGIN {
     mySociety::Config::set_file("$FindBin::Bin/../conf/general");

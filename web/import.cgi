@@ -16,7 +16,6 @@ use mySociety::AuthToken;
 use mySociety::Config;
 use mySociety::EmailUtil;
 use mySociety::EvEl;
-use mySociety::GeoUtil;
 use mySociety::Locale;
 
 sub main {
@@ -65,11 +64,8 @@ sub main {
 
     if ( $latitude && mySociety::Config::get('COUNTRY') eq 'GB' ) {
         try {
-            mySociety::Locale::in_gb_locale {
-                mySociety::GeoUtil::wgs84_to_national_grid( $latitude, $longitude, 'G' );
-            };
-        }
-        catch Error::Simple with {
+            Utils::convert_latlon_to_en( $latitude, $longitude );
+        } catch Error::Simple with {
             my $e = shift;
             push @errors, "We had a problem with the supplied co-ordinates - outside the UK?";
         };

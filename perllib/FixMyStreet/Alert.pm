@@ -30,7 +30,6 @@ use mySociety::DBHandle qw(dbh);
 use mySociety::Email;
 use mySociety::EmailUtil;
 use mySociety::Gaze;
-use mySociety::GeoUtil;
 use mySociety::Locale;
 use mySociety::MaPit;
 use mySociety::Random qw(random_bytes);

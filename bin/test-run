@@ -27,7 +27,6 @@ use FindBin;
 use mySociety::Config;
 mySociety::Config::set_file('../conf/general');
 use mySociety::DBHandle qw(dbh);
-use mySociety::GeoUtil;
 use mySociety::WebTestHarness;
 use Test::Harness;
 use File::Find;

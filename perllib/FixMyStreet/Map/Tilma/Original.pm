@@ -12,16 +12,13 @@ use strict;
 use LWP::Simple;
 
 use Cobrand;
-use mySociety::GeoUtil;
 use mySociety::Locale;
 use mySociety::Web qw(ent NewURL);
 use Utils;
 
 sub _ll_to_en {
     my ($lat, $lon) = @_;
-    return mySociety::Locale::in_gb_locale {
-        mySociety::GeoUtil::wgs84_to_national_grid( $lat, $lon, 'G' );    
-    };
+    return Utils::convert_latlon_to_en( $lat, $lon );
 }
 
 sub header_js {

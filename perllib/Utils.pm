@@ -14,6 +14,7 @@ package Utils;
 use strict;
 use mySociety::DBHandle qw(dbh);
 use mySociety::GeoUtil;
+use mySociety::Locale;
 
 sub workaround_pg_bytea {
     my ( $st, $img_idx, @elements ) = @_;
@@ -33,11 +34,30 @@ sub workaround_pg_bytea {
     $s->execute();
 }
 
+=head2 convert_latlon_to_en
+
+    ( $easting, $northing ) = Utils::convert_en_to_latlon( $latitude, $longitude );
+
+Takes the WGS84 latitude and longitude and returns OSGB36 easting and northing.
+
+=cut
+
+sub convert_latlon_to_en {
+    my ( $latitude, $longitude ) = @_;
+
+    my ( $easting, $northing ) =
+        mySociety::Locale::in_gb_locale {
+            mySociety::GeoUtil::wgs84_to_national_grid( $latitude, $longitude, 'G' );
+        };
+
+    return ( $easting, $northing );
+}
+
 =head2 convert_en_to_latlon
 
     ( $latitude, $longitude ) = Utils::convert_en_to_latlon( $easting, $northing );
 
-Takes the easting and northing and returns latitude and longitude.
+Takes the OSGB36 easting and northing and returns WGS84 latitude and longitude.
 
 =cut
 
@@ -56,8 +76,8 @@ sub convert_en_to_latlon {
 
     ( $lat, $lon ) = Utils::convert_en_to_latlon( $easting, $northing );
 
-Takes the easting and northing and returns latitude and longitude (truncated
-using C<Utils::truncate_coordinate>).
+Takes the OSGB36 easting and northing and returns WGS84 latitude and longitude
+(truncated using C<Utils::truncate_coordinate>).
 
 =cut
 
@@ -74,7 +94,7 @@ sub convert_en_to_latlon_truncated {
     $short = Utils::truncate_coordinate( $long );
 
 Given a long coordinate returns a shorter one - rounded to 6 decimal places -
-which is < 1m at the equator.
+which is < 1m at the equator, if you're using WGS84 lat/lon.
 
 =cut
 

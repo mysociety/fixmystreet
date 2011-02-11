@@ -24,7 +24,6 @@ use mySociety::AuthToken;
 use mySociety::Config;
 use mySociety::DBHandle qw(select_all);
 use mySociety::EmailUtil;
-use mySociety::GeoUtil;
 use mySociety::Locale;
 use mySociety::MaPit;
 use mySociety::PostcodeUtil;
@@ -282,9 +281,7 @@ sub submit_problem {
     # If in UK and we have a lat,lon coocdinate check it is in UK
     if ( $input{latitude} && mySociety::Config::get('COUNTRY') eq 'GB' ) {
         try {
-            mySociety::Locale::in_gb_locale {
-                mySociety::GeoUtil::wgs84_to_national_grid($input{latitude}, $input{longitude}, 'G');
-            };
+            Utils::convert_latlon_to_en( $input{latitude}, $input{longitude} );
         } catch Error::Simple with { 
             my $e = shift;
             push @errors, "We had a problem with the supplied co-ordinates - outside the UK?";
