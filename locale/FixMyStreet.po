@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2011-02-10 20:23+0000\n"
+"POT-Creation-Date: 2011-02-11 23:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
@@ -19,6 +19,10 @@ msgstr ""
 
 #: perllib/Cobrands/Emptyhomes/Util.pm:57 bin/send-questionnaires-eha:93
 msgid "Report Empty Homes"
+msgstr ""
+
+#: perllib/Cobrands/Fiksgatami/Util.pm:27
+msgid "Enter a nearby postcode, or street name and area:"
 msgstr ""
 
 #: perllib/Page.pm:80
@@ -39,52 +43,52 @@ msgstr ""
 msgid "FixMyStreet"
 msgstr ""
 
-#: perllib/Page.pm:193 perllib/Page.pm:356
+#: perllib/Page.pm:192 perllib/Page.pm:335
 msgid "Report a problem"
 msgstr ""
 
-#: perllib/Page.pm:194 perllib/Page.pm:357
+#: perllib/Page.pm:193 perllib/Page.pm:336
 msgid "All reports"
 msgstr ""
 
-#: perllib/Page.pm:195 perllib/Page.pm:358
+#: perllib/Page.pm:194 perllib/Page.pm:337
 msgid "Local alerts"
 msgstr ""
 
-#: perllib/Page.pm:196 perllib/Page.pm:359
+#: perllib/Page.pm:195 perllib/Page.pm:338
 msgid "Help"
 msgstr ""
 
-#: perllib/Page.pm:197 web/about.cgi:19 web/about.cgi:21
+#: perllib/Page.pm:196 web/about.cgi:19 web/about.cgi:21
 msgid "About us"
 msgstr ""
 
-#: perllib/Page.pm:219
+#: perllib/Page.pm:217
 msgid "Fix<span id=\"my\">My</span>Street"
 msgstr ""
 
-#: perllib/Page.pm:312
+#: perllib/Page.pm:293
 msgid ""
 "This is a developer site; things might break at any time, and the database "
 "will be periodically deleted."
 msgstr ""
 
-#: perllib/Page.pm:355
+#: perllib/Page.pm:334
 msgid "Navigation"
 msgstr ""
 
-#: perllib/Page.pm:360
+#: perllib/Page.pm:339
 msgid "Contact"
 msgstr ""
 
-#: perllib/Page.pm:361
+#: perllib/Page.pm:340
 msgid ""
 "<a href=\"http://www.mysociety.org/\"><img id=\"logo\" width=\"133\" height="
 "\"26\" src=\"/i/mysociety-dark.png\" alt=\"View mySociety.org\"><span id="
 "\"logoie\"></span></a>"
 msgstr ""
 
-#: perllib/Page.pm:362
+#: perllib/Page.pm:341
 msgid ""
 "Built by <a href=\"http://www.mysociety.org/\">mySociety</a>, using some <a "
 "href=\"http://github.com/mysociety/fixmystreet\">clever</a>&nbsp;<a href="
@@ -92,35 +96,35 @@ msgid ""
 "\">code</a>."
 msgstr ""
 
-#: perllib/Page.pm:391
+#: perllib/Page.pm:370
 msgid "Error"
 msgstr ""
 
-#: perllib/Page.pm:453
+#: perllib/Page.pm:432
 msgid "your problem will not be posted"
 msgstr ""
 
-#: perllib/Page.pm:454
+#: perllib/Page.pm:433
 msgid "we'll hang on to your problem report while you're checking your email."
 msgstr ""
 
-#: perllib/Page.pm:456
+#: perllib/Page.pm:435
 msgid "your update will not be posted"
 msgstr ""
 
-#: perllib/Page.pm:457
+#: perllib/Page.pm:436
 msgid "we'll hang on to your update while you're checking your email."
 msgstr ""
 
-#: perllib/Page.pm:459
+#: perllib/Page.pm:438
 msgid "your alert will not be activated"
 msgstr ""
 
-#: perllib/Page.pm:460
+#: perllib/Page.pm:439
 msgid "we'll hang on to your alert while you're checking your email."
 msgstr ""
 
-#: perllib/Page.pm:467
+#: perllib/Page.pm:446
 #, perl-format
 msgid ""
 "<h1>Nearly Done! Now check your email...</h1>\n"
@@ -134,170 +138,170 @@ msgid ""
 "<p>(Don't worry &mdash; %s)</p>\n"
 msgstr ""
 
-#: perllib/Page.pm:494
+#: perllib/Page.pm:473
 msgid "today"
 msgstr ""
 
-#: perllib/Page.pm:518
+#: perllib/Page.pm:497
 msgid "less than a minute"
 msgstr ""
 
-#: perllib/Page.pm:521
+#: perllib/Page.pm:500
 msgid "week"
 msgstr ""
 
-#: perllib/Page.pm:522
+#: perllib/Page.pm:501
 msgid "day"
 msgstr ""
 
-#: perllib/Page.pm:523
+#: perllib/Page.pm:502
 msgid "hour"
 msgstr ""
 
-#: perllib/Page.pm:524
+#: perllib/Page.pm:503
 msgid "minute"
 msgstr ""
 
-#: perllib/Page.pm:544
+#: perllib/Page.pm:523
 #, perl-format
 msgid "%s, reported anonymously at %s"
 msgstr ""
 
-#: perllib/Page.pm:546
+#: perllib/Page.pm:525
 #, perl-format
 msgid "%s, reported by %s at %s"
 msgstr ""
 
-#: perllib/Page.pm:550
+#: perllib/Page.pm:529
 #, perl-format
 msgid "Reported by %s in the %s category anonymously at %s"
 msgstr ""
 
-#: perllib/Page.pm:552
+#: perllib/Page.pm:531
 #, perl-format
 msgid "Reported by %s in the %s category by %s at %s"
 msgstr ""
 
-#: perllib/Page.pm:554
+#: perllib/Page.pm:533
 #, perl-format
 msgid "Reported by %s anonymously at %s"
 msgstr ""
 
-#: perllib/Page.pm:556
+#: perllib/Page.pm:535
 #, perl-format
 msgid "Reported by %s by %s at %s"
 msgstr ""
 
-#: perllib/Page.pm:558
+#: perllib/Page.pm:537
 #, perl-format
 msgid "Reported in the %s category anonymously at %s"
 msgstr ""
 
-#: perllib/Page.pm:560
+#: perllib/Page.pm:539
 #, perl-format
 msgid "Reported in the %s category by %s at %s"
 msgstr ""
 
-#: perllib/Page.pm:562
+#: perllib/Page.pm:541
 #, perl-format
 msgid "Reported anonymously at %s"
 msgstr ""
 
-#: perllib/Page.pm:564
+#: perllib/Page.pm:543
 #, perl-format
 msgid "Reported by %s at %s"
 msgstr ""
 
-#: perllib/Page.pm:569
+#: perllib/Page.pm:548
 msgid "the map was not used so pin location may be inaccurate"
 msgstr ""
 
-#: perllib/Page.pm:577
+#: perllib/Page.pm:556
 #, perl-format
 msgid "Sent to %s %s later"
 msgstr ""
 
-#: perllib/Page.pm:581
+#: perllib/Page.pm:560
 msgid "Not reported to council"
 msgstr ""
 
-#: perllib/Page.pm:632
+#: perllib/Page.pm:611
 msgid "Updates"
 msgstr ""
 
-#: perllib/Page.pm:636
+#: perllib/Page.pm:615
 #, perl-format
 msgid "Posted by %s at %s"
 msgstr ""
 
-#: perllib/Page.pm:638
+#: perllib/Page.pm:617
 #, perl-format
 msgid "Posted anonymously at %s"
 msgstr ""
 
-#: perllib/Page.pm:641
+#: perllib/Page.pm:620
 msgid "marked as fixed"
 msgstr ""
 
-#: perllib/Page.pm:642
+#: perllib/Page.pm:621
 msgid "reopened"
 msgstr ""
 
-#: perllib/Page.pm:650 web/index.cgi:1053
+#: perllib/Page.pm:629 web/index.cgi:1052
 msgid "Offensive? Unsuitable? Tell us"
 msgstr ""
 
-#: perllib/Page.pm:677
+#: perllib/Page.pm:656
 msgid "That postcode was not recognised, sorry."
 msgstr ""
 
-#: perllib/Page.pm:682
+#: perllib/Page.pm:661
 msgid ""
 "Sorry, that appears to be a Crown dependency postcode, which we don't cover."
 msgstr ""
 
-#: perllib/Page.pm:685 perllib/FixMyStreet/Geocode.pm:123
+#: perllib/Page.pm:664 perllib/FixMyStreet/Geocode.pm:128
 msgid ""
 "We do not cover Northern Ireland, I'm afraid, as our licence doesn't include "
 "any maps for the region."
 msgstr ""
 
-#: perllib/Page.pm:709
+#: perllib/Page.pm:688
 msgid "Please upload a JPEG image only"
 msgstr ""
 
-#: perllib/FixMyStreet/Alert.pm:142
+#: perllib/FixMyStreet/Alert.pm:147
 msgid "This report is currently marked as fixed."
 msgstr ""
 
-#: perllib/FixMyStreet/Alert.pm:143
+#: perllib/FixMyStreet/Alert.pm:148
 msgid "This report is currently marked as open."
 msgstr ""
 
-#: perllib/FixMyStreet/Geocode.pm:60
+#: perllib/FixMyStreet/Geocode.pm:64
 msgid ""
 "Sorry, that location appears to be too general; please be more specific."
 msgstr ""
 
-#: perllib/FixMyStreet/Geocode.pm:68
+#: perllib/FixMyStreet/Geocode.pm:72
 msgid "That location does not appear to be in Britain; please try again."
 msgstr ""
 
-#: perllib/FixMyStreet/Geocode.pm:103
+#: perllib/FixMyStreet/Geocode.pm:108
 msgid "Sorry, we could not parse that location. Please try again."
 msgstr ""
 
-#: perllib/FixMyStreet/Geocode.pm:105 perllib/FixMyStreet/Geocode.pm:120
+#: perllib/FixMyStreet/Geocode.pm:110 perllib/FixMyStreet/Geocode.pm:125
 msgid "Sorry, we could not find that location."
 msgstr ""
 
-#: perllib/FixMyStreet/Geocode.pm:136
+#: perllib/FixMyStreet/Geocode.pm:141
 msgid ""
 "We found more than one match for that location. We show up to ten matches, "
 "please try a different search if yours is not here."
 msgstr ""
 
-#: perllib/FixMyStreet/Geocode.pm:150
+#: perllib/FixMyStreet/Geocode.pm:155
 msgid "More than one match"
 msgstr ""
 
@@ -407,7 +411,7 @@ msgid ""
 "empty homes</a>.\n"
 msgstr ""
 
-#: web/ajax.cgi:55 web/ajax.cgi:76 web/index.cgi:897 web/index.cgi:912
+#: web/ajax.cgi:55 web/ajax.cgi:76 web/index.cgi:896 web/index.cgi:911
 msgid "(fixed)"
 msgstr ""
 
@@ -504,7 +508,7 @@ msgstr ""
 msgid "RSS feed of nearby problems"
 msgstr ""
 
-#: web/alert.cgi:246 web/alert.cgi:305 web/index.cgi:954 web/index.cgi:1064
+#: web/alert.cgi:246 web/alert.cgi:305 web/index.cgi:953 web/index.cgi:1063
 #: web/reports.cgi:218
 msgid "RSS feed"
 msgstr ""
@@ -555,7 +559,7 @@ msgid ""
 "postcode or street name and area:"
 msgstr ""
 
-#: web/alert.cgi:327 web/confirm.cgi:192 web/index.cgi:166
+#: web/alert.cgi:327 web/confirm.cgi:192 web/index.cgi:165
 msgid "Go"
 msgstr ""
 
@@ -575,11 +579,11 @@ msgstr ""
 msgid "Receive email when updates are left on this problem."
 msgstr ""
 
-#: web/alert.cgi:399 web/alert.cgi:426 web/index.cgi:725 web/index.cgi:1058
+#: web/alert.cgi:399 web/alert.cgi:426 web/index.cgi:724 web/index.cgi:1057
 msgid "Email:"
 msgstr ""
 
-#: web/alert.cgi:400 web/alert.cgi:427 web/index.cgi:1059
+#: web/alert.cgi:400 web/alert.cgi:427 web/index.cgi:1058
 msgid "Subscribe"
 msgstr ""
 
@@ -765,7 +769,7 @@ msgid ""
 "send an email to <a href='mailto:%s'>%s</a>:"
 msgstr ""
 
-#: web/contact.cgi:150 web/index.cgi:446
+#: web/contact.cgi:150 web/index.cgi:445
 msgid "There were problems with your report. Please see below."
 msgstr ""
 
@@ -793,7 +797,7 @@ msgstr ""
 msgid "Your&nbsp;email:"
 msgstr ""
 
-#: web/contact.cgi:231 web/index.cgi:721
+#: web/contact.cgi:231 web/index.cgi:720
 msgid "Subject:"
 msgstr ""
 
@@ -801,7 +805,7 @@ msgstr ""
 msgid "Message:"
 msgstr ""
 
-#: web/contact.cgi:233 web/index.cgi:1074
+#: web/contact.cgi:233 web/index.cgi:1073
 msgid "Post"
 msgstr ""
 
@@ -821,198 +825,198 @@ msgstr ""
 msgid "Weird and Wonderful reports"
 msgstr ""
 
-#: web/index.cgi:83
+#: web/index.cgi:82
 msgid "Submitting your report"
 msgstr ""
 
-#: web/index.cgi:86
+#: web/index.cgi:85
 msgid "Submitting your update"
 msgstr ""
 
-#: web/index.cgi:90 web/index.cgi:631
+#: web/index.cgi:89 web/index.cgi:630
 msgid "Reporting a problem"
 msgstr ""
 
-#: web/index.cgi:93
+#: web/index.cgi:92
 msgid "Viewing a problem"
 msgstr ""
 
-#: web/index.cgi:96
+#: web/index.cgi:95
 msgid "Viewing a location"
 msgstr ""
 
-#: web/index.cgi:121
+#: web/index.cgi:120
 msgid "Enter a nearby GB postcode, or street name and area:"
 msgstr ""
 
-#: web/index.cgi:135
+#: web/index.cgi:134
 msgid "Report, view, or discuss local problems"
 msgstr ""
 
-#: web/index.cgi:136
+#: web/index.cgi:135
 msgid "(like graffiti, fly tipping, broken paving slabs, or street lighting)"
 msgstr ""
 
-#: web/index.cgi:158
+#: web/index.cgi:157
 msgid ""
 "Thanks for uploading your photo. We now need to locate your problem, so "
 "please enter a nearby street name or postcode in the box below&nbsp;:"
 msgstr ""
 
-#: web/index.cgi:176
+#: web/index.cgi:175
 msgid "How to report a problem"
 msgstr ""
 
-#: web/index.cgi:179
+#: web/index.cgi:178
 msgid "Locate the problem on a map of the area"
 msgstr ""
 
-#: web/index.cgi:180
+#: web/index.cgi:179
 msgid "Enter details of the problem"
 msgstr ""
 
-#: web/index.cgi:181
+#: web/index.cgi:180
 msgid "We send it to the council on your behalf"
 msgstr ""
 
-#: web/index.cgi:196
+#: web/index.cgi:195
 msgid "Photos of recent reports"
 msgstr ""
 
-#: web/index.cgi:198
+#: web/index.cgi:197
 msgid "Recently reported problems"
 msgstr ""
 
-#: web/index.cgi:222
+#: web/index.cgi:221
 msgid "Please enter a message"
 msgstr ""
 
-#: web/index.cgi:225 web/index.cgi:308
+#: web/index.cgi:224 web/index.cgi:307
 msgid "Please enter your email"
 msgstr ""
 
-#: web/index.cgi:227 web/index.cgi:310
+#: web/index.cgi:226 web/index.cgi:309
 msgid "Please enter a valid email"
 msgstr ""
 
-#: web/index.cgi:236 web/index.cgi:376
+#: web/index.cgi:235 web/index.cgi:375
 #, perl-format
 msgid ""
 "That image doesn't appear to have uploaded correctly (%s), please try again."
 msgstr ""
 
-#: web/index.cgi:258
+#: web/index.cgi:257
 msgid "Anonymous"
 msgstr ""
 
-#: web/index.cgi:299
+#: web/index.cgi:298
 msgid "No council selected"
 msgstr ""
 
-#: web/index.cgi:300
+#: web/index.cgi:299
 msgid "Please enter a subject"
 msgstr ""
 
-#: web/index.cgi:301
+#: web/index.cgi:300
 msgid "Please enter some details"
 msgstr ""
 
-#: web/index.cgi:303
+#: web/index.cgi:302
 msgid "Please enter your name"
 msgstr ""
 
-#: web/index.cgi:305
+#: web/index.cgi:304
 msgid ""
 "Please enter your full name, councils need this information - if you do not "
 "wish your name to be shown on the site, untick the box"
 msgstr ""
 
-#: web/index.cgi:313 web/index.cgi:352
+#: web/index.cgi:312 web/index.cgi:351
 msgid "Please choose a category"
 msgstr ""
 
-#: web/index.cgi:315 web/index.cgi:565
+#: web/index.cgi:314 web/index.cgi:564
 msgid "-- Pick a property type --"
 msgstr ""
 
-#: web/index.cgi:316
+#: web/index.cgi:315
 msgid "Please choose a property type"
 msgstr ""
 
-#: web/index.cgi:336
+#: web/index.cgi:335
 msgid "That location is not part of that council"
 msgstr ""
 
-#: web/index.cgi:356
+#: web/index.cgi:355
 msgid "We have details for that council"
 msgstr ""
 
-#: web/index.cgi:365
+#: web/index.cgi:364
 msgid "Somehow, you only have one co-ordinate. Please try again."
 msgstr ""
 
-#: web/index.cgi:367
+#: web/index.cgi:366
 msgid "You haven't specified any sort of co-ordinates. Please try again."
 msgstr ""
 
-#: web/index.cgi:390 web/index.cgi:551 web/index.cgi:558
+#: web/index.cgi:389 web/index.cgi:550 web/index.cgi:557
 msgid "Other"
 msgstr ""
 
-#: web/index.cgi:407
+#: web/index.cgi:406
 #, perl-format
 msgid ""
 "You have successfully confirmed your report and you can now <a href=\"%s"
 "\">view it on the site</a>."
 msgstr ""
 
-#: web/index.cgi:538
+#: web/index.cgi:537
 msgid ""
 "That spot does not appear to be covered by a council.\n"
 "If you have tried to report an issue past the shoreline, for example,\n"
 "please specify the closest point on land."
 msgstr ""
 
-#: web/index.cgi:559
+#: web/index.cgi:558
 msgid "Category:"
 msgstr ""
 
-#: web/index.cgi:565
+#: web/index.cgi:564
 msgid "Empty house or bungalow"
 msgstr ""
 
-#: web/index.cgi:566
+#: web/index.cgi:565
 msgid "Empty flat or maisonette"
 msgstr ""
 
-#: web/index.cgi:566
+#: web/index.cgi:565
 msgid "Whole block of empty flats"
 msgstr ""
 
-#: web/index.cgi:567
+#: web/index.cgi:566
 msgid "Empty office or other commercial"
 msgstr ""
 
-#: web/index.cgi:567
+#: web/index.cgi:566
 msgid "Empty pub or bar"
 msgstr ""
 
-#: web/index.cgi:568
+#: web/index.cgi:567
 msgid "Empty public building - school, hospital, etc."
 msgstr ""
 
-#: web/index.cgi:569
+#: web/index.cgi:568
 msgid "Property type:"
 msgstr ""
 
-#: web/index.cgi:628
+#: web/index.cgi:627
 msgid ""
 "You have located the problem at the point marked with a purple pin on the "
 "map.\n"
 "If this is not the correct location, simply click on the map again. "
 msgstr ""
 
-#: web/index.cgi:636
+#: web/index.cgi:635
 #, perl-format
 msgid ""
 "All the information you provide here will be sent to <strong>%s</strong>.\n"
@@ -1020,7 +1024,7 @@ msgid ""
 "name if you give us permission."
 msgstr ""
 
-#: web/index.cgi:640
+#: web/index.cgi:639
 #, perl-format
 msgid ""
 "All the information you provide here will be sent to <strong>%s</strong>.\n"
@@ -1028,7 +1032,7 @@ msgid ""
 "name if you give us permission."
 msgstr ""
 
-#: web/index.cgi:676
+#: web/index.cgi:675
 msgid ""
 "<p>We do not yet have details for the council that covers\n"
 "this location. If you submit a report here it will be left on the site, but\n"
@@ -1036,13 +1040,13 @@ msgid ""
 "we can show to the council the activity in their area."
 msgstr ""
 
-#: web/index.cgi:685
+#: web/index.cgi:684
 msgid ""
 "Please fill in the form below with details of the problem,\n"
 "and describe the location as precisely as possible in the details box."
 msgstr ""
 
-#: web/index.cgi:694
+#: web/index.cgi:693
 msgid ""
 "Please fill in details of the empty property below, saying what type of\n"
 "property it is e.g. an empty home, block of flats, office etc. Tell us\n"
@@ -1055,7 +1059,7 @@ msgid ""
 "to read, as does a lack of punctuation.\n"
 msgstr ""
 
-#: web/index.cgi:702
+#: web/index.cgi:701
 msgid ""
 "Please fill in details of the problem below. The council won't be able\n"
 "to help unless you leave as much detail as you can, so please describe the "
@@ -1065,168 +1069,168 @@ msgid ""
 "photo of the problem if you have one), etc."
 msgstr ""
 
-#: web/index.cgi:707
+#: web/index.cgi:706
 msgid "Please fill in details of the problem below."
 msgstr ""
 
-#: web/index.cgi:720
+#: web/index.cgi:719
 msgid "Empty property details form"
 msgstr ""
 
-#: web/index.cgi:722
+#: web/index.cgi:721
 msgid "Details:"
 msgstr ""
 
-#: web/index.cgi:723 web/index.cgi:1089
+#: web/index.cgi:722 web/index.cgi:1088
 msgid "Photo:"
 msgstr ""
 
-#: web/index.cgi:724 web/index.cgi:1071
+#: web/index.cgi:723 web/index.cgi:1070
 msgid "Name:"
 msgstr ""
 
-#: web/index.cgi:726 bin/send-reports:89
+#: web/index.cgi:725 bin/send-reports:88
 msgid "Phone:"
 msgstr ""
 
-#: web/index.cgi:727
+#: web/index.cgi:726
 msgid "(optional)"
 msgstr ""
 
-#: web/index.cgi:729
+#: web/index.cgi:728
 msgid "Can we show your name on the site?"
 msgstr ""
 
-#: web/index.cgi:731
+#: web/index.cgi:730
 msgid "Can we show your name publicly?"
 msgstr ""
 
-#: web/index.cgi:733
+#: web/index.cgi:732
 msgid "(we never show your email address or phone number)"
 msgstr ""
 
-#: web/index.cgi:786
+#: web/index.cgi:785
 msgid "Submit"
 msgstr ""
 
-#: web/index.cgi:878
+#: web/index.cgi:877
 msgid "Hide stale reports"
 msgstr ""
 
-#: web/index.cgi:881
+#: web/index.cgi:880
 msgid "Include stale reports"
 msgstr ""
 
-#: web/index.cgi:900
+#: web/index.cgi:899
 msgid "No problems have been reported yet."
 msgstr ""
 
-#: web/index.cgi:916
+#: web/index.cgi:915
 msgid "No problems found."
 msgstr ""
 
-#: web/index.cgi:921
+#: web/index.cgi:920
 msgid "Show pins"
 msgstr ""
 
-#: web/index.cgi:925
+#: web/index.cgi:924
 msgid "Hide pins"
 msgstr ""
 
-#: web/index.cgi:953
+#: web/index.cgi:952
 msgid "Email me new local problems"
 msgstr ""
 
-#: web/index.cgi:955
+#: web/index.cgi:954
 msgid "RSS feed of recent local problems"
 msgstr ""
 
-#: web/index.cgi:958
+#: web/index.cgi:957
 msgid "Problems in this area"
 msgstr ""
 
-#: web/index.cgi:959
+#: web/index.cgi:958
 msgid "Reports on and around the map"
 msgstr ""
 
-#: web/index.cgi:960
+#: web/index.cgi:959
 #, perl-format
 msgid "Closest nearby problems <small>(within&nbsp;%skm)</small>"
 msgstr ""
 
-#: web/index.cgi:964
+#: web/index.cgi:963
 msgid ""
 "To report a problem, simply\n"
 "        <strong>click on the map</strong> at the correct location."
 msgstr ""
 
-#: web/index.cgi:966
+#: web/index.cgi:965
 #, perl-format
 msgid ""
 "<small>If you cannot see the map, <a href='%s' rel='nofollow'>skip this\n"
 "        step</a>.</small>"
 msgstr ""
 
-#: web/index.cgi:971
+#: web/index.cgi:970
 msgid "Recent local problems, FixMyStreet"
 msgstr ""
 
-#: web/index.cgi:983
+#: web/index.cgi:982
 msgid "There were problems with your update. Please see below."
 msgstr ""
 
-#: web/index.cgi:1004 web/index.cgi:1006
+#: web/index.cgi:1003 web/index.cgi:1005
 msgid "Unknown problem ID"
 msgstr ""
 
-#: web/index.cgi:1007
+#: web/index.cgi:1006
 msgid "That report has been removed from FixMyStreet."
 msgstr ""
 
-#: web/index.cgi:1026
+#: web/index.cgi:1025
 msgid "This problem is old and of unknown status."
 msgstr ""
 
-#: web/index.cgi:1029 web/index.cgi:1070
+#: web/index.cgi:1028 web/index.cgi:1069
 msgid "This problem has been fixed"
 msgstr ""
 
-#: web/index.cgi:1054
+#: web/index.cgi:1053
 msgid "More problems nearby"
 msgstr ""
 
-#: web/index.cgi:1057
+#: web/index.cgi:1056
 msgid "Email me updates"
 msgstr ""
 
-#: web/index.cgi:1060
+#: web/index.cgi:1059
 msgid "Receive email when updates are left on this problem"
 msgstr ""
 
-#: web/index.cgi:1065
+#: web/index.cgi:1064
 msgid "RSS feed of updates to this problem"
 msgstr ""
 
-#: web/index.cgi:1066
+#: web/index.cgi:1065
 msgid "Provide an update"
 msgstr ""
 
-#: web/index.cgi:1072
+#: web/index.cgi:1071
 msgid "Update:"
 msgstr ""
 
-#: web/index.cgi:1073
+#: web/index.cgi:1072
 msgid "Alert me to future updates"
 msgstr ""
 
-#: web/index.cgi:1080
+#: web/index.cgi:1079
 msgid ""
 "Please note that updates are not sent to the council. If you leave your name "
 "it will be public. Your information will only be used in accordance with our "
 "<a href=\"/faq#privacy\">privacy policy</a>"
 msgstr ""
 
-#: web/index.cgi:1100
+#: web/index.cgi:1099
 msgid "Updates to this problem, FixMyStreet"
 msgstr ""
 
@@ -1482,16 +1486,16 @@ msgstr ""
 msgid "Problems within %s, FixMyStreet"
 msgstr ""
 
-#: bin/send-reports:91
+#: bin/send-reports:90
 msgid ""
 "This web page also contains a photo of the problem, provided by the user."
 msgstr ""
 
-#: bin/send-reports:97
+#: bin/send-reports:96
 msgid "To view a map of the precise location of this issue"
 msgstr ""
 
-#: bin/send-reports:98
+#: bin/send-reports:97
 msgid ""
 "The user could not locate the problem on a map, but to see the area around "
 "the location they entered"
