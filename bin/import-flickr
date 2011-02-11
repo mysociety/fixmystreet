@@ -55,28 +55,28 @@ foreach (@$st) {
 
 # XXX: Hmm... Use format=perl now Cal has added it for me! :)
 while ($result =~ /<photo id="([^"]*)" owner="([^"]*)" secret="([^"]*)" server="([^"]*)" farm="([^"]*)" title="([^"]*)".*?latitude="([^"]*)" longitude="([^"]*)".*?machine_tags="([^"]*)"/g) {
-    my ($id, $owner, $secret, $server, $farm, $title, $lat, $lon, $machine) = ($1, $2, $3, $4, $5, $6, $7, $8, $9);
+    my ($id, $owner, $secret, $server, $farm, $title, $latitude, $longitude, $machine) = ($1, $2, $3, $4, $5, $6, $7, $8, $9);
     next if $ids{$id};
-    if ($machine =~ /geo:/ && !$lat && !$lon) {
+    if ($machine =~ /geo:/ && !$latitude && !$longitude) {
         # Have to fetch raw tags, as otherwise can't tell if it's negative, or how many decimal places
         my $url = 'http://api.flickr.com/services/rest/?method=flickr.tags.getListPhoto&api_key=' . $key . '&photo_id=' . $id;
         my $tags = get($url);
-        ($lon) = $tags =~ /raw="geo:lon=([^"]*)"/i;
-        ($lat) = $tags =~ /raw="geo:lat=([^"]*)"/i;
+        ($longitude) = $tags =~ /raw="geo:lon=([^"]*)"/i;
+        ($latitude) = $tags =~ /raw="geo:lat=([^"]*)"/i;
     }
     my $url = "http://farm$farm.static.flickr.com/$server/".$id.'_'.$secret.'_m.jpg';
     my $image = get($url);
-    problem_create($id, $owner, $title, $lat, $lon, $image);
+    problem_create($id, $owner, $title, $latitude, $longitude, $image);
 }
 
 sub problem_create {
-    my ($photo_id, $owner, $title, $lat, $lon, $image) = @_;
+    my ($photo_id, $owner, $title, $latitude, $longitude, $image) = @_;
     my ($name, $email) = dbh()->selectrow_array("select name, email from partial_user where service='flickr' and nsid=?", {}, $owner);
 
     # set some defaults
     $name ||= '';
-    $lat  ||= 0;
-    $lon  ||= 0;
+    $latitude ||= 0;
+    $longitude ||= 0;
 
     my $id = dbh()->selectrow_array("select nextval('problem_id_seq')");
     Utils::workaround_pg_bytea("insert into problem
