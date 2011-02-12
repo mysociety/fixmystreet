@@ -301,6 +301,19 @@ sub header ($%) {
 sub footer {
     my ($q, %params) = @_;
 
+    my $pc = $q->param('pc') || '';
+    $pc = "?pc=" . ent($pc) if $pc;
+
+    %params = (%params,
+        navigation => _('Navigation'),
+        report => _("Report a problem"),
+        reports => _("All reports"),
+        alerts => _("Local alerts"),
+        help => _("Help"),
+        contact => _("Contact"),
+        pc => $pc,
+    );
+
     my $html = template_include('footer', $q, template_root($q), %params);
     if ($html) {
         my $lang = $mySociety::Locale::lang;
@@ -309,9 +322,6 @@ sub footer {
         }
         return $html;
     }
-
-    my $pc = $q->param('pc') || '';
-    $pc = "?pc=" . ent($pc) if $pc;
 
     my $piwik = "";
     if (mySociety::Config::get('BASE_URL') eq "http://www.fixmystreet.com") {
@@ -331,24 +341,18 @@ piwikTracker.enableLinkTracking();
 EOF
     }
 
-    my $navigation = _('Navigation');
-    my $report = _("Report a problem");
-    my $reports = _("All reports");
-    my $alerts = _("Local alerts");
-    my $help = _("Help");
-    my $contact = _("Contact");
     my $orglogo = _('<a href="http://www.mysociety.org/"><img id="logo" width="133" height="26" src="/i/mysociety-dark.png" alt="View mySociety.org"><span id="logoie"></span></a>');
     my $creditline = _('Built by <a href="http://www.mysociety.org/">mySociety</a>, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.');
 
     return <<EOF;
 </div></div>
-<h2 class="v">$navigation</h2>
+<h2 class="v">$params{navigation}</h2>
 <ul id="navigation">
-<li><a href="/">$report</a></li>
-<li><a href="/reports">$reports</a></li>
-<li><a href="/alert$pc">$alerts</a></li>
-<li><a href="/faq">$help</a></li>
-<li><a href="/contact">$contact</a></li>
+<li><a href="/">$params{report}</a></li>
+<li><a href="/reports">$params{reports}</a></li>
+<li><a href="/alert$params{pc}">$params{alerts}</a></li>
+<li><a href="/faq">$params{help}</a></li>
+<li><a href="/contact">$params{contact}</a></li>
 </ul>
 
 $orglogo

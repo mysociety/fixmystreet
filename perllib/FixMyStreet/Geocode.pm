@@ -68,6 +68,7 @@ sub geocoded_string_coordinates {
         try {
             my ($easting, $northing) = Utils::convert_latlon_to_en( $latitude, $longitude );
         } catch Error::Simple with {
+            mySociety::Locale::pop(); # We threw exception, so it won't have happened.
             $error = shift;
             $error = _('That location does not appear to be in Britain; please try again.')
                 if $error =~ /out of the area covered/;

@@ -1,0 +1,16 @@
+</div></div>
+<h2 class="v">$navigation</h2>
+<ul id="navigation">
+<li><a href="/">{{ $report }}</a></li>
+<li><a href="/reports">{{ $reports }}</a></li>
+<li><a href="/alert{{ $pc }}">{{ $alerts }}</a></li>
+<li><a href="/faq">{{ $help }}</a></li>
+<li><a href="/contact">{{ $contact }}</a></li>
+</ul>
+
+<a id="logo" href="http://www.nuug.no/">NUUG</a>
+
+<p id="footer">Built by <a href="http://www.mysociety.org/">mySociety</a> and maintained by NUUG, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.</p>
+
+</body>
+</html>
