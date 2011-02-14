@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2011-02-11 23:26+0000\n"
+"POT-Creation-Date: 2011-02-14 13:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
@@ -43,19 +43,19 @@ msgstr ""
 msgid "FixMyStreet"
 msgstr ""
 
-#: perllib/Page.pm:192 perllib/Page.pm:335
+#: perllib/Page.pm:192 perllib/Page.pm:314
 msgid "Report a problem"
 msgstr ""
 
-#: perllib/Page.pm:193 perllib/Page.pm:336
+#: perllib/Page.pm:193 perllib/Page.pm:315
 msgid "All reports"
 msgstr ""
 
-#: perllib/Page.pm:194 perllib/Page.pm:337
+#: perllib/Page.pm:194 perllib/Page.pm:316
 msgid "Local alerts"
 msgstr ""
 
-#: perllib/Page.pm:195 perllib/Page.pm:338
+#: perllib/Page.pm:195 perllib/Page.pm:317
 msgid "Help"
 msgstr ""
 
@@ -73,22 +73,7 @@ msgid ""
 "will be periodically deleted."
 msgstr ""
 
-#: perllib/Page.pm:334
-msgid "Navigation"
-msgstr ""
-
-#: perllib/Page.pm:339
-msgid "Contact"
-msgstr ""
-
-#: perllib/Page.pm:340
-msgid ""
-"<a href=\"http://www.mysociety.org/\"><img id=\"logo\" width=\"133\" height="
-"\"26\" src=\"/i/mysociety-dark.png\" alt=\"View mySociety.org\"><span id="
-"\"logoie\"></span></a>"
-msgstr ""
-
-#: perllib/Page.pm:341
+#: perllib/Page.pm:307
 msgid ""
 "Built by <a href=\"http://www.mysociety.org/\">mySociety</a>, using some <a "
 "href=\"http://github.com/mysociety/fixmystreet\">clever</a>&nbsp;<a href="
@@ -96,35 +81,58 @@ msgid ""
 "\">code</a>."
 msgstr ""
 
-#: perllib/Page.pm:370
+#: perllib/Page.pm:309
+msgid ""
+"Built by <a href=\"http://www.mysociety.org/\">mySociety</a> and maintained "
+"by NUUG, using some <a href=\"http://github.com/mysociety/fixmystreet"
+"\">clever</a>&nbsp;<a href=\"https://secure.mysociety.org/cvstrac/dir?"
+"d=mysociety/services/TilMa\">code</a>."
+msgstr ""
+
+#: perllib/Page.pm:313
+msgid "Navigation"
+msgstr ""
+
+#: perllib/Page.pm:318
+msgid "Contact"
+msgstr ""
+
+#: perllib/Page.pm:320
+msgid ""
+"<a href=\"http://www.mysociety.org/\"><img id=\"logo\" width=\"133\" height="
+"\"26\" src=\"/i/mysociety-dark.png\" alt=\"View mySociety.org\"><span id="
+"\"logoie\"></span></a>"
+msgstr ""
+
+#: perllib/Page.pm:378
 msgid "Error"
 msgstr ""
 
-#: perllib/Page.pm:432
+#: perllib/Page.pm:440
 msgid "your problem will not be posted"
 msgstr ""
 
-#: perllib/Page.pm:433
+#: perllib/Page.pm:441
 msgid "we'll hang on to your problem report while you're checking your email."
 msgstr ""
 
-#: perllib/Page.pm:435
+#: perllib/Page.pm:443
 msgid "your update will not be posted"
 msgstr ""
 
-#: perllib/Page.pm:436
+#: perllib/Page.pm:444
 msgid "we'll hang on to your update while you're checking your email."
 msgstr ""
 
-#: perllib/Page.pm:438
+#: perllib/Page.pm:446
 msgid "your alert will not be activated"
 msgstr ""
 
-#: perllib/Page.pm:439
+#: perllib/Page.pm:447
 msgid "we'll hang on to your alert while you're checking your email."
 msgstr ""
 
-#: perllib/Page.pm:446
+#: perllib/Page.pm:454
 #, perl-format
 msgid ""
 "<h1>Nearly Done! Now check your email...</h1>\n"
@@ -138,135 +146,135 @@ msgid ""
 "<p>(Don't worry &mdash; %s)</p>\n"
 msgstr ""
 
-#: perllib/Page.pm:473
+#: perllib/Page.pm:481
 msgid "today"
 msgstr ""
 
-#: perllib/Page.pm:497
+#: perllib/Page.pm:505
 msgid "less than a minute"
 msgstr ""
 
-#: perllib/Page.pm:500
+#: perllib/Page.pm:508
 msgid "week"
 msgstr ""
 
-#: perllib/Page.pm:501
+#: perllib/Page.pm:509
 msgid "day"
 msgstr ""
 
-#: perllib/Page.pm:502
+#: perllib/Page.pm:510
 msgid "hour"
 msgstr ""
 
-#: perllib/Page.pm:503
+#: perllib/Page.pm:511
 msgid "minute"
-msgstr ""
-
-#: perllib/Page.pm:523
-#, perl-format
-msgid "%s, reported anonymously at %s"
-msgstr ""
-
-#: perllib/Page.pm:525
-#, perl-format
-msgid "%s, reported by %s at %s"
-msgstr ""
-
-#: perllib/Page.pm:529
-#, perl-format
-msgid "Reported by %s in the %s category anonymously at %s"
 msgstr ""
 
 #: perllib/Page.pm:531
 #, perl-format
-msgid "Reported by %s in the %s category by %s at %s"
+msgid "%s, reported anonymously at %s"
 msgstr ""
 
 #: perllib/Page.pm:533
 #, perl-format
-msgid "Reported by %s anonymously at %s"
-msgstr ""
-
-#: perllib/Page.pm:535
-#, perl-format
-msgid "Reported by %s by %s at %s"
+msgid "%s, reported by %s at %s"
 msgstr ""
 
 #: perllib/Page.pm:537
 #, perl-format
-msgid "Reported in the %s category anonymously at %s"
+msgid "Reported by %s in the %s category anonymously at %s"
 msgstr ""
 
 #: perllib/Page.pm:539
 #, perl-format
-msgid "Reported in the %s category by %s at %s"
+msgid "Reported by %s in the %s category by %s at %s"
 msgstr ""
 
 #: perllib/Page.pm:541
 #, perl-format
-msgid "Reported anonymously at %s"
+msgid "Reported by %s anonymously at %s"
 msgstr ""
 
 #: perllib/Page.pm:543
 #, perl-format
+msgid "Reported by %s by %s at %s"
+msgstr ""
+
+#: perllib/Page.pm:545
+#, perl-format
+msgid "Reported in the %s category anonymously at %s"
+msgstr ""
+
+#: perllib/Page.pm:547
+#, perl-format
+msgid "Reported in the %s category by %s at %s"
+msgstr ""
+
+#: perllib/Page.pm:549
+#, perl-format
+msgid "Reported anonymously at %s"
+msgstr ""
+
+#: perllib/Page.pm:551
+#, perl-format
 msgid "Reported by %s at %s"
 msgstr ""
 
-#: perllib/Page.pm:548
+#: perllib/Page.pm:556
 msgid "the map was not used so pin location may be inaccurate"
 msgstr ""
 
-#: perllib/Page.pm:556
+#: perllib/Page.pm:564
 #, perl-format
 msgid "Sent to %s %s later"
 msgstr ""
 
-#: perllib/Page.pm:560
+#: perllib/Page.pm:568
 msgid "Not reported to council"
 msgstr ""
 
-#: perllib/Page.pm:611
+#: perllib/Page.pm:619
 msgid "Updates"
 msgstr ""
 
-#: perllib/Page.pm:615
+#: perllib/Page.pm:623
 #, perl-format
 msgid "Posted by %s at %s"
 msgstr ""
 
-#: perllib/Page.pm:617
+#: perllib/Page.pm:625
 #, perl-format
 msgid "Posted anonymously at %s"
 msgstr ""
 
-#: perllib/Page.pm:620
+#: perllib/Page.pm:628
 msgid "marked as fixed"
 msgstr ""
 
-#: perllib/Page.pm:621
+#: perllib/Page.pm:629
 msgid "reopened"
 msgstr ""
 
-#: perllib/Page.pm:629 web/index.cgi:1052
+#: perllib/Page.pm:637 web/index.cgi:1052
 msgid "Offensive? Unsuitable? Tell us"
 msgstr ""
 
-#: perllib/Page.pm:656
+#: perllib/Page.pm:664
 msgid "That postcode was not recognised, sorry."
 msgstr ""
 
-#: perllib/Page.pm:661
+#: perllib/Page.pm:669
 msgid ""
 "Sorry, that appears to be a Crown dependency postcode, which we don't cover."
 msgstr ""
 
-#: perllib/Page.pm:664 perllib/FixMyStreet/Geocode.pm:128
+#: perllib/Page.pm:672 perllib/FixMyStreet/Geocode.pm:131
 msgid ""
 "We do not cover Northern Ireland, I'm afraid, as our licence doesn't include "
 "any maps for the region."
 msgstr ""
 
-#: perllib/Page.pm:688
+#: perllib/Page.pm:696
 msgid "Please upload a JPEG image only"
 msgstr ""
 
@@ -283,25 +291,25 @@ msgid ""
 "Sorry, that location appears to be too general; please be more specific."
 msgstr ""
 
-#: perllib/FixMyStreet/Geocode.pm:72
+#: perllib/FixMyStreet/Geocode.pm:74
 msgid "That location does not appear to be in Britain; please try again."
 msgstr ""
 
-#: perllib/FixMyStreet/Geocode.pm:108
+#: perllib/FixMyStreet/Geocode.pm:111
 msgid "Sorry, we could not parse that location. Please try again."
 msgstr ""
 
-#: perllib/FixMyStreet/Geocode.pm:110 perllib/FixMyStreet/Geocode.pm:125
+#: perllib/FixMyStreet/Geocode.pm:113 perllib/FixMyStreet/Geocode.pm:128
 msgid "Sorry, we could not find that location."
 msgstr ""
 
-#: perllib/FixMyStreet/Geocode.pm:141
+#: perllib/FixMyStreet/Geocode.pm:144
 msgid ""
 "We found more than one match for that location. We show up to ten matches, "
 "please try a different search if yours is not here."
 msgstr ""
 
-#: perllib/FixMyStreet/Geocode.pm:155
+#: perllib/FixMyStreet/Geocode.pm:158
 msgid "More than one match"
 msgstr ""
 
