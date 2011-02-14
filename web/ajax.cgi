@@ -59,8 +59,8 @@ sub main {
 
     $list = '';
     foreach (@$around_map) {
-        my $dist = int($_->{distance}/100+.5)/10;
-	$link = Cobrand::url($cobrand, NewURL($q, -retain => 1, 
+        my $dist = int($_->{distance}*10+.5)/10;
+        $link = Cobrand::url($cobrand, NewURL($q, -retain => 1, 
                                                   -url => '/report/' . $_->{id}, 
                                                   pc => undef, 
                                                   x => undef, 
@@ -81,7 +81,7 @@ sub main {
     #$list = '';
     #foreach (@$fixed) {
     #    $list .= '<li><a href="/report/' . $_->{id} . '">';
-    #    $list .= $_->{title} . ' <small>(' . int($_->{distance}/100+.5)/10 . 'km)</small>';
+    #    $list .= $_->{title} . ' <small>(' . int($_->{distance}*10+.5)/10 . 'km)</small>';
     #    $list .= '</a></li>';
     #}
     #my $f_list = $list;

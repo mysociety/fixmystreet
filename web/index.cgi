@@ -903,7 +903,7 @@ sub display_location {
     foreach (@$around_map) {
         my $report_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, 'y' => undef), $q);  
         $around_list .= '<li><a href="' . $report_url . '">';
-        my $dist = int($_->{distance}/100+0.5);
+        my $dist = int($_->{distance}*10+0.5);
         $dist = $dist / 10;
         $around_list .= ent($_->{title}) . '</a> <small>(';
         $around_list .= Page::prettify_epoch($q, $_->{time}, 1) . ', ';
