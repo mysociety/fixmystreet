@@ -11,6 +11,7 @@
 
 use strict;
 use Standard;
+use Encode;
 use URI::Escape;
 use FixMyStreet::Alert;
 use mySociety::MaPit;
@@ -49,7 +50,7 @@ sub main {
         print $q->redirect($base_url . $rss . '/reports/' . $area_name);
         return;
     } elsif ($q_council =~ /\D/) {
-        my $areas = mySociety::MaPit::call('areas', $q_council, type => $mySociety::VotingArea::council_parent_types, min_generation=>10 );
+        my $areas = mySociety::MaPit::call('areas', $q_council, type => Cobrand::area_types($cobrand), min_generation=>Cobrand::area_min_generation($cobrand) );
         if (keys %$areas == 1) {
             ($one_council) = keys %$areas;
             $area_type = $areas->{$one_council}->{type};
@@ -83,7 +84,8 @@ sub main {
     my $q_ward = $q->param('ward') || '';
     my $ward;
     if ($one_council && $q_ward) {
-        my $qw = mySociety::MaPit::call('areas', $q_ward, type => $mySociety::VotingArea::council_child_types, min_generation => 10);
+        my $qw = mySociety::MaPit::call('areas', $q_ward, type => $mySociety::VotingArea::council_child_types,
+            min_generation => Cobrand::area_min_generation($cobrand));
         foreach my $id (sort keys %$qw) {
             if ($qw->{$id}->{parent_area} == $one_council) {
                 $ward = $id;
@@ -130,10 +132,8 @@ sub main {
         $areas_info = mySociety::MaPit::call('areas', $one_council);
     } else {
         # Show all councils on main report page
-        my $ignore = 'LGD';
-        $ignore .= '|CTY' if $q->{site} eq 'emptyhomes';
-        my @types = grep { !/$ignore/ } @$mySociety::VotingArea::council_parent_types;
-        $areas_info = mySociety::MaPit::call('areas', [ @types ], min_generation=>10 );
+        my $area_types = Cobrand::area_types($cobrand);
+        $areas_info = mySociety::MaPit::call('areas', [ @$area_types ], min_generation=>Cobrand::area_min_generation($cobrand) );
     }
 
     my $problems = Problems::council_problems($ward, $one_council); 
@@ -181,7 +181,7 @@ sub main {
             my $url = Page::short_name($areas_info->{$_}->{name});
             my $cobrand_url = Cobrand::url($cobrand, "/reports/$url", $q);
             print '><td align="left"><a href="' . $cobrand_url . '">' .
-                $areas_info->{$_}->{name} . '</a></td>';
+                encode_utf8($areas_info->{$_}->{name}) . '</a></td>';
             summary_cell(\@{$open{$_}{new}});
             if ($q->{site} eq 'emptyhomes') {
                 my $c = 0;

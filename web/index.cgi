@@ -277,6 +277,7 @@ sub submit_problem {
     my @errors;
     my %field_errors;
 
+    my $cobrand = Page::get_cobrand($q);
 
     # If in UK and we have a lat,lon coocdinate check it is in UK
     if ( $input{latitude} && mySociety::Config::get('COUNTRY') eq 'GB' ) {
@@ -324,7 +325,8 @@ sub submit_problem {
         $areas = mySociety::MaPit::call( 'point', $mapit_query );
         if ($input{council} =~ /^[\d,]+(\|[\d,]+)?$/) {
             my $no_details = $1 || '';
-            my %va = map { $_ => 1 } @$mySociety::VotingArea::council_parent_types;
+            my $area_types = Cobrand::area_types($cobrand);
+            my %va = map { $_ => 1 } @$area_types;
             my %councils;
             foreach (keys %$areas) {
                 $councils{$_} = 1 if $va{$areas->{$_}->{type}};
@@ -388,7 +390,6 @@ sub submit_problem {
     my $used_map = $input{skipped} ? 'f' : 't';
     $input{category} = _('Other') unless $input{category};
     my ($id, $out);
-    my $cobrand = Page::get_cobrand($q);
     my $cobrand_data = Cobrand::extra_problem_data($cobrand, $q);
     if (my $token = $input{partial}) {
         my $id = mySociety::AuthToken::retrieve('partial', $token);
@@ -516,11 +517,9 @@ sub display_form {
     }
 
     # Look up councils and do checks for the point we've got
-    my $parent_types = $mySociety::VotingArea::council_parent_types;
-    $parent_types = [qw(DIS LBO MTD UTA LGD COI)] # No CTY
-        if $q->{site} eq 'emptyhomes';
+    my $area_types = Cobrand::area_types($cobrand);
     # XXX: I think we want in_gb_locale around the next line, needs testing
-    my $all_councils = mySociety::MaPit::call('point', "4326/$longitude,$latitude", type => $parent_types);
+    my $all_councils = mySociety::MaPit::call('point', "4326/$longitude,$latitude", type => $area_types);
 
     # Let cobrand do a check
     my ($success, $error_msg) = Cobrand::council_check($cobrand, { all_councils => $all_councils }, $q, 'submit_problem');

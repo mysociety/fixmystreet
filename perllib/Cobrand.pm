@@ -116,6 +116,9 @@ my %fns = (
     'admin_pages' => { default => '0' },
     # Show the problem creation graph in the admin interface
     'admin_show_creation_graph' => { default => '1' },
+    # The MaPit types this site handles
+    'area_types' => { default => '[qw(DIS LBO MTD UTA CTY COI)]' },
+    'area_min_generation' => { default => '10' },
 );
 
 foreach (keys %fns) {
