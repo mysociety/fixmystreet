@@ -8,9 +8,9 @@
 <li><a href="/contact">{{ $contact }}</a></li>
 </ul>
 
-<a id="logo" href="http://www.nuug.no/">NUUG</a>
+{{ $orglogo }}
 
-<p id="footer">Built by <a href="http://www.mysociety.org/">mySociety</a> and maintained by NUUG, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.</p>
+<p id="footer">{{ $creditline }}</p>
 
 </body>
 </html>

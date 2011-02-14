@@ -304,6 +304,11 @@ sub footer {
     my $pc = $q->param('pc') || '';
     $pc = "?pc=" . ent($pc) if $pc;
 
+    my $creditline = _('Built by <a href="http://www.mysociety.org/">mySociety</a>, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.');
+    if (mySociety::Config::get('COUNTRY') eq 'NO') {
+        $creditline = _('Built by <a href="http://www.mysociety.org/">mySociety</a> and maintained by NUUG, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.');
+    }
+
     %params = (%params,
         navigation => _('Navigation'),
         report => _("Report a problem"),
@@ -312,6 +317,8 @@ sub footer {
         help => _("Help"),
         contact => _("Contact"),
         pc => $pc,
+        orglogo => _('<a href="http://www.mysociety.org/"><img id="logo" width="133" height="26" src="/i/mysociety-dark.png" alt="View mySociety.org"><span id="logoie"></span></a>'),
+        creditline => $creditline,
     );
 
     my $html = template_include('footer', $q, template_root($q), %params);
@@ -341,9 +348,6 @@ piwikTracker.enableLinkTracking();
 EOF
     }
 
-    my $orglogo = _('<a href="http://www.mysociety.org/"><img id="logo" width="133" height="26" src="/i/mysociety-dark.png" alt="View mySociety.org"><span id="logoie"></span></a>');
-    my $creditline = _('Built by <a href="http://www.mysociety.org/">mySociety</a>, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.');
-
     return <<EOF;
 </div></div>
 <h2 class="v">$params{navigation}</h2>
@@ -355,9 +359,9 @@ EOF
 <li><a href="/contact">$params{contact}</a></li>
 </ul>
 
-$orglogo
+$params{orglogo}
 
-<p id="footer">$creditline</p>
+<p id="footer">$params{creditline}</p>
 
 $piwik
 
