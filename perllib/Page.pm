@@ -83,7 +83,7 @@ sub report_error {
 
     my $msg_br = join '<br><br>', split m{\n}, $msg;
 
-    print "Status: 500\nContent-Type: text/html; charset=iso-8859-1\n\n",
+    print "Status: 500\nContent-Type: text/html; charset=utf-8\n\n",
             qq(<html><head><title>$somethingwrong</title></head></html>),
             q(<body>),
             qq(<h1>$somethingwrong</h1>),

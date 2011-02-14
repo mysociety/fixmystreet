@@ -100,7 +100,9 @@ which is < 1m at the equator, if you're using WGS84 lat/lon.
 
 sub truncate_coordinate {
     my $in = shift;
-    my $out = sprintf( '%0.6f', $in );
+    my $out = mySociety::Locale::in_gb_locale {
+        sprintf( '%0.6f', $in );
+    };
     $out =~ s{\.?0+\z}{} if $out =~ m{\.};
     return $out;
 }

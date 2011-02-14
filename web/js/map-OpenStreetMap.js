@@ -8,15 +8,15 @@ YAHOO.util.Event.onContentReady('map', function() {
         ],
         displayProjection: new OpenLayers.Projection("EPSG:4326")
     });
-    var streetview = new fixmystreet.map_type("", {
+    var osm = new fixmystreet.map_type("", {
         zoomOffset: 14,
         numZoomLevels: 4
     });
-    map.addLayer(streetview);
+    map.addLayer(osm);
 
-    var centre = new OpenLayers.LonLat( fixmystreet.easting, fixmystreet.northing );
+    var centre = new OpenLayers.LonLat( fixmystreet.longitude, fixmystreet.latitude );
     centre.transform(
-        new OpenLayers.Projection("EPSG:27700"),
+        new OpenLayers.Projection("EPSG:4326"),
         map.getProjectionObject()
     );
     map.setCenter(centre, 2);
