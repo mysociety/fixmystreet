@@ -1013,11 +1013,12 @@ sub display_problem {
       map { Utils::truncate_coordinate($_) }    #
       ( $problem->{latitude}, $problem->{longitude} );
 
-    my $map_links =
-        "<p id='sub_map_links'>"
+    my $map_links = '';
+    $map_links = "<p id='sub_map_links'>"
       . "<a href=\"http://maps.google.co.uk/maps?output=embed&amp;z=16&amp;q="
       . URI::Escape::uri_escape_utf8( $problem->{title} . ' - ' . $google_link )
-      . "\@$short_lat,$short_lon\">View on Google Maps</a></p>";
+      . "\@$short_lat,$short_lon\">View on Google Maps</a></p>"
+        if mySociety::Config::get('COUNTRY') eq 'GB';
 
     my $banner;
     if ($q->{site} ne 'emptyhomes' && $problem->{state} eq 'confirmed' && $problem->{duration} > 8*7*24*60*60) {
