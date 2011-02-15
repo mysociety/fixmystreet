@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: FixMyStreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2011-02-14 13:35+0000\n"
-"PO-Revision-Date: 2011-02-12 20:27MET\n"
+"PO-Revision-Date: 2011-02-14 21:50MET\n"
 "Last-Translator: Petter Reinholdtsen <pere@hungry.com>\n"
 "Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
 "MIME-Version: 1.0\n"
@@ -29,8 +29,11 @@ msgstr "Skriv inn postnummer i nærheten, eller gatenavn og sted:"
 
 #: perllib/Page.pm:80
 #, perl-format
-msgid "Please try again later, or <a href=\"mailto:%s\">email us</a> to let us know."
-msgstr "Vær så snill å forsøk igjen senere, eller <a href=\"mailto:%s\">send oss en epost</a> og gi oss beskjed."
+msgid ""
+"Please try again later, or <a href=\"mailto:%s\">email us</a> to let us know."
+msgstr ""
+"Vær så snill å forsøk igjen senere, eller <a href=\"mailto:%s\">send oss en "
+"epost</a> og gi oss beskjed."
 
 #: perllib/Page.pm:81
 msgid "Sorry! Something's gone wrong."
@@ -69,17 +72,36 @@ msgid "Fix<span id=\"my\">My</span>Street"
 msgstr "Fiks<span id=\"my\">Gata</span>Mi"
 
 #: perllib/Page.pm:293
-msgid "This is a developer site; things might break at any time, and the database will be periodically deleted."
-msgstr "Dette er et utviklernettsted. Ting kan knekke når som helst og databasen vil bli periodisk slettet."
+msgid ""
+"This is a developer site; things might break at any time, and the database "
+"will be periodically deleted."
+msgstr ""
+"Dette er et utviklernettsted. Ting kan knekke når som helst og databasen vil "
+"bli periodisk slettet."
 
 #: perllib/Page.pm:307
-msgid "Built by <a href=\"http://www.mysociety.org/\">mySociety</a>, using some <a href=\"http://github.com/mysociety/fixmystreet\">clever</a>&nbsp;<a href=\"https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa\">code</a>."
-msgstr "Bygget av <a href=\"http://www.mysociety.org/\">mySociety</a>, ved hjelp av <a href=\"http://github.com/mysociety/fixmystreet\">smart</a>&nbsp;<a href=\"https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa\">kode</a>."
+msgid ""
+"Built by <a href=\"http://www.mysociety.org/\">mySociety</a>, using some <a "
+"href=\"http://github.com/mysociety/fixmystreet\">clever</a>&nbsp;<a href="
+"\"https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa"
+"\">code</a>."
+msgstr ""
+"Bygget av <a href=\"http://www.mysociety.org/\">mySociety</a>, ved hjelp av "
+"<a href=\"http://github.com/mysociety/fixmystreet\">smart</a>&nbsp;<a href="
+"\"https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa"
+"\">kode</a>."
 
 #: perllib/Page.pm:309
-#, fuzzy
-msgid "Built by <a href=\"http://www.mysociety.org/\">mySociety</a> and maintained by NUUG, using some <a href=\"http://github.com/mysociety/fixmystreet\">clever</a>&nbsp;<a href=\"https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa\">code</a>."
-msgstr "Bygget av <a href=\"http://www.mysociety.org/\">mySociety</a>, ved hjelp av <a href=\"http://github.com/mysociety/fixmystreet\">smart</a>&nbsp;<a href=\"https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa\">kode</a>."
+msgid ""
+"Built by <a href=\"http://www.mysociety.org/\">mySociety</a> and maintained "
+"by NUUG, using some <a href=\"http://github.com/mysociety/fixmystreet"
+"\">clever</a>&nbsp;<a href=\"https://secure.mysociety.org/cvstrac/dir?"
+"d=mysociety/services/TilMa\">code</a>."
+msgstr ""
+"Bygget av <a href=\"http://www.mysociety.org/\">mySociety</a> og "
+"vedlikeholdt av NUUG, ved hjelp av <a href=\"http://github.com/mysociety/"
+"fixmystreet\">smart</a>&nbsp;<a href=\"https://secure.mysociety.org/cvstrac/"
+"dir?d=mysociety/services/TilMa\">kode</a>."
 
 #: perllib/Page.pm:313
 msgid "Navigation"
@@ -90,8 +112,15 @@ msgid "Contact"
 msgstr "Kontakt"
 
 #: perllib/Page.pm:320
-msgid "<a href=\"http://www.mysociety.org/\"><img id=\"logo\" width=\"133\" height=\"26\" src=\"/i/mysociety-dark.png\" alt=\"View mySociety.org\"><span id=\"logoie\"></span></a>"
-msgstr "<div id=\"logo\" align=\"center\"><a href=\"http://www.nuug.no/\">NUUG</a> and<br><a href=\"http://www.mysociety.org/\"><img width=\"133\" height=\"26\" border=0 src=\"/i/mysociety-dark.png\" alt=\"mySociety\"><span id=\"logoie\"></span></a></div>"
+msgid ""
+"<a href=\"http://www.mysociety.org/\"><img id=\"logo\" width=\"133\" height="
+"\"26\" src=\"/i/mysociety-dark.png\" alt=\"View mySociety.org\"><span id="
+"\"logoie\"></span></a>"
+msgstr ""
+"<div id=\"logo\" align=\"center\"><a href=\"http://www.nuug.no/\">NUUG</a> "
+"and<br><a href=\"http://www.mysociety.org/\"><img  id=\"logo\" width=\"133\" "
+"height=\"26\" border=0 src=\"/i/mysociety-dark.png\" alt=\"mySociety\"><span "
+"id=\"logoie\"></span></a></div>"
 
 #: perllib/Page.pm:378
 msgid "Error"
@@ -125,12 +154,24 @@ msgstr "vi holder på ditt varsel mens du sjekker din epost."
 #, perl-format
 msgid ""
 "<h1>Nearly Done! Now check your email...</h1>\n"
-"<p>The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.</p>\n"
-"<p>If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.</p>\n"
+"<p>The confirmation email <strong>may</strong> take a few minutes to arrive "
+"&mdash; <em>please</em> be patient.</p>\n"
+"<p>If you use web-based email or have 'junk mail' filters, you may wish to "
+"check your bulk/spam mail folders: sometimes, our messages are marked that "
+"way.</p>\n"
 "<p>You must now click the link in the email we've just sent you &mdash;\n"
 "if you do not, %s.</p>\n"
 "<p>(Don't worry &mdash; %s)</p>\n"
 msgstr ""
+"<h1>Nesten ferdig! Nå må du sjekke din epost...</h1>\n"
+"<p>Bekreftelseseposten <strong>kan</strong> bruke noen minutter på å nå frem "
+"&mdash; <em>vær så snill</em> å være tolmodig.</p>\n"
+"<p>Hvi du bruker webbasert epost eller ar søppelepost-filter, så ønsker du "
+"kanskje a sjekke din bulk/spam-mappe. Noen ganger blir epost fra oss markert "
+"som det.</p>\n"
+"<p>Du må nå klikke på lenken i eposten vi nettopp har sendt deg &mdash;\n"
+"hvis du ikke gjør det, %s.</p>\n"
+"<p>(Ingen grunn til bekymring &mdash; %s)</p>\n"
 
 #: perllib/Page.pm:481
 msgid "today"
@@ -174,7 +215,7 @@ msgstr "Rapportert av %s i kategorien %s anonnymt den %s"
 #: perllib/Page.pm:539
 #, perl-format
 msgid "Reported by %s in the %s category by %s at %s"
-msgstr ""
+msgstr "Rapportert av %s i kategorien %s av %s den %s"
 
 #: perllib/Page.pm:541
 #, perl-format
@@ -184,17 +225,17 @@ msgstr "Publisert av %s anonymt den %s"
 #: perllib/Page.pm:543
 #, perl-format
 msgid "Reported by %s by %s at %s"
-msgstr ""
+msgstr "Rapporter av %s av %s den %s"
 
 #: perllib/Page.pm:545
 #, perl-format
 msgid "Reported in the %s category anonymously at %s"
-msgstr ""
+msgstr "Rapportert i kategorien %s anonymt den %s"
 
 #: perllib/Page.pm:547
 #, perl-format
 msgid "Reported in the %s category by %s at %s"
-msgstr ""
+msgstr "Rapportert i kategorien %s av %s den %s"
 
 #: perllib/Page.pm:549
 #, perl-format
@@ -243,19 +284,26 @@ msgstr "åpnet på nytt"
 
 #: perllib/Page.pm:637 web/index.cgi:1052
 msgid "Offensive? Unsuitable? Tell us"
-msgstr ""
+msgstr "Støtende? Upassende?  Gi oss beskjed"
 
 #: perllib/Page.pm:664
 msgid "That postcode was not recognised, sorry."
 msgstr "Det postnummeret ble ikke gjenkjent, beklager."
 
 #: perllib/Page.pm:669
-msgid "Sorry, that appears to be a Crown dependency postcode, which we don't cover."
+msgid ""
+"Sorry, that appears to be a Crown dependency postcode, which we don't cover."
 msgstr ""
+"Beklager det ser ut til å være et \"Crown dependency\"-postnummer, som vi "
+"ikke dekker."
 
 #: perllib/Page.pm:672 perllib/FixMyStreet/Geocode.pm:131
-msgid "We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region."
+msgid ""
+"We do not cover Northern Ireland, I'm afraid, as our licence doesn't include "
+"any maps for the region."
 msgstr ""
+"Vi dekker ikke nordlige Irland, er jeg redd, da vår lisens ikke inkluderer "
+"noen kart for den regionen."
 
 #: perllib/Page.pm:696
 msgid "Please upload a JPEG image only"
@@ -270,12 +318,15 @@ msgid "This report is currently marked as open."
 msgstr "Denne rapporten er for tiden markert som åpen."
 
 #: perllib/FixMyStreet/Geocode.pm:64
-msgid "Sorry, that location appears to be too general; please be more specific."
-msgstr "Beklager, den plasserigen ser ut til å være for generell.  Forsøk å være mer spesifikk."
+msgid ""
+"Sorry, that location appears to be too general; please be more specific."
+msgstr ""
+"Beklager, den plasserigen ser ut til å være for generell.  Forsøk å være mer "
+"spesifikk."
 
 #: perllib/FixMyStreet/Geocode.pm:74
 msgid "That location does not appear to be in Britain; please try again."
-msgstr ""
+msgstr "Det stedet virker ikke å være i storbritannia. Vennligst prøv igjen."
 
 #: perllib/FixMyStreet/Geocode.pm:111
 msgid "Sorry, we could not parse that location. Please try again."
@@ -286,8 +337,12 @@ msgid "Sorry, we could not find that location."
 msgstr "Beklager, vi kunne ikke finne det stedet."
 
 #: perllib/FixMyStreet/Geocode.pm:144
-msgid "We found more than one match for that location. We show up to ten matches, please try a different search if yours is not here."
-msgstr "Vi fant mer en ett treff for den plassen.  Vi viser opp til ti treff, så forsøk et annet søk hvis din ikke er her."
+msgid ""
+"We found more than one match for that location. We show up to ten matches, "
+"please try a different search if yours is not here."
+msgstr ""
+"Vi fant mer en ett treff for den plassen.  Vi viser opp til ti treff, så "
+"forsøk et annet søk hvis din ikke er her."
 
 #: perllib/FixMyStreet/Geocode.pm:158
 msgid "More than one match"
@@ -298,21 +353,33 @@ msgstr "Mer enn ett treff"
 #: perllib/FixMyStreet/Map/Google.pm:39
 #: perllib/FixMyStreet/Map/Tilma/OL/StreetView.pm:45
 #: perllib/FixMyStreet/Map/Tilma/Original/StreetView.pm:23
-msgid "Map contains Ordnance Survey data &copy; Crown copyright and database right 2010."
+msgid ""
+"Map contains Ordnance Survey data &copy; Crown copyright and database right "
+"2010."
 msgstr ""
 
 #: perllib/FixMyStreet/Map/OSM.pm:38
 #: perllib/FixMyStreet/Map/OSM/CycleMap.pm:38
-msgid "Map &copy; <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a> and contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>"
-msgstr "Kart &copy; <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a> og bidragsytere, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>"
+msgid ""
+"Map &copy; <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a> and "
+"contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-"
+"BY-SA</a>"
+msgstr ""
+"Kart &copy; <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a> og "
+"bidragsytere, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-"
+"BY-SA</a>"
 
 #: perllib/FixMyStreet/Map/BingOL.pm:39
-msgid "Map contains Ordnance Survey data &copy; Crown copyright and database right 2010. Microsoft"
+msgid ""
+"Map contains Ordnance Survey data &copy; Crown copyright and database right "
+"2010. Microsoft"
 msgstr ""
 
 #: perllib/FixMyStreet/Map/Tilma/OL/1_10k.pm:45
 #: perllib/FixMyStreet/Map/Tilma/Original/1_10k.pm:23
-msgid "&copy; Crown copyright. All rights reserved. Ministry of Justice 100037819&nbsp;2008."
+msgid ""
+"&copy; Crown copyright. All rights reserved. Ministry of Justice "
+"100037819&nbsp;2008."
 msgstr ""
 
 #: perllib/FixMyStreet/Map/Tilma/Original.pm:80
@@ -359,26 +426,34 @@ msgstr[1] "<big>%s</big> oppdateringer i rapporter"
 msgid ""
 "<h2>The Empty Homes Agency</h2>\n"
 "<p>The Empty Homes agency is an independent campaigning charity. We are not\n"
-"part of government, and have no formal links with local councils although we\n"
+"part of government, and have no formal links with local councils although "
+"we\n"
 "work in cooperation with both. We exist to highlight the waste of empty\n"
-"property and work with others to devise and promote sustainable solutions to\n"
+"property and work with others to devise and promote sustainable solutions "
+"to\n"
 "bring empty property back into use. We are based in London but work across\n"
-"England. We also work in partnership with other charities across the UK.</p>\n"
+"England. We also work in partnership with other charities across the UK.</"
+"p>\n"
 msgstr ""
 
 #: web/about.cgi:34
 msgid ""
 "<h2>Shelter Cymru</h2>\n"
-"Shelter Cymru is Wales&rsquo; people and homes charity and wants everyone in Wales to\n"
-"have a decent home. We believe a home is a fundamental right and essential to\n"
+"Shelter Cymru is Wales&rsquo; people and homes charity and wants everyone in "
+"Wales to\n"
+"have a decent home. We believe a home is a fundamental right and essential "
+"to\n"
 "the health and well-being of people and communities.  We work for people in\n"
 "housing need. We have offices all over Wales and prevent people from losing\n"
 "their homes by offering free, confidential and independent advice. When\n"
-"necessary we constructively challenge on behalf of people to ensure they are\n"
+"necessary we constructively challenge on behalf of people to ensure they "
+"are\n"
 "properly assisted and to improve practice and learning. We believe that\n"
-"bringing empty homes back into use can make a significant contribution to the\n"
+"bringing empty homes back into use can make a significant contribution to "
+"the\n"
 "supply of affordable homes in Wales.\n"
-"<a href=\"http://www.sheltercymru.org.uk/shelter/advice/pdetail.asp?cat=20\">Further information about our work on\n"
+"<a href=\"http://www.sheltercymru.org.uk/shelter/advice/pdetail.asp?cat=20"
+"\">Further information about our work on\n"
 "empty homes</a>.\n"
 msgstr ""
 
@@ -391,13 +466,17 @@ msgid "Confirmation"
 msgstr "Bekreftelse"
 
 #: web/alert.cgi:42
-#, fuzzy, perl-format
+#, perl-format
 msgid ""
-"Thank you for trying to confirm your alert. We seem to have an error ourselves\n"
-"though, so <a href=\"%s\">please let us know what went on</a> and we'll look into it.\n"
+"Thank you for trying to confirm your alert. We seem to have an error "
+"ourselves\n"
+"though, so <a href=\"%s\">please let us know what went on</a> and we'll look "
+"into it.\n"
 msgstr ""
-"Takk for at du prøver å melde en sak. Det kan se ut som det er et problempå selve portalen\n"
-", så <a href=\"/contact\">gi oss gjerne en tilbakemelding</a> så skal vi se på saken så raskt som mulig\n"
+"Takk for at du forsøker å bekrefte ditt varsel. Vi ser ut til a ha en feil "
+"hos oss,\n"
+"så <a href=\"%s\">vær så snill å fortell oss hva som skjedde</a> så skal vi "
+"se på saken.\n"
 
 #: web/alert.cgi:58 web/alert.cgi:61 web/alert.cgi:64 web/alert.cgi:218
 #: web/alert.cgi:318
@@ -405,8 +484,12 @@ msgid "Local RSS feeds and email alerts"
 msgstr "Lokal RSS-strøm og epostvarsel"
 
 #: web/alert.cgi:117
-msgid "That location does not appear to be covered by a council, perhaps it is offshore - please try somewhere more specific."
-msgstr "Det stedet dekkes ikke av noen kommune, kanskje det er til havs - vennligst forsøk et mer spesifikt sted."
+msgid ""
+"That location does not appear to be covered by a council, perhaps it is "
+"offshore - please try somewhere more specific."
+msgstr ""
+"Det stedet dekkes ikke av noen kommune, kanskje det er til havs - vennligst "
+"forsøk et mer spesifikt sted."
 
 #: web/alert.cgi:132 web/alert.cgi:148
 #, perl-format
@@ -429,14 +512,19 @@ msgstr "Eller problemer meldt til:"
 #: web/alert.cgi:191
 msgid ""
 "FixMyStreet sends different categories of problem\n"
-"to the appropriate council, so problems within the boundary of a particular council\n"
-"might not match the problems sent to that council. For example, a graffiti report\n"
-"will be sent to the district council, so will appear in both of the district\n"
-"council&rsquo;s alerts, but will only appear in the \"Within the boundary\" alert\n"
+"to the appropriate council, so problems within the boundary of a particular "
+"council\n"
+"might not match the problems sent to that council. For example, a graffiti "
+"report\n"
+"will be sent to the district council, so will appear in both of the "
+"district\n"
+"council&rsquo;s alerts, but will only appear in the \"Within the boundary\" "
+"alert\n"
 "for the county council."
 msgstr ""
 "FiksGataMi sender forskjellige kategorier saker\n"
-"til forskjellige kommuner, problemer som gjelder flere kommuner blir sendt til alle de det gjelder "
+"til forskjellige kommuner, problemer som gjelder flere kommuner blir sendt "
+"til alle de det gjelder "
 
 #: web/alert.cgi:213
 msgid "Photos of recent nearby reports"
@@ -485,8 +573,12 @@ msgid "(alternatively the RSS feed can be customised, within"
 msgstr "(alternativt kan RSS-strømmen tilpasses, innenfor"
 
 #: web/alert.cgi:257
-msgid "Or you can subscribe to an alert based upon what ward or council you&rsquo;re in:"
-msgstr "Du kan abonnere på varsel basert på avdeling eller kommune du&rsquo; bevinner deg i:"
+msgid ""
+"Or you can subscribe to an alert based upon what ward or council you&rsquo;"
+"re in:"
+msgstr ""
+"Du kan abonnere på varsel basert på avdeling eller kommune du&rsquo; "
+"bevinner deg i:"
 
 #: web/alert.cgi:261
 msgid "Give me an RSS feed"
@@ -511,11 +603,14 @@ msgstr "RSS-strøm fra %s"
 
 #: web/alert.cgi:319
 msgid ""
-"FixMyStreet has a variety of RSS feeds and email alerts for local problems, including\n"
-"alerts for all problems within a particular ward or council, or all problems\n"
+"FixMyStreet has a variety of RSS feeds and email alerts for local problems, "
+"including\n"
+"alerts for all problems within a particular ward or council, or all "
+"problems\n"
 "within a certain distance of a particular location."
 msgstr ""
-"Fiksgatami har ulike RSS-strøm og epostlister for lokale problemer, dette inkluderer\n"
+"Fiksgatami har ulike RSS-strøm og epostlister for lokale problemer, dette "
+"inkluderer\n"
 "saker meldt innenfor en kommune eller et område med problemer\n"
 "innenfor en angitt distanse fra et bestemt sted."
 
@@ -523,7 +618,8 @@ msgstr ""
 msgid ""
 "To find out what local alerts we have for you, please enter your GB\n"
 "postcode or street name and area:"
-msgstr "Du finner lokale saker ved å søke på ditt postnummer, gatenavn eller sted:"
+msgstr ""
+"Du finner lokale saker ved å søke på ditt postnummer, gatenavn eller sted:"
 
 #: web/alert.cgi:327 web/confirm.cgi:192 web/index.cgi:165
 msgid "Go"
@@ -585,17 +681,23 @@ msgstr "Velg vilken type varsel du ønsker"
 #, fuzzy, perl-format
 msgid ""
 "Thank you for trying to confirm your update or problem. We seem to have an\n"
-"error ourselves though, so <a href=\"%s\">please let us know what went on</a>\n"
+"error ourselves though, so <a href=\"%s\">please let us know what went on</"
+"a>\n"
 "and we'll look into it.\n"
 msgstr ""
 "Takk for at du prøver å oppdatere/lage en sak. Det vriker som vi har noen\n"
-"problemer i selve portalen vår, så <a href=\"/contact\">vennligst fortell oss om problemet problemet</a>\n"
+"problemer i selve portalen vår, så <a href=\"/contact\">vennligst fortell "
+"oss om problemet problemet</a>\n"
 "og vi skal ta tak i problemet.\n"
 
 #: web/confirm.cgi:101
 #, perl-format
-msgid "You have successfully confirmed your update and you can now <a href=\"%s\">view it on the site</a>."
-msgstr "Du har nå bekreftet din oppdatering <a href=\"%s\">les om saken på portalen</a>."
+msgid ""
+"You have successfully confirmed your update and you can now <a href=\"%s"
+"\">view it on the site</a>."
+msgstr ""
+"Du har nå bekreftet din oppdatering <a href=\"%s\">les om saken på portalen</"
+"a>."
 
 #: web/confirm.cgi:131
 msgid "Sorry, there has been an error confirming your problem."
@@ -604,7 +706,8 @@ msgstr "Beklager, det har oppstått problemer når vi under lagringen av saken"
 #: web/confirm.cgi:139
 msgid ""
 "Thank you for reporting an empty property on\n"
-"ReportEmptyHomes.com. We have emailed the lead officer for empty homes in the council\n"
+"ReportEmptyHomes.com. We have emailed the lead officer for empty homes in "
+"the council\n"
 "responsible with details, and asked them to do whatever they can to get the\n"
 "empty property back into use as soon as possible."
 msgstr ""
@@ -612,10 +715,14 @@ msgstr ""
 #: web/confirm.cgi:143
 msgid ""
 "It is worth noting however that the process can sometimes be slow,\n"
-"especially if the property is in very poor repair or the owner is unwilling to\n"
-"act. In most cases it can take six months or more before you can expect to see\n"
-"anything change and sometimes there may be considerable barries to a property\n"
-"being brought back into use. This doesn&rsquo;t mean the council isn&rsquo;t\n"
+"especially if the property is in very poor repair or the owner is unwilling "
+"to\n"
+"act. In most cases it can take six months or more before you can expect to "
+"see\n"
+"anything change and sometimes there may be considerable barries to a "
+"property\n"
+"being brought back into use. This doesn&rsquo;t mean the council isn&rsquo;"
+"t\n"
 "doing anything. We encourage councils to update the website so you can\n"
 "see what is happening. It may be a long process, but you reporting your\n"
 "concerns about this property to the council is a valuable first step."
@@ -655,8 +762,12 @@ msgid ". You can <a href=\"%s\">view the problem on this site</a>."
 msgstr ". Du kan <a href=\"%s\">lese saken på portalen </a>."
 
 #: web/confirm.cgi:189
-msgid "Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?"
-msgstr "Takk, glad for å høre at det er fikset!  Can vi få spørre deg om du har rapportert et problem til kommunen tidligere?"
+msgid ""
+"Thanks, glad to hear it's been fixed! Could we just ask if you have ever "
+"reported a problem to a council before?"
+msgstr ""
+"Takk, glad for å høre at det er fikset!  Can vi få spørre deg om du har "
+"rapportert et problem til kommunen tidligere?"
 
 #: web/confirm.cgi:190 web/questionnaire.cgi:231
 msgid "Yes"
@@ -668,8 +779,12 @@ msgstr "Nei"
 
 #: web/confirm.cgi:237
 #, perl-format
-msgid "Thank you &mdash; you can <a href=\"%s\">view your updated problem</a> on the site."
-msgstr "Tusen takk &mdash; du kan <a href=\"%s\">ditt oppdaterte problem</a> på tjenesten."
+msgid ""
+"Thank you &mdash; you can <a href=\"%s\">view your updated problem</a> on "
+"the site."
+msgstr ""
+"Tusen takk &mdash; du kan <a href=\"%s\">ditt oppdaterte problem</a> på "
+"tjenesten."
 
 #: web/contact.cgi:22
 msgid "Contact Us"
@@ -701,35 +816,42 @@ msgstr "Ugyldig ID"
 
 #: web/contact.cgi:86
 msgid "Thanks for your feedback.  We'll get back to you as soon as we can!"
-msgstr "Takk for ditt innspill. Vi gir deg en tilbakemelding så raskt som mulig"
+msgstr ""
+"Takk for ditt innspill. Vi gir deg en tilbakemelding så raskt som mulig"
 
 #: web/contact.cgi:131
 msgid ""
 "We&rsquo;d love to hear what you think about this\n"
-"website. Just fill in the form. Please don&rsquo;t contact us about individual empty\n"
+"website. Just fill in the form. Please don&rsquo;t contact us about "
+"individual empty\n"
 "homes; use the box accessed from <a href=\"/\">the front page</a>."
 msgstr ""
 
 #: web/contact.cgi:138
 msgid ""
-"Please do <strong>not</strong> report problems through this form; messages go to\n"
+"Please do <strong>not</strong> report problems through this form; messages "
+"go to\n"
 "the team behind FixMyStreet, not a council. To report a problem,\n"
 "please <a href=\"/\">go to the front page</a> and follow the instructions."
 msgstr ""
-"Vennligst <strong>ikke</strong> rapporter feil gjennom denne siden; messages gå til\n"
-"prosjektet bak fiksgatami for å rapportere sken,\n"
+"Vennligst <strong>ikke</strong> rapporter feil gjennom denne siden; "
+"meldinger går til\n"
+"gruppen som står bak fiksgatami, og ikke til en kommune. For å rapportere et "
+"problem,\n"
 "vennligst <a href=\"/\">gå til forsiden</a> og følg instruksjonene."
 
 #: web/contact.cgi:141
-#, fuzzy, perl-format
-msgid "We'd love to hear what you think about this site. Just fill in the form, or send an email to <a href='mailto:%s'>%s</a>:"
+#, perl-format
+msgid ""
+"We'd love to hear what you think about this site. Just fill in the form, or "
+"send an email to <a href='mailto:%s'>%s</a>:"
 msgstr ""
-"Vi ønsker å få din tilbakemelding om hva du mener om vår nettside. Fyll ut skjema, or\n"
-"send epost <a href='mailto:???team&#64;fixmystreet.com'>team&#64;fiksgatami.no</a>:"
+"Vi ønsker å få din tilbakemelding om hva du mener om denne tjenesten. Bare "
+"fyll ut skjemaet, eller send en epost <a href='mailto:%s'>%s</a>:"
 
 #: web/contact.cgi:150 web/index.cgi:445
 msgid "There were problems with your report. Please see below."
-msgstr ""
+msgstr "Det var problemer med din rapport.  Vennligst se under."
 
 #: web/contact.cgi:155
 msgid "Contact the team"
@@ -737,12 +859,20 @@ msgstr "Kontakt prosjektgruppen"
 
 #: web/contact.cgi:193
 #, fuzzy
-msgid "You are reporting the following update for being abusive, containing personal information, or similar:"
-msgstr "Du rapporterer at den aktuelle saken inneholder tekst med personlig informasjon, upassende tekst???:"
+msgid ""
+"You are reporting the following update for being abusive, containing "
+"personal information, or similar:"
+msgstr ""
+"Du rapporterer at den aktuelle saken inneholder tekst med personlig "
+"informasjon, upassende tekst???:"
 
 #: web/contact.cgi:204
-msgid "You are reporting the following problem report for being abusive, containing personal information, or similar:"
-msgstr "Du rapporterer at den aktuelle saken inneholder tekst med personlig informasjon, upassende tekst???:"
+msgid ""
+"You are reporting the following problem report for being abusive, containing "
+"personal information, or similar:"
+msgstr ""
+"Du rapporterer at den aktuelle saken inneholder tekst med personlig "
+"informasjon, upassende tekst???:"
 
 #: web/contact.cgi:229
 msgid "Your name:"
@@ -758,11 +888,11 @@ msgstr "Tema"
 
 #: web/contact.cgi:232
 msgid "Message:"
-msgstr "Melding"
+msgstr "Melding:"
 
 #: web/contact.cgi:233 web/index.cgi:1073
 msgid "Post"
-msgstr "Melding"
+msgstr "Send inn"
 
 #: web/faq.cgi:18
 msgid "Frequently Asked Questions"
@@ -771,11 +901,13 @@ msgstr "Ofte spurte spørsmål"
 #: web/flickr.cgi:45
 msgid ""
 "Thank you for trying to register for your Flickr photos. We seem to have a\n"
-"problem ourselves though, so <a href=\"/contact\">please let us know what went on</a>\n"
+"problem ourselves though, so <a href=\"/contact\">please let us know what "
+"went on</a>\n"
 "and we'll look into it.\n"
 msgstr ""
 "Takk for at du prøver å legge til dine Flickr bilder. Vi har et\n"
-"problem med siden, så <a href=\"/contact\"> vennligst meldt fra til Oss, </a>\n"
+"problem med siden, så <a href=\"/contact\"> vennligst meldt fra til Oss, </"
+"a>\n"
 "så skal vi se saken.\n"
 
 #: web/fun.cgi:17 web/fun.cgi:25
@@ -803,9 +935,8 @@ msgid "Viewing a location"
 msgstr "Ser på en lokasjon"
 
 #: web/index.cgi:120
-#, fuzzy
 msgid "Enter a nearby GB postcode, or street name and area:"
-msgstr "Du finner lokale saker ved å søke på ditt postnummer, gatenavn eller sted:"
+msgstr "Skriv inn GB-postnummer i nærheten, eller gatenavn og sted:"
 
 #: web/index.cgi:134
 msgid "Report, view, or discuss local problems"
@@ -813,10 +944,12 @@ msgstr "Rapporter, finn eller diskuter lokale utfordringer/saker"
 
 #: web/index.cgi:135
 msgid "(like graffiti, fly tipping, broken paving slabs, or street lighting)"
-msgstr "(som tagging, hull i veien, søppel eller manglende gatelys"
+msgstr "(som tagging, søppel, hull i veien, eller manglende gatelys)"
 
 #: web/index.cgi:157
-msgid "Thanks for uploading your photo. We now need to locate your problem, so please enter a nearby street name or postcode in the box below&nbsp;:"
+msgid ""
+"Thanks for uploading your photo. We now need to locate your problem, so "
+"please enter a nearby street name or postcode in the box below&nbsp;:"
 msgstr ""
 
 #: web/index.cgi:175
@@ -857,7 +990,8 @@ msgstr "Legg til en gyldig epost"
 
 #: web/index.cgi:235 web/index.cgi:375
 #, perl-format
-msgid "That image doesn't appear to have uploaded correctly (%s), please try again."
+msgid ""
+"That image doesn't appear to have uploaded correctly (%s), please try again."
 msgstr "Bildet ser ikke ut til å blitt lastet opp riktig (%s), prøv på nytt."
 
 #: web/index.cgi:257
@@ -881,17 +1015,20 @@ msgid "Please enter your name"
 msgstr "Legg inn ditt navn"
 
 #: web/index.cgi:304
-msgid "Please enter your full name, councils need this information - if you do not wish your name to be shown on the site, untick the box"
-msgstr "Legg inn ditt fulle navn, kommunen som mottar saken trenger dette - hvis du ikke ønsker at ditt navn skal vises, kryss av her"
+msgid ""
+"Please enter your full name, councils need this information - if you do not "
+"wish your name to be shown on the site, untick the box"
+msgstr ""
+"Legg inn ditt fulle navn, kommunen som mottar saken trenger dette - hvis du "
+"ikke ønsker at ditt navn skal vises, kryss av her"
 
 #: web/index.cgi:312 web/index.cgi:351
 msgid "Please choose a category"
 msgstr "Velg en kategori"
 
 #: web/index.cgi:314 web/index.cgi:564
-#, fuzzy
 msgid "-- Pick a property type --"
-msgstr "Velg en type egenskap"
+msgstr "-- velg en eiendomsstype --"
 
 #: web/index.cgi:315
 msgid "Please choose a property type"
@@ -907,7 +1044,8 @@ msgstr "Vi har opplysninger om den kommunen"
 
 #: web/index.cgi:364
 msgid "Somehow, you only have one co-ordinate. Please try again."
-msgstr "På en eller annen måte har du bare en koordinat, vennligst prøv på nytt."
+msgstr ""
+"På en eller annen måte har du bare en koordinat, vennligst prøv på nytt."
 
 #: web/index.cgi:366
 msgid "You haven't specified any sort of co-ordinates. Please try again."
@@ -919,16 +1057,21 @@ msgstr "Andre"
 
 #: web/index.cgi:406
 #, perl-format
-msgid "You have successfully confirmed your report and you can now <a href=\"%s\">view it on the site</a>."
-msgstr "Du har nå lagt til en sak og kan <a href=\"%s\">se saken på nettsiden</a>."
+msgid ""
+"You have successfully confirmed your report and you can now <a href=\"%s"
+"\">view it on the site</a>."
+msgstr ""
+"Du har nå lagt til en sak og kan <a href=\"%s\">se saken på nettsiden</a>."
 
 #: web/index.cgi:537
-#, fuzzy
 msgid ""
 "That spot does not appear to be covered by a council.\n"
 "If you have tried to report an issue past the shoreline, for example,\n"
 "please specify the closest point on land."
-msgstr "Punktet ser ikke ut til å være dekket av en kommune - det kan være at du har markert et havområde , marker nærmeste punkt på land."
+msgstr ""
+"Punktet ser ikke ut til å være dekket av en kommune.\n"
+"Hvis du har forsøkt å rapportere en sak utenfor kysten, for eksempel,\n"
+"så marker nærmeste punkt på land."
 
 #: web/index.cgi:558
 msgid "Category:"
@@ -952,11 +1095,11 @@ msgstr ""
 
 #: web/index.cgi:566
 msgid "Empty pub or bar"
-msgstr ""
+msgstr "Tom pub eller bar"
 
 #: web/index.cgi:567
 msgid "Empty public building - school, hospital, etc."
-msgstr ""
+msgstr "Tom offentlig bygning - skole, sykehos, etc."
 
 #: web/index.cgi:568
 msgid "Property type:"
@@ -964,7 +1107,8 @@ msgstr "Type egenskap:"
 
 #: web/index.cgi:627
 msgid ""
-"You have located the problem at the point marked with a purple pin on the map.\n"
+"You have located the problem at the point marked with a purple pin on the "
+"map.\n"
 "If this is not the correct location, simply click on the map again. "
 msgstr ""
 "Du har ikke funnet et korrekt punkt på kartet.\n"
@@ -993,28 +1137,39 @@ msgid ""
 "not reported to the council &ndash; please still leave your report, so that\n"
 "we can show to the council the activity in their area."
 msgstr ""
+"<p>Vi har ennå ikke detaljer for den kommunen som dekker dette stedet. Hvis "
+"du sender inn en rapport her så vil den bli tilgjengelig her men ikke "
+"rapportert til kommunen. &ndash; det er fint om du likevel sender inn din "
+"rapport, slik at vi kan vise kommunen at det er aktivitet i deres område."
 
 #: web/index.cgi:684
 msgid ""
 "Please fill in the form below with details of the problem,\n"
 "and describe the location as precisely as possible in the details box."
 msgstr ""
+"Vennligst fyll inn skjemaet under med detaljene om problemet,\n"
+"og beskriv stedet så nøyaktig som mulig i boksen for detaljer."
 
 #: web/index.cgi:693
 msgid ""
 "Please fill in details of the empty property below, saying what type of\n"
 "property it is e.g. an empty home, block of flats, office etc. Tell us\n"
-"something about its condition and any other information you feel is relevant.\n"
-"There is no need for you to give the exact address. Please be polite, concise\n"
-"and to the point; writing your message entirely in block capitals makes it hard\n"
+"something about its condition and any other information you feel is "
+"relevant.\n"
+"There is no need for you to give the exact address. Please be polite, "
+"concise\n"
+"and to the point; writing your message entirely in block capitals makes it "
+"hard\n"
 "to read, as does a lack of punctuation.\n"
 msgstr ""
 
 #: web/index.cgi:701
 msgid ""
 "Please fill in details of the problem below. The council won't be able\n"
-"to help unless you leave as much detail as you can, so please describe the exact location of\n"
-"the problem (e.g. on a wall), what it is, how long it has been there, a description (and a\n"
+"to help unless you leave as much detail as you can, so please describe the "
+"exact location of\n"
+"the problem (e.g. on a wall), what it is, how long it has been there, a "
+"description (and a\n"
 "photo of the problem if you have one), etc."
 msgstr ""
 
@@ -1036,39 +1191,39 @@ msgstr "Bilde:"
 
 #: web/index.cgi:723 web/index.cgi:1070
 msgid "Name:"
-msgstr ""
+msgstr "Navn:"
 
 #: web/index.cgi:725 bin/send-reports:88
 msgid "Phone:"
-msgstr ""
+msgstr "Telefon:"
 
 #: web/index.cgi:726
 msgid "(optional)"
-msgstr ""
+msgstr "(valgfritt)"
 
 #: web/index.cgi:728
 msgid "Can we show your name on the site?"
-msgstr ""
+msgstr "Kan vi vise ditt navn her på nettstedet?"
 
 #: web/index.cgi:730
 msgid "Can we show your name publicly?"
-msgstr ""
+msgstr "Kan vi vise ditt navn offentlig?"
 
 #: web/index.cgi:732
 msgid "(we never show your email address or phone number)"
-msgstr ""
+msgstr "(vi viser aldri din epostadresse eller telefonnummer)"
 
 #: web/index.cgi:785
 msgid "Submit"
-msgstr ""
+msgstr "Send inn"
 
 #: web/index.cgi:877
 msgid "Hide stale reports"
-msgstr ""
+msgstr "Gjem utdaterte rapporter"
 
 #: web/index.cgi:880
 msgid "Include stale reports"
-msgstr ""
+msgstr "Inkludert utdaterte rapporter"
 
 #: web/index.cgi:899
 msgid "No problems have been reported yet."
@@ -1080,15 +1235,15 @@ msgstr "Ingen saker er funnet."
 
 #: web/index.cgi:920
 msgid "Show pins"
-msgstr ""
+msgstr "Vis nåler"
 
 #: web/index.cgi:924
 msgid "Hide pins"
-msgstr ""
+msgstr "Gjem nåler"
 
 #: web/index.cgi:952
 msgid "Email me new local problems"
-msgstr "Send epost til meg om lokaler saker"
+msgstr "Send meg epost om lokaler problemer"
 
 #: web/index.cgi:954
 msgid "RSS feed of recent local problems"
@@ -1121,16 +1276,17 @@ msgid ""
 "<small>If you cannot see the map, <a href='%s' rel='nofollow'>skip this\n"
 "        step</a>.</small>"
 msgstr ""
-"<small>Hvis du ikke kan se kartet, <a href='%s' rel='nofollow'>hopp over dette\n"
+"<small>Hvis du ikke kan se kartet, <a href='%s' rel='nofollow'>hopp over "
+"dette\n"
 "        steget</a>.</small>"
 
 #: web/index.cgi:970
 msgid "Recent local problems, FixMyStreet"
-msgstr ""
+msgstr "Nylig lokalt problem, FiksGataMi."
 
 #: web/index.cgi:982
 msgid "There were problems with your update. Please see below."
-msgstr ""
+msgstr "Det var problemer med din oppdatering. Vennligst se under."
 
 #: web/index.cgi:1003 web/index.cgi:1005
 msgid "Unknown problem ID"
@@ -1138,7 +1294,7 @@ msgstr "Ukjent problem-Id"
 
 #: web/index.cgi:1006
 msgid "That report has been removed from FixMyStreet."
-msgstr ""
+msgstr "Den rapporten har blitt fjernet fra FiksGataMi."
 
 #: web/index.cgi:1025
 msgid "This problem is old and of unknown status."
@@ -1157,9 +1313,8 @@ msgid "Email me updates"
 msgstr "Send meg oppdateringer"
 
 #: web/index.cgi:1059
-#, fuzzy
 msgid "Receive email when updates are left on this problem"
-msgstr "Motta epost når det er uppdateringer på denne saken"
+msgstr "Motta epost når oppdateringer legges inn om dette problemet"
 
 #: web/index.cgi:1064
 msgid "RSS feed of updates to this problem"
@@ -1171,19 +1326,25 @@ msgstr "Send en oppdatering"
 
 #: web/index.cgi:1071
 msgid "Update:"
-msgstr ""
+msgstr "Oppdatering:"
 
 #: web/index.cgi:1072
 msgid "Alert me to future updates"
-msgstr ""
+msgstr "Send meg varsel ved fremtidige oppdateringer"
 
 #: web/index.cgi:1079
-msgid "Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href=\"/faq#privacy\">privacy policy</a>"
+msgid ""
+"Please note that updates are not sent to the council. If you leave your name "
+"it will be public. Your information will only be used in accordance with our "
+"<a href=\"/faq#privacy\">privacy policy</a>"
 msgstr ""
+"Vennligst merk at oppdateringer er ikke sendt til kommunen.  Hvis du legger "
+"igjen ditt navn så vil det være offentlig. Din informasjon vil kun bli brukt "
+"i henhold til våre <a href=\"/faq#privacy\">personvernpolicy</a>"
 
 #: web/index.cgi:1099
 msgid "Updates to this problem, FixMyStreet"
-msgstr ""
+msgstr "Oppdateringer til dette problemet, FiksGataMi"
 
 #: web/questionnaire.cgi:28 web/questionnaire.cgi:77 web/questionnaire.cgi:210
 #: web/questionnaire.cgi:230
@@ -1191,25 +1352,29 @@ msgid "Questionnaire"
 msgstr "Spørreskjema"
 
 #: web/questionnaire.cgi:38
-msgid "I'm afraid we couldn't validate that token. If you've copied the URL from an email, please check that you copied it exactly.\n"
+msgid ""
+"I'm afraid we couldn't validate that token. If you've copied the URL from an "
+"email, please check that you copied it exactly.\n"
 msgstr ""
 
 #: web/questionnaire.cgi:45
 #, perl-format
-msgid "You have already answered this questionnaire. If you have a question, please <a href='%s'>get in touch</a>, or <a href='%s'>view your problem</a>.\n"
+msgid ""
+"You have already answered this questionnaire. If you have a question, please "
+"<a href='%s'>get in touch</a>, or <a href='%s'>view your problem</a>.\n"
 msgstr ""
 
 #: web/questionnaire.cgi:50
 msgid "I'm afraid we couldn't locate your problem in the database.\n"
-msgstr ""
+msgstr "Jeg er redd vi ikke klarte å finne ditt problem i databasen.\n"
 
 #: web/questionnaire.cgi:89
-#, fuzzy
 msgid "Please state whether or not the problem has been fixed"
-msgstr "Gi oss informasjon om du har rapportert en sak til kommunen tidligere"
+msgstr "Vennligs oppgi om dette problemet er blitt fikset eller ikke"
 
 #: web/questionnaire.cgi:92
-msgid "Please say whether you've ever reported a problem to your council before"
+msgid ""
+"Please say whether you've ever reported a problem to your council before"
 msgstr "Gi oss informasjon om du har rapportert en sak til kommunen tidligere"
 
 #: web/questionnaire.cgi:94
@@ -1219,39 +1384,46 @@ msgstr ""
 #: web/questionnaire.cgi:96
 msgid "Please provide some explanation as to why you're reopening this report"
 msgstr ""
+"Vennligst bidra med en forklaring for hvorfor du åpner denne rapporten på "
+"nytt"
 
 #: web/questionnaire.cgi:112
 msgid "Please provide some text as well as a photo"
-msgstr ""
+msgstr "Vennligst bidra med litt tekst i tilegg til et bilde"
 
 #: web/questionnaire.cgi:143
 msgid "Questionnaire filled in by problem reporter"
-msgstr ""
+msgstr "Spørreskjema fylt inn av feilrapportøren"
 
 #: web/questionnaire.cgi:163
 msgid ""
 "<p>Thank you very much for filling in our questionnaire; if you\n"
-"get some more information about the status of your problem, please come back to the\n"
+"get some more information about the status of your problem, please come back "
+"to the\n"
 "site and leave an update.</p>\n"
 msgstr ""
 
 #: web/questionnaire.cgi:171
 #, perl-format
 msgid ""
-"<p style=\"font-size:150%%\">We're sorry to hear that. We have two suggestions: why not try\n"
+"<p style=\"font-size:150%%\">We're sorry to hear that. We have two "
+"suggestions: why not try\n"
 "<a href=\"%s\">writing direct to your councillor(s)</a>\n"
 "or, if it's a problem that could be fixed by local people working together,\n"
-"why not <a href=\"http://www.pledgebank.com/new\">make and publicise a pledge</a>?\n"
+"why not <a href=\"http://www.pledgebank.com/new\">make and publicise a "
+"pledge</a>?\n"
 "</p>\n"
 msgstr ""
 
 #: web/questionnaire.cgi:180
-msgid "<p style=\"font-size:150%\">Thank you very much for filling in our questionnaire; glad to hear it's been fixed.</p>\n"
+msgid ""
+"<p style=\"font-size:150%\">Thank you very much for filling in our "
+"questionnaire; glad to hear it's been fixed.</p>\n"
 msgstr ""
 
 #: web/questionnaire.cgi:233
 msgid "Don&rsquo;t know"
-msgstr ""
+msgstr "Vet ikke"
 
 #: web/questionnaire.cgi:234
 msgid "Submit questionnaire"
@@ -1260,39 +1432,50 @@ msgstr "Lever spørreskjema"
 #: web/questionnaire.cgi:251
 msgid ""
 "<p>Getting empty homes back into use can be difficult. You shouldn't expect\n"
-"the property to be back into use yet. But a good council will have started work\n"
+"the property to be back into use yet. But a good council will have started "
+"work\n"
 "and should have reported what they have done on the website. If you are not\n"
-"satisfied with progress or information from the council, now is the right time\n"
-"to say. You may also want to try contacting some other people who may be able\n"
+"satisfied with progress or information from the council, now is the right "
+"time\n"
+"to say. You may also want to try contacting some other people who may be "
+"able\n"
 "to help.  For advice on how to do this and other useful information please\n"
-"go to <a href=\"http://www.emptyhomes.com/getinvolved/campaign.html\">http://www.emptyhomes.com/getinvolved/campaign.html</a>.</p>\n"
+"go to <a href=\"http://www.emptyhomes.com/getinvolved/campaign.html\">http://"
+"www.emptyhomes.com/getinvolved/campaign.html</a>.</p>\n"
 msgstr ""
 
 #: web/questionnaire.cgi:261
 msgid ""
-"<p>Getting empty homes back into use can be difficult, but by now a good council\n"
+"<p>Getting empty homes back into use can be difficult, but by now a good "
+"council\n"
 "will have made a lot of progress and reported what they have done on the\n"
-"website. Even so properties can remain empty for many months if the owner is\n"
-"unwilling or the property is in very poor repair.  If nothing has happened or\n"
-"you are not satisfied with the progress the council is making, now is the right\n"
+"website. Even so properties can remain empty for many months if the owner "
+"is\n"
+"unwilling or the property is in very poor repair.  If nothing has happened "
+"or\n"
+"you are not satisfied with the progress the council is making, now is the "
+"right\n"
 "time to say so. We think it's a good idea to contact some other people who\n"
 "may be able to help or put pressure on the council  For advice on how to do\n"
 "this and other useful information please go to <a\n"
-"href=\"http://www.emptyhomes.com/getinvolved/campaign.html\">http://www.emptyhomes.com/getinvolved/campaign.html</a>.</p>\n"
+"href=\"http://www.emptyhomes.com/getinvolved/campaign.html\">http://www."
+"emptyhomes.com/getinvolved/campaign.html</a>.</p>\n"
 msgstr ""
 
 #: web/questionnaire.cgi:274
-msgid "The details of your problem are available on the right hand side of this page."
+msgid ""
+"The details of your problem are available on the right hand side of this "
+"page."
 msgstr ""
+"Detaljene om ditt problem er tilgjengelig på høyre side av denne siden."
 
 #: web/questionnaire.cgi:275
 msgid "Please take a look at the updates that have been left."
-msgstr ""
+msgstr "Vær sa snill å ta en titt på oppdateringene som har blitt igjen."
 
 #: web/questionnaire.cgi:281
-#, fuzzy
 msgid "An update marked this problem as fixed."
-msgstr "Har denne saken blitt løst?"
+msgstr "En oppdatering markerte dette problemet som fikset."
 
 #: web/questionnaire.cgi:282
 msgid "Has this problem been fixed?"
@@ -1307,7 +1490,9 @@ msgid "First time"
 msgstr "Første gang"
 
 #: web/questionnaire.cgi:291
-msgid "Have you ever reported a problem to a council before, or is this your first time?"
+msgid ""
+"Have you ever reported a problem to a council before, or is this your first "
+"time?"
 msgstr "Har du sendt en sak til kommunen før, eller er dette første gangen?"
 
 #: web/questionnaire.cgi:301
@@ -1316,7 +1501,8 @@ msgid ""
 "(please note it will not be sent to the council). For example, what was\n"
 "your experience of getting the problem fixed?"
 msgstr ""
-"Hvis du ønsker å legge til en offentlig kommentar til saken, legg den til her\n"
+"Hvis du ønsker å legge til en offentlig kommentar til saken, legg den til "
+"her\n"
 "(denne blir sendt til kommunen). Du kan for eksempel\n"
 "dele din erfaring med hvordan din sak ble løst."
 
@@ -1325,8 +1511,12 @@ msgid "Summary reports"
 msgstr "Oppsummeringsrapporter"
 
 #: web/reports.cgi:163
-msgid "This is a summary of all reports on this site; select a particular council to see the reports sent there."
-msgstr "Dette er en opplisting av alle sakene i denne tjenesten; velg en bestemt kommune for å se saker som er sendt dit."
+msgid ""
+"This is a summary of all reports on this site; select a particular council "
+"to see the reports sent there."
+msgstr ""
+"Dette er en opplisting av alle sakene i denne tjenesten; velg en bestemt "
+"kommune for å se saker som er sendt dit."
 
 #: web/reports.cgi:164
 msgid "Greyed-out lines are councils that no longer exist."
@@ -1358,7 +1548,7 @@ msgstr "Eldre løste"
 
 #: web/reports.cgi:209
 msgid "council"
-msgstr ""
+msgstr "kommune"
 
 #: web/reports.cgi:219
 #, perl-format
@@ -1368,32 +1558,40 @@ msgstr "RSS-strøm for problemer i denne %s"
 #: web/reports.cgi:223
 #, perl-format
 msgid "This is a summary of all reports for one %s."
-msgstr ""
+msgstr "Dette er en oppsummering av alle rapporter for en %s."
 
 #: web/reports.cgi:224
 #, perl-format
 msgid "This is a summary of all reports for this %s."
-msgstr ""
+msgstr "Dette er en oppsummering for alle rapporter for denne %s."
 
 #: web/reports.cgi:228
-#, fuzzy, perl-format
+#, perl-format
 msgid "You can <a href=\"%s\">see less detail</a>."
-msgstr ". Du kan <a href=\"%s\">lese saken på portalen </a>."
+msgstr "Du kan <a href=\"%s\">se mindre detaljer</a>."
 
 #: web/reports.cgi:230
-#, fuzzy, perl-format
+#, perl-format
 msgid "You can <a href=\"%s\">see more details</a>."
-msgstr ". Du kan <a href=\"%s\">lese saken på portalen </a>."
+msgstr "Du kan <a href=\"%s\">se flere detaljer</a>."
 
 #: web/reports.cgi:232
 #, perl-format
-msgid "You can <a href=\"%s\">see less detail</a> or go back and <a href=\"/reports\">show all councils</a>."
+msgid ""
+"You can <a href=\"%s\">see less detail</a> or go back and <a href=\"/reports"
+"\">show all councils</a>."
 msgstr ""
+"Du kan <a href=\"%s\">se mindre detaljer</a> eller gå tilbake og <a href=\"/"
+"reports\">se alle kommunene</a>."
 
 #: web/reports.cgi:234
 #, perl-format
-msgid "You can <a href=\"%s\">see more details</a> or go back and <a href=\"/reports\">show all councils</a>."
+msgid ""
+"You can <a href=\"%s\">see more details</a> or go back and <a href=\"/reports"
+"\">show all councils</a>."
 msgstr ""
+"Du kan <a href=\"%s\">se flere detaljer</a> eller gå tilbake og <a href=\"/"
+"reports\">se alle kommunene</a>."
 
 #: web/reports.cgi:248
 msgid "Old problems, state unknown"
@@ -1404,25 +1602,29 @@ msgid "Old fixed"
 msgstr "Eldre saker som er løst"
 
 #: web/reports.cgi:257
-#, fuzzy, perl-format
+#, perl-format
 msgid "%s - Summary reports"
-msgstr "Oppsummerings rapporter"
+msgstr "%s - oppsummeringsrapporter"
 
 #: web/reports.cgi:257
-#, fuzzy, perl-format
+#, perl-format
 msgid "Problems within %s, FixMyStreet"
-msgstr "Problemer innenfor %s avdeling/etat"
+msgstr "Problemer innenfor %s, Fiksgatami"
 
 #: bin/send-reports:90
-msgid "This web page also contains a photo of the problem, provided by the user."
+msgid ""
+"This web page also contains a photo of the problem, provided by the user."
 msgstr ""
+"Denne nettsiden inneholder også et bilde av problemet, sendt inn av brukeren."
 
 #: bin/send-reports:96
 msgid "To view a map of the precise location of this issue"
-msgstr ""
+msgstr "For å se en kart med den presise plasseringen for denne saken."
 
 #: bin/send-reports:97
-msgid "The user could not locate the problem on a map, but to see the area around the location they entered"
+msgid ""
+"The user could not locate the problem on a map, but to see the area around "
+"the location they entered"
 msgstr ""
 
 #: db/alert_types_eha.pl:5 db/alert_types_eha.pl:6
@@ -1471,12 +1673,14 @@ msgstr ""
 
 #: db/alert_types_eha.pl:26
 #, perl-brace-format
-msgid "New reports for {{COUNCIL}} within {{WARD}} ward on reportemptyhomes.com"
+msgid ""
+"New reports for {{COUNCIL}} within {{WARD}} ward on reportemptyhomes.com"
 msgstr ""
 
 #: db/alert_types_eha.pl:27
 #, perl-brace-format
-msgid "The latest reports for {{COUNCIL}} within {{WARD}} ward reported by users"
+msgid ""
+"The latest reports for {{COUNCIL}} within {{WARD}} ward reported by users"
 msgstr ""
 
 #: db/alert_types_eha.pl:30
@@ -1634,7 +1838,8 @@ msgstr ""
 
 #: templates/emails/alert-problem-ward
 msgid ""
-"Subject: New problems reported to <?=$values['area_name']?> within <?=$values['ward_name']?> on FixMyStreet\n"
+"Subject: New problems reported to <?=$values['area_name']?> within <?=$values"
+"['ward_name']?> on FixMyStreet\n"
 "\n"
 "The following new problems have been reported to <?=$values['area_name']?>\n"
 "within <?=$values['ward_name']?>:\n"
@@ -1648,7 +1853,8 @@ msgid ""
 "<?=$values['area_name']?> within <?=$values['ward_name']?>,\n"
 "please follow this link: <?=$values['unsubscribe_url']?>\n"
 msgstr ""
-"Subject: Nye saker sendt til <?=$values['area_name']?> innenfor <?=$values['ward_name']?> via FiksGataMi.no\n"
+"Subject: Nye saker sendt til <?=$values['area_name']?> innenfor <?=$values"
+"['ward_name']?> via FiksGataMi.no\n"
 "\n"
 "Følgende saker er sendt til <?=$values['area_name']?>\n"
 "innenfor <?=$values['ward_name']?>:\n"
@@ -1663,7 +1869,6 @@ msgstr ""
 "klikk på denne linken: <?=$values['unsubscribe_url']?>\n"
 
 #: templates/emails/alert-update
-#, fuzzy
 msgid ""
 "Subject: New updates on problem - '<?=$values['title']?>'\n"
 "\n"
@@ -1684,23 +1889,25 @@ msgid ""
 "To stop receiving emails when there are new updates on this problem,\n"
 "please follow this link: <?=$values['unsubscribe_url']?>\n"
 msgstr ""
-"Subject: Oppdateringer på saken - '<?=$values['title']?>'\n"
+"Subject: Nye oppdateringer for problem - '<?=$values['title']?>'\n"
 "\n"
-"Følgende oppdateringer er lagt til på saken:\n"
+"Følgende oppdateringer har blitt lagt inn for dette problemet:\n"
 "\n"
 "<?=$values['data']?>\n"
 "\n"
-"For å lese eller svare på disse oppdateringene, klikk på følgende link:\n"
+"<?=$values['state_message']?>\n"
+"\n"
+"For å se på eller svare på disse oppdateringene, besøk denne URLen:\n"
 "    <?=$values['problem_url']?>\n"
 "\n"
-"Svar på denne eposten vil gå til prosjektteamet på FiksGataMi.no, *ikke*\n"
-"til saken og de som leser den.\n"
+"Du kan ikke kontakte noen ved å svare på denne eposten.\n"
 "\n"
-"Vennlig hilsen,  \n"
-"FiksGataMi teamet\n"
+"Vennlig hilsen,,  \n"
+"Fiksgata-laget\n"
 "\n"
-"Hvis du ikke ønsker å abonnere på oppdateringer rundt denne saken,\n"
-"klikk på linken: <?=$values['unsubscribe_url']?>\n"
+"For å slutte å motta epost når det er nye oppdateringer om dettte "
+"problemet,\n"
+"følg denne lenken: <?=$values['unsubscribe_url']?>\n"
 
 #: templates/emails/empty property-confirm
 #, fuzzy
@@ -1925,7 +2132,8 @@ msgstr ""
 "\n"
 "    <?=$values['url']?>\n"
 "\n"
-"Vennligst ikke svar på denne eposten; det er muligheter for å kommentere i skjema.\n"
+"Vennligst ikke svar på denne eposten; det er muligheter for å kommentere i "
+"skjema.\n"
 "\n"
 "Vennlig hilsen,  \n"
 "FiksGataMi teamet\n"
@@ -1946,7 +2154,8 @@ msgid ""
 "\n"
 "Six months ago, you reported an empty home on ReportEmptyHomes.com with the\n"
 "details provided at the end of this email. To keep our site up to date and\n"
-"relevant, I'd be grateful if you could fill in this short questionnaire to tell\n"
+"relevant, I'd be grateful if you could fill in this short questionnaire to "
+"tell\n"
 "us what has happened: \n"
 "\n"
 "    <?=$values['url']?>\n"
@@ -1972,7 +2181,8 @@ msgstr ""
 "\n"
 "Six months ago, you reported an empty home on ReportEmptyHomes.com with the\n"
 "details provided at the end of this email. To keep our site up to date and\n"
-"relevant, I'd be grateful if you could fill in this short questionnaire to tell\n"
+"relevant, I'd be grateful if you could fill in this short questionnaire to "
+"tell\n"
 "us what has happened: \n"
 "\n"
 "    <?=$values['url']?>\n"
@@ -2001,7 +2211,8 @@ msgid ""
 "\n"
 "Four weeks ago, you reported an empty home on ReportEmptyHomes.com with the\n"
 "details provided at the end of this email. To keep our site up to date and\n"
-"relevant, I'd be grateful if you could fill in this short questionnaire to tell\n"
+"relevant, I'd be grateful if you could fill in this short questionnaire to "
+"tell\n"
 "us what has happened:\n"
 "\n"
 "    <?=$values['url']?>\n"
@@ -2027,7 +2238,8 @@ msgstr ""
 "\n"
 "Six months ago, you reported an empty home on ReportEmptyHomes.com with the\n"
 "details provided at the end of this email. To keep our site up to date and\n"
-"relevant, I'd be grateful if you could fill in this short questionnaire to tell\n"
+"relevant, I'd be grateful if you could fill in this short questionnaire to "
+"tell\n"
 "us what has happened: \n"
 "\n"
 "    <?=$values['url']?>\n"
@@ -2053,7 +2265,8 @@ msgid ""
 "\n"
 "Hi,\n"
 "\n"
-"This is an automatic response to your email; your email has not been delivered.\n"
+"This is an automatic response to your email; your email has not been "
+"delivered.\n"
 "\n"
 "If you're replying to an email about a report update, please visit\n"
 "the URL given in the email in order to leave a reply. You cannot\n"
@@ -2096,7 +2309,8 @@ msgid ""
 "\n"
 "Email: <?=$values['email']?>\n"
 "\n"
-"<?=$values['phone_line']?><?=$values['category_line']?>Subject: <?=$values['title']?>\n"
+"<?=$values['phone_line']?><?=$values['category_line']?>Subject: <?=$values"
+"['title']?>\n"
 "\n"
 "Details: <?=$values['detail']?>\n"
 "\n"
@@ -2111,9 +2325,12 @@ msgid ""
 "Yours,  \n"
 "The FixMyStreet team\n"
 "\n"
-"[ This message was sent via FixMyStreet, a project of UKCOD, registered charity\n"
-"number 1076346. If there is a more appropriate email address for messages about\n"
-"<?=$values['category_footer']?>, please let us know by visiting <http://www.fixmystreet.com/contact>.\n"
+"[ This message was sent via FixMyStreet, a project of UKCOD, registered "
+"charity\n"
+"number 1076346. If there is a more appropriate email address for messages "
+"about\n"
+"<?=$values['category_footer']?>, please let us know by visiting <http://www."
+"fixmystreet.com/contact>.\n"
 "This will help improve the service for local people. We\n"
 "also welcome any other feedback you may have. ]\n"
 "\n"
@@ -2126,7 +2343,8 @@ msgstr ""
 "FiksGataMi sendt følgende sak til deres kommune.\n"
 "Saken er av lokal karakter, og derfor sendt til deres kommune.\n"
 "\n"
-"<?=$values['fuzzy']?>, vi setter pris på om dere kan oppdatere saken etter behandling,\n"
+"<?=$values['fuzzy']?>, vi setter pris på om dere kan oppdatere saken etter "
+"behandling,\n"
 "ved å klikke på følgende link:\n"
 "\n"
 "    <?=$values['url']?>\n"
@@ -2137,7 +2355,8 @@ msgstr ""
 "\n"
 "Epost: <?=$values['email']?>\n"
 "\n"
-"<?=$values['phone_line']?><?=$values['category_line']?>Subject: <?=$values['title']?>\n"
+"<?=$values['phone_line']?><?=$values['category_line']?>Subject: <?=$values"
+"['title']?>\n"
 "\n"
 "Detaljer: <?=$values['detail']?>\n"
 "\n"
@@ -2171,7 +2390,8 @@ msgid ""
 "\n"
 "Email: <?=$values['email']?>\n"
 "\n"
-"<?=$values['phone_line']?><?=$values['category_line']?>Subject: <?=$values['title']?>\n"
+"<?=$values['phone_line']?><?=$values['category_line']?>Subject: <?=$values"
+"['title']?>\n"
 "\n"
 "Details: <?=$values['detail']?>\n"
 "\n"
@@ -2186,9 +2406,12 @@ msgid ""
 "Yours,  \n"
 "The FixMyStreet team\n"
 "\n"
-"[ This message was sent via FixMyStreet, a project of UKCOD, registered charity\n"
-"number 1076346. If there is a more appropriate email address for messages about\n"
-"<?=$values['category_footer']?>, please let us know by visiting <http://www.fixmystreet.com/contact>.\n"
+"[ This message was sent via FixMyStreet, a project of UKCOD, registered "
+"charity\n"
+"number 1076346. If there is a more appropriate email address for messages "
+"about\n"
+"<?=$values['category_footer']?>, please let us know by visiting <http://www."
+"fixmystreet.com/contact>.\n"
 "This will help improve the service for local people. We\n"
 "also welcome any other feedback you may have. ]\n"
 "\n"
@@ -2201,7 +2424,8 @@ msgstr ""
 "FiksGataMi sendt følgende sak til deres kommune.\n"
 "Saken er av lokal karakter, og derfor sendt til deres kommune.\n"
 "\n"
-"<?=$values['fuzzy']?>, vi setter pris på om dere kan oppdatere saken etter behandling,\n"
+"<?=$values['fuzzy']?>, vi setter pris på om dere kan oppdatere saken etter "
+"behandling,\n"
 "ved å klikke på følgende link:\n"
 "\n"
 "    <?=$values['url']?>\n"
@@ -2212,7 +2436,8 @@ msgstr ""
 "\n"
 "Epost: <?=$values['email']?>\n"
 "\n"
-"<?=$values['phone_line']?><?=$values['category_line']?>Subject: <?=$values['title']?>\n"
+"<?=$values['phone_line']?><?=$values['category_line']?>Subject: <?=$values"
+"['title']?>\n"
 "\n"
 "Detaljer: <?=$values['detail']?>\n"
 "\n"
@@ -2230,23 +2455,30 @@ msgid ""
 "\n"
 "Dear Empty Property Officer,\n"
 "\n"
-"This is a new referral of an empty property in your area made by a user of the\n"
-"website ReportEmptyHomes.com; the website user has been told that the case has\n"
-"been referred to you.  We would be grateful if you could do whatever you can to\n"
-"help get this property back into use. We will contact the user in a month and\n"
+"This is a new referral of an empty property in your area made by a user of "
+"the\n"
+"website ReportEmptyHomes.com; the website user has been told that the case "
+"has\n"
+"been referred to you.  We would be grateful if you could do whatever you can "
+"to\n"
+"help get this property back into use. We will contact the user in a month "
+"and\n"
 "again in six months and ask them what has happened to the property.  \n"
 "\n"
-"We'd encourage you to tell us what you have done, and when the property comes\n"
+"We'd encourage you to tell us what you have done, and when the property "
+"comes\n"
 "back into use, by filling in an update against the property referral on the\n"
 "website:\n"
 "\n"
 "    <?=$values['url']?>\n"
 "\n"
 "This gives useful feedback to website users and helps them understand what\n"
-"action you are taking. We will offer advice to the user on other action they\n"
+"action you are taking. We will offer advice to the user on other action "
+"they\n"
 "might take if the property isn't successfully dealt with.  \n"
 "\n"
-"<?=$values['has_photo']?>If you would like help or advice on getting empty properties back into use\n"
+"<?=$values['has_photo']?>If you would like help or advice on getting empty "
+"properties back into use\n"
 "there is lots of useful information on the Empty Homes Agency's website\n"
 "www.EmptyHomes.com - if you have further questions please give us a call. \n"
 "\n"
@@ -2341,7 +2573,8 @@ msgstr ""
 #: templates/emails/emptyhomes/alert-problem-area
 #, fuzzy
 msgid ""
-"Subject: New empty properties in <?=$values['area_name']?> on reportemptyhomes.com\n"
+"Subject: New empty properties in <?=$values['area_name']?> on "
+"reportemptyhomes.com\n"
 "\n"
 "The following empty properties have been added within\n"
 "<?=$values['area_name']?>:\n"
@@ -2372,9 +2605,11 @@ msgstr ""
 #: templates/emails/emptyhomes/alert-problem-council
 #, fuzzy
 msgid ""
-"Subject: New empty properties reported to <?=$values['area_name']?> on reportemptyhomes.com\n"
+"Subject: New empty properties reported to <?=$values['area_name']?> on "
+"reportemptyhomes.com\n"
 "\n"
-"The following empty properties have been reported to <?=$values['area_name']?>:\n"
+"The following empty properties have been reported to <?=$values['area_name']?"
+">:\n"
 "\n"
 "<?=$values['data']?>\n"
 "\n"
@@ -2428,9 +2663,11 @@ msgstr ""
 #: templates/emails/emptyhomes/alert-problem-ward
 #, fuzzy
 msgid ""
-"Subject: New empty properties reported to <?=$values['area_name']?> within <?=$values['ward_name']?> on reportemptyhomes.com\n"
+"Subject: New empty properties reported to <?=$values['area_name']?> within <?"
+"=$values['ward_name']?> on reportemptyhomes.com\n"
 "\n"
-"The following empty properties have been reported to <?=$values['area_name']?>\n"
+"The following empty properties have been reported to <?=$values['area_name']?"
+">\n"
 "within <?=$values['ward_name']?>:\n"
 "\n"
 "<?=$values['data']?>\n"
@@ -2442,7 +2679,8 @@ msgid ""
 "<?=$values['area_name']?> within <?=$values['ward_name']?>,\n"
 "please follow this link: <?=$values['unsubscribe_url']?>\n"
 msgstr ""
-"Subject: Nye saker sendt til <?=$values['area_name']?> innenfor <?=$values['ward_name']?> via FiksGataMi.no\n"
+"Subject: Nye saker sendt til <?=$values['area_name']?> innenfor <?=$values"
+"['ward_name']?> via FiksGataMi.no\n"
 "\n"
 "Følgende saker er sendt til <?=$values['area_name']?>\n"
 "innenfor <?=$values['ward_name']?>:\n"
