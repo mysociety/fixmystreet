@@ -177,22 +177,25 @@ sub admin_summary ($) {
 sub admin_councils_list ($) {
     my ($q) = @_;
 
-    print html_head($q, "Council contacts");
-    print $q->h1("Council contacts");
+    print html_head($q, _("Council contacts"));
+    print $q->h1(_("Council contacts"));
 
     # Table of editors
-    print $q->h2("Diligency prize league table");
+    print $q->h2(_("Diligency prize league table"));
     my $edit_activity = dbh()->selectall_arrayref("select count(*) as c, editor from contacts_history group by editor order by c desc");
-    print $q->ul(
-        map { $q->li($_->[0] . " edits by " . $_->[1]) } @$edit_activity 
-    );
+    if (@$edit_activity) {
+        print $q->ul(
+            map { $q->li($_->[0] . " edits by " . $_->[1]) } @$edit_activity 
+        );
+    } else {
+        print $q->p(_('No edits have yet been made.'));
+    }
 
     # Table of councils
-    print $q->h2("Councils");
-    my $ignore = 'LGD';
-    $ignore .= '|CTY' if $q->{site} eq 'emptyhomes';
-    my @types = grep { !/$ignore/ } @$mySociety::VotingArea::council_parent_types; # LGD are NI councils
-    my $areas = mySociety::MaPit::call('areas', \@types);
+    print $q->h2(_("Councils"));
+    my $cobrand = Page::get_cobrand($q);
+    my @area_types = Cobrand::area_types($cobrand);
+    my $areas = mySociety::MaPit::call('areas', \@area_types);
     my @councils_ids = sort { $areas->{$a}->{name} cmp $areas->{$b}->{name} } keys %$areas;
     my $bci_info = dbh()->selectall_hashref("
         select area_id, count(*) as c, count(case when deleted then 1 else null end) as deleted,
@@ -205,14 +208,19 @@ sub admin_councils_list ($) {
             print "None";
             return;
         }
-        print $q->p(join($q->br(), 
-            map { 
-                $q->a({ href => NewURL($q, area_id => $_, page => 'councilcontacts') }, 
-                  $areas->{$_}->{name}) . " " .
+        my @li;
+        foreach (@ids) {
+            my $parent = '';
+            $parent = ', ' . $areas->{$areas->{$_}->{parent_area}}->{name}
+                if $areas->{$_}->{parent_area};
+
+            push @li, $q->li($q->a({ href => NewURL($q, area_id => $_, page => 'councilcontacts') }, 
+                  $areas->{$_}->{name}) . $parent .
                     ($bci_info->{$_} && $q->{site} ne 'emptyhomes' ?
                         $bci_info->{$_}->{c} . ' addresses'
-                    : '')
-            } @ids));
+                    : ''));
+        }
+        print $q->ul(@li);
     };
 
     print $q->h3('No info at all');

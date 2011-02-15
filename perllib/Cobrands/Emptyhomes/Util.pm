@@ -34,7 +34,7 @@ sub admin_base_url {
 }
 
 sub area_types {
-    return [qw(DIS LBO MTD UTA LGD COI)]; # No CTY
+    return qw(DIS LBO MTD UTA LGD COI); # No CTY
 }
 
 =item set_lang_and_domain LANG UNICODE

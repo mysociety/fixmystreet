@@ -325,8 +325,8 @@ sub submit_problem {
         $areas = mySociety::MaPit::call( 'point', $mapit_query );
         if ($input{council} =~ /^[\d,]+(\|[\d,]+)?$/) {
             my $no_details = $1 || '';
-            my $area_types = Cobrand::area_types($cobrand);
-            my %va = map { $_ => 1 } @$area_types;
+            my @area_types = Cobrand::area_types($cobrand);
+            my %va = map { $_ => 1 } @area_types;
             my %councils;
             foreach (keys %$areas) {
                 $councils{$_} = 1 if $va{$areas->{$_}->{type}};
@@ -517,9 +517,9 @@ sub display_form {
     }
 
     # Look up councils and do checks for the point we've got
-    my $area_types = Cobrand::area_types($cobrand);
+    my @area_types = Cobrand::area_types($cobrand);
     # XXX: I think we want in_gb_locale around the next line, needs testing
-    my $all_councils = mySociety::MaPit::call('point', "4326/$longitude,$latitude", type => $area_types);
+    my $all_councils = mySociety::MaPit::call('point', "4326/$longitude,$latitude", type => \@area_types);
 
     # Let cobrand do a check
     my ($success, $error_msg) = Cobrand::council_check($cobrand, { all_councils => $all_councils }, $q, 'submit_problem');

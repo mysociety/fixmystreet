@@ -51,6 +51,8 @@ my $lastmodified;
 sub do_fastcgi {
     my ($func, $lm) = @_;
 
+    binmode(STDOUT, ":utf8");
+
     try {
         my $W = new mySociety::WatchUpdate();
         while (my $q = new mySociety::Web()) {
@@ -111,7 +113,7 @@ sub microsite {
     my $lang;
     $lang = 'cy' if $host =~ /cy/;
     $lang = 'en-gb' if $host =~ /^en\./;
-    Cobrand::set_lang_and_domain(get_cobrand($q), $lang);
+    Cobrand::set_lang_and_domain(get_cobrand($q), $lang, 1);
 
     Problems::set_site_restriction($q);
     Memcached::set_namespace(mySociety::Config::get('BCI_DB_NAME') . ":");
@@ -675,10 +677,16 @@ sub mapit_check_error {
 }
 
 sub short_name {
-    my $name = shift;
+    my ($area, $info) = @_;
     # Special case Durham as it's the only place with two councils of the same name
-    return 'Durham+County' if ($name eq 'Durham County Council');
-    return 'Durham+City' if ($name eq 'Durham City Council');
+    # And some places in Norway
+    return 'Durham+County' if $area->{name} eq 'Durham County Council';
+    return 'Durham+City' if $area->{name} eq 'Durham City Council';
+    if ($area->{name} =~ /^(Os|Nes|V\xe5ler|Sande|B\xf8|Her\xf8y)$/) {
+        my $parent = $info->{$area->{parent_area}}->{name};
+        return "$area->{name},+$parent";
+    }
+    my $name = $area->{name};
     $name =~ s/ (Borough|City|District|County) Council$//;
     $name =~ s/ Council$//;
     $name =~ s/ & / and /;
