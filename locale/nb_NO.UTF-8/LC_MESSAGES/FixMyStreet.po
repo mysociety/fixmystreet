@@ -118,7 +118,7 @@ msgid ""
 "\"logoie\"></span></a>"
 msgstr ""
 "<div id=\"logo\" align=\"center\"><a href=\"http://www.nuug.no/\">NUUG</a> "
-"and<br><a href=\"http://www.mysociety.org/\"><img  id=\"logo\" width=\"133\" "
+"and<br><a href=\"http://www.mysociety.org/\"><img width=\"133\" "
 "height=\"26\" border=0 src=\"/i/mysociety-dark.png\" alt=\"mySociety\"><span "
 "id=\"logoie\"></span></a></div>"
 
