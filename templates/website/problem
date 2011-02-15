@@ -37,7 +37,7 @@
 <input type="hidden" name="submit_update" value="1">
 <input type="hidden" name="id" value="{{ $input_h{id} }}">
 <div><label for="form_name">{{ $name_label }}</label>
-<input type="text" name="name" id="form_name" value="{{ $input_h{name} }}" size="20"> (optional)</div>
+<input type="text" name="name" id="form_name" value="{{ $input_h{name} }}" size="20"> {{ $optional }}</div>
 {{ if ( $field_errors{email}) {
     "<div class='form-error'>$field_errors{email}</div>";
 } }}

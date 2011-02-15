@@ -1073,6 +1073,7 @@ sub display_problem {
         cobrand_form_elements => Cobrand::form_elements($cobrand, 'updateForm', $q),
         form_action => Cobrand::url($cobrand, '/', $q),
         input_h => \%input_h,
+        optional => _('(optional)'),
     );
 
     $vars{update_blurb} = $q->p($q->small(_('Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href="/faq#privacy">privacy policy</a>')))
