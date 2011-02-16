@@ -528,11 +528,19 @@ sub display_form {
         return front_page($q, $error_msg);
     }
 
-    # Ipswich & St Edmundsbury are responsible for everything in their areas, not Suffolk
-    delete $all_councils->{2241} if $all_councils->{2446} || $all_councils->{2443};
+    if (mySociety::Config::get('COUNTRY') eq 'GB') {
+        # Ipswich & St Edmundsbury are responsible for everything in their areas, not Suffolk
+        delete $all_councils->{2241} if $all_councils->{2446} || $all_councils->{2443};
 
-    # Norwich is responsible for everything in its areas, not Norfolk
-    delete $all_councils->{2233} if $all_councils->{2391};
+        # Norwich is responsible for everything in its areas, not Norfolk
+        delete $all_councils->{2233} if $all_councils->{2391};
+
+    } elsif (mySociety::Config::get('COUNTRY') eq 'NO') {
+
+        # Oslo is both a kommune and a fylke, we only want to show it once
+        delete $all_councils->{301} if $all_councils->{3};
+
+    }
 
     return display_location($q, _('That spot does not appear to be covered by a council.
 If you have tried to report an issue past the shoreline, for example,

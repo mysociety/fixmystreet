@@ -105,11 +105,11 @@ sub alert_list {
     my $errors = '';
     $errors = '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>' if @errors;
 
-    my @types = (@$mySociety::VotingArea::council_parent_types, @$mySociety::VotingArea::council_child_types);
-    my %councils = map { $_ => 1 } @$mySociety::VotingArea::council_parent_types;
+    my $cobrand = Page::get_cobrand($q);
+    my @types = (Cobrand::area_types($cobrand), @$mySociety::VotingArea::council_child_types);
+    my %councils = map { $_ => 1 } Cobrand::area_types($cobrand);
 
     my $areas = mySociety::MaPit::call('point', "4326/$lon,$lat", type => \@types);
-    my $cobrand = Page::get_cobrand($q);
     my ($success, $error_msg) = Cobrand::council_check($cobrand, { all_councils => $areas }, $q, 'alert');    
     if (!$success) {
         return alert_front_page($q, $error_msg);
@@ -118,7 +118,52 @@ sub alert_list {
     return alert_front_page($q, _('That location does not appear to be covered by a council, perhaps it is offshore - please try somewhere more specific.')) if keys %$areas == 0;
 
     my ($options, $options_start, $options_end);
-    if (keys %$areas == 2) {
+    if (mySociety::Config::get('COUNTRY') eq 'NO') {
+
+        my (@options, $fylke, $kommune);
+        foreach (values %$areas) {
+            if ($_->{type} eq 'NKO') {
+                $kommune = $_;
+            } else {
+                $fylke = $_;
+            }
+        }
+        my $kommune_name = encode_utf8($kommune->{name});
+        my $fylke_name = encode_utf8($fylke->{name});
+
+        if ($fylke->{id} == 3) { # Oslo
+
+            push @options, [ 'council', $fylke->{id}, Page::short_name($fylke),
+                sprintf(_("Problems within %s"), $fylke_name) ];
+        
+            $options_start = "<div><ul id='rss_feed'>";
+            $options = alert_list_options($q, @options);
+            $options_end = "</ul>";
+
+        } else {
+
+            push @options,
+                [ 'area', $kommune->{id}, Page::short_name($kommune), $kommune_name ],
+                [ 'area', $fylke->{id}, Page::short_name($fylke), $fylke_name ];
+            $options_start = '<div id="rss_list">';
+            $options = $q->p($q->strong(_('Problems within the boundary of:'))) .
+                $q->ul(alert_list_options($q, @options));
+            @options = ();
+            push @options,
+                [ 'council', $kommune->{id}, Page::short_name($kommune), $kommune_name ],
+                [ 'council', $fylke->{id}, Page::short_name($fylke), $fylke_name ];
+            $options .= $q->p($q->strong(_('Or problems reported to:'))) .
+                $q->ul(alert_list_options($q, @options));
+            $options_end = $q->p($q->small(_('FixMyStreet sends different categories of problem
+to the appropriate council, so problems within the boundary of a particular council
+might not match the problems sent to that council. For example, a graffiti report
+will be sent to the district council, so will appear in both of the district
+council&rsquo;s alerts, but will only appear in the "Within the boundary" alert
+for the county council.'))) . '</div><div id="rss_buttons">';
+
+        }
+
+    } elsif (keys %$areas == 2) {
 
         # One-tier council
         my (@options, $council, $ward);

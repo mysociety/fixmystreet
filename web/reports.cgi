@@ -198,6 +198,7 @@ sub main {
         }
         print '<th>' . _('Recently fixed') . '</th><th>' . _('Older fixed') . '</th></tr>';
         foreach (sort { $areas_info->{$a}->{name} cmp $areas_info->{$b}->{name} } keys %$areas_info) {
+            next if mySociety::Config::get('COUNTRY') eq 'NO' && $_ eq 301; # Only want one Oslo
             print '<tr align="center"';
             ++$c;
             if (mySociety::Config::get('COUNTRY') eq 'GB' && $areas_info->{$_}->{generation_high} == 10) {
