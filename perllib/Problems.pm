@@ -93,12 +93,14 @@ sub recent_photos {
         my $key = "recent_photos:$site_key:$num:$lat:$lon:$dist";
         $probs = Memcached::get($key);
         unless ($probs) {
-            $probs = select_all("select id, title
+            $probs = mySociety::Locale::in_gb_locale {
+                select_all("select id, title
                 from problem_find_nearby(?, ?, ?) as nearby, problem
                 where nearby.problem_id = problem.id
                 and state in ('confirmed', 'fixed') and photo is not null
                 $site_restriction
                 order by confirmed desc limit $num", $lat, $lon, $dist);
+            };
             Memcached::set($key, $probs, 3600);
         }
     } else {
@@ -259,7 +261,7 @@ sub problems_matching_criteria {
     my $areas_info = mySociety::MaPit::call('areas', \@councils);
     foreach my $problem (@$problems){
         if ($problem->{council}) {
-             my @council_names = map { $areas_info->{$_}->{name}} @{$problem->{council}} ;
+             my @council_names = map { encode_utf8($areas_info->{$_}->{name}) } @{$problem->{council}} ;
              $problem->{council} = join(' and ', @council_names);
         }
     }

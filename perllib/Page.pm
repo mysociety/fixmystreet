@@ -51,7 +51,7 @@ my $lastmodified;
 sub do_fastcgi {
     my ($func, $lm) = @_;
 
-    binmode(STDOUT, ":utf8");
+    #binmode(STDOUT, ":utf8");
 
     try {
         my $W = new mySociety::WatchUpdate();
@@ -113,7 +113,7 @@ sub microsite {
     my $lang;
     $lang = 'cy' if $host =~ /cy/;
     $lang = 'en-gb' if $host =~ /^en\./;
-    Cobrand::set_lang_and_domain(get_cobrand($q), $lang, 1);
+    Cobrand::set_lang_and_domain(get_cobrand($q), $lang); # , 1);
 
     Problems::set_site_restriction($q);
     Memcached::set_namespace(mySociety::Config::get('BCI_DB_NAME') . ":");
@@ -304,7 +304,7 @@ sub footer {
     my ($q, %params) = @_;
 
     my $pc = $q->param('pc') || '';
-    $pc = "?pc=" . ent($pc) if $pc;
+    $pc = '?pc=' . URI::Escape::uri_escape($pc) if $pc;
 
     my $creditline = _('Built by <a href="http://www.mysociety.org/">mySociety</a>, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.');
     if (mySociety::Config::get('COUNTRY') eq 'NO') {
@@ -561,7 +561,7 @@ sub display_problem_meta_line($$) {
             $problem->{council} =~ s/\|.*//g;
             my @councils = split /,/, $problem->{council};
             my $areas_info = mySociety::MaPit::call('areas', \@councils);
-            my $council = join(' and ', map { $areas_info->{$_}->{name} } @councils);
+            my $council = join(' and ', map { encode_utf8($areas_info->{$_}->{name}) } @councils);
             $out .= '<small class="council_sent_info">';
             $out .= $q->br() . sprintf(_('Sent to %s %s later'), $council, prettify_duration($problem->{whensent}, 'minute'));
             $out .= '</small>';
@@ -684,7 +684,7 @@ sub short_name {
     return 'Durham+City' if $area->{name} eq 'Durham City Council';
     if ($area->{name} =~ /^(Os|Nes|V\xe5ler|Sande|B\xf8|Her\xf8y)$/) {
         my $parent = $info->{$area->{parent_area}}->{name};
-        return "$area->{name},+$parent";
+        return URI::Escape::uri_escape_utf8("$area->{name}, $parent");
     }
     my $name = $area->{name};
     $name =~ s/ (Borough|City|District|County) Council$//;

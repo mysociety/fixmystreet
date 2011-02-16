@@ -55,7 +55,7 @@ my %fns = (
     'front_stats' => { default => '\&Problems::front_stats' },
     # Given a STRING ($_[1]) representing a location and a QUERY, return a string that
     # includes any disambiguating information available
-    'disambiguate_location' => { default => '$_[1]' },
+    'disambiguate_location' => { default => '"$_[1]&gl=uk"' },
     # Parameter is EPOCHTIME
     'prettify_epoch' => { default => '0' },
     # Parameters are FORM_NAME, QUERY. Return HTML for any extra needed elements for FORM_NAME

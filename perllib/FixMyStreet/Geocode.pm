@@ -9,6 +9,7 @@
 package FixMyStreet::Geocode;
 
 use strict;
+use Encode;
 use Error qw(:try);
 use File::Slurp;
 use File::Path ();
@@ -87,8 +88,9 @@ sub geocoded_string_coordinates {
 # of the site. 
 sub string {
     my ($s, $q) = @_;
+    $s = decode_utf8($s);
     $s = lc($s);
-    $s =~ s/[^-&0-9a-z ']/ /g;
+    $s =~ s/[^-&\w ']/ /g;
     $s =~ s/\s+/ /g;
     $s = URI::Escape::uri_escape_utf8($s);
     $s = Cobrand::disambiguate_location(Page::get_cobrand($q), "q=$s", $q);
@@ -102,7 +104,7 @@ sub string {
     } else {
         $url .= ',+UK' unless $url =~ /united\++kingdom$/ || $url =~ /uk$/i
             || mySociety::Config::get('COUNTRY') ne 'GB';
-        $url .= '&sensor=false&gl=uk&key=' . mySociety::Config::get('GOOGLE_MAPS_API_KEY');
+        $url .= '&sensor=false&key=' . mySociety::Config::get('GOOGLE_MAPS_API_KEY');
         $js = LWP::Simple::get($url);
         File::Path::mkpath($cache_dir);
         File::Slurp::write_file($cache_file, $js) if $js && $js !~ /"code":6[12]0/;

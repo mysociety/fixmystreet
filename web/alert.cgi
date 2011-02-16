@@ -11,6 +11,7 @@
 use strict;
 use Standard;
 use Digest::SHA1 qw(sha1_hex);
+use Encode;
 use Error qw(:try);
 use CrossSell;
 use FixMyStreet::Alert;
@@ -110,7 +111,7 @@ sub alert_list {
     my $areas = mySociety::MaPit::call('point', "4326/$lon,$lat", type => \@types);
     my $cobrand = Page::get_cobrand($q);
     my ($success, $error_msg) = Cobrand::council_check($cobrand, { all_councils => $areas }, $q, 'alert');    
-    if (!$success){
+    if (!$success) {
         return alert_front_page($q, $error_msg);
     }
 
@@ -128,10 +129,12 @@ sub alert_list {
                 $ward = $_;
             }
         }
-        push @options, [ 'council', $council->{id}, Page::short_name($council->{name}),
-            sprintf(_("Problems within %s"), $council->{name}) ];
-        push @options, [ 'ward', $council->{id}.':'.$ward->{id}, Page::short_name($council->{name}) . '/'
-            . Page::short_name($ward->{name}), sprintf(_("Problems within %s ward"), $ward->{name}) ];
+        my $council_name = encode_utf8($council->{name});
+        my $ward_name = encode_utf8($ward->{name});
+        push @options, [ 'council', $council->{id}, Page::short_name($council),
+            sprintf(_("Problems within %s"), $council_name) ];
+        push @options, [ 'ward', $council->{id}.':'.$ward->{id}, Page::short_name($council) . '/'
+            . Page::short_name($ward), sprintf(_("Problems within %s ward"), $ward_name) ];
         
         $options_start = "<div><ul id='rss_feed'>";
         $options = alert_list_options($q, @options);
@@ -144,8 +147,9 @@ sub alert_list {
         foreach (values %$areas) {
             $council = $_;
         }
-        push @options, [ 'council', $council->{id}, Page::short_name($council->{name}),
-            sprintf(_("Problems within %s"), $council->{name}) ];
+        my $council_name = encode_utf8($council->{name});
+        push @options, [ 'council', $council->{id}, Page::short_name($council),
+            sprintf(_("Problems within %s"), $council_name) ];
         
         $options_start = "<div><ul id='rss_feed'>"; 
         $options = alert_list_options($q, @options);
@@ -166,26 +170,30 @@ sub alert_list {
                 $d_ward = $_;
             }
         }
+        my $district_name = encode_utf8($district->{name});
+        my $d_ward_name = encode_utf8($d_ward->{name});
+        my $county_name = encode_utf8($county->{name});
+        my $c_ward_name = encode_utf8($c_ward->{name});
         push @options,
-            [ 'area', $district->{id}, Page::short_name($district->{name}), $district->{name} ],
-            [ 'area', $district->{id}.':'.$d_ward->{id}, Page::short_name($district->{name}) . '/'
-              . Page::short_name($d_ward->{name}), "$d_ward->{name} ward, $district->{name}" ],
-            [ 'area', $county->{id}, Page::short_name($county->{name}), $county->{name} ],
-            [ 'area', $county->{id}.':'.$c_ward->{id}, Page::short_name($county->{name}) . '/'
-              . Page::short_name($c_ward->{name}), "$c_ward->{name} ward, $county->{name}" ];
+            [ 'area', $district->{id}, Page::short_name($district), $district_name ],
+            [ 'area', $district->{id}.':'.$d_ward->{id}, Page::short_name($district) . '/'
+              . Page::short_name($d_ward), "$d_ward_name ward, $district_name" ],
+            [ 'area', $county->{id}, Page::short_name($county), $county_name ],
+            [ 'area', $county->{id}.':'.$c_ward->{id}, Page::short_name($county) . '/'
+              . Page::short_name($c_ward), "$c_ward_name ward, $county_name" ];
         $options_start = '<div id="rss_list">';
         $options = $q->p($q->strong(_('Problems within the boundary of:'))) .
             $q->ul(alert_list_options($q, @options));
         @options = ();
         push @options,
-            [ 'council', $district->{id}, Page::short_name($district->{name}), $district->{name} ],
-            [ 'ward', $district->{id}.':'.$d_ward->{id}, Page::short_name($district->{name}) . '/' . Page::short_name($d_ward->{name}),
-              "$district->{name}, within $d_ward->{name} ward" ];
+            [ 'council', $district->{id}, Page::short_name($district), $district_name ],
+            [ 'ward', $district->{id}.':'.$d_ward->{id}, Page::short_name($district) . '/' . Page::short_name($d_ward),
+              "$district_name, within $d_ward_name ward" ];
         if ($q->{site} ne 'emptyhomes') {
             push @options,
-                [ 'council', $county->{id}, Page::short_name($county->{name}), $county->{name} ],
-                [ 'ward', $county->{id}.':'.$c_ward->{id}, Page::short_name($county->{name}) . '/'
-                  . Page::short_name($c_ward->{name}), "$county->{name}, within $c_ward->{name} ward" ];
+                [ 'council', $county->{id}, Page::short_name($county), $county_name ],
+                [ 'ward', $county->{id}.':'.$c_ward->{id}, Page::short_name($county) . '/'
+                  . Page::short_name($c_ward), "$county_name, within $c_ward_name ward" ];
             $options .= $q->p($q->strong(_('Or problems reported to:'))) .
                 $q->ul(alert_list_options($q, @options));
             $options_end = $q->p($q->small(_('FixMyStreet sends different categories of problem

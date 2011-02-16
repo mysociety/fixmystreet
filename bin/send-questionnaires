@@ -75,7 +75,7 @@ foreach my $row (@$unsent) {
 
     my %h = map { $_ => $row->{$_} } qw/name title detail category/;
     $h{created} = Page::prettify_duration($row->{created}, 'week');
-    $h{councils} = join(' and ', map { $areas_info->{$_}->{name} } @councils);
+    $h{councils} = join(' and ', map { encode_utf8($areas_info->{$_}->{name}) } @councils);
 
     my $id = dbh()->selectrow_array("select nextval('questionnaire_id_seq');");
     dbh()->do('insert into questionnaire (id, problem_id, whensent)

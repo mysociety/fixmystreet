@@ -130,7 +130,7 @@ sub main {
         }
         my $type = 'council_problems'; # Problems sent to a council
         my (@params, %title_params);
-        $title_params{COUNCIL} = $area_name;
+        $title_params{COUNCIL} = encode_utf8($area_name);
         push @params, $one_council->{id} if $rss eq 'reports';
         push @params, $ward ? $ward->{id} : $one_council->{id};
         if ($ward && $rss eq 'reports') {
@@ -208,9 +208,9 @@ sub main {
             my $url = Page::short_name($areas_info->{$_}, $areas_info);
             my $cobrand_url = Cobrand::url($cobrand, "/reports/$url", $q);
             print '><td align="left"><a href="' . $cobrand_url . '">' .
-                $areas_info->{$_}->{name};
-            if ($areas_info->{$_}->{parent_area} && $url =~ /,/) {
-                print ', ' . $areas_info->{$areas_info->{$_}->{parent_area}}->{name};
+                encode_utf8($areas_info->{$_}->{name});
+            if ($areas_info->{$_}->{parent_area} && $url =~ /,|%2C/) {
+                print ', ' . encode_utf8($areas_info->{$areas_info->{$_}->{parent_area}}->{name});
             }
             print '</a></td>';
             summary_cell(\@{$open{$_}{new}});
@@ -229,7 +229,7 @@ sub main {
         }
         print '</table>';
     } else {
-        my $name = $one_council->{name};
+        my $name = encode_utf8($one_council->{name});
         if (!$name) {
             print Page::header($q, title=>_("Summary reports"));
             print "Council with identifier " . ent($one_council->{id}). " not found. ";

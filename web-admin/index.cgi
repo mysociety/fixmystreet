@@ -18,6 +18,7 @@ use strict;
 use FindBin;
 use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../commonlib/perllib";
+use Encode;
 use POSIX qw(strftime);
 use Digest::MD5 qw(md5_hex);
 
@@ -215,7 +216,7 @@ sub admin_councils_list ($) {
                 if $areas->{$_}->{parent_area};
 
             push @li, $q->li($q->a({ href => NewURL($q, area_id => $_, page => 'councilcontacts') }, 
-                  $areas->{$_}->{name}) . $parent .
+                  encode_utf8($areas->{$_}->{name})) . encode_utf8($parent) .
                     ($bci_info->{$_} && $q->{site} ne 'emptyhomes' ?
                         $bci_info->{$_}->{c} . ' addresses'
                     : ''));
@@ -309,7 +310,7 @@ sub admin_council_contacts ($$) {
 
     # Title
     my $mapit_data = mySociety::MaPit::call('area', $area_id);
-    my $title = 'Council contacts for ' . $mapit_data->{name};
+    my $title = sprintf(_('Council contacts for %s'), encode_utf8($mapit_data->{name}));
     print html_head($q, $title);
     print $q->h1($title);
     print $updated;
@@ -392,7 +393,7 @@ sub admin_council_edit ($$$) {
     my $mapit_data = mySociety::MaPit::call('area', $area_id);
     
     # Title
-    my $title = 'Council contacts for ' . $mapit_data->{name};
+    my $title = sprintf(_('Council contacts for %s'), encode_utf8($mapit_data->{name}));
     print html_head($q, $title);
     print $q->h1($title);
 

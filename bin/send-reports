@@ -115,7 +115,7 @@ foreach my $row (@$unsent) {
 
         my $council = $row->{council};
         $areas_info = mySociety::MaPit::call('areas', $council);
-        my $name = $areas_info->{$council}->{name};
+        my $name = encode_utf8($areas_info->{$council}->{name});
         my ($council_email, $confirmed, $note) = dbh()->selectrow_array(
             "SELECT email,confirmed,note FROM contacts WHERE deleted='f'
                 and area_id=? AND category=?", {}, $council, 'Empty property');
@@ -142,7 +142,7 @@ foreach my $row (@$unsent) {
         my (@dear, %recips);
         my $all_confirmed = 1;
         foreach my $council (@councils) {
-            my $name = $areas_info->{$council}->{name};
+            my $name = encode_utf8($areas_info->{$council}->{name});
             push @dear, $name;
             if ($council == 2330) { # E. Hants have a web service
                 $send_web = 1;
@@ -186,7 +186,7 @@ foreach my $row (@$unsent) {
             : '';
         $h{missing} = ''; 
         if ($missing) {
-            my $name = $areas_info->{$missing}->{name};
+            my $name = encode_utf8($areas_info->{$missing}->{name});
             $h{missing} = '[ We realise this problem might be the responsibility of ' . $name
                 . "; however, we don't currently have any contact details for them.
 If you know of an appropriate contact address, please do get in touch. ]\n\n";
