@@ -216,7 +216,7 @@ sub admin_councils_list ($) {
                 if $areas->{$_}->{parent_area};
 
             push @li, $q->li($q->a({ href => NewURL($q, area_id => $_, page => 'councilcontacts') }, 
-                  encode_utf8($areas->{$_}->{name})) . encode_utf8($parent) .
+                  encode_utf8($areas->{$_}->{name})) . encode_utf8($parent) . ' ' .
                     ($bci_info->{$_} && $q->{site} ne 'emptyhomes' ?
                         $bci_info->{$_}->{c} . ' addresses'
                     : ''));

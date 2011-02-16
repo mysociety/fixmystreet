@@ -524,7 +524,7 @@ sub display_form {
 
     # Let cobrand do a check
     my ($success, $error_msg) = Cobrand::council_check($cobrand, { all_councils => $all_councils }, $q, 'submit_problem');
-    if (!$success){
+    if (!$success) {
         return front_page($q, $error_msg);
     }
 

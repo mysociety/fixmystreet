@@ -24,6 +24,19 @@ YAHOO.util.Event.onContentReady('map', function() {
     var click = new OpenLayers.Control.Click();
     fixmystreet.map.addControl(click);
     click.activate();
+
+    var markers = new OpenLayers.Layer.Markers("Markers");
+    var cols = { 'red':'R', 'green':'G', 'blue':'B', 'purple':'P' };
+    for (var i=0; i<fixmystreet.pins.length; i++) {
+        var pin = fixmystreet.pins[i];
+        var src = '/i/pin' + cols[pin[2]] + '.gif';
+        var size = new OpenLayers.Size(32, 59);
+        var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+        var icon = new OpenLayers.Icon(src, size, offset);
+        markers.addMarker(new OpenLayers.Marker(new OpenLayers.LonLat(pin[1],pin[0]), icon));
+    }
+
+    fixmystreet.map.addLayer(markers);
 });
 
 OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {                

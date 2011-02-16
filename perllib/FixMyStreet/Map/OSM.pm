@@ -30,8 +30,11 @@ sub display_map {
     $params{pre} ||= '';
     $params{post} ||= '';
 
+    my @pins;
     foreach my $pin (@{$params{pins}}) {
+        push @pins, "[ $pin->[0], $pin->[1], '$pin->[2]' ]";
     }
+    my $pins = join(",\n", @pins);
 
     my $out = FixMyStreet::Map::header($q, $params{type});
     my $copyright = _('Map &copy; <a href="http://www.openstreetmap.org/">OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>');
@@ -42,6 +45,7 @@ sub display_map {
 var fixmystreet = {
     'latitude': $params{latitude},
     'longitude': $params{longitude},
+    'pins': [ $pins ],
     'map_type': OpenLayers.Layer.OSM.Mapnik
 }
 </script>
