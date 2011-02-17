@@ -23,6 +23,7 @@ use CronFns;
 
 use EastHantsWSDL;
 use Cobrand;
+use Utils;
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh);
 use mySociety::Email;
