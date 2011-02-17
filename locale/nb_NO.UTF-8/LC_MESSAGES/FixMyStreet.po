@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: FixMyStreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2011-02-17 10:49+0000\n"
-"PO-Revision-Date: 2011-02-16 12:25MET\n"
+"PO-Revision-Date: 2011-02-17 14:56MET\n"
 "Last-Translator: Petter Reinholdtsen <pere@hungry.com>\n"
 "Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
 "MIME-Version: 1.0\n"
@@ -182,44 +182,44 @@ msgid "less than a minute"
 msgstr "mindre enn et minutt"
 
 #: perllib/Page.pm:510
-#, fuzzy, perl-format
+#, perl-format
 msgid "%d week"
-msgstr "uke"
+msgstr "%d uke"
 
 #: perllib/Page.pm:510
-#, fuzzy, perl-format
+#, perl-format
 msgid "%d weeks"
-msgstr "uke"
+msgstr "%d uker"
 
 #: perllib/Page.pm:511
-#, fuzzy, perl-format
+#, perl-format
 msgid "%d day"
-msgstr "dag"
+msgstr "%d dag"
 
 #: perllib/Page.pm:511
-#, fuzzy, perl-format
+#, perl-format
 msgid "%d days"
-msgstr "dag"
+msgstr "%d dager"
 
 #: perllib/Page.pm:512
-#, fuzzy, perl-format
+#, perl-format
 msgid "%d hour"
-msgstr "timer"
+msgstr "%d time"
 
 #: perllib/Page.pm:512
-#, fuzzy, perl-format
+#, perl-format
 msgid "%d hours"
-msgstr "timer"
+msgstr "%d timer"
 
 #: perllib/Page.pm:513
-#, fuzzy, perl-format
+#, perl-format
 msgid "%d minute"
-msgstr "minutt"
+msgstr "%d minutt"
 
 #: perllib/Page.pm:513
-#, fuzzy, perl-format
+#, perl-format
 msgid "%d minutes"
-msgstr "minutt"
+msgstr "%d minutter"
 
 #: perllib/Page.pm:533
 #, perl-format
@@ -342,9 +342,9 @@ msgid "This report is currently marked as open."
 msgstr "Denne rapporten er for tiden markert som åpen."
 
 #: perllib/FixMyStreet/Alert.pm:311
-#, fuzzy, perl-format
+#, perl-format
 msgid "Report on %s"
-msgstr "Rapportert anonymt %s"
+msgstr "Rapport for %s"
 
 #: perllib/FixMyStreet/Geocode.pm:65
 msgid ""
@@ -680,7 +680,7 @@ msgstr "Motta epost når det er uppdateringer på denne saken"
 
 #: web/alert.cgi:452 web/alert.cgi:479 web/index.cgi:733 web/index.cgi:1058
 msgid "Email:"
-msgstr "Epost"
+msgstr "Epost:"
 
 #: web/alert.cgi:453 web/alert.cgi:480 web/index.cgi:1059
 msgid "Subscribe"
@@ -921,7 +921,7 @@ msgstr "Din&nbsp;epost:"
 
 #: web/contact.cgi:234 web/index.cgi:729
 msgid "Subject:"
-msgstr "Tema"
+msgstr "Tema:"
 
 #: web/contact.cgi:235
 msgid "Message:"
@@ -1151,8 +1151,9 @@ msgid ""
 "map.\n"
 "If this is not the correct location, simply click on the map again. "
 msgstr ""
-"Du har ikke funnet et korrekt punkt på kartet.\n"
-"Klikk på kartet på nytt. "
+"Du har plassert problemet ved punktet i kartet som er markert med en lilla "
+"nål.  Hvis dette ikke er korrekt plassering kan du ganske enkelt klikke på "
+"kartet på nytt."
 
 #: web/index.cgi:643
 #, perl-format
@@ -1178,35 +1179,36 @@ msgstr ""
 "hvis du gir oss tillatelse."
 
 #: web/index.cgi:660 web/index.cgi:662
-#, fuzzy
 msgid " or "
 msgstr "eller"
 
 #: web/index.cgi:661
 msgid "All the information you provide here will be sent to"
-msgstr ""
+msgstr "All informasjonen du har lagt inn her vil bli sendt til"
 
 #: web/index.cgi:664
-#, fuzzy
 msgid ""
 "The subject and details of the problem will be public, plus your name if you "
 "give us permission."
 msgstr ""
-"All informasjonen du gir oss her vil bli sendt til <strong>%s</strong>.\n"
-"Tittelen og detaljene for problemet vil bli offentlig, pluss ditt navn\n"
-"hvis du gir oss tillatelse."
+"Tittelen og detaljene for problemet vil bli offentlig, pluss navnet ditt\n"
+"hvis du gir oss tillatelse til det."
 
 #: web/index.cgi:666
 msgid ""
 "We do <strong>not</strong> yet have details for the other council that "
 "covers this location."
 msgstr ""
+"Vi har ennå <strong>ikke</strong> detaljene for den andre administrasjonen "
+"som dekker dette stedet."
 
 #: web/index.cgi:667
 msgid ""
 "We do <strong>not</strong> yet have details for the other councils that "
 "cover this location."
 msgstr ""
+"Vi har ennå <strong>ikke</strong> detaljene for de andre administrasjonene "
+"som dekker dette stedet."
 
 #: web/index.cgi:670 web/index.cgi:685
 #, perl-format
@@ -1214,33 +1216,40 @@ msgid ""
 "You can help us by finding a contact email address for local problems for %s "
 "and emailing it to us at <a href='mailto:%s'>%s</a>."
 msgstr ""
+"Du kan hjelpe oss ved å finne en kontakt-epostadresse for lokale problemer i "
+"%s, og sende den via epost til oss på <a href='mailto:%s'>%s</a>."
 
 #: web/index.cgi:680
 msgid "We do not yet have details for the council that covers this location."
 msgstr ""
+"Vi har ennå ikke detaljer for administrasjonen som dekker dette stedet."
 
 #: web/index.cgi:681
 msgid "We do not yet have details for the councils that cover this location."
 msgstr ""
+"Vi har ennå ikke detaljene for administrasjonene som dekker dette stedet."
 
 #: web/index.cgi:684
 msgid ""
 "If you submit a problem here the subject and details of the problem will be "
 "public, but the problem will <strong>not</strong> be reported to the council."
 msgstr ""
+"Hvis du sender inn et problem hit, så vil tema og detaljer for problemet "
+"være offentlig, men problemet vil <strong>ikke</strong> bli rapportert til "
+"administrasjonen."
 
 #: web/index.cgi:687
-#, fuzzy
 msgid ""
 "<p>We do not yet have details for the council that covers this location. If "
 "you submit a report here it will be left on the site, but not reported to "
 "the council &ndash; please still leave your report, so that we can show to "
 "the council the activity in their area."
 msgstr ""
-"<p>Vi har ennå ikke detaljer for den kommunen som dekker dette stedet. Hvis "
-"du sender inn en rapport her så vil den bli tilgjengelig her men ikke "
-"rapportert til kommunen. &ndash; det er fint om du likevel sender inn din "
-"rapport, slik at vi kan vise kommunen at det er aktivitet i deres område."
+"<p>Vi har ennå ikke detaljer for den administrasjonen som dekker dette "
+"stedet. Hvis du sender inn en rapport her så vil den bli tilgjengelig her "
+"men ikke rapportert til administrasjonen. &ndash; det er fint om du likevel "
+"sender inn din rapport, slik at vi kan vise administrasjonen aktiviteten i "
+"deres område."
 
 #: web/index.cgi:693
 msgid ""
@@ -1321,34 +1330,35 @@ msgstr "(vi viser aldri din epostadresse eller telefonnummer)"
 
 #: web/index.cgi:768
 msgid "Please note:"
-msgstr ""
+msgstr "Vennligst merk deg:"
 
 #: web/index.cgi:770
-#, fuzzy
 msgid ""
 "We will only use your personal information in accordance with our <a href=\"/"
 "faq#privacy\">privacy policy.</a>"
 msgstr ""
-"Vennligst merk at oppdateringer ikke blir sendt til kommunen.  Hvis du "
-"legger igjen navnet ditt så vil det være offentlig tilgjengelig. Din "
-"informasjon vil kun bli brukt i henhold til våre <a href=\"/faq#privacy"
-"\">personvernpolicy</a>"
+"Vi vil kun bruke personlig informasjon om deg i henhold til vår <a href=\"/"
+"faq#privacy\">personvernpolicy.</a>"
 
 #: web/index.cgi:771
 msgid "Please be polite, concise and to the point."
-msgstr ""
+msgstr "Vær høflig, poengtert og kortfattet."
 
 #: web/index.cgi:772
 msgid ""
 "Please do not be abusive &mdash; abusing your council devalues the service "
 "for all users."
 msgstr ""
+"Ikke vær ufin &mdash; å kjefte på din administrasjon skader verdien av "
+"tjenesten for alle brukerne."
 
 #: web/index.cgi:773
 msgid ""
 "Writing your message entirely in block capitals makes it hard to read, as "
 "does a lack of punctuation."
 msgstr ""
+"Når du skriver meldingen din med kun store bokstaver blir den vanskelig å "
+"lese. Det samme gjelder manglende tegnsetting."
 
 #: web/index.cgi:774
 msgid ""
@@ -1357,6 +1367,10 @@ msgid ""
 "site remember that you can contact your council directly using their own "
 "website."
 msgstr ""
+"Husk at FiksGataMi primert er laget for å rapportere fysiske problemer som "
+"kan bli fikset. Hvis ditt problem ikke er egnet for å sende inn via denne "
+"tjenesten, husk at du kan kontakte administrasjonen direkte via deres egen "
+"nettside."
 
 #: web/index.cgi:776
 msgid ""
@@ -1786,9 +1800,8 @@ msgid "Problems within %s, FixMyStreet"
 msgstr "Problemer innenfor %s, Fiksgatami"
 
 #: web/reports.cgi:334
-#, fuzzy
 msgid "(not sent to council)"
-msgstr "Ikke rapportert til kommunen"
+msgstr "(ikke rapportert til administrasjonen)"
 
 #: bin/send-reports:90
 msgid ""
@@ -1809,18 +1822,17 @@ msgstr ""
 "stedet de skrev inn"
 
 #: bin/send-reports:177
-#, fuzzy
 msgid "this type of local problem"
-msgstr "Send meg epost om lokale problemer"
+msgstr "denne type lokalt problem"
 
 #: bin/send-reports:181
-#, fuzzy, perl-format
+#, perl-format
 msgid "Category: %s"
-msgstr "Kategori"
+msgstr "Kategori: %s"
 
 #: bin/send-reports:184
 msgid " and "
-msgstr ""
+msgstr " og "
 
 #: bin/send-reports:185
 msgid ""
@@ -1829,6 +1841,11 @@ msgid ""
 "the correct council to deal with the issue, or let us know what category of "
 "problem this is so we can add it to our system."
 msgstr ""
+"Denne eposten har blitt sendt til begge administrasjonene som dekker stedet "
+"for problemet, da brukeren ikke kategoriserte det.  Vær så snill å ignorere "
+"den hvis dere ikke er korrekt administrasjon for å håndtere denne skaen, "
+"eller gi oss beskjed om hvilken kategori av problemer dette er så vi kan "
+"legge det til i vårt system."
 
 #: bin/send-reports:191
 #, perl-format
