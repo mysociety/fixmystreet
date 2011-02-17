@@ -50,9 +50,9 @@ use FixMyStreet::Map;
 my $lastmodified;
 
 sub do_fastcgi {
-    my ($func, $lm) = @_;
+    my ($func, $lm, $binary) = @_;
 
-    #binmode(STDOUT, ":utf8");
+    binmode(STDOUT, ":utf8") unless $binary;
 
     try {
         my $W = new mySociety::WatchUpdate();
@@ -114,7 +114,7 @@ sub microsite {
     my $lang;
     $lang = 'cy' if $host =~ /cy/;
     $lang = 'en-gb' if $host =~ /^en\./;
-    Cobrand::set_lang_and_domain(get_cobrand($q), $lang); # , 1);
+    Cobrand::set_lang_and_domain(get_cobrand($q), $lang, 1);
 
     Problems::set_site_restriction($q);
     Memcached::set_namespace(mySociety::Config::get('BCI_DB_NAME') . ":");

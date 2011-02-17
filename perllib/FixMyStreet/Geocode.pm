@@ -147,6 +147,7 @@ sub list_choices {
     my $out = '<p>' . $message . '</p>';
     my $choice_list = '<ul>';
     foreach my $choice (@$choices) {
+        $choice = decode_utf8($choice);
         $choice =~ s/, United Kingdom//;
         $choice =~ s/, UK//;
         $url =  Cobrand::url($cobrand, NewURL($q, -retain => 1, -url => $page, 'pc' => $choice), $q);  
