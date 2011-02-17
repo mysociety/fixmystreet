@@ -49,6 +49,10 @@ sub main {
         $rss = '/rss' if $rss;
         print $q->redirect($base_url . $rss . '/reports/' . $area_name);
         return;
+    } elsif (mySociety::Config::get('COUNTRY') eq 'NO' && $q_council eq 'Oslo') {
+        $one_council = mySociety::MaPit::call('area', 3);
+        $area_type = $one_council->{type};
+        $area_name = $one_council->{name};
     } elsif (mySociety::Config::get('COUNTRY') eq 'NO' && $q_council =~ /,/) {
         my ($kommune, $fylke) = split /\s*,\s*/, $q_council;
         my @area_types = Cobrand::area_types($cobrand);
@@ -327,7 +331,7 @@ sub list_problems {
         $out .= ent($_->{title});
         $out .= '</a>';
         $out .= ' <small>(sent to both)</small>' if $_->{councils}>1;
-        $out .= ' <small>(not sent to council)</small>' if $_->{councils}==0 && $q->{site} ne 'emptyhomes';
+        $out .= ' <small>' . _('(not sent to council)') . '</small>' if $_->{councils}==0 && $q->{site} ne 'emptyhomes';
         $out .= '<br><small>' . ent($_->{detail}) . '</small>' if $all;
         $out .= '</li>';
     }
