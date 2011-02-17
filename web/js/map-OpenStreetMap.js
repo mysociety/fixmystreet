@@ -21,9 +21,11 @@ YAHOO.util.Event.onContentReady('map', function() {
     );
     fixmystreet.map.setCenter(centre, 2);
 
-    var click = new OpenLayers.Control.Click();
-    fixmystreet.map.addControl(click);
-    click.activate();
+    if (document.getElementById('mapForm')) {
+        var click = new OpenLayers.Control.Click();
+        fixmystreet.map.addControl(click);
+        click.activate();
+    }
 
     var markers = new OpenLayers.Layer.Markers("Markers");
     var cols = { 'red':'R', 'green':'G', 'blue':'B', 'purple':'P' };
@@ -31,12 +33,21 @@ YAHOO.util.Event.onContentReady('map', function() {
         var pin = fixmystreet.pins[i];
         var src = '/i/pin' + cols[pin[2]] + '.gif';
         var size = new OpenLayers.Size(32, 59);
-        var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+        var offset = new OpenLayers.Pixel(-3, -size.h-2);
         var icon = new OpenLayers.Icon(src, size, offset);
-        markers.addMarker(new OpenLayers.Marker(new OpenLayers.LonLat(pin[1],pin[0]), icon));
+        var loc = new OpenLayers.LonLat(pin[1], pin[0]);
+        loc.transform(
+            new OpenLayers.Projection("EPSG:4326"),
+            fixmystreet.map.getProjectionObject()
+        );
+        var marker = new OpenLayers.Marker(loc, icon);
+        if (pin[3]) {
+            marker.events.register('click', marker, function(evt) { window.location = '/report/' + pin[3]; OpenLayers.Event.stop(evt); });
+        }
+        markers.addMarker(marker);
     }
-
     fixmystreet.map.addLayer(markers);
+
 });
 
 OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {                

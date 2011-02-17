@@ -892,7 +892,7 @@ sub display_location {
     my ($on_map_all, $on_map, $around_map, $dist) = FixMyStreet::Map::map_features($q, $latitude, $longitude, $interval);
     my @pins;
     foreach (@$on_map_all) {
-        push @pins, [ $_->{latitude}, $_->{longitude}, $_->{state} eq 'fixed' ? 'green' : 'red' ];
+        push @pins, [ $_->{latitude}, $_->{longitude}, ($_->{state} eq 'fixed' ? 'green' : 'red'), $_->{id} ];
     }
     my $on_list = '';
     foreach (@$on_map) {
@@ -918,7 +918,7 @@ sub display_location {
         $around_list .= $dist . 'km)</small>';
         $around_list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
         $around_list .= '</li>';
-        push @pins, [ $_->{latitude}, $_->{longitude}, $_->{state} eq 'fixed' ? 'green' : 'red' ];
+        push @pins, [ $_->{latitude}, $_->{longitude}, ($_->{state} eq 'fixed' ? 'green' : 'red'), $_->{id} ];
     }
     $around_list = $q->li(_('No problems found.'))
         unless $around_list;

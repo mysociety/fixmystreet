@@ -32,7 +32,8 @@ sub display_map {
 
     my @pins;
     foreach my $pin (@{$params{pins}}) {
-        push @pins, "[ $pin->[0], $pin->[1], '$pin->[2]' ]";
+        $pin->[3] ||= '';
+        push @pins, "[ $pin->[0], $pin->[1], '$pin->[2]', '$pin->[3]' ]";
     }
     my $pins = join(",\n", @pins);
 
