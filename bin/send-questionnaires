@@ -17,6 +17,7 @@ use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../commonlib/perllib";
 use File::Slurp;
 use CGI; # XXX Awkward kludge
+use Encode;
 use CronFns;
 
 use Page;

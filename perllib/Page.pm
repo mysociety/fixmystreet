@@ -15,6 +15,7 @@ use strict;
 use Carp;
 use mySociety::CGIFast qw(-no_xhtml);
 use Data::Dumper;
+use Encode;
 use Error qw(:try);
 use File::Slurp;
 use HTTP::Date; # time2str

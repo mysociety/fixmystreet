@@ -12,6 +12,7 @@
 package Problems;
 
 use strict;
+use Encode;
 use Memcached;
 use mySociety::DBHandle qw/dbh select_all/;
 use mySociety::Locale;

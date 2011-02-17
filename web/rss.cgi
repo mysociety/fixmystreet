@@ -11,6 +11,7 @@
 use strict;
 use Error qw(:try);
 use Standard;
+use Encode;
 use URI::Escape;
 use FixMyStreet::Alert;
 use FixMyStreet::Geocode;
