@@ -106,6 +106,8 @@ sub contact_details {
     my $out = '';
     my $sitename = _('FixMyStreet');
     my $contact_info = '';
+    if ( mySociety::Config::get('COUNTRY') eq 'GB' ) {
+        # XXX Rewrite to make brandable?
     $contact_info .= <<EOF;
 <div class="contact-details">
 <p>$sitename is a service provided by mySociety, which is the project of a 
@@ -120,6 +122,7 @@ UK</p>
 </div>
 EOF
     $out .= $contact_info unless $q->{site} eq 'emptyhomes'; 
+    }
     return $out;
 }
 

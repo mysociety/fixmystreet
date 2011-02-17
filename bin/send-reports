@@ -174,22 +174,22 @@ foreach my $row (@$unsent) {
         $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/$template");
 
         if ($h{category} eq 'Other') {
-            $h{category_footer} = 'this type of local problem';
+            $h{category_footer} = _('this type of local problem');
             $h{category_line} = '';
         } else {
             $h{category_footer} = "'" . $h{category} . "'";
-            $h{category_line} = "Category: $h{category}\n\n";
+            $h{category_line} = sprintf(_("Category: %s"), $h{category}) . "\n\n";
         }
 
-        $h{councils_name} = join(' and ', @dear);
-        $h{multiple} = @dear>1 ? "[ This email has been sent to both councils covering the location of the problem, as the user did not categorise it; please ignore it if you're not the correct council to deal with the issue, or let us know what category of problem this is so we can add it to our system. ]\n\n"
+        $h{councils_name} = join(_(' and '), @dear);
+        $h{multiple} = @dear>1 ? "[ " . _("This email has been sent to both councils covering the location of the problem, as the user did not categorise it; please ignore it if you're not the correct council to deal with the issue, or let us know what category of problem this is so we can add it to our system.") . " ]\n\n"
             : '';
         $h{missing} = ''; 
         if ($missing) {
             my $name = encode_utf8($areas_info->{$missing}->{name});
-            $h{missing} = '[ We realise this problem might be the responsibility of ' . $name
-                . "; however, we don't currently have any contact details for them.
-If you know of an appropriate contact address, please do get in touch. ]\n\n";
+            $h{missing} = '[ '
+              . sprintf(_('We realise this problem might be the responsibility of %s; however, we don't currently have any contact details for them. If you know of an appropriate contact address, please do get in touch.'), $name)
+              . ' ]\n\n";
         }
 
     }

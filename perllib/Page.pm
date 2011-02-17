@@ -507,17 +507,17 @@ sub prettify_duration {
         return _('less than a minute') if $s == 0;
     }
     my @out = ();
-    _part(\$s, 60*60*24*7, _('week'), \@out);
-    _part(\$s, 60*60*24, _('day'), \@out);
-    _part(\$s, 60*60, _('hour'), \@out);
-    _part(\$s, 60, _('minute'), \@out);
+    _part(\$s, 60*60*24*7, _('%d week'), _('%d weeks'), \@out);
+    _part(\$s, 60*60*24, _('%d day'), _('%d days'), \@out);
+    _part(\$s, 60*60, _('%d hour'), _('%d hours'), \@out);
+    _part(\$s, 60, _('%d minute'), _('%d minutes'), \@out);
     return join(', ', @out);
 }
 sub _part {
-    my ($s, $m, $w, $o) = @_;
+    my ($s, $m, $w1, $w2, $o) = @_;
     if ($$s >= $m) {
         my $i = int($$s / $m);
-        push @$o, "$i $w" . ($i != 1 ? 's' : '');
+        push @$o, sprintf(mySociety::Locale::nget($w1, $w2, $i), $i);
         $$s -= $i * $m;
     }
 }

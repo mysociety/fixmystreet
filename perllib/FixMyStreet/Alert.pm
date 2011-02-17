@@ -306,7 +306,9 @@ sub generate_rss ($$$;$$$$) {
         if ($display_photos && $row->{photo}) {
             $item{description} .= ent("\n<br><img src=\"". Cobrand::url($cobrand, $url, $http_q) . "/photo?id=$row->{id}\">");
         }
-        $item{description} .= ent("\n<br><a href='$cobrand_url'>Report on FixMyStreet</a>");
+        my $recipient_name = Cobrand::contact_name($cobrand);
+        $item{description} .= ent("\n<br><a href='$cobrand_url'>" .
+            sprintf(_("Report on %s"), $recipient_name) . "</a>");
 
         if ($row->{latitude} || $row->{longitude}) {
             $item{georss} = { point => "$row->{latitude} $row->{longitude}" };

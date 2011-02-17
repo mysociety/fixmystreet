@@ -657,15 +657,17 @@ name if you give us permission.'), $council_list);
             push @missing, $_ unless $councils{$_};
         }
         my $n = @missing;
-        my $list = join(' or ', map { encode_utf8($all_councils->{$_}->{name}) } @missing);
-        $vars{text_help} = '<p>All the information you provide here will be sent to <strong>'
-            . join('</strong> or <strong>', map { encode_utf8($all_councils->{$_}->{name}) } @councils)
-            . '</strong>. The subject and details of the problem will be public, plus your
-name if you give us permission.';
-        $vars{text_help} .= ' We do <strong>not</strong> yet have details for the other council';
-        $vars{text_help} .= ($n>1) ? 's that cover' : ' that covers';
-        $vars{text_help} .= " this location. You can help us by finding a contact email address for local
-problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.";
+        my $list = join(_(' or '), map { encode_utf8($all_councils->{$_}->{name}) } @missing);
+        $vars{text_help} = '<p>' . _('All the information you provide here will be sent to') . '<strong>'
+            . join('</strong>' . _(' or ') . '<strong>', map { encode_utf8($all_councils->{$_}->{name}) } @councils)
+            . '</strong>. ';
+        $vars{text_help} .= _('The subject and details of the problem will be public, plus your name if you give us permission.');
+        $vars{text_help} .= mySociety::Locale::nget(
+            _('We do <strong>not</strong> yet have details for the other council that covers this location.'),
+            _('We do <strong>not</strong> yet have details for the other councils that cover this location.'),
+            $n
+        );
+        $vars{text_help} .=  ' ' . sprintf(_("You can help us by finding a contact email address for local problems for %s and emailing it to us at <a href='mailto:%s'>%s</a>."), $list, $e, $e);
         $vars{text_help} .= '<input type="hidden" name="council" value="' . join(',', @councils)
             . '|' . join(',', @missing) . '">';
     } else {
@@ -673,17 +675,16 @@ problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.";
         my $list = join(' or ', map { encode_utf8($_->{name}) } values %$all_councils);
         my $n = scalar keys %$all_councils;
         if ($q->{site} ne 'emptyhomes') {
-            $vars{text_help} = '<p>We do not yet have details for the council';
-            $vars{text_help} .= ($n>1) ? 's that cover' : ' that covers';
-            $vars{text_help} .= " this location. If you submit a problem here the subject and details 
-of the problem will be public, but the problem will <strong>not</strong> be reported to the council.
-You can help us by finding a contact email address for local
-problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.";
+            $vars{text_help} = '<p>';
+            $vars{text_help} .= mySociety::Locale::nget(
+                _('We do not yet have details for the council that covers this location.'),
+                _('We do not yet have details for the councils that cover this location.'),
+                $n
+            );
+            $vars{text_help} .= _("If you submit a problem here the subject and details of the problem will be public, but the problem will <strong>not</strong> be reported to the council.");
+            $vars{text_help} .= sprintf(_("You can help us by finding a contact email address for local problems for %s and emailing it to us at <a href='mailto:%se'>%s</a>."), $list, $e, $e;
         } else {
-            $vars{text_help} = _("<p>We do not yet have details for the council that covers
-this location. If you submit a report here it will be left on the site, but
-not reported to the council &ndash; please still leave your report, so that
-we can show to the council the activity in their area.");
+            $vars{text_help} = _("<p>We do not yet have details for the council that covers this location. If you submit a report here it will be left on the site, but not reported to the council &ndash; please still leave your report, so that we can show to the council the activity in their area.");
         }
         $vars{text_help} .= '<input type="hidden" name="council" value="-1">';
     }
@@ -763,27 +764,18 @@ EOF
     }
 
     if ($q->{site} ne 'emptyhomes') {
-        $vars{text_notes} = <<EOF;
-<p>Please note:</p>
-<ul>
-<li>We will only use your personal
-information in accordance with our <a href="/faq#privacy">privacy policy.</a></li>
-<li>Please be polite, concise and to the point.</li>
-<li>Please do not be abusive &mdash; abusing your council devalues the service for all users.</li>
-<li>Writing your message entirely in block capitals makes it hard to read,
-as does a lack of punctuation.</li>
-<li>Remember that FixMyStreet is primarily for reporting physical
-problems that can be fixed. If your problem is not appropriate for
-submission via this site remember that you can contact your council
-directly using their own website.</li>
-<li>
-FixMyStreet and the Guardian are providing this service in
-partnership in <a href="/faq#privacy">certain cities</a>. In those cities, both have access to
-any information submitted, including names and email addresses, and will use it only to ensure the
-smooth running of the service, in accordance with their privacy policies.
-</li>
-</ul>
-EOF
+        $vars{text_notes} =
+            $q->p(_("Please note:")) .
+            "<ul>" .
+            $q->li(_("We will only use your personal information in accordance with our <a href=\"/faq#privacy\">privacy policy.</a>")) .
+            $q->li(_("Please be polite, concise and to the point.")) .
+            $q->li(_("Please do not be abusive &mdash; abusing your council devalues the service for all users.")) .
+            $q->li(_("Writing your message entirely in block capitals makes it hard to read, as does a lack of punctuation.")) .
+            $q->li(_("Remember that FixMyStreet is primarily for reporting physical problems that can be fixed. If your problem is not appropriate for submission via this site remember that you can contact your council directly using their own website."));
+        $vars{text_notes} .=
+            $q->li(_("FixMyStreet and the Guardian are providing this service in partnership in <a href=\"/faq#privacy\">certain cities</a>. In those cities, both have access to any information submitted, including names and email addresses, and will use it only to ensure the smooth running of the service, in accordance with their privacy policies."))
+            if mySociety::Config::get('COUNTRY') eq 'GB';
+        $vars{text_notes} .= "</ul>\n";
     }
 
     %vars = (%vars, 

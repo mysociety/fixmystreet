@@ -119,8 +119,8 @@ sub fetch_data {
 sub admin_summary ($) {
     my ($q) = @_;
     my $cobrand = Page::get_cobrand($q);
-    print html_head($q, "Summary");
-    print $q->h1("Summary");
+    print html_head($q, _("Summary"));
+    print $q->h1(_("Summary"));
 
     my $contacts = Problems::contact_counts($cobrand);
     my %contacts = @$contacts;

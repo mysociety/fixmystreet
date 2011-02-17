@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: FixMyStreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2011-02-14 13:35+0000\n"
-"PO-Revision-Date: 2011-02-15 14:46MET\n"
+"PO-Revision-Date: 2011-02-16 12:25MET\n"
 "Last-Translator: Petter Reinholdtsen <pere@hungry.com>\n"
 "Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
 "MIME-Version: 1.0\n"
@@ -118,7 +118,7 @@ msgid ""
 "\"logoie\"></span></a>"
 msgstr ""
 "<div id=\"logo\" align=\"center\"><a href=\"http://www.nuug.no/\">NUUG</a> "
-"and<br><a href=\"http://www.mysociety.org/\"><img width=\"133\" "
+"and<br><a href=\"http://www.mysociety.org/\"><img  id=\"logo\" width=\"133\" "
 "height=\"26\" border=0 src=\"/i/mysociety-dark.png\" alt=\"mySociety\"><span "
 "id=\"logoie\"></span></a></div>"
 
@@ -200,52 +200,52 @@ msgstr "minutt"
 #: perllib/Page.pm:531
 #, perl-format
 msgid "%s, reported anonymously at %s"
-msgstr "%s, rapportert anonymt den %s"
+msgstr "%s, rapportert anonymt %s"
 
 #: perllib/Page.pm:533
 #, perl-format
 msgid "%s, reported by %s at %s"
-msgstr "%s, rapportert av %s den %s"
+msgstr "%s, rapportert av %s %s"
 
 #: perllib/Page.pm:537
 #, perl-format
 msgid "Reported by %s in the %s category anonymously at %s"
-msgstr "Rapportert av %s i kategorien %s anonnymt den %s"
+msgstr "Rapportert av %s i kategorien %s anonnymt %s"
 
 #: perllib/Page.pm:539
 #, perl-format
 msgid "Reported by %s in the %s category by %s at %s"
-msgstr "Rapportert av %s i kategorien %s av %s den %s"
+msgstr "Rapportert av %s i kategorien %s av %s %s"
 
 #: perllib/Page.pm:541
 #, perl-format
 msgid "Reported by %s anonymously at %s"
-msgstr "Publisert av %s anonymt den %s"
+msgstr "Publisert av %s anonymt %s"
 
 #: perllib/Page.pm:543
 #, perl-format
 msgid "Reported by %s by %s at %s"
-msgstr "Rapporter av %s av %s den %s"
+msgstr "Rapporter av %s av %s %s"
 
 #: perllib/Page.pm:545
 #, perl-format
 msgid "Reported in the %s category anonymously at %s"
-msgstr "Rapportert i kategorien %s anonymt den %s"
+msgstr "Rapportert i kategorien %s anonymt %s"
 
 #: perllib/Page.pm:547
 #, perl-format
 msgid "Reported in the %s category by %s at %s"
-msgstr "Rapportert i kategorien %s av %s den %s"
+msgstr "Rapportert i kategorien %s av %s %s"
 
 #: perllib/Page.pm:549
 #, perl-format
 msgid "Reported anonymously at %s"
-msgstr "Rapportert anonymt den %s"
+msgstr "Rapportert anonymt %s"
 
 #: perllib/Page.pm:551
 #, perl-format
 msgid "Reported by %s at %s"
-msgstr "Publisert av %s den %s"
+msgstr "Publisert av %s %s"
 
 #: perllib/Page.pm:556
 msgid "the map was not used so pin location may be inaccurate"
@@ -267,12 +267,12 @@ msgstr "Oppdateringer"
 #: perllib/Page.pm:623
 #, perl-format
 msgid "Posted by %s at %s"
-msgstr "Sendt inn av %s den %s"
+msgstr "Sendt inn av %s %s"
 
 #: perllib/Page.pm:625
 #, perl-format
 msgid "Posted anonymously at %s"
-msgstr "Publisert anonymt den %s"
+msgstr "Publisert anonymt %s"
 
 #: perllib/Page.pm:628
 msgid "marked as fixed"
@@ -1064,7 +1064,7 @@ msgstr "Du har ikke spesifisert koordinater, vennligst prøv på nytt"
 
 #: web/index.cgi:389 web/index.cgi:550 web/index.cgi:557
 msgid "Other"
-msgstr "Andre"
+msgstr "Annet"
 
 #: web/index.cgi:406
 #, perl-format
@@ -1346,7 +1346,7 @@ msgstr "RSS-strøm med oppdateringer for dette problemet"
 
 #: web/index.cgi:1065
 msgid "Provide an update"
-msgstr "Send en oppdatering"
+msgstr "Bidra med oppdatering"
 
 #: web/index.cgi:1071
 msgid "Update:"
@@ -1362,9 +1362,10 @@ msgid ""
 "it will be public. Your information will only be used in accordance with our "
 "<a href=\"/faq#privacy\">privacy policy</a>"
 msgstr ""
-"Vennligst merk at oppdateringer er ikke sendt til kommunen.  Hvis du legger "
-"igjen ditt navn så vil det være offentlig. Din informasjon vil kun bli brukt "
-"i henhold til våre <a href=\"/faq#privacy\">personvernpolicy</a>"
+"Vennligst merk at oppdateringer ikke blir sendt til kommunen.  Hvis du "
+"legger igjen navnet ditt så vil det være offentlig tilgjengelig. Din "
+"informasjon vil kun bli brukt i henhold til våre <a href=\"/faq#privacy"
+"\">personvernpolicy</a>"
 
 #: web/index.cgi:1099
 msgid "Updates to this problem, FixMyStreet"
@@ -1451,7 +1452,7 @@ msgstr ""
 "forslag: hva med å forsøke\n"
 "<a href=\"%s\">å skrive direkte til din kommune</a>, eller hvis det er et "
 "problem som kan fikses\n"
-"av folk lokalt som jobber sammen, hva med å <a href=\"http://www.pledgebank."
+"av befolkningen som jobber sammen, hva med å <a href=\"http://www.pledgebank."
 "com/new\">lage\n"
 "en \"pledge\" og publiser den</a>?</p>\n"
 
@@ -2366,7 +2367,7 @@ msgstr ""
 "Hvis det er en mer passende epostadresse for meldinger om\n"
 "<?=$values['category_footer']?>, vær så snill å gi oss beskjed ved å besøke\n"
 "<http://www.fiksgatami.no/contact>.\n"
-"Dette vil bidra til å forbedre tjenesten for de lokale folkene. Vi\n"
+"Dette vil bidra til å forbedre tjenesten for befolkningen. Vi\n"
 "tar også gjerne imot andre tilbakemeldinger som du har noen. ]\n"
 "\n"
 
@@ -2422,7 +2423,7 @@ msgstr ""
 "Kjære <?=$values['councils_name']?>,\n"
 "\n"
 "<?=$values['missing']?><?=$values['multiple']?>En bruker av\n"
-"FiksGataMi har sendt inn følgende rapport om et localt\n"
+"FiksGataMi har sendt inn følgende rapport om et lokalt\n"
 "problem som vi tror trenger deres oppmerksomhet.\n"
 "\n"
 "<?=$values['fuzzy']?>, eller for å bidra med en oppdatering om problemet,\n"
