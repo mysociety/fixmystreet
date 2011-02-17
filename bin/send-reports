@@ -188,7 +188,7 @@ foreach my $row (@$unsent) {
         if ($missing) {
             my $name = encode_utf8($areas_info->{$missing}->{name});
             $h{missing} = '[ '
-              . sprintf(_('We realise this problem might be the responsibility of %s; however, we don't currently have any contact details for them. If you know of an appropriate contact address, please do get in touch.'), $name)
+              . sprintf(_('We realise this problem might be the responsibility of %s; however, we don\'t currently have any contact details for them. If you know of an appropriate contact address, please do get in touch.'), $name)
               . ' ]\n\n";
         }
 
