@@ -12,6 +12,7 @@ use strict;
 use LWP::Simple;
 
 use Cobrand;
+use mySociety::GeoUtil;
 use mySociety::Locale;
 use mySociety::Web qw(ent NewURL);
 use Utils;
@@ -268,7 +269,7 @@ sub click_to_os {
 # tile they were), convert to WGS84 and return.
 sub click_to_wgs84 {
     my ( $easting, $northing ) = FixMyStreet::Map::click_to_os(@_);
-    my ( $lat, $lon ) = national_grid_to_wgs84( $easting, $northing, 'G' );
+    my ( $lat, $lon ) = mySociety::GeoUtil::national_grid_to_wgs84( $easting, $northing, 'G' );
     return ( $lat, $lon );
 }
 
