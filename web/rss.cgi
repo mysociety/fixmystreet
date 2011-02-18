@@ -82,6 +82,9 @@ sub rss_local_problems {
 
     $state = 'confirmed' if $state eq 'open';
 
+    my $qs;
+    my %title_params;
+
     my $cobrand = Page::get_cobrand($q);
     my $base = Cobrand::base_url($cobrand);
     if ($x && $y) {
@@ -104,6 +107,10 @@ sub rss_local_problems {
         };
         unless ($error) {
             ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );             
+	    $qs = "?pc=$pc";
+
+	    $title_params{'POSTCODE'} = encode_utf8($pc);
+
 #            print $q->redirect(-location => "$base/rss/l/$lat,$lon$d_str$state_qs");
         }
 #        return '';
@@ -117,10 +124,7 @@ sub rss_local_problems {
     # truncate the lat,lon for nicer urls
     ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );    
     
-    my $qs;
-    if ($pc) {
-	$qs = "?pc=$pc";
-    } else {
+    if (!$qs) {
 	$qs = "?lat=$lat;lon=$lon";
     }
 
@@ -134,9 +138,9 @@ sub rss_local_problems {
 
     my $xsl = Cobrand::feed_xsl($cobrand);
     if ($state eq 'all') {
-        return FixMyStreet::Alert::generate_rss('local_problems', $xsl, $qs, [$lat, $lon, $d], undef, $cobrand, $q);
+        return FixMyStreet::Alert::generate_rss('local_problems', $xsl, $qs, [$lat, $lon, $d], $title_params, $cobrand, $q);
     } else {
-        return FixMyStreet::Alert::generate_rss('local_problems_state', $xsl, $qs, [$lat, $lon, $d, $state], undef, $cobrand, $q);
+        return FixMyStreet::Alert::generate_rss('local_problems_state', $xsl, $qs, [$lat, $lon, $d, $state], $title_params, $cobrand, $q);
     }
 }
 
