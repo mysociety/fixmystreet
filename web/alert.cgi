@@ -295,9 +295,9 @@ feed, or enter your email address to subscribe to an email alert.'));
 EOF
     my $rss_feed;
     if ($pretty_pc_text) {
-        $rss_feed = Cobrand::url($cobrand, "/rss/pc/$pretty_pc_text", $q);
+        $rss_feed = Cobrand::url($cobrand, "/rss/pc/$pretty_pc_text/", $q);
     } else {
-        $rss_feed = Cobrand::url($cobrand, "/rss/l/$lat,$lon", $q);
+        $rss_feed = Cobrand::url($cobrand, "/rss/l/$lat,$lon/", $q);
     }
 
     my $default_link = Cobrand::url($cobrand, "/alert?type=local;feed=local:$lat:$lon", $q);
@@ -306,10 +306,10 @@ EOF
     $out .= " <a href='$rss_feed'><img src='/i/feed.png' width='16' height='16' title='"
         . _('RSS feed of nearby problems') . "' alt='" . _('RSS feed') . "' border='0'></a>";
     $out .= '</p> <p id="rss_local_alt">' . _('(alternatively the RSS feed can be customised, within');
-    my $rss_feed_2k  = Cobrand::url($cobrand, "/rss/l/$lat,$lon/2", $q);
-    my $rss_feed_5k  = Cobrand::url($cobrand, "/rss/l/$lat,$lon/5", $q);
-    my $rss_feed_10k = Cobrand::url($cobrand, "/rss/l/$lat,$lon/10", $q);
-    my $rss_feed_20k = Cobrand::url($cobrand, "/rss/l/$lat,$lon/20", $q);
+    my $rss_feed_2k  = Cobrand::url($cobrand, $rss_feed.'2', $q);
+    my $rss_feed_5k  = Cobrand::url($cobrand, $rss_feed.'5', $q);
+    my $rss_feed_10k = Cobrand::url($cobrand, $rss_feed.'10', $q);
+    my $rss_feed_20k = Cobrand::url($cobrand, $rss_feed.'20', $q);
     $out .= <<EOF;
  <a href="$rss_feed_2k">2km</a> / <a href="$rss_feed_5k">5km</a>
 / <a href="$rss_feed_10k">10km</a> / <a href="$rss_feed_20k">20km</a>)
