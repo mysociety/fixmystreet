@@ -117,7 +117,12 @@ sub rss_local_problems {
     # truncate the lat,lon for nicer urls
     ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );    
     
-    my $qs = "?lat=$lat;lon=$lon";
+    my $qs;
+    if ($pc) {
+	$qs = "?pc=$pc";
+    } else {
+	$qs = "?lat=$lat;lon=$lon";
+    }
 
     if ($d) {
         $qs .= ";d=$d";
