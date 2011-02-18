@@ -104,9 +104,10 @@ sub rss_local_problems {
         };
         unless ($error) {
             ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );             
-            print $q->redirect(-location => "$base/rss/l/$lat,$lon$d_str$state_qs");
+#            print $q->redirect(-location => "$base/rss/l/$lat,$lon$d_str$state_qs");
         }
-        return '';
+#        return '';
+	# pass through rather than redirecting.
     } elsif ( $lat || $lon ) { 
         # pass through
     } else {
