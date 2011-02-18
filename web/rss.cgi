@@ -106,15 +106,14 @@ sub rss_local_problems {
         } catch Error::Simple with {
             $error = shift;
         };
-        unless ($error) {
+	if ($error) {
+	    return '';
+	} else {
             ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );             
 	    $qs = "?pc=$pc";
 
 	    $title_params{'POSTCODE'} = encode_utf8($pc);
-
-#            print $q->redirect(-location => "$base/rss/l/$lat,$lon$d_str$state_qs");
         }
-#        return '';
 	# pass through rather than redirecting.
     } elsif ( $lat || $lon ) { 
         # pass through
@@ -139,7 +138,6 @@ sub rss_local_problems {
 
     my $xsl = Cobrand::feed_xsl($cobrand);
 
-
     if ($pc) {
 	$alert_type = 'postcode_local_problems';
     } else {
@@ -154,11 +152,5 @@ sub rss_local_problems {
     }
     
     return FixMyStreet::Alert::generate_rss($alert_type, $xsl, $qs, \@db_params, \%title_params, $cobrand, $q);
-
-#    if ($state eq 'all') {
-#        return FixMyStreet::Alert::generate_rss('local_problems', $xsl, $qs, [$lat, $lon, $d], \%title_params, $cobrand, $q);
-#    } else {
-#        return FixMyStreet::Alert::generate_rss('local_problems_state', $xsl, $qs, [$lat, $lon, $d, $state], \%title_params, $cobrand, $q);
-#    }
 }
 
