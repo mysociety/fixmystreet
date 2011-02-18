@@ -97,8 +97,10 @@ sub alert_list {
     return alert_front_page($q, $error) if $error;
 
     my $pretty_pc = $input_h{pc};
+    my $pretty_pc_text;# This one isnt't getting the nbsp.
     if (mySociety::PostcodeUtil::is_valid_postcode($input{pc})) {
         $pretty_pc = mySociety::PostcodeUtil::canonicalise_postcode($input{pc});
+        $pretty_pc_text = $pretty_pc;
         $pretty_pc =~ s/ /&nbsp;/;
     }
 
@@ -291,7 +293,13 @@ feed, or enter your email address to subscribe to an email alert.'));
 <input type="radio" name="feed" id="local:$lat:$lon" value="local:$lat:$lon"$checked>
 <label for="local:$lat:$lon">$rss_label</label>
 EOF
-    my $rss_feed = Cobrand::url($cobrand, "/rss/l/$lat,$lon", $q);
+    my $rss_feed;
+    if ($pretty_pc_text) {
+        $rss_feed = Cobrand::url($cobrand, "/rss/pc/$pretty_pc_text", $q);
+    } else {
+        $rss_feed = Cobrand::url($cobrand, "/rss/l/$lat,$lon", $q);
+    }
+
     my $default_link = Cobrand::url($cobrand, "/alert?type=local;feed=local:$lat:$lon", $q);
     my $rss_details = _('(a default distance which covers roughly 200,000 people)');
     $out .= $rss_details;
