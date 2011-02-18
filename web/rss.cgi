@@ -84,6 +84,7 @@ sub rss_local_problems {
 
     my $qs;
     my %title_params;
+    my $alert_type;
 
     my $cobrand = Page::get_cobrand($q);
     my $base = Cobrand::base_url($cobrand);
@@ -137,10 +138,27 @@ sub rss_local_problems {
     }
 
     my $xsl = Cobrand::feed_xsl($cobrand);
-    if ($state eq 'all') {
-        return FixMyStreet::Alert::generate_rss('local_problems', $xsl, $qs, [$lat, $lon, $d], $title_params, $cobrand, $q);
+
+
+    if ($pc) {
+	$alert_type = 'postcode_local_problems';
     } else {
-        return FixMyStreet::Alert::generate_rss('local_problems_state', $xsl, $qs, [$lat, $lon, $d, $state], $title_params, $cobrand, $q);
+	$alert_type = 'local_problems';
     }
+
+    my @db_params = ($lat, $lon, $d);
+
+    if ($state ne 'all') {
+	$alert_type .= '_state';
+	push @db_params, $state;
+    }
+    
+    return FixMyStreet::Alert::generate_rss($alert_type, $xsl, $qs, \@db_params, \%title_params, $cobrand, $q);
+
+#    if ($state eq 'all') {
+#        return FixMyStreet::Alert::generate_rss('local_problems', $xsl, $qs, [$lat, $lon, $d], \%title_params, $cobrand, $q);
+#    } else {
+#        return FixMyStreet::Alert::generate_rss('local_problems_state', $xsl, $qs, [$lat, $lon, $d, $state], \%title_params, $cobrand, $q);
+#    }
 }
 
