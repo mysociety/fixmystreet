@@ -62,7 +62,7 @@ Page::do_fastcgi(\&main);
 
 sub rss_local_problems {
     my $q = shift;
-    my $pc = $q->param('pc');
+    my $pc = uc($q->param('pc'));
     my $x = $q->param('x');
     my $y = $q->param('y');
     my $lat = $q->param('lat');
