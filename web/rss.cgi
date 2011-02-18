@@ -62,7 +62,18 @@ Page::do_fastcgi(\&main);
 
 sub rss_local_problems {
     my $q = shift;
-    my $pc = uc($q->param('pc'));
+    my $pc = $q->param('pc');
+
+    my $pretty_pc = $pc;
+    # This one isnt't getting the nbsp. As a fallback if pc isn't a postcode, let's
+    # upper case what's put in.
+    my $pretty_pc_text = uc($pc);
+    if (mySociety::PostcodeUtil::is_valid_postcode($pc)) {
+        $pretty_pc = mySociety::PostcodeUtil::canonicalise_postcode($pc);
+        $pretty_pc_text = $pretty_pc;
+        $pretty_pc =~ s/ /&nbsp;/;
+    }
+
     my $x = $q->param('x');
     my $y = $q->param('y');
     my $lat = $q->param('lat');
@@ -110,9 +121,9 @@ sub rss_local_problems {
 	    return '';
 	} else {
             ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );             
-	    $qs = "?pc=$pc";
+	    $qs = "?pc=$pretty_pc_text";
 
-	    $title_params{'POSTCODE'} = encode_utf8($pc);
+	    $title_params{'POSTCODE'} = encode_utf8($pretty_pc_text);
         }
 	# pass through rather than redirecting.
     } elsif ( $lat || $lon ) { 
