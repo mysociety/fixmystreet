@@ -101,6 +101,7 @@ sub alert_list {
     if (mySociety::PostcodeUtil::is_valid_postcode($input{pc})) {
         $pretty_pc = mySociety::PostcodeUtil::canonicalise_postcode($input{pc});
         $pretty_pc_text = $pretty_pc;
+        $pretty_pc_text =~ s/ //g;
         $pretty_pc =~ s/ /&nbsp;/;
     }
 
