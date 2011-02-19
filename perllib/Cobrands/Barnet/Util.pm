@@ -79,7 +79,7 @@ sub council_check {
     }
     my $url = 'http://www.fixmystreet.com/';
     $url .= 'alert' if $context eq 'alert';
-    $url .= '?pc=' . URI::Escape::uri_escape($q->param('pc') if $q->param('pc');
+    $url .= '?pc=' . URI::Escape::uri_escape($q->param('pc')) if $q->param('pc');
     my $error_msg = "That location is not covered by Barnet.
 Please visit <a href=\"$url\">the main FixMyStreet site</a>.";
     return (0, $error_msg);
