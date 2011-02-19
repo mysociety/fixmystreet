@@ -939,7 +939,7 @@ sub display_location {
     
     my $rss_url;
     if ($pc_h) {
-        $rss_url = URI::Escape::uri_escape("/rss/pc/$pc_h");
+        $rss_url = "/rss/pc/" . URI::Escape::uri_escape($pc_h);
     } else {
         $rss_url = "/rss/l/$short_lat,$short_lon";
     }
