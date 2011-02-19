@@ -64,15 +64,17 @@ sub rss_local_problems {
     my $q = shift;
     my $pc = $q->param('pc');
 
-    my $pretty_pc = $pc;
-    # This one isnt't getting the nbsp. As a fallback if pc isn't a postcode, let's
-    # upper case what's put in.
-    my $pretty_pc_text = uc($pc);
+    # As a fallback if pc isn't a postcode, let's upper case it.
+    my $pretty_pc = uc($pc);
+    my $pretty_pc_spaceless;
     if (mySociety::PostcodeUtil::is_valid_postcode($pc)) {
         $pretty_pc = mySociety::PostcodeUtil::canonicalise_postcode($pc);
-        $pretty_pc_text = $pretty_pc;
-        $pretty_pc =~ s/ /&nbsp;/;
+        $pretty_pc_spaceless = $pretty_pc;
+	$pretty_pc_spaceless =~ s/ //g;
+    } else {
+        $pretty_pc_spaceless = $pretty_pc;
     }
+    $pretty_pc_spaceless = URI::Escape::uri_escape_utf8($pretty_pc_spaceless);
 
     my $x = $q->param('x');
     my $y = $q->param('y');
@@ -121,9 +123,9 @@ sub rss_local_problems {
 	    return '';
 	} else {
             ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );             
-	    $qs = "?pc=$pretty_pc_text";
+	    $qs = "?pc=$pretty_pc_spaceless";
 
-	    $title_params{'POSTCODE'} = encode_utf8($pretty_pc_text);
+	    $title_params{'POSTCODE'} = encode_utf8($pretty_pc);
         }
 	# pass through rather than redirecting.
     } elsif ( $lat || $lon ) { 
