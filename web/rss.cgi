@@ -64,18 +64,6 @@ sub rss_local_problems {
     my $q = shift;
     my $pc = $q->param('pc');
 
-    # As a fallback if pc isn't a postcode, let's upper case it.
-    my $pretty_pc = uc($pc);
-    my $pretty_pc_spaceless;
-    if (mySociety::PostcodeUtil::is_valid_postcode($pc)) {
-        $pretty_pc = mySociety::PostcodeUtil::canonicalise_postcode($pc);
-        $pretty_pc_spaceless = $pretty_pc;
-	$pretty_pc_spaceless =~ s/ //g;
-    } else {
-        $pretty_pc_spaceless = $pretty_pc;
-    }
-    $pretty_pc_spaceless = URI::Escape::uri_escape_utf8($pretty_pc_spaceless);
-
     my $x = $q->param('x');
     my $y = $q->param('y');
     my $lat = $q->param('lat');
@@ -119,15 +107,22 @@ sub rss_local_problems {
         } catch Error::Simple with {
             $error = shift;
         };
-	if ($error) {
-	    return '';
-	} else {
+        if ($error) {
+            return '';
+        } else {
             ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );             
-	    $qs = "?pc=$pretty_pc_spaceless";
 
-	    $title_params{'POSTCODE'} = encode_utf8($pretty_pc);
+            my $pretty_pc = $pc;
+            if (mySociety::PostcodeUtil::is_valid_postcode($pc)) {
+                $pretty_pc = mySociety::PostcodeUtil::canonicalise_postcode($pc);
+            }
+            my $pretty_pc_escaped = URI::Escape::uri_escape_utf8($pretty_pc);
+            $pretty_pc_escaped =~ s/%20/+/g;
+            $qs = "?pc=$pretty_pc_escaped";
+
+            $title_params{'POSTCODE'} = encode_utf8($pretty_pc);
         }
-	# pass through rather than redirecting.
+        # pass through rather than redirecting.
     } elsif ( $lat || $lon ) { 
         # pass through
     } else {
@@ -138,7 +133,7 @@ sub rss_local_problems {
     ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );    
     
     if (!$qs) {
-	$qs = "?lat=$lat;lon=$lon";
+        $qs = "?lat=$lat;lon=$lon";
     }
 
     if ($d) {
@@ -152,16 +147,16 @@ sub rss_local_problems {
     my $xsl = Cobrand::feed_xsl($cobrand);
 
     if ($pc) {
-	$alert_type = 'postcode_local_problems';
+        $alert_type = 'postcode_local_problems';
     } else {
-	$alert_type = 'local_problems';
+        $alert_type = 'local_problems';
     }
 
     my @db_params = ($lat, $lon, $d);
 
     if ($state ne 'all') {
-	$alert_type .= '_state';
-	push @db_params, $state;
+        $alert_type .= '_state';
+        push @db_params, $state;
     }
     
     return FixMyStreet::Alert::generate_rss($alert_type, $xsl, $qs, \@db_params, \%title_params, $cobrand, $q);
