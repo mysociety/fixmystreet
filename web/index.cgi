@@ -943,6 +943,10 @@ sub display_location {
     } else {
         $rss_url = "/rss/l/$short_lat,$short_lon";
     }
+    $rss_url = Cobrand::url( $cobrand,
+        NewURL($q, -retain => 1, -url=> $rss_url,
+            pc => undef, x => undef, y => undef, lat=> undef, lon => undef ),
+        $q);
 
     my %vars = (
         'map' => FixMyStreet::Map::display_map($q,
@@ -953,11 +957,7 @@ sub display_location {
         ),
         map_end => FixMyStreet::Map::display_map_end(1),
         url_home => Cobrand::url($cobrand, '/', $q),
-        url_rss => Cobrand::url(
-            $cobrand,
-            NewURL($q, -retain => 1, -url=> $rss_url,
-               pc => undef, x => undef, y => undef, lat=> undef, lon => undef ),
-            $q),
+        url_rss => $rss_url,
         url_email => Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, lat => $short_lat, lon => $short_lon, -url=>'/alert', feed=>"local:$short_lat:$short_lon"), $q),
         url_skip => $url_skip,
         email_me => _('Email me new local problems'),
@@ -978,7 +978,7 @@ sub display_location {
     );
 
     my %params = (
-        rss => [ _('Recent local problems, FixMyStreet'), "/rss/l/$short_lat,$short_lon" ],
+        rss => [ _('Recent local problems, FixMyStreet'), $rss_url ],
         robots => 'noindex,nofollow',
     );
 
