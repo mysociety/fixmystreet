@@ -658,13 +658,13 @@ name if you give us permission.'), $council_list);
         }
         my $n = @missing;
         my $list = join(_(' or '), map { $all_councils->{$_}->{name} } @missing);
-        $vars{text_help} = '<p>' . _('All the information you provide here will be sent to') . '<strong>'
+        $vars{text_help} = '<p>' . _('All the information you provide here will be sent to') . ' <strong>'
             . join('</strong>' . _(' or ') . '<strong>', map { $all_councils->{$_}->{name} } @councils)
             . '</strong>. ';
         $vars{text_help} .= _('The subject and details of the problem will be public, plus your name if you give us permission.');
-        $vars{text_help} .= mySociety::Locale::nget(
-            _('We do <strong>not</strong> yet have details for the other council that covers this location.'),
-            _('We do <strong>not</strong> yet have details for the other councils that cover this location.'),
+        $vars{text_help} .= ' ' . mySociety::Locale::nget(
+            'We do <strong>not</strong> yet have details for the other council that covers this location.',
+            'We do <strong>not</strong> yet have details for the other councils that cover this location.',
             $n
         );
         $vars{text_help} .=  ' ' . sprintf(_("You can help us by finding a contact email address for local problems for %s and emailing it to us at <a href='mailto:%s'>%s</a>."), $list, $e, $e);
@@ -677,14 +677,17 @@ name if you give us permission.'), $council_list);
         if ($q->{site} ne 'emptyhomes') {
             $vars{text_help} = '<p>';
             $vars{text_help} .= mySociety::Locale::nget(
-                _('We do not yet have details for the council that covers this location.'),
-                _('We do not yet have details for the councils that cover this location.'),
+                'We do not yet have details for the council that covers this location.',
+                'We do not yet have details for the councils that cover this location.',
                 $n
             );
             $vars{text_help} .= _("If you submit a problem here the subject and details of the problem will be public, but the problem will <strong>not</strong> be reported to the council.");
             $vars{text_help} .= sprintf(_("You can help us by finding a contact email address for local problems for %s and emailing it to us at <a href='mailto:%s'>%s</a>."), $list, $e, $e);
         } else {
-            $vars{text_help} = _("<p>We do not yet have details for the council that covers this location. If you submit a report here it will be left on the site, but not reported to the council &ndash; please still leave your report, so that we can show to the council the activity in their area.");
+            $vars{text_help} = '<p>'
+              . _('We do not yet have details for the council that covers this location.')
+              . ' '
+              . _("If you submit a report here it will be left on the site, but not reported to the council &ndash; please still leave your report, so that we can show to the council the activity in their area.");
         }
         $vars{text_help} .= '<input type="hidden" name="council" value="-1">';
     }
