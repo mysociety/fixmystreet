@@ -541,7 +541,7 @@ sub do_rss {
 
         # go to reports
         '/rss/area/Birmingham'         => '/rss/reports/Birmingham',
-        '/rss/area/Birmingham/Lozells' => '/rss/reports/Birmingham/Lozells',
+        '/rss/area/Birmingham/Lozells' => '/rss/reports/Birmingham/Lozells+and+East+Handsworth',
     );
 
     my $error_count = 0;
