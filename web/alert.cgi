@@ -97,8 +97,11 @@ sub alert_list {
     return alert_front_page($q, $error) if $error;
 
     my $pretty_pc = $input_h{pc};
+    my $pretty_pc_text;# This one isnt't getting the nbsp.
     if (mySociety::PostcodeUtil::is_valid_postcode($input{pc})) {
         $pretty_pc = mySociety::PostcodeUtil::canonicalise_postcode($input{pc});
+        $pretty_pc_text = $pretty_pc;
+        $pretty_pc_text =~ s/ //g;
         $pretty_pc =~ s/ /&nbsp;/;
     }
 
@@ -291,17 +294,23 @@ feed, or enter your email address to subscribe to an email alert.'));
 <input type="radio" name="feed" id="local:$lat:$lon" value="local:$lat:$lon"$checked>
 <label for="local:$lat:$lon">$rss_label</label>
 EOF
-    my $rss_feed = Cobrand::url($cobrand, "/rss/l/$lat,$lon", $q);
+    my $rss_feed;
+    if ($pretty_pc_text) {
+        $rss_feed = Cobrand::url($cobrand, "/rss/pc/$pretty_pc_text/", $q);
+    } else {
+        $rss_feed = Cobrand::url($cobrand, "/rss/l/$lat,$lon/", $q);
+    }
+
     my $default_link = Cobrand::url($cobrand, "/alert?type=local;feed=local:$lat:$lon", $q);
     my $rss_details = _('(a default distance which covers roughly 200,000 people)');
     $out .= $rss_details;
     $out .= " <a href='$rss_feed'><img src='/i/feed.png' width='16' height='16' title='"
         . _('RSS feed of nearby problems') . "' alt='" . _('RSS feed') . "' border='0'></a>";
     $out .= '</p> <p id="rss_local_alt">' . _('(alternatively the RSS feed can be customised, within');
-    my $rss_feed_2k  = Cobrand::url($cobrand, "/rss/l/$lat,$lon/2", $q);
-    my $rss_feed_5k  = Cobrand::url($cobrand, "/rss/l/$lat,$lon/5", $q);
-    my $rss_feed_10k = Cobrand::url($cobrand, "/rss/l/$lat,$lon/10", $q);
-    my $rss_feed_20k = Cobrand::url($cobrand, "/rss/l/$lat,$lon/20", $q);
+    my $rss_feed_2k  = Cobrand::url($cobrand, $rss_feed.'2', $q);
+    my $rss_feed_5k  = Cobrand::url($cobrand, $rss_feed.'5', $q);
+    my $rss_feed_10k = Cobrand::url($cobrand, $rss_feed.'10', $q);
+    my $rss_feed_20k = Cobrand::url($cobrand, $rss_feed.'20', $q);
     $out .= <<EOF;
  <a href="$rss_feed_2k">2km</a> / <a href="$rss_feed_5k">5km</a>
 / <a href="$rss_feed_10k">10km</a> / <a href="$rss_feed_20k">20km</a>)

@@ -18,6 +18,9 @@
     _('New local reports on reportemptyhomes.com'),
     _('The latest local reports reported by users'),
 
+# New problems around a postcode
+    _('New reports on reportemptyhomes.com near {{POSTCODE}}'),
+
 # New problems sent to a particular council
     _('New reports to {{COUNCIL}} on reportemptyhomes.com'),
     _('The latest reports for {{COUNCIL}} reported by users'),

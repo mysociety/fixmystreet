@@ -63,6 +63,7 @@ Page::do_fastcgi(\&main);
 sub rss_local_problems {
     my $q = shift;
     my $pc = $q->param('pc');
+
     my $x = $q->param('x');
     my $y = $q->param('y');
     my $lat = $q->param('lat');
@@ -81,6 +82,10 @@ sub rss_local_problems {
     $state_qs = "?state=$state" unless $state eq 'all';
 
     $state = 'confirmed' if $state eq 'open';
+
+    my $qs;
+    my %title_params;
+    my $alert_type;
 
     my $cobrand = Page::get_cobrand($q);
     my $base = Cobrand::base_url($cobrand);
@@ -102,11 +107,22 @@ sub rss_local_problems {
         } catch Error::Simple with {
             $error = shift;
         };
-        unless ($error) {
+        if ($error) {
+            return '';
+        } else {
             ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );             
-            print $q->redirect(-location => "$base/rss/l/$lat,$lon$d_str$state_qs");
+
+            my $pretty_pc = $pc;
+            if (mySociety::PostcodeUtil::is_valid_postcode($pc)) {
+                $pretty_pc = mySociety::PostcodeUtil::canonicalise_postcode($pc);
+            }
+            my $pretty_pc_escaped = URI::Escape::uri_escape_utf8($pretty_pc);
+            $pretty_pc_escaped =~ s/%20/+/g;
+            $qs = "?pc=$pretty_pc_escaped";
+
+            $title_params{'POSTCODE'} = encode_utf8($pretty_pc);
         }
-        return '';
+        # pass through rather than redirecting.
     } elsif ( $lat || $lon ) { 
         # pass through
     } else {
@@ -116,7 +132,9 @@ sub rss_local_problems {
     # truncate the lat,lon for nicer urls
     ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );    
     
-    my $qs = "?lat=$lat;lon=$lon";
+    if (!$qs) {
+        $qs = "?lat=$lat;lon=$lon";
+    }
 
     if ($d) {
         $qs .= ";d=$d";
@@ -127,10 +145,20 @@ sub rss_local_problems {
     }
 
     my $xsl = Cobrand::feed_xsl($cobrand);
-    if ($state eq 'all') {
-        return FixMyStreet::Alert::generate_rss('local_problems', $xsl, $qs, [$lat, $lon, $d], undef, $cobrand, $q);
+
+    if ($pc) {
+        $alert_type = 'postcode_local_problems';
     } else {
-        return FixMyStreet::Alert::generate_rss('local_problems_state', $xsl, $qs, [$lat, $lon, $d, $state], undef, $cobrand, $q);
+        $alert_type = 'local_problems';
     }
+
+    my @db_params = ($lat, $lon, $d);
+
+    if ($state ne 'all') {
+        $alert_type .= '_state';
+        push @db_params, $state;
+    }
+    
+    return FixMyStreet::Alert::generate_rss($alert_type, $xsl, $qs, \@db_params, \%title_params, $cobrand, $q);
 }
 

@@ -937,6 +937,13 @@ sub display_location {
     );
     my $pc_h = ent($q->param('pc') || '');
     
+    my $rss_url;
+    if ($pc_h) {
+        $rss_url = "/rss/pc/" . URI::Escape::uri_escape($pc_h);
+    } else {
+        $rss_url = "/rss/l/$short_lat,$short_lon";
+    }
+
     my %vars = (
         'map' => FixMyStreet::Map::display_map($q,
             latitude => $latitude, longitude => $longitude,
@@ -946,7 +953,11 @@ sub display_location {
         ),
         map_end => FixMyStreet::Map::display_map_end(1),
         url_home => Cobrand::url($cobrand, '/', $q),
-        url_rss => Cobrand::url($cobrand, NewURL($q, -retain => 1, -url=> "/rss/l/$short_lat,$short_lon", pc => undef, x => undef, y => undef, lat => undef, lon => undef ), $q),
+        url_rss => Cobrand::url(
+            $cobrand,
+            NewURL($q, -retain => 1, -url=> $rss_url,
+               pc => undef, x => undef, y => undef, lat=> undef, lon => undef ),
+            $q),
         url_email => Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, lat => $short_lat, lon => $short_lon, -url=>'/alert', feed=>"local:$short_lat:$short_lon"), $q),
         url_skip => $url_skip,
         email_me => _('Email me new local problems'),

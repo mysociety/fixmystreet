@@ -90,7 +90,7 @@ sub delete ($) {
 sub email_alerts ($) {
     my ($testing_email) = @_;
     my $url; 
-    my $q = dbh()->prepare("select * from alert_type where ref not like 'local_problems%'");
+    my $q = dbh()->prepare("select * from alert_type where ref not like '%local_problems%'");
     $q->execute();
     my $testing_email_clause = '';
     while (my $alert_type = $q->fetchrow_hashref) {
