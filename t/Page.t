@@ -71,7 +71,7 @@ sub test_header() {
 
     # Test that template passed is rendered 
     $params{'template'} = 'test';    
-    $html = Page::template_include('test', $q,
+    $html = Page::template_include('test-header', $q,
         '/../t/templates/' . $q->{site} . '/',
         title => 'My test title', lang => 'en-gb'
     );	
