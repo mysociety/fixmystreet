@@ -391,10 +391,7 @@ sub do_alert {
     my $e = 325066;
     my $n = 673533;
     
-    # get the lat,lon from the postcode so that it matches
-    my ( $lat, $lon ) =
-      map { Utils::truncate_coordinate($_) }
-      FixMyStreet::Geocode::lookup( $postcode, undef );
+    my ( $lat, $lon ) = (55.948967, -3.201478);
     
     my $messages = english_fms_messages();
     submit_postcode('', $postcode, 'Problems in this area');
@@ -437,10 +434,7 @@ sub do_eha_alert {
     my $x = 2015; my $e = 325066;
     my $y = 4175; my $n = 673533;
     
-    # get the lat,lon from the postcode so that it matches
-    my ( $lat, $lon ) =
-      map { Utils::truncate_coordinate($_) }
-      FixMyStreet::Geocode::lookup( $postcode, undef );
+    my ( $lat, $lon ) = (55.948967, -3.201478);
         
     my @texts = ('Eiddo gwag yn yr ardal hon', 
                  'Adrodd am eiddo gwag', 
