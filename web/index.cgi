@@ -310,7 +310,7 @@ sub submit_problem {
     } elsif (!mySociety::EmailUtil::is_valid_email($input{email})) {
         $field_errors{email} = _('Please enter a valid email');
     }
-    if ($input{category} && $input{category} eq '-- Pick a category --') {
+    if ($input{category} && $input{category} eq _('-- Pick a category --')) {
         $field_errors{category} = _('Please choose a category');
         $input{category} = '';
     } elsif ($input{category} && $input{category} eq _('-- Pick a property type --')) {
@@ -562,7 +562,7 @@ please specify the closest point on land.')) unless %$all_councils;
             @categories = Page::scambs_categories();
         }
         if (@categories) {
-            @categories = ('-- Pick a category --', @categories, _('Other'));
+            @categories = (_('-- Pick a category --'), @categories, _('Other'));
             $category = _('Category:');
         }
     } else {

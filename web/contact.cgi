@@ -206,10 +206,12 @@ sub contact_page {
             } else {
                 $intro .= $q->p(_('You are reporting the following problem report for being abusive, containing personal information, or similar:'));
                 $item_title = ent($p->{title});
+                my $date_time = Page::prettify_epoch($q, $p->{confirmed});
                 $item_meta = $q->em(
-                   'Reported ',
-                   ($p->{anonymous}) ? 'anonymously' : "by " . ent($p->{name}),
-                   ' at ' . Page::prettify_epoch($q, $p->{confirmed}));
+                   $p->{anonymous}
+                       ? sprintf(_('Reported anonymously at %s'), $date_time)
+                       : sprintf(_('Reported by %s at %s'), ent($p->{name}), $date_time)
+                );
                 $item_body = ent($p->{detail});
             }
         }
