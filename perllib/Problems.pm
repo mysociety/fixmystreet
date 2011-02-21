@@ -262,7 +262,7 @@ sub problems_matching_criteria {
     my $areas_info = mySociety::MaPit::call('areas', \@councils);
     foreach my $problem (@$problems){
         if ($problem->{council}) {
-             my @council_names = map { encode_utf8($areas_info->{$_}->{name}) } @{$problem->{council}} ;
+             my @council_names = map { $areas_info->{$_}->{name} } @{$problem->{council}} ;
              $problem->{council} = join(' and ', @council_names);
         }
     }

@@ -131,8 +131,8 @@ sub alert_list {
                 $fylke = $_;
             }
         }
-        my $kommune_name = encode_utf8($kommune->{name});
-        my $fylke_name = encode_utf8($fylke->{name});
+        my $kommune_name = $kommune->{name};
+        my $fylke_name = $fylke->{name};
 
         if ($fylke->{id} == 3) { # Oslo
 
@@ -177,8 +177,8 @@ for the county council.'))) . '</div><div id="rss_buttons">';
                 $ward = $_;
             }
         }
-        my $council_name = encode_utf8($council->{name});
-        my $ward_name = encode_utf8($ward->{name});
+        my $council_name = $council->{name};
+        my $ward_name = $ward->{name};
         push @options, [ 'council', $council->{id}, Page::short_name($council),
             sprintf(_("Problems within %s"), $council_name) ];
         push @options, [ 'ward', $council->{id}.':'.$ward->{id}, Page::short_name($council) . '/'
@@ -195,7 +195,7 @@ for the county council.'))) . '</div><div id="rss_buttons">';
         foreach (values %$areas) {
             $council = $_;
         }
-        my $council_name = encode_utf8($council->{name});
+        my $council_name = $council->{name};
         push @options, [ 'council', $council->{id}, Page::short_name($council),
             sprintf(_("Problems within %s"), $council_name) ];
         
@@ -218,10 +218,10 @@ for the county council.'))) . '</div><div id="rss_buttons">';
                 $d_ward = $_;
             }
         }
-        my $district_name = encode_utf8($district->{name});
-        my $d_ward_name = encode_utf8($d_ward->{name});
-        my $county_name = encode_utf8($county->{name});
-        my $c_ward_name = encode_utf8($c_ward->{name});
+        my $district_name = $district->{name};
+        my $d_ward_name = $d_ward->{name};
+        my $county_name = $county->{name};
+        my $c_ward_name = $c_ward->{name};
         push @options,
             [ 'area', $district->{id}, Page::short_name($district), $district_name ],
             [ 'area', $district->{id}.':'.$d_ward->{id}, Page::short_name($district) . '/'

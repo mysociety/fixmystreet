@@ -47,7 +47,7 @@ sub main {
         my $id = $q->param('id');
         my $va_info = mySociety::MaPit::call('area', $id);
         my $qs = '/'.$id;
-        $out = FixMyStreet::Alert::generate_rss($type, $xsl, $qs, [$id], { NAME => encode_utf8($va_info->{name}) }, $cobrand, $q);
+        $out = FixMyStreet::Alert::generate_rss($type, $xsl, $qs, [$id], { NAME => $va_info->{name} }, $cobrand, $q);
     } elsif ($type eq 'all_problems') {
         $out = FixMyStreet::Alert::generate_rss($type, $xsl, '', undef, undef, $cobrand, $q);
     } else {
@@ -120,7 +120,7 @@ sub rss_local_problems {
             $pretty_pc_escaped =~ s/%20/+/g;
             $qs = "?pc=$pretty_pc_escaped";
 
-            $title_params{'POSTCODE'} = encode_utf8($pretty_pc);
+            $title_params{'POSTCODE'} = $pretty_pc;
         }
         # pass through rather than redirecting.
     } elsif ( $lat || $lon ) { 

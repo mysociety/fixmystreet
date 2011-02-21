@@ -638,7 +638,7 @@ If this is not the correct location, simply click on the map again. '));
     $vars{page_heading} = $q->h1(_('Reporting a problem'));
 
     if ($details eq 'all') {
-        my $council_list = join('</strong> or <strong>', map { encode_utf8($_->{name}) } values %$all_councils);
+        my $council_list = join('</strong> or <strong>', map { $_->{name} } values %$all_councils);
         if ($q->{site} eq 'emptyhomes'){
             $vars{text_help} = '<p>' . sprintf(_('All the information you provide here will be sent to <strong>%s</strong>.
 On the site, we will show the subject and details of the problem, plus your
@@ -657,9 +657,9 @@ name if you give us permission.'), $council_list);
             push @missing, $_ unless $councils{$_};
         }
         my $n = @missing;
-        my $list = join(_(' or '), map { encode_utf8($all_councils->{$_}->{name}) } @missing);
+        my $list = join(_(' or '), map { $all_councils->{$_}->{name} } @missing);
         $vars{text_help} = '<p>' . _('All the information you provide here will be sent to') . '<strong>'
-            . join('</strong>' . _(' or ') . '<strong>', map { encode_utf8($all_councils->{$_}->{name}) } @councils)
+            . join('</strong>' . _(' or ') . '<strong>', map { $all_councils->{$_}->{name} } @councils)
             . '</strong>. ';
         $vars{text_help} .= _('The subject and details of the problem will be public, plus your name if you give us permission.');
         $vars{text_help} .= mySociety::Locale::nget(
@@ -672,7 +672,7 @@ name if you give us permission.'), $council_list);
             . '|' . join(',', @missing) . '">';
     } else {
         my $e = Cobrand::contact_email($cobrand);
-        my $list = join(' or ', map { encode_utf8($_->{name}) } values %$all_councils);
+        my $list = join(' or ', map { $_->{name} } values %$all_councils);
         my $n = scalar keys %$all_councils;
         if ($q->{site} ne 'emptyhomes') {
             $vars{text_help} = '<p>';
