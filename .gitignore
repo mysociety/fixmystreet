@@ -3,3 +3,7 @@
 ._*
 .DS_Store
 local-lib5
+META.yml
+Makefile
+blib/
+inc/

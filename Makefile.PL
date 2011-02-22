@@ -1,0 +1,26 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+use inc::Module::Install;
+use Module::Install::Catalyst;
+
+name 'FixMyStreet-App';
+all_from 'perllib/FixMyStreet/App.pm';
+
+requires 'Catalyst::Runtime' => '5.80031';
+requires 'Catalyst::Plugin::ConfigLoader';
+requires 'Catalyst::Plugin::Static::Simple';
+requires 'Catalyst::Action::RenderView';
+requires 'Moose';
+requires 'namespace::autoclean';
+requires 'Config::General';
+
+test_requires 'Test::More' => '0.88';
+
+catalyst;
+
+install_script glob('script/*.pl');
+auto_install;
+WriteAll;
