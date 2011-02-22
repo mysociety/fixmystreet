@@ -2,25 +2,17 @@ package FixMyStreet::App;
 use Moose;
 use namespace::autoclean;
 
+BEGIN {
+    use mySociety::Config;
+    mySociety::Config::set_file("conf/general");
+}
+
 use Catalyst::Runtime 5.80;
 
-# Set flags and add plugins for the application.
-#
-# Note that ORDERING IS IMPORTANT here as plugins are initialized in order,
-# therefore you almost certainly want to keep ConfigLoader at the head of the
-# list if you're using it.
-#
-#         -Debug: activates the debug mode for very useful log messages
-#   ConfigLoader: will load the configuration from a Config::General file in the
-#                 application's home directory
-# Static::Simple: will serve static files from the application's root
-#                 directory
-
 use Catalyst qw/
-    -Debug
-    ConfigLoader
-    Static::Simple
-/;
+  ConfigLoader
+  Static::Simple
+  /;
 
 extends 'Catalyst';
 
@@ -36,14 +28,16 @@ our $VERSION = '0.01';
 # local deployment.
 
 __PACKAGE__->config(
+    %{ mySociety::Config::get_list() },
+
     name => 'FixMyStreet::App',
+
     # Disable deprecated behavior needed by old applications
     disable_component_resolution_regex_fallback => 1,
 );
 
 # Start the application
 __PACKAGE__->setup();
-
 
 =head1 NAME
 
