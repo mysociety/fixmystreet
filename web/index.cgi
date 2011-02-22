@@ -81,10 +81,10 @@ sub main {
     my %params;
     if ($q->param('submit_problem')) {
         $params{title} = _('Submitting your report');
-        ($out) = submit_problem($q);
+        ($out, %params) = submit_problem($q);
     } elsif ($q->param('submit_update')) {
         $params{title} = _('Submitting your update');
-        ($out) = submit_update($q);
+        ($out, %params) = submit_update($q);
     } elsif ($q->param('submit_map')) {
         ($out, %params) = display_form($q, [], {});
         $params{title} = _('Reporting a problem');
