@@ -11,6 +11,7 @@
 
 use strict;
 use Standard;
+use Encode;
 use URI::Escape;
 use FixMyStreet::Alert;
 use mySociety::MaPit;
@@ -40,24 +41,50 @@ sub main {
             print $q->redirect($base_url . '/reports');
             return;
         }
-        $area_name = Page::short_name($va_info->{name});
+        $area_name = Page::short_name($va_info);
         if (length($q_council) == 6) {
             $va_info = mySociety::MaPit::call('area', $va_info->{parent_area});
-            $area_name = Page::short_name($va_info->{name}) . '/' . $area_name;
+            $area_name = Page::short_name($va_info) . '/' . $area_name;
         }
         $rss = '/rss' if $rss;
         print $q->redirect($base_url . $rss . '/reports/' . $area_name);
         return;
+    } elsif (mySociety::Config::get('COUNTRY') eq 'NO' && $q_council eq 'Oslo') {
+        $one_council = mySociety::MaPit::call('area', 3);
+        $area_type = $one_council->{type};
+        $area_name = $one_council->{name};
+    } elsif (mySociety::Config::get('COUNTRY') eq 'NO' && $q_council =~ /,/) {
+        my ($kommune, $fylke) = split /\s*,\s*/, $q_council;
+        my @area_types = Cobrand::area_types($cobrand);
+        my $areas_k = mySociety::MaPit::call('areas', $kommune, type => \@area_types);
+        my $areas_f = mySociety::MaPit::call('areas', $fylke, type => \@area_types);
+        if (keys %$areas_f == 1) {
+            ($fylke) = values %$areas_f;
+            $kommune = decode_utf8($kommune);
+            foreach (values %$areas_k) {
+                if ($_->{name} eq $kommune && $_->{parent_area} == $fylke->{id}) {
+                    $one_council = $_;
+                    $area_type = $_->{type};
+                    $area_name = $_->{name};
+                    last;
+                }
+            }
+        }
+        if (!$one_council) { # Given a false council name
+            print $q->redirect($base_url . '/reports');
+            return;
+        }
     } elsif ($q_council =~ /\D/) {
-        my $areas = mySociety::MaPit::call('areas', $q_council, type => $mySociety::VotingArea::council_parent_types, min_generation=>10 );
+        my @area_types = Cobrand::area_types($cobrand);
+        my $areas = mySociety::MaPit::call('areas', $q_council, type => \@area_types, min_generation=>Cobrand::area_min_generation($cobrand) );
         if (keys %$areas == 1) {
-            ($one_council) = keys %$areas;
-            $area_type = $areas->{$one_council}->{type};
-            $area_name = $areas->{$one_council}->{name};
+            ($one_council) = values %$areas;
+            $area_type = $one_council->{type};
+            $area_name = $one_council->{name};
         } else {
             foreach (keys %$areas) {
                 if ($areas->{$_}->{name} =~ /^\Q$q_council\E (Borough|City|District|County) Council$/) {
-                    $one_council = $_;
+                    $one_council = $areas->{$_};
                     $area_type = $areas->{$_}->{type};
                     $area_name = $q_council;
                 }
@@ -73,8 +100,7 @@ sub main {
             print $q->redirect($base_url . '/reports');
             return;
         }
-        $area_name = $va_info->{name};
-        print $q->redirect($base_url . '/reports/' . Page::short_name($area_name));
+        print $q->redirect($base_url . '/reports/' . Page::short_name($va_info));
         return;
     }
     $all = 0 unless $one_council;
@@ -83,23 +109,24 @@ sub main {
     my $q_ward = $q->param('ward') || '';
     my $ward;
     if ($one_council && $q_ward) {
-        my $qw = mySociety::MaPit::call('areas', $q_ward, type => $mySociety::VotingArea::council_child_types, min_generation => 10);
+        my $qw = mySociety::MaPit::call('areas', $q_ward, type => $mySociety::VotingArea::council_child_types,
+            min_generation => Cobrand::area_min_generation($cobrand));
         foreach my $id (sort keys %$qw) {
-            if ($qw->{$id}->{parent_area} == $one_council) {
-                $ward = $id;
+            if ($qw->{$id}->{parent_area} == $one_council->{id}) {
+                $ward = $qw->{$id};
                 last;
             }
         }
         if (!$ward) { # Given a false ward name
-            print $q->redirect($base_url . '/reports/' . Page::short_name($q_council));
+            print $q->redirect($base_url . '/reports/' . Page::short_name($one_council));
             return;
         }
     }
 
     # RSS - reports for sent reports, area for all problems in area
     if ($rss && $one_council) {
-        my $url = Page::short_name($q_council);
-        $url .= '/' . Page::short_name($q_ward) if $ward;
+        my $url = Page::short_name($one_council);
+        $url .= '/' . Page::short_name($ward) if $ward;
         if ($rss eq 'area' && $area_type ne 'DIS' && $area_type ne 'CTY') {
             # Two possibilites are the same for one-tier councils, so redirect one to the other
             print $q->redirect($base_url . '/rss/reports/' . $url);
@@ -108,8 +135,8 @@ sub main {
         my $type = 'council_problems'; # Problems sent to a council
         my (@params, %title_params);
         $title_params{COUNCIL} = $area_name;
-        push @params, $one_council if $rss eq 'reports';
-        push @params, $ward ? $ward : $one_council;
+        push @params, $one_council->{id} if $rss eq 'reports';
+        push @params, $ward ? $ward->{id} : $one_council->{id};
         if ($ward && $rss eq 'reports') {
             $type = 'ward_problems'; # Problems sent to a council, restricted to a ward
             $title_params{WARD} = $q_ward;
@@ -127,16 +154,20 @@ sub main {
 
     my $areas_info;
     if ($one_council) {
-        $areas_info = mySociety::MaPit::call('areas', $one_council);
+        $areas_info = mySociety::MaPit::call('areas', [ $one_council->{id}, $one_council->{parent_area} ])
+            if $one_council->{parent_area};
+        $areas_info = { $one_council->{id} => $one_council }
+            unless $areas_info;
     } else {
         # Show all councils on main report page
-        my $ignore = 'LGD';
-        $ignore .= '|CTY' if $q->{site} eq 'emptyhomes';
-        my @types = grep { !/$ignore/ } @$mySociety::VotingArea::council_parent_types;
-        $areas_info = mySociety::MaPit::call('areas', [ @types ], min_generation=>10 );
+        my @area_types = Cobrand::area_types($cobrand);
+        $areas_info = mySociety::MaPit::call('areas', \@area_types, min_generation=>Cobrand::area_min_generation($cobrand) );
     }
 
-    my $problems = Problems::council_problems($ward, $one_council); 
+    my $problems = Problems::council_problems(
+        $ward ? $ward->{id} : undef,
+        $one_council ? $one_council->{id} : undef
+    );
 
     my (%fixed, %open);
     my $re_councils = join('|', keys %$areas_info);
@@ -151,7 +182,7 @@ sub main {
             $row->{council} =~ s/\|.*$//;
             my @council = split /,/, $row->{council};
             foreach (@council) {
-                next if $one_council && $_ != $one_council;
+                next if $one_council && $_ != $one_council->{id};
                 add_row($row, scalar @council, $_, \%fixed, \%open);
             }
         }
@@ -171,17 +202,22 @@ sub main {
         }
         print '<th>' . _('Recently fixed') . '</th><th>' . _('Older fixed') . '</th></tr>';
         foreach (sort { $areas_info->{$a}->{name} cmp $areas_info->{$b}->{name} } keys %$areas_info) {
+            next if mySociety::Config::get('COUNTRY') eq 'NO' && $_ eq 301; # Only want one Oslo
             print '<tr align="center"';
             ++$c;
-            if ($areas_info->{$_}->{generation_high}==10) {
+            if (mySociety::Config::get('COUNTRY') eq 'GB' && $areas_info->{$_}->{generation_high} == 10) {
                 print ' class="gone"';
             } elsif ($c%2) {
                 print ' class="a"';
             }
-            my $url = Page::short_name($areas_info->{$_}->{name});
+            my $url = Page::short_name($areas_info->{$_}, $areas_info);
             my $cobrand_url = Cobrand::url($cobrand, "/reports/$url", $q);
             print '><td align="left"><a href="' . $cobrand_url . '">' .
-                $areas_info->{$_}->{name} . '</a></td>';
+                $areas_info->{$_}->{name};
+            if ($areas_info->{$_}->{parent_area} && $url =~ /,|%2C/) {
+                print ', ' . $areas_info->{$areas_info->{$_}->{parent_area}}->{name};
+            }
+            print '</a></td>';
             summary_cell(\@{$open{$_}{new}});
             if ($q->{site} eq 'emptyhomes') {
                 my $c = 0;
@@ -198,17 +234,17 @@ sub main {
         }
         print '</table>';
     } else {
-        my $name = $areas_info->{$one_council}->{name};
+        my $name = $one_council->{name};
         if (!$name) {
             print Page::header($q, title=>_("Summary reports"));
-            print "Council with identifier " . ent($one_council). " not found. ";
+            print "Council with identifier " . ent($one_council->{id}). " not found. ";
             print $q->a({href => Cobrand::url($cobrand, '/reports', $q) }, 'Show all councils');
             print ".";
         } else {
-            my $rss_url = '/rss/reports/' . Page::short_name($name);
+            my $rss_url = '/rss/reports/' . Page::short_name($one_council, $areas_info);
             my $thing = _('council');
             if ($ward) {
-                $rss_url .= '/' . Page::short_name($q_ward);
+                $rss_url .= '/' . Page::short_name($ward);
                 $thing = 'ward';
                 $name = ent($q_ward) . ", $name";
             }
@@ -234,24 +270,25 @@ sub main {
                 $vars{summary_line} = sprintf(_('You can <a href="%s">see more details</a> or go back and <a href="/reports">show all councils</a>.'), Cobrand::url($cobrand, NewURL($q, all=>1), $q));
             }
 
-            if ($open{$one_council}) {
-                my $col = list_problems($q, _('New problems'), $open{$one_council}{new}, $all, 0);
+            my $id = $one_council->{id};
+            if ($open{$id}) {
+                my $col = list_problems($q, _('New problems'), $open{$id}{new}, $all, 0);
                 my $old = [];
                 if ($q->{site} eq 'emptyhomes') {
-                    push @$old, @{$open{$one_council}{older}} if $open{$one_council}{older};
-                    push @$old, @{$open{$one_council}{unknown}} if $open{$one_council}{unknown};
+                    push @$old, @{$open{$id}{older}} if $open{$id}{older};
+                    push @$old, @{$open{$id}{unknown}} if $open{$id}{unknown};
                 } else {
-                    $old = $open{$one_council}{older};
+                    $old = $open{$id}{older};
                 }
                 $col .= list_problems($q, _('Older problems'), $old, $all, 0);
                 if ($q->{site} ne 'emptyhomes') {
-                    $col .= list_problems($q, _('Old problems, state unknown'), $open{$one_council}{unknown}, $all, 0);
+                    $col .= list_problems($q, _('Old problems, state unknown'), $open{$id}{unknown}, $all, 0);
                 }
                 $vars{col_problems} = $col;
             }
-            if ($fixed{$one_council}) {
-                my $col = list_problems($q, _('Recently fixed'), $fixed{$one_council}{new}, $all, 1);
-                $col .= list_problems($q, _('Old fixed'), $fixed{$one_council}{old}, $all, 1);
+            if ($fixed{$id}) {
+                my $col = list_problems($q, _('Recently fixed'), $fixed{$id}{new}, $all, 1);
+                $col .= list_problems($q, _('Old fixed'), $fixed{$id}{old}, $all, 1);
                 $vars{col_fixed} = $col;
             }
             print Page::header($q, context => 'reports', title=>sprintf(_('%s - Summary reports'), $name), rss => [ sprintf(_('Problems within %s, FixMyStreet'), $name), Cobrand::url($cobrand, $rss_url, $q) ]);
@@ -294,7 +331,7 @@ sub list_problems {
         $out .= ent($_->{title});
         $out .= '</a>';
         $out .= ' <small>(sent to both)</small>' if $_->{councils}>1;
-        $out .= ' <small>(not sent to council)</small>' if $_->{councils}==0 && $q->{site} ne 'emptyhomes';
+        $out .= ' <small>' . _('(not sent to council)') . '</small>' if $_->{councils}==0 && $q->{site} ne 'emptyhomes';
         $out .= '<br><small>' . ent($_->{detail}) . '</small>' if $all;
         $out .= '</li>';
     }

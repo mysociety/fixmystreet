@@ -71,9 +71,12 @@ sub test_header() {
 
     # Test that template passed is rendered 
     $params{'template'} = 'test';    
-    $html = Page::template_header('test', $q, '/../t/templates/' . $q->{site} . '/', title=>'My test title', lang=>'en-gb');	
+    $html = Page::template_include('test-header', $q,
+        '/../t/templates/' . $q->{site} . '/',
+        title => 'My test title', lang => 'en-gb'
+    );	
+     
     like  ($html, qr/My test header template/, 'named template rendered ok');
- 
 
     return 1;
 }

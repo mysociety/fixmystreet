@@ -27,7 +27,6 @@ use FindBin;
 use mySociety::Config;
 mySociety::Config::set_file('../conf/general');
 use mySociety::DBHandle qw(dbh);
-use mySociety::GeoUtil;
 use mySociety::WebTestHarness;
 use Test::Harness;
 use File::Find;
@@ -392,10 +391,7 @@ sub do_alert {
     my $e = 325066;
     my $n = 673533;
     
-    # get the lat,lon from the postcode so that it matches
-    my ( $lat, $lon ) =
-      map { Utils::truncate_coordinate($_) }
-      FixMyStreet::Geocode::lookup( $postcode, undef );
+    my ( $lat, $lon ) = (55.948967, -3.201478);
     
     my $messages = english_fms_messages();
     submit_postcode('', $postcode, 'Problems in this area');
@@ -438,10 +434,7 @@ sub do_eha_alert {
     my $x = 2015; my $e = 325066;
     my $y = 4175; my $n = 673533;
     
-    # get the lat,lon from the postcode so that it matches
-    my ( $lat, $lon ) =
-      map { Utils::truncate_coordinate($_) }
-      FixMyStreet::Geocode::lookup( $postcode, undef );
+    my ( $lat, $lon ) = (55.948967, -3.201478);
         
     my @texts = ('Eiddo gwag yn yr ardal hon', 
                  'Adrodd am eiddo gwag', 
@@ -540,15 +533,15 @@ sub do_rss {
 
     my %redirects = (
 
-        # should always go to lat lon
+        # should always go to lat lon, except postcode (actually, query string)
         '/rss/n/406886,289126' => '/rss/l/52.499994,-1.899993',
         '/rss/2524/1779'       => '/rss/l/52.480294,-1.896931',
-        '/rss/pc/SW1A1AA'      => '/rss/l/51.50101,-0.141587',
+        '/rss/pc/SW1A1AA'      => '/rss/pc/SW1A1AA',
         '/rss/l/52.5/-1.9'     => '/rss/l/52.5/-1.9',
 
         # go to reports
         '/rss/area/Birmingham'         => '/rss/reports/Birmingham',
-        '/rss/area/Birmingham/Lozells' => '/rss/reports/Birmingham/Lozells',
+        '/rss/area/Birmingham/Lozells' => '/rss/reports/Birmingham/Lozells+and+East+Handsworth',
     );
 
     my $error_count = 0;

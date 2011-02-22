@@ -14,7 +14,6 @@ use Problems;
 use Cobrand;
 use mySociety::Config;
 use mySociety::Gaze;
-use mySociety::GeoUtil qw(national_grid_to_wgs84);
 use mySociety::Locale;
 use mySociety::Web qw(ent NewURL);
 use Utils;

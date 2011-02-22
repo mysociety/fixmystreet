@@ -33,6 +33,10 @@ sub admin_base_url {
     return 'https://secure.mysociety.org/admin/emptyhomes/';
 }
 
+sub area_types {
+    return qw(DIS LBO MTD UTA LGD COI); # No CTY
+}
+
 =item set_lang_and_domain LANG UNICODE
 
 Set the language and text domain for the site based on the query and host. 

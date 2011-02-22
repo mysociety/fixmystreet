@@ -29,7 +29,7 @@ BEGIN {
     );
 }
 
-my $UPDATE_BATCH_SIZE = 1;    # FIXME - should be ~ 500
+my $UPDATE_BATCH_SIZE = 500;
 
 migrate_problem_table();
 migrate_problem_find_nearby_function();
@@ -142,7 +142,7 @@ sub migrate_problem_find_nearby_function {
                         * cos(radians($2 - longitude)))::numeric, 14)
                     ) < $3
             order by distance desc
-    ' language sql
+' language sql
 SQL_END
 
     $dbh->commit;

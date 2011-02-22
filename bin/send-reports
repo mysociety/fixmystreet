@@ -23,11 +23,11 @@ use CronFns;
 
 use EastHantsWSDL;
 use Cobrand;
+use Utils;
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh);
 use mySociety::Email;
 use mySociety::EmailUtil;
-use mySociety::GeoUtil;
 use mySociety::Locale;
 use mySociety::MaPit;
 use mySociety::Random qw(random_bytes);
@@ -70,7 +70,7 @@ foreach my $row (@$unsent) {
     # more than once if there are multiple vhosts running off the same database. The email_host
     # call checks if this is the host that sends mail for this cobrand.
     next unless (Cobrand::email_host($cobrand));
-    Cobrand::set_lang_and_domain($cobrand, $row->{lang});
+    Cobrand::set_lang_and_domain($cobrand, $row->{lang}, 1);
     if (dbh()->selectrow_array('select email from abuse where lower(email)=?', {}, lc($row->{email}))) {
         dbh()->do("update problem set state='hidden' where id=?", {}, $row->{id});
         dbh()->commit();
@@ -103,10 +103,7 @@ foreach my $row (@$unsent) {
     $h{easting_northing} = '';
     if ( mySociety::Config::get('COUNTRY') eq 'GB' ) {
 
-        ( $h{easting}, $h{northing} ) =
-          mySociety::GeoUtil::wgs84_to_national_grid(    #
-            $h{latitude}, $h{longitude}, 'G'
-          );
+        ( $h{easting}, $h{northing} ) = Utils::convert_latlon_to_en( $h{latitude}, $h{longitude} );
 
         # email templates don't have conditionals so we need to farmat this here
         $h{easting_northing}                             #
@@ -178,22 +175,22 @@ foreach my $row (@$unsent) {
         $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/$template");
 
         if ($h{category} eq 'Other') {
-            $h{category_footer} = 'this type of local problem';
+            $h{category_footer} = _('this type of local problem');
             $h{category_line} = '';
         } else {
             $h{category_footer} = "'" . $h{category} . "'";
-            $h{category_line} = "Category: $h{category}\n\n";
+            $h{category_line} = sprintf(_("Category: %s"), $h{category}) . "\n\n";
         }
 
-        $h{councils_name} = join(' and ', @dear);
-        $h{multiple} = @dear>1 ? "[ This email has been sent to both councils covering the location of the problem, as the user did not categorise it; please ignore it if you're not the correct council to deal with the issue, or let us know what category of problem this is so we can add it to our system. ]\n\n"
+        $h{councils_name} = join(_(' and '), @dear);
+        $h{multiple} = @dear>1 ? "[ " . _("This email has been sent to both councils covering the location of the problem, as the user did not categorise it; please ignore it if you're not the correct council to deal with the issue, or let us know what category of problem this is so we can add it to our system.") . " ]\n\n"
             : '';
         $h{missing} = ''; 
         if ($missing) {
             my $name = $areas_info->{$missing}->{name};
-            $h{missing} = '[ We realise this problem might be the responsibility of ' . $name
-                . "; however, we don't currently have any contact details for them.
-If you know of an appropriate contact address, please do get in touch. ]\n\n";
+            $h{missing} = '[ '
+              . sprintf(_('We realise this problem might be the responsibility of %s; however, we don\'t currently have any contact details for them. If you know of an appropriate contact address, please do get in touch.'), $name)
+              . " ]\n\n";
         }
 
     }

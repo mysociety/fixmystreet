@@ -25,7 +25,10 @@ sub main {
     } else {
         $out = display_questionnaire($q);
     }
-    print Page::header($q, title=>_('Questionnaire'));
+    print Page::header($q,
+        title => _('Questionnaire'),
+        js => FixMyStreet::Map::header_js(),
+    );
     print $out;
     print Page::footer($q);
 }

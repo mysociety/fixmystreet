@@ -39,7 +39,7 @@ sub main {
 
     print $photo;
 }
-Page::do_fastcgi(\&main);
+Page::do_fastcgi(\&main, 0, 1);
 
 sub resize {
     my ($photo, $size) = @_;

@@ -30,7 +30,6 @@ use mySociety::DBHandle qw(dbh);
 use mySociety::Email;
 use mySociety::EmailUtil;
 use mySociety::Gaze;
-use mySociety::GeoUtil;
 use mySociety::Locale;
 use mySociety::MaPit;
 use mySociety::Random qw(random_bytes);
@@ -91,7 +90,7 @@ sub delete ($) {
 sub email_alerts ($) {
     my ($testing_email) = @_;
     my $url; 
-    my $q = dbh()->prepare("select * from alert_type where ref not like 'local_problems%'");
+    my $q = dbh()->prepare("select * from alert_type where ref not like '%local_problems%'");
     $q->execute();
     my $testing_email_clause = '';
     while (my $alert_type = $q->fetchrow_hashref) {
@@ -136,17 +135,17 @@ sub email_alerts ($) {
             # call checks if this is the host that sends mail for this cobrand.
             next unless (Cobrand::email_host($row->{alert_cobrand}));
 
-            # create problem status message for the templates
-            $data{state_message} =
-              $row->{state} eq 'fixed'
-              ? _("This report is currently marked as fixed.")
-              : _("This report is currently marked as open.");
-
             dbh()->do('insert into alert_sent (alert_id, parameter) values (?,?)', {}, $row->{alert_id}, $row->{item_id});
             if ($last_alert_id && $last_alert_id != $row->{alert_id}) {
                 _send_aggregated_alert_email(%data);
                 %data = ( template => $alert_type->{template}, data => '' );
             }
+
+            # create problem status message for the templates
+            $data{state_message} =
+              $row->{state} eq 'fixed'
+              ? _("This report is currently marked as fixed.")
+              : _("This report is currently marked as open.");
 
             $url = Cobrand::base_url_for_emails($row->{alert_cobrand}, $row->{alert_cobrand_data});
             if ($row->{item_text}) {
@@ -307,7 +306,9 @@ sub generate_rss ($$$;$$$$) {
         if ($display_photos && $row->{photo}) {
             $item{description} .= ent("\n<br><img src=\"". Cobrand::url($cobrand, $url, $http_q) . "/photo?id=$row->{id}\">");
         }
-        $item{description} .= ent("\n<br><a href='$cobrand_url'>Report on FixMyStreet</a>");
+        my $recipient_name = Cobrand::contact_name($cobrand);
+        $item{description} .= ent("\n<br><a href='$cobrand_url'>" .
+            sprintf(_("Report on %s"), $recipient_name) . "</a>");
 
         if ($row->{latitude} || $row->{longitude}) {
             $item{georss} = { point => "$row->{latitude} $row->{longitude}" };
