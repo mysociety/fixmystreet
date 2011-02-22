@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: FixMyStreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2011-02-22 13:53+0000\n"
-"PO-Revision-Date: 2011-02-22 07:59MET\n"
+"PO-Revision-Date: 2011-02-22 21:08MET\n"
 "Last-Translator: Petter Reinholdtsen <pere@hungry.com>\n"
 "Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
 "MIME-Version: 1.0\n"
@@ -92,7 +92,6 @@ msgstr ""
 "\">kode</a>."
 
 #: perllib/Page.pm:312
-#, fuzzy
 msgid ""
 "Built by <a href=\"http://www.mysociety.org/\">mySociety</a> and maintained "
 "by <a href=\"http://www.nuug.no/\">NUUG</a>, using some <a href=\"http://"
@@ -101,7 +100,7 @@ msgid ""
 msgstr ""
 "Bygget av <a href=\"http://www.mysociety.org/\">mySociety</a> og "
 "vedlikeholdt av <a href=\"http://www.nuug.no/\">NUUG</a>, ved hjelp av <a "
-"href=\"http://github.com/mysociety/fixmystreet\">smart</a>&nbsp;<a href="
+"href=\"http://github.com/mysociety/fixmystreet\">snedig</a>&nbsp;<a href="
 "\"https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa"
 "\">kode</a>."
 
@@ -128,7 +127,7 @@ msgstr "Feil"
 
 #: perllib/Page.pm:443
 msgid "your problem will not be posted"
-msgstr "ditt problem vil ikke bli publisert"
+msgstr "vil ditt problem ikke bli publisert"
 
 #: perllib/Page.pm:444
 msgid "we'll hang on to your problem report while you're checking your email."
@@ -166,7 +165,7 @@ msgstr ""
 "<h1>Nesten ferdig! Nå må du sjekke eposten din...</h1>\n"
 "<p>Bekreftelseseposten <strong>kan</strong> bruke noen minutter på å nå frem "
 "&mdash; så vær tålmodig.</p>\n"
-"<p>Hvis du bruker webbasert epost eller har søppelepost-filter, så børr du "
+"<p>Hvis du bruker webbasert epost eller har søppelepost-filter, så bør du "
 "kanskje a sjekke din bulk/spam-mappe. Noen ganger blir epost fra oss markert "
 "som søppelpost.</p>\n"
 "<p>Du må klikke på lenken i eposten vi nettopp har sendt deg &mdash;\n"
@@ -614,8 +613,8 @@ msgid ""
 "Or you can subscribe to an alert based upon what ward or council you&rsquo;"
 "re in:"
 msgstr ""
-"Du kan abonnere på varsel basert på avdeling eller kommune du&rsquo; "
-"bevinner deg i:"
+"Eller du kan abonnere på varsel basert på bydel eller administrasjon du "
+"hører inn under:"
 
 #: web/alert.cgi:323
 msgid "Give me an RSS feed"
@@ -910,8 +909,8 @@ msgid ""
 "You are reporting the following problem report for being abusive, containing "
 "personal information, or similar:"
 msgstr ""
-"Du rapporterer at den aktuelle saken inneholder tekst med personlig "
-"informasjon, upassende tekst???:"
+"Du rapporterer at følgende problem er støtende, inneholder personlig "
+"informasjon eller lignende:"
 
 #: web/contact.cgi:234
 msgid "Your name:"
@@ -1905,6 +1904,8 @@ msgstr ""
 msgid ""
 "The latest reports for {{COUNCIL}} within {{WARD}} ward reported by users"
 msgstr ""
+"De siste rapporter for {{COUNCIL}} innenfor {{WARD}} bydel rapporter av "
+"brukere"
 
 #: db/alert_types_eha.pl:27
 #, perl-brace-format
@@ -1964,7 +1965,7 @@ msgstr "Nye problemer nær {{POSTCODE}} på FiksGataMi"
 #: db/alert_types.pl:34
 #, perl-brace-format
 msgid "New problems to {{COUNCIL}} on FixMyStreet"
-msgstr "Nye problemer til {{COUNCIL}} på FiksGataMi"
+msgstr "Nye problemer i {{COUNCIL}} på FiksGataMi"
 
 #: db/alert_types.pl:35
 #, perl-brace-format
@@ -1974,7 +1975,7 @@ msgstr "De siste problemer for {{COUNCIL}} rapportert av brukere"
 #: db/alert_types.pl:38
 #, perl-brace-format
 msgid "New problems for {{COUNCIL}} within {{WARD}} ward on FixMyStreet"
-msgstr ""
+msgstr "Nye problemer for {{COUNCIL}} innenfor {{WARD}} bydel på FiksGataMi"
 
 #: db/alert_types.pl:39
 #, perl-brace-format
@@ -1993,32 +1994,28 @@ msgid "The latest problems within {{NAME}}"
 msgstr "De siste problemer innenfor {{NAME}}"
 
 #: web-admin/index.cgi:68 web-admin/index.cgi:123 web-admin/index.cgi:124
-#, fuzzy
 msgid "Summary"
-msgstr "Oppsummeringsrapporter"
+msgstr "Oppsummering"
 
 #: web-admin/index.cgi:69 web-admin/index.cgi:182 web-admin/index.cgi:183
-#, fuzzy
 msgid "Council contacts"
-msgstr "Kontakt oss"
+msgstr "Administrasjonskontakter"
 
 #: web-admin/index.cgi:71 web-admin/index.cgi:782 web-admin/index.cgi:783
 msgid "Timeline"
-msgstr ""
+msgstr "Tidslinje"
 
 #: web-admin/index.cgi:84
-#, fuzzy
 msgid "FixMyStreet administration"
-msgstr "Fiksgatami-oppdateringer"
+msgstr "Fiksgatami-administrasjon"
 
 #: web-admin/index.cgi:100
-#, fuzzy
 msgid "FixMyStreet admin:"
-msgstr "FiksGataMi"
+msgstr "FiksGataMi-admin:"
 
 #: web-admin/index.cgi:162
 msgid "Graph of problem creation by status over time"
-msgstr ""
+msgstr "Graf over problemoppretting fordelt på status over tid"
 
 #: web-admin/index.cgi:165
 msgid "Problem breakdown by state"
@@ -2033,228 +2030,205 @@ msgid "Diligency prize league table"
 msgstr ""
 
 #: web-admin/index.cgi:193
-#, fuzzy
 msgid "No edits have yet been made."
-msgstr "Ingen saker er rapporter"
+msgstr "Ingenting er redigert."
 
 #: web-admin/index.cgi:197
-#, fuzzy
 msgid "Councils"
-msgstr "kommune"
+msgstr "Administrasjoner"
 
 #: web-admin/index.cgi:210 web-admin/index.cgi:585
-#, fuzzy
 msgid "None"
-msgstr "Nei"
+msgstr "Ingen"
 
 #: web-admin/index.cgi:228
 msgid "No info at all"
-msgstr ""
+msgstr "Helt uten informasjon"
 
 #: web-admin/index.cgi:230
 msgid "Currently has 1+ deleted"
-msgstr ""
+msgstr "For tiden har 1+ slettet"
 
 #: web-admin/index.cgi:232
 msgid "Some unconfirmeds"
-msgstr ""
+msgstr "Noen ubekreftede"
 
 #: web-admin/index.cgi:234
 msgid "All confirmed"
-msgstr ""
+msgstr "Alle bekreftet"
 
 #: web-admin/index.cgi:264 web-admin/index.cgi:274 web-admin/index.cgi:291
 msgid "*unknown*"
-msgstr ""
+msgstr "*ukjent*"
 
 #: web-admin/index.cgi:267 web-admin/index.cgi:295
-#, fuzzy
 msgid "Values updated"
-msgstr "Send meg oppdateringer"
+msgstr "Verdier oppdatert"
 
 #: web-admin/index.cgi:277
 msgid "New category contact added"
-msgstr ""
+msgstr "Ny kategorikontakt lagt til"
 
 #: web-admin/index.cgi:314 web-admin/index.cgi:397
 #, perl-format
 msgid "Council contacts for %s"
-msgstr ""
+msgstr "Administrasjonskontakter for %s"
 
 #: web-admin/index.cgi:327
-#, fuzzy
 msgid " List all reported problems"
-msgstr "Nylig meldte problemer"
+msgstr " List alle rapporterte problemer"
 
 #: web-admin/index.cgi:329
 msgid "Text only version"
-msgstr ""
+msgstr "Tekst-versjon"
 
 #: web-admin/index.cgi:335
-#, fuzzy
 msgid "Category"
 msgstr "Kategori"
 
 #: web-admin/index.cgi:335 web-admin/index.cgi:437
-#, fuzzy
 msgid "Email"
-msgstr "Epost:"
+msgstr "Epost"
 
 #: web-admin/index.cgi:335 web-admin/index.cgi:367 web-admin/index.cgi:420
 #: web-admin/index.cgi:437 web-admin/index.cgi:736
-#, fuzzy
 msgid "Confirmed"
-msgstr "Bekreftelse"
+msgstr "Bekreftet"
 
 #: web-admin/index.cgi:335 web-admin/index.cgi:369 web-admin/index.cgi:422
 #: web-admin/index.cgi:437
 msgid "Deleted"
-msgstr ""
+msgstr "Slettet"
 
 #: web-admin/index.cgi:335
 msgid "Last editor"
-msgstr ""
+msgstr "Sist redigert av"
 
 #: web-admin/index.cgi:335 web-admin/index.cgi:437
-#, fuzzy
 msgid "Note"
-msgstr "Nei"
+msgstr "Merk"
 
 #: web-admin/index.cgi:335 web-admin/index.cgi:437
 msgid "When edited"
-msgstr ""
+msgstr "Når redigert"
 
 #: web-admin/index.cgi:335
-#, fuzzy
 msgid "Confirm"
-msgstr "Bekreftelse"
+msgstr "Bekreftet"
 
 #: web-admin/index.cgi:352
-#, fuzzy
 msgid "Update statuses"
-msgstr "Oppdateringer"
+msgstr "Oppdater statuser"
 
 #: web-admin/index.cgi:357
 msgid "Add new category"
-msgstr ""
+msgstr "Legg til ny kategori"
 
 #: web-admin/index.cgi:360 web-admin/index.cgi:414
-#, fuzzy
 msgid "Category: "
-msgstr "Kategori"
+msgstr "Kategori: "
 
 #: web-admin/index.cgi:363 web-admin/index.cgi:417
-#, fuzzy
 msgid "Email: "
-msgstr "Epost:"
+msgstr "Epost: "
 
 #: web-admin/index.cgi:372 web-admin/index.cgi:425
 msgid "Note: "
-msgstr ""
+msgstr "Merk: "
 
 #: web-admin/index.cgi:379
-#, fuzzy
 msgid "Create category"
-msgstr "Kategori"
+msgstr "Lat categori"
 
 #: web-admin/index.cgi:431
 msgid "Save changes"
-msgstr ""
+msgstr "Lagre endringer"
 
 #: web-admin/index.cgi:435
 msgid "History"
-msgstr ""
+msgstr "Historie"
 
 #: web-admin/index.cgi:437
 msgid "Editor"
-msgstr ""
+msgstr "Oppdatert av"
 
 #: web-admin/index.cgi:441 web-admin/index.cgi:442
-#, fuzzy
 msgid "yes"
-msgstr "Ja"
+msgstr "ja"
 
 #: web-admin/index.cgi:441 web-admin/index.cgi:442
 msgid "no"
-msgstr ""
+msgstr "nei"
 
 #: web-admin/index.cgi:469
 msgid "Search:"
-msgstr ""
+msgstr "Søk:"
 
 #: web-admin/index.cgi:541
-#, fuzzy
 msgid "That problem will now be resent."
-msgstr "ditt problem vil ikke bli publisert"
+msgstr "Det problemet vil nå bli sendt på nytt."
 
 #: web-admin/index.cgi:547
 msgid "I am afraid you cannot confirm unconfirmed reports."
-msgstr ""
+msgstr "Jeg er redd du ikke kan bekrefte ubekreftede rapporter."
 
 #: web-admin/index.cgi:576 web-admin/index.cgi:696
-#, fuzzy
 msgid "Updated!"
-msgstr "Oppdateringer"
+msgstr "Oppdatert!"
 
 #: web-admin/index.cgi:580
-#, fuzzy, perl-format
+#, perl-format
 msgid "Editing problem %d"
-msgstr "Ser på en sak"
+msgstr "Rediger problem %d"
 
 #: web-admin/index.cgi:608 web-admin/index.cgi:736
-#, fuzzy
 msgid "State:"
-msgstr "Oppdatering:"
+msgstr "Tilstand:"
 
 #: web-admin/index.cgi:608
 msgid "Open"
-msgstr ""
+msgstr "Åpen"
 
 #: web-admin/index.cgi:608
-#, fuzzy
 msgid "Fixed"
-msgstr "(løst)"
+msgstr "Løst"
 
 #: web-admin/index.cgi:608 web-admin/index.cgi:736
-#, fuzzy
 msgid "Hidden"
-msgstr "Gjem nåler"
+msgstr "Gjemt"
 
 #: web-admin/index.cgi:608 web-admin/index.cgi:736
 msgid "Unconfirmed"
-msgstr ""
+msgstr "Ubekreftet"
 
 #: web-admin/index.cgi:608
 msgid "Partial"
-msgstr ""
+msgstr "Delvis"
 
 #: web-admin/index.cgi:611
 msgid "You really want to resend?"
-msgstr ""
+msgstr "Ønsker du virkelig å sende på nytt?"
 
 #: web-admin/index.cgi:611
-#, fuzzy
 msgid "Resend report"
-msgstr "Gjem utdaterte rapporter"
+msgstr "Send rapport på nytt"
 
 #: web-admin/index.cgi:642 web-admin/index.cgi:756
-#, fuzzy
 msgid "Submit changes"
-msgstr "Send inn"
+msgstr "Send inn endringer"
 
 #: web-admin/index.cgi:674
 msgid "Edit"
-msgstr ""
+msgstr "Rediger"
 
 #: web-admin/index.cgi:701
-#, fuzzy
 msgid "Problem marked as open."
-msgstr "Denne rapporten er for tiden markert som åpen."
+msgstr "Problem markert som åpent."
 
 #: web-admin/index.cgi:717
-#, fuzzy, perl-format
+#, perl-format
 msgid "Editing update %d"
-msgstr "Legg til din oppdatering"
+msgstr "Redigerer oppdatering %d"
 
 #. Please leave the first word "Subject:" untranslated
 #: templates/emails/alert-confirm
@@ -2973,7 +2947,7 @@ msgstr ""
 "[ Denne meldingen ble sendt inn via FiksGataMi, et prosjekt hos foreningen "
 "NUUG.\n"
 "Hvis det er en mer passende epostadresse for meldinger om\n"
-"<?=$values['category_footer']?>, vær såsnill å gi oss beskjed ved å besøke "
+"<?=$values['category_footer']?>, vær så snill å gi oss beskjed ved å besøke "
 "<http://www.fiksgatami.no/contact>.\n"
 "Dette vil bidra til å forbedre tjenesten for de lokale folkene. Vi\n"
 "tar også gjerne imot andre tilbakemeldinger om du har noen. ]\n"
