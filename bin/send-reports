@@ -70,7 +70,7 @@ foreach my $row (@$unsent) {
     # more than once if there are multiple vhosts running off the same database. The email_host
     # call checks if this is the host that sends mail for this cobrand.
     next unless (Cobrand::email_host($cobrand));
-    Cobrand::set_lang_and_domain($cobrand, $row->{lang});
+    Cobrand::set_lang_and_domain($cobrand, $row->{lang}, 1);
     if (dbh()->selectrow_array('select email from abuse where lower(email)=?', {}, lc($row->{email}))) {
         dbh()->do("update problem set state='hidden' where id=?", {}, $row->{id});
         dbh()->commit();
@@ -116,7 +116,7 @@ foreach my $row (@$unsent) {
 
         my $council = $row->{council};
         $areas_info = mySociety::MaPit::call('areas', $council);
-        my $name = encode_utf8($areas_info->{$council}->{name});
+        my $name = $areas_info->{$council}->{name};
         my ($council_email, $confirmed, $note) = dbh()->selectrow_array(
             "SELECT email,confirmed,note FROM contacts WHERE deleted='f'
                 and area_id=? AND category=?", {}, $council, 'Empty property');
@@ -143,7 +143,7 @@ foreach my $row (@$unsent) {
         my (@dear, %recips);
         my $all_confirmed = 1;
         foreach my $council (@councils) {
-            my $name = encode_utf8($areas_info->{$council}->{name});
+            my $name = $areas_info->{$council}->{name};
             push @dear, $name;
             if ($council == 2330) { # E. Hants have a web service
                 $send_web = 1;
@@ -187,7 +187,7 @@ foreach my $row (@$unsent) {
             : '';
         $h{missing} = ''; 
         if ($missing) {
-            my $name = encode_utf8($areas_info->{$missing}->{name});
+            my $name = $areas_info->{$missing}->{name};
             $h{missing} = '[ '
               . sprintf(_('We realise this problem might be the responsibility of %s; however, we don\'t currently have any contact details for them. If you know of an appropriate contact address, please do get in touch.'), $name)
               . " ]\n\n";
