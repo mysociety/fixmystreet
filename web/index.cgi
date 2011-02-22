@@ -672,7 +672,7 @@ name if you give us permission.'), $council_list);
             . '|' . join(',', @missing) . '">';
     } else {
         my $e = Cobrand::contact_email($cobrand);
-        my $list = join(' or ', map { $_->{name} } values %$all_councils);
+        my $list = join(_(' or '), map { $_->{name} } values %$all_councils);
         my $n = scalar keys %$all_councils;
         if ($q->{site} ne 'emptyhomes') {
             $vars{text_help} = '<p>';
