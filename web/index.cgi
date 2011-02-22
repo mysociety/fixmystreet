@@ -638,7 +638,7 @@ If this is not the correct location, simply click on the map again. '));
     $vars{page_heading} = $q->h1(_('Reporting a problem'));
 
     if ($details eq 'all') {
-        my $council_list = join('</strong> or <strong>', map { $_->{name} } values %$all_councils);
+        my $council_list = join('</strong>' . _(' or ') . '<strong>', map { $_->{name} } values %$all_councils);
         if ($q->{site} eq 'emptyhomes'){
             $vars{text_help} = '<p>' . sprintf(_('All the information you provide here will be sent to <strong>%s</strong>.
 On the site, we will show the subject and details of the problem, plus your
