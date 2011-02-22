@@ -309,7 +309,7 @@ sub footer {
 
     my $creditline = _('Built by <a href="http://www.mysociety.org/">mySociety</a>, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.');
     if (mySociety::Config::get('COUNTRY') eq 'NO') {
-        $creditline = _('Built by <a href="http://www.mysociety.org/">mySociety</a> and maintained by NUUG, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.');
+        $creditline = _('Built by <a href="http://www.mysociety.org/">mySociety</a> and maintained by <a href="http://www.nuug.no/">NUUG</a>, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.');
     }
 
     %params = (%params,

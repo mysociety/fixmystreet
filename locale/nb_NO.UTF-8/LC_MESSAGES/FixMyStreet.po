@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: FixMyStreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2011-02-22 00:27+0000\n"
-"PO-Revision-Date: 2011-02-18 08:32MET\n"
+"PO-Revision-Date: 2011-02-22 07:59MET\n"
 "Last-Translator: Petter Reinholdtsen <pere@hungry.com>\n"
 "Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
 "MIME-Version: 1.0\n"
@@ -99,9 +99,10 @@ msgid ""
 "d=mysociety/services/TilMa\">code</a>."
 msgstr ""
 "Bygget av <a href=\"http://www.mysociety.org/\">mySociety</a> og "
-"vedlikeholdt av NUUG, ved hjelp av <a href=\"http://github.com/mysociety/"
-"fixmystreet\">smart</a>&nbsp;<a href=\"https://secure.mysociety.org/cvstrac/"
-"dir?d=mysociety/services/TilMa\">kode</a>."
+"vedlikeholdt av <a href=\"http://www.nuug.no/\">NUUG</a>, ved hjelp av <a "
+"href=\"http://github.com/mysociety/fixmystreet\">smart</a>&nbsp;<a href="
+"\"https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa"
+"\">kode</a>."
 
 #: perllib/Page.pm:316
 msgid "Navigation"
@@ -117,10 +118,8 @@ msgid ""
 "\"26\" src=\"/i/mysociety-dark.png\" alt=\"View mySociety.org\"><span id="
 "\"logoie\"></span></a>"
 msgstr ""
-"<div id=\"logo\" align=\"center\"><a href=\"http://www.nuug.no/\">NUUG</a> "
-"and<br><a href=\"http://www.mysociety.org/\"><img width=\"133\" height=\"26"
-"\" border=0 src=\"/i/mysociety-dark.png\" alt=\"mySociety\"><span id=\"logoie"
-"\"></span></a></div>"
+"<div id=\"logo\" align=\"center\"><a href=\"http://www.nuug.no/\">Foreningen "
+"NUUG</a><span id=\"logoie\"></span></a></div>"
 
 #: perllib/Page.pm:381
 msgid "Error"
@@ -163,13 +162,13 @@ msgid ""
 "if you do not, %s.</p>\n"
 "<p>(Don't worry &mdash; %s)</p>\n"
 msgstr ""
-"<h1>Nesten ferdig! Nå må du sjekke din epost...</h1>\n"
+"<h1>Nesten ferdig! Nå må du sjekke eposten din...</h1>\n"
 "<p>Bekreftelseseposten <strong>kan</strong> bruke noen minutter på å nå frem "
-"&mdash; <em>vær så snill</em> å være tålmodig.</p>\n"
-"<p>Hvis du bruker webbasert epost eller ar søppelepost-filter, så ønsker du "
+"&mdash; så vær tålmodig.</p>\n"
+"<p>Hvis du bruker webbasert epost eller har søppelepost-filter, så børr du "
 "kanskje a sjekke din bulk/spam-mappe. Noen ganger blir epost fra oss markert "
-"slik.</p>\n"
-"<p>Du må nå klikke på lenken i eposten vi nettopp har sendt deg &mdash;\n"
+"som søppelpost.</p>\n"
+"<p>Du må klikke på lenken i eposten vi nettopp har sendt deg &mdash;\n"
 "hvis du ikke gjør det, %s.</p>\n"
 "<p>(Ingen grunn til bekymring &mdash; %s)</p>\n"
 
@@ -784,7 +783,7 @@ msgstr "Vis din rapport"
 
 #: web/confirm.cgi:157
 msgid "Thank you for reporting an empty property on ReportEmptyHomes.com."
-msgstr ""
+msgstr "Takk for at du rapporterer en tom eiendom på ReportEmptyHomes.com."
 
 #: web/confirm.cgi:163
 msgid "You have successfully confirmed your problem"
@@ -792,7 +791,7 @@ msgstr "Du har nå oppdatert din sak"
 
 #: web/confirm.cgi:164
 msgid " and <strong>we will now send it to the council</strong>"
-msgstr " og <strong>vi sender det nå til kommunen/etaten</strong>"
+msgstr " og <strong>vi sender det nå til administrasjonen</strong>"
 
 #: web/confirm.cgi:165
 #, perl-format
@@ -1063,9 +1062,8 @@ msgstr ""
 "ikke ønsker at ditt navn skal vises, kryss av her"
 
 #: web/index.cgi:313 web/index.cgi:565
-#, fuzzy
 msgid "-- Pick a category --"
-msgstr "-- velg en eiendomsstype --"
+msgstr "-- velg en kategori --"
 
 #: web/index.cgi:314 web/index.cgi:354
 msgid "Please choose a category"
@@ -1124,7 +1122,7 @@ msgstr "Kategori"
 
 #: web/index.cgi:572
 msgid "Empty house or bungalow"
-msgstr ""
+msgstr "Tomt hus eller bungalow"
 
 #: web/index.cgi:573
 msgid "Empty flat or maisonette"
@@ -1136,7 +1134,7 @@ msgstr "Hel blokk med tomme leiligheter"
 
 #: web/index.cgi:574
 msgid "Empty office or other commercial"
-msgstr ""
+msgstr "Tomt kontor eller forretningsbygg"
 
 #: web/index.cgi:574
 msgid "Empty pub or bar"
@@ -1200,7 +1198,6 @@ msgstr ""
 "hvis du gir oss tillatelse til det."
 
 #: web/index.cgi:666
-#, fuzzy
 msgid ""
 "We do <strong>not</strong> yet have details for the other council that "
 "covers this location."
@@ -1211,7 +1208,7 @@ msgstr[0] ""
 "Vi har ennå <strong>ikke</strong> detaljene for den andre administrasjonen "
 "som dekker dette stedet."
 msgstr[1] ""
-"Vi har ennå <strong>ikke</strong> detaljene for den andre administrasjonen "
+"Vi har ennå <strong>ikke</strong> detaljene for de andre administrasjonene "
 "som dekker dette stedet."
 
 #: web/index.cgi:670 web/index.cgi:685
@@ -1224,14 +1221,13 @@ msgstr ""
 "%s, og sende den via epost til oss på <a href='mailto:%s'>%s</a>."
 
 #: web/index.cgi:680 web/index.cgi:688
-#, fuzzy
 msgid "We do not yet have details for the council that covers this location."
 msgid_plural ""
 "We do not yet have details for the councils that cover this location."
 msgstr[0] ""
 "Vi har ennå ikke detaljer for administrasjonen som dekker dette stedet."
 msgstr[1] ""
-"Vi har ennå ikke detaljer for administrasjonen som dekker dette stedet."
+"Vi har ennå ikke detaljer for administrasjonene som dekker dette stedet."
 
 #: web/index.cgi:684
 msgid ""
@@ -1243,17 +1239,15 @@ msgstr ""
 "administrasjonen."
 
 #: web/index.cgi:690
-#, fuzzy
 msgid ""
 "If you submit a report here it will be left on the site, but not reported to "
 "the council &ndash; please still leave your report, so that we can show to "
 "the council the activity in their area."
 msgstr ""
-"<p>Vi har ennå ikke detaljer for den administrasjonen som dekker dette "
-"stedet. Hvis du sender inn en rapport her så vil den bli tilgjengelig her "
-"men ikke rapportert til administrasjonen. &ndash; det er fint om du likevel "
-"sender inn din rapport, slik at vi kan vise administrasjonen aktiviteten i "
-"deres område."
+"Hvis du sender inn en rapport her så vil den bli tilgjengelig her men ikke "
+"rapportert til administrasjonen. &ndash; det er fint om du likevel sender "
+"inn din rapport, slik at vi kan vise administrasjonen aktiviteten i deres "
+"område."
 
 #: web/index.cgi:696
 msgid ""
@@ -1858,6 +1852,9 @@ msgid ""
 "currently have any contact details for them. If you know of an appropriate "
 "contact address, please do get in touch."
 msgstr ""
+"Vi innser at %s kan være ansvarlig for dette problemet, men vi mangler for "
+"tiden kontaktinformasjon for dem. Hvis du vet om en egnet kontaktadresse, ta "
+"kontakt med oss."
 
 #: db/alert_types_eha.pl:5
 msgid "New reports on reportemptyhomes.com"
@@ -1869,7 +1866,7 @@ msgstr ""
 
 #: db/alert_types_eha.pl:9
 msgid "The latest properties reported back to use by users"
-msgstr ""
+msgstr "De siste eiendommer rapportert tilbake i bruk av brukere"
 
 #: db/alert_types_eha.pl:12
 msgid "New local reports on reportemptyhomes.com"
@@ -1880,9 +1877,9 @@ msgid "The latest local reports reported by users"
 msgstr "De siste lokale rapporter rapporter av brukere"
 
 #: db/alert_types_eha.pl:16
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid "New reports on reportemptyhomes.com near {{POSTCODE}}"
-msgstr "Nye rapporter på reportemptyhomes.com"
+msgstr "Nye rapporter på reportemptyhomes.com nær {{POSTCODE}}"
 
 #: db/alert_types_eha.pl:19
 #, perl-brace-format
@@ -1892,7 +1889,7 @@ msgstr "Nye rapporter til {{COUNCIL}} på reportemptyhomes.com"
 #: db/alert_types_eha.pl:20
 #, perl-brace-format
 msgid "The latest reports for {{COUNCIL}} reported by users"
-msgstr ""
+msgstr "De siste rapporter for {{COUNCIL}} rapportert av brukere"
 
 #: db/alert_types_eha.pl:23
 #, perl-brace-format
@@ -1909,12 +1906,12 @@ msgstr ""
 #: db/alert_types_eha.pl:27
 #, perl-brace-format
 msgid "New reports within {{NAME}}'s boundary on reportemptyhomes.com"
-msgstr ""
+msgstr "Nye rapporter innenfor grensen til {{NAME}} på reportemptyhomes.com"
 
 #: db/alert_types_eha.pl:28
 #, perl-brace-format
 msgid "The latest reports within {{NAME}}'s boundary reported by users"
-msgstr ""
+msgstr "De siste rapporter innenfor grensen til {{NAME}} rapportert av brukere"
 
 #: db/alert_types.pl:5 db/alert_types.pl:6
 #, perl-brace-format
@@ -1927,55 +1924,49 @@ msgid "Update by {{name}}"
 msgstr "Oppdatert av {{name}}"
 
 #: db/alert_types.pl:10
-#, fuzzy
 msgid "New problems on FixMyStreet"
-msgstr "Problemer innenfor %s, Fiksgatami"
+msgstr "Nye problemer på Fiksgatami"
 
 #: db/alert_types.pl:11
-#, fuzzy
 msgid "The latest problems reported by users"
-msgstr "De siste lokale rapporter rapporter av brukere"
+msgstr "De siste problemene rapportert av brukere"
 
 #: db/alert_types.pl:14
-#, fuzzy
 msgid "Problems recently reported fixed on FixMyStreet"
-msgstr "Problemer innenfor %s, Fiksgatami"
+msgstr "Problemer nylig rapportert fikset på FiksGataMi"
 
 #: db/alert_types.pl:15
-#, fuzzy
 msgid "The latest problems reported fixed by users"
-msgstr "De siste lokale rapporter rapporter av brukere"
+msgstr "De siste problemer rapporter fikset av brukere"
 
 #: db/alert_types.pl:18 db/alert_types.pl:22
-#, fuzzy
 msgid "New local problems on FixMyStreet"
-msgstr "Nylig lokalt problem, FiksGataMi."
+msgstr "Nye lokale problemer på FiksGataMi"
 
 #: db/alert_types.pl:19 db/alert_types.pl:23 db/alert_types.pl:27
 #: db/alert_types.pl:31
-#, fuzzy
 msgid "The latest local problems reported by users"
-msgstr "De siste lokale rapporter rapporter av brukere"
+msgstr "De siste lokale problemer rapporter av brukere"
 
 #: db/alert_types.pl:26
 #, perl-brace-format
 msgid "New problems near {{POSTCODE}} on FixMyStreet"
-msgstr ""
+msgstr "Nye problemer nær {{POSTCODE}} på FiksGataMi"
 
 #: db/alert_types.pl:30
 #, perl-brace-format
 msgid "New problems NEAR {{POSTCODE}} on FixMyStreet"
-msgstr ""
+msgstr "Nye problemer nær {{POSTCODE}} på FiksGataMi"
 
 #: db/alert_types.pl:34
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid "New problems to {{COUNCIL}} on FixMyStreet"
-msgstr "Nye rapporter til {{COUNCIL}} på reportemptyhomes.com"
+msgstr "Nye problemer til {{COUNCIL}} på FiksGataMi"
 
 #: db/alert_types.pl:35
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid "The latest problems for {{COUNCIL}} reported by users"
-msgstr "De siste lokale rapporter rapporter av brukere"
+msgstr "De siste problemer for {{COUNCIL}} rapportert av brukere"
 
 #: db/alert_types.pl:38
 #, perl-brace-format
@@ -1983,20 +1974,20 @@ msgid "New problems for {{COUNCIL}} within {{WARD}} ward on FixMyStreet"
 msgstr ""
 
 #: db/alert_types.pl:39
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid ""
 "The latest problems for {{COUNCIL}} within {{WARD}} ward reported by users"
-msgstr "De siste tomme eiendommene rapporter av brukerne"
+msgstr ""
 
 #: db/alert_types.pl:42
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid "New problems within {{NAME}}"
-msgstr "Problemer innenfor %s"
+msgstr "Nye problemer innenfor {{NAME}}"
 
 #: db/alert_types.pl:43
 #, perl-brace-format
 msgid "The latest problems within {{NAME}}"
-msgstr ""
+msgstr "De siste problemer innenfor {{NAME}}"
 
 #. Please leave the first word "Subject:" untranslated
 #: templates/emails/alert-confirm
@@ -2158,7 +2149,7 @@ msgid ""
 "<?=$values['area_name']?> within <?=$values['ward_name']?>,\n"
 "please follow this link: <?=$values['unsubscribe_url']?>\n"
 msgstr ""
-"Subject: Nye saker sendt til <?=$values['area_name']?> innenfor <?=$values"
+"Subject: Nye saker sendt til <?=$values['area_name']?> innenfor <?=$values "
 "['ward_name']?> via FiksGataMi.no\n"
 "\n"
 "Følgende saker er sendt til <?=$values['area_name']?>\n"
@@ -2934,15 +2925,3 @@ msgid ""
 "To stop receiving emails when there are new updates on this property,\n"
 "please follow this link: <?=$values['unsubscribe_url']?>\n"
 msgstr ""
-
-#~ msgid ""
-#~ "We do <strong>not</strong> yet have details for the other councils that "
-#~ "cover this location."
-#~ msgstr ""
-#~ "Vi har ennå <strong>ikke</strong> detaljene for de andre "
-#~ "administrasjonene som dekker dette stedet."
-
-#~ msgid ""
-#~ "We do not yet have details for the councils that cover this location."
-#~ msgstr ""
-#~ "Vi har ennå ikke detaljene for administrasjonene som dekker dette stedet."
