@@ -787,7 +787,10 @@ EOF
         url_home => Cobrand::url($cobrand, '/', $q),
         submit_button => _('Submit')
     );
-    return (Page::template_include('report-form', $q, Page::template_root($q), %vars), robots => 'noindex,nofollow');
+    return (Page::template_include('report-form', $q, Page::template_root($q), %vars),
+        robots => 'noindex,nofollow',
+        js => FixMyStreet::Map::header_js(),
+    );
 }
 
 # redirect from osgb
@@ -982,6 +985,7 @@ sub display_location {
 
     my %params = (
         rss => [ _('Recent local problems, FixMyStreet'), $rss_url ],
+        js => FixMyStreet::Map::header_js(),
         robots => 'noindex,nofollow',
     );
 
@@ -1114,6 +1118,7 @@ EOF
     my %params = (
         rss => [ _('Updates to this problem, FixMyStreet'), "/rss/$input_h{id}" ],
         robots => 'index, nofollow',
+        js => FixMyStreet::Map::header_js(),
         title => $problem->{title}
     );
 

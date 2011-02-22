@@ -204,7 +204,7 @@ sub template_vars ($%) {
         'lang_url' => $lang_url,
         'title' => $params{title},
         'rss' => '',
-        map_js => FixMyStreet::Map::header_js(),
+        map_js => $params{js} || '',
     );
 
     if ($params{rss}) {
@@ -271,7 +271,7 @@ sub header ($%) {
     my $default_params = Cobrand::header_params(get_cobrand($q), $q, %params);
     my %default_params = %{$default_params};
     %params = (%default_params, %params);
-    my %permitted_params = map { $_ => 1 } qw(title rss expires lastmodified template cachecontrol context status_code robots);
+    my %permitted_params = map { $_ => 1 } qw(title rss expires lastmodified template cachecontrol context status_code robots js);
     foreach (keys %params) {
         croak "bad parameter '$_'" if (!exists($permitted_params{$_}));
     }
