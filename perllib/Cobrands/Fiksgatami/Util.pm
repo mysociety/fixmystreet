@@ -34,6 +34,12 @@ sub disambiguate_location {
     return $s;
 }
 
+sub geocoded_string_check {
+    my ($self, $s) = @_;
+    return 1 if $s =~ /, Norge/;
+    return 0;
+}
+
 sub area_types {
     return ( 'NKO', 'NFY' );
 }
