@@ -90,9 +90,6 @@ sub alert_list {
         };
     }
 
-    # truncate the lat,lon for nicer urls
-    ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );
-    
     return FixMyStreet::Geocode::list_choices($error, '/alert', $q) if ref($error) eq 'ARRAY';
     return alert_front_page($q, $error) if $error;
 
@@ -105,6 +102,9 @@ sub alert_list {
         $pretty_pc =~ s/ /&nbsp;/;
     }
 
+    # truncate the lat,lon for nicer urls
+    ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );
+    
     my $errors = '';
     $errors = '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>' if @errors;
 
