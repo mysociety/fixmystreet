@@ -12,7 +12,6 @@ use Utils;
 use Encode;
 use Error qw(:try);
 use File::Slurp;
-use LWP::Simple;
 use RABX;
 use CGI::Carp;
 use URI::Escape;
@@ -945,7 +944,7 @@ sub display_location {
     
     my $rss_url;
     if ($pc_h) {
-        $rss_url = "/rss/pc/" . URI::Escape::uri_escape($pc_h);
+        $rss_url = "/rss/pc/" . URI::Escape::uri_escape_utf8($pc_h);
     } else {
         $rss_url = "/rss/l/$short_lat,$short_lon";
     }

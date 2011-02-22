@@ -305,7 +305,7 @@ sub footer {
     my ($q, %params) = @_;
 
     my $pc = $q->param('pc') || '';
-    $pc = '?pc=' . URI::Escape::uri_escape($pc) if $pc;
+    $pc = '?pc=' . URI::Escape::uri_escape_utf8($pc) if $pc;
 
     my $creditline = _('Built by <a href="http://www.mysociety.org/">mySociety</a>, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.');
     if (mySociety::Config::get('COUNTRY') eq 'NO') {
