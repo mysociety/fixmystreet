@@ -108,6 +108,7 @@ sub rss_local_problems {
             $error = shift;
         };
         if ($error) {
+            print $q->redirect(-location => "$base/alert");
             return '';
         } else {
             ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );             
