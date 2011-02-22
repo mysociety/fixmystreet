@@ -40,7 +40,7 @@ PO=locale/FixMyStreet.po
 rm -f $PO
 
 # Extract from Perl
-xgettext --add-comments=TRANS --language=Perl --keyword=_ --keyword=nget:1,2 --from-code=utf-8 -o $PO `find perllib -name "*.pm"` web/*.cgi bin/send-* db/alert_types_eha.pl
+xgettext --add-comments=TRANS --language=Perl --keyword=_ --keyword=nget:1,2 --from-code=utf-8 -o $PO `find perllib -name "*.pm"` web/*.cgi bin/send-* db/*.pl
 
 # Fix headers
 TEMP=`tempfile`

@@ -1,14 +1,8 @@
 # This file is only here so that the strings from alert_types_eha.sql
 # get into the .po translation file.
 
-# New updates on a particular problem report
-    _('Updates on {{title}}'),
-    _('Updates on {{title}}'),
-    _('Update by {{name}}'),
-
 # New problems anywhere on the site
     _('New reports on reportemptyhomes.com'),
-    _('The latest empty properties reported by users'),
 
 # New fixed problems anywhere on the site
     _('Properties recently reported as put back to use on reportemptyhomes.com'),
