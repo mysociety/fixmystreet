@@ -2,11 +2,6 @@ package FixMyStreet::App;
 use Moose;
 use namespace::autoclean;
 
-BEGIN {
-    use mySociety::Config;
-    mySociety::Config::set_file("conf/general");
-}
-
 use Catalyst::Runtime 5.80;
 
 use Catalyst qw/
@@ -17,6 +12,11 @@ use Catalyst qw/
 extends 'Catalyst';
 
 our $VERSION = '0.01';
+
+BEGIN {
+    use mySociety::Config;
+    mySociety::Config::set_file( __PACKAGE__->path_to("conf/general") );
+}
 
 # Configure the application.
 #
