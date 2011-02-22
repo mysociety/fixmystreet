@@ -67,7 +67,7 @@ sub allowed_pages($) {
         $pages = {
              'summary' => [_('Summary'), 0],
              'councilslist' => [_('Council contacts'), 1],
-             'reports' => ['Reports', 2],
+             'reports' => [_('Search Reports'), 2],
              'timeline' => [_('Timeline'), 3],
              'councilcontacts' => [undef, undef],        
              'counciledit' => [undef, undef], 
@@ -150,11 +150,11 @@ sub admin_summary ($) {
     my $questionnaires_pc = $questionnaires{total} ? $questionnaires{1} / $questionnaires{total} * 100 : 'na';
     
     print $q->ul(
-        $q->li("<strong>$total_problems_live</strong> live problems"),
-        $q->li("$comments{confirmed} live updates"),
-        $q->li("$alerts{1} confirmed alerts, $alerts{0} unconfirmed"),
-        $q->li("$questionnaires{total} questionnaires sent &ndash; $questionnaires{1} answered ($questionnaires_pc%)"),
-        $q->li("$contacts{total} council contacts &ndash; $contacts{1} confirmed, $contacts{0} unconfirmed"),
+        $q->li(sprintf(_("<strong>%d</strong> live problems"), $total_problems_live)),
+        $q->li(sprintf(_("%d live updates"), $comments{confirmed})),
+        $q->li(sprintf(_("%d confirmed alerts, %d unconfirmed"), $alerts{1}, $alerts{0})),
+        $q->li(sprintf(_("%d questionnaires sent &ndash; %d answered (%d%%)"), $questionnaires{total}, $questionnaires{1}, $questionnaires_pc)),
+        $q->li(sprintf(_("%d council contacts &ndash; %d confirmed, %d unconfirmed"), $contacts{total}, $contacts{1}, $contacts{0})),
     );
 
     if (Cobrand::admin_show_creation_graph($cobrand)) {
@@ -187,7 +187,7 @@ sub admin_councils_list ($) {
     my $edit_activity = dbh()->selectall_arrayref("select count(*) as c, editor from contacts_history group by editor order by c desc");
     if (@$edit_activity) {
         print $q->ul(
-            map { $q->li($_->[0] . " edits by " . $_->[1]) } @$edit_activity 
+            map { $q->li( sprintf(_('%d edits by %d'), $_->[0], $_->[1])) } @$edit_activity 
         );
     } else {
         print $q->p(_('No edits have yet been made.'));
@@ -219,7 +219,7 @@ sub admin_councils_list ($) {
             push @li, $q->li($q->a({ href => NewURL($q, area_id => $_, page => 'councilcontacts') }, 
                   $areas->{$_}->{name}) . $parent . ' ' .
                     ($bci_info->{$_} && $q->{site} ne 'emptyhomes' ?
-                        $bci_info->{$_}->{c} . ' addresses'
+                        sprintf(_('%d addresses'), $bci_info->{$_}->{c})
                     : ''));
         }
         print $q->ul(@li);
@@ -460,7 +460,7 @@ sub admin_council_edit ($$$) {
 
 sub admin_reports {
     my $q = shift;
-    my $title = 'Reports';
+    my $title = _('Search Reports');
     my $cobrand = Page::get_cobrand($q);
     my $pages = allowed_pages($q);
     print html_head($q, $title);
@@ -473,7 +473,7 @@ sub admin_reports {
     if (my $search = $q->param('search')) {
         my $results = Problems::problem_search($search);
         print $q->start_table({border=>1, cellpadding=>2, cellspacing=>0});
-        print $q->Tr({}, $q->th({}, ['ID', 'Title', 'Name', 'Email', 'Council', 'Category', 'Anonymous', 'Cobrand', 'Created', 'State', 'When sent', '*']));
+        print $q->Tr({}, $q->th({}, [_('ID'), _('Title'), _('Name'), _('Email'), _('Council'), _('Category'), _('Anonymous'), _('Cobrand'), _('Created'), _('State'), _('When sent'), _('*') ]));
         my $cobrand_data;         
         foreach (@$results) {
             my $url = $_->{id};
@@ -495,11 +495,11 @@ sub admin_reports {
             (my $whensent = $_->{whensent} || '&nbsp;') =~ s/\..*//;
             my $state = $_->{state};
             $state .= '<small>';
-            $state .= "<br>Confirmed:&nbsp;$confirmed" if $_->{state} eq 'confirmed' || $_->{state} eq 'fixed';
-            $state .= '<br>Fixed: ' . $lastupdate if $_->{state} eq 'fixed';
-            $state .= "<br>Last&nbsp;update:&nbsp;$lastupdate" if $_->{state} eq 'confirmed';
+            $state .= "<br>" . _('Confirmed:') . "&nbsp;$confirmed" if $_->{state} eq 'confirmed' || $_->{state} eq 'fixed';
+            $state .= '<br>' . _('Fixed:') . ' ' . $lastupdate if $_->{state} eq 'fixed';
+            $state .= "<br>" . _('Last&nbsp;update:') . "&nbsp;$lastupdate" if $_->{state} eq 'confirmed';
             $state .= '</small>';
-            my $anonymous = $_->{anonymous} ? 'Yes' : 'No';
+            my $anonymous = $_->{anonymous} ? _('Yes') : _('No');
             my $cobrand = $_->{cobrand};
             $cobrand .= "<br>" . $_->{cobrand_data};
             my $counciltext = '';
@@ -513,7 +513,7 @@ sub admin_reports {
             print $q->Tr($attr, $q->td([ $url, ent($_->{title}), ent($_->{name}), ent($_->{email}),
             $counciltext,
             $category, $anonymous, $cobrand, $created, $state, $whensent,
-            $q->a({ -href => NewURL($q, page=>'report_edit', id=>$_->{id}) }, 'Edit')
+            $q->a({ -href => NewURL($q, page=>'report_edit', id=>$_->{id}) }, _('Edit'))
             ]));
         }
         print $q->end_table;
@@ -587,7 +587,7 @@ sub admin_edit_report {
     my $latitude  = $row{latitude};
     my $longitude = $row{longitude};
     my $questionnaire = $row{send_questionnaire} ? _('Yes') : _('No');
-    my $used_map = $row{used_map} ? 'used map' : "didn't use map";
+    my $used_map = $row{used_map} ? _('used map') : _("didn't use map");
     (my $whensent = $row{whensent} || '&nbsp;') =~ s/\..*//;
     (my $confirmed = $row{confirmed} || '-') =~ s/ (.*?)\..*/&nbsp;$1/;
     my $photo = '';
@@ -599,12 +599,12 @@ sub admin_edit_report {
     }
     $photo = '<li><img align="top" src="' . Cobrand::base_url_for_emails($cobrand, $cobrand_data) . '/photo?id=' . $row{id} . '">
 <input type="checkbox" id="remove_photo" name="remove_photo" value="1">
-<label for="remove_photo">Remove photo (can\'t be undone!)</label>' if $row{photo};
+<label for="remove_photo">' . _("Remove photo (can't be undone!)") . '</label>' if $row{photo};
     
     my $url_base = Cobrand::base_url_for_emails($cobrand, $cobrand_data);
     my $url = $url_base . '/report/' . $row{id};
 
-    my $anon = $q->label({-for=>'anonymous'}, 'Anonymous:') . ' ' . $q->popup_menu(-id => 'anonymous', -name => 'anonymous', -values => { 1=>'Yes', 0=>'No' }, -default => $row{anonymous});
+    my $anon = $q->label({-for=>'anonymous'}, _('Anonymous:')) . ' ' . $q->popup_menu(-id => 'anonymous', -name => 'anonymous', -values => { 1=>_('Yes'), 0=>_('No') }, -default => $row{anonymous});
     my $state = $q->label({-for=>'state'}, _('State:')) . ' ' . $q->popup_menu(-id => 'state', -name => 'state', -values => { confirmed => _('Open'), fixed => _('Fixed'), hidden => _('Hidden'), unconfirmed => _('Unconfirmed'), partial => _('Partial') }, -default => $row{state});
 
     my $resend = '';
@@ -615,30 +615,30 @@ sub admin_edit_report {
     print $q->hidden('id');
     print $q->hidden('token', get_token($q));
     print $q->hidden('submit', 1);
-    print <<EOF;
+    print "
 <ul>
-<li><a href="$url">View report on site</a>
-<li><label for="title">Subject:</label> <input size=60 type="text" id="title" name="title" value="$row_h{title}">
-<li><label for="detail">Details:</label><br><textarea name="detail" id="detail" cols=60 rows=10>$row_h{detail}</textarea>
-<li>Co-ordinates: $latitude,$longitude (originally entered $row_h{postcode}, $used_map)
-<li>For council(s): $council (other areas: $areas)
+<li><a href='$url'>" . _('View report on site') . "</a>
+<li><label for='title'>" . _('Subject:') . "</label> <input size=60 type='text' id='title' name='title' value='$row_h{title}'>
+<li><label for='detail'>" . _('Details:') . "</label><br><textarea name='detail' id='detail' cols=60 rows=10>$row_h{detail}</textarea>
+<li>" . _('Co-ordinates:') . " $latitude,$longitude (" . _('originally entered') . " $row_h{postcode}, $used_map)
+<li>" . _('For council(s):') . " $council (" . _('other areas:') . " $areas)
 <li>$anon
 <li>$state
-<li>Category: $row{category}
-<li>Name: <input type="text" name="name" id="name" value="$row_h{name}">
-<li>Email: <input type="text" id="email" name="email" value="$row_h{email}">
-<li>Phone: $row_h{phone}
-<li>Created: $row{created}
-<li>Confirmed: $confirmed
-<li>Sent: $whensent $resend
-<li>Last update: $row{lastupdate}
-<li>Service: $row{service}
-<li>Cobrand: $row{cobrand}
-<li>Cobrand data: $row{cobrand_data}
-<li>Going to send questionnaire? $questionnaire
+<li>" . _('Category:') . " $row{category}
+<li>" . _('Name:') . " <input type='text' name='name' id='name' value='$row_h{name}'>
+<li>" . _('Email:') . " <input type='text' id='email' name='email' value='$row_h{email}'>
+<li>" . _('Phone:') . " $row_h{phone}
+<li>" . _('Created:') . " $row{created}
+<li>" . _('Confirmed:') . " $confirmed
+<li>" . _('Sent:') . " $whensent $resend
+<li>" . _('Last update:') . " $row{lastupdate}
+<li>" . _('Service:') . " $row{service}
+<li>" . _('Cobrand:') . " $row{cobrand}
+<li>" . _('Cobrand data:') . " $row{cobrand_data}
+<li>" . _('Going to send questionnaire?') . " $questionnaire
 $photo
 </ul>
-EOF
+";
     print $q->submit(_('Submit changes'));
     print $q->end_form;
 
@@ -652,7 +652,7 @@ sub admin_show_updates {
     my ($q, $updates) = @_;
     my $cobrand = Page::get_cobrand($q);
     print $q->start_table({border=>1, cellpadding=>2, cellspacing=>0});
-    print $q->Tr({}, $q->th({}, ['ID', 'State', 'Name', 'Email', 'Created', 'Cobrand', 'Text', '*']));
+    print $q->Tr({}, $q->th({}, [ _('ID'), _('State'), _('Name'), _('Email'), _('Created'), _('Cobrand'), _('Text'), _('*') ]));
     my $base_url = ''; 
     my $cobrand_data;
     foreach (@$updates) {
@@ -729,7 +729,7 @@ sub admin_edit_update {
     my $photo = '';
     $photo = '<li><img align="top" src="' . Cobrand::base_url_for_emails($cobrand, $cobrand_data)  . '/photo?c=' . $row{id} . '">
 <input type="checkbox" id="remove_photo" name="remove_photo" value="1">
-<label for="remove_photo">Remove photo (can\'t be undone!)</label>' if $row{photo};
+<label for="remove_photo">' . _("Remove photo (can't be undone!)") . '</label>' if $row{photo};
 
     my $url = Cobrand::base_url_for_emails($cobrand, $cobrand_data) . '/report/' . $row{problem_id} . '#update_' . $row{id};
 
@@ -740,19 +740,19 @@ sub admin_edit_update {
     print $q->hidden('id');
     print $q->hidden('token', get_token($q));
     print $q->hidden('submit', 1);
-    print <<EOF;
+    print "
 <ul>
-<li><a href="$url">View update on site</a>
-<li><label for="text">Text:</label><br><textarea name="text" id="text" cols=60 rows=10>$row_h{text}</textarea>
+<li><a href='$url'>" . _('View update on site') . "</a>
+<li><label for='text'>" . _('Text:') . "</label><br><textarea name='text' id='text' cols=60 rows=10>$row_h{text}</textarea>
 <li>$state
-<li>Name: <input type="text" name="name" id="name" value="$name"> (blank to go anonymous)
-<li>Email: <input type="text" id="email" name="email" value="$row_h{email}">
-<li>Cobrand: $row{cobrand}
-<li>Cobrand data: $row{cobrand_data} 
-<li>Created: $row{created}
+<li>" . _('Name:') . " <input type='text' name='name' id='name' value='$name'> " . _('(blank to go anonymous)') . "
+<li>" . _('Email:') . " <input type='text' id='email' name='email' value='$row_h{email}'>
+<li>" . _('Cobrand:') . " $row{cobrand}
+<li>" . _('Cobrand data:') . " $row{cobrand_data} 
+<li>" . _('Created:') . " $row{created}
 $photo
 </ul>
-EOF
+";
     print $q->submit(_('Submit changes'));
     print $q->end_form;
     print html_tail($q);
@@ -826,32 +826,33 @@ sub admin_timeline {
         print '<dt><b>', strftime('%H:%M:%S', localtime($_)), ':</b></dt> <dd>';
         foreach (@{$time{$_}}) {
             my $type = $_->{type};
+            my $name_str = '; ' . sprintf(_("by %s"), ent($_->{name})) . " &lt;" . ent($_->{email}) . "&gt;, '" . ent($_->{title}) . "'";
             if ($type eq 'problemCreated') {
-                print "Problem $_->{id} created; by " . ent($_->{name}) . " &lt;" . ent($_->{email}) . "&gt;, '" . ent($_->{title}) . "'";
+                print sprintf(_("Problem %d created"), $_->{id}) . $name_str;
             } elsif ($type eq 'problemConfirmed') {
                 $cobrand_data = get_cobrand_data_from_hash($cobrand, $_);
                 my $url = Cobrand::base_url_for_emails($cobrand, $cobrand_data)  . "/report/$_->{id}";
-                print "Problem <a href='$url'>$_->{id}</a> confirmed; by " . ent($_->{name}) ." &lt;" . ent($_->{email}) . "&gt;, '" . ent($_->{title}) ."'";
+                print sprintf(_("Problem %s confirmed"), "<a href='$url'>$_->{id}</a>") . $name_str;
             } elsif ($type eq 'problemSent') {
                 $cobrand_data = get_cobrand_data_from_hash($cobrand, $_);
                 my $url = Cobrand::base_url_for_emails($cobrand, $cobrand_data) . "/report/$_->{id}";
-                print "Problem <a href='$url'>$_->{id}</a> sent to council $_->{council}; by " . ent($_->{name}) . " &lt;" . ent($_->{email}) . "&gt;, '" . ent($_->{title}) . "'";
+                print sprintf(_("Problem %s sent to council %s"), "<a href='$url'>$_->{id}</a>", $_->{council});
             } elsif ($type eq 'quesSent') {
-                print "Questionnaire $_->{id} sent for problem $_->{problem_id}";
+                print sprintf(_("Questionnaire %d sent for problem %d"), $_->{id}, $_->{problem_id});
             } elsif ($type eq 'quesAnswered') {
-                print "Questionnaire $_->{id} answered for problem $_->{problem_id}, $_->{old_state} to $_->{new_state}";
+                print sprintf(_("Questionnaire %d answered for problem %d, %s to %s"), $_->{id}, $_->{problem_id}, $_->{old_state}, $_->{new_state});
             } elsif ($type eq 'update') {
                 $cobrand_data = get_cobrand_data_from_hash($cobrand, $_);
                 my $url = Cobrand::base_url_for_emails($cobrand, $cobrand_data) . "/report/$_->{problem_id}#$_->{id}";
                 my $name = ent($_->{name} || 'anonymous');
-                print "Update <a href='$url'>$_->{id}</a> created for problem $_->{problem_id}; by $name &lt;" . ent($_->{email}) . "&gt;";
+                print sprintf(_("Update %s created for problem %d; by %s"), "<a href='$url'>$_->{id}</a>", $_->{problem_id}, $name) . " &lt;" . ent($_->{email}) . "&gt;";
             } elsif ($type eq 'alertSub') {
                 my $param = $_->{parameter} || '';
                 my $param2 = $_->{parameter2} || '';
-                print "Alert $_->{id} created for " . ent($_->{email}) . ", type $_->{alert_type}, parameters $param / $param2";
+                print sprintf(_("Alert %d created for %s, type %s, parameters %s / %s"), $_->{id}, ent($_->{email}), $_->{alert_type}, $param, $param2);
             } elsif ($type eq 'alertDel') {
                 my $sub = strftime('%H:%M:%S %e %B %Y', localtime($_->{whensubscribed}));
-                print "Alert $_->{id} disabled (created $sub)";
+                print sprintf(_("Alert %d disabled (created %s)"), $_->{id}, $sub);
             }
             print '<br>';
         }
