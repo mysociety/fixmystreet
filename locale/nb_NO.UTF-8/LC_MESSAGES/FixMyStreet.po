@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FixMyStreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2011-02-22 00:27+0000\n"
+"POT-Creation-Date: 2011-02-22 13:53+0000\n"
 "PO-Revision-Date: 2011-02-22 07:59MET\n"
 "Last-Translator: Petter Reinholdtsen <pere@hungry.com>\n"
 "Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
@@ -92,11 +92,12 @@ msgstr ""
 "\">kode</a>."
 
 #: perllib/Page.pm:312
+#, fuzzy
 msgid ""
 "Built by <a href=\"http://www.mysociety.org/\">mySociety</a> and maintained "
-"by NUUG, using some <a href=\"http://github.com/mysociety/fixmystreet"
-"\">clever</a>&nbsp;<a href=\"https://secure.mysociety.org/cvstrac/dir?"
-"d=mysociety/services/TilMa\">code</a>."
+"by <a href=\"http://www.nuug.no/\">NUUG</a>, using some <a href=\"http://"
+"github.com/mysociety/fixmystreet\">clever</a>&nbsp;<a href=\"https://secure."
+"mysociety.org/cvstrac/dir?d=mysociety/services/TilMa\">code</a>."
 msgstr ""
 "Bygget av <a href=\"http://www.mysociety.org/\">mySociety</a> og "
 "vedlikeholdt av <a href=\"http://www.nuug.no/\">NUUG</a>, ved hjelp av <a "
@@ -283,7 +284,7 @@ msgstr "Sendt til %s %s senere"
 msgid "Not reported to council"
 msgstr "Ikke rapportert til kommunen"
 
-#: perllib/Page.pm:622
+#: perllib/Page.pm:622 web-admin/index.cgi:521 web-admin/index.cgi:645
 msgid "Updates"
 msgstr "Oppdateringer"
 
@@ -305,7 +306,7 @@ msgstr "markert som fikset"
 msgid "reopened"
 msgstr "åpnet på nytt"
 
-#: perllib/Page.pm:640 web/index.cgi:1067
+#: perllib/Page.pm:640 web/index.cgi:1071
 msgid "Offensive? Unsuitable? Tell us"
 msgstr "Støtende? Upassende?  Gi oss beskjed"
 
@@ -491,7 +492,7 @@ msgid ""
 "empty homes</a>.\n"
 msgstr ""
 
-#: web/ajax.cgi:55 web/ajax.cgi:76 web/index.cgi:899 web/index.cgi:914
+#: web/ajax.cgi:55 web/ajax.cgi:76 web/index.cgi:902 web/index.cgi:917
 msgid "(fixed)"
 msgstr "(løst)"
 
@@ -599,7 +600,7 @@ msgstr "??"
 msgid "RSS feed of nearby problems"
 msgstr "RSS-strøm med problemer i nærheten"
 
-#: web/alert.cgi:308 web/alert.cgi:367 web/index.cgi:967 web/index.cgi:1078
+#: web/alert.cgi:308 web/alert.cgi:367 web/index.cgi:970 web/index.cgi:1082
 #: web/reports.cgi:254
 msgid "RSS feed"
 msgstr "RSS-strøm"
@@ -677,11 +678,11 @@ msgstr "Ugyldig valg av feed"
 msgid "Receive email when updates are left on this problem."
 msgstr "Motta epost når det er uppdateringer på denne saken"
 
-#: web/alert.cgi:461 web/alert.cgi:488 web/index.cgi:736 web/index.cgi:1072
+#: web/alert.cgi:461 web/alert.cgi:488 web/index.cgi:736 web/index.cgi:1076
 msgid "Email:"
 msgstr "Epost:"
 
-#: web/alert.cgi:462 web/alert.cgi:489 web/index.cgi:1073
+#: web/alert.cgi:462 web/alert.cgi:489 web/index.cgi:1077
 msgid "Subscribe"
 msgstr "Abonner"
 
@@ -806,11 +807,13 @@ msgstr ""
 "Takk, glad for å høre at det er fikset!  Can vi få spørre deg om du har "
 "rapportert et problem til kommunen tidligere?"
 
-#: web/confirm.cgi:190 web/questionnaire.cgi:231
+#: web/confirm.cgi:190 web/questionnaire.cgi:234 web-admin/index.cgi:339
+#: web-admin/index.cgi:340 web-admin/index.cgi:589
 msgid "Yes"
 msgstr "Ja"
 
-#: web/confirm.cgi:191 web/questionnaire.cgi:232
+#: web/confirm.cgi:191 web/questionnaire.cgi:235 web-admin/index.cgi:339
+#: web-admin/index.cgi:340 web-admin/index.cgi:589
 msgid "No"
 msgstr "Nei"
 
@@ -926,7 +929,7 @@ msgstr "Tema:"
 msgid "Message:"
 msgstr "Melding:"
 
-#: web/contact.cgi:238 web/index.cgi:1088
+#: web/contact.cgi:238 web/index.cgi:1092
 msgid "Post"
 msgstr "Send inn"
 
@@ -1181,7 +1184,7 @@ msgstr ""
 "Tittelen og detaljene for problemet vil bli offentlig, pluss ditt navn\n"
 "hvis du gir oss tillatelse."
 
-#: web/index.cgi:660 web/index.cgi:662
+#: web/index.cgi:660 web/index.cgi:662 web/index.cgi:675
 msgid " or "
 msgstr " eller "
 
@@ -1298,11 +1301,11 @@ msgstr "Tom eiendom detaljskjema"
 msgid "Details:"
 msgstr "Detaljer:"
 
-#: web/index.cgi:734 web/index.cgi:1104
+#: web/index.cgi:734 web/index.cgi:1108
 msgid "Photo:"
 msgstr "Bilde:"
 
-#: web/index.cgi:735 web/index.cgi:1085
+#: web/index.cgi:735 web/index.cgi:1089
 msgid "Name:"
 msgstr "Navn:"
 
@@ -1310,7 +1313,7 @@ msgstr "Navn:"
 msgid "Phone:"
 msgstr "Telefon:"
 
-#: web/index.cgi:738 web/index.cgi:1092
+#: web/index.cgi:738 web/index.cgi:1096
 msgid "(optional)"
 msgstr "(valgfritt)"
 
@@ -1383,52 +1386,52 @@ msgstr ""
 msgid "Submit"
 msgstr "Send inn"
 
-#: web/index.cgi:880
+#: web/index.cgi:883
 msgid "Hide stale reports"
 msgstr "Gjem utdaterte rapporter"
 
-#: web/index.cgi:883
+#: web/index.cgi:886
 msgid "Include stale reports"
 msgstr "Inkludert utdaterte rapporter"
 
-#: web/index.cgi:902
+#: web/index.cgi:905
 msgid "No problems have been reported yet."
 msgstr "Ingen saker er rapporter"
 
-#: web/index.cgi:918
+#: web/index.cgi:921
 msgid "No problems found."
 msgstr "Ingen saker er funnet."
 
-#: web/index.cgi:923
+#: web/index.cgi:926
 msgid "Show pins"
 msgstr "Vis nåler"
 
-#: web/index.cgi:927
+#: web/index.cgi:930
 msgid "Hide pins"
 msgstr "Gjem nåler"
 
-#: web/index.cgi:966
+#: web/index.cgi:969
 msgid "Email me new local problems"
 msgstr "Send meg epost om lokale problemer"
 
-#: web/index.cgi:968
+#: web/index.cgi:971
 msgid "RSS feed of recent local problems"
 msgstr "RSS-strøm med nylige lokale problemer"
 
-#: web/index.cgi:971
+#: web/index.cgi:974
 msgid "Problems in this area"
 msgstr "Saker i dette område"
 
-#: web/index.cgi:972
+#: web/index.cgi:975
 msgid "Reports on and around the map"
 msgstr "Saker i og rundt kartet"
 
-#: web/index.cgi:973
+#: web/index.cgi:976
 #, perl-format
 msgid "Closest nearby problems <small>(within&nbsp;%skm)</small>"
 msgstr "De nærmeste sakene <small>(innenfor&nbsp;%skm)</small>"
 
-#: web/index.cgi:977
+#: web/index.cgi:980
 msgid ""
 "To report a problem, simply\n"
 "        <strong>click on the map</strong> at the correct location."
@@ -1436,7 +1439,7 @@ msgstr ""
 "For å lage en sak, \n"
 "        <strong>klikk på kartet</strong> på riktig sted."
 
-#: web/index.cgi:979
+#: web/index.cgi:982
 #, perl-format
 msgid ""
 "<small>If you cannot see the map, <a href='%s' rel='nofollow'>skip this\n"
@@ -1446,59 +1449,59 @@ msgstr ""
 "dette\n"
 "        steget</a>.</small>"
 
-#: web/index.cgi:984
+#: web/index.cgi:987
 msgid "Recent local problems, FixMyStreet"
 msgstr "Nylig lokalt problem, FiksGataMi."
 
-#: web/index.cgi:996
+#: web/index.cgi:1000
 msgid "There were problems with your update. Please see below."
 msgstr "Det var problemer med din oppdatering. Vennligst se under."
 
-#: web/index.cgi:1017 web/index.cgi:1019
+#: web/index.cgi:1021 web/index.cgi:1023
 msgid "Unknown problem ID"
 msgstr "Ukjent problem-Id"
 
-#: web/index.cgi:1020
+#: web/index.cgi:1024
 msgid "That report has been removed from FixMyStreet."
 msgstr "Den rapporten har blitt fjernet fra FiksGataMi."
 
-#: web/index.cgi:1040
+#: web/index.cgi:1044
 msgid "This problem is old and of unknown status."
 msgstr "Denne saken er gammel og med ukjent status."
 
-#: web/index.cgi:1043 web/index.cgi:1084
+#: web/index.cgi:1047 web/index.cgi:1088
 msgid "This problem has been fixed"
 msgstr "Denne saken er løst."
 
-#: web/index.cgi:1068
+#: web/index.cgi:1072
 msgid "More problems nearby"
 msgstr "Flere saker i nærheten"
 
-#: web/index.cgi:1071
+#: web/index.cgi:1075
 msgid "Email me updates"
 msgstr "Send meg oppdateringer"
 
-#: web/index.cgi:1074
+#: web/index.cgi:1078
 msgid "Receive email when updates are left on this problem"
 msgstr "Motta epost når oppdateringer legges inn om dette problemet"
 
-#: web/index.cgi:1079
+#: web/index.cgi:1083
 msgid "RSS feed of updates to this problem"
 msgstr "RSS-strøm med oppdateringer for dette problemet"
 
-#: web/index.cgi:1080
+#: web/index.cgi:1084
 msgid "Provide an update"
 msgstr "Bidra med oppdatering"
 
-#: web/index.cgi:1086
+#: web/index.cgi:1090
 msgid "Update:"
 msgstr "Oppdatering:"
 
-#: web/index.cgi:1087
+#: web/index.cgi:1091
 msgid "Alert me to future updates"
 msgstr "Send meg varsel ved fremtidige oppdateringer"
 
-#: web/index.cgi:1095
+#: web/index.cgi:1099
 msgid ""
 "Please note that updates are not sent to the council. If you leave your name "
 "it will be public. Your information will only be used in accordance with our "
@@ -1509,16 +1512,16 @@ msgstr ""
 "informasjon vil kun bli brukt i henhold til våre <a href=\"/faq#privacy"
 "\">personvernpolicy</a>"
 
-#: web/index.cgi:1115
+#: web/index.cgi:1119
 msgid "Updates to this problem, FixMyStreet"
 msgstr "Oppdateringer til dette problemet, FiksGataMi"
 
-#: web/questionnaire.cgi:28 web/questionnaire.cgi:77 web/questionnaire.cgi:210
-#: web/questionnaire.cgi:230
+#: web/questionnaire.cgi:29 web/questionnaire.cgi:80 web/questionnaire.cgi:213
+#: web/questionnaire.cgi:233
 msgid "Questionnaire"
 msgstr "Spørreskjema"
 
-#: web/questionnaire.cgi:38
+#: web/questionnaire.cgi:41
 msgid ""
 "I'm afraid we couldn't validate that token. If you've copied the URL from an "
 "email, please check that you copied it exactly.\n"
@@ -1526,7 +1529,7 @@ msgstr ""
 "Jeg er redd vi ikke kunne verifisere den referansen. Hvis du kopierte den "
 "URLen fra en annen epost, sjekk at du har kopiert den korrekt.\n"
 
-#: web/questionnaire.cgi:45
+#: web/questionnaire.cgi:48
 #, perl-format
 msgid ""
 "You have already answered this questionnaire. If you have a question, please "
@@ -1536,38 +1539,38 @@ msgstr ""
 "vennligst <a href='%s'>ta kontakt</a>, eller <a href='%s'>se på ditt "
 "problem</a>.\n"
 
-#: web/questionnaire.cgi:50
+#: web/questionnaire.cgi:53
 msgid "I'm afraid we couldn't locate your problem in the database.\n"
 msgstr "Jeg er redd vi ikke klarte å finne ditt problem i databasen.\n"
 
-#: web/questionnaire.cgi:89
+#: web/questionnaire.cgi:92
 msgid "Please state whether or not the problem has been fixed"
 msgstr "Vennligs oppgi om dette problemet er blitt fikset eller ikke"
 
-#: web/questionnaire.cgi:92
+#: web/questionnaire.cgi:95
 msgid ""
 "Please say whether you've ever reported a problem to your council before"
 msgstr "Gi oss informasjon om du har rapportert en sak til kommunen tidligere"
 
-#: web/questionnaire.cgi:94
+#: web/questionnaire.cgi:97
 msgid "Please indicate whether you'd like to receive another questionnaire"
 msgstr "Vennligst indiker om du ønsker å motta et annet spørreskjema"
 
-#: web/questionnaire.cgi:96
+#: web/questionnaire.cgi:99
 msgid "Please provide some explanation as to why you're reopening this report"
 msgstr ""
 "Vennligst bidra med en forklaring for hvorfor du åpner denne rapporten på "
 "nytt"
 
-#: web/questionnaire.cgi:112
+#: web/questionnaire.cgi:115
 msgid "Please provide some text as well as a photo"
 msgstr "Vennligst bidra med litt tekst i tilegg til et bilde"
 
-#: web/questionnaire.cgi:143
+#: web/questionnaire.cgi:146
 msgid "Questionnaire filled in by problem reporter"
 msgstr "Spørreskjema fylt inn av feilrapportøren"
 
-#: web/questionnaire.cgi:163
+#: web/questionnaire.cgi:166
 msgid ""
 "<p>Thank you very much for filling in our questionnaire; if you\n"
 "get some more information about the status of your problem, please come back "
@@ -1579,7 +1582,7 @@ msgstr ""
 "hit til\n"
 "nettstedet og legg igjen en oppdatering.</p>\n"
 
-#: web/questionnaire.cgi:171
+#: web/questionnaire.cgi:174
 #, perl-format
 msgid ""
 "<p style=\"font-size:150%%\">We're sorry to hear that. We have two "
@@ -1598,7 +1601,7 @@ msgstr ""
 "com/new\">lage\n"
 "en \"pledge\" og publiser den</a>?</p>\n"
 
-#: web/questionnaire.cgi:180
+#: web/questionnaire.cgi:183
 msgid ""
 "<p style=\"font-size:150%\">Thank you very much for filling in our "
 "questionnaire; glad to hear it's been fixed.</p>\n"
@@ -1607,15 +1610,15 @@ msgstr ""
 "spørreskjema.\n"
 "Veldig glad for å høre at det er blitt fikset.</p>\n"
 
-#: web/questionnaire.cgi:233
+#: web/questionnaire.cgi:236
 msgid "Don&rsquo;t know"
 msgstr "Vet ikke"
 
-#: web/questionnaire.cgi:234
+#: web/questionnaire.cgi:237
 msgid "Submit questionnaire"
 msgstr "Lever spørreskjema"
 
-#: web/questionnaire.cgi:251
+#: web/questionnaire.cgi:254
 msgid ""
 "<p>Getting empty homes back into use can be difficult. You shouldn't expect\n"
 "the property to be back into use yet. But a good council will have started "
@@ -1630,7 +1633,7 @@ msgid ""
 "www.emptyhomes.com/getinvolved/campaign.html</a>.</p>\n"
 msgstr ""
 
-#: web/questionnaire.cgi:261
+#: web/questionnaire.cgi:264
 msgid ""
 "<p>Getting empty homes back into use can be difficult, but by now a good "
 "council\n"
@@ -1648,40 +1651,40 @@ msgid ""
 "emptyhomes.com/getinvolved/campaign.html</a>.</p>\n"
 msgstr ""
 
-#: web/questionnaire.cgi:274
+#: web/questionnaire.cgi:277
 msgid ""
 "The details of your problem are available on the right hand side of this "
 "page."
 msgstr ""
 "Detaljene om ditt problem er tilgjengelig på høyre side av denne siden."
 
-#: web/questionnaire.cgi:275
+#: web/questionnaire.cgi:278
 msgid "Please take a look at the updates that have been left."
 msgstr "Vær sa snill å ta en titt på oppdateringene som har blitt igjen."
 
-#: web/questionnaire.cgi:281
+#: web/questionnaire.cgi:284
 msgid "An update marked this problem as fixed."
 msgstr "En oppdatering markerte dette problemet som fikset."
 
-#: web/questionnaire.cgi:282
+#: web/questionnaire.cgi:285
 msgid "Has this problem been fixed?"
 msgstr "Har denne saken blitt løst?"
 
-#: web/questionnaire.cgi:289
+#: web/questionnaire.cgi:292
 msgid "Reported before"
 msgstr "Rapportert tidligere"
 
-#: web/questionnaire.cgi:290
+#: web/questionnaire.cgi:293
 msgid "First time"
 msgstr "Første gang"
 
-#: web/questionnaire.cgi:291
+#: web/questionnaire.cgi:294
 msgid ""
 "Have you ever reported a problem to a council before, or is this your first "
 "time?"
 msgstr "Har du sendt en sak til kommunen før, eller er dette første gangen?"
 
-#: web/questionnaire.cgi:301
+#: web/questionnaire.cgi:304
 msgid ""
 "If you wish to leave a public update on the problem, please enter it here\n"
 "(please note it will not be sent to the council). For example, what was\n"
@@ -1988,6 +1991,270 @@ msgstr "Nye problemer innenfor {{NAME}}"
 #, perl-brace-format
 msgid "The latest problems within {{NAME}}"
 msgstr "De siste problemer innenfor {{NAME}}"
+
+#: web-admin/index.cgi:68 web-admin/index.cgi:123 web-admin/index.cgi:124
+#, fuzzy
+msgid "Summary"
+msgstr "Oppsummeringsrapporter"
+
+#: web-admin/index.cgi:69 web-admin/index.cgi:182 web-admin/index.cgi:183
+#, fuzzy
+msgid "Council contacts"
+msgstr "Kontakt oss"
+
+#: web-admin/index.cgi:71 web-admin/index.cgi:782 web-admin/index.cgi:783
+msgid "Timeline"
+msgstr ""
+
+#: web-admin/index.cgi:84
+#, fuzzy
+msgid "FixMyStreet administration"
+msgstr "Fiksgatami-oppdateringer"
+
+#: web-admin/index.cgi:100
+#, fuzzy
+msgid "FixMyStreet admin:"
+msgstr "FiksGataMi"
+
+#: web-admin/index.cgi:162
+msgid "Graph of problem creation by status over time"
+msgstr ""
+
+#: web-admin/index.cgi:165
+msgid "Problem breakdown by state"
+msgstr ""
+
+#: web-admin/index.cgi:170
+msgid "Update breakdown by state"
+msgstr ""
+
+#: web-admin/index.cgi:186
+msgid "Diligency prize league table"
+msgstr ""
+
+#: web-admin/index.cgi:193
+#, fuzzy
+msgid "No edits have yet been made."
+msgstr "Ingen saker er rapporter"
+
+#: web-admin/index.cgi:197
+#, fuzzy
+msgid "Councils"
+msgstr "kommune"
+
+#: web-admin/index.cgi:210 web-admin/index.cgi:585
+#, fuzzy
+msgid "None"
+msgstr "Nei"
+
+#: web-admin/index.cgi:228
+msgid "No info at all"
+msgstr ""
+
+#: web-admin/index.cgi:230
+msgid "Currently has 1+ deleted"
+msgstr ""
+
+#: web-admin/index.cgi:232
+msgid "Some unconfirmeds"
+msgstr ""
+
+#: web-admin/index.cgi:234
+msgid "All confirmed"
+msgstr ""
+
+#: web-admin/index.cgi:264 web-admin/index.cgi:274 web-admin/index.cgi:291
+msgid "*unknown*"
+msgstr ""
+
+#: web-admin/index.cgi:267 web-admin/index.cgi:295
+#, fuzzy
+msgid "Values updated"
+msgstr "Send meg oppdateringer"
+
+#: web-admin/index.cgi:277
+msgid "New category contact added"
+msgstr ""
+
+#: web-admin/index.cgi:314 web-admin/index.cgi:397
+#, perl-format
+msgid "Council contacts for %s"
+msgstr ""
+
+#: web-admin/index.cgi:327
+#, fuzzy
+msgid " List all reported problems"
+msgstr "Nylig meldte problemer"
+
+#: web-admin/index.cgi:329
+msgid "Text only version"
+msgstr ""
+
+#: web-admin/index.cgi:335
+#, fuzzy
+msgid "Category"
+msgstr "Kategori"
+
+#: web-admin/index.cgi:335 web-admin/index.cgi:437
+#, fuzzy
+msgid "Email"
+msgstr "Epost:"
+
+#: web-admin/index.cgi:335 web-admin/index.cgi:367 web-admin/index.cgi:420
+#: web-admin/index.cgi:437 web-admin/index.cgi:736
+#, fuzzy
+msgid "Confirmed"
+msgstr "Bekreftelse"
+
+#: web-admin/index.cgi:335 web-admin/index.cgi:369 web-admin/index.cgi:422
+#: web-admin/index.cgi:437
+msgid "Deleted"
+msgstr ""
+
+#: web-admin/index.cgi:335
+msgid "Last editor"
+msgstr ""
+
+#: web-admin/index.cgi:335 web-admin/index.cgi:437
+#, fuzzy
+msgid "Note"
+msgstr "Nei"
+
+#: web-admin/index.cgi:335 web-admin/index.cgi:437
+msgid "When edited"
+msgstr ""
+
+#: web-admin/index.cgi:335
+#, fuzzy
+msgid "Confirm"
+msgstr "Bekreftelse"
+
+#: web-admin/index.cgi:352
+#, fuzzy
+msgid "Update statuses"
+msgstr "Oppdateringer"
+
+#: web-admin/index.cgi:357
+msgid "Add new category"
+msgstr ""
+
+#: web-admin/index.cgi:360 web-admin/index.cgi:414
+#, fuzzy
+msgid "Category: "
+msgstr "Kategori"
+
+#: web-admin/index.cgi:363 web-admin/index.cgi:417
+#, fuzzy
+msgid "Email: "
+msgstr "Epost:"
+
+#: web-admin/index.cgi:372 web-admin/index.cgi:425
+msgid "Note: "
+msgstr ""
+
+#: web-admin/index.cgi:379
+#, fuzzy
+msgid "Create category"
+msgstr "Kategori"
+
+#: web-admin/index.cgi:431
+msgid "Save changes"
+msgstr ""
+
+#: web-admin/index.cgi:435
+msgid "History"
+msgstr ""
+
+#: web-admin/index.cgi:437
+msgid "Editor"
+msgstr ""
+
+#: web-admin/index.cgi:441 web-admin/index.cgi:442
+#, fuzzy
+msgid "yes"
+msgstr "Ja"
+
+#: web-admin/index.cgi:441 web-admin/index.cgi:442
+msgid "no"
+msgstr ""
+
+#: web-admin/index.cgi:469
+msgid "Search:"
+msgstr ""
+
+#: web-admin/index.cgi:541
+#, fuzzy
+msgid "That problem will now be resent."
+msgstr "ditt problem vil ikke bli publisert"
+
+#: web-admin/index.cgi:547
+msgid "I am afraid you cannot confirm unconfirmed reports."
+msgstr ""
+
+#: web-admin/index.cgi:576 web-admin/index.cgi:696
+#, fuzzy
+msgid "Updated!"
+msgstr "Oppdateringer"
+
+#: web-admin/index.cgi:580
+#, fuzzy, perl-format
+msgid "Editing problem %d"
+msgstr "Ser på en sak"
+
+#: web-admin/index.cgi:608 web-admin/index.cgi:736
+#, fuzzy
+msgid "State:"
+msgstr "Oppdatering:"
+
+#: web-admin/index.cgi:608
+msgid "Open"
+msgstr ""
+
+#: web-admin/index.cgi:608
+#, fuzzy
+msgid "Fixed"
+msgstr "(løst)"
+
+#: web-admin/index.cgi:608 web-admin/index.cgi:736
+#, fuzzy
+msgid "Hidden"
+msgstr "Gjem nåler"
+
+#: web-admin/index.cgi:608 web-admin/index.cgi:736
+msgid "Unconfirmed"
+msgstr ""
+
+#: web-admin/index.cgi:608
+msgid "Partial"
+msgstr ""
+
+#: web-admin/index.cgi:611
+msgid "You really want to resend?"
+msgstr ""
+
+#: web-admin/index.cgi:611
+#, fuzzy
+msgid "Resend report"
+msgstr "Gjem utdaterte rapporter"
+
+#: web-admin/index.cgi:642 web-admin/index.cgi:756
+#, fuzzy
+msgid "Submit changes"
+msgstr "Send inn"
+
+#: web-admin/index.cgi:674
+msgid "Edit"
+msgstr ""
+
+#: web-admin/index.cgi:701
+#, fuzzy
+msgid "Problem marked as open."
+msgstr "Denne rapporten er for tiden markert som åpen."
+
+#: web-admin/index.cgi:717
+#, fuzzy, perl-format
+msgid "Editing update %d"
+msgstr "Legg til din oppdatering"
 
 #. Please leave the first word "Subject:" untranslated
 #: templates/emails/alert-confirm

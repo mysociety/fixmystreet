@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2011-02-22 00:27+0000\n"
+"POT-Creation-Date: 2011-02-22 13:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
@@ -84,9 +84,9 @@ msgstr ""
 #: perllib/Page.pm:312
 msgid ""
 "Built by <a href=\"http://www.mysociety.org/\">mySociety</a> and maintained "
-"by NUUG, using some <a href=\"http://github.com/mysociety/fixmystreet"
-"\">clever</a>&nbsp;<a href=\"https://secure.mysociety.org/cvstrac/dir?"
-"d=mysociety/services/TilMa\">code</a>."
+"by <a href=\"http://www.nuug.no/\">NUUG</a>, using some <a href=\"http://"
+"github.com/mysociety/fixmystreet\">clever</a>&nbsp;<a href=\"https://secure."
+"mysociety.org/cvstrac/dir?d=mysociety/services/TilMa\">code</a>."
 msgstr ""
 
 #: perllib/Page.pm:316
@@ -257,7 +257,7 @@ msgstr ""
 msgid "Not reported to council"
 msgstr ""
 
-#: perllib/Page.pm:622
+#: perllib/Page.pm:622 web-admin/index.cgi:521 web-admin/index.cgi:645
 msgid "Updates"
 msgstr ""
 
@@ -279,7 +279,7 @@ msgstr ""
 msgid "reopened"
 msgstr ""
 
-#: perllib/Page.pm:640 web/index.cgi:1067
+#: perllib/Page.pm:640 web/index.cgi:1071
 msgid "Offensive? Unsuitable? Tell us"
 msgstr ""
 
@@ -448,7 +448,7 @@ msgid ""
 "empty homes</a>.\n"
 msgstr ""
 
-#: web/ajax.cgi:55 web/ajax.cgi:76 web/index.cgi:899 web/index.cgi:914
+#: web/ajax.cgi:55 web/ajax.cgi:76 web/index.cgi:902 web/index.cgi:917
 msgid "(fixed)"
 msgstr ""
 
@@ -545,7 +545,7 @@ msgstr ""
 msgid "RSS feed of nearby problems"
 msgstr ""
 
-#: web/alert.cgi:308 web/alert.cgi:367 web/index.cgi:967 web/index.cgi:1078
+#: web/alert.cgi:308 web/alert.cgi:367 web/index.cgi:970 web/index.cgi:1082
 #: web/reports.cgi:254
 msgid "RSS feed"
 msgstr ""
@@ -616,11 +616,11 @@ msgstr ""
 msgid "Receive email when updates are left on this problem."
 msgstr ""
 
-#: web/alert.cgi:461 web/alert.cgi:488 web/index.cgi:736 web/index.cgi:1072
+#: web/alert.cgi:461 web/alert.cgi:488 web/index.cgi:736 web/index.cgi:1076
 msgid "Email:"
 msgstr ""
 
-#: web/alert.cgi:462 web/alert.cgi:489 web/index.cgi:1073
+#: web/alert.cgi:462 web/alert.cgi:489 web/index.cgi:1077
 msgid "Subscribe"
 msgstr ""
 
@@ -736,11 +736,13 @@ msgid ""
 "reported a problem to a council before?"
 msgstr ""
 
-#: web/confirm.cgi:190 web/questionnaire.cgi:231
+#: web/confirm.cgi:190 web/questionnaire.cgi:234 web-admin/index.cgi:339
+#: web-admin/index.cgi:340 web-admin/index.cgi:589
 msgid "Yes"
 msgstr ""
 
-#: web/confirm.cgi:191 web/questionnaire.cgi:232
+#: web/confirm.cgi:191 web/questionnaire.cgi:235 web-admin/index.cgi:339
+#: web-admin/index.cgi:340 web-admin/index.cgi:589
 msgid "No"
 msgstr ""
 
@@ -842,7 +844,7 @@ msgstr ""
 msgid "Message:"
 msgstr ""
 
-#: web/contact.cgi:238 web/index.cgi:1088
+#: web/contact.cgi:238 web/index.cgi:1092
 msgid "Post"
 msgstr ""
 
@@ -1073,7 +1075,7 @@ msgid ""
 "name if you give us permission."
 msgstr ""
 
-#: web/index.cgi:660 web/index.cgi:662
+#: web/index.cgi:660 web/index.cgi:662 web/index.cgi:675
 msgid " or "
 msgstr ""
 
@@ -1165,11 +1167,11 @@ msgstr ""
 msgid "Details:"
 msgstr ""
 
-#: web/index.cgi:734 web/index.cgi:1104
+#: web/index.cgi:734 web/index.cgi:1108
 msgid "Photo:"
 msgstr ""
 
-#: web/index.cgi:735 web/index.cgi:1085
+#: web/index.cgi:735 web/index.cgi:1089
 msgid "Name:"
 msgstr ""
 
@@ -1177,7 +1179,7 @@ msgstr ""
 msgid "Phone:"
 msgstr ""
 
-#: web/index.cgi:738 web/index.cgi:1092
+#: web/index.cgi:738 web/index.cgi:1096
 msgid "(optional)"
 msgstr ""
 
@@ -1240,175 +1242,175 @@ msgstr ""
 msgid "Submit"
 msgstr ""
 
-#: web/index.cgi:880
+#: web/index.cgi:883
 msgid "Hide stale reports"
 msgstr ""
 
-#: web/index.cgi:883
+#: web/index.cgi:886
 msgid "Include stale reports"
 msgstr ""
 
-#: web/index.cgi:902
+#: web/index.cgi:905
 msgid "No problems have been reported yet."
 msgstr ""
 
-#: web/index.cgi:918
+#: web/index.cgi:921
 msgid "No problems found."
 msgstr ""
 
-#: web/index.cgi:923
+#: web/index.cgi:926
 msgid "Show pins"
 msgstr ""
 
-#: web/index.cgi:927
+#: web/index.cgi:930
 msgid "Hide pins"
 msgstr ""
 
-#: web/index.cgi:966
+#: web/index.cgi:969
 msgid "Email me new local problems"
 msgstr ""
 
-#: web/index.cgi:968
+#: web/index.cgi:971
 msgid "RSS feed of recent local problems"
 msgstr ""
 
-#: web/index.cgi:971
+#: web/index.cgi:974
 msgid "Problems in this area"
 msgstr ""
 
-#: web/index.cgi:972
+#: web/index.cgi:975
 msgid "Reports on and around the map"
 msgstr ""
 
-#: web/index.cgi:973
+#: web/index.cgi:976
 #, perl-format
 msgid "Closest nearby problems <small>(within&nbsp;%skm)</small>"
 msgstr ""
 
-#: web/index.cgi:977
+#: web/index.cgi:980
 msgid ""
 "To report a problem, simply\n"
 "        <strong>click on the map</strong> at the correct location."
 msgstr ""
 
-#: web/index.cgi:979
+#: web/index.cgi:982
 #, perl-format
 msgid ""
 "<small>If you cannot see the map, <a href='%s' rel='nofollow'>skip this\n"
 "        step</a>.</small>"
 msgstr ""
 
-#: web/index.cgi:984
+#: web/index.cgi:987
 msgid "Recent local problems, FixMyStreet"
 msgstr ""
 
-#: web/index.cgi:996
+#: web/index.cgi:1000
 msgid "There were problems with your update. Please see below."
 msgstr ""
 
-#: web/index.cgi:1017 web/index.cgi:1019
+#: web/index.cgi:1021 web/index.cgi:1023
 msgid "Unknown problem ID"
 msgstr ""
 
-#: web/index.cgi:1020
+#: web/index.cgi:1024
 msgid "That report has been removed from FixMyStreet."
 msgstr ""
 
-#: web/index.cgi:1040
+#: web/index.cgi:1044
 msgid "This problem is old and of unknown status."
 msgstr ""
 
-#: web/index.cgi:1043 web/index.cgi:1084
+#: web/index.cgi:1047 web/index.cgi:1088
 msgid "This problem has been fixed"
 msgstr ""
 
-#: web/index.cgi:1068
+#: web/index.cgi:1072
 msgid "More problems nearby"
 msgstr ""
 
-#: web/index.cgi:1071
+#: web/index.cgi:1075
 msgid "Email me updates"
 msgstr ""
 
-#: web/index.cgi:1074
+#: web/index.cgi:1078
 msgid "Receive email when updates are left on this problem"
 msgstr ""
 
-#: web/index.cgi:1079
+#: web/index.cgi:1083
 msgid "RSS feed of updates to this problem"
 msgstr ""
 
-#: web/index.cgi:1080
+#: web/index.cgi:1084
 msgid "Provide an update"
 msgstr ""
 
-#: web/index.cgi:1086
+#: web/index.cgi:1090
 msgid "Update:"
 msgstr ""
 
-#: web/index.cgi:1087
+#: web/index.cgi:1091
 msgid "Alert me to future updates"
 msgstr ""
 
-#: web/index.cgi:1095
+#: web/index.cgi:1099
 msgid ""
 "Please note that updates are not sent to the council. If you leave your name "
 "it will be public. Your information will only be used in accordance with our "
 "<a href=\"/faq#privacy\">privacy policy</a>"
 msgstr ""
 
-#: web/index.cgi:1115
+#: web/index.cgi:1119
 msgid "Updates to this problem, FixMyStreet"
 msgstr ""
 
-#: web/questionnaire.cgi:28 web/questionnaire.cgi:77 web/questionnaire.cgi:210
-#: web/questionnaire.cgi:230
+#: web/questionnaire.cgi:29 web/questionnaire.cgi:80 web/questionnaire.cgi:213
+#: web/questionnaire.cgi:233
 msgid "Questionnaire"
 msgstr ""
 
-#: web/questionnaire.cgi:38
+#: web/questionnaire.cgi:41
 msgid ""
 "I'm afraid we couldn't validate that token. If you've copied the URL from an "
 "email, please check that you copied it exactly.\n"
 msgstr ""
 
-#: web/questionnaire.cgi:45
+#: web/questionnaire.cgi:48
 #, perl-format
 msgid ""
 "You have already answered this questionnaire. If you have a question, please "
 "<a href='%s'>get in touch</a>, or <a href='%s'>view your problem</a>.\n"
 msgstr ""
 
-#: web/questionnaire.cgi:50
+#: web/questionnaire.cgi:53
 msgid "I'm afraid we couldn't locate your problem in the database.\n"
 msgstr ""
 
-#: web/questionnaire.cgi:89
+#: web/questionnaire.cgi:92
 msgid "Please state whether or not the problem has been fixed"
 msgstr ""
 
-#: web/questionnaire.cgi:92
+#: web/questionnaire.cgi:95
 msgid ""
 "Please say whether you've ever reported a problem to your council before"
 msgstr ""
 
-#: web/questionnaire.cgi:94
+#: web/questionnaire.cgi:97
 msgid "Please indicate whether you'd like to receive another questionnaire"
 msgstr ""
 
-#: web/questionnaire.cgi:96
+#: web/questionnaire.cgi:99
 msgid "Please provide some explanation as to why you're reopening this report"
 msgstr ""
 
-#: web/questionnaire.cgi:112
+#: web/questionnaire.cgi:115
 msgid "Please provide some text as well as a photo"
 msgstr ""
 
-#: web/questionnaire.cgi:143
+#: web/questionnaire.cgi:146
 msgid "Questionnaire filled in by problem reporter"
 msgstr ""
 
-#: web/questionnaire.cgi:163
+#: web/questionnaire.cgi:166
 msgid ""
 "<p>Thank you very much for filling in our questionnaire; if you\n"
 "get some more information about the status of your problem, please come back "
@@ -1416,7 +1418,7 @@ msgid ""
 "site and leave an update.</p>\n"
 msgstr ""
 
-#: web/questionnaire.cgi:171
+#: web/questionnaire.cgi:174
 #, perl-format
 msgid ""
 "<p style=\"font-size:150%%\">We're sorry to hear that. We have two "
@@ -1428,21 +1430,21 @@ msgid ""
 "</p>\n"
 msgstr ""
 
-#: web/questionnaire.cgi:180
+#: web/questionnaire.cgi:183
 msgid ""
 "<p style=\"font-size:150%\">Thank you very much for filling in our "
 "questionnaire; glad to hear it's been fixed.</p>\n"
 msgstr ""
 
-#: web/questionnaire.cgi:233
+#: web/questionnaire.cgi:236
 msgid "Don&rsquo;t know"
 msgstr ""
 
-#: web/questionnaire.cgi:234
+#: web/questionnaire.cgi:237
 msgid "Submit questionnaire"
 msgstr ""
 
-#: web/questionnaire.cgi:251
+#: web/questionnaire.cgi:254
 msgid ""
 "<p>Getting empty homes back into use can be difficult. You shouldn't expect\n"
 "the property to be back into use yet. But a good council will have started "
@@ -1457,7 +1459,7 @@ msgid ""
 "www.emptyhomes.com/getinvolved/campaign.html</a>.</p>\n"
 msgstr ""
 
-#: web/questionnaire.cgi:261
+#: web/questionnaire.cgi:264
 msgid ""
 "<p>Getting empty homes back into use can be difficult, but by now a good "
 "council\n"
@@ -1475,39 +1477,39 @@ msgid ""
 "emptyhomes.com/getinvolved/campaign.html</a>.</p>\n"
 msgstr ""
 
-#: web/questionnaire.cgi:274
+#: web/questionnaire.cgi:277
 msgid ""
 "The details of your problem are available on the right hand side of this "
 "page."
 msgstr ""
 
-#: web/questionnaire.cgi:275
+#: web/questionnaire.cgi:278
 msgid "Please take a look at the updates that have been left."
 msgstr ""
 
-#: web/questionnaire.cgi:281
+#: web/questionnaire.cgi:284
 msgid "An update marked this problem as fixed."
 msgstr ""
 
-#: web/questionnaire.cgi:282
+#: web/questionnaire.cgi:285
 msgid "Has this problem been fixed?"
 msgstr ""
 
-#: web/questionnaire.cgi:289
+#: web/questionnaire.cgi:292
 msgid "Reported before"
 msgstr ""
 
-#: web/questionnaire.cgi:290
+#: web/questionnaire.cgi:293
 msgid "First time"
 msgstr ""
 
-#: web/questionnaire.cgi:291
+#: web/questionnaire.cgi:294
 msgid ""
 "Have you ever reported a problem to a council before, or is this your first "
 "time?"
 msgstr ""
 
-#: web/questionnaire.cgi:301
+#: web/questionnaire.cgi:304
 msgid ""
 "If you wish to leave a public update on the problem, please enter it here\n"
 "(please note it will not be sent to the council). For example, what was\n"
@@ -1792,6 +1794,243 @@ msgstr ""
 #: db/alert_types.pl:43
 #, perl-brace-format
 msgid "The latest problems within {{NAME}}"
+msgstr ""
+
+#: web-admin/index.cgi:68 web-admin/index.cgi:123 web-admin/index.cgi:124
+msgid "Summary"
+msgstr ""
+
+#: web-admin/index.cgi:69 web-admin/index.cgi:182 web-admin/index.cgi:183
+msgid "Council contacts"
+msgstr ""
+
+#: web-admin/index.cgi:71 web-admin/index.cgi:782 web-admin/index.cgi:783
+msgid "Timeline"
+msgstr ""
+
+#: web-admin/index.cgi:84
+msgid "FixMyStreet administration"
+msgstr ""
+
+#: web-admin/index.cgi:100
+msgid "FixMyStreet admin:"
+msgstr ""
+
+#: web-admin/index.cgi:162
+msgid "Graph of problem creation by status over time"
+msgstr ""
+
+#: web-admin/index.cgi:165
+msgid "Problem breakdown by state"
+msgstr ""
+
+#: web-admin/index.cgi:170
+msgid "Update breakdown by state"
+msgstr ""
+
+#: web-admin/index.cgi:186
+msgid "Diligency prize league table"
+msgstr ""
+
+#: web-admin/index.cgi:193
+msgid "No edits have yet been made."
+msgstr ""
+
+#: web-admin/index.cgi:197
+msgid "Councils"
+msgstr ""
+
+#: web-admin/index.cgi:210 web-admin/index.cgi:585
+msgid "None"
+msgstr ""
+
+#: web-admin/index.cgi:228
+msgid "No info at all"
+msgstr ""
+
+#: web-admin/index.cgi:230
+msgid "Currently has 1+ deleted"
+msgstr ""
+
+#: web-admin/index.cgi:232
+msgid "Some unconfirmeds"
+msgstr ""
+
+#: web-admin/index.cgi:234
+msgid "All confirmed"
+msgstr ""
+
+#: web-admin/index.cgi:264 web-admin/index.cgi:274 web-admin/index.cgi:291
+msgid "*unknown*"
+msgstr ""
+
+#: web-admin/index.cgi:267 web-admin/index.cgi:295
+msgid "Values updated"
+msgstr ""
+
+#: web-admin/index.cgi:277
+msgid "New category contact added"
+msgstr ""
+
+#: web-admin/index.cgi:314 web-admin/index.cgi:397
+#, perl-format
+msgid "Council contacts for %s"
+msgstr ""
+
+#: web-admin/index.cgi:327
+msgid " List all reported problems"
+msgstr ""
+
+#: web-admin/index.cgi:329
+msgid "Text only version"
+msgstr ""
+
+#: web-admin/index.cgi:335
+msgid "Category"
+msgstr ""
+
+#: web-admin/index.cgi:335 web-admin/index.cgi:437
+msgid "Email"
+msgstr ""
+
+#: web-admin/index.cgi:335 web-admin/index.cgi:367 web-admin/index.cgi:420
+#: web-admin/index.cgi:437 web-admin/index.cgi:736
+msgid "Confirmed"
+msgstr ""
+
+#: web-admin/index.cgi:335 web-admin/index.cgi:369 web-admin/index.cgi:422
+#: web-admin/index.cgi:437
+msgid "Deleted"
+msgstr ""
+
+#: web-admin/index.cgi:335
+msgid "Last editor"
+msgstr ""
+
+#: web-admin/index.cgi:335 web-admin/index.cgi:437
+msgid "Note"
+msgstr ""
+
+#: web-admin/index.cgi:335 web-admin/index.cgi:437
+msgid "When edited"
+msgstr ""
+
+#: web-admin/index.cgi:335
+msgid "Confirm"
+msgstr ""
+
+#: web-admin/index.cgi:352
+msgid "Update statuses"
+msgstr ""
+
+#: web-admin/index.cgi:357
+msgid "Add new category"
+msgstr ""
+
+#: web-admin/index.cgi:360 web-admin/index.cgi:414
+msgid "Category: "
+msgstr ""
+
+#: web-admin/index.cgi:363 web-admin/index.cgi:417
+msgid "Email: "
+msgstr ""
+
+#: web-admin/index.cgi:372 web-admin/index.cgi:425
+msgid "Note: "
+msgstr ""
+
+#: web-admin/index.cgi:379
+msgid "Create category"
+msgstr ""
+
+#: web-admin/index.cgi:431
+msgid "Save changes"
+msgstr ""
+
+#: web-admin/index.cgi:435
+msgid "History"
+msgstr ""
+
+#: web-admin/index.cgi:437
+msgid "Editor"
+msgstr ""
+
+#: web-admin/index.cgi:441 web-admin/index.cgi:442
+msgid "yes"
+msgstr ""
+
+#: web-admin/index.cgi:441 web-admin/index.cgi:442
+msgid "no"
+msgstr ""
+
+#: web-admin/index.cgi:469
+msgid "Search:"
+msgstr ""
+
+#: web-admin/index.cgi:541
+msgid "That problem will now be resent."
+msgstr ""
+
+#: web-admin/index.cgi:547
+msgid "I am afraid you cannot confirm unconfirmed reports."
+msgstr ""
+
+#: web-admin/index.cgi:576 web-admin/index.cgi:696
+msgid "Updated!"
+msgstr ""
+
+#: web-admin/index.cgi:580
+#, perl-format
+msgid "Editing problem %d"
+msgstr ""
+
+#: web-admin/index.cgi:608 web-admin/index.cgi:736
+msgid "State:"
+msgstr ""
+
+#: web-admin/index.cgi:608
+msgid "Open"
+msgstr ""
+
+#: web-admin/index.cgi:608
+msgid "Fixed"
+msgstr ""
+
+#: web-admin/index.cgi:608 web-admin/index.cgi:736
+msgid "Hidden"
+msgstr ""
+
+#: web-admin/index.cgi:608 web-admin/index.cgi:736
+msgid "Unconfirmed"
+msgstr ""
+
+#: web-admin/index.cgi:608
+msgid "Partial"
+msgstr ""
+
+#: web-admin/index.cgi:611
+msgid "You really want to resend?"
+msgstr ""
+
+#: web-admin/index.cgi:611
+msgid "Resend report"
+msgstr ""
+
+#: web-admin/index.cgi:642 web-admin/index.cgi:756
+msgid "Submit changes"
+msgstr ""
+
+#: web-admin/index.cgi:674
+msgid "Edit"
+msgstr ""
+
+#: web-admin/index.cgi:701
+msgid "Problem marked as open."
+msgstr ""
+
+#: web-admin/index.cgi:717
+#, perl-format
+msgid "Editing update %d"
 msgstr ""
 
 #. Please leave the first word "Subject:" untranslated
