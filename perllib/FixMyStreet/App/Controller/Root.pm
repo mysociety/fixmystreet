@@ -41,8 +41,11 @@ Standard 404 error page
 
 sub default :Path {
     my ( $self, $c ) = @_;
-    $c->response->body( 'Page not found' );
-    $c->response->status(404);
+
+    $c->response->body( "Fallen through to FixMyStreet::App default handler" );
+
+    # $c->response->body( 'Page not found' );
+    # $c->response->status(404);
 }
 
 =head2 end
