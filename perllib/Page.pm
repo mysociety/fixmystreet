@@ -56,7 +56,7 @@ sub do_fastcgi {
 
     try {
         my $W = new mySociety::WatchUpdate();
-        while (my $q = new mySociety::Web()) {
+        while (my $q = new mySociety::Web(unicode => 1)) {
             next if $lm && $q->Maybe304($lm);
             $lastmodified = $lm;
             microsite($q);
