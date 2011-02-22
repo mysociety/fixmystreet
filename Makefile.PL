@@ -18,6 +18,7 @@ requires 'namespace::autoclean';
 requires 'Config::General';
 
 test_requires 'Test::More' => '0.88';
+test_requires 'Test::WWW::Mechanize::Catalyst';
 
 catalyst;
 

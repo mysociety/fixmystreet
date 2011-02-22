@@ -4,11 +4,7 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller' }
 
-#
-# Sets the actions in this controller to be registered with no prefix
-# so they function identically to actions created in MyApp.pm
-#
-__PACKAGE__->config(namespace => '');
+__PACKAGE__->config( namespace => '' );
 
 =head1 NAME
 
@@ -26,7 +22,7 @@ The root page (/)
 
 =cut
 
-sub index :Path :Args(0) {
+sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
     # Hello World
@@ -35,17 +31,28 @@ sub index :Path :Args(0) {
 
 =head2 default
 
-Standard 404 error page
+Forward to the standard 404 error page
 
 =cut
 
-sub default :Path {
+sub default : Path {
+    my ( $self, $c ) = @_;
+    $c->detach('/page_not_found');
+}
+
+=head2 page_not_found
+
+    $c->detach('/page_not_found');
+
+Display a 404 page.
+
+=cut
+
+sub page_not_found : Private {
     my ( $self, $c ) = @_;
 
-    $c->response->body( "Fallen through to FixMyStreet::App default handler" );
-
-    # $c->response->body( 'Page not found' );
-    # $c->response->status(404);
+    $c->stash->{template} = 'errors/page_not_found.html';
+    $c->response->status(404);
 }
 
 =head2 end
@@ -54,18 +61,8 @@ Attempt to render a view, if needed.
 
 =cut
 
-sub end : ActionClass('RenderView') {}
-
-=head1 AUTHOR
-
-Edmund von der Burg,,,
-
-=head1 LICENSE
-
-This library is free software. You can redistribute it and/or modify
-it under the same terms as Perl itself.
-
-=cut
+sub end : ActionClass('RenderView') {
+}
 
 __PACKAGE__->meta->make_immutable;
 
