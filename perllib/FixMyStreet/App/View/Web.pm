@@ -4,12 +4,13 @@ use base 'Catalyst::View::TT';
 use strict;
 use warnings;
 
-use FixMyStreet::App;
+use mySociety::Locale;
+use FixMyStreet;
 
 __PACKAGE__->config(
     TEMPLATE_EXTENSION => '.html',
     INCLUDE_PATH       => [          #
-        FixMyStreet::App->path_to( 'templates', 'web', 'default' ),
+        FixMyStreet->path_to( 'templates', 'web', 'default' ),
     ],
     render_die     => 1,
     expose_methods => ['loc'],
@@ -37,7 +38,7 @@ FIXME - currently just passes through.
 
 sub loc {
     my ( $self, $c, @args ) = @_;
-    return join ' ', @args;
+    return _(@args);
 }
 
 1;

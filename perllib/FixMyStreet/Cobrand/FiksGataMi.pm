@@ -1,5 +1,5 @@
-package FixMyStreet::Cobrands::FiksGataMi;
-use base 'FixMyStreet::Cobrands::Default';
+package FixMyStreet::Cobrand::FiksGataMi;
+use base 'FixMyStreet::Cobrand::Default';
 
 use strict;
 use warnings;

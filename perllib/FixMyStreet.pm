@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Path::Class;
-my $ROOT_DIR = file(__FILE__)->parent->parent->absolute;
+my $ROOT_DIR = file(__FILE__)->parent->parent->absolute->resolve;
 
 use Readonly;
 

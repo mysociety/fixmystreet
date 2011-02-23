@@ -6,6 +6,7 @@ package FixMyStreet::Cobrand;
 use strict;
 use warnings;
 
+use FixMyStreet;
 use Carp;
 
 use Module::Pluggable
@@ -13,42 +14,58 @@ use Module::Pluggable
   search_path => ['FixMyStreet::Cobrand'],
   require     => 1;
 
-=item get_allowed_cobrands
+my @ALL_COBRAND_CLASSES = __PACKAGE__->_cobrands;
+
+=head2 get_allowed_cobrands
 
 Return an array reference of allowed cobrand subdomains
 
 =cut
 
 sub get_allowed_cobrands {
-    
-
-    my $allowed_cobrand_string = mySociety::Config::get('ALLOWED_COBRANDS');
+    my $allowed_cobrand_string = FixMyStreet->config('ALLOWED_COBRANDS');
     my @allowed_cobrands = split( /\|/, $allowed_cobrand_string );
     return \@allowed_cobrands;
 }
 
-=item cobrand_handle Q
+=head2 available_cobrand_classes
 
-Given a query that has the name of a site set, return a handle to the Util module for that
-site, if one exists, or zero if not.
+    @available_cobrand_classes =
+      FixMyStreet::Cobrand->available_cobrand_classes();
+
+Return an array of all the classes that were found and that have monikers that
+match the values from get_allowed_cobrands.
 
 =cut
 
-sub cobrand_handle {
-    my $cobrand = shift;
+sub available_cobrand_classes {
+    my $class = shift;
 
-    our %handles;
+    my %allowed = map { $_ => 1 } @{ $class->get_allowed_cobrands };
+    my @avail = grep { $allowed{ $_->moniker } } @ALL_COBRAND_CLASSES;
 
-    # Once we have a handle defined, return it.
-    return $handles{$cobrand} if defined $handles{$cobrand};
+    return @avail;
+}
 
-    my $cobrand_class = ucfirst($cobrand);
-    my $class         = "Cobrands::" . $cobrand_class . "::Util";
-    eval "use $class";
+=head2 get_class_for_host
 
-    eval { $handles{$cobrand} = $class->new };
-    $handles{$cobrand} = 0 if $@;
-    return $handles{$cobrand};
+    $cobrand_class = FixMyStreet::Cobrand->get_class_for_host( $host );
+
+Given a host determine which cobrand we should be using. 
+
+=cut
+
+sub get_class_for_host {
+    my $class = shift;
+    my $host  = shift;
+
+    foreach my $avail ( $class->available_cobrand_classes ) {
+        my $moniker = $avail->moniker;
+        return $avail if $host =~ m{$moniker};
+    }
+
+    # if none match then use the default
+    return 'FixMyStreet::Cobrand::Default';
 }
 
 1;

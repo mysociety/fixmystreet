@@ -22,23 +22,13 @@ Set up general things for this instance
 
 =cut
 
-sub auto {
+sub auto : Private {
     my ( $self, $c ) = @_;
 
-    return;
-}
+    # decide which cobrand this request should use
+    $c->setup_cobrand();
 
-=head2 index
-
-The root page (/)
-
-=cut
-
-sub index : Path : Args(0) {
-    my ( $self, $c ) = @_;
-
-    # Hello World
-    $c->response->body( $c->welcome_message );
+    return 1;
 }
 
 =head2 default

@@ -21,5 +21,14 @@
 
 [% INCLUDE 'tracking_code.html' %]
 
+[% IF c.config.STAGING_SITE %]
+<hr>
+
+<ul>
+    <li>Cobrand: [% c.cobrand.moniker %]</li>
+    <li>extra template path: [% additional_template_paths.join(',') %]</li>
+</ul>
+
+[% END %]
 </body>
 </html>

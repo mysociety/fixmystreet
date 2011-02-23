@@ -24,6 +24,22 @@ sub new {
     return bless $self, $class;
 }
 
+=head2 moniker
+
+    $moniker = $cobrand_class->moniker();
+
+Returns a moniker that can be used to identify this cobrand. By default this is
+the last part of the class name lowercased - eg 'F::C::SomeCobrand' becomes
+'somecobrand'.
+
+=cut
+
+sub moniker {
+    my $class = ref( $_[0] ) || $_[0];    # deal with object or class
+    my ($last_part) = $class =~ m{::(\w+)$};
+    return lc($last_part);
+}
+
 =head2 q
 
     $request = $cobrand->q;
@@ -36,9 +52,24 @@ use a request-related method out of a request-context.
 =cut
 
 sub q {
+    my $self = shift;
     return $self->{request}
       || croak "No request has been set"
       . " - should you be calling this method outside of a web request?";
+}
+
+=head2 path_to_web_templates
+
+    $path = $cobrand->path_to_web_templates(  );
+
+Returns the path to the templates for this cobrand - by default
+"templates/web/$moniker"
+
+=cut
+
+sub path_to_web_templates {
+    my $self = shift;
+    return FixMyStreet->path_to( 'templates/web', $self->moniker );
 }
 
 =head1 site_restriction
@@ -100,7 +131,8 @@ sub base_url { mySociety::Config::get('BASE_URL') }
 
 =head2 enter_postcode_text
 
-Return the text that prompts the user to enter their postcode/place name. Parameter is QUERY
+Return the text that prompts the user to enter their postcode/place name.
+Parameter is QUERY
 
 =cut
 
@@ -124,7 +156,8 @@ sub set_lang_and_domain {
 
 =head2 alert_list_options
 
-Return HTML for a list of alert options for the cobrand, given QUERY and OPTIONS.
+Return HTML for a list of alert options for the cobrand, given QUERY and
+OPTIONS.
 
 =cut
 
@@ -184,7 +217,8 @@ sub prettify_epoch { 0 }
 
 =head2 form_elements
 
-Parameters are FORM_NAME, QUERY. Return HTML for any extra needed elements for FORM_NAME
+Parameters are FORM_NAME, QUERY. Return HTML for any extra needed elements for
+FORM_NAME
 
 =cut
 
@@ -192,7 +226,8 @@ sub form_elements { '' }
 
 =head2 cobrand_data_for_generic_update
 
-Parameter is UPDATE_DATA, a reference to a hash of non-cobranded update data. Return cobrand extra data for the update
+Parameter is UPDATE_DATA, a reference to a hash of non-cobranded update data.
+Return cobrand extra data for the update
 
 =cut
 
@@ -200,7 +235,8 @@ sub cobrand_data_for_generic_update { '' }
 
 =head2 cobrand_data_for_generic_update
 
-Parameter is PROBLEM_DATA, a reference to a hash of non-cobranded problem data. Return cobrand extra data for the problem
+Parameter is PROBLEM_DATA, a reference to a hash of non-cobranded problem data.
+Return cobrand extra data for the problem
 
 =cut
 
@@ -265,7 +301,8 @@ sub extra_update_meta_text { '' }
 
 =head2 url
 
-Given a URL ($_[1]), QUERY, EXTRA_DATA, return a URL with any extra params needed appended to it.
+Given a URL ($_[1]), QUERY, EXTRA_DATA, return a URL with any extra params
+needed appended to it.
 
 =cut
 
@@ -345,7 +382,7 @@ string LOCATION passes the cobrands checks.
 
 =cut
 
-geocoded_string_check { return 1; }
+sub geocoded_string_check { return 1; }
 
 =head2 council_check
 
@@ -354,7 +391,7 @@ COUNCILS pass any extra checks. CONTEXT is where we are on the site.
 
 =cut
 
-sub council_check { return ( 1, '' ) }
+sub council_check { return ( 1, '' ); }
 
 =head2 feed_xsl
 
@@ -424,11 +461,11 @@ Get the value for KEY from the config file for COBRAND
 
 sub get_cobrand_conf {
     my ( $self, $key ) = @_;
-    my $value        = undef;
-    my $cobrand_code = $self->code;
+    my $value           = undef;
+    my $cobrand_moniker = $self->moniker;
 
     my $cobrand_config_file =
-      FixMyStreet->path_to("conf/cobrands/$cobrand_code/general");
+      FixMyStreet->path_to("conf/cobrands/$cobrand_moniker/general");
     my $normal_config_file = FixMyStreet->path_to('conf/general');
 
     if ( -e $cobrand_config_file ) {
@@ -437,7 +474,7 @@ sub get_cobrand_conf {
         # change mySociety::Config so that it can return values from a
         # particular config file instead
         mySociety::Config::set_file("$cobrand_config_file");
-        my $config_key = $key . "_" . uc($cobrand_code);
+        my $config_key = $key . "_" . uc($cobrand_moniker);
         $value = mySociety::Config::get( $config_key, undef );
         mySociety::Config::set_file("$normal_config_file");
     }
@@ -457,11 +494,11 @@ Return if we are the virtual host that sends email for this cobrand
 =cut
 
 sub email_host {
-    my $self            = shift;
-    my $cobrand_code_uc = uc( $self->code );
+    my $self               = shift;
+    my $cobrand_moniker_uc = uc( $self->moniker );
 
     my $email_vhost =
-         mySociety::Config::get("EMAIL_VHOST_$cobrand_code_uc")
+         mySociety::Config::get("EMAIL_VHOST_$cobrand_moniker_uc")
       || mySociety::Config::get("EMAIL_VHOST")
       || '';
 

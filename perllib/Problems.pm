@@ -35,6 +35,16 @@ sub set_site_restriction {
     }
 }
 
+# Set the site restrictions using the new cobrand style - no need to special
+# case 'fixmystreet' as default cobrand takes care of that.
+sub set_site_restriction_with_cobrand_object {
+    my $cobrand = shift;
+
+    my $cobrand_data = $cobrand->extra_data;
+    ( $site_restriction, $site_key ) =
+      $cobrand->site_restriction($cobrand_data);
+}
+
 sub current_timestamp {
     my $current_timestamp = dbh()->selectrow_array('select ms_current_timestamp()');
     return "'$current_timestamp'::timestamp";
