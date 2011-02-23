@@ -1,0 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="[% lang_code %]">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <script type="text/javascript" src="/yui/utilities.js"></script>
+        <script type="text/javascript" src="/js.js"></script>
+
+        <title>[% title | html %][% c.cobrand.site_title %]</title>
+        <style type="text/css">@import url("/css/core.css"); @import url("/css/main.css");</style>
+        <!--[if LT IE 7]>
+             <style type="text/css">@import url("/css/ie6.css");</style>
+        <![endif]-->
+        [% # FIXME - insert RSS links here %]
+    </head>
+    <body>
+
+        <div id="header">
+            <a href="/">[% loc('Fix<span id="my">My</span>Street') %]</a>
+        </div>
+
+        <div id="wrapper"><div id="content">
+
+    [% IF c.config.STAGING_SITE %]
+        <p class="error">
+            [% loc("This is a developer site; things might break at any time, and the database will be periodically deleted.") %]
+        </p>
+    [% END %]    
