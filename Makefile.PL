@@ -16,6 +16,8 @@ requires 'Catalyst::Action::RenderView';
 requires 'Moose';
 requires 'namespace::autoclean';
 requires 'Config::General';
+requires 'Path::Class';
+requires 'Readonly';
 
 test_requires 'Test::More' => '0.88';
 test_requires 'Test::WWW::Mechanize::Catalyst';
