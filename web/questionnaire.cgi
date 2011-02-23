@@ -305,9 +305,10 @@ EOF
 (please note it will not be sent to the council). For example, what was
 your experience of getting the problem fixed?'));
     if ($allow_photo_upload) {
-         $vars{photo_input} = <<EOF;
+        my $photo = _('Photo:');
+        $vars{photo_input} = <<EOF;
 <div id="fileupload_normalUI">
-<label for="form_photo">Photo:</label>
+<label for="form_photo">$photo</label>
 <input type="file" name="photo" id="form_photo">
 </div>
 EOF
