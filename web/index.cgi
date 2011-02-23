@@ -14,6 +14,7 @@ use Error qw(:try);
 use File::Slurp;
 use RABX;
 use CGI::Carp;
+use POSIX qw(strcoll);
 use URI::Escape;
 
 # use Carp::Always;
@@ -551,7 +552,7 @@ please specify the closest point on land.')) unless %$all_councils;
     my $categories = select_all("select area_id, category from contacts
         where deleted='f' and area_id in (" . join(',', keys %$all_councils) . ')');
     if ($q->{site} ne 'emptyhomes') {
-        @$categories = sort { $a->{category} cmp $b->{category} } @$categories;
+        @$categories = sort { strcoll($a->{category}, $b->{category}) } @$categories;
         foreach (@$categories) {
             $council_ok{$_->{area_id}} = 1;
             next if $_->{category} eq _('Other');

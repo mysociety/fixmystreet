@@ -19,7 +19,7 @@ use FindBin;
 use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../commonlib/perllib";
 use Encode;
-use POSIX qw(strftime);
+use POSIX qw(strftime strcoll);
 use Digest::MD5 qw(md5_hex);
 
 use Page;
@@ -198,7 +198,7 @@ sub admin_councils_list ($) {
     my $cobrand = Page::get_cobrand($q);
     my @area_types = Cobrand::area_types($cobrand);
     my $areas = mySociety::MaPit::call('areas', \@area_types);
-    my @councils_ids = sort { $areas->{$a}->{name} cmp $areas->{$b}->{name} } keys %$areas;
+    my @councils_ids = sort { strcoll($areas->{$a}->{name}, $areas->{$b}->{name}) } keys %$areas;
     my $bci_info = dbh()->selectall_hashref("
         select area_id, count(*) as c, count(case when deleted then 1 else null end) as deleted,
             count(case when confirmed then 1 else null end) as confirmed
