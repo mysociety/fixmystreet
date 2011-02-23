@@ -34,6 +34,12 @@ __PACKAGE__->config(
 
     # Disable deprecated behavior needed by old applications
     disable_component_resolution_regex_fallback => 1,
+
+    # Serve anything in web dir that is not a .cgi script
+    static => {    #
+        include_path      => [ __PACKAGE__->path_to("web") . "" ],
+        ignore_extensions => ['cgi'],
+    }
 );
 
 # Start the application

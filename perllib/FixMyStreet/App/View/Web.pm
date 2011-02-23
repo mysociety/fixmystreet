@@ -11,7 +11,8 @@ __PACKAGE__->config(
     INCLUDE_PATH       => [          #
         FixMyStreet::App->path_to( 'templates', 'web', 'default' ),
     ],
-    render_die => 1,
+    render_die     => 1,
+    expose_methods => ['loc'],
 );
 
 =head1 NAME
@@ -24,4 +25,20 @@ TT View for FixMyStreet::App.
 
 =cut
 
+=head2 loc
+
+    [% loc('Some text to localize') %]
+
+Passes the text to the localisation engine for translations.
+
+FIXME - currently just passes through.
+
+=cut
+
+sub loc {
+    my ( $self, $c, @args ) = @_;
+    return join ' ', @args;
+}
+
 1;
+

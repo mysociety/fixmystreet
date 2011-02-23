@@ -16,6 +16,18 @@ FixMyStreet::App::Controller::Root - Root Controller for FixMyStreet::App
 
 =head1 METHODS
 
+=head2 auto
+
+Set up general things for this instance
+
+=cut
+
+sub auto {
+    my ( $self, $c ) = @_;
+
+    return;
+}
+
 =head2 index
 
 The root page (/)
