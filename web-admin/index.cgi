@@ -818,13 +818,13 @@ sub admin_timeline {
     my $date = '';
     my $cobrand_data;
     foreach (reverse sort keys %time) {
-        my $curdate = strftime('%A, %e %B %Y', localtime($_));
+        my $curdate = decode_utf8(strftime('%A, %e %B %Y', localtime($_)));
         if ($date ne $curdate) {
             print '</dl>' if $date;
             print "<h2>$curdate</h2> <dl>";
             $date = $curdate;
         }
-        print '<dt><b>', strftime('%H:%M:%S', localtime($_)), ':</b></dt> <dd>';
+        print '<dt><b>', decode_utf8(strftime('%H:%M:%S', localtime($_))), ':</b></dt> <dd>';
         foreach (@{$time{$_}}) {
             my $type = $_->{type};
             my $name_str = '; ' . sprintf(_("by %s"), ent($_->{name})) . " &lt;" . ent($_->{email}) . "&gt;, '" . ent($_->{title}) . "'";
@@ -852,7 +852,7 @@ sub admin_timeline {
                 my $param2 = $_->{parameter2} || '';
                 print sprintf(_("Alert %d created for %s, type %s, parameters %s / %s"), $_->{id}, ent($_->{email}), $_->{alert_type}, $param, $param2);
             } elsif ($type eq 'alertDel') {
-                my $sub = strftime('%H:%M:%S %e %B %Y', localtime($_->{whensubscribed}));
+                my $sub = decode_utf8(strftime('%H:%M:%S %e %B %Y', localtime($_->{whensubscribed})));
                 print sprintf(_("Alert %d disabled (created %s)"), $_->{id}, $sub);
             }
             print '<br>';

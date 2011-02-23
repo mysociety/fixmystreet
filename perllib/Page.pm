@@ -483,13 +483,13 @@ sub prettify_epoch {
     if (strftime('%Y%m%d', @s) eq strftime('%Y%m%d', @t)) {
         $tt = "$tt " . _('today');
     } elsif (strftime('%Y %U', @s) eq strftime('%Y %U', @t)) {
-        $tt = "$tt, " . strftime('%A', @s);
+        $tt = "$tt, " . decode_utf8(strftime('%A', @s));
     } elsif ($short) {
-        $tt = "$tt, " . strftime('%e %b %Y', @s);
+        $tt = "$tt, " . decode_utf8(strftime('%e %b %Y', @s));
     } elsif (strftime('%Y', @s) eq strftime('%Y', @t)) {
-        $tt = "$tt, " . strftime('%A %e %B %Y', @s);
+        $tt = "$tt, " . decode_utf8(strftime('%A %e %B %Y', @s));
     } else {
-        $tt = "$tt, " . strftime('%a %e %B %Y', @s);
+        $tt = "$tt, " . decode_utf8(strftime('%a %e %B %Y', @s));
     }
     return $tt;
 }
