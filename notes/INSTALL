@@ -39,7 +39,7 @@ sudo apt-get install `cat conf/packages`
 
 # also install these that are available by default on mySoc boxes:
 sudo apt-get install \
-    libregexp-common-perl php5-cli perl-doc libtest-exception-perl
+    libregexp-common-perl php5-cli perl-doc libtest-exception-perl locales-all
 
 
 # SETTING UP APACHE
