@@ -3,7 +3,7 @@
 }
 
 body {
-    font-family: Helmet, Freesans, sans-serif;
+    font-family: Helmet, Freesans, "Helvetica Neue", Arial, sans-serif;
 }
 
 a:link {
@@ -26,7 +26,7 @@ blockquote {
 }
 
 #header {
-    padding: 0.3em 0.5em 0.1em;
+    padding: 0.1em 0.5em 0.15em;
     border-bottom: solid 2px #1a4f7f;
     background-color: #99bfe1;
     color: #1a4f7f;
