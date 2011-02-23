@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: FixMyStreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2011-02-22 22:49+0000\n"
-"PO-Revision-Date: 2011-02-22 21:08MET\n"
+"PO-Revision-Date: 2011-02-23 10:16MET\n"
 "Last-Translator: Petter Reinholdtsen <pere@hungry.com>\n"
 "Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
 "MIME-Version: 1.0\n"
@@ -2006,9 +2006,8 @@ msgid "Council contacts"
 msgstr "Administrasjonskontakter"
 
 #: web-admin/index.cgi:70 web-admin/index.cgi:463
-#, fuzzy
 msgid "Search Reports"
-msgstr "Oppsummeringsrapporter"
+msgstr "Søk i rapporter"
 
 #: web-admin/index.cgi:71 web-admin/index.cgi:782 web-admin/index.cgi:783
 msgid "Timeline"
@@ -2025,27 +2024,27 @@ msgstr "FiksGataMi-admin:"
 #: web-admin/index.cgi:153
 #, perl-format
 msgid "<strong>%d</strong> live problems"
-msgstr ""
+msgstr "<strong>%d</strong> aktive problemer"
 
 #: web-admin/index.cgi:154
-#, fuzzy, perl-format
+#, perl-format
 msgid "%d live updates"
-msgstr "Send meg oppdateringer"
+msgstr "%d aktive oppdateringer"
 
 #: web-admin/index.cgi:155
 #, perl-format
 msgid "%d confirmed alerts, %d unconfirmed"
-msgstr ""
+msgstr "%d bekreftede varsler, %d ubekreftede"
 
 #: web-admin/index.cgi:156
 #, perl-format
 msgid "%d questionnaires sent &ndash; %d answered (%d%%)"
-msgstr ""
+msgstr "%d spørreskjema sendt &ndash; %d besvart (%d%%)"
 
 #: web-admin/index.cgi:157
 #, perl-format
 msgid "%d council contacts &ndash; %d confirmed, %d unconfirmed"
-msgstr ""
+msgstr "%d administrasjonskontakter &ndash; %d bekreftet, %d ubekreftet"
 
 #: web-admin/index.cgi:162
 msgid "Graph of problem creation by status over time"
@@ -2053,11 +2052,11 @@ msgstr "Graf over problemoppretting fordelt på status over tid"
 
 #: web-admin/index.cgi:165
 msgid "Problem breakdown by state"
-msgstr ""
+msgstr "Problemfordeling for tilstand"
 
 #: web-admin/index.cgi:170
 msgid "Update breakdown by state"
-msgstr ""
+msgstr "Oppdateringsfordeling for tilstand"
 
 #: web-admin/index.cgi:186
 msgid "Diligency prize league table"
@@ -2066,7 +2065,7 @@ msgstr ""
 #: web-admin/index.cgi:190
 #, perl-format
 msgid "%d edits by %d"
-msgstr ""
+msgstr "%d redigeringer av %d"
 
 #: web-admin/index.cgi:193
 msgid "No edits have yet been made."
@@ -2081,9 +2080,9 @@ msgid "None"
 msgstr "Ingen"
 
 #: web-admin/index.cgi:222
-#, fuzzy, perl-format
+#, perl-format
 msgid "%d addresses"
-msgstr "%d uker"
+msgstr "%d adresser"
 
 #: web-admin/index.cgi:228
 msgid "No info at all"
@@ -2211,17 +2210,15 @@ msgstr "Søk:"
 
 #: web-admin/index.cgi:476 web-admin/index.cgi:655
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #: web-admin/index.cgi:476
-#, fuzzy
 msgid "Title"
-msgstr "Tidslinje"
+msgstr "Tittel"
 
 #: web-admin/index.cgi:476
-#, fuzzy
 msgid "Council"
-msgstr "Administrasjoner"
+msgstr "Administrasjon"
 
 #: web-admin/index.cgi:476 web-admin/index.cgi:655
 msgid "Cobrand"
@@ -2229,35 +2226,31 @@ msgstr ""
 
 #: web-admin/index.cgi:476 web-admin/index.cgi:655
 msgid "Created"
-msgstr ""
+msgstr "Opprettet"
 
 #: web-admin/index.cgi:476 web-admin/index.cgi:655
-#, fuzzy
 msgid "State"
-msgstr "Tilstand:"
+msgstr "Tilstand"
 
 #: web-admin/index.cgi:476
-#, fuzzy
 msgid "When sent"
-msgstr "Når redigert"
+msgstr "Når sendt"
 
 #: web-admin/index.cgi:476 web-admin/index.cgi:655
 msgid "*"
-msgstr ""
+msgstr "*"
 
 #: web-admin/index.cgi:498 web-admin/index.cgi:632
-#, fuzzy
 msgid "Confirmed:"
-msgstr "Bekreftet"
+msgstr "Bekreftet:"
 
 #: web-admin/index.cgi:499
-#, fuzzy
 msgid "Fixed:"
-msgstr "Løst"
+msgstr "Løst:"
 
 #: web-admin/index.cgi:500
 msgid "Last&nbsp;update:"
-msgstr ""
+msgstr "Last&nbsp;oppdatering:"
 
 #: web-admin/index.cgi:516 web-admin/index.cgi:674
 msgid "Edit"
@@ -2282,20 +2275,19 @@ msgstr "Rediger problem %d"
 
 #: web-admin/index.cgi:590
 msgid "used map"
-msgstr ""
+msgstr "brukte kart"
 
 #: web-admin/index.cgi:590
 msgid "didn't use map"
-msgstr ""
+msgstr "brukte ikke kart"
 
 #: web-admin/index.cgi:602 web-admin/index.cgi:732
 msgid "Remove photo (can't be undone!)"
-msgstr ""
+msgstr "Fjern bilde (kan ikke gjøres om!)"
 
 #: web-admin/index.cgi:607
-#, fuzzy
 msgid "Anonymous:"
-msgstr "Anonym"
+msgstr "Anonym:"
 
 #: web-admin/index.cgi:608 web-admin/index.cgi:736
 msgid "State:"
@@ -2330,45 +2322,40 @@ msgid "Resend report"
 msgstr "Send rapport på nytt"
 
 #: web-admin/index.cgi:620
-#, fuzzy
 msgid "View report on site"
-msgstr "Rapport for %s"
+msgstr "Se rapport på nettstedet"
 
 #: web-admin/index.cgi:623
 msgid "Co-ordinates:"
-msgstr ""
+msgstr "Koordinater:"
 
 #: web-admin/index.cgi:623
 msgid "originally entered"
 msgstr ""
 
 #: web-admin/index.cgi:624
-#, fuzzy
 msgid "For council(s):"
-msgstr "kommune"
+msgstr "For administrasjon(er):"
 
 #: web-admin/index.cgi:624
 msgid "other areas:"
-msgstr ""
+msgstr "andre områder:"
 
 #: web-admin/index.cgi:631 web-admin/index.cgi:752
 msgid "Created:"
-msgstr ""
+msgstr "Opprettet:"
 
 #: web-admin/index.cgi:633
-#, fuzzy
 msgid "Sent:"
-msgstr "Tema:"
+msgstr "Sendt:"
 
 #: web-admin/index.cgi:634
-#, fuzzy
 msgid "Last update:"
-msgstr "Verdier oppdatert"
+msgstr "Siste oppdatering:"
 
 #: web-admin/index.cgi:635
-#, fuzzy
 msgid "Service:"
-msgstr "Søk:"
+msgstr "Tjeneste:"
 
 #: web-admin/index.cgi:636 web-admin/index.cgi:750
 msgid "Cobrand:"
@@ -2379,9 +2366,8 @@ msgid "Cobrand data:"
 msgstr ""
 
 #: web-admin/index.cgi:638
-#, fuzzy
 msgid "Going to send questionnaire?"
-msgstr "Lever spørreskjema"
+msgstr "Skal det sendes spørreskjema?"
 
 #: web-admin/index.cgi:642 web-admin/index.cgi:756
 msgid "Submit changes"
@@ -2389,7 +2375,7 @@ msgstr "Send inn endringer"
 
 #: web-admin/index.cgi:655
 msgid "Text"
-msgstr ""
+msgstr "Tekst"
 
 #: web-admin/index.cgi:701
 msgid "Problem marked as open."
@@ -2401,62 +2387,61 @@ msgid "Editing update %d"
 msgstr "Redigerer oppdatering %d"
 
 #: web-admin/index.cgi:745
-#, fuzzy
 msgid "View update on site"
-msgstr "Oppdateringer av {{title}}"
+msgstr "Vis oppdateringer på nettstedet"
 
 #: web-admin/index.cgi:746
 msgid "Text:"
-msgstr ""
+msgstr "Tekst:"
 
 #: web-admin/index.cgi:748
 msgid "(blank to go anonymous)"
-msgstr ""
+msgstr "(blank for å være anonym)"
 
 #: web-admin/index.cgi:829
 #, perl-format
 msgid "by %s"
-msgstr ""
+msgstr "av %s"
 
 #: web-admin/index.cgi:831
-#, fuzzy, perl-format
+#, perl-format
 msgid "Problem %d created"
-msgstr "Saker i dette område"
+msgstr "Problem %d opprettet"
 
 #: web-admin/index.cgi:835
-#, fuzzy, perl-format
+#, perl-format
 msgid "Problem %s confirmed"
-msgstr "Alle bekreftet"
+msgstr "Problem %s bekreftet"
 
 #: web-admin/index.cgi:839
-#, fuzzy, perl-format
+#, perl-format
 msgid "Problem %s sent to council %s"
-msgstr "(ikke rapportert til administrasjonen)"
+msgstr "Problem %s sendt til administrasjon %s"
 
 #: web-admin/index.cgi:841
-#, fuzzy, perl-format
+#, perl-format
 msgid "Questionnaire %d sent for problem %d"
-msgstr "Spørreskjema fylt inn av feilrapportøren"
+msgstr "Spørreskjema %d sendt for problem %d"
 
 #: web-admin/index.cgi:843
-#, fuzzy, perl-format
+#, perl-format
 msgid "Questionnaire %d answered for problem %d, %s to %s"
-msgstr "Spørreskjema fylt inn av feilrapportøren"
+msgstr "Spørreskjema %d fylt inn for problem %d, %s til %s"
 
 #: web-admin/index.cgi:848
 #, perl-format
 msgid "Update %s created for problem %d; by %s"
-msgstr ""
+msgstr "Oppdatering %s opprettet for problem %d, av %s"
 
 #: web-admin/index.cgi:852
 #, perl-format
 msgid "Alert %d created for %s, type %s, parameters %s / %s"
-msgstr ""
+msgstr "Varsel %d opprettet for %s, type %s, parameter %s / %s"
 
 #: web-admin/index.cgi:855
 #, perl-format
 msgid "Alert %d disabled (created %s)"
-msgstr ""
+msgstr "Varsel %d koblet ut (opprettet %s)"
 
 #. Please leave the first word "Subject:" untranslated
 #: templates/emails/alert-confirm
@@ -3177,7 +3162,7 @@ msgstr ""
 "Hvis det er en mer passende epostadresse for meldinger om\n"
 "<?=$values['category_footer']?>, vær så snill å gi oss beskjed ved å besøke "
 "<http://www.fiksgatami.no/contact>.\n"
-"Dette vil bidra til å forbedre tjenesten for de lokale folkene. Vi\n"
+"Dette vil bidra til å forbedre tjenesten for lokalbefolkningen. Vi\n"
 "tar også gjerne imot andre tilbakemeldinger om du har noen. ]\n"
 "\n"
 
