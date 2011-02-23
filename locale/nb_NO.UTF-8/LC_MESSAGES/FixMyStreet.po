@@ -24,9 +24,8 @@ msgid "Report Empty Homes"
 msgstr "Rapporter tomme hjem"
 
 #: perllib/Cobrands/Fiksgatami/Util.pm:27
-#, fuzzy
 msgid "Enter a nearby postcode, or street name and area"
-msgstr "Skriv inn postnummer i nærheten, eller veinavn og sted:"
+msgstr "Skriv inn postnummer i nærheten, eller veinavn og sted"
 
 #: perllib/Page.pm:83
 #, perl-format
@@ -977,9 +976,8 @@ msgid "Viewing a location"
 msgstr "Ser på et sted"
 
 #: web/index.cgi:121
-#, fuzzy
 msgid "Enter a nearby GB postcode, or street name and area"
-msgstr "Skriv inn GB-postnummer i nærheten, eller veinavn og sted:"
+msgstr "Skriv inn GB-postnummer i nærheten, eller veinavn og sted"
 
 #: web/index.cgi:135
 msgid "Report, view, or discuss local problems"
