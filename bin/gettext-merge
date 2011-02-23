@@ -1,0 +1,45 @@
+#!/bin/bash
+#
+# bin/gettext-merge
+# Update all .po files from new .pot
+#
+# Copyright (c) 2011 UK Citizens Online Democracy. All rights reserved.
+# Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
+
+# Yuck
+if [ -e ../../locale ]
+then
+    cd ../../
+else if [ -e ../locale ]
+then
+    cd ../
+else if [ -e locale ]
+then
+    cd .
+else 
+    echo "Please run with current directory fixmystreet"
+    exit 1
+fi
+fi
+fi
+
+for X in locale/*.UTF-8
+do
+    if [ -d $X ]
+    then
+        cd $X/LC_MESSAGES
+        echo $X
+        if [ -e EmptyHomes.po ]
+        then
+            msgmerge -o New.po EmptyHomes.po ../../FixMyStreet-EmptyHomes.po
+            mv New.po EmptyHomes.po
+        fi
+        if [ -e FixMyStreet.po ]
+        then
+            msgmerge -o New.po FixMyStreet.po ../../FixMyStreet.po
+            mv New.po FixMyStreet.po
+        fi
+        cd - >/dev/null
+    fi
+done
+

@@ -118,7 +118,7 @@ sub front_page {
     my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'postcodeForm', $q);
     my $form_action = Cobrand::url($cobrand, '/', $q);
     my $question = Cobrand::enter_postcode_text($cobrand, $q);
-    $question = _("Enter a nearby GB postcode, or street name and area:")
+    $question = _("Enter a nearby GB postcode, or street name and area")
         unless $question;
     my %params = ('context' => 'front-page');
     $params{status_code} = $status_code if $status_code;
@@ -127,7 +127,7 @@ sub front_page {
         pc_h => $pc_h, 
         cobrand_form_elements => $cobrand_form_elements,
         form_action => $form_action,
-        question => $question,
+        question => "$question:",
     );
     my $cobrand_front_page = Page::template_include('front-page', $q, Page::template_root($q), %vars);
     return ($cobrand_front_page, %params) if $cobrand_front_page;
@@ -165,7 +165,7 @@ EOF
     }
     my $activate = _("Go");
     $out .= <<EOF;
-<label for="pc">$question</label>
+<label for="pc">$question:</label>
 &nbsp;<input type="text" name="pc" value="$pc_h" id="pc" size="10" maxlength="200">
 &nbsp;<input type="submit" value="$activate" id="submit">
 $cobrand_form_elements

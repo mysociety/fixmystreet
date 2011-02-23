@@ -54,7 +54,7 @@ sub site_title {
 
 sub enter_postcode_text {
     my ($self,$q) = @_;
-    return 'Enter a Barnet postcode, or street name and area:';
+    return 'Enter a Barnet postcode, or street name and area';
 }
 
 =item council_check COUNCILS QUERY CONTEXT

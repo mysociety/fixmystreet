@@ -24,7 +24,7 @@ sub set_lang_and_domain {
 
 sub enter_postcode_text {
     my ($self, $q) = @_;
-    return _('Enter a nearby postcode, or street name and area:');
+    return _('Enter a nearby postcode, or street name and area');
 }
 
 # Is also adding language parameter
