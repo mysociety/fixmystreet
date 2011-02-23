@@ -253,12 +253,10 @@ sub generate_rss ($$$;$$$$) {
     throw FixMyStreet::Alert::Error('Unknown alert type') unless $alert_type;
 
     # Do our own encoding
-
     my $rss = new XML::RSS( version => '2.0', encoding => 'UTF-8',
         stylesheet=> $xsl, encode_output => undef );
     $rss->add_module(prefix=>'georss', uri=>'http://www.georss.org/georss');
 
-    # XXX: Not generic
     # Only apply a site restriction if the alert uses the problem table
     $site_restriction = '' unless $alert_type->{item_table} eq 'problem';
     my $query = 'select * from ' . $alert_type->{item_table} . ' where '
@@ -274,19 +272,19 @@ sub generate_rss ($$$;$$$$) {
         $q->execute();
     }
 
-    my @months = ('', 'January','February','March','April','May','June',
-        'July','August','September','October','November','December');
     while (my $row = $q->fetchrow_hashref) {
-        # XXX: How to do this properly? name might be null in comment table, hence needing this
-        my $pubDate;
+
         $row->{name} ||= 'anonymous';
-        # And we want pretty dates... :-/
+
+        my $pubDate;
         if ($row->{confirmed}) {
             $row->{confirmed} =~ /^(\d\d\d\d)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)/;
             $pubDate = mySociety::Locale::in_gb_locale {
                 strftime("%a, %d %b %Y %H:%M:%S %z", $6, $5, $4, $3, $2-1, $1-1900, -1, -1, 0)
             };
-            $row->{confirmed} = ordinal($3+0) . ' ' . $months[$2];
+            $row->{confirmed} = strftime("%e %B", $6, $5, $4, $3, $2-1, $1-1900, -1, -1, 0);
+            $row->{confirmed} =~ s/^\s+//;
+            $row->{confirmed} =~ s/^(\d+)/ordinal($1)/e if $mySociety::Locale::lang eq 'en-gb';
         }
 
         (my $title = _($alert_type->{item_title})) =~ s/{{(.*?)}}/$row->{$1}/g;
@@ -301,7 +299,6 @@ sub generate_rss ($$$;$$$$) {
         );
         $item{pubDate} = $pubDate if $pubDate;
 
-        # XXX: Not-very-generic extensions, at all
         my $display_photos = Cobrand::allow_photo_display($cobrand);    
         if ($display_photos && $row->{photo}) {
             $item{description} .= ent("\n<br><img src=\"". Cobrand::url($cobrand, $url, $http_q) . "/photo?id=$row->{id}\">");
