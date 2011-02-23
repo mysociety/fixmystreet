@@ -13,7 +13,7 @@ use mySociety::Web qw(ent);
 
 sub header_js {
     return '
-<script type="text/javascript" src="/js/OpenLayers.js"></script>
+<script type="text/javascript" src="/jslib/OpenLayers-2.10/OpenLayers.js"></script>
 <script type="text/javascript" src="/js/map-OpenStreetMap.js"></script>
 ';
 }
