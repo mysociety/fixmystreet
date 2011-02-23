@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2011-02-23 12:34+0000\n"
+"POT-Creation-Date: 2011-02-23 13:09+0000\n"
 "PO-Revision-Date: 2009-07-10 14:20-0000\n"
 "Last-Translator: Mark Smith <Mark.Smith@trosol.co.uk>\n"
 "Language-Team: mySociety\n"
@@ -877,15 +877,15 @@ msgstr ""
 "i ni'ch holi chi, a ydych erioed wedi rhoi gwybod i'r cyngor am eiddo gwag "
 "cyn hyn?"
 
-#: web/confirm.cgi:190 web/questionnaire.cgi:234 web-admin/index.cgi:340
-#: web-admin/index.cgi:341 web-admin/index.cgi:503 web-admin/index.cgi:590
-#: web-admin/index.cgi:608
+#: web/confirm.cgi:190 web/questionnaire.cgi:234 web/questionnaire.cgi:322
+#: web-admin/index.cgi:340 web-admin/index.cgi:341 web-admin/index.cgi:503
+#: web-admin/index.cgi:590 web-admin/index.cgi:608
 msgid "Yes"
 msgstr "Ydw"
 
-#: web/confirm.cgi:191 web/questionnaire.cgi:235 web-admin/index.cgi:340
-#: web-admin/index.cgi:341 web-admin/index.cgi:503 web-admin/index.cgi:590
-#: web-admin/index.cgi:608
+#: web/confirm.cgi:191 web/questionnaire.cgi:235 web/questionnaire.cgi:323
+#: web-admin/index.cgi:340 web-admin/index.cgi:341 web-admin/index.cgi:503
+#: web-admin/index.cgi:590 web-admin/index.cgi:608
 msgid "No"
 msgstr "Nac ydw"
 
@@ -1797,6 +1797,12 @@ msgstr ""
 "(sylwer na fydd yn cael ei anfon at y cyngor). Er enghraifft, beth oedd eich "
 "profiad\n"
 "o gael yr eiddo gwag yn ôl mewn defnydd?"
+
+#: web/questionnaire.cgi:321
+msgid ""
+"Would you like to receive another questionnaire in 4 weeks, reminding you to "
+"check the status?"
+msgstr ""
 
 #: web/reports.cgi:193 web/reports.cgi:240
 msgid "Summary reports"

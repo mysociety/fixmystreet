@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2011-02-23 12:34+0000\n"
+"POT-Creation-Date: 2011-02-23 13:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
@@ -737,15 +737,15 @@ msgid ""
 "reported a problem to a council before?"
 msgstr ""
 
-#: web/confirm.cgi:190 web/questionnaire.cgi:234 web-admin/index.cgi:340
-#: web-admin/index.cgi:341 web-admin/index.cgi:503 web-admin/index.cgi:590
-#: web-admin/index.cgi:608
+#: web/confirm.cgi:190 web/questionnaire.cgi:234 web/questionnaire.cgi:322
+#: web-admin/index.cgi:340 web-admin/index.cgi:341 web-admin/index.cgi:503
+#: web-admin/index.cgi:590 web-admin/index.cgi:608
 msgid "Yes"
 msgstr ""
 
-#: web/confirm.cgi:191 web/questionnaire.cgi:235 web-admin/index.cgi:340
-#: web-admin/index.cgi:341 web-admin/index.cgi:503 web-admin/index.cgi:590
-#: web-admin/index.cgi:608
+#: web/confirm.cgi:191 web/questionnaire.cgi:235 web/questionnaire.cgi:323
+#: web-admin/index.cgi:340 web-admin/index.cgi:341 web-admin/index.cgi:503
+#: web-admin/index.cgi:590 web-admin/index.cgi:608
 msgid "No"
 msgstr ""
 
@@ -1518,6 +1518,12 @@ msgid ""
 "If you wish to leave a public update on the problem, please enter it here\n"
 "(please note it will not be sent to the council). For example, what was\n"
 "your experience of getting the problem fixed?"
+msgstr ""
+
+#: web/questionnaire.cgi:321
+msgid ""
+"Would you like to receive another questionnaire in 4 weeks, reminding you to "
+"check the status?"
 msgstr ""
 
 #: web/reports.cgi:193 web/reports.cgi:240
