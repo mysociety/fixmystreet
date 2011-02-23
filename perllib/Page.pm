@@ -56,7 +56,7 @@ sub do_fastcgi {
 
     try {
         my $W = new mySociety::WatchUpdate();
-        while (my $q = new mySociety::Web()) {
+        while (my $q = new mySociety::Web(unicode => 1)) {
             next if $lm && $q->Maybe304($lm);
             $lastmodified = $lm;
             microsite($q);
@@ -305,7 +305,7 @@ sub footer {
     my ($q, %params) = @_;
 
     my $pc = $q->param('pc') || '';
-    $pc = '?pc=' . URI::Escape::uri_escape($pc) if $pc;
+    $pc = '?pc=' . URI::Escape::uri_escape_utf8($pc) if $pc;
 
     my $creditline = _('Built by <a href="http://www.mysociety.org/">mySociety</a>, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.');
     if (mySociety::Config::get('COUNTRY') eq 'NO') {
@@ -483,13 +483,13 @@ sub prettify_epoch {
     if (strftime('%Y%m%d', @s) eq strftime('%Y%m%d', @t)) {
         $tt = "$tt " . _('today');
     } elsif (strftime('%Y %U', @s) eq strftime('%Y %U', @t)) {
-        $tt = "$tt, " . strftime('%A', @s);
+        $tt = "$tt, " . decode_utf8(strftime('%A', @s));
     } elsif ($short) {
-        $tt = "$tt, " . strftime('%e %b %Y', @s);
+        $tt = "$tt, " . decode_utf8(strftime('%e %b %Y', @s));
     } elsif (strftime('%Y', @s) eq strftime('%Y', @t)) {
-        $tt = "$tt, " . strftime('%A %e %B %Y', @s);
+        $tt = "$tt, " . decode_utf8(strftime('%A %e %B %Y', @s));
     } else {
-        $tt = "$tt, " . strftime('%a %e %B %Y', @s);
+        $tt = "$tt, " . decode_utf8(strftime('%a %e %B %Y', @s));
     }
     return $tt;
 }

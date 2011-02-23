@@ -24,7 +24,7 @@ sub set_lang_and_domain {
 
 sub enter_postcode_text {
     my ($self, $q) = @_;
-    return _('Enter a nearby postcode, or street name and area:');
+    return _('Enter a nearby postcode, or street name and area');
 }
 
 # Is also adding language parameter
@@ -32,6 +32,12 @@ sub disambiguate_location {
     my ($self, $s, $q) = @_;
     $s = "hl=no&gl=no&$s";
     return $s;
+}
+
+sub geocoded_string_check {
+    my ($self, $s) = @_;
+    return 1 if $s =~ /, Norge/;
+    return 0;
 }
 
 sub area_types {

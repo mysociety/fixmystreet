@@ -16,16 +16,8 @@ my $lastmodified = (stat $0)[9];
 sub main {
     my $q = shift;
     print Page::header($q, title=>_('Frequently Asked Questions'));
-    if ($q->{site} eq 'emptyhomes') {
-        my $lang = $mySociety::Locale::lang;
-        if ($lang eq 'cy') {
-            print File::Slurp::read_file("$FindBin::Bin/../templates/website/faq-eha.cy.html");
-        } else {
-            print File::Slurp::read_file("$FindBin::Bin/../templates/website/faq-eha.html");
-        }
-    } else {
-        print File::Slurp::read_file("$FindBin::Bin/../templates/website/faq.html");
-    }
+    my $lang = $mySociety::Locale::lang;
+    print Page::template_include("faq-$lang", $q, Page::template_root($q));
     print Page::footer($q);
 }
 Page::do_fastcgi(\&main, $lastmodified);

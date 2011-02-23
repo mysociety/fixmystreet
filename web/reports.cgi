@@ -12,6 +12,7 @@
 use strict;
 use Standard;
 use Encode;
+use POSIX qw(strcoll);
 use URI::Escape;
 use FixMyStreet::Alert;
 use mySociety::MaPit;
@@ -201,7 +202,7 @@ sub main {
             print '<th>' . _('Old problems,<br>state unknown') . '</th>';
         }
         print '<th>' . _('Recently fixed') . '</th><th>' . _('Older fixed') . '</th></tr>';
-        foreach (sort { $areas_info->{$a}->{name} cmp $areas_info->{$b}->{name} } keys %$areas_info) {
+        foreach (sort { strcoll($areas_info->{$a}->{name}, $areas_info->{$b}->{name}) } keys %$areas_info) {
             next if mySociety::Config::get('COUNTRY') eq 'NO' && $_ eq 301; # Only want one Oslo
             print '<tr align="center"';
             ++$c;

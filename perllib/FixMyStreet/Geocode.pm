@@ -106,6 +106,7 @@ sub string {
             || mySociety::Config::get('COUNTRY') ne 'GB';
         $url .= '&sensor=false&key=' . mySociety::Config::get('GOOGLE_MAPS_API_KEY');
         $js = LWP::Simple::get($url);
+        $js = encode_utf8($js) if utf8::is_utf8($js);
         File::Path::mkpath($cache_dir);
         File::Slurp::write_file($cache_file, $js) if $js && $js !~ /"code":6[12]0/;
     }

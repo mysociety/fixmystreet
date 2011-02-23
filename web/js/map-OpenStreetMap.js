@@ -4,7 +4,7 @@ YAHOO.util.Event.onContentReady('map', function() {
             new OpenLayers.Control.ArgParser(),
             //new OpenLayers.Control.LayerSwitcher(),
             new OpenLayers.Control.Navigation(),
-            new OpenLayers.Control.PanZoom()
+            new OpenLayers.Control.PanZoomFMS()
         ],
         displayProjection: new OpenLayers.Projection("EPSG:4326")
     });
@@ -48,6 +48,43 @@ YAHOO.util.Event.onContentReady('map', function() {
     }
     fixmystreet.map.addLayer(markers);
 
+});
+
+/* Overridding the buttonDown function of PanZoom so that it does
+   zoomTo(0) rather than zoomToMaxExtent()
+*/
+OpenLayers.Control.PanZoomFMS = OpenLayers.Class(OpenLayers.Control.PanZoom, {
+    buttonDown: function (evt) {
+        if (!OpenLayers.Event.isLeftClick(evt)) {
+            return;
+        }
+
+        switch (this.action) {
+            case "panup":
+                this.map.pan(0, -this.getSlideFactor("h"));
+                break;
+            case "pandown":
+                this.map.pan(0, this.getSlideFactor("h"));
+                break;
+            case "panleft":
+                this.map.pan(-this.getSlideFactor("w"), 0);
+                break;
+            case "panright":
+                this.map.pan(this.getSlideFactor("w"), 0);
+                break;
+            case "zoomin":
+                this.map.zoomIn();
+                break;
+            case "zoomout":
+                this.map.zoomOut();
+                break;
+            case "zoomworld":
+                this.map.zoomTo(0);
+                break;
+        }
+
+        OpenLayers.Event.stop(evt);
+    }
 });
 
 OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {                

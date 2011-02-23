@@ -12,9 +12,9 @@ use Utils;
 use Encode;
 use Error qw(:try);
 use File::Slurp;
-use LWP::Simple;
 use RABX;
 use CGI::Carp;
+use POSIX qw(strcoll);
 use URI::Escape;
 
 # use Carp::Always;
@@ -118,7 +118,7 @@ sub front_page {
     my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'postcodeForm', $q);
     my $form_action = Cobrand::url($cobrand, '/', $q);
     my $question = Cobrand::enter_postcode_text($cobrand, $q);
-    $question = _("Enter a nearby GB postcode, or street name and area:")
+    $question = _("Enter a nearby GB postcode, or street name and area")
         unless $question;
     my %params = ('context' => 'front-page');
     $params{status_code} = $status_code if $status_code;
@@ -127,7 +127,7 @@ sub front_page {
         pc_h => $pc_h, 
         cobrand_form_elements => $cobrand_form_elements,
         form_action => $form_action,
-        question => $question,
+        question => "$question:",
     );
     my $cobrand_front_page = Page::template_include('front-page', $q, Page::template_root($q), %vars);
     return ($cobrand_front_page, %params) if $cobrand_front_page;
@@ -165,7 +165,7 @@ EOF
     }
     my $activate = _("Go");
     $out .= <<EOF;
-<label for="pc">$question</label>
+<label for="pc">$question:</label>
 &nbsp;<input type="text" name="pc" value="$pc_h" id="pc" size="10" maxlength="200">
 &nbsp;<input type="submit" value="$activate" id="submit">
 $cobrand_form_elements
@@ -552,7 +552,7 @@ please specify the closest point on land.')) unless %$all_councils;
     my $categories = select_all("select area_id, category from contacts
         where deleted='f' and area_id in (" . join(',', keys %$all_councils) . ')');
     if ($q->{site} ne 'emptyhomes') {
-        @$categories = sort { $a->{category} cmp $b->{category} } @$categories;
+        @$categories = sort { strcoll($a->{category}, $b->{category}) } @$categories;
         foreach (@$categories) {
             $council_ok{$_->{area_id}} = 1;
             next if $_->{category} eq _('Other');
@@ -638,7 +638,7 @@ If this is not the correct location, simply click on the map again. '));
     $vars{page_heading} = $q->h1(_('Reporting a problem'));
 
     if ($details eq 'all') {
-        my $council_list = join('</strong> or <strong>', map { $_->{name} } values %$all_councils);
+        my $council_list = join('</strong>' . _(' or ') . '<strong>', map { $_->{name} } values %$all_councils);
         if ($q->{site} eq 'emptyhomes'){
             $vars{text_help} = '<p>' . sprintf(_('All the information you provide here will be sent to <strong>%s</strong>.
 On the site, we will show the subject and details of the problem, plus your
@@ -945,7 +945,7 @@ sub display_location {
     
     my $rss_url;
     if ($pc_h) {
-        $rss_url = "/rss/pc/" . URI::Escape::uri_escape($pc_h);
+        $rss_url = "/rss/pc/" . URI::Escape::uri_escape_utf8($pc_h);
     } else {
         $rss_url = "/rss/l/$short_lat,$short_lon";
     }

@@ -101,7 +101,8 @@ sub recent_photos {
     my ($num, $lat, $lon, $dist) = @_;
     my $probs;
     if (defined $lat) {
-        my $key = "recent_photos:$site_key:$num:$lat:$lon:$dist";
+        my $dist2 = $dist; # Create a copy of the variable to stop it being stringified into a locale in the next line!
+        my $key = "recent_photos:$site_key:$num:$lat:$lon:$dist2";
         $probs = Memcached::get($key);
         unless ($probs) {
             $probs = mySociety::Locale::in_gb_locale {

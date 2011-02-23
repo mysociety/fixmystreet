@@ -90,9 +90,6 @@ sub alert_list {
         };
     }
 
-    # truncate the lat,lon for nicer urls
-    ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );
-    
     return FixMyStreet::Geocode::list_choices($error, '/alert', $q) if ref($error) eq 'ARRAY';
     return alert_front_page($q, $error) if $error;
 
@@ -105,6 +102,9 @@ sub alert_list {
         $pretty_pc =~ s/ /&nbsp;/;
     }
 
+    # truncate the lat,lon for nicer urls
+    ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );
+    
     my $errors = '';
     $errors = '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>' if @errors;
 
@@ -296,9 +296,9 @@ feed, or enter your email address to subscribe to an email alert.'));
 EOF
     my $rss_feed;
     if ($pretty_pc_text) {
-        $rss_feed = Cobrand::url($cobrand, "/rss/pc/$pretty_pc_text/", $q);
+        $rss_feed = Cobrand::url($cobrand, "/rss/pc/$pretty_pc_text", $q);
     } else {
-        $rss_feed = Cobrand::url($cobrand, "/rss/l/$lat,$lon/", $q);
+        $rss_feed = Cobrand::url($cobrand, "/rss/l/$lat,$lon", $q);
     }
 
     my $default_link = Cobrand::url($cobrand, "/alert?type=local;feed=local:$lat:$lon", $q);
@@ -307,10 +307,10 @@ EOF
     $out .= " <a href='$rss_feed'><img src='/i/feed.png' width='16' height='16' title='"
         . _('RSS feed of nearby problems') . "' alt='" . _('RSS feed') . "' border='0'></a>";
     $out .= '</p> <p id="rss_local_alt">' . _('(alternatively the RSS feed can be customised, within');
-    my $rss_feed_2k  = Cobrand::url($cobrand, $rss_feed.'2', $q);
-    my $rss_feed_5k  = Cobrand::url($cobrand, $rss_feed.'5', $q);
-    my $rss_feed_10k = Cobrand::url($cobrand, $rss_feed.'10', $q);
-    my $rss_feed_20k = Cobrand::url($cobrand, $rss_feed.'20', $q);
+    my $rss_feed_2k  = Cobrand::url($cobrand, $rss_feed.'/2', $q);
+    my $rss_feed_5k  = Cobrand::url($cobrand, $rss_feed.'/5', $q);
+    my $rss_feed_10k = Cobrand::url($cobrand, $rss_feed.'/10', $q);
+    my $rss_feed_20k = Cobrand::url($cobrand, $rss_feed.'/20', $q);
     $out .= <<EOF;
  <a href="$rss_feed_2k">2km</a> / <a href="$rss_feed_5k">5km</a>
 / <a href="$rss_feed_10k">10km</a> / <a href="$rss_feed_20k">20km</a>)
@@ -437,8 +437,8 @@ sub alert_rss {
         $url .= "?" . $extra_params if ($extra_params);
         print $q->redirect($url);
         return;
-    } elsif ($feed =~ /^local:(\d+):(\d+)$/) {
-        $url = $base_url . '/rss/n/' . $1 . ',' . $2;
+    } elsif ($feed =~ /^local:([\d\.-]+):([\d\.-]+)$/) {
+        $url = $base_url . '/rss/l/' . $1 . ',' . $2;
         $url .= "?" . $extra_params if ($extra_params);
         print $q->redirect($url);
         return;
