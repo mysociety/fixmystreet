@@ -9,7 +9,7 @@ use FixMyStreet::App;
 __PACKAGE__->config(
     TEMPLATE_EXTENSION => '.html',
     INCLUDE_PATH       => [          #
-        FixMyStreet::App->path_to( 'templates', 'web' ),
+        FixMyStreet::App->path_to( 'templates', 'web', 'default' ),
     ],
     render_die => 1,
 );
