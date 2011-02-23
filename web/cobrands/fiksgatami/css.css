@@ -1,3 +1,64 @@
 #front_stats div {
-    width: 6em;
+    width: 6.5em;
 }
+
+body {
+    font-family: Helmet, Freesans, sans-serif;
+}
+
+a:link {
+    color: #215d93;
+}
+a:visited {
+    color: #518dc3;
+}
+a:hover, a:active {
+    color: #cc0000;
+}
+
+blockquote {
+    border-left: solid 4px #1a4f7f;
+}
+
+.a {
+    color: #000000;
+    background-color: #a9cff1;
+}
+
+#header {
+    padding: 0.3em 0.5em 0.1em;
+    border-bottom: solid 2px #1a4f7f;
+    background-color: #99bfe1;
+    color: #1a4f7f;
+}
+
+#my {
+    color: #0a3f6f;
+    background-color: #99bfe1;
+}
+
+#header a:link, #header a:visited {
+    color: #1a4f7f;
+    background-color: #99bfe1;
+}
+
+#navigation a:link, #navigation a:visited {
+    color: #1a4f7f;
+}
+#navigation a:hover, #navigation a:active {
+    background-color: #1a4f7f;
+    color: #99bfe1;
+}
+
+#footer {
+    border-top: solid 1px #1a4f7f;
+}
+
+#postcodeForm {
+    background-color: #99bfe1;
+}
+
+#front_stats div {
+    background-color: #99bfe1;
+}
+
