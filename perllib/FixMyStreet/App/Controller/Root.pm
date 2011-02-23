@@ -35,7 +35,7 @@ sub auto : Private {
 
 =cut
 
-sub index : Private {
+sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
     $c->res->body('index');
 }
