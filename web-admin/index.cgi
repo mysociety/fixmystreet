@@ -199,6 +199,7 @@ sub admin_councils_list ($) {
     my @area_types = Cobrand::area_types($cobrand);
     my $areas = mySociety::MaPit::call('areas', \@area_types);
     my @councils_ids = sort { strcoll($areas->{$a}->{name}, $areas->{$b}->{name}) } keys %$areas;
+    @councils_ids = grep { $_ ne 301 } @councils_ids;
     my $bci_info = dbh()->selectall_hashref("
         select area_id, count(*) as c, count(case when deleted then 1 else null end) as deleted,
             count(case when confirmed then 1 else null end) as confirmed
