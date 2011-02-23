@@ -31,6 +31,15 @@ sub auto : Private {
     return 1;
 }
 
+=head2 index
+
+=cut
+
+sub index : Private {
+    my ( $self, $c ) = @_;
+    $c->res->body('index');
+}
+
 =head2 default
 
 Forward to the standard 404 error page
