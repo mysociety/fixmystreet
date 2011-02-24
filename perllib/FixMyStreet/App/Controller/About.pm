@@ -16,11 +16,13 @@ Catalyst Controller.
 
 =cut
 
-=head2 index
+=head2 about
+
+Show the 'about us' page.
 
 =cut
 
-sub index : Path : Args(0) {
+sub about : Path : Args(0) {
     my ( $self, $c ) = @_;
 
     # don't need to do anything here - should just pass through.
