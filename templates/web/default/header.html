@@ -20,8 +20,4 @@
 
         <div id="wrapper"><div id="content">
 
-    [% IF c.config.STAGING_SITE %]
-        <p class="error">
-            [% loc("This is a developer site; things might break at any time, and the database will be periodically deleted.") %]
-        </p>
-    [% END %]    
+    [% INCLUDE 'debug_header.html' %]
