@@ -96,7 +96,8 @@ sub setup_cobrand {
 
     # append the cobrand templates to the include path
     $c->stash->{additional_template_paths} =
-      [ $cobrand->path_to_web_templates . '' ];
+      [ $cobrand->path_to_web_templates . '' ]
+      unless $cobrand->is_default;
 
     my $host = $c->req->uri->host;
     my $lang =
@@ -104,8 +105,9 @@ sub setup_cobrand {
       : $host =~ /cy/    ? 'cy'
       :                    undef;
 
-    # set the language and the translation file to use
-    $cobrand->set_lang_and_domain( $lang, 1 );
+    # set the language and the translation file to use - store it on stash
+    my $set_lang = $cobrand->set_lang_and_domain( $lang, 1 );
+    $c->stash->{lang_code} = $set_lang;
 
     Problems::set_site_restriction_with_cobrand_object($cobrand);
 

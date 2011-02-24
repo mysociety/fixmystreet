@@ -40,6 +40,19 @@ sub moniker {
     return lc($last_part);
 }
 
+=head2 is_default
+
+    $bool = $cobrand->is_default();
+
+Returns true if this is the default cobrand, false otherwise.
+
+=cut
+
+sub is_default {
+    my $self = shift;
+    return $self->moniker eq 'default';
+}
+
 =head2 q
 
     $request = $cobrand->q;
@@ -140,7 +153,7 @@ sub enter_postcode_text { '' }
 
 =head2 set_lang_and_domain
 
-    $cobrand->set_lang_and_domain( $lang, $unicode )
+    my $set_lang = $cobrand->set_lang_and_domain( $lang, $unicode )
 
 Set the language and domain of the site based on the cobrand and host.
 
@@ -148,10 +161,11 @@ Set the language and domain of the site based on the cobrand and host.
 
 sub set_lang_and_domain {
     my ( $self, $lang, $unicode ) = @_;
-    mySociety::Locale::negotiate_language(
+    my $set_lang = mySociety::Locale::negotiate_language(
         'en-gb,English,en_GB|nb,Norwegian,nb_NO', $lang );    # XXX Testing
     mySociety::Locale::gettext_domain( 'FixMyStreet', $unicode );
     mySociety::Locale::change();
+    return $set_lang;
 }
 
 =head2 alert_list_options

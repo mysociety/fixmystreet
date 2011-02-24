@@ -22,13 +22,13 @@
 [% INCLUDE 'tracking_code.html' %]
 
 [% IF c.config.STAGING_SITE %]
-<hr>
-
+<hr clear="both">
 <ul>
-    <li>Cobrand: [% c.cobrand.moniker %]</li>
-    <li>extra template path: [% additional_template_paths.join(',') %]</li>
+    <li>cobrand.moniker:           [% c.cobrand.moniker %]</li>
+    <li>additional_template_paths: [% additional_template_paths.join(', ') || '--empty--' %]</li>
+    <li>lang_code:                 [% lang_code %]</li>
 </ul>
-
 [% END %]
+
 </body>
 </html>

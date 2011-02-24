@@ -63,5 +63,9 @@ is FixMyStreet::Cobrand::EmptyHomes->moniker, 'emptyhomes',
 is FixMyStreet::Cobrand::EmptyHomes->new->moniker, 'emptyhomes',
   'object->moniker works';
 
+# check is_default works
+ok FixMyStreet::Cobrand::Default->is_default,     '::Default is default';
+ok !FixMyStreet::Cobrand::EmptyHomes->is_default, '::Emptyhomes is not default';
+
 # all done
 done_testing();
