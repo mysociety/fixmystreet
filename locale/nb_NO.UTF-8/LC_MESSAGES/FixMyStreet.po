@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: FixMyStreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2011-02-23 13:09+0000\n"
-"PO-Revision-Date: 2011-02-23 10:16MET\n"
+"PO-Revision-Date: 2011-02-23 22:56MET\n"
 "Last-Translator: Petter Reinholdtsen <pere@hungry.com>\n"
 "Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
 "MIME-Version: 1.0\n"
@@ -143,7 +143,7 @@ msgstr "vi holder på din oppdatering mens du sjekker din epost."
 
 #: perllib/Page.pm:449
 msgid "your alert will not be activated"
-msgstr "ditt varsel vil ikke bli aktivisert"
+msgstr "vil ditt varsel ikke bli aktivisert"
 
 #: perllib/Page.pm:450
 msgid "we'll hang on to your alert while you're checking your email."
@@ -281,7 +281,7 @@ msgstr "Sendt til %s %s senere"
 
 #: perllib/Page.pm:571
 msgid "Not reported to council"
-msgstr "Ikke rapportert til kommunen"
+msgstr "Ikke rapportert til administrasjonen"
 
 #: perllib/Page.pm:622 web-admin/index.cgi:522 web-admin/index.cgi:646
 msgid "Updates"
@@ -343,7 +343,7 @@ msgstr "Denne rapporten er for tiden markert som åpen."
 #: perllib/FixMyStreet/Alert.pm:311
 #, perl-format
 msgid "Report on %s"
-msgstr "Rapport for %s"
+msgstr "Rapport på %s"
 
 #: perllib/FixMyStreet/Geocode.pm:65
 msgid ""
@@ -522,8 +522,8 @@ msgid ""
 "That location does not appear to be covered by a council, perhaps it is "
 "offshore - please try somewhere more specific."
 msgstr ""
-"Det stedet dekkes ikke av noen kommune, kanskje det er til havs - vennligst "
-"forsøk et mer spesifikt sted."
+"Det stedet dekkes ikke av noen administrasjon, kanskje det er til havs - "
+"vennligst forsøk et mer spesifikt sted."
 
 #: web/alert.cgi:140 web/alert.cgi:183 web/alert.cgi:200
 #, perl-format
@@ -551,9 +551,9 @@ msgid ""
 "alert\n"
 "for the county council."
 msgstr ""
-"FiksGataMi sender forskjellige kategorier saker\n"
-"til forskjellige kommuner, problemer som gjelder flere kommuner blir sendt "
-"til alle de det gjelder "
+"FiksGataMi sender forskjellige kategorier probleme til forskjellige "
+"administrasjoner, problemer som gjelder flere administrasjoner blir sendt "
+"til alle de det gjelder."
 
 #: web/alert.cgi:185
 #, perl-format
@@ -646,8 +646,8 @@ msgid ""
 "within a certain distance of a particular location."
 msgstr ""
 "Fiksgatami har ulike RSS-strømmer og epostlister om lokale problemer, dette "
-"inkluderer\n"
-"saker meldt innenfor en kommune eller et område med problemer\n"
+"inkluderer saker meldt innenfor en bestemt bydel eller administrasjon, eller "
+"et område med problemer\n"
 "innen en angitt distanse fra en bestemt posisjon."
 
 #: web/alert.cgi:384
@@ -804,8 +804,8 @@ msgid ""
 "Thanks, glad to hear it's been fixed! Could we just ask if you have ever "
 "reported a problem to a council before?"
 msgstr ""
-"Takk, glad for å høre at det er fikset!  Can vi få spørre deg om du har "
-"rapportert et problem til kommunen tidligere?"
+"Takk, glad for å høre at det er fikset!  Kan vi få spørre deg om du har "
+"rapportert et problem til en administrasjon tidligere?"
 
 #: web/confirm.cgi:190 web/questionnaire.cgi:234 web/questionnaire.cgi:322
 #: web-admin/index.cgi:340 web-admin/index.cgi:341 web-admin/index.cgi:503
@@ -878,8 +878,8 @@ msgid ""
 msgstr ""
 "Vennligst <strong>ikke</strong> rapporter feil gjennom denne siden; "
 "meldinger går til\n"
-"gruppen som står bak fiksgatami, og ikke til en kommune. For å rapportere et "
-"problem,\n"
+"gruppen som står bak fiksgatami, og ikke til en administrasjon. For å "
+"rapportere et problem,\n"
 "vennligst <a href=\"/\">gå til forsiden</a> og følg instruksjonene."
 
 #: web/contact.cgi:144
@@ -1010,7 +1010,7 @@ msgstr "Legg inn detaljer om problemet"
 
 #: web/index.cgi:181
 msgid "We send it to the council on your behalf"
-msgstr "Vi sender til kommunen på vegne av deg"
+msgstr "Vi sender til administrasjon på dine vegne"
 
 #: web/index.cgi:196
 msgid "Photos of recent reports"
@@ -1044,7 +1044,7 @@ msgstr "Anonym"
 
 #: web/index.cgi:300
 msgid "No council selected"
-msgstr "Ingen kommune er valgt"
+msgstr "Ingen administrasjon er valgt"
 
 #: web/index.cgi:301
 msgid "Please enter a subject"
@@ -1063,8 +1063,8 @@ msgid ""
 "Please enter your full name, councils need this information - if you do not "
 "wish your name to be shown on the site, untick the box"
 msgstr ""
-"Legg inn ditt fulle navn, kommunen som mottar saken trenger dette - hvis du "
-"ikke ønsker at ditt navn skal vises, kryss av her"
+"Legg inn ditt fulle navn, administrasjoner som mottar saken trenger dette - "
+"hvis du ikke ønsker at ditt navn skal vises, kryss av her"
 
 #: web/index.cgi:313 web/index.cgi:565
 msgid "-- Pick a category --"
@@ -1084,11 +1084,11 @@ msgstr "Velg en type egenskap"
 
 #: web/index.cgi:338
 msgid "That location is not part of that council"
-msgstr "Denne lokasjonen er ikke en del av den kommunen"
+msgstr "Det stedet er ikke en del av den administrasjonen"
 
 #: web/index.cgi:358
 msgid "We have details for that council"
-msgstr "Vi har opplysninger om den kommunen"
+msgstr "Vi har opplysninger om den administrasjonen"
 
 #: web/index.cgi:367
 msgid "Somehow, you only have one co-ordinate. Please try again."
@@ -1117,7 +1117,7 @@ msgid ""
 "If you have tried to report an issue past the shoreline, for example,\n"
 "please specify the closest point on land."
 msgstr ""
-"Punktet ser ikke ut til å være dekket av en kommune.\n"
+"Punktet ser ikke ut til å være dekket av en administrasjon.\n"
 "Hvis du har forsøkt å rapportere en sak utenfor kysten, for eksempel,\n"
 "så marker nærmeste punkt på land."
 
@@ -1284,8 +1284,8 @@ msgid ""
 "description (and a\n"
 "photo of the problem if you have one), etc."
 msgstr ""
-"Vennligst fyll inn detaljene om problemet under. Kommunen vil ikke være i "
-"stand\n"
+"Vennligst fyll inn detaljene om problemet under. Administrasjonen vil ikke "
+"være i stand\n"
 "til å hjelpe med mindre du legger inn så mange detaljer som du kan. Beskriv\n"
 "eksakt plassering for problemet (f.eks. på en vegg), hva det er, hvor lenge "
 "det har\n"
@@ -1510,8 +1510,8 @@ msgid ""
 "it will be public. Your information will only be used in accordance with our "
 "<a href=\"/faq#privacy\">privacy policy</a>"
 msgstr ""
-"Vennligst merk at oppdateringer ikke blir sendt til kommunen.  Hvis du "
-"legger igjen navnet ditt så vil det være offentlig tilgjengelig. Din "
+"Vennligst merk at oppdateringer ikke blir sendt til administrasjonen.  Hvis "
+"du legger igjen navnet ditt så vil det være offentlig tilgjengelig. Din "
 "informasjon vil kun bli brukt i henhold til våre <a href=\"/faq#privacy"
 "\">personvernpolicy</a>"
 
@@ -1553,7 +1553,9 @@ msgstr "Vennligs oppgi om dette problemet er blitt fikset eller ikke"
 #: web/questionnaire.cgi:95
 msgid ""
 "Please say whether you've ever reported a problem to your council before"
-msgstr "Gi oss informasjon om du har rapportert en sak til kommunen tidligere"
+msgstr ""
+"Gi oss informasjon om du har rapportert en sak til din administrasjon "
+"tidligere"
 
 #: web/questionnaire.cgi:97
 msgid "Please indicate whether you'd like to receive another questionnaire"
@@ -1685,7 +1687,8 @@ msgstr "Første gang"
 msgid ""
 "Have you ever reported a problem to a council before, or is this your first "
 "time?"
-msgstr "Har du sendt en sak til kommunen før, eller er dette første gangen?"
+msgstr ""
+"Har du sendt en sak til en administrasjon før, eller er dette første gangen?"
 
 #: web/questionnaire.cgi:304
 msgid ""
@@ -1695,7 +1698,7 @@ msgid ""
 msgstr ""
 "Hvis du ønsker å legge til en offentlig kommentar til saken, legg den til "
 "her\n"
-"(denne blir sendt til kommunen). Du kan for eksempel\n"
+"(denne blir sendt til administrasjonen). Du kan for eksempel\n"
 "dele din erfaring med hvordan din sak ble løst."
 
 #: web/questionnaire.cgi:321
@@ -1703,6 +1706,8 @@ msgid ""
 "Would you like to receive another questionnaire in 4 weeks, reminding you to "
 "check the status?"
 msgstr ""
+"Kunne du tenke deg å motta en ny forespørsel om 4 uker, som minner deg om å "
+"sjekke status?"
 
 #: web/reports.cgi:193 web/reports.cgi:240
 msgid "Summary reports"
@@ -1714,11 +1719,12 @@ msgid ""
 "to see the reports sent there."
 msgstr ""
 "Dette er en opplisting av alle sakene i denne tjenesten; velg en bestemt "
-"kommune for å se saker som er sendt dit."
+"administrasjon for å se saker som er sendt dit."
 
 #: web/reports.cgi:196
 msgid "Greyed-out lines are councils that no longer exist."
-msgstr "Grå linjer er kommuner som ikke lenger eksisterer."
+msgstr ""
+"Linjer med grå bakgrunn er administrasjoner som ikke lenger eksisterer."
 
 #: web/reports.cgi:200 web-admin/index.cgi:477 web-admin/index.cgi:656
 msgid "Name"
@@ -1746,7 +1752,7 @@ msgstr "Eldre løste"
 
 #: web/reports.cgi:246
 msgid "council"
-msgstr "kommune"
+msgstr "administrasjon"
 
 #: web/reports.cgi:256
 #, perl-format
@@ -1780,7 +1786,7 @@ msgid ""
 "\">show all councils</a>."
 msgstr ""
 "Du kan <a href=\"%s\">se mindre detaljer</a> eller gå tilbake og <a href=\"/"
-"reports\">se alle kommunene</a>."
+"reports\">se alle administrasjonene</a>."
 
 #: web/reports.cgi:271
 #, perl-format
@@ -1789,7 +1795,7 @@ msgid ""
 "\">show all councils</a>."
 msgstr ""
 "Du kan <a href=\"%s\">se flere detaljer</a> eller gå tilbake og <a href=\"/"
-"reports\">se alle kommunene</a>."
+"reports\">se alle administrasjonene</a>."
 
 #: web/reports.cgi:286
 msgid "Old problems, state unknown"
@@ -1908,6 +1914,8 @@ msgstr "De siste rapporter for {{COUNCIL}} rapportert av brukere"
 msgid ""
 "New reports for {{COUNCIL}} within {{WARD}} ward on reportemptyhomes.com"
 msgstr ""
+"Nye rapporter for  {{COUNCIL}} innenfor {{WARD}} bydel på reportemptyhomes."
+"com"
 
 #: db/alert_types_eha.pl:24
 #, perl-brace-format
@@ -1992,6 +2000,8 @@ msgstr "Nye problemer for {{COUNCIL}} innenfor {{WARD}} bydel på FiksGataMi"
 msgid ""
 "The latest problems for {{COUNCIL}} within {{WARD}} ward reported by users"
 msgstr ""
+"De siste problemene for {{COUNCIL}} innenfor {{WARD}} bydel rapportert av "
+"brukere"
 
 #: db/alert_types.pl:42
 #, perl-brace-format
@@ -2058,11 +2068,11 @@ msgstr "Graf over problemoppretting fordelt på status over tid"
 
 #: web-admin/index.cgi:165
 msgid "Problem breakdown by state"
-msgstr "Problemfordeling for tilstand"
+msgstr "Tilstandsfordeling for problemer"
 
 #: web-admin/index.cgi:170
 msgid "Update breakdown by state"
-msgstr "Oppdateringsfordeling for tilstand"
+msgstr "Tilstandsfordeling for oppdateringer"
 
 #: web-admin/index.cgi:186
 msgid "Diligency prize league table"
@@ -2471,16 +2481,16 @@ msgstr ""
 "\n"
 "Hei,\n"
 "\n"
-"Vennligst klikk på linken under for å bekrefte saken du\n"
-"har bedt om å abonnere på FiksGataMi.no:\n"
+"Vennligst klikk på lenken under for å bekrefte varslet du\n"
+"har bedt om å abonnere på FiksGataMi:\n"
 "\n"
 "    <?=$values['url']?>\n"
 "\n"
-"Hvis du ikke kan klikke på linken, kan du kopiere den i\n"
-"addresse feltet på dine nettleser.\n"
+"Hvis du ikke kan klikke på lenken, kan du kopiere den i\n"
+"addressefeltet på dine nettleser.\n"
 "\n"
 "Vennlig Hilsen,  \n"
-"FiksGataMi teamet\n"
+"FiksGataMi-gruppen\n"
 
 #: templates/emails/alert-problem
 msgid ""
@@ -2503,7 +2513,7 @@ msgstr ""
 "<?=$values['data']?>\n"
 "\n"
 "Vennlig hilsen,  \n"
-"FiksGataMi teamet\n"
+"FiksGataMi-gruppen\n"
 "\n"
 "Hvis du ikke ønsker å stå på denne epostlisten,\n"
 "klikk på linken: <?=$values['unsubscribe_url']?>\n"
@@ -2532,7 +2542,7 @@ msgstr ""
 "<?=$values['data']?>\n"
 "\n"
 "Vennlig hilsen,  \n"
-"FiksGataMi teamet\n"
+"FiksGataMi-gruppen\n"
 "\n"
 "Hvis du ikke ønsker å motta epost om saker som er sendt til\n"
 "<?=$values['area_name']?> i fremtiden, klikk på følgende link: \n"
@@ -2560,7 +2570,7 @@ msgstr ""
 "<?=$values['data']?>\n"
 "\n"
 "Vennlig hilsen,  \n"
-"FiksGataMi teamet\n"
+"FiksGataMi-gruppen\n"
 "\n"
 "Hvis du ikke ønsker å motta epost om saker som er sendt til\n"
 "<?=$values['area_name']?> i fremtiden, klikk på følgende link: \n"
@@ -2587,7 +2597,7 @@ msgstr ""
 "<?=$values['data']?>\n"
 "\n"
 "Vennlig hilsen,  \n"
-"FiksGataMi teamet\n"
+"FiksGataMi-gruppen\n"
 "\n"
 "Hvis du ikke ønsker å abonnere på epost om problemer i nærheten,\n"
 "klikk på følgende link: <?=$values['unsubscribe_url']?>\n"
@@ -2618,7 +2628,7 @@ msgstr ""
 "<?=$values['data']?>\n"
 "\n"
 "Vennlig hilsen,  \n"
-"FiksGataMi teamet\n"
+"FiksGataMi-gruppen\n"
 "\n"
 "Hvis du ikke ønsker å abonnere via epost på saker som er sendt til\n"
 "<?=$values['area_name']?> innenfor <?=$values['ward_name']?>,\n"
@@ -2717,7 +2727,7 @@ msgstr ""
 "\n"
 "\n"
 "Vennlig hilsen,  \n"
-"FiksGataMi teamet\n"
+"FiksGataMi-gruppen\n"
 
 #: templates/emails/flickr-submit
 msgid ""
@@ -2746,10 +2756,10 @@ msgstr ""
 "\n"
 "<?=$values['url']?>\n"
 "\n"
-"På denne måten kan vi send bildene til kommunen. Takk!\n"
+"På denne måten kan vi send bildene til administrasjonen. Takk!\n"
 "\n"
 "Vennlig hilsen,  \n"
-"FiksGataMi teamet\n"
+"FiksGataMi-gruppen\n"
 
 #: templates/emails/partial
 msgid ""
@@ -2825,7 +2835,7 @@ msgstr ""
 "<?=$values['detail']?>\n"
 "\n"
 "Vennlig hilsen,  \n"
-"FiksGataMi teamet\n"
+"FiksGataMi-gruppen\n"
 
 #: templates/emails/questionnaire
 msgid ""
@@ -2870,7 +2880,7 @@ msgstr ""
 "skjema.\n"
 "\n"
 "Vennlig hilsen,  \n"
-"FiksGataMi teamet\n"
+"FiksGataMi-gruppen\n"
 "\n"
 "Saken du la til var som følger:\n"
 "\n"
@@ -2988,7 +2998,7 @@ msgstr ""
 "epost til fiksgatami@nuug.no\n"
 "\n"
 "Vennlig hilsen,\n"
-"FiksGataMi-gruppa\n"
+"FiksGataMi-gruppen\n"
 
 #: templates/emails/submit-brent
 msgid ""
@@ -3070,7 +3080,7 @@ msgstr ""
 "Svar på denne eposten vil gå til brukeren som sendte inn problemet.\n"
 "\n"
 "Vennlig hilsen,,  \n"
-"Fiksgatami-gruppa\n"
+"Fiksgatami-gruppen\n"
 "\n"
 "[ Denne meldingen ble sendt inn via FiksGataMi, et prosjekt hos foreningen "
 "NUUG.\n"
@@ -3161,7 +3171,7 @@ msgstr ""
 "Svar på denne eposten går til brukeren som sendte inn problemet.\n"
 "\n"
 "Vennlig hilsen,  \n"
-"FiksGataMi-gruppa\n"
+"FiksGataMi-gruppen\n"
 "\n"
 "[ Denne meldingen ble sendt inn via FiksGataMi, et prosjekt hos foreningen "
 "NUUG.\n"
@@ -3282,7 +3292,7 @@ msgstr ""
 "<?=$values['update']?>\n"
 "\n"
 "Vennlig hilsen,  \n"
-"FiksGataMi-gruppa\n"
+"FiksGataMi-gruppen\n"
 
 #: templates/emails/emptyhomes/alert-problem
 msgid ""
