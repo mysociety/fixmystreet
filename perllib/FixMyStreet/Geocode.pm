@@ -80,12 +80,29 @@ sub geocoded_string_coordinates {
     return ($latitude, $longitude, $error);
 }
 
+sub results_check {
+    my $q = shift;
+    my ($error, @valid_locations);
+    foreach (@_) {
+        next unless /"address" *: *"(.*?)"/s;
+        my $address = $1;
+        next unless Cobrand::geocoded_string_check(Page::get_cobrand($q), $address, $q);
+        next if $address =~ /BT\d/;
+        push (@$error, $address);
+        push (@valid_locations, $_); 
+    }
+    if (scalar @valid_locations == 1) {
+        return geocoded_string_coordinates($valid_locations[0], $q);
+    }
+    $error = _('Sorry, we could not find that location.') unless $error;
+    return (undef, undef, $error);
+}
+
 # string STRING QUERY
 # Canonicalises, looks up on Google Maps API, and caches, a user-inputted location.
-# Returns array of (TILE_X, TILE_Y, EASTING, NORTHING, ERROR), where ERROR is
-# either undef, a string, or an array of matches if there are more than one. The 
-# information in the query may be used to disambiguate the location in cobranded versions
-# of the site. 
+# Returns array of (LAT, LON, ERROR), where ERROR is either undef, a string, or
+# an array of matches if there are more than one. The information in the query
+# may be used to disambiguate the location in cobranded versions of the site. 
 sub string {
     my ($s, $q) = @_;
     $s = lc($s);
@@ -97,7 +114,7 @@ sub string {
     my $url = 'http://maps.google.com/maps/geo?' . $s;
     my $cache_dir = mySociety::Config::get('GEO_CACHE');
     my $cache_file = $cache_dir . md5_hex($url);
-    my ($js, $error, $latitude, $longitude);
+    my ($js, $error);
     if (-s $cache_file) {
         $js = File::Slurp::read_file($cache_file);
     } else {
@@ -114,27 +131,14 @@ sub string {
     } elsif ($js !~ /"code" *: *200/) {
         $error = _('Sorry, we could not find that location.');
     } elsif ($js =~ /}, *{/) { # Multiple
-        my @js = split /}, *{/, $js;
-        my @valid_locations;
-        foreach (@js) {
-            next unless /"address" *: *"(.*?)"/s;
-            my $address = $1;
-            next unless Cobrand::geocoded_string_check(Page::get_cobrand($q), $address, $q);
-            next if $address =~ /BT\d/;
-            push (@valid_locations, $_); 
-            push (@$error, $address);
-        }
-        if (scalar @valid_locations == 1) {
-           return geocoded_string_coordinates($valid_locations[0], $q);
-        }
-        $error = _('Sorry, we could not find that location.') unless $error;
+        return results_check($q, (split /}, *{/, $js));
     } elsif ($js =~ /BT\d/) {
         # Northern Ireland, hopefully
         $error = _("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.");
     } else {
-        ($latitude, $longitude, $error) = geocoded_string_coordinates($js, $q);
+        return results_check($q, $js);
     }
-    return ($latitude, $longitude, $error);
+    return (undef, undef, $error);
 }
 
 # list_choices
