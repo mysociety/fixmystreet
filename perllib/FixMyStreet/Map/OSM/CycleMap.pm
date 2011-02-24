@@ -35,7 +35,7 @@ sub display_map {
     }
 
     my $out = FixMyStreet::Map::header($q, $params{type});
-    my $copyright = _('Map &copy; <a href="http://www.openstreetmap.org/">OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>');
+    my $copyright = _('Map &copy; <a id="osm_link" href="http://www.openstreetmap.org/">OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>');
     $out .= <<EOF;
 <script type="text/javascript">
 var fixmystreet = {

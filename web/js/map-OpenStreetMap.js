@@ -1,25 +1,33 @@
 YAHOO.util.Event.onContentReady('map', function() {
+
+    fixmystreet.ZOOM_OFFSET = 14;
+
+    var perm = new OpenLayers.Control.Permalink();
     fixmystreet.map = new OpenLayers.Map("map", {
         controls: [
             new OpenLayers.Control.ArgParser(),
             //new OpenLayers.Control.LayerSwitcher(),
             new OpenLayers.Control.Navigation(),
+            perm,
+            new OpenLayers.Control.PermalinkFMS('osm_link', 'http://www.openstreetmap.org/'),
             new OpenLayers.Control.PanZoomFMS()
         ],
         displayProjection: new OpenLayers.Projection("EPSG:4326")
     });
     var osm = new fixmystreet.map_type("", {
-        zoomOffset: 14,
+        zoomOffset: fixmystreet.ZOOM_OFFSET,
         numZoomLevels: 4
     });
     fixmystreet.map.addLayer(osm);
 
-    var centre = new OpenLayers.LonLat( fixmystreet.longitude, fixmystreet.latitude );
-    centre.transform(
-        new OpenLayers.Projection("EPSG:4326"),
-        fixmystreet.map.getProjectionObject()
-    );
-    fixmystreet.map.setCenter(centre, 2);
+    if (!fixmystreet.map.getCenter()) {
+        var centre = new OpenLayers.LonLat( fixmystreet.longitude, fixmystreet.latitude );
+        centre.transform(
+            new OpenLayers.Projection("EPSG:4326"),
+            fixmystreet.map.getProjectionObject()
+        );
+        fixmystreet.map.setCenter(centre, 2);
+    }
 
     if (document.getElementById('mapForm')) {
         var click = new OpenLayers.Control.Click();
@@ -27,7 +35,17 @@ YAHOO.util.Event.onContentReady('map', function() {
         click.activate();
     }
 
-    var markers = new OpenLayers.Layer.Markers("Markers");
+    /* To let permalink not be caught by the Click layer, answer found
+     * at http://www.mail-archive.com/users@openlayers.org/msg12958.html
+     * Not sure why you can't use eventListeners or events.register...
+     */
+    OpenLayers.Event.observe( perm.element, "click", function(e) {
+        OpenLayers.Event.stop(e);
+        location.href = OpenLayers.Event.element(e).href;
+        return false;
+    });
+
+    fixmystreet.markers = new OpenLayers.Layer.Markers("Markers");
     var cols = { 'red':'R', 'green':'G', 'blue':'B', 'purple':'P' };
     for (var i=0; i<fixmystreet.pins.length; i++) {
         var pin = fixmystreet.pins[i];
@@ -44,10 +62,28 @@ YAHOO.util.Event.onContentReady('map', function() {
         if (pin[3]) {
             marker.events.register('click', marker, function(evt) { window.location = '/report/' + pin[3]; OpenLayers.Event.stop(evt); });
         }
-        markers.addMarker(marker);
+        fixmystreet.markers.addMarker(marker);
     }
-    fixmystreet.map.addLayer(markers);
+    fixmystreet.map.addLayer(fixmystreet.markers);
 
+});
+
+YAHOO.util.Event.addListener('hide_pins_link', 'click', function(e) {
+    YAHOO.util.Event.preventDefault(e);
+    var showhide = [
+        'Show pins', 'Hide pins',
+        'Dangos pinnau', 'Cuddio pinnau',
+        "Vis nåler", "Gjem nåler"
+    ];
+    for (var i=0; i<showhide.length; i+=2) {
+        if (this.innerHTML == showhide[i]) {
+            fixmystreet.markers.setVisibility(true);
+            this.innerHTML = showhide[i+1];
+        } else if (this.innerHTML == showhide[i+1]) {
+            fixmystreet.markers.setVisibility(false);
+            this.innerHTML = showhide[i];
+        }
+    }
 });
 
 /* Overridding the buttonDown function of PanZoom so that it does
@@ -87,6 +123,26 @@ OpenLayers.Control.PanZoomFMS = OpenLayers.Class(OpenLayers.Control.PanZoom, {
     }
 });
 
+/* Overriding Permalink so that it can pass the correct zoom to OSM */
+OpenLayers.Control.PermalinkFMS = OpenLayers.Class(OpenLayers.Control.Permalink, {
+    updateLink: function() {
+        var separator = this.anchor ? '#' : '?';
+        var href = this.base;
+        if (href.indexOf(separator) != -1) {
+            href = href.substring( 0, href.indexOf(separator) );
+        }
+
+        href += separator + OpenLayers.Util.getParameterString(this.createParams(null, this.map.getZoom()+fixmystreet.ZOOM_OFFSET));
+        if (this.anchor && !this.element) {
+            window.location.href = href;
+        }
+        else {
+            this.element.href = href;
+        }
+    }
+});
+
+/* Click handler */
 OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {                
     defaultHandlerOptions: {
         'single': true,

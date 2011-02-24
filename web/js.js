@@ -16,8 +16,12 @@ YAHOO.util.Event.onContentReady('mapForm', function() {
             this.onsubmit = function() { return false; };
         }
 
-        this.x.value = fixmystreet.x + 3;
-        this.y.value = fixmystreet.y + 3;
+        /* XXX Should be in Tilma code only */
+        if (this.x) {
+            this.x.value = fixmystreet.x + 3;
+            this.y.value = fixmystreet.y + 3;
+        }
+
         /*
         if (swfu && swfu.getStats().files_queued > 0) {
             swfu.startUpload();

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2011-02-23 13:09+0000\n"
+"POT-Creation-Date: 2011-02-24 13:57+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
@@ -279,7 +279,7 @@ msgstr ""
 msgid "reopened"
 msgstr ""
 
-#: perllib/Page.pm:640 web/index.cgi:1071
+#: perllib/Page.pm:640 web/index.cgi:1076
 msgid "Offensive? Unsuitable? Tell us"
 msgstr ""
 
@@ -292,7 +292,7 @@ msgid ""
 "Sorry, that appears to be a Crown dependency postcode, which we don't cover."
 msgstr ""
 
-#: perllib/Page.pm:675 perllib/FixMyStreet/Geocode.pm:134
+#: perllib/Page.pm:675 perllib/FixMyStreet/Geocode.pm:137
 msgid ""
 "We do not cover Northern Ireland, I'm afraid, as our licence doesn't include "
 "any maps for the region."
@@ -310,7 +310,7 @@ msgstr ""
 msgid "This report is currently marked as open."
 msgstr ""
 
-#: perllib/FixMyStreet/Alert.pm:311
+#: perllib/FixMyStreet/Alert.pm:308
 #, perl-format
 msgid "Report on %s"
 msgstr ""
@@ -324,21 +324,21 @@ msgstr ""
 msgid "That location does not appear to be in Britain; please try again."
 msgstr ""
 
-#: perllib/FixMyStreet/Geocode.pm:114
-msgid "Sorry, we could not parse that location. Please try again."
-msgstr ""
-
-#: perllib/FixMyStreet/Geocode.pm:116 perllib/FixMyStreet/Geocode.pm:131
+#: perllib/FixMyStreet/Geocode.pm:97 perllib/FixMyStreet/Geocode.pm:132
 msgid "Sorry, we could not find that location."
 msgstr ""
 
-#: perllib/FixMyStreet/Geocode.pm:147
+#: perllib/FixMyStreet/Geocode.pm:130
+msgid "Sorry, we could not parse that location. Please try again."
+msgstr ""
+
+#: perllib/FixMyStreet/Geocode.pm:150
 msgid ""
 "We found more than one match for that location. We show up to ten matches, "
 "please try a different search if yours is not here."
 msgstr ""
 
-#: perllib/FixMyStreet/Geocode.pm:162
+#: perllib/FixMyStreet/Geocode.pm:165
 msgid "More than one match"
 msgstr ""
 
@@ -355,9 +355,9 @@ msgstr ""
 #: perllib/FixMyStreet/Map/OSM.pm:41
 #: perllib/FixMyStreet/Map/OSM/CycleMap.pm:38
 msgid ""
-"Map &copy; <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a> and "
-"contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-"
-"BY-SA</a>"
+"Map &copy; <a id=\"osm_link\" href=\"http://www.openstreetmap.org/"
+"\">OpenStreetMap</a> and contributors, <a href=\"http://creativecommons.org/"
+"licenses/by-sa/2.0/\">CC-BY-SA</a>"
 msgstr ""
 
 #: perllib/FixMyStreet/Map/BingOL.pm:39
@@ -545,8 +545,8 @@ msgstr ""
 msgid "RSS feed of nearby problems"
 msgstr ""
 
-#: web/alert.cgi:308 web/alert.cgi:367 web/index.cgi:970 web/index.cgi:1082
-#: web/reports.cgi:255
+#: web/alert.cgi:308 web/alert.cgi:367 web/index.cgi:975 web/index.cgi:1087
+#: web/reports.cgi:254
 msgid "RSS feed"
 msgstr ""
 
@@ -616,12 +616,12 @@ msgstr ""
 msgid "Receive email when updates are left on this problem."
 msgstr ""
 
-#: web/alert.cgi:461 web/alert.cgi:488 web/index.cgi:736 web/index.cgi:1076
+#: web/alert.cgi:461 web/alert.cgi:488 web/index.cgi:736 web/index.cgi:1081
 #: web-admin/index.cgi:630 web-admin/index.cgi:750
 msgid "Email:"
 msgstr ""
 
-#: web/alert.cgi:462 web/alert.cgi:489 web/index.cgi:1077
+#: web/alert.cgi:462 web/alert.cgi:489 web/index.cgi:1082
 msgid "Subscribe"
 msgstr ""
 
@@ -737,13 +737,13 @@ msgid ""
 "reported a problem to a council before?"
 msgstr ""
 
-#: web/confirm.cgi:190 web/questionnaire.cgi:234 web/questionnaire.cgi:322
+#: web/confirm.cgi:190 web/questionnaire.cgi:234 web/questionnaire.cgi:323
 #: web-admin/index.cgi:340 web-admin/index.cgi:341 web-admin/index.cgi:503
 #: web-admin/index.cgi:590 web-admin/index.cgi:608
 msgid "Yes"
 msgstr ""
 
-#: web/confirm.cgi:191 web/questionnaire.cgi:235 web/questionnaire.cgi:323
+#: web/confirm.cgi:191 web/questionnaire.cgi:235 web/questionnaire.cgi:324
 #: web-admin/index.cgi:340 web-admin/index.cgi:341 web-admin/index.cgi:503
 #: web-admin/index.cgi:590 web-admin/index.cgi:608
 msgid "No"
@@ -847,7 +847,7 @@ msgstr ""
 msgid "Message:"
 msgstr ""
 
-#: web/contact.cgi:238 web/index.cgi:1092
+#: web/contact.cgi:238 web/index.cgi:1097
 msgid "Post"
 msgstr ""
 
@@ -1170,11 +1170,11 @@ msgstr ""
 msgid "Details:"
 msgstr ""
 
-#: web/index.cgi:734 web/index.cgi:1108
+#: web/index.cgi:734 web/index.cgi:1113 web/questionnaire.cgi:308
 msgid "Photo:"
 msgstr ""
 
-#: web/index.cgi:735 web/index.cgi:1089 web-admin/index.cgi:629
+#: web/index.cgi:735 web/index.cgi:1094 web-admin/index.cgi:629
 #: web-admin/index.cgi:749
 msgid "Name:"
 msgstr ""
@@ -1183,7 +1183,7 @@ msgstr ""
 msgid "Phone:"
 msgstr ""
 
-#: web/index.cgi:738 web/index.cgi:1096
+#: web/index.cgi:738 web/index.cgi:1101
 msgid "(optional)"
 msgstr ""
 
@@ -1270,100 +1270,100 @@ msgstr ""
 msgid "Hide pins"
 msgstr ""
 
-#: web/index.cgi:969
+#: web/index.cgi:974
 msgid "Email me new local problems"
 msgstr ""
 
-#: web/index.cgi:971
+#: web/index.cgi:976
 msgid "RSS feed of recent local problems"
 msgstr ""
 
-#: web/index.cgi:974
+#: web/index.cgi:979
 msgid "Problems in this area"
 msgstr ""
 
-#: web/index.cgi:975
+#: web/index.cgi:980
 msgid "Reports on and around the map"
 msgstr ""
 
-#: web/index.cgi:976
+#: web/index.cgi:981
 #, perl-format
 msgid "Closest nearby problems <small>(within&nbsp;%skm)</small>"
 msgstr ""
 
-#: web/index.cgi:980
+#: web/index.cgi:985
 msgid ""
 "To report a problem, simply\n"
 "        <strong>click on the map</strong> at the correct location."
 msgstr ""
 
-#: web/index.cgi:982
+#: web/index.cgi:987
 #, perl-format
 msgid ""
 "<small>If you cannot see the map, <a href='%s' rel='nofollow'>skip this\n"
 "        step</a>.</small>"
 msgstr ""
 
-#: web/index.cgi:987
+#: web/index.cgi:992
 msgid "Recent local problems, FixMyStreet"
 msgstr ""
 
-#: web/index.cgi:1000
+#: web/index.cgi:1005
 msgid "There were problems with your update. Please see below."
 msgstr ""
 
-#: web/index.cgi:1021 web/index.cgi:1023
+#: web/index.cgi:1026 web/index.cgi:1028
 msgid "Unknown problem ID"
 msgstr ""
 
-#: web/index.cgi:1024
+#: web/index.cgi:1029
 msgid "That report has been removed from FixMyStreet."
 msgstr ""
 
-#: web/index.cgi:1044
+#: web/index.cgi:1049
 msgid "This problem is old and of unknown status."
 msgstr ""
 
-#: web/index.cgi:1047 web/index.cgi:1088
+#: web/index.cgi:1052 web/index.cgi:1093
 msgid "This problem has been fixed"
 msgstr ""
 
-#: web/index.cgi:1072
+#: web/index.cgi:1077
 msgid "More problems nearby"
 msgstr ""
 
-#: web/index.cgi:1075
+#: web/index.cgi:1080
 msgid "Email me updates"
 msgstr ""
 
-#: web/index.cgi:1078
+#: web/index.cgi:1083
 msgid "Receive email when updates are left on this problem"
 msgstr ""
 
-#: web/index.cgi:1083
+#: web/index.cgi:1088
 msgid "RSS feed of updates to this problem"
 msgstr ""
 
-#: web/index.cgi:1084
+#: web/index.cgi:1089
 msgid "Provide an update"
 msgstr ""
 
-#: web/index.cgi:1090
+#: web/index.cgi:1095
 msgid "Update:"
 msgstr ""
 
-#: web/index.cgi:1091
+#: web/index.cgi:1096
 msgid "Alert me to future updates"
 msgstr ""
 
-#: web/index.cgi:1099
+#: web/index.cgi:1104
 msgid ""
 "Please note that updates are not sent to the council. If you leave your name "
 "it will be public. Your information will only be used in accordance with our "
 "<a href=\"/faq#privacy\">privacy policy</a>"
 msgstr ""
 
-#: web/index.cgi:1119
+#: web/index.cgi:1124
 msgid "Updates to this problem, FixMyStreet"
 msgstr ""
 
@@ -1520,112 +1520,112 @@ msgid ""
 "your experience of getting the problem fixed?"
 msgstr ""
 
-#: web/questionnaire.cgi:321
+#: web/questionnaire.cgi:322
 msgid ""
 "Would you like to receive another questionnaire in 4 weeks, reminding you to "
 "check the status?"
 msgstr ""
 
-#: web/reports.cgi:193 web/reports.cgi:240
+#: web/reports.cgi:192 web/reports.cgi:239
 msgid "Summary reports"
 msgstr ""
 
-#: web/reports.cgi:195
+#: web/reports.cgi:194
 msgid ""
 "This is a summary of all reports on this site; select a particular council "
 "to see the reports sent there."
 msgstr ""
 
-#: web/reports.cgi:196
+#: web/reports.cgi:195
 msgid "Greyed-out lines are councils that no longer exist."
 msgstr ""
 
-#: web/reports.cgi:200 web-admin/index.cgi:477 web-admin/index.cgi:656
+#: web/reports.cgi:199 web-admin/index.cgi:477 web-admin/index.cgi:656
 msgid "Name"
 msgstr ""
 
-#: web/reports.cgi:200 web/reports.cgi:276
+#: web/reports.cgi:199 web/reports.cgi:275
 msgid "New problems"
 msgstr ""
 
-#: web/reports.cgi:200 web/reports.cgi:284
+#: web/reports.cgi:199 web/reports.cgi:283
 msgid "Older problems"
 msgstr ""
 
-#: web/reports.cgi:202
+#: web/reports.cgi:201
 msgid "Old problems,<br>state unknown"
 msgstr ""
 
-#: web/reports.cgi:204 web/reports.cgi:291
+#: web/reports.cgi:203 web/reports.cgi:290
 msgid "Recently fixed"
 msgstr ""
 
-#: web/reports.cgi:204
+#: web/reports.cgi:203
 msgid "Older fixed"
 msgstr ""
 
-#: web/reports.cgi:246
+#: web/reports.cgi:245
 msgid "council"
 msgstr ""
 
-#: web/reports.cgi:256
+#: web/reports.cgi:255
 #, perl-format
 msgid "RSS feed of problems in this %s"
 msgstr ""
 
-#: web/reports.cgi:260
+#: web/reports.cgi:259
 #, perl-format
 msgid "This is a summary of all reports for one %s."
 msgstr ""
 
-#: web/reports.cgi:261
+#: web/reports.cgi:260
 #, perl-format
 msgid "This is a summary of all reports for this %s."
 msgstr ""
 
-#: web/reports.cgi:265
+#: web/reports.cgi:264
 #, perl-format
 msgid "You can <a href=\"%s\">see less detail</a>."
 msgstr ""
 
-#: web/reports.cgi:267
+#: web/reports.cgi:266
 #, perl-format
 msgid "You can <a href=\"%s\">see more details</a>."
 msgstr ""
 
-#: web/reports.cgi:269
+#: web/reports.cgi:268
 #, perl-format
 msgid ""
 "You can <a href=\"%s\">see less detail</a> or go back and <a href=\"/reports"
 "\">show all councils</a>."
 msgstr ""
 
-#: web/reports.cgi:271
+#: web/reports.cgi:270
 #, perl-format
 msgid ""
 "You can <a href=\"%s\">see more details</a> or go back and <a href=\"/reports"
 "\">show all councils</a>."
 msgstr ""
 
-#: web/reports.cgi:286
+#: web/reports.cgi:285
 msgid "Old problems, state unknown"
 msgstr ""
 
-#: web/reports.cgi:292
+#: web/reports.cgi:291
 msgid "Old fixed"
 msgstr ""
 
-#: web/reports.cgi:295
+#: web/reports.cgi:294
 #, perl-format
 msgid "%s - Summary reports"
 msgstr ""
 
-#: web/reports.cgi:295
+#: web/reports.cgi:294
 #, perl-format
 msgid "Problems within %s, FixMyStreet"
 msgstr ""
 
-#: web/reports.cgi:335
+#: web/reports.cgi:334
 msgid "(not sent to council)"
 msgstr ""
 
