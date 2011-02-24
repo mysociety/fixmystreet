@@ -7,10 +7,10 @@ use warnings;
 use Carp;
 
 sub set_lang_and_domain {
-    my ( $self, $lang, $unicode ) = @_;
+    my ( $self, $lang, $unicode, $dir ) = @_;
     mySociety::Locale::negotiate_language(
         'en-gb,English,en_GB|nb,Norwegian,nb_NO', 'nb' );
-    mySociety::Locale::gettext_domain( 'FixMyStreet', $unicode );
+    mySociety::Locale::gettext_domain( 'FixMyStreet', $unicode, $dir );
     mySociety::Locale::change();
 }
 

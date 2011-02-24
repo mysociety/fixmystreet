@@ -37,10 +37,11 @@ Set the language and text domain for the site based on the query and host.
 =cut
 
 sub set_lang_and_domain {
-    my ( $self, $lang, $unicode ) = @_;
+    my ( $self, $lang, $unicode, $dir ) = @_;
     my $set_lang = mySociety::Locale::negotiate_language(
         'en-gb,English,en_GB|cy,Cymraeg,cy_GB', $lang );
-    mySociety::Locale::gettext_domain( 'FixMyStreet-EmptyHomes', $unicode );
+    mySociety::Locale::gettext_domain( 'FixMyStreet-EmptyHomes', $unicode,
+        $dir );
     mySociety::Locale::change();
     return $set_lang;
 }

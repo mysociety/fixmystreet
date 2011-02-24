@@ -153,17 +153,17 @@ sub enter_postcode_text { '' }
 
 =head2 set_lang_and_domain
 
-    my $set_lang = $cobrand->set_lang_and_domain( $lang, $unicode )
+    my $set_lang = $cobrand->set_lang_and_domain( $lang, $unicode, $dir )
 
 Set the language and domain of the site based on the cobrand and host.
 
 =cut
 
 sub set_lang_and_domain {
-    my ( $self, $lang, $unicode ) = @_;
+    my ( $self, $lang, $unicode, $dir ) = @_;
     my $set_lang = mySociety::Locale::negotiate_language(
         'en-gb,English,en_GB|nb,Norwegian,nb_NO', $lang );    # XXX Testing
-    mySociety::Locale::gettext_domain( 'FixMyStreet', $unicode );
+    mySociety::Locale::gettext_domain( 'FixMyStreet', $unicode, $dir );
     mySociety::Locale::change();
     return $set_lang;
 }
@@ -345,7 +345,7 @@ Return the title to be used in page heads.
 
 =cut
 
-sub site_title { '' }
+sub site_title { 'FixMyStreet.com' }
 
 =head2 on_map_list_limit
 

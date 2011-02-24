@@ -46,6 +46,9 @@ __PACKAGE__->config(
 # Start the application
 __PACKAGE__->setup();
 
+# disable debug logging unless in debaug mode
+__PACKAGE__->log->disable('debug') unless __PACKAGE__->debug;
+
 =head1 NAME
 
 FixMyStreet::App - Catalyst based application
@@ -106,8 +109,16 @@ sub setup_cobrand {
       :                    undef;
 
     # set the language and the translation file to use - store it on stash
-    my $set_lang = $cobrand->set_lang_and_domain( $lang, 1 );
+    my $set_lang = $cobrand->set_lang_and_domain(
+        $lang,                                       # language
+        1,                                           # return unicode
+        FixMyStreet->path_to('locale')->stringify    # use locale directory
+    );
     $c->stash->{lang_code} = $set_lang;
+
+    # debug
+    $c->log->debug( sprintf "Set lang to '%s' and cobrand to '%s'",
+        $set_lang, $cobrand->moniker );
 
     Problems::set_site_restriction_with_cobrand_object($cobrand);
 
