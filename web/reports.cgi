@@ -61,7 +61,6 @@ sub main {
         my $areas_f = mySociety::MaPit::call('areas', $fylke, type => \@area_types);
         if (keys %$areas_f == 1) {
             ($fylke) = values %$areas_f;
-            $kommune = decode_utf8($kommune);
             foreach (values %$areas_k) {
                 if ($_->{name} eq $kommune && $_->{parent_area} == $fylke->{id}) {
                     $one_council = $_;

@@ -88,7 +88,6 @@ sub geocoded_string_coordinates {
 # of the site. 
 sub string {
     my ($s, $q) = @_;
-    $s = decode_utf8($s);
     $s = lc($s);
     $s =~ s/[^-&\w ']/ /g;
     $s =~ s/\s+/ /g;
