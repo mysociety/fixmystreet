@@ -2,6 +2,14 @@
     width: 6.5em;
 }
 
+label {
+    width: 6em;
+}
+
+#fieldset div.checkbox, #problem_submit {
+    padding-left: 6.5em;
+}
+
 body {
     font-family: Helmet, Freesans, "Helvetica Neue", Arial, sans-serif;
 }
