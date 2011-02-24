@@ -1,0 +1,9 @@
+[% IF c.config.STAGING_SITE %]
+<hr clear="both">
+<ul>
+    <li>cobrand.moniker:           [% c.cobrand.moniker %]</li>
+    <li>additional_template_paths: [% additional_template_paths.join(', ') || '--empty--' %]</li>
+    <li>lang_code:                 [% lang_code %]</li>
+</ul>
+[% END %]
+
