@@ -3,6 +3,7 @@ package FixMyStreet::Cobrand::Default;
 use strict;
 use warnings;
 use FixMyStreet;
+use URI;
 
 use Carp;
 
@@ -141,6 +142,18 @@ Return the base url for the cobranded version of the site
 =cut
 
 sub base_url { mySociety::Config::get('BASE_URL') }
+
+=head2 base_host
+
+Return the base host for the cobranded version of the site
+
+=cut
+
+sub base_host {
+    my $self = shift;
+    my $uri  = URI->new( $self->base_url );
+    return $uri->host;
+}
 
 =head2 enter_postcode_text
 
