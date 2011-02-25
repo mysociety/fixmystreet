@@ -254,7 +254,9 @@ sub template_include {
     return undef unless -e $template_file;
 
     $template = Text::Template->new(
-        SOURCE => $template_file,
+        TYPE => 'STRING',
+        # Don't use FILE, because we need to make sure it's Unicode characters
+        SOURCE => decode_utf8(File::Slurp::read_file($template_file)),
         DELIMITERS => ['{{', '}}'],
     );
     return $template->fill_in(HASH => \%params);
