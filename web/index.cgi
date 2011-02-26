@@ -610,6 +610,8 @@ please specify the closest point on land.')) unless %$all_councils;
        my $form_action = Cobrand::url($cobrand, '/', $q); 
        $vars{form_start} = <<EOF;
 <form action="$form_action" method="post" name="mapSkippedForm"$enctype>
+<input type="hidden" name="latitude" value="$latitude">
+<input type="hidden" name="longitude" value="$longitude">
 <input type="hidden" name="pc" value="$input_h{pc}">
 <input type="hidden" name="skipped" value="1">
 $cobrand_form_elements
@@ -721,10 +723,6 @@ photo of the problem if you have one), etc.'));
     } else {
         $vars{text_help} .= $q->p(_('Please fill in details of the problem below.'));
     }
-
-    $vars{text_help} .= '
-<input type="hidden" name="latitude" id="fixmystreet.latitude" value="' . $latitude . '">
-<input type="hidden" name="longitude" id="fixmystreet.longitude" value="' . $longitude . '">';
 
     if (@errors) {
         $vars{errors} = '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';

@@ -98,6 +98,8 @@ sub _display_map {
         $out .= <<EOF;
 <input type="hidden" name="x" id="formX" value="$x">
 <input type="hidden" name="y" id="formY" value="$y">
+<input type="hidden" name="latitude" value="$params{latitude}">
+<input type="hidden" name="longitude" value="$params{longitude}">
 EOF
         $img_type = '<input type="image"';
     } else {
