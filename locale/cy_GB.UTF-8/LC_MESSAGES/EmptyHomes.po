@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2011-02-26 20:53+0000\n"
+"POT-Creation-Date: 2011-02-26 21:29+0000\n"
 "PO-Revision-Date: 2009-07-10 14:20-0000\n"
 "Last-Translator: Mark Smith <Mark.Smith@trosol.co.uk>\n"
 "Language-Team: mySociety\n"
@@ -702,7 +702,7 @@ msgstr ""
 "ward chi,\n"
 "cofnodwch eich cod post Prydeinig neu enw stryd ac ardal:"
 
-#: web/alert.cgi:389 web/confirm.cgi:192 web/index.cgi:166
+#: web/alert.cgi:389 web/index.cgi:166
 msgid "Go"
 msgstr "Ewch"
 
@@ -889,6 +889,10 @@ msgstr "Ydw"
 #: web-admin/index.cgi:590 web-admin/index.cgi:608
 msgid "No"
 msgstr "Nac ydw"
+
+#: web/confirm.cgi:192 web/index.cgi:790
+msgid "Submit"
+msgstr "Anfon"
 
 #: web/confirm.cgi:237
 #, perl-format
@@ -1450,10 +1454,6 @@ msgid ""
 "addresses, and will use it only to ensure the smooth running of the service, "
 "in accordance with their privacy policies."
 msgstr ""
-
-#: web/index.cgi:790
-msgid "Submit"
-msgstr "Anfon"
 
 #: web/index.cgi:885
 msgid "Hide stale reports"

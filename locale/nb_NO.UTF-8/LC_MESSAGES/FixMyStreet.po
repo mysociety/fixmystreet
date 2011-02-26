@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FixMyStreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2011-02-26 20:53+0000\n"
-"PO-Revision-Date: 2011-02-24 23:09MET\n"
+"POT-Creation-Date: 2011-02-26 21:29+0000\n"
+"PO-Revision-Date: 2011-02-26 22:01MET\n"
 "Last-Translator: Petter Reinholdtsen <pere@hungry.com>\n"
 "Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
 "MIME-Version: 1.0\n"
@@ -658,9 +658,9 @@ msgid ""
 msgstr ""
 "Du finner lokale saker ved å søke på ditt postnummer, veinavn eller sted:"
 
-#: web/alert.cgi:389 web/confirm.cgi:192 web/index.cgi:166
+#: web/alert.cgi:389 web/index.cgi:166
 msgid "Go"
-msgstr "Søk"
+msgstr "Fortsett"
 
 #: web/alert.cgi:415
 msgid "Some photos of recent reports"
@@ -701,7 +701,7 @@ msgstr "Vi kan ikke bekrefte dette varselet??"
 
 #: web/alert.cgi:544
 msgid "You have successfully confirmed your alert."
-msgstr "Du har nå bekreftet ditt varsel"
+msgstr "Du har nå lykkes med å bekrefte ditt varsel."
 
 #: web/alert.cgi:551
 msgid "You have successfully deleted your alert."
@@ -807,8 +807,8 @@ msgid ""
 "Thanks, glad to hear it's been fixed! Could we just ask if you have ever "
 "reported a problem to a council before?"
 msgstr ""
-"Takk, glad for å høre at det er fikset!  Kan vi få spørre deg om du har "
-"rapportert et problem til en administrasjon tidligere?"
+"Takk, glad for å høre at problemet er fikset!  Vi vil gjerne spørre deg om "
+"du har rapportert et problem til en administrasjon tidligere?"
 
 #: web/confirm.cgi:190 web/questionnaire.cgi:234 web/questionnaire.cgi:323
 #: web-admin/index.cgi:340 web-admin/index.cgi:341 web-admin/index.cgi:503
@@ -822,14 +822,18 @@ msgstr "Ja"
 msgid "No"
 msgstr "Nei"
 
+#: web/confirm.cgi:192 web/index.cgi:790
+msgid "Submit"
+msgstr "Send inn"
+
 #: web/confirm.cgi:237
 #, perl-format
 msgid ""
 "Thank you &mdash; you can <a href=\"%s\">view your updated problem</a> on "
 "the site."
 msgstr ""
-"Tusen takk &mdash; du kan <a href=\"%s\">ditt oppdaterte problem</a> på "
-"tjenesten."
+"Tusen takk &mdash; du kan <a href=\"%s\">se på ditt oppdaterte problem</a> "
+"her hos oss."
 
 #: web/contact.cgi:22
 msgid "Contact Us"
@@ -871,6 +875,10 @@ msgid ""
 "individual empty\n"
 "homes; use the box accessed from <a href=\"/\">the front page</a>."
 msgstr ""
+"Vi vil gjerne høre hva du tenker om dette nettstedet.  Det er bare å fylle "
+"inn skjemaet. Vær så snill å ikke kontakte oss om individuelle tomme hjem.  "
+"For det bør du i stedet bruke boksen tilgjengelig fra <a href=\"/"
+"\">forsiden</a>."
 
 #: web/contact.cgi:141
 msgid ""
@@ -1126,7 +1134,7 @@ msgstr ""
 
 #: web/index.cgi:570 web-admin/index.cgi:628
 msgid "Category:"
-msgstr "Kategori"
+msgstr "Kategori:"
 
 #: web/index.cgi:576
 msgid "Empty house or bungalow"
@@ -1387,10 +1395,6 @@ msgid ""
 "use it only to ensure the smooth running of the service, in accordance with "
 "their privacy policies."
 msgstr ""
-
-#: web/index.cgi:790
-msgid "Submit"
-msgstr "Send inn"
 
 #: web/index.cgi:885
 msgid "Hide stale reports"
@@ -2079,7 +2083,7 @@ msgstr "Tilstandsfordeling for oppdateringer"
 
 #: web-admin/index.cgi:186
 msgid "Diligency prize league table"
-msgstr ""
+msgstr "Hvem har endret kontaktlista"
 
 #: web-admin/index.cgi:190
 #, fuzzy, perl-format
@@ -2181,7 +2185,7 @@ msgstr "Bekreftet"
 
 #: web-admin/index.cgi:353
 msgid "Update statuses"
-msgstr "Oppdater statuser"
+msgstr "Oppdater tilstanden"
 
 #: web-admin/index.cgi:358
 msgid "Add new category"
@@ -2201,7 +2205,7 @@ msgstr "Merk: "
 
 #: web-admin/index.cgi:380
 msgid "Create category"
-msgstr "Lat categori"
+msgstr "Lag kategori"
 
 #: web-admin/index.cgi:432
 msgid "Save changes"
@@ -2350,7 +2354,7 @@ msgstr "Koordinater:"
 
 #: web-admin/index.cgi:624
 msgid "originally entered"
-msgstr ""
+msgstr "søkte etter"
 
 #: web-admin/index.cgi:625
 msgid "For council(s):"
