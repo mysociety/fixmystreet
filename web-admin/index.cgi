@@ -187,7 +187,7 @@ sub admin_councils_list ($) {
     my $edit_activity = dbh()->selectall_arrayref("select count(*) as c, editor from contacts_history group by editor order by c desc");
     if (@$edit_activity) {
         print $q->ul(
-            map { $q->li( sprintf(_('%d edits by %d'), $_->[0], $_->[1])) } @$edit_activity 
+            map { $q->li( sprintf(_('%d edits by %s'), $_->[0], $_->[1])) } @$edit_activity 
         );
     } else {
         print $q->p(_('No edits have yet been made.'));
