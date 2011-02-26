@@ -174,7 +174,7 @@ foreach my $row (@$unsent) {
         $template = 'submit-brent' if $row->{council} eq 2488 || $row->{council} eq 2237;
         $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/$template");
 
-        if ($h{category} eq 'Other') {
+        if ($h{category} eq _('Other')) {
             $h{category_footer} = _('this type of local problem');
             $h{category_line} = '';
         } else {

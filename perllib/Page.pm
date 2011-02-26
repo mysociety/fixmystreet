@@ -538,17 +538,17 @@ sub display_problem_meta_line($$) {
             $out .= sprintf(_('%s, reported by %s at %s'), ent($category), ent($problem->{name}), $date_time);
         }
     } else {
-        if ($problem->{service} && $problem->{category} && $problem->{category} ne 'Other' && $problem->{anonymous}) {
+        if ($problem->{service} && $problem->{category} && $problem->{category} ne _('Other') && $problem->{anonymous}) {
             $out .= sprintf(_('Reported by %s in the %s category anonymously at %s'), ent($problem->{service}), ent($problem->{category}), $date_time);
-        } elsif ($problem->{service} && $problem->{category} && $problem->{category} ne 'Other') {
+        } elsif ($problem->{service} && $problem->{category} && $problem->{category} ne _('Other')) {
             $out .= sprintf(_('Reported by %s in the %s category by %s at %s'), ent($problem->{service}), ent($problem->{category}), ent($problem->{name}), $date_time);
         } elsif ($problem->{service} && $problem->{anonymous}) {
             $out .= sprintf(_('Reported by %s anonymously at %s'), ent($problem->{service}), $date_time);
         } elsif ($problem->{service}) {
             $out .= sprintf(_('Reported by %s by %s at %s'), ent($problem->{service}), ent($problem->{name}), $date_time);
-        } elsif ($problem->{category} && $problem->{category} ne 'Other' && $problem->{anonymous}) {
+        } elsif ($problem->{category} && $problem->{category} ne _('Other') && $problem->{anonymous}) {
             $out .= sprintf(_('Reported in the %s category anonymously at %s'), ent($problem->{category}), $date_time);
-        } elsif ($problem->{category} && $problem->{category} ne 'Other') {
+        } elsif ($problem->{category} && $problem->{category} ne _('Other')) {
             $out .= sprintf(_('Reported in the %s category by %s at %s'), ent($problem->{category}), ent($problem->{name}), $date_time);
         } elsif ($problem->{anonymous}) {
             $out .= sprintf(_('Reported anonymously at %s'), $date_time);
