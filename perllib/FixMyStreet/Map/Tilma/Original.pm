@@ -268,6 +268,7 @@ sub click_to_os {
 # Given some click co-ords (the tile they were on, and where in the
 # tile they were), convert to WGS84 and return.
 sub click_to_wgs84 {
+    my $q = shift;
     my ( $easting, $northing ) = FixMyStreet::Map::click_to_os(@_);
     my ( $lat, $lon ) = mySociety::GeoUtil::national_grid_to_wgs84( $easting, $northing, 'G' );
     return ( $lat, $lon );
@@ -306,6 +307,37 @@ sub os_to_px_with_adjust {
     }
 
     return ($x_tile, $y_tile, $px, $py);
+}
+
+sub compass ($$$) {
+    my ( $q, $x, $y ) = @_;
+    my @compass;
+    for ( my $i = $x - 1 ; $i <= $x + 1 ; $i++ ) {
+        for ( my $j = $y - 1 ; $j <= $y + 1 ; $j++ ) {
+            $compass[$i][$j] = NewURL( $q, x => $i, y => $j );
+        }
+    }
+    my $recentre = NewURL($q);
+    my $host = Page::base_url_with_lang( $q, undef );
+    return <<EOF;
+<table cellpadding="0" cellspacing="0" border="0" id="compass">
+<tr valign="bottom">
+<td align="right"><a rel="nofollow" href="${compass[$x-1][$y+1]}"><img src="$host/i/arrow-northwest.gif" alt="NW" width=11 height=11></a></td>
+<td align="center"><a rel="nofollow" href="${compass[$x][$y+1]}"><img src="$host/i/arrow-north.gif" vspace="3" alt="N" width=13 height=11></a></td>
+<td><a rel="nofollow" href="${compass[$x+1][$y+1]}"><img src="$host/i/arrow-northeast.gif" alt="NE" width=11 height=11></a></td>
+</tr>
+<tr>
+<td><a rel="nofollow" href="${compass[$x-1][$y]}"><img src="$host/i/arrow-west.gif" hspace="3" alt="W" width=11 height=13></a></td>
+<td align="center"><a rel="nofollow" href="$recentre"><img src="$host/i/rose.gif" alt="Recentre" width=35 height=34></a></td>
+<td><a rel="nofollow" href="${compass[$x+1][$y]}"><img src="$host/i/arrow-east.gif" hspace="3" alt="E" width=11 height=13></a></td>
+</tr>
+<tr valign="top">
+<td align="right"><a rel="nofollow" href="${compass[$x-1][$y-1]}"><img src="$host/i/arrow-southwest.gif" alt="SW" width=11 height=11></a></td>
+<td align="center"><a rel="nofollow" href="${compass[$x][$y-1]}"><img src="$host/i/arrow-south.gif" vspace="3" alt="S" width=13 height=11></a></td>
+<td><a rel="nofollow" href="${compass[$x+1][$y-1]}"><img src="$host/i/arrow-southeast.gif" alt="SE" width=11 height=11></a></td>
+</tr>
+</table>
+EOF
 }
 
 1;

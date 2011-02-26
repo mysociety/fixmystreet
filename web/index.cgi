@@ -500,8 +500,12 @@ sub display_form {
             $longitude = $lon;
         }
     } elsif ($pin_x && $pin_y) {
-        # tilma map was clicked on
-        ($latitude, $longitude)  = FixMyStreet::Map::click_to_wgs84($pin_tile_x, $pin_x, $pin_tile_y, $pin_y);
+
+        # Map was clicked on (tilma, or non-JS OpenLayers, for example)
+        ($latitude, $longitude) = FixMyStreet::Map::click_to_wgs84($q, $pin_tile_x, $pin_x, $pin_tile_y, $pin_y);
+        # Shrink, as don't need accuracy plus we want them as English strings
+        ($latitude, $longitude) = map { Utils::truncate_coordinate($_) } ( $latitude, $longitude );
+
     } elsif ( $input{partial} && $input{pc} && !length $input{latitude} && !length $input{longitude} ) {
         my $error;
         try {
@@ -719,8 +723,8 @@ photo of the problem if you have one), etc.'));
     }
 
     $vars{text_help} .= '
-<input type="hidden" name="latitude" value="' . $latitude . '">
-<input type="hidden" name="longitude" value="' . $longitude . '">';
+<input type="hidden" name="latitude" id="fixmystreet.latitude" value="' . $latitude . '">
+<input type="hidden" name="longitude" id="fixmystreet.longitude" value="' . $longitude . '">';
 
     if (@errors) {
         $vars{errors} = '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
