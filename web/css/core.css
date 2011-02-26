@@ -222,6 +222,14 @@ p#copyright {
     top: 0;
 }
 
+form#mapForm #map {
+    cursor: pointer;
+}
+
+form#mapForm .olTileImage {
+    cursor: crosshair;
+}
+
 #drag input {
     cursor: crosshair;
     background-color: #cccccc;
