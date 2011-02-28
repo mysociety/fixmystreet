@@ -8,23 +8,12 @@ use FixMyStreet::Cobrand;
 use Memcached;
 use Problems;
 
-use Catalyst qw/
-  ConfigLoader
-  Static::Simple
-  /;
+use Catalyst    #
+  'Static::Simple';
 
 extends 'Catalyst';
 
 our $VERSION = '0.01';
-
-# Configure the application.
-#
-# Note that settings in fixmystreet_app.conf (or other external
-# configuration file that you set up manually) take precedence
-# over this when using ConfigLoader. Thus configuration
-# details given here can function as a default configuration,
-# with an external configuration file acting as an override for
-# local deployment.
 
 __PACKAGE__->config(
 
@@ -47,7 +36,8 @@ __PACKAGE__->config(
 __PACKAGE__->setup();
 
 # disable debug logging unless in debaug mode
-__PACKAGE__->log->disable('debug') unless __PACKAGE__->debug;
+__PACKAGE__->log->disable('debug')    #
+  unless __PACKAGE__->debug;
 
 =head1 NAME
 
