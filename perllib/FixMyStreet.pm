@@ -62,4 +62,42 @@ sub config {
     return exists $CONFIG{$key} ? $CONFIG{$key} : undef;
 }
 
+=head2 dbic_connect_info
+
+    $connect_info = FixMyStreet->dbic_connect_info();
+
+Returns the array that DBIx::Class::Schema needs to connect to the database.
+Most of the values are read from the config file and others are hordcoded here.
+
+=cut
+
+# for exact details on what this could return refer to:
+#
+# http://search.cpan.org/dist/DBIx-Class/lib/DBIx/Class/Storage/DBI.pm#connect_info
+#
+# we use the one that is most similar to DBI's connect.
+
+sub dbic_connect_info {
+    my $class  = shift;
+    my $config = $class->config;
+
+    my $dsn = "dbi:Pg:dbname=" . $config->{BCI_DB_NAME};
+    $dsn .= ";host=$config->{BCI_DB_HOST}"
+      if $config->{BCI_DB_HOST};
+    $dsn .= ";port=$config->{BCI_DB_PORT}"
+      if $config->{BCI_DB_PORT};
+    $dsn .= ";sslmode=allow";
+
+    my $user     = $config->{BCI_DB_USER} || undef;
+    my $password = $config->{BCI_DB_PASS} || undef;
+
+    my $dbi_args = {
+        AutoCommit     => 1,
+        pg_enable_utf8 => 1,
+    };
+    my $dbic_args = {};
+
+    return [ $dsn, $user, $password, $dbi_args, $dbic_args ];
+}
+
 1;
