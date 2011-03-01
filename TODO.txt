@@ -11,3 +11,7 @@ Add users to system
 
 
 * extract group's thoughts from user issues email thread when it in done.
+
+
+* create darkpan for this project and utils to add modules to it.
+* script to build darkpan to local::lib

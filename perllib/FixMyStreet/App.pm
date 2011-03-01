@@ -8,8 +8,13 @@ use FixMyStreet::Cobrand;
 use Memcached;
 use Problems;
 
-use Catalyst    #
-  'Static::Simple';
+use Catalyst (
+    'Static::Simple',    #
+    'Session',
+    'Session::Store::DBIC',
+    'Session::State::Cookie',
+    'Authentication',
+);
 
 extends 'Catalyst';
 
@@ -29,7 +34,28 @@ __PACKAGE__->config(
     static => {    #
         include_path      => [ FixMyStreet->path_to("web") . "" ],
         ignore_extensions => ['cgi'],
-    }
+    },
+
+    'Plugin::Session' => {    # Catalyst::Plugin::Session::Store::DBIC
+        dbic_class => 'DB::Session',
+        expires    => 3600 * 24 * 7 * 6,    # 6 months
+    },
+
+    'Plugin::Authentication' => {
+        default_realm => 'default',
+        default       => {
+            credential => {    # Catalyst::Authentication::Credential::Password
+                class              => 'Password',
+                password_field     => 'password',
+                password_type      => 'hashed',
+                password_hash_type => 'SHA-1',
+            },
+            store => {         # Catalyst::Authentication::Store::DBIx::Class
+                class      => 'DBIx::Class',
+                user_model => 'DB::User',
+            },
+        },
+    },
 );
 
 # Start the application
