@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: FixMyStreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2011-02-26 21:29+0000\n"
-"PO-Revision-Date: 2011-02-26 22:01MET\n"
+"PO-Revision-Date: 2011-02-27 13:36MET\n"
 "Last-Translator: Petter Reinholdtsen <pere@hungry.com>\n"
 "Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
 "MIME-Version: 1.0\n"
@@ -705,7 +705,7 @@ msgstr "Du har nå lykkes med å bekrefte ditt varsel."
 
 #: web/alert.cgi:551
 msgid "You have successfully deleted your alert."
-msgstr "Du har nå slettet dette varselet"
+msgstr "Sletting av ditt varsel var vellykket."
 
 #: web/alert.cgi:571
 msgid "Please enter a valid email address"
@@ -2086,9 +2086,9 @@ msgid "Diligency prize league table"
 msgstr "Hvem har endret kontaktlista"
 
 #: web-admin/index.cgi:190
-#, fuzzy, perl-format
+#, perl-format
 msgid "%d edits by %s"
-msgstr "%d redigeringer av %d"
+msgstr "%d redigeringer av %s"
 
 #: web-admin/index.cgi:193
 msgid "No edits have yet been made."

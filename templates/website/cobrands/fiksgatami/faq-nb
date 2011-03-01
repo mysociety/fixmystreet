@@ -71,6 +71,16 @@
   redigere eller fjerne eventuelle problemer eller oppdateringer som
   vi anser å være upassende fortrinnsvis etter å bli informert av en
   bruker på nettstedet.</dd>
+
+  <dt>Hvorfor blir ikke mitt postnummer / stedsnavn funnet?</dt>
+
+  <dd>Tjenesten bruker navnesøk hos Google Maps for å lokalisere
+    postnummer og steder.  Hvis Google Maps har mangler i sin
+    postnummer og stedsnavndatabase, vil stedet ikke bli funnet eller
+    sende deg til feil plass.  Tilsvarende søk hos Google (etter
+    f.eks. "1234, Norway") vil også feile.  For å fikse det må en ta
+    kontakt med Google.</dd>
+
 </dl>
 
 <h2><a name="privacy"></a>Spørsmål om personvern</h2>
@@ -95,9 +105,10 @@
 
   <dt>Hvem står bak FiksGataMi?</dt>
   <dd><p>Foreningen Norwegian Unix User Group (NUUG) står bak og
-      driver FiksGataMi. Nasjonalt kompetansesenter for fri
-      programvare (Friprogsenteret) og Departementenes Servicesenter
-      bidrar med finansiering av prosjektet.</p>
+      driver FiksGataMi. <a href="http://www.friprog.no/">Nasjonalt
+      kompetansesenter for fri programvare</a> og
+      <a href="http://www.dss.dep.no/">Departementenes
+      Servicesenter</a> bidrar med finansiering av prosjektet.</p>
 
     <p>Organisasjonen mySociety i England har drevet og utviklet
       nettstedet FixMyStreet siden 2007. Programvaren for FiksGataMi
