@@ -1,0 +1,22 @@
+create DBIx::Class schema (FixMyStreet::DB)
+  * alter tables to suit
+  * add schema to FixMyStreet::App as a model
+  * 
+
+Add users to system
+  * create table in db
+  * link users to their entries (problems and comments)
+  * 
+
+??? Process to guide existing users into the system - account created in past
+using email confirm
+
+??? How to turn council contacts into users so that they can log in as well?
+
+??? If users are created on one site do we allow them to use the same
+credentials on another (eg www.fms.com and guardian cities). What about admin
+access to user details?
+
+??? What other forms of login should we accept (fb, google openid)...
+
+??? move users email, name and phone from problems into users table. How to deal with duplicates and mismatches?
