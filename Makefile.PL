@@ -10,13 +10,16 @@ name 'FixMyStreet-App';
 all_from 'perllib/FixMyStreet/App.pm';
 
 requires 'Catalyst::Action::RenderView';
+requires 'Catalyst::Authentication::Store::DBIx::Class';
+requires 'Catalyst::Model::Adaptor';
 requires 'Catalyst::Plugin::Authentication';
 requires 'Catalyst::Plugin::ConfigLoader';
 requires 'Catalyst::Plugin::Session::Store::DBIC';
-requires 'Catalyst::Authentication::Store::DBIx::Class';
 requires 'Catalyst::Plugin::Static::Simple';
 requires 'Catalyst::Runtime' => '5.80031';
 requires 'Config::General';
+requires 'Email::Send';
+requires 'Email::Simple';
 requires 'Moose';
 requires 'namespace::autoclean';
 requires 'Path::Class';

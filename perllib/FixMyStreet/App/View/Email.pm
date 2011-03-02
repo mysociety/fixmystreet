@@ -1,4 +1,4 @@
-package FixMyStreet::App::View::Web;
+package FixMyStreet::App::View::Email;
 use base 'Catalyst::View::TT';
 
 use strict;
@@ -10,7 +10,7 @@ use FixMyStreet;
 __PACKAGE__->config(
     TEMPLATE_EXTENSION => '.html',
     INCLUDE_PATH       => [          #
-        FixMyStreet->path_to( 'templates', 'web', 'default' ),
+        FixMyStreet->path_to( 'templates', 'email', 'default' ),
     ],
     render_die     => 1,
     expose_methods => ['loc'],
@@ -18,7 +18,7 @@ __PACKAGE__->config(
 
 =head1 NAME
 
-FixMyStreet::App::View::Web - TT View for FixMyStreet::App
+FixMyStreet::App::View::Email - TT View for FixMyStreet::App
 
 =head1 DESCRIPTION
 

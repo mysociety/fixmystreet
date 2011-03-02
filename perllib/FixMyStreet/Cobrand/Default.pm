@@ -86,6 +86,20 @@ sub path_to_web_templates {
     return FixMyStreet->path_to( 'templates/web', $self->moniker );
 }
 
+=head2 path_to_email_templates
+
+    $path = $cobrand->path_to_email_templates(  );
+
+Returns the path to the templates for this cobrand - by default
+"templates/email/$moniker"
+
+=cut
+
+sub path_to_email_templates {
+    my $self = shift;
+    return FixMyStreet->path_to( 'templates/email', $self->moniker );
+}
+
 =head1 site_restriction
 
 Return a site restriction clause and a site key if the cobrand uses a subset of

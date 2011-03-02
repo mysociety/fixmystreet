@@ -1,0 +1,9 @@
+Subject: test email
+From: bad-sender@duff.com
+
+Hello,
+
+This is a test email where foo: [% foo %].
+
+Yours,
+  FixMyStreet.

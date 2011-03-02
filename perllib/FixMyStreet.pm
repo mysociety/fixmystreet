@@ -27,6 +27,28 @@ Thus module has utility functions for the FMS project.
 
 =head1 METHODS
 
+=head2 test_mode
+
+    FixMyStreet->test_mode( $bool );
+    my $in_test_mode_bool = FixMyStreet->test_mode;
+
+Put the FixMyStreet into test mode - inteded for the unit tests:
+
+    BEGIN {
+        use FixMyStreet;
+        FixMyStreet->test_mode(1);
+    }
+
+=cut
+
+my $TEST_MODE = undef;
+
+sub test_mode {
+    my $class = shift;
+    $TEST_MODE = shift if scalar @_;
+    return $TEST_MODE;
+}
+
 =head2 path_to
 
     $path = FixMyStreet->path_to( 'conf/general' );

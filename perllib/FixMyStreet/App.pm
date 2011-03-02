@@ -30,6 +30,9 @@ __PACKAGE__->config(
     # Disable deprecated behavior needed by old applications
     disable_component_resolution_regex_fallback => 1,
 
+    # Some generic stuff
+    default_view => 'Web',
+
     # Serve anything in web dir that is not a .cgi script
     static => {    #
         include_path      => [ FixMyStreet->path_to("web") . "" ],
@@ -115,7 +118,7 @@ sub setup_cobrand {
 
     # append the cobrand templates to the include path
     $c->stash->{additional_template_paths} =
-      [ $cobrand->path_to_web_templates . '' ]
+      [ $cobrand->path_to_web_templates->stringify ]
       unless $cobrand->is_default;
 
     my $host = $c->req->uri->host;
@@ -141,6 +144,50 @@ sub setup_cobrand {
     Memcached::set_namespace( FixMyStreet->config('BCI_DB_NAME') . ":" );
 
     return $cobrand;
+}
+
+=head2 send_email
+
+    $email_sent = $c->send_email( 'email_template', $extra_stash_values );
+
+Send an email by filling in the given template with values in the stash.
+
+You can specify extra values to those already in the stash by passing a hashref
+as the second argument.
+
+The stash (or extra_stash_values) keys 'to', 'from' and 'subject' are used to
+set those fields in the email if they are present.
+
+If a 'from' is not specified then the default from the config is used.
+
+=cut
+
+sub send_email {
+    my $c                  = shift;
+    my $template           = shift;
+    my $extra_stash_values = shift || {};
+
+    # create the vars to pass to the email template
+    my $vars = {
+        from => FixMyStreet->config('CONTACT_EMAIL'),
+        %{ $c->stash },
+        %$extra_stash_values,
+        additional_template_paths =>
+          [ $c->cobrand->path_to_email_templates->stringify ]
+    };
+
+    # render the template
+    my $content = $c->view('Email')->render( $c, $template, $vars );
+
+    # create an email
+    my $email = Email::Simple->new($content);
+    $email->header_set( ucfirst($_), $vars->{$_} )
+      for grep { $vars->{$_} } qw( to from subject);
+
+    # send the email
+    $c->model('EmailSend')->send($email);
+
+    return $email;
 }
 
 =head1 SEE ALSO
