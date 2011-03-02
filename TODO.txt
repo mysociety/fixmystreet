@@ -15,3 +15,8 @@ Add users to system
 
 * create darkpan for this project and utils to add modules to it.
 * script to build darkpan to local::lib
+
+
+* currently don't send email via EvEl or do any of the smarts it does - should
+  we switch to using it?
+
