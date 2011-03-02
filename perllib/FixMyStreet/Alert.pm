@@ -298,6 +298,7 @@ sub generate_rss ($$$;$$$$) {
             description => ent(ent($desc)) # Yes, double-encoded, really.
         );
         $item{pubDate} = $pubDate if $pubDate;
+        $item{category} = $row->{category} if $row->{category};
 
         my $display_photos = Cobrand::allow_photo_display($cobrand);    
         if ($display_photos && $row->{photo}) {
