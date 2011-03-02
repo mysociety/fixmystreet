@@ -16,7 +16,7 @@ my @tables_to_ignore = (
     'abuse',         'admin_log',       'alert',        'alert_sent',
     'alert_type',    'comment',         'contacts',     'contacts_history',
     'debugdate',     'flickr_imported', 'partial_user', 'problem',
-    'questionnaire', 'secret',          'textmystreet', 'token',
+    'questionnaire', 'secret',          'textmystreet', 
 );
 my $exclude = '^(?:' . join( '|', @tables_to_ignore ) . ')$';
 
