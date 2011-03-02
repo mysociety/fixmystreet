@@ -14,7 +14,7 @@ create table users (
     id          serial not null primary key,
     email       text not null unique,
     name        text,
-    password    text not null
+    password    text,
 );
 
 -- add PK to contacts table

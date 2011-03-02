@@ -22,13 +22,13 @@ __PACKAGE__->add_columns(
     "name",
     { data_type => "text", is_nullable => 1 },
     "password",
-    { data_type => "text", is_nullable => 0 },
+    { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint( "users_email_key", ["email"] );
 
-# Created by DBIx::Class::Schema::Loader v0.07009 @ 2011-03-01 15:43:43
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:KZssayknEGFoV7seVdHp+w
+# Created by DBIx::Class::Schema::Loader v0.07009 @ 2011-03-02 12:20:05
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:M8SDJhpzhBZJmhar+MGQhQ
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;
