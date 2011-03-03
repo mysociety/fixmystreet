@@ -184,6 +184,9 @@ sub send_email {
     $email->header_set( ucfirst($_), $vars->{$_} )
       for grep { $vars->{$_} } qw( to from subject);
 
+    # always send utf8 emails
+    $email->header_set( 'Content-Type' => 'text/plain; charset="utf-8"' );
+
     # send the email
     $c->model('EmailSend')->send($email);
 

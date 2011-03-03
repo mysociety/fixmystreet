@@ -5,5 +5,7 @@ Hello,
 
 This is a test email where foo: [% foo %].
 
+utf8: 我们应该能够无缝处理UTF8编码
+
 Yours,
   FixMyStreet.

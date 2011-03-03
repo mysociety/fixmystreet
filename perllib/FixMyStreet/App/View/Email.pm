@@ -12,6 +12,7 @@ __PACKAGE__->config(
     INCLUDE_PATH       => [          #
         FixMyStreet->path_to( 'templates', 'email', 'default' ),
     ],
+    ENCODING       => 'utf8',
     render_die     => 1,
     expose_methods => ['loc'],
 );

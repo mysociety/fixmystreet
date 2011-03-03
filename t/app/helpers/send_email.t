@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use utf8;
 
 BEGIN {
     use FixMyStreet;
@@ -37,10 +38,13 @@ is $emails[0]->as_string, << 'END_OF_BODY', "email is as expected";
 Subject: test email
 From: evdb@ecclestoad.co.uk
 To: test@recipient.com
+Content-Type: text/plain; charset="utf-8"
 
 Hello,
 
 This is a test email where foo: bar.
+
+utf8: 我们应该能够无缝处理UTF8编码
 
 Yours,
   FixMyStreet.
