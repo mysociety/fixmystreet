@@ -21,6 +21,7 @@ use File::Slurp;
 use HTTP::Date; # time2str
 use Image::Magick;
 use Image::Size;
+use IO::String;
 use POSIX qw(strftime);
 use URI::Escape;
 use Text::Template;
@@ -52,15 +53,17 @@ my $lastmodified;
 sub do_fastcgi {
     my ($func, $lm, $binary) = @_;
 
-    binmode(STDOUT, ":utf8") unless $binary;
-
     try {
         my $W = new mySociety::WatchUpdate();
         while (my $q = new mySociety::Web(unicode => 1)) {
             next if $lm && $q->Maybe304($lm);
             $lastmodified = $lm;
             microsite($q);
+            my $str_fh = IO::String->new;
+            my $old_fh = select($str_fh);
             &$func($q);
+            select($old_fh) if defined $old_fh;
+            print encode_utf8(${$str_fh->string_ref});
             dbh()->rollback() if $mySociety::DBHandle::conf_ok;
             $W->exit_if_changed();
         }
