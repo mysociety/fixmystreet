@@ -1,22 +1,35 @@
-create DBIx::Class schema (FixMyStreet::DB)
-  * alter tables to suit
-  * add schema to FixMyStreet::App as a model
-  * 
 
-Add users to system
-  * create table in db
+Add users to system:
   * link users to their entries (problems and comments)
-  * 
+  * script to migrate database
+  * extract email from problems into users
+  * best guess name and phone for users from problems
+
+Auth:
+  * add 'remember me' option on login.
+  * limit session to this browser session on create account
+  ? discuss auto-login on create account (privacy leak)
+  * redirect back to page they came from on login
+  * complete test script
+  * create a session flag that tells us if user is confirmed
+
+Admin:
+  * create darkpan for this project and utils to add modules to it.
+  * script to build darkpan to local::lib
+  * utility to add modules to darkpan / lit ones that can be updated (check with
+    community - this is bound to exist)
+
+Problem creation:
+  ? what should the new flow be for not-logged-in (probably unchanged).
+  * after becoming confirmed require user to manually send off 'pending' reports
 
 
-
-* extract group's thoughts from user issues email thread when it in done.
-
-
-* create darkpan for this project and utils to add modules to it.
-* script to build darkpan to local::lib
+Policy:
+  * extract group's thoughts from user issues email thread when it in done.
 
 
-* currently don't send email via EvEl or do any of the smarts it does - should
-  we switch to using it?
+Email:
+  * currently don't send email via EvEl or do any of the smarts it does - should
+    we switch to using it (Email::Send::EvEl...)?
+  * pull out encoding smarts into Email::Send::SMTP - possibly a flag?
 
