@@ -20,9 +20,13 @@ requires 'Catalyst::Runtime' => '5.80031';
 requires 'Config::General';
 requires 'Email::Send';
 requires 'Email::Simple';
+requires 'Email::Valid';
+requires 'IO::String';
 requires 'Moose';
 requires 'namespace::autoclean';
+requires 'Net::Domain::TLD';
 requires 'Path::Class';
+requires 'RABX';
 requires 'Readonly';
 
 test_requires 'Test::More' => '0.88';
