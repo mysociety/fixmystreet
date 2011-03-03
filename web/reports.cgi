@@ -83,7 +83,7 @@ sub main {
             $area_name = $one_council->{name};
         } else {
             foreach (keys %$areas) {
-                if ($areas->{$_}->{name} =~ /^\Q$q_council\E (Borough|City|District|County) Council$/) {
+                if ($areas->{$_}->{name} eq $q_council || $areas->{$_}->{name} =~ /^\Q$q_council\E (Borough|City|District|County) Council$/) {
                     $one_council = $areas->{$_};
                     $area_type = $areas->{$_}->{type};
                     $area_name = $q_council;
