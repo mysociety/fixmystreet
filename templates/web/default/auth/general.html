@@ -1,0 +1,48 @@
+[% INCLUDE 'header.html', title => loc('About Us') %]
+
+<h1>[% loc('Login or create an account') %]</h1>
+
+
+<form action="[% c.uri_for() %]" method="post" name="general_auth">
+    
+    [% IF email_error;
+
+        # other keys include fqdn, mxcheck if you'd like to write a custom error message
+
+        errors = {
+            missing => loc('Please enter an email address'),
+            other   => loc('Please check your email address is correct')
+        };
+        
+        loc_email_error = errors.$email_error || errors.other;
+    END %]
+    
+    
+    <div>
+        <span class="error">[% loc_email_error %]</span><br>
+        <label for="email">[% loc('Your email:') %]</label>
+        <input type="text" name="email" value="[% email || '' | html %]">
+    </div>    
+
+
+    <div>
+        <h3>I already have an account</h3>
+        <label for="password">[% loc('Your password:') %]</label>
+        <input type="password" name="password" value="">
+        <input type="submit" name="login" value="[% loc('Log me in') %]">
+    </div>
+
+    <div>
+        <h3>I don't have an account...</h3>
+        <input type="submit" name="create_account" value="[% loc('...create a new account now') %]">
+    </div>
+
+    <div>
+        <h3>I've forgotten my password...</h3>
+        <input type="submit" name="email_reset" value="[% loc('...email me a reset link') %]">
+    </div>
+    
+</form>
+
+
+[% INCLUDE 'footer.html' %]

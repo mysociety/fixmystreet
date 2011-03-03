@@ -1,0 +1,23 @@
+[% INCLUDE 'header.html', title => loc('Confirm account') %]
+
+[% IF user_now_confirmed %]
+
+<h1>[% loc('Account now confirmed') %]</h1>
+
+<p>Your account has been confirmed - thank you!</p>
+
+[% ELSE %]
+
+<h1>[% loc('Error') %]</h1>
+
+<p>We have not been able to confirm your account - sorry. This may be because:</p>
+
+<ul>
+    <li>Link too old or already used</li>
+    <li>URL not copied correctly</li>
+    <li>FIXME - reasons here</li>
+</ul>
+
+[% END %]
+
+[% INCLUDE 'footer.html' %]

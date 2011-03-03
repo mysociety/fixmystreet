@@ -46,6 +46,10 @@ p.error {
     font-size: larger;
 }
 
+span.error {
+    color: #cc0000;
+}
+
 ul {
     padding: 0 0 0 1.5em;
     margin: 0;

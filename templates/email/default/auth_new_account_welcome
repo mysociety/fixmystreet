@@ -1,0 +1,13 @@
+Subject: [% loc('Your new FixMyStreet.com account') %]
+
+Hello,
+
+We've just created an account on FIXME for you.
+
+Please use the following link to confirm that your email works - we need to do
+this before sending reports to the council on your behalf.
+
+  [% c.uri_for( '/auth/confirm', c.user.create_confirm_token ) %]
+
+Yours,
+  FIXME team.

@@ -9,6 +9,7 @@ my $ROOT_DIR = file(__FILE__)->parent->parent->absolute->resolve;
 use Readonly;
 
 use mySociety::Config;
+use mySociety::DBHandle;
 
 # load the config file and store the contents in a readonly hash
 mySociety::Config::set_file( __PACKAGE__->path_to("conf/general") );
@@ -99,6 +100,9 @@ Most of the values are read from the config file and others are hordcoded here.
 #
 # we use the one that is most similar to DBI's connect.
 
+# FIXME - should we just use mySociety::DBHandle? will that lead to AutoCommit
+# woes (we want it on, it sets it to off)?
+
 sub dbic_connect_info {
     my $class  = shift;
     my $config = $class->config;
@@ -120,6 +124,35 @@ sub dbic_connect_info {
     my $dbic_args = {};
 
     return [ $dsn, $user, $password, $dbi_args, $dbic_args ];
+}
+
+=head2 configure_mysociety_dbhandle
+
+    FixMyStreet->configure_mysociety_dbhandle();
+
+Calls configure in mySociety::DBHandle with args from the config. We need to do
+this so that old code that uses mySociety::DBHandle finds it properly set up. We
+can't (might not) be able to share the handle as DBIx::Class wants it with
+AutoCommit on (so that its transaction code can be used in preference to calling
+begin and commit manually) and mySociety::* code does not.
+
+This should be fixed/standardized to avoid having two database handles floating
+around.
+
+=cut
+
+sub configure_mysociety_dbhandle {
+    my $class  = shift;
+    my $config = $class->config;
+
+    mySociety::DBHandle::configure(
+        Name     => $config->{BCI_DB_NAME},
+        User     => $config->{BCI_DB_USER},
+        Password => $config->{BCI_DB_PASS},
+        Host     => $config->{BCI_DB_HOST} || undef,
+        Port     => $config->{BCI_DB_PORT} || undef,
+    );
+
 }
 
 1;

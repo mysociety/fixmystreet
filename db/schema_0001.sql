@@ -11,10 +11,11 @@ CREATE TABLE sessions (
 
 -- users table
 create table users (
-    id          serial not null primary key,
-    email       text not null unique,
-    name        text,
-    password    text,
+    id              serial  not null primary key,
+    email           text    not null unique,
+    name            text,
+    password        text,
+    is_confirmed    bool    not null default false
 );
 
 -- add PK to contacts table
