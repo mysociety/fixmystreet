@@ -7,6 +7,7 @@ use FixMyStreet;
 use FixMyStreet::Cobrand;
 use Memcached;
 use Problems;
+use mySociety::Email;
 
 use Catalyst (
     'Static::Simple',    #
@@ -52,6 +53,16 @@ __PACKAGE__->config(
                 password_field     => 'password',
                 password_type      => 'hashed',
                 password_hash_type => 'SHA-1',
+            },
+            store => {         # Catalyst::Authentication::Store::DBIx::Class
+                class      => 'DBIx::Class',
+                user_model => 'DB::User',
+            },
+        },
+        no_password => {       # use post confirm etc
+            credential => {    # Catalyst::Authentication::Credential::Password
+                class         => 'Password',
+                password_type => 'none',
             },
             store => {         # Catalyst::Authentication::Store::DBIx::Class
                 class      => 'DBIx::Class',
@@ -179,16 +190,22 @@ sub send_email {
     # render the template
     my $content = $c->view('Email')->render( $c, $template, $vars );
 
-    # create an email
+    # create an email - will parse headers out of content
     my $email = Email::Simple->new($content);
     $email->header_set( ucfirst($_), $vars->{$_} )
       for grep { $vars->{$_} } qw( to from subject);
 
-    # always send utf8 emails
-    $email->header_set( 'Content-Type' => 'text/plain; charset="utf-8"' );
+    # pass the email into mySociety::Email to construct the on the wire 7bit
+    # format - this should probably happen in the transport instead but hohum.
+    my $email_text = mySociety::Email::construct_email(
+        {
+            _unwrapped_body_ => $email->body,    # will get line wrapped
+            $email->header_pairs
+        }
+    );
 
     # send the email
-    $c->model('EmailSend')->send($email);
+    $c->model('EmailSend')->send($email_text);
 
     return $email;
 }
