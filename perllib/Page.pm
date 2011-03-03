@@ -63,7 +63,7 @@ sub do_fastcgi {
             my $old_fh = select($str_fh);
             &$func($q);
             select($old_fh) if defined $old_fh;
-            print encode_utf8(${$str_fh->string_ref});
+            print $binary ? ${$str_fh->string_ref} : encode_utf8(${$str_fh->string_ref});
             dbh()->rollback() if $mySociety::DBHandle::conf_ok;
             $W->exit_if_changed();
         }
