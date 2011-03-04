@@ -28,3 +28,5 @@ libmath-bigint-gmp-perl
 libtext-template-perl
 gettext
 libtest-exception-perl
+libipc-run3-perl
+libyaml-perl
