@@ -1,12 +1,6 @@
 [% INCLUDE 'header.html', title => loc('Confirm account') %]
 
-[% IF user_now_confirmed %]
-
-<h1>[% loc('Account now confirmed') %]</h1>
-
-<p>Your account has been confirmed - thank you!</p>
-
-[% ELSE %]
+[% IF token_not_found %]
 
 <h1>[% loc('Error') %]</h1>
 
@@ -17,6 +11,14 @@
     <li>URL not copied correctly</li>
     <li>FIXME - reasons here</li>
 </ul>
+
+[% ELSE %]
+
+<h1>[% loc('Please check you email') %]</h1>
+
+<p>We have sent you an email containing a link to confirm your account.</p>
+
+<p>If you do not receive the email in the next few minutes please check your spam folder.</p>
 
 [% END %]
 

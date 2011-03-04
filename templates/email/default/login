@@ -1,0 +1,12 @@
+Subject: [% loc('Your FixMyStreet.com account details') %]
+
+Please click on the link below to confirm your email address. Then you will be able to view your problem reports.
+
+[% c.uri_for( '/auth/token', token ) %]
+
+We will never give away or sell your email address to anyone else without your permission.
+
+Yours,
+  the FixMyStreet.com team
+
+

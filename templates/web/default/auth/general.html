@@ -19,27 +19,31 @@
     
     
     <div>
-        <span class="error">[% loc_email_error %]</span><br>
-        <label for="email">[% loc('Your email:') %]</label>
+
+        [% IF loc_email_error  %]
+            <span class="error">[% loc_email_error %]</span><br>
+        [% ELSIF login_error %]
+            <span class="error">Email or password wrong - please try again.</span><br>
+        [% END %]
+
+        <label for="email">[% loc('Email:') %]</label>
         <input type="text" name="email" value="[% email || '' | html %]">
-    </div>    
+        <br>
 
-
-    <div>
-        <h3>I already have an account</h3>
-        <label for="password">[% loc('Your password:') %]</label>
+        <label for="password">[% loc('Password:') %]</label>
         <input type="password" name="password" value="">
+        <br>
+        <!-- FIXME - implement session length choosing
+        <label for="remember_me">&nbsp;</label>
+        <input type="checkbox" name="remember_me">
+        Remember me - do not use on a public computer
+        <br> -->
+        <label for="login">&nbsp;</label>
         <input type="submit" name="login" value="[% loc('Log me in') %]">
-    </div>
 
-    <div>
-        <h3>I don't have an account...</h3>
-        <input type="submit" name="create_account" value="[% loc('...create a new account now') %]">
-    </div>
-
-    <div>
-        <h3>I've forgotten my password...</h3>
-        <input type="submit" name="email_reset" value="[% loc('...email me a reset link') %]">
+        <h3>I don't have an account, or I've forgotten my password...</h3>
+        <label for="email_login">&nbsp;</label>
+        <input type="submit" name="email_login" value="[% loc('Email the details I need to the address I entered above') %]">
     </div>
     
 </form>
