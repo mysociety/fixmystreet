@@ -33,31 +33,9 @@ sub general : Path : Args(0) {
     # all done unless we have a form posted to us
     return unless $req->method eq 'POST';
 
-    # check that the email is valid - otherwise flag an error
-    my $raw_email = lc( $req->param('email') || '' );
-    my $email_checker = Email::Valid->new(
-        -mxcheck  => 1,
-        -tldcheck => 1,
-        -fqdn     => 1,
-    );
-
-    if ( my $good_email = $email_checker->address($raw_email) ) {
-        $c->stash->{email} = $good_email;
-    }
-    else {
-        $c->stash->{email} = $raw_email;
-        $c->stash->{email_error} =
-          $raw_email ? $email_checker->details : 'missing';
-        return;
-    }
-
     # decide which action to take
-    $c->detach('login')       if $req->param('login');
     $c->detach('email_login') if $req->param('email_login');
-
-    # hmm - should not get this far. 404 so that user knows there is a problem
-    # rather than it silently not working.
-    $c->detach('/page_not_found');
+    $c->detach('login');    # default
 
 }
 
@@ -70,13 +48,16 @@ Allow the user to legin with a username and a password.
 sub login : Private {
     my ( $self, $c ) = @_;
 
-    my $email    = $c->stash->{email}         || '';
+    my $email    = $c->req->param('email')    || '';
     my $password = $c->req->param('password') || '';
 
     # logout just in case
     $c->logout();
 
-    if ( $c->authenticate( { email => $email, password => $password } ) ) {
+    if (   $email
+        && $password
+        && $c->authenticate( { email => $email, password => $password } ) )
+    {
         $c->res->redirect( $c->uri_for('/my') );
         return;
     }
@@ -95,19 +76,35 @@ contains the email addresss).
 
 sub email_login : Private {
     my ( $self, $c ) = @_;
-    my $email = $c->stash->{email};
+
+    # check that the email is valid - otherwise flag an error
+    my $raw_email = lc( $c->req->param('email') || '' );
+
+    my $email_checker = Email::Valid->new(
+        -mxcheck  => 1,
+        -tldcheck => 1,
+        -fqdn     => 1,
+    );
+
+    my $good_email = $email_checker->address($raw_email);
+    if ( !$good_email ) {
+        $c->stash->{email} = $raw_email;
+        $c->stash->{email_error} =
+          $raw_email ? $email_checker->details : 'missing';
+        return;
+    }
 
     my $token_obj = $c->model('DB::Token')    #
       ->create(
         {
             scope => 'email_login',
-            data  => { email => $email }
+            data  => { email => $good_email }
         }
       );
 
     # log the user in, send them an email and redirect to the welcome page
     $c->stash->{token} = $token_obj->token;
-    $c->send_email( 'login', { to => $email } );
+    $c->send_email( 'login', { to => $good_email } );
     $c->res->redirect( $c->uri_for('token') );
 }
 
