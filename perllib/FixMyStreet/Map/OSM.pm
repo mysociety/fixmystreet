@@ -32,6 +32,10 @@ sub display_map {
     $params{pre} ||= '';
     $params{post} ||= '';
 
+    # Map centre may be overridden in the query string
+    $params{latitude} = $q->param('lat')+0 if defined $q->param('lat');
+    $params{longitude} = $q->param('lon')+0 if defined $q->param('lon');
+
     my $zoom = defined $q->param('zoom') ? $q->param('zoom') : 2;
     my $zoom_act = 14 + $zoom;
     my ($x_tile, $y_tile) = latlon_to_tile_with_adjust($params{latitude}, $params{longitude}, $zoom_act);
