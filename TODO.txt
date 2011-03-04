@@ -33,3 +33,11 @@ Email:
     we switch to using it (Email::Send::EvEl...)?
   * pull out encoding smarts into Email::Send::SMTP - possibly a flag?
 
+deploying
+
+
+
+/fixmystreet             - code from repo
+/fixmystreet/darkpan     - minicpan like repo with just our dependencies in
+
+/fixmystreet-local-lib5  - local::lib for relevant code

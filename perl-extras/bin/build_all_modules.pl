@@ -16,49 +16,50 @@ my $dist_list         = "$root_dir/install_order.txt";
 my $url_list          = "$root_dir/urls.txt";
 my $dist_dir          = "$root_dir/distributions";
 my $fake_mirror       = "$root_dir/fake_mirror";
-my $cpanm_cmd         = "perl $root_dir/bin/cpanm";
+my $local_lib         = "$root_dir/../local-lib5";
+my $cpanm_cmd =
+  "perl $root_dir/bin/cpanm --mirror $fake_mirror --mirror-only -L $local_lib";
 
-# my $cpanm_cmd =
-#   "perl $dist_dir/cpanm --mirror $fake_mirror --mirror-only -L $local_lib_dir";
+my @distributions = map { s{\s+$}{}; $_; } read_file($dist_list);
 
-my $module = $ARGV[0] || die "Usage: $0 Dist::To::Add";
+foreach my $dist (@distributions) {
+    print "  --- installing $dist ---\n";
 
-# try to install the distribution using cpanm
-my $out = '';
-my $cmd = "$cpanm_cmd $module";
-print "  running '$cmd'\n";
-run3( $cmd, undef, \$out, \$out )
-  || die "Error running '$cmd'";
+    my $out = '';
+    my $cmd = "$cpanm_cmd $dist_dir/$dist";
 
-my %fetched_urls =
-  map { $_ => 1 }
-  map { s{.*(http://\S+).*}{$1}; $_ }
-  grep { m{^Fetching http://search.cpan.org} }
-  split /\n/, $out;
+    print "  running '$cmd'\n";
 
-my @installed =
-  grep { $_ }
-  map { m{^Successfully (?:re)?installed (\S+).*} ? $1 : undef }
-  split /\n/, $out;
+    run3( $cmd, undef, \$out, \$out )
+      || die "Error running '$cmd'";
 
-foreach my $dist (@installed) {
-    my ($url) = grep { m{/$dist\.} } keys %fetched_urls;
-    die "Can't find url for $dist" unless $url;
-    delete $fetched_urls{$url};
-
-    my ($filename) = $url =~ m{([^/]+)$};
-
-    print "  fetching $filename from $url\n";
-
-    is_success( getstore( $url, "$dist_dir/$filename" ) )
-      || die "Error saving $url to $dist_dir/$filename";
-    write_file( $dist_list, { append => 1 }, "$filename\n" );
-    write_file( $url_list,  { append => 1 }, "$url\n" );
+    die "Error building '$dist':\n\n$out\n\n"
+      unless $out =~ m{Successfully installed};
 }
 
-# Check that there are no urls left over
-my @leftover = keys %fetched_urls;
-die "URLs leftover: " . join( ', ', @leftover ) if @leftover;
+# # try to install the distribution using cpanm
+#
+# my @fetched_urls =
+#   map { s{.*(http://\S+).*}{$1}; $_ }
+#   grep { m{^Fetching http://search.cpan.org} }
+#   split /\n/, $out;
+#
+# my @installed =
+#   grep { $_ }
+#   map { m{^Successfully (?:re)?installed (\S+).*} ? $1 : undef }
+#   split /\n/, $out;
+#
+# foreach my $dist (@installed) {
+#     my ($url) = grep { m{/$dist\.} } @fetched_urls;
+#     my ($filename) = $url =~ m{([^/]+)$};
+#
+#     print "  getting $filename from $url\n";
+#
+#     is_success( getstore( $url, "$dist_dir/$filename" ) )
+#       || die "Error saving $url to $dist_dir/$filename";
+#     write_file( $dist_list, { append => 1 }, "$filename\n" );
+#     write_file( $url_list,  { append => 1 }, "$url\n" );
+# }
 
 # #
 # # load list of modules at start and write it back at the end

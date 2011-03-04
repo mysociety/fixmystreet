@@ -1,0 +1,12 @@
+http://search.cpan.org/CPAN/authors/id/Y/YV/YVES/ExtUtils-Install-1.54.tar.gz
+http://search.cpan.org/CPAN/authors/id/J/JP/JPEACOCK/version-0.88.tar.gz
+http://search.cpan.org/CPAN/authors/id/D/DA/DAGOLDEN/Module-Metadata-1.000004.tar.gz
+http://search.cpan.org/CPAN/authors/id/M/MS/MSCHWERN/Test-Simple-0.98.tar.gz
+http://search.cpan.org/CPAN/authors/id/D/DA/DAGOLDEN/Perl-OSType-1.002.tar.gz
+http://search.cpan.org/CPAN/authors/id/D/DA/DAGOLDEN/ExtUtils-CBuilder-0.280202.tar.gz
+http://search.cpan.org/CPAN/authors/id/D/DA/DAGOLDEN/ExtUtils-ParseXS-2.2206.tar.gz
+http://search.cpan.org/CPAN/authors/id/D/DA/DAGOLDEN/CPAN-Meta-YAML-0.003.tar.gz
+http://search.cpan.org/CPAN/authors/id/A/AN/ANDYA/Test-Harness-3.23.tar.gz
+http://search.cpan.org/CPAN/authors/id/D/DA/DAGOLDEN/Module-Build-0.3624.tar.gz
+http://search.cpan.org/CPAN/authors/id/G/GA/GAAS/libwww-perl-5.837.tar.gz
+http://search.cpan.org/CPAN/authors/id/M/MI/MIYAGAWA/App-cpanminus-1.3001.tar.gz
