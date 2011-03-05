@@ -503,8 +503,6 @@ sub display_form {
 
         # Map was clicked on (tilma, or non-JS OpenLayers, for example)
         ($latitude, $longitude) = FixMyStreet::Map::click_to_wgs84($q, $pin_tile_x, $pin_x, $pin_tile_y, $pin_y);
-        # Shrink, as don't need accuracy plus we want them as English strings
-        ($latitude, $longitude) = map { Utils::truncate_coordinate($_) } ( $latitude, $longitude );
 
     } elsif ( $input{partial} && $input{pc} && !length $input{latitude} && !length $input{longitude} ) {
         my $error;
@@ -520,6 +518,9 @@ sub display_form {
         $latitude  = $input_h{latitude};
         $longitude = $input_h{longitude};
     }
+
+    # Shrink, as don't need accuracy plus we want them as English strings
+    ($latitude, $longitude) = map { Utils::truncate_coordinate($_) } ( $latitude, $longitude );
 
     # Look up councils and do checks for the point we've got
     my @area_types = Cobrand::area_types($cobrand);
@@ -938,7 +939,7 @@ sub display_location {
         $map_links .= "</p>";
     }
 
-    # truncate the lat,lon for nicer rss urls
+    # truncate the lat,lon for nicer rss urls, and strings for outputting
     my ( $short_lat, $short_lon ) =
       map { Utils::truncate_coordinate($_) }    #
       ( $latitude, $longitude );    
@@ -963,7 +964,7 @@ sub display_location {
 
     my %vars = (
         'map' => FixMyStreet::Map::display_map($q,
-            latitude => $latitude, longitude => $longitude,
+            latitude => $short_lat, longitude => $short_lon,
             type => 1,
             pins => \@pins,
             post => $map_links
