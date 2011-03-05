@@ -72,14 +72,13 @@
   vi anser å være upassende fortrinnsvis etter å bli informert av en
   bruker på nettstedet.</dd>
 
-  <dt>Hvorfor blir ikke mitt postnummer / stedsnavn funnet?</dt>
+  <dt>Hvorfor blir ikke mitt stedsnavn funnet?</dt>
 
   <dd>Tjenesten bruker navnesøk hos Google Maps for å lokalisere
-    postnummer og steder.  Hvis Google Maps har mangler i sin
-    postnummer og stedsnavndatabase, vil stedet ikke bli funnet eller
-    sende deg til feil plass.  Tilsvarende søk hos Google (etter
-    f.eks. "1234, Norway") vil også feile.  For å fikse det må en ta
-    kontakt med Google.</dd>
+    steder.  Hvis Google Maps har mangler i sin stedsnavndatabase, vil
+    stedet ikke bli funnet eller sende deg til feil plass.
+    Tilsvarende søk på Google Maps (etter f.eks. "Slogvær, Norway")
+    vil også feile.  For å fikse det må en ta kontakt med Google.</dd>
 
 </dl>
 

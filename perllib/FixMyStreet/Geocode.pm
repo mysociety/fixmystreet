@@ -50,6 +50,14 @@ sub lookup {
                 $longitude = $location->{wgs84_lon};
             }
         }
+    } elsif (mySociety::Config::get('COUNTRY') eq 'NO') {
+        if ($s =~ /^\d{4}$/) {
+            my $location = mySociety::MaPit::call('postcode', $s);
+            unless ($error = Page::mapit_check_error($location)) {
+                $latitude  = $location->{wgs84_lat};
+                $longitude = $location->{wgs84_lon};
+            }
+        }
     }
     unless ($error || defined $latitude) {
         ($latitude, $longitude, $error) = FixMyStreet::Geocode::string($s, $q);
