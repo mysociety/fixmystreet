@@ -33,8 +33,10 @@ sub display_map {
     $params{post} ||= '';
 
     # Map centre may be overridden in the query string
-    $params{latitude} = $q->param('lat')+0 if defined $q->param('lat');
-    $params{longitude} = $q->param('lon')+0 if defined $q->param('lon');
+    $params{latitude} = Utils::truncate_coordinate($q->param('lat')+0)
+        if defined $q->param('lat');
+    $params{longitude} = Utils::truncate_coordinate($q->param('lon')+0)
+        if defined $q->param('lon');
 
     my $zoom = defined $q->param('zoom') ? $q->param('zoom') : 2;
     my $zoom_act = 14 + $zoom;

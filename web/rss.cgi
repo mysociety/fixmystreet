@@ -15,6 +15,7 @@ use Encode;
 use URI::Escape;
 use FixMyStreet::Alert;
 use FixMyStreet::Geocode;
+use mySociety::Locale;
 use mySociety::MaPit;
 use mySociety::Gaze;
 use Utils;
@@ -143,6 +144,9 @@ sub rss_local_problems {
     } else {
         $d = mySociety::Gaze::get_radius_containing_population($lat, $lon, 200000);
         $d = int($d*10+0.5)/10;
+        mySociety::Locale::in_gb_locale {
+            $d = sprintf("%f", $d);
+        }
     }
 
     my $xsl = Cobrand::feed_xsl($cobrand);
