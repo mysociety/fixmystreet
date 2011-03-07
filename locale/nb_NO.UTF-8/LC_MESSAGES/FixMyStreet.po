@@ -552,7 +552,7 @@ msgid ""
 "alert\n"
 "for the county council."
 msgstr ""
-"FiksGataMi sender forskjellige kategorier probleme til forskjellige "
+"FiksGataMi sender forskjellige kategorier problemer til forskjellige "
 "administrasjoner, problemer som gjelder flere administrasjoner blir sendt "
 "til alle de det gjelder."
 
@@ -594,7 +594,7 @@ msgstr "Saker innen %skm av dette punktet"
 
 #: web/alert.cgi:305
 msgid "(a default distance which covers roughly 200,000 people)"
-msgstr "??"
+msgstr "(en default-avstand som dekker en befolkning på omtrent 200 000)"
 
 #: web/alert.cgi:308
 msgid "RSS feed of nearby problems"
@@ -697,7 +697,7 @@ msgstr "Du abonnerer nå på denne saken"
 
 #: web/alert.cgi:522
 msgid "We could not validate that alert."
-msgstr "Vi kan ikke bekrefte dette varselet??"
+msgstr "Vi kunne ikke validere det varselet."
 
 #: web/alert.cgi:544
 msgid "You have successfully confirmed your alert."
