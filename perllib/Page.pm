@@ -672,13 +672,14 @@ sub mapit_check_error {
         return _('That postcode was not recognised, sorry.') if $location->{code} =~ /^4/;
         return $location->{error};
     }
-    return if mySociety::Config::get('COUNTRY') eq 'NO';
-    my $island = $location->{coordsyst};
-    if (!$island) {
-        return _("Sorry, that appears to be a Crown dependency postcode, which we don't cover.");
-    }
-    if ($island eq 'I') {
-        return _("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.");
+    if (mySociety::Config::get('COUNTRY') eq 'GB') {
+        my $island = $location->{coordsyst};
+        if (!$island) {
+            return _("Sorry, that appears to be a Crown dependency postcode, which we don't cover.");
+        }
+        if ($island eq 'I') {
+            return _("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.");
+        }
     }
     return 0;
 }

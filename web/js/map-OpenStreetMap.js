@@ -60,7 +60,11 @@ YAHOO.util.Event.onContentReady('map', function() {
         );
         var marker = new OpenLayers.Marker(loc, icon);
         if (pin[3]) {
-            marker.events.register('click', marker, function(evt) { window.location = '/report/' + pin[3]; OpenLayers.Event.stop(evt); });
+            marker.id = pin[3];
+            marker.events.register('click', marker, function(evt) {
+                window.location = '/report/' + this.id;
+                OpenLayers.Event.stop(evt);
+            });
         }
         fixmystreet.markers.addMarker(marker);
     }
