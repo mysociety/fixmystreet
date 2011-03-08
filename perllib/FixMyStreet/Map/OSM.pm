@@ -117,11 +117,7 @@ sub display_pin {
         . 'px; left:' . ($px) . 'px; position: absolute;">';
     return $out unless $pin->[3];
     my $cobrand = Page::get_cobrand($q);
-    my $url = Cobrand::url($cobrand, NewURL($q,
-        -retain => 1, -url => '/report/' . $pin->[3],
-        pc => undef, x => undef, y => undef, sx => undef, sy => undef,
-        all_pins => undef, no_pins => undef), $q
-    );
+    my $url = Cobrand::url($cobrand, NewURL($q, -url => '/report/' . $pin->[3]), $q);
     # XXX Would like to include title here in title=""
     $out = '<a href="' . $url . '">' . $out . '</a>';
     return $out;

@@ -944,7 +944,7 @@ sub display_location {
       map { Utils::truncate_coordinate($_) }    #
       ( $latitude, $longitude );    
     
-    my $url_skip = NewURL($q, -retain=>1, pc => undef,
+    my $url_skip = NewURL($q, -retain=>1,
         x => undef, 'y' => undef,
         latitude => $short_lat, longitude => $short_lon,
         'submit_map'=>1, skipped=>1
@@ -969,7 +969,7 @@ sub display_location {
         map_end => FixMyStreet::Map::display_map_end(1),
         url_home => Cobrand::url($cobrand, '/', $q),
         url_rss => $rss_url,
-        url_email => Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, lat => $short_lat, lon => $short_lon, -url=>'/alert', feed=>"local:$short_lat:$short_lon"), $q),
+        url_email => Cobrand::url($cobrand, NewURL($q, lat => $short_lat, lon => $short_lon, -url=>'/alert', feed=>"local:$short_lat:$short_lon"), $q),
         url_skip => $url_skip,
         email_me => _('Email me new local problems'),
         rss_alt => _('RSS feed'),

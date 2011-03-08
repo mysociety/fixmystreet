@@ -158,15 +158,7 @@ sub display_pin {
         . 'px; left:' . ($px) . 'px; position: absolute;">';
     return $out unless $_ && $_->{id} && $col ne 'blue';
     my $cobrand = Page::get_cobrand($q);
-    my $url = Cobrand::url($cobrand, NewURL($q, -retain => 1, 
-                                                -url => '/report/' . $_->{id}, 
-                                                pc => undef,
-                                                x => undef, 
-                                                y => undef, 
-                                                sx => undef, 
-                                                sy => undef, 
-                                                all_pins => undef, 
-                                                no_pins => undef), $q);
+    my $url = Cobrand::url($cobrand, NewURL($q, -url => '/report/' . $_->{id}), $q);
     $out = '<a title="' . ent($_->{title}) . '" href="' . $url . '">' . $out . '</a>';
     return $out;
 }
