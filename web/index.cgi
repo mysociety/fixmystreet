@@ -897,7 +897,7 @@ sub display_location {
     }
     my $on_list = '';
     foreach (@$on_map) {
-        my $report_url = NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, 'y' => undef);
+        my $report_url = NewURL($q, -url => '/report/' . $_->{id});
         $report_url = Cobrand::url($cobrand, $report_url, $q);  
         $on_list .= '<li><a href="' . $report_url . '">';
         $on_list .= ent($_->{title}) . '</a> <small>(';
@@ -910,7 +910,7 @@ sub display_location {
 
     my $around_list = '';
     foreach (@$around_map) {
-        my $report_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, 'y' => undef), $q);  
+        my $report_url = Cobrand::url($cobrand, NewURL($q, -url => '/report/' . $_->{id}), $q);
         $around_list .= '<li><a href="' . $report_url . '">';
         my $dist = int($_->{distance}*10+0.5);
         $dist = $dist / 10;
@@ -957,10 +957,7 @@ sub display_location {
     } else {
         $rss_url = "/rss/l/$short_lat,$short_lon";
     }
-    $rss_url = Cobrand::url( $cobrand,
-        NewURL($q, -retain => 1, -url=> $rss_url,
-            pc => undef, x => undef, y => undef, lat=> undef, lon => undef ),
-        $q);
+    $rss_url = Cobrand::url( $cobrand, NewURL($q, -url=> $rss_url), $q);
 
     my %vars = (
         'map' => FixMyStreet::Map::display_map($q,
