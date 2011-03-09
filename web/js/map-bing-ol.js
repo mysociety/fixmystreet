@@ -1,33 +1,13 @@
-YAHOO.util.Event.onContentReady('map', function() {
-    var map = new OpenLayers.Map("map", {
-        controls: [
-                  new OpenLayers.Control.ArgParser(),
-                  //new OpenLayers.Control.LayerSwitcher(),
-                  new OpenLayers.Control.Navigation(),
-                  new OpenLayers.Control.PanZoom()
-                ],
-        displayProjection: new OpenLayers.Projection("EPSG:4326")
-    });
-    var bing = new OpenLayers.Layer.Bing("", {
-        zoomOffset: 13,
-        numZoomLevels: 4
-    });
-    map.addLayer(bing);
-
-    var centre = new OpenLayers.LonLat( fixmystreet.easting, fixmystreet.northing );
-    centre.transform(
-        new OpenLayers.Projection("EPSG:27700"),
-        map.getProjectionObject()
-    );
-    map.setCenter(centre, 3);
-});
-
-OpenLayers.Util.OS = {};
-OpenLayers.Util.OS.MISSING_TILE_URL = "http://openstreetmap.org/openlayers/img/404.png";
-OpenLayers.Util.OS.originalOnImageLoadError = OpenLayers.Util.onImageLoadError;
-OpenLayers.Util.onImageLoadError = function() {
-    OpenLayers.Util.OS.originalOnImageLoadError;
-};
+function set_map_config(perm) {
+    fixmystreet.ZOOM_OFFSET = 13;
+    fixmystreet.controls = [
+        new OpenLayers.Control.ArgParser(),
+        new OpenLayers.Control.Navigation(),
+        perm,
+        new OpenLayers.Control.PanZoomFMS()
+    ];
+    fixmystreet.map_type = OpenLayers.Layer.Bing;
+}
 
 OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
     initialize: function(name, options) {

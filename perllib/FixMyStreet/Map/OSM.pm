@@ -16,6 +16,7 @@ use Utils;
 sub header_js {
     return '
 <script type="text/javascript" src="/jslib/OpenLayers-2.10/OpenLayers.js"></script>
+<script type="text/javascript" src="/js/map-OpenLayers.js"></script>
 <script type="text/javascript" src="/js/map-OpenStreetMap.js"></script>
 ';
 }

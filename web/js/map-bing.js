@@ -1,5 +1,5 @@
 YAHOO.util.Event.onContentReady('map', function() {
-    var centre = new Microsoft.Maps.Location( fixmystreet.lat, fixmystreet.lon );
+    var centre = new Microsoft.Maps.Location( fixmystreet.latitude, fixmystreet.longitude );
     var map = new Microsoft.Maps.Map(document.getElementById("map"), {
         mapTypeId: Microsoft.Maps.MapTypeId.ordnanceSurvey,
         center: centre,
