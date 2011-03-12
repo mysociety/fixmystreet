@@ -16,8 +16,9 @@ use local::lib "$FindBin::Bin/perl-external";
 use local::lib "$FindBin::Bin/perl-external/local-lib";
 
 # add the local perllibs too
-use lib "$FindBin::Bin/commonlib/perllib";
-use lib "$FindBin::Bin/perllib";
+for ( "$FindBin::Bin/commonlib/perllib", "$FindBin::Bin/perllib" ) {
+    $ENV{PERL5LIB} = "$_:$ENV{PERL5LIB}";
+}
 
 # also set the path to our scripts etc
 $ENV{PATH} = join ':', uniq "$FindBin::Bin/bin", split( m/:/, $ENV{PATH} );

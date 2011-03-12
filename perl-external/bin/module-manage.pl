@@ -67,6 +67,13 @@ sub add {
 
     fetch_all();
     index_minicpan();
+
+    if ( $out =~ m{FAIL} ) {
+        die "\n\n\n"
+          . "ERROR: Something did not build correctly"
+          . " - please see ~/.cpanm/build_log for details"
+          . "\n\n\n";
+    }
 }
 
 sub index_minicpan {
@@ -82,7 +89,7 @@ sub index_minicpan {
 }
 
 sub build_all {
-    my @modules = sort uniq read_file($module_list);
+    my @modules = sort uniq map { s{\s+$}{}; $_; } read_file($module_list);
     build($_) for @modules;
 }
 
@@ -111,7 +118,7 @@ sub build {
 }
 
 sub fetch_all {
-    my @urls = sort uniq read_file($url_list);
+    my @urls = sort uniq map { s{\s+$}{}; $_; } read_file($url_list);
     fetch($_) for @urls;
 }
 
