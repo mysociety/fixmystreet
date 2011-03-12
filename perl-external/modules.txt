@@ -21,11 +21,11 @@ HTTP::Server::Simple::CGI
 IO::String
 Moose
 MyCPAN::App::DPAN
-namespace::autoclean
 Net::Domain::TLD
 Path::Class
-RABX
 Readonly
 Sub::Override
 Test::More
+Test::WWW::Mechanize
 Test::WWW::Mechanize::Catalyst
+namespace::autoclean

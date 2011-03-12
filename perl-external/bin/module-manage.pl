@@ -18,6 +18,7 @@ my %actions = (
     add            => \&add,
     build_all      => \&build_all,
     fetch_all      => \&fetch_all,
+    force_install  => \&force_install,
     index_minicpan => \&index_minicpan,
     init           => \&init,
     setup          => \&setup,

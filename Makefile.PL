@@ -28,7 +28,6 @@ requires 'Moose';
 requires 'namespace::autoclean';
 requires 'Net::Domain::TLD';
 requires 'Path::Class';
-requires 'RABX';
 requires 'Readonly';
 
 test_requires 'Test::More' => '0.88';
