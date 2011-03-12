@@ -1,3 +1,4 @@
 App::cpanminus
 Catalyst
+Catalyst::Devel
 MyCPAN::App::DPAN
