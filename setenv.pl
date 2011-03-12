@@ -31,7 +31,11 @@ else {
 
     my @keys = sort 'PATH', grep { m{^PERL} } keys %ENV;
 
+    print "export $_='$ENV{$_}'\n" for @keys;
+    print 'export PS1="(fms) $PS1"' . "\n";
+
     print << "STOP";
+
 # $0 - set up the environment for FixMyStreet.
 #
 # This script can be used one of two ways:
@@ -46,9 +50,6 @@ else {
 # shell:
 #
 #   eval `$0`
-
 STOP
 
-    print "export $_='$ENV{$_}'\n" for @keys;
-    print 'export PS1="(fms) $PS1"' . "\n";
 }
