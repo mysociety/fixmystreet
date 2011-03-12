@@ -42,7 +42,8 @@ sub init {
 
 sub setup {
     fetch_all();
-    init();
+    build('App::cpanminus');
+    build('MyCPAN::App::DPAN');
     build_all();
 }
 
@@ -52,7 +53,8 @@ sub add {
     # try to install the distribution using cpanm
     my $out = '';
     my $cmd = "cpanm --reinstall $module";
-    print "  running '$cmd'\n";
+
+    # print "  running '$cmd'\n";
     run3( $cmd, undef, \$out, \$out )
       || die "Error running '$cmd'";
 
@@ -102,7 +104,7 @@ sub build {
     my $out = '';
     my $cmd = "cpanm --mirror $minicpan --mirror-only  $module";
 
-    print "  running '$cmd'\n";
+    # print "  running '$cmd'\n";
 
     run3( $cmd, undef, \$out, \$out )
       || die "Error running '$cmd'";
@@ -112,9 +114,10 @@ sub build {
       split /\n+/, $out;
     my $last_line = $lines[-1];
 
-    die "Error building '$module':\n\n$out\n\n"
+    die "Error building '$module':\n\n$last_line\n\n$out\n\n"
       unless $last_line =~ m{Successfully installed }
-          || $last_line =~ m{is up to date};
+          || $last_line =~ m{is up to date}
+          || $last_line =~ m{\d+ distributions? installed};
 }
 
 sub fetch_all {
@@ -131,7 +134,8 @@ sub fetch {
 
     return if -e $destination;
 
-    print "  $url\n    -> $destination\n";
+    print "  Fetching $url\n";
+    print "    -> $destination\n";
 
     is_success( getstore( $url, "$destination" ) )
       || die "Error saving $url to $destination";

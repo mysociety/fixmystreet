@@ -1,4 +1,5 @@
 App::cpanminus
+Bundle::DBD::Pg
 Catalyst
 Catalyst::Action::RenderView
 Catalyst::Authentication::Store::DBIx::Class
@@ -11,7 +12,6 @@ Catalyst::Plugin::Static::Simple
 Catalyst::Runtime
 Catalyst::View::TT
 Config::General
-DBD::Pg
 DBIx::Class
 Email::Send
 Email::Simple
@@ -21,6 +21,7 @@ HTTP::Server::Simple::CGI
 IO::String
 Moose
 MyCPAN::App::DPAN
+namespace::autoclean
 Net::Domain::TLD
 Path::Class
 RABX
@@ -28,4 +29,3 @@ Readonly
 Sub::Override
 Test::More
 Test::WWW::Mechanize::Catalyst
-namespace::autoclean
