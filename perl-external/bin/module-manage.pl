@@ -67,6 +67,7 @@ sub add {
     sort_files();
 
     fetch_all();
+    index_minicpan();
 }
 
 sub index_minicpan {
