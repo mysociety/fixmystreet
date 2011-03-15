@@ -12,6 +12,10 @@ Problem creation:
   ? what should the new flow be for not-logged-in (probably unchanged).
   * after becoming confirmed require user to manually send off 'pending' reports
 
+Users:
+  * create a message to the user if they have reports which have not been
+    confirmed.
+
 Email:
   * currently don't send email via EvEl or do any of the smarts it does - should
     we switch to using it (Email::Send::EvEl...)?

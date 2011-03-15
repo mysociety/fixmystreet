@@ -4,6 +4,8 @@
     <li>cobrand.moniker:           [% c.cobrand.moniker %]</li>
     <li>additional_template_paths: [% additional_template_paths.join(', ') || '--empty--' %]</li>
     <li>lang_code:                 [% lang_code %]</li>
+    <li>user.id:                   [% c.user.id || '--not logged in--' %]</li>
+    
 </ul>
 [% END %]
 
