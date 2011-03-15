@@ -13,10 +13,20 @@ use DBIx::Class::Schema::Loader qw/ make_schema_at /;
 # create a exclude statement that filters out the table that we are not
 # interested in
 my @tables_to_ignore = (
-    'abuse',         'admin_log',       'alert',        'alert_sent',
-    'alert_type',    'comment',         'contacts',     'contacts_history',
-    'debugdate',     'flickr_imported', 'partial_user', 'problem',
-    'questionnaire', 'secret',          'textmystreet',
+    'abuse',               #
+    'admin_log',           #
+    'alert',               #
+    'alert_sent',          #
+    'alert_type',          #
+    'comment',             #
+    'contacts',            #
+    'contacts_history',    #
+    'debugdate',           #
+    'flickr_imported',     #
+    'partial_user',        #
+    'questionnaire',       #
+    'secret',              #
+    'textmystreet',        #
 );
 my $exclude = '^(?:' . join( '|', @tables_to_ignore ) . ')$';
 

@@ -26,8 +26,14 @@ __PACKAGE__->add_columns(
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint( "users_email_key", ["email"] );
+__PACKAGE__->has_many(
+    "problems",
+    "FixMyStreet::DB::Result::Problem",
+    { "foreign.user_id" => "self.id" },
+    { cascade_copy      => 0, cascade_delete => 0 },
+);
 
-# Created by DBIx::Class::Schema::Loader v0.07009 @ 2011-03-04 11:10:43
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:G+Jp+96IJFF5o2zR7vi/CQ
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-03-15 17:03:37
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:LAenO7w6lzCJyPUeosnLTw
 
 1;
