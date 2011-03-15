@@ -20,6 +20,7 @@ requires 'Catalyst::Runtime' => '5.80031';
 requires 'Catalyst::View::TT';
 requires 'Config::General';
 requires 'DBD::Pg' => '2.9.2';
+requires 'DBIx::Class::Schema::Loader';
 requires 'Email::Send';
 requires 'Email::Simple';
 requires 'Email::Valid';

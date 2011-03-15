@@ -13,6 +13,7 @@ Catalyst::Runtime
 Catalyst::View::TT
 Config::General
 DBIx::Class
+DBIx::Class::Schema::Loader
 Email::Send
 Email::Simple
 Email::Valid
