@@ -19,3 +19,13 @@ Users:
 Email:
   * currently don't send email via EvEl or do any of the smarts it does - should
     we switch to using it (Email::Send::EvEl...)?
+
+Framework:
+  * use Plack to handle all the redirects and also run cgi scripts - get apache
+    out of the picture (what about tile proxy...). Does this makes sense?
+
+
+
+Future ideas:
+  * dashboard for council to put on big screen
+  
