@@ -3,32 +3,53 @@
 use strict;
 use warnings;
 
-use FindBin;
 use List::MoreUtils 'uniq';
+
+my $root;
+
+BEGIN {    # add the local perllibs too
+
+    # Can't use Path::Class here as we'd load the old debian one.
+    $root =
+      __FILE__ =~ m{^(.*)/web/\.\..*$}
+      ? $1
+      : `pwd`;
+    chomp($root);
+
+    # warn "-----------------------\n";
+    # warn "__FILE__:      " . __FILE__ . "\n";
+    warn '$root:         ' . $root . "\n";
+
+    # warn '$0:            ' . $0 . "\n";
+    # warn "-----------------------";
+}
 
 # Set the environment for the FixMyStreet project
 
-# Add the lii/perl5 in perl-external so that we can load local::lib from there
-use lib "$FindBin::Bin/perl-external/lib/perl5";
+# Add the lib/perl5 in perl-external so that we can load local::lib from there
+use lib "$root/perl-external/lib/perl5";
 
 # Add the perl-external dirs properly using local::lib
-use local::lib "$FindBin::Bin/perl-external";
-use local::lib "$FindBin::Bin/perl-external/local-lib";
+use local::lib "$root/perl-external";
+use local::lib "$root/perl-external/local-lib";
 
-# add the local perllibs too
-for ( "$FindBin::Bin/commonlib/perllib", "$FindBin::Bin/perllib" ) {
+use lib "$root/commonlib/perllib";
+use lib "$root/perllib";
+for ( "$root/commonlib/perllib", "$root/perllib" ) {
     $ENV{PERL5LIB} = "$_:$ENV{PERL5LIB}";
 }
 
 # also set the path to our scripts etc
-$ENV{PATH} = join ':', uniq "$FindBin::Bin/bin", split( m/:/, $ENV{PATH} );
+$ENV{PATH} = join ':', uniq "$root/bin", split( m/:/, $ENV{PATH} );
 
 # now decide what to do  - if no arguments print out shell arguments to set the
 # environment. If there are arguments then run those so that they run correctly
 if (@ARGV) {
     system @ARGV;
 }
-else {
+
+# we might want to require this file to configure something like a CGI script
+elsif ( $0 eq __FILE__ ) {
 
     my @keys = sort 'PATH', grep { m{^PERL} } keys %ENV;
 
@@ -54,3 +75,23 @@ else {
 STOP
 
 }
+else {
+
+    # we were just required - unload some modules to prevent old code
+    # getting in the way of loading newer code from the newly set directories.
+    use Class::Unload;
+
+    my @modules =
+      sort
+      grep { m/File::/ }
+      map { s{\.pm$}{}; s{/}{::}g; $_ }
+      grep { m{\.pm$} }
+      keys %INC;
+
+    for (@modules) {
+        Class::Unload->unload($_);
+    }
+}
+
+1;
+

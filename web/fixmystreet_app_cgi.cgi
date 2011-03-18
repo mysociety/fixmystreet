@@ -1,13 +1,12 @@
 #!/usr/bin/env perl
 
-# set all the paths to the perl code
-use FindBin;
-use lib "$FindBin::Bin/../commonlib/perllib";
-use lib "$FindBin::Bin/../perllib";
-use local::lib "$FindBin::Bin/../local-lib5";
+BEGIN {    # set all the paths to the perl code
+    use FindBin;
+    require "$FindBin::Bin/../setenv.pl";
+}
 
 use Catalyst::ScriptRunner;
-Catalyst::ScriptRunner->run('FixMyStreet::App', 'CGI');
+Catalyst::ScriptRunner->run( 'FixMyStreet::App', 'CGI' );
 
 1;
 
