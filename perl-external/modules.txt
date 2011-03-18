@@ -11,12 +11,15 @@ Catalyst::Plugin::Session::Store::DBIC
 Catalyst::Plugin::Static::Simple
 Catalyst::Runtime
 Catalyst::View::TT
+Class::Unload
 Config::General
 DBIx::Class
 DBIx::Class::Schema::Loader
+DBIx::Class::Storage::DBI
 Email::Send
 Email::Simple
 Email::Valid
+File::Path
 HTTP::Server::Simple
 HTTP::Server::Simple::CGI
 IO::String
