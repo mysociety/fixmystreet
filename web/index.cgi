@@ -12,7 +12,6 @@ use Utils;
 use Encode;
 use Error qw(:try);
 use File::Slurp;
-use RABX;
 use CGI::Carp;
 use POSIX qw(strcoll);
 use URI::Escape;

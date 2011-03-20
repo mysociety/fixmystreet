@@ -16,6 +16,7 @@ use mySociety::GeoUtil;
 use mySociety::Locale;
 use mySociety::Web qw(ent NewURL);
 use Utils;
+use RABX;
 
 sub _ll_to_en {
     my ($lat, $lon) = @_;
