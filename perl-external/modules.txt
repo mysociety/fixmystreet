@@ -9,6 +9,7 @@ Catalyst::Plugin::Authentication
 Catalyst::Plugin::ConfigLoader
 Catalyst::Plugin::Session::Store::DBIC
 Catalyst::Plugin::Static::Simple
+Catalyst::Plugin::Unicode
 Catalyst::Runtime
 Catalyst::View::TT
 Class::Unload

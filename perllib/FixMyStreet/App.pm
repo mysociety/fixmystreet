@@ -11,6 +11,7 @@ use mySociety::Email;
 
 use Catalyst (
     'Static::Simple',    #
+    'Unicode',
     'Session',
     'Session::Store::DBIC',
     'Session::State::Cookie',
