@@ -119,7 +119,7 @@ msgid ""
 "\"logoie\"></span></a>"
 msgstr ""
 "<div id=\"logo\" align=\"center\"><a href=\"http://www.nuug.no/\">Foreningen "
-"NUUG</a><span id=\"logoie\"></span></a></div>"
+"NUUG</a></div>"
 
 #: perllib/Page.pm:386
 msgid "Error"
