@@ -30,6 +30,7 @@ requires 'namespace::autoclean';
 requires 'Net::Domain::TLD';
 requires 'Path::Class';
 requires 'Readonly';
+requires 'Sort::Key';
 
 test_requires 'Test::More' => '0.88';
 test_requires 'Test::WWW::Mechanize::Catalyst';

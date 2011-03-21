@@ -29,6 +29,7 @@ MyCPAN::App::DPAN
 Net::Domain::TLD
 Path::Class
 Readonly
+Sort::Key
 Sub::Override
 Test::More
 Test::WWW::Mechanize

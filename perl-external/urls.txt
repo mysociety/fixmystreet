@@ -186,6 +186,7 @@ http://search.cpan.org/CPAN/authors/id/R/RK/RKITOVER/MooseX-Traits-Pluggable-0.1
 http://search.cpan.org/CPAN/authors/id/R/RO/ROBIN/PadWalker-1.92.tar.gz
 http://search.cpan.org/CPAN/authors/id/R/RO/ROODE/Readonly-1.03.tar.gz
 http://search.cpan.org/CPAN/authors/id/R/RS/RSCHUPP/Module-ScanDeps-1.00.tar.gz
+http://search.cpan.org/CPAN/authors/id/S/SA/SALVA/Sort-Key-1.28.tar.gz
 http://search.cpan.org/CPAN/authors/id/S/SA/SARTAK/Class-Load-0.06.tar.gz
 http://search.cpan.org/CPAN/authors/id/S/SD/SDP/Lingua-Stem-Fr-0.02.tar.gz
 http://search.cpan.org/CPAN/authors/id/S/SI/SIMON/Lingua-EN-Inflect-Number-1.1.tar.gz
