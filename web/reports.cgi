@@ -330,7 +330,7 @@ sub list_problems {
         $out .= '<li><a href="' . $url . '">';
         $out .= ent($_->{title});
         $out .= '</a>';
-        $out .= ' <small>(sent to both)</small>' if $_->{councils}>1;
+        $out .= ' <small>' . _('(sent to both)') . '</small>' if $_->{councils}>1;
         $out .= ' <small>' . _('(not sent to council)') . '</small>' if $_->{councils}==0 && $q->{site} ne 'emptyhomes';
         $out .= '<br><small>' . ent($_->{detail}) . '</small>' if $all;
         $out .= '</li>';
