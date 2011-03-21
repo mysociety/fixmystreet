@@ -14,7 +14,7 @@ __PACKAGE__->config(
     ],
     ENCODING       => 'utf8',
     render_die     => 1,
-    expose_methods => ['loc'],
+    expose_methods => [ 'loc', 'nget', 'tprintf', ],
 );
 
 =head1 NAME
@@ -38,6 +38,32 @@ Passes the text to the localisation engine for translations.
 sub loc {
     my ( $self, $c, @args ) = @_;
     return _(@args);
+}
+
+=head2 nget
+
+    [% nget( 'singular', 'plural', $number ) %]
+
+Use first or second srting depending on the number.
+
+=cut
+
+sub nget {
+    my ( $self, $c, @args ) = @_;
+    return mySociety::Locale::nget(@args);
+}
+
+=head2 tprintf
+
+    [% tprintf( 'foo %s bar', 'insert' ) %]
+
+sprintf (different name to avoid clash)
+
+=cut
+
+sub tprintf {
+    my ( $self, $c, $format, @args ) = @_;
+    return sprintf $format, @args;
 }
 
 1;
