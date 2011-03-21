@@ -27,12 +27,14 @@ sub site_title {
 }
 
 sub enter_postcode_text {
-    my ( $self ) = @_;
+    my ($self) = @_;
     return 'Enter a Barnet postcode, or street name and area:';
 }
 
 sub council_check {
-    my ( $self, $params, $q, $context ) = @_;
+    my ( $self, $params, $context ) = @_;
+    my $q = $self->request;
+
     my $councils;
     if ( $params->{all_councils} ) {
         $councils = $params->{all_councils};

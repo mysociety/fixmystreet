@@ -2,6 +2,10 @@
 
 <h1>[% loc('Create a report') %]</h1>
 
+[% IF location_error %]
+    <div class="error">[% location_error %]</div>
+[% END %]
+
 Please select where to create this report:
 
 <form action="[% c.uri_for() %]" method="POST">
