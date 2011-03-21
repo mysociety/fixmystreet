@@ -1,0 +1,26 @@
+<p>
+[% loc('All the information you provide here will be sent to') %]
+
+[% FOREACH council IN all_council_names %]
+    [% loc( ' or ') IF ! loop.first %]
+    <strong>[% council %]</strong>
+    [%- '.' IF loop.last %]    
+[% END %]
+
+[%
+    loc('The subject and details of the problem will be public, plus your name if you give us permission.');
+
+    nget(
+        'We do <strong>not</strong> yet have details for the other council that covers this location.',
+        'We do <strong>not</strong> yet have details for the other councils that cover this location.',
+        missing.size
+    );
+
+    tprintf(
+        loc("You can help us by finding a contact email address for local problems for %s and emailing it to us at <a href='mailto:%s'>%s</a>."),
+        missing_names.join( loc(' or ') ),
+        c.cobrand.contact_email,
+        c.cobrand.contact_email
+    );
+%]
+

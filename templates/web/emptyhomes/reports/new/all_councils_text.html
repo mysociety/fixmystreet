@@ -1,0 +1,8 @@
+<p>
+[%
+    tprintf(
+        loc('All the information you provide here will be sent to <strong>%s</strong>. On the site, we will show the subject and details of the problem, plus your name if you give us permission.'),
+        all_council_names.join( '</strong>' _ loc(' or ') _ '<strong>' )
+    );
+%]
+</p>

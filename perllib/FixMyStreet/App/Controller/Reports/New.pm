@@ -81,9 +81,9 @@ sub report_new : Path : Args(0) {
 
     # create a problem from the submitted details
     $c->stash->{template} = "reports/new/fill_in_details.html";
+    $c->forward('setup_categories_and_councils');
     $c->forward('prepare_report');
     $c->forward('generate_map');
-
 }
 
 =head2 determine_location
@@ -287,6 +287,8 @@ sub check_councils : Private {
 
     # all good if we have some councils left
     $c->stash->{all_councils} = $all_councils;
+    $c->stash->{all_council_names} =
+      [ map { $_->{name} } values %$all_councils ];
     return 1;
 }
 
@@ -301,10 +303,10 @@ sub setup_categories_and_councils : Private {
 
     my @all_council_ids = keys %{ $c->stash->{all_councils} };
 
-    my @contacts                 #
-      = $c                       #
-      ->model('DB::Contacts')    #
-      ->not_deleted              #
+    my @contacts                #
+      = $c                      #
+      ->model('DB::Contact')    #
+      ->not_deleted             #
       ->search( { area_id => \@all_council_ids } )    #
       ->all;
 
@@ -352,10 +354,18 @@ sub setup_categories_and_councils : Private {
     }
 
     # put results onto stash
-    $c->stash->{area_ids_to_list} = @area_ids_to_list;
-    $c->stash->{category_options} = @category_options;
+    $c->stash->{area_ids_to_list} = \@area_ids_to_list;
+    $c->stash->{category_options} = \@category_options;
     $c->stash->{category_label}   = $category_label;
 
+    # add some conveniant things to the stash
+    my $all_councils = $c->stash->{all_councils};
+    my %area_ids_to_list_hash = map { $_ => 1 } @area_ids_to_list;
+    my @missing =
+      grep { !$area_ids_to_list_hash{$_} } keys %$all_councils;
+    my @missing_names = map { $all_councils->{$_}->{name} } @missing;
+    $c->stash->{missing}       = @missing;
+    $c->stash->{missing_names} = @missing_names;
 }
 
 =head2 prepare_report
