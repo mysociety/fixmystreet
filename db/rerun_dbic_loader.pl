@@ -19,7 +19,6 @@ my @tables_to_ignore = (
     'alert_sent',          #
     'alert_type',          #
     'comment',             #
-    'contacts',            #
     'contacts_history',    #
     'debugdate',           #
     'flickr_imported',     #
