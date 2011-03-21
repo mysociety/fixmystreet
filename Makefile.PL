@@ -24,6 +24,7 @@ requires 'DBIx::Class::Schema::Loader';
 requires 'Email::Send';
 requires 'Email::Simple';
 requires 'Email::Valid';
+requires 'HTML::Entities';
 requires 'IO::String';
 requires 'Moose';
 requires 'namespace::autoclean';

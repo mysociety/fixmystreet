@@ -21,6 +21,7 @@ Email::Send
 Email::Simple
 Email::Valid
 File::Path
+HTML::Entities
 HTTP::Server::Simple
 HTTP::Server::Simple::CGI
 IO::String
