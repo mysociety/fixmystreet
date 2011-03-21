@@ -938,16 +938,16 @@ sub display_location {
     
     my $url_skip = NewURL(
         $q,
-        -url         => '/reports/new',
-        -retain      => 1,
-        pc           => undef,
-        x            => undef,
-        'y'          => undef,
-        latitude     => $short_lat,
-        longitude    => $short_lon,
-        'submit_map' => 1,
-        skipped      => 1
+        -url       => '/reports/new',
+        -retain    => 1,
+        x          => undef,
+        y          => undef,
+        latitude   => $short_lat,
+        longitude  => $short_lon,
+        submit_map => 1,
+        skipped    => 1
     );
+
     my $pc_h = ent($q->param('pc') || '');
     
     my $rss_url;

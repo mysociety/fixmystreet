@@ -17,7 +17,7 @@ TODO: {
 #### test report creation for a user who does not have an account
 # come to site
 # fill in report
-# recieve token
+# receive token
 # confirm token
 # report is confirmed
 # user is created and logged in
@@ -26,7 +26,7 @@ TODO: {
 #### test report creation for a user who has account but is not logged in
 # come to site
 # fill in report
-# recieve token
+# receive token
 # confirm token
 # report is confirmed
 
@@ -42,6 +42,11 @@ TODO: {
 #### test completing a partial report (eq flickr upload)
 
 #### test error cases when filling in a report
+
+#### possibly manual testing
+# create report without using map
+# create report by clicking on may with javascript off
+# create report with images off
 
 
 

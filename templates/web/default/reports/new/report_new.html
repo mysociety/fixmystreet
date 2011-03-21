@@ -1,0 +1,24 @@
+[% INCLUDE 'header.html', title => loc('Create a report') %]
+
+<h1>[% loc('Create a report') %]</h1>
+
+Please select where to create this report:
+
+<form action="[% c.uri_for() %]" method="POST">
+    <label for="pc">Location:</label>
+    <input type="text" name="pc" value="[% pc %]">
+    [% "<span class='error'>$pc_error</span>" IF pc_error %]
+    <br>
+    <input type="submit" value="[% loc('Search') %]">
+</form>
+
+[% IF possible_location_matches %]
+    <p>[% loc('We found more than one match for that location. We show up to ten matches, please try a different search if yours is not here.') %]</p>    
+    <ul>
+        [% FOREACH match IN possible_location_matches %]
+        <li><a href="[% c.uri_for( '', { pc => match }) %]">[% match | html %]</a></li>    
+        [% END %]
+    </ul>
+[% END %]
+
+[% INCLUDE 'footer.html' %]
