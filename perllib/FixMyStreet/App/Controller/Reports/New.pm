@@ -118,29 +118,42 @@ sub determine_location : Private {
 
 =head2 determine_location_from_tile_click
 
+Detect that the map tiles have been clicked on by looking for the tile
+parameters.
+
 =cut 
 
 sub determine_location_from_tile_click : Private {
     my ( $self, $c ) = @_;
 
-    warn "FIXME - implement";
+    # example: 'tile_1673.1451.x'
+    my $param_key_regex = '^tile_(\d+)\.(\d+)\.[xy]$';
 
-    # # Get tile co-ordinates if map clicked
-    # ( $input{x} ) = $input{x} =~ /^(\d+)/;
-    # $input{x} ||= 0;
-    # ( $input{y} ) = $input{y} =~ /^(\d+)/;
-    # $input{y} ||= 0;
-    # my @ps = $q->param;
-    # foreach (@ps) {
-    #     ( $pin_tile_x, $pin_tile_y, $pin_x ) = ( $1, $2, $q->param($_) )
-    #       if /^tile_(\d+)\.(\d+)\.x$/;
-    #     $pin_y = $q->param($_) if /\.y$/;
-    # }
+    my @matching_param_keys =
+      grep { m/$param_key_regex/ } keys %{ $c->req->params };
 
-# # tilma map was clicked on
-#   ($latitude, $longitude)  = FixMyStreet::Map::click_to_wgs84($pin_tile_x, $pin_x, $pin_tile_y, $pin_y);
+    # did we find any matches
+    return unless scalar(@matching_param_keys) == 2;
 
-    return;
+    # get the x and y keys
+    my ( $x_key, $y_key ) = sort @matching_param_keys;
+
+    # Extract the data needed
+    my ( $pin_tile_x, $pin_tile_y ) = $x_key =~ m{$param_key_regex};
+    my $pin_x = $c->req->param($x_key);
+    my $pin_y = $c->req->param($y_key);
+
+    # convert the click to lat and lng
+    my ( $latitude, $longitude ) =
+      FixMyStreet::Map::click_to_wgs84( $pin_tile_x, $pin_x, $pin_tile_y,
+        $pin_y );
+
+    # store it on the stash
+    $c->stash->{latitude}  = $latitude;
+    $c->stash->{longitude} = $longitude;
+
+    # return true as we found a location
+    return 1;
 }
 
 =head2 determine_location_from_coords
