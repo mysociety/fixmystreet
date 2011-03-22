@@ -10,18 +10,8 @@ my $root;
 BEGIN {    # add the local perllibs too
 
     # Can't use Path::Class here as we'd load the old debian one.
-    $root =
-      __FILE__ =~ m{^(.*)/web/\.\..*$}
-      ? $1
-      : `pwd`;
+    $root = __FILE__ =~ m{^(.*)/web/\.\..*$} ? $1 : `pwd`;
     chomp($root);
-
-    # warn "-----------------------\n";
-    # warn "__FILE__:      " . __FILE__ . "\n";
-    warn '$root:         ' . $root . "\n";
-
-    # warn '$0:            ' . $0 . "\n";
-    # warn "-----------------------";
 }
 
 # Set the environment for the FixMyStreet project
