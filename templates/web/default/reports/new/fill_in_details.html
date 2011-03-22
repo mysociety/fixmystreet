@@ -4,6 +4,14 @@
 
 <h1>[% loc('Reporting a problem') %]</h1>
 
+<!-- {{ $text_located }} -->
+
+[%
+    IF ! skipped;
+        loc('You have located the problem at the point marked with a purple pin on the map. If this is not the correct location, simply click on the map again. ');
+    END;
+%]
+
 [% IF area_ids_to_list.size == 0 %]
     [% INCLUDE 'reports/new/no_councils_text.html' %]
     <input type="hidden" name="council" value="-1">
@@ -16,13 +24,125 @@
 [% END %]
 
 
+[% IF skipped %]
+    [% loc('Please fill in the form below with details of the problem, and describe the location as precisely as possible in the details box.') %]
+[% ELSE %]
+    [% INCLUDE 'reports/new/fill_in_details_text.html' %]
+[% END %]
 
+
+
+
+
+<input type="hidden" name="latitude"  value="[% latitude  | html %]">
+<input type="hidden" name="longitude" value="[% longitude | html %]">
+
+[% FOREACH error IN errors %]
+    [% '<ul class="error">' IF loop.first %]
+    <li>[% error %]</li>
+    [% '</ul>' IF loop.last %]
+[% END %]
 
 
 <p>FORM</p>
 
 
 
+<div id="problem_form">
+
+[% INCLUDE 'reports/new/form_heading.html' %]
+
+<div id="fieldset">
+
+
+
+
+
+<!-- {{ if ( $field_errors{category}) {
+    "<div class='form-error'>$field_errors{category}</div>";
+} }} -->
+
+<div class="form-field">
+<label for="category">[% category_label | html %]</label>
+<select name="category">
+[% FOREACH cat_op IN category_options %]
+    <option value="[% cat_op | html %]">[% cat_op | html %]</option>
+[% END %]
+</select>
+</div>
+
+<!-- {{ if ( $field_errors{title}) {
+    "<div class='form-error'>$field_errors{title}</div>";
+} }} -->
+
+<div class="form-field">
+    <label for="form_title">[% loc('Subject:') %]</label>
+    <input type="text" value="[% report.title | html %]" name="title" id="form_title" size="25">
+</div>
+
+<!-- {{ if ( $field_errors{detail}) {
+    "<div class='form-error'>$field_errors{detail}</div>";
+} }} -->
+
+<div class="form-field">
+    <label for="form_detail">[% loc('Details:') %]</label>
+    <textarea name="detail" id="form_detail" rows="7" cols="26">[% report.detail | html %]</textarea>
+</div>
+
+<!-- {{ $partial_field }} -->
+
+<!-- {{ if ( $field_errors{photo}) {
+    "<div class='form-error'>$field_errors{photo}</div>";
+} }} -->
+
+<!-- $vars{photo_label} = _('Photo:'); -->
+<!-- {{ $photo_field }} -->
+
+<!-- {{ if ( $field_errors{name}) {
+    "<div class='form-error'>$field_errors{name}</div>";
+} }} -->
+
+<div class='form-field'>
+    <label for="form_name">[% loc('Name:') %]</label>
+    <input type="text" value="[% report.name | html %]" name="name" id="form_name" size="25">
+</div>
+
+
+<div class="checkbox">
+
+    <!-- FIXME - sot sure what the title connection is with marking report anonymous -->
+    <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF !report.anonymous %]>
+
+    <!-- FIXME - empythomes should be 'Can we show your name on the site?'-->
+    <label for="form_may_show_name">[% loc('Can we show your name publicly?') %]</label>
+    <small>[% loc('(we never show your email address or phone number)') %]</small>
+</div>
+
+<!-- {{ if ( $field_errors{email}) {
+    "<div class='form-error'>$field_errors{email}</div>";
+} }} -->
+
+<div class="form-field">
+    <label for="form_email">[% loc('Email:') %]</label>
+    <input type="text" value="[% report.email | html %]" name="email" id="form_email" size="25">
+</div>
+
+<div>
+    <label for="form_phone">[% loc('Phone:') %]</label>
+    <input type="text" value="[% report.phone | html %]" name="phone" id="form_phone" size="15">
+    <small>[% loc('(optional)') %]</small>
+</div>
+
+<!-- {{ $text_notes }} -->
+
+<p id="problem_submit">
+    <input type="submit" name="submit_problem" value="[% loc('Submit') %]">
+</p>
+
+</div>
+</div>
+
+<!-- {{ $map_end }} -->
 
 
 [% INCLUDE 'footer.html' %]
