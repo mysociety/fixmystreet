@@ -92,7 +92,8 @@ sub report_new : Path : Args(0) {
           && $c->forward('process_report')
           && $c->forward('check_form_submitted')
           && $c->forward('check_for_errors')
-          && $c->forward('save_user_and_report');
+          && $c->forward('save_user_and_report')
+          && $c->forward('redirect_or_confirm_creation');
 }
 
 =head2 determine_location
@@ -496,9 +497,6 @@ sub process_report : Private {
     $report->name( $params{name} );
     $report->category( $params{category} );
 
-    # set defaults that make sense
-    $report->state('unconfirmed');
-
     #         my $fh = $q->upload('photo');
     #         if ($fh) {
     #             my $err = Page::check_photo( $q, $fh );
@@ -563,9 +561,10 @@ sub process_report : Private {
         join( ',', @councils_with_category ),
         join( ',', @councils_without_category )
       );
-    $council_string ||= '-1';    # no councils found with categories
     $report->council($council_string);
-    warn "council_string: $council_string";
+
+    # set defaults that make sense
+    $report->state('unconfirmed');
 
 #         my $image;
 #         if ($fh) {
@@ -590,16 +589,16 @@ sub process_report : Private {
 #             close FP;
 #         }
 #
-#         return display_form( $q, \@errors, \%field_errors )
-#           if ( @errors || scalar keys %field_errors );
-#
-#         delete $input{council} if $input{council} eq '-1';
-#         my $used_map = $input{skipped} ? 'f' : 't';
-#         $input{category} = _('Other') unless $input{category};
-#         my ( $id, $out );
-#         my $cobrand_data = Cobrand::extra_problem_data( $cobrand, $q );
-#         if ( my $token = $input{partial} ) {
-#             my $id = mySociety::AuthToken::retrieve( 'partial', $token );
+
+    # save the cobrand and language related information
+    $report->cobrand( $c->cobrand->moniker );
+    $report->cobrand_data( $c->cobrand->extra_problem_data );
+    $report->lang( $c->stash->{lang_code} );
+
+    #         if ( my $token = $input{partial} ) {
+
+    #             my $id = mySociety::AuthToken::retrieve( 'partial', $token );
+
 #             if ($id) {
 #                 dbh()->do(
 # "update problem set postcode=?, latitude=?, longitude=?, title=?, detail=?,
@@ -612,6 +611,7 @@ sub process_report : Private {
 #                     $input{anonymous} ? 'f' : 't',
 #                     $input{category}, $areas, $cobrand, $cobrand_data, $id
 #                 );
+
 #                 Utils::workaround_pg_bytea(
 #                     'update problem set photo=? where id=?',
 #                     1, $image, $id )
@@ -640,35 +640,6 @@ sub process_report : Private {
 #             }
 #         }
 #         else {
-#             $id = dbh()->selectrow_array("select nextval('problem_id_seq');");
-#             Utils::workaround_pg_bytea(
-#                 "insert into problem
-#                 (id, postcode, latitude, longitude, title, detail, name,
-#                  email, phone, photo, state, council, used_map, anonymous, category, areas, lang, cobrand, cobrand_data)
-#                 values
-#                 (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?, ?, ?, ?, ?, ?, ?)",
-#                 10,
-#                 $id, $input{pc}, $input{latitude}, $input{longitude},
-#                 $input{title},
-#                 $input{detail}, $input{name}, $input{email}, $input{phone},
-#                 $image,
-#                 $input{council}, $used_map, $input{anonymous} ? 'f' : 't',
-#                 $input{category},
-#                 $areas, $mySociety::Locale::lang, $cobrand, $cobrand_data
-#             );
-#             my %h = ();
-#             $h{title}  = $input{title};
-#             $h{detail} = $input{detail};
-#             $h{name}   = $input{name};
-#             my $base = Page::base_url_with_lang( $q, undef, 1 );
-#             $h{url} =
-#               $base . '/P/' . mySociety::AuthToken::store( 'problem', $id );
-#             dbh()->commit();
-#
-#             $out =
-#               Page::send_email( $q, $input{email}, $input{name}, 'problem',
-#                 %h );
-#
 #         }
 #         return $out;
 #     }
@@ -756,9 +727,13 @@ sub save_user_and_report : Private {
     # add the user to the report
     $report->user($report_user);
 
+    # Set a default if possible
+    $report->category( _('Other') ) unless $report->category;
+
     # save the report;
     $report->insert();
 
+    return 1;
 }
 
 =head2 generate_map
@@ -813,6 +788,36 @@ END_MAP_HTML
         );
     }
     return 1;
+}
+
+=head2 redirect_or_confirm_creation
+
+Now that the report has been created either redirect the user to its page if it
+has been confirmed or email them a token if it has not been.
+
+=cut
+
+sub redirect_or_confirm_creation : Private {
+    my ( $self, $c ) = @_;
+    my $report = $c->stash->{report};
+
+    # If confirmed send the user straigh there.
+    if ( $report->confirmed ) {
+        my $report_uri = $c->uri_for( '/reports', $report->id );
+        $c->res->redirect($report_uri);
+        $c->detach;
+    }
+
+    # otherwise create a confirm token and email it to them.
+    my $token =
+      $c->model("DB::Token")
+      ->create( { scope => 'problem', data => $report->id } );
+    $c->stash->{token_url} = $c->uri_for( '/P', $token->token );
+    $c->send_email( 'problem-confirm.txt', { to => $report->user->email } );
+
+    # tell user that they've been sent an email
+    $c->stash->{template}   = 'email_sent.html';
+    $c->stash->{email_type} = 'problem';
 }
 
 __PACKAGE__->meta->make_immutable;
