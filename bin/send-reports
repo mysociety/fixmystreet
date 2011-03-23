@@ -350,7 +350,7 @@ sub find_closest {
     my ($row, $latitude, $longitude) = @_;
     my $str = '';
 
-    return unless $row->{used_map};
+    return '' unless $row->{used_map};
 
     # Get nearest road-type thing from Bing
     my $url = "http://dev.virtualearth.net/REST/v1/Locations/$latitude,$longitude?c=en-GB&key=" . mySociety::Config::get('BING_MAPS_API_KEY');
