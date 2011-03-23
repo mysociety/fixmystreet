@@ -18,6 +18,7 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
             numZoomLevels: 18,
             transitionEffect: "resize",
             sphericalMercator: true,
+            buffer: 0,
             attribution: "© Microsoft / OS 2010"
         }, options);
         var newArguments = [name, url, options];

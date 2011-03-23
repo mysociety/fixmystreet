@@ -12,6 +12,7 @@ YAHOO.util.Event.onContentReady('map', function() {
 
     fixmystreet.layer_options = OpenLayers.Util.extend({
         zoomOffset: fixmystreet.ZOOM_OFFSET,
+        transitionEffect: 'resize',
         numZoomLevels: 4
     }, fixmystreet.layer_options);
     var layer = new fixmystreet.map_type("", fixmystreet.layer_options);
