@@ -6,11 +6,11 @@
 # Copyright (c) 2010 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 
-package FixMyStreet::Map;
+package FixMyStreet::Map::OSM;
 
 use strict;
 use Math::Trig;
-use mySociety::Web qw(ent);
+use mySociety::Web qw(ent NewURL);
 use Utils;
 
 sub header_js {
@@ -21,6 +21,10 @@ sub header_js {
 ';
 }
 
+sub map_type {
+    return 'OpenLayers.Layer.OSM.Mapnik';
+}
+
 # display_map Q PARAMS
 # PARAMS include:
 # latitude, longitude for the centre point of the map
@@ -29,7 +33,7 @@ sub header_js {
 # PINS is array of pins to show, location and colour
 # PRE/POST are HTML to show above/below map
 sub display_map {
-    my ($q, %params) = @_;
+    my ($self, $q, %params) = @_;
     $params{pre} ||= '';
     $params{post} ||= '';
 
@@ -71,6 +75,7 @@ sub display_map {
     my $out = FixMyStreet::Map::header($q, $params{type});
     my $copyright = _('Map &copy; <a id="osm_link" href="http://www.openstreetmap.org/">OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>');
     my $compass = compass($q, $x_tile, $y_tile, $zoom);
+    my $map_type = $self->map_type();
     $out .= <<EOF;
 <input type="hidden" name="latitude" id="fixmystreet.latitude" value="$params{latitude}">
 <input type="hidden" name="longitude" id="fixmystreet.longitude" value="$params{longitude}">
@@ -80,7 +85,7 @@ var fixmystreet = {
     'latitude': $params{latitude},
     'longitude': $params{longitude},
     'pins': [ $pins_js ],
-    'map_type': OpenLayers.Layer.OSM.Mapnik
+    'map_type': $map_type
 }
 </script>
 <div id="map_box">
@@ -95,13 +100,6 @@ var fixmystreet = {
 </div>
 <div id="side">
 EOF
-    return $out;
-}
-
-sub display_map_end {
-    my ($type) = @_;
-    my $out = '</div>';
-    $out .= '</form>' if ($type);
     return $out;
 }
 
@@ -122,9 +120,6 @@ sub display_pin {
     # XXX Would like to include title here in title=""
     $out = '<a href="' . $url . '">' . $out . '</a>';
     return $out;
-}
-
-sub map_pins {
 }
 
 # Given a lat/lon, convert it to OSM tile co-ordinates (precise).
@@ -188,7 +183,7 @@ sub click_to_tile {
 # Given some click co-ords (the tile they were on, and where in the
 # tile they were), convert to WGS84 and return.
 sub click_to_wgs84 {
-    my ($q, $pin_tile_x, $pin_x, $pin_tile_y, $pin_y) = @_;
+    my ($self, $q, $pin_tile_x, $pin_x, $pin_tile_y, $pin_y) = @_;
     my $tile_x = click_to_tile($pin_tile_x, $pin_x);
     my $tile_y = click_to_tile($pin_tile_y, $pin_y);
     my $zoom = 14 + (defined $q->param('zoom') ? $q->param('zoom') : 2);
