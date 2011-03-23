@@ -32,6 +32,7 @@ Path::Class
 Readonly
 Sort::Key
 Sub::Override
+Term::Size::Any
 Test::More
 Test::WWW::Mechanize
 Test::WWW::Mechanize::Catalyst

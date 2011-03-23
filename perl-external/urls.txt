@@ -88,7 +88,10 @@ http://search.cpan.org/CPAN/authors/id/D/DR/DROLSKY/MooseX-SemiAffordanceAccesso
 http://search.cpan.org/CPAN/authors/id/D/DR/DROLSKY/MooseX-Types-0.25.tar.gz
 http://search.cpan.org/CPAN/authors/id/D/DR/DROLSKY/Package-DeprecationManager-0.10.tar.gz
 http://search.cpan.org/CPAN/authors/id/F/FD/FDALY/Test-Tester-0.107.tar.gz
+http://search.cpan.org/CPAN/authors/id/F/FE/FERREIRA/Devel-Hide-0.0008.tar.gz
 http://search.cpan.org/CPAN/authors/id/F/FE/FERREIRA/Exporter-5.63.tar.gz
+http://search.cpan.org/CPAN/authors/id/F/FE/FERREIRA/Term-Size-Any-0.001.tar.gz
+http://search.cpan.org/CPAN/authors/id/F/FE/FERREIRA/Term-Size-Perl-0.029.tar.gz
 http://search.cpan.org/CPAN/authors/id/F/FL/FLORA/B-Hooks-EndOfScope-0.09.tar.gz
 http://search.cpan.org/CPAN/authors/id/F/FL/FLORA/Catalyst-Plugin-Session-Store-DBIC-0.11.tar.gz
 http://search.cpan.org/CPAN/authors/id/F/FL/FLORA/Class-C3-0.23.tar.gz
