@@ -387,6 +387,10 @@ sub prepare_report : Private {
         }
     );
 
+    # set some simple values
+    $report->used_map( $c->req->param('skipped') ? 0 : 1 );
+
+    $c->stash->{report} = $report;
     return 1;
 }
 

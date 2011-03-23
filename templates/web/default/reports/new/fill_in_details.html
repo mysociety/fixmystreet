@@ -4,10 +4,8 @@
 
 <h1>[% loc('Reporting a problem') %]</h1>
 
-<!-- {{ $text_located }} -->
-
 [%
-    IF ! skipped;
+    IF report.used_map;
         loc('You have located the problem at the point marked with a purple pin on the map. If this is not the correct location, simply click on the map again. ');
     END;
 %]
