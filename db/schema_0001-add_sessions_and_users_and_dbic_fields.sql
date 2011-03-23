@@ -14,6 +14,7 @@ create table users (
     id              serial  not null primary key,
     email           text    not null unique,
     name            text,
+    phone           text,
     password        text    not null default ''
 );
 

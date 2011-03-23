@@ -29,7 +29,12 @@ UPDATE users
     SET name = (
         select name from problem
         where user_id = users.id
-          and anonymous = false
+        order by created desc
+        limit 1
+    ),
+    phone = (
+        select phone from problem
+        where user_id = users.id
         order by created desc
         limit 1
     );
@@ -42,5 +47,7 @@ ALTER TABLE problem
 -- drop emails from the problems
 ALTER TABLE problem
     DROP COLUMN email;
+ALTER TABLE problem
+    DROP COLUMN phone;
 
 commit;
