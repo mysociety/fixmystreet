@@ -28,10 +28,6 @@
     [% INCLUDE 'reports/new/fill_in_details_text.html' %]
 [% END %]
 
-
-
-
-
 <input type="hidden" name="latitude"  value="[% latitude  | html %]">
 <input type="hidden" name="longitude" value="[% longitude | html %]">
 
@@ -40,11 +36,6 @@
     <li>[% error %]</li>
     [% '</ul>' IF loop.last %]
 [% END %]
-
-
-<p>FORM</p>
-
-
 
 <div id="problem_form">
 
@@ -56,31 +47,35 @@
 
 
 
-<!-- {{ if ( $field_errors{category}) {
-    "<div class='form-error'>$field_errors{category}</div>";
-} }} -->
+[% IF field_errors.council %]
+    <div class='form-error'>[% field_errors.council %]</div>
+[% END %]
+
+[% IF field_errors.category %]
+    <div class='form-error'>[% field_errors.category %]</div>
+[% END %]
 
 <div class="form-field">
-<label for="category">[% category_label | html %]</label>
-<select name="category">
-[% FOREACH cat_op IN category_options %]
-    <option value="[% cat_op | html %]">[% cat_op | html %]</option>
-[% END %]
-</select>
+    <label for="category">[% category_label | html %]</label>
+    <select name="category">
+        [%- FOREACH cat_op IN category_options %]
+        <option value="[% cat_op | html %]"[% ' selected' IF report.category == cat_op %]>[% cat_op | html %]</option>
+        [%- END %]
+    </select>
 </div>
 
-<!-- {{ if ( $field_errors{title}) {
-    "<div class='form-error'>$field_errors{title}</div>";
-} }} -->
+[% IF field_errors.title %]
+    <div class='form-error'>[% field_errors.title %]</div>
+[% END %]
 
 <div class="form-field">
     <label for="form_title">[% loc('Subject:') %]</label>
     <input type="text" value="[% report.title | html %]" name="title" id="form_title" size="25">
 </div>
 
-<!-- {{ if ( $field_errors{detail}) {
-    "<div class='form-error'>$field_errors{detail}</div>";
-} }} -->
+[% IF field_errors.detail %]
+    <div class='form-error'>[% field_errors.detail %]</div>
+[% END %]
 
 <div class="form-field">
     <label for="form_detail">[% loc('Details:') %]</label>
@@ -96,9 +91,9 @@
 <!-- $vars{photo_label} = _('Photo:'); -->
 <!-- {{ $photo_field }} -->
 
-<!-- {{ if ( $field_errors{name}) {
-    "<div class='form-error'>$field_errors{name}</div>";
-} }} -->
+[% IF field_errors.name %]
+    <div class='form-error'>[% field_errors.name %]</div>
+[% END %]
 
 <div class='form-field'>
     <label for="form_name">[% loc('Name:') %]</label>
@@ -108,17 +103,17 @@
 
 <div class="checkbox">
 
-    <!-- FIXME - sot sure what the title connection is with marking report anonymous -->
-    <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF !report.anonymous %]>
+    [%# if there is nothing in the title field then set check box as default on form %]
+    <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF !report.anonymous || !report.title %]>
 
     <!-- FIXME - empythomes should be 'Can we show your name on the site?'-->
     <label for="form_may_show_name">[% loc('Can we show your name publicly?') %]</label>
     <small>[% loc('(we never show your email address or phone number)') %]</small>
 </div>
 
-<!-- {{ if ( $field_errors{email}) {
-    "<div class='form-error'>$field_errors{email}</div>";
-} }} -->
+[% IF field_errors.email %]
+    <div class='form-error'>[% field_errors.email %]</div>
+[% END %]
 
 <div class="form-field">
     <label for="form_email">[% loc('Email:') %]</label>

@@ -9,6 +9,7 @@ use Encode;
 use Sort::Key qw(keysort);
 use List::MoreUtils qw(uniq);
 use HTML::Entities;
+use mySociety::MaPit;
 
 =head1 NAME
 
@@ -76,14 +77,22 @@ sub report_new : Path : Args(0) {
     # FIXME - deal with partial reports here
 
     # work out the location for this report and do some checks
-    $c->forward('determine_location') || return;
-    $c->forward('check_councils')     || return;
+    return
+      unless $c->forward('determine_location')
+          && $c->forward('check_councils');
 
     # create a problem from the submitted details
     $c->stash->{template} = "reports/new/fill_in_details.html";
     $c->forward('setup_categories_and_councils');
-    $c->forward('prepare_report');
     $c->forward('generate_map');
+
+    # deal with the user and report and check both are happy
+    return
+      unless $c->forward('process_user')
+          && $c->forward('process_report')
+          && $c->forward('check_form_submitted')
+          && $c->forward('check_for_errors')
+          && $c->forward('save_user_and_report');
 }
 
 =head2 determine_location
@@ -102,14 +111,28 @@ sub determine_location : Private {
           || $c->forward('determine_location_from_coords')
           || $c->forward('determine_location_from_pc');
 
+    # These should be set now
+    my $lat = $c->stash->{latitude};
+    my $lon = $c->stash->{longitude};
+
     # Check this location is okay to be displayed for the cobrand
     my ( $success, $error_msg ) = $c->cobrand->council_check(    #
-        { lat => $c->stash->{latitude}, lon => $c->stash->{longitude} },
+        { lat => $lat, lon => $lon },
         'submit_problem'
     );
 
+    # If in UK and we have a lat,lon coocdinate check it is in UK
+    # FIXME - is this a redundant check as we already see if report has a body
+    # to handle it?
+    if ( !$error_msg && $c->config->{COUNTRY} eq 'GB' ) {
+        eval { Utils::convert_latlon_to_en( $lat, $lon ); };
+        $error_msg =
+          _( "We had a problem with the supplied co-ordinates - outside the UK?"
+          ) if $@;
+    }
+
     # all good
-    return 1 if $success;
+    return 1 if !$error_msg;
 
     # show error
     $c->stash->{pc_error} = $error_msg;
@@ -368,7 +391,35 @@ sub setup_categories_and_councils : Private {
     $c->stash->{missing_names} = @missing_names;
 }
 
-=head2 prepare_report
+=head2 process_user
+
+Load user from the database or prepare a new one.
+
+=cut
+
+sub process_user : Private {
+    my ( $self, $c ) = @_;
+
+    # FIXME - If user already logged in use them regardless
+
+    # Extract all the params to a hash to make them easier to work with
+    my %params =    #
+      map { $_ => scalar $c->req->param($_) }    #
+      ( 'email', 'name', 'phone', );
+
+    my $report_user =
+      $c->model('DB::User')->find_or_new( { email => $params{email} } );
+
+    # set the user's name and phone (if given)
+    $report_user->name( $params{name} );
+    $report_user->phone( $params{phone} ) if $params{phone};
+
+    $c->stash->{report_user} = $report_user;
+
+    return 1;
+}
+
+=head2 process_report
 
 Looking at the parameters passed in create a new item and return it. Does not
 save anything to the database. If no item can be created (ie no information
@@ -376,22 +427,314 @@ provided) returns undef.
 
 =cut
 
-sub prepare_report : Private {
+sub _cleanup_text {
+    my $input = shift || '';
+
+    # lowercase everything if looks like it might be SHOUTING
+    $input = lc $input if $input !~ /[a-z]/;
+
+    # Start with a capital
+    $input = ucfirst $input;
+
+    # clean up language and tradmarks
+    for ($input) {
+
+        # shit -> poo
+        s{\bdog\s*shit\b}{dog poo}ig;
+
+        # 'portakabin' to '[portable cabin]' (and variations)
+        s{\b(porta)\s*([ck]abin|loo)\b}{[$1ble $2]}ig;
+        s{kabin\]}{cabin\]}ig;
+    }
+
+    return $input;
+}
+
+sub process_report : Private {
     my ( $self, $c ) = @_;
 
-    # create a new report, but don't save it yet
-    my $report = $c->model('DB::Problem')->new(
-        {
-            latitude  => $c->stash->{latitude},
-            longitude => $c->stash->{longitude},
-        }
-    );
+    # Extract all the params to a hash to make them easier to work with
+    my %params =    #
+      map { $_ => scalar $c->req->param($_) }    #
+      (
+        'title', 'detail', 'pc',                 #
+        'name',    'may_show_name',              #
+        'council', 'category',                   #
+        'partial', 'skipped', 'upload_fileid',   #
+      );
 
-    # set some simple values
-    $report->used_map( $c->req->param('skipped') ? 0 : 1 );
+    # create a new report, but don't save it yet
+    my $report = $c->model('DB::Problem')->new( {} );
+
+    # Enter the location
+    $report->postcode( $params{pc} );
+    $report->latitude( $c->stash->{latitude} );
+    $report->longitude( $c->stash->{longitude} );
+
+    # set some simple bool values (note they get inverted)
+    $report->used_map( $params{skipped}        ? 0 : 1 );
+    $report->anonymous( $params{may_show_name} ? 0 : 1 );
+
+    # clean up text before setting
+    $report->title( _cleanup_text( $params{title} ) );
+    $report->detail( _cleanup_text( $params{detail} ) );
+
+    # set these straight from the params
+    $report->name( $params{name} );
+    $report->category( $params{category} );
+
+    #         my $fh = $q->upload('photo');
+    #         if ($fh) {
+    #             my $err = Page::check_photo( $q, $fh );
+    #             $field_errors{photo} = $err if $err;
+    #         }
+
+    my $mapit_query =
+      sprintf( "4326/%s,%s", $report->longitude, $report->latitude );
+    my $areas = mySociety::MaPit::call( 'point', $mapit_query );
+    $report->areas( ',' . join( ',', sort keys %$areas ) . ',' );
+
+    # council = -1          - none
+    # council = 1,2,3       - all found
+    # council = 1,2|3,4     - found|missing
+    if ( $params{council} =~ m{^\d} ) {
+
+        my ( $found_council_str, $missing_council_str ) =
+          split( m{\|}, $params{council}, 2 );
+
+        my @area_types = $c->cobrand->area_types();
+        my %area_types_lookup = map { $_ => 1 } @area_types;
+
+        my %councils =
+          map { $_ => 1 }    #
+          grep { $area_types_lookup{ $areas->{$_}->type } }    #
+          keys %$areas;
+
+        my @input_councils = split /,|\|/, $params{council};
+
+        foreach (@input_councils) {
+            if ( !$councils{$_} ) {
+                push( @errors, _('That location is not part of that council') );
+                last;
+            }
+        }
+
+        if ($missing_council_str) {
+            $input{council} =~ $found_council_str;
+            @input_councils = split /,/, $input{council};
+        }
+
+        # Check category here, won't be present if council is -1
+        my @valid_councils = @input_councils;
+        if ( $input{category} && $q->{site} ne 'emptyhomes' ) {
+            my $categories = select_all(
+                "select area_id from contacts
+                        where deleted='f' and area_id in ("
+                  . $input{council} . ') and category = ?', $input{category}
+            );
+            $field_errors{category} = _('Please choose a category')
+              unless @$categories;
+            @valid_councils = map { $_->{area_id} } @$categories;
+            foreach my $c (@valid_councils) {
+                if ( $no_details =~ /$c/ ) {
+                    push( @errors, _('We have details for that council') );
+                    $no_details =~ s/,?$c//;
+                }
+            }
+        }
+        $input{council} = join( ',', @valid_councils ) . $no_details;
+    }
+
+#         my $image;
+#         if ($fh) {
+#             try {
+#                 $image = Page::process_photo($fh);
+#             }
+#             catch Error::Simple with {
+#                 my $e = shift;
+#                 $field_errors{photo} = sprintf(
+#                     _(
+# "That image doesn't appear to have uploaded correctly (%s), please try again."
+#                     ),
+#                     $e
+#                 );
+#             };
+#         }
+#
+#         if ( $input{upload_fileid} ) {
+#             open FP,
+#               mySociety::Config::get('UPLOAD_CACHE') . $input{upload_fileid};
+#             $image = join( '', <FP> );
+#             close FP;
+#         }
+#
+#         return display_form( $q, \@errors, \%field_errors )
+#           if ( @errors || scalar keys %field_errors );
+#
+#         delete $input{council} if $input{council} eq '-1';
+#         my $used_map = $input{skipped} ? 'f' : 't';
+#         $input{category} = _('Other') unless $input{category};
+#         my ( $id, $out );
+#         my $cobrand_data = Cobrand::extra_problem_data( $cobrand, $q );
+#         if ( my $token = $input{partial} ) {
+#             my $id = mySociety::AuthToken::retrieve( 'partial', $token );
+#             if ($id) {
+#                 dbh()->do(
+# "update problem set postcode=?, latitude=?, longitude=?, title=?, detail=?,
+#                     name=?, email=?, phone=?, state='confirmed', council=?, used_map='t',
+#                     anonymous=?, category=?, areas=?, cobrand=?, cobrand_data=?, confirmed=ms_current_timestamp(),
+#                     lastupdate=ms_current_timestamp() where id=?", {},
+#                     $input{pc}, $input{latitude}, $input{longitude},
+#                     $input{title}, $input{detail}, $input{name}, $input{email},
+#                     $input{phone}, $input{council},
+#                     $input{anonymous} ? 'f' : 't',
+#                     $input{category}, $areas, $cobrand, $cobrand_data, $id
+#                 );
+#                 Utils::workaround_pg_bytea(
+#                     'update problem set photo=? where id=?',
+#                     1, $image, $id )
+#                   if $image;
+#                 dbh()->commit();
+#                 $out = $q->p(
+#                     sprintf(
+#                         _(
+# 'You have successfully confirmed your report and you can now <a href="%s">view it on the site</a>.'
+#                         ),
+#                         "/report/$id"
+#                     )
+#                 );
+#                 my $display_advert = Cobrand::allow_crosssell_adverts($cobrand);
+#                 if ($display_advert) {
+#                     $out .=
+#                       CrossSell::display_advert( $q, $input{email},
+#                         $input{name} );
+#                 }
+#             }
+#             else {
+#                 $out = $q->p(
+# 'There appears to have been a problem updating the details of your report.
+#     Please <a href="/contact">let us know what went on</a> and we\'ll look into it.'
+#                 );
+#             }
+#         }
+#         else {
+#             $id = dbh()->selectrow_array("select nextval('problem_id_seq');");
+#             Utils::workaround_pg_bytea(
+#                 "insert into problem
+#                 (id, postcode, latitude, longitude, title, detail, name,
+#                  email, phone, photo, state, council, used_map, anonymous, category, areas, lang, cobrand, cobrand_data)
+#                 values
+#                 (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?, ?, ?, ?, ?, ?, ?)",
+#                 10,
+#                 $id, $input{pc}, $input{latitude}, $input{longitude},
+#                 $input{title},
+#                 $input{detail}, $input{name}, $input{email}, $input{phone},
+#                 $image,
+#                 $input{council}, $used_map, $input{anonymous} ? 'f' : 't',
+#                 $input{category},
+#                 $areas, $mySociety::Locale::lang, $cobrand, $cobrand_data
+#             );
+#             my %h = ();
+#             $h{title}  = $input{title};
+#             $h{detail} = $input{detail};
+#             $h{name}   = $input{name};
+#             my $base = Page::base_url_with_lang( $q, undef, 1 );
+#             $h{url} =
+#               $base . '/P/' . mySociety::AuthToken::store( 'problem', $id );
+#             dbh()->commit();
+#
+#             $out =
+#               Page::send_email( $q, $input{email}, $input{name}, 'problem',
+#                 %h );
+#
+#         }
+#         return $out;
+#     }
 
     $c->stash->{report} = $report;
     return 1;
+}
+
+=head2 check_form_submitted
+
+    $bool = $c->forward('check_form_submitted');
+
+Returns true if the form has been submitted, false if not. Determines this based
+on the presence of the C<submit_problem> parameter.
+
+=cut
+
+sub check_form_submitted : Private {
+    my ( $self, $c ) = @_;
+    return !!$c->req->param('submit_problem');
+}
+
+=head2 check_for_errors
+
+Examine the user and the report for errors. If found put them on stash and
+return false.
+
+=cut
+
+sub check_for_errors : Private {
+    my ( $self, $c ) = @_;
+
+    # let the model check for errors
+    my %field_errors = (
+        %{ $c->stash->{report_user}->check_for_errors },
+        %{ $c->stash->{report}->check_for_errors }
+    );
+
+    # all good if no errors
+    return 1 unless scalar keys %field_errors;
+
+    $c->stash->{field_errors} = \%field_errors;
+
+    use Data::Dumper;
+    local $Data::Dumper::Sortkeys = 1;
+    warn Dumper( \%field_errors );
+
+    return;
+}
+
+=head2 save_user_and_report
+
+Save the user and the report.
+
+Be smart about the user - only set the name and phone if user did not exist
+before or they are currently logged in. Otherwise discard any changes.
+
+Save the problem as unconfirmed. FIXME - change this behaviour with respect to
+the user's logged in status.
+
+=cut
+
+sub save_user_and_report : Private {
+    my ( $self, $c ) = @_;
+    my $report_user = $c->stash->{report_user};
+    my $report      = $c->stash->{report};
+
+    # Save or update the user if appropriate
+    if ( !$report_user->in_storage ) {
+        $report_user->insert();    # FIXME - set user state to 'unconfirmed'
+    }
+    elsif ( $c->user && $report_user->id == $c->user->id ) {
+        $report_user->update();
+        $report->confirmed(1);     # as we know the user is genuine
+    }
+    else {
+
+        # user exists and we are not logged in as them. Throw away changes to
+        # the name and phone. FIXME - propagate changes using tokens.
+        $report_user->discard_changes();
+    }
+
+    # add the user to the report
+    $report->user($report_user);
+
+    # save the report;
+    $report->insert();
+
 }
 
 =head2 generate_map
