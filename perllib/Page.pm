@@ -394,7 +394,7 @@ sub error_page ($$) {
 # send_email TO (NAME) TEMPLATE-NAME PARAMETERS
 # TEMPLATE-NAME is a full filename here.
 sub send_email {
-    my ($recipient_email_address, $name, $template, %h) = @_;
+    my ($q, $recipient_email_address, $name, $template, %h) = @_;
 
     $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/$template");
     my $to = $name ? [[$recipient_email_address, $name]] : $recipient_email_address;
@@ -454,7 +454,7 @@ sub send_confirmation_email {
     $file_thing = 'empty property' if $q->{site} eq 'emptyhomes' && $thing eq 'problem'; # Needs to be in English
     my $template = "$file_thing-confirm";
 
-    send_email($recipient_email_address, $name, $template, %h);
+    send_email($q, $recipient_email_address, $name, $template, %h);
 
     my ($action, $worry);
     if ($thing eq 'problem') {

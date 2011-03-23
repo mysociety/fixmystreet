@@ -119,7 +119,7 @@ sub main {
         detail => $input{detail},
     );
 
-    Page::send_email($input{email}, $input{name}, 'partial', %h);
+    Page::send_email($q, $input{email}, $input{name}, 'partial', %h);
 
     dbh()->commit();
     print 'SUCCESS';
