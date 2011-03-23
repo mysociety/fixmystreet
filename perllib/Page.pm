@@ -119,6 +119,8 @@ sub microsite {
     $lang = 'en-gb' if $host =~ /^en\./;
     Cobrand::set_lang_and_domain(get_cobrand($q), $lang, 1);
 
+    FixMyStreet::Map::set_map_class($q->param('map'));
+
     Problems::set_site_restriction($q);
     Memcached::set_namespace(mySociety::Config::get('BCI_DB_NAME') . ":");
 }
