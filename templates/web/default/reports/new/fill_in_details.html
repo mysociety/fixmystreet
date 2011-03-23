@@ -12,13 +12,10 @@
 
 [% IF area_ids_to_list.size == 0 %]
     [% INCLUDE 'reports/new/no_councils_text.html' %]
-    <input type="hidden" name="council" value="-1">
 [% ELSIF area_ids_to_list.size == all_councils.size %]
     [% INCLUDE 'reports/new/all_councils_text.html' %]
-    <input type="hidden" name="council" value="[% all_councils.keys.join(',') %]">
 [% ELSE %]    
     [% INCLUDE 'reports/new/some_councils_text.html' %]
-    <input type="hidden" name="council" value="[% area_ids_to_list.join(',') %]|[% missing.join(',') %]">
 [% END %]
 
 

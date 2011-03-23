@@ -79,7 +79,7 @@ sub report_new : Path : Args(0) {
     # work out the location for this report and do some checks
     return
       unless $c->forward('determine_location')
-          && $c->forward('check_councils');
+          && $c->forward('load_councils');
 
     # create a problem from the submitted details
     $c->stash->{template} = "reports/new/fill_in_details.html";
@@ -247,13 +247,14 @@ sub determine_location_from_pc : Private {
     return;
 }
 
-=head2 check_councils
+=head2 load_councils
 
-Load all the councils and check that they are ok. Do a small amount of cleanup.
+Try to load councils for this location and check that we have at least one. If
+there are no councils then return false.
 
 =cut
 
-sub check_councils : Private {
+sub load_councils : Private {
     my ( $self, $c ) = @_;
     my $latitude  = $c->stash->{latitude};
     my $longitude = $c->stash->{longitude};
@@ -261,7 +262,7 @@ sub check_councils : Private {
     # Look up councils and do checks for the point we've got
     my @area_types = $c->cobrand->area_types();
 
-    # XXX: I think we want in_gb_locale around the next line, needs testing
+    # TODO: I think we want in_gb_locale around the next line, needs testing
     my $all_councils =
       mySociety::MaPit::call( 'point', "4326/$longitude,$latitude",
         type => \@area_types );
@@ -275,9 +276,32 @@ sub check_councils : Private {
         return;
     }
 
+    # If we don't have any councils we can't accept the report
+    if ( !scalar keys %$all_councils ) {
+        $c->stash->{location_error} =
+          _(    'That spot does not appear to be covered by a council. If you'
+              . ' have tried to report an issue past the shoreline, for'
+              . ' example, please specify the closest point on land.' );
+        return;
+    }
+
+    # edit hash in-place
+    _remove_redundant_councils($all_councils);
+
+    # all good if we have some councils left
+    $c->stash->{all_councils} = $all_councils;
+    $c->stash->{all_council_names} =
+      [ map { $_->{name} } values %$all_councils ];
+    return 1;
+}
+
+# FIXME - should not be here.
+# These are country specific tweaks that should be in the cobrands
+sub _remove_redundant_councils {
+    my $all_councils = shift;
+
     # UK specific tweaks
-    # FIXME - move into cobrand
-    if ( mySociety::Config::get('COUNTRY') eq 'GB' ) {
+    if ( FixMyStreet->config('COUNTRY') eq 'GB' ) {
 
         # Ipswich & St Edmundsbury are responsible for everything in their
         # areas, not Suffolk
@@ -291,28 +315,13 @@ sub check_councils : Private {
     }
 
     # Norway specific tweaks
-    # FIXME - move into cobrand
-    if ( mySociety::Config::get('COUNTRY') eq 'NO' ) {
+    if ( FixMyStreet->config('COUNTRY') eq 'NO' ) {
 
         # Oslo is both a kommune and a fylke, we only want to show it once
         delete $all_councils->{301}     #
           if $all_councils->{3};
     }
 
-    # were councils found for this location
-    if ( !scalar keys %$all_councils ) {
-        $c->stash->{location_error} =
-          _(    'That spot does not appear to be covered by a council. If you'
-              . ' have tried to report an issue past the shoreline, for'
-              . ' example, please specify the closest point on land.' );
-        return;
-    }
-
-    # all good if we have some councils left
-    $c->stash->{all_councils} = $all_councils;
-    $c->stash->{all_council_names} =
-      [ map { $_->{name} } values %$all_councils ];
-    return 1;
 }
 
 =head2 setup_categories_and_councils
@@ -334,15 +343,19 @@ sub setup_categories_and_councils : Private {
       ->all;
 
     # variables to populate
-    my @area_ids_to_list = ();
-    my @category_options = ();
-    my $category_label   = undef;
+    my @area_ids_to_list = ();       # Areas with categories assigned
+    my @category_options = ();       # categories to show
+    my $category_label   = undef;    # what to call them
 
     # FIXME - implement in cobrand
     if ( $c->cobrand->moniker eq 'emptyhomes' ) {
+
+        # add all areas found to the list
         foreach (@contacts) {
             push @area_ids_to_list, $_->area_id;
         }
+
+        # set our own categories
         @category_options = (
             _('-- Pick a property type --'),
             _('Empty house or bungalow'),
@@ -363,32 +376,32 @@ sub setup_categories_and_councils : Private {
               unless $contact->category eq _('Other');
         }
 
-        # defunct...
-        # if ( $q->{site} eq 'scambs' ) {
-        #     @categories = Page::scambs_categories();
-        # }
-
         if (@category_options) {
             @category_options =
               ( _('-- Pick a category --'), @category_options, _('Other') );
             $category_label = _('Category:');
         }
-
     }
 
-    # put results onto stash
+    # put results onto stash for display
     $c->stash->{area_ids_to_list} = \@area_ids_to_list;
-    $c->stash->{category_options} = \@category_options;
     $c->stash->{category_label}   = $category_label;
+    $c->stash->{category_options} = \@category_options;
 
     # add some conveniant things to the stash
     my $all_councils = $c->stash->{all_councils};
     my %area_ids_to_list_hash = map { $_ => 1 } @area_ids_to_list;
-    my @missing =
-      grep { !$area_ids_to_list_hash{$_} } keys %$all_councils;
-    my @missing_names = map { $all_councils->{$_}->{name} } @missing;
-    $c->stash->{missing}       = @missing;
-    $c->stash->{missing_names} = @missing_names;
+
+    my @missing_details_councils =
+      grep { !$area_ids_to_list_hash{$_} }    #
+      keys %$all_councils;
+
+    my @missing_details_council_names =
+      map { $all_councils->{$_}->{name} }     #
+      @missing_details_councils;
+
+    $c->stash->{missing_details_councils}      = @missing_details_councils;
+    $c->stash->{missing_details_council_names} = @missing_details_council_names;
 }
 
 =head2 process_user
@@ -458,8 +471,8 @@ sub process_report : Private {
       map { $_ => scalar $c->req->param($_) }    #
       (
         'title', 'detail', 'pc',                 #
-        'name',    'may_show_name',              #
-        'council', 'category',                   #
+        'name', 'may_show_name',                 #
+        'category',                              #
         'partial', 'skipped', 'upload_fileid',   #
       );
 
@@ -494,56 +507,62 @@ sub process_report : Private {
     my $areas = mySociety::MaPit::call( 'point', $mapit_query );
     $report->areas( ',' . join( ',', sort keys %$areas ) . ',' );
 
-    # council = -1          - none
-    # council = 1,2,3       - all found
-    # council = 1,2|3,4     - found|missing
-    if ( $params{council} =~ m{^\d} ) {
+    # determine the area_types that this cobrand is interested in
+    my @area_types = $c->cobrand->area_types();
+    my %area_types_lookup = map { $_ => 1 } @area_types;
 
-        my ( $found_council_str, $missing_council_str ) =
-          split( m{\|}, $params{council}, 2 );
+    # get all the councils that are of these types and cover this area
+    my %councils =
+      map { $_ => 1 }    #
+      grep { $area_types_lookup{ $areas->{$_}->{type} } }    #
+      keys %$areas;
 
-        my @area_types = $c->cobrand->area_types();
-        my %area_types_lookup = map { $_ => 1 } @area_types;
+    # partition the councils onto these two arrays
+    my @councils_with_category    = ();
+    my @councils_without_category = ();
 
-        my %councils =
-          map { $_ => 1 }    #
-          grep { $area_types_lookup{ $areas->{$_}->type } }    #
-          keys %$areas;
-
-        my @input_councils = split /,|\|/, $params{council};
-
-        foreach (@input_councils) {
-            if ( !$councils{$_} ) {
-                push( @errors, _('That location is not part of that council') );
-                last;
-            }
-        }
-
-        if ($missing_council_str) {
-            $input{council} =~ $found_council_str;
-            @input_councils = split /,/, $input{council};
-        }
-
-        # Check category here, won't be present if council is -1
-        my @valid_councils = @input_councils;
-        if ( $input{category} && $q->{site} ne 'emptyhomes' ) {
-            my $categories = select_all(
-                "select area_id from contacts
-                        where deleted='f' and area_id in ("
-                  . $input{council} . ') and category = ?', $input{category}
-            );
-            $field_errors{category} = _('Please choose a category')
-              unless @$categories;
-            @valid_councils = map { $_->{area_id} } @$categories;
-            foreach my $c (@valid_councils) {
-                if ( $no_details =~ /$c/ ) {
-                    push( @errors, _('We have details for that council') );
-                    $no_details =~ s/,?$c//;
-                }
-            }
-        }
-        $input{council} = join( ',', @valid_councils ) . $no_details;
+    # all councils have all categories for emptyhomes
+    if ( $c->cobrand->moniker eq 'emptyhomes' ) {
+        @councils_with_category = keys %councils;
     }
+    else {
+
+        my @contacts = $c->       #
+          model('DB::Contact')    #
+          ->not_deleted           #
+          ->search(
+            {
+                area_id  => [ keys %councils ],    #
+                category => $report->category
+            }
+          )->all;
+
+        # clear category if it is not in db for possible councils
+        $report->category(undef) unless @contacts;
+
+        my %councils_with_contact_for_category =
+          map { $_->area_id => 1 } @contacts;
+
+        foreach my $council_key ( keys %councils ) {
+            $councils_with_contact_for_category{$council_key}
+              ? push( @councils_with_category,    $council_key )
+              : push( @councils_without_category, $council_key );
+        }
+
+    }
+
+    # construct the council string:
+    #  'x,x'     - x are councils_ids that have this category
+    #  'x,x|y,y' - x are councils_ids that have this category, y don't
+    # '-1'       - no councils have this category
+    my $council_string = join '|', grep { $_ }    #
+      (
+        join( ',', @councils_with_category ),
+        join( ',', @councils_without_category )
+      );
+    $council_string ||= '-1';    # no councils found with categories
+    $report->council($council_string);
+    warn "council_string: $council_string";
 
 #         my $image;
 #         if ($fh) {
