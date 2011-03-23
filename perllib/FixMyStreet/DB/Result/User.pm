@@ -10,30 +10,75 @@ use base 'DBIx::Class::Core';
 
 __PACKAGE__->table("users");
 __PACKAGE__->add_columns(
-    "id",
-    {
-        data_type         => "integer",
-        is_auto_increment => 1,
-        is_nullable       => 0,
-        sequence          => "users_id_seq",
-    },
-    "email",
-    { data_type => "text", is_nullable => 0 },
-    "name",
-    { data_type => "text", is_nullable => 1 },
-    "password",
-    { data_type => "text", default_value => "", is_nullable => 0 },
+  "id",
+  {
+    data_type         => "integer",
+    is_auto_increment => 1,
+    is_nullable       => 0,
+    sequence          => "users_id_seq",
+  },
+  "email",
+  { data_type => "text", is_nullable => 0 },
+  "name",
+  { data_type => "text", is_nullable => 1 },
+  "phone",
+  { data_type => "text", is_nullable => 1 },
+  "password",
+  { data_type => "text", default_value => "", is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("id");
-__PACKAGE__->add_unique_constraint( "users_email_key", ["email"] );
+__PACKAGE__->add_unique_constraint("users_email_key", ["email"]);
 __PACKAGE__->has_many(
-    "problems",
-    "FixMyStreet::DB::Result::Problem",
-    { "foreign.user_id" => "self.id" },
-    { cascade_copy      => 0, cascade_delete => 0 },
+  "problems",
+  "FixMyStreet::DB::Result::Problem",
+  { "foreign.user_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
 );
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-03-15 17:03:37
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:LAenO7w6lzCJyPUeosnLTw
+
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-03-23 12:42:18
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:z+QRbRAIyy2omaKVfRFTMA
+
+use mySociety::EmailUtil;
+
+=head2 check_for_errors
+
+    $error_hashref = $problem->check_for_errors();
+
+Look at all the fields and return a hashref with all errors found, keyed on the
+field name. This is intended to be passed back to the form to display the
+errors.
+
+TODO - ideally we'd pass back error codes which would be humanised in the
+templates (eg: 'missing','email_not_valid', etc).
+
+=cut
+
+sub check_for_errors {
+    my $self = shift;
+
+    my %errors = ();
+
+    if ( $self->name !~ m/\S/ ) {
+        $errors{name} = _('Please enter your name');
+    }
+    elsif (length( $self->name ) < 5
+        || $self->name !~ m/\s/
+        || $self->name =~ m/\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i )
+    {
+        $errors{name} = _(
+'Please enter your full name, councils need this information - if you do not wish your name to be shown on the site, untick the box'
+        );
+    }
+
+    if ( $self->email !~ /\S/ ) {
+        $errors{email} = _('Please enter your email');
+    }
+    elsif ( !mySociety::EmailUtil::is_valid_email( $self->email ) ) {
+        $errors{email} = _('Please enter a valid email');
+    }
+
+    return \%errors;
+}
 
 1;
