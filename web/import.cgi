@@ -15,8 +15,6 @@ use Utils;
 use mySociety::AuthToken;
 use mySociety::Config;
 use mySociety::EmailUtil;
-use mySociety::EvEl;
-use mySociety::Locale;
 
 sub main {
     my $q = shift;
@@ -112,23 +110,16 @@ sub main {
         $id, $latitude, $longitude, $input{subject},
         $input{detail}, $input{name}, $input{service}, $input{email}, $input{phone}, $photo);
 
-    # Send checking email
-    my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/partial");
     my $token = mySociety::AuthToken::store('partial', $id);
     my %h = (
         name => $input{name} ? ' ' . $input{name} : '',
-        url => mySociety::Config::get('BASE_URL') . '/L/' . $token,
+        url => Page::base_url_with_lang($q, undef, 1) . '/L/' . $token,
         service => $input{service},
+        title => $input{title},
+        detail => $input{detail},
     );
 
-    my $sender = mySociety::Config::get('CONTACT_EMAIL');
-    $sender =~ s/team/fms-DO-NOT-REPLY/;
-    mySociety::EvEl::send({
-        _template_ => $template,
-        _parameters_ => \%h,
-        To => $input{name} ? [ [ $input{email}, $input{name} ] ] : $input{email},
-        From => [ $sender, 'FixMyStreet' ],
-    }, $input{email});
+    Page::send_email($input{email}, $input{name}, 'partial', %h);
 
     dbh()->commit();
     print 'SUCCESS';

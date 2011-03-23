@@ -390,12 +390,10 @@ sub error_page ($$) {
 }
 
 # send_email TO (NAME) TEMPLATE-NAME PARAMETERS
-# TEMPLATE-NAME is currently one of problem, update, alert, tms
+# TEMPLATE-NAME is a full filename here.
 sub send_email {
-    my ($q, $recipient_email_address, $name, $thing, %h) = @_;
-    my $file_thing = $thing;
-    $file_thing = 'empty property' if $q->{site} eq 'emptyhomes' && $thing eq 'problem'; # Needs to be in English
-    my $template = "$file_thing-confirm";
+    my ($recipient_email_address, $name, $template, %h) = @_;
+
     $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/$template");
     my $to = $name ? [[$recipient_email_address, $name]] : $recipient_email_address;
     my $cobrand = get_cobrand($q);
@@ -443,6 +441,19 @@ sub send_email {
         );
     }
     
+}
+
+# send_confirmation_email TO (NAME) TEMPLATE-NAME PARAMETERS
+# TEMPLATE-NAME is currently one of problem, update, alert, tms
+sub send_confirmation_email {
+    my ($q, $recipient_email_address, $name, $thing, %h) = @_;
+
+    my $file_thing = $thing;
+    $file_thing = 'empty property' if $q->{site} eq 'emptyhomes' && $thing eq 'problem'; # Needs to be in English
+    my $template = "$file_thing-confirm";
+
+    send_email($recipient_email_address, $name, $template, %h);
+
     my ($action, $worry);
     if ($thing eq 'problem') {
         $action = _('your problem will not be posted');
@@ -467,6 +478,7 @@ if you do not, %s.</p>
 <p>(Don't worry &mdash; %s)</p>
 EOF
 
+    my $cobrand = get_cobrand($q);
     my %vars = (
         action => $action,
         worry => $worry,

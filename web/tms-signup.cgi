@@ -108,7 +108,7 @@ sub tms_do_subscribe {
             mobile => $input{mobile},
         });
     dbh()->commit();
-    return Page::send_email($q, $input{email}, $input{name}, 'tms', %h);
+    return Page::send_confirmation_email($q, $input{email}, $input{name}, 'tms', %h);
 }
 
 sub tms_confirm {
