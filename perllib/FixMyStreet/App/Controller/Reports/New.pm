@@ -496,6 +496,9 @@ sub process_report : Private {
     $report->name( $params{name} );
     $report->category( $params{category} );
 
+    # set defaults that make sense
+    $report->state('unconfirmed');
+
     #         my $fh = $q->upload('photo');
     #         if ($fh) {
     #             my $err = Page::check_photo( $q, $fh );
@@ -740,6 +743,8 @@ sub save_user_and_report : Private {
     elsif ( $c->user && $report_user->id == $c->user->id ) {
         $report_user->update();
         $report->confirmed(1);     # as we know the user is genuine
+        $report->state('confirmed');
+        $report->confirmed( \'ms_current_timestamp()' ); # FIXME - move to model
     }
     else {
 
