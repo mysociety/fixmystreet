@@ -1063,7 +1063,7 @@ sub display_problem {
         map_start => FixMyStreet::Map::display_map($q,
             latitude => $problem->{latitude}, longitude => $problem->{longitude},
             type => 0,
-            pins => [ [ $problem->{latitude}, $problem->{longitude}, 'blue' ] ],
+            pins => $problem->{used_map} ? [ [ $problem->{latitude}, $problem->{longitude}, 'blue' ] ] : [],
             post => $map_links
         ),
         map_end => FixMyStreet::Map::display_map_end(0),
