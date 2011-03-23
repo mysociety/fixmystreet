@@ -259,7 +259,7 @@ sub submit_update {
     $h{url} = $base . '/C/' . mySociety::AuthToken::store('update', { id => $id, add_alert => $input{add_alert} } );
     dbh()->commit();
 
-    my $out = Page::send_email($q, $input{rznvy}, $input{name}, 'update', %h);
+    my $out = Page::send_confirmation_email($q, $input{rznvy}, $input{name}, 'update', %h);
     return $out;
 }
 
@@ -432,7 +432,7 @@ Please <a href="/contact">let us know what went on</a> and we\'ll look into it.'
         $h{url} = $base . '/P/' . mySociety::AuthToken::store('problem', $id);
         dbh()->commit();
 
-        $out = Page::send_email($q, $input{email}, $input{name}, 'problem', %h);
+        $out = Page::send_confirmation_email($q, $input{email}, $input{name}, 'problem', %h);
 
     }
     return $out;
