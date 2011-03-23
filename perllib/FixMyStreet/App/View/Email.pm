@@ -8,7 +8,7 @@ use mySociety::Locale;
 use FixMyStreet;
 
 __PACKAGE__->config(
-    TEMPLATE_EXTENSION => '.html',
+    TEMPLATE_EXTENSION => '.txt',
     INCLUDE_PATH       => [          #
         FixMyStreet->path_to( 'templates', 'email', 'default' ),
     ],

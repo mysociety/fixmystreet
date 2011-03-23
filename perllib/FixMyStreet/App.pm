@@ -160,7 +160,7 @@ sub setup_cobrand {
 
 =head2 send_email
 
-    $email_sent = $c->send_email( 'email_template', $extra_stash_values );
+    $email_sent = $c->send_email( 'email_template.txt', $extra_stash_values );
 
 Send an email by filling in the given template with values in the stash.
 

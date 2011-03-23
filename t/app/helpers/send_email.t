@@ -28,7 +28,8 @@ $c->stash->{foo} = 'bar';
 Email::Send::Test->clear;
 
 # send the test email
-ok $c->send_email( 'test', { to => 'test@recipient.com' } ), "sent an email";
+ok $c->send_email( 'test.txt', { to => 'test@recipient.com' } ),
+  "sent an email";
 
 # check it got templated and sent correctly
 my @emails = Email::Send::Test->emails;
@@ -37,7 +38,6 @@ is scalar(@emails), 1, "caught one email";
 # Get the email, check it has a date and then strip it out
 my $email_as_string = $emails[0]->as_string;
 ok $email_as_string =~ s{\s+Date:\s+\S.*?$}{}xms, "Found and stripped out date";
-
 
 is $email_as_string,
   file(__FILE__)->dir->file('send_email_sample.txt')->slurp,

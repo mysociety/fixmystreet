@@ -104,7 +104,7 @@ sub email_login : Private {
 
     # log the user in, send them an email and redirect to the welcome page
     $c->stash->{token} = $token_obj->token;
-    $c->send_email( 'login', { to => $good_email } );
+    $c->send_email( 'login.txt', { to => $good_email } );
     $c->res->redirect( $c->uri_for('token') );
 }
 
