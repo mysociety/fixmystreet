@@ -94,7 +94,7 @@
 
 <div class='form-field'>
     <label for="form_name">[% loc('Name:') %]</label>
-    <input type="text" value="[% report.name | html %]" name="name" id="form_name" size="25">
+    <input type="text" value="[% report_user.name | html %]" name="name" id="form_name" size="25">
 </div>
 
 
@@ -114,12 +114,12 @@
 
 <div class="form-field">
     <label for="form_email">[% loc('Email:') %]</label>
-    <input type="text" value="[% report.email | html %]" name="email" id="form_email" size="25">
+    <input type="text" value="[% report_user.email | html %]" name="email" id="form_email" size="25">
 </div>
 
 <div>
     <label for="form_phone">[% loc('Phone:') %]</label>
-    <input type="text" value="[% report.phone | html %]" name="phone" id="form_phone" size="15">
+    <input type="text" value="[% report_user.phone | html %]" name="phone" id="form_phone" size="15">
     <small>[% loc('(optional)') %]</small>
 </div>
 
