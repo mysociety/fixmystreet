@@ -8,6 +8,7 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
+__PACKAGE__->load_components("FilterColumn");
 __PACKAGE__->table("token");
 __PACKAGE__->add_columns(
     "scope",
@@ -25,8 +26,8 @@ __PACKAGE__->add_columns(
 );
 __PACKAGE__->set_primary_key( "scope", "token" );
 
-# Created by DBIx::Class::Schema::Loader v0.07009 @ 2011-03-02 16:14:01
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:UfM8itc52wy22+YsRKuxmw
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-03-24 17:36:08
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:tClh4Spd63IpCeiGVHfrEQ
 
 # Trying not to use this
 # use mySociety::DBHandle qw(dbh);
@@ -52,16 +53,17 @@ ms_current_timestamp.
 
 =cut
 
-__PACKAGE__->inflate_column(
-    'data',
-    {
-        inflate => sub {
-            my $ser = shift;
+__PACKAGE__->filter_column(
+    data => {
+        filter_from_storage => sub {
+            my $self = shift;
+            my $ser  = shift;
             return undef unless defined $ser;
             my $h = new IO::String($ser);
             return RABX::wire_rd($h);
         },
-        deflate => sub {
+        filter_to_storage => sub {
+            my $self = shift;
             my $data = shift;
             my $ser  = '';
             my $h    = new IO::String($ser);

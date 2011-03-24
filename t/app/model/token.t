@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 13;
+use Test::More tests => 45;
 
 use FixMyStreet;
 use FixMyStreet::App;
@@ -19,15 +19,25 @@ FixMyStreet->configure_mysociety_dbhandle();
 # create a token using DBIC and check we can read it using AuthToken, and vice
 # versa
 
-my $test_data = { foo => 'bar', and => [ 'baz', 'bundy' ] };
+my %tests = (
+    nested_hash => { foo => 'bar', and => [ 'baz', 'bundy' ] },
+    array  => [ 'foo', 'bar' ],
+    scalar => 123,
+);
 
 my $token_rs = FixMyStreet::App->model('DB::Token');
 
-{    # create using DBIC
+# create using DBIC
+foreach my $test_data_name ( sort keys %tests ) {
+    my $test_data = $tests{$test_data_name};
+
+    pass "--- testing DBIC create using '$test_data_name'";
+
     my $dbic_token =
       $token_rs->create( { scope => 'testing', data => $test_data } );
     my $token = $dbic_token->token;
     ok $token, "stored token '$token'";
+
     is_deeply $dbic_token->data, $test_data, "data stored correctly using DBIC";
 
     # read back using DBIC
@@ -52,7 +62,12 @@ my $token_rs = FixMyStreet::App->model('DB::Token');
 
 }
 
-{    # create using m::AT
+# create using m::AT
+foreach my $test_data_name ( sort keys %tests ) {
+    my $test_data = $tests{$test_data_name};
+
+    pass "--- testing m::AT create using '$test_data_name'";
+
     my $token = mySociety::AuthToken::store( 'testing', $test_data );
     dbh->commit();
     ok $token, "stored token '$token'";

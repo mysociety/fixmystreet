@@ -15,6 +15,7 @@ Catalyst::View::TT
 Class::Unload
 Config::General
 DBIx::Class
+DBIx::Class::FilterColumn
 DBIx::Class::Schema::Loader
 DBIx::Class::Storage::DBI
 Email::Send

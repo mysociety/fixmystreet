@@ -37,6 +37,10 @@ make_schema_at(
         exclude        => qr{$exclude},    # ignore some tables
         generate_pod   => 0,               # no need for pod
         overwrite_modifications => 1,      # don't worry that the md5 is wrong
+
+        # add in some extra components
+        components => ['FilterColumn'],
+
     },
     FixMyStreet->dbic_connect_info(),
 );

@@ -8,6 +8,7 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
+__PACKAGE__->load_components("FilterColumn");
 __PACKAGE__->table("problem");
 __PACKAGE__->add_columns(
     "id",
@@ -80,8 +81,8 @@ __PACKAGE__->belongs_to(
     { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-03-23 12:42:18
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:hXAYqPHjda6+DoSiQexpEg
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-03-24 17:36:08
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+a9n7IKg3yFdgxNIbo3SGg
 
 =head2 check_for_errors
 
