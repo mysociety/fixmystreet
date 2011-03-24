@@ -89,16 +89,15 @@
     <div class='form-error'>[% field_errors.photo %]</div>
 [% END %]
 
-[% IF upload_fileid %]
-    <p>[% loc('Please note that you have already uploaded a photo - only add another if you wish to replace it') %]</p>
+[% IF upload_fileid || report.photo %]
+    <p>[% loc('You have already uploaded a photo for this report') %]</p>
     <input type="hidden" name="upload_fileid" value="[% upload_fileid %]" />
+[% ELSE %]
+    <div class='form-field'>
+        <label for="form_name">[% loc('Photo:') %]</label>
+        <input type="file" value="" name="photo" id="form_photo" >
+    </div>
 [% END %]
-
-<div class='form-field'>
-    <label for="form_name">[% loc('Photo:') %]</label>
-    <input type="file" value="" name="photo" id="form_photo" >
-</div>
-
 
 
 [% IF field_errors.name %]
