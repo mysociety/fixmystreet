@@ -10,6 +10,7 @@ use Sort::Key qw(keysort);
 use List::MoreUtils qw(uniq);
 use HTML::Entities;
 use mySociety::MaPit;
+use Path::Class;
 
 =head1 NAME
 
@@ -38,6 +39,10 @@ x, y, tile_xxx.yyy.x, tile_xxx.yyy.y: x and y are the tile locations. The
 'tile_xxx.yyy' pair are the click locations on the tile. These can be converted
 back into lat/lng by the map code.
 
+=head2 image related
+
+Parameters are 'photo' or 'upload_fileid'. The 'photo' is used when a user has selected a file. Once it has been uploaded it is cached on disk so that if there are errors on the form it need not be uploaded again. The cache location is stored in 'upload_fileid'. 
+
 =head2 optional
 
 pc: location user searched for
@@ -60,8 +65,6 @@ name
 email
 
 phone
-
-council
 
 partial
 
@@ -90,6 +93,7 @@ sub report_new : Path : Args(0) {
     return
       unless $c->forward('process_user')
           && $c->forward('process_report')
+          && $c->forward('process_photo')
           && $c->forward('check_form_submitted')
           && $c->forward('check_for_errors')
           && $c->forward('save_user_and_report')
@@ -497,12 +501,6 @@ sub process_report : Private {
     $report->name( $params{name} );
     $report->category( $params{category} );
 
-    #         my $fh = $q->upload('photo');
-    #         if ($fh) {
-    #             my $err = Page::check_photo( $q, $fh );
-    #             $field_errors{photo} = $err if $err;
-    #         }
-
     my $mapit_query =
       sprintf( "4326/%s,%s", $report->longitude, $report->latitude );
     my $areas = mySociety::MaPit::call( 'point', $mapit_query );
@@ -555,7 +553,6 @@ sub process_report : Private {
     # construct the council string:
     #  'x,x'     - x are councils_ids that have this category
     #  'x,x|y,y' - x are councils_ids that have this category, y don't
-    # '-1'       - no councils have this category
     my $council_string = join '|', grep { $_ }    #
       (
         join( ',', @councils_with_category ),
@@ -565,30 +562,6 @@ sub process_report : Private {
 
     # set defaults that make sense
     $report->state('unconfirmed');
-
-#         my $image;
-#         if ($fh) {
-#             try {
-#                 $image = Page::process_photo($fh);
-#             }
-#             catch Error::Simple with {
-#                 my $e = shift;
-#                 $field_errors{photo} = sprintf(
-#                     _(
-# "That image doesn't appear to have uploaded correctly (%s), please try again."
-#                     ),
-#                     $e
-#                 );
-#             };
-#         }
-#
-#         if ( $input{upload_fileid} ) {
-#             open FP,
-#               mySociety::Config::get('UPLOAD_CACHE') . $input{upload_fileid};
-#             $image = join( '', <FP> );
-#             close FP;
-#         }
-#
 
     # save the cobrand and language related information
     $report->cobrand( $c->cobrand->moniker );
@@ -648,6 +621,89 @@ sub process_report : Private {
     return 1;
 }
 
+=head2 process_photo
+
+Handle the photo - either checking and storing it after an upload or retrieving
+it from the cache.
+
+Store any error message onto 'photo_error' in stash.
+=cut
+
+sub process_photo : Private {
+    my ( $self, $c ) = @_;
+
+    return
+         $c->forward('process_photo_upload')
+      || $c->forward('process_photo_cache')
+      || 1;    # always return true
+}
+
+sub process_photo_upload : Private {
+    my ( $self, $c ) = @_;
+
+    # check for upload or return
+    my $upload = $c->req->upload('photo')
+      || return;
+
+    # check that the photo is a jpeg
+    my $ct = $upload->type;
+    unless ( $ct eq 'image/jpeg' || $ct eq 'image/pjpeg' ) {
+        $c->stash->{photo_error} = _('Please upload a JPEG image only');
+        return;
+    }
+
+    # convert the photo into a blob (also resize etc)
+    my $photo_blob = eval { Page::process_photo( $upload->fh ) };
+    if ( my $error = $@ ) {
+        my $format = _(
+"That image doesn't appear to have uploaded correctly (%s), please try again."
+        );
+        $c->stash->{photo_error} = sprintf( $format, $error );
+        return;
+    }
+
+    # we have an image we can use - save it to the cache in case there is an
+    # error
+    my $cache_dir = dir( $c->config->{UPLOAD_CACHE} );
+    $cache_dir->mkpath;
+    unless ( -d $cache_dir && -w $cache_dir ) {
+        warn "Can't find/write to photo cache directory '$cache_dir'";
+        return;
+    }
+
+    # create a random name and store the file there
+    my $fileid = int rand 1_000_000_000;
+    my $file   = $cache_dir->file("$fileid.jpg");
+    $file->openw->print($photo_blob);
+
+    # stick the random number on the stash
+    $c->stash->{upload_fileid} = $fileid;
+
+    return 1;
+}
+
+=head2 process_photo_cache
+
+Look for the upload_fileid parameter and check it matches a file on disk. If it
+does return true and put fileid on stash, otherwise false.
+
+=cut
+
+sub process_photo_cache : Private {
+    my ( $self, $c ) = @_;
+
+    # get the fileid and make sure it is just a number
+    my $fileid = $c->req->param('upload_fileid') || '';
+    $fileid =~ s{\D+}{}g;
+    return unless $fileid;
+
+    my $file = file( $c->config->{UPLOAD_CACHE}, "$fileid.jpg" );
+    return unless -e $file;
+
+    $c->stash->{upload_fileid} = $fileid;
+    return 1;
+}
+
 =head2 check_form_submitted
 
     $bool = $c->forward('check_form_submitted');
@@ -659,7 +715,7 @@ on the presence of the C<submit_problem> parameter.
 
 sub check_form_submitted : Private {
     my ( $self, $c ) = @_;
-    return !!$c->req->param('submit_problem');
+    return $c->req->param('submit_problem') || '';
 }
 
 =head2 check_for_errors
@@ -675,17 +731,18 @@ sub check_for_errors : Private {
     # let the model check for errors
     my %field_errors = (
         %{ $c->stash->{report_user}->check_for_errors },
-        %{ $c->stash->{report}->check_for_errors }
+        %{ $c->stash->{report}->check_for_errors },
     );
+
+    # add the photo error if there is one.
+    if ( my $photo_error = delete $c->stash->{photo_error} ) {
+        $field_errors{photo} = $photo_error;
+    }
 
     # all good if no errors
     return 1 unless scalar keys %field_errors;
 
     $c->stash->{field_errors} = \%field_errors;
-
-    use Data::Dumper;
-    local $Data::Dumper::Sortkeys = 1;
-    warn Dumper( \%field_errors );
 
     return;
 }
@@ -713,19 +770,28 @@ sub save_user_and_report : Private {
     }
     elsif ( $c->user && $report_user->id == $c->user->id ) {
         $report_user->update();
-        $report->confirmed(1);     # as we know the user is genuine
+
+        # we can also confirm the report straight away
         $report->state('confirmed');
         $report->confirmed( \'ms_current_timestamp()' ); # FIXME - move to model
     }
     else {
 
         # user exists and we are not logged in as them. Throw away changes to
-        # the name and phone. FIXME - propagate changes using tokens.
+        # the name and phone. TODO - propagate changes using tokens.
         $report_user->discard_changes();
     }
 
     # add the user to the report
     $report->user($report_user);
+
+    # If there was a photo add that too
+    if ( my $fileid = $c->stash->{upload_fileid} ) {
+        my $file = file( $c->config->{UPLOAD_CACHE}, "$fileid.jpg" );
+        my $blob = $file->slurp;
+        $file->remove;
+        $report->photo($blob);
+    }
 
     # Set a default if possible
     $report->category( _('Other') ) unless $report->category;
