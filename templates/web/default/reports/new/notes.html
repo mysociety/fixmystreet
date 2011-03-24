@@ -1,0 +1,15 @@
+<p>[% loc("Please note:") %]</p>
+
+<ul>
+
+    <li>[% loc("We will only use your personal information in accordance with our <a href=\"/faq#privacy\">privacy policy.</a>") %]</li>
+    <li>[% loc("Please be polite, concise and to the point.") %]</li>
+    <li>[% loc("Please do not be abusive &mdash; abusing your council devalues the service for all users.") %]</li>
+    <li>[% loc("Writing your message entirely in block capitals makes it hard to read, as does a lack of punctuation.") %]</li>
+    <li>[% loc("Remember that FixMyStreet is primarily for reporting physical problems that can be fixed. If your problem is not appropriate for submission via this site remember that you can contact your council directly using their own website.") %]</li>
+
+    [% IF c.config.COUNTRY == 'GB' %]
+    <li>[% loc("FixMyStreet and the Guardian are providing this service in partnership in <a href=\"/faq#privacy\">certain cities</a>. In those cities, both have access to any information submitted, including names and email addresses, and will use it only to ensure the smooth running of the service, in accordance with their privacy policies.") %]</li>
+    [% END %]
+
+</ul>
