@@ -478,7 +478,7 @@ sub process_report : Private {
         'title', 'detail', 'pc',                 #
         'name', 'may_show_name',                 #
         'category',                              #
-        'partial', 'skipped', 'upload_fileid',   #
+        'partial', 'skipped',                    #
       );
 
     # create a new report, but don't save it yet

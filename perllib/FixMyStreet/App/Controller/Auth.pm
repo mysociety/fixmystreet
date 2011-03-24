@@ -155,7 +155,12 @@ Let the user change their password.
 sub change_password : Local {
     my ( $self, $c ) = @_;
 
-    # FIXME - should be logged in
+    # FIXME - handle not being logged in more elegantly
+    unless ( $c->user ) {
+        $c->res->redirect( $c->uri_for('/auth') );
+        $c->detach;
+    }
+
     # FIXME - CSRF check here
     # FIXME - minimum criteria for passwords (length, contain number, etc)
 
