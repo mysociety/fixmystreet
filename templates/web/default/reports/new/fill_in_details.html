@@ -48,18 +48,20 @@
     <div class='form-error'>[% field_errors.council %]</div>
 [% END %]
 
-[% IF field_errors.category %]
-    <div class='form-error'>[% field_errors.category %]</div>
+[% IF category_options.size %]
+    [% IF field_errors.category %]
+        <div class='form-error'>[% field_errors.category %]</div>
+    [% END %]
+    
+    <div class="form-field">
+        <label for="category">[% category_label | html %]</label>
+        <select name="category">
+            [%- FOREACH cat_op IN category_options %]
+            <option value="[% cat_op | html %]"[% ' selected' IF report.category == cat_op %]>[% cat_op | html %]</option>
+            [%- END %]
+        </select>
+    </div>
 [% END %]
-
-<div class="form-field">
-    <label for="category">[% category_label | html %]</label>
-    <select name="category">
-        [%- FOREACH cat_op IN category_options %]
-        <option value="[% cat_op | html %]"[% ' selected' IF report.category == cat_op %]>[% cat_op | html %]</option>
-        [%- END %]
-    </select>
-</div>
 
 [% IF field_errors.title %]
     <div class='form-error'>[% field_errors.title %]</div>
