@@ -77,7 +77,8 @@ all_pins: related to map display - not relevant to creation of a new report
 sub report_new : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    # FIXME - deal with partial reports here
+    # create the report - loading a partial if available
+    $c->forward('initialize_report');
 
     # work out the location for this report and do some checks
     return
@@ -91,13 +92,67 @@ sub report_new : Path : Args(0) {
 
     # deal with the user and report and check both are happy
     return
-      unless $c->forward('process_user')
+      unless $c->forward('check_form_submitted')
+          && $c->forward('process_user')
           && $c->forward('process_report')
           && $c->forward('process_photo')
-          && $c->forward('check_form_submitted')
           && $c->forward('check_for_errors')
           && $c->forward('save_user_and_report')
           && $c->forward('redirect_or_confirm_creation');
+}
+
+=head2 initialize_report
+
+Create the report and set up some basics in it. If there is a partial report
+requested then use that .
+
+Partial reports are created when people submit to us via mobile apps or by
+specially tagging photos on Flickr. They are in the database but are not
+completed yet. Users reach us by following a link we email them that contains a
+token link. This action looks for the token and if found retrieves the report in it.
+
+=cut
+
+sub initialize_report : Private {
+    my ( $self, $c ) = @_;
+
+    # check to see if there is a partial report that we should use, otherwise
+    # create a new one. Stick it on the stash.
+    my $report = undef;
+
+    for my $partial ( scalar $c->req->param('partial') ) {
+
+        # did we find a token
+        last unless $partial;
+
+        # is it in the database
+        my $token =
+          $c->model("DB::Token")
+          ->find( { scope => 'partial', token => $partial } )    #
+          || last;
+
+        # can we get an id from it?
+        my $id = $token->data                                    #
+          || last;
+
+        # load the related problem
+        $report = $c->model("DB::Problem")                       #
+          ->search( { id => $id, state => 'partial' } )          #
+          ->first;
+
+        # no point keeping it if it is done.
+        $token->delete unless $report;
+
+        # save the token to delete at the end
+        $c->stash->{partial_token} = $token if $report;
+
+    }
+
+    # If we didn't find a partial then create a new one
+    $report ||= $c->model('DB::Problem')->new( {} );
+    $c->stash->{report} = $report;
+
+    return 1;
 }
 
 =head2 determine_location
@@ -114,7 +169,8 @@ sub determine_location : Private {
     return
       unless $c->forward('determine_location_from_tile_click')
           || $c->forward('determine_location_from_coords')
-          || $c->forward('determine_location_from_pc');
+          || $c->forward('determine_location_from_pc')
+          || $c->forward('determine_location_from_report');
 
     # These should be set now
     my $lat = $c->stash->{latitude};
@@ -170,6 +226,12 @@ sub determine_location_from_tile_click : Private {
     my ( $pin_tile_x, $pin_tile_y ) = $x_key =~ m{$param_key_regex};
     my $pin_x = $c->req->param($x_key);
     my $pin_y = $c->req->param($y_key);
+
+    # return if they are both 0 - this happens when you submit the form by
+    # hitting enter and not using the button. It also happens if you click
+    # exactly there on the map but that is less likely than hitting return to
+    # submit. Lesser of two evils...
+    return unless $pin_x && $pin_y;
 
     # convert the click to lat and lng
     my ( $latitude, $longitude ) =
@@ -249,6 +311,27 @@ sub determine_location_from_pc : Private {
 
     # pass errors back to the template
     $c->stash->{pc_error} = $error;
+    return;
+}
+
+=head2 determine_location_from_report
+
+Use latitude and longitude stored in the report - this is probably result of a
+partial report being loaded.
+
+=cut 
+
+sub determine_location_from_report : Private {
+    my ( $self, $c ) = @_;
+
+    my $report = $c->stash->{report};
+
+    if ( defined $report->latitude && defined $report->longitude ) {
+        $c->stash->{latitude}  = $report->latitude;
+        $c->stash->{longitude} = $report->longitude;
+        return 1;
+    }
+
     return;
 }
 
@@ -409,6 +492,20 @@ sub setup_categories_and_councils : Private {
     $c->stash->{missing_details_council_names} = @missing_details_council_names;
 }
 
+=head2 check_form_submitted
+
+    $bool = $c->forward('check_form_submitted');
+
+Returns true if the form has been submitted, false if not. Determines this based
+on the presence of the C<submit_problem> parameter.
+
+=cut
+
+sub check_form_submitted : Private {
+    my ( $self, $c ) = @_;
+    return $c->req->param('submit_problem') || '';
+}
+
 =head2 process_user
 
 Load user from the database or prepare a new one.
@@ -481,17 +578,17 @@ sub process_report : Private {
         'partial', 'skipped',                    #
       );
 
-    # create a new report, but don't save it yet
-    my $report = $c->model('DB::Problem')->new( {} );
+    # load the report
+    my $report = $c->stash->{report};
 
-    # Enter the location
+    # Enter the location and other bits which are not from the form
     $report->postcode( $params{pc} );
     $report->latitude( $c->stash->{latitude} );
     $report->longitude( $c->stash->{longitude} );
 
     # set some simple bool values (note they get inverted)
-    $report->used_map( $params{skipped}        ? 0 : 1 );
     $report->anonymous( $params{may_show_name} ? 0 : 1 );
+    $report->used_map( $params{skipped}        ? 0 : 1 );
 
     # clean up text before setting
     $report->title( _cleanup_text( $params{title} ) );
@@ -568,56 +665,6 @@ sub process_report : Private {
     $report->cobrand_data( $c->cobrand->extra_problem_data );
     $report->lang( $c->stash->{lang_code} );
 
-    #         if ( my $token = $input{partial} ) {
-
-    #             my $id = mySociety::AuthToken::retrieve( 'partial', $token );
-
-#             if ($id) {
-#                 dbh()->do(
-# "update problem set postcode=?, latitude=?, longitude=?, title=?, detail=?,
-#                     name=?, email=?, phone=?, state='confirmed', council=?, used_map='t',
-#                     anonymous=?, category=?, areas=?, cobrand=?, cobrand_data=?, confirmed=ms_current_timestamp(),
-#                     lastupdate=ms_current_timestamp() where id=?", {},
-#                     $input{pc}, $input{latitude}, $input{longitude},
-#                     $input{title}, $input{detail}, $input{name}, $input{email},
-#                     $input{phone}, $input{council},
-#                     $input{anonymous} ? 'f' : 't',
-#                     $input{category}, $areas, $cobrand, $cobrand_data, $id
-#                 );
-
-#                 Utils::workaround_pg_bytea(
-#                     'update problem set photo=? where id=?',
-#                     1, $image, $id )
-#                   if $image;
-#                 dbh()->commit();
-#                 $out = $q->p(
-#                     sprintf(
-#                         _(
-# 'You have successfully confirmed your report and you can now <a href="%s">view it on the site</a>.'
-#                         ),
-#                         "/report/$id"
-#                     )
-#                 );
-#                 my $display_advert = Cobrand::allow_crosssell_adverts($cobrand);
-#                 if ($display_advert) {
-#                     $out .=
-#                       CrossSell::display_advert( $q, $input{email},
-#                         $input{name} );
-#                 }
-#             }
-#             else {
-#                 $out = $q->p(
-# 'There appears to have been a problem updating the details of your report.
-#     Please <a href="/contact">let us know what went on</a> and we\'ll look into it.'
-#                 );
-#             }
-#         }
-#         else {
-#         }
-#         return $out;
-#     }
-
-    $c->stash->{report} = $report;
     return 1;
 }
 
@@ -704,20 +751,6 @@ sub process_photo_cache : Private {
     return 1;
 }
 
-=head2 check_form_submitted
-
-    $bool = $c->forward('check_form_submitted');
-
-Returns true if the form has been submitted, false if not. Determines this based
-on the presence of the C<submit_problem> parameter.
-
-=cut
-
-sub check_form_submitted : Private {
-    my ( $self, $c ) = @_;
-    return $c->req->param('submit_problem') || '';
-}
-
 =head2 check_for_errors
 
 Examine the user and the report for errors. If found put them on stash and
@@ -797,7 +830,12 @@ sub save_user_and_report : Private {
     $report->category( _('Other') ) unless $report->category;
 
     # save the report;
-    $report->insert();
+    $report->in_storage ? $report->update : $report->insert();
+
+    # tidy up
+    if ( my $token = $c->stash->{partial_token} ) {
+        $token->delete;
+    }
 
     return 1;
 }
