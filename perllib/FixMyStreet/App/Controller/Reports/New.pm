@@ -852,7 +852,7 @@ Add the html needed to for the map to the stash.
 =cut
 
 # FIXME - much of this should not happen here or in maps code but in the
-# templates.
+# templates. Perhaps also create a map 'None' to use when map is skipped.
 
 sub generate_map : Private {
     my ( $self, $c ) = @_;
@@ -896,6 +896,10 @@ END_MAP_HTML
             pins      => [ [ $latitude, $longitude, 'purple' ] ],
         );
     }
+    
+    # get the closing for the map
+    $c->stash->{map_end} = FixMyStreet::Map::display_map_end(1);
+    
     return 1;
 }
 
