@@ -92,10 +92,10 @@ sub report_new : Path : Args(0) {
 
     # deal with the user and report and check both are happy
     return
-      unless $c->forward('check_form_submitted')
-          && $c->forward('process_user')
+      unless $c->forward('process_user')
           && $c->forward('process_report')
           && $c->forward('process_photo')
+          && $c->forward('check_form_submitted')
           && $c->forward('check_for_errors')
           && $c->forward('save_user_and_report')
           && $c->forward('redirect_or_confirm_creation');
@@ -241,6 +241,10 @@ sub determine_location_from_tile_click : Private {
     # store it on the stash
     $c->stash->{latitude}  = $latitude;
     $c->stash->{longitude} = $longitude;
+
+    # set a flag so that the form is not considered submitted. This will prevent
+    # errors showing on the fields.
+    $c->stash->{force_form_not_submitted} = 1;
 
     # return true as we found a location
     return 1;
@@ -503,6 +507,7 @@ on the presence of the C<submit_problem> parameter.
 
 sub check_form_submitted : Private {
     my ( $self, $c ) = @_;
+    return if $c->stash->{force_form_not_submitted};
     return $c->req->param('submit_problem') || '';
 }
 
