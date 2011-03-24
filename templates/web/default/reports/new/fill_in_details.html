@@ -139,7 +139,8 @@
 [% INCLUDE 'reports/new/notes.html' %]
 
 <p id="problem_submit">
-    <input type="submit" name="submit_problem" value="[% loc('Submit') %]">
+    <input type="hidden" name="submit_problem" value="1">
+    <input type="submit" value="[% loc('Submit') %]">
 </p>
 
 </div>
