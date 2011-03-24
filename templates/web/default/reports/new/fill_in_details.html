@@ -81,10 +81,6 @@
     <textarea name="detail" id="form_detail" rows="7" cols="26">[% report.detail | html %]</textarea>
 </div>
 
-<!-- {{ $partial_field }} -->
-
-
-
 [% IF field_errors.photo %]
     <div class='form-error'>[% field_errors.photo %]</div>
 [% END %]
@@ -136,6 +132,10 @@
 </div>
 
 [% INCLUDE 'reports/new/notes.html' %]
+
+[% IF partial_token %]
+    <input type="hidden" name="partial" value="[% partial_token.token %]">
+[% END %]
 
 <p id="problem_submit">
     <input type="hidden" name="submit_problem" value="1">
