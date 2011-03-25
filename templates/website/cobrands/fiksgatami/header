@@ -10,7 +10,6 @@
         <title>{{ $title }}{{ $site_title }}</title>
         <style type="text/css">
             @import url("/css/core.css");
-            @import url("/css/main.css");
             @import url("/cobrands/fiksgatami/css.css");
         </style>
         {{ $rss }}
