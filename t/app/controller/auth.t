@@ -1,18 +1,11 @@
 use strict;
 use warnings;
 
-BEGIN {
-    use FixMyStreet;
-    FixMyStreet->test_mode(1);
-}
-
 use Test::More tests => 90;
 use Email::Send::Test;
 
-use FixMyStreet::App;
-
-use Test::WWW::Mechanize::Catalyst 'FixMyStreet::App';
-my $mech = Test::WWW::Mechanize::Catalyst->new;
+use FixMyStreet::TestMech;
+my $mech = FixMyStreet::TestMech->new;
 
 my $test_email    = 'test@example.com';
 my $test_password = 'foobar';
@@ -26,7 +19,7 @@ END {
 $mech->get_ok('/auth');
 
 # check that we can't reach a page that is only available to authenticated users
-is $mech->get('/auth/check_auth')->code, 401, "got 401 at check_auth";
+$mech->not_logged_in_ok;
 
 # check that submitting form with no / bad email creates an error.
 $mech->get_ok('/auth');
@@ -68,7 +61,7 @@ $mech->submit_form_ok(
 is $mech->uri->path, '/auth/token', "redirected to welcome page";
 
 # check that we are not logged in yet
-is $mech->get('/auth/check_auth')->code, 401, "got 401 at check_auth";
+$mech->not_logged_in_ok;
 
 # check that we got one email
 {
@@ -93,22 +86,21 @@ is $mech->get('/auth/check_auth')->code, 401, "got 401 at check_auth";
     # visit the confirm link (with bad token) and check user no confirmed
     $mech->get_ok( $link . 'XXX' );
     ok !get_user(), "no user exists";
-    is $mech->get('/auth/check_auth')->code, 401, "got 401 at check_auth";
+    $mech->not_logged_in_ok;
 
     # visit the confirm link and check user is confirmed
     $mech->get_ok($link);
     ok get_user(), "user created";
     is $mech->uri->path, '/my', "redirected to the 'my' section of site";
-    $mech->get_ok('/auth/check_auth');
+    $mech->logged_in_ok;
 
     # logout and try to use the token again
-    $mech->get_ok("/auth/logout");
-    is $mech->get('/auth/check_auth')->code, 401, "got 401 at check_auth";
+    $mech->log_out_ok;
     $mech->get_ok($link);
     is $mech->uri, $link, "not logged in";
     $mech->content_contains( 'Link too old or already used',
         'token now invalid' );
-    is $mech->get('/auth/check_auth')->code, 401, "got 401 at check_auth";
+    $mech->not_logged_in_ok;
 }
 
 # get a login email and change password
@@ -128,7 +120,7 @@ is $mech->get('/auth/check_auth')->code, 401, "got 401 at check_auth";
     # rest is as before so no need to test
 
     # follow link and change password - check not prompted for old password
-    is $mech->get('/auth/check_auth')->code, 401, "got 401 at check_auth";
+    $mech->not_logged_in_ok;
 
     my @emails = Email::Send::Test->emails;
     my ($link) = $emails[0]->body =~ m{(http://\S+)};
@@ -202,8 +194,7 @@ $mech->submit_form_ok(
 is $mech->uri->path, '/my', "redirected to correct page";
 
 # logout
-$mech->get_ok("/auth/logout");
-is $mech->get('/auth/check_auth')->code, 401, "got 401 at check_auth";
+$mech->log_out_ok;
 
 # try to login with bad details
 $mech->get_ok('/auth');
