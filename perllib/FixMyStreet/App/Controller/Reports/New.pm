@@ -527,12 +527,15 @@ sub process_user : Private {
       map { $_ => scalar $c->req->param($_) }    #
       ( 'email', 'name', 'phone', );
 
-    my $report_user =
-      $c->model('DB::User')->find_or_new( { email => $params{email} } );
+    # cleanup the email address
+    my $email = lc $params{email};
+    $email =~ s{\s+}{}g;
+
+    my $report_user = $c->model('DB::User')->find_or_new( { email => $email } );
 
     # set the user's name and phone (if given)
-    $report_user->name( $params{name} );
-    $report_user->phone( $params{phone} ) if $params{phone};
+    $report_user->name( _trim_text( $params{name} ) );
+    $report_user->phone( _trim_text( $params{phone} ) ) if $params{phone};
 
     $c->stash->{report_user} = $report_user;
 
@@ -547,14 +550,13 @@ provided) returns undef.
 
 =cut
 
+# args: allow_multiline => bool - strips out "\n\n" linebreaks
 sub _cleanup_text {
     my $input = shift || '';
+    my $args  = shift || {};
 
     # lowercase everything if looks like it might be SHOUTING
     $input = lc $input if $input !~ /[a-z]/;
-
-    # Start with a capital
-    $input = ucfirst $input;
 
     # clean up language and tradmarks
     for ($input) {
@@ -567,6 +569,27 @@ sub _cleanup_text {
         s{kabin\]}{cabin\]}ig;
     }
 
+    # Remove unneeded whitespace
+    my @lines = grep { m/\S/ } split m/\n\n/, $input;
+    for (@lines) {
+        $_ = _trim_text($_);
+        $_ = ucfirst $_;       # start with capital
+    }
+
+    my $join_char = $args->{allow_multiline} ? "\n\n" : " ";
+    $input = join $join_char, @lines;
+
+    return $input;
+}
+
+sub _trim_text {
+    my $input = shift;
+    for ($input) {
+        last unless $_;
+        s{\s+}{ }g;    # all whitespace to single space
+        s{^ }{};       # trim leading
+        s{ $}{};       # trim trailing
+    }
     return $input;
 }
 
@@ -574,7 +597,7 @@ sub process_report : Private {
     my ( $self, $c ) = @_;
 
     # Extract all the params to a hash to make them easier to work with
-    my %params =    #
+    my %params =       #
       map { $_ => scalar $c->req->param($_) }    #
       (
         'title', 'detail', 'pc',                 #
@@ -597,11 +620,12 @@ sub process_report : Private {
 
     # clean up text before setting
     $report->title( _cleanup_text( $params{title} ) );
-    $report->detail( _cleanup_text( $params{detail} ) );
+    $report->detail(
+        _cleanup_text( $params{detail}, { allow_multiline => 1 } ) );
 
     # set these straight from the params
-    $report->name( $params{name} );
-    $report->category( $params{category} );
+    $report->name( _trim_text( $params{name} ) );
+    $report->category( _ $params{category} );
 
     my $mapit_query =
       sprintf( "4326/%s,%s", $report->longitude, $report->latitude );
@@ -896,10 +920,10 @@ END_MAP_HTML
             pins      => [ [ $latitude, $longitude, 'purple' ] ],
         );
     }
-    
+
     # get the closing for the map
     $c->stash->{map_end} = FixMyStreet::Map::display_map_end(1);
-    
+
     return 1;
 }
 

@@ -8,6 +8,7 @@ use Test::WWW::Mechanize::Catalyst 'FixMyStreet::App';
 
 use Test::More;
 use Web::Scraper;
+use Carp;
 
 =head1 NAME
 
@@ -82,6 +83,41 @@ sub extract_location {
         longitude => undef,
         %$result
     };
+}
+
+=head2 visible_form_values
+
+    $hashref = $mech->visible_form_values(  );
+
+Return all the visible form values on the page - ie not the hidden ones.
+
+=cut
+
+sub visible_form_values {
+    my $mech = shift;
+
+    my @forms = $mech->forms;
+
+    # insert form filtering here (eg ignore login form)
+
+    croak "Found no forms - can't continue..."
+      unless @forms;
+    croak "Found several forms - don't know which to use..."
+      if @forms > 1;
+
+    my $form = $forms[0];
+
+    my @visible_fields =
+      grep { ref($_) ne 'HTML::Form::SubmitInput' }
+      grep { ref($_) ne 'HTML::Form::ImageInput' }
+      grep { ref($_) ne 'HTML::Form::TextInput' || $_->type ne 'hidden' }
+      $form->inputs;
+
+    my @visible_field_names = map { $_->name } @visible_fields;
+
+    my %params = map { $_ => $form->value($_) } @visible_field_names;
+
+    return \%params;
 }
 
 1;
