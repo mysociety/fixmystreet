@@ -25,7 +25,10 @@ sub main {
     } else {
         $out = display_questionnaire($q);
     }
-    print Page::header($q, title=>_('Questionnaire'));
+    print Page::header($q,
+        title => _('Questionnaire'),
+        js => FixMyStreet::Map::header_js(),
+    );
     print $out;
     print Page::footer($q);
 }
@@ -220,9 +223,9 @@ sub display_questionnaire {
     my %vars = (
         input_h => \%input_h,
         map_start => FixMyStreet::Map::display_map($q,
-            easting => $problem->{easting}, northing => $problem->{northing},
+            latitude => $problem->{latitude}, longitude => $problem->{longitude},
             pins => [
-                [ $problem->{easting}, $problem->{northing}, $problem->{state} eq 'fixed'?'green':'red' ],
+                [ $problem->{latitude}, $problem->{longitude}, $problem->{state} eq 'fixed'?'green':'red' ],
             ],
             pre => $problem_text, post => $updates
         ),
@@ -302,9 +305,10 @@ EOF
 (please note it will not be sent to the council). For example, what was
 your experience of getting the problem fixed?'));
     if ($allow_photo_upload) {
-         $vars{photo_input} = <<EOF;
+        my $photo = _('Photo:');
+        $vars{photo_input} = <<EOF;
 <div id="fileupload_normalUI">
-<label for="form_photo">Photo:</label>
+<label for="form_photo">$photo</label>
 <input type="file" name="photo" id="form_photo">
 </div>
 EOF
@@ -315,14 +319,17 @@ EOF
     );
     $vars{another_yes} = $another{yes};
     $vars{another_no} = $another{no};
+    my $another_qn = _('Would you like to receive another questionnaire in 4 weeks, reminding you to check the status?');
+    my $yes = _('Yes');
+    my $no = _('No');
     $vars{another_questionnaire} = <<EOF if $q->{site} ne 'emptyhomes';
 <div id="another_qn">
-<p>Would you like to receive another questionnaire in 4 weeks, reminding you to check the status?</p>
+<p>$another_qn</p>
 <p>
 <input type="radio" name="another" id="another_yes" value="Yes"$another{yes}>
-<label for="another_yes">Yes</label>
+<label for="another_yes">$yes</label>
 <input type="radio" name="another" id="another_no" value="No"$another{no}>
-<label for="another_no">No</label>
+<label for="another_no">$no</label>
 </p>
 </div>
 EOF

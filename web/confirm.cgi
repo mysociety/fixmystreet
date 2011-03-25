@@ -192,7 +192,7 @@ sub ask_questionnaire {
     my $qn_thanks = _("Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?");
     my $yes = _('Yes');
     my $no = _('No');
-    my $go = _('Go');
+    my $go = _('Submit');
     my $form_action = Cobrand::url($cobrand, "/confirm", $q);
     my $form_extra_elements = Cobrand::form_elements($cobrand, 'questionnaire', $q);
     my $out = <<EOF;

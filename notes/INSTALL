@@ -1,0 +1,110 @@
+# INSTALLING FROM SCRATCH
+
+# mySociety applications are intended to be run on a Debian system. Other Linux
+# distributions may well work but may also require some tweaking.
+
+# This document assumes that you are starting with a bare Debian Lenny box and
+# that you want to install the latest code from GitHub. For some step you will
+# need root access (via sudo)
+
+
+
+# GETTING THE CODE
+
+
+# bring your system up-to-date
+# FIXME - ???should we specify any extras apt sources???
+sudo apt-get update
+sudo apt-get upgrade
+
+# ensure that you have 'git' installed
+sudo apt-get install git-core
+
+# fetch the FixMyStreet code from GitHub:
+git clone https://github.com/mysociety/fixmystreet.git
+
+# fetch the submodules too
+cd fixmystreet
+git submodule update --init
+
+
+# SETTING UP SYSTEM
+
+# change into project directory
+cd ~/fixmystreet
+
+# check that you have all the packages needed. mySociety projects always have a
+# file in 'conf/packages' where any debian ones needed are listed
+sudo apt-get install `cat conf/packages`
+
+# also install these that are available by default on mySoc boxes:
+sudo apt-get install \
+    libregexp-common-perl php5-cli perl-doc libtest-exception-perl
+
+
+# SETTING UP APACHE
+
+cd /etc/apache2
+
+# there is an apache config file in 'conf/httpd.conf' - insert it as per sample
+# config at top of file into your /etc/apache2/ config setup
+sudo nano sites-available/fixmystreet
+sudo ln -s ../sites-available/fixmystreet sites-enabled/
+
+# you may need to enable some modules too
+sudo ln -s ../mods-available/rewrite.load     mods-enabled/
+sudo ln -s ../mods-available/proxy.load       mods-enabled/
+sudo ln -s ../mods-available/proxy_http.load  mods-enabled/
+
+# check the config and restart apache
+sudo apache2ctl configtest
+sudo apache2ctl restart
+
+cd -
+
+# You may need to change the permissions on your files so that apache can read them
+
+
+# SETTING UP EMAIL SENDING
+
+# FixMyStreet sends lots of email - your dev server should be able to deliver
+# them. If you're running a virtual machine consider sending all email via
+# Gmail by replacing exim with ssmtp.
+apt-get install ssmtp    # will probably uninstall existing MTA
+apt-get install mailx    # for testing email is working
+
+nano /etc/ssmtp/ssmtp.conf    # see http://wiki.debian.org/sSMTP for details
+mail youremail@example.com    # send a test message
+
+# SETTING UP CONFIG FILES
+
+# the setup is configured using the file 'conf/general' - copy the example one and then edit it
+cp conf/general-example conf/general
+nano conf/general
+
+# You may need to alter:
+#  * the database connection details
+#  * the OPTION_BASE_URL to be where your test site will run - eg 'http://localhost'
+#  * the OPTION_EVEL_URL to '' - this will cause some emails not to be sent but warned to STDERR instead - proper email handling is being worked on
+#  * the OPTION_SMTP_SMARTHOST to '' if routing mail via ssmtp as described above - otherwise your SMTP server
+#  * set OPTION_EMAIL_VHOST to the same as OPTION_BASE_URL minus the 'http://' - eg 'localhost'
+#  * set OPTION_UPLOAD_CACHE and OPTION_GEO_CACHE to your preferred values
+#  * set OPTION_COUNTRY to your ISO3166 alpha2 code ('GB' for the United Kingdom: http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
+
+# SETTING UP THE DATABASES
+
+# create your own db user (as a superuser to make things easier)
+sudo su - postgres
+createuser -s your_username
+exit
+
+# You'll need to create a database, enable plpgsql and load in the schema
+createdb -E SQL_ASCII bci
+createlang plpgsql bci
+psql bci < db/schema.sql
+psql bci < db/alert_types.sql
+
+
+# LOOK AT THE SITE IN YOUR BROWSER
+
+# everything should now be set up - please try to load the site in your browser

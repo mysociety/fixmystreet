@@ -6,10 +6,9 @@
 # Copyright (c) 2010 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 
-package FixMyStreet::Map;
+package FixMyStreet::Map::Google;
 
 use strict;
-use mySociety::GeoUtil;
 use mySociety::Web qw(ent);
 
 sub header_js {
@@ -27,21 +26,27 @@ sub header_js {
 # PINS is array of pins to show, location and colour
 # PRE/POST are HTML to show above/below map
 sub display_map {
-    my ($q, %params) = @_;
+    my ($self, $q, %params) = @_;
     $params{pre} ||= '';
     $params{post} ||= '';
 
+    my @pins;
     foreach my $pin (@{$params{pins}}) {
+        $pin->[3] ||= '';
+        push @pins, "[ $pin->[0], $pin->[1], '$pin->[2]', '$pin->[3]' ]";
     }
+    my $pins_js = join(",\n", @pins);
 
     my $out = FixMyStreet::Map::header($q, $params{type});
-    my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($params{easting}, $params{northing}, 'G');
     my $copyright = _('Map contains Ordnance Survey data &copy; Crown copyright and database right 2010.');
     $out .= <<EOF;
+<input type="hidden" name="latitude" id="fixmystreet.latitude" value="$params{latitude}">
+<input type="hidden" name="longitude" id="fixmystreet.longitude" value="$params{longitude}">
 <script type="text/javascript">
 var fixmystreet = {
-    'lat': $lat,
-    'lon': $lon
+    'latitude': $params{latitude},
+    'longitude': $params{longitude},
+    'pins': [ $pins_js ]
 }
 </script>
 <div id="map_box">
@@ -53,19 +58,6 @@ var fixmystreet = {
 <div id="side">
 EOF
     return $out;
-}
-
-sub display_map_end {
-    my ($type) = @_;
-    my $out = '</div>';
-    $out .= '</form>' if ($type);
-    return $out;
-}
-
-sub display_pin {
-}
-
-sub map_pins {
 }
 
 1;

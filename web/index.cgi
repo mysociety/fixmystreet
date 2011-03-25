@@ -9,12 +9,14 @@
 use strict;
 use Standard;
 use Utils;
+use Encode;
 use Error qw(:try);
 use File::Slurp;
-use LWP::Simple;
-use RABX;
 use CGI::Carp;
+use POSIX qw(strcoll);
 use URI::Escape;
+
+# use Carp::Always;
 
 use CrossSell;
 use FixMyStreet::Geocode;
@@ -22,13 +24,19 @@ use mySociety::AuthToken;
 use mySociety::Config;
 use mySociety::DBHandle qw(select_all);
 use mySociety::EmailUtil;
-use mySociety::GeoUtil;
 use mySociety::Locale;
 use mySociety::MaPit;
 use mySociety::PostcodeUtil;
 use mySociety::Random;
 use mySociety::VotingArea;
 use mySociety::Web qw(ent NewURL);
+use Utils;
+
+sub debug (@) {
+    return;
+    my ( $format, @args ) = @_;
+    warn sprintf $format, map { defined $_ ? $_ : 'undef' } @args;
+}
 
 BEGIN {
     if (!dbh()->selectrow_array('select secret from secret for update of secret')) {
@@ -47,13 +55,13 @@ sub main {
         my $id = mySociety::AuthToken::retrieve('partial', $partial);
         if ($id) {
             my @row = dbh()->selectrow_array(
-                "select easting, northing, name, email, title, (photo is not null) as has_photo, phone, detail
+                "select latitude, longitude, name, email, title, (photo is not null) as has_photo, phone, detail
                     from problem where id=? and state='partial'", {}, $id);
             if (@row) {
                 $q->param('anonymous', 1);
                 $q->param('submit_map', 1);
-                $q->param('easting', $row[0]);
-                $q->param('northing', $row[1]);
+                $q->param('latitude', $row[0]);
+                $q->param('longitude', $row[1]);
                 $q->param('name', $row[2]);
                 $q->param('email', $row[3]);
                 $q->param('title', $row[4]);
@@ -72,19 +80,21 @@ sub main {
     my %params;
     if ($q->param('submit_problem')) {
         $params{title} = _('Submitting your report');
-        ($out) = submit_problem($q);
+        ($out, %params) = submit_problem($q);
     } elsif ($q->param('submit_update')) {
         $params{title} = _('Submitting your update');
-        ($out) = submit_update($q);
+        ($out, %params) = submit_update($q);
     } elsif ($q->param('submit_map')) {
         ($out, %params) = display_form($q, [], {});
         $params{title} = _('Reporting a problem');
     } elsif ($q->param('id')) {
         ($out, %params) = display_problem($q, [], {});
         $params{title} .= ' - ' . _('Viewing a problem');
-    } elsif ($q->param('pc') || ($q->param('x') && $q->param('y')) || ($q->param('e') && $q->param('n'))) {
+    } elsif ($q->param('pc') || ($q->param('x') && $q->param('y')) || ($q->param('lat') || $q->param('lon'))) {
         ($out, %params) = display_location($q);
         $params{title} = _('Viewing a location');
+    } elsif ($q->param('e') && $q->param('n')) {
+        ($out, %params) = redirect_from_osgb_to_wgs84($q);
     } else {
         ($out, %params) = front_page($q);
     }
@@ -107,6 +117,8 @@ sub front_page {
     my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'postcodeForm', $q);
     my $form_action = Cobrand::url($cobrand, '/', $q);
     my $question = Cobrand::enter_postcode_text($cobrand, $q);
+    $question = _("Enter a nearby GB postcode, or street name and area")
+        unless $question;
     my %params = ('context' => 'front-page');
     $params{status_code} = $status_code if $status_code;
     my %vars = (
@@ -114,7 +126,7 @@ sub front_page {
         pc_h => $pc_h, 
         cobrand_form_elements => $cobrand_form_elements,
         form_action => $form_action,
-        question => $question,
+        question => "$question:",
     );
     my $cobrand_front_page = Page::template_include('front-page', $q, Page::template_root($q), %vars);
     return ($cobrand_front_page, %params) if $cobrand_front_page;
@@ -152,7 +164,7 @@ EOF
     }
     my $activate = _("Go");
     $out .= <<EOF;
-<label for="pc">$question</label>
+<label for="pc">$question:</label>
 &nbsp;<input type="text" name="pc" value="$pc_h" id="pc" size="10" maxlength="200">
 &nbsp;<input type="submit" value="$activate" id="submit">
 $cobrand_form_elements
@@ -247,13 +259,13 @@ sub submit_update {
     $h{url} = $base . '/C/' . mySociety::AuthToken::store('update', { id => $id, add_alert => $input{add_alert} } );
     dbh()->commit();
 
-    my $out = Page::send_email($q, $input{rznvy}, $input{name}, 'update', %h);
+    my $out = Page::send_confirmation_email($q, $input{rznvy}, $input{name}, 'update', %h);
     return $out;
 }
 
 sub submit_problem {
     my $q = shift;
-    my @vars = qw(council title detail name email phone pc easting northing skipped anonymous category partial upload_fileid lat lon);
+    my @vars = qw(council title detail name email phone pc skipped anonymous category partial upload_fileid latitude longitude);
     my %input = map { $_ => scalar $q->param($_) } @vars;
     for (qw(title detail)) {
         $input{$_} = lc $input{$_} if $input{$_} !~ /[a-z]/;
@@ -265,15 +277,18 @@ sub submit_problem {
     my @errors;
     my %field_errors;
 
-    if ($input{lat}) {
+    my $cobrand = Page::get_cobrand($q);
+
+    # If in UK and we have a lat,lon coocdinate check it is in UK
+    if ( $input{latitude} && mySociety::Config::get('COUNTRY') eq 'GB' ) {
         try {
-            ($input{easting}, $input{northing}) = mySociety::GeoUtil::wgs84_to_national_grid($input{lat}, $input{lon}, 'G');
+            Utils::convert_latlon_to_en( $input{latitude}, $input{longitude} );
         } catch Error::Simple with { 
             my $e = shift;
             push @errors, "We had a problem with the supplied co-ordinates - outside the UK?";
         };
     }
-
+    
     my $fh = $q->upload('photo');
     if ($fh) {
         my $err = Page::check_photo($q, $fh);
@@ -294,7 +309,7 @@ sub submit_problem {
     } elsif (!mySociety::EmailUtil::is_valid_email($input{email})) {
         $field_errors{email} = _('Please enter a valid email');
     }
-    if ($input{category} && $input{category} eq '-- Pick a category --') {
+    if ($input{category} && $input{category} eq _('-- Pick a category --')) {
         $field_errors{category} = _('Please choose a category');
         $input{category} = '';
     } elsif ($input{category} && $input{category} eq _('-- Pick a property type --')) {
@@ -305,11 +320,13 @@ sub submit_problem {
     return display_form($q, \@errors, \%field_errors) if (@errors || scalar keys %field_errors); # Short circuit
 
     my $areas;
-    if ($input{easting} && $input{northing}) {
-        $areas = mySociety::MaPit::call('point', "27700/$input{easting},$input{northing}");
+    if (defined $input{latitude} && defined $input{longitude}) {
+        my $mapit_query = "4326/$input{longitude},$input{latitude}";
+        $areas = mySociety::MaPit::call( 'point', $mapit_query );
         if ($input{council} =~ /^[\d,]+(\|[\d,]+)?$/) {
             my $no_details = $1 || '';
-            my %va = map { $_ => 1 } @$mySociety::VotingArea::council_parent_types;
+            my @area_types = Cobrand::area_types($cobrand);
+            my %va = map { $_ => 1 } @area_types;
             my %councils;
             foreach (keys %$areas) {
                 $councils{$_} = 1 if $va{$areas->{$_}->{type}};
@@ -345,10 +362,10 @@ sub submit_problem {
             $input{council} = join(',', @valid_councils) . $no_details;
         }
         $areas = ',' . join(',', sort keys %$areas) . ',';
-    } elsif ($input{easting} || $input{northing}) {
+    } elsif (defined $input{latitude} || defined $input{longitude}) {
         push(@errors, _('Somehow, you only have one co-ordinate. Please try again.'));
     } else {
-        push(@errors, _('You haven\'t specified any sort of co-ordinates. Please try again.'));
+        push(@errors, _("You haven't specified any sort of co-ordinates. Please try again."));
     }
 
     my $image;
@@ -373,15 +390,14 @@ sub submit_problem {
     my $used_map = $input{skipped} ? 'f' : 't';
     $input{category} = _('Other') unless $input{category};
     my ($id, $out);
-    my $cobrand = Page::get_cobrand($q);
     my $cobrand_data = Cobrand::extra_problem_data($cobrand, $q);
     if (my $token = $input{partial}) {
         my $id = mySociety::AuthToken::retrieve('partial', $token);
         if ($id) {
-            dbh()->do("update problem set postcode=?, easting=?, northing=?, title=?, detail=?,
+            dbh()->do("update problem set postcode=?, latitude=?, longitude=?, title=?, detail=?,
                 name=?, email=?, phone=?, state='confirmed', council=?, used_map='t',
                 anonymous=?, category=?, areas=?, cobrand=?, cobrand_data=?, confirmed=ms_current_timestamp(),
-                lastupdate=ms_current_timestamp() where id=?", {}, $input{pc}, $input{easting}, $input{northing},
+                lastupdate=ms_current_timestamp() where id=?", {}, $input{pc}, $input{latitude}, $input{longitude},
                 $input{title}, $input{detail}, $input{name}, $input{email},
                 $input{phone}, $input{council}, $input{anonymous} ? 'f' : 't',
                 $input{category}, $areas, $cobrand, $cobrand_data, $id);
@@ -400,11 +416,11 @@ Please <a href="/contact">let us know what went on</a> and we\'ll look into it.'
     } else {
         $id = dbh()->selectrow_array("select nextval('problem_id_seq');");
         Utils::workaround_pg_bytea("insert into problem
-            (id, postcode, easting, northing, title, detail, name,
+            (id, postcode, latitude, longitude, title, detail, name,
              email, phone, photo, state, council, used_map, anonymous, category, areas, lang, cobrand, cobrand_data)
             values
             (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unconfirmed', ?, ?, ?, ?, ?, ?, ?, ?)", 10,
-            $id, $input{pc}, $input{easting}, $input{northing}, $input{title},
+            $id, $input{pc}, $input{latitude}, $input{longitude}, $input{title},
             $input{detail}, $input{name}, $input{email}, $input{phone}, $image,
             $input{council}, $used_map, $input{anonymous} ? 'f': 't', $input{category},
             $areas, $mySociety::Locale::lang, $cobrand, $cobrand_data);
@@ -416,7 +432,7 @@ Please <a href="/contact">let us know what went on</a> and we\'ll look into it.'
         $h{url} = $base . '/P/' . mySociety::AuthToken::store('problem', $id);
         dbh()->commit();
 
-        $out = Page::send_email($q, $input{email}, $input{name}, 'problem', %h);
+        $out = Page::send_confirmation_email($q, $input{email}, $input{name}, 'problem', %h);
 
     }
     return $out;
@@ -430,21 +446,28 @@ sub display_form {
     push @errors, _('There were problems with your report. Please see below.') if (scalar keys %field_errors);
 
     my ($pin_x, $pin_y, $pin_tile_x, $pin_tile_y) = (0,0,0,0);
-    my @vars = qw(title detail name email phone pc easting northing x y skipped council anonymous partial upload_fileid lat lon);
-    my %input = map { $_ => $q->param($_) || '' } @vars;
-    my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
+    my @vars = qw(title detail name email phone pc latitude longitude x y skipped council anonymous partial upload_fileid);
+
+    my %input   = ();
+    my %input_h = ();
+
+    foreach my $key (@vars) {
+        my $val = $q->param($key);
+        $input{$key} = defined($val) ? $val : '';   # '0' is valid for longitude
+        $input_h{$key} = ent( $input{$key} );
+    }
 
     # Convert lat/lon to easting/northing if given
-    if ($input{lat}) {
-        try {
-            ($input{easting}, $input{northing}) = mySociety::GeoUtil::wgs84_to_national_grid($input{lat}, $input{lon}, 'G');
-            $input_h{easting} = $input{easting};
-            $input_h{northing} = $input{northing};
-        } catch Error::Simple with { 
-            my $e = shift;
-            push @errors, "We had a problem with the supplied co-ordinates - outside the UK?";
-        };
-    }
+    # if ($input{lat}) {
+    #     try {
+    #         ($input{easting}, $input{northing}) = mySociety::GeoUtil::wgs84_to_national_grid($input{lat}, $input{lon}, 'G');
+    #         $input_h{easting} = $input{easting};
+    #         $input_h{northing} = $input{northing};
+    #     } catch Error::Simple with { 
+    #         my $e = shift;
+    #         push @errors, "We had a problem with the supplied co-ordinates - outside the UK?";
+    #     };
+    # }
 
     # Get tile co-ordinates if map clicked
     ($input{x}) = $input{x} =~ /^(\d+)/; $input{x} ||= 0;
@@ -458,28 +481,32 @@ sub display_form {
     # We need either a map click, an E/N, to be skipping the map, or be filling in a partial form
     return display_location($q, @errors)
         unless ($pin_x && $pin_y)
-            || ($input{easting} && $input{northing})
+            || ($input{latitude} && $input{longitude})
             || ($input{skipped} && $input{pc})
             || ($input{partial} && $input{pc});
 
     # Work out some co-ordinates from whatever we've got
-    my ($easting, $northing);
+    my ($latitude, $longitude);
     if ($input{skipped}) {
         # Map is being skipped
-        if ($input{easting} && $input{northing}) {
-            $easting = $input{easting};
-            $northing = $input{northing};
+        if ( length $input{latitude} && length $input{longitude} ) {
+            $latitude  = $input{latitude};
+            $longitude = $input{longitude};
         } else {
-            my ($e, $n, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
-            $easting = $e; $northing = $n;
+            my ( $lat, $lon, $error ) =
+              FixMyStreet::Geocode::lookup( $input{pc}, $q );
+            $latitude  = $lat;
+            $longitude = $lon;
         }
     } elsif ($pin_x && $pin_y) {
-        # tilma map was clicked on
-        ($easting, $northing)  = FixMyStreet::Map::click_to_os($pin_tile_x, $pin_x, $pin_tile_y, $pin_y);
-    } elsif ($input{partial} && $input{pc} && !$input{easting} && !$input{northing}) {
+
+        # Map was clicked on (tilma, or non-JS OpenLayers, for example)
+        ($latitude, $longitude) = FixMyStreet::Map::click_to_wgs84($q, $pin_tile_x, $pin_x, $pin_tile_y, $pin_y);
+
+    } elsif ( $input{partial} && $input{pc} && !length $input{latitude} && !length $input{longitude} ) {
         my $error;
         try {
-            ($easting, $northing, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
+            ($latitude, $longitude, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
         } catch Error::Simple with {
             $error = shift;
         };
@@ -487,28 +514,37 @@ sub display_form {
         return front_page($q, $error) if $error;
     } else {
         # Normal form submission
-        $easting = $input_h{easting};
-        $northing = $input_h{northing};
+        $latitude  = $input_h{latitude};
+        $longitude = $input_h{longitude};
     }
 
+    # Shrink, as don't need accuracy plus we want them as English strings
+    ($latitude, $longitude) = map { Utils::truncate_coordinate($_) } ( $latitude, $longitude );
+
     # Look up councils and do checks for the point we've got
-    my $parent_types = $mySociety::VotingArea::council_parent_types;
-    $parent_types = [qw(DIS LBO MTD UTA LGD COI)] # No CTY
-        if $q->{site} eq 'emptyhomes';
+    my @area_types = Cobrand::area_types($cobrand);
     # XXX: I think we want in_gb_locale around the next line, needs testing
-    my $all_councils = mySociety::MaPit::call('point', "27700/$easting,$northing", type => $parent_types);
+    my $all_councils = mySociety::MaPit::call('point', "4326/$longitude,$latitude", type => \@area_types);
 
     # Let cobrand do a check
     my ($success, $error_msg) = Cobrand::council_check($cobrand, { all_councils => $all_councils }, $q, 'submit_problem');
-    if (!$success){
+    if (!$success) {
         return front_page($q, $error_msg);
     }
 
-    # Ipswich & St Edmundsbury are responsible for everything in their areas, no Suffolk
-    delete $all_councils->{2241} if $all_councils->{2446} || $all_councils->{2443};
+    if (mySociety::Config::get('COUNTRY') eq 'GB') {
+        # Ipswich & St Edmundsbury are responsible for everything in their areas, not Suffolk
+        delete $all_councils->{2241} if $all_councils->{2446} || $all_councils->{2443};
 
-    # Norwich is responsible for everything in its areas, no Norfolk
-    delete $all_councils->{2233} if $all_councils->{2391};
+        # Norwich is responsible for everything in its areas, not Norfolk
+        delete $all_councils->{2233} if $all_councils->{2391};
+
+    } elsif (mySociety::Config::get('COUNTRY') eq 'NO') {
+
+        # Oslo is both a kommune and a fylke, we only want to show it once
+        delete $all_councils->{301} if $all_councils->{3};
+
+    }
 
     return display_location($q, _('That spot does not appear to be covered by a council.
 If you have tried to report an issue past the shoreline, for example,
@@ -520,7 +556,7 @@ please specify the closest point on land.')) unless %$all_councils;
     my $categories = select_all("select area_id, category from contacts
         where deleted='f' and area_id in (" . join(',', keys %$all_councils) . ')');
     if ($q->{site} ne 'emptyhomes') {
-        @$categories = sort { $a->{category} cmp $b->{category} } @$categories;
+        @$categories = sort { strcoll($a->{category}, $b->{category}) } @$categories;
         foreach (@$categories) {
             $council_ok{$_->{area_id}} = 1;
             next if $_->{category} eq _('Other');
@@ -530,7 +566,7 @@ please specify the closest point on land.')) unless %$all_councils;
             @categories = Page::scambs_categories();
         }
         if (@categories) {
-            @categories = ('-- Pick a category --', @categories, _('Other'));
+            @categories = (_('-- Pick a category --'), @categories, _('Other'));
             $category = _('Category:');
         }
     } else {
@@ -574,6 +610,8 @@ please specify the closest point on land.')) unless %$all_councils;
        my $form_action = Cobrand::url($cobrand, '/', $q); 
        $vars{form_start} = <<EOF;
 <form action="$form_action" method="post" name="mapSkippedForm"$enctype>
+<input type="hidden" name="latitude" value="$latitude">
+<input type="hidden" name="longitude" value="$longitude">
 <input type="hidden" name="pc" value="$input_h{pc}">
 <input type="hidden" name="skipped" value="1">
 $cobrand_form_elements
@@ -587,9 +625,9 @@ EOF
             $type = 1;
         }
         $vars{form_start} = FixMyStreet::Map::display_map($q,
-            easting => $easting, northing => $northing,
+            latitude => $latitude, longitude => $longitude,
             type => $type,
-            pins => [ [ $easting, $northing, 'purple' ] ],
+            pins => [ [ $latitude, $longitude, 'purple' ] ],
         );
         my $partial_id;
         if (my $token = $input{partial}) {
@@ -606,7 +644,7 @@ If this is not the correct location, simply click on the map again. '));
     $vars{page_heading} = $q->h1(_('Reporting a problem'));
 
     if ($details eq 'all') {
-        my $council_list = join('</strong> or <strong>', map { $_->{name} } values %$all_councils);
+        my $council_list = join('</strong>' . _(' or ') . '<strong>', map { $_->{name} } values %$all_councils);
         if ($q->{site} eq 'emptyhomes'){
             $vars{text_help} = '<p>' . sprintf(_('All the information you provide here will be sent to <strong>%s</strong>.
 On the site, we will show the subject and details of the problem, plus your
@@ -625,33 +663,37 @@ name if you give us permission.'), $council_list);
             push @missing, $_ unless $councils{$_};
         }
         my $n = @missing;
-        my $list = join(' or ', map { $all_councils->{$_}->{name} } @missing);
-        $vars{text_help} = '<p>All the information you provide here will be sent to <strong>'
-            . join('</strong> or <strong>', map { $all_councils->{$_}->{name} } @councils)
-            . '</strong>. The subject and details of the problem will be public, plus your
-name if you give us permission.';
-        $vars{text_help} .= ' We do <strong>not</strong> yet have details for the other council';
-        $vars{text_help} .= ($n>1) ? 's that cover' : ' that covers';
-        $vars{text_help} .= " this location. You can help us by finding a contact email address for local
-problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.";
+        my $list = join(_(' or '), map { $all_councils->{$_}->{name} } @missing);
+        $vars{text_help} = '<p>' . _('All the information you provide here will be sent to') . ' <strong>'
+            . join('</strong>' . _(' or ') . '<strong>', map { $all_councils->{$_}->{name} } @councils)
+            . '</strong>. ';
+        $vars{text_help} .= _('The subject and details of the problem will be public, plus your name if you give us permission.');
+        $vars{text_help} .= ' ' . mySociety::Locale::nget(
+            'We do <strong>not</strong> yet have details for the other council that covers this location.',
+            'We do <strong>not</strong> yet have details for the other councils that cover this location.',
+            $n
+        );
+        $vars{text_help} .=  ' ' . sprintf(_("You can help us by finding a contact email address for local problems for %s and emailing it to us at <a href='mailto:%s'>%s</a>."), $list, $e, $e);
         $vars{text_help} .= '<input type="hidden" name="council" value="' . join(',', @councils)
             . '|' . join(',', @missing) . '">';
     } else {
         my $e = Cobrand::contact_email($cobrand);
-        my $list = join(' or ', map { $_->{name} } values %$all_councils);
+        my $list = join(_(' or '), map { $_->{name} } values %$all_councils);
         my $n = scalar keys %$all_councils;
         if ($q->{site} ne 'emptyhomes') {
-            $vars{text_help} = '<p>We do not yet have details for the council';
-            $vars{text_help} .= ($n>1) ? 's that cover' : ' that covers';
-            $vars{text_help} .= " this location. If you submit a problem here the subject and details 
-of the problem will be public, but the problem will <strong>not</strong> be reported to the council.
-You can help us by finding a contact email address for local
-problems for $list and emailing it to us at <a href='mailto:$e'>$e</a>.";
+            $vars{text_help} = '<p>';
+            $vars{text_help} .= mySociety::Locale::nget(
+                'We do not yet have details for the council that covers this location.',
+                'We do not yet have details for the councils that cover this location.',
+                $n
+            );
+            $vars{text_help} .= _("If you submit a problem here the subject and details of the problem will be public, but the problem will <strong>not</strong> be reported to the council.");
+            $vars{text_help} .= sprintf(_("You can help us by finding a contact email address for local problems for %s and emailing it to us at <a href='mailto:%s'>%s</a>."), $list, $e, $e);
         } else {
-            $vars{text_help} = _("<p>We do not yet have details for the council that covers
-this location. If you submit a report here it will be left on the site, but
-not reported to the council &ndash; please still leave your report, so that
-we can show to the council the activity in their area.");
+            $vars{text_help} = '<p>'
+              . _('We do not yet have details for the council that covers this location.')
+              . ' '
+              . _("If you submit a report here it will be left on the site, but not reported to the council &ndash; please still leave your report, so that we can show to the council the activity in their area.");
         }
         $vars{text_help} .= '<input type="hidden" name="council" value="-1">';
     }
@@ -681,10 +723,6 @@ photo of the problem if you have one), etc.'));
     } else {
         $vars{text_help} .= $q->p(_('Please fill in details of the problem below.'));
     }
-
-    $vars{text_help} .= '
-<input type="hidden" name="easting" value="' . $easting . '">
-<input type="hidden" name="northing" value="' . $northing . '">';
 
     if (@errors) {
         $vars{errors} = '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
@@ -731,27 +769,18 @@ EOF
     }
 
     if ($q->{site} ne 'emptyhomes') {
-        $vars{text_notes} = <<EOF;
-<p>Please note:</p>
-<ul>
-<li>We will only use your personal
-information in accordance with our <a href="/faq#privacy">privacy policy.</a></li>
-<li>Please be polite, concise and to the point.</li>
-<li>Please do not be abusive &mdash; abusing your council devalues the service for all users.</li>
-<li>Writing your message entirely in block capitals makes it hard to read,
-as does a lack of punctuation.</li>
-<li>Remember that FixMyStreet is primarily for reporting physical
-problems that can be fixed. If your problem is not appropriate for
-submission via this site remember that you can contact your council
-directly using their own website.</li>
-<li>
-FixMyStreet and the Guardian are providing this service in
-partnership in <a href="/faq#privacy">certain cities</a>. In those cities, both have access to
-any information submitted, including names and email addresses, and will use it only to ensure the
-smooth running of the service, in accordance with their privacy policies.
-</li>
-</ul>
-EOF
+        $vars{text_notes} =
+            $q->p(_("Please note:")) .
+            "<ul>" .
+            $q->li(_("We will only use your personal information in accordance with our <a href=\"/faq#privacy\">privacy policy.</a>")) .
+            $q->li(_("Please be polite, concise and to the point.")) .
+            $q->li(_("Please do not be abusive &mdash; abusing your council devalues the service for all users.")) .
+            $q->li(_("Writing your message entirely in block capitals makes it hard to read, as does a lack of punctuation.")) .
+            $q->li(_("Remember that FixMyStreet is primarily for reporting physical problems that can be fixed. If your problem is not appropriate for submission via this site remember that you can contact your council directly using their own website."));
+        $vars{text_notes} .=
+            $q->li(_("FixMyStreet and the Guardian are providing this service in partnership in <a href=\"/faq#privacy\">certain cities</a>. In those cities, both have access to any information submitted, including names and email addresses, and will use it only to ensure the smooth running of the service, in accordance with their privacy policies."))
+            if mySociety::Config::get('COUNTRY') eq 'GB';
+        $vars{text_notes} .= "</ul>\n";
     }
 
     %vars = (%vars, 
@@ -760,43 +789,93 @@ EOF
         url_home => Cobrand::url($cobrand, '/', $q),
         submit_button => _('Submit')
     );
-    return (Page::template_include('report-form', $q, Page::template_root($q), %vars), robots => 'noindex,nofollow');
+    return (Page::template_include('report-form', $q, Page::template_root($q), %vars),
+        robots => 'noindex,nofollow',
+        js => FixMyStreet::Map::header_js(),
+    );
+}
+
+# redirect from osgb
+sub redirect_from_osgb_to_wgs84 {
+    my ($q) = @_;
+
+    my $e = $q->param('e');
+    my $n = $q->param('n');
+
+    my ( $lat, $lon ) = Utils::convert_en_to_latlon_truncated( $e, $n );
+
+    my $lat_lon_url = NewURL(
+        $q,
+        -retain => 1,
+        e       => undef,
+        n       => undef,
+        lat     => $lat,
+        lon     => $lon
+    );
+
+    print $q->redirect(
+        -location => $lat_lon_url,
+        -status   => 301,            # permanent
+    );
+
+    return '';
 }
 
 sub display_location {
     my ($q, @errors) = @_;
     my $cobrand = Page::get_cobrand($q);
-    my @vars = qw(pc x y e n all_pins no_pins);
-    my %input = map { $_ => $q->param($_) || '' } @vars;
-    my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
+    my @vars = qw(pc x y lat lon all_pins no_pins);
 
-    (my $easting) = $input{e} =~ /^(\d+)/; $easting ||= 0;
-    (my $northing) = $input{n} =~ /^(\d+)/; $northing ||= 0;
+    my %input   = ();
+    my %input_h = ();
+
+    foreach my $key (@vars) {
+        my $val = $q->param($key);
+        $input{$key} = defined($val) ? $val : '';   # '0' is valid for longitude
+        $input_h{$key} = ent( $input{$key} );
+    }
+
+    my $latitude  = $input{lat};
+    my $longitude = $input{lon};
 
     # X/Y referring to tiles old-school
     (my $x) = $input{x} =~ /^(\d+)/; $x ||= 0;
     (my $y) = $input{y} =~ /^(\d+)/; $y ||= 0;
-    return front_page($q, @errors) unless $x || $y || $input{pc} || $easting || $northing;
 
-    if ($x && $y) {
+    return front_page( $q, @errors )
+      unless ( $x && $y )
+      || $input{pc}
+      || ( defined $latitude && defined $longitude );
+
+    if ( $x && $y ) {
+
         # Convert the tile co-ordinates to real ones.
-        $easting = FixMyStreet::Map::tile_to_os($x);
-        $northing = FixMyStreet::Map::tile_to_os($y);
-    } elsif ($easting && $northing) {
+        ( $latitude, $longitude ) =
+          FixMyStreet::Map::tile_xy_to_wgs84( $x, $y );
+    }
+    elsif ( $latitude && $longitude ) {
+
         # Don't need to do anything
-    } else {
+    }
+    else {
         my $error;
         try {
-            ($easting, $northing, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
-        } catch Error::Simple with {
+            ( $latitude, $longitude, $error ) =
+              FixMyStreet::Geocode::lookup( $input{pc}, $q );
+
+            debug 'Looked up postcode "%s": lat: "%s", lon: "%s", error: "%s"',
+              $input{pc}, $latitude, $longitude, $error;
+        }
+        catch Error::Simple with {
             $error = shift;
         };
-        return FixMyStreet::Geocode::list_choices($error, '/', $q) if (ref($error) eq 'ARRAY');
-        return front_page($q, $error) if $error;
+        return FixMyStreet::Geocode::list_choices( $error, '/', $q )
+          if ( ref($error) eq 'ARRAY' );
+        return front_page( $q, $error ) if $error;
     }
 
     # Check this location is okay to be displayed for the cobrand
-    my ($success, $error_msg) = Cobrand::council_check($cobrand, { e => $easting, n => $northing }, $q, 'display_location');
+    my ($success, $error_msg) = Cobrand::council_check($cobrand, { lat => $latitude, lon => $longitude }, $q, 'display_location');
     return front_page($q, $error_msg) unless $success;
 
     # Deal with pin hiding/age
@@ -810,14 +889,14 @@ sub display_location {
         $interval = '6 months';
     }   
 
-    my ($on_map_all, $on_map, $around_map, $dist) = FixMyStreet::Map::map_features($q, $easting, $northing, $interval);
+    my ($on_map_all, $on_map, $around_map, $dist) = FixMyStreet::Map::map_features($q, $latitude, $longitude, $interval);
     my @pins;
     foreach (@$on_map_all) {
-        push @pins, [ $_->{easting}, $_->{northing}, $_->{state} eq 'fixed' ? 'green' : 'red' ];
+        push @pins, [ $_->{latitude}, $_->{longitude}, ($_->{state} eq 'fixed' ? 'green' : 'red'), $_->{id} ];
     }
     my $on_list = '';
     foreach (@$on_map) {
-        my $report_url = NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, 'y' => undef);
+        my $report_url = NewURL($q, -url => '/report/' . $_->{id});
         $report_url = Cobrand::url($cobrand, $report_url, $q);  
         $on_list .= '<li><a href="' . $report_url . '">';
         $on_list .= ent($_->{title}) . '</a> <small>(';
@@ -830,16 +909,16 @@ sub display_location {
 
     my $around_list = '';
     foreach (@$around_map) {
-        my $report_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, 'y' => undef), $q);  
+        my $report_url = Cobrand::url($cobrand, NewURL($q, -url => '/report/' . $_->{id}), $q);
         $around_list .= '<li><a href="' . $report_url . '">';
-        my $dist = int($_->{distance}/100+0.5);
+        my $dist = int($_->{distance}*10+0.5);
         $dist = $dist / 10;
         $around_list .= ent($_->{title}) . '</a> <small>(';
         $around_list .= Page::prettify_epoch($q, $_->{time}, 1) . ', ';
         $around_list .= $dist . 'km)</small>';
         $around_list .= ' <small>' . _('(fixed)') . '</small>' if $_->{state} eq 'fixed';
         $around_list .= '</li>';
-        push @pins, [ $_->{easting}, $_->{northing}, $_->{state} eq 'fixed' ? 'green' : 'red' ];
+        push @pins, [ $_->{latitude}, $_->{longitude}, ($_->{state} eq 'fixed' ? 'green' : 'red'), $_->{id} ];
     }
     $around_list = $q->li(_('No problems found.'))
         unless $around_list;
@@ -852,25 +931,44 @@ sub display_location {
         $hide_link = NewURL($q, -retain=>1, no_pins=>1);
         $hide_text = _('Hide pins');
     }
-    my $map_links = "<p id='sub_map_links'><a id='hide_pins_link' rel='nofollow' href='$hide_link'>$hide_text</a> | <a id='all_pins_link' rel='nofollow' href='$all_link'>$all_text</a></p> <input type='hidden' id='all_pins' name='all_pins' value='$input_h{all_pins}'>";
+    my $map_links = "<p id='sub_map_links'><a id='hide_pins_link' rel='nofollow' href='$hide_link'>$hide_text</a>";
+    if (mySociety::Config::get('COUNTRY') eq 'GB') {
+        $map_links .= " | <a id='all_pins_link' rel='nofollow' href='$all_link'>$all_text</a></p> <input type='hidden' id='all_pins' name='all_pins' value='$input_h{all_pins}'>";
+    } else {
+        $map_links .= "</p>";
+    }
 
-    my $url_skip = NewURL($q, -retain=>1, pc => undef,
+    # truncate the lat,lon for nicer rss urls, and strings for outputting
+    my ( $short_lat, $short_lon ) =
+      map { Utils::truncate_coordinate($_) }    #
+      ( $latitude, $longitude );    
+    
+    my $url_skip = NewURL($q, -retain=>1,
         x => undef, 'y' => undef,
-        easting => $easting, northing => $northing,
+        latitude => $short_lat, longitude => $short_lon,
         'submit_map'=>1, skipped=>1
     );
     my $pc_h = ent($q->param('pc') || '');
+    
+    my $rss_url;
+    if ($pc_h) {
+        $rss_url = "/rss/pc/" . URI::Escape::uri_escape_utf8($pc_h);
+    } else {
+        $rss_url = "/rss/l/$short_lat,$short_lon";
+    }
+    $rss_url = Cobrand::url( $cobrand, NewURL($q, -url=> $rss_url), $q);
+
     my %vars = (
         'map' => FixMyStreet::Map::display_map($q,
-            easting => $easting, northing => $northing,
+            latitude => $short_lat, longitude => $short_lon,
             type => 1,
             pins => \@pins,
             post => $map_links
         ),
         map_end => FixMyStreet::Map::display_map_end(1),
         url_home => Cobrand::url($cobrand, '/', $q),
-        url_rss => Cobrand::url($cobrand, NewURL($q, -retain => 1, -url=> "/rss/n/$easting,$northing", pc => undef, x => undef, 'y' => undef), $q),
-        url_email => Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, -url=>'/alert', e=>$easting, 'n'=>$northing, feed=>"local:$easting:$northing"), $q),
+        url_rss => $rss_url,
+        url_email => Cobrand::url($cobrand, NewURL($q, lat => $short_lat, lon => $short_lon, -url=>'/alert', feed=>"local:$short_lat:$short_lon"), $q),
         url_skip => $url_skip,
         email_me => _('Email me new local problems'),
         rss_alt => _('RSS feed'),
@@ -890,7 +988,8 @@ sub display_location {
     );
 
     my %params = (
-        rss => [ _('Recent local problems, FixMyStreet'), "/rss/n/$easting,$northing" ],
+        rss => [ _('Recent local problems, FixMyStreet'), $rss_url ],
+        js => FixMyStreet::Map::header_js(),
         robots => 'noindex,nofollow',
     );
 
@@ -931,9 +1030,18 @@ sub display_problem {
     my $extra_data = Cobrand::extra_data($cobrand, $q);
     my $google_link = Cobrand::base_url_for_emails($cobrand, $extra_data)
         . '/report/' . $problem->{id};
-    my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($problem->{easting}, $problem->{northing}, 'G');
-    my $map_links = "<p id='sub_map_links'><a href=\"http://maps.google.co.uk/maps?output=embed&amp;z=16&amp;q="
-        . URI::Escape::uri_escape_utf8($problem->{title} . ' - ' . $google_link) . "\@$lat,$lon\">View on Google Maps</a></p>";
+
+    # truncate the lat,lon for nicer rss urls
+    my ( $short_lat, $short_lon ) =
+      map { Utils::truncate_coordinate($_) }    #
+      ( $problem->{latitude}, $problem->{longitude} );
+
+    my $map_links = '';
+    $map_links = "<p id='sub_map_links'>"
+      . "<a href=\"http://maps.google.co.uk/maps?output=embed&amp;z=16&amp;q="
+      . URI::Escape::uri_escape_utf8( $problem->{title} . ' - ' . $google_link )
+      . "\@$short_lat,$short_lon\">View on Google Maps</a></p>"
+        if mySociety::Config::get('COUNTRY') eq 'GB';
 
     my $banner;
     if ($q->{site} ne 'emptyhomes' && $problem->{state} eq 'confirmed' && $problem->{duration} > 8*7*24*60*60) {
@@ -945,7 +1053,7 @@ sub display_problem {
 
     my $contact_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, x => undef, 'y' => undef, -url=>'/contact?id=' . $input{id}), $q);
     my $back = Cobrand::url($cobrand, NewURL($q, -url => '/',
-        'e' => int($problem->{easting}), 'n' => int($problem->{northing}),
+        lat => $short_lat, lon => $short_lon,
         -retain => 1, pc => undef, x => undef, 'y' => undef, id => undef
     ), $q);
     my $fixed = ($input{fixed}) ? ' checked' : '';
@@ -953,9 +1061,9 @@ sub display_problem {
     my %vars = (
         banner => $banner,
         map_start => FixMyStreet::Map::display_map($q,
-            easting => $problem->{easting}, northing => $problem->{northing},
+            latitude => $problem->{latitude}, longitude => $problem->{longitude},
             type => 0,
-            pins => [ [ $problem->{easting}, $problem->{northing}, 'blue' ] ],
+            pins => $problem->{used_map} ? [ [ $problem->{latitude}, $problem->{longitude}, 'blue' ] ] : [],
             post => $map_links
         ),
         map_end => FixMyStreet::Map::display_map_end(0),
@@ -989,6 +1097,7 @@ sub display_problem {
         cobrand_form_elements => Cobrand::form_elements($cobrand, 'updateForm', $q),
         form_action => Cobrand::url($cobrand, '/', $q),
         input_h => \%input_h,
+        optional => _('(optional)'),
     );
 
     $vars{update_blurb} = $q->p($q->small(_('Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href="/faq#privacy">privacy policy</a>')))
@@ -1013,6 +1122,7 @@ EOF
     my %params = (
         rss => [ _('Updates to this problem, FixMyStreet'), "/rss/$input_h{id}" ],
         robots => 'index, nofollow',
+        js => FixMyStreet::Map::header_js(),
         title => $problem->{title}
     );
 

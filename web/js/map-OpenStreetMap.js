@@ -1,27 +1,13 @@
-YAHOO.util.Event.onContentReady('map', function() {
-    var map = new OpenLayers.Map("map", {
-        controls: [
-            new OpenLayers.Control.ArgParser(),
-            //new OpenLayers.Control.LayerSwitcher(),
-            new OpenLayers.Control.Navigation(),
-            new OpenLayers.Control.PanZoom()
-        ],
-        displayProjection: new OpenLayers.Projection("EPSG:4326")
-    });
-    var streetview = new fixmystreet.map_type("", {
-        zoomOffset: 14,
-        numZoomLevels: 4
-    });
-    map.addLayer(streetview);
-
-    var centre = new OpenLayers.LonLat( fixmystreet.easting, fixmystreet.northing );
-    centre.transform(
-        new OpenLayers.Projection("EPSG:27700"),
-        map.getProjectionObject()
-    );
-    map.setCenter(centre, 2);
-});
-
+function set_map_config(perm) {
+    fixmystreet.controls = [
+        new OpenLayers.Control.ArgParser(),
+        //new OpenLayers.Control.LayerSwitcher(),
+        new OpenLayers.Control.Navigation(),
+        perm,
+        new OpenLayers.Control.PermalinkFMS('osm_link', 'http://www.openstreetmap.org/'),
+        new OpenLayers.Control.PanZoomFMS()
+    ];
+}
 
 // http://www.openstreetmap.org/openlayers/OpenStreetMap.js (added maxResolution)
 

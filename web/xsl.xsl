@@ -12,7 +12,7 @@
     </head>
     <body>
     <div id="header"><a href="/">FixMyStreet</a></div>
-    <div id="wrapper"><div id="content">
+    <div id="wrapper"><div id="mysociety">
         <xsl:apply-templates select="rss/channel"/>
     </div></div>
 

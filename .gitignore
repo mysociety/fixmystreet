@@ -1,2 +1,5 @@
 /cities_bin
 /private_locale
+._*
+.sass-cache
+

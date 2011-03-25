@@ -17,6 +17,7 @@ use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../commonlib/perllib";
 use File::Slurp;
 use CGI; # XXX Awkward kludge
+use Encode;
 use CronFns;
 
 use Page;
@@ -62,7 +63,7 @@ foreach my $row (@$unsent) {
     my @all_councils = split /,|\|/, $row->{council};
     my $cobrand = $row->{cobrand};
     my $lang = $row->{lang};
-    Cobrand::set_lang_and_domain($cobrand, $lang); 
+    Cobrand::set_lang_and_domain($cobrand, $lang, 1); 
     # Cobranded and non-cobranded messages can share a database. In this case, the conf file 
     # should specify a vhost to send the reports for each cobrand, so that they don't get sent 
     # more than once if there are multiple vhosts running off the same database. The email_host

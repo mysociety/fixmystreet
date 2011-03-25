@@ -12,6 +12,7 @@
 package Problems;
 
 use strict;
+use Encode;
 use Memcached;
 use mySociety::DBHandle qw/dbh select_all/;
 use mySociety::Locale;
@@ -87,18 +88,21 @@ sub recent_new {
 # Front page recent lists
 
 sub recent_photos {
-    my ($num, $e, $n, $dist) = @_;
+    my ($num, $lat, $lon, $dist) = @_;
     my $probs;
-    if ($e) {
-        my $key = "recent_photos:$site_key:$num:$e:$n:$dist";
+    if (defined $lat) {
+        my $dist2 = $dist; # Create a copy of the variable to stop it being stringified into a locale in the next line!
+        my $key = "recent_photos:$site_key:$num:$lat:$lon:$dist2";
         $probs = Memcached::get($key);
         unless ($probs) {
-            $probs = select_all("select id, title
+            $probs = mySociety::Locale::in_gb_locale {
+                select_all("select id, title
                 from problem_find_nearby(?, ?, ?) as nearby, problem
                 where nearby.problem_id = problem.id
                 and state in ('confirmed', 'fixed') and photo is not null
                 $site_restriction
-                order by confirmed desc limit $num", $e, $n, $dist);
+                order by confirmed desc limit $num", $lat, $lon, $dist);
+            };
             Memcached::set($key, $probs, 3600);
         }
     } else {
@@ -170,46 +174,46 @@ sub front_stats {
 # Problems around a location
 
 sub around_map {
-    my ($min_e, $max_e, $min_n, $max_n, $interval, $limit) = @_;
+    my ($min_lat, $max_lat, $min_lon, $max_lon, $interval, $limit) = @_;
     my $limit_clause = '';
     if ($limit) {
         $limit_clause = " limit $limit";
     }
     mySociety::Locale::in_gb_locale { select_all(
-        "select id,title,easting,northing,state,
+        "select id,title,latitude,longitude,state,
              extract(epoch from confirmed) as time
         from problem
         where state in ('confirmed', 'fixed')
-            and easting>=? and easting<? and northing>=? and northing<? " .
+            and latitude>=? and latitude<? and longitude>=? and longitude<? " .
         ($interval ? " and ms_current_timestamp()-lastupdate < '$interval'::interval" : '') .
         " $site_restriction
         order by created desc
-        $limit_clause", $min_e, $max_e, $min_n, $max_n);
+        $limit_clause", $min_lat, $max_lat, $min_lon, $max_lon);
     };
 }
 
 sub nearby {
-    my ($dist, $ids, $limit, $mid_e, $mid_n, $interval) = @_;
+    my ($dist, $ids, $limit, $mid_lat, $mid_lon, $interval) = @_;
     mySociety::Locale::in_gb_locale { select_all(
-        "select id, title, easting, northing, distance, state,
+        "select id, title, latitude, longitude, distance, state,
             extract(epoch from confirmed) as time
         from problem_find_nearby(?, ?, $dist) as nearby, problem
         where nearby.problem_id = problem.id " .
         ($interval ? " and ms_current_timestamp()-lastupdate < '$interval'::interval" : '') .
         " and state in ('confirmed', 'fixed')" . ($ids ? ' and id not in (' . $ids . ')' : '') . "
         $site_restriction
-        order by distance, created desc limit $limit", $mid_e, $mid_n);
+        order by distance, created desc limit $limit", $mid_lat, $mid_lon);
     }
 }
 
 sub fixed_nearby {
-    my ($dist, $mid_e, $mid_n) = @_;
+    my ($dist, $mid_lat, $mid_lon) = @_;
     mySociety::Locale::in_gb_locale { select_all(
-        "select id, title, easting, northing, distance
+        "select id, title, latitude, longitude, distance
         from problem_find_nearby(?, ?, $dist) as nearby, problem
         where nearby.problem_id = problem.id and state='fixed'
         $site_restriction
-        order by lastupdate desc", $mid_e, $mid_n);
+        order by lastupdate desc", $mid_lat, $mid_lon);
     }
 }
 
@@ -218,7 +222,7 @@ sub fixed_nearby {
 sub fetch_problem {
     my $id = shift;
     my $p = dbh()->selectrow_hashref(
-        "select id, easting, northing, council, category, title, detail, photo,
+        "select id, latitude, longitude, council, category, title, detail, photo,
         used_map, name, anonymous, extract(epoch from confirmed) as time,
         state, extract(epoch from whensent-confirmed) as whensent,
         extract(epoch from ms_current_timestamp()-lastupdate) as duration, 
@@ -259,7 +263,7 @@ sub problems_matching_criteria {
     my $areas_info = mySociety::MaPit::call('areas', \@councils);
     foreach my $problem (@$problems){
         if ($problem->{council}) {
-             my @council_names = map { $areas_info->{$_}->{name}} @{$problem->{council}} ;
+             my @council_names = map { $areas_info->{$_}->{name} } @{$problem->{council}} ;
              $problem->{council} = join(' and ', @council_names);
         }
     }

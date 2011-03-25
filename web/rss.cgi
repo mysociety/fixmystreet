@@ -11,12 +11,14 @@
 use strict;
 use Error qw(:try);
 use Standard;
+use Encode;
 use URI::Escape;
 use FixMyStreet::Alert;
 use FixMyStreet::Geocode;
+use mySociety::Locale;
 use mySociety::MaPit;
-use mySociety::GeoUtil;
 use mySociety::Gaze;
+use Utils;
 
 sub main {
     my $q = shift;
@@ -62,6 +64,7 @@ Page::do_fastcgi(\&main);
 sub rss_local_problems {
     my $q = shift;
     my $pc = $q->param('pc');
+
     my $x = $q->param('x');
     my $y = $q->param('y');
     my $lat = $q->param('lat');
@@ -81,50 +84,86 @@ sub rss_local_problems {
 
     $state = 'confirmed' if $state eq 'open';
 
+    my $qs;
+    my %title_params;
+    my $alert_type;
+
     my $cobrand = Page::get_cobrand($q);
     my $base = Cobrand::base_url($cobrand);
-    if ($lat) { # In the UK, it'll never be 0 :)
-        ($e, $n) = mySociety::GeoUtil::wgs84_to_national_grid($lat, $lon, 'G');
-        $e = int($e + 0.5);
-        $n = int($n + 0.5);
-        print $q->redirect(-location => "$base/rss/n/$e,$n$d_str$state_qs");
-        return '';
-    } elsif ($x && $y) {
+    if ($x && $y) {
         # 5000/31 as initial scale factor for these RSS feeds, now variable so redirect.
         $e = int( ($x * 5000/31) + 0.5 );
         $n = int( ($y * 5000/31) + 0.5 );
-        print $q->redirect(-location => "$base/rss/n/$e,$n$d_str$state_qs");
+        ($lat, $lon) = Utils::convert_en_to_latlon_truncated($e, $n);
+        print $q->redirect(-location => "$base/rss/l/$lat,$lon$d_str$state_qs");
         return '';
     } elsif ($e && $n) {
-        ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($e, $n, 'G');
+        ($lat, $lon) = Utils::convert_en_to_latlon_truncated($e, $n);
+        print $q->redirect(-location => "$base/rss/l/$lat,$lon$d_str$state_qs");
+        return '';
     } elsif ($pc) {
         my $error;
         try {
-            ($e, $n, $error) = FixMyStreet::Geocode::lookup($pc, $q);
+            ($lat, $lon, $error) = FixMyStreet::Geocode::lookup($pc, $q);
         } catch Error::Simple with {
             $error = shift;
         };
-        unless ($error) {
-            print $q->redirect(-location => "$base/rss/n/$e,$n$d_str$state_qs");
+        if ($error) {
+            print $q->redirect(-location => "$base/alert");
+            return '';
+        } else {
+            ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );             
+
+            my $pretty_pc = $pc;
+            if (mySociety::PostcodeUtil::is_valid_postcode($pc)) {
+                $pretty_pc = mySociety::PostcodeUtil::canonicalise_postcode($pc);
+            }
+            my $pretty_pc_escaped = URI::Escape::uri_escape_utf8($pretty_pc);
+            $pretty_pc_escaped =~ s/%20/+/g;
+            $qs = "?pc=$pretty_pc_escaped";
+
+            $title_params{'POSTCODE'} = $pretty_pc;
         }
-        return '';
+        # pass through rather than redirecting.
+    } elsif ( $lat || $lon ) { 
+        # pass through
     } else {
         die "Missing E/N, x/y, lat/lon, or postcode parameter in RSS feed";
     }
-    my $qs = '?e=' . int($e) . ';n=' . int($n);
+    
+    # truncate the lat,lon for nicer urls
+    ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );    
+    
+    if (!$qs) {
+        $qs = "?lat=$lat;lon=$lon";
+    }
+
     if ($d) {
         $qs .= ";d=$d";
         $d = 100 if $d > 100;
     } else {
         $d = mySociety::Gaze::get_radius_containing_population($lat, $lon, 200000);
         $d = int($d*10+0.5)/10;
+        mySociety::Locale::in_gb_locale {
+            $d = sprintf("%f", $d);
+        }
     }
 
     my $xsl = Cobrand::feed_xsl($cobrand);
-    if ($state eq 'all') {
-        return FixMyStreet::Alert::generate_rss('local_problems', $xsl, $qs, [$e, $n, $d], undef, $cobrand, $q);
+
+    if ($pc) {
+        $alert_type = 'postcode_local_problems';
     } else {
-        return FixMyStreet::Alert::generate_rss('local_problems_state', $xsl, $qs, [$e, $n, $d, $state], undef, $cobrand, $q);
+        $alert_type = 'local_problems';
     }
+
+    my @db_params = ($lat, $lon, $d);
+
+    if ($state ne 'all') {
+        $alert_type .= '_state';
+        push @db_params, $state;
+    }
+    
+    return FixMyStreet::Alert::generate_rss($alert_type, $xsl, $qs, \@db_params, \%title_params, $cobrand, $q);
 }
 

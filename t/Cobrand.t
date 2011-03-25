@@ -51,7 +51,7 @@ sub test_disambiguate_location {
     $q = new MockQuery('nosite');
     $s = 'London Road';
     $s = Cobrand::disambiguate_location('nosite', $s, $q);
-    ok($s eq 'London Road', 'should return location string as passed if no cobrand module exists') or diag("Got $s");
+    ok($s eq 'London Road&gl=uk', 'should return location string as passed if no cobrand module exists') or diag("Got $s");
   
 }
 

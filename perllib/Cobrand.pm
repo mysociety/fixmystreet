@@ -41,7 +41,7 @@ my %fns = (
     # Return the base url for the cobranded version of the site
     'base_url' => { default => "mySociety::Config::get('BASE_URL')" },
     # Return the text that prompts the user to enter their postcode/place name. Parameter is QUERY
-    'enter_postcode_text' => { default => '_("Enter a nearby GB postcode, or street name and area:")' },
+    'enter_postcode_text' => { default => '""' },
     # Set the language and domain of the site based on the cobrand and host
     'set_lang_and_domain' => { default => '\&default_set_lang_and_domain' },
     # Return HTML for a list of alert options for the cobrand, given QUERY and OPTIONS.
@@ -55,7 +55,7 @@ my %fns = (
     'front_stats' => { default => '\&Problems::front_stats' },
     # Given a STRING ($_[1]) representing a location and a QUERY, return a string that
     # includes any disambiguating information available
-    'disambiguate_location' => { default => '$_[1]' },
+    'disambiguate_location' => { default => '"$_[1]&gl=uk"' },
     # Parameter is EPOCHTIME
     'prettify_epoch' => { default => '0' },
     # Parameters are FORM_NAME, QUERY. Return HTML for any extra needed elements for FORM_NAME
@@ -116,6 +116,9 @@ my %fns = (
     'admin_pages' => { default => '0' },
     # Show the problem creation graph in the admin interface
     'admin_show_creation_graph' => { default => '1' },
+    # The MaPit types this site handles
+    'area_types' => { default => '[qw(DIS LBO MTD UTA CTY COI)]' },
+    'area_min_generation' => { default => '10' },
 );
 
 foreach (keys %fns) {

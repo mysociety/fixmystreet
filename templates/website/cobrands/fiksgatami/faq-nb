@@ -1,0 +1,124 @@
+<h1>Ofte stilte spørsmål</h1>
+<dl>
+  <dt>Hva er FiksGatami?</dt>
+
+  <dd>FiksGataMi er et nettsted for å hjelpe folk til å rapportere
+    problemer, vise, eller diskutere lokale problemer de har funnet i
+    sitt område ved ganske enkelt å finne dem på et kart. Du kan melde
+    problemer uten å tenke på hvilken offentlig myndighet som er
+    ansvarlig for å løse det, det finner FiksGataMi ut for deg.</dd>
+
+  <dt>Hva slags problemer kan jeg rapportere med FiksGataMi?</dt>
+
+  <dd>FiksGataMi er primært for rapportering av ting som
+    er <strong>ødelagt, skadet, dumpet eller trenger å bli reparert,
+    rengjort eller ryddet</strong>.  Dette kan for eksempel være:
+
+    <ul>
+      <li>Forlatte kjøretøy</li>
+      <li>Gatelys som ikke virker</li>
+      <li>Plakater eller graffiti</li>
+      <li>Søppel</li>
+      <li>Behov for rengjøring</li>
+      <li>Behov for brøyting</li>
+      <li>Glatt vei eller gangsti</li>
+    </ul>
+    </dd>
+
+  <dt>Hva er FiksGataMi ikke?</dt>
+  <dd>FiksGataMi er ikke en måte å komme i kontakt med offentlig
+    myndighet for alle spørsmål - vennligst bruk FiksGataMi bare for
+    problemer som de ovennevnte.
+
+    <strong>Du må kontakte offentlige myndigheter direkte for
+      problemer som for eksempel</strong>:
+
+    <ul>
+      <li>Saker som haster eller akutt problemer</li>
+      <li>Støyforurensning eller bjeffende hunder</li>
+      <li>Brann og røyk / luktforurensning</li>
+      <li>Endringsforslag til kommune, fylke eller stat</li>
+      <li>Klager over naboene</li>
+      <li>Kriminell aktivitet</li>
+    </ul>
+  </dd>
+
+  <dt>Hvordan bruker jeg nettstedet?</dt>
+  <dd>Når du har angitt et postnummer eller sted, blir du presentert
+    med et kart over det området. Du kan se problemer allerede
+    rapportert i dette området, eller rapporten selv på egen hånd ved
+    å klikke på kartet for plasseringen av problemet.</dd>
+
+  <dt>Hvordan blir saken løst?</dt>
+  <dd>Saken blir meldt til offentlige myndigheter via e-post. Saken
+    blir så behandlet på normal måte. Alternativt kan du diskutere
+    problemet på nettstedet med andre, og da sammen påvirke offentlige
+    myndigheter til å fikse det, eller fikse det direkte selv.</dd>
+
+  <dt>Er det gratis å bruke fiksgatami.no?</dt>
+  <dd>Ja, nettsiden er gratis å bruke. FiksGataMi drives av NUUG,
+    skjønt, hvis du ønsker å gi et bidrag, kan du gjøre det.</dd>
+
+  <dt>Kan jeg bruke FiksGataMi fra min mobil?</dt>
+  <dd>Hvis mobilen har nettleser kan du fint bruke tjenesten fra
+    mobiltelefon.  Det jobbes med å skaffe finansiering til å tilpasse
+    iPhone- og Android-apps til norske forhold for å gjøre det enda
+    enklere å rapportere fra smart-telefoner.</dd>
+
+  <dt>Praktisk informasjon</dt>
+  <dd>FiksGataMi er ikke ansvarlig for innholdet og riktigheten av
+  materiale innsendt av brukerne. Vi forbeholder oss retten til å
+  redigere eller fjerne eventuelle problemer eller oppdateringer som
+  vi anser å være upassende fortrinnsvis etter å bli informert av en
+  bruker på nettstedet.</dd>
+
+  <dt>Hvorfor blir ikke mitt stedsnavn funnet?</dt>
+
+  <dd>Tjenesten bruker navnesøk hos Google Maps for å lokalisere
+    steder.  Hvis Google Maps har mangler i sin stedsnavndatabase, vil
+    stedet ikke bli funnet eller sende deg til feil plass.
+    Tilsvarende søk på Google Maps (etter f.eks. "Slogvær, Norway")
+    vil også feile.  For å fikse det må en ta kontakt med Google.</dd>
+
+</dl>
+
+<h2><a name="privacy"></a>Spørsmål om personvern</h2>
+
+<dl>
+
+  <dt>Vil jeg motta reklame eller annet uønsket epost?</dt>
+  <dd>Det vil ikke forekomme. Vi sender deg en epost hvis det skjer en
+    oppdatering av de problemer du har meldt inn, og vi vil aldri
+    sende deg e-post i forhold til noe annet en de problemene du
+    abonnerer på eller har meldt inn.</dd>
+
+  <dt>Hvem får å se min e-postadresse?</dt>
+  <dd>Hvis du melder inn en sak, lagrer vi på detaljer om saken, vi
+    sender samtidig en melding til kontakten eller kontaktene hos den
+    relevante myndighet som er ansvarlig for området der saken er
+    geografisk lokalisert. Meldingen sendes til offentlig myndighet
+    som følger offentlighetsloven og vil gi enhver innsyn i meldingen
+    og epostadressen etter de gjeldene lover og regler.  Vi i
+    FiksGataMi vi ikke under noen omstendighet gi eller selge
+    e-postadressen din til noen andre.</dd>
+
+  <dt>Hvem står bak FiksGataMi?</dt>
+  <dd><p>Foreningen Norwegian Unix User Group (NUUG) står bak og
+      driver FiksGataMi. <a href="http://www.friprog.no/">Nasjonalt
+      kompetansesenter for fri programvare</a> og
+      <a href="http://www.dss.dep.no/">Departementenes
+      Servicesenter</a> bidrar med finansiering av prosjektet.</p>
+
+    <p>Organisasjonen mySociety i England har drevet og utviklet
+      nettstedet FixMyStreet siden 2007. Programvaren for FiksGataMi
+      drives idag basert på den samme programvaren og utvikling
+      foregår som et samarbeid mellom NUUG i Norge og MySociety i
+      England. FiksGataMi er i så måte et internasjonalt prosjekt.</p>
+
+    <p>Programvaren bak dette nettstedet er fri programvare, og er
+      tilgjengelig i hovedsak under GNU Affero GPL
+      programvarelisensen. Du kan laste ned kildekoden og hjelpe oss å
+      utvikle det. Du må gjerne bruke den i egne prosjekter, men du må
+      også gjøre tilgjengelig i kildekoden til slike prosjekter.</p></dd>
+
+  </dl>

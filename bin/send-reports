@@ -18,11 +18,14 @@ use lib "$FindBin::Bin/../commonlib/perllib";
 use Encode;
 use Error qw(:try);
 use File::Slurp;
+use JSON;
+use LWP::Simple;
 use CGI; # Trying awkward kludge
 use CronFns;
 
 use EastHantsWSDL;
 use Cobrand;
+use Utils;
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh);
 use mySociety::Email;
@@ -49,10 +52,12 @@ my $base_url = mySociety::Config::get('BASE_URL');
 my $site = CronFns::site($base_url);
 
 my $query = "SELECT id, council, category, title, detail, name, email, phone,
-    used_map, easting, northing, (photo is not null) as has_photo, lang, 
+    used_map, latitude, longitude, (photo is not null) as has_photo, lang, 
     cobrand, cobrand_data
-    FROM problem WHERE state in ('confirmed','fixed') AND whensent IS NULL
-    AND council IS NOT NULL";
+      FROM problem
+      WHERE state in ('confirmed','fixed')
+        AND whensent IS NULL
+        AND council IS NOT NULL";
 my $unsent = dbh()->selectall_arrayref($query, { Slice => {} });
 
 my (%notgot, %note);
@@ -67,7 +72,7 @@ foreach my $row (@$unsent) {
     # more than once if there are multiple vhosts running off the same database. The email_host
     # call checks if this is the host that sends mail for this cobrand.
     next unless (Cobrand::email_host($cobrand));
-    Cobrand::set_lang_and_domain($cobrand, $row->{lang});
+    Cobrand::set_lang_and_domain($cobrand, $row->{lang}, 1);
     if (dbh()->selectrow_array('select email from abuse where lower(email)=?', {}, lc($row->{email}))) {
         dbh()->do("update problem set state='hidden' where id=?", {}, $row->{id});
         dbh()->commit();
@@ -81,7 +86,7 @@ foreach my $row (@$unsent) {
 
     # Template variables for the email
     my $email_base_url = Cobrand::base_url_for_emails($cobrand, $cobrand_data);
-    my %h = map { $_ => $row->{$_} } qw/title detail name email phone category easting northing/;
+    my %h = map { $_ => $row->{$_} } qw/title detail name email phone category latitude longitude/;
     $h{url} = $email_base_url . '/report/' . $row->{id};
     $h{phone_line} = $h{phone} ? _('Phone:') . " $h{phone}\n\n" : '';
     if ($row->{has_photo}) {
@@ -94,7 +99,21 @@ foreach my $row (@$unsent) {
     $h{fuzzy} = $row->{used_map} ? _('To view a map of the precise location of this issue')
         : _('The user could not locate the problem on a map, but to see the area around the location they entered');
     $h{closest_address} = '';
-    $h{closest_address_machine} = '';
+    
+    # If we are in the UK include eastings and northings, and nearest stuff
+    $h{easting_northing} = '';
+    if ( mySociety::Config::get('COUNTRY') eq 'GB' ) {
+
+        ( $h{easting}, $h{northing} ) = Utils::convert_latlon_to_en( $h{latitude}, $h{longitude} );
+
+        # email templates don't have conditionals so we need to farmat this here
+        $h{easting_northing}                             #
+          = "Easting: $h{easting}\n\n"                   #
+          . "Northing: $h{northing}\n\n";
+
+        $h{closest_address} = find_closest($row, $h{latitude}, $h{longitude});
+    }
+    $h{closest_address_machine} = $h{closest_address};
 
     my (@to, @recips, $template, $areas_info);
     if ($site eq 'emptyhomes') {
@@ -137,8 +156,8 @@ foreach my $row (@$unsent) {
                 my ($council_email, $confirmed, $note) = dbh()->selectrow_array(
                     "SELECT email,confirmed,note FROM contacts WHERE deleted='f'
                         and area_id=? AND category=?", {}, $council, $row->{category});
-                $council_email = essex_contact($row->{easting}, $row->{northing}) if $council == 2225;
-                $council_email = oxfordshire_contact($row->{easting}, $row->{northing}) if $council == 2237 && $council_email eq 'SPECIAL';
+                $council_email = essex_contact($row->{latitude}, $row->{longitude}) if $council == 2225;
+                $council_email = oxfordshire_contact($row->{latitude}, $row->{longitude}) if $council == 2237 && $council_email eq 'SPECIAL';
                 unless ($confirmed) {
                     $all_confirmed = 0;
                     $note = 'Council ' . $row->{council} . ' deleted'
@@ -159,23 +178,23 @@ foreach my $row (@$unsent) {
         $template = 'submit-brent' if $row->{council} eq 2488 || $row->{council} eq 2237;
         $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/$template");
 
-        if ($h{category} eq 'Other') {
-            $h{category_footer} = 'this type of local problem';
+        if ($h{category} eq _('Other')) {
+            $h{category_footer} = _('this type of local problem');
             $h{category_line} = '';
         } else {
             $h{category_footer} = "'" . $h{category} . "'";
-            $h{category_line} = "Category: $h{category}\n\n";
+            $h{category_line} = sprintf(_("Category: %s"), $h{category}) . "\n\n";
         }
 
-        $h{councils_name} = join(' and ', @dear);
-        $h{multiple} = @dear>1 ? "[ This email has been sent to both councils covering the location of the problem, as the user did not categorise it; please ignore it if you're not the correct council to deal with the issue, or let us know what category of problem this is so we can add it to our system. ]\n\n"
+        $h{councils_name} = join(_(' and '), @dear);
+        $h{multiple} = @dear>1 ? "[ " . _("This email has been sent to both councils covering the location of the problem, as the user did not categorise it; please ignore it if you're not the correct council to deal with the issue, or let us know what category of problem this is so we can add it to our system.") . " ]\n\n"
             : '';
         $h{missing} = ''; 
         if ($missing) {
             my $name = $areas_info->{$missing}->{name};
-            $h{missing} = '[ We realise this problem might be the responsibility of ' . $name
-                . "; however, we don't currently have any contact details for them.
-If you know of an appropriate contact address, please do get in touch. ]\n\n";
+            $h{missing} = '[ '
+              . sprintf(_('We realise this problem might be the responsibility of %s; however, we don\'t currently have any contact details for them. If you know of an appropriate contact address, please do get in touch.'), $name)
+              . " ]\n\n";
         }
 
     }
@@ -190,6 +209,7 @@ If you know of an appropriate contact address, please do get in touch. ]\n\n";
         $send_web = 0;
         $send_email = 1;
     } elsif (mySociety::Config::get('STAGING_SITE')) {
+        # on a staging server send emails to ourselves rather than the councils
         @recips = ( mySociety::Config::get('CONTACT_EMAIL') );
     } elsif ($site eq 'emptyhomes') {
         my $council = $row->{council};
@@ -254,13 +274,19 @@ if ($verbose) {
     }
 }
 
+sub _get_district_for_contact {
+    my ( $lat, $lon ) = @_;
+    my $district =
+      mySociety::MaPit::call( 'point', "4326/$lon,$lat", type => 'DIS' );
+    ($district) = keys %$district;
+    return $district;
+}
+
 # Essex has different contact addresses depending upon the district
 # Might be easier if we start storing in the db all areas covered by a point
 # Will do for now :)
 sub essex_contact {
-    my ($E, $N) = @_;
-    my $district = mySociety::MaPit::call('point', "27700/$E,$N", type => 'DIS');
-    ($district) = keys %$district;
+    my $district = _get_district_for_contact(@_);
     my $email;
     $email = 'eastarea' if $district == 2315 || $district == 2312;
     $email = 'midarea' if $district == 2317 || $district == 2314 || $district == 2316;
@@ -272,9 +298,7 @@ sub essex_contact {
 
 # Oxfordshire has different contact addresses depending upon the district
 sub oxfordshire_contact {
-    my ($E, $N) = @_;
-    my $district = mySociety::MaPit::call('point', "27700/$E,$N", type => 'DIS');
-    ($district) = keys %$district;
+    my $district = _get_district_for_contact(@_);
     my $email;
     $email = 'northernarea' if $district == 2419 || $district == 2420 || $district == 2421;
     $email = 'southernarea' if $district == 2417 || $district == 2418;
@@ -320,5 +344,27 @@ sub post_easthants_message {
         print "Caught an error: $e\n";
     };
     return $return;
+}
+
+sub find_closest {
+    my ($row, $latitude, $longitude) = @_;
+    my $str = '';
+
+    return '' unless $row->{used_map};
+
+    # Get nearest road-type thing from Bing
+    my $url = "http://dev.virtualearth.net/REST/v1/Locations/$latitude,$longitude?c=en-GB&key=" . mySociety::Config::get('BING_MAPS_API_KEY');
+    my $j = LWP::Simple::get($url);
+    $j = JSON->new->utf8->allow_nonref->decode($j);
+    $str .= "Nearest road to the pin placed on the map (automatically generated by Bing Maps): $j->{resourceSets}[0]{resources}[0]{name}\n\n";
+
+    # Get nearest postcode from Matthew's random gazetteer (put in MaPit? Or elsewhere?)
+    $url = "http://gazetteer.dracos.vm.bytemark.co.uk/point/$latitude,$longitude.json";
+    $j = LWP::Simple::get($url);
+    $j = JSON->new->utf8->allow_nonref->decode($j);
+    if ($j->{postcode}) {
+        $str .= "Nearest postcode to the pin placed on the map (automatically generated): $j->{postcode}[0] ($j->{postcode}[1]m away)\n\n";
+    }
+    return $str;
 }
 

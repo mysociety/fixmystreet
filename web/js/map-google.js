@@ -1,5 +1,5 @@
 YAHOO.util.Event.onContentReady('map', function() {
-    var centre = new google.maps.LatLng( fixmystreet.lat, fixmystreet.lon );
+    var centre = new google.maps.LatLng( fixmystreet.latitude, fixmystreet.longitude );
     var map = new google.maps.Map(document.getElementById("map"), {
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         center: centre,

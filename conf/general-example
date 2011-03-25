@@ -25,13 +25,10 @@ define('OPTION_BCI_DB_NAME', 'bci');
 define('OPTION_BCI_DB_USER', 'bci');
 define('OPTION_BCI_DB_PASS', '');
 
-define('OPTION_DRESS_DB_HOST', 'localhost');
-define('OPTION_DRESS_DB_PORT', '5432');
-define('OPTION_DRESS_DB_NAME', 'dress');
-define('OPTION_DRESS_DB_USER', 'dress');
-define('OPTION_DRESS_DB_PASS', '');
-
 define('OPTION_BASE_URL', 'http://www.example.org');
+
+# Which country are you operating in? ISO3166-alpha2 code please
+define('OPTION_COUNTRY', 'GB');
 
 define('OPTION_TESTING_EMAIL', 'testing@example.com');
 define('OPTION_EMAIL_DOMAIN', 'example.org');
@@ -47,8 +44,9 @@ define('OPTION_STAGING_SITE', 1);
 define('OPTION_UPLOAD_CACHE', '/upload/');
 define('OPTION_GEO_CACHE', '/cache/');
 define('OPTION_GOOGLE_MAPS_API_KEY', '');
+define('OPTION_BING_MAPS_API_KEY', '');
 
-define('OPTION_MAPIT_URL', 'http://services.mysociety.org/mapit');
+define('OPTION_MAPIT_URL', 'http://mapit.mysociety.org/');
 define('OPTION_MAP_TYPE', 'Tilma::Original::1_10k');
 define('OPTION_EVEL_URL', 'http://services.mysociety.org/evel');
 define('OPTION_GAZE_URL', 'http://gaze.mysociety.org/gaze');

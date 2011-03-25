@@ -121,8 +121,8 @@ create table problem (
 
     -- Problem details
     postcode text not null,
-    easting double precision not null,
-    northing double precision not null,
+    latitude double precision not null,
+    longitude double precision not null,
     council text, -- the council(s) we'll report this problem to
     areas text not null, -- the voting areas this location is in
     category text not null default 'Other',
@@ -155,7 +155,7 @@ create table problem (
     whensent timestamp,
     send_questionnaire boolean not null default 't'
 );
-create index problem_state_easting_northing_idx on problem(state, easting, northing);
+create index problem_state_latitude_longitude_idx on problem(state, latitude, longitude);
 
 create table questionnaire (
     id serial not null primary key,
@@ -196,25 +196,41 @@ create type problem_nearby_match as (
     distance double precision   -- km
 );
 
--- problem_find_nearby EASTING NORTHING DISTANCE
--- Find problems within DISTANCE (km) of (EASTING, NORTHING).
+-- problem_find_nearby LATITUDE LONGITUDE DISTANCE
+-- Find locations within DISTANCE (km) of (LATITUDE, LONGITUDE).
 create function problem_find_nearby(double precision, double precision, double precision)
     returns setof problem_nearby_match as
     -- Write as SQL function so that we don't have to construct a temporary
     -- table or results set in memory. That means we can't check the values of
     -- the parameters, sadly.
+    -- Through sheer laziness, just use great-circle distance; that'll be off
+    -- by ~0.1%:
+    --  http://www.ga.gov.au/nmd/geodesy/datums/distance.jsp
+    -- We index locations on lat/lon so that we can select the locations which lie
+    -- within a wedge of side about 2 * DISTANCE. That cuts down substantially
+    -- on the amount of work we have to do.
 '
     -- trunc due to inaccuracies in floating point arithmetic
     select problem.id,
-           sqrt(($1 - easting) ^ 2
-                + ($2 - northing) ^ 2)
-            as distance
+           R_e() * acos(trunc(
+                (sin(radians($1)) * sin(radians(latitude))
+                + cos(radians($1)) * cos(radians(latitude))
+                    * cos(radians($2 - longitude)))::numeric, 14)
+            ) as distance
         from problem
         where
+            longitude is not null and latitude is not null
+            and radians(latitude) > radians($1) - ($3 / R_e())
+            and radians(latitude) < radians($1) + ($3 / R_e())
+            and (abs(radians($1)) + ($3 / R_e()) > pi() / 2     -- case where search pt is near pole
+                    or angle_between(radians(longitude), radians($2))
+                            < $3 / (R_e() * cos(radians($1 + $3 / R_e()))))
             -- ugly -- unable to use attribute name "distance" here, sadly
-            sqrt(($1 - easting) ^ 2
-                + ($2 - northing) ^ 2)
-                < $3 * 1000
+            and R_e() * acos(trunc(
+                (sin(radians($1)) * sin(radians(latitude))
+                + cos(radians($1)) * cos(radians(latitude))
+                    * cos(radians($2 - longitude)))::numeric, 14)
+                ) < $3
         order by distance desc
 ' language sql; -- should be "stable" rather than volatile per default?
 
@@ -277,7 +293,7 @@ create table alert_type (
 create table alert (
     id serial not null primary key,
     alert_type text not null references alert_type(ref),
-    parameter text, -- e.g. Problem ID for new updates
+    parameter text, -- e.g. Problem ID for new updates, Longitude for local problem alerts
     parameter2 text, -- e.g. Latitude for local problem alerts
     email text not null,
     confirmed integer not null default 0,

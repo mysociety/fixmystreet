@@ -30,7 +30,6 @@ use mySociety::DBHandle qw(dbh);
 use mySociety::Email;
 use mySociety::EmailUtil;
 use mySociety::Gaze;
-use mySociety::GeoUtil;
 use mySociety::Locale;
 use mySociety::MaPit;
 use mySociety::Random qw(random_bytes);
@@ -91,7 +90,7 @@ sub delete ($) {
 sub email_alerts ($) {
     my ($testing_email) = @_;
     my $url; 
-    my $q = dbh()->prepare("select * from alert_type where ref not like 'local_problems%'");
+    my $q = dbh()->prepare("select * from alert_type where ref not like '%local_problems%'");
     $q->execute();
     my $testing_email_clause = '';
     while (my $alert_type = $q->fetchrow_hashref) {
@@ -135,11 +134,18 @@ sub email_alerts ($) {
             # more than once if there are multiple vhosts running off the same database. The email_host
             # call checks if this is the host that sends mail for this cobrand.
             next unless (Cobrand::email_host($row->{alert_cobrand}));
+
             dbh()->do('insert into alert_sent (alert_id, parameter) values (?,?)', {}, $row->{alert_id}, $row->{item_id});
             if ($last_alert_id && $last_alert_id != $row->{alert_id}) {
                 _send_aggregated_alert_email(%data);
                 %data = ( template => $alert_type->{template}, data => '' );
             }
+
+            # create problem status message for the templates
+            $data{state_message} =
+              $row->{state} eq 'fixed'
+              ? _("This report is currently marked as fixed.")
+              : _("This report is currently marked as open.");
 
             $url = Cobrand::base_url_for_emails($row->{alert_cobrand}, $row->{alert_cobrand_data});
             if ($row->{item_text}) {
@@ -177,12 +183,11 @@ sub email_alerts ($) {
     $query->execute();
     while (my $alert = $query->fetchrow_hashref) {
         next unless (Cobrand::email_host($alert->{cobrand}));
-        my $e = $alert->{parameter};
-        my $n = $alert->{parameter2};
+        my $longitude = $alert->{parameter};
+        my $latitude  = $alert->{parameter2};
         $url = Cobrand::base_url_for_emails($alert->{cobrand}, $alert->{cobrand_data});
         my ($site_restriction, $site_id) = Cobrand::site_restriction($alert->{cobrand}, $alert->{cobrand_data});
-        my ($lat, $lon) = mySociety::GeoUtil::national_grid_to_wgs84($e, $n, 'G');
-        my $d = mySociety::Gaze::get_radius_containing_population($lat, $lon, 200000);
+        my $d = mySociety::Gaze::get_radius_containing_population($latitude, $longitude, 200000);
         $d = int($d*10+0.5)/10;
         my $testing_email_clause = "and problem.email <> '$testing_email'" if $testing_email;        
         my %data = ( template => $template, data => '', alert_id => $alert->{id}, alert_email => $alert->{email}, lang => $alert->{lang}, cobrand => $alert->{cobrand}, cobrand_data => $alert->{cobrand_data} );
@@ -195,7 +200,7 @@ sub email_alerts ($) {
             $site_restriction
             order by confirmed desc";
         $q = dbh()->prepare($q);
-        $q->execute($e, $n, $d, $alert->{whensubscribed}, $alert->{id}, $alert->{email});
+        $q->execute($latitude, $longitude, $d, $alert->{whensubscribed}, $alert->{id}, $alert->{email});
         while (my $row = $q->fetchrow_hashref) {
             dbh()->do('insert into alert_sent (alert_id, parameter) values (?,?)', {}, $alert->{id}, $row->{id});
             $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}\n\n";
@@ -248,12 +253,10 @@ sub generate_rss ($$$;$$$$) {
     throw FixMyStreet::Alert::Error('Unknown alert type') unless $alert_type;
 
     # Do our own encoding
-
     my $rss = new XML::RSS( version => '2.0', encoding => 'UTF-8',
         stylesheet=> $xsl, encode_output => undef );
     $rss->add_module(prefix=>'georss', uri=>'http://www.georss.org/georss');
 
-    # XXX: Not generic
     # Only apply a site restriction if the alert uses the problem table
     $site_restriction = '' unless $alert_type->{item_table} eq 'problem';
     my $query = 'select * from ' . $alert_type->{item_table} . ' where '
@@ -269,19 +272,19 @@ sub generate_rss ($$$;$$$$) {
         $q->execute();
     }
 
-    my @months = ('', 'January','February','March','April','May','June',
-        'July','August','September','October','November','December');
     while (my $row = $q->fetchrow_hashref) {
-        # XXX: How to do this properly? name might be null in comment table, hence needing this
-        my $pubDate;
+
         $row->{name} ||= 'anonymous';
-        # And we want pretty dates... :-/
+
+        my $pubDate;
         if ($row->{confirmed}) {
             $row->{confirmed} =~ /^(\d\d\d\d)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)/;
             $pubDate = mySociety::Locale::in_gb_locale {
                 strftime("%a, %d %b %Y %H:%M:%S %z", $6, $5, $4, $3, $2-1, $1-1900, -1, -1, 0)
             };
-            $row->{confirmed} = ordinal($3+0) . ' ' . $months[$2];
+            $row->{confirmed} = strftime("%e %B", $6, $5, $4, $3, $2-1, $1-1900, -1, -1, 0);
+            $row->{confirmed} =~ s/^\s+//;
+            $row->{confirmed} =~ s/^(\d+)/ordinal($1)/e if $mySociety::Locale::lang eq 'en-gb';
         }
 
         (my $title = _($alert_type->{item_title})) =~ s/{{(.*?)}}/$row->{$1}/g;
@@ -295,17 +298,18 @@ sub generate_rss ($$$;$$$$) {
             description => ent(ent($desc)) # Yes, double-encoded, really.
         );
         $item{pubDate} = $pubDate if $pubDate;
+        $item{category} = $row->{category} if $row->{category};
 
-        # XXX: Not-very-generic extensions, at all
         my $display_photos = Cobrand::allow_photo_display($cobrand);    
         if ($display_photos && $row->{photo}) {
             $item{description} .= ent("\n<br><img src=\"". Cobrand::url($cobrand, $url, $http_q) . "/photo?id=$row->{id}\">");
         }
-        $item{description} .= ent("\n<br><a href='$cobrand_url'>Report on FixMyStreet</a>");
+        my $recipient_name = Cobrand::contact_name($cobrand);
+        $item{description} .= ent("\n<br><a href='$cobrand_url'>" .
+            sprintf(_("Report on %s"), $recipient_name) . "</a>");
 
-        if ($row->{easting} && $row->{northing}) {
-            my ($lat,$lon) = mySociety::GeoUtil::national_grid_to_wgs84($row->{easting}, $row->{northing}, 'G');
-            $item{georss} = { point => "$lat $lon" };
+        if ($row->{latitude} || $row->{longitude}) {
+            $item{georss} = { point => "$row->{latitude} $row->{longitude}" };
         }
         $rss->add_item( %item );
     }

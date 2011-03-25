@@ -14,11 +14,14 @@ package Page;
 use strict;
 use Carp;
 use mySociety::CGIFast qw(-no_xhtml);
+use Data::Dumper;
+use Encode;
 use Error qw(:try);
 use File::Slurp;
 use HTTP::Date; # time2str
 use Image::Magick;
 use Image::Size;
+use IO::String;
 use POSIX qw(strftime);
 use URI::Escape;
 use Text::Template;
@@ -29,6 +32,7 @@ use Cobrand;
 
 use mySociety::Config;
 use mySociety::DBHandle qw/dbh select_all/;
+use mySociety::Email;
 use mySociety::EvEl;
 use mySociety::Locale;
 use mySociety::MaPit;
@@ -47,15 +51,19 @@ use FixMyStreet::Map;
 my $lastmodified;
 
 sub do_fastcgi {
-    my ($func, $lm) = @_;
+    my ($func, $lm, $binary) = @_;
 
     try {
         my $W = new mySociety::WatchUpdate();
-        while (my $q = new mySociety::Web()) {
+        while (my $q = new mySociety::Web(unicode => 1)) {
             next if $lm && $q->Maybe304($lm);
             $lastmodified = $lm;
             microsite($q);
+            my $str_fh = IO::String->new;
+            my $old_fh = select($str_fh);
             &$func($q);
+            select($old_fh) if defined $old_fh;
+            print $binary ? ${$str_fh->string_ref} : encode_utf8(${$str_fh->string_ref});
             dbh()->rollback() if $mySociety::DBHandle::conf_ok;
             $W->exit_if_changed();
         }
@@ -78,14 +86,17 @@ sub report_error {
     my $trylater = sprintf(_('Please try again later, or <a href="mailto:%s">email us</a> to let us know.'), $contact_email);
     my $somethingwrong = _("Sorry! Something's gone wrong.");
     my $errortext = _("The text of the error was:");
-    print "Status: 500\nContent-Type: text/html; charset=iso-8859-1\n\n",
+
+    my $msg_br = join '<br><br>', split m{\n}, $msg;
+
+    print "Status: 500\nContent-Type: text/html; charset=utf-8\n\n",
             qq(<html><head><title>$somethingwrong</title></head></html>),
             q(<body>),
             qq(<h1>$somethingwrong</h1>),
             qq(<p>$trylater</p>),
             q(<hr>),
             qq(<p>$errortext</p>),
-            qq(<blockquote class="errortext">$msg</blockquote>),
+            qq(<blockquote class="errortext">$msg_br</blockquote>),
             q(</body></html>);
 }
 
@@ -106,7 +117,9 @@ sub microsite {
     my $lang;
     $lang = 'cy' if $host =~ /cy/;
     $lang = 'en-gb' if $host =~ /^en\./;
-    Cobrand::set_lang_and_domain(get_cobrand($q), $lang);
+    Cobrand::set_lang_and_domain(get_cobrand($q), $lang, 1);
+
+    FixMyStreet::Map::set_map_class($q->param('map'));
 
     Problems::set_site_restriction($q);
     Memcached::set_namespace(mySociety::Config::get('BCI_DB_NAME') . ":");
@@ -180,9 +193,8 @@ sub template_vars ($%) {
     my $lang_url = base_url_with_lang($q, 1);
     $lang_url .= $ENV{REQUEST_URI} if $ENV{REQUEST_URI};
 
-    my $site_title = $q->{site} eq 'fixmystreet'
-        ? _('FixMyStreet')
-        : Cobrand::site_title(get_cobrand($q));
+    my $site_title = Cobrand::site_title(get_cobrand($q));
+    $site_title = _('FixMyStreet') unless $site_title;
 
     %vars = (
         'report' => _('Report a problem'),
@@ -197,7 +209,7 @@ sub template_vars ($%) {
         'lang_url' => $lang_url,
         'title' => $params{title},
         'rss' => '',
-        map_js => FixMyStreet::Map::header_js(),
+        map_js => $params{js} || '',
     );
 
     if ($params{rss}) {
@@ -208,12 +220,10 @@ sub template_vars ($%) {
         $vars{robots} = '<meta name="robots" content="' . $params{robots} . '">';
     }
 
-    if ($q->{site} eq 'fixmystreet') {
-        my $home = !$params{title} && $ENV{SCRIPT_NAME} eq '/index.cgi' && !$ENV{QUERY_STRING};
-        $vars{heading_element_start} = $home ? '<h1 id="header">' : '<div id="header"><a href="/">';
-        $vars{heading} = _('Fix<span id="my">My</span>Street');
-        $vars{heading_element_end} = $home ? '</h1>' : '</a></div>';
-    }
+    my $home = !$params{title} && $ENV{SCRIPT_NAME} eq '/index.cgi' && !$ENV{QUERY_STRING};
+    $vars{heading_element_start} = $home ? '<h1 id="header">' : '<div id="header"><a href="/">';
+    $vars{heading} = _('Fix<span id="my">My</span>Street');
+    $vars{heading_element_end} = $home ? '</h1>' : '</a></div>';
 
     return \%vars;
 }
@@ -249,26 +259,12 @@ sub template_include {
     return undef unless -e $template_file;
 
     $template = Text::Template->new(
-        SOURCE => $template_file,
+        TYPE => 'STRING',
+        # Don't use FILE, because we need to make sure it's Unicode characters
+        SOURCE => decode_utf8(File::Slurp::read_file($template_file)),
         DELIMITERS => ['{{', '}}'],
     );
     return $template->fill_in(HASH => \%params);
-}
-
-=item template_header TEMPLATE Q ROOT PARAMS
-
-Return HTML for the templated top of a page, given a 
-template name, request, template root, and parameters.
-
-=cut
-
-sub template_header($$$%) {
-    my ($template, $q, $template_root, %params) = @_;
-    $template = $q->{site} eq 'fixmystreet'
-        ? 'header'
-        : $template . '-header';
-    my $vars = template_vars($q, %params);
-    return template_include($template, $q, $template_root, %$vars);
 }
 
 =item header Q [PARAM VALUE ...]
@@ -282,7 +278,7 @@ sub header ($%) {
     my $default_params = Cobrand::header_params(get_cobrand($q), $q, %params);
     my %default_params = %{$default_params};
     %params = (%default_params, %params);
-    my %permitted_params = map { $_ => 1 } qw(title rss expires lastmodified template cachecontrol context status_code robots);
+    my %permitted_params = map { $_ => 1 } qw(title rss expires lastmodified template cachecontrol context status_code robots js);
     foreach (keys %params) {
         croak "bad parameter '$_'" if (!exists($permitted_params{$_}));
     }
@@ -300,8 +296,8 @@ sub header ($%) {
     $params{title} = ent($params{title});
     $params{lang} = $mySociety::Locale::lang;
 
-    my $template = template($q, %params);
-    my $html = template_header($template, $q, template_root($q), %params);
+    my $vars = template_vars($q, %params);
+    my $html = template_include('header', $q, template_root($q), %$vars);
     my $cache_val = $default_params{cachecontrol};
     if (mySociety::Config::get('STAGING_SITE')) {
         $html .= '<p class="error">' . _("This is a developer site; things might break at any time, and the database will be periodically deleted.") . '</p>';
@@ -315,19 +311,34 @@ sub header ($%) {
 sub footer {
     my ($q, %params) = @_;
 
-    if ($q->{site} ne 'fixmystreet') {
-        my $template = template($q, %params) . '-footer';
-        my $template_root = template_root($q);
-        my $html = template_include($template, $q, $template_root, %params);
+    my $pc = $q->param('pc') || '';
+    $pc = '?pc=' . URI::Escape::uri_escape_utf8($pc) if $pc;
+
+    my $creditline = _('Built by <a href="http://www.mysociety.org/">mySociety</a>, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.');
+    if (mySociety::Config::get('COUNTRY') eq 'NO') {
+        $creditline = _('Built by <a href="http://www.mysociety.org/">mySociety</a> and maintained by <a href="http://www.nuug.no/">NUUG</a>, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.');
+    }
+
+    %params = (%params,
+        navigation => _('Navigation'),
+        report => _("Report a problem"),
+        reports => _("All reports"),
+        alerts => _("Local alerts"),
+        help => _("Help"),
+        contact => _("Contact"),
+        pc => $pc,
+        orglogo => _('<a href="http://www.mysociety.org/"><img id="logo" width="133" height="26" src="/i/mysociety-dark.png" alt="View mySociety.org"><span id="logoie"></span></a>'),
+        creditline => $creditline,
+    );
+
+    my $html = template_include('footer', $q, template_root($q), %params);
+    if ($html) {
         my $lang = $mySociety::Locale::lang;
         if ($q->{site} eq 'emptyhomes' && $lang eq 'cy') {
             $html =~ s/25 Walter Road<br>Swansea/25 Heol Walter<br>Abertawe/;
         }
         return $html;
     }
-
-    my $pc = $q->param('pc') || '';
-    $pc = "?pc=" . ent($pc) if $pc;
 
     my $piwik = "";
     if (mySociety::Config::get('BASE_URL') eq "http://www.fixmystreet.com") {
@@ -347,29 +358,20 @@ piwikTracker.enableLinkTracking();
 EOF
     }
 
-    my $navigation = _('Navigation');
-    my $report = _("Report a problem");
-    my $reports = _("All reports");
-    my $alerts = _("Local alerts");
-    my $help = _("Help");
-    my $contact = _("Contact");
-    my $orglogo = _('<a href="http://www.mysociety.org/"><img id="logo" width="133" height="26" src="/i/mysociety-dark.png" alt="View mySociety.org"><span id="logoie"></span></a>');
-    my $creditline = _('Built by <a href="http://www.mysociety.org/">mySociety</a>, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.');
-
     return <<EOF;
 </div></div>
-<h2 class="v">$navigation</h2>
+<h2 class="v">$params{navigation}</h2>
 <ul id="navigation">
-<li><a href="/">$report</a></li>
-<li><a href="/reports">$reports</a></li>
-<li><a href="/alert$pc">$alerts</a></li>
-<li><a href="/faq">$help</a></li>
-<li><a href="/contact">$contact</a></li>
+<li><a href="/">$params{report}</a></li>
+<li><a href="/reports">$params{reports}</a></li>
+<li><a href="/alert$params{pc}">$params{alerts}</a></li>
+<li><a href="/faq">$params{help}</a></li>
+<li><a href="/contact">$params{contact}</a></li>
 </ul>
 
-$orglogo
+$params{orglogo}
 
-<p id="footer">$creditline</p>
+<p id="footer">$params{creditline}</p>
 
 $piwik
 
@@ -390,24 +392,69 @@ sub error_page ($$) {
 }
 
 # send_email TO (NAME) TEMPLATE-NAME PARAMETERS
-# TEMPLATE-NAME is currently one of problem, update, alert, tms
+# TEMPLATE-NAME is a full filename here.
 sub send_email {
-    my ($q, $email, $name, $thing, %h) = @_;
-    my $file_thing = $thing;
-    $file_thing = 'empty property' if $q->{site} eq 'emptyhomes' && $thing eq 'problem'; # Needs to be in English
-    my $template = "$file_thing-confirm";
+    my ($q, $recipient_email_address, $name, $template, %h) = @_;
+
     $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/$template");
-    my $to = $name ? [[$email, $name]] : $email;
+    my $to = $name ? [[$recipient_email_address, $name]] : $recipient_email_address;
     my $cobrand = get_cobrand($q);
     my $sender = Cobrand::contact_email($cobrand);
     my $sender_name = Cobrand::contact_name($cobrand);
     $sender =~ s/team/fms-DO-NOT-REPLY/;
-    mySociety::EvEl::send({
-        _template_ => _($template),
+
+    # Can send email either via EvEl (if configured) or via local MTA on
+    # machine. If EvEl fails (server down etc) fall back to local sending
+
+    my $email_building_args = {
+        _template_   => _($template),
         _parameters_ => \%h,
-        From => [ $sender, _($sender_name)],
-        To => $to,
-    }, $email);
+        From         => [ $sender, _($sender_name) ],
+        To           => $to,
+    };
+
+    my $email_sent_successfully = 0;
+
+    if ( my $EvEl_url = mySociety::Config::get('EVEL_URL') ) {
+        eval {
+            mySociety::EvEl::send( $email_building_args, $recipient_email_address );
+            $email_sent_successfully = 1;
+        };
+
+        warn "ERROR: sending email via '$EvEl_url' failed: $@" if $@;
+    }
+
+    # If not sent through EvEL, or EvEl failed
+    if ( !$email_sent_successfully ) {
+        my $email = mySociety::Locale::in_gb_locale {
+            mySociety::Email::construct_email( $email_building_args );
+        };
+
+        my $send_email_result =
+          mySociety::EmailUtil::send_email( $email, $sender, $recipient_email_address );
+        $email_sent_successfully = !$send_email_result;    # invert result
+    }
+
+    # Could not send email - die
+    if ( !$email_sent_successfully ) {
+        throw Error::Simple(
+            "Could not send email to '$recipient_email_address' "
+            . "using either EvEl or local MTA."
+        );
+    }
+    
+}
+
+# send_confirmation_email TO (NAME) TEMPLATE-NAME PARAMETERS
+# TEMPLATE-NAME is currently one of problem, update, alert, tms
+sub send_confirmation_email {
+    my ($q, $recipient_email_address, $name, $thing, %h) = @_;
+
+    my $file_thing = $thing;
+    $file_thing = 'empty property' if $q->{site} eq 'emptyhomes' && $thing eq 'problem'; # Needs to be in English
+    my $template = "$file_thing-confirm";
+
+    send_email($q, $recipient_email_address, $name, $template, %h);
 
     my ($action, $worry);
     if ($thing eq 'problem') {
@@ -433,6 +480,7 @@ if you do not, %s.</p>
 <p>(Don't worry &mdash; %s)</p>
 EOF
 
+    my $cobrand = get_cobrand($q);
     my %vars = (
         action => $action,
         worry => $worry,
@@ -454,13 +502,13 @@ sub prettify_epoch {
     if (strftime('%Y%m%d', @s) eq strftime('%Y%m%d', @t)) {
         $tt = "$tt " . _('today');
     } elsif (strftime('%Y %U', @s) eq strftime('%Y %U', @t)) {
-        $tt = "$tt, " . strftime('%A', @s);
+        $tt = "$tt, " . decode_utf8(strftime('%A', @s));
     } elsif ($short) {
-        $tt = "$tt, " . strftime('%e %b %Y', @s);
+        $tt = "$tt, " . decode_utf8(strftime('%e %b %Y', @s));
     } elsif (strftime('%Y', @s) eq strftime('%Y', @t)) {
-        $tt = "$tt, " . strftime('%A %e %B %Y', @s);
+        $tt = "$tt, " . decode_utf8(strftime('%A %e %B %Y', @s));
     } else {
-        $tt = "$tt, " . strftime('%a %e %B %Y', @s);
+        $tt = "$tt, " . decode_utf8(strftime('%a %e %B %Y', @s));
     }
     return $tt;
 }
@@ -479,17 +527,17 @@ sub prettify_duration {
         return _('less than a minute') if $s == 0;
     }
     my @out = ();
-    _part(\$s, 60*60*24*7, _('week'), \@out);
-    _part(\$s, 60*60*24, _('day'), \@out);
-    _part(\$s, 60*60, _('hour'), \@out);
-    _part(\$s, 60, _('minute'), \@out);
+    _part(\$s, 60*60*24*7, _('%d week'), _('%d weeks'), \@out);
+    _part(\$s, 60*60*24, _('%d day'), _('%d days'), \@out);
+    _part(\$s, 60*60, _('%d hour'), _('%d hours'), \@out);
+    _part(\$s, 60, _('%d minute'), _('%d minutes'), \@out);
     return join(', ', @out);
 }
 sub _part {
-    my ($s, $m, $w, $o) = @_;
+    my ($s, $m, $w1, $w2, $o) = @_;
     if ($$s >= $m) {
         my $i = int($$s / $m);
-        push @$o, "$i $w" . ($i != 1 ? 's' : '');
+        push @$o, sprintf(mySociety::Locale::nget($w1, $w2, $i), $i);
         $$s -= $i * $m;
     }
 }
@@ -507,17 +555,17 @@ sub display_problem_meta_line($$) {
             $out .= sprintf(_('%s, reported by %s at %s'), ent($category), ent($problem->{name}), $date_time);
         }
     } else {
-        if ($problem->{service} && $problem->{category} && $problem->{category} ne 'Other' && $problem->{anonymous}) {
+        if ($problem->{service} && $problem->{category} && $problem->{category} ne _('Other') && $problem->{anonymous}) {
             $out .= sprintf(_('Reported by %s in the %s category anonymously at %s'), ent($problem->{service}), ent($problem->{category}), $date_time);
-        } elsif ($problem->{service} && $problem->{category} && $problem->{category} ne 'Other') {
+        } elsif ($problem->{service} && $problem->{category} && $problem->{category} ne _('Other')) {
             $out .= sprintf(_('Reported by %s in the %s category by %s at %s'), ent($problem->{service}), ent($problem->{category}), ent($problem->{name}), $date_time);
         } elsif ($problem->{service} && $problem->{anonymous}) {
             $out .= sprintf(_('Reported by %s anonymously at %s'), ent($problem->{service}), $date_time);
         } elsif ($problem->{service}) {
             $out .= sprintf(_('Reported by %s by %s at %s'), ent($problem->{service}), ent($problem->{name}), $date_time);
-        } elsif ($problem->{category} && $problem->{category} ne 'Other' && $problem->{anonymous}) {
+        } elsif ($problem->{category} && $problem->{category} ne _('Other') && $problem->{anonymous}) {
             $out .= sprintf(_('Reported in the %s category anonymously at %s'), ent($problem->{category}), $date_time);
-        } elsif ($problem->{category} && $problem->{category} ne 'Other') {
+        } elsif ($problem->{category} && $problem->{category} ne _('Other')) {
             $out .= sprintf(_('Reported in the %s category by %s at %s'), ent($problem->{category}), ent($problem->{name}), $date_time);
         } elsif ($problem->{anonymous}) {
             $out .= sprintf(_('Reported anonymously at %s'), $date_time);
@@ -638,21 +686,29 @@ sub mapit_check_error {
         return _('That postcode was not recognised, sorry.') if $location->{code} =~ /^4/;
         return $location->{error};
     }
-    my $island = $location->{coordsyst};
-    if (!$island) {
-        return _("Sorry, that appears to be a Crown dependency postcode, which we don't cover.");
-    }
-    if ($island eq 'I') {
-        return _("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.");
+    if (mySociety::Config::get('COUNTRY') eq 'GB') {
+        my $island = $location->{coordsyst};
+        if (!$island) {
+            return _("Sorry, that appears to be a Crown dependency postcode, which we don't cover.");
+        }
+        if ($island eq 'I') {
+            return _("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.");
+        }
     }
     return 0;
 }
 
 sub short_name {
-    my $name = shift;
+    my ($area, $info) = @_;
     # Special case Durham as it's the only place with two councils of the same name
-    return 'Durham+County' if ($name eq 'Durham County Council');
-    return 'Durham+City' if ($name eq 'Durham City Council');
+    # And some places in Norway
+    return 'Durham+County' if $area->{name} eq 'Durham County Council';
+    return 'Durham+City' if $area->{name} eq 'Durham City Council';
+    if ($area->{name} =~ /^(Os|Nes|V\xe5ler|Sande|B\xf8|Her\xf8y)$/) {
+        my $parent = $info->{$area->{parent_area}}->{name};
+        return URI::Escape::uri_escape_utf8("$area->{name}, $parent");
+    }
+    my $name = $area->{name};
     $name =~ s/ (Borough|City|District|County) Council$//;
     $name =~ s/ Council$//;
     $name =~ s/ & / and /;
