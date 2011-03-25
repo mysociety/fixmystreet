@@ -1,0 +1,67 @@
+$map_width: 378px;
+$background: #E9EEF7;
+$darker: #768EB5;
+
+#mysociety {
+
+    // Smaller map
+
+    #map_box {
+        width: $map_width + 2px;
+    }
+    #map, #drag {
+        width: $map_width;
+        height: $map_width;
+    }
+    #watermark {
+        background: url("/i/mojwatermark-378.png");
+        height: 84px;
+        width: 171px;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+    }
+
+    p#fixed, p#unknown {
+        margin-right: $map_width + 22px;
+        width: auto;
+    }
+
+    // Generics
+
+    h1 {
+        margin: 0;
+        font-size: 175%;
+    }
+    h2 {
+        font-size: 140%;
+    }
+
+    select, input, textarea {
+        font-size: 99%;
+    }
+
+    a.unsuitable-report {
+        font-size: small;
+    }
+
+    blockquote {
+        border-left: solid 4px $darker;
+    }
+
+    .a {
+        color: #000000;
+        background-color: $background;
+    }
+
+    #postcodeForm {
+        background-color: $background;
+    }
+
+    #front_stats div {
+        background-color: $background;
+        width: 6em;
+        padding: 0.5em;
+    }
+
+}
