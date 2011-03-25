@@ -1,13 +1,13 @@
 /* FixMyStreet additions */
 /* Smaller map */
-#map_box {
+#mysociety #map_box {
     width: 380px;
 }
-#map, #drag {
+#mysociety #map, #mysociety #drag {
     width: 378px;
     height: 378px;
 }
-#watermark {
+#mysociety #watermark {
     background: url("/i/mojwatermark-378.png");
     height: 84px;
     width: 171px;
@@ -16,7 +16,7 @@
     right: 0;
 }
 
-p#fixed, p#unknown {
+#mysociety p#fixed, #mysociety p#unknown {
     margin-right: 400px;
     width: auto;
 }

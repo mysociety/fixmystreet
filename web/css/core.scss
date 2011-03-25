@@ -9,7 +9,7 @@ $map_width: 500px;
 
 // Generics
 
-// #mysociety {
+#mysociety {
 
     blockquote {
         border-left: solid 4px #666666;
@@ -493,15 +493,15 @@ $map_width: 500px;
     //     white-space: nowrap;
     // }
 
-// }
+}
 
 // Printing, SCSS doesn't handle @media nesting
 
 @media print {
-    // #mysociety {
+    #mysociety {
         #map_box { float: none; margin: 0 auto; }
         #mysociety { max-width: none; }
         #side { margin-right: 0; }
-    // }
+    }
 }
 

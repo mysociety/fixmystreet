@@ -5,7 +5,7 @@ $header_darker: #0a3f6f;
 
 // Overrides of core.css
 
-// #mysociety {
+#mysociety {
 
     #front_stats div {
         width: 6.5em;
@@ -19,7 +19,7 @@ $header_darker: #0a3f6f;
         padding-left: 6.5em;
     }
 
-// }
+}
 
 @import "../../css/_main";
 

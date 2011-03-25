@@ -1,12 +1,10 @@
-#front_stats div {
+#mysociety #front_stats div {
   width: 6.5em;
 }
-
-label {
+#mysociety label {
   width: 6em;
 }
-
-#fieldset div.checkbox, #problem_submit {
+#mysociety #fieldset div.checkbox, #mysociety #problem_submit {
   padding-left: 6.5em;
 }
 
@@ -29,24 +27,20 @@ select, input, textarea {
   font-size: 99%;
 }
 
-a.unsuitable-report {
+#mysociety a.unsuitable-report {
   font-size: small;
 }
-
-blockquote {
+#mysociety blockquote {
   border-left: solid 4px #1a4f7f;
 }
-
-.a {
+#mysociety .a {
   color: #000000;
   background-color: #a9cff1;
 }
-
-#postcodeForm {
+#mysociety #postcodeForm {
   background-color: #99bfe1;
 }
-
-#front_stats div {
+#mysociety #front_stats div {
   background-color: #99bfe1;
 }
 

@@ -1,45 +1,38 @@
-blockquote {
+#mysociety blockquote {
   border-left: solid 4px #666666;
   padding-left: 0.5em;
 }
-blockquote h2, blockquote p {
+#mysociety blockquote h2, #mysociety blockquote p {
   margin: 0;
 }
-
-dt {
+#mysociety dt {
   font-weight: bold;
   margin-top: 0.5em;
 }
-
-.v {
+#mysociety .v {
   display: none;
 }
-
-.gone {
+#mysociety .gone {
   color: #666666;
   background-color: #cccccc;
 }
-
-p.error {
+#mysociety p.error {
   text-align: center;
   color: #cc0000;
   font-size: larger;
 }
-
-ul {
+#mysociety ul {
   padding: 0 0 0 1.5em;
   margin: 0;
 }
-
-ul.error {
+#mysociety ul.error {
   color: #cc0000;
   background-color: #ffeeee;
   padding-right: 4px;
   text-align: left;
   font-size: larger;
 }
-
-div.form-error {
+#mysociety div.form-error {
   color: #cc0000;
   margin: 5px 1em 5px 1em;
   padding: 2px 5px 2px 5px;
@@ -47,29 +40,24 @@ div.form-error {
   background-color: #ffeeee;
   text-align: left;
 }
-
-div.form-field {
+#mysociety div.form-field {
   clear: both;
 }
-
-#advert_thin {
+#mysociety #advert_thin {
   width: 50%;
   margin: 1em auto;
   border-top: dotted 1px #999999;
 }
-
-#advert_hfymp {
+#mysociety #advert_hfymp {
   border-top: dotted 1px #999999;
   text-align: center;
 }
-
-p#expl {
+#mysociety p#expl {
   text-align: center;
   font-size: 150%;
   margin: 0 2em;
 }
-
-#postcodeForm {
+#mysociety #postcodeForm {
   display: table;
   _width: 33em;
   text-align: center;
@@ -80,24 +68,22 @@ p#expl {
   -webkit-border-radius: 1em;
   border-radius: 1em;
 }
-#postcodeForm label {
+#mysociety #postcodeForm label {
   float: none;
   padding-right: 0;
 }
-#postcodeForm #submit {
+#mysociety #postcodeForm #submit {
   font-size: 83%;
 }
-
-#front_intro {
+#mysociety #front_intro {
   float: left;
   width: 48%;
 }
-#front_intro p {
+#mysociety #front_intro p {
   clear: both;
   margin-top: 0;
 }
-
-#front_stats div {
+#mysociety #front_stats div {
   text-align: center;
   width: 5.5em;
   -moz-border-radius: 0.5em;
@@ -106,55 +92,46 @@ p#expl {
   float: left;
   margin: 0 1em 1em;
 }
-#front_stats div big {
+#mysociety #front_stats div big {
   font-size: 150%;
   display: block;
 }
-
-#front_recent {
+#mysociety #front_recent {
   float: right;
   width: 48%;
   margin-bottom: 1em;
 }
-
-#front_recent img, #alert_recent img {
+#mysociety #front_recent img, #mysociety #alert_recent img {
   margin-right: 0.25em;
   margin-bottom: 0.25em;
 }
-
-#front_recent > h2:first-child, #front_intro > h2:first-child {
+#mysociety #front_recent > h2:first-child, #mysociety #front_intro > h2:first-child {
   margin-top: 0;
 }
-
-form {
+#mysociety form {
   margin: 0;
 }
-
-label {
+#mysociety label {
   float: left;
   text-align: right;
   padding-right: 0.5em;
   width: 5em;
 }
-
-fieldset, #fieldset {
+#mysociety fieldset, #mysociety #fieldset {
   border: none;
   padding: 0.5em;
 }
-fieldset div, #fieldset div {
+#mysociety fieldset div, #mysociety #fieldset div {
   margin-top: 2px;
   clear: left;
 }
-
-legend {
+#mysociety legend {
   display: none;
 }
-
-#fieldset div.checkbox, #problem_submit {
+#mysociety #fieldset div.checkbox, #mysociety #problem_submit {
   padding-left: 5.5em;
 }
-
-#fieldset div.checkbox label, label.n {
+#mysociety #fieldset div.checkbox label, #mysociety label.n {
   float: none;
   text-align: left;
   padding-right: 0;
@@ -162,19 +139,16 @@ legend {
   cursor: pointer;
   cursor: hand;
 }
-
-#questionnaire label, #alerts label {
+#mysociety #questionnaire label, #mysociety #alerts label {
   float: none;
 }
-
-.confirmed {
+#mysociety .confirmed {
   background-color: #ccffcc;
   border: solid 2px #009900;
   padding: 5px;
   text-align: center;
 }
-
-#watermark {
+#mysociety #watermark {
   background: url("/i/mojwatermark6.png");
   height: 113px;
   width: 231px;
@@ -182,22 +156,19 @@ legend {
   bottom: 0;
   right: 0;
 }
-
-#map_box {
+#mysociety #map_box {
   float: right;
   width: 502px;
   position: relative;
   padding-left: 20px;
   background-color: #ffffff;
 }
-
-p#copyright {
+#mysociety p#copyright {
   float: right;
   margin: 0 0 1em 0;
   font-size: 78%;
 }
-
-#map {
+#mysociety #map {
   border: solid 1px #000000;
   width: 500px;
   height: 500px;
@@ -205,43 +176,39 @@ p#copyright {
   position: relative;
   background-color: #f1f1f1;
 }
-
-#drag {
+#mysociety #drag {
   position: absolute;
   width: 500px;
   height: 500px;
   right: 0;
   top: 0;
 }
-#drag input, #drag img {
+#mysociety #drag input, #mysociety #drag img {
   position: absolute;
   border: none;
 }
-#drag input {
+#mysociety #drag input {
   cursor: crosshair;
   background-color: #cccccc;
 }
-#drag img {
+#mysociety #drag img {
   cursor: move;
 }
-#drag img.pin {
+#mysociety #drag img.pin {
   z-index: 100;
   background-color: inherit;
 }
-#drag a img.pin {
+#mysociety #drag a img.pin {
   cursor: pointer;
   cursor: hand;
 }
-
-form#mapForm #map {
+#mysociety form#mapForm #map {
   cursor: pointer;
 }
-
-form#mapForm .olTileImage {
+#mysociety form#mapForm .olTileImage {
   cursor: crosshair;
 }
-
-#compass {
+#mysociety #compass {
   background-color: #ffffff;
   border: solid 1px #000000;
   border-width: 0 1px 1px 0;
@@ -250,27 +217,23 @@ form#mapForm .olTileImage {
   top: 0px;
   left: 0px;
 }
-#compass img {
+#mysociety #compass img {
   border: 0;
 }
-
-#text_map {
+#mysociety #text_map {
   margin-top: 0.5em;
   margin-bottom: 1em;
   font-size: 110%;
 }
-
-#text_no_map {
+#mysociety #text_no_map {
   margin-top: 0;
 }
-
-#sub_map_links {
+#mysociety #sub_map_links {
   float: right;
   clear: right;
   margin-top: 0;
 }
-
-#fixed {
+#mysociety #fixed {
   margin: 0 530px 1em 0;
   padding: 5px;
   text-align: center;
@@ -278,8 +241,7 @@ form#mapForm .olTileImage {
   background-color: #ccffcc;
   border: solid 2px #009900;
 }
-
-#unknown {
+#mysociety #unknown {
   margin: 0 530px 1em 0;
   padding: 5px;
   text-align: center;
@@ -287,46 +249,40 @@ form#mapForm .olTileImage {
   background-color: #ffcccc;
   border: solid 2px #990000;
 }
-
-#updates div {
+#mysociety #updates div {
   padding: 0 0 0.5em;
   margin: 0 0 0.25em;
   border-bottom: dotted 1px #5e552b;
 }
-#updates div .problem-update, #updates div .update-text {
+#mysociety #updates div .problem-update, #mysociety #updates div .update-text {
   padding: 0;
   margin: 0;
   border-bottom: 0;
 }
-#updates p {
+#mysociety #updates p {
   margin: 0;
 }
-
-#nearby_lists h2 {
+#mysociety #nearby_lists h2 {
   margin-top: 0.5em;
   margin-bottom: 0;
 }
-
-#alert_links {
+#mysociety #alert_links {
   float: right;
 }
-
-#alert_links_area {
+#mysociety #alert_links_area {
   background-color: #ffeecc;
   border: solid 1px #ff9900;
   border-width: 1px 0;
   padding: 3px 10px;
   margin: 0;
 }
-
-#rss_alert {
+#mysociety #rss_alert {
   text-decoration: none;
 }
-#rss_alert span {
+#mysociety #rss_alert span {
   text-decoration: underline;
 }
-
-#email_alert_box {
+#mysociety #email_alert_box {
   display: none;
   position: absolute;
   padding: 3px;
@@ -335,110 +291,90 @@ form#mapForm .olTileImage {
   background-color: #eeeeff;
   color: #000000;
 }
-
-#email_alert_box p {
+#mysociety #email_alert_box p {
   margin: 0;
 }
-
-.council_sent_info {
+#mysociety .council_sent_info {
   font-size: smaller;
 }
-
-#rss_items {
+#mysociety #rss_items {
   width: 62%;
   float: left;
 }
-
-#rss_rhs {
+#mysociety #rss_rhs {
   border-left: 1px dashed #999;
   width: 36%;
   float: right;
   padding: 0 0 0 0.5em;
   margin: 0 0 1em 0.5em;
 }
-
-#rss_box {
+#mysociety #rss_box {
   padding: 10px;
   border: 1px solid #999999;
 }
-
-#rss_feed {
+#mysociety #rss_feed {
   list-style-type: none;
   margin-bottom: 2em;
 }
-
-#rss_feed li {
+#mysociety #rss_feed li {
   margin-bottom: 1em;
 }
-
-#alert_or {
+#mysociety #alert_or {
   font-style: italic;
   font-size: 125%;
   margin: 0;
 }
-
-#rss_list {
+#mysociety #rss_list {
   float: left;
   width: 47%;
 }
-
-#rss_list ul {
+#mysociety #rss_list ul {
   list-style-type: none;
 }
-
-#rss_buttons {
+#mysociety #rss_buttons {
   float: right;
   width: 35%;
   text-align: center;
   margin-bottom: 2em;
 }
-
-#rss_local {
+#mysociety #rss_local {
   margin-left: 1.5em;
   margin-bottom: 0;
 }
-
-#rss_local_alt {
+#mysociety #rss_local_alt {
   margin: 0 0 2em 4em;
 }
-
-#alert_photos {
+#mysociety #alert_photos {
   text-align: center;
   float: right;
   width: 150px;
   margin-left: 0.5em;
 }
-
-#alert_photos h2 {
+#mysociety #alert_photos h2 {
   font-size: 100%;
 }
-
-#alert_photos img {
+#mysociety #alert_photos img {
   margin-bottom: 0.25em;
 }
-
-#col_problems, #col_fixed {
+#mysociety #col_problems, #mysociety #col_fixed {
   float: left;
   width: 48%;
   margin-right: 1em;
 }
-
-.contact-details {
+#mysociety .contact-details {
   font-size: 80%;
   margin-top: 2em;
 }
 
 @media print {
-  #map_box {
+  #mysociety #map_box {
     float: none;
     margin: 0 auto;
   }
-
-  #mysociety {
+  #mysociety #mysociety {
     max-width: none;
   }
-
-  #side {
+  #mysociety #side {
     margin-right: 0;
   }
 }
