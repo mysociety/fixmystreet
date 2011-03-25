@@ -37,4 +37,5 @@ Term::Size::Any
 Test::More
 Test::WWW::Mechanize
 Test::WWW::Mechanize::Catalyst
+Web::Scraper
 namespace::autoclean

@@ -129,6 +129,7 @@ http://search.cpan.org/CPAN/authors/id/G/GB/GBARR/Scalar-List-Utils-1.23.tar.gz
 http://search.cpan.org/CPAN/authors/id/G/GE/GETTY/HTTP-Body-1.11.tar.gz
 http://search.cpan.org/CPAN/authors/id/G/GR/GRODITI/MooseX-Types-Common-0.001002.tar.gz
 http://search.cpan.org/CPAN/authors/id/I/IL/ILMARI/Class-Unload-0.07.tar.gz
+http://search.cpan.org/CPAN/authors/id/I/IN/INGY/Test-Base-0.59.tar.gz
 http://search.cpan.org/CPAN/authors/id/J/JE/JESSE/HTTP-Server-Simple-0.43.tar.gz
 http://search.cpan.org/CPAN/authors/id/J/JP/JPEACOCK/version-0.88.tar.gz
 http://search.cpan.org/CPAN/authors/id/J/JR/JROCKWAY/Context-Preserve-0.01.tar.gz
@@ -140,7 +141,11 @@ http://search.cpan.org/CPAN/authors/id/M/MA/MAKAMAKA/JSON-PP-2.27105.tar.gz
 http://search.cpan.org/CPAN/authors/id/M/MA/MANU/Net-IP-1.25.tar.gz
 http://search.cpan.org/CPAN/authors/id/M/MA/MARKOV/MIME-Types-1.31.tar.gz
 http://search.cpan.org/CPAN/authors/id/M/MH/MHX/Devel-PPPort-3.19.tar.gz
+http://search.cpan.org/CPAN/authors/id/M/MI/MIROD/HTML-TreeBuilder-XPath-0.12.tar.gz
+http://search.cpan.org/CPAN/authors/id/M/MI/MIROD/XML-XPathEngine-0.12.tar.gz
 http://search.cpan.org/CPAN/authors/id/M/MI/MIYAGAWA/App-cpanminus-1.4004.tar.gz
+http://search.cpan.org/CPAN/authors/id/M/MI/MIYAGAWA/HTML-Selector-XPath-0.07.tar.gz
+http://search.cpan.org/CPAN/authors/id/M/MI/MIYAGAWA/Web-Scraper-0.34.tar.gz
 http://search.cpan.org/CPAN/authors/id/M/ML/MLEHMANN/JSON-XS-2.3.tar.gz
 http://search.cpan.org/CPAN/authors/id/M/ML/MLEHMANN/common-sense-3.4.tar.gz
 http://search.cpan.org/CPAN/authors/id/M/MR/MRAMBERG/Text-SimpleTable-2.03.tar.gz
@@ -148,6 +153,7 @@ http://search.cpan.org/CPAN/authors/id/M/MS/MSCHILLI/Log-Log4perl-1.32.tar.gz
 http://search.cpan.org/CPAN/authors/id/M/MS/MSCHWERN/Carp-Assert-0.20.tar.gz
 http://search.cpan.org/CPAN/authors/id/M/MS/MSCHWERN/ExtUtils-MakeMaker-6.56.tar.gz
 http://search.cpan.org/CPAN/authors/id/M/MS/MSCHWERN/Test-Simple-0.98.tar.gz
+http://search.cpan.org/CPAN/authors/id/M/MS/MSCHWERN/UNIVERSAL-require-0.13.tar.gz
 http://search.cpan.org/CPAN/authors/id/M/MS/MSTROUT/Catalyst-Plugin-Session-State-Cookie-0.17.tar.gz
 http://search.cpan.org/CPAN/authors/id/M/MS/MSTROUT/Catalyst-Plugin-Static-Simple-0.29.tar.gz
 http://search.cpan.org/CPAN/authors/id/N/NU/NUFFIN/Tie-ToObject-0.03.tar.gz
