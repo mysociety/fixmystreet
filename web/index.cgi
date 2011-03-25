@@ -845,7 +845,7 @@ sub display_location {
     return front_page( $q, @errors )
       unless ( $x && $y )
       || $input{pc}
-      || ( defined $latitude && defined $longitude );
+      || ( $latitude ne '' && $longitude ne '' );
 
     if ( $x && $y ) {
 
