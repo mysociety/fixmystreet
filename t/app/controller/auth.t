@@ -1,8 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 90;
-use Email::Send::Test;
+use Test::More tests => 97;
 
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
@@ -48,7 +47,7 @@ for my $test (
 }
 
 # create a new account
-Email::Send::Test->clear;
+$mech->clear_emails_ok;
 $mech->get_ok('/auth');
 $mech->submit_form_ok(
     {
@@ -65,16 +64,15 @@ $mech->not_logged_in_ok;
 
 # check that we got one email
 {
-    my @emails = Email::Send::Test->emails;
-    Email::Send::Test->clear;
-
-    is scalar(@emails), 1, "got one email";
-    is $emails[0]->header('Subject'), "Your FixMyStreet.com account details",
+    $mech->email_count_is(1);
+    my $email = $mech->get_email;
+    $mech->clear_emails_ok;
+    is $email->header('Subject'), "Your FixMyStreet.com account details",
       "subject is correct";
-    is $emails[0]->header('To'), $test_email, "to is correct";
+    is $email->header('To'), $test_email, "to is correct";
 
     # extract the link
-    my ($link) = $emails[0]->body =~ m{(http://\S+)};
+    my ($link) = $email->body =~ m{(http://\S+)};
     ok $link, "Found a link in email '$link'";
 
     # check that the user does not exist
@@ -105,7 +103,7 @@ $mech->not_logged_in_ok;
 
 # get a login email and change password
 {
-    Email::Send::Test->clear;
+    $mech->clear_emails_ok;
     $mech->get_ok('/auth');
     $mech->submit_form_ok(
         {
@@ -122,8 +120,10 @@ $mech->not_logged_in_ok;
     # follow link and change password - check not prompted for old password
     $mech->not_logged_in_ok;
 
-    my @emails = Email::Send::Test->emails;
-    my ($link) = $emails[0]->body =~ m{(http://\S+)};
+    $mech->email_count_is(1);
+    my $email = $mech->get_email;
+    $mech->clear_emails_ok;
+    my ($link) = $email->body =~ m{(http://\S+)};
     $mech->get_ok($link);
 
     $mech->follow_link_ok( { url => '/auth/change_password' } );

@@ -13,6 +13,7 @@ use Test::WWW::Mechanize::Catalyst 'FixMyStreet::App';
 use Test::More;
 use Web::Scraper;
 use Carp;
+use Email::Send::Test;
 
 =head1 NAME
 
@@ -63,6 +64,57 @@ sub log_out_ok {
     my $mech = shift;
     $mech->get_ok('/auth/logout');
     $mech->not_logged_in_ok;
+}
+
+=head2 clear_emails_ok
+
+    $bool = $mech->clear_emails_ok();
+
+Clear the email queue.
+
+=cut
+
+sub clear_emails_ok {
+    my $mech = shift;
+    Email::Send::Test->clear;
+    $mech->builder->ok( 1, 'cleared email queue' );
+    return 1;
+}
+
+=head2 email_count_is
+
+    $bool = $mech->email_count_is( $number );
+
+Check that the number of emails in queue is correct.
+
+=cut
+
+sub email_count_is {
+    my $mech = shift;
+    my $number = shift || 0;
+
+    $mech->builder->is_num( scalar( Email::Send::Test->emails ),
+        $number, "checking for $number email(s) in the queue" );
+}
+
+=head2 get_email
+
+    $email = $mech->get_email;
+
+In scalar context returns first email in queue and fails a test if there are not exactly one emails in the queue.
+
+In list context returns all the emails (or none).
+
+=cut
+
+sub get_email {
+    my $mech   = shift;
+    my @emails = Email::Send::Test->emails;
+
+    return @emails if wantarray;
+
+    $mech->email_count_is(1) || return undef;
+    return $emails[0];
 }
 
 =head2 form_errors
