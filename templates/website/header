@@ -16,4 +16,4 @@
     </head>
     <body>
         {{ $heading_element_start }}{{ $heading }}{{ $heading_element_end }}
-        <div id="wrapper"><div id="content">
+        <div id="wrapper"><div id="mysociety">

@@ -436,7 +436,7 @@ form#mapForm .olTileImage {
 /* Printing */
 @media print {
     #map_box { float: none; margin: 0 auto; }
-    #content { max-width: none; }
+    #mysociety { max-width: none; }
     #side { margin-right: 0; }
 }
 

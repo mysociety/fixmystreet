@@ -85,14 +85,14 @@ blockquote {
     margin-left: 0.5em;
 }
 
-#content {
+#mysociety {
     width: 100%; /* Must specify a width or IE goes crazy wrong! */
     position: relative;
     margin: 0 auto;
     max-width: 60em;
 }
 
-/* Can't put the margin in #content because of above IE craziness */
+/* Can't put the margin in #mysociety because of above IE craziness */
 #wrapper {
     clear: both;
     margin: 0 2em 2em;
