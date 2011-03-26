@@ -45,8 +45,8 @@ sub display_map {
     $params{pre} ||= '';
     $params{post} ||= '';
     my $mid_point = TILE_WIDTH; # Map is 2 TILE_WIDTHs in size, square.
-    if ($q->{site} eq 'barnet') { # Map is c. 380px wide
-        $mid_point = 189;
+    if (my $mp = Cobrand::tilma_mid_point(Page::get_cobrand($q))) {
+        $mid_point = $mp;
     }
 
     # convert map center point to easting, northing

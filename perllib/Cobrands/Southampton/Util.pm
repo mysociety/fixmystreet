@@ -109,5 +109,9 @@ sub recent_photos {
     return Problems::recent_photos($num, $lat, $lon, $dist);
 }
 
+sub tilma_mid_point {
+    return 189;
+}
+
 1;
 
