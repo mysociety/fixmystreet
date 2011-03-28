@@ -14,6 +14,7 @@ use Test::More;
 use Web::Scraper;
 use Carp;
 use Email::Send::Test;
+use Digest::SHA1 'sha1_hex';
 
 =head1 NAME
 
@@ -52,6 +53,40 @@ sub logged_in_ok {
         "logged in" );
 }
 
+=head2 log_in_ok
+
+    $user = $mech->log_in_ok( $email_address );
+
+Log in with the email given. If email does not match an account then create one.
+
+=cut
+
+sub log_in_ok {
+    my $mech  = shift;
+    my $email = shift;
+
+    my $user =
+      FixMyStreet::App->model('DB::User')
+      ->find_or_create( { email => $email } );
+    ok $user, "found/created user for $email";
+
+    # store the old password and then change it
+    my $old_password_sha1 = $user->password;
+    $user->update( { password => sha1_hex('secret') } );
+
+    # log in
+    $mech->get_ok('/auth');
+    $mech->submit_form_ok(
+        { with_fields => { email => $email, password => 'secret' } },
+        "login using form" );
+    $mech->logged_in_ok;
+
+    # restore the password (if there was one)
+    $user->update( { password => $old_password_sha1 } ) if $old_password_sha1;
+
+    return $user;
+}
+
 =head2 log_out_ok
 
     $bool = $mech->log_out_ok(  );
@@ -64,6 +99,18 @@ sub log_out_ok {
     my $mech = shift;
     $mech->get_ok('/auth/logout');
     $mech->not_logged_in_ok;
+}
+
+sub delete_user {
+    my $mech = shift;
+    my $user = shift;
+
+    $mech->log_out_ok;
+    ok( $_->delete, "delete problem " . $_->title )    #
+      for $user->problems;
+    ok $user->delete, "delete test user " . $user->email;
+
+    return 1;
 }
 
 =head2 clear_emails_ok

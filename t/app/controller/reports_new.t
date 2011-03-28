@@ -376,9 +376,7 @@ subtest "test report creation for a user who does not have an account" => sub {
     $mech->logged_in_ok;
 
     # cleanup
-    $mech->log_out_ok;
-    ok $_->delete, "delete problem" for $user->problems;
-    ok $user->delete, "delete test user";
+    $mech->delete_user($user);
 };
 
 #### test report creation for a user who has account but is not logged in
@@ -389,9 +387,63 @@ subtest "test report creation for a user who does not have an account" => sub {
 # report is confirmed
 
 #### test report creation for user with account and logged in
-# come to site
-# fill in report
-# report is confirmed
+subtest "test report creation for a user who is logged in" => sub {
+
+    # check that the user does not exist
+    my $test_email = 'test-2@example.com';
+
+    $mech->clear_emails_ok;
+    my $user = $mech->log_in_ok($test_email);
+
+    # submit initial pc form
+    $mech->get_ok('/reports/new');
+    $mech->submit_form_ok( { with_fields => { pc => 'SW1A 1AA', } },
+        "submit location" );
+
+  TODO: {
+        local $TODO =
+"'/reports/<<id>>' not handled by catalyst yet - form creation redirects to there on success if logged in";
+        eval {
+            $mech->submit_form_ok(
+                {
+                    with_fields => {
+                        title         => 'Test Report',
+                        detail        => 'Test report details.',
+                        photo         => '',
+                        name          => 'Joe Bloggs',
+                        may_show_name => '1',
+                        email         => $test_email,
+                        phone         => '07903 123 456',
+                    }
+                },
+                "submit good details"
+            );
+        };
+    }
+
+    # find the report
+    my $report = $user->problems->first;
+    ok $report, "Found the report";
+
+    # check that we got redirected to /reports/
+    is $mech->uri->path, "/reports/" . $report->id, "redirected to report page";
+
+    # check that no emails have been sent
+    $mech->email_count_is(0);
+
+    # check report is confirmed and available
+    is $report->state, 'confirmed', "report is now confirmed";
+  TODO: {
+        local $TODO = "'/reports/<<id>>' not handled by catalyst yet";
+        $mech->get_ok( '/reports/' . $report->id );
+    }
+
+    # user is still logged in
+    $mech->logged_in_ok;
+
+    # cleanup
+    $mech->delete_user($user);
+};
 
 #### test uploading an image
 
