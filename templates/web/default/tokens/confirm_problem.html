@@ -1,0 +1,22 @@
+[% INCLUDE 'header.html', title => loc('Confirmation') %]
+
+<h1>[% loc('Confirmation') %]</h1>
+
+<p class="confirmed">
+[%    
+    loc('You have successfully confirmed your problem');
+
+    IF problem.council;
+        loc(' and <strong>we will now send it to the council</strong>');
+    END;
+    
+    tprintf(
+        loc( '. You can <a href="%s">view the problem on this site</a>.' ),
+        c.cobrand.url( '/report/' _ problem.id )
+    );
+%]
+</p>
+
+[% display_crossell_advert( problem.email, problem.name ) %]
+
+[% INCLUDE 'footer.html' %]

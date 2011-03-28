@@ -55,13 +55,15 @@ foreach my $test (
     },
   )
 {
-    $mech->get_ok('/reports/new');
-    $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
-        "bad location" );
-    is_deeply $mech->form_errors, $test->{errors},
-      "expected errors for pc '$test->{pc}'";
-    is_deeply $mech->pc_alternatives, $test->{pc_alternatives},
-      "expected alternatives for pc '$test->{pc}'";
+    subtest "test bad pc value '$test->{pc}'" => sub {
+        $mech->get_ok('/reports/new');
+        $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
+            "bad location" );
+        is_deeply $mech->form_errors, $test->{errors},
+          "expected errors for pc '$test->{pc}'";
+        is_deeply $mech->pc_alternatives, $test->{pc_alternatives},
+          "expected alternatives for pc '$test->{pc}'";
+    };
 }
 
 # check that exact queries result in the correct lat,lng
@@ -83,12 +85,14 @@ foreach my $test (
     },
   )
 {
-    $mech->get_ok('/reports/new');
-    $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
-        "good location" );
-    is_deeply $mech->form_errors, [], "no errors for pc '$test->{pc}'";
-    is_deeply $mech->extract_location, $test,
-      "got expected location for pc '$test->{pc}'";
+    subtest "check lat/lng for '$test->{pc}'" => sub {
+        $mech->get_ok('/reports/new');
+        $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
+            "good location" );
+        is_deeply $mech->form_errors, [], "no errors for pc '$test->{pc}'";
+        is_deeply $mech->extract_location, $test,
+          "got expected location for pc '$test->{pc}'";
+    };
 }
 
 # test that the various bit of form get filled in and errors correctly
@@ -280,37 +284,102 @@ foreach my $test (
     },
   )
 {
-    pass "--- $test->{msg} ---";
-    $mech->get_ok('/reports/new');
+    subtest "check form errors where $test->{msg}" => sub {
+        $mech->get_ok('/reports/new');
 
-    # submit initial pc form
-    $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
-        "submit location" );
-    is_deeply $mech->form_errors, [], "no errors for pc '$test->{pc}'";
+        # submit initial pc form
+        $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
+            "submit location" );
+        is_deeply $mech->form_errors, [], "no errors for pc '$test->{pc}'";
 
-    # submit the main form
-    $mech->submit_form_ok( { with_fields => $test->{fields} }, "submit form" );
+        # submit the main form
+        $mech->submit_form_ok( { with_fields => $test->{fields} },
+            "submit form" );
 
-    # check that we got the errors expected
-    is_deeply $mech->form_errors, $test->{errors}, "check errors";
+        # check that we got the errors expected
+        is_deeply $mech->form_errors, $test->{errors}, "check errors";
 
-    # check that fields have changed as expected
-    my $new_values = {
-        %{ $test->{fields} },     # values added to form
-        %{ $test->{changes} },    # changes we expect
+        # check that fields have changed as expected
+        my $new_values = {
+            %{ $test->{fields} },     # values added to form
+            %{ $test->{changes} },    # changes we expect
+        };
+        is_deeply $mech->visible_form_values, $new_values,
+          "values correctly changed";
     };
-    is_deeply $mech->visible_form_values, $new_values,
-      "values correctly changed";
-
 }
 
-#### test report creation for a user who does not have an account
-# come to site
-# fill in report
-# receive token
-# confirm token
-# report is confirmed
-# user is created and logged in
+subtest "test report creation for a user who does not have an account" => sub {
+    $mech->log_out_ok;
+    $mech->clear_emails_ok;
+
+    # check that the user does not exist
+    my $test_email = 'test-1@example.com';
+    ok !FixMyStreet::App->model('DB::User')->find( { email => $test_email } ),
+      "test user does not exist";
+
+    # submit initial pc form
+    $mech->get_ok('/reports/new');
+    $mech->submit_form_ok( { with_fields => { pc => 'SW1A 1AA', } },
+        "submit location" );
+    $mech->submit_form_ok(
+        {
+            with_fields => {
+                title         => 'Test Report',
+                detail        => 'Test report details.',
+                photo         => '',
+                name          => 'Joe Bloggs',
+                may_show_name => '1',
+                email         => 'test-1@example.com',
+                phone         => '07903 123 456',
+            }
+        },
+        "submit good details"
+    );
+
+    # check that we got the errors expected
+    is_deeply $mech->form_errors, [], "check there were no errors";
+
+    # check that the user has been created
+    my $user =
+      FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+    ok $user, "created new user";
+
+    # find the report
+    my $report = $user->problems->first;
+    ok $report, "Found the report";
+
+    # check that the report is not available yet.
+    is $report->state, 'unconfirmed', "report not confirmed";
+    is $mech->get( '/reports/' . $report->id )->code, 404, "report not found";
+
+    # receive token
+    my $email = $mech->get_email;
+    ok $email, "got an email";
+    like $email->body, qr/confirm the problem/i, "confirm the problem";
+
+    my ($url) = $email->body =~ m{(http://\S+)};
+    ok $url, "extracted confirm url '$url'";
+
+    # confirm token
+    $mech->get_ok($url);
+    $report->discard_changes;
+    is $report->state, 'confirmed', "Report is now confirmed";
+    is $report->state, 'confirmed', "report is now confirmed";
+
+  TODO: {
+        local $TODO = "'/reports/<<id>>' not handled by catalyst yet";
+        $mech->get_ok( '/reports/' . $report->id );
+    }
+
+    # user is created and logged in
+    $mech->logged_in_ok;
+
+    # cleanup
+    $mech->log_out_ok;
+    ok $_->delete, "delete problem" for $user->problems;
+    ok $user->delete, "delete test user";
+};
 
 #### test report creation for a user who has account but is not logged in
 # come to site
@@ -327,8 +396,6 @@ foreach my $test (
 #### test uploading an image
 
 #### test completing a partial report (eq flickr upload)
-
-#### test error cases when filling in a report
 
 #### possibly manual testing
 # create report without using map

@@ -66,5 +66,20 @@ sub tprintf {
     return sprintf $format, @args;
 }
 
+=head2 display_crossell_advert
+
+    [% display_crossell_advert( email, name ) %]
+
+Displays a crosssell advert if permitted by the cobrand.
+
+=cut
+
+sub display_crossell_advert {
+    my ( $self, $c, $email, $name ) = @_;
+
+    return unless $c->cobrand->allow_crosssell_adverts();
+    return CrossSell::display_advert( $c->req, $email, $name );
+}
+
 1;
 

@@ -27,8 +27,6 @@ sub main {
     if ($data) {
         if ($type eq 'update') {
             $out = confirm_update($q, $data);
-        } elsif ($type eq 'problem') {
-            $out = confirm_problem($q, $data);
         } elsif ($type eq 'questionnaire') {
             $out = add_questionnaire($q, $data, $token);
         }
@@ -116,69 +114,6 @@ sub confirm_update {
         my $alert_id = FixMyStreet::Alert::create($email, 'new_updates', $cobrand, $cobrand_data, $problem_id);
         FixMyStreet::Alert::confirm($alert_id);
     }
-
-    return $out;
-}
-
-sub confirm_problem {
-    my ($q, $id) = @_;
-    my $cobrand = Page::get_cobrand($q);
-    my ($council, $email, $name, $cobrand_data) = dbh()->selectrow_array("select council, email, name, cobrand_data from problem where id=?", {}, $id);
-
-    (my $domain = $email) =~ s/^.*\@//;
-    if (dbh()->selectrow_array('select email from abuse where lower(email)=? or lower(email)=?', {}, lc($email), lc($domain))) {
-        dbh()->do("update problem set state='hidden', lastupdate=ms_current_timestamp() where id=?", {}, $id);
-        return $q->p(_('Sorry, there has been an error confirming your problem.'));
-    } else {
-        dbh()->do("update problem set state='confirmed', confirmed=ms_current_timestamp(), lastupdate=ms_current_timestamp()
-            where id=? and state='unconfirmed'", {}, $id);
-    }
-    my $out;
-    if ($q->{site} eq 'emptyhomes') {
-        if ($council) {
-            $out = $q->p(_('Thank you for reporting an empty property on
-ReportEmptyHomes.com. We have emailed the lead officer for empty homes in the council
-responsible with details, and asked them to do whatever they can to get the
-empty property back into use as soon as possible.')) .
-$q->p(_('It is worth noting however that the process can sometimes be slow,
-especially if the property is in very poor repair or the owner is unwilling to
-act. In most cases it can take six months or more before you can expect to see
-anything change and sometimes there may be considerable barries to a property
-being brought back into use. This doesn&rsquo;t mean the council isn&rsquo;t
-doing anything. We encourage councils to update the website so you can
-see what is happening. It may be a long process, but you reporting your
-concerns about this property to the council is a valuable first step.')) . 
-$q->p(_('We may contact you periodically to ask if anything has changed
-with the property you reported.')) .
-$q->p(_('Thank you for using ReportEmptyHomes.com. Your action is already helping
-to resolve the UK&rsquo;s empty homes crisis.')) .
-$q->p('<a href="/report/' . $id . '">' . _('View your report') . '</a>.');
-        } else {
-            $out = $q->p(_('Thank you for reporting an empty property on ReportEmptyHomes.com.')) .
-$q->p('<a href="/report/' . $id . '">' . _('View your report') . '</a>.');
-        }
-    } else {
-        my $report_url = Cobrand::url($cobrand, "/report/$id", $q);
-        $out = $q->p({class => 'confirmed'},
-            _('You have successfully confirmed your problem')
-            . ($council ? _(' and <strong>we will now send it to the council</strong>') : '')
-            . sprintf(_('. You can <a href="%s">view the problem on this site</a>.'), $report_url)
-        );
-        my $display_advert = Cobrand::allow_crosssell_adverts($cobrand);
-        if ($display_advert) {
-             $out .= CrossSell::display_advert($q, $email, $name);
-        }
-        my %vars = (
-            url_report => $report_url,
-            url_home => Cobrand::url($cobrand, '/', $q),
-        );
-        my $cobrand_page = Page::template_include('confirmed-problem', $q, Page::template_root($q), %vars);
-        $out = $cobrand_page if $cobrand_page;
-    }
-
-    # Subscribe problem reporter to email updates
-    my $alert_id = FixMyStreet::Alert::create($email, 'new_updates', $cobrand, $cobrand_data, $id);
-    FixMyStreet::Alert::confirm($alert_id);
 
     return $out;
 }
