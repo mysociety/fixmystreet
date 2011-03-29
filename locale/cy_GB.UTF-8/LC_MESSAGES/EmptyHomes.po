@@ -797,7 +797,6 @@ msgid "Sorry, there has been an error confirming your empty property."
 msgstr "Sori, bu gwall wrth gadarnhau eich eiddo gwag."
 
 #: web/confirm.cgi:139
-#, fuzzy
 msgid ""
 "Thank you for reporting an empty property on\n"
 "ReportEmptyHomes.com. We have emailed the lead officer for empty homes in "
