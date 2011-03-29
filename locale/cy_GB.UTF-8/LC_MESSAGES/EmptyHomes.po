@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2011-03-21 13:15+0000\n"
+"POT-Creation-Date: 2011-03-29 15:40+0100\n"
 "PO-Revision-Date: 2009-07-10 14:20-0000\n"
 "Last-Translator: Mark Smith <Mark.Smith@trosol.co.uk>\n"
 "Language-Team: mySociety\n"
@@ -44,42 +44,42 @@ msgstr "Ymddiheuriadau! Mae rhywbeth wedi mynd o'i le."
 msgid "The text of the error was:"
 msgstr "Testun y gwall oedd:"
 
-#: perllib/Page.pm:195 web/contact.cgi:107
+#: perllib/Page.pm:197 web/contact.cgi:107
 msgid "reportemptyhomes.com"
 msgstr "reportemptyhomes.com"
 
-#: perllib/Page.pm:198 perllib/Page.pm:322
+#: perllib/Page.pm:200 perllib/Page.pm:324
 msgid "Report a property"
 msgstr "Rhoi gwybod am eiddo"
 
-#: perllib/Page.pm:199 perllib/Page.pm:323
+#: perllib/Page.pm:201 perllib/Page.pm:325
 msgid "Reports"
 msgstr "Adroddiadau"
 
-#: perllib/Page.pm:200 perllib/Page.pm:324
+#: perllib/Page.pm:202 perllib/Page.pm:326
 msgid "Get local reports"
 msgstr "Gweld adroddiadau lleol"
 
-#: perllib/Page.pm:201 perllib/Page.pm:325
+#: perllib/Page.pm:203 perllib/Page.pm:327
 msgid "FAQs"
 msgstr "Cwestiynau Cyffredin"
 
-#: perllib/Page.pm:202 web/about.cgi:19 web/about.cgi:21
+#: perllib/Page.pm:204 web/about.cgi:19 web/about.cgi:21
 msgid "About us"
 msgstr "Amdanom ni"
 
-#: perllib/Page.pm:223
+#: perllib/Page.pm:225
 msgid "Fix<span id=\"my\">My</span>Street"
 msgstr "Trwsio<span id=\"my\">Fy</span>Stryd"
 
-#: perllib/Page.pm:301
+#: perllib/Page.pm:303
 #, fuzzy
 msgid ""
 "This is a developer site; things might break at any time, and the database "
 "will be periodically deleted."
 msgstr "Safle datblygwr yw hwn; gallai pethau dorri unrhyw bryd."
 
-#: perllib/Page.pm:315
+#: perllib/Page.pm:317
 msgid ""
 "Built by <a href=\"http://www.mysociety.org/\">mySociety</a>, using some <a "
 "href=\"http://github.com/mysociety/fixmystreet\">clever</a>&nbsp;<a href="
@@ -91,7 +91,7 @@ msgstr ""
 "d=mysociety/services/TilMa\">god</a><a href=\"http://github.com/mysociety/"
 "fixmystreet\">clyfar</a>&nbsp;."
 
-#: perllib/Page.pm:317
+#: perllib/Page.pm:319
 #, fuzzy
 msgid ""
 "Built by <a href=\"http://www.mysociety.org/\">mySociety</a> and maintained "
@@ -104,15 +104,15 @@ msgstr ""
 "d=mysociety/services/TilMa\">god</a><a href=\"http://github.com/mysociety/"
 "fixmystreet\">clyfar</a>&nbsp;."
 
-#: perllib/Page.pm:321
+#: perllib/Page.pm:323
 msgid "Navigation"
 msgstr "Mordwyo  "
 
-#: perllib/Page.pm:326
+#: perllib/Page.pm:328
 msgid "Contact"
 msgstr "Cysylltu"
 
-#: perllib/Page.pm:328
+#: perllib/Page.pm:330
 msgid ""
 "<a href=\"http://www.mysociety.org/\"><img id=\"logo\" width=\"133\" height="
 "\"26\" src=\"/i/mysociety-dark.png\" alt=\"View mySociety.org\"><span id="
@@ -122,38 +122,38 @@ msgstr ""
 "\"26\" src=\"/i/mysociety-dark.png\" alt=\"View mySociety.org\"><span id="
 "\"logoie\"></span></a>"
 
-#: perllib/Page.pm:386
+#: perllib/Page.pm:388
 msgid "Error"
 msgstr "Gwall"
 
-#: perllib/Page.pm:448
+#: perllib/Page.pm:461
 msgid "your empty property will not be posted"
 msgstr "ni fydd eich eiddo gwag yn cael ei bostio"
 
-#: perllib/Page.pm:449
+#: perllib/Page.pm:462
 msgid ""
 "we'll hang on to your empty property report while you're checking your email."
 msgstr ""
 "byddwn yn dal gafael ar eich hysbysiad am eiddo gwag wrth i chi wirio eich e-"
 "bost."
 
-#: perllib/Page.pm:451
+#: perllib/Page.pm:464
 msgid "your update will not be posted"
 msgstr "ni fydd eich diweddariad yn cael ei bostio"
 
-#: perllib/Page.pm:452
+#: perllib/Page.pm:465
 msgid "we'll hang on to your update while you're checking your email."
 msgstr "byddwn yn dal gafael ar eich diweddariad wrth i chi wirio eich e-bost."
 
-#: perllib/Page.pm:454
+#: perllib/Page.pm:467
 msgid "your alert will not be activated"
 msgstr "ni fydd eich hysbysiad yn cael ei weithredu"
 
-#: perllib/Page.pm:455
+#: perllib/Page.pm:468
 msgid "we'll hang on to your alert while you're checking your email."
 msgstr "byddwn yn dal gafael ar eich hysbysiad wrth i chi wirio eich e-bost."
 
-#: perllib/Page.pm:462
+#: perllib/Page.pm:475
 #, perl-format
 msgid ""
 "<h1>Nearly Done! Now check your email...</h1>\n"
@@ -177,160 +177,160 @@ msgstr ""
 "os nad ydych, %s.</p>\n"
 "<p>(Peidiwch â phoeni &mdash; %s)</p>\n"
 
-#: perllib/Page.pm:489
+#: perllib/Page.pm:503
 msgid "today"
 msgstr "heddiw"
 
-#: perllib/Page.pm:513
+#: perllib/Page.pm:527
 msgid "less than a minute"
 msgstr "llai na munud"
 
-#: perllib/Page.pm:516
+#: perllib/Page.pm:530
 #, fuzzy, perl-format
 msgid "%d week"
 msgstr "wythnos"
 
-#: perllib/Page.pm:516
+#: perllib/Page.pm:530
 #, fuzzy, perl-format
 msgid "%d weeks"
 msgstr "wythnos"
 
-#: perllib/Page.pm:517
+#: perllib/Page.pm:531
 #, fuzzy, perl-format
 msgid "%d day"
 msgstr "diwrnod"
 
-#: perllib/Page.pm:517
+#: perllib/Page.pm:531
 #, fuzzy, perl-format
 msgid "%d days"
 msgstr "diwrnod"
 
-#: perllib/Page.pm:518
+#: perllib/Page.pm:532
 #, fuzzy, perl-format
 msgid "%d hour"
 msgstr "awr"
 
-#: perllib/Page.pm:518
+#: perllib/Page.pm:532
 #, fuzzy, perl-format
 msgid "%d hours"
 msgstr "awr"
 
-#: perllib/Page.pm:519
+#: perllib/Page.pm:533
 #, fuzzy, perl-format
 msgid "%d minute"
 msgstr "munud"
 
-#: perllib/Page.pm:519
+#: perllib/Page.pm:533
 #, fuzzy, perl-format
 msgid "%d minutes"
 msgstr "munud"
 
-#: perllib/Page.pm:539
+#: perllib/Page.pm:553
 #, perl-format
 msgid "%s, reported anonymously at %s"
 msgstr "Rhoddodd %s wybod yn ddi-enw am %s"
 
-#: perllib/Page.pm:541
+#: perllib/Page.pm:555
 #, perl-format
 msgid "%s, reported by %s at %s"
 msgstr "Adroddwyd am %s gan %s am %s"
 
-#: perllib/Page.pm:544 perllib/Page.pm:546 perllib/Page.pm:552
-#: perllib/Page.pm:554 web/index.cgi:391 web/index.cgi:562 web/index.cgi:569
-#: bin/send-reports:180
+#: perllib/Page.pm:558 perllib/Page.pm:560 perllib/Page.pm:566
+#: perllib/Page.pm:568 web/index.cgi:391 web/index.cgi:562 web/index.cgi:569
+#: bin/send-reports:181
 msgid "Other"
 msgstr "Arall"
 
-#: perllib/Page.pm:545
+#: perllib/Page.pm:559
 #, perl-format
 msgid "Reported by %s in the %s category anonymously at %s"
 msgstr "Adroddwyd am hyn gan %s yn y categori %s yn ddi-enw, am %s"
 
-#: perllib/Page.pm:547
+#: perllib/Page.pm:561
 #, perl-format
 msgid "Reported by %s in the %s category by %s at %s"
 msgstr "Adroddwyd gan %s yn y categori %s trwy %s am %s"
 
-#: perllib/Page.pm:549
+#: perllib/Page.pm:563
 #, perl-format
 msgid "Reported by %s anonymously at %s"
 msgstr "Adroddwyd gan %s yn ddi-enw am %s"
 
-#: perllib/Page.pm:551
+#: perllib/Page.pm:565
 #, perl-format
 msgid "Reported by %s by %s at %s"
 msgstr "Adroddwyd gan %s trwy %s am %s"
 
-#: perllib/Page.pm:553
+#: perllib/Page.pm:567
 #, perl-format
 msgid "Reported in the %s category anonymously at %s"
 msgstr "Adroddiwyd yn y categori %s yn ddi-enw am %s"
 
-#: perllib/Page.pm:555
+#: perllib/Page.pm:569
 #, perl-format
 msgid "Reported in the %s category by %s at %s"
 msgstr "Adroddwyd yn y categori %s gan %s am %s"
 
-#: perllib/Page.pm:557 web/contact.cgi:212
+#: perllib/Page.pm:571 web/contact.cgi:212
 #, perl-format
 msgid "Reported anonymously at %s"
 msgstr "Adroddwyd yn ddi-enw am %s"
 
-#: perllib/Page.pm:559 web/contact.cgi:213
+#: perllib/Page.pm:573 web/contact.cgi:213
 #, perl-format
 msgid "Reported by %s at %s"
 msgstr "Adroddwyd gan %s am %s"
 
-#: perllib/Page.pm:564
+#: perllib/Page.pm:578
 msgid "the map was not used so pin location may be inaccurate"
 msgstr ""
 "ni ddefnyddiwyd y map felly mae'n bosibl na fydd lleoliad y pin yn gywir"
 
-#: perllib/Page.pm:572
+#: perllib/Page.pm:586
 #, perl-format
 msgid "Sent to %s %s later"
 msgstr "Anfonwyd at %s %s yn ddiweddarach"
 
-#: perllib/Page.pm:576
+#: perllib/Page.pm:590
 msgid "Not reported to council"
 msgstr "Ni roddwyd gwybod i'r cyngor am hyn"
 
-#: perllib/Page.pm:627 web-admin/index.cgi:522 web-admin/index.cgi:646
+#: perllib/Page.pm:641 web-admin/index.cgi:522 web-admin/index.cgi:646
 msgid "Updates"
 msgstr "Diweddariadau"
 
-#: perllib/Page.pm:631
+#: perllib/Page.pm:645
 #, perl-format
 msgid "Posted by %s at %s"
 msgstr "Cofnodwyd gan %s am %s"
 
-#: perllib/Page.pm:633
+#: perllib/Page.pm:647
 #, perl-format
 msgid "Posted anonymously at %s"
 msgstr "Cofnodwyd yn ddi-enw am %s"
 
-#: perllib/Page.pm:636
+#: perllib/Page.pm:650
 msgid "marked as returned to use"
 msgstr "cofnodwyd bod hyn wedi'i adfer i'w ddefnyddio"
 
-#: perllib/Page.pm:637
+#: perllib/Page.pm:651
 msgid "reopened"
 msgstr "wedi'i ailagor"
 
-#: perllib/Page.pm:645 web/index.cgi:1075
+#: perllib/Page.pm:659 web/index.cgi:1075
 msgid "Offensive? Unsuitable? Tell us"
 msgstr "Sarhaus? Anaddas? Rhowch wybod i ni"
 
-#: perllib/Page.pm:672
+#: perllib/Page.pm:686
 msgid "That postcode was not recognised, sorry."
 msgstr "Ni chafodd y cod post hwnnw ei gydnabod, sori."
 
-#: perllib/Page.pm:678
+#: perllib/Page.pm:692
 msgid ""
 "Sorry, that appears to be a Crown dependency postcode, which we don't cover."
 msgstr ""
 
-#: perllib/Page.pm:681 perllib/FixMyStreet/Geocode.pm:145
+#: perllib/Page.pm:695 perllib/FixMyStreet/Geocode.pm:145
 msgid ""
 "We do not cover Northern Ireland, I'm afraid, as our licence doesn't include "
 "any maps for the region."
@@ -338,7 +338,7 @@ msgstr ""
 "Nid ydym yn ymdrin â Gogledd Iwerddon, yn anffodus, gan nad yw ein trwydded "
 "yn cynnwys unrhyw fapiau ar gyfer y rhanbarth."
 
-#: perllib/Page.pm:712
+#: perllib/Page.pm:726
 msgid "Please upload a JPEG image only"
 msgstr "Dim ond llun JPEG y dylech lwytho i fyny."
 
@@ -395,22 +395,21 @@ msgstr ""
 #: perllib/FixMyStreet/Map/OSM/StreetView.pm:42
 #: perllib/FixMyStreet/Map/Google.pm:41
 #: perllib/FixMyStreet/Map/Tilma/OL/StreetView.pm:51
-#: perllib/FixMyStreet/Map/Tilma/Original/StreetView.pm:23
+#: perllib/FixMyStreet/Map/Tilma/Original/StreetView.pm:21
 msgid ""
 "Map contains Ordnance Survey data &copy; Crown copyright and database right "
 "2010."
 msgstr ""
 
-#: perllib/FixMyStreet/Map/OSM.pm:72
-#: perllib/FixMyStreet/Map/OSM/CycleMap.pm:42
+#: perllib/FixMyStreet/Map/OSM.pm:76
 msgid ""
 "Map &copy; <a id=\"osm_link\" href=\"http://www.openstreetmap.org/"
 "\">OpenStreetMap</a> and contributors, <a href=\"http://creativecommons.org/"
 "licenses/by-sa/2.0/\">CC-BY-SA</a>"
 msgstr ""
 
-#: perllib/FixMyStreet/Map/OSM.pm:117
-#: perllib/FixMyStreet/Map/Tilma/Original.pm:158
+#: perllib/FixMyStreet/Map/OSM.pm:115
+#: perllib/FixMyStreet/Map/Tilma/Original.pm:155
 msgid "Empty property"
 msgstr "Eiddo gwag"
 
@@ -421,14 +420,14 @@ msgid ""
 msgstr ""
 
 #: perllib/FixMyStreet/Map/Tilma/OL/1_10k.pm:51
-#: perllib/FixMyStreet/Map/Tilma/Original/1_10k.pm:23
+#: perllib/FixMyStreet/Map/Tilma/Original/1_10k.pm:21
 #, fuzzy
 msgid ""
 "&copy; Crown copyright. All rights reserved. Ministry of Justice "
 "100037819&nbsp;2008."
 msgstr "Hawlfraint y Goron. Cedwir pob hawl. Y Weinyddiaeth Amddiffyn"
 
-#: perllib/FixMyStreet/Map/Tilma/Original.pm:82
+#: perllib/FixMyStreet/Map/Tilma/Original.pm:86
 msgid "Unable to fetch the map tiles from the tile server."
 msgstr ""
 
@@ -853,28 +852,35 @@ msgstr ""
 "helpu i \n"
 "ddatrys argyfwng tai gwag y DU."
 
-#: web/confirm.cgi:155 web/confirm.cgi:158
+#: web/confirm.cgi:155 web/confirm.cgi:161
 msgid "View your report"
 msgstr "Gweld eich adroddiad"
 
 #: web/confirm.cgi:157
-msgid "Thank you for reporting an empty property on ReportEmptyHomes.com."
-msgstr "Diolch am roi gwybod am eiddo gwag ar ReportEmptyHomes.com."
+msgid ""
+"Thank you for reporting this empty property on ReportEmptyHomes.com.\n"
+"At present the report cannot be sent through to the council for this area. "
+"We\n"
+"are working with councils to link them into the system so that as many "
+"areas\n"
+"as possible will be covered."
+msgstr ""
+"Diolch am roi gwybod am eiddo gwag ar ReportEmptyHomes.com."
 
-#: web/confirm.cgi:163
+#: web/confirm.cgi:166
 msgid "You have successfully confirmed your empty property"
 msgstr "Rydych wedi cadarnhau eich eiddo gwag yn llwyddiannus"
 
-#: web/confirm.cgi:164
+#: web/confirm.cgi:167
 msgid " and <strong>we will now send it to the council</strong>"
 msgstr " a <strong>byddwn nawr yn ei anfon at y cyngor</strong>"
 
-#: web/confirm.cgi:165
+#: web/confirm.cgi:168
 #, perl-format
 msgid ". You can <a href=\"%s\">view the empty property on this site</a>."
 msgstr ". Gallwch <a href=\"%s\">weld yr eiddo gwag ar y safle hwn</a>."
 
-#: web/confirm.cgi:189
+#: web/confirm.cgi:192
 msgid ""
 "Thanks, glad to hear it's been returned to use! Could we just ask if you "
 "have ever reported an empty property to a council before?"
@@ -883,23 +889,23 @@ msgstr ""
 "i ni'ch holi chi, a ydych erioed wedi rhoi gwybod i'r cyngor am eiddo gwag "
 "cyn hyn?"
 
-#: web/confirm.cgi:190 web/questionnaire.cgi:234 web/questionnaire.cgi:323
+#: web/confirm.cgi:193 web/questionnaire.cgi:234 web/questionnaire.cgi:323
 #: web-admin/index.cgi:340 web-admin/index.cgi:341 web-admin/index.cgi:503
 #: web-admin/index.cgi:590 web-admin/index.cgi:608
 msgid "Yes"
 msgstr "Ydw"
 
-#: web/confirm.cgi:191 web/questionnaire.cgi:235 web/questionnaire.cgi:324
+#: web/confirm.cgi:194 web/questionnaire.cgi:235 web/questionnaire.cgi:324
 #: web-admin/index.cgi:340 web-admin/index.cgi:341 web-admin/index.cgi:503
 #: web-admin/index.cgi:590 web-admin/index.cgi:608
 msgid "No"
 msgstr "Nac ydw"
 
-#: web/confirm.cgi:192 web/index.cgi:790
+#: web/confirm.cgi:195 web/index.cgi:790
 msgid "Submit"
 msgstr "Anfon"
 
-#: web/confirm.cgi:237
+#: web/confirm.cgi:240
 #, perl-format
 msgid ""
 "Thank you &mdash; you can <a href=\"%s\">view your updated empty property</"
@@ -1393,7 +1399,7 @@ msgstr "Ffotograff:"
 msgid "Name:"
 msgstr "Enw:"
 
-#: web/index.cgi:739 bin/send-reports:89 web-admin/index.cgi:631
+#: web/index.cgi:739 bin/send-reports:91 web-admin/index.cgi:631
 msgid "Phone:"
 msgstr "Rhif ffôn:"
 
@@ -1921,7 +1927,7 @@ msgstr "Ni roddwyd gwybod i'r cyngor am hyn"
 msgid "(not sent to council)"
 msgstr "Ni roddwyd gwybod i'r cyngor am hyn"
 
-#: bin/send-reports:91
+#: bin/send-reports:93
 msgid ""
 "This web page also contains a photo of the empty property, provided by the "
 "user."
@@ -1929,11 +1935,11 @@ msgstr ""
 "Mae'r dudalen we hon hefyd yn cynnwys ffotograff o'r eiddo gwag, wedi'i "
 "ddarparu gan y defnyddiwr."
 
-#: bin/send-reports:97
+#: bin/send-reports:99
 msgid "To view a map of the precise location of this issue"
 msgstr "Gweld map o union leoliad y broblem hon"
 
-#: bin/send-reports:98
+#: bin/send-reports:100
 msgid ""
 "The user could not locate the empty property on a map, but to see the area "
 "around the location they entered"
@@ -1941,21 +1947,21 @@ msgstr ""
 "Ni allai'r defnyddiwr leoli'r eiddo gwag ar fap, ond i weld yr ardal o "
 "gwmpas y lleoliad a gofnodwyd ganddynt "
 
-#: bin/send-reports:181
+#: bin/send-reports:182
 #, fuzzy
 msgid "this type of local empty property"
 msgstr "Anfonwch fanylion eiddo gwag lleol newydd ataf i drwy'r e-bost"
 
-#: bin/send-reports:185
+#: bin/send-reports:186
 #, fuzzy, perl-format
 msgid "Category: %s"
 msgstr "Categori:"
 
-#: bin/send-reports:188
+#: bin/send-reports:189
 msgid " and "
 msgstr ""
 
-#: bin/send-reports:189
+#: bin/send-reports:190
 msgid ""
 "This email has been sent to both councils covering the location of the empty "
 "property, as the user did not categorise it; please ignore it if you're not "
@@ -1963,7 +1969,7 @@ msgid ""
 "empty property this is so we can add it to our system."
 msgstr ""
 
-#: bin/send-reports:195
+#: bin/send-reports:196
 #, perl-format
 msgid ""
 "We realise this empty property might be the responsibility of %s; however, "
@@ -3528,6 +3534,9 @@ msgstr ""
 "I roi'r gorau i dderbyn negeseuon e-bost pan fydd diweddariadau newydd yn "
 "ymddangos am yr eiddo hwn,\n"
 "dilynwch y ddolen hon: <?=$values['unsubscribe_url']?>\n"
+
+#~ msgid "Thank you for reporting an empty property on ReportEmptyHomes.com."
+#~ msgstr "Diolch am roi gwybod am eiddo gwag ar ReportEmptyHomes.com."
 
 #~ msgid "Enter a nearby GB postcode, or street name and area:"
 #~ msgstr "Cofnodwch god post Prydeinig, neu enw stryd ac ardal gerllaw:"
