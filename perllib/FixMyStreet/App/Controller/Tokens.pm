@@ -20,7 +20,7 @@ Act on the various tokens that can be submitted.
 
 =head2 confirm_problem
 
-    /[Pp]/([0-9A-Za-z]{16,18}).*$
+    /P/([0-9A-Za-z]{16,18}).*$
 
 Confirm a problem - url appears in emails sent to users after they create the
 problem but are not logged in.
@@ -66,6 +66,21 @@ sub confirm_problem : Path('/P') {
     $c->authenticate( { email => $problem->user->email }, 'no_password' );
 
     return 1;
+}
+
+=head2 redirect_to_partial_problem
+
+    /P/...
+
+Redirect user to continue filling in a partial problem.
+
+=cut
+
+sub redirect_to_partial_problem : Path('/L') {
+    my ( $self, $c, $token_code ) = @_;
+
+    my $url = $c->uri_for( "/reports/new", { partial => $token_code } );
+    return $c->res->redirect( $url );
 }
 
 =head2 load_auth_token

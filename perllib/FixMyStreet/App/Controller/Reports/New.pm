@@ -11,6 +11,8 @@ use List::MoreUtils qw(uniq);
 use HTML::Entities;
 use mySociety::MaPit;
 use Path::Class;
+use Utils;
+use mySociety::EmailUtil;
 
 =head1 NAME
 
@@ -101,6 +103,173 @@ sub report_new : Path : Args(0) {
           && $c->forward('redirect_or_confirm_creation');
 }
 
+=head2 report_import
+
+Action to accept report creations from iPhones and other mobile apps. URL is
+'/import' to be compatible with existing apps.
+
+=cut
+
+sub report_import : Path('/import') {
+    my ( $self, $c ) = @_;
+
+    # If this is not a POST then just print out instructions for using page
+    return unless $c->req->method eq 'POST';
+
+    # anything else we return is plain text
+    $c->res->content_type('text/plain; charset=utf-8');
+
+    # use strict;
+    # use Standard;
+    # use mySociety::AuthToken;
+    # use mySociety::Config;
+    # use mySociety::EvEl;
+    # use mySociety::Locale;
+
+    my %input =
+      map { $_ => $c->req->param($_) || '' } (
+        'service', 'subject',  'detail', 'name', 'email', 'phone',
+        'easting', 'northing', 'lat',    'lon',  'id',    'phone_id',
+      );
+
+    my @errors;
+
+    # Get our location
+    my $latitude  = $input{lat} ||= 0;
+    my $longitude = $input{lon} ||= 0;
+    if (
+        !( $latitude || $longitude )    # have not been given lat or lon
+        && ( $input{easting} && $input{northing} )    # but do have e and n
+      )
+    {
+        ( $latitude, $longitude ) =
+          Utils::convert_en_to_latlon( $input{easting}, $input{northing} );
+    }
+
+    # handle the photo upload
+    $c->forward( 'process_photo_upload', [ { rotate_photo => 1 } ] );
+    my $photo = $c->stash->{upload_fileid};
+    if ( my $error = $c->stash->{photo_error} ) {
+        push @errors, $error;
+    }
+
+    push @errors, 'You must supply a service' unless $input{service};
+    push @errors, 'Please enter a subject'    unless $input{subject} =~ /\S/;
+    push @errors, 'Please enter your name'    unless $input{name} =~ /\S/;
+
+    if ( $input{email} !~ /\S/ ) {
+        push @errors, 'Please enter your email';
+    }
+    elsif ( !mySociety::EmailUtil::is_valid_email( $input{email} ) ) {
+        push @errors, 'Please enter a valid email';
+    }
+
+    if ( $latitude && $c->config->{COUNTRY} eq 'GB' ) {
+        eval { Utils::convert_latlon_to_en( $latitude, $longitude ); };
+        push @errors,
+          "We had a problem with the supplied co-ordinates - outside the UK?"
+          if $@;
+    }
+
+    unless ( $photo || ( $latitude || $longitude ) ) {
+        push @errors, 'Either a location or a photo must be provided.';
+    }
+
+    # if we have errors then we should bail out
+    if (@errors) {
+        my $body = join '', map { "ERROR:$_\n" } @errors;
+        $c->res->body($body);
+        return;
+    }
+
+### leaving commented out for now as the values stored here never appear to
+### get used and the new user accounts might make them redundant anyway.
+    #
+    # # Store for possible future use
+    # if ( $input{id} || $input{phone_id} ) {
+    #     my $id = $input{id} || $input{phone_id};
+    #     my $already =
+    #       dbh()
+    #       ->selectrow_array(
+    #         'select id from partial_user where service=? and nsid=?',
+    #         {}, $input{service}, $id );
+    #     unless ($already) {
+    #         dbh()->do(
+    #             'insert into partial_user (service, nsid, name, email, phone)'
+    #               . ' values (?, ?, ?, ?, ?)',
+    #             {},
+    #             $input{service},
+    #             $id,
+    #             $input{name},
+    #             $input{email},
+    #             $input{phone}
+    #         );
+    #     }
+    # }
+
+    # find or create the user
+    my $report_user = $c->model('DB::User')->find_or_create(
+        {
+            email => $input{email},
+            name  => $input{name},
+            phone => $input{phone}
+        }
+    );
+
+    # create a new report (don't save it yet)
+    my $report = $c->model('DB::Problem')->new(
+        {
+            user      => $report_user,
+            postcode  => '',
+            latitude  => $latitude,
+            longitude => $longitude,
+            title     => $input{subject},
+            detail    => $input{detail},
+            name      => $input{name},
+            service   => $input{service},
+            state     => 'partial',
+            used_map  => 1,
+            anonymous => 0,
+            category  => '',
+            areas     => '',
+
+        }
+    );
+
+    # If there was a photo add that too
+    if ( my $fileid = $c->stash->{upload_fileid} ) {
+        my $file = file( $c->config->{UPLOAD_CACHE}, "$fileid.jpg" );
+        my $blob = $file->slurp;
+        $file->remove;
+        $report->photo($blob);
+    }
+
+    # save the report;
+    $report->insert();
+
+    my $token =
+      $c->model("DB::Token")
+      ->create( { scope => 'partial', data => $report->id } );
+
+    $c->stash->{report} = $report;
+    $c->stash->{token_url} = $c->uri_for( '/L', $token->token );
+
+    my $sender = mySociety::Config::get('CONTACT_EMAIL');
+    $sender =~ s/team/fms-DO-NOT-REPLY/;
+
+    # TODO - used to be sent using EvEl
+    $c->send_email(
+        'partial.txt',
+        {
+            to   => $report->user->email,
+            from => $sender
+        }
+    );
+
+    $c->res->body('SUCCESS');
+    return 1;
+}
+
 =head2 initialize_report
 
 Create the report and set up some basics in it. If there is a partial report
@@ -140,12 +309,21 @@ sub initialize_report : Private {
           ->search( { id => $id, state => 'partial' } )          #
           ->first;
 
-        # no point keeping it if it is done.
-        $token->delete unless $report;
+        if ($report) {
 
-        # save the token to delete at the end
-        $c->stash->{partial_token} = $token if $report;
+            # log the problem creation user in to the site
+            $c->authenticate( { email => $report->user->email },
+                'no_password' );
 
+            # save the token to delete at the end
+            $c->stash->{partial_token} = $token if $report;
+
+        }
+        else {
+
+            # no point keeping it if it is done.
+            $token->delete;
+        }
     }
 
     # If we didn't find a partial then create a new one
@@ -185,7 +363,7 @@ sub determine_location : Private {
     # If in UK and we have a lat,lon coocdinate check it is in UK
     # FIXME - is this a redundant check as we already see if report has a body
     # to handle it?
-    if ( !$error_msg && $c->config->{COUNTRY} eq 'GB' ) {
+    if ( !$error_msg && $lat && $c->config->{COUNTRY} eq 'GB' ) {
         eval { Utils::convert_latlon_to_en( $lat, $lon ); };
         $error_msg =
           _( "We had a problem with the supplied co-ordinates - outside the UK?"
@@ -531,7 +709,10 @@ sub process_user : Private {
     my $email = lc $params{email};
     $email =~ s{\s+}{}g;
 
-    my $report_user = $c->model('DB::User')->find_or_new( { email => $email } );
+    my $report = $c->stash->{report};
+    my $report_user                              #
+      = ( $report ? $report->user : undef )
+      || $c->model('DB::User')->find_or_new( { email => $email } );
 
     # set the user's name and phone (if given)
     $report_user->name( _trim_text( $params{name} ) );
@@ -603,7 +784,7 @@ sub process_report : Private {
         'title', 'detail', 'pc',                 #
         'name', 'may_show_name',                 #
         'category',                              #
-        'partial', 'skipped',                    #
+        'partial', 'skipped', 'submit_problem'   #
       );
 
     # load the report
@@ -613,6 +794,9 @@ sub process_report : Private {
     $report->postcode( $params{pc} );
     $report->latitude( $c->stash->{latitude} );
     $report->longitude( $c->stash->{longitude} );
+
+    # Short circuit unless the form has been submitted
+    return 1 unless $params{submit_problem};
 
     # set some simple bool values (note they get inverted)
     $report->anonymous( $params{may_show_name} ? 0 : 1 );
@@ -715,7 +899,11 @@ sub process_photo : Private {
 }
 
 sub process_photo_upload : Private {
-    my ( $self, $c ) = @_;
+    my ( $self, $c, $args ) = @_;
+
+    # setup args and set defaults
+    $args ||= {};
+    $args->{rotate_photo} ||= 0;
 
     # check for upload or return
     my $upload = $c->req->upload('photo')
@@ -729,7 +917,8 @@ sub process_photo_upload : Private {
     }
 
     # convert the photo into a blob (also resize etc)
-    my $photo_blob = eval { Page::process_photo( $upload->fh ) };
+    my $photo_blob =
+      eval { Page::process_photo( $upload->fh, $args->{rotate_photo} ) };
     if ( my $error = $@ ) {
         my $format = _(
 "That image doesn't appear to have uploaded correctly (%s), please try again."

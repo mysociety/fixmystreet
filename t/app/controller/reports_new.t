@@ -30,12 +30,6 @@ foreach my $test (
         pc_alternatives => [],
     },
     {
-        pc => 'ZZ9 9ZZ',
-        errors =>
-          ['We had a problem with the supplied co-ordinates - outside the UK?'],
-        pc_alternatives => [],
-    },
-    {
         pc     => 'glenthorpe',
         errors => [],
         pc_alternatives => [   # TODO - should filter out these non-UK addresses

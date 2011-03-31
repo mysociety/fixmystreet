@@ -1,0 +1,14 @@
+fix reports/123 to report/123
+
+test creation of partial reports
+
+scan through code for all fixmes
+
+make email sending respect STAGING
+
+convert templates for new micro sites (or switch old code to use new headers and footers)
+
+should we ditch flickr import? (does not seem to be getting huge usage and those using it would probably report using another method: http://www.flickr.com/search/?w=all&q=fixmystreet&m=tags)
+
+add js to maps
+

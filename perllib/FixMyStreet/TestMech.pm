@@ -182,6 +182,24 @@ sub form_errors {
     return $result->{errors} || [];
 }
 
+=head2 import_errors
+
+    my $arrayref = $mech->import_errors;
+
+Takes the text output from the import post result and returns all the errors as
+an arrayref.
+
+=cut
+
+sub import_errors {
+    my $mech = shift;
+    my @errors =    #
+      grep { $_ }   #
+      map { s{^ERROR:\s*(.*)$}{$1}g ? $_ : undef; }    #
+      split m/\n+/, $mech->response->content;
+    return \@errors;
+}
+
 =head2 pc_alternatives
 
     my $arrayref = $mech->pc_alternatives;
