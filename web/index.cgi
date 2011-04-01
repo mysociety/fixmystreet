@@ -197,7 +197,7 @@ EOF
          $out .= $q->h2(_('Recently reported problems')) . ' <ul>' if @$probs;
          foreach (@$probs) {
              $out .= '<li><a href="/report/' . $_->{id} . '">'. ent($_->{title});
-             $out .= '</a>';
+             $out .= '</a></li>';
          }
          $out .= '</ul>' if @$probs;
     $out .= '</div>';

@@ -52,7 +52,7 @@ ul#contacts li a {font-size:1.2em; padding:0 8px 0 10px; font-weight:400;}
 
 /* ******* Start of Left Menu Bar ******* */
 
-#menuBar {width:200px; height:auto; float:left; margin:25px 0 0 43px; padding-bottom:25px;}
+#menuBar {width:200px; height:auto; float:left; margin:25px 0 0 43px; padding-bottom:25px; clear:both; }
 
 ul#leftMenu {height:auto; width:199px; float:left; background:#e9eef7 url(bg-box.gif) no-repeat -1px 100%; padding:0 0 10px 0; margin:5px 0 0 0; overflow:hidden;}
 ul#leftMenu li {list-style-type:none; width:199px; padding:0;}
