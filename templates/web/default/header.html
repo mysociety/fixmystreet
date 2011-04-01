@@ -5,6 +5,8 @@
         <script type="text/javascript" src="/yui/utilities.js"></script>
         <script type="text/javascript" src="/js.js"></script>
 
+        [% extra_js_verbatim IF extra_js_verbatim %]
+
         <title>[% title | html %] :: [% c.cobrand.site_title %]</title>
         <style type="text/css">@import url("/css/core.css"); @import url("/css/main.css");</style>
         <!--[if LT IE 7]>

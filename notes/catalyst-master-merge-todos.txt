@@ -6,7 +6,5 @@ convert templates for new micro sites (or switch old code to use new headers and
 
 should we ditch flickr import? (does not seem to be getting huge usage and those using it would probably report using another method: http://www.flickr.com/search/?w=all&q=fixmystreet&m=tags)
 
-add js to maps
-
 add 'remember me on this computer' to auth login. What should default session lifetime be?
 
