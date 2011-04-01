@@ -8,15 +8,6 @@ use Web::Scraper;
 my $mech = FixMyStreet::TestMech->new;
 $mech->get_ok('/report/new');
 
-# TODO: {
-#     local $TODO = "paths to '/report/new' not handled by catalyst yet";
-#     fail "Test that clicking on map sends user here";
-#     fail "Test that clicking on 'skip map' link sends user here";
-#     fail
-#       "Test that clicking on 'Report a Problem' in header link sends user here";
-#     fail "Test that partial token sends user here";
-# }
-
 # test various locations on inital search box
 foreach my $test (
     {
