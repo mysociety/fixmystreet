@@ -380,10 +380,34 @@ subtest "test report creation for a user who is logged in" => sub {
     $mech->clear_emails_ok;
     my $user = $mech->log_in_ok($test_email);
 
+    # setup the user.
+    ok $user->update(
+        {
+            name  => 'Test User',
+            phone => '01234 567 890',
+        }
+      ),
+      "set users details";
+
     # submit initial pc form
     $mech->get_ok('/report/new');
     $mech->submit_form_ok( { with_fields => { pc => 'SW1A 1AA', } },
         "submit location" );
+
+    # check that the fields are correctly prefilled
+    is_deeply(
+        $mech->visible_form_values,
+        {
+            title         => '',
+            detail        => '',
+            may_show_name => '1',
+            email         => $test_email,
+            name          => 'Test User',
+            phone         => '01234 567 890',
+            photo         => '',
+        },
+        "user's details prefilled"
+    );
 
   TODO: {
         local $TODO =
@@ -397,7 +421,6 @@ subtest "test report creation for a user who is logged in" => sub {
                         photo         => '',
                         name          => 'Joe Bloggs',
                         may_show_name => '1',
-                        email         => $test_email,
                         phone         => '07903 123 456',
                     }
                 },

@@ -79,7 +79,7 @@ sub report_new : Path : Args(0) {
 
     # set up the page
     $c->forward('setup_page');
-    
+
     # create the report - loading a partial if available
     $c->forward('initialize_report');
 
@@ -278,8 +278,8 @@ Setup the page - notably add the map js to the stash
 =cut
 
 sub setup_page : Private {
-    my ( $self, $c) = @_;
-    
+    my ( $self, $c ) = @_;
+
     $c->stash->{extra_js_verbatim} = FixMyStreet::Map::header_js();
 
     return 1;
@@ -304,45 +304,59 @@ sub initialize_report : Private {
     # create a new one. Stick it on the stash.
     my $report = undef;
 
-    for my $partial ( scalar $c->req->param('partial') ) {
+    if ( my $partial = scalar $c->req->param('partial') ) {
 
-        # did we find a token
-        last unless $partial;
+        for (1) {    # use as pseudo flow control
 
-        # is it in the database
-        my $token =
-          $c->model("DB::Token")
-          ->find( { scope => 'partial', token => $partial } )    #
-          || last;
+            # did we find a token
+            last unless $partial;
 
-        # can we get an id from it?
-        my $id = $token->data                                    #
-          || last;
+            # is it in the database
+            my $token =
+              $c->model("DB::Token")
+              ->find( { scope => 'partial', token => $partial } )    #
+              || last;
 
-        # load the related problem
-        $report = $c->model("DB::Problem")                       #
-          ->search( { id => $id, state => 'partial' } )          #
-          ->first;
+            # can we get an id from it?
+            my $id = $token->data                                    #
+              || last;
 
-        if ($report) {
+            # load the related problem
+            $report = $c->model("DB::Problem")                       #
+              ->search( { id => $id, state => 'partial' } )          #
+              ->first;
 
-            # log the problem creation user in to the site
-            $c->authenticate( { email => $report->user->email },
-                'no_password' );
+            if ($report) {
 
-            # save the token to delete at the end
-            $c->stash->{partial_token} = $token if $report;
+                # log the problem creation user in to the site
+                $c->authenticate( { email => $report->user->email },
+                    'no_password' );
 
-        }
-        else {
+                # save the token to delete at the end
+                $c->stash->{partial_token} = $token if $report;
 
-            # no point keeping it if it is done.
-            $token->delete;
+            }
+            else {
+
+                # no point keeping it if it is done.
+                $token->delete;
+            }
         }
     }
+    else {
 
-    # If we didn't find a partial then create a new one
-    $report ||= $c->model('DB::Problem')->new( {} );
+        # If we didn't find a partial then create a new one
+        $report = $c->model('DB::Problem')->new( {} );
+
+        # If we have a user logged in let's prefill some values for them.
+        if ( $c->user ) {
+            my $user = $c->user->obj;
+            $report->user($user);
+            $report->name( $user->name );
+        }
+
+    }
+
     $c->stash->{report} = $report;
 
     return 1;
@@ -810,7 +824,7 @@ sub process_report : Private {
 
     # Short circuit unless the form has been submitted
     return 1 unless $params{submit_problem};
-    
+
     # set some simple bool values (note they get inverted)
     $report->anonymous( $params{may_show_name} ? 0 : 1 );
     $report->used_map( $params{skipped}        ? 0 : 1 );
