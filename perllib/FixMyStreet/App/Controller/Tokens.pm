@@ -79,7 +79,7 @@ Redirect user to continue filling in a partial problem.
 sub redirect_to_partial_problem : Path('/L') {
     my ( $self, $c, $token_code ) = @_;
 
-    my $url = $c->uri_for( "/reports/new", { partial => $token_code } );
+    my $url = $c->uri_for( "/report/new", { partial => $token_code } );
     return $c->res->redirect( $url );
 }
 

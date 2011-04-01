@@ -1,4 +1,4 @@
-package FixMyStreet::App::Controller::Reports::New;
+package FixMyStreet::App::Controller::Report::New;
 
 use Moose;
 use namespace::autoclean;
@@ -16,7 +16,7 @@ use mySociety::EmailUtil;
 
 =head1 NAME
 
-FixMyStreet::App::Controller::Reports::New
+FixMyStreet::App::Controller::Report::New
 
 =head1 DESCRIPTION
 
@@ -88,7 +88,7 @@ sub report_new : Path : Args(0) {
           && $c->forward('load_councils');
 
     # create a problem from the submitted details
-    $c->stash->{template} = "reports/new/fill_in_details.html";
+    $c->stash->{template} = "report/new/fill_in_details.html";
     $c->forward('setup_categories_and_councils');
     $c->forward('generate_map');
 
@@ -1129,7 +1129,7 @@ sub redirect_or_confirm_creation : Private {
 
     # If confirmed send the user straigh there.
     if ( $report->confirmed ) {
-        my $report_uri = $c->uri_for( '/reports', $report->id );
+        my $report_uri = $c->uri_for( '/report', $report->id );
         $c->res->redirect($report_uri);
         $c->detach;
     }

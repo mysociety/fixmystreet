@@ -938,7 +938,7 @@ sub display_location {
     
     my $url_skip = NewURL(
         $q,
-        -url       => '/reports/new',
+        -url       => '/report/new',
         -retain    => 1,
         x          => undef,
         y          => undef,

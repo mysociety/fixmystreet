@@ -6,10 +6,10 @@ use FixMyStreet::TestMech;
 use Web::Scraper;
 
 my $mech = FixMyStreet::TestMech->new;
-$mech->get_ok('/reports/new');
+$mech->get_ok('/report/new');
 
 # TODO: {
-#     local $TODO = "paths to '/reports/new' not handled by catalyst yet";
+#     local $TODO = "paths to '/report/new' not handled by catalyst yet";
 #     fail "Test that clicking on map sends user here";
 #     fail "Test that clicking on 'skip map' link sends user here";
 #     fail
@@ -50,7 +50,7 @@ foreach my $test (
   )
 {
     subtest "test bad pc value '$test->{pc}'" => sub {
-        $mech->get_ok('/reports/new');
+        $mech->get_ok('/report/new');
         $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
             "bad location" );
         is_deeply $mech->form_errors, $test->{errors},
@@ -80,7 +80,7 @@ foreach my $test (
   )
 {
     subtest "check lat/lng for '$test->{pc}'" => sub {
-        $mech->get_ok('/reports/new');
+        $mech->get_ok('/report/new');
         $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
             "good location" );
         is_deeply $mech->form_errors, [], "no errors for pc '$test->{pc}'";
@@ -279,7 +279,7 @@ foreach my $test (
   )
 {
     subtest "check form errors where $test->{msg}" => sub {
-        $mech->get_ok('/reports/new');
+        $mech->get_ok('/report/new');
 
         # submit initial pc form
         $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
@@ -313,7 +313,7 @@ subtest "test report creation for a user who does not have an account" => sub {
       "test user does not exist";
 
     # submit initial pc form
-    $mech->get_ok('/reports/new');
+    $mech->get_ok('/report/new');
     $mech->submit_form_ok( { with_fields => { pc => 'SW1A 1AA', } },
         "submit location" );
     $mech->submit_form_ok(
@@ -345,7 +345,7 @@ subtest "test report creation for a user who does not have an account" => sub {
 
     # check that the report is not available yet.
     is $report->state, 'unconfirmed', "report not confirmed";
-    is $mech->get( '/reports/' . $report->id )->code, 404, "report not found";
+    is $mech->get( '/report/' . $report->id )->code, 404, "report not found";
 
     # receive token
     my $email = $mech->get_email;
@@ -362,8 +362,8 @@ subtest "test report creation for a user who does not have an account" => sub {
     is $report->state, 'confirmed', "report is now confirmed";
 
   TODO: {
-        local $TODO = "'/reports/<<id>>' not handled by catalyst yet";
-        $mech->get_ok( '/reports/' . $report->id );
+        local $TODO = "'/report/<<id>>' not handled by catalyst yet";
+        $mech->get_ok( '/report/' . $report->id );
     }
 
     # user is created and logged in
@@ -390,13 +390,13 @@ subtest "test report creation for a user who is logged in" => sub {
     my $user = $mech->log_in_ok($test_email);
 
     # submit initial pc form
-    $mech->get_ok('/reports/new');
+    $mech->get_ok('/report/new');
     $mech->submit_form_ok( { with_fields => { pc => 'SW1A 1AA', } },
         "submit location" );
 
   TODO: {
         local $TODO =
-"'/reports/<<id>>' not handled by catalyst yet - form creation redirects to there on success if logged in";
+"'/report/<<id>>' not handled by catalyst yet - form creation redirects to there on success if logged in";
         eval {
             $mech->submit_form_ok(
                 {
@@ -419,8 +419,8 @@ subtest "test report creation for a user who is logged in" => sub {
     my $report = $user->problems->first;
     ok $report, "Found the report";
 
-    # check that we got redirected to /reports/
-    is $mech->uri->path, "/reports/" . $report->id, "redirected to report page";
+    # check that we got redirected to /report/
+    is $mech->uri->path, "/report/" . $report->id, "redirected to report page";
 
     # check that no emails have been sent
     $mech->email_count_is(0);
@@ -428,8 +428,8 @@ subtest "test report creation for a user who is logged in" => sub {
     # check report is confirmed and available
     is $report->state, 'confirmed', "report is now confirmed";
   TODO: {
-        local $TODO = "'/reports/<<id>>' not handled by catalyst yet";
-        $mech->get_ok( '/reports/' . $report->id );
+        local $TODO = "'/report/<<id>>' not handled by catalyst yet";
+        $mech->get_ok( '/report/' . $report->id );
     }
 
     # user is still logged in

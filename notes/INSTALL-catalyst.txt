@@ -102,6 +102,6 @@ Run all the tests using:
 
 or a specific test in verbose mode using:
 
-  prove -lv t/app/controller/reports_new.t
+  prove -lv t/app/controller/report_new.t
 
 For all the lovely options do 'prove --help'. Note I've made no attempt to make the tests be able to run in parallel, the database fiddling would not be worth it.

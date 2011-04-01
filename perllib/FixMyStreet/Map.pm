@@ -38,7 +38,7 @@ sub header {
     my $cobrand = Page::get_cobrand($q);
     my $cobrand_form_elements =
       Cobrand::form_elements( $cobrand, 'mapForm', $q );
-    my $form_action = Cobrand::url( $cobrand, '/reports/new', $q );
+    my $form_action = Cobrand::url( $cobrand, '/report/new', $q );
     my $encoding = '';
     $encoding = ' enctype="multipart/form-data"' if $type == 2;
     my $pc = $q->param('pc') || '';

@@ -11,18 +11,18 @@
 %]
 
 [% IF area_ids_to_list.size == 0 %]
-    [% INCLUDE 'reports/new/no_councils_text.html' %]
+    [% INCLUDE 'report/new/no_councils_text.html' %]
 [% ELSIF area_ids_to_list.size == all_councils.size %]
-    [% INCLUDE 'reports/new/all_councils_text.html' %]
+    [% INCLUDE 'report/new/all_councils_text.html' %]
 [% ELSE %]    
-    [% INCLUDE 'reports/new/some_councils_text.html' %]
+    [% INCLUDE 'report/new/some_councils_text.html' %]
 [% END %]
 
 
 [% IF skipped %]
     [% loc('Please fill in the form below with details of the problem, and describe the location as precisely as possible in the details box.') %]
 [% ELSE %]
-    [% INCLUDE 'reports/new/fill_in_details_text.html' %]
+    [% INCLUDE 'report/new/fill_in_details_text.html' %]
 [% END %]
 
 <input type="hidden" name="latitude"  value="[% latitude  | html %]">
@@ -36,7 +36,7 @@
 
 <div id="problem_form">
 
-[% INCLUDE 'reports/new/form_heading.html' %]
+[% INCLUDE 'report/new/form_heading.html' %]
 
 <div id="fieldset">
 
@@ -136,7 +136,7 @@
     <small>[% loc('(optional)') %]</small>
 </div>
 
-[% INCLUDE 'reports/new/notes.html' %]
+[% INCLUDE 'report/new/notes.html' %]
 
 [% IF partial_token %]
     <input type="hidden" name="partial" value="[% partial_token.token %]">
