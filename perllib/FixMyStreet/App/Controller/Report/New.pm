@@ -54,9 +54,7 @@ accurate as we'd like. Default is false.
 
 upload_fileid: set if there is an uploaded file (might not be needed if we use the Catalyst upload handlers)
 
-anonymous: bool - false if the user wants this report to be anonymous. NOTE -
-this is the inverse of what you expect. FIXME - rename to 'may_show_name' to be
-clearer.
+may_show_name: bool - false if the user wants this report to be anonymous.
 
 title
 
@@ -378,8 +376,6 @@ sub determine_location : Private {
     );
 
     # If in UK and we have a lat,lon coocdinate check it is in UK
-    # FIXME - is this a redundant check as we already see if report has a body
-    # to handle it?
     if ( !$error_msg && $lat && $c->config->{COUNTRY} eq 'GB' ) {
         eval { Utils::convert_latlon_to_en( $lat, $lon ); };
         $error_msg =
@@ -582,7 +578,7 @@ sub load_councils : Private {
     return 1;
 }
 
-# FIXME - should not be here.
+# TODO - should not be here.
 # These are country specific tweaks that should be in the cobrands
 sub _remove_redundant_councils {
     my $all_councils = shift;
@@ -814,7 +810,7 @@ sub process_report : Private {
 
     # Short circuit unless the form has been submitted
     return 1 unless $params{submit_problem};
-
+    
     # set some simple bool values (note they get inverted)
     $report->anonymous( $params{may_show_name} ? 0 : 1 );
     $report->used_map( $params{skipped}        ? 0 : 1 );
