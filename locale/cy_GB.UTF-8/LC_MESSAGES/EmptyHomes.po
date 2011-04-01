@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2011-03-29 15:40+0100\n"
+"POT-Creation-Date: 2011-04-01 13:38+0100\n"
 "PO-Revision-Date: 2009-07-10 14:20-0000\n"
 "Last-Translator: Mark Smith <Mark.Smith@trosol.co.uk>\n"
 "Language-Team: mySociety\n"
@@ -864,8 +864,7 @@ msgid ""
 "are working with councils to link them into the system so that as many "
 "areas\n"
 "as possible will be covered."
-msgstr ""
-"Diolch am roi gwybod am eiddo gwag ar ReportEmptyHomes.com."
+msgstr "Diolch am roi gwybod am eiddo gwag ar ReportEmptyHomes.com."
 
 #: web/confirm.cgi:166
 msgid "You have successfully confirmed your empty property"
@@ -1248,6 +1247,12 @@ msgstr "Adeilad cyhoeddus gwag - ysgol, ysbyty, ac ati."
 #: web/index.cgi:580
 msgid "Property type:"
 msgstr "Math o eiddo:"
+
+#: web/index.cgi:638
+msgid ""
+"Please note your report has <strong>not yet been sent</strong>. Choose a "
+"category and add further information below, then submit."
+msgstr ""
 
 #: web/index.cgi:641
 msgid ""

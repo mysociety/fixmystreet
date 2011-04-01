@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2011-03-29 15:40+0100\n"
+"POT-Creation-Date: 2011-04-01 13:38+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
@@ -1065,6 +1065,12 @@ msgstr ""
 
 #: web/index.cgi:580
 msgid "Property type:"
+msgstr ""
+
+#: web/index.cgi:638
+msgid ""
+"Please note your report has <strong>not yet been sent</strong>. Choose a "
+"category and add further information below, then submit."
 msgstr ""
 
 #: web/index.cgi:641

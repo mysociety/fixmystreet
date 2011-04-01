@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FixMyStreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2011-03-29 15:40+0100\n"
+"POT-Creation-Date: 2011-04-01 13:38+0100\n"
 "PO-Revision-Date: 2011-03-31 09:12MET\n"
 "Last-Translator: Petter Reinholdtsen <pere@hungry.com>\n"
 "Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
@@ -1170,6 +1170,12 @@ msgstr "Tom offentlig bygning - skole, sykehos, etc."
 #: web/index.cgi:580
 msgid "Property type:"
 msgstr "Type egenskap:"
+
+#: web/index.cgi:638
+msgid ""
+"Please note your report has <strong>not yet been sent</strong>. Choose a "
+"category and add further information below, then submit."
+msgstr ""
 
 #: web/index.cgi:641
 msgid ""
