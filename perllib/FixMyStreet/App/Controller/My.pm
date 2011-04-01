@@ -20,10 +20,15 @@ Catalyst Controller.
 
 =cut
 
-# FIXME - only logged in users should get to here.
-
 sub my : Path : Args(0) {
     my ( $self, $c ) = @_;
+
+    # FIXME - handle not being logged in more elegantly
+    unless ( $c->user ) {
+        $c->res->redirect( $c->uri_for('/auth') );
+        $c->detach;
+    }
+
 }
 
 __PACKAGE__->meta->make_immutable;
