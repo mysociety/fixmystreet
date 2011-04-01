@@ -1,5 +1,3 @@
-scan through code for all fixmes
-
 make email sending respect STAGING
 
 convert templates for new micro sites (or switch old code to use new headers and footers)
@@ -8,3 +6,6 @@ should we ditch flickr import? (does not seem to be getting huge usage and those
 
 add 'remember me on this computer' to auth login. What should default session lifetime be?
 
+rss links
+
+tracking code
