@@ -9,7 +9,7 @@
             <ul>
                 <li class="section"><a href="/">FixMyStreet</a>
                 <ul>
-                <li class="section">{{ ($ENV{REQUEST_URI} eq '/') ? '<strong>Report a problem</strong>' : '<a href="/">Report a problem</a>' }}</li>
+                <li class="section">{{ ($ENV{REQUEST_URI} eq '/report/new') ? '<strong>Report a problem</strong>' : '<a href="/report/new">Report a problem</a>' }}</li>
                 <li class="section">{{ ($ENV{REQUEST_URI} eq '/reports/Barnet') ? '<strong>All reports</strong>' : '<a href="/reports/Barnet">All reports</a>' }}</li>
                 <li class="section">{{ ($ENV{REQUEST_URI} eq '/alert') ? '<strong>Local alerts</strong>' : '<a href="/alert">Local alerts</a>' }}</li>
                 <li class="section">{{ ($ENV{REQUEST_URI} eq '/faq') ? '<strong>Help</strong>' : '<a href="/faq">Help</a>' }}</li>

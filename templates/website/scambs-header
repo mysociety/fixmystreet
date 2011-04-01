@@ -69,7 +69,7 @@
     <div id="left">
         <div id="leftnav">
 	<ul>
-	<li class="first"><a href="/">Report a problem</a>
+	<li class="first"><a href="/report/new">Report a problem</a>
 	<li class="first">About
 	<li class="first">Recent successes
 	<li class="first">Name and shame

@@ -355,7 +355,7 @@ EOF
 </div></div>
 <h2 class="v">$params{navigation}</h2>
 <ul id="navigation">
-<li><a href="/">$params{report}</a></li>
+<li><a href="/report/new">$params{report}</a></li>
 <li><a href="/reports">$params{reports}</a></li>
 <li><a href="/alert$params{pc}">$params{alerts}</a></li>
 <li><a href="/faq">$params{help}</a></li>
