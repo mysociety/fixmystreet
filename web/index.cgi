@@ -633,9 +633,9 @@ EOF
         if (my $token = $input{partial}) {
             $partial_id = mySociety::AuthToken::retrieve('partial', $token);
             if ($partial_id) {
-                $vars{form_start} .= $q->p({id=>'unknown'}, 'Please note your report has
-                <strong>not yet been sent</strong>. Choose a category
-                and add further information below, then submit.');
+                $vars{form_start} .=
+                    $q->p({ id => 'unknown' },
+                          _('Please note your report has <strong>not yet been sent</strong>. Choose a category and add further information below, then submit.'));
             }
         }
         $vars{text_located} = $q->p(_('You have located the problem at the point marked with a purple pin on the map.

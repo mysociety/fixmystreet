@@ -142,7 +142,7 @@ foreach my $row (@$unsent) {
         # XXX Needs locks!
         my @all_councils = split /,|\|/, $row->{council};
         my ($councils, $missing) = $row->{council} =~ /^([\d,]+)(?:\|([\d,]+))?/;
-        my @councils = split /,/, $councils;
+        my @councils = split(/,/, $councils);
         $areas_info = mySociety::MaPit::call('areas', \@all_councils);
         my (@dear, %recips);
         my $all_confirmed = 1;

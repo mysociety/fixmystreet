@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: FixMyStreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2011-03-29 15:40+0100\n"
-"PO-Revision-Date: 2011-02-27 13:36MET\n"
+"PO-Revision-Date: 2011-03-31 09:12MET\n"
 "Last-Translator: Petter Reinholdtsen <pere@hungry.com>\n"
 "Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
 "MIME-Version: 1.0\n"
@@ -1488,7 +1488,7 @@ msgstr "Denne saken er gammel og med ukjent status."
 
 #: web/index.cgi:1051 web/index.cgi:1092
 msgid "This problem has been fixed"
-msgstr "Denne saken er løst."
+msgstr "Denne saken er løst"
 
 #: web/index.cgi:1076
 msgid "More problems nearby"
@@ -1830,9 +1830,8 @@ msgid "Problems within %s, FixMyStreet"
 msgstr "Problemer innenfor %s, Fiksgatami"
 
 #: web/reports.cgi:333
-#, fuzzy
 msgid "(sent to both)"
-msgstr "(ikke rapportert til administrasjonen)"
+msgstr "(sent til begge)"
 
 #: web/reports.cgi:334
 msgid "(not sent to council)"
@@ -3414,6 +3413,3 @@ msgid ""
 "To stop receiving emails when there are new updates on this property,\n"
 "please follow this link: <?=$values['unsubscribe_url']?>\n"
 msgstr ""
-
-#~ msgid "Thank you for reporting an empty property on ReportEmptyHomes.com."
-#~ msgstr "Takk for at du rapporterer en tom eiendom på ReportEmptyHomes.com."
