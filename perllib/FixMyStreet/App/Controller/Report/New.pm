@@ -1032,9 +1032,6 @@ Save the user and the report.
 Be smart about the user - only set the name and phone if user did not exist
 before or they are currently logged in. Otherwise discard any changes.
 
-Save the problem as unconfirmed. FIXME - change this behaviour with respect to
-the user's logged in status.
-
 =cut
 
 sub save_user_and_report : Private {
@@ -1044,14 +1041,11 @@ sub save_user_and_report : Private {
 
     # Save or update the user if appropriate
     if ( !$report_user->in_storage ) {
-        $report_user->insert();    # FIXME - set user state to 'unconfirmed'
+        $report_user->insert();    
     }
     elsif ( $c->user && $report_user->id == $c->user->id ) {
         $report_user->update();
-
-        # we can also confirm the report straight away
-        $report->state('confirmed');
-        $report->confirmed( \'ms_current_timestamp()' ); # FIXME - move to model
+        $report->confirm;
     }
     else {
 

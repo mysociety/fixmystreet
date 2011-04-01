@@ -164,4 +164,27 @@ sub is_from_abuser {
       || undef;
 }
 
+=head2 confirm
+
+    $bool = $problem->confirm(  );
+    $problem->update;
+
+
+Set the state to 'confirmed' and put current time into 'confirmed' field. This
+is a no-op if the report is already confirmed.
+
+NOTE - does not update storage - call update or insert to do that.
+
+=cut
+
+sub confirm {
+    my $self = shift;
+
+    return if $self->state eq 'confirmed';
+
+    $self->state('confirmed');
+    $self->confirmed( \'ms_current_timestamp()' );
+    return 1;
+}
+
 1;
