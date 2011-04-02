@@ -46,6 +46,10 @@ define('OPTION_GEO_CACHE', '/cache/');
 define('OPTION_GOOGLE_MAPS_API_KEY', '');
 define('OPTION_BING_MAPS_API_KEY', '');
 
+define('OPTION_LONDON_REPORTIT_URL', '');
+define('OPTION_LONDON_REPORTIT_KEY', '');
+define('OPTION_LONDON_REPORTIT_SECRET', '');
+
 define('OPTION_MAPIT_URL', 'http://mapit.mysociety.org/');
 define('OPTION_MAP_TYPE', 'Tilma::Original::1_10k');
 define('OPTION_EVEL_URL', 'http://services.mysociety.org/evel');
