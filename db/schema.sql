@@ -137,6 +137,11 @@ create table problem (
     phone text not null,
     anonymous boolean not null,
 
+    -- External information
+    external_id text not null,
+    external_body text not null,
+    external_team text not null,
+
     -- Metadata
     created timestamp not null default ms_current_timestamp(),
     confirmed timestamp,
