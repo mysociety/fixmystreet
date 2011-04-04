@@ -8,6 +8,7 @@ use FixMyStreet::Cobrand;
 use Memcached;
 use Problems;
 use mySociety::Email;
+use FixMyStreet::Map;
 
 use Catalyst (
     'Static::Simple',    #
@@ -157,6 +158,8 @@ sub setup_cobrand {
     Problems::set_site_restriction_with_cobrand_object($cobrand);
 
     Memcached::set_namespace( FixMyStreet->config('BCI_DB_NAME') . ":" );
+
+    FixMyStreet::Map::set_map_class( $c->request->param('map') );
 
     return $cobrand;
 }
