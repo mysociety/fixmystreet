@@ -21,12 +21,17 @@ use CronFns;
 
 use FixMyStreet::App;
 
+use BarnetWSDL;
 use EastHantsWSDL;
 use Utils;
 use mySociety::Config;
 use mySociety::EmailUtil;
 use mySociety::MaPit;
 use mySociety::Web qw(ent);
+
+# specific council numbers
+use constant COUNCIL_ID_BARNET     => 2489;
+use constant COUNCIL_ID_EAST_HANTS => 2330;
 
 # Set up site, language etc.
 my ($verbose, $nomail) = CronFns::options();
@@ -131,9 +136,12 @@ while (my $row = $unsent->next) {
         foreach my $council (@councils) {
             my $name = $areas_info->{$council}->{name};
             push @dear, $name;
-            if ($council == 2330) { # E. Hants have a web service
+            if ($council == COUNCIL_ID_EAST_HANTS) { # E. Hants have a web service
                 $send_web = 'easthants';
                 $h{category} = 'Customer Services' if $h{category} eq 'Other';
+            } elsif ($council == COUNCIL_ID_BARNET) { # Barnet have a web service
+                $send_web = 'barnet';                
+                $h{category} = 'BARNET CRM'; # FIXME force category (by arrangement with Barnet)
             } elsif ($areas_info->{$council}->{type} eq 'LBO') { # London
                 $send_web = 'london';
             } else {
@@ -243,6 +251,11 @@ while (my $row = $unsent->next) {
         if (!$nomail) {
             $result *= post_easthants_message(%h);
         }
+    } elsif ($send_web eq 'barnet') {
+        $h{message} = construct_barnet_message(%h);
+        if (!$nomail) {
+            $result *= post_barnet_message(%h);
+        }
     } elsif ($send_web eq 'london') {
         $h{message} = construct_london_message(%h);
         if (!$nomail) {
@@ -337,6 +350,59 @@ sub post_easthants_message {
     } otherwise {
         my $e = shift;
         print "Caught an error: $e\n";
+    };
+    return $return;
+}
+
+# TODO: currently just blind copy of construct_easthants_message, normally all Barnet reports will go via the web service (?)
+sub construct_barnet_message {
+    my %h = @_;
+    my $message = '';
+    $message .= "[ This report was also sent to the district council covering the location of the problem, as the user did not categorise it; please ignore if you're not the correct council to deal with the issue. ]\n\n"
+        if $h{multiple};
+    $message .= <<EOF;
+Subject: $h{title}
+
+Details: $h{detail}
+
+$h{fuzzy}, or to provide an update on the problem, please visit the following link:
+
+$h{url}
+
+$h{closest_address}
+EOF
+    return $message;
+}
+
+my $barnet_service;
+sub post_barnet_message {
+    my %h = @_;
+    my $return = 1;
+    $barnet_service ||= BarnetWSDL->on_fault(sub { my($soap, $res) = @_; die ref $res ? $res->faultstring : $soap->transport->status, "\n"; });
+    try {
+        my $kbid = $h{category}; # TODO: KBID is 50-char category ID: map our category -> Barnet KBID
+                                 # TODO: certainly won't validate until we are using KBID values provided by Barnet
+        my $message = ent(encode_utf8($h{message}));
+        my $name = ent(encode_utf8($h{name}));
+        my $location = $h{easting_northing}; # TODO: need to construct complex type for this: it's actually GEOCODE within BAPI_TTET_ADDRESS_COM:
+                                             # comprising: COUNTRY2, REGION, COUNTY, CITY, POSTALCODE, STREET, STREETNUMBER, GEOCODE
+
+        # TODO: username/password authentication will be required to access the webservice
+        
+        my $result = $barnet_service->Z_CRM_SERVICE_ORDER_CREATE(
+            '',         # ET_RETURN (?)
+            $message,   # IT_PROBLEM_DESC (SAP defines this as a table of text lines:  might need this broken up?)
+            $h{email},  # IV_CUST_EMAIL
+            $name,      # IV_CUST_NAME
+            $kbid,      # IV_KBID 
+            $h{id},     # IV_PROBLEM_ID
+            $location,  # IV_PROBLEM_LOC (see above)
+            '',         # IV_PROBLEM_SUB (?)  
+        );
+        $return = 0 if $result eq 'Report received';
+    } otherwise {
+        my $e = shift;
+        print "Caught an error: $e\n"; # anticipate: DUPLICATE_ORDER
     };
     return $return;
 }
