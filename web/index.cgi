@@ -12,7 +12,6 @@ use Utils;
 use Encode;
 use Error qw(:try);
 use File::Slurp;
-use RABX;
 use CGI::Carp;
 use POSIX qw(strcoll);
 use URI::Escape;
@@ -198,7 +197,7 @@ EOF
          $out .= $q->h2(_('Recently reported problems')) . ' <ul>' if @$probs;
          foreach (@$probs) {
              $out .= '<li><a href="/report/' . $_->{id} . '">'. ent($_->{title});
-             $out .= '</a>';
+             $out .= '</a></li>';
          }
          $out .= '</ul>' if @$probs;
     $out .= '</div>';
@@ -260,7 +259,7 @@ sub submit_update {
     $h{url} = $base . '/C/' . mySociety::AuthToken::store('update', { id => $id, add_alert => $input{add_alert} } );
     dbh()->commit();
 
-    my $out = Page::send_email($q, $input{rznvy}, $input{name}, 'update', %h);
+    my $out = Page::send_confirmation_email($q, $input{rznvy}, $input{name}, 'update', %h);
     return $out;
 }
 
@@ -433,7 +432,7 @@ Please <a href="/contact">let us know what went on</a> and we\'ll look into it.'
         $h{url} = $base . '/P/' . mySociety::AuthToken::store('problem', $id);
         dbh()->commit();
 
-        $out = Page::send_email($q, $input{email}, $input{name}, 'problem', %h);
+        $out = Page::send_confirmation_email($q, $input{email}, $input{name}, 'problem', %h);
 
     }
     return $out;
@@ -500,8 +499,10 @@ sub display_form {
             $longitude = $lon;
         }
     } elsif ($pin_x && $pin_y) {
-        # tilma map was clicked on
-        ($latitude, $longitude)  = FixMyStreet::Map::click_to_wgs84($pin_tile_x, $pin_x, $pin_tile_y, $pin_y);
+
+        # Map was clicked on (tilma, or non-JS OpenLayers, for example)
+        ($latitude, $longitude) = FixMyStreet::Map::click_to_wgs84($q, $pin_tile_x, $pin_x, $pin_tile_y, $pin_y);
+
     } elsif ( $input{partial} && $input{pc} && !length $input{latitude} && !length $input{longitude} ) {
         my $error;
         try {
@@ -516,6 +517,9 @@ sub display_form {
         $latitude  = $input_h{latitude};
         $longitude = $input_h{longitude};
     }
+
+    # Shrink, as don't need accuracy plus we want them as English strings
+    ($latitude, $longitude) = map { Utils::truncate_coordinate($_) } ( $latitude, $longitude );
 
     # Look up councils and do checks for the point we've got
     my @area_types = Cobrand::area_types($cobrand);
@@ -606,6 +610,8 @@ please specify the closest point on land.')) unless %$all_councils;
        my $form_action = Cobrand::url($cobrand, '/', $q); 
        $vars{form_start} = <<EOF;
 <form action="$form_action" method="post" name="mapSkippedForm"$enctype>
+<input type="hidden" name="latitude" value="$latitude">
+<input type="hidden" name="longitude" value="$longitude">
 <input type="hidden" name="pc" value="$input_h{pc}">
 <input type="hidden" name="skipped" value="1">
 $cobrand_form_elements
@@ -627,9 +633,9 @@ EOF
         if (my $token = $input{partial}) {
             $partial_id = mySociety::AuthToken::retrieve('partial', $token);
             if ($partial_id) {
-                $vars{form_start} .= $q->p({id=>'unknown'}, 'Please note your report has
-                <strong>not yet been sent</strong>. Choose a category
-                and add further information below, then submit.');
+                $vars{form_start} .=
+                    $q->p({ id => 'unknown' },
+                          _('Please note your report has <strong>not yet been sent</strong>. Choose a category and add further information below, then submit.'));
             }
         }
         $vars{text_located} = $q->p(_('You have located the problem at the point marked with a purple pin on the map.
@@ -717,10 +723,6 @@ photo of the problem if you have one), etc.'));
     } else {
         $vars{text_help} .= $q->p(_('Please fill in details of the problem below.'));
     }
-
-    $vars{text_help} .= '
-<input type="hidden" name="latitude" value="' . $latitude . '">
-<input type="hidden" name="longitude" value="' . $longitude . '">';
 
     if (@errors) {
         $vars{errors} = '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
@@ -843,7 +845,7 @@ sub display_location {
     return front_page( $q, @errors )
       unless ( $x && $y )
       || $input{pc}
-      || ( defined $latitude && defined $longitude );
+      || ( $latitude ne '' && $longitude ne '' );
 
     if ( $x && $y ) {
 
@@ -894,7 +896,7 @@ sub display_location {
     }
     my $on_list = '';
     foreach (@$on_map) {
-        my $report_url = NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, 'y' => undef);
+        my $report_url = NewURL($q, -url => '/report/' . $_->{id});
         $report_url = Cobrand::url($cobrand, $report_url, $q);  
         $on_list .= '<li><a href="' . $report_url . '">';
         $on_list .= ent($_->{title}) . '</a> <small>(';
@@ -907,7 +909,7 @@ sub display_location {
 
     my $around_list = '';
     foreach (@$around_map) {
-        my $report_url = Cobrand::url($cobrand, NewURL($q, -retain => 1, -url => '/report/' . $_->{id}, pc => undef, x => undef, 'y' => undef), $q);  
+        my $report_url = Cobrand::url($cobrand, NewURL($q, -url => '/report/' . $_->{id}), $q);
         $around_list .= '<li><a href="' . $report_url . '">';
         my $dist = int($_->{distance}*10+0.5);
         $dist = $dist / 10;
@@ -929,9 +931,14 @@ sub display_location {
         $hide_link = NewURL($q, -retain=>1, no_pins=>1);
         $hide_text = _('Hide pins');
     }
-    my $map_links = "<p id='sub_map_links'><a id='hide_pins_link' rel='nofollow' href='$hide_link'>$hide_text</a> | <a id='all_pins_link' rel='nofollow' href='$all_link'>$all_text</a></p> <input type='hidden' id='all_pins' name='all_pins' value='$input_h{all_pins}'>";
+    my $map_links = "<p id='sub_map_links'><a id='hide_pins_link' rel='nofollow' href='$hide_link'>$hide_text</a>";
+    if (mySociety::Config::get('COUNTRY') eq 'GB') {
+        $map_links .= " | <a id='all_pins_link' rel='nofollow' href='$all_link'>$all_text</a></p> <input type='hidden' id='all_pins' name='all_pins' value='$input_h{all_pins}'>";
+    } else {
+        $map_links .= "</p>";
+    }
 
-    # truncate the lat,lon for nicer rss urls
+    # truncate the lat,lon for nicer rss urls, and strings for outputting
     my ( $short_lat, $short_lon ) =
       map { Utils::truncate_coordinate($_) }    #
       ( $latitude, $longitude );    
@@ -956,14 +963,11 @@ sub display_location {
     } else {
         $rss_url = "/rss/l/$short_lat,$short_lon";
     }
-    $rss_url = Cobrand::url( $cobrand,
-        NewURL($q, -retain => 1, -url=> $rss_url,
-            pc => undef, x => undef, y => undef, lat=> undef, lon => undef ),
-        $q);
+    $rss_url = Cobrand::url( $cobrand, NewURL($q, -url=> $rss_url), $q);
 
     my %vars = (
         'map' => FixMyStreet::Map::display_map($q,
-            latitude => $latitude, longitude => $longitude,
+            latitude => $short_lat, longitude => $short_lon,
             type => 1,
             pins => \@pins,
             post => $map_links
@@ -971,7 +975,7 @@ sub display_location {
         map_end => FixMyStreet::Map::display_map_end(1),
         url_home => Cobrand::url($cobrand, '/', $q),
         url_rss => $rss_url,
-        url_email => Cobrand::url($cobrand, NewURL($q, -retain => 1, pc => undef, lat => $short_lat, lon => $short_lon, -url=>'/alert', feed=>"local:$short_lat:$short_lon"), $q),
+        url_email => Cobrand::url($cobrand, NewURL($q, lat => $short_lat, lon => $short_lon, -url=>'/alert', feed=>"local:$short_lat:$short_lon"), $q),
         url_skip => $url_skip,
         email_me => _('Email me new local problems'),
         rss_alt => _('RSS feed'),
@@ -1066,7 +1070,7 @@ sub display_problem {
         map_start => FixMyStreet::Map::display_map($q,
             latitude => $problem->{latitude}, longitude => $problem->{longitude},
             type => 0,
-            pins => [ [ $problem->{latitude}, $problem->{longitude}, 'blue' ] ],
+            pins => $problem->{used_map} ? [ [ $problem->{latitude}, $problem->{longitude}, 'blue' ] ] : [],
             post => $map_links
         ),
         map_end => FixMyStreet::Map::display_map_end(0),

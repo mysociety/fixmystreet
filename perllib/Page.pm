@@ -21,6 +21,7 @@ use File::Slurp;
 use HTTP::Date; # time2str
 use Image::Magick;
 use Image::Size;
+use IO::String;
 use POSIX qw(strftime);
 use URI::Escape;
 use Text::Template;
@@ -52,15 +53,17 @@ my $lastmodified;
 sub do_fastcgi {
     my ($func, $lm, $binary) = @_;
 
-    binmode(STDOUT, ":utf8") unless $binary;
-
     try {
         my $W = new mySociety::WatchUpdate();
         while (my $q = new mySociety::Web(unicode => 1)) {
             next if $lm && $q->Maybe304($lm);
             $lastmodified = $lm;
             microsite($q);
+            my $str_fh = IO::String->new;
+            my $old_fh = select($str_fh);
             &$func($q);
+            select($old_fh) if defined $old_fh;
+            print $binary ? ${$str_fh->string_ref} : encode_utf8(${$str_fh->string_ref});
             dbh()->rollback() if $mySociety::DBHandle::conf_ok;
             $W->exit_if_changed();
         }
@@ -115,6 +118,8 @@ sub microsite {
     $lang = 'cy' if $host =~ /cy/;
     $lang = 'en-gb' if $host =~ /^en\./;
     Cobrand::set_lang_and_domain(get_cobrand($q), $lang, 1);
+
+    FixMyStreet::Map::set_map_class($q->param('map'));
 
     Problems::set_site_restriction($q);
     Memcached::set_namespace(mySociety::Config::get('BCI_DB_NAME') . ":");
@@ -254,7 +259,9 @@ sub template_include {
     return undef unless -e $template_file;
 
     $template = Text::Template->new(
-        SOURCE => $template_file,
+        TYPE => 'STRING',
+        # Don't use FILE, because we need to make sure it's Unicode characters
+        SOURCE => decode_utf8(File::Slurp::read_file($template_file)),
         DELIMITERS => ['{{', '}}'],
     );
     return $template->fill_in(HASH => \%params);
@@ -385,12 +392,10 @@ sub error_page ($$) {
 }
 
 # send_email TO (NAME) TEMPLATE-NAME PARAMETERS
-# TEMPLATE-NAME is currently one of problem, update, alert, tms
+# TEMPLATE-NAME is a full filename here.
 sub send_email {
-    my ($q, $recipient_email_address, $name, $thing, %h) = @_;
-    my $file_thing = $thing;
-    $file_thing = 'empty property' if $q->{site} eq 'emptyhomes' && $thing eq 'problem'; # Needs to be in English
-    my $template = "$file_thing-confirm";
+    my ($q, $recipient_email_address, $name, $template, %h) = @_;
+
     $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/$template");
     my $to = $name ? [[$recipient_email_address, $name]] : $recipient_email_address;
     my $cobrand = get_cobrand($q);
@@ -438,6 +443,19 @@ sub send_email {
         );
     }
     
+}
+
+# send_confirmation_email TO (NAME) TEMPLATE-NAME PARAMETERS
+# TEMPLATE-NAME is currently one of problem, update, alert, tms
+sub send_confirmation_email {
+    my ($q, $recipient_email_address, $name, $thing, %h) = @_;
+
+    my $file_thing = $thing;
+    $file_thing = 'empty property' if $q->{site} eq 'emptyhomes' && $thing eq 'problem'; # Needs to be in English
+    my $template = "$file_thing-confirm";
+
+    send_email($q, $recipient_email_address, $name, $template, %h);
+
     my ($action, $worry);
     if ($thing eq 'problem') {
         $action = _('your problem will not be posted');
@@ -462,6 +480,7 @@ if you do not, %s.</p>
 <p>(Don't worry &mdash; %s)</p>
 EOF
 
+    my $cobrand = get_cobrand($q);
     my %vars = (
         action => $action,
         worry => $worry,
@@ -536,17 +555,17 @@ sub display_problem_meta_line($$) {
             $out .= sprintf(_('%s, reported by %s at %s'), ent($category), ent($problem->{name}), $date_time);
         }
     } else {
-        if ($problem->{service} && $problem->{category} && $problem->{category} ne 'Other' && $problem->{anonymous}) {
+        if ($problem->{service} && $problem->{category} && $problem->{category} ne _('Other') && $problem->{anonymous}) {
             $out .= sprintf(_('Reported by %s in the %s category anonymously at %s'), ent($problem->{service}), ent($problem->{category}), $date_time);
-        } elsif ($problem->{service} && $problem->{category} && $problem->{category} ne 'Other') {
+        } elsif ($problem->{service} && $problem->{category} && $problem->{category} ne _('Other')) {
             $out .= sprintf(_('Reported by %s in the %s category by %s at %s'), ent($problem->{service}), ent($problem->{category}), ent($problem->{name}), $date_time);
         } elsif ($problem->{service} && $problem->{anonymous}) {
             $out .= sprintf(_('Reported by %s anonymously at %s'), ent($problem->{service}), $date_time);
         } elsif ($problem->{service}) {
             $out .= sprintf(_('Reported by %s by %s at %s'), ent($problem->{service}), ent($problem->{name}), $date_time);
-        } elsif ($problem->{category} && $problem->{category} ne 'Other' && $problem->{anonymous}) {
+        } elsif ($problem->{category} && $problem->{category} ne _('Other') && $problem->{anonymous}) {
             $out .= sprintf(_('Reported in the %s category anonymously at %s'), ent($problem->{category}), $date_time);
-        } elsif ($problem->{category} && $problem->{category} ne 'Other') {
+        } elsif ($problem->{category} && $problem->{category} ne _('Other')) {
             $out .= sprintf(_('Reported in the %s category by %s at %s'), ent($problem->{category}), ent($problem->{name}), $date_time);
         } elsif ($problem->{anonymous}) {
             $out .= sprintf(_('Reported anonymously at %s'), $date_time);
@@ -667,12 +686,14 @@ sub mapit_check_error {
         return _('That postcode was not recognised, sorry.') if $location->{code} =~ /^4/;
         return $location->{error};
     }
-    my $island = $location->{coordsyst};
-    if (!$island) {
-        return _("Sorry, that appears to be a Crown dependency postcode, which we don't cover.");
-    }
-    if ($island eq 'I') {
-        return _("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.");
+    if (mySociety::Config::get('COUNTRY') eq 'GB') {
+        my $island = $location->{coordsyst};
+        if (!$island) {
+            return _("Sorry, that appears to be a Crown dependency postcode, which we don't cover.");
+        }
+        if ($island eq 'I') {
+            return _("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.");
+        }
     }
     return 0;
 }

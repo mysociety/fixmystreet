@@ -6,7 +6,7 @@
 # Copyright (c) 2010 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 
-package FixMyStreet::Map;
+package FixMyStreet::Map::Tilma::Original;
 
 use strict;
 use LWP::Simple;
@@ -16,6 +16,11 @@ use mySociety::GeoUtil;
 use mySociety::Locale;
 use mySociety::Web qw(ent NewURL);
 use Utils;
+use RABX;
+
+sub TILE_WIDTH()   { return $FixMyStreet::Map::map_class->tile_width;   }
+sub SCALE_FACTOR() { return $FixMyStreet::Map::map_class->scale_factor; }
+sub TILE_TYPE()    { return $FixMyStreet::Map::map_class->tile_type;    }
 
 sub _ll_to_en {
     my ($lat, $lon) = @_;
@@ -35,13 +40,13 @@ sub header_js {
 #     0 if not clickable
 # PINS is array of pins to show, location and colour
 # PRE/POST are HTML to show above/below map
-sub _display_map {
-    my ($q, %params) = @_;
+sub display_map {
+    my ($self, $q, %params) = @_;
     $params{pre} ||= '';
     $params{post} ||= '';
     my $mid_point = TILE_WIDTH; # Map is 2 TILE_WIDTHs in size, square.
-    if ($q->{site} eq 'barnet') { # Map is c. 380px wide
-        $mid_point = 189;
+    if (my $mp = Cobrand::tilma_mid_point(Page::get_cobrand($q))) {
+        $mid_point = $mp;
     }
 
     # convert map center point to easting, northing
@@ -62,13 +67,13 @@ sub _display_map {
     ($input{x}) = $input{x} =~ /^(\d+)/; $input{x} ||= 0;
     ($input{y}) = $input{y} =~ /^(\d+)/; $input{y} ||= 0;
 
-    my ($x, $y, $px, $py) = FixMyStreet::Map::os_to_px_with_adjust($q, $params{easting}, $params{northing}, $input{x}, $input{y});
+    my ($x, $y, $px, $py) = os_to_px_with_adjust($q, $params{easting}, $params{northing}, $input{x}, $input{y});
 
     my $pins = '';
     foreach my $pin (@{$params{pins}}) {
-        my $pin_x = FixMyStreet::Map::os_to_px($pin->[0], $x);
-        my $pin_y = FixMyStreet::Map::os_to_px($pin->[1], $y, 1);
-        $pins .= FixMyStreet::Map::display_pin($q, $pin_x, $pin_y, $pin->[2]);
+        my $pin_x = os_to_px($pin->[0], $x);
+        my $pin_y = os_to_px($pin->[1], $y, 1);
+        $pins .= display_pin($q, $pin_x, $pin_y, $pin->[2]);
     }
 
     $px = defined($px) ? $mid_point - $px : 0;
@@ -98,6 +103,8 @@ sub _display_map {
         $out .= <<EOF;
 <input type="hidden" name="x" id="formX" value="$x">
 <input type="hidden" name="y" id="formY" value="$y">
+<input type="hidden" name="latitude" value="$params{latitude}">
+<input type="hidden" name="longitude" value="$params{longitude}">
 EOF
         $img_type = '<input type="image"';
     } else {
@@ -126,9 +133,9 @@ $params{pre}
         <div id="pins">$pins</div>
     </div>
 EOF
-    $out .= '<div id="watermark"></div>' if $params{watermark};
+    $out .= '<div id="watermark"></div>' if $self->watermark();
     $out .= compass($q, $x, $y);
-    my $copyright = $params{copyright};
+    my $copyright = $self->copyright();
     $out .= <<EOF;
     </div>
     <p id="copyright">$copyright</p>
@@ -136,13 +143,6 @@ $params{post}
 </div>
 <div id="side">
 EOF
-    return $out;
-}
-
-sub display_map_end {
-    my ($type) = @_;
-    my $out = '</div>';
-    $out .= '</form>' if ($type);
     return $out;
 }
 
@@ -156,45 +156,38 @@ sub display_pin {
         . 'px; left:' . ($px) . 'px; position: absolute;">';
     return $out unless $_ && $_->{id} && $col ne 'blue';
     my $cobrand = Page::get_cobrand($q);
-    my $url = Cobrand::url($cobrand, NewURL($q, -retain => 1, 
-                                                -url => '/report/' . $_->{id}, 
-                                                pc => undef,
-                                                x => undef, 
-                                                y => undef, 
-                                                sx => undef, 
-                                                sy => undef, 
-                                                all_pins => undef, 
-                                                no_pins => undef), $q);
+    my $url = Cobrand::url($cobrand, NewURL($q, -url => '/report/' . $_->{id}), $q);
     $out = '<a title="' . ent($_->{title}) . '" href="' . $url . '">' . $out . '</a>';
     return $out;
 }
 
 sub map_pins {
-    my ($q, $x, $y, $sx, $sy, $interval) = @_;
+    my ($self, $q, $x, $y, $sx, $sy, $interval) = @_;
 
-    my $e = FixMyStreet::Map::tile_to_os($x);
-    my $n = FixMyStreet::Map::tile_to_os($y);
+    my $e = tile_to_os($x);
+    my $n = tile_to_os($y);
 
+    my ( $lat, $lon ) = Utils::convert_en_to_latlon( $e, $n );
     my ( $around_map, $around_map_list, $nearby, $dist ) =
-      FixMyStreet::Map::map_features_easting_northing( $q, $e, $n, $interval );
+      FixMyStreet::Map::map_features( $q, $lat, $lon, $interval );
 
     my $pins = '';
     foreach (@$around_map) {
         ( $_->{easting}, $_->{northing} ) =
           _ll_to_en( $_->{latitude}, $_->{longitude} );
-        my $px = FixMyStreet::Map::os_to_px($_->{easting}, $sx);
-        my $py = FixMyStreet::Map::os_to_px($_->{northing}, $sy, 1);
+        my $px = os_to_px($_->{easting}, $sx);
+        my $py = os_to_px($_->{northing}, $sy, 1);
         my $col = $_->{state} eq 'fixed' ? 'green' : 'red';
-        $pins .= FixMyStreet::Map::display_pin($q, $px, $py, $col);
+        $pins .= display_pin($q, $px, $py, $col);
     }
 
     foreach (@$nearby) {
         ( $_->{easting}, $_->{northing} ) =
           _ll_to_en( $_->{latitude}, $_->{longitude} );
-        my $px = FixMyStreet::Map::os_to_px($_->{easting}, $sx);
-        my $py = FixMyStreet::Map::os_to_px($_->{northing}, $sy, 1);
+        my $px = os_to_px($_->{easting}, $sx);
+        my $py = os_to_px($_->{northing}, $sy, 1);
         my $col = $_->{state} eq 'fixed' ? 'green' : 'red';
-        $pins .= FixMyStreet::Map::display_pin($q, $px, $py, $col);
+        $pins .= display_pin($q, $px, $py, $col);
     }
 
     return ($pins, $around_map_list, $nearby, $dist);
@@ -236,7 +229,7 @@ Takes the tile x,y and converts to lat, lon.
 =cut
 
 sub tile_xy_to_wgs84 {
-    my ( $x, $y ) = @_;
+    my ( $self, $x, $y ) = @_;
 
     my $easting  = tile_to_os($x);
     my $northing = tile_to_os($y);
@@ -258,17 +251,19 @@ sub click_to_tile {
 # tile they were), convert to OSGB36 and return.
 sub click_to_os {
     my ($pin_tile_x, $pin_x, $pin_tile_y, $pin_y) = @_;
-    my $tile_x = FixMyStreet::Map::click_to_tile($pin_tile_x, $pin_x);
-    my $tile_y = FixMyStreet::Map::click_to_tile($pin_tile_y, $pin_y, 1);
-    my $easting = FixMyStreet::Map::tile_to_os($tile_x);
-    my $northing = FixMyStreet::Map::tile_to_os($tile_y);
+    my $tile_x = click_to_tile($pin_tile_x, $pin_x);
+    my $tile_y = click_to_tile($pin_tile_y, $pin_y, 1);
+    my $easting = tile_to_os($tile_x);
+    my $northing = tile_to_os($tile_y);
     return ($easting, $northing);
 }
 
 # Given some click co-ords (the tile they were on, and where in the
 # tile they were), convert to WGS84 and return.
 sub click_to_wgs84 {
-    my ( $easting, $northing ) = FixMyStreet::Map::click_to_os(@_);
+    my $self = shift;
+    my $q = shift;
+    my ( $easting, $northing ) = click_to_os(@_);
     my ( $lat, $lon ) = mySociety::GeoUtil::national_grid_to_wgs84( $easting, $northing, 'G' );
     return ( $lat, $lon );
 }
@@ -279,8 +274,8 @@ sub click_to_wgs84 {
 sub os_to_px_with_adjust {
     my ($q, $easting, $northing, $in_x, $in_y) = @_;
 
-    my $x = FixMyStreet::Map::os_to_tile($easting);
-    my $y = FixMyStreet::Map::os_to_tile($northing);
+    my $x = os_to_tile($easting);
+    my $y = os_to_tile($northing);
     my $x_tile = $in_x || int($x);
     my $y_tile = $in_y || int($y);
 
@@ -292,20 +287,51 @@ sub os_to_px_with_adjust {
         $y_tile += 1;
     }
 
-    my $px = FixMyStreet::Map::os_to_px($easting, $x_tile);
-    my $py = FixMyStreet::Map::os_to_px($northing, $y_tile, 1);
+    my $px = os_to_px($easting, $x_tile);
+    my $py = os_to_px($northing, $y_tile, 1);
     if ($q->{site} eq 'barnet') { # Map is 380px, so might need to adjust
         if (!$in_x && $px > 380) {
             $x_tile++;
-            $px = FixMyStreet::Map::os_to_px($easting, $x_tile);
+            $px = os_to_px($easting, $x_tile);
         }
         if (!$in_y && $py > 380) {
             $y_tile--;
-            $py = FixMyStreet::Map::os_to_px($northing, $y_tile, 1);
+            $py = os_to_px($northing, $y_tile, 1);
         }
     }
 
     return ($x_tile, $y_tile, $px, $py);
+}
+
+sub compass ($$$) {
+    my ( $q, $x, $y ) = @_;
+    my @compass;
+    for ( my $i = $x - 1 ; $i <= $x + 1 ; $i++ ) {
+        for ( my $j = $y - 1 ; $j <= $y + 1 ; $j++ ) {
+            $compass[$i][$j] = NewURL( $q, x => $i, y => $j );
+        }
+    }
+    my $recentre = NewURL($q);
+    my $host = Page::base_url_with_lang( $q, undef );
+    return <<EOF;
+<table cellpadding="0" cellspacing="0" border="0" id="compass">
+<tr valign="bottom">
+<td align="right"><a rel="nofollow" href="${compass[$x-1][$y+1]}"><img src="$host/i/arrow-northwest.gif" alt="NW" width=11 height=11></a></td>
+<td align="center"><a rel="nofollow" href="${compass[$x][$y+1]}"><img src="$host/i/arrow-north.gif" vspace="3" alt="N" width=13 height=11></a></td>
+<td><a rel="nofollow" href="${compass[$x+1][$y+1]}"><img src="$host/i/arrow-northeast.gif" alt="NE" width=11 height=11></a></td>
+</tr>
+<tr>
+<td><a rel="nofollow" href="${compass[$x-1][$y]}"><img src="$host/i/arrow-west.gif" hspace="3" alt="W" width=11 height=13></a></td>
+<td align="center"><a rel="nofollow" href="$recentre"><img src="$host/i/rose.gif" alt="Recentre" width=35 height=34></a></td>
+<td><a rel="nofollow" href="${compass[$x+1][$y]}"><img src="$host/i/arrow-east.gif" hspace="3" alt="E" width=11 height=13></a></td>
+</tr>
+<tr valign="top">
+<td align="right"><a rel="nofollow" href="${compass[$x-1][$y-1]}"><img src="$host/i/arrow-southwest.gif" alt="SW" width=11 height=11></a></td>
+<td align="center"><a rel="nofollow" href="${compass[$x][$y-1]}"><img src="$host/i/arrow-south.gif" vspace="3" alt="S" width=13 height=11></a></td>
+<td><a rel="nofollow" href="${compass[$x+1][$y-1]}"><img src="$host/i/arrow-southeast.gif" alt="SE" width=11 height=11></a></td>
+</tr>
+</table>
+EOF
 }
 
 1;

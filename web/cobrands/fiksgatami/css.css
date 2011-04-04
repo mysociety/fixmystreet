@@ -1,64 +1,152 @@
-#front_stats div {
-    width: 6.5em;
+#mysociety #front_stats div {
+  width: 6.5em;
+}
+#mysociety label {
+  width: 6em;
+}
+#mysociety #fieldset div.checkbox, #mysociety #problem_submit {
+  padding-left: 6.5em;
 }
 
 body {
-    font-family: Helmet, Freesans, "Helvetica Neue", Arial, sans-serif;
+  font-family: "Gill Sans", "Gill Sans MT", Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
-a:link {
-    color: #215d93;
-}
-a:visited {
-    color: #518dc3;
-}
-a:hover, a:active {
-    color: #cc0000;
+h1 {
+  margin: 0;
+  font-size: 175%;
 }
 
-blockquote {
-    border-left: solid 4px #1a4f7f;
+h2 {
+  font-size: 140%;
 }
 
-.a {
-    color: #000000;
-    background-color: #a9cff1;
+select, input, textarea {
+  font-size: 99%;
+}
+
+#mysociety a.unsuitable-report {
+  font-size: small;
+}
+#mysociety blockquote {
+  border-left: solid 4px #1a4f7f;
+}
+#mysociety .a {
+  color: #000000;
+  background-color: #a9cff1;
+}
+#mysociety #postcodeForm {
+  background-color: #99bfe1;
+}
+#mysociety #front_stats div {
+  background-color: #99bfe1;
 }
 
 #header {
-    padding: 0.1em 0.5em 0.15em;
-    border-bottom: solid 2px #1a4f7f;
-    background-color: #99bfe1;
-    color: #1a4f7f;
+  font-size: 200%;
+  font-weight: bold;
+  border-bottom: solid 2px #1a4f7f;
+  margin: 0;
+  padding: 0.15em 0.5em;
+  background-color: #99bfe1;
+  color: #1a4f7f;
+}
+#header a:link, #header a:visited {
+  color: #1a4f7f;
+  background-color: #99bfe1;
+  text-decoration: none;
+}
+#header a:active, #header a:hover {
+  text-decoration: underline;
 }
 
 #my {
-    color: #0a3f6f;
-    background-color: #99bfe1;
+  color: #0a3f6f;
+  background-color: #99bfe1;
 }
 
-#header a:link, #header a:visited {
-    color: #1a4f7f;
-    background-color: #99bfe1;
+#mysociety {
+  width: 100%;
+  /* Must specify a width or IE goes crazy wrong! */
+  position: relative;
+  margin: 0 auto;
+  max-width: 60em;
 }
 
+/* Can't put the margin in #mysociety because of above IE craziness */
+#wrapper {
+  margin: 2em;
+}
+
+.v {
+  display: none;
+}
+
+#navigation {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+#navigation li {
+  display: inline;
+  padding: 0;
+  margin: 0;
+}
+#navigation a {
+  display: -moz-inline-box;
+  display: inline-block;
+  padding: 0.4em 1em;
+}
 #navigation a:link, #navigation a:visited {
-    color: #1a4f7f;
+  color: #1a4f7f;
 }
 #navigation a:hover, #navigation a:active {
-    background-color: #1a4f7f;
-    color: #99bfe1;
+  background-color: #1a4f7f;
+  color: #99bfe1;
+}
+
+#nav_new a {
+  background-image: url("/i/new.png");
+  background-repeat: no-repeat;
+  background-position: 100% 0;
+}
+
+#logo {
+  border: none;
+  position: absolute;
+  top: 3.3em;
+  right: 10px;
 }
 
 #footer {
-    border-top: solid 1px #1a4f7f;
+  clear: both;
+  text-align: right;
+  font-size: 83%;
+  border-top: solid 1px #1a4f7f;
+  display: table;
+  margin: 2em 0 1em auto;
+  padding: 2px 4px;
 }
 
-#postcodeForm {
-    background-color: #99bfe1;
+body {
+  font-family: Helmet, Freesans, "Helvetica Neue", Arial, sans-serif;
 }
 
-#front_stats div {
-    background-color: #99bfe1;
+a:link {
+  color: #215d93;
+}
+a:visited {
+  color: #518dc3;
+}
+a:hover, a:active {
+  color: #cc0000;
 }
 
+#header {
+  padding: 0.1em 0.5em 0.15em;
+}

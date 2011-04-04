@@ -1,126 +1,13 @@
-YAHOO.util.Event.onContentReady('map', function() {
-    fixmystreet.map = new OpenLayers.Map("map", {
-        controls: [
-            new OpenLayers.Control.ArgParser(),
-            //new OpenLayers.Control.LayerSwitcher(),
-            new OpenLayers.Control.Navigation(),
-            new OpenLayers.Control.PanZoomFMS()
-        ],
-        displayProjection: new OpenLayers.Projection("EPSG:4326")
-    });
-    var osm = new fixmystreet.map_type("", {
-        zoomOffset: 14,
-        numZoomLevels: 4
-    });
-    fixmystreet.map.addLayer(osm);
-
-    var centre = new OpenLayers.LonLat( fixmystreet.longitude, fixmystreet.latitude );
-    centre.transform(
-        new OpenLayers.Projection("EPSG:4326"),
-        fixmystreet.map.getProjectionObject()
-    );
-    fixmystreet.map.setCenter(centre, 2);
-
-    if (document.getElementById('mapForm')) {
-        var click = new OpenLayers.Control.Click();
-        fixmystreet.map.addControl(click);
-        click.activate();
-    }
-
-    var markers = new OpenLayers.Layer.Markers("Markers");
-    var cols = { 'red':'R', 'green':'G', 'blue':'B', 'purple':'P' };
-    for (var i=0; i<fixmystreet.pins.length; i++) {
-        var pin = fixmystreet.pins[i];
-        var src = '/i/pin' + cols[pin[2]] + '.gif';
-        var size = new OpenLayers.Size(32, 59);
-        var offset = new OpenLayers.Pixel(-3, -size.h-2);
-        var icon = new OpenLayers.Icon(src, size, offset);
-        var loc = new OpenLayers.LonLat(pin[1], pin[0]);
-        loc.transform(
-            new OpenLayers.Projection("EPSG:4326"),
-            fixmystreet.map.getProjectionObject()
-        );
-        var marker = new OpenLayers.Marker(loc, icon);
-        if (pin[3]) {
-            marker.events.register('click', marker, function(evt) { window.location = '/report/' + pin[3]; OpenLayers.Event.stop(evt); });
-        }
-        markers.addMarker(marker);
-    }
-    fixmystreet.map.addLayer(markers);
-
-});
-
-/* Overridding the buttonDown function of PanZoom so that it does
-   zoomTo(0) rather than zoomToMaxExtent()
-*/
-OpenLayers.Control.PanZoomFMS = OpenLayers.Class(OpenLayers.Control.PanZoom, {
-    buttonDown: function (evt) {
-        if (!OpenLayers.Event.isLeftClick(evt)) {
-            return;
-        }
-
-        switch (this.action) {
-            case "panup":
-                this.map.pan(0, -this.getSlideFactor("h"));
-                break;
-            case "pandown":
-                this.map.pan(0, this.getSlideFactor("h"));
-                break;
-            case "panleft":
-                this.map.pan(-this.getSlideFactor("w"), 0);
-                break;
-            case "panright":
-                this.map.pan(this.getSlideFactor("w"), 0);
-                break;
-            case "zoomin":
-                this.map.zoomIn();
-                break;
-            case "zoomout":
-                this.map.zoomOut();
-                break;
-            case "zoomworld":
-                this.map.zoomTo(0);
-                break;
-        }
-
-        OpenLayers.Event.stop(evt);
-    }
-});
-
-OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {                
-    defaultHandlerOptions: {
-        'single': true,
-        'double': false,
-        'pixelTolerance': 0,
-        'stopSingle': false,
-        'stopDouble': false
-    },
-
-    initialize: function(options) {
-        this.handlerOptions = OpenLayers.Util.extend(
-            {}, this.defaultHandlerOptions
-        );
-        OpenLayers.Control.prototype.initialize.apply(
-            this, arguments
-        ); 
-        this.handler = new OpenLayers.Handler.Click(
-            this, {
-                'click': this.trigger
-            }, this.handlerOptions
-        );
-    }, 
-
-    trigger: function(e) {
-        var lonlat = fixmystreet.map.getLonLatFromViewPortPx(e.xy);
-        lonlat.transform(
-            fixmystreet.map.getProjectionObject(),
-            new OpenLayers.Projection("EPSG:4326")
-        );
-        document.getElementById('fixmystreet.latitude').value = lonlat.lat;
-        document.getElementById('fixmystreet.longitude').value = lonlat.lon;
-        document.getElementById('mapForm').submit();
-    }
-});
+function set_map_config(perm) {
+    fixmystreet.controls = [
+        new OpenLayers.Control.ArgParser(),
+        //new OpenLayers.Control.LayerSwitcher(),
+        new OpenLayers.Control.Navigation(),
+        perm,
+        new OpenLayers.Control.PermalinkFMS('osm_link', 'http://www.openstreetmap.org/'),
+        new OpenLayers.Control.PanZoomFMS()
+    ];
+}
 
 // http://www.openstreetmap.org/openlayers/OpenStreetMap.js (added maxResolution)
 

@@ -119,6 +119,8 @@ my %fns = (
     # The MaPit types this site handles
     'area_types' => { default => '[qw(DIS LBO MTD UTA CTY COI)]' },
     'area_min_generation' => { default => '10' },
+    # Some cobrands that use a Tilma map have a smaller mid-point to make pin centred
+    'tilma_mid_point' => { default => '""' },
 );
 
 foreach (keys %fns) {

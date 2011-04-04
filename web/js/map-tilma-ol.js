@@ -1,21 +1,19 @@
-YAHOO.util.Event.onContentReady('map', function() {
-    var map = new OpenLayers.Map("map", {
-        controls: [
-            new OpenLayers.Control.ArgParser(),
-            new OpenLayers.Control.Navigation(),
-            new OpenLayers.Control.PanPanel()
-        ]
-    });
-    var tilma = new OpenLayers.Layer.Tilma("Tilma", {
+function set_map_config(perm) {
+    fixmystreet.controls = [
+        new OpenLayers.Control.ArgParser(),
+        perm,
+        new OpenLayers.Control.Navigation(),
+        new OpenLayers.Control.PanPanel()
+    ];
+    fixmystreet.map_type = OpenLayers.Layer.Tilma;
+    fixmystreet.layer_options = {
         maxResolution: fixmystreet.maxResolution,
         tileSize: new OpenLayers.Size(fixmystreet.tilewidth, fixmystreet.tileheight),
-        map_type: fixmystreet.tile_type
-    });
-    map.addLayer(tilma);
-
-    var centre = new OpenLayers.LonLat( fixmystreet.easting, fixmystreet.northing );
-    map.setCenter(centre);
-});
+        map_type: fixmystreet.tile_type,
+        numZoomLevels: 1,
+        zoomOffset: 0
+    };
+}
 
 OpenLayers.Layer.Tilma = OpenLayers.Class(OpenLayers.Layer.XYZ, {
     initialize: function(name, options) {
@@ -23,8 +21,9 @@ OpenLayers.Layer.Tilma = OpenLayers.Class(OpenLayers.Layer.XYZ, {
         options = OpenLayers.Util.extend({
             transitionEffect: "resize",
             numZoomLevels: 1,
+            projection: "EPSG:27700",
             units: "m",
-            maxExtent: new OpenLayers.Bounds(0, 0, 700000, 1300000),
+            maxExtent: new OpenLayers.Bounds(0, 0, 700000, 1300000)
         }, options);
         var newArguments = [name, url, options];
         OpenLayers.Layer.XYZ.prototype.initialize.apply(this, newArguments);

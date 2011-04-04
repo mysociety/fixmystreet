@@ -7,3 +7,4 @@ META.yml
 Makefile
 blib/
 inc/
+.sass-cache

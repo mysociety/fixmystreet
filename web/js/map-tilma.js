@@ -135,7 +135,7 @@ function update_tiles(dx, dy, force) {
 }
 
 function load_pins(x, y) {
-    if (document.getElementById('formX')) {
+    if (document.getElementById('formX') && !document.getElementById('problem_submit')) {
         all_pins = '';
         if (document.getElementById('all_pins')) {
             all_pins = document.getElementById('all_pins').value;

@@ -1,27 +1,13 @@
-YAHOO.util.Event.onContentReady('map', function() {
-    var map = new OpenLayers.Map("map", {
-        controls: [
-            new OpenLayers.Control.ArgParser(),
-            //new OpenLayers.Control.LayerSwitcher(),
-            new OpenLayers.Control.Navigation(),
-            new OpenLayers.Control.PanZoom()
-        ],
-        displayProjection: new OpenLayers.Projection("EPSG:4326")
-    });
-    var streetview = new OpenLayers.Layer.StreetView("OS StreetView (1:10000)", {
-        zoomOffset: 14,
-        numZoomLevels: 4
-    });
-    map.addLayer(streetview);
-
-    var centre = new OpenLayers.LonLat( fixmystreet.easting, fixmystreet.northing );
-    centre.transform(
-        new OpenLayers.Projection("EPSG:27700"),
-        map.getProjectionObject()
-    );
-    map.setCenter(centre, 2);
-});
-
+function set_map_config(perm) {
+    fixmystreet.controls = [
+        new OpenLayers.Control.ArgParser(),
+        //new OpenLayers.Control.LayerSwitcher(),
+        new OpenLayers.Control.Navigation(),
+        perm,
+        new OpenLayers.Control.PanZoomFMS()
+    ];
+    fixmystreet.map_type = OpenLayers.Layer.StreetView;
+}
 
 // http://os.openstreetmap.org/openlayers/OS.js (added one line)
 

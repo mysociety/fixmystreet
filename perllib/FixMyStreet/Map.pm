@@ -10,25 +10,64 @@ package FixMyStreet::Map;
 
 use strict;
 
+use Module::Pluggable
+  sub_name    => 'maps',
+  search_path => __PACKAGE__,
+  except      => 'FixMyStreet::Map::Tilma::Original',
+  require     => 1;
+
+# Get the list of maps we want and load map classes at compile time
+my @ALL_MAP_CLASSES = allowed_maps();
+
 use Problems;
 use Cobrand;
 use mySociety::Config;
 use mySociety::Gaze;
 use mySociety::Locale;
-use mySociety::Web qw(ent NewURL);
-use Utils;
+use mySociety::Web qw(ent);
 
-# Run on module boot up
-load();
+=head2 allowed_maps
 
-# This is yucky, but no-one's taught me a better way
-sub load {
-    my $type  = mySociety::Config::get('MAP_TYPE');
-    my $class = "FixMyStreet::Map::$type";
-    eval "use $class";
+Returns an array of all the map classes that were found and that
+are permitted by the config.
 
-    # If we have an error die as it is a compile error rather than runtime error
-    die $@ if $@;
+=cut
+
+sub allowed_maps {
+    my @allowed = split /,/, mySociety::Config::get('MAP_TYPE');
+    @allowed = map { __PACKAGE__.'::'.$_ } @allowed;
+    my %avail = map { $_ => 1 } __PACKAGE__->maps;
+    return grep { $avail{$_} } @allowed;
+}
+
+=head2 map_class
+
+Set and return the appropriate class given a query parameter string.
+
+=cut
+
+our $map_class;
+sub set_map_class {
+    my $str = shift;
+    $str = __PACKAGE__.'::'.$str if $str;
+    my %avail = map { $_ => 1 } @ALL_MAP_CLASSES;
+    $str = $ALL_MAP_CLASSES[0] unless $str && $avail{$str};
+    $map_class = $str;
+}
+
+sub header_js {
+    return $map_class->header_js(@_);
+}
+
+sub display_map {
+    return $map_class->display_map(@_);
+}
+
+sub display_map_end {
+    my ($type) = @_;
+    my $out = '</div>';
+    $out .= '</form>' if ($type);
+    return $out;
 }
 
 sub header {
@@ -41,27 +80,15 @@ sub header {
     my $form_action = Cobrand::url( $cobrand, '/report/new', $q );
     my $encoding = '';
     $encoding = ' enctype="multipart/form-data"' if $type == 2;
-    my $pc = $q->param('pc') || '';
-    my $pc_enc = ent($pc);
+    my $pc = ent($q->param('pc') || '');
+    my $map = ent($q->param('map') || '');
     return <<EOF;
 <form action="$form_action" method="post" name="mapForm" id="mapForm"$encoding>
 <input type="hidden" name="submit_map" value="1">
-<input type="hidden" name="pc" value="$pc_enc">
+<input type="hidden" name="map" value="$map">
+<input type="hidden" name="pc" value="$pc">
 $cobrand_form_elements
 EOF
-}
-
-=head2 map_features_easting_northing
-
-Wrapper around map_features which does the easting, northing to lat, lon
-conversion.
-
-=cut
-
-sub map_features_easting_northing {
-    my ( $q, $easting, $northing, $interval ) = @_;
-    my ( $lat, $lon ) = Utils::convert_en_to_latlon( $easting, $northing );
-    return map_features( $q, $lat, $lon, $interval );
 }
 
 sub map_features {
@@ -102,35 +129,16 @@ sub map_features {
     return ( $around_map, $around_map_list, $nearby, $dist );
 }
 
-sub compass ($$$) {
-    my ( $q, $x, $y ) = @_;
-    my @compass;
-    for ( my $i = $x - 1 ; $i <= $x + 1 ; $i++ ) {
-        for ( my $j = $y - 1 ; $j <= $y + 1 ; $j++ ) {
-            $compass[$i][$j] = NewURL( $q, x => $i, y => $j );
-        }
-    }
-    my $recentre = NewURL($q);
-    my $host = Page::base_url_with_lang( $q, undef );
-    return <<EOF;
-<table cellpadding="0" cellspacing="0" border="0" id="compass">
-<tr valign="bottom">
-<td align="right"><a rel="nofollow" href="${compass[$x-1][$y+1]}"><img src="$host/i/arrow-northwest.gif" alt="NW" width=11 height=11></a></td>
-<td align="center"><a rel="nofollow" href="${compass[$x][$y+1]}"><img src="$host/i/arrow-north.gif" vspace="3" alt="N" width=13 height=11></a></td>
-<td><a rel="nofollow" href="${compass[$x+1][$y+1]}"><img src="$host/i/arrow-northeast.gif" alt="NE" width=11 height=11></a></td>
-</tr>
-<tr>
-<td><a rel="nofollow" href="${compass[$x-1][$y]}"><img src="$host/i/arrow-west.gif" hspace="3" alt="W" width=11 height=13></a></td>
-<td align="center"><a rel="nofollow" href="$recentre"><img src="$host/i/rose.gif" alt="Recentre" width=35 height=34></a></td>
-<td><a rel="nofollow" href="${compass[$x+1][$y]}"><img src="$host/i/arrow-east.gif" hspace="3" alt="E" width=11 height=13></a></td>
-</tr>
-<tr valign="top">
-<td align="right"><a rel="nofollow" href="${compass[$x-1][$y-1]}"><img src="$host/i/arrow-southwest.gif" alt="SW" width=11 height=11></a></td>
-<td align="center"><a rel="nofollow" href="${compass[$x][$y-1]}"><img src="$host/i/arrow-south.gif" vspace="3" alt="S" width=13 height=11></a></td>
-<td><a rel="nofollow" href="${compass[$x+1][$y-1]}"><img src="$host/i/arrow-southeast.gif" alt="SE" width=11 height=11></a></td>
-</tr>
-</table>
-EOF
+sub map_pins {
+    return $map_class->map_pins(@_);
+}
+
+sub click_to_wgs84 {
+    return $map_class->click_to_wgs84(@_);
+}
+
+sub tile_xy_to_wgs84 {
+    return $map_class->tile_xy_to_wgs84(@_);
 }
 
 1;

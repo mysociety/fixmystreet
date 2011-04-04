@@ -364,7 +364,7 @@ sub alert_list_options {
         my $rss_url = Cobrand::url($cobrand, $url, $q);
         $out .= 'value="' . $id . '"> <label for="' . $id . '">' . $text
             . '</label> <a href="' . $rss_url . '"><img src="/i/feed.png" width="16" height="16"
-title="' . sprintf(_('RSS feed of %s'), $text) . '" alt="' . _('RSS feed') . '" border="0"></a>';
+title="' . sprintf(_('RSS feed of %s'), $text) . '" alt="' . _('RSS feed') . '" border="0"></a></li>';
     }
     return $out;
 }
@@ -605,6 +605,6 @@ sub alert_do_subscribe {
     $h{url} = Page::base_url_with_lang($q, undef, 1) . '/A/'
         . mySociety::AuthToken::store('alert', { id => $alert_id, type => 'subscribe', email => $email } );
     dbh()->commit();
-    return Page::send_email($q, $email, undef, 'alert', %h);
+    return Page::send_confirmation_email($q, $email, undef, 'alert', %h);
 }
 

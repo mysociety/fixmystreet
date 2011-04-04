@@ -1,0 +1,47 @@
+#mysociety #map_box {
+  width: 380px;
+}
+#mysociety #map, #mysociety #drag {
+  width: 378px;
+  height: 378px;
+}
+#mysociety #watermark {
+  background: url("/i/mojwatermark-378.png");
+  height: 84px;
+  width: 171px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+#mysociety p#fixed, #mysociety p#unknown {
+  margin-right: 400px;
+  width: auto;
+}
+#mysociety h1 {
+  margin: 0;
+  font-size: 175%;
+}
+#mysociety h2 {
+  font-size: 140%;
+}
+#mysociety select, #mysociety input, #mysociety textarea {
+  font-size: 99%;
+}
+#mysociety a.unsuitable-report {
+  font-size: small;
+}
+#mysociety blockquote {
+  border-left: solid 4px #768eb5;
+}
+#mysociety .a {
+  color: #000000;
+  background-color: #e9eef7;
+}
+#mysociety #postcodeForm {
+  background-color: #e9eef7;
+}
+#mysociety #front_stats div {
+  background-color: #e9eef7;
+  width: 6em;
+  padding: 0.5em;
+}

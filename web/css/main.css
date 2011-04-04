@@ -1,146 +1,134 @@
-/* Generics */
+a:link {
+  color: #0000ff;
+}
+a:visited {
+  color: #000099;
+}
+a:hover, a:active {
+  color: #ff0000;
+}
 
 body {
-    font-family: "Gill Sans", "Gill Sans MT", Helvetica, Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    /* color: #a9aeb0; */
+  font-family: "Gill Sans", "Gill Sans MT", Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
 h1 {
-    margin: 0;
-    font-size: 175%;
+  margin: 0;
+  font-size: 175%;
 }
+
 h2 {
-    font-size: 140%;
+  font-size: 140%;
 }
 
 select, input, textarea {
-    font-size: 99%;
+  font-size: 99%;
 }
 
-a:link {
-    color: #0000ff;
+#mysociety a.unsuitable-report {
+  font-size: small;
 }
-a:visited {
-    color: #000099;
+#mysociety blockquote {
+  border-left: solid 4px #5e552b;
 }
-a:hover, a:active {
-    color: #ff0000;
+#mysociety .a {
+  color: #000000;
+  background-color: #f3e5a5;
 }
-
-a.unsuitable-report {
-    font-size: small;
+#mysociety #postcodeForm {
+  background-color: #e3d595;
 }
-
-blockquote {
-    border-left: solid 4px #5e552b;
+#mysociety #front_stats div {
+  background-color: #e3d595;
 }
-
-.a {
-    color: #000000;
-    background-color: #f3e5a5;
-}
-
-/* Site layout */
 
 #header {
-    font-size: 200%;
-    font-weight: bold;
-    border-bottom: solid 2px #5e552b;
-    margin: 0;
-    padding: 0.15em 0.5em;
-    background-color: #e3d595;
-    color: #5e552b;
+  font-size: 200%;
+  font-weight: bold;
+  border-bottom: solid 2px #5e552b;
+  margin: 0;
+  padding: 0.15em 0.5em;
+  background-color: #e3d595;
+  color: #5e552b;
+}
+#header a:link, #header a:visited {
+  color: #5e552b;
+  background-color: #e3d595;
+  text-decoration: none;
+}
+#header a:active, #header a:hover {
+  text-decoration: underline;
 }
 
 #my {
-    color: #4e451b;
-    background-color: #e3d595;
-}
-#beta {
-    color: #6e653b;
-    background-color: #e3d595;
-    font-size: 50%;
-    font-style: italic;
+  color: #4e451b;
+  background-color: #e3d595;
 }
 
-#header a:link, #header a:visited {
-    color: #5e552b;
-    background-color: #e3d595;
-    text-decoration: none;
-}
-#header a:active, #header a:hover {
-    text-decoration: underline;
-}
-
-#content {
-    width: 100%; /* Must specify a width or IE goes crazy wrong! */
-    position: relative;
-    margin: 0 auto;
-    max-width: 60em;
+#mysociety {
+  width: 100%;
+  /* Must specify a width or IE goes crazy wrong! */
+  position: relative;
+  margin: 0 auto;
+  max-width: 60em;
 }
 
-/* Can't put the margin in #content because of above IE craziness */
+/* Can't put the margin in #mysociety because of above IE craziness */
 #wrapper {
-    margin: 2em;
+  margin: 2em;
+}
+
+.v {
+  display: none;
 }
 
 #navigation {
-    position: absolute;
-    top: 1em;
-    right: 1em;
-    padding: 0;
-    margin: 0;
-    list-style-type: none;
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
 }
 #navigation li {
-    display: inline;
-    padding: 0;
-    margin: 0;
+  display: inline;
+  padding: 0;
+  margin: 0;
 }
-
 #navigation a {
-    display: -moz-inline-box;
-    display: inline-block;
-    padding: 0.4em 1em;
+  display: -moz-inline-box;
+  display: inline-block;
+  padding: 0.4em 1em;
 }
 #navigation a:link, #navigation a:visited {
-    color: #5e552b;
+  color: #5e552b;
 }
 #navigation a:hover, #navigation a:active {
-    background-color: #5e552b;
-    color: #e3d595;
+  background-color: #5e552b;
+  color: #e3d595;
 }
 
 #nav_new a {
-    background-image: url("/i/new.png");
-    background-repeat: no-repeat;
-    background-position: 100% 0;
+  background-image: url("/i/new.png");
+  background-repeat: no-repeat;
+  background-position: 100% 0;
 }
 
 #logo {
-    border: none;
-    position: absolute;
-    top: 3.3em;
-    right: 10px;
+  border: none;
+  position: absolute;
+  top: 3.3em;
+  right: 10px;
 }
 
 #footer {
-    clear: both;
-    text-align: right;
-    font-size: 83%;
-    border-top: solid 1px #5e552b;
-    display: table;
-    margin: 2em 0 1em auto;
-    padding: 2px 4px;
+  clear: both;
+  text-align: right;
+  font-size: 83%;
+  border-top: solid 1px #5e552b;
+  display: table;
+  margin: 2em 0 1em auto;
+  padding: 2px 4px;
 }
-
-#postcodeForm {
-    background-color: #e3d595;
-}
-
-#front_stats div {
-    background-color: #e3d595;
-}
-

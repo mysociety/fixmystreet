@@ -6,7 +6,7 @@
 # Copyright (c) 2010 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 
-package FixMyStreet::Map;
+package FixMyStreet::Map::Tilma::OL::StreetView;
 
 use strict;
 
@@ -18,8 +18,10 @@ use constant TILE_TYPE => 'streetview';
 
 sub header_js {
     return '
-<script type="text/javascript" src="http://openlayers.org/api/OpenLayers.js"></script>
+<script type="text/javascript" src="/jslib/OpenLayers-2.10/OpenLayers.js"></script>
+<script type="text/javascript" src="/js/map-OpenLayers.js"></script>
 <script type="text/javascript" src="/js/map-tilma-ol.js"></script>
+<script type="text/javascript" src="/js/OpenLayers.Projection.OrdnanceSurvey.js"></script>
 ';
 }
 
@@ -31,12 +33,16 @@ sub header_js {
 # PINS is array of pins to show, location and colour
 # PRE/POST are HTML to show above/below map
 sub display_map {
-    my ($q, %params) = @_;
+    my ($self, $q, %params) = @_;
     $params{pre} ||= '';
     $params{post} ||= '';
 
+    my @pins;
     foreach my $pin (@{$params{pins}}) {
+        $pin->[3] ||= '';
+        push @pins, "[ $pin->[0], $pin->[1], '$pin->[2]', '$pin->[3]' ]";
     }
+    my $pins_js = join(",\n", @pins);
 
     my $out = FixMyStreet::Map::header($q, $params{type});
     my $tile_width = TILE_WIDTH;
@@ -44,12 +50,15 @@ sub display_map {
     my $sf = SCALE_FACTOR / TILE_WIDTH;
     my $copyright = _('Map contains Ordnance Survey data &copy; Crown copyright and database right 2010.');
     $out .= <<EOF;
+<input type="hidden" name="latitude" id="fixmystreet.latitude" value="$params{latitude}">
+<input type="hidden" name="longitude" id="fixmystreet.longitude" value="$params{longitude}">
 <script type="text/javascript">
 var fixmystreet = {
     'tilewidth': $tile_width,
     'tileheight': $tile_width,
-    'easting': $params{easting},
-    'northing': $params{northing},
+    'latitude': $params{latitude},
+    'longitude': $params{longitude},
+    'pins': [ $pins_js ],
     'tile_type': '$tile_type',
     'maxResolution': $sf
 };
@@ -63,19 +72,6 @@ var fixmystreet = {
 <div id="side">
 EOF
     return $out;
-}
-
-sub display_map_end {
-    my ($type) = @_;
-    my $out = '</div>';
-    $out .= '</form>' if ($type);
-    return $out;
-}
-
-sub display_pin {
-}
-
-sub map_pins {
 }
 
 1;

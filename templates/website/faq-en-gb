@@ -57,13 +57,19 @@ by a registered charity, though, so if you want to make a contribution, <a
 href="https://secure.mysociety.org/donate/">please do</a>.</dd>
 
     <dt>Can I use FixMyStreet on my mobile?</dt>
-    <dd>There are two iPhone apps for FixMyStreet, one written by us in 2008 and
-    another much more recently by a volunteer, Martin Stephenson. Both are available for
-    download on the App Store:
+    <dd><ul>
+    <li><em>iPhone:</em> There are two apps for FixMyStreet, one written by us
+    in 2008 and another much more recently by a volunteer, Martin Stephenson.
+    Both are available for download on the App Store:
     <a href="http://itunes.apple.com/gb/app/fixmystreet/id297456545">FixMyStreet</a>,
     <a href="http://itunes.apple.com/gb/app/streetreport/id371891859">StreetReport</a>.
-    There is an Android app written by a volunteer, Anna Powell-Smith,
-    available from the Android Market.
+    <li><em>Android:</em> A volunteer, Anna Powell-Smith, has written an app
+    available from the 
+    <a href="https://market.android.com/details?id=com.android.fixmystreet">Android Market</a>.
+    <li><em>Nokia:</em> A volunteer, Thomas Forth, has written an app available from the
+    <a href="http://store.ovi.com/content/107557">Ovi Store</a>.
+    </ul>
+    <p>We also hope to make the website itself much more mobile friendly in the future.</p>
     </dd>
 
     <dt>Why do you only cover the countries of Great Britain?</dt>
@@ -107,7 +113,7 @@ dragging an empty square.</dd>
     this might mean that you&rsquo;ll need to pan around to figure out where the
     problem is if you&rsquo;re not familiar with the area. If you&rsquo;re from the
     council then the emailed version of the problem report will contain the
-    closest postal address to the pin on the map.</dd>
+    closest road to the pin on the map.</dd>
 
     <dt>This site is great – why aren&rsquo;t you better publicised?</dt>
     <dd>As a tiny charity we simply don&rsquo;t have a publicity budget, and we

@@ -61,7 +61,6 @@ sub main {
         my $areas_f = mySociety::MaPit::call('areas', $fylke, type => \@area_types);
         if (keys %$areas_f == 1) {
             ($fylke) = values %$areas_f;
-            $kommune = decode_utf8($kommune);
             foreach (values %$areas_k) {
                 if ($_->{name} eq $kommune && $_->{parent_area} == $fylke->{id}) {
                     $one_council = $_;
@@ -84,7 +83,7 @@ sub main {
             $area_name = $one_council->{name};
         } else {
             foreach (keys %$areas) {
-                if ($areas->{$_}->{name} =~ /^\Q$q_council\E (Borough|City|District|County) Council$/) {
+                if ($areas->{$_}->{name} eq $q_council || $areas->{$_}->{name} =~ /^\Q$q_council\E (Borough|City|District|County) Council$/) {
                     $one_council = $areas->{$_};
                     $area_type = $areas->{$_}->{type};
                     $area_name = $q_council;
@@ -331,7 +330,7 @@ sub list_problems {
         $out .= '<li><a href="' . $url . '">';
         $out .= ent($_->{title});
         $out .= '</a>';
-        $out .= ' <small>(sent to both)</small>' if $_->{councils}>1;
+        $out .= ' <small>' . _('(sent to both)') . '</small>' if $_->{councils}>1;
         $out .= ' <small>' . _('(not sent to council)') . '</small>' if $_->{councils}==0 && $q->{site} ne 'emptyhomes';
         $out .= '<br><small>' . ent($_->{detail}) . '</small>' if $all;
         $out .= '</li>';

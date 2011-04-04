@@ -1,5 +1,5 @@
 </div></div>
-<h2 class="v">$navigation</h2>
+<h2 class="v">{{ $navigation }}</h2>
 <ul id="navigation">
 <li><a href="/">{{ $report }}</a></li>
 <li><a href="/reports">{{ $reports }}</a></li>
