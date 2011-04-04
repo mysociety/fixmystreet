@@ -5,3 +5,6 @@ should we ditch flickr import? (does not seem to be getting huge usage and those
 add 'remember me on this computer' to auth login. What should default session lifetime be? Waiting for answer on http://lists.scsys.co.uk/pipermail/catalyst/2011-April/date.html
 
 merge in from master
+
+southhampton templates
+

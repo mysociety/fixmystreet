@@ -5,19 +5,21 @@
 <ul id="navigation">
 <li><a href="/report/new"       >[% loc("Report a problem") %]</a></li>
 <li><a href="/reports"          >[% loc("All reports")      %]</a></li>
-<li><a href="/alert$params{pc}" >[% loc("Local alerts")     %]</a></li>
+<li><a href="[% c.uri_for('/alert', {pc =>  pc}) | html %]">[% loc("Local alerts")     %]</a></li>
 <li><a href="/faq"              >[% loc("Help")             %]</a></li>
 <li><a href="/contact"          >[% loc("Contact")          %]</a></li>
 </ul>
 
 [% loc('<a href="http://www.mysociety.org/"><img id="logo" width="133" height="26" src="/i/mysociety-dark.png" alt="View mySociety.org"><span id="logoie"></span></a>') %]
 
-[% #FIXME - should be handled in NO template override %]
-[% IF c.config.COUNTRY == 'NO' %]
-    [% loc('Built by <a href="http://www.mysociety.org/">mySociety</a> and maintained by <a href="http://www.nuug.no/">NUUG</a>, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.') %]
-[% ELSE %]
-    [% loc('Built by <a href="http://www.mysociety.org/">mySociety</a>, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.') %]
-[% END %]
+<p id="footer">
+    [% #FIXME - should be handled in NO template override %]
+    [% IF c.config.COUNTRY == 'NO' %]
+        [% loc('Built by <a href="http://www.mysociety.org/">mySociety</a> and maintained by <a href="http://www.nuug.no/">NUUG</a>, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.') %]
+    [% ELSE %]
+        [% loc('Built by <a href="http://www.mysociety.org/">mySociety</a>, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.') %]
+    [% END %]
+</p>
 
 [% INCLUDE 'tracking_code.html' %]
 
