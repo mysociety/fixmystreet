@@ -6,6 +6,4 @@ should we ditch flickr import? (does not seem to be getting huge usage and those
 
 add 'remember me on this computer' to auth login. What should default session lifetime be?
 
-rss links
-
 tracking code
