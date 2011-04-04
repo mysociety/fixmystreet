@@ -115,6 +115,22 @@ create trigger contacts_update_trigger after update on contacts
 create trigger contacts_insert_trigger after insert on contacts
     for each row execute procedure contacts_updated();
 
+-- table for sessions - needed by Catalyst::Plugin::Session::Store::DBIC
+create table sessions (
+    id           char(72) primary key,
+    session_data text,
+    expires      integer
+);
+
+-- users table
+create table users (
+    id              serial  not null primary key,
+    email           text    not null unique,
+    name            text,
+    phone           text,
+    password        text    not null default ''
+);
+
 -- Problems reported by users of site
 create table problem (
     id serial not null primary key,
@@ -132,9 +148,8 @@ create table problem (
     used_map boolean not null,
 
     -- User's details
+    user_id int references users(id) not null,    
     name text not null,
-    email text not null,
-    phone text not null,
     anonymous boolean not null,
 
     -- Metadata
@@ -156,6 +171,7 @@ create table problem (
     send_questionnaire boolean not null default 't'
 );
 create index problem_state_latitude_longitude_idx on problem(state, latitude, longitude);
+create index problem_user_id_idx on problem ( user_id );
 
 create table questionnaire (
     id serial not null primary key,
@@ -362,3 +378,4 @@ create table admin_log (
         or action = 'resend'),
     whenedited timestamp not null default ms_current_timestamp()
 ); 
+
