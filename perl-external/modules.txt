@@ -19,6 +19,7 @@ DBIx::Class
 DBIx::Class::FilterColumn
 DBIx::Class::Schema::Loader
 DBIx::Class::Storage::DBI
+Email::Address
 Email::Send
 Email::Simple
 Email::Valid
@@ -32,6 +33,7 @@ MyCPAN::App::DPAN
 Net::Domain::TLD
 Path::Class
 Readonly
+Return::Value
 Sort::Key
 Sub::Override
 Term::Size::Any

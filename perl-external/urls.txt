@@ -178,11 +178,13 @@ http://search.cpan.org/CPAN/authors/id/R/RG/RGARCIA/Sub-Identify-0.04.tar.gz
 http://search.cpan.org/CPAN/authors/id/R/RG/RGARCIA/Test-LongString-0.15.tar.gz
 http://search.cpan.org/CPAN/authors/id/R/RI/RIBASUSHI/Class-C3-Componentised-1.0008.tar.gz
 http://search.cpan.org/CPAN/authors/id/R/RJ/RJBS/Data-OptList-0.106.tar.gz
+http://search.cpan.org/CPAN/authors/id/R/RJ/RJBS/Email-Address-1.892.tar.gz
 http://search.cpan.org/CPAN/authors/id/R/RJ/RJBS/Email-Date-Format-1.002.tar.gz
 http://search.cpan.org/CPAN/authors/id/R/RJ/RJBS/Email-Send-2.198.tar.gz
 http://search.cpan.org/CPAN/authors/id/R/RJ/RJBS/Email-Simple-2.100.tar.gz
 http://search.cpan.org/CPAN/authors/id/R/RJ/RJBS/Email-Valid-0.184.tar.gz
 http://search.cpan.org/CPAN/authors/id/R/RJ/RJBS/Getopt-Long-Descriptive-0.089.tar.gz
+http://search.cpan.org/CPAN/authors/id/R/RJ/RJBS/Return-Value-1.666001.tar.gz
 http://search.cpan.org/CPAN/authors/id/R/RJ/RJBS/String-RewritePrefix-0.006.tar.gz
 http://search.cpan.org/CPAN/authors/id/R/RJ/RJBS/Sub-Exporter-0.982.tar.gz
 http://search.cpan.org/CPAN/authors/id/R/RJ/RJBS/Sub-Install-0.925.tar.gz
