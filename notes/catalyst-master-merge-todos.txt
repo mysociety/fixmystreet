@@ -9,3 +9,5 @@ merge in from master
 southhampton templates
 
 Add newsletter signup to bottom of problem confirm page
+
+ON STAGING ONLY: toggle cobrands and languages using params, and persist the change using sessions
