@@ -8,3 +8,4 @@ Makefile
 blib/
 inc/
 .sass-cache
+_Inline/
