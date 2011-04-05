@@ -439,9 +439,10 @@ sub determine_location_from_tile_click : Private {
     return unless $pin_x && $pin_y;
 
     # convert the click to lat and lng
-    my ( $latitude, $longitude ) =
-      FixMyStreet::Map::click_to_wgs84( $pin_tile_x, $pin_x, $pin_tile_y,
-        $pin_y );
+    my ( $latitude, $longitude ) = FixMyStreet::Map::click_to_wgs84(    #
+        $c->req,                                                        #
+        $pin_tile_x, $pin_x, $pin_tile_y, $pin_y
+    );
 
     # store it on the stash
     $c->stash->{latitude}  = $latitude;
@@ -470,6 +471,12 @@ sub determine_location_from_coords : Private {
     if ( defined $latitude && defined $longitude ) {
         $c->stash->{latitude}  = $latitude;
         $c->stash->{longitude} = $longitude;
+
+        # Also save the pc if there is one
+        if ( my $pc = $c->req->param('pc') ) {
+            $c->stash->{pc} = $pc;
+        }
+
         return 1;
     }
 
@@ -1041,7 +1048,7 @@ sub save_user_and_report : Private {
 
     # Save or update the user if appropriate
     if ( !$report_user->in_storage ) {
-        $report_user->insert();    
+        $report_user->insert();
     }
     elsif ( $c->user && $report_user->id == $c->user->id ) {
         $report_user->update();
@@ -1110,9 +1117,11 @@ sub generate_map : Private {
         my $form_action = $c->uri_for('');
         my $pc          = encode_entities( $c->stash->{pc} );
 
-        $c->stash->{map_html} = <<END_MAP_HTML;
+        $c->stash->{map_html} = <<"END_MAP_HTML";
 <form action="$form_action" method="post" name="mapSkippedForm"$enctype>
-<input type="hidden" name="pc" value="pc">
+<input type="hidden" name="latitude"  value="$latitude">
+<input type="hidden" name="longitude" value="$longitude">
+<input type="hidden" name="pc" value="$pc">
 <input type="hidden" name="skipped" value="1">
 $cobrand_form_elements
 <div id="skipped-map">

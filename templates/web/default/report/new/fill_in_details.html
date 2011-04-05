@@ -25,9 +25,6 @@
     [% INCLUDE 'report/new/fill_in_details_text.html' %]
 [% END %]
 
-<input type="hidden" name="latitude"  value="[% latitude  | html %]">
-<input type="hidden" name="longitude" value="[% longitude | html %]">
-
 [% FOREACH error IN errors %]
     [% '<ul class="error">' IF loop.first %]
     <li>[% error %]</li>
