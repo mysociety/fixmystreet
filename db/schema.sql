@@ -66,6 +66,7 @@ create function ms_current_timestamp()
 
 -- Who to send problems for a specific MaPit area ID to
 create table contacts (
+    id serial primary key,
     area_id integer not null,
     category text not null default 'Other',
     email text not null,
@@ -86,6 +87,7 @@ create unique index contacts_area_id_category_idx on contacts(area_id, category)
 create table contacts_history (
     contacts_history_id serial not null primary key,
 
+    contact_id integer not null,
     area_id integer not null,
     category text not null default 'Other',
     email text not null,

@@ -18,5 +18,22 @@ create table users (
     password        text    not null default ''
 );
 
--- rollback;
+--- add PK to contacts table
+ALTER TABLE contacts
+    ADD COLUMN id SERIAL PRIMARY KEY;
+
+AlTER TABLE contacts_history
+    ADD COLUMN contact_id integer;
+
+update contacts_history
+    set contact_id = (
+        select id
+        from contacts
+        where contacts_history.category = contacts.category
+          and contacts_history.area_id = contacts.area_id
+    );
+
+AlTER TABLE contacts_history
+    alter COLUMN contact_id SET NOT NULL;
+
 commit;
