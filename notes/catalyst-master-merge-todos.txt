@@ -8,3 +8,4 @@ merge in from master
 
 southhampton templates
 
+Add newsletter signup to bottom of problem confirm page
