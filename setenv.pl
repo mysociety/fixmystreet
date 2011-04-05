@@ -72,7 +72,7 @@ else {
 
     # use an eval to prevent needing Class::Unload before perl-external properly
     # setup
-    eval { use Class::Unload };
+    eval "use Class::Unload";
     die $@ if $@;
 
     my @modules =
