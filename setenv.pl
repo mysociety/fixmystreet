@@ -69,7 +69,11 @@ else {
 
     # we were just required - unload some modules to prevent old code
     # getting in the way of loading newer code from the newly set directories.
-    use Class::Unload;
+
+    # use an eval to prevent needing Class::Unload before perl-external properly
+    # setup
+    eval { use Class::Unload };
+    die $@ if $@;
 
     my @modules =
       sort
