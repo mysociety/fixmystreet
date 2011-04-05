@@ -2,4 +2,5 @@
 /private_locale
 ._*
 .sass-cache
-
+perl-external/
+inc/
