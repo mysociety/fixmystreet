@@ -12,6 +12,7 @@ Catalyst::Plugin::Static::Simple
 Catalyst::Plugin::Unicode
 Catalyst::Runtime
 Catalyst::View::TT
+Class::Accessor
 Class::Unload
 Config::General
 DBIx::Class

@@ -133,6 +133,7 @@ http://search.cpan.org/CPAN/authors/id/I/IN/INGY/Test-Base-0.59.tar.gz
 http://search.cpan.org/CPAN/authors/id/J/JE/JESSE/HTTP-Server-Simple-0.43.tar.gz
 http://search.cpan.org/CPAN/authors/id/J/JP/JPEACOCK/version-0.88.tar.gz
 http://search.cpan.org/CPAN/authors/id/J/JR/JROCKWAY/Context-Preserve-0.01.tar.gz
+http://search.cpan.org/CPAN/authors/id/K/KA/KASEI/Class-Accessor-0.34.tar.gz
 http://search.cpan.org/CPAN/authors/id/K/KW/KWILLIAMS/Path-Class-0.23.tar.gz
 http://search.cpan.org/CPAN/authors/id/K/KW/KWILLIAMS/Probe-Perl-0.01.tar.gz
 http://search.cpan.org/CPAN/authors/id/L/LB/LBROCARD/Data-Page-2.02.tar.gz
