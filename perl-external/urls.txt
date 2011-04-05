@@ -129,6 +129,7 @@ http://search.cpan.org/CPAN/authors/id/G/GB/GBARR/Scalar-List-Utils-1.23.tar.gz
 http://search.cpan.org/CPAN/authors/id/G/GE/GETTY/HTTP-Body-1.11.tar.gz
 http://search.cpan.org/CPAN/authors/id/G/GR/GRODITI/MooseX-Types-Common-0.001002.tar.gz
 http://search.cpan.org/CPAN/authors/id/I/IL/ILMARI/Class-Unload-0.07.tar.gz
+http://search.cpan.org/CPAN/authors/id/I/IN/INGY/Spiffy-0.30.tar.gz
 http://search.cpan.org/CPAN/authors/id/I/IN/INGY/Test-Base-0.59.tar.gz
 http://search.cpan.org/CPAN/authors/id/J/JE/JESSE/HTTP-Server-Simple-0.43.tar.gz
 http://search.cpan.org/CPAN/authors/id/J/JP/JPEACOCK/version-0.88.tar.gz

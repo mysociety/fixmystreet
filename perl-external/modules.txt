@@ -35,6 +35,7 @@ Path::Class
 Readonly
 Return::Value
 Sort::Key
+Spiffy
 Sub::Override
 Term::Size::Any
 Test::More
