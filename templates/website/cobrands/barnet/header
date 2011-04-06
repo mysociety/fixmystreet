@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="{{ $lang_code }}">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <link rel="stylesheet" type="text/css" href="/cobrands/barnet/css/basic.css">
+
+        <style type="text/css">
+            @import url(/css/core.css);
+            @import url(/cobrands/barnet/css/layout.css);
+        </style>
+
+
+        <!-- Preferred style sheet enabled when the page is loaded -->
+        <link rel="stylesheet" title="default" type="text/css" href="/cobrands/barnet/css/light.css">
+
+        <!-- Alternate style sheets used for the light/relaxed style -->
+        <link rel="alternate stylesheet" title="relaxed light" type="text/css" href="/cobrands/barnet/css/light.css">
+        <link rel="alternate stylesheet" title="relaxed light" type="text/css" href="/cobrands/barnet/css/relaxed.css">
+
+        <!-- Alternate style sheets used for the dark style -->
+        <link rel="alternate stylesheet" title="dark" type="text/css" href="/cobrands/barnet/css/dark.css">
+
+        <!-- Alternate style sheets used for the dark/relaxed style -->
+        <link rel="alternate stylesheet" title="relaxed dark" type="text/css" href="/cobrands/barnet/css/dark.css">
+        <link rel="alternate stylesheet" title="relaxed dark" type="text/css" href="/cobrands/barnet/css/relaxed.css">
+
+
+        <!--[if lte IE 6]>
+             <link rel="stylesheet" type="text/css" href="/cobrands/barnet/css/ie.css">
+
+             <link rel="alternate stylesheet" title="relaxed light" type="text/css" href="/cobrands/barnet/css/ie-relaxed.css">
+
+             <link rel="alternate stylesheet" title="dark" type="text/css" href="/cobrands/barnet/css/ie-dark.css">
+
+             <link rel="alternate stylesheet" title="relaxed dark" type="text/css" href="/cobrands/barnet/css/ie-dark.css">
+             <link rel="alternate stylesheet" title="relaxed dark" type="text/css" href="/cobrands/barnet/css/ie-relaxed.css">
+        <![endif]-->
+
+        <!--[if IE 7]>
+             <link rel="stylesheet" type="text/css" href="/cobrands/barnet/css/ie-seven.css">
+
+             <link rel="alternate stylesheet" title="relaxed light" type="text/css" href="/cobrands/barnet/css/ie-seven-relaxed.css">
+
+             <link rel="alternate stylesheet" title="relaxed dark" type="text/css" href="/cobrands/barnet/css/ie-seven-relaxed.css">
+        <![endif]-->
+        <link rel="stylesheet" media="print" type="text/css" href="/cobrands/barnet/css/print.css">
+
+<script type="text/javascript" src="/cobrands/barnet/javascript/jquery-1.2.6_common.js"></script>
+<script type="text/javascript" src="/cobrands/barnet/javascript/styleswitch.js"></script>
+<script type="text/javascript" src="/cobrands/barnet/javascript/jquery-cookie-min.js"></script>
+<script type="text/javascript" src="/cobrands/barnet/javascript/2008-portsurf.js"></script>
+<script type="text/javascript" src="/yui/utilities.js"></script>
+<script type="text/javascript" src="/js.js"></script>
+{{ $map_js }}
+
+{{ $rss }}
+
+    <title>{{ $title }}{{ $site_title }}</title>
+  </head>
+  <body>
+
+  <div id="iewrap">
+  <img id="print-logo" src="/cobrands/barnet/images/logo-barnet.gif" alt="">
+            <div id="header">
+                <a href="http://www.barnet.gov.uk/"><img src="/cobrands/barnet/images/logo-barnet.gif" alt="Barnet Logo"></a>
+
+                <a href="#content" class="rm">Skip to Content</a>
+                <span class="rm">|</span>
+                <a href="#navigation" class="rm">Skip to Menu</a>
+                <span class="rm">|</span>
+
+                <form action="http://www.barnet.gov.uk/search">
+                    <div class="search-input">
+                        <input type="hidden" name="col" value="lbb">
+                        <input type="hidden" name="type" value="sitesearch">
+                        <label for="input-0" class="rm">Search:</label>
+                        <input type="text" value="Please enter your search" name="search" class="search">
+                    </div>
+                    <div class="search-button">
+                        <input type="submit" value="Search" class="submit" id="input-0">
+                    </div>
+                </form>
+
+                <div id="switcher" style="display:none">
+                    <p>Site preferences:</p>
+                    <ul>
+                        <li class="default"><a id="s1" class="styleswitch" rel="default" title="Light colours with the default layout">default</a></li>
+                        <li class="relaxed-light"><a id="s2" class="styleswitch" rel="relaxed light" title="Light colours with the relaxed layout" href="#">relaxed light</a></li>
+                        <li class="dark"><a id="s3" class="styleswitch" rel="dark" title="Dark colours with the default layout" href="#">dark</a></li>
+                        <li class="relaxed-dark"><a id="s4" class="styleswitch" rel="relaxed dark" title="Dark colours with the relaxed layout" href="#">relaxed dark</a></li>
+                    </ul>
+                </div><!-- end switcher -->
+            </div><!-- end header -->
+
+      <div id="wrap">
+          <div id="content">
+              <div id="mysociety">
+
