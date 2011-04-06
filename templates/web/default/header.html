@@ -1,32 +1,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="[% lang_code %]">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <script type="text/javascript" src="/yui/utilities.js"></script>
-        <script type="text/javascript" src="/js.js"></script>
-        [% map_js %]
-        [% extra_js_verbatim %]
-        [% robots %]
 
-        <title>
-            [% IF legacy_title %]
-                [% legacy_title %]
-            [% ELSE %]
-                [% title | html %] :: [% c.cobrand.site_title %]
-            [% END %]
-        </title>
-        
-        
-        
+        [% INCLUDE 'common_header_tags.html' %]
+                
         <style type="text/css">@import url("/css/core.css"); @import url("/css/main.css");</style>
         <!--[if LT IE 7]>
              <style type="text/css">@import url("/css/ie6.css");</style>
         <![endif]-->
-
-        [% IF rss %]
-            <link rel="alternate" type="application/rss+xml" title="[% rss.0 %]" href="[% rss.1 %]">
-        [% END %]
-        [% legacy_rss %]
 
     </head>
     <body>
