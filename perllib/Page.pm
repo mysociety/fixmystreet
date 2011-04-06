@@ -391,43 +391,52 @@ sub header ($%) {
     return $html;
 }
 
+
 =item footer
 
 =cut
+
 sub footer {
-    my ($q, %params) = @_;
+    my ( $q, %params ) = @_;
 
     my $pc = $q->param('pc') || '';
     $pc = '?pc=' . URI::Escape::uri_escape_utf8($pc) if $pc;
 
-    my $creditline = _('Built by <a href="http://www.mysociety.org/">mySociety</a>, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.');
-    if (mySociety::Config::get('COUNTRY') eq 'NO') {
-        $creditline = _('Built by <a href="http://www.mysociety.org/">mySociety</a> and maintained by <a href="http://www.nuug.no/">NUUG</a>, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.');
+    my $creditline = _(
+'Built by <a href="http://www.mysociety.org/">mySociety</a>, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.'
+    );
+    if ( mySociety::Config::get('COUNTRY') eq 'NO' ) {
+        $creditline = _(
+'Built by <a href="http://www.mysociety.org/">mySociety</a> and maintained by <a href="http://www.nuug.no/">NUUG</a>, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.'
+        );
     }
 
-    %params = (%params,
+    %params = (
+        %params,
         navigation => _('Navigation'),
-        report => _("Report a problem"),
-        reports => _("All reports"),
-        alerts => _("Local alerts"),
-        help => _("Help"),
-        contact => _("Contact"),
-        pc => $pc,
-        orglogo => _('<a href="http://www.mysociety.org/"><img id="logo" width="133" height="26" src="/i/mysociety-dark.png" alt="View mySociety.org"><span id="logoie"></span></a>'),
+        report     => _("Report a problem"),
+        reports    => _("All reports"),
+        alerts     => _("Local alerts"),
+        help       => _("Help"),
+        contact    => _("Contact"),
+        pc         => $pc,
+        orglogo    => _(
+'<a href="http://www.mysociety.org/"><img id="logo" width="133" height="26" src="/i/mysociety-dark.png" alt="View mySociety.org"><span id="logoie"></span></a>'
+        ),
         creditline => $creditline,
     );
 
-    my $html = template_include('footer', $q, template_root($q), %params);
+    my $html = template_include( 'footer', $q, template_root($q), %params );
     if ($html) {
         my $lang = $mySociety::Locale::lang;
-        if ($q->{site} eq 'emptyhomes' && $lang eq 'cy') {
+        if ( $q->{site} eq 'emptyhomes' && $lang eq 'cy' ) {
             $html =~ s/25 Walter Road<br>Swansea/25 Heol Walter<br>Abertawe/;
         }
         return $html;
     }
 
     my $piwik = "";
-    if (mySociety::Config::get('BASE_URL') eq "http://www.fixmystreet.com") {
+    if ( mySociety::Config::get('BASE_URL') eq "http://www.fixmystreet.com" ) {
         $piwik = <<EOF;
 <!-- Piwik -->
 <script type="text/javascript">
