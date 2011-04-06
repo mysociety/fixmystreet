@@ -25,6 +25,7 @@ use IO::String;
 use POSIX qw(strftime);
 use URI::Escape;
 use Text::Template;
+use Template;
 
 use Memcached;
 use Problems;
@@ -267,6 +268,67 @@ sub template_include {
     return $template->fill_in(HASH => \%params);
 }
 
+=item tt2_template_include
+
+    $html = tt2_template_include( 'header', $q, $vars );
+
+Return HTML for a template, given a template name, request, and
+any parameters needed. This uses the TT2 templates that the Catalyst port uses.
+Intended to prevent having duplicate headers and footers whilst the migration is
+in progress.
+
+=cut
+
+sub _tt2_template_include_path {
+    my $q = shift;
+
+    # work out where the emplate dir is relative to the current file
+    ( my $project_dir = __FILE__ ) =~ s{/[^/]*?$}{};
+    my $template_root = "$project_dir/../templates/web";
+
+    # tidy up the '/foo/..' cruft
+    1 while $template_root =~ s{[^/]+/../}{};
+
+    my @paths = ();
+    push @paths, "$template_root/$q->{site}" if $q->{site};    # cobrand
+    push @paths, "$template_root/default";                     # fallback
+
+    return \@paths;
+}
+
+sub tt2_template_include {
+    my ( $template, $q, $params ) = @_;
+
+    # check that the template is 'header.html' or 'footer.html' - this is for
+    # transition only
+    unless ( $template eq 'header.html' || $template eq 'footer.html' ) {
+        warn "template not '(header|footer).html': '$template'";
+        return undef;
+    }
+
+    # create the template object
+    my $tt2 = Template->new(
+        {
+            INCLUDE_PATH => _tt2_template_include_path($q),
+            ENCODING     => 'utf8',
+        }
+    );
+
+    # add/edit bits on the params to suit new templates
+    $params->{loc} = sub { return _(@_) };    # create the loc function for i18n
+    $params->{legacy_title} = $params->{title} . $params->{site_title};
+    $params->{legacy_rss}   = delete $params->{rss};
+
+    use Data::Dumper;
+    local $Data::Dumper::Sortkeys = 1;
+    warn Dumper($params);
+
+    my $html = '';
+    $tt2->process( $template, $params, \$html );
+
+    return $html;
+}
+
 =item header Q [PARAM VALUE ...]
 
     $html = Page::header( $q, %params );
@@ -319,7 +381,7 @@ sub header ($%) {
 
     # produce the html
     my $vars = template_vars( $q, %params );
-    my $html = template_include( 'header', $q, template_root($q), %$vars );
+    my $html = tt2_template_include( 'header.html', $q, $vars );
     my $cache_val = $default_params{cachecontrol};
     if ( mySociety::Config::get('STAGING_SITE') ) {
         $html .=

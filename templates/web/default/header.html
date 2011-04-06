@@ -4,10 +4,20 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <script type="text/javascript" src="/yui/utilities.js"></script>
         <script type="text/javascript" src="/js.js"></script>
+        [% map_js %]
+        [% extra_js_verbatim %]
+        [% robots %]
 
-        [% extra_js_verbatim IF extra_js_verbatim %]
-
-        <title>[% title | html %] :: [% c.cobrand.site_title %]</title>
+        <title>
+            [% IF legacy_title %]
+                [% legacy_title %]
+            [% ELSE %]
+                [% title | html %] :: [% c.cobrand.site_title %]
+            [% END %]
+        </title>
+        
+        
+        
         <style type="text/css">@import url("/css/core.css"); @import url("/css/main.css");</style>
         <!--[if LT IE 7]>
              <style type="text/css">@import url("/css/ie6.css");</style>
@@ -16,6 +26,7 @@
         [% IF rss %]
             <link rel="alternate" type="application/rss+xml" title="[% rss.0 %]" href="[% rss.1 %]">
         [% END %]
+        [% legacy_rss %]
 
     </head>
     <body>
