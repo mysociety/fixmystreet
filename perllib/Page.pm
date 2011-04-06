@@ -293,6 +293,8 @@ sub _tt2_template_include_path {
     push @paths, "$template_root/$q->{site}" if $q->{site};    # cobrand
     push @paths, "$template_root/default";                     # fallback
 
+    # warn "template path: $_" for @paths;
+
     return \@paths;
 }
 
@@ -318,10 +320,6 @@ sub tt2_template_include {
     $params->{loc} = sub { return _(@_) };    # create the loc function for i18n
     $params->{legacy_title} = $params->{title} . $params->{site_title};
     $params->{legacy_rss}   = delete $params->{rss};
-
-    use Data::Dumper;
-    local $Data::Dumper::Sortkeys = 1;
-    warn Dumper($params);
 
     my $html = '';
     $tt2->process( $template, $params, \$html );
