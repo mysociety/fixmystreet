@@ -26,7 +26,7 @@ sub auto : Private {
     my ( $self, $c ) = @_;
 
     # decide which cobrand this request should use
-    $c->setup_cobrand();
+    $c->setup_request();
 
     return 1;
 }

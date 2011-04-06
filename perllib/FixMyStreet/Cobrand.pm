@@ -68,4 +68,24 @@ sub get_class_for_host {
     return 'FixMyStreet::Cobrand::Default';
 }
 
+=head2 get_class_for_moniker
+
+    $cobrand_class = FixMyStreet::Cobrand->get_class_for_moniker( $moniker );
+
+Given a moniker determine which cobrand we should be using. 
+
+=cut
+
+sub get_class_for_moniker {
+    my $class   = shift;
+    my $moniker = shift;
+
+    foreach my $avail ( $class->available_cobrand_classes ) {
+        return $avail if $moniker eq $avail->moniker;
+    }
+
+    # if none match then use the default
+    return 'FixMyStreet::Cobrand::Default';
+}
+
 1;

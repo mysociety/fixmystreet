@@ -113,23 +113,33 @@ sub cobrand {
 }
 
 sub _get_cobrand {
-    my $c             = shift;
-    my $host          = $c->req->uri->host;
-    my $cobrand_class = FixMyStreet::Cobrand->get_class_for_host($host);
+    my $c = shift;
+
+    my $host             = $c->req->uri->host;
+    my $override_moniker = $c->get_override('cobrand_moniker');
+
+    my $cobrand_class =
+      $override_moniker
+      ? FixMyStreet::Cobrand->get_class_for_moniker($override_moniker)
+      : FixMyStreet::Cobrand->get_class_for_host($host);
+
     return $cobrand_class->new( { request => $c->req } );
 }
 
-=head2 setup_cobrand
+=head2 setup_request
 
-    $cobrand = $c->setup_cobrand();
+    $cobrand = $c->setup_request();
 
 Work out which cobrand we should be using. Set the environment correctly - eg
-template paths
+template paths, maps, languages etc, etc.
 
 =cut
 
-sub setup_cobrand {
-    my $c       = shift;
+sub setup_request {
+    my $c = shift;
+
+    $c->setup_dev_overrides();
+
     my $cobrand = $c->cobrand;
 
     # append the cobrand templates to the include path
@@ -137,9 +147,12 @@ sub setup_cobrand {
       [ $cobrand->path_to_web_templates->stringify ]
       unless $cobrand->is_default;
 
-    my $host = $c->req->uri->host;
+    # work out which language to use
+    my $lang_override = $c->get_override('lang');
+    my $host          = $c->req->uri->host;
     my $lang =
-        $host =~ /^en\./ ? 'en-gb'
+        $lang_override ? $lang_override
+      : $host =~ /^en\./ ? 'en-gb'
       : $host =~ /cy/    ? 'cy'
       :                    undef;
 
@@ -162,6 +175,68 @@ sub setup_cobrand {
     FixMyStreet::Map::set_map_class( $c->request->param('map') );
 
     return $cobrand;
+}
+
+=head2 setup_dev_overrides
+
+    $c->setup_dev_overrides();
+
+This is only run if STAGING_SITE is true.
+
+It is intended as an easy way to change the cobrand, language, map etc etc etc
+without having to muck around with domain names and so on. The overrides are set
+by passing _override_xxx parameters in the query. The values and stored in the
+session and are used in preference to the defaults.
+
+All overrides can be easily cleared by setting the _override_clear_all parameter
+to true.
+
+=cut
+
+sub setup_dev_overrides {
+    my $c = shift;
+
+    # If not on STAGING_SITE bail out
+    return unless $c->config->{STAGING_SITE};
+
+    # Extract all the _override_xxx parameters
+    my $params = $c->req->parameters;
+    delete $params->{$_} for grep { !m{^_override_} } keys %$params;
+
+    # stop if there is nothing to add
+    return 1 unless scalar keys %$params;
+
+    # Check to see if we should clear all
+    if ( $params->{_override_clear_all} ) {
+        delete $c->session->{overrides};
+        return;
+    }
+
+    # check for all the other _override params and set their values
+    my $overrides = $c->session->{overrides} ||= {};
+    foreach my $raw_key ( keys %$params ) {
+        my ($key) = $raw_key =~ m{^_override_(.*)$};
+        $overrides->{$key} = $params->{$raw_key};
+    }
+
+    return $overrides;
+}
+
+=head2 get_override
+
+    $value = $c->get_override( 'cobrand_moniker' );
+
+Checks the overrides for the value given and returns it if found, undef if not.
+
+Always returns undef unless on a staging site (avoids autovivifying overrides
+hash in session and so creating a session for all users).
+
+=cut
+
+sub get_override {
+    my ( $c, $key ) = @_;
+    return unless $c->config->{STAGING_SITE};
+    return $c->session->{overrides}->{$key};
 }
 
 =head2 send_email
