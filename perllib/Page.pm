@@ -269,38 +269,64 @@ sub template_include {
 
 =item header Q [PARAM VALUE ...]
 
-Return HTML for the top of the page, given PARAMs (TITLE is required).
+    $html = Page::header( $q, %params );
+
+Return HTML for the top of the page, given %params ('title' is required).
+
+Also prints the HTTP headers for the page to STDOUT.
 
 =cut
+
 sub header ($%) {
-    my ($q, %params) = @_;
-    my  $context = $params{context};
-    my $default_params = Cobrand::header_params(get_cobrand($q), $q, %params);
+    my ( $q, %params ) = @_;
+
+    # get the context
+    my $context        = $params{context};
+
+    # get default header parameters for the cobrand
+    my $default_params = Cobrand::header_params( get_cobrand($q), $q, %params );
     my %default_params = %{$default_params};
-    %params = (%default_params, %params);
-    my %permitted_params = map { $_ => 1 } qw(title rss expires lastmodified template cachecontrol context status_code robots js);
-    foreach (keys %params) {
-        croak "bad parameter '$_'" if (!exists($permitted_params{$_}));
+    %params = ( %default_params, %params );
+
+    # check that all the params given ar allowed
+    my %permitted_params = map { $_ => 1 } (
+        'title',    'rss',          'expires', 'lastmodified',
+        'template', 'cachecontrol', 'context', 'status_code',
+        'robots',   'js',
+    );
+    foreach ( keys %params ) {
+        croak "bad parameter '$_'" if ( !exists( $permitted_params{$_} ) );
     }
 
+    # create the HTTP header
     my %head = ();
-    $head{-expires} = $params{expires} if $params{expires};
-    $head{'-last-modified'} = time2str($params{lastmodified}) if $params{lastmodified};
+    $head{'-expires'} = $params{expires} if $params{expires};
+    $head{'-last-modified'} = time2str( $params{lastmodified} )
+      if $params{lastmodified};
     $head{'-last-modified'} = time2str($lastmodified) if $lastmodified;
-    $head{'-Cache-Control'} = $params{cachecontrol} if $params{cachecontrol};
-    $head{'-status'} = $params{status_code} if $params{status_code};
+    $head{'-Cache-Control'} = $params{cachecontrol}   if $params{cachecontrol};
+    $head{'-status'}        = $params{status_code}    if $params{status_code};
     print $q->header(%head);
 
+    
+    # mangle the title
     $params{title} ||= '';
     $params{title} .= ' - ' if $params{title};
-    $params{title} = ent($params{title});
-    $params{lang} = $mySociety::Locale::lang;
+    $params{title} = ent( $params{title} );
 
-    my $vars = template_vars($q, %params);
-    my $html = template_include('header', $q, template_root($q), %$vars);
+    # get the language
+    $params{lang}  = $mySociety::Locale::lang;
+
+    # produce the html
+    my $vars = template_vars( $q, %params );
+    my $html = template_include( 'header', $q, template_root($q), %$vars );
     my $cache_val = $default_params{cachecontrol};
-    if (mySociety::Config::get('STAGING_SITE')) {
-        $html .= '<p class="error">' . _("This is a developer site; things might break at any time, and the database will be periodically deleted.") . '</p>';
+    if ( mySociety::Config::get('STAGING_SITE') ) {
+        $html .=
+          '<p class="error">'
+          . _(
+"This is a developer site; things might break at any time, and the database will be periodically deleted."
+          ) . '</p>';
     }
     return $html;
 }
