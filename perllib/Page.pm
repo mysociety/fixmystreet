@@ -318,8 +318,13 @@ sub tt2_template_include {
 
     # add/edit bits on the params to suit new templates
     $params->{loc} = sub { return _(@_) };    # create the loc function for i18n
-    $params->{legacy_title} = $params->{title} . $params->{site_title};
-    $params->{legacy_rss}   = delete $params->{rss};
+    $params->{legacy_title} =
+      ( $params->{title} || '' ) . ( $params->{site_title} || '' );
+    $params->{legacy_rss} = delete $params->{rss};
+
+    # fake parts of the config that the templates need
+    $params->{c}{config}{STAGING_SITE} = mySociety::Config::get('STAGING_SITE');
+
 
     my $html = '';
     $tt2->process( $template, $params, \$html );
@@ -381,13 +386,6 @@ sub header ($%) {
     my $vars = template_vars( $q, %params );
     my $html = tt2_template_include( 'header.html', $q, $vars );
     my $cache_val = $default_params{cachecontrol};
-    if ( mySociety::Config::get('STAGING_SITE') ) {
-        $html .=
-          '<p class="error">'
-          . _(
-"This is a developer site; things might break at any time, and the database will be periodically deleted."
-          ) . '</p>';
-    }
     return $html;
 }
 
@@ -402,77 +400,30 @@ sub footer {
     my $pc = $q->param('pc') || '';
     $pc = '?pc=' . URI::Escape::uri_escape_utf8($pc) if $pc;
 
-    my $creditline = _(
-'Built by <a href="http://www.mysociety.org/">mySociety</a>, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.'
-    );
-    if ( mySociety::Config::get('COUNTRY') eq 'NO' ) {
-        $creditline = _(
-'Built by <a href="http://www.mysociety.org/">mySociety</a> and maintained by <a href="http://www.nuug.no/">NUUG</a>, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.'
-        );
-    }
+#     if ( mySociety::Config::get('COUNTRY') eq 'NO' ) {
+#         $creditline = _(
+# 'Built by <a href="http://www.mysociety.org/">mySociety</a> and maintained by <a href="http://www.nuug.no/">NUUG</a>, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.'
+#         );
+#     }
 
     %params = (
         %params,
-        navigation => _('Navigation'),
-        report     => _("Report a problem"),
-        reports    => _("All reports"),
-        alerts     => _("Local alerts"),
-        help       => _("Help"),
-        contact    => _("Contact"),
+        # navigation => _('Navigation'),
+        # report     => _("Report a problem"),
+        # reports    => _("All reports"),
+        # alerts     => _("Local alerts"),
+        # help       => _("Help"),
+        # contact    => _("Contact"),
         pc         => $pc,
-        orglogo    => _(
-'<a href="http://www.mysociety.org/"><img id="logo" width="133" height="26" src="/i/mysociety-dark.png" alt="View mySociety.org"><span id="logoie"></span></a>'
-        ),
-        creditline => $creditline,
+#         orglogo    => _(
+# '<a href="http://www.mysociety.org/"><img id="logo" width="133" height="26" src="/i/mysociety-dark.png" alt="View mySociety.org"><span id="logoie"></span></a>'
+#         ),
     );
 
-    my $html = template_include( 'footer', $q, template_root($q), %params );
-    if ($html) {
-        my $lang = $mySociety::Locale::lang;
-        if ( $q->{site} eq 'emptyhomes' && $lang eq 'cy' ) {
-            $html =~ s/25 Walter Road<br>Swansea/25 Heol Walter<br>Abertawe/;
-        }
-        return $html;
-    }
+    my $html = tt2_template_include( 'footer.html', $q, \%params );
 
-    my $piwik = "";
-    if ( mySociety::Config::get('BASE_URL') eq "http://www.fixmystreet.com" ) {
-        $piwik = <<EOF;
-<!-- Piwik -->
-<script type="text/javascript">
-var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.mysociety.org/" : "http://piwik.mysociety.org/");
-document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
-</script><script type="text/javascript">
-try {
-var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 8);
-piwikTracker.trackPageView();
-piwikTracker.enableLinkTracking();
-} catch( err ) {}
-</script><noscript><p><img src="http://piwik.mysociety.org/piwik.php?idsite=8" style="border:0" alt=""/></p></noscript>
-<!-- End Piwik Tag -->
-EOF
-    }
+    return $html;
 
-    return <<EOF;
-</div></div>
-<h2 class="v">$params{navigation}</h2>
-<ul id="navigation">
-<li><a href="/report/new">$params{report}</a></li>
-<li><a href="/reports">$params{reports}</a></li>
-<li><a href="/alert$params{pc}">$params{alerts}</a></li>
-<li><a href="/faq">$params{help}</a></li>
-<li><a href="/contact">$params{contact}</a></li>
-</ul>
-
-$params{orglogo}
-
-<p id="footer">$params{creditline}</p>
-
-$piwik
-
-</body>
-</html>
-EOF
 }
 
 =item error_page Q MESSAGE
