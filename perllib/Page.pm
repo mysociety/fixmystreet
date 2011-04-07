@@ -401,21 +401,11 @@ sub footer {
     my $pc = $q->param('pc') || '';
     $pc = '?pc=' . URI::Escape::uri_escape_utf8($pc) if $pc;
 
-    %params = (
-        %params,
-        # navigation => _('Navigation'),
-        # report     => _("Report a problem"),
-        # reports    => _("All reports"),
-        # alerts     => _("Local alerts"),
-        # help       => _("Help"),
-        # contact    => _("Contact"),
-        pc         => $pc,
-    );
+    %params = ( %params, pc => $pc, );
 
     my $html = tt2_template_include( 'footer.html', $q, \%params );
 
     return $html;
-
 }
 
 =item error_page Q MESSAGE
