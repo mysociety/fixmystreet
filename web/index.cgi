@@ -133,6 +133,8 @@ sub front_page {
 
     my $out = '<p id="expl"><strong>' . _('Report, view, or discuss local problems') . '</strong>';
     my $subhead = _('(like graffiti, fly tipping, broken paving slabs, or street lighting)');
+    $subhead = '(like graffiti, fly tipping, or broken paving slabs)'
+        if $q->{site} eq 'southampton';
     $out .= '<br><small>' . $subhead . '</small>' if $subhead ne ' ';
     $out .= '</p>';
     #if (my $url = mySociety::Config::get('IPHONE_URL')) {
@@ -560,6 +562,7 @@ please specify the closest point on land.')) unless %$all_councils;
         foreach (@$categories) {
             $council_ok{$_->{area_id}} = 1;
             next if $_->{category} eq _('Other');
+            next if $q->{site} eq 'southampton' && $_->{category} eq 'Street lighting';
             push @categories, $_->{category};
         }
         if ($q->{site} eq 'scambs') {
