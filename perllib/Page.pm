@@ -324,6 +324,7 @@ sub tt2_template_include {
 
     # fake parts of the config that the templates need
     $params->{c}{config}{STAGING_SITE} = mySociety::Config::get('STAGING_SITE');
+    $params->{c}{req}{uri}{path} = $ENV{REQUEST_URI};
 
 
     my $html = '';
@@ -400,12 +401,6 @@ sub footer {
     my $pc = $q->param('pc') || '';
     $pc = '?pc=' . URI::Escape::uri_escape_utf8($pc) if $pc;
 
-#     if ( mySociety::Config::get('COUNTRY') eq 'NO' ) {
-#         $creditline = _(
-# 'Built by <a href="http://www.mysociety.org/">mySociety</a> and maintained by <a href="http://www.nuug.no/">NUUG</a>, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.'
-#         );
-#     }
-
     %params = (
         %params,
         # navigation => _('Navigation'),
@@ -415,9 +410,6 @@ sub footer {
         # help       => _("Help"),
         # contact    => _("Contact"),
         pc         => $pc,
-#         orglogo    => _(
-# '<a href="http://www.mysociety.org/"><img id="logo" width="133" height="26" src="/i/mysociety-dark.png" alt="View mySociety.org"><span id="logoie"></span></a>'
-#         ),
     );
 
     my $html = tt2_template_include( 'footer.html', $q, \%params );
