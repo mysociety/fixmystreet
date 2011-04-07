@@ -48,8 +48,9 @@ Allow the user to legin with a username and a password.
 sub login : Private {
     my ( $self, $c ) = @_;
 
-    my $email    = $c->req->param('email')    || '';
-    my $password = $c->req->param('password') || '';
+    my $email       = $c->req->param('email')       || '';
+    my $password    = $c->req->param('password')    || '';
+    my $remember_me = $c->req->param('remember_me') || 0;
 
     # logout just in case
     $c->logout();
@@ -58,6 +59,11 @@ sub login : Private {
         && $password
         && $c->authenticate( { email => $email, password => $password } ) )
     {
+
+        # unless user asked to be remembered limit the session to browser
+        $c->set_session_cookie_expire(0)
+          unless $remember_me;
+
         $c->res->redirect( $c->uri_for('/my') );
         return;
     }

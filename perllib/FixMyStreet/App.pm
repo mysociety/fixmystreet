@@ -15,7 +15,7 @@ use Catalyst (
     'Unicode',
     'Session',
     'Session::Store::DBIC',
-    'Session::State::Cookie',
+    'Session::State::Cookie',    # FIXME - we're using our own override atm
     'Authentication',
 );
 

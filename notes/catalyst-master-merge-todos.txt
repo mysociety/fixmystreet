@@ -1,13 +1,3 @@
-convert templates for new micro sites (or switch old code to use new headers and footers)
-
 should we ditch flickr import? (does not seem to be getting huge usage and those using it would probably report using another method: http://www.flickr.com/search/?w=all&q=fixmystreet&m=tags)
 
-add 'remember me on this computer' to auth login. What should default session lifetime be? Waiting for answer on http://lists.scsys.co.uk/pipermail/catalyst/2011-April/date.html
-
-merge in from master
-
-southhampton templates
-
 Add newsletter signup to bottom of problem confirm page
-
-ON STAGING ONLY: toggle cobrands and languages using params, and persist the change using sessions

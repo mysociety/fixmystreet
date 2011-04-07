@@ -33,11 +33,12 @@
         <label for="password">[% loc('Password:') %]</label>
         <input type="password" name="password" value="">
         <br>
-        <!-- FIXME - implement session length choosing
+
         <label for="remember_me">&nbsp;</label>
-        <input type="checkbox" name="remember_me">
+        <input type="checkbox" name="remember_me" value='1' [% 'checked="checked"' IF remember_me %]>
         Remember me - do not use on a public computer
-        <br> -->
+        <br>
+        
         <label for="login">&nbsp;</label>
         <input type="submit" name="login" value="[% loc('Log me in') %]">
 

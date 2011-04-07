@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 97;
+use Test::More tests => 94;
 
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
@@ -178,23 +178,33 @@ $mech->not_logged_in_ok;
     ok $user->password, "user now has a password";
 }
 
-# login using valid details
-$mech->get_ok('/auth');
-$mech->submit_form_ok(
-    {
-        form_name => 'general_auth',
-        fields    => {
-            email    => $test_email,
-            password => $test_password,
-        },
-        button => 'login',
-    },
-    "login with '$test_email' & '$test_password"
-);
-is $mech->uri->path, '/my', "redirected to correct page";
+foreach my $remember_me ( '1', '0' ) {
+    subtest "login using valid details (remember_me => '$remember_me')" => sub {
+        $mech->get_ok('/auth');
+        $mech->submit_form_ok(
+            {
+                form_name => 'general_auth',
+                fields    => {
+                    email       => $test_email,
+                    password    => $test_password,
+                    remember_me => ( $remember_me ? 1 : undef ),
+                },
+                button => 'login',
+            },
+            "login with '$test_email' & '$test_password"
+        );
+        is $mech->uri->path, '/my', "redirected to correct page";
 
-# logout
-$mech->log_out_ok;
+        # check that the cookie has no expiry set
+        my $expiry = $mech->session_cookie_expiry;
+        $remember_me
+          ? cmp_ok( $expiry, '>', 86400, "long expiry time" )
+          : is( $expiry, 0, "no expiry time" );
+
+        # logout
+        $mech->log_out_ok;
+    };
+}
 
 # try to login with bad details
 $mech->get_ok('/auth');
