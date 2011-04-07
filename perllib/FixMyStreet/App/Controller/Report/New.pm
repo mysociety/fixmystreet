@@ -675,9 +675,16 @@ sub setup_categories_and_councils : Private {
 
         @contacts = keysort { $_->category } @contacts;
         foreach my $contact (@contacts) {
+
             push @area_ids_to_list, $contact->area_id;
-            push @category_options, $contact->category
-              unless $contact->category eq _('Other');
+
+            next    # TODO - move this to the cobrand
+              if $c->cobrand->moniker eq 'southampton'
+                  && $contact->category eq 'Street lighting';
+
+            next if $contact->category eq _('Other');
+
+            push @category_options, $contact->category;
         }
 
         if (@category_options) {
