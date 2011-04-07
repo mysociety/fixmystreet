@@ -6,6 +6,7 @@ use warnings;
 
 use mySociety::Locale;
 use FixMyStreet;
+use CrossSell;
 
 __PACKAGE__->config(
     TEMPLATE_EXTENSION => '.html',
@@ -14,7 +15,7 @@ __PACKAGE__->config(
     ],
     ENCODING       => 'utf8',
     render_die     => 1,
-    expose_methods => [ 'loc', 'nget', 'tprintf', ],
+    expose_methods => [ 'loc', 'nget', 'tprintf', 'display_crossell_advert' ],
 );
 
 =head1 NAME
@@ -78,7 +79,12 @@ sub display_crossell_advert {
     my ( $self, $c, $email, $name ) = @_;
 
     return unless $c->cobrand->allow_crosssell_adverts();
-    return CrossSell::display_advert( $c->req, $email, $name );
+
+    # fake up the old style $q
+    my $q = { site => $c->cobrand->moniker, };
+    $q->{site} = 'fixmystreet' if $q->{site} eq 'default';
+
+    return CrossSell::display_advert( $q, $email, $name );
 }
 
 1;
