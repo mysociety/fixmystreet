@@ -200,23 +200,23 @@ sub setup_dev_overrides {
     return unless $c->config->{STAGING_SITE};
 
     # Extract all the _override_xxx parameters
-    my $params = $c->req->parameters;
-    delete $params->{$_} for grep { !m{^_override_} } keys %$params;
+    my %params = %{ $c->req->parameters };
+    delete $params{$_} for grep { !m{^_override_} } keys %params;
 
     # stop if there is nothing to add
-    return 1 unless scalar keys %$params;
+    return 1 unless scalar keys %params;
 
     # Check to see if we should clear all
-    if ( $params->{_override_clear_all} ) {
+    if ( $params{_override_clear_all} ) {
         delete $c->session->{overrides};
         return;
     }
 
     # check for all the other _override params and set their values
     my $overrides = $c->session->{overrides} ||= {};
-    foreach my $raw_key ( keys %$params ) {
+    foreach my $raw_key ( keys %params ) {
         my ($key) = $raw_key =~ m{^_override_(.*)$};
-        $overrides->{$key} = $params->{$raw_key};
+        $overrides->{$key} = $params{$raw_key};
     }
 
     return $overrides;

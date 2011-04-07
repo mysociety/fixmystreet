@@ -256,9 +256,9 @@ Return all the visible form values on the page - ie not the hidden ones.
 sub visible_form_values {
     my $mech = shift;
 
-    my @forms = $mech->forms;
-
-    # insert form filtering here (eg ignore login form)
+    my @forms =
+      grep { ( $_->attr('name') || '' ) ne 'overrides_form' } # ignore overrides
+      $mech->forms;
 
     croak "Found no forms - can't continue..."
       unless @forms;
