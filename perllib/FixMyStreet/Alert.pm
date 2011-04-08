@@ -158,11 +158,11 @@ sub email_alerts ($) {
             if (!$data{alert_email}) {
                 %data = (%data, %$row);
                 if ($ref eq 'area_problems' || $ref eq 'council_problems' || $ref eq 'ward_problems') {
-                    my $va_info = mySociety::MaPit::get_voting_area_info($row->{alert_parameter});
+                    my $va_info = mySociety::MaPit::call('area', $row->{alert_parameter});
                     $data{area_name} = $va_info->{name};
                 }
                 if ($ref eq 'ward_problems') {
-                    my $va_info = mySociety::MaPit::get_voting_area_info($row->{alert_parameter2});
+                    my $va_info = mySociety::MaPit::call('area', $row->{alert_parameter2});
                     $data{ward_name} = $va_info->{name};
                 }
             }
