@@ -284,7 +284,7 @@ sub do_report {
     my $postcode = 'SW1A 0AA';
     my $messages = english_fms_messages();
     my $x_coord = 3287;
-    my $y_coord = 1112;
+    my $y_coord = 1113;
     submit_report($postcode, $x_coord, $y_coord, 530268, 179545, 1, undef, $messages, ''); 
   
     # Check that the report is now available through the AJAX interface 
@@ -296,8 +296,8 @@ sub do_update {
     set_base_url('');
     my $postcode = 'ME15 6RS';
     my $messages = english_fms_messages();
-    my $x_coord = 3287;
-    my $y_coord = 1112;
+    my $x_coord = 3570;
+    my $y_coord = 969;
     submit_report($postcode, $x_coord, $y_coord, 575794, 156256, 1, undef, $messages, '');
     $wth->browser_follow_link(text => 'view the problem on this site');
     $wth->browser_submit_form(with_fields => { name => name_n(1),
