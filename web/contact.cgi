@@ -115,9 +115,9 @@ registered charity. The charity is called UK Citizens Online Democracy and is ch
 <p>mySociety can be contacted by email at <a href="mailto:hello&#64;mysociety.org">hello&#64;mysociety.org</a>,
 or by post at:</p>
 <p>mySociety<br>
-PO Box 839<br>
-Oxford<br>
-OX1 9LG<br>
+483 Green Lanes<br>
+London<br>
+N13 4BS<br>
 UK</p>
 </div>
 EOF
