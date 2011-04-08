@@ -251,8 +251,11 @@ sub submit_report {
                         email => email_n($user_num),
                         phone => '555 5555'};
 
-	if ($cobrand eq 'cy.emptyhomes.'){
+        if ($cobrand eq 'cy.emptyhomes.') {
             $fields->{category} = "Bloc cyfan o fflatiau gwag";
+        } elsif ($postcode =~ /^(SW|SE)/) {
+            # London needs a category
+            $fields->{category} = "Street sign";
         }
  
         if ($council){
