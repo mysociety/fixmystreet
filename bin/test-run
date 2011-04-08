@@ -348,17 +348,17 @@ sub do_import {
 
 sub do_questionnaire {
     
-    my $council_id = 2491; 
-    my $council_name =  "Southwark Borough Council";
+    my $council_id = 2514;
+    my $council_name =  "Birmingham City Council";
 
     # set up a fake contact record for a council
     create_fake_contact($council_id);
 
     # submit a problem report
     set_fms_date('2009-11-01');
-    my $postcode = 'SE1';
+    my $postcode = 'B14';
     my $messages = english_fms_messages();
-    submit_report($postcode, 3307, 1116, 533484.251968504, 180025.4000508, 5, $council_id, $messages, '');
+    submit_report($postcode, 2529, 1738, 407903, 280322, 5, $council_id, $messages, '');
 
     # send emails (for the report)
     call_send_emails();
