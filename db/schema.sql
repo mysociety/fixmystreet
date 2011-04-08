@@ -154,6 +154,11 @@ create table problem (
     name text not null,
     anonymous boolean not null,
 
+    -- External information
+    external_id text,
+    external_body text,
+    external_team text,
+
     -- Metadata
     created timestamp not null default ms_current_timestamp(),
     confirmed timestamp,

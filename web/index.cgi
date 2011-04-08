@@ -330,8 +330,10 @@ sub submit_problem {
             my @area_types = Cobrand::area_types($cobrand);
             my %va = map { $_ => 1 } @area_types;
             my %councils;
+            my $london = 0;
             foreach (keys %$areas) {
                 $councils{$_} = 1 if $va{$areas->{$_}->{type}};
+                $london = 1 if $areas->{$_}->{type} eq 'LBO' && $q->{site} ne 'emptyhomes';
             }
             my @input_councils = split /,|\|/, $input{council};
             foreach (@input_councils) {
@@ -348,7 +350,11 @@ sub submit_problem {
 
             # Check category here, won't be present if council is -1
             my @valid_councils = @input_councils;
-            if ($input{category} && $q->{site} ne 'emptyhomes') {
+            if ($london) {
+                $field_errors{category} = _('Please choose a category')
+                    unless Utils::london_categories()->{$input{category}};
+                @valid_councils = $input{council};
+            } elsif ($input{category} && $q->{site} ne 'emptyhomes') {
                 my $categories = select_all("select area_id from contacts
                     where deleted='f' and area_id in ("
                     . $input{council} . ') and category = ?', $input{category});
@@ -557,7 +563,21 @@ please specify the closest point on land.')) unless %$all_councils;
     my (%council_ok, @categories);
     my $categories = select_all("select area_id, category from contacts
         where deleted='f' and area_id in (" . join(',', keys %$all_councils) . ')');
-    if ($q->{site} ne 'emptyhomes') {
+    my $first_council = (values %$all_councils)[0];
+    if ($q->{site} eq 'emptyhomes') {
+        foreach (@$categories) {
+            $council_ok{$_->{area_id}} = 1;
+        }
+        @categories = (_('-- Pick a property type --'), _('Empty house or bungalow'),
+            _('Empty flat or maisonette'), _('Whole block of empty flats'),
+            _('Empty office or other commercial'), _('Empty pub or bar'),
+            _('Empty public building - school, hospital, etc.'));
+        $category = _('Property type:');
+    } elsif ($first_council->{type} eq 'LBO') {
+        $council_ok{$first_council->{id}} = 1;
+        @categories = (_('-- Pick a category --'), sort keys %{ Utils::london_categories() } );
+        $category = _('Category:');
+    } else {
         @$categories = sort { strcoll($a->{category}, $b->{category}) } @$categories;
         foreach (@$categories) {
             $council_ok{$_->{area_id}} = 1;
@@ -572,15 +592,6 @@ please specify the closest point on land.')) unless %$all_councils;
             @categories = (_('-- Pick a category --'), @categories, _('Other'));
             $category = _('Category:');
         }
-    } else {
-        foreach (@$categories) {
-            $council_ok{$_->{area_id}} = 1;
-        }
-        @categories = (_('-- Pick a property type --'), _('Empty house or bungalow'),
-            _('Empty flat or maisonette'), _('Whole block of empty flats'),
-            _('Empty office or other commercial'), _('Empty pub or bar'),
-            _('Empty public building - school, hospital, etc.'));
-        $category = _('Property type:');
     }
     $category = $q->label({'for'=>'form_category'}, $category) .
         $q->popup_menu(-name=>'category', -values=>\@categories, -id=>'form_category',
@@ -648,10 +659,16 @@ If this is not the correct location, simply click on the map again. '));
 
     if ($details eq 'all') {
         my $council_list = join('</strong>' . _(' or ') . '<strong>', map { $_->{name} } values %$all_councils);
-        if ($q->{site} eq 'emptyhomes'){
+        if ($q->{site} eq 'emptyhomes') {
             $vars{text_help} = '<p>' . sprintf(_('All the information you provide here will be sent to <strong>%s</strong>.
 On the site, we will show the subject and details of the problem, plus your
 name if you give us permission.'), $council_list);
+        } elsif ($first_council->{type} eq 'LBO') {
+            $vars{text_help} = '<p>' . sprintf(_('All the information you
+            provide here will be sent to <strong>%s</strong> or a relevant
+            local body such as TfL, via the London Report-It system. The
+            subject and details of the problem will be public, plus your name
+            if you give us permission.'), $council_list);
         } else {
             $vars{text_help} = '<p>' . sprintf(_('All the information you provide here will be sent to <strong>%s</strong>.
 The subject and details of the problem will be public, plus your

@@ -606,12 +606,17 @@ sub display_problem_meta_line($$) {
     $out .= '; ' . _('the map was not used so pin location may be inaccurate') unless ($problem->{used_map});
     if ($problem->{council}) {
         if ($problem->{whensent}) {
-            $problem->{council} =~ s/\|.*//g;
-            my @councils = split /,/, $problem->{council};
-            my $areas_info = mySociety::MaPit::call('areas', \@councils);
-            my $council = join(' and ', map { $areas_info->{$_}->{name} } @councils);
+            my $body;
+            if ($problem->{external_body}) {
+                $body = $problem->{external_body};
+            } else {
+                $problem->{council} =~ s/\|.*//g;
+                my @councils = split /,/, $problem->{council};
+                my $areas_info = mySociety::MaPit::call('areas', \@councils);
+                $body = join(' and ', map { $areas_info->{$_}->{name} } @councils);
+            }
             $out .= '<small class="council_sent_info">';
-            $out .= $q->br() . sprintf(_('Sent to %s %s later'), $council, prettify_duration($problem->{whensent}, 'minute'));
+            $out .= $q->br() . sprintf(_('Sent to %s %s later'), $body, prettify_duration($problem->{whensent}, 'minute'));
             $out .= '</small>';
         }
     } else {
