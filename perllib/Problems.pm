@@ -226,7 +226,7 @@ sub fetch_problem {
         used_map, name, anonymous, extract(epoch from confirmed) as time,
         state, extract(epoch from whensent-confirmed) as whensent,
         extract(epoch from ms_current_timestamp()-lastupdate) as duration, 
-        service, cobrand, cobrand_data
+        service, cobrand, cobrand_data, external_body
         from problem where id=? and state in ('confirmed','fixed', 'hidden')
         $site_restriction", {}, $id
     );
