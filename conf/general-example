@@ -48,6 +48,9 @@ define('OPTION_MAP_TYPE', 'OSM');
 define('OPTION_EVEL_URL', 'http://services.mysociety.org/evel');
 define('OPTION_GAZE_URL', 'http://gaze.mysociety.org/gaze');
 
+// webservice for Barnet: expected format: user:password@https_url
+define('OPTION_BARNET_WEBSERVICE_ENDPOINT', '');
+
 // Tracking
 define('OPTION_TRACKING', 0);   // off by default
 define('OPTION_TRACKING_URL', 'http://path/to/web/bug');
