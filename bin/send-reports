@@ -21,7 +21,6 @@ use CronFns;
 
 use FixMyStreet::App;
 
-use BarnetWSDL;
 use EastHantsWSDL;
 use Utils;
 use mySociety::Config;
@@ -34,6 +33,7 @@ use Open311;
 # specific council numbers
 use constant COUNCIL_ID_BARNET     => 2489;
 use constant COUNCIL_ID_EAST_HANTS => 2330;
+use constant MAX_LINE_LENGTH       => 132;
 
 # Set up site, language etc.
 my ($verbose, $nomail) = CronFns::options();
@@ -143,7 +143,7 @@ while (my $row = $unsent->next) {
                 $h{category} = 'Customer Services' if $h{category} eq 'Other';
             } elsif ($council == COUNCIL_ID_BARNET) { # Barnet have a web service
                 $send_web = 'barnet';                
-                $h{category} = 'BARNET CRM'; # FIXME force category (by arrangement with Barnet)
+                $h{category} = 'BARNET CRM'; # FIXME category is lookup (by arrangement with Barnet)
             } elsif ($areas_info->{$council}->{type} eq 'LBO') { # London
                 $send_web = 'london';
             } elsif ( my $endpoint = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $council, endpoint => { '!=', '' } } )->first ) {
@@ -426,33 +426,47 @@ EOF
 my $barnet_service;
 sub post_barnet_message {
     my %h = @_;
-    my $return = 1;
-    $barnet_service ||= BarnetWSDL->on_fault(sub { my($soap, $res) = @_; die ref $res ? $res->faultstring : $soap->transport->status, "\n"; });
-    try {
-        my $kbid = $h{category}; # TODO: KBID is 50-char category ID: map our category -> Barnet KBID
-                                 # TODO: certainly won't validate until we are using KBID values provided by Barnet
-        my $message = ent(encode_utf8($h{message}));
-        my $name = ent(encode_utf8($h{name}));
-        my $location = $h{easting_northing}; # TODO: need to construct complex type for this: it's actually GEOCODE within BAPI_TTET_ADDRESS_COM:
-                                             # comprising: COUNTRY2, REGION, COUNTY, CITY, POSTALCODE, STREET, STREETNUMBER, GEOCODE
+    my $kbid = $h{category}; # TODO: KBID is 50-char category ID: map our category -> Barnet KBID
+    my $geo_code = "$h{easting} $h{northing}"; 
 
-        # TODO: username/password authentication will be required to access the webservice
-        
-        my $result = $barnet_service->Z_CRM_SERVICE_ORDER_CREATE(
-            '',         # ET_RETURN (?)
-            $message,   # IT_PROBLEM_DESC (SAP defines this as a table of text lines:  might need this broken up?)
-            $h{email},  # IV_CUST_EMAIL
-            $name,      # IV_CUST_NAME
-            $kbid,      # IV_KBID 
-            $h{id},     # IV_PROBLEM_ID
-            $location,  # IV_PROBLEM_LOC (see above)
-            '',         # IV_PROBLEM_SUB (?)  
-        );
-        $return = 0 if $result eq 'Report received';
-    } otherwise {
-        my $e = shift;
-        print "Caught an error: $e\n"; # anticipate: DUPLICATE_ORDER
-    };
+    my $interface = BarnetInterfaces::service::ZLBB_SERVICE_ORDER->new();
+    
+    # note: config can be of form 'http://username@password:url' (or https, hopefully)
+    if (my $barnet_endpoint = mySociety::Config::get('OPTION_BARNET_WEBSERVICE_ENDPOINT')) {
+        $interface->set_proxy($barnet_endpoint) if $barnet_endpoint;
+    }
+    
+    # FIXME handle return errors
+    my $return = $interface->Z_CRM_SERVICE_ORDER_CREATE( {
+        ET_RETURN =>  { # ignored by server
+          item =>  {
+              TYPE => "", ID => "", NUMBER => "", MESSAGE => "", LOG_NO => "", LOG_MSG_NO => "", 
+              MESSAGE_V1 => "", MESSAGE_V2 => "", MESSAGE_V3 => "", MESSAGE_V4 => "", PARAMETER => "", 
+              ROW =>  "", FIELD => "", SYSTEM => "",
+            },
+        },
+        IT_PROBLEM_DESC =>  { # MyTypes::TABLE_OF_CRMT_SERVICE_REQUEST_TEXT
+          item =>  { # MyTypes::CRMT_SERVICE_REQUEST_TEXT
+            TEXT_LINE => split_text_into_lines(ent(encode_utf8($h{message})), 132) # char132
+          },
+        },
+        IV_CUST_EMAIL => truncate_string(ent(encode_utf8($h{email})), 241), # char241
+        IV_CUST_NAME  => truncate_string(ent(encode_utf8($h{name})),   50), # char50
+        IV_KBID => $kbid,        # char50
+        IV_PROBLEM_ID => $h{id}, # char35
+        IV_PROBLEM_LOC =>  {     # MyTypes::BAPI_TTET_ADDRESS_COM
+          COUNTRY2 => 'GB',      # char2
+          REGION => "",          # char3
+          COUNTY => "",          # char30
+          CITY => "",            # char30
+          POSTALCODE => $h{postcode},      # char10
+          STREET => "",          # char30
+          STREETNUMBER => "",    # char5
+          GEOCODE => $geo_code,  # char32
+        },
+        IV_PROBLEM_SUB => truncate_string(ent(encode_utf8($h{title})), 40), # char40
+      },,
+     );
     return $return;
 }
 
@@ -555,3 +569,54 @@ sub london_lookup {
     return $str;
 }
 
+# truncate_string
+# args:    text to truncate
+#          max number of chars
+# returns: string truncated
+# Note: must not partially truncate an entity (e.g., &amp;)
+sub truncate_string {
+    my ($str, $max_len) = @_;
+    my $retVal = "";
+    foreach my $chunk  (split /(\&\w+;)/, $str) {
+        if ($chunk=~/^\&\w+;$/){
+            my $next = $retVal.$chunk;
+            if (length $next > $max_len) {
+                last
+            } else {
+                $retVal = $next
+            }
+        } else {
+            $retVal.=$chunk;
+            if (length $retVal > $max_len) {
+                $retVal = substr($retVal, 0, $max_len);
+                last
+            }
+        } 
+    }
+    return $retVal
+}
+
+# split_text_into_lines
+# args:    text to be broken into lines
+#          max length (option: uses constant MAX_LINE_LENGTH)
+# returns: ref to array of lines
+# Important not to split an entity (e.g., &amp;)
+# Not worrying about hyphenating here, since a word is only ever split if 
+# it's longer than the whole line, which is uncommon in genuine problem reports
+sub split_text_into_lines {
+    my ($text, $max_line_length) = @_;
+    $max_line_length ||= MAX_LINE_LENGTH;
+    my @lines;
+    foreach my $line (split "\n", $text) {
+        while (length $line > $max_line_length) {
+            if (! ($line =~ s/^(.{1,$max_line_length})\s//         # break on a space
+                or $line =~ s/^(.{1,$max_line_length})(\&\w+;)/$2/ # break before an entity
+                or $line =~ s/(.{$max_line_length})//)) {          # break the word ruthlessly
+                $line =~ s/(.*)//; # otherwise gobble whole line (which is now shorter than max length)
+            }
+            push @lines, $1;
+        }
+        push @lines, $line;
+    }
+    return \@lines
+}
