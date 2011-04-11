@@ -35,5 +35,13 @@ update contacts_history
 
 AlTER TABLE contacts_history
     alter COLUMN contact_id SET NOT NULL;
+    
+create or replace function contacts_updated()
+    returns trigger as '
+    begin
+        insert into contacts_history (contact_id, area_id, category, email, editor, whenedited, note, confirmed, deleted) values (new.id, new.area_id, new.category, new.email, new.editor, new.whenedited, new.note, new.confirmed, new.deleted);
+        return new;
+    end;
+' language 'plpgsql';
 
 commit;
