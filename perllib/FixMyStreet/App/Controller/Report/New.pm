@@ -253,7 +253,7 @@ sub report_import : Path('/import') {
       ->create( { scope => 'partial', data => $report->id } );
 
     $c->stash->{report} = $report;
-    $c->stash->{token_url} = $c->uri_for( '/L', $token->token );
+    $c->stash->{token_url} = $c->uri_for_email( '/L', $token->token );
 
     my $sender = mySociety::Config::get('CONTACT_EMAIL');
     $sender =~ s/team/fms-DO-NOT-REPLY/;
@@ -1182,7 +1182,7 @@ sub redirect_or_confirm_creation : Private {
     my $token =
       $c->model("DB::Token")
       ->create( { scope => 'problem', data => $report->id } );
-    $c->stash->{token_url} = $c->uri_for( '/P', $token->token );
+    $c->stash->{token_url} = $c->uri_for_email( '/P', $token->token );
     $c->send_email( 'problem-confirm.txt', { to => $report->user->email } );
 
     # tell user that they've been sent an email

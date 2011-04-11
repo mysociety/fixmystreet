@@ -292,6 +292,27 @@ sub send_email {
     return $email;
 }
 
+=head2 uri_for_email
+
+    $uri = $c->uri_for_email( ... );
+
+Like C<uri_for> except that it checks the cobrand for an email specific url base
+and uses that.
+
+=cut
+
+sub uri_for_email {
+    my $c    = shift;
+    my @args = @_;
+
+    my $normal_uri = $c->uri_for(@_);
+    my $base       = $c->cobrand->base_url_for_emails();
+
+    my $email_uri = $base . $normal_uri->path_query;
+
+    return URI->new($email_uri);
+}
+
 =head1 SEE ALSO
 
 L<FixMyStreet::App::Controller::Root>, L<Catalyst>
