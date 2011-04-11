@@ -841,12 +841,14 @@ sub process_report : Private {
     $report->latitude( $c->stash->{latitude} );
     $report->longitude( $c->stash->{longitude} );
 
+    # Capture wether the may was used
+    $report->used_map( $params{skipped} ? 0 : 1 );
+
     # Short circuit unless the form has been submitted
     return 1 unless $params{submit_problem};
 
     # set some simple bool values (note they get inverted)
     $report->anonymous( $params{may_show_name} ? 0 : 1 );
-    $report->used_map( $params{skipped}        ? 0 : 1 );
 
     # clean up text before setting
     $report->title( _cleanup_text( $params{title} ) );
