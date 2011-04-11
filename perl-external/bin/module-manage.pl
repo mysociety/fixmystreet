@@ -100,7 +100,7 @@ sub build {
     my $module = shift    #
       || die "Usage: $0 build Module::To::Build\n";
 
-    print "  --- installing $module ---\n";
+    print "  --- checking/installing $module ---\n";
 
     my $out = '';
     my $cmd = "cpanm --mirror $minicpan --mirror-only  $module";
