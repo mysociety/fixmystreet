@@ -1,18 +1,18 @@
 use strict;
 use warnings;
 
-use Test::More tests => 94;
+use Test::More;
 
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
 my $test_email    = 'test@example.com';
 my $test_password = 'foobar';
+$mech->delete_user($test_email);
 
 END {
-    ok( FixMyStreet::App->model('DB::User')->find( { email => $_ } )->delete,
-        "delete test user '$_'" )
-      for ($test_email);
+    $mech->delete_user($test_email);
+    done_testing();
 }
 
 $mech->get_ok('/auth');
@@ -224,4 +224,3 @@ $mech->content_contains( 'Email or password wrong', 'found error message' );
 
 # more test:
 # TODO: test that email are always lowercased
-

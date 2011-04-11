@@ -101,9 +101,31 @@ sub log_out_ok {
     $mech->not_logged_in_ok;
 }
 
+=head2 delete_user
+
+    $mech->delete_user( $user );
+    $mech->delete_user( $email );
+
+Delete the current user, including linked objects like problems etc. Can be
+either a user object or an email address.
+
+=cut
+
 sub delete_user {
-    my $mech = shift;
-    my $user = shift;
+    my $mech          = shift;
+    my $email_or_user = shift;
+
+    my $user =
+      ref $email_or_user
+      ? $email_or_user
+      : FixMyStreet::App->model('DB::User')
+      ->find( { email => $email_or_user } );
+
+    # If no user found we can't delete them
+    if ( !$user ) {
+        ok( 1, "No user found to delete" );
+        return 1;
+    }
 
     $mech->log_out_ok;
     ok( $_->delete, "delete problem " . $_->title )    #
