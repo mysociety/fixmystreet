@@ -403,7 +403,7 @@ sub post_easthants_message {
     return $return;
 }
 
-# TODO: currently just blind copy of construct_easthants_message, normally all Barnet reports will go via the web service (?)
+# TODO: currently just blind copy of construct_easthants_message
 sub construct_barnet_message {
     my %h = @_;
     my $message = '';
@@ -447,11 +447,11 @@ sub post_barnet_message {
         },
         IT_PROBLEM_DESC =>  { # MyTypes::TABLE_OF_CRMT_SERVICE_REQUEST_TEXT
           item =>  { # MyTypes::CRMT_SERVICE_REQUEST_TEXT
-            TEXT_LINE => split_text_into_lines(ent(encode_utf8($h{message})), 132) # char132
+            TEXT_LINE => split_text_with_entities(ent(encode_utf8($h{message})), 132) # char132
           },
         },
-        IV_CUST_EMAIL => truncate_string(ent(encode_utf8($h{email})), 241), # char241
-        IV_CUST_NAME  => truncate_string(ent(encode_utf8($h{name})),   50), # char50
+        IV_CUST_EMAIL => truncate_string_with_entities(ent(encode_utf8($h{email})), 241), # char241
+        IV_CUST_NAME  => truncate_string_with_entities(ent(encode_utf8($h{name})),   50), # char50
         IV_KBID => $kbid,        # char50
         IV_PROBLEM_ID => $h{id}, # char35
         IV_PROBLEM_LOC =>  {     # MyTypes::BAPI_TTET_ADDRESS_COM
@@ -464,7 +464,7 @@ sub post_barnet_message {
           STREETNUMBER => "",    # char5
           GEOCODE => $geo_code,  # char32
         },
-        IV_PROBLEM_SUB => truncate_string(ent(encode_utf8($h{title})), 40), # char40
+        IV_PROBLEM_SUB => truncate_string_with_entities(ent(encode_utf8($h{title})), 40), # char40
       },,
      );
     return $return;
@@ -574,17 +574,14 @@ sub london_lookup {
 #          max number of chars
 # returns: string truncated
 # Note: must not partially truncate an entity (e.g., &amp;)
-sub truncate_string {
+sub truncate_string_with_entities {
     my ($str, $max_len) = @_;
     my $retVal = "";
-    foreach my $chunk  (split /(\&\w+;)/, $str) {
-        if ($chunk=~/^\&\w+;$/){
+    foreach my $chunk  (split /(\&(?:\#\d+|\w+);)/, $str) {
+        if ($chunk=~/^\&(\#\d+|\w+);$/){
             my $next = $retVal.$chunk;
-            if (length $next > $max_len) {
-                last
-            } else {
-                $retVal = $next
-            }
+            last if length $next > $max_len;
+            $retVal=$next
         } else {
             $retVal.=$chunk;
             if (length $retVal > $max_len) {
@@ -596,22 +593,22 @@ sub truncate_string {
     return $retVal
 }
 
-# split_text_into_lines
+# split_text_with_entities into lines
 # args:    text to be broken into lines
 #          max length (option: uses constant MAX_LINE_LENGTH)
 # returns: ref to array of lines
 # Important not to split an entity (e.g., &amp;)
 # Not worrying about hyphenating here, since a word is only ever split if 
 # it's longer than the whole line, which is uncommon in genuine problem reports
-sub split_text_into_lines {
+sub split_text_with_entities {
     my ($text, $max_line_length) = @_;
     $max_line_length ||= MAX_LINE_LENGTH;
     my @lines;
     foreach my $line (split "\n", $text) {
         while (length $line > $max_line_length) {
-            if (! ($line =~ s/^(.{1,$max_line_length})\s//         # break on a space
-                or $line =~ s/^(.{1,$max_line_length})(\&\w+;)/$2/ # break before an entity
-                or $line =~ s/(.{$max_line_length})//)) {          # break the word ruthlessly
+            if (! ($line =~ s/^(.{1,$max_line_length})\s//                 # break on a space
+                or $line =~ s/^(.{1,$max_line_length})(\&(\#\d+|\w+);)/$2/ # break before an entity
+                or $line =~ s/(.{$max_line_length})//)) {                  # break the word ruthlessly
                 $line =~ s/(.*)//; # otherwise gobble whole line (which is now shorter than max length)
             }
             push @lines, $1;
