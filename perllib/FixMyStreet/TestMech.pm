@@ -299,7 +299,8 @@ sub session_cookie_expiry {
       ->cookie_jar    #
       ->scan( sub { $expires = $_[8] if $_[1] eq $cookie_name } );
 
-    croak "Could not find cookie '$cookie_name'" if $expires eq 'not found';
+    croak "Could not find cookie '$cookie_name'"
+      if $expires && $expires eq 'not found';
 
     return $expires || 0;
 }
