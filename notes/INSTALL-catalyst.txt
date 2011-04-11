@@ -89,7 +89,7 @@ The DBIx::Class code uses a separate DBI connection than the mySociety::DBHandle
 
 FixMyStreet::App is a fairly standard Catalyst app, there aren't any really big surprises.
 
-Note that the FixMyStree.pm file is used though to abstract some config related things. Note the FixMyStreet->test_mode(1) which will do things like send all emails to a memory queue for the test scripts. test_mode should only be used in test scripts, and so is different from setting STAGING to true.
+Note that the FixMyStreet.pm file is used though to abstract some config related things. Note the FixMyStreet->test_mode(1) which will do things like send all emails to a memory queue for the test scripts. test_mode should only be used in test scripts, and so is different from setting STAGING to true.
 
 
 ############## testing ##################

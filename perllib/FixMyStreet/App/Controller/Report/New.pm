@@ -520,7 +520,12 @@ sub determine_location_from_pc : Private {
 
     # $error doubles up to return multiple choices by being an array
     if ( ref($error) eq 'ARRAY' ) {
-        @$error = map { decode_utf8($_) } @$error;
+        @$error = map {
+            decode_utf8($_);
+            s/, United Kingdom//;
+            s/, UK//;
+            $_;
+        } @$error;
         $c->stash->{possible_location_matches} = $error;
         return;
     }
