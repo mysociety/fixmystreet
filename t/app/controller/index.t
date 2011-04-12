@@ -15,8 +15,9 @@ subtest "check that the form goes to /around" => sub {
     $mech->submit_form_ok( { with_fields => { pc => 'SW1A 1AA', } } );
 
     # check that we are at /around
-    is $mech->res->uri->path, '/around', "Got to /around";
-    is $mech->res->uri->query_form, { pc => 'SW1A 1AA' }, "query passed along";
+    is $mech->uri->path, '/around', "Got to /around";
+    is_deeply { $mech->uri->query_form }, { pc => 'SW1A 1AA' },
+      "query passed along";
 };
 
 subtest "check that requests with pc, x,y or lat,lon go to /around" => sub {
@@ -31,8 +32,8 @@ subtest "check that requests with pc, x,y or lat,lon go to /around" => sub {
         $mech->get_ok($uri);
 
         # check that we are at /around
-        is $mech->res->uri->path, '/around', "Got to /around";
-        is $mech->res->uri->query_form, $test, "query passed along";
+        is $mech->uri->path, '/around', "Got to /around";
+        is_deeply { $mech->uri->query_form }, $test, "query passed along";
     }
 };
 

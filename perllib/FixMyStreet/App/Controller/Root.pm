@@ -33,10 +33,30 @@ sub auto : Private {
 
 =head2 index
 
+Home page.
+
+If request includes certain parameters redirect to '/around' - this is to
+preserve old behaviour.
+
 =cut
 
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
+
+    my @old_param_keys = ( 'pc', 'x', 'y', 'lat', 'lon' );
+    my %old_params = ();
+
+    foreach my $key (@old_param_keys) {
+        my $val = $c->req->param($key);
+        next unless $val;
+        $old_params{$key} = $val;
+    }
+
+    if ( scalar keys %old_params ) {
+        my $around_uri = $c->uri_for( '/around', \%old_params );
+        $c->res->redirect($around_uri);
+        return;
+    }
 
 }
 
