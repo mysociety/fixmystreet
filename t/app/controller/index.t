@@ -21,10 +21,9 @@ subtest "check that the form goes to /around" => sub {
 };
 
 subtest "check that requests with pc, x,y or lat,lon go to /around" => sub {
-    foreach my $test (
-        { pc  => 'SW1A 1AA', },
-        { x   => 3281, y => 1113, },
-        { lat => 51.50100, lon => -0.14158, },
+    foreach my $test (    #
+        { pc => 'SW1A 1AA' },                   #
+        { lat => 51.50100, lon => -0.14158 },
       )
     {
         my $uri = URI->new('http://localhost/');
