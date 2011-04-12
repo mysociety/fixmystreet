@@ -37,7 +37,7 @@ sub auto : Private {
 
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
-    $c->res->body('index');
+
 }
 
 =head2 default

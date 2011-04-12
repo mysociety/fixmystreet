@@ -107,106 +107,106 @@ sub main {
 }
 Page::do_fastcgi(\&main);
 
-# Display front page
-sub front_page {
-    my ($q, $error, $status_code) = @_;
-    my $pc_h = ent($q->param('pc') || '');
-
-    # Look up various cobrand things
-    my $cobrand = Page::get_cobrand($q);
-    my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'postcodeForm', $q);
-    my $form_action = Cobrand::url($cobrand, '/', $q);
-    my $question = Cobrand::enter_postcode_text($cobrand, $q);
-    $question = _("Enter a nearby GB postcode, or street name and area")
-        unless $question;
-    my %params = ('context' => 'front-page');
-    $params{status_code} = $status_code if $status_code;
-    my %vars = (
-        error => $error || '',
-        pc_h => $pc_h, 
-        cobrand_form_elements => $cobrand_form_elements,
-        form_action => $form_action,
-        question => "$question:",
-    );
-    my $cobrand_front_page = Page::template_include('front-page', $q, Page::template_root($q), %vars);
-    return ($cobrand_front_page, %params) if $cobrand_front_page;
-
-    my $out = '<p id="expl"><strong>' . _('Report, view, or discuss local problems') . '</strong>';
-    my $subhead = _('(like graffiti, fly tipping, broken paving slabs, or street lighting)');
-    $subhead = '(like graffiti, fly tipping, or broken paving slabs)'
-        if $q->{site} eq 'southampton';
-    $out .= '<br><small>' . $subhead . '</small>' if $subhead ne ' ';
-    $out .= '</p>';
-    #if (my $url = mySociety::Config::get('IPHONE_URL')) {
-    #    my $getiphone = _("Get FixMyStreet on your iPhone");
-    #    my $new = _("New!");
-    #    if ($q->{site} eq 'fixmystreet') {
-    #        $out .= <<EOF
-#<p align="center" style="margin-bottom:0">
-#<img width="23" height="12" alt="$new" src="/i/new.png" border="0">
-#<a href="$url">$getiphone</a>
-#</p>
-#EOF
-    #    }
-    #}
-    $out .= '<p class="error">' . $error . '</p>' if ($error);
-
-    # Add pretty commas for display
-    $out .= '<form action="' . $form_action . '" method="get" name="postcodeForm" id="postcodeForm">';
-    if (my $token = $q->param('partial')) {
-        my $id = mySociety::AuthToken::retrieve('partial', $token);
-        if ($id) {
-            my $thanks = _("Thanks for uploading your photo. We now need to locate your problem, so please enter a nearby street name or postcode in the box below&nbsp;:");
-            $out .= <<EOF;
-<p style="margin-top: 0; color: #cc0000;"><img align="right" src="/photo?id=$id" hspace="5">$thanks</p>
-
-<input type="hidden" name="partial_token" value="$token">
-EOF
-        }
-    }
-    my $activate = _("Go");
-    $out .= <<EOF;
-<label for="pc">$question:</label>
-&nbsp;<input type="text" name="pc" value="$pc_h" id="pc" size="10" maxlength="200">
-&nbsp;<input type="submit" value="$activate" id="submit">
-$cobrand_form_elements
-</form>
-
-<div id="front_intro">
-EOF
-    $out .= $q->h2(_('How to report a problem'));
-    $out .= $q->ol(
-        $q->li($question),
-        $q->li(_('Locate the problem on a map of the area')),
-        $q->li(_('Enter details of the problem')),
-        $q->li(_('We send it to the council on your behalf'))
-    );
-
-    
-    $out .= Cobrand::front_stats(Page::get_cobrand($q), $q);
-
-    $out .= <<EOF;
-</div>
-
-EOF
-
-    my $recent_photos = Cobrand::recent_photos(Page::get_cobrand($q), 3);
-    my $probs = Cobrand::recent(Page::get_cobrand($q));
-    if (@$probs || $recent_photos){
-         $out .= '<div id="front_recent">';
-         $out .= $q->h2(_('Photos of recent reports')) . $recent_photos if $recent_photos;
-
-         $out .= $q->h2(_('Recently reported problems')) . ' <ul>' if @$probs;
-         foreach (@$probs) {
-             $out .= '<li><a href="/report/' . $_->{id} . '">'. ent($_->{title});
-             $out .= '</a></li>';
-         }
-         $out .= '</ul>' if @$probs;
-    $out .= '</div>';
-    }   
-
-    return ($out, %params);
-}
+# # Display front page
+# sub front_page {
+#     my ($q, $error, $status_code) = @_;
+#     my $pc_h = ent($q->param('pc') || '');
+# 
+#     # Look up various cobrand things
+#     my $cobrand = Page::get_cobrand($q);
+#     my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'postcodeForm', $q);
+#     my $form_action = Cobrand::url($cobrand, '/', $q);
+#     my $question = Cobrand::enter_postcode_text($cobrand, $q);
+#     $question = _("Enter a nearby GB postcode, or street name and area")
+#         unless $question;
+#     my %params = ('context' => 'front-page');
+#     $params{status_code} = $status_code if $status_code;
+#     my %vars = (
+#         error => $error || '',
+#         pc_h => $pc_h, 
+#         cobrand_form_elements => $cobrand_form_elements,
+#         form_action => $form_action,
+#         question => "$question:",
+#     );
+#     my $cobrand_front_page = Page::template_include('front-page', $q, Page::template_root($q), %vars);
+#     return ($cobrand_front_page, %params) if $cobrand_front_page;
+# 
+#     my $out = '<p id="expl"><strong>' . _('Report, view, or discuss local problems') . '</strong>';
+#     my $subhead = _('(like graffiti, fly tipping, broken paving slabs, or street lighting)');
+#     $subhead = '(like graffiti, fly tipping, or broken paving slabs)'
+#         if $q->{site} eq 'southampton';
+#     $out .= '<br><small>' . $subhead . '</small>' if $subhead ne ' ';
+#     $out .= '</p>';
+#     #if (my $url = mySociety::Config::get('IPHONE_URL')) {
+#     #    my $getiphone = _("Get FixMyStreet on your iPhone");
+#     #    my $new = _("New!");
+#     #    if ($q->{site} eq 'fixmystreet') {
+#     #        $out .= <<EOF
+# #<p align="center" style="margin-bottom:0">
+# #<img width="23" height="12" alt="$new" src="/i/new.png" border="0">
+# #<a href="$url">$getiphone</a>
+# #</p>
+# #EOF
+#     #    }
+#     #}
+#     $out .= '<p class="error">' . $error . '</p>' if ($error);
+# 
+#     # Add pretty commas for display
+#     $out .= '<form action="' . $form_action . '" method="get" name="postcodeForm" id="postcodeForm">';
+#     if (my $token = $q->param('partial')) {
+#         my $id = mySociety::AuthToken::retrieve('partial', $token);
+#         if ($id) {
+#             my $thanks = _("Thanks for uploading your photo. We now need to locate your problem, so please enter a nearby street name or postcode in the box below&nbsp;:");
+#             $out .= <<EOF;
+# <p style="margin-top: 0; color: #cc0000;"><img align="right" src="/photo?id=$id" hspace="5">$thanks</p>
+# 
+# <input type="hidden" name="partial_token" value="$token">
+# EOF
+#         }
+#     }
+#     my $activate = _("Go");
+#     $out .= <<EOF;
+# <label for="pc">$question:</label>
+# &nbsp;<input type="text" name="pc" value="$pc_h" id="pc" size="10" maxlength="200">
+# &nbsp;<input type="submit" value="$activate" id="submit">
+# $cobrand_form_elements
+# </form>
+# 
+# <div id="front_intro">
+# EOF
+#     $out .= $q->h2(_('How to report a problem'));
+#     $out .= $q->ol(
+#         $q->li($question),
+#         $q->li(_('Locate the problem on a map of the area')),
+#         $q->li(_('Enter details of the problem')),
+#         $q->li(_('We send it to the council on your behalf'))
+#     );
+# 
+#     
+#     $out .= Cobrand::front_stats(Page::get_cobrand($q), $q);
+# 
+#     $out .= <<EOF;
+# </div>
+# 
+# EOF
+# 
+#     my $recent_photos = Cobrand::recent_photos(Page::get_cobrand($q), 3);
+#     my $probs = Cobrand::recent(Page::get_cobrand($q));
+#     if (@$probs || $recent_photos){
+#          $out .= '<div id="front_recent">';
+#          $out .= $q->h2(_('Photos of recent reports')) . $recent_photos if $recent_photos;
+# 
+#          $out .= $q->h2(_('Recently reported problems')) . ' <ul>' if @$probs;
+#          foreach (@$probs) {
+#              $out .= '<li><a href="/report/' . $_->{id} . '">'. ent($_->{title});
+#              $out .= '</a></li>';
+#          }
+#          $out .= '</ul>' if @$probs;
+#     $out .= '</div>';
+#     }   
+# 
+#     return ($out, %params);
+# }
 
 sub submit_update {
     my $q = shift;
