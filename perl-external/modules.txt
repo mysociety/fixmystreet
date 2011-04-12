@@ -37,6 +37,7 @@ Return::Value
 Sort::Key
 Spiffy
 Sub::Override
+Template::Plugin::Comma
 Term::Size::Any
 Test::More
 Test::WWW::Mechanize

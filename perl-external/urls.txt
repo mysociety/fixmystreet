@@ -147,6 +147,7 @@ http://search.cpan.org/CPAN/authors/id/M/MI/MIROD/HTML-TreeBuilder-XPath-0.12.ta
 http://search.cpan.org/CPAN/authors/id/M/MI/MIROD/XML-XPathEngine-0.12.tar.gz
 http://search.cpan.org/CPAN/authors/id/M/MI/MIYAGAWA/App-cpanminus-1.4004.tar.gz
 http://search.cpan.org/CPAN/authors/id/M/MI/MIYAGAWA/HTML-Selector-XPath-0.07.tar.gz
+http://search.cpan.org/CPAN/authors/id/M/MI/MIYAGAWA/Template-Plugin-Comma-0.04.tar.gz
 http://search.cpan.org/CPAN/authors/id/M/MI/MIYAGAWA/Web-Scraper-0.34.tar.gz
 http://search.cpan.org/CPAN/authors/id/M/ML/MLEHMANN/JSON-XS-2.3.tar.gz
 http://search.cpan.org/CPAN/authors/id/M/ML/MLEHMANN/common-sense-3.4.tar.gz
