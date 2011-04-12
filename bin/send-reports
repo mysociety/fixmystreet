@@ -141,7 +141,7 @@ while (my $row = $unsent->next) {
                 $h{category} = 'Customer Services' if $h{category} eq 'Other';
             } elsif ($council == COUNCIL_ID_BARNET) { # Barnet have a web service
                 $send_web = 'barnet';                
-                $h{category} = 'BARNET CRM'; # FIXME category is lookup (by arrangement with Barnet)
+                # Barnet use a category mapping (see KBID when the message is posted)
             } elsif ($areas_info->{$council}->{type} eq 'LBO') { # London
                 $send_web = 'london';
             } else {
@@ -377,6 +377,7 @@ EOF
 my $barnet_service;
 sub post_barnet_message {
     my %h = @_;
+    my $return = 1;
     my $kbid = $h{category}; # TODO: KBID is 50-char category ID: map our category -> Barnet KBID
     my $geo_code = "$h{easting} $h{northing}"; 
 
@@ -386,38 +387,63 @@ sub post_barnet_message {
     if (my $barnet_endpoint = mySociety::Config::get('OPTION_BARNET_WEBSERVICE_ENDPOINT')) {
         $interface->set_proxy($barnet_endpoint) if $barnet_endpoint;
     }
-    
-    # FIXME handle return errors
-    my $return = $interface->Z_CRM_SERVICE_ORDER_CREATE( {
-        ET_RETURN =>  { # ignored by server
-          item =>  {
-              TYPE => "", ID => "", NUMBER => "", MESSAGE => "", LOG_NO => "", LOG_MSG_NO => "", 
-              MESSAGE_V1 => "", MESSAGE_V2 => "", MESSAGE_V3 => "", MESSAGE_V4 => "", PARAMETER => "", 
-              ROW =>  "", FIELD => "", SYSTEM => "",
+    try {    
+        my $result = $interface->Z_CRM_SERVICE_ORDER_CREATE( {
+            ET_RETURN =>  { # ignored by server
+              item =>  {
+                  TYPE => "", ID => "", NUMBER => "", MESSAGE => "", LOG_NO => "", LOG_MSG_NO => "", 
+                  MESSAGE_V1 => "", MESSAGE_V2 => "", MESSAGE_V3 => "", MESSAGE_V4 => "", PARAMETER => "", 
+                  ROW =>  "", FIELD => "", SYSTEM => "",
+                },
             },
-        },
-        IT_PROBLEM_DESC =>  { # MyTypes::TABLE_OF_CRMT_SERVICE_REQUEST_TEXT
-          item =>  { # MyTypes::CRMT_SERVICE_REQUEST_TEXT
-            TEXT_LINE => split_text_with_entities(ent(encode_utf8($h{message})), 132) # char132
-          },
-        },
-        IV_CUST_EMAIL => truncate_string_with_entities(ent(encode_utf8($h{email})), 241), # char241
-        IV_CUST_NAME  => truncate_string_with_entities(ent(encode_utf8($h{name})),   50), # char50
-        IV_KBID => $kbid,        # char50
-        IV_PROBLEM_ID => $h{id}, # char35
-        IV_PROBLEM_LOC =>  {     # MyTypes::BAPI_TTET_ADDRESS_COM
-          COUNTRY2 => 'GB',      # char2
-          REGION => "",          # char3
-          COUNTY => "",          # char30
-          CITY => "",            # char30
-          POSTALCODE => $h{postcode},      # char10
-          STREET => "",          # char30
-          STREETNUMBER => "",    # char5
-          GEOCODE => $geo_code,  # char32
-        },
-        IV_PROBLEM_SUB => truncate_string_with_entities(ent(encode_utf8($h{title})), 40), # char40
-      },,
-     );
+            IT_PROBLEM_DESC =>  { # MyTypes::TABLE_OF_CRMT_SERVICE_REQUEST_TEXT
+              item =>  { # MyTypes::CRMT_SERVICE_REQUEST_TEXT
+                TEXT_LINE => split_text_with_entities(ent(encode_utf8($h{message})), 132) # char132
+              },
+            },
+            IV_CUST_EMAIL => truncate_string_with_entities(ent(encode_utf8($h{email})), 241), # char241
+            IV_CUST_NAME  => truncate_string_with_entities(ent(encode_utf8($h{name})),   50), # char50
+            IV_KBID => $kbid,        # char50
+            IV_PROBLEM_ID => $h{id}, # char35
+            IV_PROBLEM_LOC =>  {     # MyTypes::BAPI_TTET_ADDRESS_COM
+              COUNTRY2 => 'GB',      # char2
+              REGION => "",          # char3
+              COUNTY => "",          # char30
+              CITY => "",            # char30
+              POSTALCODE => $h{postcode},      # char10
+              STREET => "",          # char30
+              STREETNUMBER => "",    # char5
+              GEOCODE => $geo_code,  # char32
+            },
+            IV_PROBLEM_SUB => truncate_string_with_entities(ent(encode_utf8($h{title})), 40), # char40
+          },,
+        );
+
+        if ($result){        
+            # currently not using this: get_EV_ORDER_GUID (maybe that's the customer number in the CRM)
+            if (my $barnet_id = $result->get_EV_ORDER_NO()) {
+                # print "EVERYTHING HUNKYDORY: id: ===========>[$barnet_id]<==============\n";                            
+                # FIXME write to db
+                $return = 0;
+            } else {
+                print "Failed (problem id $h{id}): service returned no external id\n";                
+            }
+        } else {
+            my %fault = (
+                    'code' =>  $result->get_faultcode(),
+                    'actor' =>  $result->get_faultactor(),
+                    'string' =>  $result->get_faultstring(),
+                    # 'detail' =>  $result->get_detail(), # possibly only contains debug info
+                );
+            $fault{$_}=~s/^\s*|\s*$//g foreach keys %fault;
+            $fault{actor}&&=" (actor: $fault{actor})";
+            print "Failed (problem id $h{id}): Fault $fault{code}$fault{actor}\n$fault{string}\n";
+        }
+
+    } otherwise {
+        my $e = shift;
+        print "Caught an error: $e\n";
+    }
     return $return;
 }
 
