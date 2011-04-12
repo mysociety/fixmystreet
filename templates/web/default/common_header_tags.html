@@ -16,6 +16,7 @@
     [% IF legacy_title %]
         [% legacy_title %]
     [% ELSE %]
-        [% title | html %] :: [% c.cobrand.site_title %]
+        [% "$title :: " | html IF title %]
+        [% c.cobrand.site_title %]
     [% END %]
 </title>
