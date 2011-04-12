@@ -228,15 +228,47 @@ sub recent {
     return Problems::recent(@_);
 }
 
-=head2 front_stats
+=item shorten_recency_if_new_greater_than_fixed
 
-Given a QUERY, return a block of html for showing front stats for the site
+By default we want to shorten the recency so that the numbers are more
+attractive.
 
 =cut
 
-sub front_stats {
+sub shorten_recency_if_new_greater_than_fixed {
+    return 1;
+}
+
+=head2 front_stats_data
+
+Return a data structure containing the front stats information that a template
+can then format.
+
+=cut
+
+sub front_stats_data {
     my $self = shift;
-    return Problems::front_stats(@_);
+
+    my $recency         = '1 week';
+    my $shorter_recency = '3 days';
+
+    my $fixed   = Problems::recent_fixed();
+    my $updates = Problems::number_comments();
+    my $new     = Problems::recent_new($recency);
+
+    if ( $new > $fixed && $self->shorten_recency_if_new_greater_than_fixed ) {
+        $recency = $shorter_recency;
+        $new     = Problems::recent_new($recency);
+    }
+
+    my $stats = {
+        fixed   => $fixed,
+        updates => $updates,
+        new     => $new,
+        recency => $recency,
+    };
+
+    return $stats;
 }
 
 =head2 disambiguate_location

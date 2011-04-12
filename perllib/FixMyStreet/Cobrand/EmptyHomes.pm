@@ -68,5 +68,15 @@ sub feed_xsl {
     return '/xsl.eha.xsl';
 }
 
+=item shorten_recency_if_new_greater_than_fixed
+
+For empty homes we don't want to shorten the recency
+
+=cut
+
+sub shorten_recency_if_new_greater_than_fixed {
+    return 0;
+}
+
 1;
 
