@@ -8,8 +8,16 @@
 %]
 
 
-<h1>[% loc('Reporting a problem') %]</h1>
+<form action="[% partial_token ? '/report/new' : '/' %]" method="get" name="postcodeForm" id="postcodeForm"><label for="pc">[% loc("Enter a nearby GB postcode, or street name and area") %]:</label>
+&nbsp;<input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200">
+&nbsp;<input type="submit" value="[% loc('Go') %]" id="submit">
+[% c.cobrand.form_elements %]
 
+[% IF partial_token %]
+    <input type="hidden" name="partial" value="[% partial_token.token %]">
+[% END %]
+
+</form>
 [% IF location_error %]
     <div class="error">[% location_error %]</div>
 [% END %]
@@ -34,15 +42,5 @@
 <p class="error">[% pc_error %]</p>
 [% END %]
 
-<form action="[% partial_token ? '/report/new' : '/' %]" method="get" name="postcodeForm" id="postcodeForm"><label for="pc">[% loc("Enter a nearby GB postcode, or street name and area") %]:</label>
-&nbsp;<input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200">
-&nbsp;<input type="submit" value="[% loc('Go') %]" id="submit">
-[% c.cobrand.form_elements %]
-
-[% IF partial_token %]
-    <input type="hidden" name="partial" value="[% partial_token.token %]">
-[% END %]
-
-</form>
 
 [% INCLUDE 'footer.html' %]

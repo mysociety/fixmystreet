@@ -105,12 +105,16 @@ subtest "Submit a correct entry" => sub {
     is_deeply $mech->visible_form_values, { pc => '' },
       "check only pc field is shown";
 
+    is $mech->uri->path, '/around', "sent to report page";
+
     $mech->submit_form_ok(    #
         { with_fields => { pc => 'SW1A 1AA' } },
         "fill in postcode"
     );
 
-    # check that we are not shown anything as we don't have a location yet
+    is $mech->uri->path, '/report/new', "sent to report page";
+
+    # check that fields are prefilled for us
     is_deeply $mech->visible_form_values,
       {
         name          => 'Test User',
@@ -124,7 +128,7 @@ subtest "Submit a correct entry" => sub {
       "check imported fields are shown";
 
   TODO: {
-        local $TODO = "'/report/123' urls not srved by catalyst yet";
+        local $TODO = "'/report/123' urls not served by catalyst yet";
 
         # change the details
         $mech->submit_form_ok(    #

@@ -204,6 +204,24 @@ sub form_errors {
     return $result->{errors} || [];
 }
 
+=head2 page_errors
+
+    my $arrayref = $mech->page_errors;
+
+Find all the form errors on the current page and return them in page order as an
+arrayref of TEXTs. If none found return empty arrayref.
+
+=cut
+
+sub page_errors {
+    my $mech   = shift;
+    my $result = scraper {
+        process 'p.error', 'errors[]', 'TEXT';
+    }
+    ->scrape( $mech->response );
+    return $result->{errors} || [];
+}
+
 =head2 import_errors
 
     my $arrayref = $mech->import_errors;

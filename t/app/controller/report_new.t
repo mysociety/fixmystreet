@@ -8,77 +8,10 @@ use Web::Scraper;
 my $mech = FixMyStreet::TestMech->new;
 $mech->get_ok('/report/new');
 
-# test various locations on inital search box
-foreach my $test (
-    {
-        pc              => '',    #
-        errors          => [],
-        pc_alternatives => [],
-    },
-    {
-        pc              => 'xxxxxxxxxxxxxxxxxxxxxxxxxxx',
-        errors          => ['Sorry, we could not find that location.'],
-        pc_alternatives => [],
-    },
-    {
-        pc     => 'glenthorpe',
-        errors => [],
-        pc_alternatives => [   # TODO - should filter out these non-UK addresses
-            'Glenthorpe Crescent, Leeds LS9 7, UK',
-            'Glenthorpe Rd, Merton, Greater London SM4 4, UK',
-            'Glenthorpe Ln, Katy, TX 77494, USA',
-            'Glenthorpe Dr, Walnut, CA 91789, USA',
-            'Glenthorpe Ave, Leeds LS9 7, UK',
-            'Glenthorpe Ct, Katy, TX 77494, USA',
-        ],
-    },
-    {
-        pc => 'Glenthorpe Ct, Katy, TX 77494, USA',
-        errors =>
-          ['We had a problem with the supplied co-ordinates - outside the UK?'],
-        pc_alternatives => [],
-    },
-  )
-{
-    subtest "test bad pc value '$test->{pc}'" => sub {
-        $mech->get_ok('/report/new');
-        $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
-            "bad location" );
-        is_deeply $mech->form_errors, $test->{errors},
-          "expected errors for pc '$test->{pc}'";
-        is_deeply $mech->pc_alternatives, $test->{pc_alternatives},
-          "expected alternatives for pc '$test->{pc}'";
-    };
-}
+fail "test that lat,lon not covered by council goes to '/around'";
 
-# check that exact queries result in the correct lat,lng
-foreach my $test (
-    {
-        pc        => 'SW1A 1AA',
-        latitude  => '51.5010096115539',
-        longitude => '-0.141587067110009',
-    },
-    {
-        pc        => 'Manchester',
-        latitude  => '53.4807125',
-        longitude => '-2.2343765',
-    },
-    {
-        pc        => 'Glenthorpe Rd, Merton, Greater London SM4 4, UK',
-        latitude  => '51.3937997',
-        longitude => '-0.2209596',
-    },
-  )
-{
-    subtest "check lat/lng for '$test->{pc}'" => sub {
-        $mech->get_ok('/report/new');
-        $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
-            "good location" );
-        is_deeply $mech->form_errors, [], "no errors for pc '$test->{pc}'";
-        is_deeply $mech->extract_location, $test,
-          "got expected location for pc '$test->{pc}'";
-    };
-}
+fail "test that partial code is transferred";
+
 
 # test that the various bit of form get filled in and errors correctly
 # generated.
