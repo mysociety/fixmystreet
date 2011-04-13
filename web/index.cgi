@@ -78,26 +78,40 @@ sub main {
 
     my $out = '';
     my %params;
-    if ($q->param('submit_problem')) {
-        $params{title} = _('Submitting your report');
-        ($out, %params) = submit_problem($q);
-    } elsif ($q->param('submit_update')) {
-        $params{title} = _('Submitting your update');
-        ($out, %params) = submit_update($q);
-    } elsif ($q->param('submit_map')) {
-        ($out, %params) = display_form($q, [], {});
-        $params{title} = _('Reporting a problem');
-    } elsif ($q->param('id')) {
-        ($out, %params) = display_problem($q, [], {});
-        $params{title} .= ' - ' . _('Viewing a problem');
-    } elsif ($q->param('pc') || ($q->param('x') && $q->param('y')) || ($q->param('lat') || $q->param('lon'))) {
-        ($out, %params) = display_location($q);
-        $params{title} = _('Viewing a location');
-    } elsif ($q->param('e') && $q->param('n')) {
-        ($out, %params) = redirect_from_osgb_to_wgs84($q);
-    } else {
-        ($out, %params) = front_page($q);
+
+    if (0) {    # never run
     }
+    # elsif ( $q->param('submit_problem') ) {
+    #     $params{title} = _('Submitting your report');
+    #     ( $out, %params ) = submit_problem($q);
+    # }
+    elsif ( $q->param('submit_update') ) {
+        $params{title} = _('Submitting your update');
+        ( $out, %params ) = submit_update($q);
+    }
+    # elsif ( $q->param('submit_map') ) {
+    #     ( $out, %params ) = display_form( $q, [], {} );
+    #     $params{title} = _('Reporting a problem');
+    # }
+    elsif ( $q->param('id') ) {
+        ( $out, %params ) = display_problem( $q, [], {} );
+        $params{title} .= ' - ' . _('Viewing a problem');
+    }
+
+    # elsif ($q->param('pc')
+    #     || ( $q->param('x') && $q->param('y') )
+    #     || ( $q->param('lat') || $q->param('lon') ) )
+    # {
+    #     ( $out, %params ) = display_location($q);
+    #     $params{title} = _('Viewing a location');
+    # }
+    elsif ( $q->param('e') && $q->param('n') ) {
+        ( $out, %params ) = redirect_from_osgb_to_wgs84($q);
+    }
+    # else {
+    #     ( $out, %params ) = front_page($q);
+    # }
+
     print Page::header($q, %params);
     print $out;
     my %footerparams;
