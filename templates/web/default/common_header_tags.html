@@ -5,7 +5,9 @@
 [% map_js %]
 [% extra_js_verbatim %]
 
-[% robots %]
+[% IF robots %]
+    <meta name="robots" content="[% robots %]">
+[% END %]
 
 [% IF rss %]
     <link rel="alternate" type="application/rss+xml" title="[% rss.0 %]" href="[% rss.1 %]">

@@ -7,6 +7,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 use FixMyStreet::Map;
 use List::MoreUtils qw(any);
 use Encode;
+use FixMyStreet::Map;
 
 =head1 NAME
 
@@ -54,7 +55,7 @@ sub around_index : Path : Args(0) {
     warn "FIXME - implement";
 
     # Show the nearby reports
-    $c->forward('display_location');
+    $c->detach('display_location');
 
 }
 
@@ -67,176 +68,87 @@ Display a specific lat/lng location (which may have come from a pc search).
 sub display_location : Private {
     my ( $self, $c ) = @_;
 
-#     # Deal with pin hiding/age
-#     my ( $hide_link, $hide_text, $all_link, $all_text, $interval );
-#     if ( $input{all_pins} ) {
-#         $all_link =
-#           NewURL( $q, -retain => 1, no_pins => undef, all_pins => undef );
-#         $all_text = _('Hide stale reports');
-#     }
-#     else {
-#         $all_link = NewURL( $q, -retain => 1, no_pins => undef, all_pins => 1 );
-#         $all_text = _('Include stale reports');
-#         $interval = '6 months';
-#     }
+    # set the template to use
+    $c->stash->{template} = 'around/display_location.html';
 
-#     my ( $on_map_all, $on_map, $around_map, $dist ) =
-#       FixMyStreet::Map::map_features( $q, $latitude, $longitude, $interval );
-#     my @pins;
-#     foreach (@$on_map_all) {
-#         push @pins,
-#           [
-#             $_->{latitude}, $_->{longitude},
-#             ( $_->{state} eq 'fixed' ? 'green' : 'red' ), $_->{id}
-#           ];
-#     }
-#     my $on_list = '';
-#     foreach (@$on_map) {
-#         my $report_url = NewURL( $q, -url => '/report/' . $_->{id} );
-#         $report_url = Cobrand::url( $cobrand, $report_url, $q );
-#         $on_list .= '<li><a href="' . $report_url . '">';
-#         $on_list .= ent( $_->{title} ) . '</a> <small>(';
-#         $on_list .= Page::prettify_epoch( $q, $_->{time}, 1 ) . ')</small>';
-#         $on_list .= ' <small>' . _('(fixed)') . '</small>'
-#           if $_->{state} eq 'fixed';
-#         $on_list .= '</li>';
-#     }
-#     $on_list = $q->li( _('No problems have been reported yet.') )
-#       unless $on_list;
-#
-#     my $around_list = '';
-#     foreach (@$around_map) {
-#         my $report_url =
-#           Cobrand::url( $cobrand, NewURL( $q, -url => '/report/' . $_->{id} ),
-#             $q );
-#         $around_list .= '<li><a href="' . $report_url . '">';
-#         my $dist = int( $_->{distance} * 10 + 0.5 );
-#         $dist = $dist / 10;
-#         $around_list .= ent( $_->{title} ) . '</a> <small>(';
-#         $around_list .= Page::prettify_epoch( $q, $_->{time}, 1 ) . ', ';
-#         $around_list .= $dist . 'km)</small>';
-#         $around_list .= ' <small>' . _('(fixed)') . '</small>'
-#           if $_->{state} eq 'fixed';
-#         $around_list .= '</li>';
-#         push @pins,
-#           [
-#             $_->{latitude}, $_->{longitude},
-#             ( $_->{state} eq 'fixed' ? 'green' : 'red' ), $_->{id}
-#           ];
-#     }
-#     $around_list = $q->li( _('No problems found.') )
-#       unless $around_list;
+    # get the lat,lng
+    my $latitude  = $c->stash->{latitude};
+    my $longitude = $c->stash->{longitude};
 
-#     if ( $input{no_pins} ) {
-#         $hide_link = NewURL( $q, -retain => 1, no_pins => undef );
-#         $hide_text = _('Show pins');
-#         @pins      = ();
-#     }
-#     else {
-#         $hide_link = NewURL( $q, -retain => 1, no_pins => 1 );
-#         $hide_text = _('Hide pins');
-#     }
+    # truncate the lat,lon for nicer rss urls, and strings for outputting
+    my $short_latitude  = Utils::truncate_coordinate($latitude);
+    my $short_longitude = Utils::truncate_coordinate($longitude);
+    $c->stash->{short_latitude}  = $short_latitude;
+    $c->stash->{short_longitude} = $short_longitude;
 
-#     my $map_links =
-# "<p id='sub_map_links'><a id='hide_pins_link' rel='nofollow' href='$hide_link'>$hide_text</a>";
-#     if ( mySociety::Config::get('COUNTRY') eq 'GB' ) {
-#         $map_links .=
-# " | <a id='all_pins_link' rel='nofollow' href='$all_link'>$all_text</a></p> <input type='hidden' id='all_pins' name='all_pins' value='$input_h{all_pins}'>";
-#     }
-#     else {
-#         $map_links .= "</p>";
-#     }
+    # Deal with pin hiding/age
+    my $all_pins = $c->req->param('all_pins') ? 1 : undef;
+    $c->stash->{all_pins} = $all_pins;
 
-#     # truncate the lat,lon for nicer rss urls, and strings for outputting
-#     my ( $short_lat, $short_lon ) =
-#       map { Utils::truncate_coordinate($_) }    #
-#       ( $latitude, $longitude );
-#
-#     my $url_skip = NewURL(
-#         $q,
-#         -url       => '/report/new',
-#         -retain    => 1,
-#         x          => undef,
-#         y          => undef,
-#         latitude   => $short_lat,
-#         longitude  => $short_lon,
-#         submit_map => 1,
-#         skipped    => 1
-#     );
-#
-#     my $pc_h = ent( $q->param('pc') || '' );
-#
-#     my $rss_url;
-#     if ($pc_h) {
-#         $rss_url = "/rss/pc/" . URI::Escape::uri_escape_utf8($pc_h);
-#     }
-#     else {
-#         $rss_url = "/rss/l/$short_lat,$short_lon";
-#     }
-#     $rss_url = Cobrand::url( $cobrand, NewURL( $q, -url => $rss_url ), $q );
-#
-#     my %vars = (
-#         'map' => FixMyStreet::Map::display_map(
-#             $q,
-#             latitude  => $short_lat,
-#             longitude => $short_lon,
-#             type      => 1,
-#             pins      => \@pins,
-#             post      => $map_links
-#         ),
-#         map_end   => FixMyStreet::Map::display_map_end(1),
-#         url_home  => Cobrand::url( $cobrand, '/', $q ),
-#         url_rss   => $rss_url,
-#         url_email => Cobrand::url(
-#             $cobrand,
-#             NewURL(
-#                 $q,
-#                 lat  => $short_lat,
-#                 lon  => $short_lon,
-#                 -url => '/alert',
-#                 feed => "local:$short_lat:$short_lon"
-#             ),
-#             $q
-#         ),
-#         url_skip          => $url_skip,
-#         email_me          => _('Email me new local problems'),
-#         rss_alt           => _('RSS feed'),
-#         rss_title         => _('RSS feed of recent local problems'),
-#         reports_on_around => $on_list,
-#         reports_nearby    => $around_list,
-#         heading_problems  => _('Problems in this area'),
-#         heading_on_around => _('Reports on and around the map'),
-#         heading_closest   => sprintf(
-#             _('Closest nearby problems <small>(within&nbsp;%skm)</small>'),
-#             $dist
-#         ),
-#         distance => $dist,
-#         pc_h     => $pc_h,
-#         errors   => @errors
-#         ? '<ul class="error"><li>' . join( '</li><li>', @errors ) . '</li></ul>'
-#         : '',
-#         text_to_report => _(
-#             'To report a problem, simply
-#             <strong>click on the map</strong> at the correct location.'
-#         ),
-#         text_skip => sprintf(
-#             _(
-# "<small>If you cannot see the map, <a href='%s' rel='nofollow'>skip this
-#             step</a>.</small>"
-#             ),
-#             $url_skip
-#         ),
-#     );
-#
-#     my %params = (
-#         rss    => [ _('Recent local problems, FixMyStreet'), $rss_url ],
-#         js     => FixMyStreet::Map::header_js(),
-#         robots => 'noindex,nofollow',
-#     );
-#
-#     return (
-#         Page::template_include( 'map', $q, Page::template_root($q), %vars ),
-#         %params );
+    # Setup some bits of text
+    my $all_link = $c->req->uri_with( { no_pins => undef, all_pins => undef } );
+    my $all_text =
+      $all_pins ? _('Hide stale reports') : _('Include stale reports');
+    my $interval = $all_pins ? undef : '6 months';
+
+    # get the map features
+    my ( $on_map_all, $on_map, $around_map, $distance ) =
+      FixMyStreet::Map::map_features( $c->req, $latitude, $longitude,
+        $interval );
+
+    # copy the found reports to the stash
+    $c->stash->{on_map}     = $on_map;
+    $c->stash->{around_map} = $around_map;
+    $c->stash->{distance}   = $distance;
+
+    # create a list of all the pins
+    my @pins = map {
+        my $pin_colour = $_->{state} eq 'fixed' ? 'green' : 'red';
+        [ $_->{latitude}, $_->{longitude}, $pin_colour, $_->{id} ];
+    } @$on_map_all, @$around_map;
+
+    {    # FIXME - ideally this indented code should be in the templates
+        my $no_pins = $c->req->param('no_pins') || '';
+        my $toggle_pins_link =
+          $c->req->uri_with( { no_pins => $no_pins ? 0 : 1 } );
+        my $toggle_pins_text = $no_pins ? _('Show pins') : _('Hide pins');
+
+        my $map_links =
+            "<p id='sub_map_links'>"
+          . "  <a id='hide_pins_link' rel='nofollow' href='$toggle_pins_link'>"
+          . "    $toggle_pins_text"    #
+          . "  </a>";
+
+        $map_links .=                                                   #
+          " | "                                                         #
+          . "<a id='all_pins_link' rel='nofollow' href='$all_link'>"    #
+          . "  $all_text"                                               #
+          . "</a>"
+          if mySociety::Config::get('COUNTRY') eq 'GB';
+
+        $map_links .= "</p>";
+
+        $map_links .=                                                     #
+          "<input type='hidden' id='all_pins' name='all_pins' value='"    #
+          . ( $all_pins || '' )                                           #
+          . "'>"
+          if mySociety::Config::get('COUNTRY') eq 'GB';
+
+        $map_links .= "</p>";
+
+        $c->stash->{map_html} = FixMyStreet::Map::display_map(
+            $c->req,
+            latitude  => $latitude,
+            longitude => $longitude,
+            type      => 1,
+            pins      => \@pins,
+            post      => $map_links
+        );
+        $c->stash->{map_end_html} = FixMyStreet::Map::display_map_end(1);
+        $c->stash->{map_js}       = FixMyStreet::Map::header_js();
+    }
+
+    return 1;
 }
 
 =head2 determine_location_from_coords
@@ -248,8 +160,8 @@ Use latitude and longitude if provided in parameters.
 sub determine_location_from_coords : Private {
     my ( $self, $c ) = @_;
 
-    my $latitude  = $c->req->param('latitude');
-    my $longitude = $c->req->param('longitude');
+    my $latitude  = $c->req->param('latitude')  || $c->req->param('lat');
+    my $longitude = $c->req->param('longitude') || $c->req->param('lon');
 
     if ( defined $latitude && defined $longitude ) {
         $c->stash->{latitude}  = $latitude;

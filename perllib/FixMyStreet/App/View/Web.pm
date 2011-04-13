@@ -15,7 +15,9 @@ __PACKAGE__->config(
     ],
     ENCODING       => 'utf8',
     render_die     => 1,
-    expose_methods => [ 'loc', 'nget', 'tprintf', 'display_crossell_advert' ],
+    expose_methods => [
+        'loc', 'nget', 'tprintf', 'display_crossell_advert', 'prettify_epoch',
+    ],
 );
 
 =head1 NAME
@@ -85,6 +87,22 @@ sub display_crossell_advert {
     $q->{site} = 'fixmystreet' if $q->{site} eq 'default';
 
     return CrossSell::display_advert( $q, $email, $name );
+}
+
+=head2 Page::prettify_epoch
+
+    [% pretty = prettify_epoch( $epoch, $short_bool ) %]
+
+Return a pretty version of the epoch.
+
+    $short_bool = 1;     # 16:02, 29 Mar 2011
+    $short_bool = 0;     # 16:02, Tuesday 29 March 2011
+
+=cut
+
+sub prettify_epoch {
+    my ( $self, $c, $epoch, $short_bool ) = @_;
+    return Page::prettify_epoch( $c->req, $epoch, $short_bool );
 }
 
 1;
