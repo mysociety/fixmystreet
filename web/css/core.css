@@ -1,4 +1,3 @@
-
 #mysociety blockquote {
   border-left: solid 4px #666666;
   padding-left: 0.5em;
@@ -14,7 +13,7 @@
   color: #666666;
   background-color: #cccccc;
 }
-#mysociety p.error {
+#mysociety p.dev-site-notice, #mysociety p.error {
   text-align: center;
   color: #cc0000;
   font-size: larger;
@@ -350,7 +349,6 @@
 }
 #mysociety #alert_photos h2 {
   font-size: 100%;
-
 }
 #mysociety #alert_photos img {
   margin-bottom: 0.25em;
