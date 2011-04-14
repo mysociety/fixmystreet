@@ -22,6 +22,7 @@ use CronFns;
 use FixMyStreet::App;
 
 use EastHantsWSDL;
+use BarnetInterfaces::service::ZLBB_SERVICE_ORDER;
 use Utils;
 use mySociety::Config;
 use mySociety::EmailUtil;
@@ -384,10 +385,11 @@ sub post_barnet_message {
     my $interface = BarnetInterfaces::service::ZLBB_SERVICE_ORDER->new();
     
     # note: config can be of form 'http://username@password:url' (or https, hopefully)
-    if (my $barnet_endpoint = mySociety::Config::get('OPTION_BARNET_WEBSERVICE_ENDPOINT')) {
-        $interface->set_proxy($barnet_endpoint) if $barnet_endpoint;
+    if (my $barnet_endpoint = mySociety::Config::get('OPTION_BARNET_WEBSERVICE_ENDPOINT', undef)) {
+        $interface->set_proxy($barnet_endpoint);
     }
-    try {    
+    
+    eval {    
         my $result = $interface->Z_CRM_SERVICE_ORDER_CREATE( {
             ET_RETURN =>  { # ignored by server
               item =>  {
@@ -418,7 +420,6 @@ sub post_barnet_message {
             IV_PROBLEM_SUB => truncate_string_with_entities(ent(encode_utf8($h{title})), 40), # char40
           },,
         );
-
         if ($result){        
             # currently not using this: get_EV_ORDER_GUID (maybe that's the customer number in the CRM)
             if (my $barnet_id = $result->get_EV_ORDER_NO()) {
@@ -440,9 +441,10 @@ sub post_barnet_message {
             print "Failed (problem id $h{id}): Fault $fault{code}$fault{actor}\n$fault{string}\n";
         }
 
-    } otherwise {
+    };
+    if ($@) {
         my $e = shift;
-        print "Caught an error: $e\n";
+        print "Caught an error: $@\n"; 
     }
     return $return;
 }
