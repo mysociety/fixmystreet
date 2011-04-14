@@ -313,6 +313,23 @@ sub uri_for_email {
     return URI->new($email_uri);
 }
 
+=head2 fake_q
+
+    $q = $c->fake_q();
+
+Returns a faked up object that behaves as the old code expects the old '$q' to
+behave.
+
+=cut
+
+sub fake_q {
+    my $c = shift;
+
+    # FIXME - implement fully
+    # site
+    return $c->req;
+}
+
 =head1 SEE ALSO
 
 L<FixMyStreet::App::Controller::Root>, L<Catalyst>
