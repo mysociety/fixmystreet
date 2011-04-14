@@ -101,11 +101,12 @@ subtest "Submit a correct entry" => sub {
     # go to the token url
     $mech->get_ok($token_url);
 
+    # check that we are on '/around'
+    is $mech->uri->path, '/around', "sent to /around";
+
     # check that we are not shown anything as we don't have a location yet
     is_deeply $mech->visible_form_values, { pc => '' },
       "check only pc field is shown";
-
-    is $mech->uri->path, '/around', "sent to report page";
 
     $mech->submit_form_ok(    #
         { with_fields => { pc => 'SW1A 1AA' } },
@@ -155,6 +156,91 @@ subtest "Submit a correct entry" => sub {
     my $report = $user->problems->first;
     is $report->state, 'confirmed',       'is confirmed';
     is $report->title, 'New Test report', 'title is correct';
+
+    $mech->delete_user($user);
+};
+
+# submit an empty report to import - check we get all errors
+subtest "Submit a correct entry (with location)" => sub {
+
+    $mech->get_ok('/import');
+
+    $mech->submit_form_ok(    #
+        {
+            with_fields => {
+                service   => 'test-script',
+                latitude  => '51.5010096115539',           # SW1A 1AA
+                longitude => '-0.141587067110009',
+                latitude  => '',
+                longitude => '',
+                name      => 'Test User ll',
+                email     => 'test-ll@example.com',
+                subject   => 'Test report ll',
+                detail    => 'This is a test report ll',
+                photo     => $sample_file,
+            }
+        },
+        "fill in form"
+    );
+
+    is_deeply( $mech->import_errors, [], "got no errors" );
+    is $mech->content, 'SUCCESS', "Got success response";
+
+    # check that we have received the email
+    $mech->email_count_is(1);
+    my $email = $mech->get_email;
+    $mech->clear_emails_ok;
+
+    my ($token_url) = $email->body =~ m{(http://\S+)};
+    ok $token_url, "Found a token url $token_url";
+
+    # go to the token url
+    $mech->get_ok($token_url);
+
+    # check that we are on '/around'
+    is $mech->uri->path, '/report/new', "sent to /around";
+
+    # check that fields are prefilled for us
+    is_deeply $mech->visible_form_values,
+      {
+        name          => 'Test User ll',
+        email         => 'test-ll@example.com',
+        title         => 'Test report ll',
+        detail        => 'This is a test report ll',
+        photo         => '',
+        phone         => '',
+        may_show_name => '1',
+      },
+      "check imported fields are shown";
+
+  TODO: {
+        local $TODO = "'/report/123' urls not served by catalyst yet";
+
+        # change the details
+        $mech->submit_form_ok(    #
+            {
+                with_fields => {
+                    name          => 'New Test User',
+                    email         => 'test@example.com',
+                    title         => 'New Test report',
+                    detail        => 'This is a test report',
+                    phone         => '01234 567 890',
+                    may_show_name => '1',
+                }
+            },
+            "Update details and save"
+        );
+    }
+
+    # check that report has been created
+    my $user =
+      FixMyStreet::App->model('DB::User')
+      ->find( { email => 'test-ll@example.com' } );
+    ok $user, "Found a user";
+
+    my $report = $user->problems->first;
+    is $report->state, 'confirmed',          'is confirmed';
+    is $report->title, 'New Test report ll', 'title is correct';
 
     $mech->delete_user($user);
 };

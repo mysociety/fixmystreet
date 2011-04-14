@@ -72,7 +72,9 @@ sub confirm_problem : Path('/P') {
 
     /P/...
 
-Redirect user to continue filling in a partial problem.
+Redirect user to continue filling in a partial problem. The request is sent to
+'/report/new' which might redirect again to '/around' if there is no location
+found.
 
 =cut
 
