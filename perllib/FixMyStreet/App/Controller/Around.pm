@@ -144,7 +144,7 @@ sub display_location : Private {
 
     # get the map features
     my ( $on_map_all, $on_map, $around_map, $distance ) =
-      FixMyStreet::Map::map_features( $c->req, $latitude, $longitude,
+      FixMyStreet::Map::map_features( $c->fake_q, $latitude, $longitude,
         $interval );
 
     # copy the found reports to the stash
@@ -188,7 +188,7 @@ sub display_location : Private {
         $map_links .= "</p>";
 
         $c->stash->{map_html} = FixMyStreet::Map::display_map(
-            $c->req,
+            $c->fake_q,
             latitude  => $latitude,
             longitude => $longitude,
             type      => 1,
@@ -249,7 +249,7 @@ sub determine_location_from_pc : Private {
     $c->stash->{pc} = $pc;    # for template
 
     my ( $latitude, $longitude, $error ) =
-      eval { FixMyStreet::Geocode::lookup( $pc, $c->req ) };
+      eval { FixMyStreet::Geocode::lookup( $pc, $c->fake_q ) };
 
     # Check that nothing blew up
     if ($@) {

@@ -419,7 +419,7 @@ sub determine_location_from_tile_click : Private {
 
     # convert the click to lat and lng
     my ( $latitude, $longitude ) = FixMyStreet::Map::click_to_wgs84(    #
-        $c->req,                                                        #
+        $c->fake_q,                                                        #
         $pin_tile_x, $pin_x, $pin_tile_y, $pin_y
     );
 
@@ -1046,7 +1046,7 @@ END_MAP_HTML
         my $map_type = $allow_photo_upload ? 2 : 1;
 
         $c->stash->{map_html} = FixMyStreet::Map::display_map(
-            $c->req,
+            $c->fake_q,
             latitude  => $latitude,
             longitude => $longitude,
             type      => $map_type,

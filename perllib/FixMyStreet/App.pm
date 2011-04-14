@@ -123,7 +123,7 @@ sub _get_cobrand {
       ? FixMyStreet::Cobrand->get_class_for_moniker($override_moniker)
       : FixMyStreet::Cobrand->get_class_for_host($host);
 
-    return $cobrand_class->new( { request => $c->req } );
+    return $cobrand_class->new( { request => $c->req, fake_q => $c->fake_q, } );
 }
 
 =head2 setup_request

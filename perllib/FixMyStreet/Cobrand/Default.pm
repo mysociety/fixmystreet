@@ -10,7 +10,7 @@ use Carp;
 =head2 new
 
     my $cobrand = $class->new;
-    my $cobrand = $class->new( { request => $c->req } );
+    my $cobrand = $class->new( { request => $c->req, fake_q => $c->fake_q } );
 
 Create a new cobrand object, optionally setting the web request.
 
@@ -54,9 +54,9 @@ sub is_default {
     return $self->moniker eq 'default';
 }
 
-=head2 q
+=head2 fake_q
 
-    $request = $cobrand->q;
+    $fake_q = $cobrand->fake_q;
 
 Often the cobrand needs access to the request so we add it at the start by
 passing it to ->new. If the request has not been set and you call this (or a
@@ -65,10 +65,10 @@ use a request-related method out of a request-context.
 
 =cut
 
-sub q {
+sub fake_q {
     my $self = shift;
-    return $self->{request}
-      || croak "No request has been set"
+    return $self->{fake_q}
+      || croak "No fake_q has been set"
       . " - should you be calling this method outside of a web request?";
 }
 
