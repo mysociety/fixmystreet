@@ -168,16 +168,14 @@ subtest "Submit a correct entry (with location)" => sub {
     $mech->submit_form_ok(    #
         {
             with_fields => {
-                service   => 'test-script',
-                latitude  => '51.5010096115539',           # SW1A 1AA
-                longitude => '-0.141587067110009',
-                latitude  => '',
-                longitude => '',
-                name      => 'Test User ll',
-                email     => 'test-ll@example.com',
-                subject   => 'Test report ll',
-                detail    => 'This is a test report ll',
-                photo     => $sample_file,
+                service => 'test-script',
+                lat     => '51.5010096115539',           # SW1A 1AA
+                lon     => '-0.141587067110009',
+                name    => 'Test User ll',
+                email   => 'test-ll@example.com',
+                subject => 'Test report ll',
+                detail  => 'This is a test report ll',
+                photo   => $sample_file,
             }
         },
         "fill in form"
@@ -220,10 +218,10 @@ subtest "Submit a correct entry (with location)" => sub {
         $mech->submit_form_ok(    #
             {
                 with_fields => {
-                    name          => 'New Test User',
-                    email         => 'test@example.com',
-                    title         => 'New Test report',
-                    detail        => 'This is a test report',
+                    name          => 'New Test User ll',
+                    email         => 'test-ll@example.com',
+                    title         => 'New Test report ll',
+                    detail        => 'This is a test report ll',
                     phone         => '01234 567 890',
                     may_show_name => '1',
                 }

@@ -1109,7 +1109,9 @@ sub redirect_to_around : Private {
         delete $params->{$_} if !$params->{$_};
     }
 
-    # FIXME add partial here.
+    if ( my $token = $c->stash->{partial_token} ) {
+        $params->{partial} = $token->token;
+    }
 
     my $around_uri = $c->uri_for( '/around', $params );
 

@@ -8,9 +8,8 @@
 %]
 
 
-<form action="[% '/around' %]" method="get" name="postcodeForm" id="postcodeForm"><label for="pc">[% loc("Enter a nearby GB postcode, or street name and area") %]:</label>
-&nbsp;<input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200">
-&nbsp;<input type="submit" value="[% loc('Go') %]" id="submit">
+<form action="[% '/around' %]" method="get" name="postcodeForm" id="postcodeForm">
+    <label for="pc">[% loc("Enter a nearby GB postcode, or street name and area") %]:</label>&nbsp;<input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200">&nbsp;<input type="submit" value="[% loc('Go') %]" id="submit">
 [% c.cobrand.form_elements %]
 
 [% IF partial_token %]

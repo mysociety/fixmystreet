@@ -42,6 +42,9 @@ sub around_index : Path : Args(0) {
         return;
     }
 
+    # Check if we have a partial report
+    my $partial_report = $c->forward('load_partial');
+
     # Try to create a location for whatever we have
     return
       unless $c->forward('determine_location_from_coords')
@@ -52,11 +55,59 @@ sub around_index : Path : Args(0) {
 
     # If we have a partial - redirect to /report/new so that it can be
     # completed.
-    warn "FIXME - implement";
+    if ($partial_report) {
+        my $new_uri = $c->uri_for(
+            '/report/new',
+            {
+                partial   => $c->stash->{partial_token}->token,
+                latitude  => $c->stash->{latitude},
+                longitude => $c->stash->{longitude},
+                pc        => $c->stash->{pc},
+            }
+        );
+        return $c->res->redirect($new_uri);
+    }
 
     # Show the nearby reports
     $c->detach('display_location');
+}
 
+=head2 load_partial
+
+    my $partial_report = $c->forward('load_partial');
+
+Check for the partial token and load the partial report. If found save it and
+token to stash and return report. Otherwise return false.
+
+=cut
+
+sub load_partial : Private {
+    my ( $self, $c ) = @_;
+
+    my $partial = scalar $c->req->param('partial')
+      || return;
+
+    # is it in the database
+    my $token =
+      $c->model("DB::Token")
+      ->find( { scope => 'partial', token => $partial } )    #
+      || last;
+
+    # can we get an id from it?
+    my $report_id = $token->data                             #
+      || last;
+
+    # load the related problem
+    my $report = $c->model("DB::Problem")                    #
+      ->search( { id => $report_id, state => 'partial' } )   #
+      ->first
+      || last;
+
+    # save what we found on the stash.
+    $c->stash->{partial_token}  = $token;
+    $c->stash->{partial_report} = $report;
+
+    return $report;
 }
 
 =head2 display_location
