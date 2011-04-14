@@ -342,7 +342,8 @@ sub initialize_report : Private {
             }
         }
     }
-    else {
+
+    if ( !$report ) {
 
         # If we didn't find a partial then create a new one
         $report = $c->model('DB::Problem')->new( {} );
