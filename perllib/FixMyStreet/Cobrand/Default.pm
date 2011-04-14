@@ -414,6 +414,14 @@ Return the maximum number of items to be given in the list of reports on the map
 
 sub on_map_list_limit { return undef; }
 
+=head2 on_map_default_max_pin_age
+
+Return the default maximum age for pins.
+
+=cut
+
+sub on_map_default_max_pin_age { return '6 months'; }
+
 =head2 allow_photo_upload
 
 Return a boolean indicating whether the cobrand allows photo uploads

@@ -140,7 +140,7 @@ sub display_location : Private {
     my $all_link = $c->req->uri_with( { no_pins => undef, all_pins => undef } );
     my $all_text =
       $all_pins ? _('Hide stale reports') : _('Include stale reports');
-    my $interval = $all_pins ? undef : '6 months';
+    my $interval = $all_pins ? undef : $c->cobrand->on_map_default_max_pin_age;
 
     # get the map features
     my ( $on_map_all, $on_map, $around_map, $distance ) =
@@ -317,6 +317,65 @@ sub check_location_is_acceptable : Private {
 
     # check that there are councils that can accept this location
     return $c->forward('/report/new/load_and_check_councils');
+}
+
+=head2 /ajax
+
+Handle the ajax calls that the map makes when it is dragged. The info returned
+is used to update the pins on the map and the text descriptions on the side of
+the map.
+
+=cut
+
+sub ajax : Path('/ajax') {
+    my ( $self, $c ) = @_;
+
+    # Our current X/Y middle of visible map
+    my $x = ( $c->req->param('x') || 0 ) + 0;
+    my $y = ( $c->req->param('y') || 0 ) + 0;
+
+    # Where we started as that's the (0,0) we have to work to
+    my $sx = ( $c->req->param('sx') || 0 ) + 0;
+    my $sy = ( $c->req->param('sy') || 0 ) + 0;
+
+    # how far back should we go?
+    my $all_pins = $c->req->param('all_pins') ? 1 : undef;
+    my $interval = $all_pins ? undef : $c->cobrand->on_map_default_max_pin_age;
+
+    # extract the data from the map
+    my ( $pins, $on_map, $around_map, $dist ) =
+      FixMyStreet::Map::map_pins( $c->fake_q, $x, $y, $sx, $sy, $interval );
+
+    # render templates to get the html
+    # my $on_map_list_html = $c->forward(
+    #     "View::Web", "render",
+    my $on_map_list_html =
+      $c->view('Web')
+      ->render( $c, 'around/on_map_list_items.html', { on_map => $on_map } );
+
+    # my $around_map_list_html = $c->forward(
+    #     "View::Web", "render",
+    my $around_map_list_html = $c->view('Web')->render(
+        $c,
+        'around/around_map_list_items.html',
+        { around_map => $around_map, dist => $dist }
+    );
+
+    # JSON encode the response
+    my $body = JSON->new->utf8(1)->pretty(1)->encode(
+        {
+            pins         => $pins,
+            current      => $on_map_list_html,
+            current_near => $around_map_list_html,
+        }
+    );
+
+    # assume this is not cacheable - may need to be more fine-grained later
+    $c->res->content_type('text/javascript; charset=utf-8');
+    $c->res->header( 'Cache_Control' => 'max-age=0' );
+
+    # Set the body - note that the js needs the surrounding brackets.
+    $c->res->body("($body)");
 }
 
 __PACKAGE__->meta->make_immutable;
