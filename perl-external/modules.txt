@@ -28,6 +28,7 @@ HTML::Entities
 HTTP::Server::Simple
 HTTP::Server::Simple::CGI
 IO::String
+JSON
 Moose
 MyCPAN::App::DPAN
 Net::Domain::TLD
