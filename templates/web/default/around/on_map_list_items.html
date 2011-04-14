@@ -1,0 +1,15 @@
+[% IF on_map.size %]
+    [% FOREACH p IN on_map %]
+        <li>
+            <a href="[% c.uri_for('/report', p.id ) %]">
+                [% p.title | html %]
+            </a>
+            <small>([% prettify_epoch( p.time, 1 ) %])</small>
+            [% IF p.state == 'fixed' %]
+                <small>[% loc('(fixed)') %]</small>
+            [% END %]
+        </li>
+    [% END %]
+[% ELSE %]
+    <li>[% loc('No problems have been reported yet.') %]</li>
+[% END %]
