@@ -84,9 +84,8 @@ sub report_new : Path : Args(0) {
     $c->forward('initialize_report');
 
     # work out the location for this report and do some checks
-    return
-      unless $c->forward('determine_location')
-          && $c->forward('load_councils');
+    return $c->forward('redirect_to_around')
+      unless $c->forward('determine_location');
 
     # create a problem from the submitted details
     $c->stash->{template} = "report/new/fill_in_details.html";
@@ -373,14 +372,15 @@ found.
 sub determine_location : Private {
     my ( $self, $c ) = @_;
 
-    return
-      unless $c->forward('determine_location_from_tile_click')
-          || $c->forward('/around/determine_location_from_coords')
-          || $c->forward('/around/determine_location_from_pc')
-          || $c->forward('determine_location_from_report');
-
-
-    return $c->forward('/around/check_location_is_acceptable');
+    return 1
+      if    #
+          (    #
+              $c->forward('determine_location_from_tile_click')
+              || $c->forward('/around/determine_location_from_coords')
+              || $c->forward('determine_location_from_report')
+          )    #
+          && $c->forward('/around/check_location_is_acceptable');
+    return;
 }
 
 =head2 determine_location_from_tile_click
@@ -455,14 +455,14 @@ sub determine_location_from_report : Private {
     return;
 }
 
-=head2 load_councils
+=head2 load_and_check_councils
 
 Try to load councils for this location and check that we have at least one. If
 there are no councils then return false.
 
 =cut
 
-sub load_councils : Private {
+sub load_and_check_councils : Private {
     my ( $self, $c ) = @_;
     my $latitude  = $c->stash->{latitude};
     my $longitude = $c->stash->{longitude};
@@ -484,6 +484,9 @@ sub load_councils : Private {
         return;
     }
 
+    # edit hash in-place
+    _remove_redundant_councils($all_councils);
+
     # If we don't have any councils we can't accept the report
     if ( !scalar keys %$all_councils ) {
         $c->stash->{location_error} =
@@ -492,9 +495,6 @@ sub load_councils : Private {
               . ' example, please specify the closest point on land.' );
         return;
     }
-
-    # edit hash in-place
-    _remove_redundant_councils($all_councils);
 
     # all good if we have some councils left
     $c->stash->{all_councils} = $all_councils;
@@ -1087,6 +1087,33 @@ sub redirect_or_confirm_creation : Private {
     # tell user that they've been sent an email
     $c->stash->{template}   = 'email_sent.html';
     $c->stash->{email_type} = 'problem';
+}
+
+=head2 redirect_to_around
+
+Redirect the user to '/around' passing along all the relevant parameters.
+
+=cut
+
+sub redirect_to_around : Private {
+    my ( $self, $c ) = @_;
+
+    my $params = {
+        pc => ( $c->stash->{pc} || $c->req->param('pc') || '' ),
+        lat => $c->stash->{latitude},
+        lon => $c->stash->{longitude},
+    };
+
+    # delete empty values
+    for ( keys %$params ) {
+        delete $params->{$_} if !$params->{$_};
+    }
+
+    # FIXME add partial here.
+
+    my $around_uri = $c->uri_for( '/around', $params );
+
+    return $c->res->redirect($around_uri);
 }
 
 __PACKAGE__->meta->make_immutable;

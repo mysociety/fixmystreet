@@ -226,7 +226,7 @@ sub determine_location_from_pc : Private {
     }
 
     # pass errors back to the template
-    $c->stash->{pc_error} = $error;
+    $c->stash->{location_error} = $error;
     return;
 }
 
@@ -258,13 +258,14 @@ sub check_location_is_acceptable : Private {
           ) if $@;
     }
 
-    # all good
-    return 1 if !$error_msg;
-
     # show error
-    $c->stash->{pc_error} = $error_msg;
-    return;
+    if ($error_msg) {
+        $c->stash->{location_error} = $error_msg;
+        return;
+    }
 
+    # check that there are councils that can accept this location
+    return $c->forward('/report/new/load_and_check_councils');
 }
 
 __PACKAGE__->meta->make_immutable;

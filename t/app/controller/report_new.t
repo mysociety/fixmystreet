@@ -8,10 +8,19 @@ use Web::Scraper;
 my $mech = FixMyStreet::TestMech->new;
 $mech->get_ok('/report/new');
 
-fail "test that lat,lon not covered by council goes to '/around'";
-
 fail "test that partial code is transferred";
 
+subtest "test that bare requests to /report/new get redirected" => sub {
+
+    $mech->get_ok('/report/new');
+    is $mech->uri->path, '/around', "went to /around";
+    is_deeply { $mech->uri->query_form }, {}, "query empty";
+
+    $mech->get_ok('/report/new?pc=SW1A%201AA');
+    is $mech->uri->path, '/around', "went to /around";
+    is_deeply { $mech->uri->query_form }, { pc => 'SW1A 1AA' },
+      "pc correctly transferred";
+};
 
 # test that the various bit of form get filled in and errors correctly
 # generated.
@@ -203,12 +212,16 @@ foreach my $test (
   )
 {
     subtest "check form errors where $test->{msg}" => sub {
-        $mech->get_ok('/report/new');
+        $mech->get_ok('/around');
 
         # submit initial pc form
         $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
             "submit location" );
         is_deeply $mech->form_errors, [], "no errors for pc '$test->{pc}'";
+
+        # click through to the report page
+        $mech->follow_link_ok( { text => 'skip this step', },
+            "follow 'skip this step' link" );
 
         # submit the main form
         $mech->submit_form_ok( { with_fields => $test->{fields} },
@@ -237,9 +250,14 @@ subtest "test report creation for a user who does not have an account" => sub {
       "test user does not exist";
 
     # submit initial pc form
-    $mech->get_ok('/report/new');
+    $mech->get_ok('/around');
     $mech->submit_form_ok( { with_fields => { pc => 'SW1A 1AA', } },
         "submit location" );
+
+    # click through to the report page
+    $mech->follow_link_ok( { text => 'skip this step', },
+        "follow 'skip this step' link" );
+
     $mech->submit_form_ok(
         {
             with_fields => {
@@ -323,9 +341,13 @@ subtest "test report creation for a user who is logged in" => sub {
       "set users details";
 
     # submit initial pc form
-    $mech->get_ok('/report/new');
+    $mech->get_ok('/around');
     $mech->submit_form_ok( { with_fields => { pc => 'SW1A 1AA', } },
         "submit location" );
+
+    # click through to the report page
+    $mech->follow_link_ok( { text => 'skip this step', },
+        "follow 'skip this step' link" );
 
     # check that the fields are correctly prefilled
     is_deeply(
@@ -394,5 +416,26 @@ subtest "test report creation for a user who is logged in" => sub {
 # create report without using map
 # create report by clicking on may with javascript off
 # create report with images off
+
+subtest "check that a lat/lon off coast leads to /around" => sub {
+    my $off_coast_latitude  = 50.78301;
+    my $off_coast_longitude = -0.646929;
+
+    $mech->get_ok(    #
+        "/report/new"
+          . "?latitude=$off_coast_latitude"
+          . "&longitude=$off_coast_longitude"
+    );
+
+    is $mech->uri->path, '/around', "redirected to '/around'";
+
+    is_deeply         #
+      $mech->page_errors,
+      [     'That spot does not appear to be covered by a council. If you have'
+          . ' tried to report an issue past the shoreline, for example, please'
+          . ' specify the closest point on land.' ],    #
+      "Found location error";
+
+};
 
 done_testing();
