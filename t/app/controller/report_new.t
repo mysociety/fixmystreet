@@ -8,8 +8,6 @@ use Web::Scraper;
 my $mech = FixMyStreet::TestMech->new;
 $mech->get_ok('/report/new');
 
-fail "test that partial code is transferred";
-
 subtest "test that bare requests to /report/new get redirected" => sub {
 
     $mech->get_ok('/report/new');
