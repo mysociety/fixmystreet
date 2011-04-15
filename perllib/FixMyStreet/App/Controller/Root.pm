@@ -73,16 +73,16 @@ sub default : Path {
 
 =head2 page_not_found
 
-    $c->detach('/page_not_found');
+    $c->detach('/page_not_found', [ $error_msg ] );
 
-Display a 404 page.
+Display a 404 page. Pass in an optional error message in an arrayref.
 
 =cut
 
 sub page_not_found : Private {
-    my ( $self, $c ) = @_;
-
-    $c->stash->{template} = 'errors/page_not_found.html';
+    my ( $self, $c, $error_msg ) = @_;
+    $c->stash->{template}  = 'errors/page_not_found.html';
+    $c->stash->{error_msg} = $error_msg;
     $c->response->status(404);
 }
 
