@@ -43,7 +43,7 @@ preserve old behaviour.
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    my @old_param_keys = ( 'pc', 'x', 'y', 'lat', 'lon' );
+    my @old_param_keys = ( 'pc', 'x', 'y', 'e', 'n', 'lat', 'lon' );
     my %old_params = ();
 
     foreach my $key (@old_param_keys) {

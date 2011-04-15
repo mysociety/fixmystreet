@@ -8,6 +8,7 @@ use FixMyStreet::Map;
 use List::MoreUtils qw(any);
 use Encode;
 use FixMyStreet::Map;
+use Utils;
 
 =head1 NAME
 
@@ -32,15 +33,8 @@ If no search redirect back to the homepage.
 sub around_index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    # check for x,y requests and redirect them to lat,lon
-    my $x = $c->req->param('x');
-    my $y = $c->req->param('y');
-    if ( $x || $y ) {
-        my ( $lat, $lon ) = FixMyStreet::Map::tile_xy_to_wgs84( $x, $y );
-        my $ll_uri = $c->uri_for( '/around', { lat => $lat, lon => $lon } );
-        $c->res->redirect( $ll_uri, 301 );
-        return;
-    }
+    # handle old coord systems
+    $c->forward('redirect_en_or_xy');
 
     # Check if we have a partial report
     my $partial_report = $c->forward('load_partial');
@@ -70,6 +64,44 @@ sub around_index : Path : Args(0) {
 
     # Show the nearby reports
     $c->detach('display_location');
+}
+
+=head2 redirect_en_or_xy
+
+    $c->forward('redirect_en_or_xy'); # does not return if there was rd
+
+Handle coord systems that are no longer in use.
+
+=cut
+
+sub redirect_en_or_xy : Private {
+    my ( $self, $c ) = @_;
+    my $req = $c->req;
+
+    # check for x,y requests and redirect them to lat,lon
+    my $x = $req->param('x');
+    my $y = $req->param('y');
+    my $e = $req->param('e');
+    my $n = $req->param('n');
+
+    # lat and lon - fill in below if we need to
+    my ( $lat, $lon );
+
+    if ( $x || $y ) {
+        ( $lat, $lon ) = FixMyStreet::Map::tile_xy_to_wgs84( $x, $y );
+    }
+
+    if ( $e || $n ) {
+        ( $lat, $lon ) = Utils::convert_en_to_latlon_truncated( $e, $n );
+    }
+
+    # return if nothing set
+    return unless $lat || $lon;
+
+    # create a uri and redirect to it
+    my $ll_uri = $c->uri_for( '/around', { lat => $lat, lon => $lon } );
+    $c->res->redirect( $ll_uri, 301 );
+    $c->detach;
 }
 
 =head2 load_partial

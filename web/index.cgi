@@ -105,9 +105,9 @@ sub main {
     #     ( $out, %params ) = display_location($q);
     #     $params{title} = _('Viewing a location');
     # }
-    elsif ( $q->param('e') && $q->param('n') ) {
-        ( $out, %params ) = redirect_from_osgb_to_wgs84($q);
-    }
+    # elsif ( $q->param('e') && $q->param('n') ) {
+    #     ( $out, %params ) = redirect_from_osgb_to_wgs84($q);
+    # }
     # else {
     #     ( $out, %params ) = front_page($q);
     # }
@@ -830,30 +830,30 @@ sub submit_update {
 # }
 
 # redirect from osgb
-sub redirect_from_osgb_to_wgs84 {
-    my ($q) = @_;
-
-    my $e = $q->param('e');
-    my $n = $q->param('n');
-
-    my ( $lat, $lon ) = Utils::convert_en_to_latlon_truncated( $e, $n );
-
-    my $lat_lon_url = NewURL(
-        $q,
-        -retain => 1,
-        e       => undef,
-        n       => undef,
-        lat     => $lat,
-        lon     => $lon
-    );
-
-    print $q->redirect(
-        -location => $lat_lon_url,
-        -status   => 301,            # permanent
-    );
-
-    return '';
-}
+# sub redirect_from_osgb_to_wgs84 {
+#     my ($q) = @_;
+# 
+#     my $e = $q->param('e');
+#     my $n = $q->param('n');
+# 
+#     my ( $lat, $lon ) = Utils::convert_en_to_latlon_truncated( $e, $n );
+# 
+#     my $lat_lon_url = NewURL(
+#         $q,
+#         -retain => 1,
+#         e       => undef,
+#         n       => undef,
+#         lat     => $lat,
+#         lon     => $lon
+#     );
+# 
+#     print $q->redirect(
+#         -location => $lat_lon_url,
+#         -status   => 301,            # permanent
+#     );
+# 
+#     return '';
+# }
 
 # sub display_location {
 #     my ($q, @errors) = @_;
