@@ -6,3 +6,4 @@ should we ditch flickr import? (does not seem to be getting huge usage and those
 
 move all FAQ over to TT2
 
+check that using specific 404 and 410 pages is ok for reports

@@ -54,17 +54,21 @@ sub display : Path('') : Args(1) {
 #     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 #     my $base = Cobrand::base_url($cobrand);
 
-    # Some council with bad email software
-    if ( $id =~ m{ ^ 3D (\d+) $ }x ) {
+    if (
+        $id =~ m{ ^ 3D (\d+) $ }x         # Some council with bad email software
+        || $id =~ m{ ^(\d+) \D .* $ }x    # trailing garbage
+      )
+    {
         return $c->res->redirect( $c->uri_for($1), 301 );
     }
 
     # try to load a report if the id is a number
-    my $problem =
-      $id =~ m{\D}
-      ? undef
+    my $problem                           #
+      = $id =~ m{\D}                      # is id non-numeric?
+      ? undef                             # ...don't even search
       : $c->model('DB::Problem')->find( { id => $id } );
 
+    # check that the problem is suitable to show.
     if ( !$problem || $problem->state eq 'unconfirmed' ) {
         $c->detach( '/page_error_404_not_found', [ _('Unknown problem ID') ] );
     }

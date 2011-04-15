@@ -55,6 +55,11 @@ subtest "test bad council email clients web links" => sub {
     is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
 };
 
+subtest "test tailing non-ints get stripped" => sub {
+    $mech->get_ok("/report/${report_id}xx ");
+    is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
+};
+
 subtest "test bad ids get dealt with (404)" => sub {
     foreach my $id ( 'XXX', 99999999 ) {
         ok $mech->get("/report/$id"), "get '/report/$id'";
