@@ -34,5 +34,20 @@ sub area_min_generation {
     return '';
 }
 
-1;
+# If lat/lon are present in the URL, OpenLayers will use that to centre the map.
+# Need to specify a zoom to stop it defaulting to null/0.
+sub url {
+    my ( $self, $url ) = @_;
+    if ( $url =~ /lat=/ && $url !~ /zoom=/ ) {
+        $url .= ';zoom=2';
+    }
+    return $url;
+}
 
+sub geocoded_string_check {
+    my ( $self, $s ) = @_;
+    return 1 if $s =~ /, Norge/;
+    return 0;
+}
+
+1;
