@@ -34,7 +34,7 @@ sub around_index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
     # handle old coord systems
-    $c->forward('redirect_en_or_xy');
+    $c->forward('redirect_en_or_xy_to_latlon');
 
     # Check if we have a partial report
     my $partial_report = $c->forward('load_partial');
@@ -66,19 +66,20 @@ sub around_index : Path : Args(0) {
     $c->detach('display_location');
 }
 
-=head2 redirect_en_or_xy
+=head2 redirect_en_or_xy_to_latlon
 
-    $c->forward('redirect_en_or_xy'); # does not return if there was rd
+    # detaches if there was a redirect
+    $c->forward('redirect_en_or_xy_to_latlon');
 
 Handle coord systems that are no longer in use.
 
 =cut
 
-sub redirect_en_or_xy : Private {
+sub redirect_en_or_xy_to_latlon : Private {
     my ( $self, $c ) = @_;
     my $req = $c->req;
 
-    # check for x,y requests and redirect them to lat,lon
+    # check for x,y or e,n requests
     my $x = $req->param('x');
     my $y = $req->param('y');
     my $e = $req->param('e');
@@ -90,13 +91,12 @@ sub redirect_en_or_xy : Private {
     if ( $x || $y ) {
         ( $lat, $lon ) = FixMyStreet::Map::tile_xy_to_wgs84( $x, $y );
     }
-
-    if ( $e || $n ) {
+    elsif ( $e || $n ) {
         ( $lat, $lon ) = Utils::convert_en_to_latlon_truncated( $e, $n );
     }
-
-    # return if nothing set
-    return unless $lat || $lon;
+    else {
+        return;
+    }
 
     # create a uri and redirect to it
     my $ll_uri = $c->uri_for( '/around', { lat => $lat, lon => $lon } );
