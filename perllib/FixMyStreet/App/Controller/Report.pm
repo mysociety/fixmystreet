@@ -4,7 +4,6 @@ use Moose;
 use namespace::autoclean;
 BEGIN { extends 'Catalyst::Controller'; }
 
-
 =head1 NAME
 
 FixMyStreet::App::Controller::Report - display a report
@@ -15,6 +14,26 @@ Show a report
 
 =head1 ACTIONS
 
+=head2 index
+
+Redirect to homepage unless C<id> parameter in query, in which case redirect to
+'/report/$id'.
+
+=cut
+
+sub index : Path('') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    my $id = $c->req->param('id');
+
+    my $uri =
+        $id
+      ? $c->uri_for( '/report', $id )
+      : $c->uri_for('/');
+
+    $c->res->redirect($uri);
+}
+
 =head2 report_display
 
 Display a report.
@@ -23,7 +42,6 @@ Display a report.
 
 sub display : Path('') : Args(1) {
     my ( $self, $c, $id ) = @_;
-}
 
 #     my ($q, $errors, $field_errors) = @_;
 #     my @errors = @$errors;
@@ -31,46 +49,39 @@ sub display : Path('') : Args(1) {
 #     my $cobrand = Page::get_cobrand($q);
 #     push @errors, _('There were problems with your update. Please see below.') if (scalar keys %field_errors);
 
-
 #     my @vars = qw(id name rznvy update fixed add_alert upload_fileid submit_update);
 #     my %input = map { $_ => $q->param($_) || '' } @vars;
 #     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 #     my $base = Cobrand::base_url($cobrand);
 
+    # Some council with bad email software
+    if ( $id =~ m{ ^ 3D (\d+) $ }x ) {
+        return $c->res->redirect( $c->uri_for($1), 301 );
+    }
 
+    # try to load a report if the id is a number
+    my $problem =
+      $id =~ m{\D}
+      ? undef
+      : $c->model('DB::Problem')->find( { id => $id } );
 
-#     # Some council with bad email software
-#     if ($input{id} =~ /^3D\d+$/) {
-#         $input{id} =~ s/^3D//;
-#         print $q->redirect(-location => $base . '/report/' . $input{id}, -status => 301);
-#         return '';
-#     }
+    if ( !$problem ) {    # bad id or id not found
+        $c->detach( '/page_not_found', [ _('Unknown problem ID') ] );
+    }
 
+    #  elsif () {
+    #
+    # }
 
-
-#     # Redirect old /?id=NNN URLs to /report/NNN
-#     if (!@errors && !scalar keys %field_errors && $ENV{SCRIPT_URL} eq '/') {
-#         print $q->redirect(-location => $base . '/report/' . $input{id}, -status => 301);
-#         return '';
-#     }
-
-
-#     # Get all information from database
-#     return display_location($q, _('Unknown problem ID')) if !$input{id} || $input{id} =~ /\D/;
-
-
-#     my $problem = Problems::fetch_problem($input{id});
-#     return display_location($q, _('Unknown problem ID')) unless $problem;
 #     return front_page($q, _('That report has been removed from FixMyStreet.'), '410 Gone') if $problem->{state} eq 'hidden';
 
-
-#     my $extra_data = Cobrand::extra_data($cobrand, $q);
-#     my $google_link = Cobrand::base_url_for_emails($cobrand, $extra_data)
-#         . '/report/' . $problem->{id};
-#     # truncate the lat,lon for nicer rss urls
-#     my ( $short_lat, $short_lon ) =
-#       map { Utils::truncate_coordinate($_) }    #
-#       ( $problem->{latitude}, $problem->{longitude} );
+    #     my $extra_data = Cobrand::extra_data($cobrand, $q);
+    #     my $google_link = Cobrand::base_url_for_emails($cobrand, $extra_data)
+    #         . '/report/' . $problem->{id};
+    #     # truncate the lat,lon for nicer rss urls
+    #     my ( $short_lat, $short_lon ) =
+    #       map { Utils::truncate_coordinate($_) }    #
+    #       ( $problem->{latitude}, $problem->{longitude} );
 
 #     my $map_links = '';
 #     $map_links = "<p id='sub_map_links'>"
@@ -164,9 +175,8 @@ sub display : Path('') : Args(1) {
 #
 #     my $page = Page::template_include('problem', $q, Page::template_root($q), %vars);
 #     return ($page, %params);
-# }
 
-
+}
 
 __PACKAGE__->meta->make_immutable;
 
