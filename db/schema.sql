@@ -358,9 +358,8 @@ create table flickr_imported (
 create unique index flickr_imported_id_idx on flickr_imported(id);
 
 create table abuse (
-    email text not null
+    email text primary key check( lower(email) = email )
 );
-create unique index abuse_email_idx on abuse(lower(email));
 
 create table textmystreet (
     name text not null,

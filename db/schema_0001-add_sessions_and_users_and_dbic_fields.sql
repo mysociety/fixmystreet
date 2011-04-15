@@ -44,4 +44,11 @@ create or replace function contacts_updated()
     end;
 ' language 'plpgsql';
 
+
+--- add pk and lowercase check to abuse
+drop index  abuse_email_idx;
+update abuse set email = lower(email);
+alter table abuse add check( lower(email) = email );
+alter table abuse add primary key(email);
+
 commit;
