@@ -1,0 +1,111 @@
+[% 
+    problem_title = problem.title | html;
+
+    INCLUDE 'header.html', title => problem_title
+%]
+
+{{ $map_start }}
+{{ $banner }}
+
+<h1>[% problem_title %]</h1>
+
+<p><em>{{ $problem_meta }}</em></p>
+
+{{ $problem_detail }}
+
+{{ $problem_photo }}
+
+<p align="right">
+    <small>
+        {{ $unsuitable }}
+    </small>
+</p>
+
+<p style="padding-bottom: 0.5em; border-bottom: dotted 1px #999999;" align="right">
+    {{ $more_problems }}
+</p>
+
+<div id="alert_links">
+    <a rel="nofollow" id="email_alert" href="{{ $alert_link }}">{{ $alert_text }}</a>
+
+    <form action="{{ $form_alert_action }}" method="post" id="email_alert_box">
+        <p>{{ $blurb }}</p>
+        <label class="n" for="alert_rznvy">{{ $email_label }}</label>
+        <input type="text" name="rznvy" id="alert_rznvy" value="{{ $input_h{rznvy} }}" size="30">
+        <input type="hidden" name="id" value="{{ $input_h{id} }}">
+        <input type="hidden" name="type" value="updates">
+        <input type="submit" value="{{ $subscribe }}">
+        {{ $cobrand_form_elements1 }}
+    </form>
+    &nbsp;
+    <a href="{{ $rss_url }}">
+        <img src="/i/feed.png" width="16" height="16" title="{{ $rss_title }}" alt="{{ $rss_alt }}" border="0" style="vertical-align: middle">
+    </a>
+</div>
+
+{{ $problem_updates }}
+
+<div id="update_form">
+
+    {{ $update_heading }}
+    {{ $update_blurb }}
+
+    {{ $errors }}
+
+    <form method="post" action="{{ $form_action }}" name="updateForm" id="fieldset"{{ $enctype }}>
+
+        <input type="hidden" name="submit_update" value="1">
+        <input type="hidden" name="id" value="{{ $input_h{id} }}">
+
+        <div>
+            <label for="form_name">{{ $name_label }}</label>
+            <input type="text" name="name" id="form_name" value="{{ $input_h{name} }}" size="20"> {{ $optional }}
+        </div>
+
+        {{ if ( $field_errors{email}) {
+            "<div class='form-error'>$field_errors{email}</div>";
+        } }}
+                <div class="form-field">
+            <label for="form_rznvy">{{ $email_label }}</label>
+            <input type="text" name="rznvy" id="form_rznvy" value="{{ $input_h{rznvy} }}" size="20">
+        </div>
+
+
+        {{ if ( $field_errors{update}) {
+            "<div class='form-error'>$field_errors{update}</div>";
+        } }}
+        <div class="form-field">
+            <label for="form_update">{{ $update_label }}</label>
+            <textarea name="update" id="form_update" rows="7" cols="30">{{ $input_h{update} }}</textarea>
+        </div>
+
+
+        <div class="checkbox">
+            {{ $fixedline_box }}
+            {{ $fixedline_label }}
+        </div>
+        
+
+        {{ $photo_element }}
+        
+
+        <div class="checkbox">
+            <input type="checkbox" name="add_alert" id="form_add_alert" value="1"{{ $add_alert_checked }}>
+            <label for="form_add_alert">{{ $alert_label }}</label>
+        </div>
+
+
+        <div class="checkbox">
+            <input type="submit" id="update_post" value="{{ $post_label }}">
+        </div>
+
+
+        {{ $cobrand_form_elements }}
+
+
+    </form>
+</div>
+
+{{ $map_end }}
+
+[% INCLUDE 'footer.html' %]
