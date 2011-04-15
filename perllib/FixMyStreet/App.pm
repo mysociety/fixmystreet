@@ -182,7 +182,7 @@ sub setup_request {
 
     FixMyStreet::Map::set_map_class( $c->request->param('map') );
 
-    return $cobrand;
+    return $c;
 }
 
 =head2 setup_dev_overrides
@@ -298,6 +298,30 @@ sub send_email {
     $c->model('EmailSend')->send($email_text);
 
     return $email;
+}
+
+=head2 uri_for
+
+    $uri = $c->uri_for( ... );
+
+Like C<uri_for> except that it passes the uri to the cobrand to be altered if
+needed.
+
+=cut
+
+sub uri_for {
+    my $c    = shift;
+    my @args = @_;
+
+    my $uri = $c->next::method(@args);
+
+    # Currently the cobrand expect and return the url as a string.
+    my $cobranded_uri = $c->cobrand->url( $uri->as_string );
+
+    # check to see if the returned string looks like a url (cities does not)
+    return $cobranded_uri =~ m{^https?://}
+      ? URI->new($cobranded_uri)
+      : $cobranded_uri;
 }
 
 =head2 uri_for_email
