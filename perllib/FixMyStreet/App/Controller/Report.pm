@@ -66,7 +66,7 @@ sub display : Path('') : Args(1) {
       : $c->model('DB::Problem')->find( { id => $id } );
 
     if ( !$problem ) {    # bad id or id not found
-        $c->detach( '/page_not_found', [ _('Unknown problem ID') ] );
+        $c->detach( '/page_error_404_not_found', [ _('Unknown problem ID') ] );
     }
 
     #  elsif () {

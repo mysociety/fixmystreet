@@ -68,20 +68,20 @@ Forward to the standard 404 error page
 
 sub default : Path {
     my ( $self, $c ) = @_;
-    $c->detach('/page_not_found');
+    $c->detach('/page_error_404_not_found');
 }
 
-=head2 page_not_found
+=head2 page_error_404_not_found
 
-    $c->detach('/page_not_found', [ $error_msg ] );
+    $c->detach('/page_error_404_not_found', [ $error_msg ] );
 
 Display a 404 page. Pass in an optional error message in an arrayref.
 
 =cut
 
-sub page_not_found : Private {
+sub page_error_404_not_found : Private {
     my ( $self, $c, $error_msg ) = @_;
-    $c->stash->{template}  = 'errors/page_not_found.html';
+    $c->stash->{template}  = 'errors/page_error_404_not_found.html';
     $c->stash->{error_msg} = $error_msg;
     $c->response->status(404);
 }
