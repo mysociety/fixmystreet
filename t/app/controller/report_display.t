@@ -64,12 +64,28 @@ subtest "test bad ids get dealt with (404)" => sub {
     }
 };
 
+subtest "change report to unconfirmed and check for 404 status" => sub {
+    ok $report->update( { state => 'unconfirmed' } ), 'unconfirm report';
+    ok $mech->get("/report/$report_id"), "get '/report/$report_id'";
+    is $mech->res->code, 404, "page not found";
+    is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
+    $mech->content_contains('Unknown problem ID');
+    ok $report->update( { state => 'confirmed' } ), 'confirm report again';
+};
+
+subtest "change report to hidden and check for 410 status" => sub {
+    ok $report->update( { state => 'hidden' } ), 'hide report';
+    ok $mech->get("/report/$report_id"), "get '/report/$report_id'";
+    is $mech->res->code, 410, "page gone";
+    is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
+    $mech->content_contains('That report has been removed from FixMyStreet.');
+    ok $report->update( { state => 'confirmed' } ), 'confirm report again';
+};
+
 subtest "test a good report" => sub {
     $mech->get_ok("/report/$report_id");
     is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
 };
-
-fail "change report to hidden and check for 400 status";
 
 # tidy up
 $mech->delete_user('test@example.com');

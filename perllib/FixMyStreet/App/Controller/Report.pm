@@ -65,15 +65,15 @@ sub display : Path('') : Args(1) {
       ? undef
       : $c->model('DB::Problem')->find( { id => $id } );
 
-    if ( !$problem ) {    # bad id or id not found
+    if ( !$problem || $problem->state eq 'unconfirmed' ) {
         $c->detach( '/page_error_404_not_found', [ _('Unknown problem ID') ] );
     }
-
-    #  elsif () {
-    #
-    # }
-
-#     return front_page($q, _('That report has been removed from FixMyStreet.'), '410 Gone') if $problem->{state} eq 'hidden';
+    elsif ( $problem->state eq 'hidden' ) {
+        $c->detach(
+            '/page_error_410_gone',
+            [ _('That report has been removed from FixMyStreet.') ]    #
+        );
+    }
 
     #     my $extra_data = Cobrand::extra_data($cobrand, $q);
     #     my $google_link = Cobrand::base_url_for_emails($cobrand, $extra_data)
