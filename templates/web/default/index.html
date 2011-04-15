@@ -43,7 +43,7 @@
         || loc("Enter a nearby GB postcode, or street name and area");
 %]
 
-<form action="[% c.cobrand.url('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
+<form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
     <label for="pc">[% question %]:</label>
     &nbsp;<input type="text" name="pc" value="" id="pc" size="10" maxlength="200">
     &nbsp;<input type="submit" value="[% loc('Go') %]" id="submit">

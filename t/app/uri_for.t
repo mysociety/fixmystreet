@@ -56,7 +56,7 @@ is(
 # fiksgatami
 is(
     $fgm_c->uri_for( '/foo', { lat => 1.23, } ) . "",
-    'http://www.fiksgatami.no/foo?lat=1.23;zoom=2',
+    'http://www.fiksgatami.no/foo?lat=1.23&zoom=2',
     'FiksGataMi url with lat not zoom'
 );
 

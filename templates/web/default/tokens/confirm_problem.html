@@ -12,7 +12,7 @@
     
     tprintf(
         loc( '. You can <a href="%s">view the problem on this site</a>.' ),
-        c.cobrand.url( '/report/' _ problem.id )
+        c.uri_for( '/report', problem.id )
     );
 %]
 </p>

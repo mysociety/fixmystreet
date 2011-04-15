@@ -11,6 +11,9 @@ use mySociety::Email;
 use FixMyStreet::Map;
 use FixMyStreet::FakeQ;
 
+use URI;
+use URI::QueryParam;
+
 use Catalyst (
     'Static::Simple',    #
     'Unicode',
@@ -315,13 +318,10 @@ sub uri_for {
 
     my $uri = $c->next::method(@args);
 
-    # Currently the cobrand expect and return the url as a string.
-    my $cobranded_uri = $c->cobrand->url( $uri->as_string );
+    my $cobranded_uri = $c->cobrand->uri($uri);
 
-    # check to see if the returned string looks like a url (cities does not)
-    return $cobranded_uri =~ m{^https?://}
-      ? URI->new($cobranded_uri)
-      : $cobranded_uri;
+    # note that the returned uri may be a string not an object (eg cities)
+    return $cobranded_uri;
 }
 
 =head2 uri_for_email

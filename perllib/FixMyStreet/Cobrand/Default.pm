@@ -357,7 +357,7 @@ produced on the page returned by that query.
 
 =cut
 
-sub extra_params { '' }
+sub extra_params { return {} }
 
 =head2 extra_problem_meta_text
 
@@ -375,14 +375,14 @@ Returns any extra text to be displayed with an UPDATE.
 
 sub extra_update_meta_text { '' }
 
-=head2 url
+=head2 uri
 
 Given a URL ($_[1]), QUERY, EXTRA_DATA, return a URL with any extra params
 needed appended to it.
 
 =cut
 
-sub url { $_[1] }
+sub uri { $_[1] }    # passthrough unchanged
 
 =head2 header_params
 
