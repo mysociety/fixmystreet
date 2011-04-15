@@ -60,6 +60,7 @@ subtest "test bad ids get dealt with (404)" => sub {
         ok $mech->get("/report/$id"), "get '/report/$id'";
         is $mech->res->code, 404,           "page not found";
         is $mech->uri->path, "/report/$id", "at /report/$id";
+        $mech->content_contains('Unknown problem ID');
     }
 };
 
