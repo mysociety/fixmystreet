@@ -56,7 +56,8 @@ sub is_default {
 
 =head2 fake_q
 
-    $fake_q = $cobrand->fake_q;
+    $fake_q     = $cobrand->fake_q;
+    $new_fake_q = $cobrand->fake_q($new_fake_q);
 
 Often the cobrand needs access to the request so we add it at the start by
 passing it to ->new. If the request has not been set and you call this (or a
@@ -67,6 +68,8 @@ use a request-related method out of a request-context.
 
 sub fake_q {
     my $self = shift;
+    $self->{fake_q} = shift if @_;
+
     return $self->{fake_q}
       || croak "No fake_q has been set"
       . " - should you be calling this method outside of a web request?";

@@ -9,6 +9,7 @@ use Memcached;
 use Problems;
 use mySociety::Email;
 use FixMyStreet::Map;
+use FixMyStreet::FakeQ;
 
 use Catalyst (
     'Static::Simple',    #
@@ -123,7 +124,14 @@ sub _get_cobrand {
       ? FixMyStreet::Cobrand->get_class_for_moniker($override_moniker)
       : FixMyStreet::Cobrand->get_class_for_host($host);
 
-    return $cobrand_class->new( { request => $c->req, fake_q => $c->fake_q, } );
+    my $cobrand = $cobrand_class->new( { request => $c->req } );
+
+    # create the cobrand explicitly passing in the site. Avoids the chicken and
+    # egg situation where one needs to be created first. Should disappear when
+    # all instances of the old '$q' are gone.
+    $cobrand->fake_q( $c->fake_q( { site => $cobrand->moniker } ) );
+
+    return $cobrand;
 }
 
 =head2 setup_request
@@ -315,19 +323,33 @@ sub uri_for_email {
 
 =head2 fake_q
 
-    $q = $c->fake_q();
+    $q = $c->fake_q();                                   # normal usage
+    $q = $c->fake_q( { site => 'cobrand_moniker' } );    # when creating
 
 Returns a faked up object that behaves as the old code expects the old '$q' to
-behave.
+behave. Object is cached for the request. See L<FixMyStreet::FakeQ> for more
+details.
+
+The first time fake_q is called you need to pass in 'site' explicitly. This
+should normally be done automatically when the cobrand is first loaded.
 
 =cut
 
 sub fake_q {
-    my $c = shift;
+    my $c    = shift;
+    my $args = shift;
 
-    # FIXME - implement fully
-    # site
-    return $c->req;
+    return $c->stash->{fakeq}    #
+      ||= $c->_get_fake_q($args);
+}
+
+sub _get_fake_q {
+    my $c = shift;
+    my $args = shift || {};
+
+    $args->{params} ||= $c->req->parameters;
+
+    return FixMyStreet::FakeQ->new($args);
 }
 
 =head1 SEE ALSO
