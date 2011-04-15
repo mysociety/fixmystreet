@@ -1,4 +1,4 @@
-display_may needs a properly faked $q so it can choose a cobrand. Or should it be ported to use new cobrand?
+display_map needs a properly faked $q so it can choose a cobrand. Or should it be ported to use new cobrand?
 
 change uri_for to use cobrand->url so we don't have to
 
