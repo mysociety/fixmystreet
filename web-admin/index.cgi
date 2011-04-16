@@ -69,6 +69,7 @@ sub allowed_pages($) {
              'councilslist' => [_('Council contacts'), 1],
              'reports' => [_('Search Reports'), 2],
              'timeline' => [_('Timeline'), 3],
+             'questionare' => [_('Survey Results'), 4],
              'councilcontacts' => [undef, undef],        
              'counciledit' => [undef, undef], 
              'report_edit' => [undef, undef], 
@@ -863,6 +864,42 @@ sub admin_timeline {
 
 }
 
+sub admin_questionare {
+    my $q = shift;
+    my $cobrand = Page::get_cobrand($q);
+    print html_head($q, _('Survey Results'));
+    print $q->h1(_('Survey Results'));
+
+    my $survey = select_all("select * from questionnaire where whenanswered is not null");
+    # id, problem_id, whensent, whenanswered, ever_reported,
+    # old_state, new_state
+
+    my %res;
+    $res{'t'} = 0;
+    $res{'f'} = 0;
+    foreach my $h (@$survey) {
+        if ($h->{ever_reported}) {
+            $res{'t'}++;
+        } else {
+            $res{'f'}++;
+        }
+    }
+
+    print $q->start_table({border=>1});
+    print $q->Tr({},
+                 $q->th({}, [_("Reported before"),
+                             _("Not reported before")]));
+    print $q->Tr({},
+                 $q->td([
+                     sprintf("%d (%d%%)", $res{'t'},
+                             (100 * $res{'t'}) / ($res{'t'} + $res{'f'})),
+                     sprintf("%d (%d%%)", $res{'f'},
+                             (100 * $res{'f'}) / ($res{'t'} + $res{'f'})),
+                        ]));
+    print $q->end_table();
+    print html_tail($q);
+}
+
 sub not_found {
     my ($q) = @_;
     print $q->header(-status=>'404 Not Found',-type=>'text/html');
@@ -917,6 +954,8 @@ sub main {
         admin_edit_update($q, $id);
     } elsif ($page eq 'timeline') {
         admin_timeline($q);
+    } elsif ($page eq 'questionare') {
+        admin_questionare($q);
     } else {
         admin_summary($q);
     }
