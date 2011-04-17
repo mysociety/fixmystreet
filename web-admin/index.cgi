@@ -69,7 +69,7 @@ sub allowed_pages($) {
              'councilslist' => [_('Council contacts'), 1],
              'reports' => [_('Search Reports'), 2],
              'timeline' => [_('Timeline'), 3],
-             'questionare' => [_('Survey Results'), 4],
+             'questionnaire' => [_('Survey Results'), 4],
              'councilcontacts' => [undef, undef],        
              'counciledit' => [undef, undef], 
              'report_edit' => [undef, undef], 
@@ -864,38 +864,38 @@ sub admin_timeline {
 
 }
 
-sub admin_questionare {
+sub admin_questionnaire {
     my $q = shift;
     my $cobrand = Page::get_cobrand($q);
     print html_head($q, _('Survey Results'));
     print $q->h1(_('Survey Results'));
 
-    my $survey = select_all("select * from questionnaire where whenanswered is not null");
-    # id, problem_id, whensent, whenanswered, ever_reported,
-    # old_state, new_state
+    # columns in questionnaire is id, problem_id, whensent,
+    # whenanswered, ever_reported, old_state, new_state
+
+    my $survey = select_all("select ever_reported, count(*) from questionnaire where whenanswered is not null group by ever_reported");
 
     my %res;
-    $res{'t'} = 0;
-    $res{'f'} = 0;
+    $res{0} = 0;
+    $res{1} = 0;
     foreach my $h (@$survey) {
-        if ($h->{ever_reported}) {
-            $res{'t'}++;
-        } else {
-            $res{'f'}++;
-        }
+        $res{$h->{ever_reported}} = $h->{count} if (exists $h->{ever_reported});
     }
+    my $total = $res{0} + $res{1};
 
     print $q->start_table({border=>1});
     print $q->Tr({},
                  $q->th({}, [_("Reported before"),
                              _("Not reported before")]));
-    print $q->Tr({},
-                 $q->td([
-                     sprintf("%d (%d%%)", $res{'t'},
-                             (100 * $res{'t'}) / ($res{'t'} + $res{'f'})),
-                     sprintf("%d (%d%%)", $res{'f'},
-                             (100 * $res{'f'}) / ($res{'t'} + $res{'f'})),
-                        ]));
+    if ($total) {
+        print $q->Tr({},
+                     $q->td([
+                 sprintf("%d (%d%%)", $res{1}, (100 * $res{1}) / $total),
+                 sprintf("%d (%d%%)", $res{0}, (100 * $res{0}) / $total),
+                            ]));
+    } else {
+        print $q->Tr({}, $q->td([ 'n/a', 'n/a' ]));
+    }
     print $q->end_table();
     print html_tail($q);
 }
@@ -954,8 +954,8 @@ sub main {
         admin_edit_update($q, $id);
     } elsif ($page eq 'timeline') {
         admin_timeline($q);
-    } elsif ($page eq 'questionare') {
-        admin_questionare($q);
+    } elsif ($page eq 'questionnaire') {
+        admin_questionnaire($q);
     } else {
         admin_summary($q);
     }
