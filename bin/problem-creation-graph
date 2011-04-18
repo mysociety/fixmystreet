@@ -1,83 +1,91 @@
-#!/bin/bash
-# problem-creation-graph
+#!/usr/bin/env perl
+
+# problem-creation-graph:
 # Plot graph of rate of problem creation
 #
-# Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
-# Email: francis@mysociety.org. WWW: http://www.mysociety.org/
-# 
-# $Id: problem-creation-graph,v 1.6 2008-11-12 18:06:34 matthew Exp $
+# Copyright (c) 2014 UK Citizens Online Democracy. All rights reserved.
+# Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 
-GPLOT_OUTPUT="set terminal png font 'Vera.ttf' 9 size 1200,400"
-EXTENSION=".png"
-#GPLOT_OUTPUT="set terminal fig color big thickness 1"
-#EXTENSION=".fig"
-#GPLOT_OUTPUT="set terminal svg size 800 250"
-#EXTENSION=".svg"
+use strict;
+use warnings;
+require 5.8.0;
 
-cd `dirname $0`
-cd ../../
-source fixmystreet/commonlib/shlib/deployfns
+use FindBin;
+use File::Temp qw(tempfile);
 
-read_conf fixmystreet/conf/general.yml
+use FixMyStreet::App;
 
-if [ $OPTION_BASE_URL = "http://reportemptyhomes.com" ]; then
-    DATE="2008-10-01"
-else
-    DATE="2007-02-01"
-fi
+chdir("$FindBin::Bin/../");
 
-SOURCEA=/tmp/fms-creation-rate-graph-data-$RANDOM$RANDOM
-SOURCEB=/tmp/fms-creation-rate-graph-data-$RANDOM$RANDOM
-SOURCEC=/tmp/fms-creation-rate-graph-data-$RANDOM$RANDOM
-SOURCED=/tmp/fms-creation-rate-graph-data-$RANDOM$RANDOM
-SOURCEE=/tmp/fms-creation-rate-graph-data-$RANDOM$RANDOM
-GPSCRIPT=/tmp/fms-creation-rate-graph-script-$RANDOM$RANDOM
+my %config = (
+    gplot_output => "set terminal png font 'Vera.ttf' 9 size 1200,400",
+    extension => '.png',
+    #gplot_output => "set terminal fig color big thickness 1"
+    #extension => ".fig"
+    #gplot_output => "set terminal svg size 800 250"
+    #extension => ".svg"
+);
 
-#    where status in ('draft') 
+my $base_url = FixMyStreet->config('BASE_URL');
+$config{date} = '2007-02-01';
+$config{date} = '2011-03-03' if $base_url =~ /fiksgatami/;
+$config{date} = '2008-10-01' if $base_url =~ /emptyhomes/;
 
-function grab_data {
-    echo "select 
-        date(created), count(*)
-        from problem 
-        $1
-        group by date(created)
-        order by date(created)
-        ;" | psql --host $OPTION_FMS_DB_HOST --port $OPTION_FMS_DB_PORT -A -F " " $OPTION_FMS_DB_NAME $OPTION_FMS_DB_USER | egrep -v "date|rows" >$2
+my %sources;
+sub grab_data {
+    my ($type, $selection) = @_;
+
+    my ($fh, $filename) = tempfile("fms-creation-rate-graph-data-XXXXXXXXXX", UNLINK => 1);
+    $sources{$type} = $filename;
+
+    my @entries = FixMyStreet::App->model('DB::Problem')->search(
+        $selection, {
+            columns => [
+                { 'date' => { date => 'created' } },
+                { 'count' => { count => '*' } }
+            ],
+            group_by => [ 'date' ],
+            order_by => [ 'date' ],
+        }
+    );
+    @entries = map { { $_->get_columns } } @entries;
+    foreach (@entries) {
+        $fh->print($_->{date}, ' ', $_->{count}, "\n");
+    }
 }
 
-# rather nastily, work out the cumulative heights in reverse, so can plot impulses on top of each other
-grab_data "" $SOURCEA
-grab_data "where state not in ('unconfirmed')" $SOURCEB
-grab_data "where state not in ('unconfirmed', 'confirmed')" $SOURCEC
-grab_data "where state not in ('unconfirmed', 'confirmed', 'fixed', 'fixed - council', 'fixed - user')" $SOURCED
-grab_data "where state not in ('unconfirmed', 'confirmed', 'fixed', 'fixed - council', 'fixed - user', 'hidden')" $SOURCEE
+# rather nastily, work out the cumulative heights in reverse, so can
+# plot impulses on top of each other
+grab_data('unconfirmed', {});
+my @states_to_ignore = ('unconfirmed');
+grab_data('open', { state => { -not_in => \@states_to_ignore } });
+push @states_to_ignore, FixMyStreet::DB::Result::Problem->open_states();
+grab_data('fixed', { state => { -not_in => \@states_to_ignore } });
+push @states_to_ignore, FixMyStreet::DB::Result::Problem->fixed_states();
+grab_data('closed', { state => { -not_in => \@states_to_ignore } });
+push @states_to_ignore, FixMyStreet::DB::Result::Problem->closed_states();
+grab_data('hidden', { state => { -not_in => \@states_to_ignore } });
+push @states_to_ignore, 'hidden';
+grab_data('other', { state => { -not_in => \@states_to_ignore } });
 
-
-#state = 'unconfirmed'
-#or state = 'confirmed'
-#or state in ('fixed', 'fixed - council', 'fixed - user')
-#or state = 'hidden'
-#or state = 'partial'
-
-
-cat >$GPSCRIPT <<END 
+my $gp = <<END;
     unset border
     unset arrow
     set key left
     set tics out
-    $GPLOT_OUTPUT
+    $config{gplot_output}
 
     set xdata time
     set timefmt "%Y-%m-%d"
-    set xrange ["$DATE":]
+    set xrange ["$config{date}":]
     set format x "%d %b %Y"
     set xtics nomirror
     set xlabel "status of problems that were created on each calendar day"
 
     set ytics nomirror 
     set ylabel "number of problems created on the calendar day" 
-    set y2tics tc lt 2
-    set y2label "cumulative total number of problems" tc lt 2
+    set y2tics tc lt 0
+    set y2label "cumulative total number of problems" tc lt 0
     set format y2 "%.0f"
 
 #    set arrow 1 from '2005-02-14', 0 to '2005-02-14', 900 lt 0 nohead
@@ -85,25 +93,21 @@ cat >$GPSCRIPT <<END
 
     n = 0
 END
-echo -n >>$GPSCRIPT "    plot \"$SOURCEA\" using 1:2 with impulses lt 3 lw 15 title \"unconfirmed\","
-if [ -s $SOURCEB ]; then
-echo -n >>$GPSCRIPT " \"$SOURCEB\" using 1:2 with impulses lt 4 lw 15 title \"confirmed\","
-fi
-if [ -s $SOURCEC ]; then
-echo -n >>$GPSCRIPT " \"$SOURCEC\" using 1:2 with impulses lt 5 lw 15 title \"fixed\","
-fi
-if [ -s $SOURCED ]; then
-echo -n >>$GPSCRIPT " \"$SOURCED\" using 1:2 with impulses lt 6 lw 15 title \"hidden\","
-fi
-if [ -s $SOURCEE ]; then
-echo -n >>$GPSCRIPT " \"$SOURCEE\" using 1:2 with impulses lt 7 lw 15 title \"any other type\","
-fi
-cat >>$GPSCRIPT <<END 
-    "< awk 'BEGIN { n = 0 } { n += \$2; print \$1, \$2, n; }' $SOURCEA" using 1:3 axes x1y2 with lines lt 2 title "cumulative total number of problems"
+$gp .= "    plot \"$sources{unconfirmed}\" using 1:2 with impulses lt 1 lw 2 title \"unconfirmed\",";
+$gp .= " \"$sources{open}\" using 1:2 with impulses lt 3 lw 2 title \"open\","
+    if -s $sources{open};
+$gp .= " \"$sources{fixed}\" using 1:2 with impulses lt 2 lw 2 title \"fixed\","
+    if -s $sources{fixed};
+$gp .= " \"$sources{closed}\" using 1:2 with impulses lt 4 lw 2 title \"closed\","
+    if -s $sources{closed};
+$gp .= " \"$sources{hidden}\" using 1:2 with impulses lt 5 lw 2 title \"hidden\","
+    if -s $sources{hidden};
+$gp .= " \"$sources{other}\" using 1:2 with impulses lt 6 lw 2 title \"any other type\","
+    if -s $sources{other};
+$gp .= <<END;
+    "< awk 'BEGIN { n = 0 } { n += \$2; print \$1, \$2, n; }' $sources{unconfirmed}" using 1:3 axes x1y2 with lines lt 0 title "cumulative total number of problems"
 END
-#echo "gpscript $GPSCRIPT"
 
-export GDFONTPATH=/usr/share/fonts/truetype/ttf-bitstream-vera
-gnuplot < $GPSCRIPT > fixmystreet/web/fms-live-creation$EXTENSION 2>/dev/null
-
-
+open(my $gnuplot, '|-', "GDFONTPATH=/usr/share/fonts/truetype/ttf-bitstream-vera gnuplot > web/fms-live-creation$config{extension} 2> /dev/null");
+$gnuplot->print($gp);
+close $gnuplot;

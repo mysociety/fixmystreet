@@ -1,61 +1,62 @@
-#!/bin/bash
-# problems-filed-graph
+#!/usr/bin/env perl
+
+# problems-filed-graph:
 # Plot graph of FixMyStreet problem report creation rate.
 #
-# Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
-# Email: francis@mysociety.org. WWW: http://www.mysociety.org/
-# 
-# $Id: problems-filed-graph,v 1.2 2008-04-11 11:05:36 francis Exp $
+# Copyright (c) 2014 UK Citizens Online Democracy. All rights reserved.
+# Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 
-GPLOT_OUTPUT="set terminal png font 'Vera.ttf' 9 size 1200,600"
-EXTENSION=".png"
-#GPLOT_OUTPUT="set terminal fig color big thickness 1"
-#EXTENSION=".fig"
-#GPLOT_OUTPUT="set terminal svg size 800 250"
-#EXTENSION=".svg"
+use strict;
+use warnings;
+require 5.8.0;
 
-cd `dirname $0`
-cd ../../
-source fixmystreet/commonlib/shlib/deployfns
+use FindBin;
+use File::Temp qw(tempfile);
 
-read_conf fixmystreet/conf/general.yml
+use FixMyStreet::App;
 
-SOURCEO=/tmp/fms-report-rate-graph-data-nonwmc-$RANDOM$RANDOM
-GPSCRIPT=/tmp/fms-report-rate-graph-script-$RANDOM$RANDOM
+chdir("$FindBin::Bin/../");
 
-echo "select 
-    date(created), count(*)
-    from problem 
-    where state not in ('unconfirmed', 'hidden') 
-    group by date(created)
-    order by date(created)
-    ;" | psql --host $OPTION_FMS_DB_HOST --port $OPTION_FMS_DB_PORT -A -F " " $OPTION_FMS_DB_NAME $OPTION_FMS_DB_USER | egrep -v "date|rows" >$SOURCEO
-#echo "source $SOURCEO"
+my %config = (
+    gplot_output => "set terminal png font 'Vera.ttf' 9 size 1200,600",
+    extension => '.png',
+);
 
-cat >$GPSCRIPT <<END 
+my ($fh, $source) = tempfile("fms-report-rate-graph-data-nonwmc-XXXXXXXXXX", UNLINK => 1);
+
+my @entries = FixMyStreet::App->model('DB::Problem')->search({
+        state => { -not_in => [ 'unconfirmed', 'hidden', 'partial' ] },
+    }, {
+        columns => [
+            { 'date' => { date => 'created' } },
+            { 'count' => { count => '*' } }
+        ],
+        group_by => [ 'date' ],
+        order_by => [ 'date' ],
+    }
+);
+@entries = map { { $_->get_columns } } @entries;
+foreach (@entries) {
+    $fh->print($_->{date}, ' ', $_->{count}, "\n");
+}
+
+my $gp = <<END;
     unset border
-    $GPLOT_OUTPUT
+    $config{gplot_output}
 
     set xdata time;
     set timefmt "%Y-%m-%d";
-    # set xrange ["2005-01-01":"2006-01-01"];
     set format x "%b %Y"
-    # set xlabel "WriteToThem.com in 2005"
     unset xlabel
-    #set nokey
 
-    #set ylabel "cumulative messages"
     set ylabel "problems filed / calendar day"
     set xtics nomirror
     set ytics nomirror
-    # set y2tics nomirror tc lt 3
 
     n = 0
-    plot "$SOURCEO" using 1:2 with lines axes x1y2 lt 3 title "FixMyStreet problem reports" 
-#    "< awk 'BEGIN { n = 0 } { n += \$2; print \$1, \$2, n; }' $SOURCE" using 1:3 with lines lt 2 title "cumulative messages created",
+    plot "$source" using 1:2 with lines axes x1y2 lt 3 title "FixMyStreet problem reports"
 END
-#echo "gpscript $GPSCRIPT"
 
-export GDFONTPATH=/usr/share/fonts/truetype/ttf-bitstream-vera
-gnuplot < $GPSCRIPT > fixmystreet/web/fms-live-line$EXTENSION 2>/dev/null
-
+open(my $gnuplot, '|-', "GDFONTPATH=/usr/share/fonts/truetype/ttf-bitstream-vera gnuplot > web/fms-live-line$config{extension} 2> /dev/null");
+$gnuplot->print($gp);
+close $gnuplot;
