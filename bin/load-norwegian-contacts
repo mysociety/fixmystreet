@@ -1,0 +1,69 @@
+#!/usr/bin/perl -w
+
+# load-norwegian-contacts:
+# Load initial contact list into fiksgatami.
+# The format is
+# Name;ID;email-address;Category1,Category2,...
+#
+# Based on script load-contacts copyright (c) 2006 UK Citizens Online Democracy.
+# Copyright 2011 Petter Reinholdtsen <pere@hungry.com>
+#
+# $Id: load-norwegian-contacts,v 1.0 2007-08-02 11:44:59 matthew Exp $
+
+use strict;
+require 5.8.0;
+
+# Horrible boilerplate to set up appropriate library paths.
+use FindBin;
+use lib "$FindBin::Bin/../perllib";
+use lib "$FindBin::Bin/../commonlib/perllib";
+
+use mySociety::Config;
+use mySociety::DBHandle qw(dbh select_all);
+use mySociety::Random;
+
+BEGIN {
+    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+    mySociety::DBHandle::configure(
+        Name => mySociety::Config::get('BCI_DB_NAME'),
+        User => mySociety::Config::get('BCI_DB_USER'),
+        Password => mySociety::Config::get('BCI_DB_PASS'),
+        Host => mySociety::Config::get('BCI_DB_HOST', undef),
+        Port => mySociety::Config::get('BCI_DB_PORT', undef)
+    );
+
+    if (!dbh()->selectrow_array('select secret from secret for update of secret')) {
+        local dbh()->{HandleError};
+        dbh()->do('insert into secret (secret) values (?)', {}, unpack('h*', mySociety::Random::random_bytes(32)));
+    }
+    dbh()->commit();
+}
+
+my $datafile = shift;
+my $defcategories;
+open(FP, "<", $datafile) or die "Unable to read from $datafile";
+while (<FP>) {
+    s/\r?\n//g;
+    print "Loading $_\n";
+    my ($id, $name, $email, $categories) = split /;/;
+    if (0 == $id) {
+        $defcategories = $categories;
+        next;
+    }
+    unless ($categories) {
+        $categories = $defcategories;
+    }
+#    dbh()->do("INSERT INTO contacts (area_id, email, editor, whenedited, note, confirmed, deleted)
+#        VALUES (?, ?, 'import', ms_current_timestamp(), 'Initial import', 'false', 'false')",
+#        {}, $id, $email);
+#    } else {
+        for my $category (split(/,\s*/, $categories)) {
+            print "  Category '$category'\n";
+            dbh()->do("INSERT INTO contacts (area_id, email, category, editor, whenedited, note, confirmed, deleted)
+                        VALUES (?, ?, ?, 'import', ms_current_timestamp(), 'Initial import', 'true', 'false')",
+                      {}, $id, $email, $category);
+        }
+#    }
+}
+dbh()->commit();
+close(FP);
