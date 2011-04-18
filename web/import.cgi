@@ -128,6 +128,7 @@ sub main {
 Page::do_fastcgi(\&main);
 
 sub docs {
+    my $base = mySociety::Config::get('BASE_URL');
     print <<EOF;
 <p>You may inject problem reports into FixMyStreet programatically using this
 simple interface. Upon receipt, an email will be sent to the address given,
@@ -139,7 +140,7 @@ the report has been successfully received, or if not, a list of errors, one per
 line each starting with <samp>ERROR:</samp>.
 
 <p>You may submit the following information by POST to this URL
-(i.e. <samp>http://www.fixmystreet.com/import</samp> ):</p>
+(i.e. <samp>$base/import</samp> ):</p>
 <dl>
 <dt>service
 <dd>
