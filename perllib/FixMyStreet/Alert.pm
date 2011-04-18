@@ -82,14 +82,14 @@ sub delete ($) {
 }
 
 # This makes load of assumptions, but still should be useful
-# 
+#
 # Child must have confirmed, id, email, state(!) columns
 # If parent/child, child table must also have name and text
 #   and foreign key to parent must be PARENT_id
 
 sub email_alerts ($) {
     my ($testing_email) = @_;
-    my $url; 
+    my $url;
     my $q = dbh()->prepare("select * from alert_type where ref not like '%local_problems%'");
     $q->execute();
     my $testing_email_clause = '';
@@ -116,7 +116,7 @@ sub email_alerts ($) {
             where alert_type='$ref' and whendisabled is null and $item_table.confirmed >= whensubscribed
             and $item_table.confirmed >= ms_current_timestamp() - '7 days'::interval
              and (select whenqueued from alert_sent where alert_sent.alert_id = alert.id and alert_sent.parameter::integer = $item_table.id) is null
-            and $item_table.email <> alert.email 
+            and $item_table.email <> alert.email
             $testing_email_clause
             and $alert_type->{item_where}
             and alert.confirmed = 1
@@ -129,8 +129,8 @@ sub email_alerts ($) {
         my $last_alert_id;
         my %data = ( template => $alert_type->{template}, data => '' );
         while (my $row = $query->fetchrow_hashref) {
-            # Cobranded and non-cobranded messages can share a database. In this case, the conf file 
-            # should specify a vhost to send the reports for each cobrand, so that they don't get sent 
+            # Cobranded and non-cobranded messages can share a database. In this case, the conf file
+            # should specify a vhost to send the reports for each cobrand, so that they don't get sent
             # more than once if there are multiple vhosts running off the same database. The email_host
             # call checks if this is the host that sends mail for this cobrand.
             next unless (Cobrand::email_host($row->{alert_cobrand}));
@@ -189,7 +189,7 @@ sub email_alerts ($) {
         my ($site_restriction, $site_id) = Cobrand::site_restriction($alert->{cobrand}, $alert->{cobrand_data});
         my $d = mySociety::Gaze::get_radius_containing_population($latitude, $longitude, 200000);
         $d = int($d*10+0.5)/10;
-        my $testing_email_clause = "and problem.email <> '$testing_email'" if $testing_email;        
+        my $testing_email_clause = "and problem.email <> '$testing_email'" if $testing_email;
         my %data = ( template => $template, data => '', alert_id => $alert->{id}, alert_email => $alert->{email}, lang => $alert->{lang}, cobrand => $alert->{cobrand}, cobrand_data => $alert->{cobrand_data} );
         my $q = "select * from problem_find_nearby(?, ?, ?) as nearby, problem
             where nearby.problem_id = problem.id and problem.state in ('confirmed', 'fixed')
@@ -263,7 +263,8 @@ sub generate_rss ($$$;$$$$) {
         . ($alert_type->{head_table} ? $alert_type->{head_table}.'_id=? and ' : '')
         . $alert_type->{item_where} . $site_restriction . ' order by '
         . $alert_type->{item_order};
-    $query .= ' limit 20' unless $type =~ /^all/;
+    my $rss_limit = mySociety::Config::get('RSS_LIMIT');
+    $query .= " limit $rss_limit" unless $type =~ /^all/;
     $q = dbh()->prepare($query);
     if ($query =~ /\?/) {
         throw FixMyStreet::Alert::Error('Missing parameter') unless @$db_params;
@@ -300,7 +301,7 @@ sub generate_rss ($$$;$$$$) {
         $item{pubDate} = $pubDate if $pubDate;
         $item{category} = $row->{category} if $row->{category};
 
-        my $display_photos = Cobrand::allow_photo_display($cobrand);    
+        my $display_photos = Cobrand::allow_photo_display($cobrand);
         if ($display_photos && $row->{photo}) {
             $item{description} .= ent("\n<br><img src=\"". Cobrand::url($cobrand, $url, $http_q) . "/photo?id=$row->{id}\">");
         }
@@ -338,6 +339,6 @@ sub generate_rss ($$$;$$$$) {
     my $out = $rss->as_string;
     my $uri = Cobrand::url($cobrand, $ENV{SCRIPT_URI}, $http_q);
     $out =~ s{<link>(.*?)</link>}{"<link>" . Cobrand::url($cobrand, $1, $http_q) . "</link><uri>$uri</uri>"}e;
-             
+
     return $out;
 }
