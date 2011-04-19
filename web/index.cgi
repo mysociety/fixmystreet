@@ -345,7 +345,7 @@ sub submit_problem {
 
             if ($no_details) {
                 $input{council} =~ s/\Q$no_details\E//;
-                @input_councils = split /,/, $input{council};
+                @input_councils = split(/,/, $input{council});
             }
 
             # Check category here, won't be present if council is -1
