@@ -55,6 +55,8 @@ define('OPTION_MAP_TYPE', 'Tilma::Original::1_10k');
 define('OPTION_EVEL_URL', 'http://services.mysociety.org/evel');
 define('OPTION_GAZE_URL', 'http://gaze.mysociety.org/gaze');
 
+define('OPTION_OSM_GUESS_OPERATOR', '0');
+
 // Tracking
 define('OPTION_TRACKING', 0);   // off by default
 define('OPTION_TRACKING_URL', 'http://path/to/web/bug');

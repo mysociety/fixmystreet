@@ -351,7 +351,8 @@ sub getNearestRoadTags {
 
         my $osmtags = getOSMWayTags($inforef->{result}->{osm_id});
 #        print STDERR Dumper $osmtags;
-        unless (exists $osmtags->{operator}) {
+        if (mySociety::Config::get('OSM_GUESS_OPERATOR')
+            && !exists $osmtags->{operator}) {
             my $guess = guessRoadOperator($osmtags);
             $osmtags->{operatorguess} = $guess if $guess;
         }
@@ -555,7 +556,7 @@ sub find_closest {
             }
         }
     }
-    if ( mySociety::Config::get('COUNTRY') eq 'NO' ) {
+    if ( mySociety::Config::get('MAP_TYPE') eq 'OSM' ) {
         my $osmtags = getNearestRoadTags($latitude, $longitude);
         if ($osmtags) {
             my ($name, $ref) = ('','');
