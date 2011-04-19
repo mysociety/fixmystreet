@@ -59,7 +59,7 @@ sub area_min_generation {
 }
 
 sub admin_base_url {
-    return 'http://www.fikstatami.no/admin/';
+    return 'http://www.fiksgatami.no/admin/';
 }
 
 sub writetothem_url {
