@@ -263,7 +263,8 @@ sub generate_rss ($$$;$$$$) {
         . ($alert_type->{head_table} ? $alert_type->{head_table}.'_id=? and ' : '')
         . $alert_type->{item_where} . $site_restriction . ' order by '
         . $alert_type->{item_order};
-    $query .= ' limit 20' unless $type =~ /^all/;
+    my $rss_limit = mySociety::Config::get('RSS_LIMIT');
+    $query .= " limit $rss_limit" unless $type =~ /^all/;
     $q = dbh()->prepare($query);
     if ($query =~ /\?/) {
         throw FixMyStreet::Alert::Error('Missing parameter') unless @$db_params;
