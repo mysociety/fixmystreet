@@ -10,7 +10,7 @@ use lib "$FindBin::Bin/../commonlib/perllib";
 use XML::Simple;
 use LWP::Simple;
 
-use FixMyStreet::Map::OSM;
+use FixMyStreet::Geocode::OSM;
 
 use Data::Dumper;
 
@@ -35,10 +35,10 @@ sub guessRoadOperator {
 sub getNearestRoadTags {
     my ($latitude, $longitude) = @_;
     my $inforef =
-        FixMyStreet::Map::OSM::lookup_location($latitude, $longitude, 16);
+        FixMyStreet::Geocode::OSM::lookup_location($latitude, $longitude, 16);
     if ('way' eq $inforef->{result}->{osm_type}) {
         my $osmtags =
-            FixMyStreet::Map::OSM::get_object_tags('way',
+            FixMyStreet::Geocode::OSM::get_object_tags('way',
                                                    $inforef->{result}->{osm_id});
         unless (exists $osmtags->{operator}) {
             $osmtags->{operatorguess} = guessRoadOperator($osmtags);

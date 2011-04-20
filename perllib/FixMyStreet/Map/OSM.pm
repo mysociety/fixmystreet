@@ -12,11 +12,6 @@ use strict;
 use Math::Trig;
 use mySociety::Web qw(ent NewURL);
 use Utils;
-use LWP::Simple;
-use XML::Simple;
-
-my $osmapibase    = "http://www.openstreetmap.org/api/";
-my $nominatimbase = "http://nominatim.openstreetmap.org/";
 
 sub header_js {
     return '
@@ -225,35 +220,6 @@ sub compass ($$$$) {
     <div style="position: absolute; left: 13px; top: 99px; width: 18px; height: 18px;"><a href="$zoom_out"><img style="position: relative; width: 18px; height: 18px;" src="$dir/zoom-minus-mini.png" border="0"></a></div>
 </div>
 EOF
-}
-
-sub lookup_location {
-    my ($latitude, $longitude, $zoom) = @_;
-    my $url =
-    "${nominatimbase}reverse?format=xml&zoom=$zoom&lat=$latitude&lon=$longitude";
-    my $j = LWP::Simple::get($url);
-    if ($j) {
-        my $ref = XMLin($j);
-        return $ref;
-    } else {
-        print STDERR "No reply from $url\n";
-    }
-    return undef;
-}
-
-sub get_object_tags {
-    my ($type, $id) = @_;
-    my $url = "${osmapibase}0.6/$type/$id";
-    my $j = LWP::Simple::get($url);
-    if ($j) {
-        my $ref = XMLin($j);
-        my %tags;
-        map { $tags{$_->{'k'}} = $_->{'v'} } @{$ref->{$type}->{tag}};
-        return \%tags;
-    } else {
-        print STDERR "No reply from $url\n";
-    }
-    return undef;
 }
 
 1;
