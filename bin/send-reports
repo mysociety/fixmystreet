@@ -532,7 +532,7 @@ sub find_closest {
                 if (my $operator = $osmtags->{operator}) {
                     $str .= sprintf(_("Road operator for this named road (from OpenStreetmap): %s\n\n"),
                                     $operator);
-                } elsif (my $operator =$osmtags->{operatorguess}) {
+                } elsif ($operator = $osmtags->{operatorguess}) {
                     $str .= sprintf(_("Road operator for this named road (guessed from reference number and type): %s\n\n"),
                                     $operator);
                 }
