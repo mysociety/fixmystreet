@@ -7,14 +7,14 @@
 #   6k street lighting                   Gatelys
 #   4k pavements/footpaths               Fortau/gangstier
 #   3k flytipping                        Dumpet skrot
-#   2k rubbish (refuse and recycling)    Forsøpling
+#   2k rubbish (refuse and recycling)    ForsÃ¸pling
 # 1.7k car parking                       Parkering
 # 1.6k graffiti                          Graffiti/tagging
-# 1.5k dog fouling                       Hundemøkk
+# 1.5k dog fouling                       HundemÃ¸kk
 # 1.5k street cleaning                   Gaterydding
 #   1k road traffic signs                Trafikkskilter
-#   1k abandoned vehicles                Forlatte kjøretøy
-#   1k trees                             Trær
+#   1k abandoned vehicles                Forlatte kjÃ¸retÃ¸y
+#   1k trees                             TrÃ¦r
 #  500 street nameplates                 Veinavn-skilt
 #  700 traffic lights                    Trafikklys
 #  700 parks/landscapes                  Park/landskap
@@ -22,18 +22,18 @@
 #  174 bus stops                         Buss- og togstopp / Kollektivtrafikk
 #   50 public toilets                    Offentlige toaletter
 # 
-# Her er noen ideer til ting som kan være aktuelle for Norge:
+# Her er noen ideer til ting som kan vÃ¦re aktuelle for Norge:
 # 
-#   Dårlig vannkvalitet / Vannforsyning
-#   Snøbrøyting
-#   Veistrøing / Glatt vei
+#   DÃ¥rlig vannkvalitet / Vannforsyning
+#   SnÃ¸brÃ¸yting
+#   VeistrÃ¸ing / Glatt vei
 #   Gang- og sykkelsti
 #   Sykkelvei
 # 
-#   Oversvømmelse
-#   Tett avløpsrist / Oversvømmelse
+#   OversvÃ¸mmelse
+#   Tett avlÃ¸psrist / OversvÃ¸mmelse
 #   Flomvann
-#   Oljesøl
+#   OljesÃ¸l
 #
 # Konkret forslag til kommunekategorier
 # -------------------------------------
@@ -42,12 +42,12 @@
 # Gatelys
 # Fortau/gangstier
 # Dumpet skrot
-# Forsøpling
+# ForsÃ¸pling
 # Parkering
 # Graffiti/tagging
 # Trafikkskilter
-# Forlatte kjøretøy
-# Trær
+# Forlatte kjÃ¸retÃ¸y
+# TrÃ¦r
 # Veinavn-skilter
 # Trafikklys
 # Park/landskap
@@ -55,17 +55,17 @@
 # Buss- og togstopp
 # Offentlige toaletter
 # Vannforsyning
-# Snøbrøyting
+# SnÃ¸brÃ¸yting
 # Sykkelveier
-# Tette avløpsrister
-# Oljesøl
+# Tette avlÃ¸psrister
+# OljesÃ¸l
 # Annet
 #
 # Konkret forslag til fylkeskategorier
 # -------------------------------------
 # Annet
 # 
-0000;default;;Hull i vei,Gater/Veier,Gatelys,Fortau/gangstier,Dumpet skrot,Forsøpling,Parkering,Graffiti/tagging,Trafikkskilter,Forlatte kjøretøy,Trær,Veinavn-skilter,Trafikklys,Park/landskap,Ulovlige oppslag,Buss- og togstopp,Offentlige toaletter,Vannforsyning,Snøbrøyting,Sykkelveier,Tette avløpsrister,Oljesøl,Annet
+0000;default;;Hull i vei,Gater/Veier,Gatelys,Fortau/gangstier,Dumpet skrot,ForsÃ¸pling,Parkering,Graffiti/tagging,Trafikkskilter,Forlatte kjÃ¸retÃ¸y,TrÃ¦r,Veinavn-skilter,Trafikklys,Park/landskap,Ulovlige oppslag,Buss- og togstopp,Offentlige toaletter,Vannforsyning,SnÃ¸brÃ¸yting,Sykkelveier,Tette avlÃ¸psrister,OljesÃ¸l,Annet
 0101;Halden;postmottak@halden.kommune.no
 0104;Moss;post@moss.kommune.no
 0105;Sarpsborg;postmottak@sarpsborg.com
@@ -73,32 +73,32 @@
 0111;Hvaler;postmottak@hvaler.kommune.no
 0118;Aremark;post@aremark.kommune.no
 0119;Marker;post@marker.kommune.no
-0121;Rømskog;postmottak@romskog.kommune.no
-0122;Trøgstad;postmottak@trogstad.kommune.no
+0121;RÃ¸mskog;postmottak@romskog.kommune.no
+0122;TrÃ¸gstad;postmottak@trogstad.kommune.no
 0123;Spydeberg;post@spydeberg.kommune.no
 0124;Askim;postmottak@askim.kommune.no
 0125;Eidsberg;postmottak@eidsberg.kommune.no
 0127;Skiptvet;postmottak@skiptvet.kommune.no
 0128;Rakkestad;postmottak@rakkestad.kommune.no
-0135;Råde;post@rade.kommune.no
+0135;RÃ¥de;post@rade.kommune.no
 0136;Rygge;postmottak@rygge.kommune.no
-0137;Våler;postmottak@valer-of.kommune.no
-0138;Hobøl;post@hobol.kommune.no
-01;Østfold;sentralpost@ostfoldfk.no;Annet
+0137;VÃ¥ler;postmottak@valer-of.kommune.no
+0138;HobÃ¸l;post@hobol.kommune.no
+01;Ã˜stfold;sentralpost@ostfoldfk.no;Annet
 0211;Vestby;post@vestby.kommune.no
 0213;Ski;postmottak@ski.kommune.no
-0214;Ås;post@as.kommune.no
+0214;Ã…s;post@as.kommune.no
 0215;Frogn;postmottak@frogn.kommune.no
 0216;Nesodden;postmottak@nesodden.kommune.no
-0217;Oppegård;postmottak@oppegard.kommune.no
-0219;Bærum;post@baerum.kommune.no
+0217;OppegÃ¥rd;postmottak@oppegard.kommune.no
+0219;BÃ¦rum;post@baerum.kommune.no
 0220;Asker;post@asker.kommune.no
-0221;Aurskog-Høland;postmottak@ahk.no
-0226;Sørum;postmottak@sorum.kommune.no
+0221;Aurskog-HÃ¸land;postmottak@ahk.no
+0226;SÃ¸rum;postmottak@sorum.kommune.no
 0227;Fet;postmottak@fet.kommune.no
-0228;Rælingen;postmottak@ralingen.kommune.no
+0228;RÃ¦lingen;postmottak@ralingen.kommune.no
 0229;Enebakk;postmottak@enebakk.kommune.no
-0230;Lørenskog;postmottak@lorenskog.kommune.no
+0230;LÃ¸renskog;postmottak@lorenskog.kommune.no
 0231;Skedsmo;postmottak@skedsmo.kommune.no
 0233;Nittedal;postmottak@nittedal.kommune.no
 0234;Gjerdrum;postmottak@gjerdrum.kommune.no
@@ -112,17 +112,17 @@
 0402;Kongsvinger;postmottak@kongsvinger.kommune.no
 0403;Hamar;postmottak@hamar.kommune.no
 0412;Ringsaker;postmottak@ringsaker.kommune.no
-0415;Løten;post@loten.kommune.no
+0415;LÃ¸ten;post@loten.kommune.no
 0417;Stange;post@stange.kommune.no
 0418;Nord-Odal;postmottak@nord-odal.kommune.no
-0419;Sør-Odal;postmottak@sor-odal.kommune.no
+0419;SÃ¸r-Odal;postmottak@sor-odal.kommune.no
 0420;Eidskog;postmottak@eidskog.kommune.no
 0423;Grue;post@grue.kommune.no
-0425;Åsnes;post@asnes.kommune.no
-0426;Våler;postmottak@vaaler-he.kommune.no
+0425;Ã…snes;post@asnes.kommune.no
+0426;VÃ¥ler;postmottak@vaaler-he.kommune.no
 0427;Elverum;postmottak@elverum.kommune.no
 0428;Trysil;postmottak@trysil.kommune.no
-0429;Åmot;postmottak@amot.kommune.no
+0429;Ã…mot;postmottak@amot.kommune.no
 0430;Stor-Elvdal;postmottak@stor-elvdal.kommune.no
 0432;Rendalen;postmottak@rendalen.kommune.no
 0434;Engerdal;postmottak@engerdal.kommune.no
@@ -133,49 +133,49 @@
 0441;Os;postmottak@os.kommune.no
 04;Hedmark;postmottak@hedmark.org;Annet
 0501;Lillehammer;postmottak@lillehammer.kommune.no
-0502;Gjøvik;postmottak@gjovik.kommune.no
+0502;GjÃ¸vik;postmottak@gjovik.kommune.no
 0511;Dovre;postmottak@dovre.kommune.no
 0512;Lesja;postmottak@lesja.kommune.no
-0513;Skjåk;post@skjaak.kommune.no
+0513;SkjÃ¥k;post@skjaak.kommune.no
 0514;Lom;post@lom.kommune.no
-0515;Vågå;postmottak@vaga.kommune.no
+0515;VÃ¥gÃ¥;postmottak@vaga.kommune.no
 0516;Nord-Fron;post@nord-fron.kommune.no
 0517;Sel;postmottak@sel.kommune.no
-0519;Sør-Fron;postmottak@sor-fron.kommune.no
+0519;SÃ¸r-Fron;postmottak@sor-fron.kommune.no
 0520;Ringebu;post@ringebu.kommune.no
-0521;Øyer;postmottak@oyer.kommune.no
+0521;Ã˜yer;postmottak@oyer.kommune.no
 0522;Gausdal;postmottak@gausdal.kommune.no
-0528;Østre Toten;postmottak@ostre-toten.kommune.no
+0528;Ã˜stre Toten;postmottak@ostre-toten.kommune.no
 0529;Vestre Toten;post@vestre-toten.kommune.no
 0532;Jevnaker;postmottak@jevnaker.kommune.no
 0533;Lunner;post@lunner.kommune.no
 0534;Gran;postmottak@gran.kommune.no
-0536;Søndre Land;epost@sondre-land.kommune.no
+0536;SÃ¸ndre Land;epost@sondre-land.kommune.no
 0538;Nordre Land;postmottak@nordre-land.kommune.no
-0540;Sør-Aurdal;postmottak@sor-aurdal.kommune.no
+0540;SÃ¸r-Aurdal;postmottak@sor-aurdal.kommune.no
 0541;Etnedal;postmottak@etnedal.kommune.no
 0542;Nord-Aurdal;nak@nord-aurdal.kommune.no
 0543;Vestre Slidre;post@vestre-slidre.kommune.no
-0544;Øystre Slidre;post@oystre-slidre.kommune.no
+0544;Ã˜ystre Slidre;post@oystre-slidre.kommune.no
 0545;Vang;post@vang.kommune.no
 05;Oppland;postmottak@oppland.org;Annet
 0602;Drammen;kommunepost@drammen.kommune.no
 0604;Kongsberg;postmottak@kongsberg.kommune.no
 0605;Ringerike;postmottak@ringerike.kommune.no
 0612;Hole;postmottak@hole.kommune.no
-0615;Flå;postmottak@flaa.kommune.no
+0615;FlÃ¥;postmottak@flaa.kommune.no
 0616;Nes;postmottak@nes-bu.kommune.no
 0617;Gol;postmottak@gol.kommune.no
 0618;Hemsedal;postmottak@hemsedal.kommune.no
-0619;Ål;postmottak@aal.kommune.no
+0619;Ã…l;postmottak@aal.kommune.no
 0620;Hol;postmottak@hol.kommune.no
 0621;Sigdal;post@sigdal.kommune.no
-0622;Krødsherad;krodsherad.kommune@krodsherad.kommune.no
+0622;KrÃ¸dsherad;krodsherad.kommune@krodsherad.kommune.no
 0623;Modum;post@modum.kommune.no
-0624;Øvre Eiker;post@ovre-eiker.kommune.no
+0624;Ã˜vre Eiker;post@ovre-eiker.kommune.no
 0625;Nedre Eiker;post@nedre-eiker.kommune.no
 0626;Lier;postmottak@lier.kommune.no
-0627;Røyken;postmottak@royken.kommune.no
+0627;RÃ¸yken;postmottak@royken.kommune.no
 0628;Hurum;postmottak@hurum.kommune.no
 0631;Flesberg;post@flesberg.kommune.no
 0632;Rollag;postmottak@rollag.kommune.no
@@ -183,7 +183,7 @@
 06;Buskerud;postmottak@bfk.no;Annet
 0701;Horten;postmottak@horten.kommune.no
 0702;Holmestrand;postmottak@holmestrand.kommune.no
-0704;Tønsberg;postmottak@tonsberg.kommune.no
+0704;TÃ¸nsberg;postmottak@tonsberg.kommune.no
 0706;Sandefjord;sentraladm@sandefjord.kommune.no
 0709;Larvik;postmottak@larvik.kommune.no
 0711;Svelvik;postmottak@svelvik.kommune.no
@@ -192,8 +192,8 @@
 0716;Re;postmottak@re.kommune.no
 0719;Andebu;postmottak@andebu.kommune.no
 0720;Stokke;postmottak@stokke.kommune.no
-0722;Nøtterøy;postmottak@notteroy.kommune.no
-0723;Tjøme;post@tjome.kommune.no
+0722;NÃ¸tterÃ¸y;postmottak@notteroy.kommune.no
+0723;TjÃ¸me;post@tjome.kommune.no
 0728;Lardal;postmottak@lardal.kommune.no
 07;Vestfold;firmapost@vfk.no;Annet
 0805;Porsgrunn;postmottak@porsgrunn.kommune.no
@@ -201,10 +201,10 @@
 0807;Notodden;postmottak@notodden.kommune.no
 0811;Siljan;post@siljan.kommune.no
 0814;Bamble;postmottak@bamble.kommune.no
-0815;Kragerø;post@kragero.kommune.no
+0815;KragerÃ¸;post@kragero.kommune.no
 0817;Drangedal;postmottak@drangedal.kommune.no
 0819;Nome;postmottak@nome.kommune.no
-0821;Bø;postmottak@bo.kommune.no
+0821;BÃ¸;postmottak@bo.kommune.no
 0822;Sauherad;postmottak@sauherad.kommune.no
 0826;Tinn;post@tinn.kommune.no
 0827;Hjartdal;postmottak@hjartdal.kommune.no
@@ -215,16 +215,16 @@
 0833;Tokke;postmottak@tokke.kommune.no
 0834;Vinje;postmottak@vinje.kommune.no
 08;Telemark;post@t-fk.no;Annet
-0901;Risør;postmottak@risor.kommune.no
+0901;RisÃ¸r;postmottak@risor.kommune.no
 0904;Grimstad;postmottak@grimstad.kommune.no
 0906;Arendal;postmottak@arendal.kommune.no
 0911;Gjerstad;postmottak@gjerstad.kommune.no
-0912;Vegårshei;post@vegarshei.kommune.no
+0912;VegÃ¥rshei;post@vegarshei.kommune.no
 0914;Tvedestrand;postmottak@tvedestrand.kommune.no
 0919;Froland;post@froland.kommune.no
 0926;Lillesand;postmottak@lillesand.kommune.no
 0928;Birkenes;postmottak@birkenes.kommune.no
-0929;Åmli;postmottak@amli.kommune.no
+0929;Ã…mli;postmottak@amli.kommune.no
 0935;Iveland;postmottak@iveland.kommune.no
 0937;Evje og Hornnes;post@e-h.kommune.no
 0938;Bygland;post@bygland.kommune.no
@@ -237,13 +237,13 @@
 1004;Flekkefjord;post@flekkefjord.kommune.no
 1014;Vennesla;post@vennesla.kommune.no
 1017;Songdalen;postmottak@songdalen.kommune.no
-1018;Søgne;postmottak@sogne.kommune.no
+1018;SÃ¸gne;postmottak@sogne.kommune.no
 1021;Marnardal;service@Marnardal.kommune.no
-1026;Åseral;info@aseral.kommune.no
+1026;Ã…seral;info@aseral.kommune.no
 1027;Audnedal;info@audnedal.kommune.no
 1029;Lindesnes;postmottak@lindesnes.kommune.no
 1032;Lyngdal;post@lyngdal.kommune.no
-1034;Hægebostad;postmottak@haegebostad.kommune.no
+1034;HÃ¦gebostad;postmottak@haegebostad.kommune.no
 1037;Kvinesdal;post@kvinesdal.kommune.no
 1046;Sirdal;post@sirdal.kommune.no
 10;Vest-Agder;postmottak@vaf.no;Annet
@@ -254,7 +254,7 @@
 1111;Sokndal;postmottak@sokndal.kommune.no
 1112;Lund;postmottak@lund.kommune.no
 1114;Bjerkreim;postmottak@bjerkreim.kommune.no
-1119;Hå;post@ha.kommune.no
+1119;HÃ¥;post@ha.kommune.no
 1120;Klepp;postmottak@klepp.kommune.no
 1121;Time;postmottak@time.kommune.no
 1122;Gjesdal;postmottak@gjesdal.kommune.no
@@ -265,19 +265,19 @@
 1133;Hjelmeland;postmottak@hjelmeland.kommune.no
 1134;Suldal;postmottak@suldal.kommune.no
 1135;Sauda;post@sauda.kommune.no
-1141;Finnøy;post@finnoy.kommune.no
-1142;Rennesøy;post@rennesoy.kommune.no
-1144;Kvitsøy;post@kvitsoy.kommune.no
+1141;FinnÃ¸y;post@finnoy.kommune.no
+1142;RennesÃ¸y;post@rennesoy.kommune.no
+1144;KvitsÃ¸y;post@kvitsoy.kommune.no
 1145;Bokn;post@bokn.kommune.no
-1146;Tysvær;post@tysver.kommune.no
-1149;Karmøy;postmottak@karmoy.kommune.no
+1146;TysvÃ¦r;post@tysver.kommune.no
+1149;KarmÃ¸y;postmottak@karmoy.kommune.no
 1151;Utsira;post@utsira.kommune.no
 1160;Vindafjord;postmottak@vindafjord.kommune.no
 11;Rogaland;firmapost@rogfk.no;Annet
 1201;Bergen;postmottak@bergen.kommune.no
 1211;Etne;firmapost@etne.kommune.no
 1216;Sveio;postmottak@sveio.kommune.no
-1219;Bømlo;postmottak@bomlo.kommune.no
+1219;BÃ¸mlo;postmottak@bomlo.kommune.no
 1221;Stord;post@stord.kommune.no
 1222;Fitjar;fitjar@fitjar.kommune.no
 1223;Tysnes;post@tysnes.kommune.no
@@ -296,14 +296,14 @@
 1244;Austevoll;postmottak@austevoll.kommune.no
 1245;Sund;postmottak@sund.kommune.no
 1246;Fjell;postmottak@fjell.kommune.no
-1247;Askøy;postmottak@askoy.kommune.no
+1247;AskÃ¸y;postmottak@askoy.kommune.no
 1251;Vaksdal;post@vaksdal.kommune.no
 1252;Modalen;postmottak@modalen.kommune.no
-1253;Osterøy;post@osteroy.kommune.no
+1253;OsterÃ¸y;post@osteroy.kommune.no
 1256;Meland;postmottak@meland.kommune.no
-1259;Øygarden;postmottak@oygarden.kommune.no
-1260;Radøy;postmottak@radoy.kommune.no
-1263;Lindås;postmottak@lindas.kommune.no
+1259;Ã˜ygarden;postmottak@oygarden.kommune.no
+1260;RadÃ¸y;postmottak@radoy.kommune.no
+1263;LindÃ¥s;postmottak@lindas.kommune.no
 1264;Austrheim;post@austrheim.kommune.no
 1265;Fedje;postmottak@fedje.kommune.no
 1266;Masfjorden;post@masfjorden.kommune.no
@@ -312,23 +312,23 @@
 1411;Gulen;postmottak@gulen.kommune.no
 1412;Solund;post@solund.kommune.no
 1413;Hyllestad;postmottak@hyllestad.kommune.no
-1416;Høyanger;postmottak@hoyanger.kommune.no
+1416;HÃ¸yanger;postmottak@hoyanger.kommune.no
 1417;Vik;postmottak@vik.kommune.no
 1418;Balestrand;postmottak@balestrand.kommune.no
 1419;Leikanger;postmottak@leikanger.kommune.no
 1420;Sogndal;postmottak@sogndal.kommune.no
 1421;Aurland;post@aurland.kommune.no
-1422;Lærdal;post@laerdal.kommune.no
-1424;Årdal;postmottak@ardal.kommune.no
+1422;LÃ¦rdal;post@laerdal.kommune.no
+1424;Ã…rdal;postmottak@ardal.kommune.no
 1426;Luster;postmottak@luster.kommune.no
 1428;Askvoll;postmottak@askvoll.kommune.no
 1429;Fjaler;post@fjaler.kommune.no
 1430;Gaular;postmottak@gaular.kommune.no
-1431;Jølster;postmottak@jolster.kommune.no
-1432;Førde;postmottak@forde.kommune.no
+1431;JÃ¸lster;postmottak@jolster.kommune.no
+1432;FÃ¸rde;postmottak@forde.kommune.no
 1433;Naustdal;postmottak@naustdal.kommune.no
 1438;Bremanger;post@bremanger.kommune.no
-1439;Vågsøy;post@vagsoy.kommune.no
+1439;VÃ¥gsÃ¸y;post@vagsoy.kommune.no
 1441;Selje;post@selje.kommune.no
 1443;Eid;post@eid.kommune.no
 1444;Hornindal;post@hornindal.kommune.no
@@ -336,16 +336,16 @@
 1449;Stryn;postmottak@stryn.kommune.no
 14;Sogn og Fjordane;postmottak.sentraladm@sfj.no;Annet
 1502;Molde;postmottak@molde.kommune.no
-1504;Ålesund;postmottak@alesund.kommune.no
+1504;Ã…lesund;postmottak@alesund.kommune.no
 1505;Kristiansund;postmottak@kristiansund.kommune.no
 1511;Vanylven;postmottak@vanylven.kommune.no
 1514;Sande;sande.kommune@sande-mr.kommune.no
-1515;Herøy;postmottak@heroy.kommune.no
+1515;HerÃ¸y;postmottak@heroy.kommune.no
 1516;Ulstein;postmottak@ulstein.kommune.no
 1517;Hareid;postmottak@hareid.kommune.no
 1519;Volda;postmottak@volda.kommune.no
-1520;Ørsta;postmottak@orsta.kommune.no
-1523;Ørskog;post@orskog.kommune.no
+1520;Ã˜rsta;postmottak@orsta.kommune.no
+1523;Ã˜rskog;post@orskog.kommune.no
 1524;Norddal;post@norddal.kommune.no
 1525;Stranda;post@stranda.kommune.no
 1526;Stordal;postmottak@stordal.kommune.no
@@ -358,50 +358,50 @@
 1539;Rauma;post@rauma.kommune.no
 1543;Nesset;postmottak@nesset.kommune.no
 1545;Midsund;postmottak@midsund.kommune.no
-1546;Sandøy;post@sandoy.kommune.no
+1546;SandÃ¸y;post@sandoy.kommune.no
 1547;Aukra;post@aukra.kommune.no
-1548;Fræna;postmottak@frana.kommune.no
+1548;FrÃ¦na;postmottak@frana.kommune.no
 1551;Eide;postmottak@eide.kommune.no
-1554;Averøy;post@averoy.kommune.no
+1554;AverÃ¸y;post@averoy.kommune.no
 1557;Gjemnes;post@gjemnes.kommune.no
 1560;Tingvoll;postmottak@tingvoll.kommune.no
 1563;Sunndal;post@sunndal.kommune.no
 1566;Surnadal;post@surnadal.kommune.no
 1567;Rindal;post@rindal.kommune.no
 1571;Halsa;post@halsa.kommune.no
-1573;Smøla;postmottak@smola.kommune.no
+1573;SmÃ¸la;postmottak@smola.kommune.no
 1576;Aure;postmottak@aure.kommune.no
-15;Møre og Romsdal;post@mrfylke.no;Annet
+15;MÃ¸re og Romsdal;post@mrfylke.no;Annet
 1601;Trondheim;postmottak@trondheim.kommune.no
 1612;Hemne;postmottak@hemne.kommune.no
 1613;Snillfjord;postmottak@snillfjord.kommune.no
 1617;Hitra;postmottak@hitra.kommune.no
-1620;Frøya;postmottak@froya.kommune.no
-1621;Ørland;postmottak@orland.kommune.no
+1620;FrÃ¸ya;postmottak@froya.kommune.no
+1621;Ã˜rland;postmottak@orland.kommune.no
 1622;Agdenes;postmottak@agdenes.kommune.no
 1624;Rissa;postmottak@rissa.kommune.no
 1627;Bjugn;postmottak@bjugn.kommune.no
-1630;Åfjord;postmottak@afjord.kommune.no
+1630;Ã…fjord;postmottak@afjord.kommune.no
 1632;Roan;post@roan.kommune.no
 1633;Osen;postmottak@osen.kommune.no
 1634;Oppdal;post@oppdal.kommune.no
 1635;Rennebu;postmottak@rennebu.kommune.no
 1636;Meldal;postmottak@meldal.kommune.no
 1638;Orkdal;postmottak@orkdal.kommune.no
-1640;Røros;postmottak@roros.kommune.no
-1644;Holtålen;epost@holtalen.kommune.no
+1640;RÃ¸ros;postmottak@roros.kommune.no
+1644;HoltÃ¥len;epost@holtalen.kommune.no
 1648;Midtre Gauldal;postmottak@midtre-gauldal.kommune.no
 1653;Melhus;postmottak@melhus.kommune.no
 1657;Skaun;postmottak@skaun.kommune.no
-1662;Klæbu;postmottak@klabu.kommune.no
+1662;KlÃ¦bu;postmottak@klabu.kommune.no
 1663;Malvik;postmottak@malvik.kommune.no
 1664;Selbu;postmottak@selbu.kommune.no
 1665;Tydal;postmottak@tydal.kommune.no
-16;Sør-Trøndelag;postmottak@stfk.no;Annet
+16;SÃ¸r-TrÃ¸ndelag;postmottak@stfk.no;Annet
 1702;Steinkjer;postmottak@steinkjer.kommune.no
 1703;Namsos;postmottak@namsos.kommune.no
-1711;Meråker;postmottak@meraker.kommune.no
-1714;Stjørdal;postmottak@stjordal.kommune.no
+1711;MerÃ¥ker;postmottak@meraker.kommune.no
+1714;StjÃ¸rdal;postmottak@stjordal.kommune.no
 1717;Frosta;postmottak@frosta.kommune.no
 1718;Leksvik;post@leksvik.kommune.no
 1719;Levanger;postmottak@levanger.kommune.no
@@ -409,109 +409,109 @@
 1723;Mosvik;postmottak@mosvik.kommune.no
 1724;Verran;postkasse@verran.kommune.no
 1725;Namdalseid;postmottak@namdalseid.kommune.no
-1729;Inderøy;postmottak@inderoy.kommune.no
-1736;Snåsa;postmottak@snasa.kommune.no
+1729;InderÃ¸y;postmottak@inderoy.kommune.no
+1736;SnÃ¥sa;postmottak@snasa.kommune.no
 1738;Lierne;postmottak@lierne.kommune.no
-1739;Røyrvik;postmottak@royrvik.kommune.no
+1739;RÃ¸yrvik;postmottak@royrvik.kommune.no
 1740;Namsskogan;postmottak@namsskogan.kommune.no
 1742;Grong;postmottak@grong.kommune.no
-1743;Høylandet;postmottak@hoylandet.kommune.no
+1743;HÃ¸ylandet;postmottak@hoylandet.kommune.no
 1744;Overhalla;postmottak@overhalla.kommune.no
 1748;Fosnes;postmottak@fosnes.kommune.no
 1749;Flatanger;postmottak@flatanger.kommune.no
 1750;Vikna;vikna@vikna.kommune.no
-1751;Nærøy;postmottak@naroy.kommune.no
+1751;NÃ¦rÃ¸y;postmottak@naroy.kommune.no
 1755;Leka;post@leka.kommune.no
-17;Nord-Trøndelag;postmottak@ntfk.no;Annet
-1804;Bodø;postmottak@bodo.kommune.no
+17;Nord-TrÃ¸ndelag;postmottak@ntfk.no;Annet
+1804;BodÃ¸;postmottak@bodo.kommune.no
 1805;Narvik;postmottak@narvik.kommune.no
 1811;Bindal;postmottak@bindal.kommune.no
-1812;Sømna;post@somna.kommune.no
-1813;Brønnøy;postmottak@bronnoy.kommune.no
+1812;SÃ¸mna;post@somna.kommune.no
+1813;BrÃ¸nnÃ¸y;postmottak@bronnoy.kommune.no
 1815;Vega;postkasse@vega.kommune.no
 1816;Vevelstad;post@vevelstad.kommune.no
-1818;Herøy;post@heroy-no.kommune.no
+1818;HerÃ¸y;post@heroy-no.kommune.no
 1820;Alstahaug;post@alstahaug.kommune.no
 1822;Leirfjord;postmottak@leirfjord.kommune.no
 1824;Vefsn;post@vefsn.kommune.no
 1825;Grane;post@grane.kommune.no
 1826;Hattfjelldal;post@hattfjelldal.kommune.no
-1827;Dønna;post@donna.kommune.no
+1827;DÃ¸nna;post@donna.kommune.no
 1828;Nesna;postmottak@nesna.kommune.no
 1832;Hemnes;postmottak@hemnes.kommune.no
 1833;Rana;postmottak@rana.kommune.no
-1834;Lurøy;postmottak@luroy.kommune.no
-1835;Træna;post@trana.kommune.no
-1836;Rødøy;postmottak@rodoy.kommune.no
-1837;Meløy;postmottak@meloy.kommune.no
-1838;Gildeskål;postmottak@gildeskal.kommune.no
+1834;LurÃ¸y;postmottak@luroy.kommune.no
+1835;TrÃ¦na;post@trana.kommune.no
+1836;RÃ¸dÃ¸y;postmottak@rodoy.kommune.no
+1837;MelÃ¸y;postmottak@meloy.kommune.no
+1838;GildeskÃ¥l;postmottak@gildeskal.kommune.no
 1839;Beiarn;post@beiarn.kommune.no
 1840;Saltdal;postmottak@saltdal.kommune.no
 1841;Fauske;postmottak@fauske.kommune.no
-1845;Sørfold;post@sorfold.kommune.no
+1845;SÃ¸rfold;post@sorfold.kommune.no
 1848;Steigen;postmottak@steigen.kommune.no
-1849;Hamarøy;postmottak@hamaroy.kommune.no
+1849;HamarÃ¸y;postmottak@hamaroy.kommune.no
 1850;Tysfjord;postmottak@tysfjord.kommune.no
-1851;Lødingen;postmottak@lodingen.kommune.no
+1851;LÃ¸dingen;postmottak@lodingen.kommune.no
 1852;Tjeldsund;post@tjeldsund.kommune.no
 1853;Evenes;postmottak@evenes.kommune.no
 1854;Ballangen;post@ballangen.kommune.no
-1856;Røst;postkasse@rost.kommune.no
-1857;Værøy;postmottak@varoy.kommune.no
+1856;RÃ¸st;postkasse@rost.kommune.no
+1857;VÃ¦rÃ¸y;postmottak@varoy.kommune.no
 1859;Flakstad;postmottak@flakstad.kommune.no
-1860;Vestvågøy;postmottak@vestvagoy.kommune.no
-1865;Vågan;postmottak@vagan.kommune.no
+1860;VestvÃ¥gÃ¸y;postmottak@vestvagoy.kommune.no
+1865;VÃ¥gan;postmottak@vagan.kommune.no
 1866;Hadsel;postmottak@hadsel.kommune.no
-1867;Bø;post@boe.kommune.no
-1868;Øksnes;postmottak@oksnes.kommune.no
+1867;BÃ¸;post@boe.kommune.no
+1868;Ã˜ksnes;postmottak@oksnes.kommune.no
 1870;Sortland;postmottak@sortland.kommune.no
-1871;Andøy;postmottak@andoy.kommune.no
+1871;AndÃ¸y;postmottak@andoy.kommune.no
 1874;Moskenes;postmottak@moskenes.kommune.no
 18;Nordland;post@nfk.no;Annet
 1901;Harstad;postmottak@harstad.kommune.no
-1902;Tromsø;postmottak@tromso.kommune.no
-1911;Kvæfjord;postmottak@kvafjord.kommune.no
-1913;Skånland;post@skanland.kommune.no
-1915;Bjarkøy;post@bjarkoy.kommune.no
+1902;TromsÃ¸;postmottak@tromso.kommune.no
+1911;KvÃ¦fjord;postmottak@kvafjord.kommune.no
+1913;SkÃ¥nland;post@skanland.kommune.no
+1915;BjarkÃ¸y;post@bjarkoy.kommune.no
 1917;Ibestad;postmottak@ibestad.kommune.no
 1919;Gratangen;postmottak@gratangen.kommune.no
 1920;Lavangen;postmottak@lavangen.kommune.no
 1922;Bardu;postmottak@bardu.kommune.no
 1923;Salangen;postmottak@salangen.kommune.no
-1924;Målselv;postmottak@malselv.kommune.no
-1925;Sørreisa;postmottak@sorreisa.kommune.no
-1926;Dyrøy;postmottak@dyroy.kommune.no
-1927;Tranøy;postmottak@tranoy.kommune.no
+1924;MÃ¥lselv;postmottak@malselv.kommune.no
+1925;SÃ¸rreisa;postmottak@sorreisa.kommune.no
+1926;DyrÃ¸y;postmottak@dyroy.kommune.no
+1927;TranÃ¸y;postmottak@tranoy.kommune.no
 1928;Torsken;postmottak@torsken.kommune.no
 1929;Berg;postmottak@berg.kommune.no
 1931;Lenvik;postmottak@lenvik.kommune.no
 1933;Balsfjord;post@balsfjord.kommune.no
-1936;Karlsøy;postmottak@karlsoy.kommune.no
+1936;KarlsÃ¸y;postmottak@karlsoy.kommune.no
 1938;Lyngen;post@lyngen.kommune.no
 1939;Storfjord;post@storfjord.kommune.no
-1940;Kåfjord;post@kafjord.kommune.no
-1941;Skjervøy;post@skjervoy.kommune.no
+1940;KÃ¥fjord;post@kafjord.kommune.no
+1941;SkjervÃ¸y;post@skjervoy.kommune.no
 1942;Nordreisa;postmottak@nordreisa.kommune.no
-1943;Kvænangen;post@kvanangen.kommune.no
+1943;KvÃ¦nangen;post@kvanangen.kommune.no
 19;Troms;postmottak@tromsfylke.no;Annet
-2002;Vardø;postmottak@vardo.kommune.no
-2003;Vadsø;postmottak@vadso.kommune.no
+2002;VardÃ¸;postmottak@vardo.kommune.no
+2003;VadsÃ¸;postmottak@vadso.kommune.no
 2004;Hammerfest;postmottak@hammerfest.kommune.no
 2011;Kautokeino;e-post@kautokeino.kommune.no
 2012;Alta;postmottak@alta.kommune.no
 2014;Loppa;postmottak@loppa.kommune.no
 2015;Hasvik;post@hasvik.kommune.no
 2017;Kvalsund;servicekontoret@kvalsund.kommune.no
-2018;Måsøy;postmottak@masoy.kommune.no
+2018;MÃ¥sÃ¸y;postmottak@masoy.kommune.no
 2019;Nordkapp;postmottak@nordkapp.kommune.no
 2020;Porsanger;postmottak@porsanger.kommune.no
 2021;Karasjok;postmottak@karasjok.kommune.no
 2022;Lebesby;postmottak@lebesby.kommune.no
 2023;Gamvik;postmottak@gamvik.kommune.no
-2024;Berlevåg;postmottak@berlevag.kommune.no
+2024;BerlevÃ¥g;postmottak@berlevag.kommune.no
 2025;Tana;postmottak@tana.kommune.no
 2027;Nesseby;postmottak@nesseby.kommune.no
-2028;Båtsfjord;postmottak@batsfjord.kommune.no
-2030;Sør-Varanger;postmottak@sor-varanger.kommune.no
+2028;BÃ¥tsfjord;postmottak@batsfjord.kommune.no
+2030;SÃ¸r-Varanger;postmottak@sor-varanger.kommune.no
 20;Finnmark;postmottak@ffk.no;Annet
 2111;Spitsbergen;postmottak@lokalstyre.no
