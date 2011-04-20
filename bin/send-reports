@@ -529,10 +529,11 @@ sub find_closest {
                 $str .= sprintf(_("Nearest named road to the pin placed on the map (automatically generated using OpenStreetmap): %s%s\n\n"),
                                 $name, $ref);
 
-                my $operator = $osmtags->{operator} ||
-                    $osmtags->{operatorguess};
-                if ($operator) {
-                    $str .= sprintf(_("Guessed road operator for nearest named road: %s\n\n"),
+                if (my $operator = $osmtags->{operator}) {
+                    $str .= sprintf(_("Road operator for this named road (from OpenStreetmap): %s\n\n"),
+                                    $operator);
+                } elsif (my $operator =$osmtags->{operatorguess}) {
+                    $str .= sprintf(_("Road operator for this named road (guessed from reference number and type): %s\n\n"),
                                     $operator);
                 }
             }
