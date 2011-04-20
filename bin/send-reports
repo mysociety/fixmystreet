@@ -337,7 +337,7 @@ sub guessRoadOperator {
             || $ref =~ m/E \d+/
             || $ref =~ m/Fv\d+/i
             ) {
-            $operator = "Statens Vegvesen";
+            $operator = "Statens vegvesen";
         }
     }
 #    print STDERR "Guessing operator $operator\n" if defined $operator;
