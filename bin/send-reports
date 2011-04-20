@@ -36,7 +36,7 @@ use mySociety::Locale;
 use mySociety::MaPit;
 use mySociety::Random qw(random_bytes);
 use mySociety::Web qw(ent);
-use FixMyStreet::Map::OSM;
+use FixMyStreet::Geocode::OSM;
 
 BEGIN {
     mySociety::Config::set_file("$FindBin::Bin/../conf/general");
@@ -309,10 +309,10 @@ sub guess_road_operator {
 sub get_nearest_road_tags {
     my ($latitude, $longitude) = @_;
     my $inforef =
-        FixMyStreet::Map::OSM::lookup_location($latitude, $longitude, 16);
+        FixMyStreet::Geocode::OSM::lookup_location($latitude, $longitude, 16);
     if ('way' eq $inforef->{result}->{osm_type}) {
         my $osmtags =
-            FixMyStreet::Map::OSM::get_object_tags('way',
+            FixMyStreet::Geocode::OSM::get_object_tags('way',
                                                    $inforef->{result}->{osm_id});
         if (mySociety::Config::get('OSM_GUESS_OPERATOR')
             && !exists $osmtags->{operator}) {
