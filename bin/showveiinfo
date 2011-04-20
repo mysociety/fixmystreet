@@ -3,45 +3,16 @@
 use warnings;
 use strict;
 
+use FindBin;
+use lib "$FindBin::Bin/../perllib";
+use lib "$FindBin::Bin/../commonlib/perllib";
+
 use XML::Simple;
 use LWP::Simple;
 
+use FixMyStreet::Map::OSM;
+
 use Data::Dumper;
-
-my $nominatimbase = "http://nominatim.openstreetmap.org/";
-my $osmbase       = "http://www.openstreetmap.org/api/";
-
-sub lookupNominatim {
-    my ($latitude, $longitude) = @_;
-    my $url =
-    "${nominatimbase}reverse?format=xml&zoom=16&lat=$latitude&lon=$longitude";
-    my $j = LWP::Simple::get($url);
-    if ($j) {
-        my $ref = XMLin($j);
-        print STDERR "URL: $url\n";
-        print STDERR Dumper($ref);
-        return $ref;
-    } else {
-        print STDERR "No reply from $url\n";
-    }
-    return undef;
-}
-sub getOSMWayTags {
-    my $wayid = shift;
-    my $url = "${osmbase}0.6/way/$wayid";
-    print STDERR "URL: $url\n";
-    my $j = LWP::Simple::get($url);
-    if ($j) {
-        my $ref = XMLin($j);
-        print STDERR Dumper($ref);
-        my %tags;
-        map { $tags{$_->{'k'}} = $_->{'v'} } @{$ref->{way}->{tag}};
-        return \%tags;
-    } else {
-        print STDERR "No reply from $url\n";
-    }
-    return undef;
-}
 
 sub guessRoadOperator {
     my $inforef = shift;
@@ -63,14 +34,14 @@ sub guessRoadOperator {
 
 sub getNearestRoadTags {
     my ($latitude, $longitude) = @_;
-    my $inforef = lookupNominatim($latitude, $longitude);
+    my $inforef =
+        FixMyStreet::Map::OSM::lookup_location($latitude, $longitude, 16);
     if ('way' eq $inforef->{result}->{osm_type}) {
-
-        my $osmtags = getOSMWayTags($inforef->{result}->{osm_id});
-        print STDERR Dumper $osmtags;
+        my $osmtags =
+            FixMyStreet::Map::OSM::get_object_tags('way',
+                                                   $inforef->{result}->{osm_id});
         unless (exists $osmtags->{operator}) {
             $osmtags->{operatorguess} = guessRoadOperator($osmtags);
-            delete $osmtags->{operator};
         }
         return $osmtags;
     }

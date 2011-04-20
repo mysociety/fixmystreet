@@ -15,6 +15,9 @@ use Utils;
 use LWP::Simple;
 use XML::Simple;
 
+my $osmapibase    = "http://www.openstreetmap.org/api/";
+my $nominatimbase = "http://nominatim.openstreetmap.org/";
+
 sub header_js {
     return '
 <script type="text/javascript" src="/jslib/OpenLayers-2.10/OpenLayers.js"></script>
@@ -224,9 +227,23 @@ sub compass ($$$$) {
 EOF
 }
 
+sub lookup_location {
+    my ($latitude, $longitude, $zoom) = @_;
+    my $url =
+    "${nominatimbase}reverse?format=xml&zoom=$zoom&lat=$latitude&lon=$longitude";
+    my $j = LWP::Simple::get($url);
+    if ($j) {
+        my $ref = XMLin($j);
+        return $ref;
+    } else {
+        print STDERR "No reply from $url\n";
+    }
+    return undef;
+}
+
 sub get_object_tags {
     my ($type, $id) = @_;
-    my $url = "${osmbase}0.6/$type/$id";
+    my $url = "${osmapibase}0.6/$type/$id";
     my $j = LWP::Simple::get($url);
     if ($j) {
         my $ref = XMLin($j);
