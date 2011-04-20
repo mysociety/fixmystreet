@@ -288,42 +288,6 @@ if ($verbose) {
     }
 }
 
-sub guess_road_operator {
-    my $inforef = shift;
-    my $highway = $inforef->{highway} || "unknown";
-    my $ref =  $inforef->{ref} || "unknown";
-
-    my $operator;
-    if ( mySociety::Config::get('COUNTRY') eq 'NO' ) {
-        if ($highway eq "trunk"
-            || $highway eq "primary"
-            || $ref =~ m/E \d+/
-            || $ref =~ m/Fv\d+/i
-            ) {
-            $operator = "Statens vegvesen";
-        }
-    }
-    return $operator;
-}
-
-sub get_nearest_road_tags {
-    my ($latitude, $longitude) = @_;
-    my $inforef =
-        FixMyStreet::Geocode::OSM::lookup_location($latitude, $longitude, 16);
-    if ('way' eq $inforef->{result}->{osm_type}) {
-        my $osmtags =
-            FixMyStreet::Geocode::OSM::get_object_tags('way',
-                                                   $inforef->{result}->{osm_id});
-        if (mySociety::Config::get('OSM_GUESS_OPERATOR')
-            && !exists $osmtags->{operator}) {
-            my $guess = guess_road_operator($osmtags);
-            $osmtags->{operatorguess} = $guess if $guess;
-        }
-        return $osmtags;
-    }
-    return undef;
-}
-
 sub _get_district_for_contact {
     my ( $lat, $lon ) = @_;
     my $district =
@@ -520,7 +484,9 @@ sub find_closest {
         }
     }
     if ( mySociety::Config::get('MAP_TYPE') eq 'OSM' ) {
-        my $osmtags = get_nearest_road_tags($latitude, $longitude);
+        my $osmtags =
+            FixMyStreet::Geocode::OSM::get_nearest_road_tags($latitude,
+                                                             $longitude);
         if ($osmtags) {
             my ($name, $ref) = ('','');
             $name =  $osmtags->{name} if exists $osmtags->{name};

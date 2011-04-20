@@ -11,6 +11,7 @@ package FixMyStreet::Geocode::OSM;
 use warnings;
 use strict;
 
+use mySociety::Config;
 use LWP::Simple;
 use XML::Simple;
 
@@ -43,6 +44,40 @@ sub get_object_tags {
         return \%tags;
     } else {
         print STDERR "No reply from $url\n";
+    }
+    return undef;
+}
+
+sub guess_road_operator {
+    my $inforef = shift;
+    my $highway = $inforef->{highway} || "unknown";
+    my $ref =  $inforef->{ref} || "unknown";
+
+    my $operator;
+    if ( mySociety::Config::get('COUNTRY') eq 'NO' ) {
+        if ($highway eq "trunk"
+            || $highway eq "primary"
+            || $ref =~ m/E \d+/
+            || $ref =~ m/Fv\d+/i
+            ) {
+            $operator = "Statens vegvesen";
+        }
+    }
+    return $operator;
+}
+
+sub get_nearest_road_tags {
+    my ($latitude, $longitude) = @_;
+    my $inforef = lookup_location($latitude, $longitude, 16);
+    if ('way' eq $inforef->{result}->{osm_type}) {
+        my $osmtags = get_object_tags('way',
+                                      $inforef->{result}->{osm_id});
+        if (mySociety::Config::get('OSM_GUESS_OPERATOR')
+            && !exists $osmtags->{operator}) {
+            my $guess = guess_road_operator($osmtags);
+            $osmtags->{operatorguess} = $guess if $guess;
+        }
+        return $osmtags;
     }
     return undef;
 }

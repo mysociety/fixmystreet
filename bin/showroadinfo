@@ -7,50 +7,18 @@ use FindBin;
 use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../commonlib/perllib";
 
-use XML::Simple;
-use LWP::Simple;
-
 use FixMyStreet::Geocode::OSM;
-
 use Data::Dumper;
 
-sub guessRoadOperator {
-    my $inforef = shift;
-    my $highway = $inforef->{highway} || "unknown";
-    my $ref =  $inforef->{ref} || "unknown";
-
-    my $operator;
-
-    if ($highway eq "trunk"
-        || $highway eq "primary"
-        || $ref =~ m/E \d+/
-        || $ref =~ m/Fv\d+/i
-        ) {
-        $operator = "Statens Vegvesen";
-    }
-    print STDERR "Guessing operator $operator\n" if defined $operator;
-    return $operator;
-}
-
-sub getNearestRoadTags {
-    my ($latitude, $longitude) = @_;
-    my $inforef =
-        FixMyStreet::Geocode::OSM::lookup_location($latitude, $longitude, 16);
-    if ('way' eq $inforef->{result}->{osm_type}) {
-        my $osmtags =
-            FixMyStreet::Geocode::OSM::get_object_tags('way',
-                                                   $inforef->{result}->{osm_id});
-        unless (exists $osmtags->{operator}) {
-            $osmtags->{operatorguess} = guessRoadOperator($osmtags);
-        }
-        return $osmtags;
-    }
-    return undef;
+BEGIN {
+    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
 }
 
 sub isRoadOperator {
     my ($latitude, $longitude, $operatorname) = @_;
-    my $osmtags = getNearestRoadTags($latitude, $longitude);
+    my $osmtags =
+            FixMyStreet::Geocode::OSM::get_nearest_road_tags($latitude,
+                                                             $longitude);
     print STDERR Dumper($osmtags);
     my $operator = $osmtags->{operator} || $osmtags->{operatorguess};
     if ($operator) {
@@ -66,6 +34,6 @@ sub isRoadOperator {
 my $latitude = $ARGV[0] || 63.37638;
 my $longitude = $ARGV[1] || 10.37595;
 
-unless (isRoadOperator($latitude, $longitude, "Statens Vegvesen")) {
-    print STDERR "Operator is not Statens Vegvesen\n";
+unless (isRoadOperator($latitude, $longitude, "Statens vegvesen")) {
+    print STDERR "Operator is not Statens vegvesen\n";
 }
