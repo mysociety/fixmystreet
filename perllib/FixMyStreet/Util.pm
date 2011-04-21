@@ -32,15 +32,13 @@ sub find_closest {
     }
 
     # Get nearest postcode from Matthew's random gazetteer (put in MaPit? Or elsewhere?)
-    if ( mySociety::Config::get('COUNTRY') eq 'GB' ) {
-        my $url = "http://gazetteer.dracos.vm.bytemark.co.uk/point/$latitude,$longitude.json";
-        my $j = LWP::Simple::get($url);
-        if ($j) {
-            $j = JSON->new->utf8->allow_nonref->decode($j);
-            if ($j->{postcode}) {
-                $str .= sprintf(_("Nearest postcode to the pin placed on the map (automatically generated): %s (%sm away)\n\n"),
-                                $j->{postcode}[0], $j->{postcode}[1]);
-            }
+    my $url = "http://gazetteer.dracos.vm.bytemark.co.uk/point/$latitude,$longitude.json";
+    my $j = LWP::Simple::get($url);
+    if ($j) {
+        $j = JSON->new->utf8->allow_nonref->decode($j);
+        if ($j->{postcode}) {
+            $str .= sprintf(_("Nearest postcode to the pin placed on the map (automatically generated): %s (%sm away)\n\n"),
+                            $j->{postcode}[0], $j->{postcode}[1]);
         }
     }
     if ( mySociety::Config::get('MAP_TYPE') eq 'OSM' ) {
