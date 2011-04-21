@@ -192,8 +192,13 @@ foreach my $row (@$unsent) {
         }
 
         $h{councils_name} = join(_(' and '), @dear);
-        $h{multiple} = @dear>1 ? "[ " . _("This email has been sent to both councils covering the location of the problem, as the user did not categorise it; please ignore it if you're not the correct council to deal with the issue, or let us know what category of problem this is so we can add it to our system.") . " ]\n\n"
-            : '';
+        if ($h{category} eq _('Other')) {
+            $h{multiple} = @dear>1 ? "[ " . _("This email has been sent to both councils covering the location of the problem, as the user did not categorise it; please ignore it if you're not the correct council to deal with the issue, or let us know what category of problem this is so we can add it to our system.") . " ]\n\n"
+                : '';
+        } else {
+            $h{multiple} = @dear>1 ? "[ " . _("This email has been sent to several councils covering the location of the problem, as the category selected is provided for all of them; please ignore it if you're not the correct council to deal with the issue.") . " ]\n\n"
+                : '';
+        }
         $h{missing} = ''; 
         if ($missing) {
             my $name = $areas_info->{$missing}->{name};
