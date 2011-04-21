@@ -259,6 +259,7 @@ foreach my $row (@$unsent) {
             $result *= post_easthants_message(%h);
         }
     } elsif ($send_web eq 'london') {
+        $h{message} = construct_london_message(%h);
         if (!$nomail) {
             $result *= post_london_report(%h);
         }
@@ -358,6 +359,27 @@ sub post_easthants_message {
 
 # London
 
+sub construct_london_message {
+    my %h = @_;
+    return <<EOF,
+A user of FixMyStreet has submitted the following report of a local
+problem that they believe might require your attention.
+
+Subject: $h{title}
+
+Details: $h{detail}
+
+$h{fuzzy}, or to provide an update on the problem, please visit the
+following link:
+
+$h{url}
+
+$h{closest_address}
+Yours,
+The FixMyStreet team
+EOF
+}
+
 sub post_london_report {
     my %h = @_;
     my $phone = $h{phone};
@@ -380,6 +402,7 @@ sub post_london_report {
         'Customer.Email' => $h{email},
         'Customer.Phone' => $phone,
         'Customer.Mobile' => $mobile,
+        'ProblemDescription' => $h{message},
     );
     if ($h{used_map}) {
         $params{'Location.Latitude'} = $h{latitude};
