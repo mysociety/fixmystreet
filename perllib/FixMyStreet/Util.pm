@@ -11,8 +11,6 @@ sub find_closest {
     my ($latitude, $longitude) = @_;
     my $str = '';
 
-    print "find_closest: Look up $latitude $longitude\n";
-
     # Get nearest road-type thing from Bing
     my $bingkey;
     try {
