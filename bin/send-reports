@@ -55,7 +55,7 @@ my $base_url = mySociety::Config::get('BASE_URL');
 my $site = CronFns::site($base_url);
 
 my $query = "SELECT id, council, category, title, detail, name, email, phone,
-    used_map, latitude, longitude, (photo is not null) as has_photo, lang,
+    used_map, latitude, longitude, (photo is not null) as has_photo, lang, 
     cobrand, cobrand_data, date_trunc('second', confirmed) as confirmed, postcode
       FROM problem
       WHERE state in ('confirmed','fixed')
@@ -67,11 +67,11 @@ my (%notgot, %note);
 my $cobrand;
 my $cobrand_data;
 foreach my $row (@$unsent) {
-
+    
     $cobrand = $row->{cobrand};
     $cobrand_data = $row->{cobrand_data};
-    # Cobranded and non-cobranded messages can share a database. In this case, the conf file
-    # should specify a vhost to send the reports for each cobrand, so that they don't get sent
+    # Cobranded and non-cobranded messages can share a database. In this case, the conf file 
+    # should specify a vhost to send the reports for each cobrand, so that they don't get sent 
     # more than once if there are multiple vhosts running off the same database. The email_host
     # call checks if this is the host that sends mail for this cobrand.
     next unless (Cobrand::email_host($cobrand));
@@ -103,7 +103,7 @@ foreach my $row (@$unsent) {
     $h{fuzzy} = $row->{used_map} ? _('To view a map of the precise location of this issue')
         : _('The user could not locate the problem on a map, but to see the area around the location they entered');
     $h{closest_address} = '';
-
+    
     # If we are in the UK include eastings and northings, and nearest stuff
     $h{easting_northing} = '';
     if ( mySociety::Config::get('COUNTRY') eq 'GB' ) {
@@ -202,7 +202,7 @@ foreach my $row (@$unsent) {
             $h{multiple} = @dear>1 ? "[ " . _("This email has been sent to several councils covering the location of the problem, as the category selected is provided for all of them; please ignore it if you're not the correct council to deal with the issue.") . " ]\n\n"
                 : '';
         }
-        $h{missing} = '';
+        $h{missing} = ''; 
         if ($missing) {
             my $name = $areas_info->{$missing}->{name};
             $h{missing} = '[ '
