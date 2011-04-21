@@ -3,7 +3,7 @@
 # Cobrand.pm:
 # Cobranding for FixMyStreet.
 #
-# 
+#
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: louise@mysociety.org. WWW: http://www.mysociety.org
 #
@@ -12,6 +12,7 @@
 package Cobrand;
 use strict;
 use Carp;
+use FixMyStreet::Util;
 
 =item get_allowed_cobrands
 
@@ -26,11 +27,11 @@ sub get_allowed_cobrands {
 
 # Cobrand calling functions
 my %fns = (
-    # Return a site restriction clause and a site key if the cobrand uses a subset of the FixMyStreet 
-    # data. Parameter is any extra data the cobrand needs. Returns an empty string and site key 0 
+    # Return a site restriction clause and a site key if the cobrand uses a subset of the FixMyStreet
+    # data. Parameter is any extra data the cobrand needs. Returns an empty string and site key 0
     # if the cobrand uses all the data.
     'site_restriction' => { default => '["", 0]' },
-    # Return a contact restriction clause if the cobrand uses a subset of the FixMyStreet contact data. 
+    # Return a contact restriction clause if the cobrand uses a subset of the FixMyStreet contact data.
     'contact_restriction' => { default => "''" },
     # Return the base url to use in links in emails for the cobranded version of the site, parameter is extra data.
     'base_url_for_emails' => { default => 'base_url($cobrand)' },
@@ -47,9 +48,9 @@ my %fns = (
     # Return HTML for a list of alert options for the cobrand, given QUERY and OPTIONS.
     'alert_list_options' => { default => '0' },
     # Return N recent photos. If EASTING, NORTHING and DISTANCE are supplied, the photos must be attached to problems
-    # within DISTANCE of the point defined by EASTING and NORTHING. 
+    # within DISTANCE of the point defined by EASTING and NORTHING.
     'recent_photos' => { default => '\&Problems::recent_photos' },
-    # Return recent problems on the site. 
+    # Return recent problems on the site.
     'recent' => { default => '\&Problems::recent' },
     # Given a QUERY, return a block of html for showing front stats for the site
     'front_stats' => { default => '\&Problems::front_stats' },
@@ -63,23 +64,23 @@ my %fns = (
     # Parameter is UPDATE_DATA, a reference to a hash of non-cobranded update data. Return cobrand extra data for the update
     'cobrand_data_for_generic_update' => { default => "''" },
     # Parameter is PROBLEM_DATA, a reference to a hash of non-cobranded problem data. Return cobrand extra data for the problem
-    'cobrand_data_for_generic_problem' => { default => "''" }, 
+    'cobrand_data_for_generic_problem' => { default => "''" },
     # Parameter is QUERY. Return a string of extra data to be stored with a problem
     'extra_problem_data' => { default => "''" },
     # Parameter is QUERY. Return a string of extra data to be stored with an update
     'extra_update_data' => { default => "''" },
     # Parameter is QUERY. Return a string of extra data to be stored with an alert
     'extra_alert_data' => { default => "''" },
-    # Given a QUERY, extract any extra data required by the cobrand 
+    # Given a QUERY, extract any extra data required by the cobrand
     'extra_data' => { default => "''" },
-    # Given a QUERY, return a hash of extra params to be included in 
+    # Given a QUERY, return a hash of extra params to be included in
     # any URLs in links produced on the page returned by that query.
     'extra_params' => { default => "''" },
     # Returns any extra text to be displayed with a PROBLEM.
     'extra_problem_meta_text' => { default => "''" },
     # Returns any extra text to be displayed with an UPDATE.
     'extra_update_meta_text' => { default => "''" },
-    # Given a URL ($_[1]), QUERY, EXTRA_DATA, return a URL with any extra params needed appended to it. 
+    # Given a URL ($_[1]), QUERY, EXTRA_DATA, return a URL with any extra params needed appended to it.
     'url' => { default => '$_[1]' },
     # Return any params to be added to responses
     'header_params' => { default => '{}' },
@@ -97,7 +98,7 @@ my %fns = (
     # Return a boolean indicating whether the cobrand allows photo display
     'allow_photo_display' => { default => '1' },
     # Return a boolean indication whether users should see links next to updates allowing them
-    # to report them as offensive. 
+    # to report them as offensive.
     'allow_update_reporting' => { default => '0' },
     # Parameters are LOCATION, QUERY. Return a boolean indicating whether the
     # string LOCATION passes the cobrands checks.
@@ -112,7 +113,7 @@ my %fns = (
     # Return a boolean indicating whether people should be asked whether this
     # is the first time they've reported a problem.
     'ask_ever_reported' => { default => '1' },
-    # List of names of pages to display on the admin interface 
+    # List of names of pages to display on the admin interface
     'admin_pages' => { default => '0' },
     # Show the problem creation graph in the admin interface
     'admin_show_creation_graph' => { default => '1' },
@@ -121,6 +122,8 @@ my %fns = (
     'area_min_generation' => { default => '10' },
     # Some cobrands that use a Tilma map have a smaller mid-point to make pin centred
     'tilma_mid_point' => { default => '""' },
+    # Information derived from the location of the map pin
+    'find_closest' => { default => '\&FixMyStreet::Util::find_closest' },
 );
 
 foreach (keys %fns) {
@@ -179,7 +182,7 @@ sub cobrand_handle {
 
 # Cobrand functions to fetch config variables
 %fns = (
-    # Return the contact name for the cobranded version of the site 
+    # Return the contact name for the cobranded version of the site
     # (to be used in emails).
     'contact_name' => 'CONTACT_NAME',
     # Return the contact email for the cobranded version of the site
@@ -202,11 +205,11 @@ Get the value for KEY from the config file for COBRAND
 =cut
 sub get_cobrand_conf {
     my ($cobrand, $key) = @_;
-    my $value; 
+    my $value;
     if ($cobrand){
         (my $dir = __FILE__) =~ s{/[^/]*?$}{};
         if (-e "$dir/../conf/cobrands/$cobrand/general"){
-            mySociety::Config::set_file("$dir/../conf/cobrands/$cobrand/general");            
+            mySociety::Config::set_file("$dir/../conf/cobrands/$cobrand/general");
             $cobrand = uc($cobrand);
             $value = mySociety::Config::get($key . "_" . $cobrand, undef);
             mySociety::Config::set_file("$dir/../conf/general");
@@ -242,7 +245,7 @@ sub default_set_lang_and_domain {
     my ($lang, $unicode) = @_;
     mySociety::Locale::negotiate_language('en-gb,English,en_GB|nb,Norwegian,nb_NO', $lang); # XXX Testing
     mySociety::Locale::gettext_domain('FixMyStreet', $unicode);
-    mySociety::Locale::change(); 
+    mySociety::Locale::change();
 }
 
 1;
