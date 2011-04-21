@@ -9,6 +9,7 @@
 package FixMyStreet::Map::BingOL;
 
 use strict;
+use mySociety::Gaze;
 use mySociety::Web qw(ent);
 
 sub header_js {
@@ -41,6 +42,9 @@ sub display_map {
 
     my $out = FixMyStreet::Map::header($q, $params{type});
     my $copyright = _('Map contains Ordnance Survey data &copy; Crown copyright and database right 2010. Microsoft');
+    my $dist = mySociety::Gaze::get_radius_containing_population( $params{latitude}, $params{longitude}, 200_000 );
+    my $zoom = 2;
+    $zoom = 3 if $dist < 10;
     $out .= <<EOF;
 <input type="hidden" name="latitude" id="fixmystreet.latitude" value="$params{latitude}">
 <input type="hidden" name="longitude" id="fixmystreet.longitude" value="$params{longitude}">
@@ -48,6 +52,7 @@ sub display_map {
 var fixmystreet = {
     'latitude': $params{latitude},
     'longitude': $params{longitude},
+    'zoom': $zoom,
     'pins': [ $pins_js ]
 }
 </script>
