@@ -579,11 +579,13 @@ please specify the closest point on land.')) unless %$all_councils;
         $category = _('Category:');
     } else {
         @$categories = sort { strcoll($a->{category}, $b->{category}) } @$categories;
+        my %seen;
         foreach (@$categories) {
             $council_ok{$_->{area_id}} = 1;
             next if $_->{category} eq _('Other');
             next if $q->{site} eq 'southampton' && $_->{category} eq 'Street lighting';
-            push @categories, $_->{category};
+            push @categories, $_->{category} unless $seen{$_->{category}};
+            $seen{$_->{category}} = 1;
         }
         if ($q->{site} eq 'scambs') {
             @categories = Page::scambs_categories();
