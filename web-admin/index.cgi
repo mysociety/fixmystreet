@@ -898,6 +898,36 @@ sub admin_questionnaire {
         print $q->Tr({}, $q->td([ 'n/a', 'n/a' ]));
     }
     print $q->end_table();
+
+    print $q->p(_('Problem state change based on survey results'));
+
+    $survey = select_all("SELECT old_state, new_state, COUNT(*) FROM questionnaire WHERE whenanswered IS NOT NULL GROUP BY old_state, new_state");
+
+    $total = 0;
+    foreach my $h (@$survey) {
+        $total += $h->{count}
+    }
+
+    print $q->start_table({border=>1});
+    print $q->Tr({},
+                 $q->th({}, [_('Old state'),
+                             _('New state'),
+                             _('Count')]));
+    if ($total) {
+        foreach my $h (@$survey) {
+            print $q->Tr({},
+                         $q->td([
+                             $h->{old_state},
+                             $h->{new_state},
+                                 sprintf("%d (%d%%)", $h->{count},
+                                         100 * $h->{count} / $total),
+                            ]));
+        }
+    } else {
+        print $q->Tr({}, $q->td([ 'n/a', 'n/a', 'n/a' ]));
+    }
+    print $q->end_table();
+
     print html_tail($q);
 }
 
