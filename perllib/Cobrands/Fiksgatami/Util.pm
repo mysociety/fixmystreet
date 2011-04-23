@@ -67,7 +67,7 @@ sub writetothem_url {
 }
 
 sub find_closest {
-    my ($latitude, $longitude) = @_;
+    my ($self, $latitude, $longitude) = @_;
     my $str = '';
     $str .= FixMyStreet::Geocode::OSM::closest_road_text($latitude,
                                                          $longitude);
