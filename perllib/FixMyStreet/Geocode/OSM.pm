@@ -82,4 +82,29 @@ sub get_nearest_road_tags {
     return undef;
 }
 
+sub closest_road_text {
+    my ($latitude, $longitude) = @_;
+    my $str = '';
+    my $osmtags = get_nearest_road_tags($latitude, $longitude);
+    if ($osmtags) {
+        my ($name, $ref) = ('','');
+        $name =  $osmtags->{name} if exists $osmtags->{name};
+        $ref = " ($osmtags->{ref})" if exists $osmtags->{ref};
+        if ($name || $ref) {
+            $str .= _('The following information might be inaccurate or irrelevant, if the problem is close to several roads or close to a road without a name in OpenStreetmap.') . "\n\n";
+            $str .= sprintf(_("Nearest named road to the pin placed on the map (automatically generated using OpenStreetmap): %s%s"),
+                            $name, $ref) . "\n\n";
+
+            if (my $operator = $osmtags->{operator}) {
+                $str .= sprintf(_("Road operator for this named road (from OpenStreetmap): %s"),
+                                $operator) . "\n\n";
+            } elsif ($operator = $osmtags->{operatorguess}) {
+                $str .= sprintf(_("Road operator for this named road (guessed from road reference number and type): %s"),
+                                $operator) . "\n\n";
+            }
+        }
+    }
+    return $str;
+}
+
 1;
