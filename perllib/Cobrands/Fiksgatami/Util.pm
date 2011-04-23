@@ -66,5 +66,14 @@ sub writetothem_url {
     return 'http://www.norge.no/styresmakter/';
 }
 
+sub find_closest {
+    my ($latitude, $longitude) = @_;
+    my $str = '';
+    $str .= FixMyStreet::Geocode::OSM::closest_road_text($latitude,
+                                                         $longitude);
+    return $str;
+}
+
+
 1;
 
