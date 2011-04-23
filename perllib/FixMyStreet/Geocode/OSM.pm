@@ -69,7 +69,8 @@ sub guess_road_operator {
 sub get_nearest_road_tags {
     my ($latitude, $longitude) = @_;
     my $inforef = lookup_location($latitude, $longitude, 16);
-    if ('way' eq $inforef->{result}->{osm_type}) {
+    if (exists $inforef->{result}->{osm_type}
+        && 'way' eq $inforef->{result}->{osm_type}) {
         my $osmtags = get_object_tags('way',
                                       $inforef->{result}->{osm_id});
         if (mySociety::Config::get('OSM_GUESS_OPERATOR')
