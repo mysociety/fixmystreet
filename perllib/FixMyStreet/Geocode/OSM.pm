@@ -100,7 +100,7 @@ sub closest_road_text {
                 $str .= sprintf(_("Road operator for this named road (from OpenStreetmap): %s"),
                                 $operator) . "\n\n";
             } elsif ($operator = $osmtags->{operatorguess}) {
-                $str .= sprintf(_("Road operator for this named road (guessed from road reference number and type): %s"),
+                $str .= sprintf(_("Road operator for this named road (derived from road reference number and type): %s"),
                                 $operator) . "\n\n";
             }
         }
