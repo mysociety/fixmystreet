@@ -50,7 +50,7 @@ sub find_closest {
             $name =  $osmtags->{name} if exists $osmtags->{name};
             $ref = " ($osmtags->{ref})" if exists $osmtags->{ref};
             if ($name || $ref) {
-                $str .= sprintf(_('The following information might be inaccurate or irrelevant, if the problem is close to several roads or close to a road without a name.') . "\n\n";
+                $str .= sprintf(_('The following information might be inaccurate or irrelevant, if the problem is close to several roads or close to a road without a name in OpenStreetmap.') . "\n\n";
                 $str .= sprintf(_("Nearest named road to the pin placed on the map (automatically generated using OpenStreetmap): %s%s"),
                                 $name, $ref) . "\n\n";
 
