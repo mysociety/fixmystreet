@@ -40,6 +40,18 @@ sub lookup_location {
     return XMLin($result);
 }
 
+sub _osmxml_to_hash {
+    my ($xml, $type) = @_;
+    my $ref = XMLin($xml);
+    my %tags;
+    if ('ARRAY' eq ref $ref->{$type}->{tag}) {
+        map { $tags{$_->{'k'}} = $_->{'v'} } @{$ref->{$type}->{tag}};
+        return \%tags;
+    } else {
+        return undef;
+    }
+}
+
 sub get_object_tags {
     my ($type, $id) = @_;
     my $url = "${osmapibase}0.6/$type/$id";
@@ -49,19 +61,13 @@ sub get_object_tags {
         my $j = LWP::Simple::get($url);
         if ($j) {
             Memcached::set($key, $j, 3600);
-            my $ref = XMLin($j);
-            my %tags;
-            map { $tags{$_->{'k'}} = $_->{'v'} } @{$ref->{$type}->{tag}};
-            return \%tags;
+            return _osmxml_to_hash($j, $type);
         } else {
             print STDERR "No reply from $url\n";
         }
         return undef;
     }
-    my $ref = XMLin($result);
-    my %tags;
-    map { $tags{$_->{'k'}} = $_->{'v'} } @{$ref->{$type}->{tag}};
-    return \%tags;
+    return _osmxml_to_hash($result, $type);
 }
 
 sub guess_road_operator {
