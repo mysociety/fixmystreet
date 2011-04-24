@@ -11,6 +11,7 @@ package FixMyStreet::Geocode::OSM;
 use warnings;
 use strict;
 
+use Memcached;
 use mySociety::Config;
 use LWP::Simple;
 use XML::Simple;
@@ -23,29 +24,44 @@ sub lookup_location {
     my ($latitude, $longitude, $zoom) = @_;
     my $url =
     "${nominatimbase}reverse?format=xml&zoom=$zoom&lat=$latitude&lon=$longitude";
-    my $j = LWP::Simple::get($url);
-    if ($j) {
-        my $ref = XMLin($j);
-        return $ref;
-    } else {
-        print STDERR "No reply from $url\n";
+    my $key = "OSM:lookup_location:$url";
+    my $result = Memcached::get($key);
+    unless ($result) {
+        my $j = LWP::Simple::get($url);
+        if ($j) {
+            Memcached::set($key, $j, 3600);
+            my $ref = XMLin($j);
+            return $ref;
+        } else {
+            print STDERR "No reply from $url\n";
+        }
+        return undef;
     }
-    return undef;
+    return XMLin($result);
 }
 
 sub get_object_tags {
     my ($type, $id) = @_;
     my $url = "${osmapibase}0.6/$type/$id";
-    my $j = LWP::Simple::get($url);
-    if ($j) {
-        my $ref = XMLin($j);
-        my %tags;
-        map { $tags{$_->{'k'}} = $_->{'v'} } @{$ref->{$type}->{tag}};
-        return \%tags;
-    } else {
-        print STDERR "No reply from $url\n";
+    my $key = "OSM:get_object_tags:$url";
+    my $result = Memcached::get($key);
+    unless ($result) {
+        my $j = LWP::Simple::get($url);
+        if ($j) {
+            Memcached::set($key, $j, 3600);
+            my $ref = XMLin($j);
+            my %tags;
+            map { $tags{$_->{'k'}} = $_->{'v'} } @{$ref->{$type}->{tag}};
+            return \%tags;
+        } else {
+            print STDERR "No reply from $url\n";
+        }
+        return undef;
     }
-    return undef;
+    my $ref = XMLin($result);
+    my %tags;
+    map { $tags{$_->{'k'}} = $_->{'v'} } @{$ref->{$type}->{tag}};
+    return \%tags;
 }
 
 sub guess_road_operator {
