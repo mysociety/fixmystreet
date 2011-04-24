@@ -1,0 +1,79 @@
+#!/usr/bin/perl
+
+use warnings;
+use strict;
+
+use FindBin;
+use lib "$FindBin::Bin/../perllib";
+use lib "$FindBin::Bin/../commonlib/perllib";
+
+use Cobrand;
+use mySociety::DBHandle qw(dbh);
+
+use FixMyStreet::Geocode::OSM;
+use Data::Dumper;
+
+BEGIN {
+    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+    mySociety::DBHandle::configure(
+        Name => mySociety::Config::get('BCI_DB_NAME'),
+        User => mySociety::Config::get('BCI_DB_USER'),
+        Password => mySociety::Config::get('BCI_DB_PASS'),
+        Host => mySociety::Config::get('BCI_DB_HOST', undef),
+        Port => mySociety::Config::get('BCI_DB_PORT', undef)
+    );
+}
+
+my $query = "SELECT id, council, category, title, detail, name, email, phone,
+    used_map, latitude, longitude, (photo is not null) as has_photo, lang,
+    cobrand, cobrand_data, date_trunc('second', confirmed) as confirmed, postcode
+      FROM problem
+      WHERE state in ('confirmed','fixed')";
+
+$query .= " LIMIT 40";
+
+my $unsent = dbh()->selectall_arrayref($query, { Slice => {} });
+
+my (%namecount, %refcount, %operatorcount);
+my $cobrand;
+my $cobrand_data;
+my $total;
+$| = 1;
+foreach my $row (@$unsent) {
+    print ".";
+    $total++;
+    $cobrand = $row->{cobrand};
+    $cobrand_data = $row->{cobrand_data};
+    Cobrand::set_lang_and_domain($cobrand, $row->{lang}, 1);
+    my ($latitude, $longitude) = ($row->{latitude}, $row->{longitude});
+    my $osmtags = FixMyStreet::Geocode::OSM::get_nearest_road_tags($latitude, $longitude);
+    if (exists $osmtags->{name}) {
+        $namecount{$osmtags->{name}}++;
+    }
+    if (exists $osmtags->{ref}) {
+        $refcount{$osmtags->{ref}}++;
+    }
+    my $operator = $osmtags->{operator} || $osmtags->{operatorguess};
+    if ($operator) {
+        $operatorcount{$operator}++;
+    }
+    sleep 5;
+}
+print "\n";
+print_stats();
+
+sub print_stats {
+    print "Names:\n";
+    for my $name (sort keys %namecount) {
+        printf("%3d %s\n", $namecount{$name}, $name) if $namecount{$name} > 1;
+    }
+    print "Refs:\n";
+    for my $ref (sort keys %refcount) {
+        printf("%3d %s\n", $refcount{$ref}, $ref) if $refcount{$ref} > 1;
+    }
+    print "Operators:\n";
+    for my $operator (sort keys %operatorcount) {
+        printf("%3d %s\n", $operatorcount{$operator}, $operator);
+    }
+    print "Total $total\n";
+}
