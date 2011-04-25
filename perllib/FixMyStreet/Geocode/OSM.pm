@@ -73,16 +73,23 @@ sub get_object_tags {
 sub guess_road_operator {
     my $inforef = shift;
     my $highway = $inforef->{highway} || "unknown";
-    my $ref =  $inforef->{ref} || "unknown";
+    my $refs =  $inforef->{ref} || "unknown";
 
     my $operator;
     if ( mySociety::Config::get('COUNTRY') eq 'NO' ) {
         if ($highway eq "trunk"
             || $highway eq "primary"
-            || $ref =~ m/E \d+/
-            || $ref =~ m/Fv\d+/i
             ) {
             $operator = "Statens vegvesen";
+        }
+        unless (defined $operator) {
+            for my $ref (split(/;/, $refs)) {
+                if ($ref =~ m/E ?\d+/
+                    || $ref =~ m/Fv\d+/i
+                    ) {
+                    $operator = "Statens vegvesen";
+                }
+            }
         }
     }
     return $operator;
