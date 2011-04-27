@@ -82,24 +82,26 @@ sub get_discovery {
               'specification' => $spec_url},
             ]
     };
-    format_output($format, $info);
+    format_output($q, $format, $info);
 }
 
 sub get_services {
     my ($q, $format) = @_;
     my $jurisdiction_id = $q->param('jurisdiction_id') || '';
-    test_dump();
+    test_dump($q);
 }
 sub get_requests {
     my ($q, $format) = @_;
-    test_dump();
+    test_dump($q);
 }
 
 sub format_output {
-    my ($format, $hashref) = @_;
+    my ($q, $format, $hashref) = @_;
     if ('json' eq $format) {
-        JSON::to_json($hashref);
+        print $q->header( -type => 'application/json; charset=utf-8' );
+        print JSON::to_json($hashref);
     } elsif ('xml' eq $format) {
+        print $q->header( -type => 'text/xml; charset=utf-8' );
         # FIXME
     } else {
         error();
@@ -107,6 +109,7 @@ sub format_output {
 }
 
 sub test_dump {
+    my ($q) = @_;
     print $q->header(-charset => 'utf-8', -content_type => 'text/plain');
     for my $env (sort keys %ENV) {
        print "$env = '$ENV{$env}'\n";
