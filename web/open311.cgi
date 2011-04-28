@@ -123,13 +123,17 @@ sub get_services {
     my $cobrand = Page::get_cobrand($q);
     my @area_types = Cobrand::area_types($cobrand);
 
-    my $all_councils = mySociety::MaPit::call('point',
-                                              "4326/$lon,$lat",
-                                              type => \@area_types);
+    my $all_councils;
+    if ($lat || $lon) {
+        $all_councils = mySociety::MaPit::call('point',
+                                               "4326/$lon,$lat",
+                                               type => \@area_types);
+    } else {
+        # FIXME Figure out a better way to handle no lat/lon
+        $all_councils = { 3 => 'Oslo'};
+    }
 
     # Look up categories for this council or councils
-    my $category = '';
-    my (%council_ok, @categories);
     my $categories =
         select_all("SELECT area_id, category FROM contacts ".
                    " WHERE deleted='f' and area_id IN (" .
