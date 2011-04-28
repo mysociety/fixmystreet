@@ -19,12 +19,13 @@ sub main {
     my $type = $q->param('type') || '';
     my $start_date = $q->param('start_date') || '';
     my $end_date = $q->param('end_date') || '';
+    my $category = $q->param('category') || '';
     if ($start_date !~ /^\d{4}-\d\d-\d\d$/ || $end_date !~ /^\d{4}-\d\d-\d\d$/) {
         $problems = { error => 'Invalid dates supplied' };
     } elsif ($type eq 'new_problems') {
-        $problems = Problems::created_in_interval($start_date, $end_date);
+        $problems = Problems::created_in_interval($start_date, $end_date, $category);
     } elsif ($type eq 'fixed_problems') {
-        $problems = Problems::fixed_in_interval($start_date, $end_date);
+        $problems = Problems::fixed_in_interval($start_date, $end_date, $category);
     }
     print $q->header( -type => 'application/json; charset=utf-8' );
     print JSON::to_json($problems);
