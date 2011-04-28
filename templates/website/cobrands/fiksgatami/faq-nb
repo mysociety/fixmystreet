@@ -80,6 +80,36 @@
     Tilsvarende søk på Google Maps (etter f.eks. "Slogvær, Norway")
     vil også feile.  For å fikse det må en ta kontakt med Google.</dd>
 
+  <dt>Jeg finner ikke gata mi på kartet, hvorfor bruker dere ikke
+    Google Maps? / Det er noe galt med kartet, hvor rapporterer jeg
+    det? / Hvorfor bruker dere ikke Google Maps? / Hvor rapporterer
+    jeg feil eller mangler i kartet?</dt>
+
+  <dd>Kartene i FiksGataMi kommer fra OpenStreetMap (OSM). OSM er
+    fritt og laget og styrt av brukerne, mye likt Wikipedia. Fordelene
+    med OSM er mange, f.eks kan du forholdsvis enkelt være med å
+    utbedre kartet, og legge til detaljer og informasjon som ikke er
+    tilgjengelig på andre kart. Men siden kartet er laget av brukerne
+    er det ikke sikkert alle gatene er tegnet inn der du bor.  Vi
+    oppfordrer alle til å involvere seg i OSM direkte, men dersom
+    dette ikke er aktuelt for deg kan du rapportere feil og mangler på
+    <a href="http://www.mapdust.com/">Mapdust</a>, og dersom du velger
+    kategorien «Missing street», kan du be om at bidragsyterne legger
+    til en vei.</a>
+
+  <dt>Hvor finner jeg FiksGataMi på sosiale medier?</dt>
+  <dd>Fiksgatami er tilgjengelig på
+    <a href="http://www.facebook.com/pages/FiksGataMi/146616932068569">Facebook</a>
+    og <a href="http://twitter.com/fiksgatami">Twitter</a>.</dd>
+
+  <dt>Hvordan anbefaler FiksGataMi-gruppen at det offentlige håndterer
+    problemrapporter?</dt>
+  <dd>Vi har skrevet en side med
+    <a href="http://wiki.nuug.no/grupper/fiksgatami/tips">tips til
+    offentlige virksomheter som mottar meldinger fra FiksGataMi</a>
+    for svarer på vanlige spørsmål vi får fra det offentlige, og litt
+    om hva vi anbefaler.</dd>
+
 </dl>
 
 <h2><a name="privacy"></a>Spørsmål om personvern</h2>
