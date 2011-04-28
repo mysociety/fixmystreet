@@ -18,6 +18,7 @@
 #    values).
 #  * should service IDs be numeric or not?  Spec do not say, and all
 #    examples use numbers.
+#  * missing way to search for reports near a location using lat/lon
 
 use strict;
 use warnings;
