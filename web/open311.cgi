@@ -45,6 +45,9 @@ sub main {
     } elsif ($path_info =~ m%^/v2/requests/(\d+).(xml|json|html)$%) {
         my ($id, $format) = ($1, $2);
         return get_request($q, $id, $format);
+    } elsif ($path_info =~ m%^/v2/requests.(xml|json|html)$%) {
+        my ($format) = ($2);
+        return get_requests($q, $format);
     } else {
         return show_documentation($q);
     }
@@ -155,6 +158,25 @@ sub get_services {
             );
     }
     format_output($q, $format, {'services' => [{ 'service' => \@services}]});
+}
+
+sub get_requests {
+    my ($q, $format) = @_;
+    my $jurisdiction_id    = $q->param('jurisdiction_id') || error();
+    my $service_request_id = $q->param('service_request_id') || '';
+    my $service_code       = $q->param('service_code') || '';
+    my $start_date         = $q->param('start_date') || '';
+    my $end_date           = $q->param('end_date') || '';
+    my $status             = $q->param('status') || '';
+
+    if ($start_date !~ /^\d{4}-\d\d-\d\d$/ || $end_date !~ /^\d{4}-\d\d-\d\d$/) {
+        error('Invalid dates supplied');
+    }
+    if ('open' eq $status)
+        $problems = Problems::created_in_interval($start_date, $end_date);
+    } elsif ('closed' eq $status) {
+        $problems = Problems::fixed_in_interval($start_date, $end_date);
+    }
 }
 
 # Example
