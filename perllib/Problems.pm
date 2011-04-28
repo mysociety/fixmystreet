@@ -276,22 +276,24 @@ sub fixed_in_interval {
     my ($start_date, $end_date, $category) = @_;
     my $criteria = "where state='fixed' and date_trunc('day',lastupdate)>=? and 
 date_trunc('day',lastupdate)<=?";
+    my @args = ($start_date, $end_date);
     if ($category) {
         $criteria .= " and category = ?";
+        push(@args, $category);
     }
-    return problems_matching_criteria($criteria, $start_date, $end_date,
-                                      $category);
+    return problems_matching_criteria($criteria, @args)
 }
 
 sub created_in_interval {
     my ($start_date, $end_date, $category) = @_;
     my $criteria = "where state='confirmed' and date_trunc('day',created)>=? and 
 date_trunc('day',created)<=?";
+    my @args = ($start_date, $end_date);
     if ($category) {
         $criteria .= " and category = ?";
+        push(@args, $category);
     }
-    return problems_matching_criteria($criteria, $start_date, $end_date,
-                                      $category);
+    return problems_matching_criteria($criteria, @args)
 }
 
 =item data_sharing_notification_start
