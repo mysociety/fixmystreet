@@ -36,15 +36,15 @@ sub main {
     my $rss = $q->param('rss') || '';
     # Like PATH_INFO = '/services.xml'
     my $path_info = $ENV{'PATH_INFO'};
-    if ($path_info =~ m%^/v2/discovery.(xml|json)$%) {
+    if ($path_info =~ m%^/v2/discovery.(xml|json|html)$%) {
         my ($format) = $1;
         return get_discovery($q, $format);
-    } elsif ($path_info =~ m%^/v2/services.(xml|json)$%) {
+    } elsif ($path_info =~ m%^/v2/services.(xml|json|html)$%) {
         my ($format) = $1;
         return get_services($q, $format);
-    } elsif ($path_info =~ m%^/v2/requests/(\d+).(xml|json)$%) {
+    } elsif ($path_info =~ m%^/v2/requests/(\d+).(xml|json|html)$%) {
         my ($id, $format) = ($1, $2);
-        return get_requests($q, $format);
+        return get_request($q, $id, $format);
     } else {
         return show_documentation($q);
     }
@@ -156,9 +156,47 @@ sub get_services {
     }
     format_output($q, $format, {'services' => [{ 'service' => \@services}]});
 }
-sub get_requests {
-    my ($q, $format) = @_;
-    test_dump($q);
+
+# Example
+# http://seeclickfix.com/open311/requests/1.xml?jurisdiction_id=sfgov.org
+sub get_request {
+    my ($q, $id, $format) = @_;
+
+    # Look up categories for this council or councils
+    my $problems =
+        select_all("SELECT title, detail, latitude, longitude, state, ".
+                   "category, created, lastupdate, ".
+                   "(photo is not null) as has_photo FROM problem ".
+                   "WHERE state in ('fixed', 'confirmed') and id = ?", $id);
+    if (@{$problems}[0]) {
+        my $problem = @{$problems}[0];
+        my %statusmap = ( 'fixed' => 'closed',
+                          'confirmed' => 'open');
+        my $info =
+        {
+            'service_request_id' => [ $id ],
+            'description' => [ $problem->{title} ."\n" . $problem->{detail} ],
+            'lat' => [ $problem->{latitude} ],
+            'long' => [ $problem->{longitude} ],
+            'status' => [ $statusmap{$problem->{state}} ],
+            'status_notes' => [ {} ],
+            'requested_datetime' => [ $problem->{created} ],
+            'updated_datetime' => [ $problem->{lastupdate} ],
+            'expected_datetime' => [ {} ],
+            'address' => [ {} ],
+            'address_id' => [ {} ],
+            'service_code' => [ $problem->{category} ],
+            'service_name' => [ $problem->{category} ],
+            'service_notice' => [ {} ],
+            # FIXME create full URL to image
+            'media_url' => [ $problem->{has_photo} ? "/photo?id=$id" : {} ],
+            'agency_responsible' => [ {} ],
+            'zipcode' => [ {} ],
+        };
+        format_output($q, $format, {'requests' => [{ 'request' => [ $info ]}]});
+    } else {
+        # FIXME handle bogus IDs
+    }
 }
 
 sub format_output {
