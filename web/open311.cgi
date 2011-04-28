@@ -64,11 +64,10 @@ sub get_discovery {
         'changeset' => $prod_changeset,
         # XXX rewrite to match
         'key_service' =>"Read access is open to all according to our \u003Ca href='/open_data' target='_blank'\u003Eopen data license\u003C/a\u003E. For write access either: 1. return the 'guid' cookie on each call (unique to each client) or 2. use an api key from a user account which can be generated here: http://seeclickfix.com/register The unversioned url will always point to the latest supported version.",
-        "endpoints" =>
-            [
-             {'formats' => ["text/xml",
-                            "application/json",
-                            "text/html"],
+        'endpoints' =>
+            [{'formats' => ['text/xml',
+                            'application/json',
+                            'text/html'],
               'type' => 'production',
               'changeset' => $prod_changeset,
               'url' => $prod_url,
@@ -101,11 +100,31 @@ sub format_output {
         print $q->header( -type => 'application/json; charset=utf-8' );
         print JSON::to_json($hashref);
     } elsif ('xml' eq $format) {
-        print $q->header( -type => 'text/xml; charset=utf-8' );
+        print $q->header( -type => 'application/xml; charset=utf-8' );
         # FIXME
+        print as_xml({'discovery' => $hashref});
     } else {
         error();
     }
+}
+
+sub as_xml {
+    my ($hashref) = @_;
+    my $xml = '';
+    for my $key (sort keys %{$hashref}) {
+        $xml .= "<$key>";
+        if ('HASH' eq ref $hashref->{$key}) {
+            $xml .= as_xml($hashref->{$key});
+        } elsif ('ARRAY' eq ref $hashref->{$key}) {
+            for my $row (@{$hashref->{$key}}) {
+                $xml .= as_xml($row);
+            }
+        } else {
+            $xml .= $hashref->{$key};
+        }
+        $xml .= "</$key>";
+    }
+    return $xml;
 }
 
 sub test_dump {
