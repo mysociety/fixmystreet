@@ -28,6 +28,7 @@ use JSON;
 use XML::Simple;
 use URI::Escape;
 use Page;
+use Problems;
 use mySociety::DBHandle qw(select_all);
 
 sub main {
@@ -163,20 +164,41 @@ sub get_services {
 sub get_requests {
     my ($q, $format) = @_;
     my $jurisdiction_id    = $q->param('jurisdiction_id') || error();
-    my $service_request_id = $q->param('service_request_id') || '';
-    my $service_code       = $q->param('service_code') || '';
-    my $start_date         = $q->param('start_date') || '';
-    my $end_date           = $q->param('end_date') || '';
-    my $status             = $q->param('status') || '';
 
-    if ($start_date !~ /^\d{4}-\d\d-\d\d$/ || $end_date !~ /^\d{4}-\d\d-\d\d$/) {
-        error('Invalid dates supplied');
+    my %rules = (
+        service_request_id => 'id = ?',
+        service_code       => 'category = ?',
+        status             => 'state = ?',
+        start_date         => "date_trunc('day',lastupdate) >= ?",
+        end_date           => "date_trunc('day',lastupdate) <= ?",
+        );
+    my @args;
+    my $criteria;
+    for my $param (keys %rules) {
+        if ($q->param($param)) {
+            my $value = $q->param($param);
+            my $rule = $rules{$param};
+            if ($criteria) {
+                $criteria .= " and $rule";
+            } else {
+                $criteria = $rule;
+            }
+            if ('status' eq $param) {
+                $value = {
+                    'open' => 'confirmed',
+                    'closed' => 'fixed'
+                }->{$value};
+            } elsif ('start_date' eq $param || 'end_date' eq $param) {
+                if ($value !~ /^\d{4}-\d\d-\d\d$/) {
+                    error('Invalid dates supplied');
+                }
+            }
+            push(@args, $value);
+        }
     }
-    if ('open' eq $status)
-        $problems = Problems::created_in_interval($start_date, $end_date);
-    } elsif ('closed' eq $status) {
-        $problems = Problems::fixed_in_interval($start_date, $end_date);
-    }
+
+    my $problems = Problems::problems_matching_criteria("WHERE $criteria", @args);
+    format_output($q, $format, {'requests' => [ $problems]});
 }
 
 # Example
