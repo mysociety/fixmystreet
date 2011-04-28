@@ -277,7 +277,7 @@ sub fixed_in_interval {
     my $criteria = "where state='fixed' and date_trunc('day',lastupdate)>=? and 
 date_trunc('day',lastupdate)<=?";
     if ($category) {
-        $criteria .= " category = ?";
+        $criteria .= " and category = ?";
     }
     return problems_matching_criteria($criteria, $start_date, $end_date,
                                       $category);
@@ -288,7 +288,7 @@ sub created_in_interval {
     my $criteria = "where state='confirmed' and date_trunc('day',created)>=? and 
 date_trunc('day',created)<=?";
     if ($category) {
-        $criteria .= " category = ?";
+        $criteria .= " and category = ?";
     }
     return problems_matching_criteria($criteria, $start_date, $end_date,
                                       $category);
