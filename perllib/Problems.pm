@@ -240,7 +240,9 @@ sub problems_matching_criteria {
     my ($criteria, @params) = @_;
     my $problems = select_all(
         "select id, title, council, category, detail, name, anonymous,
-        confirmed, whensent, service
+        confirmed, whensent, service, latitude, longitude, used_map,
+        state, created, lang, lastupdate,
+        external_id, external_body, external_team
         from problem
         $criteria
         $site_restriction", @params);
