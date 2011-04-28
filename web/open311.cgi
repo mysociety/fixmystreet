@@ -10,6 +10,14 @@
 #
 # Copyright (c) 2011 Petter Reinholdtsen, some rights reserved.
 # Email: pere@hungry.com
+#
+# Issues with Open311
+#  * no way to specify which languages are understood by the
+#    recipients.  some lang=nb,nn setting should be available.
+#  * not obvious how to handle generic requests (ie without lat/lon
+#    values).
+#  * should service IDs be numeric or not?  Spec do not say, and all
+#    examples use numbers.
 
 use strict;
 use warnings;
@@ -17,8 +25,10 @@ use warnings;
 use Standard;
 
 use JSON;
+use XML::Simple;
 use URI::Escape;
 use Page;
+use mySociety::DBHandle qw(select_all);
 
 sub main {
     my $q = shift;
@@ -51,6 +61,8 @@ sub show_documentation {
     print $q->li("http://wiki.open311.org/GeoReport_v2");
 }
 
+# Example
+# http://sandbox.georeport.org/tools/discovery/discovery.xml
 sub get_discovery {
     my ($q, $format) = @_;
     my $contact_email = 'fiksgatami@rt.nuug.no';
@@ -61,28 +73,43 @@ sub get_discovery {
     my $spec_url = 'http://wiki.open311.org/GeoReport_v2';
     my $info =
     {
-        'contact' => "Send email to $contact_email.",
-        'changeset' => $prod_changeset,
+        'contact' => ["Send email to $contact_email."],
+        'changeset' => [$prod_changeset],
         # XXX rewrite to match
-        'key_service' =>"Read access is open to all according to our \u003Ca href='/open_data' target='_blank'\u003Eopen data license\u003C/a\u003E. For write access either: 1. return the 'guid' cookie on each call (unique to each client) or 2. use an api key from a user account which can be generated here: http://seeclickfix.com/register The unversioned url will always point to the latest supported version.",
-        'endpoints' =>
-            [{'formats' => ['text/xml',
-                            'application/json',
-                            'text/html'],
-              'type' => 'production',
-              'changeset' => $prod_changeset,
-              'url' => $prod_url,
-              'specification' => $spec_url},
-             {'formats' => ['text/xml',
-                            'application/json',
-                            'text/html'],
-              'type' => 'test',
-              'changeset' => $test_changeset,
-              'url' => "$test_url",
-              'specification' => $spec_url},
+        'key_service' => ["Read access is open to all according to our \u003Ca href='/open_data' target='_blank'\u003Eopen data license\u003C/a\u003E. For write access either: 1. return the 'guid' cookie on each call (unique to each client) or 2. use an api key from a user account which can be generated here: http://seeclickfix.com/register The unversioned url will always point to the latest supported version."],
+        'endpoints' => [
+            {
+                'endpoint' => [
+                    {
+                        'formats' => [
+                            {'format' => [ 'text/xml',
+                                           'application/json',
+                                           'text/html' ]
+                            }
+                            ],
+                        'specification' => [ $spec_url ],
+                        'changeset' => [ $prod_changeset ],
+                        'url' => [ $prod_url ],
+                        'type' => [ 'production' ]
+                    },
+                    {
+                        'formats' => [
+                            {
+                                'format' => [ 'text/xml',
+                                              'application/json',
+                                              'text/html' ]
+                            }
+                            ],
+                        'specification' => [ $spec_url ],
+                        'changeset' => [ $test_changeset ],
+                        'url' => [ $test_url ],
+                        'type' => [ 'test' ]
+                    }
+                    ]
+            }
             ]
     };
-    format_output($q, $format, $info);
+    format_output($q, $format, {'discovery' => $info});
 }
 
 # Example
@@ -93,6 +120,7 @@ sub get_services {
     my $lat = $q->param('lat') || '';
     my $lon = $q->param('lon') || '';
 
+    my $cobrand = Page::get_cobrand($q);
     my @area_types = Cobrand::area_types($cobrand);
 
     my $all_councils = mySociety::MaPit::call('point',
@@ -106,29 +134,23 @@ sub get_services {
         select_all("SELECT area_id, category FROM contacts ".
                    " WHERE deleted='f' and area_id IN (" .
                    join(',', keys %$all_councils) . ')');
-    my $categorynum = 0;
+    my @services;
     for my $categoryref ( sort {$a->{category} cmp $b->{category} }
                           @$categories) {
         my $categoryname = $categoryref->{category};
-        $categorynum++; # FIXME need to figure out a good number to use
         push(@services,
              {
-                 'service_name' => $categoryname,
-                 'description' => '',
-                 'service_code' => $categorynum,
-                 'metadata' => 'true',
-                 'type' => 'realtime',
-                 'group' => '',
-                 'keywords' => '',
+                 'service_name' => [ $categoryname ],
+                 'description' =>  [ '' ],
+                 'service_code' => [ $categoryname ],
+                 'metadata' => [ 'true' ],
+                 'type' => [ 'realtime' ],
+                 'group' => [ '' ],
+                 'keywords' => [ '' ],
              }
             );
     }
-    if ('json' eq $format) {
-        print $q->header( -type => 'application/json; charset=utf-8' );
-        print JSON::to_json($hashref);
-    } else {
-        # FIXME, add XML support
-    }
+    format_output($q, $format, {'services' => [{ 'service' => \@services}]});
 }
 sub get_requests {
     my ($q, $format) = @_;
@@ -142,30 +164,10 @@ sub format_output {
         print JSON::to_json($hashref);
     } elsif ('xml' eq $format) {
         print $q->header( -type => 'application/xml; charset=utf-8' );
-        # FIXME
-        print as_xml({'discovery' => $hashref});
+        print XMLout($hashref, RootName => undef);
     } else {
         error();
     }
-}
-
-sub as_xml {
-    my ($hashref) = @_;
-    my $xml = '';
-    for my $key (sort keys %{$hashref}) {
-        $xml .= "<$key>";
-        if ('HASH' eq ref $hashref->{$key}) {
-            $xml .= as_xml($hashref->{$key});
-        } elsif ('ARRAY' eq ref $hashref->{$key}) {
-            for my $row (@{$hashref->{$key}}) {
-                $xml .= as_xml($row);
-            }
-        } else {
-            $xml .= $hashref->{$key};
-        }
-        $xml .= "</$key>";
-    }
-    return $xml;
 }
 
 sub test_dump {
