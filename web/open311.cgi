@@ -6,6 +6,7 @@
 # http://open311.org/
 # http://wiki.open311.org/GeoReport_v2
 # http://fixmystreet.org.nz/api
+# http://seeclickfix.com/open311/
 #
 # Copyright (c) 2011 Petter Reinholdtsen, some rights reserved.
 # Email: pere@hungry.com
@@ -84,10 +85,50 @@ sub get_discovery {
     format_output($q, $format, $info);
 }
 
+# Example
+# http://seeclickfix.com/open311/services.html?lat=32.1562864999991&lng=-110.883806
 sub get_services {
     my ($q, $format) = @_;
     my $jurisdiction_id = $q->param('jurisdiction_id') || '';
-    test_dump($q);
+    my $lat = $q->param('lat') || '';
+    my $lon = $q->param('lon') || '';
+
+    my @area_types = Cobrand::area_types($cobrand);
+
+    my $all_councils = mySociety::MaPit::call('point',
+                                              "4326/$lon,$lat",
+                                              type => \@area_types);
+
+    # Look up categories for this council or councils
+    my $category = '';
+    my (%council_ok, @categories);
+    my $categories =
+        select_all("SELECT area_id, category FROM contacts ".
+                   " WHERE deleted='f' and area_id IN (" .
+                   join(',', keys %$all_councils) . ')');
+    my $categorynum = 0;
+    for my $categoryref ( sort {$a->{category} cmp $b->{category} }
+                          @$categories) {
+        my $categoryname = $categoryref->{category};
+        $categorynum++; # FIXME need to figure out a good number to use
+        push(@services,
+             {
+                 'service_name' => $categoryname,
+                 'description' => '',
+                 'service_code' => $categorynum,
+                 'metadata' => 'true',
+                 'type' => 'realtime',
+                 'group' => '',
+                 'keywords' => '',
+             }
+            );
+    }
+    if ('json' eq $format) {
+        print $q->header( -type => 'application/json; charset=utf-8' );
+        print JSON::to_json($hashref);
+    } else {
+        # FIXME, add XML support
+    }
 }
 sub get_requests {
     my ($q, $format) = @_;
