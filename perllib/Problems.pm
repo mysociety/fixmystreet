@@ -273,17 +273,25 @@ sub problems_matching_criteria {
 }
 
 sub fixed_in_interval {
-    my ($start_date, $end_date) = @_; 
+    my ($start_date, $end_date, $category) = @_;
     my $criteria = "where state='fixed' and date_trunc('day',lastupdate)>=? and 
 date_trunc('day',lastupdate)<=?";
-    return problems_matching_criteria($criteria, $start_date, $end_date);
+    if ($category) {
+        $criteria .= " category = ?";
+    }
+    return problems_matching_criteria($criteria, $start_date, $end_date,
+                                      $category);
 }
 
 sub created_in_interval {
-    my ($start_date, $end_date) = @_; 
+    my ($start_date, $end_date, $category) = @_;
     my $criteria = "where state='confirmed' and date_trunc('day',created)>=? and 
 date_trunc('day',created)<=?";
-    return problems_matching_criteria($criteria, $start_date, $end_date);
+    if ($category) {
+        $criteria .= " category = ?";
+    }
+    return problems_matching_criteria($criteria, $start_date, $end_date,
+                                      $category);
 }
 
 =item data_sharing_notification_start
