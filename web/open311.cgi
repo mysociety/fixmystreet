@@ -168,7 +168,7 @@ sub output_requests {
     my ($q, $format, $criteria, @args) = @_;
     # Look up categories for this council or councils
     my $problems =
-        select_all("SELECT title, detail, latitude, longitude, state, ".
+        select_all("SELECT id, title, detail, latitude, longitude, state, ".
                    "category, created, lastupdate, ".
                    "(photo is not null) as has_photo FROM problem ".
                    "WHERE $criteria", @args);
