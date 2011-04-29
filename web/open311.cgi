@@ -156,7 +156,7 @@ sub get_services {
         push(@services,
              {
                  'service_name' => [ $categoryname ],
-                 'description' =>  [ 'n/a' ], # FIXME required!
+                 'description' =>  [ 'n/a' ], # FIXME required by Open311 v2!
                  'service_code' => [ $categoryname ],
                  'metadata' => [ 'false' ],
                  'type' => [ 'realtime' ],
