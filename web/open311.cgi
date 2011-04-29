@@ -153,7 +153,7 @@ sub get_services {
                  'service_name' => [ $categoryname ],
                  'description' =>  [ '' ],
                  'service_code' => [ $categoryname ],
-                 'metadata' => [ 'true' ],
+                 'metadata' => [ 'false' ],
                  'type' => [ 'realtime' ],
                  'group' => [ '' ],
                  'keywords' => [ '' ],
