@@ -17,8 +17,9 @@
 #  * not obvious how to handle generic requests (ie without lat/lon
 #    values).
 #  * should service IDs be numeric or not?  Spec do not say, and all
-#    examples use numbers.
+#    examples I find use numbers.
 #  * missing way to search for reports near a location using lat/lon
+#  * report attributes lack title field.
 
 use strict;
 use warnings;
@@ -48,7 +49,7 @@ sub main {
         my ($id, $format) = ($1, $2);
         return get_request($q, $id, $format);
     } elsif ($path_info =~ m%^/v2/requests.(xml|json|html)$%) {
-        my ($format) = ($2);
+        my ($format) = ($1);
         return get_requests($q, $format);
     } else {
         return show_documentation($q);
@@ -162,6 +163,48 @@ sub get_services {
     format_output($q, $format, {'services' => [{ 'service' => \@services}]});
 }
 
+
+sub output_requests {
+    my ($q, $format, $criteria, @args) = @_;
+    # Look up categories for this council or councils
+    my $problems =
+        select_all("SELECT title, detail, latitude, longitude, state, ".
+                   "category, created, lastupdate, ".
+                   "(photo is not null) as has_photo FROM problem ".
+                   "WHERE $criteria", @args);
+
+    my %statusmap = ( 'fixed' => 'closed',
+                      'confirmed' => 'open');
+
+    my @problemlist;
+    for my $problem (@{$problems}) {
+        my $id = $problem->{id};
+        push(@problemlist,
+             {
+                 'service_request_id' => [ $id ],
+                 'description' => [ $problem->{title} ."\n\n" .
+                                    $problem->{detail} ],
+                 'lat' => [ $problem->{latitude} ],
+                 'long' => [ $problem->{longitude} ],
+                 'status' => [ $statusmap{$problem->{state}} ],
+                 'status_notes' => [ {} ],
+                 'requested_datetime' => [ $problem->{created} ],
+                 'updated_datetime' => [ $problem->{lastupdate} ],
+                 'expected_datetime' => [ {} ],
+                 'address' => [ {} ],
+                 'address_id' => [ {} ],
+                 'service_code' => [ $problem->{category} ],
+                 'service_name' => [ $problem->{category} ],
+                 'service_notice' => [ {} ],
+                 # FIXME create full URL to image
+                 'media_url' => [ $problem->{has_photo} ? "/photo?id=$id" : {} ],
+                 'agency_responsible' => [ {} ],
+                 'zipcode' => [ {} ],
+             });
+    }
+    format_output($q, $format, {'requests' => [{ 'request' => \@problemlist}]});
+}
+
 sub get_requests {
     my ($q, $format) = @_;
     my $jurisdiction_id    = $q->param('jurisdiction_id') || error();
@@ -197,51 +240,15 @@ sub get_requests {
             push(@args, $value);
         }
     }
-
-    my $problems = Problems::problems_matching_criteria("WHERE $criteria", @args);
-    format_output($q, $format, {'requests' => [ $problems]});
+    output_requests($q, $format, $criteria, @args);
 }
 
 # Example
 # http://seeclickfix.com/open311/requests/1.xml?jurisdiction_id=sfgov.org
 sub get_request {
     my ($q, $id, $format) = @_;
-
-    # Look up categories for this council or councils
-    my $problems =
-        select_all("SELECT title, detail, latitude, longitude, state, ".
-                   "category, created, lastupdate, ".
-                   "(photo is not null) as has_photo FROM problem ".
-                   "WHERE state in ('fixed', 'confirmed') and id = ?", $id);
-    if (@{$problems}[0]) {
-        my $problem = @{$problems}[0];
-        my %statusmap = ( 'fixed' => 'closed',
-                          'confirmed' => 'open');
-        my $info =
-        {
-            'service_request_id' => [ $id ],
-            'description' => [ $problem->{title} ."\n" . $problem->{detail} ],
-            'lat' => [ $problem->{latitude} ],
-            'long' => [ $problem->{longitude} ],
-            'status' => [ $statusmap{$problem->{state}} ],
-            'status_notes' => [ {} ],
-            'requested_datetime' => [ $problem->{created} ],
-            'updated_datetime' => [ $problem->{lastupdate} ],
-            'expected_datetime' => [ {} ],
-            'address' => [ {} ],
-            'address_id' => [ {} ],
-            'service_code' => [ $problem->{category} ],
-            'service_name' => [ $problem->{category} ],
-            'service_notice' => [ {} ],
-            # FIXME create full URL to image
-            'media_url' => [ $problem->{has_photo} ? "/photo?id=$id" : {} ],
-            'agency_responsible' => [ {} ],
-            'zipcode' => [ {} ],
-        };
-        format_output($q, $format, {'requests' => [{ 'request' => [ $info ]}]});
-    } else {
-        # FIXME handle bogus IDs
-    }
+    my $criteria = "state IN ('fixed', 'confirmed') AND id = ?";
+    output_requests($q, $format, $criteria, $id);
 }
 
 sub format_output {
