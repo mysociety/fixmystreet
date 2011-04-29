@@ -95,6 +95,8 @@ sub guess_road_operator {
     return $operator;
 }
 
+# A better alternative might be
+# http://www.geonames.org/maps/osm-reverse-geocoder.html#findNearbyStreetsOSM
 sub get_nearest_road_tags {
     my ($latitude, $longitude) = @_;
     my $inforef = lookup_location($latitude, $longitude, 16);
