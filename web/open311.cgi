@@ -187,6 +187,7 @@ sub output_requests {
         push(@problemlist,
              {
                  'service_request_id' => [ $id ],
+                 'title' => [ $problem->{title} ], # Not in Open311 v2
                  'description' => [ $problem->{title} ."\n\n" .
                                     $problem->{detail} ],
                  'lat' => [ $problem->{latitude} ],
