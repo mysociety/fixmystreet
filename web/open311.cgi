@@ -174,7 +174,7 @@ sub output_requests {
     # Look up categories for this council or councils
     my $problems =
         select_all("SELECT id, title, detail, latitude, longitude, state, ".
-                   "category, created, lastupdate, ".
+                   "category, created, lastupdate, council, ".
                    "(photo is not null) as has_photo FROM problem ".
                    "WHERE $criteria", @args);
 
@@ -193,19 +193,19 @@ sub output_requests {
                  'lat' => [ $problem->{latitude} ],
                  'long' => [ $problem->{longitude} ],
                  'status' => [ $statusmap{$problem->{state}} ],
-                 'status_notes' => [ {} ],
+#                 'status_notes' => [ {} ],
                  'requested_datetime' => [ w3date($problem->{created}) ],
                  'updated_datetime' => [ w3date($problem->{lastupdate}) ],
-                 'expected_datetime' => [ {} ],
-                 'address' => [ {} ],
-                 'address_id' => [ {} ],
+#                 'expected_datetime' => [ {} ],
+#                 'address' => [ {} ],
+#                 'address_id' => [ {} ],
                  'service_code' => [ $problem->{category} ],
                  'service_name' => [ $problem->{category} ],
-                 'service_notice' => [ {} ],
+#                 'service_notice' => [ {} ],
                  # FIXME create full URL to image
                  'media_url' => [ $problem->{has_photo} ? "/photo?id=$id" : {} ],
-                 'agency_responsible' => [ {} ],
-                 'zipcode' => [ {} ],
+                 'agency_responsible' => [ $problem->{council} ], # FIXME Not according to Open311 v2
+#                 'zipcode' => [ {} ],
              });
     }
     format_output($q, $format, {'requests' => [{ 'request' => \@problemlist}]});
