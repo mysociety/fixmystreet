@@ -177,7 +177,8 @@ sub output_requests {
         select_all("SELECT id, title, detail, latitude, longitude, state, ".
                    "category, created, lastupdate, council, ".
                    "(photo is not null) as has_photo FROM problem ".
-                   "WHERE $criteria LIMIT $open311limit", @args);
+                   "WHERE $criteria LIMIT $open311limit ORDER BY lastupdate",
+                   @args);
 
     my %statusmap = ( 'fixed' => 'closed',
                       'confirmed' => 'open');
