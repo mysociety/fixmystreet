@@ -217,7 +217,7 @@ sub get_requests {
         end_date           => "date_trunc('day',lastupdate) <= ?",
         );
     my @args;
-    my $criteria;
+    my $criteria = "state in ('fixed', 'confirmed')";
     for my $param (keys %rules) {
         if ($q->param($param)) {
             my $value = $q->param($param);
