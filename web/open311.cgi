@@ -20,6 +20,7 @@
 #    examples I find use numbers.
 #  * missing way to search for reports near a location using lat/lon
 #  * report attributes lack title field.
+#  * missing way to provide updates information for a request
 
 use strict;
 use warnings;
