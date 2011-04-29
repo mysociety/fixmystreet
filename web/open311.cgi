@@ -151,7 +151,7 @@ sub get_services {
         push(@services,
              {
                  'service_name' => [ $categoryname ],
-                 'description' =>  [ '' ],
+                 'description' =>  [ '' ], # FIXME required!
                  'service_code' => [ $categoryname ],
                  'metadata' => [ 'false' ],
                  'type' => [ 'realtime' ],
@@ -188,6 +188,7 @@ sub output_requests {
                  'long' => [ $problem->{longitude} ],
                  'status' => [ $statusmap{$problem->{state}} ],
                  'status_notes' => [ {} ],
+                 # FIXME date format need to be corrected
                  'requested_datetime' => [ $problem->{created} ],
                  'updated_datetime' => [ $problem->{lastupdate} ],
                  'expected_datetime' => [ {} ],
