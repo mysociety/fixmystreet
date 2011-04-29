@@ -222,16 +222,13 @@ sub get_requests {
         end_date           => "date_trunc('day',lastupdate) <= ?",
         );
     my @args;
+    # Only provide access to the published reports
     my $criteria = "state in ('fixed', 'confirmed')";
     for my $param (keys %rules) {
         if ($q->param($param)) {
             my $value = $q->param($param);
             my $rule = $rules{$param};
-            if ($criteria) {
-                $criteria .= " and $rule";
-            } else {
-                $criteria = $rule;
-            }
+            $criteria .= " and $rule";
             if ('status' eq $param) {
                 $value = {
                     'open' => 'confirmed',
