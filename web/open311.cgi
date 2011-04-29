@@ -61,10 +61,15 @@ sub show_documentation {
     my $q = shift;
 
     print $q->header(-charset => 'utf-8', -content_type => 'text/html');
-    print $q->p(_("Open311 API for FixMyStreet"));
+    print $q->p(_('Open311 API for FixMyStreet'));
+    print $q->p(_('At the moment only searching for and looking at reports work.'));
 
-    print $q->li("http://open311.org/");
-    print $q->li("http://wiki.open311.org/GeoReport_v2");
+    print $q->li($q->a({rel => 'nofollow',
+                        href => "http://www.open311.org/"},
+                       _('Open311 initiative web page')));
+    print $q->li($q->a({rel => 'nofollow',
+                        href => 'http://wiki.open311.org/GeoReport_v2'},
+                       _('Open311 specification')));
 }
 
 # Example
