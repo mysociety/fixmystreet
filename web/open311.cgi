@@ -173,13 +173,16 @@ sub get_services {
 sub output_requests {
     my ($q, $format, $criteria, @args) = @_;
     # Look up categories for this council or councils
-    my $open311limit = 200;
-    my $problems =
-        select_all("SELECT id, title, detail, latitude, longitude, state, ".
-                   "category, created, lastupdate, council, ".
-                   "(photo is not null) as has_photo FROM problem ".
-                   "WHERE $criteria ORDER BY lastupdate LIMIT $open311limit",
-                   @args);
+    my $query =
+        "SELECT id, title, detail, latitude, longitude, state, ".
+        "category, created, lastupdate, council, ".
+        "(photo is not null) as has_photo FROM problem ".
+        "WHERE $criteria ORDER BY lastupdate";
+
+    my $open311limit = mySociety::Config::get('RSS_LIMIT');
+    $query .= " LIMIT $open311limit" if $open311limit;
+
+    my $problems = select_all($query, @args);
 
     my %statusmap = ( 'fixed' => 'closed',
                       'confirmed' => 'open');
