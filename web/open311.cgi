@@ -151,7 +151,7 @@ sub get_services {
         push(@services,
              {
                  'service_name' => [ $categoryname ],
-                 'description' =>  [ '' ], # FIXME required!
+                 'description' =>  [ 'n/a' ], # FIXME required!
                  'service_code' => [ $categoryname ],
                  'metadata' => [ 'false' ],
                  'type' => [ 'realtime' ],
@@ -188,9 +188,8 @@ sub output_requests {
                  'long' => [ $problem->{longitude} ],
                  'status' => [ $statusmap{$problem->{state}} ],
                  'status_notes' => [ {} ],
-                 # FIXME date format need to be corrected
-                 'requested_datetime' => [ $problem->{created} ],
-                 'updated_datetime' => [ $problem->{lastupdate} ],
+                 'requested_datetime' => [ w3date($problem->{created}) ],
+                 'updated_datetime' => [ w3date($problem->{lastupdate}) ],
                  'expected_datetime' => [ {} ],
                  'address' => [ {} ],
                  'address_id' => [ {} ],
@@ -271,4 +270,15 @@ sub test_dump {
     for my $env (sort keys %ENV) {
        print "$env = '$ENV{$env}'\n";
     };
+}
+
+# Input:  2011-04-23 10:28:55.944805<
+# Output: 2011-04-23T10:28:55+02:00
+# FIXME Need generic solution to find time zone
+sub w3date {
+    my $datestr = shift;
+    $datestr =~ s/ /T/;
+    my $tz = '+02:00';
+    $datestr =~ s/\.\d+$/$tz/;
+    return $datestr;
 }
