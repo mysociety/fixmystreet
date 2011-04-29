@@ -185,29 +185,35 @@ sub output_requests {
     my @problemlist;
     for my $problem (@{$problems}) {
         my $id = $problem->{id};
-        push(@problemlist,
-             {
-                 'service_request_id' => [ $id ],
-                 'title' => [ $problem->{title} ], # Not in Open311 v2
-                 'description' => [ $problem->{title} ."\n\n" .
-                                    $problem->{detail} ],
-                 'lat' => [ $problem->{latitude} ],
-                 'long' => [ $problem->{longitude} ],
-                 'status' => [ $statusmap{$problem->{state}} ],
-#                 'status_notes' => [ {} ],
-                 'requested_datetime' => [ w3date($problem->{created}) ],
-                 'updated_datetime' => [ w3date($problem->{lastupdate}) ],
-#                 'expected_datetime' => [ {} ],
-#                 'address' => [ {} ],
-#                 'address_id' => [ {} ],
-                 'service_code' => [ $problem->{category} ],
-                 'service_name' => [ $problem->{category} ],
-#                 'service_notice' => [ {} ],
-                 # FIXME create full URL to image
-                 'media_url' => [ $problem->{has_photo} ? "/photo?id=$id" : {} ],
-                 'agency_responsible' => [ $problem->{council} ], # FIXME Not according to Open311 v2
-#                 'zipcode' => [ {} ],
-             });
+        my $request =
+        {
+            'service_request_id' => [ $id ],
+            'title' => [ $problem->{title} ], # Not in Open311 v2
+            'description' => [ $problem->{title} ."\n\n" . $problem->{detail} ],
+            'lat' => [ $problem->{latitude} ],
+            'long' => [ $problem->{longitude} ],
+            'status' => [ $statusmap{$problem->{state}} ],
+#            'status_notes' => [ {} ],
+            'requested_datetime' => [ w3date($problem->{created}) ],
+            'updated_datetime' => [ w3date($problem->{lastupdate}) ],
+#            'expected_datetime' => [ {} ],
+#            'address' => [ {} ],
+#            'address_id' => [ {} ],
+            'service_code' => [ $problem->{category} ],
+            'service_name' => [ $problem->{category} ],
+#            'service_notice' => [ {} ],
+            'agency_responsible' => [ $problem->{council} ], # FIXME Not according to Open311 v2
+#            'zipcode' => [ {} ],
+        };
+
+        my $cobrand = Page::get_cobrand($q);
+        my $url = Cobrand::base_url($cobrand);
+        my $display_photos = Cobrand::allow_photo_display($cobrand);
+        if ($display_photos && $problem->{has_photo}) {
+            my $imgurl = Cobrand::url($cobrand, $url, $q) . "/photo?id=$id";
+            $request->{'media_url'} = [ $imgurl ];
+        }
+        push(@problemlist, $request);
     }
     format_output($q, $format, {'requests' => [{ 'request' => \@problemlist}]});
 }
