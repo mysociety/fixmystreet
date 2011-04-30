@@ -99,6 +99,9 @@ administration.  The search term is the administration ID provided by
 <p>Examples:</p>
 
 <ul>
+<li><a href="/open311.cgi/v2/discovery.xml?jurisdiction_id=dummy">discovery information</a></li>
+<li><a href="/open311.cgi/v2/services.xml?jurisdiction_id=dummy">list of services provided</a></li>
+<li><a href="/open311.cgi/v2/services.xml?jurisdiction_id=dummy?lat=11&lng=60">list of services provided for WGS84 coordinate latitude 11 longitude 60</a></li>
 <li><a href="/open311.cgi/v2/requests/1.xml?jurisdiction_id=dummy">request 1</a></li>
 <li><a href="/open311.cgi/v2/requests.xml?jurisdiction_id=dummy&status=open&agency_responsible=1601&end_date=2011-03-10">All open requests reported before 2011-03-10 to Trondheim (id 1601)</a></li>
 <li><a href="/open311.cgi/v2/requests.xml?jurisdiction_id=dummy&service_code=Veier&">All requests with the category 'Vannforsyning'</a></li>
@@ -165,7 +168,7 @@ sub get_services {
     my ($q, $format) = @_;
     my $jurisdiction_id = $q->param('jurisdiction_id') || '';
     my $lat = $q->param('lat') || '';
-    my $lon = $q->param('lon') || '';
+    my $lon = $q->param('lng') || '';
 
     my $cobrand = Page::get_cobrand($q);
     my @area_types = Cobrand::area_types($cobrand);
