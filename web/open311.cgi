@@ -315,6 +315,7 @@ sub get_requests {
                     error('Invalid dates supplied');
                 }
             } elsif ('agency_responsible' eq $param) {
+                # FIXME This seem to fail some times.  Not sure when or why
                 $value = "(\\y$value\\y|^$value\\y|\\y$value\$)";
             }
             push(@args, $value);
