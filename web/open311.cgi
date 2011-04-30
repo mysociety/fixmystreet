@@ -74,6 +74,24 @@ sub show_documentation {
 
     print $q->p(sprintf(_('At most %d requests are returned in each query.  The returned requests are ordered by updated_datetime, so to get all requests, do several searches with rolling start_date and end_date.'),
                         mySociety::Config::get('RSS_LIMIT')));
+    print <<EOF;
+
+<p>The following Open311 v2 attributes are returned for each request:
+service_request_id, description, lat, long, media_url, status,
+requested_datetime, updated_datetime, service_code and
+service_name.</p>
+
+<p>In addition, the following attributes that are not part of the
+Open311 v2 specification are returned: agency_sent_datetime, title
+(also returned as part of description), interface_used and
+citicen_anonymous, citicen_name (if citicen_anonymous is not
+true).</p>
+
+<p>The Open311 v2 attribute agency_responsible is used to list the
+administrations that received the problem report, which is not quite
+as the attribute is defined in the Open311 v2 specification.</p>
+
+EOF
 
 }
 
