@@ -286,7 +286,11 @@ sub output_requests {
     foreach my $request (@problemlist) {
         if ($request->{agency_responsible}) {
             my @council_names = map { $areas_info->{$_}->{name} } @{$request->{agency_responsible}} ;
-            $request->{agency_responsible} = [join(';', @council_names)];
+            $request->{agency_responsible} =
+                [ '<recipient>' .
+                  join('</recipient><recipient>', @council_names)
+                  '</recipient>'
+                ];
         }
     }
     format_output($q, $format, {'requests' => [{ 'request' => \@problemlist}]});
