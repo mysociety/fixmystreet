@@ -91,6 +91,11 @@ true).</p>
 administrations that received the problem report, which is not quite
 as the attribute is defined in the Open311 v2 specification.</p>
 
+<p>With request searches, it is also possible to search for
+agency_responsible to limit the requests to those sent to a single
+administration.  The search term is the administration ID provided by
+<a href="http://mapit.nuug.no/">MaPit</a>.</p>
+
 EOF
 
 }
@@ -290,6 +295,7 @@ sub get_requests {
         status             => 'state = ?',
         start_date         => "date_trunc('day',lastupdate) >= ?",
         end_date           => "date_trunc('day',lastupdate) <= ?",
+        agency_responsible => "council ~ ?",
         );
     my @args;
     # Only provide access to the published reports
@@ -308,6 +314,8 @@ sub get_requests {
                 if ($value !~ /^\d{4}-\d\d-\d\d$/) {
                     error('Invalid dates supplied');
                 }
+            } elsif ('agency_responsible' eq $param) {
+                $value = "(\\y$value\\y|^$value\\y|\\y$value\$)";
             }
             push(@args, $value);
         }
