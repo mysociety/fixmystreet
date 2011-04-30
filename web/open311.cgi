@@ -175,7 +175,8 @@ sub output_requests {
     # Look up categories for this council or councils
     my $query =
         "SELECT id, title, detail, latitude, longitude, state, ".
-        "category, created, lastupdate, council, ".
+        "category, created, whensent, lastupdate, council, service, ".
+        "name, anonymous, ".
         "(photo is not null) as has_photo FROM problem ".
         "WHERE $criteria ORDER BY lastupdate";
 
@@ -190,6 +191,23 @@ sub output_requests {
     my @problemlist;
     for my $problem (@{$problems}) {
         my $id = $problem->{id};
+
+        if ($problem->{anonymous} == 1){
+            $problem->{name} = '';
+        }
+        if ($problem->{service} eq ''){
+            $problem->{service} = 'Web interface';
+        }
+
+        my $areas_info = mySociety::MaPit::call('areas', \@councils);
+        foreach my $problem (@$problems){
+            if ($problem->{council}) {
+                my @council_names = map { $areas_info->{$_}->{name} } @{$problem->{council}} ;
+                $problem->{council} = join(' and ', @council_names);
+            }
+        }
+        $problem->{status} = $statusmap{$problem->{state}}
+
         my $request =
         {
             'service_request_id' => [ $id ],
@@ -197,7 +215,7 @@ sub output_requests {
             'description' => [ $problem->{title} .': ' . $problem->{detail} ],
             'lat' => [ $problem->{latitude} ],
             'long' => [ $problem->{longitude} ],
-            'status' => [ $statusmap{$problem->{state}} ],
+            'status' => [ $problem->{status} ],
 #            'status_notes' => [ {} ],
             'requested_datetime' => [ w3date($problem->{created}) ],
             'updated_datetime' => [ w3date($problem->{lastupdate}) ],
@@ -208,9 +226,15 @@ sub output_requests {
             'service_name' => [ $problem->{category} ],
 #            'service_notice' => [ {} ],
             'agency_responsible' => [ $problem->{council} ], # FIXME Not according to Open311 v2
+            'agency_sent_datetime' => [ $problem->{whensent} ], # Not in Open311 v2
 #            'zipcode' => [ {} ],
+            'interface_used' => [ $problem->{service} ], # Not in Open311 v2
+            'citicen_anonymous' => [ $probem->{anonymouns} ], # Not in Open311 v2
         };
-
+        if ($problem->{name}) {
+            # Not in Open311 v2
+            $request->{'citicen_name'} = [ $problem->{name} ];
+        }
         my $cobrand = Page::get_cobrand($q);
         my $url = Cobrand::base_url($cobrand);
         my $display_photos = Cobrand::allow_photo_display($cobrand);
