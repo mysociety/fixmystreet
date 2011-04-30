@@ -71,6 +71,10 @@ sub show_documentation {
     print $q->li($q->a({rel => 'nofollow',
                         href => 'http://wiki.open311.org/GeoReport_v2'},
                        _('Open311 specification')));
+
+    print $q->p(sprintf(_('At most %d requests are returned in each query.  The returned requests are ordered by updated_datetime, so to get all requests, do several searches with rolling start_date and end_date.'),
+                        mySociety::Config::get('RSS_LIMIT')));
+
 }
 
 # Example
