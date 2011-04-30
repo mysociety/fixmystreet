@@ -101,6 +101,7 @@ administration.  The search term is the administration ID provided by
 <ul>
 <li><a href="/open311.cgi/v2/requests/1.xml?jurisdiction_id=dummy">request 1</a></li>
 <li><a href="/open311.cgi/v2/requests.xml?jurisdiction_id=dummy&status=open&agency_responsible=1601&end_date=2011-03-10">All open requests reported before 2011-03-10 to Trondheim (id 1601)</a></li>
+<li><a href="/open311.cgi/v2/requests.xml?jurisdiction_id=dummy&service_code=Veier&">All requests with the category 'Vannforsyning'</a></li>
 </ul>
 
 EOF
