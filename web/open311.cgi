@@ -189,6 +189,7 @@ sub output_requests {
                       'confirmed' => 'open');
 
     my @problemlist;
+    my @councils;
     for my $problem (@{$problems}) {
         my $id = $problem->{id};
 
@@ -198,15 +199,14 @@ sub output_requests {
         if ($problem->{service} eq ''){
             $problem->{service} = 'Web interface';
         }
-
-        my $areas_info = mySociety::MaPit::call('areas', \@councils);
-        foreach my $problem (@$problems){
-            if ($problem->{council}) {
-                my @council_names = map { $areas_info->{$_}->{name} } @{$problem->{council}} ;
-                $problem->{council} = join(' and ', @council_names);
-            }
+        if ($problem->{council}) {
+            $problem->{council} =~ s/\|.*//g;
+            my @council_ids = split(/,/, $problem->{council});
+            push(@councils, @council_ids);
+            $problem->{council} = \@council_ids;
         }
-        $problem->{status} = $statusmap{$problem->{state}}
+
+        $problem->{status} = $statusmap{$problem->{state}};
 
         my $request =
         {
@@ -225,15 +225,19 @@ sub output_requests {
             'service_code' => [ $problem->{category} ],
             'service_name' => [ $problem->{category} ],
 #            'service_notice' => [ {} ],
-            'agency_responsible' => [ $problem->{council} ], # FIXME Not according to Open311 v2
-            'agency_sent_datetime' => [ $problem->{whensent} ], # Not in Open311 v2
+            'agency_responsible' =>  $problem->{council} , # FIXME Not according to Open311 v2
 #            'zipcode' => [ {} ],
             'interface_used' => [ $problem->{service} ], # Not in Open311 v2
-            'citicen_anonymous' => [ $probem->{anonymouns} ], # Not in Open311 v2
+            'citicen_anonymous' => [ $problem->{anonymouns} ], # Not in Open311 v2
         };
         if ($problem->{name}) {
             # Not in Open311 v2
             $request->{'citicen_name'} = [ $problem->{name} ];
+        }
+        if ( $problem->{whensent} ) {
+            # Not in Open311 v2
+            $request->{'agency_sent_datetime'} =
+                [ w3date($problem->{whensent}) ];
         }
         my $cobrand = Page::get_cobrand($q);
         my $url = Cobrand::base_url($cobrand);
@@ -243,6 +247,13 @@ sub output_requests {
             $request->{'media_url'} = [ $imgurl ];
         }
         push(@problemlist, $request);
+    }
+    my $areas_info = mySociety::MaPit::call('areas', \@councils);
+    foreach my $request (@problemlist) {
+        if ($request->{agency_responsible}) {
+            my @council_names = map { $areas_info->{$_}->{name} } @{$request->{agency_responsible}} ;
+            $request->{agency_responsible} = [join(';', @council_names)];
+        }
     }
     format_output($q, $format, {'requests' => [{ 'request' => \@problemlist}]});
 }
