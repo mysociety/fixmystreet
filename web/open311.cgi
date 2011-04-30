@@ -96,6 +96,13 @@ agency_responsible to limit the requests to those sent to a single
 administration.  The search term is the administration ID provided by
 <a href="http://mapit.nuug.no/">MaPit</a>.</p>
 
+<p>Examples:</p>
+
+<ul>
+<li><a href="/open311.cgi/v2/requests/1.xml?jurisdiction_id=dummy">request 1</a></li>
+<li><a href="/open311.cgi/v2/requests.xml?jurisdiction_id=dummy&status=open&agency_responsible=1601&end_date=2011-03-10">All open requests reported before 2011-03-10 to Trondheim (id 1601)</a></li>
+</ul>
+
 EOF
 
 }
