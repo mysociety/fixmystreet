@@ -288,7 +288,7 @@ sub output_requests {
             my @council_names = map { $areas_info->{$_}->{name} } @{$request->{agency_responsible}} ;
             $request->{agency_responsible} =
                 [ '<recipient>' .
-                  join('</recipient><recipient>', @council_names)
+                  join('</recipient><recipient>', @council_names) .
                   '</recipient>'
                 ];
         }
