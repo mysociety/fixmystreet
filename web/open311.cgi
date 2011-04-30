@@ -62,7 +62,7 @@ sub show_documentation {
     my $q = shift;
 
     print $q->header(-charset => 'utf-8', -content_type => 'text/html');
-    print $q->p(_('Open311 API for FixMyStreet'));
+    print $q->p(_('Open311 API for the mySociety FixMyStreet server'));
     print $q->p(_('At the moment only searching for and looking at reports work.'));
 
     print $q->li($q->a({rel => 'nofollow',
