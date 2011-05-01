@@ -356,7 +356,7 @@ sub get_requests {
     if ('rss' eq $format) {
         my $cobrand = Page::get_cobrand($q);
         my $alert_type = 'open311_requests_rss';
-        my $xsl = '';
+        my $xsl = Cobrand::feed_xsl($cobrand);
         my $qs = '';
         my %title_params;
         my $out =
