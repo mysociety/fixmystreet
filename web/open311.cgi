@@ -217,7 +217,7 @@ sub output_requests {
         "category, created, whensent, lastupdate, council, service, ".
         "name, anonymous, ".
         "(photo is not null) as has_photo FROM problem ".
-        "WHERE $criteria ORDER BY lastupdate";
+        "WHERE $criteria ORDER BY confirmed";
 
     my $open311limit = mySociety::Config::get('RSS_LIMIT');
     $query .= " LIMIT $open311limit" if $open311limit;
@@ -256,7 +256,7 @@ sub output_requests {
             'long' => [ $problem->{longitude} ],
             'status' => [ $problem->{status} ],
 #            'status_notes' => [ {} ],
-            'requested_datetime' => [ w3date($problem->{created}) ],
+            'requested_datetime' => [ w3date($problem->{confirmed}) ],
             'updated_datetime' => [ w3date($problem->{lastupdate}) ],
 #            'expected_datetime' => [ {} ],
 #            'address' => [ {} ],
