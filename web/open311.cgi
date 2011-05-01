@@ -21,6 +21,7 @@
 #  * missing way to search for reports near a location using lat/lon
 #  * report attributes lack title field.
 #  * missing way to provide updates information for a request
+#  * should support GeoRSS output as well as json and home made XML
 
 use strict;
 use warnings;
