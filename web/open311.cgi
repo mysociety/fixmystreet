@@ -309,8 +309,8 @@ sub get_requests {
         service_request_id => 'id = ?',
         service_code       => 'category = ?',
         status             => 'state = ?',
-        start_date         => "date_trunc('day',lastupdate) >= ?",
-        end_date           => "date_trunc('day',lastupdate) <= ?",
+        start_date         => "date_trunc('day',confirmed) >= ?",
+        end_date           => "date_trunc('day',confirmed) <= ?",
         agency_responsible => "council ~ ?",
         );
     my @args;
