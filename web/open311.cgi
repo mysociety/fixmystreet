@@ -280,8 +280,10 @@ sub output_requests {
             $request->{'agency_sent_datetime'} =
                 [ w3date($problem->{whensent}) ];
         }
-        $comment_count = dbh()->selectrow_array("select count(*) from comment ".
-                "where state='confirmed' and problem_id = ?", $id);
+        my $comment_count =
+            dbh()->selectrow_array("select count(*) from comment ".
+                                   "where state='confirmed' and ".
+                                   "problem_id = ?", $id);
         if ($comment_count) {
             $request->{'comment_count'} = [ $comment_count ];
         }
@@ -319,7 +321,7 @@ sub get_requests {
         start_date         => "date_trunc('day',confirmed) >= ?",
         end_date           => "date_trunc('day',confirmed) <= ?",
         agency_responsible => "council ~ ?",
-        interface_used     => 'service = ?',
+        interface_used     => 'service is not null and service = ?',
         );
     my @args;
     # Only provide access to the published reports
@@ -328,7 +330,6 @@ sub get_requests {
         if ($q->param($param)) {
             my $value = $q->param($param);
             my $rule = $rules{$param};
-            $criteria .= " and $rule";
             if ('status' eq $param) {
                 $value = {
                     'open' => 'confirmed',
@@ -342,7 +343,12 @@ sub get_requests {
                 # FIXME This seem to match the wrong entries some
                 # times.  Not sure when or why
                 $value = "(\\y$value\\y|^$value\\y|\\y$value\$)";
+            } elsif ('interface_used' eq $param) {
+                if ('Web interface' eq $value) {
+                    $rule = 'service is null'
+                }
             }
+            $criteria .= " and $rule";
             push(@args, $value);
         }
     }
