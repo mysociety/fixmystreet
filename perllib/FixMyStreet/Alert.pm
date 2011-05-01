@@ -266,7 +266,7 @@ sub generate_rss ($$$;$$$$$) {
     my $query = 'select * from ' . $alert_type->{item_table} . ' where '
         . ($alert_type->{head_table} ? $alert_type->{head_table}.'_id=? and ' : '')
         . $alert_type->{item_where} . $site_restriction
-        . ($db_criteria ? $db_criteria : '')
+        . ($db_criteria ? "and $db_criteria" : '')
         . ' order by ' . $alert_type->{item_order};
     my $rss_limit = mySociety::Config::get('RSS_LIMIT');
     $query .= " limit $rss_limit" unless $type =~ /^all/;
