@@ -280,6 +280,11 @@ sub output_requests {
             $request->{'agency_sent_datetime'} =
                 [ w3date($problem->{whensent}) ];
         }
+        $comments = dbh()->selectrow_array("select count(*) from comment
+                where state='confirmed' and problem_id = ?", $id);
+        if ($comments) {
+            $request->{'comments'} = [ $comments ];
+        }
         my $cobrand = Page::get_cobrand($q);
         my $url = Cobrand::base_url($cobrand);
         my $display_photos = Cobrand::allow_photo_display($cobrand);
