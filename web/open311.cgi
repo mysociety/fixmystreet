@@ -285,6 +285,7 @@ sub output_requests {
                                    "where state='confirmed' and ".
                                    "problem_id = $id");
         if ($comment_count) {
+            # Not in Open311 v2
             $request->{'comment_count'} = [ $comment_count ];
         }
         my $cobrand = Page::get_cobrand($q);
