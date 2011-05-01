@@ -115,3 +115,21 @@ values ('area_problems', '', '',
     '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-area'
 );
 
+
+-- Generic problem search using the Open311 API
+insert into alert_type
+(ref, head_sql_query, head_table,
+    head_title, head_link,
+    head_description,
+    item_table,
+    item_where, item_order,
+    item_title, item_link, item_description,
+    template)
+values ('open311_requests_rss', '', '',
+    'Open311 requests search on FixMyStreet', '/open311',
+    'Open311 search on requests',
+    'problem',
+    'problem.state in (''confirmed'', ''fixed'')', 'updated_datetime desc',
+    '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}',
+     ''
+);

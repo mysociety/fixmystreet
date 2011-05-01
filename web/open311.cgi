@@ -32,6 +32,7 @@ use XML::Simple;
 use URI::Escape;
 use Page;
 use Problems;
+use FixMyStreet::Alert;
 use mySociety::DBHandle qw(select_all);
 
 sub main {
@@ -49,7 +50,7 @@ sub main {
     } elsif ($path_info =~ m%^/v2/requests/(\d+).(xml|json|html)$%) {
         my ($id, $format) = ($1, $2);
         return get_request($q, $id, $format);
-    } elsif ($path_info =~ m%^/v2/requests.(xml|json|html)$%) {
+    } elsif ($path_info =~ m%^/v2/requests.(xml|json|html|rss)$%) {
         my ($format) = ($1);
         return get_requests($q, $format);
     } else {
@@ -337,7 +338,23 @@ sub get_requests {
             push(@args, $value);
         }
     }
-    output_requests($q, $format, $criteria, @args);
+
+    if ('rss' eq $format) {
+        my $cobrand = Page::get_cobrand($q);
+        my $alert_type = 'open311_requests_rss';
+        my $xsl = '';
+        my $qs = '';
+        my $title_params = '';
+        my $out =
+            FixMyStreet::Alert::generate_rss('new_problems', $xsl,
+                                             $qs, \@args,
+                                             $title_params, $cobrand,
+                                             $q, $criteria);
+        print $q->header( -type => 'application/xml; charset=utf-8' );
+        print $out;
+    } else {
+        output_requests($q, $format, $criteria, @args);
+    }
 }
 
 # Example
