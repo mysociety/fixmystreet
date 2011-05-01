@@ -344,11 +344,11 @@ sub get_requests {
         my $alert_type = 'open311_requests_rss';
         my $xsl = '';
         my $qs = '';
-        my $title_params = '';
+        my %title_params;
         my $out =
             FixMyStreet::Alert::generate_rss('new_problems', $xsl,
                                              $qs, \@args,
-                                             $title_params, $cobrand,
+                                             \%title_params, $cobrand,
                                              $q, $criteria);
         print $q->header( -type => 'application/xml; charset=utf-8' );
         print $out;
