@@ -1,0 +1,61 @@
+#!/usr/bin/perl
+
+use warnings;
+use strict;
+
+use FindBin;
+use lib "$FindBin::Bin/../perllib";
+use lib "$FindBin::Bin/../commonlib/perllib";
+
+use mySociety::DBHandle qw(dbh);
+
+use mySociety::MaPit;
+use FixMyStreet::Geocode::OSM;
+
+BEGIN {
+    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+    mySociety::DBHandle::configure(
+        Name => mySociety::Config::get('BCI_DB_NAME'),
+        User => mySociety::Config::get('BCI_DB_USER'),
+        Password => mySociety::Config::get('BCI_DB_PASS'),
+        Host => mySociety::Config::get('BCI_DB_HOST', undef),
+        Port => mySociety::Config::get('BCI_DB_PORT', undef)
+    );
+}
+
+my $query = "SELECT council, COUNT(*) AS total,
+   100.0 * SUM(fixed) / COUNT(*) AS fraq_fixed
+  FROM (SELECT council,
+        CASE WHEN state = 'fixed' THEN 1 ELSE 0 END AS fixed
+        FROM problem WHERE confirmed IS NOT NULL AND
+        state IN ('fixed', 'confirmed') AND
+        whensent < NOW() - INTERVAL '4 weeks') AS a
+  GROUP BY council ORDER BY fraq_fixed DESC, total DESC, council";
+
+my $stats = dbh()->selectall_arrayref($query, { Slice => {} });
+
+my @councils;
+foreach my $row (@$stats) {
+    if ($row->{council}) {
+        $row->{council} =~ s/\|.*//g;
+        my @council_ids = split(/,/, $row->{council});
+        push(@councils, @council_ids);
+        $row->{council} = \@council_ids;
+    }
+}
+my $areas_info = mySociety::MaPit::call('areas', \@councils);
+foreach my $row (@$stats){
+    if ($row->{council}) {
+        my @council_names = map { $areas_info->{$_}->{name} } @{$row->{council}} ;
+        $row->{council} = join(',', @council_names);
+    }
+}
+
+foreach my $row (@$stats) {
+    my $council = $row->{council};
+    my $total = $row->{total};
+    my $fraq_fixed = $row->{fraq_fixed};
+
+    my @councils = split(/,/, $council);
+    printf("%5.1f %4d %s\n", $fraq_fixed, $total, $council);
+}
