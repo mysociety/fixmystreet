@@ -61,6 +61,7 @@ Page::do_fastcgi(\&main);
 
 sub show_documentation {
     my $q = shift;
+    my $jurisdiction_id = 'fiksgatami.no';
 
     print $q->header(-charset => 'utf-8', -content_type => 'text/html');
     print $q->p(_('Open311 API for the mySociety FixMyStreet server'));
@@ -100,12 +101,12 @@ administration.  The search term is the administration ID provided by
 <p>Examples:</p>
 
 <ul>
-<li><a href="/open311.cgi/v2/discovery.xml?jurisdiction_id=dummy">discovery information</a></li>
-<li><a href="/open311.cgi/v2/services.xml?jurisdiction_id=dummy">list of services provided</a></li>
-<li><a href="/open311.cgi/v2/services.xml?jurisdiction_id=dummy?lat=11&lng=60">list of services provided for WGS84 coordinate latitude 11 longitude 60</a></li>
-<li><a href="/open311.cgi/v2/requests/1.xml?jurisdiction_id=dummy">request 1</a></li>
-<li><a href="/open311.cgi/v2/requests.xml?jurisdiction_id=dummy&status=open&agency_responsible=1601&end_date=2011-03-10">All open requests reported before 2011-03-10 to Trondheim (id 1601)</a></li>
-<li><a href="/open311.cgi/v2/requests.xml?jurisdiction_id=dummy&service_code=Veier&">All requests with the category 'Vannforsyning'</a></li>
+<li><a href="/open311.cgi/v2/discovery.xml?jurisdiction_id=$jurisdiction_id">discovery information</a></li>
+<li><a href="/open311.cgi/v2/services.xml?jurisdiction_id=$jurisdiction_id">list of services provided</a></li>
+<li><a href="/open311.cgi/v2/services.xml?jurisdiction_id=$jurisdiction_id?lat=11&lng=60">list of services provided for WGS84 coordinate latitude 11 longitude 60</a></li>
+<li><a href="/open311.cgi/v2/requests/1.xml?jurisdiction_id=$jurisdiction_id">request 1</a></li>
+<li><a href="/open311.cgi/v2/requests.xml?jurisdiction_id=$jurisdiction_id&status=open&agency_responsible=1601&end_date=2011-03-10">All open requests reported before 2011-03-10 to Trondheim (id 1601)</a></li>
+<li><a href="/open311.cgi/v2/requests.xml?jurisdiction_id=$jurisdiction_id&service_code=Veier&">All requests with the category 'Vannforsyning'</a></li>
 </ul>
 
 EOF
