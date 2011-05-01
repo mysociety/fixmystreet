@@ -283,7 +283,7 @@ sub output_requests {
         my $comment_count =
             dbh()->selectrow_array("select count(*) from comment ".
                                    "where state='confirmed' and ".
-                                   "problem_id = ?", $id);
+                                   "problem_id = $id");
         if ($comment_count) {
             $request->{'comment_count'} = [ $comment_count ];
         }
