@@ -86,7 +86,7 @@ service_name.</p>
 
 <p>In addition, the following attributes that are not part of the
 Open311 v2 specification are returned: agency_sent_datetime, title
-(also returned as part of description), interface_used,
+(also returned as part of description), interface_used, comment_count,
 citicen_anonymous and citicen_name (if citicen_anonymous is not
 true).</p>
 
@@ -280,10 +280,10 @@ sub output_requests {
             $request->{'agency_sent_datetime'} =
                 [ w3date($problem->{whensent}) ];
         }
-        $comments = dbh()->selectrow_array("select count(*) from comment
-                where state='confirmed' and problem_id = ?", $id);
-        if ($comments) {
-            $request->{'comments'} = [ $comments ];
+        $comment_count = dbh()->selectrow_array("select count(*) from comment ".
+                "where state='confirmed' and problem_id = ?", $id);
+        if ($comment_count) {
+            $request->{'comment_count'} = [ $comment_count ];
         }
         my $cobrand = Page::get_cobrand($q);
         my $url = Cobrand::base_url($cobrand);
