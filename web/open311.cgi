@@ -404,14 +404,6 @@ sub format_output {
     }
 }
 
-sub test_dump {
-    my ($q) = @_;
-    print $q->header(-charset => 'utf-8', -content_type => 'text/plain');
-    for my $env (sort keys %ENV) {
-       print "$env = '$ENV{$env}'\n";
-    };
-}
-
 # Input:  2011-04-23 10:28:55.944805<
 # Output: 2011-04-23T10:28:55+02:00
 # FIXME Need generic solution to find time zone
