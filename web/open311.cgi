@@ -84,6 +84,11 @@ sub show_documentation {
 
     print $q->p(sprintf(_('At most %d requests are returned in each query.  The returned requests are ordered by updated_datetime, so to get all requests, do several searches with rolling start_date and end_date.'),
                         mySociety::Config::get('RSS_LIMIT')));
+
+    my $cobrand = Page::get_cobrand($q);
+    my $url = Cobrand::base_url($cobrand);
+    my $rssurl = Cobrand::url($cobrand, $url, $q) . "/open311.cgi/v2/requests.rss?jurisdiction_id=$jurisdiction_id&status=closed";
+
     print <<EOF;
 
 <p>The following Open311 v2 attributes are returned for each request:
@@ -114,7 +119,8 @@ administration.  The search term is the administration ID provided by
 <li><a href="/open311.cgi/v2/services.xml?jurisdiction_id=$jurisdiction_id?lat=11&lng=60">list of services provided for WGS84 coordinate latitude 11 longitude 60</a></li>
 <li><a href="/open311.cgi/v2/requests/1.xml?jurisdiction_id=$jurisdiction_id">request 1</a></li>
 <li><a href="/open311.cgi/v2/requests.xml?jurisdiction_id=$jurisdiction_id&status=open&agency_responsible=1601&end_date=2011-03-10">All open requests reported before 2011-03-10 to Trondheim (id 1601)</a></li>
-<li><a href="/open311.cgi/v2/requests.xml?jurisdiction_id=$jurisdiction_id&service_code=Veier&">All requests with the category 'Vannforsyning'</a></li>
+<li><a href="/open311.cgi/v2/requests.xml?jurisdiction_id=$jurisdiction_id&service_code=Vannforsyning">All requests with the category 'Vannforsyning'</a></li>
+<li><a href="http://maps.google.com/q=$rssurl">Show GeoRSS of closed requests on Google Maps</a></li>
 </ul>
 
 EOF
