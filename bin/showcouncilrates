@@ -49,8 +49,8 @@ foreach my $row (@$stats){
     if ($row->{council}) {
         my @council_names = map { $areas_info->{$_}->{name} } @{$row->{council}} ;
         for my $council (@council_names) {
-            $adminsum{$council} = $row->{total};
-            $adminfixed{$council} = $row->{fixed};
+            $adminsum{$council} += $row->{total};
+            $adminfixed{$council} += $row->{fixed};
         }
     }
 }
