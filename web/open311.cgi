@@ -137,6 +137,7 @@ sub get_discovery {
         'changeset' => [$prod_changeset],
         # XXX rewrite to match
         'key_service' => ["Read access is open to all according to our \u003Ca href='/open_data' target='_blank'\u003Eopen data license\u003C/a\u003E. For write access either: 1. return the 'guid' cookie on each call (unique to each client) or 2. use an api key from a user account which can be generated here: http://seeclickfix.com/register The unversioned url will always point to the latest supported version."],
+        'max_requests' = [ mySociety::Config::get('RSS_LIMIT') ],
         'endpoints' => [
             {
                 'endpoint' => [
