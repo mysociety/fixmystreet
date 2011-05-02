@@ -60,12 +60,18 @@ sub main {
 }
 Page::do_fastcgi(\&main);
 
+sub error {
+    my ($q, $error) = @_;
+    show_documentation($q, $error);
+}
+
 sub show_documentation {
-    my $q = shift;
+    my ($q, $message) = @_;
     my $jurisdiction_id = 'fiksgatami.no';
 
     print $q->header(-charset => 'utf-8', -content_type => 'text/html');
     print $q->p(_('Open311 API for the mySociety FixMyStreet server'));
+    print $q->p(sprintf(_('Note: <strong>%s</strong>', $message));
     print $q->p(_('At the moment only searching for and looking at reports work.'));
 
     print $q->li($q->a({rel => 'nofollow',
@@ -313,7 +319,10 @@ sub output_requests {
 
 sub get_requests {
     my ($q, $format) = @_;
-    my $jurisdiction_id    = $q->param('jurisdiction_id') || error();
+    unless (my $jurisdiction_id = $q->param('jurisdiction_id')) {
+        error($q, _('Missing jurisdiction_id'));
+        return;
+    }
 
     my %rules = (
         service_request_id => 'id = ?',
@@ -338,7 +347,8 @@ sub get_requests {
                 }->{$value};
             } elsif ('start_date' eq $param || 'end_date' eq $param) {
                 if ($value !~ /^\d{4}-\d\d-\d\d$/) {
-                    error('Invalid dates supplied');
+                    error($q, 'Invalid dates supplied');
+                    return;
                 }
             } elsif ('agency_responsible' eq $param) {
                 # FIXME This seem to match the wrong entries some
@@ -389,7 +399,8 @@ sub format_output {
         print $q->header( -type => 'application/xml; charset=utf-8' );
         print XMLout($hashref, RootName => undef);
     } else {
-        error();
+        error($q, "Invalid format $format specified.");
+        return;
     }
 }
 
