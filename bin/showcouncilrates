@@ -48,24 +48,26 @@ my %adminsum;
 my %adminfixed;
 foreach my $row (@$stats){
     if ($row->{council}) {
-        my @council_names = map { $areas_info->{$_}->{name} } @{$row->{council}} ;
-        for my $council (@council_names) {
-            $adminsum{$council} += $row->{total};
-            $adminfixed{$council} += $row->{fixed};
+        for my $councilid (@{$row->{council}}) {
+            $adminsum{$councilid} += $row->{total};
+            $adminfixed{$councilid} += $row->{fixed};
         }
     }
 }
 
-foreach my $council (sort sort_councils keys %adminsum) {
-    my $total = $adminsum{$council};
-    my $fixed = $adminfixed{$council};
-    printf("%5.1f %4d %s\n", 100 * $fixed / $total, $total, $council);
+foreach my $councilid (sort sort_councils keys %adminsum) {
+    my $council = $areas_info->{$councilid}->{name};
+    my $total = $adminsum{$councilid};
+    my $fixed = $adminfixed{$councilid};
+    printf("%5.1f %4d %s (%d)\n", 100 * $fixed / $total, $total,
+           $council, $councilid);
 }
 
 sub sort_councils {
     my $retval = ($adminfixed{$b} / $adminsum{$b}) <=>
         ($adminfixed{$a} / $adminsum{$a});
     $retval = $adminsum{$b} <=> $adminsum{$a} unless $retval;
-    $retval = strcoll($a, $b) unless $retval;
+    $retval = strcoll($areas_info->{$a}->{name},
+                      $areas_info->{$b}->{name}) unless $retval;
     return $retval;
 }
