@@ -73,6 +73,7 @@ sub show_documentation {
     print $q->p(_('Open311 API for the mySociety FixMyStreet server'));
     print $q->p(sprintf(_('Note: <strong>%s</strong>', $message));
     print $q->p(_('At the moment only searching for and looking at reports work.'));
+    print $q->p(_('This API implementation is work in progress and not yet stabilized.  It will change without warnings in the future.'));
 
     print $q->li($q->a({rel => 'nofollow',
                         href => "http://www.open311.org/"},
