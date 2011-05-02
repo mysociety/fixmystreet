@@ -227,7 +227,7 @@ sub output_requests {
         "category, created, whensent, lastupdate, council, service, ".
         "name, anonymous, ".
         "(photo is not null) as has_photo FROM problem ".
-        "WHERE $criteria ORDER BY confirmed";
+        "WHERE $criteria ORDER BY confirmed desc";
 
     my $open311limit = mySociety::Config::get('RSS_LIMIT');
     $query .= " LIMIT $open311limit" if $open311limit;
