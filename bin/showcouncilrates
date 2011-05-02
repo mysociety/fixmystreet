@@ -23,14 +23,13 @@ BEGIN {
     );
 }
 
-my $query = "SELECT council, COUNT(*) AS total,
-   100.0 * SUM(fixed) / COUNT(*) AS fraq_fixed
+my $query = "SELECT council, COUNT(*) AS total, SUM(fixed) AS fixed
   FROM (SELECT council,
         CASE WHEN state = 'fixed' THEN 1 ELSE 0 END AS fixed
         FROM problem WHERE confirmed IS NOT NULL AND
         state IN ('fixed', 'confirmed') AND
         whensent < NOW() - INTERVAL '4 weeks') AS a
-  GROUP BY council ORDER BY fraq_fixed DESC, total DESC, council";
+  GROUP BY council";
 
 my $stats = dbh()->selectall_arrayref($query, { Slice => {} });
 
@@ -44,18 +43,27 @@ foreach my $row (@$stats) {
     }
 }
 my $areas_info = mySociety::MaPit::call('areas', \@councils);
+my %adminsum;
+my %adminfixed;
 foreach my $row (@$stats){
     if ($row->{council}) {
         my @council_names = map { $areas_info->{$_}->{name} } @{$row->{council}} ;
-        $row->{council} = join(',', @council_names);
+        for my $council (@council_names) {
+            $adminsum{$council} = $row->{total};
+            $adminfixed{$council} = $row->{fixed};
+        }
     }
 }
 
-foreach my $row (@$stats) {
-    my $council = $row->{council};
-    my $total = $row->{total};
-    my $fraq_fixed = $row->{fraq_fixed};
+foreach my $council (sort sort_councils keys %adminsum) {
+    my $total = $adminsum{$council};
+    my $fixed = $adminfixed{$council};
+    printf("%5.1f %4d %s\n", 100 * $fixed / $total, $total, $council);
+}
 
-    my @councils = split(/,/, $council);
-    printf("%5.1f %4d %s\n", $fraq_fixed, $total, $council);
+sub sort_councils {
+    my $retval = ($adminfixed{$b} / $adminsum{$b}) <=>
+        ($adminfixed{$a} / $adminsum{$a});
+    $retval = $adminsum{$b} <=> $adminsum{$a} unless $retval;
+    return $retval;
 }
