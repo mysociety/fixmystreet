@@ -71,7 +71,7 @@ sub show_documentation {
 
     print $q->header(-charset => 'utf-8', -content_type => 'text/html');
     print $q->p(_('Open311 API for the mySociety FixMyStreet server'));
-    print $q->p(sprintf(_('Note: <strong>%s</strong>', $message));
+    print $q->p(sprintf(_('Note: <strong>%s</strong>', $message)));
     print $q->p(_('At the moment only searching for and looking at reports work.'));
     print $q->p(_('This API implementation is work in progress and not yet stabilized.  It will change without warnings in the future.'));
 
@@ -137,7 +137,7 @@ sub get_discovery {
         'changeset' => [$prod_changeset],
         # XXX rewrite to match
         'key_service' => ["Read access is open to all according to our \u003Ca href='/open_data' target='_blank'\u003Eopen data license\u003C/a\u003E. For write access either: 1. return the 'guid' cookie on each call (unique to each client) or 2. use an api key from a user account which can be generated here: http://seeclickfix.com/register The unversioned url will always point to the latest supported version."],
-        'max_requests' = [ mySociety::Config::get('RSS_LIMIT') ],
+        'max_requests' => [ mySociety::Config::get('RSS_LIMIT') ],
         'endpoints' => [
             {
                 'endpoint' => [
@@ -184,34 +184,35 @@ sub get_services {
     my $cobrand = Page::get_cobrand($q);
     my @area_types = Cobrand::area_types($cobrand);
 
-    my $all_councils;
+    my $criteria;
     if ($lat || $lon) {
-        $all_councils = mySociety::MaPit::call('point',
-                                               "4326/$lon,$lat",
-                                               type => \@area_types);
+        my $all_councils = mySociety::MaPit::call('point',
+                                                  "4326/$lon,$lat",
+                                                  type => \@area_types);
+        $criteria = 'and area_id IN (' . join(',', keys %$all_councils) . ')';
     } else {
-        # FIXME Figure out a better way to handle no lat/lon
-        $all_councils = { 3 => 'Oslo'};
+        $criteria = '';
     }
 
     # Look up categories for this council or councils
     my $categories =
-        select_all("SELECT area_id, category FROM contacts ".
-                   " WHERE deleted='f' and area_id IN (" .
-                   join(',', keys %$all_councils) . ')');
+        select_all('SELECT DISTINCT category FROM contacts '.
+                   "WHERE deleted='f'" . $criteria);
     my @services;
     for my $categoryref ( sort {$a->{category} cmp $b->{category} }
                           @$categories) {
         my $categoryname = $categoryref->{category};
         push(@services,
              {
+                 # FIXME Open311 v2 seem to require all three, and we
+                 # only have one value.
                  'service_name' => [ $categoryname ],
-                 'description' =>  [ 'n/a' ], # FIXME required by Open311 v2!
+                 'description' =>  [ $categoryname ],
                  'service_code' => [ $categoryname ],
                  'metadata' => [ 'false' ],
                  'type' => [ 'realtime' ],
-                 'group' => [ '' ],
-                 'keywords' => [ '' ],
+#                 'group' => [ '' ],
+#                 'keywords' => [ '' ],
              }
             );
     }
