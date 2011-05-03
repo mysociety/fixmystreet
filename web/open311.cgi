@@ -62,7 +62,7 @@ Page::do_fastcgi(\&main);
 
 sub error {
     my ($q, $error) = @_;
-    show_documentation($q, $error);
+    show_documentation($q, "ERROR: $error");
 }
 
 sub show_documentation {
@@ -356,14 +356,15 @@ sub get_requests {
                 }->{$value[0]};
             } elsif ('start_date' eq $param || 'end_date' eq $param) {
                 if ($value[0] !~ /^\d{4}-\d\d-\d\d$/) {
-                    error($q, 'Invalid dates supplied');
+                    error($q, _('Invalid dates supplied'));
                     return;
                 }
             } elsif ('agency_responsible' eq $param) {
                 my $combined_rule = '';
                 my @valuelist;
                 for my $agency (split(/\|/, $value[0])) {
-                    error ($q, "Invalid agency_responsible value $value[0]")
+                    error ($q, sprintf(_('Invalid agency_responsible value %s'),
+                                       $value[0]))
                         unless ($agency =~ m/^(\d+)$/);
                     my $agencyid = $1;
                     # FIXME This seem to match the wrong entries
@@ -423,7 +424,7 @@ sub format_output {
         print $q->header( -type => 'application/xml; charset=utf-8' );
         print XMLout($hashref, RootName => undef);
     } else {
-        error($q, "Invalid format $format specified.");
+        error($q, sprintf(_('Invalid format %s specified.'), $format));
         return;
     }
 }
