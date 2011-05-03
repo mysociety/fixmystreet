@@ -122,6 +122,7 @@ administration.  The search term is the administration ID provided by
 <li><a href="/open311.cgi/v2/services.xml?jurisdiction_id=$jurisdiction_id?lat=11&lng=60">list of services provided for WGS84 coordinate latitude 11 longitude 60</a></li>
 <li><a href="/open311.cgi/v2/requests/1.xml?jurisdiction_id=$jurisdiction_id">request 1</a></li>
 <li><a href="/open311.cgi/v2/requests.xml?jurisdiction_id=$jurisdiction_id&status=open&agency_responsible=1601&end_date=2011-03-10">All open requests reported before 2011-03-10 to Trondheim (id 1601)</a></li>
+<li><a href="/open311.cgi/v2/requests.xml?jurisdiction_id=$jurisdiction_id&status=open&agency_responsible=219|220">All open requests in Asker (id 220) and Bærum (id 219)</a></li>
 <li><a href="/open311.cgi/v2/requests.xml?jurisdiction_id=$jurisdiction_id&service_code=Vannforsyning">All requests with the category 'Vannforsyning'</a></li>
 <li><a href="http://maps.google.com/?q=$rssurl">Show GeoRSS of closed requests on Google Maps</a></li>
 </ul>
