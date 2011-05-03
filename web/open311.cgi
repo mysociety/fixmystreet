@@ -88,7 +88,9 @@ sub show_documentation {
 
     my $cobrand = Page::get_cobrand($q);
     my $url = Cobrand::base_url($cobrand);
-    my $rssurl = Cobrand::url($cobrand, $url, $q) . "/open311.cgi/v2/requests.rss?jurisdiction_id=$jurisdiction_id&status=closed";
+    my $rssurl = $q->escape(Cobrand::url($cobrand, $url,
+                                         $q) .
+                            "/open311.cgi/v2/requests.rss?jurisdiction_id=$jurisdiction_id&status=closed");
 
     print <<EOF;
 
