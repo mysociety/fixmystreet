@@ -347,29 +347,41 @@ sub get_requests {
     my $criteria = "state in ('fixed', 'confirmed')";
     for my $param (keys %rules) {
         if ($q->param($param)) {
-            my $value = $q->param($param);
+            my @value = ($q->param($param));
             my $rule = $rules{$param};
             if ('status' eq $param) {
-                $value = {
+                $value[0] = {
                     'open' => 'confirmed',
                     'closed' => 'fixed'
-                }->{$value};
+                }->{$value[0]};
             } elsif ('start_date' eq $param || 'end_date' eq $param) {
-                if ($value !~ /^\d{4}-\d\d-\d\d$/) {
+                if ($value[0] !~ /^\d{4}-\d\d-\d\d$/) {
                     error($q, 'Invalid dates supplied');
                     return;
                 }
             } elsif ('agency_responsible' eq $param) {
-                # FIXME This seem to match the wrong entries some
-                # times.  Not sure when or why
-                $value = "(\\y$value\\y|^$value\\y|\\y$value\$)";
+                my $combined_rule = '';
+                my @valuelist;
+                for my $agency (split(/,/, $value[0])) {
+                    # FIXME This seem to match the wrong entries some
+                    # times.  Not sure when or why
+                    my $re = "(\\y$agency\\y|^$agency\\y|\\y$agency\$)";
+                    if ($combined_rule) {
+                        $combined_rule .= " or $rule";
+                    } else {
+                        $combined_rule = $rule;
+                    }
+                    push(@valuelist, $re);
+                }
+                $rule = "( $combined_rule )";
+                @value = @valuelist;
             } elsif ('interface_used' eq $param) {
-                if ('Web interface' eq $value) {
+                if ('Web interface' eq $value[0]) {
                     $rule = 'service is null'
                 }
             }
             $criteria .= " and $rule";
-            push(@args, $value);
+            push(@args, @value);
         }
     }
 
