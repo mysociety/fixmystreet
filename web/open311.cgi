@@ -35,6 +35,7 @@ use Page;
 use Problems;
 use FixMyStreet::Alert;
 use mySociety::DBHandle qw(select_all);
+use mySociety::Web qw(ent);
 
 sub main {
     my $q = shift;
@@ -88,9 +89,7 @@ sub show_documentation {
 
     my $cobrand = Page::get_cobrand($q);
     my $url = Cobrand::base_url($cobrand);
-    my $rssurl = $q->escape(Cobrand::url($cobrand, $url,
-                                         $q) .
-                            "/open311.cgi/v2/requests.rss?jurisdiction_id=$jurisdiction_id&status=closed");
+    my $baseurl = Cobrand::url($cobrand, $url, $q);
 
     print <<EOF;
 
@@ -117,14 +116,61 @@ administration.  The search term is the administration ID provided by
 <p>Examples:</p>
 
 <ul>
-<li><a href="/open311.cgi/v2/discovery.xml?jurisdiction_id=$jurisdiction_id">discovery information</a></li>
-<li><a href="/open311.cgi/v2/services.xml?jurisdiction_id=$jurisdiction_id">list of services provided</a></li>
-<li><a href="/open311.cgi/v2/services.xml?jurisdiction_id=$jurisdiction_id?lat=11&lng=60">list of services provided for WGS84 coordinate latitude 11 longitude 60</a></li>
-<li><a href="/open311.cgi/v2/requests/1.xml?jurisdiction_id=$jurisdiction_id">request 1</a></li>
-<li><a href="/open311.cgi/v2/requests.xml?jurisdiction_id=$jurisdiction_id&status=open&agency_responsible=1601&end_date=2011-03-10">All open requests reported before 2011-03-10 to Trondheim (id 1601)</a></li>
-<li><a href="/open311.cgi/v2/requests.xml?jurisdiction_id=$jurisdiction_id&status=open&agency_responsible=219|220">All open requests in Asker (id 220) and Bærum (id 219)</a></li>
-<li><a href="/open311.cgi/v2/requests.xml?jurisdiction_id=$jurisdiction_id&service_code=Vannforsyning">All requests with the category 'Vannforsyning'</a></li>
-<li><a href="http://maps.google.com/?q=$rssurl">Show GeoRSS of closed requests on Google Maps</a></li>
+EOF
+n
+    my @examples =
+    (
+     {
+         url => "$baseurl/open311.cgi/v2/discovery.xml?jurisdiction_id=$jurisdiction_id",
+         info => 'discovery information',
+     },
+     {
+         url => "$baseurl/open311.cgi/v2/services.xml?jurisdiction_id=$jurisdiction_id",
+         info => 'list of services provided',
+     },
+     {
+         url => "$baseurl/open311.cgi/v2/services.xml?jurisdiction_id=$jurisdiction_id?lat=11&lng=60",
+         info => 'list of services provided for WGS84 coordinate latitude 11 longitude 60',
+     },
+     {
+         url => "$baseurl/open311.cgi/v2/requests/1.xml?jurisdiction_id=$jurisdiction_id",
+         info => 'Request number 1',
+     },
+     {
+         url => "$baseurl/open311.cgi/v2/requests.xml?jurisdiction_id=$jurisdiction_id&status=open&agency_responsible=1601&end_date=2011-03-10",
+         info => 'All open requests reported before 2011-03-10 to Trondheim (id 1601)',
+     },
+     {
+         url => "$baseurl/open311.cgi/v2/requests.xml?jurisdiction_id=$jurisdiction_id&status=open&agency_responsible=219|220",
+         info => 'All open requests in Asker (id 220) and Bærum (id 219)',
+     },
+     {
+         url => "$baseurl/open311.cgi/v2/requests.xml?jurisdiction_id=$jurisdiction_id&service_code=Vannforsyning",
+         info => "All requests with the category 'Vannforsyning'",
+     },
+     {
+         url => "$baseurl/open311.cgi/v2/requests.xml?jurisdiction_id=$jurisdiction_id&status=closed",
+         info => 'All closed requests',
+     },
+    );
+    for my $example (@examples) {
+        my $url = $example->{url};
+        my $info = $example->{info};
+        my $googlemapslink = '';
+        if ($url =~ m%/requests.xml%) {
+            my $rssurl = $url;
+            $rssurl =~ s/.xml/.rss/;
+            my $encurl = $q->escape($rssurl);
+            $googlemapslink = '<br>' .
+                $q->a({href => "http://maps.google.com/?q=$encurl"},
+                      _('GeoRSS on Google Maps'));
+        }
+        print $q->li($q->a({href => $url}, $info) . '<br>' .
+                     ent($url) .
+                     $googlemapslink);
+    }
+
+    print <<EOF;
 </ul>
 
 EOF
