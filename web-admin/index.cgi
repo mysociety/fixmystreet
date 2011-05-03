@@ -154,7 +154,7 @@ sub admin_summary ($) {
         $q->li(sprintf(_("<strong>%d</strong> live problems"), $total_problems_live)),
         $q->li(sprintf(_("%d live updates"), $comments{confirmed})),
         $q->li(sprintf(_("%d confirmed alerts, %d unconfirmed"), $alerts{1}, $alerts{0})),
-        $q->li(sprintf(_("%d questionnaires sent &ndash; %d answered (%d%%)"), $questionnaires{total}, $questionnaires{1}, $questionnaires_pc)),
+        $q->li(sprintf(_("%d questionnaires sent &ndash; %d answered (%s%%)"), $questionnaires{total}, $questionnaires{1}, $questionnaires_pc)),
         $q->li(sprintf(_("%d council contacts &ndash; %d confirmed, %d unconfirmed"), $contacts{total}, $contacts{1}, $contacts{0})),
     );
 
