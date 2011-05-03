@@ -828,10 +828,11 @@ sub admin_timeline {
         print '<dt><b>', decode_utf8(strftime('%H:%M:%S', localtime($_))), ':</b></dt> <dd>';
         foreach (@{$time{$_}}) {
             my $type = $_->{type};
-            my $name_str = '; ' . sprintf(_("by %s"), ent($_->{name})) . " &lt;" . ent($_->{email}) . "&gt;, '" . ent($_->{title}) . "'";
             if ($type eq 'problemCreated') {
+                my $name_str = '; ' . sprintf(_("by %s"), ent($_->{name})) . " &lt;" . ent($_->{email}) . "&gt;, '" . ent($_->{title}) . "'";
                 print sprintf(_("Problem %d created"), $_->{id}) . $name_str;
             } elsif ($type eq 'problemConfirmed') {
+                my $name_str = '; ' . sprintf(_("by %s"), ent($_->{name})) . " &lt;" . ent($_->{email}) . "&gt;, '" . ent($_->{title}) . "'";
                 $cobrand_data = get_cobrand_data_from_hash($cobrand, $_);
                 my $url = Cobrand::base_url_for_emails($cobrand, $cobrand_data)  . "/report/$_->{id}";
                 print sprintf(_("Problem %s confirmed"), "<a href='$url'>$_->{id}</a>") . $name_str;
