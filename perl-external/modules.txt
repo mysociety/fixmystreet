@@ -43,6 +43,6 @@ Term::Size::Any
 Test::More
 Test::WWW::Mechanize
 Test::WWW::Mechanize::Catalyst
-URI::QueryParam
+URI
 Web::Scraper
 namespace::autoclean
