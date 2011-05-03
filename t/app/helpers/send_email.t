@@ -40,7 +40,7 @@ my $email_as_string = $emails[0]->as_string;
 ok $email_as_string =~ s{\s+Date:\s+\S.*?$}{}xms, "Found and stripped out date";
 
 my $expected_email_content =   file(__FILE__)->dir->file('send_email_sample.txt')->slurp;
-$expected_email_content =~ s{TESTING_EMAIL}{ FixMyStreet->config('TESTING_EMAIL') }e;
+$expected_email_content =~ s{CONTACT_EMAIL}{ FixMyStreet->config('CONTACT_EMAIL') }e;
 
 is $email_as_string,
 $expected_email_content,
