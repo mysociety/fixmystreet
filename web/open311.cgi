@@ -117,7 +117,7 @@ administration.  The search term is the administration ID provided by
 
 <ul>
 EOF
-n
+
     my @examples =
     (
      {
