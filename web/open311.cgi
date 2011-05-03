@@ -362,10 +362,13 @@ sub get_requests {
             } elsif ('agency_responsible' eq $param) {
                 my $combined_rule = '';
                 my @valuelist;
-                for my $agency (split(/,/, $value[0])) {
-                    # FIXME This seem to match the wrong entries some
-                    # times.  Not sure when or why
-                    my $re = "(\\y$agency\\y|^$agency\\y|\\y$agency\$)";
+                for my $agency (split(/\|/, $value[0])) {
+                    error ($q, "Invalid agency_responsible value $value[0]")
+                        unless ($agency =~ m/^(\d+)$/);
+                    my $agencyid = $1;
+                    # FIXME This seem to match the wrong entries
+                    # some times.  Not sure when or why
+                    my $re = "(\\y$agencyid\\y|^$agencyid\\y|\\y$agencyid\$)";
                     if ($combined_rule) {
                         $combined_rule .= " or $rule";
                     } else {
