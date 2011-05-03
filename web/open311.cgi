@@ -364,9 +364,12 @@ sub get_requests {
                 my $combined_rule = '';
                 my @valuelist;
                 for my $agency (split(/\|/, $value[0])) {
-                    error ($q, sprintf(_('Invalid agency_responsible value %s'),
-                                       $value[0]))
-                        unless ($agency =~ m/^(\d+)$/);
+                    unless ($agency =~ m/^(\d+)$/) {
+                        error ($q,
+                               sprintf(_('Invalid agency_responsible value %s'),
+                                       $value[0]));
+                        return;
+                    }
                     my $agencyid = $1;
                     # FIXME This seem to match the wrong entries
                     # some times.  Not sure when or why
