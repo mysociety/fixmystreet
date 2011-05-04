@@ -891,8 +891,8 @@ sub admin_questionnaire {
     if ($total) {
         print $q->Tr({},
                      $q->td([
-                 sprintf("%d (%d%%)", $res{1}, (100 * $res{1}) / $total),
-                 sprintf("%d (%d%%)", $res{0}, (100 * $res{0}) / $total),
+                 sprintf("%d (%.1f%%)", $res{1}, (100 * $res{1}) / $total),
+                 sprintf("%d (%.1f%%)", $res{0}, (100 * $res{0}) / $total),
                             ]));
     } else {
         print $q->Tr({}, $q->td([ 'n/a', 'n/a' ]));
