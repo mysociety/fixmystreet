@@ -281,8 +281,8 @@ sub output_requests {
     # Look up categories for this council or councils
     my $query =
         "SELECT id, title, detail, latitude, longitude, state, ".
-        "category, created, whensent, lastupdate, council, service, ".
-        "name, anonymous, ".
+        "category, created, confirmed, whensent, lastupdate, council, "
+        "service, name, anonymous, ".
         "(photo is not null) as has_photo FROM problem ".
         "WHERE $criteria ORDER BY confirmed desc";
 
