@@ -919,7 +919,7 @@ sub admin_questionnaire {
                          $q->td([
                              $h->{old_state},
                              $h->{new_state},
-                                 sprintf("%d (%d%%)", $h->{count},
+                                 sprintf("%d (%.1f%%)", $h->{count},
                                          100 * $h->{count} / $total),
                             ]));
         }
