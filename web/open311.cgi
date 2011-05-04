@@ -101,8 +101,8 @@ service_name.</p>
 <p>In addition, the following attributes that are not part of the
 Open311 v2 specification are returned: agency_sent_datetime, title
 (also returned as part of description), interface_used, comment_count,
-citicen_anonymous and citicen_name (if citicen_anonymous is not
-true).</p>
+requestor_name (only present if requestor allowed the name to be shown
+on this site).</p>
 
 <p>The Open311 v2 attribute agency_responsible is used to list the
 administrations that received the problem report, which is not quite
@@ -299,9 +299,6 @@ sub output_requests {
     for my $problem (@{$problems}) {
         my $id = $problem->{id};
 
-        if ($problem->{anonymous} == 1){
-            $problem->{name} = '';
-        }
         if ($problem->{service} eq ''){
             $problem->{service} = 'Web interface';
         }
@@ -334,11 +331,11 @@ sub output_requests {
             'agency_responsible' =>  $problem->{council} , # FIXME Not according to Open311 v2
 #            'zipcode' => [ {} ],
             'interface_used' => [ $problem->{service} ], # Not in Open311 v2
-            'citicen_anonymous' => [ $problem->{anonymouns} ], # Not in Open311 v2
         };
-        if ($problem->{name}) {
+
+        if ($problem->{anonymous} == 0){
             # Not in Open311 v2
-            $request->{'citicen_name'} = [ $problem->{name} ];
+            $request->{'requestor_name'} = [ $problem->{name} ];
         }
         if ( $problem->{whensent} ) {
             # Not in Open311 v2
@@ -388,7 +385,7 @@ sub get_requests {
         end_date           => "date_trunc('day',confirmed) <= ?",
         agency_responsible => "council ~ ?",
         interface_used     => 'service is not null and service = ?',
-        citicen_name       => 'name = ? and anonymous = false',
+        requestor_name     => 'name = ? and anonymous = false',
         );
     my @args;
     # Only provide access to the published reports
