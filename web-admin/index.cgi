@@ -148,13 +148,13 @@ sub admin_summary ($) {
     $questionnaires{0} ||= 0;
     $questionnaires{1} ||= 0;
     $questionnaires{total} = $questionnaires{0} + $questionnaires{1};
-    my $questionnaires_pc = $questionnaires{total} ? $questionnaires{1} / $questionnaires{total} * 100 : 'na';
+    my $questionnaires_pc = $questionnaires{total} ? sprintf('%.1f', $questionnaires{1} / $questionnaires{total} * 100) : 'na';
     
     print $q->ul(
         $q->li(sprintf(_("<strong>%d</strong> live problems"), $total_problems_live)),
         $q->li(sprintf(_("%d live updates"), $comments{confirmed})),
         $q->li(sprintf(_("%d confirmed alerts, %d unconfirmed"), $alerts{1}, $alerts{0})),
-        $q->li(sprintf(_("%d questionnaires sent &ndash; %d answered (%d%%)"), $questionnaires{total}, $questionnaires{1}, $questionnaires_pc)),
+        $q->li(sprintf(_("%d questionnaires sent &ndash; %d answered (%s%%)"), $questionnaires{total}, $questionnaires{1}, $questionnaires_pc)),
         $q->li(sprintf(_("%d council contacts &ndash; %d confirmed, %d unconfirmed"), $contacts{total}, $contacts{1}, $contacts{0})),
     );
 
@@ -828,10 +828,11 @@ sub admin_timeline {
         print '<dt><b>', decode_utf8(strftime('%H:%M:%S', localtime($_))), ':</b></dt> <dd>';
         foreach (@{$time{$_}}) {
             my $type = $_->{type};
-            my $name_str = '; ' . sprintf(_("by %s"), ent($_->{name})) . " &lt;" . ent($_->{email}) . "&gt;, '" . ent($_->{title}) . "'";
             if ($type eq 'problemCreated') {
+                my $name_str = '; ' . sprintf(_("by %s"), ent($_->{name})) . " &lt;" . ent($_->{email}) . "&gt;, '" . ent($_->{title}) . "'";
                 print sprintf(_("Problem %d created"), $_->{id}) . $name_str;
             } elsif ($type eq 'problemConfirmed') {
+                my $name_str = '; ' . sprintf(_("by %s"), ent($_->{name})) . " &lt;" . ent($_->{email}) . "&gt;, '" . ent($_->{title}) . "'";
                 $cobrand_data = get_cobrand_data_from_hash($cobrand, $_);
                 my $url = Cobrand::base_url_for_emails($cobrand, $cobrand_data)  . "/report/$_->{id}";
                 print sprintf(_("Problem %s confirmed"), "<a href='$url'>$_->{id}</a>") . $name_str;
