@@ -85,16 +85,9 @@ sub list :Path('list') :Args(0) {
 #
 #    return FixMyStreet::Geocode::list_choices($error, '/alert', $q) if ref($error) eq 'ARRAY';
 #    return alert_front_page($q, $error) if $error;
-#
-#    my $pretty_pc = $input_h{pc};
-#    my $pretty_pc_text;# This one isnt't getting the nbsp.
-#    if (mySociety::PostcodeUtil::is_valid_postcode($input{pc})) {
-#        $pretty_pc = mySociety::PostcodeUtil::canonicalise_postcode($input{pc});
-#        $pretty_pc_text = $pretty_pc;
-#        $pretty_pc_text =~ s/ //g;
-#        $pretty_pc =~ s/ /&nbsp;/;
-#    }
-#
+
+    $c->forward('prettify_pc');
+
 #    # truncate the lat,lon for nicer urls
 #    ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );
 #    
@@ -336,6 +329,32 @@ sub list :Path('list') :Args(0) {
 #    my $cobrand_page = Page::template_include('alert-options', $q, Page::template_root($q), %vars);
 #    $out = $cobrand_page if ($cobrand_page);
 #    return $out;
+}
+
+=head2 prettify_pc
+
+This will canonicalise and prettify the postcode and stick a pretty_pc and pretty_pc_text in the stash.
+
+=cut
+
+sub prettify_pc : Private {
+    my ( $self, $c ) = @_;
+
+    # FIXME previously this had been run through ent so need to do similar here or in template
+    my $pretty_pc = $c->req->params->{'pc'};
+
+#    my $pretty_pc = $input_h{pc};
+#    my $pretty_pc_text;# This one isnt't getting the nbsp.
+    if (mySociety::PostcodeUtil::is_valid_postcode($c->req->params->{'pc'})) {
+        $pretty_pc = mySociety::PostcodeUtil::canonicalise_postcode($c->req->params->{'pc'});
+        my $pretty_pc_text = $pretty_pc;
+        $pretty_pc_text =~ s/ //g;
+        $c->stash->{pretty_pc_text} = $pretty_pc_text;
+        # this may be better done in template
+        $pretty_pc =~ s/ /&nbsp;/;
+    }
+
+    $c->stash->{pretty_pc} = $pretty_pc;
 }
 
 
