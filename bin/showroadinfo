@@ -1,0 +1,39 @@
+#!/usr/bin/perl
+
+use warnings;
+use strict;
+
+use FindBin;
+use lib "$FindBin::Bin/../perllib";
+use lib "$FindBin::Bin/../commonlib/perllib";
+
+use FixMyStreet::Geocode::OSM;
+use Data::Dumper;
+
+BEGIN {
+    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+}
+
+sub isRoadOperator {
+    my ($latitude, $longitude, $operatorname) = @_;
+    my $osmtags =
+            FixMyStreet::Geocode::OSM::get_nearest_road_tags($latitude,
+                                                             $longitude);
+    print STDERR Dumper($osmtags);
+    my $operator = $osmtags->{operator} || $osmtags->{operatorguess};
+    if ($operator) {
+        my ($name, $ref) = ('','');
+        $name = " named $osmtags->{name}" if exists $osmtags->{name};
+        $ref = " ($osmtags->{ref})" if exists $osmtags->{ref};
+        print STDERR "Claiming operator $operator for way$name$ref\n";
+        return ($operator eq $operatorname);
+    }
+    return undef;
+}
+
+my $latitude = $ARGV[0] || 63.37638;
+my $longitude = $ARGV[1] || 10.37595;
+
+unless (isRoadOperator($latitude, $longitude, "Statens vegvesen")) {
+    print STDERR "Operator is not Statens vegvesen\n";
+}

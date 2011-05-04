@@ -12,6 +12,7 @@
 package Cobrand;
 use strict;
 use Carp;
+use FixMyStreet::Util;
 
 =item get_allowed_cobrands
 
@@ -121,6 +122,8 @@ my %fns = (
     'area_min_generation' => { default => '10' },
     # Some cobrands that use a Tilma map have a smaller mid-point to make pin centred
     'tilma_mid_point' => { default => '""' },
+    # Information derived from the location of the map pin
+    'find_closest' => { default => '\&FixMyStreet::Util::find_closest' },
 );
 
 foreach (keys %fns) {
