@@ -385,7 +385,6 @@ sub get_requests {
         end_date           => "date_trunc('day',confirmed) <= ?",
         agency_responsible => "council ~ ?",
         interface_used     => 'service is not null and service = ?',
-        requestor_name     => 'name = ? and anonymous = false',
         );
     my @args;
     # Only provide access to the published reports
