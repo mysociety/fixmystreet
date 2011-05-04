@@ -51,7 +51,7 @@ sub geocoded_string_check {
 }
 
 sub area_types {
-    return ( 'NKO', 'NFY' );
+    return ( 'NKO', 'NFY', 'NRA' );
 }
 
 sub area_min_generation {
