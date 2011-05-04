@@ -496,8 +496,10 @@ sub is_jurisdiction_id_ok {
 # FIXME Need generic solution to find time zone
 sub w3date {
     my $datestr = shift;
-    $datestr =~ s/ /T/;
-    my $tz = '+02:00';
-    $datestr =~ s/\.\d+$/$tz/;
+    if (defined $datestr) {
+        $datestr =~ s/ /T/;
+        my $tz = '+02:00';
+        $datestr =~ s/\.\d+$/$tz/;
+    }
     return $datestr;
 }
