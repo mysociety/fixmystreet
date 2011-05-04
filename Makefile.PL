@@ -32,6 +32,18 @@ requires 'Net::Domain::TLD';
 requires 'Path::Class';
 requires 'Readonly';
 requires 'Sort::Key';
+requires 'List::MoreUtils';
+requires 'IPC::Run3';
+requires 'Data::UUID';
+requires 'YAML';
+requires 'Geography::NationalGrid';
+requires 'Digest::SHA1';
+requires 'XML::RSS';
+requires 'Regexp::Common';
+requires 'Text::Template';
+requires 'Image::Size';
+requires 'Image::Magick';
+requires 'Statistics::Distributions';
 
 test_requires 'Test::More' => '0.88';
 test_requires 'Test::WWW::Mechanize::Catalyst';
