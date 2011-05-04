@@ -189,8 +189,8 @@ sub email_alerts ($) {
         my ($site_restriction, $site_id) = Cobrand::site_restriction($alert->{cobrand}, $alert->{cobrand_data});
         my $d = mySociety::Gaze::get_radius_containing_population($latitude, $longitude, 200000);
         # Convert integer to GB locale string (with a ".")
-        mySociety::Locale::in_gb_locale {
-            $d = sprintf("%f", int($d*10+0.5)/10);
+        $d = mySociety::Locale::in_gb_locale {
+            sprintf("%f", int($d*10+0.5)/10);
         };
         my $testing_email_clause = "and problem.email <> '$testing_email'" if $testing_email;        
         my %data = ( template => $template, data => '', alert_id => $alert->{id}, alert_email => $alert->{email}, lang => $alert->{lang}, cobrand => $alert->{cobrand}, cobrand_data => $alert->{cobrand_data} );
