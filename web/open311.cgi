@@ -378,10 +378,7 @@ sub output_requests {
 
 sub get_requests {
     my ($q, $format) = @_;
-    unless (my $jurisdiction_id = $q->param('jurisdiction_id')) {
-        error($q, _('Missing jurisdiction_id'));
-        return;
-    }
+    return unless is_jurisdiction_id_ok($q);
 
     my %rules = (
         service_request_id => 'id = ?',
@@ -465,6 +462,8 @@ sub get_requests {
 # http://seeclickfix.com/open311/requests/1.xml?jurisdiction_id=sfgov.org
 sub get_request {
     my ($q, $id, $format) = @_;
+    return unless is_jurisdiction_id_ok($q);
+
     my $criteria = "state IN ('fixed', 'confirmed') AND id = ?";
     output_requests($q, $format, $criteria, $id);
 }
@@ -481,6 +480,15 @@ sub format_output {
         error($q, sprintf(_('Invalid format %s specified.'), $format));
         return;
     }
+}
+
+sub is_jurisdiction_id_ok {
+    my ($q) = @_;
+    unless (my $jurisdiction_id = $q->param('jurisdiction_id')) {
+        error($q, _('Missing jurisdiction_id'));
+        return 0;
+    }
+    return 1;
 }
 
 # Input:  2011-04-23 10:28:55.944805<
