@@ -23,7 +23,7 @@ Show the alerts page
 
 =cut
 
-sub alert :Path :Args(0) {
+sub alert_index :Path :Args(0) {
     my ( $self, $c ) = @_;
 
 }
