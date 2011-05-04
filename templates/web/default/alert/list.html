@@ -7,7 +7,43 @@
 
 <h1>[% title %]</h1>
 
+<form id="alerts" name="alerts" method="post" action="">
+  <input type="hidden" name="type" value="local">
+  <input type="hidden" name="pc" value="[% pc | html %]">
 
-[%# FIXME - put in blurb here %]
+  [%# FIXME cobrands and pics here %]
+
+  <p>
+  [% IF pretty_pc %]
+    [% tprintf( loc('Here are the types of local problem alerts for %s.'), pretty_pc ) %]
+  [% END %]
+  [% loc('Select which type of alert you\'d like and click the button for an RSS feed, or enter your email address to subscribe to an email alert') %]
+  </p>
+
+  <p>
+  [% loc('The simplest alert is our geographic one') %]
+  </p>
+
+  [%# FIXME errors here %]
+
+  [%# FIXME rss options here %]
+
+  <p>
+    <input type="submit" name="rss" value="[% loc('Give me an RSS feed') %]">
+  <p>
+
+  <p id="aler_or">
+    or
+  </p>
+
+  <p>
+  [% loc('Your email:') %] <input type="text" id="rznvy" name="rznvy" value="[% rznvy | html %]" size="30">
+  </p>
+
+  <p>
+    <input type="submit" name="alert" value="[% loc('Subscribe me to an email alert') %]">
+  </p>
+  </div> <!-- ???? -->
+  </form>
 
 [% INCLUDE 'footer.html' %]
