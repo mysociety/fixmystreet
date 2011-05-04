@@ -191,7 +191,7 @@ sub email_alerts ($) {
         # Convert integer to GB locale string (with a ".")
         mySociety::Locale::in_gb_locale {
             $d = sprintf("%f", int($d*10+0.5)/10);
-        }
+        };
         my $testing_email_clause = "and problem.email <> '$testing_email'" if $testing_email;        
         my %data = ( template => $template, data => '', alert_id => $alert->{id}, alert_email => $alert->{email}, lang => $alert->{lang}, cobrand => $alert->{cobrand}, cobrand_data => $alert->{cobrand_data} );
         my $q = "select * from problem_find_nearby(?, ?, ?) as nearby, problem
