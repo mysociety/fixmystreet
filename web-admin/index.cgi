@@ -148,7 +148,7 @@ sub admin_summary ($) {
     $questionnaires{0} ||= 0;
     $questionnaires{1} ||= 0;
     $questionnaires{total} = $questionnaires{0} + $questionnaires{1};
-    my $questionnaires_pc = $questionnaires{total} ? sprintf('%d', $questionnaires{1} / $questionnaires{total} * 100) : 'na';
+    my $questionnaires_pc = $questionnaires{total} ? sprintf('%.1f', $questionnaires{1} / $questionnaires{total} * 100) : 'na';
     
     print $q->ul(
         $q->li(sprintf(_("<strong>%d</strong> live problems"), $total_problems_live)),
