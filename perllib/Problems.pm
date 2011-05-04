@@ -240,7 +240,9 @@ sub problems_matching_criteria {
     my ($criteria, @params) = @_;
     my $problems = select_all(
         "select id, title, council, category, detail, name, anonymous,
-        confirmed, whensent, service
+        confirmed, whensent, service, latitude, longitude, used_map,
+        state, created, lang, lastupdate,
+        external_id, external_body, external_team
         from problem
         $criteria
         $site_restriction", @params);
@@ -271,17 +273,27 @@ sub problems_matching_criteria {
 }
 
 sub fixed_in_interval {
-    my ($start_date, $end_date) = @_; 
+    my ($start_date, $end_date, $category) = @_;
     my $criteria = "where state='fixed' and date_trunc('day',lastupdate)>=? and 
 date_trunc('day',lastupdate)<=?";
-    return problems_matching_criteria($criteria, $start_date, $end_date);
+    my @args = ($start_date, $end_date);
+    if ($category) {
+        $criteria .= " and category = ?";
+        push(@args, $category);
+    }
+    return problems_matching_criteria($criteria, @args)
 }
 
 sub created_in_interval {
-    my ($start_date, $end_date) = @_; 
+    my ($start_date, $end_date, $category) = @_;
     my $criteria = "where state='confirmed' and date_trunc('day',created)>=? and 
 date_trunc('day',created)<=?";
-    return problems_matching_criteria($criteria, $start_date, $end_date);
+    my @args = ($start_date, $end_date);
+    if ($category) {
+        $criteria .= " and category = ?";
+        push(@args, $category);
+    }
+    return problems_matching_criteria($criteria, @args)
 }
 
 =item data_sharing_notification_start
