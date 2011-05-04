@@ -2,7 +2,20 @@
 
 <h1>[% loc('Local RSS feeds and email alerts') %]</h1>
 
-<h2>FixMyStreet.com</h2>
+<p>
+[% loc('FixMyStreet has a variety of RSS feeds and email alerts for local problems, including
+alerts for all problems within a particular ward or council, or all problems
+within a certain distance of a particular location.') %]
+</p>
+
+<form method="get" action="/alert">
+  <p>
+  [% loc('To find out what local alerts we have for you, please enter your GB
+  postcode or street name and area:' ) %]
+  <input type="text" name="pc" value="">
+  <input type="submit" value="[% loc('Go') %]">
+  </p>
+</form>
 
 [%# FIXME - put in blurb here %]
 
