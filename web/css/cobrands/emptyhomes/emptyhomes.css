@@ -193,3 +193,17 @@ blockquote {
     margin-top: 1px;
 }
 
+#eha_advert {
+    clear: both;
+    width: 55%;
+    margin: 0 auto;
+    padding: 0.5em;
+    text-align: center;
+    background-color: #ffeecc;
+    border: solid 1px #ff9900;
+}
+
+#front_intro {
+    margin-bottom: 1em;
+}
+

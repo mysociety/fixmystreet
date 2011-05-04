@@ -202,8 +202,17 @@ EOF
              $out .= '</a></li>';
          }
          $out .= '</ul>' if @$probs;
-    $out .= '</div>';
-    }   
+         $out .= '</div>';
+    }
+
+    if ($q->{site} eq 'emptyhomes') {
+        $out .= <<EOF;
+<div id="eha_advert">
+Now is the best time to turn empty properties into empty homes... Don't miss it!
+<a href="http://www.emptyhomes.com/EHConference2011.html">Home Again: Empty Homes National Conference 2011</a>
+</div>
+EOF
+    }
 
     return ($out, %params);
 }
