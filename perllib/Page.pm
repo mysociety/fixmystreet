@@ -604,6 +604,7 @@ sub display_problem_detail($) {
     foreach (split /\n{2,}/, $detail) {
         $out .= '<p>' . ent($_) . '</p>';
     }
+    $out =~ s%(https?://[^\s]+)%<a href="$1">$1</a>%g;
     return $out;
 }
 
@@ -682,6 +683,7 @@ sub display_problem_updates($$) {
         }
         $out .= '</div>';
     }
+    $out =~ s%(https?://[^\s]+)%<a href="$1">$1</a>%g;
     return $out;
 }
 
