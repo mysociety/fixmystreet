@@ -190,12 +190,12 @@ EOF
 <dd>Search for open or closed (fixed) requests.</dd>
 
 <dt>start_date<dt>
-<dd>Only return requests confirmed by the user after or at the date
-  and time specified.  The format is YYYY-MM-DDTHH:MM:SS+TZ:TZ.</dd>
+<dd>Only return requests with requested_datetime set after or at the
+  date and time specified.  The format is YYYY-MM-DDTHH:MM:SS+TZ:TZ.</dd>
 
 <dt>end_date<dt>
-<dd>Only retur requests confirmed by the user before the date and time
-  specified.  Same format as start_date</dd>.
+<dd>Only return requests with requested_datetime set before the date
+  and time specified.  Same format as start_date</dd>.
 
 <dt>agency_responsible</dt>
 <dd>ID of government body receiving the request.  Several IDs can be
@@ -204,8 +204,41 @@ EOF
 <dt>interface_used<dt>
 <dd>Name / identifier of interface used.</dd>
 
+<dl>
+
+<p>The search result might look like this:</p>
+
 EOF
 
+    print xml_format("
+  <requests>
+    <request>
+      <agency_responsible>
+        <recipient>Statens vegvesen region øst</recipient>
+        <recipient>Oslo</recipient>
+      </agency_responsible>
+      <agency_sent_datetime>2011-04-23T10:28:55+02:00</agency_sent_datetime>
+      <description>Mangler brustein: Det støver veldig på tørre dager.  Her burde det vært brustein.</description>
+      <interface_used>Web interface</interface_used>
+      <lat>59.916848</lat>
+      <long>10.728148</long>
+      <requested_datetime>2011-04-23T09:32:36+02:00</requested_datetime>
+      <requestor_name>Petter Reinholdtsen</requestor_name>
+      <service_code>Annet</service_code>
+      <service_name>Annet</service_name>
+      <service_request_id>1</service_request_id>
+      <status>open</status>
+      <title>Mangler brustein</title>
+      <updated_datetime>2011-04-23T10:28:55+02:00</updated_datetime>
+    </request>
+  </requests>
+");
+
+}
+
+sub xml_format {
+    my $xml = shift;
+    return $xml;
 }
 
 # Example
@@ -396,10 +429,7 @@ sub output_requests {
         if ($request->{agency_responsible}) {
             my @council_names = map { $areas_info->{$_}->{name} } @{$request->{agency_responsible}} ;
             $request->{agency_responsible} =
-                [ '<recipient>' .
-                  join('</recipient><recipient>', @council_names) .
-                  '</recipient>'
-                ];
+                [ {'recipient' => [ @council_names ] } ];
         }
     }
     format_output($q, $format, {'requests' => [{ 'request' => \@problemlist}]});
