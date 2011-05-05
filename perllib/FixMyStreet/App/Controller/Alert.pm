@@ -72,8 +72,8 @@ sub list :Path('list') :Args(0) {
 #    my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 #
     # Try to create a location for whatever we have
-    unless ($c->forward('/around/determine_location_from_coords')
-          || $c->forward('/around/determine_location_from_pc') ) {
+    unless ($c->forward('/location/determine_location_from_coords')
+          || $c->forward('/location/determine_location_from_pc') ) {
       # FIXME: do error display here
 #    return FixMyStreet::Geocode::list_choices($error, '/alert', $q) if ref($error) eq 'ARRAY';
 #    return alert_front_page($q, $error) if $error;
