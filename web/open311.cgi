@@ -499,8 +499,10 @@ sub get_requests {
                     $rule = 'service is null'
                 }
             }
-            $criteria .= " and $rule";
-            push(@args, @value);
+            if (@value) {
+                $criteria .= " and $rule";
+                push(@args, @value);
+            }
         }
     }
 
