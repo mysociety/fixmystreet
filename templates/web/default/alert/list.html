@@ -1,9 +1,11 @@
 [% title = loc('Local RSS feeds and email alerts') %]
+
+[% INCLUDE 'header.html', title => title %]
+
 [% IF pretty_pc %]
 [% title = tprintf( loc('Local RSS feeds and email alerts for %s'), pretty_pc ) %]
 [% END %]
 
-[% INCLUDE 'header.html', title => title %]
 
 <h1>[% title %]</h1>
 
