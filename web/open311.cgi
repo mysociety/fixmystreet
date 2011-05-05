@@ -346,6 +346,7 @@ sub output_requests {
         {
             'service_request_id' => [ $id ],
             'title' => [ $problem->{title} ], # Not in Open311 v2
+            'detail'  => [ $problem->{detail} ], # Not in Open311 v2
             'description' => [ $problem->{title} .': ' . $problem->{detail} ],
             'lat' => [ $problem->{latitude} ],
             'long' => [ $problem->{longitude} ],
