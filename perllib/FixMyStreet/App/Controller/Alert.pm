@@ -74,13 +74,13 @@ sub list :Path('list') :Args(0) {
     # Try to create a location for whatever we have
     unless ($c->forward('/location/determine_location_from_coords')
           || $c->forward('/location/determine_location_from_pc') ) {
-          if ( $c->stash->{possible_location_matches} ) {
-            $c->stash->{choose_target_uri} = $c->uri_for( '/alert/list' );
-            $c->detach('choose');
-          }
-      # FIXME: do error display here
-#    return FixMyStreet::Geocode::list_choices($error, '/alert', $q) if ref($error) eq 'ARRAY';
-#    return alert_front_page($q, $error) if $error;
+
+      if ( $c->stash->{possible_location_matches} ) {
+        $c->stash->{choose_target_uri} = $c->uri_for( '/alert/list' );
+        $c->detach('choose');
+      }
+
+      $c->go('index') if $c->stash->{ location_error };
     }
 
     $c->log->debug( $_ ) for ( $c->stash->{pc}, $c->stash->{latitude}, $c->stash->{longitude} );
