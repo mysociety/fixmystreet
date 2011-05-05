@@ -413,8 +413,8 @@ sub get_requests {
         service_request_id => 'id = ?',
         service_code       => 'category = ?',
         status             => 'state = ?',
-        start_date         => "date_trunc('day',confirmed) >= ?",
-        end_date           => "date_trunc('day',confirmed) <= ?",
+        start_date         => "confirmed >= ?",
+        end_date           => "confirmed < ?",
         agency_responsible => "council ~ ?",
         interface_used     => 'service is not null and service = ?',
         );
