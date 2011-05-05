@@ -71,7 +71,7 @@ sub show_documentation {
     my $jurisdiction_id = 'fiksgatami.no';
 
     print $q->header(-charset => 'utf-8', -content_type => 'text/html');
-    print $q->p(_('Open311 API for the mySociety FixMyStreet server'));
+    print $q->h1(_('Open311 API for the mySociety FixMyStreet server'));
     print $q->p(sprintf(_('Note: <strong>%s</strong>', $message)))
         if $message;
     print $q->p(_('At the moment only searching for and looking at reports work.'));
@@ -84,7 +84,7 @@ sub show_documentation {
                         href => 'http://wiki.open311.org/GeoReport_v2'},
                        _('Open311 specification')));
 
-    print $q->p(sprintf(_('At most %d requests are returned in each query.  The returned requests are ordered by updated_datetime, so to get all requests, do several searches with rolling start_date and end_date.'),
+    print $q->p(sprintf(_('At most %d requests are returned in each query.  The returned requests are ordered by requested_datetime, so to get all requests, do several searches with rolling start_date and end_date.'),
                         mySociety::Config::get('RSS_LIMIT')));
 
     my $cobrand = Page::get_cobrand($q);
