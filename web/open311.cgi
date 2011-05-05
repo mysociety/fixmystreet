@@ -195,7 +195,7 @@ EOF
 
 <dt>end_date<dt>
 <dd>Only return requests with requested_datetime set before the date
-  and time specified.  Same format as start_date</dd>.
+  and time specified.  Same format as start_date.</dd>
 
 <dt>agency_responsible</dt>
 <dd>ID of government body receiving the request.  Several IDs can be
