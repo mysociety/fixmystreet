@@ -71,20 +71,15 @@ sub list :Path('list') :Args(0) {
 #    my %input = map { $_ => scalar $q->param($_) } @vars;
 #    my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 #
-#    my($error, $lat, $lon);
-#    if ($input{lat} || $input{lon}) {
-#        $lat = $input{lat};
-#        $lon = $input{lon};
-#    } else {
-#        try {
-#            ($lat, $lon, $error) = FixMyStreet::Geocode::lookup($input{pc}, $q);
-#        } catch Error::Simple with {
-#            $error = shift;
-#        };
-#    }
-#
+    # Try to create a location for whatever we have
+    unless ($c->forward('/around/determine_location_from_coords')
+          || $c->forward('/around/determine_location_from_pc') ) {
+      # FIXME: do error display here
 #    return FixMyStreet::Geocode::list_choices($error, '/alert', $q) if ref($error) eq 'ARRAY';
 #    return alert_front_page($q, $error) if $error;
+    }
+
+    $c->log->debug( $_ ) for ( $c->stash->{pc}, $c->stash->{latitude}, $c->stash->{longitude} );
 
     $c->forward('prettify_pc');
 
