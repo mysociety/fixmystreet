@@ -161,9 +161,9 @@ EOF
             my $rssurl = $url;
             $rssurl =~ s/.xml/.rss/;
             my $encurl = $q->escape($rssurl);
-            $googlemapslink = '<br>' .
+            $googlemapslink = ' [ ' .
                 $q->a({href => "http://maps.google.com/?q=$encurl"},
-                      ' [ ' . _('GeoRSS on Google Maps') . ' ]');
+                      _('GeoRSS on Google Maps')) . ' ]';
         }
         print $q->li($q->a({href => $url}, $info) . $googlemapslink . '<br>' .
                      ent($url));
