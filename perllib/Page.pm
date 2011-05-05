@@ -602,9 +602,10 @@ sub display_problem_detail($) {
     (my $detail = $problem->{detail}) =~ s/\r//g;
     my $out = '';
     foreach (split /\n{2,}/, $detail) {
-        $out .= '<p>' . ent($_) . '</p>';
+        my $enttext = $_;
+        $enttext =~ s%(https?://[^\s]+)%<a href="$1">$1</a>%g;
+        $out .= '<p>' . $enttext . '</p>';
     }
-    $out =~ s%(https?://[^\s]+)%<a href="$1">$1</a>%g;
     return $out;
 }
 
@@ -670,7 +671,9 @@ sub display_problem_updates($$) {
             my $text = $row->{text};
             $text =~ s/\r//g;
             foreach (split /\n{2,}/, $text) {
-                $out .= '<p>' . ent($_) . '</p>';
+                my $enttext = ent($_);
+                $enttext =~ s%(https?://[^\s]+)%<a href="$1">$1</a>%g;
+                $out .= '<p>' . $enttext . '</p>';
             }
             my $cobrand = get_cobrand($q);
             my $display_photos = Cobrand::allow_photo_display($cobrand);
@@ -683,7 +686,6 @@ sub display_problem_updates($$) {
         }
         $out .= '</div>';
     }
-    $out =~ s%(https?://[^\s]+)%<a href="$1">$1</a>%g;
     return $out;
 }
 
