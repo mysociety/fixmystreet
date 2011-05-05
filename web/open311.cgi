@@ -467,11 +467,6 @@ sub get_requests {
                     'open' => 'confirmed',
                     'closed' => 'fixed'
                 }->{$value[0]};
-            } elsif ('start_date' eq $param || 'end_date' eq $param) {
-                if ($value[0] !~ /^\d{4}-\d\d-\d\d$/) {
-                    error($q, _('Invalid dates supplied'));
-                    return;
-                }
             } elsif ('agency_responsible' eq $param) {
                 my $combined_rule = '';
                 my @valuelist;
