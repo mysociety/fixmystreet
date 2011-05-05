@@ -341,7 +341,7 @@ sub get_services {
 
 
 sub output_requests {
-    my ($q, $format, $criteria, @args) = @_;
+    my ($q, $format, $criteria, $limit, @args) = @_;
     # Look up categories for this council or councils
     my $query =
         "SELECT id, title, detail, latitude, longitude, state, ".
@@ -351,6 +351,7 @@ sub output_requests {
         "WHERE $criteria ORDER BY confirmed desc";
 
     my $open311limit = mySociety::Config::get('RSS_LIMIT');
+    $open311limit = $limit if ($limit && $limit < $open311limit);
     $query .= " LIMIT $open311limit" if $open311limit;
 
     my $problems = select_all($query, @args);
@@ -443,11 +444,13 @@ sub get_requests {
         service_request_id => 'id = ?',
         service_code       => 'category = ?',
         status             => 'state = ?',
-        start_date         => "confirmed >= ?",
-        end_date           => "confirmed < ?",
-        agency_responsible => "council ~ ?",
+        start_date         => 'confirmed >= ?',
+        end_date           => 'confirmed < ?',
+        agency_responsible => 'council ~ ?',
         interface_used     => 'service is not null and service = ?',
+        max_requests       => '',
         );
+    my $max_requests = 0;
     my @args;
     # Only provide access to the published reports
     my $criteria = "state in ('fixed', 'confirmed')";
@@ -488,6 +491,9 @@ sub get_requests {
                 }
                 $rule = "( $combined_rule )";
                 @value = @valuelist;
+            } elsif ('max_requests' eq $param) {
+                $max_requests = @value[0];
+                @value = ();
             } elsif ('interface_used' eq $param) {
                 if ('Web interface' eq $value[0]) {
                     $rule = 'service is null'
@@ -508,11 +514,11 @@ sub get_requests {
             FixMyStreet::Alert::generate_rss('new_problems', $xsl,
                                              $qs, \@args,
                                              \%title_params, $cobrand,
-                                             $q, $criteria);
+                                             $q, $criteria, $max_requests);
         print $q->header( -type => 'application/xml; charset=utf-8' );
         print $out;
     } else {
-        output_requests($q, $format, $criteria, @args);
+        output_requests($q, $format, $criteria, $max_requests, @args);
     }
 }
 
@@ -523,7 +529,7 @@ sub get_request {
     return unless is_jurisdiction_id_ok($q);
 
     my $criteria = "state IN ('fixed', 'confirmed') AND id = ?";
-    output_requests($q, $format, $criteria, $id);
+    output_requests($q, $format, $criteria, 0, $id);
 }
 
 sub format_output {

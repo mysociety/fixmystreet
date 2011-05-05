@@ -244,9 +244,9 @@ sub _send_aggregated_alert_email(%) {
     }
 }
 
-sub generate_rss ($$$;$$$$$) {
+sub generate_rss ($$$;$$$$$$) {
     my ($type, $xsl, $qs, $db_params, $title_params, $cobrand, $http_q,
-        $db_criteria) = @_;
+        $db_criteria, $limit) = @_;
     $db_params ||= [];
     my $url = Cobrand::base_url($cobrand);
     my $cobrand_data = Cobrand::extra_data($cobrand, $http_q);
@@ -269,6 +269,7 @@ sub generate_rss ($$$;$$$$$) {
         . ($db_criteria ? "and $db_criteria" : '')
         . ' order by ' . $alert_type->{item_order};
     my $rss_limit = mySociety::Config::get('RSS_LIMIT');
+    $rss_limit = $limit if ($limit && $limit < $rss_limit);
     $query .= " limit $rss_limit" unless $type =~ /^all/;
     $q = dbh()->prepare($query);
     if ($query =~ /\?/) {
