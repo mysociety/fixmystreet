@@ -25,4 +25,6 @@ $mech->title_like(qr/^Local RSS feeds and email alerts/);
 $mech->content_contains('Local RSS feeds and email alerts for ZZ9&nbsp;9ZY');
 $mech->content_contains('html lang="en-gb"');
 
+$mech->get_ok('/alert/list?pc=High Street');
+$mech->content_contains('We found more than one match for that location');
 done_testing();
