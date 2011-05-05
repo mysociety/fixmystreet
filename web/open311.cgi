@@ -173,6 +173,37 @@ EOF
     print <<EOF;
 </ul>
 
+<h2>Searching</h2>
+
+<p>The following search parameters can be used:</p>
+
+<dl>
+
+<dt>service_request_id</dt>
+<dd>Search for numeric ID of specific request.
+   Using this is identical to asking for a individual request using
+   the /requests/number.format URL.</dd>
+<dt>service_code</dt>
+<dd>Search for the given category / service type string.</dd>
+
+<dt>status</dt>
+<dd>Search for open or closed (fixed) requests.</dd>
+
+<dt>start_date<dt>
+<dd>Only return requests confirmed by the user after or at the date
+  and time specified.  The format is YYYY-MM-DDTHH:MM:SS+TZ:TZ.</dd>
+
+<dt>end_date<dt>
+<dd>Only retur requests confirmed by the user before the date and time
+  specified.  Same format as start_date</dd>.
+
+<dt>agency_responsible</dt>
+<dd>ID of government body receiving the request.  Several IDs can be
+  specified with | as a separator.</dd>
+
+<dt>interface_used<dt>
+<dd>Name / identifier of interface used.</dd>
+
 EOF
 
 }
