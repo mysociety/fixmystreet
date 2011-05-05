@@ -204,6 +204,11 @@ EOF
 <dt>interface_used<dt>
 <dd>Name / identifier of interface used.</dd>
 
+<dt>max_requests</dt>
+<dd>Max number of requests to return from the search.  If it is larger
+than the site specific max_requests value specified in the discovery
+call, the value provided is ignored.</dd>
+
 <dl>
 
 <p>The search result might look like this:</p>
