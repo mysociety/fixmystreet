@@ -238,7 +238,7 @@ EOF
 
 sub xml_format {
     my $xml = shift;
-    return '<pre>' . ent($url) . '</pre>';
+    return '<pre>' . ent($xml) . '</pre>';
 }
 
 # Example
