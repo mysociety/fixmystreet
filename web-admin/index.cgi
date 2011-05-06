@@ -150,12 +150,15 @@ sub admin_summary ($) {
     $questionnaires{total} = $questionnaires{0} + $questionnaires{1};
     my $questionnaires_pc = $questionnaires{total} ? sprintf('%.1f', $questionnaires{1} / $questionnaires{total} * 100) : 'na';
     
+    my $users = Problems::unique_emails_count($cobrand);
+
     print $q->ul(
         $q->li(sprintf(_("<strong>%d</strong> live problems"), $total_problems_live)),
         $q->li(sprintf(_("%d live updates"), $comments{confirmed})),
         $q->li(sprintf(_("%d confirmed alerts, %d unconfirmed"), $alerts{1}, $alerts{0})),
         $q->li(sprintf(_("%d questionnaires sent &ndash; %d answered (%s%%)"), $questionnaires{total}, $questionnaires{1}, $questionnaires_pc)),
         $q->li(sprintf(_("%d council contacts &ndash; %d confirmed, %d unconfirmed"), $contacts{total}, $contacts{1}, $contacts{0})),
+        $q->li(sprintf(_("%d unique emails requested live problems"), $users)),
     );
 
     if (Cobrand::admin_show_creation_graph($cobrand)) {
