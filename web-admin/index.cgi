@@ -176,6 +176,25 @@ sub admin_summary ($) {
         map { $q->li("$comments{$_} $_") } sort keys %comments
     );
 
+    my $query =
+        "SELECT category, COUNT(*) AS total, ".
+        "       (100 * SUM(fixed) / count(*)) AS fixedfraq ".
+        "  FROM (SELECT category, ".
+        "               CASE WHEN state = 'fixed' THEN 1 ELSE 0 END AS fixed ".
+        "        FROM problem WHERE confirmed IS NOT NULL AND ".
+        "                         state IN ('fixed', 'confirmed') AND ".
+        "                         whensent < NOW() - INTERVAL '4 weeks') AS a ".
+        "  GROUP BY category";
+    my $categorystats = dbh()->selectall_arrayref($query, { Slice => {} });
+    print $q->h2(_('Category fix rate for problems > 4 weeks old'));
+    print $q->start_table({border=>1, cellpadding=>2, cellspacing=>0});
+    print $q->Tr({}, $q->th({}, [_('Category'), _('Count'), _("Fixed")]));
+    map {
+        print $q->Tr({}, $q->td({}, [ $_->{category}, $_->{total},
+                                      $_->{fixedfraq} . '%' ]));
+    } sort { $b->{fixedfraq} <=> $a->{fixedfraq} } @{$categorystats};
+    print $q->end_table();
+
     print html_tail($q);
 }
 
