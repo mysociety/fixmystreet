@@ -235,7 +235,7 @@ sub xml_format {
 # http://sandbox.georeport.org/tools/discovery/discovery.xml
 sub get_discovery {
     my ($q, $format) = @_;
-    my $contact_email = 'fiksgatami@rt.nuug.no';
+    my $contact_email = mySociety::Config::get('CONTACT_EMAIL');
     my $prod_url = 'http://www.fiksgatami.no/open311';
     my $test_url = 'http://fiksgatami-dev.nuug.no/open311';
     my $prod_changeset = '2011-04-08T00:00:00Z';
