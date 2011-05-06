@@ -158,7 +158,7 @@ sub admin_summary ($) {
         $q->li(sprintf(_("%d confirmed alerts, %d unconfirmed"), $alerts{1}, $alerts{0})),
         $q->li(sprintf(_("%d questionnaires sent &ndash; %d answered (%s%%)"), $questionnaires{total}, $questionnaires{1}, $questionnaires_pc)),
         $q->li(sprintf(_("%d council contacts &ndash; %d confirmed, %d unconfirmed"), $contacts{total}, $contacts{1}, $contacts{0})),
-        $q->li(sprintf(_("%d unique emails requested live problems"), $users)),
+        $q->li(sprintf(_("%d unique emails behind reports with state fixed and confirmed"), $users)),
     );
 
     if (Cobrand::admin_show_creation_graph($cobrand)) {
