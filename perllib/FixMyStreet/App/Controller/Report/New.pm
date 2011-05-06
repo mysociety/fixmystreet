@@ -377,7 +377,7 @@ sub determine_location : Private {
       if    #
           (    #
               $c->forward('determine_location_from_tile_click')
-              || $c->forward('/around/determine_location_from_coords')
+              || $c->forward('/location/determine_location_from_coords')
               || $c->forward('determine_location_from_report')
           )    #
           && $c->forward('/around/check_location_is_acceptable');
