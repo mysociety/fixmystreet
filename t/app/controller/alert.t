@@ -24,6 +24,11 @@ $mech->get_ok('/alert/list?pc=EH99 1SP');
 $mech->title_like(qr/^Local RSS feeds and email alerts/);
 $mech->content_contains('Local RSS feeds and email alerts for EH99&nbsp;1SP');
 $mech->content_contains('html lang="en-gb"');
+$mech->content_contains('Problems within 8.5km');
+$mech->content_contains('rss/pc/EH991SP/2');
+$mech->content_contains('rss/pc/EH991SP/5');
+$mech->content_contains('rss/pc/EH991SP/10');
+$mech->content_contains('rss/pc/EH991SP/20');
 
 $mech->get_ok('/alert/list?pc=High Street');
 $mech->content_contains('We found more than one match for that location');

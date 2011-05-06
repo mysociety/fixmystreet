@@ -26,6 +26,17 @@
   [% loc('The simplest alert is our geographic one') %]
   </p>
 
+  <p id="rss_local">
+    <input type="radio" name="feed" id="[% rss_feed_id %]" value="[% rss_feed_id %]">
+    <label for="[% rss_feed_id %]">[% tprintf( loc('Problems within %.1fkm of this location'), population_radius ) %]</label>
+    ([% loc('a default distance which covers roughly 200,000 people') %]) <a href='[% rss_feed_uri %]'>
+      <img src='/i/feed.png' width='16' height='16' title='[% loc('RSS feed of nearby problems') %]' alt='[% loc('RSS feed') %]' border='0'></a>
+  </p>
+
+  <p id="rss_local_alt">
+  [% loc('(alternatively the RSS feed can be customised, within') %]
+    <a href="[% rss_feed_2k %]">2km</a> / <a href="[% rss_feed_5k %]">5km</a> / <a href="[% rss_feed_10k %]">10km</a> / <a href="[% rss_feed_20k %]">20km</a>)
+
   [%# FIXME errors here %]
 
   [%# FIXME rss options here %]

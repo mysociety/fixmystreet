@@ -99,202 +99,44 @@ sub list :Path('list') :Args(0) {
       $c->go( 'index' );
     }
 
-#    my ($options, $options_start, $options_end);
-#    if (mySociety::Config::get('COUNTRY') eq 'NO') {
-#
-#        my (@options, $fylke, $kommune);
-#        foreach (values %$areas) {
-#            if ($_->{type} eq 'NKO') {
-#                $kommune = $_;
-#            } else {
-#                $fylke = $_;
-#            }
-#        }
-#        my $kommune_name = $kommune->{name};
-#        my $fylke_name = $fylke->{name};
-#
-#        if ($fylke->{id} == 3) { # Oslo
-#
-#            push @options, [ 'council', $fylke->{id}, Page::short_name($fylke),
-#                sprintf(_("Problems within %s"), $fylke_name) ];
-#        
-#            $options_start = "<div><ul id='rss_feed'>";
-#            $options = alert_list_options($q, @options);
-#            $options_end = "</ul>";
-#
-#        } else {
-#
-#            push @options,
-#                [ 'area', $kommune->{id}, Page::short_name($kommune), $kommune_name ],
-#                [ 'area', $fylke->{id}, Page::short_name($fylke), $fylke_name ];
-#            $options_start = '<div id="rss_list">';
-#            $options = $q->p($q->strong(_('Problems within the boundary of:'))) .
-#                $q->ul(alert_list_options($q, @options));
-#            @options = ();
-#            push @options,
-#                [ 'council', $kommune->{id}, Page::short_name($kommune), $kommune_name ],
-#                [ 'council', $fylke->{id}, Page::short_name($fylke), $fylke_name ];
-#            $options .= $q->p($q->strong(_('Or problems reported to:'))) .
-#                $q->ul(alert_list_options($q, @options));
-#            $options_end = $q->p($q->small(_('FixMyStreet sends different categories of problem
-#to the appropriate council, so problems within the boundary of a particular council
-#might not match the problems sent to that council. For example, a graffiti report
-#will be sent to the district council, so will appear in both of the district
-#council&rsquo;s alerts, but will only appear in the "Within the boundary" alert
-#for the county council.'))) . '</div><div id="rss_buttons">';
-#
-#        }
-#
-#    } elsif (keys %$areas == 2) {
-#
-#        # One-tier council
-#        my (@options, $council, $ward);
-#        foreach (values %$areas) {
-#            if ($councils{$_->{type}}) {
-#                $council = $_;
-#            } else {
-#                $ward = $_;
-#            }
-#        }
-#        my $council_name = $council->{name};
-#        my $ward_name = $ward->{name};
-#        push @options, [ 'council', $council->{id}, Page::short_name($council),
-#            sprintf(_("Problems within %s"), $council_name) ];
-#        push @options, [ 'ward', $council->{id}.':'.$ward->{id}, Page::short_name($council) . '/'
-#            . Page::short_name($ward), sprintf(_("Problems within %s ward"), $ward_name) ];
-#        
-#        $options_start = "<div><ul id='rss_feed'>";
-#        $options = alert_list_options($q, @options);
-#        $options_end = "</ul>";
-#
-#    } elsif (keys %$areas == 1) {
-#
-#        # One-tier council, no ward
-#        my (@options, $council);
-#        foreach (values %$areas) {
-#            $council = $_;
-#        }
-#        my $council_name = $council->{name};
-#        push @options, [ 'council', $council->{id}, Page::short_name($council),
-#            sprintf(_("Problems within %s"), $council_name) ];
-#        
-#        $options_start = "<div><ul id='rss_feed'>"; 
-#        $options = alert_list_options($q, @options);
-#        $options_end = "</ul>";
-#
-#    } elsif (keys %$areas == 4) {
-#
-#        # Two-tier council
-#        my (@options, $county, $district, $c_ward, $d_ward);
-#        foreach (values %$areas) {
-#            if ($_->{type} eq 'CTY') {
-#                $county = $_;
-#            } elsif ($_->{type} eq 'DIS') {
-#                $district = $_;
-#            } elsif ($_->{type} eq 'CED') {
-#                $c_ward = $_;
-#            } elsif ($_->{type} eq 'DIW') {
-#                $d_ward = $_;
-#            }
-#        }
-#        my $district_name = $district->{name};
-#        my $d_ward_name = $d_ward->{name};
-#        my $county_name = $county->{name};
-#        my $c_ward_name = $c_ward->{name};
-#        push @options,
-#            [ 'area', $district->{id}, Page::short_name($district), $district_name ],
-#            [ 'area', $district->{id}.':'.$d_ward->{id}, Page::short_name($district) . '/'
-#              . Page::short_name($d_ward), "$d_ward_name ward, $district_name" ],
-#            [ 'area', $county->{id}, Page::short_name($county), $county_name ],
-#            [ 'area', $county->{id}.':'.$c_ward->{id}, Page::short_name($county) . '/'
-#              . Page::short_name($c_ward), "$c_ward_name ward, $county_name" ];
-#        $options_start = '<div id="rss_list">';
-#        $options = $q->p($q->strong(_('Problems within the boundary of:'))) .
-#            $q->ul(alert_list_options($q, @options));
-#        @options = ();
-#        push @options,
-#            [ 'council', $district->{id}, Page::short_name($district), $district_name ],
-#            [ 'ward', $district->{id}.':'.$d_ward->{id}, Page::short_name($district) . '/' . Page::short_name($d_ward),
-#              "$district_name, within $d_ward_name ward" ];
-#        if ($q->{site} ne 'emptyhomes') {
-#            push @options,
-#                [ 'council', $county->{id}, Page::short_name($county), $county_name ],
-#                [ 'ward', $county->{id}.':'.$c_ward->{id}, Page::short_name($county) . '/'
-#                  . Page::short_name($c_ward), "$county_name, within $c_ward_name ward" ];
-#            $options .= $q->p($q->strong(_('Or problems reported to:'))) .
-#                $q->ul(alert_list_options($q, @options));
-#            $options_end = $q->p($q->small(_('FixMyStreet sends different categories of problem
-#to the appropriate council, so problems within the boundary of a particular council
-#might not match the problems sent to that council. For example, a graffiti report
-#will be sent to the district council, so will appear in both of the district
-#council&rsquo;s alerts, but will only appear in the "Within the boundary" alert
-#for the county council.'))) . '</div><div id="rss_buttons">';
-#        } else {
-#            $options_end = '';
-#        }
-#    } else {
-#        # Hopefully impossible in the UK!
-#        throw Error::Simple('An area with three tiers of council? Impossible! '. $lat . ' ' . $lon . ' ' . join('|',keys %$areas));
-#    }
-#
-#    my $dist = mySociety::Gaze::get_radius_containing_population($lat, $lon, 200000);
-#    $dist = int($dist * 10 + 0.5);
-#    $dist = $dist / 10.0;
+    $c->forward('council_options');
+
+   my $dist = mySociety::Gaze::get_radius_containing_population($c->stash->{latitude}, $c->stash->{longitude}, 200000);
+   $dist = int($dist * 10 + 0.5);
+   $dist = $dist / 10.0;
+   $c->stash->{population_radius} = $dist;
 #
 #    my $checked = '';
 #    $checked = ' checked' if $q->param('feed') && $q->param('feed') eq "local:$lat:$lon";
 #    my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'alerts', $q);
 #    my $pics = Cobrand::recent_photos($cobrand, 5, $lat, $lon, $dist);
 #    $pics = '<div id="alert_photos">' . $q->h2(_('Photos of recent nearby reports')) . $pics . '</div>' if $pics;
-#    my $header;
-#    if ($pretty_pc) {
-#        $header = sprintf(_('Local RSS feeds and email alerts for &lsquo;%s&rsquo;'), $pretty_pc); 
-#    } else {
-#        $header = _('Local RSS feeds and email alerts');
-#    }
-#    my $out = $q->h1($header);
+
 #    my $form_action = Cobrand::url($cobrand, '/alert', $q);
-#    $out .= <<EOF;
-#<form id="alerts" name="alerts" method="post" action="$form_action">
-#<input type="hidden" name="type" value="local">
-#<input type="hidden" name="pc" value="$input_h{pc}">
 #$cobrand_form_elements
 #$pics
 #
 #EOF
-#    $out .= $q->p(($pretty_pc ? sprintf(_('Here are the types of local problem alerts for &lsquo;%s&rsquo;.'), $pretty_pc)
-#    : '') . ' ' . _('Select which type of alert you&rsquo;d like and click the button for an RSS
-#feed, or enter your email address to subscribe to an email alert.'));
 #    $out .= $errors;
-#    $out .= $q->p(_('The simplest alert is our geographic one:'));
-#    my $rss_label = sprintf(_('Problems within %skm of this location'), $dist);
 #    $out .= <<EOF;
-#<p id="rss_local">
-#<input type="radio" name="feed" id="local:$lat:$lon" value="local:$lat:$lon"$checked>
-#<label for="local:$lat:$lon">$rss_label</label>
-#EOF
-#    my $rss_feed;
-#    if ($pretty_pc_text) {
-#        $rss_feed = Cobrand::url($cobrand, "/rss/pc/$pretty_pc_text", $q);
-#    } else {
-#        $rss_feed = Cobrand::url($cobrand, "/rss/l/$lat,$lon", $q);
-#    }
-#
+  $c->stash->{rss_feed_id} = sprintf( 'local:%s:%s', $c->stash->{latitude}, $c->stash->{longitude} );
+
+  my $rss_feed;
+  if ($c->stash->{pretty_pc_text}) {
+     $rss_feed = $c->cobrand->uri("/rss/pc/" . $c->stash->{pretty_pc_text}, $c->fake_q);
+  } else {
+     $rss_feed = $c->cobrand->uri( sprintf("/rss/l/%s,%s", $c->stash->{latitude},$c->stash->{longitude}), $c->fake_q);
+  }
+
+  $c->stash->{rss_feed_uri} = $rss_feed;
+
 #    my $default_link = Cobrand::url($cobrand, "/alert?type=local;feed=local:$lat:$lon", $q);
-#    my $rss_details = _('(a default distance which covers roughly 200,000 people)');
-#    $out .= $rss_details;
-#    $out .= " <a href='$rss_feed'><img src='/i/feed.png' width='16' height='16' title='"
-#        . _('RSS feed of nearby problems') . "' alt='" . _('RSS feed') . "' border='0'></a>";
-#    $out .= '</p> <p id="rss_local_alt">' . _('(alternatively the RSS feed can be customised, within');
-#    my $rss_feed_2k  = Cobrand::url($cobrand, $rss_feed.'/2', $q);
-#    my $rss_feed_5k  = Cobrand::url($cobrand, $rss_feed.'/5', $q);
-#    my $rss_feed_10k = Cobrand::url($cobrand, $rss_feed.'/10', $q);
-#    my $rss_feed_20k = Cobrand::url($cobrand, $rss_feed.'/20', $q);
-#    $out .= <<EOF;
-# <a href="$rss_feed_2k">2km</a> / <a href="$rss_feed_5k">5km</a>
-#/ <a href="$rss_feed_10k">10km</a> / <a href="$rss_feed_20k">20km</a>)
-#</p>
-#EOF
+
+   $c->stash->{rss_feed_2k}  = $c->cobrand->uri($rss_feed.'/2', $c->fake_q);
+   $c->stash->{rss_feed_5k}  = $c->cobrand->uri($rss_feed.'/5', $c->fake_q);
+   $c->stash->{rss_feed_10k} = $c->cobrand->uri($rss_feed.'/10', $c->fake_q);
+   $c->stash->{rss_feed_20k} = $c->cobrand->uri($rss_feed.'/20', $c->fake_q);
+
 #    $out .= $q->p(_('Or you can subscribe to an alert based upon what ward or council you&rsquo;re in:'));
 #    $out .= $options_start;
 #    $out .= $options;
@@ -348,6 +190,156 @@ sub prettify_pc : Private {
     }
 
     $c->stash->{pretty_pc} = $pretty_pc;
+}
+
+
+sub council_options : Private {
+  my ( $self, $c ) = @_;
+
+  if ( $c->config->{COUNTRY} eq 'NO' ) {
+#    my ($options, $options_start, $options_end);
+#    if (mySociety::Config::get('COUNTRY') eq 'NO') {
+#
+#        my (@options, $fylke, $kommune);
+#        foreach (values %$areas) {
+#            if ($_->{type} eq 'NKO') {
+#                $kommune = $_;
+#            } else {
+#                $fylke = $_;
+#            }
+#        }
+#        my $kommune_name = $kommune->{name};
+#        my $fylke_name = $fylke->{name};
+#
+#        if ($fylke->{id} == 3) { # Oslo
+#
+#            push @options, [ 'council', $fylke->{id}, Page::short_name($fylke),
+#                sprintf(_("Problems within %s"), $fylke_name) ];
+#        
+#            $options_start = "<div><ul id='rss_feed'>";
+#            $options = alert_list_options($q, @options);
+#            $options_end = "</ul>";
+#
+#        } else {
+#
+#            push @options,
+#                [ 'area', $kommune->{id}, Page::short_name($kommune), $kommune_name ],
+#                [ 'area', $fylke->{id}, Page::short_name($fylke), $fylke_name ];
+#            $options_start = '<div id="rss_list">';
+#            $options = $q->p($q->strong(_('Problems within the boundary of:'))) .
+#                $q->ul(alert_list_options($q, @options));
+#            @options = ();
+#            push @options,
+#                [ 'council', $kommune->{id}, Page::short_name($kommune), $kommune_name ],
+#                [ 'council', $fylke->{id}, Page::short_name($fylke), $fylke_name ];
+#            $options .= $q->p($q->strong(_('Or problems reported to:'))) .
+#                $q->ul(alert_list_options($q, @options));
+#            $options_end = $q->p($q->small(_('FixMyStreet sends different categories of problem
+#to the appropriate council, so problems within the boundary of a particular council
+#might not match the problems sent to that council. For example, a graffiti report
+#will be sent to the district council, so will appear in both of the district
+#council&rsquo;s alerts, but will only appear in the "Within the boundary" alert
+#for the county council.'))) . '</div><div id="rss_buttons">';
+#
+#        }
+#
+#    } elsif (keys %$areas == 2) {
+  } elsif( keys %{ $c->stash->{ all_councils } } == 2 ) {
+    $c->log->debug( 'one tier council' );
+#
+#        # One-tier council
+#        my (@options, $council, $ward);
+#        foreach (values %$areas) {
+#            if ($councils{$_->{type}}) {
+#                $council = $_;
+#            } else {
+#                $ward = $_;
+#            }
+#        }
+#        my $council_name = $council->{name};
+#        my $ward_name = $ward->{name};
+#        push @options, [ 'council', $council->{id}, Page::short_name($council),
+#            sprintf(_("Problems within %s"), $council_name) ];
+#        push @options, [ 'ward', $council->{id}.':'.$ward->{id}, Page::short_name($council) . '/'
+#            . Page::short_name($ward), sprintf(_("Problems within %s ward"), $ward_name) ];
+#        
+#        $options_start = "<div><ul id='rss_feed'>";
+#        $options = alert_list_options($q, @options);
+#        $options_end = "</ul>";
+#
+#    } elsif (keys %$areas == 1) {
+  } elsif( keys %{ $c->stash->{ all_councils } } == 1 ) {
+    $c->log->debug( 'one tier council. no ward' );
+#
+#        # One-tier council, no ward
+#        my (@options, $council);
+#        foreach (values %$areas) {
+#            $council = $_;
+#        }
+#        my $council_name = $council->{name};
+#        push @options, [ 'council', $council->{id}, Page::short_name($council),
+#            sprintf(_("Problems within %s"), $council_name) ];
+#        
+#        $options_start = "<div><ul id='rss_feed'>"; 
+#        $options = alert_list_options($q, @options);
+#        $options_end = "</ul>";
+#
+#    } elsif (keys %$areas == 4) {
+  } elsif( keys %{ $c->stash->{ all_councils } } == 4 ) {
+    $c->log->debug( 'two tier council' );
+#
+#        # Two-tier council
+#        my (@options, $county, $district, $c_ward, $d_ward);
+#        foreach (values %$areas) {
+#            if ($_->{type} eq 'CTY') {
+#                $county = $_;
+#            } elsif ($_->{type} eq 'DIS') {
+#                $district = $_;
+#            } elsif ($_->{type} eq 'CED') {
+#                $c_ward = $_;
+#            } elsif ($_->{type} eq 'DIW') {
+#                $d_ward = $_;
+#            }
+#        }
+#        my $district_name = $district->{name};
+#        my $d_ward_name = $d_ward->{name};
+#        my $county_name = $county->{name};
+#        my $c_ward_name = $c_ward->{name};
+#        push @options,
+#            [ 'area', $district->{id}, Page::short_name($district), $district_name ],
+#            [ 'area', $district->{id}.':'.$d_ward->{id}, Page::short_name($district) . '/'
+#              . Page::short_name($d_ward), "$d_ward_name ward, $district_name" ],
+#            [ 'area', $county->{id}, Page::short_name($county), $county_name ],
+#            [ 'area', $county->{id}.':'.$c_ward->{id}, Page::short_name($county) . '/'
+#              . Page::short_name($c_ward), "$c_ward_name ward, $county_name" ];
+#        $options_start = '<div id="rss_list">';
+#        $options = $q->p($q->strong(_('Problems within the boundary of:'))) .
+#            $q->ul(alert_list_options($q, @options));
+#        @options = ();
+#        push @options,
+#            [ 'council', $district->{id}, Page::short_name($district), $district_name ],
+#            [ 'ward', $district->{id}.':'.$d_ward->{id}, Page::short_name($district) . '/' . Page::short_name($d_ward),
+#              "$district_name, within $d_ward_name ward" ];
+#        if ($q->{site} ne 'emptyhomes') {
+#            push @options,
+#                [ 'council', $county->{id}, Page::short_name($county), $county_name ],
+#                [ 'ward', $county->{id}.':'.$c_ward->{id}, Page::short_name($county) . '/'
+#                  . Page::short_name($c_ward), "$county_name, within $c_ward_name ward" ];
+#            $options .= $q->p($q->strong(_('Or problems reported to:'))) .
+#                $q->ul(alert_list_options($q, @options));
+#            $options_end = $q->p($q->small(_('FixMyStreet sends different categories of problem
+#to the appropriate council, so problems within the boundary of a particular council
+#might not match the problems sent to that council. For example, a graffiti report
+#will be sent to the district council, so will appear in both of the district
+#council&rsquo;s alerts, but will only appear in the "Within the boundary" alert
+#for the county council.'))) . '</div><div id="rss_buttons">';
+#        } else {
+#            $options_end = '';
+#        }
+    } else {
+        # Hopefully impossible in the UK!
+        throw Error::Simple('An area with three tiers of council? Impossible! '. $c->stash->{latitude}. ' ' . $c->stash->{longitude} . ' ' . join('|',keys %{ $c->stash->{all_councils} } ));
+    }
 }
 
 sub choose : Private {
