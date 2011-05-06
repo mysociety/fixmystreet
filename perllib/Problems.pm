@@ -466,8 +466,7 @@ sub unique_emails_count {
             "select count(*) from (select distinct email from problem " .
             "where confirmed is not null ".
             "and state in ('fixed', 'confirmed') $site_restriction) as t");
-    $result = $resultset->[0]->[0];
-    return $result;
+    return $resultset->[0]->[0];
 }
 
 =item admin_fetch_problem ID
