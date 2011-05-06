@@ -348,7 +348,7 @@ sub check_location_is_acceptable : Private {
     }
 
     # check that there are councils that can accept this location
-    return $c->forward('/report/new/load_and_check_councils');
+    return $c->forward('/council/load_and_check_councils');
 }
 
 =head2 /ajax
