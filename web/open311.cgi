@@ -209,6 +209,7 @@ EOF
       </agency_responsible>
       <agency_sent_datetime>2011-04-23T10:28:55+02:00</agency_sent_datetime>
       <description>Mangler brustein: Det støver veldig på tørre dager.  Her burde det vært brustein.</description>
+      <detail>Det støver veldig på tørre dager.  Her burde det vært brustein.</detail>
       <interface_used>Web interface</interface_used>
       <lat>59.916848</lat>
       <long>10.728148</long>
