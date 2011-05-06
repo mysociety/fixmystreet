@@ -87,8 +87,9 @@ sub list :Path('list') :Args(0) {
 
     $c->forward('prettify_pc');
 
-#    # truncate the lat,lon for nicer urls
-#    ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );
+    # truncate the lat,lon for nicer urls
+    ( $c->stash->{latitude}, $c->stash->{longitude} ) = map { Utils::truncate_coordinate($_) } ( $c->stash->{latitude}, $c->stash->{longitude} );
+    $c->log->debug( $_ ) for ( $c->stash->{pc}, $c->stash->{latitude}, $c->stash->{longitude} );
 #    
 #    my $errors = '';
 #    $errors = '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>' if @errors;
