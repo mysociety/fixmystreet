@@ -465,11 +465,11 @@ sub unique_emails_count {
     my $key = "unique_emails_count:$site_key";
     my $result = Memcached::get($key);
     unless ($result) {
-        my $resultset = dbh()->selectrow_array(
+        my @resultset = dbh()->selectall_arrayref(
             "select count(*) from (select distinct email from problem " .
             "where confirmed is not null ".
             "and state in ('fixed', 'confirmed') $site_restriction) as t");
-        $result = $resultset->{count};
+        $result = $resultset[0];
         Memcached::set($key, $result, 3600);
     }
     return $result;
