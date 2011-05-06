@@ -102,7 +102,7 @@ sub show_documentation {
 
     print $q->p(_('Examples:'));
 
-    print '<ul>\n';
+    print "<ul>\n";
 
     my @examples =
     (
