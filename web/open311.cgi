@@ -91,32 +91,18 @@ sub show_documentation {
     my $url = Cobrand::base_url($cobrand);
     my $baseurl = Cobrand::url($cobrand, $url, $q);
 
-    print <<EOF;
+    print $q->p(_('The following Open311 v2 attributes are returned for each request: service_request_id, description, lat, long, media_url, status, requested_datetime, updated_datetime, service_code and service_name.'));
 
-<p>The following Open311 v2 attributes are returned for each request:
-service_request_id, description, lat, long, media_url, status,
-requested_datetime, updated_datetime, service_code and
-service_name.</p>
+    print $q->p(_('In addition, the following attributes that are not part of the Open311 v2 specification are returned: agency_sent_datetime, title (also returned as part of description), interface_used, comment_count, requestor_name (only present if requestor allowed the name to be shown on this site).'));
 
-<p>In addition, the following attributes that are not part of the
-Open311 v2 specification are returned: agency_sent_datetime, title
-(also returned as part of description), interface_used, comment_count,
-requestor_name (only present if requestor allowed the name to be shown
-on this site).</p>
+    print $q->p(_('The Open311 v2 attribute agency_responsible is used to list the administrations that received the problem report, which is not quite the way the attribute is defined in the Open311 v2 specification.'));
 
-<p>The Open311 v2 attribute agency_responsible is used to list the
-administrations that received the problem report, which is not quite
-the way the attribute is defined in the Open311 v2 specification.</p>
+    my $mapiturl = mySociety::Config::get('MAPIT_URL');
+    print $q->p(sprintf(_('With request searches, it is also possible to search for agency_responsible to limit the requests to those sent to a single administration.  The search term is the administration ID provided by <a href="%s">MaPit</a>.'), $mapiturl));
 
-<p>With request searches, it is also possible to search for
-agency_responsible to limit the requests to those sent to a single
-administration.  The search term is the administration ID provided by
-<a href="http://mapit.nuug.no/">MaPit</a>.</p>
+    print $q->p(_('Examples:'));
 
-<p>Examples:</p>
-
-<ul>
-EOF
+    print '<ul>\n';
 
     my @examples =
     (
