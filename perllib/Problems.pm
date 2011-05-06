@@ -462,16 +462,11 @@ Uses any site_restriction defined by a cobrand.
 sub unique_emails_count {
     my ($cobrand) = @_;
     my $contact_restriction = Cobrand::contact_restriction($cobrand);
-    my $key = "unique_emails_count:$site_key";
-    my $result = Memcached::get($key);
-    unless ($result) {
-        my @resultset = dbh()->selectall_arrayref(
+    my $resultset = dbh()->selectall_arrayref(
             "select count(*) from (select distinct email from problem " .
             "where confirmed is not null ".
             "and state in ('fixed', 'confirmed') $site_restriction) as t");
-        $result = $resultset[0];
-        Memcached::set($key, $result, 3600);
-    }
+    $result = $resultset->[0]->[0];
     return $result;
 }
 
