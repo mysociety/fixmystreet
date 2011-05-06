@@ -94,18 +94,10 @@ sub list :Path('list') :Args(0) {
 #    my $errors = '';
 #    $errors = '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>' if @errors;
 #
-#    my $cobrand = Page::get_cobrand($q);
-#    my @types = (Cobrand::area_types($cobrand), @$mySociety::VotingArea::council_child_types);
-#    my %councils = map { $_ => 1 } Cobrand::area_types($cobrand);
-#
-#    my $areas = mySociety::MaPit::call('point', "4326/$lon,$lat", type => \@types);
-#    my ($success, $error_msg) = Cobrand::council_check($cobrand, { all_councils => $areas }, $q, 'alert');    
-#    if (!$success) {
-#        return alert_front_page($q, $error_msg);
-#    }
-#
-#    return alert_front_page($q, _('That location does not appear to be covered by a council, perhaps it is offshore - please try somewhere more specific.')) if keys %$areas == 0;
-#
+    unless ( $c->forward( '/council/load_and_check_councils', 'alert' ) ) {
+      $c->go( 'index' );
+    }
+
 #    my ($options, $options_start, $options_end);
 #    if (mySociety::Config::get('COUNTRY') eq 'NO') {
 #
