@@ -5,7 +5,7 @@
 <ul id="navigation">
 <li><a href="/report/new"       >[% loc("Report a problem") %]</a></li>
 <li><a href="/reports"          >[% loc("All reports")      %]</a></li>
-<li><a href="/alert[% pc | uri %]">[% loc("Local alerts")   %]</a></li>
+<li><a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]">[% loc("Local alerts")   %]</a></li>
 <li><a href="/faq"              >[% loc("Help")             %]</a></li>
 <li><a href="/contact"          >[% loc("Contact")          %]</a></li>
 </ul>
