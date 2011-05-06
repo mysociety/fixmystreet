@@ -14,6 +14,20 @@ Catalyst Controller.
 
 =head1 METHODS
 
+=head2 load_and_check_councils_and_wards
+
+Try to load councils and wards for this location and check that we have at least one. If
+there are no councils then return false.
+
+=cut
+
+sub load_and_check_councils_and_wards : Private {
+    my ( $self, $c ) = @_;
+    my @area_types = ( $c->cobrand->area_types(), @$mySociety::VotingArea::council_child_types );
+    $c->stash->{area_types} = \@area_types;
+    $c->forward('load_and_check_councils');
+}
+
 =head2 load_and_check_councils
 
 Try to load councils for this location and check that we have at least one. If
@@ -22,12 +36,17 @@ there are no councils then return false.
 =cut
 
 sub load_and_check_councils : Private {
-    my ( $self, $c, $action ) = @_;
+    my ( $self, $c ) = @_;
     my $latitude  = $c->stash->{latitude};
     my $longitude = $c->stash->{longitude};
 
     # Look up councils and do checks for the point we've got
-    my @area_types = $c->cobrand->area_types();
+    my @area_types;
+    if ( $c->stash->{area_types} and scalar @{ $c->stash->{area_types} } ) {
+      @area_types = @{ $c->stash->{area_types} };
+    } else {
+      @area_types = $c->cobrand->area_types();
+    }
 
     # TODO: I think we want in_gb_locale around the next line, needs testing
     my $all_councils =
@@ -37,14 +56,14 @@ sub load_and_check_councils : Private {
     # Let cobrand do a check
     my ( $success, $error_msg ) =
       $c->cobrand->council_check( { all_councils => $all_councils },
-        $action );
+        $c->stash->{council_check_action} );
     if ( !$success ) {
         $c->stash->{location_error} = $error_msg;
         return;
     }
 
     # edit hash in-place
-    _remove_redundant_councils($all_councils);
+    _remove_redundant_councils($all_councils) if $c->stash->{remove_redundant_councils};
 
     # If we don't have any councils we can't accept the report
     if ( !scalar keys %$all_councils ) {

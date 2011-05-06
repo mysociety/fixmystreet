@@ -94,7 +94,8 @@ sub list :Path('list') :Args(0) {
 #    my $errors = '';
 #    $errors = '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>' if @errors;
 #
-    unless ( $c->forward( '/council/load_and_check_councils', 'alert' ) ) {
+    $c->stash->{council_check_action} = 'alert';
+    unless ( $c->forward( '/council/load_and_check_councils_and_wards' ) ) {
       $c->go( 'index' );
     }
 

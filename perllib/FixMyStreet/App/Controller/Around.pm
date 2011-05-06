@@ -269,7 +269,9 @@ sub check_location_is_acceptable : Private {
     }
 
     # check that there are councils that can accept this location
-    return $c->forward('/council/load_and_check_councils', 'submit_problem' );
+    $c->stash->{council_check_action} = 'submit_problem';
+    $c->stash->{remove_redundant_councils} = 1;
+    return $c->forward('/council/load_and_check_councils');
 }
 
 =head2 /ajax
