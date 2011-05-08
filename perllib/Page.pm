@@ -585,7 +585,12 @@ sub display_problem_meta_line($$) {
                 $problem->{council} =~ s/\|.*//g;
                 my @councils = split /,/, $problem->{council};
                 my $areas_info = mySociety::MaPit::call('areas', \@councils);
-                $body = join(' and ', map { $areas_info->{$_}->{name} } @councils);
+                $body = join(' and ',
+                             map {
+                                 my $name = $areas_info->{$_}->{name};
+                                 $q->a({href => "/reports/$name" },
+                                       $name);
+                             } @councils);
             }
             $out .= '<small class="council_sent_info">';
             $out .= $q->br() . sprintf(_('Sent to %s %s later'), $body, prettify_duration($problem->{whensent}, 'minute'));
