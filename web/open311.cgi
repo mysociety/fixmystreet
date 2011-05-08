@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w -I../perllib
+#!/usr/bin/perl
 
 # open311.cgi:
 # Open311 server API for Open311 clients
@@ -25,6 +25,9 @@
 
 use strict;
 use warnings;
+
+use FindBin;
+use lib "$FindBin::Bin/../perllib";
 
 use Standard;
 
