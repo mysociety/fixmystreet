@@ -481,7 +481,7 @@ sub get_requests {
                 $rule = "( $combined_rule )";
                 @value = @valuelist;
             } elsif ('max_requests' eq $param) {
-                $max_requests = @value[0];
+                $max_requests = $value[0];
                 @value = ();
             } elsif ('interface_used' eq $param) {
                 if ('Web interface' eq $value[0]) {
