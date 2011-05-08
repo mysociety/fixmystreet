@@ -45,7 +45,7 @@ sub main {
     my $all = $q->param('all') || 0;
     my $rss = $q->param('rss') || '';
     # Like PATH_INFO = '/services.xml'
-    my $path_info = $ENV{'PATH_INFO'};
+    my $path_info = $ENV{'PATH_INFO'} || '';
     if ($path_info =~ m%^/v2/discovery.(xml|json|html)$%) {
         my ($format) = $1;
         return get_discovery($q, $format);
