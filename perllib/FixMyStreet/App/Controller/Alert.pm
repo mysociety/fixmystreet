@@ -99,7 +99,9 @@ sub list :Path('list') :Args(0) {
       $c->go( 'index' );
     }
 
-    $c->forward('council_options');
+    ( $c->stash->{options}, $c->stash->{reported_to_options} )
+      = $c->cobrand->council_rss_alert_options( $c->stash->{all_councils} );
+
 
    my $dist = mySociety::Gaze::get_radius_containing_population($c->stash->{latitude}, $c->stash->{longitude}, 200000);
    $dist = int($dist * 10 + 0.5);
@@ -136,34 +138,6 @@ sub list :Path('list') :Args(0) {
    $c->stash->{rss_feed_5k}  = $c->cobrand->uri($rss_feed.'/5', $c->fake_q);
    $c->stash->{rss_feed_10k} = $c->cobrand->uri($rss_feed.'/10', $c->fake_q);
    $c->stash->{rss_feed_20k} = $c->cobrand->uri($rss_feed.'/20', $c->fake_q);
-
-#    $out .= $q->p(_('Or you can subscribe to an alert based upon what ward or council you&rsquo;re in:'));
-#    $out .= $options_start;
-#    $out .= $options;
-#    $out .= $options_end;
-#    $out .= $q->p('<input type="submit" name="rss" value="' . _('Give me an RSS feed') . '">');
-#    $out .= $q->p({-id=>'alert_or'}, _('or'));
-#    $out .= '<p>' . _('Your email:') . ' <input type="text" id="rznvy" name="rznvy" value="' . $input_h{rznvy} . '" size="30"></p>
-#<p><input type="submit" name="alert" value="' . _('Subscribe me to an email alert') . '"></p>
-#</div>
-#</form>';
-#    my %vars = (header => $header, 
-#                cobrand_form_elements => $cobrand_form_elements, 
-#                error => $errors,
-#                rss_label => $rss_label,
-#                rss_feed => $rss_feed,
-#                default_link => $default_link, 
-#                rss_details => $rss_details, 
-#                rss_feed_2k => $rss_feed_2k, 
-#                rss_feed_5k => $rss_feed_5k,   
-#                rss_feed_10k => $rss_feed_10k,   
-#                rss_feed_20k => $rss_feed_20k, 
-#                lat => $lat,
-#                lon => $lon, 
-#                options => $options );
-#    my $cobrand_page = Page::template_include('alert-options', $q, Page::template_root($q), %vars);
-#    $out = $cobrand_page if ($cobrand_page);
-#    return $out;
 }
 
 =head2 prettify_pc
@@ -244,104 +218,7 @@ sub council_options : Private {
 #
 #        }
 #
-  } elsif( keys %{ $c->stash->{ all_councils } } == 2 ) {
-    $c->log->debug( 'one tier council' );
-    $c->forward('generate_council_and_ward_options');
-  } elsif( keys %{ $c->stash->{ all_councils } } == 1 ) {
-    $c->log->debug( 'one tier council. no ward' );
-    $c->forward('generate_council_and_ward_options');
-  } elsif( keys %{ $c->stash->{ all_councils } } == 4 ) {
-    $c->log->debug( 'two tier council' );
-    $c->stash->{two_tier_council} = 1;
-#
-#        # Two-tier council
-#        my (@options, $county, $district, $c_ward, $d_ward);
-#        foreach (values %$areas) {
-#            if ($_->{type} eq 'CTY') {
-#                $county = $_;
-#            } elsif ($_->{type} eq 'DIS') {
-#                $district = $_;
-#            } elsif ($_->{type} eq 'CED') {
-#                $c_ward = $_;
-#            } elsif ($_->{type} eq 'DIW') {
-#                $d_ward = $_;
-#            }
-#        }
-#        my $district_name = $district->{name};
-#        my $d_ward_name = $d_ward->{name};
-#        my $county_name = $county->{name};
-#        my $c_ward_name = $c_ward->{name};
-#        push @options,
-#            [ 'area', $district->{id}, Page::short_name($district), $district_name ],
-#            [ 'area', $district->{id}.':'.$d_ward->{id}, Page::short_name($district) . '/'
-#              . Page::short_name($d_ward), "$d_ward_name ward, $district_name" ],
-#            [ 'area', $county->{id}, Page::short_name($county), $county_name ],
-#            [ 'area', $county->{id}.':'.$c_ward->{id}, Page::short_name($county) . '/'
-#              . Page::short_name($c_ward), "$c_ward_name ward, $county_name" ];
-#        $options_start = '<div id="rss_list">';
-#        $options = $q->p($q->strong(_('Problems within the boundary of:'))) .
-#            $q->ul(alert_list_options($q, @options));
-#        @options = ();
-#        push @options,
-#            [ 'council', $district->{id}, Page::short_name($district), $district_name ],
-#            [ 'ward', $district->{id}.':'.$d_ward->{id}, Page::short_name($district) . '/' . Page::short_name($d_ward),
-#              "$district_name, within $d_ward_name ward" ];
-#        if ($q->{site} ne 'emptyhomes') {
-#            push @options,
-#                [ 'council', $county->{id}, Page::short_name($county), $county_name ],
-#                [ 'ward', $county->{id}.':'.$c_ward->{id}, Page::short_name($county) . '/'
-#                  . Page::short_name($c_ward), "$county_name, within $c_ward_name ward" ];
-#            $options .= $q->p($q->strong(_('Or problems reported to:'))) .
-#                $q->ul(alert_list_options($q, @options));
-#            $options_end = $q->p($q->small(_('FixMyStreet sends different categories of problem
-#to the appropriate council, so problems within the boundary of a particular council
-#might not match the problems sent to that council. For example, a graffiti report
-#will be sent to the district council, so will appear in both of the district
-#council&rsquo;s alerts, but will only appear in the "Within the boundary" alert
-#for the county council.'))) . '</div><div id="rss_buttons">';
-#        } else {
-#            $options_end = '';
-#        }
-    } else {
-        # Hopefully impossible in the UK!
-        throw Error::Simple('An area with three tiers of council? Impossible! '. $c->stash->{latitude}. ' ' . $c->stash->{longitude} . ' ' . join('|',keys %{ $c->stash->{all_councils} } ));
     }
-}
-
-sub generate_council_and_ward_options : Private {
-  my ( $self, $c ) = @_;
-
-  my %councils = map { $_ => 1 } $c->cobrand->area_types();
-
-  my (@options, $council, $ward);
-  foreach (values %{ $c->stash->{all_councils} }) {
-      if ($councils{$_->{type}}) {
-          $council = $_;
-          $council->{short_name} = $c->cobrand->short_name( $council );
-          ( $council->{id_name} = $council->{short_name} ) =~ tr/+/_/;
-      } else {
-          $ward = $_;
-          $ward->{short_name} = $c->cobrand->short_name( $ward );
-          ( $ward->{id_name} = $ward->{short_name} ) =~ tr/+/_/;
-      }
-  }
-
-  push @options,
-    {
-      type  => 'council',
-      id    => sprintf( 'council:%s:%s', $council->{id}, $council->{id_name} ),
-      text  => sprintf( _('Problems within %s'), $council->{name}),
-      uri   => $c->cobrand->uri( '/rss/reports/' . $council->{short_name} ),
-    };
-  push @options,
-    {
-      type  => 'ward',
-      id    => sprintf( 'ward:%s:%s:%s:%s', $council->{id}, $ward->{id}, $council->{id_name}, $ward->{id_name} ),
-      text  => sprintf( _('Problems within %s ward'), $ward->{name}),
-      uri   => $c->cobrand->uri( '/rss/reports/' . $council->{short_name} . '/' . $ward->{short_name} ),
-    } if $ward;
-
-  $c->stash->{options} = \@options;
 }
 
 sub choose : Private {
