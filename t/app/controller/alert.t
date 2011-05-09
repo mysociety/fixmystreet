@@ -29,10 +29,19 @@ $mech->content_contains('rss/pc/EH991SP/2');
 $mech->content_contains('rss/pc/EH991SP/5');
 $mech->content_contains('rss/pc/EH991SP/10');
 $mech->content_contains('rss/pc/EH991SP/20');
+$mech->content_contains('Problems within City of Edinburgh');
+$mech->content_contains('Problems within City Centre ward');
+$mech->content_contains('/rss/reports/City+of+Edinburgh');
+$mech->content_contains('/rss/reports/City+of+Edinburgh/City+Centre');
+$mech->content_contains('council:2651:City_of_Edinburgh');
+$mech->content_contains('ward:2651:20728:City_of_Edinburgh:City_Centre');
 
 $mech->get_ok('/alert/list?pc=High Street');
 $mech->content_contains('We found more than one match for that location');
 
 $mech->get_ok('/alert/list?pc=');
 $mech->content_contains('hat location does not appear to be covered by a council');
+
+$mech->get_ok('/alert/list?pc=GL502PR');
+$mech->content_contains('Problems within the boundary of');
 done_testing();

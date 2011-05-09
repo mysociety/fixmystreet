@@ -36,8 +36,33 @@
   <p id="rss_local_alt">
   [% loc('(alternatively the RSS feed can be customised, within') %]
     <a href="[% rss_feed_2k %]">2km</a> / <a href="[% rss_feed_5k %]">5km</a> / <a href="[% rss_feed_10k %]">10km</a> / <a href="[% rss_feed_20k %]">20km</a>)
+  </p>
 
+  <p>
+  [% loc("Or you can subscribe to an alert based upon what ward or council you’re in:") %]
+  </p>
+
+    [% IF two_tier_council %]
+      <div id="rss_feed">
+        <p><strong>
+          [% loc('Problems within the boundary of:') %]
+        </strong></p>
+        <ul>
+    [% ELSE %]
+      <div><ul id="rss_feed">
+    [% END %]
   [%# FIXME errors here %]
+
+  [% FOREACH option IN options %]
+  <li>
+    <input type="radio" name="feed" id="[% option.id %]" value="[% option.id %]">
+    <label for="[% option.id %]">[% option.text %]</label>
+    <a href="[% option.uri %]"><img src="/i/feed.png" width="16" height="16"
+title="RSS feed of [% option.text %]" alt="RSS feed" border="0"></a>
+  </li>
+  [% END %]
+</ul>
+</div>
 
   [%# FIXME rss options here %]
 

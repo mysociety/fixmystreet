@@ -196,6 +196,7 @@ sub prettify_pc : Private {
 sub council_options : Private {
   my ( $self, $c ) = @_;
 
+
   if ( $c->config->{COUNTRY} eq 'NO' ) {
 #    my ($options, $options_start, $options_end);
 #    if (mySociety::Config::get('COUNTRY') eq 'NO') {
@@ -243,50 +244,15 @@ sub council_options : Private {
 #
 #        }
 #
-#    } elsif (keys %$areas == 2) {
   } elsif( keys %{ $c->stash->{ all_councils } } == 2 ) {
     $c->log->debug( 'one tier council' );
-#
-#        # One-tier council
-#        my (@options, $council, $ward);
-#        foreach (values %$areas) {
-#            if ($councils{$_->{type}}) {
-#                $council = $_;
-#            } else {
-#                $ward = $_;
-#            }
-#        }
-#        my $council_name = $council->{name};
-#        my $ward_name = $ward->{name};
-#        push @options, [ 'council', $council->{id}, Page::short_name($council),
-#            sprintf(_("Problems within %s"), $council_name) ];
-#        push @options, [ 'ward', $council->{id}.':'.$ward->{id}, Page::short_name($council) . '/'
-#            . Page::short_name($ward), sprintf(_("Problems within %s ward"), $ward_name) ];
-#        
-#        $options_start = "<div><ul id='rss_feed'>";
-#        $options = alert_list_options($q, @options);
-#        $options_end = "</ul>";
-#
-#    } elsif (keys %$areas == 1) {
+    $c->forward('generate_council_and_ward_options');
   } elsif( keys %{ $c->stash->{ all_councils } } == 1 ) {
     $c->log->debug( 'one tier council. no ward' );
-#
-#        # One-tier council, no ward
-#        my (@options, $council);
-#        foreach (values %$areas) {
-#            $council = $_;
-#        }
-#        my $council_name = $council->{name};
-#        push @options, [ 'council', $council->{id}, Page::short_name($council),
-#            sprintf(_("Problems within %s"), $council_name) ];
-#        
-#        $options_start = "<div><ul id='rss_feed'>"; 
-#        $options = alert_list_options($q, @options);
-#        $options_end = "</ul>";
-#
-#    } elsif (keys %$areas == 4) {
+    $c->forward('generate_council_and_ward_options');
   } elsif( keys %{ $c->stash->{ all_councils } } == 4 ) {
     $c->log->debug( 'two tier council' );
+    $c->stash->{two_tier_council} = 1;
 #
 #        # Two-tier council
 #        my (@options, $county, $district, $c_ward, $d_ward);
@@ -340,6 +306,42 @@ sub council_options : Private {
         # Hopefully impossible in the UK!
         throw Error::Simple('An area with three tiers of council? Impossible! '. $c->stash->{latitude}. ' ' . $c->stash->{longitude} . ' ' . join('|',keys %{ $c->stash->{all_councils} } ));
     }
+}
+
+sub generate_council_and_ward_options : Private {
+  my ( $self, $c ) = @_;
+
+  my %councils = map { $_ => 1 } $c->cobrand->area_types();
+
+  my (@options, $council, $ward);
+  foreach (values %{ $c->stash->{all_councils} }) {
+      if ($councils{$_->{type}}) {
+          $council = $_;
+          $council->{short_name} = Page::short_name( $council );
+          ( $council->{id_name} = $council->{short_name} ) =~ tr/+/_/;
+      } else {
+          $ward = $_;
+          $ward->{short_name} = Page::short_name( $ward );
+          ( $ward->{id_name} = $ward->{short_name} ) =~ tr/+/_/;
+      }
+  }
+
+  push @options,
+    {
+      type  => 'council',
+      id    => sprintf( 'council:%s:%s', $council->{id}, $council->{id_name} ),
+      text  => sprintf( _('Problems within %s'), $council->{name}),
+      uri   => $c->cobrand->uri( '/rss/reports/' . $council->{short_name} ),
+    };
+  push @options,
+    {
+      type  => 'ward',
+      id    => sprintf( 'ward:%s:%s:%s:%s', $council->{id}, $ward->{id}, $council->{id_name}, $ward->{id_name} ),
+      text  => sprintf( _('Problems within %s ward'), $ward->{name}),
+      uri   => $c->cobrand->uri( '/rss/reports/' . $council->{short_name} . '/' . $ward->{short_name} ),
+    } if $ward;
+
+  $c->stash->{options} = \@options;
 }
 
 sub choose : Private {
