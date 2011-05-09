@@ -51,4 +51,13 @@ sub geocoded_string_check {
     return 0;
 }
 
+sub remove_redundant_councils {
+  my $self = shift;
+  my $all_councils = shift;
+
+  # Oslo is both a kommune and a fylke, we only want to show it once
+  delete $all_councils->{301}     #
+    if $all_councils->{3};
+}
+
 1;

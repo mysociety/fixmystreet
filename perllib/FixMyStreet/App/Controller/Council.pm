@@ -63,7 +63,7 @@ sub load_and_check_councils : Private {
     }
 
     # edit hash in-place
-    _remove_redundant_councils($all_councils) if $c->stash->{remove_redundant_councils};
+    $c->cobrand->remove_redundant_councils($all_councils) if $c->stash->{remove_redundant_councils};
 
     # If we don't have any councils we can't accept the report
     if ( !scalar keys %$all_councils ) {
@@ -76,35 +76,6 @@ sub load_and_check_councils : Private {
     $c->stash->{all_council_names} =
       [ map { $_->{name} } values %$all_councils ];
     return 1;
-}
-
-# TODO - should not be here.
-# These are country specific tweaks that should be in the cobrands
-sub _remove_redundant_councils {
-    my $all_councils = shift;
-
-    # UK specific tweaks
-    if ( FixMyStreet->config('COUNTRY') eq 'GB' ) {
-
-        # Ipswich & St Edmundsbury are responsible for everything in their
-        # areas, not Suffolk
-        delete $all_councils->{2241}
-          if $all_councils->{2446}    #
-              || $all_councils->{2443};
-
-        # Norwich is responsible for everything in its areas, not Norfolk
-        delete $all_councils->{2233}    #
-          if $all_councils->{2391};
-    }
-
-    # Norway specific tweaks
-    if ( FixMyStreet->config('COUNTRY') eq 'NO' ) {
-
-        # Oslo is both a kommune and a fylke, we only want to show it once
-        delete $all_councils->{301}     #
-          if $all_councils->{3};
-    }
-
 }
 
 =head1 AUTHOR
