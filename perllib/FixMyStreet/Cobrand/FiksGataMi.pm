@@ -60,4 +60,21 @@ sub remove_redundant_councils {
     if $all_councils->{3};
 }
 
+sub short_name {
+  my $self = shift;
+  my ($area, $info) = @_;
+
+  if ($area->{name} =~ /^(Os|Nes|V\xe5ler|Sande|B\xf8|Her\xf8y)$/) {
+      my $parent = $info->{$area->{parent_area}}->{name};
+      return URI::Escape::uri_escape_utf8("$area->{name}, $parent");
+  }
+
+  my $name = $area->{name};
+  $name =~ s/ & / and /;
+  $name = URI::Escape::uri_escape_utf8($name);
+  $name =~ s/%20/+/g;
+  return $name;
+
+}
+
 1;

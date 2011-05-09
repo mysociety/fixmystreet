@@ -317,11 +317,11 @@ sub generate_council_and_ward_options : Private {
   foreach (values %{ $c->stash->{all_councils} }) {
       if ($councils{$_->{type}}) {
           $council = $_;
-          $council->{short_name} = Page::short_name( $council );
+          $council->{short_name} = $c->cobrand->short_name( $council );
           ( $council->{id_name} = $council->{short_name} ) =~ tr/+/_/;
       } else {
           $ward = $_;
-          $ward->{short_name} = Page::short_name( $ward );
+          $ward->{short_name} = $c->cobrand->short_name( $ward );
           ( $ward->{id_name} = $ward->{short_name} ) =~ tr/+/_/;
       }
   }

@@ -611,5 +611,28 @@ sub remove_redundant_councils {
     if $all_councils->{2391};
 }
 
+=item short_name
+
+Renove extra information from council names for tidy URIs
+
+=cut
+
+sub short_name {
+  my $self = shift;
+  my ($area, $info) = @_;
+  # Special case Durham as it's the only place with two councils of the same name
+  return 'Durham+County' if $area->{name} eq 'Durham County Council';
+  return 'Durham+City' if $area->{name} eq 'Durham City Council';
+
+  my $name = $area->{name};
+  $name =~ s/ (Borough|City|District|County) Council$//;
+  $name =~ s/ Council$//;
+  $name =~ s/ & / and /;
+  $name = URI::Escape::uri_escape_utf8($name);
+  $name =~ s/%20/+/g;
+  return $name;
+
+}
+
 1;
 
