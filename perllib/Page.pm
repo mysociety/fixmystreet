@@ -588,8 +588,11 @@ sub display_problem_meta_line($$) {
                 $body = join(' and ',
                              map {
                                  my $name = $areas_info->{$_}->{name};
-                                 $q->a({href => "/reports/$name" },
-                                       $name);
+                                 if (mySociety::Config::get('AREA_LINKS_FROM_PROBLEMS')) {
+                                     $q->a({href => "/reports/$name" }, $name);
+                                 } else {
+                                     $name;
+                                 }
                              } @councils);
             }
             $out .= '<small class="council_sent_info">';
