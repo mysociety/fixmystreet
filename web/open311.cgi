@@ -520,6 +520,12 @@ sub get_request {
     return unless is_jurisdiction_id_ok($q);
 
     my $criteria = "state IN ('fixed', 'confirmed') AND id = ?";
+    if ('html' eq $format) {
+        my $cobrand = Page::get_cobrand($q);
+        my $base_url = Cobrand::base_url($cobrand);
+        print $q->redirect($base_url . "/report/$id");
+        return;
+    }
     output_requests($q, $format, $criteria, 0, $id);
 }
 
