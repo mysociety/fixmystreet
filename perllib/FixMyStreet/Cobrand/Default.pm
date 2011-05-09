@@ -613,7 +613,7 @@ sub remove_redundant_councils {
 
 =item short_name
 
-Renove extra information from council names for tidy URIs
+Remove extra information from council names for tidy URIs
 
 =cut
 
