@@ -14,7 +14,6 @@ use DBIx::Class::Schema::Loader qw/ make_schema_at /;
 # interested in
 my @tables_to_ignore = (
     'admin_log',           #
-    'alert',               #
     'alert_sent',          #
     'alert_type',          #
     'comment',             #
