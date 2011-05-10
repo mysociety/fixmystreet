@@ -140,6 +140,42 @@ sub list :Path('list') :Args(0) {
    $c->stash->{rss_feed_20k} = $c->cobrand->uri($rss_feed.'/20', $c->fake_q);
 }
 
+=head2 rss
+
+Redirects to relevant RSS feed
+
+=cut
+
+sub rss :Path('rss') :Args(0) {
+  my ($self, $c) = @_;
+  my $feed = $c->req->params->{feed};
+
+  unless ( $feed ) {
+    $c->stash->{errors} = [ _( 'Please select the feed you want' ) ];
+    $c->go( 'list' );
+  }
+
+  my $extra_params = $c->cobrand->extra_params($c->fake_q);
+  my $url;
+  if ($feed =~ /^area:(?:\d+:)+(.*)$/) {
+    (my $id = $1) =~ tr{:_}{/+};
+    $url = $c->cobrand->base_url() . '/rss/area/' . $id;
+    $c->res->redirect( $url );
+  } elsif ($feed =~ /^(?:council|ward):(?:\d+:)+(.*)$/) {
+    (my $id = $1) =~ tr{:_}{/+};
+    $url = $c->cobrand->base_url() . '/rss/reports/' . $id;
+    $c->res->redirect( $url );
+  } elsif ($feed =~ /^local:([\d\.-]+):([\d\.-]+)$/) {
+    (my $id = $1) =~ tr{:_}{/+};
+    $url = $c->cobrand->base_url() . '/rss/l/' . $id;
+    $c->res->redirect( $url );
+  } else {
+    $c->stash->{errors} = [ _( 'Illegal feed selection' ) ];
+    $c->go( 'list' );
+  }
+}
+
+
 =head2 prettify_pc
 
 This will canonicalise and prettify the postcode and stick a pretty_pc and pretty_pc_text in the stash.
