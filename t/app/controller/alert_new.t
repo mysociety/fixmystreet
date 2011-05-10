@@ -91,6 +91,29 @@ foreach my $test (
         );
         ok $token, 'Token found in database';
         ok $alert->id == $token->data->{id}, 'token alertid matches alert id';
+
+        $mech->clear_emails_ok;
+
+        my $existing_id    = $alert->id;
+        my $existing_token = $url_token;
+
+        $mech->get_ok( $test->{uri} );
+
+        $email = $mech->get_email;
+        ok $email, 'got a second email';
+
+        ($url_token) = $email->body =~ m{http://\S+/A/(\S+)};
+        ok $url_token ne $existing_token, 'sent out a new token';
+
+        $token = FixMyStreet::App->model('DB::Token')->find(
+            {
+                token => $url_token,
+                scope => 'alert'
+            }
+        );
+
+        ok $token, 'new token found in database';
+        ok $token->data->{id} == $existing_id, 'subscribed to exsiting alert';
     };
 }
 
