@@ -2,7 +2,7 @@ package FixMyStreet::App::Controller::Alert;
 use Moose;
 use namespace::autoclean;
 
-BEGIN {extends 'Catalyst::Controller'; }
+BEGIN { extends 'Catalyst::Controller'; }
 
 =head1 NAME
 
@@ -16,14 +16,13 @@ Catalyst Controller.
 
 =cut
 
-
 =head2 alert
 
 Show the alerts page
 
 =cut
 
-sub index :Path('') :Args(0) {
+sub index : Path('') : Args(0) {
     my ( $self, $c ) = @_;
 
 #    my $q = shift;
@@ -41,15 +40,15 @@ sub index :Path('') :Args(0) {
 #<input type="submit" value="' . $submit_text . '">');
 #    $out .= $cobrand_form_elements;
 #
-#    my %vars = (error => $error, 
-#                header => $header, 
-#                intro => $intro, 
-#                pc_label => $pc_label, 
-#                form_action => $form_action, 
-#                input_h => \%input_h, 
-#                submit_text => $submit_text, 
-#                cobrand_form_elements => $cobrand_form_elements, 
-#                cobrand_extra_data => $cobrand_extra_data, 
+#    my %vars = (error => $error,
+#                header => $header,
+#                intro => $intro,
+#                pc_label => $pc_label,
+#                form_action => $form_action,
+#                input_h => \%input_h,
+#                submit_text => $submit_text,
+#                cobrand_form_elements => $cobrand_form_elements,
+#                cobrand_extra_data => $cobrand_extra_data,
 #                url_home => Cobrand::url($cobrand, '/', $q));
 #
 #    my $cobrand_page = Page::template_include('alert-front-page', $q, Page::template_root($q), %vars);
@@ -62,51 +61,58 @@ sub index :Path('') :Args(0) {
 #    return $out;
 }
 
-
-
-sub list :Path('list') :Args(0) {
+sub list : Path('list') : Args(0) {
     my ( $self, $c ) = @_;
-#    my ($q, @errors) = @_;
-#    my @vars = qw(pc rznvy lat lon);
-#    my %input = map { $_ => scalar $q->param($_) } @vars;
-#    my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
-#
-    # Try to create a location for whatever we have
-    unless ($c->forward('/location/determine_location_from_coords')
-          || $c->forward('/location/determine_location_from_pc') ) {
 
-      if ( $c->stash->{possible_location_matches} ) {
-        $c->stash->{choose_target_uri} = $c->uri_for( '/alert/list' );
-        $c->detach('choose');
-      }
+ #    my ($q, @errors) = @_;
+ #    my @vars = qw(pc rznvy lat lon);
+ #    my %input = map { $_ => scalar $q->param($_) } @vars;
+ #    my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
+ #
+ # Try to create a location for whatever we have
+    unless ( $c->forward('/location/determine_location_from_coords')
+        || $c->forward('/location/determine_location_from_pc') )
+    {
 
-      $c->go('index') if $c->stash->{ location_error };
+        if ( $c->stash->{possible_location_matches} ) {
+            $c->stash->{choose_target_uri} = $c->uri_for('/alert/list');
+            $c->detach('choose');
+        }
+
+        $c->go('index') if $c->stash->{location_error};
     }
 
-    $c->log->debug( $_ ) for ( $c->stash->{pc}, $c->stash->{latitude}, $c->stash->{longitude} );
+    $c->log->debug($_)
+      for ( $c->stash->{pc}, $c->stash->{latitude}, $c->stash->{longitude} );
 
     $c->forward('prettify_pc');
 
     # truncate the lat,lon for nicer urls
-    ( $c->stash->{latitude}, $c->stash->{longitude} ) = map { Utils::truncate_coordinate($_) } ( $c->stash->{latitude}, $c->stash->{longitude} );
-    $c->log->debug( $_ ) for ( $c->stash->{pc}, $c->stash->{latitude}, $c->stash->{longitude} );
-#    
+    ( $c->stash->{latitude}, $c->stash->{longitude} ) =
+      map { Utils::truncate_coordinate($_) }
+      ( $c->stash->{latitude}, $c->stash->{longitude} );
+    $c->log->debug($_)
+      for ( $c->stash->{pc}, $c->stash->{latitude}, $c->stash->{longitude} );
+
+#
 #    my $errors = '';
 #    $errors = '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>' if @errors;
 #
     $c->stash->{council_check_action} = 'alert';
-    unless ( $c->forward( '/council/load_and_check_councils_and_wards' ) ) {
-      $c->go( 'index' );
+    unless ( $c->forward('/council/load_and_check_councils_and_wards') ) {
+        $c->go('index');
     }
 
-    ( $c->stash->{options}, $c->stash->{reported_to_options} )
-      = $c->cobrand->council_rss_alert_options( $c->stash->{all_councils} );
+    ( $c->stash->{options}, $c->stash->{reported_to_options} ) =
+      $c->cobrand->council_rss_alert_options( $c->stash->{all_councils} );
 
+    my $dist =
+      mySociety::Gaze::get_radius_containing_population( $c->stash->{latitude},
+        $c->stash->{longitude}, 200000 );
+    $dist                          = int( $dist * 10 + 0.5 );
+    $dist                          = $dist / 10.0;
+    $c->stash->{population_radius} = $dist;
 
-   my $dist = mySociety::Gaze::get_radius_containing_population($c->stash->{latitude}, $c->stash->{longitude}, 200000);
-   $dist = int($dist * 10 + 0.5);
-   $dist = $dist / 10.0;
-   $c->stash->{population_radius} = $dist;
 #
 #    my $checked = '';
 #    $checked = ' checked' if $q->param('feed') && $q->param('feed') eq "local:$lat:$lon";
@@ -114,30 +120,41 @@ sub list :Path('list') :Args(0) {
 #    my $pics = Cobrand::recent_photos($cobrand, 5, $lat, $lon, $dist);
 #    $pics = '<div id="alert_photos">' . $q->h2(_('Photos of recent nearby reports')) . $pics . '</div>' if $pics;
 
-#    my $form_action = Cobrand::url($cobrand, '/alert', $q);
-#$cobrand_form_elements
-#$pics
-#
-#EOF
-#    $out .= $errors;
-#    $out .= <<EOF;
-  $c->stash->{rss_feed_id} = sprintf( 'local:%s:%s', $c->stash->{latitude}, $c->stash->{longitude} );
+    #    my $form_action = Cobrand::url($cobrand, '/alert', $q);
+    #$cobrand_form_elements
+    #$pics
+    #
+    #EOF
+    #    $out .= $errors;
+    #    $out .= <<EOF;
+    $c->stash->{rss_feed_id} =
+      sprintf( 'local:%s:%s', $c->stash->{latitude}, $c->stash->{longitude} );
 
-  my $rss_feed;
-  if ($c->stash->{pretty_pc_text}) {
-     $rss_feed = $c->cobrand->uri("/rss/pc/" . $c->stash->{pretty_pc_text}, $c->fake_q);
-  } else {
-     $rss_feed = $c->cobrand->uri( sprintf("/rss/l/%s,%s", $c->stash->{latitude},$c->stash->{longitude}), $c->fake_q);
-  }
+    my $rss_feed;
+    if ( $c->stash->{pretty_pc_text} ) {
+        $rss_feed =
+          $c->cobrand->uri( "/rss/pc/" . $c->stash->{pretty_pc_text},
+            $c->fake_q );
+    }
+    else {
+        $rss_feed = $c->cobrand->uri(
+            sprintf( "/rss/l/%s,%s",
+                $c->stash->{latitude},
+                $c->stash->{longitude} ),
+            $c->fake_q
+        );
+    }
 
-  $c->stash->{rss_feed_uri} = $rss_feed;
+    $c->stash->{rss_feed_uri} = $rss_feed;
 
 #    my $default_link = Cobrand::url($cobrand, "/alert?type=local;feed=local:$lat:$lon", $q);
 
-   $c->stash->{rss_feed_2k}  = $c->cobrand->uri($rss_feed.'/2', $c->fake_q);
-   $c->stash->{rss_feed_5k}  = $c->cobrand->uri($rss_feed.'/5', $c->fake_q);
-   $c->stash->{rss_feed_10k} = $c->cobrand->uri($rss_feed.'/10', $c->fake_q);
-   $c->stash->{rss_feed_20k} = $c->cobrand->uri($rss_feed.'/20', $c->fake_q);
+    $c->stash->{rss_feed_2k} = $c->cobrand->uri( $rss_feed . '/2', $c->fake_q );
+    $c->stash->{rss_feed_5k} = $c->cobrand->uri( $rss_feed . '/5', $c->fake_q );
+    $c->stash->{rss_feed_10k} =
+      $c->cobrand->uri( $rss_feed . '/10', $c->fake_q );
+    $c->stash->{rss_feed_20k} =
+      $c->cobrand->uri( $rss_feed . '/20', $c->fake_q );
 }
 
 =head2 rss
@@ -146,35 +163,37 @@ Redirects to relevant RSS feed
 
 =cut
 
-sub rss :Path('rss') :Args(0) {
-  my ($self, $c) = @_;
-  my $feed = $c->req->params->{feed};
+sub rss : Path('rss') : Args(0) {
+    my ( $self, $c ) = @_;
+    my $feed = $c->req->params->{feed};
 
-  unless ( $feed ) {
-    $c->stash->{errors} = [ _( 'Please select the feed you want' ) ];
-    $c->go( 'list' );
-  }
+    unless ($feed) {
+        $c->stash->{errors} = [ _('Please select the feed you want') ];
+        $c->go('list');
+    }
 
-  my $extra_params = $c->cobrand->extra_params($c->fake_q);
-  my $url;
-  if ($feed =~ /^area:(?:\d+:)+(.*)$/) {
-    (my $id = $1) =~ tr{:_}{/+};
-    $url = $c->cobrand->base_url() . '/rss/area/' . $id;
-    $c->res->redirect( $url );
-  } elsif ($feed =~ /^(?:council|ward):(?:\d+:)+(.*)$/) {
-    (my $id = $1) =~ tr{:_}{/+};
-    $url = $c->cobrand->base_url() . '/rss/reports/' . $id;
-    $c->res->redirect( $url );
-  } elsif ($feed =~ /^local:([\d\.-]+):([\d\.-]+)$/) {
-    (my $id = $1) =~ tr{:_}{/+};
-    $url = $c->cobrand->base_url() . '/rss/l/' . $id;
-    $c->res->redirect( $url );
-  } else {
-    $c->stash->{errors} = [ _( 'Illegal feed selection' ) ];
-    $c->go( 'list' );
-  }
+    my $extra_params = $c->cobrand->extra_params( $c->fake_q );
+    my $url;
+    if ( $feed =~ /^area:(?:\d+:)+(.*)$/ ) {
+        ( my $id = $1 ) =~ tr{:_}{/+};
+        $url = $c->cobrand->base_url() . '/rss/area/' . $id;
+        $c->res->redirect($url);
+    }
+    elsif ( $feed =~ /^(?:council|ward):(?:\d+:)+(.*)$/ ) {
+        ( my $id = $1 ) =~ tr{:_}{/+};
+        $url = $c->cobrand->base_url() . '/rss/reports/' . $id;
+        $c->res->redirect($url);
+    }
+    elsif ( $feed =~ /^local:([\d\.-]+):([\d\.-]+)$/ ) {
+        ( my $id = $1 ) =~ tr{:_}{/+};
+        $url = $c->cobrand->base_url() . '/rss/l/' . $id;
+        $c->res->redirect($url);
+    }
+    else {
+        $c->stash->{errors} = [ _('Illegal feed selection') ];
+        $c->go('list');
+    }
 }
-
 
 =head2 prettify_pc
 
@@ -185,16 +204,19 @@ This will canonicalise and prettify the postcode and stick a pretty_pc and prett
 sub prettify_pc : Private {
     my ( $self, $c ) = @_;
 
-    # FIXME previously this had been run through ent so need to do similar here or in template
+# FIXME previously this had been run through ent so need to do similar here or in template
     my $pretty_pc = $c->req->params->{'pc'};
 
-#    my $pretty_pc = $input_h{pc};
-#    my $pretty_pc_text;# This one isnt't getting the nbsp.
-    if (mySociety::PostcodeUtil::is_valid_postcode($c->req->params->{'pc'})) {
-        $pretty_pc = mySociety::PostcodeUtil::canonicalise_postcode($c->req->params->{'pc'});
+    #    my $pretty_pc = $input_h{pc};
+    #    my $pretty_pc_text;# This one isnt't getting the nbsp.
+    if ( mySociety::PostcodeUtil::is_valid_postcode( $c->req->params->{'pc'} ) )
+    {
+        $pretty_pc = mySociety::PostcodeUtil::canonicalise_postcode(
+            $c->req->params->{'pc'} );
         my $pretty_pc_text = $pretty_pc;
         $pretty_pc_text =~ s/ //g;
         $c->stash->{pretty_pc_text} = $pretty_pc_text;
+
         # this may be better done in template
         $pretty_pc =~ s/ /&nbsp;/;
     }
@@ -202,12 +224,11 @@ sub prettify_pc : Private {
     $c->stash->{pretty_pc} = $pretty_pc;
 }
 
-
 sub council_options : Private {
-  my ( $self, $c ) = @_;
+    my ( $self, $c ) = @_;
 
+    if ( $c->config->{COUNTRY} eq 'NO' ) {
 
-  if ( $c->config->{COUNTRY} eq 'NO' ) {
 #    my ($options, $options_start, $options_end);
 #    if (mySociety::Config::get('COUNTRY') eq 'NO') {
 #
@@ -226,7 +247,7 @@ sub council_options : Private {
 #
 #            push @options, [ 'council', $fylke->{id}, Page::short_name($fylke),
 #                sprintf(_("Problems within %s"), $fylke_name) ];
-#        
+#
 #            $options_start = "<div><ul id='rss_feed'>";
 #            $options = alert_list_options($q, @options);
 #            $options_end = "</ul>";
@@ -258,10 +279,9 @@ sub council_options : Private {
 }
 
 sub choose : Private {
-  my ( $self, $c ) = @_;
-  $c->stash->{template} = 'alert/choose.html';
+    my ( $self, $c ) = @_;
+    $c->stash->{template} = 'alert/choose.html';
 }
-
 
 =head1 AUTHOR
 
