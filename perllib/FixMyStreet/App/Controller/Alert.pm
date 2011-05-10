@@ -4,6 +4,8 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
+use mySociety::EmailUtil qw(is_valid_email);
+
 =head1 NAME
 
 FixMyStreet::App::Controller::Alert - Catalyst Controller
@@ -64,6 +66,9 @@ sub index : Path('') : Args(0) {
 
 sub list : Path('list') : Args(0) {
     my ( $self, $c ) = @_;
+
+    $c->stash->{rznvy} = $c->req->param('rznvy');
+    $c->stash->{selected_feed} = $c->req->param('feed');
 
  #    my ($q, @errors) = @_;
  #    my @vars = qw(pc rznvy lat lon);
@@ -169,6 +174,8 @@ sub subscribe : Path('subscribe') : Args(0) {
 
     if ( $c->req->param( 'rss' ) ) {
         $c->detach( 'rss' );
+    } elsif ( $c->req->param( 'rznvy' ) ) {
+        $c->detach( 'subscribe_email' );
     }
 }
 
@@ -208,6 +215,96 @@ sub rss : Private {
         $c->stash->{errors} = [ _('Illegal feed selection') ];
         $c->go('list');
     }
+}
+
+=head2 subscribe_email
+
+Sign up to email alerts
+
+=cut
+
+sub subscribe_email : Private {
+    my ( $self, $c ) = @_;
+
+    my $type = $c->req->param('type');
+    $c->stash->{email_type} = 'alert';
+
+    my @errors;
+    push @errors, _('Please enter a valid email address') unless is_valid_email($c->req->param('rznvy'));
+    push @errors, _('Please select the type of alert you want') if $type && $type eq 'local' && !$c->req->param('feed');
+    if (@errors) {
+        $c->stash->{errors} = \@errors;
+        $c->go('list');
+#        return alert_updates_form($q, @errors) if $type && $type eq 'updates';
+#        return alert_list($q, @errors) if $type && $type eq 'local';
+#        return alert_front_page($q, @errors);
+    }
+
+    my $alert_id;
+    my $email = $c->req->param('rznvy');
+#    my $cobrand = Page::get_cobrand($q);
+#    my $cobrand_data = Cobrand::extra_alert_data($cobrand, $q);
+    if ($type eq 'updates') {
+#        my $id = $q->param('id');
+#        $alert_id = FixMyStreet::Alert::create($email, 'new_updates', $cobrand, $cobrand_data, $id);
+    } elsif ($type eq 'problems') {
+#        $alert_id = FixMyStreet::Alert::create($email, 'new_problems', $cobrand, $cobrand_data);
+    } elsif ($type eq 'local') {
+        my $feed = $c->req->param('feed');
+
+        my ( $type, @params );
+        if ($feed =~ /^area:(?:\d+:)?(\d+)/) {
+            $type = 'area_problems';
+            push @params, $1;
+        } elsif ($feed =~ /^council:(\d+)/) {
+            $type = 'council_problems';
+            push @params, $1, $1;
+        } elsif ($feed =~ /^ward:(\d+):(\d+)/) {
+            $type = 'ward_problems';
+            push @params, $1, $2;
+        } elsif ($feed =~ m{ \A local: ( [\+\-]? \d+ \.? \d* ) : ( [\+\-]? \d+ \.? \d* ) }xms ) {
+            $type = 'local_problems';
+            push @params, $1, $2;
+#            my $lat = $1;
+#            my $lon = $2;
+#            $alert_id = FixMyStreet::Alert::create($email, 'local_problems', $cobrand, $cobrand_data, $lon, $lat);
+        }
+
+        my $options = {
+            email => $email,
+            alert_type  => $type
+        };
+
+        if ( scalar @params == 1 ) {
+            $options->{parameter} = $params[0];
+        } elsif ( scalar @params == 2 ) {
+            $options->{parameter} = $params[0];
+            $options->{parameter2} = $params[1];
+        }
+
+        my $alert = $c->model('DB::Alert')->find(
+            $options
+        );
+
+        unless ( $alert ) {
+            $options->{cobrand} = $c->cobrand->moniker();
+            $options->{cobrand_data} = $c->cobrand->extra_update_data();
+
+            $alert = $c->model('DB::Alert')->new( $options );
+            $alert->insert();
+        }
+
+        $c->log->debug( 'created alert ' . $alert->id );
+        $c->stash->{template} = 'email_sent.html';
+    } else {
+        throw FixMyStreet::Alert::Error('Invalid type');
+    }
+#
+#    my %h = ();
+#    $h{url} = Page::base_url_with_lang($q, undef, 1) . '/A/'
+#        . mySociety::AuthToken::store('alert', { id => $alert_id, type => 'subscribe', email => $email } );
+#    dbh()->commit();
+#    return Page::send_confirmation_email($q, $email, undef, 'alert', %h);
 }
 
 =head2 prettify_pc
