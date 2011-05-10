@@ -45,25 +45,25 @@ $mech->content_contains('hat location does not appear to be covered by a council
 $mech->get_ok('/alert/list?pc=GL502PR');
 $mech->content_contains('Problems within the boundary of');
 
-$mech->get_ok('/alert/rss?type=local&pc=ky16+8yg&rss=Give+me+an+RSS+feed&rznvy=' );
+$mech->get_ok('/alert/subscribe?rss=1&type=local&pc=ky16+8yg&rss=Give+me+an+RSS+feed&rznvy=' );
 $mech->content_contains('Please select the feed you want');
 
-$mech->get_ok('/alert/rss?feed=invalid:1000:A_Locationtype=local&pc=ky16+8yg&rss=Give+me+an+RSS+feed&rznvy=');
+$mech->get_ok('/alert/subscribe?rss=1&feed=invalid:1000:A_Locationtype=local&pc=ky16+8yg&rss=Give+me+an+RSS+feed&rznvy=');
 $mech->content_contains('Illegal feed selection');
 
 TODO: {
   local $TODO = 'not implemented rss feeds yet';
 
-  $mech->get_ok('/alert/rss?feed=area:1000:A_Location');
+  $mech->get_ok('/alert/subscribe?rss=1&feed=area:1000:A_Location');
   $mech->uri->path('/rss/area/A+Location');
 
-  $mech->get_ok('/alert/rss?feed=area:1000:1001:A_Location:Diff_Location');
+  $mech->get_ok('/alert/subscribe?rss=1&feed=area:1000:1001:A_Location:Diff_Location');
   $mech->uri->path('/rss/area/A+Location/Diff+Location');
 
-  $mech->get_ok('/alert/rss?feed=council:1000:A_Location');
+  $mech->get_ok('/alert/subscribe?rss=1&feed=council:1000:A_Location');
   $mech->uri->path('/rss/reports/A+Location');
 
-  $mech->get_ok('/alert/rss?feed=ward:1000:1001:A_Location:Diff_Location');
+  $mech->get_ok('/alert/subscribe?rss=1&feed=ward:1000:1001:A_Location:Diff_Location');
   $mech->uri->path('/rss/ward/A+Location/Diff+Location');
 }
 

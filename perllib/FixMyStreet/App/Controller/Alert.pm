@@ -25,6 +25,7 @@ Show the alerts page
 sub index : Path('') : Args(0) {
     my ( $self, $c ) = @_;
 
+
 #    my $q = shift;
 #    my $cobrand = Page::get_cobrand($q);
 #    my $error = shift;
@@ -157,13 +158,27 @@ sub list : Path('list') : Args(0) {
       $c->cobrand->uri( $rss_feed . '/20', $c->fake_q );
 }
 
+=head2 subscribe
+
+Target for subscribe form
+
+=cut
+
+sub subscribe : Path('subscribe') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    if ( $c->req->param( 'rss' ) ) {
+        $c->detach( 'rss' );
+    }
+}
+
 =head2 rss
 
 Redirects to relevant RSS feed
 
 =cut
 
-sub rss : Path('rss') : Args(0) {
+sub rss : Private {
     my ( $self, $c ) = @_;
     my $feed = $c->req->params->{feed};
 
