@@ -243,8 +243,11 @@ sub subscribe_email : Private {
  #        return alert_front_page($q, @errors);
     }
 
-    my $alert;
     my $email = $c->req->param('rznvy');
+    $c->stash->{email} = $email;
+    $c->forward( 'process_user' );
+
+    my $alert;
 
     #    my $cobrand = Page::get_cobrand($q);
     #    my $cobrand_data = Cobrand::extra_alert_data($cobrand, $q);
@@ -286,7 +289,7 @@ sub subscribe_email : Private {
         }
 
         my $options = {
-            email      => $email,
+            user       => $c->stash->{alert_user},
             alert_type => $type
         };
 
@@ -438,6 +441,14 @@ sub council_options : Private {
 #        }
 #
     }
+}
+
+sub process_user : Private {
+    my ( $self, $c ) = @_;
+
+    my $email = $c->stash->{email};
+    my $alert_user = $c->model('DB::User')->find_or_new( { email => $email } );
+    $c->stash->{alert_user} = $alert_user;
 }
 
 sub choose : Private {

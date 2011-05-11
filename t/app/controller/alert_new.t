@@ -53,21 +53,38 @@ foreach my $test (
 
         my $type = $test->{type} . '_problems';
 
-        # we don't want an alert
-        my $alert = FixMyStreet::App->model('DB::Alert')->find(
+        my $user = FixMyStreet::App->model('DB::User')->find(
             {
-                email      => $test->{email},
-                alert_type => $type
+                email => $test->{email}
             }
         );
+
+        # we don't want an alert
+        my $alert;
+        if ( $user ) {
+            $alert = FixMyStreet::App->model('DB::Alert')->find(
+                {
+                    user       => $user,
+                    alert_type => $type
+                }
+            );
+        }
         $alert->delete() if $alert;
 
         $mech->get_ok( $test->{uri} );
         $mech->content_contains( $test->{content} );
 
+        $user = FixMyStreet::App->model('DB::User')->find(
+            {
+                email => $test->{email}
+            }
+        );
+
+        ok $user, 'user for report';
+
         $alert = FixMyStreet::App->model('DB::Alert')->find(
             {
-                email      => $test->{email},
+                user       => $user,
                 alert_type => $type,
                 parameter  => $test->{param1},
                 parameter2 => $test->{param2},
@@ -117,7 +134,7 @@ foreach my $test (
         ok $token->data->{id} == $existing_id, 'subscribed to exsiting alert';
 
         $mech->get_ok("/A/$url_token");
-        $mech->content_contains('subscribed');
+        $mech->content_contains('successfully confirmed');
 
         $alert =
           FixMyStreet::App->model('DB::Alert')->find( { id => $existing_id, } );
