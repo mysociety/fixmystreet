@@ -130,6 +130,8 @@ sub delete_user {
     $mech->log_out_ok;
     ok( $_->delete, "delete problem " . $_->title )    #
       for $user->problems;
+    ok( $_->delete, "delete alert " . $_->alert_type )
+      for $user->alerts;
     ok $user->delete, "delete test user " . $user->email;
 
     return 1;
