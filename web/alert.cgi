@@ -524,43 +524,43 @@ sub alert_signed_input {
     return $out;
 }
 
-sub alert_token {
-    my ($q, $data) = @_;
-    my $id = $data->{id};
-    my $type = $data->{type};
-    my $email = $data->{email};
+# sub alert_token {
+#     my ($q, $data) = @_;
+#     my $id = $data->{id};
+#     my $type = $data->{type};
+#     my $email = $data->{email};
 
-    (my $domain = $email) =~ s/^.*\@//;
-    if (dbh()->selectrow_array('select email from abuse where lower(email)=? or lower(email)=?', {}, lc($email), lc($domain))) {
-        return $q->p('Sorry, there has been an error confirming your alert.');
-    }
+#     (my $domain = $email) =~ s/^.*\@//;
+#     if (dbh()->selectrow_array('select email from abuse where lower(email)=? or lower(email)=?', {}, lc($email), lc($domain))) {
+#         return $q->p('Sorry, there has been an error confirming your alert.');
+#     }
 
-    my $out;
-    my $cobrand = Page::get_cobrand($q);
-    my $message; 
-    my $display_advert = Cobrand::allow_crosssell_adverts($cobrand);
-    if ($type eq 'subscribe') {
-        FixMyStreet::Alert::confirm($id);
-        $message = _('You have successfully confirmed your alert.');
-        $out = $q->p($message);
-        if ($display_advert) {
-            $out .= CrossSell::display_advert($q, $email);
-        }
-    } elsif ($type eq 'unsubscribe') {
-        FixMyStreet::Alert::delete($id);
-        $message = _('You have successfully deleted your alert.');
-        $out = $q->p($message);
-        if ($display_advert) {
-            $out .= CrossSell::display_advert($q, $email);
-        }
-    }
+#     my $out;
+#     my $cobrand = Page::get_cobrand($q);
+#     my $message; 
+#     my $display_advert = Cobrand::allow_crosssell_adverts($cobrand);
+#     if ($type eq 'subscribe') {
+#         FixMyStreet::Alert::confirm($id);
+#         $message = _('You have successfully confirmed your alert.');
+#         $out = $q->p($message);
+#         if ($display_advert) {
+#             $out .= CrossSell::display_advert($q, $email);
+#         }
+#     } elsif ($type eq 'unsubscribe') {
+#         FixMyStreet::Alert::delete($id);
+#         $message = _('You have successfully deleted your alert.');
+#         $out = $q->p($message);
+#         if ($display_advert) {
+#             $out .= CrossSell::display_advert($q, $email);
+#         }
+#     }
  
-    my %vars = (message => $message, 
-                url_home => Cobrand::url($cobrand, '/', $q));
-    my $confirmation = Page::template_include('confirmed-alert', $q, Page::template_root($q), %vars);
-    return $confirmation if $confirmation;
-    return $out;
-}
+#     my %vars = (message => $message, 
+#                 url_home => Cobrand::url($cobrand, '/', $q));
+#     my $confirmation = Page::template_include('confirmed-alert', $q, Page::template_root($q), %vars);
+#     return $confirmation if $confirmation;
+#     return $out;
+# }
 
 # sub alert_do_subscribe {
 #     my ($q, $email) = @_;
