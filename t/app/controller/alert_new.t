@@ -53,26 +53,22 @@ foreach my $test (
 
         my $type = $test->{type} . '_problems';
 
-        my $user = FixMyStreet::App->model('DB::User')->find(
-            {
-                email => $test->{email}
-            }
-        );
+        my $user =
+          FixMyStreet::App->model('DB::User')
+          ->find( { email => $test->{email} } );
 
         # we don't want an alert
         my $alert;
-        if ( $user ) {
-            $mech->delete_user( $user );
+        if ($user) {
+            $mech->delete_user($user);
         }
 
         $mech->get_ok( $test->{uri} );
         $mech->content_contains( $test->{content} );
 
-        $user = FixMyStreet::App->model('DB::User')->find(
-            {
-                email => $test->{email}
-            }
-        );
+        $user =
+          FixMyStreet::App->model('DB::User')
+          ->find( { email => $test->{email} } );
 
         ok $user, 'user created for alert';
 
@@ -147,18 +143,17 @@ foreach my $test (
 '/alert/subscribe?type=local&rznvy=test-new@example.com&feed=area:1000:A_Location',
         param1 => 1000
     }
-) {
+  )
+{
     subtest "use existing user in a alert" => sub {
         my $type = $test->{type} . '_problems';
 
-        my $user = FixMyStreet::App->model('DB::User')->find_or_create(
-            {
-                email => $test->{email}
-            }
-        );
+        my $user =
+          FixMyStreet::App->model('DB::User')
+          ->find_or_create( { email => $test->{email} } );
 
         my $alert;
-        if ( $user ) {
+        if ($user) {
             $alert = FixMyStreet::App->model('DB::Alert')->find(
                 {
                     user       => $user,
@@ -171,6 +166,62 @@ foreach my $test (
         }
 
         $mech->get_ok( $test->{uri} );
+
+        $alert = FixMyStreet::App->model('DB::Alert')->find(
+            {
+                user       => $user,
+                alert_type => $type,
+                parameter  => $test->{param1},
+                parameter2 => $test->{param2},
+                confirmed  => 0,
+            }
+        );
+
+        ok $alert, 'New alert created with existing user';
+    };
+}
+
+foreach my $test (
+    {
+        email      => 'test-login@example.com',
+        type       => 'council',
+        content    => 'your alert will not be activated',
+        email_text => 'confirm the alert',
+        param1     => 2651,
+        param2     => 2651,
+    }
+  )
+{
+    subtest "use logged in user in an alert" => sub {
+        my $type = $test->{type} . '_problems';
+
+        my $user =
+          FixMyStreet::App->model('DB::User')
+          ->find_or_create( { email => $test->{email} } );
+
+        $mech->log_in_ok( $test->{email} );
+
+        my $alert;
+        if ($user) {
+            $alert = FixMyStreet::App->model('DB::Alert')->find(
+                {
+                    user       => $user,
+                    alert_type => $type
+                }
+            );
+
+            # clear existing data so we can be sure we're creating it
+            $alert->delete() if $alert;
+        }
+
+        $mech->get_ok('/alert/list?pc=EH991SP');
+
+        my $form_values = $mech->visible_form_values();
+        ok $form_values->{rznvy} eq $test->{email},
+          'auto filled in correct email';
+
+        $mech->set_visible( [ radio => 'council:2651:City_of_Edinburgh' ] );
+        $mech->click('alert');
 
         $alert = FixMyStreet::App->model('DB::Alert')->find(
             {

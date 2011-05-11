@@ -69,6 +69,10 @@ sub list : Path('list') : Args(0) {
     $c->stash->{rznvy}         = $c->req->param('rznvy');
     $c->stash->{selected_feed} = $c->req->param('feed');
 
+    if ( $c->user ) {
+        $c->stash->{rznvy} ||= $c->user->email;
+    }
+
  #    my ($q, @errors) = @_;
  #    my @vars = qw(pc rznvy lat lon);
  #    my %input = map { $_ => scalar $q->param($_) } @vars;
@@ -245,7 +249,7 @@ sub subscribe_email : Private {
 
     my $email = $c->req->param('rznvy');
     $c->stash->{email} = $email;
-    $c->forward( 'process_user' );
+    $c->forward('process_user');
 
     my $alert;
 
