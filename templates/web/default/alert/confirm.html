@@ -1,0 +1,13 @@
+[% INCLUDE 'headerhtml', title =>  loc('Local RSS feeds and email alerts') %]
+
+<h1>[% loc('Local RSS feeds and email alerts') %]</h1>
+
+<p>
+[% IF confirm_type == 'subscribe' %]
+  [% loc('You have successfully confirmed your alert.') %]
+[% ELSIF confirm_type == 'unsubscribe' %]
+  [% loc('You have successfully deleted your alert.') %]
+[% END %]
+</p>
+
+[% INCLUDE 'footer.html' %]

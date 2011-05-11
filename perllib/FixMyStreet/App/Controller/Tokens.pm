@@ -82,7 +82,37 @@ sub redirect_to_partial_problem : Path('/L') {
     my ( $self, $c, $token_code ) = @_;
 
     my $url = $c->uri_for( "/report/new", { partial => $token_code } );
-    return $c->res->redirect( $url );
+    return $c->res->redirect($url);
+}
+
+=head2 confirm_alert
+
+    /A/([0-9A-Za-z]{16,18}).*$
+
+Confirm an alert - url appears in emails sent to users after they create the
+alert but are not logged in.
+
+=cut
+
+sub confirm_alert : Path('/A') {
+    my ( $self, $c, $token_code ) = @_;
+
+    my $auth_token = $c->forward( 'load_auth_token', [ $token_code, 'alert' ] );
+
+    # Load the problem
+    my $alert_id = $auth_token->data->{id};
+    $c->stash->{confirm_type} = $auth_token->data->{type};
+    my $alert = $c->model('DB::Alert')->find( { id => $alert_id } )
+      || $c->detach('token_error');
+    $c->stash->{alert} = $alert;
+
+    # check that this email or domain are not the cause of abuse. If so hide it.
+    if ( $alert->is_from_abuser ) {
+        $c->stash->{template} = 'tokens/abuse.html';
+        return;
+    }
+
+    $c->forward('/alert/confirm');
 }
 
 =head2 load_auth_token

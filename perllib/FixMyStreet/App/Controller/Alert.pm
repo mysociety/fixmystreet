@@ -298,7 +298,7 @@ sub subscribe_email : Private {
             $options->{parameter2} = $params[1];
         }
 
-        $alert = $c->model('DB::Alert')->find( $options );
+        $alert = $c->model('DB::Alert')->find($options);
 
         unless ($alert) {
             $options->{cobrand}      = $c->cobrand->moniker();
@@ -333,6 +333,28 @@ sub subscribe_email : Private {
             from => $sender
         }
     );
+}
+
+=head2 confirm
+
+Confirm signup to an alert
+
+=cut
+
+sub confirm : Private {
+    my ( $self, $c ) = @_;
+
+    my $alert = $c->stash->{alert};
+    $c->stash->{template} = 'alert/confirm.html';
+
+    if ( $c->stash->{confirm_type} eq 'subscribe' ) {
+        $alert->confirm();
+        $alert->update;
+    }
+    elsif ( $c->stash->{confirm_type} eq 'unsubscribe' ) {
+        $alert->delete();
+        $alert->update;
+    }
 }
 
 =head2 prettify_pc

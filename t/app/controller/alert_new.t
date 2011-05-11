@@ -70,7 +70,8 @@ foreach my $test (
                 email      => $test->{email},
                 alert_type => $type,
                 parameter  => $test->{param1},
-                parameter2 => $test->{param2}
+                parameter2 => $test->{param2},
+                confirmed  => 0,
             }
         );
 
@@ -114,6 +115,14 @@ foreach my $test (
 
         ok $token, 'new token found in database';
         ok $token->data->{id} == $existing_id, 'subscribed to exsiting alert';
+
+        $mech->get_ok("/A/$url_token");
+        $mech->content_contains('subscribed');
+
+        $alert =
+          FixMyStreet::App->model('DB::Alert')->find( { id => $existing_id, } );
+
+        ok $alert->confirmed, 'alert set to confirmed';
     };
 }
 

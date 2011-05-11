@@ -49,4 +49,51 @@ __PACKAGE__->set_primary_key("id");
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:tfT1PBeEOwcLsQaX+HXSKA
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+# FIXME: this is more or less duplicated from problem. need to stick somewhere common
+
+
+=head2 is_from_abuser
+
+    $bool = $alert->is_from_abuser(  );
+
+Returns true if the user's email or its domain is listed in the 'abuse' table.
+
+=cut
+
+sub is_from_abuser {
+    my $self = shift;
+
+    # get the domain
+    my $email = $self->email;
+    my ($domain) = $email =~ m{ @ (.*) \z }x;
+
+    # search for an entry in the abuse table
+    my $abuse_rs = $self->result_source->schema->resultset('Abuse');
+
+    return
+         $abuse_rs->find( { email => $email } )
+      || $abuse_rs->find( { email => $domain } )
+      || undef;
+}
+
+=head2 confirm
+
+    $alert->confirm();
+
+Sets the state of the alert to confirmed.
+
+=cut
+
+sub confirm {
+    my $self = shift;
+
+    return if $self->confirmed == 1 and $self->whendisabled ne 'null';
+
+    $self->confirmed(1);
+    $self->whendisabled(undef);
+
+    return 1;
+}
+
 1;
