@@ -62,14 +62,8 @@ foreach my $test (
         # we don't want an alert
         my $alert;
         if ( $user ) {
-            $alert = FixMyStreet::App->model('DB::Alert')->find(
-                {
-                    user       => $user,
-                    alert_type => $type
-                }
-            );
+            $mech->delete_user( $user );
         }
-        $alert->delete() if $alert;
 
         $mech->get_ok( $test->{uri} );
         $mech->content_contains( $test->{content} );
@@ -80,7 +74,7 @@ foreach my $test (
             }
         );
 
-        ok $user, 'user for report';
+        ok $user, 'user created for alert';
 
         $alert = FixMyStreet::App->model('DB::Alert')->find(
             {
@@ -140,6 +134,55 @@ foreach my $test (
           FixMyStreet::App->model('DB::Alert')->find( { id => $existing_id, } );
 
         ok $alert->confirmed, 'alert set to confirmed';
+    };
+}
+
+foreach my $test (
+    {
+        email      => 'test-new@example.com',
+        type       => 'area',
+        content    => 'your alert will not be activated',
+        email_text => 'confirm the alert',
+        uri =>
+'/alert/subscribe?type=local&rznvy=test-new@example.com&feed=area:1000:A_Location',
+        param1 => 1000
+    }
+) {
+    subtest "use existing user in a alert" => sub {
+        my $type = $test->{type} . '_problems';
+
+        my $user = FixMyStreet::App->model('DB::User')->find_or_create(
+            {
+                email => $test->{email}
+            }
+        );
+
+        my $alert;
+        if ( $user ) {
+            $alert = FixMyStreet::App->model('DB::Alert')->find(
+                {
+                    user       => $user,
+                    alert_type => $type
+                }
+            );
+
+            # clear existing data so we can be sure we're creating it
+            $alert->delete() if $alert;
+        }
+
+        $mech->get_ok( $test->{uri} );
+
+        $alert = FixMyStreet::App->model('DB::Alert')->find(
+            {
+                user       => $user,
+                alert_type => $type,
+                parameter  => $test->{param1},
+                parameter2 => $test->{param2},
+                confirmed  => 0,
+            }
+        );
+
+        ok $alert, 'New alert created with existing user';
     };
 }
 
