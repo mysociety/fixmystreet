@@ -57,17 +57,12 @@ sub list : Path('list') : Args(0) {
         $c->go('index') if $c->stash->{location_error};
     }
 
-    $c->log->debug($_)
-      for ( $c->stash->{pc}, $c->stash->{latitude}, $c->stash->{longitude} );
-
     $c->forward('prettify_pc');
 
     # truncate the lat,lon for nicer urls
     ( $c->stash->{latitude}, $c->stash->{longitude} ) =
       map { Utils::truncate_coordinate($_) }
       ( $c->stash->{latitude}, $c->stash->{longitude} );
-    $c->log->debug($_)
-      for ( $c->stash->{pc}, $c->stash->{latitude}, $c->stash->{longitude} );
 
     $c->stash->{council_check_action} = 'alert';
     unless ( $c->forward('/council/load_and_check_councils_and_wards') ) {
