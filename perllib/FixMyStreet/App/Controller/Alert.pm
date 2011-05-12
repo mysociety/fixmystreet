@@ -64,13 +64,7 @@ sub list : Path('list') : Args(0) {
       map { Utils::truncate_coordinate($_) }
       ( $c->stash->{latitude}, $c->stash->{longitude} );
 
-    $c->stash->{council_check_action} = 'alert';
-    unless ( $c->forward('/council/load_and_check_councils_and_wards') ) {
-        $c->go('index');
-    }
-
-    ( $c->stash->{options}, $c->stash->{reported_to_options} ) =
-      $c->cobrand->council_rss_alert_options( $c->stash->{all_councils} );
+    $c->forward('setup_council_rss_feeds');
 
     my $dist =
       mySociety::Gaze::get_radius_containing_population( $c->stash->{latitude},
@@ -483,6 +477,24 @@ sub setup_coordinate_rss_feeds : Private {
       $c->cobrand->uri( $rss_feed . '/20', $c->fake_q );
 
     return 1;
+}
+
+=head2 setup_council_rss_feeds
+
+Generate the details required to display the council/ward/area RSS feeds
+
+=cut
+
+sub setup_council_rss_feeds : Private {
+    my ( $self, $c ) = @_;
+
+    $c->stash->{council_check_action} = 'alert';
+    unless ( $c->forward('/council/load_and_check_councils_and_wards') ) {
+        $c->go('index');
+    }
+
+    ( $c->stash->{options}, $c->stash->{reported_to_options} ) =
+      $c->cobrand->council_rss_alert_options( $c->stash->{all_councils} );
 }
 
 sub choose : Private {
