@@ -195,23 +195,17 @@ sub subscribe_email : Private {
       if $type && $type eq 'local' && !$c->req->param('feed');
     if (@errors) {
         $c->stash->{errors} = \@errors;
-        $c->go('list');
-
- #        return alert_updates_form($q, @errors) if $type && $type eq 'updates';
- #        return alert_list($q, @errors) if $type && $type eq 'local';
- #        return alert_front_page($q, @errors);
+        $c->go('updates') if $type && $type eq 'updates';
+        $c->go('list') if $type && $type eq 'local';
+        $c->go('index');
     }
 
     my $email = $c->req->param('rznvy');
     $c->stash->{email} = $email;
     $c->forward('process_user');
 
-    my $alert;
-
-    #    my $cobrand = Page::get_cobrand($q);
-    #    my $cobrand_data = Cobrand::extra_alert_data($cobrand, $q);
     if ( $type eq 'updates' ) {
-
+        $c->forward('create_update_alert');
 #        my $id = $q->param('id');
 #        $alert_id = FixMyStreet::Alert::create($email, 'new_updates', $cobrand, $cobrand_data, $id);
     }
@@ -227,6 +221,14 @@ sub subscribe_email : Private {
     }
 
     $c->forward('send_confirmation_email');
+}
+
+sub updates : Path('updates') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->stash->{email} = $c->req->param('rznvy');
+    $c->stash->{problem_id} = $c->req->param('id');
+    $c->stash->{cobrand_form_elements} = $c->cobrand->form_elements('alerts');
 }
 
 =head2 confirm
@@ -249,6 +251,38 @@ sub confirm : Private {
         $alert->delete();
         $alert->update;
     }
+}
+
+=head2 create_update_alert
+
+Create an update alert
+
+=cut
+
+sub create_update_alert : Private {
+    my ( $self, $c ) = @_;
+
+    my $report_id = $c->req->param('id');
+
+    my $options = {
+        user       => $c->stash->{alert_user},
+        alert_type => 'new_updates',
+        parameter  => $report_id,
+    };
+
+    my $alert = $c->model('DB::Alert')->find($options);
+
+    unless ($alert) {
+        $options->{cobrand}      = $c->cobrand->moniker();
+        $options->{cobrand_data} = $c->cobrand->extra_update_data();
+
+        $alert = $c->model('DB::Alert')->new($options);
+        $alert->insert();
+    }
+
+    $c->stash->{alert} = $alert;
+
+    $c->log->debug( 'created alert ' . $alert->id );
 }
 
 =head2 create_local_alert

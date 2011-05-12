@@ -9,7 +9,7 @@ my $mech = FixMyStreet::TestMech->new;
 foreach my $test (
     {
         email      => 'test@example.com',
-        type       => 'area',
+        type       => 'area_problems',
         content    => 'your alert will not be activated',
         email_text => 'confirm the alert',
         uri =>
@@ -18,7 +18,7 @@ foreach my $test (
     },
     {
         email      => 'test@example.com',
-        type       => 'council',
+        type       => 'council_problems',
         content    => 'your alert will not be activated',
         email_text => 'confirm the alert',
         uri =>
@@ -28,7 +28,7 @@ foreach my $test (
     },
     {
         email      => 'test@example.com',
-        type       => 'ward',
+        type       => 'ward_problems',
         content    => 'your alert will not be activated',
         email_text => 'confirm the alert',
         uri =>
@@ -38,20 +38,28 @@ foreach my $test (
     },
     {
         email      => 'test@example.com',
-        type       => 'local',
+        type       => 'local_problems',
         content    => 'your alert will not be activated',
         email_text => 'confirm the alert',
         uri =>
 '/alert/subscribe?type=local&rznvy=test@example.com&feed=local:10.2:20.1',
         param1 => 10.2,
         param2 => 20.1,
+    },
+    {
+        email      => 'test@example.com',
+        type       => 'new_updates',
+        content    => 'your alert will not be activated',
+        email_text => 'confirm the alert',
+        uri    => '/alert/subscribe?type=updates&rznvy=test@example.com&id=1',
+        param1 => 1,
     }
   )
 {
     subtest "$test->{type} alert correctly created" => sub {
         $mech->clear_emails_ok;
 
-        my $type = $test->{type} . '_problems';
+        my $type = $test->{type};
 
         my $user =
           FixMyStreet::App->model('DB::User')
