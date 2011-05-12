@@ -23,6 +23,12 @@ within a certain distance of a particular location.') %]
   </p>
 </form>
 
+[% IF photos %]
+<div id="alert_recent">
+  <h2>[% loc('Some photos of recent reports') %]</h2>
+  [% photos %]
+</div>
+[% END %]
 [%# FIXME - put in blurb here %]
 
 [% INCLUDE 'footer.html' %]

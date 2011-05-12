@@ -56,11 +56,9 @@ sub index : Path('') : Args(0) {
 #    my $cobrand_page = Page::template_include('alert-front-page', $q, Page::template_root($q), %vars);
 #    $out = $cobrand_page if ($cobrand_page);
 #
-#    return $out if $q->referer() && $q->referer() =~ /fixmystreet\.com/;
-#    my $recent_photos = Cobrand::recent_photos($cobrand, 10);
-#    $out .= '<div id="alert_recent">' . $q->h2(_('Some photos of recent reports')) . $recent_photos . '</div>' if $recent_photos;
-#
-#    return $out;
+    unless ( $c->req->referer && $c->req->referer =~ /fixmystreet\.com/ ) {
+        $c->stash->{photos} = $c->cobrand->recent_photos(10);
+    }
 }
 
 sub list : Path('list') : Args(0) {
