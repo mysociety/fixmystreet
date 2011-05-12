@@ -62,6 +62,8 @@ sub list : Path('list') : Args(0) {
 
     $c->forward('prettify_pc');
 
+    $c->forward('setup_location_info');
+
     # truncate the lat,lon for nicer urls
     ( $c->stash->{latitude}, $c->stash->{longitude} ) =
       map { Utils::truncate_coordinate($_) }
@@ -93,32 +95,7 @@ sub list : Path('list') : Args(0) {
 
     $c->stash->{cobrand_form_elements} = $c->cobrand->form_elements('alerts');
 
-    $c->stash->{rss_feed_id} =
-      sprintf( 'local:%s:%s', $c->stash->{latitude}, $c->stash->{longitude} );
-
-    my $rss_feed;
-    if ( $c->stash->{pretty_pc_text} ) {
-        $rss_feed =
-          $c->cobrand->uri( "/rss/pc/" . $c->stash->{pretty_pc_text},
-            $c->fake_q );
-    }
-    else {
-        $rss_feed = $c->cobrand->uri(
-            sprintf( "/rss/l/%s,%s",
-                $c->stash->{latitude},
-                $c->stash->{longitude} ),
-            $c->fake_q
-        );
-    }
-
-    $c->stash->{rss_feed_uri} = $rss_feed;
-
-    $c->stash->{rss_feed_2k} = $c->cobrand->uri( $rss_feed . '/2', $c->fake_q );
-    $c->stash->{rss_feed_5k} = $c->cobrand->uri( $rss_feed . '/5', $c->fake_q );
-    $c->stash->{rss_feed_10k} =
-      $c->cobrand->uri( $rss_feed . '/10', $c->fake_q );
-    $c->stash->{rss_feed_20k} =
-      $c->cobrand->uri( $rss_feed . '/20', $c->fake_q );
+    $c->forward( 'setup_rss_feeds' );
 }
 
 =head2 subscribe
@@ -473,6 +450,46 @@ sub process_user : Private {
     my $email = $c->stash->{email};
     my $alert_user = $c->model('DB::User')->find_or_new( { email => $email } );
     $c->stash->{alert_user} = $alert_user;
+}
+
+=head2 setup_rss_feeds
+
+Takes the latitide and longitude from the stash and uses them to generate uris
+for the local rss feeds
+
+=cut 
+
+sub setup_rss_feeds : Private {
+    my ( $self, $c ) = @_;
+
+    $c->stash->{rss_feed_id} =
+      sprintf( 'local:%s:%s', $c->stash->{latitude}, $c->stash->{longitude} );
+
+    my $rss_feed;
+    if ( $c->stash->{pretty_pc_text} ) {
+        $rss_feed =
+          $c->cobrand->uri( "/rss/pc/" . $c->stash->{pretty_pc_text},
+            $c->fake_q );
+    }
+    else {
+        $rss_feed = $c->cobrand->uri(
+            sprintf( "/rss/l/%s,%s",
+                $c->stash->{latitude},
+                $c->stash->{longitude} ),
+            $c->fake_q
+        );
+    }
+
+    $c->stash->{rss_feed_uri} = $rss_feed;
+
+    $c->stash->{rss_feed_2k} = $c->cobrand->uri( $rss_feed . '/2', $c->fake_q );
+    $c->stash->{rss_feed_5k} = $c->cobrand->uri( $rss_feed . '/5', $c->fake_q );
+    $c->stash->{rss_feed_10k} =
+      $c->cobrand->uri( $rss_feed . '/10', $c->fake_q );
+    $c->stash->{rss_feed_20k} =
+      $c->cobrand->uri( $rss_feed . '/20', $c->fake_q );
+
+    return 1;
 }
 
 sub choose : Private {
