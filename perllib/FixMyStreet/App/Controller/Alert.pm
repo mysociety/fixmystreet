@@ -44,12 +44,7 @@ sub list : Path('list') : Args(0) {
         $c->stash->{rznvy} ||= $c->user->email;
     }
 
- #    my ($q, @errors) = @_;
- #    my @vars = qw(pc rznvy lat lon);
- #    my %input = map { $_ => scalar $q->param($_) } @vars;
- #    my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
- #
- # Try to create a location for whatever we have
+    # Try to create a location for whatever we have
     unless ( $c->forward('/location/determine_location_from_coords')
         || $c->forward('/location/determine_location_from_pc') )
     {
@@ -74,10 +69,6 @@ sub list : Path('list') : Args(0) {
     $c->log->debug($_)
       for ( $c->stash->{pc}, $c->stash->{latitude}, $c->stash->{longitude} );
 
-#
-#    my $errors = '';
-#    $errors = '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>' if @errors;
-#
     $c->stash->{council_check_action} = 'alert';
     unless ( $c->forward('/council/load_and_check_councils_and_wards') ) {
         $c->go('index');
@@ -101,20 +92,7 @@ sub list : Path('list') : Args(0) {
     );
 
     $c->stash->{cobrand_form_elements} = $c->cobrand->form_elements('alerts');
-#
-#    my $checked = '';
-#    $checked = ' checked' if $q->param('feed') && $q->param('feed') eq "local:$lat:$lon";
-#    my $cobrand_form_elements = Cobrand::form_elements($cobrand, 'alerts', $q);
-#    my $pics = Cobrand::recent_photos($cobrand, 5, $lat, $lon, $dist);
-#    $pics = '<div id="alert_photos">' . $q->h2(_('Photos of recent nearby reports')) . $pics . '</div>' if $pics;
 
-    #    my $form_action = Cobrand::url($cobrand, '/alert', $q);
-    #$cobrand_form_elements
-    #$pics
-    #
-    #EOF
-    #    $out .= $errors;
-    #    $out .= <<EOF;
     $c->stash->{rss_feed_id} =
       sprintf( 'local:%s:%s', $c->stash->{latitude}, $c->stash->{longitude} );
 
@@ -134,8 +112,6 @@ sub list : Path('list') : Args(0) {
     }
 
     $c->stash->{rss_feed_uri} = $rss_feed;
-
-#    my $default_link = Cobrand::url($cobrand, "/alert?type=local;feed=local:$lat:$lon", $q);
 
     $c->stash->{rss_feed_2k} = $c->cobrand->uri( $rss_feed . '/2', $c->fake_q );
     $c->stash->{rss_feed_5k} = $c->cobrand->uri( $rss_feed . '/5', $c->fake_q );
