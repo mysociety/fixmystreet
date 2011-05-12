@@ -221,30 +221,12 @@ sub subscribe_email : Private {
     }
     elsif ( $type eq 'local' ) {
         $c->forward('create_local_alert');
-        $c->stash->{template} = 'email_sent.html';
     }
     else {
         throw FixMyStreet::Alert::Error('Invalid type');
     }
 
-    my $token = $c->model("DB::Token")->create(
-        {
-            scope => 'alert',
-            data  => { id => $c->stash->{alert}->id, type => 'subscribe', email => $email }
-        }
-    );
-
-    $c->stash->{token_url} = $c->uri_for_email( '/A', $token->token );
-
-    my $sender = mySociety::Config::get('CONTACT_EMAIL');
-
-    $c->send_email(
-        'alert-confirm.txt',
-        {
-            to   => $email,
-            from => $sender
-        }
-    );
+    $c->forward('send_confirmation_email');
 }
 
 =head2 confirm
@@ -326,6 +308,42 @@ sub create_local_alert : Private {
     $c->stash->{alert} = $alert;
 
     $c->log->debug( 'created alert ' . $alert->id );
+}
+
+=head2 send_confirmation_email
+
+Generate a token and send out an alert subscription confirmation email and
+then display confirmation page.
+
+=cut
+
+sub send_confirmation_email : Private {
+    my ( $self, $c ) = @_;
+
+    my $token = $c->model("DB::Token")->create(
+        {
+            scope => 'alert',
+            data  => {
+                id    => $c->stash->{alert}->id,
+                type  => 'subscribe',
+                email => $c->stash->{alert}->user->email
+            }
+        }
+    );
+
+    $c->stash->{token_url} = $c->uri_for_email( '/A', $token->token );
+
+    my $sender = mySociety::Config::get('CONTACT_EMAIL');
+
+    $c->send_email(
+        'alert-confirm.txt',
+        {
+            to   => $c->stash->{alert}->user->email,
+            from => $sender
+        }
+    );
+
+    $c->stash->{template} = 'email_sent.html';
 }
 
 =head2 prettify_pc
