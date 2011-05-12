@@ -62,8 +62,6 @@ sub list : Path('list') : Args(0) {
 
     $c->forward('prettify_pc');
 
-    $c->forward('setup_location_info');
-
     # truncate the lat,lon for nicer urls
     ( $c->stash->{latitude}, $c->stash->{longitude} ) =
       map { Utils::truncate_coordinate($_) }
@@ -95,7 +93,7 @@ sub list : Path('list') : Args(0) {
 
     $c->stash->{cobrand_form_elements} = $c->cobrand->form_elements('alerts');
 
-    $c->forward( 'setup_rss_feeds' );
+    $c->forward( 'setup_coordinate_rss_feeds' );
 }
 
 =head2 subscribe
@@ -452,14 +450,14 @@ sub process_user : Private {
     $c->stash->{alert_user} = $alert_user;
 }
 
-=head2 setup_rss_feeds
+=head2 setup_coordinate_rss_feeds
 
 Takes the latitide and longitude from the stash and uses them to generate uris
 for the local rss feeds
 
 =cut 
 
-sub setup_rss_feeds : Private {
+sub setup_coordinate_rss_feeds : Private {
     my ( $self, $c ) = @_;
 
     $c->stash->{rss_feed_id} =
