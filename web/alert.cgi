@@ -447,32 +447,32 @@ Page::do_fastcgi(\&main);
 #    }
 #}
 
-sub alert_updates_form {
-    my ($q, @errors) = @_;
-    my @vars = qw(id rznvy);
-    my %input = map { $_ => $q->param($_) || '' } @vars;
-    my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
-    my $cobrand_form_elements = Cobrand::form_elements(Page::get_cobrand($q), 'alerts', $q);
-    my $out = '';
-    if (@errors) {
-        $out .= '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
-    }
-    $out .= $q->p(_('Receive email when updates are left on this problem.'));
-    my $label = _('Email:');
-    my $subscribe = _('Subscribe');
-    my $form_action = Cobrand::url(Page::get_cobrand($q), 'alert', $q);
-    $out .= <<EOF;
-<form action="$form_action" method="post">
-<label class="n" for="alert_rznvy">$label</label>
-<input type="text" name="rznvy" id="alert_rznvy" value="$input_h{rznvy}" size="30">
-<input type="hidden" name="id" value="$input_h{id}">
-<input type="hidden" name="type" value="updates">
-<input type="submit" value="$subscribe">
-$cobrand_form_elements
-</form>
-EOF
-    return $out;
-}
+# sub alert_updates_form {
+#     my ($q, @errors) = @_;
+#     my @vars = qw(id rznvy);
+#     my %input = map { $_ => $q->param($_) || '' } @vars;
+#     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
+#     my $cobrand_form_elements = Cobrand::form_elements(Page::get_cobrand($q), 'alerts', $q);
+#     my $out = '';
+#     if (@errors) {
+#         $out .= '<ul class="error"><li>' . join('</li><li>', @errors) . '</li></ul>';
+#     }
+#     $out .= $q->p(_('Receive email when updates are left on this problem.'));
+#     my $label = _('Email:');
+#     my $subscribe = _('Subscribe');
+#     my $form_action = Cobrand::url(Page::get_cobrand($q), 'alert', $q);
+#     $out .= <<EOF;
+# <form action="$form_action" method="post">
+# <label class="n" for="alert_rznvy">$label</label>
+# <input type="text" name="rznvy" id="alert_rznvy" value="$input_h{rznvy}" size="30">
+# <input type="hidden" name="id" value="$input_h{id}">
+# <input type="hidden" name="type" value="updates">
+# <input type="submit" value="$subscribe">
+# $cobrand_form_elements
+# </form>
+# EOF
+#     return $out;
+# }
 
 sub alert_local_form {
     my ($q, @errors) = @_;
