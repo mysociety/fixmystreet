@@ -220,57 +220,7 @@ sub subscribe_email : Private {
 #        $alert_id = FixMyStreet::Alert::create($email, 'new_problems', $cobrand, $cobrand_data);
     }
     elsif ( $type eq 'local' ) {
-        my $feed = $c->req->param('feed');
-
-        my ( $type, @params );
-        if ( $feed =~ /^area:(?:\d+:)?(\d+)/ ) {
-            $type = 'area_problems';
-            push @params, $1;
-        }
-        elsif ( $feed =~ /^council:(\d+)/ ) {
-            $type = 'council_problems';
-            push @params, $1, $1;
-        }
-        elsif ( $feed =~ /^ward:(\d+):(\d+)/ ) {
-            $type = 'ward_problems';
-            push @params, $1, $2;
-        }
-        elsif ( $feed =~
-            m{ \A local: ( [\+\-]? \d+ \.? \d* ) : ( [\+\-]? \d+ \.? \d* ) }xms
-          )
-        {
-            $type = 'local_problems';
-            push @params, $1, $2;
-
-#            my $lat = $1;
-#            my $lon = $2;
-#            $alert_id = FixMyStreet::Alert::create($email, 'local_problems', $cobrand, $cobrand_data, $lon, $lat);
-        }
-
-        my $options = {
-            user       => $c->stash->{alert_user},
-            alert_type => $type
-        };
-
-        if ( scalar @params == 1 ) {
-            $options->{parameter} = $params[0];
-        }
-        elsif ( scalar @params == 2 ) {
-            $options->{parameter}  = $params[0];
-            $options->{parameter2} = $params[1];
-        }
-
-        $alert = $c->model('DB::Alert')->find($options);
-
-        unless ($alert) {
-            $options->{cobrand}      = $c->cobrand->moniker();
-            $options->{cobrand_data} = $c->cobrand->extra_update_data();
-
-            $alert = $c->model('DB::Alert')->new($options);
-            $alert->insert();
-        }
-
-        $c->log->debug( 'created alert ' . $alert->id );
+        $c->forward('create_local_alert');
         $c->stash->{template} = 'email_sent.html';
     }
     else {
@@ -280,7 +230,7 @@ sub subscribe_email : Private {
     my $token = $c->model("DB::Token")->create(
         {
             scope => 'alert',
-            data  => { id => $alert->id, type => 'subscribe', email => $email }
+            data  => { id => $c->stash->{alert}->id, type => 'subscribe', email => $email }
         }
     );
 
@@ -317,6 +267,65 @@ sub confirm : Private {
         $alert->delete();
         $alert->update;
     }
+}
+
+=head2 create_local_alert
+
+Create a local alert
+
+=cut
+
+sub create_local_alert : Private {
+    my ( $self, $c ) = @_;
+
+    my $feed = $c->req->param('feed');
+
+    my ( $type, @params, $alert );
+    if ( $feed =~ /^area:(?:\d+:)?(\d+)/ ) {
+        $type = 'area_problems';
+        push @params, $1;
+    }
+    elsif ( $feed =~ /^council:(\d+)/ ) {
+        $type = 'council_problems';
+        push @params, $1, $1;
+    }
+    elsif ( $feed =~ /^ward:(\d+):(\d+)/ ) {
+        $type = 'ward_problems';
+        push @params, $1, $2;
+    }
+    elsif ( $feed =~
+        m{ \A local: ( [\+\-]? \d+ \.? \d* ) : ( [\+\-]? \d+ \.? \d* ) }xms )
+    {
+        $type = 'local_problems';
+        push @params, $1, $2;
+    }
+
+    my $options = {
+        user       => $c->stash->{alert_user},
+        alert_type => $type
+    };
+
+    if ( scalar @params == 1 ) {
+        $options->{parameter} = $params[0];
+    }
+    elsif ( scalar @params == 2 ) {
+        $options->{parameter}  = $params[0];
+        $options->{parameter2} = $params[1];
+    }
+
+    $alert = $c->model('DB::Alert')->find($options);
+
+    unless ($alert) {
+        $options->{cobrand}      = $c->cobrand->moniker();
+        $options->{cobrand_data} = $c->cobrand->extra_update_data();
+
+        $alert = $c->model('DB::Alert')->new($options);
+        $alert->insert();
+    }
+
+    $c->stash->{alert} = $alert;
+
+    $c->log->debug( 'created alert ' . $alert->id );
 }
 
 =head2 prettify_pc
