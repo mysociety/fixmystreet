@@ -30,35 +30,20 @@ sub index : Path('') : Args(0) {
     $c->stash->{cobrand_form_elements} = $c->cobrand->form_elements('alerts');
 
     unless ( $c->req->referer && $c->req->referer =~ /fixmystreet\.com/ ) {
-        $c->stash->{photos} = $c->cobrand->recent_photos(10);
+        $c->forward( 'add_recent_photos', [10] );
     }
 }
 
 sub list : Path('list') : Args(0) {
     my ( $self, $c ) = @_;
 
-    # setup the various parameters we need
-    $c->stash->{rznvy}         = $c->req->param('rznvy');
-    $c->stash->{selected_feed} = $c->req->param('feed');
-
-    if ( $c->user ) {
-        $c->stash->{rznvy} ||= $c->user->email;
-    }
-
-    $c->forward('prettify_pc');
-    $c->forward('determine_location');
-
-    $c->stash->{photos} = $c->cobrand->recent_photos(
-        5,
-        $c->stash->{latitude},
-        $c->stash->{longitude},
-        $c->stash->{population_radius}
-    );
-
-    $c->stash->{cobrand_form_elements} = $c->cobrand->form_elements('alerts');
-
-    $c->forward('setup_council_rss_feeds');
-    $c->forward( 'setup_coordinate_rss_feeds' );
+    return
+      unless $c->forward('setup_request')
+          && $c->forward('prettify_pc')
+          && $c->forward('determine_location')
+          && $c->forward( 'add_recent_photos', [5] )
+          && $c->forward('setup_council_rss_feeds')
+          && $c->forward('setup_coordinate_rss_feeds');
 }
 
 =head2 subscribe
@@ -351,6 +336,8 @@ sub prettify_pc : Private {
     }
 
     $c->stash->{pretty_pc} = $pretty_pc;
+
+    return 1;
 }
 
 sub council_options : Private {
@@ -471,6 +458,8 @@ sub setup_council_rss_feeds : Private {
 
     ( $c->stash->{options}, $c->stash->{reported_to_options} ) =
       $c->cobrand->council_rss_alert_options( $c->stash->{all_councils} );
+
+    return 1;
 }
 
 =head2 determine_location
@@ -507,11 +496,66 @@ sub determine_location : Private {
     $dist                          = int( $dist * 10 + 0.5 );
     $dist                          = $dist / 10.0;
     $c->stash->{population_radius} = $dist;
+
+    return 1;
+}
+
+=head2 add_recent_photos
+
+    $c->forward( 'add_recent_photos', [ $num_photos ] );
+
+Adds the most recent $num_photos to the template. If there is coordinate 
+and population radius information in the stash uses that to limit it.
+
+=cut
+
+sub add_recent_photos : Private {
+    my ( $self, $c, $num_photos ) = @_;
+
+    if (    $c->stash->{latitude}
+        and $c->stash->{longitude}
+        and $c->stash->{population_radius} )
+    {
+
+        $c->stash->{photos} = $c->cobrand->recent_photos(
+            $num_photos,
+            $c->stash->{latitude},
+            $c->stash->{longitude},
+            $c->stash->{population_radius}
+        );
+    }
+    else {
+        $c->stash->{photos} = $c->cobrand->recent_photos($num_photos);
+    }
+
+    return 1;
 }
 
 sub choose : Private {
     my ( $self, $c ) = @_;
     $c->stash->{template} = 'alert/choose.html';
+}
+
+
+=head2 setup_request
+
+Setup the variables we need for the rest of the request
+
+=cut
+
+sub setup_request : Private {
+    my ( $self, $c ) = @_;
+
+    $c->stash->{rznvy}         = $c->req->param('rznvy');
+    $c->stash->{selected_feed} = $c->req->param('feed');
+
+    if ( $c->user ) {
+        $c->stash->{rznvy} ||= $c->user->email;
+    }
+
+    $c->stash->{cobrand_form_elements} = $c->cobrand->form_elements('alerts');
+
+    return 1;
 }
 
 =head1 AUTHOR
