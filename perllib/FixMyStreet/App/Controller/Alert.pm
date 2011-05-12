@@ -205,21 +205,20 @@ sub subscribe_email : Private {
     $c->forward('process_user');
 
     if ( $type eq 'updates' ) {
-        $c->forward('create_update_alert');
-#        my $id = $q->param('id');
-#        $alert_id = FixMyStreet::Alert::create($email, 'new_updates', $cobrand, $cobrand_data, $id);
+        $c->forward('set_update_alert_options');
     }
     elsif ( $type eq 'problems' ) {
 
 #        $alert_id = FixMyStreet::Alert::create($email, 'new_problems', $cobrand, $cobrand_data);
     }
     elsif ( $type eq 'local' ) {
-        $c->forward('create_local_alert');
+        $c->forward('set_local_alert_options');
     }
     else {
         throw FixMyStreet::Alert::Error('Invalid type');
     }
 
+    $c->forward('create_alert');
     $c->forward('send_confirmation_email');
 }
 
@@ -253,22 +252,17 @@ sub confirm : Private {
     }
 }
 
-=head2 create_update_alert
+=head2 create_alert
 
-Create an update alert
+Take the alert options from the stash and use these to create a new
+alert. If it finds an existing alert that's the same then use that
 
-=cut
+=cut 
 
-sub create_update_alert : Private {
+sub create_alert : Private {
     my ( $self, $c ) = @_;
 
-    my $report_id = $c->req->param('id');
-
-    my $options = {
-        user       => $c->stash->{alert_user},
-        alert_type => 'new_updates',
-        parameter  => $report_id,
-    };
+    my $options = $c->stash->{alert_options};
 
     my $alert = $c->model('DB::Alert')->find($options);
 
@@ -285,13 +279,34 @@ sub create_update_alert : Private {
     $c->log->debug( 'created alert ' . $alert->id );
 }
 
-=head2 create_local_alert
+=head2 set_update_alert_options
 
-Create a local alert
+Set up the options in the stash required to create a problem update alert
 
 =cut
 
-sub create_local_alert : Private {
+sub set_update_alert_options : Private {
+    my ( $self, $c ) = @_;
+
+    my $report_id = $c->req->param('id');
+
+    my $options = {
+        user       => $c->stash->{alert_user},
+        alert_type => 'new_updates',
+        parameter  => $report_id,
+    };
+
+    $c->stash->{alert_options} = $options;
+    $c->forward('create_alert');
+}
+
+=head2 set_local_alert_options
+
+Set up the options in the stash required to create a local problems alert
+
+=cut
+
+sub set_local_alert_options : Private {
     my ( $self, $c ) = @_;
 
     my $feed = $c->req->param('feed');
@@ -316,6 +331,7 @@ sub create_local_alert : Private {
         push @params, $1, $2;
     }
 
+
     my $options = {
         user       => $c->stash->{alert_user},
         alert_type => $type
@@ -329,19 +345,7 @@ sub create_local_alert : Private {
         $options->{parameter2} = $params[1];
     }
 
-    $alert = $c->model('DB::Alert')->find($options);
-
-    unless ($alert) {
-        $options->{cobrand}      = $c->cobrand->moniker();
-        $options->{cobrand_data} = $c->cobrand->extra_update_data();
-
-        $alert = $c->model('DB::Alert')->new($options);
-        $alert->insert();
-    }
-
-    $c->stash->{alert} = $alert;
-
-    $c->log->debug( 'created alert ' . $alert->id );
+    $c->stash->{alert_options} = $options;
 }
 
 =head2 send_confirmation_email
