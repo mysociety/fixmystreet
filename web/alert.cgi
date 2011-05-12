@@ -33,37 +33,37 @@ sub main {
     my $title = _('Confirmation');
     if ($q->param('signed_email')) {
         $out = alert_signed_input($q);
-    } elsif (my $token = $q->param('token')) {
-        my $data = mySociety::AuthToken::retrieve('alert', $token);
-        if ($data->{id}) {
-            $out = alert_token($q, $data);
-        } else {
-            my $contact_url = Cobrand::url(Page::get_cobrand($q), '/contact', $q);
-            $out = $q->p(sprintf(_(<<EOF), $contact_url));
-Thank you for trying to confirm your alert. We seem to have an error ourselves
-though, so <a href="%s">please let us know what went on</a> and we'll look into it.
-EOF
-            my %vars = (error => $out);
-            my $cobrand_page = Page::template_include('error', $q, Page::template_root($q), %vars);
-            $out = $cobrand_page if $cobrand_page;
+#     } elsif (my $token = $q->param('token')) {
+#         my $data = mySociety::AuthToken::retrieve('alert', $token);
+#         if ($data->{id}) {
+#             $out = alert_token($q, $data);
+#         } else {
+#             my $contact_url = Cobrand::url(Page::get_cobrand($q), '/contact', $q);
+#             $out = $q->p(sprintf(_(<<EOF), $contact_url));
+# Thank you for trying to confirm your alert. We seem to have an error ourselves
+# though, so <a href="%s">please let us know what went on</a> and we'll look into it.
+# EOF
+#             my %vars = (error => $out);
+#             my $cobrand_page = Page::template_include('error', $q, Page::template_root($q), %vars);
+#             $out = $cobrand_page if $cobrand_page;
 
-        }
-    } elsif ($q->param('rss')) {
-        $out = alert_rss($q);
-        return unless $out;
-    } elsif ($q->param('rznvy')) {
-        $out = alert_do_subscribe($q, $q->param('rznvy'));
-    } elsif ($q->param('id')) {
-        $out = alert_updates_form($q);
+#         }
+#     } elsif ($q->param('rss')) {
+#         $out = alert_rss($q);
+#         return unless $out;
+#     } elsif ($q->param('rznvy')) {
+#         $out = alert_do_subscribe($q, $q->param('rznvy'));
+#     } elsif ($q->param('id')) {
+#         $out = alert_updates_form($q);
     } elsif ($q->param('type') && $q->param('feed')) {
         $title = _('Local RSS feeds and email alerts');
         $out = alert_local_form($q);
-    } elsif ($q->param('pc') || ($q->param('lat') || $q->param('lon'))) {
-        $title = _('Local RSS feeds and email alerts');
-        $out = alert_list($q);
-    } else {
-        $title = _('Local RSS feeds and email alerts');
-        $out = alert_front_page($q);
+    # } elsif ($q->param('pc') || ($q->param('lat') || $q->param('lon'))) {
+    #     $title = _('Local RSS feeds and email alerts');
+    #     $out = alert_list($q);
+    # } else {
+    #     $title = _('Local RSS feeds and email alerts');
+    #     $out = alert_front_page($q);
     }
 
     print Page::header($q, title => $title, robots => 'noindex,nofollow');
