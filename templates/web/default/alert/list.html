@@ -29,13 +29,7 @@
   [% loc('Select which type of alert you\'d like and click the button for an RSS feed, or enter your email address to subscribe to an email alert') %]
   </p>
 
-  [% IF errors %]
-  <ul class="error">
-    [% FOREACH error IN errors %]
-    <li>[% error %]</li>
-    [% END %]
-  </ul>
-  [% END %]
+  [% INCLUDE 'errors.html' %]
 
   <p>
   [% loc('The simplest alert is our geographic one') %]

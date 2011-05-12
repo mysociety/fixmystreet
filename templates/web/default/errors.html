@@ -1,0 +1,5 @@
+[% FOREACH error IN errors %]
+    [% '<ul class="error">' IF loop.first %]
+    <li>[% error %]</li>
+    [% '</ul>' IF loop.last %]
+[% END %]

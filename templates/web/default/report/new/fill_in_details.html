@@ -25,11 +25,7 @@
     [% INCLUDE 'report/new/fill_in_details_text.html' %]
 [% END %]
 
-[% FOREACH error IN errors %]
-    [% '<ul class="error">' IF loop.first %]
-    <li>[% error %]</li>
-    [% '</ul>' IF loop.last %]
-[% END %]
+[% INCLUDE 'errors.html' %]
 
 <div id="problem_form">
 
