@@ -55,6 +55,8 @@ sub index : Path('') : Args(0) {
 #
 #    my $cobrand_page = Page::template_include('alert-front-page', $q, Page::template_root($q), %vars);
 #    $out = $cobrand_page if ($cobrand_page);
+
+    $c->stash->{cobrand_form_elements} = $c->cobrand->form_elements('alerts');
 #
     unless ( $c->req->referer && $c->req->referer =~ /fixmystreet\.com/ ) {
         $c->stash->{photos} = $c->cobrand->recent_photos(10);
