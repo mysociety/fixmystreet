@@ -99,6 +99,8 @@ sub list : Path('list') : Args(0) {
         $c->stash->{latitude},
         $c->stash->{longitude}, $dist
     );
+
+    $c->stash->{cobrand_form_elements} = $c->cobrand->form_elements('alerts');
 #
 #    my $checked = '';
 #    $checked = ' checked' if $q->param('feed') && $q->param('feed') eq "local:$lat:$lon";
