@@ -57,10 +57,15 @@ sub confirm_problem : Path('/P') {
     ) if $problem->state eq 'unconfirmed';
 
     # Subscribe problem reporter to email updates
-    my $alert_id =
-      FixMyStreet::Alert::create( $problem->user->email, 'new_updates',
-        $problem->cobrand, $problem->cobrand_data, $problem_id );
-    FixMyStreet::Alert::confirm($alert_id);
+    my $alert = $c->model('DB::Alert')->find_or_create(
+        {
+            user         => $problem->user,
+            alert_type   => 'new_updates',
+            cobrand      => $problem->cobrand,
+            cobrand_data => $problem->cobrand_data,
+            parameter    => $problem->id
+        }
+    )->confirm;
 
     # log the problem creation user in to the site
     $c->authenticate( { email => $problem->user->email }, 'no_password' );
