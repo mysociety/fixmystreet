@@ -15,6 +15,13 @@
 
   [%# FIXME cobrands and pics here %]
 
+  [% IF photos %]
+    <div id="alert_photos">
+      <h2>[% loc('Photos of recent nearby reports') %]</h2>
+      [% photos %]
+    </div>
+  [% END %]
+
   <p>
   [% IF pretty_pc %]
     [% tprintf( loc('Here are the types of local problem alerts for %s.'), pretty_pc ) %]

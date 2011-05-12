@@ -122,6 +122,12 @@ sub list : Path('list') : Args(0) {
     $dist                          = $dist / 10.0;
     $c->stash->{population_radius} = $dist;
 
+
+    $c->stash->{photos} = $c->cobrand->recent_photos(
+        5,
+        $c->stash->{latitude},
+        $c->stash->{longitude}, $dist
+    );
 #
 #    my $checked = '';
 #    $checked = ' checked' if $q->param('feed') && $q->param('feed') eq "local:$lat:$lon";
@@ -344,7 +350,7 @@ sub subscribe_email : Private {
 
 =head2 confirm
 
-Confirm signup to an alert
+Confirm signup to an alert. Forwarded here from Tokens.
 
 =cut
 
