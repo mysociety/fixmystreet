@@ -37,6 +37,7 @@ sub index : Path('') : Args(0) {
 sub list : Path('list') : Args(0) {
     my ( $self, $c ) = @_;
 
+    # setup the various parameters we need
     $c->stash->{rznvy}         = $c->req->param('rznvy');
     $c->stash->{selected_feed} = $c->req->param('feed');
 
@@ -44,44 +45,19 @@ sub list : Path('list') : Args(0) {
         $c->stash->{rznvy} ||= $c->user->email;
     }
 
-    # Try to create a location for whatever we have
-    unless ( $c->forward('/location/determine_location_from_coords')
-        || $c->forward('/location/determine_location_from_pc') )
-    {
-
-        if ( $c->stash->{possible_location_matches} ) {
-            $c->stash->{choose_target_uri} = $c->uri_for('/alert/list');
-            $c->detach('choose');
-        }
-
-        $c->go('index') if $c->stash->{location_error};
-    }
-
     $c->forward('prettify_pc');
-
-    # truncate the lat,lon for nicer urls
-    ( $c->stash->{latitude}, $c->stash->{longitude} ) =
-      map { Utils::truncate_coordinate($_) }
-      ( $c->stash->{latitude}, $c->stash->{longitude} );
-
-    $c->forward('setup_council_rss_feeds');
-
-    my $dist =
-      mySociety::Gaze::get_radius_containing_population( $c->stash->{latitude},
-        $c->stash->{longitude}, 200000 );
-    $dist                          = int( $dist * 10 + 0.5 );
-    $dist                          = $dist / 10.0;
-    $c->stash->{population_radius} = $dist;
-
+    $c->forward('determine_location');
 
     $c->stash->{photos} = $c->cobrand->recent_photos(
         5,
         $c->stash->{latitude},
-        $c->stash->{longitude}, $dist
+        $c->stash->{longitude},
+        $c->stash->{population_radius}
     );
 
     $c->stash->{cobrand_form_elements} = $c->cobrand->form_elements('alerts');
 
+    $c->forward('setup_council_rss_feeds');
     $c->forward( 'setup_coordinate_rss_feeds' );
 }
 
@@ -495,6 +471,42 @@ sub setup_council_rss_feeds : Private {
 
     ( $c->stash->{options}, $c->stash->{reported_to_options} ) =
       $c->cobrand->council_rss_alert_options( $c->stash->{all_councils} );
+}
+
+=head2 determine_location
+
+Do all the things we need to do to work out where the alert is for
+and to setup the location related things for later
+
+=cut
+
+sub determine_location : Private {
+    my ( $self, $c ) = @_;
+
+    # Try to create a location for whatever we have
+    unless ( $c->forward('/location/determine_location_from_coords')
+        || $c->forward('/location/determine_location_from_pc') )
+    {
+
+        if ( $c->stash->{possible_location_matches} ) {
+            $c->stash->{choose_target_uri} = $c->uri_for('/alert/list');
+            $c->detach('choose');
+        }
+
+        $c->go('index') if $c->stash->{location_error};
+    }
+
+    # truncate the lat,lon for nicer urls
+    ( $c->stash->{latitude}, $c->stash->{longitude} ) =
+      map { Utils::truncate_coordinate($_) }
+      ( $c->stash->{latitude}, $c->stash->{longitude} );
+
+    my $dist =
+      mySociety::Gaze::get_radius_containing_population( $c->stash->{latitude},
+        $c->stash->{longitude}, 200000 );
+    $dist                          = int( $dist * 10 + 0.5 );
+    $dist                          = $dist / 10.0;
+    $c->stash->{population_radius} = $dist;
 }
 
 sub choose : Private {
