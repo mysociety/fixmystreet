@@ -1,0 +1,58 @@
+[% INCLUDE 'header.html', title => loc('Create a report') %]
+
+<h1>[% loc('Contact the team') %]</h1>
+ 
+<form method="post" action="/contact/submit">
+
+<input type="hidden" name="submit_form" value="1">
+
+[% INCLUDE 'errors.html' %]
+
+<p>
+[% loc('Please do <strong>not</strong> report problems through this form; messages go to
+the team behind FixMyStreet, not a council. To report a problem,
+please <a href="/">go to the front page</a> and follow the instructions.') %]
+</p>
+
+<p>
+[% tprintf( loc("We'd love to hear what you think about this site. Just fill in the form, or send an email to <a href='mailto:%s'>%s</a>:"), contact_email, contact_email) %]
+</p> 
+
+
+<div class="form-field">
+<label for="form_name">Your name:</label>
+
+<input type="text" name="name" id="form_name" value="[% form_name %]" size="30"></div>
+
+
+<div class="form-field">
+<label for="form_email">Your&nbsp;email:</label>
+<input type="text" name="em" id="form_email" value="[% email %]" size="30"></div>
+
+<div class="form-field">
+<label for="form_subject">Subject:</label>
+<input type="text" name="subject" id="form_subject" value="[% subject %]" size="30"></div>
+
+<div class="form-field">
+<label for="form_message">Message:</label>
+
+<textarea name="message" id="form_message" rows="7" cols="50">[% message %]</textarea></div>
+<div class="checkbox"><input type="submit" value="Post"></div>
+
+</form>
+
+<div class="contact-details">
+<p>FixMyStreet is a service provided by mySociety, which is the project of a 
+registered charity. The charity is called UK Citizens Online Democracy and is charity number 1076346.</p>
+<p>mySociety can be contacted by email at <a href="mailto:hello&#64;mysociety.org">hello&#64;mysociety.org</a>,
+or by post at:</p>
+<p>mySociety<br>
+483 Green Lanes<br>
+
+London<br>
+N13 4BS<br>
+UK</p>
+</div>
+
+
+[% INCLUDE 'footer.html' %]
