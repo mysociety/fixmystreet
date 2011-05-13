@@ -2,7 +2,7 @@ package FixMyStreet::App::Controller::Contact;
 use Moose;
 use namespace::autoclean;
 
-BEGIN {extends 'Catalyst::Controller'; }
+BEGIN { extends 'Catalyst::Controller'; }
 
 =head1 NAME
 
@@ -16,12 +16,11 @@ Contact us page
 
 =cut
 
-
 =head2 index
 
 =cut
 
-sub index :Path :Args(0) {
+sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
     $c->stash->{contact_email} = $c->cobrand->contact_email;
@@ -38,25 +37,25 @@ sub index :Path :Args(0) {
 #    my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
 #    my $out = '';
 
-#    my $cobrand = Page::get_cobrand($q);
-#    my $form_action = Cobrand::url($cobrand, '/contact', $q);
-#
-#    my $intro = '';
-#    my $item_title = '';
-#    my $item_body = '';
-#    my $item_meta = '';
-#    my $hidden_vals = '';
+    #    my $cobrand = Page::get_cobrand($q);
+    #    my $form_action = Cobrand::url($cobrand, '/contact', $q);
+    #
+    #    my $intro = '';
+    #    my $item_title = '';
+    #    my $item_body = '';
+    #    my $item_meta = '';
+    #    my $hidden_vals = '';
 
 #    my $cobrand_form_elements = Cobrand::form_elements(Page::get_cobrand($q), 'contactForm', $q);
 #    my %vars = (
 #      header => $header,
 #      errors => $errors,
 #      intro => $intro,
-#      item_title => $item_title, 
+#      item_title => $item_title,
 #      item_meta => $item_meta,
 #      item_body => $item_body,
 #      hidden_vals => $hidden_vals,
-#      form_action => $form_action, 
+#      form_action => $form_action,
 #      input_h => \%input_h,
 #      field_errors => \%field_errors,
 #      label_name => _('Your name:'),
@@ -74,15 +73,15 @@ sub index :Path :Args(0) {
 sub determine_contact_type : Private {
     my ( $self, $c ) = @_;
 
-    my $id = $c->req->param('id');
+    my $id        = $c->req->param('id');
     my $update_id = $c->req->param('update_id');
-    $id = undef unless $id && $id =~ /^[1-9]\d*$/;
+    $id        = undef unless $id        && $id        =~ /^[1-9]\d*$/;
     $update_id = undef unless $update_id && $update_id =~ /^[1-9]\d*$/;
 
     if ($id) {
         my $problem = $c->model('DB::Problem')->find(
             { id => $id },
-              {
+            {
                 'select' => [
                     'title', 'detail', 'name',
                     'anonymous',
@@ -92,13 +91,14 @@ sub determine_contact_type : Private {
                         -as     => 'confirmed'
                     }
                 ]
-              }
+            }
         );
 
-        if ( $update_id ) {
+        if ($update_id) {
+
 #             my $u = dbh()->selectrow_hashref(
 #            'select comment.text, comment.name, problem.title, extract(epoch from comment.confirmed) as confirmed
-#            from comment, problem where comment.id=? 
+#            from comment, problem where comment.id=?
 #            and comment.problem_id = problem.id
 #            and comment.problem_id=?', {}, $update_id ,$id);
 #            if (! $u) {
@@ -111,8 +111,10 @@ sub determine_contact_type : Private {
 #                $item_body = ent($u->{text});
 #                $hidden_vals .= '<input type="hidden" name="update_id" value="' . $update_id . '">';
 #            }
-        } elsif ( $problem ) {
+        }
+        elsif ($problem) {
             $c->stash->{problem} = $problem;
+
 #                $intro .= $q->p(_('You are reporting the following problem report for being abusive, containing personal information, or similar:'));
 #                $item_title = ent($p->{title});
 #                my $date_time = Page::prettify_epoch($q, $p->{confirmed});
@@ -123,10 +125,10 @@ sub determine_contact_type : Private {
 #                );
 #                $item_body = ent($p->{detail});
         }
-#	$hidden_vals .= '<input type="hidden" name="id" value="' . $id . '">';
+
+        #	$hidden_vals .= '<input type="hidden" name="id" value="' . $id . '">';
     }
 }
-
 
 =head1 AUTHOR
 
