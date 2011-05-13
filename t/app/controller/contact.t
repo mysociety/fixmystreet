@@ -24,6 +24,7 @@ subtest 'check reporting a problem displays correctly' => sub {
             title => 'Some problem or other',
             detail => 'More detail on the problem',
             postcode => 'EH99 1SP',
+            confirmed => '2011-05-04 10:44:28.145168',
             latitude => 0,
             longitude => 0,
             areas => 0,
@@ -41,6 +42,7 @@ subtest 'check reporting a problem displays correctly' => sub {
     $mech->content_contains( 'reporting the following problem' );
     $mech->content_contains( 'Some problem or other' );
     $mech->content_contains( 'Reported by A User' );
+    $mech->content_contains( 'Reported by A User at 10:44, Wednesday  4 May 2011' );
 
     $problem->delete;
 };

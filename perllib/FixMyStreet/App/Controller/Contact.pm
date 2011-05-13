@@ -80,7 +80,20 @@ sub determine_contact_type : Private {
     $update_id = undef unless $update_id && $update_id =~ /^[1-9]\d*$/;
 
     if ($id) {
-        my $problem = $c->model('DB::Problem')->find( { id => $id } );
+        my $problem = $c->model('DB::Problem')->find(
+            { id => $id },
+              {
+                'select' => [
+                    'title', 'detail', 'name',
+                    'anonymous',
+                    'user_id',
+                    {
+                        extract => 'epoch from confirmed',
+                        -as     => 'confirmed'
+                    }
+                ]
+              }
+        );
 
         if ( $update_id ) {
 #             my $u = dbh()->selectrow_hashref(
