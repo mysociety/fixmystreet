@@ -114,6 +114,7 @@ sub determine_contact_type : Private {
         elsif ($problem) {
             $c->stash->{problem} = $problem;
         }
+        $c->stash->{id} = $id;
     }
 
     return 1;
@@ -144,6 +145,10 @@ sub validate : Private {
       if $c->req->param('id') && $c->req->param('id') !~ /^[1-9]\d*$/
           or $c->req->param('update_id')
           && $c->req->param('update_id') !~ /^[1-9]\d*$/;
+
+    unshift @errors,
+      _('There were problems with your report. Please see below.')
+      if scalar keys %field_errors;
 
     if ( @errors or scalar keys %field_errors ) {
         $c->stash->{errors}       = \@errors;

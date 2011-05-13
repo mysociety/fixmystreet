@@ -219,6 +219,7 @@ sub page_errors {
     my $mech   = shift;
     my $result = scraper {
         process 'p.error', 'errors[]', 'TEXT';
+        process 'ul.error', 'errors[]', 'TEXT';
     }
     ->scrape( $mech->response );
     return $result->{errors} || [];

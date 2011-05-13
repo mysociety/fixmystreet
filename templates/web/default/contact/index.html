@@ -32,7 +32,8 @@
 
     </blockquote>
     [% END %]
-    <input type="hidden" name="id" value="[% update.id %]">
+    <input type="hidden" name="update_id" value="[% update.id %]">
+    <input type="hidden" name="id" value="[% problem.id %]">
 [% ELSIF problem %]
     <p>
     [% loc('You are reporting the following problem report for being abusive, containing personal information, or similar:') %]
@@ -58,6 +59,9 @@
     <input type="hidden" name="id" value="[% problem.id %]">
     [% END %]
 [% ELSE %]
+[% IF id %]
+<input type="hidden" name="id" value="[% id %]">
+[% END %]
 <p>
 [% loc('Please do <strong>not</strong> report problems through this form; messages go to
 the team behind FixMyStreet, not a council. To report a problem,

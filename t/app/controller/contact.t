@@ -77,7 +77,9 @@ for my $test (
             subject => '',
             message => '',
         },
-        errors => [
+        page_errors =>
+          [ 'There were problems with your report. Please see below.', ],
+        field_errors => [
             'Please give your name',
             'Please give your email',
             'Please give a subject',
@@ -91,7 +93,9 @@ for my $test (
             subject => '',
             message => '',
         },
-        errors => [
+        page_errors =>
+          [ 'There were problems with your report. Please see below.', ],
+        field_errors => [
             'Please give your name',
             'Please give a valid email address',
             'Please give a subject',
@@ -105,7 +109,9 @@ for my $test (
             subject => '',
             message => '',
         },
-        errors => [ 'Please give a subject', 'Please write a message', ]
+        page_errors =>
+          [ 'There were problems with your report. Please see below.', ],
+        field_errors => [ 'Please give a subject', 'Please write a message', ]
     },
     {
         fields => {
@@ -114,7 +120,9 @@ for my $test (
             subject => 'A subject',
             message => '',
         },
-        errors => [ 'Please write a message', ]
+        page_errors =>
+          [ 'There were problems with your report. Please see below.', ],
+        field_errors => [ 'Please write a message', ]
     },
     {
         fields => {
@@ -123,7 +131,9 @@ for my $test (
             subject => '  ',
             message => '',
         },
-        errors => [ 'Please give a subject', 'Please write a message', ]
+        page_errors =>
+          [ 'There were problems with your report. Please see below.', ],
+        field_errors => [ 'Please give a subject', 'Please write a message', ]
     },
     {
         fields => {
@@ -132,15 +142,33 @@ for my $test (
             subject => 'A subject',
             message => ' ',
         },
-        errors => [ 'Please write a message', ]
+        page_errors =>
+          [ 'There were problems with your report. Please see below.', ],
+        field_errors => [ 'Please write a message', ]
     },
-
+    {
+        url    => '/contact?id=1',
+        fields => {
+            em      => 'test@example.com',
+            name    => 'A name',
+            subject => 'A subject',
+            message => 'A message',
+            id      => 'invalid',
+        },
+        page_errors  => [ 'Illegal ID' ],
+        field_errors => []
+    },
   )
 {
     subtest 'check submit page error handling' => sub {
-        $mech->get_ok('/contact');
+        $mech->get_ok( $test->{url} ? $test->{url} : '/contact' );
         $mech->submit_form_ok( { with_fields => $test->{fields} } );
-        is_deeply $mech->form_errors,         $test->{errors};
+        is_deeply $mech->page_errors, $test->{page_errors};
+        is_deeply $mech->form_errors, $test->{field_errors};
+
+        # we santise this when we submit so need to remove it
+        delete $test->{fields}->{id}
+          if $test->{fields}->{id} and $test->{fields}->{id} eq 'invalid';
         is_deeply $mech->visible_form_values, $test->{fields};
     };
 }
