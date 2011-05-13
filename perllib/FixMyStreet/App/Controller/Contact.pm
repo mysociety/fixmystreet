@@ -20,6 +20,8 @@ Contact us page
 
 =head2 index
 
+Display contact us page
+
 =cut
 
 sub index : Path : Args(0) {
@@ -28,48 +30,13 @@ sub index : Path : Args(0) {
     return
       unless $c->forward('setup_request')
           && $c->forward('determine_contact_type');
-
-#    my ($q, $errors, $field_errors) = @_;
-#    my @errors = @$errors;
-#    my %field_errors = %{$field_errors};
-#    push @errors, _('There were problems with your report. Please see below.') if (scalar keys %field_errors);
-#    my @vars = qw(name em subject message);
-#    my %input = map { $_ => $q->param($_) || '' } @vars;
-#    my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
-#    my $out = '';
-
-    #    my $cobrand = Page::get_cobrand($q);
-    #    my $form_action = Cobrand::url($cobrand, '/contact', $q);
-    #
-    #    my $intro = '';
-    #    my $item_title = '';
-    #    my $item_body = '';
-    #    my $item_meta = '';
-    #    my $hidden_vals = '';
-
-#    my $cobrand_form_elements = Cobrand::form_elements(Page::get_cobrand($q), 'contactForm', $q);
-#    my %vars = (
-#      header => $header,
-#      errors => $errors,
-#      intro => $intro,
-#      item_title => $item_title,
-#      item_meta => $item_meta,
-#      item_body => $item_body,
-#      hidden_vals => $hidden_vals,
-#      form_action => $form_action,
-#      input_h => \%input_h,
-#      field_errors => \%field_errors,
-#      label_name => _('Your name:'),
-#      label_email => _('Your&nbsp;email:'),
-#      label_subject => _('Subject:'),
-#      label_message => _('Message:'),
-#      label_submit => _('Post'),
-#      contact_details => contact_details($q),
-#      cobrand_form_elements => $cobrand_form_elements
-#    );
-#    $out .= Page::template_include('contact', $q, Page::template_root($q), %vars);
-#    return $out;
 }
+
+=head2 submit
+
+Handle contact us form submission
+
+=cut
 
 sub submit : Path('submit') : Args(0) {
     my ( $self, $c ) = @_;
@@ -80,6 +47,13 @@ sub submit : Path('submit') : Args(0) {
           && $c->forward('prepare_params_for_email')
           && $c->forward('send_email');
 }
+
+=head2 determine_contact_type
+
+Work out if we have got here via a report/update or this is a
+generic contact request and set up things accordingly
+
+=cut
 
 sub determine_contact_type : Private {
     my ( $self, $c ) = @_;
@@ -107,6 +81,8 @@ sub determine_contact_type : Private {
 
         if ($update_id) {
 
+            # FIXME: updates not implemented yet
+
 #             my $u = dbh()->selectrow_hashref(
 #            'select comment.text, comment.name, problem.title, extract(epoch from comment.confirmed) as confirmed
 #            from comment, problem where comment.id=?
@@ -121,6 +97,13 @@ sub determine_contact_type : Private {
 
     return 1;
 }
+
+=head2 validate
+
+Validate the form submission parameters. Sets error messages and redirect 
+to index page if errors.
+
+=cut
 
 sub validate : Private {
     my ( $self, $c ) = @_;
@@ -160,6 +143,13 @@ sub validate : Private {
 
     return 1;
 }
+
+=head2 prepare_params_for_email
+
+Does neccessary reformating of exiting params and add any additional
+information required for emailing ( problem ids, admin page links etc )
+
+=cut
 
 sub prepare_params_for_email : Private {
     my ( $self, $c ) = @_;
@@ -206,6 +196,13 @@ sub prepare_params_for_email : Private {
     return 1;
 }
 
+=head2 setup_request
+
+Pulls things from request into stash and adds other information
+generally required to stash
+
+=cut
+
 sub setup_request : Private {
     my ( $self, $c ) = @_;
 
@@ -221,6 +218,12 @@ sub setup_request : Private {
 
     return 1;
 }
+
+=head2 send_email
+
+Sends the email
+
+=cut
 
 sub send_email : Private {
     my ( $self, $c ) = @_;
