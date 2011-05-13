@@ -23,9 +23,9 @@ Contact us page
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    return unless
-           $c->forward('setup_request')
-        && $c->forward('determine_contact_type');
+    return
+      unless $c->forward('setup_request')
+          && $c->forward('determine_contact_type');
 
 #    my ($q, $errors, $field_errors) = @_;
 #    my @errors = @$errors;
@@ -72,9 +72,10 @@ sub index : Path : Args(0) {
 sub submit : Path('submit') : Args(0) {
     my ( $self, $c ) = @_;
 
-    return unless 
-           $c->forward('setup_request')
-        && $c->forward('validate');
+    return
+      unless $c->forward('setup_request')
+          && $c->forward('validate')
+          && $c->forward('prepare_params_for_email');
 }
 
 sub determine_contact_type : Private {
@@ -148,6 +149,43 @@ sub validate : Private {
         $c->stash->{field_errors} = \%field_errors;
         $c->go('index');
     }
+}
+
+sub prepare_params_for_email : Private {
+    my ( $self, $c ) = @_;
+
+    $c->stash->{message} =~ s/\r\n/\n/g;
+    $c->stash->{subject} =~ s/\r|\n/ /g;
+
+    my $base_url       = $c->cobrand->base_url_for_emails;
+    my $admin_base_url = $c->cobrand->admin_base_url
+      || 'https://secure.mysociety.org/admin/bci/';
+
+    if ( $c->stash->{problem} and $c->stash->{update} ) {
+
+        # FIXME - correct url here
+        my $problem_url = $base_url;
+        my $admin_url   = $admin_base_url;
+        $c->stash->{message} .= sprintf(
+            " \n\n[ Complaint about update %d on report %d - %s - %s ]",
+            $c->stash->{update}->id,
+            $c->stash->{problem}->id,
+            $problem_url, $admin_url
+        );
+    }
+    elsif ( $c->stash->{problem} ) {
+
+        # FIXME - correct url here
+        my $problem_url = $base_url;
+        my $admin_url   = $admin_base_url;
+        $c->stash->{message} .= sprintf(
+            " \n\n[ Complaint about report %d - %s - %s ]",
+            $c->stash->{problem}->id,
+            $problem_url, $admin_url
+        );
+    }
+
+    return 1;
 }
 
 sub setup_request : Private {
