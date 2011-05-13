@@ -75,7 +75,8 @@ sub submit : Path('submit') : Args(0) {
     return
       unless $c->forward('setup_request')
           && $c->forward('validate')
-          && $c->forward('prepare_params_for_email');
+          && $c->forward('prepare_params_for_email')
+          && $c->forward('send_email');
 }
 
 sub determine_contact_type : Private {
@@ -149,6 +150,8 @@ sub validate : Private {
         $c->stash->{field_errors} = \%field_errors;
         $c->go('index');
     }
+
+    return 1;
 }
 
 sub prepare_params_for_email : Private {
@@ -200,6 +203,14 @@ sub setup_request : Private {
 
     # name is already used in the stash for the app class name
     $c->stash->{form_name} = $c->req->param('name');
+
+    return 1;
+}
+
+sub send_email : Private {
+    my ( $self, $c ) = @_;
+
+    $c->stash->{success} = 1;
 
     return 1;
 }

@@ -145,4 +145,22 @@ for my $test (
     };
 }
 
+for my $test (
+    {
+        fields => {
+            em      => 'test@example.com',
+            name    => 'A name',
+            subject => 'A subject',
+            message => 'A message',
+        },
+    },
+
+  )
+{
+    subtest 'check email sent correctly' => sub {
+        $mech->get_ok('/contact');
+        $mech->submit_form_ok( { with_fields => $test->{fields} } );
+        $mech->content_contains('Thanks for your feedback');
+    };
+}
 done_testing();
