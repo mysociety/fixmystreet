@@ -6,13 +6,64 @@
 
 <input type="hidden" name="submit_form" value="1">
 
+
 [% INCLUDE 'errors.html' %]
 
+[% IF update %]
+    <p>
+    [% loc('You are reporting the following update for being abusive, containing personal information, or similar:') %]
+    </p>
+
+    [% IF update.title %]
+    <blockquote>
+        <h2>[% update.title | html %]</h2>
+
+        <p>
+            [% IF update.anonymous %]
+                [% tprintf( loc('Update below added anonymously at %s'), update.confirmed ) %]
+            [% ELSE %]
+                [% tprintf( loc('Update below added by %s at %s'), update.name, problem.confirmed ) | html %]
+            [% END %]
+        </p>
+
+        <p>
+            [% update.detail | html %]
+        </p>
+
+    </blockquote>
+    [% END %]
+    <input type="hidden" name="id" value="[% update.id %]">
+[% ELSIF problem %]
+    <p>
+    [% loc('You are reporting the following problem report for being abusive, containing personal information, or similar:') %]
+    </p>
+    
+    [% IF problem.title %]
+    <blockquote>
+        <h2>[% problem.title | html %]</h2>
+
+        <p>
+            [% IF problem.anonymous %]
+                [% tprintf( loc('Reported anonymously at %s'), problem.confirmed ) %]
+            [% ELSE %]
+                [% tprintf( loc('Reported by %s at %s'), problem.user.name, problem.confirmed ) | html %]
+            [% END %]
+        </p>
+
+        <p>
+            [% problem.detail | html %]
+        </p>
+
+    </blockquote>
+    <input type="hidden" name="id" value="[% problem.id %]">
+    [% END %]
+[% ELSE %]
 <p>
 [% loc('Please do <strong>not</strong> report problems through this form; messages go to
 the team behind FixMyStreet, not a council. To report a problem,
 please <a href="/">go to the front page</a> and follow the instructions.') %]
 </p>
+[% END %]
 
 <p>
 [% tprintf( loc("We'd love to hear what you think about this site. Just fill in the form, or send an email to <a href='mailto:%s'>%s</a>:"), contact_email, contact_email) %]
