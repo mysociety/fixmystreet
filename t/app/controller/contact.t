@@ -69,4 +69,80 @@ for my $test (
     };
 }
 
+for my $test (
+    {
+        fields => {
+            em      => ' ',
+            name    => '',
+            subject => '',
+            message => '',
+        },
+        errors => [
+            'Please give your name',
+            'Please give your email',
+            'Please give a subject',
+            'Please write a message',
+        ]
+    },
+    {
+        fields => {
+            em      => 'invalidemail',
+            name    => '',
+            subject => '',
+            message => '',
+        },
+        errors => [
+            'Please give your name',
+            'Please give a valid email address',
+            'Please give a subject',
+            'Please write a message',
+        ]
+    },
+    {
+        fields => {
+            em      => 'test@example.com',
+            name    => 'A name',
+            subject => '',
+            message => '',
+        },
+        errors => [ 'Please give a subject', 'Please write a message', ]
+    },
+    {
+        fields => {
+            em      => 'test@example.com',
+            name    => 'A name',
+            subject => 'A subject',
+            message => '',
+        },
+        errors => [ 'Please write a message', ]
+    },
+    {
+        fields => {
+            em      => 'test@example.com',
+            name    => 'A name',
+            subject => '  ',
+            message => '',
+        },
+        errors => [ 'Please give a subject', 'Please write a message', ]
+    },
+    {
+        fields => {
+            em      => 'test@example.com',
+            name    => 'A name',
+            subject => 'A subject',
+            message => ' ',
+        },
+        errors => [ 'Please write a message', ]
+    },
+
+  )
+{
+    subtest 'check submit page error handling' => sub {
+        $mech->get_ok('/contact');
+        $mech->submit_form_ok( { with_fields => $test->{fields} } );
+        is_deeply $mech->form_errors,         $test->{errors};
+        is_deeply $mech->visible_form_values, $test->{fields};
+    };
+}
+
 done_testing();

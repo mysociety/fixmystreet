@@ -1,0 +1,18 @@
+[% INCLUDE 'header.html', title => loc('Contact Us') %]
+
+<h1>[% loc('Contact the team') %]</h1>
+ 
+<form method="post" action="/contact/submit">
+
+<input type="hidden" name="submit_form" value="1">
+
+
+<p>
+[% IF success %]
+    [% loc("Thanks for your feedback.  We'll get back to you as soon as we can!") %]
+[% ELSE %]
+    [% tprintf( loc('Failed to send message.  Please try again, or <a href="mailto:%s">email us</a>.'), contact_email ) %]
+[% END %]
+</p>
+
+[% INCLUDE 'footer.html' %]

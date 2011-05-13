@@ -23,10 +23,9 @@ Contact us page
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->stash->{contact_email} = $c->cobrand->contact_email;
-    $c->stash->{contact_email} =~ s/\@/&#64;/;
-
-    $c->forward('determine_contact_type');
+    return unless
+           $c->forward('setup_request')
+        && $c->forward('determine_contact_type');
 
 #    my ($q, $errors, $field_errors) = @_;
 #    my @errors = @$errors;
@@ -70,6 +69,14 @@ sub index : Path : Args(0) {
 #    return $out;
 }
 
+sub submit : Path('submit') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    return unless 
+           $c->forward('setup_request')
+        && $c->forward('validate');
+}
+
 sub determine_contact_type : Private {
     my ( $self, $c ) = @_;
 
@@ -106,6 +113,57 @@ sub determine_contact_type : Private {
             $c->stash->{problem} = $problem;
         }
     }
+
+    return 1;
+}
+
+sub validate : Private {
+    my ( $self, $c ) = @_;
+
+    my ( %field_errors, @errors );
+    my %required = (
+        name    => _('Please give your name'),
+        em      => _('Please give your email'),
+        subject => _('Please give a subject'),
+        message => _('Please write a message')
+    );
+
+    foreach my $field ( keys %required ) {
+        $field_errors{$field} = $required{$field}
+          unless $c->req->param($field) =~ /\S/;
+    }
+
+    unless ( $field_errors{em} ) {
+        $field_errors{em} = _('Please give a valid email address')
+          if !mySociety::EmailUtil::is_valid_email( $c->req->param('em') );
+    }
+
+    push @errors, _('Illegal ID')
+      if $c->req->param('id') && $c->req->param('id') !~ /^[1-9]\d*$/
+          or $c->req->param('update_id')
+          && $c->req->param('update_id') !~ /^[1-9]\d*$/;
+
+    if ( @errors or scalar keys %field_errors ) {
+        $c->stash->{errors}       = \@errors;
+        $c->stash->{field_errors} = \%field_errors;
+        $c->go('index');
+    }
+}
+
+sub setup_request : Private {
+    my ( $self, $c ) = @_;
+
+    $c->stash->{contact_email} = $c->cobrand->contact_email;
+    $c->stash->{contact_email} =~ s/\@/&#64;/;
+
+    for my $param (qw/em subject message/) {
+        $c->stash->{$param} = $c->req->param($param);
+    }
+
+    # name is already used in the stash for the app class name
+    $c->stash->{form_name} = $c->req->param('name');
+
+    return 1;
 }
 
 =head1 AUTHOR
