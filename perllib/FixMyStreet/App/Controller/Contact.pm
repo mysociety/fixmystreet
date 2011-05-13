@@ -4,6 +4,8 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
+use mySociety::Random qw(random_bytes);
+
 =head1 NAME
 
 FixMyStreet::App::Controller::Contact - Catalyst Controller
@@ -193,6 +195,14 @@ sub prepare_params_for_email : Private {
         );
     }
 
+    my $postfix = '[ Sent by contact.cgi on ' .
+        $ENV{'HTTP_HOST'} . '. ' .
+        "IP address " . $ENV{'REMOTE_ADDR'} .
+        ($ENV{'HTTP_X_FORWARDED_FOR'} ? ' (forwarded from '.$ENV{'HTTP_X_FORWARDED_FOR'}.')' : '') . '. ' .
+        ' ]';
+
+    $c->stash->{message} .= "\n\n$postfix";
+
     return 1;
 }
 
@@ -215,7 +225,33 @@ sub setup_request : Private {
 sub send_email : Private {
     my ( $self, $c ) = @_;
 
-    $c->stash->{success} = 1;
+    my $recipient      = $c->cobrand->contact_email();
+    my $recipient_name = $c->cobrand->contact_name();
+
+    my $email = mySociety::Email::construct_email(
+        {
+            _body_       => $c->stash->{message},
+            From         => [ $c->stash->{em}, $c->stash->{form_name} ],
+            To           => [ [ $recipient, _($recipient_name) ] ],
+            Subject      => 'FMS message: ' . $c->stash->{subject},
+            'Message-ID' => sprintf(
+                '<contact-%s-%s@mysociety.org>',
+                time(), unpack( 'h*', random_bytes( 5, 1 ) )
+            ),
+        }
+    );
+
+    # FIXME: do something more sensible here
+    if ( FixMyStreet->test_mode ) {
+        $c->stash->{success} = 1;
+    } else {
+        my $result =
+          mySociety::EmailUtil::send_email( $email, $c->stash->{em}, $recipient );
+
+        if ( $result == mySociety::EmailUtil::EMAIL_SUCCESS ) {
+            $c->stash->{success} = 1;
+        }
+    }
 
     return 1;
 }
