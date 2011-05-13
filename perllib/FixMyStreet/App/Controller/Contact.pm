@@ -101,32 +101,10 @@ sub determine_contact_type : Private {
 #            from comment, problem where comment.id=?
 #            and comment.problem_id = problem.id
 #            and comment.problem_id=?', {}, $update_id ,$id);
-#            if (! $u) {
-#                $intro = generic_contact_text($q);
-#            } else {
-#                $intro .= $q->p(_('You are reporting the following update for being abusive, containing personal information, or similar:'));
-#                $item_title =  ent($u->{title});
-#                $item_meta = $q->em( 'Update below added ', (!$u->{name}) ? 'anonymously' : "by " . ent($u->{name}),
-#                                     ' at ' . Page::prettify_epoch($q, $u->{confirmed}));
-#                $item_body = ent($u->{text});
-#                $hidden_vals .= '<input type="hidden" name="update_id" value="' . $update_id . '">';
-#            }
         }
         elsif ($problem) {
             $c->stash->{problem} = $problem;
-
-#                $intro .= $q->p(_('You are reporting the following problem report for being abusive, containing personal information, or similar:'));
-#                $item_title = ent($p->{title});
-#                my $date_time = Page::prettify_epoch($q, $p->{confirmed});
-#                $item_meta = $q->em(
-#                   $p->{anonymous}
-#                       ? sprintf(_('Reported anonymously at %s'), $date_time)
-#                       : sprintf(_('Reported by %s at %s'), ent($p->{name}), $date_time)
-#                );
-#                $item_body = ent($p->{detail});
         }
-
-        #	$hidden_vals .= '<input type="hidden" name="id" value="' . $id . '">';
     }
 }
 
