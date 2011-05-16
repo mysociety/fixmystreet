@@ -95,10 +95,12 @@
         </div>
 
 
+        [% IF problem.state != 'fixed' %]
         <div class="checkbox">
-            {{ $fixedline_box }}
-            {{ $fixedline_label }}
+         <input type="checkbox" name="fixed" id="form_fixed" value="1" [% fixed %]>
+         <label for="form_fixed">[% loc('This problem has been fixed') %]</label>
         </div>
+        [% END %]
         
 
         {{ $photo_element }}

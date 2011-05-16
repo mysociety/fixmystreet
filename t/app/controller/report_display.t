@@ -106,6 +106,9 @@ subtest "test a good report" => sub {
       'Reported by Test User at 15:47, Saturday 16 April 2011',
       'correct problem meta information';
     $mech->content_contains( 'Test 2 Detail' );
+
+    my $update_form = $mech->form_name( 'updateForm' );
+    is $update_form->value( 'fixed' ), undef, 'problem is not fixed';
 };
 
 foreach my $meta (
@@ -174,6 +177,22 @@ foreach my $meta (
 
     };
 }
+
+subtest "test a fixed report" => sub {
+    $report->state( 'fixed' );
+    $report->update;
+    $mech->get_ok("/report/$report_id");
+    is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
+
+    my $update_form = $mech->form_name( 'updateForm' );
+    my $banner = $mech->extract_problem_banner;
+    $banner->{text} =~ s/^ //g;
+    $banner->{text} =~ s/ $//g;
+
+    is $banner->{id}, 'fixed', 'banner id';
+    is $banner->{text}, 'This problem has been fixed.', 'banner text';
+    is $update_form->find_input( 'fixed' ), undef, 'problem is fixed';
+};
 
 # tidy up
 $mech->delete_user('test@example.com');
