@@ -178,21 +178,68 @@ foreach my $meta (
     };
 }
 
-subtest "test a fixed report" => sub {
-    $report->state( 'fixed' );
-    $report->update;
-    $mech->get_ok("/report/$report_id");
-    is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
+for my $test ( 
+    {
+        description => 'old report',
+        date => DateTime->new(
+            year => 2009,
+            month => 6,
+            day => 12,
+            hour => 9,
+            minute => 43,
+            second => 12
+        ),
+        state => 'confirmed',
+        banner_id => 'unknown',
+        banner_text => 'This problem is old and of unknown status.',
+        fixed => 0
+    },
+    {
+        description => 'old fixed report',
+        date => DateTime->new(
+            year => 2009,
+            month => 6,
+            day => 12,
+            hour => 9,
+            minute => 43,
+            second => 12
+        ),
+        state => 'fixed',
+        banner_id => 'fixed',
+        banner_text => 'This problem has been fixed.',
+        fixed => 1
+    },
+    {
+        description => 'fixed report',
+        date => DateTime->now,
+        state => 'fixed',
+        banner_id => 'fixed',
+        banner_text => 'This problem has been fixed.',
+        fixed => 1
+    },
+) {
+    subtest "banner for $test->{description}" => sub {
+        $report->confirmed( $test->{date}->ymd . ' ' . $test->{date}->hms );
+        $report->state( $test->{state} );
+        $report->update;
 
-    my $update_form = $mech->form_name( 'updateForm' );
-    my $banner = $mech->extract_problem_banner;
-    $banner->{text} =~ s/^ //g;
-    $banner->{text} =~ s/ $//g;
+        $mech->get_ok("/report/$report_id");
+        is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
+        my $banner = $mech->extract_problem_banner;
+        $banner->{text} =~ s/^ //g;
+        $banner->{text} =~ s/ $//g;
 
-    is $banner->{id}, 'fixed', 'banner id';
-    is $banner->{text}, 'This problem has been fixed.', 'banner text';
-    is $update_form->find_input( 'fixed' ), undef, 'problem is fixed';
-};
+        is $banner->{id}, $test->{banner_id}, 'banner id';
+        is $banner->{text}, $test->{banner_text}, 'banner text';
+
+        my $update_form = $mech->form_name( 'updateForm' );
+        if ( $test->{fixed} ) {
+            is $update_form->find_input( 'fixed' ), undef, 'problem is fixed';
+        } else {
+            ok $update_form->find_input( 'fixed' ) != undef, 'problem is not fixed';
+        }
+    };
+}
 
 # tidy up
 $mech->delete_user('test@example.com');
