@@ -96,6 +96,7 @@ sub display : Path('') : Args(1) {
 #     ), $q);
 #     my $fixed = ($input{fixed}) ? ' checked' : '';
 
+    $c->forward( 'format_problem_for_display' );
 #     my %vars = (
 #         banner => $banner,
 #         map_start => FixMyStreet::Map::display_map($q,
@@ -225,6 +226,40 @@ sub load_problem_or_display_error : Private {
     $c->stash->{problem} = $problem;
 
     return 1;
+}
+
+sub format_problem_for_display : Private {
+    my ( $self, $c ) = @_;
+
+    my $problem = $c->stash->{problem};
+
+    ( my $detail = $problem->detail ) =~ s/\r//g;
+    my @detail = split /\n{2,}/, $detail;
+    $c->stash->{detail} = \@detail;
+
+    $c->forward('generate_map_tags');
+    return 1;
+}
+
+sub generate_map_tags : Private {
+    my ( $self, $c ) = @_;
+
+    my $map_links = '';
+    my $problem   = $c->stash->{problem};
+
+    $c->stash->{map_start_html} = FixMyStreet::Map::display_map(
+        $c->fake_q,
+        latitude  => $problem->latitude,
+        longitude => $problem->longitude,
+        type      => 0,
+        pins      => $problem->used_map
+        ? [ [ $problem->latitude, $problem->longitude, 'blue' ] ]
+        : [],
+        post => $map_links
+    );
+    $c->stash->{map_end_html} = FixMyStreet::Map::display_map_end(0),
+
+      return 1;
 }
 __PACKAGE__->meta->make_immutable;
 

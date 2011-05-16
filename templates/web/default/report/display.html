@@ -4,7 +4,6 @@
     INCLUDE 'header.html', title => problem_title
 %]
 
-{{ $map_start }}
 [% map_start_html %]
 [% IF banner %]
 <p id="[% banner.id %]">
@@ -111,6 +110,6 @@
     </form>
 </div>
 
-{{ $map_end }}
+[% map_end_html %]
 
 [% INCLUDE 'footer.html' %]
