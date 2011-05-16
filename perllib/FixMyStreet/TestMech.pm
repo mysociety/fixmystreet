@@ -312,7 +312,7 @@ sub extract_problem_meta {
 
     $title = $mech->extract_problem_title;
 
-Returns the problem title from a problem report page
+Returns the problem title from a problem report page.
 
 =cut
 
@@ -325,6 +325,26 @@ sub extract_problem_title {
     ->scrape( $mech->response );
 
     return $result->{title};
+}
+
+
+=head2 extract_problem_banner
+
+    $banner = $mech->extract_problem_banner;
+
+Returns the problem title from a problem report page. Returns a hashref with id and text.
+
+=cut
+
+sub extract_problem_banner {
+    my $mech = shift;
+
+    my $result = scraper {
+        process 'div#side > p', id => '@id', text => 'TEXT';
+    }
+    ->scrape( $mech->response );
+
+    return $result;
 }
 
 =head2 visible_form_values
