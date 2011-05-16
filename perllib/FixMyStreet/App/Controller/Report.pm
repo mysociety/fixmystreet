@@ -238,6 +238,8 @@ sub format_problem_for_display : Private {
     $c->stash->{detail} = \@detail;
 
     $c->forward('generate_map_tags');
+    $c->forward('generate_problem_meta');
+
     return 1;
 }
 
@@ -261,6 +263,62 @@ sub generate_map_tags : Private {
 
       return 1;
 }
+sub generate_problem_meta : Private {
+    my ( $self, $c ) = @_;
+
+    my $problem = $c->stash->{problem};
+    my $date_time =
+      Page::prettify_epoch( $c->req, $problem->get_column('time') );
+    my $meta = '';
+    if ( $problem->anonymous ) {
+        if (    $problem->service
+            and $problem->category && $problem->category ne _('Other') )
+        {
+            $meta =
+              sprintf( _('Reported by %s in the %s category anonymously at %s'),
+                $problem->service, $problem->category, $date_time );
+        }
+        elsif ( $problem->service ) {
+            $meta = sprintf( _('Reported by %s anonymously at %s'),
+                $problem->service, $date_time );
+        }
+        elsif ( $problem->category and $problem->category ne _('Other') ) {
+            $meta = sprintf( _('Reported in the %s category anonymously at %s'),
+                $problem->category, $date_time );
+        }
+        else {
+            $meta = sprintf( _('Reported anonymously at %s'), $date_time );
+        }
+    }
+    else {
+        if (    $problem->service
+            and $problem->category && $problem->category ne _('Other') )
+        {
+            $meta = sprintf(
+                _('Reported by %s in the %s category by %s at %s'),
+                $problem->service, $problem->category,
+                $problem->name,    $date_time
+            );
+        }
+        elsif ( $problem->service ) {
+            $meta = sprintf( _('Reported by %s by %s at %s'),
+                $problem->service, $problem->name, $date_time );
+        }
+        elsif ( $problem->category and $problem->category ne _('Other') ) {
+            $meta = sprintf( _('Reported in the %s category by %s at %s'),
+                $problem->category, $problem->name, $date_time );
+        }
+        else {
+            $meta =
+              sprintf( _('Reported by %s at %s'), $problem->name, $date_time );
+        }
+    }
+
+    $c->stash->{meta} = $meta;
+
+    return 1;
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;

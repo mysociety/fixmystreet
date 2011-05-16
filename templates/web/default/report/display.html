@@ -13,9 +13,13 @@
 
 <h1>[% problem_title %]</h1>
 
-<p><em>{{ $problem_meta }}</em></p>
+<p><em>[% meta | html %]</em></p>
 
-{{ $problem_detail }}
+[% FOREACH line IN detail %]
+<p>
+[% line | html %]
+</p>
+[% END %]
 
 {{ $problem_photo }}
 
