@@ -288,6 +288,26 @@ sub extract_location {
     };
 }
 
+=head2 extract_problem_meta
+
+    $meta = $mech->extract_problem_meta;
+
+Returns the problem meta information ( submitted by, at etc ) from a 
+problem report page
+
+=cut
+
+sub extract_problem_meta {
+    my $mech = shift;
+
+    my $result = scraper {
+        process 'div#side p em', 'meta', 'TEXT';
+    }
+    ->scrape( $mech->response );
+
+    return $result->{meta};
+}
+
 =head2 visible_form_values
 
     $hashref = $mech->visible_form_values(  );
