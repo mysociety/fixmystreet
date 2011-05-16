@@ -32,7 +32,7 @@ my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
         areas              => ',105255,11806,11828,2247,2504,',
         category           => 'Other',
         title              => 'Test 2',
-        detail             => 'Test 2',
+        detail             => 'Test 2 Detail',
         used_map           => 't',
         name               => 'Test User',
         anonymous          => 'f',
@@ -101,9 +101,11 @@ subtest "change report to hidden and check for 410 status" => sub {
 subtest "test a good report" => sub {
     $mech->get_ok("/report/$report_id");
     is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
+    is $mech->extract_problem_title, 'Test 2', 'problem title';
     is $mech->extract_problem_meta,
       'Reported by Test User at 15:47, Saturday 16 April 2011',
       'correct problem meta information';
+    $mech->content_contains( 'Test 2 Detail' );
 };
 
 foreach my $meta (
