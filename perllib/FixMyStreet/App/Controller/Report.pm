@@ -98,19 +98,6 @@ sub display : Path('') : Args(1) {
 
     $c->forward( 'format_problem_for_display' );
 #     my %vars = (
-#         banner => $banner,
-#         map_start => FixMyStreet::Map::display_map($q,
-#             latitude => $problem->{latitude}, longitude => $problem->{longitude},
-#             type => 0,
-#             pins => $problem->{used_map} ? [ [ $problem->{latitude}, $problem->{longitude}, 'blue' ] ] : [],
-#             post => $map_links
-#         ),
-#         map_end => FixMyStreet::Map::display_map_end(0),
-#         problem_title => ent($problem->{title}),
-#         problem_meta => Page::display_problem_meta_line($q, $problem),
-#         problem_detail => Page::display_problem_detail($problem),
-#         problem_photo => Page::display_problem_photo($q, $problem),
-#         problem_updates => Page::display_problem_updates($input{id}, $q),
 #         unsuitable => $q->a({rel => 'nofollow', href => $contact_url}, _('Offensive? Unsuitable? Tell us')),
 #         more_problems => '<a href="' . $back . '">' . _('More problems nearby') . '</a>',
 #         url_home => Cobrand::url($cobrand, '/', $q),
@@ -127,8 +114,6 @@ sub display : Path('') : Args(1) {
 #         update_heading => $q->h2(_('Provide an update')),
 #         field_errors => \%field_errors,
 #         add_alert_checked => ($input{add_alert} || !$input{submit_update}) ? ' checked' : '',
-#         fixedline_box => $problem->{state} eq 'fixed' ? '' : qq{<input type="checkbox" name="fixed" id="form_fixed" value="1"$fixed>},
-#         fixedline_label => $problem->{state} eq 'fixed' ? '' : qq{<label for="form_fixed">} . _('This problem has been fixed') . qq{</label>},
 #         name_label => _('Name:'),
 #         update_label => _('Update:'),
 #         alert_label => _('Alert me to future updates'),
