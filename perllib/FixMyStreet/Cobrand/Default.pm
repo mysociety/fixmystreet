@@ -768,5 +768,24 @@ sub council_rss_alert_options {
     return ( \@options, @reported_to_options ? \@reported_to_options : undef );
 }
 
+=head2 generate_problem_banner
+
+=cut
+
+sub generate_problem_banner {
+    my ( $self, $problem ) = @_;
+
+    my $banner = {};
+    if ($problem->state eq 'confirmed' && $problem->get_column('time') > 8*7*24*60*60) {
+        $banner->{id} = 'unknown';
+        $banner->{text} = _('This problem is old and of unknown status.');
+    }
+    if ($problem->state eq 'fixed') {
+        $banner->{id} = 'fixed';
+        $banner->{text} = _('This problem has been fixed') . '.';
+    }
+
+    return $banner;
+}
 1;
 

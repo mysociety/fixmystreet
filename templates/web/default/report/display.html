@@ -5,7 +5,12 @@
 %]
 
 {{ $map_start }}
-{{ $banner }}
+[% map_start_html %]
+[% IF banner %]
+<p id="[% banner.id %]">
+    [% banner.text %]
+</p>
+[% END %]
 
 <h1>[% problem_title %]</h1>
 

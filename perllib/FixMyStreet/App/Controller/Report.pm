@@ -79,6 +79,8 @@ sub display : Path('') : Args(1) {
 #       . "\@$short_lat,$short_lon\">View on Google Maps</a></p>"
 #         if mySociety::Config::get('COUNTRY') eq 'GB';
 
+    $c->stash->{banner} = $c->cobrand->generate_problem_banner($c->stash->{problem});
+
 #     my $banner;
 #     if ($q->{site} ne 'emptyhomes' && $problem->{state} eq 'confirmed' && $problem->{duration} > 8*7*24*60*60) {
 #         $banner = $q->p({id => 'unknown'}, _('This problem is old and of unknown status.'));
