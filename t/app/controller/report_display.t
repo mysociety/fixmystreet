@@ -5,6 +5,7 @@ use Test::More;
 use FixMyStreet::TestMech;
 use Web::Scraper;
 use Path::Class;
+use DateTime;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -14,6 +15,15 @@ my $user =
   FixMyStreet::App->model('DB::User')
   ->find_or_create( { email => 'test@example.com', name => 'Test User' } );
 ok $user, "created test user";
+
+my $dt = DateTime->new(
+    year   => 2011,
+    month  => 04,
+    day    => 16,
+    hour   => 15,
+    minute => 47,
+    second => 23
+);
 
 my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
     {
@@ -27,6 +37,7 @@ my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
         name               => 'Test User',
         anonymous          => 'f',
         state              => 'confirmed',
+        confirmed          => $dt->ymd . ' ' . $dt->hms,
         lang               => 'en-gb',
         service            => '',
         cobrand            => 'default',
@@ -90,7 +101,77 @@ subtest "change report to hidden and check for 410 status" => sub {
 subtest "test a good report" => sub {
     $mech->get_ok("/report/$report_id");
     is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
+    is $mech->extract_problem_meta,
+      'Reported by Test User at 15:47, Saturday 16 April 2011',
+      'correct problem meta information';
 };
+
+foreach my $meta (
+    {
+        anonymous => 'f',
+        category  => 'Other',
+        service   => '',
+        meta      => 'Reported by Test User at 15:47, Saturday 16 April 2011'
+    },
+    {
+        anonymous => 'f',
+        category  => 'Roads',
+        service   => '',
+        meta =>
+'Reported in the Roads category by Test User at 15:47, Saturday 16 April 2011'
+    },
+    {
+        anonymous => 'f',
+        category  => '',
+        service   => 'Transport service',
+        meta =>
+'Reported by Transport service by Test User at 15:47, Saturday 16 April 2011'
+    },
+    {
+        anonymous => 'f',
+        category  => 'Roads',
+        service   => 'Transport service',
+        meta =>
+'Reported by Transport service in the Roads category by Test User at 15:47, Saturday 16 April 2011'
+    },
+    {
+        anonymous => 't',
+        category  => 'Other',
+        service   => '',
+        meta      => 'Reported anonymously at 15:47, Saturday 16 April 2011'
+    },
+    {
+        anonymous => 'f',
+        category  => 'Roads',
+        service   => '',
+        meta =>
+'Reported in the Roads category anonymously at 15:47, Saturday 16 April 2011'
+    },
+    {
+        anonymous => 'f',
+        category  => '',
+        service   => 'Transport service',
+        meta =>
+'Reported by Transport service anonymously at 15:47, Saturday 16 April 2011'
+    },
+    {
+        anonymous => 'f',
+        category  => 'Roads',
+        service   => 'Transport service',
+        meta =>
+'Reported by Transport service in the Roads category anonymously at 15:47, Saturday 16 April 2011'
+    },
+  )
+{
+    $report->service( $meta->{service} );
+    $report->category( $meta->{category} );
+    $report->anonymous( $meta->{anonymous} );
+    $report->update;
+    subtest "test correct problem meta information" => sub {
+        $mech->get_ok("/report/$report_id");
+
+    };
+}
 
 # tidy up
 $mech->delete_user('test@example.com');
