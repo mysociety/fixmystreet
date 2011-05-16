@@ -62,22 +62,7 @@ sub display : Path('') : Args(1) {
         return $c->res->redirect( $c->uri_for($1), 301 );
     }
 
-    # try to load a report if the id is a number
-    my $problem                           #
-      = $id =~ m{\D}                      # is id non-numeric?
-      ? undef                             # ...don't even search
-      : $c->model('DB::Problem')->find( { id => $id } );
-
-    # check that the problem is suitable to show.
-    if ( !$problem || $problem->state eq 'unconfirmed' ) {
-        $c->detach( '/page_error_404_not_found', [ _('Unknown problem ID') ] );
-    }
-    elsif ( $problem->state eq 'hidden' ) {
-        $c->detach(
-            '/page_error_410_gone',
-            [ _('That report has been removed from FixMyStreet.') ]    #
-        );
-    }
+    $c->forward('load_problem_or_display_error', [ $id ] );
 
     #     my $extra_data = Cobrand::extra_data($cobrand, $q);
     #     my $google_link = Cobrand::base_url_for_emails($cobrand, $extra_data)
@@ -182,6 +167,63 @@ sub display : Path('') : Args(1) {
 
 }
 
+sub load_problem_or_display_error : Private {
+    my ( $self, $c, $id ) = @_;
+
+    # try to load a report if the id is a number
+    my $problem    #
+      = $id =~ m{\D}    # is id non-numeric?
+      ? undef           # ...don't even search
+      : $c->model('DB::Problem')->find(
+        { id => $id },
+        {
+            select => [
+                'id',
+                'latitude',
+                'longitude',
+                'council',
+                'category',
+                'title', 'detail', 'photo',
+                'used_map',
+                'name',
+                'anonymous',
+                'state',
+                'service',
+                'cobrand',
+                'cobrand_data',
+                'external_body',
+                {
+                    extract => 'epoch from confirmed',
+                    -as     => 'time',
+                },
+                {
+                    extract => 'epoch from whensent-confirmed',
+                    -as     => 'whensent'
+                },
+                {
+                    extract => 'epoch from ms_current_timestamp()-lastupdate',
+                    -as     => 'duration'
+                }
+
+            ]
+        }
+      );
+
+    # check that the problem is suitable to show.
+    if ( !$problem || $problem->state eq 'unconfirmed' ) {
+        $c->detach( '/page_error_404_not_found', [ _('Unknown problem ID') ] );
+    }
+    elsif ( $problem->state eq 'hidden' ) {
+        $c->detach(
+            '/page_error_410_gone',
+            [ _('That report has been removed from FixMyStreet.') ]    #
+        );
+    }
+
+    $c->stash->{problem} = $problem;
+
+    return 1;
+}
 __PACKAGE__->meta->make_immutable;
 
 1;
