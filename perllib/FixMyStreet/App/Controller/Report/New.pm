@@ -575,7 +575,7 @@ sub process_user : Private {
       ( 'email', 'name', 'phone', );
 
     # cleanup the email address
-    my $email = lc $params{email};
+    my $email = $params{email} ? lc $params{email} : '';
     $email =~ s{\s+}{}g;
 
     my $report = $c->stash->{report};
