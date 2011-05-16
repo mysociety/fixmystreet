@@ -308,6 +308,25 @@ sub extract_problem_meta {
     return $result->{meta};
 }
 
+=head2 extract_problem_title
+
+    $title = $mech->extract_problem_title;
+
+Returns the problem title from a problem report page
+
+=cut
+
+sub extract_problem_title {
+    my $mech = shift;
+
+    my $result = scraper {
+        process 'div#side h1', 'title', 'TEXT';
+    }
+    ->scrape( $mech->response );
+
+    return $result->{title};
+}
+
 =head2 visible_form_values
 
     $hashref = $mech->visible_form_values(  );
