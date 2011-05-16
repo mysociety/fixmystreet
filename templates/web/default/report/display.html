@@ -38,20 +38,20 @@
 </p>
 
 <div id="alert_links">
-    <a rel="nofollow" id="email_alert" href="{{ $alert_link }}">{{ $alert_text }}</a>
+    <a rel="nofollow" id="email_alert" href="{{ $alert_link }}">[% loc('Email me updates' ) %]<a>
 
     <form action="{{ $form_alert_action }}" method="post" id="email_alert_box">
         <p>{{ $blurb }}</p>
-        <label class="n" for="alert_rznvy">{{ $email_label }}</label>
+        <label class="n" for="alert_rznvy">[% loc('Email') %]</label>
         <input type="text" name="rznvy" id="alert_rznvy" value="{{ $input_h{rznvy} }}" size="30">
         <input type="hidden" name="id" value="{{ $input_h{id} }}">
         <input type="hidden" name="type" value="updates">
-        <input type="submit" value="{{ $subscribe }}">
+        <input type="submit" value="[% loc('Subscribe') %]">
         {{ $cobrand_form_elements1 }}
     </form>
     &nbsp;
     <a href="{{ $rss_url }}">
-        <img src="/i/feed.png" width="16" height="16" title="{{ $rss_title }}" alt="{{ $rss_alt }}" border="0" style="vertical-align: middle">
+        <img src="/i/feed.png" width="16" height="16" title="[% loc('Rss feed') %]" alt="[% loc('Rss feed of updates to the problem' ) %]" border="0" style="vertical-align: middle">
     </a>
 </div>
 
@@ -59,7 +59,10 @@
 
 <div id="update_form">
 
-    {{ $update_heading }}
+    <h2>
+        [% loc( 'Provide an update') %]
+    </h2>
+
     {{ $update_blurb }}
 
     {{ $errors }}
