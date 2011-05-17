@@ -38,16 +38,16 @@
 </p>
 
 <div id="alert_links">
-    <a rel="nofollow" id="email_alert" href="{{ $alert_link }}">[% loc('Email me updates' ) %]<a>
+    <a rel="nofollow" id="email_alert" href="[% c.uri_for( '/alert', { type => 'updates', id => problem.id } ) %]">[% loc('Email me updates' ) %]</a>
 
-    <form action="{{ $form_alert_action }}" method="post" id="email_alert_box">
-        <p>{{ $blurb }}</p>
+    <form action="[% c.uri_for( '/alert/subscribe' ) %]" method="post" id="email_alert_box">
+        <p>[% loc('Receive email when updates are left on this problem' ) %]</p>
         <label class="n" for="alert_rznvy">[% loc('Email') %]</label>
         <input type="text" name="rznvy" id="alert_rznvy" value="[% email %]" size="30">
         <input type="hidden" name="id" value="[% problem.id %]">
         <input type="hidden" name="type" value="updates">
         <input type="submit" value="[% loc('Subscribe') %]">
-        {{ $cobrand_form_elements1 }}
+        [% cobrand_alert_fields %]
     </form>
     &nbsp;
     <a href="{{ $rss_url }}">
