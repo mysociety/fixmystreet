@@ -154,21 +154,21 @@ foreach my $meta (
         meta      => 'Reported anonymously at 15:47, Saturday 16 April 2011'
     },
     {
-        anonymous => 'f',
+        anonymous => 't',
         category  => 'Roads',
         service   => '',
         meta =>
 'Reported in the Roads category anonymously at 15:47, Saturday 16 April 2011'
     },
     {
-        anonymous => 'f',
+        anonymous => 't',
         category  => '',
         service   => 'Transport service',
         meta =>
 'Reported by Transport service anonymously at 15:47, Saturday 16 April 2011'
     },
     {
-        anonymous => 'f',
+        anonymous => 't',
         category  => 'Roads',
         service   => 'Transport service',
         meta =>
@@ -182,6 +182,8 @@ foreach my $meta (
     $report->update;
     subtest "test correct problem meta information" => sub {
         $mech->get_ok("/report/$report_id");
+    
+    is $mech->extract_problem_meta, $meta->{meta};
 
     };
 }
