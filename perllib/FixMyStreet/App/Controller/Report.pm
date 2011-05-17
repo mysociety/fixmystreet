@@ -102,8 +102,6 @@ sub display : Path('') : Args(1) {
 #         more_problems => '<a href="' . $back . '">' . _('More problems nearby') . '</a>',
 #         url_home => Cobrand::url($cobrand, '/', $q),
 #         alert_link => Cobrand::url($cobrand, NewURL($q, -url => '/alert?type=updates;id='.$input_h{id}, -retain => 1, pc => undef, x => undef, 'y' => undef ), $q),
-#         alert_text => _('Email me updates'),
-#         email_label => _('Email:'),
 #         subscribe => _('Subscribe'),
 #         blurb => _('Receive email when updates are left on this problem'),
 #         cobrand_form_elements1 => Cobrand::form_elements($cobrand, 'alerts', $q),
@@ -111,17 +109,12 @@ sub display : Path('') : Args(1) {
 #         rss_url => Cobrand::url($cobrand,  NewURL($q, -retain=>1, -url => '/rss/'.$input_h{id}, pc => undef, x => undef, 'y' => undef, id => undef), $q),
 #         rss_title => _('RSS feed'),
 #         rss_alt => _('RSS feed of updates to this problem'),
-#         update_heading => $q->h2(_('Provide an update')),
 #         field_errors => \%field_errors,
 #         add_alert_checked => ($input{add_alert} || !$input{submit_update}) ? ' checked' : '',
-#         name_label => _('Name:'),
-#         update_label => _('Update:'),
-#         alert_label => _('Alert me to future updates'),
 #         post_label => _('Post'),
 #         cobrand_form_elements => Cobrand::form_elements($cobrand, 'updateForm', $q),
 #         form_action => Cobrand::url($cobrand, '/', $q),
 #         input_h => \%input_h,
-#         optional => _('(optional)'),
 #     );
 #
 #     $vars{update_blurb} = $q->p($q->small(_('Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href="/faq#privacy">privacy policy</a>')))
