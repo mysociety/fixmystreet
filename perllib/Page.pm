@@ -211,14 +211,11 @@ sub template_vars ($%) {
         'title' => $params{title},
         'rss' => '',
         map_js => $params{js} || '',
+        robots => $params{robots},
     );
 
     if ($params{rss}) {
         $vars{rss} = '<link rel="alternate" type="application/rss+xml" title="' . $params{rss}[0] . '" href="' . $params{rss}[1] . '">';
-    }
-
-    if ($params{robots}) {
-        $vars{robots} = '<meta name="robots" content="' . $params{robots} . '">';
     }
 
     my $home = !$params{title} && $ENV{SCRIPT_NAME} eq '/index.cgi' && !$ENV{QUERY_STRING};
