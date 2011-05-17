@@ -347,6 +347,28 @@ sub extract_problem_banner {
     return $result;
 }
 
+=head2 extract_update_metas
+
+    $metas = $mech->extract_update_metas;
+
+Returns an array ref of all the update meta information on the page. Strips whitespace from
+the start and end of all of them.
+
+=cut
+
+sub extract_update_metas {
+    my $mech = shift;
+
+    my $result = scraper {
+        process 'div#updates div.problem-update p em', 'meta[]', 'TEXT';
+    }
+    ->scrape( $mech->response );
+
+    my @metas = map { s/^\s+//; s/\s+$//; $_; } @{ $result->{meta} };
+
+    return \@metas;
+}
+
 =head2 visible_form_values
 
     $hashref = $mech->visible_form_values(  );
