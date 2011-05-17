@@ -221,7 +221,14 @@ sub format_problem_for_display : Private {
     ( my $detail = $problem->detail ) =~ s/\r//g;
     my @detail = split /\n{2,}/, $detail;
     $c->stash->{detail} = \@detail;
+    $c->stash->{allow_photo_upload} = $c->cobrand->allow_photo_display;
+
     $c->stash->{cobrand_alert_fields} = $c->cobrand->form_elements( '/alerts' );
+    $c->stash->{cobrand_update_fields} = $c->cobrand->form_elements( '/updateForm' );
+
+    $c->stash->{name} = $c->req->param('name');
+    $c->stash->{update} = $c->req->param('update');
+    $c->stash->{email} = $c->req->param('rznvy');
 
     $c->forward('generate_map_tags');
     $c->forward('generate_problem_photo');
