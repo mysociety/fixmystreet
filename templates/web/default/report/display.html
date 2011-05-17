@@ -50,7 +50,7 @@
         [% cobrand_alert_fields %]
     </form>
     &nbsp;
-    <a href="{{ $rss_url }}">
+    <a href="[% c.uri_for( '/rss', problem.id ) %]">
         <img src="/i/feed.png" width="16" height="16" title="[% loc('Rss feed') %]" alt="[% loc('Rss feed of updates to the problem' ) %]" border="0" style="vertical-align: middle">
     </a>
 </div>
