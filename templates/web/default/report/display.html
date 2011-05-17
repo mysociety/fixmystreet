@@ -34,7 +34,7 @@
 </p>
 
 <p style="padding-bottom: 0.5em; border-bottom: dotted 1px #999999;" align="right">
-    {{ $more_problems }}
+    <a href="[% c.uri_for( '/', { lat => short_latitude, lon => short_longitude } ) %]">[% loc( 'More problems nearby' ) %]</a>
 </p>
 
 <div id="alert_links">
