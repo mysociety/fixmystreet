@@ -56,42 +56,44 @@ my $comment = FixMyStreet::App->model('DB::Comment')->find_or_create(
         problem_id => $report_id,
         name       => 'Other User',
         mark_fixed => 'false',
-        text  => 'This is some update text',
-        email => 'commenter@example.com',
-        state => 'confirmed',
-        confirmed => $dt->ymd . ' ' . $dt->hms,
+        text       => 'This is some update text',
+        email      => 'commenter@example.com',
+        state      => 'confirmed',
+        confirmed  => $dt->ymd . ' ' . $dt->hms,
     }
 );
 
 my $comment_id = $comment->id;
 ok $comment, "created test update - $comment_id";
 
-for my $test ( 
+for my $test (
     {
-        name => 'Other User',
+        name       => 'Other User',
         mark_fixed => 'false',
-        mark_open => 'false',
-        meta => 'Posted by Other User at 15:47, Saturday 16 April 2011',
+        mark_open  => 'false',
+        meta       => 'Posted by Other User at 15:47, Saturday 16 April 2011',
     },
     {
-        name => '',
+        name       => '',
         mark_fixed => 'false',
-        mark_open => 'false',
-        meta => 'Posted anonymously at 15:47, Saturday 16 April 2011',
+        mark_open  => 'false',
+        meta       => 'Posted anonymously at 15:47, Saturday 16 April 2011',
     },
     {
-        name => '',
+        name       => '',
         mark_fixed => 'true',
-        mark_open => 'false',
-        meta => 'Posted anonymously at 15:47, Saturday 16 April 2011, marked as fixed',
+        mark_open  => 'false',
+        meta =>
+'Posted anonymously at 15:47, Saturday 16 April 2011, marked as fixed',
     },
     {
-        name => '',
+        name       => '',
         mark_fixed => 'false',
-        mark_open => 'true',
+        mark_open  => 'true',
         meta => 'Posted anonymously at 15:47, Saturday 16 April 2011, reopened',
     }
-) {
+  )
+{
     subtest "test update displayed" => sub {
         $comment->name( $test->{name} );
         $comment->mark_fixed( $test->{mark_fixed} );
