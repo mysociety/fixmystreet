@@ -105,10 +105,18 @@ subtest "test a good report" => sub {
     is $mech->extract_problem_meta,
       'Reported by Test User at 15:47, Saturday 16 April 2011',
       'correct problem meta information';
-    $mech->content_contains( 'Test 2 Detail' );
+    $mech->content_contains('Test 2 Detail');
 
-    my $update_form = $mech->form_name( 'updateForm' );
-    is $update_form->value( 'fixed' ), undef, 'problem is not fixed';
+    my $update_form = $mech->form_name('updateForm');
+
+    my %fields = (
+        name      => '',
+        rznvy     => '',
+        update    => '',
+        add_alert => undef,
+        fixed     => undef
+    );
+    is $update_form->value($_), $fields{$_}, "$_ value" for keys %fields;
 };
 
 foreach my $meta (

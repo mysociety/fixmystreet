@@ -43,8 +43,8 @@
     <form action="{{ $form_alert_action }}" method="post" id="email_alert_box">
         <p>{{ $blurb }}</p>
         <label class="n" for="alert_rznvy">[% loc('Email') %]</label>
-        <input type="text" name="rznvy" id="alert_rznvy" value="{{ $input_h{rznvy} }}" size="30">
-        <input type="hidden" name="id" value="{{ $input_h{id} }}">
+        <input type="text" name="rznvy" id="alert_rznvy" value="[% email %]" size="30">
+        <input type="hidden" name="id" value="[% problem.id %]">
         <input type="hidden" name="type" value="updates">
         <input type="submit" value="[% loc('Subscribe') %]">
         {{ $cobrand_form_elements1 }}
@@ -63,35 +63,37 @@
         [% loc( 'Provide an update') %]
     </h2>
 
-    {{ $update_blurb }}
+    <p>
+    <small>[% loc( 'Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href="/faq#privacy">privacy policy</a>' ) %]</small>
+    </p>
 
-    {{ $errors }}
+    [% INCLUDE 'errors.html' %]
 
-    <form method="post" action="{{ $form_action }}" name="updateForm" id="fieldset"{{ $enctype }}>
+    <form method="post" action="{{ $form_action }}" name="updateForm" id="fieldset"[% IF allow_photo_upload %] enctype="multipart/form-data"[% END %]>
 
         <input type="hidden" name="submit_update" value="1">
         <input type="hidden" name="id" value="{{ $input_h{id} }}">
 
         <div>
-            <label for="form_name">{{ $name_label }}</label>
-            <input type="text" name="name" id="form_name" value="{{ $input_h{name} }}" size="20"> {{ $optional }}
+            <label for="form_name">[% loc( 'Name:') %]</label>
+            <input type="text" name="name" id="form_name" value="[% email %]" size="20"> [% loc( '(optional)' ) %]
         </div>
 
-        {{ if ( $field_errors{email}) {
-            "<div class='form-error'>$field_errors{email}</div>";
-        } }}
+        [% IF field_errors.email %]
+            <div class='form-error'>[% field_errors.email %]</div>
+        [% END %]
                 <div class="form-field">
-            <label for="form_rznvy">{{ $email_label }}</label>
-            <input type="text" name="rznvy" id="form_rznvy" value="{{ $input_h{rznvy} }}" size="20">
+            <label for="form_rznvy">[% loc('Email' ) %]</label>
+            <input type="text" name="rznvy" id="form_rznvy" value="[% email %]" size="20">
         </div>
 
 
-        {{ if ( $field_errors{update}) {
-            "<div class='form-error'>$field_errors{update}</div>";
-        } }}
+        [% IF field_errors.update %]
+            <div class='form-error'>[% field_errors.update %]</div>
+        [% END %]
         <div class="form-field">
-            <label for="form_update">{{ $update_label }}</label>
-            <textarea name="update" id="form_update" rows="7" cols="30">{{ $input_h{update} }}</textarea>
+            <label for="form_update">[% loc( 'Update:' ) %]</label>
+            <textarea name="update" id="form_update" rows="7" cols="30">[% update %]</textarea>
         </div>
 
 
@@ -101,19 +103,24 @@
          <label for="form_fixed">[% loc('This problem has been fixed') %]</label>
         </div>
         [% END %]
-        
 
-        {{ $photo_element }}
-        
+
+        [% IF allow_photo_upload %]
+        <div id="fileupload_normalUI">
+        <label for="form_photo">[% loc('Photo:') %]</label>
+        <input type="file" name="photo" id="form_photo">
+        </div>
+        [% END %]
+
 
         <div class="checkbox">
             <input type="checkbox" name="add_alert" id="form_add_alert" value="1"{{ $add_alert_checked }}>
-            <label for="form_add_alert">{{ $alert_label }}</label>
+            <label for="form_add_alert">[% loc( 'Alert me to future updates' ) %]</label>
         </div>
 
 
         <div class="checkbox">
-            <input type="submit" id="update_post" value="{{ $post_label }}">
+            <input type="submit" id="update_post" value="[% loc('Post:') %]">
         </div>
 
 
