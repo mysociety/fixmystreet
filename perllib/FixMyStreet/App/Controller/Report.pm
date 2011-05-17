@@ -72,12 +72,6 @@ sub display : Path('') : Args(1) {
     #       map { Utils::truncate_coordinate($_) }    #
     #       ( $problem->{latitude}, $problem->{longitude} );
 
-#     my $map_links = '';
-#     $map_links = "<p id='sub_map_links'>"
-#       . "<a href=\"http://maps.google.co.uk/maps?output=embed&amp;z=16&amp;q="
-#       . URI::Escape::uri_escape_utf8( $problem->{title} . ' - ' . $google_link )
-#       . "\@$short_lat,$short_lon\">View on Google Maps</a></p>"
-#         if mySociety::Config::get('COUNTRY') eq 'GB';
 
     $c->stash->{banner} = $c->cobrand->generate_problem_banner($c->stash->{problem});
 
@@ -207,6 +201,19 @@ sub generate_map_tags : Private {
 
     my $map_links = '';
     my $problem   = $c->stash->{problem};
+
+    my ( $short_lat, $short_lon ) =
+      ( $c->stash->{short_latitude}, $c->stash->{short_longitude} );
+
+    my $google_link =
+      $c->cobrand->base_url_for_emails() . '/report/' . $problem->id;
+
+    $map_links =
+        "<p id='sub_map_links'>"
+      . "<a href=\"http://maps.google.co.uk/maps?output=embed&amp;z=16&amp;q="
+      . URI::Escape::uri_escape_utf8( $problem->title . ' - ' . $google_link )
+      . "\@$short_lat,$short_lon\">View on Google Maps</a></p>"
+      if mySociety::Config::get('COUNTRY') eq 'GB';
 
     $c->stash->{map_start_html} = FixMyStreet::Map::display_map(
         $c->fake_q,
