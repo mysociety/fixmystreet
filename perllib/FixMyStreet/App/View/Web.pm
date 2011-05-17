@@ -17,6 +17,7 @@ __PACKAGE__->config(
     render_die     => 1,
     expose_methods => [
         'loc', 'nget', 'tprintf', 'display_crossell_advert', 'prettify_epoch',
+        'split_into_lines',
     ],
 );
 
@@ -103,6 +104,29 @@ Return a pretty version of the epoch.
 sub prettify_epoch {
     my ( $self, $c, $epoch, $short_bool ) = @_;
     return Page::prettify_epoch( $c->req, $epoch, $short_bool );
+}
+
+=head2 split_into_lines
+
+    [% FOREACH line IN split_into_lines( text ) %]
+    <p>
+        [% line | html %]
+    </p>
+    [% END %]
+
+Split some text into an array of lines on double new lines.
+
+=cut
+
+sub split_into_lines {
+    my ( $self, $c, $text ) = @_;
+
+    my @lines;
+    $text =~ s/\r//g;
+
+    @lines = split /\n{2,}/, $text;
+
+    return \@lines;
 }
 
 1;
