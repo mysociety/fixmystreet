@@ -78,5 +78,27 @@ sub shorten_recency_if_new_greater_than_fixed {
     return 0;
 }
 
+=head2 generate_problem_banner
+
+    my $banner = $c->cobrand->generate_problem_banner;
+
+    <p id="[% banner.id %]:>[% banner.text %]</p>
+
+Generate id and text for banner that appears at top of problem page.
+
+=cut
+
+sub generate_problem_banner {
+    my ( $self, $problem ) = @_;
+
+    my $banner = {};
+    if ($problem->state eq 'fixed') {
+        $banner->{id} = 'fixed';
+        $banner->{text} = _('This problem has been fixed') . '.';
+    }
+
+    return $banner;
+}
+
 1;
 
