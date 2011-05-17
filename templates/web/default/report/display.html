@@ -76,7 +76,7 @@
 
         <div>
             <label for="form_name">[% loc( 'Name:') %]</label>
-            <input type="text" name="name" id="form_name" value="[% email %]" size="20"> [% loc( '(optional)' ) %]
+            <input type="text" name="name" id="form_name" value="[% name | html %]" size="20"> [% loc( '(optional)' ) %]
         </div>
 
         [% IF field_errors.email %]
@@ -84,7 +84,7 @@
         [% END %]
                 <div class="form-field">
             <label for="form_rznvy">[% loc('Email' ) %]</label>
-            <input type="text" name="rznvy" id="form_rznvy" value="[% email %]" size="20">
+            <input type="text" name="rznvy" id="form_rznvy" value="[% email | html %]" size="20">
         </div>
 
 
@@ -93,7 +93,7 @@
         [% END %]
         <div class="form-field">
             <label for="form_update">[% loc( 'Update:' ) %]</label>
-            <textarea name="update" id="form_update" rows="7" cols="30">[% update %]</textarea>
+            <textarea name="update" id="form_update" rows="7" cols="30">[% update | html %]</textarea>
         </div>
 
 
