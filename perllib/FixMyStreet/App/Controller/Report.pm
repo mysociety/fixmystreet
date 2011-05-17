@@ -164,9 +164,6 @@ sub format_problem_for_display : Private {
 
     $c->stash->{banner} = $c->cobrand->generate_problem_banner($problem);
 
-    ( my $detail = $problem->detail ) =~ s/\r//g;
-    my @detail = split /\n{2,}/, $detail;
-    $c->stash->{detail} = \@detail;
     $c->stash->{allow_photo_upload} = $c->cobrand->allow_photo_display;
 
     $c->stash->{cobrand_alert_fields} = $c->cobrand->form_elements( '/alerts' );
