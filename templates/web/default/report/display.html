@@ -76,7 +76,7 @@
 
         <div>
             <label for="form_name">[% loc( 'Name:') %]</label>
-            <input type="text" name="name" id="form_name" value="[% name | html %]" size="20"> [% loc( '(optional)' ) %]
+            <input type="text" name="name" id="form_name" value="[% form_name | html %]" size="20"> [% loc( '(optional)' ) %]
         </div>
 
         [% IF field_errors.email %]

@@ -189,7 +189,7 @@ sub format_problem_for_display : Private {
       map { Utils::truncate_coordinate($_) }
       ( $problem->latitude, $problem->longitude );
 
-    $c->stash->{name} = $c->req->param('name');
+    $c->stash->{report_name} = $c->req->param('name');
     $c->stash->{update} = $c->req->param('update');
     $c->stash->{email} = $c->req->param('rznvy');
 
