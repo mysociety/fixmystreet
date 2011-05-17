@@ -770,6 +770,12 @@ sub council_rss_alert_options {
 
 =head2 generate_problem_banner
 
+    my $banner = $c->cobrand->generate_problem_banner;
+
+    <p id="[% banner.id %]:>[% banner.text %]</p>
+
+Generate id and text for banner that appears at top of problem page.
+
 =cut
 
 sub generate_problem_banner {
