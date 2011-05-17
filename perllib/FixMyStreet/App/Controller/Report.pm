@@ -73,15 +73,6 @@ sub display : Path('') : Args(1) {
     #       ( $problem->{latitude}, $problem->{longitude} );
 
 
-    $c->stash->{banner} = $c->cobrand->generate_problem_banner($c->stash->{problem});
-
-#     my $banner;
-#     if ($q->{site} ne 'emptyhomes' && $problem->{state} eq 'confirmed' && $problem->{duration} > 8*7*24*60*60) {
-#         $banner = $q->p({id => 'unknown'}, _('This problem is old and of unknown status.'));
-#     }
-#     if ($problem->{state} eq 'fixed') {
-#         $banner = $q->p({id => 'fixed'}, _('This problem has been fixed') . '.');
-#     }
 
 #     my $fixed = ($input{fixed}) ? ' checked' : '';
 
@@ -170,6 +161,8 @@ sub format_problem_for_display : Private {
     my ( $self, $c ) = @_;
 
     my $problem = $c->stash->{problem};
+
+    $c->stash->{banner} = $c->cobrand->generate_problem_banner($problem);
 
     ( my $detail = $problem->detail ) =~ s/\r//g;
     my @detail = split /\n{2,}/, $detail;
