@@ -65,45 +65,135 @@ sub report_update : Path : Args(0) {
 #    my $out = Page::send_confirmation_email($q, $input{rznvy}, $input{name}, 'update', %h);
 #    return $out;
 
-    $c->forward( 'setup_page' );
-    $c->forward( 'validate' ) || $c->forward( '/report/display', [ $c->req->param( 'id' ) ] );
+         $c->forward('setup_page')
+      && $c->forward('process_user')
+      && $c->forward('process_update')
+      && $c->forward('check_for_errors')
+      or $c->go( '/report/display', [ $c->req->param('id') ] );
+
+    $c->forward('save_update');
 
     # just go back to the report page for now
-    $c->go( '/report/display', [ $c->req->param( 'id' ) ] );
+    $c->go( '/report/display', [ $c->req->param('id') ] );
     return 1;
 }
 
 sub setup_page : Private {
     my ( $self, $c ) = @_;
 
-    $c->stash->{problem} = $c->model( 'DB::Problem' )->find(
-        { id => $c->req->param('id') }
-    );
-}
+    my $problem =
+      $c->model('DB::Problem')->find( { id => $c->req->param('id') } );
 
-sub validate : Private {
-    my ( $self, $c ) = @_;
+    return unless $problem;
 
-    my %field_errors = ();
-
-    if ( $c->req->param( 'update' ) !~ /\S/ ) {
-        $field_errors{update} = _('Please enter a message');
-    }
-
-   if ($c->req->param('rznvy') !~ /\S/) {
-       $field_errors{email} = _('Please enter your email');
-   } elsif (!mySociety::EmailUtil::is_valid_email($c->req->param('rznvy'))) {
-       $field_errors{email} = _('Please enter a valid email');
-   }
-
-    if ( scalar keys %field_errors ) {
-        $c->stash->{field_errors} = \%field_errors;
-        return;
-    }
+    $c->stash->{problem} = $problem;
 
     return 1;
 }
 
+=head2 process_user
+
+Load user from the database or prepare a new one.
+
+=cut
+
+sub process_user : Private {
+    my ( $self, $c ) = @_;
+
+    # FIXME - If user already logged in use them regardless
+
+    # Extract all the params to a hash to make them easier to work with
+    my %params =    #
+      map { $_ => scalar $c->req->param($_) }    #
+      ( 'rznvy', 'name' );
+
+    # cleanup the email address
+    my $email = $params{rznvy} ? lc $params{rznvy} : '';
+    $email =~ s{\s+}{}g;
+
+    my $update_user = $c->model('DB::User')->find_or_new( { email => $email } );
+
+    # set the user's name if they don't have one
+    $update_user->name( _trim_text( $params{name} ) )
+      unless $update_user->name;
+
+    $c->stash->{update_user} = $update_user;
+
+    return 1;
+}
+
+sub process_update : Private {
+    my ( $self, $c ) = @_;
+
+    my %params =    #
+      map { $_ => scalar $c->req->param($_) } ( 'update', 'name' );
+
+    my $update = $c->model('DB::Comment')->new(
+        {
+            text    => $params{update},
+            name    => _trim_text( $params{name} ),
+            problem => $c->stash->{problem},
+            user    => $c->stash->{update_user}
+        }
+    );
+
+    $c->stash->{update} = $update;
+
+    return 1;
+}
+
+sub _trim_text {
+    my $input = shift;
+    for ($input) {
+        last unless $_;
+        s{\s+}{ }g;    # all whitespace to single space
+        s{^ }{};       # trim leading
+        s{ $}{};       # trim trailing
+    }
+    return $input;
+}
+
+=head2 check_for_errors
+
+Examine the user and the report for errors. If found put them on stash and
+return false.
+
+=cut
+
+sub check_for_errors : Private {
+    my ( $self, $c ) = @_;
+
+    # let the model check for errors
+    my %field_errors = (
+        %{ $c->stash->{update_user}->check_for_errors },
+        %{ $c->stash->{update}->check_for_errors },
+    );
+
+    $c->log->debug( join ', ', keys %field_errors );
+
+    # all good if no errors
+    return 1 unless scalar keys %field_errors;
+
+    $c->stash->{field_errors} = \%field_errors;
+
+    return;
+}
+
+sub save_update : Private {
+    my ( $self, $c ) = @_;
+
+    if ( $c->stash->{update_user}->in_storage ) {
+        $c->stash->{update_user}->update_user;
+    } else {
+        $c->stash->{update_user}->insert;
+    }
+
+    if ( $c->stash->{update}->in_storage ) {
+        $c->stash->{update}->update;
+    } else {
+        $c->stash->{update}->insert;
+    }
+}
 
 __PACKAGE__->meta->make_immutable;
 

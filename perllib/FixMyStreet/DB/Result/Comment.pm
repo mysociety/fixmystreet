@@ -73,4 +73,15 @@ __PACKAGE__->belongs_to(
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+sub check_for_errors {
+    my $self = shift;
+
+    my %errors = ();
+
+    $errors{update} = _('Please enter a message')
+      unless $self->text =~ m/\S/;
+
+    return \%errors;
+}
 1;
