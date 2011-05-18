@@ -159,6 +159,8 @@ sub load_problem_or_display_error : Private {
         {
             select => [
                 'id', 'name', 'text',
+                'user_id',
+                'anonymous',
                 'mark_fixed',
                 'mark_open',
                 'photo',
