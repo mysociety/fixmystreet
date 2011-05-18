@@ -122,6 +122,16 @@ sub process_user : Private {
     return 1;
 }
 
+=head2 process_update
+
+Take the submitted params and create a new update item. Does not save
+anything to the database.
+
+NB: relies on their being a probem and update_user in the stash. May
+want to move adding these elsewhere
+
+=cut
+
 sub process_update : Private {
     my ( $self, $c ) = @_;
 
@@ -178,6 +188,12 @@ sub check_for_errors : Private {
 
     return;
 }
+
+=head2 save_update
+
+Save the update and the user as appropriate.
+
+=cut
 
 sub save_update : Private {
     my ( $self, $c ) = @_;
