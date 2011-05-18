@@ -134,6 +134,15 @@ for my $test (
     };
 }
 
+subtest "unconfirmed updates not displayed" => sub {
+    $comment->state( 'unconfirmed' );
+    $comment->update;
+    $mech->get_ok("/report/$report_id");
+
+    my $meta = $mech->extract_update_metas;
+    is scalar @$meta, 0, 'update not displayed';
+};
+
 ok $comment->delete, 'deleted comment';
 $mech->delete_user('commenter@example.com');
 $mech->delete_user('test@example.com');

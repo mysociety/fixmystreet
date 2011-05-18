@@ -155,7 +155,7 @@ sub load_problem_or_display_error : Private {
     $c->stash->{problem} = $problem;
 
     my $updates = $c->model('DB::Comment')->search(
-        { problem_id => $problem->id }, #, state => 'confirmed' },
+        { problem_id => $problem->id, state => 'confirmed' },
         {
             select => [
                 'id', 'name', 'text',
@@ -170,7 +170,7 @@ sub load_problem_or_display_error : Private {
                     -as     => 'confirmed',
                 }
             ],
-            order_by => 'confirmed'
+            order_by => 'confirmed',
         }
     );
 
