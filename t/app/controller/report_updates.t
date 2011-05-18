@@ -187,6 +187,35 @@ subtest "several updates shown in correct order" => sub {
     is $meta->[2], 'Posted anonymously at 08:12, Tuesday 15 March 2011, marked as fixed', 'third update';
 };
 
+for my $test (
+    {
+        fields => {
+            rznvy  => '',
+            update => '',
+            name   => '',
+        },
+        field_errors => [ 'Please enter your email', 'Please enter a message' ]
+    },
+    {
+        fields => {
+            rznvy  => 'test',
+            update => '',
+            name   => '',
+        },
+        field_errors => [ 'Please enter a valid email', 'Please enter a message' ]
+    },
+  )
+{
+    subtest "submit an update" => sub {
+        $mech->get_ok("/report/$report_id");
+
+        $mech->submit_form_ok( { with_fields => $test->{fields} },
+            'submit update' );
+
+        is_deeply $mech->form_errors, $test->{field_errors}, 'field errors';
+    };
+}
+
 ok $comment->delete, 'deleted comment';
 $mech->delete_user('commenter@example.com');
 $mech->delete_user('test@example.com');
