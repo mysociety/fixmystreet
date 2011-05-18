@@ -128,6 +128,8 @@ sub delete_user {
     }
 
     $mech->log_out_ok;
+    ok( $_->delete, "delete comment" . $_->text )    #
+      for $user->comments;
     ok( $_->delete, "delete problem " . $_->title )    #
       for $user->problems;
     ok( $_->delete, "delete alert " . $_->alert_type )
