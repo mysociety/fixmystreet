@@ -143,6 +143,50 @@ subtest "unconfirmed updates not displayed" => sub {
     is scalar @$meta, 0, 'update not displayed';
 };
 
+subtest "several updates shown in correct order" => sub {
+    for my $fields ( {
+            problem_id => $report_id,
+            user_id    => $user2->id,
+            name       => 'Other User',
+            mark_fixed => 'false',
+            text       => 'First update',
+            state      => 'confirmed',
+            confirmed  => '2011-03-10 12:23:15',
+        },
+        {
+            problem_id => $report_id,
+            user_id    => $user->id,
+            name       => 'Main User',
+            mark_fixed => 'false',
+            text       => 'Second update',
+            state      => 'confirmed',
+            confirmed  => '2011-03-10 12:23:16',
+        },
+        {
+            problem_id => $report_id,
+            user_id    => $user->id,
+            name       => 'Other User',
+            anonymous  => 'true',
+            mark_fixed => 'true',
+            text       => 'Third update',
+            state      => 'confirmed',
+            confirmed  => '2011-03-15 08:12:36',
+        }
+    ) {
+        my $comment = FixMyStreet::App->model('DB::Comment')->find_or_create(
+            $fields
+        );
+    }
+
+    $mech->get_ok("/report/$report_id");
+
+    my $meta = $mech->extract_update_metas;
+    is scalar @$meta, 3, 'number of updates';
+    is $meta->[0], 'Posted by Other User at 12:23, Thursday 10 March 2011', 'first update';
+    is $meta->[1], 'Posted by Main User at 12:23, Thursday 10 March 2011', 'second update';
+    is $meta->[2], 'Posted anonymously at 08:12, Tuesday 15 March 2011, marked as fixed', 'third update';
+};
+
 ok $comment->delete, 'deleted comment';
 $mech->delete_user('commenter@example.com');
 $mech->delete_user('test@example.com');
