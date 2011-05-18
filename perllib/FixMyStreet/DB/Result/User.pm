@@ -36,6 +36,12 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 __PACKAGE__->has_many(
+  "comments",
+  "FixMyStreet::DB::Result::Comment",
+  { "foreign.user_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+__PACKAGE__->has_many(
   "problems",
   "FixMyStreet::DB::Result::Problem",
   { "foreign.user_id" => "self.id" },
@@ -43,8 +49,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-05-11 14:21:33
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Qaw6SZ5my5MnH7B5sB9NDw
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-05-18 10:55:41
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:PsK+O4EefB4wywX6VZYNuw
 
 use mySociety::EmailUtil;
 

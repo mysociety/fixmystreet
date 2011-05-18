@@ -22,8 +22,6 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "name",
   { data_type => "text", is_nullable => 1 },
-  "email",
-  { data_type => "text", is_nullable => 0 },
   "website",
   { data_type => "text", is_nullable => 1 },
   "created",
@@ -50,8 +48,18 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", is_nullable => 0 },
   "mark_open",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "user_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "anonymous",
+  { data_type => "boolean", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
+__PACKAGE__->belongs_to(
+  "user",
+  "FixMyStreet::DB::Result::User",
+  { id => "user_id" },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+);
 __PACKAGE__->belongs_to(
   "problem",
   "FixMyStreet::DB::Result::Problem",
@@ -60,8 +68,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-05-17 14:18:03
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:CVW3SYgW5Us142cj8zTafg
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-05-18 11:45:22
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:1HsEtlhxEN6I/umfbrswSw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
