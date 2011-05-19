@@ -140,16 +140,17 @@ sub process_update : Private {
     my %params =    #
       map { $_ => scalar $c->req->param($_) } ( 'update', 'name', 'fixed' );
 
-    use Data::Dumper;
-    $c->log->debug( 'params: ' . Dumper( %params ) );
     my $update = $c->model('DB::Comment')->new(
         {
-            text    => $params{update},
-            name    => _trim_text( $params{name} ),
-            problem => $c->stash->{problem},
-            user    => $c->stash->{update_user},
-            state   => 'unconfirmed',
-            mark_fixed => $params{fixed} ? 't' : 'f',
+            text         => $params{update},
+            name         => _trim_text( $params{name} ),
+            problem      => $c->stash->{problem},
+            user         => $c->stash->{update_user},
+            state        => 'unconfirmed',
+            mark_fixed   => $params{fixed} ? 't' : 'f',
+            cobrand      => $c->cobrand->moniker,
+            cobrand_data => $c->cobrand->extra_update_data,
+            lang         => $c->stash->{lang},
         }
     );
 
