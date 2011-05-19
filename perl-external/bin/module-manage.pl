@@ -9,10 +9,12 @@ use File::Slurp;
 use Path::Class;
 use List::MoreUtils 'uniq';
 
-my $root_dir    = file(__FILE__)->dir->parent->absolute->stringify;
-my $module_list = "$root_dir/modules.txt";
-my $file_list   = "$root_dir/files.txt";
-my $minicpan    = "$root_dir/minicpan";
+my $root_dir               = file(__FILE__)->dir->parent->absolute->stringify;
+my $module_list            = "$root_dir/modules.txt";
+my $file_list              = "$root_dir/files.txt";
+my $minicpan               = "$root_dir/minicpan";
+my $local_packages_file    = "$minicpan/modules/02packages.details.txt";
+my $local_packages_file_gz = "$local_packages_file.gz";
 
 my %actions = (
     add            => \&add,
@@ -66,17 +68,87 @@ sub add {
 
 sub index_minicpan {
 
-    # go to the minicpan dir and run dpan there
-    # if ( `which dpan` =~ m/\S/ ) {
-    #     chdir $minicpan;
-    #     system "dpan -f ../dpan_config";
-    # }
-    # else {
-    #     warn "Skipping indexing - could not find dpan";
-    # }
+    # Go through all files in minicpan and add to files.txt
+    my @files = sort map { s{^.*?(/authors/id/.*)$}{$1}; $_ }
+      split '\s', `find $minicpan/authors -type f`;
+    write_file( $file_list, @files );
 
-    warn "implement indexing";
+    # work out which ones are not currently in packages
+    my @local_packages_lines = read_packages_txt_gz($local_packages_file_gz);
 
+    # Are there any missing files?
+    my @missing_files = ();
+  MINICPAN_FILE:
+    foreach my $file (@files) {
+        my ($auth_and_file) = $file =~ m{/authors/id/./../(.*)$};
+
+        foreach my $line (@local_packages_lines) {
+            next MINICPAN_FILE if $line =~ m{$auth_and_file};
+        }
+
+        push @missing_files, $auth_and_file;
+    }
+
+    # If there are no missing files we can stop
+    return unless @missing_files;
+
+    # Fetch 02packages off live cpan
+    my $remote_packages_url =
+      'http://cpan.perl.org/modules/02packages.details.txt.gz';
+    my $remote_packages_file = "$minicpan/modules/remote_packages.txt.gz";
+    print "  Fetching '$remote_packages_url'...\n";
+    is_error( mirror( $remote_packages_url, $remote_packages_file ) )
+      && die "Could not retrieve '$remote_packages_url'";
+    print "  done...\n";
+
+    my @remote_packages_lines = read_packages_txt_gz($remote_packages_file);
+
+    # Find remaining in live file and add to local file
+    my @lines_to_add = ();
+    foreach my $missing (@missing_files) {
+        print "  Finding matches for '$missing'\n";
+        push @lines_to_add, grep { m{$missing} } @remote_packages_lines;
+    }
+
+    # combine and sort the lines found
+    my @new_lines = sort @local_packages_lines, @lines_to_add;
+    unlink $local_packages_file_gz;
+    write_file( $local_packages_file, map { "$_\n" } packages_file_headers(),
+        @new_lines );
+    system "gzip -v $local_packages_file";
+}
+
+sub read_packages_txt_gz {
+    my $file = shift;
+
+    return unless -e $file;
+
+    my @lines = split /\n/, `zcat $file`;
+
+    # ditch the headers
+    while ( my $line = shift @lines ) {
+        last if $line =~ m{^\s*$};
+    }
+
+    return @lines;
+}
+
+sub packages_file_headers {
+
+    # this is all fake stuff
+
+    return << 'END_OF_LINES';
+Allow-Packages-Only-Once: 0
+Columns: package name, version, path
+Description: Package names for my private CPAN
+File: 02packages.details.txt
+Intended-For: My private CPAN
+Last-Updated: Wed, 04 May 2011 09:59:13 GMT
+Line-Count: 1389
+URL: http://example.com/MyCPAN/modules/02packages.details.txt
+Written-By: /home/evdb/fixmystreet/perl-external/local-lib/bin/dpan using CPAN::PackageDetails 0.25    
+
+END_OF_LINES
 }
 
 sub build_all {
