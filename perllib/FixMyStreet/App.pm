@@ -84,7 +84,7 @@ __PACKAGE__->setup();
 # set up DB handle for old code
 FixMyStreet->configure_mysociety_dbhandle;
 
-# disable debug logging unless in debaug mode
+# disable debug logging unless in debug mode
 __PACKAGE__->log->disable('debug')    #
   unless __PACKAGE__->debug;
 
