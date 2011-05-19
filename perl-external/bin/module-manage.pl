@@ -11,7 +11,7 @@ use List::MoreUtils 'uniq';
 
 my $root_dir    = file(__FILE__)->dir->parent->absolute->stringify;
 my $module_list = "$root_dir/modules.txt";
-my $url_list    = "$root_dir/urls.txt";
+my $file_list   = "$root_dir/files.txt";
 my $minicpan    = "$root_dir/minicpan";
 
 my %actions = (
@@ -30,7 +30,9 @@ my %actions = (
 my ( $action, @args ) = @ARGV;
 $actions{$action}
   ? $actions{$action}->(@args)
-  : die "Usage: $0 action [args ...]\n";
+  : die("Usage: $0 action [...]\n  actions: "
+      . join( ', ', sort keys %actions )
+      . "\n" );
 
 exit;
 
@@ -63,7 +65,8 @@ sub add {
       split /\n/, $out;
 
     write_file( $module_list, { append => 1 }, "$module\n" );
-    write_file( $url_list, { append => 1 }, map { "$_\n" } @fetched_urls );
+
+    # write_file( $file_list, { append => 1 }, map { "$_\n" } @fetched_urls );
     sort_files();
 
     fetch_all();
@@ -123,24 +126,37 @@ sub build {
 }
 
 sub fetch_all {
-    my @urls = sort uniq map { s{\s+$}{}; $_; } read_file($url_list);
+    my @urls = sort uniq map { s{\s+$}{}; $_; } read_file($file_list);
     fetch($_) for @urls;
 }
 
 sub fetch {
-    my $url = shift;
-    my ($filename) = $url =~ m{/(authors/.+)$};
+    my $filename = shift;
 
     my $destination = file("$minicpan/$filename");
     $destination->dir->mkpath;
 
     return if -e $destination;
 
-    print "  Fetching $url\n";
-    print "    -> $destination\n";
+    # create a list of urls to try in order
+    my @urls = (
+        "http://search.cpan.org/CPAN" . $filename,
+        "http://backpan.perl.org" . $filename,
+    );
 
-    is_success( getstore( $url, "$destination" ) )
-      || die "Error saving $url to $destination";
+    while ( scalar @urls ) {
+        my $url = shift @urls;
+
+        # try to fetch
+        print "  Trying '$url'...\n";
+        last if is_success( getstore( $url, "$destination" ) );
+
+        # if more options try again
+        next if scalar @urls;
+
+        # could not retrieve - die
+        die "ERROR - ran out of urls fetching '$filename'";
+    }
 }
 
 sub zap {
@@ -152,7 +168,7 @@ sub zap {
 }
 
 sub sort_files {
-    foreach my $file ( $url_list, $module_list ) {
+    foreach my $file ( $file_list, $module_list ) {
         my @entries = read_file($file);
         @entries = uniq sort @entries;
         write_file( $file, @entries );

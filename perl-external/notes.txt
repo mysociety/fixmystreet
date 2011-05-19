@@ -1,29 +1,16 @@
 Steps to add a module.
 
-Install using cpanm storing files needed in minicpan dir using --save-dists
+  Install using cpanm storing files needed in minicpan dir using --save-dists
+  Add module to modules.txt
+  Go through all files in minicpan and add to files.txt which gets committed to repo
+  Fetch 02packages off live cpan
+  get list of all files
+  remove those is current local packages file
+  Find remaining in live file and add to local file
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-make urls.txt files be relative - rename to files.txt
-
-ditch dpan
 
 fetch files from backpan if not found on cpan
 
