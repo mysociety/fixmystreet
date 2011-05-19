@@ -225,4 +225,24 @@ sub url {
     return "/report/" . $self->id;
 }
 
+=head2 get_photo_params
+
+Returns a hashref of details of any attached photo for use in templates.
+Hashref contains height, width and url keys.
+
+=cut
+
+sub get_photo_params {
+    my $self = shift;
+
+    return {} unless $self->photo;
+
+    my $photo = {};
+    ( $photo->{width}, $photo->{height} ) =
+      Image::Size::imgsize( \$self->photo );
+    $photo->{url} = '/photo/?id=' . $self->id;
+
+    return $photo;
+}
+
 1;

@@ -23,11 +23,7 @@
 </p>
 [% END %]
 
-[% IF photo %]
-<p align="center">
-    <img alt="" height="[% photo.height %]" width="[% photo.width %]" src="[% photo.url %]">
-</p>
-[% END %]
+[% INCLUDE 'report/photo.html' object=problem %]
 
 <p align="right">
     <small>

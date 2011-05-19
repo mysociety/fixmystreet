@@ -200,7 +200,6 @@ sub format_problem_for_display : Private {
     $c->stash->{email} = $c->req->param('rznvy');
 
     $c->forward('generate_map_tags');
-    $c->forward('generate_problem_photo');
     $c->forward('generate_problem_meta');
 
     #         problem_updates => Page::display_problem_updates($input{id}, $q),
@@ -241,20 +240,6 @@ sub generate_map_tags : Private {
     $c->stash->{map_js}       = FixMyStreet::Map::header_js();
 
       return 1;
-}
-
-sub generate_problem_photo : Private {
-    my ( $self, $c ) = @_;
-
-    my $problem = $c->stash->{problem};
-
-    if ( $c->cobrand->allow_photo_display and $problem->photo ) {
-        my $photo = {};
-        ( $photo->{width}, $photo->{height} ) =
-          Image::Size::imgsize( \$problem->photo );
-        $photo->{url} = '/photo/?id=' . $problem->id;
-        $c->stash->{photo} = $photo;
-    }
 }
 
 sub generate_problem_meta : Private {
