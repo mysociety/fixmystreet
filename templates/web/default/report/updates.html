@@ -22,7 +22,9 @@
         </p>
         [% END %]
     </div>
-    [%# images %]
+
+    [% INCLUDE 'report/photo.html' object=update %]
+
     </div>
 [% '</div>' IF loop.last %]
 [% END %]

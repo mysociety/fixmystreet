@@ -4,6 +4,8 @@ use Moose;
 use namespace::autoclean;
 BEGIN { extends 'Catalyst::Controller'; }
 
+use Path::Class;
+
 =head1 NAME
 
 FixMyStreet::App::Controller::Report::Update
@@ -68,6 +70,7 @@ sub report_update : Path : Args(0) {
          $c->forward('setup_page')
       && $c->forward('process_user')
       && $c->forward('process_update')
+      && $c->forward('/report/new/process_photo')
       && $c->forward('check_for_errors')
       or $c->go( '/report/display', [ $c->req->param('id') ] );
 
@@ -210,6 +213,14 @@ sub save_update : Private {
     } elsif ( $c->user && $c->user->id == $user->id ) {
         $user->update;
             $update->confirm;
+    }
+
+    # If there was a photo add that too
+    if ( my $fileid = $c->stash->{upload_fileid} ) {
+        my $file = file( $c->config->{UPLOAD_CACHE}, "$fileid.jpg" );
+        my $blob = $file->slurp;
+        $file->remove;
+        $update->photo($blob);
     }
 
     if ( $update->in_storage ) {
