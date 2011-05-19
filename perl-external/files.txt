@@ -10,8 +10,8 @@
 /authors/id/A/AD/ADAMK/File-ShareDir-1.03.tar.gz
 /authors/id/A/AD/ADAMK/Module-Install-1.00.tar.gz
 /authors/id/A/AD/ADAMK/Object-Signature-1.05.tar.gz
-/authors/id/A/AD/ADAMK/Params-Util-1.03.tar.gz
 /authors/id/A/AD/ADAMK/PPI-1.215.tar.gz
+/authors/id/A/AD/ADAMK/Params-Util-1.03.tar.gz
 /authors/id/A/AD/ADAMK/Task-Weaken-1.04.tar.gz
 /authors/id/A/AD/ADAMK/Test-NoWarnings-1.02.tar.gz
 /authors/id/A/AD/ADAMK/Test-Object-0.07.tar.gz
@@ -27,8 +27,8 @@
 /authors/id/A/AS/ASKSH/Snowball-Norwegian-1.2.tar.gz
 /authors/id/A/AS/ASKSH/Snowball-Swedish-1.2.tar.gz
 /authors/id/A/AU/AUDREYT/Test-use-ok-0.02.tar.gz
-/authors/id/B/BD/BDFOY/ConfigReader-Simple-1.28.tar.gz
 /authors/id/B/BD/BDFOY/CPAN-PackageDetails-0.25.tar.gz
+/authors/id/B/BD/BDFOY/ConfigReader-Simple-1.28.tar.gz
 /authors/id/B/BD/BDFOY/Distribution-Guess-BuildSystem-0.12.tar.gz
 /authors/id/B/BD/BDFOY/File-Find-Closures-1.09.tar.gz
 /authors/id/B/BD/BDFOY/Module-Extract-Namespaces-0.14.tar.gz
@@ -49,8 +49,8 @@
 /authors/id/B/BO/BOBTFISH/Catalyst-Runtime-5.80032.tar.gz
 /authors/id/B/BO/BOBTFISH/CatalystX-Component-Traits-0.16.tar.gz
 /authors/id/B/BO/BOBTFISH/MooseX-Getopt-0.35.tar.gz
-/authors/id/B/BO/BOBTFISH/namespace-autoclean-0.12.tar.gz
 /authors/id/B/BO/BOBTFISH/Test-WWW-Mechanize-Catalyst-0.53.tar.gz
+/authors/id/B/BO/BOBTFISH/namespace-autoclean-0.12.tar.gz
 /authors/id/B/BP/BPOWERS/Memoize-ExpireLRU-0.55.tar.gz
 /authors/id/B/BR/BRICAS/Catalyst-Plugin-ConfigLoader-0.30.tar.gz
 /authors/id/B/BR/BRICAS/Config-Any-0.20.tar.gz
@@ -100,12 +100,12 @@
 /authors/id/F/FL/FLORA/Data-Visitor-0.27.tar.gz
 /authors/id/F/FL/FLORA/Devel-GlobalDestruction-0.03.tar.gz
 /authors/id/F/FL/FLORA/HTTP-Request-AsCGI-1.2.tar.gz
+/authors/id/F/FL/FLORA/MRO-Compat-0.11.tar.gz
 /authors/id/F/FL/FLORA/MooseX-Emulate-Class-Accessor-Fast-0.00903.tar.gz
 /authors/id/F/FL/FLORA/MooseX-MethodAttributes-0.24.tar.gz
 /authors/id/F/FL/FLORA/MooseX-Role-WithOverloading-0.09.tar.gz
-/authors/id/F/FL/FLORA/MRO-Compat-0.11.tar.gz
-/authors/id/F/FL/FLORA/namespace-clean-0.20.tar.gz
 /authors/id/F/FL/FLORA/Sub-Name-0.05.tar.gz
+/authors/id/F/FL/FLORA/namespace-clean-0.20.tar.gz
 /authors/id/F/FR/FREW/Data-Dumper-Concise-2.020.tar.gz
 /authors/id/F/FR/FREW/SQL-Abstract-1.72.tar.gz
 /authors/id/G/GA/GAAS/Data-Dump-1.19.tar.gz
@@ -119,11 +119,11 @@
 /authors/id/G/GA/GAAS/HTTP-Message-6.01.tar.gz
 /authors/id/G/GA/GAAS/HTTP-Negotiate-6.00.tar.gz
 /authors/id/G/GA/GAAS/IO-String-1.08.tar.gz
-/authors/id/G/GA/GAAS/libwww-perl-6.01.tar.gz
 /authors/id/G/GA/GAAS/LWP-MediaTypes-6.01.tar.gz
 /authors/id/G/GA/GAAS/Net-HTTP-6.00.tar.gz
 /authors/id/G/GA/GAAS/URI-1.58.tar.gz
 /authors/id/G/GA/GAAS/WWW-RobotRules-6.00.tar.gz
+/authors/id/G/GA/GAAS/libwww-perl-6.01.tar.gz
 /authors/id/G/GB/GBARR/CPAN-DistnameInfo-0.12.tar.gz
 /authors/id/G/GB/GBARR/Scalar-List-Utils-1.23.tar.gz
 /authors/id/G/GE/GETTY/HTTP-Body-1.11.tar.gz
@@ -149,8 +149,8 @@
 /authors/id/M/MI/MIYAGAWA/HTML-Selector-XPath-0.07.tar.gz
 /authors/id/M/MI/MIYAGAWA/Template-Plugin-Comma-0.04.tar.gz
 /authors/id/M/MI/MIYAGAWA/Web-Scraper-0.34.tar.gz
-/authors/id/M/ML/MLEHMANN/common-sense-3.4.tar.gz
 /authors/id/M/ML/MLEHMANN/JSON-XS-2.3.tar.gz
+/authors/id/M/ML/MLEHMANN/common-sense-3.4.tar.gz
 /authors/id/M/MR/MRAMBERG/Text-SimpleTable-2.03.tar.gz
 /authors/id/M/MS/MSCHILLI/Log-Log4perl-1.32.tar.gz
 /authors/id/M/MS/MSCHWERN/Carp-Assert-0.20.tar.gz
@@ -161,8 +161,8 @@
 /authors/id/M/MS/MSTROUT/Catalyst-Plugin-Static-Simple-0.29.tar.gz
 /authors/id/N/NU/NUFFIN/Tie-ToObject-0.03.tar.gz
 /authors/id/O/OL/OLAF/Net-DNS-0.66.tar.gz
-/authors/id/O/OV/OVID/aliased-0.30.tar.gz
 /authors/id/O/OV/OVID/Sub-Override-0.08.tar.gz
+/authors/id/O/OV/OVID/aliased-0.30.tar.gz
 /authors/id/P/PE/PETDANCE/Carp-Assert-More-1.12.tar.gz
 /authors/id/P/PE/PETDANCE/Template-Timer-1.00.tar.gz
 /authors/id/P/PE/PETDANCE/Test-WWW-Mechanize-1.30.tar.gz
