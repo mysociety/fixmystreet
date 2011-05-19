@@ -71,7 +71,7 @@ sub index_minicpan {
     # Go through all files in minicpan and add to files.txt
     my @files = sort map { s{^.*?(/authors/id/.*)$}{$1}; $_ }
       split '\s', `find $minicpan/authors -type f`;
-    write_file( $file_list, @files );
+    write_file( $file_list, map { "$_\n" } @files );
 
     # work out which ones are not currently in packages
     my @local_packages_lines = read_packages_txt_gz($local_packages_file_gz);
