@@ -35,8 +35,7 @@ sub index :Path :Args(0) {
     my $photo;
 
     if ( $comment ) {
-        # FIXME implement comment photos
-        return;
+        $photo = $c->model('DB::Comment')->find( {id => $comment, state => 'confirmed' } );
     } else {
         $photo = $c->model('DB::Problem')->find( {id => $id, state => 'confirmed' } );
     }
