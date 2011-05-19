@@ -216,6 +216,71 @@ for my $test (
     };
 }
 
+subtest "submit an update for a non registered user" => sub {
+    $mech->clear_emails_ok();
+
+    $mech->get_ok("/report/$report_id");
+
+    $mech->submit_form_ok(
+        {
+            with_fields => {
+                rznvy  => 'unregistered@example.com',
+                update => 'update from an unregistered user'
+            }
+        },
+        'submit update'
+    );
+
+    $mech->content_contains('Nearly Done! Now check your email');
+
+    my $email = $mech->get_email;
+    ok $email, "got an email";
+    like $email->body, qr/confirm the update you/i, "Correct email text";
+
+
+    my ( $url, $url_token ) = $email->body =~ m{(http://\S+/C/)(\S+)};
+    ok $url, "extracted confirm url '$url'";
+
+    my $token = FixMyStreet::App->model('DB::Token')->find(
+        {
+            token => $url_token,
+            scope => 'comment'
+        }
+    );
+    ok $token, 'Token found in database';
+
+    my $update_id = $token->data;
+    my $update = FixMyStreet::App->model( 'DB::Comment' )->find(
+        { id => $update_id }
+    );
+
+    ok $update, 'found update in database';
+    is $update->state, 'unconfirmed', 'update unconfirmed';
+    is $update->user->email, 'unregistered@example.com', 'update email';
+    is $update->text, 'update from an unregistered user', 'update text';
+};
+
+subtest "submit an update for a registered user" => sub {
+    $mech->clear_emails_ok();
+
+    $mech->log_in_ok( $user->email );
+    $mech->get_ok("/report/$report_id");
+
+    $mech->submit_form_ok(
+        {
+            with_fields => {
+                rznvy  => 'test@example.com',
+                update => 'update from a registered user'
+            }
+        },
+        'submit update'
+    );
+
+    is $mech->uri->path, "/report/" . $report_id, "redirected to report page";
+
+    $mech->email_count_is(0);
+};
+
 ok $comment->delete, 'deleted comment';
 $mech->delete_user('commenter@example.com');
 $mech->delete_user('test@example.com');
