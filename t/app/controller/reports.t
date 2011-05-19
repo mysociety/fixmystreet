@@ -20,14 +20,14 @@ SKIP: {
     # EHA lacks one column the others have
     $mech->content_lacks('state unknown');
 
-    # FIXME To do the below, need a way of altering where MaPit is pointing
-    # skip( "Need 'fiksgatami' in ALLOWED_COBRANDS config", 8 )
-    #   unless FixMyStreet::App->config->{ALLOWED_COBRANDS} =~ m{fiksgatami};
-    # ok $mech->host("fiksgatami.no"), 'change host to fiksgatami';
-    # $mech->get_ok('/reports');
-    # # There should only be one Oslo
-    # $mech->content_contains('Oslo');
-    # $mech->content_unlike(qr{Oslo.*Oslo}s);
+    skip( "Need 'fiksgatami' in ALLOWED_COBRANDS config", 8 )
+      unless FixMyStreet::App->config->{ALLOWED_COBRANDS} =~ m{fiksgatami};
+    mySociety::MaPit::configure('http://mapit.nuug.no/');
+    ok $mech->host("fiksgatami.no"), 'change host to fiksgatami';
+    $mech->get_ok('/reports');
+    # There should only be one Oslo
+    $mech->content_contains('Oslo');
+    $mech->content_unlike(qr{Oslo">Oslo.*Oslo}s);
 }
 
 done_testing();
