@@ -9,7 +9,7 @@ use URI::Escape;
 use mySociety::VotingArea;
 
 sub site_restriction {
-    return ( "and council='2489'", 'barnet' );
+    return ( "and council='2489'", 'barnet', { council => '2489' } );
 }
 
 sub base_url {

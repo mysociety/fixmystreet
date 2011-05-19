@@ -47,6 +47,7 @@ http://search.cpan.org/CPAN/authors/id/B/BO/BOBTFISH/Catalyst-Plugin-Authenticat
 http://search.cpan.org/CPAN/authors/id/B/BO/BOBTFISH/Catalyst-Plugin-Session-0.31.tar.gz
 http://search.cpan.org/CPAN/authors/id/B/BO/BOBTFISH/Catalyst-Plugin-Session-Store-Delegate-0.06.tar.gz
 http://search.cpan.org/CPAN/authors/id/B/BO/BOBTFISH/Catalyst-Plugin-Unicode-0.93.tar.gz
+http://search.cpan.org/CPAN/authors/id/B/BO/BOBTFISH/Catalyst-Plugin-Unicode-Encoding-1.1.tar.gz
 http://search.cpan.org/CPAN/authors/id/B/BO/BOBTFISH/Catalyst-Runtime-5.80032.tar.gz
 http://search.cpan.org/CPAN/authors/id/B/BO/BOBTFISH/CatalystX-Component-Traits-0.16.tar.gz
 http://search.cpan.org/CPAN/authors/id/B/BO/BOBTFISH/MooseX-Getopt-0.35.tar.gz
