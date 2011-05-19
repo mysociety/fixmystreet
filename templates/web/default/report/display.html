@@ -104,6 +104,9 @@
 
 
         [% IF allow_photo_upload %]
+        [% IF photo_error %]
+            <div class='form-error'>[% photo_error %]</div>
+        [% END %]
         <div id="fileupload_normalUI">
         <label for="form_photo">[% loc('Photo:') %]</label>
         <input type="file" name="photo" id="form_photo">

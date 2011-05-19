@@ -189,7 +189,10 @@ sub check_for_errors : Private {
     delete $field_errors{name};
 
     # all good if no errors
-    return 1 unless scalar keys %field_errors;
+    return 1
+      unless ( scalar keys %field_errors
+        || scalar @{ $c->stash->{errors} }
+        || $c->stash->{photo_error} );
 
     $c->stash->{field_errors} = \%field_errors;
 
