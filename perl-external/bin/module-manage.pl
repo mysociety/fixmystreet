@@ -9,6 +9,9 @@ use File::Slurp;
 use Path::Class;
 use List::MoreUtils 'uniq';
 
+# TODO - 'updates' action that lists packages that could be updated
+# TODO - add smarts to strip out old packages (could switch to building using files.txt after)
+
 my $root_dir               = file(__FILE__)->dir->parent->absolute->stringify;
 my $module_list            = "$root_dir/modules.txt";
 my $file_list              = "$root_dir/files.txt";
@@ -204,7 +207,7 @@ sub fetch {
         my $url = shift @urls;
 
         # try to fetch
-        print "  Trying '$url'...\n";
+        print "  Fetching '$url'...\n";
         last if is_success( getstore( $url, "$destination" ) );
 
         # if more options try again
