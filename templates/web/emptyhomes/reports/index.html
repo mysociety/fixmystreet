@@ -22,7 +22,7 @@
 >
 <td align="left"><a href="[% area.url %]">[% area.name %]</a></td>
 <td>[% open.${area.id}.new.size or 0 %]</td>
-<td>[% open.${area.id}.older.list.size + open.${area.id}.unknown.list.size %]</td>
+<td>[% (open.${area.id}.older.size or 0) + (open.${area.id}.unknown.size or 0) %]</td>
 <td>[% fixed.${area.id}.new.size or 0 %]</td>
 <td>[% fixed.${area.id}.old.size or 0 %]</td>
 </tr>
