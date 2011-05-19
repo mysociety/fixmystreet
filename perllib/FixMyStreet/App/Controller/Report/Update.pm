@@ -140,16 +140,17 @@ sub process_update : Private {
     my %params =    #
       map { $_ => scalar $c->req->param($_) } ( 'update', 'name', 'fixed' );
 
-    use Data::Dumper;
-    $c->log->debug( 'params: ' . Dumper( %params ) );
     my $update = $c->model('DB::Comment')->new(
         {
-            text    => $params{update},
-            name    => _trim_text( $params{name} ),
-            problem => $c->stash->{problem},
-            user    => $c->stash->{update_user},
-            state   => 'unconfirmed',
-            mark_fixed => $params{fixed} ? 't' : 'f',
+            text         => $params{update},
+            name         => _trim_text( $params{name} ),
+            problem      => $c->stash->{problem},
+            user         => $c->stash->{update_user},
+            state        => 'unconfirmed',
+            mark_fixed   => $params{fixed} ? 't' : 'f',
+            cobrand      => $c->cobrand->moniker,
+            cobrand_data => $c->cobrand->extra_update_data,
+            lang         => $c->stash->{lang_code},
         }
     );
 
@@ -189,7 +190,10 @@ sub check_for_errors : Private {
     delete $field_errors{name};
 
     # all good if no errors
-    return 1 unless scalar keys %field_errors;
+    return 1
+      unless ( scalar keys %field_errors
+        || ( $c->stash->{errors} && scalar @{ $c->stash->{errors} } )
+        || $c->stash->{photo_error} );
 
     $c->stash->{field_errors} = \%field_errors;
 
@@ -228,6 +232,8 @@ sub save_update : Private {
     } else {
         $update->insert;
     }
+
+    return 1;
 }
 
 =head2 redirect_or_confirm_creation
@@ -243,21 +249,56 @@ sub redirect_or_confirm_creation : Private {
 
     # If confirmed send the user straight there.
     if ( $update->confirmed ) {
+        $c->forward( 'signup_for_alerts' );
         my $report_uri = $c->uri_for( '/report', $update->problem_id );
         $c->res->redirect($report_uri);
         $c->detach;
     }
 
     # otherwise create a confirm token and email it to them.
-    my $token =
-      $c->model("DB::Token")
-      ->create( { scope => 'comment', data => $update->id } );
+    my $token = $c->model("DB::Token")->create(
+        {
+            scope => 'comment',
+            data  => {
+                id        => $update->id,
+                add_alert => ( $c->req->param('add_alert') ? 1 : 0 ),
+            }
+        }
+    );
     $c->stash->{token_url} = $c->uri_for_email( '/C', $token->token );
     $c->send_email( 'update-confirm.txt', { to => $update->user->email } );
 
     # tell user that they've been sent an email
     $c->stash->{template}   = 'email_sent.html';
     $c->stash->{email_type} = 'update';
+
+    return 1;
+}
+
+=head2 signup_for_alerts
+
+If the user has selected to be signed up for alerts then create a
+new_updates alert.
+
+NB: this does not check if they are a registered user so that should
+happen before calling this.
+
+=cut
+
+sub signup_for_alerts : Private {
+    my ( $self, $c ) = @_;
+
+    if ( $c->req->param( 'add_alert' ) ) {
+        my $alert = $c->model( 'DB::Alert' )->find_or_create(
+            user => $c->stash->{update_user},
+            alert_type => 'new_updates',
+            parameter => $c->stash->{problem}->id
+        );
+
+        $alert->update;
+    }
+
+    return 1;
 }
 
 __PACKAGE__->meta->make_immutable;
