@@ -60,6 +60,7 @@ http://search.cpan.org/CPAN/authors/id/C/CH/CHORNY/Hook-LexWrap-0.24.tar.gz
 http://search.cpan.org/CPAN/authors/id/C/CH/CHORNY/Test-Warn-0.23.tar.gz
 http://search.cpan.org/CPAN/authors/id/C/CH/CHORNY/Tie-IxHash-1.22.tar.gz
 http://search.cpan.org/CPAN/authors/id/C/CI/CINE/Lingua-Stem-Snowball-Da-1.01.tar.gz
+http://search.cpan.org/CPAN/authors/id/C/CK/CKRAS/DateTime-Format-HTTP-0.40.tar.gz
 http://search.cpan.org/CPAN/authors/id/C/CO/COGENT/Tree-DAG_Node-1.06.tar.gz
 http://search.cpan.org/CPAN/authors/id/C/CR/CRENZ/Module-Find-0.10.tar.gz
 http://search.cpan.org/CPAN/authors/id/D/DA/DAGOLDEN/CPAN-Meta-2.110580.tar.gz
@@ -146,6 +147,7 @@ http://search.cpan.org/CPAN/authors/id/M/MH/MHX/Devel-PPPort-3.19.tar.gz
 http://search.cpan.org/CPAN/authors/id/M/MI/MIROD/HTML-TreeBuilder-XPath-0.12.tar.gz
 http://search.cpan.org/CPAN/authors/id/M/MI/MIROD/XML-XPathEngine-0.12.tar.gz
 http://search.cpan.org/CPAN/authors/id/M/MI/MIYAGAWA/App-cpanminus-1.4004.tar.gz
+http://search.cpan.org/CPAN/authors/id/M/MI/MIYAGAWA/App-cpanminus-1.4007.tar.gz
 http://search.cpan.org/CPAN/authors/id/M/MI/MIYAGAWA/HTML-Selector-XPath-0.07.tar.gz
 http://search.cpan.org/CPAN/authors/id/M/MI/MIYAGAWA/Template-Plugin-Comma-0.04.tar.gz
 http://search.cpan.org/CPAN/authors/id/M/MI/MIYAGAWA/Web-Scraper-0.34.tar.gz

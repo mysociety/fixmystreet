@@ -19,6 +19,7 @@ DBIx::Class
 DBIx::Class::FilterColumn
 DBIx::Class::Schema::Loader
 DBIx::Class::Storage::DBI
+DateTime::Format::HTTP
 Email::Address
 Email::Send
 Email::Simple
