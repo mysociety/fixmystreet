@@ -10,6 +10,7 @@ Catalyst::Plugin::ConfigLoader
 Catalyst::Plugin::Session::Store::DBIC
 Catalyst::Plugin::Static::Simple
 Catalyst::Plugin::Unicode
+Catalyst::Plugin::Unicode::Encoding
 Catalyst::Runtime
 Catalyst::View::TT
 Class::Accessor
