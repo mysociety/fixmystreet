@@ -228,6 +228,8 @@ sub save_update : Private {
     } else {
         $update->insert;
     }
+
+    return 1;
 }
 
 =head2 redirect_or_confirm_creation
@@ -243,6 +245,7 @@ sub redirect_or_confirm_creation : Private {
 
     # If confirmed send the user straight there.
     if ( $update->confirmed ) {
+        $c->forward( 'signup_for_alerts' );
         my $report_uri = $c->uri_for( '/report', $update->problem_id );
         $c->res->redirect($report_uri);
         $c->detach;
@@ -264,6 +267,32 @@ sub redirect_or_confirm_creation : Private {
     # tell user that they've been sent an email
     $c->stash->{template}   = 'email_sent.html';
     $c->stash->{email_type} = 'update';
+
+    return 1;
+}
+
+=head2 signup_for_alerts
+
+If the user has selected to be signed up for alerts then create a
+new_updates alert.
+
+NB: this does not check if they are a registered user so that should
+happen before calling this.
+
+=cut
+
+sub signup_for_alerts : Private {
+    my ( $self, $c ) = @_;
+
+    if ( $c->req->param( 'add_alert' ) ) {
+        my $alert = $c->model( 'DB::Alert' )->find_or_create(
+            user => $c->stash->{update_user},
+            alert_type => 'new_updates',
+            parameter => $c->stash->{problem}->id
+        );
+
+        $alert->update;
+    }
 
     return 1;
 }

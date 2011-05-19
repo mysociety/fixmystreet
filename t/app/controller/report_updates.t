@@ -262,37 +262,60 @@ subtest "submit an update for a non registered user" => sub {
     is $add_alerts, 0, 'do not sign up for alerts';
 };
 
-subtest "submit an update for a registered user" => sub {
-    # clear out comments for this problem to make
-    # checking details easier later
-    ok( $_->delete, 'deleted comment ' . $_->id )
-        for $report->comments;
-
-    $mech->clear_emails_ok();
-
-    $mech->log_in_ok( $user->email );
-    $mech->get_ok("/report/$report_id");
-
-    $mech->submit_form_ok(
-        {
-            with_fields => {
-                rznvy  => 'test@example.com',
-                update => 'update from a registered user'
-            }
+for my $test (
+    {
+        desc => 'submit update for register user',
+        fields => {
+            rznvy  => 'test@example.com',
+            update => 'update from a registered user'
         },
-        'submit update'
-    );
+        alert => 0,
+    },
+    {
+        desc => 'submit update for register user and sign up',
+        fields => {
+            rznvy  => 'test@example.com',
+            update => 'update from a registered user',
+            add_alert => 1,
+        },
+        alert => 1,
+    },
+) {
+    subtest $test->{desc} => sub {
+        # clear out comments for this problem to make
+        # checking details easier later
+        ok( $_->delete, 'deleted comment ' . $_->id )
+            for $report->comments;
 
-    is $mech->uri->path, "/report/" . $report_id, "redirected to report page";
+        $mech->clear_emails_ok();
 
-    $mech->email_count_is(0);
+        $mech->log_in_ok( $user->email );
+        $mech->get_ok("/report/$report_id");
 
-    my $update = $report->comments->first;
-    ok $update, 'found update';
-    is $update->text, 'update from a registered user', 'update text';
-    is $update->user->email, 'test@example.com', 'update user';
-    is $update->state, 'confirmed', 'update confirmed';
-};
+        $mech->submit_form_ok(
+            {
+                with_fields => $test->{fields},
+            },
+            'submit update'
+        );
+
+        is $mech->uri->path, "/report/" . $report_id, "redirected to report page";
+
+        $mech->email_count_is(0);
+
+        my $update = $report->comments->first;
+        ok $update, 'found update';
+        is $update->text, $test->{fields}->{update}, 'update text';
+        is $update->user->email, 'test@example.com', 'update user';
+        is $update->state, 'confirmed', 'update confirmed';
+
+        my $alert =
+          FixMyStreet::App->model('DB::Alert')
+          ->find( { user => $user, alert_type => 'new_updates' } );
+
+        ok $test->{alert} ? $alert : !$alert, 'not signed up for alerts';
+    };
+}
 
 ok $comment->delete, 'deleted comment';
 $mech->delete_user('commenter@example.com');
