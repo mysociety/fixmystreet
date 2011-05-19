@@ -64,15 +64,7 @@ Show the summary page for a particular council.
 
 sub council : Path : Args(1) {
     my ( $self, $c, $council ) = @_;
-
-    $c->forward( 'council_check', [ $council ] );
-    $c->forward( 'load_parent' );
-    $c->forward( 'load_problems' );
-    $c->forward( 'group_problems' );
-    $c->forward( 'sort_problems' );
-
-    $c->stash->{rss_url} = '/rss/reports/'
-        . $c->cobrand->short_name( $c->stash->{council}, $c->stash->{areas_info} );
+    $c->detach( 'ward', [ $council ] );
 }
 
 =head2 index
@@ -85,29 +77,75 @@ sub ward : Path : Args(2) {
     my ( $self, $c, $council, $ward ) = @_;
 
     $c->forward( 'council_check', [ $council ] );
-    $c->forward( 'ward_check', [ $ward ] );
+    $c->forward( 'ward_check', [ $ward ] )
+        if $ward;
     $c->forward( 'load_parent' );
     $c->forward( 'load_problems' );
     $c->forward( 'group_problems' );
     $c->forward( 'sort_problems' );
 
     $c->stash->{rss_url} = '/rss/reports/'
-        . $c->cobrand->short_name( $c->stash->{council}, $c->stash->{areas_info} )
-        . '/' . $c->cobrand->short_name( $c->stash->{ward} );
+        . $c->cobrand->short_name( $c->stash->{council}, $c->stash->{areas_info} );
+    $c->stash->{rss_url} .= '/' . $c->cobrand->short_name( $c->stash->{ward} )
+        if $c->stash->{ward};
 }
 
-#sub rss_ward : RegEx('/rss/(reports|area)') : Args(2) {
-#    my ( $self, $c, $council, $ward ) = @_;
-#
-#    $c->stash->{q_council} = $council;
-#    $c->stash->{q_ward} = $ward;
-#
-#}
-#
-#sub rss_council : RegEx('/rss/(reports|area)') : Args(1) {
-#    my ( $self, $c, $council ) = @_;
-#    $c->stash->{rss} = $c->req->{rss};
-#}
+sub rss_council : Regex('^rss/(reports|area)$') : Args(1) {
+    my ( $self, $c, $council ) = @_;
+    $c->detach( 'rss_ward', [ $council ] );
+}
+
+sub rss_ward : Regex('^rss/(reports|area)$') : Args(2) {
+    my ( $self, $c, $council, $ward ) = @_;
+
+    my ( $rss ) = $c->req->captures->[0];
+
+    $c->stash->{rss} = 1;
+
+    $c->forward( 'council_check', [ $council ] );
+    $c->forward( 'ward_check',    [ $ward    ] ) if $ward;
+
+    if ($rss eq 'area' && $c->stash->{council}{type} ne 'DIS' && $c->stash->{council}{type} ne 'CTY') {
+        # Two possibilites are the same for one-tier councils, so redirect one to the other
+        $c->detach( 'redirect_area' );
+    }
+
+    my $url =       $c->cobrand->short_name( $c->stash->{council} );
+    $url   .= '/' . $c->cobrand->short_name( $c->stash->{ward}    ) if $c->stash->{ward};
+    $c->stash->{qs} = "/$url";
+
+    my @params;
+    push @params, $c->stash->{council}->{id} if $rss eq 'reports';
+    push @params, $c->stash->{ward}
+        ? $c->stash->{ward}->{id}
+        : $c->stash->{council}->{id};
+    $c->stash->{db_params} = [ @params ];
+
+    if ( $rss eq 'area' && $c->stash->{ward} ) {
+        # All problems within a particular ward
+        $c->stash->{type}         = 'area_problems';
+        $c->stash->{title_params} = { NAME => $c->stash->{ward}{name} };
+        $c->stash->{db_params}    = [ $c->stash->{ward}->{id} ];
+    } elsif ( $rss eq 'area' ) {
+        # Problems within a particular council
+        $c->stash->{type}         = 'area_problems';
+        $c->stash->{title_params} = { NAME => $c->stash->{council}{name} };
+        $c->stash->{db_params}    = [ $c->stash->{council}->{id} ];
+    } elsif ($c->stash->{ward}) {
+        # Problems sent to a council, restricted to a ward
+        $c->stash->{type} = 'ward_problems';
+        $c->stash->{title_params} = { COUNCIL => $c->stash->{council}{name}, WARD => $c->stash->{ward}{name} };
+        $c->stash->{db_params} = [ $c->stash->{council}->{id}, $c->stash->{ward}->{id} ];
+    } else {
+        # Problems sent to a council
+        $c->stash->{type} = 'council_problems';
+        $c->stash->{title_params} = { COUNCIL => $c->stash->{council}{name} };
+        $c->stash->{db_params} = [ $c->stash->{council}->{id}, $c->stash->{council}->{id} ];
+    }
+
+    # Send on to the RSS generation
+    $c->forward( '/rss/output' );
+}
 
 =head2 council_check
 
@@ -139,7 +177,7 @@ sub council_check : Private {
         my $council = mySociety::MaPit::call('area', $q_council);
         $c->detach( 'redirect_index') if $council->{error};
         $c->stash->{council} = $council;
-        $c->detach( 'redirect_council' );
+        $c->detach( 'redirect_area' );
     }
 
     # We must now have a string to check
@@ -190,7 +228,7 @@ sub ward_check : Private {
         }
     }
     # Given a false ward name
-    $c->detach( 'redirect_council' );
+    $c->detach( 'redirect_area' );
 }
 
 sub load_parent : Private {
@@ -283,22 +321,14 @@ sub redirect_index : Private {
     $c->res->redirect( $c->uri_for($url) );
 }
 
-sub redirect_council : Private {
+sub redirect_area : Private {
     my ( $self, $c ) = @_;
     my $url = '';
     $url   .= "/rss" if $c->stash->{rss};
     $url   .= '/reports';
     $url   .= '/' . $c->cobrand->short_name( $c->stash->{council} );
-    $c->res->redirect( $c->uri_for($url) );
-}
-
-sub redirect_ward : Private {
-    my ( $self, $c ) = @_;
-    my $url = '';
-    $url   .= "/rss" if $c->stash->{rss};
-    $url   .= '/reports';
-    $url   .= '/' . $c->cobrand->short_name( $c->stash->{council} );
-    $url   .= '/' . $c->cobrand->short_name( $c->stash->{ward} );
+    $url   .= '/' . $c->cobrand->short_name( $c->stash->{ward} )
+        if $c->stash->{ward};
     $c->res->redirect( $c->uri_for($url) );
 }
 
@@ -329,33 +359,4 @@ Licensed under the Affero GPL.
 __PACKAGE__->meta->make_immutable;
 
 1;
-
-#     # RSS - reports for sent reports, area for all problems in area
-#     if ($rss && $council) {
-#         my $url = Page::short_name($council);
-#         $url .= '/' . Page::short_name($ward) if $ward;
-#         if ($rss eq 'area' && $area_type ne 'DIS' && $area_type ne 'CTY') {
-#             # Two possibilites are the same for one-tier councils, so redirect one to the other
-#             print $q->redirect($base_url . '/rss/reports/' . $url);
-#             return;
-#         }
-#         my $type = 'council_problems'; # Problems sent to a council
-#         my (@params, %title_params);
-#         $title_params{COUNCIL} = $area_name;
-#         push @params, $council->{id} if $rss eq 'reports';
-#         push @params, $ward ? $ward->{id} : $council->{id};
-#         if ($ward && $rss eq 'reports') {
-#             $type = 'ward_problems'; # Problems sent to a council, restricted to a ward
-#             $title_params{WARD} = $q_ward;
-#         } elsif ($rss eq 'area') {
-#             $title_params{NAME} = $ward ? $q_ward : $q_council;
-#             $type = 'area_problems'; # Problems within an area
-#         }
-#         print $q->header( -type => 'application/xml; charset=utf-8' );
-#         my $xsl = Cobrand::feed_xsl($cobrand);
-#         my $out = FixMyStreet::Alert::generate_rss($type, $xsl, "/$url", \@params, \%title_params, $cobrand, $q);
-#         $out =~ s/matthew.fixmystreet/emptyhomes.matthew.fixmystreet/g if $q->{site} eq 'emptyhomes';
-#         print $out;
-#         return;
-#     }
 

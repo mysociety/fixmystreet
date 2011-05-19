@@ -241,20 +241,21 @@ sub _send_aggregated_alert_email(%) {
     }
 }
 
-sub generate_rss ($$$;$$$$) {
-    my ($type, $xsl, $qs, $db_params, $title_params, $cobrand, $http_q) = @_;
-    $db_params ||= [];
-    my $url = Cobrand::base_url($cobrand);
-    my $cobrand_data = Cobrand::extra_data($cobrand, $http_q);
+sub generate_rss ($) {
+    my $c = shift;
+    my $type = $c->stash->{type};
+    $c->stash->{qs} ||= '';
+    $c->stash->{db_params} ||= [];
+    my $cobrand_data = $c->cobrand->extra_data;
     my $q = dbh()->prepare('select * from alert_type where ref=?');
     $q->execute($type);
     my $alert_type = $q->fetchrow_hashref;
-    my ($site_restriction, $site_id) = Cobrand::site_restriction($cobrand, $cobrand_data);
+    my ($site_restriction, $site_id) = $c->cobrand->site_restriction($cobrand_data);
     throw FixMyStreet::Alert::Error('Unknown alert type') unless $alert_type;
 
     # Do our own encoding
     my $rss = new XML::RSS( version => '2.0', encoding => 'UTF-8',
-        stylesheet=> $xsl, encode_output => undef );
+        stylesheet=> $c->cobrand->feed_xsl, encode_output => undef );
     $rss->add_module(prefix=>'georss', uri=>'http://www.georss.org/georss');
 
     # Only apply a site restriction if the alert uses the problem table
@@ -267,8 +268,8 @@ sub generate_rss ($$$;$$$$) {
     $query .= " limit $rss_limit" unless $type =~ /^all/;
     $q = dbh()->prepare($query);
     if ($query =~ /\?/) {
-        throw FixMyStreet::Alert::Error('Missing parameter') unless @$db_params;
-        $q->execute(@$db_params);
+        throw FixMyStreet::Alert::Error('Missing parameter') unless @{ $c->stash->{db_params} };
+        $q->execute( @{ $c->stash->{db_params} } );
     } else {
         $q->execute();
     }
@@ -291,22 +292,22 @@ sub generate_rss ($$$;$$$$) {
         (my $title = _($alert_type->{item_title})) =~ s/{{(.*?)}}/$row->{$1}/g;
         (my $link = $alert_type->{item_link}) =~ s/{{(.*?)}}/$row->{$1}/g;
         (my $desc = _($alert_type->{item_description})) =~ s/{{(.*?)}}/$row->{$1}/g;
-        my $cobrand_url = Cobrand::url($cobrand, $url . $link, $http_q);
+        my $url = $c->uri_for( $link );
         my %item = (
             title => ent($title),
-            link => $cobrand_url,
-            guid => $cobrand_url,
+            link => $url,
+            guid => $url,
             description => ent(ent($desc)) # Yes, double-encoded, really.
         );
         $item{pubDate} = $pubDate if $pubDate;
         $item{category} = $row->{category} if $row->{category};
 
-        my $display_photos = Cobrand::allow_photo_display($cobrand);    
+        my $display_photos = $c->cobrand->allow_photo_display; 
         if ($display_photos && $row->{photo}) {
-            $item{description} .= ent("\n<br><img src=\"". Cobrand::url($cobrand, $url, $http_q) . "/photo?id=$row->{id}\">");
+            $item{description} .= ent("\n<br><img src=\"". $c->uri_for( $c->cobrand->base_url ) . "/photo?id=$row->{id}\">");
         }
-        my $recipient_name = Cobrand::contact_name($cobrand);
-        $item{description} .= ent("\n<br><a href='$cobrand_url'>" .
+        my $recipient_name = $c->cobrand->contact_name;
+        $item{description} .= ent("\n<br><a href='$url'>" .
             sprintf(_("Report on %s"), $recipient_name) . "</a>");
 
         if ($row->{latitude} || $row->{longitude}) {
@@ -319,26 +320,26 @@ sub generate_rss ($$$;$$$$) {
     if ($alert_type->{head_sql_query}) {
         $q = dbh()->prepare($alert_type->{head_sql_query});
         if ($alert_type->{head_sql_query} =~ /\?/) {
-            $q->execute(@$db_params);
+            $q->execute(@{ $c->stash->{db_params} });
         } else {
             $q->execute();
         }
         $row = $q->fetchrow_hashref;
     }
-    foreach (keys %$title_params) {
-        $row->{$_} = $title_params->{$_};
+    foreach ( keys %{ $c->stash->{title_params} } ) {
+        $row->{$_} = $c->stash->{title_params}->{$_};
     }
     (my $title = _($alert_type->{head_title})) =~ s/{{(.*?)}}/$row->{$1}/g;
     (my $link = $alert_type->{head_link}) =~ s/{{(.*?)}}/$row->{$1}/g;
     (my $desc = _($alert_type->{head_description})) =~ s/{{(.*?)}}/$row->{$1}/g;
     $rss->channel(
-        title => ent($title), link =>  "$url$link$qs", description  => ent($desc),
+        title => ent($title), link => $link . $c->stash->{qs}, description  => ent($desc),
         language   => 'en-gb'
     );
 
     my $out = $rss->as_string;
-    my $uri = Cobrand::url($cobrand, $ENV{SCRIPT_URI}, $http_q);
-    $out =~ s{<link>(.*?)</link>}{"<link>" . Cobrand::url($cobrand, $1, $http_q) . "</link><uri>$uri</uri>"}e;
+    my $uri = $c->uri_for( '/' . $c->req->path );
+    $out =~ s{<link>(.*?)</link>}{"<link>" . $c->uri_for( $1 ) . "</link><uri>$uri</uri>"}e;
              
     return $out;
 }

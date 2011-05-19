@@ -58,10 +58,10 @@ If no matches are found returns false.
 =cut 
 
 sub determine_location_from_pc : Private {
-    my ( $self, $c ) = @_;
+    my ( $self, $c, $pc ) = @_;
 
     # check for something to search
-    my $pc = $c->req->param('pc') || return;
+    $pc ||= $c->req->param('pc') || return;
     $c->stash->{pc} = $pc;    # for template
 
     my ( $latitude, $longitude, $error ) =
