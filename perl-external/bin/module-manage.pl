@@ -53,24 +53,11 @@ sub add {
 
     # try to install the distribution using cpanm
     my $out = '';
-    my $cmd = "cpanm --reinstall $module";
+    my $cmd = "cpanm --reinstall --save-dists $minicpan $module";
 
     # print "  running '$cmd'\n";
     run3( $cmd, undef, \$out, \$out )
       || die "Error running '$cmd'";
-
-    my @fetched_urls =
-      map { s{.*(http://\S+).*}{$1}; $_ }
-      grep { m{^Fetching http://search.cpan.org} }
-      split /\n/, $out;
-
-    write_file( $module_list, { append => 1 }, "$module\n" );
-
-    # write_file( $file_list, { append => 1 }, map { "$_\n" } @fetched_urls );
-    sort_files();
-
-    fetch_all();
-    index_minicpan();
 
     if ( $out =~ m{FAIL} ) {
         die "\n\n\n"
@@ -78,6 +65,11 @@ sub add {
           . " - please see ~/.cpanm/build_log for details"
           . "\n\n\n";
     }
+
+    write_file( $module_list, { append => 1 }, "$module\n" );
+
+    index_minicpan();
+    sort_files();
 }
 
 sub index_minicpan {

@@ -9,11 +9,6 @@ Steps to add a module.
   Find remaining in live file and add to local file
 
 
-
-
-
-fetch files from backpan if not found on cpan
-
 Create the packages file by stripping out the goodness from live cpan packages file
 
 
