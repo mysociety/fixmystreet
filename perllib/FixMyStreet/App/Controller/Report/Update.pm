@@ -249,15 +249,23 @@ sub redirect_or_confirm_creation : Private {
     }
 
     # otherwise create a confirm token and email it to them.
-    my $token =
-      $c->model("DB::Token")
-      ->create( { scope => 'comment', data => $update->id } );
+    my $token = $c->model("DB::Token")->create(
+        {
+            scope => 'comment',
+            data  => {
+                id        => $update->id,
+                add_alert => ( $c->req->param('add_alert') ? 1 : 0 ),
+            }
+        }
+    );
     $c->stash->{token_url} = $c->uri_for_email( '/C', $token->token );
     $c->send_email( 'update-confirm.txt', { to => $update->user->email } );
 
     # tell user that they've been sent an email
     $c->stash->{template}   = 'email_sent.html';
     $c->stash->{email_type} = 'update';
+
+    return 1;
 }
 
 __PACKAGE__->meta->make_immutable;

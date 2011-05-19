@@ -249,7 +249,8 @@ subtest "submit an update for a non registered user" => sub {
     );
     ok $token, 'Token found in database';
 
-    my $update_id = $token->data;
+    my $update_id = $token->data->{id};
+    my $add_alerts = $token->data->{add_alert};
     my $update = FixMyStreet::App->model( 'DB::Comment' )->find(
         { id => $update_id }
     );
@@ -258,6 +259,7 @@ subtest "submit an update for a non registered user" => sub {
     is $update->state, 'unconfirmed', 'update unconfirmed';
     is $update->user->email, 'unregistered@example.com', 'update email';
     is $update->text, 'update from an unregistered user', 'update text';
+    is $add_alerts, 0, 'do not sign up for alerts';
 };
 
 subtest "submit an update for a registered user" => sub {
