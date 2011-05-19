@@ -55,16 +55,8 @@ sub add {
     my $out = '';
     my $cmd = "cpanm --reinstall --save-dists $minicpan $module";
 
-    # print "  running '$cmd'\n";
-    run3( $cmd, undef, \$out, \$out )
+    run3( $cmd, undef, undef, undef )
       || die "Error running '$cmd'";
-
-    if ( $out =~ m{FAIL} ) {
-        die "\n\n\n"
-          . "ERROR: Something did not build correctly"
-          . " - please see ~/.cpanm/build_log for details"
-          . "\n\n\n";
-    }
 
     write_file( $module_list, { append => 1 }, "$module\n" );
 
