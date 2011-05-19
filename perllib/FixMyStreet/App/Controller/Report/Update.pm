@@ -150,7 +150,7 @@ sub process_update : Private {
             mark_fixed   => $params{fixed} ? 't' : 'f',
             cobrand      => $c->cobrand->moniker,
             cobrand_data => $c->cobrand->extra_update_data,
-            lang         => $c->stash->{lang},
+            lang         => $c->stash->{lang_code},
         }
     );
 
@@ -192,7 +192,7 @@ sub check_for_errors : Private {
     # all good if no errors
     return 1
       unless ( scalar keys %field_errors
-        || scalar @{ $c->stash->{errors} }
+        || ( $c->stash->{errors} && scalar @{ $c->stash->{errors} } )
         || $c->stash->{photo_error} );
 
     $c->stash->{field_errors} = \%field_errors;
