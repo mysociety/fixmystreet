@@ -4,6 +4,8 @@ use namespace::autoclean;
 
 BEGIN {extends 'Catalyst::Controller'; }
 
+use DateTime::Format::HTTP;
+
 =head1 NAME
 
 FixMyStreet::App::Controller::Photo - Catalyst Controller
@@ -48,7 +50,12 @@ sub index :Path :Args(0) {
         $photo = _resize( $photo, '195x' );
     }
 
-    print $photo;
+    my $dt = DateTime->now();
+    $dt->set_year( $dt->year + 1 );
+
+    $c->res->content_type( 'image/jpeg' );
+    $c->res->header( 'expires', DateTime::Format::HTTP->format_datetime( $dt ) );
+    $c->res->body( $photo );
 }
 
 sub _resize {
