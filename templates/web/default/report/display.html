@@ -1,7 +1,9 @@
 [% 
     problem_title = problem.title | html;
-
-    INCLUDE 'header.html', title => problem_title
+    INCLUDE 'header.html'
+        title = problem_title
+        rss = [ loc('Updates to this problem, FixMyStreet'), "/rss/$problem.id" ]
+        robots = 'index, nofollow'
 %]
 
 [% map_start_html %]
