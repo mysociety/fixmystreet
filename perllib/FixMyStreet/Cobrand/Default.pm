@@ -6,6 +6,7 @@ use FixMyStreet;
 use URI;
 
 use Carp;
+use mySociety::MaPit;
 
 =head2 new
 
@@ -111,7 +112,7 @@ empty string and site key 0 if the cobrand uses all the data.
 
 =cut
 
-sub site_restriction { return ( "", 0 ) }
+sub site_restriction { return ( "", 0, {} ) }
 
 =head2 contact_restriction
 
@@ -793,5 +794,24 @@ sub generate_problem_banner {
 
     return $banner;
 }
+
+sub reports_council_check {
+    my ( $self, $c, $code ) = @_;
+
+    if ($code =~ /^(\d\d)([a-z]{2})?([a-z]{2})?$/i) {
+        my $area = mySociety::MaPit::call( 'area', uc $code );
+        $c->detach( 'redirect_index' ) if $area->{error}; # Given a bad/old ONS code
+        if (length($code) == 6) {
+            my $council = mySociety::MaPit::call( 'area', $area->{parent_area} );
+            $c->stash->{ward} = $area;
+            $c->stash->{council} = $council;
+            $c->detach( 'redirect_ward' );
+        } else {
+            $c->stash->{council} = $area;
+            $c->detach( 'redirect_council' );
+        }
+    }
+}
+
 1;
 

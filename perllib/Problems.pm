@@ -21,6 +21,11 @@ use mySociety::MaPit;
 
 my $site_restriction = '';
 my $site_key = 0;
+my $site_restriction_hash = {};
+
+sub site_restriction {
+    return $site_restriction_hash;
+}
 
 sub set_site_restriction {
     my $q = shift;
@@ -41,7 +46,7 @@ sub set_site_restriction_with_cobrand_object {
     my $cobrand = shift;
 
     my $cobrand_data = $cobrand->extra_data;
-    ( $site_restriction, $site_key ) =
+    ( $site_restriction, $site_key, $site_restriction_hash ) =
       $cobrand->site_restriction($cobrand_data);
 }
 

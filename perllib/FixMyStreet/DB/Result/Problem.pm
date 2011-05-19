@@ -200,4 +200,29 @@ sub confirm {
     return 1;
 }
 
+=head2 councils
+
+Returns an array of councils to which a report was sent.
+
+=cut
+
+sub councils {
+    my $self = shift;
+    return () unless $self->council;
+    (my $council = $self->council) =~ s/\|.*$//;
+    my @council = split /,/, $council;
+    return @council;
+}
+
+=head2 url
+
+Returns a URL for this problem report.
+
+=cut
+
+sub url {
+    my $self = shift;
+    return "/report/" . $self->id;
+}
+
 1;
