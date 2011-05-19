@@ -84,4 +84,17 @@ sub check_for_errors {
 
     return \%errors;
 }
+
+=head2 confirm
+
+Set state of comment to confirmed
+
+=cut
+
+sub confirm {
+    my $self = shift;
+
+    $self->state( 'confirmed' );
+    $self->confirmed( \'ms_current_timestamp()' );
+}
 1;
