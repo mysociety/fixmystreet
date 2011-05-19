@@ -246,7 +246,7 @@ for my $test (
         if ( $test->{fixed} ) {
             is $update_form->find_input( 'fixed' ), undef, 'problem is fixed';
         } else {
-            ok $update_form->find_input( 'fixed' ) != undef, 'problem is not fixed';
+            ok $update_form->find_input( 'fixed' ), 'problem is not fixed';
         }
     };
 }
