@@ -34,8 +34,6 @@ http://search.cpan.org/CPAN/authors/id/B/BD/BDFOY/File-Find-Closures-1.09.tar.gz
 http://search.cpan.org/CPAN/authors/id/B/BD/BDFOY/Module-Extract-Namespaces-0.14.tar.gz
 http://search.cpan.org/CPAN/authors/id/B/BD/BDFOY/Module-Extract-Use-0.17.tar.gz
 http://search.cpan.org/CPAN/authors/id/B/BD/BDFOY/Module-Extract-VERSION-0.13.tar.gz
-http://search.cpan.org/CPAN/authors/id/B/BD/BDFOY/MyCPAN-App-DPAN-1.28.tar.gz
-http://search.cpan.org/CPAN/authors/id/B/BD/BDFOY/MyCPAN-Indexer-1.28.tar.gz
 http://search.cpan.org/CPAN/authors/id/B/BD/BDFOY/Test-Output-0.16.tar.gz
 http://search.cpan.org/CPAN/authors/id/B/BI/BINGOS/Archive-Tar-1.76.tar.gz
 http://search.cpan.org/CPAN/authors/id/B/BI/BINGOS/Module-CoreList-2.45.tar.gz

@@ -1,2 +1,0 @@
-# Primary package [TAB] version [TAB] dist file [newline]
-common::sense	3.4	authors/id/M/ML/MLEHMANN/common-sense-3.4.tar.gz

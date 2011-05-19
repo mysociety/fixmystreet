@@ -32,7 +32,6 @@ HTTP::Server::Simple::CGI
 IO::String
 JSON
 Moose
-MyCPAN::App::DPAN
 Net::Domain::TLD
 Path::Class
 Readonly

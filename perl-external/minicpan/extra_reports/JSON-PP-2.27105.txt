@@ -1,3 +1,0 @@
-# Primary package [TAB] version [TAB] dist file [newline]
-JSON::PP	2.27105	/home/evdb/fixmystreet/perl-external/minicpan/authors/id/M/MA/MAKAMAKA/JSON-PP-2.27105.tar.gz
-JSON::PP::Boolean	2.27105	/home/evdb/fixmystreet/perl-external/minicpan/authors/id/M/MA/MAKAMAKA/JSON-PP-2.27105.tar.gz

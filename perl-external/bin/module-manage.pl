@@ -38,13 +38,11 @@ exit;
 
 sub init {
     add('App::cpanminus');
-    add('MyCPAN::App::DPAN');
 }
 
 sub setup {
     fetch_all();
     build('App::cpanminus');
-    build('MyCPAN::App::DPAN');
     build_all();
 }
 
@@ -82,13 +80,16 @@ sub add {
 sub index_minicpan {
 
     # go to the minicpan dir and run dpan there
-    if ( `which dpan` =~ m/\S/ ) {
-        chdir $minicpan;
-        system "dpan -f ../dpan_config";
-    }
-    else {
-        warn "Skipping indexing - could not find dpan";
-    }
+    # if ( `which dpan` =~ m/\S/ ) {
+    #     chdir $minicpan;
+    #     system "dpan -f ../dpan_config";
+    # }
+    # else {
+    #     warn "Skipping indexing - could not find dpan";
+    # }
+
+    warn "implement indexing";
+
 }
 
 sub build_all {
