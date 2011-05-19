@@ -1,4 +1,7 @@
-#!/usr/bin/env perl
+#!/usr/bin/perl
+
+eval 'exec /usr/bin/perl  -S $0 ${1+"$@"}'
+    if 0; # not running under some shell
 #
 # You want to install cpanminus? Run the following command and it will
 # install itself for you. You might want to run it as a root with sudo
@@ -18,7 +21,7 @@ my %fatpacked;
 
 $fatpacked{"App/cpanminus.pm"} = <<'APP_CPANMINUS';
   package App::cpanminus;
-  our $VERSION = "1.3001";
+  our $VERSION = "1.4007";
   
   =head1 NAME
   
@@ -73,7 +76,7 @@ $fatpacked{"App/cpanminus.pm"} = <<'APP_CPANMINUS';
   to install the C<cpanm> executable to the perl's bin path, like
   C<~/perl5/perlbrew/bin/cpanm>.
   
-  =head2 Downloaing the standalone executable
+  =head2 Downloading the standalone executable
   
   You can also copy the standalone executable to whatever location you'd like.
   
@@ -303,16 +306,18 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
   use Config;
   use Cwd ();
   use File::Basename ();
+  use File::Find ();
   use File::Path ();
   use File::Spec ();
   use File::Copy ();
   use Getopt::Long ();
   use Parse::CPAN::Meta;
+  use Symbol ();
   
   use constant WIN32 => $^O eq 'MSWin32';
   use constant SUNOS => $^O eq 'solaris';
   
-  our $VERSION = "1.3001";
+  our $VERSION = "1.4007";
   
   my $quote = WIN32 ? q/"/ : q/'/;
   
@@ -347,6 +352,12 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
           uninstall_shadows => ($] < 5.012),
           skip_installed => 1,
           auto_cleanup => 7, # days
+          pod2man => 1,
+          installed_dists => 0,
+          scandeps => 0,
+          scandeps_tree => [],
+          format   => 'tree',
+          save_dists => undef,
           @_,
       }, $class;
   }
@@ -363,10 +374,6 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
       push @ARGV, split /\s+/, $self->env('OPT');
       push @ARGV, @_;
   
-      if ($0 ne '-' && !-t STDIN){ # e.g. $ cpanm < author/requires.cpanm
-          push @ARGV, $self->load_argv_from_fh(\*STDIN);
-      }
-  
       Getopt::Long::Configure("bundling");
       Getopt::Long::GetOptions(
           'f|force'   => sub { $self->{skip_installed} = 0; $self->{force} = 1 },
@@ -378,7 +385,11 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
           'V|version' => sub { $self->{action} = 'show_version' },
           'perl=s'    => \$self->{perl},
           'l|local-lib=s' => sub { $self->{local_lib} = $self->maybe_abs($_[1]) },
-          'L|local-lib-contained=s' => sub { $self->{local_lib} = $self->maybe_abs($_[1]); $self->{self_contained} = 1 },
+          'L|local-lib-contained=s' => sub {
+              $self->{local_lib} = $self->maybe_abs($_[1]);
+              $self->{self_contained} = 1;
+              $self->{pod2man} = undef;
+          },
           'mirror=s@' => $self->{mirrors},
           'mirror-only!' => \$self->{mirror_only},
           'prompt!'   => \$self->{prompt},
@@ -395,7 +406,18 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
           'wget!'   => \$self->{try_wget},
           'curl!'   => \$self->{try_curl},
           'auto-cleanup=s' => \$self->{auto_cleanup},
+          'man-pages!' => \$self->{pod2man},
+          'scandeps'   => \$self->{scandeps},
+          'format=s'   => \$self->{format},
+          'save-dists=s' => sub {
+              $self->{save_dists} = $self->maybe_abs($_[1]);
+          },
       );
+  
+      if (!@ARGV && $0 ne '-' && !-t STDIN){ # e.g. # cpanm < author/requires.cpanm
+          push @ARGV, $self->load_argv_from_fh(\*STDIN);
+          $self->{load_from_stdin} = 1;
+      }
   
       $self->{argv} = \@ARGV;
   }
@@ -407,6 +429,7 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
       $self->bootstrap_local_lib;
       if (@{$self->{bootstrap_deps} || []}) {
           local $self->{notest} = 1; # test failure in bootstrap should be tolerated
+          local $self->{scandeps} = 0;
           $self->install_deps(Cwd::cwd, 0, @{$self->{bootstrap_deps}});
       }
   }
@@ -421,7 +444,8 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
           $self->$action() and return 1;
       }
   
-      $self->show_help(1) unless @{$self->{argv}};
+      $self->show_help(1)
+          unless @{$self->{argv}} or $self->{load_from_stdin};
   
       $self->configure_mirrors;
   
@@ -437,6 +461,15 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
   
       if ($self->{base} && $self->{auto_cleanup}) {
           $self->cleanup_workdirs;
+      }
+  
+      if ($self->{installed_dists}) {
+          my $dists = $self->{installed_dists} > 1 ? "distributions" : "distribution";
+          $self->diag("$self->{installed_dists} $dists installed\n", 1);
+      }
+  
+      if ($self->{scandeps}) {
+          $self->dump_scandeps();
       }
   
       return !@fail;
@@ -467,20 +500,18 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
           };
       }
   
-      open my $out, ">$self->{log}" or die "$self->{log}: $!";
-      print $out "cpanm (App::cpanminus) $VERSION on perl $] built for $Config{archname}\n";
-      print $out "Work directory is $self->{base}\n";
+      { open my $out, ">$self->{log}" or die "$self->{log}: $!" }
+  
+      $self->chat("cpanm (App::cpanminus) $VERSION on perl $] built for $Config{archname}\n" .
+                  "Work directory is $self->{base}\n");
   }
   
-  sub fetch_meta {
+  sub fetch_meta_sco {
       my($self, $dist) = @_;
+      return if $self->{mirror_only};
   
-      unless ($self->{mirror_only}) {
-          my $meta_yml = $self->get("http://cpansearch.perl.org/src/$dist->{cpanid}/$dist->{distvname}/META.yml");
-          return $self->parse_meta_string($meta_yml);
-      }
-  
-      return undef;
+      my $meta_yml = $self->get("http://search.cpan.org/meta/$dist->{distvname}/META.yml");
+      return $self->parse_meta_string($meta_yml);
   }
   
   sub package_index_for {
@@ -510,7 +541,7 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
                   print $fh $buffer;
               }
           } else {
-              unless (system("gunzip -c $gz_file > $file")) {
+              if (system("gunzip -c $gz_file > $file")) {
                   $self->diag_fail("Cannot uncompress -- please install gunzip or Compress::Zlib");
                   return;
               }
@@ -541,7 +572,7 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
           my $uri  = "http://cpanmetadb.appspot.com/v1.0/package/$module";
           my $yaml = $self->get($uri);
           my $meta = $self->parse_meta_string($yaml);
-          if ($meta->{distfile}) {
+          if ($meta && $meta->{distfile}) {
               return $self->cpan_module($module, $meta->{distfile}, $meta->{version});
           }
   
@@ -624,7 +655,7 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
   
   Options:
     -v,--verbose              Turns on chatty output
-    -q,--quiet                Turns off all output
+    -q,--quiet                Turns off the most output
     --interactive             Turns on interactive configure (required for Task:: modules)
     -f,--force                force install
     -n,--notest               Do not run unit tests
@@ -729,19 +760,44 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
   }
   
   sub _dump_inc {
-      my($self, $inc) = @_;
+      my($self, $inc, $std_inc) = @_;
   
-      my @inc = map { qq('$_') } (@$inc, '.'); # . for inc/Module/Install.pm
+      # $self->{base} for ModuleBuildPatch.pm, . for inc/Module/Install.pm
+      my @new_inc     = map { qq('$_') } (@$inc, $self->{base}, '.');
+      my @exclude_inc = map { qq('$_') } grep { $_ ne '.' && !ref } $self->_diff($inc, $std_inc);
   
       open my $out, ">$self->{base}/DumpedINC.pm" or die $!;
       local $" = ",";
-      print $out "BEGIN { \@INC = (@inc) }\n1;\n";
+      print $out <<EOF;
+  package DumpedINC;
+  my \%exclude = map { \$_ => 1 } (@exclude_inc);
+  sub import {
+    if (\$_[1] eq "tests") {
+      \@INC = grep !\$exclude{\$_}, \@INC;
+    } else {
+      \@INC = (@new_inc);
+    }
+  }
+  1;
+  EOF
   }
   
-  sub _import_local_lib {
-      my($self, @args) = @_;
+  sub _diff {
+      my($self, $old, $new) = @_;
+  
+      my @diff;
+      my %old = map { $_ => 1 } @$old;
+      for my $n (@$new) {
+          push @diff, $n unless exists $old{$n};
+      }
+  
+      @diff;
+  }
+  
+  sub _setup_local_lib_env {
+      my($self, $base) = @_;
       local $SIG{__WARN__} = sub { }; # catch 'Attempting to write ...'
-      local::lib->import(@args);
+      local::lib->setup_env_hash_for($base);
   }
   
   sub setup_local_lib {
@@ -753,10 +809,16 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
           $base ||= "~/perl5";
           if ($self->{self_contained}) {
               my @inc = $self->_core_only_inc($base);
-              $self->_dump_inc(\@inc);
+              $self->_dump_inc(\@inc, \@INC);
               $self->{search_inc} = [ @inc ];
+          } else {
+              $self->{search_inc} = [
+                  local::lib->install_base_arch_path($base),
+                  local::lib->install_base_perl_path($base),
+                  @INC,
+              ];
           }
-          $self->_import_local_lib($base);
+          $self->_setup_local_lib_env($base);
       }
   
       $self->bootstrap_local_lib_deps;
@@ -784,7 +846,7 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
       my $dispdef = defined $def ? "[$def] " : " ";
       $def = defined $def ? $def : "";
   
-      if ($self->{quiet} || !$self->{prompt} || (!$isa_tty && eof STDIN)) {
+      if (!$self->{prompt} || (!$isa_tty && eof STDIN)) {
           return $def;
       }
   
@@ -819,7 +881,7 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
   }
   
   sub diag_fail {
-      my($self, $msg) = @_;
+      my($self, $msg, $always) = @_;
       chomp $msg;
       if ($self->{in_progress}) {
           $self->_diag("FAIL\n");
@@ -827,7 +889,7 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
       }
   
       if ($msg) {
-          $self->_diag("! $msg\n");
+          $self->_diag("! $msg\n", $always);
           $self->log("-> FAIL $msg\n");
       }
   }
@@ -841,13 +903,13 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
   }
   
   sub _diag {
-      my $self = shift;
-      print STDERR @_ if $self->{verbose} or !$self->{quiet};
+      my($self, $msg, $always) = @_;
+      print STDERR $msg if $always or $self->{verbose} or !$self->{quiet};
   }
   
   sub diag {
-      my($self, $msg) = @_;
-      $self->_diag($msg);
+      my($self, $msg, $always) = @_;
+      $self->_diag($msg, $always);
       $self->log($msg);
   }
   
@@ -945,6 +1007,12 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
       my $use_default = !$self->{interactive};
       local $ENV{PERL_MM_USE_DEFAULT} = $use_default;
   
+      # skip man page generation
+      local $ENV{PERL_MM_OPT} = $ENV{PERL_MM_OPT};
+      unless ($self->{pod2man}) {
+          $ENV{PERL_MM_OPT} .= " INSTALLMAN1DIR=none INSTALLMAN3DIR=none";
+      }
+  
       local $self->{verbose} = $self->{verbose} || $self->{interactive};
       $self->run_timeout($cmd, $self->{configure_timeout});
   }
@@ -968,6 +1036,9 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
       # http://www.nntp.perl.org/group/perl.perl5.porters/2009/10/msg152656.html
       local $ENV{AUTOMATED_TESTING} = 1
           unless $self->env('NO_AUTOMATED_TESTING');
+  
+     local $ENV{PERL5OPT} = "-I$self->{base} -MDumpedINC=tests"
+          if $self->{self_contained};
   
       return 1 if $self->run_timeout($cmd, $self->{test_timeout});
       if ($self->{force}) {
@@ -1045,7 +1116,7 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
   
       my $dist = $self->resolve_name($module);
       unless ($dist) {
-          $self->diag_fail("Couldn't find module or a distribution $module");
+          $self->diag_fail("Couldn't find module or a distribution $module", 1);
           return;
       }
   
@@ -1054,21 +1125,18 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
           return 1;
       }
   
-      if ($dist->{source} eq 'cpan') {
-          $dist->{meta} = $self->fetch_meta($dist);
-      }
-  
       if ($self->{cmd} eq 'info') {
-          print $dist->{cpanid}, "/", $dist->{filename}, "\n";
+          print $self->format_dist($dist), "\n";
           return 1;
       }
   
       $self->check_libs;
+      $self->setup_module_build_patch unless $self->{pod2man};
   
       if ($dist->{module}) {
           my($ok, $local) = $self->check_module($dist->{module}, $dist->{module_version} || 0);
           if ($self->{skip_installed} && $ok) {
-              $self->diag("$dist->{module} is up to date. ($local)\n");
+              $self->diag("$dist->{module} is up to date. ($local)\n", 1);
               return 1;
           }
       }
@@ -1083,7 +1151,7 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
       $dist->{dir} ||= $self->fetch_module($dist);
   
       unless ($dist->{dir}) {
-          $self->diag_fail("Failed to fetch distribution $dist->{distvname}");
+          $self->diag_fail("Failed to fetch distribution $dist->{distvname}", 1);
           return;
       }
   
@@ -1097,6 +1165,13 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
       }
   
       return $self->build_stuff($module, $dist, $depth);
+  }
+  
+  sub format_dist {
+      my($self, $dist) = @_;
+  
+      # TODO support --dist-format?
+      return "$dist->{cpanid}/$dist->{filename}";
   }
   
   sub fetch_module {
@@ -1141,9 +1216,17 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
           }
   
           $self->diag_ok;
+          $dist->{local_path} = File::Spec->rel2abs($name);
   
           my $dir = $self->unpack($file);
           next unless $dir; # unpack failed
+  
+          if (my $save = $self->{save_dists}) {
+              my $path = "$save/authors/id/$dist->{pathname}";
+              $self->chat("Copying $name to $path\n");
+              File::Path::mkpath([ File::Basename::dirname($path) ], 0, 0777);
+              File::Copy::copy($file, $path) or warn $!;
+          }
   
           return $dist, $dir;
       }
@@ -1238,6 +1321,23 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
       };
   }
   
+  sub setup_module_build_patch {
+      my $self = shift;
+  
+      open my $out, ">$self->{base}/ModuleBuildSkipMan.pm" or die $!;
+      print $out <<EOF;
+  package ModuleBuildSkipMan;
+  CHECK {
+    if (%Module::Build::) {
+      no warnings 'redefine';
+      *Module::Build::Base::ACTION_manpages = sub {};
+      *Module::Build::Base::ACTION_docs     = sub {};
+    }
+  }
+  1;
+  EOF
+  }
+  
   sub check_module {
       my($self, $mod, $want_ver) = @_;
   
@@ -1250,8 +1350,21 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
       # When -L is in use, the version loaded from 'perl' library path
       # might be newer than the version that is shipped with the current perl
       if ($self->{self_contained} && $self->loaded_from_perl_lib($meta)) {
-          require Module::CoreList;
-          $version = $Module::CoreList::version{$]}{$mod};
+          my $core_version = eval {
+              require Module::CoreList;
+              $Module::CoreList::version{$]+0}{$mod};
+          };
+  
+          # HACK: Module::Build 0.3622 or later has non-core module
+          # dependencies such as Perl::OSType and CPAN::Meta, and causes
+          # issues when a newer version is loaded from 'perl' while deps
+          # are loaded from the 'site' library path. Just assume it's
+          # not in the core, and install to the new local library path.
+          if ($mod eq 'Module::Build' && $core_version != $version) {
+              return 0, undef;
+          }
+  
+          $version = $core_version if $core_version;
       }
   
       $self->{local_versions}{$mod} = $version;
@@ -1259,7 +1372,7 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
       if ($self->is_deprecated($meta)){
           return 0, $version;
       } elsif (!$want_ver or $version >= version->new($want_ver)) {
-          return 1, $version;
+          return 1, ($version || 'undef');
       } else {
           return 0, $version;
       }
@@ -1340,31 +1453,12 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
       if (@fail) {
           unless ($self->prompt_bool("Installing the following dependencies failed:\n==> " .
                                      join(", ", @fail) . "\nDo you want to continue building $target anyway?", "n")) {
-              $self->diag_fail("Bailing out the installation for $target. Retry with --prompt or --force.");
+              $self->diag_fail("Bailing out the installation for $target. Retry with --prompt or --force.", 1);
               return;
           }
       }
   
       return 1;
-  }
-  
-  sub _patch_module_build_config_deps {
-      my($self, $config_deps) = @_;
-  
-      # Crazy hack to auto-add Module::Build dependencies into
-      # configure_requires if Module::Build is there, since there's a
-      # possibility where Module::Build is in 'perl' library path while
-      # the dependencies are in 'site' and can't be loaded when -L
-      # (--local-lib-contained) is in effect.
-  
-      my %config_deps = (@{$config_deps});
-      if ($config_deps{"Module::Build"}) {
-          push @{$config_deps}, (
-              'Perl::OSType' => 1,
-              'Module::Metadata' => 1.000002,
-              'version' => 0.87,
-          );
-      }
   }
   
   sub build_stuff {
@@ -1376,12 +1470,16 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
           $dist->{meta} = $self->parse_meta('META.yml');
       }
   
+      if (!$dist->{meta} && $dist->{source} eq 'cpan') {
+          $self->chat("META.yml not found or unparsable. Fetching META.yml from search.cpan.org\n");
+          $dist->{meta} = $self->fetch_meta_sco($dist);
+      }
+  
+      $dist->{meta} ||= {};
+  
       push @config_deps, %{$dist->{meta}{configure_requires} || {}};
   
       my $target = $dist->{meta}{name} ? "$dist->{meta}{name}-$dist->{meta}{version}" : $dist->{dir};
-  
-      $self->_patch_module_build_config_deps(\@config_deps)
-          if $self->{self_contained};
   
       $self->install_deps_bailout($target, $dist->{dir}, $depth, @config_deps)
           or return;
@@ -1392,12 +1490,33 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
   
       $self->diag_ok($configure_state->{configured_ok} ? "OK" : "N/A");
   
-      my @deps = $self->find_prereqs($dist->{meta});
+      my @deps = $self->find_prereqs($dist);
   
       my $distname = $dist->{meta}{name} ? "$dist->{meta}{name}-$dist->{meta}{version}" : $stuff;
   
+      my $walkup;
+      if ($self->{scandeps}) {
+          $walkup = $self->scandeps_append_child($dist);
+      }
+  
       $self->install_deps_bailout($distname, $dist->{dir}, $depth, @deps)
           or return;
+  
+      if ($self->{scandeps}) {
+          unless ($configure_state->{configured_ok}) {
+              my $diag = <<DIAG;
+  ! Configuring $distname failed. See $self->{log} for details.
+  ! You might have to install the following modules first to get --scandeps working correctly.
+  DIAG
+              if (@config_deps) {
+                  my @tree = @{$self->{scandeps_tree}};
+                  $diag .= "!\n" . join("", map "! * $_->[0]{module}\n", @tree[0..$#tree-1]) if @tree;
+              }
+              $self->diag("!\n$diag!\n", 1);
+          }
+          $walkup->();
+          return 1;
+      }
   
       if ($self->{installdeps} && $depth == 0) {
           $self->diag("<== Installed dependencies for $stuff. Finishing.\n");
@@ -1406,10 +1525,11 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
   
       my $installed;
       if ($configure_state->{use_module_build} && -e 'Build' && -f _) {
+          my @switches = $self->{pod2man} ? () : ("-I$self->{base}", "-MModuleBuildSkipMan");
           $self->diag_progress("Building " . ($self->{notest} ? "" : "and testing ") . $distname);
-          $self->build([ $self->{perl}, "./Build" ], $distname) &&
+          $self->build([ $self->{perl}, @switches, "./Build" ], $distname) &&
           $self->test([ $self->{perl}, "./Build", "test" ], $distname) &&
-          $self->install([ $self->{perl}, "./Build", "install" ], [ "--uninst", 1 ]) &&
+          $self->install([ $self->{perl}, @switches, "./Build", "install" ], [ "--uninst", 1 ]) &&
           $installed++;
       } elsif ($self->{make} && -e 'Makefile') {
           $self->diag_progress("Building " . ($self->{notest} ? "" : "and testing ") . $distname);
@@ -1424,7 +1544,7 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
           elsif ($self->{make})  { $why = "The distribution doesn't have a proper Makefile.PL/Build.PL" }
           else                   { $why = "Can't configure the distribution. You probably need to have 'make'." }
   
-          $self->diag_fail("$why See $self->{log} for details.");
+          $self->diag_fail("$why See $self->{log} for details.", 1);
           return;
       }
   
@@ -1438,11 +1558,12 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
                                : "installed $distname" ;
           my $msg = "Successfully $how";
           $self->diag_ok;
-          $self->diag("$msg\n");
+          $self->diag("$msg\n", 1);
+          $self->{installed_dists}++;
           return 1;
       } else {
           my $msg = "Building $distname failed";
-          $self->diag_fail("Installing $stuff failed. See $self->{log} for details.");
+          $self->diag_fail("Installing $stuff failed. See $self->{log} for details.", 1);
           return;
       }
   }
@@ -1453,6 +1574,12 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
       my @switches;
       @switches = ("-I$self->{base}", "-MDumpedINC") if $self->{self_contained};
       local $ENV{PERL5LIB} = ''                      if $self->{self_contained};
+  
+      my @mb_switches = @switches;
+      unless ($self->{pod2man}) {
+          # it has to be push, so Module::Build is loaded from the adjusted path when -L is in use
+          push @mb_switches, ("-I$self->{base}", "-MModuleBuildSkipMan");
+      }
   
       my $state = {};
   
@@ -1475,7 +1602,7 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
       my $try_mb = sub {
           if (-e 'Build.PL') {
               $self->chat("Running Build.PL\n");
-              if ($self->configure([ $self->{perl}, @switches, "Build.PL" ])) {
+              if ($self->configure([ $self->{perl}, @mb_switches, "Build.PL" ])) {
                   $state->{configured_ok} = -e 'Build' && -f _;
               }
               $state->{use_module_build}++;
@@ -1517,14 +1644,18 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
   }
   
   sub find_prereqs {
-      my($self, $meta) = @_;
+      my($self, $dist) = @_;
   
       my @deps;
+  
+      my $meta = $dist->{meta};
       if (-e 'MYMETA.yml') {
           $self->chat("Checking dependencies from MYMETA.yml ...\n");
           my $mymeta = $self->parse_meta('MYMETA.yml');
-          @deps = $self->extract_requires($mymeta);
-          $meta->{$_} = $mymeta->{$_} for keys %$mymeta; # merge
+          if ($mymeta) {
+              @deps = $self->extract_requires($mymeta);
+              $meta->{$_} = $mymeta->{$_} for keys %$mymeta; # merge
+          }
       } elsif (-e '_build/prereqs') {
           $self->chat("Checking dependencies from _build/prereqs ...\n");
           my $mymeta = do { open my $in, "_build/prereqs"; $self->safe_eval(join "", <$in>) };
@@ -1550,10 +1681,48 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
           }
       }
   
+      if ($dist->{module} =~ /^Bundle::/i) {
+          push @deps, $self->bundle_deps($dist);
+      }
+  
       # No need to remove, but this gets in the way of signature testing :/
-      unlink 'MYMETA.yml';
+      unlink $_ for qw(MYMETA.json MYMETA.yml);
   
       return @deps;
+  }
+  
+  sub bundle_deps {
+      my($self, $dist) = @_;
+  
+      my @files;
+      File::Find::find({
+          wanted => sub { push @files, File::Spec->rel2abs($_) if /\.pm/i },
+          no_chdir => 1,
+      }, '.');
+  
+      my @deps;
+  
+      for my $file (@files) {
+          open my $pod, "<", $file or next;
+          my $in_contents;
+          while (<$pod>) {
+              if (/^=head\d\s+CONTENTS/) {
+                  $in_contents = 1;
+              } elsif (/^=/) {
+                  $in_contents = 0;
+              } elsif ($in_contents) {
+                  /^(\S+)\s*(\S+)?/
+                      and push @deps, $1, $self->maybe_version($2);
+              }
+          }
+      }
+  
+      return @deps;
+  }
+  
+  sub maybe_version {
+      my($self, $string) = @_;
+      return $string && $string =~ /^\.?\d/ ? $string : undef;
   }
   
   sub extract_requires {
@@ -1587,6 +1756,64 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
       }
   }
   
+  sub scandeps_append_child {
+      my($self, $dist) = @_;
+  
+      my $new_node = [ $dist, [] ];
+  
+      my $curr_node = $self->{scandeps_current} || [ undef, $self->{scandeps_tree} ];
+      push @{$curr_node->[1]}, $new_node;
+  
+      $self->{scandeps_current} = $new_node;
+  
+      return sub { $self->{scandeps_current} = $curr_node };
+  }
+  
+  sub dump_scandeps {
+      my $self = shift;
+  
+      if ($self->{format} eq 'tree') {
+          $self->walk_down(sub {
+              my($dist, $depth) = @_;
+              if ($depth == 0) {
+                  print "$dist->{distvname}\n";
+              } else {
+                  print " " x ($depth - 1);
+                  print "\\_ $dist->{distvname}\n";
+              }
+          }, 1);
+      } elsif ($self->{format} =~ /^dists?$/) {
+          $self->walk_down(sub {
+              my($dist, $depth) = @_;
+              print $self->format_dist($dist), "\n";
+          }, 0);
+      } elsif ($self->{format} eq 'json') {
+          require JSON;
+          print JSON::encode_json($self->{scandeps_tree});
+      } elsif ($self->{format} eq 'yaml') {
+          require YAML;
+          print YAML::Dump($self->{scandeps_tree});
+      } else {
+          $self->diag("Unknown format: $self->{format}\n");
+      }
+  }
+  
+  sub walk_down {
+      my($self, $cb, $pre) = @_;
+      $self->_do_walk_down($self->{scandeps_tree}, $cb, 0, $pre);
+  }
+  
+  sub _do_walk_down {
+      my($self, $children, $cb, $depth, $pre) = @_;
+  
+      # DFS - $pre determines when we call the callback
+      for my $node (@$children) {
+          $cb->($node->[0], $depth) if $pre;
+          $self->_do_walk_down($node->[1], $cb, $depth + 1, $pre);
+          $cb->($node->[0], $depth) unless $pre;
+      }
+  }
+  
   sub DESTROY {
       my $self = shift;
       $self->{at_exit}->($self) if $self->{at_exit};
@@ -1596,7 +1823,7 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
   
   sub shell_quote {
       my($self, $stuff) = @_;
-      $quote . $stuff . $quote;
+      $stuff =~ /^${quote}.+${quote}$/ ? $stuff : ($quote . $stuff . $quote);
   }
   
   sub which {
@@ -1667,32 +1894,32 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
           $self->{_backends}{get} = sub {
               my($self, $uri) = @_;
               return $self->file_get($uri) if $uri =~ s!^file:/+!/!;
-              my $q = $self->{verbose} ? '' : '-q';
-              open my $fh, "$wget $uri $q -O - |" or die "wget $uri: $!";
+              $self->safeexec( my $fh, $wget, $uri, ( $self->{verbose} ? () : '-q' ), '-O', '-' ) or die "wget $uri: $!";
               local $/;
               <$fh>;
           };
           $self->{_backends}{mirror} = sub {
               my($self, $uri, $path) = @_;
               return $self->file_mirror($uri, $path) if $uri =~ s!^file:/+!/!;
-              my $q = $self->{verbose} ? '' : '-q';
-              system "$wget --retry-connrefused $uri $q -O $path";
+              $self->safeexec( my $fh, $wget, '--retry-connrefused', $uri, ( $self->{verbose} ? () : '-q' ), '-O', $path ) or die "wget $uri: $!";
+              local $/;
+              <$fh>;
           };
       } elsif ($self->{try_curl} and my $curl = $self->which('curl')) {
           $self->chat("You have $curl\n");
           $self->{_backends}{get} = sub {
               my($self, $uri) = @_;
               return $self->file_get($uri) if $uri =~ s!^file:/+!/!;
-              my $q = $self->{verbose} ? '' : '-s';
-              open my $fh, "$curl -L $q $uri |" or die "curl $uri: $!";
+              $self->safeexec( my $fh, $curl, '-L', ( $self->{verbose} ? () : '-s' ), $uri ) or die "curl $uri: $!";
               local $/;
               <$fh>;
           };
           $self->{_backends}{mirror} = sub {
               my($self, $uri, $path) = @_;
               return $self->file_mirror($uri, $path) if $uri =~ s!^file:/+!/!;
-              my $q = $self->{verbose} ? '' : '-s';
-              system "$curl -L $uri $q -# -o $path";
+              $self->safeexec( my $fh, $curl, '-L', $uri, ( $self->{verbose} ? () : '-s' ), '-#', '-o', $path ) or die "curl $uri: $!";
+              local $/;
+              <$fh>;
           };
       } else {
           require HTTP::Tiny;
@@ -1728,6 +1955,7 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
                   or return undef;
   
               chomp $root;
+              $root =~ s!^\./!!;
               $root =~ s{^(.+?)/.*$}{$1};
   
               system "$tar $xf$ar $tarfile";
@@ -1817,14 +2045,35 @@ $fatpacked{"App/cpanminus/script.pm"} = <<'APP_CPANMINUS_SCRIPT';
       }
   }
   
+  sub safeexec {
+      my $self = shift;
+      my $rdr = $_[0] ||= Symbol::gensym();
+  
+      if (WIN32) {
+          my $cmd = join q{ }, map { $self->shell_quote($_) } @_[ 1 .. $#_ ];
+          return open( $rdr, "$cmd |" );
+      }
+  
+      if ( my $pid = open( $rdr, '-|' ) ) {
+          return $pid;
+      }
+      elsif ( defined $pid ) {
+          exec( @_[ 1 .. $#_ ] );
+          exit 1;
+      }
+      else {
+          return;
+      }
+  }
+  
   sub parse_meta {
       my($self, $file) = @_;
-      return eval { (Parse::CPAN::Meta::LoadFile($file))[0] } || {};
+      return eval { (Parse::CPAN::Meta::LoadFile($file))[0] } || undef;
   }
   
   sub parse_meta_string {
       my($self, $yaml) = @_;
-      return eval { (Parse::CPAN::Meta::Load($yaml))[0] } || {};
+      return eval { (Parse::CPAN::Meta::Load($yaml))[0] } || undef;
   }
   
   1;
@@ -1934,99 +2183,6 @@ $fatpacked{"CPAN/DistnameInfo.pm"} = <<'CPAN_DISTNAMEINFO';
   1;
   
   __END__
-  
-  =head1 NAME
-  
-  CPAN::DistnameInfo - Extract distribution name and version from a distribution filename
-  
-  =head1 SYNOPSIS
-  
-    my $pathname = "authors/id/G/GB/GBARR/CPAN-DistnameInfo-0.02.tar.gz";
-  
-    my $d = CPAN::DistnameInfo->new($pathname);
-  
-    my $dist      = $d->dist;      # "CPAN-DistnameInfo"
-    my $version   = $d->version;   # "0.02"
-    my $maturity  = $d->maturity;  # "released"
-    my $filename  = $d->filename;  # "CPAN-DistnameInfo-0.02.tar.gz"
-    my $cpanid    = $d->cpanid;    # "GBARR"
-    my $distvname = $d->distvname; # "CPAN-DistnameInfo-0.02"
-    my $extension = $d->extension; # "tar.gz"
-    my $pathname  = $d->pathname;  # "authors/id/G/GB/GBARR/..."
-  
-    my %prop = $d->properties;
-  
-  =head1 DESCRIPTION
-  
-  Many online services that are centered around CPAN attempt to
-  associate multiple uploads by extracting a distribution name from
-  the filename of the upload. For most distributions this is easy as
-  they have used ExtUtils::MakeMaker or Module::Build to create the
-  distribution, which results in a uniform name. But sadly not all
-  uploads are created in this way.
-  
-  C<CPAN::DistnameInfo> uses heuristics that have been learnt by
-  L<http://search.cpan.org/> to extract the distribution name and
-  version from filenames and also report if the version is to be
-  treated as a developer release
-  
-  The constructor takes a single pathname, returning an object with the following methods
-  
-  =over
-  
-  =item cpanid
-  
-  If the path given looked like a CPAN authors directory path, then this will be the
-  the CPAN id of the author.
-  
-  =item dist
-  
-  The name of the distribution
-  
-  =item distvname
-  
-  The file name with any suffix and leading directory names removed
-  
-  =item filename
-  
-  If the path given looked like a CPAN authors directory path, then this will be the
-  path to the file relative to the detected CPAN author directory. Otherwise it is the path
-  that was passed in.
-  
-  =item maturity
-  
-  The maturity of the distribution. This will be either C<released> or C<developer>
-  
-  =item extension
-  
-  The extension of the distribution, often used to denote the archive type (e.g. 'tar.gz')
-  
-  =item pathname
-  
-  The pathname that was passed to the constructor when creating the object.
-  
-  =item properties
-  
-  This will return a list of key-value pairs, suitable for assigning to a hash,
-  for the known properties.
-  
-  =item version
-  
-  The extracted version
-  
-  =back
-  
-  =head1 AUTHOR
-  
-  Graham Barr <gbarr@pobox.com>
-  
-  =head1 COPYRIGHT 
-  
-  Copyright (c) 2003 Graham Barr. All rights reserved. This program is
-  free software; you can redistribute it and/or modify it under the same
-  terms as Perl itself.
-  
-  =cut
   
 CPAN_DISTNAMEINFO
 
@@ -2786,327 +2942,6 @@ $fatpacked{"HTTP/Tiny.pm"} = <<'HTTP_TINY';
   __END__
   =pod
   
-  =head1 NAME
-  
-  HTTP::Tiny - A small, simple, correct HTTP/1.1 client
-  
-  =head1 VERSION
-  
-  version 0.009
-  
-  =head1 SYNOPSIS
-  
-      use HTTP::Tiny;
-  
-      my $response = HTTP::Tiny->new->get('http://example.com/');
-  
-      die "Failed!\n" unless $response->{success};
-  
-      print "$response->{status} $response->{reason}\n";
-  
-      while (my ($k, $v) = each %{$response->{headers}}) {
-          for (ref $v eq 'ARRAY' ? @$v : $v) {
-              print "$k: $_\n";
-          }
-      }
-  
-      print $response->{content} if length $response->{content};
-  
-  =head1 DESCRIPTION
-  
-  This is a very simple HTTP/1.1 client, designed primarily for doing simple GET
-  requests without the overhead of a large framework like L<LWP::UserAgent>.
-  
-  It is more correct and more complete than L<HTTP::Lite>.  It supports
-  proxies (currently only non-authenticating ones) and redirection.  It
-  also correctly resumes after EINTR.
-  
-  =head1 METHODS
-  
-  =head2 new
-  
-      $http = HTTP::Tiny->new( %attributes );
-  
-  This constructor returns a new HTTP::Tiny object.  Valid attributes include:
-  
-  =over 4
-  
-  =item *
-  
-  agent
-  
-  A user-agent string (defaults to 'HTTP::Tiny/$VERSION')
-  
-  =item *
-  
-  default_headers
-  
-  A hashref of default headers to apply to requests
-  
-  =item *
-  
-  max_redirect
-  
-  Maximum number of redirects allowed (defaults to 5)
-  
-  =item *
-  
-  max_size
-  
-  Maximum response size (only when not using a data callback).  If defined,
-  responses larger than this will die with an error message
-  
-  =item *
-  
-  proxy
-  
-  URL of a proxy server to use.
-  
-  =item *
-  
-  timeout
-  
-  Request timeout in seconds (default is 60)
-  
-  =back
-  
-  =head2 get
-  
-      $response = $http->get($url);
-      $response = $http->get($url, \%options);
-  
-  Executes a C<GET> request for the given URL.  The URL must have unsafe
-  characters escaped and international domain names encoded.  Internally, it just
-  calls C<request()> with 'GET' as the method.  See C<request()> for valid
-  options and a description of the response.
-  
-  =head2 mirror
-  
-      $response = $http->mirror($url, $file, \%options)
-      if ( $response->{success} ) {
-          print "$file is up to date\n";
-      }
-  
-  Executes a C<GET> request for the URL and saves the response body to the file
-  name provided.  The URL must have unsafe characters escaped and international
-  domain names encoded.  If the file already exists, the request will includes an
-  C<If-Modified-Since> header with the modification timestamp of the file.  You
-  may specificy a different C<If-Modified-Since> header yourself in the C<<
-  $options->{headers} >> hash.
-  
-  The C<success> field of the response will be true if the status code is 2XX
-  or 304 (unmodified).
-  
-  If the file was modified and the server response includes a properly
-  formatted C<Last-Modified> header, the file modification time will
-  be updated accordingly.
-  
-  =head2 request
-  
-      $response = $http->request($method, $url);
-      $response = $http->request($method, $url, \%options);
-  
-  Executes an HTTP request of the given method type ('GET', 'HEAD', 'POST',
-  'PUT', etc.) on the given URL.  The URL must have unsafe characters escaped and
-  international domain names encoded.  A hashref of options may be appended to
-  modify the request.
-  
-  Valid options are:
-  
-  =over 4
-  
-  =item *
-  
-  headers
-  
-  A hashref containing headers to include with the request.  If the value for
-  a header is an array reference, the header will be output multiple times with
-  each value in the array.  These headers over-write any default headers.
-  
-  =item *
-  
-  content
-  
-  A scalar to include as the body of the request OR a code reference
-  that will be called iteratively to produce the body of the response
-  
-  =item *
-  
-  trailer_callback
-  
-  A code reference that will be called if it exists to provide a hashref
-  of trailing headers (only used with chunked transfer-encoding)
-  
-  =item *
-  
-  data_callback
-  
-  A code reference that will be called for each chunks of the response
-  body received.
-  
-  =back
-  
-  If the C<content> option is a code reference, it will be called iteratively
-  to provide the content body of the request.  It should return the empty
-  string or undef when the iterator is exhausted.
-  
-  If the C<data_callback> option is provided, it will be called iteratively until
-  the entire response body is received.  The first argument will be a string
-  containing a chunk of the response body, the second argument will be the
-  in-progress response hash reference, as described below.  (This allows
-  customizing the action of the callback based on the C<status> or C<headers>
-  received prior to the content body.)
-  
-  The C<request> method returns a hashref containing the response.  The hashref
-  will have the following keys:
-  
-  =over 4
-  
-  =item *
-  
-  success
-  
-  Boolean indicating whether the operation returned a 2XX status code
-  
-  =item *
-  
-  status
-  
-  The HTTP status code of the response
-  
-  =item *
-  
-  reason
-  
-  The response phrase returned by the server
-  
-  =item *
-  
-  content
-  
-  The body of the response.  If the response does not have any content
-  or if a data callback is provided to consume the response body,
-  this will be the empty string
-  
-  =item *
-  
-  headers
-  
-  A hashref of header fields.  All header field names will be normalized
-  to be lower case. If a header is repeated, the value will be an arrayref;
-  it will otherwise be a scalar string containing the value
-  
-  =back
-  
-  On an exception during the execution of the request, the C<status> field will
-  contain 599, and the C<content> field will contain the text of the exception.
-  
-  =for Pod::Coverage agent
-  default_headers
-  max_redirect
-  max_size
-  proxy
-  timeout
-  
-  =head1 LIMITATIONS
-  
-  HTTP::Tiny is I<conditionally compliant> with the
-  L<HTTP/1.1 specification|http://www.w3.org/Protocols/rfc2616/rfc2616.html>.
-  It attempts to meet all "MUST" requirements of the specification, but does not
-  implement all "SHOULD" requirements.
-  
-  Some particular limitations of note include:
-  
-  =over
-  
-  =item *
-  
-  HTTP::Tiny focuses on correct transport.  Users are responsible for ensuring
-  that user-defined headers and content are compliant with the HTTP/1.1
-  specification.
-  
-  =item *
-  
-  Users must ensure that URLs are properly escaped for unsafe characters and that
-  international domain names are properly encoded to ASCII. See L<URI::Escape>,
-  L<URI::_punycode> and L<Net::IDN::Encode>.
-  
-  =item *
-  
-  Redirection is very strict against the specification.  Redirection is only
-  automatic for response codes 301, 302 and 307 if the request method is 'GET' or
-  'HEAD'.  Response code 303 is always converted into a 'GET' redirection, as
-  mandated by the specification.  There is no automatic support for status 305
-  ("Use proxy") redirections.
-  
-  =item *
-  
-  Persistant connections are not supported.  The C<Connection> header will
-  always be set to C<close>.
-  
-  =item *
-  
-  Direct C<https> connections are supported only if L<IO::Socket::SSL> is
-  installed.  There is no support for C<https> connections via proxy.
-  
-  =item *
-  
-  Cookies are not directly supported.  Users that set a C<Cookie> header
-  should also set C<max_redirect> to zero to ensure cookies are not
-  inappropriately re-transmitted.
-  
-  =item *
-  
-  Proxy environment variables are not supported.
-  
-  =item *
-  
-  There is no provision for delaying a request body using an C<Expect> header.
-  Unexpected C<1XX> responses are silently ignored as per the specification.
-  
-  =item *
-  
-  Only 'chunked' C<Transfer-Encoding> is supported.
-  
-  =item *
-  
-  There is no support for a Request-URI of '*' for the 'OPTIONS' request.
-  
-  =back
-  
-  =head1 SEE ALSO
-  
-  =over 4
-  
-  =item *
-  
-  L<LWP::UserAgent>
-  
-  =back
-  
-  =head1 AUTHORS
-  
-  =over 4
-  
-  =item *
-  
-  Christian Hansen <chansen@cpan.org>
-  
-  =item *
-  
-  David Golden <dagolden@cpan.org>
-  
-  =back
-  
-  =head1 COPYRIGHT AND LICENSE
-  
-  This software is copyright (c) 2011 by Christian Hansen.
-  
-  This is free software; you can redistribute it and/or modify it under
-  the same terms as the Perl 5 programming language system itself.
-  
-  =cut
-  
 HTTP_TINY
 
 $fatpacked{"Module/Metadata.pm"} = <<'MODULE_METADATA';
@@ -3756,116 +3591,6 @@ $fatpacked{"Module/Metadata.pm"} = <<'MODULE_METADATA';
   
   1;
   
-  =head1 NAME
-  
-  Module::Metadata - Gather package and POD information from perl module files
-  
-  =head1 DESCRIPTION
-  
-  =over 4
-  
-  =item new_from_file($filename, collect_pod => 1)
-  
-  Construct a C<ModuleInfo> object given the path to a file. Takes an optional
-  argument C<collect_pod> which is a boolean that determines whether
-  POD data is collected and stored for reference. POD data is not
-  collected by default. POD headings are always collected.
-  
-  =item new_from_module($module, collect_pod => 1, inc => \@dirs)
-  
-  Construct a C<ModuleInfo> object given a module or package name. In addition
-  to accepting the C<collect_pod> argument as described above, this
-  method accepts a C<inc> argument which is a reference to an array of
-  of directories to search for the module. If none are given, the
-  default is @INC.
-  
-  =item name()
-  
-  Returns the name of the package represented by this module. If there
-  are more than one packages, it makes a best guess based on the
-  filename. If it's a script (i.e. not a *.pm) the package name is
-  'main'.
-  
-  =item version($package)
-  
-  Returns the version as defined by the $VERSION variable for the
-  package as returned by the C<name> method if no arguments are
-  given. If given the name of a package it will attempt to return the
-  version of that package if it is specified in the file.
-  
-  =item filename()
-  
-  Returns the absolute path to the file.
-  
-  =item packages_inside()
-  
-  Returns a list of packages.
-  
-  =item pod_inside()
-  
-  Returns a list of POD sections.
-  
-  =item contains_pod()
-  
-  Returns true if there is any POD in the file.
-  
-  =item pod($section)
-  
-  Returns the POD data in the given section.
-  
-  =item find_module_by_name($module, \@dirs)
-  
-  Returns the path to a module given the module or package name. A list
-  of directories can be passed in as an optional parameter, otherwise
-  @INC is searched.
-  
-  Can be called as either an object or a class method.
-  
-  =item find_module_dir_by_name($module, \@dirs)
-  
-  Returns the entry in C<@dirs> (or C<@INC> by default) that contains
-  the module C<$module>. A list of directories can be passed in as an
-  optional parameter, otherwise @INC is searched.
-  
-  Can be called as either an object or a class method.
-  
-  =item package_versions_from_directory($dir, \@files?)
-  
-  Scans C<$dir> for .pm files (unless C<@files> is given, in which case looks
-  for those files in C<$dir> - and reads each file for packages and versions,
-  returning a hashref of the form:
-  
-    {
-      'Package::Name' => {
-        version => '0.123',
-        file => 'Package/Name.pm'
-      },
-      'OtherPackage::Name' => ...
-    }
-  
-  =item log_info (internal)
-  
-  Used internally to perform logging; imported from Log::Contextual if
-  Log::Contextual has already been loaded, otherwise simply calls warn.
-  
-  =back
-  
-  =head1 AUTHOR
-  
-  Ken Williams <kwilliams@cpan.org>, Randy W. Sims <RandyS@ThePierianSpring.org>
-  
-  Released as Module::Metadata by Matt S Trout (mst) <mst@shadowcat.co.uk> with
-  assistance from David Golden (xdg) <dagolden@cpan.org>
-  
-  =head1 COPYRIGHT
-  
-  Copyright (c) 2001-2011 Ken Williams.  All rights reserved.
-  
-  This library is free software; you can redistribute it and/or
-  modify it under the same terms as Perl itself.
-  
-  =cut
-  
 MODULE_METADATA
 
 $fatpacked{"Parse/CPAN/Meta.pm"} = <<'PARSE_CPAN_META';
@@ -4211,101 +3936,6 @@ $fatpacked{"Parse/CPAN/Meta.pm"} = <<'PARSE_CPAN_META';
   
   __END__
   
-  =pod
-  
-  =head1 NAME
-  
-  Parse::CPAN::Meta - Parse META.yml and other similar CPAN metadata files
-  
-  =head1 SYNOPSIS
-  
-      #############################################
-      # In your file
-      
-      ---
-      rootproperty: blah
-      section:
-        one: two
-        three: four
-        Foo: Bar
-        empty: ~
-      
-      
-      
-      #############################################
-      # In your program
-      
-      use Parse::CPAN::Meta;
-      
-      # Create a YAML file
-      my @yaml = Parse::CPAN::Meta::LoadFile( 'Meta.yml' );
-      
-      # Reading properties
-      my $root = $yaml[0]->{rootproperty};
-      my $one  = $yaml[0]->{section}->{one};
-      my $Foo  = $yaml[0]->{section}->{Foo};
-  
-  =head1 DESCRIPTION
-  
-  B<Parse::CPAN::Meta> is a parser for F<META.yml> files, based on the
-  parser half of L<YAML::Tiny>.
-  
-  It supports a basic subset of the full YAML specification, enough to
-  implement parsing of typical F<META.yml> files, and other similarly simple
-  YAML files.
-  
-  If you need something with more power, move up to a full YAML parser such
-  as L<YAML>, L<YAML::Syck> or L<YAML::LibYAML>.
-  
-  B<Parse::CPAN::Meta> provides a very simply API of only two functions,
-  based on the YAML functions of the same name. Wherever possible,
-  identical calling semantics are used.
-  
-  All error reporting is done with exceptions (die'ing).
-  
-  =head1 FUNCTIONS
-  
-  For maintenance clarity, no functions are exported.
-  
-  =head2 Load
-  
-    my @yaml = Load( $string );
-  
-  Parses a string containing a valid YAML stream into a list of Perl data
-  structures.
-  
-  =head2 LoadFile
-  
-    my @yaml = LoadFile( 'META.yml' );
-  
-  Reads the YAML stream from a file instead of a string.
-  
-  =head1 SUPPORT
-  
-  Bugs should be reported via the CPAN bug tracker at
-  
-  L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Parse-CPAN-Meta>
-  
-  =head1 AUTHOR
-  
-  Adam Kennedy E<lt>adamk@cpan.orgE<gt>
-  
-  =head1 SEE ALSO
-  
-  L<YAML>, L<YAML::Syck>, L<Config::Tiny>, L<CSS::Tiny>,
-  L<http://use.perl.org/~Alias/journal/29427>, L<http://ali.as/>
-  
-  =head1 COPYRIGHT
-  
-  Copyright 2006 - 2009 Adam Kennedy.
-  
-  This program is free software; you can redistribute
-  it and/or modify it under the same terms as Perl itself.
-  
-  The full text of the license can be found in the
-  LICENSE file included with this module.
-  
-  =cut
 PARSE_CPAN_META
 
 $fatpacked{"lib/core/only.pm"} = <<'LIB_CORE_ONLY';
@@ -4319,89 +3949,6 @@ $fatpacked{"lib/core/only.pm"} = <<'LIB_CORE_ONLY';
     @INC = @Config{qw(privlibexp archlibexp)};
     return
   }
-  
-  =head1 NAME
-  
-  lib::core::only - Remove all non-core paths from @INC to avoid site/vendor dirs
-  
-  =head1 SYNOPSIS
-  
-    use lib::core::only; # now @INC contains only the two core directories
-  
-  To get only the core directories plus the ones for the local::lib in scope:
-  
-    $ perl -Mlib::core::only -Mlocal::lib=~/perl5 myscript.pl
-  
-  To attempt to do a self-contained build (but note this will not reliably
-  propagate into subprocesses, see the CAVEATS below):
-  
-    $ PERL5OPT='-Mlib::core::only -Mlocal::lib=~/perl5' cpan
-  
-  =head1 DESCRIPTION
-  
-  lib::core::only is simply a shortcut to say "please reduce my @INC to only
-  the core lib and archlib (architecture-specific lib) directories of this perl".
-  
-  You might want to do this to ensure a local::lib contains only the code you
-  need, or to test an L<App::FatPacker|App::FatPacker> tree, or to avoid known
-  bad vendor packages.
-  
-  You might want to use this to try and install a self-contained tree of perl
-  modules. Be warned that that probably won't work (see L</CAVEATS>).
-  
-  This module was extracted from L<local::lib|local::lib>'s --self-contained
-  feature, and contains the only part that ever worked. I apologise to anybody
-  who thought anything else did.
-  
-  =head1 CAVEATS
-  
-  This does B<not> propagate properly across perl invocations like local::lib's
-  stuff does. It can't. It's only a module import, so it B<only affects the
-  specific perl VM instance in which you load and import() it>.
-  
-  If you want to cascade it across invocations, you can set the PERL5OPT
-  environment variable to '-Mlib::core::only' and it'll sort of work. But be
-  aware that taint mode ignores this, so some modules' build and test code
-  probably will as well.
-  
-  You also need to be aware that perl's command line options are not processed
-  in order - -I options take effect before -M options, so
-  
-    perl -Mlib::core::only -Ilib
-  
-  is unlike to do what you want - it's exactly equivalent to:
-  
-    perl -Mlib::core::only
-  
-  If you want to combine a core-only @INC with additional paths, you need to
-  add the additional paths using -M options and the L<lib|lib> module:
-  
-    perl -Mlib::core::only -Mlib=lib
-  
-    # or if you're trying to test compiled code:
-  
-    perl -Mlib::core::only -Mblib
-  
-  For more information on the impossibility of sanely propagating this across
-  module builds without help from the build program, see
-  L<http://www.shadowcat.co.uk/blog/matt-s-trout/tainted-love> - and for ways
-  to achieve the old --self-contained feature's results, look at
-  L<App::FatPacker|App::FatPacker>'s tree function, and at
-  L<App::cpanminus|cpanm>'s --local-lib-contained feature.
-  
-  =head1 AUTHOR
-  
-  Matt S. Trout <mst@shadowcat.co.uk>
-  
-  =head1 LICENSE
-  
-  This library is free software under the same terms as perl itself.
-  
-  =head1 COPYRIGHT
-  
-  (c) 2010 the lib::core::only L</AUTHOR> as specified above.
-  
-  =cut
   
   1;
 LIB_CORE_ONLY
@@ -4488,20 +4035,6 @@ $fatpacked{"local/lib.pm"} = <<'LOCAL_LIB';
     }
   }
   
-  =begin testing
-  
-  #:: test pipeline
-  
-  package local::lib;
-  
-  { package Foo; sub foo { -$_[1] } sub bar { $_[1]+2 } sub baz { $_[1]+3 } }
-  my $foo = bless({}, 'Foo');                                                 
-  Test::More::ok($foo->${pipeline qw(foo bar baz)}(10) == -15);
-  
-  =end testing
-  
-  =cut
-  
   sub _uniq {
       my %seen;
       grep { ! $seen{$_}++ } @_;
@@ -4524,25 +4057,6 @@ $fatpacked{"local/lib.pm"} = <<'LOCAL_LIB';
       '~/perl5';
     }
   }
-  
-  =begin testing
-  
-  #:: test classmethod setup
-  
-  my $c = 'local::lib';
-  
-  =end testing
-  
-  =begin testing
-  
-  #:: test classmethod
-  
-  is($c->resolve_empty_path, '~/perl5');
-  is($c->resolve_empty_path('foo'), 'foo');
-  
-  =end testing
-  
-  =cut
   
   sub resolve_home_path {
     my ($class, $path) = @_;
@@ -4584,17 +4098,6 @@ $fatpacked{"local/lib.pm"} = <<'LOCAL_LIB';
     my ($class, $path) = @_;
     $path = File::Spec->rel2abs($path);
   }
-  
-  =begin testing
-  
-  #:: test classmethod
-  
-  local *File::Spec::rel2abs = sub { shift; 'FOO'.shift; };
-  is($c->resolve_relative_path('bar'),'FOObar');
-  
-  =end testing
-  
-  =cut
   
   sub setup_local_lib_for {
     my ($class, $path) = @_;
@@ -4750,505 +4253,6 @@ $fatpacked{"local/lib.pm"} = <<'LOCAL_LIB';
                ),
     )
   }
-  
-  =begin testing
-  
-  #:: test classmethod
-  
-  File::Path::rmtree('t/var/splat');
-  
-  $c->ensure_dir_structure_for('t/var/splat');
-  
-  ok(-d 't/var/splat');
-  
-  =end testing
-  
-  =encoding utf8
-  
-  =head1 NAME
-  
-  local::lib - create and use a local lib/ for perl modules with PERL5LIB
-  
-  =head1 SYNOPSIS
-  
-  In code -
-  
-    use local::lib; # sets up a local lib at ~/perl5
-  
-    use local::lib '~/foo'; # same, but ~/foo
-  
-    # Or...
-    use FindBin;
-    use local::lib "$FindBin::Bin/../support";  # app-local support library
-  
-  From the shell -
-  
-    # Install LWP and its missing dependencies to the '~/perl5' directory
-    perl -MCPAN -Mlocal::lib -e 'CPAN::install(LWP)'
-  
-    # Just print out useful shell commands
-    $ perl -Mlocal::lib
-    export PERL_MB_OPT='--install_base /home/username/perl5'
-    export PERL_MM_OPT='INSTALL_BASE=/home/username/perl5'
-    export PERL5LIB='/home/username/perl5/lib/perl5/i386-linux:/home/username/perl5/lib/perl5'
-    export PATH="/home/username/perl5/bin:$PATH"
-  
-  =head2 The bootstrapping technique
-  
-  A typical way to install local::lib is using what is known as the
-  "bootstrapping" technique.  You would do this if your system administrator
-  hasn't already installed local::lib.  In this case, you'll need to install
-  local::lib in your home directory. 
-  
-  If you do have administrative privileges, you will still want to set up your 
-  environment variables, as discussed in step 4. Without this, you would still
-  install the modules into the system CPAN installation and also your Perl scripts
-  will not use the lib/ path you bootstrapped with local::lib.
-  
-  By default local::lib installs itself and the CPAN modules into ~/perl5.
-  
-  Windows users must also see L</Differences when using this module under Win32>.
-  
-  1. Download and unpack the local::lib tarball from CPAN (search for "Download"
-  on the CPAN page about local::lib).  Do this as an ordinary user, not as root
-  or administrator.  Unpack the file in your home directory or in any other
-  convenient location.
-  
-  2. Run this:
-  
-    perl Makefile.PL --bootstrap
-  
-  If the system asks you whether it should automatically configure as much
-  as possible, you would typically answer yes.
-  
-  In order to install local::lib into a directory other than the default, you need
-  to specify the name of the directory when you call bootstrap, as follows:
-  
-    perl Makefile.PL --bootstrap=~/foo
-  
-  3. Run this: (local::lib assumes you have make installed on your system)
-  
-    make test && make install
-  
-  4. Now we need to setup the appropriate environment variables, so that Perl 
-  starts using our newly generated lib/ directory. If you are using bash or
-  any other Bourne shells, you can add this to your shell startup script this
-  way:
-  
-    echo 'eval $(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)' >>~/.bashrc
-  
-  If you are using C shell, you can do this as follows:
-  
-    /bin/csh
-    echo $SHELL
-    /bin/csh
-    perl -I$HOME/perl5/lib/perl5 -Mlocal::lib >> ~/.cshrc
-  
-  If you passed to bootstrap a directory other than default, you also need to give that as 
-  import parameter to the call of the local::lib module like this way:
-  
-    echo 'eval $(perl -I$HOME/foo/lib/perl5 -Mlocal::lib=$HOME/foo)' >>~/.bashrc
-  
-  After writing your shell configuration file, be sure to re-read it to get the
-  changed settings into your current shell's environment. Bourne shells use 
-  C<. ~/.bashrc> for this, whereas C shells use C<source ~/.cshrc>.
-  
-  If you're on a slower machine, or are operating under draconian disk space
-  limitations, you can disable the automatic generation of manpages from POD when
-  installing modules by using the C<--no-manpages> argument when bootstrapping:
-  
-    perl Makefile.PL --bootstrap --no-manpages
-  
-  To avoid doing several bootstrap for several Perl module environments on the 
-  same account, for example if you use it for several different deployed 
-  applications independently, you can use one bootstrapped local::lib 
-  installation to install modules in different directories directly this way:
-  
-    cd ~/mydir1
-    perl -Mlocal::lib=./
-    eval $(perl -Mlocal::lib=./)  ### To set the environment for this shell alone
-    printenv                      ### You will see that ~/mydir1 is in the PERL5LIB
-    perl -MCPAN -e install ...    ### whatever modules you want
-    cd ../mydir2
-    ... REPEAT ...
-  
-  For multiple environments for multiple apps you may need to include a modified
-  version of the C<< use FindBin >> instructions in the "In code" sample above.
-  If you did something like the above, you have a set of Perl modules at C<<
-  ~/mydir1/lib >>. If you have a script at C<< ~/mydir1/scripts/myscript.pl >>,
-  you need to tell it where to find the modules you installed for it at C<<
-  ~/mydir1/lib >>.
-  
-  In C<< ~/mydir1/scripts/myscript.pl >>:
-  
-    use strict;
-    use warnings;
-    use local::lib "$FindBin::Bin/..";  ### points to ~/mydir1 and local::lib finds lib
-    use lib "$FindBin::Bin/../lib";     ### points to ~/mydir1/lib
-  
-  Put this before any BEGIN { ... } blocks that require the modules you installed.
-  
-  =head2 Differences when using this module under Win32
-  
-  To set up the proper environment variables for your current session of
-  C<CMD.exe>, you can use this:
-  
-    C:\>perl -Mlocal::lib
-    set PERL_MB_OPT=--install_base C:\DOCUME~1\ADMINI~1\perl5
-    set PERL_MM_OPT=INSTALL_BASE=C:\DOCUME~1\ADMINI~1\perl5
-    set PERL5LIB=C:\DOCUME~1\ADMINI~1\perl5\lib\perl5;C:\DOCUME~1\ADMINI~1\perl5\lib\perl5\MSWin32-x86-multi-thread
-    set PATH=C:\DOCUME~1\ADMINI~1\perl5\bin;%PATH%
-    
-    ### To set the environment for this shell alone
-    C:\>perl -Mlocal::lib > %TEMP%\tmp.bat && %TEMP%\tmp.bat && del %TEMP%\temp.bat
-    ### instead of $(perl -Mlocal::lib=./)
-  
-  If you want the environment entries to persist, you'll need to add then to the
-  Control Panel's System applet yourself or use L<App::local::lib::Win32Helper>.
-  
-  The "~" is translated to the user's profile directory (the directory named for
-  the user under "Documents and Settings" (Windows XP or earlier) or "Users"
-  (Windows Vista or later)) unless $ENV{HOME} exists. After that, the home
-  directory is translated to a short name (which means the directory must exist)
-  and the subdirectories are created.
-  
-  =head1 RATIONALE
-  
-  The version of a Perl package on your machine is not always the version you
-  need.  Obviously, the best thing to do would be to update to the version you
-  need.  However, you might be in a situation where you're prevented from doing
-  this.  Perhaps you don't have system administrator privileges; or perhaps you
-  are using a package management system such as Debian, and nobody has yet gotten
-  around to packaging up the version you need.
-  
-  local::lib solves this problem by allowing you to create your own directory of
-  Perl packages downloaded from CPAN (in a multi-user system, this would typically
-  be within your own home directory).  The existing system Perl installation is
-  not affected; you simply invoke Perl with special options so that Perl uses the
-  packages in your own local package directory rather than the system packages.
-  local::lib arranges things so that your locally installed version of the Perl
-  packages takes precedence over the system installation.
-  
-  If you are using a package management system (such as Debian), you don't need to
-  worry about Debian and CPAN stepping on each other's toes.  Your local version
-  of the packages will be written to an entirely separate directory from those
-  installed by Debian.  
-  
-  =head1 DESCRIPTION
-  
-  This module provides a quick, convenient way of bootstrapping a user-local Perl
-  module library located within the user's home directory. It also constructs and
-  prints out for the user the list of environment variables using the syntax
-  appropriate for the user's current shell (as specified by the C<SHELL>
-  environment variable), suitable for directly adding to one's shell
-  configuration file.
-  
-  More generally, local::lib allows for the bootstrapping and usage of a
-  directory containing Perl modules outside of Perl's C<@INC>. This makes it
-  easier to ship an application with an app-specific copy of a Perl module, or
-  collection of modules. Useful in cases like when an upstream maintainer hasn't
-  applied a patch to a module of theirs that you need for your application.
-  
-  On import, local::lib sets the following environment variables to appropriate
-  values:
-  
-  =over 4
-  
-  =item PERL_MB_OPT
-  
-  =item PERL_MM_OPT
-  
-  =item PERL5LIB
-  
-  =item PATH
-  
-  PATH is appended to, rather than clobbered.
-  
-  =back
-  
-  These values are then available for reference by any code after import.
-  
-  =head1 CREATING A SELF-CONTAINED SET OF MODULES
-  
-  See L<lib::core::only> for one way to do this - but note that
-  there are a number of caveats, and the best approach is always to perform a
-  build against a clean perl (i.e. site and vendor as close to empty as possible).
-  
-  =head1 METHODS
-  
-  =head2 ensure_dir_structure_for
-  
-  =over 4
-  
-  =item Arguments: $path
-  
-  =item Return value: None
-  
-  =back
-  
-  Attempts to create the given path, and all required parent directories. Throws
-  an exception on failure.
-  
-  =head2 print_environment_vars_for
-  
-  =over 4
-  
-  =item Arguments: $path
-  
-  =item Return value: None
-  
-  =back
-  
-  Prints to standard output the variables listed above, properly set to use the
-  given path as the base directory.
-  
-  =head2 build_environment_vars_for
-  
-  =over 4
-  
-  =item Arguments: $path, $interpolate
-  
-  =item Return value: \%environment_vars
-  
-  =back
-  
-  Returns a hash with the variables listed above, properly set to use the
-  given path as the base directory.
-  
-  =head2 setup_env_hash_for
-  
-  =over 4
-  
-  =item Arguments: $path
-  
-  =item Return value: None
-  
-  =back
-  
-  Constructs the C<%ENV> keys for the given path, by calling
-  L</build_environment_vars_for>.
-  
-  =head2 install_base_perl_path
-  
-  =over 4
-  
-  =item Arguments: $path
-  
-  =item Return value: $install_base_perl_path
-  
-  =back
-  
-  Returns a path describing where to install the Perl modules for this local
-  library installation. Appends the directories C<lib> and C<perl5> to the given
-  path.
-  
-  =head2 install_base_arch_path
-  
-  =over 4
-  
-  =item Arguments: $path
-  
-  =item Return value: $install_base_arch_path
-  
-  =back
-  
-  Returns a path describing where to install the architecture-specific Perl
-  modules for this local library installation. Based on the
-  L</install_base_perl_path> method's return value, and appends the value of
-  C<$Config{archname}>.
-  
-  =head2 install_base_bin_path
-  
-  =over 4
-  
-  =item Arguments: $path
-  
-  =item Return value: $install_base_bin_path
-  
-  =back
-  
-  Returns a path describing where to install the executable programs for this
-  local library installation. Based on the L</install_base_perl_path> method's
-  return value, and appends the directory C<bin>.
-  
-  =head2 resolve_empty_path
-  
-  =over 4
-  
-  =item Arguments: $path
-  
-  =item Return value: $base_path
-  
-  =back
-  
-  Builds and returns the base path into which to set up the local module
-  installation. Defaults to C<~/perl5>.
-  
-  =head2 resolve_home_path
-  
-  =over 4
-  
-  =item Arguments: $path
-  
-  =item Return value: $home_path
-  
-  =back
-  
-  Attempts to find the user's home directory. If installed, uses C<File::HomeDir>
-  for this purpose. If no definite answer is available, throws an exception.
-  
-  =head2 resolve_relative_path
-  
-  =over 4
-  
-  =item Arguments: $path
-  
-  =item Return value: $absolute_path
-  
-  =back
-  
-  Translates the given path into an absolute path.
-  
-  =head2 resolve_path
-  
-  =over 4
-  
-  =item Arguments: $path
-  
-  =item Return value: $absolute_path
-  
-  =back
-  
-  Calls the following in a pipeline, passing the result from the previous to the
-  next, in an attempt to find where to configure the environment for a local
-  library installation: L</resolve_empty_path>, L</resolve_home_path>,
-  L</resolve_relative_path>. Passes the given path argument to
-  L</resolve_empty_path> which then returns a result that is passed to
-  L</resolve_home_path>, which then has its result passed to
-  L</resolve_relative_path>. The result of this final call is returned from
-  L</resolve_path>.
-  
-  =head1 A WARNING ABOUT UNINST=1
-  
-  Be careful about using local::lib in combination with "make install UNINST=1".
-  The idea of this feature is that will uninstall an old version of a module
-  before installing a new one. However it lacks a safety check that the old
-  version and the new version will go in the same directory. Used in combination
-  with local::lib, you can potentially delete a globally accessible version of a
-  module while installing the new version in a local place. Only combine "make
-  install UNINST=1" and local::lib if you understand these possible consequences.
-  
-  =head1 LIMITATIONS
-  
-  The perl toolchain is unable to handle directory names with spaces in it,
-  so you cant put your local::lib bootstrap into a directory with spaces. What
-  you can do is moving your local::lib to a directory with spaces B<after> you
-  installed all modules inside your local::lib bootstrap. But be aware that you
-  cant update or install CPAN modules after the move.
-  
-  Rather basic shell detection. Right now anything with csh in its name is
-  assumed to be a C shell or something compatible, and everything else is assumed
-  to be Bourne, except on Win32 systems. If the C<SHELL> environment variable is
-  not set, a Bourne-compatible shell is assumed.
-  
-  Bootstrap is a hack and will use CPAN.pm for ExtUtils::MakeMaker even if you
-  have CPANPLUS installed.
-  
-  Kills any existing PERL5LIB, PERL_MM_OPT or PERL_MB_OPT.
-  
-  Should probably auto-fixup CPAN config if not already done.
-  
-  Patches very much welcome for any of the above.
-  
-  On Win32 systems, does not have a way to write the created environment variables
-  to the registry, so that they can persist through a reboot.
-  
-  =head1 TROUBLESHOOTING
-  
-  If you've configured local::lib to install CPAN modules somewhere in to your
-  home directory, and at some point later you try to install a module with C<cpan
-  -i Foo::Bar>, but it fails with an error like: C<Warning: You do not have
-  permissions to install into /usr/lib64/perl5/site_perl/5.8.8/x86_64-linux at
-  /usr/lib64/perl5/5.8.8/Foo/Bar.pm> and buried within the install log is an
-  error saying C<'INSTALL_BASE' is not a known MakeMaker parameter name>, then
-  you've somehow lost your updated ExtUtils::MakeMaker module.
-  
-  To remedy this situation, rerun the bootstrapping procedure documented above.
-  
-  Then, run C<rm -r ~/.cpan/build/Foo-Bar*>
-  
-  Finally, re-run C<cpan -i Foo::Bar> and it should install without problems.
-  
-  =head1 ENVIRONMENT
-  
-  =over 4
-  
-  =item SHELL
-  
-  =item COMSPEC
-  
-  local::lib looks at the user's C<SHELL> environment variable when printing out
-  commands to add to the shell configuration file.
-  
-  On Win32 systems, C<COMSPEC> is also examined.
-  
-  =back
-  
-  =head1 SUPPORT
-  
-  IRC:
-  
-      Join #local-lib on irc.perl.org.
-  
-  =head1 AUTHOR
-  
-  Matt S Trout <mst@shadowcat.co.uk> http://www.shadowcat.co.uk/
-  
-  auto_install fixes kindly sponsored by http://www.takkle.com/
-  
-  =head1 CONTRIBUTORS
-  
-  Patches to correctly output commands for csh style shells, as well as some
-  documentation additions, contributed by Christopher Nehren <apeiron@cpan.org>.
-  
-  Doc patches for a custom local::lib directory, more cleanups in the english
-  documentation and a L<german documentation|POD2::DE::local::lib> contributed by Torsten Raudssus
-  <torsten@raudssus.de>.
-  
-  Hans Dieter Pearcey <hdp@cpan.org> sent in some additional tests for ensuring
-  things will install properly, submitted a fix for the bug causing problems with
-  writing Makefiles during bootstrapping, contributed an example program, and
-  submitted yet another fix to ensure that local::lib can install and bootstrap
-  properly. Many, many thanks!
-  
-  pattern of Freenode IRC contributed the beginnings of the Troubleshooting
-  section. Many thanks!
-  
-  Patch to add Win32 support contributed by Curtis Jewell <csjewell@cpan.org>.
-  
-  Warnings for missing PATH/PERL5LIB (as when not running interactively) silenced
-  by a patch from Marco Emilio Poleggi.
-  
-  Mark Stosberg <mark@summersault.com> provided the code for the now deleted
-  '--self-contained' option.
-  
-  Documentation patches to make win32 usage clearer by
-  David Mertens <dcmertens.perl@gmail.com> (run4flat).
-  
-  Brazilian L<portuguese translation|POD2::PT_BR::local::lib> and minor doc patches contributed by Breno
-  G. de Oliveira <garu@cpan.org>.
-  
-  =head1 COPYRIGHT
-  
-  Copyright (c) 2007 - 2010 the local::lib L</AUTHOR> and L</CONTRIBUTORS> as
-  listed above.
-  
-  =head1 LICENSE
-  
-  This library is free software and may be distributed under the same terms
-  as perl itself.
-  
-  =cut
   
   1;
 LOCAL_LIB
@@ -6442,6 +5446,7 @@ cpanm - get, unpack build and install modules from CPAN
   cpanm --installdeps .                                     # install all the deps for the current directory
   cpanm -L extlib Plack                                     # install Plack and all non-core deps into extlib
   cpanm --mirror http://cpan.cpantesters.org/ DBI           # use the fast-syncing mirror
+  cpanm --scandeps Moose                                    # See what modules will be installed for Moose
 
 =head1 COMMANDS
 
@@ -6602,6 +5607,70 @@ requires custom configuration or Task:: distributions.
 Defaults to false, and you can say C<--no-interactive> to override
 when it's set in the default options in C<PERL_CPANM_OPT>.
 
+=item --scandeps
+
+Scans the depencencies of given modules and output the tree in a text
+format. (See C<--format> below for more options)
+
+Because this command doesn't actually install any distributions, it
+will be useful that by typing:
+
+  cpanm --scandeps Catalyst::Runtime
+
+you can make sure what modules will be installed.
+
+This command takes into account which modules you already have
+installed in your system. If you want to see what modules will be
+installed against a vanilla perl installation, you might want to
+combine it with C<-L> option.
+
+=item --format
+
+Determines what format to display the scanned dependency
+tree. Available options are C<tree>, C<json>, C<yaml> and C<dists>.
+
+=over 8
+
+=item tree
+
+Displays the tree in a plain text format. This is the default value.
+
+=item json, yaml
+
+Outputs the tree in a JSON or YAML format. L<JSON> and L<YAML> modules
+need to be installed respectively. The output tree is represented as a
+recursive tuple of:
+
+  [ distribution, dependencies ]
+
+and the container is an array containing the root elements. Note that
+there may be multiple root nodes, since you can give multiple modules
+to the C<--scandeps> command.
+
+=item dists
+
+C<dists> is a special output format, where it prints the distribution
+filename in the I<depth first order> after the dependency resolution,
+like:
+
+  GAAS/MIME-Base64-3.13.tar.gz
+  GAAS/URI-1.58.tar.gz
+  PETDANCE/HTML-Tagset-3.20.tar.gz
+  GAAS/HTML-Parser-3.68.tar.gz
+  GAAS/libwww-perl-5.837.tar.gz
+
+which means you can install these distributions in this order without
+extra dependencies. When combined with C<-L> option, it will be useful
+to replay installations on other machines.
+
+=back
+
+=item --save-dists
+
+Specifies the optional directory path to copy downloaded tarballs in
+the CPAN mirror compatible directory structure
+i.e. I<authors/id/A/AU/AUTHORS/Foo-Bar-version.tar.gz>
+
 =item --uninst-shadows
 
 Uninstalls the shadow files of the distribution that you're
@@ -6632,6 +5701,14 @@ cleaned up in one week.
 
 You can set the value to C<0> to make cpan never cleanup those
 directories.
+
+=item --man-pages
+
+Generates man pages for executables (man1) and libraries (man3).
+
+Defaults to false (no man pages generated) if
+C<-L|--local-lib-contained> option is supplied. Otherwise, defaults to
+true, and you can disable it with C<--no-man-pages>.
 
 =item --lwp
 
