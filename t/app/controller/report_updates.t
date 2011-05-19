@@ -261,6 +261,11 @@ subtest "submit an update for a non registered user" => sub {
 };
 
 subtest "submit an update for a registered user" => sub {
+    # clear out comments for this problem to make
+    # checking details easier later
+    ok( $_->delete, 'deleted comment ' . $_->id )
+        for $report->comments;
+
     $mech->clear_emails_ok();
 
     $mech->log_in_ok( $user->email );
@@ -279,6 +284,12 @@ subtest "submit an update for a registered user" => sub {
     is $mech->uri->path, "/report/" . $report_id, "redirected to report page";
 
     $mech->email_count_is(0);
+
+    my $update = $report->comments->first;
+    ok $update, 'found update';
+    is $update->text, 'update from a registered user', 'update text';
+    is $update->user->email, 'test@example.com', 'update user';
+    is $update->state, 'confirmed', 'update confirmed';
 };
 
 ok $comment->delete, 'deleted comment';
