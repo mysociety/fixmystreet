@@ -120,6 +120,42 @@ sub confirm_alert : Path('/A') {
     $c->forward('/alert/confirm');
 }
 
+=head2 confirm_update
+
+    /C/([0-9A-Za-z]{16,18}).*$
+
+Confirm an update - url appears in emails sent to users after they create the
+update but are not logged in.
+
+=cut
+
+sub confirm_update : Path('/C') {
+    my ( $self, $c, $token_code ) = @_;
+
+    my $auth_token =
+      $c->forward( 'load_auth_token', [ $token_code, 'comment' ] );
+
+    # Load the problem
+    my $comment_id = $auth_token->data->{id};
+    $c->stash->{add_alert} = $auth_token->data->{add_alert};
+
+    my $comment = $c->model('DB::Comment')->find( { id => $comment_id } )
+      || $c->detach('token_error');
+    $c->stash->{update} = $comment;
+
+    # check that this email or domain are not the cause of abuse. If so hide it.
+    if ( $comment->is_from_abuser ) {
+        $c->stash->{template} = 'tokens/abuse.html';
+        return;
+    }
+
+    $c->forward('/report/update/confirm');
+
+    $c->authenticate( { email => $comment->user->email }, 'no_password' );
+
+    return 1;
+}
+
 =head2 load_auth_token
 
     my $auth_token =

@@ -31,6 +31,59 @@ sub report_update : Path : Args(0) {
       && $c->forward('redirect_or_confirm_creation');
 }
 
+sub confirm : Private {
+    my ( $self, $c ) = @_;
+
+    $c->stash->{update}->confirm;
+    $c->stash->{update}->update;
+
+    $c->forward('update_problem');
+    $c->forward('signup_for_alerts');
+
+    return 1;
+}
+
+sub update_problem : Private {
+    my ( $self, $c ) = @_;
+
+    my $update = $c->stash->{update};
+    my $problem = $c->stash->{problem} || $update->problem;
+
+    if ( $update->mark_fixed ) {
+        $problem->state( 'fixed' );
+
+        if ( $update->user->id == $problem->user->id ) {
+            $problem->send_questionnaire( 'f' );
+        } else {
+            $c->forward( 'ask_questionnaire' );
+        }
+    }
+
+    $problem->lastupdate( \'ms_current_timestamp()' );
+    $problem->update;
+
+    $c->stash->{problem} = $problem;
+
+
+    return 1;
+}
+
+sub ask_questionnaire : Private {
+    my ( $self, $c ) = @_;
+
+    # FIXME send out questionnaire token here
+
+    return 1;
+}
+
+sub display_confirmation : Private {
+    my ( $self, $c ) = @_;
+
+    $c->stash->{template} = 'tokens/confirm_update.html';
+
+    return 1;
+}
+
 =head2 setup_page
 
 Setup things we need for later.
@@ -118,6 +171,7 @@ sub process_update : Private {
     );
 
     $c->stash->{update} = $update;
+    $c->stash->{add_alert} = $c->req->param('add_alert');
 
     return 1;
 }
@@ -209,6 +263,7 @@ sub redirect_or_confirm_creation : Private {
     # If confirmed send the user straight there.
     if ( $update->confirmed ) {
         $c->forward( 'signup_for_alerts' );
+        $c->forward( 'update_problem' );
         my $report_uri = $c->uri_for( '/report', $update->problem_id );
         $c->res->redirect($report_uri);
         $c->detach;
@@ -247,9 +302,9 @@ happen before calling this.
 sub signup_for_alerts : Private {
     my ( $self, $c ) = @_;
 
-    if ( $c->req->param( 'add_alert' ) ) {
+    if ( $c->stash->{add_alert} ) {
         my $alert = $c->model( 'DB::Alert' )->find_or_create(
-            user => $c->stash->{update_user},
+            user => $c->stash->{update}->user,
             alert_type => 'new_updates',
             parameter => $c->stash->{problem}->id
         );
