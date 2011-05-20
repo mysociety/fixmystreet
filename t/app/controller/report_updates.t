@@ -265,6 +265,13 @@ subtest "submit an update for a non registered user" => sub {
     is $update->user->email, 'unregistered@example.com', 'update email';
     is $update->text, 'Update from an unregistered user', 'update text';
     is $add_alerts, 0, 'do not sign up for alerts';
+
+    $mech->get_ok( $url . $url_token );
+    $mech->content_contains( "/report/$report_id#$update_id" );
+
+    $update->discard_changes;
+
+    is $update->state, 'confirmed', 'update confirmed';
 };
 
 for my $test (
