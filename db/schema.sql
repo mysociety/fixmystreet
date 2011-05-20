@@ -262,8 +262,9 @@ create function problem_find_nearby(double precision, double precision, double p
 create table comment (
     id serial not null primary key,
     problem_id integer not null references problem(id),
+    user_id int references users(id) not null,
+    anonymous bool not null,
     name text, -- null means anonymous
-    email text not null,
     website text,
     created timestamp not null default ms_current_timestamp(),
     confirmed timestamp,
@@ -283,6 +284,7 @@ create table comment (
     -- and should be highlighted in the display?
 );
 
+create index comment_user_id_idx on comment(user_id);
 create index comment_problem_id_idx on comment(problem_id);
 create index comment_problem_id_created_idx on comment(problem_id, created);
 
@@ -318,7 +320,7 @@ create table alert (
     alert_type text not null references alert_type(ref),
     parameter text, -- e.g. Problem ID for new updates, Longitude for local problem alerts
     parameter2 text, -- e.g. Latitude for local problem alerts
-    email text not null,
+    user_id int references users(id) not null,
     confirmed integer not null default 0,
     lang text not null default 'en-gb',
     cobrand text not null default '' check (cobrand ~* '^[a-z0-9]*$'), 
@@ -326,11 +328,11 @@ create table alert (
     whensubscribed timestamp not null default ms_current_timestamp(),
     whendisabled timestamp default null
 );
-create index alert_email_idx on alert(email);
+create index alert_user_id_idx on alert ( user_id );
 create index alert_alert_type_confirmed_whendisabled_idx on alert(alert_type, confirmed, whendisabled);
 create index alert_whendisabled_cobrand_idx on alert(whendisabled, cobrand);
 create index alert_whensubscribed_confirmed_cobrand_idx on alert(whensubscribed, confirmed, cobrand);
--- Possible indexes - unique (alert_type,email,parameter)
+-- Possible indexes - unique (alert_type,user_id,parameter)
 
 create table alert_sent (
     alert_id integer not null references alert(id),

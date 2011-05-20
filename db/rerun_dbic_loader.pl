@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-# This script inspects the current state of the database and then ammends the
+# This script inspects the current state of the database and then amends the
 # FixMyStreet::DB::Result::* files to suit. After running the changes should be
 # inspected before the code is commited.
 
@@ -20,7 +20,6 @@ my @tables_to_ignore = (
     'debugdate',           #
     'flickr_imported',     #
     'partial_user',        #
-    'questionnaire',       #
     'secret',              #
     'textmystreet',        #
 );
@@ -30,7 +29,7 @@ make_schema_at(
     'FixMyStreet::DB',
     {
         debug          => 0,               # switch on to be chatty
-        dump_directory => './lib',         # edit files in place
+        dump_directory => './perllib',     # edit files in place
         exclude        => qr{$exclude},    # ignore some tables
         generate_pod   => 0,               # no need for pod
         overwrite_modifications => 1,      # don't worry that the md5 is wrong
