@@ -43,10 +43,6 @@ Display a report.
 sub display : Path('') : Args(1) {
     my ( $self, $c, $id ) = @_;
 
-#     my ($q, $errors, $field_errors) = @_;
-#     my @errors = @$errors;
-#     my %field_errors = %{$field_errors};
-#     my $cobrand = Page::get_cobrand($q);
 #     push @errors, _('There were problems with your update. Please see below.') if (scalar keys %field_errors);
 
 #     my @vars = qw(id name rznvy update fixed add_alert upload_fileid submit_update);
@@ -63,39 +59,14 @@ sub display : Path('') : Args(1) {
     }
 
     $c->forward('load_problem_or_display_error', [ $id ] );
-
-    #     my $extra_data = Cobrand::extra_data($cobrand, $q);
-    #     my $google_link = Cobrand::base_url_for_emails($cobrand, $extra_data)
-    #         . '/report/' . $problem->{id};
-    #     # truncate the lat,lon for nicer rss urls
-    #     my ( $short_lat, $short_lon ) =
-    #       map { Utils::truncate_coordinate($_) }    #
-    #       ( $problem->{latitude}, $problem->{longitude} );
-
-
-
-#     my $fixed = ($input{fixed}) ? ' checked' : '';
-
     $c->forward( 'format_problem_for_display' );
-#     my %vars = (
-#         url_home => Cobrand::url($cobrand, '/', $q),
-#         field_errors => \%field_errors,
-#         add_alert_checked => ($input{add_alert} || !$input{submit_update}) ? ' checked' : '',
-#         form_action => Cobrand::url($cobrand, '/', $q),
-#     );
 #
 #     $vars{update_blurb} = $q->p($q->small(_('Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href="/faq#privacy">privacy policy</a>')))
 #         unless $q->{site} eq 'emptyhomes'; # No council blurb
 #
 #     my %params = (
-#         rss => [ _('Updates to this problem, FixMyStreet'), "/rss/$input_h{id}" ],
-#         robots => 'index, nofollow',
 #         js => FixMyStreet::Map::header_js(),
-#         title => $problem->{title}
 #     );
-#
-#     my $page = Page::template_include('problem', $q, Page::template_root($q), %vars);
-#     return ($page, %params);
 
 }
 
