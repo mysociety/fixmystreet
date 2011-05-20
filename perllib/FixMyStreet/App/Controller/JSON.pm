@@ -47,22 +47,55 @@ sub json : Path : Args(0) {
         return;
     }
 
+    # check that the dates are sane
+    if ( $start_dt > $end_dt ) {
+        $c->stash->{error} = 'Start date after end date';
+        return;
+    }
+
     # check that the type is supported
     unless ( $type eq 'new_problems' || $type eq 'fixed_problems' ) {
         $c->stash->{error} = 'Invalid type supplied';
         return;
     }
 
-    my $response = $c->stash->{response} ||= {};
-
-    # elsif ( $type eq 'new_problems' ) {
-    #     $problems = Problems::created_in_interval( $start_date, $end_date );
-    # }
-    # elsif ( $type eq 'fixed_problems' ) {
-    #     $problems = Problems::fixed_in_interval( $start_date, $end_date );
-    # }
-
+    # query the database
+    $c->stash->{response} =
+      $type eq 'new_problems'
+      ? Problems::created_in_interval( $start_date, $end_date )
+      : Problems::fixed_in_interval( $start_date, $end_date );
 }
+
+# If we convert this code to be fully DBIC based then the following snippet is a
+# good start. The roadblock to doing it fully is the 'site_restriction' in the
+# SQL which is currently provided as SQL, rather than something that could be
+# easily added to the DBIC query. The hardest cobrand to change would be the
+# cities - so perhaps do it after we know wether that needs to be kept or not.
+#
+# my $state =
+#     $type eq 'new_problems'   ? 'confirmed'
+#   : $type eq 'fixed_problems' ? 'fixed_problems'
+#   :                             die;
+#
+# my $one_day = DateTime::Duration->new( days => 1 );
+#
+# my $problems = $c->model('DB::Problem')->search(
+#     {
+#         created => {
+#             '>=' => $start_dt,
+#             '<=' => $end_dt + $one_day,
+#         },
+#         state => $state,
+#         # ------ add is site_restriction here -------
+#     },
+#     {
+#         columns => [
+#             'id',       'title', 'council',   'category',
+#             'detail',   'name',  'anonymous', 'confirmed',
+#             'whensent', 'service',
+#         ]
+#     }
+# );
 
 sub end : Private {
     my ( $self, $c ) = @_;
@@ -73,7 +106,7 @@ sub end : Private {
       : $c->stash->{response};
 
     $c->res->content_type('application/json; charset=utf-8');
-    $c->res->body( encode_json($response) );
+    $c->res->body( encode_json( $response || {} ) );
 }
 
 __PACKAGE__->meta->make_immutable;

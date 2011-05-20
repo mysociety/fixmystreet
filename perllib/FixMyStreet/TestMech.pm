@@ -54,6 +54,26 @@ sub logged_in_ok {
         "logged in" );
 }
 
+=head2 create_user_ok
+
+    $user = $mech->create_user_ok( $email );
+
+Create a test user (or find it and return if it already exists).
+
+=cut
+
+sub create_user_ok {
+    my $self = shift;
+    my ($email) = @_;
+
+    my $user =
+      FixMyStreet::App->model('DB::User')
+      ->find_or_create( { email => $email } );
+    ok $user, "found/created user for $email";
+
+    return $user;
+}
+
 =head2 log_in_ok
 
     $user = $mech->log_in_ok( $email_address );
@@ -66,10 +86,7 @@ sub log_in_ok {
     my $mech  = shift;
     my $email = shift;
 
-    my $user =
-      FixMyStreet::App->model('DB::User')
-      ->find_or_create( { email => $email } );
-    ok $user, "found/created user for $email";
+    my $user = $mech->create_user_ok($email);
 
     # store the old password and then change it
     my $old_password_sha1 = $user->password;
