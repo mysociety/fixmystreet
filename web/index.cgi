@@ -85,10 +85,10 @@ sub main {
     #     $params{title} = _('Submitting your report');
     #     ( $out, %params ) = submit_problem($q);
     # }
-    elsif ( $q->param('submit_update') ) {
-        $params{title} = _('Submitting your update');
-        ( $out, %params ) = submit_update($q);
-    }
+    #elsif ( $q->param('submit_update') ) {
+    #    $params{title} = _('Submitting your update');
+    #    ( $out, %params ) = submit_update($q);
+    #}
     # elsif ( $q->param('submit_map') ) {
     #     ( $out, %params ) = display_form( $q, [], {} );
     #     $params{title} = _('Reporting a problem');
@@ -222,62 +222,62 @@ Page::do_fastcgi(\&main);
 #     return ($out, %params);
 # }
 
-sub submit_update {
-    my $q = shift;
-    my @vars = qw(id name rznvy update fixed upload_fileid add_alert);
-    my %input = map { $_ => $q->param($_) || '' } @vars;
-    my @errors;
-    my %field_errors;
-
-    my $fh = $q->upload('photo');
-    if ($fh) {
-        my $err = Page::check_photo($q, $fh);
-        push @errors, $err if $err;
-    }
-    $field_errors{update} = _('Please enter a message') unless $input{update} =~ /\S/;
-    $input{name} = undef unless $input{name} =~ /\S/;
-    if ($input{rznvy} !~ /\S/) {
-        $field_errors{email} = _('Please enter your email');
-    } elsif (!mySociety::EmailUtil::is_valid_email($input{rznvy})) {
-        $field_errors{email} = _('Please enter a valid email');
-    }
-
-    my $image;
-    if ($fh) {
-        try {
-            $image = Page::process_photo($fh);
-        } catch Error::Simple with {
-            my $e = shift;
-            push(@errors, sprintf(_("That image doesn't appear to have uploaded correctly (%s), please try again."), $e));
-        };
-    }
-
-    if ($input{upload_fileid}) {
-        open FP, mySociety::Config::get('UPLOAD_CACHE') . $input{upload_fileid};
-        $image = join('', <FP>);
-        close FP;
-    }
-
-    return display_problem($q, \@errors, \%field_errors) if (@errors || scalar(keys(%field_errors)));
-    my $cobrand = Page::get_cobrand($q);
-    my $cobrand_data = Cobrand::extra_update_data($cobrand, $q);
-    my $id = dbh()->selectrow_array("select nextval('comment_id_seq');");
-    Utils::workaround_pg_bytea("insert into comment
-        (id, problem_id, name, email, website, text, state, mark_fixed, photo, lang, cobrand, cobrand_data)
-        values (?, ?, ?, ?, '', ?, 'unconfirmed', ?, ?, ?, ?, ?)", 7,
-        $id, $input{id}, $input{name}, $input{rznvy}, $input{update},
-        $input{fixed} ? 't' : 'f', $image, $mySociety::Locale::lang, $cobrand, $cobrand_data);
-
-    my %h = ();
-    $h{update} = $input{update};
-    $h{name} = $input{name} ? $input{name} : _("Anonymous");
-    my $base = Page::base_url_with_lang($q, undef, 1);
-    $h{url} = $base . '/C/' . mySociety::AuthToken::store('update', { id => $id, add_alert => $input{add_alert} } );
-    dbh()->commit();
-
-    my $out = Page::send_confirmation_email($q, $input{rznvy}, $input{name}, 'update', %h);
-    return $out;
-}
+#sub submit_update {
+#    my $q = shift;
+#    my @vars = qw(id name rznvy update fixed upload_fileid add_alert);
+#    my %input = map { $_ => $q->param($_) || '' } @vars;
+#    my @errors;
+#    my %field_errors;
+#
+#    my $fh = $q->upload('photo');
+#    if ($fh) {
+#        my $err = Page::check_photo($q, $fh);
+#        push @errors, $err if $err;
+#    }
+#    $field_errors{update} = _('Please enter a message') unless $input{update} =~ /\S/;
+#    $input{name} = undef unless $input{name} =~ /\S/;
+#    if ($input{rznvy} !~ /\S/) {
+#        $field_errors{email} = _('Please enter your email');
+#    } elsif (!mySociety::EmailUtil::is_valid_email($input{rznvy})) {
+#        $field_errors{email} = _('Please enter a valid email');
+#    }
+#
+#    my $image;
+#    if ($fh) {
+#        try {
+#            $image = Page::process_photo($fh);
+#        } catch Error::Simple with {
+#            my $e = shift;
+#            push(@errors, sprintf(_("That image doesn't appear to have uploaded correctly (%s), please try again."), $e));
+#        };
+#    }
+#
+#    if ($input{upload_fileid}) {
+#        open FP, mySociety::Config::get('UPLOAD_CACHE') . $input{upload_fileid};
+#        $image = join('', <FP>);
+#        close FP;
+#    }
+#
+#    return display_problem($q, \@errors, \%field_errors) if (@errors || scalar(keys(%field_errors)));
+#    my $cobrand = Page::get_cobrand($q);
+#    my $cobrand_data = Cobrand::extra_update_data($cobrand, $q);
+#    my $id = dbh()->selectrow_array("select nextval('comment_id_seq');");
+#    Utils::workaround_pg_bytea("insert into comment
+#        (id, problem_id, name, email, website, text, state, mark_fixed, photo, lang, cobrand, cobrand_data)
+#        values (?, ?, ?, ?, '', ?, 'unconfirmed', ?, ?, ?, ?, ?)", 7,
+#        $id, $input{id}, $input{name}, $input{rznvy}, $input{update},
+#        $input{fixed} ? 't' : 'f', $image, $mySociety::Locale::lang, $cobrand, $cobrand_data);
+#
+#    my %h = ();
+#    $h{update} = $input{update};
+#    $h{name} = $input{name} ? $input{name} : _("Anonymous");
+#    my $base = Page::base_url_with_lang($q, undef, 1);
+#    $h{url} = $base . '/C/' . mySociety::AuthToken::store('update', { id => $id, add_alert => $input{add_alert} } );
+#    dbh()->commit();
+#
+#    my $out = Page::send_confirmation_email($q, $input{rznvy}, $input{name}, 'update', %h);
+#    return $out;
+#}
 
 # sub submit_problem {
 #     my $q = shift;
