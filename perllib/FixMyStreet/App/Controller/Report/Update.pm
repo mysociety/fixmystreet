@@ -5,6 +5,7 @@ use namespace::autoclean;
 BEGIN { extends 'Catalyst::Controller'; }
 
 use Path::Class;
+use Utils;
 
 =head1 NAME
 
@@ -116,7 +117,7 @@ sub process_user : Private {
     my $update_user = $c->model('DB::User')->find_or_new( { email => $email } );
 
     # set the user's name if they don't have one
-    $update_user->name( _trim_text( $params{name} ) )
+    $update_user->name( Utils::trim_text( $params{name} ) )
       unless $update_user->name;
 
     $c->stash->{update_user} = $update_user;
@@ -140,10 +141,13 @@ sub process_update : Private {
     my %params =    #
       map { $_ => scalar $c->req->param($_) } ( 'update', 'name', 'fixed' );
 
+    $params{update} =
+      Utils::cleanup_text( $params{update}, { allow_multiline => 1 } );
+
     my $update = $c->model('DB::Comment')->new(
         {
             text         => $params{update},
-            name         => _trim_text( $params{name} ),
+            name         => Utils::trim_text( $params{name} ),
             problem      => $c->stash->{problem},
             user         => $c->stash->{update_user},
             state        => 'unconfirmed',
@@ -159,16 +163,6 @@ sub process_update : Private {
     return 1;
 }
 
-sub _trim_text {
-    my $input = shift;
-    for ($input) {
-        last unless $_;
-        s{\s+}{ }g;    # all whitespace to single space
-        s{^ }{};       # trim leading
-        s{ $}{};       # trim trailing
-    }
-    return $input;
-}
 
 =head2 check_for_errors
 

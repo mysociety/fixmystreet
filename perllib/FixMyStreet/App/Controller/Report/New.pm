@@ -584,8 +584,8 @@ sub process_user : Private {
       || $c->model('DB::User')->find_or_new( { email => $email } );
 
     # set the user's name and phone (if given)
-    $report_user->name( _trim_text( $params{name} ) );
-    $report_user->phone( _trim_text( $params{phone} ) ) if $params{phone};
+    $report_user->name( Utils::trim_text( $params{name} ) );
+    $report_user->phone( Utils::trim_text( $params{phone} ) ) if $params{phone};
 
     $c->stash->{report_user} = $report_user;
 
@@ -599,49 +599,6 @@ save anything to the database. If no item can be created (ie no information
 provided) returns undef.
 
 =cut
-
-# args: allow_multiline => bool - strips out "\n\n" linebreaks
-sub _cleanup_text {
-    my $input = shift || '';
-    my $args  = shift || {};
-
-    # lowercase everything if looks like it might be SHOUTING
-    $input = lc $input if $input !~ /[a-z]/;
-
-    # clean up language and tradmarks
-    for ($input) {
-
-        # shit -> poo
-        s{\bdog\s*shit\b}{dog poo}ig;
-
-        # 'portakabin' to '[portable cabin]' (and variations)
-        s{\b(porta)\s*([ck]abin|loo)\b}{[$1ble $2]}ig;
-        s{kabin\]}{cabin\]}ig;
-    }
-
-    # Remove unneeded whitespace
-    my @lines = grep { m/\S/ } split m/\n\n/, $input;
-    for (@lines) {
-        $_ = _trim_text($_);
-        $_ = ucfirst $_;       # start with capital
-    }
-
-    my $join_char = $args->{allow_multiline} ? "\n\n" : " ";
-    $input = join $join_char, @lines;
-
-    return $input;
-}
-
-sub _trim_text {
-    my $input = shift;
-    for ($input) {
-        last unless $_;
-        s{\s+}{ }g;    # all whitespace to single space
-        s{^ }{};       # trim leading
-        s{ $}{};       # trim trailing
-    }
-    return $input;
-}
 
 sub process_report : Private {
     my ( $self, $c ) = @_;
@@ -674,12 +631,12 @@ sub process_report : Private {
     $report->anonymous( $params{may_show_name} ? 0 : 1 );
 
     # clean up text before setting
-    $report->title( _cleanup_text( $params{title} ) );
+    $report->title( Utils::cleanup_text( $params{title} ) );
     $report->detail(
-        _cleanup_text( $params{detail}, { allow_multiline => 1 } ) );
+        Utils::cleanup_text( $params{detail}, { allow_multiline => 1 } ) );
 
     # set these straight from the params
-    $report->name( _trim_text( $params{name} ) );
+    $report->name( Utils::trim_text( $params{name} ) );
     $report->category( _ $params{category} );
 
     my $mapit_query =

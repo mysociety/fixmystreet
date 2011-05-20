@@ -136,4 +136,74 @@ sub london_categories {
     };
 }
 
+=head2 trim_text
+
+    my $text = trim_text( $text_to_trim );
+
+Strip leading and trailing white space from a string. Also reduces all
+white space to a single space.
+
+Trim 
+
+=cut
+
+sub trim_text {
+    my $input = shift;
+    for ($input) {
+        last unless $_;
+        s{\s+}{ }g;    # all whitespace to single space
+        s{^ }{};       # trim leading
+        s{ $}{};       # trim trailing
+    }
+    return $input;
+}
+
+
+=head2 cleanup_text
+
+Tidy up text including removing contentious phrases,
+SHOUTING and new lines and adding sentence casing. Takes an optional HASHREF
+of args as follows.
+
+=over
+
+=item allow_multiline
+
+Do not flatten down to a single line if true.
+
+=back
+
+=cut
+
+sub cleanup_text {
+    my $input = shift || '';
+    my $args  = shift || {};
+
+    # lowercase everything if looks like it might be SHOUTING
+    $input = lc $input if $input !~ /[a-z]/;
+
+    # clean up language and tradmarks
+    for ($input) {
+
+        # shit -> poo
+        s{\bdog\s*shit\b}{dog poo}ig;
+
+        # 'portakabin' to '[portable cabin]' (and variations)
+        s{\b(porta)\s*([ck]abin|loo)\b}{[$1ble $2]}ig;
+        s{kabin\]}{cabin\]}ig;
+    }
+
+    # Remove unneeded whitespace
+    my @lines = grep { m/\S/ } split m/\n\n/, $input;
+    for (@lines) {
+        $_ = trim_text($_);
+        $_ = ucfirst $_;       # start with capital
+    }
+
+    my $join_char = $args->{allow_multiline} ? "\n\n" : " ";
+    $input = join $join_char, @lines;
+
+    return $input;
+}
+
 1;

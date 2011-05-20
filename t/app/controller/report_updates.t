@@ -258,7 +258,7 @@ subtest "submit an update for a non registered user" => sub {
     ok $update, 'found update in database';
     is $update->state, 'unconfirmed', 'update unconfirmed';
     is $update->user->email, 'unregistered@example.com', 'update email';
-    is $update->text, 'update from an unregistered user', 'update text';
+    is $update->text, 'Update from an unregistered user', 'update text';
     is $add_alerts, 0, 'do not sign up for alerts';
 };
 
@@ -269,6 +269,9 @@ for my $test (
             rznvy  => 'test@example.com',
             update => 'update from a registered user'
         },
+        changed => {
+            update => 'Update from a registered user'
+        },
         alert => 0,
     },
     {
@@ -277,6 +280,9 @@ for my $test (
             rznvy  => 'test@example.com',
             update => 'update from a registered user',
             add_alert => 1,
+        },
+        changed => {
+            update => 'Update from a registered user'
         },
         alert => 1,
     },
@@ -303,9 +309,14 @@ for my $test (
 
         $mech->email_count_is(0);
 
+        my $results = {
+            %{ $test->{fields} },
+            %{ $test->{changed} },
+        };
+
         my $update = $report->comments->first;
         ok $update, 'found update';
-        is $update->text, $test->{fields}->{update}, 'update text';
+        is $update->text, $results->{update}, 'update text';
         is $update->user->email, 'test@example.com', 'update user';
         is $update->state, 'confirmed', 'update confirmed';
 
