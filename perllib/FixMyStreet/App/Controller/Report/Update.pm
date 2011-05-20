@@ -20,54 +20,6 @@ Creates an update to a report
 sub report_update : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-#    my $q = shift;
-#    my @vars = qw(id name rznvy update fixed upload_fileid add_alert);
-#    my %input = map { $_ => $q->param($_) || '' } @vars;
-#    my @errors;
-#    my %field_errors;
-#
-#    my $fh = $q->upload('photo');
-#    if ($fh) {
-#        my $err = Page::check_photo($q, $fh);
-#        push @errors, $err if $err;
-#    }
-#
-#    my $image;
-#    if ($fh) {
-#        try {
-#            $image = Page::process_photo($fh);
-#        } catch Error::Simple with {
-#            my $e = shift;
-#            push(@errors, sprintf(_("That image doesn't appear to have uploaded correctly (%s), please try again."), $e));
-#        };
-#    }
-#
-#    if ($input{upload_fileid}) {
-#        open FP, mySociety::Config::get('UPLOAD_CACHE') . $input{upload_fileid};
-#        $image = join('', <FP>);
-#        close FP;
-#    }
-#
-#    return display_problem($q, \@errors, \%field_errors) if (@errors || scalar(keys(%field_errors)));
-#    my $cobrand = Page::get_cobrand($q);
-#    my $cobrand_data = Cobrand::extra_update_data($cobrand, $q);
-#    my $id = dbh()->selectrow_array("select nextval('comment_id_seq');");
-#    Utils::workaround_pg_bytea("insert into comment
-#        (id, problem_id, name, email, website, text, state, mark_fixed, photo, lang, cobrand, cobrand_data)
-#        values (?, ?, ?, ?, '', ?, 'unconfirmed', ?, ?, ?, ?, ?)", 7,
-#        $id, $input{id}, $input{name}, $input{rznvy}, $input{update},
-#        $input{fixed} ? 't' : 'f', $image, $mySociety::Locale::lang, $cobrand, $cobrand_data);
-#
-#    my %h = ();
-#    $h{update} = $input{update};
-#    $h{name} = $input{name} ? $input{name} : _("Anonymous");
-#    my $base = Page::base_url_with_lang($q, undef, 1);
-#    $h{url} = $base . '/C/' . mySociety::AuthToken::store('update', { id => $id, add_alert => $input{add_alert} } );
-#    dbh()->commit();
-#
-#    my $out = Page::send_confirmation_email($q, $input{rznvy}, $input{name}, 'update', %h);
-#    return $out;
-
          $c->forward('setup_page')
       && $c->forward('process_user')
       && $c->forward('process_update')
@@ -75,11 +27,15 @@ sub report_update : Path : Args(0) {
       && $c->forward('check_for_errors')
       or $c->go( '/report/display', [ $c->req->param('id') ] );
 
-    $c->forward('save_update');
-    $c->forward('redirect_or_confirm_creation');
-
-    return 1;
+    return $c->forward('save_update')
+      && $c->forward('redirect_or_confirm_creation');
 }
+
+=head2 setup_page
+
+Setup things we need for later.
+
+=cut
 
 sub setup_page : Private {
     my ( $self, $c ) = @_;
@@ -130,7 +86,7 @@ sub process_user : Private {
 Take the submitted params and create a new update item. Does not save
 anything to the database.
 
-NB: relies on their being a probem and update_user in the stash. May
+NB: relies on their being a problem and update_user in the stash. May
 want to move adding these elsewhere
 
 =cut
@@ -138,7 +94,7 @@ want to move adding these elsewhere
 sub process_update : Private {
     my ( $self, $c ) = @_;
 
-    my %params =    #
+    my %params =
       map { $_ => scalar $c->req->param($_) } ( 'update', 'name', 'fixed' );
 
     $params{update} =
@@ -203,14 +159,15 @@ Save the update and the user as appropriate.
 sub save_update : Private {
     my ( $self, $c ) = @_;
 
-    my $user = $c->stash->{update_user};
+    my $user   = $c->stash->{update_user};
     my $update = $c->stash->{update};
 
     if ( !$user->in_storage ) {
         $user->insert;
-    } elsif ( $c->user && $c->user->id == $user->id ) {
+    }
+    elsif ( $c->user && $c->user->id == $user->id ) {
         $user->update;
-            $update->confirm;
+        $update->confirm;
     }
 
     # If there was a photo add that too
@@ -223,7 +180,8 @@ sub save_update : Private {
 
     if ( $update->in_storage ) {
         $update->update;
-    } else {
+    }
+    else {
         $update->insert;
     }
 
