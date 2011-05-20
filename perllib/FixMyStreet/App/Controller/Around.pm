@@ -218,6 +218,7 @@ sub display_location : Private {
           if mySociety::Config::get('COUNTRY') eq 'GB';
 
         $map_links .= "</p>";
+        $c->stash->{map_links} = $map_links;
 
         $c->stash->{map_html} = FixMyStreet::Map::display_map(
             $c->fake_q,
@@ -225,7 +226,6 @@ sub display_location : Private {
             longitude => $longitude,
             type      => 1,
             pins      => \@pins,
-            post      => $map_links
         );
         $c->stash->{map_js}       = FixMyStreet::Map::header_js();
     }

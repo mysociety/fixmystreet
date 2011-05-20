@@ -1,6 +1,12 @@
 [% INCLUDE 'header.html', title => loc('Reporting a problem') %]
 
 [% map_html %]
+</div>
+[% IF report.used_map %]
+<div id="side">
+[% ELSE %]
+<div id="skipped-map">
+[% END %]
 
 <h1>[% loc('Reporting a problem') %]</h1>
 

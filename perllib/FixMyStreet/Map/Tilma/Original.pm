@@ -43,7 +43,6 @@ sub header_js {
 sub display_map {
     my ($self, $q, %params) = @_;
     $params{pre} ||= '';
-    $params{post} ||= '';
     my $mid_point = TILE_WIDTH; # Map is 2 TILE_WIDTHs in size, square.
     if (my $mp = Cobrand::tilma_mid_point(Page::get_cobrand($q))) {
         $mid_point = $mp;
@@ -139,9 +138,6 @@ EOF
     $out .= <<EOF;
     </div>
     <p id="copyright">$copyright</p>
-$params{post}
-</div>
-<div id="side">
 EOF
     return $out;
 }

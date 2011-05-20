@@ -621,7 +621,7 @@ sub process_report : Private {
     $report->latitude( $c->stash->{latitude} );
     $report->longitude( $c->stash->{longitude} );
 
-    # Capture wether the may was used
+    # Capture whether the may was used
     $report->used_map( $params{skipped} ? 0 : 1 );
 
     # Short circuit unless the form has been submitted
@@ -918,7 +918,7 @@ sub generate_map : Private {
 <input type="hidden" name="pc" value="$pc">
 <input type="hidden" name="skipped" value="1">
 $cobrand_form_elements
-<div id="skipped-map">
+<div>
 END_MAP_HTML
 
     }
