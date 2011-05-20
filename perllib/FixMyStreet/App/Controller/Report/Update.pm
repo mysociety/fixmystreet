@@ -147,6 +147,10 @@ sub check_for_errors : Private {
 
     $c->stash->{field_errors} = \%field_errors;
 
+    $c->stash->{errors} ||= [];
+    push @{ $c->stash->{errors} },
+      _('There were problems with your update. Please see below.');
+
     return;
 }
 
