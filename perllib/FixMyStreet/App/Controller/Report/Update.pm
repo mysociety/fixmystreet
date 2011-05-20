@@ -100,10 +100,12 @@ sub process_update : Private {
     $params{update} =
       Utils::cleanup_text( $params{update}, { allow_multiline => 1 } );
 
+    my $name = Utils::trim_text( $params{ name } );
+
     my $update = $c->model('DB::Comment')->new(
         {
             text         => $params{update},
-            name         => Utils::trim_text( $params{name} ),
+            name         => $name,
             problem      => $c->stash->{problem},
             user         => $c->stash->{update_user},
             state        => 'unconfirmed',
@@ -111,6 +113,7 @@ sub process_update : Private {
             cobrand      => $c->cobrand->moniker,
             cobrand_data => $c->cobrand->extra_update_data,
             lang         => $c->stash->{lang_code},
+            anonymous    => ( $name ? 'f': 't' ),
         }
     );
 

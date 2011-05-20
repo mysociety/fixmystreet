@@ -67,6 +67,7 @@ my $comment = FixMyStreet::App->model('DB::Comment')->find_or_create(
         text       => 'This is some update text',
         state      => 'confirmed',
         confirmed  => $dt->ymd . ' ' . $dt->hms,
+        anonymous  => 'f',
     }
 );
 
@@ -152,6 +153,7 @@ subtest "several updates shown in correct order" => sub {
             text       => 'First update',
             state      => 'confirmed',
             confirmed  => '2011-03-10 12:23:15',
+            anonymous  => 'f',
         },
         {
             problem_id => $report_id,
@@ -161,6 +163,7 @@ subtest "several updates shown in correct order" => sub {
             text       => 'Second update',
             state      => 'confirmed',
             confirmed  => '2011-03-10 12:23:16',
+            anonymous  => 'f',
         },
         {
             problem_id => $report_id,
