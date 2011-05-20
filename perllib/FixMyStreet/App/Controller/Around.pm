@@ -227,7 +227,6 @@ sub display_location : Private {
             pins      => \@pins,
             post      => $map_links
         );
-        $c->stash->{map_end_html} = FixMyStreet::Map::display_map_end(1);
         $c->stash->{map_js}       = FixMyStreet::Map::header_js();
     }
 

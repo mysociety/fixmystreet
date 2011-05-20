@@ -213,7 +213,6 @@ sub generate_map_tags : Private {
         : [],
         post => $map_links
     );
-    $c->stash->{map_end_html} = FixMyStreet::Map::display_map_end(0),
     $c->stash->{map_js}       = FixMyStreet::Map::header_js();
 
       return 1;

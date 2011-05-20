@@ -21,10 +21,9 @@
             [% line | html %]
         </p>
         [% END %]
+
+        [% INCLUDE 'report/photo.html' object=update %]
     </div>
-
-    [% INCLUDE 'report/photo.html' object=update %]
-
     </div>
 [% '</div>' IF loop.last %]
 [% END %]

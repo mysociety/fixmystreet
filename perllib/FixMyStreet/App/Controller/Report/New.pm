@@ -934,9 +934,6 @@ END_MAP_HTML
         );
     }
 
-    # get the closing for the map
-    $c->stash->{map_end} = FixMyStreet::Map::display_map_end(1);
-
     return 1;
 }
 
