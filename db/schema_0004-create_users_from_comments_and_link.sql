@@ -32,9 +32,9 @@ WHERE users.name = '';
 ALTER table comment
     ADD COLUMN anonymous BOOL;
 
-UPDATE comment SET anonymous = true WHERE name = '';
-
 UPDATE comment SET anonymous = false WHERE name <> '';
+
+UPDATE comment SET anonymous = true  WHERE anonymous is NULL;
 
 -- tidy up now everythings in place
 ALTER table comment
