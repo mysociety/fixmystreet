@@ -197,10 +197,15 @@ sub format_problem_for_display : Private {
 
     $c->stash->{report_name} = $c->req->param('name');
 
-    $c->stash->{update} = $c->req->param('update');
-    $c->stash->{email} = $c->req->param('rznvy');
-    $c->stash->{fixed} = $c->req->param('fixed') ? ' checked' : '';
-    $c->stash->{add_alert} = $c->req->param('add_alert') ? ' checked' : '';
+    if ( $c->req->param('submit_update' ) ) {
+        $c->stash->{update} = $c->req->param('update');
+        $c->stash->{email} = $c->req->param('rznvy');
+        $c->stash->{fixed} = $c->req->param('fixed') ? ' checked' : '';
+        $c->stash->{add_alert} = $c->req->param('add_alert') ? ' checked' : '';
+    } else {
+        $c->stash->{add_alert} = ' checked';
+    }
+
 
     $c->forward('generate_map_tags');
     $c->forward('generate_problem_meta');

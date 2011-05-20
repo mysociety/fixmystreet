@@ -113,7 +113,7 @@ subtest "test a good report" => sub {
         name      => '',
         rznvy     => '',
         update    => '',
-        add_alert => undef,
+        add_alert => 1, # defaults to true
         fixed     => undef
     );
     is $update_form->value($_), $fields{$_}, "$_ value" for keys %fields;

@@ -224,8 +224,10 @@ subtest "submit an update for a non registered user" => sub {
     $mech->submit_form_ok(
         {
             with_fields => {
+                submit_update => 1,
                 rznvy  => 'unregistered@example.com',
-                update => 'update from an unregistered user'
+                update => 'update from an unregistered user',
+                add_alert => 0,
             }
         },
         'submit update'
@@ -266,8 +268,10 @@ for my $test (
     {
         desc => 'submit update for register user',
         fields => {
+            submit_update => 1,
             rznvy  => 'test@example.com',
-            update => 'update from a registered user'
+            update => 'update from a registered user',
+            add_alert => 0,
         },
         changed => {
             update => 'Update from a registered user'
@@ -277,6 +281,7 @@ for my $test (
     {
         desc => 'submit update for register user and sign up',
         fields => {
+            submit_update => 1,
             rznvy  => 'test@example.com',
             update => 'update from a registered user',
             add_alert => 1,
