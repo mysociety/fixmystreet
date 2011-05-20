@@ -156,6 +156,24 @@ sub confirm_update : Path('/C') {
     return 1;
 }
 
+sub load_questionnaire_id : Private {
+    my ( $self, $c, $token_code ) = @_;
+
+    # Set up error handling
+    $c->stash->{error_template} = 'questionnaire/error.html';
+    $c->stash->{message} = _("I'm afraid we couldn't validate that token. If you've copied the URL from an email, please check that you copied it exactly.\n");
+
+    my $auth_token = $c->forward( 'load_auth_token', [ $token_code, 'questionnaire' ] );
+    $c->stash->{id} = $auth_token->data;
+    $c->stash->{token} = $token_code;
+}
+
+sub questionnaire : Path('/Q') : Args(1) {
+    my ( $self, $c, $token_code ) = @_;
+    $c->forward( 'load_questionnaire_id', [ $token_code ] );
+    $c->forward( '/questionnaire/index');
+}
+
 =head2 load_auth_token
 
     my $auth_token =
@@ -193,7 +211,7 @@ Display an error page saying that there is something wrong with the token.
 
 sub token_error : Private {
     my ( $self, $c ) = @_;
-    $c->stash->{template} = 'tokens/error.html';
+    $c->stash->{template} = $c->stash->{error_template} || 'tokens/error.html';
     $c->detach;
 }
 

@@ -1,0 +1,13 @@
+<h1>[% problem_title %]</h1>
+
+<p><em>[% meta | html %]</em></p>
+
+[% FOREACH line IN split_into_lines( problem.detail ) %]
+<p>
+[% line | html %]
+</p>
+[% END %]
+
+[% INCLUDE 'report/photo.html' object=problem center=1 %]
+
+
