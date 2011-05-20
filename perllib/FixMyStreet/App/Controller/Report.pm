@@ -196,13 +196,14 @@ sub format_problem_for_display : Private {
       ( $problem->latitude, $problem->longitude );
 
     $c->stash->{report_name} = $c->req->param('name');
+
     $c->stash->{update} = $c->req->param('update');
     $c->stash->{email} = $c->req->param('rznvy');
+    $c->stash->{fixed} = $c->req->param('fixed') ? ' checked' : '';
+    $c->stash->{add_alert} = $c->req->param('add_alert') ? ' checked' : '';
 
     $c->forward('generate_map_tags');
     $c->forward('generate_problem_meta');
-
-    #         problem_updates => Page::display_problem_updates($input{id}, $q),
 
     return 1;
 }
