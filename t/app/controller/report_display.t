@@ -190,6 +190,14 @@ foreach my $meta (
 
 for my $test ( 
     {
+        description => 'new report',
+        date => DateTime->now,
+        state => 'confirmed',
+        banner_id => '',
+        banner_text => '',
+        fixed => 0
+    },
+    {
         description => 'old report',
         date => DateTime->new(
             year => 2009,
@@ -230,6 +238,7 @@ for my $test (
 ) {
     subtest "banner for $test->{description}" => sub {
         $report->confirmed( $test->{date}->ymd . ' ' . $test->{date}->hms );
+        $report->lastupdate( $test->{date}->ymd . ' ' . $test->{date}->hms );
         $report->state( $test->{state} );
         $report->update;
 
