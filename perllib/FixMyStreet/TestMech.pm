@@ -15,6 +15,7 @@ use Web::Scraper;
 use Carp;
 use Email::Send::Test;
 use Digest::SHA1 'sha1_hex';
+use JSON;
 
 =head1 NAME
 
@@ -129,14 +130,11 @@ sub delete_user {
 
     $mech->log_out_ok;
     for my $p ( $user->problems ) {
-        ok( $_->delete, "delete comment " . $_->text )
-            for $p->comments;
+        ok( $_->delete, "delete comment " . $_->text ) for $p->comments;
         ok( $p->delete, "delete problem " . $p->title );
     }
-    ok( $_->delete, "delete comment " . $_->text )
-        for $user->comments;
-    ok( $_->delete, "delete alert " . $_->alert_type )
-      for $user->alerts;
+    ok( $_->delete, "delete comment " . $_->text )     for $user->comments;
+    ok( $_->delete, "delete alert " . $_->alert_type ) for $user->alerts;
     ok $user->delete, "delete test user " . $user->email;
 
     return 1;
@@ -223,7 +221,7 @@ arrayref of TEXTs. If none found return empty arrayref.
 sub page_errors {
     my $mech   = shift;
     my $result = scraper {
-        process 'p.error', 'errors[]', 'TEXT';
+        process 'p.error',  'errors[]', 'TEXT';
         process 'ul.error', 'errors[]', 'TEXT';
     }
     ->scrape( $mech->response );
@@ -332,7 +330,6 @@ sub extract_problem_title {
     return $result->{title};
 }
 
-
 =head2 extract_problem_banner
 
     $banner = $mech->extract_problem_banner;
@@ -432,6 +429,30 @@ sub session_cookie_expiry {
       if $expires && $expires eq 'not found';
 
     return $expires || 0;
+}
+
+=head2 get_ok_json
+
+    $decoded = $mech->get_ok_json( $url );
+
+Get the url, check that it was JSON and then decode and return the body.
+
+=cut
+
+sub get_ok_json {
+    my $mech = shift;
+    my $url  = shift;
+
+    # try to get the response
+    $mech->get_ok($url)
+      || return undef;
+    my $res = $mech->response;
+
+    # check that the content-type of response is correct
+    croak "Response was not JSON"
+      unless $res->header('Content-Type') =~ m{^application/json\b};
+
+    return decode_json( $res->content );
 }
 
 1;

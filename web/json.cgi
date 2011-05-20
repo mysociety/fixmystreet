@@ -8,28 +8,28 @@
 #
 # $Id: json.cgi,v 1.4 2010-01-20 11:31:26 matthew Exp $
 
-use strict;
-use Error qw(:try);
-use JSON;
-use Standard;
- 
-sub main {
-    my $q = shift;
-    my $problems;
-    my $type = $q->param('type') || '';
-    my $start_date = $q->param('start_date') || '';
-    my $end_date = $q->param('end_date') || '';
-    if ($start_date !~ /^\d{4}-\d\d-\d\d$/ || $end_date !~ /^\d{4}-\d\d-\d\d$/) {
-        $problems = { error => 'Invalid dates supplied' };
-    } elsif ($type eq 'new_problems') {
-        $problems = Problems::created_in_interval($start_date, $end_date);
-    } elsif ($type eq 'fixed_problems') {
-        $problems = Problems::fixed_in_interval($start_date, $end_date);
-    }
-    print $q->header( -type => 'application/json; charset=utf-8' );
-    print JSON::to_json($problems);
-}
-
-
-Page::do_fastcgi(\&main);
-
+# use strict;
+# use Error qw(:try);
+# use JSON;
+# use Standard;
+#  
+# sub main {
+#     my $q = shift;
+#     my $problems;
+#     my $type = $q->param('type') || '';
+#     my $start_date = $q->param('start_date') || '';
+#     my $end_date = $q->param('end_date') || '';
+#     if ($start_date !~ /^\d{4}-\d\d-\d\d$/ || $end_date !~ /^\d{4}-\d\d-\d\d$/) {
+#         $problems = { error => 'Invalid dates supplied' };
+#     } elsif ($type eq 'new_problems') {
+#         $problems = Problems::created_in_interval($start_date, $end_date);
+#     } elsif ($type eq 'fixed_problems') {
+#         $problems = Problems::fixed_in_interval($start_date, $end_date);
+#     }
+#     print $q->header( -type => 'application/json; charset=utf-8' );
+#     print JSON::to_json($problems);
+# }
+# 
+# 
+# Page::do_fastcgi(\&main);
+# 
