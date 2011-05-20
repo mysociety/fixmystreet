@@ -92,10 +92,16 @@ __PACKAGE__->belongs_to(
   { id => "user_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
+__PACKAGE__->has_many(
+  "questionnaires",
+  "FixMyStreet::DB::Result::Questionnaire",
+  { "foreign.problem_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-05-17 14:18:03
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:LyIl4gkdC2Lo2vuddrEByQ
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-05-20 12:11:12
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:qY08aYo4JBAg/aVmf/IzqQ
 
 =head2 check_for_errors
 
