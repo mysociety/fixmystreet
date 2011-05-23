@@ -62,17 +62,10 @@
 [% IF id %]
 <input type="hidden" name="id" value="[% id %]">
 [% END %]
-<p>
-[% loc('Please do <strong>not</strong> report problems through this form; messages go to
-the team behind FixMyStreet, not a council. To report a problem,
-please <a href="/">go to the front page</a> and follow the instructions.') %]
-</p>
+
+[% INCLUDE 'contact/blurb.html' %]
+
 [% END %]
-
-<p>
-[% tprintf( loc("We'd love to hear what you think about this site. Just fill in the form, or send an email to <a href='mailto:%s'>%s</a>:"), contact_email, contact_email) %]
-</p> 
-
 
 [% IF field_errors.name %]
    <div class="form-error">[% field_errors.name %]</div>
@@ -107,18 +100,6 @@ please <a href="/">go to the front page</a> and follow the instructions.') %]
 
 </form>
 
-<div class="contact-details">
-<p>FixMyStreet is a service provided by mySociety, which is the project of a 
-registered charity. The charity is called UK Citizens Online Democracy and is charity number 1076346.</p>
-<p>mySociety can be contacted by email at <a href="mailto:hello&#64;mysociety.org">hello&#64;mysociety.org</a>,
-or by post at:</p>
-<p>mySociety<br>
-483 Green Lanes<br>
-
-London<br>
-N13 4BS<br>
-UK</p>
-</div>
-
+[% INCLUDE 'contact/address.html' %]
 
 [% INCLUDE 'footer.html' %]
