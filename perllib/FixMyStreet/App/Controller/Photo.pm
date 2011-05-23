@@ -45,8 +45,8 @@ sub index :Path :Args(0) {
     $photo = $photo->photo;
     if ( $c->req->param('tn' ) ) {
         $photo = _resize( $photo, 'x100' );
-    } elsif ( 0 ) { # emptyhomes
-        $photo = _resize( $photo, '195x' );
+    } elsif ( $c->cobrand->default_photo_resize ) {
+        $photo = _resize( $photo, $c->cobrand->default_photo_resize );
     }
 
     my $dt = DateTime->now();

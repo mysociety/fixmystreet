@@ -100,5 +100,14 @@ sub generate_problem_banner {
     return $banner;
 }
 
+=head2 default_photo_resize
+
+Size that photos are to be resized to for display. If photos aren't
+to be resized then return 0;
+
+=cut
+
+sub default_photo_resize { return '195x'; }
+
 1;
 
