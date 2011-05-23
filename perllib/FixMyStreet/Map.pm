@@ -63,13 +63,6 @@ sub display_map {
     return $map_class->display_map(@_);
 }
 
-sub display_map_end {
-    my ($type) = @_;
-    my $out = '</div>';
-    $out .= '</form>' if ($type);
-    return $out;
-}
-
 sub header {
     my ( $q, $type ) = @_;
     return '' unless $type;

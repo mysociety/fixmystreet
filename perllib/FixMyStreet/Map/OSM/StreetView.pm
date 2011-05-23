@@ -29,7 +29,6 @@ sub header_js {
 sub display_map {
     my ($self, $q, %params) = @_;
     $params{pre} ||= '';
-    $params{post} ||= '';
 
     my @pins;
     foreach my $pin (@{$params{pins}}) {
@@ -54,9 +53,6 @@ var fixmystreet = {
     $params{pre}
     <div id="map"></div>
     <p id="copyright">$copyright</p>
-    $params{post}
-</div>
-<div id="side">
 EOF
     return $out;
 }

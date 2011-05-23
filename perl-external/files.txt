@@ -61,6 +61,7 @@
 /authors/id/C/CI/CINE/Lingua-Stem-Snowball-Da-1.01.tar.gz
 /authors/id/C/CK/CKRAS/DateTime-Format-HTTP-0.40.tar.gz
 /authors/id/C/CO/COGENT/Tree-DAG_Node-1.06.tar.gz
+/authors/id/C/CO/CORION/parent-0.225.tar.gz
 /authors/id/C/CR/CRENZ/Module-Find-0.10.tar.gz
 /authors/id/D/DA/DAGOLDEN/CPAN-Meta-2.110580.tar.gz
 /authors/id/D/DA/DAGOLDEN/CPAN-Meta-YAML-0.003.tar.gz
@@ -80,6 +81,12 @@
 /authors/id/D/DO/DOY/Package-Stash-0.26.tar.gz
 /authors/id/D/DO/DOY/Package-Stash-XS-0.22.tar.gz
 /authors/id/D/DO/DOY/Try-Tiny-0.09.tar.gz
+/authors/id/D/DR/DROLSKY/Class-Factory-Util-1.7.tar.gz
+/authors/id/D/DR/DROLSKY/DateTime-0.70.tar.gz
+/authors/id/D/DR/DROLSKY/DateTime-Format-Builder-0.80.tar.gz
+/authors/id/D/DR/DROLSKY/DateTime-Format-Strptime-1.5000.tar.gz
+/authors/id/D/DR/DROLSKY/DateTime-Locale-0.45.tar.gz
+/authors/id/D/DR/DROLSKY/DateTime-TimeZone-1.34.tar.gz
 /authors/id/D/DR/DROLSKY/File-ChangeNotify-0.19.tar.gz
 /authors/id/D/DR/DROLSKY/File-Slurp-9999.13.tar.gz
 /authors/id/D/DR/DROLSKY/Moose-1.24.tar.gz
@@ -128,10 +135,12 @@
 /authors/id/G/GB/GBARR/Scalar-List-Utils-1.23.tar.gz
 /authors/id/G/GE/GETTY/HTTP-Body-1.11.tar.gz
 /authors/id/G/GR/GRODITI/MooseX-Types-Common-0.001002.tar.gz
+/authors/id/G/GR/GROMMEL/Math-Round-0.06.tar.gz
 /authors/id/I/IL/ILMARI/Class-Unload-0.07.tar.gz
 /authors/id/I/IN/INGY/Spiffy-0.30.tar.gz
 /authors/id/I/IN/INGY/Test-Base-0.59.tar.gz
 /authors/id/J/JE/JESSE/HTTP-Server-Simple-0.44.tar.gz
+/authors/id/J/JH/JHOBLITT/DateTime-Format-ISO8601-0.07.tar.gz
 /authors/id/J/JP/JPEACOCK/version-0.88.tar.gz
 /authors/id/J/JR/JROCKWAY/Context-Preserve-0.01.tar.gz
 /authors/id/K/KA/KASEI/Class-Accessor-0.34.tar.gz

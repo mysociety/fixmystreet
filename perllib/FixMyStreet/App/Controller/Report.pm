@@ -157,7 +157,7 @@ sub format_problem_for_display : Private {
 
     $c->stash->{banner} = $c->cobrand->generate_problem_banner($problem);
 
-    $c->stash->{allow_photo_upload} = $c->cobrand->allow_photo_display;
+    $c->stash->{allow_photo_upload} = $c->cobrand->allow_photo_display; # FIXME?
 
     $c->stash->{cobrand_alert_fields} = $c->cobrand->form_elements( '/alerts' );
     $c->stash->{cobrand_update_fields} = $c->cobrand->form_elements( '/updateForm' );
@@ -187,7 +187,6 @@ sub format_problem_for_display : Private {
 sub generate_map_tags : Private {
     my ( $self, $c ) = @_;
 
-    my $map_links = '';
     my $problem   = $c->stash->{problem};
 
     my ( $short_lat, $short_lon ) =
@@ -196,7 +195,7 @@ sub generate_map_tags : Private {
     my $google_link =
       $c->cobrand->base_url_for_emails() . '/report/' . $problem->id;
 
-    $map_links =
+    $c->stash->{map_links} =
         "<p id='sub_map_links'>"
       . "<a href=\"http://maps.google.co.uk/maps?output=embed&amp;z=16&amp;q="
       . URI::Escape::uri_escape_utf8( $problem->title . ' - ' . $google_link )
@@ -211,9 +210,7 @@ sub generate_map_tags : Private {
         pins      => $problem->used_map
         ? [ [ $problem->latitude, $problem->longitude, 'blue' ] ]
         : [],
-        post => $map_links
     );
-    $c->stash->{map_end_html} = FixMyStreet::Map::display_map_end(0),
     $c->stash->{map_js}       = FixMyStreet::Map::header_js();
 
       return 1;

@@ -35,7 +35,6 @@ sub map_type {
 sub display_map {
     my ($self, $q, %params) = @_;
     $params{pre} ||= '';
-    $params{post} ||= '';
 
     # Map centre may be overridden in the query string
     $params{latitude} = Utils::truncate_coordinate($q->param('lat')+0)
@@ -96,9 +95,6 @@ var fixmystreet = {
         $compass
     </noscript></div>
     <p id="copyright">$copyright</p>
-    $params{post}
-</div>
-<div id="side">
 EOF
     return $out;
 }
