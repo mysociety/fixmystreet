@@ -398,17 +398,30 @@ Return all the visible form values on the page - ie not the hidden ones.
 
 sub visible_form_values {
     my $mech = shift;
+    my $name = shift || '';
 
-    my @forms =
-      grep { ( $_->attr('name') || '' ) ne 'overrides_form' } # ignore overrides
-      $mech->forms;
+    my $form;
 
-    croak "Found no forms - can't continue..."
-      unless @forms;
-    croak "Found several forms - don't know which to use..."
-      if @forms > 1;
+    if ($name) {
+        for ( $mech->forms ) {
+            $form = $_ if ( $_->attr('name') || '' ) eq $name;
+        }
+        croak "Can't find form named $name - can't continue..."
+          unless $form;
+    }
+    else {
+        my @forms =
+          grep { ( $_->attr('name') || '' ) ne 'overrides_form' } # ignore overrides
+          $mech->forms;
 
-    my $form = $forms[0];
+        croak "Found no forms - can't continue..."
+          unless @forms;
+
+        croak "Found several forms - don't know which to use..."
+          if @forms > 1;
+
+        $form = $forms[0];
+    }
 
     my @visible_fields =
       grep { ref($_) ne 'HTML::Form::SubmitInput' }
