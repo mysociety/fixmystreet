@@ -90,7 +90,7 @@
         [% END %]
         <div class="form-field">
             <label for="form_update">[% loc( 'Update:' ) %]</label>
-            <textarea name="update" id="form_update" rows="7" cols="30">[% update | html %]</textarea>
+            <textarea name="update" id="form_update" rows="7" cols="30">[% update_text | html %]</textarea>
         </div>
 
 
@@ -114,7 +114,7 @@
 
 
         <div class="checkbox">
-            <input type="checkbox" name="add_alert" id="form_add_alert" value="1"[% add_alert %]>
+            <input type="checkbox" name="add_alert" id="form_add_alert" value="1"[% add_alert_checked %]>
             <label for="form_add_alert">[% loc( 'Alert me to future updates' ) %]</label>
         </div>
 

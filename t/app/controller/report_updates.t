@@ -192,30 +192,81 @@ subtest "several updates shown in correct order" => sub {
 
 for my $test (
     {
+        desc => 'No email, no message',
         fields => {
             rznvy  => '',
             update => '',
             name   => '',
+            photo  => '',
+            fixed  => undef,
+            add_alert => 1,
+            may_show_name => undef,
         },
+        changes => {},
         field_errors => [ 'Please enter your email', 'Please enter a message' ]
     },
     {
+        desc => 'Invalid email, no message',
         fields => {
             rznvy  => 'test',
             update => '',
             name   => '',
+            photo  => '',
+            fixed  => undef,
+            add_alert => 1,
+            may_show_name => undef,
         },
+        changes => {},
         field_errors => [ 'Please enter a valid email', 'Please enter a message' ]
+    },
+    {
+        desc => 'email with spaces, no message',
+        fields => {
+            rznvy  => 'test @ example. com',
+            update => '',
+            name   => '',
+            photo  => '',
+            fixed  => undef,
+            add_alert => 1,
+            may_show_name => undef,
+        },
+        changes => {
+            rznvy => 'test@example.com',
+        },
+        field_errors => [ 'Please enter a message' ]
+    },
+    {
+        desc => 'email with uppercase, no message',
+        fields => {
+            rznvy  => 'test@EXAMPLE.COM',
+            update => '',
+            name   => '',
+            photo  => '',
+            fixed  => undef,
+            add_alert => 1,
+            may_show_name => undef,
+        },
+        changes => {
+            rznvy => 'test@example.com',
+        },
+        field_errors => [ 'Please enter a message' ]
     },
   )
 {
-    subtest "submit an update" => sub {
+    subtest "submit an update - $test->{desc}" => sub {
         $mech->get_ok("/report/$report_id");
 
         $mech->submit_form_ok( { with_fields => $test->{fields} },
             'submit update' );
 
         is_deeply $mech->form_errors, $test->{field_errors}, 'field errors';
+
+        my $values = {
+            %{ $test->{fields} },
+            %{ $test->{changes} },
+        };
+
+        is_deeply $mech->visible_form_values('updateForm'), $values, 'form changes';
     };
 }
 
@@ -224,13 +275,27 @@ subtest "submit an update for a non registered user" => sub {
 
     $mech->get_ok("/report/$report_id");
 
+    my $values = $mech->visible_form_values('updateForm');
+
+    is_deeply $values,
+      {
+        name          => '',
+        rznvy         => '',
+        may_show_name => undef,
+        add_alert     => 1,
+        photo         => '',
+        update        => '',
+        fixed         => undef,
+      },
+      'initial form values';
+
     $mech->submit_form_ok(
         {
             with_fields => {
                 submit_update => 1,
-                rznvy  => 'unregistered@example.com',
-                update => 'update from an unregistered user',
-                add_alert => 0,
+                rznvy         => 'unregistered@example.com',
+                update        => 'update from an unregistered user',
+                add_alert     => 0,
             }
         },
         'submit update'
@@ -241,7 +306,6 @@ subtest "submit an update for a non registered user" => sub {
     my $email = $mech->get_email;
     ok $email, "got an email";
     like $email->body, qr/confirm the update you/i, "Correct email text";
-
 
     my ( $url, $url_token ) = $email->body =~ m{(http://\S+/C/)(\S+)};
     ok $url, "extracted confirm url '$url'";
@@ -254,11 +318,10 @@ subtest "submit an update for a non registered user" => sub {
     );
     ok $token, 'Token found in database';
 
-    my $update_id = $token->data->{id};
+    my $update_id  = $token->data->{id};
     my $add_alerts = $token->data->{add_alert};
-    my $update = FixMyStreet::App->model( 'DB::Comment' )->find(
-        { id => $update_id }
-    );
+    my $update =
+      FixMyStreet::App->model('DB::Comment')->find( { id => $update_id } );
 
     ok $update, 'found update in database';
     is $update->state, 'unconfirmed', 'update unconfirmed';
@@ -267,7 +330,7 @@ subtest "submit an update for a non registered user" => sub {
     is $add_alerts, 0, 'do not sign up for alerts';
 
     $mech->get_ok( $url . $url_token );
-    $mech->content_contains( "/report/$report_id#$update_id" );
+    $mech->content_contains("/report/$report_id#$update_id");
 
     $update->discard_changes;
 

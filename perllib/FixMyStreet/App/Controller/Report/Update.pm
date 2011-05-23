@@ -130,6 +130,7 @@ sub process_user : Private {
       unless $update_user->name;
 
     $c->stash->{update_user} = $update_user;
+    $c->stash->{email}       = $update_user->email;
 
     return 1;
 }
@@ -153,11 +154,11 @@ sub process_update : Private {
     $params{update} =
       Utils::cleanup_text( $params{update}, { allow_multiline => 1 } );
 
-    my $name = Utils::trim_text( $params{ name } );
+    my $name = Utils::trim_text( $params{name} );
 
     my $anonymous = 't';
 
-    $anonymous = 'f' if ( $name && $c->req->param('may_show_name' ) );
+    $anonymous = 'f' if ( $name && $c->req->param('may_show_name') );
 
     my $update = $c->model('DB::Comment')->new(
         {
@@ -174,8 +175,9 @@ sub process_update : Private {
         }
     );
 
-    $c->stash->{update} = $update;
-    $c->stash->{add_alert} = $c->req->param('add_alert');
+    $c->stash->{update}        = $update;
+    $c->stash->{update_text}   = $update->text;
+    $c->stash->{add_alert}     = $c->req->param('add_alert');
     $c->stash->{may_show_name} = ' checked' if $c->req->param('may_show_name');
 
     return 1;

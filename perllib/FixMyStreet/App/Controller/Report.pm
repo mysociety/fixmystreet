@@ -159,8 +159,9 @@ sub format_problem_for_display : Private {
 
     $c->stash->{allow_photo_upload} = $c->cobrand->allow_photo_display; # FIXME?
 
-    $c->stash->{cobrand_alert_fields} = $c->cobrand->form_elements( '/alerts' );
-    $c->stash->{cobrand_update_fields} = $c->cobrand->form_elements( '/updateForm' );
+    $c->stash->{cobrand_alert_fields} = $c->cobrand->form_elements('/alerts');
+    $c->stash->{cobrand_update_fields} =
+      $c->cobrand->form_elements('/updateForm');
 
     ( $c->stash->{short_latitude}, $c->stash->{short_longitude} ) =
       map { Utils::truncate_coordinate($_) }
@@ -168,19 +169,23 @@ sub format_problem_for_display : Private {
 
     $c->stash->{report_name} = $c->req->param('name');
 
-    if ( $c->req->param('submit_update' ) ) {
-        $c->stash->{form_name} = $c->req->param('name');
-        $c->stash->{update} = $c->req->param('update');
-        $c->stash->{email} = $c->req->param('rznvy');
-        $c->stash->{fixed} = $c->req->param('fixed') ? ' checked' : '';
-        $c->stash->{add_alert} = $c->req->param('add_alert') ? ' checked' : '';
-    } else {
+    if ( $c->req->param('submit_update') ) {
+        # we may have munged these previously in /report/update 
+        # so only set if they're not already in the stash
+        $c->stash->{form_name}   ||= $c->req->param('name');
+        $c->stash->{update_text} ||= $c->req->param('update');
+        $c->stash->{email}       ||= $c->req->param('rznvy');
+        $c->stash->{fixed}       ||= $c->req->param('fixed') ? ' checked' : '';
+        $c->stash->{add_alert_checked} ||=
+          ( $c->req->param('add_alert') ? ' checked' : '' );
+    }
+    else {
         if ( $c->user ) {
-            $c->stash->{form_name} = $c->user->name;
-            $c->stash->{email} = $c->user->email;
+            $c->stash->{form_name}     = $c->user->name;
+            $c->stash->{email}         = $c->user->email;
             $c->stash->{may_show_name} = ' checked' if $c->user->name;
         }
-        $c->stash->{add_alert} = ' checked';
+        $c->stash->{add_alert_checked} = ' checked';
     }
 
     $c->forward('generate_map_tags');
