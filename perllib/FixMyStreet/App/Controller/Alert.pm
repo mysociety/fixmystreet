@@ -318,11 +318,8 @@ This will canonicalise and prettify the postcode and stick a pretty_pc and prett
 sub prettify_pc : Private {
     my ( $self, $c ) = @_;
 
-# FIXME previously this had been run through ent so need to do similar here or in template
     my $pretty_pc = $c->req->params->{'pc'};
 
-    #    my $pretty_pc = $input_h{pc};
-    #    my $pretty_pc_text;# This one isnt't getting the nbsp.
     if ( mySociety::PostcodeUtil::is_valid_postcode( $c->req->params->{'pc'} ) )
     {
         $pretty_pc = mySociety::PostcodeUtil::canonicalise_postcode(

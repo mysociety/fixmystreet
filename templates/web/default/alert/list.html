@@ -7,7 +7,7 @@
 [% END %]
 
 
-<h1>[% title %]</h1>
+<h1>[% title | html %]</h1>
 
 <form id="alerts" name="alerts" method="post" action="/alert/subscribe">
   <input type="hidden" name="type" value="local">
@@ -24,7 +24,7 @@
 
   <p>
   [% IF pretty_pc %]
-    [% tprintf( loc('Here are the types of local problem alerts for %s.'), pretty_pc ) %]
+    [% tprintf( loc('Here are the types of local problem alerts for %s.'), pretty_pc ) | html %]
   [% END %]
   [% loc('Select which type of alert you\'d like and click the button for an RSS feed, or enter your email address to subscribe to an email alert') %]
   </p>
