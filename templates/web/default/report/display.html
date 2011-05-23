@@ -71,6 +71,12 @@
             <input type="text" name="name" id="form_name" value="[% form_name | html %]" size="20"> [% loc( '(optional)' ) %]
         </div>
 
+        <div class="checkbox">
+                <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% may_show_name %]>
+                <label for="form_may_show_name">[% loc('Can we show your name publicly?') %]</label>
+                <small>[% loc('(we never show your email address or phone number)') %]</small>
+        </div>
+
         [% IF field_errors.email %]
             <div class='form-error'>[% field_errors.email %]</div>
         [% END %]

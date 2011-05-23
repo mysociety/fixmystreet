@@ -277,29 +277,136 @@ subtest "submit an update for a non registered user" => sub {
 for my $test (
     {
         desc => 'submit update for register user',
+        initial_values => {
+            name => 'Test User',
+            rznvy => 'test@example.com',
+            may_show_name => 1,
+            add_alert => 1,
+            photo => '',
+            update => '',
+            fixed => undef,
+        },
         fields => {
             submit_update => 1,
             rznvy  => 'test@example.com',
             update => 'update from a registered user',
             add_alert => 0,
+            fixed => 0,
         },
         changed => {
             update => 'Update from a registered user'
         },
+        initial_banner => '',
+        endstate_banner => '',
         alert => 0,
+        anonymous => 0,
+    },
+    {
+        desc => 'submit update for register user anonymously by unchecking',
+        initial_values => {
+            name => 'Test User',
+            rznvy => 'test@example.com',
+            may_show_name => 1,
+            add_alert => 1,
+            photo => '',
+            update => '',
+            fixed => undef,
+        },
+        fields => {
+            submit_update => 1,
+            rznvy  => 'test@example.com',
+            update => 'update from a registered user',
+            may_show_name => 0,
+            add_alert => 0,
+            fixed => 0,
+        },
+        changed => {
+            update => 'Update from a registered user'
+        },
+        initial_banner => '',
+        endstate_banner => '',
+        alert => 0,
+        anonymous => 1,
+    },
+    {
+        desc => 'submit update for register user anonymously by deleting name',
+        initial_values => {
+            name => 'Test User',
+            rznvy => 'test@example.com',
+            may_show_name => 1,
+            add_alert => 1,
+            photo => '',
+            update => '',
+            fixed => undef,
+        },
+        fields => {
+            submit_update => 1,
+            name => '',
+            rznvy  => 'test@example.com',
+            update => 'update from a registered user',
+            may_show_name => 1,
+            add_alert => 0,
+            fixed => 0,
+        },
+        changed => {
+            update => 'Update from a registered user'
+        },
+        initial_banner => '',
+        endstate_banner => '',
+        alert => 0,
+        anonymous => 1,
     },
     {
         desc => 'submit update for register user and sign up',
+        initial_values => {
+            name => 'Test User',
+            rznvy => 'test@example.com',
+            may_show_name => 1,
+            add_alert => 1,
+            photo => '',
+            update => '',
+            fixed => undef,
+        },
         fields => {
             submit_update => 1,
             rznvy  => 'test@example.com',
             update => 'update from a registered user',
             add_alert => 1,
+            fixed => 0,
         },
         changed => {
             update => 'Update from a registered user'
         },
+        initial_banner => '',
+        endstate_banner => '',
         alert => 1,
+        anonymous => 0,
+    },
+    {
+        desc => 'submit update for register user and mark fixed',
+        initial_values => {
+            name => 'Test User',
+            rznvy => 'test@example.com',
+            may_show_name => 1,
+            add_alert => 1,
+            photo => '',
+            update => '',
+            fixed => undef,
+        },
+        fields => {
+            submit_update => 1,
+            rznvy  => 'test@example.com',
+            update => 'update from a registered user',
+            add_alert => 0,
+            fixed => 1,
+        },
+        changed => {
+            update => 'Update from a registered user'
+        },
+        initial_banner => '',
+        endstate_banner => ' This problem has been fixed. ',
+        alert => 1, # we signed up for alerts before, do not unsign us
+        anonymous => 0,
     },
 ) {
     subtest $test->{desc} => sub {
@@ -313,6 +420,12 @@ for my $test (
         $mech->log_in_ok( $user->email );
         $mech->get_ok("/report/$report_id");
 
+        my $values = $mech->visible_form_values( 'updateForm' );
+
+        is_deeply $values, $test->{initial_values}, 'initial form values';
+
+        is $mech->extract_problem_banner->{text}, $test->{initial_banner}, 'initial banner';
+
         $mech->submit_form_ok(
             {
                 with_fields => $test->{fields},
@@ -321,6 +434,8 @@ for my $test (
         );
 
         is $mech->uri->path, "/report/" . $report_id, "redirected to report page";
+
+        is $mech->extract_problem_banner->{text}, $test->{endstate_banner}, 'submitted banner';
 
         $mech->email_count_is(0);
 
@@ -334,6 +449,7 @@ for my $test (
         is $update->text, $results->{update}, 'update text';
         is $update->user->email, 'test@example.com', 'update user';
         is $update->state, 'confirmed', 'update confirmed';
+        is $update->anonymous, $test->{anonymous}, 'user anonymous';
 
         my $alert =
           FixMyStreet::App->model('DB::Alert')

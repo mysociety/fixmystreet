@@ -178,6 +178,7 @@ sub format_problem_for_display : Private {
         if ( $c->user ) {
             $c->stash->{form_name} = $c->user->name;
             $c->stash->{email} = $c->user->email;
+            $c->stash->{may_show_name} = ' checked' if $c->user->name;
         }
         $c->stash->{add_alert} = ' checked';
     }

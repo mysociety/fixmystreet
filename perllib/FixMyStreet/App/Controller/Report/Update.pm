@@ -155,6 +155,10 @@ sub process_update : Private {
 
     my $name = Utils::trim_text( $params{ name } );
 
+    my $anonymous = 't';
+
+    $anonymous = 'f' if ( $name && $c->req->param('may_show_name' ) );
+
     my $update = $c->model('DB::Comment')->new(
         {
             text         => $params{update},
@@ -166,12 +170,13 @@ sub process_update : Private {
             cobrand      => $c->cobrand->moniker,
             cobrand_data => $c->cobrand->extra_update_data,
             lang         => $c->stash->{lang_code},
-            anonymous    => ( $name ? 'f': 't' ),
+            anonymous    => $anonymous,
         }
     );
 
     $c->stash->{update} = $update;
     $c->stash->{add_alert} = $c->req->param('add_alert');
+    $c->stash->{may_show_name} = ' checked' if $c->req->param('may_show_name');
 
     return 1;
 }
