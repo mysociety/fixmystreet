@@ -49,7 +49,7 @@ sub update_problem : Private {
     my $update = $c->stash->{update};
     my $problem = $c->stash->{problem} || $update->problem;
 
-    if ( $update->mark_fixed ) {
+    if ( $update->mark_fixed eq 't' ) {
         $problem->state( 'fixed' );
 
         if ( $update->user->id == $problem->user->id ) {
