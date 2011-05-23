@@ -34,6 +34,8 @@
 /authors/id/B/BD/BDFOY/Module-Extract-Namespaces-0.14.tar.gz
 /authors/id/B/BD/BDFOY/Module-Extract-Use-0.17.tar.gz
 /authors/id/B/BD/BDFOY/Module-Extract-VERSION-0.13.tar.gz
+/authors/id/B/BD/BDFOY/MyCPAN-App-DPAN-1.28.tar.gz
+/authors/id/B/BD/BDFOY/MyCPAN-Indexer-1.28.tar.gz
 /authors/id/B/BD/BDFOY/Test-Output-0.16.tar.gz
 /authors/id/B/BI/BINGOS/Archive-Tar-1.76.tar.gz
 /authors/id/B/BI/BINGOS/Module-CoreList-2.45.tar.gz
@@ -61,7 +63,6 @@
 /authors/id/C/CI/CINE/Lingua-Stem-Snowball-Da-1.01.tar.gz
 /authors/id/C/CK/CKRAS/DateTime-Format-HTTP-0.40.tar.gz
 /authors/id/C/CO/COGENT/Tree-DAG_Node-1.06.tar.gz
-/authors/id/C/CO/CORION/parent-0.225.tar.gz
 /authors/id/C/CR/CRENZ/Module-Find-0.10.tar.gz
 /authors/id/D/DA/DAGOLDEN/CPAN-Meta-2.110580.tar.gz
 /authors/id/D/DA/DAGOLDEN/CPAN-Meta-YAML-0.003.tar.gz
@@ -71,6 +72,7 @@
 /authors/id/D/DA/DAGOLDEN/Module-Metadata-1.000004.tar.gz
 /authors/id/D/DA/DAGOLDEN/Parse-CPAN-Meta-1.4401.tar.gz
 /authors/id/D/DA/DAGOLDEN/Perl-OSType-1.002.tar.gz
+/authors/id/D/DA/DAGOLDEN/Sub-Uplevel-0.22.tar.gz
 /authors/id/D/DC/DCANTRELL/Data-Compare-1.22.tar.gz
 /authors/id/D/DC/DCONWAY/Lingua-EN-Inflect-1.893.tar.gz
 /authors/id/D/DL/DLAND/File-Path-2.08.tar.gz
@@ -82,11 +84,8 @@
 /authors/id/D/DO/DOY/Package-Stash-XS-0.22.tar.gz
 /authors/id/D/DO/DOY/Try-Tiny-0.09.tar.gz
 /authors/id/D/DR/DROLSKY/Class-Factory-Util-1.7.tar.gz
-/authors/id/D/DR/DROLSKY/DateTime-0.70.tar.gz
 /authors/id/D/DR/DROLSKY/DateTime-Format-Builder-0.80.tar.gz
 /authors/id/D/DR/DROLSKY/DateTime-Format-Strptime-1.5000.tar.gz
-/authors/id/D/DR/DROLSKY/DateTime-Locale-0.45.tar.gz
-/authors/id/D/DR/DROLSKY/DateTime-TimeZone-1.34.tar.gz
 /authors/id/D/DR/DROLSKY/File-ChangeNotify-0.19.tar.gz
 /authors/id/D/DR/DROLSKY/File-Slurp-9999.13.tar.gz
 /authors/id/D/DR/DROLSKY/Moose-1.24.tar.gz
@@ -135,10 +134,10 @@
 /authors/id/G/GB/GBARR/Scalar-List-Utils-1.23.tar.gz
 /authors/id/G/GE/GETTY/HTTP-Body-1.11.tar.gz
 /authors/id/G/GR/GRODITI/MooseX-Types-Common-0.001002.tar.gz
-/authors/id/G/GR/GROMMEL/Math-Round-0.06.tar.gz
 /authors/id/I/IL/ILMARI/Class-Unload-0.07.tar.gz
 /authors/id/I/IN/INGY/Spiffy-0.30.tar.gz
 /authors/id/I/IN/INGY/Test-Base-0.59.tar.gz
+/authors/id/J/JE/JESSE/HTTP-Server-Simple-0.43.tar.gz
 /authors/id/J/JE/JESSE/HTTP-Server-Simple-0.44.tar.gz
 /authors/id/J/JH/JHOBLITT/DateTime-Format-ISO8601-0.07.tar.gz
 /authors/id/J/JP/JPEACOCK/version-0.88.tar.gz
@@ -154,6 +153,7 @@
 /authors/id/M/MH/MHX/Devel-PPPort-3.19.tar.gz
 /authors/id/M/MI/MIROD/HTML-TreeBuilder-XPath-0.12.tar.gz
 /authors/id/M/MI/MIROD/XML-XPathEngine-0.12.tar.gz
+/authors/id/M/MI/MIYAGAWA/App-cpanminus-1.4004.tar.gz
 /authors/id/M/MI/MIYAGAWA/App-cpanminus-1.4007.tar.gz
 /authors/id/M/MI/MIYAGAWA/HTML-Selector-XPath-0.07.tar.gz
 /authors/id/M/MI/MIYAGAWA/Template-Plugin-Comma-0.04.tar.gz
@@ -186,6 +186,7 @@
 /authors/id/R/RC/RCLAMP/Text-Glob-0.09.tar.gz
 /authors/id/R/RD/RDF/Clone-0.31.tar.gz
 /authors/id/R/RG/RGARCIA/Sub-Identify-0.04.tar.gz
+/authors/id/R/RG/RGARCIA/Test-LongString-0.14.tar.gz
 /authors/id/R/RG/RGARCIA/Test-LongString-0.15.tar.gz
 /authors/id/R/RI/RIBASUSHI/Class-C3-Componentised-1.0008.tar.gz
 /authors/id/R/RJ/RJBS/Data-OptList-0.106.tar.gz
