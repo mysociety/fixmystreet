@@ -96,14 +96,12 @@ sub display_map {
 
     my $cobrand = Page::get_cobrand($q);
     my $root_path_js = Cobrand::root_path_js($cobrand, $q);
-    my $out = FixMyStreet::Map::header($q, $params{type});
+    my $out = '';
     my $img_type;
     if ($params{type}) {
         $out .= <<EOF;
 <input type="hidden" name="x" id="formX" value="$x">
 <input type="hidden" name="y" id="formY" value="$y">
-<input type="hidden" name="latitude" value="$params{latitude}">
-<input type="hidden" name="longitude" value="$params{longitude}">
 EOF
         $img_type = '<input type="image"';
     } else {

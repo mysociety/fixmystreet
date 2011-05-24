@@ -71,13 +71,11 @@ sub display_map {
     } else {
         $img_type = '<img';
     }
-    my $out = FixMyStreet::Map::header($q, $params{type});
+    my $out = '';
     my $copyright = _('Map &copy; <a id="osm_link" href="http://www.openstreetmap.org/">OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>');
     my $compass = compass($q, $x_tile, $y_tile, $zoom);
     my $map_type = $self->map_type();
     $out .= <<EOF;
-<input type="hidden" name="latitude" id="fixmystreet.latitude" value="$params{latitude}">
-<input type="hidden" name="longitude" id="fixmystreet.longitude" value="$params{longitude}">
 <input type="hidden" name="zoom" value="$zoom">
 <script type="text/javascript">
 var fixmystreet = {

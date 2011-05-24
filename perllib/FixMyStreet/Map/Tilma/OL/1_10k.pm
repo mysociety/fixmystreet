@@ -43,14 +43,12 @@ sub display_map {
     }
     my $pins_js = join(",\n", @pins);
 
-    my $out = FixMyStreet::Map::header($q, $params{type});
+    my $out = '';
     my $tile_width = TILE_WIDTH;
     my $tile_type = TILE_TYPE;
     my $sf = SCALE_FACTOR / TILE_WIDTH;
     my $copyright = _('&copy; Crown copyright. All rights reserved. Ministry of Justice 100037819&nbsp;2008.');
     $out .= <<EOF;
-<input type="hidden" name="latitude" id="fixmystreet.latitude" value="$params{latitude}">
-<input type="hidden" name="longitude" id="fixmystreet.longitude" value="$params{longitude}">
 <script type="text/javascript">
 var fixmystreet = {
     'tilewidth': $tile_width,

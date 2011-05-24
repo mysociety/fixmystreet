@@ -63,27 +63,6 @@ sub display_map {
     return $map_class->display_map(@_);
 }
 
-sub header {
-    my ( $q, $type ) = @_;
-    return '' unless $type;
-
-    my $cobrand = Page::get_cobrand($q);
-    my $cobrand_form_elements =
-      Cobrand::form_elements( $cobrand, 'mapForm', $q );
-    my $form_action = Cobrand::url( $cobrand, '/report/new', $q );
-    my $encoding = '';
-    $encoding = ' enctype="multipart/form-data"' if $type == 2;
-    my $pc = ent($q->param('pc') || '');
-    my $map = ent($q->param('map') || '');
-    return <<EOF;
-<form action="$form_action" method="post" name="mapForm" id="mapForm"$encoding>
-<input type="hidden" name="submit_map" value="1">
-<input type="hidden" name="map" value="$map">
-<input type="hidden" name="pc" value="$pc">
-$cobrand_form_elements
-EOF
-}
-
 sub map_features {
     my ( $q, $lat, $lon, $interval ) = @_;
 
