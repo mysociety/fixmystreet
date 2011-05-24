@@ -38,7 +38,7 @@ sub display_map {
     }
     my $pins_js = join(",\n", @pins);
 
-    my $out = FixMyStreet::Map::header($q, $params{type});
+    my $out = '';
     my $copyright = _('Map contains Ordnance Survey data &copy; Crown copyright and database right 2010. Microsoft');
     $out .= <<EOF;
 <input type="hidden" name="latitude" id="fixmystreet.latitude" value="$params{latitude}">

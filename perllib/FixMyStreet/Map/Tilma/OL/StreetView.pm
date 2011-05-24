@@ -43,7 +43,7 @@ sub display_map {
     }
     my $pins_js = join(",\n", @pins);
 
-    my $out = FixMyStreet::Map::header($q, $params{type});
+    my $out = '';
     my $tile_width = TILE_WIDTH;
     my $tile_type = TILE_TYPE;
     my $sf = SCALE_FACTOR / TILE_WIDTH;

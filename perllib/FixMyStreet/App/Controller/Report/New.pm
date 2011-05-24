@@ -898,31 +898,7 @@ sub generate_map : Private {
     my $allow_photo_upload = $c->cobrand->allow_photo_upload;
 
     # Don't do anything if the user skipped the map
-    if ( $c->req->param('skipped') ) {
-
-        my $enctype =
-          $allow_photo_upload
-          ? ' enctype="multipart/form-data"'
-          : '';
-
-        my $cobrand_form_elements =
-          $c->cobrand->form_elements('mapSkippedForm');
-
-        my $form_action = $c->uri_for('');
-        my $pc          = encode_entities( $c->stash->{pc} );
-
-        $c->stash->{map_html} = <<"END_MAP_HTML";
-<form action="$form_action" method="post" name="mapSkippedForm"$enctype>
-<input type="hidden" name="latitude"  value="$latitude">
-<input type="hidden" name="longitude" value="$longitude">
-<input type="hidden" name="pc" value="$pc">
-<input type="hidden" name="skipped" value="1">
-$cobrand_form_elements
-<div>
-END_MAP_HTML
-
-    }
-    else {
+    unless ( $c->req->param('skipped') ) {
         my $map_type = $allow_photo_upload ? 2 : 1;
 
         $c->stash->{map_html} = FixMyStreet::Map::display_map(

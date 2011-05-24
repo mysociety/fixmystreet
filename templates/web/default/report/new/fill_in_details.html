@@ -1,8 +1,24 @@
 [% INCLUDE 'header.html', title => loc('Reporting a problem') %]
 
-[% map_html %]
-</div>
 [% IF report.used_map %]
+<form action="[% c.uri_for('/report/new') %]" method="post" name="mapForm" id="mapForm"[% IF c.cobrand.allow_photo_upload %] enctype="multipart/form-data"[% END %]>
+<input type="hidden" name="submit_map" value="1">
+<input type="hidden" name="map" value="[% c.req.params.map | html %]">
+<input type="hidden" name="pc" value="[% pc | html %]">
+[% c.cobrand.form_elements('mapForm') %]
+[% ELSE %]
+<form action="[% c.uri_for('/report/new') %]" method="post" name="mapSkippedForm"[% IF c.cobrand.allow_photo_upload %] enctype="multipart/form-data"[% END %]>
+<input type="hidden" name="latitude"  value="[% latitude | html %]">
+<input type="hidden" name="longitude" value="[% longitude | html %]">
+<input type="hidden" name="pc" value="[% pc | html %]">
+<input type="hidden" name="skipped" value="1">
+[% c.cobrand.form_elements('mapSkippedForm') %]
+[% END %]
+
+[% map_html %]
+
+[% IF report.used_map %]
+</div>
 <div id="side">
 [% ELSE %]
 <div id="skipped-map">

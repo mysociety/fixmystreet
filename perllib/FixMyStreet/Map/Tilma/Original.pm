@@ -96,7 +96,7 @@ sub display_map {
 
     my $cobrand = Page::get_cobrand($q);
     my $root_path_js = Cobrand::root_path_js($cobrand, $q);
-    my $out = FixMyStreet::Map::header($q, $params{type});
+    my $out = '';
     my $img_type;
     if ($params{type}) {
         $out .= <<EOF;

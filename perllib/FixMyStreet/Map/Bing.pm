@@ -36,7 +36,7 @@ sub display_map {
     }
     my $pins_js = join(",\n", @pins);
 
-    my $out = FixMyStreet::Map::header($q, $params{type});
+    my $out = '';
     my $copyright = _('Map contains Ordnance Survey data &copy; Crown copyright and database right 2010.');
     my $key = mySociety::Config::get('BING_MAPS_API_KEY');
     $out .= <<EOF;
