@@ -8,26 +8,27 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
-__PACKAGE__->load_components("FilterColumn");
+__PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime");
 __PACKAGE__->table("token");
 __PACKAGE__->add_columns(
-    "scope",
-    { data_type => "text", is_nullable => 0 },
-    "token",
-    { data_type => "text", is_nullable => 0 },
-    "data",
-    { data_type => "bytea", is_nullable => 0 },
-    "created",
-    {
-        data_type     => "timestamp",
-        default_value => \"ms_current_timestamp()",
-        is_nullable   => 0,
-    },
+  "scope",
+  { data_type => "text", is_nullable => 0 },
+  "token",
+  { data_type => "text", is_nullable => 0 },
+  "data",
+  { data_type => "bytea", is_nullable => 0 },
+  "created",
+  {
+    data_type     => "timestamp",
+    default_value => \"ms_current_timestamp()",
+    is_nullable   => 0,
+  },
 );
-__PACKAGE__->set_primary_key( "scope", "token" );
+__PACKAGE__->set_primary_key("scope", "token");
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-03-24 17:36:08
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:tClh4Spd63IpCeiGVHfrEQ
+
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-05-24 15:32:43
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ET4L1y6yWmEUDKPKa7wJiw
 
 # Trying not to use this
 # use mySociety::DBHandle qw(dbh);

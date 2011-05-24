@@ -8,7 +8,7 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
-__PACKAGE__->load_components("FilterColumn");
+__PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime");
 __PACKAGE__->table("users");
 __PACKAGE__->add_columns(
   "id",
@@ -49,8 +49,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-05-18 10:55:41
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:PsK+O4EefB4wywX6VZYNuw
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-05-24 15:32:43
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Vo92xIsCQTLF6lBugzhHcA
 
 use mySociety::EmailUtil;
 
