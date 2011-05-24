@@ -1,0 +1,14 @@
+[% INCLUDE 'header.html', title => loc('Confirmation') %]
+
+<h1>[% loc('Confirmation') %]</h1>
+
+<p class="confirmed">
+[%    
+    tprintf( loc('You have successfully confirmed your update and you can now <a href="%s">view it on the site</a>'), c.uri_for( '/report',
+    update.problem.id ) _ '#' _ update.id );
+%]
+</p>
+
+[% display_crossell_advert( update.user.email, update.name ) %]
+
+[% INCLUDE 'footer.html' %]
