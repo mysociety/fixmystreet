@@ -76,8 +76,6 @@ sub display_map {
     my $compass = compass($q, $x_tile, $y_tile, $zoom);
     my $map_type = $self->map_type();
     $out .= <<EOF;
-<input type="hidden" name="latitude" id="fixmystreet.latitude" value="$params{latitude}">
-<input type="hidden" name="longitude" id="fixmystreet.longitude" value="$params{longitude}">
 <input type="hidden" name="zoom" value="$zoom">
 <script type="text/javascript">
 var fixmystreet = {

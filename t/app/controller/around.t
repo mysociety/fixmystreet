@@ -75,18 +75,18 @@ foreach my $test (
 foreach my $test (
     {
         pc        => 'SW1A 1AA',
-        latitude  => '51.5010096115539',
-        longitude => '-0.141587067110009',
+        latitude  => '51.50101',
+        longitude => '-0.141587',
     },
     {
         pc        => 'Manchester',
-        latitude  => '53.4807125',
-        longitude => '-2.2343765',
+        latitude  => '53.480713',
+        longitude => '-2.234376',
     },
     {
         pc        => 'Glenthorpe Rd, Merton, Greater London SM4 4, UK',
-        latitude  => '51.3937997',
-        longitude => '-0.2209596',
+        latitude  => '51.3938',
+        longitude => '-0.22096',
     },
   )
 {

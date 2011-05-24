@@ -49,8 +49,6 @@ sub display_map {
     my $sf = SCALE_FACTOR / TILE_WIDTH;
     my $copyright = _('Map contains Ordnance Survey data &copy; Crown copyright and database right 2010.');
     $out .= <<EOF;
-<input type="hidden" name="latitude" id="fixmystreet.latitude" value="$params{latitude}">
-<input type="hidden" name="longitude" id="fixmystreet.longitude" value="$params{longitude}">
 <script type="text/javascript">
 var fixmystreet = {
     'tilewidth': $tile_width,

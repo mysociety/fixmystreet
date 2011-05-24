@@ -894,6 +894,10 @@ sub generate_map : Private {
     my $latitude  = $c->stash->{latitude};
     my $longitude = $c->stash->{longitude};
 
+    ( $c->stash->{short_latitude}, $c->stash->{short_longitude} ) =
+      map { Utils::truncate_coordinate($_) }
+      ( $c->stash->{latitude}, $c->stash->{longitude} );
+
     # Forms that allow photos need a different enctype
     my $allow_photo_upload = $c->cobrand->allow_photo_upload;
 

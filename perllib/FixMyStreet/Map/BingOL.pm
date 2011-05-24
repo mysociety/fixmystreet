@@ -41,8 +41,6 @@ sub display_map {
     my $out = '';
     my $copyright = _('Map contains Ordnance Survey data &copy; Crown copyright and database right 2010. Microsoft');
     $out .= <<EOF;
-<input type="hidden" name="latitude" id="fixmystreet.latitude" value="$params{latitude}">
-<input type="hidden" name="longitude" id="fixmystreet.longitude" value="$params{longitude}">
 <script type="text/javascript">
 var fixmystreet = {
     'latitude': $params{latitude},

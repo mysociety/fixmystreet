@@ -40,8 +40,6 @@ sub display_map {
     my $copyright = _('Map contains Ordnance Survey data &copy; Crown copyright and database right 2010.');
     my $key = mySociety::Config::get('BING_MAPS_API_KEY');
     $out .= <<EOF;
-<input type="hidden" name="latitude" id="fixmystreet.latitude" value="$params{latitude}">
-<input type="hidden" name="longitude" id="fixmystreet.longitude" value="$params{longitude}">
 <script type="text/javascript">
 var fixmystreet = {
     'key': '$key',

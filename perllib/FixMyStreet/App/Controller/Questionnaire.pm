@@ -198,6 +198,10 @@ sub display : Private {
 
     my $problem = $c->stash->{questionnaire}->problem;
 
+    ( $c->stash->{short_latitude}, $c->stash->{short_longitude} ) =
+      map { Utils::truncate_coordinate($_) }
+      ( $problem->latitude, $problem->longitude );
+
     my $problem_text = ''; # Page::display_problem_text($c->fake_q, $problem); # FIXME This needs to be in the template
     $c->stash->{updates} = ''; # FIXME Should be database ResultSet of problem's pdates
     $c->stash->{map_start_html} = FixMyStreet::Map::display_map(

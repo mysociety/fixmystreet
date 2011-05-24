@@ -40,6 +40,9 @@
 <input type="hidden" name="pc" value="[% pc | html %]">
 [% c.cobrand.form_elements('mapForm') %]
 
+<input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% short_latitude | html %]">
+<input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% short_longitude | html %]">
+
 [% map_html %]
 
 <p id='sub_map_links'>
