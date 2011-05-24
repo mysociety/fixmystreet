@@ -306,11 +306,11 @@ sub sort_problems : Private {
     my $open = $c->stash->{open};
 
     foreach (qw/new old/) {
-        $c->stash->{fixed}{$id}{$_} = [ sort { $a->{duration} <=> $b->{duration} } @{$fixed->{$id}{$_}} ]
+        $c->stash->{fixed}{$id}{$_} = [ sort { $a->get_column('duration') <=> $b->get_column('duration') } @{$fixed->{$id}{$_}} ]
             if $fixed->{$id}{$_};
     }
     foreach (qw/new older unknown/) {
-        $c->stash->{open}{$id}{$_} = [ sort { $a->{age} <=> $b->{age} } @{$open->{$id}{$_}} ]
+        $c->stash->{open}{$id}{$_} = [ sort { $a->get_column('age') <=> $b->get_column('age') } @{$open->{$id}{$_}} ]
             if $open->{$id}{$_};
     }
 }
