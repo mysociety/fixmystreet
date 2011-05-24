@@ -337,60 +337,6 @@ sub prettify_pc : Private {
     return 1;
 }
 
-sub council_options : Private {
-    my ( $self, $c ) = @_;
-
-    if ( $c->config->{COUNTRY} eq 'NO' ) {
-
-#    my ($options, $options_start, $options_end);
-#    if (mySociety::Config::get('COUNTRY') eq 'NO') {
-#
-#        my (@options, $fylke, $kommune);
-#        foreach (values %$areas) {
-#            if ($_->{type} eq 'NKO') {
-#                $kommune = $_;
-#            } else {
-#                $fylke = $_;
-#            }
-#        }
-#        my $kommune_name = $kommune->{name};
-#        my $fylke_name = $fylke->{name};
-#
-#        if ($fylke->{id} == 3) { # Oslo
-#
-#            push @options, [ 'council', $fylke->{id}, Page::short_name($fylke),
-#                sprintf(_("Problems within %s"), $fylke_name) ];
-#
-#            $options_start = "<div><ul id='rss_feed'>";
-#            $options = alert_list_options($q, @options);
-#            $options_end = "</ul>";
-#
-#        } else {
-#
-#            push @options,
-#                [ 'area', $kommune->{id}, Page::short_name($kommune), $kommune_name ],
-#                [ 'area', $fylke->{id}, Page::short_name($fylke), $fylke_name ];
-#            $options_start = '<div id="rss_list">';
-#            $options = $q->p($q->strong(_('Problems within the boundary of:'))) .
-#                $q->ul(alert_list_options($q, @options));
-#            @options = ();
-#            push @options,
-#                [ 'council', $kommune->{id}, Page::short_name($kommune), $kommune_name ],
-#                [ 'council', $fylke->{id}, Page::short_name($fylke), $fylke_name ];
-#            $options .= $q->p($q->strong(_('Or problems reported to:'))) .
-#                $q->ul(alert_list_options($q, @options));
-#            $options_end = $q->p($q->small(_('FixMyStreet sends different categories of problem
-#to the appropriate council, so problems within the boundary of a particular council
-#might not match the problems sent to that council. For example, a graffiti report
-#will be sent to the district council, so will appear in both of the district
-#council&rsquo;s alerts, but will only appear in the "Within the boundary" alert
-#for the county council.'))) . '</div><div id="rss_buttons">';
-#
-#        }
-#
-    }
-}
-
 sub process_user : Private {
     my ( $self, $c ) = @_;
 
@@ -454,7 +400,7 @@ sub setup_council_rss_feeds : Private {
     }
 
     ( $c->stash->{options}, $c->stash->{reported_to_options} ) =
-      $c->cobrand->council_rss_alert_options( $c->stash->{all_councils} );
+      $c->cobrand->council_rss_alert_options( $c->stash->{all_councils}, $c );
 
     return 1;
 }

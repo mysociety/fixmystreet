@@ -40,6 +40,7 @@ sub area_min_generation {
 sub uri {
     my ( $self, $uri ) = @_;
 
+    $uri = URI->new( $uri );
     $uri->query_param( zoom => 2 )
       if $uri->query_param('lat') && !$uri->query_param('zoom');
 
@@ -75,6 +76,88 @@ sub short_name {
   $name = URI::Escape::uri_escape_utf8($name);
   $name =~ s/%20/+/g;
   return $name;
+
+}
+
+sub council_rss_alert_options {
+    my $self         = shift;
+    my $all_councils = shift;
+    my $c            = shift;
+
+    my ( @options, @reported_to_options, $fylke, $kommune );
+
+    foreach ( values %$all_councils ) {
+        if ( $_->{type} eq 'NKO' ) {
+            $kommune = $_;
+        }
+        else {
+            $fylke = $_;
+        }
+    }
+
+    if ( $fylke->{id} == 3 ) {    # Oslo
+        my $short_name = $self->short_name($fylke, $all_councils);
+        ( my $id_name = $short_name ) =~ tr/+/_/;
+
+        push @options,
+          {
+            type => 'council',
+            id   => sprintf( 'council:%s:%s', $fylke->{id}, $id_name ),
+            rss_text =>
+              sprintf( _('RSS feed of problems within %s'), $fylke->{name} ),
+            text => sprintf( _('Problems within %s'), $fylke->{name} ),
+            uri => $c->uri_for( '/rss/reports', $short_name ),
+          };
+    }
+    else {
+        my $short_kommune_name = $self->short_name($kommune, $all_councils);
+        ( my $id_kommune_name = $short_kommune_name ) =~ tr/+/_/;
+
+        my $short_fylke_name = $self->short_name($fylke, $all_councils);
+        ( my $id_fylke_name = $short_fylke_name ) =~ tr/+/_/;
+
+        push @options,
+          {
+            type => 'area',
+            id   => sprintf( 'area:%s:%s', $kommune->{id}, $id_kommune_name ),
+            rss_text =>
+              sprintf( _('RSS feed of %s'), $kommune->{name} ),
+            text => $kommune->{name},
+            uri => $c->uri_for( '/rss/area', $short_kommune_name ),
+          },
+          {
+            type => 'area',
+            id   => sprintf( 'area:%s:%s', $fylke->{id}, $id_fylke_name ),
+            rss_text =>
+              sprintf( _('RSS feed of %s'), $fylke->{name} ),
+            text => $fylke->{name},
+            uri => $c->uri_for( '/rss/area', $short_fylke_name ),
+          };
+
+        push @reported_to_options,
+          {
+            type => 'council',
+            id => sprintf( 'council:%s:%s', $kommune->{id}, $id_kommune_name ),
+            rss_text =>
+              sprintf( _('RSS feed of %s'), $kommune->{name} ),
+            text => $kommune->{name},
+            uri => $c->uri_for( '/rss/reports', $short_kommune_name ),
+          },
+          {
+            type => 'council',
+            id   => sprintf( 'council:%s:%s', $fylke->{id}, $id_fylke_name ),
+            rss_text =>
+              sprintf( _('RSS feed of %s'), $fylke->{name} ),
+            text => $fylke->{name},
+            uri => $c->uri_for( '/rss/reports/', $short_fylke_name ),
+          };
+    }
+
+    return (
+          \@options, @reported_to_options
+        ? \@reported_to_options
+        : undef
+    );
 
 }
 
