@@ -167,11 +167,6 @@ sub display_location : Private {
     # Deal with pin hiding/age
     my $all_pins = $c->req->param('all_pins') ? 1 : undef;
     $c->stash->{all_pins} = $all_pins;
-
-    # Setup some bits of text
-    my $all_link = $c->req->uri_with( { no_pins => undef, all_pins => undef } );
-    my $all_text =
-      $all_pins ? _('Hide stale reports') : _('Include stale reports');
     my $interval = $all_pins ? undef : $c->cobrand->on_map_default_max_pin_age;
 
     # get the map features
@@ -191,35 +186,6 @@ sub display_location : Private {
     } @$on_map_all, @$around_map;
 
     {    # FIXME - ideally this indented code should be in the templates
-        my $no_pins = $c->req->param('no_pins') || '';
-        my $toggle_pins_link =
-          $c->req->uri_with( { no_pins => $no_pins ? 0 : 1 } );
-        my $toggle_pins_text = $no_pins ? _('Show pins') : _('Hide pins');
-
-        my $map_links =
-            "<p id='sub_map_links'>"
-          . "  <a id='hide_pins_link' rel='nofollow' href='$toggle_pins_link'>"
-          . "    $toggle_pins_text"    #
-          . "  </a>";
-
-        $map_links .=                                                   #
-          " | "                                                         #
-          . "<a id='all_pins_link' rel='nofollow' href='$all_link'>"    #
-          . "  $all_text"                                               #
-          . "</a>"
-          if mySociety::Config::get('COUNTRY') eq 'GB';
-
-        $map_links .= "</p>";
-
-        $map_links .=                                                     #
-          "<input type='hidden' id='all_pins' name='all_pins' value='"    #
-          . ( $all_pins || '' )                                           #
-          . "'>"
-          if mySociety::Config::get('COUNTRY') eq 'GB';
-
-        $map_links .= "</p>";
-        $c->stash->{map_links} = $map_links;
-
         $c->stash->{map_html} = FixMyStreet::Map::display_map(
             $c->fake_q,
             latitude  => $latitude,
