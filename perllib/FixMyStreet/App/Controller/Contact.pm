@@ -70,11 +70,7 @@ sub determine_contact_type : Private {
                 'select' => [
                     'title', 'detail', 'name',
                     'anonymous',
-                    'user_id',
-                    {
-                        extract => 'epoch from confirmed',
-                        -as     => 'confirmed'
-                    }
+                    'user_id', 'confirmed',
                 ]
             }
         );

@@ -20,9 +20,9 @@
 
         <p>
             [% IF update.anonymous %]
-                [% tprintf( loc('Update below added anonymously at %s'), prettify_epoch( update.confirmed ) ) %]
+                [% tprintf( loc('Update below added anonymously at %s'), prettify_epoch( update.confirmed_local.epoch ) ) %]
             [% ELSE %]
-                [% tprintf( loc('Update below added by %s at %s'), update.name, prettify_epoch( update.confirmed ) ) | html %]
+                [% tprintf( loc('Update below added by %s at %s'), update.name, prettify_epoch( update.confirmed_local.epoch ) ) | html %]
             [% END %]
         </p>
 
@@ -45,9 +45,9 @@
 
         <p>
             [% IF problem.anonymous %]
-                [% tprintf( loc('Reported anonymously at %s'), prettify_epoch( problem.confirmed ) ) %]
+                [% tprintf( loc('Reported anonymously at %s'), prettify_epoch( problem.confirmed_local.epoch ) ) %]
             [% ELSE %]
-                [% tprintf( loc('Reported by %s at %s'), problem.user.name, prettify_epoch( problem.confirmed ) ) | html %]
+                [% tprintf( loc('Reported by %s at %s'), problem.user.name, prettify_epoch( problem.confirmed_local.epoch ) ) | html %]
             [% END %]
         </p>
 

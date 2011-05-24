@@ -94,22 +94,7 @@ sub load_problem_or_display_error : Private {
 
     my $updates = $c->model('DB::Comment')->search(
         { problem_id => $problem->id, state => 'confirmed' },
-        {
-            select => [
-                'id', 'name', 'text',
-                'user_id',
-                'anonymous',
-                'mark_fixed',
-                'mark_open',
-                'photo',
-                'cobrand',
-                {
-                    extract => 'epoch from confirmed',
-                    -as     => 'confirmed',
-                }
-            ],
-            order_by => 'confirmed',
-        }
+        { order_by => 'confirmed' }
     );
 
     $c->stash->{updates} = $updates;

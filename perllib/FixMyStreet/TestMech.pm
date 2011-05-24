@@ -325,7 +325,9 @@ sub extract_problem_meta {
     }
     ->scrape( $mech->response );
 
-    return $result->{meta};
+    my ($meta) = map { s/^\s+//; s/\s+$//; $_; } ($result->{meta});
+
+    return $meta;
 }
 
 =head2 extract_problem_title

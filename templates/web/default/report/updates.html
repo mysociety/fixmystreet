@@ -5,9 +5,9 @@
 [% END %]
     <div><div class="problem-update"><p><a name="update_[% update.id %]"></a><em>
         [% IF update.anonymous || update.name == '' %]
-            [% tprintf( loc( 'Posted anonymously at %s' ), prettify_epoch( update.confirmed ) ) -%]
+            [% tprintf( loc( 'Posted anonymously at %s' ), prettify_epoch( update.confirmed_local.epoch ) ) -%]
         [%- ELSE %]
-            [% tprintf( loc( 'Posted by %s at %s' ), update.name, prettify_epoch( update.confirmed ) ) | html -%]
+            [% tprintf( loc( 'Posted by %s at %s' ), update.name, prettify_epoch( update.confirmed_local.epoch ) ) | html -%]
         [%- END -%]
         [%- # extra cobrand meta data -%]
         [%- ", " _ loc( 'marked as fixed' ) IF update.mark_fixed %]

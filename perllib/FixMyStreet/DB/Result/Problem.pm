@@ -103,6 +103,25 @@ __PACKAGE__->has_many(
 # Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-05-24 15:32:43
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:U3aYCRwE4etekKaHdhEkIw
 
+use DateTime::TimeZone;
+my $tz = DateTime::TimeZone->new( name => "local" );
+
+sub confirmed_local {
+    return shift->confirmed->set_time_zone($tz);
+}
+
+sub created_local {
+    return shift->created->set_time_zone($tz);
+}
+
+sub whensent_local {
+    return shift->whensent->set_time_zone($tz);
+}
+
+sub lastupdate_local {
+    return shift->lastupdate->set_time_zone($tz);
+}
+
 =head2 check_for_errors
 
     $error_hashref = $problem->check_for_errors();
@@ -262,7 +281,7 @@ sub meta_line {
     my ( $problem, $c ) = @_;
 
     my $date_time =
-      Page::prettify_epoch( $c->req, $problem->confirmed->epoch );
+      Page::prettify_epoch( $c->req, $problem->confirmed_local->epoch );
     my $meta = '';
 
     # FIXME Should be in cobrand
@@ -343,7 +362,7 @@ sub duration_string {
         $body = join(' and ', map { $areas_info->{$_}->{name} } @councils);
     }
     return sprintf(_('Sent to %s %s later'), $body,
-        Page::prettify_duration($problem->whensent->epoch - $problem->confirmed->epoch, 'minute')
+        Page::prettify_duration($problem->whensent_local->epoch - $problem->confirmed_local->epoch, 'minute')
     );
 }
 
