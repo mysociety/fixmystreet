@@ -46,6 +46,8 @@ sub confirm : Private {
 sub update_problem : Private {
     my ( $self, $c ) = @_;
 
+    my $display_questionnaire = 0;
+
     my $update = $c->stash->{update};
     my $problem = $c->stash->{problem} || $update->problem;
 
@@ -54,8 +56,7 @@ sub update_problem : Private {
 
         if ( $update->user->id == $problem->user->id ) {
             $problem->send_questionnaire( 'f' );
-        } else {
-            $c->forward( 'ask_questionnaire' );
+            $display_questionnaire = 1;
         }
     }
 
@@ -64,14 +65,9 @@ sub update_problem : Private {
 
     $c->stash->{problem} = $problem;
 
-
-    return 1;
-}
-
-sub ask_questionnaire : Private {
-    my ( $self, $c ) = @_;
-
-    # FIXME send out questionnaire token here
+    if ( $display_questionnaire ) {
+        $c->detach('/questionnaire/creator_fixed');
+    }
 
     return 1;
 }

@@ -215,6 +215,14 @@ sub display : Private {
     $c->stash->{cobrand_form_elements} = $c->cobrand->form_elements('questionnaireForm');
 }
 
+sub creator_fixed : Private {
+    my ( $self, $c ) = @_;
+
+    $c->stash->{template} = 'questionnaire/creator_fixed.html';
+
+    return 1;
+}
+
 =head1 AUTHOR
 
 Matthew Somerville

@@ -448,8 +448,8 @@ for my $test (
     {
         desc => 'submit update for register user and mark fixed',
         initial_values => {
-            name => 'Test User',
-            rznvy => 'test@example.com',
+            name => 'Commenter',
+            rznvy => 'commenter@example.com',
             may_show_name => 1,
             add_alert => 1,
             photo => '',
@@ -458,7 +458,7 @@ for my $test (
         },
         fields => {
             submit_update => 1,
-            rznvy  => 'test@example.com',
+            rznvy  => 'commenter@example.com',
             update => 'update from a registered user',
             add_alert => 0,
             fixed => 1,
@@ -480,7 +480,7 @@ for my $test (
 
         $mech->clear_emails_ok();
 
-        $mech->log_in_ok( $user->email );
+        $mech->log_in_ok( $test->{fields}->{rznvy} );
         $mech->get_ok("/report/$report_id");
 
         my $values = $mech->visible_form_values( 'updateForm' );
@@ -498,6 +498,10 @@ for my $test (
 
         is $mech->uri->path, "/report/" . $report_id, "redirected to report page";
 
+        if ( $mech->uri->path eq '/report/update' ) {
+            print $mech->content;
+        }
+
         is $mech->extract_problem_banner->{text}, $test->{endstate_banner}, 'submitted banner';
 
         $mech->email_count_is(0);
@@ -510,7 +514,7 @@ for my $test (
         my $update = $report->comments->first;
         ok $update, 'found update';
         is $update->text, $results->{update}, 'update text';
-        is $update->user->email, 'test@example.com', 'update user';
+        is $update->user->email, $test->{fields}->{rznvy}, 'update user';
         is $update->state, 'confirmed', 'update confirmed';
         is $update->anonymous, $test->{anonymous}, 'user anonymous';
 
@@ -519,6 +523,84 @@ for my $test (
           ->find( { user => $user, alert_type => 'new_updates' } );
 
         ok $test->{alert} ? $alert : !$alert, 'not signed up for alerts';
+    };
+}
+
+foreach my $test (
+    {
+        desc => 'reporter submit update mark fixed',
+        initial_values => {
+            name => 'Test User',
+            rznvy => 'test@example.com',
+            may_show_name => 1,
+            add_alert => 1,
+            photo => '',
+            update => '',
+            fixed => undef,
+        },
+        fields => {
+            submit_update => 1,
+            rznvy  => 'test@example.com',
+            update => 'update from owner',
+            add_alert => 0,
+            fixed => 1,
+        },
+        changed => {
+            update => 'Update from owner'
+        },
+        initial_banner => '',
+        alert => 1, # we signed up for alerts before, do not unsign us
+        anonymous => 0,
+    },
+) {
+    subtest $test->{desc} => sub {
+        # clear out comments for this problem to make
+        # checking details easier later
+        ok( $_->delete, 'deleted comment ' . $_->id )
+            for $report->comments;
+
+        $report->discard_changes;
+        $report->state('confirmed');
+        $report->update;
+
+        $report->discard_changes;
+        print 'state is ' . $report->state . "\n";
+
+        $mech->clear_emails_ok();
+
+        $mech->log_in_ok( $test->{fields}->{rznvy} );
+        $mech->get_ok("/report/$report_id");
+
+        my $values = $mech->visible_form_values( 'updateForm' );
+
+        is_deeply $values, $test->{initial_values}, 'initial form values';
+
+        is $mech->extract_problem_banner->{text}, $test->{initial_banner}, 'initial banner';
+
+        $mech->submit_form_ok(
+            {
+                with_fields => $test->{fields},
+            },
+            'submit update'
+        );
+
+        is $mech->uri->path, "/report/update", "display questionnaire";
+
+        $mech->content_contains("Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?");
+
+        $mech->email_count_is(0);
+
+        my $results = {
+            %{ $test->{fields} },
+            %{ $test->{changed} },
+        };
+
+        my $update = $report->comments->first;
+        ok $update, 'found update';
+        is $update->text, $results->{update}, 'update text';
+        is $update->user->email, $test->{fields}->{rznvy}, 'update user';
+        is $update->state, 'confirmed', 'update confirmed';
+        is $update->anonymous, $test->{anonymous}, 'user anonymous';
     };
 }
 
