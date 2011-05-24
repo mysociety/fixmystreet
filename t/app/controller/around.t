@@ -43,19 +43,22 @@ foreach my $test (
     {
         pc     => 'glenthorpe',
         errors => [],
-        pc_alternatives => [   # TODO - should filter out these non-UK addresses
+        pc_alternatives => [
             'Glenthorpe Crescent, Leeds LS9 7',
             'Glenthorpe Rd, Merton, Greater London SM4 4',
-            'Glenthorpe Ln, Katy, TX 77494, USA',
-            'Glenthorpe Dr, Walnut, CA 91789, USA',
             'Glenthorpe Ave, Leeds LS9 7',
-            'Glenthorpe Ct, Katy, TX 77494, USA',
+            'Glenthorne Rd, Hammersmith, Greater London W6 0',
+            'Glenthorne Ave, Yeovil, Somerset BA21 4',
+            'Glenthorne Rd, Kenwyn, Cornwall TR3 6',
+            'Glenthorne Dr, Cheslyn Hay, Staffordshire WS6 7',
+            'Glenthorne Gardens, Ilford, Greater London IG5 0',
+            'Glenthorne Ave, Croydon, Greater London CR0 7',
         ],
     },
     {
         pc => 'Glenthorpe Ct, Katy, TX 77494, USA',
         errors =>
-          ['We had a problem with the supplied co-ordinates - outside the UK?'],
+          ['Sorry, we could not find that location.'],
         pc_alternatives => [],
     },
   )

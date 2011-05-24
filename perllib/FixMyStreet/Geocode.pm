@@ -126,8 +126,20 @@ sub string {
     if (-s $cache_file) {
         $js = File::Slurp::read_file($cache_file);
     } else {
-        $url .= ',+UK' unless $url =~ /united\++kingdom$/ || $url =~ /uk$/i
-            || mySociety::Config::get('COUNTRY') ne 'GB';
+        # For some reason adding gl=uk is no longer sufficient to make google
+        # think we are in the UK for some locations so we explictly add UK to
+        # the address. We do it here so as not to invalidate existing cache
+        # entries
+        if (   mySociety::Config::get('COUNTRY') eq 'GB'
+            && $url !~ /,\+UK/
+            && $url !~ /united\++kingdom$/ )
+        {
+            if ( $url =~ /&/ ) {
+                $url =~ s/&/,+UK&/;
+            } else {
+                $url .= ',+UK';
+            }
+        }
         $url .= '&sensor=false&key=' . mySociety::Config::get('GOOGLE_MAPS_API_KEY');
         $js = LWP::Simple::get($url);
         $js = encode_utf8($js) if utf8::is_utf8($js);

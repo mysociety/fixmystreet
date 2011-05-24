@@ -43,8 +43,8 @@ sub test_geocode_string() {
     # geocode a straightforward string, expect success
     my ( $latitude, $longitude, $error ) =
       FixMyStreet::Geocode::string( 'Buckingham Palace', $q );
-    is( $latitude, 51.5013639, 'example easting generated' );
-    is( $longitude, -0.1418898, 'example northing generated' );
+    is( $latitude, 51.4949261, 'example easting generated' );
+    is( $longitude, -0.1461924, 'example northing generated' );
     is( $error, undef, 'should not generate error for simple example' );
 
     # expect a failure message for Northern Ireland
