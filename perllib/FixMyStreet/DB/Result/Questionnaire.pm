@@ -8,7 +8,7 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
-__PACKAGE__->load_components("FilterColumn");
+__PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime");
 __PACKAGE__->table("questionnaire");
 __PACKAGE__->add_columns(
   "id",

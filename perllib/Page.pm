@@ -567,60 +567,60 @@ sub _part {
     }
 }
 
-sub display_problem_meta_line($$) {
-    my ($q, $problem) = @_;
-    my $out = '';
-    my $date_time = prettify_epoch($q, $problem->{time});
-    if ($q->{site} eq 'emptyhomes') {
-        my $category = _($problem->{category});
-        utf8::decode($category); # So that Welsh to Welsh doesn't encode already-encoded UTF-8
-        if ($problem->{anonymous}) {
-            $out .= sprintf(_('%s, reported anonymously at %s'), ent($category), $date_time);
-        } else {
-            $out .= sprintf(_('%s, reported by %s at %s'), ent($category), ent($problem->{name}), $date_time);
-        }
-    } else {
-        if ($problem->{service} && $problem->{category} && $problem->{category} ne _('Other') && $problem->{anonymous}) {
-            $out .= sprintf(_('Reported by %s in the %s category anonymously at %s'), ent($problem->{service}), ent($problem->{category}), $date_time);
-        } elsif ($problem->{service} && $problem->{category} && $problem->{category} ne _('Other')) {
-            $out .= sprintf(_('Reported by %s in the %s category by %s at %s'), ent($problem->{service}), ent($problem->{category}), ent($problem->{name}), $date_time);
-        } elsif ($problem->{service} && $problem->{anonymous}) {
-            $out .= sprintf(_('Reported by %s anonymously at %s'), ent($problem->{service}), $date_time);
-        } elsif ($problem->{service}) {
-            $out .= sprintf(_('Reported by %s by %s at %s'), ent($problem->{service}), ent($problem->{name}), $date_time);
-        } elsif ($problem->{category} && $problem->{category} ne _('Other') && $problem->{anonymous}) {
-            $out .= sprintf(_('Reported in the %s category anonymously at %s'), ent($problem->{category}), $date_time);
-        } elsif ($problem->{category} && $problem->{category} ne _('Other')) {
-            $out .= sprintf(_('Reported in the %s category by %s at %s'), ent($problem->{category}), ent($problem->{name}), $date_time);
-        } elsif ($problem->{anonymous}) {
-            $out .= sprintf(_('Reported anonymously at %s'), $date_time);
-        } else {
-            $out .= sprintf(_('Reported by %s at %s'), ent($problem->{name}), $date_time);
-        }
-    }
-    my $cobrand = get_cobrand($q);
-    $out .= Cobrand::extra_problem_meta_text($cobrand, $problem);
-    $out .= '; ' . _('the map was not used so pin location may be inaccurate') unless ($problem->{used_map});
-    if ($problem->{council}) {
-        if ($problem->{whensent}) {
-            my $body;
-            if ($problem->{external_body}) {
-                $body = $problem->{external_body};
-            } else {
-                $problem->{council} =~ s/\|.*//g;
-                my @councils = split /,/, $problem->{council};
-                my $areas_info = mySociety::MaPit::call('areas', \@councils);
-                $body = join(' and ', map { $areas_info->{$_}->{name} } @councils);
-            }
-            $out .= '<small class="council_sent_info">';
-            $out .= $q->br() . sprintf(_('Sent to %s %s later'), $body, prettify_duration($problem->{whensent}, 'minute'));
-            $out .= '</small>';
-        }
-    } else {
-        $out .= $q->br() . $q->small(_('Not reported to council'));
-    }
-    return $out;
-}
+# sub display_problem_meta_line($$) {
+#     my ($q, $problem) = @_;
+#     my $out = '';
+#     my $date_time = prettify_epoch($q, $problem->{time});
+#     if ($q->{site} eq 'emptyhomes') {
+#         my $category = _($problem->{category});
+#         utf8::decode($category); # So that Welsh to Welsh doesn't encode already-encoded UTF-8
+#         if ($problem->{anonymous}) {
+#             $out .= sprintf(_('%s, reported anonymously at %s'), ent($category), $date_time);
+#         } else {
+#             $out .= sprintf(_('%s, reported by %s at %s'), ent($category), ent($problem->{name}), $date_time);
+#         }
+#     } else {
+#         if ($problem->{service} && $problem->{category} && $problem->{category} ne _('Other') && $problem->{anonymous}) {
+#             $out .= sprintf(_('Reported by %s in the %s category anonymously at %s'), ent($problem->{service}), ent($problem->{category}), $date_time);
+#         } elsif ($problem->{service} && $problem->{category} && $problem->{category} ne _('Other')) {
+#             $out .= sprintf(_('Reported by %s in the %s category by %s at %s'), ent($problem->{service}), ent($problem->{category}), ent($problem->{name}), $date_time);
+#         } elsif ($problem->{service} && $problem->{anonymous}) {
+#             $out .= sprintf(_('Reported by %s anonymously at %s'), ent($problem->{service}), $date_time);
+#         } elsif ($problem->{service}) {
+#             $out .= sprintf(_('Reported by %s by %s at %s'), ent($problem->{service}), ent($problem->{name}), $date_time);
+#         } elsif ($problem->{category} && $problem->{category} ne _('Other') && $problem->{anonymous}) {
+#             $out .= sprintf(_('Reported in the %s category anonymously at %s'), ent($problem->{category}), $date_time);
+#         } elsif ($problem->{category} && $problem->{category} ne _('Other')) {
+#             $out .= sprintf(_('Reported in the %s category by %s at %s'), ent($problem->{category}), ent($problem->{name}), $date_time);
+#         } elsif ($problem->{anonymous}) {
+#             $out .= sprintf(_('Reported anonymously at %s'), $date_time);
+#         } else {
+#             $out .= sprintf(_('Reported by %s at %s'), ent($problem->{name}), $date_time);
+#         }
+#     }
+#     my $cobrand = get_cobrand($q);
+#     $out .= Cobrand::extra_problem_meta_text($cobrand, $problem);
+#     $out .= '; ' . _('the map was not used so pin location may be inaccurate') unless ($problem->{used_map});
+#     if ($problem->{council}) {
+#         if ($problem->{whensent}) {
+#             my $body;
+#             if ($problem->{external_body}) {
+#                 $body = $problem->{external_body};
+#             } else {
+#                 $problem->{council} =~ s/\|.*//g;
+#                 my @councils = split /,/, $problem->{council};
+#                 my $areas_info = mySociety::MaPit::call('areas', \@councils);
+#                 $body = join(' and ', map { $areas_info->{$_}->{name} } @councils);
+#             }
+#             $out .= '<small class="council_sent_info">';
+#             $out .= $q->br() . sprintf(_('Sent to %s %s later'), $body, prettify_duration($problem->{whensent}, 'minute'));
+#             $out .= '</small>';
+#         }
+#     } else {
+#         $out .= $q->br() . $q->small(_('Not reported to council'));
+#     }
+#     return $out;
+# }
 
 sub display_problem_detail($) {
     my $problem = shift;

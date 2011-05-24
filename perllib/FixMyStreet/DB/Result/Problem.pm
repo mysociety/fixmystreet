@@ -8,7 +8,7 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
-__PACKAGE__->load_components("FilterColumn");
+__PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime");
 __PACKAGE__->table("problem");
 __PACKAGE__->add_columns(
   "id",
@@ -249,6 +249,102 @@ sub get_photo_params {
     $photo->{url} = '/photo/?id=' . $self->id;
 
     return $photo;
+}
+
+=head2 meta_line
+
+Returns a string to be used on a problem report page, describing some of the
+meta data about the report.
+
+=cut
+
+sub meta_line {
+    my ( $problem, $c ) = @_;
+
+    my $date_time =
+      Page::prettify_epoch( $c->req, $problem->confirmed->epoch );
+    my $meta = '';
+
+    # FIXME Should be in cobrand
+    if ($c->cobrand->moniker eq 'emptyhomes') {
+
+        my $category = _($problem->category);
+        utf8::decode($category);
+        if ($problem->anonymous) {
+            $meta = sprintf(_('%s, reported anonymously at %s'), $category, $date_time);
+        } else {
+            $meta = sprintf(_('%s, reported by %s at %s'), $category, $problem->name, $date_time);
+        }
+
+    } else {
+
+        if ( $problem->anonymous ) {
+            if (    $problem->service
+                and $problem->category && $problem->category ne _('Other') )
+            {
+                $meta =
+                sprintf( _('Reported by %s in the %s category anonymously at %s'),
+                    $problem->service, $problem->category, $date_time );
+            }
+            elsif ( $problem->service ) {
+                $meta = sprintf( _('Reported by %s anonymously at %s'),
+                    $problem->service, $date_time );
+            }
+            elsif ( $problem->category and $problem->category ne _('Other') ) {
+                $meta = sprintf( _('Reported in the %s category anonymously at %s'),
+                    $problem->category, $date_time );
+            }
+            else {
+                $meta = sprintf( _('Reported anonymously at %s'), $date_time );
+            }
+        }
+        else {
+            if (    $problem->service
+                and $problem->category && $problem->category ne _('Other') )
+            {
+                $meta = sprintf(
+                    _('Reported by %s in the %s category by %s at %s'),
+                    $problem->service, $problem->category,
+                    $problem->name,    $date_time
+                );
+            }
+            elsif ( $problem->service ) {
+                $meta = sprintf( _('Reported by %s by %s at %s'),
+                    $problem->service, $problem->name, $date_time );
+            }
+            elsif ( $problem->category and $problem->category ne _('Other') ) {
+                $meta = sprintf( _('Reported in the %s category by %s at %s'),
+                    $problem->category, $problem->name, $date_time );
+            }
+            else {
+                $meta =
+                sprintf( _('Reported by %s at %s'), $problem->name, $date_time );
+            }
+        }
+
+    }
+
+    $meta .= $c->cobrand->extra_problem_meta_text($problem);
+    $meta .= '; ' . _('the map was not used so pin location may be inaccurate')
+        unless $problem->used_map;
+
+    return $meta;
+}
+
+sub duration_string {
+    my $problem = shift;
+    my $body;
+    if ($problem->external_body) {
+        $body = $problem->external_body;
+    } else {
+        (my $council = $problem->council) =~ s/\|.*//g;
+        my @councils = split /,/, $council;
+        my $areas_info = mySociety::MaPit::call('areas', \@councils);
+        $body = join(' and ', map { $areas_info->{$_}->{name} } @councils);
+    }
+    return sprintf(_('Sent to %s %s later'), $body,
+        Page::prettify_duration($problem->whensent->epoch - $problem->confirmed->epoch, 'minute')
+    );
 }
 
 1;
