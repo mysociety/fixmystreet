@@ -34,6 +34,8 @@
 /authors/id/B/BD/BDFOY/Module-Extract-Namespaces-0.14.tar.gz
 /authors/id/B/BD/BDFOY/Module-Extract-Use-0.17.tar.gz
 /authors/id/B/BD/BDFOY/Module-Extract-VERSION-0.13.tar.gz
+/authors/id/B/BD/BDFOY/MyCPAN-App-DPAN-1.28.tar.gz
+/authors/id/B/BD/BDFOY/MyCPAN-Indexer-1.28.tar.gz
 /authors/id/B/BD/BDFOY/Test-Output-0.16.tar.gz
 /authors/id/B/BI/BINGOS/Archive-Tar-1.76.tar.gz
 /authors/id/B/BI/BINGOS/Module-CoreList-2.45.tar.gz
@@ -71,10 +73,12 @@
 /authors/id/D/DA/DAGOLDEN/Module-Metadata-1.000004.tar.gz
 /authors/id/D/DA/DAGOLDEN/Parse-CPAN-Meta-1.4401.tar.gz
 /authors/id/D/DA/DAGOLDEN/Perl-OSType-1.002.tar.gz
+/authors/id/D/DA/DAGOLDEN/Sub-Uplevel-0.22.tar.gz
 /authors/id/D/DC/DCANTRELL/Data-Compare-1.22.tar.gz
 /authors/id/D/DC/DCONWAY/Lingua-EN-Inflect-1.893.tar.gz
 /authors/id/D/DL/DLAND/File-Path-2.08.tar.gz
 /authors/id/D/DL/DLUX/Parallel-ForkManager-0.7.9.tar.gz
+/authors/id/D/DM/DMAKI/DateTime-Format-Pg-0.16005.tar.gz
 /authors/id/D/DM/DMUEY/File-Copy-Recursive-0.38.tar.gz
 /authors/id/D/DM/DMUEY/Hash-Merge-0.12.tar.gz
 /authors/id/D/DO/DOY/Dist-CheckConflicts-0.02.tar.gz
@@ -139,6 +143,7 @@
 /authors/id/I/IL/ILMARI/Class-Unload-0.07.tar.gz
 /authors/id/I/IN/INGY/Spiffy-0.30.tar.gz
 /authors/id/I/IN/INGY/Test-Base-0.59.tar.gz
+/authors/id/J/JE/JESSE/HTTP-Server-Simple-0.43.tar.gz
 /authors/id/J/JE/JESSE/HTTP-Server-Simple-0.44.tar.gz
 /authors/id/J/JH/JHOBLITT/DateTime-Format-ISO8601-0.07.tar.gz
 /authors/id/J/JP/JPEACOCK/version-0.88.tar.gz
@@ -154,6 +159,7 @@
 /authors/id/M/MH/MHX/Devel-PPPort-3.19.tar.gz
 /authors/id/M/MI/MIROD/HTML-TreeBuilder-XPath-0.12.tar.gz
 /authors/id/M/MI/MIROD/XML-XPathEngine-0.12.tar.gz
+/authors/id/M/MI/MIYAGAWA/App-cpanminus-1.4004.tar.gz
 /authors/id/M/MI/MIYAGAWA/App-cpanminus-1.4007.tar.gz
 /authors/id/M/MI/MIYAGAWA/HTML-Selector-XPath-0.07.tar.gz
 /authors/id/M/MI/MIYAGAWA/Template-Plugin-Comma-0.04.tar.gz
@@ -186,6 +192,7 @@
 /authors/id/R/RC/RCLAMP/Text-Glob-0.09.tar.gz
 /authors/id/R/RD/RDF/Clone-0.31.tar.gz
 /authors/id/R/RG/RGARCIA/Sub-Identify-0.04.tar.gz
+/authors/id/R/RG/RGARCIA/Test-LongString-0.14.tar.gz
 /authors/id/R/RG/RGARCIA/Test-LongString-0.15.tar.gz
 /authors/id/R/RI/RIBASUSHI/Class-C3-Componentised-1.0008.tar.gz
 /authors/id/R/RJ/RJBS/Data-OptList-0.106.tar.gz
@@ -228,6 +235,7 @@
 /authors/id/T/TM/TMTM/Class-Data-Inheritable-0.08.tar.gz
 /authors/id/T/TO/TOKUHIROM/Test-Requires-0.06.tar.gz
 /authors/id/T/TU/TURNSTEP/DBD-Pg-2.17.2.tar.gz
+/authors/id/T/TU/TURNSTEP/DBD-Pg-2.18.1.tar.gz
 /authors/id/U/UL/ULPFR/Text-German-0.06.tar.gz
 /authors/id/V/VP/VPIT/Variable-Magic-0.46.tar.gz
 /authors/id/X/XE/XERN/Lingua-PT-Stemmer-0.01.tar.gz

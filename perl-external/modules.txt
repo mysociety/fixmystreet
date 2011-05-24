@@ -22,6 +22,7 @@ DBIx::Class::Schema::Loader
 DBIx::Class::Storage::DBI
 DateTime::Format::HTTP
 DateTime::Format::ISO8601
+DateTime::Format::Pg
 Email::Address
 Email::Send
 Email::Simple
