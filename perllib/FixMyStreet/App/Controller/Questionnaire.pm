@@ -260,7 +260,11 @@ sub display : Private {
         $c,
         latitude  => $problem->latitude,
         longitude => $problem->longitude,
-        pins      => [ [ $problem->latitude, $problem->longitude, $problem->state eq 'fixed' ? 'green' : 'red' ] ],
+        pins      => [ {
+            latitude  => $problem->latitude,
+            longitude => $problem->longitude,
+            colour    => $problem->state eq 'fixed' ? 'green' : 'red',
+        } ],
     );
     $c->stash->{map_js}                = FixMyStreet::Map::header_js();
     $c->stash->{cobrand_form_elements} = $c->cobrand->form_elements('questionnaireForm');

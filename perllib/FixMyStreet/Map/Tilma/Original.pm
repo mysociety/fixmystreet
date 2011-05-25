@@ -49,14 +49,6 @@ sub display_map {
     ( $params{easting}, $params{northing} ) =
       _ll_to_en( $params{latitude}, $params{longitude} );
 
-    # FIXME - convert all pins to lat, lng
-    # all the pins are currently [lat, lng, colour] - convert them
-    foreach my $pin ( @{ $params{pins} ||= [] } ) {
-        my ( $lat, $lon ) = ( $pin->[0], $pin->[1] );
-        my ( $e, $n ) = _ll_to_en( $lat, $lon );
-        ( $pin->[0], $pin->[1] ) = ( $e, $n );
-    }
-
     # X/Y tile co-ords may be overridden in the query string
     my @vars = qw(x y);
     my %input = map { $_ => $c->req->params->{$_} || '' } @vars;
@@ -65,17 +57,10 @@ sub display_map {
 
     my ($x, $y, $px, $py) = os_to_px_with_adjust($c, $params{easting}, $params{northing}, $input{x}, $input{y});
 
-    my @pins;
     foreach my $pin (@{$params{pins}}) {
-        my $pin_x = os_to_px($pin->[0], $x);
-        my $pin_y = os_to_px($pin->[1], $y, 1);
-        push @pins, {
-            px => $pin_x,
-            py => $pin_y,
-            col => $pin->[2],
-            id => $pin->[3],
-            title => $pin->[4],
-        };
+        my ( $e, $n ) = _ll_to_en( $pin->{latitude}, $pin->{longitude} );
+        $pin->{px} = os_to_px($e, $x);
+        $pin->{py} = os_to_px($n, $y, 1);
     }
 
     $px = defined($px) ? $mid_point - $px : 0;
@@ -88,7 +73,7 @@ sub display_map {
     my $tileids = RABX::unserialise($tiles);
     $c->stash->{map} = {
         type => 'tilma/original',
-        pins => \@pins,
+        pins => $params{pins},
         tiles => $tiles,
         clickable => $params{type},
         url => $url,

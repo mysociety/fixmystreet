@@ -15,4 +15,8 @@ sub map_type {
     return 'OpenLayers.Layer.OSM.CycleMap';
 }
 
+sub base_tile_url {
+    return 'tile.opencyclemap.org/cycle';
+}
+
 1;

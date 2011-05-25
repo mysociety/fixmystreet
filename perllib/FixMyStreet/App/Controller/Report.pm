@@ -156,7 +156,11 @@ sub generate_map_tags : Private {
         longitude => $problem->longitude,
         type      => 0,
         pins      => $problem->used_map
-        ? [ [ $problem->latitude, $problem->longitude, 'blue' ] ]
+        ? [ {
+            latitude  => $problem->latitude,
+            longitude => $problem->longitude,
+            colour    => 'blue',
+          } ]
         : [],
     );
     $c->stash->{map_js}       = FixMyStreet::Map::header_js();

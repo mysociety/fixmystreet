@@ -11,7 +11,7 @@ var fixmystreet = {
     'longitude': [% map.longitude %],
     'pins': [
 [% FOR pin IN map.pins -%]
-    [ [% pin.lat %], [% pin.lon %], '[% pin.col %]', '[% pin.id %]', '[% pin.title %]' ]
+    [ [% pin.latitude %], [% pin.longitude %], '[% pin.colour %]', '[% pin.id %]', '[% pin.title %]' ]
     [%- IF !loop.last %],[% END %]
 [% END %] ],
     'map_type': [% map.map_type %]
@@ -23,25 +23,25 @@ var fixmystreet = {
         <div id="drag"><[% map.img_type %]
             alt="NW map tile" id="t2.2"
             name="tile_[% map.x_tile - 1 %].[% map.y_tile - 1 %]"
-            src="http://a.tile.openstreetmap.org/[% map.zoom_act %]/[% map.x_tile - 1 %]/[% map.y_tile - 1 %].png"
+            src="http://a.[% map.tile_url %]/[% map.zoom_act %]/[% map.x_tile - 1 %]/[% map.y_tile - 1 %].png"
             style="top:0; left:0;"><[% map.img_type %]
             alt="NE map tile" id="t2.3"
             name="tile_[% map.x_tile %].[% map.y_tile - 1 %]"
-            src="http://b.tile.openstreetmap.org/[% map.zoom_act %]/[% map.x_tile %]/[% map.y_tile - 1 %].png"
+            src="http://b.[% map.tile_url %]/[% map.zoom_act %]/[% map.x_tile %]/[% map.y_tile - 1 %].png"
             style="top:0px; left:256px;"><br><[% map.img_type %]
             alt="SW map tile" id="t3.2"
             name="tile_[% map.x_tile - 1 %].[% map.y_tile %]"
-            src="http://c.tile.openstreetmap.org/[% map.zoom_act %]/[% map.x_tile - 1 %]/[% map.y_tile %].png"
+            src="http://c.[% map.tile_url %]/[% map.zoom_act %]/[% map.x_tile - 1 %]/[% map.y_tile %].png"
             style="top:256px; left:0;"><[% map.img_type %]
             alt="SE map tile" id="t3.3"
             name="tile_[% map.x_tile %].[% map.y_tile %]"
-            src="http://tile.openstreetmap.org/[% map.zoom_act %]/[% map.x_tile %]/[% map.y_tile %].png"
+            src="http://[% map.tile_url %]/[% map.zoom_act %]/[% map.x_tile %]/[% map.y_tile %].png"
             style="top:256px; left:256px;"></div>
         <div id="pins">[% FOR pin IN map.pins %][% INCLUDE pin %][% END %]</div>
         [% INCLUDE compass %]
     </noscript></div>
     <p id="copyright">
-        [% loc('Map &copy; <a id="osm_link" href="http://www.openstreetmap.org/">OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>') %]
+        [% map.copyright %]
     </p>
 
 
@@ -78,7 +78,7 @@ var fixmystreet = {
 [% IF pin.id %]
 <a title="[% pin.title | html %]" href="[% c.uri_for('/report/' _ pin.id) %]">
 [%- END -%]
-<img border="0" class="pin" src="[% c.uri_for('/i/pin' _ cols.${pin.col} _ '.gif') %]"
+<img border="0" class="pin" src="[% c.uri_for('/i/pin' _ cols.${pin.colour} _ '.gif') %]"
     alt="[% loc('Problem') %]" style="top:[% pin.py - 59 %]px; left:[% pin.px %]px; position: absolute;">
 [%- IF pin.id -%]
 </a>
