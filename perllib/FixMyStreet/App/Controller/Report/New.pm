@@ -903,13 +903,11 @@ sub generate_map : Private {
 
     # Don't do anything if the user skipped the map
     unless ( $c->req->param('skipped') ) {
-        my $map_type = $allow_photo_upload ? 2 : 1;
-
         $c->stash->{map_html} = FixMyStreet::Map::display_map(
-            $c->fake_q,
+            $c, $c->fake_q,
             latitude  => $latitude,
             longitude => $longitude,
-            type      => $map_type,
+            type      => 1,
             pins      => [ [ $latitude, $longitude, 'purple' ] ],
         );
     }

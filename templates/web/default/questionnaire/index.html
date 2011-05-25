@@ -1,9 +1,8 @@
 [% INCLUDE 'header.html', title = loc('Questionnaire') %]
 
-[% INCLUDE 'report/_main.html' %]
+[% pre_map = INCLUDE 'report/_main.html' %]
 
-# FIXME The below should be in the template, by including a map template.
-[% map_start_html %]
+[% INCLUDE "maps/${map.type}.html" %]
 
 [% INCLUDE 'report/updates.html' %]
 

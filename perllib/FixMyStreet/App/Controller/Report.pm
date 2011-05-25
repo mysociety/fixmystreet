@@ -148,23 +148,10 @@ sub format_problem_for_display : Private {
 sub generate_map_tags : Private {
     my ( $self, $c ) = @_;
 
-    my $problem   = $c->stash->{problem};
-
-    my ( $short_lat, $short_lon ) =
-      ( $c->stash->{short_latitude}, $c->stash->{short_longitude} );
-
-    my $google_link =
-      $c->cobrand->base_url_for_emails() . '/report/' . $problem->id;
-
-    $c->stash->{map_links} =
-        "<p id='sub_map_links'>"
-      . "<a href=\"http://maps.google.co.uk/maps?output=embed&amp;z=16&amp;q="
-      . URI::Escape::uri_escape_utf8( $problem->title . ' - ' . $google_link )
-      . "\@$short_lat,$short_lon\">View on Google Maps</a></p>"
-      if mySociety::Config::get('COUNTRY') eq 'GB';
+    my $problem = $c->stash->{problem};
 
     $c->stash->{map_start_html} = FixMyStreet::Map::display_map(
-        $c->fake_q,
+        $c, $c->fake_q,
         latitude  => $problem->latitude,
         longitude => $problem->longitude,
         type      => 0,
@@ -174,7 +161,7 @@ sub generate_map_tags : Private {
     );
     $c->stash->{map_js}       = FixMyStreet::Map::header_js();
 
-      return 1;
+    return 1;
 }
 
 __PACKAGE__->meta->make_immutable;

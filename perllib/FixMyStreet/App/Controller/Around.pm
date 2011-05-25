@@ -182,12 +182,12 @@ sub display_location : Private {
     # create a list of all the pins
     my @pins = map {
         my $pin_colour = $_->{state} eq 'fixed' ? 'green' : 'red';
-        [ $_->{latitude}, $_->{longitude}, $pin_colour, $_->{id} ];
+        [ $_->{latitude}, $_->{longitude}, $pin_colour, $_->{id}, $_->{title} ];
     } @$on_map_all, @$around_map;
 
     {    # FIXME - ideally this indented code should be in the templates
         $c->stash->{map_html} = FixMyStreet::Map::display_map(
-            $c->fake_q,
+            $c, $c->fake_q,
             latitude  => $latitude,
             longitude => $longitude,
             type      => 1,

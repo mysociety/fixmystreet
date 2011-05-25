@@ -26,7 +26,7 @@ sub header_js {
 # PINS is array of pins to show, location and colour
 # PRE/POST are HTML to show above/below map
 sub display_map {
-    my ($self, $q, %params) = @_;
+    my ($self, $c, $q, %params) = @_;
     $params{pre} ||= '';
 
     my @pins;
