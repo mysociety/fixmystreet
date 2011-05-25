@@ -57,6 +57,54 @@ sub load_questionnaire : Private {
 sub submit : Path('submit') {
     my ( $self, $c ) = @_;
 
+    if ( $c->req->params->{token} ) {
+        $c->forward('submit_standard');
+    } elsif ( $c->req->params->{problem} ) {
+        $c->forward('submit_creator_fixed');
+    } else {
+        return;
+    }
+
+    return 1;
+}
+
+sub submit_creator_fixed : Private {
+    my ( $self, $c ) = @_;
+
+    my @errors;
+
+    map { $c->stash->{$_} = $c->req->params->{$_} || '' } qw(reported problem);
+
+    push @errors, _('Please say whether you\'ve ever reported a problem to your council before') unless $c->stash->{reported};
+
+    $c->stash->{problem_id} = $c->stash->{problem};
+    $c->stash->{errors} = \@errors;
+    $c->detach( 'creator_fixed' ) if scalar @errors;
+
+    my $questionnaire = $c->model( 'DB::Questionnaire' )->find_or_new(
+        {
+            problem_id => $c->stash->{problem},
+            old_state  => 'confirmed',
+            new_state  => 'fixed',
+        }
+    );
+
+    unless ( $questionnaire->in_storage ) {
+        $questionnaire->ever_reported( $c->stash->{reported} eq 'Yes' ? 'y' : 'n' );
+        $questionnaire->whensent( \'ms_current_timestamp()' );
+        $questionnaire->whenanswered( \'ms_current_timestamp()' );
+        $questionnaire->insert;
+    }
+
+    $c->stash->{creator_fixed} = 1;
+    $c->stash->{template} = 'tokens/confirm_update.html';
+
+    return 1;
+}
+
+sub submit_standard : Private {
+    my ( $self, $c ) = @_;
+
     $c->forward( '/tokens/load_questionnaire_id', [ $c->req->params->{token} ] );
     $c->forward( 'load_questionnaire' );
 
@@ -217,6 +265,13 @@ sub display : Private {
     $c->stash->{map_js}                = FixMyStreet::Map::header_js();
     $c->stash->{cobrand_form_elements} = $c->cobrand->form_elements('questionnaireForm');
 }
+
+=head2 creator_fixed
+
+Display the reduced questionnaire that we display when the reporter of a
+problem submits an update marking it as fixed.
+
+=cut
 
 sub creator_fixed : Private {
     my ( $self, $c ) = @_;

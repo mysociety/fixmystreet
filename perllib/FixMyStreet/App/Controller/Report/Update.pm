@@ -68,7 +68,7 @@ sub update_problem : Private {
     $problem->lastupdate( \'ms_current_timestamp()' );
     $problem->update;
 
-    $c->stash->{problem} = $problem;
+    $c->stash->{problem_id} = $problem->id;
 
     if ($display_questionnaire) {
         $c->detach('/questionnaire/creator_fixed');

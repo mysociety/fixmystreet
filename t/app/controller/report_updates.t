@@ -498,10 +498,6 @@ for my $test (
 
         is $mech->uri->path, "/report/" . $report_id, "redirected to report page";
 
-        if ( $mech->uri->path eq '/report/update' ) {
-            print $mech->content;
-        }
-
         is $mech->extract_problem_banner->{text}, $test->{endstate_banner}, 'submitted banner';
 
         $mech->email_count_is(0);
@@ -638,6 +634,27 @@ foreach my $test (
         is $update->user->email, $test->{fields}->{rznvy}, 'update user';
         is $update->state, 'confirmed', 'update confirmed';
         is $update->anonymous, $test->{anonymous}, 'user anonymous';
+
+        SKIP: {
+            skip( 'not answering questionnaire', 5 ) if $questionnaire;
+
+            $mech->submit_form_ok( );
+
+            my @errors = @{ $mech->page_errors };
+            ok scalar @errors, 'displayed error messages';
+            is $errors[0], "Please say whether you've ever reported a problem to your council before", 'error message';
+
+            $mech->submit_form_ok( { with_fields => { reported => 'Yes' } } );
+
+            $mech->content_contains( 'Thank you &mdash; you can' );
+
+            $questionnaire = FixMyStreet::App->model( 'DB::Questionnaire' )->find(
+                { problem_id => $report_id }
+            );
+
+            ok $questionnaire, 'questionnaire exists';
+            ok $questionnaire->ever_reported, 'ever reported is yes';
+        };
 
         if ($questionnaire) {
             $questionnaire->delete;
