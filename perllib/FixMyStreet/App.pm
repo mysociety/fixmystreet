@@ -305,6 +305,19 @@ sub send_email {
     return $email;
 }
 
+=head2 uri_with
+
+    $uri = $c->uri_with( ... );
+
+Simply forwards on to $c->req->uri_with - this is a common typo I make!
+
+=cut
+
+sub uri_with {
+    my $c = shift;
+    return $c->req->uri_with(@_);
+}
+
 =head2 uri_for
 
     $uri = $c->uri_for( ... );

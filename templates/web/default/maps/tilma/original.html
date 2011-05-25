@@ -36,23 +36,7 @@ var fixmystreet = {
         <div id="pins">[% FOR pin IN map.pins %][% INCLUDE pin %][% END %]</div>
         </div>
         [% '<div id="watermark"></div>' IF map.watermark %]
-        <table cellpadding="0" cellspacing="0" border="0" id="compass">
-            <tr valign="bottom">
-                <td align="right"><a href="[% c.req.uri_with( { x => map.x - 1, y => map.y + 1 } ) %]"><img src="[% c.uri_for('/i/arrow-northwest.gif') %]" alt="NW" width=11 height=11></a></td>
-                <td align="center"><a href="[% c.req.uri_with( { x => map.x, y => map.y + 1 } ) %]"><img src="[% c.uri_for('/i/arrow-north.gif') %]" vspace="3" alt="N" width=13 height=11></a></td>
-                <td><a href="[% c.req.uri_with( { x => map.x + 1, y => map.y + 1 } ) %]"><img src="[% c.uri_for('/i/arrow-northeast.gif') %]" alt="NE" width=11 height=11></a></td>
-            </tr>
-            <tr>
-                <td><a href="[% c.req.uri_with( { x => map.x - 1, y => map.y } ) %]"><img src="[% c.uri_for('/i/arrow-west.gif') %]" hspace="3" alt="W" width=11 height=13></a></td>
-                <td align="center"><a href="$recentre"><img src="[% c.uri_for('/i/rose.gif') %]" alt="Recentre" width=35 height=34></a></td>
-                <td><a href="[% c.req.uri_with( { x => map.x + 1, y => map.y } ) %]"><img src="[% c.uri_for('/i/arrow-east.gif') %]" hspace="3" alt="E" width=11 height=13></a></td>
-            </tr>
-            <tr valign="top">
-                <td align="right"><a href="[% c.req.uri_with( { x => map.x - 1, y => map.y - 1 } ) %]"><img src="[% c.uri_for('/i/arrow-southwest.gif') %]" alt="SW" width=11 height=11></a></td>
-                <td align="center"><a href="[% c.req.uri_with( { x => map.x, y => map.y - 1 } ) %]"><img src="[% c.uri_for('/i/arrow-south.gif') %]" vspace="3" alt="S" width=13 height=11></a></td>
-                <td><a href="[% c.req.uri_with( { x => map.x + 1, y => map.y - 1 } ) %]"><img src="[% c.uri_for('/i/arrow-southeast.gif') %]" alt="SE" width=11 height=11></a></td>
-            </tr>
-        </table>
+        [% INCLUDE compass %]
     </div>
     <p id="copyright">[% map.copyright %]</p>
 
@@ -73,4 +57,25 @@ var fixmystreet = {
 </a>
 [% END %]
 
+[% END %]
+
+
+[% BLOCK compass %]
+        <table cellpadding="0" cellspacing="0" border="0" id="compass">
+            <tr valign="bottom">
+                <td align="right"><a href="[% c.req.uri_with( { x => map.x - 1, y => map.y + 1 } ) %]"><img src="[% c.uri_for('/i/arrow-northwest.gif') %]" alt="NW" width=11 height=11></a></td>
+                <td align="center"><a href="[% c.req.uri_with( { x => map.x, y => map.y + 1 } ) %]"><img src="[% c.uri_for('/i/arrow-north.gif') %]" vspace="3" alt="N" width=13 height=11></a></td>
+                <td><a href="[% c.req.uri_with( { x => map.x + 1, y => map.y + 1 } ) %]"><img src="[% c.uri_for('/i/arrow-northeast.gif') %]" alt="NE" width=11 height=11></a></td>
+            </tr>
+            <tr>
+                <td><a href="[% c.req.uri_with( { x => map.x - 1, y => map.y } ) %]"><img src="[% c.uri_for('/i/arrow-west.gif') %]" hspace="3" alt="W" width=11 height=13></a></td>
+                <td align="center"><a href="$recentre"><img src="[% c.uri_for('/i/rose.gif') %]" alt="Recentre" width=35 height=34></a></td>
+                <td><a href="[% c.req.uri_with( { x => map.x + 1, y => map.y } ) %]"><img src="[% c.uri_for('/i/arrow-east.gif') %]" hspace="3" alt="E" width=11 height=13></a></td>
+            </tr>
+            <tr valign="top">
+                <td align="right"><a href="[% c.req.uri_with( { x => map.x - 1, y => map.y - 1 } ) %]"><img src="[% c.uri_for('/i/arrow-southwest.gif') %]" alt="SW" width=11 height=11></a></td>
+                <td align="center"><a href="[% c.req.uri_with( { x => map.x, y => map.y - 1 } ) %]"><img src="[% c.uri_for('/i/arrow-south.gif') %]" vspace="3" alt="S" width=13 height=11></a></td>
+                <td><a href="[% c.req.uri_with( { x => map.x + 1, y => map.y - 1 } ) %]"><img src="[% c.uri_for('/i/arrow-southeast.gif') %]" alt="SE" width=11 height=11></a></td>
+            </tr>
+        </table>
 [% END %]
