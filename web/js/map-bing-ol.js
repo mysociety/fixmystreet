@@ -51,7 +51,7 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
             OpenLayers.Util.indexOf(this.serverResolutions, res) :
             this.map.getZoom() + this.zoomOffset;
 
-        if (z == 16) {
+        if (z >= 16) {
             var url = [
                 "http://a.os.openstreetmap.org/sv/${z}/${x}/${y}.png",
                 "http://b.os.openstreetmap.org/sv/${z}/${x}/${y}.png",

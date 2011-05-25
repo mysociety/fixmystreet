@@ -10,7 +10,11 @@ package FixMyStreet::Map::OSM;
 
 use strict;
 use Math::Trig;
+use mySociety::Gaze;
 use Utils;
+
+use constant ZOOM_LEVELS    => 5;
+use constant MIN_ZOOM_LEVEL => 13;
 
 sub header_js {
     return '
@@ -22,6 +26,17 @@ sub header_js {
 
 sub map_type {
     return 'OpenLayers.Layer.OSM.Mapnik';
+}
+
+sub map_tiles {
+    my ($self, $x, $y, $z) = @_;
+    my $tile_url = $self->base_tile_url();
+    return [
+        "http://a.$tile_url/$z/" . ($x - 1) . "/" . ($y - 1) . ".png",
+        "http://b.$tile_url/$z/$x/" . ($y - 1) . ".png",
+        "http://c.$tile_url/$z/" . ($x - 1) . "/$y.png",
+        "http://$tile_url/$z/$x/$y.png",
+    ];
 }
 
 sub base_tile_url {
@@ -40,40 +55,50 @@ sub copyright {
 sub display_map {
     my ($self, $c, %params) = @_;
 
+    # Adjust zoom level dependent upon population density
+    my $dist = mySociety::Gaze::get_radius_containing_population( $params{latitude}, $params{longitude}, 200_000 );
+    my $default_zoom = ZOOM_LEVELS - 3;
+    $default_zoom = ZOOM_LEVELS - 2 if $dist < 10;
+
     # Map centre may be overridden in the query string
     $params{latitude} = Utils::truncate_coordinate($c->req->params->{lat} + 0)
         if defined $c->req->params->{lat};
     $params{longitude} = Utils::truncate_coordinate($c->req->params->{lon} + 0)
         if defined $c->req->params->{lon};
 
-    my $zoom = defined $c->req->params->{zoom} ? $c->req->params->{zoom} + 0 : 2;
-    $zoom = 3 if $zoom > 3;
+    my $zoom = defined $c->req->params->{zoom} ? $c->req->params->{zoom} + 0 : $default_zoom;
+    $zoom = ZOOM_LEVELS - 1 if $zoom >= ZOOM_LEVELS;
     $zoom = 0 if $zoom < 0;
-    my $zoom_act = 14 + $zoom;
+    my $zoom_act = MIN_ZOOM_LEVEL + $zoom;
     my ($x_tile, $y_tile) = latlon_to_tile_with_adjust($params{latitude}, $params{longitude}, $zoom_act);
 
     foreach my $pin (@{$params{pins}}) {
         ($pin->{px}, $pin->{py}) = latlon_to_px($pin->{latitude}, $pin->{longitude}, $x_tile, $y_tile, $zoom_act);
     }
 
-    my $compass = {
-        north => [ map { Utils::truncate_coordinate($_) } tile_to_latlon( $x_tile, $y_tile-1, $zoom_act ) ],
-        south => [ map { Utils::truncate_coordinate($_) } tile_to_latlon( $x_tile, $y_tile+1, $zoom_act ) ],
-        west  => [ map { Utils::truncate_coordinate($_) } tile_to_latlon( $x_tile-1, $y_tile, $zoom_act ) ],
-        east  => [ map { Utils::truncate_coordinate($_) } tile_to_latlon( $x_tile+1, $y_tile, $zoom_act ) ],
-        here  => [ map { Utils::truncate_coordinate($_) } tile_to_latlon( $x_tile, $y_tile, $zoom_act ) ],
-    };
     $c->stash->{map} = {
         %params,
         type => 'osm',
         map_type => $self->map_type(),
-        tile_url => $self->base_tile_url(),
+        tiles => $self->map_tiles( $x_tile, $y_tile, $zoom_act ),
         copyright => $self->copyright(),
         x_tile => $x_tile,
         y_tile => $y_tile,
         zoom => $zoom,
         zoom_act => $zoom_act,
-        compass => $compass,
+        zoom_levels => ZOOM_LEVELS,
+        compass => compass( $x_tile, $y_tile, $zoom_act ),
+    };
+}
+
+sub compass {
+    my ( $x, $y, $z ) = @_;
+    return {
+        north => [ map { Utils::truncate_coordinate($_) } tile_to_latlon( $x, $y-1, $z ) ],
+        south => [ map { Utils::truncate_coordinate($_) } tile_to_latlon( $x, $y+1, $z ) ],
+        west  => [ map { Utils::truncate_coordinate($_) } tile_to_latlon( $x-1, $y, $z ) ],
+        east  => [ map { Utils::truncate_coordinate($_) } tile_to_latlon( $x+1, $y, $z ) ],
+        here  => [ map { Utils::truncate_coordinate($_) } tile_to_latlon( $x, $y, $z ) ],
     };
 }
 
@@ -141,7 +166,7 @@ sub click_to_wgs84 {
     my ($self, $c, $pin_tile_x, $pin_x, $pin_tile_y, $pin_y) = @_;
     my $tile_x = click_to_tile($pin_tile_x, $pin_x);
     my $tile_y = click_to_tile($pin_tile_y, $pin_y);
-    my $zoom = 14 + (defined $c->req->params->{zoom} ? $c->req->params->{zoom} : 2);
+    my $zoom = MIN_ZOOM_LEVEL + (defined $c->req->params->{zoom} ? $c->req->params->{zoom} : 2);
     my ($lat, $lon) = tile_to_latlon($tile_x, $tile_y, $zoom);
     return ( $lat, $lon );
 }

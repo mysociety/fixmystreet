@@ -12,8 +12,8 @@ var fixmystreet = {
 [% IF map.zoom -%]
     'zoom': [% map.zoom %],
 [%- END %]
-    'pins': [% INCLUDE maps/pins_js.html %],
-    'map_type': [% map.map_type %]
+    'map_type': [% map.map_type %],
+    'pins': [% INCLUDE maps/pins_js.html %]
 }
 </script>
 <div id="map_box">
@@ -22,19 +22,19 @@ var fixmystreet = {
         <div id="drag"><[% map.img_type %]
             alt="NW map tile" id="t2.2"
             name="tile_[% map.x_tile - 1 %].[% map.y_tile - 1 %]"
-            src="http://a.[% map.tile_url %]/[% map.zoom_act %]/[% map.x_tile - 1 %]/[% map.y_tile - 1 %].png"
+            src="[% map.tiles.0 %]"
             style="top:0; left:0;"><[% map.img_type %]
             alt="NE map tile" id="t2.3"
             name="tile_[% map.x_tile %].[% map.y_tile - 1 %]"
-            src="http://b.[% map.tile_url %]/[% map.zoom_act %]/[% map.x_tile %]/[% map.y_tile - 1 %].png"
+            src="[% map.tiles.1 %]"
             style="top:0px; left:256px;"><br><[% map.img_type %]
             alt="SW map tile" id="t3.2"
             name="tile_[% map.x_tile - 1 %].[% map.y_tile %]"
-            src="http://c.[% map.tile_url %]/[% map.zoom_act %]/[% map.x_tile - 1 %]/[% map.y_tile %].png"
+            src="[% map.tiles.2 %]"
             style="top:256px; left:0;"><[% map.img_type %]
             alt="SE map tile" id="t3.3"
             name="tile_[% map.x_tile %].[% map.y_tile %]"
-            src="http://[% map.tile_url %]/[% map.zoom_act %]/[% map.x_tile %]/[% map.y_tile %].png"
+            src="[% map.tiles.3 %]"
             style="top:256px; left:256px;"></div>
         <div id="pins">[% FOR pin IN map.pins %][% INCLUDE pin %][% END %]</div>
         [% INCLUDE compass %]
@@ -51,10 +51,10 @@ var fixmystreet = {
     east     = c.uri_with( { lat = map.compass.east.0,  lon = map.compass.east.1,  zoom = map.zoom } )
     west     = c.uri_with( { lat = map.compass.west.0,  lon = map.compass.west.1,  zoom = map.zoom } )
     world    = c.uri_with( { zoom = 0 } );
-    zoom_in  = c.uri_with( { zoom = map.zoom + 1 } ) IF map.zoom < 3;
-    zoom_out = c.uri_with( { zoom = map.zoom - 1 } ) IF map.zoom > 0;
-    zoom_in  = '#' IF map.zoom >= 3;
-    zoom_out = '#' IF map.zoom <= 0
+    SET zoom_in  = c.uri_with( { zoom = map.zoom + 1 } ) IF map.zoom < map.zoom_levels - 1;
+    SET zoom_out = c.uri_with( { zoom = map.zoom - 1 } ) IF map.zoom > 0;
+    SET zoom_in  = '#' IF map.zoom >= map.zoom_levels - 1;
+    SET zoom_out = '#' IF map.zoom <= 0;
 %]
 <div style="position: absolute; left: 4px; top: 4px; z-index: 1007;" class="olControlPanZoom olControlNoSelect" unselectable="on">
     <div style="position: absolute; left: 13px; top: 4px; width: 18px; height: 18px;"><a href="[% north %]"><img style="position: relative; width: 18px; height: 18px;" src="/jslib/OpenLayers-2.10/img/north-mini.png" border="0"></a></div>
