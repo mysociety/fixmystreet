@@ -41,7 +41,7 @@ sub header_js {
 sub display_map {
     my ($self, $c, %params) = @_;
     my $mid_point = TILE_WIDTH; # Map is 2 TILE_WIDTHs in size, square.
-    if (my $mp = Cobrand::tilma_mid_point(Page::get_cobrand($q))) {
+    if (my $mp = $c->cobrand->tilma_mid_point) {
         $mid_point = $mp;
     }
 

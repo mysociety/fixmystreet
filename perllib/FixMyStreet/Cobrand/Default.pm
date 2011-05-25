@@ -528,6 +528,16 @@ The MaPit types this site handles
 sub area_types          { return qw(DIS LBO MTD UTA CTY COI); }
 sub area_min_generation { 10 }
 
+=head2 tilma_mid_point
+
+If the map is smaller than the usual, return half its size.
+
+=cut
+
+sub tilma_mid_point {
+    return 0;
+}
+
 =head2 contact_name, contact_email
 
 Return the contact name or email for the cobranded version of the site (to be
