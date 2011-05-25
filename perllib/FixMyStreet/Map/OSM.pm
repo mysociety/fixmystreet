@@ -33,7 +33,7 @@ sub map_type {
 # PINS is array of pins to show, location and colour
 # PRE/POST are HTML to show above/below map
 sub display_map {
-    my ($self, $q, %params) = @_;
+    my ($self, $c, $q, %params) = @_;
     $params{pre} ||= '';
 
     # Map centre may be overridden in the query string
@@ -94,6 +94,9 @@ var fixmystreet = {
     </noscript></div>
     <p id="copyright">$copyright</p>
 EOF
+    $c->stash->{map} = {
+        type => 'osm',
+    };
     return $out;
 }
 

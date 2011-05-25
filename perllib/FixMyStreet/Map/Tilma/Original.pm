@@ -41,8 +41,7 @@ sub header_js {
 # PINS is array of pins to show, location and colour
 # PRE/POST are HTML to show above/below map
 sub display_map {
-    my ($self, $q, %params) = @_;
-    $params{pre} ||= '';
+    my ($self, $c, $q, %params) = @_;
     my $mid_point = TILE_WIDTH; # Map is 2 TILE_WIDTHs in size, square.
     if (my $mp = Cobrand::tilma_mid_point(Page::get_cobrand($q))) {
         $mid_point = $mp;
@@ -68,11 +67,17 @@ sub display_map {
 
     my ($x, $y, $px, $py) = os_to_px_with_adjust($q, $params{easting}, $params{northing}, $input{x}, $input{y});
 
-    my $pins = '';
+    my @pins;
     foreach my $pin (@{$params{pins}}) {
         my $pin_x = os_to_px($pin->[0], $x);
         my $pin_y = os_to_px($pin->[1], $y, 1);
-        $pins .= display_pin($q, $pin_x, $pin_y, $pin->[2]);
+        push @pins, {
+            px => $pin_x,
+            py => $pin_y,
+            col => $pin->[2],
+            id => $pin->[3],
+            title => $pin->[4],
+        };
     }
 
     $px = defined($px) ? $mid_point - $px : 0;
@@ -82,76 +87,38 @@ sub display_map {
     my $url = 'http://tilma.mysociety.org/tileserver/' . TILE_TYPE . '/';
     my $tiles_url = $url . ($x-1) . '-' . $x . ',' . ($y-1) . '-' . $y . '/RABX';
     my $tiles = LWP::Simple::get($tiles_url);
-    return '<div id="map_box"> <div id="map"><div id="drag">' . _("Unable to fetch the map tiles from the tile server.") . '</div></div></div><div id="side">' if !$tiles;
     my $tileids = RABX::unserialise($tiles);
-    my $tl = ($x-1) . '.' . $y;
-    my $tr = $x . '.' . $y;
-    my $bl = ($x-1) . '.' . ($y-1);
-    my $br = $x . '.' . ($y-1);
-    return '<div id="side">' if (!$tileids->[0][0] || !$tileids->[0][1] || !$tileids->[1][0] || !$tileids->[1][1]);
-    my $tl_src = $url . $tileids->[0][0];
-    my $tr_src = $url . $tileids->[0][1];
-    my $bl_src = $url . $tileids->[1][0];
-    my $br_src = $url . $tileids->[1][1];
-
-    my $cobrand = Page::get_cobrand($q);
-    my $root_path_js = Cobrand::root_path_js($cobrand, $q);
-    my $out = '';
-    my $img_type;
-    if ($params{type}) {
-        $out .= <<EOF;
-<input type="hidden" name="x" id="formX" value="$x">
-<input type="hidden" name="y" id="formY" value="$y">
-EOF
-        $img_type = '<input type="image"';
-    } else {
-        $img_type = '<img';
-    }
-    my $imgw = TILE_WIDTH . 'px';
-    my $tile_width = TILE_WIDTH;
-    my $tile_type = TILE_TYPE;
-    $out .= <<EOF;
-<script type="text/javascript">
-$root_path_js
-var fixmystreet = {
-    'x': $x - 3,
-    'y': $y - 3,
-    'start_x': $px,
-    'start_y': $py,
-    'tile_type': '$tile_type',
-    'tilewidth': $tile_width,
-    'tileheight': $tile_width
-};
-</script>
-<div id="map_box">
-$params{pre}
-    <div id="map"><div id="drag">
-        $img_type alt="NW map tile" id="t2.2" name="tile_$tl" src="$tl_src" style="top:0px; left:0;">$img_type alt="NE map tile" id="t2.3" name="tile_$tr" src="$tr_src" style="top:0px; left:$imgw;"><br>$img_type alt="SW map tile" id="t3.2" name="tile_$bl" src="$bl_src" style="top:$imgw; left:0;">$img_type alt="SE map tile" id="t3.3" name="tile_$br" src="$br_src" style="top:$imgw; left:$imgw;">
-        <div id="pins">$pins</div>
-    </div>
-EOF
-    $out .= '<div id="watermark"></div>' if $self->watermark();
-    $out .= compass($q, $x, $y);
-    my $copyright = $self->copyright();
-    $out .= <<EOF;
-    </div>
-    <p id="copyright">$copyright</p>
-EOF
-    return $out;
+    $c->stash->{map} = {
+        type => 'tilma/original',
+        pins => \@pins,
+        tiles => $tiles,
+        clickable => $params{type},
+        url => $url,
+        tileids => $tileids,
+        x => $x,
+        y => $y,
+        px => $px,
+        py => $py,
+        tile_type => TILE_TYPE,
+        tilewidth => TILE_WIDTH,
+        tileheight => TILE_WIDTH,
+        watermark => $self->watermark(),
+        copyright => $self->copyright(),
+    };
 }
 
 sub display_pin {
-    my ($q, $px, $py, $col, $num) = @_;
+    my ($q, $px, $py, $col, $id, $title, $num) = @_;
     $num = '' if !$num || $num > 9;
     my $host = Page::base_url_with_lang($q, undef);
     my %cols = (red=>'R', green=>'G', blue=>'B', purple=>'P');
     my $out = '<img class="pin" src="' . $host . '/i/pin' . $cols{$col}
         . $num . '.gif" alt="' . _('Problem') . '" style="top:' . ($py-59)
         . 'px; left:' . ($px) . 'px; position: absolute;">';
-    return $out unless $_ && $_->{id} && $col ne 'blue';
+    return $out unless $id;
     my $cobrand = Page::get_cobrand($q);
-    my $url = Cobrand::url($cobrand, NewURL($q, -url => '/report/' . $_->{id}), $q);
-    $out = '<a title="' . ent($_->{title}) . '" href="' . $url . '">' . $out . '</a>';
+    my $url = Cobrand::url($cobrand, NewURL($q, -url => '/report/' . $id), $q);
+    $out = '<a title="' . ent($title) . '" href="' . $url . '">' . $out . '</a>';
     return $out;
 }
 
@@ -172,7 +139,7 @@ sub map_pins {
         my $px = os_to_px($_->{easting}, $sx);
         my $py = os_to_px($_->{northing}, $sy, 1);
         my $col = $_->{state} eq 'fixed' ? 'green' : 'red';
-        $pins .= display_pin($q, $px, $py, $col);
+        $pins .= display_pin($q, $px, $py, $col, $_->{id}, $_->{title});
     }
 
     foreach (@$nearby) {
@@ -181,7 +148,7 @@ sub map_pins {
         my $px = os_to_px($_->{easting}, $sx);
         my $py = os_to_px($_->{northing}, $sy, 1);
         my $col = $_->{state} eq 'fixed' ? 'green' : 'red';
-        $pins .= display_pin($q, $px, $py, $col);
+        $pins .= display_pin($q, $px, $py, $col, $_->{id}, $_->{title});
     }
 
     return ($pins, $around_map_list, $nearby, $dist);

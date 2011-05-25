@@ -202,14 +202,17 @@ sub display : Private {
       map { Utils::truncate_coordinate($_) }
       ( $problem->latitude, $problem->longitude );
 
-    my $problem_text = ''; # Page::display_problem_text($c->fake_q, $problem); # FIXME This needs to be in the template
-    $c->stash->{updates} = ''; # FIXME Should be database ResultSet of problem's pdates
+    my $updates = $c->model('DB::Comment')->search(
+        { problem_id => $problem->id, state => 'confirmed' },
+        { order_by => 'confirmed' }
+    );
+    $c->stash->{updates} = $updates;
+
     $c->stash->{map_start_html} = FixMyStreet::Map::display_map(
-        $c->fake_q,
+        $c, $c->fake_q,
         latitude  => $problem->latitude,
         longitude => $problem->longitude,
         pins      => [ [ $problem->latitude, $problem->longitude, $problem->state eq 'fixed' ? 'green' : 'red' ] ],
-        pre       => $problem_text,
     );
     $c->stash->{map_js}                = FixMyStreet::Map::header_js();
     $c->stash->{cobrand_form_elements} = $c->cobrand->form_elements('questionnaireForm');
