@@ -903,11 +903,11 @@ sub generate_map : Private {
 
     # Don't do anything if the user skipped the map
     unless ( $c->req->param('skipped') ) {
-        $c->stash->{map_html} = FixMyStreet::Map::display_map(
+        FixMyStreet::Map::display_map(
             $c,
             latitude  => $latitude,
             longitude => $longitude,
-            type      => 1,
+            clickable => 1,
             pins      => [ {
                 latitude  => $latitude,
                 longitude => $longitude,

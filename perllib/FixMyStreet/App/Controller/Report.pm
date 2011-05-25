@@ -150,11 +150,10 @@ sub generate_map_tags : Private {
 
     my $problem = $c->stash->{problem};
 
-    $c->stash->{map_start_html} = FixMyStreet::Map::display_map(
+    FixMyStreet::Map::display_map(
         $c,
         latitude  => $problem->latitude,
         longitude => $problem->longitude,
-        type      => 0,
         pins      => $problem->used_map
         ? [ {
             latitude  => $problem->latitude,
@@ -163,7 +162,7 @@ sub generate_map_tags : Private {
           } ]
         : [],
     );
-    $c->stash->{map_js}       = FixMyStreet::Map::header_js();
+    $c->stash->{map_js} = FixMyStreet::Map::header_js();
 
     return 1;
 }

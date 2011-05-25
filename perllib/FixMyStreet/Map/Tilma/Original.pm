@@ -36,7 +36,7 @@ sub header_js {
 # display_map C PARAMS
 # PARAMS include:
 # latitude, longitude for the centre point of the map
-# TYPE is 1 if the map is clickable, 0 otherwise.
+# CLICKABLE is set if the map is clickable
 # PINS is array of pins to show, location and colour
 sub display_map {
     my ($self, $c, %params) = @_;
@@ -72,10 +72,9 @@ sub display_map {
     my $tiles = LWP::Simple::get($tiles_url);
     my $tileids = RABX::unserialise($tiles);
     $c->stash->{map} = {
+        %params,
         type => 'tilma/original',
-        pins => $params{pins},
         tiles => $tiles,
-        clickable => $params{type},
         url => $url,
         tileids => $tileids,
         x => $x,
