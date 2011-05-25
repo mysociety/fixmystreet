@@ -187,7 +187,7 @@ sub display_location : Private {
 
     {    # FIXME - ideally this indented code should be in the templates
         $c->stash->{map_html} = FixMyStreet::Map::display_map(
-            $c, $c->fake_q,
+            $c,
             latitude  => $latitude,
             longitude => $longitude,
             type      => 1,

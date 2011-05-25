@@ -18,15 +18,13 @@ sub header_js {
 ';
 }
 
-# display_map Q PARAMS
+# display_map C PARAMS
 # PARAMS include:
-# EASTING, NORTHING for the centre point of the map
-# TYPE is 1 if the map is clickable, 2 if clickable and has a form upload,
-#     0 if not clickable
+# latitude, longitude for the centre point of the map
+# TYPE is 1 if the map is clickable, 0 otherwise.
 # PINS is array of pins to show, location and colour
-# PRE/POST are HTML to show above/below map
 sub display_map {
-    my ($self, $c, $q, %params) = @_;
+    my ($self, $c, %params) = @_;
     $params{pre} ||= '';
 
     my @pins;

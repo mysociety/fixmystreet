@@ -33,15 +33,13 @@ sub header_js {
 ';
 }
 
-# display_map Q PARAMS
+# display_map C PARAMS
 # PARAMS include:
 # latitude, longitude for the centre point of the map
-# TYPE is 1 if the map is clickable, 2 if clickable and has a form upload,
-#     0 if not clickable
+# TYPE is 1 if the map is clickable, 0 otherwise.
 # PINS is array of pins to show, location and colour
-# PRE/POST are HTML to show above/below map
 sub display_map {
-    my ($self, $c, $q, %params) = @_;
+    my ($self, $c, %params) = @_;
     my $mid_point = TILE_WIDTH; # Map is 2 TILE_WIDTHs in size, square.
     if (my $mp = Cobrand::tilma_mid_point(Page::get_cobrand($q))) {
         $mid_point = $mp;
@@ -61,11 +59,11 @@ sub display_map {
 
     # X/Y tile co-ords may be overridden in the query string
     my @vars = qw(x y);
-    my %input = map { $_ => $q->param($_) || '' } @vars;
+    my %input = map { $_ => $c->req->params->{$_} || '' } @vars;
     ($input{x}) = $input{x} =~ /^(\d+)/; $input{x} ||= 0;
     ($input{y}) = $input{y} =~ /^(\d+)/; $input{y} ||= 0;
 
-    my ($x, $y, $px, $py) = os_to_px_with_adjust($q, $params{easting}, $params{northing}, $input{x}, $input{y});
+    my ($x, $y, $px, $py) = os_to_px_with_adjust($c, $params{easting}, $params{northing}, $input{x}, $input{y});
 
     my @pins;
     foreach my $pin (@{$params{pins}}) {
@@ -223,7 +221,7 @@ sub click_to_os {
 # tile they were), convert to WGS84 and return.
 sub click_to_wgs84 {
     my $self = shift;
-    my $q = shift;
+    my $c = shift;
     my ( $easting, $northing ) = click_to_os(@_);
     my ( $lat, $lon ) = mySociety::GeoUtil::national_grid_to_wgs84( $easting, $northing, 'G' );
     return ( $lat, $lon );
@@ -233,7 +231,7 @@ sub click_to_wgs84 {
 # of the map (either to get the point near the middle, or the override X,Y),
 # and the pixel co-ords of the point, relative to that map.
 sub os_to_px_with_adjust {
-    my ($q, $easting, $northing, $in_x, $in_y) = @_;
+    my ($c, $easting, $northing, $in_x, $in_y) = @_;
 
     my $x = os_to_tile($easting);
     my $y = os_to_tile($northing);
@@ -250,7 +248,7 @@ sub os_to_px_with_adjust {
 
     my $px = os_to_px($easting, $x_tile);
     my $py = os_to_px($northing, $y_tile, 1);
-    if ($q->{site} eq 'barnet') { # Map is 380px, so might need to adjust
+    if ($c->cobrand->tilma_mid_point == 189) { # Map is 380px, so might need to adjust
         if (!$in_x && $px > 380) {
             $x_tile++;
             $px = os_to_px($easting, $x_tile);
@@ -262,37 +260,6 @@ sub os_to_px_with_adjust {
     }
 
     return ($x_tile, $y_tile, $px, $py);
-}
-
-sub compass ($$$) {
-    my ( $q, $x, $y ) = @_;
-    my @compass;
-    for ( my $i = $x - 1 ; $i <= $x + 1 ; $i++ ) {
-        for ( my $j = $y - 1 ; $j <= $y + 1 ; $j++ ) {
-            $compass[$i][$j] = NewURL( $q, x => $i, y => $j );
-        }
-    }
-    my $recentre = NewURL($q);
-    my $host = Page::base_url_with_lang( $q, undef );
-    return <<EOF;
-<table cellpadding="0" cellspacing="0" border="0" id="compass">
-<tr valign="bottom">
-<td align="right"><a rel="nofollow" href="${compass[$x-1][$y+1]}"><img src="$host/i/arrow-northwest.gif" alt="NW" width=11 height=11></a></td>
-<td align="center"><a rel="nofollow" href="${compass[$x][$y+1]}"><img src="$host/i/arrow-north.gif" vspace="3" alt="N" width=13 height=11></a></td>
-<td><a rel="nofollow" href="${compass[$x+1][$y+1]}"><img src="$host/i/arrow-northeast.gif" alt="NE" width=11 height=11></a></td>
-</tr>
-<tr>
-<td><a rel="nofollow" href="${compass[$x-1][$y]}"><img src="$host/i/arrow-west.gif" hspace="3" alt="W" width=11 height=13></a></td>
-<td align="center"><a rel="nofollow" href="$recentre"><img src="$host/i/rose.gif" alt="Recentre" width=35 height=34></a></td>
-<td><a rel="nofollow" href="${compass[$x+1][$y]}"><img src="$host/i/arrow-east.gif" hspace="3" alt="E" width=11 height=13></a></td>
-</tr>
-<tr valign="top">
-<td align="right"><a rel="nofollow" href="${compass[$x-1][$y-1]}"><img src="$host/i/arrow-southwest.gif" alt="SW" width=11 height=11></a></td>
-<td align="center"><a rel="nofollow" href="${compass[$x][$y-1]}"><img src="$host/i/arrow-south.gif" vspace="3" alt="S" width=13 height=11></a></td>
-<td><a rel="nofollow" href="${compass[$x+1][$y-1]}"><img src="$host/i/arrow-southeast.gif" alt="SE" width=11 height=11></a></td>
-</tr>
-</table>
-EOF
 }
 
 1;

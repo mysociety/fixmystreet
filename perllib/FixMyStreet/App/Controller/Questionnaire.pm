@@ -209,7 +209,7 @@ sub display : Private {
     $c->stash->{updates} = $updates;
 
     $c->stash->{map_start_html} = FixMyStreet::Map::display_map(
-        $c, $c->fake_q,
+        $c,
         latitude  => $problem->latitude,
         longitude => $problem->longitude,
         pins      => [ [ $problem->latitude, $problem->longitude, $problem->state eq 'fixed' ? 'green' : 'red' ] ],

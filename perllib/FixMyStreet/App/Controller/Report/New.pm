@@ -418,8 +418,8 @@ sub determine_location_from_tile_click : Private {
     return unless $pin_x && $pin_y;
 
     # convert the click to lat and lng
-    my ( $latitude, $longitude ) = FixMyStreet::Map::click_to_wgs84(    #
-        $c->fake_q,                                                        #
+    my ( $latitude, $longitude ) = FixMyStreet::Map::click_to_wgs84(
+        $c,
         $pin_tile_x, $pin_x, $pin_tile_y, $pin_y
     );
 
@@ -904,7 +904,7 @@ sub generate_map : Private {
     # Don't do anything if the user skipped the map
     unless ( $c->req->param('skipped') ) {
         $c->stash->{map_html} = FixMyStreet::Map::display_map(
-            $c, $c->fake_q,
+            $c,
             latitude  => $latitude,
             longitude => $longitude,
             type      => 1,

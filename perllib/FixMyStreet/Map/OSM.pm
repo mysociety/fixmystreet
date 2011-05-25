@@ -25,24 +25,22 @@ sub map_type {
     return 'OpenLayers.Layer.OSM.Mapnik';
 }
 
-# display_map Q PARAMS
+# display_map C PARAMS
 # PARAMS include:
 # latitude, longitude for the centre point of the map
-# TYPE is 1 if the map is clickable, 2 if clickable and has a form upload,
-#     0 if not clickable
+# TYPE is 1 if the map is clickable, 0 otherwise.
 # PINS is array of pins to show, location and colour
-# PRE/POST are HTML to show above/below map
 sub display_map {
-    my ($self, $c, $q, %params) = @_;
+    my ($self, $c, %params) = @_;
     $params{pre} ||= '';
 
     # Map centre may be overridden in the query string
-    $params{latitude} = Utils::truncate_coordinate($q->param('lat')+0)
-        if defined $q->param('lat');
-    $params{longitude} = Utils::truncate_coordinate($q->param('lon')+0)
-        if defined $q->param('lon');
+    $params{latitude} = Utils::truncate_coordinate($c->req->params->{lat} + 0)
+        if defined $c->req->params->{lat};
+    $params{longitude} = Utils::truncate_coordinate($c->req->params->{lon} + 0)
+        if defined $c->req->params->{lon};
 
-    my $zoom = defined $q->param('zoom') ? $q->param('zoom') : 2;
+    my $zoom = defined $c->req->params->{zoom} ? $c->req->params->{zoom} : 2;
     my $zoom_act = 14 + $zoom;
     my ($x_tile, $y_tile) = latlon_to_tile_with_adjust($params{latitude}, $params{longitude}, $zoom_act);
 
