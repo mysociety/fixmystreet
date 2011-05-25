@@ -10,7 +10,6 @@ package FixMyStreet::Map::OSM;
 
 use strict;
 use Math::Trig;
-use mySociety::Web qw(ent NewURL);
 use Utils;
 
 sub header_js {
@@ -23,6 +22,14 @@ sub header_js {
 
 sub map_type {
     return 'OpenLayers.Layer.OSM.Mapnik';
+}
+
+sub base_tile_url {
+    return 'tile.openstreetmap.org';
+}
+
+sub copyright {
+    return _('Map &copy; <a id="osm_link" href="http://www.openstreetmap.org/">OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>');
 }
 
 # display_map C PARAMS
@@ -72,6 +79,8 @@ sub display_map {
         latitude => $params{latitude},
         longitude => $params{longitude},
         map_type => $self->map_type(),
+        tile_url => $self->base_tile_url(),
+        copyright => $self->copyright(),
         x_tile => $x_tile,
         y_tile => $y_tile,
         zoom => $zoom,
