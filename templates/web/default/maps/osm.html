@@ -9,11 +9,10 @@
 var fixmystreet = {
     'latitude': [% map.latitude %],
     'longitude': [% map.longitude %],
-    'pins': [
-[% FOR pin IN map.pins -%]
-    [ [% pin.latitude %], [% pin.longitude %], '[% pin.colour %]', '[% pin.id %]', '[% pin.title %]' ]
-    [%- IF !loop.last %],[% END %]
-[% END %] ],
+[% IF map.zoom -%]
+    'zoom': [% map.zoom %],
+[%- END %]
+    'pins': [% INCLUDE maps/pins_js.html %],
     'map_type': [% map.map_type %]
 }
 </script>

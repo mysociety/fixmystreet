@@ -83,7 +83,6 @@ sub display_map {
         py => $py,
         tile_type => TILE_TYPE,
         tilewidth => TILE_WIDTH,
-        tileheight => TILE_WIDTH,
         watermark => $self->watermark(),
         copyright => $self->copyright(),
     };

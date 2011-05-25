@@ -9,7 +9,7 @@
 package FixMyStreet::Map::BingOL;
 
 use strict;
-use mySociety::Web qw(ent);
+use mySociety::Gaze;
 
 sub header_js {
     return '
@@ -23,35 +23,22 @@ sub header_js {
 # display_map C PARAMS
 # PARAMS include:
 # latitude, longitude for the centre point of the map
-# TYPE is 1 if the map is clickable, 0 otherwise.
+# CLICKABLE is set if the map is clickable
 # PINS is array of pins to show, location and colour
 sub display_map {
     my ($self, $c, %params) = @_;
-    $params{pre} ||= '';
 
-    my @pins;
-    foreach my $pin (@{$params{pins}}) {
-        $pin->[3] ||= '';
-        push @pins, "[ $pin->[0], $pin->[1], '$pin->[2]', '$pin->[3]' ]";
-    }
-    my $pins_js = join(",\n", @pins);
+    my $dist = mySociety::Gaze::get_radius_containing_population( $params{latitude}, $params{longitude}, 200_000 );
+    my $zoom = 2;
+    $zoom = 3 if $dist < 10;
 
-    my $out = '';
-    my $copyright = _('Map contains Ordnance Survey data &copy; Crown copyright and database right 2010. Microsoft');
-    $out .= <<EOF;
-<script type="text/javascript">
-var fixmystreet = {
-    'latitude': $params{latitude},
-    'longitude': $params{longitude},
-    'pins': [ $pins_js ]
-}
-</script>
-<div id="map_box">
-    $params{pre}
-    <div id="map"></div>
-    <p id="copyright">$copyright</p>
-EOF
-    return $out;
+    $c->stash->{map} = {
+        %params,
+        type => 'osm',
+        zoom => $zoom,
+        map_type => '""', # Is set by the JavaScript
+        copyright => _('Map contains Ordnance Survey data &copy; Crown copyright and database right 2010. Microsoft'),
+    };
 }
 
 1;

@@ -1,0 +1,11 @@
+<script type="text/javascript">
+var fixmystreet = {
+    'latitude': [% map.latitude %],
+    'longitude': [% map.longitude %],
+    'pins': [% INCLUDE maps/pins_js.html %]
+}
+</script>
+<div id="map_box">
+    [% pre_map %]
+    <div id="map"></div>
+
