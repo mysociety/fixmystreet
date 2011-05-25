@@ -256,7 +256,7 @@ sub display : Private {
     );
     $c->stash->{updates} = $updates;
 
-    $c->stash->{map_start_html} = FixMyStreet::Map::display_map(
+    FixMyStreet::Map::display_map(
         $c,
         latitude  => $problem->latitude,
         longitude => $problem->longitude,

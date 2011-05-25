@@ -189,14 +189,14 @@ sub display_location : Private {
     } } @$on_map_all, @$around_map;
 
     {    # FIXME - ideally this indented code should be in the templates
-        $c->stash->{map_html} = FixMyStreet::Map::display_map(
+        FixMyStreet::Map::display_map(
             $c,
             latitude  => $latitude,
             longitude => $longitude,
-            type      => 1,
+            clickable => 1,
             pins      => \@pins,
         );
-        $c->stash->{map_js}       = FixMyStreet::Map::header_js();
+        $c->stash->{map_js} = FixMyStreet::Map::header_js();
     }
 
     return 1;

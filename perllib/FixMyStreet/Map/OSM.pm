@@ -35,7 +35,7 @@ sub copyright {
 # display_map C PARAMS
 # PARAMS include:
 # latitude, longitude for the centre point of the map
-# TYPE is 1 if the map is clickable, 0 otherwise.
+# CLICKABLE is set if the map is clickable
 # PINS is array of pins to show, location and colour
 sub display_map {
     my ($self, $c, %params) = @_;
@@ -64,10 +64,8 @@ sub display_map {
         here  => [ map { Utils::truncate_coordinate($_) } tile_to_latlon( $x_tile, $y_tile, $zoom_act ) ],
     };
     $c->stash->{map} = {
+        %params,
         type => 'osm',
-        clickable => $params{type},
-        latitude => $params{latitude},
-        longitude => $params{longitude},
         map_type => $self->map_type(),
         tile_url => $self->base_tile_url(),
         copyright => $self->copyright(),
@@ -75,7 +73,6 @@ sub display_map {
         y_tile => $y_tile,
         zoom => $zoom,
         zoom_act => $zoom_act,
-        pins => $params{pins},
         compass => $compass,
     };
 }
