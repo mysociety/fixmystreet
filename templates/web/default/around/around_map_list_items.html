@@ -4,9 +4,7 @@
         [% dist = tprintf("%.1f", (p.distance || 0) ) %]
         
         <li>
-            <a href="[% c.uri_for('/report', p.id ) %]">
-                [% p.title | html %]
-            </a>
+            <a href="[% c.uri_for('/report', p.id ) %]">[% p.title | html %]</a>
             <small>([% prettify_epoch( p.time, 1 ) %], [% dist %]km)</small>)</small>
             [% IF p.state == 'fixed' %]
                 <small>[% loc('(fixed)') %]</small>
