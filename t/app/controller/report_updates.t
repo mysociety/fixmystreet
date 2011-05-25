@@ -524,6 +524,62 @@ for my $test (
 
 foreach my $test (
     {
+        desc           => 'logged in reporter submits update and marks problem fixed',
+        initial_values => {
+            name          => 'Test User',
+            rznvy         => 'test@example.com',
+            may_show_name => 1,
+            add_alert     => 1,
+            photo         => '',
+            update        => '',
+            fixed         => undef,
+        },
+        fields => {
+            submit_update => 1,
+            rznvy         => 'test@example.com',
+            update        => 'update from owner',
+            add_alert     => 0,
+            fixed         => 1,
+        },
+        changed        => { update => 'Update from owner' },
+        initial_banner => '',
+        alert     => 1,    # we signed up for alerts before, do not unsign us
+        anonymous => 0,
+        answered  => 0,
+        login     => 1,
+        path => '/report/update',
+        content =>
+"Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?",
+    },
+    {
+        desc =>
+'logged in reporter submits update and marks problem fixed and has answered questionnaire',
+        initial_values => {
+            name          => 'Test User',
+            rznvy         => 'test@example.com',
+            may_show_name => 1,
+            add_alert     => 1,
+            photo         => '',
+            update        => '',
+            fixed         => undef,
+        },
+        fields => {
+            submit_update => 1,
+            rznvy         => 'test@example.com',
+            update        => 'update from owner',
+            add_alert     => 0,
+            fixed         => 1,
+        },
+        changed        => { update => 'Update from owner' },
+        initial_banner => '',
+        alert     => 1,    # we signed up for alerts before, do not unsign us
+        anonymous => 0,
+        answered  => 1,
+        login     => 1,
+        path    => '/report/' . $report->id,
+        content => $report->title,
+    },
+    {
         desc           => 'reporter submits update and marks problem fixed',
         initial_values => {
             name          => 'Test User',
@@ -546,6 +602,7 @@ foreach my $test (
         alert     => 1,    # we signed up for alerts before, do not unsign us
         anonymous => 0,
         answered  => 0,
+        login     => 0,
         path => '/report/update',
         content =>
 "Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?",
@@ -574,6 +631,7 @@ foreach my $test (
         alert     => 1,    # we signed up for alerts before, do not unsign us
         anonymous => 0,
         answered  => 1,
+        login     => 0,
         path    => '/report/' . $report->id,
         content => $report->title,
     },
@@ -607,7 +665,10 @@ foreach my $test (
 
         $mech->clear_emails_ok();
 
-        $mech->log_in_ok( $test->{fields}->{rznvy} );
+        SKIP: {
+            skip 'not logging user in', 1 unless $test->{login};
+            $mech->log_in_ok( $test->{fields}->{rznvy} );
+        };
         $mech->get_ok("/report/$report_id");
 
         my $values = $mech->visible_form_values('updateForm');
