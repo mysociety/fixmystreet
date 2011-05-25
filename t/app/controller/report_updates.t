@@ -528,72 +528,109 @@ for my $test (
 
 foreach my $test (
     {
-        desc => 'reporter submit update mark fixed',
+        desc           => 'reporter submits update and marks problem fixed',
         initial_values => {
-            name => 'Test User',
-            rznvy => 'test@example.com',
+            name          => 'Test User',
+            rznvy         => 'test@example.com',
             may_show_name => 1,
-            add_alert => 1,
-            photo => '',
-            update => '',
-            fixed => undef,
+            add_alert     => 1,
+            photo         => '',
+            update        => '',
+            fixed         => undef,
         },
         fields => {
             submit_update => 1,
-            rznvy  => 'test@example.com',
-            update => 'update from owner',
-            add_alert => 0,
-            fixed => 1,
+            rznvy         => 'test@example.com',
+            update        => 'update from owner',
+            add_alert     => 0,
+            fixed         => 1,
         },
-        changed => {
-            update => 'Update from owner'
-        },
+        changed        => { update => 'Update from owner' },
         initial_banner => '',
-        alert => 1, # we signed up for alerts before, do not unsign us
+        alert     => 1,    # we signed up for alerts before, do not unsign us
         anonymous => 0,
+        answered  => 0,
+        path => '/report/update',
+        content =>
+"Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?",
     },
-) {
+    {
+        desc =>
+'reporter submits update and marks problem fixed and has answered questionnaire',
+        initial_values => {
+            name          => 'Test User',
+            rznvy         => 'test@example.com',
+            may_show_name => 1,
+            add_alert     => 1,
+            photo         => '',
+            update        => '',
+            fixed         => undef,
+        },
+        fields => {
+            submit_update => 1,
+            rznvy         => 'test@example.com',
+            update        => 'update from owner',
+            add_alert     => 0,
+            fixed         => 1,
+        },
+        changed        => { update => 'Update from owner' },
+        initial_banner => '',
+        alert     => 1,    # we signed up for alerts before, do not unsign us
+        anonymous => 0,
+        answered  => 1,
+        path    => '/report/' . $report->id,
+        content => $report->title,
+    },
+  )
+{
     subtest $test->{desc} => sub {
+
         # clear out comments for this problem to make
         # checking details easier later
-        ok( $_->delete, 'deleted comment ' . $_->id )
-            for $report->comments;
+        ok( $_->delete, 'deleted comment ' . $_->id ) for $report->comments;
 
         $report->discard_changes;
         $report->state('confirmed');
         $report->update;
 
+        my $questionnaire;
+        if ( $test->{answered} ) {
+            $questionnaire =
+              FixMyStreet::App->model('DB::Questionnaire')->create(
+                {
+                    problem_id    => $report_id,
+                    ever_reported => 'y',
+                    whensent      => \'ms_current_timestamp()',
+                }
+              );
+
+            ok $questionnaire, 'added questionnaire';
+        }
+
         $report->discard_changes;
-        print 'state is ' . $report->state . "\n";
 
         $mech->clear_emails_ok();
 
         $mech->log_in_ok( $test->{fields}->{rznvy} );
         $mech->get_ok("/report/$report_id");
 
-        my $values = $mech->visible_form_values( 'updateForm' );
+        my $values = $mech->visible_form_values('updateForm');
 
         is_deeply $values, $test->{initial_values}, 'initial form values';
 
-        is $mech->extract_problem_banner->{text}, $test->{initial_banner}, 'initial banner';
+        is $mech->extract_problem_banner->{text}, $test->{initial_banner},
+          'initial banner';
 
-        $mech->submit_form_ok(
-            {
-                with_fields => $test->{fields},
-            },
-            'submit update'
-        );
+        $mech->submit_form_ok( { with_fields => $test->{fields}, },
+            'submit update' );
 
-        is $mech->uri->path, "/report/update", "display questionnaire";
+        is $mech->uri->path, $test->{path}, "page after submission";
 
-        $mech->content_contains("Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?");
+        $mech->content_contains( $test->{content} );
 
         $mech->email_count_is(0);
 
-        my $results = {
-            %{ $test->{fields} },
-            %{ $test->{changed} },
-        };
+        my $results = { %{ $test->{fields} }, %{ $test->{changed} }, };
 
         my $update = $report->comments->first;
         ok $update, 'found update';
@@ -601,6 +638,11 @@ foreach my $test (
         is $update->user->email, $test->{fields}->{rznvy}, 'update user';
         is $update->state, 'confirmed', 'update confirmed';
         is $update->anonymous, $test->{anonymous}, 'user anonymous';
+
+        if ($questionnaire) {
+            $questionnaire->delete;
+            ok !$questionnaire->in_storage, 'questionnaire deleted';
+        }
     };
 }
 

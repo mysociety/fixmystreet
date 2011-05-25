@@ -94,4 +94,24 @@ sub check_for_errors {
     return \%errors;
 }
 
+=head2 answered_ever_reported
+
+Check if the user has ever answered a questionnaire.
+
+=cut
+
+sub answered_ever_reported {
+    my $self = shift;
+
+    my $has_answered =
+      $self->result_source->schema->resultset('Questionnaire')->search(
+        {
+            ever_reported => { not => undef },
+            problem_id => { -in =>
+                $self->problems->get_column('id')->as_query },
+        }
+      );
+
+    return $has_answered->count > 0;
+}
 1;

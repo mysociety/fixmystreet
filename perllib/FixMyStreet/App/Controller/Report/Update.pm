@@ -52,11 +52,16 @@ sub update_problem : Private {
     my $problem = $c->stash->{problem} || $update->problem;
 
     if ( $update->mark_fixed eq 't' ) {
-        $problem->state( 'fixed' );
+        $problem->state('fixed');
 
         if ( $update->user->id == $problem->user->id ) {
-            $problem->send_questionnaire( 'f' );
-            $display_questionnaire = 1;
+            $problem->send_questionnaire('f');
+
+            if ( $c->cobrand->ask_ever_reported
+                && !$problem->user->answered_ever_reported )
+            {
+                $display_questionnaire = 1;
+            }
         }
     }
 
@@ -65,7 +70,7 @@ sub update_problem : Private {
 
     $c->stash->{problem} = $problem;
 
-    if ( $display_questionnaire ) {
+    if ($display_questionnaire) {
         $c->detach('/questionnaire/creator_fixed');
     }
 
