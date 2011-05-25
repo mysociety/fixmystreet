@@ -181,14 +181,6 @@ sub prepare_params_for_email : Private {
         );
     }
 
-    my $postfix = '[ Sent by contact.cgi on ' .
-        $ENV{'HTTP_HOST'} . '. ' .
-        "IP address " . $ENV{'REMOTE_ADDR'} .
-        ($ENV{'HTTP_X_FORWARDED_FOR'} ? ' (forwarded from '.$ENV{'HTTP_X_FORWARDED_FOR'}.')' : '') . '. ' .
-        ' ]';
-
-    $c->stash->{message} .= "\n\n$postfix";
-
     return 1;
 }
 
@@ -227,30 +219,21 @@ sub send_email : Private {
     my $recipient      = $c->cobrand->contact_email();
     my $recipient_name = $c->cobrand->contact_name();
 
-    my $email = mySociety::Email::construct_email(
-        {
-            _body_       => $c->stash->{message},
-            From         => [ $c->stash->{em}, $c->stash->{form_name} ],
-            To           => [ [ $recipient, _($recipient_name) ] ],
-            Subject      => 'FMS message: ' . $c->stash->{subject},
-            'Message-ID' => sprintf(
-                '<contact-%s-%s@mysociety.org>',
-                time(), unpack( 'h*', random_bytes( 5, 1 ) )
-            ),
-        }
-    );
+    $c->stash->{host} = $c->req->header('HOST');
+    $c->stash->{ip}   = $c->req->address;
+    $c->stash->{ip} .=
+      $c->req->header('X-Forwarded-For')
+      ? ' ( forwarded from ' . $c->req->header('X-Forwarded-For') . ' )'
+      : '';
 
-    # FIXME: do something more sensible here
-    if ( FixMyStreet->test_mode ) {
-        $c->stash->{success} = 1;
-    } else {
-        my $result =
-          mySociety::EmailUtil::send_email( $email, $c->stash->{em}, $recipient );
+    $c->send_email( 'contact.txt', {
+        to      => [ [ $recipient, _($recipient_name) ] ],
+        from    => [ $c->stash->{em}, $c->stash->{form_name} ],
+        subject => 'FMS message: ' . $c->stash->{subject},
+    });
 
-        if ( $result == mySociety::EmailUtil::EMAIL_SUCCESS ) {
-            $c->stash->{success} = 1;
-        }
-    }
+    # above is always succesful :(
+    $c->stash->{success} = 1;
 
     return 1;
 }

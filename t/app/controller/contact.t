@@ -163,13 +163,13 @@ for my $test (
     subtest 'check submit page error handling' => sub {
         $mech->get_ok( $test->{url} ? $test->{url} : '/contact' );
         $mech->submit_form_ok( { with_fields => $test->{fields} } );
-        is_deeply $mech->page_errors, $test->{page_errors};
-        is_deeply $mech->form_errors, $test->{field_errors};
+        is_deeply $mech->page_errors, $test->{page_errors}, 'page errors';
+        is_deeply $mech->form_errors, $test->{field_errors}, 'field_errors';
 
         # we santise this when we submit so need to remove it
         delete $test->{fields}->{id}
           if $test->{fields}->{id} and $test->{fields}->{id} eq 'invalid';
-        is_deeply $mech->visible_form_values, $test->{fields};
+        is_deeply $mech->visible_form_values, $test->{fields}, 'form values';
     };
 }
 
@@ -186,9 +186,18 @@ for my $test (
   )
 {
     subtest 'check email sent correctly' => sub {
+        $mech->clear_emails_ok;
         $mech->get_ok('/contact');
         $mech->submit_form_ok( { with_fields => $test->{fields} } );
         $mech->content_contains('Thanks for your feedback');
+        $mech->email_count_is(1);
+
+        my $email = $mech->get_email;
+
+        is $email->header('Subject'), 'FMS message: ' .  $test->{fields}->{subject}, 'subject';
+        is $email->header('From'), "\"$test->{fields}->{name}\" <$test->{fields}->{em}>", 'from';
+        like $email->body, qr/$test->{fields}->{message}/, 'body';
+        like $email->body, qr/Sent by contact.cgi on \S+. IP address (?:\d{1,3}\.){3,}\d{1,3}/, 'body footer'
     };
 }
 done_testing();
