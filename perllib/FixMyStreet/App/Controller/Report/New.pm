@@ -908,7 +908,11 @@ sub generate_map : Private {
             latitude  => $latitude,
             longitude => $longitude,
             type      => 1,
-            pins      => [ [ $latitude, $longitude, 'purple' ] ],
+            pins      => [ {
+                latitude  => $latitude,
+                longitude => $longitude,
+                colour    => 'purple',
+            } ],
         );
     }
 

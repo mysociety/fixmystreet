@@ -11,7 +11,7 @@ var fixmystreet = {
     'longitude': [% map.longitude %],
     'pins': [
 [% FOR pin IN map.pins -%]
-    [ [% pin.lat %], [% pin.lon %], '[% pin.col %]', '[% pin.id %]', '[% pin.title %]' ]
+    [ [% pin.latitude %], [% pin.longitude %], '[% pin.colour %]', '[% pin.id %]', '[% pin.title %]' ]
     [%- IF !loop.last %],[% END %]
 [% END %] ],
     'map_type': [% map.map_type %]
@@ -78,7 +78,7 @@ var fixmystreet = {
 [% IF pin.id %]
 <a title="[% pin.title | html %]" href="[% c.uri_for('/report/' _ pin.id) %]">
 [%- END -%]
-<img border="0" class="pin" src="[% c.uri_for('/i/pin' _ cols.${pin.col} _ '.gif') %]"
+<img border="0" class="pin" src="[% c.uri_for('/i/pin' _ cols.${pin.colour} _ '.gif') %]"
     alt="[% loc('Problem') %]" style="top:[% pin.py - 59 %]px; left:[% pin.px %]px; position: absolute;">
 [%- IF pin.id -%]
 </a>

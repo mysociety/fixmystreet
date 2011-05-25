@@ -51,7 +51,7 @@ var fixmystreet = {
 [% IF pin.id %]
 <a title="[% pin.title | html %]" href="[% c.uri_for('/report/' _ pin.id) %]">
 [%- END -%]
-<img class="pin" src="[% c.uri_for('/i/pin' _ cols.${pin.col} _ num _ '.gif') %]"
+<img class="pin" src="[% c.uri_for('/i/pin' _ cols.${pin.colour} _ num _ '.gif') %]"
     alt="[% loc('Problem') %]" style="top:[% pin.py - 59 %]px; left:[% pin.px %]px; position: absolute;">
 [%- IF pin.id -%]
 </a>
