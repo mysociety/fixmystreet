@@ -98,7 +98,7 @@ sub submit_creator_fixed : Private {
     );
 
     unless ( $questionnaire->in_storage ) {
-        $questionnaire->ever_reported( $c->stash->{reported} eq 'Yes' );
+        $questionnaire->ever_reported( $c->stash->{reported} eq 'Yes' ? 1 : 0 );
         $questionnaire->whensent( \'ms_current_timestamp()' );
         $questionnaire->whenanswered( \'ms_current_timestamp()' );
         $questionnaire->insert;
@@ -145,8 +145,8 @@ sub submit_standard : Private {
 
     # Record questionnaire response
     my $reported = undef;
-    $reported = 't' if $c->stash->{reported} eq 'Yes';
-    $reported = 'f' if $c->stash->{reported} eq 'No';
+    $reported = 1 if $c->stash->{reported} eq 'Yes';
+    $reported = 0 if $c->stash->{reported} eq 'No';
 
     my $q = $c->stash->{questionnaire};
     $q->whenanswered( \'ms_current_timestamp()' );
