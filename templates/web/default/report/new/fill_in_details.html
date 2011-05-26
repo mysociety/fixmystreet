@@ -1,4 +1,7 @@
-[% INCLUDE 'header.html', title => loc('Reporting a problem') %]
+[%
+    PROCESS "maps/${map.type}.html" IF report.used_map;
+    INCLUDE 'header.html', title => loc('Reporting a problem')
+%]
 
 [% IF report.used_map %]
 <form action="[% c.uri_for('/report/new') %]" method="post" name="mapForm" id="mapForm"[% IF c.cobrand.allow_photo_upload %] enctype="multipart/form-data"[% END %]>
@@ -17,7 +20,7 @@
 <input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% short_longitude | html %]">
 
 [% IF report.used_map %]
-    [% INCLUDE "maps/${map.type}.html" %]
+    [% map_html %]
     </div>
     <div id="side">
 [% ELSE %]

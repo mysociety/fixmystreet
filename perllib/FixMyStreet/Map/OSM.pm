@@ -16,16 +16,12 @@ use Utils;
 use constant ZOOM_LEVELS    => 5;
 use constant MIN_ZOOM_LEVEL => 13;
 
-sub header_js {
-    return '
-<script type="text/javascript" src="/jslib/OpenLayers-2.10/OpenLayers.js"></script>
-<script type="text/javascript" src="/js/map-OpenLayers.js"></script>
-<script type="text/javascript" src="/js/map-OpenStreetMap.js"></script>
-';
-}
-
 sub map_type {
     return 'OpenLayers.Layer.OSM.Mapnik';
+}
+
+sub map_template {
+    return 'osm';
 }
 
 sub map_tiles {
@@ -78,7 +74,7 @@ sub display_map {
 
     $c->stash->{map} = {
         %params,
-        type => 'osm',
+        type => $self->map_template(),
         map_type => $self->map_type(),
         tiles => $self->map_tiles( $x_tile, $y_tile, $zoom_act ),
         copyright => $self->copyright(),

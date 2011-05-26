@@ -77,9 +77,6 @@ all_pins: related to map display - not relevant to creation of a new report
 sub report_new : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    # set up the page
-    $c->forward('setup_page');
-
     # create the report - loading a partial if available
     $c->forward('initialize_report');
 
@@ -267,20 +264,6 @@ sub report_import : Path('/import') {
     );
 
     $c->res->body('SUCCESS');
-    return 1;
-}
-
-=head2 setup_page
-
-Setup the page - notably add the map js to the stash
-
-=cut
-
-sub setup_page : Private {
-    my ( $self, $c ) = @_;
-
-    $c->stash->{extra_js_verbatim} = FixMyStreet::Map::header_js();
-
     return 1;
 }
 

@@ -14,15 +14,6 @@ sub TILE_WIDTH()   { return $FixMyStreet::Map::map_class->tile_width;   }
 sub SCALE_FACTOR() { return $FixMyStreet::Map::map_class->scale_factor; }
 sub TILE_TYPE()    { return $FixMyStreet::Map::map_class->tile_type;    }
 
-sub header_js {
-    return '
-<script type="text/javascript" src="/jslib/OpenLayers-2.10/OpenLayers.js"></script>
-<script type="text/javascript" src="/js/map-OpenLayers.js"></script>
-<script type="text/javascript" src="/js/map-tilma-ol.js"></script>
-<script type="text/javascript" src="/js/OpenLayers.Projection.OrdnanceSurvey.js"></script>
-';
-}
-
 # display_map C PARAMS
 # PARAMS include:
 # latitude, longitude for the centre point of the map

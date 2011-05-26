@@ -160,7 +160,6 @@ sub generate_map_tags : Private {
           } ]
         : [],
     );
-    $c->stash->{map_js} = FixMyStreet::Map::header_js();
 
     return 1;
 }

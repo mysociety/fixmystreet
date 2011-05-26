@@ -14,18 +14,13 @@ use strict;
 use constant ZOOM_LEVELS    => 5;
 use constant MIN_ZOOM_LEVEL => 13;
 
-sub header_js {
-    return '
-<!-- <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0&mkt=en-GB"></script> -->
-<script type="text/javascript" src="/jslib/OpenLayers-2.10/OpenLayers.js"></script>
-<script type="text/javascript" src="/js/map-OpenLayers.js"></script>
-<script type="text/javascript" src="/js/map-bing-ol.js"></script>
-';
-}
-
 # Is set by the JavaScript
 sub map_type {
     return '""';
+}
+
+sub map_template {
+    return 'fms';
 }
 
 sub copyright {
