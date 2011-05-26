@@ -396,9 +396,26 @@ sub extra_update_meta_text { '' }
 Given a URL ($_[1]), QUERY, EXTRA_DATA, return a URL with any extra params
 needed appended to it.
 
+In the default case, if we're using an OpenLayers map, we need to make
+sure zoom is always present if lat/lon are, to stop OpenLayers defaulting
+to null/0.
+
 =cut
 
-sub uri { $_[1] }    # passthrough unchanged
+sub uri {
+    my ( $self, $uri ) = @_;
+
+    (my $map_class = $FixMyStreet::Map::map_class) =~ s/^FixMyStreet::Map:://;
+    return $uri unless $map_class =~ /OSM|FMS/;
+
+    $uri = URI->new( $uri );
+    $uri->query_param( zoom => 3 )
+      if $uri->query_param('lat') && !$uri->query_param('zoom');
+    $uri->query_param( map => $map_class ); # FIXME Only on /around, /report?
+
+    return $uri;
+}
+
 
 =head2 header_params
 
