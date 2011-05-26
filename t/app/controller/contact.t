@@ -31,6 +31,21 @@ for my $test (
         anonymous => 1,
         meta      => 'Reported anonymously at 13:24, Tuesday  3 May 2011',
     },
+    {
+        name      => 'A User',
+        email     => 'problem_report_test@example.com',
+        title     => 'A different problem',
+        detail    => 'More detail on the different problem',
+        postcode  => 'EH99 1SP',
+        confirmed => '2011-05-03 13:24:28.145168',
+        anonymous => 1,
+        meta      => 'Reported anonymously at 13:24, Tuesday  3 May 2011',
+        update    => {
+            name  => 'Different User',
+            email => 'commenter@example.com',
+            text  => 'This is an update',
+        },
+    },
   )
 {
     subtest 'check reporting a problem displays correctly' => sub {
@@ -58,13 +73,44 @@ for my $test (
             }
         );
 
+        my $update;
+
+        if ( $test->{update} ) {
+            my $update_info = $test->{update};
+            my $update_user = FixMyStreet::App->model('DB::User')->find_or_create(
+                {
+                    name  => $update_info->{name},
+                    email => $update_info->{email}
+                }
+            );
+
+            $update = FixMyStreet::App->model('DB::Comment')->create(
+                {
+                    problem_id => $problem->id,
+                    user        => $update_user,
+                    state       => 'confirmed',
+                    text        => $update_info->{text},
+                    confirmed   => \'ms_current_timestamp()',
+                    mark_fixed => 'f',
+                    anonymous  => 'f',
+                }
+            );
+        }
+
         ok $problem, 'succesfully create a problem';
 
-        $mech->get_ok( '/contact?id=' . $problem->id );
-        $mech->content_contains('reporting the following problem');
-        $mech->content_contains( $test->{title} );
-        $mech->content_contains( $test->{meta} );
+        if ( $update ) {
+            $mech->get_ok( '/contact?id=' . $problem->id . '&update_id=' . $update->id );
+            $mech->content_contains('reporting the following update');
+            $mech->content_contains( $test->{update}->{text} );
+        } else {
+            $mech->get_ok( '/contact?id=' . $problem->id );
+            $mech->content_contains('reporting the following problem');
+            $mech->content_contains( $test->{title} );
+            $mech->content_contains( $test->{meta} );
+        }
 
+        $update->delete if $update;
         $problem->delete;
     };
 }
