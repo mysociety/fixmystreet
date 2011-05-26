@@ -51,11 +51,11 @@ sub update_problem : Private {
     my $update = $c->stash->{update};
     my $problem = $c->stash->{problem} || $update->problem;
 
-    if ( $update->mark_fixed eq 't' ) {
+    if ( $update->mark_fixed ) {
         $problem->state('fixed');
 
         if ( $update->user->id == $problem->user->id ) {
-            $problem->send_questionnaire('f');
+            $problem->send_questionnaire(0);
 
             if ( $c->cobrand->ask_ever_reported
                 && !$problem->user->answered_ever_reported )
@@ -157,9 +157,9 @@ sub process_update : Private {
 
     my $name = Utils::trim_text( $params{name} );
 
-    my $anonymous = 't';
+    my $anonymous = 1;
 
-    $anonymous = 'f' if ( $name && $c->req->param('may_show_name') );
+    $anonymous = 0 if ( $name && $c->req->param('may_show_name') );
 
     my $update = $c->model('DB::Comment')->new(
         {
@@ -168,7 +168,7 @@ sub process_update : Private {
             problem      => $c->stash->{problem},
             user         => $c->stash->{update_user},
             state        => 'unconfirmed',
-            mark_fixed   => $params{fixed} ? 't' : 'f',
+            mark_fixed   => $params{fixed} ? 1 : 0,
             cobrand      => $c->cobrand->moniker,
             cobrand_data => $c->cobrand->extra_update_data,
             lang         => $c->stash->{lang_code},

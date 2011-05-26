@@ -90,7 +90,7 @@ sub submit_creator_fixed : Private {
     );
 
     unless ( $questionnaire->in_storage ) {
-        $questionnaire->ever_reported( $c->stash->{reported} eq 'Yes' ? 'y' : 'n' );
+        $questionnaire->ever_reported( $c->stash->{reported} eq 'Yes' );
         $questionnaire->whensent( \'ms_current_timestamp()' );
         $questionnaire->whenanswered( \'ms_current_timestamp()' );
         $questionnaire->insert;
