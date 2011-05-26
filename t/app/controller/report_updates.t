@@ -295,7 +295,7 @@ subtest "submit an update for a non registered user" => sub {
                 submit_update => 1,
                 rznvy         => 'unregistered@example.com',
                 update        => 'update from an unregistered user',
-                add_alert     => 0,
+                add_alert     => undef,
             }
         },
         'submit update'
@@ -353,8 +353,8 @@ for my $test (
             submit_update => 1,
             rznvy  => 'test@example.com',
             update => 'update from a registered user',
-            add_alert => 0,
-            fixed => 0,
+            add_alert => undef,
+            fixed => undef,
         },
         changed => {
             update => 'Update from a registered user'
@@ -379,9 +379,9 @@ for my $test (
             submit_update => 1,
             rznvy  => 'test@example.com',
             update => 'update from a registered user',
-            may_show_name => 0,
-            add_alert => 0,
-            fixed => 0,
+            may_show_name => undef,
+            add_alert => undef,
+            fixed => undef,
         },
         changed => {
             update => 'Update from a registered user'
@@ -408,8 +408,8 @@ for my $test (
             rznvy  => 'test@example.com',
             update => 'update from a registered user',
             may_show_name => 1,
-            add_alert => 0,
-            fixed => 0,
+            add_alert => undef,
+            fixed => undef,
         },
         changed => {
             update => 'Update from a registered user'
@@ -435,7 +435,7 @@ for my $test (
             rznvy  => 'test@example.com',
             update => 'update from a registered user',
             add_alert => 1,
-            fixed => 0,
+            fixed => undef,
         },
         changed => {
             update => 'Update from a registered user'
@@ -460,7 +460,7 @@ for my $test (
             submit_update => 1,
             rznvy  => 'commenter@example.com',
             update => 'update from a registered user',
-            add_alert => 0,
+            add_alert => undef,
             fixed => 1,
         },
         changed => {
@@ -538,7 +538,7 @@ foreach my $test (
             submit_update => 1,
             rznvy         => 'test@example.com',
             update        => 'update from owner',
-            add_alert     => 0,
+            add_alert     => undef,
             fixed         => 1,
         },
         changed        => { update => 'Update from owner' },
@@ -567,7 +567,7 @@ foreach my $test (
             submit_update => 1,
             rznvy         => 'test@example.com',
             update        => 'update from owner',
-            add_alert     => 0,
+            add_alert     => undef,
             fixed         => 1,
         },
         changed        => { update => 'Update from owner' },
@@ -594,7 +594,7 @@ foreach my $test (
             submit_update => 1,
             rznvy         => 'test@example.com',
             update        => 'update from owner',
-            add_alert     => 0,
+            add_alert     => undef,
             fixed         => 1,
         },
         changed        => { update => 'Update from owner' },
@@ -623,7 +623,7 @@ foreach my $test (
             submit_update => 1,
             rznvy         => 'test@example.com',
             update        => 'update from owner',
-            add_alert     => 0,
+            add_alert     => undef,
             fixed         => 1,
         },
         changed        => { update => 'Update from owner' },
