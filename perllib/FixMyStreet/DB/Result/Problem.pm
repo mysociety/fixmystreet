@@ -246,7 +246,7 @@ sub get_photo_params {
     my $photo = {};
     ( $photo->{width}, $photo->{height} ) =
       Image::Size::imgsize( \$self->photo );
-    $photo->{url} = '/photo/?id=' . $self->id;
+    $photo->{url} = '/photo?id=' . $self->id;
 
     return $photo;
 }
