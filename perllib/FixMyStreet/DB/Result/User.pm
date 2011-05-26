@@ -114,4 +114,5 @@ sub answered_ever_reported {
 
     return $has_answered->count > 0;
 }
+
 1;

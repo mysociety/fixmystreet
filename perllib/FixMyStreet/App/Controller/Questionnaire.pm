@@ -2,10 +2,7 @@ package FixMyStreet::App::Controller::Questionnaire;
 
 use Moose;
 use namespace::autoclean;
-#use Utils;
-#use Error qw(:try);
-#use CrossSell;
-#use mySociety::Locale;
+use Utils;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -15,9 +12,17 @@ FixMyStreet::App::Controller::Questionnaire - Catalyst Controller
 
 =head1 DESCRIPTION
 
-Catalyst Controller.
+Deals with report questionnaires.
 
 =head1 METHODS
+
+=cut
+
+=head2 load_questionnaire
+
+Loads the questionnaire from the database, and checks it still needs answering
+and is in the right state. Also finds out if this user has answered the
+"ever reported" question before.
 
 =cut
 
@@ -40,19 +45,22 @@ sub load_questionnaire : Private {
         $c->detach;
     }
 
-    # FIXME problem fetched information
-    # extract(epoch from confirmed) as time, extract(epoch from whensent-confirmed) as whensent
-    # state in ('confirmed','fixed')
-    $c->stash->{problem} = $questionnaire->problem;
-    # throw Error::Simple(_("I'm afraid we couldn't locate your problem in the database.\n")) unless $problem;
+    unless ( $questionnaire->problem->state eq 'confirmed' || $questionnaire->problem->state eq 'fixed' ) {
+        $c->stash->{message} = _("I'm afraid we couldn't locate your problem in the database.\n");
+        $c->stash->{template} = 'questionnaire/error.html';
+        $c->detach;
+    }
 
-    $c->stash->{answered_ever_reported} = $c->model('DB::Questionnaire')->count(
-        { 'problem.user_id' => $c->stash->{problem}->user_id,
-          ever_reported     => { '!=', undef },
-        },
-        { join => 'problem' }
-    );
+    $c->stash->{problem} = $questionnaire->problem;
+    $c->stash->{answered_ever_reported} = $questionnaire->problem->user->answered_ever_reported;
 }
+
+=head2 submit
+
+If someone submits a questionnaire - either a full style one (when we'll have a
+token), or the mini own-report one (when we'll have a problem ID).
+
+=cut
 
 sub submit : Path('submit') {
     my ( $self, $c ) = @_;
@@ -108,127 +116,113 @@ sub submit_standard : Private {
     $c->forward( '/tokens/load_questionnaire_id', [ $c->req->params->{token} ] );
     $c->forward( 'load_questionnaire' );
 
-    my $questionnaire = $c->stash->{questionnaire};
-    my $problem = $questionnaire->problem;
+    my $problem = $c->stash->{problem};
 
-    $c->stash->{num_questionnaire} = $c->model('DB::Questionnaire')->count(
-        { problem_id => $problem->id }
-    );
-
-    map { $c->stash->{$_} = $c->req->params->{$_} || '' } qw(been_fixed reported another update);
     # EHA questionnaires done for you
     if ($c->cobrand->moniker eq 'emptyhomes') {
+        $c->stash->{num_questionnaire} = $c->model('DB::Questionnaire')->count(
+            { problem_id => $problem->id }
+        );
         $c->stash->{another} = $c->stash->{num_questionnaire}==1 ? 'Yes' : 'No';
     }
 
-    my @errors;
-    push @errors, _('Please state whether or not the problem has been fixed') unless $c->stash->{been_fixed};
-    my $ask_ever_reported = $c->cobrand->ask_ever_reported;
-    if ($ask_ever_reported) {
-        push @errors, _('Please say whether you\'ve ever reported a problem to your council before') unless $c->stash->{reported} || $c->stash->{answered_ever_reported};
+    $c->forward( 'process_questionnaire' );
+
+    my $new_state = '';
+    $new_state = 'fixed' if $c->stash->{been_fixed} eq 'Yes' && $problem->{state} eq 'confirmed';
+    $new_state = 'confirmed' if $c->stash->{been_fixed} eq 'No' && $problem->{state} eq 'fixed';
+
+    # Record state change, if there was one
+    if ( $new_state ) {
+        $problem->state( $new_state );
+        $problem->lastupdate( \'ms_current_timestamp()' );
     }
+
+    # If it's not fixed and they say it's still not been fixed, record time update
+    if ( $c->stash->{been_fixed} eq 'No' && $problem->state eq 'confirmed' ) {
+        $problem->lastupdate( \'ms_current_timestamp()' );
+    }
+
+    # Record questionnaire response
+    my $reported = undef;
+    $reported = 't' if $c->stash->{reported} eq 'Yes';
+    $reported = 'f' if $c->stash->{reported} eq 'No';
+
+    my $q = $c->stash->{questionnaire};
+    $q->whenanswered( \'ms_current_timestamp()' );
+    $q->ever_reported( $reported );
+    $q->old_state( $problem->state );
+    $q->new_state( $c->stash->{been_fixed} eq 'Unknown' ? 'unknown' : ($new_state ? $new_state : $problem->state) );
+    $q->update;
+
+    # Record an update if they've given one, or if there's a state change
+    if ( $new_state || $c->stash->{update} ) {
+        my $update = $c->stash->{update} || _('Questionnaire filled in by problem reporter');
+        $update = $c->model('DB::Comment')->new(
+            {
+                problem      => $problem,
+                name         => $problem->name,
+                user         => $problem->user,
+                text         => $c->stash->{update},
+                state        => 'confirmed',
+                mark_fixed   => $new_state eq 'fixed' ? 1 : 0,
+                mark_open    => $new_state eq 'confirmed' ? 1 : 0,
+                lang         => $c->stash->{lang_code},
+                cobrand      => $c->cobrand->moniker,
+                cobrand_data => $c->cobrand->extra_update_data,
+                confirmed    => \'ms_current_timestamp()',
+                anonymous    => $problem->anonymous,
+            }
+        );
+        if ( my $fileid = $c->stash->{upload_fileid} ) {
+            my $file = file( $c->config->{UPLOAD_CACHE}, "$fileid.jpg" );
+            my $blob = $file->slurp;
+            $file->remove;
+            $update->photo($blob);
+        }
+        $update->insert;
+    }
+
+    # If they've said they want another questionnaire, mark as such
+    $problem->send_questionnaire( 1 )
+        if ($c->stash->{been_fixed} eq 'No' || $c->stash->{been_fixed} eq 'Unknown') && $c->stash->{another} eq 'Yes';
+    $problem->update;
+
+    $c->stash->{new_state} = $new_state;
+    $c->stash->{template} = 'questionnaire/completed.html';
+}
+
+sub process_questionnaire : Private {
+    my ( $self, $c ) = @_;
+
+    map { $c->stash->{$_} = $c->req->params->{$_} || '' } qw(been_fixed reported another update);
+
+    my @errors;
+    push @errors, _('Please state whether or not the problem has been fixed')
+        unless $c->stash->{been_fixed};
+
+    if ($c->cobrand->ask_ever_reported) {
+        push @errors, _('Please say whether you\'ve ever reported a problem to your council before')
+            unless $c->stash->{reported} || $c->stash->{answered_ever_reported};
+    }
+
     push @errors, _('Please indicate whether you\'d like to receive another questionnaire')
         if ($c->stash->{been_fixed} eq 'No' || $c->stash->{been_fixed} eq 'Unknown') && !$c->stash->{another};
+
     push @errors, _('Please provide some explanation as to why you\'re reopening this report')
-        if $c->stash->{been_fixed} eq 'No' && $problem->state eq 'fixed' && !$c->stash->{update};
+        if $c->stash->{been_fixed} eq 'No' && $c->stash->{problem}->state eq 'fixed' && !$c->stash->{update};
+
+    $c->forward('/report/new/process_photo');
+    push @errors, $c->stash->{photo_error}
+        if $c->stash->{photo_error};
+
+    push @errors, _('Please provide some text as well as a photo')
+        if $c->stash->{upload_fileid} && !$c->stash->{update};
+
     if (@errors) {
         $c->stash->{errors} = [ @errors ];
         $c->detach( 'display' );
     }
-
-#     my $fh = $q->upload('photo');
-#     my $image;
-#     if ($fh) {
-#         my $err = Page::check_photo($q, $fh);
-#         push @errors, $err if $err;
-#         try {
-#             $image = Page::process_photo($fh) unless $err;
-#         } catch Error::Simple with {
-#             my $e = shift;
-#             push(@errors, "That image doesn't appear to have uploaded correctly ($e), please try again.");
-#         };
-#     }
-#     push @errors, _('Please provide some text as well as a photo')
-#         if $image && !$input{update};
-#     return display_questionnaire($q, @errors) if @errors;
-# 
-#     my $new_state = '';
-#     $new_state = 'fixed' if $input{been_fixed} eq 'Yes' && $problem->{state} eq 'confirmed';
-#     $new_state = 'confirmed' if $input{been_fixed} eq 'No' && $problem->{state} eq 'fixed';
-# 
-#     # Record state change, if there was one
-#     dbh()->do("update problem set state=?, lastupdate=ms_current_timestamp()
-#         where id=?", {}, $new_state, $problem->{id})
-#         if $new_state;
-# 
-#     # If it's not fixed and they say it's still not been fixed, record time update
-#     dbh()->do("update problem set lastupdate=ms_current_timestamp()
-#         where id=?", {}, $problem->{id})
-#         if $input{been_fixed} eq 'No' && $problem->{state} eq 'confirmed';
-# 
-#     # Record questionnaire response
-#     my $reported = $input{reported}
-#         ? ($input{reported} eq 'Yes' ? 't' : ($input{reported} eq 'No' ? 'f' : undef))
-#         : undef;
-#     dbh()->do('update questionnaire set whenanswered=ms_current_timestamp(),
-#         ever_reported=?, old_state=?, new_state=? where id=?', {},
-#         $reported, $problem->{state}, $input{been_fixed} eq 'Unknown'
-#             ? 'unknown'
-#             : ($new_state ? $new_state : $problem->{state}),
-#         $questionnaire->{id});
-# 
-#     # Record an update if they've given one, or if there's a state change
-#     my $name = $problem->{anonymous} ? undef : $problem->{name};
-#     my $update = $input{update} ? $input{update} : _('Questionnaire filled in by problem reporter');
-#     Utils::workaround_pg_bytea("insert into comment
-#         (problem_id, name, email, website, text, state, mark_fixed, mark_open, photo, lang, cobrand, cobrand_data, confirmed)
-#         values (?, ?, ?, '', ?, 'confirmed', ?, ?, ?, ?, ?, ?, ms_current_timestamp())", 7,
-#         $problem->{id}, $name, $problem->{email}, $update,
-#         $new_state eq 'fixed' ? 't' : 'f', $new_state eq 'confirmed' ? 't' : 'f',
-#         $image, $mySociety::Locale::lang, $cobrand, $c->cobrand->extra_data
-#     )
-#         if $new_state || $input{update};
-# 
-#     # If they've said they want another questionnaire, mark as such
-#     dbh()->do("update problem set send_questionnaire = 't' where id=?", {}, $problem->{id})
-#         if ($input{been_fixed} eq 'No' || $input{been_fixed} eq 'Unknown') && $input{another} eq 'Yes';
-#     dbh()->commit();
-# 
-#     my $out;
-#     my $message;
-#     my $advert_outcome = 1;
-#     if ($input{been_fixed} eq 'Unknown') {
-#         $message = _(<<EOF);
-# <p>Thank you very much for filling in our questionnaire; if you
-# get some more information about the status of your problem, please come back to the
-# site and leave an update.</p>
-# EOF
-#     } elsif ($new_state eq 'confirmed' || (!$new_state && $problem->{state} eq 'confirmed')) {
-#         my $wtt_url = Cobrand::writetothem_url($cobrand, $c->cobrand->extra_data);
-#         $wtt_url = "http://www.writetothem.com" if (! $wtt_url);
-#         $message = sprintf(_(<<EOF), $wtt_url);
-# <p style="font-size:150%%">We're sorry to hear that. We have two suggestions: why not try
-# <a href="%s">writing direct to your councillor(s)</a>
-# or, if it's a problem that could be fixed by local people working together,
-# why not <a href="http://www.pledgebank.com/new">make and publicise a pledge</a>?
-# </p>
-# EOF
-#         $advert_outcome = 0;
-#     } else {
-#         $message = _(<<EOF);
-# <p style="font-size:150%">Thank you very much for filling in our questionnaire; glad to hear it's been fixed.</p>
-# EOF
-#     }
-#     $out = $message;
-#     my $display_advert = Cobrand::allow_crosssell_adverts($cobrand);
-#     if ($display_advert && $advert_outcome) {
-#         $out .= CrossSell::display_advert($q, $problem->{email}, $problem->{name},
-#             council => $problem->{council});
-#     }
-#     my %vars = (message => $message);
-#     my $template_page = Page::template_include('questionnaire-completed', $q, Page::template_root($q), %vars);
-#     return $template_page if ($template_page);
-#     return $out;
 }
 
 # Sent here from email token action. Simply load and display questionnaire.
@@ -238,7 +232,12 @@ sub index : Private {
     $c->forward( 'display' );
 }
 
-# Displays the questionnaire, either after bad submission or from email token
+=head2 display
+
+Displays a questionnaire, either after bad submission or directly from email token.
+
+=cut
+
 sub display : Private {
     my ( $self, $c ) = @_;
 
@@ -250,11 +249,10 @@ sub display : Private {
       map { Utils::truncate_coordinate($_) }
       ( $problem->latitude, $problem->longitude );
 
-    my $updates = $c->model('DB::Comment')->search(
+    $c->stash->{updates} = $c->model('DB::Comment')->search(
         { problem_id => $problem->id, state => 'confirmed' },
         { order_by => 'confirmed' }
     );
-    $c->stash->{updates} = $updates;
 
     FixMyStreet::Map::display_map(
         $c,
@@ -266,7 +264,6 @@ sub display : Private {
             colour    => $problem->state eq 'fixed' ? 'green' : 'red',
         } ],
     );
-    $c->stash->{cobrand_form_elements} = $c->cobrand->form_elements('questionnaireForm');
 }
 
 =head2 creator_fixed
