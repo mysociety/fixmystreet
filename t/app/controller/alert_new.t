@@ -250,4 +250,83 @@ foreach my $test (
     };
 }
 
+for my $test (
+    {
+        email      => 'test@example.com',
+        type       => 'new_updates',
+        content    => 'your alert will not be activated',
+        email_text => 'confirm the alert',
+        uri    => '/alert/subscribe?type=updates&rznvy=test@example.com&id=1',
+        param1 => 1,
+    }
+  )
+{
+    subtest "cannot sign up for alert if in abuse table" => sub {
+        $mech->clear_emails_ok;
+
+        my $type = $test->{type};
+
+        my $user =
+          FixMyStreet::App->model('DB::User')
+          ->find( { email => $test->{email} } );
+
+        # we don't want an alert
+        my $alert;
+        if ($user) {
+            $mech->delete_user($user);
+        }
+
+        my $abuse =
+          FixMyStreet::App->model('DB::Abuse')
+          ->find_or_create( { email => $test->{email} } );
+
+        $mech->get_ok( $test->{uri} );
+        $mech->content_contains( $test->{content} );
+
+        $user =
+          FixMyStreet::App->model('DB::User')
+          ->find( { email => $test->{email} } );
+
+        ok $user, 'user created for alert';
+
+        $alert = FixMyStreet::App->model('DB::Alert')->find(
+            {
+                user       => $user,
+                alert_type => $type,
+                parameter  => $test->{param1},
+                parameter2 => $test->{param2},
+                confirmed  => 0,
+            }
+        );
+
+        ok $alert, "Found the alert";
+
+        my $email = $mech->get_email;
+        ok $email, "got an email";
+        like $email->body, qr/$test->{email_text}/i, "Correct email text";
+
+        my ( $url, $url_token ) = $email->body =~ m{(http://\S+/A/)(\S+)};
+        ok $url, "extracted confirm url '$url'";
+
+        my $token = FixMyStreet::App->model('DB::Token')->find(
+            {
+                token => $url_token,
+                scope => 'alert'
+            }
+        );
+        ok $token, 'Token found in database';
+        ok $alert->id == $token->data->{id}, 'token alertid matches alert id';
+
+        $mech->clear_emails_ok;
+
+        $mech->get_ok("/A/$url_token");
+        $mech->content_contains('error confirming');
+
+        $alert->discard_changes;
+
+        ok !$alert->confirmed, 'alert not set to confirmed';
+
+        $abuse->delete;
+    };
+}
 done_testing();

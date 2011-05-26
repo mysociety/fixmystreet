@@ -104,6 +104,11 @@ __PACKAGE__->has_many(
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:U3aYCRwE4etekKaHdhEkIw
 
 use DateTime::TimeZone;
+use Moose;
+use namespace::clean -except => [ 'meta' ];
+
+with 'FixMyStreet::Roles::Abuser';
+
 my $tz = DateTime::TimeZone->new( name => "local" );
 
 sub confirmed_local {
@@ -176,30 +181,6 @@ sub check_for_errors {
     }
 
     return \%errors;
-}
-
-=head2 is_from_abuser
-
-    $bool = $problem->is_from_abuser(  );
-
-Returns true if the user's email or its domain is listed in the 'abuse' table.
-
-=cut
-
-sub is_from_abuser {
-    my $self = shift;
-
-    # get the domain
-    my $email = $self->user->email;
-    my ($domain) = $email =~ m{ @ (.*) \z }x;
-
-    # search for an entry in the abuse table
-    my $abuse_rs = $self->result_source->schema->resultset('Abuse');
-
-    return
-         $abuse_rs->find( { email => $email } )
-      || $abuse_rs->find( { email => $domain } )
-      || undef;
 }
 
 =head2 confirm
@@ -365,5 +346,8 @@ sub duration_string {
         Page::prettify_duration($problem->whensent_local->epoch - $problem->confirmed_local->epoch, 'minute')
     );
 }
+
+# we need the inline_constructor bit as we don't inherit from Moose
+__PACKAGE__->meta->make_immutable( inline_constructor => 0 );
 
 1;

@@ -57,32 +57,10 @@ __PACKAGE__->belongs_to(
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 
-# FIXME: this is more or less duplicated from problem. need to stick somewhere common
+use Moose;
+use namespace::clean -except => [ 'meta' ];
 
-
-=head2 is_from_abuser
-
-    $bool = $alert->is_from_abuser(  );
-
-Returns true if the user's email or its domain is listed in the 'abuse' table.
-
-=cut
-
-sub is_from_abuser {
-    my $self = shift;
-
-    # get the domain
-    my $email = $self->user->email;
-    my ($domain) = $email =~ m{ @ (.*) \z }x;
-
-    # search for an entry in the abuse table
-    my $abuse_rs = $self->result_source->schema->resultset('Abuse');
-
-    return
-         $abuse_rs->find( { email => $email } )
-      || $abuse_rs->find( { email => $domain } )
-      || undef;
-}
+with 'FixMyStreet::Roles::Abuser';
 
 =head2 confirm
 
@@ -102,5 +80,8 @@ sub confirm {
 
     return 1;
 }
+
+# need the inline_constuctor bit as we don't inherit from Moose
+__PACKAGE__->meta->make_immutable( inline_constructor => 0 );
 
 1;
