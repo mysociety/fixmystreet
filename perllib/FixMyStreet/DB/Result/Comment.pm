@@ -79,7 +79,13 @@ sub created_local {
 }
 
 sub confirmed_local {
-    return shift->confirmed->set_time_zone($tz);
+    my $self = shift;
+
+    # if confirmed is null then it doesn't get inflated so don't
+    # try and set the timezone
+    return $self->confirmed->set_time_zone($tz) if $self->confirmed;
+
+    return 0;
 }
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
