@@ -142,7 +142,7 @@ sub subscribe_email : Private {
     $c->forward('create_alert');
     if ( $c->stash->{alert}->confirmed ) {
         $c->stash->{confirm_type} = 'created';
-        $c->stash->{template} = 'alert/confirm.html';
+        $c->stash->{template} = 'tokens/confirm_alert.html';
     } else {
         $c->forward('send_confirmation_email');
     }
@@ -166,7 +166,6 @@ sub confirm : Private {
     my ( $self, $c ) = @_;
 
     my $alert = $c->stash->{alert};
-    $c->stash->{template} = 'alert/confirm.html';
 
     if ( $c->stash->{confirm_type} eq 'subscribe' ) {
         $alert->confirm();
