@@ -109,8 +109,6 @@ sub format_problem_for_display : Private {
 
     $c->stash->{banner} = $c->cobrand->generate_problem_banner($problem);
 
-    $c->stash->{allow_photo_upload} = $c->cobrand->allow_photo_display; # FIXME?
-
     $c->stash->{cobrand_alert_fields} = $c->cobrand->form_elements('/alerts');
     $c->stash->{cobrand_update_fields} =
       $c->cobrand->form_elements('/updateForm');
