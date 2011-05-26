@@ -181,7 +181,7 @@ foreach my $test (
                 alert_type => $type,
                 parameter  => $test->{param1},
                 parameter2 => $test->{param2},
-                confirmed  => 0,
+                confirmed  => 1,
             }
         );
 
@@ -208,6 +208,8 @@ foreach my $test (
           ->find_or_create( { email => $test->{email} } );
 
         $mech->log_in_ok( $test->{email} );
+
+        $mech->clear_emails_ok;
 
         my $alert;
         if ($user) {
@@ -237,11 +239,14 @@ foreach my $test (
                 alert_type => $type,
                 parameter  => $test->{param1},
                 parameter2 => $test->{param2},
-                confirmed  => 0,
+                confirmed  => 1,
             }
         );
 
         ok $alert, 'New alert created with existing user';
+
+        $mech->email_count_is(0);
+
     };
 }
 

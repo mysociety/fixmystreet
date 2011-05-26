@@ -140,7 +140,12 @@ sub subscribe_email : Private {
     }
 
     $c->forward('create_alert');
-    $c->forward('send_confirmation_email');
+    if ( $c->stash->{alert}->confirmed ) {
+        $c->stash->{confirm_type} = 'created';
+        $c->stash->{template} = 'alert/confirm.html';
+    } else {
+        $c->forward('send_confirmation_email');
+    }
 }
 
 sub updates : Path('updates') : Args(0) {
@@ -190,14 +195,13 @@ sub create_alert : Private {
     unless ($alert) {
         $options->{cobrand}      = $c->cobrand->moniker();
         $options->{cobrand_data} = $c->cobrand->extra_update_data();
+        $options->{confirmed} = 1 if $c->stash->{alert_user}->in_storage;
 
         $alert = $c->model('DB::Alert')->new($options);
         $alert->insert();
     }
 
     $c->stash->{alert} = $alert;
-
-    $c->log->debug( 'created alert ' . $alert->id );
 }
 
 =head2 set_update_alert_options

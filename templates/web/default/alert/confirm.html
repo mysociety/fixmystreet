@@ -7,6 +7,8 @@
   [% loc('You have successfully confirmed your alert.') %]
 [% ELSIF confirm_type == 'unsubscribe' %]
   [% loc('You have successfully deleted your alert.') %]
+[% ELSIF confirm_type == 'created' %]
+  [% loc('You have successfully created your alert.') %]
 [% END %]
 </p>
 
