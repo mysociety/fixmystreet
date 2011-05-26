@@ -137,6 +137,21 @@ sub base_url_for_emails {
     return $self->base_url;
 }
 
+=head2 base_url_with_lang 
+
+=cut
+
+sub base_url_with_lang {
+    my $self = shift;
+    my $email = shift;
+
+    if ($email) {
+        return $self->base_url_for_emails;
+    } else {
+        return $self->base_url;
+    }
+}
+
 =head2 admin_base_url
 
 Base URL for the admin interface.

@@ -30,6 +30,26 @@ sub area_types {
     return qw(DIS LBO MTD UTA LGD COI);    # No CTY
 }
 
+
+sub base_url_with_lang {
+    my $self = shift;
+    my $email = shift;
+
+    my $base = $self->base_url;
+
+    if ($email) {
+        $base = $self->base_url_for_emails;
+    }
+
+    my $lang = $mySociety::Locale::lang;
+    if ($lang eq 'cy') {
+        $base =~ s{http://}{$&cy.};
+    } else {
+        $base =~ s{http://}{$&en.};
+    }
+    return $base;
+}
+
 =item set_lang_and_domain LANG UNICODE
 
 Set the language and text domain for the site based on the query and host. 

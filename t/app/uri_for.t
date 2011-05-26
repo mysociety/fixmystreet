@@ -39,6 +39,20 @@ my $fgm_c = FixMyStreet::App->new(
     }
 );
 
+my $reh_en_c = FixMyStreet::App->new(
+    {
+        request => Catalyst::Request->new(
+            {
+                base => URI->new('http://reportemptyhomes.com/'),
+                uri  => URI->new('http://reportemptyhomes.com/test_namespace')
+            }
+        ),
+        namespace => 'test_namespace',
+    }
+);
+$reh_en_c->setup_request();
+
+
 is(
     $fms_c->uri_for('/bar/baz') . "",
     'http://www.fixmystreet.com/bar/baz',
@@ -62,6 +76,33 @@ is(
     $fgm_c->uri_for( '/foo', { lat => 1.23, } ) . "",
     'http://www.fiksgatami.no/foo?lat=1.23&zoom=3',
     'FiksGataMi url with lat not zoom'
+);
+
+like(
+    $reh_en_c->uri_for_email( '/foo' ),
+    qr{^http://en.},
+    'adds en to retain language'
+);
+
+# instantiate this here otherwise sets locale to cy and breaks test
+# above
+my $reh_cy_c = FixMyStreet::App->new(
+    {
+        request => Catalyst::Request->new(
+            {
+                base => URI->new('http://cy.reportemptyhomes.com/'),
+                uri  => URI->new('http://cy.reportemptyhomes.com/test_namespace')
+            }
+        ),
+        namespace => 'test_namespace',
+    }
+);
+$reh_cy_c->setup_request();
+
+like(
+    $reh_cy_c->uri_for_email( '/foo' ),
+    qr{^http://cy.},
+    'retains language'
 );
 
 ## Should really test the cities but we'd need to fake up too much of the
