@@ -132,10 +132,6 @@ sub subscribe_email : Private {
     if ( $type eq 'updates' ) {
         $c->forward('set_update_alert_options');
     }
-    elsif ( $type eq 'problems' ) {
-
-#        $alert_id = FixMyStreet::Alert::create($email, 'new_problems', $cobrand, $cobrand_data);
-    }
     elsif ( $type eq 'local' ) {
         $c->forward('set_local_alert_options');
     }

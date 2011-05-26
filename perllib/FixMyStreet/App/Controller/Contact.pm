@@ -76,14 +76,11 @@ sub determine_contact_type : Private {
         );
 
         if ($update_id) {
+            my $update = $c->model('DB::Comment')->find(
+                { id => $update_id }
+            );
 
-            # FIXME: updates not implemented yet
-
-#             my $u = dbh()->selectrow_hashref(
-#            'select comment.text, comment.name, problem.title, extract(epoch from comment.confirmed) as confirmed
-#            from comment, problem where comment.id=?
-#            and comment.problem_id = problem.id
-#            and comment.problem_id=?', {}, $update_id ,$id);
+            $c->stash->{update} = $update;
         }
         elsif ($problem) {
             $c->stash->{problem} = $problem;
