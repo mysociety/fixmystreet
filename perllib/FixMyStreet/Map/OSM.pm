@@ -166,7 +166,7 @@ sub click_to_wgs84 {
     my ($self, $c, $pin_tile_x, $pin_x, $pin_tile_y, $pin_y) = @_;
     my $tile_x = click_to_tile($pin_tile_x, $pin_x);
     my $tile_y = click_to_tile($pin_tile_y, $pin_y);
-    my $zoom = MIN_ZOOM_LEVEL + (defined $c->req->params->{zoom} ? $c->req->params->{zoom} : 2);
+    my $zoom = MIN_ZOOM_LEVEL + (defined $c->req->params->{zoom} ? $c->req->params->{zoom} : 3);
     my ($lat, $lon) = tile_to_latlon($tile_x, $tile_y, $zoom);
     return ( $lat, $lon );
 }

@@ -24,7 +24,7 @@ YAHOO.util.Event.onContentReady('map', function() {
             new OpenLayers.Projection("EPSG:4326"),
             fixmystreet.map.getProjectionObject()
         );
-        fixmystreet.map.setCenter(centre, fixmystreet.zoom || 2);
+        fixmystreet.map.setCenter(centre, fixmystreet.zoom || 3);
     }
 
     if (document.getElementById('mapForm')) {

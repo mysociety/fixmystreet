@@ -3,6 +3,10 @@ use warnings;
 
 use Test::More;
 
+# FIXME Should this be here? A better way? uri_for varies by map.
+use Test::WWW::Mechanize::Catalyst 'FixMyStreet::App';
+FixMyStreet::Map::set_map_class();
+
 # structure of these tests borrowed from '/t/aggregate/unit_core_uri_for.t'
 
 use strict;
@@ -56,7 +60,7 @@ is(
 # fiksgatami
 is(
     $fgm_c->uri_for( '/foo', { lat => 1.23, } ) . "",
-    'http://www.fiksgatami.no/foo?lat=1.23&zoom=2',
+    'http://www.fiksgatami.no/foo?lat=1.23&zoom=3',
     'FiksGataMi url with lat not zoom'
 );
 

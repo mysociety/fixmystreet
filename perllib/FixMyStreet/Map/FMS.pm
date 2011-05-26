@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 #
-# FixMyStreet:Map::BingOL
-# Bing maps on FixMyStreet, using OpenLayers.
+# FixMyStreet:Map::FMS
+# Bing and OS StreetView maps on FixMyStreet, using OpenLayers.
 #
 # Copyright (c) 2011 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 
-package FixMyStreet::Map::BingOL;
+package FixMyStreet::Map::FMS;
 use base 'FixMyStreet::Map::OSM';
 
 use strict;

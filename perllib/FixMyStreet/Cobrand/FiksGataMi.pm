@@ -41,7 +41,7 @@ sub uri {
     my ( $self, $uri ) = @_;
 
     $uri = URI->new( $uri );
-    $uri->query_param( zoom => 2 )
+    $uri->query_param( zoom => 3 )
       if $uri->query_param('lat') && !$uri->query_param('zoom');
 
     return $uri;
