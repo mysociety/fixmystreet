@@ -1,8 +1,10 @@
-[% INCLUDE 'header.html', title = loc('Questionnaire') %]
+[%
+    pre_map = INCLUDE 'report/_main.html';
+    PROCESS "maps/${map.type}.html";
+    INCLUDE 'header.html', title = loc('Questionnaire')
+%]
 
-[% pre_map = INCLUDE 'report/_main.html' %]
-
-[% INCLUDE "maps/${map.type}.html" %]
+[% map_html %]
 
 [% INCLUDE 'report/updates.html' %]
 

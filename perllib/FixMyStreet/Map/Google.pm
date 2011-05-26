@@ -11,13 +11,6 @@ package FixMyStreet::Map::Google;
 use strict;
 use mySociety::Web qw(ent);
 
-sub header_js {
-    return '
-<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
-<script type="text/javascript" src="/js/map-google.js"></script>
-';
-}
-
 # display_map C PARAMS
 # PARAMS include:
 # latitude, longitude for the centre point of the map

@@ -1,3 +1,9 @@
+[% map_js = BLOCK %]
+<script type="text/javascript" src="/js/map-tilma.js"></script>
+[% END %]
+
+[% map_html = BLOCK %]
+
 [% IF !map.tiles %]
     <div id="map_box">
         <div id="map"><div id="drag">
@@ -39,6 +45,7 @@ var fixmystreet = {
         [% INCLUDE compass %]
     </div>
     <p id="copyright">[% map.copyright %]</p>
+[% END %]
 
 
 [% BLOCK pin %]

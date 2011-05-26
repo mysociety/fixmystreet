@@ -1,4 +1,6 @@
 [% 
+    PROCESS "maps/${map.type}.html";
+
     problem_title = problem.title | html;
     INCLUDE 'header.html'
         title = problem_title
@@ -6,7 +8,7 @@
         robots = 'index, nofollow'
 %]
 
-[% INCLUDE "maps/${map.type}.html" %]
+[% map_html %]
 
 [% IF c.config.COUNTRY == 'GB' %]
 <p id='sub_map_links'>

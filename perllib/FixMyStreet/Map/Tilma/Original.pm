@@ -27,12 +27,6 @@ sub _ll_to_en {
     return Utils::convert_latlon_to_en( $lat, $lon );
 }
 
-sub header_js {
-    return '
-<script type="text/javascript" src="/js/map-tilma.js"></script>
-';
-}
-
 # display_map C PARAMS
 # PARAMS include:
 # latitude, longitude for the centre point of the map

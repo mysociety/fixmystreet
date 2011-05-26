@@ -11,16 +11,12 @@ use base 'FixMyStreet::Map::OSM';
 
 use strict;
 
-sub header_js {
-    return '
-<script type="text/javascript" src="/jslib/OpenLayers-2.10/OpenLayers.js"></script>
-<script type="text/javascript" src="/js/map-OpenLayers.js"></script>
-<script type="text/javascript" src="/js/map-streetview.js"></script>
-';
-}
-
 sub map_type {
     return '""';
+}
+
+sub map_template {
+    return 'osm-streetview';
 }
 
 sub base_tile_url {

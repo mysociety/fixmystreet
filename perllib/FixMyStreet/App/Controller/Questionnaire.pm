@@ -266,7 +266,6 @@ sub display : Private {
             colour    => $problem->state eq 'fixed' ? 'green' : 'red',
         } ],
     );
-    $c->stash->{map_js}                = FixMyStreet::Map::header_js();
     $c->stash->{cobrand_form_elements} = $c->cobrand->form_elements('questionnaireForm');
 }
 
