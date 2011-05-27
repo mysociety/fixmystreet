@@ -194,7 +194,10 @@ sub create_alert : Private {
     unless ($alert) {
         $options->{cobrand}      = $c->cobrand->moniker();
         $options->{cobrand_data} = $c->cobrand->extra_update_data();
-        $options->{confirmed} = 1 if $c->stash->{alert_user}->in_storage;
+
+        if ( $c->user && $c->user->id == $c->stash->{alert_user}->id ) {
+            $options->{confirmed} = 1;
+        }
 
         $alert = $c->model('DB::Alert')->new($options);
         $alert->insert();
@@ -221,7 +224,6 @@ sub set_update_alert_options : Private {
     };
 
     $c->stash->{alert_options} = $options;
-    $c->forward('create_alert');
 }
 
 =head2 set_local_alert_options
@@ -254,7 +256,6 @@ sub set_local_alert_options : Private {
         $type = 'local_problems';
         push @params, $1, $2;
     }
-
 
     my $options = {
         user       => $c->stash->{alert_user},
