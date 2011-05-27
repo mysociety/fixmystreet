@@ -58,9 +58,14 @@ sub subscribe : Path('subscribe') : Args(0) {
     if ( $c->req->param('rss') ) {
         $c->detach('rss');
     }
-    elsif ( $c->req->param('rznvy') ) {
+    # if it exists then it's been submitted so we should
+    # go to subscribe email and let it work out the next step
+    elsif ( exists $c->req->params->{'rznvy'} ) {
         $c->detach('subscribe_email');
     }
+
+    # shouldn't get to here but if we have then do something sensible
+    $c->go('index');
 }
 
 =head2 rss
