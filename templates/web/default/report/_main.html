@@ -11,11 +11,7 @@
 
 </em></p>
 
-[% FOREACH line IN split_into_lines( problem.detail ) %]
-<p>
-[% line | html %]
-</p>
-[% END %]
+[% add_links( problem.detail ) | html_para %]
 
 [% INCLUDE 'report/photo.html' object=problem center=1 %]
 

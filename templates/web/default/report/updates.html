@@ -16,11 +16,7 @@
     </div>
     [%# update reporting %]
     <div class="update-text">
-        [% FOREACH line IN split_into_lines( update.text ) %]
-        <p>
-            [% line | html %]
-        </p>
-        [% END %]
+        [% add_links( update.text ) | html_para %]
 
         [% INCLUDE 'report/photo.html' object=update %]
     </div>
