@@ -46,9 +46,7 @@ sub load_questionnaire : Private {
     }
 
     unless ( $questionnaire->problem->state eq 'confirmed' || $questionnaire->problem->state eq 'fixed' ) {
-        $c->stash->{message} = _("I'm afraid we couldn't locate your problem in the database.\n");
-        $c->stash->{template} = 'questionnaire/error.html';
-        $c->detach;
+        $c->detach('missing_problem');
     }
 
     $c->stash->{problem} = $questionnaire->problem;
@@ -76,12 +74,40 @@ sub submit : Path('submit') {
     return 1;
 }
 
+=head2 missing_problem
+
+Display couldn't locate problem error message
+
+=cut
+
+sub missing_problem : Private {
+    my ( $self, $c ) = @_;
+
+    $c->stash->{message} = _("I'm afraid we couldn't locate your problem in the database.\n");
+    $c->stash->{template} = 'questionnaire/error.html';
+}
+
 sub submit_creator_fixed : Private {
     my ( $self, $c ) = @_;
 
     my @errors;
 
     map { $c->stash->{$_} = $c->req->params->{$_} || '' } qw(reported problem);
+
+    # should only be able to get to here if we are logged and we have a
+    # problem
+    unless ( $c->user && $c->stash->{problem} ) {
+        $c->detach('missing_problem');
+    }
+
+    my $problem = $c->model('DB::Problem')->find( { id =>
+            $c->stash->{problem} } );
+
+    # you should not be able to answer questionnaires about problems
+    # that you've not submitted
+    if ( $c->user->id != $problem->user->id ) {
+        $c->detach('missing_problem');
+    }
 
     push @errors, _('Please say whether you\'ve ever reported a problem to your council before') unless $c->stash->{reported};
 

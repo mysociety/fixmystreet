@@ -149,9 +149,9 @@ sub confirm_update : Path('/C') {
         return;
     }
 
-    $c->forward('/report/update/confirm');
-
     $c->authenticate( { email => $comment->user->email }, 'no_password' );
+
+    $c->forward('/report/update/confirm');
 
     return 1;
 }

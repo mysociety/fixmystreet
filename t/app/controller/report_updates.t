@@ -271,6 +271,7 @@ for my $test (
 }
 
 subtest "submit an update for a non registered user" => sub {
+    $mech->log_out_ok();
     $mech->clear_emails_ok();
 
     $mech->get_ok("/report/$report_id");
@@ -473,6 +474,8 @@ for my $test (
     },
 ) {
     subtest $test->{desc} => sub {
+        $mech->log_out_ok();
+
         # clear out comments for this problem to make
         # checking details easier later
         ok( $_->delete, 'deleted comment ' . $_->id )
@@ -579,65 +582,12 @@ foreach my $test (
         path    => '/report/' . $report->id,
         content => $report->title,
     },
-    {
-        desc           => 'reporter submits update and marks problem fixed',
-        initial_values => {
-            name          => 'Test User',
-            rznvy         => 'test@example.com',
-            may_show_name => 1,
-            add_alert     => 1,
-            photo         => '',
-            update        => '',
-            fixed         => undef,
-        },
-        fields => {
-            submit_update => 1,
-            rznvy         => 'test@example.com',
-            update        => 'update from owner',
-            add_alert     => undef,
-            fixed         => 1,
-        },
-        changed        => { update => 'Update from owner' },
-        initial_banner => '',
-        alert     => 1,    # we signed up for alerts before, do not unsign us
-        anonymous => 0,
-        answered  => 0,
-        login     => 0,
-        path => '/report/update',
-        content =>
-"Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?",
-    },
-    {
-        desc =>
-'reporter submits update and marks problem fixed and has answered questionnaire',
-        initial_values => {
-            name          => 'Test User',
-            rznvy         => 'test@example.com',
-            may_show_name => 1,
-            add_alert     => 1,
-            photo         => '',
-            update        => '',
-            fixed         => undef,
-        },
-        fields => {
-            submit_update => 1,
-            rznvy         => 'test@example.com',
-            update        => 'update from owner',
-            add_alert     => undef,
-            fixed         => 1,
-        },
-        changed        => { update => 'Update from owner' },
-        initial_banner => '',
-        alert     => 1,    # we signed up for alerts before, do not unsign us
-        anonymous => 0,
-        answered  => 1,
-        login     => 0,
-        path    => '/report/' . $report->id,
-        content => $report->title,
-    },
   )
 {
     subtest $test->{desc} => sub {
+
+        # double check
+        $mech->log_out_ok();
 
         # clear out comments for this problem to make
         # checking details easier later
@@ -665,10 +615,7 @@ foreach my $test (
 
         $mech->clear_emails_ok();
 
-        SKIP: {
-            skip 'not logging user in', 1 unless $test->{login};
-            $mech->log_in_ok( $test->{fields}->{rznvy} );
-        };
+        $mech->log_in_ok( $test->{fields}->{rznvy} );
         $mech->get_ok("/report/$report_id");
 
         my $values = $mech->visible_form_values('updateForm');
@@ -723,6 +670,170 @@ foreach my $test (
         }
     };
 }
+
+
+for my $test (
+    {
+        desc           => 'reporter submits update and marks problem fixed',
+        fields => {
+            submit_update => 1,
+            name          => 'Test User',
+            rznvy         => 'test@example.com',
+            may_show_name => 1,
+            update        => 'update from owner',
+            add_alert     => undef,
+            fixed         => 1,
+        },
+        changed        => { update => 'Update from owner' },
+        initial_banner => '',
+        alert     => 1,    # we signed up for alerts before, do not unsign us
+        anonymous => 0,
+        answered  => 0,
+        path => '/report/update',
+        content =>
+"Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?",
+    },
+    {
+        desc =>
+'reporter submits update and marks problem fixed and has answered questionnaire',
+        fields => {
+            submit_update => 1,
+            name          => 'Test User',
+            may_show_name => 1,
+            rznvy         => 'test@example.com',
+            update        => 'update from owner',
+            add_alert     => undef,
+            fixed         => 1,
+        },
+        changed        => { update => 'Update from owner' },
+        initial_banner => '',
+        alert     => 1,    # we signed up for alerts before, do not unsign us
+        anonymous => 0,
+        answered  => 1,
+        path    => '/report/update',
+        content => "You have successfully confirmed your update",
+    },
+  )
+{
+    subtest $test->{desc} => sub {
+
+        # double check
+        $mech->log_out_ok();
+
+        # clear out comments for this problem to make
+        # checking details easier later
+        ok( $_->delete, 'deleted comment ' . $_->id ) for $report->comments;
+
+        $report->discard_changes;
+        $report->state('confirmed');
+        $report->update;
+
+        my $questionnaire;
+        if ( $test->{answered} ) {
+            $questionnaire =
+              FixMyStreet::App->model('DB::Questionnaire')->create(
+                {
+                    problem_id    => $report_id,
+                    ever_reported => 'y',
+                    whensent      => \'ms_current_timestamp()',
+                }
+              );
+
+            ok $questionnaire, 'added questionnaire';
+        }
+
+        $report->discard_changes;
+
+        $mech->clear_emails_ok();
+
+        $mech->get_ok("/report/$report_id");
+
+        my $values = $mech->visible_form_values('updateForm');
+
+        is $mech->extract_problem_banner->{text}, $test->{initial_banner},
+          'initial banner';
+
+        $mech->submit_form_ok( { with_fields => $test->{fields}, },
+            'submit update' );
+
+        is $mech->uri->path, $test->{path}, "page after submission";
+
+        $mech->content_contains( 'Now check your email' );
+
+        $mech->email_count_is(1);
+
+        my $results = { %{ $test->{fields} }, %{ $test->{changed} }, };
+
+        my $update = $report->comments->first;
+        ok $update, 'found update';
+        is $update->text, $results->{update}, 'update text';
+        is $update->user->email, $test->{fields}->{rznvy}, 'update user';
+        is $update->state, 'unconfirmed', 'update confirmed';
+        is $update->anonymous, $test->{anonymous}, 'user anonymous';
+
+        my $email = $mech->get_email;
+        ok $email, "got an email";
+        like $email->body, qr/confirm the update you/i, "Correct email text";
+
+        my ( $url, $url_token ) = $email->body =~ m{(http://\S+/C/)(\S+)};
+        ok $url, "extracted confirm url '$url'";
+
+        my $token = FixMyStreet::App->model('DB::Token')->find(
+            {
+                token => $url_token,
+                scope => 'comment'
+            }
+        );
+        ok $token, 'Token found in database';
+
+        $mech->get_ok( '/C/' . $url_token );
+
+        $mech->content_contains( $test->{content} );
+
+        SKIP: {
+            skip( 'not answering questionnaire', 5 ) if $questionnaire;
+
+            $mech->submit_form_ok( );
+
+            my @errors = @{ $mech->page_errors };
+            ok scalar @errors, 'displayed error messages';
+            is $errors[0], "Please say whether you've ever reported a problem to your council before", 'error message';
+
+            $mech->submit_form_ok( { with_fields => { reported => 'Yes' } } );
+
+            $mech->content_contains( 'Thank you &mdash; you can' );
+
+            $questionnaire = FixMyStreet::App->model( 'DB::Questionnaire' )->find(
+                { problem_id => $report_id }
+            );
+
+            ok $questionnaire, 'questionnaire exists';
+            ok $questionnaire->ever_reported, 'ever reported is yes';
+        };
+
+        if ($questionnaire) {
+            $questionnaire->delete;
+            ok !$questionnaire->in_storage, 'questionnaire deleted';
+        }
+    };
+}
+
+subtest 'check have to be logged in for creator fixed questionnaire' => sub {
+    $mech->log_out_ok();
+
+    $mech->get_ok( "/questionnaire/submit?problem=$report_id&reported=Yes" );
+
+    $mech->content_contains( "I'm afraid we couldn't locate your problem in the database." )
+};
+
+subtest 'check cannot answer other user\'s creator fixed questionnaire' => sub {
+    $mech->log_out_ok();
+    $mech->log_in_ok( $user2->email );
+
+    $mech->get_ok( "/questionnaire/submit?problem=$report_id&reported=Yes" );
+
+    $mech->content_contains( "I'm afraid we couldn't locate your problem in the database." )
+};
 
 ok $comment->delete, 'deleted comment';
 $mech->delete_user('commenter@example.com');
