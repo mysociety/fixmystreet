@@ -69,6 +69,7 @@ sub allowed_pages($) {
              'councilslist' => [_('Council contacts'), 1],
              'reports' => [_('Search Reports'), 2],
              'timeline' => [_('Timeline'), 3],
+             'questionnaire' => [_('Survey Results'), 4],
              'councilcontacts' => [undef, undef],        
              'counciledit' => [undef, undef], 
              'report_edit' => [undef, undef], 
@@ -147,13 +148,13 @@ sub admin_summary ($) {
     $questionnaires{0} ||= 0;
     $questionnaires{1} ||= 0;
     $questionnaires{total} = $questionnaires{0} + $questionnaires{1};
-    my $questionnaires_pc = $questionnaires{total} ? $questionnaires{1} / $questionnaires{total} * 100 : 'na';
+    my $questionnaires_pc = $questionnaires{total} ? sprintf('%.1f', $questionnaires{1} / $questionnaires{total} * 100) : 'na';
     
     print $q->ul(
         $q->li(sprintf(_("<strong>%d</strong> live problems"), $total_problems_live)),
         $q->li(sprintf(_("%d live updates"), $comments{confirmed})),
         $q->li(sprintf(_("%d confirmed alerts, %d unconfirmed"), $alerts{1}, $alerts{0})),
-        $q->li(sprintf(_("%d questionnaires sent &ndash; %d answered (%d%%)"), $questionnaires{total}, $questionnaires{1}, $questionnaires_pc)),
+        $q->li(sprintf(_("%d questionnaires sent &ndash; %d answered (%s%%)"), $questionnaires{total}, $questionnaires{1}, $questionnaires_pc)),
         $q->li(sprintf(_("%d council contacts &ndash; %d confirmed, %d unconfirmed"), $contacts{total}, $contacts{1}, $contacts{0})),
     );
 
@@ -827,10 +828,11 @@ sub admin_timeline {
         print '<dt><b>', decode_utf8(strftime('%H:%M:%S', localtime($_))), ':</b></dt> <dd>';
         foreach (@{$time{$_}}) {
             my $type = $_->{type};
-            my $name_str = '; ' . sprintf(_("by %s"), ent($_->{name})) . " &lt;" . ent($_->{email}) . "&gt;, '" . ent($_->{title}) . "'";
             if ($type eq 'problemCreated') {
+                my $name_str = '; ' . sprintf(_("by %s"), ent($_->{name})) . " &lt;" . ent($_->{email}) . "&gt;, '" . ent($_->{title}) . "'";
                 print sprintf(_("Problem %d created"), $_->{id}) . $name_str;
             } elsif ($type eq 'problemConfirmed') {
+                my $name_str = '; ' . sprintf(_("by %s"), ent($_->{name})) . " &lt;" . ent($_->{email}) . "&gt;, '" . ent($_->{title}) . "'";
                 $cobrand_data = get_cobrand_data_from_hash($cobrand, $_);
                 my $url = Cobrand::base_url_for_emails($cobrand, $cobrand_data)  . "/report/$_->{id}";
                 print sprintf(_("Problem %s confirmed"), "<a href='$url'>$_->{id}</a>") . $name_str;
@@ -861,6 +863,42 @@ sub admin_timeline {
     }
     print html_tail($q);
 
+}
+
+sub admin_questionnaire {
+    my $q = shift;
+    my $cobrand = Page::get_cobrand($q);
+    print html_head($q, _('Survey Results'));
+    print $q->h1(_('Survey Results'));
+
+    # columns in questionnaire is id, problem_id, whensent,
+    # whenanswered, ever_reported, old_state, new_state
+
+    my $survey = select_all("select ever_reported, count(*) from questionnaire where whenanswered is not null group by ever_reported");
+
+    my %res;
+    $res{0} = 0;
+    $res{1} = 0;
+    foreach my $h (@$survey) {
+        $res{$h->{ever_reported}} = $h->{count} if (exists $h->{ever_reported});
+    }
+    my $total = $res{0} + $res{1};
+
+    print $q->start_table({border=>1});
+    print $q->Tr({},
+                 $q->th({}, [_("Reported before"),
+                             _("Not reported before")]));
+    if ($total) {
+        print $q->Tr({},
+                     $q->td([
+                 sprintf("%d (%d%%)", $res{1}, (100 * $res{1}) / $total),
+                 sprintf("%d (%d%%)", $res{0}, (100 * $res{0}) / $total),
+                            ]));
+    } else {
+        print $q->Tr({}, $q->td([ 'n/a', 'n/a' ]));
+    }
+    print $q->end_table();
+    print html_tail($q);
 }
 
 sub not_found {
@@ -917,6 +955,8 @@ sub main {
         admin_edit_update($q, $id);
     } elsif ($page eq 'timeline') {
         admin_timeline($q);
+    } elsif ($page eq 'questionnaire') {
+        admin_questionnaire($q);
     } else {
         admin_summary($q);
     }
