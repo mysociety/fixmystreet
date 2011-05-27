@@ -53,6 +53,14 @@ sub load_questionnaire : Private {
 
     $c->stash->{problem} = $questionnaire->problem;
     $c->stash->{answered_ever_reported} = $questionnaire->problem->user->answered_ever_reported;
+
+    # EHA needs to know how many to alter display, and whether to send another or not
+    if ($c->cobrand->moniker eq 'emptyhomes') {
+        $c->stash->{num_questionnaire} = $c->model('DB::Questionnaire')->count(
+            { problem_id => $c->stash->{problem}->id }
+        );
+    }
+
 }
 
 =head2 submit
@@ -115,22 +123,13 @@ sub submit_standard : Private {
 
     $c->forward( '/tokens/load_questionnaire_id', [ $c->req->params->{token} ] );
     $c->forward( 'load_questionnaire' );
-
-    my $problem = $c->stash->{problem};
-
-    # EHA questionnaires done for you
-    if ($c->cobrand->moniker eq 'emptyhomes') {
-        $c->stash->{num_questionnaire} = $c->model('DB::Questionnaire')->count(
-            { problem_id => $problem->id }
-        );
-        $c->stash->{another} = $c->stash->{num_questionnaire}==1 ? 'Yes' : 'No';
-    }
-
     $c->forward( 'process_questionnaire' );
 
+    my $problem = $c->stash->{problem};
+    my $old_state = $problem->state;
     my $new_state = '';
-    $new_state = 'fixed' if $c->stash->{been_fixed} eq 'Yes' && $problem->{state} eq 'confirmed';
-    $new_state = 'confirmed' if $c->stash->{been_fixed} eq 'No' && $problem->{state} eq 'fixed';
+    $new_state = 'fixed' if $c->stash->{been_fixed} eq 'Yes' && $old_state eq 'confirmed';
+    $new_state = 'confirmed' if $c->stash->{been_fixed} eq 'No' && $old_state eq 'fixed';
 
     # Record state change, if there was one
     if ( $new_state ) {
@@ -139,7 +138,7 @@ sub submit_standard : Private {
     }
 
     # If it's not fixed and they say it's still not been fixed, record time update
-    if ( $c->stash->{been_fixed} eq 'No' && $problem->state eq 'confirmed' ) {
+    if ( $c->stash->{been_fixed} eq 'No' && $old_state eq 'confirmed' ) {
         $problem->lastupdate( \'ms_current_timestamp()' );
     }
 
@@ -151,8 +150,8 @@ sub submit_standard : Private {
     my $q = $c->stash->{questionnaire};
     $q->whenanswered( \'ms_current_timestamp()' );
     $q->ever_reported( $reported );
-    $q->old_state( $problem->state );
-    $q->new_state( $c->stash->{been_fixed} eq 'Unknown' ? 'unknown' : ($new_state ? $new_state : $problem->state) );
+    $q->old_state( $old_state );
+    $q->new_state( $c->stash->{been_fixed} eq 'Unknown' ? 'unknown' : ($new_state || $old_state) );
     $q->update;
 
     # Record an update if they've given one, or if there's a state change
@@ -163,7 +162,7 @@ sub submit_standard : Private {
                 problem      => $problem,
                 name         => $problem->name,
                 user         => $problem->user,
-                text         => $c->stash->{update},
+                text         => $update,
                 state        => 'confirmed',
                 mark_fixed   => $new_state eq 'fixed' ? 1 : 0,
                 mark_open    => $new_state eq 'confirmed' ? 1 : 0,
@@ -196,6 +195,11 @@ sub process_questionnaire : Private {
     my ( $self, $c ) = @_;
 
     map { $c->stash->{$_} = $c->req->params->{$_} || '' } qw(been_fixed reported another update);
+
+    # EHA questionnaires done for you
+    if ($c->cobrand->moniker eq 'emptyhomes') {
+        $c->stash->{another} = $c->stash->{num_questionnaire}==1 ? 'Yes' : 'No';
+    }
 
     my @errors;
     push @errors, _('Please state whether or not the problem has been fixed')
