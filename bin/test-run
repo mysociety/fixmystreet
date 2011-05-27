@@ -284,7 +284,7 @@ sub do_report {
     my $postcode = 'SW1A 0AA';
     my $messages = english_fms_messages();
     my $x_coord = 3287;
-    my $y_coord = 1112;
+    my $y_coord = 1113;
     submit_report($postcode, $x_coord, $y_coord, 530268, 179545, 1, undef, $messages, ''); 
   
     # Check that the report is now available through the AJAX interface 
@@ -296,8 +296,8 @@ sub do_update {
     set_base_url('');
     my $postcode = 'ME15 6RS';
     my $messages = english_fms_messages();
-    my $x_coord = 3287;
-    my $y_coord = 1112;
+    my $x_coord = 3570;
+    my $y_coord = 969;
     submit_report($postcode, $x_coord, $y_coord, 575794, 156256, 1, undef, $messages, '');
     $wth->browser_follow_link(text => 'view the problem on this site');
     $wth->browser_submit_form(with_fields => { name => name_n(1),
@@ -348,17 +348,17 @@ sub do_import {
 
 sub do_questionnaire {
     
-    my $council_id = 2491; 
-    my $council_name =  "Southwark Borough Council";
+    my $council_id = 2514;
+    my $council_name =  "Birmingham City Council";
 
     # set up a fake contact record for a council
     create_fake_contact($council_id);
 
     # submit a problem report
     set_fms_date('2009-11-01');
-    my $postcode = 'SE1';
+    my $postcode = 'B14';
     my $messages = english_fms_messages();
-    submit_report($postcode, 3307, 1116, 533484.251968504, 180025.4000508, 5, $council_id, $messages, '');
+    submit_report($postcode, 2529, 1738, 407903, 280322, 5, $council_id, $messages, '');
 
     # send emails (for the report)
     call_send_emails();
