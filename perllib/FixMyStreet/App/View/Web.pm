@@ -16,7 +16,7 @@ __PACKAGE__->config(
     ENCODING       => 'utf8',
     render_die     => 1,
     expose_methods => [
-        'loc', 'nget', 'tprintf', 'display_crossell_advert', 'prettify_epoch',
+        'loc', 'nget', 'tprintf', 'display_crosssell_advert', 'prettify_epoch',
         'split_into_lines',
     ],
 );
@@ -70,16 +70,16 @@ sub tprintf {
     return sprintf $format, @args;
 }
 
-=head2 display_crossell_advert
+=head2 display_crosssell_advert
 
-    [% display_crossell_advert( email, name ) %]
+    [% display_crosssell_advert( email, name ) %]
 
 Displays a crosssell advert if permitted by the cobrand.
 
 =cut
 
-sub display_crossell_advert {
-    my ( $self, $c, $email, $name ) = @_;
+sub display_crosssell_advert {
+    my ( $self, $c, $email, $name, %data ) = @_;
 
     return unless $c->cobrand->allow_crosssell_adverts();
 
@@ -87,7 +87,7 @@ sub display_crossell_advert {
     my $q = { site => $c->cobrand->moniker, };
     $q->{site} = 'fixmystreet' if $q->{site} eq 'default';
 
-    return CrossSell::display_advert( $q, $email, $name );
+    return CrossSell::display_advert( $q, $email, $name, %data );
 }
 
 =head2 Page::prettify_epoch

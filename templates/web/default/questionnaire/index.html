@@ -21,6 +21,8 @@
 
 <input type="hidden" name="token" value="[% token | html %]">
 
+[% c.cobrand.form_elements('questionnaireForm') %]
+
 [% IF c.cobrand.moniker == 'emptyhomes' %]
 [% IF num_questionnaires == 1 %]
     _(<<EOF);
@@ -90,6 +92,10 @@ your experience of getting the problem fixed?') %]</p>
 
 [% IF c.cobrand.allow_photo_upload %]
 <div id="fileupload_normalUI">
+    [% IF upload_fileid %]
+        <p>[% loc('You have already attached a photo to this report, attaching another one will replace it.') %]</p>
+        <input type="hidden" name="upload_fileid" value="[% upload_fileid %]">
+    [% END %]
     <label for="form_photo">[% loc('Photo:') %]</label>
     <input type="file" name="photo" id="form_photo">
 </div>

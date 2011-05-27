@@ -881,9 +881,6 @@ sub generate_map : Private {
       map { Utils::truncate_coordinate($_) }
       ( $c->stash->{latitude}, $c->stash->{longitude} );
 
-    # Forms that allow photos need a different enctype
-    my $allow_photo_upload = $c->cobrand->allow_photo_upload;
-
     # Don't do anything if the user skipped the map
     unless ( $c->req->param('skipped') ) {
         FixMyStreet::Map::display_map(
