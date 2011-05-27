@@ -80,7 +80,11 @@ with 'FixMyStreet::Roles::Abuser';
 my $tz = DateTime::TimeZone->new( name => "local" );
 
 sub created_local {
-    return shift->created->set_time_zone($tz);
+    my $self = shift;
+
+    return $self->created
+      ? $self->created->set_time_zone($tz)
+      : $self->created;
 }
 
 sub confirmed_local {
@@ -88,9 +92,9 @@ sub confirmed_local {
 
     # if confirmed is null then it doesn't get inflated so don't
     # try and set the timezone
-    return $self->confirmed->set_time_zone($tz) if $self->confirmed;
-
-    return 0;
+    return $self->confirmed
+      ? $self->confirmed->set_time_zone($tz)
+      : $self->confirmed;
 }
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

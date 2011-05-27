@@ -112,19 +112,35 @@ with 'FixMyStreet::Roles::Abuser';
 my $tz = DateTime::TimeZone->new( name => "local" );
 
 sub confirmed_local {
-    return shift->confirmed->set_time_zone($tz);
+    my $self = shift;
+
+    return $self->confirmed
+      ? $self->confirmed->set_time_zone($tz)
+      : $self->confirmed;
 }
 
 sub created_local {
-    return shift->created->set_time_zone($tz);
+    my $self = shift;
+
+    return $self->created
+      ? $self->created->set_time_zone($tz)
+      : $self->created;
 }
 
 sub whensent_local {
-    return shift->whensent->set_time_zone($tz);
+    my $self = shift;
+
+    return $self->whensent
+      ? $self->whensent->set_time_zone($tz)
+      : $self->confirmed;
 }
 
 sub lastupdate_local {
-    return shift->lastupdate->set_time_zone($tz);
+    my $self = shift;
+
+    return $self->lastupdate
+      ? $self->lastupdate->set_time_zone($tz)
+      : $self->lastupdate;
 }
 
 =head2 check_for_errors
