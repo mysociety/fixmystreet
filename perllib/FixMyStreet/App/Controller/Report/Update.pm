@@ -20,6 +20,10 @@ Creates an update to a report
 sub report_update : Path : Args(0) {
     my ( $self, $c ) = @_;
 
+    # if there's no id then we should just stop now
+    $c->detach( '/page_error_404_not_found', [ _('Unknown problem ID') ] )
+      unless $c->req->param('id');
+
          $c->forward('setup_page')
       && $c->forward('process_user')
       && $c->forward('process_update')
