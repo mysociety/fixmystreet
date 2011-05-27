@@ -148,6 +148,7 @@ sub delete_user {
     $mech->log_out_ok;
     for my $p ( $user->problems ) {
         ok( $_->delete, "delete comment " . $_->text ) for $p->comments;
+        ok( $_->delete, "delete questionnaire " . $_->id ) for $p->questionnaires;
         ok( $p->delete, "delete problem " . $p->title );
     }
     ok( $_->delete, "delete comment " . $_->text )     for $user->comments;
@@ -239,7 +240,7 @@ sub page_errors {
     my $mech   = shift;
     my $result = scraper {
         process 'p.error',  'errors[]', 'TEXT';
-        process 'ul.error', 'errors[]', 'TEXT';
+        process 'ul.error li', 'errors[]', 'TEXT';
     }
     ->scrape( $mech->response );
     return $result->{errors} || [];
