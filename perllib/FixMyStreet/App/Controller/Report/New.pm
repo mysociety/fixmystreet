@@ -485,6 +485,7 @@ sub setup_categories_and_councils : Private {
     else {
 
         @contacts = keysort { $_->category } @contacts;
+        my %seen;
         foreach my $contact (@contacts) {
 
             push @area_ids_to_list, $contact->area_id;
@@ -495,7 +496,9 @@ sub setup_categories_and_councils : Private {
 
             next if $contact->category eq _('Other');
 
-            push @category_options, $contact->category;
+            push @category_options, $contact->category
+                unless $seen{$contact->category};
+            $seen{$contact->category} = 1;
         }
 
         if (@category_options) {
