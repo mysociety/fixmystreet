@@ -61,11 +61,11 @@ a:hover, a:active {
     background-color: #B1BECF;
 }
 
-blockquote {
+#mysociety blockquote {
     border-left: solid 4px #013B63;
 }
 
-.a {
+#mysociety .a {
     color: #000000;
     background-color: #DCDCED; /* #427499; */
     background-color: #B1BECF;
@@ -172,24 +172,38 @@ blockquote {
     color: #FFFFFF;
 }
 
-#postcodeForm {
+#mysociety #postcodeForm {
     background-color: #80AE7D;
     color: #000000;
     font-size: 130%;
 }
 
-#front_stats div {
+#mysociety #front_stats div {
     background-color: #80AE7D;
     color: #000000;
     /*padding: 0.5em 0; */
     width: 9em;
 }
 
-#problem_form {
+#mysociety #problem_form {
     clear: both; 
 }
 
-#alert_links_area {
+#mysociety #alert_links_area {
     margin-top: 1px;
+}
+
+#mysociety #eha_advert {
+    clear: both;
+    width: 55%;
+    margin: 0 auto;
+    padding: 0.5em;
+    text-align: center;
+    background-color: #ffeecc;
+    border: solid 1px #ff9900;
+}
+
+#mysociety #front_intro {
+    margin-bottom: 1em;
 }
 
