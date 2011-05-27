@@ -232,7 +232,7 @@ sub councils {
     my $self = shift;
     return () unless $self->council;
     (my $council = $self->council) =~ s/\|.*$//;
-    my @council = split /,/, $council;
+    my @council = split( /,/, $council );
     return @council;
 }
 
@@ -354,7 +354,7 @@ sub duration_string {
         $body = $problem->external_body;
     } else {
         (my $council = $problem->council) =~ s/\|.*//g;
-        my @councils = split /,/, $council;
+        my @councils = split( /,/, $council );
         my $areas_info = mySociety::MaPit::call('areas', \@councils);
         $body = join(' and ', map { $areas_info->{$_}->{name} } @councils);
     }
