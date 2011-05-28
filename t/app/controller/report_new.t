@@ -34,6 +34,7 @@ foreach my $test (
             may_show_name => '1',
             email         => '',
             phone         => '',
+            category      => 'Street lighting',
         },
         changes => {},
         errors  => [
@@ -54,6 +55,7 @@ foreach my $test (
             may_show_name => undef,
             email         => '',
             phone         => '',
+            category      => 'Street lighting',
         },
         changes => { may_show_name => '1' },
         errors  => [
@@ -74,6 +76,7 @@ foreach my $test (
             may_show_name => undef,
             email         => '',
             phone         => '',
+            category      => 'Street lighting',
         },
         changes => {},
         errors  => [
@@ -93,6 +96,7 @@ foreach my $test (
             may_show_name => '1',
             email         => '',
             phone         => '',
+            category      => 'Street lighting',
         },
         changes => {},
         errors  => [
@@ -112,6 +116,7 @@ foreach my $test (
             may_show_name => '1',
             email         => '',
             phone         => '',
+            category      => 'Street lighting',
         },
         changes => {
             title => 'Dog poo on walls',
@@ -131,6 +136,7 @@ foreach my $test (
             may_show_name => '1',
             email         => '',
             phone         => '',
+            category      => 'Street lighting',
         },
         changes => {},
         errors  => [
@@ -149,6 +155,7 @@ foreach my $test (
             may_show_name => '1',
             email         => '',
             phone         => '',
+            category      => 'Street lighting',
         },
         changes => {},
         errors  => [
@@ -167,6 +174,7 @@ foreach my $test (
             may_show_name => '1',
             email         => 'not an email',
             phone         => '',
+            category      => 'Street lighting',
         },
         changes => { email => 'notanemail', },
         errors  => [ 'Please enter a valid email', ],
@@ -182,6 +190,7 @@ foreach my $test (
             may_show_name => '1',
             email         => '',
             phone         => '',
+            category      => 'Street lighting',
         },
         changes => {
             title  => 'Test title',
@@ -200,6 +209,7 @@ foreach my $test (
             may_show_name => '1',
             email         => '   BOB @ExAmplE.COM   ',
             phone         => '',
+            category      => 'Street lighting',
         },
         changes => {
             name  => 'Bob Jones',
@@ -266,6 +276,7 @@ subtest "test report creation for a user who does not have an account" => sub {
                 may_show_name => '1',
                 email         => 'test-1@example.com',
                 phone         => '07903 123 456',
+                category      => 'Street lighting',
             }
         },
         "submit good details"
@@ -358,6 +369,7 @@ subtest "test report creation for a user who is logged in" => sub {
             name          => 'Test User',
             phone         => '01234 567 890',
             photo         => '',
+            category      => '-- Pick a category --',
         },
         "user's details prefilled"
     );
@@ -375,6 +387,7 @@ subtest "test report creation for a user who is logged in" => sub {
                         name          => 'Joe Bloggs',
                         may_show_name => '1',
                         phone         => '07903 123 456',
+                        category      => 'Street lighting',
                     }
                 },
                 "submit good details"

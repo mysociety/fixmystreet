@@ -29,11 +29,9 @@
 
 <h1>[% loc('Reporting a problem') %]</h1>
 
-[%
-    IF report.used_map;
-        loc('You have located the problem at the point marked with a purple pin on the map. If this is not the correct location, simply click on the map again. ');
-    END;
-%]
+[% IF report.used_map %]
+<p>[% loc('You have located the problem at the point marked with a purple pin on the map. If this is not the correct location, simply click on the map again. ') %]</p>
+[% END %]
 
 [% IF area_ids_to_list.size == 0 %]
     [% INCLUDE 'report/new/no_councils_text.html' %]
@@ -43,12 +41,13 @@
     [% INCLUDE 'report/new/some_councils_text.html' %]
 [% END %]
 
-
+<p>
 [% IF skipped %]
     [% loc('Please fill in the form below with details of the problem, and describe the location as precisely as possible in the details box.') %]
 [% ELSE %]
     [% INCLUDE 'report/new/fill_in_details_text.html' %]
 [% END %]
+</p>
 
 [% INCLUDE 'errors.html' %]
 

@@ -448,17 +448,18 @@ Look up categories for this council or councils
 sub setup_categories_and_councils : Private {
     my ( $self, $c ) = @_;
 
-    my @all_council_ids = keys %{ $c->stash->{all_councils} };
+    my $all_councils = $c->stash->{all_councils};
+    my $first_council = ( values %$all_councils )[0];
 
     my @contacts                #
       = $c                      #
       ->model('DB::Contact')    #
       ->not_deleted             #
-      ->search( { area_id => \@all_council_ids } )    #
+      ->search( { area_id => [ keys %$all_councils ] } )    #
       ->all;
 
     # variables to populate
-    my @area_ids_to_list = ();       # Areas with categories assigned
+    my %area_ids_to_list = ();       # Areas with categories assigned
     my @category_options = ();       # categories to show
     my $category_label   = undef;    # what to call them
 
@@ -467,7 +468,7 @@ sub setup_categories_and_councils : Private {
 
         # add all areas found to the list
         foreach (@contacts) {
-            push @area_ids_to_list, $_->area_id;
+            $area_ids_to_list{ $_->area_id } = 1;
         }
 
         # set our own categories
@@ -481,14 +482,23 @@ sub setup_categories_and_councils : Private {
             _('Empty public building - school, hospital, etc.')
         );
         $category_label = _('Property type:');
-    }
-    else {
 
-        @contacts = keysort { $_->category } @contacts;
+    } elsif ($first_council->{type} eq 'LBO') {
+
+        $area_ids_to_list{ $first_council->{id} } = 1;
+        @category_options = (
+            _('-- Pick a category --'),
+            sort keys %{ Utils::london_categories() }
+        );
+        $category_label = _('Category:');
+
+    } else {
+
+        @contacts = keysort { $_->category } @contacts; # TODO Old code used strcoll, check if this no longer needed
         my %seen;
         foreach my $contact (@contacts) {
 
-            push @area_ids_to_list, $contact->area_id;
+            $area_ids_to_list{ $contact->area_id } = 1;
 
             next    # TODO - move this to the cobrand
               if $c->cobrand->moniker eq 'southampton'
@@ -509,24 +519,20 @@ sub setup_categories_and_councils : Private {
     }
 
     # put results onto stash for display
-    $c->stash->{area_ids_to_list} = \@area_ids_to_list;
+    $c->stash->{area_ids_to_list} = [ keys %area_ids_to_list ];
     $c->stash->{category_label}   = $category_label;
     $c->stash->{category_options} = \@category_options;
 
-    # add some conveniant things to the stash
-    my $all_councils = $c->stash->{all_councils};
-    my %area_ids_to_list_hash = map { $_ => 1 } @area_ids_to_list;
-
     my @missing_details_councils =
-      grep { !$area_ids_to_list_hash{$_} }    #
+      grep { !$area_ids_to_list{$_} }    #
       keys %$all_councils;
 
     my @missing_details_council_names =
       map { $all_councils->{$_}->{name} }     #
       @missing_details_councils;
 
-    $c->stash->{missing_details_councils}      = @missing_details_councils;
-    $c->stash->{missing_details_council_names} = @missing_details_council_names;
+    $c->stash->{missing_details_councils}      = \@missing_details_councils;
+    $c->stash->{missing_details_council_names} = \@missing_details_council_names;
 }
 
 =head2 check_form_submitted
@@ -607,7 +613,7 @@ sub process_report : Private {
     $report->latitude( $c->stash->{latitude} );
     $report->longitude( $c->stash->{longitude} );
 
-    # Capture whether the may was used
+    # Capture whether the map was used
     $report->used_map( $params{skipped} ? 0 : 1 );
 
     # Short circuit unless the form has been submitted
@@ -625,64 +631,73 @@ sub process_report : Private {
     $report->name( Utils::trim_text( $params{name} ) );
     $report->category( _ $params{category} );
 
+    # FIXME: This is more inefficient than old FixMyStreet code,
+    # with 2 MaPit point calls per submission now rather than just one.
     my $mapit_query =
       sprintf( "4326/%s,%s", $report->longitude, $report->latitude );
     my $areas = mySociety::MaPit::call( 'point', $mapit_query );
     $report->areas( ',' . join( ',', sort keys %$areas ) . ',' );
 
-    # determine the area_types that this cobrand is interested in
-    my @area_types = $c->cobrand->area_types();
-    my %area_types_lookup = map { $_ => 1 } @area_types;
+    # From earlier in the process.
+    my $councils = $c->stash->{all_councils};
+    my $first_council = ( values %$councils )[0];
 
-    # get all the councils that are of these types and cover this area
-    my %councils =
-      map { $_ => 1 }    #
-      grep { $area_types_lookup{ $areas->{$_}->{type} } }    #
-      keys %$areas;
-
-    # partition the councils onto these two arrays
-    my @councils_with_category    = ();
-    my @councils_without_category = ();
-
-    # all councils have all categories for emptyhomes
     if ( $c->cobrand->moniker eq 'emptyhomes' ) {
-        @councils_with_category = keys %councils;
-    }
-    else {
 
+        # all councils have all categories for emptyhomes
+        $report->council( join( ',', keys %$councils) );
+
+    } elsif ( $first_council->{type} eq 'LBO') {
+
+        unless ( Utils::london_categories()->{ $report->category } ) {
+            # TODO Perfect world, this wouldn't short-circuit, other errors would
+            # be included as well.
+            $c->stash->{field_errors} = { category => _('Please choose a category') };
+            return;
+        }
+        $report->council( $first_council->{id} );
+
+    } elsif ( $report->category ) {
+
+        # FIXME All contacts were fetched in setup_categories_and_councils,
+        # so can this DB call also be avoided?
         my @contacts = $c->       #
           model('DB::Contact')    #
           ->not_deleted           #
           ->search(
             {
-                area_id  => [ keys %councils ],    #
+                area_id  => [ keys %$councils ],
                 category => $report->category
             }
           )->all;
 
-        # clear category if it is not in db for possible councils
-        $report->category(undef) unless @contacts;
-
-        my %councils_with_contact_for_category =
-          map { $_->area_id => 1 } @contacts;
-
-        foreach my $council_key ( keys %councils ) {
-            $councils_with_contact_for_category{$council_key}
-              ? push( @councils_with_category,    $council_key )
-              : push( @councils_without_category, $council_key );
+        unless ( @contacts ) {
+            $c->stash->{field_errors} = { category => _('Please choose a category') };
+            return;
         }
 
-    }
+        # construct the council string:
+        #  'x,x'     - x are council IDs that have this category
+        #  'x,x|y,y' - x are council IDs that have this category, y council IDs with *no* contact
+        my $council_string = join( ',', map { $_->area_id } @contacts );
+        $council_string .=
+          '|' . join( ',', @{ $c->stash->{missing_details_councils} } )
+            if $council_string && @{ $c->stash->{missing_details_councils} };
+        $report->council($council_string);
 
-    # construct the council string:
-    #  'x,x'     - x are councils_ids that have this category
-    #  'x,x|y,y' - x are councils_ids that have this category, y don't
-    my $council_string = join '|', grep { $_ }    #
-      (
-        join( ',', @councils_with_category ),
-        join( ',', @councils_without_category )
-      );
-    $report->council($council_string);
+    } elsif ( @{ $c->stash->{area_ids_to_list} } ) {
+
+        # There was an area with categories, but we've not been given one. Bail.
+        $c->stash->{field_errors} = { category => _('Please choose a category') };
+        return;
+
+    } else {
+
+        # If we're here, we've been submitted somewhere
+        # where we have no contact information at all.
+        $report->council( -1 );
+
+    }
 
     # set defaults that make sense
     $report->state('unconfirmed');
@@ -854,6 +869,9 @@ sub save_user_and_report : Private {
 
     # Set a default if possible
     $report->category( _('Other') ) unless $report->category;
+
+    # Set unknown to DB unknown
+    $report->council( undef ) if $report->council == -1;
 
     # save the report;
     $report->in_storage ? $report->update : $report->insert();
