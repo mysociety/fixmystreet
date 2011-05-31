@@ -280,7 +280,8 @@ sub group_problems : Private {
     foreach my $row (@{$c->stash->{problems}}) {
         if (!$row->council) {
             # Problem was not sent to any council, add to possible councils
-            while ($row->areas =~ /,($re_councils)(?=,)/g) {
+            my $areas = $row->areas;
+            while ($areas =~ /,($re_councils)(?=,)/g) {
                 add_row($row, $1, \%fixed, \%open);
             }
         } else {
