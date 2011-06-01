@@ -550,7 +550,7 @@ sub timeline_alerts {
     if ($cobrand) {
          $cobrand_clause = " and cobrand = '$cobrand'";
     }
-    my $alerts = select_all("select *,
+    my $alerts = select_all("select alert.*, users.email, users.name,
                              extract(epoch from whensubscribed) as whensubscribed
                              from alert, users
                              where alert.user_id = users.id
