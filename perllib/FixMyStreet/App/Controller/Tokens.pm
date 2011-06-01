@@ -69,6 +69,7 @@ sub confirm_problem : Path('/P') {
 
     # log the problem creation user in to the site
     $c->authenticate( { email => $problem->user->email }, 'no_password' );
+    $c->set_session_cookie_expire(0);
 
     return 1;
 }
@@ -117,7 +118,12 @@ sub confirm_alert : Path('/A') {
         return;
     }
 
+    $c->authenticate( { email => $alert->user->email }, 'no_password' );
+    $c->set_session_cookie_expire(0);
+
     $c->forward('/alert/confirm');
+
+    return 1;
 }
 
 =head2 confirm_update
@@ -150,6 +156,7 @@ sub confirm_update : Path('/C') {
     }
 
     $c->authenticate( { email => $comment->user->email }, 'no_password' );
+    $c->set_session_cookie_expire(0);
 
     $c->forward('/report/update/confirm');
 
