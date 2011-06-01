@@ -318,7 +318,7 @@ sub signup_for_alerts : Private {
         my $alert = $c->model( 'DB::Alert' )->find_or_create(
             user => $c->stash->{update}->user,
             alert_type => 'new_updates',
-            parameter => $c->stash->{problem}->id
+            parameter => $c->stash->{update}->problem_id,
         );
 
         $alert->update;

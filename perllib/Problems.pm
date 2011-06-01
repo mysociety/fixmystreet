@@ -503,11 +503,13 @@ Uses any site_restriction defined by a cobrand.
 =cut
 sub timeline_problems {
     my $current_timestamp = current_timestamp();
-    my $problems = select_all("select state,id,name,email,title,council,category,service,cobrand,cobrand_data,
+    my $problems = select_all("select state,problem.id,problem.name,users.email,title,council,category,service,cobrand,cobrand_data,
                                extract(epoch from created) as created,
                                extract(epoch from confirmed) as confirmed,
                                extract(epoch from whensent) as whensent
-                               from problem where (created>=$current_timestamp-'7 days'::interval
+                               from problem, users
+                               where problem.user_id = users.id
+                               and (created>=$current_timestamp-'7 days'::interval
                                or confirmed>=$current_timestamp-'7 days'::interval
                                or whensent>=$current_timestamp-'7 days'::interval)
                                $site_restriction");
@@ -525,9 +527,11 @@ Uses any site_restriction defined by a cobrand.
 sub timeline_updates {
     my $updates = select_all("select comment.*,
                               extract(epoch from comment.created) as created, 
+                              users.email,
                               problem.council
-                              from comment, problem 
+                              from comment, problem, users 
                               where comment.problem_id = problem.id 
+                              and comment.user_id = users.id
                               and comment.state='confirmed' 
                               and comment.created>=" . current_timestamp() . "-'7 days'::interval
                               $site_restriction");
@@ -548,7 +552,9 @@ sub timeline_alerts {
     }
     my $alerts = select_all("select *,
                              extract(epoch from whensubscribed) as whensubscribed
-                             from alert where whensubscribed>=" . current_timestamp() . "-'7 days'::interval
+                             from alert, users
+                             where alert.user_id = users.id
+                             and whensubscribed>=" . current_timestamp() . "-'7 days'::interval
                              and confirmed=1
                              $cobrand_clause");
     return $alerts; 
