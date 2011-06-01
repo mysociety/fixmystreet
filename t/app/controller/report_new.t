@@ -20,6 +20,36 @@ subtest "test that bare requests to /report/new get redirected" => sub {
       "pc correctly transferred";
 };
 
+my %contact_params = (
+    confirmed => 1,
+    deleted => 0,
+    editor => 'Test',
+    whenedited => \'current_timestamp',
+    note => 'Created for test',
+);
+# Let's make some contacts to send things to!
+my $contact1 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
+    %contact_params,
+    area_id => 2651, # Edinburgh
+    category => 'Street lighting',
+    email => 'highways@example.com',
+} );
+my $contact2 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
+    %contact_params,
+    area_id => 2226, # Gloucestershire
+    category => 'Potholes',
+    email => 'potholes@example.com',
+} );
+my $contact3 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
+    %contact_params,
+    area_id => 2326, # Cheltenham
+    category => 'Trees',
+    email => 'trees@example.com',
+} );
+ok $contact1, "created test contact 1";
+ok $contact2, "created test contact 2";
+ok $contact3, "created test contact 3";
+
 # test that the various bit of form get filled in and errors correctly
 # generated.
 foreach my $test (
@@ -259,7 +289,7 @@ subtest "test report creation for a user who does not have an account" => sub {
 
     # submit initial pc form
     $mech->get_ok('/around');
-    $mech->submit_form_ok( { with_fields => { pc => 'SW1A 1AA', } },
+    $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } },
         "submit location" );
 
     # click through to the report page
@@ -298,6 +328,9 @@ subtest "test report creation for a user who does not have an account" => sub {
     is $report->state, 'unconfirmed', "report not confirmed";
     is $mech->get( '/report/' . $report->id )->code, 404, "report not found";
 
+    # Check the report has been assigned appropriately
+    is $report->council, 2651;
+
     # receive token
     my $email = $mech->get_email;
     ok $email, "got an email";
@@ -312,10 +345,7 @@ subtest "test report creation for a user who does not have an account" => sub {
     is $report->state, 'confirmed', "Report is now confirmed";
     is $report->state, 'confirmed', "report is now confirmed";
 
-  TODO: {
-        local $TODO = "'/report/<<id>>' not handled by catalyst yet";
-        $mech->get_ok( '/report/' . $report->id );
-    }
+    $mech->get_ok( '/report/' . $report->id );
 
     # user is created and logged in
     $mech->logged_in_ok;
@@ -332,92 +362,92 @@ subtest "test report creation for a user who does not have an account" => sub {
 # report is confirmed
 
 #### test report creation for user with account and logged in
-subtest "test report creation for a user who is logged in" => sub {
+foreach my $test (
+    { category => 'Trees', council => 2326 },
+    { category => 'Potholes', council => 2226 },
+) {
+    subtest "test report creation for a user who is logged in" => sub {
 
-    # check that the user does not exist
-    my $test_email = 'test-2@example.com';
+        # check that the user does not exist
+        my $test_email = 'test-2@example.com';
 
-    $mech->clear_emails_ok;
-    my $user = $mech->log_in_ok($test_email);
+        $mech->clear_emails_ok;
+        my $user = $mech->log_in_ok($test_email);
 
-    # setup the user.
-    ok $user->update(
-        {
-            name  => 'Test User',
-            phone => '01234 567 890',
-        }
-      ),
-      "set users details";
+        # setup the user.
+        ok $user->update(
+            {
+                name  => 'Test User',
+                phone => '01234 567 890',
+            }
+          ),
+          "set users details";
 
-    # submit initial pc form
-    $mech->get_ok('/around');
-    $mech->submit_form_ok( { with_fields => { pc => 'SW1A 1AA', } },
-        "submit location" );
+        # submit initial pc form
+        $mech->get_ok('/around');
+        $mech->submit_form_ok( { with_fields => { pc => 'GL50 2PR', } },
+            "submit location" );
 
-    # click through to the report page
-    $mech->follow_link_ok( { text => 'skip this step', },
-        "follow 'skip this step' link" );
+        # click through to the report page
+        $mech->follow_link_ok( { text => 'skip this step', },
+            "follow 'skip this step' link" );
 
-    # check that the fields are correctly prefilled
-    is_deeply(
-        $mech->visible_form_values,
-        {
-            title         => '',
-            detail        => '',
-            may_show_name => '1',
-            email         => $test_email,
-            name          => 'Test User',
-            phone         => '01234 567 890',
-            photo         => '',
-            category      => '-- Pick a category --',
-        },
-        "user's details prefilled"
-    );
+        # check that the fields are correctly prefilled
+        is_deeply(
+            $mech->visible_form_values,
+            {
+                title         => '',
+                detail        => '',
+                may_show_name => '1',
+                email         => $test_email,
+                name          => 'Test User',
+                phone         => '01234 567 890',
+                photo         => '',
+                category      => '-- Pick a category --',
+            },
+            "user's details prefilled"
+        );
 
-  TODO: {
-        local $TODO =
-"'/report/<<id>>' not handled by catalyst yet - form creation redirects to there on success if logged in";
-        eval {
-            $mech->submit_form_ok(
-                {
-                    with_fields => {
-                        title         => 'Test Report',
-                        detail        => 'Test report details.',
-                        photo         => '',
-                        name          => 'Joe Bloggs',
-                        may_show_name => '1',
-                        phone         => '07903 123 456',
-                        category      => 'Street lighting',
-                    }
-                },
-                "submit good details"
-            );
-        };
-    }
+        $mech->submit_form_ok(
+            {
+                with_fields => {
+                    title         => 'Test Report',
+                    detail        => 'Test report details.',
+                    photo         => '',
+                    name          => 'Joe Bloggs',
+                    may_show_name => '1',
+                    phone         => '07903 123 456',
+                    category      => $test->{category},
+                }
+            },
+            "submit good details"
+        );
 
-    # find the report
-    my $report = $user->problems->first;
-    ok $report, "Found the report";
+        # find the report
+        my $report = $user->problems->first;
+        ok $report, "Found the report";
 
-    # check that we got redirected to /report/
-    is $mech->uri->path, "/report/" . $report->id, "redirected to report page";
+        # Check the report has been assigned appropriately
+        is $report->council, $test->{council};
 
-    # check that no emails have been sent
-    $mech->email_count_is(0);
+        # check that we got redirected to /report/
+        is $mech->uri->path, "/report/" . $report->id, "redirected to report page";
 
-    # check report is confirmed and available
-    is $report->state, 'confirmed', "report is now confirmed";
-  TODO: {
-        local $TODO = "'/report/<<id>>' not handled by catalyst yet";
+        # check that no emails have been sent
+        $mech->email_count_is(0);
+
+        # check report is confirmed and available
+        is $report->state, 'confirmed', "report is now confirmed";
         $mech->get_ok( '/report/' . $report->id );
-    }
 
-    # user is still logged in
-    $mech->logged_in_ok;
+        # user is still logged in
+        $mech->logged_in_ok;
 
-    # cleanup
-    $mech->delete_user($user);
-};
+        # cleanup
+        $mech->delete_user($user);
+    };
+
+}
 
 #### test uploading an image
 
@@ -448,5 +478,9 @@ subtest "check that a lat/lon off coast leads to /around" => sub {
       "Found location error";
 
 };
+
+$contact1->delete;
+$contact2->delete;
+$contact3->delete;
 
 done_testing();
