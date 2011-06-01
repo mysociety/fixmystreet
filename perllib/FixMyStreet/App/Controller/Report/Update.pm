@@ -315,10 +315,11 @@ sub signup_for_alerts : Private {
     my ( $self, $c ) = @_;
 
     if ( $c->stash->{add_alert} ) {
-        my $alert = $c->model( 'DB::Alert' )->find_or_create(
-            user => $c->stash->{update}->user,
+        my $alert = $c->model('DB::Alert')->find_or_create(
+            user       => $c->stash->{update}->user,
             alert_type => 'new_updates',
-            parameter => $c->stash->{update}->problem_id,
+            parameter  => $c->stash->{update}->problem_id,
+            confirmed  => 1,
         );
 
         $alert->update;

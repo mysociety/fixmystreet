@@ -270,73 +270,117 @@ for my $test (
     };
 }
 
-subtest "submit an update for a non registered user" => sub {
-    $mech->log_out_ok();
-    $mech->clear_emails_ok();
-
-    $mech->get_ok("/report/$report_id");
-
-    my $values = $mech->visible_form_values('updateForm');
-
-    is_deeply $values,
-      {
-        name          => '',
-        rznvy         => '',
-        may_show_name => undef,
-        add_alert     => 1,
-        photo         => '',
-        update        => '',
-        fixed         => undef,
-      },
-      'initial form values';
-
-    $mech->submit_form_ok(
-        {
-            with_fields => {
-                submit_update => 1,
-                rznvy         => 'unregistered@example.com',
-                update        => 'update from an unregistered user',
-                add_alert     => undef,
-            }
+for my $test (
+    {
+        desc => 'submit an update for a non registered user',
+        initial_values => {
+            name          => '',
+            rznvy         => '',
+            may_show_name => undef,
+            add_alert     => 1,
+            photo         => '',
+            update        => '',
+            fixed         => undef,
         },
-        'submit update'
-    );
+        form_values => {
+            submit_update => 1,
+            rznvy         => 'unregistered@example.com',
+            update        => 'Update from an unregistered user',
+            add_alert     => undef,
+        },
+        changes => {},
+    },
+    {
+        desc => 'submit an update for a non registered user and sign up',
+        initial_values => {
+            name          => '',
+            rznvy         => '',
+            may_show_name => undef,
+            add_alert     => 1,
+            photo         => '',
+            update        => '',
+            fixed         => undef,
+        },
+        form_values => {
+            submit_update => 1,
+            rznvy         => 'unregistered@example.com',
+            update        => 'update from an unregistered user',
+            add_alert     => 1,
+        },
+        changes => {
+            update => 'Update from an unregistered user',
+        },
+    }
+) {
+    subtest $test->{desc} => sub {
+        $mech->log_out_ok();
+        $mech->clear_emails_ok();
 
-    $mech->content_contains('Nearly Done! Now check your email');
+        $mech->get_ok("/report/$report_id");
 
-    my $email = $mech->get_email;
-    ok $email, "got an email";
-    like $email->body, qr/confirm the update you/i, "Correct email text";
+        my $values = $mech->visible_form_values('updateForm');
 
-    my ( $url, $url_token ) = $email->body =~ m{(http://\S+/C/)(\S+)};
-    ok $url, "extracted confirm url '$url'";
+        is_deeply $values, $test->{initial_values}, 'initial form values';
 
-    my $token = FixMyStreet::App->model('DB::Token')->find(
-        {
-            token => $url_token,
-            scope => 'comment'
-        }
-    );
-    ok $token, 'Token found in database';
+        $mech->submit_form_ok(
+            {
+                with_fields => $test->{form_values}
+            },
+            'submit update'
+        );
 
-    my $update_id  = $token->data->{id};
-    my $add_alerts = $token->data->{add_alert};
-    my $update =
-      FixMyStreet::App->model('DB::Comment')->find( { id => $update_id } );
+        $mech->content_contains('Nearly Done! Now check your email');
 
-    ok $update, 'found update in database';
-    is $update->state, 'unconfirmed', 'update unconfirmed';
-    is $update->user->email, 'unregistered@example.com', 'update email';
-    is $update->text, 'Update from an unregistered user', 'update text';
-    is $add_alerts, 0, 'do not sign up for alerts';
+        my $email = $mech->get_email;
+        ok $email, "got an email";
+        like $email->body, qr/confirm the update you/i, "Correct email text";
 
-    $mech->get_ok( $url . $url_token );
-    $mech->content_contains("/report/$report_id#$update_id");
+        my ( $url, $url_token ) = $email->body =~ m{(http://\S+/C/)(\S+)};
+        ok $url, "extracted confirm url '$url'";
 
-    $update->discard_changes;
+        my $token = FixMyStreet::App->model('DB::Token')->find(
+            {
+                token => $url_token,
+                scope => 'comment'
+            }
+        );
+        ok $token, 'Token found in database';
 
-    is $update->state, 'confirmed', 'update confirmed';
-};
+        my $update_id  = $token->data->{id};
+        my $add_alerts = $token->data->{add_alert};
+        my $update =
+          FixMyStreet::App->model('DB::Comment')->find( { id => $update_id } );
+
+        my $details = {
+            %{ $test->{form_values} },
+            %{ $test->{changes} }
+        };
+
+        ok $update, 'found update in database';
+        is $update->state, 'unconfirmed', 'update unconfirmed';
+        is $update->user->email, $details->{rznvy}, 'update email';
+        is $update->text, $details->{update}, 'update text';
+        is $add_alerts, $details->{add_alert} ? 1 : 0, 'do not sign up for alerts';
+
+        $mech->get_ok( $url . $url_token );
+        $mech->content_contains("/report/$report_id#$update_id");
+
+        my $unreg_user = FixMyStreet::App->model( 'DB::User' )->find( { email => $details->{rznvy} } );
+
+        ok $unreg_user, 'found user';
+
+        my $alert = FixMyStreet::App->model( 'DB::Alert' )->find(
+            { user => $unreg_user, alert_type => 'new_updates', confirmed => 1, }
+        );
+
+        ok $details->{add_alert} ? defined( $alert ) : !defined( $alert ), 'sign up for alerts';
+
+        $update->discard_changes;
+
+        is $update->state, 'confirmed', 'update confirmed';
+        $mech->delete_user( $unreg_user );
+    };
+}
 
 for my $test (
     {
@@ -519,7 +563,7 @@ for my $test (
 
         my $alert =
           FixMyStreet::App->model('DB::Alert')
-          ->find( { user => $user, alert_type => 'new_updates' } );
+          ->find( { user => $user, alert_type => 'new_updates', confirmed => 1 } );
 
         ok $test->{alert} ? $alert : !$alert, 'not signed up for alerts';
     };
