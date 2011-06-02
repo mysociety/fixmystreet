@@ -32,17 +32,25 @@ sub index :Path :Args(0) {
     my $comment = $c->req->param('c');
     return unless ( $id || $comment );
 
-    my $photo;
-
+    my @photo;
     if ( $comment ) {
-        $photo = $c->model('DB::Comment')->find( {id => $comment, state => 'confirmed' } );
+        @photo = $c->model('DB::Comment')->search( {
+            id => $comment,
+            state => 'confirmed',
+            photo => { '!=', undef },
+        } );
     } else {
-        $photo = $c->model('DB::Problem')->find( {id => $id, state => 'confirmed' } );
+        @photo = $c->model('DB::Problem')->search( {
+            id => $id,
+            state => [ 'confirmed', 'fixed', 'partial' ],
+            photo => { '!=', undef },
+        } );
     }
 
-    return unless $photo;
+    $c->detach( '/page_error_404_not_found', [ 'No photo' ] )
+        unless @photo;
 
-    $photo = $photo->photo;
+    my $photo = $photo[0]->photo;
     if ( $c->req->param('tn' ) ) {
         $photo = _resize( $photo, 'x100' );
     } elsif ( $c->cobrand->default_photo_resize ) {
