@@ -278,8 +278,10 @@ sub send_email {
         from => FixMyStreet->config('CONTACT_EMAIL'),
         %{ $c->stash },
         %$extra_stash_values,
-        additional_template_paths =>
-          [ $c->cobrand->path_to_email_templates->stringify ]
+        additional_template_paths => [
+            FixMyStreet->path_to( 'templates', 'email', $c->cobrand->moniker, $c->stash->{lang_code} )->stringify,
+            FixMyStreet->path_to( 'templates', 'email', $c->cobrand->moniker )->stringify,
+        ]
     };
 
     # render the template
@@ -292,12 +294,13 @@ sub send_email {
 
     # pass the email into mySociety::Email to construct the on the wire 7bit
     # format - this should probably happen in the transport instead but hohum.
-    my $email_text = mySociety::Email::construct_email(
+    my $email_text = mySociety::Locale::in_gb_locale { mySociety::Email::construct_email(
         {
-            _unwrapped_body_ => $email->body,    # will get line wrapped
+            _template_ => $email->body,    # will get line wrapped
+            _parameters_ => {},
             $email->header_pairs
         }
-    );
+    ) };
 
     # send the email
     $c->model('EmailSend')->send($email_text);

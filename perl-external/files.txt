@@ -198,6 +198,10 @@
 /authors/id/R/RJ/RJBS/Data-OptList-0.106.tar.gz
 /authors/id/R/RJ/RJBS/Email-Address-1.892.tar.gz
 /authors/id/R/RJ/RJBS/Email-Date-Format-1.002.tar.gz
+/authors/id/R/RJ/RJBS/Email-MIME-1.908.tar.gz
+/authors/id/R/RJ/RJBS/Email-MIME-ContentType-1.015.tar.gz
+/authors/id/R/RJ/RJBS/Email-MIME-Encodings-1.313.tar.gz
+/authors/id/R/RJ/RJBS/Email-MessageID-1.402.tar.gz
 /authors/id/R/RJ/RJBS/Email-Send-2.198.tar.gz
 /authors/id/R/RJ/RJBS/Email-Simple-2.100.tar.gz
 /authors/id/R/RJ/RJBS/Email-Valid-0.184.tar.gz

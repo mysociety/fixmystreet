@@ -3,18 +3,12 @@
 # send-reports:
 # Send new problem reports to councils
 #
-# Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
+# Copyright (c) 2011 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
-#
-# $Id: send-reports,v 1.79 2010-01-06 16:50:26 louise Exp $
 
 use strict;
 require 5.8.0;
 
-# Horrible boilerplate to set up appropriate library paths.
-use FindBin;
-use lib "$FindBin::Bin/../perllib";
-use lib "$FindBin::Bin/../commonlib/perllib";
 use Digest::MD5;
 use Encode;
 use Error qw(:try);
@@ -25,11 +19,11 @@ use LWP::Simple;
 use CGI; # Trying awkward kludge
 use CronFns;
 
+use FixMyStreet::App;
+
 use EastHantsWSDL;
-use Cobrand;
 use Utils;
 use mySociety::Config;
-use mySociety::DBHandle qw(dbh);
 use mySociety::Email;
 use mySociety::EmailUtil;
 use mySociety::Locale;
@@ -37,69 +31,52 @@ use mySociety::MaPit;
 use mySociety::Random qw(random_bytes);
 use mySociety::Web qw(ent);
 
-BEGIN {
-    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
-    mySociety::DBHandle::configure(
-        Name => mySociety::Config::get('BCI_DB_NAME'),
-        User => mySociety::Config::get('BCI_DB_USER'),
-        Password => mySociety::Config::get('BCI_DB_PASS'),
-        Host => mySociety::Config::get('BCI_DB_HOST', undef),
-        Port => mySociety::Config::get('BCI_DB_PORT', undef)
-    );
-}
-
 # Set up site, language etc.
 my ($verbose, $nomail) = CronFns::options();
 my $base_url = mySociety::Config::get('BASE_URL');
 my $site = CronFns::site($base_url);
 
-my $query = "SELECT id, council, category, title, detail, name, email, phone,
-    used_map, latitude, longitude, (photo is not null) as has_photo, lang, 
-    cobrand, cobrand_data, date_trunc('second', confirmed) as confirmed, postcode
-      FROM problem
-      WHERE state in ('confirmed','fixed')
-        AND whensent IS NULL
-        AND council IS NOT NULL";
-my $unsent = dbh()->selectall_arrayref($query, { Slice => {} });
-
+my $unsent = FixMyStreet::App->model("DB::Problem")->search( {
+    state => [ 'confirmed', 'fixed' ],
+    whensent => undef,
+    council => { '!=', undef },
+} );
 my (%notgot, %note);
-my $cobrand;
-my $cobrand_data;
-foreach my $row (@$unsent) {
+while (my $row = $unsent->next) {
     
-    $cobrand = $row->{cobrand};
-    $cobrand_data = $row->{cobrand_data};
+    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->cobrand)->new();
+
     # Cobranded and non-cobranded messages can share a database. In this case, the conf file 
     # should specify a vhost to send the reports for each cobrand, so that they don't get sent 
     # more than once if there are multiple vhosts running off the same database. The email_host
     # call checks if this is the host that sends mail for this cobrand.
-    next unless (Cobrand::email_host($cobrand));
-    Cobrand::set_lang_and_domain($cobrand, $row->{lang}, 1);
-    if (dbh()->selectrow_array('select email from abuse where lower(email)=?', {}, lc($row->{email}))) {
-        dbh()->do("update problem set state='hidden' where id=?", {}, $row->{id});
-        dbh()->commit();
+    next unless $cobrand->email_host();
+    $cobrand->set_lang_and_domain($row->lang, 1);
+    if ( $row->is_from_abuser ) {
+        $row->update( { state => 'hidden' } );
         next;
     }
 
     my $send_email = 0;
     my $send_web = 0;
 
-    mySociety::Locale::change($row->{lang});
-
     # Template variables for the email
-    my $email_base_url = Cobrand::base_url_for_emails($cobrand, $cobrand_data);
-    my %h = map { $_ => $row->{$_} } qw/id title detail name email phone category latitude longitude confirmed used_map/;
-    $h{query} = $row->{postcode};
-    $h{url} = $email_base_url . '/report/' . $row->{id};
+    my $email_base_url = $cobrand->base_url_for_emails($row->cobrand_data);
+    my %h = map { $_ => $row->$_ } qw/id title detail name category latitude longitude used_map/;
+    map { $h{$_} = $row->user->$_ } qw/email phone/;
+    $h{confirmed} = DateTime::Format::Pg->format_datetime( $row->confirmed->truncate (to => 'second' ) );
+
+    $h{query} = $row->postcode;
+    $h{url} = $email_base_url . '/report/' . $row->id;
     $h{phone_line} = $h{phone} ? _('Phone:') . " $h{phone}\n\n" : '';
-    if ($row->{has_photo}) {
+    if ($row->photo) {
         $h{has_photo} = _("This web page also contains a photo of the problem, provided by the user.") . "\n\n";
-        $h{image_url} = $email_base_url . '/photo?id=' . $row->{id};
+        $h{image_url} = $email_base_url . '/photo?id=' . $row->id;
     } else {
         $h{has_photo} = '';
         $h{image_url} = '';
     }
-    $h{fuzzy} = $row->{used_map} ? _('To view a map of the precise location of this issue')
+    $h{fuzzy} = $row->used_map ? _('To view a map of the precise location of this issue')
         : _('The user could not locate the problem on a map, but to see the area around the location they entered');
     $h{closest_address} = '';
     
@@ -116,35 +93,37 @@ foreach my $row (@$unsent) {
 
         $h{closest_address} = find_closest($row, $h{latitude}, $h{longitude});
     }
-    $h{closest_address_machine} = $h{closest_address};
 
     my (@to, @recips, $template, $areas_info);
     if ($site eq 'emptyhomes') {
 
-        my $council = $row->{council};
+        my $council = $row->council;
         $areas_info = mySociety::MaPit::call('areas', $council);
         my $name = $areas_info->{$council}->{name};
-        my ($council_email, $confirmed, $note) = dbh()->selectrow_array(
-            "SELECT email,confirmed,note FROM contacts WHERE deleted='f'
-                and area_id=? AND category=?", {}, $council, 'Empty property');
+        my $contact = FixMyStreet::App->model("DB::Contact")->find( {
+            deleted => 0,
+            area_id => $council,
+            category => 'Empty property',
+        } );
+        my ($council_email, $confirmed, $note) = ( $contact->email, $contact->confirmed, $contact->note );
         unless ($confirmed) {
             $note = 'Council ' . $council . ' deleted' unless $note;
             $council_email = 'N/A' unless $council_email;
-            $notgot{$council_email}{$row->{category}}++;
-            $note{$council_email}{$row->{category}} = $note;
+            $notgot{$council_email}{$row->category}++;
+            $note{$council_email}{$row->category} = $note;
             next;
         }
 
         push @to, [ $council_email, $name ];
         @recips = ($council_email);
         $send_email = 1;
-        $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/submit-eha");
+        $template = File::Slurp::read_file("$FindBin::Bin/../templates/email/emptyhomes/" . $row->lang . "/submit.txt");
 
     } else {
 
         # XXX Needs locks!
-        my @all_councils = split /,|\|/, $row->{council};
-        my ($councils, $missing) = $row->{council} =~ /^([\d,]+)(?:\|([\d,]+))?/;
+        my @all_councils = split /,|\|/, $row->council;
+        my ($councils, $missing) = $row->council =~ /^([\d,]+)(?:\|([\d,]+))?/;
         my @councils = split(/,/, $councils);
         $areas_info = mySociety::MaPit::call('areas', \@all_councils);
         my (@dear, %recips);
@@ -158,18 +137,21 @@ foreach my $row (@$unsent) {
             } elsif ($areas_info->{$council}->{type} eq 'LBO') { # London
                 $send_web = 'london';
             } else {
-                my ($council_email, $confirmed, $note) = dbh()->selectrow_array(
-                    "SELECT email,confirmed,note FROM contacts WHERE deleted='f'
-                        and area_id=? AND category=?", {}, $council, $row->{category});
-                $council_email = essex_contact($row->{latitude}, $row->{longitude}) if $council == 2225;
-                $council_email = oxfordshire_contact($row->{latitude}, $row->{longitude}) if $council == 2237 && $council_email eq 'SPECIAL';
+                my $contact = FixMyStreet::App->model("DB::Contact")->find( {
+                    deleted => 0,
+                    area_id => $council,
+                    category => $row->category
+                } );
+                my ($council_email, $confirmed, $note) = ( $contact->email, $contact->confirmed, $contact->note );
+                $council_email = essex_contact($row->latitude, $row->longitude) if $council == 2225;
+                $council_email = oxfordshire_contact($row->latitude, $row->longitude) if $council == 2237 && $council_email eq 'SPECIAL';
                 unless ($confirmed) {
                     $all_confirmed = 0;
-                    $note = 'Council ' . $row->{council} . ' deleted'
+                    $note = 'Council ' . $row->council . ' deleted'
                         unless $note;
                     $council_email = 'N/A' unless $council_email;
-                    $notgot{$council_email}{$row->{category}}++;
-                    $note{$council_email}{$row->{category}} = $note;
+                    $notgot{$council_email}{$row->category}++;
+                    $note{$council_email}{$row->category} = $note;
                 }
                 push @to, [ $council_email, $name ];
                 $recips{$council_email} = 1;
@@ -179,9 +161,9 @@ foreach my $row (@$unsent) {
         @recips = keys %recips;
         next unless $all_confirmed;
 
-        $template = 'submit-council';
-        $template = 'submit-brent' if $row->{council} eq 2488 || $row->{council} eq 2237;
-        $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/$template");
+        $template = 'submit.txt';
+        $template = 'submit-brent.txt' if $row->council eq 2488 || $row->council eq 2237;
+        $template = File::Slurp::read_file("$FindBin::Bin/../templates/email/" . $cobrand->moniker . "/$template");
 
         if ($h{category} eq _('Other')) {
             $h{category_footer} = _('this type of local problem');
@@ -210,11 +192,11 @@ foreach my $row (@$unsent) {
     }
 
     unless ($send_email || $send_web) {
-        die 'Report not going anywhere for ID ' . $row->{id} . '!';
+        die 'Report not going anywhere for ID ' . $row->id . '!';
     }
 
     my $testing_email = mySociety::Config::get('TESTING_EMAIL');
-    if ($row->{email} eq $testing_email) {
+    if ($row->user->email eq $testing_email) {
         @recips = ( $testing_email );
         $send_web = 0;
         $send_email = 1;
@@ -222,7 +204,7 @@ foreach my $row (@$unsent) {
         # on a staging server send emails to ourselves rather than the councils
         @recips = ( mySociety::Config::get('CONTACT_EMAIL') );
     } elsif ($site eq 'emptyhomes') {
-        my $council = $row->{council};
+        my $council = $row->council;
         my $country = $areas_info->{$council}->{country};
         if ($country eq 'W') {
             push @recips, 'shelter@' . mySociety::Config::get('EMAIL_DOMAIN');
@@ -232,7 +214,7 @@ foreach my $row (@$unsent) {
     }
 
     # Special case for this parish council
-    # if ($address && $address =~ /Sprowston/ && $row->{council} == 2233 && $row->{category} eq 'Street lighting') {
+    # if ($address && $address =~ /Sprowston/ && $row->council == 2233 && $row->category eq 'Street lighting') {
     #     $h{councils_name} = 'Sprowston Parish Council';
     #     my $e = 'parishclerk' . '@' . 'sprowston-pc.gov.uk';
     #     @to = ( [ $e, $h{councils_name} ] );
@@ -243,14 +225,15 @@ foreach my $row (@$unsent) {
     my $result = -1;
 
     if ($send_email) {
-        $template = _($template);
-        my $email = mySociety::Locale::in_gb_locale { mySociety::Email::construct_email({
+
+        my $params = {
             _template_ => $template,
             _parameters_ => \%h,
             To => \@to,
-            From => [ $row->{email}, $row->{name} ],
+            From => [ $row->user->email, $row->name ],
             'Message-ID' => sprintf('<report-%s-%s@mysociety.org>', time(), unpack('h*', random_bytes(5, 1))),
-        }) };
+        };
+        my $email = mySociety::Locale::in_gb_locale { mySociety::Email::construct_email($params) };
         if (!$nomail) {
             $result *= mySociety::EmailUtil::send_email($email, mySociety::Config::get('CONTACT_EMAIL'), @recips);
         } else {
@@ -271,11 +254,10 @@ foreach my $row (@$unsent) {
     }
 
     if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
-        dbh()->do('UPDATE problem SET whensent=ms_current_timestamp(),
-            lastupdate=ms_current_timestamp() WHERE id=?', {}, $row->{id});
-        dbh()->commit();
-    } else {
-        dbh()->rollback();
+        $row->update( {
+            whensent => \'ms_current_timestamp()',
+            lastupdate => \'ms_current_timestamp()',
+        } );
     }
 }
 
@@ -449,7 +431,7 @@ sub find_closest {
     my ($row, $latitude, $longitude) = @_;
     my $str = '';
 
-    return '' unless $row->{used_map};
+    return '' unless $row->used_map;
 
     # Get nearest road-type thing from Bing
     my $url = "http://dev.virtualearth.net/REST/v1/Locations/$latitude,$longitude?c=en-GB&key=" . mySociety::Config::get('BING_MAPS_API_KEY');
