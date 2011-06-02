@@ -25,16 +25,21 @@ Details: <?=$values['detail']?>
 
 Longitude: <?=$values['longitude']?>
 
-<?=$values['closest_address_machine']?>----------
+<?=$values['closest_address']?>----------
 
 Replies to this email will go to the user who submitted the problem.
 
 Yours,  
 The FixMyStreet team
 
-[ This message was sent via FixMyStreet, a project of UKCOD, registered charity
+This message was sent via FixMyStreet, a project of UKCOD, registered charity
 number 1076346. If there is a more appropriate email address for messages about
 <?=$values['category_footer']?>, please let us know by visiting <http://www.fixmystreet.com/contact>.
 This will help improve the service for local people. We
-also welcome any other feedback you may have. ]
+also welcome any other feedback you may have.
+
+FixMyStreet is now available for full integration into council
+websites, making life easier for both you and your residents.
+Read more here:
+http://www.mysociety.org/fixmystreet-for-local-council-websites/
 

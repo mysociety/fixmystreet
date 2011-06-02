@@ -1,0 +1,20 @@
+Subject: Bekreftelse på ny sak lagt til på FiksGataMi.no
+
+Hei [% report.user.name %],
+
+Vennligst klikk på linken under for å bekrefte saken du har lagt til
+på FiksGataMi:
+
+[% token_url %]
+
+Hvis ditt epost program ikke gir deg mulighet til å klikke på linken,
+kopier linken inn i nettleseren.
+
+Din sak hadde følgende tittel:
+[% report.title %]
+
+Med følgende verdier:
+[% report.detail %]
+
+Vennlig hilsen,  
+FiksGataMi-gruppen

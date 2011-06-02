@@ -23,7 +23,7 @@ From: CONTACT_EMAIL
      sint occaecat cupidatat non proident, sunt in culpa qui officia
      deserunt mollit anim id est laborum.
 
-     Yours,
-       FixMyStreet.
+     Yours,=20=20
+     FixMyStreet.=20=
 
 
