@@ -62,10 +62,12 @@ sub index : Path : Args(0) {
     $c->stash->{contacts} = \%contact_counts;
 
     my $questionnaires = $c->model('DB::Questionnaire')->search(
-        undef, { group_by => [ \'whenanswered is not null' ], select => [ \'(whenanswered is not null)', { count => 'me.id' } ], as => [qw/answered questionnaire_count/] }
+        undef, { group_by => [ \'whenanswered is not null' ], select => [ \'(whenanswered is not null)', { count => 'me.id' } ], as => [qw/answered questionnaire_count/], join => 'problem' }
     );
 
     my %questionnaire_counts = map { $_->get_column( 'answered' ) => $_->get_column( 'questionnaire_count' ) } $questionnaires->all;
+    $questionnaire_counts{1} ||= 0;
+    $questionnaire_counts{0} ||= 0;
 
     $questionnaire_counts{total} = $questionnaire_counts{0} + $questionnaire_counts{1};
     $c->stash->{questionnaires_pc} = $questionnaire_counts{total} ? sprintf('%.1f', $questionnaire_counts{1} / $questionnaire_counts{total} * 100) : 'na';
@@ -74,6 +76,26 @@ sub index : Path : Args(0) {
     return 1;
 }
 
+sub questionnaire : Path('questionnaire') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    my $questionnaires = $c->model('DB::Questionnaire')->search(
+        { whenanswered => \'is not null' }, { group_by => [ 'ever_reported' ], select => [ 'ever_reported', { count => 'me.id' } ], as => [qw/reported questionnaire_count/] }
+    );
+
+
+    my %questionnaire_counts = map { $_->get_column( 'reported' ) => $_->get_column( 'questionnaire_count' ) } $questionnaires->all;
+
+    $questionnaire_counts{1} ||= 0;
+    $questionnaire_counts{0} ||= 0;
+
+    $questionnaire_counts{total} = $questionnaire_counts{0} + $questionnaire_counts{1};
+    $c->stash->{reported_pc} = ( 100 * $questionnaire_counts{1} ) / $questionnaire_counts{total};
+    $c->stash->{not_reported_pc} = ( 100 * $questionnaire_counts{0} ) / $questionnaire_counts{total};
+    $c->stash->{questionnaires} = \%questionnaire_counts;
+
+    return 1;
+}
 # use Encode;
 # use POSIX qw(strftime strcoll);
 # use Digest::MD5 qw(md5_hex);
@@ -842,41 +864,6 @@ sub index : Path : Args(0) {
 # 
 # }
 # 
-# sub admin_questionnaire {
-#     my $q = shift;
-#     my $cobrand = Page::get_cobrand($q);
-#     print html_head($q, _('Survey Results'));
-#     print $q->h1(_('Survey Results'));
-# 
-#     # columns in questionnaire is id, problem_id, whensent,
-#     # whenanswered, ever_reported, old_state, new_state
-# 
-#     my $survey = select_all("select ever_reported, count(*) from questionnaire where whenanswered is not null group by ever_reported");
-# 
-#     my %res;
-#     $res{0} = 0;
-#     $res{1} = 0;
-#     foreach my $h (@$survey) {
-#         $res{$h->{ever_reported}} = $h->{count} if (exists $h->{ever_reported});
-#     }
-#     my $total = $res{0} + $res{1};
-# 
-#     print $q->start_table({border=>1});
-#     print $q->Tr({},
-#                  $q->th({}, [_("Reported before"),
-#                              _("Not reported before")]));
-#     if ($total) {
-#         print $q->Tr({},
-#                      $q->td([
-#                  sprintf("%d (%d%%)", $res{1}, (100 * $res{1}) / $total),
-#                  sprintf("%d (%d%%)", $res{0}, (100 * $res{0}) / $total),
-#                             ]));
-#     } else {
-#         print $q->Tr({}, $q->td([ 'n/a', 'n/a' ]));
-#     }
-#     print $q->end_table();
-#     print html_tail($q);
-# }
 # 
 # sub not_found {
 #     my ($q) = @_;
