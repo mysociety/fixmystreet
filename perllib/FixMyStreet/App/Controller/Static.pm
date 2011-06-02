@@ -1,4 +1,4 @@
-package FixMyStreet::App::Controller::FAQ;
+package FixMyStreet::App::Controller::Static;
 use Moose;
 use namespace::autoclean;
 
@@ -6,16 +6,23 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 =head1 NAME
 
-FixMyStreet::App::Controller::FAQ - Catalyst Controller
+FixMyStreet::App::Controller::Static - Catalyst Controller
 
 =head1 DESCRIPTION
 
-Show the FAQ page - does some smarts to choose the correct template depending on
-language.
+Static pages Catalyst Controller. FAQ does some smarts to choose the correct
+template depending on language, will need extending at some point.
+
+=head1 METHODS
 
 =cut
 
-sub faq : Path : Args(0) {
+sub about : Global : Args(0) {
+    my ( $self, $c ) = @_;
+    # don't need to do anything here - should just pass through.
+}
+
+sub faq : Global : Args(0) {
     my ( $self, $c ) = @_;
 
     # There should be a faq template for each language in a cobrand or default.
@@ -30,6 +37,16 @@ sub faq : Path : Args(0) {
     $c->stash->{template} = $template;
 }
 
+sub fun : Global : Args(0) {
+    my ( $self, $c ) = @_;
+    # don't need to do anything here - should just pass through.
+}
+
+sub posters : Global : Args(0) {
+    my ( $self, $c ) = @_;
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
+
