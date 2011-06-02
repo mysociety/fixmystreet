@@ -51,6 +51,9 @@ sub index : Path : Args(0) {
 
     my %alert_counts = map { $_->confirmed => $_->get_column( 'confirmed_count' ) } $alerts->all;
 
+    $alert_counts{0} ||= 0;
+    $alert_counts{1} ||= 0;
+
     $c->stash->{alerts} = \%alert_counts;
 
     my $contacts = $c->model('DB::Contact')->search(
@@ -58,6 +61,10 @@ sub index : Path : Args(0) {
     );
 
     my %contact_counts = map { $_->confirmed => $_->get_column( 'confirmed_count' ) } $contacts->all;
+
+    $contact_counts{0} ||= 0;
+    $contact_counts{1} ||= 0;
+    $contact_counts{total} = $contact_counts{0} + $contact_counts{1};
 
     $c->stash->{contacts} = \%contact_counts;
 
