@@ -358,10 +358,10 @@ sub problem_search {
     my ($search) = @_;
     my $search_n = 0;
     $search_n = int($search) if $search =~ /^\d+$/;
-    my $problems = select_all("select id, council, category, title, name,
+    my $problems = select_all("select problem.id, council, category, title, problem.name,
                                email, anonymous, cobrand, cobrand_data, created, confirmed, state, service, lastupdate,
-                               whensent, send_questionnaire from problem where (id=? or email ilike
-                               '%'||?||'%' or name ilike '%'||?||'%' or title ilike '%'||?||'%' or
+                               whensent, send_questionnaire from problem, users where problem.user_id = users.id
+                               and (problem.id=? or email ilike '%'||?||'%' or problem.name ilike '%'||?||'%' or title ilike '%'||?||'%' or
                                detail ilike '%'||?||'%' or council like '%'||?||'%' or cobrand_data like '%'||?||'%')
                                $site_restriction 
                                order by (state='hidden'),created", $search_n,
@@ -380,9 +380,9 @@ sub update_search {
     my $search_n = 0;
     $search_n = int($search) if $search =~ /^\d+$/;
     my $updates = select_all("select comment.*, problem.council, problem.state as problem_state
-        from comment, problem where problem.id = comment.problem_id
+        from comment, problem, users where problem.id = comment.problem_id and comment.user_id = users.id
             and (comment.id=? or
-            problem_id=? or comment.email ilike '%'||?||'%' or comment.name ilike '%'||?||'%' or
+            problem_id=? or users.email ilike '%'||?||'%' or comment.name ilike '%'||?||'%' or
             comment.text ilike '%'||?||'%' or comment.cobrand_data ilike '%'||?||'%')
             $site_restriction
             order by (comment.state='hidden'),(problem.state='hidden'),created", $search_n, $search_n, $search, $search,
