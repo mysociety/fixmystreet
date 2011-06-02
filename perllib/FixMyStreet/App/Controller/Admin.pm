@@ -28,28 +28,49 @@ sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
     my $problems = $c->model('DB::Problem')->search(
-        undef, { group_by => ['state'], select => [ 'state', { count => 'id' } ], as => [qw/state state_count/] }
+        undef,
+        {
+            group_by => ['state'],
+            select   => [ 'state', { count => 'id' } ],
+            as       => [qw/state state_count/]
+        }
     );
 
-    my %prob_counts = map { $_->state => $_->get_column( 'state_count' ) } $problems->all;
+    my %prob_counts =
+      map { $_->state => $_->get_column('state_count') } $problems->all;
 
-    %prob_counts = map { $_ => $prob_counts{$_} || 0 } qw(confirmed fixed unconfirmed hidden partial);
+    %prob_counts =
+      map { $_ => $prob_counts{$_} || 0 }
+      qw(confirmed fixed unconfirmed hidden partial);
     $c->stash->{problems} = \%prob_counts;
-    $c->stash->{total_problems_live} = $prob_counts{confirmed} + $prob_counts{fixed};
+    $c->stash->{total_problems_live} =
+      $prob_counts{confirmed} + $prob_counts{fixed};
 
     my $comments = $c->model('DB::Comment')->search(
-        undef, { group_by => ['state'], select => [ 'state', { count => 'id' } ], as => [qw/state state_count/] }
+        undef,
+        {
+            group_by => ['state'],
+            select   => [ 'state', { count => 'id' } ],
+            as       => [qw/state state_count/]
+        }
     );
 
-    my %comment_counts = map { $_->state => $_->get_column( 'state_count' ) } $comments->all;
+    my %comment_counts =
+      map { $_->state => $_->get_column('state_count') } $comments->all;
 
     $c->stash->{comments} = \%comment_counts;
 
     my $alerts = $c->model('DB::Alert')->search(
-        undef, { group_by => ['confirmed'], select => [ 'confirmed', { count => 'id' } ], as => [qw/confirmed confirmed_count/] }
+        undef,
+        {
+            group_by => ['confirmed'],
+            select   => [ 'confirmed', { count => 'id' } ],
+            as       => [qw/confirmed confirmed_count/]
+        }
     );
 
-    my %alert_counts = map { $_->confirmed => $_->get_column( 'confirmed_count' ) } $alerts->all;
+    my %alert_counts =
+      map { $_->confirmed => $_->get_column('confirmed_count') } $alerts->all;
 
     $alert_counts{0} ||= 0;
     $alert_counts{1} ||= 0;
@@ -57,10 +78,16 @@ sub index : Path : Args(0) {
     $c->stash->{alerts} = \%alert_counts;
 
     my $contacts = $c->model('DB::Contact')->search(
-        undef, { group_by => ['confirmed'], select => [ 'confirmed', { count => 'id' } ], as => [qw/confirmed confirmed_count/] }
+        undef,
+        {
+            group_by => ['confirmed'],
+            select   => [ 'confirmed', { count => 'id' } ],
+            as       => [qw/confirmed confirmed_count/]
+        }
     );
 
-    my %contact_counts = map { $_->confirmed => $_->get_column( 'confirmed_count' ) } $contacts->all;
+    my %contact_counts =
+      map { $_->confirmed => $_->get_column('confirmed_count') } $contacts->all;
 
     $contact_counts{0} ||= 0;
     $contact_counts{1} ||= 0;
@@ -69,15 +96,28 @@ sub index : Path : Args(0) {
     $c->stash->{contacts} = \%contact_counts;
 
     my $questionnaires = $c->model('DB::Questionnaire')->search(
-        undef, { group_by => [ \'whenanswered is not null' ], select => [ \'(whenanswered is not null)', { count => 'me.id' } ], as => [qw/answered questionnaire_count/], join => 'problem' }
+        undef,
+        {
+            group_by => [ \'whenanswered is not null' ],
+            select   => [ \'(whenanswered is not null)', { count => 'me.id' } ],
+            as       => [qw/answered questionnaire_count/],
+            join     => 'problem'
+        }
     );
 
-    my %questionnaire_counts = map { $_->get_column( 'answered' ) => $_->get_column( 'questionnaire_count' ) } $questionnaires->all;
+    my %questionnaire_counts = map {
+        $_->get_column('answered') => $_->get_column('questionnaire_count')
+    } $questionnaires->all;
     $questionnaire_counts{1} ||= 0;
     $questionnaire_counts{0} ||= 0;
 
-    $questionnaire_counts{total} = $questionnaire_counts{0} + $questionnaire_counts{1};
-    $c->stash->{questionnaires_pc} = $questionnaire_counts{total} ? sprintf('%.1f', $questionnaire_counts{1} / $questionnaire_counts{total} * 100) : 'na';
+    $questionnaire_counts{total} =
+      $questionnaire_counts{0} + $questionnaire_counts{1};
+    $c->stash->{questionnaires_pc} =
+      $questionnaire_counts{total}
+      ? sprintf( '%.1f',
+        $questionnaire_counts{1} / $questionnaire_counts{total} * 100 )
+      : 'na';
     $c->stash->{questionnaires} = \%questionnaire_counts;
 
     return 1;
