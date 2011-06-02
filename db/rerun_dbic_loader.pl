@@ -16,7 +16,6 @@ my @tables_to_ignore = (
     'admin_log',           #
     'alert_sent',          #
     'alert_type',          #
-    'contacts_history',    #
     'debugdate',           #
     'flickr_imported',     #
     'partial_user',        #
