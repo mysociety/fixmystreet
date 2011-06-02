@@ -475,8 +475,8 @@ Uses any site_restriction defined by a cobrand.
 
 sub admin_fetch_problem {
     my ($id) = @_;
-    my $problem = dbh()->selectall_arrayref("select * from problem 
-                                             where id=? 
+    my $problem = dbh()->selectall_arrayref("select problem.*, users.email from problem, users
+                                             where problem.id=? and users.id = problem.user_id
                                              $site_restriction", { Slice=>{} }, $id);
     return $problem;
 }
@@ -489,9 +489,10 @@ Uses any site_restriction defined by a cobrand.
 =cut
 sub admin_fetch_update {
     my ($id) = @_;
-    my $update = dbh()->selectall_arrayref("select comment.*, problem.council from comment, problem 
+    my $update = dbh()->selectall_arrayref("select comment.*, problem.council, users.email from comment, problem, users
                                             where comment.id=? 
                                             and problem.id = comment.problem_id 
+                                            and users.id = comment.user_id
                                             $site_restriction", { Slice=>{} }, $id);
     return $update; 
 }
