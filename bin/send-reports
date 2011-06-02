@@ -24,11 +24,8 @@ use FixMyStreet::App;
 use EastHantsWSDL;
 use Utils;
 use mySociety::Config;
-use mySociety::Email;
 use mySociety::EmailUtil;
-use mySociety::Locale;
 use mySociety::MaPit;
-use mySociety::Random qw(random_bytes);
 use mySociety::Web qw(ent);
 
 # Set up site, language etc.
@@ -225,20 +222,17 @@ while (my $row = $unsent->next) {
     my $result = -1;
 
     if ($send_email) {
-
-        my $params = {
-            _template_ => $template,
-            _parameters_ => \%h,
-            To => \@to,
-            From => [ $row->user->email, $row->name ],
-            'Message-ID' => sprintf('<report-%s-%s@mysociety.org>', time(), unpack('h*', random_bytes(5, 1))),
-        };
-        my $email = mySociety::Locale::in_gb_locale { mySociety::Email::construct_email($params) };
-        if (!$nomail) {
-            $result *= mySociety::EmailUtil::send_email($email, mySociety::Config::get('CONTACT_EMAIL'), @recips);
-        } else {
-            print $email;
-        }
+        $result *= FixMyStreet::App->send_email_cron(
+            {
+                _template_ => $template,
+                _parameters_ => \%h,
+                To => \@to,
+                From => [ $row->user->email, $row->name ],
+            },
+            mySociety::Config::get('CONTACT_EMAIL'),
+            \@recips,
+            $nomail
+        );
     }
 
     if ($send_web eq 'easthants') {

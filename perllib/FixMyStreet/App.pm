@@ -8,6 +8,8 @@ use FixMyStreet::Cobrand;
 use Memcached;
 use Problems;
 use mySociety::Email;
+use mySociety::EmailUtil;
+use mySociety::Random qw(random_bytes);
 use FixMyStreet::Map;
 use FixMyStreet::FakeQ;
 
@@ -306,6 +308,27 @@ sub send_email {
     $c->model('EmailSend')->send($email_text);
 
     return $email;
+}
+
+sub send_email_cron {
+    my ( $c, $params, $env_from, $env_to, $nomail ) = @_;
+
+    $params->{'Message-ID'} = sprintf('<fms-cron-%s-%s@mysociety.org>', time(),
+        unpack('h*', random_bytes(5, 1))
+    );
+
+    my $email = mySociety::Locale::in_gb_locale { mySociety::Email::construct_email($params) };
+
+    if ( FixMyStreet->test_mode ) {
+        my $sender = Email::Send->new({ mailer => 'Test' });
+        $sender->send( $email );
+        return 0;
+    } elsif (!$nomail) {
+        return mySociety::EmailUtil::send_email( $email, $env_from, @$env_to );
+    } else {
+        print $email;
+        return 1; # Failure
+    }
 }
 
 =head2 uri_with

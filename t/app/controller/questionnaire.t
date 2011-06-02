@@ -45,29 +45,29 @@ my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
 my $report_id = $report->id;
 ok $report, "created test report - $report_id";
 
-# FIXME Should call send-questionnaires here to test that is working okay.
-# For now, just generate the questionnaire etc. manually.
-# Call send-questionnaires (for normal non-EHA site)
-# my $email = $mech->get_email;
-# ok $email, "got an email";
-# like $email->body, qr/fill in our short questionnaire/i, "got questionnaire email";
-# my ($url) = $email->body =~ m{(http://\S+)};
-# ok $url, "extracted questionnaire url '$url'";
+# Call the questionaire sending function...
+FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires( {
+    site => 'fixmystreet'
+} );
+my $email = $mech->get_email;
+ok $email, "got an email";
+like $email->body, qr/fill in our short questionnaire/i, "got questionnaire email";
+my ($token) = $email->body =~ m{http://.*?/Q/(\S+)};
+ok $token, "extracted questionnaire token '$token'";
+$mech->clear_emails_ok;
 
-$report->send_questionnaire( 0 );
-$report->update;
+$report->discard_changes;
+is $report->send_questionnaire, 0;
 
-my $questionnaire = FixMyStreet::App->model('DB::Questionnaire')->find_or_create(
-    {
-        problem_id => $report->id,
-        whensent => '2011-04-01 12:00:00',
-    }
-);
-ok $questionnaire, 'added questionnaire';
-my $token = FixMyStreet::App->model("DB::Token")->create(
-    { scope => 'questionnaire', data => $questionnaire->id }
-);
-ok $token, 'added token for questionnaire';
+$token = FixMyStreet::App->model("DB::Token")->find( {
+    scope => 'questionnaire', token => $token
+} );
+ok $token, 'found token for questionnaire';
+
+my $questionnaire = FixMyStreet::App->model('DB::Questionnaire')->find( {
+    id => $token->data
+} );
+ok $questionnaire, 'found questionnaire';
 
 foreach my $test (
     {
@@ -251,7 +251,21 @@ foreach my $test (
 
 # EHA extra checking
 ok $mech->host("reportemptyhomes.com"), 'change host to reportemptyhomes';
-$mech->get_ok("/Q/" . $token->token);
+
+# Reset, and all the questionaire sending function - FIXME should it detect site itself somehow?
+$report->send_questionnaire( 1 );
+$report->update;
+$questionnaire->delete;
+FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires( {
+    site => 'emptyhomes'
+} );
+$email = $mech->get_email;
+ok $email, "got an email";
+like $email->body, qr/fill in this short questionnaire/i, "got questionnaire email";
+($token) = $email->body =~ m{http://.*?/Q/(\S+)};
+ok $token, "extracted questionnaire token '$token'";
+
+$mech->get_ok("/Q/" . $token);
 $mech->content_contains( 'should have reported what they have done' );
 
 # Test already answered the ever reported question, so not shown again
@@ -264,14 +278,14 @@ my $questionnaire2 = FixMyStreet::App->model('DB::Questionnaire')->find_or_creat
 );
 ok $questionnaire, 'added another questionnaire';
 ok $mech->host("fixmystreet.com"), 'change host to fixmystreet';
-$mech->get_ok("/Q/" . $token->token);
+$mech->get_ok("/Q/" . $token);
 $mech->title_like( qr/Questionnaire/ );
 $mech->content_contains( 'Has this problem been fixed?' );
 $mech->content_lacks( 'ever reported' );
 
 # EHA extra checking
 ok $mech->host("reportemptyhomes.com"), 'change host to reportemptyhomes';
-$mech->get_ok("/Q/" . $token->token);
+$mech->get_ok("/Q/" . $token);
 $mech->content_contains( 'made a lot of progress' );
 
 $mech->delete_user('test@example.com');

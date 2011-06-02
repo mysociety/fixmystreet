@@ -9,126 +9,17 @@
 use strict;
 require 5.8.0;
 
-use File::Slurp;
 use CGI; # XXX Awkward kludge
 use Encode;
 use CronFns;
 
 use FixMyStreet::App;
-
-use Page;
 use mySociety::Config;
-use mySociety::Email;
-use mySociety::Locale;
-use mySociety::EmailUtil;
-use mySociety::Random qw(random_bytes);
 
-my ($verbose, $nomail) = CronFns::options();
-my $site = CronFns::site(mySociety::Config::get('BASE_URL'));
-CronFns::language($site);
+my %params;
+( $params{verbose}, $params{nomail} ) = CronFns::options();
+$params{site} = CronFns::site(mySociety::Config::get('BASE_URL'));
+CronFns::language($params{site});
 
-send_q($site, '4 weeks');
-send_q($site, '26 weeks') if $site eq 'emptyhomes';
-
-# ---
-
-sub send_q {
-    my ($site, $period) = @_;
-
-    # Select all problems that need a questionnaire email sending
-    my $params = {
-        state => [ 'confirmed', 'fixed' ],
-        whensent => [
-            '-and',
-            { '!=', undef },
-            { '<', \"ms_current_timestamp() - '$period'::interval" },
-        ],
-        send_questionnaire => 1,
-    };
-    # FIXME Do these a bit better...
-    if ($site eq 'emptyhomes' && $period eq '4 weeks') {
-        $params->{'(select max(whensent) from questionnaire where me.id=problem_id)'} = undef;
-    } elsif ($site eq 'emptyhomes' && $period eq '26 weeks') {
-        $params->{'(select max(whensent) from questionnaire where me.id=problem_id)'} = { '!=', undef };
-    } else {
-        $params->{'-or'} = [
-            '(select max(whensent) from questionnaire where me.id=problem_id)' => undef,
-            '(select max(whenanswered) from questionnaire where me.id=problem_id)' => { '<', \"ms_current_timestamp() - '$period'::interval" }
-        ];
-    }
-
-    my $unsent = FixMyStreet::App->model('DB::Problem')->search( $params, {
-        order_by => { -desc => 'created' }
-    } );
-
-    while (my $row = $unsent->next) {
-
-        my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->cobrand)->new();
-        $cobrand->set_lang_and_domain($row->lang, 1);
-
-        # Cobranded and non-cobranded messages can share a database. In this case, the conf file 
-        # should specify a vhost to send the reports for each cobrand, so that they don't get sent 
-        # more than once if there are multiple vhosts running off the same database. The email_host
-        # call checks if this is the host that sends mail for this cobrand.
-        next unless $cobrand->email_host;
-
-        my $template;
-        if ($site eq 'emptyhomes') {
-            ($template = $period) =~ s/ //;
-            $template = File::Slurp::read_file("$FindBin::Bin/../templates/email/emptyhomes/" . $row->lang . "/questionnaire-$template.txt");
-        } else {
-            $template = File::Slurp::read_file("$FindBin::Bin/../templates/email/" . $cobrand->moniker . "/questionnaire.txt");
-        }
-
-        my %h = map { $_ => $row->$_ } qw/name title detail category/;
-        $h{created} = Page::prettify_duration( time() - $row->created->epoch, 'week' );
-
-        my $questionnaire = FixMyStreet::App->model('DB::Questionnaire')->create( {
-            problem_id => $row->id,
-            whensent => \'ms_current_timestamp()',
-        } );
-
-        # We won't send another questionnaire unless they ask for it (or it was
-        # the first EHA questionnaire.
-        $row->send_questionnaire( 0 )
-            if $site ne 'emptyhomes' || $period eq '26 weeks';
-
-        my $token = FixMyStreet::App->model("DB::Token")->new_result( {
-            scope => 'questionnaire',
-            data  => $questionnaire->id,
-        } );
-        $h{url} = $cobrand->base_url_for_emails($row->cobrand_data) . '/Q/' . $token->token;
-
-        my $sender = $cobrand->contact_email;
-        my $sender_name = _($cobrand->contact_name);
-        $sender =~ s/team/fms-DO-NOT-REPLY/;
-        my $email = mySociety::Locale::in_gb_locale { mySociety::Email::construct_email({
-            _template_ => $template,
-            _parameters_ => \%h,
-            To => [ [ $row->user->email, $row->name ] ],
-            From => [ $sender, $sender_name ],
-            'Message-ID' => sprintf('<ques-%s-%s@mysociety.org>', time(), unpack('h*', random_bytes(5, 1))),
-        }) };
-
-        print "Sending questionnaire " . $questionnaire->id . ", problem "
-            . $row->id . ", token " . $token->token . " to "
-            . $row->user->email . "\n"
-            if $verbose;
-
-        my $result;
-        if ($nomail) {
-            $result = -1;
-        } else {
-            $result = mySociety::EmailUtil::send_email($email, $sender, $row->user->email);
-        }
-        if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
-            print "  ...success\n" if $verbose;
-            $row->update();
-            $token->insert();
-        } else {
-            print " ...failed\n" if $verbose;
-            $questionnaire->delete;
-        }
-    }
-}
+FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires( \%params );
 
