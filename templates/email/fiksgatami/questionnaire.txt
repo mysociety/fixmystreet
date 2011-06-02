@@ -1,0 +1,23 @@
+Subject: Skjema for din sak på FiksGataMi
+
+Hei <?=$values['name']?>,
+
+for <?=$values['created']?> siden, la du til en sak på FiksGataMi
+med detaljene som vist i denne eposten. For å holde vår nettside oppdatert
+og relevant, vil vi sette pris på om du kunne fylle ut følgende skjema for å
+oppdatere saken:
+
+    <?=$values['url']?>
+
+Vennligst ikke svar på denne eposten; det er muligheter for å kommentere i skjema.
+
+Vennlig hilsen,  
+FiksGataMi-gruppen
+
+Saken du la til var som følger:
+
+<?=$values['title']?>
+
+<?=$values['detail']?>
+
+

@@ -16,7 +16,7 @@ MAILTO=cron-!!(*= $site *)!!@mysociety.org
 0 0-11,13-23                      * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/send-reports || echo "stalled?"
 0 12                              * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/send-reports --verbose" || echo "stalled?"
 2 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-alerts.lock /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/send-alerts || echo "stalled?"
-0,30 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-questionnaires.lock /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/send-questionnaires-eha || echo "stalled?"
+0,30 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-questionnaires.lock /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/send-questionnaires || echo "stalled?"
 
 !!(* } elsif ($vhost eq 'cities.fixmystreet.com') { *)!!
 2,7,12,17,22,27,32,37,42,47,52,57 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/send-reports || echo "stalled?"
