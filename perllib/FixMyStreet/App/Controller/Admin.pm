@@ -4,7 +4,7 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
-use mySociety::Random qw(random_bytes);
+use POSIX qw(strftime strcoll);
 
 =head1 NAME
 
@@ -143,6 +143,55 @@ sub questionnaire : Path('questionnaire') : Args(0) {
 
     return 1;
 }
+
+sub council_list : Path('council_list') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    my $edit_activity = $c->model('DB::ContactsHistory')->search(
+        undef,
+        {
+            select => [ 'editor', { count => 'contacts_history_id', -as => 'c' } ],
+            group_by => ['editor'],
+            order_by => { -desc => 'c' }
+        }
+    );
+
+    $c->stash->{edit_activity} = $edit_activity;
+
+    my @area_types = $c->cobrand->area_types;
+    my $areas = mySociety::MaPit::call('areas', \@area_types);
+
+    my @councils_ids = sort { strcoll($areas->{$a}->{name}, $areas->{$b}->{name}) } keys %$areas;
+    # this is for norway only - put in cobrand
+    @councils_ids = grep { $_ ne 301 } @councils_ids;
+
+    my $contacts = $c->model('DB::Contact')->search(
+        undef,
+        {
+            select => [ 'area_id', { count => 'id' }, { count => \'case when deleted then 1 else null end' },
+            { count => \'case when confirmed then 1 else null end' } ],
+            as => [qw/area_id c deleted confirmed/],
+            group_by => [ 'area_id' ],
+            result_class => 'DBIx::Class::ResultClass::HashRefInflator'
+        }
+    );
+
+    my %council_info = map { $_->{area_id} => $_ } $contacts->all;
+
+    my @no_info = grep { !$council_info{$_} } @councils_ids;
+    my @one_plus_deleted = grep { $council_info{$_} && $council_info{$_}->{deleted} } @councils_ids;
+    my @unconfirmeds = grep { $council_info{$_} && !$council_info{$_}->{deleted} && $council_info{$_}->{confirmed} != $council_info{$_}->{c} } @councils_ids;
+    my @all_confirmed = grep { $council_info{$_} && !$council_info{$_}->{deleted} && $council_info{$_}->{confirmed} == $council_info{$_}->{c} } @councils_ids;
+
+    $c->stash->{areas} = $areas;
+    $c->stash->{counts} = \%council_info;
+    $c->stash->{no_info} = \@no_info;
+    $c->stash->{one_plus_deleted} = \@one_plus_deleted;
+    $c->stash->{unconfirmeds} = \@unconfirmeds;
+    $c->stash->{all_confirmed} = \@all_confirmed;
+
+    return 1;
+}
 # use Encode;
 # use POSIX qw(strftime strcoll);
 # use Digest::MD5 qw(md5_hex);
@@ -222,67 +271,6 @@ sub questionnaire : Path('questionnaire') : Args(0) {
 # }
 # 
 # 
-# # admin_councils_list CGI
-# sub admin_councils_list ($) {
-#     my ($q) = @_;
-# 
-#     print html_head($q, _("Council contacts"));
-#     print $q->h1(_("Council contacts"));
-# 
-#     # Table of editors
-#     print $q->h2(_("Diligency prize league table"));
-#     my $edit_activity = dbh()->selectall_arrayref("select count(*) as c, editor from contacts_history group by editor order by c desc");
-#     if (@$edit_activity) {
-#         print $q->ul(
-#             map { $q->li( sprintf(_('%d edits by %s'), $_->[0], $_->[1])) } @$edit_activity 
-#         );
-#     } else {
-#         print $q->p(_('No edits have yet been made.'));
-#     }
-# 
-#     # Table of councils
-#     print $q->h2(_("Councils"));
-#     my $cobrand = Page::get_cobrand($q);
-#     my @area_types = Cobrand::area_types($cobrand);
-#     my $areas = mySociety::MaPit::call('areas', \@area_types);
-#     my @councils_ids = sort { strcoll($areas->{$a}->{name}, $areas->{$b}->{name}) } keys %$areas;
-#     @councils_ids = grep { $_ ne 301 } @councils_ids;
-#     my $bci_info = dbh()->selectall_hashref("
-#         select area_id, count(*) as c, count(case when deleted then 1 else null end) as deleted,
-#             count(case when confirmed then 1 else null end) as confirmed
-#         from contacts group by area_id", 'area_id');
-# 
-#     my $list_part = sub {
-#         my @ids = @_;
-#         if (!scalar(@ids)) {
-#             print _("None");
-#             return;
-#         }
-#         my @li;
-#         foreach (@ids) {
-#             my $parent = '';
-#             $parent = ', ' . $areas->{$areas->{$_}->{parent_area}}->{name}
-#                 if $areas->{$_}->{parent_area};
-# 
-#             push @li, $q->li($q->a({ href => NewURL($q, area_id => $_, page => 'councilcontacts') }, 
-#                   $areas->{$_}->{name}) . $parent . ' ' .
-#                     ($bci_info->{$_} && $q->{site} ne 'emptyhomes' ?
-#                         sprintf(_('%d addresses'), $bci_info->{$_}->{c})
-#                     : ''));
-#         }
-#         print $q->ul(@li);
-#     };
-# 
-#     print $q->h3(_('No info at all'));
-#     &$list_part(grep { !$bci_info->{$_} } @councils_ids);
-#     print $q->h3(_('Currently has 1+ deleted'));
-#     &$list_part(grep { $bci_info->{$_} && $bci_info->{$_}->{deleted} } @councils_ids);
-#     print $q->h3(_('Some unconfirmeds'));
-#     &$list_part(grep { $bci_info->{$_} && !$bci_info->{$_}->{deleted} && $bci_info->{$_}->{confirmed} != $bci_info->{$_}->{c} } @councils_ids);
-#     print $q->h3(_('All confirmed'));
-#     &$list_part(grep { $bci_info->{$_} && !$bci_info->{$_}->{deleted} && $bci_info->{$_}->{confirmed} == $bci_info->{$_}->{c} } @councils_ids);
-#     print html_tail($q);
-# }
 # 
 # # admin_council_contacts CGI AREA_ID
 # sub admin_council_contacts ($$) {
