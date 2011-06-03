@@ -343,9 +343,16 @@ subtest "test report creation for a user who does not have an account" => sub {
     $mech->get_ok($url);
     $report->discard_changes;
     is $report->state, 'confirmed', "Report is now confirmed";
-    is $report->state, 'confirmed', "report is now confirmed";
 
     $mech->get_ok( '/report/' . $report->id );
+
+    # check that the reporter has an alert
+    my $alert = FixMyStreet::App->model('DB::Alert')->find( {
+        user       => $report->user,
+        alert_type => 'new_updates',
+        parameter  => $report->id,
+    } );
+    ok $alert, "created new alert";
 
     # user is created and logged in
     $mech->logged_in_ok;
@@ -439,6 +446,14 @@ foreach my $test (
         # check report is confirmed and available
         is $report->state, 'confirmed', "report is now confirmed";
         $mech->get_ok( '/report/' . $report->id );
+
+        # check that the reporter has an alert
+        my $alert = FixMyStreet::App->model('DB::Alert')->find( {
+            user       => $report->user,
+            alert_type => 'new_updates',
+            parameter  => $report->id,
+        } );
+        ok $alert, "created new alert";
 
         # user is still logged in
         $mech->logged_in_ok;

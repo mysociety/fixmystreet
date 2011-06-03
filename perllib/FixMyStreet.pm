@@ -121,11 +121,7 @@ sub dbic_connect_info {
         AutoCommit     => 1,
         pg_enable_utf8 => 1,
     };
-
-    # need this to stop issues with user being a reserved word in postgres
-    my $dbic_args = {
-        quote_char => '"', 
-    };
+    my $dbic_args = {};
 
     return [ $dsn, $user, $password, $dbi_args, $dbic_args ];
 }

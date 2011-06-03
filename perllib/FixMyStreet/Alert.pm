@@ -8,12 +8,6 @@
 #
 # $Id: Alert.pm,v 1.71 2010-01-06 16:50:27 louise Exp $
 
-package FixMyStreet::Alert::Error;
-
-use Error qw(:try);
-
-@FixMyStreet::Alert::Error::ISA = qw(Error::Simple);
-
 package FixMyStreet::Alert;
 
 use strict;
@@ -32,57 +26,9 @@ use mySociety::Locale;
 use mySociety::MaPit;
 use mySociety::Random qw(random_bytes);
 
-# Add a new alert
-sub create ($$$$;@) {
-    my ($email, $alert_type, $cobrand, $cobrand_data, @params) = @_;
-    my $already = 0;
-    if (0==@params) {
-        ($already) = dbh()->selectrow_array('select id from alert where alert_type=? and email=? limit 1',
-            {}, $alert_type, $email);
-    } elsif (1==@params) {
-        ($already) = dbh()->selectrow_array('select id from alert where alert_type=? and email=? and parameter=? limit 1',
-            {}, $alert_type, $email, @params);
-    } elsif (2==@params) {
-        ($already) = dbh()->selectrow_array('select id from alert where alert_type=? and email=? and parameter=? and parameter2=? limit 1',
-            {}, $alert_type, $email, @params);
-    }
-    return $already if $already;
-
-    my $id = dbh()->selectrow_array("select nextval('alert_id_seq');");
-    my $lang = $mySociety::Locale::lang;
-    if (0==@params) {
-        dbh()->do('insert into alert (id, alert_type, email, lang, cobrand, cobrand_data)
-            values (?, ?, ?, ?, ?, ?)', {}, $id, $alert_type, $email, $lang, $cobrand, $cobrand_data);
-    } elsif (1==@params) {
-        dbh()->do('insert into alert (id, alert_type, parameter, email, lang, cobrand, cobrand_data)
-            values (?, ?, ?, ?, ?, ?, ?)', {}, $id, $alert_type, @params, $email, $lang, $cobrand, $cobrand_data);
-    } elsif (2==@params) {
-        dbh()->do('insert into alert (id, alert_type, parameter, parameter2, email, lang, cobrand, cobrand_data)
-            values (?, ?, ?, ?, ?, ?, ?, ?)', {}, $id, $alert_type, @params, $email, $lang, $cobrand, $cobrand_data);
-    }
-    dbh()->commit();
-    return $id;
-}
-
-sub confirm ($) {
-    my $id = shift;
-    dbh()->do("update alert set confirmed=1, whendisabled=null where id=?", {}, $id);
-    dbh()->commit();
-}
-
-# Delete an alert
-sub delete ($) {
-    my $id = shift;
-    dbh()->do('update alert set whendisabled = ms_current_timestamp() where id = ?', {}, $id);
-    dbh()->commit();
-}
-
-# This makes load of assumptions, but still should be useful
-# 
 # Child must have confirmed, id, email, state(!) columns
 # If parent/child, child table must also have name and text
 #   and foreign key to parent must be PARENT_id
-
 sub email_alerts ($) {
     my ($testing_email) = @_;
     my $url; 
@@ -236,7 +182,8 @@ sub _send_aggregated_alert_email(%) {
         dbh()->commit();
     } else {
         dbh()->rollback();
-        throw FixMyStreet::Alert::Error("Failed to send alert $data{alert_id}!");
+        print "Failed to send alert $data{alert_id}!";
     }
 }
 
+1;

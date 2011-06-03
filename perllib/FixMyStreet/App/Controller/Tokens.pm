@@ -57,15 +57,8 @@ sub confirm_problem : Path('/P') {
     ) if $problem->state eq 'unconfirmed';
 
     # Subscribe problem reporter to email updates
-    my $alert = $c->model('DB::Alert')->find_or_create(
-        {
-            user         => $problem->user,
-            alert_type   => 'new_updates',
-            cobrand      => $problem->cobrand,
-            cobrand_data => $problem->cobrand_data,
-            parameter    => $problem->id
-        }
-    )->confirm;
+    $c->stash->{report} = $c->stash->{problem};
+    $c->forward( '/report/new/create_reporter_alert' );
 
     # log the problem creation user in to the site
     $c->authenticate( { email => $problem->user->email }, 'no_password' );

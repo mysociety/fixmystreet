@@ -140,7 +140,7 @@ sub subscribe_email : Private {
         $c->forward('set_local_alert_options');
     }
     else {
-        throw FixMyStreet::Alert::Error('Invalid type');
+        $c->detach( '/page_error_404_not_found', [ 'Invalid type' ] );
     }
 
     $c->forward('create_alert');
@@ -162,7 +162,7 @@ sub updates : Path('updates') : Args(0) {
 
 =head2 confirm
 
-Confirm signup to an alert. Forwarded here from Tokens.
+Confirm signup to or unsubscription from an alert. Forwarded here from Tokens.
 
 =cut
 
@@ -173,11 +173,9 @@ sub confirm : Private {
 
     if ( $c->stash->{confirm_type} eq 'subscribe' ) {
         $alert->confirm();
-        $alert->update;
     }
     elsif ( $c->stash->{confirm_type} eq 'unsubscribe' ) {
-        $alert->delete();
-        $alert->update;
+        $alert->disable();
     }
 }
 
@@ -198,6 +196,7 @@ sub create_alert : Private {
     unless ($alert) {
         $options->{cobrand}      = $c->cobrand->moniker();
         $options->{cobrand_data} = $c->cobrand->extra_update_data();
+        $options->{lang}         = $c->stash->{lang_code};
 
         if ( $c->user && $c->user->id == $c->stash->{alert_user}->id ) {
             $options->{confirmed} = 1;
