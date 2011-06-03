@@ -19,7 +19,6 @@ my @tables_to_ignore = (
     'debugdate',           #
     'flickr_imported',     #
     'partial_user',        #
-    'secret',              #
     'textmystreet',        #
 );
 my $exclude = '^(?:' . join( '|', @tables_to_ignore ) . ')$';
