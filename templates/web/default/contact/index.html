@@ -69,7 +69,7 @@
    <div class="form-error">[% field_errors.name %]</div>
 [% END %]
 <div class="form-field">
-<label for="form_name">Your name:</label>
+<label for="form_name">[% loc('Your name:') %]</label>
 <input type="text" name="name" id="form_name" value="[% form_name %]" size="30"></div>
 
 
@@ -77,24 +77,24 @@
    <div class="form-error">[% field_errors.em %]</div>
 [% END %]
 <div class="form-field">
-<label for="form_email">Your&nbsp;email:</label>
+<label for="form_email">[% loc('Your&nbsp;email:') %]</label>
 <input type="text" name="em" id="form_email" value="[% em %]" size="30"></div>
 
 [% IF field_errors.subject %]
    <div class="form-error">[% field_errors.subject %]</div>
 [% END %]
 <div class="form-field">
-<label for="form_subject">Subject:</label>
+<label for="form_subject">[% loc('Subject:') %]</label>
 <input type="text" name="subject" id="form_subject" value="[% subject %]" size="30"></div>
 
 [% IF field_errors.message %]
    <div class="form-error">[% field_errors.message %]</div>
 [% END %]
 <div class="form-field">
-<label for="form_message">Message:</label>
+<label for="form_message">[% loc('Message:') %]</label>
 
 <textarea name="message" id="form_message" rows="7" cols="50">[% message %]</textarea></div>
-<div class="checkbox"><input type="submit" value="Post"></div>
+<div class="checkbox"><input type="submit" value="[% loc('Post') %]"></div>
 
 </form>
 

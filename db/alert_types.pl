@@ -27,7 +27,7 @@
     _('The latest local problems reported by users'),
 
 # New problems around a postcode with a particular state
-    _('New problems NEAR {{POSTCODE}} on FixMyStreet'),
+    _('New problems near {{POSTCODE}} on FixMyStreet'),
     _('The latest local problems reported by users'),
 
 # New problems sent to a particular council

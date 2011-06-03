@@ -34,6 +34,7 @@ HTTP::Server::Simple
 HTTP::Server::Simple::CGI
 IO::String
 JSON
+Locale::Maketext::Lexicon
 Moose
 Net::Domain::TLD
 Path::Class

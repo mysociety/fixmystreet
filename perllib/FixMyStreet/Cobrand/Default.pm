@@ -763,7 +763,7 @@ sub council_rss_alert_options {
           {
             type      => 'council',
             id        => sprintf( 'district:%s:%s', $district->{id}, $district->{id_name} ),
-            text      => sprintf( _('%s'), $district->{name}),
+            text      => $district->{name},
             rss_text  => sprintf( _('RSS feed of %s'), $district->{name}),
             uri       => $self->uri( '/rss/reports/' . $district->{short_name} ),
           },
@@ -777,7 +777,7 @@ sub council_rss_alert_options {
           {
             type      => 'council',
             id        => sprintf( 'county:%s:%s', $county->{id}, $county->{id_name} ),
-            text      => sprintf( _('%s'), $county->{name}),
+            text      => $county->{name},
             rss_text  => sprintf( _('RSS feed of %s'), $county->{name}),
             uri       => $self->uri( '/rss/reports/' . $county->{short_name} ),
           },
