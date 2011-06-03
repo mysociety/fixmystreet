@@ -167,8 +167,7 @@ sub council_list : Path('council_list') : Args(0) {
     my $areas = mySociety::MaPit::call('areas', \@area_types);
 
     my @councils_ids = sort { strcoll($areas->{$a}->{name}, $areas->{$b}->{name}) } keys %$areas;
-    # this is for norway only - put in cobrand
-    @councils_ids = grep { $_ ne 301 } @councils_ids;
+    @councils_ids = $c->cobrand->filter_all_council_ids_list( @councils_ids );
 
     my $contacts = $c->model('DB::Contact')->search(
         undef,

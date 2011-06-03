@@ -640,6 +640,18 @@ sub remove_redundant_councils {
     if $all_councils->{2391};
 }
 
+=item filter_all_council_ids_list
+
+Removes any council IDs that we don't need from an array and returns the
+filtered array
+
+=cut
+
+sub filter_all_council_ids_list {
+  my $self = shift;
+  return @_;
+}
+
 =item short_name
 
 Remove extra information from council names for tidy URIs

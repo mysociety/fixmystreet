@@ -70,6 +70,14 @@ sub remove_redundant_councils {
     if $all_councils->{3};
 }
 
+sub filter_all_council_ids_list {
+  my $self = shift;
+  my @all_councils_ids = @_;
+
+  # as above we only want to show Oslo once
+  return grep { $_ != 301 } @all_councils_ids;
+}
+
 sub short_name {
   my $self = shift;
   my ($area, $info) = @_;
