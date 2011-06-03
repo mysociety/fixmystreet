@@ -47,7 +47,7 @@ if ($data{is_bounce_message}) {
 
 # Not a bounce, send an automatic response
 my $template = 'reply-autoresponse';
-open FP, "$FindBin::Bin/../templates/emails/$template" or exit 75;
+open FP, "$FindBin::Bin/../templates/email/default/$template" or exit 75;
 $template = join('', <FP>);
 close FP;
 
