@@ -293,7 +293,7 @@ sub display_contacts : Private {
 
     $c->stash->{contacts} = $contacts;
 
-    if ( $c->req->param('text') == 1 ) {
+    if ( $c->req->param('text') && $c->req->param('text') == 1 ) {
         $c->stash->{template} = 'admin/council_contacts.txt';
         $c->res->content_encoding('text/plain');
         return 1;
@@ -371,7 +371,10 @@ sub get_token : Private {
 
     my $secret = $c->model('DB::Secret')->search()->first;
 
-    my $token = md5_hex(($c->req->remote_user() . $secret->secret));
+    my $user = $c->req->remote_user();
+    $user ||= '';
+
+    my $token = md5_hex(($user . $secret->secret));
 
     $c->stash->{token} = $token;
 
