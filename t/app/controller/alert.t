@@ -22,7 +22,7 @@ $mech->content_contains('html lang="en-gb"');
 
 $mech->get_ok('/alert/list?pc=EH99 1SP');
 $mech->title_like(qr/^Local RSS feeds and email alerts/);
-$mech->content_contains('Local RSS feeds and email alerts for &lsquo;EH99&nbsp;1SP&rsquo;');
+$mech->content_contains('Here are the types of local problem alerts for &lsquo;EH99&nbsp;1SP&rsquo;');
 $mech->content_contains('html lang="en-gb"');
 $mech->content_contains('Problems within 8.5km');
 $mech->content_contains('rss/pc/EH991SP/2');

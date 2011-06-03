@@ -96,8 +96,7 @@ sub rss : Private {
         $c->res->redirect($url);
     }
     elsif ( $feed =~ /^local:([\d\.-]+):([\d\.-]+)$/ ) {
-        ( my $id = $1 ) =~ tr{:_}{/+};
-        $url = $c->cobrand->base_url() . '/rss/l/' . $id;
+        $url = $c->cobrand->base_url() . '/rss/l/' . $1 . ',' . $2;
         $c->res->redirect($url);
     }
     else {
@@ -332,9 +331,6 @@ sub prettify_pc : Private {
         my $pretty_pc_text = $pretty_pc;
         $pretty_pc_text =~ s/ //g;
         $c->stash->{pretty_pc_text} = $pretty_pc_text;
-
-        # this may be better done in template
-        $pretty_pc =~ s/ /&nbsp;/;
     }
 
     $c->stash->{pretty_pc} = $pretty_pc;

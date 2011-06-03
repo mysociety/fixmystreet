@@ -34,12 +34,12 @@ $ENV{PATH} = join ':', uniq "$root/bin", split( m/:/, $ENV{PATH} );
 
 # now decide what to do  - if no arguments print out shell arguments to set the
 # environment. If there are arguments then run those so that they run correctly
-if (@ARGV) {
-    system @ARGV;
-}
+#if (@ARGV) {
+#    system @ARGV;
+#}
 
 # we might want to require this file to configure something like a CGI script
-elsif ( $0 eq __FILE__ ) {
+if ( $0 eq __FILE__ ) {
 
     my @keys = sort 'PATH', grep { m{^PERL} } keys %ENV;
 
