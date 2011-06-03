@@ -46,6 +46,10 @@ sub posters : Global : Args(0) {
     my ( $self, $c ) = @_;
 }
 
+sub iphone : Global : Args(0) {
+    my ( $self, $c ) = @_;
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
