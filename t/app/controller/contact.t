@@ -10,6 +10,8 @@ $mech->get_ok('/contact');
 $mech->title_like(qr/Contact Us/);
 $mech->content_contains("We'd love to hear what you think about this site");
 
+my $problem_main;
+
 for my $test (
     {
         name      => 'A User',
@@ -20,6 +22,7 @@ for my $test (
         confirmed => '2011-05-04 10:44:28.145168',
         anonymous => 0,
         meta      => 'Reported by A User at 10:44, Wednesday  4 May 2011',
+        main      => 1,
     },
     {
         name      => 'A User',
@@ -111,7 +114,11 @@ for my $test (
         }
 
         $update->delete if $update;
-        $problem->delete;
+        if ($test->{main}) {
+            $problem_main = $problem;
+        } else {
+            $problem->delete;
+        }
     };
 }
 
@@ -193,7 +200,7 @@ for my $test (
         field_errors => [ 'Please write a message', ]
     },
     {
-        url    => '/contact?id=1',
+        url    => '/contact?id=' . $problem_main->id,
         fields => {
             em      => 'test@example.com',
             name    => 'A name',
@@ -228,12 +235,25 @@ for my $test (
             message => 'A message',
         },
     },
+    {
+        fields => {
+            em      => 'test@example.com',
+            name    => 'A name',
+            subject => 'A subject',
+            message => 'A message',
+            id      => $problem_main->id,
+        },
+    },
 
   )
 {
     subtest 'check email sent correctly' => sub {
         $mech->clear_emails_ok;
-        $mech->get_ok('/contact');
+        if ($test->{fields}{id}) {
+            $mech->get_ok('/contact?id=' . $test->{fields}{id});
+        } else {
+            $mech->get_ok('/contact');
+        }
         $mech->submit_form_ok( { with_fields => $test->{fields} } );
         $mech->content_contains('Thanks for your feedback');
         $mech->email_count_is(1);
@@ -243,7 +263,13 @@ for my $test (
         is $email->header('Subject'), 'FMS message: ' .  $test->{fields}->{subject}, 'subject';
         is $email->header('From'), "\"$test->{fields}->{name}\" <$test->{fields}->{em}>", 'from';
         like $email->body, qr/$test->{fields}->{message}/, 'body';
-        like $email->body, qr/Sent by contact.cgi on \S+. IP address (?:\d{1,3}\.){3,}\d{1,3}/, 'body footer'
+        like $email->body, qr/Sent by contact.cgi on \S+. IP address (?:\d{1,3}\.){3,}\d{1,3}/, 'body footer';
+        my $problem_id = $test->{fields}{id};
+        like $email->body, qr/Complaint about report $problem_id/, 'reporting a report'
+            if $test->{fields}{id};
     };
 }
+
+$problem_main->delete;
+
 done_testing();

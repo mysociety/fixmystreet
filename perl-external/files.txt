@@ -98,6 +98,7 @@
 /authors/id/D/DR/DROLSKY/MooseX-SemiAffordanceAccessor-0.09.tar.gz
 /authors/id/D/DR/DROLSKY/MooseX-Types-0.25.tar.gz
 /authors/id/D/DR/DROLSKY/Package-DeprecationManager-0.10.tar.gz
+/authors/id/D/DR/DRTECH/Locale-Maketext-Lexicon-0.86.tar.gz
 /authors/id/F/FD/FDALY/Test-Tester-0.107.tar.gz
 /authors/id/F/FE/FERREIRA/Devel-Hide-0.0008.tar.gz
 /authors/id/F/FE/FERREIRA/Exporter-5.63.tar.gz
@@ -237,6 +238,7 @@
 /authors/id/T/TJ/TJENNESS/File-Temp-0.22.tar.gz
 /authors/id/T/TL/TLINDEN/Config-General-2.50.tar.gz
 /authors/id/T/TM/TMTM/Class-Data-Inheritable-0.08.tar.gz
+/authors/id/T/TO/TODDR/Locale-Maketext-1.19.tar.gz
 /authors/id/T/TO/TOKUHIROM/Test-Requires-0.06.tar.gz
 /authors/id/T/TU/TURNSTEP/DBD-Pg-2.17.2.tar.gz
 /authors/id/T/TU/TURNSTEP/DBD-Pg-2.18.1.tar.gz

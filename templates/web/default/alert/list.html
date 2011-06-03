@@ -3,7 +3,7 @@
 [% INCLUDE 'header.html', title => title %]
 
 [% IF pretty_pc %]
-[% title = tprintf( loc('Local RSS feeds and email alerts for %s'), pretty_pc ) %]
+[% title = tprintf( loc('Local RSS feeds and email alerts for &lsquo;%s&rsquo;'), pretty_pc ) %]
 [% END %]
 
 
@@ -24,7 +24,7 @@
 
   <p>
   [% IF pretty_pc %]
-    [% tprintf( loc('Here are the types of local problem alerts for %s.'), pretty_pc ) | html %]
+    [% tprintf( loc('Here are the types of local problem alerts for &lsquo;%s&rsquo;.'), pretty_pc ) | html %]
   [% END %]
   [% loc('Select which type of alert you\'d like and click the button for an RSS feed, or enter your email address to subscribe to an email alert') %]
   </p>
@@ -38,7 +38,7 @@
   <p id="rss_local">
     <input type="radio" name="feed" id="[% rss_feed_id %]" value="[% rss_feed_id %]"[% IF rss_feed_id == selected_feed || selected_feed == '' %] checked[% END %]>
     <label for="[% rss_feed_id %]">[% tprintf( loc('Problems within %.1fkm of this location'), population_radius ) %]</label>
-    ([% loc('a default distance which covers roughly 200,000 people') %]) <a href='[% rss_feed_uri %]'>
+    [% loc('(a default distance which covers roughly 200,000 people)') %] <a href='[% rss_feed_uri %]'>
       <img src='/i/feed.png' width='16' height='16' title='[% loc('RSS feed of nearby problems') %]' alt='[% loc('RSS feed') %]' border='0'></a>
   </p>
 

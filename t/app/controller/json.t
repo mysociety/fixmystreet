@@ -13,23 +13,23 @@ subtest "check that a bad request produces the appropriate response" => sub {
     my $bad_type = "Invalid type supplied";
 
     my %tests = (
-        ''                                                => $bad_date,
-        'foo=bar'                                         => $bad_date,
-        'type=&start_date=&end_date='                     => $bad_date,
-        'type=&start_date=bad&end_date=2000-02-01'        => $bad_date,
-        'type=&start_date=2000-01-01&end_date=bad'        => $bad_date,
-        'type=&start_date=2000-02-31&end_date=2000-02-01' => $bad_date,
-        'type=&start_date=2000-01-01&end_date=2000-02-31' => $bad_date,
-
-        'type=&start_date=2000-02-01&end_date=2000-01-01' => $mad_date,
-
-        'type=&start_date=2000-01-01&end_date=2000-02-01'    => $bad_type,
-        'type=foo&start_date=2000-01-01&end_date=2000-02-01' => $bad_type,
+        '?'                                                => $bad_date,
+        '?foo=bar'                                         => $bad_date,
+        '?start_date=&end_date='                     => $bad_date,
+        '?start_date=bad&end_date=2000-02-01'        => $bad_date,
+        '?start_date=2000-01-01&end_date=bad'        => $bad_date,
+        '?start_date=2000-02-31&end_date=2000-02-01' => $bad_date,
+        '?start_date=2000-01-01&end_date=2000-02-31' => $bad_date,
+          
+        '?start_date=2000-02-01&end_date=2000-01-01' => $mad_date,
+          
+        '?start_date=2000-01-01&end_date=2000-02-01'    => $bad_type,
+        '/foo?type=foo&start_date=2000-01-01&end_date=2000-02-01' => $bad_type,
     );
 
     foreach my $q ( sort keys %tests ) {
         is_deeply                            #
-          $mech->get_ok_json("/json?$q"),    #
+          $mech->get_ok_json("/json/problems$q"),    #
           { error => $tests{$q} },           #
           "correct error for query '$q'";
     }
@@ -38,7 +38,7 @@ subtest "check that a bad request produces the appropriate response" => sub {
 
 is_deeply                                    #
   $mech->get_ok_json(
-    "/json?type=new_problems&start_date=2000-01-01&end_date=2000-02-01"),    #
+    "/json/problems/new?start_date=2000-01-01&end_date=2000-02-01"),    #
   [],                                                                        #
   "correct response";
 
@@ -75,7 +75,7 @@ ok $anon_problem, "created anon test problem";
 
 is_deeply    #
   $mech->get_ok_json(
-    "/json?type=new_problems&start_date=2000-01-01&end_date=2000-02-01"),    #
+    "/json/problems/new?start_date=2000-01-01&end_date=2000-02-01"),    #
   [
     {
         'anonymous' => 0,

@@ -1,7 +1,7 @@
 [% 
     PROCESS "maps/${map.type}.html";
 
-    problem_title = problem.title | html;
+    problem_title = problem.title _ ' - ' _ loc('Viewing a problem') | html;
     INCLUDE 'header.html'
         title = problem_title
         rss = [ loc('Updates to this problem, FixMyStreet'), "/rss/$problem.id" ]
@@ -42,7 +42,7 @@
     <a rel="nofollow" id="email_alert" href="[% c.uri_for( '/alert', { type => 'updates', id => problem.id } ) %]">[% loc('Email me updates' ) %]</a>
 
     <form action="[% c.uri_for( '/alert/subscribe' ) %]" method="post" id="email_alert_box">
-        <p>[% loc('Receive email when updates are left on this problem' ) %]</p>
+        <p>[% loc('Receive email when updates are left on this problem.' ) %]</p>
         <label class="n" for="alert_rznvy">[% loc('Email') %]</label>
         <input type="text" name="rznvy" id="alert_rznvy" value="[% email | html %]" size="30">
         <input type="hidden" name="id" value="[% problem.id %]">
@@ -52,7 +52,7 @@
     </form>
     &nbsp;
     <a href="[% c.uri_for( '/rss', problem.id ) %]">
-        <img src="/i/feed.png" width="16" height="16" title="[% loc('Rss feed') %]" alt="[% loc('Rss feed of updates to the problem' ) %]" border="0" style="vertical-align: middle">
+        <img src="/i/feed.png" width="16" height="16" title="[% loc('RSS feed') %]" alt="[% loc('RSS feed of updates to this problem' ) %]" border="0" style="vertical-align: middle">
     </a>
 </div>
 

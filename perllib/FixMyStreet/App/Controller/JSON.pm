@@ -18,15 +18,24 @@ Provide information as JSON
 
 =head1 METHODS
 
-=head2 json
+=head2 problems
+
+Provide JSON of new/fixed problems in a specified time range
 
 =cut
 
-sub json : Path : Args(0) {
-    my ( $self, $c ) = @_;
+sub problems : Local {
+    my ( $self, $c, $path_type ) = @_;
+
+    # get the type from the path - this is to deal with the historic url
+    # structure. In futur
+    $path_type ||= '';
+    my $type =
+        $path_type eq 'new'   ? 'new_problems'
+      : $path_type eq 'fixed' ? 'fixed_problems'
+      :                         '';
 
     # gather the parameters
-    my $type       = $c->req->param('type')       || '';
     my $start_date = $c->req->param('start_date') || '';
     my $end_date   = $c->req->param('end_date')   || '';
 
