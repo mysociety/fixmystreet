@@ -257,7 +257,7 @@ sub set_local_alert_options : Private {
         m{ \A local: ( [\+\-]? \d+ \.? \d* ) : ( [\+\-]? \d+ \.? \d* ) }xms )
     {
         $type = 'local_problems';
-        push @params, $1, $2;
+        push @params, $2, $1; # Note alert parameters are lon,lat
     }
 
     my $options = {

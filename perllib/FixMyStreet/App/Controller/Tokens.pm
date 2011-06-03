@@ -4,8 +4,6 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
-use FixMyStreet::Alert;
-
 =head1 NAME
 
 FixMyStreet::App::Controller::Tokens - Handle auth tokens
