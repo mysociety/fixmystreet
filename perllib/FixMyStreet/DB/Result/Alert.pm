@@ -45,15 +45,27 @@ __PACKAGE__->add_columns(
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->belongs_to(
+  "alert_type",
+  "FixMyStreet::DB::Result::AlertType",
+  { ref => "alert_type" },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+);
+__PACKAGE__->belongs_to(
   "user",
   "FixMyStreet::DB::Result::User",
   { id => "user_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
+__PACKAGE__->has_many(
+  "alert_sents",
+  "FixMyStreet::DB::Result::AlertSent",
+  { "foreign.alert_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-05-24 15:32:43
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:MV8kPZiQVJH7coYT4FmXLg
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-06-03 16:48:36
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:NlyhWyg0NrH5/kZYYO36qg
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 

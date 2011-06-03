@@ -2,11 +2,15 @@ package FixMyStreet::App::Controller::Rss;
 
 use Moose;
 use namespace::autoclean;
+use POSIX qw(strftime);
 use URI::Escape;
-use FixMyStreet::Alert;
+use XML::RSS;
+
 use mySociety::Gaze;
 use mySociety::Locale;
 use mySociety::MaPit;
+use mySociety::Sundries qw(ordinal);
+use mySociety::Web qw(ent);
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -157,8 +161,143 @@ sub local_problems_ll : Private {
 
 sub output : Private {
     my ( $self, $c ) = @_;
+
+    $c->stash->{alert_type} = $c->model('DB::AlertType')->find( { ref => $c->stash->{type} } );
+    $c->detach( '/page_error_404_not_found', [ _('Unknown alert type') ] )
+        unless $c->stash->{alert_type};
+
+    $c->forward( 'query_main' );
+
+    # Do our own encoding
+    $c->stash->{rss} = new XML::RSS(
+        version       => '2.0',
+        encoding      => 'UTF-8',
+        stylesheet    => $c->cobrand->feed_xsl,
+        encode_output => undef
+    );
+    $c->stash->{rss}->add_module(
+        prefix => 'georss',
+        uri    => 'http://www.georss.org/georss'
+    );
+
+    while (my $row = $c->stash->{query_main}->fetchrow_hashref) {
+        $c->forward( 'add_row', [ $row ] );
+    }
+
+    $c->forward( 'add_parameters' );
+
+    my $out = $c->stash->{rss}->as_string;
+    my $uri = $c->uri_for( '/' . $c->req->path );
+    $out =~ s{<link>(.*?)</link>}{"<link>" . $c->uri_for( $1 ) . "</link><uri>$uri</uri>"}e;
+
     $c->response->header('Content-Type' => 'application/xml; charset=utf-8');
-    $c->response->body( FixMyStreet::Alert::generate_rss( $c ) );
+    $c->response->body( $out );
+}
+
+sub query_main : Private {
+    my ( $self, $c ) = @_;
+    my $alert_type = $c->stash->{alert_type};
+
+    my ( $site_restriction, $site_id ) = $c->cobrand->site_restriction( $c->cobrand->extra_data );
+    # Only apply a site restriction if the alert uses the problem table
+    $site_restriction = '' unless $alert_type->item_table eq 'problem';
+
+    # FIXME Do this in a nicer way at some point in the future...
+    my $query = 'select * from ' . $alert_type->item_table . ' where '
+        . ($alert_type->head_table ? $alert_type->head_table . '_id=? and ' : '')
+        . $alert_type->item_where . $site_restriction . ' order by '
+        . $alert_type->item_order;
+    my $rss_limit = mySociety::Config::get('RSS_LIMIT');
+    $query .= " limit $rss_limit" unless $c->stash->{type} =~ /^all/;
+
+    my $q = $c->model('DB::Alert')->result_source->storage->dbh->prepare($query);
+
+    $c->stash->{db_params} ||= [];
+    if ($query =~ /\?/) {
+        $c->detach( '/page_error_404_not_found', [ 'Missing parameter' ] )
+            unless @{ $c->stash->{db_params} };
+        $q->execute( @{ $c->stash->{db_params} } );
+    } else {
+        $q->execute();
+    }
+    $c->stash->{query_main} = $q;
+}
+
+sub add_row : Private {
+    my ( $self, $c, $row ) = @_;
+    my $alert_type = $c->stash->{alert_type};
+
+    $row->{name} ||= 'anonymous';
+
+    my $pubDate;
+    if ($row->{confirmed}) {
+        $row->{confirmed} =~ /^(\d\d\d\d)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)/;
+        $pubDate = mySociety::Locale::in_gb_locale {
+            strftime("%a, %d %b %Y %H:%M:%S %z", $6, $5, $4, $3, $2-1, $1-1900, -1, -1, 0)
+        };
+        $row->{confirmed} = strftime("%e %B", $6, $5, $4, $3, $2-1, $1-1900, -1, -1, 0);
+        $row->{confirmed} =~ s/^\s+//;
+        $row->{confirmed} =~ s/^(\d+)/ordinal($1)/e if $c->stash->{lang_code} eq 'en-gb';
+    }
+
+    (my $title = _($alert_type->item_title)) =~ s/{{(.*?)}}/$row->{$1}/g;
+    (my $link = $alert_type->item_link) =~ s/{{(.*?)}}/$row->{$1}/g;
+    (my $desc = _($alert_type->item_description)) =~ s/{{(.*?)}}/$row->{$1}/g;
+    my $url = $c->uri_for( $link );
+    my %item = (
+        title => ent($title),
+        link => $url,
+        guid => $url,
+        description => ent(ent($desc)) # Yes, double-encoded, really.
+    );
+    $item{pubDate} = $pubDate if $pubDate;
+    $item{category} = $row->{category} if $row->{category};
+
+    if ($c->cobrand->allow_photo_display && $row->{photo}) {
+        my $key = $alert_type->item_table eq 'comment' ? 'c' : 'id';
+        $item{description} .= ent("\n<br><img src=\"". $c->cobrand->base_url . "/photo?$key=$row->{id}\">");
+    }
+    my $recipient_name = $c->cobrand->contact_name;
+    $item{description} .= ent("\n<br><a href='$url'>" .
+        sprintf(_("Report on %s"), $recipient_name) . "</a>");
+
+    if ($row->{latitude} || $row->{longitude}) {
+        $item{georss} = { point => "$row->{latitude} $row->{longitude}" };
+    }
+
+    $c->stash->{rss}->add_item( %item );
+}
+
+sub add_parameters : Private {
+    my ( $self, $c ) = @_;
+    my $alert_type = $c->stash->{alert_type};
+
+    my $row = {};
+    if ($alert_type->head_sql_query) {
+        my $q = $c->model('DB::Alert')->result_source->storage->dbh->prepare(
+            $alert_type->head_sql_query
+        );
+        if ($alert_type->head_sql_query =~ /\?/) {
+            $q->execute(@{ $c->stash->{db_params} });
+        } else {
+            $q->execute();
+        }
+        $row = $q->fetchrow_hashref;
+    }
+    foreach ( keys %{ $c->stash->{title_params} } ) {
+        $row->{$_} = $c->stash->{title_params}->{$_};
+    }
+
+    (my $title = _($alert_type->head_title)) =~ s/{{(.*?)}}/$row->{$1}/g;
+    (my $link = $alert_type->head_link) =~ s/{{(.*?)}}/$row->{$1}/g;
+    (my $desc = _($alert_type->head_description)) =~ s/{{(.*?)}}/$row->{$1}/g;
+
+    $c->stash->{rss}->channel(
+        title       => ent($title),
+        link        => $link . ($c->stash->{qs} || ''),
+        description => ent($desc),
+        language    => 'en-gb',
+    );
 }
 
 sub local_problems_legacy : LocalRegex('^(\d+)[,/](\d+)(?:/(\d+))?$') {
