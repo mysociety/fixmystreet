@@ -4,8 +4,6 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
-use mySociety::Random qw(random_bytes);
-
 =head1 NAME
 
 FixMyStreet::App::Controller::Contact - Catalyst Controller
@@ -43,6 +41,7 @@ sub submit : Path('submit') : Args(0) {
 
     return
       unless $c->forward('setup_request')
+          && $c->forward('determine_contact_type')
           && $c->forward('validate')
           && $c->forward('prepare_params_for_email')
           && $c->forward('send_email');
@@ -69,7 +68,7 @@ sub determine_contact_type : Private {
             {
                 'select' => [
                     'title', 'detail', 'name',
-                    'anonymous',
+                    'anonymous', 'id',
                     'user_id', 'confirmed',
                 ]
             }
@@ -85,7 +84,6 @@ sub determine_contact_type : Private {
         elsif ($problem) {
             $c->stash->{problem} = $problem;
         }
-        $c->stash->{id} = $id;
     }
 
     return 1;
@@ -150,27 +148,26 @@ sub prepare_params_for_email : Private {
     $c->stash->{message} =~ s/\r\n/\n/g;
     $c->stash->{subject} =~ s/\r|\n/ /g;
 
-    my $base_url       = $c->cobrand->base_url_for_emails;
+    my $base_url       = $c->cobrand->base_url_for_emails( $c->cobrand->extra_data );
     my $admin_base_url = $c->cobrand->admin_base_url
       || 'https://secure.mysociety.org/admin/bci/';
 
-    if ( $c->stash->{problem} and $c->stash->{update} ) {
+    if ( $c->stash->{update} ) {
 
-        # FIXME - correct url here
-        my $problem_url = $base_url;
-        my $admin_url   = $admin_base_url;
+        my $problem_url = $base_url . '/report/' . $c->stash->{update}->problem_id
+            . '#update_' . $c->stash->{update}->id;
+        my $admin_url   = $admin_base_url . '?page=update_edit;id=' . $c->stash->{update}->id;
         $c->stash->{message} .= sprintf(
             " \n\n[ Complaint about update %d on report %d - %s - %s ]",
             $c->stash->{update}->id,
-            $c->stash->{problem}->id,
+            $c->stash->{update}->problem_id,
             $problem_url, $admin_url
         );
     }
     elsif ( $c->stash->{problem} ) {
 
-        # FIXME - correct url here
-        my $problem_url = $base_url;
-        my $admin_url   = $admin_base_url;
+        my $problem_url = $base_url . '/report/' . $c->stash->{problem}->id;
+        my $admin_url   = $admin_base_url . '?page=report_edit;id=' . $c->stash->{problem}->id;
         $c->stash->{message} .= sprintf(
             " \n\n[ Complaint about report %d - %s - %s ]",
             $c->stash->{problem}->id,

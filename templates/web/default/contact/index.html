@@ -1,20 +1,20 @@
-[% INCLUDE 'header.html', title => loc('Contact Us') %]
+[% INCLUDE 'header.html',
+    title = loc('Contact Us')
+    robots = 'noindex,nofollow'
+%]
 
 <h1>[% loc('Contact the team') %]</h1>
  
 <form method="post" action="/contact/submit">
 
-<input type="hidden" name="submit_form" value="1">
-
-
 [% INCLUDE 'errors.html' %]
 
 [% IF update %]
+
     <p>
     [% loc('You are reporting the following update for being abusive, containing personal information, or similar:') %]
     </p>
 
-    [% IF update.text %]
     <blockquote>
         <p>
             [% IF update.anonymous %]
@@ -29,15 +29,14 @@
         </p>
 
     </blockquote>
-    [% END %]
     <input type="hidden" name="update_id" value="[% update.id %]">
-    <input type="hidden" name="id" value="[% problem.id %]">
+    <input type="hidden" name="id" value="[% update.problem_id %]">
+
 [% ELSIF problem %]
     <p>
     [% loc('You are reporting the following problem report for being abusive, containing personal information, or similar:') %]
     </p>
     
-    [% IF problem.title %]
     <blockquote>
         <h2>[% problem.title | html %]</h2>
 
@@ -55,13 +54,10 @@
 
     </blockquote>
     <input type="hidden" name="id" value="[% problem.id %]">
-    [% END %]
-[% ELSE %]
-[% IF id %]
-<input type="hidden" name="id" value="[% id %]">
-[% END %]
 
-[% INCLUDE 'contact/blurb.html' %]
+[% ELSE %]
+
+    [% INCLUDE 'contact/blurb.html' %]
 
 [% END %]
 
@@ -70,7 +66,7 @@
 [% END %]
 <div class="form-field">
 <label for="form_name">[% loc('Your name:') %]</label>
-<input type="text" name="name" id="form_name" value="[% form_name %]" size="30"></div>
+<input type="text" name="name" id="form_name" value="[% form_name | html %]" size="30"></div>
 
 
 [% IF field_errors.em %]
@@ -78,14 +74,14 @@
 [% END %]
 <div class="form-field">
 <label for="form_email">[% loc('Your&nbsp;email:') %]</label>
-<input type="text" name="em" id="form_email" value="[% em %]" size="30"></div>
+<input type="text" name="em" id="form_email" value="[% em | html %]" size="30"></div>
 
 [% IF field_errors.subject %]
    <div class="form-error">[% field_errors.subject %]</div>
 [% END %]
 <div class="form-field">
 <label for="form_subject">[% loc('Subject:') %]</label>
-<input type="text" name="subject" id="form_subject" value="[% subject %]" size="30"></div>
+<input type="text" name="subject" id="form_subject" value="[% subject | html %]" size="30"></div>
 
 [% IF field_errors.message %]
    <div class="form-error">[% field_errors.message %]</div>
@@ -93,8 +89,10 @@
 <div class="form-field">
 <label for="form_message">[% loc('Message:') %]</label>
 
-<textarea name="message" id="form_message" rows="7" cols="50">[% message %]</textarea></div>
+<textarea name="message" id="form_message" rows="7" cols="50">[% message | html %]</textarea></div>
 <div class="checkbox"><input type="submit" value="[% loc('Post') %]"></div>
+
+[% c.cobrand.form_elements('contactForm') %]
 
 </form>
 
