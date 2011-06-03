@@ -28,8 +28,11 @@ Display contact us page
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
+    my ( $sql_resttriction, $id, $site_restriction ) = $c->cobrand->site_restriction();
+    my $cobrand_restriction = $c->cobrand->moniker eq 'fixmystreet' ? {} : { cobrand => $c->cobrand->moniker };
+
     my $problems = $c->model('DB::Problem')->search(
-        undef,
+        $site_restriction,
         {
             group_by => ['state'],
             select   => [ 'state', { count => 'id' } ],
@@ -48,11 +51,12 @@ sub index : Path : Args(0) {
       $prob_counts{confirmed} + $prob_counts{fixed};
 
     my $comments = $c->model('DB::Comment')->search(
-        undef,
+        $site_restriction,
         {
-            group_by => ['state'],
-            select   => [ 'state', { count => 'id' } ],
-            as       => [qw/state state_count/]
+            group_by => ['me.state'],
+            select   => [ 'me.state', { count => 'me.id' } ],
+            as       => [qw/state state_count/],
+            join     => 'problem'
         }
     );
 
@@ -62,7 +66,7 @@ sub index : Path : Args(0) {
     $c->stash->{comments} = \%comment_counts;
 
     my $alerts = $c->model('DB::Alert')->search(
-        undef,
+        $cobrand_restriction,
         {
             group_by => ['confirmed'],
             select   => [ 'confirmed', { count => 'id' } ],
@@ -97,7 +101,7 @@ sub index : Path : Args(0) {
     $c->stash->{contacts} = \%contact_counts;
 
     my $questionnaires = $c->model('DB::Questionnaire')->search(
-        undef,
+        $cobrand_restriction,
         {
             group_by => [ \'whenanswered is not null' ],
             select   => [ \'(whenanswered is not null)', { count => 'me.id' } ],
