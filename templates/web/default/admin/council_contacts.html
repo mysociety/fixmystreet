@@ -1,0 +1,89 @@
+[% INCLUDE 'admin/header.html' title=tprintf(loc('Council contacts for %s'), council_name) -%]
+
+<p>
+<em>[% updated %]</em>
+</p>
+
+<p>
+[% IF example_pc %]
+<a href="[% c.uri_for( '/around', { pc => example_pc } ) %]">[% tprintf( loc('Example postcode %s'), example_pc ) | html %]</a> |  
+[% END %]
+<a href="[% c.uri_for( '/reports', { council => area_id } ) %]">[% loc('List all reported problems' ) %]</a> 
+<a href="[% c.uri_for( 'council_contacts', area_id, { text => 1 } ) %]">[% loc('Text only version') %]</a>
+</p>
+
+<form method="post" action="[% c.uri_for('council_contacts', area_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+
+    <table cellspacing="0" cellpadding="2" border="1">
+        <tr>
+            <th>Category</th>
+            <th>Email</th>
+            <th>Confirmed</th>
+            <th>Deleted</th>
+            <th>Last editor</th>
+            <th>Note</th>
+            <th>When edited</th>
+            <th>Confirm</th>
+        </tr>
+        [% WHILE ( contact = contacts.next ) %]
+            <tr>
+                <td><a href="[% c.uri_for( 'council_edit', { area_id => area_id, category => contact.category } ) %]">[% contact.category %]</a></td>
+                <td>[% contact.email %]</td>
+                <td>[% IF contact.confirmed %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
+                <td>[% IF contact.deleted %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
+                <td>[% contact.editor %]</td>
+                <td>[% contact.note | html %]</td>
+                <td>[% contact.whenedited.ymd _ ' ' _ contact.whenedited.hms %]</td>
+                <td><input type="checkbox" name="confirmed" value="[% contact.category %]"></td>
+            </tr>
+        [% END %]
+    </table>
+
+    <p>
+    <input type="hidden" name="area_id" value="[% area_id %]">
+    <input type="hidden" name="posted" value="update">
+    <input type="hidden" name="token" value="[% token %]">
+    <input type="submit" name="Update statuses" value="Update statuses">
+    </p>
+    </form>
+
+    <h2>Add new category</h2>
+
+    <form method="post" action="[% c.uri_for('council_contacts', area_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+
+        [% IF c.cobrand.moniker != 'emptyhomes' %]
+        <p>
+        <strong>Category: </strong><input type="text" name="category" size="30">
+        </p>
+        [% END %]
+
+        <p>
+        <strong>Email: </strong><input type="text" name="email" size="30">
+        </p>
+
+        <p>
+        <input type="checkbox" name="confirmed" value="1" id="confirmed"> 
+        <label for="confirmed">Confirmed</label>
+
+        <input type="checkbox" name="deleted" value="1"id="deleted"> 
+        <label for="deleted">Deleted</label>
+        </p>
+
+        <p>
+        <strong>Note: </strong> <textarea name="note" rows="3" cols="40"></textarea>
+        </p>
+
+        <p>
+        <input type="hidden" name="area_id" value="[% area_id %]" >
+        <input type="hidden" name="posted" value="new" >
+        <input type="hidden" name="token" value="[% token %]" >
+        <input type="submit" name="Create category" value="Create category" >
+        </p>
+
+        <div>
+            <input type="hidden" name=".cgifields" value="confirmed" >
+            <input type="hidden" name=".cgifields" value="deleted" >
+        </div>
+    </form>
+
+[% INCLUDE 'admin/footer.html' %]

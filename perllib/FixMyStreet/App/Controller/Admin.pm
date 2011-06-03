@@ -5,6 +5,7 @@ use namespace::autoclean;
 BEGIN { extends 'Catalyst::Controller'; }
 
 use POSIX qw(strftime strcoll);
+use Digest::MD5 qw(md5_hex);
 
 =head1 NAME
 
@@ -192,9 +193,117 @@ sub council_list : Path('council_list') : Args(0) {
 
     return 1;
 }
+
+sub council_contacts : Path('council_contacts') : Args(1) {
+    my ( $self, $c, $area_id ) = @_;
+
+    my $posted = $c->req->param('posted') || '';
+    $c->stash->{area_id} = $area_id;
+
+    $c->forward( 'get_token' );
+
+    if ( $posted ) {
+        $c->log->debug( 'posted' );
+        $c->forward('update_contacts');
+    }
+
+    $c->forward('display_contacts');
+
+    return 1;
+}
+
+sub update_contacts : Private {
+    my ( $self, $c ) = @_;
+
+    my $posted = $c->req->param('posted');
+    my $editor = $c->req->remote_user || _('*unknown*');
+
+    if ( $posted eq 'new' ) {
+        $c->forward('check_token');
+
+        my $category = $self->trim( $c->req->param( 'category' ) );
+        my $email = $self->trim( $c->req->param( 'email' ) );
+
+        $category = 'Empty property' if $c->cobrand->moniker eq 'emptyhomes';
+
+        my $contact = $c->model('DB::Contact')->find_or_new(
+            {
+                area_id => $c->stash->{area_id},
+                category => $category,
+            }
+        );
+
+        $contact->email( $email );
+        $contact->confirmed( $c->req->param('confirmed') ? 1 : 0 );
+        $contact->deleted( $c->req->param('deleted') ? 1 : 0 );
+        $contact->note( $c->req->param('note') );
+        $contact->whenedited( \'ms_current_timestamp()' );
+        $contact->editor( $editor );
+
+        if ( $contact->in_storage ) {
+            $c->stash->{updated} = _('Values updated');
+
+            # NB: History is automatically stored by a trigger in the database
+            $contact->update;
+        } else {
+            $c->stash->{updated} = _('New category contact added');
+            $contact->insert;
+        }
+
+    } elsif ( $posted eq 'update' ) {
+        $c->forward('check_token');
+
+        my @categories = $c->req->param('confirmed');
+
+        my $contacts = $c->model('DB::Contact')->search(
+            {
+                area_id => $c->stash->{area_id},
+                category => { -in => \@categories },
+            }
+        );
+
+        $contacts->update(
+            {
+                confirmed => 1,
+                whenedited => \'ms_current_timestamp()',
+                note => 'Confirmed',
+                editor => $editor,
+            }
+        );
+
+        $c->stash->{updated} = _('Values updated');
+    }
+}
+
+sub display_contacts : Private {
+    my ( $self, $c ) = @_;
+
+    my $area_id = $c->stash->{area_id};
+
+    my $contacts = $c->model('DB::Contact')->search(
+        { area_id => $area_id },
+        { order_by => ['category'] }
+    );
+
+    $c->stash->{contacts} = $contacts;
+
+    if ( $c->req->param('text') == 1 ) {
+        $c->stash->{template} = 'admin/council_contacts.txt';
+        $c->res->content_encoding('text/plain');
+        return 1;
+    }
+
+    my $mapit_data = mySociety::MaPit::call('area', $area_id);
+    $c->stash->{council_name} = $mapit_data->{name};
+
+    my $example_postcode = mySociety::MaPit::call('area/example_postcode', $area_id);
+
+    if ($example_postcode && ! ref $example_postcode) {
+        $c->stash->{example_pc} = $example_postcode;
+    }
+}
+
 # use Encode;
-# use POSIX qw(strftime strcoll);
-# use Digest::MD5 qw(md5_hex);
 # 
 # use Page;
 # use mySociety::Config;
@@ -203,17 +312,32 @@ sub council_list : Path('council_list') : Args(0) {
 # use mySociety::VotingArea;
 # use mySociety::Web qw(NewURL ent);
 # 
-# =item get_token Q
-# 
-# Generate a token based on user and secret
-# 
-# =cut
-# sub get_token {
-#     my ($q) = @_;
-#     my $secret = scalar(dbh()->selectrow_array('select secret from secret'));
-#     my $token = md5_hex(($q->remote_user() . $secret));
-#     return $token;
-# }
+=item get_token
+
+Generate a token based on user and secret
+
+=cut
+sub get_token : Private {
+    my ( $self, $c ) = @_;
+
+    my $secret = $c->model('DB::Secret')->search()->first;
+
+    my $token = md5_hex(($c->req->remote_user() . $secret->secret));
+
+    $c->stash->{token} = $token;
+
+    return 1;
+}
+
+sub check_token : Private {
+    my ( $self, $c ) = @_;
+
+    if ( $c->req->param('token' ) ne $c->stash->{token} ) {
+        $c->detach( '/page_error_404_not_found', [ _('The requested URL was not found on this server.') ] );
+    }
+
+    return 1;
+}
 # 	
 # =item allowed_pages Q
 # 
@@ -270,154 +394,6 @@ sub council_list : Path('council_list') : Args(0) {
 # sub fetch_data {
 # }
 # 
-# 
-# 
-# # admin_council_contacts CGI AREA_ID
-# sub admin_council_contacts ($$) {
-#     my ($q, $area_id) = @_;
-# 
-#     # Submit form
-#     my $updated = '';
-#     my $posted = $q->param('posted') || '';
-#     if ($posted eq 'new') {
-#         return not_found($q) if $q->param('token') ne get_token($q);
-#         my $email = trim($q->param('email'));
-#         my $category = trim($q->param('category'));
-#         $category = 'Empty property' if $q->{site} eq 'emptyhomes';
-#         # History is automatically stored by a trigger in the database
-#         my $update = dbh()->do("update contacts set
-#             email = ?,
-#             confirmed = ?,
-#             deleted = ?,
-#             editor = ?,
-#             whenedited = ms_current_timestamp(),
-#             note = ?
-#             where area_id = ?
-#             and category = ?
-#             ", {}, 
-#             $email, ($q->param('confirmed') ? 1 : 0),
-#             ($q->param('deleted') ? 1 : 0),
-#             ($q->remote_user() || _("*unknown*")), $q->param('note'),
-#             $area_id, $category
-#             );
-#         $updated = $q->p($q->em(_("Values updated")));
-#         unless ($update > 0) {
-#             dbh()->do('insert into contacts
-#                 (area_id, category, email, editor, whenedited, note, confirmed, deleted)
-#                 values
-#                 (?, ?, ?, ?, ms_current_timestamp(), ?, ?, ?)', {},
-#                 $area_id, $category, $email,
-#                 ($q->remote_user() || _('*unknown*')), $q->param('note'),
-#                 ($q->param('confirmed') ? 1 : 0), ($q->param('deleted') ? 1 : 0)
-#             );
-#             $updated = $q->p($q->em(_("New category contact added")));
-#         }
-#         dbh()->commit();
-#     } elsif ($posted eq 'update') {
-#         return not_found($q) if $q->param('token') ne get_token($q);
-#         my @cats = $q->param('confirmed');
-#         foreach my $cat (@cats) {
-#             dbh()->do("update contacts set
-#                 confirmed = 't', editor = ?,
-#                 whenedited = ms_current_timestamp(),
-#                 note = 'Confirmed'
-#                 where area_id = ?
-#                 and category = ?
-#                 ", {},
-#                 ($q->remote_user() || _("*unknown*")),
-#                 $area_id, $cat
-#             );
-#         }
-#         $updated = $q->p($q->em(_("Values updated")));
-#         dbh()->commit();
-#     }
-# 
-#     my $bci_data = select_all("select * from contacts where area_id = ? order by category", $area_id);
-# 
-#     if ($q->param('text')) {
-#         print $q->header(-type => 'text/plain', -charset => 'utf-8');
-#         foreach my $l (@$bci_data) {
-#             next if $l->{deleted} || !$l->{confirmed};
-#             print $l->{category} . "\t" . $l->{email} . "\n";
-#         }
-#         return;
-#     }
-# 
-#     $q->delete_all(); # No need for state!
-# 
-#     # Title
-#     my $mapit_data = mySociety::MaPit::call('area', $area_id);
-#     my $title = sprintf(_('Council contacts for %s'), $mapit_data->{name});
-#     print html_head($q, $title);
-#     print $q->h1($title);
-#     print $updated;
-# 
-#     # Example postcode, link to list of problem reports
-#     my $links_html;
-#     my $example_postcode = mySociety::MaPit::call('area/example_postcode', $area_id);
-#     if ($example_postcode && ! ref $example_postcode) {
-#         $links_html .= $q->a({ href => mySociety::Config::get('BASE_URL') . '/?pc=' . $q->escape($example_postcode) }, 
-#                 "Example postcode " . $example_postcode) . " | ";
-#     }
-#     $links_html .= ' '  . 
-#             $q->a({ href => mySociety::Config::get('BASE_URL') . "/reports?council=" . $area_id }, _(" List all reported problems"));
-#     $links_html .= ' ' .
-#             $q->a({ href => NewURL($q, area_id => $area_id, page => 'councilcontacts', text => 1) }, _('Text only version'));
-#     print $q->p($links_html);
-# 
-#     # Display of addresses / update statuses form
-#     print $q->start_form(-method => 'POST', -action => './');
-#     print $q->start_table({border=>1, cellpadding=>2, cellspacing=>0});
-#     print $q->Tr({}, $q->th({}, [_("Category"), _("Email"), _("Confirmed"), _("Deleted"), _("Last editor"), _("Note"), _("When edited"), _('Confirm')]));
-#     foreach my $l (@$bci_data) {
-#         print $q->Tr($q->td([
-#             $q->a({ href => NewURL($q, area_id => $area_id, category => $l->{category}, page => 'counciledit') },
-#                 $l->{category}), $l->{email}, $l->{confirmed} ? _('Yes') : _('No'),
-#             $l->{deleted} ? _('Yes') : _('No'), $l->{editor}, ent($l->{note}),
-#             $l->{whenedited} =~ m/^(.+)\.\d+$/,
-#             $q->checkbox(-name => 'confirmed', -value => $l->{category}, -label => '')
-#         ]));
-#     }
-#     print $q->end_table();
-#     # XXX
-#     print $q->p(
-#         $q->hidden('area_id', $area_id),
-#         $q->hidden('posted', 'update'),
-#         $q->hidden('token', get_token($q)),
-#         $q->hidden('page', 'councilcontacts'),
-#         $q->submit(_('Update statuses'))
-#     );
-#     print $q->end_form();
-# 
-#     # Display form for adding new category
-#     print $q->h2(_('Add new category'));
-#     print $q->start_form(-method => 'POST', -action => './');
-#     if ($q->{site} ne 'emptyhomes') {
-#         print $q->p($q->strong(_("Category: ")),
-#             $q->textfield(-name => "category", -size => 30));
-#     }
-#     print $q->p($q->strong(_("Email: ")),
-#         $q->textfield(-name => "email", -size => 30));
-#     $q->autoEscape(0);
-#     print $q->p(
-#         $q->checkbox(-id => 'confirmed', -name => "confirmed", -value => 1, -label => ' ' . $q->label({-for => 'confirmed'}, _('Confirmed'))),
-#         ' ',
-#         $q->checkbox(-id => 'deleted', -name => "deleted", -value => 1, -label => ' ' . $q->label({-for => 'deleted'}, _('Deleted')))
-#     );
-#     $q->autoEscape(1);
-#     print $q->p($q->strong(_("Note: ")),
-#         $q->textarea(-name => "note", -rows => 3, -columns=>40));
-#     print $q->p(
-#         $q->hidden('area_id', $area_id),
-#         $q->hidden('posted', 'new'),
-#         $q->hidden('token', get_token($q)),
-#         $q->hidden('page', 'councilcontacts'),
-#         $q->submit(_('Create category'))
-#     );
-#     print $q->end_form();
-# 
-#     print html_tail($q);
-# }
 # 
 # # admin_council_edit CGI AREA_ID CATEGORY
 # sub admin_council_edit ($$$) {
@@ -962,12 +938,13 @@ sub council_list : Path('council_list') : Args(0) {
 # }
 # Page::do_fastcgi(\&main);
 # 
-# sub trim {
-#     my $e = shift;
-#     $e =~ s/^\s+//;
-#     $e =~ s/\s+$//;
-#     return $e;
-# }
+sub trim {
+    my $self = shift;
+    my $e = shift;
+    $e =~ s/^\s+//;
+    $e =~ s/\s+$//;
+    return $e;
+}
 
 =head1 AUTHOR
 
