@@ -174,11 +174,12 @@ sub submit_standard : Private {
     $reported = 0 if $c->stash->{reported} eq 'No';
 
     my $q = $c->stash->{questionnaire};
-    $q->whenanswered( \'ms_current_timestamp()' );
-    $q->ever_reported( $reported );
-    $q->old_state( $old_state );
-    $q->new_state( $c->stash->{been_fixed} eq 'Unknown' ? 'unknown' : ($new_state || $old_state) );
-    $q->update;
+    $q->update( {
+        whenanswered  => \'ms_current_timestamp()',
+        ever_reported => $reported,
+        old_state     => $old_state,
+        new_state     => $c->stash->{been_fixed} eq 'Unknown' ? 'unknown' : ($new_state || $old_state),
+    } );
 
     # Record an update if they've given one, or if there's a state change
     if ( $new_state || $c->stash->{update} ) {
