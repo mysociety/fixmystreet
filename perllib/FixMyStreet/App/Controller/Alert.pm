@@ -96,8 +96,7 @@ sub rss : Private {
         $c->res->redirect($url);
     }
     elsif ( $feed =~ /^local:([\d\.-]+):([\d\.-]+)$/ ) {
-        ( my $id = $1 ) =~ tr{:_}{/+};
-        $url = $c->cobrand->base_url() . '/rss/l/' . $id;
+        $url = $c->cobrand->base_url() . '/rss/l/' . $1 . ',' . $2;
         $c->res->redirect($url);
     }
     else {
