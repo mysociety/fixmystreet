@@ -28,7 +28,7 @@
         [% WHILE ( contact = contacts.next ) %]
             <tr>
                 <td><a href="[% c.uri_for( 'council_edit', area_id, contact.category ) %]">[% contact.category %]</a></td>
-                <td>[% contact.email %]</td>
+                <td>[% contact.email | html %]</td>
                 <td>[% IF contact.confirmed %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
                 <td>[% IF contact.deleted %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
                 <td>[% contact.editor %]</td>
