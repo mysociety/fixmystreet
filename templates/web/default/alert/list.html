@@ -1,9 +1,18 @@
-[% title = loc('Local RSS feeds and email alerts') %]
+[%
+    IF pretty_pc;
+        title = tprintf( loc("Local RSS feeds and email alerts for ‘%s’"), pretty_pc );
+    ELSE;
+        title = loc('Local RSS feeds and email alerts');
+    END;
+%]
 
 [% INCLUDE 'header.html', title => title %]
 
 [% IF pretty_pc %]
-[% title = tprintf( loc('Local RSS feeds and email alerts for &lsquo;%s&rsquo;'), pretty_pc ) %]
+    [%
+        pretty_pc = pretty_pc | html | replace(' ', '&nbsp;');
+        title = tprintf( loc("Local RSS feeds and email alerts for ‘%s’"), pretty_pc );
+    %]
 [% END %]
 
 
@@ -24,7 +33,7 @@
 
   <p>
   [% IF pretty_pc %]
-    [% tprintf( loc('Here are the types of local problem alerts for &lsquo;%s&rsquo;.'), pretty_pc ) | html %]
+    [% tprintf( loc('Here are the types of local problem alerts for &lsquo;%s&rsquo;.'), pretty_pc ) %]
   [% END %]
   [% loc('Select which type of alert you\'d like and click the button for an RSS feed, or enter your email address to subscribe to an email alert') %]
   </p>

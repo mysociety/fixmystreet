@@ -332,9 +332,6 @@ sub prettify_pc : Private {
         my $pretty_pc_text = $pretty_pc;
         $pretty_pc_text =~ s/ //g;
         $c->stash->{pretty_pc_text} = $pretty_pc_text;
-
-        # this may be better done in template
-        $pretty_pc =~ s/ /&nbsp;/;
     }
 
     $c->stash->{pretty_pc} = $pretty_pc;
