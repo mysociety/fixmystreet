@@ -21,11 +21,9 @@ use Error qw(:try);
 use File::Slurp;
 use FindBin;
 use POSIX qw(strftime);
-use XML::RSS;
 
 use Cobrand;
 use mySociety::AuthToken;
-use mySociety::Config;
 use mySociety::DBHandle qw(dbh);
 use mySociety::Email;
 use mySociety::EmailUtil;
@@ -33,8 +31,6 @@ use mySociety::Gaze;
 use mySociety::Locale;
 use mySociety::MaPit;
 use mySociety::Random qw(random_bytes);
-use mySociety::Sundries qw(ordinal);
-use mySociety::Web qw(ent);
 
 # Add a new alert
 sub create ($$$$;@) {
@@ -244,105 +240,3 @@ sub _send_aggregated_alert_email(%) {
     }
 }
 
-sub generate_rss ($) {
-    my $c = shift;
-    my $type = $c->stash->{type};
-    $c->stash->{qs} ||= '';
-    $c->stash->{db_params} ||= [];
-    my $cobrand_data = $c->cobrand->extra_data;
-    my $q = dbh()->prepare('select * from alert_type where ref=?');
-    $q->execute($type);
-    my $alert_type = $q->fetchrow_hashref;
-    my ($site_restriction, $site_id) = $c->cobrand->site_restriction($cobrand_data);
-    throw FixMyStreet::Alert::Error('Unknown alert type') unless $alert_type;
-
-    # Do our own encoding
-    my $rss = new XML::RSS( version => '2.0', encoding => 'UTF-8',
-        stylesheet=> $c->cobrand->feed_xsl, encode_output => undef );
-    $rss->add_module(prefix=>'georss', uri=>'http://www.georss.org/georss');
-
-    # Only apply a site restriction if the alert uses the problem table
-    $site_restriction = '' unless $alert_type->{item_table} eq 'problem';
-    my $query = 'select * from ' . $alert_type->{item_table} . ' where '
-        . ($alert_type->{head_table} ? $alert_type->{head_table}.'_id=? and ' : '')
-        . $alert_type->{item_where} . $site_restriction . ' order by '
-        . $alert_type->{item_order};
-    my $rss_limit = mySociety::Config::get('RSS_LIMIT');
-    $query .= " limit $rss_limit" unless $type =~ /^all/;
-    $q = dbh()->prepare($query);
-    if ($query =~ /\?/) {
-        throw FixMyStreet::Alert::Error('Missing parameter') unless @{ $c->stash->{db_params} };
-        $q->execute( @{ $c->stash->{db_params} } );
-    } else {
-        $q->execute();
-    }
-
-    while (my $row = $q->fetchrow_hashref) {
-
-        $row->{name} ||= 'anonymous';
-
-        my $pubDate;
-        if ($row->{confirmed}) {
-            $row->{confirmed} =~ /^(\d\d\d\d)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)/;
-            $pubDate = mySociety::Locale::in_gb_locale {
-                strftime("%a, %d %b %Y %H:%M:%S %z", $6, $5, $4, $3, $2-1, $1-1900, -1, -1, 0)
-            };
-            $row->{confirmed} = strftime("%e %B", $6, $5, $4, $3, $2-1, $1-1900, -1, -1, 0);
-            $row->{confirmed} =~ s/^\s+//;
-            $row->{confirmed} =~ s/^(\d+)/ordinal($1)/e if $mySociety::Locale::lang eq 'en-gb';
-        }
-
-        (my $title = _($alert_type->{item_title})) =~ s/{{(.*?)}}/$row->{$1}/g;
-        (my $link = $alert_type->{item_link}) =~ s/{{(.*?)}}/$row->{$1}/g;
-        (my $desc = _($alert_type->{item_description})) =~ s/{{(.*?)}}/$row->{$1}/g;
-        my $url = $c->uri_for( $link );
-        my %item = (
-            title => ent($title),
-            link => $url,
-            guid => $url,
-            description => ent(ent($desc)) # Yes, double-encoded, really.
-        );
-        $item{pubDate} = $pubDate if $pubDate;
-        $item{category} = $row->{category} if $row->{category};
-
-        my $display_photos = $c->cobrand->allow_photo_display; 
-        if ($display_photos && $row->{photo}) {
-            $item{description} .= ent("\n<br><img src=\"". $c->uri_for( $c->cobrand->base_url ) . "/photo?id=$row->{id}\">");
-        }
-        my $recipient_name = $c->cobrand->contact_name;
-        $item{description} .= ent("\n<br><a href='$url'>" .
-            sprintf(_("Report on %s"), $recipient_name) . "</a>");
-
-        if ($row->{latitude} || $row->{longitude}) {
-            $item{georss} = { point => "$row->{latitude} $row->{longitude}" };
-        }
-        $rss->add_item( %item );
-    }
-
-    my $row = {};
-    if ($alert_type->{head_sql_query}) {
-        $q = dbh()->prepare($alert_type->{head_sql_query});
-        if ($alert_type->{head_sql_query} =~ /\?/) {
-            $q->execute(@{ $c->stash->{db_params} });
-        } else {
-            $q->execute();
-        }
-        $row = $q->fetchrow_hashref;
-    }
-    foreach ( keys %{ $c->stash->{title_params} } ) {
-        $row->{$_} = $c->stash->{title_params}->{$_};
-    }
-    (my $title = _($alert_type->{head_title})) =~ s/{{(.*?)}}/$row->{$1}/g;
-    (my $link = $alert_type->{head_link}) =~ s/{{(.*?)}}/$row->{$1}/g;
-    (my $desc = _($alert_type->{head_description})) =~ s/{{(.*?)}}/$row->{$1}/g;
-    $rss->channel(
-        title => ent($title), link => $link . $c->stash->{qs}, description  => ent($desc),
-        language   => 'en-gb'
-    );
-
-    my $out = $rss->as_string;
-    my $uri = $c->uri_for( '/' . $c->req->path );
-    $out =~ s{<link>(.*?)</link>}{"<link>" . $c->uri_for( $1 ) . "</link><uri>$uri</uri>"}e;
-             
-    return $out;
-}
