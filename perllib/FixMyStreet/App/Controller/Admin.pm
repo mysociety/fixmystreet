@@ -278,6 +278,8 @@ sub update_contacts : Private {
 sub display_contacts : Private {
     my ( $self, $c ) = @_;
 
+    $c->forward('setup_council_details');
+
     my $area_id = $c->stash->{area_id};
 
     my $contacts = $c->model('DB::Contact')->search(
@@ -293,7 +295,16 @@ sub display_contacts : Private {
         return 1;
     }
 
+    return 1;
+}
+
+sub setup_council_details : Private {
+    my ( $self, $c ) = @_;
+
+    my $area_id = $c->stash->{area_id};
+
     my $mapit_data = mySociety::MaPit::call('area', $area_id);
+
     $c->stash->{council_name} = $mapit_data->{name};
 
     my $example_postcode = mySociety::MaPit::call('area/example_postcode', $area_id);
@@ -301,6 +312,40 @@ sub display_contacts : Private {
     if ($example_postcode && ! ref $example_postcode) {
         $c->stash->{example_pc} = $example_postcode;
     }
+
+    return 1;
+}
+
+sub council_edit : Path('council_edit') : Args(2) {
+    my ( $self, $c, $area_id, $category ) = @_;
+
+    $c->stash->{area_id} = $area_id;
+
+    $c->forward( 'get_token' );
+    $c->forward('setup_council_details');
+
+    my $contact = $c->model('DB::Contact')->search(
+        {
+            area_id => $area_id,
+            category => $category
+        }
+    )->first;
+
+    $c->stash->{contact} = $contact;
+
+    my $history = $c->model('DB::ContactsHistory')->search(
+        {
+            area_id => $area_id,
+            category => $category
+        },
+        {
+            order_by => ['contacts_history_id']
+        },
+    );
+
+    $c->stash->{history} = $history;
+
+    return 1;
 }
 
 # use Encode;
