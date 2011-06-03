@@ -1,46 +1,29 @@
-#!/usr/bin/perl -w
-#
-# FixMyStreet::Alert.pm
-# Alerts by email or RSS.
-#
-# Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
-# Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
-#
-# $Id: Alert.pm,v 1.71 2010-01-06 16:50:27 louise Exp $
-
-package FixMyStreet::Alert;
+package FixMyStreet::DB::ResultSet::AlertType;
+use base 'DBIx::Class::ResultSet';
 
 use strict;
-use Error qw(:try);
-use File::Slurp;
-use FindBin;
-use POSIX qw(strftime);
+use warnings;
 
-use Cobrand;
-use mySociety::AuthToken;
+use File::Slurp;
+
 use mySociety::DBHandle qw(dbh);
-use mySociety::Email;
 use mySociety::EmailUtil;
 use mySociety::Gaze;
 use mySociety::Locale;
 use mySociety::MaPit;
-use mySociety::Random qw(random_bytes);
 
 # Child must have confirmed, id, email, state(!) columns
 # If parent/child, child table must also have name and text
 #   and foreign key to parent must be PARENT_id
 sub email_alerts ($) {
-    my ($testing_email) = @_;
-    my $url; 
-    my $q = dbh()->prepare("select * from alert_type where ref not like '%local_problems%'");
-    $q->execute();
-    my $testing_email_clause = '';
-    while (my $alert_type = $q->fetchrow_hashref) {
-        my $ref = $alert_type->{ref};
-        my $head_table = $alert_type->{head_table};
-        my $item_table = $alert_type->{item_table};
-        my $testing_email_clause = "and $item_table.email <> '$testing_email'" if $testing_email;
-        my $query = 'select alert.id as alert_id, alert.email as alert_email, alert.lang as alert_lang, alert.cobrand as alert_cobrand,
+    my ( $rs ) = @_;
+
+    my $q = $rs->search( { ref => { -not_like => '%local_problems%' } } );
+    while (my $alert_type = $q->next) {
+        my $ref = $alert_type->ref;
+        my $head_table = $alert_type->head_table;
+        my $item_table = $alert_type->item_table;
+        my $query = 'select alert.id as alert_id, alert_user.email as alert_email, alert.lang as alert_lang, alert.cobrand as alert_cobrand,
             alert.cobrand_data as alert_cobrand_data, alert.parameter as alert_parameter, alert.parameter2 as alert_parameter2, ';
         if ($head_table) {
             $query .= "
@@ -48,19 +31,21 @@ sub email_alerts ($) {
                    $head_table.*
             from alert
                 inner join $item_table on alert.parameter::integer = $item_table.${head_table}_id
-                inner join $head_table on alert.parameter::integer = $head_table.id";
+                inner join $head_table on alert.parameter::integer = $head_table.id
+                inner join users as alert_user on alert.user_id = alert_user.id";
         } else {
             $query .= " $item_table.*,
                    $item_table.id as item_id
-            from alert, $item_table";
+            from alert
+                cross join $item_table
+                inner join users as alert_user on alert.user_id = alert_user.id";
         }
         $query .= "
             where alert_type='$ref' and whendisabled is null and $item_table.confirmed >= whensubscribed
             and $item_table.confirmed >= ms_current_timestamp() - '7 days'::interval
              and (select whenqueued from alert_sent where alert_sent.alert_id = alert.id and alert_sent.parameter::integer = $item_table.id) is null
-            and $item_table.email <> alert.email 
-            $testing_email_clause
-            and $alert_type->{item_where}
+            and $item_table.user_id <> alert.user_id
+            and " . $alert_type->item_where . "
             and alert.confirmed = 1
             order by alert.id, $item_table.confirmed";
         # XXX Ugh - needs work
@@ -69,18 +54,24 @@ sub email_alerts ($) {
         $query = dbh()->prepare($query);
         $query->execute();
         my $last_alert_id;
-        my %data = ( template => $alert_type->{template}, data => '' );
+        my %data = ( template => $alert_type->template, data => '' );
         while (my $row = $query->fetchrow_hashref) {
+
+            my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->{alert_cobrand})->new();
+
             # Cobranded and non-cobranded messages can share a database. In this case, the conf file 
             # should specify a vhost to send the reports for each cobrand, so that they don't get sent 
             # more than once if there are multiple vhosts running off the same database. The email_host
             # call checks if this is the host that sends mail for this cobrand.
-            next unless (Cobrand::email_host($row->{alert_cobrand}));
+            next unless $cobrand->email_host;
 
-            dbh()->do('insert into alert_sent (alert_id, parameter) values (?,?)', {}, $row->{alert_id}, $row->{item_id});
+            FixMyStreet::App->model('DB::AlertSent')->create( {
+                alert_id  => $row->{alert_id},
+                parameter => $row->{item_id},
+            } );
             if ($last_alert_id && $last_alert_id != $row->{alert_id}) {
                 _send_aggregated_alert_email(%data);
-                %data = ( template => $alert_type->{template}, data => '' );
+                %data = ( template => $alert_type->template, data => '' );
             }
 
             # create problem status message for the templates
@@ -89,7 +80,7 @@ sub email_alerts ($) {
               ? _("This report is currently marked as fixed.")
               : _("This report is currently marked as open.");
 
-            $url = Cobrand::base_url_for_emails($row->{alert_cobrand}, $row->{alert_cobrand_data});
+            my $url = $cobrand->base_url_for_emails( $row->{alert_cobrand_data} );
             if ($row->{item_text}) {
                 $data{problem_url} = $url . "/report/" . $row->{id};
                 $data{data} .= $row->{item_name} . ' : ' if $row->{item_name};
@@ -119,35 +110,44 @@ sub email_alerts ($) {
     }
 
     # Nearby done separately as the table contains the parameters
-    my $template = dbh()->selectrow_array("select template from alert_type where ref = 'local_problems'");
-    my $query = "select * from alert where alert_type='local_problems' and whendisabled is null and confirmed=1 order by id";
-    $query = dbh()->prepare($query);
-    $query->execute();
-    while (my $alert = $query->fetchrow_hashref) {
-        next unless (Cobrand::email_host($alert->{cobrand}));
-        my $longitude = $alert->{parameter};
-        my $latitude  = $alert->{parameter2};
-        $url = Cobrand::base_url_for_emails($alert->{cobrand}, $alert->{cobrand_data});
-        my ($site_restriction, $site_id) = Cobrand::site_restriction($alert->{cobrand}, $alert->{cobrand_data});
+    my $template = $rs->find( { ref => 'local_problems' } )->template;
+    my $query = FixMyStreet::App->model('DB::Alert')->search( {
+        alert_type   => 'local_problems',
+        whendisabled => undef,
+        confirmed    => 1
+    }, {
+        order_by     => 'id'
+    } );
+    while (my $alert = $query->next) {
+        my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($alert->cobrand)->new();
+        next unless $cobrand->email_host;
+
+        my $longitude = $alert->parameter;
+        my $latitude  = $alert->parameter2;
+        my $url = $cobrand->base_url_for_emails( $alert->cobrand_data );
+        my ($site_restriction, $site_id) = $cobrand->site_restriction( $alert->cobrand_data );
         my $d = mySociety::Gaze::get_radius_containing_population($latitude, $longitude, 200000);
         # Convert integer to GB locale string (with a ".")
         $d = mySociety::Locale::in_gb_locale {
             sprintf("%f", int($d*10+0.5)/10);
         };
-        my $testing_email_clause = "and problem.email <> '$testing_email'" if $testing_email;        
-        my %data = ( template => $template, data => '', alert_id => $alert->{id}, alert_email => $alert->{email}, lang => $alert->{lang}, cobrand => $alert->{cobrand}, cobrand_data => $alert->{cobrand_data} );
-        my $q = "select * from problem_find_nearby(?, ?, ?) as nearby, problem
-            where nearby.problem_id = problem.id and problem.state in ('confirmed', 'fixed')
+        my %data = ( template => $template, data => '', alert_id => $alert->id, alert_email => $alert->user->email, lang => $alert->lang, cobrand => $alert->cobrand, cobrand_data => $alert->cobrand_data );
+        my $q = "select problem.id, problem.title from problem_find_nearby(?, ?, ?) as nearby, problem, users
+            where nearby.problem_id = problem.id
+            and problem.user_id = users.id
+            and problem.state in ('confirmed', 'fixed')
             and problem.confirmed >= ? and problem.confirmed >= ms_current_timestamp() - '7 days'::interval
             and (select whenqueued from alert_sent where alert_sent.alert_id = ? and alert_sent.parameter::integer = problem.id) is null
-            and problem.email <> ?
-            $testing_email_clause
+            and users.email <> ?
             $site_restriction
             order by confirmed desc";
         $q = dbh()->prepare($q);
-        $q->execute($latitude, $longitude, $d, $alert->{whensubscribed}, $alert->{id}, $alert->{email});
+        $q->execute($latitude, $longitude, $d, $alert->whensubscribed, $alert->id, $alert->user->email);
         while (my $row = $q->fetchrow_hashref) {
-            dbh()->do('insert into alert_sent (alert_id, parameter) values (?,?)', {}, $alert->{id}, $row->{id});
+            FixMyStreet::App->model('DB::AlertSent')->create( {
+                alert_id  => $alert->id,
+                parameter => $row->{id},
+            } );
             $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}\n\n";
         }
         _send_aggregated_alert_email(%data) if $data{data};
@@ -156,32 +156,47 @@ sub email_alerts ($) {
 
 sub _send_aggregated_alert_email(%) {
     my %data = @_;
-    Cobrand::set_lang_and_domain($data{cobrand}, $data{lang}, 1);
 
-    $data{unsubscribe_url} = Cobrand::base_url_for_emails($data{cobrand}, $data{cobrand_data}) . '/A/'
-        . mySociety::AuthToken::store('alert', { id => $data{alert_id}, type => 'unsubscribe', email => $data{alert_email} } );
-    my $template = "$FindBin::Bin/../templates/emails/$data{template}";
-    if ($data{cobrand}) {
-        my $template_cobrand = "$FindBin::Bin/../templates/emails/$data{cobrand}/$data{template}";
-        $template = $template_cobrand if -e $template_cobrand;
-    }
+    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($data{cobrand})->new();
+
+    $cobrand->set_lang_and_domain( $data{lang}, 1 );
+
+    my $token = FixMyStreet::App->model("DB::Token")->new_result( {
+        scope => 'alert',
+        data  => {
+            id => $data{alert_id},
+            type => 'unsubscribe',
+            email => $data{alert_email},
+        }
+    } );
+    $data{unsubscribe_url} = $cobrand->base_url_for_emails( $data{cobrand_data} ) . '/A/' . $token->token;
+
+    my $template = FixMyStreet->path_to(
+        "templates", "email", $cobrand->moniker, "$data{template}.txt"
+    )->stringify;
+    my $template_cobrand = FixMyStreet->path_to(
+        "templates", "email", $cobrand->moniker, $data{lang}, "$data{template}.txt"
+    )->stringify;
+    $template = $template_cobrand if -e $template_cobrand;
     $template = File::Slurp::read_file($template);
-    my $sender = Cobrand::contact_email($data{cobrand});
-    my $sender_name = Cobrand::contact_name($data{cobrand});
-    (my $from = $sender) =~ s/team/fms-DO-NOT-REPLY/; # XXX
-    my $email = mySociety::Email::construct_email({
-        _template_ => _($template),
-        _parameters_ => \%data,
-        From => [ $from, _($sender_name) ],
-        To => $data{alert_email},
-        'Message-ID' => sprintf('<alert-%s-%s@mysociety.org>', time(), unpack('h*', random_bytes(5, 1))),
-    });
 
-    my $result = mySociety::EmailUtil::send_email($email, $sender, $data{alert_email});
+    my $sender = $cobrand->contact_email;
+    (my $from = $sender) =~ s/team/fms-DO-NOT-REPLY/; # XXX
+    my $result = FixMyStreet::App->send_email_cron(
+        {
+            _template_ => $template,
+            _parameters_ => \%data,
+            From => [ $from, _($cobrand->contact_name) ],
+            To => $data{alert_email},
+        },
+        $sender,
+        [ $data{alert_email} ],
+        0,
+    );
+
     if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
-        dbh()->commit();
+        $token->insert();
     } else {
-        dbh()->rollback();
         print "Failed to send alert $data{alert_id}!";
     }
 }

@@ -63,6 +63,9 @@ sub subscribe : Path('subscribe') : Args(0) {
     elsif ( exists $c->req->params->{'rznvy'} ) {
         $c->detach('subscribe_email');
     }
+    elsif ( $c->req->params->{'id'} ) {
+        $c->go('updates');
+    }
 
     # shouldn't get to here but if we have then do something sensible
     $c->go('index');
@@ -198,7 +201,7 @@ sub create_alert : Private {
         $options->{cobrand_data} = $c->cobrand->extra_update_data();
         $options->{lang}         = $c->stash->{lang_code};
 
-        if ( $c->user && $c->user->id == $c->stash->{alert_user}->id ) {
+        if ( $c->user && $c->stash->{alert_user}->in_storage && $c->user->id == $c->stash->{alert_user}->id ) {
             $options->{confirmed} = 1;
         }
 

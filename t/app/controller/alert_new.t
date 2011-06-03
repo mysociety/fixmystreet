@@ -43,8 +43,8 @@ foreach my $test (
         email_text => 'confirm the alert',
         uri =>
 '/alert/subscribe?type=local&rznvy=test@example.com&feed=local:10.2:20.1',
-        param1 => 10.2,
-        param2 => 20.1,
+        param1 => 20.1,
+        param2 => 10.2,
     },
     {
         email      => 'test@example.com',
@@ -66,7 +66,6 @@ foreach my $test (
           ->find( { email => $test->{email} } );
 
         # we don't want an alert
-        my $alert;
         if ($user) {
             $mech->delete_user($user);
         }
@@ -80,7 +79,7 @@ foreach my $test (
 
         ok $user, 'user created for alert';
 
-        $alert = FixMyStreet::App->model('DB::Alert')->find(
+        my $alert = FixMyStreet::App->model('DB::Alert')->find(
             {
                 user       => $user,
                 alert_type => $type,
@@ -129,7 +128,7 @@ foreach my $test (
         );
 
         ok $token, 'new token found in database';
-        ok $token->data->{id} == $existing_id, 'subscribed to exsiting alert';
+        ok $token->data->{id} == $existing_id, 'subscribed to existing alert';
 
         $mech->get_ok("/A/$url_token");
         $mech->content_contains('successfully confirmed');
@@ -138,6 +137,7 @@ foreach my $test (
           FixMyStreet::App->model('DB::Alert')->find( { id => $existing_id, } );
 
         ok $alert->confirmed, 'alert set to confirmed';
+        $mech->delete_user($user);
     };
 }
 
@@ -162,18 +162,14 @@ foreach my $test (
           FixMyStreet::App->model('DB::User')
           ->find_or_create( { email => $test->{email} } );
 
-        my $alert;
-        if ($user) {
-            $alert = FixMyStreet::App->model('DB::Alert')->find(
-                {
-                    user       => $user,
-                    alert_type => $type
-                }
-            );
-
-            # clear existing data so we can be sure we're creating it
-            ok $alert->delete() if $alert;
-        }
+        my $alert = FixMyStreet::App->model('DB::Alert')->find(
+            {
+                user       => $user,
+                alert_type => $type
+            }
+        );
+        # clear existing data so we can be sure we're creating it
+        ok $alert->delete() if $alert;
 
         $mech->get_ok( $test->{uri} );
 
@@ -190,6 +186,7 @@ foreach my $test (
         $mech->content_contains( 'Now check your email' );
 
         ok $alert, 'New alert created with existing user';
+        $mech->delete_user($user);
     };
 }
 
@@ -199,8 +196,6 @@ foreach my $test (
         user       => 'test-login@example.com',
         email      => 'test-login@example.com',
         type       => 'council',
-        content    => 'your alert will not be activated',
-        email_text => 'confirm the alert',
         param1     => 2651,
         param2     => 2651,
         confirmed  => 1,
@@ -210,8 +205,6 @@ foreach my $test (
         user       => 'loggedin@example.com',
         email      => 'test-login@example.com',
         type       => 'council',
-        content    => 'your alert will not be activated',
-        email_text => 'confirm the alert',
         param1     => 2651,
         param2     => 2651,
         confirmed  => 0,
@@ -350,6 +343,112 @@ for my $test (
         ok !$alert->confirmed, 'alert not set to confirmed';
 
         $abuse->delete;
+        $mech->delete_user($user);
     };
 }
+
+subtest "Test normal alert signups and that alerts are sent" => sub {
+    my $user1 = FixMyStreet::App->model('DB::User')
+      ->find_or_create( { email => 'reporter@example.com', name => 'Reporter User' } );
+    ok $user1, "created test user";
+    $user1->alerts->delete;
+
+    my $user2 = FixMyStreet::App->model('DB::User')
+      ->find_or_create( { email => 'alerts@example.com', name => 'Alert User' } );
+    ok $user2, "created test user";
+    $user2->alerts->delete;
+
+    for my $alert (
+        { feed => 'local:55.951963:-3.189944', email_confirm => 1 },
+        { feed => 'council:2651:City_of_Edinburgh', },
+    ) {
+        $mech->get_ok( '/alert' );
+        $mech->submit_form_ok( { with_fields => { pc => 'EH11BB' } } );
+        $mech->submit_form_ok( {
+            button => 'alert',
+            with_fields => {
+                rznvy => $user2->email,
+                feed => $alert->{feed},
+            }
+        } );
+        if ( $alert->{email_confirm} ) {
+            my $email = $mech->get_email;
+            $mech->clear_emails_ok;
+            my ( $url, $url_token ) = $email->body =~ m{http://\S+(/A/(\S+))};
+            my $token = FixMyStreet::App->model('DB::Token')->find( { token => $url_token, scope => 'alert' } );
+            $mech->get_ok( $url );
+            $mech->content_contains('successfully confirmed');
+        } else {
+            $mech->content_contains('successfully created');
+        }
+    }
+
+    my $dt = DateTime->now()->add( days => 2);
+
+    my $report_time = '2011-03-01 12:00:00';
+    my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
+        postcode           => 'EH1 1BB',
+        council            => '2651',
+        areas              => ',11808,135007,14419,134935,2651,20728,',
+        category           => 'Street lighting',
+        title              => 'Testing',
+        detail             => 'Testing Detail',
+        used_map           => 1,
+        name               => $user1->name,
+        anonymous          => 0,
+        state              => 'confirmed',
+        confirmed          => $dt,
+        lastupdate         => $dt,
+        whensent           => $dt->clone->add( minutes => 5 ),
+        lang               => 'en-gb',
+        service            => '',
+        cobrand            => 'default',
+        cobrand_data       => '',
+        send_questionnaire => 1,
+        latitude           => '55.951963',
+        longitude          => '-3.189944',
+        user_id            => $user1->id,
+    } );
+    my $report_id = $report->id;
+    ok $report, "created test report - $report_id";
+
+    my $alert = FixMyStreet::App->model('DB::Alert')->create( {
+        parameter  => $report_id,
+        alert_type => 'new_updates',
+        user       => $user1,
+    } )->confirm;
+    ok $alert, 'created alert for reporter';
+
+    my $update = FixMyStreet::App->model('DB::Comment')->create( {
+        problem_id => $report_id,
+        user_id    => $user2->id,
+        name       => 'Other User',
+        mark_fixed => 'false',
+        text       => 'This is some update text',
+        state      => 'confirmed',
+        confirmed  => $dt->clone->add( hours => 7 ),
+        anonymous  => 'f',
+    } );
+    my $update_id = $update->id;
+    ok $update, "created test update - $update_id";
+
+    FixMyStreet::App->model('DB::AlertType')->email_alerts();
+    $mech->email_count_is(3);
+    my @emails = $mech->get_email;
+    my $count;
+    for (@emails) {
+        $count++ if $_->body =~ /The following updates have been left on this problem:/;
+        $count++ if $_->body =~ /The following new problems have been reported to City of\s*Edinburgh Council:/;
+        $count++ if $_->body =~ /The following nearby problems have been added:/;
+    }
+    is $count, 3, 'Three emails with the right things in them';
+
+    my ( $url, $url_token ) = $emails[0]->body =~ m{http://\S+(/A/(\S+))};
+    $mech->get_ok( $url );
+    $mech->content_contains('successfully deleted');
+
+    $mech->delete_user($user1);
+    $mech->delete_user($user2);
+};
+
 done_testing();

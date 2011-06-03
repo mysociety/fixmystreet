@@ -192,14 +192,11 @@ while (my $row = $unsent->next) {
         die 'Report not going anywhere for ID ' . $row->id . '!';
     }
 
-    my $testing_email = mySociety::Config::get('TESTING_EMAIL');
-    if ($row->user->email eq $testing_email) {
-        @recips = ( $testing_email );
-        $send_web = 0;
-        $send_email = 1;
-    } elsif (mySociety::Config::get('STAGING_SITE')) {
+    if (mySociety::Config::get('STAGING_SITE')) {
         # on a staging server send emails to ourselves rather than the councils
         @recips = ( mySociety::Config::get('CONTACT_EMAIL') );
+        $send_web = 0;
+        $send_email = 1;
     } elsif ($site eq 'emptyhomes') {
         my $council = $row->council;
         my $country = $areas_info->{$council}->{country};

@@ -151,8 +151,11 @@ sub delete_user {
         ok( $_->delete, "delete questionnaire " . $_->id ) for $p->questionnaires;
         ok( $p->delete, "delete problem " . $p->title );
     }
+    for my $a ( $user->alerts ) {
+        $a->alert_sents->delete;
+        ok( $a->delete, "delete alert " . $a->alert_type );
+    }
     ok( $_->delete, "delete comment " . $_->text )     for $user->comments;
-    ok( $_->delete, "delete alert " . $_->alert_type ) for $user->alerts;
     ok $user->delete, "delete test user " . $user->email;
 
     return 1;

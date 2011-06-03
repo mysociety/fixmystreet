@@ -39,7 +39,7 @@
 </p>
 
 <div id="alert_links">
-    <a rel="nofollow" id="email_alert" href="[% c.uri_for( '/alert', { type => 'updates', id => problem.id } ) %]">[% loc('Email me updates' ) %]</a>
+    <a rel="nofollow" id="email_alert" href="[% c.uri_for( '/alert/subscribe', { id => problem.id } ) %]">[% loc('Email me updates' ) %]</a>
 
     <form action="[% c.uri_for( '/alert/subscribe' ) %]" method="post" id="email_alert_box">
         <p>[% loc('Receive email when updates are left on this problem.' ) %]</p>
