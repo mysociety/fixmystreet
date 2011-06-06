@@ -25,8 +25,15 @@ Display contact us page
 
 =cut
 
+sub summary : Path( 'summary' ) : Args(0) {
+    my ( $self, $c ) = @_;
+    $c->go( 'index' );
+}
+
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
+
+    $c->forward('set_allowed_pages');
 
     my ( $sql_resttriction, $id, $site_restriction ) = $c->cobrand->site_restriction();
     my $cobrand_restriction = $c->cobrand->moniker eq 'fixmystreet' ? {} : { cobrand => $c->cobrand->moniker };
@@ -131,6 +138,8 @@ sub index : Path : Args(0) {
 sub questionnaire : Path('questionnaire') : Args(0) {
     my ( $self, $c ) = @_;
 
+    $c->forward('set_allowed_pages');
+
     my $questionnaires = $c->model('DB::Questionnaire')->search(
         { whenanswered => \'is not null' }, { group_by => [ 'ever_reported' ], select => [ 'ever_reported', { count => 'me.id' } ], as => [qw/reported questionnaire_count/] }
     );
@@ -151,6 +160,8 @@ sub questionnaire : Path('questionnaire') : Args(0) {
 
 sub council_list : Path('council_list') : Args(0) {
     my ( $self, $c ) = @_;
+
+    $c->forward('set_allowed_pages');
 
     my $edit_activity = $c->model('DB::ContactsHistory')->search(
         undef,
@@ -199,6 +210,8 @@ sub council_list : Path('council_list') : Args(0) {
 
 sub council_contacts : Path('council_contacts') : Args(1) {
     my ( $self, $c, $area_id ) = @_;
+
+    $c->forward('set_allowed_pages');
 
     my $posted = $c->req->param('posted') || '';
     $c->stash->{area_id} = $area_id;
@@ -322,6 +335,8 @@ sub setup_council_details : Private {
 sub council_edit : Path('council_edit') : Args(2) {
     my ( $self, $c, $area_id, $category ) = @_;
 
+    $c->forward('set_allowed_pages');
+
     $c->stash->{area_id} = $area_id;
 
     $c->forward( 'get_token' );
@@ -355,7 +370,6 @@ sub search_reports : Path('search_reports') {
     my ( $self, $c ) = @_;
 
     $c->forward('set_allowed_pages');
-
 
     if (my $search = $c->req->param('search')) {
         $c->stash->{searched} = 1;
@@ -428,23 +442,26 @@ sub search_reports : Path('search_reports') {
 sub set_allowed_pages : Private {
     my ( $self, $c ) = @_;
 
-    my $allowed_pages = $c->cobrand->admin_pages;
+    my $pages = $c->cobrand->admin_pages;
 
-    if( !$allowed_pages ) {
-        $allowed_pages = {
+    if( !$pages ) {
+        $pages = {
              'summary' => [_('Summary'), 0],
-             'councilslist' => [_('Council contacts'), 1],
-             'reports' => [_('Search Reports'), 2],
+             'council_list' => [_('Council contacts'), 1],
+             'search_reports' => [_('Search Reports'), 2],
              'timeline' => [_('Timeline'), 3],
              'questionnaire' => [_('Survey Results'), 4],
-             'councilcontacts' => [undef, undef],        
-             'counciledit' => [undef, undef], 
+             'council_contacts' => [undef, undef],        
+             'council_edit' => [undef, undef], 
              'report_edit' => [undef, undef], 
              'update_edit' => [undef, undef], 
         }
     }
 
-    $c->stash->{allowed_pages} = $allowed_pages;
+    my @allowed_links = sort {$pages->{$a}[1] <=> $pages->{$b}[1]}  grep {$pages->{$_}->[0] } keys %$pages;
+
+    $c->stash->{allowed_pages} = $pages;
+    $c->stash->{allowed_links} = \@allowed_links;
 
     return 1;
 }

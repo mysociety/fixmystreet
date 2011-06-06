@@ -10,10 +10,8 @@ dd { margin-left: 8em; }
 <body>
 
     <strong>[% loc('FixMyStreet admin:') %]</strong>
-    <a href="[% c.uri_for( '' ) %]">[% loc('Summary') %]</a>
-    <a href="[% c.uri_for( 'council_list' ) %]">[% loc('Council contacts') %]</a>
-    <a href="[% c.uri_for( 'search_reports' ) %]">[% loc('Search Reports') %]</a>
-    <a href="">[% loc('Timeline') %]</a>
-    <a href="[% c.uri_for( 'questionnaire') %]">[% loc('Survey Results') %]</a>
+    [%- FOREACH link IN allowed_links %]
+    <a href="[% c.uri_for( link ) %]">[% allowed_pages.$link.0 %]</a>
+    [%- END %]
 
     <h1>[% title %]</h1>
