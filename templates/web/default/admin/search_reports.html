@@ -16,18 +16,18 @@
 [% IF searched %]
 <table cellspacing="0" cellpadding="2" border="1">
     <tr>
-        <th>ID</th>
-        <th>Title</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Council</th>
-        <th>Category</th>
-        <th>Anonymous</th>
-        <th>Cobrand</th>
-        <th>Created</th>
-        <th>State</th>
-        <th>When sent</th>
-        <th>*</th>
+        <th>[% loc('ID') %]</th>
+        <th>[% loc('Title') %]</th>
+        <th>[% loc('Name') %]</th>
+        <th>[% loc('Email') %]</th>
+        <th>[% loc('Council') %]</th>
+        <th>[% loc('Category') %]</th>
+        <th>[% loc('Anonymous') %]</th>
+        <th>[% loc('Cobrand') %]</th>
+        <th>[% loc('Created') %]</th>
+        <th>[% loc('State') %]</th>
+        <th>[% loc('When sent') %]</th>
+        <th>[% loc('*') %]</th>
     </tr>
 [%- FOREACH problem IN problems %]
     <tr[% ' class="hidden"' IF problem.state == 'hidden' %]>
@@ -65,16 +65,35 @@
 
 <table cellspacing="0" cellpadding="2" border="1">
     <tr>
-        <th>ID</th>
-        <th>State</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Created</th>
-        <th>Cobrand</th>
-        <th>Text</th>
-        <th>*</th>
+        <th>[% loc('ID') %]</th>
+        <th>[% loc('State') %]</th>
+        <th>[% loc('Name') %]</th>
+        <th>[% loc('Email') %]</th>
+        <th>[% loc('Created') %]</th>
+        <th>[% loc('Anonymous') %]</th>
+        <th>[% loc('Cobrand') %]</th>
+        <th>[% loc('Text') %]</th>
+        <th>[% loc('*') %]</th>
     </tr>
-<tr>
+[% FOREACH update IN updates -%]
+    <tr[% ' class="hidden"' IF update.state == 'hidden' || ( problem.state && problem.state == 'hidden' ) %]>
+        <td>[%- IF update.state == 'confirmed' -%]
+        [%- cobrand_data = update.cobrand_data %]
+        [%- cobrand_data = c.data_for_generic_update IF !update.cobrand %]
+        <a href="[% c.uri_for_email( '/report', update.problem.id, cobrand_data ) %]#update_[% update.id %]">[% update.id %]</a>
+        [%- ELSE %]
+        [%- update.id %]
+        [%- END -%]</td> 
+        <td>[% update.state %]</td> 
+        <td>[% update.name | html %]</td> 
+        <td>[% update.user.email | html %]</td> 
+        <td>[% PROCESS format_time time=update.created %]</td> 
+        <td>[% IF update.anonymous %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td> 
+        <td>[% update.cobrand %]<br>[% update.cobrand_data | html %]</td> 
+        <td>[% update.text | html %]</td> 
+        <td><a href="[% c.uri_for( 'update_edit', update.id ) %]">Edit</a></td>
+    <tr>
+[% END -%]
 </table>
 [% END %]
 

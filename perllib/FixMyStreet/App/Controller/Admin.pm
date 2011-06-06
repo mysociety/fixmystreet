@@ -360,6 +360,8 @@ sub search_reports : Path('search_reports') {
     if (my $search = $c->req->param('search')) {
         $c->stash->{searched} = 1;
 
+        my ( $site_res_sql, $site_key, $site_restriction ) = $c->cobrand->site_restriction;
+
         my $search_n = 0;
         $search_n = int($search) if $search =~ /^\d+$/;
 
@@ -382,7 +384,7 @@ sub search_reports : Path('search_reports') {
                     detail => { ilike => $like_search },
                     council => { like => $like_search },
                     cobrand_data => { like => $like_search },
-                    # site restriction
+                    %{ $site_restriction },
                 ]
             },
             {
@@ -393,18 +395,34 @@ sub search_reports : Path('search_reports') {
 
         $c->stash->{problems} = [ $problems->all ];
 
-        # Switch quoting back off. See above for explanation of this.
-        $c->model('DB')->schema->storage->sql_maker->quote_char( '' );
 
         $c->stash->{edit_council_contacts} = 1
             if ( grep {$_ eq 'councilcontacts'} keys %{$c->stash->{allowed_pages}});
+
+        my $updates = $c->model('DB::Comment')->search(
+            {
+                -or => [
+                    'me.id' => $search_n,
+                    'problem.id' => $search_n,
+                    'user.email' => { ilike => $like_search },
+                    'me.name' => { ilike => $like_search },
+                    text => { ilike => $like_search },
+                    'me.cobrand_data' => { ilike => $like_search },
+                    %{ $site_restriction },
+                ]
+            },
+            {
+                -select   => [ 'me.*', qw/problem.council problem.state/ ],
+                prefetch => [qw/user problem/],
+                order_by => [\"(me.state='hidden')",\"(problem.state='hidden')",'me.created']
+            }
+        );
+
+        $c->stash->{updates} = [ $updates->all ];
+
+        # Switch quoting back off. See above for explanation of this.
+        $c->model('DB')->schema->storage->sql_maker->quote_char( '' );
     }
-
-#         print $q->h2(_('Updates'));
-#         my $updates = Problems::update_search($search);
-#         admin_show_updates($q, $updates);
-#     }
-
 }
 
 sub set_allowed_pages : Private {
@@ -526,9 +544,6 @@ sub check_token : Private {
 # }
 # 
 # 
-# 
-# sub admin_reports {
-# }
 # 
 # sub admin_edit_report {
 #     my ($q, $id) = @_;
