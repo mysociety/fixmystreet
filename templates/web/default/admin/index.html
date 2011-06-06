@@ -1,31 +1,31 @@
-[% INCLUDE 'admin/header.html' title=loc('Summary') %]
+[% INCLUDE 'admin/header.html' title=loc('Summary') -%]
 
-[% BLOCK states %]
+[%- BLOCK states -%]
 <h2>[% title %]</h2>
 
-[% FOREACH state IN object.keys.sort %]
-[% '<ul>' IF loop.first %]
+[%- FOREACH state IN object.keys.sort %]
+[%- '<ul>' IF loop.first %]
     <li>[% object.$state %] [% state %]</li>
-[% '</ul>' IF loop.last %]
-[% END %]
-[% END %]
+[%- "\n</ul>" IF loop.last %]
+[%- END %]
+[% END -%]
 
-<ul>
-    <li>[% tprintf( loc('<strong>%d</strong> live problems'), total_problems_live ) %]</li>
-    <li>[% tprintf( loc('%d live updates'), comments.confirmed ) %]</li>
-    <li>[% tprintf( loc('%d confirmed alerts, %d unconfirmed'), alerts.1, alerts.0) %]</li>
-    <li>[% tprintf( loc('%d questionnaires sent &ndash; %d answered (%s%%)'), questionnaires.total, questionnaires.1, questionnaires_pc) %]</li>
-    <li>[% tprintf( loc('%d council contacts &ndash; %d confirmed, %d unconfirmed'), contacts.total, contacts.1, contacts.0) %]</li>
-</ul>
+    <ul>
+        <li>[% tprintf( loc('<strong>%d</strong> live problems'), total_problems_live ) %]</li>
+        <li>[% tprintf( loc('%d live updates'), comments.confirmed ) %]</li>
+        <li>[% tprintf( loc('%d confirmed alerts, %d unconfirmed'), alerts.1, alerts.0) %]</li>
+        <li>[% tprintf( loc('%d questionnaires sent &ndash; %d answered (%s%%)'), questionnaires.total, questionnaires.1, questionnaires_pc) %]</li>
+        <li>[% tprintf( loc('%d council contacts &ndash; %d confirmed, %d unconfirmed'), contacts.total, contacts.1, contacts.0) %]</li>
+    </ul>
 
-[% IF c.cobrand.admin_show_creation_graph %]
+[% IF c.cobrand.admin_show_creation_graph -%]
     <p>
         <a href="">[% loc('Graph of problem creation by status over time') %]</a>
     </p>
-[% END %]
+[% END -%]
 
-[% PROCESS states title=loc('Problem breakdown by state') object=problems %]</h2>
+[% PROCESS states title=loc('Problem breakdown by state') object=problems %]
 
-[% PROCESS states title=loc('Update breakdown by state') object=comments %]</h2>
+[% PROCESS states title=loc('Update breakdown by state') object=comments %]
 
 [% INCLUDE 'admin/footer.html' %]
