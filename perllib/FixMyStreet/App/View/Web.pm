@@ -104,7 +104,7 @@ Return a pretty version of the epoch.
 
 sub prettify_epoch {
     my ( $self, $c, $epoch, $short_bool ) = @_;
-    return Page::prettify_epoch( $c->req, $epoch, $short_bool );
+    return Page::prettify_epoch( $epoch, $short_bool );
 }
 
 =head2 add_links

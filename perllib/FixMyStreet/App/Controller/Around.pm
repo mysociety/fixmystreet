@@ -171,7 +171,7 @@ sub display_location : Private {
 
     # get the map features
     my ( $on_map_all, $on_map, $around_map, $distance ) =
-      FixMyStreet::Map::map_features( $c->fake_q, $latitude, $longitude,
+      FixMyStreet::Map::map_features( $c, $latitude, $longitude,
         $interval );
 
     # copy the found reports to the stash
@@ -266,7 +266,7 @@ sub ajax : Path('/ajax') {
 
     # extract the data from the map
     my ( $pins, $on_map, $around_map, $dist ) =
-      FixMyStreet::Map::map_pins( $c->fake_q, $x, $y, $sx, $sy, $interval );
+      FixMyStreet::Map::map_pins( $c, $x, $y, $sx, $sy, $interval );
 
     # render templates to get the html
     # my $on_map_list_html = $c->forward(

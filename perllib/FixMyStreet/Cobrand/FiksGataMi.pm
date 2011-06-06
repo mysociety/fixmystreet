@@ -22,7 +22,7 @@ sub enter_postcode_text {
 
 # Is also adding language parameter
 sub disambiguate_location {
-    my ( $self, $s, $q ) = @_;
+    my ( $self, $s ) = @_;
     $s = "hl=no&gl=no&$s";
     return $s;
 }

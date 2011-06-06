@@ -86,7 +86,6 @@ sub rss : Private {
         $c->go('list');
     }
 
-    my $extra_params = $c->cobrand->extra_params( $c->fake_q );
     my $url;
     if ( $feed =~ /^area:(?:\d+:)+(.*)$/ ) {
         ( my $id = $1 ) =~ tr{:_}{/+};
@@ -363,27 +362,22 @@ sub setup_coordinate_rss_feeds : Private {
 
     my $rss_feed;
     if ( $c->stash->{pretty_pc_text} ) {
-        $rss_feed =
-          $c->cobrand->uri( "/rss/pc/" . $c->stash->{pretty_pc_text},
-            $c->fake_q );
+        $rss_feed = $c->uri_for( "/rss/pc/" . $c->stash->{pretty_pc_text} );
     }
     else {
-        $rss_feed = $c->cobrand->uri(
+        $rss_feed = $c->uri_for(
             sprintf( "/rss/l/%s,%s",
                 $c->stash->{latitude},
-                $c->stash->{longitude} ),
-            $c->fake_q
+                $c->stash->{longitude} )
         );
     }
 
     $c->stash->{rss_feed_uri} = $rss_feed;
 
-    $c->stash->{rss_feed_2k} = $c->cobrand->uri( $rss_feed . '/2', $c->fake_q );
-    $c->stash->{rss_feed_5k} = $c->cobrand->uri( $rss_feed . '/5', $c->fake_q );
-    $c->stash->{rss_feed_10k} =
-      $c->cobrand->uri( $rss_feed . '/10', $c->fake_q );
-    $c->stash->{rss_feed_20k} =
-      $c->cobrand->uri( $rss_feed . '/20', $c->fake_q );
+    $c->stash->{rss_feed_2k}  = $c->uri_for( $rss_feed . '/2' );
+    $c->stash->{rss_feed_5k}  = $c->uri_for( $rss_feed . '/5' );
+    $c->stash->{rss_feed_10k} = $c->uri_for( $rss_feed . '/10' );
+    $c->stash->{rss_feed_20k} = $c->uri_for( $rss_feed . '/20' );
 
     return 1;
 }

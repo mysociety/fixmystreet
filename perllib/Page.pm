@@ -516,10 +516,7 @@ EOF
 }
 
 sub prettify_epoch {
-    my ($q, $s, $short) = @_;
-    my $cobrand = get_cobrand($q);
-    my $cobrand_datetime = Cobrand::prettify_epoch($cobrand, $s);
-    return $cobrand_datetime if ($cobrand_datetime);
+    my ($s, $short) = @_;
     my @s = localtime($s);
     my $tt = strftime('%H:%M', @s);
     my @t = localtime();
@@ -655,24 +652,6 @@ sub display_problem_text($$) {
     return $out;
 }
 
-sub mapit_check_error {
-    my $location = shift;
-    if ($location->{error}) {
-        return _('That postcode was not recognised, sorry.') if $location->{code} =~ /^4/;
-        return $location->{error};
-    }
-    if (mySociety::Config::get('COUNTRY') eq 'GB') {
-        my $island = $location->{coordsyst};
-        if (!$island) {
-            return _("Sorry, that appears to be a Crown dependency postcode, which we don't cover.");
-        }
-        if ($island eq 'I') {
-            return _("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.");
-        }
-    }
-    return 0;
-}
-
 sub short_name {
     my ($area, $info) = @_;
     # Special case Durham as it's the only place with two councils of the same name
@@ -736,12 +715,6 @@ sub process_photo {
     }
     unlink $filename;
     return $photo;
-}
-
-sub scambs_categories {
-    return ('Abandoned vehicles', 'Discarded hypodermic needles',
-            'Dog fouling', 'Flytipping', 'Graffiti', 'Lighting (e.g. security lights)',
-            'Litter', 'Neighbourhood noise');
 }
 
 1;

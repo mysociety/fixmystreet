@@ -285,14 +285,6 @@ includes any disambiguating information available
 
 sub disambiguate_location { "$_[1]&gl=uk" }
 
-=head2 prettify_epoch 
-
-Parameter is EPOCHTIME
-
-=cut
-
-sub prettify_epoch { 0 }
-
 =head2 form_elements
 
 Parameters are FORM_NAME, QUERY. Return HTML for any extra needed elements for

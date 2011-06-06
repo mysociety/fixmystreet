@@ -64,7 +64,7 @@ sub display_map {
 }
 
 sub map_features {
-    my ( $q, $lat, $lon, $interval ) = @_;
+    my ( $c, $lat, $lon, $interval ) = @_;
 
    # TODO - be smarter about calculating the surrounding square
    # use deltas that are roughly 500m in the UK - so we get a 1 sq km search box
@@ -78,8 +78,7 @@ sub map_features {
     my $max_lon = $lon + $lon_delta;
 
     # list of problems around map can be limited, but should show all pins
-    my $around_limit    #
-      = Cobrand::on_map_list_limit( Page::get_cobrand($q) ) || undef;
+    my $around_limit = $c->cobrand->on_map_list_limit || undef;
 
     my @around_args = ( $min_lat, $max_lat, $min_lon, $max_lon, $interval );
     my $around_map_list = Problems::around_map( @around_args, $around_limit );
