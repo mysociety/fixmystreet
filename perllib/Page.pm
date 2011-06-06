@@ -31,7 +31,7 @@ use Problems;
 use Cobrand;
 
 use mySociety::Config;
-use mySociety::DBHandle qw/dbh select_all/;
+use mySociety::DBHandle qw/dbh/;
 use mySociety::Email;
 use mySociety::EvEl;
 use mySociety::Locale;
@@ -471,49 +471,49 @@ sub send_email {
 
 # send_confirmation_email TO (NAME) TEMPLATE-NAME PARAMETERS
 # TEMPLATE-NAME is currently one of problem, update, alert, tms
-sub send_confirmation_email {
-    my ($q, $recipient_email_address, $name, $thing, %h) = @_;
-
-    my $file_thing = $thing;
-    $file_thing = 'empty property' if $q->{site} eq 'emptyhomes' && $thing eq 'problem'; # Needs to be in English
-    my $template = "$file_thing-confirm";
-
-    send_email($q, $recipient_email_address, $name, $template, %h);
-
-    my ($action, $worry);
-    if ($thing eq 'problem') {
-        $action = _('your problem will not be posted');
-        $worry = _("we'll hang on to your problem report while you're checking your email.");
-    } elsif ($thing eq 'update') {
-        $action = _('your update will not be posted');
-        $worry = _("we'll hang on to your update while you're checking your email.");
-    } elsif ($thing eq 'alert') {
-        $action = _('your alert will not be activated');
-        $worry = _("we'll hang on to your alert while you're checking your email.");
-    } elsif ($thing eq 'tms') {
-        $action = 'your expression of interest will not be registered';
-        $worry = "we'll hang on to your expression of interest while you're checking your email.";
-    }
-
-    my $out = sprintf(_(<<EOF), $action, $worry);
-<h1>Nearly Done! Now check your email...</h1>
-<p>The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.</p>
-<p>If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.</p>
-<p>You must now click the link in the email we've just sent you &mdash;
-if you do not, %s.</p>
-<p>(Don't worry &mdash; %s)</p>
-EOF
-
-    my $cobrand = get_cobrand($q);
-    my %vars = (
-        action => $action,
-        worry => $worry,
-        url_home => Cobrand::url($cobrand, '/', $q),
-    );
-    my $cobrand_email = Page::template_include('check-email', $q, Page::template_root($q), %vars);
-    return $cobrand_email if $cobrand_email;
-    return $out;
-}
+#sub send_confirmation_email {
+#    my ($q, $recipient_email_address, $name, $thing, %h) = @_;
+#
+#    my $file_thing = $thing;
+#    $file_thing = 'empty property' if $q->{site} eq 'emptyhomes' && $thing eq 'problem'; # Needs to be in English
+#    my $template = "$file_thing-confirm";
+#
+#    send_email($q, $recipient_email_address, $name, $template, %h);
+#
+#    my ($action, $worry);
+#    if ($thing eq 'problem') {
+#        $action = _('your problem will not be posted');
+#        $worry = _("we'll hang on to your problem report while you're checking your email.");
+#    } elsif ($thing eq 'update') {
+#        $action = _('your update will not be posted');
+#        $worry = _("we'll hang on to your update while you're checking your email.");
+#    } elsif ($thing eq 'alert') {
+#        $action = _('your alert will not be activated');
+#        $worry = _("we'll hang on to your alert while you're checking your email.");
+#    } elsif ($thing eq 'tms') {
+#        $action = 'your expression of interest will not be registered';
+#        $worry = "we'll hang on to your expression of interest while you're checking your email.";
+#    }
+#
+#    my $out = sprintf(_(<<EOF), $action, $worry);
+#<h1>Nearly Done! Now check your email...</h1>
+#<p>The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.</p>
+#<p>If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.</p>
+#<p>You must now click the link in the email we've just sent you &mdash;
+#if you do not, %s.</p>
+#<p>(Don't worry &mdash; %s)</p>
+#EOF
+#
+#    my $cobrand = get_cobrand($q);
+#    my %vars = (
+#        action => $action,
+#        worry => $worry,
+#        url_home => Cobrand::url($cobrand, '/', $q),
+#    );
+#    my $cobrand_email = Page::template_include('check-email', $q, Page::template_root($q), %vars);
+#    return $cobrand_email if $cobrand_email;
+#    return $out;
+#}
 
 sub prettify_epoch {
     my ($s, $short) = @_;
@@ -561,125 +561,6 @@ sub _part {
         push @$o, sprintf(mySociety::Locale::nget($w1, $w2, $i), $i);
         $$s -= $i * $m;
     }
-}
-
-# sub display_problem_meta_line($$) {
-#     my ($q, $problem) = @_;
-#     my $out = '';
-#     my $date_time = prettify_epoch($q, $problem->{time});
-#     if ($q->{site} eq 'emptyhomes') {
-#         my $category = _($problem->{category});
-#         utf8::decode($category); # So that Welsh to Welsh doesn't encode already-encoded UTF-8
-#         if ($problem->{anonymous}) {
-#             $out .= sprintf(_('%s, reported anonymously at %s'), ent($category), $date_time);
-#         } else {
-#             $out .= sprintf(_('%s, reported by %s at %s'), ent($category), ent($problem->{name}), $date_time);
-#         }
-#     } else {
-#         if ($problem->{service} && $problem->{category} && $problem->{category} ne _('Other') && $problem->{anonymous}) {
-#             $out .= sprintf(_('Reported by %s in the %s category anonymously at %s'), ent($problem->{service}), ent($problem->{category}), $date_time);
-#         } elsif ($problem->{service} && $problem->{category} && $problem->{category} ne _('Other')) {
-#             $out .= sprintf(_('Reported by %s in the %s category by %s at %s'), ent($problem->{service}), ent($problem->{category}), ent($problem->{name}), $date_time);
-#         } elsif ($problem->{service} && $problem->{anonymous}) {
-#             $out .= sprintf(_('Reported by %s anonymously at %s'), ent($problem->{service}), $date_time);
-#         } elsif ($problem->{service}) {
-#             $out .= sprintf(_('Reported by %s by %s at %s'), ent($problem->{service}), ent($problem->{name}), $date_time);
-#         } elsif ($problem->{category} && $problem->{category} ne _('Other') && $problem->{anonymous}) {
-#             $out .= sprintf(_('Reported in the %s category anonymously at %s'), ent($problem->{category}), $date_time);
-#         } elsif ($problem->{category} && $problem->{category} ne _('Other')) {
-#             $out .= sprintf(_('Reported in the %s category by %s at %s'), ent($problem->{category}), ent($problem->{name}), $date_time);
-#         } elsif ($problem->{anonymous}) {
-#             $out .= sprintf(_('Reported anonymously at %s'), $date_time);
-#         } else {
-#             $out .= sprintf(_('Reported by %s at %s'), ent($problem->{name}), $date_time);
-#         }
-#     }
-#     my $cobrand = get_cobrand($q);
-#     $out .= Cobrand::extra_problem_meta_text($cobrand, $problem);
-#     $out .= '; ' . _('the map was not used so pin location may be inaccurate') unless ($problem->{used_map});
-#     if ($problem->{council}) {
-#         if ($problem->{whensent}) {
-#             my $body;
-#             if ($problem->{external_body}) {
-#                 $body = $problem->{external_body};
-#             } else {
-#                 $problem->{council} =~ s/\|.*//g;
-#                 my @councils = split /,/, $problem->{council};
-#                 my $areas_info = mySociety::MaPit::call('areas', \@councils);
-#                 $body = join(' and ', map { $areas_info->{$_}->{name} } @councils);
-#             }
-#             $out .= '<small class="council_sent_info">';
-#             $out .= $q->br() . sprintf(_('Sent to %s %s later'), $body, prettify_duration($problem->{whensent}, 'minute'));
-#             $out .= '</small>';
-#         }
-#     } else {
-#         $out .= $q->br() . $q->small(_('Not reported to council'));
-#     }
-#     return $out;
-# }
-
-sub display_problem_detail($) {
-    my $problem = shift;
-    (my $detail = $problem->{detail}) =~ s/\r//g;
-    my $out = '';
-    foreach (split /\n{2,}/, $detail) {
-        $out .= '<p>' . ent($_) . '</p>';
-    }
-    return $out;
-}
-
-sub display_problem_photo($$) {
-    my ($q, $problem) = @_;
-    my $cobrand = get_cobrand($q);
-    my $display_photos = Cobrand::allow_photo_display($cobrand);
-    if ($display_photos && $problem->{photo}) {
-        my $dims = Image::Size::html_imgsize(\$problem->{photo});
-        return "<p align='center'><img alt='' $dims src='/photo?id=$problem->{id}'></p>";
-    }
-    return '';
-}
-
-# Display information about problem
-sub display_problem_text($$) {
-    my ($q, $problem) = @_;
-
-    my $out = $q->h1(ent($problem->{title}));
-    $out .= '<p><em>';
-    $out .= display_problem_meta_line($q, $problem);
-    $out .= '</em></p>';
-    $out .= display_problem_detail($problem);
-    $out .= display_problem_photo($q, $problem);
-    return $out;
-}
-
-sub short_name {
-    my ($area, $info) = @_;
-    # Special case Durham as it's the only place with two councils of the same name
-    # And some places in Norway
-    return 'Durham+County' if $area->{name} eq 'Durham County Council';
-    return 'Durham+City' if $area->{name} eq 'Durham City Council';
-    if ($area->{name} =~ /^(Os|Nes|V\xe5ler|Sande|B\xf8|Her\xf8y)$/) {
-        my $parent = $info->{$area->{parent_area}}->{name};
-        return URI::Escape::uri_escape_utf8("$area->{name}, $parent");
-    }
-    my $name = $area->{name};
-    $name =~ s/ (Borough|City|District|County) Council$//;
-    $name =~ s/ Council$//;
-    $name =~ s/ & / and /;
-    $name = URI::Escape::uri_escape_utf8($name);
-    $name =~ s/%20/+/g;
-    return $name;
-}
-
-sub check_photo {
-    my ($q, $fh) = @_;
-    my $ct = $q->uploadInfo($fh)->{'Content-Type'};
-    my $cd = $q->uploadInfo($fh)->{'Content-Disposition'};
-    # Must delete photo param, otherwise display functions get confused
-    $q->delete('photo');
-    return _('Please upload a JPEG image only') unless
-        ($ct eq 'image/jpeg' || $ct eq 'image/pjpeg');
-    return '';
 }
 
 sub process_photo {

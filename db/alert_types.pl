@@ -39,6 +39,6 @@
     _('The latest problems for {{COUNCIL}} within {{WARD}} ward reported by users'),
 
 # New problems within a particular voting area (ward, constituency, whatever)
-    _('New problems within {{NAME}}''s boundary on FixMyStreet'),
-    _('The latest problems within {{NAME}}''s boundary reported by users'),
+    _('New problems within {{NAME}}\'s boundary on FixMyStreet'),
+    _('The latest problems within {{NAME}}\'s boundary reported by users'),
 
