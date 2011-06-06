@@ -51,16 +51,16 @@ $mech->content_contains('Please select the feed you want');
 $mech->get_ok('/alert/subscribe?rss=1&feed=invalid:1000:A_Locationtype=local&pc=ky16+8yg&rss=Give+me+an+RSS+feed&rznvy=');
 $mech->content_contains('Illegal feed selection');
 
-$mech->get_ok('/alert/subscribe?rss=1&feed=area:1000:A_Location');
-$mech->uri->path('/rss/area/A+Location');
+$mech->get_ok('/alert/subscribe?rss=1&feed=area:1000:Birmingham');
+is $mech->uri->path, '/rss/reports/Birmingham';
 
-$mech->get_ok('/alert/subscribe?rss=1&feed=area:1000:1001:A_Location:Diff_Location');
-$mech->uri->path('/rss/area/A+Location/Diff+Location');
+$mech->get_ok('/alert/subscribe?rss=1&feed=area:1000:1001:Cheltenham:Lansdown');
+is $mech->uri->path, '/rss/area/Cheltenham/Lansdown';
 
-$mech->get_ok('/alert/subscribe?rss=1&feed=council:1000:A_Location');
-$mech->uri->path('/rss/reports/A+Location');
+$mech->get_ok('/alert/subscribe?rss=1&feed=council:1000:Gloucestershire');
+is $mech->uri->path, '/rss/reports/Gloucestershire';
 
-$mech->get_ok('/alert/subscribe?rss=1&feed=ward:1000:1001:A_Location:Diff_Location');
-$mech->uri->path('/rss/ward/A+Location/Diff+Location');
+$mech->get_ok('/alert/subscribe?rss=1&feed=ward:1000:1001:Cheltenham:Lansdown');
+is $mech->uri->path, '/rss/reports/Cheltenham/Lansdown';
 
 done_testing();

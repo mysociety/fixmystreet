@@ -347,6 +347,33 @@ for my $test (
     };
 }
 
+subtest "Test two-tier council alerts" => sub {
+    for my $alert (
+        { feed => "local:51.896269:-2.093063",          result => '/rss/l/51.896269,-2.093063' },
+        { feed => "area:2326:Cheltenham",               result => '/rss/area/Cheltenham' },
+        { feed => "area:2326:4544:Cheltenham:Lansdown", result => '/rss/area/Cheltenham/Lansdown'  },
+        { feed => "area:2226:Gloucestershire",          result => '/rss/area/Gloucestershire' },
+        { feed => "area:2226:14949:Gloucestershire:Lansdown%2C_Park_and_Warden_Hill",
+          result => '/rss/area/Gloucestershire/Lansdown%2C+Park+and+Warden+Hill'
+        },
+        { feed => "council:2326:Cheltenham",            result => '/rss/reports/Cheltenham' },
+        { feed => "ward:2326:4544:Cheltenham:Lansdown", result => '/rss/reports/Cheltenham/Lansdown' },
+        { feed => "council:2226:Gloucestershire",       result => '/rss/reports/Gloucestershire' },
+        { feed => "ward:2226:14949:Gloucestershire:Lansdown%2C_Park_and_Warden_Hill",
+          result => '/rss/reports/Gloucestershire/Lansdown%2C+Park+and+Warden+Hill'
+        },
+    ) {
+        $mech->get_ok( '/alert/list?pc=GL502PR' );
+        $mech->submit_form_ok( {
+            button => 'rss',
+            with_fields => {
+                feed => $alert->{feed},
+            }
+        } );
+        is $mech->uri->path, $alert->{result};
+    }
+};
+
 subtest "Test normal alert signups and that alerts are sent" => sub {
     my $user1 = FixMyStreet::App->model('DB::User')
       ->find_or_create( { email => 'reporter@example.com', name => 'Reporter User' } );
