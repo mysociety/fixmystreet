@@ -344,15 +344,6 @@ Given a QUERY, extract any extra data required by the cobrand
 
 sub extra_data { '' }
 
-=head2 extra_params
-
-Given a QUERY, return a hash of extra params to be included in any URLs in links
-produced on the page returned by that query.
-
-=cut
-
-sub extra_params { return {} }
-
 =head2 extra_problem_meta_text
 
 Returns any extra text to be displayed with a PROBLEM.

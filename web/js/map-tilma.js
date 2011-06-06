@@ -146,10 +146,6 @@ function load_pins(x, y) {
                             'y='  + (y+3), 
                             'all_pins=' +  all_pins ];
 
-        if (document.getElementById('extra_param')) {
-            ajax_params.push(document.getElementById('extra_param').name + '=' + document.getElementById('extra_param').value);
-        }            
-
         var url = [ root_path , '/ajax?', ajax_params.join(';')].join('');
         YAHOO.util.Connect.asyncRequest('GET', url, {
            success: pins_loaded
