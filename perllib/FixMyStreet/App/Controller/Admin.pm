@@ -439,6 +439,130 @@ sub search_reports : Path('search_reports') {
     }
 }
 
+sub report_edit : Path('report_edit') : Args(1) {
+    my ( $self, $c, $id ) = @_;
+
+    my ( $site_res_sql, $site_key, $site_restriction ) = $c->cobrand->site_restriction;
+
+    my $problem = $c->model('DB::Problem')->search(
+        {
+            id => $id,
+            %{ $site_restriction },
+        }
+    )->first;
+
+    $c->detach( '/page_error_404_not_found',
+        [ _('The requested URL was not found on this server.') ] )
+      unless $problem;
+
+    $c->stash->{problem} = $problem;
+
+    $c->forward('get_token');
+    $c->forward('set_allowed_pages');
+
+    $c->stash->{updates} =
+      [ $c->model('DB::Comment')
+          ->search( { problem_id => $problem->id }, { order_by => 'created' } )
+          ->all ];
+
+    if ( $c->req->param('resend') ) {
+        $c->forward('check_token');
+
+        $problem->whensent(undef);
+        $problem->update();
+        $c->stash->{status_message} =
+          '<p><em>' . _('That problem will now be resent.') . '</em></p>';
+
+        $c->forward( 'log_edit', [ $id, 'problem', 'resend' ] );
+    }
+    elsif ( $c->req->param('submit') ) {
+        $c->forward('check_token');
+
+        my $done   = 0;
+        my $edited = 0;
+
+        my $new_state = $c->req->param('state');
+        my $old_state = $problem->state;
+        if (   $new_state eq 'confirmed'
+            && $problem->state eq 'unconfirmed'
+            && $c->cobrand->moniker eq 'emptyhomes' )
+        {
+            $c->stash->{status_message} =
+                '<p><em>'
+              . _('I am afraid you cannot confirm unconfirmed reports.')
+              . '</em></p>';
+            $done = 1;
+        }
+
+        # do this here so before we update the values in problem
+        if (   $c->req->param('anonymous') ne $problem->anonymous
+            || $c->req->param('name')   ne $problem->name
+            || $c->req->param('email')  ne $problem->user->email
+            || $c->req->param('title')  ne $problem->title
+            || $c->req->param('detail') ne $problem->detail )
+        {
+            $edited = 1;
+        }
+
+        $problem->anonymous( $c->req->param('anonymous') );
+        $problem->title( $c->req->param('title') );
+        $problem->detail( $c->req->param('detail') );
+        $problem->state( $c->req->param('state') );
+        $problem->name( $c->req->param('name') );
+
+        if ( $c->req->param('email') ne $problem->user->email ) {
+            my $user = $c->model('DB::User')->find_or_create(
+                { email => $c->req->param('email') }
+            );
+
+            $user->insert unless $user->in_storage;
+            $problem->user( $user );
+        }
+
+        if ( $c->req->param('remove_photo') ) {
+            $problem->photo(undef);
+        }
+
+        if ( $new_state ne $old_state ) {
+            $problem->lastupdate( \'ms_current_timestamp()' );
+        }
+
+        if ( $new_state eq 'confirmed' and $old_state eq 'unconfirmed' ) {
+            $problem->confirmed( \'ms_current_timestamp()' );
+        }
+
+        if ($done) {
+            $problem->discard_changes;
+        }
+        else {
+            $problem->update;
+
+            if ( $new_state ne $old_state ) {
+                $c->forward( 'log_edit', [ $id, 'problem', 'state_change' ] );
+            }
+            if ($edited) {
+                $c->forward( 'log_edit', [ $id, 'problem', 'edit' ] );
+            }
+
+            $c->stash->{status_message} =
+              '<p><em>' . _('Updated!') . '</em></p>';
+
+            # do this here otherwise lastupdate and confirmed times
+            # do not display correctly
+            $problem->discard_changes;
+        }
+    }
+
+#     my $cobrand_data;
+#     if ($row{cobrand}) {
+#         $cobrand_data = $row{cobrand_data};
+#     } else {
+#         $cobrand_data = Cobrand::cobrand_data_for_generic_problem($cobrand, \%row);
+#     }
+
+    return 1;
+}
+
 sub set_allowed_pages : Private {
     my ( $self, $c ) = @_;
 
@@ -504,6 +628,19 @@ sub check_token : Private {
 
     return 1;
 }
+
+
+sub log_edit : Private {
+    my ( $self, $c, $id, $object_type, $action ) = @_;
+    $c->model('DB::AdminLog')->create(
+        {
+            admin_user => ( $c->req->remote_user() || '' ),
+            object_type => $object_type,
+            action => $action,
+            object_id => $id,
+        }
+    )->insert();
+}
 # 	
 # =item allowed_pages Q
 # 
@@ -562,127 +699,6 @@ sub check_token : Private {
 # 
 # 
 # 
-# sub admin_edit_report {
-#     my ($q, $id) = @_;
-#     my $row = Problems::admin_fetch_problem($id);
-#     my $cobrand = Page::get_cobrand($q);
-#     return not_found($q) if ! $row->[0];
-#     my %row = %{$row->[0]};
-#     my $status_message = '';
-#     if ($q->param('resend')) {
-#         return not_found($q) if $q->param('token') ne get_token($q);
-#         dbh()->do('update problem set whensent=null where id=?', {}, $id);
-#         admin_log_edit($q, $id, 'problem', 'resend');
-#         dbh()->commit();
-#         $status_message = '<p><em>' . _('That problem will now be resent.') . '</em></p>';
-#     } elsif ($q->param('submit')) {
-#         return not_found($q) if $q->param('token') ne get_token($q);
-#         my $new_state = $q->param('state');
-#         my $done = 0;
-#         if ($new_state eq 'confirmed' && $row{state} eq 'unconfirmed' && $q->{site} eq 'emptyhomes') {
-#             $status_message = '<p><em>' . _('I am afraid you cannot confirm unconfirmed reports.') . '</em></p>';
-#             $done = 1;
-#         }
-#         my $query = 'update problem set anonymous=?, state=?, name=?, email=?, title=?, detail=?';
-#         if ($q->param('remove_photo')) {
-#             $query .= ', photo=null';
-#         }
-#         if ($new_state ne $row{state}) {
-#             $query .= ', lastupdate=current_timestamp';
-#         }
-#         if ($new_state eq 'confirmed' and $row{state} eq 'unconfirmed') {
-#             $query .= ', confirmed=current_timestamp';
-#         }
-#         $query .= ' where id=?';
-#         unless ($done) {
-#             dbh()->do($query, {}, $q->param('anonymous') ? 't' : 'f', $new_state,
-#                 $q->param('name'), $q->param('email'), $q->param('title'), $q->param('detail'), $id);
-#             if ($new_state ne $row{state}) {	
-#                 admin_log_edit($q, $id, 'problem', 'state_change');
-#             }
-#             if ($q->param('anonymous') ne $row{anonymous} || 
-#                 $q->param('name') ne $row{name} ||
-#                 $q->param('email') ne $row{email} || 
-#                 $q->param('title') ne $row{title} ||
-#                 $q->param('detail') ne $row{detail}) {
-#                admin_log_edit($q, $id, 'problem', 'edit');
-#             } 
-#             dbh()->commit();
-#             map { $row{$_} = $q->param($_) } qw(anonymous state name email title detail);
-#             $status_message = '<p><em>' . _('Updated!') . '</em></p>';
-#         }
-#     }
-#     my %row_h = map { $_ => $row{$_} ? ent($row{$_}) : '' } keys %row;
-#     my $title = sprintf(_("Editing problem %d"), $id);
-#     print html_head($q, $title);
-#     print $q->h1($title);
-#     print $status_message;
-# 
-#     my $council = $row{council} || '<em>' . _('None') . '</em>';
-#     (my $areas = $row{areas}) =~ s/^,(.*),$/$1/;
-#     my $latitude  = $row{latitude};
-#     my $longitude = $row{longitude};
-#     my $questionnaire = $row{send_questionnaire} ? _('Yes') : _('No');
-#     my $used_map = $row{used_map} ? _('used map') : _("didn't use map");
-#     (my $whensent = $row{whensent} || '&nbsp;') =~ s/\..*//;
-#     (my $confirmed = $row{confirmed} || '-') =~ s/ (.*?)\..*/&nbsp;$1/;
-#     my $photo = '';
-#     my $cobrand_data;
-#     if ($row{cobrand}) {
-#         $cobrand_data = $row{cobrand_data};
-#     } else {
-#         $cobrand_data = Cobrand::cobrand_data_for_generic_problem($cobrand, \%row);
-#     }
-#     $photo = '<li><img align="top" src="' . Cobrand::base_url_for_emails($cobrand, $cobrand_data) . '/photo?id=' . $row{id} . '">
-# <input type="checkbox" id="remove_photo" name="remove_photo" value="1">
-# <label for="remove_photo">' . _("Remove photo (can't be undone!)") . '</label>' if $row{photo};
-#     
-#     my $url_base = Cobrand::base_url_for_emails($cobrand, $cobrand_data);
-#     my $url = $url_base . '/report/' . $row{id};
-# 
-#     my $anon = $q->label({-for=>'anonymous'}, _('Anonymous:')) . ' ' . $q->popup_menu(-id => 'anonymous', -name => 'anonymous', -values => { 1=>_('Yes'), 0=>_('No') }, -default => $row{anonymous});
-#     my $state = $q->label({-for=>'state'}, _('State:')) . ' ' . $q->popup_menu(-id => 'state', -name => 'state', -values => { confirmed => _('Open'), fixed => _('Fixed'), hidden => _('Hidden'), unconfirmed => _('Unconfirmed'), partial => _('Partial') }, -default => $row{state});
-# 
-#     my $resend = '';
-#     $resend = ' <input onclick="return confirm(\'' . _('You really want to resend?') . '\')" type="submit" name="resend" value="' . _('Resend report') . '">' if $row{state} eq 'confirmed';
-# 
-#     print $q->start_form(-method => 'POST', -action => './');
-#     print $q->hidden('page');
-#     print $q->hidden('id');
-#     print $q->hidden('token', get_token($q));
-#     print $q->hidden('submit', 1);
-#     print "
-# <ul>
-# <li><a href='$url'>" . _('View report on site') . "</a>
-# <li><label for='title'>" . _('Subject:') . "</label> <input size=60 type='text' id='title' name='title' value='$row_h{title}'>
-# <li><label for='detail'>" . _('Details:') . "</label><br><textarea name='detail' id='detail' cols=60 rows=10>$row_h{detail}</textarea>
-# <li>" . _('Co-ordinates:') . " $latitude,$longitude (" . _('originally entered') . " $row_h{postcode}, $used_map)
-# <li>" . _('For council(s):') . " $council (" . _('other areas:') . " $areas)
-# <li>$anon
-# <li>$state
-# <li>" . _('Category:') . " $row{category}
-# <li>" . _('Name:') . " <input type='text' name='name' id='name' value='$row_h{name}'>
-# <li>" . _('Email:') . " <input type='text' id='email' name='email' value='$row_h{email}'>
-# <li>" . _('Phone:') . " $row_h{phone}
-# <li>" . _('Created:') . " $row{created}
-# <li>" . _('Confirmed:') . " $confirmed
-# <li>" . _('Sent:') . " $whensent $resend
-# <li>" . _('Last update:') . " $row{lastupdate}
-# <li>" . _('Service:') . " $row{service}
-# <li>" . _('Cobrand:') . " $row{cobrand}
-# <li>" . _('Cobrand data:') . " $row{cobrand_data}
-# <li>" . _('Going to send questionnaire?') . " $questionnaire
-# $photo
-# </ul>
-# ";
-#     print $q->submit(_('Submit changes'));
-#     print $q->end_form;
-# 
-#     print $q->h2(_('Updates'));
-#     my $updates = select_all('select * from comment where problem_id=? order by created', $id);
-#     admin_show_updates($q, $updates);
-#     print html_tail($q);
-# }
 # 
 # sub admin_show_updates {
 #     my ($q, $updates) = @_;
@@ -805,12 +821,6 @@ sub check_token : Private {
 #     return $cobrand_data;
 # }
 # 
-# sub admin_log_edit {
-#    my ($q, $id, $object_type, $action) = @_;
-#    my $query = "insert into admin_log (admin_user, object_type, object_id, action)
-#                 values (?, ?, ?, ?);";
-#    dbh()->do($query, {}, $q->remote_user(), $object_type, $id, $action);
-# }
 # 
 # sub admin_timeline {
 #     my $q = shift;
