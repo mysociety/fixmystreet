@@ -11,7 +11,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 59;
+use Test::More tests => 56;
 use Test::Exception;
 use Error qw(:try);
 
@@ -135,21 +135,6 @@ sub test_base_url_for_emails {
 
 }
 
-sub test_extra_params { 
-    my $cobrand = 'mysite';    
-    my $q = new MockQuery($cobrand);
-
-    # should get the results of the extra_params function in the cobrand module if one exists
-    my $extra_params = Cobrand::extra_params($cobrand, $q);
-    is($extra_params, 'key=value', 'extra_params returns output from cobrand module') ;
-
-    # should return an empty string otherwise
-    $cobrand = 'nosite';
-    $extra_params = Cobrand::extra_params($cobrand, $q);
-    is($extra_params, '', 'extra_params returns an empty string if no cobrand module');
-    
-}
-
 sub test_header_params {
     my $cobrand = 'mysite';
     my $q = new MockQuery($cobrand);
@@ -270,7 +255,6 @@ ok(test_base_url_for_emails() == 1, 'Ran all tests for base_url_for_emails');
 ok(test_extra_problem_data() == 1, 'Ran all tests for extra_problem_data');
 ok(test_extra_update_data() == 1, 'Ran all tests for extra_update_data');
 ok(test_extra_alert_data() == 1, 'Ran all tests for extra_alert_data');
-ok(test_extra_params() == 1, 'Ran all tests for extra_params');
 ok(test_header_params() == 1, 'Ran all tests for header_params');
 ok(test_root_path_js() == 1, 'Ran all tests for root_js');
 ok(test_site_title() == 1, 'Ran all tests for site_title');

@@ -61,10 +61,6 @@ sub extra_alert_data {
     return "Cobrand alert data";
 }
 
-sub extra_params {
-    return 'key=value';
-}
-
 sub header_params {
     my %params = ('key' => 'value');
     return \%params;

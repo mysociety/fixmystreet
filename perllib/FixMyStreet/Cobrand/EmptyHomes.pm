@@ -129,5 +129,49 @@ to be resized then return 0;
 
 sub default_photo_resize { return '195x'; }
 
+=item council_rss_alert_options
+
+Generate a set of options for council rss alerts. 
+
+=cut
+
+sub council_rss_alert_options {
+    my $self = shift;
+    my $all_councils = shift;
+
+    my %councils = map { $_ => 1 } $self->area_types();
+
+    my $num_councils = scalar keys %$all_councils;
+
+    my ( @options, @reported_to_options );
+    my ($council, $ward);
+    foreach (values %$all_councils) {
+        $_->{short_name} = $self->short_name( $_ );
+        ( $_->{id_name} = $_->{short_name} ) =~ tr/+/_/;
+        if ($_->{type} eq 'DIS') {
+            $council = $_;
+        } elsif ($_->{type} eq 'DIW') {
+            $ward = $_;
+        }
+    }
+
+    push @options, {
+        type      => 'council',
+        id        => sprintf( 'council:%s:%s', $council->{id}, $council->{id_name} ),
+        text      => sprintf( _('Problems within %s'), $council->{name}),
+        rss_text  => sprintf( _('RSS feed of problems within %s'), $council->{name}),
+        uri       => $self->uri( '/rss/reports/' . $council->{short_name} ),
+    };
+    push @options, {
+        type     => 'ward',
+        id       => sprintf( 'ward:%s:%s:%s:%s', $council->{id}, $ward->{id}, $council->{id_name}, $ward->{id_name} ),
+        rss_text => sprintf( _('RSS feed of problems within %s ward'), $ward->{name}),
+        text     => sprintf( _('Problems within %s ward'), $ward->{name}),
+        uri      => $self->uri( '/rss/reports/' . $council->{short_name} . '/' . $ward->{short_name} ),
+    };
+
+    return ( \@options, @reported_to_options ? \@reported_to_options : undef );
+}
+
 1;
 

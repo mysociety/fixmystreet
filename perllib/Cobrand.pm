@@ -72,9 +72,6 @@ my %fns = (
     'extra_alert_data' => { default => "''" },
     # Given a QUERY, extract any extra data required by the cobrand 
     'extra_data' => { default => "''" },
-    # Given a QUERY, return a hash of extra params to be included in 
-    # any URLs in links produced on the page returned by that query.
-    'extra_params' => { default => "''" },
     # Returns any extra text to be displayed with a PROBLEM.
     'extra_problem_meta_text' => { default => "''" },
     # Returns any extra text to be displayed with an UPDATE.

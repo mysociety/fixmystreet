@@ -344,15 +344,6 @@ Given a QUERY, extract any extra data required by the cobrand
 
 sub extra_data { '' }
 
-=head2 extra_params
-
-Given a QUERY, return a hash of extra params to be included in any URLs in links
-produced on the page returned by that query.
-
-=cut
-
-sub extra_params { return {} }
-
 =head2 extra_problem_meta_text
 
 Returns any extra text to be displayed with a PROBLEM.
@@ -766,30 +757,30 @@ sub council_rss_alert_options {
         push @reported_to_options,
           {
             type      => 'council',
-            id        => sprintf( 'district:%s:%s', $district->{id}, $district->{id_name} ),
+            id        => sprintf( 'council:%s:%s', $district->{id}, $district->{id_name} ),
             text      => $district->{name},
             rss_text  => sprintf( _('RSS feed of %s'), $district->{name}),
             uri       => $self->uri( '/rss/reports/' . $district->{short_name} ),
           },
           {
             type     => 'ward',
-            id       => sprintf( 'd_ward:%s:%s:%s:%s', $district->{id}, $d_ward->{id}, $district->{id_name}, $d_ward->{id_name} ),
+            id       => sprintf( 'ward:%s:%s:%s:%s', $district->{id}, $d_ward->{id}, $district->{id_name}, $d_ward->{id_name} ),
             rss_text => sprintf( _('RSS feed of %s, within %s ward'), $district->{name}, $d_ward->{name}),
-            text     => sprintf( _('%s within, %s ward'), $district->{name}, $d_ward->{name}),
+            text     => sprintf( _('%s, within %s ward'), $district->{name}, $d_ward->{name}),
             uri      => $self->uri( '/rss/reports/' . $district->{short_name} . '/' . $d_ward->{short_name} ),
           },
           {
             type      => 'council',
-            id        => sprintf( 'county:%s:%s', $county->{id}, $county->{id_name} ),
+            id        => sprintf( 'council:%s:%s', $county->{id}, $county->{id_name} ),
             text      => $county->{name},
             rss_text  => sprintf( _('RSS feed of %s'), $county->{name}),
             uri       => $self->uri( '/rss/reports/' . $county->{short_name} ),
           },
           {
             type     => 'ward',
-            id       => sprintf( 'c_ward:%s:%s:%s:%s', $county->{id}, $c_ward->{id}, $county->{id_name}, $c_ward->{id_name} ),
+            id       => sprintf( 'ward:%s:%s:%s:%s', $county->{id}, $c_ward->{id}, $county->{id_name}, $c_ward->{id_name} ),
             rss_text => sprintf( _('RSS feed of %s, within %s ward'), $county->{name}, $c_ward->{name}),
-            text     => sprintf( _('%s within, %s ward'), $county->{name}, $c_ward->{name}),
+            text     => sprintf( _('%s, within %s ward'), $county->{name}, $c_ward->{name}),
             uri      => $self->uri( '/rss/reports/' . $county->{short_name} . '/' . $c_ward->{short_name} ),
           };
 
