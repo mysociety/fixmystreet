@@ -14,7 +14,6 @@ package Page;
 use strict;
 use Carp;
 use mySociety::CGIFast qw(-no_xhtml);
-use Data::Dumper;
 use Encode;
 use Error qw(:try);
 use File::Slurp;
@@ -653,60 +652,6 @@ sub display_problem_text($$) {
     $out .= '</em></p>';
     $out .= display_problem_detail($problem);
     $out .= display_problem_photo($q, $problem);
-    return $out;
-}
-
-# Display updates
-sub display_problem_updates($$) {
-    my ($id, $q) = @_;
-    my $cobrand = get_cobrand($q);
-    my $updates = select_all(
-        "select id, name, extract(epoch from confirmed) as confirmed, text,
-         mark_fixed, mark_open, photo, cobrand
-         from comment where problem_id = ? and state='confirmed'
-         order by confirmed", $id);
-    my $out = '';
-    if (@$updates) {
-        $out .= '<div id="updates">';
-        $out .= '<h2 class="problem-update-list-header">' . _('Updates') . '</h2>';
-        foreach my $row (@$updates) {
-            $out .= "<div><div class=\"problem-update\"><p><a name=\"update_$row->{id}\"></a><em>";
-            if ($row->{name}) {
-                $out .= sprintf(_('Posted by %s at %s'), ent($row->{name}), prettify_epoch($q, $row->{confirmed}));
-            } else {
-                $out .= sprintf(_('Posted anonymously at %s'), prettify_epoch($q, $row->{confirmed}));
-            }
-            $out .= Cobrand::extra_update_meta_text($cobrand, $row);
-            $out .= ', ' . _('marked as fixed') if ($row->{mark_fixed});
-            $out .= ', ' . _('reopened') if ($row->{mark_open});
-            $out .= '</em></p>';
-
-            my $allow_update_reporting = Cobrand::allow_update_reporting($cobrand);
-            if ($allow_update_reporting) {
-                my $contact = '/contact?id=' . $id . ';update_id='. $row->{id};
-                my $contact_url =  Cobrand::url($cobrand, $contact, $q);
-                $out .= '<p>';
-                $out .= $q->a({rel => 'nofollow', class => 'unsuitable-problem', href => $contact_url}, _('Offensive? Unsuitable? Tell us'));
-                $out .= '</p>';
-            }
-            $out .= '</div>';
-            $out .= '<div class="update-text">';
-            my $text = $row->{text};
-            $text =~ s/\r//g;
-            foreach (split /\n{2,}/, $text) {
-                $out .= '<p>' . ent($_) . '</p>';
-            }
-            my $cobrand = get_cobrand($q);
-            my $display_photos = Cobrand::allow_photo_display($cobrand);
-            if ($display_photos && $row->{photo}) {
-                my $dims = Image::Size::html_imgsize(\$row->{photo});
-                $out .= "<p><img alt='' $dims src='/photo?c=$row->{id}'></p>";
-            }
-            $out .= '</div>';
-            $out .= '</div>';
-        }
-        $out .= '</div>';
-    }
     return $out;
 }
 
