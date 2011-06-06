@@ -553,13 +553,6 @@ sub report_edit : Path('report_edit') : Args(1) {
         }
     }
 
-#     my $cobrand_data;
-#     if ($row{cobrand}) {
-#         $cobrand_data = $row{cobrand_data};
-#     } else {
-#         $cobrand_data = Cobrand::cobrand_data_for_generic_problem($cobrand, \%row);
-#     }
-
     return 1;
 }
 
@@ -641,93 +634,6 @@ sub log_edit : Private {
         }
     )->insert();
 }
-# 	
-# =item allowed_pages Q
-# 
-# Return a hash of allowed pages, keyed on page param. The values of the hash
-# are arrays of the form [link_text, link_order]. Pages without link_texts
-# are not to be included in the main admin menu.
-# =cut
-# sub allowed_pages($) {
-#     my ($q) = @_;
-#     my $cobrand = Page::get_cobrand($q);
-#     my $pages = Cobrand::admin_pages($cobrand);
-#     if (!$pages) {
-#         $pages = {
-#              'summary' => [_('Summary'), 0],
-#              'councilslist' => [_('Council contacts'), 1],
-#              'reports' => [_('Search Reports'), 2],
-#              'timeline' => [_('Timeline'), 3],
-#              'questionnaire' => [_('Survey Results'), 4],
-#              'councilcontacts' => [undef, undef],        
-#              'counciledit' => [undef, undef], 
-#              'report_edit' => [undef, undef], 
-#              'update_edit' => [undef, undef], 
-#         };
-#     }
-#     return $pages;
-# }
-# 
-# sub html_head($$) {
-#     my ($q, $title) = @_;
-#     my $ret = $q->header(-type => 'text/html', -charset => 'utf-8');
-#     my $site_title = _('FixMyStreet administration');
-#     $ret .= <<END;
-# <html>
-# <head>
-# <title>$title - $site_title</title>
-# <style type="text/css">
-# dt { clear: left; float: left; font-weight: bold; }
-# dd { margin-left: 8em; }
-# .hidden { color: #666666; }
-# </style>
-# </head>
-# <body>
-# END
-#     my $pages = allowed_pages($q);    
-#     my @links = sort {$pages->{$a}[1] <=> $pages->{$b}[1]}  grep {$pages->{$_}->[0] } keys %$pages;
-#     $ret .= $q->p(
-#         $q->strong(_("FixMyStreet admin:")), 
-#         map { $q->a( { href => NewURL($q, page => $_) }, $pages->{$_}->[0]) } @links
-#     ); 
-# 
-#     return $ret;
-# }
-# 
-# sub fetch_data {
-# }
-# 
-# 
-# 
-# 
-# sub admin_show_updates {
-#     my ($q, $updates) = @_;
-#     my $cobrand = Page::get_cobrand($q);
-#     print $q->start_table({border=>1, cellpadding=>2, cellspacing=>0});
-#     print $q->Tr({}, $q->th({}, [ _('ID'), _('State'), _('Name'), _('Email'), _('Created'), _('Cobrand'), _('Text'), _('*') ]));
-#     my $base_url = ''; 
-#     my $cobrand_data;
-#     foreach (@$updates) {
-#         my $url = $_->{id};
-#         if ( $_->{state} eq 'confirmed' ) {
-#             if ($_->{cobrand}) {
-#                 $cobrand_data = $_->{cobrand_data};
-#             } else {
-#                 $cobrand_data = Cobrand::cobrand_data_for_generic_update($cobrand, $_);
-#             }
-#             $url = $q->a({ -href => Cobrand::base_url_for_emails($cobrand, $cobrand_data) . '/report/' . $_->{problem_id} . '#update_' . $_->{id} },
-#                 $url);
-#         }
-#         my $cobrand = $_->{cobrand} . '<br>' . $_->{cobrand_data};
-#         my $attr = {};
-#         $attr->{-class} = 'hidden' if $_->{state} eq 'hidden' || ($_->{problem_state} && $_->{problem_state} eq 'hidden');
-#         print $q->Tr($attr, $q->td([ $url, $_->{state}, ent($_->{name} || ''),
-#         ent($_->{email}), $_->{created}, $cobrand, ent($_->{text}),
-#         $q->a({ -href => NewURL($q, page=>'update_edit', id=>$_->{id}) }, _('Edit'))
-#         ]));
-#     }
-#     print $q->end_table;
-# }
 # 
 # sub admin_edit_update {
 #     my ($q, $id) = @_;
@@ -909,12 +815,6 @@ sub log_edit : Private {
 # 
 # }
 # 
-# 
-# sub not_found {
-#     my ($q) = @_;
-#     print $q->header(-status=>'404 Not Found',-type=>'text/html');
-#     print "<h1>Not Found</h1>The requested URL was not found on this server.";
-# }
 # 
 # sub main {
 #     my $q = shift;
