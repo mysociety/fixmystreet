@@ -323,7 +323,9 @@ sub signup_for_alerts : Private {
             cobrand      => $update->cobrand,
             cobrand_data => $update->cobrand_data,
             lang         => $update->lang,
-        )->confirm();
+        );
+
+        $alert->confirm();
 
         $alert->update;
     }
