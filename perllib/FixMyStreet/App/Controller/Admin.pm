@@ -351,6 +351,86 @@ sub council_edit : Path('council_edit') : Args(2) {
     return 1;
 }
 
+sub search_reports : Path('search_reports') {
+    my ( $self, $c ) = @_;
+
+    $c->forward('set_allowed_pages');
+
+
+    if (my $search = $c->req->param('search')) {
+        $c->stash->{searched} = 1;
+
+        my $search_n = 0;
+        $search_n = int($search) if $search =~ /^\d+$/;
+
+        my $like_search = "%$search%";
+
+        # when DBIC creates the join it does 'JOIN users user' in the
+        # SQL which makes PostgreSQL unhappy as user is a reserved
+        # word, hence we need to quote this SQL. However, the quoting
+        # makes PostgreSQL unhappy elsewhere so we only want to do
+        # it for this query and then switch it off afterwards.
+        $c->model('DB')->schema->storage->sql_maker->quote_char( '"' );
+
+        my $problems = $c->model('DB::Problem')->search(
+            {
+                -or => [
+                    'me.id' => $search_n,
+                    'user.email' => { ilike => $like_search },
+                    'me.name' => { ilike => $like_search },
+                    title => { ilike => $like_search },
+                    detail => { ilike => $like_search },
+                    council => { like => $like_search },
+                    cobrand_data => { like => $like_search },
+                    # site restriction
+                ]
+            },
+            {
+                prefetch => 'user',
+                order_by => [\"(state='hidden')",'created']
+            }
+        );
+
+        $c->stash->{problems} = [ $problems->all ];
+
+        # Switch quoting back off. See above for explanation of this.
+        $c->model('DB')->schema->storage->sql_maker->quote_char( '' );
+
+        $c->stash->{edit_council_contacts} = 1
+            if ( grep {$_ eq 'councilcontacts'} keys %{$c->stash->{allowed_pages}});
+    }
+
+#         print $q->h2(_('Updates'));
+#         my $updates = Problems::update_search($search);
+#         admin_show_updates($q, $updates);
+#     }
+
+}
+
+sub set_allowed_pages : Private {
+    my ( $self, $c ) = @_;
+
+    my $allowed_pages = $c->cobrand->admin_pages;
+
+    if( !$allowed_pages ) {
+        $allowed_pages = {
+             'summary' => [_('Summary'), 0],
+             'councilslist' => [_('Council contacts'), 1],
+             'reports' => [_('Search Reports'), 2],
+             'timeline' => [_('Timeline'), 3],
+             'questionnaire' => [_('Survey Results'), 4],
+             'councilcontacts' => [undef, undef],        
+             'counciledit' => [undef, undef], 
+             'report_edit' => [undef, undef], 
+             'update_edit' => [undef, undef], 
+        }
+    }
+
+    $c->stash->{allowed_pages} = $allowed_pages;
+
+    return 1;
+}
+
 # use Encode;
 # 
 # use Page;
@@ -448,71 +528,6 @@ sub check_token : Private {
 # 
 # 
 # sub admin_reports {
-#     my $q = shift;
-#     my $title = _('Search Reports');
-#     my $cobrand = Page::get_cobrand($q);
-#     my $pages = allowed_pages($q);
-#     print html_head($q, $title);
-#     print $q->h1($title);
-#     print $q->start_form(-method => 'GET', -action => './');
-#     print $q->label({-for => 'search'}, _('Search:')), ' ', $q->textfield(-id => 'search', -name => "search", -size => 30);
-#     print $q->hidden('page');
-#     print $q->end_form;
-# 
-#     if (my $search = $q->param('search')) {
-#         my $results = Problems::problem_search($search);
-#         print $q->start_table({border=>1, cellpadding=>2, cellspacing=>0});
-#         print $q->Tr({}, $q->th({}, [_('ID'), _('Title'), _('Name'), _('Email'), _('Council'), _('Category'), _('Anonymous'), _('Cobrand'), _('Created'), _('State'), _('When sent'), _('*') ]));
-#         my $cobrand_data;         
-#         foreach (@$results) {
-#             my $url = $_->{id};
-#             if ($_->{state} eq 'confirmed' || $_->{state} eq 'fixed') {
-#                 # if this is a cobranded admin interface, but we're looking at a generic problem, figure out enough information
-#                 # to create a URL to the cobranded version of the problem
-#                 if ($_->{cobrand}) {
-#                     $cobrand_data = $_->{cobrand_data};
-#                 } else {	
-#                     $cobrand_data = Cobrand::cobrand_data_for_generic_problem($cobrand, $_);
-#                 }
-#                 $url = $q->a({ -href => Cobrand::base_url_for_emails($cobrand, $cobrand_data) . '/report/' . $_->{id} }, $url);
-#             }
-#             my $council = $_->{council} || '&nbsp;';
-#             my $category = $_->{category} || '&nbsp;';
-#             (my $confirmed = $_->{confirmed} || '-') =~ s/ (.*?)\..*/&nbsp;$1/;
-#             (my $created = $_->{created}) =~ s/\..*//;
-#             (my $lastupdate = $_->{lastupdate}) =~ s/ (.*?)\..*/&nbsp;$1/;
-#             (my $whensent = $_->{whensent} || '&nbsp;') =~ s/\..*//;
-#             my $state = $_->{state};
-#             $state .= '<small>';
-#             $state .= "<br>" . _('Confirmed:') . "&nbsp;$confirmed" if $_->{state} eq 'confirmed' || $_->{state} eq 'fixed';
-#             $state .= '<br>' . _('Fixed:') . ' ' . $lastupdate if $_->{state} eq 'fixed';
-#             $state .= "<br>" . _('Last&nbsp;update:') . "&nbsp;$lastupdate" if $_->{state} eq 'confirmed';
-#             $state .= '</small>';
-#             my $anonymous = $_->{anonymous} ? _('Yes') : _('No');
-#             my $cobrand = $_->{cobrand};
-#             $cobrand .= "<br>" . $_->{cobrand_data};
-#             my $counciltext = '';
-#             if (grep {$_ eq 'councilcontacts'} keys %{$pages}) {  
-#                  $counciltext = $q->a({ -href => NewURL($q, page=>'councilcontacts', area_id=>$council)}, $council);
-#             } else {
-#                  $counciltext = $council;
-#             }
-#             my $attr = {};
-#             $attr->{-class} = 'hidden' if $_->{state} eq 'hidden';
-#             print $q->Tr($attr, $q->td([ $url, ent($_->{title}), ent($_->{name}), ent($_->{email}),
-#             $counciltext,
-#             $category, $anonymous, $cobrand, $created, $state, $whensent,
-#             $q->a({ -href => NewURL($q, page=>'report_edit', id=>$_->{id}) }, _('Edit'))
-#             ]));
-#         }
-#         print $q->end_table;
-# 
-#         print $q->h2(_('Updates'));
-#         my $updates = Problems::update_search($search);
-#         admin_show_updates($q, $updates);
-#     }
-# 
-#     print html_tail($q);
 # }
 # 
 # sub admin_edit_report {
