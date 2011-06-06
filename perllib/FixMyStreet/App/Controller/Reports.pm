@@ -4,7 +4,6 @@ use namespace::autoclean;
 
 use Problems;
 use POSIX qw(strcoll);
-# use FixMyStreet::Alert;
 use mySociety::MaPit;
 use mySociety::VotingArea;
 

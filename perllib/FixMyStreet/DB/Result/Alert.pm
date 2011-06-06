@@ -85,10 +85,18 @@ Sets the state of the alert to confirmed.
 sub confirm {
     my $self = shift;
 
-    return if $self->confirmed and $self->confirmed == 1 and $self->whendisabled ne 'null';
-
     $self->confirmed(1);
     $self->whendisabled(undef);
+    $self->update;
+
+    return 1;
+}
+
+sub disable {
+    my $self = shift;
+
+    $self->whendisabled( \'ms_current_timestamp()' );
+    $self->update;
 
     return 1;
 }

@@ -931,8 +931,10 @@ sub redirect_or_confirm_creation : Private {
     my ( $self, $c ) = @_;
     my $report = $c->stash->{report};
 
-    # If confirmed send the user straigh there.
+    # If confirmed send the user straight there.
     if ( $report->confirmed ) {
+        # Subscribe problem reporter to email updates
+        $c->forward( 'create_reporter_alert' );
         my $report_uri = $c->uri_for( '/report', $report->id );
         $c->res->redirect($report_uri);
         $c->detach;
@@ -948,6 +950,20 @@ sub redirect_or_confirm_creation : Private {
     # tell user that they've been sent an email
     $c->stash->{template}   = 'email_sent.html';
     $c->stash->{email_type} = 'problem';
+}
+
+sub create_reporter_alert : Private {
+    my ( $self, $c ) = @_;
+
+    my $problem = $c->stash->{report};
+    my $alert = $c->model('DB::Alert')->find_or_create( {
+        user         => $problem->user,
+        alert_type   => 'new_updates',
+        parameter    => $problem->id,
+        cobrand      => $problem->cobrand,
+        cobrand_data => $problem->cobrand_data,
+        lang         => $problem->lang,
+    } )->confirm;
 }
 
 =head2 redirect_to_around

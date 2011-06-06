@@ -63,6 +63,9 @@ sub subscribe : Path('subscribe') : Args(0) {
     elsif ( exists $c->req->params->{'rznvy'} ) {
         $c->detach('subscribe_email');
     }
+    elsif ( $c->req->params->{'id'} ) {
+        $c->go('updates');
+    }
 
     # shouldn't get to here but if we have then do something sensible
     $c->go('index');
@@ -140,7 +143,7 @@ sub subscribe_email : Private {
         $c->forward('set_local_alert_options');
     }
     else {
-        throw FixMyStreet::Alert::Error('Invalid type');
+        $c->detach( '/page_error_404_not_found', [ 'Invalid type' ] );
     }
 
     $c->forward('create_alert');
@@ -162,7 +165,7 @@ sub updates : Path('updates') : Args(0) {
 
 =head2 confirm
 
-Confirm signup to an alert. Forwarded here from Tokens.
+Confirm signup to or unsubscription from an alert. Forwarded here from Tokens.
 
 =cut
 
@@ -173,11 +176,9 @@ sub confirm : Private {
 
     if ( $c->stash->{confirm_type} eq 'subscribe' ) {
         $alert->confirm();
-        $alert->update;
     }
     elsif ( $c->stash->{confirm_type} eq 'unsubscribe' ) {
-        $alert->delete();
-        $alert->update;
+        $alert->disable();
     }
 }
 
@@ -198,8 +199,9 @@ sub create_alert : Private {
     unless ($alert) {
         $options->{cobrand}      = $c->cobrand->moniker();
         $options->{cobrand_data} = $c->cobrand->extra_update_data();
+        $options->{lang}         = $c->stash->{lang_code};
 
-        if ( $c->user && $c->user->id == $c->stash->{alert_user}->id ) {
+        if ( $c->user && $c->stash->{alert_user}->in_storage && $c->user->id == $c->stash->{alert_user}->id ) {
             $options->{confirmed} = 1;
         }
 
@@ -258,7 +260,7 @@ sub set_local_alert_options : Private {
         m{ \A local: ( [\+\-]? \d+ \.? \d* ) : ( [\+\-]? \d+ \.? \d* ) }xms )
     {
         $type = 'local_problems';
-        push @params, $1, $2;
+        push @params, $2, $1; # Note alert parameters are lon,lat
     }
 
     my $options = {
