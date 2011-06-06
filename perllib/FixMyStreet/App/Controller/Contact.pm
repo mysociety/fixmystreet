@@ -101,9 +101,9 @@ sub validate : Private {
 
     my ( %field_errors, @errors );
     my %required = (
-        name    => _('Please give your name'),
-        em      => _('Please give your email'),
-        subject => _('Please give a subject'),
+        name    => _('Please enter your name'),
+        em      => _('Please enter your email'),
+        subject => _('Please enter a subject'),
         message => _('Please write a message')
     );
 
@@ -113,7 +113,7 @@ sub validate : Private {
     }
 
     unless ( $field_errors{em} ) {
-        $field_errors{em} = _('Please give a valid email address')
+        $field_errors{em} = _('Please enter a valid email address')
           if !mySociety::EmailUtil::is_valid_email( $c->req->param('em') );
     }
 

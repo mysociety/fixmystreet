@@ -11,7 +11,7 @@
 
 use strict;
 use warnings; 
-use Test::More tests => 13;
+use Test::More tests => 8;
 use Test::Exception; 
 
 use FindBin;
@@ -34,28 +34,6 @@ sub set_lang($) {
     mySociety::Locale::negotiate_language($lang);
     mySociety::Locale::gettext_domain('FixMyStreet');
     mySociety::Locale::change();
-}
-
-sub test_geocode_string() {
-    my %params = ();
-    my $q = new MockQuery( 'nosite', \%params );
-
-    # geocode a straightforward string, expect success
-    my ( $latitude, $longitude, $error ) =
-      FixMyStreet::Geocode::string( 'Buckingham Palace', $q );
-    is( $latitude, 51.4949261, 'example easting generated' );
-    is( $longitude, -0.1461924, 'example northing generated' );
-    is( $error, undef, 'should not generate error for simple example' );
-
-    # expect a failure message for Northern Ireland
-    ( $latitude, $longitude, $error ) =
-      FixMyStreet::Geocode::string( 'Falls Road, Belfast', $q );
-    is(
-        $error,
-        "We do not cover Northern Ireland, I'm afraid, as our licence doesn't "
-          . "include any maps for the region.",
-        'error message produced for NI location'
-    );
 }
 
 sub test_header() {
@@ -104,4 +82,3 @@ sub test_base_url_with_lang {
 ok(test_base_url_with_lang() == 1, 'Ran all tests for base_url_with_lang');
 ok(test_footer() == 1, 'Ran all tests for the footer function');
 ok(test_header() == 1, 'Ran all tests for the header function'); 
-ok(test_geocode_string() == 1, 'Ran all tests for the geocode_string function');

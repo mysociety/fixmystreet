@@ -326,8 +326,6 @@ sub signup_for_alerts : Private {
         );
 
         $alert->confirm();
-
-        $alert->update;
     }
 
     return 1;

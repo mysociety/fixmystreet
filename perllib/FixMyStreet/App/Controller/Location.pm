@@ -65,7 +65,7 @@ sub determine_location_from_pc : Private {
     $c->stash->{pc} = $pc;    # for template
 
     my ( $latitude, $longitude, $error ) =
-      eval { FixMyStreet::Geocode::lookup( $pc, $c->fake_q ) };
+      eval { FixMyStreet::Geocode::lookup( $pc, $c ) };
 
     # Check that nothing blew up
     if ($@) {

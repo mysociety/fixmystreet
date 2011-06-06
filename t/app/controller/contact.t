@@ -133,9 +133,9 @@ for my $test (
         page_errors =>
           [ 'There were problems with your report. Please see below.', ],
         field_errors => [
-            'Please give your name',
-            'Please give your email',
-            'Please give a subject',
+            'Please enter your name',
+            'Please enter your email',
+            'Please enter a subject',
             'Please write a message',
         ]
     },
@@ -149,9 +149,9 @@ for my $test (
         page_errors =>
           [ 'There were problems with your report. Please see below.', ],
         field_errors => [
-            'Please give your name',
-            'Please give a valid email address',
-            'Please give a subject',
+            'Please enter your name',
+            'Please enter a valid email address',
+            'Please enter a subject',
             'Please write a message',
         ]
     },
@@ -164,7 +164,7 @@ for my $test (
         },
         page_errors =>
           [ 'There were problems with your report. Please see below.', ],
-        field_errors => [ 'Please give a subject', 'Please write a message', ]
+        field_errors => [ 'Please enter a subject', 'Please write a message', ]
     },
     {
         fields => {
@@ -186,7 +186,7 @@ for my $test (
         },
         page_errors =>
           [ 'There were problems with your report. Please see below.', ],
-        field_errors => [ 'Please give a subject', 'Please write a message', ]
+        field_errors => [ 'Please enter a subject', 'Please write a message', ]
     },
     {
         fields => {

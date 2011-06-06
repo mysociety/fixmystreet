@@ -24,7 +24,7 @@ $mech->not_logged_in_ok;
 $mech->get_ok('/auth');
 
 for my $test (
-    [ ''                         => 'enter an email address' ],
+    [ ''                         => 'enter your email' ],
     [ 'not an email'             => 'check your email address is correct' ],
     [ 'bob@foo'                  => 'check your email address is correct' ],
     [ 'bob@foonaoedudnueu.co.uk' => 'check your email address is correct' ],

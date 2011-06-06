@@ -9,12 +9,19 @@
         [%- ELSE %]
             [% tprintf( loc( 'Posted by %s at %s' ), update.name, prettify_epoch( update.confirmed_local.epoch ) ) | html -%]
         [%- END -%]
-        [%- # extra cobrand meta data -%]
+        [%- c.cobrand.extra_update_meta_text(update) -%]
         [%- ", " _ loc( 'marked as fixed' ) IF update.mark_fixed %]
         [%- ", " _ loc( 'reopened' ) IF update.mark_open %]
         </em></p>
+
+    [% IF c.cobrand.allow_update_reporting %]
+        <p>
+            <a rel="nofollow" class="unsuitable-problem" href="[% c.uri_for( '/contact?id=' _ update.problem_id _ ';update_id' _ update.id ) %]">[% loc('Offensive? Unsuitable? Tell us') %]</a>
+        </p>
+    [% END %]
+
     </div>
-    [%# update reporting %]
+
     <div class="update-text">
         [% add_links( update.text ) | html_para %]
 

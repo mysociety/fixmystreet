@@ -66,7 +66,7 @@ sub all_councils_report {
 }
 
 sub disambiguate_location {
-    my ( $self, $s, $q ) = @_;
+    my ( $self, $s ) = @_;
     $s = "ll=51.612832,-0.218169&spn=0.0563,0.09&$s";
     return $s;
 }

@@ -278,7 +278,7 @@ sub meta_line {
     my ( $problem, $c ) = @_;
 
     my $date_time =
-      Page::prettify_epoch( $c->req, $problem->confirmed_local->epoch );
+      Page::prettify_epoch( $problem->confirmed_local->epoch );
     my $meta = '';
 
     # FIXME Should be in cobrand

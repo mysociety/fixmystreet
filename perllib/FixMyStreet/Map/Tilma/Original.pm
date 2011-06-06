@@ -83,29 +83,28 @@ sub display_map {
 }
 
 sub display_pin {
-    my ($q, $px, $py, $col, $id, $title, $num) = @_;
+    my ($c, $px, $py, $col, $id, $title, $num) = @_;
     $num = '' if !$num || $num > 9;
-    my $host = Page::base_url_with_lang($q, undef);
+    my $host = $c->cobrand->base_url_with_lang;
     my %cols = (red=>'R', green=>'G', blue=>'B', purple=>'P');
     my $out = '<img class="pin" src="' . $host . '/i/pin' . $cols{$col}
         . $num . '.gif" alt="' . _('Problem') . '" style="top:' . ($py-59)
         . 'px; left:' . ($px) . 'px; position: absolute;">';
     return $out unless $id;
-    my $cobrand = Page::get_cobrand($q);
-    my $url = Cobrand::url($cobrand, NewURL($q, -url => '/report/' . $id), $q);
+    my $url = $c->uri_for( '/report/' . $id );
     $out = '<a title="' . ent($title) . '" href="' . $url . '">' . $out . '</a>';
     return $out;
 }
 
 sub map_pins {
-    my ($self, $q, $x, $y, $sx, $sy, $interval) = @_;
+    my ($self, $c, $x, $y, $sx, $sy, $interval) = @_;
 
     my $e = tile_to_os($x);
     my $n = tile_to_os($y);
 
     my ( $lat, $lon ) = Utils::convert_en_to_latlon( $e, $n );
     my ( $around_map, $around_map_list, $nearby, $dist ) =
-      FixMyStreet::Map::map_features( $q, $lat, $lon, $interval );
+      FixMyStreet::Map::map_features( $c, $lat, $lon, $interval );
 
     my $pins = '';
     foreach (@$around_map) {
@@ -114,7 +113,7 @@ sub map_pins {
         my $px = os_to_px($_->{easting}, $sx);
         my $py = os_to_px($_->{northing}, $sy, 1);
         my $col = $_->{state} eq 'fixed' ? 'green' : 'red';
-        $pins .= display_pin($q, $px, $py, $col, $_->{id}, $_->{title});
+        $pins .= display_pin($c, $px, $py, $col, $_->{id}, $_->{title});
     }
 
     foreach (@$nearby) {
@@ -123,7 +122,7 @@ sub map_pins {
         my $px = os_to_px($_->{easting}, $sx);
         my $py = os_to_px($_->{northing}, $sy, 1);
         my $col = $_->{state} eq 'fixed' ? 'green' : 'red';
-        $pins .= display_pin($q, $px, $py, $col, $_->{id}, $_->{title});
+        $pins .= display_pin($c, $px, $py, $col, $_->{id}, $_->{title});
     }
 
     return ($pins, $around_map_list, $nearby, $dist);
