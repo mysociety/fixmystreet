@@ -64,8 +64,6 @@ define('OPTION_HEARFROMYOURMP_BASE_URL', '');
 
 define('OPTION_SMTP_SMARTHOST', 'localhost');
 
-define('OPTION_FLICKR_API', '');
-
 define('OPTION_IPHONE_URL', '');
 
 // Log file (used in test harness, and later in admin scripts)

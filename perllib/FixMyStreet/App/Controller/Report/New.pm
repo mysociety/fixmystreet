@@ -272,10 +272,10 @@ sub report_import : Path('/import') {
 Create the report and set up some basics in it. If there is a partial report
 requested then use that .
 
-Partial reports are created when people submit to us via mobile apps or by
-specially tagging photos on Flickr. They are in the database but are not
-completed yet. Users reach us by following a link we email them that contains a
-token link. This action looks for the token and if found retrieves the report in it.
+Partial reports are created when people submit to us e.g. via mobile apps.
+They are in the database but are not completed yet. Users reach us by following
+a link we email them that contains a token link. This action looks for the
+token and if found retrieves the report in it.
 
 =cut
 
