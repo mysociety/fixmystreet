@@ -292,7 +292,11 @@ sub redirect_or_confirm_creation : Private {
         }
     );
     $c->stash->{token_url} = $c->uri_for_email( '/C', $token->token );
-    $c->send_email( 'update-confirm.txt', { to => $update->user->email } );
+    $c->send_email( 'update-confirm.txt', {
+        to => $update->name
+            ? [ [ $update->user->email, $update->name ] ]
+            : $update->user->email,
+    } );
 
     # tell user that they've been sent an email
     $c->stash->{template}   = 'email_sent.html';

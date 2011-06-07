@@ -301,15 +301,7 @@ sub send_confirmation_email : Private {
 
     $c->stash->{token_url} = $c->uri_for_email( '/A', $token->token );
 
-    my $sender = mySociety::Config::get('CONTACT_EMAIL');
-
-    $c->send_email(
-        'alert-confirm.txt',
-        {
-            to   => $c->stash->{alert}->user->email,
-            from => $sender
-        }
-    );
+    $c->send_email( 'alert-confirm.txt', { to => $c->stash->{alert}->user->email } );
 
     $c->stash->{template} = 'email_sent.html';
 }
