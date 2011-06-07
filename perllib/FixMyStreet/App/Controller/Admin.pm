@@ -39,7 +39,7 @@ Displays some summary information for the requests.
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->forward('set_allowed_pages');
+    $c->forward('check_page_allowed');
 
     my ( $sql_restriction, $id, $site_restriction ) = $c->cobrand->site_restriction();
     my $cobrand_restriction = $c->cobrand->moniker eq 'fixmystreet' ? {} : { cobrand => $c->cobrand->moniker };
@@ -107,7 +107,7 @@ sub index : Path : Args(0) {
 sub timeline : Path( 'timeline' ) : Args(0) {
     my ($self, $c) = @_;
 
-    $c->forward('set_allowed_pages');
+    $c->forward('check_page_allowed');
 
     my ( $sql_restriction, $id, $site_restriction ) = $c->cobrand->site_restriction();
     my $cobrand_restriction = { cobrand => $c->cobrand->moniker };
@@ -158,7 +158,7 @@ sub timeline : Path( 'timeline' ) : Args(0) {
 sub questionnaire : Path('questionnaire') : Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->forward('set_allowed_pages');
+    $c->forward('check_page_allowed');
 
     my $questionnaires = $c->model('DB::Questionnaire')->search(
         { whenanswered => \'is not null' }, { group_by => [ 'ever_reported' ], select => [ 'ever_reported', { count => 'me.id' } ], as => [qw/reported questionnaire_count/] }
@@ -181,7 +181,7 @@ sub questionnaire : Path('questionnaire') : Args(0) {
 sub council_list : Path('council_list') : Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->forward('set_allowed_pages');
+    $c->forward('check_page_allowed');
 
     my $edit_activity = $c->model('DB::ContactsHistory')->search(
         undef,
@@ -231,7 +231,7 @@ sub council_list : Path('council_list') : Args(0) {
 sub council_contacts : Path('council_contacts') : Args(1) {
     my ( $self, $c, $area_id ) = @_;
 
-    $c->forward('set_allowed_pages');
+    $c->forward('check_page_allowed');
 
     my $posted = $c->req->param('posted') || '';
     $c->stash->{area_id} = $area_id;
@@ -355,7 +355,7 @@ sub setup_council_details : Private {
 sub council_edit : Path('council_edit') : Args(2) {
     my ( $self, $c, $area_id, $category ) = @_;
 
-    $c->forward('set_allowed_pages');
+    $c->forward('check_page_allowed');
 
     $c->stash->{area_id} = $area_id;
 
@@ -389,7 +389,7 @@ sub council_edit : Path('council_edit') : Args(2) {
 sub search_reports : Path('search_reports') {
     my ( $self, $c ) = @_;
 
-    $c->forward('set_allowed_pages');
+    $c->forward('check_page_allowed');
 
     if (my $search = $c->req->param('search')) {
         $c->stash->{searched} = 1;
@@ -478,7 +478,7 @@ sub report_edit : Path('report_edit') : Args(1) {
     $c->stash->{problem} = $problem;
 
     $c->forward('get_token');
-    $c->forward('set_allowed_pages');
+    $c->forward('check_page_allowed');
 
     $c->stash->{updates} =
       [ $c->model('DB::Comment')
@@ -685,7 +685,7 @@ sub update_edit : Path('update_edit') : Args(1) {
       unless $update;
 
     $c->forward('get_token');
-    $c->forward('set_allowed_pages');
+    $c->forward('check_page_allowed');
 
     $c->stash->{update} = $update;
 
@@ -754,64 +754,22 @@ sub update_edit : Path('update_edit') : Args(1) {
     return 1;
 }
 
-# 
-# 
-# sub main {
-#     my $q = shift;
-# 
-#     my $logout = $q->param('logout');
-#     my $timeout = $q->param('timeout');
-#     if ($logout) {
-#         if (!$timeout) {
-#             print $q->redirect(-location => '?logout=1;timeout=' . (time() + 7));
-#             return;
-#         }
-#         if (time() < $timeout) {
-#             print $q->header(
-#                 -status => '401 Unauthorized',
-#                 -www_authenticate => 'Basic realm="www.fixmystreet.com admin pages"'
-#             );
-#             return;
-#         }
-#     }
-# 
-#     my $page = $q->param('page');
-#     $page = "summary" if !$page;
-# 
-#     my $area_id = $q->param('area_id');
-#     my $category = $q->param('category');
-#     my $pages = allowed_pages($q);
-#     my @allowed_actions = keys %$pages;
-#  
-#     if (!grep {$_ eq $page} @allowed_actions) {
-#         not_found($q);
-#         return; 
-#     }
-# 
-#     if ($page eq "councilslist") {
-#         admin_councils_list($q);
-#     } elsif ($page eq "councilcontacts") {
-#         admin_council_contacts($q, $area_id);
-#     } elsif ($page eq "counciledit") {
-#         admin_council_edit($q, $area_id, $category);
-#     } elsif ($page eq 'reports') {
-#         admin_reports($q);
-#     } elsif ($page eq 'report_edit') {
-#         my $id = $q->param('id');
-#         admin_edit_report($q, $id);
-#     } elsif ($page eq 'update_edit') {
-#         my $id = $q->param('id');
-#         admin_edit_update($q, $id);
-#     } elsif ($page eq 'timeline') {
-#         admin_timeline($q);
-#     } elsif ($page eq 'questionnaire') {
-#         admin_questionnaire($q);
-#     } else {
-#         admin_summary($q);
-#     }
-# }
-# Page::do_fastcgi(\&main);
-# 
+sub check_page_allowed : Private {
+    my ( $self, $c ) = @_;
+
+    $c->forward('set_allowed_pages');
+
+    (my $page = $c->req->action) =~ s#admin/##;
+
+    $page ||= 'summary';
+
+    if ( !grep { $_ eq $page } keys %{ $c->stash->{allowed_pages} } ) {
+        $c->detach( '/page_error_404_not_found', [ _('The requested URL was not found on this server.') ] );
+    }
+
+    return 1;
+}
+
 sub trim {
     my $self = shift;
     my $e = shift;
