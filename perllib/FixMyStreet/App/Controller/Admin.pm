@@ -759,7 +759,7 @@ sub check_page_allowed : Private {
 
     $c->forward('set_allowed_pages');
 
-    (my $page = $c->req->action) =~ s#admin/##;
+    (my $page = $c->req->action) =~ s#admin/?##;
 
     $page ||= 'summary';
 
