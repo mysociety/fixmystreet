@@ -21,7 +21,14 @@ use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../commonlib/perllib";
 
 use Cobrand;
+use Problems;
 use mySociety::MockQuery;
+use mySociety::Config;
+
+BEGIN {
+    (my $dir = __FILE__) =~ s{/[^/]*?$}{};
+    mySociety::Config::set_file("$dir/../conf/general");
+}
 
 sub test_site_restriction { 
     my ($site_restriction, $site_id) = Cobrand::site_restriction('mysite', 'test');

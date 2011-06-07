@@ -4,7 +4,7 @@ use base 'DBIx::Class::ResultSet';
 use strict;
 use warnings;
 use File::Slurp;
-use Page;
+use Utils;
 use mySociety::EmailUtil;
 
 sub send_questionnaires {
@@ -63,7 +63,7 @@ sub send_questionnaires_period {
         }
 
         my %h = map { $_ => $row->$_ } qw/name title detail category/;
-        $h{created} = Page::prettify_duration( time() - $row->confirmed->epoch, 'week' );
+        $h{created} = Utils::prettify_duration( time() - $row->confirmed->epoch, 'week' );
 
         my $questionnaire = FixMyStreet::App->model('DB::Questionnaire')->create( {
             problem_id => $row->id,

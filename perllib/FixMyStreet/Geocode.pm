@@ -18,7 +18,6 @@ use Digest::MD5 qw(md5_hex);
 use URI::Escape;
 
 use Cobrand;
-use Page;
 use Utils;
 use mySociety::Config;
 use mySociety::Locale;
