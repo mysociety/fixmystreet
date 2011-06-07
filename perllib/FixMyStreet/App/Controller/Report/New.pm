@@ -118,13 +118,6 @@ sub report_import : Path('/import') {
     # anything else we return is plain text
     $c->res->content_type('text/plain; charset=utf-8');
 
-    # use strict;
-    # use Standard;
-    # use mySociety::AuthToken;
-    # use mySociety::Config;
-    # use mySociety::EvEl;
-    # use mySociety::Locale;
-
     my %input =
       map { $_ => $c->req->param($_) || '' } (
         'service', 'subject',  'detail', 'name', 'email', 'phone',

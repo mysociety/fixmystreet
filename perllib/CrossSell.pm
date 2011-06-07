@@ -197,14 +197,14 @@ EOF
 # Choose appropriate advert and display it.
 # $this_site is to stop a site advertising itself.
 sub display_advert ($$;$%) {
-    my ($q, $email, $name, %data) = @_;
+    my ($c, $email, $name, %data) = @_;
 
-    return '' unless $q->{site} eq 'fixmystreet';
+    return '' unless $c->cobrand->is_default;
 
     if (defined $data{council} && $data{council} eq '2326') {
         my ($out, $ad) = display_hfyc_cheltenham_advert($email, $name);
         if ($out) {
-            $q->{scratch} = "advert=$ad";
+            $c->stash->{scratch} = "advert=$ad";
             return $out;
         }
     }
@@ -212,17 +212,17 @@ sub display_advert ($$;$%) {
     #if ($data{lat}) {
     #    my $out = display_gny_groups($data{lon}, $data{lat});
     #    if ($out) {
-    #        $q->{scratch} = 'advert=gnygroups';
+    #        $c->stash->{scratch} = 'advert=gnygroups';
     #        return '<div style="margin: 0 5em; border-top: dotted 1px #666666;">'
     #            . $out . '</div>';
     #    }
     #}
 
-    #$q->{scratch} = 'advert=demclub0';
+    #$c->stash->{scratch} = 'advert=demclub0';
     #return display_democracyclub();
 
     #unless (defined $data{done_tms} && $data{done_tms}==1) {
-        $q->{scratch} = 'advert=news';
+        $c->stash->{scratch} = 'advert=news';
         my $auth_signature = '';
         unless (defined $data{emailunvalidated} && $data{emailunvalidated}==1) {
             $auth_signature = mySociety::AuthToken::sign_with_shared_secret($email, mySociety::Config::get('AUTH_SHARED_SECRET'));
@@ -250,7 +250,7 @@ sub display_advert ($$;$%) {
         my $out = &$func($email, $name, $advert_text);
         use strict 'refs';
         if ($out) {
-            $q->{scratch} = "advert=$advert_id";
+            $c->stash->{scratch} = "advert=$advert_id";
             return $out;
         }
 
@@ -260,7 +260,7 @@ sub display_advert ($$;$%) {
         }
     }
 
-    $q->{scratch} = 'advert=pb';
+    $c->stash->{scratch} = 'advert=pb';
     return <<EOF;
 <div id="advert_thin" style="text-align:center">
 <h2 style="font-size: 150%">

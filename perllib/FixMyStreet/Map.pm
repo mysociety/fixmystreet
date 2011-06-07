@@ -20,7 +20,6 @@ use Module::Pluggable
 my @ALL_MAP_CLASSES = allowed_maps();
 
 use Problems;
-use Cobrand;
 use mySociety::Config;
 use mySociety::Gaze;
 use mySociety::Locale;

@@ -87,7 +87,7 @@ FixMyStreet contact data.
 =cut
 
 sub contact_restriction {
-    '';
+    {};
 }
 
 =head2 base_url_for_emails

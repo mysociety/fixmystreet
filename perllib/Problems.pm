@@ -447,8 +447,8 @@ the cobrand if a cobrand is specified.
 
 =cut 
 sub contact_counts {
-    my ($cobrand) = @_;
-    my $contact_restriction = Cobrand::contact_restriction($cobrand);
+    my ( $c ) = @_;
+    my $contact_restriction = $c->cobrand->contact_restriction;
     my $contacts = dbh()->selectcol_arrayref("select confirmed, count(*) as c from contacts $contact_restriction group by confirmed", { Columns => [1,2] });
     return $contacts; 
 }

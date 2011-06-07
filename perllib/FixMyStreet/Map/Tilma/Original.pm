@@ -11,7 +11,6 @@ package FixMyStreet::Map::Tilma::Original;
 use strict;
 use LWP::Simple;
 
-use Cobrand;
 use mySociety::GeoUtil;
 use mySociety::Locale;
 use mySociety::Web qw(ent NewURL);

@@ -73,7 +73,7 @@ sub index : Path : Args(0) {
 
     $c->stash->{alerts} = \%alert_counts;
 
-    my $contacts = $c->model('DB::Contact')->summary_count;
+    my $contacts = $c->model('DB::Contact')->summary_count( $c->cobrand->contact_restriction );
 
     my %contact_counts =
       map { $_->confirmed => $_->get_column('confirmed_count') } $contacts->all;

@@ -84,12 +84,7 @@ sub display_crosssell_advert {
     my ( $self, $c, $email, $name, %data ) = @_;
 
     return unless $c->cobrand->allow_crosssell_adverts();
-
-    # fake up the old style $q
-    my $q = { site => $c->cobrand->moniker, };
-    $q->{site} = 'fixmystreet' if $q->{site} eq 'default';
-
-    return CrossSell::display_advert( $q, $email, $name, %data );
+    return CrossSell::display_advert( $c, $email, $name, %data );
 }
 
 =head2 Utils::prettify_epoch

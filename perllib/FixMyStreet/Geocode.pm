@@ -17,7 +17,6 @@ use LWP::Simple;
 use Digest::MD5 qw(md5_hex);
 use URI::Escape;
 
-use Cobrand;
 use Utils;
 use mySociety::Config;
 use mySociety::Locale;
