@@ -72,6 +72,7 @@ __PACKAGE__->belongs_to(
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:71bSUgPf3uW607g2EGl/Vw
 
 use DateTime::TimeZone;
+use Image::Size;
 use Moose;
 use namespace::clean -except => [ 'meta' ];
 

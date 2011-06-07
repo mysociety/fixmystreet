@@ -104,6 +104,7 @@ __PACKAGE__->has_many(
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:U3aYCRwE4etekKaHdhEkIw
 
 use DateTime::TimeZone;
+use Image::Size;
 use Moose;
 use namespace::clean -except => [ 'meta' ];
 

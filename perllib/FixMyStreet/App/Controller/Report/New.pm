@@ -6,6 +6,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 use FixMyStreet::Geocode;
 use Encode;
+use Image::Magick;
 use Sort::Key qw(keysort);
 use List::MoreUtils qw(uniq);
 use HTML::Entities;
@@ -13,6 +14,7 @@ use mySociety::MaPit;
 use Path::Class;
 use Utils;
 use mySociety::EmailUtil;
+use mySociety::TempFiles;
 
 =head1 NAME
 
@@ -737,7 +739,7 @@ sub process_photo_upload : Private {
 
     # convert the photo into a blob (also resize etc)
     my $photo_blob =
-      eval { Page::process_photo( $upload->fh, $args->{rotate_photo} ) };
+      eval { _process_photo( $upload->fh, $args->{rotate_photo} ) };
     if ( my $error = $@ ) {
         my $format = _(
 "That image doesn't appear to have uploaded correctly (%s), please try again."
@@ -985,6 +987,41 @@ sub redirect_to_around : Private {
     my $around_uri = $c->uri_for( '/around', $params );
 
     return $c->res->redirect($around_uri);
+}
+
+sub _process_photo {
+    my $fh = shift;
+    my $import = shift;
+
+    my $blob = join('', <$fh>);
+    close $fh;
+    my ($handle, $filename) = mySociety::TempFiles::named_tempfile('.jpeg');
+    print $handle $blob;
+    close $handle;
+
+    my $photo = Image::Magick->new;
+    my $err = $photo->Read($filename);
+    unlink $filename;
+    throw Error::Simple("read failed: $err") if "$err";
+    $err = $photo->Scale(geometry => "250x250>");
+    throw Error::Simple("resize failed: $err") if "$err";
+    my @blobs = $photo->ImageToBlob();
+    undef $photo;
+    $photo = $blobs[0];
+    return $photo unless $import; # Only check orientation for iPhone imports at present
+
+    # Now check if it needs orientating
+    ($fh, $filename) = mySociety::TempFiles::named_tempfile('.jpeg');
+    print $fh $photo;
+    close $fh;
+    my $out = `jhead -se -autorot $filename`;
+    if ($out) {
+        open(FP, $filename) or throw Error::Simple($!);
+        $photo = join('', <FP>);
+        close FP;
+    }
+    unlink $filename;
+    return $photo;
 }
 
 __PACKAGE__->meta->make_immutable;
