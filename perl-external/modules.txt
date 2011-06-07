@@ -44,6 +44,7 @@ Sort::Key
 Spiffy
 Sub::Override
 Template::Plugin::Comma
+Template::Plugin::DateTime::Format
 Term::Size::Any
 Test::More
 Test::WWW::Mechanize

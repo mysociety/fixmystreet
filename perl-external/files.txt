@@ -149,6 +149,7 @@
 /authors/id/J/JH/JHOBLITT/DateTime-Format-ISO8601-0.07.tar.gz
 /authors/id/J/JP/JPEACOCK/version-0.88.tar.gz
 /authors/id/J/JR/JROCKWAY/Context-Preserve-0.01.tar.gz
+/authors/id/J/JR/JROCKWAY/Template-Plugin-DateTime-Format-0.02.tar.gz
 /authors/id/K/KA/KASEI/Class-Accessor-0.34.tar.gz
 /authors/id/K/KW/KWILLIAMS/Path-Class-0.23.tar.gz
 /authors/id/K/KW/KWILLIAMS/Probe-Perl-0.01.tar.gz
