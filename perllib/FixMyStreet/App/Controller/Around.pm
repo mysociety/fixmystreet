@@ -180,13 +180,16 @@ sub display_location : Private {
     $c->stash->{distance}   = $distance;
 
     # create a list of all the pins
-    my @pins = map { {
+    my @pins;
+    unless ($c->req->param('no_pins')) {
+        @pins = map { {
             latitude  => $_->{latitude},
             longitude => $_->{longitude},
             colour    => $_->{state} eq 'fixed' ? 'green' : 'red',
             id        => $_->{id},
             title     => $_->{title},
-    } } @$on_map_all, @$around_map;
+        } } @$on_map_all, @$around_map;
+    }
 
     {    # FIXME - ideally this indented code should be in the templates
         FixMyStreet::Map::display_map(
