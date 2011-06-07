@@ -62,37 +62,36 @@ sub geocoded_string_check {
 }
 
 sub remove_redundant_councils {
-  my $self = shift;
-  my $all_councils = shift;
+    my $self = shift;
+    my $all_councils = shift;
 
-  # Oslo is both a kommune and a fylke, we only want to show it once
-  delete $all_councils->{301}     #
-    if $all_councils->{3};
+    # Oslo is both a kommune and a fylke, we only want to show it once
+    delete $all_councils->{301}     #
+        if $all_councils->{3};
 }
 
 sub filter_all_council_ids_list {
-  my $self = shift;
-  my @all_councils_ids = @_;
+    my $self = shift;
+    my @all_councils_ids = @_;
 
-  # as above we only want to show Oslo once
-  return grep { $_ != 301 } @all_councils_ids;
+    # as above we only want to show Oslo once
+    return grep { $_ != 301 } @all_councils_ids;
 }
 
 sub short_name {
-  my $self = shift;
-  my ($area, $info) = @_;
+    my $self = shift;
+    my ($area, $info) = @_;
 
-  if ($area->{name} =~ /^(Os|Nes|V\xe5ler|Sande|B\xf8|Her\xf8y)$/) {
-      my $parent = $info->{$area->{parent_area}}->{name};
-      return URI::Escape::uri_escape_utf8("$area->{name}, $parent");
-  }
+    if ($area->{name} =~ /^(Os|Nes|V\xe5ler|Sande|B\xf8|Her\xf8y)$/) {
+        my $parent = $info->{$area->{parent_area}}->{name};
+        return URI::Escape::uri_escape_utf8("$area->{name}, $parent");
+    }
 
-  my $name = $area->{name};
-  $name =~ s/ & / and /;
-  $name = URI::Escape::uri_escape_utf8($name);
-  $name =~ s/%20/+/g;
-  return $name;
-
+    my $name = $area->{name};
+    $name =~ s/ & / and /;
+    $name = URI::Escape::uri_escape_utf8($name);
+    $name =~ s/%20/+/g;
+    return $name;
 }
 
 sub council_rss_alert_options {

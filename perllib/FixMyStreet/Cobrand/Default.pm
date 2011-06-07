@@ -11,7 +11,7 @@ use mySociety::MaPit;
 =head2 new
 
     my $cobrand = $class->new;
-    my $cobrand = $class->new( { request => $c->req, fake_q => $c->fake_q } );
+    my $cobrand = $class->new( { request => $c->req } );
 
 Create a new cobrand object, optionally setting the web request.
 
@@ -53,27 +53,6 @@ Returns true if this is the default cobrand, false otherwise.
 sub is_default {
     my $self = shift;
     return $self->moniker eq 'default';
-}
-
-=head2 fake_q
-
-    $fake_q     = $cobrand->fake_q;
-    $new_fake_q = $cobrand->fake_q($new_fake_q);
-
-Often the cobrand needs access to the request so we add it at the start by
-passing it to ->new. If the request has not been set and you call this (or a
-method that needs it) then it croaks. This is probably because you are trying to
-use a request-related method out of a request-context.
-
-=cut
-
-sub fake_q {
-    my $self = shift;
-    $self->{fake_q} = shift if @_;
-
-    return $self->{fake_q}
-      || croak "No fake_q has been set"
-      . " - should you be calling this method outside of a web request?";
 }
 
 =head2 path_to_web_templates

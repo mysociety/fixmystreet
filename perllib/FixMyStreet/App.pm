@@ -11,7 +11,6 @@ use mySociety::Email;
 use mySociety::EmailUtil;
 use mySociety::Random qw(random_bytes);
 use FixMyStreet::Map;
-use FixMyStreet::FakeQ;
 
 use URI;
 use URI::QueryParam;
@@ -132,11 +131,6 @@ sub _get_cobrand {
       : FixMyStreet::Cobrand->get_class_for_host($host);
 
     my $cobrand = $cobrand_class->new( { request => $c->req } );
-
-    # create the cobrand explicitly passing in the site. Avoids the chicken and
-    # egg situation where one needs to be created first. Should disappear when
-    # all instances of the old '$q' are gone.
-    $cobrand->fake_q( $c->fake_q( { site => $cobrand->moniker } ) );
 
     return $cobrand;
 }
@@ -388,37 +382,6 @@ sub uri_for_email {
     my $email_uri = $base . $normal_uri->path_query;
 
     return URI->new($email_uri);
-}
-
-=head2 fake_q
-
-    $q = $c->fake_q();                                   # normal usage
-    $q = $c->fake_q( { site => 'cobrand_moniker' } );    # when creating
-
-Returns a faked up object that behaves as the old code expects the old '$q' to
-behave. Object is cached for the request. See L<FixMyStreet::FakeQ> for more
-details.
-
-The first time fake_q is called you need to pass in 'site' explicitly. This
-should normally be done automatically when the cobrand is first loaded.
-
-=cut
-
-sub fake_q {
-    my $c    = shift;
-    my $args = shift;
-
-    return $c->stash->{fakeq}    #
-      ||= $c->_get_fake_q($args);
-}
-
-sub _get_fake_q {
-    my $c = shift;
-    my $args = shift || {};
-
-    $args->{params} ||= $c->req->parameters;
-
-    return FixMyStreet::FakeQ->new($args);
 }
 
 =head1 SEE ALSO

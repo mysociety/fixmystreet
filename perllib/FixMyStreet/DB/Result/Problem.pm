@@ -104,8 +104,10 @@ __PACKAGE__->has_many(
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:U3aYCRwE4etekKaHdhEkIw
 
 use DateTime::TimeZone;
+use Image::Size;
 use Moose;
 use namespace::clean -except => [ 'meta' ];
+use Utils;
 
 with 'FixMyStreet::Roles::Abuser';
 
@@ -278,7 +280,7 @@ sub meta_line {
     my ( $problem, $c ) = @_;
 
     my $date_time =
-      Page::prettify_epoch( $problem->confirmed_local->epoch );
+      Utils::prettify_epoch( $problem->confirmed_local->epoch );
     my $meta = '';
 
     # FIXME Should be in cobrand
@@ -359,7 +361,7 @@ sub duration_string {
         $body = join(' and ', map { $areas_info->{$_}->{name} } @councils);
     }
     return sprintf(_('Sent to %s %s later'), $body,
-        Page::prettify_duration($problem->whensent_local->epoch - $problem->confirmed_local->epoch, 'minute')
+        Utils::prettify_duration($problem->whensent_local->epoch - $problem->confirmed_local->epoch, 'minute')
     );
 }
 

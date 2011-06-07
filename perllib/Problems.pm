@@ -27,19 +27,6 @@ sub site_restriction {
     return $site_restriction_hash;
 }
 
-sub set_site_restriction {
-    my $q = shift;
-    my $site = $q->{site};
-    if ($site ne 'fixmystreet'){
-        my $cobrand = Page::get_cobrand($q);
-        my $cobrand_data = Cobrand::extra_data($cobrand, $q);
-        ($site_restriction, $site_key) = Cobrand::site_restriction($cobrand, $cobrand_data);
-    } else {
-        $site_restriction = '';
-        $site_key = 0;
-    }
-}
-
 # Set the site restrictions using the new cobrand style - no need to special
 # case 'fixmystreet' as default cobrand takes care of that.
 sub set_site_restriction_with_cobrand_object {

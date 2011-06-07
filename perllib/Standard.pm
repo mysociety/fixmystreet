@@ -18,8 +18,6 @@ use FindBin;
 use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../commonlib/perllib";
 
-use Page;
-
 package Standard;
 
 sub import {

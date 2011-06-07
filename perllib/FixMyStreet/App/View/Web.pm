@@ -8,6 +8,7 @@ use mySociety::Locale;
 use mySociety::Web qw(ent);
 use FixMyStreet;
 use CrossSell;
+use Utils;
 
 __PACKAGE__->config(
     TEMPLATE_EXTENSION => '.html',
@@ -91,7 +92,7 @@ sub display_crosssell_advert {
     return CrossSell::display_advert( $q, $email, $name, %data );
 }
 
-=head2 Page::prettify_epoch
+=head2 Utils::prettify_epoch
 
     [% pretty = prettify_epoch( $epoch, $short_bool ) %]
 
@@ -104,7 +105,7 @@ Return a pretty version of the epoch.
 
 sub prettify_epoch {
     my ( $self, $c, $epoch, $short_bool ) = @_;
-    return Page::prettify_epoch( $epoch, $short_bool );
+    return Utils::prettify_epoch( $epoch, $short_bool );
 }
 
 =head2 add_links

@@ -10,7 +10,6 @@
 # $Id: Util.pm,v 1.20 2009-12-16 12:43:13 matthew Exp $
 
 package Cobrands::Mysite::Util;
-use Page;
 use strict;
 use Carp;
 use mySociety::Web qw(ent);
