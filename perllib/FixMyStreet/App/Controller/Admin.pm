@@ -634,87 +634,89 @@ sub log_edit : Private {
         }
     )->insert();
 }
-# 
-# sub admin_edit_update {
-#     my ($q, $id) = @_;
-#     my $row = Problems::admin_fetch_update($id);
-#     return not_found($q) if ! $row->[0];
-#     my $cobrand = Page::get_cobrand($q);
-# 
-#     my %row = %{$row->[0]};
-#     my $status_message = '';
-#     if ($q->param('submit')) {
-#         return not_found($q) if $q->param('token') ne get_token($q);
-#         my $query = 'update comment set state=?, name=?, email=?, text=?';
-#         if ($q->param('remove_photo')) {
-#             $query .= ', photo=null';
-#         }
-#         $query .= ' where id=?';
-#         dbh()->do($query, {}, $q->param('state'), $q->param('name'), $q->param('email'), $q->param('text'), $id);
-#         $status_message = '<p><em>' . _('Updated!') . '</em></p>';
-# 
-#         # If we're hiding an update, see if it marked as fixed and unfix if so
-#         if ($q->param('state') eq 'hidden' && $row{mark_fixed}) {
-#             dbh()->do("update problem set state='confirmed' where state='fixed' and id=?", {}, $row{problem_id});
-#             $status_message .= '<p><em>' . _('Problem marked as open.') . '</em></p>';
-#         }
-# 
-#         if ($q->param('state') ne $row{state}) {
-#             admin_log_edit($q, $id, 'update', 'state_change');
-#         } 
-#         if (!defined($row{name})){
-#            $row{name} = "";   
-#         }
-#         if ($q->param('name') ne $row{name} || $q->param('email') ne $row{email} || $q->param('text') ne $row{text}) {
-#             admin_log_edit($q, $id, 'update', 'edit');
-#         }
-#         dbh()->commit();
-#         map { $row{$_} = $q->param($_) } qw(state name email text);
-#     }
-#     my %row_h = map { $_ => $row{$_} ? ent($row{$_}) : '' } keys %row;
-#     my $title = sprintf(_("Editing update %d"), $id);
-#     print html_head($q, $title);
-#     print $q->h1($title);
-#     print $status_message;
-#     my $name = $row_h{name};
-#     $name = '' unless $name;
-#     my $cobrand_data;
-#     if ($row{cobrand}) {
-#         $cobrand_data = $row{cobrand_data};
-#     } else {
-#         $cobrand_data = Cobrand::cobrand_data_for_generic_update($cobrand, \%row);
-#     }
-#     my $photo = '';
-#     $photo = '<li><img align="top" src="' . Cobrand::base_url_for_emails($cobrand, $cobrand_data)  . '/photo?c=' . $row{id} . '">
-# <input type="checkbox" id="remove_photo" name="remove_photo" value="1">
-# <label for="remove_photo">' . _("Remove photo (can't be undone!)") . '</label>' if $row{photo};
-# 
-#     my $url = Cobrand::base_url_for_emails($cobrand, $cobrand_data) . '/report/' . $row{problem_id} . '#update_' . $row{id};
-# 
-#     my $state = $q->label({-for=>'state'}, _('State:')) . ' ' . $q->popup_menu(-id => 'state', -name => 'state', -values => { confirmed => _('Confirmed'), hidden => _('Hidden'), unconfirmed => _('Unconfirmed') }, -default => $row{state});
-# 
-#     print $q->start_form(-method => 'POST', -action => './');
-#     print $q->hidden('page');
-#     print $q->hidden('id');
-#     print $q->hidden('token', get_token($q));
-#     print $q->hidden('submit', 1);
-#     print "
-# <ul>
-# <li><a href='$url'>" . _('View update on site') . "</a>
-# <li><label for='text'>" . _('Text:') . "</label><br><textarea name='text' id='text' cols=60 rows=10>$row_h{text}</textarea>
-# <li>$state
-# <li>" . _('Name:') . " <input type='text' name='name' id='name' value='$name'> " . _('(blank to go anonymous)') . "
-# <li>" . _('Email:') . " <input type='text' id='email' name='email' value='$row_h{email}'>
-# <li>" . _('Cobrand:') . " $row{cobrand}
-# <li>" . _('Cobrand data:') . " $row{cobrand_data} 
-# <li>" . _('Created:') . " $row{created}
-# $photo
-# </ul>
-# ";
-#     print $q->submit(_('Submit changes'));
-#     print $q->end_form;
-#     print html_tail($q);
-# }
+ 
+sub update_edit : Path('update_edit') : Args(1) {
+    my ($self, $c, $id) = @_;
+
+    my ( $site_res_sql, $site_key, $site_restriction ) = $c->cobrand->site_restriction;
+    my $update = $c->model('DB::Comment')->search(
+        { 
+            id => $id,
+            %{ $site_restriction },
+        }
+    )->first;
+
+    $c->detach( '/page_error_404_not_found',
+        [ _('The requested URL was not found on this server.') ] )
+      unless $update;
+
+    $c->forward('get_token');
+    $c->forward('set_allowed_pages');
+
+    $c->stash->{update} = $update;
+
+    my $status_message = '';
+    if ($c->req->param('submit')) {
+        $c->forward('check_token');
+
+        my $old_state = $update->state;
+        my $new_state = $c->req->param('state');
+
+        my $edited = 0;
+
+        if (   $c->req->param('name') ne $update->name
+            || $c->req->param('email') ne $update->user->email
+            || $c->req->param('anonymous')  ne $update->anonymous
+            || $c->req->param('text')  ne $update->text )
+        {
+            $edited = 1;
+        }
+
+        if ($c->req->param('remove_photo')) {
+            $update->photo( undef );
+        }
+
+        $update->name( $c->req->param('name') || '' );
+        $update->text( $c->req->param('text') );
+        $update->anonymous( $c->req->param('anonymous') );
+        $update->state( $c->req->param( 'state' ) );
+
+        if ( $c->req->param('email') ne $update->user->email ) {
+            my $user = $c->model('DB::User')->find_or_create(
+                { email => $c->req->param('email') }
+            );
+
+            $user->insert unless $user->in_storage;
+            $update->user( $user );
+        }
+
+        $update->update;
+
+        $status_message = '<p><em>' . _('Updated!') . '</em></p>';
+
+        # If we're hiding an update, see if it marked as fixed and unfix if so
+        if ($new_state eq 'hidden' && $update->mark_fixed ) {
+            if ( $update->problem->state eq 'fixed' ) {
+                $update->problem->state( 'confirmed' );
+                $update->problem->update;
+            }
+
+            $status_message .= '<p><em>' . _('Problem marked as open.') . '</em></p>';
+        }
+
+        if ($new_state ne $old_state) {
+            $c->forward('log_edit', [ $update->id, 'update', 'state_change' ]);
+        }
+
+        if ($edited) {
+            $c->forward('log_edit', [ $update->id, 'update', 'edit' ]);
+        }
+
+    }
+    $c->stash->{status_message} = $status_message;
+
+    return 1;
+}
 # 
 # sub get_cobrand_data_from_hash {
 #     my ($cobrand, $data) = @_;
