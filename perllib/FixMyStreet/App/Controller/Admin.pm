@@ -44,14 +44,7 @@ sub index : Path : Args(0) {
     my ( $sql_restriction, $id, $site_restriction ) = $c->cobrand->site_restriction();
     my $cobrand_restriction = $c->cobrand->moniker eq 'fixmystreet' ? {} : { cobrand => $c->cobrand->moniker };
 
-    my $problems = $c->model('DB::Problem')->search(
-        $site_restriction,
-        {
-            group_by => ['state'],
-            select   => [ 'state', { count => 'id' } ],
-            as       => [qw/state state_count/]
-        }
-    );
+    my $problems = $c->model('DB::Problem')->summary_count( $site_restriction );
 
     my %prob_counts =
       map { $_->state => $_->get_column('state_count') } $problems->all;
@@ -63,29 +56,14 @@ sub index : Path : Args(0) {
     $c->stash->{total_problems_live} =
       $prob_counts{confirmed} + $prob_counts{fixed};
 
-    my $comments = $c->model('DB::Comment')->search(
-        $site_restriction,
-        {
-            group_by => ['me.state'],
-            select   => [ 'me.state', { count => 'me.id' } ],
-            as       => [qw/state state_count/],
-            join     => 'problem'
-        }
-    );
+    my $comments = $c->model('DB::Comment')->summary_count( $site_restriction );
 
     my %comment_counts =
       map { $_->state => $_->get_column('state_count') } $comments->all;
 
     $c->stash->{comments} = \%comment_counts;
 
-    my $alerts = $c->model('DB::Alert')->search(
-        $cobrand_restriction,
-        {
-            group_by => ['confirmed'],
-            select   => [ 'confirmed', { count => 'id' } ],
-            as       => [qw/confirmed confirmed_count/]
-        }
-    );
+    my $alerts = $c->model('DB::Alert')->summary_count( $cobrand_restriction );
 
     my %alert_counts =
       map { $_->confirmed => $_->get_column('confirmed_count') } $alerts->all;
@@ -95,14 +73,7 @@ sub index : Path : Args(0) {
 
     $c->stash->{alerts} = \%alert_counts;
 
-    my $contacts = $c->model('DB::Contact')->search(
-        undef,
-        {
-            group_by => ['confirmed'],
-            select   => [ 'confirmed', { count => 'id' } ],
-            as       => [qw/confirmed confirmed_count/]
-        }
-    );
+    my $contacts = $c->model('DB::Contact')->summary_count;
 
     my %contact_counts =
       map { $_->confirmed => $_->get_column('confirmed_count') } $contacts->all;
@@ -113,15 +84,7 @@ sub index : Path : Args(0) {
 
     $c->stash->{contacts} = \%contact_counts;
 
-    my $questionnaires = $c->model('DB::Questionnaire')->search(
-        $cobrand_restriction,
-        {
-            group_by => [ \'whenanswered is not null' ],
-            select   => [ \'(whenanswered is not null)', { count => 'me.id' } ],
-            as       => [qw/answered questionnaire_count/],
-            join     => 'problem'
-        }
-    );
+    my $questionnaires = $c->model('DB::Questionnaire')->summary_count( $cobrand_restriction );
 
     my %questionnaire_counts = map {
         $_->get_column('answered') => $_->get_column('questionnaire_count')

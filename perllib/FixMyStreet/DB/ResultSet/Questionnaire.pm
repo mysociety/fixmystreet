@@ -130,4 +130,17 @@ sub timeline {
     );
 }
 
+sub summary_count {
+    my ( $rs, $restriction ) = @_;
+
+    return $rs->search(
+        $restriction,
+        {
+            group_by => [ \'whenanswered is not null' ],
+            select   => [ \'(whenanswered is not null)', { count => 'me.id' } ],
+            as       => [qw/answered questionnaire_count/],
+            join     => 'problem'
+        }
+    );
+}
 1;

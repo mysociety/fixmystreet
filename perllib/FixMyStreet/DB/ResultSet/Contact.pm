@@ -17,4 +17,17 @@ sub not_deleted {
     return $rs->search( { deleted => 0 } );
 }
 
+sub summary_count {
+    my ( $rs, $restriction ) = @_;
+
+    return $rs->search(
+        $restriction,
+        {
+            group_by => ['confirmed'],
+            select   => [ 'confirmed', { count => 'id' } ],
+            as       => [qw/confirmed confirmed_count/]
+        }
+    );
+}
+
 1;

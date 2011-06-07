@@ -24,4 +24,18 @@ sub timeline {
     );
 }
 
+sub summary_count {
+    my ( $rs, $restriction ) = @_;
+
+    return $rs->search(
+            $restriction,
+        {
+            group_by => ['me.state'],
+            select   => [ 'me.state', { count => 'me.id' } ],
+            as       => [qw/state state_count/],
+            join     => 'problem'
+        }
+    );
+}
+
 1;
