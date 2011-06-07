@@ -69,10 +69,30 @@ __PACKAGE__->has_many(
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 
+use DateTime::TimeZone;
 use Moose;
 use namespace::clean -except => [ 'meta' ];
 
 with 'FixMyStreet::Roles::Abuser';
+
+my $tz = DateTime::TimeZone->new( name => "local" );
+
+
+sub whensubscribed_local {
+    my $self = shift;
+
+    return $self->whensubscribed
+      ? $self->whensubscribed->set_time_zone($tz)
+      : $self->whensubscribed;
+}
+
+sub whendisabled_local {
+    my $self = shift;
+
+    return $self->whendisabled
+      ? $self->whendisabled->set_time_zone($tz)
+      : $self->whendisabled;
+}
 
 =head2 confirm
 

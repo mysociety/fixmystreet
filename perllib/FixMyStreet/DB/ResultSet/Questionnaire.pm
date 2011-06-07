@@ -112,4 +112,22 @@ sub send_questionnaires_period {
     }
 }
 
+sub timeline {
+    my ( $rs, $restriction ) = @_;
+
+    return $rs->search(
+        {
+            -or => {
+                whenanswered => { '>=', \"ms_current_timestamp()-'7 days'::interval" },
+                'me.whensent'  => { '>=', \"ms_current_timestamp()-'7 days'::interval" },
+            },
+            %{ $restriction },
+        },
+        {
+            -select => [qw/me.*/],
+            prefetch => [qw/problem/],
+        }
+    );
+}
+
 1;

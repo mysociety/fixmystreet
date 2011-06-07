@@ -41,7 +41,7 @@ sub index : Path : Args(0) {
 
     $c->forward('set_allowed_pages');
 
-    my ( $sql_resttriction, $id, $site_restriction ) = $c->cobrand->site_restriction();
+    my ( $sql_restriction, $id, $site_restriction ) = $c->cobrand->site_restriction();
     my $cobrand_restriction = $c->cobrand->moniker eq 'fixmystreet' ? {} : { cobrand => $c->cobrand->moniker };
 
     my $problems = $c->model('DB::Problem')->search(
@@ -137,6 +137,57 @@ sub index : Path : Args(0) {
         $questionnaire_counts{1} / $questionnaire_counts{total} * 100 )
       : 'na';
     $c->stash->{questionnaires} = \%questionnaire_counts;
+
+    return 1;
+}
+
+sub timeline : Path( 'timeline' ) : Args(0) {
+    my ($self, $c) = @_;
+
+    $c->forward('set_allowed_pages');
+
+    my ( $sql_restriction, $id, $site_restriction ) = $c->cobrand->site_restriction();
+    my $cobrand_restriction = { cobrand => $c->cobrand->moniker };
+    my %time;
+
+    $c->model('DB')->schema->storage->sql_maker->quote_char( '"' );
+
+    my $probs = $c->model('DB::Problem')->timeline( $site_restriction );
+
+    foreach ($probs->all) {
+        push @{$time{$_->created->epoch}}, { type => 'problemCreated', date => $_->created_local, obj => $_ };
+        push @{$time{$_->confirmed->epoch}}, { type => 'problemConfirmed', date => $_->confirmed_local, obj => $_ } if $_->confirmed;
+        push @{$time{$_->whensent->epoch}}, { type => 'problemSent', date => $_->whensent_local, obj => $_ } if $_->whensent;
+    }
+
+    my $questionnaires = $c->model('DB::Questionnaire')->timeline( $cobrand_restriction );
+
+    foreach ($questionnaires->all) {
+        push @{$time{$_->whensent->epoch}}, { type => 'quesSent', date => $_->whensent_local, obj => $_ };
+        push @{$time{$_->whenanswered->epoch}}, { type => 'quesAnswered', date => $_->whenanswered_local, obj => $_ } if $_->whenanswered;
+    }
+
+    my $updates = $c->model('DB::Comment')->timeline( $site_restriction );
+
+    foreach ($updates->all) {
+        push @{$time{$_->created->epoch}}, { type => 'update', date => $_->created_local, obj => $_} ;
+    }
+
+    my $alerts = $c->model('DB::Alert')->timeline_created( $cobrand_restriction );
+
+    foreach ($alerts->all) {
+        push @{$time{$_->whensubscribed->epoch}}, { type => 'alertSub', date => $_->whensubscribed_local, obj => $_ };
+    }
+
+    $alerts = $c->model('DB::Alert')->timeline_disabled( $cobrand_restriction );
+
+    foreach ($alerts->all) {
+        push @{$time{$_->whendisabled->epoch}}, { type => 'alertDel', date => $_->whendisabled_local, obj => $_ };
+    }
+
+    $c->model('DB')->schema->storage->sql_maker->quote_char( '' );
+
+    $c->stash->{time} = \%time;
 
     return 1;
 }
@@ -740,92 +791,6 @@ sub update_edit : Path('update_edit') : Args(1) {
     return 1;
 }
 
-# sub admin_timeline {
-#     my $q = shift;
-#     my $cobrand = Page::get_cobrand($q);
-#     print html_head($q, _('Timeline'));
-#     print $q->h1(_('Timeline'));
-# 
-#     my %time;
-#     #my $backto_unix = time() - 60*60*24*7;
-# 
-#     my $probs = Problems::timeline_problems();
-#     foreach (@$probs) {
-#         push @{$time{$_->{created}}}, { type => 'problemCreated', %$_ };
-#         push @{$time{$_->{confirmed}}}, { type => 'problemConfirmed', %$_ } if $_->{confirmed};
-#         push @{$time{$_->{whensent}}}, { type => 'problemSent', %$_ } if $_->{whensent};
-#     }
-# 
-#     my $questionnaire = Problems::timeline_questionnaires($cobrand);
-#     foreach (@$questionnaire) {
-#         push @{$time{$_->{whensent}}}, { type => 'quesSent', %$_ };
-#         push @{$time{$_->{whenanswered}}}, { type => 'quesAnswered', %$_ } if $_->{whenanswered};
-#     }
-# 
-#     my $updates = Problems::timeline_updates();
-#     foreach (@$updates) {
-#         push @{$time{$_->{created}}}, { type => 'update', %$_} ;
-#     }
-# 
-#     my $alerts = Problems::timeline_alerts($cobrand);
-# 
-#    
-#     foreach (@$alerts) {
-#         push @{$time{$_->{whensubscribed}}}, { type => 'alertSub', %$_ };
-#     }
-#     $alerts = Problems::timeline_deleted_alerts($cobrand);
-#     foreach (@$alerts) {
-#         push @{$time{$_->{whendisabled}}}, { type => 'alertDel', %$_ };
-#     }
-# 
-#     my $date = '';
-#     my $cobrand_data;
-#     foreach (reverse sort keys %time) {
-#         my $curdate = decode_utf8(strftime('%A, %e %B %Y', localtime($_)));
-#         if ($date ne $curdate) {
-#             print '</dl>' if $date;
-#             print "<h2>$curdate</h2> <dl>";
-#             $date = $curdate;
-#         }
-#         print '<dt><b>', decode_utf8(strftime('%H:%M:%S', localtime($_))), ':</b></dt> <dd>';
-#         foreach (@{$time{$_}}) {
-#             my $type = $_->{type};
-#             if ($type eq 'problemCreated') {
-#                 my $name_str = '; ' . sprintf(_("by %s"), ent($_->{name})) . " &lt;" . ent($_->{email}) . "&gt;, '" . ent($_->{title}) . "'";
-#                 print sprintf(_("Problem %d created"), $_->{id}) . $name_str;
-#             } elsif ($type eq 'problemConfirmed') {
-#                 my $name_str = '; ' . sprintf(_("by %s"), ent($_->{name})) . " &lt;" . ent($_->{email}) . "&gt;, '" . ent($_->{title}) . "'";
-#                 $cobrand_data = get_cobrand_data_from_hash($cobrand, $_);
-#                 my $url = Cobrand::base_url_for_emails($cobrand, $cobrand_data)  . "/report/$_->{id}";
-#                 print sprintf(_("Problem %s confirmed"), "<a href='$url'>$_->{id}</a>") . $name_str;
-#             } elsif ($type eq 'problemSent') {
-#                 $cobrand_data = get_cobrand_data_from_hash($cobrand, $_);
-#                 my $url = Cobrand::base_url_for_emails($cobrand, $cobrand_data) . "/report/$_->{id}";
-#                 print sprintf(_("Problem %s sent to council %s"), "<a href='$url'>$_->{id}</a>", $_->{council});
-#             } elsif ($type eq 'quesSent') {
-#                 print sprintf(_("Questionnaire %d sent for problem %d"), $_->{id}, $_->{problem_id});
-#             } elsif ($type eq 'quesAnswered') {
-#                 print sprintf(_("Questionnaire %d answered for problem %d, %s to %s"), $_->{id}, $_->{problem_id}, $_->{old_state}, $_->{new_state});
-#             } elsif ($type eq 'update') {
-#                 $cobrand_data = get_cobrand_data_from_hash($cobrand, $_);
-#                 my $url = Cobrand::base_url_for_emails($cobrand, $cobrand_data) . "/report/$_->{problem_id}#$_->{id}";
-#                 my $name = ent($_->{name} || 'anonymous');
-#                 print sprintf(_("Update %s created for problem %d; by %s"), "<a href='$url'>$_->{id}</a>", $_->{problem_id}, $name) . " &lt;" . ent($_->{email}) . "&gt;";
-#             } elsif ($type eq 'alertSub') {
-#                 my $param = $_->{parameter} || '';
-#                 my $param2 = $_->{parameter2} || '';
-#                 print sprintf(_("Alert %d created for %s, type %s, parameters %s / %s"), $_->{id}, ent($_->{email}), $_->{alert_type}, $param, $param2);
-#             } elsif ($type eq 'alertDel') {
-#                 my $sub = decode_utf8(strftime('%H:%M:%S %e %B %Y', localtime($_->{whensubscribed})));
-#                 print sprintf(_("Alert %d disabled (created %s)"), $_->{id}, $sub);
-#             }
-#             print '<br>';
-#         }
-#         print "</dd>\n";
-#     }
-#     print html_tail($q);
-# 
-# }
 # 
 # 
 # sub main {

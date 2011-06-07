@@ -43,6 +43,24 @@ __PACKAGE__->belongs_to(
 # Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-05-24 15:32:43
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:BAWTYKAQ84VeOI6D2gtQOQ
 
+use DateTime::TimeZone;
 
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
+my $tz = DateTime::TimeZone->new( name => "local" );
+
+sub whensent_local {
+    my $self = shift;
+
+    return $self->whensent
+      ? $self->whensent->set_time_zone($tz)
+      : $self->whensent;
+}
+
+sub whenanswered_local {
+    my $self = shift;
+
+    return $self->whenanswered
+      ? $self->whenanswered->set_time_zone($tz)
+      : $self->whenanswered;
+}
+
 1;
