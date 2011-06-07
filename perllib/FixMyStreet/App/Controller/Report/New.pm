@@ -348,8 +348,8 @@ sub initialize_report : Private {
 =head2 determine_location
 
 Work out what the location of the report should be - either by using lat,lng or
-a tile click or a user search query C<pc>. Returns false if no location could be
-found.
+a tile click or what's come in from a partial. Returns false if no location
+could be found.
 
 =cut 
 

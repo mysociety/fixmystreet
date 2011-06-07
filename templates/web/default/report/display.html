@@ -43,7 +43,7 @@
 
     <form action="[% c.uri_for( '/alert/subscribe' ) %]" method="post" id="email_alert_box">
         <p>[% loc('Receive email when updates are left on this problem.' ) %]</p>
-        <label class="n" for="alert_rznvy">[% loc('Email') %]</label>
+        <label class="n" for="alert_rznvy">[% loc('Email:') %]</label>
         <input type="text" name="rznvy" id="alert_rznvy" value="[% email | html %]" size="30">
         <input type="hidden" name="id" value="[% problem.id %]">
         <input type="hidden" name="type" value="updates">
@@ -107,7 +107,7 @@
 
         [% IF problem.state != 'fixed' %]
         <div class="checkbox">
-         <input type="checkbox" name="fixed" id="form_fixed" value="1" [% fixed %]>
+         <input type="checkbox" name="fixed" id="form_fixed" value="1"[% fixed %]>
          <label for="form_fixed">[% loc('This problem has been fixed') %]</label>
         </div>
         [% END %]

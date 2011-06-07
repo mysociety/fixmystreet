@@ -9,7 +9,7 @@
 %]
 [% ELSE %]
 [%
-    tprintf( loc('You have successfully confirmed your update and you can now <a href="%s">view it on the site</a>'), c.uri_for( '/report',
+    tprintf( loc('You have successfully confirmed your update and you can now <a href="%s">view it on the site</a>.'), c.uri_for( '/report',
     update.problem.id ) _ '#' _ update.id );
 %]
 [% END %]

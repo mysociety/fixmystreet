@@ -43,13 +43,6 @@ Display a report.
 sub display : Path('') : Args(1) {
     my ( $self, $c, $id ) = @_;
 
-#     push @errors, _('There were problems with your update. Please see below.') if (scalar keys %field_errors);
-
-#     my @vars = qw(id name rznvy update fixed add_alert upload_fileid submit_update);
-#     my %input = map { $_ => $q->param($_) || '' } @vars;
-#     my %input_h = map { $_ => $q->param($_) ? ent($q->param($_)) : '' } @vars;
-#     my $base = Cobrand::base_url($cobrand);
-
     if (
         $id =~ m{ ^ 3D (\d+) $ }x         # Some council with bad email software
         || $id =~ m{ ^(\d+) \D .* $ }x    # trailing garbage
@@ -60,14 +53,6 @@ sub display : Path('') : Args(1) {
 
     $c->forward('load_problem_or_display_error', [ $id ] );
     $c->forward( 'format_problem_for_display' );
-#
-#     $vars{update_blurb} = $q->p($q->small(_('Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href="/faq#privacy">privacy policy</a>')))
-#         unless $q->{site} eq 'emptyhomes'; # No council blurb
-#
-#     my %params = (
-#         js => FixMyStreet::Map::header_js(),
-#     );
-
 }
 
 sub load_problem_or_display_error : Private {
