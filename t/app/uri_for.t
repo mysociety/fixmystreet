@@ -105,30 +105,4 @@ like(
     'retains language'
 );
 
-## Should really test the cities but we'd need to fake up too much of the
-# request. Following code starts to do this but is not complete. Instead better
-# to test that the cities produces the correct urls by looking at the html
-# produced.
-#
-# # cities
-# my $cities_c = FixMyStreet::App->new(
-#     {
-#         request => Catalyst::Request->new(
-#             {
-#                 base => URI->new('http://cities.fixmystreet.com/'),
-#                 uri  => URI->new(
-#                     'http://cities.fixmystreet.com/test_namespace?city=cardiff'
-#                 ),
-#                 params => { city => 'cardiff', },
-#             }
-#         ),
-#         namespace => 'test_namespace',
-#     }
-# )->setup_request;
-# is(
-#     $cities_c->uri_for( '/foo', { bar => 'baz' } ) . "",
-#     '{microapp-href:http://cities.fixmystreet.com/foo?bar=baz&city=cardiff}',
-#     'Cities url'
-# );
-
 done_testing();
