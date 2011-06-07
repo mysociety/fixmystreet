@@ -11,13 +11,8 @@
 [% IF rss %]
     <link rel="alternate" type="application/rss+xml" title="[% rss.0 %]" href="[% rss.1 %]">
 [% END %]
-[% legacy_rss %]
 
 <title>
-    [% IF legacy_title %]
-        [% legacy_title %]
-    [% ELSE %]
-        [% "$title :: " | html IF title %]
-        [% c.cobrand.site_title %]
-    [% END %]
+    [% "$title :: " | html IF title %]
+    [% c.cobrand.site_title %]
 </title>

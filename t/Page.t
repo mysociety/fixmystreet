@@ -11,7 +11,7 @@
 
 use strict;
 use warnings; 
-use Test::More tests => 8;
+use Test::More tests => 4;
 use Test::Exception; 
 
 use FindBin;
@@ -36,33 +36,6 @@ sub set_lang($) {
     mySociety::Locale::change();
 }
 
-sub test_header() {
-    my $q = mock_query();
-    my $html;
-    my %params = (title => 'test title');
-    set_lang('en-gb,English,en_GB');
-   
-    # Test that param that isn't explicitly allowed raises error
-    $params{'test-param'} = 'test';
-    throws_ok { Page::header($q, %params); } qr/bad parameter/, 'bad parameter caught ok';
-    delete $params{'test-param'};
-
-    # Test that template passed is rendered 
-    $params{'template'} = 'test';    
-    $html = Page::template_include('test-header', $q,
-        '/../t/templates/' . $q->{site} . '/',
-        title => 'My test title', lang => 'en-gb'
-    );	
-     
-    like  ($html, qr/My test header template/, 'named template rendered ok');
-
-    return 1;
-}
-
-sub test_footer(){
-    return 1;
-}
-
 sub test_base_url_with_lang {
     set_lang('en-gb,English,en_GB');
     my $q = mock_query();
@@ -80,5 +53,3 @@ sub test_base_url_with_lang {
 
 
 ok(test_base_url_with_lang() == 1, 'Ran all tests for base_url_with_lang');
-ok(test_footer() == 1, 'Ran all tests for the footer function');
-ok(test_header() == 1, 'Ran all tests for the header function'); 

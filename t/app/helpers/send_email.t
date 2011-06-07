@@ -15,11 +15,17 @@ use Email::Send::Test;
 use Path::Class;
 
 use_ok 'FixMyStreet::App';
-my $c = FixMyStreet::App->new;
-
-# fake up the request a little
-$c->req->uri( URI->new('http://localhost/') );
-$c->req->base( $c->req->uri );
+my $c = FixMyStreet::App->new(
+    {
+        request => Catalyst::Request->new(
+            {
+                base => URI->new('http://fixmystreet.com/'),
+                uri  => URI->new('http://fixmystreet.com/')
+            }
+        ),
+    }
+);
+$c->setup_request();
 
 # set some values in the stash
 $c->stash->{foo} = 'bar';
@@ -40,7 +46,8 @@ my $email_as_string = $emails[0]->as_string;
 ok $email_as_string =~ s{\s+Date:\s+\S.*?$}{}xms, "Found and stripped out date";
 
 my $expected_email_content =   file(__FILE__)->dir->file('send_email_sample.txt')->slurp;
-$expected_email_content =~ s{CONTACT_EMAIL}{ FixMyStreet->config('CONTACT_EMAIL') }e;
+my $sender = '"' . FixMyStreet->config('CONTACT_NAME') . '" <' . FixMyStreet->config('CONTACT_EMAIL') . '>';
+$expected_email_content =~ s{CONTACT_EMAIL}{$sender};
 
 is $email_as_string,
 $expected_email_content,

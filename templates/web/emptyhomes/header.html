@@ -26,21 +26,17 @@
 </div>
 
 <div id="navigation">
-      <ul>
-      <li><a href="/report/new"       >[% loc("Report a problem") %]</a></li>
-      <li><a href="/reports"          >[% loc("All reports")      %]</a></li>
-      <li><a href="/alert"            >[% loc("Local alerts")     %]</a></li>
-      <li><a href="/faq"              >[% loc("Help")             %]</a></li>
-      <li><a href="/about"            >[% loc('About us')         %]</a></li>
-      [% IF lang_url # old Page.pm code %]
-          <li><a href="[% lang_url %]">[% lang %]</a></li>
-      [% ELSE # new Catalyst code %]
-          [% IF lang_code == 'en-gb' %]
-          <li><a href="http://cy.[% c.cobrand.base_host %]">Cymraeg</a></li>
-          [% ELSE %]
-          <li><a href="http://en.[% c.cobrand.base_host %]">English</a></li>
-          [% END %]
-      [% END %]
+    <ul>
+      <li><a href="/">[% loc("Report a problem") %]</a></li>
+      <li><a href="/reports">[% loc("All reports") %]</a></li>
+      <li><a href="/alert">[% loc("Local alerts") %]</a></li>
+      <li><a href="/faq">[% loc("Help") %]</a></li>
+      <li><a href="/about">[% loc('About us') %]</a></li>
+        [% IF lang_code == 'en-gb' %]
+            <li><a href="http://cy.[% c.cobrand.base_host %][% c.req.uri.path_query %]">Cymraeg</a></li>
+        [% ELSE %]
+            <li><a href="http://en.[% c.cobrand.base_host %][% c.req.uri.path_query %]">English</a></li>
+        [% END %]
     </ul>
 </div>
 

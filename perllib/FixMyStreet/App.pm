@@ -275,9 +275,13 @@ sub send_email {
     my $template           = shift;
     my $extra_stash_values = shift || {};
 
+    my $sender = $c->cobrand->contact_email;
+    my $sender_name = $c->cobrand->contact_name;
+    $sender =~ s/team/fms-DO-NOT-REPLY/;
+
     # create the vars to pass to the email template
     my $vars = {
-        from => FixMyStreet->config('CONTACT_EMAIL'),
+        from => [ $sender, _($sender_name) ],
         %{ $c->stash },
         %$extra_stash_values,
         additional_template_paths => [

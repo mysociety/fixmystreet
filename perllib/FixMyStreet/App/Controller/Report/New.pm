@@ -251,17 +251,7 @@ sub report_import : Path('/import') {
     $c->stash->{report} = $report;
     $c->stash->{token_url} = $c->uri_for_email( '/L', $token->token );
 
-    my $sender = mySociety::Config::get('CONTACT_EMAIL');
-    $sender =~ s/team/fms-DO-NOT-REPLY/;
-
-    # TODO - used to be sent using EvEl
-    $c->send_email(
-        'partial.txt',
-        {
-            to   => $report->user->email,
-            from => $sender
-        }
-    );
+    $c->send_email( 'partial.txt', { to => $report->user->email, } );
 
     $c->res->body('SUCCESS');
     return 1;
@@ -945,7 +935,9 @@ sub redirect_or_confirm_creation : Private {
       $c->model("DB::Token")
       ->create( { scope => 'problem', data => $report->id } );
     $c->stash->{token_url} = $c->uri_for_email( '/P', $token->token );
-    $c->send_email( 'problem-confirm.txt', { to => $report->user->email } );
+    $c->send_email( 'problem-confirm.txt', {
+        to => [ [ $report->user->email, $report->name ] ],
+    } );
 
     # tell user that they've been sent an email
     $c->stash->{template}   = 'email_sent.html';
