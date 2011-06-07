@@ -19,9 +19,9 @@ Admin pages
 
 =cut
 
-=head2 index
+=head2 summary
 
-Display contact us page
+Redirect to index page. There to make the allowed pages stuff neater
 
 =cut
 
@@ -29,6 +29,12 @@ sub summary : Path( 'summary' ) : Args(0) {
     my ( $self, $c ) = @_;
     $c->go( 'index' );
 }
+
+=head2 index
+
+Displays some summary information for the requests.
+
+=cut
 
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
@@ -556,6 +562,13 @@ sub report_edit : Path('report_edit') : Args(1) {
     return 1;
 }
 
+=head2 set_allowed_pages
+
+Sets up the allowed_pages stash entry for checking if the current page is
+available in the current cobrand.
+
+=cut
+
 sub set_allowed_pages : Private {
     my ( $self, $c ) = @_;
 
@@ -583,20 +596,12 @@ sub set_allowed_pages : Private {
     return 1;
 }
 
-# use Encode;
-# 
-# use Page;
-# use mySociety::Config;
-# use mySociety::DBHandle qw(dbh select_all);
-# use mySociety::MaPit;
-# use mySociety::VotingArea;
-# use mySociety::Web qw(NewURL ent);
-# 
 =item get_token
 
 Generate a token based on user and secret
 
 =cut
+
 sub get_token : Private {
     my ( $self, $c ) = @_;
 
@@ -612,6 +617,13 @@ sub get_token : Private {
     return 1;
 }
 
+=item check_token
+
+Check that a token has been set on a request and it's the correct token. If
+not then display 404 page
+
+=cut
+
 sub check_token : Private {
     my ( $self, $c ) = @_;
 
@@ -622,6 +634,13 @@ sub check_token : Private {
     return 1;
 }
 
+=item log_edit
+
+    $c->forward( 'log_edit', [ $object_id, $object_type, $action_performed ] );
+
+Adds an entry into the admin_log table using the current remote_user.
+
+=cut
 
 sub log_edit : Private {
     my ( $self, $c, $id, $object_type, $action ) = @_;
@@ -634,15 +653,16 @@ sub log_edit : Private {
         }
     )->insert();
 }
- 
-sub update_edit : Path('update_edit') : Args(1) {
-    my ($self, $c, $id) = @_;
 
-    my ( $site_res_sql, $site_key, $site_restriction ) = $c->cobrand->site_restriction;
+sub update_edit : Path('update_edit') : Args(1) {
+    my ( $self, $c, $id ) = @_;
+
+    my ( $site_res_sql, $site_key, $site_restriction ) =
+      $c->cobrand->site_restriction;
     my $update = $c->model('DB::Comment')->search(
-        { 
+        {
             id => $id,
-            %{ $site_restriction },
+            %{$site_restriction},
         }
     )->first;
 
@@ -656,7 +676,7 @@ sub update_edit : Path('update_edit') : Args(1) {
     $c->stash->{update} = $update;
 
     my $status_message = '';
-    if ($c->req->param('submit')) {
+    if ( $c->req->param('submit') ) {
         $c->forward('check_token');
 
         my $old_state = $update->state;
@@ -665,29 +685,29 @@ sub update_edit : Path('update_edit') : Args(1) {
         my $edited = 0;
 
         if (   $c->req->param('name') ne $update->name
-            || $c->req->param('email') ne $update->user->email
-            || $c->req->param('anonymous')  ne $update->anonymous
-            || $c->req->param('text')  ne $update->text )
+            || $c->req->param('email')     ne $update->user->email
+            || $c->req->param('anonymous') ne $update->anonymous
+            || $c->req->param('text')      ne $update->text )
         {
             $edited = 1;
         }
 
-        if ($c->req->param('remove_photo')) {
-            $update->photo( undef );
+        if ( $c->req->param('remove_photo') ) {
+            $update->photo(undef);
         }
 
         $update->name( $c->req->param('name') || '' );
         $update->text( $c->req->param('text') );
         $update->anonymous( $c->req->param('anonymous') );
-        $update->state( $c->req->param( 'state' ) );
+        $update->state( $c->req->param('state') );
 
         if ( $c->req->param('email') ne $update->user->email ) {
-            my $user = $c->model('DB::User')->find_or_create(
-                { email => $c->req->param('email') }
-            );
+            my $user =
+              $c->model('DB::User')
+              ->find_or_create( { email => $c->req->param('email') } );
 
             $user->insert unless $user->in_storage;
-            $update->user( $user );
+            $update->user($user);
         }
 
         $update->update;
@@ -695,21 +715,23 @@ sub update_edit : Path('update_edit') : Args(1) {
         $status_message = '<p><em>' . _('Updated!') . '</em></p>';
 
         # If we're hiding an update, see if it marked as fixed and unfix if so
-        if ($new_state eq 'hidden' && $update->mark_fixed ) {
+        if ( $new_state eq 'hidden' && $update->mark_fixed ) {
             if ( $update->problem->state eq 'fixed' ) {
-                $update->problem->state( 'confirmed' );
+                $update->problem->state('confirmed');
                 $update->problem->update;
             }
 
-            $status_message .= '<p><em>' . _('Problem marked as open.') . '</em></p>';
+            $status_message .=
+              '<p><em>' . _('Problem marked as open.') . '</em></p>';
         }
 
-        if ($new_state ne $old_state) {
-            $c->forward('log_edit', [ $update->id, 'update', 'state_change' ]);
+        if ( $new_state ne $old_state ) {
+            $c->forward( 'log_edit',
+                [ $update->id, 'update', 'state_change' ] );
         }
 
         if ($edited) {
-            $c->forward('log_edit', [ $update->id, 'update', 'edit' ]);
+            $c->forward( 'log_edit', [ $update->id, 'update', 'edit' ] );
         }
 
     }
@@ -717,19 +739,7 @@ sub update_edit : Path('update_edit') : Args(1) {
 
     return 1;
 }
-# 
-# sub get_cobrand_data_from_hash {
-#     my ($cobrand, $data) = @_;
-#     my $cobrand_data;
-#     if ($data->{cobrand}) {
-#         $cobrand_data = $data->{cobrand_data};
-#     } else {
-#         $cobrand_data = Cobrand::cobrand_data_for_generic_problem($cobrand, $data);
-#     }
-#     return $cobrand_data;
-# }
-# 
-# 
+
 # sub admin_timeline {
 #     my $q = shift;
 #     my $cobrand = Page::get_cobrand($q);
