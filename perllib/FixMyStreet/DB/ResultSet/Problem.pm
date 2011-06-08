@@ -40,4 +40,18 @@ sub summary_count {
     );
 }
 
+my $site_restriction;
+my $site_key;
+
+sub set_restriction {
+    my ( $rs, $sql, $key, $restriction ) = @_;
+    $site_key = $key;
+    $site_restriction = $restriction;
+}
+
+sub site_restricted {
+    my ( $rs ) = @_;
+    return $rs->search( $site_restriction );
+}
+
 1;

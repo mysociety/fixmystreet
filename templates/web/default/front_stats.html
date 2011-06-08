@@ -4,6 +4,7 @@
     # 'Template::Plugin::Number::Format'
 %]
 
+<h2>[% loc('FixMyStreet updates') %]</h2>
 
 [%
     stats = c.cobrand.front_stats_data();
@@ -37,7 +38,9 @@
 
 <div id="front_stats">
     <div>[% tprintf( new_text,     stats.new     ) | comma %]</div>
+    [% IF c.cobrand.moniker != 'emptyhomes' %]
     <div>[% tprintf( fixed_text,   stats.fixed   ) | comma %]</div>
+    [% END %]
     <div>[% tprintf( updates_text, stats.updates ) | comma %]</div>
 </div>
 
