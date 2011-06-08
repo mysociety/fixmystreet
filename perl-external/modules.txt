@@ -9,6 +9,7 @@ Catalyst::Model::Adaptor
 Catalyst::Plugin::Authentication
 Catalyst::Plugin::ConfigLoader
 Catalyst::Plugin::Session::Store::DBIC
+Catalyst::Plugin::SmartURI
 Catalyst::Plugin::Static::Simple
 Catalyst::Plugin::Unicode
 Catalyst::Plugin::Unicode::Encoding
