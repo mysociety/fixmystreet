@@ -130,7 +130,7 @@ sub load_partial : Private {
       || last;
 
     # load the related problem
-    my $report = $c->model("DB::Problem")                    #
+    my $report = $c->cobrand->problems                       #
       ->search( { id => $report_id, state => 'partial' } )   #
       ->first
       || last;

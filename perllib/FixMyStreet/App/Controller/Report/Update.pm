@@ -99,7 +99,7 @@ sub setup_page : Private {
     my ( $self, $c ) = @_;
 
     my $problem =
-      $c->model('DB::Problem')->find( { id => $c->req->param('id') } );
+      $c->cobrand->problems->find( { id => $c->req->param('id') } );
 
     return unless $problem;
 

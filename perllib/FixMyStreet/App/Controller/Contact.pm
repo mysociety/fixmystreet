@@ -63,7 +63,7 @@ sub determine_contact_type : Private {
     $update_id = undef unless $update_id && $update_id =~ /^[1-9]\d*$/;
 
     if ($id) {
-        my $problem = $c->model('DB::Problem')->find(
+        my $problem = $c->cobrand->problems->find(
             { id => $id },
             {
                 'select' => [

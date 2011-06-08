@@ -62,7 +62,7 @@ sub load_problem_or_display_error : Private {
     my $problem    #
       = $id =~ m{\D}    # is id non-numeric?
       ? undef           # ...don't even search
-      : $c->model('DB::Problem')->find( { id => $id } );
+      : $c->cobrand->problems->find( { id => $id } );
 
     # check that the problem is suitable to show.
     if ( !$problem || $problem->state eq 'unconfirmed' ) {

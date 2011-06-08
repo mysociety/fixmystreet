@@ -7,6 +7,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 use JSON;
 use DateTime;
 use DateTime::Format::ISO8601;
+use List::MoreUtils 'uniq';
 
 =head1 NAME
 
@@ -69,42 +70,53 @@ sub problems : Local {
     }
 
     # query the database
-    $c->stash->{response} =
-      $type eq 'new_problems'
-      ? Problems::created_in_interval( $start_date, $end_date )
-      : Problems::fixed_in_interval( $start_date, $end_date );
-}
+    my ( $state, $date_col );
+    if ( $type eq 'new_problems' ) {
+        $state = 'confirmed';
+        $date_col = 'created';
+    } elsif ( $type eq 'fixed_problems' ) {
+        $state = 'fixed';
+        $date_col = 'lastupdate';
+    }
 
-# If we convert this code to be fully DBIC based then the following snippet is a
-# good start. The roadblock to doing it fully is the 'site_restriction' in the
-# SQL which is currently provided as SQL, rather than something that could be
-# easily added to the DBIC query. The hardest cobrand to change would be the
-# cities - so perhaps do it after we know wether that needs to be kept or not.
-#
-# my $state =
-#     $type eq 'new_problems'   ? 'confirmed'
-#   : $type eq 'fixed_problems' ? 'fixed_problems'
-#   :                             die;
-#
-# my $one_day = DateTime::Duration->new( days => 1 );
-#
-# my $problems = $c->model('DB::Problem')->search(
-#     {
-#         created => {
-#             '>=' => $start_dt,
-#             '<=' => $end_dt + $one_day,
-#         },
-#         state => $state,
-#         # ------ add is site_restriction here -------
-#     },
-#     {
-#         columns => [
-#             'id',       'title', 'council',   'category',
-#             'detail',   'name',  'anonymous', 'confirmed',
-#             'whensent', 'service',
-#         ]
-#     }
-# );
+    my $one_day = DateTime::Duration->new( days => 1 );
+    my @problems = $c->cobrand->problems->search( {
+        $date_col => {
+            '>=' => $start_dt,
+            '<=' => $end_dt + $one_day,
+        },
+        state => $state,
+    }, {
+        columns => [
+            'id',       'title', 'council',   'category',
+            'detail',   'name',  'anonymous', 'confirmed',
+            'whensent', 'service',
+        ]
+    } );
+
+    my @councils;
+    foreach my $problem (@problems) {
+        $problem->name( '' ) if $problem->anonymous == 1;
+        $problem->service( 'Web interface' ) if $problem->service eq '';
+        if ($problem->council) {
+            (my $council = $problem->council) =~ s/\|.*//g;
+            my @council_ids = split /,/, $council;
+            push(@councils, @council_ids);
+            $problem->council( \@council_ids );
+        }
+    }
+    @councils = uniq @councils;
+    my $areas_info = mySociety::MaPit::call('areas', \@councils);
+    foreach my $problem (@problems) {
+        if ($problem->council) {
+             my @council_names = map { $areas_info->{$_}->{name} } @{$problem->council} ;
+             $problem->council( join(' and ', @council_names) );
+        }
+    }
+
+    @problems = map { { $_->get_columns } } @problems;
+    $c->stash->{response} = \@problems;
+}
 
 sub end : Private {
     my ( $self, $c ) = @_;
