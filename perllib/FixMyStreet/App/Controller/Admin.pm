@@ -44,7 +44,7 @@ sub index : Path : Args(0) {
     my ( $sql_restriction, $id, $site_restriction ) = $c->cobrand->site_restriction();
     my $cobrand_restriction = $c->cobrand->moniker eq 'fixmystreet' ? {} : { cobrand => $c->cobrand->moniker };
 
-    my $problems = $c->model('DB::Problem')->summary_count( $site_restriction );
+    my $problems = $c->cobrand->problems->summary_count;
 
     my %prob_counts =
       map { $_->state => $_->get_column('state_count') } $problems->all;
@@ -115,7 +115,7 @@ sub timeline : Path( 'timeline' ) : Args(0) {
 
     $c->model('DB')->schema->storage->sql_maker->quote_char( '"' );
 
-    my $probs = $c->model('DB::Problem')->timeline( $site_restriction );
+    my $probs = $c->cobrand->problems->timeline;
 
     foreach ($probs->all) {
         push @{$time{$_->created->epoch}}, { type => 'problemCreated', date => $_->created_local, obj => $_ };
@@ -408,7 +408,7 @@ sub search_reports : Path('search_reports') {
         # it for this query and then switch it off afterwards.
         $c->model('DB')->schema->storage->sql_maker->quote_char( '"' );
 
-        my $problems = $c->model('DB::Problem')->search(
+        my $problems = $c->cobrand->problems->search(
             {
                 -or => [
                     'me.id' => $search_n,
@@ -418,7 +418,6 @@ sub search_reports : Path('search_reports') {
                     detail => { ilike => $like_search },
                     council => { like => $like_search },
                     cobrand_data => { like => $like_search },
-                    %{ $site_restriction },
                 ]
             },
             {
@@ -464,10 +463,9 @@ sub report_edit : Path('report_edit') : Args(1) {
 
     my ( $site_res_sql, $site_key, $site_restriction ) = $c->cobrand->site_restriction;
 
-    my $problem = $c->model('DB::Problem')->search(
+    my $problem = $c->cobrand->problems->search(
         {
             id => $id,
-            %{ $site_restriction },
         }
     )->first;
 
