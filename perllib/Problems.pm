@@ -27,20 +27,6 @@ sub current_timestamp {
     return "'$current_timestamp'::timestamp";
 }
 
-# Front page statistics
-
-sub recent_fixed {
-    my $key = "recent_fixed:$site_key";
-    my $result = Memcached::get($key);
-    unless ($result) {
-        $result = dbh()->selectrow_array("select count(*) from problem
-            where state='fixed' and lastupdate>" . current_timestamp() . "-'1 month'::interval
-            $site_restriction");
-        Memcached::set($key, $result, 3600);
-    }
-    return $result;
-}
-
 sub number_comments {
     my $key = "number_comments:$site_key";
     my $result = Memcached::get($key);
@@ -53,20 +39,6 @@ sub number_comments {
             $result = dbh()->selectrow_array("select count(*) from comment
                 where state='confirmed'");
         }
-        Memcached::set($key, $result, 3600);
-    }
-    return $result;
-}
-
-sub recent_new {
-    my $interval = shift;
-    (my $key = $interval) =~ s/\s+//g;
-    $key = "recent_new:$site_key:$key";
-    my $result = Memcached::get($key);
-    unless ($result) {
-        $result = dbh()->selectrow_array("select count(*) from problem
-            where state in ('confirmed','fixed') and confirmed>" . current_timestamp() . "-'$interval'::interval
-            $site_restriction");
         Memcached::set($key, $result, 3600);
     }
     return $result;
@@ -111,19 +83,6 @@ sub recent_photos {
             '" alt="' . $title . '" title="' . $title . '"></a>';
     }
     return $out;
-}
-
-sub recent {
-    my $key = "recent:$site_key";
-    my $result = Memcached::get($key);
-    unless ($result) {
-        $result = select_all("select id,title from problem
-            where state in ('confirmed', 'fixed')
-            $site_restriction
-            order by confirmed desc limit 5");
-        Memcached::set($key, $result, 3600);
-    }
-    return $result;
 }
 
 # Problems around a location

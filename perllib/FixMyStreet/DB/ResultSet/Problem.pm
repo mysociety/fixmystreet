@@ -4,6 +4,72 @@ use base 'DBIx::Class::ResultSet';
 use strict;
 use warnings;
 
+my $site_restriction;
+my $site_key;
+
+sub set_restriction {
+    my ( $rs, $sql, $key, $restriction ) = @_;
+    $site_key = $key;
+    $site_restriction = $restriction;
+}
+
+sub site_restricted {
+    my ( $rs ) = @_;
+    return $rs->search( $site_restriction );
+}
+
+# Front page statistics
+
+sub recent_fixed {
+    my $rs = shift;
+    my $key = "recent_fixed:$site_key";
+    my $result = Memcached::get($key);
+    unless ($result) {
+        $result = $rs->site_restricted->search( {
+            state => 'fixed',
+            lastupdate => { '>', \"current_timestamp-'1 month'::interval" },
+        } )->count;
+        Memcached::set($key, $result, 3600);
+    }
+    return $result;
+}
+
+sub recent_new {
+    my ( $rs, $interval ) = @_;
+    (my $key = $interval) =~ s/\s+//g;
+    $key = "recent_new:$site_key:$key";
+    my $result = Memcached::get($key);
+    unless ($result) {
+        $result = $rs->site_restricted->search( {
+            state => [ 'confirmed', 'fixed' ],
+            confirmed => { '>', \"current_timestamp-'$interval'::interval" },
+        } )->count;
+        Memcached::set($key, $result, 3600);
+    }
+    return $result;
+}
+
+# Front page recent lists
+
+sub recent {
+    my ( $rs ) = @_;
+    my $key = "recent:$site_key";
+    my $result = Memcached::get($key);
+    unless ($result) {
+        $result = $rs->site_restricted->search( {
+            state => [ 'confirmed', 'fixed' ]
+        }, {
+            columns => [ 'id', 'title' ],
+            order_by => { -desc => 'confirmed' },
+            rows => 5,
+        } )->count;
+        Memcached::set($key, $result, 3600);
+    }
+    return $result;
+}
+
+# Admin functions
+
 sub timeline {
     my ( $rs, $restriction ) = @_;
 
@@ -38,20 +104,6 @@ sub summary_count {
             as       => [qw/state state_count/]
         }
     );
-}
-
-my $site_restriction;
-my $site_key;
-
-sub set_restriction {
-    my ( $rs, $sql, $key, $restriction ) = @_;
-    $site_key = $key;
-    $site_restriction = $restriction;
-}
-
-sub site_restricted {
-    my ( $rs ) = @_;
-    return $rs->search( $site_restriction );
 }
 
 1;

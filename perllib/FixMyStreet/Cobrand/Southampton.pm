@@ -51,8 +51,8 @@ sub council_check {
     }
     my $url = 'http://www.fixmystreet.com/';
     $url .= 'alert' if $context eq 'alert';
-    $url .= '?pc=' . URI::Escape::uri_escape_utf8($self->{request}->param('pc'))
-        if $self->{request}->param('pc');
+    $url .= '?pc=' . URI::Escape::uri_escape_utf8($self->{c}->req->param('pc'))
+        if $self->{c}->req->param('pc');
     my $error_msg = "That location is not covered by Southampton.
 Please visit <a href=\"$url\">the main FixMyStreet site</a>.";
     return ( 0, $error_msg );

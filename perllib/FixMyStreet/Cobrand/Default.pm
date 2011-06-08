@@ -11,9 +11,9 @@ use mySociety::MaPit;
 =head2 new
 
     my $cobrand = $class->new;
-    my $cobrand = $class->new( { request => $c->req } );
+    my $cobrand = $class->new( { c => $c } );
 
-Create a new cobrand object, optionally setting the web request.
+Create a new cobrand object, optionally setting the context.
 
 You probably shouldn't need to do this and should get the cobrand object via a
 method in L<FixMyStreet::Cobrand> instead.
@@ -208,8 +208,8 @@ Return recent problems on the site.
 =cut
 
 sub recent {
-    my $self = shift;
-    return Problems::recent(@_);
+    my ( $self ) = @_;
+    return $self->{c}->model('DB::Problem')->recent();
 }
 
 =item shorten_recency_if_new_greater_than_fixed
@@ -231,18 +231,19 @@ can then format.
 =cut
 
 sub front_stats_data {
-    my $self = shift;
+    my ( $self ) = @_;
+    my $c = $self->{c};
 
     my $recency         = '1 week';
     my $shorter_recency = '3 days';
 
-    my $fixed   = Problems::recent_fixed();
+    my $fixed   = $c->model('DB::Problem')->recent_fixed();
     my $updates = Problems::number_comments();
-    my $new     = Problems::recent_new($recency);
+    my $new     = $c->model('DB::Problem')->recent_new( $recency );
 
     if ( $new > $fixed && $self->shorten_recency_if_new_greater_than_fixed ) {
         $recency = $shorter_recency;
-        $new     = Problems::recent_new($recency);
+        $new     = $c->model('DB::Problem')->recent_new( $recency );
     }
 
     my $stats = {
