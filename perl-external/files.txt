@@ -4,6 +4,7 @@
 /authors/id/A/AB/ABW/Template-Toolkit-2.22.tar.gz
 /authors/id/A/AC/ACALPINI/Lingua-Stem-It-0.02.tar.gz
 /authors/id/A/AC/ACOBURN/Lingua-EN-Tagger-0.16.tar.gz
+/authors/id/A/AD/ADAMK/Archive-Zip-1.30.tar.gz
 /authors/id/A/AD/ADAMK/Class-Inspector-1.25.tar.gz
 /authors/id/A/AD/ADAMK/DBD-SQLite-1.31.tar.gz
 /authors/id/A/AD/ADAMK/File-Remove-1.48.tar.gz
@@ -74,6 +75,7 @@
 /authors/id/D/DA/DAGOLDEN/Parse-CPAN-Meta-1.4401.tar.gz
 /authors/id/D/DA/DAGOLDEN/Perl-OSType-1.002.tar.gz
 /authors/id/D/DA/DAGOLDEN/Sub-Uplevel-0.22.tar.gz
+/authors/id/D/DC/DCANTRELL/CPAN-ParseDistribution-1.3.tar.gz
 /authors/id/D/DC/DCANTRELL/Data-Compare-1.22.tar.gz
 /authors/id/D/DC/DCONWAY/Lingua-EN-Inflect-1.893.tar.gz
 /authors/id/D/DL/DLAND/File-Path-2.08.tar.gz
