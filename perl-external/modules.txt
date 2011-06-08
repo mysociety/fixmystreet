@@ -1,5 +1,6 @@
 App::cpanminus
 Bundle::DBD::Pg
+CPAN::ParseDistribution
 Catalyst
 Catalyst::Action::RenderView
 Catalyst::Authentication::Store::DBIx::Class

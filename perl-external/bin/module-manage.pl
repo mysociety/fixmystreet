@@ -8,6 +8,7 @@ use LWP::Simple;
 use File::Slurp;
 use Path::Class;
 use List::MoreUtils 'uniq';
+use CPAN::ParseDistribution;
 
 # TODO - 'updates' action that lists packages that could be updated
 # TODO - add smarts to strip out old packages (could switch to building using files.txt after)
@@ -107,14 +108,40 @@ sub index_minicpan {
     my @remote_packages_lines = read_packages_txt_gz($remote_packages_file);
 
     # Find remaining in live file and add to local file
-    my @lines_to_add = ();
+    my %lines_to_add = ();
     foreach my $missing (@missing_files) {
         print "  Finding matches for '$missing'\n";
-        push @lines_to_add, grep { m{$missing} } @remote_packages_lines;
+        my @matches = grep { m{$missing} } @remote_packages_lines;
+        next unless @matches;
+        $lines_to_add{$missing} = \@matches;
+    }
+
+    # for packages still not found parse out the contents
+    foreach my $missing (@missing_files) {
+        next if $lines_to_add{$missing};
+
+        print "  Parsing out matches for '$missing'\n";
+
+        my ( $A, $B ) = $missing =~ m{^(.)(.)};
+        my $dist =
+          CPAN::ParseDistribution->new("$minicpan/authors/id/$A/$A$B/$missing");
+
+        my $modules = $dist->modules();
+        my @matches = ();
+
+        foreach my $module ( sort keys %$modules ) {
+            my $version = $modules->{$module} || 'undef';
+
+            # Zucchini 0.000017 C/CH/CHISEL/Zucchini-0.0.17.tar.gz
+            push @matches, "$module $version $A/$A$B/$missing\n";
+        }
+
+        $lines_to_add{$missing} = \@matches;
     }
 
     # combine and sort the lines found
-    my @new_lines = sort @local_packages_lines, @lines_to_add;
+    my @new_lines = sort @local_packages_lines,
+      map { @$_ } values %lines_to_add;
     unlink $local_packages_file_gz;
     write_file( $local_packages_file, map { "$_\n" } packages_file_headers(),
         @new_lines );
