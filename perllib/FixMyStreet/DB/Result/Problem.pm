@@ -134,7 +134,7 @@ sub whensent_local {
 
     return $self->whensent
       ? $self->whensent->set_time_zone($tz)
-      : $self->confirmed;
+      : $self->whensent;
 }
 
 sub lastupdate_local {
@@ -144,6 +144,13 @@ sub lastupdate_local {
       ? $self->lastupdate->set_time_zone($tz)
       : $self->lastupdate;
 }
+
+around service => sub {
+    my ( $orig, $self ) = ( shift, shift );
+    my $s = $self->$orig(@_);
+    $s =~ s/_/ /g;
+    return $s;
+};
 
 =head2 check_for_errors
 

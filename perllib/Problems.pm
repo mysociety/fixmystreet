@@ -22,11 +22,6 @@ use mySociety::MaPit;
 my $site_restriction = '';
 my $site_key = 0;
 
-sub current_timestamp {
-    my $current_timestamp = dbh()->selectrow_array('select ms_current_timestamp()');
-    return "'$current_timestamp'::timestamp";
-}
-
 sub number_comments {
     my $key = "number_comments:$site_key";
     my $result = Memcached::get($key);
@@ -85,68 +80,7 @@ sub recent_photos {
     return $out;
 }
 
-# Problems around a location
-
-sub around_map {
-    my ($min_lat, $max_lat, $min_lon, $max_lon, $interval, $limit) = @_;
-    my $limit_clause = '';
-    if ($limit) {
-        $limit_clause = " limit $limit";
-    }
-    mySociety::Locale::in_gb_locale { select_all(
-        "select id,title,latitude,longitude,state,
-             extract(epoch from confirmed) as time
-        from problem
-        where state in ('confirmed', 'fixed')
-            and latitude>=? and latitude<? and longitude>=? and longitude<? " .
-        ($interval ? " and ms_current_timestamp()-lastupdate < '$interval'::interval" : '') .
-        " $site_restriction
-        order by created desc
-        $limit_clause", $min_lat, $max_lat, $min_lon, $max_lon);
-    };
-}
-
-sub nearby {
-    my ($dist, $ids, $limit, $mid_lat, $mid_lon, $interval) = @_;
-    mySociety::Locale::in_gb_locale { select_all(
-        "select id, title, latitude, longitude, distance, state,
-            extract(epoch from confirmed) as time
-        from problem_find_nearby(?, ?, $dist) as nearby, problem
-        where nearby.problem_id = problem.id " .
-        ($interval ? " and ms_current_timestamp()-lastupdate < '$interval'::interval" : '') .
-        " and state in ('confirmed', 'fixed')" . ($ids ? ' and id not in (' . $ids . ')' : '') . "
-        $site_restriction
-        order by distance, created desc limit $limit", $mid_lat, $mid_lon);
-    }
-}
-
-sub fixed_nearby {
-    my ($dist, $mid_lat, $mid_lon) = @_;
-    mySociety::Locale::in_gb_locale { select_all(
-        "select id, title, latitude, longitude, distance
-        from problem_find_nearby(?, ?, $dist) as nearby, problem
-        where nearby.problem_id = problem.id and state='fixed'
-        $site_restriction
-        order by lastupdate desc", $mid_lat, $mid_lon);
-    }
-}
-
 # Fetch an individual problem
-
-sub fetch_problem {
-    my $id = shift;
-    my $p = dbh()->selectrow_hashref(
-        "select id, latitude, longitude, council, category, title, detail, photo,
-        used_map, name, anonymous, extract(epoch from confirmed) as time,
-        state, extract(epoch from whensent-confirmed) as whensent,
-        extract(epoch from ms_current_timestamp()-lastupdate) as duration, 
-        service, cobrand, cobrand_data, external_body
-        from problem where id=? and state in ('confirmed','fixed', 'hidden')
-        $site_restriction", {}, $id
-    );
-    $p->{service} =~ s/_/ /g if $p && $p->{service};
-    return $p;
-}
 
 # Report functions
 

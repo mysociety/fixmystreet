@@ -69,6 +69,15 @@ sub path_to_web_templates {
     return FixMyStreet->path_to( 'templates/web', $self->moniker );
 }
 
+=head1 problems_clause
+
+Returns a hash for a query to be used by problems (and elsewhere in joined
+queries) to restrict results for a cobrand.
+
+=cut
+
+sub problems_clause {}
+
 =head1 problems
 
 Returns a ResultSet of Problems, restricted to a subset if we're on a cobrand

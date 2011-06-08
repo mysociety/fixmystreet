@@ -12,11 +12,13 @@ sub site_restriction {
     return ( "and council='2567'", 'southampton', { council => '2567' } );
 }
 
+sub problems_clause {
+    return { council => '2567' };
+}
+
 sub problems {
     my $self = shift;
-    return $self->{c}->model('DB::Problem')->search( {
-        council => '2567'
-    } );
+    return $self->{c}->model('DB::Problem')->search( $self->problems_clause );
 }
 
 sub base_url {

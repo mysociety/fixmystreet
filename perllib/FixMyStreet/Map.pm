@@ -80,8 +80,8 @@ sub map_features {
     my $around_limit = $c->cobrand->on_map_list_limit || undef;
 
     my @around_args = ( $min_lat, $max_lat, $min_lon, $max_lon, $interval );
-    my $around_map_list = Problems::around_map( @around_args, $around_limit );
-    my $around_map      = Problems::around_map( @around_args, undef );
+    my $around_map_list = $c->cobrand->problems->around_map( @around_args, $around_limit );
+    my $around_map      = $c->cobrand->problems->around_map( @around_args, undef );
 
     my $dist;
     mySociety::Locale::in_gb_locale {
@@ -92,9 +92,10 @@ sub map_features {
     $dist = int( $dist * 10 + 0.5 ) / 10;
 
     my $limit  = 20;
-    my @ids    = map { $_->{id} } @$around_map_list;
-    my $nearby = Problems::nearby( $dist, join( ',', @ids ),
-        $limit, $lat, $lon, $interval );
+    my @ids    = map { $_->id } @$around_map_list;
+    my $nearby = $c->model('DB::Nearby')->nearby(
+        $c, $dist, \@ids, $limit, $lat, $lon, $interval
+    );
 
     return ( $around_map, $around_map_list, $nearby, $dist );
 }

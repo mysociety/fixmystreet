@@ -107,21 +107,22 @@ sub map_pins {
 
     my $pins = '';
     foreach (@$around_map) {
-        ( $_->{easting}, $_->{northing} ) =
-          _ll_to_en( $_->{latitude}, $_->{longitude} );
-        my $px = os_to_px($_->{easting}, $sx);
-        my $py = os_to_px($_->{northing}, $sy, 1);
-        my $col = $_->{state} eq 'fixed' ? 'green' : 'red';
-        $pins .= display_pin($c, $px, $py, $col, $_->{id}, $_->{title});
+        my ( $easting, $northing ) =
+          _ll_to_en( $_->latitude, $_->longitude );
+        my $px = os_to_px($easting, $sx);
+        my $py = os_to_px($northing, $sy, 1);
+        my $col = $_->state eq 'fixed' ? 'green' : 'red';
+        $pins .= display_pin($c, $px, $py, $col, $_->id, $_->title);
     }
 
     foreach (@$nearby) {
-        ( $_->{easting}, $_->{northing} ) =
-          _ll_to_en( $_->{latitude}, $_->{longitude} );
-        my $px = os_to_px($_->{easting}, $sx);
-        my $py = os_to_px($_->{northing}, $sy, 1);
-        my $col = $_->{state} eq 'fixed' ? 'green' : 'red';
-        $pins .= display_pin($c, $px, $py, $col, $_->{id}, $_->{title});
+        my $p = $_->problem;
+        my ( $easting, $northing ) =
+          _ll_to_en( $p->latitude, $p->longitude );
+        my $px = os_to_px($easting, $sx);
+        my $py = os_to_px($northing, $sy, 1);
+        my $col = $p->state eq 'fixed' ? 'green' : 'red';
+        $pins .= display_pin($c, $px, $py, $col, $p->id, $p->title);
     }
 
     return ($pins, $around_map_list, $nearby, $dist);
