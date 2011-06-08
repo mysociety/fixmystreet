@@ -13,11 +13,6 @@ sub set_restriction {
     $site_restriction = $restriction;
 }
 
-sub site_restricted {
-    my ( $rs ) = @_;
-    return $rs->search( $site_restriction );
-}
-
 # Front page statistics
 
 sub recent_fixed {
@@ -25,7 +20,7 @@ sub recent_fixed {
     my $key = "recent_fixed:$site_key";
     my $result = Memcached::get($key);
     unless ($result) {
-        $result = $rs->site_restricted->search( {
+        $result = $rs->search( {
             state => 'fixed',
             lastupdate => { '>', \"current_timestamp-'1 month'::interval" },
         } )->count;
@@ -40,7 +35,7 @@ sub recent_new {
     $key = "recent_new:$site_key:$key";
     my $result = Memcached::get($key);
     unless ($result) {
-        $result = $rs->site_restricted->search( {
+        $result = $rs->search( {
             state => [ 'confirmed', 'fixed' ],
             confirmed => { '>', \"current_timestamp-'$interval'::interval" },
         } )->count;
@@ -56,7 +51,7 @@ sub recent {
     my $key = "recent:$site_key";
     my $result = Memcached::get($key);
     unless ($result) {
-        $result = $rs->site_restricted->search( {
+        $result = $rs->search( {
             state => [ 'confirmed', 'fixed' ]
         }, {
             columns => [ 'id', 'title' ],

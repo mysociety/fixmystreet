@@ -108,8 +108,7 @@ sub submit_creator_fixed : Private {
         $c->detach('missing_problem');
     }
 
-    my $problem = $c->model('DB::Problem')->find( { id =>
-            $c->stash->{problem} } );
+    my $problem = $c->cobrand->problems->find( { id => $c->stash->{problem} } );
 
     # you should not be able to answer questionnaires about problems
     # that you've not submitted

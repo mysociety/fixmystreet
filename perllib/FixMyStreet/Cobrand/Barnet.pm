@@ -12,6 +12,13 @@ sub site_restriction {
     return ( "and council='2489'", 'barnet', { council => '2489' } );
 }
 
+sub problems {
+    my $self = shift;
+    return $self->{c}->model('DB::Problem')->search( {
+        council => '2489'
+    } );
+}
+
 sub base_url {
     my $base_url = mySociety::Config::get('BASE_URL');
     if ( $base_url !~ /barnet/ ) {

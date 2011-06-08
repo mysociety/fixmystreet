@@ -254,7 +254,7 @@ sub load_problems : Private {
         $where->{areas} = { 'like', '%' . $c->stash->{council}->{id} . '%' };
     }
     my $current_timestamp = Problems::current_timestamp();
-    my $problems = $c->model('DB::Problem')->site_restricted->search(
+    my $problems = $c->cobrand->problems->search(
         $where,
         {
             columns => [

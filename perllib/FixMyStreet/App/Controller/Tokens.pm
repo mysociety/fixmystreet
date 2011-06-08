@@ -33,7 +33,7 @@ sub confirm_problem : Path('/P') {
 
     # Load the problem
     my $problem_id = $auth_token->data;
-    my $problem = $c->model('DB::Problem')->find( { id => $problem_id } )
+    my $problem = $c->cobrand->problems->find( { id => $problem_id } )
       || $c->detach('token_error');
     $c->stash->{problem} = $problem;
 

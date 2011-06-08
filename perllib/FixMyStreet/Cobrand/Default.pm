@@ -69,6 +69,18 @@ sub path_to_web_templates {
     return FixMyStreet->path_to( 'templates/web', $self->moniker );
 }
 
+=head1 problems
+
+Returns a ResultSet of Problems, restricted to a subset if we're on a cobrand
+that only wants some of the data.
+
+=cut
+
+sub problems {
+    my $self = shift;
+    return $self->{c}->model('DB::Problem');
+}
+
 =head1 site_restriction
 
 Return a site restriction clause and a site key if the cobrand uses a subset of
@@ -209,7 +221,7 @@ Return recent problems on the site.
 
 sub recent {
     my ( $self ) = @_;
-    return $self->{c}->model('DB::Problem')->recent();
+    return $self->problems->recent();
 }
 
 =item shorten_recency_if_new_greater_than_fixed
@@ -232,18 +244,17 @@ can then format.
 
 sub front_stats_data {
     my ( $self ) = @_;
-    my $c = $self->{c};
 
     my $recency         = '1 week';
     my $shorter_recency = '3 days';
 
-    my $fixed   = $c->model('DB::Problem')->recent_fixed();
+    my $fixed   = $self->problems->recent_fixed();
     my $updates = Problems::number_comments();
-    my $new     = $c->model('DB::Problem')->recent_new( $recency );
+    my $new     = $self->problems->recent_new( $recency );
 
     if ( $new > $fixed && $self->shorten_recency_if_new_greater_than_fixed ) {
         $recency = $shorter_recency;
-        $new     = $c->model('DB::Problem')->recent_new( $recency );
+        $new     = $self->problems->recent_new( $recency );
     }
 
     my $stats = {

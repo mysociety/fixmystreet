@@ -80,7 +80,7 @@ sub problems : Local {
     }
 
     my $one_day = DateTime::Duration->new( days => 1 );
-    my @problems = $c->model('DB::Problem')->site_restricted->search( {
+    my @problems = $c->cobrand->problems->search( {
         $date_col => {
             '>=' => $start_dt,
             '<=' => $end_dt + $one_day,
