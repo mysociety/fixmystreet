@@ -21,39 +21,10 @@ use mySociety::MaPit;
 
 my $site_restriction = '';
 my $site_key = 0;
-my $site_restriction_hash = {};
-
-sub site_restriction {
-    return $site_restriction_hash;
-}
-
-# Set the site restrictions using the new cobrand style - no need to special
-# case 'fixmystreet' as default cobrand takes care of that.
-sub set_site_restriction_with_cobrand_object {
-    my $cobrand = shift;
-
-    my $cobrand_data = $cobrand->extra_data;
-    ( $site_restriction, $site_key, $site_restriction_hash ) =
-      $cobrand->site_restriction($cobrand_data);
-}
 
 sub current_timestamp {
     my $current_timestamp = dbh()->selectrow_array('select ms_current_timestamp()');
     return "'$current_timestamp'::timestamp";
-}
-
-# Front page statistics
-
-sub recent_fixed {
-    my $key = "recent_fixed:$site_key";
-    my $result = Memcached::get($key);
-    unless ($result) {
-        $result = dbh()->selectrow_array("select count(*) from problem
-            where state='fixed' and lastupdate>" . current_timestamp() . "-'1 month'::interval
-            $site_restriction");
-        Memcached::set($key, $result, 3600);
-    }
-    return $result;
 }
 
 sub number_comments {
@@ -68,20 +39,6 @@ sub number_comments {
             $result = dbh()->selectrow_array("select count(*) from comment
                 where state='confirmed'");
         }
-        Memcached::set($key, $result, 3600);
-    }
-    return $result;
-}
-
-sub recent_new {
-    my $interval = shift;
-    (my $key = $interval) =~ s/\s+//g;
-    $key = "recent_new:$site_key:$key";
-    my $result = Memcached::get($key);
-    unless ($result) {
-        $result = dbh()->selectrow_array("select count(*) from problem
-            where state in ('confirmed','fixed') and confirmed>" . current_timestamp() . "-'$interval'::interval
-            $site_restriction");
         Memcached::set($key, $result, 3600);
     }
     return $result;
@@ -127,51 +84,6 @@ sub recent_photos {
     }
     return $out;
 }
-
-sub recent {
-    my $key = "recent:$site_key";
-    my $result = Memcached::get($key);
-    unless ($result) {
-        $result = select_all("select id,title from problem
-            where state in ('confirmed', 'fixed')
-            $site_restriction
-            order by confirmed desc limit 5");
-        Memcached::set($key, $result, 3600);
-    }
-    return $result;
-}
-
-# sub front_stats {
-#     my ($q) = @_;
-#     my $fixed = Problems::recent_fixed();
-#     my $updates = Problems::number_comments();
-#     my $new = Problems::recent_new('1 week');
-#     (my $new_pretty = $new) =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
-#     my $new_text = sprintf(mySociety::Locale::nget('<big>%s</big> report in past week',
-#         '<big>%s</big> reports in past week', $new), $new_pretty);
-#     if ($q->{site} ne 'emptyhomes' && $new > $fixed) {
-#         $new = Problems::recent_new('3 days');
-#         ($new_pretty = $new) =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
-#         $new_text = sprintf(mySociety::Locale::nget('<big>%s</big> report recently', '<big>%s</big> reports recently', $new), $new_pretty);
-#     }
-#     (my $fixed_pretty = $fixed) =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
-#     (my $updates_pretty = $updates) =~ s/(?<=\d)(?=(?:\d\d\d)+$)/,/g;
-# 
-#     my $out = '';
-#     $out .= $q->h2(_('FixMyStreet updates'));
-#     my $lastmo = '';
-#     if ($q->{site} ne 'emptyhomes'){
-#           $lastmo = $q->div(sprintf(mySociety::Locale::nget("<big>%s</big> fixed in past month", "<big>%s</big> fixed in past month", $fixed), $fixed), $fixed_pretty);
-#     }
-#     $out .= $q->div({-id => 'front_stats'},
-#                     $q->div($new_text),
-#                     ($q->{site} ne 'emptyhomes' ? $q->div(sprintf(mySociety::Locale::nget("<big>%s</big> fixed in past month", "<big>%s</big> fixed in past month", $fixed), $fixed_pretty)) : ''),
-#                     $q->div(sprintf(mySociety::Locale::nget("<big>%s</big> update on reports",
-#                     "<big>%s</big> updates on reports", $updates), $updates_pretty))
-#     );
-#     return $out;
-# 
-# }
 
 # Problems around a location
 
@@ -234,67 +146,6 @@ sub fetch_problem {
     );
     $p->{service} =~ s/_/ /g if $p && $p->{service};
     return $p;
-}
-
-# API functions
-
-sub problems_matching_criteria {
-    my ($criteria, @params) = @_;
-    my $problems = select_all(
-        "select id, title, council, category, detail, name, anonymous,
-        confirmed, whensent, service
-        from problem
-        $criteria
-        $site_restriction", @params);
-
-    my @councils;
-    foreach my $problem (@$problems){
-        if ($problem->{anonymous} == 1){
-            $problem->{name} = '';
-        }
-        if ($problem->{service} eq ''){
-            $problem->{service} = 'Web interface';
-        }
-        if ($problem->{council}) {
-            $problem->{council} =~ s/\|.*//g;
-            my @council_ids = split /,/, $problem->{council};
-            push(@councils, @council_ids);
-            $problem->{council} = \@council_ids;
-        }
-    }
-    my $areas_info = mySociety::MaPit::call('areas', \@councils);
-    foreach my $problem (@$problems){
-        if ($problem->{council}) {
-             my @council_names = map { $areas_info->{$_}->{name} } @{$problem->{council}} ;
-             $problem->{council} = join(' and ', @council_names);
-        }
-    }
-    return $problems;
-}
-
-sub fixed_in_interval {
-    my ($start_date, $end_date) = @_; 
-    my $criteria = "where state='fixed' and date_trunc('day',lastupdate)>=? and 
-date_trunc('day',lastupdate)<=?";
-    return problems_matching_criteria($criteria, $start_date, $end_date);
-}
-
-sub created_in_interval {
-    my ($start_date, $end_date) = @_; 
-    my $criteria = "where state='confirmed' and date_trunc('day',created)>=? and 
-date_trunc('day',created)<=?";
-    return problems_matching_criteria($criteria, $start_date, $end_date);
-}
-
-=item data_sharing_notification_start
-
-Returns the unix datetime when the T&Cs that explicitly allow for users' data to be displayed
-on other sites.
-
-=cut
-
-sub data_sharing_notification_start {
-    return 1255392000;
 }
 
 # Report functions

@@ -289,7 +289,7 @@ sub initialize_report : Private {
               || last;
 
             # load the related problem
-            $report = $c->model("DB::Problem")                       #
+            $report = $c->cobrand->problems                          #
               ->search( { id => $id, state => 'partial' } )          #
               ->first;
 

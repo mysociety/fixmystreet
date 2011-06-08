@@ -40,7 +40,7 @@ sub index :Path :Args(0) {
             photo => { '!=', undef },
         } );
     } else {
-        @photo = $c->model('DB::Problem')->search( {
+        @photo = $c->cobrand->problems->search( {
             id => $id,
             state => [ 'confirmed', 'fixed', 'partial' ],
             photo => { '!=', undef },

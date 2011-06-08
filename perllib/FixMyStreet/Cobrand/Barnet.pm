@@ -12,6 +12,13 @@ sub site_restriction {
     return ( "and council='2489'", 'barnet', { council => '2489' } );
 }
 
+sub problems {
+    my $self = shift;
+    return $self->{c}->model('DB::Problem')->search( {
+        council => '2489'
+    } );
+}
+
 sub base_url {
     my $base_url = mySociety::Config::get('BASE_URL');
     if ( $base_url !~ /barnet/ ) {
@@ -52,8 +59,8 @@ sub council_check {
     }
     my $url = 'http://www.fixmystreet.com/';
     $url .= 'alert' if $context eq 'alert';
-    $url .= '?pc=' . URI::Escape::uri_escape( $self->{request}->param('pc') )
-      if $self->{request}->param('pc');
+    $url .= '?pc=' . URI::Escape::uri_escape( $self->{c}->req->param('pc') )
+      if $self->{c}->req->param('pc');
     my $error_msg = "That location is not covered by Barnet.
 Please visit <a href=\"$url\">the main FixMyStreet site</a>.";
     return ( 0, $error_msg );

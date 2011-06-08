@@ -246,8 +246,7 @@ sub load_problems : Private {
     my ( $self, $c ) = @_;
 
     my $where = {
-        state => [ 'confirmed', 'fixed' ],
-        %{ Problems::site_restriction() }
+        state => [ 'confirmed', 'fixed' ]
     };
     if ($c->stash->{ward}) {
         $where->{areas} = { 'like', '%' . $c->stash->{ward}->{id} . '%' }; # FIXME Check this is secure
@@ -255,7 +254,7 @@ sub load_problems : Private {
         $where->{areas} = { 'like', '%' . $c->stash->{council}->{id} . '%' };
     }
     my $current_timestamp = Problems::current_timestamp();
-    my $problems = $c->model('DB::Problem')->search(
+    my $problems = $c->cobrand->problems->search(
         $where,
         {
             columns => [

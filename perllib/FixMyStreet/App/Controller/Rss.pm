@@ -30,7 +30,7 @@ sub updates : LocalRegex('^(\d+)$') {
     my ( $self, $c ) = @_;
 
     my $id = $c->req->captures->[0];
-    my $problem = $c->model('DB::Problem')->find( { id => $id } );
+    my $problem = $c->cobrand->problems->find( { id => $id } );
 
     # FIXME Put these 404/410 checks in central place - Report.pm does it too.
     if ( !$problem || $problem->state eq 'unconfirmed' ) {
