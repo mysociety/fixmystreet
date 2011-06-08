@@ -25,6 +25,12 @@ Redirect to index page. There to make the allowed pages stuff neater
 
 =cut
 
+sub begin : Private {
+    my ( $self, $c ) = @_;
+
+    $c->uri_disposition('relative');
+}
+
 sub summary : Path( 'summary' ) : Args(0) {
     my ( $self, $c ) = @_;
     $c->go( 'index' );
