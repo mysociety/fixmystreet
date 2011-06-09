@@ -1,0 +1,18 @@
+Subject: Nye oppdateringer for problem - '<?=$values['title']?>'
+
+Følgende oppdateringer har blitt lagt inn for dette problemet:
+
+<?=$values['data']?>
+
+<?=$values['state_message']?>
+
+For å se på eller svare på disse oppdateringene, besøk denne URLen:
+    <?=$values['problem_url']?>
+
+Du kan ikke kontakte noen ved å svare på denne eposten.
+
+Vennlig hilsen,  
+Fiksgata-laget
+
+For å slutte å motta epost når det er nye oppdateringer om dettte
+problemet, følg denne lenken: <?=$values['unsubscribe_url']?>
