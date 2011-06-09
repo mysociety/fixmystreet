@@ -49,7 +49,7 @@
                 [%- IF problem.state == 'confirmed' %]<br>[% loc('Last&nbsp;update:') %] [% PROCESS format_time time=problem.lastupdate %][% END -%]</small>
         </td> 
         <td>[% PROCESS format_time time=problem.whensent %]</td> 
-        <td><a href="[% c.uri_for( 'report_edit', problem.id ) %]">Edit</a></td>
+        <td><a href="[% c.uri_for( 'report_edit', problem.id ) %]">[% loc('Edit') %]</a></td>
     </tr>
 [%- END -%]
 </table>

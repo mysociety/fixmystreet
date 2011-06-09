@@ -28,7 +28,7 @@
         <td>[% IF update.anonymous %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td> 
         <td>[% update.cobrand %]<br>[% update.cobrand_data | html %]</td> 
         <td>[% update.text | html %]</td> 
-        <td><a href="[% c.uri_for( 'update_edit', update.id ) %]">Edit</a></td>
+        <td><a href="[% c.uri_for( 'update_edit', update.id ) %]">[% loc('Edit') %]</a></td>
     <tr>
 [% END -%]
 </table>

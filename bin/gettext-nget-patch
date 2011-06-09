@@ -5,6 +5,8 @@
 
 use File::Find qw/find/;
 
+my %out;
+
 find( sub {
     next unless -f;
     open (FP, $_) or die $!;
@@ -16,15 +18,25 @@ find( sub {
             $text .= <FP>;
         } until $text =~ /\)/;
         $text =~ /nget\(\s*"(.*?)"\s*,\s*"(.*?)"\s*,\s*(.*?)\s*\)/s;
-        print <<EOF;
-
-#: $File::Find::name:$line
-#, perl-format
-msgid "$1"
-msgid_plural "$2"
-msgstr[0] ""
-msgstr[1] ""
-EOF
+        $out{$1} = {
+            file => $File::Find::name,
+            line => $line,
+            s => $1,
+            p => $2,
+        };
     }
     close FP;
 }, 'templates');
+
+foreach (values %out) {
+    print <<EOF;
+
+#: $_->{file}:$_->{line}
+#, perl-format
+msgid "$_->{s}"
+msgid_plural "$_->{p}"
+msgstr[0] ""
+msgstr[1] ""
+EOF
+}
+
