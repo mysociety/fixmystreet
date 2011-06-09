@@ -22,23 +22,6 @@ use mySociety::MaPit;
 my $site_restriction = '';
 my $site_key = 0;
 
-sub number_comments {
-    my $key = "number_comments:$site_key";
-    my $result = Memcached::get($key);
-    unless ($result) {
-        if ($site_restriction) {
-            $result = dbh()->selectrow_array("select count(*) from comment, problem
-                where comment.problem_id=problem.id and comment.state='confirmed'
-                $site_restriction");
-        } else {
-            $result = dbh()->selectrow_array("select count(*) from comment
-                where state='confirmed'");
-        }
-        Memcached::set($key, $result, 3600);
-    }
-    return $result;
-}
-
 # Admin view functions
 
 =item problem_search SEARCH

@@ -29,6 +29,20 @@ sub recent_fixed {
     return $result;
 }
 
+sub number_comments {
+    my $rs = shift;
+    my $key = "number_comments:$site_key";
+    my $result = Memcached::get($key);
+    unless ($result) {
+        $result = $rs->search(
+            { 'comments.state' => 'confirmed' },
+            { join => 'comments' }
+        )->count;
+        Memcached::set($key, $result, 3600);
+    }
+    return $result;
+}
+
 sub recent_new {
     my ( $rs, $interval ) = @_;
     (my $key = $interval) =~ s/\s+//g;
