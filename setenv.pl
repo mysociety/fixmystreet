@@ -32,12 +32,6 @@ for ( "$root/commonlib/perllib", "$root/perllib" ) {
 # also set the path to our scripts etc
 $ENV{PATH} = join ':', uniq "$root/bin", split( m/:/, $ENV{PATH} );
 
-# now decide what to do  - if no arguments print out shell arguments to set the
-# environment. If there are arguments then run those so that they run correctly
-#if (@ARGV) {
-#    system @ARGV;
-#}
-
 # we might want to require this file to configure something like a CGI script
 if ( $0 eq __FILE__ ) {
 

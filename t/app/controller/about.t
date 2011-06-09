@@ -8,7 +8,7 @@ ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
 # check that we can get the page
 $mech->get_ok('/about');
-$mech->content_like(qr{About us ::\s+FixMyStreet.com});
+$mech->content_like(qr{About us ::\s+FixMyStreet});
 $mech->content_contains('html lang="en-gb"');
 
 SKIP: {
