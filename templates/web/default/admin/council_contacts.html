@@ -16,14 +16,14 @@
 
     <table cellspacing="0" cellpadding="2" border="1">
         <tr>
-            <th>Category</th>
-            <th>Email</th>
-            <th>Confirmed</th>
-            <th>Deleted</th>
-            <th>Last editor</th>
-            <th>Note</th>
-            <th>When edited</th>
-            <th>Confirm</th>
+            <th>[% loc('Category') %]</th>
+            <th>[% loc('Email') %]</th>
+            <th>[% loc('Confirmed') %]</th>
+            <th>[% loc('Deleted') %]</th>
+            <th>[% loc('Last editor') %]</th>
+            <th>[% loc('Note') %]</th>
+            <th>[% loc('When edited') %]</th>
+            <th>[% loc('Confirm') %]</th>
         </tr>
         [% WHILE ( contact = contacts.next ) %]
             <tr>
@@ -43,41 +43,41 @@
     <input type="hidden" name="area_id" value="[% area_id %]">
     <input type="hidden" name="posted" value="update">
     <input type="hidden" name="token" value="[% token %]">
-    <input type="submit" name="Update statuses" value="Update statuses">
+    <input type="submit" name="Update statuses" value="[% loc('Update statuses') %]">
     </p>
     </form>
 
-    <h2>Add new category</h2>
+    <h2>[% loc('Add new category') %]</h2>
 
     <form method="post" action="[% c.uri_for('council_contacts', area_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
 
         [% IF c.cobrand.moniker != 'emptyhomes' %]
         <p>
-        <strong>Category: </strong><input type="text" name="category" size="30">
+        <strong>[% loc('Category:') %] </strong><input type="text" name="category" size="30">
         </p>
         [% END %]
 
         <p>
-        <strong>Email: </strong><input type="text" name="email" size="30">
+        <strong>[% loc('Email:') %] </strong><input type="text" name="email" size="30">
         </p>
 
         <p>
         <input type="checkbox" name="confirmed" value="1" id="confirmed"> 
-        <label for="confirmed">Confirmed</label>
+        <label for="confirmed">[% loc('Confirmed') %]</label>
 
         <input type="checkbox" name="deleted" value="1"id="deleted"> 
-        <label for="deleted">Deleted</label>
+        <label for="deleted">[% loc('Deleted') %]</label>
         </p>
 
         <p>
-        <strong>Note: </strong> <textarea name="note" rows="3" cols="40"></textarea>
+        <strong>[% loc('Note:') %] </strong> <textarea name="note" rows="3" cols="40"></textarea>
         </p>
 
         <p>
         <input type="hidden" name="area_id" value="[% area_id %]" >
         <input type="hidden" name="posted" value="new" >
         <input type="hidden" name="token" value="[% token %]" >
-        <input type="submit" name="Create category" value="Create category" >
+        <input type="submit" name="Create category" value="[% loc('Create category') %]" >
         </p>
 
         <div>

@@ -104,7 +104,7 @@ sub index : Path : Args(0) {
       $questionnaire_counts{total}
       ? sprintf( '%.1f',
         $questionnaire_counts{1} / $questionnaire_counts{total} * 100 )
-      : 'na';
+      : _('n/a');
     $c->stash->{questionnaires} = \%questionnaire_counts;
 
     return 1;
