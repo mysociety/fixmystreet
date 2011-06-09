@@ -103,6 +103,14 @@ __PACKAGE__->has_many(
 # Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-05-24 15:32:43
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:U3aYCRwE4etekKaHdhEkIw
 
+# Add fake relationship to stored procedure table
+__PACKAGE__->has_many(
+  "nearby",
+  "FixMyStreet::DB::Result::Nearby",
+  { "foreign.problem_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 use DateTime::TimeZone;
 use Image::Size;
 use Moose;

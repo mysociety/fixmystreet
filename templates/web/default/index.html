@@ -76,7 +76,10 @@
 <div id="front_recent">
     [% IF recent_photos %]
         <h2>[% loc('Photos of recent reports') %]</h2>
-        [% recent_photos %]
+        [% FOREACH p IN recent_photos %]
+            <a href="/report/[% p.id %]"><img border="0" height="100"
+                src="/photo?tn=1;id=[% p.id %]" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
+        [% END %]
     [% END %]
 
     [% IF probs.size %]

@@ -219,7 +219,7 @@ EASTING and NORTHING.
 
 sub recent_photos {
     my $self = shift;
-    return Problems::recent_photos(@_);
+    return $self->problems->recent_photos(@_);
 }
 
 =head2 recent
@@ -258,7 +258,7 @@ sub front_stats_data {
     my $shorter_recency = '3 days';
 
     my $fixed   = $self->problems->recent_fixed();
-    my $updates = Problems::number_comments();
+    my $updates = $self->problems->number_comments();
     my $new     = $self->problems->recent_new( $recency );
 
     if ( $new > $fixed && $self->shorten_recency_if_new_greater_than_fixed ) {

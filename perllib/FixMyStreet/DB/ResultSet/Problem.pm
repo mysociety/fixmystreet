@@ -29,6 +29,20 @@ sub recent_fixed {
     return $result;
 }
 
+sub number_comments {
+    my $rs = shift;
+    my $key = "number_comments:$site_key";
+    my $result = Memcached::get($key);
+    unless ($result) {
+        $result = $rs->search(
+            { 'comments.state' => 'confirmed' },
+            { join => 'comments' }
+        )->count;
+        Memcached::set($key, $result, 3600);
+    }
+    return $result;
+}
+
 sub recent_new {
     my ( $rs, $interval ) = @_;
     (my $key = $interval) =~ s/\s+//g;
@@ -51,16 +65,51 @@ sub recent {
     my $key = "recent:$site_key";
     my $result = Memcached::get($key);
     unless ($result) {
-        $result = $rs->search( {
+        $result = [ $rs->search( {
             state => [ 'confirmed', 'fixed' ]
         }, {
             columns => [ 'id', 'title' ],
             order_by => { -desc => 'confirmed' },
             rows => 5,
-        } )->count;
+        } )->all ];
         Memcached::set($key, $result, 3600);
     }
     return $result;
+}
+
+sub recent_photos {
+    my ( $rs, $num, $lat, $lon, $dist ) = @_;
+    my $probs;
+    my $query = {
+        state => [ 'confirmed', 'fixed' ],
+        photo => { '!=', undef },
+    };
+    my $attrs = {
+        columns => [ 'id', 'title' ],
+        order_by => { -desc => 'confirmed' },
+        rows => $num,
+    };
+    if (defined $lat) {
+        my $dist2 = $dist; # Create a copy of the variable to stop it being stringified into a locale in the next line!
+        my $key = "recent_photos:$site_key:$num:$lat:$lon:$dist2";
+        $probs = Memcached::get($key);
+        unless ($probs) {
+            $attrs->{bind} = [ $lat, $lon, $dist ];
+            $attrs->{join} = 'nearby';
+            $probs = [ mySociety::Locale::in_gb_locale {
+                $rs->search( $query, $attrs )->all;
+            } ];
+            Memcached::set($key, $probs, 3600);
+        }
+    } else {
+        my $key = "recent_photos:$site_key:$num";
+        $probs = Memcached::get($key);
+        unless ($probs) {
+            $probs = [ $rs->search( $query, $attrs )->all ];
+            Memcached::set($key, $probs, 3600);
+        }
+    }
+    return $probs;
 }
 
 # Problems around a location

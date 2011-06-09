@@ -52,6 +52,7 @@ sub display : Path('') : Args(1) {
     }
 
     $c->forward('load_problem_or_display_error', [ $id ] );
+    $c->forward( 'load_updates' );
     $c->forward( 'format_problem_for_display' );
 }
 
@@ -76,9 +77,14 @@ sub load_problem_or_display_error : Private {
     }
 
     $c->stash->{problem} = $problem;
+    return 1;
+}
+
+sub load_updates : Private {
+    my ( $self, $c ) = @_;
 
     my $updates = $c->model('DB::Comment')->search(
-        { problem_id => $problem->id, state => 'confirmed' },
+        { problem_id => $c->stash->{problem}->id, state => 'confirmed' },
         { order_by => 'confirmed' }
     );
 
