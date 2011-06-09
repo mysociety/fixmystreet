@@ -12,13 +12,13 @@
     new_text =
         stats.recency == '1 week'
         ? nget(
-            '<big>%s</big> report in past week',
-            '<big>%s</big> reports in past week',
+            "<big>%s</big> report in past week",
+            "<big>%s</big> reports in past week",
             stats.new
           )
         : nget(
-            '<big>%s</big> report recently',
-            '<big>%s</big> reports recently',
+            "<big>%s</big> report recently",
+            "<big>%s</big> reports recently",
             stats.new
          );
     
