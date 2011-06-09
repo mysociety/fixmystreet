@@ -63,6 +63,29 @@ sub recent {
     return $result;
 }
 
+# Problems around a location
+
+sub around_map {
+    my ( $rs, $min_lat, $max_lat, $min_lon, $max_lon, $interval, $limit ) = @_;
+    my $attr = {
+        order_by => { -desc => 'created' },
+        columns => [
+            'id', 'title' ,'latitude', 'longitude', 'state', 'confirmed'
+        ],
+    };
+    $attr->{rows} = $limit if $limit;
+
+    my $q = {
+            state => [ 'confirmed', 'fixed' ],
+            latitude => { '>=', $min_lat, '<', $max_lat },
+            longitude => { '>=', $min_lon, '<', $max_lon },
+    };
+    $q->{'current_timestamp - lastupdate'} = { '<', \"'$interval'::interval" };
+
+    my @problems = mySociety::Locale::in_gb_locale { $rs->search( $q, $attr )->all };
+    return \@problems;
+}
+
 # Admin functions
 
 sub timeline {

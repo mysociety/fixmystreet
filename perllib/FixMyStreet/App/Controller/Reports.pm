@@ -253,14 +253,13 @@ sub load_problems : Private {
     } elsif ($c->stash->{council}) {
         $where->{areas} = { 'like', '%' . $c->stash->{council}->{id} . '%' };
     }
-    my $current_timestamp = Problems::current_timestamp();
     my $problems = $c->cobrand->problems->search(
         $where,
         {
             columns => [
                 'id', 'title', 'detail', 'council', 'state', 'areas',
-                { duration => { extract => "epoch from $current_timestamp-lastupdate" } },
-                { age      => { extract => "epoch from $current_timestamp-confirmed"  } },
+                { duration => { extract => "epoch from current_timestamp-lastupdate" } },
+                { age      => { extract => "epoch from current_timestamp-confirmed"  } },
             ],
             order_by => { -desc => 'id' },
         }
