@@ -413,6 +413,32 @@ subtest 'change email to new user' => sub {
 
 $log_entries->delete;
 
+subtest 'report search' => sub {
+    my $update = FixMyStreet::App->model('DB::Comment')->create(
+        {
+            text => 'this is an update',
+            user => $report->user,
+            state => 'confirmed',
+            problem => $report,
+            mark_fixed => 0,
+            anonymous => 1,
+        }
+    );
+
+    $mech->get_ok('/admin/search_reports');
+    $mech->get_ok('/admin/search_reports?search=' . $report->id );
+
+    $mech->content_contains( $report->title );
+    my $r_id = $report->id;
+    $mech->content_like( qr{href="http://[^/]*[^.]/report/$r_id/">$r_id</a>} );
+
+    $mech->get_ok('/admin/search_reports?search=' . $report->user->email);
+
+    my $u_id = $update->id;
+    $mech->content_like( qr{href="http://[^/]*[^.]/report/$r_id/">$r_id</a>} );
+    $mech->content_like( qr{href="http://[^/]*[^.]/report/$r_id/#update_$u_id">$u_id</a>} );
+};
+
 $mech->delete_user( $user );
 $mech->delete_user( $user2 );
 $mech->delete_user( $user3 );
