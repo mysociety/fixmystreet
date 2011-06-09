@@ -413,17 +413,210 @@ subtest 'change email to new user' => sub {
 
 $log_entries->delete;
 
-subtest 'report search' => sub {
-    my $update = FixMyStreet::App->model('DB::Comment')->create(
-        {
+my $update = FixMyStreet::App->model('DB::Comment')->create(
+    {
+        text => 'this is an update',
+        user => $user,
+        state => 'confirmed',
+        problem => $report,
+        mark_fixed => 0,
+        anonymous => 1,
+    }
+);
+
+$log_entries = FixMyStreet::App->model('DB::AdminLog')->search(
+    {
+        object_type => 'update',
+        object_id   => $update->id
+    },
+    { 
+        order_by => { -desc => 'id' },
+    }
+);
+
+is $log_entries->count, 0, 'no admin log entries';
+
+for my $test (
+    {
+        desc => 'edit update text',
+        fields => {
             text => 'this is an update',
-            user => $report->user,
             state => 'confirmed',
-            problem => $report,
-            mark_fixed => 0,
+            name => '',
             anonymous => 1,
+            email => 'test@example.com',
+        },
+        changes => {
+            text => 'this is a changed update',
+        },
+        log_count => 1,
+        log_entries => [qw/edit/],
+    },
+    {
+        desc => 'edit update name',
+        fields => {
+            text => 'this is a changed update',
+            state => 'confirmed',
+            name => '',
+            anonymous => 1,
+            email => 'test@example.com',
+        },
+        changes => {
+            name => 'A User',
+        },
+        log_count => 2,
+        log_entries => [qw/edit edit/],
+    },
+    {
+        desc => 'edit update anonymous',
+        fields => {
+            text => 'this is a changed update',
+            state => 'confirmed',
+            name => 'A User',
+            anonymous => 1,
+            email => 'test@example.com',
+        },
+        changes => {
+            anonymous => 0,
+        },
+        log_count => 3,
+        log_entries => [qw/edit edit edit/],
+    },
+    {
+        desc => 'edit update user',
+        fields => {
+            text => 'this is a changed update',
+            state => 'confirmed',
+            name => 'A User',
+            anonymous => 0,
+            email => $update->user->email,
+            email => 'test@example.com',
+        },
+        changes => {
+            email => 'test2@example.com',
+        },
+        log_count => 4,
+        log_entries => [qw/edit edit edit edit/],
+        user => $user2,
+    },
+    {
+        desc => 'edit update state',
+        fields => {
+            text => 'this is a changed update',
+            state => 'confirmed',
+            name => 'A User',
+            anonymous => 0,
+            email => 'test2@example.com',
+        },
+        changes => {
+            state => 'unconfirmed',
+        },
+        log_count => 5,
+        log_entries => [qw/state_change edit edit edit edit/],
+    },
+    {
+        desc => 'edit update state and text',
+        fields => {
+            text => 'this is a changed update',
+            state => 'unconfirmed',
+            name => 'A User',
+            anonymous => 0,
+            email => 'test2@example.com',
+        },
+        changes => {
+            text => 'this is a twice changed update',
+            state => 'hidden',
+        },
+        log_count => 7,
+        log_entries => [qw/edit state_change state_change edit edit edit edit/],
+    },
+) {
+    subtest $test->{desc} => sub {
+        $log_entries->reset;
+        $mech->get_ok('/admin/update_edit/' . $update->id );
+
+        is_deeply $mech->visible_form_values, $test->{fields}, 'initial form values';
+
+        my $to_submit = {
+            %{ $test->{fields} },
+            %{ $test->{changes} }
+        };
+
+        $mech->submit_form_ok( { with_fields => $to_submit } );
+
+        is_deeply $mech->visible_form_values, $to_submit, 'submitted form values';
+
+        is $log_entries->count, $test->{log_count}, 'number of log entries';
+        is $log_entries->next->action, $_, 'log action' for @{ $test->{log_entries} };
+
+        $update->discard_changes;
+
+        is $update->$_, $test->{changes}->{$_} for grep { $_ ne 'email' } keys %{ $test->{changes} };
+
+        if ( $test->{user} ) {
+            is $update->user->id, $test->{user}->id, 'update user';
         }
+    };
+}
+
+subtest 'editing update email creates new user if required' => sub {
+    my $user = FixMyStreet::App->model('DB::User')->find(
+        { email => 'test4@example.com' } 
     );
+
+    $user->delete if $user;
+
+    my $fields = {
+            text => 'this is a changed update',
+            state => 'hidden',
+            name => 'A User',
+            anonymous => 0,
+            email => 'test4@example.com',
+    };
+
+    $mech->submit_form_ok( { with_fields => $fields } );
+
+    $user = FixMyStreet::App->model('DB::User')->find(
+        { email => 'test4@example.com' } 
+    );
+
+    is_deeply $mech->visible_form_values, $fields, 'submitted form values';
+
+    ok $user, 'new user created';
+
+    $update->discard_changes;
+    is $update->user->id, $user->id, 'update set to new user';
+};
+
+subtest 'hiding comment marked as fixed reopens report' => sub {
+    $update->mark_fixed( 1 );
+    $update->update;
+
+    $report->state('fixed');
+    $report->update;
+
+
+    my $fields = {
+            text => 'this is a changed update',
+            state => 'hidden',
+            name => 'A User',
+            anonymous => 0,
+            email => 'test2@example.com',
+    };
+
+    $mech->submit_form_ok( { with_fields => $fields } );
+
+    $report->discard_changes;
+    is $report->state, 'confirmed', 'report reopened';
+    $mech->content_contains('Problem marked as open');
+};
+
+$log_entries->delete;
+
+subtest 'report search' => sub {
+    $update->state('confirmed');
+    $update->user($report->user);
+    $update->update;
 
     $mech->get_ok('/admin/search_reports');
     $mech->get_ok('/admin/search_reports?search=' . $report->id );
@@ -437,10 +630,23 @@ subtest 'report search' => sub {
     my $u_id = $update->id;
     $mech->content_like( qr{href="http://[^/]*[^.]/report/$r_id/">$r_id</a>} );
     $mech->content_like( qr{href="http://[^/]*[^.]/report/$r_id/#update_$u_id">$u_id</a>} );
+
+    $update->state('hidden');
+    $update->update;
+
+    $mech->get_ok('/admin/search_reports?search=' . $report->user->email);
+    $mech->content_like( qr{<tr [^>]*hidden[^>]*> \s* <td> \s* $u_id \s* </td>}xs );
+
+    $report->state('hidden');
+    $report->update;
+
+    $mech->get_ok('/admin/search_reports?search=' . $report->user->email);
+    $mech->content_like( qr{<tr [^>]*hidden[^>]*> \s* <td> \s* $r_id \s* </td>}xs );
 };
 
 $mech->delete_user( $user );
 $mech->delete_user( $user2 );
 $mech->delete_user( $user3 );
+$mech->delete_user( 'test4@example.com' );
 
 done_testing();
