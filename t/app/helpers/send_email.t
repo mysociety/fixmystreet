@@ -46,7 +46,9 @@ my $email_as_string = $emails[0]->as_string;
 ok $email_as_string =~ s{\s+Date:\s+\S.*?$}{}xms, "Found and stripped out date";
 
 my $expected_email_content =   file(__FILE__)->dir->file('send_email_sample.txt')->slurp;
-my $sender = '"' . FixMyStreet->config('CONTACT_NAME') . '" <' . FixMyStreet->config('CONTACT_EMAIL') . '>';
+my $name = FixMyStreet->config('CONTACT_NAME');
+$name = "\"$name\"" if $name =~ / /;
+my $sender = $name . ' <' . FixMyStreet->config('CONTACT_EMAIL') . '>';
 $expected_email_content =~ s{CONTACT_EMAIL}{$sender};
 
 is $email_as_string,

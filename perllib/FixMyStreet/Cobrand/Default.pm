@@ -409,7 +409,7 @@ Return the title to be used in page heads.
 
 =cut
 
-sub site_title { 'FixMyStreet.com' }
+sub site_title { 'FixMyStreet' }
 
 =head2 on_map_list_limit
 
