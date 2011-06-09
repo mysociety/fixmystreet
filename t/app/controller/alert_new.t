@@ -208,6 +208,7 @@ foreach my $test (
         param1     => 2651,
         param2     => 2651,
         confirmed  => 0,
+        delete     => 1,
     }
   )
 {
@@ -263,6 +264,10 @@ foreach my $test (
 
         $mech->email_count_is( $test->{confirmed} ? 0 : 1 );
 
+        if ( $test->{delete} ) {
+            $mech->delete_user($user);
+            $mech->delete_user($alert_user);
+        }
     };
 }
 
