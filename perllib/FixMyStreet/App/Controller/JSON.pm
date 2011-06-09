@@ -87,6 +87,7 @@ sub problems : Local {
         },
         state => $state,
     }, {
+        order_by => { -asc => 'confirmed' },
         columns => [
             'id',       'title', 'council',   'category',
             'detail',   'name',  'anonymous', 'confirmed',

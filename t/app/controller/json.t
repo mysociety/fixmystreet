@@ -68,7 +68,7 @@ my $problem_args = {
     longitude          => '-0.23021896608596',
 };
 my $problem      = $user->add_to_problems( { %$problem_args, anonymous => 0 } );
-my $anon_problem = $user->add_to_problems( { %$problem_args, anonymous => 1 } );
+my $anon_problem = $user->add_to_problems( { %$problem_args, anonymous => 1, confirmed => '2000-01-01 12:02:00' } );
 
 ok $problem,      "created normal test problem";
 ok $anon_problem, "created anon test problem";
@@ -92,7 +92,7 @@ is_deeply    #
     {
         'anonymous' => 1,
         'category'  => 'test category',
-        'confirmed' => '2000-01-01 12:01:00',
+        'confirmed' => '2000-01-01 12:02:00',
         'council'   => 'Wandsworth Borough Council',
         'detail'    => 'Test detail',
         'id'        => $anon_problem->id,
