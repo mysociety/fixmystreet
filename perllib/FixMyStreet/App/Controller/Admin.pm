@@ -702,13 +702,15 @@ sub update_edit : Path('update_edit') : Args(1) {
 
         my $edited = 0;
 
-        if (   $c->req->param('name') ne $update->name
-            || $c->req->param('email')     ne $update->user->email
-            || $c->req->param('anonymous') ne $update->anonymous
-            || $c->req->param('text')      ne $update->text )
-        {
-            $edited = 1;
-        }
+        # $update->name can be null which makes ne unhappy
+        my $name = $update->name || '';
+
+        if ( $c->req->param('name') ne $name
+          || $c->req->param('email')     ne $update->user->email
+          || $c->req->param('anonymous') ne $update->anonymous
+          || $c->req->param('text')      ne $update->text ){
+              $edited = 1;
+          }
 
         if ( $c->req->param('remove_photo') ) {
             $update->photo(undef);
