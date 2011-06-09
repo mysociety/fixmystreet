@@ -63,16 +63,8 @@ sub determine_contact_type : Private {
     $update_id = undef unless $update_id && $update_id =~ /^[1-9]\d*$/;
 
     if ($id) {
-        my $problem = $c->cobrand->problems->find(
-            { id => $id },
-            {
-                'select' => [
-                    'title', 'detail', 'name',
-                    'anonymous', 'id',
-                    'user_id', 'confirmed',
-                ]
-            }
-        );
+
+        $c->forward( '/report/load_problem_or_display_error', [ $id ] );
 
         if ($update_id) {
             my $update = $c->model('DB::Comment')->find(
@@ -80,9 +72,6 @@ sub determine_contact_type : Private {
             );
 
             $c->stash->{update} = $update;
-        }
-        elsif ($problem) {
-            $c->stash->{problem} = $problem;
         }
     }
 

@@ -24,7 +24,7 @@ sub report_update : Path : Args(0) {
     $c->detach( '/page_error_404_not_found', [ _('Unknown problem ID') ] )
       unless $c->req->param('id');
 
-         $c->forward('setup_page')
+         $c->forward( '/report/load_problem_or_display_error', [ $c->req->param('id') ] )
       && $c->forward('process_user')
       && $c->forward('process_update')
       && $c->forward('/report/new/process_photo')
@@ -85,25 +85,6 @@ sub display_confirmation : Private {
     my ( $self, $c ) = @_;
 
     $c->stash->{template} = 'tokens/confirm_update.html';
-
-    return 1;
-}
-
-=head2 setup_page
-
-Setup things we need for later.
-
-=cut
-
-sub setup_page : Private {
-    my ( $self, $c ) = @_;
-
-    my $problem =
-      $c->cobrand->problems->find( { id => $c->req->param('id') } );
-
-    return unless $problem;
-
-    $c->stash->{problem} = $problem;
 
     return 1;
 }
