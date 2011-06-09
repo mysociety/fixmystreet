@@ -20,30 +20,30 @@
 </p>
 
 <form method="post" action="[% c.uri_for('council_contacts', area_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
-    <strong>Category: </strong>test
+    <strong>[% loc('Category: ' ) %]</strong>[% contact.category | html %]
     <input type="hidden" name="category" value="[% contact.category | html %]" >
-    <input type="hidden" name="token" value="[% token %]" >1
-    <strong> Email: </strong>
+    <input type="hidden" name="token" value="[% token %]" >
+    <strong>[% loc('Email: ') %]</strong>
     <input type="text" name="email" value="[% contact.email | html %]" size="30"> 
-    <input type="checkbox" name="confirmed" value="1" id="confirmed"[% ' checked' IF contact.confirmed %]> <label for="confirmed">Confirmed</label> 
-    <input type="checkbox" name="deleted" value="1" id="deleted"[% ' checked' IF contact.deleted %]> <label for="deleted">Deleted</label><br>
+    <input type="checkbox" name="confirmed" value="1" id="confirmed"[% ' checked' IF contact.confirmed %]> <label for="confirmed">[% loc('Confirmed' ) %]</label> 
+    <input type="checkbox" name="deleted" value="1" id="deleted"[% ' checked' IF contact.deleted %]> <label for="deleted">[% loc('Deleted') %]</label><br>
 
-    <strong>Note: </strong><textarea name="note" rows="3" cols="40">[% contact.note | html %]</textarea> <br>
+    <strong>[% loc('Note: ') %]</strong><textarea name="note" rows="3" cols="40">[% contact.note | html %]</textarea> <br>
 
     <input type="hidden" name="area_id" value="[% area_id %]">
     <input type="hidden" name="posted" value="new">
     <input type="submit" name="Save changes" value="Save changes">
 </form>
 
-<h2>History</h2>
+<h2>[% loc('History') %]</h2>
 <table border="1">
     <tr>
-        <th>When edited</th>
-        <th>Email</th>
-        <th>Confirmed</th>
-        <th>Deleted</th>
-        <th>Editor</th>
-        <th>Note</th>
+        <th>[% loc('When edited') %]</th>
+        <th>[% loc('Email') %]</th>
+        <th>[% loc('Confirmed') %]</th>
+        <th>[% loc('Deleted') %]</th>
+        <th>[% loc('Editor') %]</th>
+        <th>[% loc('Note') %]</th>
     </tr>
     [%- prev = '' %]
     [%- WHILE ( contact = history.next ) %]
