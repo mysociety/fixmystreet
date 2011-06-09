@@ -29,7 +29,10 @@ postcode or street name and area:' ) %]
 [% IF photos %]
 <div id="alert_recent">
   <h2>[% loc('Some photos of recent reports') %]</h2>
-  [% photos %]
+    [% FOREACH p IN photos %]
+        <a href="/report/[% p.id %]"><img border="0" height="100"
+            src="/photo?tn=1;id=[% p.id %]" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
+    [% END %]
 </div>
 [% END %]
 [%# FIXME - put in blurb here %]

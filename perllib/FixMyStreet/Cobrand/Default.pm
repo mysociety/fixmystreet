@@ -219,7 +219,7 @@ EASTING and NORTHING.
 
 sub recent_photos {
     my $self = shift;
-    return Problems::recent_photos(@_);
+    return $self->problems->recent_photos(@_);
 }
 
 =head2 recent

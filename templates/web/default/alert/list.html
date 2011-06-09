@@ -27,7 +27,10 @@
   [% IF photos %]
     <div id="alert_photos">
       <h2>[% loc('Photos of recent nearby reports') %]</h2>
-      [% photos %]
+        [% FOREACH p IN photos %]
+            <a href="/report/[% p.id %]"><img border="0" height="100"
+                src="/photo?tn=1;id=[% p.id %]" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
+        [% END %]
     </div>
   [% END %]
 
