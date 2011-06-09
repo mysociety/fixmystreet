@@ -377,7 +377,7 @@ sub uri_for_email {
     my $c    = shift;
     my @args = @_;
 
-    my $normal_uri = $c->uri_for(@_);
+    my $normal_uri = $c->uri_for(@_)->absolute;
     my $base       = $c->cobrand->base_url_with_lang( 1 );
 
     my $email_uri = $base . $normal_uri->path_query;
