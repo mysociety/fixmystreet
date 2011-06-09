@@ -12,8 +12,8 @@
 <li><a href="[% c.uri_for_email( '/report', update.problem_id, cobrand_data ) %]#update_[% update.id %]">[% loc('View report on site' )%]</a></li>
 <li><label for='detail'>[% loc('Text:') %]</label><br><textarea name='text' id='text' cols=60 rows=10>[% update.text | html %]</textarea></li>
 <li><label for="anonymous">[% loc('Anonymous:') %]</label> <select name="anonymous"  id="anonymous">
-<option [% 'selected ' IF update.anonymous %]value="1">Yes</option>
-<option [% 'selected ' IF !update.anonymous %]value="0">No</option>
+<option [% 'selected ' IF update.anonymous %]value="1">[% loc('Yes') %]</option>
+<option [% 'selected ' IF !update.anonymous %]value="0">[% loc('No') %]</option>
 </select></li>
 <li><label for="state">[% loc('State:') %]</label> <select name="state"  id="state">
     [% FOREACH state IN [ ['confirmed', loc('Open')], ['hidden', loc('Hidden')], ['unconfirmed',loc('Unconfirmed')] ] %]

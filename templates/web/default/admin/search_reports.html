@@ -2,7 +2,7 @@
 [% PROCESS 'admin/report_blocks.html' %]
 
 <form method="get" action="[% c.uri_for('search_reports') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
-    <label for="search">Search:</label> <input type="text" name="search"  size="30" id="search">
+    <label for="search">[% loc('Search:') %]</label> <input type="text" name="search"  size="30" id="search">
 </form>
 
 
@@ -20,7 +20,7 @@
         <th>[% loc('Created') %]</th>
         <th>[% loc('State') %]</th>
         <th>[% loc('When sent') %]</th>
-        <th>[% loc('*') %]</th>
+        <th>*</th>
     </tr>
 [%- FOREACH problem IN problems %]
     <tr[% ' class="hidden"' IF problem.state == 'hidden' %]>

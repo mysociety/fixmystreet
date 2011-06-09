@@ -35,7 +35,7 @@
     _('The latest problems for {{COUNCIL}} reported by users'),
 
 # New problems within a particular ward sent to a particular council
-    _('New problems for {{COUNCIL}} within {{WARD}} ward on FixMyStreet'
+    _('New problems for {{COUNCIL}} within {{WARD}} ward on FixMyStreet'),
     _('The latest problems for {{COUNCIL}} within {{WARD}} ward reported by users'),
 
 # New problems within a particular voting area (ward, constituency, whatever)

@@ -10,7 +10,7 @@
         <th>[% loc('Anonymous') %]</th>
         <th>[% loc('Cobrand') %]</th>
         <th>[% loc('Text') %]</th>
-        <th>[% loc('*') %]</th>
+        <th>*</th>
     </tr>
 [% FOREACH update IN updates -%]
     <tr[% ' class="hidden"' IF update.state == 'hidden' || ( problem.state && problem.state == 'hidden' ) %]>
