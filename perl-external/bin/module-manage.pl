@@ -8,7 +8,6 @@ use LWP::Simple;
 use File::Slurp;
 use Path::Class;
 use List::MoreUtils 'uniq';
-use CPAN::ParseDistribution;
 
 # TODO - 'updates' action that lists packages that could be updated
 # TODO - add smarts to strip out old packages (could switch to building using files.txt after)
@@ -119,6 +118,10 @@ sub index_minicpan {
     # for packages still not found parse out the contents
     foreach my $missing (@missing_files) {
         next if $lines_to_add{$missing};
+
+        # do a require here so that this module does not prevent 'setup' from
+        # being run - needed to install it.
+        require CPAN::ParseDistribution;
 
         print "  Parsing out matches for '$missing'\n";
 
