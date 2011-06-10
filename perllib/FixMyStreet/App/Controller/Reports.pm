@@ -282,7 +282,7 @@ sub group_problems : Private {
             }
         } else {
             # Add to councils it was sent to
-            foreach ($row->councils) {
+            foreach (@{ $row->councils }) {
                 next if $c->stash->{council} && $_ != $c->stash->{council}->{id};
                 add_row($row, $_, \%fixed, \%open);
             }

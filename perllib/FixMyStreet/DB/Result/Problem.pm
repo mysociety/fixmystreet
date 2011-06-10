@@ -241,16 +241,16 @@ sub confirm {
 
 =head2 councils
 
-Returns an array of councils to which a report was sent.
+Returns an arrayref of councils to which a report was sent.
 
 =cut
 
 sub councils {
     my $self = shift;
-    return () unless $self->council;
+    return [] unless $self->council;
     (my $council = $self->council) =~ s/\|.*$//;
     my @council = split( /,/, $council );
-    return @council;
+    return \@council;
 }
 
 =head2 url
