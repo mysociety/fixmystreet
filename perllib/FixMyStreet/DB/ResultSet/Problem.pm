@@ -138,7 +138,7 @@ sub around_map {
 # Admin functions
 
 sub timeline {
-    my ( $rs, $restriction ) = @_;
+    my ( $rs ) = @_;
 
     my $prefetch = 
         FixMyStreet::App->model('DB')->schema->storage->sql_maker->quote_char ?
@@ -151,7 +151,6 @@ sub timeline {
                 created  => { '>=', \"ms_current_timestamp()-'7 days'::interval" },
                 confirmed => { '>=', \"ms_current_timestamp()-'7 days'::interval" },
                 whensent  => { '>=', \"ms_current_timestamp()-'7 days'::interval" },
-                %{ $restriction },
             }
         },
         {
