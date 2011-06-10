@@ -194,7 +194,8 @@ Set the language and domain of the site based on the cobrand and host.
 sub set_lang_and_domain {
     my ( $self, $lang, $unicode, $dir ) = @_;
     my $set_lang = mySociety::Locale::negotiate_language(
-        'en-gb,English,en_GB|nb,Norwegian,nb_NO', $lang );    # XXX Testing
+        'en-gb,English,en_GB', $lang
+    );
     mySociety::Locale::gettext_domain( 'FixMyStreet', $unicode, $dir );
     mySociety::Locale::change();
     return $set_lang;

@@ -30,17 +30,7 @@ sub updates : LocalRegex('^(\d+)$') {
     my ( $self, $c ) = @_;
 
     my $id = $c->req->captures->[0];
-    my $problem = $c->cobrand->problems->find( { id => $id } );
-
-    # FIXME Put these 404/410 checks in central place - Report.pm does it too.
-    if ( !$problem || $problem->state eq 'unconfirmed' ) {
-        $c->detach( '/page_error_404_not_found', [ _('Unknown problem ID') ] );
-    } elsif ( $problem->state eq 'hidden' ) {
-        $c->detach(
-            '/page_error_410_gone',
-            [ _('That report has been removed from FixMyStreet.') ]
-        );
-    }
+    $c->forward( '/report/load_problem_or_display_error', [ $id ] );
 
     $c->stash->{type}      = 'new_updates';
     $c->stash->{qs}        = 'report/' . $id;
