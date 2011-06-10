@@ -304,7 +304,7 @@ sub local_problems_legacy : LocalRegex('^(\d+)[,/](\d+)(?:/(\d+))?$') {
 sub get_query_parameters : Private {
     my ( $self, $c, $d ) = @_;
 
-    $d = '' unless $d =~ /^\d+$/;
+    $d = '' unless $d && $d =~ /^\d+$/;
     $c->stash->{distance} = $d;
 
     my $state = $c->req->param('state') || 'all';
@@ -321,7 +321,9 @@ sub redirect_lat_lon : Private {
 
     my $d_str = '';
     $d_str    = '/' . $c->stash->{distance} if $c->stash->{distance};
-    $c->res->redirect( "/rss/l/$lat,$lon" . $d_str . $c->stash->{state_qs} );
+    my $state_qs = '';
+    $state_qs    = $c->stash->{state_qs} if $c->stash->{state_qs};
+    $c->res->redirect( "/rss/l/$lat,$lon" . $d_str . $state_qs );
 }
 
 =head1 AUTHOR
