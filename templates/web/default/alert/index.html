@@ -26,7 +26,7 @@ postcode or street name and area:' ) %]
   </p>
 </form>
 
-[% IF photos %]
+[% IF photos.size %]
 <div id="alert_recent">
   <h2>[% loc('Some photos of recent reports') %]</h2>
     [% FOREACH p IN photos %]
@@ -35,6 +35,5 @@ postcode or street name and area:' ) %]
     [% END %]
 </div>
 [% END %]
-[%# FIXME - put in blurb here %]
 
 [% INCLUDE 'footer.html' %]
