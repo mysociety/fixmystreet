@@ -448,8 +448,10 @@ sub search_reports : Path('search_reports') {
             }
         );
 
+        # we need to pass this in as an array as we can't
+        # query the object in the template as the quoting
+        # will have been turned off
         $c->stash->{problems} = [ $problems->all ];
-
 
         $c->stash->{edit_council_contacts} = 1
             if ( grep {$_ eq 'councilcontacts'} keys %{$c->stash->{allowed_pages}});
@@ -722,7 +724,9 @@ sub list_flagged : Path('list_flagged') : Args(0) {
 
     my $problems = $c->model('DB::Problem')->search( { flagged => 1 } );
 
-    $c->stash->{problems} = $problems;
+    # pass in as array ref as using same template as search_reports
+    # which has to use an array ref for sql quoting reasons
+    $c->stash->{problems} = [ $problems->all ];
 
     my $users = $c->model('DB::User')->search( { flagged => 1 } );
 
