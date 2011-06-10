@@ -499,6 +499,7 @@ sub report_edit : Path('report_edit') : Args(1) {
 
     $c->forward('get_token');
     $c->forward('check_page_allowed');
+    $c->forward('check_email_for_abuse', [ $problem->user->email ] );
 
     $c->stash->{updates} =
       [ $c->model('DB::Comment')
@@ -514,6 +515,9 @@ sub report_edit : Path('report_edit') : Args(1) {
           '<p><em>' . _('That problem will now be resent.') . '</em></p>';
 
         $c->forward( 'log_edit', [ $id, 'problem', 'resend' ] );
+    }
+    elsif ( $c->req->param('banuser') ) {
+        $c->forward('ban_user');
     }
     elsif ( $c->req->param('submit') ) {
         $c->forward('check_token');
@@ -688,6 +692,25 @@ sub log_edit : Private {
     )->insert();
 }
 
+sub ban_user : Private {
+    my ( $self, $c ) = @_;
+
+    my $email = $c->req->param('email');
+
+    my $abuse = $c->model('DB::Abuse')->find_or_new({ email => $email });
+
+    if ( $abuse->in_storage ) {
+        $c->stash->{status_message} = _('Email already in abuse list');
+    } else {
+        $abuse->insert;
+        $c->stash->{status_message} = _('Email added to abuse list');
+    }
+
+    $c->stash->{email_in_abuse} = 1;
+
+    return 1;
+}
+
 sub update_edit : Path('update_edit') : Args(1) {
     my ( $self, $c, $id ) = @_;
 
@@ -709,8 +732,12 @@ sub update_edit : Path('update_edit') : Args(1) {
 
     $c->stash->{update} = $update;
 
-    my $status_message = '';
-    if ( $c->req->param('submit') ) {
+    $c->forward('check_email_for_abuse', [ $update->user->email ] );
+
+    if ( $c->req->param('banuser') ) {
+        $c->forward('ban_user');
+    }
+    elsif ( $c->req->param('submit') ) {
         $c->forward('check_token');
 
         my $old_state = $update->state;
@@ -752,7 +779,7 @@ sub update_edit : Path('update_edit') : Args(1) {
 
         $update->update;
 
-        $status_message = '<p><em>' . _('Updated!') . '</em></p>';
+        $c->stash->{status_message} = '<p><em>' . _('Updated!') . '</em></p>';
 
         # If we're hiding an update, see if it marked as fixed and unfix if so
         if ( $new_state eq 'hidden' && $update->mark_fixed ) {
@@ -761,7 +788,7 @@ sub update_edit : Path('update_edit') : Args(1) {
                 $update->problem->update;
             }
 
-            $status_message .=
+            $c->stash->{status_message} .=
               '<p><em>' . _('Problem marked as open.') . '</em></p>';
         }
 
@@ -775,7 +802,16 @@ sub update_edit : Path('update_edit') : Args(1) {
         }
 
     }
-    $c->stash->{status_message} = $status_message;
+
+    return 1;
+}
+
+sub check_email_for_abuse : Private {
+    my ( $self, $c, $email ) =@_;
+
+    my $is_abuse = $c->model('DB::Abuse')->find({ email => $email });
+
+    $c->stash->{email_in_abuse} = 1 if $is_abuse;
 
     return 1;
 }

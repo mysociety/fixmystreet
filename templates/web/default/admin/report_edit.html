@@ -25,7 +25,7 @@
 </select></li>
 <li>[% loc('Category:') %] [% problem.category | html %] </li>
 <li>[% loc('Name:') %] <input type='text' name='name' id='name' value='[% problem.name | html %]'></li>
-<li>[% loc('Email:') %] <input type='text' id='email' name='email' value='[% problem.user.email | html %]'></li>
+<li>[% loc('Email:') %] <input type='text' id='email' name='email' value='[% problem.user.email | html %]'> [% PROCESS abuse_button %]</li>
 <li>[% loc('Phone:') %] [% problem.user.phone | html %]</li>
 <li>[% loc('Created:') %] [% PROCESS format_time time=problem.created %]</li>
 <li>[% loc('Confirmed:') %] [% PROCESS format_time time=problem.confirmed no_time='-' %]</li>

@@ -488,6 +488,27 @@ subtest 'change email to new user' => sub {
     is $report->user_id, $user3->id, 'user changed to new user';
 };
 
+subtest 'adding email to abuse list from report page' => sub {
+    my $email = $report->user->email;
+
+    my $abuse = FixMyStreet::App->model('DB::Abuse')->find( { email => $email } );
+    $abuse->delete if $abuse;
+
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->content_contains('Ban email address');
+
+    $mech->click_ok('banuser');
+
+    $mech->content_contains('Email added to abuse list');
+    $mech->content_contains('<small>(Email in abuse table)</small>');
+
+    $abuse = FixMyStreet::App->model('DB::Abuse')->find( { email => $email } );
+    ok $abuse, 'entry created in abuse table';
+
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->content_contains('<small>(Email in abuse table)</small>');
+};
+
 $log_entries->delete;
 
 my $update = FixMyStreet::App->model('DB::Comment')->create(
@@ -666,6 +687,27 @@ subtest 'editing update email creates new user if required' => sub {
 
     $update->discard_changes;
     is $update->user->id, $user->id, 'update set to new user';
+};
+
+subtest 'adding email to abuse list from update page' => sub {
+    my $email = $update->user->email;
+
+    my $abuse = FixMyStreet::App->model('DB::Abuse')->find( { email => $email } );
+    $abuse->delete if $abuse;
+
+    $mech->get_ok( '/admin/update_edit/' . $update->id );
+    $mech->content_contains('Ban email address');
+
+    $mech->click_ok('banuser');
+
+    $mech->content_contains('Email added to abuse list');
+    $mech->content_contains('<small>(Email in abuse table)</small>');
+
+    $abuse = FixMyStreet::App->model('DB::Abuse')->find( { email => $email } );
+    ok $abuse, 'entry created in abuse table';
+
+    $mech->get_ok( '/admin/update_edit/' . $update->id );
+    $mech->content_contains('<small>(Email in abuse table)</small>');
 };
 
 subtest 'hiding comment marked as fixed reopens report' => sub {

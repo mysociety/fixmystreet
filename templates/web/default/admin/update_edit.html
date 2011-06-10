@@ -21,7 +21,7 @@
     [% END %]
 </select></li>
 <li>[% loc('Name:') %] <input type='text' name='name' id='name' value='[% update.name | html %]'></li>
-<li>[% loc('Email:') %] <input type='text' id='email' name='email' value='[% update.user.email | html %]'></li>
+<li>[% loc('Email:') %] <input type='text' id='email' name='email' value='[% update.user.email | html %]'> [% PROCESS abuse_button %]</li>
 <li>[% loc('Cobrand:') %] [% update.cobrand %]</li>
 <li>[% loc('Cobrand data:') %] [% update.cobrand_data %]</li>
 <li>[% loc('Created:') %] [% PROCESS format_time time=update.created %]</li>
