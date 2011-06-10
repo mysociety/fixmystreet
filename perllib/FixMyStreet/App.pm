@@ -6,7 +6,6 @@ use Catalyst::Runtime 5.80;
 use FixMyStreet;
 use FixMyStreet::Cobrand;
 use Memcached;
-use Problems;
 use mySociety::Email;
 use mySociety::EmailUtil;
 use mySociety::Random qw(random_bytes);

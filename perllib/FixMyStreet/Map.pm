@@ -19,7 +19,6 @@ use Module::Pluggable
 # Get the list of maps we want and load map classes at compile time
 my @ALL_MAP_CLASSES = allowed_maps();
 
-use Problems;
 use mySociety::Config;
 use mySociety::Gaze;
 use mySociety::Locale;

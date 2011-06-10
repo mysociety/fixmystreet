@@ -2,7 +2,6 @@ package FixMyStreet::App::Controller::Reports;
 use Moose;
 use namespace::autoclean;
 
-use Problems;
 use POSIX qw(strcoll);
 use mySociety::MaPit;
 use mySociety::VotingArea;
