@@ -24,7 +24,7 @@
 [% IF edit_activity.count %]
 <ul>
     [% WHILE ( editor = edit_activity.next ) %]
-    <li>[% tprintf( loc('%d edits by %s'), editor.get_column('c'), editor.name ) %]</li>
+    <li>[% tprintf( loc('%d edits by %s'), editor.get_column('c'), editor.editor ) %]</li>
     [% END %]
 </ul>
 [% ELSE %]
