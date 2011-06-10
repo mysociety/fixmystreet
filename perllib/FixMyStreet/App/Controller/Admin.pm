@@ -600,117 +600,6 @@ sub report_edit : Path('report_edit') : Args(1) {
     return 1;
 }
 
-=head2 set_allowed_pages
-
-Sets up the allowed_pages stash entry for checking if the current page is
-available in the current cobrand.
-
-=cut
-
-sub set_allowed_pages : Private {
-    my ( $self, $c ) = @_;
-
-    my $pages = $c->cobrand->admin_pages;
-
-    if( !$pages ) {
-        $pages = {
-             'summary' => [_('Summary'), 0],
-             'council_list' => [_('Council contacts'), 1],
-             'search_reports' => [_('Search Reports'), 2],
-             'timeline' => [_('Timeline'), 3],
-             'questionnaire' => [_('Survey Results'), 4],
-             'council_contacts' => [undef, undef],        
-             'council_edit' => [undef, undef], 
-             'report_edit' => [undef, undef], 
-             'update_edit' => [undef, undef], 
-        }
-    }
-
-    my @allowed_links = sort {$pages->{$a}[1] <=> $pages->{$b}[1]}  grep {$pages->{$_}->[0] } keys %$pages;
-
-    $c->stash->{allowed_pages} = $pages;
-    $c->stash->{allowed_links} = \@allowed_links;
-
-    return 1;
-}
-
-=item get_token
-
-Generate a token based on user and secret
-
-=cut
-
-sub get_token : Private {
-    my ( $self, $c ) = @_;
-
-    my $secret = $c->model('DB::Secret')->search()->first;
-
-    my $user = $c->req->remote_user();
-    $user ||= '';
-
-    my $token = md5_hex(($user . $secret->secret));
-
-    $c->stash->{token} = $token;
-
-    return 1;
-}
-
-=item check_token
-
-Check that a token has been set on a request and it's the correct token. If
-not then display 404 page
-
-=cut
-
-sub check_token : Private {
-    my ( $self, $c ) = @_;
-
-    if ( $c->req->param('token' ) ne $c->stash->{token} ) {
-        $c->detach( '/page_error_404_not_found', [ _('The requested URL was not found on this server.') ] );
-    }
-
-    return 1;
-}
-
-=item log_edit
-
-    $c->forward( 'log_edit', [ $object_id, $object_type, $action_performed ] );
-
-Adds an entry into the admin_log table using the current remote_user.
-
-=cut
-
-sub log_edit : Private {
-    my ( $self, $c, $id, $object_type, $action ) = @_;
-    $c->model('DB::AdminLog')->create(
-        {
-            admin_user => ( $c->req->remote_user() || '' ),
-            object_type => $object_type,
-            action => $action,
-            object_id => $id,
-        }
-    )->insert();
-}
-
-sub ban_user : Private {
-    my ( $self, $c ) = @_;
-
-    my $email = $c->req->param('email');
-
-    my $abuse = $c->model('DB::Abuse')->find_or_new({ email => $email });
-
-    if ( $abuse->in_storage ) {
-        $c->stash->{status_message} = _('Email already in abuse list');
-    } else {
-        $abuse->insert;
-        $c->stash->{status_message} = _('Email added to abuse list');
-    }
-
-    $c->stash->{email_in_abuse} = 1;
-
-    return 1;
-}
-
 sub update_edit : Path('update_edit') : Args(1) {
     my ( $self, $c, $id ) = @_;
 
@@ -806,6 +695,136 @@ sub update_edit : Path('update_edit') : Args(1) {
     return 1;
 }
 
+=head2 set_allowed_pages
+
+Sets up the allowed_pages stash entry for checking if the current page is
+available in the current cobrand.
+
+=cut
+
+sub set_allowed_pages : Private {
+    my ( $self, $c ) = @_;
+
+    my $pages = $c->cobrand->admin_pages;
+
+    if( !$pages ) {
+        $pages = {
+             'summary' => [_('Summary'), 0],
+             'council_list' => [_('Council contacts'), 1],
+             'search_reports' => [_('Search Reports'), 2],
+             'timeline' => [_('Timeline'), 3],
+             'questionnaire' => [_('Survey Results'), 4],
+             'council_contacts' => [undef, undef],        
+             'council_edit' => [undef, undef], 
+             'report_edit' => [undef, undef], 
+             'update_edit' => [undef, undef], 
+        }
+    }
+
+    my @allowed_links = sort {$pages->{$a}[1] <=> $pages->{$b}[1]}  grep {$pages->{$_}->[0] } keys %$pages;
+
+    $c->stash->{allowed_pages} = $pages;
+    $c->stash->{allowed_links} = \@allowed_links;
+
+    return 1;
+}
+
+=item get_token
+
+Generate a token based on user and secret
+
+=cut
+
+sub get_token : Private {
+    my ( $self, $c ) = @_;
+
+    my $secret = $c->model('DB::Secret')->search()->first;
+
+    my $user = $c->req->remote_user();
+    $user ||= '';
+
+    my $token = md5_hex(($user . $secret->secret));
+
+    $c->stash->{token} = $token;
+
+    return 1;
+}
+
+=item check_token
+
+Check that a token has been set on a request and it's the correct token. If
+not then display 404 page
+
+=cut
+
+sub check_token : Private {
+    my ( $self, $c ) = @_;
+
+    if ( $c->req->param('token' ) ne $c->stash->{token} ) {
+        $c->detach( '/page_error_404_not_found', [ _('The requested URL was not found on this server.') ] );
+    }
+
+    return 1;
+}
+
+=item log_edit
+
+    $c->forward( 'log_edit', [ $object_id, $object_type, $action_performed ] );
+
+Adds an entry into the admin_log table using the current remote_user.
+
+=cut
+
+sub log_edit : Private {
+    my ( $self, $c, $id, $object_type, $action ) = @_;
+    $c->model('DB::AdminLog')->create(
+        {
+            admin_user => ( $c->req->remote_user() || '' ),
+            object_type => $object_type,
+            action => $action,
+            object_id => $id,
+        }
+    )->insert();
+}
+
+=head2 ban_user
+
+Add the email address in the email param of the request object to
+the abuse table if they are not already in there and sets status_message
+accordingly
+
+=cut
+
+sub ban_user : Private {
+    my ( $self, $c ) = @_;
+
+    my $email = $c->req->param('email');
+
+    return unless $email;
+
+    my $abuse = $c->model('DB::Abuse')->find_or_new({ email => $email });
+
+    if ( $abuse->in_storage ) {
+        $c->stash->{status_message} = _('Email already in abuse list');
+    } else {
+        $abuse->insert;
+        $c->stash->{status_message} = _('Email added to abuse list');
+    }
+
+    $c->stash->{email_in_abuse} = 1;
+
+    return 1;
+}
+
+
+=head2 check_email_for_abuse
+
+    $c->forward('check_email_for_abuse', [ $email ] );
+
+Checks if $email is in the abuse table and sets email_in_abuse accordingly
+
+=cut
+
 sub check_email_for_abuse : Private {
     my ( $self, $c, $email ) =@_;
 
@@ -815,6 +834,13 @@ sub check_email_for_abuse : Private {
 
     return 1;
 }
+
+=head2 check_page_allowed
+
+Checks if the current catalyst action is in the list of allowed pages and
+if not then redirects to 404 error page.
+
+=cut
 
 sub check_page_allowed : Private {
     my ( $self, $c ) = @_;
