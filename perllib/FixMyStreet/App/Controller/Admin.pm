@@ -718,6 +718,7 @@ sub set_allowed_pages : Private {
              'council_edit' => [undef, undef], 
              'report_edit' => [undef, undef], 
              'update_edit' => [undef, undef], 
+             'abuse_edit'  => [undef, undef],
         }
     }
 

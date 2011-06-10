@@ -7,5 +7,7 @@
 [%- END %]
 
 [% BLOCK abuse_button -%]
+[% IF allowed_pages.abuse_edit -%]
 [% IF email_in_abuse %]<small>[% loc('(Email in abuse table)') %]</small>[% ELSE %]<input type="submit" name="banuser" value="[% loc('Ban email address') %]" />[% END %]
+[%- END %]
 [%- END %]
