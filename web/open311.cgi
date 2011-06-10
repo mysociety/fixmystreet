@@ -118,7 +118,7 @@ sub show_documentation {
          info => 'list of services provided',
      },
      {
-         url => "$baseurl/open311.cgi/v2/services.xml?jurisdiction_id=$jurisdiction_id?lat=11&lng=60",
+         url => "$baseurl/open311.cgi/v2/services.xml?jurisdiction_id=$jurisdiction_id?lat=11&long=60",
          info => 'list of services provided for WGS84 coordinate latitude 11 longitude 60',
      },
      {
@@ -293,7 +293,7 @@ sub get_services {
     my ($q, $format) = @_;
     my $jurisdiction_id = $q->param('jurisdiction_id') || '';
     my $lat = $q->param('lat') || '';
-    my $lon = $q->param('lng') || '';
+    my $lon = $q->param('long') || '';
 
     my $cobrand = Page::get_cobrand($q);
     my @area_types = Cobrand::area_types($cobrand);
