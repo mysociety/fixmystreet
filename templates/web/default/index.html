@@ -1,0 +1,107 @@
+[% INCLUDE 'header.html', title => '' %]
+
+<p id="expl">        
+    [% 
+        subhead
+            = c.cobrand.moniker == 'southampton'
+            ? '(like graffiti, fly tipping, or broken paving slabs)'
+            : loc('(like graffiti, fly tipping, broken paving slabs, or street lighting)');
+    %]
+    
+    <strong>[% loc('Report, view, or discuss local problems') %]</strong>
+    
+    [% IF subhead != ' ' %]
+        <br><small>[% subhead %]</small>
+    [% END %]
+</p>
+
+
+[% #  --- insert iPhone details, not converted from old cgi script yet 
+   #
+   # if (my $url = mySociety::Config::get('IPHONE_URL')) {
+   #     my $getiphone = _("Get FixMyStreet on your iPhone");
+   #     my $new = _("New!");
+   #     if ($q->{site} eq 'fixmystreet') {
+   #         $out .= <<EOF
+   # <p align="center" style="margin-bottom:0">
+   # <img width="23" height="12" alt="$new" src="/i/new.png" border="0">
+   # <a href="$url">$getiphone</a>
+   # </p>
+   # EOF
+   # }
+%]
+
+
+[% IF error %]
+    <p class="error">[% error %]</p>
+[% END %]
+
+
+[%
+    question
+        =  c.cobrand.enter_postcode_text()
+        || loc("Enter a nearby GB postcode, or street name and area");
+%]
+
+<form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
+    <label for="pc">[% question %]:</label>
+    &nbsp;<input type="text" name="pc" value="" id="pc" size="10" maxlength="200">
+    &nbsp;<input type="submit" value="[% loc('Go') %]" id="submit">
+    [% c.cobrand.form_elements('postcodeForm') %]
+</form>
+
+
+<div id="front_intro">
+
+    <h2>[% loc('How to report a problem') %]</h2>
+    
+    <ol>
+        <li>[% question %]</li>
+        <li>[% loc('Locate the problem on a map of the area') %]</li>
+        <li>[% loc('Enter details of the problem') %]</li>
+        <li>[% loc('We send it to the council on your behalf') %]</li>
+    </ol>
+    
+    [% INCLUDE "front_stats.html" %]
+
+</div>
+
+[% 
+    recent_photos = c.cobrand.recent_photos(3);
+    probs         = c.cobrand.recent();
+%]
+
+
+[% IF probs.size || recent_photos.size %]
+<div id="front_recent">
+    [% IF recent_photos.size %]
+        <h2>[% loc('Photos of recent reports') %]</h2>
+        [% FOREACH p IN recent_photos %]
+            <a href="/report/[% p.id %]"><img border="0" height="100"
+                src="/photo?tn=1;id=[% p.id %]" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
+        [% END %]
+    [% END %]
+
+    [% IF probs.size %]
+
+        <h2>[% loc('Recently reported problems') %]</h2>
+    
+        <ul>
+        [% FOREACH p IN probs %]
+            <li>
+                <a href="/report/[% p.id %]">[% p.title | html %]</a>
+            </li>    
+        [% END %]
+        </ul>
+    [% END %]
+</div>
+[% END %]
+
+[% IF c.cobrand.moniker == 'emptyhomes' %]
+<div id="eha_advert">
+    Now is the best time to turn empty properties into empty homes... Don't miss it!
+    <a href="http://www.emptyhomes.com/EHConference2011.html">Home Again: Empty Homes National Conference 2011</a>
+</div>
+[% END %]
+
+[% INCLUDE 'footer.html' %]

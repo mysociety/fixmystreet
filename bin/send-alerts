@@ -5,37 +5,18 @@
 #
 # Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
-#
-# $Id: send-alerts,v 1.5 2010-01-06 16:50:25 louise Exp $
 
 use strict;
 require 5.8.0;
 
 use CGI; # XXX
-
-# Horrible boilerplate to set up appropriate library paths.
-use FindBin;
-use lib "$FindBin::Bin/../perllib";
-use lib "$FindBin::Bin/../commonlib/perllib";
 use CronFns;
 
 use mySociety::Config;
-use mySociety::DBHandle qw(dbh);
-use FixMyStreet::Alert;
-
-BEGIN {
-    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
-    mySociety::DBHandle::configure(
-        Name => mySociety::Config::get('BCI_DB_NAME'),
-        User => mySociety::Config::get('BCI_DB_USER'),
-        Password => mySociety::Config::get('BCI_DB_PASS'),
-        Host => mySociety::Config::get('BCI_DB_HOST', undef),
-        Port => mySociety::Config::get('BCI_DB_PORT', undef)
-    );
-}
+use FixMyStreet::App;
 
 my $site = CronFns::site(mySociety::Config::get('BASE_URL'));
 CronFns::language($site);
-my $testing_email = mySociety::Config::get('TESTING_EMAIL');
-FixMyStreet::Alert::email_alerts($testing_email);
+
+FixMyStreet::App->model('DB::AlertType')->email_alerts();
 

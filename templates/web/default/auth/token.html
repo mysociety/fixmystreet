@@ -1,0 +1,25 @@
+[% INCLUDE 'header.html', title => loc('Confirm account') %]
+
+[% IF token_not_found %]
+
+<h1>[% loc('Error') %]</h1>
+
+<p>We have not been able to confirm your account - sorry. This may be because:</p>
+
+<ul>
+    <li>Link too old or already used</li>
+    <li>URL not copied correctly</li>
+    [%# FIXME - add more reasons here %]
+</ul>
+
+[% ELSE %]
+
+<h1>[% loc('Please check your email') %]</h1>
+
+<p>We have sent you an email containing a link to confirm your account.</p>
+
+<p>If you do not receive the email in the next few minutes please check your spam folder.</p>
+
+[% END %]
+
+[% INCLUDE 'footer.html' %]

@@ -1,0 +1,33 @@
+[% INCLUDE 'header.html', title = loc('Summary reports') %]
+
+<p>
+[% loc('This is a summary of all reports on this site; select a particular council to see the reports sent there.') %]
+[% loc('Greyed-out lines are councils that no longer exist.') %]
+</p>
+
+<table cellpadding="3" cellspacing="1" border="0">
+<tr>
+<th>[% loc('Name') %]</th>
+<th>[% loc('New problems') %]</th>
+<th>[% loc('Older problems') %]</th>
+<th>[% loc('Recently fixed') %]</th>
+<th>[% loc('Older fixed') %]</th>
+</tr>
+
+[% FOREACH area IN areas_info_sorted %]
+<tr align="center"
+[%- IF area.generation_high == 10 %] class="gone"
+[%- ELSIF loop.count % 2 %] class="a"
+[%- END -%]
+>
+<td align="left"><a href="[% area.url %]">[% area.name %]</a></td>
+<td>[% open.${area.id}.new.size or 0 %]</td>
+<td>[% (open.${area.id}.older.size or 0) + (open.${area.id}.unknown.size or 0) %]</td>
+<td>[% fixed.${area.id}.new.size or 0 %]</td>
+<td>[% fixed.${area.id}.old.size or 0 %]</td>
+</tr>
+[% END %]
+</table>
+
+[% INCLUDE 'footer.html' %]
+

@@ -1,0 +1,121 @@
+[%
+    pre_map = INCLUDE 'report/_main.html';
+    PROCESS "maps/${map.type}.html";
+    INCLUDE 'header.html', title = loc('Questionnaire')
+%]
+
+[% map_html %]
+
+[% INCLUDE 'report/updates.html' %]
+
+</div>
+<div id="side">
+
+<h1>[% loc('Questionnaire') %]</h1>
+
+<form method="post" action="/questionnaire/submit" id="questionnaire"
+[%- IF c.cobrand.allow_photo_upload -%]
+ enctype="multipart/form-data"
+[%- END -%]
+>
+
+<input type="hidden" name="token" value="[% token | html %]">
+
+[% c.cobrand.form_elements('questionnaireForm') %]
+
+[% IF c.cobrand.moniker == 'emptyhomes' %]
+[% IF num_questionnaire == 1 %]
+[% loc('<p>Getting empty homes back into use can be difficult. You shouldn&rsquo;t expect
+the property to be back into use yet. But a good council will have started work
+and should have reported what they have done on the website. If you are not
+satisfied with progress or information from the council, now is the right time
+to say. You may also want to try contacting some other people who may be able
+to help.  For advice on how to do this and other useful information please
+go to <a href="http://www.emptyhomes.com/getinvolved/campaign.html">http://www.emptyhomes.com/getinvolved/campaign.html</a>.</p>
+') %]
+[% ELSE %]
+[% loc('<p>Getting empty homes back into use can be difficult, but by now a good council
+will have made a lot of progress and reported what they have done on the
+website. Even so properties can remain empty for many months if the owner is
+unwilling or the property is in very poor repair.  If nothing has happened or
+you are not satisfied with the progress the council is making, now is the right
+time to say so. We think it&rsquo;s a good idea to contact some other people who
+may be able to help or put pressure on the council  For advice on how to do
+this and other useful information please go to <a
+href="http://www.emptyhomes.com/getinvolved/campaign.html">http://www.emptyhomes.com/getinvolved/campaign.html</a>.</p>
+') %]
+[% END %]
+[% END %]
+
+<p>
+[% loc('The details of your problem are available on the right hand side of this page.') %]
+[% loc('Please take a look at the updates that have been left.') IF updates %]
+</p>
+
+[% IF errors %]
+<ul class="error">
+<li>[% errors.join("</li>\n<li>") %]</li>
+</ul>
+[% END %]
+
+<p>
+[% loc('An update marked this problem as fixed.') IF problem.state == 'fixed' %]
+[% loc('Has this problem been fixed?') %]
+</p>
+
+<p>
+<input type="radio" name="been_fixed" id="been_fixed_yes" value="Yes"[% ' checked' IF been_fixed == 'Yes' %]>
+<label for="been_fixed_yes">[% loc('Yes') %]</label>
+<input type="radio" name="been_fixed" id="been_fixed_no" value="No"[% ' checked' IF been_fixed == 'No' %]>
+<label for="been_fixed_no">[% loc('No') %]</label>
+<input type="radio" name="been_fixed" id="been_fixed_unknown" value="Unknown"[% ' checked' IF been_fixed == 'Unknown' %]>
+<label for="been_fixed_unknown">[% loc('Don&rsquo;t know') %]</label>
+</p>
+
+[% UNLESS answered_ever_reported %]
+<p>[% loc('Have you ever reported a problem to a council before, or is this your first time?') %]</p>
+<p>
+<input type="radio" name="reported" id="reported_yes" value="Yes"[% ' checked' IF reported == 'Yes' %]>
+<label for="reported_yes">[% loc('Reported before') %]</label>
+<input type="radio" name="reported" id="reported_no" value="No"[% ' checked' IF reported == 'No' %]>
+<label for="reported_no">[% loc('First time') %]</label>
+</p>
+[% END %]
+
+<p>[% loc('If you wish to leave a public update on the problem, please enter it here
+(please note it will not be sent to the council). For example, what was
+your experience of getting the problem fixed?') %]</p>
+
+<p><textarea name="update" style="max-width:90%" rows="7" cols="30">[% update | html %]</textarea></p>
+
+[% IF c.cobrand.allow_photo_upload %]
+<div id="fileupload_normalUI">
+    [% IF upload_fileid %]
+        <p>[% loc('You have already attached a photo to this report, attaching another one will replace it.') %]</p>
+        <input type="hidden" name="upload_fileid" value="[% upload_fileid %]">
+    [% END %]
+    <label for="form_photo">[% loc('Photo:') %]</label>
+    <input type="file" name="photo" id="form_photo">
+</div>
+[% END %]
+
+[% IF c.cobrand.moniker != 'emptyhomes' %]
+<div id="another_qn">
+    <p>[% loc('Would you like to receive another questionnaire in 4 weeks, reminding you to check the status?') %]</p>
+    <p>
+        <input type="radio" name="another" id="another_yes" value="Yes"[% ' checked' IF another == 'Yes' %]>
+        <label for="another_yes">[% loc('Yes') %]</label>
+        <input type="radio" name="another" id="another_no" value="No"[% ' checked' IF another == 'No' %]>
+        <label for="another_no">[% loc('No') %]</label>
+    </p>
+</div>
+[% END %]
+
+<p><input type="submit" name="submit" value="[% loc('Submit questionnaire') %]"></p>
+
+</form>
+
+</div>
+
+[% INCLUDE 'footer.html' %]
+

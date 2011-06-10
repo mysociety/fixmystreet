@@ -1,6 +1,6 @@
 YAHOO.util.Event.onContentReady('map', function() {
 
-    fixmystreet.ZOOM_OFFSET = 14;
+    fixmystreet.ZOOM_OFFSET = 13;
 
     var perm = new OpenLayers.Control.Permalink();
     set_map_config(perm);
@@ -13,7 +13,7 @@ YAHOO.util.Event.onContentReady('map', function() {
     fixmystreet.layer_options = OpenLayers.Util.extend({
         zoomOffset: fixmystreet.ZOOM_OFFSET,
         transitionEffect: 'resize',
-        numZoomLevels: 4
+        numZoomLevels: 5
     }, fixmystreet.layer_options);
     var layer = new fixmystreet.map_type("", fixmystreet.layer_options);
     fixmystreet.map.addLayer(layer);
@@ -24,7 +24,7 @@ YAHOO.util.Event.onContentReady('map', function() {
             new OpenLayers.Projection("EPSG:4326"),
             fixmystreet.map.getProjectionObject()
         );
-        fixmystreet.map.setCenter(centre, fixmystreet.zoom || 2);
+        fixmystreet.map.setCenter(centre, fixmystreet.zoom || 3);
     }
 
     if (document.getElementById('mapForm')) {

@@ -1,0 +1,9 @@
+#!/usr/bin/env perl
+
+BEGIN {    # set all the paths to the perl code
+    use FindBin;
+    require "$FindBin::Bin/../setenv.pl";
+}
+
+exec { $ARGV[0] } @ARGV;
+

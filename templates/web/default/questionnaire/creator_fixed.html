@@ -1,0 +1,23 @@
+[% INCLUDE 'header.html', title = loc('Confirmation') %]
+
+<form method="post" action="/questionnaire/submit" id="questionnaire">
+<input type="hidden" name="problem" value="[% problem_id | html %]">
+
+[% INCLUDE 'errors.html' %]
+
+<p>
+[% loc("Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?") %]
+</p>
+
+<p align="center">
+<input type="radio" name="reported" id="reported_yes" value="Yes"[% ' checked' IF reported == 'Yes' %]>
+<label for="reported_yes">[% loc('Yes') %]</label>
+<input type="radio" name="reported" id="reported_no" value="No"[% ' checked' IF reported == 'No' %]>
+<label for="reported_no">[% loc('No') %]</label>
+</p>
+
+<p><input type="submit" name="submit" value="[% loc('Submit') %]"></p>
+
+</form>
+
+[% INCLUDE 'footer.html' %]

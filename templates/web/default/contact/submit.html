@@ -1,0 +1,20 @@
+[% INCLUDE 'header.html', title = loc('Contact Us') %]
+
+<h1>[% loc('Contact the team') %]</h1>
+ 
+[% IF success %]
+
+    <p>
+    [% loc("Thanks for your feedback.  We'll get back to you as soon as we can!") %]
+    </p>
+    [% display_crosssell_advert( em, form_name, 'emailunvalidated', 1 ) %]
+
+[% ELSE %]
+
+    <p>
+    [% tprintf( loc('Failed to send message.  Please try again, or <a href="mailto:%s">email us</a>.'), contact_email ) %]
+    </p>
+
+[% END %]
+
+[% INCLUDE 'footer.html' %]

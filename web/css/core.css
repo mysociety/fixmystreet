@@ -13,7 +13,7 @@
   color: #666666;
   background-color: #cccccc;
 }
-#mysociety p.error {
+#mysociety p.dev-site-notice, #mysociety p.error {
   text-align: center;
   color: #cc0000;
   font-size: larger;

@@ -1,0 +1,32 @@
+[% FOREACH update IN updates.all %]
+[% IF loop.first %]
+<div id="updates">
+    <h2 class="problem-update-list-header">[% loc('Updates') %]</h2>
+[% END %]
+    <div><div class="problem-update"><p><a name="update_[% update.id %]"></a><em>
+        [% IF update.anonymous || update.name == '' %]
+            [% tprintf( loc( 'Posted anonymously at %s' ), prettify_epoch( update.confirmed_local.epoch ) ) -%]
+        [%- ELSE %]
+            [% tprintf( loc( 'Posted by %s at %s' ), update.name, prettify_epoch( update.confirmed_local.epoch ) ) | html -%]
+        [%- END -%]
+        [%- c.cobrand.extra_update_meta_text(update) -%]
+        [%- ", " _ loc( 'marked as fixed' ) IF update.mark_fixed %]
+        [%- ", " _ loc( 'reopened' ) IF update.mark_open %]
+        </em></p>
+
+    [% IF c.cobrand.allow_update_reporting %]
+        <p>
+            <a rel="nofollow" class="unsuitable-problem" href="[% c.uri_for( '/contact?id=' _ update.problem_id _ ';update_id' _ update.id ) %]">[% loc('Offensive? Unsuitable? Tell us') %]</a>
+        </p>
+    [% END %]
+
+    </div>
+
+    <div class="update-text">
+        [% add_links( update.text ) | html_para %]
+
+        [% INCLUDE 'report/photo.html' object=update %]
+    </div>
+    </div>
+[% '</div>' IF loop.last %]
+[% END %]

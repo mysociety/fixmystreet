@@ -12,6 +12,8 @@
 package Utils;
 
 use strict;
+use Encode;
+use POSIX qw(strftime);
 use mySociety::DBHandle qw(dbh);
 use mySociety::GeoUtil;
 use mySociety::Locale;
@@ -134,6 +136,124 @@ sub london_categories {
         'Tree (fallen branches)' => 'FallenTree',
         'Untaxed vehicle' => 'UntaxedVehicle',
     };
+}
+
+=head2 trim_text
+
+    my $text = trim_text( $text_to_trim );
+
+Strip leading and trailing white space from a string. Also reduces all
+white space to a single space.
+
+Trim 
+
+=cut
+
+sub trim_text {
+    my $input = shift;
+    for ($input) {
+        last unless $_;
+        s{\s+}{ }g;    # all whitespace to single space
+        s{^ }{};       # trim leading
+        s{ $}{};       # trim trailing
+    }
+    return $input;
+}
+
+
+=head2 cleanup_text
+
+Tidy up text including removing contentious phrases,
+SHOUTING and new lines and adding sentence casing. Takes an optional HASHREF
+of args as follows.
+
+=over
+
+=item allow_multiline
+
+Do not flatten down to a single line if true.
+
+=back
+
+=cut
+
+sub cleanup_text {
+    my $input = shift || '';
+    my $args  = shift || {};
+
+    # lowercase everything if looks like it might be SHOUTING
+    $input = lc $input if $input !~ /[a-z]/;
+
+    # clean up language and tradmarks
+    for ($input) {
+
+        # shit -> poo
+        s{\bdog\s*shit\b}{dog poo}ig;
+
+        # 'portakabin' to '[portable cabin]' (and variations)
+        s{\b(porta)\s*([ck]abin|loo)\b}{[$1ble $2]}ig;
+        s{kabin\]}{cabin\]}ig;
+    }
+
+    # Remove unneeded whitespace
+    my @lines = grep { m/\S/ } split m/\n\n/, $input;
+    for (@lines) {
+        $_ = trim_text($_);
+        $_ = ucfirst $_;       # start with capital
+    }
+
+    my $join_char = $args->{allow_multiline} ? "\n\n" : " ";
+    $input = join $join_char, @lines;
+
+    return $input;
+}
+
+sub prettify_epoch {
+    my ($s, $short) = @_;
+    my @s = localtime($s);
+    my $tt = strftime('%H:%M', @s);
+    my @t = localtime();
+    if (strftime('%Y%m%d', @s) eq strftime('%Y%m%d', @t)) {
+        $tt = "$tt " . _('today');
+    } elsif (strftime('%Y %U', @s) eq strftime('%Y %U', @t)) {
+        $tt = "$tt, " . decode_utf8(strftime('%A', @s));
+    } elsif ($short) {
+        $tt = "$tt, " . decode_utf8(strftime('%e %b %Y', @s));
+    } elsif (strftime('%Y', @s) eq strftime('%Y', @t)) {
+        $tt = "$tt, " . decode_utf8(strftime('%A %e %B %Y', @s));
+    } else {
+        $tt = "$tt, " . decode_utf8(strftime('%a %e %B %Y', @s));
+    }
+    return $tt;
+}
+
+# argument is duration in seconds, rounds to the nearest minute
+sub prettify_duration {
+    my ($s, $nearest) = @_;
+    if ($nearest eq 'week') {
+        $s = int(($s+60*60*24*3.5)/60/60/24/7)*60*60*24*7;
+    } elsif ($nearest eq 'day') {
+        $s = int(($s+60*60*12)/60/60/24)*60*60*24;
+    } elsif ($nearest eq 'hour') {
+        $s = int(($s+60*30)/60/60)*60*60;
+    } elsif ($nearest eq 'minute') {
+        $s = int(($s+30)/60)*60;
+        return _('less than a minute') if $s == 0;
+    }
+    my @out = ();
+    _part(\$s, 60*60*24*7, _('%d week'), _('%d weeks'), \@out);
+    _part(\$s, 60*60*24, _('%d day'), _('%d days'), \@out);
+    _part(\$s, 60*60, _('%d hour'), _('%d hours'), \@out);
+    _part(\$s, 60, _('%d minute'), _('%d minutes'), \@out);
+    return join(', ', @out);
+}
+sub _part {
+    my ($s, $m, $w1, $w2, $o) = @_;
+    if ($$s >= $m) {
+        my $i = int($$s / $m);
+        push @$o, sprintf(mySociety::Locale::nget($w1, $w2, $i), $i);
+        $$s -= $i * $m;
+    }
 }
 
 1;

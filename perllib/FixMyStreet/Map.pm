@@ -19,8 +19,6 @@ use Module::Pluggable
 # Get the list of maps we want and load map classes at compile time
 my @ALL_MAP_CLASSES = allowed_maps();
 
-use Problems;
-use Cobrand;
 use mySociety::Config;
 use mySociety::Gaze;
 use mySociety::Locale;
@@ -63,36 +61,8 @@ sub display_map {
     return $map_class->display_map(@_);
 }
 
-sub display_map_end {
-    my ($type) = @_;
-    my $out = '</div>';
-    $out .= '</form>' if ($type);
-    return $out;
-}
-
-sub header {
-    my ( $q, $type ) = @_;
-    return '' unless $type;
-
-    my $cobrand = Page::get_cobrand($q);
-    my $cobrand_form_elements =
-      Cobrand::form_elements( $cobrand, 'mapForm', $q );
-    my $form_action = Cobrand::url( $cobrand, '/', $q );
-    my $encoding = '';
-    $encoding = ' enctype="multipart/form-data"' if $type == 2;
-    my $pc = ent($q->param('pc') || '');
-    my $map = ent($q->param('map') || '');
-    return <<EOF;
-<form action="$form_action" method="post" name="mapForm" id="mapForm"$encoding>
-<input type="hidden" name="submit_map" value="1">
-<input type="hidden" name="map" value="$map">
-<input type="hidden" name="pc" value="$pc">
-$cobrand_form_elements
-EOF
-}
-
 sub map_features {
-    my ( $q, $lat, $lon, $interval ) = @_;
+    my ( $c, $lat, $lon, $interval ) = @_;
 
    # TODO - be smarter about calculating the surrounding square
    # use deltas that are roughly 500m in the UK - so we get a 1 sq km search box
@@ -106,12 +76,11 @@ sub map_features {
     my $max_lon = $lon + $lon_delta;
 
     # list of problems around map can be limited, but should show all pins
-    my $around_limit    #
-      = Cobrand::on_map_list_limit( Page::get_cobrand($q) ) || undef;
+    my $around_limit = $c->cobrand->on_map_list_limit || undef;
 
     my @around_args = ( $min_lat, $max_lat, $min_lon, $max_lon, $interval );
-    my $around_map_list = Problems::around_map( @around_args, $around_limit );
-    my $around_map      = Problems::around_map( @around_args, undef );
+    my $around_map_list = $c->cobrand->problems->around_map( @around_args, $around_limit );
+    my $around_map      = $c->cobrand->problems->around_map( @around_args, undef );
 
     my $dist;
     mySociety::Locale::in_gb_locale {
@@ -122,9 +91,10 @@ sub map_features {
     $dist = int( $dist * 10 + 0.5 ) / 10;
 
     my $limit  = 20;
-    my @ids    = map { $_->{id} } @$around_map_list;
-    my $nearby = Problems::nearby( $dist, join( ',', @ids ),
-        $limit, $lat, $lon, $interval );
+    my @ids    = map { $_->id } @$around_map_list;
+    my $nearby = $c->model('DB::Nearby')->nearby(
+        $c, $dist, \@ids, $limit, $lat, $lon, $interval
+    );
 
     return ( $around_map, $around_map_list, $nearby, $dist );
 }

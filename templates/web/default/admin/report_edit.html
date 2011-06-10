@@ -1,0 +1,50 @@
+[% INCLUDE 'admin/header.html' title=tprintf(loc('Editing problem %d'), problem.id ) -%]
+[% PROCESS 'admin/report_blocks.html' %]
+
+[% status_message %]
+
+<form method="post" action="[% c.uri_for( 'report_edit', problem.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+    <input type="hidden" name="token" value="[% token %]" >
+    <input type="hidden" name="submit" value="1" >
+<ul>
+    [%- cobrand_data = problem.cobrand_data %]
+    [%- cobrand_data = c.data_for_generic_problem IF !problem.cobrand %]
+<li><a href="[% c.uri_for_email( '/report', problem.id, cobrand_data ) %]">[% loc('View report on site' )%]</a></li>
+<li><label for='title'>[% loc('Subject:') %]</label> <input size=60 type='text' id='title' name='title' value='[% problem.title | html %]'></li>
+<li><label for='detail'>[% loc('Details:') %]</label><br><textarea name='detail' id='detail' cols=60 rows=10>[% problem.detail | html %]</textarea></li>
+<li>[% loc('Co-ordinates:') %] [% problem.latitude %], [% problem.longitude %] ( [% loc('originally entered') %] [% problem.postcode | html %] , [% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</li>
+<li>[% loc('For council(s):') %] [% IF problem.council %][% problem.council %][% ELSE %]<em>[% loc('None' ) %]</em>[% END %] ([% loc('other areas:') %] [% problem.areas | remove('^,') | remove( ',$' ) %])</li>
+<li><label for="anonymous">[% loc('Anonymous:') %]</label> <select name="anonymous"  id="anonymous">
+<option [% 'selected ' IF problem.anonymous %]value="1">[% loc('Yes') %]</option>
+<option [% 'selected ' IF !problem.anonymous %]value="0">[% loc('No') %]</option>
+</select></li>
+<li><label for="state">[% loc('State:') %]</label> <select name="state"  id="state">
+    [% FOREACH state IN [ ['confirmed', loc('Open')], ['fixed', loc('Fixed')], ['hidden', loc('Hidden')], ['partial', loc('Partial')],['unconfirmed',loc('Unconfirmed')] ] %]
+        <option [% 'selected ' IF state.0 == problem.state %] value="[% state.0 %]">[% state.1 %]</option>
+    [% END %]
+</select></li>
+<li>[% loc('Category:') %] [% problem.category | html %] </li>
+<li>[% loc('Name:') %] <input type='text' name='name' id='name' value='[% problem.name | html %]'></li>
+<li>[% loc('Email:') %] <input type='text' id='email' name='email' value='[% problem.user.email | html %]'></li>
+<li>[% loc('Phone:') %] [% problem.user.phone | html %]</li>
+<li>[% loc('Created:') %] [% PROCESS format_time time=problem.created %]</li>
+<li>[% loc('Confirmed:') %] [% PROCESS format_time time=problem.confirmed no_time='-' %]</li>
+<li>[% loc('Sent:') %] [% PROCESS format_time time=problem.whensent %] [% IF problem.state == 'confirmed' %]<input onclick="return confirm('[% loc('You really want to resend?') %]')" type="submit" name="resend" value="[% loc('Resend report') %]">[% END %]</li>
+<li>[% loc('Last update:') %] [% PROCESS format_time time=problem.lastupdate %]</li>
+<li>[% loc('Service:') %] [% problem.service %]</li>
+<li>[% loc('Cobrand:') %] [% problem.cobrand %]</li>
+<li>[% loc('Cobrand data:') %] [% problem.cobrand_data %]</li>
+<li>[% loc('Going to send questionnaire?') %] [% IF problem.send_questionnaire %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</li>
+
+[% IF problem.photo %]
+[% photo = problem.get_photo_params %]
+<li><img alt="" height="[% photo.height %]" width="[% photo.width %]" src="[% photo.url %]">
+<input type="checkbox" id="remove_photo" name="remove_photo" value="1">
+<label for="remove_photo">[% loc("Remove photo (can't be undone!)") %]</label></li>
+[% END %]
+</ul>
+<input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" ></form>
+
+[% INCLUDE 'admin/list_updates.html' %]
+
+[% INCLUDE 'admin/footer.html' %]

@@ -1,0 +1,34 @@
+<h2>[% loc('Updates') %]</h2>
+
+<table cellspacing="0" cellpadding="2" border="1">
+    <tr>
+        <th>[% loc('ID') %]</th>
+        <th>[% loc('State') %]</th>
+        <th>[% loc('Name') %]</th>
+        <th>[% loc('Email') %]</th>
+        <th>[% loc('Created') %]</th>
+        <th>[% loc('Anonymous') %]</th>
+        <th>[% loc('Cobrand') %]</th>
+        <th>[% loc('Text') %]</th>
+        <th>*</th>
+    </tr>
+[% FOREACH update IN updates -%]
+    <tr[% ' class="hidden"' IF update.state == 'hidden' || ( problem.state && problem.state == 'hidden' ) %]>
+        <td>[%- IF update.state == 'confirmed' -%]
+        [%- cobrand_data = update.cobrand_data %]
+        [%- cobrand_data = c.data_for_generic_update IF !update.cobrand %]
+        <a href="[% c.uri_for_email( '/report', update.problem.id, cobrand_data ) %]#update_[% update.id %]">[% update.id %]</a>
+        [%- ELSE %]
+        [%- update.id %]
+        [%- END -%]</td> 
+        <td>[% update.state %]</td> 
+        <td>[% update.name | html %]</td> 
+        <td>[% update.user.email | html %]</td> 
+        <td>[% PROCESS format_time time=update.created %]</td> 
+        <td>[% IF update.anonymous %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td> 
+        <td>[% update.cobrand %]<br>[% update.cobrand_data | html %]</td> 
+        <td>[% update.text | html %]</td> 
+        <td><a href="[% c.uri_for( 'update_edit', update.id ) %]">[% loc('Edit') %]</a></td>
+    <tr>
+[% END -%]
+</table>

@@ -1,0 +1,21 @@
+[% INCLUDE 'admin/header.html' title=loc('Survey Results') %]
+
+<table border="1">
+    <tr>
+        <th>[% loc('Reported before') %]</th>
+        <th>[% loc('Not reported before') %]</th>
+    </tr>
+    [% IF questionnaires.total > 0 %]
+    <tr>
+        <td>[% questionnaires.1 %] ([% reported_pc %]%)</td>
+        <td>[% questionnaires.0 %] ([% not_reported_pc %]%)</td>
+    </tr>
+    [% ELSE %]
+    <tr>
+        <td>[% loc('n/a') %]</td>
+        <td>[% loc('n/a') %]</td>
+    </tr>
+    [% END %]
+</table>
+
+[% INCLUDE 'admin/footer.html' %]

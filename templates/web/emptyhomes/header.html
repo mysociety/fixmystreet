@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="[% lang_code %]">
+<head>
+
+[% INCLUDE 'common_header_tags.html' %]
+
+<style type="text/css">
+@import "/css/core.css";
+@import "/cobrands/emptyhomes/css.css";
+</style>
+<!--[if LT IE 7]>
+<style type="text/css">@import url("/css/ie6.css");</style>
+<![endif]-->
+
+</head>
+<body>
+
+<div id="header">
+    <a href="http://www.emptyhomes.com/"><img id="eha-logo" border="0" src="/i/eha-logo.jpeg" alt="Empty Homes Agency" width="91" height="71" align="left"></a>
+    <div>
+        <small><em>in conjunction with</em></small>
+        <br>
+        <a href="http://www.sheltercymru.org.uk/"><img border="0" src="/i/Sheltercymru47s.png" alt="Shelter Cymru" width="80" height="33" align="bottom"></a>
+        <a href="http://scotland.shelter.org.uk/housing_issues/more_homes/empty_homes"><img border="0" src="/i/SEHPlogo-bwS.png" alt="Scottish Empty Homes Partnership" width="131" height="40" align="bottom"></a>
+    </div>
+</div>
+
+<div id="navigation">
+    <ul>
+      <li><a href="/">[% loc("Report a problem") %]</a></li>
+      <li><a href="/reports">[% loc("All reports") %]</a></li>
+      <li><a href="/alert">[% loc("Local alerts") %]</a></li>
+      <li><a href="/faq">[% loc("Help") %]</a></li>
+      <li><a href="/about">[% loc('About us') %]</a></li>
+        [% IF lang_code == 'en-gb' %]
+            <li><a href="http://cy.[% c.cobrand.base_host %][% c.req.uri.path_query %]">Cymraeg</a></li>
+        [% ELSE %]
+            <li><a href="http://en.[% c.cobrand.base_host %][% c.req.uri.path_query %]">English</a></li>
+        [% END %]
+    </ul>
+</div>
+
+<div id="wrapper">
+<div id="mysociety">
+
+    [% INCLUDE 'debug_header.html' %]
+

@@ -1,0 +1,47 @@
+Subject: Adroddiad am eiddo gwag
+
+Annwyl Swyddog Eiddo Gwag,
+
+Dyma gyfeiriad newydd am eiddo gwag yn eich ardal, a wnaed gan ddefnyddiwr
+gwefan ReportEmptyHomes.com; dywedwyd wrth ddefnyddiwr y wefan fod yr achos
+wedi cael ei gyfeirio atoch.  Byddem yn ddiolchgar petaech yn gwneud yr hyn y
+gallwch i helpu adfer yr eiddo hwn i'w ddefnyddio eto. Byddwn yn cysylltu â'r
+defnyddiwr ymhen mis ac eto ymhen chwe mis ac yn gofyn iddynt beth sydd wedi
+digwydd i'r eiddo.  
+
+Hoffwn eich annog chi i ddweud wrthom beth rydych chi wedi'i wneud, a phan y
+daw'r eiddo yn ôl mewn defnydd, trwy lenwi diweddariad wrth y cyfeiriad at yr
+eiddo ar y wefan:
+
+    <?=$values['url']?>
+
+Mae hyn yn rhoi adborth defnyddiol i ddefnyddwyr y wefan ac yn helpu iddynt
+ddeall pa gamau yr ydych yn eu cymryd. Byddwn yn cynnig cyngor i'r defnyddiwr
+ar gamau eraill y gall eu cymryd os nad eir i'r afael â'r eiddo'n llwyddiannus.  
+
+<?=$values['has_photo']?>Os hoffech gael help neu gyngor ar gael eiddo gwag yn
+ôl mewn defnydd mae llawer o wybodaeth ddefnyddiol ar wefan yr Asiantaeth Tai
+Gwag www.EmptyHomes.com - os oes gennych unrhyw gwestiynau eraill, rhowch alwad
+i ni.
+
+----------
+
+Enw: <?=$values['name']?>
+
+E-bost: <?=$values['email']?>
+
+<?=$values['phone_line']?>Pwnc: <?=$values['title']?>
+
+Math o eiddo: <?=$values['category']?>
+
+Manylion: <?=$values['detail']?>
+
+<?=$values['closest_address']?>----------
+
+Bydd ymatebion i'r neges e-bost hon yn mynd at y defnyddiwr a gyflwynodd yr
+adroddiad, os hoffech ofyn am fwy o wybodaeth.
+
+Yn gywir,  
+reportemptyhomes.com
+
+

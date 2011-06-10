@@ -1,0 +1,7 @@
+[% BLOCK value_or_nbsp -%]
+    [%- IF value %][% value | html %][% ELSE %]&nbsp;[% END %]
+[%- END %]
+
+[% BLOCK format_time -%]
+    [%- IF time %][% time.ymd %]&nbsp;[% time.hms %][% ELSE %][% no_time || '&nbsp;' %][% END %][% no_time = '' %]
+[%- END %]

@@ -1,0 +1,68 @@
+# Apache configuration for FixMyStreet.
+#
+# Add lines something like this to your /etc/apache2/sites-enabled/fixmystreet -
+# replacing '/home/yourname/fixmystreet' with the path to your install
+#
+# # FixMyStreet
+# <VirtualHost *:80>
+#     ServerName fixmystreet.yourservername
+#     DocumentRoot /home/yourname/fixmystreet/web/
+# 
+#     # Pull in the specific config
+#     Include /home/yourname/fixmystreet/conf/httpd.conf
+# 
+#     <Directory /home/yourname/fixmystreet/web>
+#         # You also need to enable cgi files to run as CGI scripts.  For example:
+#         # on production servers these are run under fastcgi
+#         Options +ExecCGI
+#         AddHandler cgi-script .cgi
+#     </Directory>
+# 
+#     <Directory /home/yourname/fixmystreet/web-admin>
+#         # 
+#         #  WARNING - enable auth here on production machine
+#         # 
+#         Options +ExecCGI
+#         AddHandler cgi-script .cgi
+#     </Directory>
+#
+#     Alias /admin/ /home/yourname/fixmystreet/web-admin/
+# 
+#     Alias /jslib/ "/home/yourname/fixmystreet/commonlib/jslib/"
+# 
+# </VirtualHost>
+#
+# 
+# Copyright (c) 2011 UK Citizens Online Democracy. All rights reserved.
+# Email: team@mysociety.org
+# WWW: http://www.mysociety.org
+
+RewriteEngine on
+# RewriteLog /var/log/apache2/rewrite.log
+# RewriteLogLevel 3
+
+# RSS feeds for voting areas
+RewriteRule ^/rss/council/([0-9]+)$     /rss/reports/$1 [R=permanent,L]
+RewriteRule ^/report$                   /reports        [R=permanent,L]
+# Fix incorrect RSS urls caused by my stupidity
+RewriteRule ^/{/rss/(.*)}$              /rss/$1         [R=permanent,L]
+RewriteRule ^/reports/{/rss/(.*)}$      /rss/$1         [R=permanent,L]
+# In case of misspelling
+RewriteRule ^/alerts/?$                 /alert          [R=permanent,L]
+
+# Proxy tilma so that our js code can make calls on the originating server. Use
+# a RewriteRule rather than ProxyPass so that Apache's processing order is more
+# predictable. ProxyPassReverse is not affected by this.
+RewriteRule /tilma/(.*) http://tilma.mysociety.org/$1 [P,L]
+ProxyPassReverse /tilma/ http://tilma.mysociety.org/
+
+# serve static files directly
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f
+RewriteRule /(.+) /$1 [L]
+
+# Don't want jslib being passed to Catalyst
+RewriteRule ^/jslib(.*)                 /jslib$1 [L,PT]
+
+# trap anything that reaches us here and send it to the Catalyst app
+RewriteRule ^(.*)$                      /fixmystreet_app_fastcgi.cgi$1  [L]
+

@@ -1,0 +1,17 @@
+<html>
+<head>
+<title>[% title %] - [% loc('FixMyStreet administration') %]</title>
+<style type="text/css">
+dt { clear: left; float: left; font-weight: bold; }
+dd { margin-left: 8em; }
+.hidden { color: #666666; }
+</style>
+</head>
+<body>
+
+    <strong>[% loc('FixMyStreet admin:') %]</strong>
+    [%- FOREACH link IN allowed_links %]
+    <a href="[% c.uri_for( link ) %]">[% allowed_pages.$link.0 %]</a>
+    [%- END %]
+
+    <h1>[% title %]</h1>

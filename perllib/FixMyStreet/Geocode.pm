@@ -17,8 +17,6 @@ use LWP::Simple;
 use Digest::MD5 qw(md5_hex);
 use URI::Escape;
 
-use Cobrand;
-use Page;
 use Utils;
 use mySociety::Config;
 use mySociety::Locale;
@@ -38,14 +36,14 @@ BEGIN {
 # Northern Ireland). The information in the query may be used by cobranded versions
 # of the site to diambiguate locations.
 sub lookup {
-    my ($s, $q) = @_;
+    my ($s, $c) = @_;
     my ($latitude, $longitude, $error);
     if (mySociety::Config::get('COUNTRY') eq 'GB') {
         if ($s =~ /^\d+$/) {
             $error = 'FixMyStreet is a UK-based website that currently works in England, Scotland, and Wales. Please enter either a postcode, or a Great British street name and area.';
         } elsif (mySociety::PostcodeUtil::is_valid_postcode($s)) {
             my $location = mySociety::MaPit::call('postcode', $s);
-            unless ($error = Page::mapit_check_error($location)) {
+            unless ($error = mapit_check_error($location)) {
                 $latitude  = $location->{wgs84_lat};
                 $longitude = $location->{wgs84_lon};
             }
@@ -53,20 +51,20 @@ sub lookup {
     } elsif (mySociety::Config::get('COUNTRY') eq 'NO') {
         if ($s =~ /^\d{4}$/) {
             my $location = mySociety::MaPit::call('postcode', $s);
-            unless ($error = Page::mapit_check_error($location)) {
+            unless ($error = mapit_check_error($location)) {
                 $latitude  = $location->{wgs84_lat};
                 $longitude = $location->{wgs84_lon};
             }
         }
     }
     unless ($error || defined $latitude) {
-        ($latitude, $longitude, $error) = FixMyStreet::Geocode::string($s, $q);
+        ($latitude, $longitude, $error) = FixMyStreet::Geocode::string($s, $c);
     }
     return ($latitude, $longitude, $error);
 }
 
 sub geocoded_string_coordinates {
-    my ($js, $q) = @_;
+    my ( $js ) = @_;
     my ($latitude, $longitude, $error);
     my ($accuracy) = $js =~ /"Accuracy" *: *(\d)/;
     if ($accuracy < 4) {  
@@ -89,18 +87,18 @@ sub geocoded_string_coordinates {
 }
 
 sub results_check {
-    my $q = shift;
+    my $c = shift;
     my ($error, @valid_locations);
     foreach (@_) {
         next unless /"address" *: *"(.*?)"/s;
         my $address = $1;
-        next unless Cobrand::geocoded_string_check(Page::get_cobrand($q), $address, $q);
+        next unless $c->cobrand->geocoded_string_check( $address );
         next if $address =~ /BT\d/;
         push (@$error, $address);
         push (@valid_locations, $_); 
     }
     if (scalar @valid_locations == 1) {
-        return geocoded_string_coordinates($valid_locations[0], $q);
+        return geocoded_string_coordinates( $valid_locations[0] );
     }
     $error = _('Sorry, we could not find that location.') unless $error;
     return (undef, undef, $error);
@@ -112,12 +110,12 @@ sub results_check {
 # an array of matches if there are more than one. The information in the query
 # may be used to disambiguate the location in cobranded versions of the site. 
 sub string {
-    my ($s, $q) = @_;
+    my ($s, $c) = @_;
     $s = lc($s);
     $s =~ s/[^-&\w ']/ /g;
     $s =~ s/\s+/ /g;
     $s = URI::Escape::uri_escape_utf8($s);
-    $s = Cobrand::disambiguate_location(Page::get_cobrand($q), "q=$s", $q);
+    $s = $c->cobrand->disambiguate_location( "q=$s" );
     $s =~ s/%20/+/g;
     my $url = 'http://maps.google.com/maps/geo?' . $s;
     my $cache_dir = mySociety::Config::get('GEO_CACHE');
@@ -126,8 +124,20 @@ sub string {
     if (-s $cache_file) {
         $js = File::Slurp::read_file($cache_file);
     } else {
-        $url .= ',+UK' unless $url =~ /united\++kingdom$/ || $url =~ /uk$/i
-            || mySociety::Config::get('COUNTRY') ne 'GB';
+        # For some reason adding gl=uk is no longer sufficient to make google
+        # think we are in the UK for some locations so we explictly add UK to
+        # the address. We do it here so as not to invalidate existing cache
+        # entries
+        if (   mySociety::Config::get('COUNTRY') eq 'GB'
+            && $url !~ /,\+UK/
+            && $url !~ /united\++kingdom$/ )
+        {
+            if ( $url =~ /&/ ) {
+                $url =~ s/&/,+UK&/;
+            } else {
+                $url .= ',+UK';
+            }
+        }
         $url .= '&sensor=false&key=' . mySociety::Config::get('GOOGLE_MAPS_API_KEY');
         $js = LWP::Simple::get($url);
         $js = encode_utf8($js) if utf8::is_utf8($js);
@@ -139,42 +149,32 @@ sub string {
     } elsif ($js !~ /"code" *: *200/) {
         $error = _('Sorry, we could not find that location.');
     } elsif ($js =~ /}, *{/) { # Multiple
-        return results_check($q, (split /}, *{/, $js));
+        return results_check($c, (split /}, *{/, $js));
     } elsif ($js =~ /BT\d/) {
         # Northern Ireland, hopefully
         $error = _("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.");
     } else {
-        return results_check($q, $js);
+        return results_check($c, $js);
     }
     return (undef, undef, $error);
 }
 
-# list_choices
-# Prints response if there's more than one possible result
-sub list_choices {
-    my ($choices, $page, $q) = @_;
-    my $url;
-    my $cobrand = Page::get_cobrand($q);
-    my $message = _('We found more than one match for that location. We show up to ten matches, please try a different search if yours is not here.');
-    my $out = '<p>' . $message . '</p>';
-    my $choice_list = '<ul>';
-    foreach my $choice (@$choices) {
-        $choice = decode_utf8($choice);
-        $choice =~ s/, United Kingdom//;
-        $choice =~ s/, UK//;
-        $url =  Cobrand::url($cobrand, NewURL($q, -retain => 1, -url => $page, 'pc' => $choice), $q);  
-        $url =~ s/%20/+/g;
-        $choice_list .= '<li><a href="' . $url . '">' . $choice . "</a></li>\n";
+sub mapit_check_error {
+    my $location = shift;
+    if ($location->{error}) {
+        return _('That postcode was not recognised, sorry.') if $location->{code} =~ /^4/;
+        return $location->{error};
     }
-    $choice_list .= '</ul>';
-    $out .= $choice_list;
-    my %vars = (message => $message, 
-                choice_list => $choice_list, 
-                header => _('More than one match'), 
-                url_home => Cobrand::url($cobrand, '/', $q));
-    my $cobrand_choice = Page::template_include('geocode-choice', $q, Page::template_root($q), %vars);
-    return $cobrand_choice if $cobrand_choice;
-    return $out;
+    if (mySociety::Config::get('COUNTRY') eq 'GB') {
+        my $island = $location->{coordsyst};
+        if (!$island) {
+            return _("Sorry, that appears to be a Crown dependency postcode, which we don't cover.");
+        }
+        if ($island eq 'I') {
+            return _("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.");
+        }
+    }
+    return 0;
 }
 
 1;

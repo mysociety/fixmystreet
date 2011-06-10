@@ -1,0 +1,18 @@
+[% INCLUDE 'header.html', title => loc('My Reports') %]
+
+<h1>[% loc('Your Reports') %]</h1>
+
+[% FOREACH p = c.user.problems %]
+    [% "<ul>" IF loop.first %]
+
+    <li><a href="[% c.uri_for( '/report', p.id ) %]">[% p.title | html %]</a> ([% loc(p.state) %])</li>
+
+    [% "</ul>" IF loop.last %]
+[% END %]
+
+
+[%# FIXME - put in blurb here %]
+
+<a href="/auth/change_password">change password</a>
+
+[% INCLUDE 'footer.html' %]

@@ -66,6 +66,7 @@ create function ms_current_timestamp()
 
 -- Who to send problems for a specific MaPit area ID to
 create table contacts (
+    id serial primary key,
     area_id integer not null,
     category text not null default 'Other',
     email text not null,
@@ -86,6 +87,7 @@ create unique index contacts_area_id_category_idx on contacts(area_id, category)
 create table contacts_history (
     contacts_history_id serial not null primary key,
 
+    contact_id integer not null,
     area_id integer not null,
     category text not null default 'Other',
     email text not null,
@@ -105,7 +107,7 @@ create table contacts_history (
 create function contacts_updated()
     returns trigger as '
     begin
-        insert into contacts_history (area_id, category, email, editor, whenedited, note, confirmed, deleted) values (new.area_id, new.category, new.email, new.editor, new.whenedited, new.note, new.confirmed, new.deleted);
+        insert into contacts_history (contact_id, area_id, category, email, editor, whenedited, note, confirmed, deleted) values (new.id, new.area_id, new.category, new.email, new.editor, new.whenedited, new.note, new.confirmed, new.deleted);
         return new;
     end;
 ' language 'plpgsql';
@@ -114,6 +116,22 @@ create trigger contacts_update_trigger after update on contacts
     for each row execute procedure contacts_updated();
 create trigger contacts_insert_trigger after insert on contacts
     for each row execute procedure contacts_updated();
+
+-- table for sessions - needed by Catalyst::Plugin::Session::Store::DBIC
+create table sessions (
+    id           char(72) primary key,
+    session_data text,
+    expires      integer
+);
+
+-- users table
+create table users (
+    id              serial  not null primary key,
+    email           text    not null unique,
+    name            text,
+    phone           text,
+    password        text    not null default ''
+);
 
 -- Problems reported by users of site
 create table problem (
@@ -132,9 +150,8 @@ create table problem (
     used_map boolean not null,
 
     -- User's details
+    user_id int references users(id) not null,    
     name text not null,
-    email text not null,
-    phone text not null,
     anonymous boolean not null,
 
     -- External information
@@ -161,6 +178,7 @@ create table problem (
     send_questionnaire boolean not null default 't'
 );
 create index problem_state_latitude_longitude_idx on problem(state, latitude, longitude);
+create index problem_user_id_idx on problem ( user_id );
 
 create table questionnaire (
     id serial not null primary key,
@@ -244,8 +262,9 @@ create function problem_find_nearby(double precision, double precision, double p
 create table comment (
     id serial not null primary key,
     problem_id integer not null references problem(id),
+    user_id int references users(id) not null,
+    anonymous bool not null,
     name text, -- null means anonymous
-    email text not null,
     website text,
     created timestamp not null default ms_current_timestamp(),
     confirmed timestamp,
@@ -265,6 +284,7 @@ create table comment (
     -- and should be highlighted in the display?
 );
 
+create index comment_user_id_idx on comment(user_id);
 create index comment_problem_id_idx on comment(problem_id);
 create index comment_problem_id_created_idx on comment(problem_id, created);
 
@@ -300,7 +320,7 @@ create table alert (
     alert_type text not null references alert_type(ref),
     parameter text, -- e.g. Problem ID for new updates, Longitude for local problem alerts
     parameter2 text, -- e.g. Latitude for local problem alerts
-    email text not null,
+    user_id int references users(id) not null,
     confirmed integer not null default 0,
     lang text not null default 'en-gb',
     cobrand text not null default '' check (cobrand ~* '^[a-z0-9]*$'), 
@@ -308,11 +328,11 @@ create table alert (
     whensubscribed timestamp not null default ms_current_timestamp(),
     whendisabled timestamp default null
 );
-create index alert_email_idx on alert(email);
+create index alert_user_id_idx on alert ( user_id );
 create index alert_alert_type_confirmed_whendisabled_idx on alert(alert_type, confirmed, whendisabled);
 create index alert_whendisabled_cobrand_idx on alert(whendisabled, cobrand);
 create index alert_whensubscribed_confirmed_cobrand_idx on alert(whensubscribed, confirmed, cobrand);
--- Possible indexes - unique (alert_type,email,parameter)
+-- Possible indexes - unique (alert_type,user_id,parameter)
 
 create table alert_sent (
     alert_id integer not null references alert(id),
@@ -340,9 +360,8 @@ create table flickr_imported (
 create unique index flickr_imported_id_idx on flickr_imported(id);
 
 create table abuse (
-    email text not null
+    email text primary key check( lower(email) = email )
 );
-create unique index abuse_email_idx on abuse(lower(email));
 
 create table textmystreet (
     name text not null,
@@ -367,3 +386,4 @@ create table admin_log (
         or action = 'resend'),
     whenedited timestamp not null default ms_current_timestamp()
 ); 
+

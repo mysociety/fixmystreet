@@ -1,0 +1,180 @@
+[%
+    PROCESS "maps/${map.type}.html" IF report.used_map;
+    INCLUDE 'header.html', title => loc('Reporting a problem')
+%]
+
+[% IF report.used_map %]
+<form action="[% c.uri_for('/report/new') %]" method="post" name="mapForm" id="mapForm"[% IF c.cobrand.allow_photo_upload %] enctype="multipart/form-data"[% END %]>
+<input type="hidden" name="submit_map" value="1">
+<input type="hidden" name="map" value="[% c.req.params.map | html %]">
+<input type="hidden" name="pc" value="[% pc | html %]">
+[% c.cobrand.form_elements('mapForm') %]
+[% ELSE %]
+<form action="[% c.uri_for('/report/new') %]" method="post" name="mapSkippedForm"[% IF c.cobrand.allow_photo_upload %] enctype="multipart/form-data"[% END %]>
+<input type="hidden" name="pc" value="[% pc | html %]">
+<input type="hidden" name="skipped" value="1">
+[% c.cobrand.form_elements('mapSkippedForm') %]
+[% END %]
+
+<input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% short_latitude | html %]">
+<input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% short_longitude | html %]">
+
+[% IF report.used_map %]
+    [% map_html %]
+    </div>
+    <div id="side">
+[% ELSE %]
+    <div id="skipped-map">
+[% END %]
+
+<h1>[% loc('Reporting a problem') %]</h1>
+
+[% IF report.used_map %]
+    [% IF partial_token %]
+        <p id="unknown">[% loc('Please note your report has <strong>not yet been sent</strong>. Choose a category and add further information below, then submit.') %]</p>
+    [% END %]
+<p>[% loc('You have located the problem at the point marked with a purple pin on the map. If this is not the correct location, simply click on the map again. ') %]</p>
+[% END %]
+
+[% IF area_ids_to_list.size == 0 %]
+    [% INCLUDE 'report/new/no_councils_text.html' %]
+[% ELSIF area_ids_to_list.size == all_councils.size %]
+    [% INCLUDE 'report/new/all_councils_text.html' %]
+[% ELSE %]    
+    [% INCLUDE 'report/new/some_councils_text.html' %]
+[% END %]
+
+<p>
+[% IF skipped %]
+    [% loc('Please fill in the form below with details of the problem, and describe the location as precisely as possible in the details box.') %]
+[% ELSE %]
+    [% INCLUDE 'report/new/fill_in_details_text.html' %]
+[% END %]
+</p>
+
+[% INCLUDE 'errors.html' %]
+
+<div id="problem_form">
+
+[% INCLUDE 'report/new/form_heading.html' %]
+
+<div id="fieldset">
+
+
+
+
+
+[% IF field_errors.council %]
+    <div class='form-error'>[% field_errors.council %]</div>
+[% END %]
+
+[% IF category_options.size %]
+    [% IF field_errors.category %]
+        <div class='form-error'>[% field_errors.category %]</div>
+    [% END %]
+    
+    <div class="form-field">
+        <label for="form_category">[% category_label | html %]</label>
+        <select name="category" id="form_category">
+            [%- FOREACH cat_op IN category_options %]
+            <option value="[% cat_op | html %]"[% ' selected' IF report.category == cat_op %]>[% cat_op | html %]</option>
+            [%- END %]
+        </select>
+    </div>
+[% END %]
+
+[% IF field_errors.title %]
+    <div class='form-error'>[% field_errors.title %]</div>
+[% END %]
+
+<div class="form-field">
+    <label for="form_title">[% loc('Subject:') %]</label>
+    <input type="text" value="[% report.title | html %]" name="title" id="form_title" size="25">
+</div>
+
+[% IF field_errors.detail %]
+    <div class='form-error'>[% field_errors.detail %]</div>
+[% END %]
+
+<div class="form-field">
+    <label for="form_detail">[% loc('Details:') %]</label>
+    <textarea name="detail" id="form_detail" rows="7" cols="26">[% report.detail | html %]</textarea>
+</div>
+
+[% IF c.cobrand.allow_photo_upload %]
+    [% IF field_errors.photo %]
+        <div class='form-error'>[% field_errors.photo %]</div>
+    [% END %]
+    
+    <div class='form-field'>
+    [% IF upload_fileid || report.photo %]
+        <p>[% loc('You have already attached a photo to this report, attaching another one will replace it.') %]</p>
+        [% IF upload_fileid %]
+        <input type="hidden" name="upload_fileid" value="[% upload_fileid %]" />
+        [% END %]
+        [% IF report.photo %]
+        <img align="right" src="/photo?id=[% report.id %]" hspace="5">
+        [% END %]
+    [% END %]
+    
+        <label for="form_photo">[% loc('Photo:') %]</label>
+        <input type="file" name="photo" id="form_photo" >
+    </div>
+[% END %]
+
+[% IF field_errors.name %]
+    <div class='form-error'>[% field_errors.name %]</div>
+[% END %]
+
+<div class='form-field'>
+    <label for="form_name">[% loc('Name:') %]</label>
+    <input type="text" value="[% report.name | html %]" name="name" id="form_name" size="25">
+</div>
+
+
+<div class="checkbox">
+
+    [%# if there is nothing in the name field then set check box as default on form %]
+    <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF !report.anonymous || !report.name %]>
+
+    [% IF c.cobrand.moniker == 'emptyhomes' %]
+    <label for="form_may_show_name">[% loc('Can we show your name on the site?') %]</label>
+    [% ELSE %]
+    <label for="form_may_show_name">[% loc('Can we show your name publicly?') %]</label>
+    [% END %]
+    <small>[% loc('(we never show your email address or phone number)') %]</small>
+</div>
+
+[% IF field_errors.email %]
+    <div class='form-error'>[% field_errors.email %]</div>
+[% END %]
+
+<div class="form-field">
+    <label for="form_email">[% loc('Email:') %]</label>
+    <input type="text" value="[% report_user.email | html %]" name="email" id="form_email" size="25">
+</div>
+
+<div>
+    <label for="form_phone">[% loc('Phone:') %]</label>
+    <input type="text" value="[% report_user.phone | html %]" name="phone" id="form_phone" size="15">
+    <small>[% loc('(optional)') %]</small>
+</div>
+
+[% INCLUDE 'report/new/notes.html' %]
+
+[% IF partial_token %]
+    <input type="hidden" name="partial" value="[% partial_token.token %]">
+[% END %]
+
+<p id="problem_submit">
+    <input type="hidden" name="submit_problem" value="1">
+    <input type="submit" value="[% loc('Submit') %]">
+</p>
+
+</div>
+</div>
+
+</div>
+</form>
+
+[% INCLUDE 'footer.html' %]

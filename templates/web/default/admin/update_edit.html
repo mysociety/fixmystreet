@@ -1,0 +1,38 @@
+[% INCLUDE 'admin/header.html' title=tprintf(loc('Editing update %d'), update.id ) -%]
+[% PROCESS 'admin/report_blocks.html' %]
+
+[% status_message %]
+
+<form method="post" action="[% c.uri_for( 'update_edit', update.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+    <input type="hidden" name="token" value="[% token %]" >
+    <input type="hidden" name="submit" value="1" >
+<ul>
+    [%- cobrand_data = update.cobrand_data %]
+    [%- cobrand_data = c.data_for_generic_update IF !update.cobrand %]
+<li><a href="[% c.uri_for_email( '/report', update.problem_id, cobrand_data ) %]#update_[% update.id %]">[% loc('View report on site' )%]</a></li>
+<li><label for='detail'>[% loc('Text:') %]</label><br><textarea name='text' id='text' cols=60 rows=10>[% update.text | html %]</textarea></li>
+<li><label for="anonymous">[% loc('Anonymous:') %]</label> <select name="anonymous"  id="anonymous">
+<option [% 'selected ' IF update.anonymous %]value="1">[% loc('Yes') %]</option>
+<option [% 'selected ' IF !update.anonymous %]value="0">[% loc('No') %]</option>
+</select></li>
+<li><label for="state">[% loc('State:') %]</label> <select name="state"  id="state">
+    [% FOREACH state IN [ ['confirmed', loc('Open')], ['hidden', loc('Hidden')], ['unconfirmed',loc('Unconfirmed')] ] %]
+        <option [% 'selected ' IF state.0 == update.state %] value="[% state.0 %]">[% state.1 %]</option>
+    [% END %]
+</select></li>
+<li>[% loc('Name:') %] <input type='text' name='name' id='name' value='[% update.name | html %]'></li>
+<li>[% loc('Email:') %] <input type='text' id='email' name='email' value='[% update.user.email | html %]'></li>
+<li>[% loc('Cobrand:') %] [% update.cobrand %]</li>
+<li>[% loc('Cobrand data:') %] [% update.cobrand_data %]</li>
+<li>[% loc('Created:') %] [% PROCESS format_time time=update.created %]</li>
+
+[% IF update.photo %]
+[% photo = update.get_photo_params %]
+<li><img alt="" height="[% photo.height %]" width="[% photo.width %]" src="[% photo.url %]">
+<input type="checkbox" id="remove_photo" name="remove_photo" value="1">
+<label for="remove_photo">[% loc("Remove photo (can't be undone!)") %]</label></li>
+[% END %]
+</ul>
+<input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" ></form>
+
+[% INCLUDE 'admin/footer.html' %]

@@ -3,115 +3,23 @@
 # send-questionnaires:
 # Send out creator questionnaires
 #
-# Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
+# Copyright (c) 2011 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
-#
-# $Id: send-questionnaires,v 1.21 2010-01-06 14:44:45 louise Exp $
 
 use strict;
 require 5.8.0;
 
-# Horrible boilerplate to set up appropriate library paths.
-use FindBin;
-use lib "$FindBin::Bin/../perllib";
-use lib "$FindBin::Bin/../commonlib/perllib";
-use File::Slurp;
 use CGI; # XXX Awkward kludge
 use Encode;
 use CronFns;
 
-use Page;
-use mySociety::AuthToken;
+use FixMyStreet::App;
 use mySociety::Config;
-use mySociety::DBHandle qw(dbh select_all);
-use mySociety::Email;
-use mySociety::Locale;
-use mySociety::MaPit;
-use mySociety::EmailUtil;
-use mySociety::Random qw(random_bytes);
 
-BEGIN {
-    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
-    mySociety::DBHandle::configure(
-        Name => mySociety::Config::get('BCI_DB_NAME'),
-        User => mySociety::Config::get('BCI_DB_USER'),
-        Password => mySociety::Config::get('BCI_DB_PASS'),
-        Host => mySociety::Config::get('BCI_DB_HOST', undef),
-        Port => mySociety::Config::get('BCI_DB_PORT', undef)
-    );
-}
+my %params;
+( $params{verbose}, $params{nomail} ) = CronFns::options();
+$params{site} = CronFns::site(mySociety::Config::get('BASE_URL'));
+CronFns::language($params{site});
 
-my ($verbose, $nomail) = CronFns::options();
-my $site = CronFns::site(mySociety::Config::get('BASE_URL'));
-CronFns::language($site);
-
-# Select all problems that need a questionnaire email sending
-my $unsent = select_all(
-    "select id, council, category, title, detail, name, email, cobrand, cobrand_data, lang,
-        extract(epoch from ms_current_timestamp()-created) as created
-    from problem
-    where state in ('confirmed','fixed')
-        and whensent is not null
-        and whensent < ms_current_timestamp() - '4 weeks'::interval
-        and send_questionnaire = 't'
-        and ( (select max(whensent) from questionnaire where problem.id=problem_id) is null
-            or (select max(whenanswered) from questionnaire where problem.id=problem_id) < ms_current_timestamp() - '4 weeks'::interval)
-    order by created desc
-");
-
-foreach my $row (@$unsent) {
-    my @all_councils = split /,|\|/, $row->{council};
-    my $cobrand = $row->{cobrand};
-    my $lang = $row->{lang};
-    Cobrand::set_lang_and_domain($cobrand, $lang, 1); 
-    # Cobranded and non-cobranded messages can share a database. In this case, the conf file 
-    # should specify a vhost to send the reports for each cobrand, so that they don't get sent 
-    # more than once if there are multiple vhosts running off the same database. The email_host
-    # call checks if this is the host that sends mail for this cobrand.
-    next unless (Cobrand::email_host($cobrand));
-    my ($councils, $missing) = $row->{council} =~ /^([\d,]+)(?:\|([\d,]+))?/;
-    my @councils = split /,/, $councils;
-    my $areas_info = mySociety::MaPit::call('areas', \@all_councils);
-    my $template = File::Slurp::read_file("$FindBin::Bin/../templates/emails/questionnaire");
-
-    my %h = map { $_ => $row->{$_} } qw/name title detail category/;
-    $h{created} = Page::prettify_duration($row->{created}, 'week');
-    $h{councils} = join(' and ', map { $areas_info->{$_}->{name} } @councils);
-
-    my $id = dbh()->selectrow_array("select nextval('questionnaire_id_seq');");
-    dbh()->do('insert into questionnaire (id, problem_id, whensent)
-        values (?, ?, ms_current_timestamp())', {}, $id, $row->{id});
-    dbh()->do("update problem set send_questionnaire = 'f' where id=?", {}, $row->{id});
-
-    my $token = mySociety::AuthToken::store('questionnaire', $id);
-    $h{url} = Cobrand::base_url_for_emails($cobrand, $row->{cobrand_data}) . '/Q/' . $token;
-
-    my $sender = Cobrand::contact_email($cobrand);
-    my $sender_name = _(Cobrand::contact_name($cobrand));
-    $sender =~ s/team/fms-DO-NOT-REPLY/;
-    $template = _($template);
-    my $email = mySociety::Locale::in_gb_locale { mySociety::Email::construct_email({
-        _template_ => $template,
-        _parameters_ => \%h,
-        To => [ [ $row->{email}, $row->{name} ] ],
-        From => [ $sender, $sender_name ],
-        'Message-ID' => sprintf('<ques-%s-%s@mysociety.org>', time(), unpack('h*', random_bytes(5, 1))),
-    }) };
-
-    print "Sending questionnaire $id, problem $row->{id}, token $token to $row->{email}\n" if $verbose;
-
-    my $result;
-    if ($nomail) {
-        $result = -1;
-    } else {
-        $result = mySociety::EmailUtil::send_email($email, $sender, $row->{email});
-    }
-    if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
-        print "  ...success\n" if $verbose;
-        dbh()->commit();
-    } else {
-        print " ...failed\n" if $verbose;
-        dbh()->rollback();
-    }
-}
+FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires( \%params );
 

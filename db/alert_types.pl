@@ -27,7 +27,7 @@
     _('The latest local problems reported by users'),
 
 # New problems around a postcode with a particular state
-    _('New problems NEAR {{POSTCODE}} on FixMyStreet'),
+    _('New problems near {{POSTCODE}} on FixMyStreet'),
     _('The latest local problems reported by users'),
 
 # New problems sent to a particular council
@@ -35,10 +35,10 @@
     _('The latest problems for {{COUNCIL}} reported by users'),
 
 # New problems within a particular ward sent to a particular council
-    _('New problems for {{COUNCIL}} within {{WARD}} ward on FixMyStreet'
+    _('New problems for {{COUNCIL}} within {{WARD}} ward on FixMyStreet'),
     _('The latest problems for {{COUNCIL}} within {{WARD}} ward reported by users'),
 
 # New problems within a particular voting area (ward, constituency, whatever)
-    _('New problems within {{NAME}}''s boundary on FixMyStreet'),
-    _('The latest problems within {{NAME}}''s boundary reported by users'),
+    _('New problems within {{NAME}}\'s boundary on FixMyStreet'),
+    _('The latest problems within {{NAME}}\'s boundary reported by users'),
 

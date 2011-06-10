@@ -1,0 +1,28 @@
+[% advert_outcome = 1 %]
+
+[% IF been_fixed == 'Unknown' %]
+
+[% loc('<p>Thank you very much for filling in our questionnaire; if you
+get some more information about the status of your problem, please come back to the
+site and leave an update.</p>') %]
+
+[% ELSIF new_state == 'confirmed' OR (!new_state AND problem.state == 'confirmed') %]
+
+[% tprintf( loc('<p style="font-size:150%%">We&rsquo;re sorry to hear that. We have two suggestions: why not try
+<a href="%s">writing direct to your councillor(s)</a>
+or, if it&rsquo;s a problem that could be fixed by local people working together,
+why not <a href="http://www.pledgebank.com/new">make and publicise a pledge</a>?
+</p>'), c.cobrand.writetothem_url || 'http://www.writetothem.com/' ) %]
+
+[% advert_outcome = 0 %]
+
+[% ELSE %]
+
+[% loc('<p style="font-size:150%">Thank you very much for filling in our questionnaire; glad to hear it&rsquo;s been fixed.</p>') %]
+
+[% END %]
+
+[% IF advert_outcome %]
+    [% display_crosssell_advert( problem.user.email, problem.name, 'council', problem.council ) %]
+[% END %]
+

@@ -1,0 +1,31 @@
+
+Add users to system:
+  * script to migrate database
+  * best phone for users from problems
+
+Auth:
+  * add 'remember me' option on login.
+  * limit session to this browser session on create account
+  * redirect back to page they came from on login
+
+Problem creation:
+  ? what should the new flow be for not-logged-in (probably unchanged).
+  * after becoming confirmed require user to manually send off 'pending' reports
+
+Users:
+  * create a message to the user if they have reports which have not been
+    confirmed.
+
+Email:
+  * currently don't send email via EvEl or do any of the smarts it does - should
+    we switch to using it (Email::Send::EvEl...)?
+
+Framework:
+  * use Plack to handle all the redirects and also run cgi scripts - get apache
+    out of the picture (what about tile proxy...). Does this makes sense?
+
+
+
+Future ideas:
+  * dashboard for council to put on big screen
+  
