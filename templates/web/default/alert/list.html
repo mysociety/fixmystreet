@@ -24,7 +24,7 @@
 
   [% cobrand_form_elements %]
 
-  [% IF photos %]
+  [% IF photos.size %]
     <div id="alert_photos">
       <h2>[% loc('Photos of recent nearby reports') %]</h2>
         [% FOREACH p IN photos %]
@@ -72,7 +72,6 @@
     [% ELSE %]
       <div><ul id="rss_feed">
     [% END %]
-  [%# FIXME errors here %]
 
   [% FOREACH option IN options %]
   <li>
@@ -108,8 +107,6 @@ for the county council.' ) %]
 </div>
 <div id="rss_buttons">
     [% END %]
-
-  [%# FIXME rss options here %]
 
   <p>
     <input type="submit" name="rss" value="[% loc('Give me an RSS feed') %]">
