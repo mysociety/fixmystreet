@@ -772,6 +772,18 @@ subtest 'search abuse' => sub {
     $mech->content_contains('test4@example.com');
 };
 
+subtest 'show flagged entries' => sub {
+    $report->flagged( 1 );
+    $report->update;
+
+    $user->flagged( 1 );
+    $user->update;
+
+    $mech->get_ok('/admin/list_flagged');
+    $mech->content_contains( $report->title );
+    $mech->content_contains( $user->email );
+};
+
 $mech->delete_user( $user );
 $mech->delete_user( $user2 );
 $mech->delete_user( $user3 );

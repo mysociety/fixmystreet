@@ -715,6 +715,22 @@ sub search_abuse : Path('search_abuse') : Args(0) {
     return 1;
 }
 
+sub list_flagged : Path('list_flagged') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->forward('set_allowed_pages');
+
+    my $problems = $c->model('DB::Problem')->search( { flagged => 1 } );
+
+    $c->stash->{problems} = $problems;
+
+    my $users = $c->model('DB::User')->search( { flagged => 1 } );
+
+    $c->stash->{users} = $users;
+
+    return 1;
+}
+
 =head2 set_allowed_pages
 
 Sets up the allowed_pages stash entry for checking if the current page is
@@ -735,10 +751,11 @@ sub set_allowed_pages : Private {
              'timeline' => [_('Timeline'), 3],
              'questionnaire' => [_('Survey Results'), 4],
              'search_abuse' => [_('Search Abuse'), 5],
-             'council_contacts' => [undef, undef],        
-             'council_edit' => [undef, undef], 
-             'report_edit' => [undef, undef], 
-             'update_edit' => [undef, undef], 
+             'list_flagged'  => [_('List Flagged'), 6],
+             'council_contacts' => [undef, undef],
+             'council_edit' => [undef, undef],
+             'report_edit' => [undef, undef],
+             'update_edit' => [undef, undef],
              'abuse_edit'  => [undef, undef],
         }
     }
