@@ -766,6 +766,12 @@ subtest 'report search' => sub {
     $mech->content_like( qr{<tr [^>]*hidden[^>]*> \s* <td> \s* $r_id \s* </td>}xs );
 };
 
+subtest 'search abuse' => sub {
+    $mech->get_ok( '/admin/search_abuse?search=example' );
+
+    $mech->content_contains('test4@example.com');
+};
+
 $mech->delete_user( $user );
 $mech->delete_user( $user2 );
 $mech->delete_user( $user3 );

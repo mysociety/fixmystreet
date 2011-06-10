@@ -695,6 +695,26 @@ sub update_edit : Path('update_edit') : Args(1) {
     return 1;
 }
 
+sub search_abuse : Path('search_abuse') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->forward('set_allowed_pages');
+
+    my $search = $c->req->param('search');
+
+    if ($search) {
+        my $emails = $c->model('DB::Abuse')->search(
+            {
+                email => { ilike => "\%$search\%" }
+            }
+        );
+
+        $c->stash->{emails} = [ $emails->all ];
+    }
+
+    return 1;
+}
+
 =head2 set_allowed_pages
 
 Sets up the allowed_pages stash entry for checking if the current page is
@@ -714,6 +734,7 @@ sub set_allowed_pages : Private {
              'search_reports' => [_('Search Reports'), 2],
              'timeline' => [_('Timeline'), 3],
              'questionnaire' => [_('Survey Results'), 4],
+             'search_abuse' => [_('Search Abuse'), 5],
              'council_contacts' => [undef, undef],        
              'council_edit' => [undef, undef], 
              'report_edit' => [undef, undef], 
