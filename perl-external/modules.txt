@@ -36,6 +36,7 @@ HTTP::Server::Simple
 HTTP::Server::Simple::CGI
 IO::String
 JSON
+LWP::UserAgent
 Locale::Maketext::Lexicon
 Moose
 Net::Domain::TLD

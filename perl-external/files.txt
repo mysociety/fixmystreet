@@ -138,6 +138,7 @@
 /authors/id/G/GA/GAAS/URI-1.58.tar.gz
 /authors/id/G/GA/GAAS/WWW-RobotRules-6.00.tar.gz
 /authors/id/G/GA/GAAS/libwww-perl-6.01.tar.gz
+/authors/id/G/GA/GAAS/libwww-perl-6.02.tar.gz
 /authors/id/G/GB/GBARR/CPAN-DistnameInfo-0.12.tar.gz
 /authors/id/G/GB/GBARR/Scalar-List-Utils-1.23.tar.gz
 /authors/id/G/GE/GETTY/HTTP-Body-1.11.tar.gz
@@ -151,6 +152,7 @@
 /authors/id/J/JH/JHOBLITT/DateTime-Format-ISO8601-0.07.tar.gz
 /authors/id/J/JP/JPEACOCK/version-0.88.tar.gz
 /authors/id/J/JR/JROCKWAY/Context-Preserve-0.01.tar.gz
+/authors/id/J/JR/JROCKWAY/Template-Plugin-DateTime-Format-0.02.tar.gz
 /authors/id/K/KA/KASEI/Class-Accessor-0.34.tar.gz
 /authors/id/K/KW/KWILLIAMS/Path-Class-0.23.tar.gz
 /authors/id/K/KW/KWILLIAMS/Probe-Perl-0.01.tar.gz
