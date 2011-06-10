@@ -129,25 +129,21 @@ subtest "Submit a correct entry" => sub {
       },
       "check imported fields are shown";
 
-  TODO: {
-        local $TODO = "'/report/123' urls not served by catalyst yet";
-
-        # change the details
-        $mech->submit_form_ok(    #
-            {
-                with_fields => {
-                    name          => 'New Test User',
-                    email         => 'test@example.com',
-                    title         => 'New Test report',
-                    detail        => 'This is a test report',
-                    phone         => '01234 567 890',
-                    may_show_name => '1',
-                    category      => 'Street lighting',
-                }
-            },
-            "Update details and save"
-        );
-    }
+    # change the details
+    $mech->submit_form_ok(    #
+        {
+            with_fields => {
+                name          => 'New Test User',
+                email         => 'test@example.com',
+                title         => 'New Test report',
+                detail        => 'This is a test report',
+                phone         => '01234 567 890',
+                may_show_name => '1',
+                category      => 'Street lighting',
+            }
+        },
+        "Update details and save"
+    );
 
     # check that report has been created
     my $user =
@@ -214,25 +210,21 @@ subtest "Submit a correct entry (with location)" => sub {
       },
       "check imported fields are shown";
 
-  TODO: {
-        local $TODO = "'/report/123' urls not served by catalyst yet";
-
-        # change the details
-        $mech->submit_form_ok(    #
-            {
-                with_fields => {
-                    name          => 'New Test User ll',
-                    email         => 'test-ll@example.com',
-                    title         => 'New Test report ll',
-                    detail        => 'This is a test report ll',
-                    phone         => '01234 567 890',
-                    may_show_name => '1',
-                    category      => 'Street lighting',
-                }
-            },
-            "Update details and save"
-        );
-    }
+    # change the details
+    $mech->submit_form_ok(    #
+        {
+            with_fields => {
+                name          => 'New Test User ll',
+                email         => 'test-ll@example.com',
+                title         => 'New Test report ll',
+                detail        => 'This is a test report ll',
+                phone         => '01234 567 890',
+                may_show_name => '1',
+                category      => 'Street lighting',
+            }
+        },
+        "Update details and save"
+    );
 
     # check that report has been created
     my $user =
