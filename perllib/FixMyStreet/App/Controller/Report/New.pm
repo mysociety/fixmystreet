@@ -7,8 +7,8 @@ BEGIN { extends 'Catalyst::Controller'; }
 use FixMyStreet::Geocode;
 use Encode;
 use Image::Magick;
-use Sort::Key qw(keysort);
 use List::MoreUtils qw(uniq);
+use POSIX 'strcoll';
 use HTML::Entities;
 use mySociety::MaPit;
 use Path::Class;
@@ -479,7 +479,9 @@ sub setup_categories_and_councils : Private {
 
     } else {
 
-        @contacts = keysort { $_->category } @contacts; # TODO Old code used strcoll, check if this no longer needed
+        # keysort does not appear to obey locale so use strcoll (see i18n.t)
+        @contacts = sort { strcoll( $a->category, $b->category ) } @contacts;
+
         my %seen;
         foreach my $contact (@contacts) {
 
