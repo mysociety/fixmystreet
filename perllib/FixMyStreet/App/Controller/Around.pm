@@ -220,24 +220,14 @@ sub check_location_is_acceptable : Private {
     my $lat = $c->stash->{latitude};
     my $lon = $c->stash->{longitude};
 
-    # Check this location is okay to be displayed for the cobrand
-    my ( $success, $error_msg ) = $c->cobrand->council_check(    #
-        { lat => $lat, lon => $lon },
-        'submit_problem'
-    );
-
     # If in UK and we have a lat,lon coocdinate check it is in UK
-    if ( !$error_msg && $lat && $c->config->{COUNTRY} eq 'GB' ) {
+    if ( $lat && $c->config->{COUNTRY} eq 'GB' ) {
         eval { Utils::convert_latlon_to_en( $lat, $lon ); };
-        $error_msg =
-          _( "We had a problem with the supplied co-ordinates - outside the UK?"
-          ) if $@;
-    }
-
-    # show error
-    if ($error_msg) {
-        $c->stash->{location_error} = $error_msg;
-        return;
+        if ($@) {
+            $c->stash->{location_error} =
+                _( "We had a problem with the supplied co-ordinates - outside the UK?" );
+            return;
+        }
     }
 
     # check that there are councils that can accept this location

@@ -341,6 +341,7 @@ could be found.
 sub determine_location : Private {
     my ( $self, $c ) = @_;
 
+    $c->stash->{fetch_all_areas} = 1;
     return 1
       if    #
           (    #
@@ -618,11 +619,7 @@ sub process_report : Private {
     $report->name( Utils::trim_text( $params{name} ) );
     $report->category( _ $params{category} );
 
-    # FIXME: This is more inefficient than old FixMyStreet code,
-    # with 2 MaPit point calls per submission now rather than just one.
-    my $mapit_query =
-      sprintf( "4326/%s,%s", $report->longitude, $report->latitude );
-    my $areas = mySociety::MaPit::call( 'point', $mapit_query );
+    my $areas = $c->stash->{all_areas};
     $report->areas( ',' . join( ',', sort keys %$areas ) . ',' );
 
     # From earlier in the process.

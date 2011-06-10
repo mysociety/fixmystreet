@@ -363,7 +363,7 @@ for my $test (
         is $add_alerts, $details->{add_alert} ? 1 : 0, 'do not sign up for alerts';
 
         $mech->get_ok( $url . $url_token );
-        $mech->content_contains("/report/$report_id#$update_id");
+        $mech->content_contains("/report/$report_id#update_$update_id");
 
         my $unreg_user = FixMyStreet::App->model( 'DB::User' )->find( { email => $details->{rznvy} } );
 

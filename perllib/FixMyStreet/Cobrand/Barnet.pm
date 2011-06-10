@@ -43,18 +43,7 @@ sub enter_postcode_text {
 sub council_check {
     my ( $self, $params, $context ) = @_;
 
-    my $councils;
-    if ( $params->{all_councils} ) {
-        $councils = $params->{all_councils};
-    }
-    elsif ( defined $params->{lat} ) {
-        my $parent_types = $mySociety::VotingArea::council_parent_types;
-        $councils = mySociety::MaPit::call(
-            'point',
-            "4326/$params->{lon},$params->{lat}",
-            type => $parent_types
-        );
-    }
+    my $councils = $params->{all_councils};
     my $council_match = defined $councils->{2489};
     if ($council_match) {
         return 1;
