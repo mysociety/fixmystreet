@@ -491,15 +491,16 @@ sub get_requests {
                 @value = ();
             } elsif ('has_photo' eq $param) {
                 if ('true' eq $value[0]) {
-                    $rule = 'photo is not null';
+                    $criteria .= ' and photo is not null';
                     @value = ();
                 } elsif ('false' eq $value[0]) {
-                    $rule = 'photo is null';
+                    $criteria .= ' and photo is null';
                     @value = ();
                 } else {
                     error($q,
                           sprintf(_('Incorrect has_photo value "%s"'),
                                   $value[0]));
+                    return;
                 }
             } elsif ('interface_used' eq $param) {
                 if ('Web interface' eq $value[0]) {
