@@ -192,6 +192,11 @@ sub show_documentation {
 <dt>interface_used<dt>
 <dd>Name / identifier of interface used.</dd>
 
+<dt>has_photo<dt>
+<dd>Search for entries with or without photos.  Use value 'true' to
+only get requests created with images, and 'false' to get those
+created without images.</dd>
+
 <dt>max_requests</dt>
 <dd>Max number of requests to return from the search.  If it is larger
 than the site specific max_requests value specified in the discovery
@@ -443,6 +448,7 @@ sub get_requests {
         agency_responsible => 'council ~ ?',
         interface_used     => 'service is not null and service = ?',
         max_requests       => '',
+        has_photo          => '',
         );
     my $max_requests = 0;
     my @args;
@@ -483,6 +489,18 @@ sub get_requests {
             } elsif ('max_requests' eq $param) {
                 $max_requests = $value[0];
                 @value = ();
+            } elsif ('has_photo' eq $param) {
+                if ('true' eq $value[0]) {
+                    $rule = 'photo is not null';
+                    @value = ();
+                } elsif ('false' eq $value[0]) {
+                    $rule = 'photo is null';
+                    @value = ();
+                } else {
+                    error($q,
+                          sprintf(_('Incorrect has_photo value '%s''),
+                                  $value[0]));
+                }
             } elsif ('interface_used' eq $param) {
                 if ('Web interface' eq $value[0]) {
                     $rule = 'service is null'
