@@ -498,7 +498,7 @@ sub get_requests {
                     @value = ();
                 } else {
                     error($q,
-                          sprintf(_('Incorrect has_photo value '%s''),
+                          sprintf(_('Incorrect has_photo value "%s"'),
                                   $value[0]));
                 }
             } elsif ('interface_used' eq $param) {
