@@ -240,7 +240,7 @@ while (my $row = $unsent->next) {
     } elsif ($send_web eq 'london') {
         $h{message} = construct_london_message(%h);
         if (!$nomail) {
-            $result *= post_london_report(%h);
+            $result *= post_london_report( $row, %h );
         }
     }
 
@@ -359,7 +359,7 @@ EOF
 }
 
 sub post_london_report {
-    my %h = @_;
+    my ( $problem, %h ) = @_;
     my $phone = $h{phone};
     my $mobile = '';
     if ($phone =~ /^\s*07/) {
@@ -411,8 +411,9 @@ sub post_london_report {
     my ($team) = $out =~ /<team>(.*?)<\/team>/;
 
     $org = london_lookup($org);
-    dbh()->do("update problem set external_id=?, external_body=?, external_team=? where id=?", {},
-        $id, $org, $team, $h{id});
+    $problem->external_id( $id );
+    $problem->external_body( $org );
+    $problem->external_team( $team );
     return 0;
 }
 
