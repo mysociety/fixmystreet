@@ -26,7 +26,7 @@ UPDATE users
         order by created desc
         limit 1
     )
-WHERE users.name = '';
+WHERE users.name IS NULL;
 
 -- set up the anonymous flag
 ALTER table comment

@@ -628,8 +628,8 @@ sub process_report : Private {
 
     if ( $c->cobrand->moniker eq 'emptyhomes' ) {
 
-        # all councils have all categories for emptyhomes
-        $report->council( join( ',', keys %$councils) );
+        $councils = join( ',', @{ $c->stash->{area_ids_to_list} } ) || -1;
+        $report->council( $councils );
 
     } elsif ( $first_council->{type} eq 'LBO') {
 
