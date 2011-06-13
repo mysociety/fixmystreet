@@ -540,12 +540,15 @@ sub report_edit : Path('report_edit') : Args(1) {
             $done = 1;
         }
 
+        my $flagged = $c->req->param('flagged') ? 1 : 0;
+
         # do this here so before we update the values in problem
         if (   $c->req->param('anonymous') ne $problem->anonymous
             || $c->req->param('name')   ne $problem->name
             || $c->req->param('email')  ne $problem->user->email
             || $c->req->param('title')  ne $problem->title
-            || $c->req->param('detail') ne $problem->detail )
+            || $c->req->param('detail') ne $problem->detail
+            || $flagged != $problem->flagged )
         {
             $edited = 1;
         }
@@ -555,6 +558,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         $problem->detail( $c->req->param('detail') );
         $problem->state( $c->req->param('state') );
         $problem->name( $c->req->param('name') );
+        $problem->flagged( $flagged );
 
         if ( $c->req->param('email') ne $problem->user->email ) {
             my $user = $c->model('DB::User')->find_or_create(

@@ -35,6 +35,7 @@
 <li>[% loc('Cobrand:') %] [% problem.cobrand %]</li>
 <li>[% loc('Cobrand data:') %] [% problem.cobrand_data %]</li>
 <li>[% loc('Going to send questionnaire?') %] [% IF problem.send_questionnaire %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</li>
+<li><label for="flagged">[% loc('Flagged:') %]</label> <input type="checkbox" name="flagged"[% ' checked' IF problem.flagged %]></li>
 
 [% IF problem.photo %]
 [% photo = problem.get_photo_params %]
