@@ -48,7 +48,6 @@ sub index : Path : Args(0) {
     $c->forward('check_page_allowed');
 
     my ( $sql_restriction, $id, $site_restriction ) = $c->cobrand->site_restriction();
-    my $cobrand_restriction = $c->cobrand->moniker ? { cobrand => $c->cobrand->moniker } : {};
 
     my $problems = $c->cobrand->problems->summary_count;
 
@@ -69,7 +68,7 @@ sub index : Path : Args(0) {
 
     $c->stash->{comments} = \%comment_counts;
 
-    my $alerts = $c->model('DB::Alert')->summary_count( $cobrand_restriction );
+    my $alerts = $c->model('DB::Alert')->summary_count( $c->cobrand->restriction );
 
     my %alert_counts =
       map { $_->confirmed => $_->get_column('confirmed_count') } $alerts->all;
@@ -90,7 +89,7 @@ sub index : Path : Args(0) {
 
     $c->stash->{contacts} = \%contact_counts;
 
-    my $questionnaires = $c->model('DB::Questionnaire')->summary_count( $cobrand_restriction );
+    my $questionnaires = $c->model('DB::Questionnaire')->summary_count( $c->cobrand->restriction );
 
     my %questionnaire_counts = map {
         $_->get_column('answered') => $_->get_column('questionnaire_count')
@@ -116,7 +115,6 @@ sub timeline : Path( 'timeline' ) : Args(0) {
     $c->forward('check_page_allowed');
 
     my ( $sql_restriction, $id, $site_restriction ) = $c->cobrand->site_restriction();
-    my $cobrand_restriction = $c->cobrand->moniker ? { cobrand => $c->cobrand->moniker } : {};
     my %time;
 
     $c->model('DB')->schema->storage->sql_maker->quote_char( '"' );
@@ -129,7 +127,7 @@ sub timeline : Path( 'timeline' ) : Args(0) {
         push @{$time{$_->whensent->epoch}}, { type => 'problemSent', date => $_->whensent_local, obj => $_ } if $_->whensent;
     }
 
-    my $questionnaires = $c->model('DB::Questionnaire')->timeline( $cobrand_restriction );
+    my $questionnaires = $c->model('DB::Questionnaire')->timeline( $c->cobrand->restriction );
 
     foreach ($questionnaires->all) {
         push @{$time{$_->whensent->epoch}}, { type => 'quesSent', date => $_->whensent_local, obj => $_ };
@@ -142,13 +140,13 @@ sub timeline : Path( 'timeline' ) : Args(0) {
         push @{$time{$_->created->epoch}}, { type => 'update', date => $_->created_local, obj => $_} ;
     }
 
-    my $alerts = $c->model('DB::Alert')->timeline_created( $cobrand_restriction );
+    my $alerts = $c->model('DB::Alert')->timeline_created( $c->cobrand->restriction );
 
     foreach ($alerts->all) {
         push @{$time{$_->whensubscribed->epoch}}, { type => 'alertSub', date => $_->whensubscribed_local, obj => $_ };
     }
 
-    $alerts = $c->model('DB::Alert')->timeline_disabled( $cobrand_restriction );
+    $alerts = $c->model('DB::Alert')->timeline_disabled( $c->cobrand->restriction );
 
     foreach ($alerts->all) {
         push @{$time{$_->whendisabled->epoch}}, { type => 'alertDel', date => $_->whendisabled_local, obj => $_ };

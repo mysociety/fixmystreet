@@ -113,6 +113,18 @@ sub contact_restriction {
     {};
 }
 
+=head2 restriction
+
+Return a restriction to pull out data saved while using the cobrand site.
+
+=cut
+
+sub restriction {
+    my $self = shift;
+
+    return $self->moniker ? { cobrand => $self->moniker } : {};
+}
+
 =head2 base_url_for_emails
 
 Return the base url to use in links in emails for the cobranded version of the
