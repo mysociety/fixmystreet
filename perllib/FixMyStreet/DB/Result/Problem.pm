@@ -364,8 +364,9 @@ sub meta_line {
     return $meta;
 }
 
+# TODO Some/much of this could be moved to the template
 sub duration_string {
-    my $problem = shift;
+    my ( $problem, $c ) = @_;
     my $body;
     if ($problem->external_body) {
         $body = $problem->external_body;
@@ -373,7 +374,18 @@ sub duration_string {
         (my $council = $problem->council) =~ s/\|.*//g;
         my @councils = split( /,/, $council );
         my $areas_info = mySociety::MaPit::call('areas', \@councils);
-        $body = join(' and ', map { $areas_info->{$_}->{name} } @councils);
+        $body = join( _(' and '),
+            map {
+                my $name = $areas_info->{$_}->{name};
+                if (mySociety::Config::get('AREA_LINKS_FROM_PROBLEMS')) {
+                    '<a href="'
+                    . $c->uri_for( '/reports/' . $c->cobrand->short_name( $areas_info->{$_} ) )
+                    . '">' . $name . '</a>';
+                } else {
+                    $name;
+                }
+            } @councils
+        );
     }
     return sprintf(_('Sent to %s %s later'), $body,
         Utils::prettify_duration($problem->whensent_local->epoch - $problem->confirmed_local->epoch, 'minute')

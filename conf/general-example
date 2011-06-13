@@ -75,4 +75,7 @@ define('OPTION_ALLOWED_COBRANDS', 'cobrand_one|cobrand_two');
 // How many items are returned in the GeoRSS feeds by default
 define('OPTION_RSS_LIMIT', '20');
 
+// Should problem reports link to the council summary pages?
+define('OPTION_AREA_LINKS_FROM_PROBLEMS', '0');
+
 ?>

@@ -3,7 +3,7 @@
 <p><em>[% problem.meta_line(c) | html %]
 [% IF problem.council %]
     [% IF problem.whensent %]
-        <small class="council_sent_info"><br>[% problem.duration_string %]</small>
+        <small class="council_sent_info"><br>[% problem.duration_string(c) %]</small>
     [% END %]
 [% ELSE %]
 <br><small>[% loc('Not reported to council') %]</small>
