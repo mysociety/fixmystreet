@@ -14,8 +14,124 @@ if ( $secret == 0 ) {
     plan skip_all => 'No entry in secret table';
 }
 
-$mech->get_ok('/admin');
-$mech->title_like(qr/Summary/);
+my $user =
+  FixMyStreet::App->model('DB::User')
+  ->find_or_create( { email => 'test@example.com', name => 'Test User' } );
+ok $user, "created test user";
+
+my $user2 =
+  FixMyStreet::App->model('DB::User')
+  ->find_or_create( { email => 'test2@example.com', name => 'Test User 2' } );
+ok $user2, "created second test user";
+
+
+my $user3 =
+  FixMyStreet::App->model('DB::User')
+  ->find( { email => 'test3@example.com', name => 'Test User 2' } );
+
+if ( $user3 ) {
+  $mech->delete_user( $user3 );
+}
+
+my $dt = DateTime->new(
+    year   => 2011,
+    month  => 04,
+    day    => 16,
+    hour   => 15,
+    minute => 47,
+    second => 23
+);
+
+my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
+    {
+        postcode           => 'SW1A 1AA',
+        council            => '2504',
+        areas              => ',105255,11806,11828,2247,2504,',
+        category           => 'Other',
+        title              => 'Report to Edit',
+        detail             => 'Detail for Report to Edit',
+        used_map           => 't',
+        name               => 'Test User',
+        anonymous          => 'f',
+        state              => 'confirmed',
+        confirmed          => $dt->ymd . ' ' . $dt->hms,
+        lang               => 'en-gb',
+        service            => '',
+        cobrand            => '',
+        cobrand_data       => '',
+        send_questionnaire => 't',
+        latitude           => '51.5016605453401',
+        longitude          => '-0.142497580865087',
+        user_id            => $user->id,
+        whensent           => $dt->ymd . ' ' . $dt->hms,
+    }
+);
+
+my $alert = FixMyStreet::App->model('DB::Alert')->find_or_create(
+    {
+        alert_type => 'new_updates',
+        parameter => $report->id,
+        confirmed => 1,
+        user => $user,
+    },
+);
+
+subtest 'check summary counts' => sub {
+    my $problems = FixMyStreet::App->model('DB::Problem')->search( { state => { -in => [qw/confirmed fixed/] } } );
+
+    my $problem_count = $problems->count;
+    $problems->update( { cobrand => '' } );
+
+    my $q = FixMyStreet::App->model('DB::Questionnaire')->find_or_new( { problem => $report, });
+    $q->whensent( \'ms_current_timestamp()' );
+    $q->in_storage ? $q->update : $q->insert;
+
+    my $alerts =  FixMyStreet::App->model('DB::Alert')->search( { confirmed => { '>' => 0 } } );
+    my $a_count = $alerts->count;
+
+    $mech->get_ok('/admin');
+
+    $mech->title_like(qr/Summary/);
+
+    $mech->content_contains( "$problem_count</strong> live problems" );
+    $mech->content_contains( "$a_count confirmed alerts" );
+
+    my $questionnaires = FixMyStreet::App->model('DB::Questionnaire')->search( { whensent => { -not => undef } } );
+    my $q_count = $questionnaires->count();
+
+    $mech->content_contains( "$q_count questionnaires sent" );
+
+    ok $mech->host('barnet.fixmystreet.com');
+
+    $mech->get_ok('/admin');
+    $mech->title_like(qr/Summary/);
+
+    $mech->content_contains( "0</strong> live problems" );
+    $mech->content_contains( "0 confirmed alerts" );
+    $mech->content_contains( "0 questionnaires sent" );
+
+    $report->council(2489);
+    $report->cobrand('barnet');
+    $report->update;
+
+    $alert->cobrand('barnet');
+    $alert->update;
+
+    $mech->get_ok('/admin');
+
+    $mech->content_contains( "1</strong> live problems" );
+    $mech->content_contains( "1 confirmed alerts" );
+    $mech->content_contains( "1 questionnaires sent" );
+
+    $report->council(2504);
+    $report->cobrand('');
+    $report->update;
+
+    $alert->cobrand('');
+    $alert->update;
+
+    ok $mech->host('fixmystreet.com');
+};
 
 $mech->get_ok('/admin/council_contacts/2650');
 $mech->content_contains('Aberdeen City Council');
@@ -78,58 +194,6 @@ subtest 'check contact updating' => sub {
     $mech->content_like(qr{test2\@example.com[^<]*</td>[^<]*<td><strong>Yes}s);
 };
 
-my $user =
-  FixMyStreet::App->model('DB::User')
-  ->find_or_create( { email => 'test@example.com', name => 'Test User' } );
-ok $user, "created test user";
-
-my $user2 =
-  FixMyStreet::App->model('DB::User')
-  ->find_or_create( { email => 'test2@example.com', name => 'Test User 2' } );
-ok $user2, "created second test user";
-
-
-my $user3 =
-  FixMyStreet::App->model('DB::User')
-  ->find( { email => 'test3@example.com', name => 'Test User 2' } );
-
-if ( $user3 ) {
-  $mech->delete_user( $user3 );
-}
-
-my $dt = DateTime->new(
-    year   => 2011,
-    month  => 04,
-    day    => 16,
-    hour   => 15,
-    minute => 47,
-    second => 23
-);
-
-my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
-    {
-        postcode           => 'SW1A 1AA',
-        council            => '2504',
-        areas              => ',105255,11806,11828,2247,2504,',
-        category           => 'Other',
-        title              => 'Report to Edit',
-        detail             => 'Detail for Report to Edit',
-        used_map           => 't',
-        name               => 'Test User',
-        anonymous          => 'f',
-        state              => 'confirmed',
-        confirmed          => $dt->ymd . ' ' . $dt->hms,
-        lang               => 'en-gb',
-        service            => '',
-        cobrand            => 'default',
-        cobrand_data       => '',
-        send_questionnaire => 't',
-        latitude           => '51.5016605453401',
-        longitude          => '-0.142497580865087',
-        user_id            => $user->id,
-        whensent           => $dt->ymd . ' ' . $dt->hms,
-    }
-);
 
 my $log_entries = FixMyStreet::App->model('DB::AdminLog')->search(
     {

@@ -48,7 +48,7 @@ sub index : Path : Args(0) {
     $c->forward('check_page_allowed');
 
     my ( $sql_restriction, $id, $site_restriction ) = $c->cobrand->site_restriction();
-    my $cobrand_restriction = $c->cobrand->moniker eq 'fixmystreet' ? {} : { cobrand => $c->cobrand->moniker };
+    my $cobrand_restriction = $c->cobrand->moniker ? { cobrand => $c->cobrand->moniker } : {};
 
     my $problems = $c->cobrand->problems->summary_count;
 
@@ -116,7 +116,7 @@ sub timeline : Path( 'timeline' ) : Args(0) {
     $c->forward('check_page_allowed');
 
     my ( $sql_restriction, $id, $site_restriction ) = $c->cobrand->site_restriction();
-    my $cobrand_restriction = { cobrand => $c->cobrand->moniker };
+    my $cobrand_restriction = $c->cobrand->moniker ? { cobrand => $c->cobrand->moniker } : {};
     my %time;
 
     $c->model('DB')->schema->storage->sql_maker->quote_char( '"' );
