@@ -855,7 +855,7 @@ sub save_user_and_report : Private {
     $report->category( _('Other') ) unless $report->category;
 
     # Set unknown to DB unknown
-    $report->council( undef ) if $report->council == -1;
+    $report->council( undef ) if $report->council eq '-1';
 
     # save the report;
     $report->in_storage ? $report->update : $report->insert();

@@ -2,6 +2,7 @@ package FixMyStreet::App::Controller::Questionnaire;
 
 use Moose;
 use namespace::autoclean;
+use Path::Class;
 use Utils;
 
 BEGIN { extends 'Catalyst::Controller'; }

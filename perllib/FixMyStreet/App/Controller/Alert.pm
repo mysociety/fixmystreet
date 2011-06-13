@@ -366,10 +366,10 @@ sub setup_coordinate_rss_feeds : Private {
 
     $c->stash->{rss_feed_uri} = $rss_feed;
 
-    $c->stash->{rss_feed_2k}  = $c->uri_for( $rss_feed . '/2' );
-    $c->stash->{rss_feed_5k}  = $c->uri_for( $rss_feed . '/5' );
-    $c->stash->{rss_feed_10k} = $c->uri_for( $rss_feed . '/10' );
-    $c->stash->{rss_feed_20k} = $c->uri_for( $rss_feed . '/20' );
+    $c->stash->{rss_feed_2k}  = $rss_feed . '/2';
+    $c->stash->{rss_feed_5k}  = $rss_feed . '/5';
+    $c->stash->{rss_feed_10k} = $rss_feed . '/10';
+    $c->stash->{rss_feed_20k} = $rss_feed . '/20';
 
     return 1;
 }
