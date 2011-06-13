@@ -160,7 +160,10 @@ while (my $row = $unsent->next) {
 
         $template = 'submit.txt';
         $template = 'submit-brent.txt' if $row->council eq 2488 || $row->council eq 2237;
-        $template = File::Slurp::read_file("$FindBin::Bin/../templates/email/" . $cobrand->moniker . "/$template");
+        $template = FixMyStreet->path_to( "templates", "email", $cobrand->moniker, $template )->stringify;
+        $template = FixMyStreet->path_to( "templates", "email", "default", $template )->stringify
+            unless -e $template;
+        $template = File::Slurp::read_file( $template );
 
         if ($h{category} eq _('Other')) {
             $h{category_footer} = _('this type of local problem');

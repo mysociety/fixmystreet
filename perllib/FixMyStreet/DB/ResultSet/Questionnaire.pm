@@ -59,7 +59,10 @@ sub send_questionnaires_period {
             ($template = $period) =~ s/ //;
             $template = File::Slurp::read_file( FixMyStreet->path_to( "templates/email/emptyhomes/" . $row->lang . "/questionnaire-$template.txt" )->stringify );
         } else {
-            $template = File::Slurp::read_file( FixMyStreet->path_to( "templates/email/" . $cobrand->moniker . "/questionnaire.txt" )->stringify );
+            $template = FixMyStreet->path_to( "templates", "email", $cobrand->moniker, "questionnaire.txt" )->stringify;
+            $template = FixMyStreet->path_to( "templates", "email", "default", "questionnaire.txt" )->stringify
+                unless -e $template;
+            $template = File::Slurp::read_file( $template );
         }
 
         my %h = map { $_ => $row->$_ } qw/name title detail category/;
