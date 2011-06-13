@@ -39,7 +39,9 @@ the last part of the class name lowercased - eg 'F::C::SomeCobrand' becomes
 sub moniker {
     my $class = ref( $_[0] ) || $_[0];    # deal with object or class
     my ($last_part) = $class =~ m{::(\w+)$};
-    return lc($last_part);
+    $last_part = lc($last_part);
+    return '' if $last_part eq 'default';
+    return $last_part;
 }
 
 =head2 is_default
@@ -52,7 +54,7 @@ Returns true if this is the default cobrand, false otherwise.
 
 sub is_default {
     my $self = shift;
-    return $self->moniker eq 'default';
+    return $self->moniker eq '';
 }
 
 =head2 path_to_web_templates
