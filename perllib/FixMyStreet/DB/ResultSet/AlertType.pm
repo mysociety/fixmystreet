@@ -23,7 +23,7 @@ sub email_alerts ($) {
         my $ref = $alert_type->ref;
         my $head_table = $alert_type->head_table;
         my $item_table = $alert_type->item_table;
-        my $query = 'select alert.id as alert_id, alert_user.email as alert_email, alert.lang as alert_lang, alert.cobrand as alert_cobrand,
+        my $query = 'select alert.id as alert_id, alert.user_id as alert_user_id, alert.lang as alert_lang, alert.cobrand as alert_cobrand,
             alert.cobrand_data as alert_cobrand_data, alert.parameter as alert_parameter, alert.parameter2 as alert_parameter2, ';
         if ($head_table) {
             $query .= "
@@ -32,13 +32,11 @@ sub email_alerts ($) {
             from alert
                 inner join $item_table on alert.parameter::integer = $item_table.${head_table}_id
                 inner join $head_table on alert.parameter::integer = $head_table.id
-                inner join users as alert_user on alert.user_id = alert_user.id";
+                ";
         } else {
             $query .= " $item_table.*,
                    $item_table.id as item_id
-            from alert
-                cross join $item_table
-                inner join users as alert_user on alert.user_id = alert_user.id";
+            from alert, $item_table";
         }
         $query .= "
             where alert_type='$ref' and whendisabled is null and $item_table.confirmed >= whensubscribed
@@ -88,7 +86,7 @@ sub email_alerts ($) {
             } else {
                 $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}\n\n";
             }
-            if (!$data{alert_email}) {
+            if (!$data{alert_user_id}) {
                 %data = (%data, %$row);
                 if ($ref eq 'area_problems' || $ref eq 'council_problems' || $ref eq 'ward_problems') {
                     my $va_info = mySociety::MaPit::call('area', $row->{alert_parameter});
@@ -160,6 +158,13 @@ sub _send_aggregated_alert_email(%) {
     my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($data{cobrand})->new();
 
     $cobrand->set_lang_and_domain( $data{lang}, 1 );
+
+    if (!$data{alert_email}) {
+        my $user = FixMyStreet::App->model('DB::User')->find( {
+            id => $data{alert_user_id}
+        } );
+        $data{alert_email} = $user->email;
+    }
 
     my $token = FixMyStreet::App->model("DB::Token")->new_result( {
         scope => 'alert',

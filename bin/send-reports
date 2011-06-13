@@ -365,7 +365,7 @@ sub post_london_report {
     my ( $problem, %h ) = @_;
     my $phone = $h{phone};
     my $mobile = '';
-    if ($phone =~ /^\s*07/) {
+    if ($phone && $phone =~ /^\s*07/) {
         $mobile = $phone;
         $phone = '';
     }
