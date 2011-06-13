@@ -50,8 +50,7 @@ sub index : Path : Args(0) {
     my @keys = sort { strcoll($areas_info->{$a}{name}, $areas_info->{$b}{name}) } keys %$areas_info;
     $c->stash->{areas_info_sorted} = [ map { $areas_info->{$_} } @keys ];
 
-    $c->forward( 'load_problems' );
-    $c->forward( 'group_problems' );
+    $c->forward( 'load_and_group_problems' );
 }
 
 =head2 index
@@ -78,8 +77,7 @@ sub ward : Path : Args(2) {
     $c->forward( 'ward_check', [ $ward ] )
         if $ward;
     $c->forward( 'load_parent' );
-    $c->forward( 'load_problems' );
-    $c->forward( 'group_problems' );
+    $c->forward( 'load_and_group_problems' );
     $c->forward( 'sort_problems' );
 
     $c->stash->{rss_url} = '/rss/reports/'
@@ -241,39 +239,36 @@ sub load_parent : Private {
     }
 }
 
-sub load_problems : Private {
+sub load_and_group_problems : Private {
     my ( $self, $c ) = @_;
 
     my $where = {
         state => [ 'confirmed', 'fixed' ]
     };
+    my @cols = ( 'id', 'council', 'state', 'areas' );
+    push @cols, 'title', 'detail';
     if ($c->stash->{ward}) {
         $where->{areas} = { 'like', '%' . $c->stash->{ward}->{id} . '%' }; # FIXME Check this is secure
+        #push @cols, 'title', 'detail';
     } elsif ($c->stash->{council}) {
         $where->{areas} = { 'like', '%' . $c->stash->{council}->{id} . '%' };
+        #push @cols, 'title', 'detail';
     }
     my $problems = $c->cobrand->problems->search(
         $where,
         {
             columns => [
-                'id', 'title', 'detail', 'council', 'state', 'areas',
+                @cols,
                 { duration => { extract => "epoch from current_timestamp-lastupdate" } },
                 { age      => { extract => "epoch from current_timestamp-confirmed"  } },
             ],
             order_by => { -desc => 'id' },
         }
     );
-    $c->stash->{problems} = [ $problems->all ];
-
-    return 1;
-}
- 
-sub group_problems : Private {
-    my ( $self, $c ) = @_;
 
     my ( %fixed, %open );
     my $re_councils = join('|', keys %{$c->stash->{areas_info}});
-    foreach my $row (@{$c->stash->{problems}}) {
+    while ( my $row = $problems->next ) {
         if (!$row->council) {
             # Problem was not sent to any council, add to possible councils
             my $areas = $row->areas;
