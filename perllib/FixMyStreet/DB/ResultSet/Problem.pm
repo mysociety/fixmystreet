@@ -129,7 +129,8 @@ sub around_map {
             latitude => { '>=', $min_lat, '<', $max_lat },
             longitude => { '>=', $min_lon, '<', $max_lon },
     };
-    $q->{'current_timestamp - lastupdate'} = { '<', \"'$interval'::interval" };
+    $q->{'current_timestamp - lastupdate'} = { '<', \"'$interval'::interval" }
+        if $interval;
 
     my @problems = mySociety::Locale::in_gb_locale { $rs->search( $q, $attr )->all };
     return \@problems;
