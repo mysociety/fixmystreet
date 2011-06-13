@@ -84,10 +84,10 @@
 
 <ul>
 [% FOREACH problem IN problems %]
-    <li><a href="[% c.uri_for(problem.url) %]">[% problem.title | html %]</a>
-    [% IF problem.councils.size > 1 %] <small>[% loc('(sent to both)') %]</small> [% END %]
+    <li><a href="[% c.uri_for('/report/' _ problem.id) %]">[% problem.title | html %]</a>
+    [% IF problem.councils > 1 %] <small>[% loc('(sent to both)') %]</small> [% END %]
     [% IF c.cobrand.moniker != 'emptyhomes' %]
-        [% IF problem.councils.size == 0 %] <small>[% loc('(not sent to council)') %]</small> [% END %]
+        [% IF problem.councils == 0 %] <small>[% loc('(not sent to council)') %]</small> [% END %]
     [% END %]
     [% IF all %] <br><small>[% problem.detail %]</small> [% END %]
     </li>
