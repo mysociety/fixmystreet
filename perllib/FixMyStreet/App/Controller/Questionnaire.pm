@@ -33,6 +33,8 @@ sub load_questionnaire : Private {
         { id => $c->stash->{id} },
         { prefetch => 'problem' }
     );
+    $c->detach('missing_problem') unless $questionnaire;
+
     $c->stash->{questionnaire} = $questionnaire;
 
     my $problem_id = $questionnaire->problem_id;
