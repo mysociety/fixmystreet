@@ -246,13 +246,12 @@ sub load_and_group_problems : Private {
         state => [ 'confirmed', 'fixed' ]
     };
     my @cols = ( 'id', 'council', 'state', 'areas' );
-    push @cols, 'title', 'detail';
     if ($c->stash->{ward}) {
         $where->{areas} = { 'like', '%' . $c->stash->{ward}->{id} . '%' }; # FIXME Check this is secure
-        #push @cols, 'title', 'detail';
+        push @cols, 'title', 'detail';
     } elsif ($c->stash->{council}) {
         $where->{areas} = { 'like', '%' . $c->stash->{council}->{id} . '%' };
-        #push @cols, 'title', 'detail';
+        push @cols, 'title', 'detail';
     }
     my $problems = $c->cobrand->problems->search(
         $where,
