@@ -90,6 +90,7 @@ sub redirect_en_or_xy_to_latlon : Private {
 
     if ( $x || $y ) {
         ( $lat, $lon ) = FixMyStreet::Map::tile_xy_to_wgs84( $x, $y );
+        ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );
     }
     elsif ( $e || $n ) {
         ( $lat, $lon ) = Utils::convert_en_to_latlon_truncated( $e, $n );
