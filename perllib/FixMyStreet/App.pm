@@ -385,6 +385,16 @@ sub uri_for_email {
     return URI->new($email_uri);
 }
 
+sub finalize {
+    my $c = shift;
+    $c->next::method(@_);
+
+    # cobrand holds on to a reference to $c so we want to 
+    # get git rid of this to stop circular references and
+    # memory leaks
+    delete $c->stash->{cobrand};
+}
+
 =head1 SEE ALSO
 
 L<FixMyStreet::App::Controller::Root>, L<Catalyst>
