@@ -30,7 +30,8 @@ sub index :Path :Args(0) {
 
     my $id = $c->req->param('id');
     my $comment = $c->req->param('c');
-    return unless ( $id || $comment );
+    $c->detach( '/page_error_404_not_found', [ 'No photo' ] )
+        unless $id || $comment;
 
     my @photo;
     if ( $comment ) {
