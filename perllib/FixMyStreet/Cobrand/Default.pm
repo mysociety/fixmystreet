@@ -829,11 +829,10 @@ sub reports_council_check {
             my $council = mySociety::MaPit::call( 'area', $area->{parent_area} );
             $c->stash->{ward} = $area;
             $c->stash->{council} = $council;
-            $c->detach( 'redirect_ward' );
         } else {
             $c->stash->{council} = $area;
-            $c->detach( 'redirect_council' );
         }
+        $c->detach( 'redirect_area' );
     }
 }
 

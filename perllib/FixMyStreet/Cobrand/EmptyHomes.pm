@@ -148,9 +148,9 @@ sub council_rss_alert_options {
     foreach (values %$all_councils) {
         $_->{short_name} = $self->short_name( $_ );
         ( $_->{id_name} = $_->{short_name} ) =~ tr/+/_/;
-        if ($_->{type} eq 'DIS') {
+        if ($councils{$_->{type}}) {
             $council = $_;
-        } elsif ($_->{type} eq 'DIW') {
+        } else {
             $ward = $_;
         }
     }

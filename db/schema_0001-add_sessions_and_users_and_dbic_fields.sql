@@ -33,6 +33,9 @@ update contacts_history
           and contacts_history.area_id = contacts.area_id
     );
 
+-- Note any categories that have been deleted will cause the following
+-- line to fail, and they'll need to be deleted manually first.
+
 AlTER TABLE contacts_history
     alter COLUMN contact_id SET NOT NULL;
     
