@@ -177,12 +177,12 @@ sub _send_aggregated_alert_email(%) {
     $data{unsubscribe_url} = $cobrand->base_url_for_emails( $data{cobrand_data} ) . '/A/' . $token->token;
 
     my $template = FixMyStreet->path_to(
-        "templates", "email", $cobrand->moniker, "$data{template}.txt"
-    )->stringify;
-    my $template_cobrand = FixMyStreet->path_to(
         "templates", "email", $cobrand->moniker, $data{lang}, "$data{template}.txt"
     )->stringify;
-    $template = $template_cobrand if -e $template_cobrand;
+    $template = FixMyStreet->path_to( "templates", "email", $cobrand->moniker, "$data{template}.txt" )->stringify
+        unless -e $template;
+    $template = FixMyStreet->path_to( "templates", "email", "default", "$data{template}.txt" )->stringify
+        unless -e $template;
     $template = File::Slurp::read_file($template);
 
     my $sender = $cobrand->contact_email;
