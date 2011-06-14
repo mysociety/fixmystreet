@@ -260,7 +260,7 @@ while (my $row = $unsent->next) {
     } elsif ($send_web eq 'barnet') {
         $h{message} = construct_barnet_message(%h);
         if (!$nomail) {
-            $result *= post_barnet_message(%h);
+            $result *= post_barnet_message( $row, %h );
         }
     } elsif ($send_web eq 'london') {
         $h{message} = construct_london_message(%h);
@@ -404,7 +404,7 @@ sub post_easthants_message {
     return $return;
 }
 
-# TODO: currently just blind copy of construct_easthants_message
+# currently just blind copy of construct_easthants_message
 sub construct_barnet_message {
     my %h = @_;
     my $message = '';
@@ -424,9 +424,8 @@ EOF
     return $message;
 }
 
-my $barnet_service;
 sub post_barnet_message {
-    my %h = @_;
+    my ( $problem, %h ) = @_;
     my $return = 1;
     my $kbid = $h{category}; # TODO: KBID is 50-char category ID: map our category -> Barnet KBID
     my $geo_code = "$h{easting} $h{northing}"; 
@@ -469,11 +468,11 @@ sub post_barnet_message {
             IV_PROBLEM_SUB => truncate_string_with_entities(ent(encode_utf8($h{title})), 40), # char40
           },,
         );
-        if ($result){        
+        if ($result) {
             # currently not using this: get_EV_ORDER_GUID (maybe that's the customer number in the CRM)
             if (my $barnet_id = $result->get_EV_ORDER_NO()) {
-                # print "EVERYTHING HUNKYDORY: id: ===========>[$barnet_id]<==============\n";                            
-                # FIXME write to db
+                $problem->external_id( $barnet_id );
+                $problem->external_body( 'Barnet Council CRM' );
                 $return = 0;
             } else {
                 print "Failed (problem id $h{id}): service returned no external id\n";                
@@ -597,7 +596,9 @@ sub london_lookup {
     return $str;
 }
 
-# truncate_string
+# for barnet webservice: max-length fields require truncate and split
+
+# truncate_string_with_entities
 # args:    text to truncate
 #          max number of chars
 # returns: string truncated
@@ -625,7 +626,7 @@ sub truncate_string_with_entities {
 # args:    text to be broken into lines
 #          max length (option: uses constant MAX_LINE_LENGTH)
 # returns: ref to array of lines
-# Important not to split an entity (e.g., &amp;)
+# Must not to split an entity (e.g., &amp;)
 # Not worrying about hyphenating here, since a word is only ever split if 
 # it's longer than the whole line, which is uncommon in genuine problem reports
 sub split_text_with_entities {
