@@ -7,6 +7,10 @@ use warnings;
 use Carp;
 use mySociety::MaPit;
 
+sub country {
+    return 'NO';
+}
+
 sub set_lang_and_domain {
     my ( $self, $lang, $unicode, $dir ) = @_;
     mySociety::Locale::negotiate_language(

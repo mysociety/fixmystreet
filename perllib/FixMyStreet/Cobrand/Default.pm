@@ -71,6 +71,16 @@ sub path_to_web_templates {
     return FixMyStreet->path_to( 'templates/web', $self->moniker );
 }
 
+=head1 country
+
+Returns the country that this cobrand operates in, as an ISO3166-alpha2 code.
+
+=cut
+
+sub country {
+    return 'GB';
+}
+
 =head1 problems_clause
 
 Returns a hash for a query to be used by problems (and elsewhere in joined

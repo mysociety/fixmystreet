@@ -27,9 +27,6 @@ define('OPTION_BCI_DB_PASS', '');
 
 define('OPTION_BASE_URL', 'http://www.example.org');
 
-# Which country are you operating in? ISO3166-alpha2 code please
-define('OPTION_COUNTRY', 'GB');
-
 define('OPTION_EMAIL_DOMAIN', 'example.org');
 define('OPTION_CONTACT_EMAIL', 'team@'.OPTION_EMAIL_DOMAIN);
 define('OPTION_TEST_EMAIL_PREFIX', null);

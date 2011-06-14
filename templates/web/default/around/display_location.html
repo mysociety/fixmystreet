@@ -53,7 +53,7 @@
     [% ELSE %]
         <a id='hide_pins_link' rel='nofollow' href='[% c.uri_with( { no_pins => 1 } ) %]'>[% loc('Hide pins') %]</a>
     [% END %]
-    [% IF c.config.COUNTRY == 'GB' %]
+    [% IF c.cobrand.country == 'GB' %]
         |
         [% IF c.req.params.all_pins %]
             <a id='all_pins_link' rel='nofollow' href='[% c.uri_with( { no_pins => undef, all_pins => undef } ) %]'>[% loc('Hide stale reports') %]</a>
@@ -63,7 +63,7 @@
     [% END %]
 </p>
 
-[% IF c.config.COUNTRY == 'GB' %]
+[% IF c.cobrand.country == 'GB' %]
 <input type='hidden' id='all_pins' name='all_pins' value='[% all_pins | html %]'>
 [% END %]
 

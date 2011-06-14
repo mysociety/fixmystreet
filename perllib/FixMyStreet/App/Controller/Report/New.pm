@@ -156,7 +156,7 @@ sub report_import : Path('/import') {
         push @errors, 'Please enter a valid email';
     }
 
-    if ( $latitude && $c->config->{COUNTRY} eq 'GB' ) {
+    if ( $latitude && $c->cobrand->country eq 'GB' ) {
         eval { Utils::convert_latlon_to_en( $latitude, $longitude ); };
         push @errors,
           "We had a problem with the supplied co-ordinates - outside the UK?"

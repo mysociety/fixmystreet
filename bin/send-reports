@@ -79,7 +79,7 @@ while (my $row = $unsent->next) {
     
     # If we are in the UK include eastings and northings, and nearest stuff
     $h{easting_northing} = '';
-    if ( mySociety::Config::get('COUNTRY') eq 'GB' ) {
+    if ( $cobrand->country eq 'GB' ) {
 
         ( $h{easting}, $h{northing} ) = Utils::convert_latlon_to_en( $h{latitude}, $h{longitude} );
 

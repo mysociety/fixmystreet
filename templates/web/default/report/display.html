@@ -10,7 +10,7 @@
 
 [% map_html %]
 
-[% IF c.config.COUNTRY == 'GB' %]
+[% IF c.cobrand.country == 'GB' %]
 <p id='sub_map_links'>
     <a href="http://maps.google.co.uk/maps?output=embed&amp;z=16&amp;q=
     [%- problem.title _ ' - ' _ c.cobrand.base_url_for_emails _ '/report/' _ problem.id | uri -%]

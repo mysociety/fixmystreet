@@ -222,7 +222,7 @@ sub check_location_is_acceptable : Private {
     my $lon = $c->stash->{longitude};
 
     # If in UK and we have a lat,lon coocdinate check it is in UK
-    if ( $lat && $c->config->{COUNTRY} eq 'GB' ) {
+    if ( $lat && $c->cobrand->country eq 'GB' ) {
         eval { Utils::convert_latlon_to_en( $lat, $lon ); };
         if ($@) {
             $c->stash->{location_error} =

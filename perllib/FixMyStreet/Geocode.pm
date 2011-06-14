@@ -38,20 +38,20 @@ BEGIN {
 sub lookup {
     my ($s, $c) = @_;
     my ($latitude, $longitude, $error);
-    if (mySociety::Config::get('COUNTRY') eq 'GB') {
+    if ( $c->cobrand->country eq 'GB') {
         if ($s =~ /^\d+$/) {
             $error = 'FixMyStreet is a UK-based website that currently works in England, Scotland, and Wales. Please enter either a postcode, or a Great British street name and area.';
         } elsif (mySociety::PostcodeUtil::is_valid_postcode($s)) {
             my $location = mySociety::MaPit::call('postcode', $s);
-            unless ($error = mapit_check_error($location)) {
+            unless ( $error = mapit_check_error( $c, $location ) ) {
                 $latitude  = $location->{wgs84_lat};
                 $longitude = $location->{wgs84_lon};
             }
         }
-    } elsif (mySociety::Config::get('COUNTRY') eq 'NO') {
+    } elsif ( $c->cobrand->country eq 'NO') {
         if ($s =~ /^\d{4}$/) {
             my $location = mySociety::MaPit::call('postcode', $s);
-            unless ($error = mapit_check_error($location)) {
+            unless ( $error = mapit_check_error( $c, $location ) ) {
                 $latitude  = $location->{wgs84_lat};
                 $longitude = $location->{wgs84_lon};
             }
@@ -64,7 +64,7 @@ sub lookup {
 }
 
 sub geocoded_string_coordinates {
-    my ( $js ) = @_;
+    my ( $c, $js ) = @_;
     my ($latitude, $longitude, $error);
     my ($accuracy) = $js =~ /"Accuracy" *: *(\d)/;
     if ($accuracy < 4) {  
@@ -72,7 +72,7 @@ sub geocoded_string_coordinates {
     } elsif ( $js =~ /"coordinates" *: *\[ *(.*?), *(.*?),/ ) {
         $longitude = $1;
         $latitude  = $2;
-        if (mySociety::Config::get('COUNTRY') eq 'GB') {
+        if ( $c->cobrand->country eq 'GB') {
             try {
                 my ($easting, $northing) = Utils::convert_latlon_to_en( $latitude, $longitude );
             } catch Error::Simple with {
@@ -98,7 +98,7 @@ sub results_check {
         push (@valid_locations, $_); 
     }
     if (scalar @valid_locations == 1) {
-        return geocoded_string_coordinates( $valid_locations[0] );
+        return geocoded_string_coordinates( $c, $valid_locations[0] );
     }
     $error = _('Sorry, we could not find that location.') unless $error;
     return (undef, undef, $error);
@@ -128,7 +128,7 @@ sub string {
         # think we are in the UK for some locations so we explictly add UK to
         # the address. We do it here so as not to invalidate existing cache
         # entries
-        if (   mySociety::Config::get('COUNTRY') eq 'GB'
+        if (   $c->cobrand->country eq 'GB'
             && $url !~ /,\+UK/
             && $url !~ /united\++kingdom$/ )
         {
@@ -160,12 +160,12 @@ sub string {
 }
 
 sub mapit_check_error {
-    my $location = shift;
+    my ( $c, $location ) = @_;
     if ($location->{error}) {
         return _('That postcode was not recognised, sorry.') if $location->{code} =~ /^4/;
         return $location->{error};
     }
-    if (mySociety::Config::get('COUNTRY') eq 'GB') {
+    if ( $c->cobrand->country eq 'GB') {
         my $island = $location->{coordsyst};
         if (!$island) {
             return _("Sorry, that appears to be a Crown dependency postcode, which we don't cover.");
