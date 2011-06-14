@@ -177,7 +177,7 @@ create table problem (
     lastupdate timestamp not null default ms_current_timestamp(),
     whensent timestamp,
     send_questionnaire boolean not null default 't',
-    flagged boolean not null default 'f',
+    flagged boolean not null default 'f'
 );
 create index problem_state_latitude_longitude_idx on problem(state, latitude, longitude);
 create index problem_user_id_idx on problem ( user_id );
