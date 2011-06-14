@@ -1,5 +1,9 @@
 [% INCLUDE 'header.html', title => '' %]
 
+[% IF error %]
+    <p class="error">[% error %]</p>
+[% END %]
+
 <p id="expl">        
     [% 
         subhead
@@ -30,12 +34,6 @@
    # EOF
    # }
 %]
-
-
-[% IF error %]
-    <p class="error">[% error %]</p>
-[% END %]
-
 
 [%
     question
