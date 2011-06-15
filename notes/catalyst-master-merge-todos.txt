@@ -1,9 +1,0 @@
-display_map needs a properly faked $q so it can choose a cobrand. Or should it be ported to use new cobrand?
-
-change uri_for to use cobrand->url so we don't have to
-
-should we ditch flickr import? (does not seem to be getting huge usage and those using it would probably report using another method: http://www.flickr.com/search/?w=all&q=fixmystreet&m=tags)
-
-move all FAQ over to TT2
-
-check that using specific 404 and 410 pages is ok for reports

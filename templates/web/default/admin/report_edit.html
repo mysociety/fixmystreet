@@ -38,7 +38,7 @@
 
 [% IF problem.photo %]
 [% photo = problem.get_photo_params %]
-<li><img alt="" height="[% photo.height %]" width="[% photo.width %]" src="[% photo.url %]">
+<li><img alt="" height="[% photo.height %]" width="[% photo.width %]" src="[% c.cobrand.base_url %][% photo.url %]">
 <input type="checkbox" id="remove_photo" name="remove_photo" value="1">
 <label for="remove_photo">[% loc("Remove photo (can't be undone!)") %]</label></li>
 [% END %]
