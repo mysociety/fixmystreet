@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2011-06-09 18:49+0100\n"
+"POT-Creation-Date: 2011-06-14 17:28+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: bin/send-reports:173
+#: bin/send-reports:176 perllib/FixMyStreet/DB/Result/Problem.pm:377
 msgid " and "
 msgstr ""
 
@@ -89,7 +89,7 @@ msgstr ""
 msgid "%s - Summary reports"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:738 perllib/FixMyStreet/Cobrand/Default.pm:752
+#: perllib/FixMyStreet/Cobrand/Default.pm:763 perllib/FixMyStreet/Cobrand/Default.pm:777
 msgid "%s ward, %s"
 msgstr ""
 
@@ -101,7 +101,7 @@ msgstr ""
 msgid "%s, reported by %s at %s"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:769 perllib/FixMyStreet/Cobrand/Default.pm:783
+#: perllib/FixMyStreet/Cobrand/Default.pm:794 perllib/FixMyStreet/Cobrand/Default.pm:808
 msgid "%s, within %s ward"
 msgstr ""
 
@@ -125,7 +125,7 @@ msgstr ""
 msgid "(fixed)"
 msgstr ""
 
-#: templates/web/default/index.html:4 templates/web/default/index.html:8
+#: templates/web/default/index.html:12 templates/web/default/index.html:8
 msgid "(like graffiti, fly tipping, broken paving slabs, or street lighting)"
 msgstr ""
 
@@ -145,15 +145,15 @@ msgstr ""
 msgid "(we never show your email address or phone number)"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:261
+#: perllib/FixMyStreet/App/Controller/Admin.pm:259
 msgid "*unknown*"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:475 perllib/FixMyStreet/App/Controller/Report/New.pm:501 perllib/FixMyStreet/DB/Result/Problem.pm:204
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:476 perllib/FixMyStreet/App/Controller/Report/New.pm:504 perllib/FixMyStreet/DB/Result/Problem.pm:204
 msgid "-- Pick a category --"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:461 perllib/FixMyStreet/DB/Result/Problem.pm:210
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:462 perllib/FixMyStreet/DB/Result/Problem.pm:210
 msgid "-- Pick a property type --"
 msgstr ""
 
@@ -297,11 +297,11 @@ msgstr ""
 msgid "Category"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:478 perllib/FixMyStreet/App/Controller/Report/New.pm:502 templates/web/default/admin/council_contacts.html:56 templates/web/default/admin/council_edit.html:23 templates/web/default/admin/report_edit.html:26
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:479 perllib/FixMyStreet/App/Controller/Report/New.pm:505 templates/web/default/admin/council_contacts.html:56 templates/web/default/admin/council_edit.html:23 templates/web/default/admin/report_edit.html:26
 msgid "Category:"
 msgstr ""
 
-#: bin/send-reports:170
+#: bin/send-reports:173
 msgid "Category: %s"
 msgstr ""
 
@@ -365,7 +365,7 @@ msgstr ""
 msgid "Council"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:598 templates/web/default/admin/council_list.html:1
+#: perllib/FixMyStreet/App/Controller/Admin.pm:596 templates/web/default/admin/council_list.html:1
 msgid "Council contacts"
 msgstr ""
 
@@ -449,15 +449,15 @@ msgstr ""
 msgid "Email:"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:463
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:464
 msgid "Empty flat or maisonette"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:462
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:463
 msgid "Empty house or bungalow"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:465
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:466
 msgid "Empty office or other commercial"
 msgstr ""
 
@@ -465,23 +465,23 @@ msgstr ""
 msgid "Empty property details form"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:466
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:467
 msgid "Empty pub or bar"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:467
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:468
 msgid "Empty public building - school, hospital, etc."
 msgstr ""
 
-#: templates/web/default/around/around_index.html:10 templates/web/default/around/around_index.html:13 templates/web/default/index.html:40 templates/web/default/index.html:43
+#: templates/web/default/around/around_index.html:10 templates/web/default/around/around_index.html:13 templates/web/default/index.html:38 templates/web/default/index.html:41
 msgid "Enter a nearby GB postcode, or street name and area"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:20
+#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:24
 msgid "Enter a nearby postcode, or street name and area"
 msgstr ""
 
-#: templates/web/default/index.html:61
+#: templates/web/default/index.html:59
 msgid "Enter details of the problem"
 msgstr ""
 
@@ -520,7 +520,7 @@ msgid ""
 "within a certain distance of a particular location."
 msgstr ""
 
-#: templates/web/default/alert/list.html:101
+#: templates/web/default/alert/list.html:100
 msgid ""
 "FixMyStreet sends different categories of problem\n"
 "to the appropriate council, so problems within the boundary of a particular council\n"
@@ -554,15 +554,15 @@ msgstr ""
 msgid "Further information about our work on empty homes."
 msgstr ""
 
-#: templates/web/default/index.html:22
+#: templates/web/default/index.html:26
 msgid "Get FixMyStreet on your iPhone"
 msgstr ""
 
-#: templates/web/default/alert/list.html:115
+#: templates/web/default/alert/list.html:112
 msgid "Give me an RSS feed"
 msgstr ""
 
-#: templates/web/default/alert/index.html:24 templates/web/default/around/around_index.html:17 templates/web/default/index.html:49
+#: templates/web/default/alert/index.html:24 templates/web/default/around/around_index.html:17 templates/web/default/index.html:47
 msgid "Go"
 msgstr ""
 
@@ -610,15 +610,15 @@ msgstr ""
 msgid "History"
 msgstr ""
 
-#: templates/web/default/index.html:56
+#: templates/web/default/index.html:54
 msgid "How to report a problem"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:516
+#: perllib/FixMyStreet/App/Controller/Admin.pm:514
 msgid "I am afraid you cannot confirm unconfirmed reports."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:93
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:96
 msgid "I'm afraid we couldn't locate your problem in the database.\n"
 msgstr ""
 
@@ -693,7 +693,7 @@ msgstr ""
 msgid "Local alerts"
 msgstr ""
 
-#: templates/web/default/index.html:60
+#: templates/web/default/index.html:58
 msgid "Locate the problem on a map of the area"
 msgstr ""
 
@@ -749,7 +749,7 @@ msgstr ""
 msgid "Nearly Done! Now check your email..."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:291
+#: perllib/FixMyStreet/App/Controller/Admin.pm:289
 msgid "New category contact added"
 msgstr ""
 
@@ -805,7 +805,7 @@ msgstr ""
 msgid "New reports within {{NAME}}'s boundary on reportemptyhomes.com"
 msgstr ""
 
-#: templates/web/default/index.html:23
+#: templates/web/default/index.html:27
 msgid "New!"
 msgstr ""
 
@@ -881,7 +881,7 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
-#: templates/web/default/alert/list.html:88
+#: templates/web/default/alert/list.html:87
 msgid "Or problems reported to:"
 msgstr ""
 
@@ -889,12 +889,8 @@ msgstr ""
 msgid "Or you can subscribe to an alert based upon what ward or council you&rsquo;re in:"
 msgstr ""
 
-#: bin/send-reports:165 bin/send-reports:174 perllib/FixMyStreet/App/Controller/Report/New.pm:492 perllib/FixMyStreet/App/Controller/Report/New.pm:501 perllib/FixMyStreet/App/Controller/Report/New.pm:856 perllib/FixMyStreet/DB/Result/Problem.pm:316 perllib/FixMyStreet/DB/Result/Problem.pm:326 perllib/FixMyStreet/DB/Result/Problem.pm:336 perllib/FixMyStreet/DB/Result/Problem.pm:348
+#: bin/send-reports:168 bin/send-reports:177 perllib/FixMyStreet/App/Controller/Report/New.pm:495 perllib/FixMyStreet/App/Controller/Report/New.pm:504 perllib/FixMyStreet/App/Controller/Report/New.pm:855 perllib/FixMyStreet/DB/Result/Problem.pm:316 perllib/FixMyStreet/DB/Result/Problem.pm:326 perllib/FixMyStreet/DB/Result/Problem.pm:336 perllib/FixMyStreet/DB/Result/Problem.pm:348
 msgid "Other"
-msgstr ""
-
-#: templates/web/default/errors/page_error_410_gone.html:1 templates/web/default/errors/page_error_410_gone.html:3
-msgid "Page Gone"
 msgstr ""
 
 #: templates/web/default/errors/page_error_404_not_found.html:1 templates/web/default/errors/page_error_404_not_found.html:3
@@ -921,7 +917,7 @@ msgstr ""
 msgid "Photos of recent nearby reports"
 msgstr ""
 
-#: templates/web/default/index.html:78
+#: templates/web/default/index.html:76
 msgid "Photos of recent reports"
 msgstr ""
 
@@ -941,7 +937,7 @@ msgstr ""
 msgid "Please check your email address is correct"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:640 perllib/FixMyStreet/App/Controller/Report/New.pm:660 perllib/FixMyStreet/App/Controller/Report/New.pm:676 perllib/FixMyStreet/DB/Result/Problem.pm:206
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:639 perllib/FixMyStreet/App/Controller/Report/New.pm:659 perllib/FixMyStreet/App/Controller/Report/New.pm:675 perllib/FixMyStreet/DB/Result/Problem.pm:206
 msgid "Please choose a category"
 msgstr ""
 
@@ -1022,7 +1018,7 @@ msgstr ""
 msgid "Please fill in the form below with details of the problem, and describe the location as precisely as possible in the details box."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:239
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:242
 msgid "Please indicate whether you'd like to receive another questionnaire"
 msgstr ""
 
@@ -1038,15 +1034,15 @@ msgstr ""
 msgid "Please note:"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:242
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:245
 msgid "Please provide some explanation as to why you're reopening this report"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:249
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:252
 msgid "Please provide some text as well as a photo"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:119 perllib/FixMyStreet/App/Controller/Questionnaire.pm:235
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:122 perllib/FixMyStreet/App/Controller/Questionnaire.pm:238
 msgid "Please say whether you've ever reported a problem to your council before"
 msgstr ""
 
@@ -1058,7 +1054,7 @@ msgstr ""
 msgid "Please select the type of alert you want"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:231
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:234
 msgid "Please state whether or not the problem has been fixed"
 msgstr ""
 
@@ -1066,7 +1062,7 @@ msgstr ""
 msgid "Please take a look at the updates that have been left."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:729
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:728
 msgid "Please upload a JPEG image only"
 msgstr ""
 
@@ -1106,7 +1102,7 @@ msgstr ""
 msgid "Problem breakdown by state"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:745
+#: perllib/FixMyStreet/App/Controller/Admin.pm:743
 msgid "Problem marked as open."
 msgstr ""
 
@@ -1122,11 +1118,11 @@ msgstr ""
 msgid "Problems within %.1fkm of this location"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:694 perllib/FixMyStreet/Cobrand/EmptyHomes.pm:161 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:123
+#: perllib/FixMyStreet/Cobrand/Default.pm:719 perllib/FixMyStreet/Cobrand/EmptyHomes.pm:161 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:127
 msgid "Problems within %s"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:703 perllib/FixMyStreet/Cobrand/EmptyHomes.pm:169
+#: perllib/FixMyStreet/Cobrand/Default.pm:728 perllib/FixMyStreet/Cobrand/EmptyHomes.pm:169
 msgid "Problems within %s ward"
 msgstr ""
 
@@ -1142,7 +1138,7 @@ msgstr ""
 msgid "Properties recently reported as put back to use on reportemptyhomes.com"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:469
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:470
 msgid "Property type:"
 msgstr ""
 
@@ -1162,7 +1158,7 @@ msgstr ""
 msgid "Questionnaire %d sent for problem %d"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:185
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:188
 msgid "Questionnaire filled in by problem reporter"
 msgstr ""
 
@@ -1170,19 +1166,19 @@ msgstr ""
 msgid "RSS feed"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:732 perllib/FixMyStreet/Cobrand/Default.pm:746
+#: perllib/FixMyStreet/Cobrand/Default.pm:757 perllib/FixMyStreet/Cobrand/Default.pm:771
 msgid "RSS feed for %s"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:739 perllib/FixMyStreet/Cobrand/Default.pm:753
+#: perllib/FixMyStreet/Cobrand/Default.pm:764 perllib/FixMyStreet/Cobrand/Default.pm:778
 msgid "RSS feed for %s ward, %s"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:762 perllib/FixMyStreet/Cobrand/Default.pm:776 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:139 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:147 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:157 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:165
+#: perllib/FixMyStreet/Cobrand/Default.pm:787 perllib/FixMyStreet/Cobrand/Default.pm:801 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:143 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:151 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:161 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:169
 msgid "RSS feed of %s"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:768 perllib/FixMyStreet/Cobrand/Default.pm:782
+#: perllib/FixMyStreet/Cobrand/Default.pm:793 perllib/FixMyStreet/Cobrand/Default.pm:807
 msgid "RSS feed of %s, within %s ward"
 msgstr ""
 
@@ -1194,11 +1190,11 @@ msgstr ""
 msgid "RSS feed of problems in this %s"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:695 perllib/FixMyStreet/Cobrand/EmptyHomes.pm:162 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:122
+#: perllib/FixMyStreet/Cobrand/Default.pm:720 perllib/FixMyStreet/Cobrand/EmptyHomes.pm:162 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:126
 msgid "RSS feed of problems within %s"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:702 perllib/FixMyStreet/Cobrand/EmptyHomes.pm:168
+#: perllib/FixMyStreet/Cobrand/Default.pm:727 perllib/FixMyStreet/Cobrand/EmptyHomes.pm:168
 msgid "RSS feed of problems within %s ward"
 msgstr ""
 
@@ -1222,7 +1218,7 @@ msgstr ""
 msgid "Recently fixed"
 msgstr ""
 
-#: templates/web/default/index.html:87
+#: templates/web/default/index.html:85
 msgid "Recently reported problems"
 msgstr ""
 
@@ -1242,11 +1238,11 @@ msgstr ""
 msgid "Report a problem"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Rss.pm:262
+#: perllib/FixMyStreet/App/Controller/Rss.pm:252
 msgid "Report on %s"
 msgstr ""
 
-#: templates/web/default/index.html:11
+#: templates/web/default/index.html:15
 msgid "Report, view, or discuss local problems"
 msgstr ""
 
@@ -1302,7 +1298,7 @@ msgstr ""
 msgid "Save changes"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:599 templates/web/default/admin/search_reports.html:1
+#: perllib/FixMyStreet/App/Controller/Admin.pm:597 templates/web/default/admin/search_reports.html:1
 msgid "Search Reports"
 msgstr ""
 
@@ -1314,7 +1310,7 @@ msgstr ""
 msgid "Select which type of alert you'd like and click the button for an RSS feed, or enter your email address to subscribe to an email alert."
 msgstr ""
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:378
+#: perllib/FixMyStreet/DB/Result/Problem.pm:390
 msgid "Sent to %s %s later"
 msgstr ""
 
@@ -1407,11 +1403,11 @@ msgstr ""
 msgid "Subscribe"
 msgstr ""
 
-#: templates/web/default/alert/list.html:127
+#: templates/web/default/alert/list.html:124
 msgid "Subscribe me to an email alert"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:597 templates/web/default/admin/index.html:1
+#: perllib/FixMyStreet/App/Controller/Admin.pm:595 templates/web/default/admin/index.html:1
 msgid "Summary"
 msgstr ""
 
@@ -1419,7 +1415,7 @@ msgstr ""
 msgid "Summary reports"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:601 templates/web/default/admin/questionnaire.html:1
+#: perllib/FixMyStreet/App/Controller/Admin.pm:599 templates/web/default/admin/questionnaire.html:1
 msgid "Survey Results"
 msgstr ""
 
@@ -1471,7 +1467,7 @@ msgstr ""
 msgid "Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:738
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:737
 msgid "That image doesn't appear to have uploaded correctly (%s), please try again."
 msgstr ""
 
@@ -1487,11 +1483,11 @@ msgstr ""
 msgid "That postcode was not recognised, sorry."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:498
+#: perllib/FixMyStreet/App/Controller/Admin.pm:496
 msgid "That problem will now be resent."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report.pm:75 perllib/FixMyStreet/App/Controller/Rss.pm:41
+#: perllib/FixMyStreet/App/Controller/Report.pm:75
 msgid "That report has been removed from FixMyStreet."
 msgstr ""
 
@@ -1570,15 +1566,11 @@ msgstr ""
 msgid "The passwords do not match"
 msgstr ""
 
-#: templates/web/default/errors/page_error_410_gone.html:10 templates/web/default/errors/page_error_410_gone.html:12
-msgid "The requested URL '%s' is no longer available"
-msgstr ""
-
 #: templates/web/default/errors/page_error_404_not_found.html:10 templates/web/default/errors/page_error_404_not_found.html:12
 msgid "The requested URL '%s' was not found on this server"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:479 perllib/FixMyStreet/App/Controller/Admin.pm:649 perllib/FixMyStreet/App/Controller/Admin.pm:688 perllib/FixMyStreet/App/Controller/Admin.pm:773
+#: perllib/FixMyStreet/App/Controller/Admin.pm:477 perllib/FixMyStreet/App/Controller/Admin.pm:647 perllib/FixMyStreet/App/Controller/Admin.pm:686 perllib/FixMyStreet/App/Controller/Admin.pm:771
 msgid "The requested URL was not found on this server."
 msgstr ""
 
@@ -1602,11 +1594,11 @@ msgstr ""
 msgid "There were problems with your update. Please see below."
 msgstr ""
 
-#: bin/send-reports:175
+#: bin/send-reports:178
 msgid "This email has been sent to both councils covering the location of the problem, as the user did not categorise it; please ignore it if you're not the correct council to deal with the issue, or let us know what category of problem this is so we can add it to our system."
 msgstr ""
 
-#: bin/send-reports:178
+#: bin/send-reports:181
 msgid "This email has been sent to several councils covering the location of the problem, as the category selected is provided for all of them; please ignore it if you're not the correct council to deal with the issue."
 msgstr ""
 
@@ -1626,19 +1618,19 @@ msgstr ""
 msgid "This is a summary of all reports on this site; select a particular council to see the reports sent there."
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:815 perllib/FixMyStreet/Cobrand/EmptyHomes.pm:117 templates/web/default/report/display.html:111
+#: perllib/FixMyStreet/Cobrand/Default.pm:840 perllib/FixMyStreet/Cobrand/EmptyHomes.pm:117 templates/web/default/report/display.html:111
 msgid "This problem has been fixed"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:811
+#: perllib/FixMyStreet/Cobrand/Default.pm:836
 msgid "This problem is old and of unknown status."
 msgstr ""
 
-#: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:80
+#: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:78
 msgid "This report is currently marked as fixed."
 msgstr ""
 
-#: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:81
+#: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:79
 msgid "This report is currently marked as open."
 msgstr ""
 
@@ -1646,7 +1638,7 @@ msgstr ""
 msgid "This web page also contains a photo of the problem, provided by the user."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:600 templates/web/default/admin/timeline.html:1
+#: perllib/FixMyStreet/App/Controller/Admin.pm:598 templates/web/default/admin/timeline.html:1
 msgid "Timeline"
 msgstr ""
 
@@ -1676,11 +1668,11 @@ msgstr ""
 msgid "Unconfirmed"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Rss.pm:166
+#: perllib/FixMyStreet/App/Controller/Rss.pm:156
 msgid "Unknown alert type"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report.pm:70 perllib/FixMyStreet/App/Controller/Report/Update.pm:24 perllib/FixMyStreet/App/Controller/Rss.pm:37
+#: perllib/FixMyStreet/App/Controller/Report.pm:70 perllib/FixMyStreet/App/Controller/Report/Update.pm:24
 msgid "Unknown problem ID"
 msgstr ""
 
@@ -1712,7 +1704,7 @@ msgstr ""
 msgid "Update:"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:572 perllib/FixMyStreet/App/Controller/Admin.pm:735
+#: perllib/FixMyStreet/App/Controller/Admin.pm:570 perllib/FixMyStreet/App/Controller/Admin.pm:733
 msgid "Updated!"
 msgstr ""
 
@@ -1728,7 +1720,7 @@ msgstr ""
 msgid "Updates to this problem, FixMyStreet"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:286 perllib/FixMyStreet/App/Controller/Admin.pm:316
+#: perllib/FixMyStreet/App/Controller/Admin.pm:284 perllib/FixMyStreet/App/Controller/Admin.pm:314
 msgid "Values updated"
 msgstr ""
 
@@ -1756,7 +1748,7 @@ msgstr ""
 msgid "We found more than one match for that location. We show up to ten matches, please try a different search if yours is not here."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Around.pm:235
+#: perllib/FixMyStreet/App/Controller/Around.pm:229
 msgid "We had a problem with the supplied co-ordinates - outside the UK?"
 msgstr ""
 
@@ -1764,11 +1756,11 @@ msgstr ""
 msgid "We may contact you periodically to ask if anything has changed with the property you reported."
 msgstr ""
 
-#: bin/send-reports:185
+#: bin/send-reports:188
 msgid "We realise this problem might be the responsibility of %s; however, we don't currently have any contact details for them. If you know of an appropriate contact address, please do get in touch."
 msgstr ""
 
-#: templates/web/default/index.html:62
+#: templates/web/default/index.html:60
 msgid "We send it to the council on your behalf"
 msgstr ""
 
@@ -1792,7 +1784,7 @@ msgstr ""
 msgid "When sent"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:464
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:465
 msgid "Whole block of empty flats"
 msgstr ""
 
@@ -1836,7 +1828,7 @@ msgstr ""
 msgid "You can help us by finding a contact email address for local problems for %s and emailing it to us at <a href='mailto:%s'>%s</a>."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:42
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:45
 msgid "You have already answered this questionnaire. If you have a question, please <a href='%s'>get in touch</a>, or <a href='%s'>view your problem</a>.\n"
 msgstr ""
 
@@ -1884,7 +1876,7 @@ msgstr ""
 msgid "Your Reports"
 msgstr ""
 
-#: templates/web/default/alert/list.html:123
+#: templates/web/default/alert/list.html:120
 msgid "Your email:"
 msgstr ""
 
@@ -1916,11 +1908,11 @@ msgstr ""
 msgid "marked as fixed"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:107 templates/web/default/admin/questionnaire.html:15 templates/web/default/admin/questionnaire.html:16
+#: perllib/FixMyStreet/App/Controller/Admin.pm:106 templates/web/default/admin/questionnaire.html:15 templates/web/default/admin/questionnaire.html:16
 msgid "n/a"
 msgstr ""
 
-#: templates/web/default/alert/list.html:119
+#: templates/web/default/alert/list.html:116
 msgid "or"
 msgstr ""
 
@@ -1940,7 +1932,7 @@ msgstr ""
 msgid "the map was not used so pin location may be inaccurate"
 msgstr ""
 
-#: bin/send-reports:166
+#: bin/send-reports:169
 msgid "this type of local problem"
 msgstr ""
 

@@ -89,8 +89,8 @@ sub page_error_404_not_found : Private {
 
 sub page_error_410_gone : Private {
     my ( $self, $c, $error_msg ) = @_;
-    $c->stash->{template}  = 'errors/page_error_410_gone.html';
-    $c->stash->{error_msg} = $error_msg;
+    $c->stash->{template}  = 'index.html';
+    $c->stash->{error} = $error_msg;
     $c->response->status(410);
 }
 

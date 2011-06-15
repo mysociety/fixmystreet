@@ -275,6 +275,7 @@ sub load_and_group_problems : Private {
         my %problem = zip @cols, @problem;
         if ( !$problem{council} ) {
             # Problem was not sent to any council, add to possible councils
+            $problem{councils} = 0;
             while ($problem{areas} =~ /,($re_councils)(?=,)/g) {
                 add_row( \%problem, $1, \%fixed, \%open );
             }
