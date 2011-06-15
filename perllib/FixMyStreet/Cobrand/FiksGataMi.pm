@@ -196,7 +196,6 @@ sub reports_council_check {
         my @area_types = $c->cobrand->area_types;
         my $areas_k = mySociety::MaPit::call('areas', $kommune, type => \@area_types);
         my $areas_f = mySociety::MaPit::call('areas', $fylke, type => \@area_types);
-        use Data::Dumper;
         if (keys %$areas_f == 1) {
             ($fylke) = values %$areas_f;
             foreach (values %$areas_k) {
