@@ -106,4 +106,16 @@ sub utf8_diag {
         \@NO_sorted, "sort strcoll correctly with use locale 'nb_NO'" );
 }
 
+subtest "check that code is only called once by in_gb_locale" => sub {
+
+    my $scalar_counter = 0;
+    my $out = mySociety::Locale::in_gb_locale { $scalar_counter++ };
+    is $scalar_counter, 1, "code called once in scalar context";
+
+    my $list_counter = 0;
+    my @out = mySociety::Locale::in_gb_locale { $list_counter++ };
+    is $list_counter, 1, "code called once in list context";
+
+};
+
 done_testing();
