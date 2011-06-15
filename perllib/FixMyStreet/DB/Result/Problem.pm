@@ -284,6 +284,21 @@ sub get_photo_params {
     return $photo;
 }
 
+sub is_open {
+    my $self = shift;
+
+    my %open_states = (
+        unconfirmed => 1,
+        partial => 1,
+        confirmed => 1,
+        'planned' => 1,
+        'investigating' => 1,
+        'in progress' => 1,
+    );
+
+    return exists $open_states{ $self->state } ? 1 : 0;
+}
+
 =head2 meta_line
 
 Returns a string to be used on a problem report page, describing some of the

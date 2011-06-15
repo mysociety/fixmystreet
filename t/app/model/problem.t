@@ -152,4 +152,48 @@ for my $test (
     };
 }
 
+for my $test ( 
+    {
+        state => 'unconfirmed',
+        is_open => 1,
+    },
+    {
+        state => 'confirmed',
+        is_open => 1,
+    },
+    {
+        state => 'investigating',
+        is_open => 1,
+    },
+    {
+        state => 'planned',
+        is_open => 1,
+    },
+    {
+        state => 'in progress',
+        is_open => 1,
+    },
+    {
+        state => 'fixed',
+        is_open => 0,
+    },
+    {
+        state => 'fixed - council',
+        is_open => 0,
+    },
+    {
+        state => 'fixed - user',
+        is_open => 0,
+    },
+    {
+        state => 'will not fix',
+        is_open => 0,
+    },
+) {
+    subtest $test->{state} . ' is open/closed' => sub {
+        $problem->state( $test->{state} );
+        is $problem->is_open, $test->{is_open}, 'is_open';
+    };
+}
+
 done_testing();
