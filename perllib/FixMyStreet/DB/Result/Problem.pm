@@ -284,16 +284,22 @@ sub get_photo_params {
     return $photo;
 }
 
+=head2 is_open
+
+Returns 1 if the problem is in a open state otherwise 0;
+
+=cut
+
 sub is_open {
     my $self = shift;
 
     my %open_states = (
-        unconfirmed => 1,
-        partial => 1,
-        confirmed => 1,
-        'planned' => 1,
+        unconfirmed     => 1,
+        partial         => 1,
+        confirmed       => 1,
+        'planned'       => 1,
         'investigating' => 1,
-        'in progress' => 1,
+        'in progress'   => 1,
     );
 
     return exists $open_states{ $self->state } ? 1 : 0;
