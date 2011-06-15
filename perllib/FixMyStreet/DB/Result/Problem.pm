@@ -305,6 +305,22 @@ sub is_open {
     return exists $open_states{ $self->state } ? 1 : 0;
 }
 
+=head2
+
+    @states = FixMyStreet::DB::Problem::visible_states();
+
+Returns a list of states that should be displayed on the site.
+
+=cut
+
+sub visible_states {
+    return (
+        'confirmed',    'planned', 'investigating',
+        'in progress',  'fixed',   'fixed - council',
+        'fixed - user', 'will not fix',
+    );
+}
+
 =head2 meta_line
 
 Returns a string to be used on a problem report page, describing some of the
