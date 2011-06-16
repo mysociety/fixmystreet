@@ -256,7 +256,7 @@ sub load_and_group_problems : Private {
     my ( $self, $c ) = @_;
 
     my $where = {
-        state => [ 'confirmed', 'fixed' ]
+        state => [ FixMyStreet::DB::Result::Problem->visible_states() ]
     };
     my @extra_cols = ();
     if ($c->stash->{ward}) {

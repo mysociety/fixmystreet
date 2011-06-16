@@ -112,7 +112,7 @@ sub generate_problem_banner {
     my ( $self, $problem ) = @_;
 
     my $banner = {};
-    if ($problem->state eq 'fixed') {
+    if ($problem->state->is_fixed ) {
         $banner->{id} = 'fixed';
         $banner->{text} = _('This problem has been fixed') . '.';
     }
