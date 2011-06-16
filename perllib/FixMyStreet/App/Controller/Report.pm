@@ -66,7 +66,7 @@ sub load_problem_or_display_error : Private {
       : $c->cobrand->problems->find( { id => $id } );
 
     # check that the problem is suitable to show.
-    if ( !$problem || $problem->state eq 'unconfirmed' ) {
+    if ( !$problem || $problem->state eq 'unconfirmed' || $problem->state eq 'partial' ) {
         $c->detach( '/page_error_404_not_found', [ _('Unknown problem ID') ] );
     }
     elsif ( $problem->state eq 'hidden' ) {
