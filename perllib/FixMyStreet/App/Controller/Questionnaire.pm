@@ -44,7 +44,7 @@ sub load_questionnaire : Private {
         my $problem_url = $c->uri_for( "/report/$problem_id" );
         my $contact_url = $c->uri_for( "/contact" );
         $c->stash->{message} = sprintf(_("You have already answered this questionnaire. If you have a question, please <a href='%s'>get in touch</a>, or <a href='%s'>view your problem</a>.\n"), $contact_url, $problem_url);
-        $c->stash->{template} = 'questionnaire/error.html';
+        $c->stash->{template} = 'errors/generic.html';
         $c->detach;
     }
 
@@ -95,7 +95,7 @@ sub missing_problem : Private {
     my ( $self, $c ) = @_;
 
     $c->stash->{message} = _("I'm afraid we couldn't locate your problem in the database.\n");
-    $c->stash->{template} = 'questionnaire/error.html';
+    $c->stash->{template} = 'errors/generic.html';
 }
 
 sub submit_creator_fixed : Private {

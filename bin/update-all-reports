@@ -1,0 +1,69 @@
+#!/usr/bin/perl
+
+# update-all-reports:
+# Generate the data for the /reports page
+#
+# Copyright (c) 2011 UK Citizens Online Democracy. All rights reserved.
+# Email: matthew@mysociety.org. WWW: http://www.mysociety.org
+
+use strict;
+use warnings;
+require 5.8.0;
+
+use FixMyStreet::App;
+use File::Path ();
+use File::Slurp;
+use JSON;
+use List::MoreUtils qw(zip);
+
+my $fourweeks = 4*7*24*60*60;
+
+my $problems = FixMyStreet::App->model("DB::Problem")->search(
+    {
+        state => [ 'confirmed', 'fixed' ]
+    },
+    {
+        columns => [
+            'id', 'council', 'state', 'areas',
+            { duration => { extract => "epoch from current_timestamp-lastupdate" } },
+            { age      => { extract => "epoch from current_timestamp-confirmed"  } },
+        ]
+    }
+);
+$problems = $problems->cursor; # Raw DB cursor for speed
+
+my ( %fixed, %open );
+my @cols = ( 'id', 'council', 'state', 'areas', 'duration', 'age' );
+while ( my @problem = $problems->next ) {
+    my %problem = zip @cols, @problem;
+    my @areas;
+    if ( !$problem{council} ) {
+        # Problem was not sent to any council, add to all areas
+        @areas = grep { $_ } split( /,/, $problem{areas} );
+        $problem{councils} = 0;
+    } else {
+        # Add to councils it was sent to
+        (my $council = $problem{council}) =~ s/\|.*$//;
+        @areas = split( /,/, $council );
+        $problem{councils} = scalar @areas;
+    }
+    foreach my $council ( @areas ) {
+        my $duration_str = ( $problem{duration} > 2 * $fourweeks ) ? 'old' : 'new';
+        my $type = ( $problem{duration} > 2 * $fourweeks )
+            ? 'unknown'
+            : ($problem{age} > $fourweeks ? 'older' : 'new');
+        # Fixed problems are either old or new
+        $fixed{$council}{$duration_str}++ if $problem{state} eq 'fixed';
+        # Open problems are either unknown, older, or new
+        $open{$council}{$type}++ if $problem{state} eq 'confirmed';
+    }
+}
+
+my $body = JSON->new->utf8(1)->encode( {
+    fixed => \%fixed,
+    open  => \%open,
+} );
+
+File::Path::mkpath( FixMyStreet->path_to( '../data/' )->stringify );
+File::Slurp::write_file( FixMyStreet->path_to( '../data/all-reports.json' )->stringify, \$body );
+
