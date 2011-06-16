@@ -105,7 +105,7 @@
         </div>
 
 
-        [% IF problem.is_open %]
+        [% IF !problem.is_fixed %]
         <div class="checkbox">
          <input type="checkbox" name="fixed" id="form_fixed" value="1"[% fixed %]>
          <label for="form_fixed">[% loc('This problem has been fixed') %]</label>

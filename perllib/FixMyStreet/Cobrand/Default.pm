@@ -835,7 +835,7 @@ sub generate_problem_banner {
         $banner->{id} = 'unknown';
         $banner->{text} = _('This problem is old and of unknown status.');
     }
-    if ($problem->state eq 'fixed') {
+    if ($problem->is_fixed) {
         $banner->{id} = 'fixed';
         $banner->{text} = _('This problem has been fixed') . '.';
     }

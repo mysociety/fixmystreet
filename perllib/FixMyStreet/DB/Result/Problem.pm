@@ -119,6 +119,74 @@ use Utils;
 
 with 'FixMyStreet::Roles::Abuser';
 
+=head2
+
+    @states = FixMyStreet::DB::Problem::open_states();
+
+Get a list or states that are regarded as open. If called in
+array context then returns an array of names, otherwise returns a
+HASHREF.
+
+=cut
+
+sub open_states {
+    my $states = {
+        'unconfirmed'   => 1,
+        'confirmed'     => 1,
+        'investigating' => 1,
+        'planned'       => 1,
+        'in progress'   => 1,
+    };
+
+    return wantarray ? keys %{$states} : $states;
+}
+
+=head2
+
+    @states = FixMyStreet::DB::Problem::fixed_states();
+
+Get a list or states that should be regarded as fixed. If called in
+array context then returns an array of names, otherwise returns a
+HASHREF.
+
+=cut
+
+sub fixed_states {
+    my $states = {
+        'fixed'           => 1,
+        'fixed - user'    => 1,
+        'fixed - council' => 1,
+    };
+
+    return wantarray ? keys %{ $states } : $states;
+}
+
+=head2
+
+    @states = FixMyStreet::DB::Problem::visible_states();
+
+Get a list or states that should be visible on the site. If called in
+array context then returns an array of names, otherwise returns a
+HASHREF.
+
+=cut
+
+sub visible_states {
+    my $states = {
+        'confirmed'       => 1,
+        'planned'         => 1,
+        'investigating'   => 1,
+        'in progress'     => 1,
+        'fixed'           => 1,
+        'fixed - council' => 1,
+        'fixed - user'    => 1,
+        'will not fix'    => 1,
+    };
+
+    return wantarray ? keys %{$states} : $states;
+}
+
+
 my $tz = DateTime::TimeZone->new( name => "local" );
 
 sub confirmed_local {
@@ -286,39 +354,39 @@ sub get_photo_params {
 
 =head2 is_open
 
-Returns 1 if the problem is in a open state otherwise 0;
+Returns 1 if the problem is in a open state otherwise 0.
 
 =cut
 
 sub is_open {
     my $self = shift;
 
-    my %open_states = (
-        unconfirmed     => 1,
-        partial         => 1,
-        confirmed       => 1,
-        'planned'       => 1,
-        'investigating' => 1,
-        'in progress'   => 1,
-    );
-
-    return exists $open_states{ $self->state } ? 1 : 0;
+    return exists $self->open_states->{ $self->state } ? 1 : 0;
 }
 
-=head2
 
-    @states = FixMyStreet::DB::Problem::visible_states();
+=head2 is_fixed
 
-Returns a list of states that should be displayed on the site.
+Returns 1 if the problem is in a fixed state otherwise 0.
 
 =cut
 
-sub visible_states {
-    return (
-        'confirmed',    'planned', 'investigating',
-        'in progress',  'fixed',   'fixed - council',
-        'fixed - user', 'will not fix',
-    );
+sub is_fixed {
+    my $self = shift;
+
+    return exists $self->fixed_states->{ $self->state } ? 1 : 0;
+}
+
+=head2 is_visible
+
+Returns 1 if the problem should be displayed on the site otherwise 0.
+
+=cut
+
+sub is_visible {
+    my $self = shift;
+
+    return exists $self->visible_states->{ $self->state } ? 1 : 0;
 }
 
 =head2 meta_line

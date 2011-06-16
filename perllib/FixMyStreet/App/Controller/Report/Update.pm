@@ -56,7 +56,7 @@ sub update_problem : Private {
     my $problem = $c->stash->{problem} || $update->problem;
 
     if ( $update->mark_fixed ) {
-        $problem->state('fixed');
+        $problem->state('fixed - user');
 
         if ( $update->user->id == $problem->user->id ) {
             $problem->send_questionnaire(0);

@@ -196,4 +196,100 @@ for my $test (
     };
 }
 
+for my $test ( 
+    {
+        state => 'unconfirmed',
+        is_fixed => 0,
+    },
+    {
+        state => 'confirmed',
+        is_fixed => 0,
+    },
+    {
+        state => 'investigating',
+        is_fixed => 0,
+    },
+    {
+        state => 'planned',
+        is_fixed => 0,
+    },
+    {
+        state => 'in progress',
+        is_fixed => 0,
+    },
+    {
+        state => 'fixed',
+        is_fixed => 1,
+    },
+    {
+        state => 'fixed - council',
+        is_fixed => 1,
+    },
+    {
+        state => 'fixed - user',
+        is_fixed => 1,
+    },
+    {
+        state => 'will not fix',
+        is_fixed => 0,
+    },
+) {
+    subtest $test->{state} . ' is fixed/open' => sub {
+        $problem->state( $test->{state} );
+        is $problem->is_fixed, $test->{is_fixed}, 'is_fixed';
+    };
+}
+
+for my $test ( 
+    {
+        state => 'partial',
+        is_visible => 0,
+    },
+    {
+        state => 'hidden',
+        is_visible => 0,
+    },
+    {
+        state => 'unconfirmed',
+        is_visible => 0,
+    },
+    {
+        state => 'confirmed',
+        is_visible => 1,
+    },
+    {
+        state => 'investigating',
+        is_visible => 1,
+    },
+    {
+        state => 'planned',
+        is_visible => 1,
+    },
+    {
+        state => 'in progress',
+        is_visible => 1,
+    },
+    {
+        state => 'fixed',
+        is_visible => 1,
+    },
+    {
+        state => 'fixed - council',
+        is_visible => 1,
+    },
+    {
+        state => 'fixed - user',
+        is_visible => 1,
+    },
+    {
+        state => 'will not fix',
+        is_visible => 1,
+    },
+) {
+    subtest $test->{state} . ' is fixed/open' => sub {
+        $problem->state( $test->{state} );
+        is $problem->is_visible, $test->{is_visible}, 'is_visible';
+    };
+}
+
 done_testing();

@@ -119,55 +119,6 @@ subtest "test a good report" => sub {
     is $update_form->value($_), $fields{$_}, "$_ value" for keys %fields;
 };
 
-for my $test ( 
-    {
-        state => 'confirmed',
-        display => 1,
-    },
-    {
-        state => 'investigating',
-        display => 1,
-    },
-    {
-        state => 'planned',
-        display => 1,
-    },
-    {
-        state => 'in progress',
-        display => 1,
-    },
-    {
-        state => 'fixed',
-        display => 0,
-    },
-    {
-        state => 'fixed - council',
-        display => 0,
-    },
-    {
-        state => 'fixed - user',
-        display => 0,
-    },
-    {
-        state => 'will not fix',
-        display => 0,
-    },
-) {
-    subtest "check fixed checkbox display for state $test->{state}" => sub {
-        $report->state( $test->{state} );
-        $report->update;
-        $mech->get_ok("/report/$report_id");
-
-        my $update_form = $mech->form_name('updateForm');
-
-        if ( $test->{display} ) {
-            ok defined $update_form->find_input('#form_fixed', 'checkbox'), "fixed checkbox display";
-        } else {
-            is $update_form->find_input('#form_fixed', 'checkbox'), undef, "fixed checkbox display";
-        }
-    };
-}
-
 foreach my $meta (
     {
         anonymous => 'f',
@@ -283,6 +234,30 @@ for my $test (
         banner_id => 'fixed',
         banner_text => 'This problem has been fixed.',
         fixed => 1
+    },
+    {
+        description => 'user fixed report',
+        date => DateTime->now,
+        state => 'fixed - user',
+        banner_id => 'fixed',
+        banner_text => 'This problem has been fixed.',
+        fixed => 1
+    },
+    {
+        description => 'council fixed report',
+        date => DateTime->now,
+        state => 'fixed - council',
+        banner_id => 'fixed',
+        banner_text => 'This problem has been fixed.',
+        fixed => 1
+    },
+    {
+        description => 'closed report',
+        date => DateTime->now,
+        state => 'will not fix',
+        banner_id => '',
+        banner_text => '',
+        fixed => 0
     },
 ) {
     subtest "banner for $test->{description}" => sub {
