@@ -30,8 +30,7 @@ sub index :Path :Args(0) {
 
     my $id = $c->req->param('id');
     my $comment = $c->req->param('c');
-    $c->detach( '/page_error_404_not_found', [ 'No photo' ] )
-        unless $id || $comment;
+    $c->detach( 'no_photo' ) unless $id || $comment;
 
     my @photo;
     if ( $comment ) {
@@ -41,6 +40,12 @@ sub index :Path :Args(0) {
             photo => { '!=', undef },
         } );
     } else {
+        # GoogleBot-Image is doing this for some reason?
+        if ( $id =~ m{ ^(\d+) \D .* $ }x ) {
+            return $c->res->redirect( $c->uri_with( { id => $1 } ), 301 );
+        }
+
+        $c->detach( 'no_photo' ) if $id =~ /\D/;
         @photo = $c->cobrand->problems->search( {
             id => $id,
             state => [ 'confirmed', 'fixed', 'partial' ],
@@ -48,8 +53,7 @@ sub index :Path :Args(0) {
         } );
     }
 
-    $c->detach( '/page_error_404_not_found', [ 'No photo' ] )
-        unless @photo;
+    $c->detach( 'no_photo' ) unless @photo;
 
     my $photo = $photo[0]->photo;
     if ( $c->req->param('tn' ) ) {
@@ -64,6 +68,11 @@ sub index :Path :Args(0) {
     $c->res->content_type( 'image/jpeg' );
     $c->res->header( 'expires', DateTime::Format::HTTP->format_datetime( $dt ) );
     $c->res->body( $photo );
+}
+
+sub no_photo : Private {
+    my ( $self, $c ) = @_;
+    $c->detach( '/page_error_404_not_found', [ 'No photo' ] );
 }
 
 sub _resize {
