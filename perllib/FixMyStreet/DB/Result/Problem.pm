@@ -180,7 +180,7 @@ sub visible_states {
         'fixed'           => 1,
         'fixed - council' => 1,
         'fixed - user'    => 1,
-        'will not fix'    => 1,
+        'closed'          => 1,
     };
 
     return wantarray ? keys %{$states} : $states;

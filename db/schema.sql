@@ -168,7 +168,7 @@ create table problem (
         or state = 'investigating'
         or state = 'planned'
         or state = 'in progress'
-        or state = 'will not fix'
+        or state = 'closed'
         or state = 'fixed'
         or state = 'fixed - council'
         or state = 'fixed - user'

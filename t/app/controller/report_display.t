@@ -254,7 +254,7 @@ for my $test (
     {
         description => 'closed report',
         date => DateTime->now,
-        state => 'will not fix',
+        state => 'closed',
         banner_id => '',
         banner_text => '',
         fixed => 0

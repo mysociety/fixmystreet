@@ -186,7 +186,7 @@ for my $test (
         is_open => 0,
     },
     {
-        state => 'will not fix',
+        state => 'closed',
         is_open => 0,
     },
 ) {
@@ -230,7 +230,7 @@ for my $test (
         is_fixed => 1,
     },
     {
-        state => 'will not fix',
+        state => 'closed',
         is_fixed => 0,
     },
 ) {
@@ -282,7 +282,7 @@ for my $test (
         is_visible => 1,
     },
     {
-        state => 'will not fix',
+        state => 'closed',
         is_visible => 1,
     },
 ) {

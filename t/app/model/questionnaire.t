@@ -78,7 +78,7 @@ for my $test (
         send_email => 1,
     },
     {
-        state => 'will not fix',
+        state => 'closed',
         send_email => 1,
     },
 ) {
