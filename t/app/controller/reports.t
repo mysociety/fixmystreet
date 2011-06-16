@@ -6,6 +6,9 @@ use mySociety::MaPit;
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
+# Run the cron script that makes the data for /reports so we don't get an error.
+system( "bin/cron-wrapper update-all-reports" );
+
 # check that we can get the page
 $mech->get_ok('/reports');
 $mech->title_like(qr{Summary reports});

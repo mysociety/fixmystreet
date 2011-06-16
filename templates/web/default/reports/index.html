@@ -22,11 +22,11 @@
 [%- END -%]
 >
 <td align="left"><a href="[% area.url %]">[% area.name %]</a></td>
-<td>[% open.${area.id}.new.size or 0 %]</td>
-<td>[% open.${area.id}.older.size or 0 %]</td>
-<td>[% open.${area.id}.unknown.size or 0 %]</td>
-<td>[% fixed.${area.id}.new.size or 0 %]</td>
-<td>[% fixed.${area.id}.old.size or 0 %]</td>
+<td>[% open.${area.id}.new or 0 %]</td>
+<td>[% open.${area.id}.older or 0 %]</td>
+<td>[% open.${area.id}.unknown or 0 %]</td>
+<td>[% fixed.${area.id}.new or 0 %]</td>
+<td>[% fixed.${area.id}.old or 0 %]</td>
 </tr>
 [% END %]
 </table>

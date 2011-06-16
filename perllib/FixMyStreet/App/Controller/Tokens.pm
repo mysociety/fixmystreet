@@ -158,7 +158,7 @@ sub load_questionnaire_id : Private {
     my ( $self, $c, $token_code ) = @_;
 
     # Set up error handling
-    $c->stash->{error_template} = 'questionnaire/error.html';
+    $c->stash->{error_template} = 'errors/generic.html';
     $c->stash->{message} = _("I'm afraid we couldn't validate that token. If you've copied the URL from an email, please check that you copied it exactly.\n");
 
     my $auth_token = $c->forward( 'load_auth_token', [ $token_code, 'questionnaire' ] );

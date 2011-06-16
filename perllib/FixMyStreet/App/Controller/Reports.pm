@@ -2,6 +2,7 @@ package FixMyStreet::App::Controller::Reports;
 use Moose;
 use namespace::autoclean;
 
+use File::Slurp;
 use List::MoreUtils qw(zip);
 use POSIX qw(strcoll);
 use mySociety::MaPit;
@@ -51,7 +52,18 @@ sub index : Path : Args(0) {
     my @keys = sort { strcoll($areas_info->{$a}{name}, $areas_info->{$b}{name}) } keys %$areas_info;
     $c->stash->{areas_info_sorted} = [ map { $areas_info->{$_} } @keys ];
 
-    $c->forward( 'load_and_group_problems' );
+    eval {
+        my $data = File::Slurp::read_file(
+            FixMyStreet->path_to( '../data/all-reports.json' )->stringify
+        );
+        my $j = JSON->new->utf8->decode($data);
+        $c->stash->{fixed} = $j->{fixed};
+        $c->stash->{open} = $j->{open};
+    };
+    if ($@) {
+        $c->stash->{message} = _("There was a problem showing the All Reports page. Please try again later.");
+        $c->stash->{template} = 'errors/generic.html';
+    }
 }
 
 =head2 index

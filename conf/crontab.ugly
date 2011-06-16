@@ -27,6 +27,9 @@ MAILTO=cron-!!(*= $site *)!!@mysociety.org
 
 !!(* } *)!!
 
+# Once an hour, update the all reports stats
+13 * * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper update-all-reports
+
 # Once a day on all servers
 39 2 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/problems-filed-graph
 43 2 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/problem-creation-graph
