@@ -19,21 +19,7 @@
     [% END %]
 </p>
 
-
-[% #  --- insert iPhone details, not converted from old cgi script yet 
-   #
-   # if (my $url = mySociety::Config::get('IPHONE_URL')) {
-   #     my $getiphone = _("Get FixMyStreet on your iPhone");
-   #     my $new = _("New!");
-   #     if ($q->{site} eq 'fixmystreet') {
-   #         $out .= <<EOF
-   # <p align="center" style="margin-bottom:0">
-   # <img width="23" height="12" alt="$new" src="/i/new.png" border="0">
-   # <a href="$url">$getiphone</a>
-   # </p>
-   # EOF
-   # }
-%]
+[% TRY %][% INCLUDE 'front/news.html' %][% CATCH file %][% END %]
 
 [%
     question
@@ -60,7 +46,8 @@
         <li>[% loc('We send it to the council on your behalf') %]</li>
     </ol>
     
-    [% INCLUDE "front_stats.html" %]
+    [% INCLUDE "front/stats.html" %]
+    [% TRY %][% INCLUDE "front/tips.html" %][% CATCH file %][% END %]
 
 </div>
 
