@@ -1,110 +1,135 @@
-# INSTALLING FROM SCRATCH
+Installing FixMyStreet
+======================
 
-# mySociety applications are intended to be run on a Debian system. Other Linux
-# distributions may well work but may also require some tweaking.
+mySociety applications have generally been run on Debian systems. Other Linux
+distributions (and more) may well work but may also require some tweaking.
 
-# This document assumes that you are starting with a bare Debian Lenny box and
-# that you want to install the latest code from GitHub. For some step you will
-# need root access (via sudo)
+Clone the repository (you've probably already done this):
+    git clone git://github.com/mysociety/fixmystreet.git
+and be sure to run:
+    git submodule update --init
+inside to fetch the shared commonlib submodule.
 
+conf/packages is a list of Debian packages that are needed, so install them if
+you're on Debian/Ubuntu. You'll also probably need to install lots of CPAN
+modules, see the section on that below.
 
+FixMyStreet expects a PostgreSQL database, so set one of them up - the schema
+is available in db/schema.sql. You will also need to load in db/alert_types.sql
+to populate the alert types table.
 
-# GETTING THE CODE
+Copy conf/general-example to conf/general and set it up appropriately:
+* provide the relevant database connection details
+* the OPTION_BASE_URL to be where your test site will run - eg 'http://localhost'
+* set OPTION_UPLOAD_CACHE and OPTION_GEO_CACHE to your preferred values
+* MAP_TYPE - OSM is probably the best one to try to start with, it's being
+  successfully used.
 
+Environment setup
+-----------------
 
-# bring your system up-to-date
-# FIXME - ???should we specify any extras apt sources???
-sudo apt-get update
-sudo apt-get upgrade
+There is a little script that is used to set up the correct environment needed
+for FMS to run (perl library paths, cpan install locations, bin paths etc). It
+should be eval-ed in a bash shell to set environment variables:
+   eval `./setenv.pl`
 
-# ensure that you have 'git' installed
-sudo apt-get install git-core
+Cron scripts can be run through the bin/cron-wrapper script in order to be run
+within the right environment.
 
-# fetch the FixMyStreet code from GitHub:
-git clone https://github.com/mysociety/fixmystreet.git
+CPAN module dependencies
+------------------------
 
-# fetch the submodules too
-cd fixmystreet
-git submodule update --init
+There are many CPAN dependencies that should be dealt with using
+module-manage.pl which takes care of fetching specific versions of packages
+from CPAN and building them. To install all the CPAN packages needed:
 
+    eval `./setenv.pl`
+    module-manage.pl setup
 
-# SETTING UP SYSTEM
+Look in the perl-external directory for details. Notably the following are important:
 
-# change into project directory
-cd ~/fixmystreet
+urls.txt    - url to the specific packages to fetch
+modules.txt - list of all modules that need to be built
+minicpan/   - local subset of cpan - used as source for all packages
+local-lib   - where the cpan modules get built to
+lib         - some initial modules needed for bootstrap
+bin         - scripts to make it all work
 
-# check that you have all the packages needed. mySociety projects always have a
-# file in 'conf/packages' where any debian ones needed are listed
-sudo apt-get install `cat conf/packages`
+Read the perl-external/bin/module-manage.pl code to see how it all works. It is
+basically a wrapper around cpanm (which builds the packages) and dpan (which
+helps maintain the fake cpan subset).
 
-# also install these that are available by default on mySoc boxes:
-sudo apt-get install \
-    libregexp-common-perl php5-cli perl-doc libtest-exception-perl locales-all
+If you need to add a module do it using:
 
+  module-manage.pl add Module::To::Add
+  
+and it will update all the relevant bits.
 
-# SETTING UP APACHE
+If a module won't build (Test::WWW::Mechanize and HTTP::Server::Simple fail
+tests for me but the failures are not pertinent) then the module-manage script
+will bail out. Look in ~/.cpanm/build_log to see what went wrong. You can force
+an install if the test failures are not important by running cpanm directly:
 
-cd /etc/apache2
+    cpanm                                                   \
+        --mirror /absolute/path/to/perl-external/minicpan   \
+        --mirror-only                                       \
+        --force                                             \
+        Test::WWW::Mechanize
 
-# there is an apache config file in 'conf/httpd.conf' - insert it as per sample
-# config at top of file into your /etc/apache2/ config setup
-sudo nano sites-available/fixmystreet
-sudo ln -s ../sites-available/fixmystreet sites-enabled/
+Hopefully once it is all built we can automate the running of module-manage.pl
+in order to make sure that the setup is current.
 
-# you may need to enable some modules too
-sudo ln -s ../mods-available/rewrite.load     mods-enabled/
-sudo ln -s ../mods-available/proxy.load       mods-enabled/
-sudo ln -s ../mods-available/proxy_http.load  mods-enabled/
+Note: Others are starting to work on this and it might be a good idea to switch
+to their output:
+http://blogs.perl.org/users/sebastian_willert/2011/03/how-i-distribute-my-projects.html
 
-# check the config and restart apache
-sudo apache2ctl configtest
-sudo apache2ctl restart
+Running the code
+================
 
-cd -
+Development
+-----------
 
-# You may need to change the permissions on your files so that apache can read them
+Start the catalyst dev server using:
 
+  CATALYST_DEBUG=1 ./script/fixmystreet_app_server.pl -r
 
-# SETTING UP EMAIL SENDING
+CATALYST_DEBUG turns on the very verbose debug output which is helpful to see what the code is actually doing. The '-r' flag watches for files to change and then restarts the dev server.
 
-# FixMyStreet sends lots of email - your dev server should be able to deliver
-# them. If you're running a virtual machine consider sending all email via
-# Gmail by replacing exim with ssmtp.
-apt-get install ssmtp    # will probably uninstall existing MTA
-apt-get install mailx    # for testing email is working
+Production
+----------
 
-nano /etc/ssmtp/ssmtp.conf    # see http://wiki.debian.org/sSMTP for details
-mail youremail@example.com    # send a test message
+mySociety currently use Apache, our httpd.conf performs a few redirect checks
+and then passes everything else to the Catalyst app using FastCGI. Other
+options are available with Catalyst, including PSGI, mod_perl, and so on.
 
-# SETTING UP CONFIG FILES
+What's where in the code?
+=========================
 
-# the setup is configured using the file 'conf/general' - copy the example one and then edit it
-cp conf/general-example conf/general
-nano conf/general
+FixMyStreet::App is a fairly standard Catalyst app; there aren't any really big
+surprises.
 
-# You may need to alter:
-#  * the database connection details
-#  * the OPTION_BASE_URL to be where your test site will run - eg 'http://localhost'
-#  * the OPTION_EVEL_URL to '' - this will cause some emails not to be sent but warned to STDERR instead - proper email handling is being worked on
-#  * the OPTION_SMTP_SMARTHOST to '' if routing mail via ssmtp as described above - otherwise your SMTP server
-#  * set OPTION_EMAIL_VHOST to the same as OPTION_BASE_URL minus the 'http://' - eg 'localhost'
-#  * set OPTION_UPLOAD_CACHE and OPTION_GEO_CACHE to your preferred values
-#  * set OPTION_COUNTRY to your ISO3166 alpha2 code ('GB' for the United Kingdom: http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
+Note that the FixMyStreet.pm file is used though to abstract some config
+related things. The FixMyStreet->test_mode(1) which will do things like send
+all emails to a memory queue for the test scripts. test_mode should only be
+used in test scripts, and so is different from setting STAGING to true.
 
-# SETTING UP THE DATABASES
+Testing
+=======
 
-# create your own db user (as a superuser to make things easier)
-sudo su - postgres
-createuser -s your_username
-exit
+There are several tests in the t directory - organized into subdirs. Note that
+there is a module FixMyStreet::TestMech that abstracts some things like logging
+in as a user and grabbing all the form error messages. This makes testing much
+slicker and less fiddly.
 
-# You'll need to create a database, enable plpgsql and load in the schema
-createdb -E SQL_ASCII bci
-createlang plpgsql bci
-psql bci < db/schema.sql
-psql bci < db/alert_types.sql
+Run all the tests (within the correct environment) using:
 
+  prove -lr t
 
-# LOOK AT THE SITE IN YOUR BROWSER
+or a specific test in verbose mode using:
 
-# everything should now be set up - please try to load the site in your browser
+  prove -lv t/app/controller/report_new.t
+
+For all the lovely options do 'prove --help'. Note I've made no attempt to make
+the tests be able to run in parallel, the database fiddling would not be worth
+it. The tests currently assume MAPIT_URL is set to the UK version.
+
