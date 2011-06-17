@@ -39,7 +39,7 @@ sub determine_location_from_coords : Private {
             $c->stash->{pc} = $pc;
         }
 
-        return 1;
+        return $c->forward( 'check_location' );
     }
 
     return;
@@ -65,19 +65,13 @@ sub determine_location_from_pc : Private {
     $c->stash->{pc} = $pc;    # for template
 
     my ( $latitude, $longitude, $error ) =
-      eval { FixMyStreet::Geocode::lookup( $pc, $c ) };
-
-    # Check that nothing blew up
-    if ($@) {
-        warn "Error: $@";
-        return;
-    }
+        FixMyStreet::Geocode::lookup( $pc, $c );
 
     # If we got a lat/lng set to stash and return true
     if ( defined $latitude && defined $longitude ) {
         $c->stash->{latitude}  = $latitude;
         $c->stash->{longitude} = $longitude;
-        return 1;
+        return $c->forward( 'check_location' );
     }
 
     # $error doubles up to return multiple choices by being an array
@@ -95,6 +89,29 @@ sub determine_location_from_pc : Private {
     # pass errors back to the template
     $c->stash->{location_error} = $error;
     return;
+}
+
+=head2 check_location
+
+Just make sure that for UK installs, our co-ordinates are indeed in the UK.
+
+=cut
+
+sub check_location : Private {
+    my ( $self, $c ) = @_;
+
+    if ( $c->stash->{latitude} && $c->cobrand->country eq 'GB' ) {
+        eval { Utils::convert_latlon_to_en( $c->stash->{latitude}, $c->stash->{longitude} ); };
+        if (my $error = $@) {
+            mySociety::Locale::pop(); # We threw exception, so it won't have happened.
+            $error = _('That location does not appear to be in Britain; please try again.')
+                if $error =~ /of the area covered/;
+            $c->stash->{location_error} = $error;
+            return;
+        }
+    }
+
+    return 1;
 }
 
 =head1 AUTHOR

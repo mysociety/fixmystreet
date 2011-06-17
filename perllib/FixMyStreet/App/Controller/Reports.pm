@@ -168,6 +168,7 @@ sub council_check : Private {
     my ( $self, $c, $q_council ) = @_;
 
     $q_council =~ s/\+/ /g;
+    $q_council =~ s/\.html//;
 
     # Manual misspelling redirect
     if ($q_council =~ /^rhondda cynon taff$/i) {
@@ -224,6 +225,8 @@ sub ward_check : Private {
     my ( $self, $c, $ward ) = @_;
 
     $ward =~ s/\+/ /g;
+    $ward =~ s/\.html//;
+
     my $council = $c->stash->{council};
 
     my $qw = mySociety::MaPit::call('areas', $ward,

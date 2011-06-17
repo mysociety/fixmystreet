@@ -79,7 +79,7 @@ sub submit : Path('submit') {
     } elsif ( $c->req->params->{problem} ) {
         $c->forward('submit_creator_fixed');
     } else {
-        return;
+        $c->detach( '/page_error_404_not_found' );
     }
 
     return 1;
