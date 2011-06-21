@@ -1,9 +1,9 @@
-[% INCLUDE 'header.html', title => loc('Login or create an account') %]
+[% INCLUDE 'header.html', title = loc('Sign in or create an account') %]
 
-<h1>[% loc('Login or create an account') %]</h1>
-
+<h1>[% loc('Sign in or create an account') %]</h1>
 
 <form action="[% c.uri_for() %]" method="post" name="general_auth">
+<input type="hidden" name="r" value="[% c.req.params.r | html %]">
     
     [% IF email_error;
 
@@ -18,33 +18,40 @@
     END %]
     
     
-    <div>
+    <div id="fieldset">
 
         [% IF loc_email_error  %]
-            <span class="error">[% loc_email_error %]</span><br>
+            <div class="form-error">[% loc_email_error %]</div>
         [% ELSIF login_error %]
-            <span class="error">Email or password wrong - please try again.</span><br>
+            <div class="form-error">Email or password wrong - please try again.</div>
         [% END %]
 
+        <div class="form-field">
         <label for="email">[% loc('Email:') %]</label>
         <input type="text" name="email" value="[% email || '' | html %]">
-        <br>
+        </div>
 
+        <div class="form-field">
         <label for="password">[% loc('Password:') %]</label>
         <input type="password" name="password" value="">
-        <br>
+        </div>
 
-        <label for="remember_me">&nbsp;</label>
-        <input type="checkbox" name="remember_me" value='1' [% 'checked="checked"' IF remember_me %]>
-        Remember me - do not use on a public computer
-        <br>
+        <div class="checkbox">
+        <input type="checkbox" name="remember_me" value='1'[% ' checked' IF remember_me %]>
+        <label for="remember_me">
+        [% loc('Remember me - do not use on a public computer') %]
+        </label>
+        </div>
         
-        <label for="login">&nbsp;</label>
-        <input type="submit" name="login" value="[% loc('Log me in') %]">
+        <div class="checkbox">
+        <input type="submit" name="login" value="[% loc('Sign me in') %]">
+        </div>
 
         <h3>I don't have an account, or I've forgotten my password...</h3>
-        <label for="email_login">&nbsp;</label>
+        <div class="checkbox">
         <input type="submit" name="email_login" value="[% loc('Email the details I need to the address I entered above') %]">
+        </div>
+
     </div>
     
 </form>

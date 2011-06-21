@@ -22,13 +22,7 @@ Catalyst Controller.
 
 sub my : Path : Args(0) {
     my ( $self, $c ) = @_;
-
-    # FIXME - handle not being logged in more elegantly
-    unless ( $c->user ) {
-        $c->res->redirect( $c->uri_for('/auth') );
-        $c->detach;
-    }
-
+    $c->detach( '/auth/redirect' ) unless $c->user;
 }
 
 __PACKAGE__->meta->make_immutable;
