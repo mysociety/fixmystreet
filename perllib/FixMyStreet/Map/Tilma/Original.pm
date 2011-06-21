@@ -102,6 +102,7 @@ sub map_pins {
     my $n = tile_to_os($y);
 
     my ( $lat, $lon ) = Utils::convert_en_to_latlon( $e, $n );
+
     my ( $around_map, $around_map_list, $nearby, $dist ) =
       FixMyStreet::Map::map_features( $c, $lat, $lon, $interval );
 
@@ -111,7 +112,7 @@ sub map_pins {
           _ll_to_en( $_->latitude, $_->longitude );
         my $px = os_to_px($easting, $sx);
         my $py = os_to_px($northing, $sy, 1);
-        my $col = $_->state eq 'fixed' ? 'green' : 'red';
+        my $col = exists FixMyStreet::DB::Result::Problem->fixed_states()->{$_->state} ? 'green' : 'red';
         $pins .= display_pin($c, $px, $py, $col, $_->id, $_->title);
     }
 
@@ -121,7 +122,7 @@ sub map_pins {
           _ll_to_en( $p->latitude, $p->longitude );
         my $px = os_to_px($easting, $sx);
         my $py = os_to_px($northing, $sy, 1);
-        my $col = $p->state eq 'fixed' ? 'green' : 'red';
+        my $col = exists FixMyStreet::DB::Result::Problem->fixed_states()->{$p->state} ? 'green' : 'red';
         $pins .= display_pin($c, $px, $py, $col, $p->id, $p->title);
     }
 

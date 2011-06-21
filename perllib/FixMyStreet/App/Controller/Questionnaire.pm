@@ -48,7 +48,7 @@ sub load_questionnaire : Private {
         $c->detach;
     }
 
-    unless ( $questionnaire->problem->state eq 'confirmed' || $questionnaire->problem->state eq 'fixed' ) {
+    unless ( $questionnaire->problem->is_visible ) {
         $c->detach('missing_problem');
     }
 
@@ -129,7 +129,7 @@ sub submit_creator_fixed : Private {
         {
             problem_id => $c->stash->{problem},
             old_state  => 'confirmed',
-            new_state  => 'fixed',
+            new_state  => 'fixed - user',
         }
     );
 
@@ -156,8 +156,9 @@ sub submit_standard : Private {
     my $problem = $c->stash->{problem};
     my $old_state = $problem->state;
     my $new_state = '';
-    $new_state = 'fixed' if $c->stash->{been_fixed} eq 'Yes' && $old_state eq 'confirmed';
-    $new_state = 'confirmed' if $c->stash->{been_fixed} eq 'No' && $old_state eq 'fixed';
+    $new_state = 'fixed - user' if $c->stash->{been_fixed} eq 'Yes' && $old_state eq 'confirmed';
+    $new_state = 'confirmed' if $c->stash->{been_fixed} eq 'No' &&
+        exists FixMyStreet::DB::Result::Problem->fixed_states()->{$old_state};
 
     # Record state change, if there was one
     if ( $new_state ) {

@@ -354,7 +354,8 @@ sub add_row {
         ? 'unknown'
         : ($problem->{age} > $fourweeks ? 'older' : 'new');
     # Fixed problems are either old or new
-    push @{$fixed->{$council}{$duration_str}}, $problem if $problem->{state} eq 'fixed';
+    push @{$fixed->{$council}{$duration_str}}, $problem if
+        exists FixMyStreet::DB::Result::Problem->fixed_states()->{$problem->{state}};
     # Open problems are either unknown, older, or new
     push @{$open->{$council}{$type}}, $problem if $problem->{state} eq 'confirmed';
 }

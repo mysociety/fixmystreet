@@ -204,7 +204,12 @@ foreach my $test (
         }
 
         my $result;
-        $result = 'fixed'     if $test->{fields}{been_fixed} eq 'Yes';
+        $result = 'fixed - user'
+          if $test->{fields}{been_fixed} eq 'Yes'
+              && $test->{problem_state} ne 'fixed';
+        $result = 'fixed'
+          if $test->{fields}{been_fixed} eq 'Yes'
+              && $test->{problem_state} eq 'fixed';
         $result = 'confirmed' if $test->{fields}{been_fixed} eq 'No';
         $result = 'unknown'   if $test->{fields}{been_fixed} eq 'Unknown';
 
@@ -214,7 +219,7 @@ foreach my $test (
         # Check the right HTML page has been returned
         $mech->content_like( qr/<title>[^<]*Questionnaire/m );
         $mech->content_contains( 'glad to hear it&rsquo;s been fixed' )
-            if $result eq 'fixed';
+            if $result =~ /fixed/;
         $mech->content_contains( 'get some more information about the status of your problem' )
             if $result eq 'unknown';
         $mech->content_contains( "sorry to hear that" )
