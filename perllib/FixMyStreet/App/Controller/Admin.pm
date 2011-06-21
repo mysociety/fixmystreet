@@ -331,7 +331,7 @@ sub display_contacts : Private {
 
     if ( $c->req->param('text') && $c->req->param('text') == 1 ) {
         $c->stash->{template} = 'admin/council_contacts.txt';
-        $c->res->content_encoding('text/plain');
+        $c->res->content_type('text/plain; charset=utf-8');
         return 1;
     }
 
