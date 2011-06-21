@@ -128,7 +128,7 @@ sub submit_creator_fixed : Private {
     my $questionnaire = $c->model( 'DB::Questionnaire' )->find_or_new(
         {
             problem_id => $c->stash->{problem},
-            old_state  => 'confirmed',
+            old_state  => [ FixMyStreet::DB::Result::Problem->open_states() ],
             new_state  => 'fixed - user',
         }
     );
@@ -156,9 +156,10 @@ sub submit_standard : Private {
     my $problem = $c->stash->{problem};
     my $old_state = $problem->state;
     my $new_state = '';
-    $new_state = 'fixed - user' if $c->stash->{been_fixed} eq 'Yes' && $old_state eq 'confirmed';
+    $new_state = 'fixed - user' if $c->stash->{been_fixed} eq 'Yes' && 
+        FixMyStreet::DB::Result::Problem->open_states()->{$old_state};
     $new_state = 'confirmed' if $c->stash->{been_fixed} eq 'No' &&
-        exists FixMyStreet::DB::Result::Problem->fixed_states()->{$old_state};
+        FixMyStreet::DB::Result::Problem->fixed_states()->{$old_state};
 
     # Record state change, if there was one
     if ( $new_state ) {
@@ -167,7 +168,8 @@ sub submit_standard : Private {
     }
 
     # If it's not fixed and they say it's still not been fixed, record time update
-    if ( $c->stash->{been_fixed} eq 'No' && $old_state eq 'confirmed' ) {
+    if ( $c->stash->{been_fixed} eq 'No' &&
+        FixMyStreet::DB::Result::Problem->open_states($old_state) ) {
         $problem->lastupdate( \'ms_current_timestamp()' );
     }
 
