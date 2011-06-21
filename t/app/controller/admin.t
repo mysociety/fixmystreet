@@ -136,18 +136,17 @@ subtest 'check summary counts' => sub {
 $mech->get_ok('/admin/council_contacts/2650');
 $mech->content_contains('Aberdeen City Council');
 $mech->content_contains('AB15 8RN');
+$mech->content_contains('street.com/around');
 
 subtest 'check contact creation' => sub {
-    my $contact = FixMyStreet::App->model('DB::Contact')->find(
-        { area_id => 2650, category => 'test category' }
+    my $contact = FixMyStreet::App->model('DB::Contact')->search(
+        { area_id => 2650, category => [ 'test category', 'test/category' ] }
     );
-
-    $contact->delete if $contact;
+    $contact->delete_all;
 
     my $history = FixMyStreet::App->model('DB::ContactsHistory')->search(
-        { area_id => 2650, category => 'test category' }
+        { area_id => 2650, category => [ 'test category', 'test/category' ] }
     );
-
     $history->delete_all;
 
     $mech->get_ok('/admin/council_contacts/2650');
@@ -161,6 +160,14 @@ subtest 'check contact creation' => sub {
     $mech->content_contains( 'test category' );
     $mech->content_contains( '<td>test@example.com' );
     $mech->content_contains( '<td>test note' );
+
+    $mech->submit_form_ok( { with_fields => {
+        category => 'test/category',
+        email    => 'test@example.com',
+        note     => 'test/note',
+    } } );
+    $mech->get_ok('/admin/council_edit/2650/test/category');
+
 };
 
 subtest 'check contact editing' => sub {
@@ -194,6 +201,11 @@ subtest 'check contact updating' => sub {
     $mech->content_like(qr{test2\@example.com[^<]*</td>[^<]*<td><strong>Yes}s);
 };
 
+subtest 'check text output' => sub {
+    $mech->get_ok('/admin/council_contacts/2650?text=1');
+    is $mech->content_type, 'text/plain';
+    $mech->content_contains('test category');
+};
 
 my $log_entries = FixMyStreet::App->model('DB::AdminLog')->search(
     {

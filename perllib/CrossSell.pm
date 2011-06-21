@@ -143,38 +143,6 @@ details. You can unsubscribe at any time.</p>
 EOF
 }
 
-sub display_tms_form {
-    my (%input) = @_;
-    my %input_h = map { $_ => $input{$_} ? ent($input{$_}) : '' } qw(name email postcode mobile signed_email);
-    my $auth_signature = $input_h{signed_email};
-    return <<EOF;
-<h1 style="padding-top:0.5em">Coming Soon: TextMyStreet</h1>
-
-<p>Exclusive to FixMyStreet users: Sign up for a <strong>brand new</strong>, not-yet-launched
-service which will make it easy to send short messages to other people on <strong>your
-street</strong> and just round the corner.</p>
-
-<p>Use it to borrow a strimmer, discuss the weather or report a <strong>lost cat</strong>.</p>
-
-<form action="/tms-signup" method="post">
-<input type="hidden" name="signed_email" value="$auth_signature">
-<label for="name">Name:</label>
-<input type="text" name="name" id="name" value="$input_h{name}" size="30">
-<br><label for="email">Email:</label>
-<input type="text" name="email" id="email" value="$input_h{email}" size="30">
-<br><label for="postcode">Postcode:</label> 
-<input type="text" name="postcode" id="postcode" value="$input_h{postcode}" size="11">
-<br><label for="mobile">Mobile:</label> <input type="text" name="mobile" id="mobile" value="$input_h{mobile}" size="11">
-&nbsp; <input type="submit" class="submit" value="Sign up">
-</form>
-
-<p>mySociety respects your privacy, and we'll never sell or give away your private
-details. Once we launch we'll send you some emails and perhaps some texts
-explaining how it works, and it'll never cost you a penny unless we explicitly
-say it will. You'll be able to <strong>unsubscribe</strong> at any time.</p>
-EOF
-}
-
 # Not currently used, needs more explanation and testing; perhaps in future.
 sub display_gny_groups {
     my ($lon, $lat) = @_;

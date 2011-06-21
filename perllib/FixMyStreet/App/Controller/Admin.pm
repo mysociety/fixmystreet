@@ -331,7 +331,7 @@ sub display_contacts : Private {
 
     if ( $c->req->param('text') && $c->req->param('text') == 1 ) {
         $c->stash->{template} = 'admin/council_contacts.txt';
-        $c->res->content_encoding('text/plain');
+        $c->res->content_type('text/plain; charset=utf-8');
         return 1;
     }
 
@@ -354,6 +354,12 @@ sub setup_council_details : Private {
     }
 
     return 1;
+}
+
+sub council_edit_all : Path('council_edit') {
+    my ( $self, $c, $area_id, @category ) = @_;
+    my $category = join( '/', @category );
+    $c->go( 'council_edit', [ $area_id, $category ] );
 }
 
 sub council_edit : Path('council_edit') : Args(2) {

@@ -57,7 +57,6 @@ $mech->submit_form_ok(
     },
     "create an account for '$test_email'"
 );
-is $mech->uri->path, '/auth/token', "redirected to welcome page";
 
 # check that we are not logged in yet
 $mech->not_logged_in_ok;
@@ -108,12 +107,14 @@ $mech->not_logged_in_ok;
     $mech->submit_form_ok(
         {
             form_name => 'general_auth',
-            fields    => { email => "$test_email", },
+            fields    => {
+                email => "$test_email",
+                r     => 'faq', # Just as a test
+            },
             button    => 'email_login',
         },
         "email_login with '$test_email'"
     );
-    is $mech->uri->path, '/auth/token', "redirected to token page";
 
     # rest is as before so no need to test
 
@@ -125,7 +126,9 @@ $mech->not_logged_in_ok;
     $mech->clear_emails_ok;
     my ($link) = $email->body =~ m{(http://\S+)};
     $mech->get_ok($link);
+    is $mech->uri->path, '/faq', "redirected to the Help page";
 
+    $mech->get_ok('/my');
     $mech->follow_link_ok( { url => '/auth/change_password' } );
 
     ok my $form = $mech->form_name('change_password'),

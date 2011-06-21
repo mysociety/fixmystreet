@@ -1,8 +1,4 @@
 
-Add users to system:
-  * script to migrate database
-  * best phone for users from problems
-
 Auth:
   * add 'remember me' option on login.
   * limit session to this browser session on create account

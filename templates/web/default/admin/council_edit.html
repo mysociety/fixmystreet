@@ -15,7 +15,7 @@
 
 <p>
 [% IF example_pc %]
-<a href="[% c.uri_for( '/around', { pc => example_pc } ) %]">[% tprintf( loc('Example postcode %s'), example_pc ) | html %]</a>
+<a href="[% c.uri_for_email( '/around', { pc => example_pc } ) %]">[% tprintf( loc('Example postcode %s'), example_pc ) | html %]</a>
 [% END %]
 </p>
 

@@ -30,6 +30,9 @@ sub general : Path : Args(0) {
     my ( $self, $c ) = @_;
     my $req = $c->req;
 
+    $c->detach( 'redirect_on_signin', [ $req->param('r') ] )
+        if $c->user && $req->param('r');
+
     # all done unless we have a form posted to us
     return unless $req->method eq 'POST';
 
@@ -64,8 +67,7 @@ sub login : Private {
         $c->set_session_cookie_expire(0)
           unless $remember_me;
 
-        $c->res->redirect( $c->uri_for('/my') );
-        return;
+        $c->detach( 'redirect_on_signin', [ $c->req->param('r') ] );
     }
 
     # could not authenticate - show an error
@@ -104,14 +106,16 @@ sub email_login : Private {
       ->create(
         {
             scope => 'email_login',
-            data  => { email => $good_email }
+            data  => {
+                email => $good_email,
+                r => $c->req->param('r'),
+            }
         }
       );
 
-    # log the user in, send them an email and redirect to the welcome page
     $c->stash->{token} = $token_obj->token;
     $c->send_email( 'login.txt', { to => $good_email } );
-    $c->res->redirect( $c->uri_for('token') );
+    $c->stash->{template} = 'auth/token.html';
 }
 
 =head2 token
@@ -121,16 +125,15 @@ Handle the 'email_login' tokens. Find the account for the email address
 
 =cut
 
-sub token : Local {
+sub token : Path('/M') : Args(1) {
     my ( $self, $c, $url_token ) = @_;
 
-    # check for a token - if none found then return
-    return unless $url_token;
-
     # retrieve the token or return
-    my $token_obj =
-      $c->model('DB::Token')
-      ->find( { scope => 'email_login', token => $url_token, } );
+    my $token_obj = $url_token
+      ? $c->model('DB::Token')->find( {
+          scope => 'email_login', token => $url_token
+        } )
+      : undef;
 
     if ( !$token_obj ) {
         $c->stash->{token_not_found} = 1;
@@ -142,6 +145,7 @@ sub token : Local {
 
     # get the email and scrap the token
     my $email = $token_obj->data->{email};
+    my $redirect = $token_obj->data->{r};
     $token_obj->delete;
 
     # find or create the user related to the token and delete the token
@@ -149,7 +153,35 @@ sub token : Local {
     $c->authenticate( { email => $user->email }, 'no_password' );
 
     # send the user to their page
-    $c->res->redirect( $c->uri_for('/my') );
+    $c->detach( 'redirect_on_signin', [ $redirect ] );
+}
+
+=head2 redirect_on_signin
+
+Used after signing in to take the person back to where they were.
+
+=cut
+
+
+sub redirect_on_signin : Private {
+    my ( $self, $c, $redirect ) = @_;
+    $redirect = 'my' unless $redirect;
+    $c->res->redirect( $c->uri_for( "/$redirect" ) );
+}
+
+=head2 redirect
+
+Used when trying to view a page that requires login when you're not.
+
+=cut
+
+sub redirect : Private {
+    my ( $self, $c ) = @_;
+
+    my $uri = $c->uri_for( '/auth', { r => $c->req->path } );
+    $c->res->redirect( $uri );
+    $c->detach;
+
 }
 
 =head2 change_password
@@ -161,11 +193,7 @@ Let the user change their password.
 sub change_password : Local {
     my ( $self, $c ) = @_;
 
-    # FIXME - handle not being logged in more elegantly
-    unless ( $c->user ) {
-        $c->res->redirect( $c->uri_for('/auth') );
-        $c->detach;
-    }
+    $c->detach( 'redirect' ) unless $c->user;
 
     # FIXME - CSRF check here
     # FIXME - minimum criteria for passwords (length, contain number, etc)
