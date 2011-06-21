@@ -212,6 +212,7 @@ foreach my $test (
         $another = 1 if $test->{fields}{another} && $test->{fields}{another} eq 'Yes';
 
         # Check the right HTML page has been returned
+        $mech->content_like( qr/<title>[^<]*Questionnaire/m );
         $mech->content_contains( 'glad to hear it&rsquo;s been fixed' )
             if $result eq 'fixed';
         $mech->content_contains( 'get some more information about the status of your problem' )
