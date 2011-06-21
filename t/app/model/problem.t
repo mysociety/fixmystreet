@@ -155,7 +155,7 @@ for my $test (
 for my $test ( 
     {
         state => 'unconfirmed',
-        is_open => 1,
+        is_open => 0,
     },
     {
         state => 'confirmed',

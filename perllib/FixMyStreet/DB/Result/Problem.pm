@@ -131,7 +131,6 @@ HASHREF.
 
 sub open_states {
     my $states = {
-        'unconfirmed'   => 1,
         'confirmed'     => 1,
         'investigating' => 1,
         'planned'       => 1,
