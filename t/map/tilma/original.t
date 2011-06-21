@@ -7,8 +7,11 @@ use FixMyStreet::App;
 use FixMyStreet::Map;
 use FixMyStreet::TestMech;
 use DateTime;
+use mySociety::Locale;
 
 my $mech = FixMyStreet::TestMech->new;
+
+mySociety::Locale::gettext_domain('FixMyStreet');
 
 FixMyStreet::Map::set_map_class();
 my $r = Catalyst::Request->new( { base => URI->new('/'), uri => URI->new('http://fixmystreet.com/test') } );
