@@ -133,10 +133,11 @@ subtest 'check summary counts' => sub {
     ok $mech->host('fixmystreet.com');
 };
 
+my $host = FixMyStreet->config('OPTION_BASE_URL');
 $mech->get_ok('/admin/council_contacts/2650');
 $mech->content_contains('Aberdeen City Council');
 $mech->content_contains('AB15 8RN');
-$mech->content_contains('street.com/around');
+$mech->content_contains("$host/around");
 
 subtest 'check contact creation' => sub {
     my $contact = FixMyStreet::App->model('DB::Contact')->search(
