@@ -822,8 +822,9 @@ sub generate_problem_banner {
     my ( $self, $problem ) = @_;
 
     my $banner = {};
-    if ($problem->state eq 'confirmed' && time() - $problem->lastupdate_local->epoch > 8*7*24*60*60) {
-        $banner->{id} = 'unknown';
+    if ( $problem->is_open && time() - $problem->lastupdate_local->epoch > 8 * 7 * 24 * 60 * 60 )
+    {
+        $banner->{id}   = 'unknown';
         $banner->{text} = _('This problem is old and of unknown status.');
     }
     if ($problem->is_fixed) {

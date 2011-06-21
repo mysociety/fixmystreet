@@ -357,7 +357,8 @@ sub add_row {
     push @{$fixed->{$council}{$duration_str}}, $problem if
         exists FixMyStreet::DB::Result::Problem->fixed_states()->{$problem->{state}};
     # Open problems are either unknown, older, or new
-    push @{$open->{$council}{$type}}, $problem if $problem->{state} eq 'confirmed';
+    push @{$open->{$council}{$type}}, $problem if 
+        exists FixMyStreet::DB::Result::Problem->open_states->{$problem->{state}};
 }
 
 =head1 AUTHOR
