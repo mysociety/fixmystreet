@@ -47,6 +47,7 @@ Takes the WGS84 latitude and longitude and returns OSGB36 easting and northing.
 sub convert_latlon_to_en {
     my ( $latitude, $longitude ) = @_;
 
+    local $SIG{__WARN__} = sub { die $_[0] };
     my ( $easting, $northing ) =
         mySociety::Locale::in_gb_locale {
             mySociety::GeoUtil::wgs84_to_national_grid( $latitude, $longitude, 'G' );

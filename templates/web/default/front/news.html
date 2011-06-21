@@ -1,0 +1,11 @@
+[%#
+    news = [
+        { date = '2008-12-11', text = '<a href="' _ c.config.IPHONE_URL _ '">' _ loc('Get FixMyStreet on your iPhone') _ '</a>' },
+    ]
+%]
+[% FOREACH item IN news %]
+    <p align="center" style="margin-bottom:0">
+        <img width="23" height="12" alt="[% loc('New!') %]" src="/i/new.png" border="0">[% item.date %] [% item.text %]</p>
+    </p>
+[% END %]
+

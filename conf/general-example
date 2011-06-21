@@ -31,10 +31,6 @@ define('OPTION_EMAIL_DOMAIN', 'example.org');
 define('OPTION_CONTACT_EMAIL', 'team@'.OPTION_EMAIL_DOMAIN);
 define('OPTION_TEST_EMAIL_PREFIX', null);
 
-# this should be the same as the OPTION_BASE_URL for historical reasons
-define('OPTION_EMAIL_VHOST', 'www.example.com');
-define('OPTION_EMAIL_VHOST_EMPTYHOMES', 'www.example.com');
-
 define('OPTION_CONTACT_NAME', 'FixMyStreet');
 define('OPTION_STAGING_SITE', 1);
 

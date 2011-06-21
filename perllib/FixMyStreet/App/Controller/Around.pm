@@ -217,20 +217,6 @@ and that they are in UK (if we are in UK).
 sub check_location_is_acceptable : Private {
     my ( $self, $c ) = @_;
 
-    # These should be set now
-    my $lat = $c->stash->{latitude};
-    my $lon = $c->stash->{longitude};
-
-    # If in UK and we have a lat,lon coocdinate check it is in UK
-    if ( $lat && $c->cobrand->country eq 'GB' ) {
-        eval { Utils::convert_latlon_to_en( $lat, $lon ); };
-        if ($@) {
-            $c->stash->{location_error} =
-                _( "We had a problem with the supplied co-ordinates - outside the UK?" );
-            return;
-        }
-    }
-
     # check that there are councils that can accept this location
     $c->stash->{council_check_action} = 'submit_problem';
     $c->stash->{remove_redundant_councils} = 1;

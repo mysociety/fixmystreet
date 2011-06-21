@@ -1,3 +1,7 @@
+[%
+    INCLUDE 'header.html', title = loc('Questionnaire')
+%]
+
 [% advert_outcome = 1 %]
 
 [% IF been_fixed == 'Unknown' %]
@@ -26,3 +30,4 @@ why not <a href="http://www.pledgebank.com/new">make and publicise a pledge</a>?
     [% display_crosssell_advert( problem.user.email, problem.name, 'council', problem.council ) %]
 [% END %]
 
+[% INCLUDE 'footer.html' %]

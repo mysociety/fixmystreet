@@ -1,0 +1,12 @@
+[%
+    news = [
+        { date = '2011-04-26', text = '<a href="' _ c.config.ANDROID_URL _ '">Last ned FiksGataMi-app for din Android-telefon.</a>' },
+        { date = '2011-04-23', text = 'FiksGataMi sender n&aring; veisaker ogs&aring; til vegvesenet slik at kommuner ikke trenger sende saker videre.' },
+    ]
+%]
+[% FOREACH item IN news %]
+    <p align="center" style="margin-bottom:0">
+        <img width="23" height="12" alt="[% loc('New!') %]" src="/i/new.png" border="0">[% item.date %] [% item.text %]</p>
+    </p>
+[% END %]
+
