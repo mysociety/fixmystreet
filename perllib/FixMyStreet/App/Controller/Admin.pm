@@ -356,6 +356,12 @@ sub setup_council_details : Private {
     return 1;
 }
 
+sub council_edit_all : Path('council_edit') {
+    my ( $self, $c, $area_id, @category ) = @_;
+    my $category = join( '/', @category );
+    $c->go( 'council_edit', [ $area_id, $category ] );
+}
+
 sub council_edit : Path('council_edit') : Args(2) {
     my ( $self, $c, $area_id, $category ) = @_;
 
