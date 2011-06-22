@@ -1,4 +1,4 @@
-Subject: Questionnaire about your problem on FixMyStreet
+Subject: FixMyStreet questionnaire about '<?=$values['title']?>'
 
 Hi <?=$values['name']?>,
 
