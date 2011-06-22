@@ -93,10 +93,10 @@ sub report_new : Path : Args(0) {
 
     # deal with the user and report and check both are happy
     return
-      unless $c->forward('process_user')
+      unless $c->forward('check_form_submitted')
+          && $c->forward('process_user')
           && $c->forward('process_report')
           && $c->forward('process_photo')
-          && $c->forward('check_form_submitted')
           && $c->forward('check_for_errors')
           && $c->forward('save_user_and_report')
           && $c->forward('redirect_or_confirm_creation');
@@ -325,6 +325,9 @@ sub initialize_report : Private {
 
     }
 
+    # Capture whether the map was used
+    $report->used_map( $c->req->param('skipped') ? 0 : 1 );
+
     $c->stash->{report} = $report;
 
     return 1;
@@ -547,8 +550,6 @@ Load user from the database or prepare a new one.
 sub process_user : Private {
     my ( $self, $c ) = @_;
 
-    # FIXME - If user already logged in use them regardless
-
     # Extract all the params to a hash to make them easier to work with
     my %params =    #
       map { $_ => scalar $c->req->param($_) }    #
@@ -559,15 +560,12 @@ sub process_user : Private {
     $email =~ s{\s+}{}g;
 
     my $report = $c->stash->{report};
-    my $report_user                              #
-      = ( $report ? $report->user : undef )
-      || $c->model('DB::User')->find_or_new( { email => $email } );
+    $report->user( $c->model('DB::User')->find_or_new( { email => $email } ) )
+        unless $report->user;
 
     # set the user's name and phone (if given)
-    $report_user->name( Utils::trim_text( $params{name} ) );
-    $report_user->phone( Utils::trim_text( $params{phone} ) ) if $params{phone};
-
-    $c->stash->{report_user} = $report_user;
+    $report->user->name( Utils::trim_text( $params{name} ) );
+    $report->user->phone( Utils::trim_text( $params{phone} ) );
 
     return 1;
 }
@@ -590,7 +588,7 @@ sub process_report : Private {
         'title', 'detail', 'pc',                 #
         'name', 'may_show_name',                 #
         'category',                              #
-        'partial', 'skipped', 'submit_problem'   #
+        'partial',                               #
       );
 
     # load the report
@@ -600,12 +598,6 @@ sub process_report : Private {
     $report->postcode( $params{pc} );
     $report->latitude( $c->stash->{latitude} );
     $report->longitude( $c->stash->{longitude} );
-
-    # Capture whether the map was used
-    $report->used_map( $params{skipped} ? 0 : 1 );
-
-    # Short circuit unless the form has been submitted
-    return 1 unless $params{submit_problem};
 
     # set some simple bool values (note they get inverted)
     $report->anonymous( $params{may_show_name} ? 0 : 1 );
@@ -794,7 +786,7 @@ sub check_for_errors : Private {
 
     # let the model check for errors
     my %field_errors = (
-        %{ $c->stash->{report_user}->check_for_errors },
+        %{ $c->stash->{report}->user->check_for_errors },
         %{ $c->stash->{report}->check_for_errors },
     );
 
@@ -822,26 +814,22 @@ before or they are currently logged in. Otherwise discard any changes.
 
 sub save_user_and_report : Private {
     my ( $self, $c ) = @_;
-    my $report_user = $c->stash->{report_user};
     my $report      = $c->stash->{report};
 
     # Save or update the user if appropriate
-    if ( !$report_user->in_storage ) {
-        $report_user->insert();
+    if ( !$report->user->in_storage ) {
+        $report->user->insert();
     }
-    elsif ( $c->user && $report_user->id == $c->user->id ) {
-        $report_user->update();
+    elsif ( $c->user && $report->user->id == $c->user->id ) {
+        $report->user->update();
         $report->confirm;
     }
     else {
 
         # user exists and we are not logged in as them. Throw away changes to
         # the name and phone. TODO - propagate changes using tokens.
-        $report_user->discard_changes();
+        $report->user->discard_changes();
     }
-
-    # add the user to the report
-    $report->user($report_user);
 
     # If there was a photo add that too
     if ( my $fileid = $c->stash->{upload_fileid} ) {
