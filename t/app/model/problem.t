@@ -154,141 +154,89 @@ for my $test (
 
 for my $test ( 
     {
-        state => 'unconfirmed',
-        is_open => 0,
-    },
-    {
-        state => 'confirmed',
-        is_open => 1,
-    },
-    {
-        state => 'investigating',
-        is_open => 1,
-    },
-    {
-        state => 'planned',
-        is_open => 1,
-    },
-    {
-        state => 'in progress',
-        is_open => 1,
-    },
-    {
-        state => 'fixed',
-        is_open => 0,
-    },
-    {
-        state => 'fixed - council',
-        is_open => 0,
-    },
-    {
-        state => 'fixed - user',
-        is_open => 0,
-    },
-    {
-        state => 'closed',
-        is_open => 0,
-    },
-) {
-    subtest $test->{state} . ' is open/closed' => sub {
-        $problem->state( $test->{state} );
-        is $problem->is_open, $test->{is_open}, 'is_open';
-    };
-}
-
-for my $test ( 
-    {
-        state => 'unconfirmed',
-        is_fixed => 0,
-    },
-    {
-        state => 'confirmed',
-        is_fixed => 0,
-    },
-    {
-        state => 'investigating',
-        is_fixed => 0,
-    },
-    {
-        state => 'planned',
-        is_fixed => 0,
-    },
-    {
-        state => 'in progress',
-        is_fixed => 0,
-    },
-    {
-        state => 'fixed',
-        is_fixed => 1,
-    },
-    {
-        state => 'fixed - council',
-        is_fixed => 1,
-    },
-    {
-        state => 'fixed - user',
-        is_fixed => 1,
-    },
-    {
-        state => 'closed',
-        is_fixed => 0,
-    },
-) {
-    subtest $test->{state} . ' is fixed/open' => sub {
-        $problem->state( $test->{state} );
-        is $problem->is_fixed, $test->{is_fixed}, 'is_fixed';
-    };
-}
-
-for my $test ( 
-    {
         state => 'partial',
-        is_visible => 0,
+        is_visible  => 0,
+        is_fixed    => 0,
+        is_open     => 0,
+        is_closed   => 0,
     },
     {
         state => 'hidden',
         is_visible => 0,
+        is_fixed    => 0,
+        is_open     => 0,
+        is_closed   => 0,
     },
     {
         state => 'unconfirmed',
         is_visible => 0,
+        is_fixed    => 0,
+        is_open     => 0,
+        is_closed   => 0,
     },
     {
         state => 'confirmed',
         is_visible => 1,
+        is_fixed    => 0,
+        is_open     => 1,
+        is_closed   => 0,
     },
     {
         state => 'investigating',
         is_visible => 1,
+        is_fixed    => 0,
+        is_open     => 1,
+        is_closed   => 0,
     },
     {
         state => 'planned',
         is_visible => 1,
+        is_fixed    => 0,
+        is_open     => 1,
+        is_closed   => 0,
     },
     {
         state => 'in progress',
         is_visible => 1,
+        is_fixed    => 0,
+        is_open     => 1,
+        is_closed   => 0,
     },
     {
         state => 'fixed',
         is_visible => 1,
+        is_fixed    => 1,
+        is_open     => 0,
+        is_closed   => 0,
     },
     {
         state => 'fixed - council',
         is_visible => 1,
+        is_fixed    => 1,
+        is_open     => 0,
+        is_closed   => 0,
     },
     {
         state => 'fixed - user',
         is_visible => 1,
+        is_fixed    => 1,
+        is_open     => 0,
+        is_closed   => 0,
     },
     {
         state => 'closed',
         is_visible => 1,
+        is_fixed    => 0,
+        is_open     => 0,
+        is_closed   => 1,
     },
 ) {
-    subtest $test->{state} . ' is fixed/open' => sub {
+    subtest $test->{state} . ' is fixed/open/closed/visible' => sub {
         $problem->state( $test->{state} );
         is $problem->is_visible, $test->{is_visible}, 'is_visible';
+        is $problem->is_fixed, $test->{is_fixed}, 'is_fixed';
+        is $problem->is_closed, $test->{is_closed}, 'is_closed';
+        is $problem->is_open, $test->{is_open}, 'is_open';
     };
 }
 

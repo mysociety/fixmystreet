@@ -162,6 +162,25 @@ sub fixed_states {
 
 =head2
 
+    @states = FixMyStreet::DB::Problem::closed_states();
+
+Get a list or states that should be regarded as closed. If called in
+array context then returns an array of names, otherwise returns a
+HASHREF.
+
+=cut
+
+sub closed_states {
+    my $states = {
+        'closed'          => 1,
+    };
+
+    return wantarray ? keys %{$states} : $states;
+}
+
+
+=head2
+
     @states = FixMyStreet::DB::Problem::visible_states();
 
 Get a list or states that should be visible on the site. If called in
@@ -374,6 +393,18 @@ sub is_fixed {
     my $self = shift;
 
     return exists $self->fixed_states->{ $self->state } ? 1 : 0;
+}
+
+=head2 is_closed
+
+Returns 1 if the problem is in a closed state otherwise 0.
+
+=cut
+
+sub is_closed {
+    my $self = shift;
+
+    return exists $self->closed_states->{ $self->state } ? 1 : 0;
 }
 
 =head2 is_visible
