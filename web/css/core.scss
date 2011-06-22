@@ -303,6 +303,12 @@ $map_width: 500px;
         border: solid 2px #990000;
     }
 
+    #closed {
+        @include problem-banner;
+        background-color: #ccccff;
+        border: solid 2px #000099;
+    }
+
     #updates {
         div {
             padding: 0 0 0.5em;

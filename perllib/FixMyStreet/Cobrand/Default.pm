@@ -831,6 +831,10 @@ sub generate_problem_banner {
         $banner->{id} = 'fixed';
         $banner->{text} = _('This problem has been fixed') . '.';
     }
+    if ($problem->is_closed) {
+        $banner->{id} = 'closed';
+        $banner->{text} = _('This problem has been closed') . '.';
+    }
 
     return $banner;
 }
