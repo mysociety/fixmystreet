@@ -56,10 +56,12 @@ sub index : Path : Args(0) {
 
     %prob_counts =
       map { $_ => $prob_counts{$_} || 0 }
-      qw(confirmed fixed unconfirmed hidden partial);
+      ('confirmed', 'investigating', 'in progress', 'closed', 'fixed - council',
+          'fixed - user', 'fixed', 'unconfirmed', 'hidden',
+          'partial', 'planned');
     $c->stash->{problems} = \%prob_counts;
-    $c->stash->{total_problems_live} =
-      $prob_counts{confirmed} + $prob_counts{fixed};
+    $c->stash->{total_problems_live} += $prob_counts{$_} 
+        for ( FixMyStreet::DB::Result::Problem->visible_states() );
 
     my $comments = $c->model('DB::Comment')->summary_count( $site_restriction );
 
@@ -740,7 +742,7 @@ sub update_edit : Path('update_edit') : Args(1) {
 
         # If we're hiding an update, see if it marked as fixed and unfix if so
         if ( $new_state eq 'hidden' && $update->mark_fixed ) {
-            if ( $update->problem->state eq 'fixed' ) {
+            if ( $update->problem->is_fixed ) {
                 $update->problem->state('confirmed');
                 $update->problem->update;
             }
