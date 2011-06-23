@@ -464,7 +464,7 @@ $report->update;
 
 for my $test (
     {
-        desc => 'submit update for register user',
+        desc => 'submit update for registered user',
         initial_values => {
             name => 'Test User',
             may_show_name => 1,
@@ -489,7 +489,7 @@ for my $test (
         anonymous => 0,
     },
     {
-        desc => 'submit update for register user anonymously by unchecking',
+        desc => 'submit update for registered user anonymously by unchecking',
         initial_values => {
             name => 'Test User',
             may_show_name => 1,
@@ -515,7 +515,7 @@ for my $test (
         anonymous => 1,
     },
     {
-        desc => 'submit update for register user anonymously by deleting name',
+        desc => 'submit update for registered user anonymously by deleting name',
         initial_values => {
             name => 'Test User',
             may_show_name => 1,
@@ -542,7 +542,7 @@ for my $test (
         anonymous => 1,
     },
     {
-        desc => 'submit update for register user and sign up',
+        desc => 'submit update for registered user and sign up',
         initial_values => {
             name => 'Test User',
             may_show_name => 1,
@@ -567,7 +567,7 @@ for my $test (
         anonymous => 0,
     },
     {
-        desc => 'submit update for register user and mark fixed',
+        desc => 'submit update for registered user and mark fixed',
         initial_values => {
             name => 'Commenter',
             may_show_name => 1,
@@ -580,7 +580,7 @@ for my $test (
         fields => {
             submit_update => 1,
             update => 'update from a registered user',
-            add_alert => undef,
+            add_alert => 1,
             fixed => 1,
         },
         changed => {
@@ -588,9 +588,33 @@ for my $test (
         },
         initial_banner => '',
         endstate_banner => ' This problem has been fixed. ',
-        alert => 1, # we signed up for alerts before, do not unsign us
+        alert => 1,
         anonymous => 0,
     },
+    {
+        desc => 'submit another update for registered user and want no more alerts',
+        initial_values => {
+            name => 'Commenter',
+            may_show_name => 1,
+            add_alert => 1,
+            photo => '',
+            update => '',
+        },
+        email  => 'commenter@example.com',
+        fields => {
+            submit_update => 1,
+            update => 'another update from a registered user',
+            add_alert => undef,
+        },
+        changed => {
+            update => 'Another update from a registered user'
+        },
+        initial_banner => ' This problem has been fixed. ',
+        endstate_banner => ' This problem has been fixed. ',
+        alert => 0,
+        anonymous => 0,
+    },
+        # If logged in person unticks the box and already has an alert, they should be unsubscribed.
 ) {
     subtest $test->{desc} => sub {
         $mech->log_out_ok();
@@ -638,7 +662,7 @@ for my $test (
 
         my $alert =
           FixMyStreet::App->model('DB::Alert')
-          ->find( { user => $user, alert_type => 'new_updates', confirmed => 1 } );
+          ->find( { user => $update->user, alert_type => 'new_updates', confirmed => 1, whendisabled => undef } );
 
         ok $test->{alert} ? $alert : !$alert, 'not signed up for alerts';
     };

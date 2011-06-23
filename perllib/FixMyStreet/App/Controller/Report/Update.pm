@@ -297,7 +297,8 @@ sub redirect_or_confirm_creation : Private {
 =head2 signup_for_alerts
 
 If the user has selected to be signed up for alerts then create a
-new_updates alert.
+new_updates alert. Or if they're logged in and they've unticked the
+box, disable their alert.
 
 NB: this does not check if they are a registered user so that should
 happen before calling this.
@@ -317,8 +318,10 @@ sub signup_for_alerts : Private {
             cobrand_data => $update->cobrand_data,
             lang         => $update->lang,
         );
-
         $alert->confirm();
+
+    } elsif ( $c->user && ( my $alert = $c->user->alert_for_problem($c->stash->{update}->problem_id) ) ) {
+        $alert->disable();
     }
 
     return 1;
