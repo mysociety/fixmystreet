@@ -418,6 +418,52 @@ subtest 'check non authority user cannot change set state' => sub {
 
 for my $test (
     {
+        desc => 'from authority user marks report as fixed',
+        fields => {
+            name => $user->name,
+            may_show_name => 1,
+            add_alert => 0,
+            photo => '',
+            update => 'Set state to fixed',
+            state => 'fixed',
+        },
+        state => 'fixed - council',
+    },
+) {
+    subtest $test->{desc} => sub {
+        $report->comments->delete;
+
+        $mech->log_in_ok( $user->email );
+        $user->from_authority( 1 );
+        $user->update;
+
+        $mech->get_ok("/report/$report_id");
+
+        $mech->submit_form_ok(
+            {
+                with_fields => $test->{fields},
+            },
+            'submit update'
+        );
+
+        my $update = $report->comments->first;
+        ok $update, 'found update';
+        is $update->text, $test->{fields}->{update}, 'update text';
+        is $update->problem_state, $test->{state}, 'problem state set';
+
+        $report->discard_changes;
+        is $report->state, $test->{state}, 'state set';
+    };
+}
+
+$user->from_authority(0);
+$user->update;
+
+$report->state('confirmed');
+$report->update;
+
+for my $test (
+    {
         desc => 'submit update for register user',
         initial_values => {
             name => 'Test User',

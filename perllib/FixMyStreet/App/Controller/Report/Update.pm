@@ -65,6 +65,10 @@ sub update_problem : Private {
         }
     }
 
+    if ( $update->problem_state ) {
+        $problem->state( $update->problem_state );
+    }
+
     $problem->lastupdate( \'ms_current_timestamp()' );
     $problem->update;
 
@@ -126,7 +130,7 @@ sub process_update : Private {
     my ( $self, $c ) = @_;
 
     my %params =
-      map { $_ => scalar $c->req->param($_) } ( 'update', 'name', 'fixed' );
+      map { $_ => scalar $c->req->param($_) } ( 'update', 'name', 'fixed', 'state' );
 
     $params{update} =
       Utils::cleanup_text( $params{update}, { allow_multiline => 1 } );
@@ -151,6 +155,12 @@ sub process_update : Private {
             anonymous    => $anonymous,
         }
     );
+
+    if ( $params{state} ) {
+        $params{state} = 'fixed - council' 
+            if $params{state} eq 'fixed' && $c->user && $c->user->from_authority;
+        $update->problem_state( $params{state} );
+    }
 
     $c->stash->{update}        = $update;
     $c->stash->{add_alert}     = $c->req->param('add_alert');
