@@ -86,20 +86,26 @@ Load user from the database or prepare a new one.
 sub process_user : Private {
     my ( $self, $c ) = @_;
 
-    # FIXME - If user already logged in use them regardless
+    my $update_user;
+    if ( $c->user ) {
 
-    # Extract all the params to a hash to make them easier to work with
-    my %params =    #
-      map { $_ => scalar $c->req->param($_) }    #
-      ( 'rznvy', 'name' );
+        $update_user = $c->user->obj;
 
-    # cleanup the email address
-    my $email = $params{rznvy} ? lc $params{rznvy} : '';
-    $email =~ s{\s+}{}g;
+    } else {
 
-    my $update_user = $c->model('DB::User')->find_or_new( { email => $email } );
-    $update_user->name( Utils::trim_text( $params{name} ) )
-        if $params{name};
+        # Extract all the params to a hash to make them easier to work with
+        my %params =    #
+          map { $_ => scalar $c->req->param($_) }    #
+          ( 'rznvy', 'name' );
+
+        # cleanup the email address
+        my $email = $params{rznvy} ? lc $params{rznvy} : '';
+        $email =~ s{\s+}{}g;
+
+        $update_user = $c->model('DB::User')->find_or_new( { email => $email } );
+        $update_user->name( Utils::trim_text( $params{name} ) );
+
+    }
 
     $c->stash->{update_user} = $update_user;
 
