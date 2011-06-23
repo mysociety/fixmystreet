@@ -52,6 +52,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "anonymous",
   { data_type => "boolean", is_nullable => 0 },
+  "problem_state",
+  { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->belongs_to(
@@ -68,8 +70,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-05-24 15:32:43
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:71bSUgPf3uW607g2EGl/Vw
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-06-23 14:25:34
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:scnPU5RAGLnT0fY1gM6Z5A
 
 use DateTime::TimeZone;
 use Image::Size;

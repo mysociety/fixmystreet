@@ -287,6 +287,16 @@ create table comment (
     cobrand_data text not null default '' check (cobrand_data ~* '^[a-z0-9]*$'), -- Extra data used in cobranded versions of the site
     mark_fixed boolean not null,
     mark_open boolean not null default 'f'
+    problem_state text check (
+        problem_state = 'confirmed'
+        or problem_state = 'investigating'
+        or problem_state = 'planned'
+        or problem_state = 'in progress'
+        or problem_state = 'closed'
+        or problem_state = 'fixed'
+        or problem_state = 'fixed - council'
+        or problem_state = 'fixed - user'
+    )
     -- other fields? one to indicate whether this was written by the council
     -- and should be highlighted in the display?
 );
