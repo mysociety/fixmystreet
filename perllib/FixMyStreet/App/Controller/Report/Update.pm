@@ -20,10 +20,6 @@ Creates an update to a report
 sub report_update : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    # if there's no id then we should just stop now
-    $c->detach( '/page_error_404_not_found', [ _('Unknown problem ID') ] )
-      unless $c->req->param('id');
-
          $c->forward( '/report/load_problem_or_display_error', [ $c->req->param('id') ] )
       && $c->forward('process_user')
       && $c->forward('process_update')
@@ -182,7 +178,7 @@ sub check_for_errors : Private {
 
     # let the model check for errors
     my %field_errors = (
-        %{ $c->stash->{update_user}->check_for_errors },
+        %{ $c->stash->{update}->user->check_for_errors },
         %{ $c->stash->{update}->check_for_errors },
     );
 
@@ -213,14 +209,13 @@ Save the update and the user as appropriate.
 sub save_update : Private {
     my ( $self, $c ) = @_;
 
-    my $user   = $c->stash->{update_user};
     my $update = $c->stash->{update};
 
-    if ( !$user->in_storage ) {
-        $user->insert;
+    if ( !$update->user->in_storage ) {
+        $update->user->insert;
     }
-    elsif ( $c->user && $c->user->id == $user->id ) {
-        $user->update;
+    elsif ( $c->user && $c->user->id == $update->user->id ) {
+        $update->user->update;
         $update->confirm;
     }
 

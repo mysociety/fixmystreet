@@ -60,9 +60,9 @@ sub load_problem_or_display_error : Private {
     my ( $self, $c, $id ) = @_;
 
     # try to load a report if the id is a number
-    my $problem    #
-      = $id =~ m{\D}    # is id non-numeric?
-      ? undef           # ...don't even search
+    my $problem
+      = ( !$id || $id =~ m{\D} ) # is id non-numeric?
+      ? undef                    # ...don't even search
       : $c->cobrand->problems->find( { id => $id } );
 
     # check that the problem is suitable to show.
