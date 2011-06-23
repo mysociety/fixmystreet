@@ -20,10 +20,6 @@ Creates an update to a report
 sub report_update : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    # if there's no id then we should just stop now
-    $c->detach( '/page_error_404_not_found', [ _('Unknown problem ID') ] )
-      unless $c->req->param('id');
-
          $c->forward( '/report/load_problem_or_display_error', [ $c->req->param('id') ] )
       && $c->forward('process_user')
       && $c->forward('process_update')
@@ -81,14 +77,6 @@ sub update_problem : Private {
     return 1;
 }
 
-sub display_confirmation : Private {
-    my ( $self, $c ) = @_;
-
-    $c->stash->{template} = 'tokens/confirm_update.html';
-
-    return 1;
-}
-
 =head2 process_user
 
 Load user from the database or prepare a new one.
@@ -98,25 +86,28 @@ Load user from the database or prepare a new one.
 sub process_user : Private {
     my ( $self, $c ) = @_;
 
-    # FIXME - If user already logged in use them regardless
+    my $update_user;
+    if ( $c->user ) {
 
-    # Extract all the params to a hash to make them easier to work with
-    my %params =    #
-      map { $_ => scalar $c->req->param($_) }    #
-      ( 'rznvy', 'name' );
+        $update_user = $c->user->obj;
 
-    # cleanup the email address
-    my $email = $params{rznvy} ? lc $params{rznvy} : '';
-    $email =~ s{\s+}{}g;
+    } else {
 
-    my $update_user = $c->model('DB::User')->find_or_new( { email => $email } );
+        # Extract all the params to a hash to make them easier to work with
+        my %params =    #
+          map { $_ => scalar $c->req->param($_) }    #
+          ( 'rznvy', 'name' );
 
-    # set the user's name if they don't have one
-    $update_user->name( Utils::trim_text( $params{name} ) )
-      unless $update_user->name;
+        # cleanup the email address
+        my $email = $params{rznvy} ? lc $params{rznvy} : '';
+        $email =~ s{\s+}{}g;
+
+        $update_user = $c->model('DB::User')->find_or_new( { email => $email } );
+        $update_user->name( Utils::trim_text( $params{name} ) );
+
+    }
 
     $c->stash->{update_user} = $update_user;
-    $c->stash->{email}       = $update_user->email;
 
     return 1;
 }
@@ -162,9 +153,7 @@ sub process_update : Private {
     );
 
     $c->stash->{update}        = $update;
-    $c->stash->{update_text}   = $update->text;
     $c->stash->{add_alert}     = $c->req->param('add_alert');
-    $c->stash->{may_show_name} = ' checked' if $c->req->param('may_show_name');
 
     return 1;
 }
@@ -191,7 +180,7 @@ sub check_for_errors : Private {
 
     # let the model check for errors
     my %field_errors = (
-        %{ $c->stash->{update_user}->check_for_errors },
+        %{ $c->stash->{update}->user->check_for_errors },
         %{ $c->stash->{update}->check_for_errors },
     );
 
@@ -222,14 +211,14 @@ Save the update and the user as appropriate.
 sub save_update : Private {
     my ( $self, $c ) = @_;
 
-    my $user   = $c->stash->{update_user};
     my $update = $c->stash->{update};
 
-    if ( !$user->in_storage ) {
-        $user->insert;
+    if ( !$update->user->in_storage ) {
+        $update->user->insert;
     }
-    elsif ( $c->user && $c->user->id == $user->id ) {
-        $user->update;
+    elsif ( $c->user && $c->user->id == $update->user->id ) {
+        # Logged in and same user, so can confirm update straight away
+        $update->user->update;
         $update->confirm;
     }
 
@@ -264,8 +253,8 @@ sub redirect_or_confirm_creation : Private {
 
     # If confirmed send the user straight there.
     if ( $update->confirmed ) {
-        $c->forward( 'signup_for_alerts' );
         $c->forward( 'update_problem' );
+        $c->forward( 'signup_for_alerts' );
         my $report_uri = $c->uri_for( '/report', $update->problem_id );
         $c->res->redirect($report_uri);
         $c->detach;

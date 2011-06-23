@@ -74,7 +74,7 @@ sub check_for_errors {
 
     my %errors = ();
 
-    if ( $self->name !~ m/\S/ ) {
+    if ( !$self->name || $self->name !~ m/\S/ ) {
         $errors{name} = _('Please enter your name');
     }
     elsif (length( $self->name ) < 5
@@ -115,6 +115,22 @@ sub answered_ever_reported {
       );
 
     return $has_answered->count > 0;
+}
+
+=head2 alert_for_problem
+
+Returns whether the user is already subscribed to an
+alert for the problem ID provided.
+
+=cut
+
+sub alert_for_problem {
+    my ( $self, $id ) = @_;
+
+    return $self->alerts->find( {
+        alert_type => 'new_updates',
+        parameter  => $id,
+    } );
 }
 
 1;
