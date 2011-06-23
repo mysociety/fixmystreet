@@ -255,8 +255,8 @@ for my $test (
         description => 'closed report',
         date => DateTime->now,
         state => 'closed',
-        banner_id => '',
-        banner_text => '',
+        banner_id => 'closed',
+        banner_text => 'This problem has been closed.',
         fixed => 0
     },
 ) {
@@ -280,6 +280,31 @@ for my $test (
             is $update_form->find_input( 'fixed' ), undef, 'problem is fixed';
         } else {
             ok $update_form->find_input( 'fixed' ), 'problem is not fixed';
+        }
+    };
+}
+
+for my $test ( 
+    {
+        desc => 'no state dropdown if user not from authority',
+        from_authority => 0,
+    },
+    {
+        desc => 'state dropdown if user from authority',
+        from_authority => 1,
+    },
+) {
+    subtest $test->{desc} => sub {
+        $mech->log_in_ok( $user->email );
+        $user->from_authority( $test->{from_authority} );
+        $user->update;
+
+        $mech->get_ok("/report/$report_id");
+        my $fields = $mech->visible_form_values( 'updateForm' );
+        if ( $test->{from_authority} ) {
+            ok $fields->{state};
+        } else {
+            ok !$fields->{state};
         }
     };
 }

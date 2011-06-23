@@ -104,12 +104,25 @@
             <textarea name="update" id="form_update" rows="7" cols="30">[% update_text | html %]</textarea>
         </div>
 
-
-        [% IF !problem.is_fixed %]
-        <div class="checkbox">
-         <input type="checkbox" name="fixed" id="form_fixed" value="1"[% fixed %]>
-         <label for="form_fixed">[% loc('This problem has been fixed') %]</label>
+        [% IF c.user && c.user.from_authority %]
+        <div class="form-field">
+            <label for="form_state">[% loc( 'State:' ) %]</label>
+            <select name="state" id="form_state">
+            [% FOREACH state IN [ ['confirmed', loc('Open')], ['investigating',
+            loc('Investigating')], ['planned', loc('Planned')], ['in progress',
+            loc('In Progress')], ['closed', loc('Closed')], ['fixed', loc('Fixed')], ['fixed - user',
+            loc('Fixed - User')], ['fixed - council', loc('Fixed - Council')], ['hidden', loc('Hidden')], ['partial', loc('Partial')],['unconfirmed',loc('Unconfirmed')] ] %]
+                <option [% 'selected ' IF state.0 == problem.state %] value="[% state.0 %]">[% state.1 %]</option>
+            [% END %]
+            </select>
         </div>
+        [% ELSE %]
+            [% IF !problem.is_fixed %]
+            <div class="checkbox">
+             <input type="checkbox" name="fixed" id="form_fixed" value="1"[% fixed %]>
+             <label for="form_fixed">[% loc('This problem has been fixed') %]</label>
+            </div>
+            [% END %]
         [% END %]
 
 
