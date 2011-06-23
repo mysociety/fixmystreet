@@ -451,6 +451,54 @@ for my $state ( qw/unconfirmed hidden partial/ ) {
 
 for my $test (
     {
+        desc => 'from authority user marks report as investigating',
+        fields => {
+            name => $user->name,
+            may_show_name => 1,
+            add_alert => 0,
+            photo => '',
+            update => 'Set state to investigating',
+            state => 'investigating',
+        },
+        state => 'investigating',
+    },
+    {
+        desc => 'from authority user marks report as planned',
+        fields => {
+            name => $user->name,
+            may_show_name => 1,
+            add_alert => 0,
+            photo => '',
+            update => 'Set state to planned',
+            state => 'planned',
+        },
+        state => 'planned',
+    },
+    {
+        desc => 'from authority user marks report as in progress',
+        fields => {
+            name => $user->name,
+            may_show_name => 1,
+            add_alert => 0,
+            photo => '',
+            update => 'Set state to in progress',
+            state => 'in progress',
+        },
+        state => 'in progress',
+    },
+    {
+        desc => 'from authority user marks report as closed',
+        fields => {
+            name => $user->name,
+            may_show_name => 1,
+            add_alert => 0,
+            photo => '',
+            update => 'Set state to closed',
+            state => 'closed',
+        },
+        state => 'closed',
+    },
+    {
         desc => 'from authority user marks report as fixed',
         fields => {
             name => $user->name,
@@ -483,6 +531,9 @@ for my $test (
         ok $update, 'found update';
         is $update->text, $test->{fields}->{update}, 'update text';
         is $update->problem_state, $test->{state}, 'problem state set';
+
+        my $update_meta = $mech->extract_update_metas;
+        like $update_meta->[0], qr/marked as $test->{fields}->{state}$/, 'update meta includes state change';
 
         $report->discard_changes;
         is $report->state, $test->{state}, 'state set';

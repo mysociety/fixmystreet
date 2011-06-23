@@ -12,6 +12,7 @@
         [%- c.cobrand.extra_update_meta_text(update) -%]
         [%- ", " _ loc( 'marked as fixed' ) IF update.mark_fixed %]
         [%- ", " _ loc( 'reopened' ) IF update.mark_open %]
+        [%- ", " _ tprintf(loc( 'marked as %s' ), update.meta_problem_state) IF update.problem_state %]
         </em></p>
 
     [% IF c.cobrand.allow_update_reporting %]
