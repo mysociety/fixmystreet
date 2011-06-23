@@ -203,7 +203,7 @@ for my $test (
             may_show_name => undef,
         },
         changes => {},
-        field_errors => [ 'Please enter your email', 'Please enter a message' ]
+        field_errors => [ 'Please enter a message', 'Please enter your email' ]
     },
     {
         desc => 'Invalid email, no message',
@@ -217,7 +217,7 @@ for my $test (
             may_show_name => undef,
         },
         changes => {},
-        field_errors => [ 'Please enter a valid email', 'Please enter a message' ]
+        field_errors => [ 'Please enter a message', 'Please enter a valid email' ]
     },
     {
         desc => 'email with spaces, no message',
@@ -387,16 +387,15 @@ for my $test (
         desc => 'submit update for register user',
         initial_values => {
             name => 'Test User',
-            rznvy => 'test@example.com',
             may_show_name => 1,
             add_alert => 1,
             photo => '',
             update => '',
             fixed => undef,
         },
+        email  => 'test@example.com',
         fields => {
             submit_update => 1,
-            rznvy  => 'test@example.com',
             update => 'update from a registered user',
             add_alert => undef,
             fixed => undef,
@@ -413,16 +412,15 @@ for my $test (
         desc => 'submit update for register user anonymously by unchecking',
         initial_values => {
             name => 'Test User',
-            rznvy => 'test@example.com',
             may_show_name => 1,
             add_alert => 1,
             photo => '',
             update => '',
             fixed => undef,
         },
+        email  => 'test@example.com',
         fields => {
             submit_update => 1,
-            rznvy  => 'test@example.com',
             update => 'update from a registered user',
             may_show_name => undef,
             add_alert => undef,
@@ -440,17 +438,16 @@ for my $test (
         desc => 'submit update for register user anonymously by deleting name',
         initial_values => {
             name => 'Test User',
-            rznvy => 'test@example.com',
             may_show_name => 1,
             add_alert => 1,
             photo => '',
             update => '',
             fixed => undef,
         },
+        email  => 'test@example.com',
         fields => {
             submit_update => 1,
             name => '',
-            rznvy  => 'test@example.com',
             update => 'update from a registered user',
             may_show_name => 1,
             add_alert => undef,
@@ -468,16 +465,15 @@ for my $test (
         desc => 'submit update for register user and sign up',
         initial_values => {
             name => 'Test User',
-            rznvy => 'test@example.com',
             may_show_name => 1,
             add_alert => 1,
             photo => '',
             update => '',
             fixed => undef,
         },
+        email  => 'test@example.com',
         fields => {
             submit_update => 1,
-            rznvy  => 'test@example.com',
             update => 'update from a registered user',
             add_alert => 1,
             fixed => undef,
@@ -494,16 +490,15 @@ for my $test (
         desc => 'submit update for register user and mark fixed',
         initial_values => {
             name => 'Commenter',
-            rznvy => 'commenter@example.com',
             may_show_name => 1,
             add_alert => 1,
             photo => '',
             update => '',
             fixed => undef,
         },
+        email  => 'commenter@example.com',
         fields => {
             submit_update => 1,
-            rznvy  => 'commenter@example.com',
             update => 'update from a registered user',
             add_alert => undef,
             fixed => 1,
@@ -527,7 +522,7 @@ for my $test (
 
         $mech->clear_emails_ok();
 
-        $mech->log_in_ok( $test->{fields}->{rznvy} );
+        $mech->log_in_ok( $test->{email} );
         $mech->get_ok("/report/$report_id");
 
         my $values = $mech->visible_form_values( 'updateForm' );
@@ -557,7 +552,7 @@ for my $test (
         my $update = $report->comments->first;
         ok $update, 'found update';
         is $update->text, $results->{update}, 'update text';
-        is $update->user->email, $test->{fields}->{rznvy}, 'update user';
+        is $update->user->email, $test->{email}, 'update user';
         is $update->state, 'confirmed', 'update confirmed';
         is $update->anonymous, $test->{anonymous}, 'user anonymous';
 
@@ -574,16 +569,15 @@ foreach my $test (
         desc           => 'logged in reporter submits update and marks problem fixed',
         initial_values => {
             name          => 'Test User',
-            rznvy         => 'test@example.com',
             may_show_name => 1,
             add_alert     => 1,
             photo         => '',
             update        => '',
             fixed         => undef,
         },
+        email  => 'test@example.com',
         fields => {
             submit_update => 1,
-            rznvy         => 'test@example.com',
             update        => 'update from owner',
             add_alert     => undef,
             fixed         => 1,
@@ -603,16 +597,15 @@ foreach my $test (
 'logged in reporter submits update and marks problem fixed and has answered questionnaire',
         initial_values => {
             name          => 'Test User',
-            rznvy         => 'test@example.com',
             may_show_name => 1,
             add_alert     => 1,
             photo         => '',
             update        => '',
             fixed         => undef,
         },
+        email  => 'test@example.com',
         fields => {
             submit_update => 1,
-            rznvy         => 'test@example.com',
             update        => 'update from owner',
             add_alert     => undef,
             fixed         => 1,
@@ -659,7 +652,7 @@ foreach my $test (
 
         $mech->clear_emails_ok();
 
-        $mech->log_in_ok( $test->{fields}->{rznvy} );
+        $mech->log_in_ok( $test->{email} );
         $mech->get_ok("/report/$report_id");
 
         my $values = $mech->visible_form_values('updateForm');
@@ -683,7 +676,7 @@ foreach my $test (
         my $update = $report->comments->first;
         ok $update, 'found update';
         is $update->text, $results->{update}, 'update text';
-        is $update->user->email, $test->{fields}->{rznvy}, 'update user';
+        is $update->user->email, $test->{email}, 'update user';
         is $update->state, 'confirmed', 'update confirmed';
         is $update->anonymous, $test->{anonymous}, 'user anonymous';
 
