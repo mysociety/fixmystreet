@@ -77,7 +77,7 @@ my $alert = FixMyStreet::App->model('DB::Alert')->find_or_create(
 );
 
 subtest 'check summary counts' => sub {
-    my $problems = FixMyStreet::App->model('DB::Problem')->search( { state => { -in => [qw/confirmed fixed/] } } );
+    my $problems = FixMyStreet::App->model('DB::Problem')->search( { state => { -in => [qw/confirmed fixed closed investigating planned/, 'in progress', 'fixed - user', 'fixed - council'] } } );
 
     my $problem_count = $problems->count;
     $problems->update( { cobrand => '' } );
