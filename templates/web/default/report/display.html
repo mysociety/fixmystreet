@@ -110,8 +110,7 @@
             <select name="state" id="form_state">
             [% FOREACH state IN [ ['confirmed', loc('Open')], ['investigating',
             loc('Investigating')], ['planned', loc('Planned')], ['in progress',
-            loc('In Progress')], ['closed', loc('Closed')], ['fixed', loc('Fixed')], ['fixed - user',
-            loc('Fixed - User')], ['fixed - council', loc('Fixed - Council')], ['hidden', loc('Hidden')], ['partial', loc('Partial')],['unconfirmed',loc('Unconfirmed')] ] %]
+            loc('In Progress')], ['closed', loc('Closed')], ['fixed', loc('Fixed')] ] %]
                 <option [% 'selected ' IF state.0 == problem.state %] value="[% state.0 %]">[% state.1 %]</option>
             [% END %]
             </select>
