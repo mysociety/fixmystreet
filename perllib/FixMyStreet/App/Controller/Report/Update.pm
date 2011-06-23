@@ -180,6 +180,15 @@ return false.
 sub check_for_errors : Private {
     my ( $self, $c ) = @_;
 
+    # they have to be an authority user to update the state
+    if ( $c->req->param('state') ) {
+        unless ( $c->user && $c->user->from_authority ) {
+            $c->stash->{errors} ||= [];
+            push @{ $c->stash->{errors} }, _('There was a problem with your update. Please try again.');
+            return;
+        }
+    }
+
     # let the model check for errors
     my %field_errors = (
         %{ $c->stash->{update_user}->check_for_errors },
