@@ -72,7 +72,7 @@ sub check_for_errors {
 
     my %errors = ();
 
-    if ( $self->name !~ m/\S/ ) {
+    if ( !$self->name || $self->name !~ m/\S/ ) {
         $errors{name} = _('Please enter your name');
     }
     elsif (length( $self->name ) < 5

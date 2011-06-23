@@ -79,11 +79,11 @@
 
         <div>
             <label for="form_name">[% loc( 'Name:') %]</label>
-            <input type="text" name="name" id="form_name" value="[% form_name | html %]" size="20"> [% loc( '(optional)' ) %]
+            <input type="text" name="name" id="form_name" value="[% update.name || c.user.name | html %]" size="20"> [% loc( '(optional)' ) %]
         </div>
 
         <div class="checkbox">
-                <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% may_show_name %]>
+                <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' UNLESS update.anonymous %]>
                 <label for="form_may_show_name">[% loc('Show my name publicly') %]</label>
                 <small>[% loc('(we never show your email address or phone number)') %]</small>
         </div>
@@ -93,7 +93,7 @@
         [% END %]
                 <div class="form-field">
             <label for="form_rznvy">[% loc('Email' ) %]</label>
-            <input type="text" name="rznvy" id="form_rznvy" value="[% email | html %]" size="20">
+            <input type="text" name="rznvy" id="form_rznvy" value="[% update.user.email || c.user.email | html %]" size="20">
         </div>
 
         [% IF field_errors.update %]
@@ -101,13 +101,13 @@
         [% END %]
         <div class="form-field">
             <label for="form_update">[% loc( 'Update:' ) %]</label>
-            <textarea name="update" id="form_update" rows="7" cols="30">[% update_text | html %]</textarea>
+            <textarea name="update" id="form_update" rows="7" cols="30">[% update.text | html %]</textarea>
         </div>
 
 
         [% IF problem.state != 'fixed' %]
         <div class="checkbox">
-         <input type="checkbox" name="fixed" id="form_fixed" value="1"[% fixed %]>
+         <input type="checkbox" name="fixed" id="form_fixed" value="1"[% ' checked' IF update.mark_fixed %]>
          <label for="form_fixed">[% loc('This problem has been fixed') %]</label>
         </div>
         [% END %]
@@ -129,7 +129,7 @@
 
 
         <div class="checkbox">
-            <input type="checkbox" name="add_alert" id="form_add_alert" value="1"[% add_alert_checked %]>
+            <input type="checkbox" name="add_alert" id="form_add_alert" value="1"[% ' checked' IF add_alert %]>
             <label for="form_add_alert">[% loc( 'Alert me to future updates' ) %]</label>
         </div>
 

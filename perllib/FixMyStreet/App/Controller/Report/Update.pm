@@ -77,14 +77,6 @@ sub update_problem : Private {
     return 1;
 }
 
-sub display_confirmation : Private {
-    my ( $self, $c ) = @_;
-
-    $c->stash->{template} = 'tokens/confirm_update.html';
-
-    return 1;
-}
-
 =head2 process_user
 
 Load user from the database or prepare a new one.
@@ -106,13 +98,10 @@ sub process_user : Private {
     $email =~ s{\s+}{}g;
 
     my $update_user = $c->model('DB::User')->find_or_new( { email => $email } );
-
-    # set the user's name if they don't have one
     $update_user->name( Utils::trim_text( $params{name} ) )
-      unless $update_user->name;
+        if $params{name};
 
     $c->stash->{update_user} = $update_user;
-    $c->stash->{email}       = $update_user->email;
 
     return 1;
 }
@@ -158,9 +147,7 @@ sub process_update : Private {
     );
 
     $c->stash->{update}        = $update;
-    $c->stash->{update_text}   = $update->text;
     $c->stash->{add_alert}     = $c->req->param('add_alert');
-    $c->stash->{may_show_name} = ' checked' if $c->req->param('may_show_name');
 
     return 1;
 }
@@ -215,6 +202,7 @@ sub save_update : Private {
         $update->user->insert;
     }
     elsif ( $c->user && $c->user->id == $update->user->id ) {
+        # Logged in and same user, so can confirm update straight away
         $update->user->update;
         $update->confirm;
     }
@@ -250,8 +238,8 @@ sub redirect_or_confirm_creation : Private {
 
     # If confirmed send the user straight there.
     if ( $update->confirmed ) {
-        $c->forward( 'signup_for_alerts' );
         $c->forward( 'update_problem' );
+        $c->forward( 'signup_for_alerts' );
         my $report_uri = $c->uri_for( '/report', $update->problem_id );
         $c->res->redirect($report_uri);
         $c->detach;
