@@ -203,6 +203,13 @@
   position: relative;
   background-color: #ccccff;
   border: solid 2px #000099; }
+#mysociety #progress {
+  margin: 0 530px 1em 0;
+  padding: 5px;
+  text-align: center;
+  position: relative;
+  background-color: #ffffcc;
+  border: solid 2px #999900; }
 #mysociety #updates div {
   padding: 0 0 0.5em;
   margin: 0 0 0.25em;

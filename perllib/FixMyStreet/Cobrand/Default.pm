@@ -836,6 +836,11 @@ sub generate_problem_banner {
         $banner->{text} = _('This problem has been closed') . '.';
     }
 
+    if ( grep { $problem->state eq $_ } ( 'investigating', 'in progress', 'planned' ) ) {
+        $banner->{id} = 'progress';
+        $banner->{text} = _('This problem is in progress') . '.';
+    }
+
     return $banner;
 }
 

@@ -259,6 +259,30 @@ for my $test (
         banner_text => 'This problem has been closed.',
         fixed => 0
     },
+    {
+        description => 'investigating report',
+        date => DateTime->now,
+        state => 'investigating',
+        banner_id => 'progress',
+        banner_text => 'This problem is in progress.',
+        fixed => 0
+    },
+    {
+        description => 'planned report',
+        date => DateTime->now,
+        state => 'planned',
+        banner_id => 'progress',
+        banner_text => 'This problem is in progress.',
+        fixed => 0
+    },
+    {
+        description => 'in progressreport',
+        date => DateTime->now,
+        state => 'in progress',
+        banner_id => 'progress',
+        banner_text => 'This problem is in progress.',
+        fixed => 0
+    },
 ) {
     subtest "banner for $test->{description}" => sub {
         $report->confirmed( $test->{date}->ymd . ' ' . $test->{date}->hms );
