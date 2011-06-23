@@ -276,7 +276,7 @@ for my $test (
         initial_values => {
             name          => '',
             rznvy         => '',
-            may_show_name => undef,
+            may_show_name => 1,
             add_alert     => 1,
             photo         => '',
             update        => '',
@@ -295,7 +295,7 @@ for my $test (
         initial_values => {
             name          => '',
             rznvy         => '',
-            may_show_name => undef,
+            may_show_name => 1,
             add_alert     => 1,
             photo         => '',
             update        => '',
