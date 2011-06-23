@@ -416,6 +416,39 @@ subtest 'check non authority user cannot change set state' => sub {
     is $report->state, 'confirmed', 'state unchanged';
 };
 
+for my $state ( qw/unconfirmed hidden partial/ ) {
+    subtest "check that update cannot set state to $state" => sub {
+        $mech->log_in_ok( $user->email );
+        $user->from_authority( 1 );
+        $user->update;
+
+        $mech->get_ok("/report/$report_id");
+        $mech->submit_form_ok( {
+                form_number => 2,
+                fields => {
+                    submit_update => 1,
+                    id => $report_id,
+                    name => $user->name,
+                    rznvy => $user->email,
+                    may_show_name => 1,
+                    add_alert => 0,
+                    photo => '',
+                    update => 'this is a forbidden update',
+                    state => $state,
+                },
+            },
+            'submitted with state',
+        );
+
+        is $mech->uri->path, "/report/update", "at /report/update";
+
+        my $errors = $mech->page_errors;
+        is_deeply $errors, [ 'There was a problem with your update. Please try again.' ], 'error message';
+
+        is $report->state, 'confirmed', 'state unchanged';
+    };
+}
+
 for my $test (
     {
         desc => 'from authority user marks report as fixed',

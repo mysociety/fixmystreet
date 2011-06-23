@@ -181,11 +181,18 @@ sub check_for_errors : Private {
 
     # they have to be an authority user to update the state
     if ( $c->req->param('state') ) {
-        unless ( $c->user && $c->user->from_authority ) {
+        my $error = 0;
+        $error = 1 unless $c->user && $c->user->from_authority;
+
+        my $state = $c->req->param('state');
+        $error = 1 unless ( grep { $state eq $_ } ( qw/closed fixed investigating planned/, 'in progress', 'fixed', 'fixed - user', 'fixed - council' ) );
+
+        if ( $error ) {
             $c->stash->{errors} ||= [];
             push @{ $c->stash->{errors} }, _('There was a problem with your update. Please try again.');
             return;
         }
+
     }
 
     # let the model check for errors
