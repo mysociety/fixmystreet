@@ -12,6 +12,8 @@ var fixmystreet = {
 [% IF map.zoom -%]
     'zoom': [% map.zoom %],
 [%- END %]
+    'numZoomLevels': [% map.numZoomLevels %],
+    'zoomOffset': [% map.zoomOffset %],
     'map_type': [% map.map_type %],
     'pins': [% INCLUDE maps/pins_js.html %]
 }
@@ -51,9 +53,9 @@ var fixmystreet = {
     east     = c.uri_with( { lat = map.compass.east.0,  lon = map.compass.east.1,  zoom = map.zoom } )
     west     = c.uri_with( { lat = map.compass.west.0,  lon = map.compass.west.1,  zoom = map.zoom } )
     world    = c.uri_with( { zoom = 0 } );
-    SET zoom_in  = c.uri_with( { zoom = map.zoom + 1 } ) IF map.zoom < map.zoom_levels - 1;
+    SET zoom_in  = c.uri_with( { zoom = map.zoom + 1 } ) IF map.zoom < map.numZoomLevels - 1;
     SET zoom_out = c.uri_with( { zoom = map.zoom - 1 } ) IF map.zoom > 0;
-    SET zoom_in  = '#' IF map.zoom >= map.zoom_levels - 1;
+    SET zoom_in  = '#' IF map.zoom >= map.numZoomLevels - 1;
     SET zoom_out = '#' IF map.zoom <= 0;
 %]
 <div style="position: absolute; left: 4px; top: 4px; z-index: 1007;" class="olControlPanZoom olControlNoSelect" unselectable="on">
