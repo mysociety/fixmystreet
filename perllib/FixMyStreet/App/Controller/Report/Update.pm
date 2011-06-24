@@ -21,8 +21,8 @@ sub report_update : Path : Args(0) {
     my ( $self, $c ) = @_;
 
          $c->forward( '/report/load_problem_or_display_error', [ $c->req->param('id') ] )
-      && $c->forward('process_user')
       && $c->forward('process_update')
+      && $c->forward('process_user')
       && $c->forward('/report/new/process_photo')
       && $c->forward('check_for_errors')
       or $c->go( '/report/display', [ $c->req->param('id') ] );
@@ -86,28 +86,24 @@ Load user from the database or prepare a new one.
 sub process_user : Private {
     my ( $self, $c ) = @_;
 
-    my $update_user;
-    if ( $c->user ) {
+    my $update = $c->stash->{update};
 
-        $update_user = $c->user->obj;
+    $update->user( $c->user->obj ) if $c->user;
 
-    } else {
+    # Extract all the params to a hash to make them easier to work with
+    my %params =    #
+      map { $_ => scalar $c->req->param($_) }    #
+      ( 'rznvy', 'name' );
 
-        # Extract all the params to a hash to make them easier to work with
-        my %params =    #
-          map { $_ => scalar $c->req->param($_) }    #
-          ( 'rznvy', 'name' );
+    # cleanup the email address
+    my $email = $params{rznvy} ? lc $params{rznvy} : '';
+    $email =~ s{\s+}{}g;
 
-        # cleanup the email address
-        my $email = $params{rznvy} ? lc $params{rznvy} : '';
-        $email =~ s{\s+}{}g;
+    $update->user( $c->model('DB::User')->find_or_new( { email => $email } ) )
+        unless $update->user;
 
-        $update_user = $c->model('DB::User')->find_or_new( { email => $email } );
-        $update_user->name( Utils::trim_text( $params{name} ) );
-
-    }
-
-    $c->stash->{update_user} = $update_user;
+    $update->user->name( Utils::trim_text( $params{name} ) )
+        if $params{name};
 
     return 1;
 }
@@ -142,7 +138,6 @@ sub process_update : Private {
             text         => $params{update},
             name         => $name,
             problem      => $c->stash->{problem},
-            user         => $c->stash->{update_user},
             state        => 'unconfirmed',
             mark_fixed   => $params{fixed} ? 1 : 0,
             cobrand      => $c->cobrand->moniker,

@@ -564,7 +564,7 @@ sub process_user : Private {
         unless $report->user;
 
     # set the user's name and phone (if given)
-    $report->user->name( Utils::trim_text( $params{name} ) );
+    $report->user->name( Utils::trim_text( $params{name} ) ) if $params{name};
     $report->user->phone( Utils::trim_text( $params{phone} ) );
 
     return 1;

@@ -119,7 +119,6 @@ subtest "Submit a correct entry" => sub {
     is_deeply $mech->visible_form_values,
       {
         name          => 'Test User',
-        email         => 'test@example.com',
         title         => 'Test report',
         detail        => 'This is a test report',
         photo         => '',
@@ -134,7 +133,6 @@ subtest "Submit a correct entry" => sub {
         {
             with_fields => {
                 name          => 'New Test User',
-                email         => 'test@example.com',
                 title         => 'New Test report',
                 detail        => 'This is a test report',
                 phone         => '01234 567 890',
@@ -193,14 +191,13 @@ subtest "Submit a correct entry (with location)" => sub {
     # go to the token url
     $mech->get_ok($token_url);
 
-    # check that we are on '/around'
-    is $mech->uri->path, '/report/new', "sent to /around";
+    # check that we are on '/report/new'
+    is $mech->uri->path, '/report/new', "sent to /report/new";
 
     # check that fields are prefilled for us
     is_deeply $mech->visible_form_values,
       {
         name          => 'Test User ll',
-        email         => 'test-ll@example.com',
         title         => 'Test report ll',
         detail        => 'This is a test report ll',
         photo         => '',
@@ -215,7 +212,6 @@ subtest "Submit a correct entry (with location)" => sub {
         {
             with_fields => {
                 name          => 'New Test User ll',
-                email         => 'test-ll@example.com',
                 title         => 'New Test report ll',
                 detail        => 'This is a test report ll',
                 phone         => '01234 567 890',
