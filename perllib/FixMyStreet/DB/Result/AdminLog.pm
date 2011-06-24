@@ -8,7 +8,7 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
-__PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime");
+__PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "EncodedColumn");
 __PACKAGE__->table("admin_log");
 __PACKAGE__->add_columns(
   "id",
@@ -36,8 +36,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-06-06 18:52:09
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:VKN3o9SHoDhG2/H5NInf2w
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-06-23 15:49:48
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:7427CuN3/6IL2GxiQDoWUA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

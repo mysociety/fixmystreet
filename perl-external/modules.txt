@@ -18,7 +18,9 @@ Catalyst::View::TT
 Class::Accessor
 Class::Unload
 Config::General
+Crypt::Eksblowfish::Bcrypt
 DBIx::Class
+DBIx::Class::EncodedColumn
 DBIx::Class::FilterColumn
 DBIx::Class::Schema::Loader
 DBIx::Class::Storage::DBI

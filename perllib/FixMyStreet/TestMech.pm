@@ -14,7 +14,6 @@ use Test::More;
 use Web::Scraper;
 use Carp;
 use Email::Send::Test;
-use Digest::SHA1 'sha1_hex';
 use JSON;
 
 =head1 NAME
@@ -89,8 +88,8 @@ sub log_in_ok {
     my $user = $mech->create_user_ok($email);
 
     # store the old password and then change it
-    my $old_password_sha1 = $user->password;
-    $user->update( { password => sha1_hex('secret') } );
+    my $old_password = $user->password;
+    $user->update( { password => 'secret' } );
 
     # log in
     $mech->get_ok('/auth');
@@ -100,7 +99,7 @@ sub log_in_ok {
     $mech->logged_in_ok;
 
     # restore the password (if there was one)
-    $user->update( { password => $old_password_sha1 } ) if $old_password_sha1;
+    $user->update( { password => $old_password } ) if $old_password;
 
     return $user;
 }

@@ -7,7 +7,6 @@ BEGIN { extends 'Catalyst::Controller'; }
 use Email::Valid;
 use Net::Domain::TLD;
 use mySociety::AuthToken;
-use Digest::SHA1 qw(sha1_hex);
 
 =head1 NAME
 
@@ -219,7 +218,7 @@ sub change_password : Local {
     }
 
     # we should have a usable password - save it to the user
-    $c->user->obj->update( { password => sha1_hex($new) } );
+    $c->user->obj->update( { password => $new } );
     $c->stash->{password_changed} = 1;
 
 }

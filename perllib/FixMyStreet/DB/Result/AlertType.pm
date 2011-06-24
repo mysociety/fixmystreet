@@ -8,7 +8,7 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
-__PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime");
+__PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "EncodedColumn");
 __PACKAGE__->table("alert_type");
 __PACKAGE__->add_columns(
   "ref",
@@ -47,8 +47,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-06-03 16:48:36
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:KNZ7eWU/VgF8xzsjCHKVjw
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-06-23 15:49:48
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+PKqo7IZ4MlM9ur4V2P9tA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

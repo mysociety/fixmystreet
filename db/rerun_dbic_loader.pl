@@ -30,7 +30,7 @@ make_schema_at(
         overwrite_modifications => 1,      # don't worry that the md5 is wrong
 
         # add in some extra components
-        components => [ 'FilterColumn', 'InflateColumn::DateTime' ],
+        components => [ 'FilterColumn', 'InflateColumn::DateTime', 'EncodedColumn' ],
 
     },
     FixMyStreet->dbic_connect_info(),

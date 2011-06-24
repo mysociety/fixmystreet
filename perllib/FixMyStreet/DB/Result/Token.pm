@@ -8,7 +8,7 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
-__PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime");
+__PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "EncodedColumn");
 __PACKAGE__->table("token");
 __PACKAGE__->add_columns(
   "scope",
@@ -27,8 +27,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("scope", "token");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-05-24 15:32:43
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ET4L1y6yWmEUDKPKa7wJiw
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-06-23 15:49:48
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:frl+na3HrIzGw9D1t891nA
 
 # Trying not to use this
 # use mySociety::DBHandle qw(dbh);
