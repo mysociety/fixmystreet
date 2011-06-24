@@ -28,8 +28,6 @@ Create a new report, or complete a partial one .
 
 =head2 flow control
 
-submit_map: true if we reached this page by clicking on the map
-
 submit_problem: true if a problem has been submitted
 
 =head2 location (required)
@@ -912,9 +910,12 @@ sub redirect_or_confirm_creation : Private {
     }
 
     # otherwise create a confirm token and email it to them.
-    my $token =
-      $c->model("DB::Token")
-      ->create( { scope => 'problem', data => $report->id } );
+    my $token = $c->model("DB::Token")->create( {
+        scope => 'problem',
+        data => {
+            id => $report->id
+        }
+    } );
     $c->stash->{token_url} = $c->uri_for_email( '/P', $token->token );
     $c->send_email( 'problem-confirm.txt', {
         to => [ [ $report->user->email, $report->name ] ],

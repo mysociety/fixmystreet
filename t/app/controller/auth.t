@@ -38,7 +38,7 @@ for my $test (
         {
             form_name => 'general_auth',
             fields    => { email => $email, },
-            button    => 'email_login',
+            button    => 'email_sign_in',
         },
         "try to create an account with email '$email'"
     );
@@ -53,7 +53,7 @@ $mech->submit_form_ok(
     {
         form_name => 'general_auth',
         fields    => { email => $test_email, },
-        button    => 'email_login',
+        button    => 'email_sign_in',
     },
     "create an account for '$test_email'"
 );
@@ -100,7 +100,7 @@ $mech->not_logged_in_ok;
     $mech->not_logged_in_ok;
 }
 
-# get a login email and change password
+# get a sign in email and change password
 {
     $mech->clear_emails_ok;
     $mech->get_ok('/auth');
@@ -111,9 +111,9 @@ $mech->not_logged_in_ok;
                 email => "$test_email",
                 r     => 'faq', # Just as a test
             },
-            button    => 'email_login',
+            button    => 'email_sign_in',
         },
-        "email_login with '$test_email'"
+        "email_sign_in with '$test_email'"
     );
 
     # rest is as before so no need to test
@@ -182,19 +182,19 @@ $mech->not_logged_in_ok;
 }
 
 foreach my $remember_me ( '1', '0' ) {
-    subtest "login using valid details (remember_me => '$remember_me')" => sub {
+    subtest "sign in using valid details (remember_me => '$remember_me')" => sub {
         $mech->get_ok('/auth');
         $mech->submit_form_ok(
             {
                 form_name => 'general_auth',
                 fields    => {
                     email       => $test_email,
-                    password_login => $test_password,
+                    password_sign_in => $test_password,
                     remember_me => ( $remember_me ? 1 : undef ),
                 },
-                button => 'login',
+                button => 'sign_in',
             },
-            "login with '$test_email' & '$test_password"
+            "sign in with '$test_email' & '$test_password"
         );
         is $mech->uri->path, '/my', "redirected to correct page";
 
@@ -210,18 +210,18 @@ foreach my $remember_me ( '1', '0' ) {
     };
 }
 
-# try to login with bad details
+# try to sign in with bad details
 $mech->get_ok('/auth');
 $mech->submit_form_ok(
     {
         form_name => 'general_auth',
         fields    => {
             email    => $test_email,
-            password_login => 'not the password',
+            password_sign_in => 'not the password',
         },
-        button => 'login',
+        button => 'sign_in',
     },
-    "login with '$test_email' & '$test_password"
+    "sign in with '$test_email' & '$test_password"
 );
 is $mech->uri->path, '/auth', "redirected to correct page";
 $mech->content_contains( 'Email or password wrong', 'found error message' );

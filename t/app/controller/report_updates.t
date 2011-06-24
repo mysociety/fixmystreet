@@ -611,7 +611,6 @@ foreach my $test (
         alert     => 1,    # we signed up for alerts before, do not unsign us
         anonymous => 0,
         answered  => 0,
-        login     => 1,
         path => '/report/update',
         content =>
 "Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?",
@@ -639,7 +638,6 @@ foreach my $test (
         alert     => 1,    # we signed up for alerts before, do not unsign us
         anonymous => 0,
         answered  => 1,
-        login     => 1,
         path    => '/report/' . $report->id,
         content => $report->title,
     },

@@ -7,9 +7,9 @@ use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
 $mech->get_ok('/my');
-is $mech->uri->path, '/auth', "got sent to the login page";
+is $mech->uri->path, '/auth', "got sent to the sign in page";
 
-# login
+# sign in
 my $user = $mech->log_in_ok( 'test@example.com' );
 $mech->get_ok('/my');
 is $mech->uri->path, '/my', "stayed on '/my/' page";

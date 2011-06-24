@@ -17,27 +17,25 @@
         loc_email_error = errors.$email_error || errors.other;
     END %]
     
-    <div id="fieldset">
+    [% IF loc_email_error  %]
+        <div class="form-error">[% loc_email_error %]</div>
+    [% ELSIF sign_in_error %]
+        <div class="form-error">[% loc('Email or password wrong - please try again.') %]</div>
+    [% END %]
 
-        [% IF loc_email_error  %]
-            <div class="form-error">[% loc_email_error %]</div>
-        [% ELSIF login_error %]
-            <div class="form-error">[% loc('Email or password wrong - please try again.') %]</div>
-        [% END %]
-
-
-        <div class="form-field">
+    <div class="form-field">
         <label class="n" for="email">[% loc('Your email address:') %]</label>
         <input type="email" size="30" id="email" name="email" value="[% email | html %]">
-        </div>
+    </div>
 
-        <h3 style="margin-bottom:0">[% loc("Do you have a FixMyStreet password?") %]</h3>
+<div id="form_sign_in">
+    <h3>[% loc("Do you have a FixMyStreet password?") %]</h3>
 
-<div style="float: left; width: 48%; border-right: solid 1px #999999;">
+    <div id="form_sign_in_yes">
 
         <p>
-        <label class="n" for="password_login">[% loc('<strong>Yes</strong>, I have a password:') %]</label>
-        <input type="password" name="password_login" id="password_login" value="">
+        <label class="n" for="password_sign_in">[% loc('<strong>Yes</strong>, I have a password:') %]</label>
+        <input type="password" name="password_sign_in" id="password_sign_in" value="">
         </p>
 
         <p>
@@ -48,22 +46,24 @@
         </p>
         
         <p>
-        <input type="submit" name="login" value="[% loc('Sign in') %]">
+        <input type="submit" name="sign_in" value="[% loc('Sign in') %]">
         </p>
 
-</div>
-<div style="float: right; width: 48%; clear:none;">
+    </div>
+    <div id="form_sign_in_no">
 
         <p>[% loc('<strong>No</strong>, I do not, let me sign in by email:') %]</p>
 
-        <div class="form-field">
-        <label for="name">[% loc('Your name:') %]</label>
-        <input type="text" name="name" value="">
-        </div>
+        <div id="fieldset">
+            <div class="form-field">
+                <label for="name">[% loc('Your name:') %]</label>
+                <input type="text" name="name" value="">
+            </div>
 
-        <div class="form-field">
-        <label for="password_register">[% loc('Enter a new password:') %]</label>
-        <input type="password" name="password_register" id="password_register" value="">
+            <div class="form-field">
+                <label for="password_register">[% loc('Enter a new password:') %]</label>
+                <input type="password" name="password_register" id="password_register" value="">
+            </div>
         </div>
 
         <p><small>Providing a name and password is optional, but doing so
@@ -71,12 +71,12 @@
         manage your reports.</small></p>
 
         <p>
-        <input type="submit" name="email_login" value="[% loc('Sign in by email') %]">
+        <input type="submit" name="email_sign_in" value="[% loc('Sign in by email') %]">
         </p>
 
-</div>
-
     </div>
+
+</div>
     
 </form>
 

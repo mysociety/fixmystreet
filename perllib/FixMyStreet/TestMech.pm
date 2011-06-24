@@ -94,8 +94,8 @@ sub log_in_ok {
     # log in
     $mech->get_ok('/auth');
     $mech->submit_form_ok(
-        { with_fields => { email => $email, password_login => 'secret' } },
-        "login using form" );
+        { with_fields => { email => $email, password_sign_in => 'secret' } },
+        "sign in using form" );
     $mech->logged_in_ok;
 
     # restore the password (if there was one)
@@ -114,7 +114,7 @@ Log out the current user
 
 sub log_out_ok {
     my $mech = shift;
-    $mech->get_ok('/auth/logout');
+    $mech->get_ok('/auth/sign_out');
     $mech->not_logged_in_ok;
 }
 

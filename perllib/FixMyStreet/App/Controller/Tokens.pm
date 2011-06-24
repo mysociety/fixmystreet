@@ -32,7 +32,7 @@ sub confirm_problem : Path('/P') {
       $c->forward( 'load_auth_token', [ $token_code, 'problem' ] );
 
     # Load the problem
-    my $problem_id = $auth_token->data;
+    my $problem_id = $auth_token->data->{id};
     my $problem = $c->cobrand->problems->find( { id => $problem_id } )
       || $c->detach('token_error');
     $c->stash->{problem} = $problem;

@@ -193,8 +193,8 @@ foreach my $test (
 foreach my $test (
     {
         desc       => 'logged in user signing up',
-        user       => 'test-login@example.com',
-        email      => 'test-login@example.com',
+        user       => 'test-sign-in@example.com',
+        email      => 'test-sign-in@example.com',
         type       => 'council',
         param1     => 2651,
         param2     => 2651,
@@ -203,7 +203,7 @@ foreach my $test (
     {
         desc       => 'logged in user signing up with different email',
         user       => 'loggedin@example.com',
-        email      => 'test-login@example.com',
+        email      => 'test-sign-in@example.com',
         type       => 'council',
         param1     => 2651,
         param2     => 2651,
