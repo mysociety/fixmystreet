@@ -1,18 +1,53 @@
-[% INCLUDE 'header.html', title => loc('My Reports') %]
+[%
+    pre_map = '<h2>' _ loc('Your latest problem') _ '</h2>';
+    PROCESS "maps/${map.type}.html" IF c.user.problems;
+    INCLUDE 'header.html', title = loc('Your Reports')
+%]
+
+[% IF c.user.problems %]
+    [% map_html %]
+    </div>
+    <div id="side">
+[% ELSE %]
+    <div id="skipped-map">
+[% END %]
 
 <h1>[% loc('Your Reports') %]</h1>
 
-[% FOREACH p = c.user.problems %]
+[% FOREACH p = problems.confirmed %]
+    [% IF loop.first %]<h2>[% loc('Open reports') %]</h2>[% END %]
+    [% INCLUDE problem %]
+[% END %]
+
+[% FOREACH p = problems.fixed %]
+    [% IF loop.first %]<h2>[% loc('Fixed reports') %]</h2>[% END %]
+    [% INCLUDE problem %]
+[% END %]
+
+[%# FOREACH p = problems.unconfirmed;
+    IF loop.first;
+        '<h2>' _ loc('Unconfirmed reports') _ '</h2>';
+    END;
+    INCLUDE problem;
+END %]
+
+</div>
+
+[% INCLUDE 'footer.html' %]
+
+[% BLOCK problem %]
     [% "<ul>" IF loop.first %]
 
-    <li><a href="[% c.uri_for( '/report', p.id ) %]">[% p.title | html %]</a> ([% loc(p.state) %])</li>
+    <li><a href="[% c.uri_for( '/report', p.id ) %]">[% p.title | html %]</a>
+    <em class="council_sent_info">
+        [% IF p.whensent %]
+            [% tprintf( loc("Reported %s to %s"), prettify_epoch( p.confirmed_local.epoch, 'date' ), p.body(c) ) %]
+        [% ELSE %]
+            [% tprintf( loc("Reported %s"), prettify_epoch( p.confirmed_local.epoch, 'date' ) ) %]
+        [% END %]
+        </em>
+    </li>
 
     [% "</ul>" IF loop.last %]
 [% END %]
 
-
-[%# FIXME - put in blurb here %]
-
-<a href="/auth/change_password">change password</a>
-
-[% INCLUDE 'footer.html' %]

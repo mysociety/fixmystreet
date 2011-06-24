@@ -210,20 +210,25 @@ sub cleanup_text {
 }
 
 sub prettify_epoch {
-    my ($s, $short) = @_;
+    my ( $s, $type ) = @_;
+    $type = 'short' if $type eq '1';
+
     my @s = localtime($s);
-    my $tt = strftime('%H:%M', @s);
+    my $tt = '';
+    $tt = strftime('%H:%M', @s) unless $type eq 'date';
     my @t = localtime();
     if (strftime('%Y%m%d', @s) eq strftime('%Y%m%d', @t)) {
-        $tt = "$tt " . _('today');
-    } elsif (strftime('%Y %U', @s) eq strftime('%Y %U', @t)) {
-        $tt = "$tt, " . decode_utf8(strftime('%A', @s));
-    } elsif ($short) {
-        $tt = "$tt, " . decode_utf8(strftime('%e %b %Y', @s));
+        return "$tt " . _('today');
+    }
+    $tt .= ', ' unless $type eq 'date';
+    if (strftime('%Y %U', @s) eq strftime('%Y %U', @t)) {
+        $tt .= decode_utf8(strftime('%A', @s));
+    } elsif ($type eq 'short') {
+        $tt .= decode_utf8(strftime('%e %b %Y', @s));
     } elsif (strftime('%Y', @s) eq strftime('%Y', @t)) {
-        $tt = "$tt, " . decode_utf8(strftime('%A %e %B %Y', @s));
+        $tt .= decode_utf8(strftime('%A %e %B %Y', @s));
     } else {
-        $tt = "$tt, " . decode_utf8(strftime('%a %e %B %Y', @s));
+        $tt .= decode_utf8(strftime('%a %e %B %Y', @s));
     }
     return $tt;
 }

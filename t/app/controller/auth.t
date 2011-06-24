@@ -128,8 +128,7 @@ $mech->not_logged_in_ok;
     $mech->get_ok($link);
     is $mech->uri->path, '/faq', "redirected to the Help page";
 
-    $mech->get_ok('/my');
-    $mech->follow_link_ok( { url => '/auth/change_password' } );
+    $mech->get_ok('/auth/change_password');
 
     ok my $form = $mech->form_name('change_password'),
       "found change password form";

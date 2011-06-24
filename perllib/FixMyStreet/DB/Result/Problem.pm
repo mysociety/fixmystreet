@@ -364,8 +364,7 @@ sub meta_line {
     return $meta;
 }
 
-# TODO Some/much of this could be moved to the template
-sub duration_string {
+sub body {
     my ( $problem, $c ) = @_;
     my $body;
     if ($problem->external_body) {
@@ -387,6 +386,13 @@ sub duration_string {
             } @councils
         );
     }
+    return $body;
+}
+
+# TODO Some/much of this could be moved to the template
+sub duration_string {
+    my ( $problem, $c ) = @_;
+    my $body = $problem->body( $c );
     return sprintf(_('Sent to %s %s later'), $body,
         Utils::prettify_duration($problem->whensent_local->epoch - $problem->confirmed_local->epoch, 'minute')
     );
