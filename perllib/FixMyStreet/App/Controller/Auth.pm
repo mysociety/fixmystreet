@@ -50,9 +50,9 @@ Allow the user to legin with a username and a password.
 sub login : Private {
     my ( $self, $c ) = @_;
 
-    my $email       = $c->req->param('email')       || '';
-    my $password    = $c->req->param('password')    || '';
-    my $remember_me = $c->req->param('remember_me') || 0;
+    my $email       = $c->req->param('email')          || '';
+    my $password    = $c->req->param('password_login') || '';
+    my $remember_me = $c->req->param('remember_me')    || 0;
 
     # logout just in case
     $c->logout();
@@ -108,6 +108,8 @@ sub email_login : Private {
             data  => {
                 email => $good_email,
                 r => $c->req->param('r'),
+                name => $c->req->param('name'),
+                password => $c->req->param('password_register'),
             }
         }
       );
@@ -143,16 +145,19 @@ sub token : Path('/M') : Args(1) {
     $c->logout();
 
     # get the email and scrap the token
-    my $email = $token_obj->data->{email};
-    my $redirect = $token_obj->data->{r};
+    my $data = $token_obj->data;
     $token_obj->delete;
 
-    # find or create the user related to the token and delete the token
-    my $user = $c->model('DB::User')->find_or_create( { email => $email } );
+    # find or create the user related to the token.
+    my $user = $c->model('DB::User')->find_or_create( { email => $data->{email} } );
+    $user->name( $data->{name} ) if $data->{name};
+    $user->password( $data->{password} ) if $data->{password};
+    $user->update;
+
     $c->authenticate( { email => $user->email }, 'no_password' );
 
     # send the user to their page
-    $c->detach( 'redirect_on_signin', [ $redirect ] );
+    $c->detach( 'redirect_on_signin', [ $data->{r} ] );
 }
 
 =head2 redirect_on_signin

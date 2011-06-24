@@ -189,7 +189,7 @@ foreach my $remember_me ( '1', '0' ) {
                 form_name => 'general_auth',
                 fields    => {
                     email       => $test_email,
-                    password    => $test_password,
+                    password_login => $test_password,
                     remember_me => ( $remember_me ? 1 : undef ),
                 },
                 button => 'login',
@@ -217,7 +217,7 @@ $mech->submit_form_ok(
         form_name => 'general_auth',
         fields    => {
             email    => $test_email,
-            password => 'not the password',
+            password_login => 'not the password',
         },
         button => 'login',
     },

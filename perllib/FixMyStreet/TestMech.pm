@@ -94,7 +94,7 @@ sub log_in_ok {
     # log in
     $mech->get_ok('/auth');
     $mech->submit_form_ok(
-        { with_fields => { email => $email, password => 'secret' } },
+        { with_fields => { email => $email, password_login => 'secret' } },
         "login using form" );
     $mech->logged_in_ok;
 
