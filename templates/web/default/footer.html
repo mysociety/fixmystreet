@@ -4,16 +4,18 @@
 <h2 class="v">[% loc('Navigation') %]</h2>
 <ul id="navigation">
 <li><a href="/">[% loc("Report a problem") %]</a></li>
+<li id="nav_new"><a href="/my">[% loc("Your reports") %]</a></li>
 <li><a href="/reports">[% loc("All reports") %]</a></li>
 <li><a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]">[% loc("Local alerts") %]</a></li>
 <li><a href="/faq">[% loc("Help") %]</a></li>
-<li><a href="/contact">[% loc("Contact") %]</a></li>
 </ul>
 
 [% loc('<a href="http://www.mysociety.org/"><img id="logo" width="133" height="26" src="/i/mysociety-dark.png" alt="View mySociety.org"><span id="logoie"></span></a>') %]
 
 <p id="footer">
-    [% loc('Built by <a href="http://www.mysociety.org/">mySociety</a>, using some <a href="http://github.com/mysociety/fixmystreet">clever</a>&nbsp;<a href="https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa">code</a>.') %]
+    [% loc('Built by <a href="http://www.mysociety.org/">mySociety</a>') %]
+    | <a href="http://github.com/mysociety/fixmystreet">[% loc('Source code') %]</a>
+    | <a href="/contact">[% loc("Contact FixMyStreet") %]</a>
 </p>
 
 [% INCLUDE 'tracking_code.html' %]

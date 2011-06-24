@@ -16,6 +16,15 @@
             [%- loc('Fix<span id="my">My</span>Street') %]
         [%- IF NOT title AND NOT c.req.path %]</h1>[% ELSE %]</a></div>[% END %]
 
+        <ul id="meta">
+            [% IF c.user_exists %]
+                <li>[% tprintf(loc('Signed in as %s'), c.user.name || c.user.email) %]
+                <li><a href="/auth/logout">[% loc('Sign out') %]</a></li>
+            [% ELSE %]
+                <li>&nbsp;</li>
+            [% END %]
+        </ul>
+
         <div id="wrapper"><div id="mysociety">
 
     [% INCLUDE 'debug_header.html' %]

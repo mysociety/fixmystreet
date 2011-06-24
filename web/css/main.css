@@ -77,7 +77,23 @@ select, input, textarea {
 
 /* Can't put the margin in #mysociety because of above IE craziness */
 #wrapper {
-  margin: 2em;
+  margin: 1em 2em 2em;
+}
+
+#meta {
+  list-style-type: none;
+  margin: 0.25em 0 0 1em;
+  padding: 0;
+  font-size: 0.875em;
+}
+#meta li {
+  display: inline;
+  margin: 0;
+  padding: 0 0 0 0.25em;
+  border-left: solid 1px #5e552b;
+}
+#meta li:first-child {
+  border-left: none;
 }
 
 .v {
@@ -108,6 +124,12 @@ select, input, textarea {
 #navigation a:hover, #navigation a:active {
   background-color: #5e552b;
   color: #e3d595;
+  -moz-border-radius-topleft: 0.5em;
+  -webkit-border-top-left-radius: 0.5em;
+  border-radius-top-left: 0.5em;
+  -moz-border-radius-topright: 0.5em;
+  -webkit-border-top-right-radius: 0.5em;
+  border-radius-top-right: 0.5em;
 }
 
 #nav_new a {
@@ -125,10 +147,9 @@ select, input, textarea {
 
 #footer {
   clear: both;
-  text-align: right;
-  font-size: 83%;
-  border-top: solid 1px #5e552b;
-  display: table;
-  margin: 2em 0 1em auto;
-  padding: 2px 4px;
+  text-align: center;
+  border-top: solid 2px #e3d595;
+  width: 50%;
+  margin: 2em auto 0;
+  padding: 1em;
 }
