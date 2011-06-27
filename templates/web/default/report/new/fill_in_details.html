@@ -141,14 +141,18 @@
     <small>[% loc('(we never show your email address or phone number)') %]</small>
 </div>
 
-[% IF field_errors.email %]
-    <div class='form-error'>[% field_errors.email %]</div>
-[% END %]
+[% IF NOT c.user_exists %]
 
-<div class="form-field">
-    <label for="form_email">[% loc('Email:') %]</label>
-    <input type="text" value="[% report.user.email | html %]" name="email" id="form_email" size="25">
-</div>
+    [% IF field_errors.email %]
+        <div class='form-error'>[% field_errors.email %]</div>
+    [% END %]
+
+    <div class="form-field">
+        <label for="form_email">[% loc('Email:') %]</label>
+        <input type="text" value="[% report.user.email | html %]" name="email" id="form_email" size="25">
+    </div>
+
+[% END %]
 
 <div>
     <label for="form_phone">[% loc('Phone:') %]</label>

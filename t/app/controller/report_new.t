@@ -406,7 +406,6 @@ foreach my $test (
                 title         => '',
                 detail        => '',
                 may_show_name => '1',
-                email         => $test_email,
                 name          => 'Test User',
                 phone         => '01234 567 890',
                 photo         => '',

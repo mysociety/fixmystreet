@@ -8,7 +8,7 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
-__PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime");
+__PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "EncodedColumn");
 __PACKAGE__->table("questionnaire");
 __PACKAGE__->add_columns(
   "id",
@@ -40,8 +40,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-05-24 15:32:43
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:BAWTYKAQ84VeOI6D2gtQOQ
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-06-23 15:49:48
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:QNFqqCg6J4SFlg4zwm7TWw
 
 use DateTime::TimeZone;
 

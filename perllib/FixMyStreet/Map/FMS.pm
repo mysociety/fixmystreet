@@ -11,9 +11,6 @@ use base 'FixMyStreet::Map::OSM';
 
 use strict;
 
-use constant ZOOM_LEVELS    => 5;
-use constant MIN_ZOOM_LEVEL => 13;
-
 # Is set by the JavaScript
 sub map_type {
     return '""';

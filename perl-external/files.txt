@@ -161,6 +161,7 @@
 /authors/id/M/MA/MAKAMAKA/JSON-PP-2.27105.tar.gz
 /authors/id/M/MA/MANU/Net-IP-1.25.tar.gz
 /authors/id/M/MA/MARKOV/MIME-Types-1.31.tar.gz
+/authors/id/M/MA/MAUKE/Dir-Self-0.10.tar.gz
 /authors/id/M/MH/MHX/Devel-PPPort-3.19.tar.gz
 /authors/id/M/MI/MIROD/HTML-TreeBuilder-XPath-0.12.tar.gz
 /authors/id/M/MI/MIROD/XML-XPathEngine-0.12.tar.gz
@@ -250,5 +251,9 @@
 /authors/id/T/TU/TURNSTEP/DBD-Pg-2.18.1.tar.gz
 /authors/id/U/UL/ULPFR/Text-German-0.06.tar.gz
 /authors/id/V/VP/VPIT/Variable-Magic-0.46.tar.gz
+/authors/id/W/WR/WREIS/DBIx-Class-EncodedColumn-0.00011.tar.gz
 /authors/id/X/XE/XERN/Lingua-PT-Stemmer-0.01.tar.gz
 /authors/id/Y/YV/YVES/ExtUtils-Install-1.54.tar.gz
+/authors/id/Z/ZE/ZEFRAM/Class-Mix-0.004.tar.gz
+/authors/id/Z/ZE/ZEFRAM/Crypt-Eksblowfish-0.009.tar.gz
+/authors/id/Z/ZE/ZEFRAM/Params-Classify-0.013.tar.gz

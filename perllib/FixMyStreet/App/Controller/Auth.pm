@@ -7,7 +7,6 @@ BEGIN { extends 'Catalyst::Controller'; }
 use Email::Valid;
 use Net::Domain::TLD;
 use mySociety::AuthToken;
-use Digest::SHA1 qw(sha1_hex);
 
 =head1 NAME
 
@@ -15,14 +14,14 @@ FixMyStreet::App::Controller::Auth - Catalyst Controller
 
 =head1 DESCRIPTION
 
-Controller for all the authentication related pages - create account, login,
-logout.
+Controller for all the authentication related pages - create account, sign in,
+sign out.
 
 =head1 METHODS
 
 =head2 index
 
-Present the user with a login / create account page. 
+Present the user with a sign in / create account page.
 
 =cut
 
@@ -37,25 +36,27 @@ sub general : Path : Args(0) {
     return unless $req->method eq 'POST';
 
     # decide which action to take
-    $c->detach('email_login') if $req->param('email_login');
-    $c->detach('login');    # default
+    $c->detach('email_sign_in') if $req->param('email_sign_in');
+
+       $c->forward( 'sign_in' )
+    && $c->detach( 'redirect_on_signin', [ $req->param('r') ] );
 
 }
 
-=head2 login
+=head2 sign_in
 
-Allow the user to legin with a username and a password.
+Allow the user to sign in with a username and a password.
 
 =cut
 
-sub login : Private {
-    my ( $self, $c ) = @_;
+sub sign_in : Private {
+    my ( $self, $c, $email ) = @_;
 
-    my $email       = $c->req->param('email')       || '';
-    my $password    = $c->req->param('password')    || '';
-    my $remember_me = $c->req->param('remember_me') || 0;
+    $email        ||= $c->req->param('email')            || '';
+    my $password    = $c->req->param('password_sign_in') || '';
+    my $remember_me = $c->req->param('remember_me')      || 0;
 
-    # logout just in case
+    # Sign out just in case
     $c->logout();
 
     if (   $email
@@ -67,22 +68,22 @@ sub login : Private {
         $c->set_session_cookie_expire(0)
           unless $remember_me;
 
-        $c->detach( 'redirect_on_signin', [ $c->req->param('r') ] );
+        return 1;
     }
 
-    # could not authenticate - show an error
-    $c->stash->{login_error} = 1;
+    $c->stash->{sign_in_error} = 1;
+    return;
 }
 
-=head2 email_login
+=head2 email_sign_in
 
-Email the user the details they need to log in. Don't check for an account - if
+Email the user the details they need to sign in. Don't check for an account - if
 there isn't one we can create it when they come back with a token (which
 contains the email addresss).
 
 =cut
 
-sub email_login : Private {
+sub email_sign_in : Private {
     my ( $self, $c ) = @_;
 
     # check that the email is valid - otherwise flag an error
@@ -105,10 +106,12 @@ sub email_login : Private {
     my $token_obj = $c->model('DB::Token')    #
       ->create(
         {
-            scope => 'email_login',
+            scope => 'email_sign_in',
             data  => {
                 email => $good_email,
                 r => $c->req->param('r'),
+                name => $c->req->param('name'),
+                password => $c->req->param('password_register'),
             }
         }
       );
@@ -120,7 +123,7 @@ sub email_login : Private {
 
 =head2 token
 
-Handle the 'email_login' tokens. Find the account for the email address
+Handle the 'email_sign_in' tokens. Find the account for the email address
 (creating if needed), authenticate the user and delete the token.
 
 =cut
@@ -131,7 +134,7 @@ sub token : Path('/M') : Args(1) {
     # retrieve the token or return
     my $token_obj = $url_token
       ? $c->model('DB::Token')->find( {
-          scope => 'email_login', token => $url_token
+          scope => 'email_sign_in', token => $url_token
         } )
       : undef;
 
@@ -140,20 +143,23 @@ sub token : Path('/M') : Args(1) {
         return;
     }
 
-    # logout in case we are another user
+    # Sign out in case we are another user
     $c->logout();
 
     # get the email and scrap the token
-    my $email = $token_obj->data->{email};
-    my $redirect = $token_obj->data->{r};
+    my $data = $token_obj->data;
     $token_obj->delete;
 
-    # find or create the user related to the token and delete the token
-    my $user = $c->model('DB::User')->find_or_create( { email => $email } );
+    # find or create the user related to the token.
+    my $user = $c->model('DB::User')->find_or_create( { email => $data->{email} } );
+    $user->name( $data->{name} ) if $data->{name};
+    $user->password( $data->{password} ) if $data->{password};
+    $user->update;
+
     $c->authenticate( { email => $user->email }, 'no_password' );
 
     # send the user to their page
-    $c->detach( 'redirect_on_signin', [ $redirect ] );
+    $c->detach( 'redirect_on_signin', [ $data->{r} ] );
 }
 
 =head2 redirect_on_signin
@@ -171,7 +177,7 @@ sub redirect_on_signin : Private {
 
 =head2 redirect
 
-Used when trying to view a page that requires login when you're not.
+Used when trying to view a page that requires sign in when you're not.
 
 =cut
 
@@ -219,18 +225,18 @@ sub change_password : Local {
     }
 
     # we should have a usable password - save it to the user
-    $c->user->obj->update( { password => sha1_hex($new) } );
+    $c->user->obj->update( { password => $new } );
     $c->stash->{password_changed} = 1;
 
 }
 
-=head2 logout
+=head2 sign_out
 
 Log the user out. Tell them we've done so.
 
 =cut
 
-sub logout : Local {
+sub sign_out : Local {
     my ( $self, $c ) = @_;
     $c->logout();
 }

@@ -1,5 +1,4 @@
 function set_map_config(perm) {
-    fixmystreet.ZOOM_OFFSET = 13;
     fixmystreet.controls = [
         new OpenLayers.Control.ArgParser(),
         new OpenLayers.Control.Navigation(),

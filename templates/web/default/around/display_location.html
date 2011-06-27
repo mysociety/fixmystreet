@@ -23,7 +23,6 @@
             pc         => pc
             latitude   => short_latitude,
             longitude  => short_longitude,
-            submit_map => 1,
             skipped    => 1,
         }
     );
@@ -37,7 +36,6 @@
 %]
 
 <form action="[% c.uri_for('/report/new') %]" method="post" name="mapForm" id="mapForm">
-<input type="hidden" name="submit_map" value="1">
 <input type="hidden" name="map" value="[% c.req.params.map | html %]">
 <input type="hidden" name="pc" value="[% pc | html %]">
 [% c.cobrand.form_elements('mapForm') %]

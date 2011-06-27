@@ -129,7 +129,7 @@
                 <small>[% loc('(we never show your email)') %]</small>
         </div>
 
-[% IF NOT c.user %]
+[% IF NOT c.user_exists %]
 
         [% IF field_errors.email %]
             <div class='form-error'>[% field_errors.email %]</div>

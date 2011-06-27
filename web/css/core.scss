@@ -189,6 +189,22 @@ $map_width: 500px;
         text-align: center;
     }
 
+    #form_sign_in_yes {
+        float: left;
+        width: 47%;
+        padding-right: 1%;
+        border-right: solid 1px #999999;
+        margin-bottom: 1em;
+    }
+
+    #form_sign_in_no, #fieldset #form_sign_in_no {
+        float: right;
+        width: 47%;
+        padding-left: 1%;
+        clear: none;
+        margin-bottom: 1em;
+    }
+
     // Map
 
     #watermark {

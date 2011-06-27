@@ -61,8 +61,7 @@ __PACKAGE__->config(
             credential => {    # Catalyst::Authentication::Credential::Password
                 class              => 'Password',
                 password_field     => 'password',
-                password_type      => 'hashed',
-                password_hash_type => 'SHA-1',
+                password_type      => 'self_check',
             },
             store => {         # Catalyst::Authentication::Store::DBIx::Class
                 class      => 'DBIx::Class',

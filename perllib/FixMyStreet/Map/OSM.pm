@@ -51,10 +51,17 @@ sub copyright {
 sub display_map {
     my ($self, $c, %params) = @_;
 
+    my $numZoomLevels = ZOOM_LEVELS;
+    my $zoomOffset = MIN_ZOOM_LEVEL;
+    if ($params{any_zoom}) {
+        $numZoomLevels = 18;
+        $zoomOffset = 0;
+    }
+
     # Adjust zoom level dependent upon population density
     my $dist = mySociety::Gaze::get_radius_containing_population( $params{latitude}, $params{longitude}, 200_000 );
-    my $default_zoom = ZOOM_LEVELS - 3;
-    $default_zoom = ZOOM_LEVELS - 2 if $dist < 10;
+    my $default_zoom = $numZoomLevels - 3;
+    $default_zoom = $numZoomLevels - 2 if $dist < 10;
 
     # Map centre may be overridden in the query string
     $params{latitude} = Utils::truncate_coordinate($c->req->params->{lat} + 0)
@@ -63,9 +70,9 @@ sub display_map {
         if defined $c->req->params->{lon};
 
     my $zoom = defined $c->req->params->{zoom} ? $c->req->params->{zoom} + 0 : $default_zoom;
-    $zoom = ZOOM_LEVELS - 1 if $zoom >= ZOOM_LEVELS;
+    $zoom = $numZoomLevels - 1 if $zoom >= $numZoomLevels;
     $zoom = 0 if $zoom < 0;
-    my $zoom_act = MIN_ZOOM_LEVEL + $zoom;
+    my $zoom_act = $zoomOffset + $zoom;
     my ($x_tile, $y_tile) = latlon_to_tile_with_adjust($params{latitude}, $params{longitude}, $zoom_act);
 
     foreach my $pin (@{$params{pins}}) {
@@ -82,7 +89,8 @@ sub display_map {
         y_tile => $y_tile,
         zoom => $zoom,
         zoom_act => $zoom_act,
-        zoom_levels => ZOOM_LEVELS,
+        zoomOffset => $zoomOffset,
+        numZoomLevels => $numZoomLevels,
         compass => compass( $x_tile, $y_tile, $zoom_act ),
     };
 }
@@ -158,6 +166,7 @@ sub click_to_tile {
 
 # Given some click co-ords (the tile they were on, and where in the
 # tile they were), convert to WGS84 and return.
+# XXX Note use of MIN_ZOOM_LEVEL here.
 sub click_to_wgs84 {
     my ($self, $c, $pin_tile_x, $pin_x, $pin_tile_y, $pin_y) = @_;
     my $tile_x = click_to_tile($pin_tile_x, $pin_x);

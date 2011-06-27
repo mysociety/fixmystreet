@@ -1,7 +1,5 @@
 YAHOO.util.Event.onContentReady('map', function() {
 
-    fixmystreet.ZOOM_OFFSET = 13;
-
     var perm = new OpenLayers.Control.Permalink();
     set_map_config(perm);
 
@@ -11,9 +9,9 @@ YAHOO.util.Event.onContentReady('map', function() {
     });
 
     fixmystreet.layer_options = OpenLayers.Util.extend({
-        zoomOffset: fixmystreet.ZOOM_OFFSET,
+        zoomOffset: fixmystreet.zoomOffset,
         transitionEffect: 'resize',
-        numZoomLevels: 5
+        numZoomLevels: fixmystreet.numZoomLevels
     }, fixmystreet.layer_options);
     var layer = new fixmystreet.map_type("", fixmystreet.layer_options);
     fixmystreet.map.addLayer(layer);

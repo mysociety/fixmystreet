@@ -8,7 +8,7 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
-__PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime");
+__PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "EncodedColumn");
 __PACKAGE__->table("users");
 __PACKAGE__->add_columns(
   "id",
@@ -53,6 +53,16 @@ __PACKAGE__->has_many(
 
 # Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-06-22 16:10:43
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:zQIniwAXjl5Lh9wyiGuwFw
+
+__PACKAGE__->add_columns(
+    "password" => {
+        encode_column => 1,
+        encode_class => 'Crypt::Eksblowfish::Bcrypt',
+        encode_args => { cost => 8 },
+        encode_check_method => 'check_password',
+    },
+);
+>>>>>>> 62ffebc89cc66d32a828ea1de8c850c3e950faa1
 
 use mySociety::EmailUtil;
 

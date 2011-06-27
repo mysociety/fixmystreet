@@ -113,7 +113,22 @@
   background-color: #ccffcc;
   border: solid 2px #009900;
   padding: 5px;
-  text-align: center; }
+  text-align: center;
+}
+#mysociety #form_sign_in_yes {
+  float: left;
+  width: 47%;
+  padding-right: 1%;
+  border-right: solid 1px #999999;
+  margin-bottom: 1em;
+}
+#mysociety #form_sign_in_no, #mysociety #fieldset #form_sign_in_no {
+  float: right;
+  width: 47%;
+  padding-left: 1%;
+  clear: none;
+  margin-bottom: 1em;
+}
 #mysociety #watermark {
   background: url("/i/mojwatermark6.png");
   height: 113px;
