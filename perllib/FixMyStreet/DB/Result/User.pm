@@ -26,8 +26,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "password",
   { data_type => "text", default_value => "", is_nullable => 0 },
-  "from_authority",
-  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "from_council",
+  { data_type => "integer", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("users_email_key", ["email"]);
@@ -51,8 +51,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-06-22 16:10:43
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:zQIniwAXjl5Lh9wyiGuwFw
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-06-27 10:25:21
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:9IHuqRTcHZCqJeBAaiQxzw
 
 __PACKAGE__->add_columns(
     "password" => {

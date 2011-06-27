@@ -70,8 +70,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-06-23 14:25:34
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:scnPU5RAGLnT0fY1gM6Z5A
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-06-27 10:07:32
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ilLn3dlagg5COdpZDmzrVQ
 
 use DateTime::TimeZone;
 use Image::Size;

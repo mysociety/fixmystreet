@@ -387,7 +387,7 @@ $report->update;
 
 subtest 'check non authority user cannot change set state' => sub {
     $mech->log_in_ok( $user->email );
-    $user->from_authority( 0 );
+    $user->from_council( 0 );
     $user->update;
 
     $mech->get_ok("/report/$report_id");
@@ -419,7 +419,7 @@ subtest 'check non authority user cannot change set state' => sub {
 for my $state ( qw/unconfirmed hidden partial/ ) {
     subtest "check that update cannot set state to $state" => sub {
         $mech->log_in_ok( $user->email );
-        $user->from_authority( 1 );
+        $user->from_council( 2504 );
         $user->update;
 
         $mech->get_ok("/report/$report_id");
@@ -515,7 +515,7 @@ for my $test (
         $report->comments->delete;
 
         $mech->log_in_ok( $user->email );
-        $user->from_authority( 1 );
+        $user->from_council( 2504 );
         $user->update;
 
         $mech->get_ok("/report/$report_id");
@@ -540,7 +540,7 @@ for my $test (
     };
 }
 
-$user->from_authority(0);
+$user->from_council(0);
 $user->update;
 
 $report->state('confirmed');

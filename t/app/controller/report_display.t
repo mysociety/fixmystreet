@@ -311,24 +311,31 @@ for my $test (
 for my $test ( 
     {
         desc => 'no state dropdown if user not from authority',
-        from_authority => 0,
+        from_council => 0,
+        no_state => 1,
     },
     {
         desc => 'state dropdown if user from authority',
-        from_authority => 1,
+        from_council => 2504,
+        no_state => 0,
+    },
+    {
+        desc => 'no state dropdown if user not from same council as problem',
+        from_council => 2505,
+        no_state => 1,
     },
 ) {
     subtest $test->{desc} => sub {
         $mech->log_in_ok( $user->email );
-        $user->from_authority( $test->{from_authority} );
+        $user->from_council( $test->{from_council} );
         $user->update;
 
         $mech->get_ok("/report/$report_id");
         my $fields = $mech->visible_form_values( 'updateForm' );
-        if ( $test->{from_authority} ) {
-            ok $fields->{state};
-        } else {
+        if ( $test->{no_state} ) {
             ok !$fields->{state};
+        } else {
+            ok $fields->{state};
         }
     };
 }

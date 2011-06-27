@@ -85,7 +85,7 @@
             <textarea name="update" id="form_update" rows="7" cols="30">[% update.text | html %]</textarea>
         </div>
 
-        [% IF c.user && c.user.from_authority %]
+        [% IF c.user && c.user.from_council && c.user.from_council == problem.council %]
         <div class="form-field">
             <label for="form_state">[% loc( 'State:' ) %]</label>
             <select name="state" id="form_state">

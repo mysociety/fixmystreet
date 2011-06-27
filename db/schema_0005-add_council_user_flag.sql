@@ -1,6 +1,6 @@
 begin;
 
 ALTER table users
-    ADD COLUMN from_authority boolean NOT NULL DEFAULT false;
+    ADD COLUMN from_council integer;
 
 commit;

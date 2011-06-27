@@ -153,7 +153,8 @@ sub process_update : Private {
 
     if ( $params{state} ) {
         $params{state} = 'fixed - council' 
-            if $params{state} eq 'fixed' && $c->user && $c->user->from_authority;
+            if $params{state} eq 'fixed' && $c->user && $c->user->from_council
+            && $c->user->from_council == $update->problem->council;
         $update->problem_state( $params{state} );
     }
 
@@ -177,7 +178,7 @@ sub check_for_errors : Private {
     # they have to be an authority user to update the state
     if ( $c->req->param('state') ) {
         my $error = 0;
-        $error = 1 unless $c->user && $c->user->from_authority;
+        $error = 1 unless $c->user && $c->user->from_council && $c->user->from_council == $c->stash->{update}->problem->council;
 
         my $state = $c->req->param('state');
         $error = 1 unless ( grep { $state eq $_ } ( qw/closed fixed investigating planned/, 'in progress', 'fixed', 'fixed - user', 'fixed - council' ) );
