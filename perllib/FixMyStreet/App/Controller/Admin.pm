@@ -586,6 +586,83 @@ sub report_edit : Path('report_edit') : Args(1) {
     return 1;
 }
 
+
+sub search_users: Path('search_users') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->forward('check_page_allowed');
+
+    if (my $search = $c->req->param('search')) {
+        $c->stash->{searched} = 1;
+
+        my $search = $c->req->param('search');
+        my $isearch = '%' . $search . '%';
+
+        my $search_n = 0;
+        $search_n = int($search) if $search =~ /^\d+$/;
+
+        my $users = $c->model('DB::User')->search(
+            {
+                -or => [
+                    email        => { ilike => $isearch },
+                    name         => { ilike => $isearch },
+                    from_council => $search_n,
+                ]
+            }
+        );
+
+        $c->stash->{users} = [ $users->all ];
+    }
+
+    return 1;
+}
+
+sub user_edit : Path('user_edit') : Args(1) {
+    my ( $self, $c, $id ) = @_;
+
+    $c->forward('check_page_allowed');
+    $c->forward('get_token');
+
+    my $user = $c->model('DB::User')->find( { id => $id } );
+    $c->stash->{user} = $user;
+
+    my @area_types = $c->cobrand->area_types;
+    my $areas = mySociety::MaPit::call('areas', \@area_types);
+
+    my @councils_ids = sort { strcoll($areas->{$a}->{name}, $areas->{$b}->{name}) } keys %$areas;
+    @councils_ids = $c->cobrand->filter_all_council_ids_list( @councils_ids );
+
+    $c->stash->{council_ids} = \@councils_ids;
+    $c->stash->{council_details} = $areas;
+
+    if ( $c->req->param('submit') ) {
+        $c->forward('check_token');
+
+        my $edited = 0;
+
+        if ( $user->email ne $c->req->param('email') ||
+            $user->name ne $c->req->param('name' ) ||
+            $user->from_council != $c->req->param('council') ) {
+                $edited = 1;
+        }
+
+        $user->name( $c->req->param('name') );
+        $user->email( $c->req->param('email') );
+        $user->from_council( $c->req->param('council') || undef );
+        $user->update;
+
+        if ($edited) {
+            $c->forward( 'log_edit', [ $id, 'user', 'edit' ] );
+        }
+
+        $c->stash->{status_message} =
+          '<p><em>' . _('Updated!') . '</em></p>';
+    }
+
+    return 1;
+}
+
+
 =head2 set_allowed_pages
 
 Sets up the allowed_pages stash entry for checking if the current page is
@@ -605,10 +682,12 @@ sub set_allowed_pages : Private {
              'search_reports' => [_('Search Reports'), 2],
              'timeline' => [_('Timeline'), 3],
              'questionnaire' => [_('Survey Results'), 4],
+             'search_users' => [_('Search Users'), 5], 
              'council_contacts' => [undef, undef],        
              'council_edit' => [undef, undef], 
              'report_edit' => [undef, undef], 
              'update_edit' => [undef, undef], 
+             'user_edit' => [undef, undef], 
         }
     }
 

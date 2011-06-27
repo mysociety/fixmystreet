@@ -721,6 +721,98 @@ subtest 'report search' => sub {
     $mech->content_like( qr{<tr [^>]*hidden[^>]*> \s* <td> \s* $r_id \s* </td>}xs );
 };
 
+subtest 'user search' => sub {
+    $mech->get_ok('/admin/search_users');
+    $mech->get_ok('/admin/search_users?search=' . $user->name);
+
+    $mech->content_contains( $user->name);
+    my $u_id = $user->id;
+    $mech->content_like( qr{user_edit/$u_id">Edit</a>} );
+
+    $mech->get_ok('/admin/search_users?search=' . $user->email);
+
+    $mech->content_like( qr{user_edit/$u_id">Edit</a>} );
+
+    $user->from_council(2509);
+    $user->update;
+    $mech->get_ok('/admin/search_users?search=2509' );
+    $mech->content_contains(2509);
+};
+
+$log_entries = FixMyStreet::App->model('DB::AdminLog')->search(
+    {
+        object_type => 'user',
+        object_id   => $user->id
+    },
+    { 
+        order_by => { -desc => 'id' },
+    }
+);
+
+is $log_entries->count, 0, 'no admin log entries';
+
+for my $test (
+    {
+        desc => 'edit user name',
+        fields => {
+            name => 'Test User',
+            email => 'test@example.com',
+            council => 2509,
+        },
+        changes => {
+            name => 'Changed User',
+        },
+        log_count => 1,
+        log_entries => [qw/edit/],
+    },
+    {
+        desc => 'edit user email',
+        fields => {
+            name => 'Changed User',
+            email => 'test@example.com',
+            council => 2509,
+        },
+        changes => {
+            email => 'changed@example.com',
+        },
+        log_count => 2,
+        log_entries => [qw/edit edit/],
+    },
+    {
+        desc => 'edit user council',
+        fields => {
+            name => 'Changed User',
+            email => 'changed@example.com',
+            council => 2509,
+        },
+        changes => {
+            council => 2607,
+        },
+        log_count => 3,
+        log_entries => [qw/edit edit edit/],
+    },
+) {
+    subtest $test->{desc} => sub {
+        $mech->get_ok( '/admin/user_edit/' . $user->id );
+
+        my $visible = $mech->visible_form_values;
+        is_deeply $visible, $test->{fields}, 'expected user';
+
+        my $expected = {
+            %{ $test->{fields} },
+            %{ $test->{changes} }
+        };
+
+        $mech->submit_form_ok( { with_fields => $expected } );
+
+        $visible = $mech->visible_form_values;
+        is_deeply $visible, $expected, 'user updated';
+
+        $mech->content_contains( 'Updated!' );
+    };
+}
+
+
 $mech->delete_user( $user );
 $mech->delete_user( $user2 );
 $mech->delete_user( $user3 );
