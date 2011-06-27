@@ -11,7 +11,7 @@
 
 <form action="/alert/subscribe" method="post">
 <label class="n" for="alert_rznvy">[% loc('Email:') %]</label>
-<input type="text" name="rznvy" id="alert_rznvy" value="[% email | html %]" size="30">
+<input type="email" name="rznvy" id="alert_rznvy" value="[% email | html %]" size="30">
 <input type="hidden" name="id" value="[% problem_id | html %]">
 <input type="hidden" name="type" value="updates">
 <input type="submit" value="[% loc('Subscribe') %]">

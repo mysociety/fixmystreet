@@ -224,7 +224,7 @@ $mech->submit_form_ok(
     "sign in with '$test_email' & '$test_password"
 );
 is $mech->uri->path, '/auth', "redirected to correct page";
-$mech->content_contains( 'Email or password wrong', 'found error message' );
+$mech->content_contains( 'problem with your email/password combination', 'found error message' );
 
 # more test:
 # TODO: test that email are always lowercased

@@ -65,13 +65,16 @@ foreach my $test (
             email         => '',
             phone         => '',
             category      => 'Street lighting',
+            password_sign_in => '',
+            password_register => '',
+            remember_me => undef,
         },
         changes => {},
         errors  => [
             'Please enter a subject',
             'Please enter some details',
-            'Please enter your name',
             'Please enter your email',
+            'Please enter your name',
         ],
     },
     {
@@ -86,13 +89,16 @@ foreach my $test (
             email         => '',
             phone         => '',
             category      => 'Street lighting',
+            password_sign_in => '',
+            password_register => '',
+            remember_me => undef,
         },
         changes => { may_show_name => '1' },
         errors  => [
             'Please enter a subject',
             'Please enter some details',
-            'Please enter your name',
             'Please enter your email',
+            'Please enter your name',
         ],
     },
     {
@@ -107,6 +113,9 @@ foreach my $test (
             email         => '',
             phone         => '',
             category      => 'Street lighting',
+            password_sign_in => '',
+            password_register => '',
+            remember_me => undef,
         },
         changes => {},
         errors  => [
@@ -127,6 +136,9 @@ foreach my $test (
             email         => '',
             phone         => '',
             category      => 'Street lighting',
+            password_sign_in => '',
+            password_register => '',
+            remember_me => undef,
         },
         changes => {},
         errors  => [
@@ -147,6 +159,9 @@ foreach my $test (
             email         => '',
             phone         => '',
             category      => 'Street lighting',
+            password_sign_in => '',
+            password_register => '',
+            remember_me => undef,
         },
         changes => {
             title => 'Dog poo on walls',
@@ -167,11 +182,14 @@ foreach my $test (
             email         => '',
             phone         => '',
             category      => 'Street lighting',
+            password_sign_in => '',
+            password_register => '',
+            remember_me => undef,
         },
         changes => {},
         errors  => [
-'Please enter your full name, councils need this information - if you do not wish your name to be shown on the site, untick the box',
             'Please enter your email',
+'Please enter your full name, councils need this information - if you do not wish your name to be shown on the site, untick the box',
         ],
     },
     {
@@ -186,11 +204,14 @@ foreach my $test (
             email         => '',
             phone         => '',
             category      => 'Street lighting',
+            password_sign_in => '',
+            password_register => '',
+            remember_me => undef,
         },
         changes => {},
         errors  => [
-'Please enter your full name, councils need this information - if you do not wish your name to be shown on the site, untick the box',
             'Please enter your email',
+'Please enter your full name, councils need this information - if you do not wish your name to be shown on the site, untick the box',
         ],
     },
     {
@@ -205,6 +226,9 @@ foreach my $test (
             email         => 'not an email',
             phone         => '',
             category      => 'Street lighting',
+            password_sign_in => '',
+            password_register => '',
+            remember_me => undef,
         },
         changes => { email => 'notanemail', },
         errors  => [ 'Please enter a valid email', ],
@@ -221,12 +245,18 @@ foreach my $test (
             email         => '',
             phone         => '',
             category      => 'Street lighting',
+            password_sign_in => '',
+            password_register => '',
+            remember_me => undef,
         },
         changes => {
             title  => 'Test title',
             detail => "First line\n\nSecond line",
         },
-        errors => [ 'Please enter your name', 'Please enter your email', ],
+        errors => [
+            'Please enter your email',
+            'Please enter your name',
+        ],
     },
     {
         msg    => 'clean up name and email',
@@ -240,6 +270,9 @@ foreach my $test (
             email         => '   BOB @ExAmplE.COM   ',
             phone         => '',
             category      => 'Street lighting',
+            password_sign_in => '',
+            password_register => '',
+            remember_me => undef,
         },
         changes => {
             name  => 'Bob Jones',
@@ -278,14 +311,30 @@ foreach my $test (
     };
 }
 
-subtest "test report creation for a user who does not have an account" => sub {
+foreach my $test (
+    {
+        desc => 'does not have an account',
+        user => 0,
+    },
+    {
+        desc => 'does have an account and is not signed in; does not sign in',
+        user => 1,
+    }
+) {
+  subtest "test report creation for a user who " . $test->{desc} => sub {
     $mech->log_out_ok;
     $mech->clear_emails_ok;
 
     # check that the user does not exist
     my $test_email = 'test-1@example.com';
-    ok !FixMyStreet::App->model('DB::User')->find( { email => $test_email } ),
-      "test user does not exist";
+    if ($test->{user}) {
+        my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+        ok $user, "test user does exist";
+        $user->problems->delete;
+    } else {
+        ok !FixMyStreet::App->model('DB::User')->find( { email => $test_email } ),
+          "test user does not exist";
+    }
 
     # submit initial pc form
     $mech->get_ok('/around');
@@ -298,6 +347,7 @@ subtest "test report creation for a user who does not have an account" => sub {
 
     $mech->submit_form_ok(
         {
+            button      => 'submit_register',
             with_fields => {
                 title         => 'Test Report',
                 detail        => 'Test report details.',
@@ -307,6 +357,7 @@ subtest "test report creation for a user who does not have an account" => sub {
                 email         => 'test-1@example.com',
                 phone         => '07903 123 456',
                 category      => 'Street lighting',
+                password_register => 'secret',
             }
         },
         "submit good details"
@@ -319,6 +370,7 @@ subtest "test report creation for a user who does not have an account" => sub {
     my $user =
       FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
     ok $user, "created new user";
+    ok $user->check_password('secret'), 'password set correctly';
 
     # find the report
     my $report = $user->problems->first;
@@ -358,15 +410,98 @@ subtest "test report creation for a user who does not have an account" => sub {
     $mech->logged_in_ok;
 
     # cleanup
-    $mech->delete_user($user);
-};
+    $mech->delete_user($user)
+        if $test->{user};
+  };
+}
 
-#### test report creation for a user who has account but is not logged in
-# come to site
-# fill in report
-# receive token
-# confirm token
-# report is confirmed
+subtest "test report creation for a user who is signing in as they report" => sub {
+    $mech->log_out_ok;
+    $mech->clear_emails_ok;
+
+    # check that the user does not exist
+    my $test_email = 'test-2@example.com';
+
+    my $user = FixMyStreet::App->model('DB::User')->find_or_create( { email => $test_email } );
+    ok $user, "test user does exist";
+
+    # setup the user.
+    ok $user->update( {
+        name     => 'Joe Bloggs',
+        phone    => '01234 567 890',
+        password => 'secret2',
+    } ), "set user details";
+
+    # submit initial pc form
+    $mech->get_ok('/around');
+    $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } },
+        "submit location" );
+
+    # click through to the report page
+    $mech->follow_link_ok( { text => 'skip this step', },
+        "follow 'skip this step' link" );
+
+    $mech->submit_form_ok(
+        {
+            button      => 'submit_sign_in',
+            with_fields => {
+                title         => 'Test Report',
+                detail        => 'Test report details.',
+                photo         => '',
+                email         => 'test-2@example.com',
+                password_sign_in => 'secret2',
+                category      => 'Street lighting',
+            }
+        },
+        "submit good details"
+    );
+
+    # check that we got the errors expected
+    is_deeply $mech->form_errors, [
+        'You have successfully signed in; please check and confirm your details are accurate:',
+    ], "check there were errors";
+
+    # Now submit with a name
+    $mech->submit_form_ok(
+        {
+            with_fields => {
+                name => 'Joe Bloggs',
+            }
+        },
+        "submit good details"
+    );
+
+    # find the report
+    my $report = $user->problems->first;
+    ok $report, "Found the report";
+
+    # check that we got redirected to /report/
+    is $mech->uri->path, "/report/" . $report->id, "redirected to report page";
+
+    # Check the report has been assigned appropriately
+    is $report->council, 2651;
+
+    # check that no emails have been sent
+    $mech->email_count_is(0);
+
+    # check report is confirmed and available
+    is $report->state, 'confirmed', "report is now confirmed";
+    $mech->get_ok( '/report/' . $report->id );
+
+    # check that the reporter has an alert
+    my $alert = FixMyStreet::App->model('DB::Alert')->find( {
+        user       => $report->user,
+        alert_type => 'new_updates',
+        parameter  => $report->id,
+    } );
+    ok $alert, "created new alert";
+
+    # user is created and logged in
+    $mech->logged_in_ok;
+
+    # cleanup
+    $mech->delete_user($user)
+};
 
 #### test report creation for user with account and logged in
 foreach my $test (

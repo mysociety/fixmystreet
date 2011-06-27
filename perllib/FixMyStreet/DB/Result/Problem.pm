@@ -188,7 +188,7 @@ sub check_for_errors {
       unless $self->council
           && $self->council =~ m/^(?:-1|[\d,]+(?:\|[\d,]+)?)$/;
 
-    if ( $self->name !~ m/\S/ ) {
+    if ( !$self->name || $self->name !~ m/\S/ ) {
         $errors{name} = _('Please enter your name');
     }
     elsif (length( $self->name ) < 5
