@@ -142,4 +142,21 @@ sub alert_for_problem {
     } );
 }
 
+sub council {
+    my $self = shift;
+
+    return '' unless $self->from_council;
+
+    my $key = 'council_name:' . $self->from_council;
+    my $result = Memcached::get($key);
+
+    unless ($result) {
+        my $area_info = mySociety::MaPit::call('area', $self->from_council);
+        $result = $area_info->{name};
+        Memcached::set($key, $result, 86400);
+    }
+
+    return $result;
+}
+
 1;

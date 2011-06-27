@@ -534,6 +534,8 @@ for my $test (
 
         my $update_meta = $mech->extract_update_metas;
         like $update_meta->[0], qr/marked as $test->{fields}->{state}$/, 'update meta includes state change';
+        like $update_meta->[0], qr{Test User \(Westminster City Council\)}, 'update meta includes council name';
+        $mech->content_contains( 'Test User (<strong>Westminster City Council</strong>)', 'council name in bold');
 
         $report->discard_changes;
         is $report->state, $test->{state}, 'state set';
