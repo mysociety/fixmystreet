@@ -131,7 +131,7 @@ create table users (
     name            text,
     phone           text,
     password        text    not null default ''
-    from_authority  boolean not null default false -- users is from a council etc
+    from_council    integer -- id of council user is from or null/0 if not
 );
 
 -- Problems reported by users of site
