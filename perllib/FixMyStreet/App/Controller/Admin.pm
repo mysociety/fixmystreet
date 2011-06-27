@@ -730,7 +730,7 @@ not then display 404 page
 sub check_token : Private {
     my ( $self, $c ) = @_;
 
-    if ( $c->req->param('token' ) ne $c->stash->{token} ) {
+    if ( !$c->req->param('token') || $c->req->param('token' ) ne $c->stash->{token} ) {
         $c->detach( '/page_error_404_not_found', [ _('The requested URL was not found on this server.') ] );
     }
 
