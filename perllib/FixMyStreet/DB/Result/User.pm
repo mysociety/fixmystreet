@@ -62,7 +62,6 @@ __PACKAGE__->add_columns(
         encode_check_method => 'check_password',
     },
 );
->>>>>>> 62ffebc89cc66d32a828ea1de8c850c3e950faa1
 
 use mySociety::EmailUtil;
 
