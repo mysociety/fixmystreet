@@ -395,6 +395,7 @@ create table admin_log (
     object_type text not null check (
       object_type = 'problem'
       or object_type = 'update'
+      or object_type = 'user'
     ),
     object_id integer not null,
     action text not null check (
