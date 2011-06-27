@@ -181,7 +181,7 @@ sub check_for_errors : Private {
         $error = 1 unless $c->user && $c->user->from_council && $c->user->from_council == $c->stash->{update}->problem->council;
 
         my $state = $c->req->param('state');
-        $error = 1 unless ( grep { $state eq $_ } ( qw/closed fixed investigating planned/, 'in progress', 'fixed', 'fixed - user', 'fixed - council' ) );
+        $error = 1 unless ( grep { $state eq $_ } ( qw/confirmed closed fixed investigating planned/, 'in progress', 'fixed', 'fixed - user', 'fixed - council' ) );
 
         if ( $error ) {
             $c->stash->{errors} ||= [];

@@ -510,6 +510,18 @@ for my $test (
         },
         state => 'fixed - council',
     },
+    {
+        desc => 'from authority user marks report as confirmed',
+        fields => {
+            name => $user->name,
+            may_show_name => 1,
+            add_alert => 0,
+            photo => '',
+            update => 'Set state to investigating',
+            state => 'confirmed',
+        },
+        state => 'confirmed',
+    },
 ) {
     subtest $test->{desc} => sub {
         $report->comments->delete;
