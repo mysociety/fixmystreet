@@ -255,6 +255,55 @@ foreach my $test (
     };
 }
 
+
+for my $test ( 
+    {
+        state => 'confirmed',
+        fixed => 0
+    },
+    {
+        state => 'planned',
+        fixed => 0
+    },
+    {
+        state => 'in progress',
+        fixed => 0
+    },
+    {
+        state => 'investigating',
+        fixed => 0
+    },
+    {
+        state => 'closed',
+        fixed => 0
+    },
+    {
+        state => 'fixed',
+        fixed => 1
+    },
+    {
+        state => 'fixed - council',
+        fixed => 1
+    },
+    {
+        state => 'fixed - user',
+        fixed => 1
+    },
+) {
+    subtest "correct fixed text for state $test->{state}" => sub {
+        $report->state ( $test->{state} );
+        $report->update;
+
+        $mech->get_ok("/Q/" . $token->token);
+        $mech->title_like( qr/Questionnaire/ );
+        if ( $test->{fixed} ) {
+            $mech->content_contains('An update marked this problem as fixed');
+        } else {
+            $mech->content_lacks('An update marked this problem as fixed');
+        }
+    };
+}
+
 # EHA extra checking
 ok $mech->host("reportemptyhomes.com"), 'change host to reportemptyhomes';
 
