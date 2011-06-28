@@ -65,6 +65,10 @@ sub update_problem : Private {
         }
     }
 
+    if ( $update->mark_open && $update->user->id == $problem->user->id ) {
+        $problem->state('confirmed');
+    }
+
     $problem->lastupdate( \'ms_current_timestamp()' );
     $problem->update;
 
@@ -141,13 +145,15 @@ sub process_update : Private {
     my ( $self, $c ) = @_;
 
     my %params =
-      map { $_ => scalar $c->req->param($_) } ( 'update', 'name', 'fixed' );
+      map { $_ => scalar $c->req->param($_) } ( 'update', 'name', 'fixed', 'reopen' );
 
     $params{update} =
       Utils::cleanup_text( $params{update}, { allow_multiline => 1 } );
 
     my $name = Utils::trim_text( $params{name} );
     my $anonymous = $c->req->param('may_show_name') ? 0 : 1;
+
+    $params{reopen} = 0 unless $c->user && $c->user->id == $c->stash->{problem}->user->id;
 
     my $update = $c->model('DB::Comment')->new(
         {
@@ -156,6 +162,7 @@ sub process_update : Private {
             problem      => $c->stash->{problem},
             state        => 'unconfirmed',
             mark_fixed   => $params{fixed} ? 1 : 0,
+            mark_open    => $params{reopen} ? 1 : 0,
             cobrand      => $c->cobrand->moniker,
             cobrand_data => $c->cobrand->extra_update_data,
             lang         => $c->stash->{lang_code},
