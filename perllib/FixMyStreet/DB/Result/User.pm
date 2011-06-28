@@ -84,14 +84,6 @@ sub check_for_errors {
     if ( !$self->name || $self->name !~ m/\S/ ) {
         $errors{name} = _('Please enter your name');
     }
-    elsif (length( $self->name ) < 5
-        || $self->name !~ m/\s/
-        || $self->name =~ m/\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i )
-    {
-        $errors{name} = _(
-'Please enter your full name, councils need this information - if you do not wish your name to be shown on the site, untick the box'
-        );
-    }
 
     if ( $self->email !~ /\S/ ) {
         $errors{email} = _('Please enter your email');
