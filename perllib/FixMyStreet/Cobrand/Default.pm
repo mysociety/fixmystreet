@@ -405,7 +405,8 @@ sub uri {
     $uri = URI->new( $uri );
     $uri->query_param( zoom => 3 )
       if $uri->query_param('lat') && !$uri->query_param('zoom');
-    $uri->query_param( map => $map_class ); # FIXME Only on /around, /report?
+
+    # $uri->query_param( map => $map_class ); # FIXME Only on /around, /report?
 
     return $uri;
 }

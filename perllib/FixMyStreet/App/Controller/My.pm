@@ -25,6 +25,9 @@ sub my : Path : Args(0) {
 
     $c->detach( '/auth/redirect' ) unless $c->user;
 
+    # Even though front end doesn't yet have it, have it on this page, it's better!
+    FixMyStreet::Map::set_map_class( 'FMS' );
+
     my $pins = [];
     my $problems = {};
     foreach my $problem ( $c->user->problems ) {
@@ -39,6 +42,10 @@ sub my : Path : Args(0) {
     }
 
     $c->stash->{problems} = $problems;
+    my @updates = $c->user->comments->search( {
+        state => 'confirmed',
+    } )->all;
+    $c->stash->{updates} = \@updates;
 
     FixMyStreet::Map::display_map(
         $c,

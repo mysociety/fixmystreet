@@ -377,6 +377,11 @@
   margin-top: 2em;
 }
 
+.olControlAttribution {
+  bottom: 3px !important;
+  left: 3px;
+}
+
 @media print {
   #mysociety #map_box {
     float: none;

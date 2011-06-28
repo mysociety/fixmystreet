@@ -1,5 +1,4 @@
 [%
-    pre_map = '<h2>' _ loc('Your latest problem') _ '</h2>';
     PROCESS "maps/${map.type}.html" IF c.user.problems;
     INCLUDE 'header.html', title = loc('Your Reports')
 %]
@@ -31,6 +30,17 @@
     INCLUDE problem;
 END %]
 
+[% FOREACH u IN updates %]
+    [% IF loop.first %]<h2>[% loc('Your updates') %]</h2><ul>[% END %]
+    <li>&ldquo;[% u.text | html %]&rdquo;
+    &ndash; <a href="[% c.uri_for( '/report', u.problem_id ) %]#update_[% u.id %]">[% u.problem.title | html %]</a>.
+    <em class="council_sent_info">
+        [% tprintf( loc("Added %s"), prettify_epoch( u.confirmed_local.epoch, 'date' ) ) %]
+        </em>
+    </li>
+    [% "</ul>" IF loop.last %]
+[% END %]
+
 </div>
 
 [% INCLUDE 'footer.html' %]
@@ -38,7 +48,7 @@ END %]
 [% BLOCK problem %]
     [% "<ul>" IF loop.first %]
 
-    <li><a href="[% c.uri_for( '/report', p.id ) %]">[% p.title | html %]</a>
+    <li><a href="[% c.uri_for( '/report', p.id ) %]">[% p.title | html %]</a>.
     <em class="council_sent_info">
         [% IF p.whensent %]
             [% tprintf( loc("Reported %s to %s"), prettify_epoch( p.confirmed_local.epoch, 'date' ), p.body(c) ) %]

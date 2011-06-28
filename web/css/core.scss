@@ -507,6 +507,11 @@ $map_width: 500px;
 
 }
 
+.olControlAttribution {
+    bottom: 3px !important;
+    left: 3px;
+}
+
 // Printing, SCSS doesn't handle @media nesting
 
 @media print {
