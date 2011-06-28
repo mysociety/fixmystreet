@@ -28,9 +28,15 @@ sub my : Path : Args(0) {
     # Even though front end doesn't yet have it, have it on this page, it's better!
     FixMyStreet::Map::set_map_class( 'FMS' );
 
+    my $p_page = $c->req->params->{p} || 1;
+    my $u_page = $c->req->params->{u} || 1;
+
     my $pins = [];
     my $problems = {};
-    foreach my $problem ( $c->user->problems ) {
+    my $rs = $c->user->problems->search( undef,
+        { rows => 50 } )->page( $p_page );
+
+    while ( my $problem = $rs->next ) {
         push @$pins, {
             latitude  => $problem->latitude,
             longitude => $problem->longitude,
@@ -40,12 +46,15 @@ sub my : Path : Args(0) {
         };
         push @{ $problems->{$problem->state} }, $problem;
     }
-
+    $c->stash->{problems_pager} = $rs->pager;
     $c->stash->{problems} = $problems;
-    my @updates = $c->user->comments->search( {
-        state => 'confirmed',
-    } )->all;
+
+    $rs = $c->user->comments->search(
+        { state => 'confirmed' },
+        { rows => 50 } )->page( $u_page );
+    my @updates = $rs->all;
     $c->stash->{updates} = \@updates;
+    $c->stash->{updates_pager} = $rs->pager;
 
     FixMyStreet::Map::display_map(
         $c,

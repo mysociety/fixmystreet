@@ -1,9 +1,9 @@
 [%
-    PROCESS "maps/${map.type}.html" IF c.user.problems;
+    PROCESS "maps/${map.type}.html" IF problems.size;
     INCLUDE 'header.html', title = loc('Your Reports')
 %]
 
-[% IF c.user.problems %]
+[% IF problems.size %]
     [% map_html %]
     </div>
     <div id="side">
@@ -12,6 +12,8 @@
 [% END %]
 
 <h1>[% loc('Your Reports') %]</h1>
+
+[% INCLUDE pagination, pager = problems_pager %]
 
 [% FOREACH p = problems.confirmed %]
     [% IF loop.first %]<h2>[% loc('Open reports') %]</h2>[% END %]
@@ -31,7 +33,12 @@
 END %]
 
 [% FOREACH u IN updates %]
-    [% IF loop.first %]<h2>[% loc('Your updates') %]</h2><ul>[% END %]
+    [% IF loop.first %]
+        <h2>[% loc('Your updates') %]</h2>
+        [% INCLUDE pagination, pager = updates_pager %]
+        <ul>
+    [% END %]
+
     <li>&ldquo;[% u.text | html %]&rdquo;
     &ndash; <a href="[% c.uri_for( '/report', u.problem_id ) %]#update_[% u.id %]">[% u.problem.title | html %]</a>.
     <em class="council_sent_info">
@@ -48,10 +55,10 @@ END %]
 [% BLOCK problem %]
     [% "<ul>" IF loop.first %]
 
-    <li><a href="[% c.uri_for( '/report', p.id ) %]">[% p.title | html %]</a>.
-    <em class="council_sent_info">
+    <li><a href="[% c.uri_for( '/report', p.id ) %]">[% p.title | html %]</a>
+    <em class="council_sent_info"> &ndash;
         [% IF p.whensent %]
-            [% tprintf( loc("Reported %s to %s"), prettify_epoch( p.confirmed_local.epoch, 'date' ), p.body(c) ) %]
+            [% tprintf( loc("Reported %s, to %s"), prettify_epoch( p.confirmed_local.epoch, 'date' ), p.body(c) ) %]
         [% ELSE %]
             [% tprintf( loc("Reported %s"), prettify_epoch( p.confirmed_local.epoch, 'date' ) ) %]
         [% END %]
@@ -61,3 +68,22 @@ END %]
     [% "</ul>" IF loop.last %]
 [% END %]
 
+[% BLOCK pagination %]
+  [% IF pager.last_page > 1 %]
+    <p>
+        [% IF pager.previous_page %]
+            <a href="[% c.req.uri_with({'p_page' => pager.previous_page}) %]">&larr; Previous</a>
+        [% ELSE %]
+            &larr; Previous
+        [% END %]
+        |
+        [% pager.first %] to [% pager.last %] of [% pager.total_entries %]
+        |
+        [% IF pager.next_page %]
+            <a href="[% c.req.uri_with({'p_page' => pager.next_page}) %]">Next &rarr;</a>
+        [% ELSE %]
+            Next &rarr;
+        [% END %]
+    </p>
+  [% END %]
+[% END %]
