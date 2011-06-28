@@ -128,8 +128,7 @@ $mech->not_logged_in_ok;
     $mech->get_ok($link);
     is $mech->uri->path, '/faq', "redirected to the Help page";
 
-    $mech->get_ok('/my');
-    $mech->follow_link_ok( { url => '/auth/change_password' } );
+    $mech->get_ok('/auth/change_password');
 
     ok my $form = $mech->form_name('change_password'),
       "found change password form";
@@ -224,7 +223,7 @@ $mech->submit_form_ok(
     "sign in with '$test_email' & '$test_password"
 );
 is $mech->uri->path, '/auth', "redirected to correct page";
-$mech->content_contains( 'Email or password wrong', 'found error message' );
+$mech->content_contains( 'problem with your email/password combination', 'found error message' );
 
 # more test:
 # TODO: test that email are always lowercased

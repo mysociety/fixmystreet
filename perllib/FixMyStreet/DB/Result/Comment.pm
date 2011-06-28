@@ -107,6 +107,9 @@ sub check_for_errors {
 
     my %errors = ();
 
+    $errors{name} = _('Please enter your name')
+        if !$self->name || $self->name !~ m/\S/;
+
     $errors{update} = _('Please enter a message')
       unless $self->text =~ m/\S/;
 

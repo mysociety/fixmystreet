@@ -12,7 +12,7 @@ YAHOO.util.Event.onContentReady('pc', function() {
 
 YAHOO.util.Event.onContentReady('mapForm', function() {
     this.onsubmit = function() {
-       if (this.submit_problem) {
+        if (this.submit_problem) {
             this.onsubmit = function() { return false; };
         }
 

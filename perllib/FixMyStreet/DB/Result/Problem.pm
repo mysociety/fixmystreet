@@ -274,7 +274,7 @@ sub check_for_errors {
       unless $self->council
           && $self->council =~ m/^(?:-1|[\d,]+(?:\|[\d,]+)?)$/;
 
-    if ( $self->name !~ m/\S/ ) {
+    if ( !$self->name || $self->name !~ m/\S/ ) {
         $errors{name} = _('Please enter your name');
     }
     elsif (length( $self->name ) < 5
@@ -499,8 +499,7 @@ sub meta_line {
     return $meta;
 }
 
-# TODO Some/much of this could be moved to the template
-sub duration_string {
+sub body {
     my ( $problem, $c ) = @_;
     my $body;
     if ($problem->external_body) {
@@ -522,6 +521,13 @@ sub duration_string {
             } @councils
         );
     }
+    return $body;
+}
+
+# TODO Some/much of this could be moved to the template
+sub duration_string {
+    my ( $problem, $c ) = @_;
+    my $body = $problem->body( $c );
     return sprintf(_('Sent to %s %s later'), $body,
         Utils::prettify_duration($problem->whensent_local->epoch - $problem->confirmed_local->epoch, 'minute')
     );

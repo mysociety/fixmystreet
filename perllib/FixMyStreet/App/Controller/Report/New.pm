@@ -28,7 +28,10 @@ Create a new report, or complete a partial one .
 
 =head2 flow control
 
-submit_problem: true if a problem has been submitted
+submit_problem: true if a problem has been submitted, at all.
+submit_sign_in: true if the sign in button has been clicked by logged out user.
+submit_register: true if the register/confirm by email button has been clicked
+by logged out user.
 
 =head2 location (required)
 
@@ -90,14 +93,13 @@ sub report_new : Path : Args(0) {
     $c->forward('generate_map');
 
     # deal with the user and report and check both are happy
-    return
-      unless $c->forward('check_form_submitted')
-          && $c->forward('process_user')
-          && $c->forward('process_report')
-          && $c->forward('process_photo')
-          && $c->forward('check_for_errors')
-          && $c->forward('save_user_and_report')
-          && $c->forward('redirect_or_confirm_creation');
+    return unless $c->forward('check_form_submitted');
+    $c->forward('process_user');
+    $c->forward('process_report');
+    $c->forward('process_photo');
+    return unless $c->forward('check_for_errors');
+    $c->forward('save_user_and_report');
+    $c->forward('redirect_or_confirm_creation');
 }
 
 =head2 report_import
@@ -548,22 +550,48 @@ Load user from the database or prepare a new one.
 sub process_user : Private {
     my ( $self, $c ) = @_;
 
+    my $report = $c->stash->{report};
+
+    # The user is already signed in
+    if ( $c->user_exists ) {
+        my $user = $c->user->obj;
+        my %params = map { $_ => scalar $c->req->param($_) } ( 'name', 'phone' );
+        $user->name( Utils::trim_text( $params{name} ) ) if $params{name};
+        $user->phone( Utils::trim_text( $params{phone} ) );
+        $report->user( $user );
+        $report->name( $user->name );
+        return 1;
+    }
+
     # Extract all the params to a hash to make them easier to work with
-    my %params =    #
-      map { $_ => scalar $c->req->param($_) }    #
-      ( 'email', 'name', 'phone', );
+    my %params = map { $_ => scalar $c->req->param($_) }
+      ( 'email', 'name', 'phone', 'password_register' );
 
     # cleanup the email address
     my $email = $params{email} ? lc $params{email} : '';
     $email =~ s{\s+}{}g;
 
-    my $report = $c->stash->{report};
     $report->user( $c->model('DB::User')->find_or_new( { email => $email } ) )
         unless $report->user;
 
-    # set the user's name and phone (if given)
+    # The user is trying to sign in. We only care about email from the params.
+    if ( $c->req->param('submit_sign_in') ) {
+        unless ( $c->forward( '/auth/sign_in' ) ) {
+            $c->stash->{field_errors}->{password} = _('There was a problem with your email/password combination. Please try again.');
+            return 1;
+        }
+        my $user = $c->user->obj;
+        $report->user( $user );
+        $report->name( $user->name );
+        $c->stash->{field_errors}->{name} = _('You have successfully signed in; please check and confirm your details are accurate:');
+        return 1;
+    }
+
+    # set the user's name, phone, and password
     $report->user->name( Utils::trim_text( $params{name} ) ) if $params{name};
     $report->user->phone( Utils::trim_text( $params{phone} ) );
+    $report->user->password( Utils::trim_text( $params{password_register} ) );
+    $report->name( Utils::trim_text( $params{name} ) );
 
     return 1;
 }
@@ -584,7 +612,7 @@ sub process_report : Private {
       map { $_ => scalar $c->req->param($_) }    #
       (
         'title', 'detail', 'pc',                 #
-        'name', 'may_show_name',                 #
+        'may_show_name',                         #
         'category',                              #
         'partial',                               #
       );
@@ -606,7 +634,6 @@ sub process_report : Private {
         Utils::cleanup_text( $params{detail}, { allow_multiline => 1 } ) );
 
     # set these straight from the params
-    $report->name( Utils::trim_text( $params{name} ) );
     $report->category( _ $params{category} );
 
     my $areas = $c->stash->{all_areas};
@@ -624,10 +651,7 @@ sub process_report : Private {
     } elsif ( $first_council->{type} eq 'LBO') {
 
         unless ( Utils::london_categories()->{ $report->category } ) {
-            # TODO Perfect world, this wouldn't short-circuit, other errors would
-            # be included as well.
-            $c->stash->{field_errors} = { category => _('Please choose a category') };
-            return;
+            $c->stash->{field_errors}->{category} = _('Please choose a category');
         }
         $report->council( $first_council->{id} );
 
@@ -646,8 +670,9 @@ sub process_report : Private {
           )->all;
 
         unless ( @contacts ) {
-            $c->stash->{field_errors} = { category => _('Please choose a category') };
-            return;
+            $c->stash->{field_errors}->{category} = _('Please choose a category');
+            $report->council( -1 );
+            return 1;
         }
 
         # construct the council string:
@@ -662,8 +687,7 @@ sub process_report : Private {
     } elsif ( @{ $c->stash->{area_ids_to_list} } ) {
 
         # There was an area with categories, but we've not been given one. Bail.
-        $c->stash->{field_errors} = { category => _('Please choose a category') };
-        return;
+        $c->stash->{field_errors}->{category} = _('Please choose a category');
 
     } else {
 
@@ -783,7 +807,9 @@ sub check_for_errors : Private {
     my ( $self, $c ) = @_;
 
     # let the model check for errors
+    $c->stash->{field_errors} ||= {};
     my %field_errors = (
+        %{ $c->stash->{field_errors} },
         %{ $c->stash->{report}->user->check_for_errors },
         %{ $c->stash->{report}->check_for_errors },
     );

@@ -1,18 +1,89 @@
-[% INCLUDE 'header.html', title => loc('My Reports') %]
+[%
+    PROCESS "maps/${map.type}.html" IF problems.size;
+    INCLUDE 'header.html', title = loc('Your Reports')
+%]
+
+[% IF problems.size %]
+    [% map_html %]
+    </div>
+    <div id="side">
+[% ELSE %]
+    <div id="skipped-map">
+[% END %]
 
 <h1>[% loc('Your Reports') %]</h1>
 
-[% FOREACH p = c.user.problems %]
+[% INCLUDE pagination, pager = problems_pager %]
+
+[% FOREACH p = problems.confirmed %]
+    [% IF loop.first %]<h2>[% loc('Open reports') %]</h2>[% END %]
+    [% INCLUDE problem %]
+[% END %]
+
+[% FOREACH p = problems.fixed %]
+    [% IF loop.first %]<h2>[% loc('Fixed reports') %]</h2>[% END %]
+    [% INCLUDE problem %]
+[% END %]
+
+[%# FOREACH p = problems.unconfirmed;
+    IF loop.first;
+        '<h2>' _ loc('Unconfirmed reports') _ '</h2>';
+    END;
+    INCLUDE problem;
+END %]
+
+[% FOREACH u IN updates %]
+    [% IF loop.first %]
+        <h2>[% loc('Your updates') %]</h2>
+        [% INCLUDE pagination, pager = updates_pager %]
+        <ul>
+    [% END %]
+
+    <li>&ldquo;[% u.text | html %]&rdquo;
+    &ndash; <a href="[% c.uri_for( '/report', u.problem_id ) %]#update_[% u.id %]">[% u.problem.title | html %]</a>.
+    <em class="council_sent_info">
+        [% tprintf( loc("Added %s"), prettify_epoch( u.confirmed_local.epoch, 'date' ) ) %]
+        </em>
+    </li>
+    [% "</ul>" IF loop.last %]
+[% END %]
+
+</div>
+
+[% INCLUDE 'footer.html' %]
+
+[% BLOCK problem %]
     [% "<ul>" IF loop.first %]
 
-    <li><a href="[% c.uri_for( '/report', p.id ) %]">[% p.title | html %]</a> ([% loc(p.state) %])</li>
+    <li><a href="[% c.uri_for( '/report', p.id ) %]">[% p.title | html %]</a>
+    <em class="council_sent_info"> &ndash;
+        [% IF p.whensent %]
+            [% tprintf( loc("Reported %s, to %s"), prettify_epoch( p.confirmed_local.epoch, 'date' ), p.body(c) ) %]
+        [% ELSE %]
+            [% tprintf( loc("Reported %s"), prettify_epoch( p.confirmed_local.epoch, 'date' ) ) %]
+        [% END %]
+        </em>
+    </li>
 
     [% "</ul>" IF loop.last %]
 [% END %]
 
-
-[%# FIXME - put in blurb here %]
-
-<a href="/auth/change_password">change password</a>
-
-[% INCLUDE 'footer.html' %]
+[% BLOCK pagination %]
+  [% IF pager.last_page > 1 %]
+    <p>
+        [% IF pager.previous_page %]
+            <a href="[% c.req.uri_with({'p_page' => pager.previous_page}) %]">&larr; Previous</a>
+        [% ELSE %]
+            &larr; Previous
+        [% END %]
+        |
+        [% pager.first %] to [% pager.last %] of [% pager.total_entries %]
+        |
+        [% IF pager.next_page %]
+            <a href="[% c.req.uri_with({'p_page' => pager.next_page}) %]">Next &rarr;</a>
+        [% ELSE %]
+            Next &rarr;
+        [% END %]
+    </p>
+  [% END %]
+[% END %]

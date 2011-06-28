@@ -1,5 +1,6 @@
 function set_map_config(perm) {
     fixmystreet.controls = [
+        new OpenLayers.Control.Attribution(),
         new OpenLayers.Control.ArgParser(),
         new OpenLayers.Control.Navigation(),
         perm,
@@ -9,6 +10,9 @@ function set_map_config(perm) {
 }
 
 OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
+    attribution: '<a href="http://www.bing.com/maps/">' +
+               '<img border=0 src="http://dev.virtualearth.net/Branding/logo_powered_by.png"></a>',
+
     initialize: function(name, options) {
         var url = [];
         options = OpenLayers.Util.extend({
@@ -18,7 +22,7 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
             transitionEffect: "resize",
             sphericalMercator: true,
             buffer: 0,
-            attribution: "© Microsoft / OS 2010"
+            //attribution: "© Microsoft / OS 2010"
         }, options);
         var newArguments = [name, url, options];
         OpenLayers.Layer.XYZ.prototype.initialize.apply(this, newArguments);

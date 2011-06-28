@@ -226,6 +226,7 @@ $map_width: 500px;
 
     p#copyright {
         float: right;
+        text-align: right;
         margin: 0 0 1em 0;
         font-size: 78%;
     }
@@ -517,6 +518,11 @@ $map_width: 500px;
     //     white-space: nowrap;
     // }
 
+}
+
+.olControlAttribution {
+    bottom: 3px !important;
+    left: 3px;
 }
 
 // Printing, SCSS doesn't handle @media nesting

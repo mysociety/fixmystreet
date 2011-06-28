@@ -20,15 +20,15 @@ Creates an update to a report
 sub report_update : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-         $c->forward( '/report/load_problem_or_display_error', [ $c->req->param('id') ] )
-      && $c->forward('process_update')
-      && $c->forward('process_user')
-      && $c->forward('/report/new/process_photo')
-      && $c->forward('check_for_errors')
+    $c->forward( '/report/load_problem_or_display_error', [ $c->req->param('id') ] );
+    $c->forward('process_update');
+    $c->forward('process_user');
+    $c->forward('/report/new/process_photo');
+    $c->forward('check_for_errors')
       or $c->go( '/report/display', [ $c->req->param('id') ] );
 
-    return $c->forward('save_update')
-      && $c->forward('redirect_or_confirm_creation');
+    $c->forward('save_update');
+    $c->forward('redirect_or_confirm_creation');
 }
 
 sub confirm : Private {
@@ -72,6 +72,10 @@ sub update_problem : Private {
         $problem->state( $update->problem_state );
     }
 
+    if ( $update->mark_open && $update->user->id == $problem->user->id ) {
+        $problem->state('confirmed');
+    }
+
     $problem->lastupdate( \'ms_current_timestamp()' );
     $problem->update;
 
@@ -96,12 +100,17 @@ sub process_user : Private {
 
     my $update = $c->stash->{update};
 
-    $update->user( $c->user->obj ) if $c->user;
+    if ( $c->user_exists ) {
+        my $user = $c->user->obj;
+        my $name = scalar $c->req->param('name');
+        $user->name( Utils::trim_text( $name ) ) if $name;
+        $update->user( $user );
+        return 1;
+    }
 
     # Extract all the params to a hash to make them easier to work with
-    my %params =    #
-      map { $_ => scalar $c->req->param($_) }    #
-      ( 'rznvy', 'name' );
+    my %params = map { $_ => scalar $c->req->param($_) }
+      ( 'rznvy', 'name', 'password_register' );
 
     # cleanup the email address
     my $email = $params{rznvy} ? lc $params{rznvy} : '';
@@ -110,8 +119,22 @@ sub process_user : Private {
     $update->user( $c->model('DB::User')->find_or_new( { email => $email } ) )
         unless $update->user;
 
+    # The user is trying to sign in. We only care about email from the params.
+    if ( $c->req->param('submit_sign_in') ) {
+        unless ( $c->forward( '/auth/sign_in', [ $email ] ) ) {
+            $c->stash->{field_errors}->{password} = _('There was a problem with your email/password combination. Please try again.');
+            return 1;
+        }
+        my $user = $c->user->obj;
+        $update->user( $user );
+        $update->name( $user->name );
+        $c->stash->{field_errors}->{name} = _('You have successfully signed in; please check and confirm your details are accurate:');
+        return 1;
+    }
+
     $update->user->name( Utils::trim_text( $params{name} ) )
         if $params{name};
+    $update->user->password( Utils::trim_text( $params{password_register} ) );
 
     return 1;
 }
@@ -130,16 +153,15 @@ sub process_update : Private {
     my ( $self, $c ) = @_;
 
     my %params =
-      map { $_ => scalar $c->req->param($_) } ( 'update', 'name', 'fixed', 'state' );
+      map { $_ => scalar $c->req->param($_) } ( 'update', 'name', 'fixed', 'state', 'reopen' );
 
     $params{update} =
       Utils::cleanup_text( $params{update}, { allow_multiline => 1 } );
 
     my $name = Utils::trim_text( $params{name} );
+    my $anonymous = $c->req->param('may_show_name') ? 0 : 1;
 
-    my $anonymous = 1;
-
-    $anonymous = 0 if ( $name && $c->req->param('may_show_name') );
+    $params{reopen} = 0 unless $c->user && $c->user->id == $c->stash->{problem}->user->id;
 
     my $update = $c->model('DB::Comment')->new(
         {
@@ -148,6 +170,7 @@ sub process_update : Private {
             problem      => $c->stash->{problem},
             state        => 'unconfirmed',
             mark_fixed   => $params{fixed} ? 1 : 0,
+            mark_open    => $params{reopen} ? 1 : 0,
             cobrand      => $c->cobrand->moniker,
             cobrand_data => $c->cobrand->extra_update_data,
             lang         => $c->stash->{lang_code},
@@ -196,25 +219,27 @@ sub check_for_errors : Private {
     }
 
     # let the model check for errors
+    $c->stash->{field_errors} ||= {};
     my %field_errors = (
+        %{ $c->stash->{field_errors} },
         %{ $c->stash->{update}->user->check_for_errors },
         %{ $c->stash->{update}->check_for_errors },
     );
 
-    # we don't care if there are errors with this...
-    delete $field_errors{name};
+    if ( my $photo_error  = delete $c->stash->{photo_error} ) {
+        $field_errors{photo} = $photo_error;
+    }
 
     # all good if no errors
     return 1
       unless ( scalar keys %field_errors
-        || ( $c->stash->{errors} && scalar @{ $c->stash->{errors} } )
-        || $c->stash->{photo_error} );
+        || ( $c->stash->{errors} && scalar @{ $c->stash->{errors} } ) );
 
     $c->stash->{field_errors} = \%field_errors;
 
     $c->stash->{errors} ||= [];
-    push @{ $c->stash->{errors} },
-      _('There were problems with your update. Please see below.');
+    #push @{ $c->stash->{errors} },
+    #  _('There were problems with your update. Please see below.');
 
     return;
 }

@@ -144,6 +144,7 @@
   background-color: #ffffff; }
 #mysociety p#copyright {
   float: right;
+  text-align: right;
   margin: 0 0 1em 0;
   font-size: 78%; }
 #mysociety #map {
@@ -314,6 +315,11 @@
 #mysociety .contact-details {
   font-size: 80%;
   margin-top: 2em; }
+
+.olControlAttribution {
+  bottom: 3px !important;
+  left: 3px;
+}
 
 @media print {
   #mysociety #map_box {

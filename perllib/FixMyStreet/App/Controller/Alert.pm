@@ -55,17 +55,14 @@ Target for subscribe form
 sub subscribe : Path('subscribe') : Args(0) {
     my ( $self, $c ) = @_;
 
-    if ( $c->req->param('rss') ) {
-        $c->detach('rss');
-    }
+    $c->detach('rss') if $c->req->param('rss');
+
     # if it exists then it's been submitted so we should
     # go to subscribe email and let it work out the next step
-    elsif ( exists $c->req->params->{'rznvy'} ) {
-        $c->detach('subscribe_email');
-    }
-    elsif ( $c->req->params->{'id'} ) {
-        $c->go('updates');
-    }
+    $c->detach('subscribe_email')
+        if exists $c->req->params->{'rznvy'} || $c->req->params->{'alert'};
+
+    $c->go('updates') if $c->req->params->{'id'};
 
     # shouldn't get to here but if we have then do something sensible
     $c->go('index');
@@ -116,24 +113,17 @@ Sign up to email alerts
 sub subscribe_email : Private {
     my ( $self, $c ) = @_;
 
-    my $type = $c->req->param('type');
-    $c->stash->{email_type} = 'alert';
+    $c->stash->{errors} = [];
+    $c->forward('process_user');
 
-    my @errors;
-    push @errors, _('Please enter a valid email address')
-      unless is_valid_email( $c->req->param('rznvy') );
-    push @errors, _('Please select the type of alert you want')
+    my $type = $c->req->param('type');
+    push @{ $c->stash->{errors} }, _('Please select the type of alert you want')
       if $type && $type eq 'local' && !$c->req->param('feed');
-    if (@errors) {
-        $c->stash->{errors} = \@errors;
+    if (@{ $c->stash->{errors} }) {
         $c->go('updates') if $type && $type eq 'updates';
         $c->go('list') if $type && $type eq 'local';
         $c->go('index');
     }
-
-    my $email = $c->req->param('rznvy');
-    $c->stash->{email} = $email;
-    $c->forward('process_user');
 
     if ( $type eq 'updates' ) {
         $c->forward('set_update_alert_options');
@@ -200,13 +190,11 @@ sub create_alert : Private {
         $options->{cobrand_data} = $c->cobrand->extra_update_data();
         $options->{lang}         = $c->stash->{lang_code};
 
-        if ( $c->user && $c->stash->{alert_user}->in_storage && $c->user->id == $c->stash->{alert_user}->id ) {
-            $options->{confirmed} = 1;
-        }
-
         $alert = $c->model('DB::Alert')->new($options);
         $alert->insert();
     }
+
+    $alert->confirm() if $c->user && $c->user->id == $alert->user->id;
 
     $c->stash->{alert} = $alert;
 }
@@ -303,6 +291,7 @@ sub send_confirmation_email : Private {
 
     $c->send_email( 'alert-confirm.txt', { to => $c->stash->{alert}->user->email } );
 
+    $c->stash->{email_type} = 'alert';
     $c->stash->{template} = 'email_sent.html';
 }
 
@@ -331,12 +320,46 @@ sub prettify_pc : Private {
     return 1;
 }
 
+=head2 process_user
+
+Fetch/check email address
+
+=cut
+
 sub process_user : Private {
     my ( $self, $c ) = @_;
 
-    my $email = $c->stash->{email};
+    if ( $c->user_exists ) {
+        $c->stash->{alert_user} = $c->user->obj;
+        return;
+    }
+
+    # Extract all the params to a hash to make them easier to work with
+    my %params = map { $_ => scalar $c->req->param($_) }
+      ( 'rznvy' ); # , 'password_register' );
+
+    # cleanup the email address
+    my $email = $params{rznvy} ? lc $params{rznvy} : '';
+    $email =~ s{\s+}{}g;
+
+    push @{ $c->stash->{errors} }, _('Please enter a valid email address')
+      unless is_valid_email( $email );
+
     my $alert_user = $c->model('DB::User')->find_or_new( { email => $email } );
     $c->stash->{alert_user} = $alert_user;
+
+#    # The user is trying to sign in. We only care about email from the params.
+#    if ( $c->req->param('submit_sign_in') ) {
+#        unless ( $c->forward( '/auth/sign_in', [ $email ] ) ) {
+#            $c->stash->{field_errors}->{password} = _('There was a problem with your email/password combination. Please try again.');
+#            return 1;
+#        }
+#        my $user = $c->user->obj;
+#        $c->stash->{alert_user} = $user;
+#        return 1;
+#    }
+#
+#    $alert_user->password( Utils::trim_text( $params{password_register} ) );
 }
 
 =head2 setup_coordinate_rss_feeds
