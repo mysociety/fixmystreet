@@ -49,6 +49,7 @@ sub email_alerts ($) {
         # XXX Ugh - needs work
         $query =~ s/\?/alert.parameter/ if ($query =~ /\?/);
         $query =~ s/\?/alert.parameter2/ if ($query =~ /\?/);
+
         $query = dbh()->prepare($query);
         $query->execute();
         my $last_alert_id;
@@ -73,11 +74,13 @@ sub email_alerts ($) {
             }
 
             # create problem status message for the templates
-            $data{state_message} =
-              # XXXXXX test this
-              FixMyStreet::DB::Result::Problem::fixed_states()->{$row->{state}}
-              ? _("This report is currently marked as fixed.")
-              : _("This report is currently marked as open.");
+            if ( FixMyStreet::DB::Result::Problem::fixed_states()->{$row->{state}} ) {
+                $data{state_message} = _("This report is currently marked as fixed.");
+            } elsif ( FixMyStreet::DB::Result::Problem::closed_states()->{$row->{state}} ) {
+                $data{state_message} = _("This report is currently marked as closed.")
+            } else {
+                $data{state_message} = _("This report is currently marked as open.");
+            }
 
             my $url = $cobrand->base_url_for_emails( $row->{alert_cobrand_data} );
             if ($row->{item_text}) {
