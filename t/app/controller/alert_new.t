@@ -193,22 +193,11 @@ foreach my $test (
 foreach my $test (
     {
         desc       => 'logged in user signing up',
-        user       => 'test-sign-in@example.com',
         email      => 'test-sign-in@example.com',
         type       => 'council',
         param1     => 2651,
         param2     => 2651,
         confirmed  => 1,
-    },
-    {
-        desc       => 'logged in user signing up with different email',
-        user       => 'loggedin@example.com',
-        email      => 'test-sign-in@example.com',
-        type       => 'council',
-        param1     => 2651,
-        param2     => 2651,
-        confirmed  => 0,
-        delete     => 1,
     }
   )
 {
@@ -217,42 +206,18 @@ foreach my $test (
 
         my $user =
           FixMyStreet::App->model('DB::User')
-          ->find_or_create( { email => $test->{user} } );
+          ->find_or_create( { email => $test->{email} } );
 
-        my $alert_user =
-          FixMyStreet::App->model('DB::User')
-          ->find( { email => $test->{email} } );
-
-        $mech->log_in_ok( $test->{user} );
-
+        $mech->log_in_ok( $test->{email} );
         $mech->clear_emails_ok;
 
-        my $alert;
-        if ($alert_user) {
-            $alert = FixMyStreet::App->model('DB::Alert')->find(
-                {
-                    user       => $alert_user,
-                    alert_type => $type
-                }
-            );
-
-            # clear existing data so we can be sure we're creating it
-            $alert->delete() if $alert;
-        }
-
         $mech->get_ok('/alert/list?pc=EH991SP');
-
-        my $form_values = $mech->visible_form_values();
-        ok $form_values->{rznvy} eq $test->{user},
-          'auto filled in correct email';
-
-        $mech->set_visible( [ radio => 'council:2651:City_of_Edinburgh' ],
-            [ text => $test->{email} ] );
+        $mech->set_visible( [ radio => 'council:2651:City_of_Edinburgh' ] );
         $mech->click('alert');
 
-        $alert = FixMyStreet::App->model('DB::Alert')->find(
+        my $alert = FixMyStreet::App->model('DB::Alert')->find(
             {
-                user       => $alert_user,
+                user       => $user,
                 alert_type => $type,
                 parameter  => $test->{param1},
                 parameter2 => $test->{param2},
@@ -261,13 +226,8 @@ foreach my $test (
         );
 
         ok $alert, 'New alert created with logged in user';
-
-        $mech->email_count_is( $test->{confirmed} ? 0 : 1 );
-
-        if ( $test->{delete} ) {
-            $mech->delete_user($user);
-            $mech->delete_user($alert_user);
-        }
+        $mech->email_count_is( 0 );
+        $mech->delete_user($user);
     };
 }
 
@@ -391,17 +351,24 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
     $user2->alerts->delete;
 
     for my $alert (
-        { feed => 'local:55.951963:-3.189944', email_confirm => 1 },
-        { feed => 'council:2651:City_of_Edinburgh', },
+        {
+            fields => {
+                feed => 'local:55.951963:-3.189944',
+                rznvy => $user2->email,
+            },
+            email_confirm => 1
+        },
+        {
+            fields => {
+                feed => 'council:2651:City_of_Edinburgh',
+            }
+        },
     ) {
         $mech->get_ok( '/alert' );
         $mech->submit_form_ok( { with_fields => { pc => 'EH11BB' } } );
         $mech->submit_form_ok( {
             button => 'alert',
-            with_fields => {
-                rznvy => $user2->email,
-                feed => $alert->{feed},
-            }
+            with_fields => $alert->{fields},
         } );
         if ( $alert->{email_confirm} ) {
             my $email = $mech->get_email;

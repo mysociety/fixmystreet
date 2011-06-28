@@ -116,9 +116,13 @@ for the county council.' ) %]
     [% loc('or') %]
   </p>
 
+[% UNLESS c.user_exists %]
+
   <p>
   [% loc('Your email:') %] <input type="text" id="rznvy" name="rznvy" value="[% rznvy | html %]" size="30">
   </p>
+
+[% END %]
 
   <p>
     <input type="submit" name="alert" value="[% loc('Subscribe me to an email alert') %]">
