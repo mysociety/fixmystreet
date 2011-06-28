@@ -240,6 +240,16 @@ foreach my $test (
                 { problem_id => $report->id }
             );
             is $c->text, $test->{fields}{update} || $test->{comment};
+            if ( $result =~ /fixed/ ) {
+                ok $c->mark_fixed, 'comment marked as fixed';
+                ok !$c->mark_open, 'comment not marked as open';
+            } elsif ( $result eq 'confirmed' ) {
+                ok $c->mark_open, 'comment marked as open';
+                ok !$c->mark_fixed, 'comment not marked as fixed';
+            } elsif ( $result eq 'unknown' ) {
+                ok !$c->mark_open, 'comment not marked as open';
+                ok !$c->mark_fixed, 'comment not marked as fixed';
+            }
         }
 
         # Reset questionnaire for next test

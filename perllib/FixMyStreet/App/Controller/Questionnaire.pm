@@ -202,7 +202,7 @@ sub submit_standard : Private {
                 user         => $problem->user,
                 text         => $update,
                 state        => 'confirmed',
-                mark_fixed   => $new_state eq 'fixed' ? 1 : 0,
+                mark_fixed   => $new_state eq 'fixed - user' ? 1 : 0,
                 mark_open    => $new_state eq 'confirmed' ? 1 : 0,
                 lang         => $c->stash->{lang_code},
                 cobrand      => $c->cobrand->moniker,
