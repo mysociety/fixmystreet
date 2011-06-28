@@ -128,13 +128,19 @@ sub submit_creator_fixed : Private {
     my $questionnaire = $c->model( 'DB::Questionnaire' )->find_or_new(
         {
             problem_id => $c->stash->{problem},
+            # we want to look for any previous questionnaire here rather than one for
+            # this specific open state -> fixed transistion
             old_state  => [ FixMyStreet::DB::Result::Problem->open_states() ],
             new_state  => 'fixed - user',
         }
     );
 
     unless ( $questionnaire->in_storage ) {
+        my $old_state = $c->flash->{old_state};
+        $old_state = 'confirmed' unless FixMyStreet::DB::Result::Problem->open_states->{$old_state};
+
         $questionnaire->ever_reported( $c->stash->{reported} eq 'Yes' ? 1 : 0 );
+        $questionnaire->old_state( $old_state );
         $questionnaire->whensent( \'ms_current_timestamp()' );
         $questionnaire->whenanswered( \'ms_current_timestamp()' );
         $questionnaire->insert;

@@ -786,6 +786,34 @@ foreach my $test (
         },
         changed        => { update => 'Update from owner' },
         initial_banner => '',
+        initial_state  => 'confirmed',
+        alert     => 1,    # we signed up for alerts before, do not unsign us
+        anonymous => 0,
+        answered  => 0,
+        path => '/report/update',
+        content =>
+"Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?",
+    },
+    {
+        desc           => 'logged in reporter submits update and marks in progress problem fixed',
+        initial_values => {
+            name          => 'Test User',
+            may_show_name => 1,
+            add_alert     => 1,
+            photo         => '',
+            update        => '',
+            fixed         => undef,
+        },
+        email  => 'test@example.com',
+        fields => {
+            submit_update => 1,
+            update        => 'update from owner',
+            add_alert     => undef,
+            fixed         => 1,
+        },
+        changed        => { update => 'Update from owner' },
+        initial_banner => ' This problem is in progress. ',
+        initial_state  => 'in progress',
         alert     => 1,    # we signed up for alerts before, do not unsign us
         anonymous => 0,
         answered  => 0,
@@ -813,6 +841,7 @@ foreach my $test (
         },
         changed        => { update => 'Update from owner' },
         initial_banner => '',
+        initial_state  => 'confirmed',
         alert     => 1,    # we signed up for alerts before, do not unsign us
         anonymous => 0,
         answered  => 1,
@@ -831,7 +860,7 @@ foreach my $test (
         ok( $_->delete, 'deleted comment ' . $_->id ) for $report->comments;
 
         $report->discard_changes;
-        $report->state('confirmed');
+        $report->state( $test->{initial_state} );
         $report->update;
 
         my $questionnaire;
@@ -873,12 +902,16 @@ foreach my $test (
 
         my $results = { %{ $test->{fields} }, %{ $test->{changed} }, };
 
+        $report->discard_changes;
+
         my $update = $report->comments->first;
         ok $update, 'found update';
         is $update->text, $results->{update}, 'update text';
         is $update->user->email, $test->{email}, 'update user';
         is $update->state, 'confirmed', 'update confirmed';
         is $update->anonymous, $test->{anonymous}, 'user anonymous';
+
+        is $report->state, 'fixed - user', 'report state';
 
         SKIP: {
             skip( 'not answering questionnaire', 5 ) if $questionnaire;
@@ -899,6 +932,8 @@ foreach my $test (
 
             ok $questionnaire, 'questionnaire exists';
             ok $questionnaire->ever_reported, 'ever reported is yes';
+            is $questionnaire->old_state(), $test->{initial_state}, 'questionnaire old state';
+            is $questionnaire->new_state(), 'fixed - user', 'questionnaire new state';
         };
 
         if ($questionnaire) {

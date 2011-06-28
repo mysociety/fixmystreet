@@ -51,6 +51,9 @@ sub update_problem : Private {
     my $update = $c->stash->{update};
     my $problem = $c->stash->{problem} || $update->problem;
 
+    # we may need this if we display the questionnaire
+    my $old_state = $problem->state;
+
     if ( $update->mark_fixed ) {
         $problem->state('fixed - user');
 
@@ -75,6 +78,7 @@ sub update_problem : Private {
     $c->stash->{problem_id} = $problem->id;
 
     if ($display_questionnaire) {
+        $c->flash->{old_state} = $old_state;
         $c->detach('/questionnaire/creator_fixed');
     }
 
