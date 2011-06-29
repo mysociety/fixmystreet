@@ -65,6 +65,9 @@ YAHOO.util.Event.onContentReady('map', function() {
         fixmystreet.markers.addMarker(marker);
     }
     fixmystreet.map.addLayer(fixmystreet.markers);
+    if ( fixmystreet.zoomToBounds ) {
+        fixmystreet.map.zoomToExtent( fixmystreet.markers.getDataExtent() );
+    }
 
 });
 

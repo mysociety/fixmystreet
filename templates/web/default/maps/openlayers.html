@@ -9,6 +9,9 @@
 var fixmystreet = {
     'latitude': [% map.latitude %],
     'longitude': [% map.longitude %],
+[% IF map.any_zoom -%]
+    'zoomToBounds': 1,
+[%- END %]
 [% IF map.zoom -%]
     'zoom': [% map.zoom %],
 [%- END %]
