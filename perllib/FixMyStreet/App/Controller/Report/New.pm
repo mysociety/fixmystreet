@@ -71,10 +71,6 @@ phone
 
 partial
 
-=head2 can be ignored
-
-all_pins: related to map display - not relevant to creation of a new report
-
 =cut
 
 sub report_new : Path : Args(0) {

@@ -196,6 +196,7 @@ sub display_location : Private {
         } @$on_map_all, @$around_map;
     }
 
+    $c->stash->{page} = 'around'; # So the map knows to make clickable pins, update on pan
     FixMyStreet::Map::display_map(
         $c,
         latitude  => $latitude,

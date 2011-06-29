@@ -22,6 +22,7 @@
 <script type="text/javascript">
 [% c.cobrand.root_path_js %]
 var fixmystreet = {
+    'all_pins': [% all_pins || "''" | html %],
     'x': [% map.x - 3 %],
     'y': [% map.y - 3 %],
     'start_x': [% map.px %],

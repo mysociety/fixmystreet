@@ -60,21 +60,21 @@ YAHOO.util.Event.addListener('all_pins_link', 'click', function(e) {
     var welsh = 0;
     if (this.innerHTML == 'Include stale reports') {
         this.innerHTML = 'Hide stale reports';
-        document.getElementById('all_pins').value = '1';
+        fixmystreet.all_pins = 1;
         load_pins(fixmystreet.x, fixmystreet.y);
     } else if (this.innerHTML == 'Cynnwys hen adroddiadau') {
         this.innerHTML = 'Cuddio hen adroddiadau';
-        document.getElementById('all_pins').value = '1';
+        fixmystreet.all_pins = 1;
         welsh = 1;
         load_pins(fixmystreet.x, fixmystreet.y);
     } else if (this.innerHTML == 'Cuddio hen adroddiadau') {
         this.innerHTML = 'Cynnwys hen adroddiadau';
         welsh = 1;
-        document.getElementById('all_pins').value = '';
+        fixmystreet.all_pins = '';
         load_pins(fixmystreet.x, fixmystreet.y);
     } else if (this.innerHTML == 'Hide stale reports') {
         this.innerHTML = 'Include stale reports';
-        document.getElementById('all_pins').value = '';
+        fixmystreet.all_pins = '';
         load_pins(fixmystreet.x, fixmystreet.y);
     }
     if (welsh) {
@@ -136,15 +136,11 @@ function update_tiles(dx, dy, force) {
 
 function load_pins(x, y) {
     if (document.getElementById('formX') && !document.getElementById('problem_submit')) {
-        all_pins = '';
-        if (document.getElementById('all_pins')) {
-            all_pins = document.getElementById('all_pins').value;
-        }
         var ajax_params = [ 'sx=' + document.getElementById('formX').value, 
                             'sy=' + document.getElementById('formY').value, 
                             'x='  + (x+3),
                             'y='  + (y+3), 
-                            'all_pins=' +  all_pins ];
+                            'all_pins=' +  fixmystreet.all_pins ];
 
         var url = [ root_path , '/ajax?', ajax_params.join(';')].join('');
         YAHOO.util.Connect.asyncRequest('GET', url, {
