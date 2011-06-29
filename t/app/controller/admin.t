@@ -82,6 +82,8 @@ subtest 'check summary counts' => sub {
     my $problem_count = $problems->count;
     $problems->update( { cobrand => '' } );
 
+    FixMyStreet::App->model('DB::Problem')->search( { council => 2489 } )->update( { council => 1 } );
+
     my $q = FixMyStreet::App->model('DB::Questionnaire')->find_or_new( { problem => $report, });
     $q->whensent( \'ms_current_timestamp()' );
     $q->in_storage ? $q->update : $q->insert;
@@ -130,6 +132,7 @@ subtest 'check summary counts' => sub {
     $alert->cobrand('');
     $alert->update;
 
+    FixMyStreet::App->model('DB::Problem')->search( { council => 1 } )->update( { council => 2489 } );
     ok $mech->host('fixmystreet.com');
 };
 
