@@ -378,14 +378,16 @@ EOF
 sub post_barnet_message {
     my ( $problem, %h ) = @_;
     my $return = 1;
-    my $kbid = $h{category}; # TODO: KBID is 50-char category ID: map our category -> Barnet KBID
+    my $kbid = '00000000000000000000000000000000000000000000000014'; # There is only one category
     my $geo_code = "$h{easting} $h{northing}"; 
 
     my $interface = BarnetInterfaces::service::ZLBB_SERVICE_ORDER->new();
     
     # note: config can be of form 'http://username@password:url' (or https, hopefully)
-    if (my $barnet_endpoint = mySociety::Config::get('OPTION_BARNET_WEBSERVICE_ENDPOINT', undef)) {
+    if (my $barnet_endpoint = mySociety::Config::get('BARNET_WEBSERVICE_ENDPOINT', undef)) {
         $interface->set_proxy($barnet_endpoint);
+        # Barnet web service doesn't like namespaces in the elements so use a prefix
+        $interface->set_prefix('urn');
     }
     
     eval {    
