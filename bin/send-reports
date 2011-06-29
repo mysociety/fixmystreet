@@ -364,6 +364,8 @@ sub construct_barnet_message {
     $message .= <<EOF;
 Subject: $h{title}
 
+Category: $h{category}
+
 Details: $h{detail}
 
 $h{fuzzy}, or to provide an update on the problem, please visit the following link:
