@@ -35,3 +35,5 @@ libtemplate-perl
 postgresql-server-dev-8.4
 gnuplot
 ttf-bitstream-vera
+libsoap-wsdl-perl
+libclass-std-fast-perl
