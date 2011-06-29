@@ -34,4 +34,6 @@ libyaml-perl
 liblist-moreutils-perl
 libhaml-ruby
 libtemplate-perl
+libsoap-wsdl-perl
+libclass-std-fast-perl
 postgresql-server-dev-8.3
