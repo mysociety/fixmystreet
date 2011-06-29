@@ -51,8 +51,7 @@ __PACKAGE__->config(
 
     'Plugin::Session' => {    # Catalyst::Plugin::Session::Store::DBIC
         dbic_class     => 'DB::Session',
-        expires        => 3600 * 24 * 7 * 6, # 6 months
-        cookie_expires => 0
+        expires        => 3600 * 24 * 7 * 4, # 4 weeks
     },
 
     'Plugin::Authentication' => {
