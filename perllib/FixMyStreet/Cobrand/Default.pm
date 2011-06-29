@@ -303,12 +303,15 @@ sub front_stats_data {
 
 =head2 disambiguate_location
 
-Given a STRING ($_[1]) representing a location and a QUERY, return a string that
-includes any disambiguating information available
+Returns disambiguating information available
 
 =cut 
 
-sub disambiguate_location { "$_[1]&gl=uk" }
+sub disambiguate_location {
+    return {
+        country => 'uk',
+    };
+}
 
 =head2 form_elements
 

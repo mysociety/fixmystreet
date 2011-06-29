@@ -28,9 +28,10 @@ sub enter_postcode_text {
 
 # Is also adding language parameter
 sub disambiguate_location {
-    my ( $self, $s ) = @_;
-    $s = "hl=no&gl=no&$s";
-    return $s;
+    return {
+        lang => 'no',
+        country => 'no',
+    };
 }
 
 sub area_types {
