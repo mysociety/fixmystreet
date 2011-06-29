@@ -127,6 +127,8 @@ sub set_session_cookie_expire {
     else {
         delete $c->session->{__cookie_expires};
     }
+    # Force the cookie to be regenerated
+    $c->set_session_id( $c->sessionid );
     return 1;
 }
 

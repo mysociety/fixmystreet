@@ -71,7 +71,11 @@ sub sign_in : Private {
         return 1;
     }
 
-    $c->stash->{sign_in_error} = 1;
+    $c->stash(
+        sign_in_error => 1,
+        email => $email,
+        remember_me => $remember_me,
+    );
     return;
 }
 
