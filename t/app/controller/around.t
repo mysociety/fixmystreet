@@ -41,21 +41,6 @@ foreach my $test (
         pc_alternatives => [],
     },
     {
-        pc     => 'glenthorpe',
-        errors => [],
-        pc_alternatives => [
-            'Glenthorpe Crescent, Leeds LS9 7',
-            'Glenthorpe Rd, Merton, Greater London SM4 4',
-            'Glenthorpe Ave, Leeds LS9 7',
-            'Glenthorne Rd, Hammersmith, Greater London W6 0',
-            'Glenthorne Ave, Yeovil, Somerset BA21 4',
-            'Glenthorne Rd, Kenwyn, Cornwall TR3 6',
-            'Glenthorne Dr, Cheslyn Hay, Staffordshire WS6 7',
-            'Glenthorne Gardens, Ilford, Greater London IG5 0',
-            'Glenthorne Ave, Croydon, Greater London CR0 7',
-        ],
-    },
-    {
         pc => 'Glenthorpe Ct, Katy, TX 77494, USA',
         errors =>
           ['Sorry, we could not find that location.'],
@@ -80,16 +65,6 @@ foreach my $test (
         pc        => 'SW1A 1AA',
         latitude  => '51.50101',
         longitude => '-0.141587',
-    },
-    {
-        pc        => 'Manchester',
-        latitude  => '53.480713',
-        longitude => '-2.234376',
-    },
-    {
-        pc        => 'Glenthorpe Rd, Merton, Greater London SM4 4, UK',
-        latitude  => '51.3938',
-        longitude => '-0.22096',
     },
   )
 {

@@ -185,8 +185,8 @@ sub string_bing {
     my ( $error, @valid_locations, $latitude, $longitude );
     foreach (@$results) {
         my $address = $_->{name};
+        next unless $_->{address}->{countryRegion} eq 'United Kingdom'; # FIXME This is UK only
         ( $latitude, $longitude ) = @{ $_->{point}->{coordinates} };
-        # TODO Check $_->{address}->{countryRegion} for cobrand
         push (@$error, $address);
         push (@valid_locations, $_);
     }
