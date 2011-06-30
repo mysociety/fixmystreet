@@ -540,6 +540,25 @@ subtest 'adding email to abuse list from report page' => sub {
     $mech->content_contains('<small>(Email in abuse table)</small>');
 };
 
+subtest 'flagging user from report page' => sub {
+    $report->user->flagged(0);
+    $report->user->update;
+
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->content_contains('Flag user');
+
+    $mech->click_ok('flaguser');
+
+    $mech->content_contains('User flagged');
+    $mech->content_contains('<small>(Flagged)</small>');
+
+    $report->discard_changes;
+    ok $report->user->flagged, 'user flagged';
+
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->content_contains('<small>(Flagged)</small>');
+};
+
 $log_entries->delete;
 
 my $update = FixMyStreet::App->model('DB::Comment')->create(
@@ -740,6 +759,26 @@ subtest 'adding email to abuse list from update page' => sub {
     $mech->get_ok( '/admin/update_edit/' . $update->id );
     $mech->content_contains('<small>(Email in abuse table)</small>');
 };
+
+subtest 'flagging user from update page' => sub {
+    $update->user->flagged(0);
+    $update->user->update;
+
+    $mech->get_ok( '/admin/update_edit/' . $update->id );
+    $mech->content_contains('Flag user');
+
+    $mech->click_ok('flaguser');
+
+    $mech->content_contains('User flagged');
+    $mech->content_contains('<small>(Flagged)</small>');
+
+    $update->discard_changes;
+    ok $update->user->flagged, 'user flagged';
+
+    $mech->get_ok( '/admin/update_edit/' . $update->id );
+    $mech->content_contains('<small>(Flagged)</small>');
+};
+
 
 subtest 'hiding comment marked as fixed reopens report' => sub {
     $update->mark_fixed( 1 );
