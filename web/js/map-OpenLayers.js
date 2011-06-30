@@ -41,6 +41,21 @@ YAHOO.util.Event.onContentReady('map', function() {
         return false;
     });
 
+    if ( fixmystreet.area ) {
+        var area = new OpenLayers.Layer.Vector("KML", {
+            strategies: [ new OpenLayers.Strategy.Fixed() ],
+            protocol: new OpenLayers.Protocol.HTTP({
+                url: "/mapit/area/" + fixmystreet.area + ".kml",
+                format: new OpenLayers.Format.KML()
+            })
+        });
+        fixmystreet.map.addLayer(area);
+        area.events.register('loadend', null, function(a,b,c) {
+            var bounds = area.getDataExtent();
+            if (bounds) { fixmystreet.map.zoomToExtent( bounds ); }
+        });
+    }
+
     var pin_layer_options = {
         styleMap: new OpenLayers.StyleMap({
             'default': new OpenLayers.Style({
@@ -78,7 +93,8 @@ YAHOO.util.Event.onContentReady('map', function() {
     fixmystreet.map.addLayer(fixmystreet.markers);
 
     if ( fixmystreet.zoomToBounds ) {
-        fixmystreet.map.zoomToExtent( fixmystreet.markers.getDataExtent() );
+        var bounds = fixmystreet.markers.getDataExtent();
+        if (bounds) { fixmystreet.map.zoomToExtent( bounds ); }
     }
 
 });
