@@ -271,9 +271,11 @@ for my $test (
         like $email->body, qr/Complaint about report $problem_id/, 'reporting a report'
             if $test->{fields}{id};
 
+        $problem_main->discard_changes;
         if ( $problem_id ) {
-            $problem_main->discard_changes;
             ok $problem_main->flagged, 'problem flagged';
+        } else {
+            ok !$problem_main->flagged, 'problem not flagged';
         }
 
     };
