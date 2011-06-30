@@ -286,7 +286,7 @@ create table comment (
     lang text not null default 'en-gb',
     cobrand_data text not null default '' check (cobrand_data ~* '^[a-z0-9]*$'), -- Extra data used in cobranded versions of the site
     mark_fixed boolean not null,
-    mark_open boolean not null default 'f'
+    mark_open boolean not null default 'f',
     problem_state text check (
         problem_state = 'confirmed'
         or problem_state = 'investigating'
