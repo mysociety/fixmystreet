@@ -235,31 +235,19 @@ the map.
 sub ajax : Path('/ajax') {
     my ( $self, $c ) = @_;
 
-    # Our current X/Y middle of visible map
-    my $x = ( $c->req->param('x') || 0 ) + 0;
-    my $y = ( $c->req->param('y') || 0 ) + 0;
-
-    # Where we started as that's the (0,0) we have to work to
-    my $sx = ( $c->req->param('sx') || 0 ) + 0;
-    my $sy = ( $c->req->param('sy') || 0 ) + 0;
-
     # how far back should we go?
     my $all_pins = $c->req->param('all_pins') ? 1 : undef;
     my $interval = $all_pins ? undef : $c->cobrand->on_map_default_max_pin_age;
 
     # extract the data from the map
     my ( $pins, $on_map, $around_map, $dist ) =
-      FixMyStreet::Map::map_pins( $c, $x, $y, $sx, $sy, $interval );
+      FixMyStreet::Map::map_pins( $c, $interval );
 
     # render templates to get the html
-    # my $on_map_list_html = $c->forward(
-    #     "View::Web", "render",
     my $on_map_list_html =
       $c->view('Web')
       ->render( $c, 'around/on_map_list_items.html', { on_map => $on_map } );
 
-    # my $around_map_list_html = $c->forward(
-    #     "View::Web", "render",
     my $around_map_list_html = $c->view('Web')->render(
         $c,
         'around/around_map_list_items.html',
@@ -279,8 +267,12 @@ sub ajax : Path('/ajax') {
     $c->res->content_type('text/javascript; charset=utf-8');
     $c->res->header( 'Cache_Control' => 'max-age=0' );
 
-    # Set the body - note that the js needs the surrounding brackets.
-    $c->res->body("($body)");
+    if ( $c->req->param('bbox') ) {
+        $c->res->body($body);
+    } else {
+        # The JS needs the surrounding brackets for Tilma
+        $c->res->body("($body)");
+    }
 }
 
 __PACKAGE__->meta->make_immutable;

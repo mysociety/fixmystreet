@@ -83,7 +83,7 @@ sub map_features_bounds {
     my $lon = ( $max_lon + $min_lon ) / 2;
     return _map_features(
         $c, $lat, $lon,
-        $min_lon, $min_lat.
+        $min_lon, $min_lat,
         $max_lon, $max_lat,
         $interval
     );
