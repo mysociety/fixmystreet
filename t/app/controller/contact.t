@@ -248,6 +248,9 @@ for my $test (
   )
 {
     subtest 'check email sent correctly' => sub {
+        $problem_main->discard_changes;
+        ok !$problem_main->flagged, 'problem not flagged';
+
         $mech->clear_emails_ok;
         if ($test->{fields}{id}) {
             $mech->get_ok('/contact?id=' . $test->{fields}{id});
@@ -267,6 +270,12 @@ for my $test (
         my $problem_id = $test->{fields}{id};
         like $email->body, qr/Complaint about report $problem_id/, 'reporting a report'
             if $test->{fields}{id};
+
+        if ( $problem_id ) {
+            $problem_main->discard_changes;
+            ok $problem_main->flagged, 'problem flagged';
+        }
+
     };
 }
 
