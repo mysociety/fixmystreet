@@ -8,6 +8,8 @@
         <th>[% loc('Email') %]</th>
         <th>[% loc('Created') %]</th>
         <th>[% loc('Anonymous') %]</th>
+        <th>[% loc('Owner') %]</th>
+        <th>[% loc('Council') %]</th>
         <th>[% loc('Cobrand') %]</th>
         <th>[% loc('Text') %]</th>
         <th>*</th>
@@ -26,6 +28,8 @@
         <td>[% update.user.email | html %]</td> 
         <td>[% PROCESS format_time time=update.created %]</td> 
         <td>[% IF update.anonymous %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td> 
+        <td>[% IF update.user.id == update.problem.user_id %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
+        <td>[% IF update.user.from_council == update.problem.council %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
         <td>[% update.cobrand %]<br>[% update.cobrand_data | html %]</td> 
         <td>[% update.text | html %]</td> 
         <td><a href="[% c.uri_for( 'update_edit', update.id ) %]">[% loc('Edit') %]</a></td>
