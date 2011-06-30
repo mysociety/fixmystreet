@@ -639,6 +639,76 @@ for my $test (
     };
 }
 
+for my $test (
+    {
+        desc          => 'user is problem owner',
+        problem_user  => $user,
+        update_user   => $user,
+        update_fixed  => 0,
+        update_reopen => 0,
+        update_state  => undef,
+        user_council  => undef,
+        content       => 'user is problem owner',
+    },
+    {
+        desc          => 'user is council user',
+        problem_user  => $user,
+        update_user   => $user2,
+        update_fixed  => 0,
+        update_reopen => 0,
+        update_state  => undef,
+        user_council  => 2504,
+        content       => 'user is from same council as problem - 2504',
+    },
+    {
+        desc          => 'update changed problem state',
+        problem_user  => $user,
+        update_user   => $user2,
+        update_fixed  => 0,
+        update_reopen => 0,
+        update_state  => 'planned',
+        user_council  => 2504,
+        content       => 'Update changed problem state to planned',
+    },
+    {
+        desc          => 'update marked problem as fixed',
+        problem_user  => $user,
+        update_user   => $user3,
+        update_fixed  => 1,
+        update_reopen => 0,
+        update_state  => undef,
+        user_council  => undef,
+        content       => 'Update marked problem as fixed',
+    },
+    {
+        desc          => 'update reopened problem',
+        problem_user  => $user,
+        update_user   => $user,
+        update_fixed  => 0,
+        update_reopen => 1,
+        update_state  => undef,
+        user_council  => undef,
+        content       => 'Update reopened problem',
+    },
+) {
+    subtest $test->{desc} => sub {
+        $report->user( $test->{problem_user} );
+        $report->update;
+
+        $update->user( $test->{update_user} );
+        $update->problem_state( $test->{update_state} );
+        $update->mark_fixed( $test->{update_fixed} );
+        $update->mark_open( $test->{update_reopen} );
+        $update->update;
+
+        $test->{update_user}->from_council( $test->{user_council} );
+        $test->{update_user}->update;
+
+        $mech->get_ok('/admin/update_edit/' . $update->id );
+        $mech->content_contains( $test->{content} );
+    };
+}
+
 subtest 'editing update email creates new user if required' => sub {
     my $user = FixMyStreet::App->model('DB::User')->find(
         { email => 'test4@example.com' } 

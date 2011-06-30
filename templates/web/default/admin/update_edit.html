@@ -21,7 +21,21 @@
     [% END %]
 </select></li>
 <li>[% loc('Name:') %] <input type='text' name='name' id='name' value='[% update.name | html %]'></li>
-<li>[% loc('Email:') %] <input type='text' id='email' name='email' value='[% update.user.email | html %]'></li>
+<li>[% loc('Email:') %] <input type='text' id='email' name='email' value='[% update.user.email | html %]'>
+[%- IF update.user.from_council && update.user.from_council == update.problem.council %]
+[% ' (' _ tprintf(loc('user is from same council as problem - %d'), update.user.from_council ) _')' %]
+[% END -%]
+[%- IF update.user.id == update.problem.user.id %]
+[% ' (' _ loc('user is problem owner') _')' %]
+[% END -%]
+</li>
+[% IF update.problem_state %]
+<li>[% tprintf(loc('Update changed problem state to %s'), update.problem_state) %]</li>
+[% ELSIF update.mark_fixed %]
+<li>[% loc('Update marked problem as fixed') %]</li>
+[% ELSIF update.user.id == update.problem.user.id && update.mark_open %]
+<li>[% loc('Update reopened problem') %]</li>
+[% END %]
 <li>[% loc('Cobrand:') %] [% update.cobrand %]</li>
 <li>[% loc('Cobrand data:') %] [% update.cobrand_data %]</li>
 <li>[% loc('Created:') %] [% PROCESS format_time time=update.created %]</li>
