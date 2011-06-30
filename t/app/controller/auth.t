@@ -197,12 +197,10 @@ foreach my $remember_me ( '1', '0' ) {
         );
         is $mech->uri->path, '/my', "redirected to correct page";
 
-        # check that the cookie has no expiry set
         my $expiry = $mech->session_cookie_expiry;
-        is( $expiry, 0, "no expiry time" );
-        #$remember_me
-        #  ? cmp_ok( $expiry, '>', 86400, "long expiry time" )
-        #  : is( $expiry, 0, "no expiry time" );
+        $remember_me
+          ? cmp_ok( $expiry, '>', 86400, "long expiry time" )
+          : is( $expiry, 0, "no expiry time" );
 
         # logout
         $mech->log_out_ok;

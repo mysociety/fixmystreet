@@ -41,32 +41,86 @@ YAHOO.util.Event.onContentReady('map', function() {
         return false;
     });
 
-    fixmystreet.markers = new OpenLayers.Layer.Markers("Markers");
-    var cols = { 'red':'R', 'green':'G', 'blue':'B', 'purple':'P' };
-    for (var i=0; i<fixmystreet.pins.length; i++) {
-        var pin = fixmystreet.pins[i];
-        var src = '/i/pin' + cols[pin[2]] + '.gif';
-        var size = new OpenLayers.Size(32, 59);
-        var offset = new OpenLayers.Pixel(-3, -size.h-2);
-        var icon = new OpenLayers.Icon(src, size, offset);
-        var loc = new OpenLayers.LonLat(pin[1], pin[0]);
-        loc.transform(
-            new OpenLayers.Projection("EPSG:4326"),
-            fixmystreet.map.getProjectionObject()
-        );
-        var marker = new OpenLayers.Marker(loc, icon);
-        if (pin[3]) {
-            marker.id = pin[3];
-            marker.events.register('click', marker, function(evt) {
-                window.location = '/report/' + this.id;
-                OpenLayers.Event.stop(evt);
-            });
-        }
-        fixmystreet.markers.addMarker(marker);
+    if ( fixmystreet.area ) {
+        var area = new OpenLayers.Layer.Vector("KML", {
+            strategies: [ new OpenLayers.Strategy.Fixed() ],
+            protocol: new OpenLayers.Protocol.HTTP({
+                url: "/mapit/area/" + fixmystreet.area + ".kml",
+                format: new OpenLayers.Format.KML()
+            })
+        });
+        fixmystreet.map.addLayer(area);
+        area.events.register('loadend', null, function(a,b,c) {
+            var bounds = area.getDataExtent();
+            if (bounds) { fixmystreet.map.zoomToExtent( bounds ); }
+        });
+    }
+
+    var pin_layer_options = {
+        styleMap: new OpenLayers.StyleMap({
+            'default': new OpenLayers.Style({
+                externalGraphic: "/i/pin${type}.gif",
+                graphicTitle: "${title}",
+                graphicWidth: 32,
+                graphicHeight: 59,
+                graphicOpacity: 1,
+                graphicXOffset: -1,
+                graphicYOffset: -59
+            })
+        })
+    };
+    if (fixmystreet.page == 'around') {
+        pin_layer_options.strategies = [ new OpenLayers.Strategy.BBOX() ];
+        pin_layer_options.protocol = new OpenLayers.Protocol.HTTP({
+            url: '/ajax',
+            params: fixmystreet.all_pins ? { all_pins: 1, map: 'FMS' } : { map: 'FMS' },
+            format: new OpenLayers.Format.FixMyStreet()
+        });
+    }
+    fixmystreet.markers = new OpenLayers.Layer.Vector("Pins", pin_layer_options);
+
+    var markers = fms_markers_list( fixmystreet.pins, true );
+    fixmystreet.markers.addFeatures( markers );
+    if (fixmystreet.page == 'around') {
+        fixmystreet.markers.events.register( 'featureselected', fixmystreet.markers, function(evt) {
+            window.location = '/report/' + evt.feature.attributes.id;
+            OpenLayers.Event.stop(evt);
+        });
+        var select = new OpenLayers.Control.SelectFeature( fixmystreet.markers );
+        fixmystreet.map.addControl( select );
+        select.activate();
     }
     fixmystreet.map.addLayer(fixmystreet.markers);
 
+    if ( fixmystreet.zoomToBounds ) {
+        var bounds = fixmystreet.markers.getDataExtent();
+        if (bounds) { fixmystreet.map.zoomToExtent( bounds ); }
+    }
+
 });
+
+function fms_markers_list(pins, transform) {
+    var cols = { 'red':'R', 'green':'G', 'blue':'B', 'purple':'P' };
+    var markers = [];
+    for (var i=0; i<pins.length; i++) {
+        var pin = pins[i];
+        var loc = new OpenLayers.Geometry.Point(pin[1], pin[0]);
+        if (transform) {
+            // The Strategy does this for us, so don't do it in that case.
+            loc.transform(
+                new OpenLayers.Projection("EPSG:4326"),
+                fixmystreet.map.getProjectionObject()
+            );
+        }
+        var marker = new OpenLayers.Feature.Vector(loc, {
+            type: cols[pin[2]],
+            id: pin[3],
+            title: pin[4]
+        });
+        markers.push( marker );
+    }
+    return markers;
+}
 
 YAHOO.util.Event.addListener('hide_pins_link', 'click', function(e) {
     YAHOO.util.Event.preventDefault(e);
@@ -85,6 +139,35 @@ YAHOO.util.Event.addListener('hide_pins_link', 'click', function(e) {
         }
     }
 });
+
+YAHOO.util.Event.addListener('all_pins_link', 'click', function(e) {
+    YAHOO.util.Event.preventDefault(e);
+    fixmystreet.markers.setVisibility(true);
+    var welsh = 0;
+    var texts = [
+        'en', 'Include stale reports', 'Hide stale reports',
+        'cy', 'Cynnwys hen adroddiadau', 'Cuddio hen adroddiadau'
+    ];
+    for (var i=0; i<texts.length; i+=3) {
+        if (this.innerHTML == texts[i+1]) {
+            this.innerHTML = texts[i+2];
+            fixmystreet.markers.protocol.options.params = { all_pins: 1, map: 'FMS' };
+            fixmystreet.markers.refresh( { force: true } );
+            lang = texts[i];
+        } else if (this.innerHTML == texts[i+2]) {
+            this.innerHTML = texts[i+1];
+            fixmystreet.markers.protocol.options.params = { map: 'FMS' };
+            fixmystreet.markers.refresh( { force: true } );
+            lang = texts[i];
+        }
+    }
+    if (lang == 'cy') {
+        document.getElementById('hide_pins_link').innerHTML = 'Cuddio pinnau';
+    } else {
+        document.getElementById('hide_pins_link').innerHTML = 'Hide pins';
+    }
+});
+
 
 /* Overridding the buttonDown function of PanZoom so that it does
    zoomTo(0) rather than zoomToMaxExtent()
@@ -140,6 +223,24 @@ OpenLayers.Control.PermalinkFMS = OpenLayers.Class(OpenLayers.Control.Permalink,
             this.element.href = href;
         }
     }
+});
+
+/* Pan data handler */
+OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
+    read: function(json, filter) {
+        if (typeof json == 'string') {
+            obj = OpenLayers.Format.JSON.prototype.read.apply(this, [json, filter]);
+        } else {
+            obj = json;
+        }
+        if (typeof(obj.current) != 'undefined')
+            document.getElementById('current').innerHTML = obj.current;
+        if (typeof(obj.current_near) != 'undefined')
+            document.getElementById('current_near').innerHTML = obj.current_near;
+        var markers = fms_markers_list( obj.pins, false );
+        return markers;
+    },
+    CLASS_NAME: "OpenLayers.Format.FixMyStreet"
 });
 
 /* Click handler */

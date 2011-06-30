@@ -56,6 +56,9 @@ RewriteRule ^/alerts/?$                 /alert          [R=permanent,L]
 RewriteRule /tilma/(.*) http://tilma.mysociety.org/$1 [P,L]
 ProxyPassReverse /tilma/ http://tilma.mysociety.org/
 
+RewriteRule /mapit/(.*) http://mapit.mysociety.org/$1 [P,L]
+ProxyPassReverse /mapit/ http://mapit.mysociety.org/
+
 # serve static files directly
 RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f
 RewriteRule /(.+) /$1 [L]

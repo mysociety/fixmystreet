@@ -16,21 +16,15 @@ use LWP::Simple;
 use Digest::MD5 qw(md5_hex);
 use URI::Escape;
 
-use mySociety::Config;
 use mySociety::Locale;
 use mySociety::MaPit;
 use mySociety::PostcodeUtil;
 use mySociety::Web qw(NewURL);
 
-BEGIN {
-    (my $dir = __FILE__) =~ s{/[^/]*?$}{};
-    mySociety::Config::set_file("$dir/../../conf/general");
-}
-
-# lookup STRING QUERY
+# lookup STRING CONTEXT
 # Given a user-inputted string, try and convert it into co-ordinates using either
 # MaPit if it's a postcode, or Google Maps API otherwise. Returns an array of
-# data, including an error if there is one (which includes a location being in 
+# data, including an error if there is one (which includes a location being in
 # Northern Ireland). The information in the query may be used by cobranded versions
 # of the site to diambiguate locations.
 sub lookup {
@@ -58,57 +52,49 @@ sub lookup {
     unless ($error || defined $latitude) {
         ($latitude, $longitude, $error) = FixMyStreet::Geocode::string($s, $c);
     }
-    return ($latitude, $longitude, $error);
-}
-
-sub geocoded_string_coordinates {
-    my ( $c, $js ) = @_;
-    my ($latitude, $longitude, $error);
-    my ($accuracy) = $js =~ /"Accuracy" *: *(\d)/;
-    if ($accuracy < 4) {  
-        $error = _('Sorry, that location appears to be too general; please be more specific.');
-    } elsif ( $js =~ /"coordinates" *: *\[ *(.*?), *(.*?),/ ) {
-        $longitude = $1;
-        $latitude  = $2;
+    unless ($error || defined $latitude) {
+        $error = _('Sorry, we could not find that location.');
     }
     return ($latitude, $longitude, $error);
 }
 
-sub results_check {
-    my $c = shift;
-    my ($error, @valid_locations);
-    foreach (@_) {
-        next unless /"address" *: *"(.*?)"/s;
-        my $address = $1;
-        next unless $c->cobrand->geocoded_string_check( $address );
-        next if $address =~ /BT\d/;
-        push (@$error, $address);
-        push (@valid_locations, $_); 
-    }
-    if (scalar @valid_locations == 1) {
-        return geocoded_string_coordinates( $c, $valid_locations[0] );
-    }
-    $error = _('Sorry, we could not find that location.') unless $error;
-    return (undef, undef, $error);
-}
-
-# string STRING QUERY
-# Canonicalises, looks up on Google Maps API, and caches, a user-inputted location.
-# Returns array of (LAT, LON, ERROR), where ERROR is either undef, a string, or
-# an array of matches if there are more than one. The information in the query
-# may be used to disambiguate the location in cobranded versions of the site. 
+# string STRING CONTEXT
+# Canonicalises, and then passes to some external API to look stuff up.
 sub string {
     my ($s, $c) = @_;
     $s = lc($s);
     $s =~ s/[^-&\w ']/ /g;
     $s =~ s/\s+/ /g;
     $s = URI::Escape::uri_escape_utf8($s);
-    $s = $c->cobrand->disambiguate_location( "q=$s" );
     $s =~ s/%20/+/g;
-    my $url = 'http://maps.google.com/maps/geo?' . $s;
-    my $cache_dir = mySociety::Config::get('GEO_CACHE');
+    my $params = $c->cobrand->disambiguate_location();
+    if ( FixMyStreet->config('BING_MAPS_API_KEY') ) {
+        my $lookup = FixMyStreet::Geocode::string_bing($s, $c, $params);
+        return ( $lookup->{latitude}, $lookup->{longitude}, $lookup->{error} );
+    }
+    if ( FixMyStreet->config('GOOGLE_MAPS_API_KEY') ) {
+        my $lookup = FixMyStreet::Geocode::string_google($s, $c, $params);
+        return ( $lookup->{latitude}, $lookup->{longitude}, $lookup->{error} );
+    }
+}
+
+# string_google STRING CONTEXT
+# Looks up on Google Maps API, and caches, a user-inputted location.
+# Returns array of (LAT, LON, ERROR), where ERROR is either undef, a string, or
+# an array of matches if there are more than one. The information in the query
+# may be used to disambiguate the location in cobranded versions of the site.
+sub string_google {
+    my ( $s, $c, $params ) = @_;
+
+    my $url = 'http://maps.google.com/maps/geo?q=' . $s;
+      $url .=  '&ll=' . $params->{centre}  if $params->{centre};
+      $url .= '&spn=' . $params->{span}    if $params->{span};
+      $url .=  '&gl=' . $params->{country} if $params->{country};
+      $url .=  '&hl=' . $params->{lang}    if $params->{lang};
+
+    my $cache_dir = FixMyStreet->config('GEO_CACHE') . 'google/';
     my $cache_file = $cache_dir . md5_hex($url);
-    my ($js, $error);
+    my $js;
     if (-s $cache_file) {
         $js = File::Slurp::read_file($cache_file);
     } else {
@@ -126,25 +112,86 @@ sub string {
                 $url .= ',+UK';
             }
         }
-        $url .= '&sensor=false&key=' . mySociety::Config::get('GOOGLE_MAPS_API_KEY');
+        $url .= '&sensor=false&key=' . FixMyStreet->config('GOOGLE_MAPS_API_KEY');
         $js = LWP::Simple::get($url);
         $js = encode_utf8($js) if utf8::is_utf8($js);
         File::Path::mkpath($cache_dir);
         File::Slurp::write_file($cache_file, $js) if $js && $js !~ /"code":6[12]0/;
     }
+
     if (!$js) {
-        $error = _('Sorry, we could not parse that location. Please try again.');
-    } elsif ($js !~ /"code" *: *200/) {
-        $error = _('Sorry, we could not find that location.');
-    } elsif ($js =~ /}, *{/) { # Multiple
-        return results_check($c, (split /}, *{/, $js));
+        return { error => _('Sorry, we could not parse that location. Please try again.') };
     } elsif ($js =~ /BT\d/) {
         # Northern Ireland, hopefully
-        $error = _("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.");
-    } else {
-        return results_check($c, $js);
+        return { error => _("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.") };
     }
-    return (undef, undef, $error);
+
+    $js = JSON->new->utf8->allow_nonref->decode($js);
+    if ($js->{Status}->{code} ne '200') {
+        return { error => _('Sorry, we could not find that location.') };
+    }
+
+    my $results = $js->{Placemark};
+    my ( $error, @valid_locations, $latitude, $longitude );
+    foreach (@$results) {
+        next unless $_->{AddressDetails}->{Accuracy} >= 4;
+        my $address = $_->{address};
+        next unless $c->cobrand->geocoded_string_check( $address );
+        ( $longitude, $latitude ) = @{ $_->{Point}->{coordinates} };
+        push (@$error, $address);
+        push (@valid_locations, $_);
+    }
+    return { latitude => $latitude, longitude => $longitude } if scalar @valid_locations == 1;
+    return { error => $error };
+}
+
+# string_bing STRING CONTEXT
+# Looks up on Bing Maps API, and caches, a user-inputted location.
+# Returns array of (LAT, LON, ERROR), where ERROR is either undef, a string, or
+# an array of matches if there are more than one. The information in the query
+# may be used to disambiguate the location in cobranded versions of the site.
+sub string_bing {
+    my ( $s, $c, $params ) = @_;
+    my $url = "http://dev.virtualearth.net/REST/v1/Locations?q=$s&c=en-GB"; # FIXME nb-NO for Norway
+    $url .= '&mapView=' . $params->{bounds}[0] . ',' . $params->{bounds}[1]
+        if $params->{bounds};
+    $url .= '&userLocation=' . $params->{centre} if $params->{centre};
+
+    my $cache_dir = FixMyStreet->config('GEO_CACHE') . 'bing/';
+    my $cache_file = $cache_dir . md5_hex($url);
+    my $js;
+    if (-s $cache_file) {
+        $js = File::Slurp::read_file($cache_file);
+    } else {
+        $url .= '&key=' . FixMyStreet->config('BING_MAPS_API_KEY');
+        $js = LWP::Simple::get($url);
+        $js = encode_utf8($js) if utf8::is_utf8($js);
+        File::Path::mkpath($cache_dir);
+        File::Slurp::write_file($cache_file, $js) if $js;
+    }
+
+    if (!$js) {
+        return { error => _('Sorry, we could not parse that location. Please try again.') };
+    } elsif ($js =~ /BT\d/) {
+        return { error => _("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.") };
+    }
+
+    $js = JSON->new->utf8->allow_nonref->decode($js);
+    if ($js->{statusCode} ne '200') {
+        return { error => _('Sorry, we could not find that location.') };
+    }
+
+    my $results = $js->{resourceSets}->[0]->{resources};
+    my ( $error, @valid_locations, $latitude, $longitude );
+    foreach (@$results) {
+        my $address = $_->{name};
+        next unless $_->{address}->{countryRegion} eq 'United Kingdom'; # FIXME This is UK only
+        ( $latitude, $longitude ) = @{ $_->{point}->{coordinates} };
+        push (@$error, $address);
+        push (@valid_locations, $_);
+    }
+    return { latitude => $latitude, longitude => $longitude } if scalar @valid_locations == 1;
+    return { error => $error };
 }
 
 sub mapit_check_error {

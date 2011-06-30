@@ -63,9 +63,11 @@ sub all_councils_report {
 }
 
 sub disambiguate_location {
-    my ( $self, $s ) = @_;
-    $s = "ll=51.612832,-0.218169&spn=0.0563,0.09&$s";
-    return $s;
+    return {
+        centre => '51.612832,-0.218169',
+        span   => '0.0563,0.09',
+        bounds => [ '51.584682,-0.263169', '51.640982,-0.173169' ],
+    };
 }
 
 sub recent_photos {

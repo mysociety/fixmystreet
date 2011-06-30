@@ -68,12 +68,29 @@ sub map_features {
    # use deltas that are roughly 500m in the UK - so we get a 1 sq km search box
     my $lat_delta = 0.00438;
     my $lon_delta = 0.00736;
+    return _map_features(
+        $c, $lat, $lon,
+        $lon - $lon_delta, $lat - $lat_delta,
+        $lon + $lon_delta, $lat + $lat_delta,
+        $interval
+    );
+}
 
-    my $min_lat = $lat - $lat_delta;
-    my $max_lat = $lat + $lat_delta;
+sub map_features_bounds {
+    my ( $c, $min_lon, $min_lat, $max_lon, $max_lat, $interval ) = @_;
 
-    my $min_lon = $lon - $lon_delta;
-    my $max_lon = $lon + $lon_delta;
+    my $lat = ( $max_lat + $min_lat ) / 2;
+    my $lon = ( $max_lon + $min_lon ) / 2;
+    return _map_features(
+        $c, $lat, $lon,
+        $min_lon, $min_lat,
+        $max_lon, $max_lat,
+        $interval
+    );
+}
+
+sub _map_features {
+    my ( $c, $lat, $lon, $min_lon, $min_lat, $max_lon, $max_lat, $interval ) = @_;
 
     # list of problems around map can be limited, but should show all pins
     my $around_limit = $c->cobrand->on_map_list_limit || undef;

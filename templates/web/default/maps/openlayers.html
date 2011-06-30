@@ -7,8 +7,14 @@
 <input type="hidden" name="zoom" value="[% map.zoom %]">
 <script type="text/javascript">
 var fixmystreet = {
+    'page': '[% page %]',
+    'area': '[% map.area %]',
+    'all_pins': [% all_pins || "''" | html %],
     'latitude': [% map.latitude %],
     'longitude': [% map.longitude %],
+[% IF map.any_zoom -%]
+    'zoomToBounds': 1,
+[%- END %]
 [% IF map.zoom -%]
     'zoom': [% map.zoom %],
 [%- END %]

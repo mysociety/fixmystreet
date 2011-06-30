@@ -19,24 +19,17 @@ Deals with report questionnaires.
 
 =cut
 
-=head2 load_questionnaire
+=head2 check_questionnaire
 
-Loads the questionnaire from the database, and checks it still needs answering
-and is in the right state. Also finds out if this user has answered the
-"ever reported" question before.
+Checks the questionnaire still needs answering and is in the right state. Also
+finds out if this user has answered the "ever reported" question before.
 
 =cut
 
-sub load_questionnaire : Private {
+sub check_questionnaire : Private {
     my ( $self, $c ) = @_;
 
-    my $questionnaire = $c->model('DB::Questionnaire')->find(
-        { id => $c->stash->{id} },
-        { prefetch => 'problem' }
-    );
-    $c->detach('missing_problem') unless $questionnaire;
-
-    $c->stash->{questionnaire} = $questionnaire;
+    my $questionnaire = $c->stash->{questionnaire};
 
     my $problem_id = $questionnaire->problem_id;
 
@@ -155,8 +148,8 @@ sub submit_creator_fixed : Private {
 sub submit_standard : Private {
     my ( $self, $c ) = @_;
 
-    $c->forward( '/tokens/load_questionnaire_id', [ $c->req->params->{token} ] );
-    $c->forward( 'load_questionnaire' );
+    $c->forward( '/tokens/load_questionnaire', [ $c->req->params->{token} ] );
+    $c->forward( 'check_questionnaire' );
     $c->forward( 'process_questionnaire' );
 
     my $problem = $c->stash->{problem};
@@ -270,7 +263,7 @@ sub process_questionnaire : Private {
 # Sent here from email token action. Simply load and display questionnaire.
 sub index : Private {
     my ( $self, $c ) = @_;
-    $c->forward( 'load_questionnaire' );
+    $c->forward( 'check_questionnaire' );
     $c->forward( 'display' );
 }
 

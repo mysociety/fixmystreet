@@ -93,10 +93,36 @@ sub ward : Path : Args(2) {
     $c->forward( 'load_and_group_problems' );
     $c->forward( 'sort_problems' );
 
-    $c->stash->{rss_url} = '/rss/reports/'
-        . $c->cobrand->short_name( $c->stash->{council}, $c->stash->{areas_info} );
+    my $council_short = $c->cobrand->short_name( $c->stash->{council}, $c->stash->{areas_info} );
+    $c->stash->{rss_url} = '/rss/reports/' . $council_short;
     $c->stash->{rss_url} .= '/' . $c->cobrand->short_name( $c->stash->{ward} )
         if $c->stash->{ward};
+
+    $c->stash->{council_url} = '/reports/' . $council_short;
+
+    my $pins = $c->stash->{pins};
+
+    # Even though front end doesn't yet have it, have it on this page, it's better!
+    FixMyStreet::Map::set_map_class( 'FMS' );
+    FixMyStreet::Map::display_map(
+        $c,
+        latitude  => @$pins ? $pins->[0]{latitude} : 0,
+        longitude => @$pins ? $pins->[0]{longitude} : 0,
+        area      => $c->stash->{ward} ? $c->stash->{ward}->{id} : $c->stash->{council}->{id},
+        pins      => $pins,
+        any_zoom  => 1,
+    );
+
+    # List of wards
+    unless ($c->stash->{ward}) {
+        my $children = mySociety::MaPit::call('area/children', $c->stash->{council}->{id} );
+        foreach (values %$children) {
+            $_->{url} = $c->uri_for( $c->stash->{council_url}
+                . '/' . $c->cobrand->short_name( $_ )
+            );
+        }
+        $c->stash->{children} = $children;
+    }
 }
 
 sub rss_council : Regex('^rss/(reports|area)$') : Args(1) {
@@ -258,41 +284,41 @@ sub load_parent : Private {
 sub load_and_group_problems : Private {
     my ( $self, $c ) = @_;
 
+    my $page = $c->req->params->{p} || 1;
+
     my $where = {
         state => [ FixMyStreet::DB::Result::Problem->visible_states() ]
     };
-    my @extra_cols = ();
     if ($c->stash->{ward}) {
         $where->{areas} = { 'like', '%' . $c->stash->{ward}->{id} . '%' }; # FIXME Check this is secure
-        push @extra_cols, 'title', 'detail';
     } elsif ($c->stash->{council}) {
         $where->{areas} = { 'like', '%' . $c->stash->{council}->{id} . '%' };
-        push @extra_cols, 'title', 'detail';
     }
     my $problems = $c->cobrand->problems->search(
         $where,
         {
             columns => [
-                'id', 'council', 'state', 'areas',
+                'id', 'council', 'state', 'areas', 'latitude', 'longitude', 'title',
                 { duration => { extract => "epoch from current_timestamp-lastupdate" } },
                 { age      => { extract => "epoch from current_timestamp-confirmed"  } },
-                @extra_cols,
             ],
-            order_by => { -desc => 'id' },
+            order_by => { -desc => 'lastupdate' },
+            rows => 100,
         }
-    );
+    )->page( $page );
+    $c->stash->{pager} = $problems->pager;
     $problems = $problems->cursor; # Raw DB cursor for speed
 
-    my ( %fixed, %open );
+    my ( %fixed, %open, @pins );
     my $re_councils = join('|', keys %{$c->stash->{areas_info}});
-    my @cols = ( 'id', 'council', 'state', 'areas', 'duration', 'age', 'title', 'detail' );
+    my @cols = ( 'id', 'council', 'state', 'areas', 'latitude', 'longitude', 'title', 'duration', 'age' );
     while ( my @problem = $problems->next ) {
         my %problem = zip @cols, @problem;
         if ( !$problem{council} ) {
             # Problem was not sent to any council, add to possible councils
             $problem{councils} = 0;
             while ($problem{areas} =~ /,($re_councils)(?=,)/g) {
-                add_row( \%problem, $1, \%fixed, \%open );
+                add_row( \%problem, $1, \%fixed, \%open, \@pins );
             }
         } else {
             # Add to councils it was sent to
@@ -301,13 +327,16 @@ sub load_and_group_problems : Private {
             $problem{councils} = scalar @council;
             foreach ( @council ) {
                 next if $c->stash->{council} && $_ != $c->stash->{council}->{id};
-                add_row( \%problem, $_, \%fixed, \%open );
+                add_row( \%problem, $_, \%fixed, \%open, \@pins );
             }
         }
     }
 
-    $c->stash->{fixed} = \%fixed;
-    $c->stash->{open} = \%open;
+    $c->stash( 
+        fixed => \%fixed,
+        open  => \%open,
+        pins  => \@pins,
+    );
 
     return 1;
 }
@@ -348,7 +377,7 @@ sub redirect_area : Private {
 
 my $fourweeks = 4*7*24*60*60;
 sub add_row {
-    my ( $problem, $council, $fixed, $open ) = @_;
+    my ( $problem, $council, $fixed, $open, $pins ) = @_;
     my $duration_str = ( $problem->{duration} > 2 * $fourweeks ) ? 'old' : 'new';
     my $type = ( $problem->{duration} > 2 * $fourweeks )
         ? 'unknown'
@@ -359,6 +388,14 @@ sub add_row {
     # Open problems are either unknown, older, or new
     push @{$open->{$council}{$type}}, $problem if 
         exists FixMyStreet::DB::Result::Problem->open_states->{$problem->{state}};
+
+    push @$pins, {
+        latitude  => $problem->{latitude},
+        longitude => $problem->{longitude},
+        colour    => $problem->{state} eq 'fixed' ? 'green' : 'red',
+        id        => $problem->{id},
+        title     => $problem->{title},
+    };
 }
 
 =head1 AUTHOR

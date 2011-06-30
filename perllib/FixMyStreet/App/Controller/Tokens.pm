@@ -154,7 +154,7 @@ sub confirm_update : Path('/C') {
     return 1;
 }
 
-sub load_questionnaire_id : Private {
+sub load_questionnaire : Private {
     my ( $self, $c, $token_code ) = @_;
 
     # Set up error handling
@@ -164,11 +164,21 @@ sub load_questionnaire_id : Private {
     my $auth_token = $c->forward( 'load_auth_token', [ $token_code, 'questionnaire' ] );
     $c->stash->{id} = $auth_token->data;
     $c->stash->{token} = $token_code;
+
+    my $questionnaire = $c->model('DB::Questionnaire')->find(
+        { id => $c->stash->{id} },
+        { prefetch => 'problem' }
+    );
+    $c->detach('/questionnaire/missing_problem') unless $questionnaire;
+    $c->stash->{questionnaire} = $questionnaire;
 }
 
 sub questionnaire : Path('/Q') : Args(1) {
     my ( $self, $c, $token_code ) = @_;
-    $c->forward( 'load_questionnaire_id', [ $token_code ] );
+    $c->forward( 'load_questionnaire', [ $token_code ] );
+
+    $c->authenticate( { email => $c->stash->{questionnaire}->problem->user->email }, 'no_password' );
+    $c->set_session_cookie_expire(0);
     $c->forward( '/questionnaire/index');
 }
 

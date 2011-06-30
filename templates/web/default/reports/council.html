@@ -8,11 +8,28 @@
     %]
 [% END %]
 
-[% INCLUDE 'header.html',
+[%
+    PROCESS "maps/${map.type}.html";
+    INCLUDE 'header.html',
     title = tprintf(loc('%s - Summary reports'), name)
     context = 'reports'
     rss = [ tprintf(loc('Problems within %s, FixMyStreet'), name), rss_url ]
 %]
+
+[% map_html %]
+
+[% IF children %]
+<h2 style="clear:right">[% loc('Wards of this council') %]</h2>
+<p>[% loc('Follow a ward link to view only reports within that ward.') %]</p>
+<ul>
+[% FOR c IN children.values.sort('name') %]
+<li><a href="[% c.url %]">[% c.name %]</a></p>
+[% END %]
+</ul>
+[% END %]
+
+</div>
+<div id="side">
 
 <p><a href="[% rss_url %]"><img align="right" src="/i/feed.png" width="16" height="16" title="[% loc('RSS feed') %]" alt="[% tprintf(loc('RSS feed of problems in this %s'), thing) %]" border="0" hspace="4"></a>
 
@@ -22,24 +39,21 @@
     [% tprintf( loc('This is a summary of all reports for this %s.'), thing ) %]
 [% END %]
 
-[%# FIXME: It should link to council from a ward page, and should have list of wards on a council page. And a map? 
-    The reason c.req.base/path is used below is that passing undef to uri_with
-    in a template actually passes "", and so the key still appears in the URL.
-%]
-
-[% IF c.req.parameters.all AND !c.cobrand.all_councils_report %]
-    [% tprintf( loc('You can <a href="%s">see less detail</a>.'), c.req.base _ c.req.path ) %]
-[% ELSIF !c.cobrand.all_councils_report %]
-    [% tprintf( loc('You can <a href="%s">see more details</a>.'), c.req.uri_with( { all = 1 } ) ) %]
-[% ELSIF c.req.parameters.all %]
-    [% tprintf( loc('You can <a href="%s">see less detail</a> or go back and <a href="/reports">show all councils</a>.'), c.req.base _ c.req.path ) %]
+[% IF ward %]
+[% tprintf( loc('You can <a href="%s">view all reports for the council</a> or <a href="/reports">show all councils</a>.'), council_url ) %]
 [% ELSE %]
-    [% tprintf( loc('You can <a href="%s">see more details</a> or go back and <a href="/reports">show all councils</a>.'), c.req.uri_with( { all = 1 } ) ) %]
+[% loc('You can <a href="/reports">show all councils</a>.') %]
 [% END %]
 
 <h2>[% name %]</h2>
 
-<div id="col_problems">
+    [% INCLUDE 'pagination' %]
+
+    [% INCLUDE column
+        title = loc('Recently fixed')
+        problems = fixed.${council.id}.new
+    %]
+
     [% INCLUDE column
         title = loc('New problems')
         problems = open.${council.id}.new
@@ -62,19 +76,13 @@
             problems = open.${council.id}.unknown
         %]
     [% END %]
-</div>
 
-<div id="col_fixed">
-    [% INCLUDE column
-        title = loc('Recently fixed')
-        problems = fixed.${council.id}.new
-    %]
     [% INCLUDE column
         title = loc('Old fixed')
         problems = fixed.${council.id}.old
     %]
-</div>
 
+</div>
 [% INCLUDE 'footer.html' %]
 
 [% BLOCK column %]
@@ -89,11 +97,30 @@
     [% IF c.cobrand.moniker != 'emptyhomes' %]
         [% IF problem.councils == 0 %] <small>[% loc('(not sent to council)') %]</small> [% END %]
     [% END %]
-    [% IF all %] <br><small>[% problem.detail %]</small> [% END %]
     </li>
 [% END %]
 </ul>
 
 [% END %]
+[% END %]
+
+[% BLOCK pagination %]
+  [% IF pager.last_page > 1 %]
+    <p>
+        [% IF pager.previous_page %]
+            <a href="[% c.req.uri_with({'p' => pager.previous_page}) %]">&larr; Previous</a>
+        [% ELSE %]
+            &larr; Previous
+        [% END %]
+        |
+        [% pager.first %] to [% pager.last %] of [% pager.total_entries %]
+        |
+        [% IF pager.next_page %]
+            <a href="[% c.req.uri_with({'p' => pager.next_page}) %]">Next &rarr;</a>
+        [% ELSE %]
+            Next &rarr;
+        [% END %]
+    </p>
+  [% END %]
 [% END %]
 

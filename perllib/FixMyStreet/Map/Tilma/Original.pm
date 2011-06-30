@@ -96,7 +96,15 @@ sub display_pin {
 }
 
 sub map_pins {
-    my ($self, $c, $x, $y, $sx, $sy, $interval) = @_;
+    my ($self, $c, $interval) = @_;
+
+    # Our current X/Y middle of visible map
+    my $x = ( $c->req->param('x') || 0 ) + 0;
+    my $y = ( $c->req->param('y') || 0 ) + 0;
+
+    # Where we started as that's the (0,0) we have to work to
+    my $sx = ( $c->req->param('sx') || 0 ) + 0;
+    my $sy = ( $c->req->param('sy') || 0 ) + 0;
 
     my $e = tile_to_os($x);
     my $n = tile_to_os($y);
