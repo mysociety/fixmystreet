@@ -130,7 +130,7 @@ create table users (
     email           text    not null unique,
     name            text,
     phone           text,
-    password        text    not null default ''
+    password        text    not null default '',
     from_council    integer -- id of council user is from or null/0 if not
 );
 
