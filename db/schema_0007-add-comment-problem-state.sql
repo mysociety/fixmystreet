@@ -2,7 +2,7 @@ begin;
 
     ALTER TABLE comment ADD column problem_state text;
 
-    ALTER TABLE comment ADD CONSTRAINT problem_state_check CHECK ( 
+    ALTER TABLE comment ADD CONSTRAINT comment_problem_state_check CHECK ( 
         problem_state = 'confirmed'
         or problem_state = 'investigating'
         or problem_state = 'planned'
