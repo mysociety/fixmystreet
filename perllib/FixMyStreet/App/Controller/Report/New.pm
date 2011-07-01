@@ -571,7 +571,7 @@ sub process_user : Private {
         unless $report->user;
 
     # The user is trying to sign in. We only care about email from the params.
-    if ( $c->req->param('submit_sign_in') ) {
+    if ( $c->req->param('submit_sign_in') || $c->req->param('password_sign_in') ) {
         unless ( $c->forward( '/auth/sign_in' ) ) {
             $c->stash->{field_errors}->{password} = _('There was a problem with your email/password combination. Please try again.');
             return 1;
