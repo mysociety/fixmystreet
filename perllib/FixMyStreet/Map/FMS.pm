@@ -41,10 +41,10 @@ sub map_tiles {
     my ($self, $x, $y, $z) = @_;
     if ($z >= 16) {
         return [
-            "http://a.os.openstreetmap.org/sv/$z/" . ($x-1) . "/" . ($y-1) . ".png",
-            "http://b.os.openstreetmap.org/sv/$z/$x/" . ($y-1) . ".png",
-            "http://c.os.openstreetmap.org/sv/$z/" . ($x-1) . "/$y.png",
-            "http://os.openstreetmap.org/sv/$z/$x/$y.png",
+            "http://a.tilma.mysociety.org/sv/$z/" . ($x-1) . "/" . ($y-1) . ".png",
+            "http://b.tilma.mysociety.org/sv/$z/$x/" . ($y-1) . ".png",
+            "http://c.tilma.mysociety.org/sv/$z/" . ($x-1) . "/$y.png",
+            "http://tilma.mysociety.org/sv/$z/$x/$y.png",
         ];
     } else {
         return [
