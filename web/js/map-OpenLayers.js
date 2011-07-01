@@ -45,7 +45,7 @@ YAHOO.util.Event.onContentReady('map', function() {
         var area = new OpenLayers.Layer.Vector("KML", {
             strategies: [ new OpenLayers.Strategy.Fixed() ],
             protocol: new OpenLayers.Protocol.HTTP({
-                url: "/mapit/area/" + fixmystreet.area + ".kml",
+                url: "/mapit/area/" + fixmystreet.area + ".kml?simplify_tolerance=0.0001",
                 format: new OpenLayers.Format.KML()
             })
         });
