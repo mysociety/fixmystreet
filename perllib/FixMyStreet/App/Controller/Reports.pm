@@ -288,9 +288,9 @@ sub load_and_group_problems : Private {
         state => [ 'confirmed', 'fixed' ]
     };
     if ($c->stash->{ward}) {
-        $where->{areas} = { 'like', '%' . $c->stash->{ward}->{id} . '%' }; # FIXME Check this is secure
+        $where->{areas} = { 'like', '%,' . $c->stash->{ward}->{id} . ',%' };
     } elsif ($c->stash->{council}) {
-        $where->{areas} = { 'like', '%' . $c->stash->{council}->{id} . '%' };
+        $where->{areas} = { 'like', '%,' . $c->stash->{council}->{id} . ',%' };
     }
     my $problems = $c->cobrand->problems->search(
         $where,
