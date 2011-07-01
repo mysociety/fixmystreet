@@ -415,7 +415,7 @@ for my $test (
             password_sign_in => 'secret',
         },
         field_errors => [
-            'There was a problem with your email/password combination. Please try again.',
+            "There was a problem with your email/password combination. Passwords and user accounts are a brand new service, so you probably do not have one yet \x{2013} please fill in the right hand side of this form to get one.",
             'Please enter your name', # FIXME Not really necessary error
         ],
     },
