@@ -38,6 +38,7 @@
     <tr>
         <td>[% user.name | html %]</td>
         <td>[% user.email | html %]</td>
+        <td><a href="[% c.uri_for( 'search_reports', search => user.email ) %]">list content</a></td>
     </tr>
 [%- END %]
 </table>
