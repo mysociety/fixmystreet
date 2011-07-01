@@ -1,0 +1,74 @@
+Problems exist in four broad state categories:
+    unconfirmed - the report has been made but the user hasn't clicked
+the confirmation link.
+    open - the report has been confirmed
+    fixed - exactly what it says
+    closed - a registered user from a council has marked the problem as
+closed
+
+When a problem is created it will be unconfirmed, The problem
+becomes confirmed when the user clicks on the link sent to them in
+the confirmation email. At this point the problem is confirmed.
+
+If a problem is uploaded from a mobile app then it is initally 
+created with a state of partial.
+
+If a user is logged in then any problem they create is confirmed
+automatically.
+
+If a council user is logged in then they can change the state of the 
+problem to one of the following provifing they are from the council that
+the problem has been reported to:
+    Open ( a synonym for confirmed )
+    Investigating
+    Planned
+    In Progress
+    Fixed
+    Closed
+
+Updates from council users will have the name of the council they
+are from included in the meta information for that update.
+
+Any user of the sytem can mark a problem as fixed.
+
+If a problem has been marked as fixed then the user who created the
+problem can reopen the problem by checking the 'This problem has not
+been fixed' checkbox when submitting an update.
+
+If a problem has been closed it may only be re-opened by a council
+user although it can still be updated.
+
+Internally there are three states for fixed problems:
+    fixed : problems marked as fixed before the addition of extra states
+    fixed - user : marked as fixed by a standard site user
+    fixed - council : marked as fixed by a council user
+
+At the moment there is no visible difference between these fixed states.
+
+If you need to check the state of a problem then there are a set of
+utility functions in DB/Result/Problem.pm to do that. If you have a
+problem object then these can be called directly on it:
+
+    $problem->is_visible
+    $problem->is_fixed
+    $problem->is_open
+    $problem->is_closed
+
+The is_visible method returns true if a problem should be displayed
+on the site - i.e it has been confirmed.
+
+You can also get a list of the states in a particular category by 
+calling one of the following class methods:
+
+    visible_states
+    open_states
+    closed_states
+    fixed_states
+
+Which will return a list of state strings in list context or a 
+hash reference in scalar context which you can use like this:
+
+    if ( FixMyStreet::App->model('DB::Problem')->open_states->{$state}
+) {
+        print "$state is open\n";
+    }
