@@ -78,9 +78,14 @@ is_deeply    #
     "/json/problems/new?start_date=2000-01-01&end_date=2000-02-01"),    #
   [
     {
+        'state'     => 'confirmed',
+        'longitude' => -0.23021896608596,
+        'latitude'  => 51.4531988729771,
+        'used_map'  => 1,
         'anonymous' => 0,
         'category'  => 'test category',
         'confirmed' => '2000-01-01 12:01:00',
+        'lastupdate' => '2000-01-01 12:00:00',
         'council'   => 'Wandsworth Borough Council',
         'detail'    => 'Test detail',
         'id'        => $problem->id,
@@ -90,9 +95,14 @@ is_deeply    #
         'whensent'  => undef
     },
     {
+        'state'     => 'confirmed',
+        'longitude' => -0.23021896608596,
+        'latitude'  => 51.4531988729771,
+        'used_map'  => 1,
         'anonymous' => 1,
         'category'  => 'test category',
         'confirmed' => '2000-01-01 12:02:00',
+        'lastupdate' => '2000-01-01 12:00:00',
         'council'   => 'Wandsworth Borough Council',
         'detail'    => 'Test detail',
         'id'        => $anon_problem->id,
