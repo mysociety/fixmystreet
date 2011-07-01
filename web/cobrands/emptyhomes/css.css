@@ -147,6 +147,24 @@ a:hover, a:active {
     background-position: 100% 0;
 }
 
+#meta {
+    clear: right;
+    float: right;
+    list-style-type: none;
+    margin: 0.25em 0 0 1em;
+    padding: 0;
+    font-size: 0.875em;
+}
+#meta li {
+    display: inline;
+    margin: 0;
+    padding: 0 0 0 0.25em;
+    border-left: solid 1px #B1BECF;
+}
+#meta li:first-child {
+    border-left: none;
+}
+
 #logo {
     border: none;
     position: absolute;
