@@ -19,7 +19,7 @@
         <ul id="meta">
             [% IF c.user_exists %]
                 <li>[% tprintf(loc('Signed in as %s'), c.user.name || c.user.email) %]
-                <li><a href="/auth/logout">[% loc('Sign out') %]</a></li>
+                <li><a href="/auth/sign_out">[% loc('Sign out') %]</a></li>
             [% ELSE %]
                 <li>&nbsp;</li>
             [% END %]
