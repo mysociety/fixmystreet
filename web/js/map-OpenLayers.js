@@ -81,7 +81,7 @@ YAHOO.util.Event.onContentReady('map', function() {
 
     var markers = fms_markers_list( fixmystreet.pins, true );
     fixmystreet.markers.addFeatures( markers );
-    if (fixmystreet.page == 'around') {
+    if (fixmystreet.page == 'around' || fixmystreet.page == 'reports') {
         fixmystreet.markers.events.register( 'featureselected', fixmystreet.markers, function(evt) {
             window.location = '/report/' + evt.feature.attributes.id;
             OpenLayers.Event.stop(evt);

@@ -102,6 +102,7 @@ sub ward : Path : Args(2) {
 
     my $pins = $c->stash->{pins};
 
+    $c->stash->{page} = 'reports'; # So the map knows to make clickable pins
     FixMyStreet::Map::display_map(
         $c,
         latitude  => @$pins ? $pins->[0]{latitude} : 0,
