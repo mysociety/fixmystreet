@@ -56,9 +56,10 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 
         if (z >= 16) {
             var url = [
-                "http://a.os.openstreetmap.org/sv/${z}/${x}/${y}.png",
-                "http://b.os.openstreetmap.org/sv/${z}/${x}/${y}.png",
-                "http://c.os.openstreetmap.org/sv/${z}/${x}/${y}.png"
+                "http://tilma.mysociety.org/sv/${z}/${x}/${y}.png",
+                "http://a.tilma.mysociety.org/sv/${z}/${x}/${y}.png",
+                "http://b.tilma.mysociety.org/sv/${z}/${x}/${y}.png",
+                "http://c.tilma.mysociety.org/sv/${z}/${x}/${y}.png"
             ];
         } else {
             var url = [

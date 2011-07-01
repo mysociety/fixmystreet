@@ -73,7 +73,7 @@ YAHOO.util.Event.onContentReady('map', function() {
         pin_layer_options.strategies = [ new OpenLayers.Strategy.BBOX() ];
         pin_layer_options.protocol = new OpenLayers.Protocol.HTTP({
             url: '/ajax',
-            params: fixmystreet.all_pins ? { all_pins: 1, map: 'FMS' } : { map: 'FMS' },
+            params: fixmystreet.all_pins ? { all_pins: 1 } : { },
             format: new OpenLayers.Format.FixMyStreet()
         });
     }
@@ -151,12 +151,12 @@ YAHOO.util.Event.addListener('all_pins_link', 'click', function(e) {
     for (var i=0; i<texts.length; i+=3) {
         if (this.innerHTML == texts[i+1]) {
             this.innerHTML = texts[i+2];
-            fixmystreet.markers.protocol.options.params = { all_pins: 1, map: 'FMS' };
+            fixmystreet.markers.protocol.options.params = { all_pins: 1 };
             fixmystreet.markers.refresh( { force: true } );
             lang = texts[i];
         } else if (this.innerHTML == texts[i+2]) {
             this.innerHTML = texts[i+1];
-            fixmystreet.markers.protocol.options.params = { map: 'FMS' };
+            fixmystreet.markers.protocol.options.params = { };
             fixmystreet.markers.refresh( { force: true } );
             lang = texts[i];
         }

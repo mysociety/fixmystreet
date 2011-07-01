@@ -102,8 +102,6 @@ sub ward : Path : Args(2) {
 
     my $pins = $c->stash->{pins};
 
-    # Even though front end doesn't yet have it, have it on this page, it's better!
-    FixMyStreet::Map::set_map_class( 'FMS' );
     FixMyStreet::Map::display_map(
         $c,
         latitude  => @$pins ? $pins->[0]{latitude} : 0,
