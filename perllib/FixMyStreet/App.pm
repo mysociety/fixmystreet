@@ -181,6 +181,10 @@ sub setup_request {
     Memcached::set_namespace( FixMyStreet->config('BCI_DB_NAME') . ":" );
 
     my $map = $host =~ /^osm\./ ? 'OSM' : $c->req->param('map');
+    #if ($c->sessionid) {
+    #    $map = $c->session->{map};
+    #    $map = undef unless $map eq 'OSM';
+    #}
     FixMyStreet::Map::set_map_class( $map );
 
     return $c;
