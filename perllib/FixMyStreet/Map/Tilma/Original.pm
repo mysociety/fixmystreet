@@ -8,6 +8,12 @@
 
 package FixMyStreet::Map::Tilma::Original;
 
+sub TILE_WIDTH   { return 254; }
+sub TIF_SIZE_M   { return 5000; }
+sub TIF_SIZE_PX  { return 7874; }
+sub SCALE_FACTOR { return TIF_SIZE_M() / (TIF_SIZE_PX() / TILE_WIDTH()); }
+sub TILE_TYPE    { return '10k-full'; }
+
 use strict;
 use LWP::Simple;
 
@@ -16,10 +22,6 @@ use mySociety::Locale;
 use mySociety::Web qw(ent NewURL);
 use Utils;
 use RABX;
-
-sub TILE_WIDTH()   { return $FixMyStreet::Map::map_class->tile_width;   }
-sub SCALE_FACTOR() { return $FixMyStreet::Map::map_class->scale_factor; }
-sub TILE_TYPE()    { return $FixMyStreet::Map::map_class->tile_type;    }
 
 sub _ll_to_en {
     my ($lat, $lon) = @_;
@@ -76,8 +78,8 @@ sub display_map {
         py => $py,
         tile_type => TILE_TYPE,
         tilewidth => TILE_WIDTH,
-        watermark => $self->watermark(),
-        copyright => $self->copyright(),
+        watermark => 1,
+        copyright => _('&copy; Crown copyright. All rights reserved. Ministry of Justice 100037819&nbsp;2008.'),
     };
 }
 
@@ -162,25 +164,6 @@ sub os_to_tile {
 sub tile_to_os {
     return int($_[0] * SCALE_FACTOR + 0.5);
 }
-
-=head2 tile_xy_to_wgs84
-
-    ($lat, $lon) = tile_xy_to_wgs84( $x, $y );
-
-Takes the tile x,y and converts to lat, lon.
-
-=cut
-
-sub tile_xy_to_wgs84 {
-    my ( $self, $x, $y ) = @_;
-
-    my $easting  = tile_to_os($x);
-    my $northing = tile_to_os($y);
-
-    my ( $lat, $lon ) = Utils::convert_en_to_latlon( $easting, $northing );
-    return ( $lat, $lon );
-}
-
 
 sub click_to_tile {
     my ($pin_tile, $pin, $invert) = @_;

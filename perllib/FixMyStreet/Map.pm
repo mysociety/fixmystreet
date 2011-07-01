@@ -23,6 +23,7 @@ use mySociety::Config;
 use mySociety::Gaze;
 use mySociety::Locale;
 use mySociety::Web qw(ent);
+use Utils;
 
 =head2 allowed_maps
 
@@ -124,8 +125,19 @@ sub click_to_wgs84 {
     return $map_class->click_to_wgs84(@_);
 }
 
+=head2 tile_xy_to_wgs84
+
+Takes the tile x,y and converts to lat, lon. Legacy to deal with old URLs,
+hence hard-coded things.
+
+=cut
+
 sub tile_xy_to_wgs84 {
-    return $map_class->tile_xy_to_wgs84(@_);
+    my ( $x, $y ) = @_;
+    my $easting  = int( $x * (5000/31) + 0.5 );
+    my $northing = int( $y * (5000/31) + 0.5 );
+    my ( $lat, $lon ) = Utils::convert_en_to_latlon( $easting, $northing );
+    return ( $lat, $lon );
 }
 
 1;

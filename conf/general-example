@@ -44,7 +44,7 @@ define('OPTION_LONDON_REPORTIT_KEY', '');
 define('OPTION_LONDON_REPORTIT_SECRET', '');
 
 define('OPTION_MAPIT_URL', 'http://mapit.mysociety.org/');
-define('OPTION_MAP_TYPE', 'Tilma::Original::1_10k');
+define('OPTION_MAP_TYPE', 'OSM');
 define('OPTION_EVEL_URL', 'http://services.mysociety.org/evel');
 define('OPTION_GAZE_URL', 'http://gaze.mysociety.org/gaze');
 
