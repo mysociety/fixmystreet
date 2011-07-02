@@ -251,6 +251,7 @@ sub ward_check : Private {
 
     $ward =~ s/\+/ /g;
     $ward =~ s/\.html//;
+    $ward =~ s{_}{/}g;
 
     my $council = $c->stash->{council};
 
