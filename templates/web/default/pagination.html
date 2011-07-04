@@ -1,7 +1,7 @@
 [% IF pager.last_page > 1 %]
     <p>
         [% IF pager.previous_page %]
-            <a href="[% c.req.uri_with({ param => pager.previous_page }) %]">&larr; Previous</a>
+            <a href="[% c.req.uri_with({ $param => pager.previous_page }) %]">&larr; Previous</a>
         [% ELSE %]
             &larr; Previous
         [% END %]
@@ -9,7 +9,7 @@
         [% pager.first %] to [% pager.last %] of [% pager.total_entries %]
         |
         [% IF pager.next_page %]
-            <a href="[% c.req.uri_with({ param => pager.next_page }) %]">Next &rarr;</a>
+            <a href="[% c.req.uri_with({ $param => pager.next_page }) %]">Next &rarr;</a>
         [% ELSE %]
             Next &rarr;
         [% END %]
