@@ -47,7 +47,7 @@
 
 <h2>[% name %]</h2>
 
-    [% INCLUDE 'pagination' %]
+    [% INCLUDE 'pagination.html', param = 'p' %]
 
     [% INCLUDE column
         title = loc('Recently fixed')
@@ -102,25 +102,5 @@
 </ul>
 
 [% END %]
-[% END %]
-
-[% BLOCK pagination %]
-  [% IF pager.last_page > 1 %]
-    <p>
-        [% IF pager.previous_page %]
-            <a href="[% c.req.uri_with({'p' => pager.previous_page}) %]">&larr; Previous</a>
-        [% ELSE %]
-            &larr; Previous
-        [% END %]
-        |
-        [% pager.first %] to [% pager.last %] of [% pager.total_entries %]
-        |
-        [% IF pager.next_page %]
-            <a href="[% c.req.uri_with({'p' => pager.next_page}) %]">Next &rarr;</a>
-        [% ELSE %]
-            Next &rarr;
-        [% END %]
-    </p>
-  [% END %]
 [% END %]
 
