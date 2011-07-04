@@ -231,6 +231,14 @@ sub save_update : Private {
         # Logged in and same user, so can confirm update straight away
         $update->user->update;
         $update->confirm;
+    } else {
+        # User exists and we are not logged in as them.
+        # Store changes in token for when token is validated.
+        $c->stash->{token_data} = {
+            name => $update->user->name,
+            password => $update->user->password,
+        };
+        $update->user->discard_changes();
     }
 
     # If there was a photo add that too
@@ -272,10 +280,12 @@ sub redirect_or_confirm_creation : Private {
     }
 
     # otherwise create a confirm token and email it to them.
+    my $data = $c->stash->{token_data} || {};
     my $token = $c->model("DB::Token")->create(
         {
             scope => 'comment',
             data  => {
+                %$data,
                 id        => $update->id,
                 add_alert => ( $c->req->param('add_alert') ? 1 : 0 ),
             }

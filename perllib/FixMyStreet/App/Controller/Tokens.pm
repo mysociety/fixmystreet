@@ -32,7 +32,8 @@ sub confirm_problem : Path('/P') {
       $c->forward( 'load_auth_token', [ $token_code, 'problem' ] );
 
     # Load the problem
-    my $problem_id = $auth_token->data->{id};
+    my $data = $auth_token->data;
+    my $problem_id = $data->{id};
     my $problem = $c->cobrand->problems->find( { id => $problem_id } )
       || $c->detach('token_error');
     $c->stash->{problem} = $problem;
@@ -59,6 +60,11 @@ sub confirm_problem : Path('/P') {
     $c->forward( '/report/new/create_reporter_alert' );
 
     # log the problem creation user in to the site
+    if ( $data->{name} || $data->{password} ) {
+        $problem->user->name( $data->{name} ) if $data->{name};
+        $problem->user->password( $data->{password}, 1 ) if $data->{password};
+        $problem->user->update;
+    }
     $c->authenticate( { email => $problem->user->email }, 'no_password' );
     $c->set_session_cookie_expire(0);
 
@@ -133,8 +139,9 @@ sub confirm_update : Path('/C') {
       $c->forward( 'load_auth_token', [ $token_code, 'comment' ] );
 
     # Load the problem
-    my $comment_id = $auth_token->data->{id};
-    $c->stash->{add_alert} = $auth_token->data->{add_alert};
+    my $data = $auth_token->data;
+    my $comment_id = $data->{id};
+    $c->stash->{add_alert} = $data->{add_alert};
 
     my $comment = $c->model('DB::Comment')->find( { id => $comment_id } )
       || $c->detach('token_error');
@@ -146,6 +153,11 @@ sub confirm_update : Path('/C') {
         return;
     }
 
+    if ( $data->{name} || $data->{password} ) {
+        $comment->user->name( $data->{name} ) if $data->{name};
+        $comment->user->password( $data->{password}, 1 ) if $data->{password};
+        $comment->user->update;
+    }
     $c->authenticate( { email => $comment->user->email }, 'no_password' );
     $c->set_session_cookie_expire(0);
 

@@ -845,9 +845,13 @@ sub save_user_and_report : Private {
         $report->confirm;
     }
     else {
-
-        # user exists and we are not logged in as them. Throw away changes to
-        # the name and phone. TODO - propagate changes using tokens.
+        # User exists and we are not logged in as them.
+        # Store changes in token for when token is validated.
+        $c->stash->{token_data} = {
+            name => $report->user->name,
+            phone => $report->user->phone,
+            password => $report->user->password,
+        };
         $report->user->discard_changes();
     }
 
@@ -932,9 +936,11 @@ sub redirect_or_confirm_creation : Private {
     }
 
     # otherwise create a confirm token and email it to them.
+    my $data = $c->stash->{token_data} || {};
     my $token = $c->model("DB::Token")->create( {
         scope => 'problem',
         data => {
+            %$data,
             id => $report->id
         }
     } );
