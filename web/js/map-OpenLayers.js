@@ -64,7 +64,7 @@ YAHOO.util.Event.onContentReady('map', function() {
                 graphicWidth: 32,
                 graphicHeight: 59,
                 graphicOpacity: 1,
-                graphicXOffset: -1,
+                graphicXOffset: -2,
                 graphicYOffset: -59
             })
         })
