@@ -21,6 +21,9 @@ __PACKAGE__->config(
         'loc', 'nget', 'tprintf', 'display_crosssell_advert', 'prettify_epoch',
         'add_links',
     ],
+    FILTERS => {
+        escape_js => \&escape_js,
+    },
 );
 
 =head1 NAME
@@ -117,6 +120,25 @@ sub add_links {
     $text =~ s/\r//g;
     $text = ent($text);
     $text =~ s{(https?://[^\s]+)}{<a href="$1">$1</a>}g;
+    return $text;
+}
+
+=head2 escape_js
+
+Used to escape strings that are going to be put inside JavaScript.
+
+=cut
+
+sub escape_js {
+    my $text = shift;
+    my %lookup = (
+        '\\' => 'u005c',
+        '"'  => 'u0022',
+        "'"  => 'u0027',
+        '<'  => 'u003c',
+        '>'  => 'u003e',
+    );
+    $text =~ s/([\\"'<>])/\\$lookup{$1}/g;
     return $text;
 }
 
