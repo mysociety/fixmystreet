@@ -48,10 +48,10 @@ sub map_tiles {
         ];
     } else {
         return [
-            "http://ecn.t0.tiles.virtualearth.net/tiles/r" . get_quadkey($x-1, $y-1, $z) . ".png?g=587&productSet=mmOS",
-            "http://ecn.t1.tiles.virtualearth.net/tiles/r" . get_quadkey($x,   $y-1, $z) . ".png?g=587&productSet=mmOS",
-            "http://ecn.t2.tiles.virtualearth.net/tiles/r" . get_quadkey($x-1, $y,   $z) . ".png?g=587&productSet=mmOS",
-            "http://ecn.t3.tiles.virtualearth.net/tiles/r" . get_quadkey($x,   $y,   $z) . ".png?g=587&productSet=mmOS",
+            "http://ecn.t0.tiles.virtualearth.net/tiles/r" . get_quadkey($x-1, $y-1, $z) . ".png?g=701&productSet=mmOS",
+            "http://ecn.t1.tiles.virtualearth.net/tiles/r" . get_quadkey($x,   $y-1, $z) . ".png?g=701&productSet=mmOS",
+            "http://ecn.t2.tiles.virtualearth.net/tiles/r" . get_quadkey($x-1, $y,   $z) . ".png?g=701&productSet=mmOS",
+            "http://ecn.t3.tiles.virtualearth.net/tiles/r" . get_quadkey($x,   $y,   $z) . ".png?g=701&productSet=mmOS",
         ];
     }
 }

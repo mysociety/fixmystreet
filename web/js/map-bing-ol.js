@@ -63,10 +63,10 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
             ];
         } else {
             var url = [
-                "http://ecn.t0.tiles.virtualearth.net/tiles/r${id}.png?g=587&productSet=mmOS",
-                "http://ecn.t1.tiles.virtualearth.net/tiles/r${id}.png?g=587&productSet=mmOS",
-                "http://ecn.t2.tiles.virtualearth.net/tiles/r${id}.png?g=587&productSet=mmOS",
-                "http://ecn.t3.tiles.virtualearth.net/tiles/r${id}.png?g=587&productSet=mmOS"
+                "http://ecn.t0.tiles.virtualearth.net/tiles/r${id}.png?g=701&productSet=mmOS",
+                "http://ecn.t1.tiles.virtualearth.net/tiles/r${id}.png?g=701&productSet=mmOS",
+                "http://ecn.t2.tiles.virtualearth.net/tiles/r${id}.png?g=701&productSet=mmOS",
+                "http://ecn.t3.tiles.virtualearth.net/tiles/r${id}.png?g=701&productSet=mmOS"
             ];
         }
         var s = '' + x + y + z;
