@@ -173,14 +173,18 @@ sub questionnaire : Path('questionnaire') : Args(0) {
 
 
     my %questionnaire_counts = map { $_->get_column( 'reported' ) => $_->get_column( 'questionnaire_count' ) } $questionnaires->all;
-
     $questionnaire_counts{1} ||= 0;
     $questionnaire_counts{0} ||= 0;
-
     $questionnaire_counts{total} = $questionnaire_counts{0} + $questionnaire_counts{1};
-    $c->stash->{reported_pc} = ( 100 * $questionnaire_counts{1} ) / $questionnaire_counts{total};
-    $c->stash->{not_reported_pc} = ( 100 * $questionnaire_counts{0} ) / $questionnaire_counts{total};
     $c->stash->{questionnaires} = \%questionnaire_counts;
+
+    $c->stash->{state_changes} = $c->model('DB::Questionnaire')->search(
+        { whenanswered => \'is not null' },
+        {
+            group_by => [ 'old_state', 'new_state' ],
+            columns => [ 'old_state', 'new_state', { c => { count => 'id' } } ],
+        },
+    );
 
     return 1;
 }
