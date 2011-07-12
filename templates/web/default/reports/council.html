@@ -75,6 +75,13 @@ Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a
 
 <h2>[% name %]</h2>
 
+[% IF c.cobrand.moniker == '' %]
+<p class="promo">
+    FixMyStreet is now available for local council websites.
+    <a href="http://www.mysociety.org/fixmystreet-for-local-council-websites/">Find&nbsp;out&nbsp;more</a>.
+</p>
+[% END %]
+
     [% INCLUDE 'pagination.html', param = 'p' %]
 
     [% INCLUDE column

@@ -41,6 +41,14 @@ select, input, textarea {
     #front_stats div {
         background-color: $header_back;
     }
+    
+    p.promo {
+        border-top:    1px solid #bbb;
+        border-bottom: 1px solid #bbb;
+        background-color: #eee;
+        text-align: center;
+        padding: 0 0.5em;
+    }
 
 }
 
