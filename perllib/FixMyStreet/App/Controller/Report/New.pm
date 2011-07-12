@@ -220,6 +220,8 @@ sub report_import : Path('/import') {
             anonymous => 0,
             category  => '',
             areas     => '',
+            cobrand   => $c->cobrand->moniker,
+            lang      => $c->stash->{lang_code},
 
         }
     );
