@@ -87,6 +87,11 @@ sub geocoded_string_check {
     return 0;
 }
 
+sub find_closest {
+    my ( $self, $latitude, $longitude ) = @_;
+    return FixMyStreet::Geocode::OSM::closest_road_text( $self, $latitude, $longitude );
+}
+
 sub remove_redundant_councils {
     my $self = shift;
     my $all_councils = shift;
