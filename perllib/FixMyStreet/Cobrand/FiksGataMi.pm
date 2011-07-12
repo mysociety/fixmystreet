@@ -35,7 +35,7 @@ sub disambiguate_location {
 }
 
 sub area_types {
-    return ( 'NKO', 'NFY' );
+    return ( 'NKO', 'NFY', 'NRA' );
 }
 
 sub area_min_generation {
