@@ -60,6 +60,7 @@ sub index : Path : Args(0) {
     $c->stash->{problems} = \%prob_counts;
     $c->stash->{total_problems_live} =
       $prob_counts{confirmed} + $prob_counts{fixed};
+    $c->stash->{total_problems_users} = $c->cobrand->problems->unique_users;
 
     my $comments = $c->model('DB::Comment')->summary_count( $site_restriction );
 
@@ -105,6 +106,8 @@ sub index : Path : Args(0) {
         $questionnaire_counts{1} / $questionnaire_counts{total} * 100 )
       : _('n/a');
     $c->stash->{questionnaires} = \%questionnaire_counts;
+
+    $c->stash->{categories} = $c->cobrand->problems->categories_summary();
 
     return 1;
 }

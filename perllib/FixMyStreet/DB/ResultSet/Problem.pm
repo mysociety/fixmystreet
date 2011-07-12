@@ -161,16 +161,43 @@ sub timeline {
 }
 
 sub summary_count {
-    my ( $rs, $restriction ) = @_;
+    my ( $rs ) = @_;
 
     return $rs->search(
-        $restriction,
+        undef,
         {
             group_by => ['state'],
             select   => [ 'state', { count => 'id' } ],
             as       => [qw/state state_count/]
         }
     );
+}
+
+sub unique_users {
+    my ( $rs ) = @_;
+
+    return $rs->search( {
+        state => [ 'confirmed', 'fixed' ],
+    }, {
+        select => [ { count => { distinct => 'user_id' } } ],
+        as     => [ 'count' ]
+    } )->first->get_column('count');
+}
+
+sub categories_summary {
+    my ( $rs ) = @_;
+
+    my $categories = $rs->search( {
+        state    => [ 'confirmed', 'fixed' ],
+        whensent => { '<' => \"NOW() - INTERVAL '4 weeks'" },
+    }, {
+        select   => [ 'category', { count => 'id' }, { count => \"case when state='fixed' then 1 else null end" } ],
+        as       => [ 'category', 'c', 'fixed' ],
+        group_by => [ 'category' ],
+        result_class => 'DBIx::Class::ResultClass::HashRefInflator'
+    } );
+    my %categories = map { $_->{category} => { total => $_->{c}, fixed => $_->{fixed} } } $categories->all;
+    return \%categories;
 }
 
 1;
