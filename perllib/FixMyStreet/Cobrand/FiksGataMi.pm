@@ -61,6 +61,26 @@ sub uri {
     return $uri;
 }
 
+sub geocode_postcode {
+    my ( $self, $s ) = @_;
+
+    if ($s =~ /^\d{4}$/) {
+        my $location = mySociety::MaPit::call('postcode', $s);
+        if ($location->{error}) {
+            return {
+                error => $location->{code} =~ /^4/
+                    ? _('That postcode was not recognised, sorry.')
+                    : $location->{error}
+            };
+        }
+        return {
+            latitude  => $location->{wgs84_lat},
+            longitude => $location->{wgs84_lon},
+        };
+    }
+    return {};
+}
+
 sub geocoded_string_check {
     my ( $self, $s ) = @_;
     return 1 if $s =~ /, Norge/;

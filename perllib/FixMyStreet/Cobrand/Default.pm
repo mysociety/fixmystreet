@@ -7,6 +7,7 @@ use URI;
 
 use Carp;
 use mySociety::MaPit;
+use mySociety::PostcodeUtil;
 
 =head2 new
 
@@ -486,6 +487,46 @@ allowing them to report them as offensive.
 =cut
 
 sub allow_update_reporting { return 0; }
+
+=head2 geocode_postcode
+
+Given a QUERY, return LAT/LON and/or ERROR.
+
+=cut
+
+sub geocode_postcode {
+    my ( $self, $s ) = @_;
+
+    if ($s =~ /^\d+$/) {
+        return {
+            error => 'FixMyStreet is a UK-based website that currently works in England, Scotland, and Wales. Please enter either a postcode, or a Great British street name and area.'
+        };
+    } elsif (mySociety::PostcodeUtil::is_valid_postcode($s)) {
+        my $location = mySociety::MaPit::call('postcode', $s);
+        if ($location->{error}) {
+            return {
+                error => $location->{code} =~ /^4/
+                    ? _('That postcode was not recognised, sorry.')
+                    : $location->{error}
+            };
+        }
+        my $island = $location->{coordsyst};
+        if (!$island) {
+            return {
+                error => _("Sorry, that appears to be a Crown dependency postcode, which we don't cover.")
+            };
+        } elsif ($island eq 'I') {
+            return {
+                error => _("We do not currently cover Northern Ireland, I'm afraid.")
+            };
+        }
+        return {
+            latitude  => $location->{wgs84_lat},
+            longitude => $location->{wgs84_lon},
+        };
+    }
+    return {};
+}
 
 =head2 geocoded_string_check
 
