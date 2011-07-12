@@ -92,6 +92,23 @@ sub find_closest {
     return FixMyStreet::Geocode::OSM::closest_road_text( $self, $latitude, $longitude );
 }
 
+# Used by send-reports, calling find_closest, calling OSM geocoding
+sub guess_road_operator {
+    my ( $self, $inforef ) = @_;
+
+    my $highway = $inforef->{highway} || "unknown";
+    my $refs    = $inforef->{ref}     || "unknown";
+
+    return "Statens vegvesen"
+        if $highway eq "trunk" || $highway eq "primary";
+
+    for my $ref (split(/;/, $refs)) {
+        return "Statens vegvesen"
+            if $ref =~ m/E ?\d+/ || $ref =~ m/Fv\d+/i;
+    }
+    return '';
+}
+
 sub remove_redundant_councils {
     my $self = shift;
     my $all_councils = shift;

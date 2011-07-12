@@ -70,44 +70,17 @@ sub get_object_tags {
     return _osmxml_to_hash($result, $type);
 }
 
-sub guess_road_operator {
-    my $inforef = shift;
-    my $highway = $inforef->{highway} || "unknown";
-    my $refs =  $inforef->{ref} || "unknown";
-
-    my $operator;
-    if ( mySociety::Config::get('COUNTRY') eq 'NO' ) {
-        if ($highway eq "trunk"
-            || $highway eq "primary"
-            ) {
-            $operator = "Statens vegvesen";
-        }
-        unless (defined $operator) {
-            for my $ref (split(/;/, $refs)) {
-                if ($ref =~ m/E ?\d+/
-                    || $ref =~ m/Fv\d+/i
-                    ) {
-                    $operator = "Statens vegvesen";
-                }
-            }
-        }
-    }
-    return $operator;
-}
-
 # A better alternative might be
 # http://www.geonames.org/maps/osm-reverse-geocoder.html#findNearbyStreetsOSM
 sub get_nearest_road_tags {
-    my ($latitude, $longitude) = @_;
+    my ( $cobrand, $latitude, $longitude ) = @_;
     my $inforef = lookup_location($latitude, $longitude, 16);
     if (exists $inforef->{result}->{osm_type}
         && 'way' eq $inforef->{result}->{osm_type}) {
         my $osmtags = get_object_tags('way',
                                       $inforef->{result}->{osm_id});
-        if (mySociety::Config::get('OSM_GUESS_OPERATOR')
-            && !exists $osmtags->{operator}) {
-            my $guess = guess_road_operator($osmtags);
-            $osmtags->{operatorguess} = $guess if $guess;
+        unless ( exists $osmtags->{operator} ) {
+            $osmtags->{operatorguess} = $cobrand->guess_road_operator( $osmtags );
         }
         return $osmtags;
     }
@@ -115,9 +88,9 @@ sub get_nearest_road_tags {
 }
 
 sub closest_road_text {
-    my ($latitude, $longitude) = @_;
+    my ( $cobrand, $latitude, $longitude ) = @_;
     my $str = '';
-    my $osmtags = get_nearest_road_tags($latitude, $longitude);
+    my $osmtags = get_nearest_road_tags( $cobrand, $latitude, $longitude );
     if ($osmtags) {
         my ($name, $ref) = ('','');
         $name =  $osmtags->{name} if exists $osmtags->{name};
