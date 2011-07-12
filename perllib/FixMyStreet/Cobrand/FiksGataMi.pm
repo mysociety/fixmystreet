@@ -6,6 +6,7 @@ use warnings;
 
 use Carp;
 use mySociety::MaPit;
+use FixMyStreet::Geocode::OSM;
 
 sub country {
     return 'NO';
