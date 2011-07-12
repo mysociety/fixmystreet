@@ -178,6 +178,9 @@ sub questionnaire : Path('questionnaire') : Args(0) {
     $questionnaire_counts{total} = $questionnaire_counts{0} + $questionnaire_counts{1};
     $c->stash->{questionnaires} = \%questionnaire_counts;
 
+    $c->stash->{state_changes_count} = $c->model('DB::Questionnaire')->search(
+        { whenanswered => \'is not null' }
+    )->count;
     $c->stash->{state_changes} = $c->model('DB::Questionnaire')->search(
         { whenanswered => \'is not null' },
         {
