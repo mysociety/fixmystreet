@@ -23,7 +23,7 @@
 <table>
 <tr><th>[% loc('Old state') %]</th><th>[% loc('New state') %]</th><th>[% loc('Total') %]</th></tr>
 [% WHILE ( s = state_changes.next ) %]
-<tr><td>[% s.old_state %]</td><td>[% s.new_state %]</td><td>[% s.count %] ([% 100 * s.count / questionnaires.total | format('%.1f') %]%)</td></tr>
+<tr><td>[% s.old_state %]</td><td>[% s.new_state %]</td><td>[% s.count %] ([% 100 * s.c / questionnaires.total | format('%.1f') %]%)</td></tr>
 [% END %]
 </table>
 
