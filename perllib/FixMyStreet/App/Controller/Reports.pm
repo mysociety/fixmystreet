@@ -34,10 +34,18 @@ sub index : Path : Args(0) {
     $c->response->header('Cache-Control' => 'max-age=3600');
 
     # Fetch all areas of the types we're interested in
-    my @area_types = $c->cobrand->area_types;
-    my $areas_info = mySociety::MaPit::call('areas', \@area_types,
-        min_generation => $c->cobrand->area_min_generation
-    );
+    my $areas_info;
+    eval {
+        my @area_types = $c->cobrand->area_types;
+        $areas_info = mySociety::MaPit::call('areas', \@area_types,
+            min_generation => $c->cobrand->area_min_generation
+        );
+    };
+    if ($@) {
+        $c->stash->{message} = _("Unable to look up areas in MaPit. Please try again later.") . ' ' .
+            sprintf(_('The error was: %s'), $@);
+        $c->stash->{template} = 'errors/generic.html';
+    }
 
     # For each area, add its link and perhaps alter its name if we need to for
     # places with the same name.
@@ -61,7 +69,8 @@ sub index : Path : Args(0) {
         $c->stash->{open} = $j->{open};
     };
     if ($@) {
-        $c->stash->{message} = _("There was a problem showing the All Reports page. Please try again later.");
+        $c->stash->{message} = _("There was a problem showing the All Reports page. Please try again later.") . ' ' .
+            sprintf(_('The error was: %s'), $@);
         $c->stash->{template} = 'errors/generic.html';
     }
 }
