@@ -90,6 +90,7 @@ sub ward : Path : Args(2) {
     $c->forward( 'ward_check', [ $ward ] )
         if $ward;
     $c->forward( 'load_parent' );
+    $c->forward( 'check_canonical_url', [ $council ] );
     $c->forward( 'load_and_group_problems' );
     $c->forward( 'sort_problems' );
 
@@ -226,7 +227,7 @@ sub council_check : Private {
         return;
     } else {
         foreach (keys %$areas) {
-            if ($areas->{$_}->{name} eq $q_council || $areas->{$_}->{name} =~ /^\Q$q_council\E (Borough|City|District|County) Council$/) {
+            if (lc($areas->{$_}->{name}) eq lc($q_council) || $areas->{$_}->{name} =~ /^\Q$q_council\E (Borough|City|District|County) Council$/i) {
                 $c->stash->{council} = $areas->{$_};
                 return;
             }
@@ -279,6 +280,22 @@ sub load_parent : Private {
     } else {
         $c->stash->{areas_info} = { $council->{id} => $council };
     }
+}
+
+=head2 check_canonical_url
+
+Given an already found (case-insensitively) council, check what URL
+we are at and redirect accordingly if different.
+
+=cut
+
+sub check_canonical_url : Private {
+    my ( $self, $c, $q_council ) = @_;
+
+    my $council_short = $c->cobrand->short_name( $c->stash->{council}, $c->stash->{areas_info} );
+    my $url_short = URI::Escape::uri_escape_utf8($q_council);
+    $url_short =~ s/%2B/+/g;
+    $c->detach( 'redirect_area' ) unless $council_short eq $url_short;
 }
 
 sub load_and_group_problems : Private {
@@ -369,7 +386,7 @@ sub redirect_area : Private {
     my $url = '';
     $url   .= "/rss" if $c->stash->{rss};
     $url   .= '/reports';
-    $url   .= '/' . $c->cobrand->short_name( $c->stash->{council} );
+    $url   .= '/' . $c->cobrand->short_name( $c->stash->{council}, $c->stash->{areas_info} );
     $url   .= '/' . $c->cobrand->short_name( $c->stash->{ward} )
         if $c->stash->{ward};
     $c->res->redirect( $c->uri_for($url) );
