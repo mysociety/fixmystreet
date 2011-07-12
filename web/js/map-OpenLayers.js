@@ -215,7 +215,8 @@ OpenLayers.Control.PermalinkFMS = OpenLayers.Class(OpenLayers.Control.Permalink,
             href = href.substring( 0, href.indexOf(separator) );
         }
 
-        href += separator + OpenLayers.Util.getParameterString(this.createParams(null, this.map.getZoom()+fixmystreet.ZOOM_OFFSET));
+        href += separator + OpenLayers.Util.getParameterString(this.createParams(null, this.map.getZoom()+fixmystreet.zoomOffset));
+        // Could use mlat/mlon here as well if we are on a page with a marker
         if (this.anchor && !this.element) {
             window.location.href = href;
         }
