@@ -227,8 +227,8 @@ sub report_import : Path('/import') {
     );
 
     # If there was a photo add that too
-    if ( my $fileid = $c->stash->{upload_fileid} ) {
-        my $file = file( $c->config->{UPLOAD_CACHE}, "$fileid.jpg" );
+    if ( $photo ) {
+        my $file = file( $c->config->{UPLOAD_CACHE}, "$photo.jpg" );
         my $blob = $file->slurp;
         $file->remove;
         $report->photo($blob);

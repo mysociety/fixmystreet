@@ -127,6 +127,35 @@ subtest "Submit a correct entry" => sub {
       },
       "check imported fields are shown";
 
+    # Check photo present, and still there after map submission (testing bug #18)
+    $mech->content_contains( '<img align="right" src="/photo?id' );
+    $mech->content_contains('latitude" value="51.50101"', 'Check latitude');
+    $mech->content_contains('longitude" value="-0.141587"', 'Check longitude');
+    $mech->submit_form_ok(
+        {
+            button => 'tile_32742.21793',
+            x => 10,
+            y => 10,
+        },
+        "New map location"
+    );
+    $mech->content_contains( '<img align="right" src="/photo?id' );
+    $mech->content_contains('latitude" value="51.50519"', 'Check latitude');
+    $mech->content_contains('longitude" value="-0.142608"', 'Check longitude');
+
+    # check that fields haven't changed at all
+    is_deeply $mech->visible_form_values,
+      {
+        name          => 'Test User',
+        title         => 'Test report',
+        detail        => 'This is a test report',
+        photo         => '',
+        phone         => '',
+        may_show_name => '1',
+        category      => '-- Pick a category --',
+      },
+      "check imported fields are shown";
+
     # change the details
     $mech->submit_form_ok(    #
         {
