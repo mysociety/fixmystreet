@@ -129,7 +129,7 @@ msgstr ""
 
 #: templates/web/default/email_sent.html:28
 msgid "(Don't worry &mdash; %s)"
-msgstr "(Slapp av &mdash; %s)"
+msgstr "(Ingen grunn til bekymring &mdash; %s)"
 
 #: templates/web/default/alert/list.html:53
 msgid "(a default distance which covers roughly 200,000 people)"
@@ -2135,7 +2135,7 @@ msgstr ""
 msgid ""
 "The confirmation email <strong>may</strong> take a few minutes to arrive "
 "&mdash; <em>please</em> be patient."
-msgstr "Bekrefelseseposten <strong>kan</strong>bruke noen minutter før den kommer frem &mdash; vær tolmodig."
+msgstr "Bekrefelseseposten <strong>kan</strong>bruke noen minutter før den kommer frem &mdash; så vær tålmodig."
 
 #: templates/web/default/questionnaire/index.html:51
 msgid ""
