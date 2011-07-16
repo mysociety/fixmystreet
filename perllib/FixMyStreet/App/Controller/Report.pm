@@ -108,8 +108,6 @@ sub format_problem_for_display : Private {
       map { Utils::truncate_coordinate($_) }
       ( $problem->latitude, $problem->longitude );
 
-    $c->stash->{report_name} = $c->req->param('name');
-
     unless ( $c->req->param('submit_update') ) {
         $c->stash->{add_alert} = 1;
     }
