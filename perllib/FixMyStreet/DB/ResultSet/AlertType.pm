@@ -27,7 +27,8 @@ sub email_alerts ($) {
             alert.cobrand_data as alert_cobrand_data, alert.parameter as alert_parameter, alert.parameter2 as alert_parameter2, ';
         if ($head_table) {
             $query .= "
-                   $item_table.id as item_id, $item_table.name as item_name, $item_table.text as item_text,
+                   $item_table.id as item_id, $item_table.text as item_text,
+                   $item_table.name as item_name, $item_table.anonymous as item_anonymous,
                    $head_table.*
             from alert
                 inner join $item_table on alert.parameter::integer = $item_table.${head_table}_id
@@ -81,7 +82,7 @@ sub email_alerts ($) {
             my $url = $cobrand->base_url_for_emails( $row->{alert_cobrand_data} );
             if ($row->{item_text}) {
                 $data{problem_url} = $url . "/report/" . $row->{id};
-                $data{data} .= $row->{item_name} . ' : ' if $row->{item_name};
+                $data{data} .= $row->{item_name} . ' : ' if $row->{item_name} && !$row->{item_anonymous};
                 $data{data} .= $row->{item_text} . "\n\n------\n\n";
             } else {
                 $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}\n\n";

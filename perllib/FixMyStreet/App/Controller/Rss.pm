@@ -217,7 +217,7 @@ sub add_row : Private {
     my ( $self, $c, $row ) = @_;
     my $alert_type = $c->stash->{alert_type};
 
-    $row->{name} ||= 'anonymous';
+    $row->{name} = 'anonymous' if $row->{anonymous} || !$row->{name};
 
     my $pubDate;
     if ($row->{confirmed}) {

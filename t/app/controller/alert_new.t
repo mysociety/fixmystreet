@@ -431,6 +431,19 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
     my $update_id = $update->id;
     ok $update, "created test update - $update_id";
 
+    $update = FixMyStreet::App->model('DB::Comment')->create( {
+        problem_id => $report_id,
+        user_id    => $user2->id,
+        name       => 'Anonymous User',
+        mark_fixed => 'false',
+        text       => 'This is some more update text',
+        state      => 'confirmed',
+        confirmed  => $dt->clone->add( hours => 8 ),
+        anonymous  => 't',
+    } );
+    $update_id = $update->id;
+    ok $update, "created test update - $update_id";
+
     FixMyStreet::App->model('DB::AlertType')->email_alerts();
     $mech->email_count_is(3);
     my @emails = $mech->get_email;
@@ -441,6 +454,10 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
         $count++ if $_->body =~ /The following nearby problems have been added:/;
     }
     is $count, 3, 'Three emails with the right things in them';
+
+    my $email = $emails[0];
+    like $email->body, qr/Other User/, 'Update name given';
+    unlike $email->body, qr/Anonymous User/, 'Update name not given';
 
     my ( $url, $url_token ) = $emails[0]->body =~ m{http://\S+(/A/(\S+))};
     $mech->get_ok( $url );
