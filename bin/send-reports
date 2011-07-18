@@ -409,10 +409,7 @@ sub post_easthants_message {
 # currently just blind copy of construct_easthants_message
 sub construct_barnet_message {
     my %h = @_;
-    my $message = '';
-    $message .= "[ This report was also sent to the district council covering the location of the problem, as the user did not categorise it; please ignore if you're not the correct council to deal with the issue. ]\n\n"
-        if $h{multiple};
-    $message .= <<EOF;
+    my $message = <<EOF;
 Subject: $h{title}
 
 Details: $h{detail}
@@ -451,9 +448,9 @@ sub post_barnet_message {
                 },
             },
             IT_PROBLEM_DESC =>  { # MyTypes::TABLE_OF_CRMT_SERVICE_REQUEST_TEXT
-              item =>  { # MyTypes::CRMT_SERVICE_REQUEST_TEXT
-                TEXT_LINE => split_text_with_entities(ent(encode_utf8($h{message})), 132) # char132
-              },
+              item =>  [ # MyTypes::CRMT_SERVICE_REQUEST_TEXT
+                map { { TEXT_LINE => $_ } } split_text_with_entities(ent(encode_utf8($h{message})), 132) # char132
+              ],
             },
             IV_CUST_EMAIL => truncate_string_with_entities(ent(encode_utf8($h{email})), 241), # char241
             IV_CUST_NAME  => truncate_string_with_entities(ent(encode_utf8($h{name})),   50), # char50
@@ -470,7 +467,7 @@ sub post_barnet_message {
               GEOCODE => $geo_code,  # char32
             },
             IV_PROBLEM_SUB => truncate_string_with_entities(ent(encode_utf8($h{title})), 40), # char40
-          },,
+          },
         );
         if ($result) {
             # currently not using this: get_EV_ORDER_GUID (maybe that's the customer number in the CRM)
@@ -629,7 +626,7 @@ sub truncate_string_with_entities {
 # split_text_with_entities into lines
 # args:    text to be broken into lines
 #          max length (option: uses constant MAX_LINE_LENGTH)
-# returns: ref to array of lines
+# returns: array of lines
 # Must not to split an entity (e.g., &amp;)
 # Not worrying about hyphenating here, since a word is only ever split if 
 # it's longer than the whole line, which is uncommon in genuine problem reports
@@ -648,5 +645,5 @@ sub split_text_with_entities {
         }
         push @lines, $line;
     }
-    return \@lines
+    return @lines;
 }
