@@ -279,6 +279,9 @@
   margin-top: 0.5em;
   margin-bottom: 0;
 }
+#mysociety #nearby_lists li small {
+  color: #666666;
+}
 #mysociety #alert_links {
   float: right;
 }
