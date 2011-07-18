@@ -1,6 +1,6 @@
 Subject: Bekreft din oppdatering på FiksGataMi
 
-Hei [% update.user.name %],
+Hei [% update.name %],
 
 Vennligst klikk på lenken under for å bekrefte oppdateringen du skrev
 nettopp:

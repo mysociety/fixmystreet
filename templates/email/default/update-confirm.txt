@@ -1,6 +1,6 @@
 Subject: Confirm your update on FixMyStreet
 
-Hi [% update.user.name %],
+Hi [% update.name %],
 
 Please click on the link below to confirm the update you just
 wrote:

@@ -1,6 +1,6 @@
 Subject: Bekreftelse på ny sak lagt til på FiksGataMi.no
 
-Hei [% report.user.name %],
+Hei [% report.name %],
 
 Vennligst klikk på linken under for å bekrefte saken du har lagt til
 på FiksGataMi:
