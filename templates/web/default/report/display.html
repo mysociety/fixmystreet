@@ -95,6 +95,7 @@
                 <option [% 'selected ' IF state.0 == problem.state %] value="[% state.0 %]">[% state.1 %]</option>
             [% END %]
             </select>
+        </div>
         [% ELSE %]
             [% IF problem.is_fixed AND c.user_exists AND c.user.id == problem.user_id %]
             <div class="checkbox">
@@ -103,7 +104,7 @@
             </div>
             [% ELSIF !problem.is_fixed %]
             <div class="checkbox">
-             <input type="checkbox" name="fixed" id="form_fixed" value="1"[% fixed %]>
+             <input type="checkbox" name="fixed" id="form_fixed" value="1"[% ' checked' IF update.mark_fixed %]>
              <label for="form_fixed">[% loc('This problem has been fixed') %]</label>
             </div>
             [% END %]
