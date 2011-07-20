@@ -13,7 +13,6 @@ use strict;
 use Module::Pluggable
   sub_name    => 'maps',
   search_path => __PACKAGE__,
-  except      => 'FixMyStreet::Map::Tilma::Original',
   require     => 1;
 
 # Get the list of maps we want and load map classes at compile time
