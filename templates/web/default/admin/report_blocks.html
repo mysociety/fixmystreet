@@ -13,5 +13,5 @@
 [%- END %]
 
 [% BLOCK flag_button -%]
-[% IF user.flagged || user_flagged %]<small>([% loc('Flagged') %])</small>[% ELSE %]<input type="submit" name="flaguser" value="[% loc('Flag user') %]" />[% END %]
+[% IF user.flagged || user_flagged %]<input type="submit" name="removeuserflag" value="[% loc('Remove flag') %]">[% ELSE %]<input type="submit" name="flaguser" value="[% loc('Flag user') %]" />[% END %]
 [%- END %]

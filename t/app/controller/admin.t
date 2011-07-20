@@ -550,13 +550,32 @@ subtest 'flagging user from report page' => sub {
     $mech->click_ok('flaguser');
 
     $mech->content_contains('User flagged');
-    $mech->content_contains('<small>(Flagged)</small>');
+    $mech->content_contains('Remove flag');
 
     $report->discard_changes;
     ok $report->user->flagged, 'user flagged';
 
     $mech->get_ok( '/admin/report_edit/' . $report->id );
-    $mech->content_contains('<small>(Flagged)</small>');
+    $mech->content_contains('Remove flag');
+};
+
+subtest 'unflagging user from report page' => sub {
+    $report->user->flagged(1);
+    $report->user->update;
+
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->content_contains('Remove flag');
+
+    $mech->click_ok('removeuserflag');
+
+    $mech->content_contains('User flag removed');
+    $mech->content_contains('Flag user');
+
+    $report->discard_changes;
+    ok !$report->user->flagged, 'user not flagged';
+
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->content_contains('Flag user');
 };
 
 $log_entries->delete;
@@ -770,15 +789,33 @@ subtest 'flagging user from update page' => sub {
     $mech->click_ok('flaguser');
 
     $mech->content_contains('User flagged');
-    $mech->content_contains('<small>(Flagged)</small>');
+    $mech->content_contains('Remove flag');
 
     $update->discard_changes;
     ok $update->user->flagged, 'user flagged';
 
     $mech->get_ok( '/admin/update_edit/' . $update->id );
-    $mech->content_contains('<small>(Flagged)</small>');
+    $mech->content_contains('Remove flag');
 };
 
+subtest 'unflagging user from update page' => sub {
+    $update->user->flagged(1);
+    $update->user->update;
+
+    $mech->get_ok( '/admin/update_edit/' . $update->id );
+    $mech->content_contains('Remove flag');
+
+    $mech->click_ok('removeuserflag');
+
+    $mech->content_contains('User flag removed');
+    $mech->content_contains('Flag user');
+
+    $update->discard_changes;
+    ok !$update->user->flagged, 'user not flagged';
+
+    $mech->get_ok( '/admin/update_edit/' . $update->id );
+    $mech->content_contains('Flag user');
+};
 
 subtest 'hiding comment marked as fixed reopens report' => sub {
     $update->mark_fixed( 1 );

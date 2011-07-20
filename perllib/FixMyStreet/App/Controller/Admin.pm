@@ -520,6 +520,11 @@ sub report_edit : Path('report_edit') : Args(1) {
     }
     elsif ( $c->req->param('flaguser') ) {
         $c->forward('flag_user');
+        $c->stash->{problem}->discard_changes;
+    }
+    elsif ( $c->req->param('removeuserflag') ) {
+        $c->forward('remove_user_flag');
+        $c->stash->{problem}->discard_changes;
     }
     elsif ( $c->req->param('banuser') ) {
         $c->forward('ban_user');
@@ -637,6 +642,11 @@ sub update_edit : Path('update_edit') : Args(1) {
     }
     elsif ( $c->req->param('flaguser') ) {
         $c->forward('flag_user');
+        $c->stash->{update}->discard_changes;
+    }
+    elsif ( $c->req->param('removeuserflag') ) {
+        $c->forward('remove_user_flag');
+        $c->stash->{update}->discard_changes;
     }
     elsif ( $c->req->param('submit') ) {
         $c->forward('check_token');
@@ -871,7 +881,7 @@ sub ban_user : Private {
 
 =head2 flag_user
 
-Sets the flag on a user with the give email
+Sets the flag on a user with the given email
 
 =cut
 
@@ -893,6 +903,32 @@ sub flag_user : Private {
     }
 
     $c->stash->{user_flagged} = 1;
+
+    return 1;
+}
+
+=head2 remove_user_flag
+
+Remove the flag on a user with the given email
+
+=cut
+
+sub remove_user_flag : Private {
+    my ( $self, $c ) = @_;
+
+    my $email = $c->req->param('email');
+
+    return unless $email;
+
+    my $user = $c->model('DB::User')->find({ email => $email });
+
+    if ( !$user ) {
+        $c->stash->{status_message} = _('Could not find user');
+    } else {
+        $user->flagged(0);
+        $user->update;
+        $c->stash->{status_message} = _('User flag removed');
+    }
 
     return 1;
 }
