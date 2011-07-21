@@ -491,7 +491,7 @@ sub setup_categories_and_councils : Private {
 
             next    # TODO - move this to the cobrand
               if $c->cobrand->moniker eq 'southampton'
-                  && $contact->category eq 'Street lighting';
+                  && $contact->category =~ /Street lighting|Traffic lights/;
 
             next if $contact->category eq _('Other');
 
@@ -610,6 +610,7 @@ sub process_report : Private {
       map { $_ => scalar $c->req->param($_) }    #
       (
         'title', 'detail', 'pc',                 #
+        'detail_size', 'detail_depth',
         'may_show_name',                         #
         'category',                              #
         'partial',                               #
@@ -628,8 +629,14 @@ sub process_report : Private {
 
     # clean up text before setting
     $report->title( Utils::cleanup_text( $params{title} ) );
-    $report->detail(
-        Utils::cleanup_text( $params{detail}, { allow_multiline => 1 } ) );
+
+    my $detail = Utils::cleanup_text( $params{detail}, { allow_multiline => 1 } );
+    for my $w ('depth', 'size') {
+        next unless $params{"detail_$w"};
+        next if $params{"detail_$w"} eq '-- Please select --';
+        $detail .= "\n\n\u$w: " . $params{"detail_$w"};
+    }
+    $report->detail( $detail );
 
     # set these straight from the params
     $report->category( _ $params{category} );

@@ -1,21 +1,16 @@
 #mysociety #map_box {
-  width: 380px;
+  width: 422px;
 }
 #mysociety #map, #mysociety #drag {
-  width: 378px;
-  height: 378px;
-}
-#mysociety #watermark {
-  background: url("/i/mojwatermark-378.png");
-  height: 84px;
-  width: 171px;
-  position: absolute;
-  bottom: 0;
-  right: 0;
+  width: 420px;
+  height: 420px;
 }
 #mysociety p#fixed, #mysociety p#unknown {
-  margin-right: 400px;
+  margin-right: 442px;
   width: auto;
+}
+#mysociety #problem_form {
+  clear: both;
 }
 #mysociety h1 {
   margin: 0;
