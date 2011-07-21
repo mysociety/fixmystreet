@@ -81,7 +81,7 @@ $(function(){
 
     var markers = fms_markers_list( fixmystreet.pins, true );
     fixmystreet.markers.addFeatures( markers );
-    if (fixmystreet.page == 'around' || fixmystreet.page == 'reports') {
+    if (fixmystreet.page == 'around' || fixmystreet.page == 'reports' || fixmystreet.page == 'my') {
         fixmystreet.markers.events.register( 'featureselected', fixmystreet.markers, function(evt) {
             window.location = '/report/' + evt.feature.attributes.id;
             OpenLayers.Event.stop(evt);
@@ -270,12 +270,18 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 
     trigger: function(e) {
         var lonlat = fixmystreet.map.getLonLatFromViewPortPx(e.xy);
+        if (fixmystreet.page == 'new') {
+            fixmystreet.markers.features[0].move(lonlat);
+        }
         lonlat.transform(
             fixmystreet.map.getProjectionObject(),
             new OpenLayers.Projection("EPSG:4326")
         );
         document.getElementById('fixmystreet.latitude').value = lonlat.lat;
         document.getElementById('fixmystreet.longitude').value = lonlat.lon;
+        if (fixmystreet.page == 'new') {
+            return;
+        }
         document.getElementById('mapForm').submit();
     }
 });

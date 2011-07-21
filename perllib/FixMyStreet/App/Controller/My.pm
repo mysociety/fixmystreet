@@ -53,6 +53,7 @@ sub my : Path : Args(0) {
     $c->stash->{updates} = \@updates;
     $c->stash->{updates_pager} = $rs->pager;
 
+    $c->stash->{page} = 'my';
     FixMyStreet::Map::display_map(
         $c,
         latitude  => $pins->[0]{latitude},

@@ -122,6 +122,7 @@ sub generate_map_tags : Private {
 
     my $problem = $c->stash->{problem};
 
+    $c->stash->{page} = 'report';
     FixMyStreet::Map::display_map(
         $c,
         latitude  => $problem->latitude,
