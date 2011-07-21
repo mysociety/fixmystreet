@@ -1,4 +1,4 @@
-YAHOO.util.Event.onContentReady('map', function() {
+$(function(){
     var centre = new google.maps.LatLng( fixmystreet.latitude, fixmystreet.longitude );
     var map = new google.maps.Map(document.getElementById("map"), {
         mapTypeId: google.maps.MapTypeId.ROADMAP,

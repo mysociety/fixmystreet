@@ -1,4 +1,4 @@
-YAHOO.util.Event.onContentReady('map', function() {
+$(function(){
 
     var perm = new OpenLayers.Control.Permalink();
     set_map_config(perm);
@@ -122,8 +122,8 @@ function fms_markers_list(pins, transform) {
     return markers;
 }
 
-YAHOO.util.Event.addListener('hide_pins_link', 'click', function(e) {
-    YAHOO.util.Event.preventDefault(e);
+$('#hide_pins_link').click(function(e) {
+    e.preventDefault();
     var showhide = [
         'Show pins', 'Hide pins',
         'Dangos pinnau', 'Cuddio pinnau',
@@ -140,8 +140,8 @@ YAHOO.util.Event.addListener('hide_pins_link', 'click', function(e) {
     }
 });
 
-YAHOO.util.Event.addListener('all_pins_link', 'click', function(e) {
-    YAHOO.util.Event.preventDefault(e);
+$('#all_pins_link').click(function(e) {
+    e.preventDefault();
     fixmystreet.markers.setVisibility(true);
     var welsh = 0;
     var texts = [
