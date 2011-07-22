@@ -8,8 +8,10 @@ use FixMyStreet::App;
 
 use Data::Dumper;
 
-my $council = 1;
-my $end_point = 'http://seeclicktest.com/open311/services.xml?lat=38.918978274355&lng=-77.0126581192017';
+my $council = shift;
+my $end_point = shift;
+
+die "require council id and end point\n" unless $council and $end_point;
 
 my $service_list = get( $end_point );
 
