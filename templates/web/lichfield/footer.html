@@ -1,3 +1,8 @@
+            </div>
+            <br class="cl">
+          </div><!-- end content -->
+      </div><!-- end wrap -->
+
 			</div><!-- End content -->
 
   <div class="colinfo">
@@ -25,13 +30,13 @@
 <ul id="column_nav">
       <li class="column_widget">
           <h2>Navigation</h2>
-          <ul>
-          <li><a href="/">Petitions Home</a></li>
-          <li><a href="/list">View Petitions</a></li>
-          <li><a href="/new">Create a Petition</a></li>
-          <li><a href="http://www.lichfielddc.gov.uk/voiceit">Voice It Home</a></li>
-          </ul>
-
+                <ul>
+                    <li class="section">[% c.req.uri.path == '/'               ? '<strong>Report a problem</strong>' : '<a href="/">Report a problem</a>'           %]</li>
+                    <li class="section">[% c.req.uri.path == '/reports/Barnet' ? '<strong>All reports</strong>'      : '<a href="/reports/Barnet">All reports</a>'  %]</li>
+                    <li class="section">[% c.req.uri.path == '/alert'          ? '<strong>Local alerts</strong>'     : '<a href="/alert">Local alerts</a>'          %]</li>
+                    <li class="section">[% c.req.uri.path == '/faq'            ? '<strong>Help</strong>'             : '<a href="/faq">Help</a>'                    %]</li>
+                    <li class="section">[% c.req.uri.path == '/contact'        ? '<strong>Contact</strong>'          : '<a href="/contact">Contact</a>'             %]</li>
+                </ul>
       </li>
           <!-- End left-hand supplements -->
 
