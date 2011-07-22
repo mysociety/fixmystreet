@@ -9,11 +9,11 @@ use URI::Escape;
 use mySociety::VotingArea;
 
 sub site_restriction {
-    return ( "and council='2434'", 'lichfield', { council => '2434' } );
+    return ( "and council like '%2434%'", 'lichfield', { council => '2434' } );
 }
 
 sub problems_clause {
-    return { council => '2434' };
+    return { council => { like => '%2434%' } };
 }
 
 sub problems {
