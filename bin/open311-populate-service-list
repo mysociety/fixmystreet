@@ -33,8 +33,22 @@ foreach my $service ( @{ $list->{service} } ) {
     my $contact = $contacts->first;
 
     if ( $contact ) {
+
         print "$council already has a contact for service code " . $service->{service_code} . "\n";
         push @found_contacts, $service->{service_code};
+
+        if ( $contact->deleted ) {
+            $contact->update(
+                {
+                    category => $service->{service_name},
+                    confirmed => 1,
+                    deleted => 0,
+                    editor => $0,
+                    whenedited => \'ms_current_timestamp()',
+                    note => 'automatically undeleted by script',
+                }
+            );
+        }
     } else {
         my $contact = FixMyStreet::App->model( 'DB::Contact')->create(
             {
