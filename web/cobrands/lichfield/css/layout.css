@@ -1,0 +1,9 @@
+#postcodeForm {
+   background-color: #F3F4F4;
+}
+
+#mysociety #postcodeForm label {
+    float: none;
+    margin-bottom: 5px;
+    width: auto !important;
+}
