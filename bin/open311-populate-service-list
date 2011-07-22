@@ -11,9 +11,23 @@ use Data::Dumper;
 my $council = shift;
 my $end_point = shift;
 
-die "require council id and end point\n" unless $council and $end_point;
+die <<"EOT"
+You need to provide a council id and an end point url
+
+Usage:
+
+    $0 council_id end_point_url
+
+    council_id: the mapit id of the council as used in the contacts table
+    end_point_url: the location of the open311 service list xml
+
+EOT
+    unless $council and $end_point;
 
 my $service_list = get( $end_point );
+
+die "Invalid council id: $council\n" unless $council =~ /^\d+$/;
+die "No service list found at $end_point\n" unless $service_list;
 
 my $xml = XML::Simple->new();
 my $list = $xml->XMLin( $service_list );
