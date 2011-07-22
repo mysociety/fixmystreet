@@ -1,0 +1,68 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use LWP::Simple;
+use XML::Simple;
+use FixMyStreet::App;
+
+use Data::Dumper;
+
+my $council = 1;
+my $end_point = 'http://seeclicktest.com/open311/services.xml?lat=38.918978274355&lng=-77.0126581192017';
+
+my $service_list = get( $end_point );
+
+my $xml = XML::Simple->new();
+my $list = $xml->XMLin( $service_list );
+my @found_contacts;
+
+# print Dumper $list;
+
+foreach my $service ( @{ $list->{service} } ) {
+    print $service->{service_code} . ': ' . $service->{service_name} .  "\n";
+    my $contacts = FixMyStreet::App->model( 'DB::Contact')->search(
+        {
+            email => $service->{service_code},
+            area_id => $council
+        }
+    );
+
+    my $contact = $contacts->first;
+
+    if ( $contact ) {
+        print "$council already has a contact for service code " . $service->{service_code} . "\n";
+        push @found_contacts, $service->{service_code};
+    } else {
+        my $contact = FixMyStreet::App->model( 'DB::Contact')->create(
+            {
+                email => $service->{service_code},
+                area_id => $council,
+                category => $service->{service_name},
+                confirmed => 1,
+                deleted => 0,
+                editor => $0,
+                whenedited => \'ms_current_timestamp()',
+                note => 'created automatically by script',
+            }
+        );
+        print "created contact for service code " . $service->{service_code} . " for council $council\n";
+    }
+}
+
+my $found_contacts = FixMyStreet::App->model( 'DB::Contact')->search(
+    {
+        email => { -not_in => \@found_contacts },
+        area_id => $council,
+        deleted => 0,
+    }
+);
+
+$found_contacts->update(
+    {
+        deleted => 1,
+        editor  => $0,
+        whenedited => \'ms_current_timestamp()',
+        note => 'automatically marked as deleted by script'
+    }
+);
