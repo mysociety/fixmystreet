@@ -47,3 +47,11 @@
 #mysociety #fileupload_normalUI input {
     background-color: white;
 }
+
+#mysociety input[type='submit']{
+    border: 0px;
+    color: white;
+    padding: 3px;
+    font:150%/1.4em "Trebuchet MS", Helvetica, Arial, Sans-serif;
+    background:url(http://www.lichfielddc.gov.uk/site/styles/css_img/nav-bg.png) top repeat-x;
+}
