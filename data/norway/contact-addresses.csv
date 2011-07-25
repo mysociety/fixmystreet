@@ -1,4 +1,4 @@
-# # i
+#
 # 2010 engelsk kategori                  Forslag til oversettelse
 # ---------------------------------------------------------------------
 #  18k potholes                          Hull i vei
@@ -65,7 +65,7 @@
 # -------------------------------------
 # Annet
 # 
-0000;default;;Hull i vei,Gater/Veier,Gatelys,Fortau/gangstier,Dumpet skrot,Forsøpling,Parkering,Graffiti/tagging,Trafikkskilter,Forlatte kjøretøy,Trær,Veinavn-skilter,Trafikklys,Park/landskap,Ulovlige oppslag,Buss- og togstopp,Offentlige toaletter,Vannforsyning,Snøbrøyting,Sykkelveier,Tette avløpsrister,Oljesøl,Annet
+0000;default;;Annet,Buss- og togstopp,Dumpet skrot,Forlatte kjøretøy,Forsøpling,Fortau/gangstier,Gatefeiing,Gatelys,Gater/Veier,Graffiti/tagging,Hull i vei,Offentlige toaletter,Oljesøl,Parkering,Park/landskap,Snøbrøyting,Sykkelveier,Tette avløpsrister,Trafikklys,Trafikkskilter,Trær,Ulovlige oppslag,Universell utforming,Vannforsyning,Veinavn-skilter
 0101;Halden;postmottak@halden.kommune.no
 0104;Moss;post@moss.kommune.no
 0105;Sarpsborg;postmottak@sarpsborg.com
@@ -75,13 +75,13 @@
 0119;Marker;post@marker.kommune.no
 0121;Rømskog;postmottak@romskog.kommune.no
 0122;Trøgstad;postmottak@trogstad.kommune.no
-0123;Spydeberg;post@spydeberg.kommune.no
+0123;Spydeberg;servicetorget@spydeberg.kommune.no
 0124;Askim;postmottak@askim.kommune.no
 0125;Eidsberg;postmottak@eidsberg.kommune.no
 0127;Skiptvet;postmottak@skiptvet.kommune.no
 0128;Rakkestad;postmottak@rakkestad.kommune.no
 0135;Råde;post@rade.kommune.no
-0136;Rygge;postmottak@rygge.kommune.no
+0136;Rygge;servicetorget@rygge.kommune.no
 0137;Våler;postmottak@valer-of.kommune.no
 0138;Hobøl;post@hobol.kommune.no
 01;Østfold;sentralpost@ostfoldfk.no;Annet
@@ -91,7 +91,7 @@
 0215;Frogn;postmottak@frogn.kommune.no
 0216;Nesodden;postmottak@nesodden.kommune.no
 0217;Oppegård;postmottak@oppegard.kommune.no
-0219;Bærum;post@baerum.kommune.no
+0219;Bærum;veiledningstorget@baerum.kommune.no;Annet,Buss- og togstopp,Dumpet skrot,Forlatte kjøretøy,Forsøpling,Fortau/gangstier,Gatefeiing,Gatelys,Gater/Veier,Graffiti/tagging,Hull i vei,Offentlige toaletter,Oljesøl,Parkering,Park/landskap,Snøbrøyting,Sykkelveier,Tette avløpsrister,Trafikklys,Trafikkskilter,Trær,Turveier,Ulovlige oppslag,Universell utforming,Vannforsyning,Veinavn-skilter
 0220;Asker;post@asker.kommune.no
 0221;Aurskog-Høland;postmottak@ahk.no
 0226;Sørum;postmottak@sorum.kommune.no
@@ -99,7 +99,7 @@
 0228;Rælingen;postmottak@ralingen.kommune.no
 0229;Enebakk;postmottak@enebakk.kommune.no
 0230;Lørenskog;postmottak@lorenskog.kommune.no
-0231;Skedsmo;postmottak@skedsmo.kommune.no
+0231;Skedsmo;ekspedts@skedsmo.kommune.no
 0233;Nittedal;postmottak@nittedal.kommune.no
 0234;Gjerdrum;postmottak@gjerdrum.kommune.no
 0235;Ullensaker;postmottak@ullensaker.kommune.no
@@ -109,7 +109,7 @@
 0239;Hurdal;postmottak@hurdal.kommune.no
 02;Akershus;postmottak@akershus-fk.no;Annet
 03;Oslo;postmottak@oslo.kommune.no
-0402;Kongsvinger;postmottak@kongsvinger.kommune.no
+0402;Kongsvinger;fiksgata@kongsvinger.kommune.no
 0403;Hamar;postmottak@hamar.kommune.no
 0412;Ringsaker;postmottak@ringsaker.kommune.no
 0415;Løten;post@loten.kommune.no
@@ -132,7 +132,7 @@
 0439;Folldal;postmottak@folldal.kommune.no
 0441;Os;postmottak@os.kommune.no
 04;Hedmark;postmottak@hedmark.org;Annet
-0501;Lillehammer;postmottak@lillehammer.kommune.no
+0501;Lillehammer;servicetorget@lillehammer.kommune.no
 0502;Gjøvik;postmottak@gjovik.kommune.no
 0511;Dovre;postmottak@dovre.kommune.no
 0512;Lesja;postmottak@lesja.kommune.no
@@ -162,7 +162,7 @@
 0602;Drammen;kommunepost@drammen.kommune.no
 0604;Kongsberg;postmottak@kongsberg.kommune.no
 0605;Ringerike;postmottak@ringerike.kommune.no
-0612;Hole;postmottak@hole.kommune.no
+0612;Hole;publikumskontoret@hole.kommune.no
 0615;Flå;postmottak@flaa.kommune.no
 0616;Nes;postmottak@nes-bu.kommune.no
 0617;Gol;postmottak@gol.kommune.no
@@ -237,7 +237,7 @@
 1004;Flekkefjord;post@flekkefjord.kommune.no
 1014;Vennesla;post@vennesla.kommune.no
 1017;Songdalen;postmottak@songdalen.kommune.no
-1018;Søgne;postmottak@sogne.kommune.no
+1018;Søgne;fiksgatami@sogne.kommune.no
 1021;Marnardal;service@Marnardal.kommune.no
 1026;Åseral;info@aseral.kommune.no
 1027;Audnedal;info@audnedal.kommune.no
@@ -247,6 +247,11 @@
 1037;Kvinesdal;post@kvinesdal.kommune.no
 1046;Sirdal;post@sirdal.kommune.no
 10;Vest-Agder;postmottak@vaf.no;Annet
+11001;Statens vegvesen region øst;firmapost-ost@vegvesen.no;Fortau/gangstier,Gatefeiing,Gatelys,Gater/Veier,Hull i vei,Snøbrøyting,Sykkelveier,Trafikklys,Trafikkskilter,Veinavn-skilter
+11002;Statens vegvesen region sør;firmapost-sor@vegvesen.no;Fortau/gangstier,Gatefeiing,Gatelys,Gater/Veier,Hull i vei,Snøbrøyting,Sykkelveier,Trafikklys,Trafikkskilter,Veinavn-skilter
+11003;Statens vegvesen region vest;firmapost-vest@vegvesen.no;Fortau/gangstier,Gatefeiing,Gatelys,Gater/Veier,Hull i vei,Snøbrøyting,Sykkelveier,Trafikklys,Trafikkskilter,Veinavn-skilter
+11004;Statens vegvesen region midt;firmapost-midt@vegvesen.no;Fortau/gangstier,Gatefeiing,Gatelys,Gater/Veier,Hull i vei,Snøbrøyting,Sykkelveier,Trafikklys,Trafikkskilter,Veinavn-skilter
+11005;Statens vegvesen region nord;firmapost-nord@vegvesen.no;Fortau/gangstier,Gatefeiing,Gatelys,Gater/Veier,Hull i vei,Snøbrøyting,Sykkelveier,Trafikklys,Trafikkskilter,Veinavn-skilter
 1101;Eigersund;post@eigersund.kommune.no
 1102;Sandnes;postmottak@sandnes.kommune.no
 1103;Stavanger;postmottak@stavanger.kommune.no
@@ -274,20 +279,21 @@
 1151;Utsira;post@utsira.kommune.no
 1160;Vindafjord;postmottak@vindafjord.kommune.no
 11;Rogaland;firmapost@rogfk.no;Annet
-1201;Bergen;postmottak@bergen.kommune.no
+1201;Bergen;vaktsentral@bergen.kommune.no
 1211;Etne;firmapost@etne.kommune.no
 1216;Sveio;postmottak@sveio.kommune.no
 1219;Bømlo;postmottak@bomlo.kommune.no
-1221;Stord;post@stord.kommune.no
+1221;Stord;kundetorget@stord.kommune.no;Annet,Buss- og togstopp,Dumpet skrot,Forlatte kjøretøy,Forsøpling,Fortau/gangstier,Gatefeiing,Gater/Veier,Graffiti/tagging,Hull i vei,Offentlige toaletter,Oljesøl,Parkering,Park/landskap,Snøbrøyting,Sykkelveier,Tette avløpsrister,Trafikklys,Trafikkskilter,Trær,Ulovlige oppslag,Universell utforming,Vannforsyning,Veinavn-skilter
+1221;Stord;post@skl.as;Gatelys
 1222;Fitjar;fitjar@fitjar.kommune.no
 1223;Tysnes;post@tysnes.kommune.no
 1224;Kvinnherad;post@kvinnherad.kommune.no
 1227;Jondal;post@jondal.kommune.no
-1228;Odda;epost@odda.kommune.no
-1231;Ullensvang;postmottak@ullensvang.herad.no
+1228;Odda;Tenestetorg@odda.kommune.no
+1231;Ullensvang herad;postmottak@ullensvang.herad.no
 1232;Eidfjord;postmottak@eidfjord.kommune.no
-1233;Ulvik;postmottak@ulvik.kommune.no
-1234;Granvin;postmottak@granvin.kommune.no
+1233;Ulvik herad;postmottak@ulvik.kommune.no
+1234;Granvin herad;postmottak@granvin.kommune.no
 1235;Voss;postmottak@voss.kommune.no
 1238;Kvam herad;postmottak@kvam.kommune.no
 1241;Fusa;postkasse@fusa.kommune.no
@@ -296,7 +302,7 @@
 1244;Austevoll;postmottak@austevoll.kommune.no
 1245;Sund;postmottak@sund.kommune.no
 1246;Fjell;postmottak@fjell.kommune.no
-1247;Askøy;postmottak@askoy.kommune.no
+1247;Askøy;kundetorg@askoy.kommune.no
 1251;Vaksdal;post@vaksdal.kommune.no
 1252;Modalen;postmottak@modalen.kommune.no
 1253;Osterøy;post@osteroy.kommune.no
@@ -308,7 +314,7 @@
 1265;Fedje;postmottak@fedje.kommune.no
 1266;Masfjorden;post@masfjorden.kommune.no
 12;Hordaland;hfk@post.hfk.no;Annet
-1401;Flora;postmottak@flora.kommune.no
+1401;Flora;tenestetorgetekspedisjon@flora.kommune.no
 1411;Gulen;postmottak@gulen.kommune.no
 1412;Solund;post@solund.kommune.no
 1413;Hyllestad;postmottak@hyllestad.kommune.no
@@ -325,7 +331,7 @@
 1429;Fjaler;post@fjaler.kommune.no
 1430;Gaular;postmottak@gaular.kommune.no
 1431;Jølster;postmottak@jolster.kommune.no
-1432;Førde;postmottak@forde.kommune.no
+1432;Førde;servicetorget@forde.kommune.no
 1433;Naustdal;postmottak@naustdal.kommune.no
 1438;Bremanger;post@bremanger.kommune.no
 1439;Vågsøy;post@vagsoy.kommune.no
@@ -336,7 +342,7 @@
 1449;Stryn;postmottak@stryn.kommune.no
 14;Sogn og Fjordane;postmottak.sentraladm@sfj.no;Annet
 1502;Molde;postmottak@molde.kommune.no
-1504;Ålesund;postmottak@alesund.kommune.no
+1504;Ålesund;servicetorget@alesund.kommune.no
 1505;Kristiansund;postmottak@kristiansund.kommune.no
 1511;Vanylven;postmottak@vanylven.kommune.no
 1514;Sande;sande.kommune@sande-mr.kommune.no
@@ -372,7 +378,7 @@
 1573;Smøla;postmottak@smola.kommune.no
 1576;Aure;postmottak@aure.kommune.no
 15;Møre og Romsdal;post@mrfylke.no;Annet
-1601;Trondheim;postmottak@trondheim.kommune.no
+1601;Trondheim;bydrift.vegdrift@trondheim.kommune.no
 1612;Hemne;postmottak@hemne.kommune.no
 1613;Snillfjord;postmottak@snillfjord.kommune.no
 1617;Hitra;postmottak@hitra.kommune.no

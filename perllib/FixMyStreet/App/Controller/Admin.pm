@@ -121,6 +121,7 @@ sub timeline : Path( 'timeline' ) : Args(0) {
     my %time;
 
     $c->model('DB')->schema->storage->sql_maker->quote_char( '"' );
+    $c->model('DB')->schema->storage->sql_maker->name_sep( '.' );
 
     my $probs = $c->cobrand->problems->timeline;
 
@@ -427,6 +428,7 @@ sub search_reports : Path('search_reports') {
         # makes PostgreSQL unhappy elsewhere so we only want to do
         # it for this query and then switch it off afterwards.
         $c->model('DB')->schema->storage->sql_maker->quote_char( '"' );
+        $c->model('DB')->schema->storage->sql_maker->name_sep( '.' );
 
         my $problems = $c->cobrand->problems->search(
             {

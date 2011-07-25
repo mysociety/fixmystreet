@@ -41,6 +41,15 @@ $(function(){
         return false;
     });
 
+    // Vector layers must be added onload as IE sucks
+    if ($.browser.msie) {
+        $(window).load(fixmystreet_onload);
+    } else {
+        fixmystreet_onload();
+    }
+});
+
+function fixmystreet_onload() {
     if ( fixmystreet.area ) {
         var area = new OpenLayers.Layer.Vector("KML", {
             strategies: [ new OpenLayers.Strategy.Fixed() ],
@@ -96,8 +105,7 @@ $(function(){
         var bounds = fixmystreet.markers.getDataExtent();
         if (bounds) { fixmystreet.map.zoomToExtent( bounds ); }
     }
-
-});
+}
 
 function fms_markers_list(pins, transform) {
     var cols = { 'red':'R', 'green':'G', 'blue':'B', 'purple':'P' };
