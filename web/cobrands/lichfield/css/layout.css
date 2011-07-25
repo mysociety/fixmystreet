@@ -43,3 +43,7 @@
 #mysociety input {
     background-color: #f9f9f1;
 }
+
+#mysociety #fileupload_normalUI input {
+    background-color: white;
+}
