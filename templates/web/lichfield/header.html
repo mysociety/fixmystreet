@@ -171,7 +171,17 @@
 
                  <!-- Breadcrumb --><!-- googleoff:all -->
                             <ul id="breadcrumb">
-                                <li><a href="http://www.lichfielddc.gov.uk/site/">Home</a></li><li><a href="http://www.lichfielddc.gov.uk/site/scripts/documents_index.php">Council information</a></li><li><a href="http://www.lichfielddc.gov.uk/site/scripts/documents.php?categoryID=100004" >Council and democracy</a></li><li class="bc_end">FixMyStreet</li></ul>
+                                <li><a href="http://www.lichfielddc.gov.uk/site/">Home</a></li><li><a href="http://lichfield.fixmystreet.com/">FixMyStreet</a></li>
+                                <li class="bc_end">
+                                [% SWITCH c.req.uri.path %]Report a problem
+                                [% CASE '/' %]Report a problem
+                                [% CASE '/reports/Lichfield' %]All reports
+                                [% CASE '/my' %]Your reports
+                                [% CASE '/alert' %]Local alerts
+                                [% CASE '/faq' %]Help
+                                [% CASE '/contact' %] Contact
+                                [% END %]
+                                </li></ul>
                             <!-- END Breadcrumb --><!-- googleon:all -->
                     <!-- END BREAD CRUMB -->
       <div id="wrap">

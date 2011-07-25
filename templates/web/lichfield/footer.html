@@ -29,13 +29,18 @@
 
 <ul id="column_nav">
       <li class="column_widget">
-          <h2>Navigation</h2>
+          <h2>FixMyStreet</h2>
                 <ul>
-                    <li class="section">[% c.req.uri.path == '/'               ? '<strong>Report a problem</strong>' : '<a href="/">Report a problem</a>'           %]</li>
-                    <li class="section">[% c.req.uri.path == '/reports/Lichfield' ? '<strong>All reports</strong>'      : '<a href="/reports/Lichfield">All reports</a>'  %]</li>
-                    <li class="section">[% c.req.uri.path == '/alert'          ? '<strong>Local alerts</strong>'     : '<a href="/alert">Local alerts</a>'          %]</li>
-                    <li class="section">[% c.req.uri.path == '/faq'            ? '<strong>Help</strong>'             : '<a href="/faq">Help</a>'                    %]</li>
-                    <li class="section">[% c.req.uri.path == '/contact'        ? '<strong>Contact</strong>'          : '<a href="/contact">Contact</a>'             %]</li>
+                [% IF c.user_exists %]
+                <li class="section">[% tprintf(loc('Signed in as %s'), c.user.name || c.user.email) %]</li>
+                <li class="section"><a href="/auth/sign_out">[% loc('Sign out') %]</a></li>
+                [% END %]
+                    <li class="section"><a href="/">Report a problem</a></li>
+                    <li class="section"><a href="/reports/Lichfield">All reports</a></li>
+                    <li class="section"><a href="/my">Your reports</a></li>
+                    <li class="section"><a href="/alert">Local alerts</a></li>
+                    <li class="section"><a href="/faq">Help</a></li>
+                    <li class="section"><a href="/contact">Contact</a></li>
                 </ul>
       </li>
           <!-- End left-hand supplements -->
