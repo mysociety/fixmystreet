@@ -16,3 +16,30 @@
     width: 378px;
     height: 378px;
 }
+
+#mysociety p {
+    margin: 1em 0px;
+    padding: 0px;
+}
+
+#mysociety #update_form {
+    clear: both;
+}
+
+#mysociety #form_sign_in {
+    padding-top: 2em;
+}
+
+#mysociety form label {
+    width: 6em;
+    display: inline;
+    margin-right: 0px;
+}
+
+#mysociety div.checkbox {
+    padding-left: 6.5em;
+}
+
+#mysociety input {
+    background-color: #f9f9f1;
+}
