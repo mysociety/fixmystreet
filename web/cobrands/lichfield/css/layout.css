@@ -7,3 +7,12 @@
     margin-bottom: 5px;
     width: auto !important;
 }
+
+#mysociety #map_box {
+    width: 380px;
+}
+
+#mysociety #map, #mysociety #drag {
+    width: 378px;
+    height: 378px;
+}
