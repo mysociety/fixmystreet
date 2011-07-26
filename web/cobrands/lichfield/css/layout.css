@@ -1,5 +1,6 @@
-#postcodeForm {
-   background-color: #F3F4F4;
+#mysociety #postcodeForm {
+    padding: 0.8em;
+    background-color: #F3F4F4;
 }
 
 #mysociety #postcodeForm label {
