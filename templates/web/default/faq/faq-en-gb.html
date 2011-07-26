@@ -17,13 +17,15 @@ or clearing</strong>, such as:
     <li>Flyposting or graffiti
     <li>Flytipping or litter
     <li>Streetcleaning, such as broken glass in a cycle lane
+    [% IF c.cobrand.moniker != 'southampton' %]
     <li>Unlit lamposts
+    [% END %]
     <li>Potholes
     </ul>
     </dd>
 
     <dt>What isn&rsquo;t FixMyStreet for?</dt>
-    <dd>FixMyStreet is not a way of getting in touch with your council for all
+    <dd>FixMyStreet is not a way of getting in touch with [% c.cobrand.moniker == 'southampton' ? 'the' : 'your' %] council for all
     issues &ndash; please use FixMyStreet only for problems such as the above. We
     often route problem reports via cleansing services or highways and so using
     FixMyStreet for other matters may result in a delay in your report getting
@@ -49,10 +51,10 @@ with a map of that area. You can view problems already reported in that area,
 or report ones of your own simply by clicking on the map at the location of
 the problem.</dd>
         <dt>How are the problems solved?</dt>
-        <dd>They are reported to the relevant council by email. The
+        <dd>They are reported to the [% IF c.cobrand.moniker != 'southampton' %]relevant[% END %] council by email. The
 council can then resolve the problem the way they normally would.
-Alternatively, you can discuss the problem on the website with others, and
-then together lobby the council to fix it, or fix it directly yourselves.</dd>
+Alternatively, you can discuss the problem on the website with others[% IF c.cobrand.moniker != 'southampton' %], and
+then together lobby the council to fix it, or fix it directly yourselves[% END %].</dd>
         <dt>Is it free?</dt>
         <dd>The site is free to use, yes. FixMyStreet is run
 by a registered charity, though, so if you want to make a contribution, <a
@@ -90,6 +92,8 @@ href="https://secure.mysociety.org/donate/">please do</a>.</dd>
         <dd>You can either leave a test report or <a href="/contact">contact us</a>
 to find out where reports go at the moment. Also <a href="/contact">contact us</a>
 to update the address or addresses we use.</dd>
+        <dt>I&rsquo;m from a council, can we have FixMyStreet on our website?</dt>
+        <dd>Yes you can! We offer branded, hosted versions of FixMyStreet for local council websites. <a href="http://www.mysociety.org/fixmystreet-for-local-council-websites/">Full details</a>.</dd>
         <dt>Do you remove silly or illegal content?</dt>
         <dd>FixMyStreet is not responsible for the content and accuracy
 of material submitted by its users. We reserve the right to edit or remove any

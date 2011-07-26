@@ -138,6 +138,7 @@ Generate a set of options for council rss alerts.
 sub council_rss_alert_options {
     my $self = shift;
     my $all_councils = shift;
+    my $c            = shift;
 
     my %councils = map { $_ => 1 } $self->area_types();
 
@@ -160,14 +161,14 @@ sub council_rss_alert_options {
         id        => sprintf( 'council:%s:%s', $council->{id}, $council->{id_name} ),
         text      => sprintf( _('Problems within %s'), $council->{name}),
         rss_text  => sprintf( _('RSS feed of problems within %s'), $council->{name}),
-        uri       => $self->uri( '/rss/reports/' . $council->{short_name} ),
+        uri       => $c->uri_for( '/rss/reports/' . $council->{short_name} ),
     };
     push @options, {
         type     => 'ward',
         id       => sprintf( 'ward:%s:%s:%s:%s', $council->{id}, $ward->{id}, $council->{id_name}, $ward->{id_name} ),
         rss_text => sprintf( _('RSS feed of problems within %s ward'), $ward->{name}),
         text     => sprintf( _('Problems within %s ward'), $ward->{name}),
-        uri      => $self->uri( '/rss/reports/' . $council->{short_name} . '/' . $ward->{short_name} ),
+        uri      => $c->uri_for( '/rss/reports/' . $council->{short_name} . '/' . $ward->{short_name} ),
     };
 
     return ( \@options, @reported_to_options ? \@reported_to_options : undef );

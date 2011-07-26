@@ -289,6 +289,7 @@ sub display : Private {
         { order_by => 'confirmed' }
     );
 
+    $c->stash->{page} = 'questionnaire';
     FixMyStreet::Map::display_map(
         $c,
         latitude  => $problem->latitude,

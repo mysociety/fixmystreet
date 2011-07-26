@@ -21,7 +21,7 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
             numZoomLevels: 18,
             transitionEffect: "resize",
             sphericalMercator: true,
-            buffer: 0,
+            buffer: 0
             //attribution: "© Microsoft / OS 2010"
         }, options);
         var newArguments = [name, url, options];
@@ -56,16 +56,17 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 
         if (z >= 16) {
             var url = [
-                "http://a.os.openstreetmap.org/sv/${z}/${x}/${y}.png",
-                "http://b.os.openstreetmap.org/sv/${z}/${x}/${y}.png",
-                "http://c.os.openstreetmap.org/sv/${z}/${x}/${y}.png"
+                "http://tilma.mysociety.org/sv/${z}/${x}/${y}.png",
+                "http://a.tilma.mysociety.org/sv/${z}/${x}/${y}.png",
+                "http://b.tilma.mysociety.org/sv/${z}/${x}/${y}.png",
+                "http://c.tilma.mysociety.org/sv/${z}/${x}/${y}.png"
             ];
         } else {
             var url = [
-                "http://ecn.t0.tiles.virtualearth.net/tiles/r${id}.png?g=587&productSet=mmOS",
-                "http://ecn.t1.tiles.virtualearth.net/tiles/r${id}.png?g=587&productSet=mmOS",
-                "http://ecn.t2.tiles.virtualearth.net/tiles/r${id}.png?g=587&productSet=mmOS",
-                "http://ecn.t3.tiles.virtualearth.net/tiles/r${id}.png?g=587&productSet=mmOS"
+                "http://ecn.t0.tiles.virtualearth.net/tiles/r${id}.png?g=701&productSet=mmOS",
+                "http://ecn.t1.tiles.virtualearth.net/tiles/r${id}.png?g=701&productSet=mmOS",
+                "http://ecn.t2.tiles.virtualearth.net/tiles/r${id}.png?g=701&productSet=mmOS",
+                "http://ecn.t3.tiles.virtualearth.net/tiles/r${id}.png?g=701&productSet=mmOS"
             ];
         }
         var s = '' + x + y + z;

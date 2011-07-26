@@ -1,4 +1,4 @@
-YAHOO.util.Event.onContentReady('map', function() {
+$(function(){
     var centre = new Microsoft.Maps.Location( fixmystreet.latitude, fixmystreet.longitude );
     var map = new Microsoft.Maps.Map(document.getElementById("map"), {
         credentials: fixmystreet.key,

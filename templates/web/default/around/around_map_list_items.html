@@ -5,7 +5,7 @@
         
         <li>
             <a href="[% c.uri_for('/report', p.problem.id ) %]">[% p.problem.title | html %]</a>
-            <small>([% prettify_epoch( p.problem.confirmed_local.epoch, 1 ) %], [% dist %]km)</small>
+            <small>[% prettify_epoch( p.problem.confirmed_local.epoch, 1 ) %], [% dist %]km</small>
             [% IF p.problem.state == 'fixed' %]
                 <small>[% loc('(fixed)') %]</small>
             [% END %]

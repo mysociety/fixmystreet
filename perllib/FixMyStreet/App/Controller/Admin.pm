@@ -62,6 +62,7 @@ sub index : Path : Args(0) {
     $c->stash->{problems} = \%prob_counts;
     $c->stash->{total_problems_live} += $prob_counts{$_} 
         for ( FixMyStreet::DB::Result::Problem->visible_states() );
+    $c->stash->{total_problems_users} = $c->cobrand->problems->unique_users;
 
     my $comments = $c->model('DB::Comment')->summary_count( $site_restriction );
 
@@ -108,6 +109,8 @@ sub index : Path : Args(0) {
       : _('n/a');
     $c->stash->{questionnaires} = \%questionnaire_counts;
 
+    $c->stash->{categories} = $c->cobrand->problems->categories_summary();
+
     return 1;
 }
 
@@ -120,6 +123,7 @@ sub timeline : Path( 'timeline' ) : Args(0) {
     my %time;
 
     $c->model('DB')->schema->storage->sql_maker->quote_char( '"' );
+    $c->model('DB')->schema->storage->sql_maker->name_sep( '.' );
 
     my $probs = $c->cobrand->problems->timeline;
 
@@ -172,14 +176,21 @@ sub questionnaire : Path('questionnaire') : Args(0) {
 
 
     my %questionnaire_counts = map { $_->get_column( 'reported' ) => $_->get_column( 'questionnaire_count' ) } $questionnaires->all;
-
     $questionnaire_counts{1} ||= 0;
     $questionnaire_counts{0} ||= 0;
-
     $questionnaire_counts{total} = $questionnaire_counts{0} + $questionnaire_counts{1};
-    $c->stash->{reported_pc} = ( 100 * $questionnaire_counts{1} ) / $questionnaire_counts{total};
-    $c->stash->{not_reported_pc} = ( 100 * $questionnaire_counts{0} ) / $questionnaire_counts{total};
     $c->stash->{questionnaires} = \%questionnaire_counts;
+
+    $c->stash->{state_changes_count} = $c->model('DB::Questionnaire')->search(
+        { whenanswered => \'is not null' }
+    )->count;
+    $c->stash->{state_changes} = $c->model('DB::Questionnaire')->search(
+        { whenanswered => \'is not null' },
+        {
+            group_by => [ 'old_state', 'new_state' ],
+            columns => [ 'old_state', 'new_state', { c => { count => 'id' } } ],
+        },
+    );
 
     return 1;
 }
@@ -419,6 +430,7 @@ sub search_reports : Path('search_reports') {
         # makes PostgreSQL unhappy elsewhere so we only want to do
         # it for this query and then switch it off afterwards.
         $c->model('DB')->schema->storage->sql_maker->quote_char( '"' );
+        $c->model('DB')->schema->storage->sql_maker->name_sep( '.' );
 
         my $problems = $c->cobrand->problems->search(
             {

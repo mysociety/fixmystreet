@@ -331,6 +331,9 @@ foreach my $test (
         my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
         ok $user, "test user does exist";
         $user->problems->delete;
+        $user->name( 'Old Name' );
+        $user->password( 'old_password' );
+        $user->update;
     } else {
         ok !FixMyStreet::App->model('DB::User')->find( { email => $test_email } ),
           "test user does not exist";
@@ -366,11 +369,15 @@ foreach my $test (
     # check that we got the errors expected
     is_deeply $mech->form_errors, [], "check there were no errors";
 
-    # check that the user has been created
+    # check that the user has been created/ not changed
     my $user =
       FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
-    ok $user, "created new user";
-    ok $user->check_password('secret'), 'password set correctly';
+    ok $user, "user found";
+    if ($test->{user}) {
+        ok $user->check_password('old_password'), 'password unchanged';
+    } else {
+        ok $user->check_password('secret'), 'password set correctly';
+    }
 
     # find the report
     my $report = $user->problems->first;
@@ -397,6 +404,11 @@ foreach my $test (
     is $report->state, 'confirmed', "Report is now confirmed";
 
     $mech->get_ok( '/report/' . $report->id );
+
+    if ($test->{user}) {
+        is $report->name, 'Joe Bloggs', 'name updated correctly';
+        ok $report->user->check_password('secret'), 'password updated correctly';
+    }
 
     # check that the reporter has an alert
     my $alert = FixMyStreet::App->model('DB::Alert')->find( {

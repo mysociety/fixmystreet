@@ -220,13 +220,15 @@ sub report_import : Path('/import') {
             anonymous => 0,
             category  => '',
             areas     => '',
+            cobrand   => $c->cobrand->moniker,
+            lang      => $c->stash->{lang_code},
 
         }
     );
 
     # If there was a photo add that too
-    if ( my $fileid = $c->stash->{upload_fileid} ) {
-        my $file = file( $c->config->{UPLOAD_CACHE}, "$fileid.jpg" );
+    if ( $photo ) {
+        my $file = file( $c->config->{UPLOAD_CACHE}, "$photo.jpg" );
         my $blob = $file->slurp;
         $file->remove;
         $report->photo($blob);
@@ -489,7 +491,7 @@ sub setup_categories_and_councils : Private {
 
             next    # TODO - move this to the cobrand
               if $c->cobrand->moniker eq 'southampton'
-                  && $contact->category eq 'Street lighting';
+                  && $contact->category =~ /Street lighting|Traffic lights/;
 
             next if $contact->category eq _('Other');
 
@@ -571,9 +573,9 @@ sub process_user : Private {
         unless $report->user;
 
     # The user is trying to sign in. We only care about email from the params.
-    if ( $c->req->param('submit_sign_in') ) {
+    if ( $c->req->param('submit_sign_in') || $c->req->param('password_sign_in') ) {
         unless ( $c->forward( '/auth/sign_in' ) ) {
-            $c->stash->{field_errors}->{password} = _('There was a problem with your email/password combination. Please try again.');
+            $c->stash->{field_errors}->{password} = _('There was a problem with your email/password combination. Passwords and user accounts are a brand <strong>new</strong> service, so you probably do not have one yet &ndash; please fill in the right hand side of this form to get one.');
             return 1;
         }
         my $user = $c->user->obj;
@@ -608,6 +610,7 @@ sub process_report : Private {
       map { $_ => scalar $c->req->param($_) }    #
       (
         'title', 'detail', 'pc',                 #
+        'detail_size', 'detail_depth',
         'may_show_name',                         #
         'category',                              #
         'partial',                               #
@@ -626,8 +629,14 @@ sub process_report : Private {
 
     # clean up text before setting
     $report->title( Utils::cleanup_text( $params{title} ) );
-    $report->detail(
-        Utils::cleanup_text( $params{detail}, { allow_multiline => 1 } ) );
+
+    my $detail = Utils::cleanup_text( $params{detail}, { allow_multiline => 1 } );
+    for my $w ('depth', 'size') {
+        next unless $params{"detail_$w"};
+        next if $params{"detail_$w"} eq '-- Please select --';
+        $detail .= "\n\n\u$w: " . $params{"detail_$w"};
+    }
+    $report->detail( $detail );
 
     # set these straight from the params
     $report->category( _ $params{category} );
@@ -845,9 +854,13 @@ sub save_user_and_report : Private {
         $report->confirm;
     }
     else {
-
-        # user exists and we are not logged in as them. Throw away changes to
-        # the name and phone. TODO - propagate changes using tokens.
+        # User exists and we are not logged in as them.
+        # Store changes in token for when token is validated.
+        $c->stash->{token_data} = {
+            name => $report->user->name,
+            phone => $report->user->phone,
+            password => $report->user->password,
+        };
         $report->user->discard_changes();
     }
 
@@ -895,6 +908,7 @@ sub generate_map : Private {
 
     # Don't do anything if the user skipped the map
     unless ( $c->req->param('skipped') ) {
+        $c->stash->{page} = 'new';
         FixMyStreet::Map::display_map(
             $c,
             latitude  => $latitude,
@@ -932,9 +946,11 @@ sub redirect_or_confirm_creation : Private {
     }
 
     # otherwise create a confirm token and email it to them.
+    my $data = $c->stash->{token_data} || {};
     my $token = $c->model("DB::Token")->create( {
         scope => 'problem',
         data => {
+            %$data,
             id => $report->id
         }
     } );

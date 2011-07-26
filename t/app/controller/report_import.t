@@ -68,7 +68,6 @@ subtest "Test creating bad partial entries" => sub {
 
 };
 
-# submit an empty report to import - check we get all errors
 subtest "Submit a correct entry" => sub {
 
     $mech->get_ok('/import');
@@ -128,6 +127,35 @@ subtest "Submit a correct entry" => sub {
       },
       "check imported fields are shown";
 
+    # Check photo present, and still there after map submission (testing bug #18)
+    $mech->content_contains( '<img align="right" src="/photo?id' );
+    $mech->content_contains('latitude" value="51.50101"', 'Check latitude');
+    $mech->content_contains('longitude" value="-0.141587"', 'Check longitude');
+    $mech->submit_form_ok(
+        {
+            button => 'tile_32742.21793',
+            x => 10,
+            y => 10,
+        },
+        "New map location"
+    );
+    $mech->content_contains( '<img align="right" src="/photo?id' );
+    $mech->content_contains('latitude" value="51.50519"', 'Check latitude');
+    $mech->content_contains('longitude" value="-0.142608"', 'Check longitude');
+
+    # check that fields haven't changed at all
+    is_deeply $mech->visible_form_values,
+      {
+        name          => 'Test User',
+        title         => 'Test report',
+        detail        => 'This is a test report',
+        photo         => '',
+        phone         => '',
+        may_show_name => '1',
+        category      => '-- Pick a category --',
+      },
+      "check imported fields are shown";
+
     # change the details
     $mech->submit_form_ok(    #
         {
@@ -156,7 +184,6 @@ subtest "Submit a correct entry" => sub {
     $mech->delete_user($user);
 };
 
-# submit an empty report to import - check we get all errors
 subtest "Submit a correct entry (with location)" => sub {
 
     $mech->get_ok('/import');
@@ -231,6 +258,73 @@ subtest "Submit a correct entry (with location)" => sub {
     my $report = $user->problems->first;
     is $report->state, 'confirmed',          'is confirmed';
     is $report->title, 'New Test report ll', 'title is correct';
+
+    $mech->delete_user($user);
+};
+
+subtest "Submit a correct entry (with location) to cobrand" => sub {
+
+    skip( "Need 'fiksgatami' in ALLOWED_COBRANDS config", 8 )
+      unless FixMyStreet::App->config->{ALLOWED_COBRANDS} =~ m{fiksgatami};
+    mySociety::MaPit::configure('http://mapit.nuug.no/');
+    ok $mech->host("fiksgatami.no"), 'change host to fiksgatami';
+
+    $mech->get_ok('/import');
+
+    $mech->submit_form_ok(    #
+        {
+            with_fields => {
+                service => 'test-script',
+                lat     => '59',
+                lon     => '10',
+                name    => 'Test User ll',
+                email   => 'test-ll@example.com',
+                subject => 'Test report ll',
+                detail  => 'This is a test report ll',
+                photo   => $sample_file,
+            }
+        },
+        "fill in form"
+    );
+
+    is_deeply( $mech->import_errors, [], "got no errors" );
+    is $mech->content, 'SUCCESS', "Got success response";
+
+    # check that we have received the email
+    $mech->email_count_is(1);
+    my $email = $mech->get_email;
+    $mech->clear_emails_ok;
+
+    my ($token_url) = $email->body =~ m{(http://\S+)};
+    ok $token_url, "Found a token url $token_url";
+
+    # go to the token url
+    $mech->get_ok($token_url);
+
+    # check that we are on '/report/new'
+    is $mech->uri->path, '/report/new', "sent to /report/new";
+
+    # check that fields are prefilled for us
+    is_deeply $mech->visible_form_values,
+      {
+        name          => 'Test User ll',
+        title         => 'Test report ll',
+        detail        => 'This is a test report ll',
+        photo         => '',
+        phone         => '',
+        may_show_name => '1',
+      },
+      "check imported fields are shown";
+
+    my $user =
+      FixMyStreet::App->model('DB::User')
+      ->find( { email => 'test-ll@example.com' } );
+    ok $user, "Found a user";
+
+    my $report = $user->problems->first;
+    is $report->state, 'partial',        'is still partial';
+    is $report->title, 'Test report ll', 'title is correct';
+    is $report->lang, 'nb',              'language is correct';
 
     $mech->delete_user($user);
 };

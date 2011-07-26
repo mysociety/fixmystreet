@@ -7,8 +7,8 @@
     </tr>
     [% IF questionnaires.total > 0 %]
     <tr>
-        <td>[% questionnaires.1 %] ([% reported_pc %]%)</td>
-        <td>[% questionnaires.0 %] ([% not_reported_pc %]%)</td>
+        <td>[% questionnaires.1 %] ([% 100 * questionnaires.1 / questionnaires.total | format('%.1f') %]%)</td>
+        <td>[% questionnaires.0 %] ([% 100 * questionnaires.0 / questionnaires.total | format('%.1f') %]%)</td>
     </tr>
     [% ELSE %]
     <tr>
@@ -16,6 +16,15 @@
         <td>[% loc('n/a') %]</td>
     </tr>
     [% END %]
+</table>
+
+<h2>[% loc('Problem state change based on survey results') %]</h2>
+
+<table>
+<tr><th>[% loc('Old state') %]</th><th>[% loc('New state') %]</th><th>[% loc('Total') %]</th></tr>
+[% WHILE ( s = state_changes.next ) %]
+<tr><td>[% s.old_state %]</td><td>[% s.new_state %]</td><td>[% s.get_column('c') %] ([% 100 * s.get_column('c') / state_changes_count | format('%.1f') %]%)</td></tr>
+[% END %]
 </table>
 
 [% INCLUDE 'admin/footer.html' %]

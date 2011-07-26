@@ -2,7 +2,7 @@
     [% FOREACH p IN on_map %]
         <li>
             <a href="[% c.uri_for('/report', p.id ) %]">[% p.title | html %]</a>
-            <small>([% prettify_epoch( p.confirmed_local.epoch, 1 ) %])</small>
+            <small>[% prettify_epoch( p.confirmed_local.epoch, 1 ) %]</small>
             [% IF p.state == 'fixed' %]
                 <small>[% loc('(fixed)') %]</small>
             [% END %]

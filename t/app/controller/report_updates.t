@@ -584,7 +584,7 @@ $report->update;
 
 for my $test (
     {
-        desc => 'submit an update for a non registered user, signing in with wrong password',
+        desc => 'submit an update for a registered user, signing in with wrong password',
         form_values => {
             submit_update => 1,
             rznvy         => 'registered@example.com',
@@ -593,12 +593,12 @@ for my $test (
             password_sign_in => 'secret',
         },
         field_errors => [
-            'There was a problem with your email/password combination. Please try again.',
+            "There was a problem with your email/password combination. Passwords and user accounts are a brand new service, so you probably do not have one yet \x{2013} please fill in the right hand side of this form to get one.",
             'Please enter your name', # FIXME Not really necessary error
         ],
     },
     {
-        desc => 'submit an update for a non registered user and sign in',
+        desc => 'submit an update for a registered user and sign in',
         form_values => {
             submit_update => 1,
             rznvy         => 'registered@example.com',
@@ -656,6 +656,66 @@ for my $test (
         }
     };
 }
+
+subtest 'submit an update for a registered user, creating update by email' => sub {
+    my $user = $mech->create_user_ok( 'registered@example.com' );
+    $user->update( { name => 'Mr Reg', password => 'secret2' } );
+    $report->comments->delete;
+    $mech->log_out_ok();
+    $mech->clear_emails_ok();
+    $mech->get_ok("/report/$report_id");
+    $mech->submit_form_ok( {
+        with_fields => {
+            submit_update => 1,
+            rznvy         => 'registered@example.com',
+            update        => 'Update from a user',
+            add_alert     => undef,
+            name          => 'New Name',
+            password_register => 'new_secret',
+        },
+    }, 'submit update' );
+
+    $mech->content_contains('Nearly Done! Now check your email');
+
+    # No change to user yet.
+    $user->discard_changes;
+    ok $user->check_password( 'secret2' ), 'password unchanged';
+    is $user->name, 'Mr Reg', 'name unchanged';
+
+    my $email = $mech->get_email;
+    ok $email, "got an email";
+    like $email->body, qr/confirm the update you/i, "Correct email text";
+
+    my ( $url, $url_token ) = $email->body =~ m{(http://\S+/C/)(\S+)};
+    ok $url, "extracted confirm url '$url'";
+
+    my $token = FixMyStreet::App->model('DB::Token')->find( {
+        token => $url_token,
+        scope => 'comment'
+    } );
+    ok $token, 'Token found in database';
+
+    my $update_id  = $token->data->{id};
+    my $add_alerts = $token->data->{add_alert};
+    my $update = FixMyStreet::App->model('DB::Comment')->find( { id => $update_id } );
+
+    ok $update, 'found update in database';
+    is $update->state, 'unconfirmed', 'update unconfirmed';
+    is $update->user->email, 'registered@example.com', 'update email';
+    is $update->text, 'Update from a user', 'update text';
+
+    $mech->get_ok( $url . $url_token );
+    $mech->content_contains("/report/$report_id#update_$update_id");
+
+    # User should have new name and password
+    $user->discard_changes;
+    ok $user->check_password( 'new_secret' ), 'password changed';
+    is $user->name, 'New Name', 'name changed';
+
+    $update->discard_changes;
+    is $update->state, 'confirmed', 'update confirmed';
+    $mech->delete_user( $user );
+};
 
 for my $test (
     {

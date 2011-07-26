@@ -120,9 +120,9 @@ sub process_user : Private {
         unless $update->user;
 
     # The user is trying to sign in. We only care about email from the params.
-    if ( $c->req->param('submit_sign_in') ) {
+    if ( $c->req->param('submit_sign_in') || $c->req->param('password_sign_in') ) {
         unless ( $c->forward( '/auth/sign_in', [ $email ] ) ) {
-            $c->stash->{field_errors}->{password} = _('There was a problem with your email/password combination. Please try again.');
+            $c->stash->{field_errors}->{password} = _('There was a problem with your email/password combination. Passwords and user accounts are a brand <strong>new</strong> service, so you probably do not have one yet &ndash; please fill in the right hand side of this form to get one.');
             return 1;
         }
         my $user = $c->user->obj;
@@ -262,6 +262,14 @@ sub save_update : Private {
         # Logged in and same user, so can confirm update straight away
         $update->user->update;
         $update->confirm;
+    } else {
+        # User exists and we are not logged in as them.
+        # Store changes in token for when token is validated.
+        $c->stash->{token_data} = {
+            name => $update->user->name,
+            password => $update->user->password,
+        };
+        $update->user->discard_changes();
     }
 
     # If there was a photo add that too
@@ -303,10 +311,12 @@ sub redirect_or_confirm_creation : Private {
     }
 
     # otherwise create a confirm token and email it to them.
+    my $data = $c->stash->{token_data} || {};
     my $token = $c->model("DB::Token")->create(
         {
             scope => 'comment',
             data  => {
+                %$data,
                 id        => $update->id,
                 add_alert => ( $c->req->param('add_alert') ? 1 : 0 ),
             }

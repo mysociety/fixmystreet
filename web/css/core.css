@@ -34,7 +34,9 @@
 #mysociety #advert_thin {
   width: 50%;
   margin: 1em auto;
-  border-top: dotted 1px #999999; }
+  text-align: center;
+  border-top: dotted 1px #999999;
+}
 #mysociety #advert_hfymp {
   border-top: dotted 1px #999999;
   text-align: center; }
@@ -238,7 +240,11 @@
   margin: 0; }
 #mysociety #nearby_lists h2 {
   margin-top: 0.5em;
-  margin-bottom: 0; }
+  margin-bottom: 0;
+}
+#mysociety #nearby_lists li small {
+  color: #666666;
+}
 #mysociety #alert_links {
   float: right; }
 #mysociety #alert_links_area {

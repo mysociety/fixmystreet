@@ -50,12 +50,9 @@ RewriteRule ^/reports/{/rss/(.*)}$      /rss/$1         [R=permanent,L]
 # In case of misspelling
 RewriteRule ^/alerts/?$                 /alert          [R=permanent,L]
 
-# Proxy tilma so that our js code can make calls on the originating server. Use
+# Proxy mapit so that our js code can make calls on the originating server. Use
 # a RewriteRule rather than ProxyPass so that Apache's processing order is more
 # predictable. ProxyPassReverse is not affected by this.
-RewriteRule /tilma/(.*) http://tilma.mysociety.org/$1 [P,L]
-ProxyPassReverse /tilma/ http://tilma.mysociety.org/
-
 RewriteRule /mapit/(.*) http://mapit.mysociety.org/$1 [P,L]
 ProxyPassReverse /mapit/ http://mapit.mysociety.org/
 

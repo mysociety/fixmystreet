@@ -66,6 +66,7 @@ $map_width: 500px;
     #advert_thin {
         width: 50%;
         margin: 1em auto;
+        text-align: center;
         border-top: dotted 1px #999999;
     }
     #advert_hfymp {
@@ -354,6 +355,11 @@ $map_width: 500px;
         margin-top: 0.5em;
         margin-bottom: 0;
     }
+
+    #nearby_lists li small {
+        color: #666666;
+    }
+
     #alert_links {
         float: right;
     }

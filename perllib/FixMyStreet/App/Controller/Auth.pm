@@ -36,7 +36,8 @@ sub general : Path : Args(0) {
     return unless $req->method eq 'POST';
 
     # decide which action to take
-    $c->detach('email_sign_in') if $req->param('email_sign_in');
+    $c->detach('email_sign_in') if $req->param('email_sign_in')
+        || $c->req->param('name') || $c->req->param('password_register');
 
        $c->forward( 'sign_in' )
     && $c->detach( 'redirect_on_signin', [ $req->param('r') ] );
@@ -107,6 +108,11 @@ sub email_sign_in : Private {
         return;
     }
 
+    my $user_params = {};
+    $user_params->{password} = $c->req->param('password_register')
+        if $c->req->param('password_register');
+    my $user = $c->model('DB::User')->new( $user_params );
+
     my $token_obj = $c->model('DB::Token')    #
       ->create(
         {
@@ -115,7 +121,7 @@ sub email_sign_in : Private {
                 email => $good_email,
                 r => $c->req->param('r'),
                 name => $c->req->param('name'),
-                password => $c->req->param('password_register'),
+                password => $user->password,
             }
         }
       );
@@ -157,9 +163,8 @@ sub token : Path('/M') : Args(1) {
     # find or create the user related to the token.
     my $user = $c->model('DB::User')->find_or_create( { email => $data->{email} } );
     $user->name( $data->{name} ) if $data->{name};
-    $user->password( $data->{password} ) if $data->{password};
+    $user->password( $data->{password}, 1 ) if $data->{password};
     $user->update;
-
     $c->authenticate( { email => $user->email }, 'no_password' );
 
     # send the user to their page

@@ -19,7 +19,7 @@ subtest "redirect x,y requests to lat/lon (301 - permanent)" => sub {
     # did we redirect to lat,lon?
     is $mech->uri->path, '/around', "still on /around";
     is_deeply { $mech->uri->query_form },
-      { lat => 51.499825, lon => -0.140137, },
+      { lat => 51.499825, lon => -0.140137, zoom => 3 },
       "lat,lon correctly set";
 
     # was it a 301?

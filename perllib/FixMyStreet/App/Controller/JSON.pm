@@ -39,6 +39,7 @@ sub problems : Local {
     # gather the parameters
     my $start_date = $c->req->param('start_date') || '';
     my $end_date   = $c->req->param('end_date')   || '';
+    my $category   = $c->req->param('category')   || '';
 
     my $yyyy_mm_dd = qr{^\d{4}-\d\d-\d\d$};
     if (   $start_date !~ $yyyy_mm_dd
@@ -73,25 +74,29 @@ sub problems : Local {
     my ( @state, $date_col );
     if ( $type eq 'new_problems' ) {
         @state = FixMyStreet::DB::Result::Problem->open_states();
-        $date_col = 'created';
+        $date_col = 'confirmed';
     } elsif ( $type eq 'fixed_problems' ) {
         @state = FixMyStreet::DB::Result::Problem->fixed_states();
         $date_col = 'lastupdate';
     }
 
     my $one_day = DateTime::Duration->new( days => 1 );
-    my @problems = $c->cobrand->problems->search( {
+    my $query = {
         $date_col => {
             '>=' => $start_dt,
             '<=' => $end_dt + $one_day,
         },
         state => [ @state ],
-    }, {
+    };
+    $query->{category} = $category if $category;
+    my @problems = $c->cobrand->problems->search( $query, {
         order_by => { -asc => 'confirmed' },
         columns => [
             'id',       'title', 'council',   'category',
             'detail',   'name',  'anonymous', 'confirmed',
             'whensent', 'service',
+            'latitude', 'longitude', 'used_map',
+            'state', 'lastupdate',
         ]
     } );
 

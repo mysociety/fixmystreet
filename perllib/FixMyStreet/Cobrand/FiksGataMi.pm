@@ -6,6 +6,7 @@ use warnings;
 
 use Carp;
 use mySociety::MaPit;
+use FixMyStreet::Geocode::OSM;
 
 sub country {
     return 'NO';
@@ -35,7 +36,7 @@ sub disambiguate_location {
 }
 
 sub area_types {
-    return ( 'NKO', 'NFY' );
+    return ( 'NKO', 'NFY', 'NRA' );
 }
 
 sub area_min_generation {
@@ -55,17 +56,58 @@ sub writetothem_url {
 sub uri {
     my ( $self, $uri ) = @_;
 
-    $uri = URI->new( $uri );
     $uri->query_param( zoom => 3 )
       if $uri->query_param('lat') && !$uri->query_param('zoom');
 
     return $uri;
 }
 
+sub geocode_postcode {
+    my ( $self, $s ) = @_;
+
+    if ($s =~ /^\d{4}$/) {
+        my $location = mySociety::MaPit::call('postcode', $s);
+        if ($location->{error}) {
+            return {
+                error => $location->{code} =~ /^4/
+                    ? _('That postcode was not recognised, sorry.')
+                    : $location->{error}
+            };
+        }
+        return {
+            latitude  => $location->{wgs84_lat},
+            longitude => $location->{wgs84_lon},
+        };
+    }
+    return {};
+}
+
 sub geocoded_string_check {
     my ( $self, $s ) = @_;
     return 1 if $s =~ /, Norge/;
     return 0;
+}
+
+sub find_closest {
+    my ( $self, $latitude, $longitude ) = @_;
+    return FixMyStreet::Geocode::OSM::closest_road_text( $self, $latitude, $longitude );
+}
+
+# Used by send-reports, calling find_closest, calling OSM geocoding
+sub guess_road_operator {
+    my ( $self, $inforef ) = @_;
+
+    my $highway = $inforef->{highway} || "unknown";
+    my $refs    = $inforef->{ref}     || "unknown";
+
+    return "Statens vegvesen"
+        if $highway eq "trunk" || $highway eq "primary";
+
+    for my $ref (split(/;/, $refs)) {
+        return "Statens vegvesen"
+            if $ref =~ m/E ?\d+/ || $ref =~ m/Fv\d+/i;
+    }
+    return '';
 }
 
 sub remove_redundant_councils {

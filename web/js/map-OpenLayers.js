@@ -1,4 +1,4 @@
-YAHOO.util.Event.onContentReady('map', function() {
+$(function(){
 
     var perm = new OpenLayers.Control.Permalink();
     set_map_config(perm);
@@ -41,11 +41,20 @@ YAHOO.util.Event.onContentReady('map', function() {
         return false;
     });
 
+    // Vector layers must be added onload as IE sucks
+    if ($.browser.msie) {
+        $(window).load(fixmystreet_onload);
+    } else {
+        fixmystreet_onload();
+    }
+});
+
+function fixmystreet_onload() {
     if ( fixmystreet.area ) {
         var area = new OpenLayers.Layer.Vector("KML", {
             strategies: [ new OpenLayers.Strategy.Fixed() ],
             protocol: new OpenLayers.Protocol.HTTP({
-                url: "/mapit/area/" + fixmystreet.area + ".kml",
+                url: "/mapit/area/" + fixmystreet.area + ".kml?simplify_tolerance=0.0001",
                 format: new OpenLayers.Format.KML()
             })
         });
@@ -64,7 +73,7 @@ YAHOO.util.Event.onContentReady('map', function() {
                 graphicWidth: 32,
                 graphicHeight: 59,
                 graphicOpacity: 1,
-                graphicXOffset: -1,
+                graphicXOffset: -2,
                 graphicYOffset: -59
             })
         })
@@ -73,7 +82,7 @@ YAHOO.util.Event.onContentReady('map', function() {
         pin_layer_options.strategies = [ new OpenLayers.Strategy.BBOX() ];
         pin_layer_options.protocol = new OpenLayers.Protocol.HTTP({
             url: '/ajax',
-            params: fixmystreet.all_pins ? { all_pins: 1, map: 'FMS' } : { map: 'FMS' },
+            params: fixmystreet.all_pins ? { all_pins: 1 } : { },
             format: new OpenLayers.Format.FixMyStreet()
         });
     }
@@ -81,7 +90,7 @@ YAHOO.util.Event.onContentReady('map', function() {
 
     var markers = fms_markers_list( fixmystreet.pins, true );
     fixmystreet.markers.addFeatures( markers );
-    if (fixmystreet.page == 'around') {
+    if (fixmystreet.page == 'around' || fixmystreet.page == 'reports' || fixmystreet.page == 'my') {
         fixmystreet.markers.events.register( 'featureselected', fixmystreet.markers, function(evt) {
             window.location = '/report/' + evt.feature.attributes.id;
             OpenLayers.Event.stop(evt);
@@ -96,8 +105,7 @@ YAHOO.util.Event.onContentReady('map', function() {
         var bounds = fixmystreet.markers.getDataExtent();
         if (bounds) { fixmystreet.map.zoomToExtent( bounds ); }
     }
-
-});
+}
 
 function fms_markers_list(pins, transform) {
     var cols = { 'red':'R', 'green':'G', 'blue':'B', 'purple':'P' };
@@ -122,8 +130,8 @@ function fms_markers_list(pins, transform) {
     return markers;
 }
 
-YAHOO.util.Event.addListener('hide_pins_link', 'click', function(e) {
-    YAHOO.util.Event.preventDefault(e);
+$('#hide_pins_link').click(function(e) {
+    e.preventDefault();
     var showhide = [
         'Show pins', 'Hide pins',
         'Dangos pinnau', 'Cuddio pinnau',
@@ -140,8 +148,8 @@ YAHOO.util.Event.addListener('hide_pins_link', 'click', function(e) {
     }
 });
 
-YAHOO.util.Event.addListener('all_pins_link', 'click', function(e) {
-    YAHOO.util.Event.preventDefault(e);
+$('#all_pins_link').click(function(e) {
+    e.preventDefault();
     fixmystreet.markers.setVisibility(true);
     var welsh = 0;
     var texts = [
@@ -151,12 +159,12 @@ YAHOO.util.Event.addListener('all_pins_link', 'click', function(e) {
     for (var i=0; i<texts.length; i+=3) {
         if (this.innerHTML == texts[i+1]) {
             this.innerHTML = texts[i+2];
-            fixmystreet.markers.protocol.options.params = { all_pins: 1, map: 'FMS' };
+            fixmystreet.markers.protocol.options.params = { all_pins: 1 };
             fixmystreet.markers.refresh( { force: true } );
             lang = texts[i];
         } else if (this.innerHTML == texts[i+2]) {
             this.innerHTML = texts[i+1];
-            fixmystreet.markers.protocol.options.params = { map: 'FMS' };
+            fixmystreet.markers.protocol.options.params = { };
             fixmystreet.markers.refresh( { force: true } );
             lang = texts[i];
         }
@@ -215,7 +223,8 @@ OpenLayers.Control.PermalinkFMS = OpenLayers.Class(OpenLayers.Control.Permalink,
             href = href.substring( 0, href.indexOf(separator) );
         }
 
-        href += separator + OpenLayers.Util.getParameterString(this.createParams(null, this.map.getZoom()+fixmystreet.ZOOM_OFFSET));
+        href += separator + OpenLayers.Util.getParameterString(this.createParams(null, this.map.getZoom()+fixmystreet.zoomOffset));
+        // Could use mlat/mlon here as well if we are on a page with a marker
         if (this.anchor && !this.element) {
             window.location.href = href;
         }
@@ -269,12 +278,18 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 
     trigger: function(e) {
         var lonlat = fixmystreet.map.getLonLatFromViewPortPx(e.xy);
+        if (fixmystreet.page == 'new') {
+            fixmystreet.markers.features[0].move(lonlat);
+        }
         lonlat.transform(
             fixmystreet.map.getProjectionObject(),
             new OpenLayers.Projection("EPSG:4326")
         );
         document.getElementById('fixmystreet.latitude').value = lonlat.lat;
         document.getElementById('fixmystreet.longitude').value = lonlat.lon;
+        if (fixmystreet.page == 'new') {
+            return;
+        }
         document.getElementById('mapForm').submit();
     }
 });

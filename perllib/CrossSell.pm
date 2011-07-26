@@ -62,7 +62,7 @@ sub display_random_twfy_alerts_advert {
 <input type="hidden" name="site" value="fms">
 <input style="font-size:150%" type="submit" value="#;
     $text =~ s#\[/button\]#"></p>#;
-    return '<div id="advert_thin" style="text-align:center">' . $text . '</div>';
+    return '<div id="advert_thin">' . $text . '</div>';
 }
 
 sub display_hfyc_cheltenham_advert {
@@ -113,7 +113,7 @@ EOF
 sub display_democracyclub {
     my (%input) = @_;
     return <<EOF;
-<div id="advert_thin" style="text-align:center">
+<div id="advert_thin">
 <h2 style="margin-bottom:0">Help make the next election the most accountable ever</h2> <p style="font-size:120%;margin-top:0.5em;"><a href="http://www.democracyclub.org.uk/">Join Democracy Club</a> and have fun keeping an eye on your election candidates. <a href="http://www.democracyclub.org.uk/">Sign me up</a>!
 </div>
 EOF
@@ -169,13 +169,13 @@ sub display_advert ($$;$%) {
 
     return '' unless $c->cobrand->is_default;
 
-    if (defined $data{council} && $data{council} eq '2326') {
-        my ($out, $ad) = display_hfyc_cheltenham_advert($email, $name);
-        if ($out) {
-            $c->stash->{scratch} = "advert=$ad";
-            return $out;
-        }
-    }
+    #if (defined $data{council} && $data{council} eq '2326') {
+    #    my ($out, $ad) = display_hfyc_cheltenham_advert($email, $name);
+    #    if ($out) {
+    #        $c->stash->{scratch} = "advert=$ad";
+    #        return $out;
+    #    }
+    #}
 
     #if ($data{lat}) {
     #    my $out = display_gny_groups($data{lon}, $data{lat});
@@ -189,15 +189,25 @@ sub display_advert ($$;$%) {
     #$c->stash->{scratch} = 'advert=demclub0';
     #return display_democracyclub();
 
+    return <<EOF;
+<div id="advert_thin">
+<p>Do you have an issue that&rsquo;s too big for FixMyStreet?
+It could be time to petition your council. Try our new site:
+<h2 style="margin-top:0; font-size: 150%">
+<a href="http://www.petitionyourcouncil.com/">PetitionYourCouncil</a></p>
+</h2>
+</div>
+EOF
+
     #unless (defined $data{done_tms} && $data{done_tms}==1) {
-        $c->stash->{scratch} = 'advert=news';
-        my $auth_signature = '';
-        unless (defined $data{emailunvalidated} && $data{emailunvalidated}==1) {
-            $auth_signature = mySociety::AuthToken::sign_with_shared_secret($email, mySociety::Config::get('AUTH_SHARED_SECRET'));
-        }
-        return '<div style="margin: 0 5em; border-top: dotted 1px #666666;">'
-            . display_news_form(email => $email, name => $name, signed_email => $auth_signature)
-            . '</div>';
+    #$c->stash->{scratch} = 'advert=news';
+    #my $auth_signature = '';
+    #unless (defined $data{emailunvalidated} && $data{emailunvalidated}==1) {
+    #    $auth_signature = mySociety::AuthToken::sign_with_shared_secret($email, mySociety::Config::get('AUTH_SHARED_SECRET'));
+    #}
+    #return '<div style="margin: 0 5em; border-top: dotted 1px #666666;">'
+    #    . display_news_form(email => $email, name => $name, signed_email => $auth_signature)
+    #    . '</div>';
     #}
 
     my @adverts = (
@@ -230,7 +240,7 @@ sub display_advert ($$;$%) {
 
     $c->stash->{scratch} = 'advert=pb';
     return <<EOF;
-<div id="advert_thin" style="text-align:center">
+<div id="advert_thin">
 <h2 style="font-size: 150%">
 If you're interested in improving your local area,
 <a href="http://www.pledgebank.com/">use PledgeBank</a> to

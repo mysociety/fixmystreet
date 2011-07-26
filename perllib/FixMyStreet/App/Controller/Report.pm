@@ -108,8 +108,6 @@ sub format_problem_for_display : Private {
       map { Utils::truncate_coordinate($_) }
       ( $problem->latitude, $problem->longitude );
 
-    $c->stash->{report_name} = $c->req->param('name');
-
     unless ( $c->req->param('submit_update') ) {
         $c->stash->{add_alert} = 1;
     }
@@ -124,6 +122,7 @@ sub generate_map_tags : Private {
 
     my $problem = $c->stash->{problem};
 
+    $c->stash->{page} = 'report';
     FixMyStreet::Map::display_map(
         $c,
         latitude  => $problem->latitude,

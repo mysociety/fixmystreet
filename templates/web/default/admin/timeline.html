@@ -32,7 +32,7 @@
                 [% tprintf(loc("Questionnaire %d answered for problem %d, %s to %s"), item.obj.id, item.obj.problem_id, item.obj.old_state, item.obj.new_state ) %]
             [% CASE 'update' %]
                 [% name = ( item.obj.name || 'anonymous' ) | html %]
-                [% tprintf(loc("Update %s created for problem %d; by %s"), "<a href='" _ c.uri_for_email( '/report', item.obj.problem_id, c.cobrand_data ) _ "#update_" _ item.obj.id _ "'>" _ item.obj.id _ "</a>", item.obj.problem_id, name) %]&lt;[% item.obj.user.email | html %]&gt;
+                [% tprintf(loc("Update %s created for problem %d; by %s"), "<a href='" _ c.uri_for_email( '/report', item.obj.problem_id, c.cobrand_data ) _ "#update_" _ item.obj.id _ "'>" _ item.obj.id _ "</a>", item.obj.problem_id, name) %] &lt;[% item.obj.user.email | html %]&gt;
             [% CASE 'alertSub' %]
                  [% tprintf(loc("Alert %d created for %s, type %s, parameters %s / %s"), item.obj.id, item.obj.user.email, item.obj.alert_type.ref, item.obj.parameter, item.obj.parameter2) | html %]
             [% CASE 'alertDel' %]

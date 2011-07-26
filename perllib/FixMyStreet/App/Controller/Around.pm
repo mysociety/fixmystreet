@@ -239,6 +239,11 @@ sub ajax : Path('/ajax') {
     my $all_pins = $c->req->param('all_pins') ? 1 : undef;
     my $interval = $all_pins ? undef : $c->cobrand->on_map_default_max_pin_age;
 
+    # Need to be the class that can handle it
+    if ($c->req->param('bbox')) {
+        FixMyStreet::Map::set_map_class( 'OSM' );
+    }
+
     # extract the data from the map
     my ( $pins, $on_map, $around_map, $dist ) =
       FixMyStreet::Map::map_pins( $c, $interval );

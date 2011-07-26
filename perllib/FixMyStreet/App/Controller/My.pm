@@ -25,9 +25,6 @@ sub my : Path : Args(0) {
 
     $c->detach( '/auth/redirect' ) unless $c->user;
 
-    # Even though front end doesn't yet have it, have it on this page, it's better!
-    FixMyStreet::Map::set_map_class( 'FMS' );
-
     my $p_page = $c->req->params->{p} || 1;
     my $u_page = $c->req->params->{u} || 1;
 
@@ -56,6 +53,7 @@ sub my : Path : Args(0) {
     $c->stash->{updates} = \@updates;
     $c->stash->{updates_pager} = $rs->pager;
 
+    $c->stash->{page} = 'my';
     FixMyStreet::Map::display_map(
         $c,
         latitude  => $pins->[0]{latitude},

@@ -13,7 +13,10 @@
 
 <h1>[% loc('Your Reports') %]</h1>
 
-[% INCLUDE pagination, pager = problems_pager %]
+[% INCLUDE 'pagination.html',
+    pager = problems_pager,
+    param = 'p'
+%]
 
 [% FOREACH p = problems.confirmed %]
     [% IF loop.first %]<h2>[% loc('Open reports') %]</h2>[% END %]
@@ -35,7 +38,10 @@ END %]
 [% FOREACH u IN updates %]
     [% IF loop.first %]
         <h2>[% loc('Your updates') %]</h2>
-        [% INCLUDE pagination, pager = updates_pager %]
+        [% INCLUDE 'pagination.html',
+            pager = updates_pager,
+            param = 'u'
+        %]
         <ul>
     [% END %]
 
@@ -68,22 +74,3 @@ END %]
     [% "</ul>" IF loop.last %]
 [% END %]
 
-[% BLOCK pagination %]
-  [% IF pager.last_page > 1 %]
-    <p>
-        [% IF pager.previous_page %]
-            <a href="[% c.req.uri_with({'p_page' => pager.previous_page}) %]">&larr; Previous</a>
-        [% ELSE %]
-            &larr; Previous
-        [% END %]
-        |
-        [% pager.first %] to [% pager.last %] of [% pager.total_entries %]
-        |
-        [% IF pager.next_page %]
-            <a href="[% c.req.uri_with({'p_page' => pager.next_page}) %]">Next &rarr;</a>
-        [% ELSE %]
-            Next &rarr;
-        [% END %]
-    </p>
-  [% END %]
-[% END %]

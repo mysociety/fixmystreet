@@ -34,10 +34,18 @@ sub index : Path : Args(0) {
     $c->response->header('Cache-Control' => 'max-age=3600');
 
     # Fetch all areas of the types we're interested in
-    my @area_types = $c->cobrand->area_types;
-    my $areas_info = mySociety::MaPit::call('areas', \@area_types,
-        min_generation => $c->cobrand->area_min_generation
-    );
+    my $areas_info;
+    eval {
+        my @area_types = $c->cobrand->area_types;
+        $areas_info = mySociety::MaPit::call('areas', \@area_types,
+            min_generation => $c->cobrand->area_min_generation
+        );
+    };
+    if ($@) {
+        $c->stash->{message} = _("Unable to look up areas in MaPit. Please try again later.") . ' ' .
+            sprintf(_('The error was: %s'), $@);
+        $c->stash->{template} = 'errors/generic.html';
+    }
 
     # For each area, add its link and perhaps alter its name if we need to for
     # places with the same name.
@@ -61,7 +69,8 @@ sub index : Path : Args(0) {
         $c->stash->{open} = $j->{open};
     };
     if ($@) {
-        $c->stash->{message} = _("There was a problem showing the All Reports page. Please try again later.");
+        $c->stash->{message} = _("There was a problem showing the All Reports page. Please try again later.") . ' ' .
+            sprintf(_('The error was: %s'), $@);
         $c->stash->{template} = 'errors/generic.html';
     }
 }
@@ -90,6 +99,7 @@ sub ward : Path : Args(2) {
     $c->forward( 'ward_check', [ $ward ] )
         if $ward;
     $c->forward( 'load_parent' );
+    $c->forward( 'check_canonical_url', [ $council ] );
     $c->forward( 'load_and_group_problems' );
     $c->forward( 'sort_problems' );
 
@@ -102,8 +112,7 @@ sub ward : Path : Args(2) {
 
     my $pins = $c->stash->{pins};
 
-    # Even though front end doesn't yet have it, have it on this page, it's better!
-    FixMyStreet::Map::set_map_class( 'FMS' );
+    $c->stash->{page} = 'reports'; # So the map knows to make clickable pins
     FixMyStreet::Map::display_map(
         $c,
         latitude  => @$pins ? $pins->[0]{latitude} : 0,
@@ -227,7 +236,7 @@ sub council_check : Private {
         return;
     } else {
         foreach (keys %$areas) {
-            if ($areas->{$_}->{name} eq $q_council || $areas->{$_}->{name} =~ /^\Q$q_council\E (Borough|City|District|County) Council$/) {
+            if (lc($areas->{$_}->{name}) eq lc($q_council) || $areas->{$_}->{name} =~ /^\Q$q_council\E (Borough|City|District|County) Council$/i) {
                 $c->stash->{council} = $areas->{$_};
                 return;
             }
@@ -252,6 +261,7 @@ sub ward_check : Private {
 
     $ward =~ s/\+/ /g;
     $ward =~ s/\.html//;
+    $ward =~ s{_}{/}g;
 
     my $council = $c->stash->{council};
 
@@ -281,6 +291,22 @@ sub load_parent : Private {
     }
 }
 
+=head2 check_canonical_url
+
+Given an already found (case-insensitively) council, check what URL
+we are at and redirect accordingly if different.
+
+=cut
+
+sub check_canonical_url : Private {
+    my ( $self, $c, $q_council ) = @_;
+
+    my $council_short = $c->cobrand->short_name( $c->stash->{council}, $c->stash->{areas_info} );
+    my $url_short = URI::Escape::uri_escape_utf8($q_council);
+    $url_short =~ s/%2B/+/g;
+    $c->detach( 'redirect_area' ) unless $council_short eq $url_short;
+}
+
 sub load_and_group_problems : Private {
     my ( $self, $c ) = @_;
 
@@ -290,9 +316,9 @@ sub load_and_group_problems : Private {
         state => [ FixMyStreet::DB::Result::Problem->visible_states() ]
     };
     if ($c->stash->{ward}) {
-        $where->{areas} = { 'like', '%' . $c->stash->{ward}->{id} . '%' }; # FIXME Check this is secure
+        $where->{areas} = { 'like', '%,' . $c->stash->{ward}->{id} . ',%' };
     } elsif ($c->stash->{council}) {
-        $where->{areas} = { 'like', '%' . $c->stash->{council}->{id} . '%' };
+        $where->{areas} = { 'like', '%,' . $c->stash->{council}->{id} . ',%' };
     }
     my $problems = $c->cobrand->problems->search(
         $where,
@@ -369,7 +395,7 @@ sub redirect_area : Private {
     my $url = '';
     $url   .= "/rss" if $c->stash->{rss};
     $url   .= '/reports';
-    $url   .= '/' . $c->cobrand->short_name( $c->stash->{council} );
+    $url   .= '/' . $c->cobrand->short_name( $c->stash->{council}, $c->stash->{areas_info} );
     $url   .= '/' . $c->cobrand->short_name( $c->stash->{ward} )
         if $c->stash->{ward};
     $c->res->redirect( $c->uri_for($url) );

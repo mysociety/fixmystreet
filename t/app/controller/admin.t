@@ -108,9 +108,9 @@ subtest 'check summary counts' => sub {
     $mech->get_ok('/admin');
     $mech->title_like(qr/Summary/);
 
-    $mech->content_contains( "0</strong> live problems" );
-    $mech->content_contains( "0 confirmed alerts" );
-    $mech->content_contains( "0 questionnaires sent" );
+    my ($num_live) = $mech->content =~ /(\d+)<\/strong> live problems/;
+    my ($num_alerts) = $mech->content =~ /(\d+) confirmed alerts/;
+    my ($num_qs) = $mech->content =~ /(\d+) questionnaires sent/;
 
     $report->council(2489);
     $report->cobrand('barnet');
@@ -121,9 +121,9 @@ subtest 'check summary counts' => sub {
 
     $mech->get_ok('/admin');
 
-    $mech->content_contains( "1</strong> live problems" );
-    $mech->content_contains( "1 confirmed alerts" );
-    $mech->content_contains( "1 questionnaires sent" );
+    $mech->content_contains( ($num_live+1) . "</strong> live problems" );
+    $mech->content_contains( ($num_alerts+1) . " confirmed alerts" );
+    $mech->content_contains( ($num_qs+1) . " questionnaires sent" );
 
     $report->council(2504);
     $report->cobrand('');

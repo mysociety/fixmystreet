@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2011-06-14 17:28+0100\n"
+"POT-Creation-Date: 2011-07-14 12:35+0100\n"
 "PO-Revision-Date: 2009-07-10 14:20-0000\n"
 "Last-Translator: Mark Smith <Mark.Smith@trosol.co.uk>\n"
 "Language-Team: mySociety\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
-#: bin/send-reports:176 perllib/FixMyStreet/DB/Result/Problem.pm:377
+#: bin/send-reports:179 perllib/FixMyStreet/DB/Result/Problem.pm:376
 msgid " and "
 msgstr ""
 
@@ -45,20 +45,20 @@ msgstr "neu"
 msgid "%d addresses"
 msgstr "wythnos"
 
-#: templates/web/default/admin/index.html:16
+#: templates/web/default/admin/index.html:17
 msgid "%d confirmed alerts, %d unconfirmed"
 msgstr ""
 
-#: templates/web/default/admin/index.html:18
+#: templates/web/default/admin/index.html:19
 msgid "%d council contacts &ndash; %d confirmed, %d unconfirmed"
 msgstr ""
 
-#: perllib/Utils.pm:245
+#: perllib/Utils.pm:251
 #, fuzzy
 msgid "%d day"
 msgstr "diwrnod"
 
-#: perllib/Utils.pm:245
+#: perllib/Utils.pm:251
 #, fuzzy
 msgid "%d days"
 msgstr "diwrnod"
@@ -67,52 +67,52 @@ msgstr "diwrnod"
 msgid "%d edits by %s"
 msgstr ""
 
-#: perllib/Utils.pm:246
+#: perllib/Utils.pm:252
 #, fuzzy
 msgid "%d hour"
 msgstr "awr"
 
-#: perllib/Utils.pm:246
+#: perllib/Utils.pm:252
 #, fuzzy
 msgid "%d hours"
 msgstr "awr"
 
-#: templates/web/default/admin/index.html:15
+#: templates/web/default/admin/index.html:16
 #, fuzzy
 msgid "%d live updates"
 msgstr "Anfonwch ddiweddariadau ataf i drwy'r e-bost"
 
-#: perllib/Utils.pm:247
+#: perllib/Utils.pm:253
 #, fuzzy
 msgid "%d minute"
 msgstr "munud"
 
-#: perllib/Utils.pm:247
+#: perllib/Utils.pm:253
 #, fuzzy
 msgid "%d minutes"
 msgstr "munud"
 
-#: templates/web/default/admin/index.html:17
+#: templates/web/default/admin/index.html:18
 msgid "%d questionnaires sent &ndash; %d answered (%s%%)"
 msgstr ""
 
-#: perllib/Utils.pm:244
+#: perllib/Utils.pm:250
 #, fuzzy
 msgid "%d week"
 msgstr "wythnos"
 
-#: perllib/Utils.pm:244
+#: perllib/Utils.pm:250
 #, fuzzy
 msgid "%d weeks"
 msgstr "wythnos"
 
-#: templates/web/default/reports/council.html:11
-#: templates/web/default/reports/council.html:12
+#: templates/web/default/reports/council.html:0
+#: templates/web/default/reports/council.html:14
 msgid "%s - Summary reports"
 msgstr "%s - Adroddiadau cryno"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:763
-#: perllib/FixMyStreet/Cobrand/Default.pm:777
+#: perllib/FixMyStreet/Cobrand/Default.pm:836
+#: perllib/FixMyStreet/Cobrand/Default.pm:850
 msgid "%s ward, %s"
 msgstr ""
 
@@ -124,21 +124,20 @@ msgstr "Rhoddodd %s wybod yn ddi-enw am %s"
 msgid "%s, reported by %s at %s"
 msgstr "Adroddwyd am %s gan %s am %s"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:794
-#: perllib/FixMyStreet/Cobrand/Default.pm:808
+#: perllib/FixMyStreet/Cobrand/Default.pm:867
+#: perllib/FixMyStreet/Cobrand/Default.pm:881
 #, fuzzy
 msgid "%s, within %s ward"
 msgstr "Eiddo gwag yn ward %s"
 
-#: perllib/FixMyStreet/Map/Tilma/OL/1_10k.pm:21
-#: perllib/FixMyStreet/Map/Tilma/Original/1_10k.pm:21
+#: perllib/FixMyStreet/Map/Tilma/Original.pm:82
 #, fuzzy
 msgid ""
 "&copy; Crown copyright. All rights reserved. Ministry of Justice "
 "100037819&nbsp;2008."
 msgstr "Hawlfraint y Goron. Cedwir pob hawl. Y Weinyddiaeth Amddiffyn"
 
-#: templates/web/default/email_sent.html:32
+#: templates/web/default/email_sent.html:28
 msgid "(Don't worry &mdash; %s)"
 msgstr ""
 
@@ -159,38 +158,41 @@ msgstr "(wedi'i adfer i'w ddefnyddio)"
 msgid " "
 msgstr " "
 
-#: templates/web/default/reports/council.html:90
+#: templates/web/default/reports/council.html:133
 #, fuzzy
 msgid "(not sent to council)"
 msgstr "Ni roddwyd gwybod i'r cyngor am hyn"
 
-#: templates/web/default/report/display.html:82
-#: templates/web/default/report/new/fill_in_details.html:160
+#: templates/web/default/report/new/fill_in_details.html:233
 msgid "(optional)"
 msgstr "(dewisol)"
 
-#: templates/web/default/reports/council.html:88
+#: templates/web/default/reports/council.html:131
 #, fuzzy
 msgid "(sent to both)"
 msgstr "Ni roddwyd gwybod i'r cyngor am hyn"
 
-#: templates/web/default/report/display.html:88
-#: templates/web/default/report/new/fill_in_details.html:145
+#: templates/web/default/report/new/fill_in_details.html:227
 msgid "(we never show your email address or phone number)"
 msgstr "(nid ydym byth yn dangos eich cyfeiriad e-bost na'ch rhif ffôn)"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:259
+#: templates/web/default/report/display.html:206
+#, fuzzy
+msgid "(we never show your email)"
+msgstr "(nid ydym byth yn dangos eich cyfeiriad e-bost na'ch rhif ffôn)"
+
+#: perllib/FixMyStreet/App/Controller/Admin.pm:269
 msgid "*unknown*"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:476
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:504
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:477
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:505
 #: perllib/FixMyStreet/DB/Result/Problem.pm:204
 #, fuzzy
 msgid "-- Pick a category --"
 msgstr "-- Dewiswch fath o eiddo --"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:462
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:463
 #: perllib/FixMyStreet/DB/Result/Problem.pm:210
 msgid "-- Pick a property type --"
 msgstr "-- Dewiswch fath o eiddo --"
@@ -210,7 +212,7 @@ msgstr ""
 "\"26\" src=\"/i/mysociety-dark.png\" alt=\"View mySociety.org\"><span id="
 "\"logoie\"></span></a>"
 
-#: templates/web/default/questionnaire/completed.html:21
+#: templates/web/default/questionnaire/completed.html:25
 #, fuzzy
 msgid ""
 "<p style=\"font-size:150%\">Thank you very much for filling in our "
@@ -219,7 +221,7 @@ msgstr ""
 "<p style=\"font-size:150%\">Diolch yn fawr am lenwi'n holiadur; rydym yn "
 "falch o glywed ei fod wedi'i adfer i'w ddefnyddio.</p>\n"
 
-#: templates/web/default/questionnaire/completed.html:11
+#: templates/web/default/questionnaire/completed.html:15
 #, fuzzy
 msgid ""
 "<p style=\"font-size:150%%\">We&rsquo;re sorry to hear that. We have two "
@@ -307,7 +309,7 @@ msgstr ""
 "<a href=\"http://www.emptyhomes.com/getinvolved/campaign.html\">http://www."
 "emptyhomes.com/getinvolved/campaign.html</a>.</p>\n"
 
-#: templates/web/default/questionnaire/completed.html:5
+#: templates/web/default/questionnaire/completed.html:9
 #, fuzzy
 msgid ""
 "<p>Thank you very much for filling in our questionnaire; if you\n"
@@ -319,8 +321,8 @@ msgstr ""
 "mwy o wybodaeth am statws eich eiddo gwag, dewch yn ôl i'r safle\n"
 "a rhowch ddiweddariad yno.</p>\n"
 
-#: templates/web/default/around/display_location.html:93
-#: templates/web/default/around/display_location.html:95
+#: templates/web/default/around/display_location.html:87
+#: templates/web/default/around/display_location.html:89
 #, fuzzy
 msgid ""
 "<small>If you cannot see the map, <a href='%s' rel='nofollow'>skip this "
@@ -332,6 +334,27 @@ msgstr ""
 #: templates/web/default/admin/index.html:14
 #, fuzzy
 msgid "<strong>%d</strong> live empty properties"
+msgstr "Adrodd am eiddo gwag a gweld y rhain"
+
+#: templates/web/default/auth/general.html:55
+msgid "<strong>No</strong>, I do not, let me sign in by email:"
+msgstr ""
+
+#: templates/web/default/report/new/fill_in_details.html:175
+#, fuzzy
+msgid "<strong>No</strong>, let me confirm my report by email:"
+msgstr "Adrodd am eiddo gwag a gweld y rhain"
+
+#: templates/web/default/report/display.html:160
+#, fuzzy
+msgid "<strong>No</strong>, let me confirm my update by email:"
+msgstr "Adrodd am eiddo gwag a gweld y rhain"
+
+#: templates/web/default/auth/general.html:37
+#: templates/web/default/report/display.html:142
+#: templates/web/default/report/new/fill_in_details.html:157
+#, fuzzy
+msgid "<strong>Yes</strong>, I have a password:"
 msgstr "Adrodd am eiddo gwag a gweld y rhain"
 
 #: templates/web/default/static/about.html:1
@@ -346,7 +369,11 @@ msgstr "Amdanom ni"
 msgid "Add new category"
 msgstr ""
 
-#: templates/web/default/auth/change_password.html:30
+#: templates/web/default/my/my.html:51
+msgid "Added %s"
+msgstr ""
+
+#: templates/web/default/auth/change_password.html:31
 msgid "Again:"
 msgstr ""
 
@@ -358,7 +385,7 @@ msgstr ""
 msgid "Alert %d disabled (created %s)"
 msgstr ""
 
-#: templates/web/default/report/display.html:133
+#: templates/web/default/report/display.html:211
 msgid "Alert me to future updates"
 msgstr "Rhowch wybod i mi am ddiweddariadau yn y dyfodol"
 
@@ -366,7 +393,7 @@ msgstr "Rhowch wybod i mi am ddiweddariadau yn y dyfodol"
 msgid "All confirmed"
 msgstr ""
 
-#: templates/web/default/footer.html:7 templates/web/emptyhomes/header.html:31
+#: templates/web/default/footer.html:8 templates/web/emptyhomes/header.html:31
 #: templates/web/fiksgatami/footer.html:6
 msgid "Reports"
 msgstr "Adroddiadau"
@@ -424,55 +451,36 @@ msgstr "Di-enw"
 msgid "Anonymous:"
 msgstr "Di-enw"
 
+#: templates/web/default/footer.html:16
+msgid "Built by <a href=\"http://www.mysociety.org/\">mySociety</a>"
+msgstr ""
+
 #: templates/web/fiksgatami/footer.html:15
-#, fuzzy
 msgid ""
 "Built by <a href=\"http://www.mysociety.org/\">mySociety</a> and maintained "
-"by <a href=\"http://www.nuug.no/\">NUUG</a>, using some <a href=\"http://"
-"github.com/mysociety/fixmystreet\">clever</a>&nbsp;<a href=\"https://secure."
-"mysociety.org/cvstrac/dir?d=mysociety/services/TilMa\">code</a>."
-msgstr ""
-"Adeiladwyd gan <a href=\"http://www.mysociety.org/\">mySociety</a>, gan "
-"ddefnyddio tipyn o <a href=\"https://secure.mysociety.org/cvstrac/dir?"
-"d=mysociety/services/TilMa\">god</a><a href=\"http://github.com/mysociety/"
-"fixmystreet\">clyfar</a>&nbsp;."
-
-#: templates/web/default/footer.html:16
-msgid ""
-"Built by <a href=\"http://www.mysociety.org/\">mySociety</a>, using some <a "
-"href=\"http://github.com/mysociety/fixmystreet\">clever</a>&nbsp;<a href="
-"\"https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa"
-"\">code</a>."
-msgstr ""
-"Adeiladwyd gan <a href=\"http://www.mysociety.org/\">mySociety</a>, gan "
-"ddefnyddio tipyn o <a href=\"https://secure.mysociety.org/cvstrac/dir?"
-"d=mysociety/services/TilMa\">god</a><a href=\"http://github.com/mysociety/"
-"fixmystreet\">clyfar</a>&nbsp;."
-
-#: templates/web/default/report/new/fill_in_details.html:141
-msgid "Can we show your name on the site?"
-msgstr "Allwn ni ddangos eich enw chi ar y safle?"
-
-#: templates/web/default/report/display.html:87
-#: templates/web/default/report/new/fill_in_details.html:143
-msgid "Can we show your name publicly?"
+"by <a href=\"http://www.nuug.no/\">NUUG</a>"
 msgstr ""
 
 #: templates/web/default/admin/council_contacts.html:19
+#: templates/web/default/admin/index.html:36
 #: templates/web/default/admin/search_reports.html:17
 #, fuzzy
 msgid "Category"
 msgstr "Categori:"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:479
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:505
+#: templates/web/default/admin/index.html:34
+msgid "Category fix rate for empty properties > 4 weeks old"
+msgstr ""
+
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:480
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:506
 #: templates/web/default/admin/council_contacts.html:56
 #: templates/web/default/admin/council_edit.html:23
 #: templates/web/default/admin/report_edit.html:26
 msgid "Category:"
 msgstr "Categori:"
 
-#: bin/send-reports:173
+#: bin/send-reports:176
 #, fuzzy
 msgid "Category: %s"
 msgstr "Categori:"
@@ -483,8 +491,8 @@ msgstr "Categori:"
 msgid "Change Password"
 msgstr ""
 
-#: templates/web/default/around/display_location.html:111
-#: templates/web/default/around/display_location.html:113
+#: templates/web/default/around/display_location.html:105
+#: templates/web/default/around/display_location.html:107
 msgid "Closest nearby empty properties <small>(within&nbsp;%skm)</small>"
 msgstr "Yr eiddo gwag cyfagos agosaf <small>(within&nbsp;%skm)</small>"
 
@@ -541,9 +549,14 @@ msgstr "Cadarnhau"
 msgid "Confirmed:"
 msgstr "Cadarnhau"
 
-#: templates/web/default/footer.html:10 templates/web/fiksgatami/footer.html:9
+#: templates/web/fiksgatami/footer.html:9
 msgid "Contact"
 msgstr "Cysylltu"
+
+#: templates/web/default/footer.html:18
+#, fuzzy
+msgid "Contact reportemptyhomes.com"
+msgstr "Adroddiadau newydd ar reportemptyhomes.com"
 
 #: templates/web/default/contact/index.html:1
 #: templates/web/default/contact/index.html:2
@@ -561,7 +574,7 @@ msgstr "Cysylltu â'r tîm"
 msgid "Council"
 msgstr "cyngor"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:596
+#: perllib/FixMyStreet/App/Controller/Admin.pm:612
 #: templates/web/default/admin/council_list.html:1
 #, fuzzy
 msgid "Council contacts"
@@ -609,13 +622,18 @@ msgid "Deleted"
 msgstr ""
 
 #: templates/web/default/admin/report_edit.html:14
-#: templates/web/default/report/new/fill_in_details.html:100
+#: templates/web/default/report/new/fill_in_details.html:99
 msgid "Details:"
 msgstr "Manylion:"
 
 #: templates/web/default/admin/council_list.html:23
 msgid "Diligency prize league table"
 msgstr ""
+
+#: templates/web/default/auth/general.html:32
+#, fuzzy
+msgid "Do you have a reportemptyhomes.com password?"
+msgstr "Diweddariadau i reportemptyhomes.com"
 
 #: templates/web/default/questionnaire/index.html:72
 msgid "Don&rsquo;t know"
@@ -644,12 +662,11 @@ msgstr ""
 #: templates/web/default/admin/council_edit.html:42
 #: templates/web/default/admin/list_updates.html:8
 #: templates/web/default/admin/search_reports.html:15
-#: templates/web/default/report/display.html:95
 #, fuzzy
 msgid "Email"
 msgstr "E-bost:"
 
-#: templates/web/default/around/display_location.html:77
+#: templates/web/default/around/display_location.html:71
 msgid "Email me new local empty properties"
 msgstr "Anfonwch fanylion eiddo gwag lleol newydd ataf i drwy'r e-bost"
 
@@ -657,30 +674,24 @@ msgstr "Anfonwch fanylion eiddo gwag lleol newydd ataf i drwy'r e-bost"
 msgid "Email me updates"
 msgstr "Anfonwch ddiweddariadau ataf i drwy'r e-bost"
 
-#: templates/web/default/auth/general.html:47
-msgid "Email the details I need to the address I entered above"
-msgstr ""
-
 #: templates/web/default/admin/council_contacts.html:61
 #: templates/web/default/admin/council_edit.html:26
 #: templates/web/default/admin/report_edit.html:28
 #: templates/web/default/admin/update_edit.html:24
 #: templates/web/default/alert/updates.html:13
-#: templates/web/default/auth/general.html:29
 #: templates/web/default/report/display.html:46
-#: templates/web/default/report/new/fill_in_details.html:153
 msgid "Email:"
 msgstr "E-bost:"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:464
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:465
 msgid "Empty flat or maisonette"
 msgstr "Fflat neu fflat deulawr gwag"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:463
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:464
 msgid "Empty house or bungalow"
 msgstr "Tŷ neu fyngalo gwag"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:466
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:467
 msgid "Empty office or other commercial"
 msgstr "Swyddfa wag neu fan masnachol gwag arall"
 
@@ -688,32 +699,39 @@ msgstr "Swyddfa wag neu fan masnachol gwag arall"
 msgid "Empty property details form"
 msgstr "Ffurflen manylion eiddo gwag"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:467
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:468
 msgid "Empty pub or bar"
 msgstr "Tafarn neu far gwag"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:468
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:469
 msgid "Empty public building - school, hospital, etc."
 msgstr "Adeilad cyhoeddus gwag - ysgol, ysbyty, ac ati."
 
 #: templates/web/default/around/around_index.html:10
 #: templates/web/default/around/around_index.html:13
-#: templates/web/default/index.html:38 templates/web/default/index.html:41
+#: templates/web/default/index.html:24 templates/web/default/index.html:27
 msgid "Enter a nearby GB postcode, or street name and area"
 msgstr "Cofnodwch god post Prydeinig, neu enw stryd ac ardal gerllaw"
 
-#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:24
+#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:27
 #, fuzzy
 msgid "Enter a nearby postcode, or street name and area"
 msgstr "Cofnodwch god post Prydeinig, neu enw stryd ac ardal gerllaw:"
 
-#: templates/web/default/index.html:59
+#: templates/web/default/auth/general.html:64
+#: templates/web/default/report/display.html:167
+#: templates/web/default/report/new/fill_in_details.html:182
+#, fuzzy
+msgid "Enter a new password:"
+msgstr "Ychwanegwch neges"
+
+#: templates/web/default/index.html:45
 msgid "Enter details of the empty property"
 msgstr "Rhowch fanylion yr eiddo gwag"
 
 #: templates/web/default/auth/token.html:5
-#: templates/web/default/questionnaire/error.html:1
-#: templates/web/default/questionnaire/error.html:3
+#: templates/web/default/errors/generic.html:1
+#: templates/web/default/errors/generic.html:3
 #: templates/web/default/tokens/abuse.html:1
 #: templates/web/default/tokens/abuse.html:3
 #: templates/web/default/tokens/error.html:1
@@ -739,7 +757,7 @@ msgstr ""
 msgid "First time"
 msgstr "Y tro cyntaf"
 
-#: templates/web/default/header.html:16
+#: templates/web/default/header.html:20
 #: templates/web/fiksgatami/header.html:14
 msgid "Fix<span id=\"my\">My</span>Street"
 msgstr "Trwsio<span id=\"my\">Fy</span>Stryd"
@@ -791,16 +809,26 @@ msgstr ""
 "rhanbarth a'r cyngor, ond dim ond yn yr hysbysiad \"O fewn y ffin\" \n"
 "y bydd yn ymddangos yn achos y cyngor sir."
 
-#: templates/web/default/front_stats.html:7
+#: templates/web/default/front/stats.html:7
 msgid "reportemptyhomes.com updates"
 msgstr "Diweddariadau i reportemptyhomes.com"
 
+#: templates/web/default/admin/index.html:36
 #: templates/web/default/admin/report_edit.html:22
 msgid "Fixed"
 msgstr ""
 
+#: templates/web/default/my/my.html:27
+#, fuzzy
+msgid "Fixed reports"
+msgstr "Cuddio hen adroddiadau "
+
 #: templates/web/default/admin/search_reports.html:48
 msgid "Fixed:"
+msgstr ""
+
+#: templates/web/default/reports/council.html:23
+msgid "Follow a ward link to view only reports within that ward."
 msgstr ""
 
 #: templates/web/default/admin/report_edit.html:16
@@ -819,18 +847,13 @@ msgstr "Cwestiynau Cyffredin"
 msgid "Further information about our work on empty homes."
 msgstr ""
 
-#: templates/web/default/index.html:26
-#, fuzzy
-msgid "Get reportemptyhomes.com on your iPhone"
-msgstr "Cael yr Asiantaeth Tai Gwag ar eich iPhone"
-
 #: templates/web/default/alert/list.html:112
 msgid "Give me an RSS feed"
 msgstr "Rhowch borthiant RSS i mi"
 
 #: templates/web/default/alert/index.html:24
 #: templates/web/default/around/around_index.html:17
-#: templates/web/default/index.html:47
+#: templates/web/default/index.html:33
 msgid "Go"
 msgstr "Ewch"
 
@@ -839,7 +862,7 @@ msgstr "Ewch"
 msgid "Going to send questionnaire?"
 msgstr "Anfon yr holiadur"
 
-#: templates/web/default/admin/index.html:23
+#: templates/web/default/admin/index.html:24
 msgid "Graph of empty property creation by status over time"
 msgstr ""
 
@@ -860,7 +883,8 @@ msgstr ""
 "Ydych chi wedi rhoi gwybod i gyngor am eiddo gwag erioed o'r blaen, neu ai "
 "dyma'ch tro cyntaf?"
 
-#: templates/web/default/footer.html:9 templates/web/emptyhomes/header.html:33
+#: templates/web/default/footer.html:10
+#: templates/web/emptyhomes/header.html:33
 #: templates/web/fiksgatami/footer.html:8
 msgid "FAQs"
 msgstr "Cwestiynau Cyffredin"
@@ -876,11 +900,11 @@ msgstr ""
 msgid "Hidden"
 msgstr "Cuddio pinnau"
 
-#: templates/web/default/around/display_location.html:54
+#: templates/web/default/around/display_location.html:52
 msgid "Hide pins"
 msgstr "Cuddio pinnau"
 
-#: templates/web/default/around/display_location.html:59
+#: templates/web/default/around/display_location.html:57
 msgid "Hide stale reports"
 msgstr "Cuddio hen adroddiadau "
 
@@ -888,20 +912,20 @@ msgstr "Cuddio hen adroddiadau "
 msgid "History"
 msgstr ""
 
-#: templates/web/default/index.html:54
+#: templates/web/default/index.html:40
 msgid "How to report an empty property"
 msgstr "Sut i roi gwybod am eiddo gwag"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:514
+#: perllib/FixMyStreet/App/Controller/Admin.pm:530
 msgid "I am afraid you cannot confirm unconfirmed reports."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:96
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:89
 msgid "I'm afraid we couldn't locate your empty property in the database.\n"
 msgstr ""
 "Yn anffodus ni fu modd i ni ddod o hyd i'ch eiddo gwag yn y gronfa ddata.\n"
 
-#: perllib/FixMyStreet/App/Controller/Tokens.pm:161
+#: perllib/FixMyStreet/App/Controller/Tokens.pm:173
 msgid ""
 "I'm afraid we couldn't validate that token. If you've copied the URL from an "
 "email, please check that you copied it exactly.\n"
@@ -936,7 +960,8 @@ msgstr ""
 "fel y gallwn\n"
 "ddangos i'r cyngor y gweithgarwch yn ei ardal."
 
-#: templates/web/default/email_sent.html:28
+#: templates/web/default/auth/token.html:23
+#: templates/web/default/email_sent.html:24
 msgid ""
 "If you use web-based email or have 'junk mail' filters, you may wish to "
 "check your bulk/spam mail folders: sometimes, our messages are marked that "
@@ -960,11 +985,11 @@ msgstr ""
 msgid "Illegal ID"
 msgstr "ID Anghyfreithlon"
 
-#: perllib/FixMyStreet/App/Controller/Alert.pm:105
+#: perllib/FixMyStreet/App/Controller/Alert.pm:102
 msgid "Illegal feed selection"
 msgstr "Dewis porthiant annilys"
 
-#: templates/web/default/around/display_location.html:61
+#: templates/web/default/around/display_location.html:59
 msgid "Include stale reports"
 msgstr "Cynnwys hen adroddiadau"
 
@@ -991,6 +1016,12 @@ msgstr ""
 "yw'r cyngor\n"
 "yn gwneud unrhyw beth. Rydym yn annog cynghorau i ddiweddaru'r wefan \n"
 "fel y gallwch weld beth sy'n digwydd."
+
+#: templates/web/default/auth/general.html:44
+#: templates/web/default/report/display.html:149
+#: templates/web/default/report/new/fill_in_details.html:164
+msgid "Keep me signed in on this computer"
+msgstr ""
 
 #: templates/web/default/admin/council_contacts.html:23
 msgid "Last editor"
@@ -1030,27 +1061,14 @@ msgstr "Porthiannau RSS a hysbysiadau e-bost lleol"
 msgid "Local RSS feeds and email alerts for ‘%s’"
 msgstr "Porthiannau RSS a hysbysiadau e-bost lleol"
 
-#: templates/web/default/footer.html:8 templates/web/emptyhomes/header.html:32
+#: templates/web/default/footer.html:9 templates/web/emptyhomes/header.html:32
 #: templates/web/fiksgatami/footer.html:7
 msgid "Get local reports"
 msgstr "Gweld adroddiadau lleol"
 
-#: templates/web/default/index.html:58
+#: templates/web/default/index.html:44
 msgid "Locate the empty property on a map of the area"
 msgstr "Chwiliwch am leoliad yr eiddo gwag ar fap o'r ardal"
-
-#: templates/web/default/auth/general.html:43
-msgid "Log me in"
-msgstr ""
-
-#: templates/web/default/auth/general.html:1
-#: templates/web/default/auth/general.html:3
-msgid "Login or create an account"
-msgstr ""
-
-#: templates/web/default/auth/logout.html:1
-msgid "Logout"
-msgstr ""
 
 #: perllib/FixMyStreet/Map/OSM.pm:43
 msgid ""
@@ -1060,17 +1078,16 @@ msgid ""
 msgstr ""
 
 #: perllib/FixMyStreet/Map/OSM/StreetView.pm:27
-#: perllib/FixMyStreet/Map/Tilma/OL/StreetView.pm:21
-#: perllib/FixMyStreet/Map/Tilma/Original/StreetView.pm:21
 msgid ""
 "Map contains Ordnance Survey data &copy; Crown copyright and database right "
 "2010."
 msgstr ""
 
-#: perllib/FixMyStreet/Map/FMS.pm:27
+#: perllib/FixMyStreet/Map/FMS.pm:24
 msgid ""
 "Map contains Ordnance Survey data &copy; Crown copyright and database right "
-"2010. Microsoft"
+"2010.<br>&copy; 2011 <a href=\"http://www.bing.com/maps/\">Microsoft</a>. "
+"&copy; AND, Navteq, Ordnance Survey."
 msgstr ""
 
 #: templates/web/default/contact/index.html:90
@@ -1080,11 +1097,6 @@ msgstr "Neges:"
 #: templates/web/default/report/display.html:38
 msgid "More empty properties nearby"
 msgstr "Mwy o eiddo gwag cyfagos"
-
-#: templates/web/default/my/my.html:1
-#, fuzzy
-msgid "My Reports"
-msgstr "Adroddiadau"
 
 #: templates/web/default/admin/list_updates.html:7
 #: templates/web/default/admin/search_reports.html:14
@@ -1096,8 +1108,6 @@ msgstr "Enw"
 
 #: templates/web/default/admin/report_edit.html:27
 #: templates/web/default/admin/update_edit.html:23
-#: templates/web/default/report/display.html:81
-#: templates/web/default/report/new/fill_in_details.html:130
 msgid "Name:"
 msgstr "Enw:"
 
@@ -1105,11 +1115,29 @@ msgstr "Enw:"
 msgid "Navigation"
 msgstr "Mordwyo  "
 
-#: templates/web/default/email_sent.html:24
+#: perllib/FixMyStreet/Geocode/OSM.pm:100
+msgid ""
+"Nearest named road to the pin placed on the map (automatically generated "
+"using OpenStreetMap): %s%s"
+msgstr ""
+
+#: perllib/FixMyStreet/Cobrand/Default.pm:570
+msgid ""
+"Nearest postcode to the pin placed on the map (automatically generated): %s "
+"(%sm away)"
+msgstr ""
+
+#: perllib/FixMyStreet/Cobrand/Default.pm:558
+msgid ""
+"Nearest road to the pin placed on the map (automatically generated by Bing "
+"Maps): %s"
+msgstr ""
+
+#: templates/web/default/email_sent.html:20
 msgid "Nearly Done! Now check your email..."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:289
+#: perllib/FixMyStreet/App/Controller/Admin.pm:299
 msgid "New category contact added"
 msgstr ""
 
@@ -1122,8 +1150,8 @@ msgstr "Eiddo gwag lleol diweddar, reportemptyhomes.com"
 msgid "New local reports on reportemptyhomes.com"
 msgstr "Adroddiadau lleol newydd ar reportemptyhomes.com"
 
-#: templates/web/default/reports/council.html:43
-#: templates/web/default/reports/council.html:44
+#: templates/web/default/reports/council.html:92
+#: templates/web/default/reports/council.html:93
 #: templates/web/default/reports/index.html:11
 #: templates/web/emptyhomes/reports/index.html:11
 #: templates/web/fiksgatami/reports/index.html:10
@@ -1184,7 +1212,12 @@ msgstr "Adroddiadau newydd i gyngor {{COUNCIL}} ar reportemptyhomes.com"
 msgid "New reports within {{NAME}}'s boundary on reportemptyhomes.com"
 msgstr "Adroddiadau newydd o fewn ffin {{NAME}} ar reportemptyhomes.com"
 
-#: templates/web/default/index.html:27
+#: templates/web/default/admin/questionnaire.html:24
+msgid "New state"
+msgstr ""
+
+#: templates/web/default/front/news.html:8
+#: templates/web/fiksgatami/front/news.html:9
 msgid "New!"
 msgstr "Newydd!"
 
@@ -1249,18 +1282,30 @@ msgstr "Nac ydw"
 msgid "Note:"
 msgstr "Nac ydw"
 
+#: templates/web/default/report/new/fill_in_details.html:148
+msgid ""
+"Now to submit your report&hellip; do you have a reportemptyhomes.com "
+"password?"
+msgstr ""
+
+#: templates/web/default/report/display.html:133
+msgid ""
+"Now to submit your update&hellip; do you have a reportemptyhomes.com "
+"password?"
+msgstr ""
+
 #: templates/web/default/report/display.html:33
 #: templates/web/default/report/updates.html:19
 msgid "Offensive? Unsuitable? Tell us"
 msgstr "Sarhaus? Anaddas? Rhowch wybod i ni"
 
-#: templates/web/default/reports/council.html:72
-#: templates/web/default/reports/council.html:73
+#: templates/web/default/reports/council.html:115
+#: templates/web/default/reports/council.html:116
 msgid "Old returned to use"
 msgstr "Hen wedi'i adfer i'w ddefnyddio"
 
-#: templates/web/default/reports/council.html:60
-#: templates/web/default/reports/council.html:61
+#: templates/web/default/reports/council.html:109
+#: templates/web/default/reports/council.html:110
 msgid "Old empty properties, state unknown"
 msgstr "Eiddo gwag hen, nid yw eu cyflwr yn hysbys"
 
@@ -1269,16 +1314,20 @@ msgstr "Eiddo gwag hen, nid yw eu cyflwr yn hysbys"
 msgid "Old empty properties,<br>state unknown"
 msgstr "Hen eiddo gwag,<br>cyflwr anhysbys"
 
+#: templates/web/default/admin/questionnaire.html:24
+msgid "Old state"
+msgstr ""
+
 #: templates/web/default/reports/index.html:15
 #: templates/web/emptyhomes/reports/index.html:14
 #: templates/web/fiksgatami/reports/index.html:14
 msgid "Older returned to use"
 msgstr "Wedi'u hadfer i'w defnyddio ers amser"
 
-#: templates/web/default/reports/council.html:50
-#: templates/web/default/reports/council.html:52
-#: templates/web/default/reports/council.html:56
-#: templates/web/default/reports/council.html:57
+#: templates/web/default/reports/council.html:101
+#: templates/web/default/reports/council.html:105
+#: templates/web/default/reports/council.html:106
+#: templates/web/default/reports/council.html:99
 #: templates/web/default/reports/index.html:12
 #: templates/web/emptyhomes/reports/index.html:12
 #: templates/web/fiksgatami/reports/index.html:11
@@ -1289,6 +1338,11 @@ msgstr "Adroddiadau hŷn o eiddo gwag"
 #: templates/web/default/admin/update_edit.html:19
 msgid "Open"
 msgstr ""
+
+#: templates/web/default/my/my.html:22
+#, fuzzy
+msgid "Open reports"
+msgstr "Cuddio hen adroddiadau "
 
 #: templates/web/default/alert/list.html:87
 msgid "Or empty properties reported to:"
@@ -1302,10 +1356,10 @@ msgstr ""
 "Neu, gallwch danysgrifio am hysbysiad yn ôl pa ward neu gyngor yr ydych yn "
 "byw ynddo:"
 
-#: bin/send-reports:168 bin/send-reports:177
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:495
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:504
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:855
+#: bin/send-reports:171 bin/send-reports:180
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:496
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:505
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:869
 #: perllib/FixMyStreet/DB/Result/Problem.pm:316
 #: perllib/FixMyStreet/DB/Result/Problem.pm:326
 #: perllib/FixMyStreet/DB/Result/Problem.pm:336
@@ -1322,19 +1376,18 @@ msgstr ""
 msgid "Partial"
 msgstr ""
 
-#: templates/web/default/auth/change_password.html:26
-#: templates/web/default/auth/general.html:33
+#: templates/web/default/auth/change_password.html:27
 msgid "Password:"
 msgstr ""
 
 #: bin/send-reports:68 templates/web/default/admin/report_edit.html:29
-#: templates/web/default/report/new/fill_in_details.html:158
+#: templates/web/default/report/new/fill_in_details.html:231
 msgid "Phone:"
 msgstr "Rhif ffôn:"
 
 #: templates/web/default/questionnaire/index.html:97
-#: templates/web/default/report/display.html:125
-#: templates/web/default/report/new/fill_in_details.html:120
+#: templates/web/default/report/display.html:109
+#: templates/web/default/report/new/fill_in_details.html:119
 msgid "Photo:"
 msgstr "Ffotograff:"
 
@@ -1342,7 +1395,7 @@ msgstr "Ffotograff:"
 msgid "Photos of recent nearby reports"
 msgstr "Ffotograffau o adroddiadau cyfagos diweddar"
 
-#: templates/web/default/index.html:76
+#: templates/web/default/index.html:63
 msgid "Photos of recent reports"
 msgstr "Ffotograffau o adroddiadau diweddar"
 
@@ -1350,8 +1403,8 @@ msgstr "Ffotograffau o adroddiadau diweddar"
 msgid "Please be polite, concise and to the point."
 msgstr ""
 
-#: templates/web/default/auth/change_password.html:12
-#: templates/web/default/auth/change_password.html:17
+#: templates/web/default/auth/change_password.html:14
+#: templates/web/default/auth/change_password.html:19
 msgid "Please check the passwords and try again"
 msgstr ""
 
@@ -1366,9 +1419,9 @@ msgstr "Rhowch eich cyfeiriad e-bost"
 msgid "Please check your email address is correct"
 msgstr "Rhowch gyfeiriad e-bost dilys"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:639
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:659
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:675
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:652
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:671
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:688
 #: perllib/FixMyStreet/DB/Result/Problem.pm:206
 msgid "Please choose a category"
 msgstr "Dewiswch gategori"
@@ -1398,12 +1451,12 @@ msgid ""
 "for all users."
 msgstr ""
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:108
+#: perllib/FixMyStreet/DB/Result/Comment.pm:111
 msgid "Please enter a message"
 msgstr "Ychwanegwch neges"
 
-#: templates/web/default/auth/change_password.html:12
-#: templates/web/default/auth/change_password.html:15
+#: templates/web/default/auth/change_password.html:14
+#: templates/web/default/auth/change_password.html:17
 #, fuzzy
 msgid "Please enter a password"
 msgstr "Ychwanegwch neges"
@@ -1413,11 +1466,11 @@ msgstr "Ychwanegwch neges"
 msgid "Please enter a subject"
 msgstr "Rhowch enw'r pwnc"
 
-#: perllib/FixMyStreet/DB/Result/User.pm:91
+#: perllib/FixMyStreet/DB/Result/User.pm:92
 msgid "Please enter a valid email"
 msgstr "Cofnodwch gyfeiriad e-bost dilys"
 
-#: perllib/FixMyStreet/App/Controller/Alert.pm:123
+#: perllib/FixMyStreet/App/Controller/Alert.pm:345
 #: perllib/FixMyStreet/App/Controller/Contact.pm:105
 msgid "Please enter a valid email address"
 msgstr "Cofnodwch gyfeiriad e-bost dilys"
@@ -1427,14 +1480,13 @@ msgid "Please enter some details"
 msgstr "Cofnodwch fanylion"
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:94
-#: perllib/FixMyStreet/DB/Result/User.pm:88
+#: perllib/FixMyStreet/DB/Result/User.pm:89
 #: templates/web/default/auth/general.html:13
 #: templates/web/default/auth/general.html:8
 msgid "Please enter your email"
 msgstr "Cofnodwch eich cyfeiriad e-bost"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:199
-#: perllib/FixMyStreet/DB/Result/User.pm:83
 msgid ""
 "Please enter your full name - if you do not wish your name to be shown on "
 "the site, untick the box"
@@ -1443,8 +1495,9 @@ msgstr ""
 "ddangos ar y safle, cliciwch i ddileu'r tic o'r bocs"
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:93
+#: perllib/FixMyStreet/DB/Result/Comment.pm:108
 #: perllib/FixMyStreet/DB/Result/Problem.pm:192
-#: perllib/FixMyStreet/DB/Result/User.pm:76
+#: perllib/FixMyStreet/DB/Result/User.pm:85
 msgid "Please enter your name"
 msgstr "Cofnodwch eich enw"
 
@@ -1485,7 +1538,7 @@ msgid ""
 "photo of the empty property if you have one), etc."
 msgstr ""
 
-#: templates/web/default/report/new/fill_in_details.html:49
+#: templates/web/default/report/new/fill_in_details.html:48
 #, fuzzy
 msgid ""
 "Please fill in the form below with details of the empty property, and "
@@ -1494,7 +1547,7 @@ msgstr ""
 "Llenwch y ffurflen isod gyda manylion yr eiddo gwag,\n"
 "a disgrifiwch y lleoliad mor fanwl ag y bo modd yn y blwch manylion."
 
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:242
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:235
 msgid "Please indicate whether you'd like to receive another questionnaire"
 msgstr "Nodwch a fyddech chi'n hoffi derbyn holiadur arall"
 
@@ -1505,7 +1558,7 @@ msgid ""
 "<a href=\"/faq#privacy\">privacy policy</a>"
 msgstr ""
 
-#: templates/web/default/report/new/fill_in_details.html:34
+#: templates/web/default/report/new/fill_in_details.html:33
 msgid ""
 "Please note your report has <strong>not yet been sent</strong>. Choose a "
 "category and add further information below, then submit."
@@ -1515,16 +1568,16 @@ msgstr ""
 msgid "Please note:"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:245
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:238
 msgid "Please provide some explanation as to why you're reopening this report"
 msgstr "Rhowch ychydig o esboniad pam rydych yn ailagor yr adroddiad hwn"
 
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:252
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:245
 msgid "Please provide some text as well as a photo"
 msgstr "Rhowch rywfaint o destun yn ogystal â ffotograff"
 
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:122
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:238
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:115
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:231
 msgid ""
 "Please say whether you've ever reported an empty property to your council "
 "before"
@@ -1532,15 +1585,15 @@ msgstr ""
 "Rhowch wybod a ydych chi wedi rhoi gwybod i'ch cyngor am eiddo gwag erioed "
 "o'r blaen"
 
-#: perllib/FixMyStreet/App/Controller/Alert.pm:85
+#: perllib/FixMyStreet/App/Controller/Alert.pm:82
 msgid "Please select the feed you want"
 msgstr "Dewiswch y porthiant rydych chi eisiau ei gael"
 
-#: perllib/FixMyStreet/App/Controller/Alert.pm:125
+#: perllib/FixMyStreet/App/Controller/Alert.pm:120
 msgid "Please select the type of alert you want"
 msgstr "Dewiswch y math o hysbysiad rydych chi eisiau ei gael"
 
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:234
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:227
 msgid "Please state whether or not the empty property has been returned to use"
 msgstr ""
 "Cofnodwch a yw'r eiddo gwag wedi cael ei adfer i'w ddefnyddio, ai peidio"
@@ -1549,7 +1602,7 @@ msgstr ""
 msgid "Please take a look at the updates that have been left."
 msgstr "Ewch i fwrw golwg ar y diweddariadau sydd wedi cael eu gadael."
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:728
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:740
 msgid "Please upload a JPEG image only"
 msgstr "Dim ond llun JPEG y dylech lwytho i fyny."
 
@@ -1558,7 +1611,9 @@ msgid "Please write a message"
 msgstr "Ysgrifennwch neges"
 
 #: templates/web/default/contact/index.html:93
-#: templates/web/default/report/display.html:138
+#: templates/web/default/report/display.html:119
+#: templates/web/default/report/display.html:154
+#: templates/web/default/report/display.html:175
 msgid "Post"
 msgstr "Postio"
 
@@ -1570,9 +1625,9 @@ msgstr "Cofnodwyd yn ddi-enw am %s"
 msgid "Posted by %s at %s"
 msgstr "Cofnodwyd gan %s am %s"
 
-#: perllib/FixMyStreet/Map/Tilma/Original.pm:90
-#: templates/web/default/maps/openlayers.html:81
-#: templates/web/default/maps/tilma/original.html:62
+#: perllib/FixMyStreet/Map/Tilma/Original.pm:92
+#: templates/web/default/maps/openlayers.html:89
+#: templates/web/default/maps/tilma/original.html:63
 msgid "Empty property"
 msgstr "Eiddo gwag"
 
@@ -1591,17 +1646,21 @@ msgstr "Ffurflen manylion eiddo gwag"
 msgid "Empty property %s sent to council %s"
 msgstr "Eiddo gwag yn %s"
 
-#: templates/web/default/admin/index.html:27
+#: templates/web/default/admin/index.html:28
 #, fuzzy
 msgid "Empty property breakdown by state"
 msgstr "ni fydd eich eiddo gwag yn cael ei bostio"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:743
+#: perllib/FixMyStreet/App/Controller/Admin.pm:759
 #, fuzzy
 msgid "Empty property marked as open."
 msgstr "Ffurflen manylion eiddo gwag"
 
-#: templates/web/default/around/display_location.html:73
+#: templates/web/default/admin/questionnaire.html:21
+msgid "Empty property state change based on survey results"
+msgstr ""
+
+#: templates/web/default/around/display_location.html:67
 msgid "Empty properties in this area"
 msgstr "Eiddo gwag yn yr ardal hon"
 
@@ -1618,19 +1677,19 @@ msgstr ""
 msgid "Empty properties within %.1fkm of this location"
 msgstr "Eiddo gwag o fewn %skm o'r lleoliad hwn"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:719
-#: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:161
-#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:127
+#: perllib/FixMyStreet/Cobrand/Default.pm:792
+#: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:162
+#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:172
 msgid "Empty properties within %s"
 msgstr "Eiddo gwag yn %s"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:728
-#: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:169
+#: perllib/FixMyStreet/Cobrand/Default.pm:801
+#: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:170
 msgid "Empty properties within %s ward"
 msgstr "Eiddo gwag yn ward %s"
 
-#: templates/web/default/reports/council.html:11
-#: templates/web/default/reports/council.html:14
+#: templates/web/default/reports/council.html:0
+#: templates/web/default/reports/council.html:16
 msgid "Empty properties within %s, reportemptyhomes.com"
 msgstr "Eiddo gwag o fewn %s, reportemptyhomes.com"
 
@@ -1644,7 +1703,7 @@ msgstr ""
 "Eiddo y cafwyd adroddiadau diweddar ar reportemptyhomes.com eu bod wedi cael "
 "eu hadfer i'w defnyddio"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:470
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:471
 msgid "Property type:"
 msgstr "Math o eiddo:"
 
@@ -1652,6 +1711,15 @@ msgstr "Math o eiddo:"
 msgid "Provide an update"
 msgstr "Rhowch ddiweddariad"
 
+#: templates/web/default/report/display.html:172
+#: templates/web/default/report/new/fill_in_details.html:187
+msgid ""
+"Providing a password is optional, but doing so will allow you to more easily "
+"report empty properties, leave updates and manage your reports."
+msgstr ""
+
+#: templates/web/default/questionnaire/completed.html:1
+#: templates/web/default/questionnaire/completed.html:2
 #: templates/web/default/questionnaire/index.html:0
 #: templates/web/default/questionnaire/index.html:14
 #: templates/web/default/questionnaire/index.html:4
@@ -1668,7 +1736,7 @@ msgstr "Llenwyd yr holiadur gan yr unigolyn a roddodd wybod am yr eiddo gwag"
 msgid "Questionnaire %d sent for empty property %d"
 msgstr "Llenwyd yr holiadur gan yr unigolyn a roddodd wybod am yr eiddo gwag"
 
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:188
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:181
 msgid "Questionnaire filled in by empty property reporter"
 msgstr "Llenwyd yr holiadur gan yr unigolyn a roddodd wybod am yr eiddo gwag"
 
@@ -1676,33 +1744,33 @@ msgstr "Llenwyd yr holiadur gan yr unigolyn a roddodd wybod am yr eiddo gwag"
 #: templates/web/default/around/display_location.html:1
 #: templates/web/default/around/display_location.html:3
 #: templates/web/default/report/display.html:55
-#: templates/web/default/reports/council.html:17
+#: templates/web/default/reports/council.html:61
 msgid "RSS feed"
 msgstr "Porthiant RSS"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:757
-#: perllib/FixMyStreet/Cobrand/Default.pm:771
+#: perllib/FixMyStreet/Cobrand/Default.pm:830
+#: perllib/FixMyStreet/Cobrand/Default.pm:844
 #, fuzzy
 msgid "RSS feed for %s"
 msgstr "Porthiant RSS %s"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:764
-#: perllib/FixMyStreet/Cobrand/Default.pm:778
+#: perllib/FixMyStreet/Cobrand/Default.pm:837
+#: perllib/FixMyStreet/Cobrand/Default.pm:851
 #, fuzzy
 msgid "RSS feed for %s ward, %s"
 msgstr "Porthiant RSS %s"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:787
-#: perllib/FixMyStreet/Cobrand/Default.pm:801
-#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:143
-#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:151
-#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:161
-#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:169
+#: perllib/FixMyStreet/Cobrand/Default.pm:860
+#: perllib/FixMyStreet/Cobrand/Default.pm:874
+#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:188
+#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:196
+#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:206
+#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:214
 msgid "RSS feed of %s"
 msgstr "Porthiant RSS %s"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:793
-#: perllib/FixMyStreet/Cobrand/Default.pm:807
+#: perllib/FixMyStreet/Cobrand/Default.pm:866
+#: perllib/FixMyStreet/Cobrand/Default.pm:880
 #, fuzzy
 msgid "RSS feed of %s, within %s ward"
 msgstr "Porthiant RSS %s"
@@ -1711,19 +1779,19 @@ msgstr "Porthiant RSS %s"
 msgid "RSS feed of nearby empty properties"
 msgstr "Porthiant RSS o eiddo gwag sydd gerllaw"
 
-#: templates/web/default/reports/council.html:17
+#: templates/web/default/reports/council.html:61
 msgid "RSS feed of empty properties in this %s"
 msgstr "Porthiant RSS o eiddo gwag yn yr %s hwn"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:720
-#: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:162
-#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:126
+#: perllib/FixMyStreet/Cobrand/Default.pm:793
+#: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:163
+#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:171
 #, fuzzy
 msgid "RSS feed of empty properties within %s"
 msgstr "Porthiant RSS o eiddo gwag yn yr %s hwn"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:727
-#: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:168
+#: perllib/FixMyStreet/Cobrand/Default.pm:800
+#: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:169
 #, fuzzy
 msgid "RSS feed of empty properties within %s ward"
 msgstr "Porthiant RSS o eiddo gwag yn yr %s hwn"
@@ -1745,19 +1813,19 @@ msgstr ""
 "hwn."
 
 #: templates/web/default/around/display_location.html:0
-#: templates/web/default/around/display_location.html:35
+#: templates/web/default/around/display_location.html:34
 msgid "Recent local empty properties, reportemptyhomes.com"
 msgstr "Eiddo gwag lleol diweddar, reportemptyhomes.com"
 
-#: templates/web/default/reports/council.html:68
-#: templates/web/default/reports/council.html:69
+#: templates/web/default/reports/council.html:87
+#: templates/web/default/reports/council.html:88
 #: templates/web/default/reports/index.html:14
 #: templates/web/emptyhomes/reports/index.html:13
 #: templates/web/fiksgatami/reports/index.html:13
 msgid "Recently returned to use"
 msgstr "Wedi'u hadfer i'w defnyddio'n ddiweddar"
 
-#: templates/web/default/index.html:85
+#: templates/web/default/index.html:72
 msgid "Recently reported empty properties"
 msgstr "Eiddo gwag yr adroddwyd amdanynt yn ddiweddar"
 
@@ -1791,6 +1859,16 @@ msgstr "Adroddiadau"
 #: templates/web/default/index.html:15
 msgid "Report and view empty properties"
 msgstr "Adrodd am eiddo gwag a gweld y rhain"
+
+#: templates/web/default/my/my.html:69
+#, fuzzy
+msgid "Reported %s"
+msgstr "Adroddiadau"
+
+#: templates/web/default/my/my.html:67
+#, fuzzy
+msgid "Reported %s, to %s"
+msgstr "Adroddwyd gan %s am %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:331
 #: templates/web/default/contact/index.html:45
@@ -1833,12 +1911,12 @@ msgstr "Adroddwyd yn y categori %s gan %s am %s"
 
 #: templates/web/default/around/around_index.html:1
 #: templates/web/default/report/new/fill_in_details.html:0
+#: templates/web/default/report/new/fill_in_details.html:29
 #: templates/web/default/report/new/fill_in_details.html:3
-#: templates/web/default/report/new/fill_in_details.html:30
 msgid "Reporting an empty property"
 msgstr "Adrodd am eiddo gwag"
 
-#: templates/web/default/around/display_location.html:103
+#: templates/web/default/around/display_location.html:97
 msgid "Reports on and around the map"
 msgstr "Adroddiadau ar ac yng nghyffiniau'r map"
 
@@ -1847,11 +1925,21 @@ msgstr "Adroddiadau ar ac yng nghyffiniau'r map"
 msgid "Resend report"
 msgstr "Cuddio hen adroddiadau "
 
+#: perllib/FixMyStreet/Geocode/OSM.pm:107
+msgid ""
+"Road operator for this named road (derived from road reference number and "
+"type): %s"
+msgstr ""
+
+#: perllib/FixMyStreet/Geocode/OSM.pm:104
+msgid "Road operator for this named road (from OpenStreetMap): %s"
+msgstr ""
+
 #: templates/web/default/admin/council_edit.html:35
 msgid "Save changes"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:597
+#: perllib/FixMyStreet/App/Controller/Admin.pm:613
 #: templates/web/default/admin/search_reports.html:1
 #, fuzzy
 msgid "Search Reports"
@@ -1871,7 +1959,7 @@ msgstr ""
 "porthiant RSS,\n"
 "neu rhowch eich cyfeiriad e-bost i danysgrifio am hysbysiad e-bost."
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:390
+#: perllib/FixMyStreet/DB/Result/Problem.pm:396
 msgid "Sent to %s %s later"
 msgstr "Anfonwyd at %s %s yn ddiweddarach"
 
@@ -1924,16 +2012,45 @@ msgstr ""
 "cat=20'>Gwybodaeth\n"
 "bellach am ein gwaith ar gartrefi gwag</a>.\n"
 
-#: templates/web/default/around/display_location.html:52
+#: templates/web/default/report/display.html:205
+#: templates/web/default/report/new/fill_in_details.html:226
+msgid "Show my name publicly"
+msgstr ""
+
+#: templates/web/default/around/display_location.html:50
 msgid "Show pins"
 msgstr "Dangos pinnau"
+
+#: templates/web/default/auth/general.html:3
+#: templates/web/default/auth/general.html:49
+msgid "Sign in"
+msgstr ""
+
+#: templates/web/default/auth/general.html:74
+msgid "Sign in by email"
+msgstr ""
+
+#: templates/web/default/auth/general.html:1
+msgid "Sign in or create an account"
+msgstr ""
+
+#: templates/web/default/auth/sign_out.html:1
+#: templates/web/default/header.html:26
+#: templates/web/emptyhomes/header.html:46
+msgid "Sign out"
+msgstr ""
+
+#: templates/web/default/header.html:25
+#: templates/web/emptyhomes/header.html:45
+msgid "Signed in as %s"
+msgstr ""
 
 #: templates/web/default/alert/index.html:31
 msgid "Some photos of recent reports"
 msgstr "Rhai ffotograffau o adroddiadau diweddar"
 
 #: perllib/FixMyStreet/App/View/Email.pm:32
-#: perllib/FixMyStreet/App/View/Web.pm:38
+#: perllib/FixMyStreet/App/View/Web.pm:41
 msgid "Some text to localize"
 msgstr ""
 
@@ -1941,30 +2058,30 @@ msgstr ""
 msgid "Some unconfirmeds"
 msgstr ""
 
-#: perllib/FixMyStreet/Geocode.pm:171
+#: perllib/FixMyStreet/Cobrand/Default.pm:516
 msgid ""
 "Sorry, that appears to be a Crown dependency postcode, which we don't cover."
 msgstr ""
-
-#: perllib/FixMyStreet/Geocode.pm:71
-msgid ""
-"Sorry, that location appears to be too general; please be more specific."
-msgstr ""
-"Sori, mae'n ymddangos bod y lleoliad hwnnw'n rhy gyffredinol; rhowch gynnig "
-"arall arni."
 
 #: templates/web/default/tokens/abuse.html:5
 msgid "Sorry, there has been an error confirming your empty property."
 msgstr "Sori, bu gwall wrth gadarnhau eich eiddo gwag."
 
-#: perllib/FixMyStreet/Geocode.pm:103 perllib/FixMyStreet/Geocode.pm:150
+#: perllib/FixMyStreet/Geocode.pm:27 perllib/FixMyStreet/Geocode/Bing.pm:51
+#: perllib/FixMyStreet/Geocode/Google.pm:68
 msgid "Sorry, we could not find that location."
 msgstr "Sori, ni fu modd i ni ddod o hyd i'r lleoliad hwnnw."
 
-#: perllib/FixMyStreet/Geocode.pm:148
+#: perllib/FixMyStreet/Geocode/Bing.pm:44
+#: perllib/FixMyStreet/Geocode/Google.pm:60
 msgid "Sorry, we could not parse that location. Please try again."
 msgstr ""
 "Sori, ni fu modd i ni ddosrannu'r lleoliad hwnnw. Rhowch gynnig arall arni."
+
+#: templates/web/default/footer.html:17
+#: templates/web/fiksgatami/footer.html:15
+msgid "Source code"
+msgstr ""
 
 #: templates/web/default/admin/list_updates.html:6
 #: templates/web/default/admin/search_reports.html:21
@@ -1980,12 +2097,14 @@ msgstr "Diweddariad:"
 
 #: templates/web/default/admin/report_edit.html:13
 #: templates/web/default/contact/index.html:83
-#: templates/web/default/report/new/fill_in_details.html:91
+#: templates/web/default/report/new/fill_in_details.html:90
 msgid "Subject:"
 msgstr "Pwnc:"
 
 #: templates/web/default/questionnaire/creator_fixed.html:19
-#: templates/web/default/report/new/fill_in_details.html:171
+#: templates/web/default/report/new/fill_in_details.html:131
+#: templates/web/default/report/new/fill_in_details.html:169
+#: templates/web/default/report/new/fill_in_details.html:190
 msgid "Submit"
 msgstr "Anfon"
 
@@ -2004,11 +2123,11 @@ msgstr "Anfon yr holiadur"
 msgid "Subscribe"
 msgstr "Tanysgrifio"
 
-#: templates/web/default/alert/list.html:124
+#: templates/web/default/alert/list.html:128
 msgid "Subscribe me to an email alert"
 msgstr "Dymunaf danysgrifio i rybuddion drwy e-bost"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:595
+#: perllib/FixMyStreet/App/Controller/Admin.pm:611
 #: templates/web/default/admin/index.html:1
 #, fuzzy
 msgid "Summary"
@@ -2020,7 +2139,7 @@ msgstr "Adroddiadau cryno"
 msgid "Summary reports"
 msgstr "Adroddiadau cryno"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:599
+#: perllib/FixMyStreet/App/Controller/Admin.pm:615
 #: templates/web/default/admin/questionnaire.html:1
 msgid "Survey Results"
 msgstr ""
@@ -2119,7 +2238,7 @@ msgstr ""
 "i ni'ch holi chi, a ydych erioed wedi rhoi gwybod i'r cyngor am eiddo gwag "
 "cyn hyn?"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:737
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:749
 msgid ""
 "That image doesn't appear to have uploaded correctly (%s), please try again."
 msgstr ""
@@ -2134,17 +2253,18 @@ msgstr ""
 "Nid yw'n ymddangos bod cyngor yn gyfrifol am y lleoliad hwnnw, efallai ei "
 "fod ar y môr - chwiliwch am fan mwy penodol."
 
-#: perllib/FixMyStreet/Geocode.pm:81
+#: perllib/FixMyStreet/App/Controller/Location.pm:107
 msgid "That location does not appear to be in Britain; please try again."
 msgstr ""
 "Nid yw'n ymddangos bod y lleoliad hwnnw ym Mhrydain; rhowch gynnig arall "
 "arni."
 
-#: perllib/FixMyStreet/Geocode.pm:165
+#: perllib/FixMyStreet/Cobrand/Default.pm:509
+#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:73
 msgid "That postcode was not recognised, sorry."
 msgstr "Ni chafodd y cod post hwnnw ei gydnabod, sori."
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:496
+#: perllib/FixMyStreet/App/Controller/Admin.pm:512
 #, fuzzy
 msgid "That empty property will now be resent."
 msgstr "ni fydd eich eiddo gwag yn cael ei bostio"
@@ -2199,7 +2319,8 @@ msgstr ""
 "rydym yn gweithio ledled Lloegr. Rydym hefyd yn gweithio mewn partneriaeth "
 "ag elusennau eraill ledled y DU.</p>\n"
 
-#: templates/web/default/email_sent.html:26
+#: templates/web/default/auth/token.html:21
+#: templates/web/default/email_sent.html:22
 msgid ""
 "The confirmation email <strong>may</strong> take a few minutes to arrive "
 "&mdash; <em>please</em> be patient."
@@ -2210,6 +2331,19 @@ msgid ""
 "The details of your empty property are available on the right hand side of "
 "this page."
 msgstr "Mae manylion eich eiddo gwag ar gael ar ochr dde'r dudalen hon."
+
+#: perllib/FixMyStreet/App/Controller/Reports.pm:46
+#: perllib/FixMyStreet/App/Controller/Reports.pm:73
+#, fuzzy
+msgid "The error was: %s"
+msgstr "Testun y gwall oedd:"
+
+#: perllib/FixMyStreet/Geocode/OSM.pm:99
+msgid ""
+"The following information about the nearest road might be inaccurate or "
+"irrelevant, if the empty property is close to several roads or close to a "
+"road without a name registered in OpenStreetMap."
+msgstr ""
 
 #: db/alert_types.pl:19 db/alert_types.pl:23 db/alert_types.pl:27
 #: db/alert_types.pl:31
@@ -2280,8 +2414,8 @@ msgstr ""
 "Yr adroddiadau diweddaraf o fewn ffin {{NAME}} y mae defnyddwyr wedi rhoi "
 "gwybod amdanynt"
 
-#: templates/web/default/auth/change_password.html:12
-#: templates/web/default/auth/change_password.html:16
+#: templates/web/default/auth/change_password.html:14
+#: templates/web/default/auth/change_password.html:18
 msgid "The passwords do not match"
 msgstr ""
 
@@ -2290,10 +2424,10 @@ msgstr ""
 msgid "The requested URL '%s' was not found on this server"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:477
-#: perllib/FixMyStreet/App/Controller/Admin.pm:647
-#: perllib/FixMyStreet/App/Controller/Admin.pm:686
-#: perllib/FixMyStreet/App/Controller/Admin.pm:771
+#: perllib/FixMyStreet/App/Controller/Admin.pm:493
+#: perllib/FixMyStreet/App/Controller/Admin.pm:663
+#: perllib/FixMyStreet/App/Controller/Admin.pm:702
+#: perllib/FixMyStreet/App/Controller/Admin.pm:787
 msgid "The requested URL was not found on this server."
 msgstr ""
 
@@ -2317,15 +2451,37 @@ msgstr ""
 "Ni allai'r defnyddiwr leoli'r eiddo gwag ar fap, ond i weld yr ardal o "
 "gwmpas y lleoliad a gofnodwyd ganddynt "
 
+#: perllib/FixMyStreet/App/Controller/Reports.pm:72
+msgid ""
+"There was an empty property showing the All Reports page. Please try again "
+"later."
+msgstr ""
+
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:578
+#: perllib/FixMyStreet/App/Controller/Report/Update.pm:117
+#: templates/web/default/auth/general.html:23
+msgid ""
+"There was an empty property with your email/password combination. Passwords "
+"and user accounts are a brand <strong>new</strong> service, so you probably "
+"do not have one yet &ndash; please fill in the right hand side of this form "
+"to get one."
+msgstr ""
+
+#: perllib/FixMyStreet/App/Controller/Alert.pm:354
+msgid ""
+"There was an empty property with your email/password combination. Please try "
+"again."
+msgstr ""
+
 #: perllib/FixMyStreet/App/Controller/Contact.pm:115
 msgid "There were problems with your report. Please see below."
 msgstr "Cafwyd anhawsterau gyda'ch adroddiad. Gweler isod."
 
-#: perllib/FixMyStreet/App/Controller/Report/Update.pm:202
+#: perllib/FixMyStreet/App/Controller/Report/Update.pm:211
 msgid "There were problems with your update. Please see below."
 msgstr "Cafwyd anhawsterau gyda'ch diweddariad. Gweler isod"
 
-#: bin/send-reports:178
+#: bin/send-reports:181
 msgid ""
 "This email has been sent to both councils covering the location of the empty "
 "property, as the user did not categorise it; please ignore it if you're not "
@@ -2333,7 +2489,7 @@ msgid ""
 "empty property this is so we can add it to our system."
 msgstr ""
 
-#: bin/send-reports:181
+#: bin/send-reports:184
 msgid ""
 "This email has been sent to several councils covering the location of the "
 "empty property, as the category selected is provided for all of them; please "
@@ -2347,11 +2503,11 @@ msgid ""
 "will be periodically deleted."
 msgstr "Safle datblygwr yw hwn; gallai pethau dorri unrhyw bryd."
 
-#: templates/web/default/reports/council.html:20
+#: templates/web/default/reports/council.html:65
 msgid "This is a summary of all reports for one %s."
 msgstr "Dyma grynodeb o'r holl adroddiadau ar gyfer y %s."
 
-#: templates/web/default/reports/council.html:22
+#: templates/web/default/reports/council.html:67
 msgid "This is a summary of all reports for this %s."
 msgstr ""
 
@@ -2365,13 +2521,18 @@ msgstr ""
 "Dyma grynodeb o'r holl adroddiadau ar y safle hwn; dewiswch gyngor penodol i "
 "weld yr adroddiadau a anfonwyd ato."
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:840
+#: perllib/FixMyStreet/Cobrand/Default.pm:913
 #: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:117
-#: templates/web/default/report/display.html:111
+#: templates/web/default/report/display.html:96
 msgid "This empty property has been returned to use"
 msgstr "Mae'r eiddo gwag hwn wedi cael ei adfer i'w ddefnyddio"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:836
+#: templates/web/default/report/display.html:91
+#, fuzzy
+msgid "This empty property has not been returned to use"
+msgstr "Mae'r eiddo gwag hwn wedi cael ei adfer i'w ddefnyddio"
+
+#: perllib/FixMyStreet/Cobrand/Default.pm:909
 msgid "This empty property is old and of unknown status."
 msgstr "Mae'r eiddo gwag hwn yn hen ac nid yw ei statws yn hysbys."
 
@@ -2392,7 +2553,7 @@ msgstr ""
 "Mae'r dudalen we hon hefyd yn cynnwys ffotograff o'r eiddo gwag, wedi'i "
 "ddarparu gan y defnyddiwr."
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:598
+#: perllib/FixMyStreet/App/Controller/Admin.pm:614
 #: templates/web/default/admin/timeline.html:1
 msgid "Timeline"
 msgstr ""
@@ -2411,7 +2572,7 @@ msgstr ""
 "ward chi,\n"
 "cofnodwch eich cod post Prydeinig neu enw stryd ac ardal:"
 
-#: templates/web/default/around/display_location.html:92
+#: templates/web/default/around/display_location.html:86
 #, fuzzy
 msgid ""
 "To report an empty property, simply <strong>click on the map</strong> at the "
@@ -2424,8 +2585,17 @@ msgstr ""
 msgid "To view a map of the precise location of this issue"
 msgstr "Gweld map o union leoliad y broblem hon"
 
+#: templates/web/default/admin/index.html:36
+#: templates/web/default/admin/questionnaire.html:24
+msgid "Total"
+msgstr ""
+
 #: templates/web/default/maps/tilma/original.html:10
 msgid "Unable to fetch the map tiles from the tile server."
+msgstr ""
+
+#: perllib/FixMyStreet/App/Controller/Reports.pm:45
+msgid "Unable to look up areas in MaPit. Please try again later."
 msgstr ""
 
 #: templates/web/default/admin/report_edit.html:22
@@ -2439,7 +2609,6 @@ msgid "Unknown alert type"
 msgstr "ID eiddo gwag anhysbys"
 
 #: perllib/FixMyStreet/App/Controller/Report.pm:70
-#: perllib/FixMyStreet/App/Controller/Report/Update.pm:24
 msgid "Unknown empty property ID"
 msgstr "ID eiddo gwag anhysbys"
 
@@ -2457,7 +2626,7 @@ msgstr "Adroddwyd yn ddi-enw am %s"
 msgid "Update below added by %s at %s"
 msgstr "Adroddwyd gan %s trwy %s am %s"
 
-#: templates/web/default/admin/index.html:29
+#: templates/web/default/admin/index.html:30
 msgid "Update breakdown by state"
 msgstr ""
 
@@ -2470,12 +2639,12 @@ msgstr "Diweddariadau yn ôl {{name}}"
 msgid "Update statuses"
 msgstr "Diweddariadau"
 
-#: templates/web/default/report/display.html:103
+#: templates/web/default/report/display.html:84
 msgid "Update:"
 msgstr "Diweddariad:"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:570
-#: perllib/FixMyStreet/App/Controller/Admin.pm:733
+#: perllib/FixMyStreet/App/Controller/Admin.pm:586
+#: perllib/FixMyStreet/App/Controller/Admin.pm:749
 #, fuzzy
 msgid "Updated!"
 msgstr "Diweddariadau"
@@ -2494,8 +2663,8 @@ msgstr "Diweddariadau am {{title}}"
 msgid "Updates to this empty property, reportemptyhomes.com"
 msgstr "Diweddariadau i'r eiddo gwag hwn, reportemptyhomes.com"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:284
-#: perllib/FixMyStreet/App/Controller/Admin.pm:314
+#: perllib/FixMyStreet/App/Controller/Admin.pm:294
+#: perllib/FixMyStreet/App/Controller/Admin.pm:324
 #, fuzzy
 msgid "Values updated"
 msgstr "Anfonwch ddiweddariadau ataf i drwy'r e-bost"
@@ -2511,7 +2680,7 @@ msgid "View your report"
 msgstr "Gweld eich adroddiad"
 
 #: templates/web/default/around/display_location.html:0
-#: templates/web/default/around/display_location.html:34
+#: templates/web/default/around/display_location.html:33
 msgid "Viewing a location"
 msgstr "Gweld lleoliad"
 
@@ -2519,13 +2688,22 @@ msgstr "Gweld lleoliad"
 msgid "Viewing an empty property"
 msgstr "Gweld eiddo gwag"
 
-#: perllib/FixMyStreet/Geocode.pm:155 perllib/FixMyStreet/Geocode.pm:174
+#: templates/web/default/reports/council.html:22
+msgid "Wards of this council"
+msgstr ""
+
+#: perllib/FixMyStreet/Geocode/Bing.pm:46
 msgid ""
 "We do not cover Northern Ireland, I'm afraid, as our licence doesn't include "
 "any maps for the region."
 msgstr ""
 "Nid ydym yn ymdrin â Gogledd Iwerddon, yn anffodus, gan nad yw ein trwydded "
 "yn cynnwys unrhyw fapiau ar gyfer y rhanbarth."
+
+#: perllib/FixMyStreet/Cobrand/Default.pm:520
+#: perllib/FixMyStreet/Geocode/Google.pm:63
+msgid "We do not currently cover Northern Ireland, I'm afraid."
+msgstr ""
 
 #: templates/web/default/alert/choose.html:6
 #: templates/web/default/around/around_index.html:33
@@ -2537,9 +2715,8 @@ msgstr ""
 "hyd at ddeg cyfatebiaeth, rhowch gynnig ar chwiliad gwahanol os nad yw'ch "
 "lleoliad chi yno."
 
-#: perllib/FixMyStreet/App/Controller/Around.pm:229
-msgid ""
-"We had an empty property with the supplied co-ordinates - outside the UK?"
+#: templates/web/default/auth/token.html:19
+msgid "We have sent you an email containing a link to confirm your account."
 msgstr ""
 
 #: templates/web/emptyhomes/tokens/confirm_problem.html:18
@@ -2549,14 +2726,14 @@ msgid ""
 "property you reported."
 msgstr ""
 
-#: bin/send-reports:188
+#: bin/send-reports:191
 msgid ""
 "We realise this empty property might be the responsibility of %s; however, "
 "we don't currently have any contact details for them. If you know of an "
 "appropriate contact address, please do get in touch."
 msgstr ""
 
-#: templates/web/default/index.html:60
+#: templates/web/default/index.html:46
 msgid ""
 "The details will be sent directly to the right person in the local council "
 "for them to take action"
@@ -2599,7 +2776,7 @@ msgstr ""
 msgid "When sent"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:465
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:466
 msgid "Whole block of empty flats"
 msgstr "Bloc cyfan o fflatiau gwag"
 
@@ -2643,28 +2820,18 @@ msgid ""
 "personal information, or similar:"
 msgstr ""
 
-#: templates/web/default/reports/council.html:35
+#: templates/web/default/reports/council.html:71
+#, fuzzy
 msgid ""
-"You can <a href=\"%s\">see less detail</a> or go back and <a href=\"/reports"
-"\">show all councils</a>."
+"You can <a href=\"%s\">view all reports for the council</a> or <a href=\"/"
+"reports\">show all councils</a>."
 msgstr ""
 "Gallwch <a href=\"%s\">weld llai o fanylion</a> neu fynd yn ôl a <a href=\"/"
 "reports\">dangos pob cyngor</a>."
 
-#: templates/web/default/reports/council.html:31
-msgid "You can <a href=\"%s\">see less detail</a>."
-msgstr "Gallwch <a href=\"%s\">weld llai o fanylion</a>."
-
-#: templates/web/default/reports/council.html:37
-msgid ""
-"You can <a href=\"%s\">see more details</a> or go back and <a href=\"/reports"
-"\">show all councils</a>."
-msgstr ""
-"Gallwch <a href=\"%s\">weld mwy o fanylion</a> neu fynd yn ôl a <a href=\"/"
-"reports\">dangos pob cyngor</a>."
-
-#: templates/web/default/reports/council.html:33
-msgid "You can <a href=\"%s\">see more details</a>."
+#: templates/web/default/reports/council.html:73
+#, fuzzy
+msgid "You can <a href=\"/reports\">show all councils</a>."
 msgstr "Gallwch <a href=\"%s\">weld mwy o fanylion</a>."
 
 #: templates/web/default/report/new/no_councils_text.html:14
@@ -2676,7 +2843,7 @@ msgid ""
 "properties for %s and emailing it to us at <a href='mailto:%s'>%s</a>."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:45
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:38
 msgid ""
 "You have already answered this questionnaire. If you have a question, please "
 "<a href='%s'>get in touch</a>, or <a href='%s'>view your empty property</"
@@ -2686,18 +2853,23 @@ msgstr ""
 "s'>cysylltwch â ni</a>, neu ewch i <a href='%s'>weld eich eiddo gwag</a>.\n"
 
 #: templates/web/default/questionnaire/index.html:94
-#: templates/web/default/report/display.html:122
-#: templates/web/default/report/new/fill_in_details.html:111
+#: templates/web/default/report/new/fill_in_details.html:110
 msgid ""
 "You have already attached a photo to this report, attaching another one will "
 "replace it."
 msgstr ""
 
-#: templates/web/default/auth/logout.html:3
-msgid "You have been logged out"
+#: templates/web/default/report/display.html:106
+msgid ""
+"You have already attached a photo to this update, attaching another one will "
+"replace it."
 msgstr ""
 
-#: templates/web/default/report/new/fill_in_details.html:36
+#: templates/web/default/auth/sign_out.html:3
+msgid "You have been signed out"
+msgstr ""
+
+#: templates/web/default/report/new/fill_in_details.html:35
 #, fuzzy
 msgid ""
 "You have located the empty property at the point marked with a purple pin on "
@@ -2734,7 +2906,15 @@ msgstr "Rydych wedi dileu'ch hysbysiad yn llwyddiannus."
 msgid "You have successfully deleted your alert."
 msgstr "Rydych wedi dileu'ch hysbysiad yn llwyddiannus."
 
-#: templates/web/default/email_sent.html:30
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:584
+#: perllib/FixMyStreet/App/Controller/Report/Update.pm:123
+#, fuzzy
+msgid ""
+"You have successfully signed in; please check and confirm your details are "
+"accurate:"
+msgstr "Rydych wedi cadarnhau'ch hysbysiad yn llwyddiannus."
+
+#: templates/web/default/email_sent.html:26
 msgid ""
 "You must now click the link in the email we've just sent you &mdash; if you "
 "do not, %s."
@@ -2744,18 +2924,43 @@ msgstr ""
 msgid "You really want to resend?"
 msgstr ""
 
+#: templates/web/default/my/my.html:0 templates/web/default/my/my.html:14
 #: templates/web/default/my/my.html:3
 #, fuzzy
 msgid "Your Reports"
 msgstr "Adroddiadau"
 
-#: templates/web/default/alert/list.html:120
+#: templates/web/default/auth/general.html:27
+#, fuzzy
+msgid "Your email address:"
+msgstr "Eich cyfeiriad e-bost:"
+
+#: templates/web/default/alert/list.html:122
+#: templates/web/default/report/display.html:128
+#: templates/web/default/report/new/fill_in_details.html:141
 msgid "Your email:"
 msgstr "Eich cyfeiriad e-bost:"
 
+#: templates/web/default/auth/general.html:59
 #: templates/web/default/contact/index.html:68
+#: templates/web/default/report/display.html:199
+#: templates/web/default/report/new/fill_in_details.html:219
 msgid "Your name:"
 msgstr "Eich enw:"
+
+#: templates/web/default/auth/change_password.html:6
+msgid "Your password has been changed"
+msgstr ""
+
+#: templates/web/default/footer.html:7
+#, fuzzy
+msgid "Your reports"
+msgstr "Adroddiadau"
+
+#: templates/web/default/my/my.html:40
+#, fuzzy
+msgid "Your updates"
+msgstr "Adroddiadau"
 
 #: templates/web/default/contact/index.html:76
 msgid "Your&nbsp;email:"
@@ -2774,7 +2979,11 @@ msgstr "cyngor"
 msgid "didn't use map"
 msgstr ""
 
-#: perllib/Utils.pm:241
+#: templates/web/default/admin/index.html:15
+msgid "from %d different users"
+msgstr ""
+
+#: perllib/Utils.pm:247
 msgid "less than a minute"
 msgstr "llai na munud"
 
@@ -2782,7 +2991,7 @@ msgstr "llai na munud"
 msgid "marked as returned to use"
 msgstr "cofnodwyd bod hyn wedi'i adfer i'w ddefnyddio"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:106
+#: perllib/FixMyStreet/App/Controller/Admin.pm:107
 #: templates/web/default/admin/questionnaire.html:15
 #: templates/web/default/admin/questionnaire.html:16
 msgid "n/a"
@@ -2809,12 +3018,12 @@ msgid "the map was not used so pin location may be inaccurate"
 msgstr ""
 "ni ddefnyddiwyd y map felly mae'n bosibl na fydd lleoliad y pin yn gywir"
 
-#: bin/send-reports:169
+#: bin/send-reports:172
 #, fuzzy
 msgid "this type of local empty property"
 msgstr "Anfonwch fanylion eiddo gwag lleol newydd ataf i drwy'r e-bost"
 
-#: perllib/Utils.pm:217
+#: perllib/Utils.pm:221
 msgid "today"
 msgstr "heddiw"
 
@@ -2860,7 +3069,7 @@ msgstr "ni fydd eich eiddo gwag yn cael ei bostio"
 msgid "your update will not be posted"
 msgstr "ni fydd eich diweddariad yn cael ei bostio"
 
-#: templates/web/default/front_stats.html:19
+#: templates/web/default/front/stats.html:19
 #, perl-format
 msgid "<big>%s</big> report recently"
 msgid_plural "<big>%s</big> reports recently"
@@ -2875,19 +3084,26 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: templates/web/default/front_stats.html:14
+#: templates/web/default/front/stats.html:14
 #, perl-format
 msgid "<big>%s</big> report in past week"
 msgid_plural "<big>%s</big> reports in past week"
 msgstr[0] "<big>%s</big> adroddiad o fewn yr wythnos ddiwethaf"
 msgstr[1] "<big>%s</big> o adroddiadau o fewn yr wythnos ddiwethaf"
 
-#: templates/web/default/front_stats.html:25
+#: templates/web/default/front/stats.html:25
 #, perl-format
 msgid "<big>%s</big> returned to use in past month"
 msgid_plural "<big>%s</big> returned to use in past month"
 msgstr[0] "Dychwelwyd <big>%s</big> i'w ddefnyddio yn y mis diwethaf"
 msgstr[1] "Dychwelwyd <big>%s</big> i'w defnyddio yn y mis diwethaf"
+
+#: templates/web/default/front/stats.html:31
+#, perl-format
+msgid "<big>%s</big> update on reports"
+msgid_plural "<big>%s</big> updates on reports"
+msgstr[0] "<big>%s</big> diweddariad ar adroddiadau"
+msgstr[1] "<big>%s</big> diweddariad ar adroddiadau"
 
 #: templates/web/default/report/new/some_councils_text.html:14
 #, perl-format
@@ -2900,18 +3116,59 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: templates/web/default/front_stats.html:31
-#, perl-format
-msgid "<big>%s</big> update on reports"
-msgid_plural "<big>%s</big> updates on reports"
-msgstr[0] "<big>%s</big> diweddariad ar adroddiadau"
-msgstr[1] "<big>%s</big> diweddariad ar adroddiadau"
+#, fuzzy
+#~ msgid ""
+#~ "Built by <a href=\"http://www.mysociety.org/\">mySociety</a> and "
+#~ "maintained by <a href=\"http://www.nuug.no/\">NUUG</a>, using some <a "
+#~ "href=\"http://github.com/mysociety/fixmystreet\">clever</a>&nbsp;<a href="
+#~ "\"https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa"
+#~ "\">code</a>."
+#~ msgstr ""
+#~ "Adeiladwyd gan <a href=\"http://www.mysociety.org/\">mySociety</a>, gan "
+#~ "ddefnyddio tipyn o <a href=\"https://secure.mysociety.org/cvstrac/dir?"
+#~ "d=mysociety/services/TilMa\">god</a><a href=\"http://github.com/mysociety/"
+#~ "fixmystreet\">clyfar</a>&nbsp;."
+
+#~ msgid ""
+#~ "Built by <a href=\"http://www.mysociety.org/\">mySociety</a>, using some "
+#~ "<a href=\"http://github.com/mysociety/fixmystreet\">clever</a>&nbsp;<a "
+#~ "href=\"https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/TilMa"
+#~ "\">code</a>."
+#~ msgstr ""
+#~ "Adeiladwyd gan <a href=\"http://www.mysociety.org/\">mySociety</a>, gan "
+#~ "ddefnyddio tipyn o <a href=\"https://secure.mysociety.org/cvstrac/dir?"
+#~ "d=mysociety/services/TilMa\">god</a><a href=\"http://github.com/mysociety/"
+#~ "fixmystreet\">clyfar</a>&nbsp;."
+
+#~ msgid "Can we show your name on the site?"
+#~ msgstr "Allwn ni ddangos eich enw chi ar y safle?"
+
+#, fuzzy
+#~ msgid "Get reportemptyhomes.com on your iPhone"
+#~ msgstr "Cael yr Asiantaeth Tai Gwag ar eich iPhone"
+
+#, fuzzy
+#~ msgid "My Reports"
+#~ msgstr "Adroddiadau"
+
+#~ msgid ""
+#~ "Sorry, that location appears to be too general; please be more specific."
+#~ msgstr ""
+#~ "Sori, mae'n ymddangos bod y lleoliad hwnnw'n rhy gyffredinol; rhowch "
+#~ "gynnig arall arni."
+
+#~ msgid "You can <a href=\"%s\">see less detail</a>."
+#~ msgstr "Gallwch <a href=\"%s\">weld llai o fanylion</a>."
+
+#~ msgid ""
+#~ "You can <a href=\"%s\">see more details</a> or go back and <a href=\"/"
+#~ "reports\">show all councils</a>."
+#~ msgstr ""
+#~ "Gallwch <a href=\"%s\">weld mwy o fanylion</a> neu fynd yn ôl a <a href="
+#~ "\"/reports\">dangos pob cyngor</a>."
 
 #~ msgid "Sorry! Something's gone wrong."
 #~ msgstr "Ymddiheuriadau! Mae rhywbeth wedi mynd o'i le."
-
-#~ msgid "The text of the error was:"
-#~ msgstr "Testun y gwall oedd:"
 
 #~ msgid ""
 #~ "<h1>Nearly Done! Now check your email...</h1>\n"
