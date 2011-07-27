@@ -539,14 +539,31 @@ for my $test (
             may_show_name => 1,
             add_alert => 0,
             photo => '',
-            update => 'Set state to investigating',
+            update => 'Set state to confirmed',
             state => 'confirmed',
         },
         state => 'confirmed',
     },
+    {
+        desc => 'from authority user marks report sent to two councils as fixed',
+        fields => {
+            name => $user->name,
+            may_show_name => 1,
+            add_alert => 0,
+            photo => '',
+            update => 'Set state to fixed',
+            state => 'fixed',
+        },
+        state => 'fixed - council',
+        report_councils => '2504,2505',
+    },
 ) {
     subtest $test->{desc} => sub {
         $report->comments->delete;
+        if ( $test->{ report_councils } ) {
+            $report->council( $test->{ report_councils } );
+            $report->update;
+        }
 
         $mech->log_in_ok( $user->email );
         $user->from_council( 2504 );
@@ -561,6 +578,7 @@ for my $test (
             'submit update'
         );
 
+        $report->discard_changes;
         my $update = $report->comments->first;
         ok $update, 'found update';
         is $update->text, $test->{fields}->{update}, 'update text';
@@ -580,6 +598,7 @@ $user->from_council(0);
 $user->update;
 
 $report->state('confirmed');
+$report->council('2504');
 $report->update;
 
 for my $test (
