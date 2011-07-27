@@ -555,7 +555,7 @@ for my $test (
             state => 'fixed',
         },
         state => 'fixed - council',
-        report_councils => '2504,2505',
+        report_councils => '2504|2505',
     },
 ) {
     subtest $test->{desc} => sub {
