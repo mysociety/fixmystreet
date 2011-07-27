@@ -1,4 +1,4 @@
-package FixMyStreet::Cobrand::Lichfield;
+package FixMyStreet::Cobrand::LichfieldDC;
 use base 'FixMyStreet::Cobrand::Default';
 
 use strict;
@@ -23,16 +23,16 @@ sub problems {
 
 sub base_url {
     my $base_url = mySociety::Config::get('BASE_URL');
-    if ( $base_url !~ /lichfield/ ) {
-        $base_url =~ s{http://(?!www\.)}{http://lichfield.}g;
-        $base_url =~ s{http://www\.}{http://lichfield.}g;
+    if ( $base_url !~ /lichfielddc/ ) {
+        $base_url =~ s{http://(?!www\.)}{http://lichfielddc.}g;
+        $base_url =~ s{http://www\.}{http://lichfielddc.}g;
     }
     return $base_url;
 }
 
 sub site_title {
     my ($self) = @_;
-    return 'Lichfield Council FixMyStreet';
+    return 'Lichfield District Council FixMyStreet';
 }
 
 sub enter_postcode_text {
@@ -52,7 +52,7 @@ sub council_check {
     $url .= 'alert' if $context eq 'alert';
     $url .= '?pc=' . URI::Escape::uri_escape( $self->{c}->req->param('pc') )
       if $self->{c}->req->param('pc');
-    my $error_msg = "That location is not covered by Lichfield.
+    my $error_msg = "That location is not covered by Lichfield District Council.
 Please visit <a href=\"$url\">the main FixMyStreet site</a>.";
     return ( 0, $error_msg );
 }
