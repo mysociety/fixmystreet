@@ -168,7 +168,7 @@ sub submit_standard : Private {
 
     # If it's not fixed and they say it's still not been fixed, record time update
     if ( $c->stash->{been_fixed} eq 'No' &&
-        FixMyStreet::DB::Result::Problem->open_states($old_state) ) {
+        FixMyStreet::DB::Result::Problem->open_states->{$old_state} ) {
         $problem->lastupdate( \'ms_current_timestamp()' );
     }
 
