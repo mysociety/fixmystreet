@@ -13,15 +13,6 @@
     width: auto !important;
 }
 
-#mysociety #map_box {
-    width: 380px;
-}
-
-#mysociety #map, #mysociety #drag {
-    width: 378px;
-    height: 378px;
-}
-
 #mysociety p {
     margin: 1em 0px;
     padding: 0px;
