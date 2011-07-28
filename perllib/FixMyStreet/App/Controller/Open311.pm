@@ -6,7 +6,6 @@ use namespace::autoclean;
 
 use JSON;
 use XML::Simple;
-use mySociety::DBHandle qw(select_all);
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -159,24 +158,27 @@ sub get_services : Private {
     my $lat = $c->req->param('lat') || '';
     my $lon = $c->req->param('long') || '';
 
-    my @area_types = $c->cobrand->area_types;
-    my $criteria;
+    # Look up categories for this council or councils
+    my $categories = $c->model('DB::Contact')->not_deleted;
+
     if ($lat || $lon) {
+        my @area_types = $c->cobrand->area_types;
         my $all_councils = mySociety::MaPit::call('point',
                                                   "4326/$lon,$lat",
                                                   type => \@area_types);
-        $criteria = 'and area_id IN (' . join(',', keys %$all_councils) . ')';
-    } else {
-        $criteria = '';
+        $categories = $categories->search( {
+            area_id => [ keys %$all_councils ],
+        } );
     }
 
-    # Look up categories for this council or councils
-    my $categories =
-        select_all('SELECT DISTINCT category FROM contacts '.
-                   "WHERE deleted='f'" . $criteria);
+    my @categories = $categories->search( undef, {
+        columns => [ 'category' ],
+        distinct => 1,
+    } )->all;
+
     my @services;
     for my $categoryref ( sort {$a->{category} cmp $b->{category} }
-                          @$categories) {
+                          @categories) {
         my $categoryname = $categoryref->{category};
         push(@services,
              {
@@ -201,20 +203,17 @@ sub get_services : Private {
 
 
 sub output_requests : Private {
-    my ( $self, $c, $criteria, $limit, @args ) = @_;
+    my ( $self, $c, $criteria, $limit ) = @_;
+    $limit = $c->config->{RSS_LIMIT}
+        unless $limit && $limit <= $c->config->{RSS_LIMIT};
+
+    my $attr = {
+        order_by => { -desc => 'confirmed' },
+        rows => $limit
+    };
+
     # Look up categories for this council or councils
-    my $query =
-        "SELECT id, title, detail, latitude, longitude, state, ".
-        "category, created, confirmed, whensent, lastupdate, council, ".
-        "service, name, anonymous, ".
-        "(photo is not null) as has_photo FROM problem ".
-        "WHERE $criteria ORDER BY confirmed desc";
-
-    my $open311limit = $c->config->{RSS_LIMIT};
-    $open311limit = $limit if ($limit && $limit < $open311limit);
-    $query .= " LIMIT $open311limit" if $open311limit;
-
-    my $problems = select_all($query, @args);
+    my $problems = $c->cobrand->problems->search( $criteria, $attr );
 
     my %statusmap = ( 'fixed' => 'closed',
                       'confirmed' => 'open');
@@ -287,7 +286,7 @@ sub output_requests : Private {
         }
 
         my $display_photos = $c->cobrand->allow_photo_display;
-        if ($display_photos && $problem->{has_photo}) {
+        if ($display_photos && $problem->{photo}) {
             my $url = $c->cobrand->base_url();
             my $imgurl = $url . "/photo?id=$id";
             $request->{'media_url'} = [ $imgurl ];
@@ -314,79 +313,61 @@ sub get_requests : Private {
 
     $c->forward( 'is_jurisdiction_id_ok' );
 
-    my %rules = (
-        service_request_id => 'id = ?',
-        service_code       => 'category = ?',
-        status             => 'state = ?',
-        start_date         => 'confirmed >= ?',
-        end_date           => 'confirmed < ?',
-        agency_responsible => 'council ~ ?',
-        interface_used     => 'service is not null and service = ?',
-        max_requests       => '',
-        has_photo          => '',
-        );
-    my $max_requests = 0;
-    my @args;
+    my $max_requests = $c->req->param('max_requests') || 0;
+
     # Only provide access to the published reports
-    my $criteria = "state in ('fixed', 'confirmed')";
+    my $criteria = {
+        state => [ 'fixed', 'confirmed' ]
+    };
+
+    my %rules = (
+        service_request_id => [ '=', 'id' ],
+        service_code       => [ '=', 'category' ],
+        status             => [ '=', 'state' ],
+        start_date         => [ '>=', 'confirmed' ],
+        end_date           => [ '<', 'confirmed' ],
+        agency_responsible => [ '~', 'council' ],
+        interface_used     => [ '=', 'service' ],
+        has_photo          => [ '=', 'photo' ],
+    );
     for my $param (keys %rules) {
-        if ($c->req->param($param)) {
-            my @value = ($c->req->param($param));
-            my $rule = $rules{$param};
-            if ('status' eq $param) {
-                $value[0] = {
-                    'open' => 'confirmed',
-                    'closed' => 'fixed'
-                }->{$value[0]};
-            } elsif ('agency_responsible' eq $param) {
-                my $combined_rule = '';
-                my @valuelist;
-                for my $agency (split(/\|/, $value[0])) {
-                    unless ($agency =~ m/^(\d+)$/) {
-                        $c->detach( 'error', [
-                               sprintf(_('Invalid agency_responsible value %s'),
-                                       $value[0])
-                        ] );
-                    }
-                    my $agencyid = $1;
-                    # FIXME This seem to match the wrong entries
-                    # some times.  Not sure when or why
-                    my $re = "(\\y$agencyid\\y|^$agencyid\\y|\\y$agencyid\$)";
-                    if ($combined_rule) {
-                        $combined_rule .= " or $rule";
-                    } else {
-                        $combined_rule = $rule;
-                    }
-                    push(@valuelist, $re);
-                }
-                $rule = "( $combined_rule )";
-                @value = @valuelist;
-            } elsif ('max_requests' eq $param) {
-                $max_requests = $value[0];
-                @value = ();
-            } elsif ('has_photo' eq $param) {
-                if ('true' eq $value[0]) {
-                    $criteria .= ' and photo is not null';
-                    @value = ();
-                } elsif ('false' eq $value[0]) {
-                    $criteria .= ' and photo is null';
-                    @value = ();
-                } else {
+        my $value = $c->req->param($param);
+        next unless $value;
+        my $op  = $rules{$param}[0];
+        my $key = $rules{$param}[1];
+        if ( 'status' eq $param ) {
+            $value = {
+                'open' => 'confirmed',
+                'closed' => 'fixed'
+            }->{$value};
+        } elsif ( 'agency_responsible' eq $param ) {
+            my @valuelist;
+            for my $agency (split(/\|/, $value)) {
+                unless ($agency =~ m/^(\d+)$/) {
                     $c->detach( 'error', [
-                          sprintf(_('Incorrect has_photo value "%s"'),
-                                  $value[0])
+                        sprintf(_('Invalid agency_responsible value %s'),
+                            $value[0])
                     ] );
                 }
-            } elsif ('interface_used' eq $param) {
-                if ('Web interface' eq $value[0]) {
-                    $rule = 'service is null'
-                }
+                my $agencyid = $1;
+                # FIXME This seem to match the wrong entries
+                # some times.  Not sure when or why
+                my $re = "(\\y$agencyid\\y|^$agencyid\\y|\\y$agencyid\$)";
+                push(@valuelist, $re);
             }
-            if (@value) {
-                $criteria .= " and $rule";
-                push(@args, @value);
-            }
+            $value = \@valuelist;
+        } elsif ( 'has_photo' eq $param ) {
+            $value = undef;
+            $op = '!=' if 'true' eq $value;
+            $c->detach( 'error', [
+                sprintf(_('Incorrect has_photo value "%s"'),
+                    $value)
+            ] )
+                unless 'true' eq $value || 'false' eq $value;
+        } elsif ( 'interface_used' eq $param ) {
+            $value = undef if 'Web interface' eq $value;
         }
+        $criteria->{$key} = { $op, $value };
     }
 
 #    if ('rss' eq $c->stash->{format}) {
@@ -404,7 +385,7 @@ sub get_requests : Private {
 #        print $c->header( -type => 'application/xml; charset=utf-8' );
 #        print $out;
 #    } else {
-        $c->forward( 'output_requests', [ $criteria, $max_requests, @args ] );
+        $c->forward( 'output_requests', [ $criteria, $max_requests ] );
 #    }
 }
 
@@ -417,13 +398,17 @@ sub get_request : Private {
 
     $c->forward( 'is_jurisdiction_id_ok' );
 
-    my $criteria = "state IN ('fixed', 'confirmed') AND id = ?";
     if ('html' eq $format) {
         my $base_url = $c->cobrand->base_url();
         $c->res->redirect($base_url . "/report/$id");
         return;
     }
-    $c->forward( 'output_requests', [ $criteria, 0, $id ] );
+
+    my $criteria = {
+        state => [ 'fixed', 'confirmed' ],
+        id => $id,
+    };
+    $c->forward( 'output_requests', [ $criteria ] );
 }
 
 sub format_output : Private {
