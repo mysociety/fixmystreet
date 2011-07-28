@@ -436,6 +436,15 @@ sub output_requests : Private {
 #            # Not in Open311 v2
 #            $request->{'comment_count'} = [ $comment_count ];
 #        }
+        # Extract number of comments/updates
+        my $updates = $c->model('DB::Comment')->search(
+            { problem_id => $id, state => 'confirmed' },
+            { order_by => 'confirmed' }
+            );
+        if ($updates->count()) {
+            $request->{'comment_count'} = [ $updates->count() ];
+        }
+
         my $display_photos = $c->cobrand->allow_photo_display;
         if ($display_photos && $problem->{has_photo}) {
             my $url = $c->cobrand->base_url();
