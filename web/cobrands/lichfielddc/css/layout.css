@@ -92,7 +92,7 @@
 #nav {
 	font-size: 1em;
 	margin: 0 0 30px 0 !important;
-	background: transparent url(bg_header.gif) left repeat-x !important;
+	background: transparent url(/cobrands/lichfielddc/i/bg_header.gif) left repeat-x !important;
 	clear: both;
 	width: 100%;
 	float: left;
@@ -118,7 +118,7 @@
 	
 #nav li a:hover {
 	border-bottom: 1px solid #111;
-	background: transparent url(bg_header2.gif) left repeat-x !important;
+	background: transparent url(/cobrands/lichfielddc/i/bg_header2.gif) left repeat-x !important;
 	}
 	
 #mysociety #fixed {
