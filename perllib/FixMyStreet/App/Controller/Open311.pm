@@ -6,6 +6,7 @@ use namespace::autoclean;
 
 use JSON;
 use XML::Simple;
+use DateTime::Format::W3CDTF;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -177,9 +178,9 @@ sub get_services : Private {
     } )->all;
 
     my @services;
-    for my $categoryref ( sort {$a->{category} cmp $b->{category} }
+    for my $categoryref ( sort { $a->category cmp $b->category }
                           @categories) {
-        my $categoryname = $categoryref->{category};
+        my $categoryname = $categoryref->category;
         push(@services,
              {
                  # FIXME Open311 v2 seem to require all three, and we
@@ -220,73 +221,64 @@ sub output_requests : Private {
 
     my @problemlist;
     my @councils;
-    for my $problem (@{$problems}) {
-        my $id = $problem->{id};
+    while ( my $problem = $problems->next ) {
+        my $id = $problem->id;
 
-        if ($problem->{service} eq ''){
-            $problem->{service} = 'Web interface';
-        }
-        if ($problem->{council}) {
-            $problem->{council} =~ s/\|.*//g;
-            my @council_ids = split(/,/, $problem->{council});
+        $problem->service( 'Web interface' ) unless $problem->service;
+
+        if ($problem->council) {
+            (my $council = $problem->council) =~ s/\|.*//g;
+            my @council_ids = split(/,/, $council);
             push(@councils, @council_ids);
-            $problem->{council} = \@council_ids;
+            $problem->council( \@council_ids );
         }
 
-        $problem->{status} = $statusmap{$problem->{state}};
+        $problem->state( $statusmap{$problem->state} );
 
         my $request =
         {
             'service_request_id' => [ $id ],
-            'title' => [ $problem->{title} ], # Not in Open311 v2
-            'detail'  => [ $problem->{detail} ], # Not in Open311 v2
-            'description' => [ $problem->{title} .': ' . $problem->{detail} ],
-            'lat' => [ $problem->{latitude} ],
-            'long' => [ $problem->{longitude} ],
-            'status' => [ $problem->{status} ],
+            'title' => [ $problem->title ], # Not in Open311 v2
+            'detail'  => [ $problem->detail ], # Not in Open311 v2
+            'description' => [ $problem->title .': ' . $problem->detail ],
+            'lat' => [ $problem->latitude ],
+            'long' => [ $problem->longitude ],
+            'status' => [ $problem->state ],
 #            'status_notes' => [ {} ],
-            'requested_datetime' => [ w3date($problem->{confirmed}) ],
-            'updated_datetime' => [ w3date($problem->{lastupdate}) ],
+            'requested_datetime' => [ w3date($problem->confirmed_local) ],
+            'updated_datetime' => [ w3date($problem->lastupdate_local) ],
 #            'expected_datetime' => [ {} ],
 #            'address' => [ {} ],
 #            'address_id' => [ {} ],
-            'service_code' => [ $problem->{category} ],
-            'service_name' => [ $problem->{category} ],
+            'service_code' => [ $problem->category ],
+            'service_name' => [ $problem->category ],
 #            'service_notice' => [ {} ],
-            'agency_responsible' =>  $problem->{council} , # FIXME Not according to Open311 v2
+            'agency_responsible' =>  $problem->council , # FIXME Not according to Open311 v2
 #            'zipcode' => [ {} ],
-            'interface_used' => [ $problem->{service} ], # Not in Open311 v2
+            'interface_used' => [ $problem->service ], # Not in Open311 v2
         };
 
-        if ($problem->{anonymous} == 0){
+        if ( !$problem->anonymous ) {
             # Not in Open311 v2
-            $request->{'requestor_name'} = [ $problem->{name} ];
+            $request->{'requestor_name'} = [ $problem->name ];
         }
-        if ( $problem->{whensent} ) {
+        if ( $problem->whensent ) {
             # Not in Open311 v2
             $request->{'agency_sent_datetime'} =
-                [ w3date($problem->{whensent}) ];
+                [ w3date($problem->whensent_local) ];
         }
-# FIXME Find way to get comment count
-#        my $comment_count =
-#            dbh()->selectrow_array("select count(*) from comment ".
-#                                   "where state='confirmed' and ".
-#                                   "problem_id = $id");
-#        if ($comment_count) {
-#            # Not in Open311 v2
-#            $request->{'comment_count'} = [ $comment_count ];
-#        }
-        # Extract number of comments/updates
-        my $updates = $c->model('DB::Comment')->search(
-            { problem_id => $id, state => 'confirmed' },
-            { order_by => 'confirmed' }
-            );
-        if ($updates->count()) {
-            $request->{'comment_count'} = [ $updates->count() ];
+
+        # Extract number of updates
+        my $updates = $problem->comments->search(
+            { state => 'confirmed' },
+        )->count;
+        if ($updates) {
+            # Not in Open311 v2
+            $request->{'comment_count'} = [ $updates ];
         }
 
         my $display_photos = $c->cobrand->allow_photo_display;
-        if ($display_photos && $problem->{photo}) {
+        if ($display_photos && $problem->photo) {
             my $url = $c->cobrand->base_url();
             my $imgurl = $url . "/photo?id=$id";
             $request->{'media_url'} = [ $imgurl ];
@@ -434,17 +426,13 @@ sub is_jurisdiction_id_ok : Private {
     }
 }
 
-# Input:  2011-04-23 10:28:55.944805<
+# Input:  DateTime object
 # Output: 2011-04-23T10:28:55+02:00
 # FIXME Need generic solution to find time zone
 sub w3date : Private {
     my $datestr = shift;
-    if (defined $datestr) {
-        $datestr =~ s/ /T/;
-        my $tz = '+02:00';
-        $datestr =~ s/\.\d+$/$tz/;
-    }
-    return $datestr;
+    return unless $datestr;
+    return DateTime::Format::W3CDTF->format_datetime($datestr);
 }
 
 =head1 AUTHOR
