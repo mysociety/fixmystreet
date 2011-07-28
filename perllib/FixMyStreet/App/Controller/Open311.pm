@@ -65,26 +65,26 @@ http://search.cpan.org/~bobtfish/Catalyst-Manual-5.8007/lib/Catalyst/Manual/Intr
 
 sub discovery_v2 : LocalRegex('^v2/discovery.(xml|json|html)$') : Args(0) {
     my ( $self, $c ) = @_;
-    $c->stash->{format} = $c->req->captures->[1];
+    $c->stash->{format} = $c->req->captures->[0];
     $c->forward( 'get_discovery' );
 }
 
 sub services_v2 : LocalRegex('^v2/services.(xml|json|html)$') : Args(0) {
     my ( $self, $c ) = @_;
-    $c->stash->{format} = $c->req->captures->[1];
+    $c->stash->{format} = $c->req->captures->[0];
     $c->forward( 'get_services' );
 }
 
 sub requests_v2 : LocalRegex('^v2/requests.(xml|json|html|rss)$') : Args(0) {
     my ( $self, $c ) = @_;
-    $c->stash->{format} = $c->req->captures->[1];
+    $c->stash->{format} = $c->req->captures->[0];
     $c->forward( 'get_requests' );
 }
 
 sub request_v2 : LocalRegex('^v2/requests/(\d+).(xml|json|html)$') : Args(0) {
     my ( $self, $c ) = @_;
-    $c->stash->{id}     = $c->req->captures->[1];
-    $c->stash->{format} = $c->req->captures->[2];
+    $c->stash->{id}     = $c->req->captures->[0];
+    $c->stash->{format} = $c->req->captures->[1];
     $c->forward( 'get_request' );
 }
 
@@ -346,7 +346,7 @@ sub get_requests : Private {
                 unless ($agency =~ m/^(\d+)$/) {
                     $c->detach( 'error', [
                         sprintf(_('Invalid agency_responsible value %s'),
-                            $value[0])
+                            $value)
                     ] );
                 }
                 my $agencyid = $1;
@@ -416,10 +416,10 @@ sub format_output : Private {
     my $format = $c->stash->{format};
     if ('json' eq $format) {
         $c->res->content_type('application/json; charset=utf-8');
-        $c->stash->{response} = JSON::to_json($hashref);
+        $c->res->body( encode_json($hashref) );
     } elsif ('xml' eq $format) {
         $c->res->content_type('application/xml; charset=utf-8');
-        $c->stash->{response} = XMLout($hashref, RootName => undef);
+        $c->res->body( XMLout($hashref, RootName => undef) );
     } else {
         $c->detach( 'error', [
             sprintf(_('Invalid format %s specified.'), $format)
