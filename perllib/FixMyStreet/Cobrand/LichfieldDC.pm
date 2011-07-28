@@ -37,7 +37,7 @@ sub site_title {
 
 sub enter_postcode_text {
     my ($self) = @_;
-    return 'Enter a Lichfield postcode, or street name and area';
+    return 'Enter a Lichfield district postcode, or street name and area';
 }
 
 sub council_check {
