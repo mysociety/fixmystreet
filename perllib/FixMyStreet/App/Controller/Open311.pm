@@ -51,7 +51,7 @@ Displays some summary information for the requests.
 
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
-    return show_documentation($c);
+    # don't need to do anything here - should just pass through.
 }
 
 =head2 discovery
@@ -86,180 +86,9 @@ sub request_v2 : Regex('^open311(.cgi)?/v2/requests/(\d+).(xml|json|html)$') : A
 }
 
 sub error : Private {
-    my ($q, $error) = @_;
-    show_documentation($q, "ERROR: $error");
-}
-
-sub show_documentation : Private {
-    my ($c, $message) = @_;
-    my $jurisdiction_id = 'fiksgatami.no';
-    my $response;
-
-    $c->res->content_type('text/html; charset=utf-8');
-
-    $response .= CGI::h1(_('Open311 API for the mySociety FixMyStreet server'));
-    $response .= CGI::p(sprintf(_('Note: <strong>%s</strong>'), $message))
-        if $message;
-    $response .= CGI::p(_('At the moment only searching for and looking at reports work.'));
-    $response .= CGI::p(_('This API implementation is work in progress and not yet stabilized.  It will change without warnings in the future.'));
-
-    $response .= CGI::li(CGI::a({rel => 'nofollow',
-                        href => "http://www.open311.org/"},
-                       _('Open311 initiative web page')));
-    $response .= CGI::li(CGI::a({rel => 'nofollow',
-                        href => 'http://wiki.open311.org/GeoReport_v2'},
-                       _('Open311 specification')));
-
-    $response .= CGI::p(sprintf(_('At most %d requests are returned in each query.  The returned requests are ordered by requested_datetime, so to get all requests, do several searches with rolling start_date and end_date.'),
-                        mySociety::Config::get('RSS_LIMIT')));
-
-    my $baseurl = $c->cobrand->base_url();
-
-    $response .= CGI::p(_('The following Open311 v2 attributes are returned for each request: service_request_id, description, lat, long, media_url, status, requested_datetime, updated_datetime, service_code and service_name.'));
-
-    $response .= CGI::p(_('In addition, the following attributes that are not part of the Open311 v2 specification are returned: agency_sent_datetime, title (also returned as part of description), interface_used, comment_count, requestor_name (only present if requestor allowed the name to be shown on this site).'));
-
-    $response .= CGI::p(_('The Open311 v2 attribute agency_responsible is used to list the administrations that received the problem report, which is not quite the way the attribute is defined in the Open311 v2 specification.'));
-
-    my $mapiturl = mySociety::Config::get('MAPIT_URL');
-    $response .= CGI::p(sprintf(_('With request searches, it is also possible to search for agency_responsible to limit the requests to those sent to a single administration.  The search term is the administration ID provided by <a href="%s">MaPit</a>.'), $mapiturl));
-
-    $response .= CGI::p(_('Examples:'));
-
-    $response .= "<ul>\n";
-
-    my @examples =
-    (
-     {
-         url => "$baseurl/open311.cgi/v2/discovery.xml?jurisdiction_id=$jurisdiction_id",
-         info => 'discovery information',
-     },
-     {
-         url => "$baseurl/open311.cgi/v2/services.xml?jurisdiction_id=$jurisdiction_id",
-         info => 'list of services provided',
-     },
-     {
-         url => "$baseurl/open311.cgi/v2/services.xml?jurisdiction_id=$jurisdiction_id?lat=11&long=60",
-         info => 'list of services provided for WGS84 coordinate latitude 11 longitude 60',
-     },
-     {
-         url => "$baseurl/open311.cgi/v2/requests/1.xml?jurisdiction_id=$jurisdiction_id",
-         info => 'Request number 1',
-     },
-     {
-         url => "$baseurl/open311.cgi/v2/requests.xml?jurisdiction_id=$jurisdiction_id&status=open&agency_responsible=1601&end_date=2011-03-10",
-         info => 'All open requests reported before 2011-03-10 to Trondheim (id 1601)',
-     },
-     {
-         url => "$baseurl/open311.cgi/v2/requests.xml?jurisdiction_id=$jurisdiction_id&status=open&agency_responsible=219|220",
-         info => 'All open requests in Asker (id 220) and Bærum (id 219)',
-     },
-     {
-         url => "$baseurl/open311.cgi/v2/requests.xml?jurisdiction_id=$jurisdiction_id&service_code=Vannforsyning",
-         info => "All requests with the category 'Vannforsyning'",
-     },
-     {
-         url => "$baseurl/open311.cgi/v2/requests.xml?jurisdiction_id=$jurisdiction_id&status=closed",
-         info => 'All closed requests',
-     },
-    );
-    for my $example (@examples) {
-        my $url = $example->{url};
-        my $info = $example->{info};
-        my $googlemapslink = '';
-        if ($url =~ m%/requests.xml%) {
-            my $rssurl = $url;
-            $rssurl =~ s/.xml/.rss/;
-            my $encurl = CGI::escape($rssurl);
-            $googlemapslink = ' [ ' .
-                CGI::a({href => "http://maps.google.com/?q=$encurl"},
-                      _('GeoRSS on Google Maps')) . ' ]';
-        }
-        $response .= CGI::li(CGI::a({href => $url}, $info) . $googlemapslink . '<br>' .
-                     ent($url));
-    }
-
-    $response .= <<EOF;
-</ul>
-
-<h2>Searching</h2>
-
-<p>The following search parameters can be used:</p>
-
-<dl>
-
-<dt>service_request_id</dt>
-<dd>Search for numeric ID of specific request.
-   Using this is identical to asking for a individual request using
-   the /requests/number.format URL.</dd>
-<dt>service_code</dt>
-<dd>Search for the given category / service type string.</dd>
-
-<dt>status</dt>
-<dd>Search for open or closed (fixed) requests.</dd>
-
-<dt>start_date<dt>
-<dd>Only return requests with requested_datetime set after or at the
-  date and time specified.  The format is YYYY-MM-DDTHH:MM:SS+TZ:TZ.</dd>
-
-<dt>end_date<dt>
-<dd>Only return requests with requested_datetime set before the date
-  and time specified.  Same format as start_date.</dd>
-
-<dt>agency_responsible</dt>
-<dd>ID of government body receiving the request.  Several IDs can be
-  specified with | as a separator.</dd>
-
-<dt>interface_used<dt>
-<dd>Name / identifier of interface used.</dd>
-
-<dt>has_photo<dt>
-<dd>Search for entries with or without photos.  Use value 'true' to
-only get requests created with images, and 'false' to get those
-created without images.</dd>
-
-<dt>max_requests</dt>
-<dd>Max number of requests to return from the search.  If it is larger
-than the site specific max_requests value specified in the discovery
-call, the value provided is ignored.</dd>
-
-<dl>
-
-<p>The search result might look like this:</p>
-
-EOF
-
-    $response .= xml_format("
-  <requests>
-    <request>
-      <agency_responsible>
-        <recipient>Statens vegvesen region øst</recipient>
-        <recipient>Oslo</recipient>
-      </agency_responsible>
-      <agency_sent_datetime>2011-04-23T10:28:55+02:00</agency_sent_datetime>
-      <description>Mangler brustein: Det støver veldig på tørre dager.  Her burde det vært brustein.</description>
-      <detail>Det støver veldig på tørre dager.  Her burde det vært brustein.</detail>
-      <interface_used>Web interface</interface_used>
-      <lat>59.916848</lat>
-      <long>10.728148</long>
-      <requested_datetime>2011-04-23T09:32:36+02:00</requested_datetime>
-      <requestor_name>Petter Reinholdtsen</requestor_name>
-      <service_code>Annet</service_code>
-      <service_name>Annet</service_name>
-      <service_request_id>1</service_request_id>
-      <status>open</status>
-      <title>Mangler brustein</title>
-      <updated_datetime>2011-04-23T10:28:55+02:00</updated_datetime>
-    </request>
-  </requests>
-");
-
-    $c->stash->{response} = $response;
-}
-
-sub xml_format : Private {
-    my $xml = shift;
-    return '<pre>' . ent($xml) . '</pre>';
+    my ($c, $error) = @_;
+    $c->stash->{error} = "ERROR: $error";
+    $c->stash->{template} = 'open311/index.html';
 }
 
 # Example
@@ -466,7 +295,7 @@ sub output_requests : Private {
 
 sub get_requests : Private {
     my ($c, $format) = @_;
-    return unless is_jurisdiction_id_ok($c);
+    $c->forward( 'is_jurisdiction_id_ok' );
 
     my %rules = (
         service_request_id => 'id = ?',
@@ -497,10 +326,10 @@ sub get_requests : Private {
                 my @valuelist;
                 for my $agency (split(/\|/, $value[0])) {
                     unless ($agency =~ m/^(\d+)$/) {
-                        error ($c,
+                        $c->detach( 'error', [
                                sprintf(_('Invalid agency_responsible value %s'),
-                                       $value[0]));
-                        return;
+                                       $value[0])
+                        ] );
                     }
                     my $agencyid = $1;
                     # FIXME This seem to match the wrong entries
@@ -526,10 +355,10 @@ sub get_requests : Private {
                     $criteria .= ' and photo is null';
                     @value = ();
                 } else {
-                    error($c,
+                    $c->detach( 'error', [
                           sprintf(_('Incorrect has_photo value "%s"'),
-                                  $value[0]));
-                    return;
+                                  $value[0])
+                    ] );
                 }
             } elsif ('interface_used' eq $param) {
                 if ('Web interface' eq $value[0]) {
@@ -566,7 +395,7 @@ sub get_requests : Private {
 # http://seeclickfix.com/open311/requests/1.xml?jurisdiction_id=sfgov.org
 sub get_request : Private {
     my ($c, $id, $format) = @_;
-    return unless is_jurisdiction_id_ok($c);
+    $c->forward( 'is_jurisdiction_id_ok' );
 
     my $criteria = "state IN ('fixed', 'confirmed') AND id = ?";
     if ('html' eq $format) {
@@ -586,18 +415,17 @@ sub format_output : Private {
         $c->res->content_type('application/xml; charset=utf-8');
         $c->stash->{response} = XMLout($hashref, RootName => undef);
     } else {
-        error($c, sprintf(_('Invalid format %s specified.'), $format));
-        return;
+        $c->detach( 'error', [
+            sprintf(_('Invalid format %s specified.'), $format)
+        ] );
     }
 }
 
 sub is_jurisdiction_id_ok : Private {
-    my ($c) = @_;
+    my ( $self, $c ) = @_;
     unless (my $jurisdiction_id = $c->req->param('jurisdiction_id')) {
-        error($c, _('Missing jurisdiction_id'));
-        return 0;
+        $c->detach( 'error', [ _('Missing jurisdiction_id') ] );
     }
-    return 1;
 }
 
 # Input:  2011-04-23 10:28:55.944805<
@@ -611,17 +439,6 @@ sub w3date : Private {
         $datestr =~ s/\.\d+$/$tz/;
     }
     return $datestr;
-}
-
-sub end : Private {
-    my ( $self, $c ) = @_;
-
-    my $response =
-      $c->stash->{error}
-      ? { error => $c->stash->{error} }
-      : $c->stash->{response};
-
-    $c->res->body( $response || {} );
 }
 
 =head1 AUTHOR
