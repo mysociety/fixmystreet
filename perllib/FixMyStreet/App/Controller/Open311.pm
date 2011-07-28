@@ -6,9 +6,7 @@ use namespace::autoclean;
 
 use JSON;
 use XML::Simple;
-use URI::Escape;
 use mySociety::DBHandle qw(select_all);
-use mySociety::Web qw(ent);
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -101,9 +99,8 @@ sub error : Private {
 # http://sandbox.georeport.org/tools/discovery/discovery.xml
 sub get_discovery : Private {
     my ( $self, $c ) = @_;
-    my $format = $c->stash->{format};
 
-    my $contact_email = mySociety::Config::get('CONTACT_EMAIL');
+    my $contact_email = $c->config->{CONTACT_EMAIL};
     my $prod_url = 'http://www.fiksgatami.no/open311';
     my $test_url = 'http://fiksgatami-dev.nuug.no/open311';
     my $prod_changeset = '2011-04-08T00:00:00Z';
@@ -115,7 +112,7 @@ sub get_discovery : Private {
         'changeset' => [$prod_changeset],
         # XXX rewrite to match
         'key_service' => ["Read access is open to all according to our \u003Ca href='/open_data' target='_blank'\u003Eopen data license\u003C/a\u003E. For write access either: 1. return the 'guid' cookie on each call (unique to each client) or 2. use an api key from a user account which can be generated here: http://seeclickfix.com/register The unversioned url will always point to the latest supported version."],
-        'max_requests' => [ mySociety::Config::get('RSS_LIMIT') ],
+        'max_requests' => [ $c->config->{RSS_LIMIT} ],
         'endpoints' => [
             {
                 'endpoint' => [
@@ -148,14 +145,15 @@ sub get_discovery : Private {
             }
             ]
     };
-    format_output($c, $format, {'discovery' => $info});
+    $c->forward( 'format_output', [ {
+        'discovery' => $info
+    } ] );
 }
 
 # Example
 # http://seeclickfix.com/open311/services.html?lat=32.1562864999991&lng=-110.883806
 sub get_services : Private {
     my ( $self, $c ) = @_;
-    my $format = $c->stash->{format};
 
     my $jurisdiction_id = $c->req->param('jurisdiction_id') || '';
     my $lat = $c->req->param('lat') || '';
@@ -194,12 +192,16 @@ sub get_services : Private {
              }
             );
     }
-    format_output($c, $format, {'services' => [{ 'service' => \@services}]});
+    $c->forward( 'format_output', [ {
+        'services' => [ {
+            'service' => \@services
+        } ]
+    } ] );
 }
 
 
 sub output_requests : Private {
-    my ($c, $format, $criteria, $limit, @args) = @_;
+    my ( $self, $c, $criteria, $limit, @args ) = @_;
     # Look up categories for this council or councils
     my $query =
         "SELECT id, title, detail, latitude, longitude, state, ".
@@ -208,7 +210,7 @@ sub output_requests : Private {
         "(photo is not null) as has_photo FROM problem ".
         "WHERE $criteria ORDER BY confirmed desc";
 
-    my $open311limit = mySociety::Config::get('RSS_LIMIT');
+    my $open311limit = $c->config->{RSS_LIMIT};
     $open311limit = $limit if ($limit && $limit < $open311limit);
     $query .= " LIMIT $open311limit" if $open311limit;
 
@@ -300,12 +302,15 @@ sub output_requests : Private {
                 [ {'recipient' => [ @council_names ] } ];
         }
     }
-    format_output($c, $format, {'requests' => [{ 'request' => \@problemlist}]});
+    $c->forward( 'format_output', [ {
+        'requests' => [ {
+            'request' => \@problemlist
+        } ]
+    } ] );
 }
 
 sub get_requests : Private {
     my ( $self, $c ) = @_;
-    my $format = $c->stash->{format};
 
     $c->forward( 'is_jurisdiction_id_ok' );
 
@@ -384,7 +389,7 @@ sub get_requests : Private {
         }
     }
 
-#    if ('rss' eq $format) {
+#    if ('rss' eq $c->stash->{format}) {
 # FIXME write new implementatin
 #        my $cobrand = Page::get_cobrand($c);
 #        my $alert_type = 'open311_requests_rss';
@@ -399,7 +404,7 @@ sub get_requests : Private {
 #        print $c->header( -type => 'application/xml; charset=utf-8' );
 #        print $out;
 #    } else {
-        output_requests($c, $format, $criteria, $max_requests, @args);
+        $c->forward( 'output_requests', [ $criteria, $max_requests, @args ] );
 #    }
 }
 
@@ -415,14 +420,15 @@ sub get_request : Private {
     my $criteria = "state IN ('fixed', 'confirmed') AND id = ?";
     if ('html' eq $format) {
         my $base_url = $c->cobrand->base_url();
-        print $c->redirect($base_url . "/report/$id");
+        $c->res->redirect($base_url . "/report/$id");
         return;
     }
-    output_requests($c, $format, $criteria, 0, $id);
+    $c->forward( 'output_requests', [ $criteria, 0, $id ] );
 }
 
 sub format_output : Private {
-    my ($c, $format, $hashref) = @_;
+    my ( $self, $c, $hashref ) = @_;
+    my $format = $c->stash->{format};
     if ('json' eq $format) {
         $c->res->content_type('application/json; charset=utf-8');
         $c->stash->{response} = JSON::to_json($hashref);
