@@ -54,39 +54,45 @@ sub index : Path : Args(0) {
     # don't need to do anything here - should just pass through.
 }
 
+sub old_uri : Regex('^open311\.cgi') : Args(0) {
+    my ( $self, $c ) = @_;
+    ( my $new = $c->req->path ) =~ s/open311.cgi/open311/;
+    $c->res->redirect( "/$new", 301);
+}
+
 =head2 discovery
 
 http://search.cpan.org/~bobtfish/Catalyst-Manual-5.8007/lib/Catalyst/Manual/Intro.pod#Action_types
 
 =cut
 
-sub discovery_v2 : Regex('^open311(.cgi)?/v2/discovery.(xml|json|html)$') : Args(0) {
+sub discovery_v2 : LocalRegex('^v2/discovery.(xml|json|html)$') : Args(0) {
     my ( $self, $c ) = @_;
-    my $format = $c->req->captures->[1];
-    return get_discovery($c, 'xml');
+    $c->stash->{format} = $c->req->captures->[1];
+    $c->forward( 'get_discovery' );
 }
 
-sub services_v2 : Regex('^open311(.cgi)?/v2/services.(xml|json|html)$') : Args(0) {
+sub services_v2 : LocalRegex('^v2/services.(xml|json|html)$') : Args(0) {
     my ( $self, $c ) = @_;
-    my $format = $c->req->captures->[1];
-    return get_services($c, $format);
+    $c->stash->{format} = $c->req->captures->[1];
+    $c->forward( 'get_services' );
 }
 
-sub requests_v2 : Regex('^open311(.cgi)?/v2/requests.(xml|json|html|rss)$') : Args(0) {
+sub requests_v2 : LocalRegex('^v2/requests.(xml|json|html|rss)$') : Args(0) {
     my ( $self, $c ) = @_;
-    my $format = $c->req->captures->[1];
-    return get_requests($c, $format);
+    $c->stash->{format} = $c->req->captures->[1];
+    $c->forward( 'get_requests' );
 }
 
-sub request_v2 : Regex('^open311(.cgi)?/v2/requests/(\d+).(xml|json|html)$') : Args(0) {
+sub request_v2 : LocalRegex('^v2/requests/(\d+).(xml|json|html)$') : Args(0) {
     my ( $self, $c ) = @_;
-    my $id = $c->req->captures->[1];
-    my $format = $c->req->captures->[2];
-    return get_request($c, $id, $format);
+    $c->stash->{id}     = $c->req->captures->[1];
+    $c->stash->{format} = $c->req->captures->[2];
+    $c->forward( 'get_request' );
 }
 
 sub error : Private {
-    my ($c, $error) = @_;
+    my ( $self, $c, $error ) = @_;
     $c->stash->{error} = "ERROR: $error";
     $c->stash->{template} = 'open311/index.html';
 }
@@ -94,7 +100,9 @@ sub error : Private {
 # Example
 # http://sandbox.georeport.org/tools/discovery/discovery.xml
 sub get_discovery : Private {
-    my ($c, $format) = @_;
+    my ( $self, $c ) = @_;
+    my $format = $c->stash->{format};
+
     my $contact_email = mySociety::Config::get('CONTACT_EMAIL');
     my $prod_url = 'http://www.fiksgatami.no/open311';
     my $test_url = 'http://fiksgatami-dev.nuug.no/open311';
@@ -146,7 +154,9 @@ sub get_discovery : Private {
 # Example
 # http://seeclickfix.com/open311/services.html?lat=32.1562864999991&lng=-110.883806
 sub get_services : Private {
-    my ($c, $format) = @_;
+    my ( $self, $c ) = @_;
+    my $format = $c->stash->{format};
+
     my $jurisdiction_id = $c->req->param('jurisdiction_id') || '';
     my $lat = $c->req->param('lat') || '';
     my $lon = $c->req->param('long') || '';
@@ -294,7 +304,9 @@ sub output_requests : Private {
 }
 
 sub get_requests : Private {
-    my ($c, $format) = @_;
+    my ( $self, $c ) = @_;
+    my $format = $c->stash->{format};
+
     $c->forward( 'is_jurisdiction_id_ok' );
 
     my %rules = (
@@ -394,7 +406,10 @@ sub get_requests : Private {
 # Example
 # http://seeclickfix.com/open311/requests/1.xml?jurisdiction_id=sfgov.org
 sub get_request : Private {
-    my ($c, $id, $format) = @_;
+    my ( $self, $c ) = @_;
+    my $format = $c->stash->{format};
+    my $id     = $c->stash->{id};
+
     $c->forward( 'is_jurisdiction_id_ok' );
 
     my $criteria = "state IN ('fixed', 'confirmed') AND id = ?";
