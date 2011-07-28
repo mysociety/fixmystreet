@@ -7,7 +7,7 @@
     @import url(/cobrands/lichfielddc/css/layout.css);
 </style>
 
-	<link rel="stylesheet" type="text/css" href="http://www.lichfielddc.gov.uk/site/styles/standard.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="http://www.lichfielddc.gov.uk/site/styles/standard_1_.css" media="screen" />
 <link rel="stylesheet" type="text/css" href="http://www.lichfielddc.gov.uk/site/styles/generic/style.php" media="screen" />
 
 <!--[if lte IE 6]>
@@ -61,7 +61,7 @@
 	<script type="text/javascript" src="http://www.lichfielddc.gov.uk/site/javascript/global.js"></script>
 
 
-	<meta name="Keywords" content="home, homepage, index, root, Lichfield, UK, England, local authority, council, local government, services, citizen, councillor, community, leisure, tourist, tourism, social services, education, enviroment, fire, emergency planning, road safety, transport, motorways, library, libraries, archive, public record, record office, parish councils, county councillors" />
+	<meta name="Keywords" content="home, homepage, index, root, Lichfield, UK, England, local authority, council, local government, services, citizen, councillor, community, leisure, tourist, tourism, social services, education, environment, fire, emergency planning, road safety, transport, motorways, library, libraries, archive, public record, record office, parish councils, county councillors" />
 	<meta name="Description" content="Lichfield District Council: FixMyStreet" />
 
 	<meta name="DC.title" lang="en" content="Lichfield District Council: FixMyStreet" />
@@ -72,14 +72,14 @@
 	
 [% INCLUDE 'common_header_tags.html' %]
 </head>
-<body PARAM_BODYID>
+<body>
 <!-- ########## MAIN STRUCTURE ######### -->
 <div id="container">
 <div id="mobile_name">Lichfield District Council</div>
 <div id="mast">
 	<p class="skip">
-		<a accesskey="s" title="Skip to page content, access key S" href="http://www.lichfielddc.gov.uk/site/custom_scripts/mysociety/header.php?#main" rel="nofollow">Jump to content</a> - 
-		<a accesskey="n" title="Skip to main navigation, access key N" href="http://www.lichfielddc.gov.uk/site/custom_scripts/mysociety/header.php?#main-nav" rel="nofollow">Jump to navigation</a> - 
+		<a accesskey="s" title="Skip to page content, access key S" href="[% c.req.url %]#main" rel="nofollow">Jump to content</a> - 
+		<a accesskey="n" title="Skip to main navigation, access key N" href="[% c.req.url %]#main-nav" rel="nofollow">Jump to navigation</a> - 
 		
 		<a class="access" title="Change font size, colour and contrast of this site" href="http://www.lichfielddc.gov.uk/site/scripts/user_settings.php">Accessibility Settings</a> 
 	</p>
@@ -92,10 +92,9 @@
 	<form action="http://www.lichfielddc.gov.uk/site/scripts/google_results.php" method="get" name="search" id="search">
 		<fieldset><a title="Create a specific detailed search" href="http://www.lichfielddc.gov.uk/site/scripts/search_index.php">Need help finding something?</a>
 		<label for="SearchSite">Search this site</label>
-        <input type="text" name="q" size="18" maxlength="40" class="field" id="SearchSite" value=""/>
-        <input type="hidden" name="site" value="ldc"/>
-        <input type="hidden" name="client" value="ldc"/>
+        <input type="text" name="q" size="18" maxlength="40" class="field" id="SearchSite" value="What are you looking for?" style="colour:#666;"/>
         <input type="hidden" name="output" value="xml"/>
+        <input type="hidden" name="as_sitesearch" value="lichfielddc.gov.uk"/>
         <input type="submit" value="Search" class="button" /></fieldset>
 	</form>
 	<div class="pseudoH1">
@@ -129,9 +128,9 @@
 
 	</ul><!-- end navigation -->
 	<!--
-	<span id="postcodebox" style="display: none;">
+	<span id="postcode box" style="display: none;">
 <form action="http://www.lichfielddc.gov.uk/site/custom_scripts/myarea.php" method="get" id="pcodeform">
-<label for="postcode">Your Postcode: </label><input name="postcode" id="postcode" class="text" /> <input value="Go!" name="submit" class="pbutton" type="submit" />
+<label for="postcode">Your Postcode: </label><input name="postcode" id="postcode" class="text" /> <input value="Go!" name="submit" class="button" type="submit" />
 </form>
 </span> -->
 	
@@ -152,18 +151,31 @@
 	var url = li.title;
 	window.location = url;
 	}
+
+$('SearchSite').onfocus = function() {
+   if (this._cleared) return
+   this.clear()
+   this.style.color = '#000'
+   this._cleared = true
+ }
+
 	
 /*	document.observe("dom:loaded", function() {
-		Event.observe($('myarea'), 'click', function(event) {
+		Event.observe($('my area'), 'click', function(event) {
 		$('postcodebox').appear();
 		event.stop(event);
 		});
 	}); */
 	</script>	<div id="page_wrap">
 		<div id="mainContent">
-			<div id="content" class="withWidth">
+			<div id="content">
 				<a name="main"></a>
 
+    [% IF c.user_exists %]
+    <ul class="user">
+        <li>[% tprintf(loc('Signed in as %s'), c.user.name || c.user.email) %] - <a href="/auth/sign_out">[% loc('Sign out') %]</a></li>
+    </ul>
+    [% END %]
                 <!-- BREAD CRUMB NAVIGATION -->
 
                  <!-- Breadcrumb --><!-- googleoff:all -->
@@ -179,9 +191,17 @@
                                 [% CASE '/contact' %] Contact
                                 [% END %]
                                 </li></ul>
+
                             <!-- END Breadcrumb --><!-- googleon:all -->
                     <!-- END BREAD CRUMB -->
-      <div id="wrap">
-          <div id="content">
+
+<ul id="nav">
+    <li class="section"><a href="/">Report a problem</a></li>
+    <li class="section"><a href="/reports/Lichfield">All reports</a></li>
+    <li class="section"><a href="/my">Your reports</a></li>
+    <li class="section"><a href="/alert">Local alerts</a></li>
+    <li class="section"><a href="/faq">Help</a></li>
+    <li class="section"><a href="/contact">Contact</a></li>
+</ul>
               <div id="mysociety">
 
