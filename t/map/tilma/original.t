@@ -14,7 +14,7 @@ my $mech = FixMyStreet::TestMech->new;
 mySociety::Locale::gettext_domain('FixMyStreet');
 
 FixMyStreet::Map::set_map_class();
-my $r = Catalyst::Request->new( { base => URI->new('/'), uri => URI->new('http://fixmystreet.com/test') } );
+my $r = Catalyst::Request->new( { base => URI->new('/'), uri => URI->new('http://fixmystreet.com/test'), parameters => { bbox => '-7.6,49.7,-7.5,49.8' } } );
 
 my $c = FixMyStreet::App->new( {
     request => $r,
@@ -56,31 +56,31 @@ my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
 for my $test ( 
     {
         state => 'fixed', 
-        colour => 'G',
+        colour => 'green',
     },
     {
         state => 'fixed - user', 
-        colour => 'G',
+        colour => 'green',
     },
     {
         state => 'fixed - council', 
-        colour => 'G',
+        colour => 'green',
     },
     {
         state => 'confirmed', 
-        colour => 'R',
+        colour => 'red',
     },
     {
         state => 'investigating', 
-        colour => 'R',
+        colour => 'red',
     },
     {
         state => 'planned', 
-        colour => 'R',
+        colour => 'red',
     },
     {
         state => 'in progress', 
-        colour => 'R',
+        colour => 'red',
     },
 ) {
     subtest "pin colour for state $test->{state}" => sub {
@@ -98,7 +98,7 @@ for my $test (
         my $id = $report->id;
         my $colour = $test->{colour};
 
-        like $pins, qr#<a [^>]* /report/$id [^>]*>[^>]*/i/pin$colour#x, 'pin colour';
+        is $pins->[0][2], $colour, 'pin colour';
     };
 }
 
