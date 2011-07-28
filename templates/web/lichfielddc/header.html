@@ -188,7 +188,12 @@ $('SearchSite').onfocus = function() {
                                 [% CASE '/my' %]Your reports
                                 [% CASE '/alert' %]Local alerts
                                 [% CASE '/faq' %]Help
-                                [% CASE '/contact' %] Contact
+                                [% CASE '/contact' %]Contact
+                                [% CASE '/around' %]Viewing a location
+                                [% CASE '/report/new' %]Reporting a problem
+                                [% CASE '/auth' %]Sign in
+                                [% CASE '/auth/sign_out' %]Signed out
+                                [% CASE DEFAULT %] [% IF c.req.uri.path.substr(0, 8 ) == '/report/' %][% problem.title %] - Viewing a problem[% END %]
                                 [% END %]
                                 </li></ul>
 
