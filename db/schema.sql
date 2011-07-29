@@ -388,3 +388,12 @@ create table admin_log (
     whenedited timestamp not null default ms_current_timestamp()
 ); 
 
+-- Record open 311 configuration details
+
+create table open311conf (
+    id           integer primary key,
+    area_id      integer not null unique,
+    endpoint     text not null,
+    jurisdiction text,
+    api_key      text
+);
