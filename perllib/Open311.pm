@@ -4,6 +4,7 @@ use URI;
 use Moose;
 use XML::Simple;
 use LWP::Simple;
+use LWP::UserAgent;
 use HTTP::Request::Common qw(POST);
 
 has jurisdiction => ( is => 'ro', isa => 'Str' );;
@@ -110,13 +111,14 @@ sub _post {
     $uri->path( $uri->path . $path );
 
     use Data::Dumper;
-    my $req = POST $uri->as_string;
+    my $req = POST $uri->as_string,
     [
         jurisdiction_id => $self->jurisdiction,
         api_key => $self->api_key,
         %{ $params }
     ];
 
+    my $ua = LWP::UserAgent->new();
     my $res = $ua->request( $req );
 
     if ( $res->is_success ) {
