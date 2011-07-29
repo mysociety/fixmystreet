@@ -78,6 +78,8 @@ __PACKAGE__->add_columns(
   { data_type => "timestamp", is_nullable => 1 },
   "send_questionnaire",
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
+  "extra",
+  { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->has_many(
@@ -100,8 +102,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-06-23 15:49:48
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:3sw/1dqxlTvcWEI/eJTm4w
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-07-29 16:26:23
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ifvx9FOlbui66hPyzNIAPA
 
 # Add fake relationship to stored procedure table
 __PACKAGE__->has_many(
@@ -111,11 +113,31 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+__PACKAGE__->filter_column(
+    extra => {
+        filter_from_storage => sub {
+            my $self = shift;
+            my $ser  = shift;
+            return undef unless defined $ser;
+            my $h = new IO::String($ser);
+            return RABX::wire_rd($h);
+        },
+        filter_to_storage => sub {
+            my $self = shift;
+            my $data = shift;
+            my $ser  = '';
+            my $h    = new IO::String($ser);
+            RABX::wire_wr( $data, $h );
+            return $ser;
+        },
+    }
+);
 use DateTime::TimeZone;
 use Image::Size;
 use Moose;
 use namespace::clean -except => [ 'meta' ];
 use Utils;
+use RABX;
 
 with 'FixMyStreet::Roles::Abuser';
 
