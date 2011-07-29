@@ -12,7 +12,12 @@ __PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "Encoded
 __PACKAGE__->table("open311conf");
 __PACKAGE__->add_columns(
   "id",
-  { data_type => "integer", is_nullable => 0 },
+  {
+    data_type         => "integer",
+    is_auto_increment => 1,
+    is_nullable       => 0,
+    sequence          => "open311conf_id_seq",
+  },
   "area_id",
   { data_type => "integer", is_nullable => 0 },
   "endpoint",
@@ -26,8 +31,8 @@ __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("open311conf_area_id_key", ["area_id"]);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-07-29 17:47:55
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:e7DwO1HQwldHk/94RvQj6A
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-07-29 18:09:25
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ryqCpvwjNtQrZm4I3s0hxg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

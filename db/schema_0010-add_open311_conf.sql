@@ -1,7 +1,7 @@
 begin;
 
 CREATE TABLE open311conf (
-    id           INTEGER PRIMARY KEY,
+    id           SERIAL PRIMARY KEY,
     area_id      INTEGER NOT NULL unique,
     endpoint     TEXT NOT NULL,
     jurisdiction TEXT,
