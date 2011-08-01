@@ -79,6 +79,9 @@ create table contacts (
     whenedited timestamp not null, 
     -- what the last change was for: author's notes
     note text not null
+
+    -- extra fields required for open311
+    extra text
 );
 create unique index contacts_area_id_category_idx on contacts(area_id, category);
 
