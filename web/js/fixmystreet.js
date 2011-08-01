@@ -61,7 +61,7 @@ $(function(){
         if ( category_extras ) {
             $('#category_meta').empty();
             if ( category_extras[this.options[ this.selectedIndex ].text] ) {
-                extras = category_extras[this.options[ this.selectedIndex ].text].attribute;
+                extras = category_extras[this.options[ this.selectedIndex ].text];
                 for ( i in extras ) {
                     meta = extras[i];
                     field = '<div class="form-field">';

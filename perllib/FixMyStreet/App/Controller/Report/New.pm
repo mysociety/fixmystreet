@@ -692,7 +692,7 @@ sub process_report : Private {
         my @extra = ();
         my $metas = $contacts[0]->extra;
 
-        foreach my $field ( @{ $metas->{attribute} } ) {
+        foreach my $field ( sort { $a->{order} <=> $b->{order} } values %$metas ) {
             if ( lc( $field->{required} ) eq 'true' ) {
                 unless ( $c->request->param( $field->{code} ) ) {
                     $c->stash->{field_errors}->{ $field->{code} } = _('This information is required');
@@ -705,8 +705,10 @@ sub process_report : Private {
             };
         }
 
-        $c->stash->{report_meta} = \@extra if @extra;
-        $report->extra( \@extra ) if @extra;
+        if ( @extra ) {
+            $c->stash->{report_meta} = \@extra;
+            $report->extra( \@extra );
+        }
     } elsif ( @{ $c->stash->{area_ids_to_list} } ) {
 
         # There was an area with categories, but we've not been given one. Bail.

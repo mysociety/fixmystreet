@@ -75,7 +75,14 @@ while ( my $council = $council_list->next ) {
             if ( lc( $service->{metadata} ) eq 'true' ) {
                 print "Fetching meta data for $service->{service_code}\n";
                 my $meta_data = $open311->get_service_meta_info( $service->{service_code} );
-                $contact->extra( $meta_data );
+
+                # turn the data into something a bit more friendly to use
+                my %meta = ();
+                foreach my $attribute ( @{ $meta_data->{attribute} } ) {
+                    $meta{ $attribute->{code} } = $attribute;
+                }
+
+                $contact->extra( \%meta );
                 $contact->update;
             }
             print "created contact for service code " . $service->{service_code} . " for council @{[$council->area_id]}\n";
