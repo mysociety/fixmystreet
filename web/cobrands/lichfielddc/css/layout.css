@@ -115,7 +115,7 @@
 #mysociety #fixed {
 	padding: 5px !important;
 	margin: 70px 0 10px 0 !important;
-	width: 540px;
+	width: 405px;
 	position: relative;
 	top: 7px
 	}
@@ -125,8 +125,23 @@
 	}
 	
 #mysociety #updates div {
-	border: none;
+	border-bottom: 1px dotted #ccc;
+	padding: 0 0 17px 0;
+	margin: 17px 0 0 0;
+}
+
+#mysociety #updates {
+	margin-bottom: 40px;
 	}
+	
+#mysociety #updates p {
+	margin-bottom: 15px;
+	}
+	
+#map_box ul li p {
+	margin: 0;
+	padding: 0;
+}
 	
 #mysociety input[type='text'], #mysociety input[type='password'], #mysociety input[type='email'] {
 	background: #F9F9F1;
