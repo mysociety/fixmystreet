@@ -60,7 +60,7 @@ sub old_uri : Regex('^open311\.cgi') : Args(0) {
 
 =head2 discovery
 
-http://search.cpan.org/~bobtfish/Catalyst-Manual-5.8007/lib/Catalyst/Manual/Intro.pod#Action_types
+http://search.cpan.org/~bobtfish/Catalyst-Manual-5.8007/lib/Catalyst/Manual/Intro.pod
 
 =cut
 
@@ -362,7 +362,7 @@ sub get_requests : Private {
         $criteria->{$key} = { $op, $value };
     }
 
-#    if ('rss' eq $c->stash->{format}) {
+    if ('rss' eq $c->stash->{format}) {
 # FIXME write new implementatin
 #        my $cobrand = Page::get_cobrand($c);
 #        my $alert_type = 'open311_requests_rss';
@@ -376,9 +376,14 @@ sub get_requests : Private {
 #                                             $c, $criteria, $max_requests);
 #        print $c->header( -type => 'application/xml; charset=utf-8' );
 #        print $out;
-#    } else {
+        $c->stash->{type} = 'new_problems';
+        $c->stash->{search_criteria} = $criteria;
+        $c->stash->{max_requests} = $max_requests;
+        # Call Controller::Rss::output
+        $c->forward( '/rss/output' );
+    } else {
         $c->forward( 'output_requests', [ $criteria, $max_requests ] );
-#    }
+    }
 }
 
 # Example
