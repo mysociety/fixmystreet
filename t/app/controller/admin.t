@@ -602,7 +602,7 @@ for my $test (
         },
         changes => {
             text => 'this is a twice changed update',
-            state => 'hidden',
+            state => 'confirmed',
         },
         log_count => 7,
         log_entries => [qw/edit state_change state_change edit edit edit edit/],
@@ -629,6 +629,9 @@ for my $test (
         $update->discard_changes;
 
         is $update->$_, $test->{changes}->{$_} for grep { $_ ne 'email' } keys %{ $test->{changes} };
+        if ( $test->{changes}{state} && $test->{changes}{state} eq 'confirmed' ) {
+            isnt $update->confirmed, undef;
+        }
 
         if ( $test->{user} ) {
             is $update->user->id, $test->{user}->id, 'update user';

@@ -746,6 +746,10 @@ sub update_edit : Path('update_edit') : Args(1) {
             $update->user($user);
         }
 
+        if ( $new_state eq 'confirmed' and $old_state eq 'unconfirmed' ) {
+            $update->confirmed( \'ms_current_timestamp()' );
+        }
+
         $update->update;
 
         $status_message = '<p><em>' . _('Updated!') . '</em></p>';
