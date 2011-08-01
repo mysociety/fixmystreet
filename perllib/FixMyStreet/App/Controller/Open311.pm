@@ -376,7 +376,6 @@ sub get_requests : Private {
 #                                             $c, $criteria, $max_requests);
 #        print $c->header( -type => 'application/xml; charset=utf-8' );
 #        print $out;
-        $c->stash->{type} = 'new_problems';
         $c->stash->{search_criteria} = $criteria;
         $c->stash->{max_requests} = $max_requests;
         $c->stash->{query_func} = '/open311/rss_query';
@@ -390,6 +389,7 @@ sub get_requests : Private {
 sub rss_query : Private {
     my ( $self, $c ) = @_;
 
+    my $criteria = $c->stash->{search_criteria};
     my $limit = $c->stash->{max_requests};
     $limit = $c->config->{RSS_LIMIT}
         unless $limit && $limit <= $c->config->{RSS_LIMIT};
