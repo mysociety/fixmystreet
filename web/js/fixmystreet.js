@@ -57,4 +57,21 @@ $(function(){
         timer = window.setTimeout(email_alert_close, 2000);
     });
 
+    $('#form_category').change(function() {
+        if ( category_extras ) {
+            $('#category_meta').empty();
+            if ( category_extras[this.options[ this.selectedIndex ].text] ) {
+                extras = category_extras[this.options[ this.selectedIndex ].text].attribute;
+                for ( i in extras ) {
+                    meta = extras[i];
+                    field = '<div class="form-field">';
+                    field += '<label for="form_' + meta.code + '">' + meta.description + '</label>';
+                    field += '<input type="text" value="" name="' + meta.code + '" id="form_' + meta.code + '">';
+                    field += '</div>';
+                    $('<p>' + field + '</p>').appendTo('#category_meta');
+                }
+            }
+        }
+    });
+
 });

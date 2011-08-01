@@ -15,6 +15,7 @@ use Path::Class;
 use Utils;
 use mySociety::EmailUtil;
 use mySociety::TempFiles;
+use JSON;
 
 =head1 NAME
 
@@ -449,6 +450,7 @@ sub setup_categories_and_councils : Private {
     my %area_ids_to_list = ();       # Areas with categories assigned
     my @category_options = ();       # categories to show
     my $category_label   = undef;    # what to call them
+    my %category_extras  = ();       # extra fields to fill in for open311
 
     # FIXME - implement in cobrand
     if ( $c->cobrand->moniker eq 'emptyhomes' ) {
@@ -495,8 +497,12 @@ sub setup_categories_and_councils : Private {
 
             next if $contact->category eq _('Other');
 
-            push @category_options, $contact->category
-                unless $seen{$contact->category};
+            unless ( $seen{$contact->category} ) {
+                push @category_options, $contact->category;
+
+                $category_extras{ $contact->category } = $contact->extra
+                    if $contact->extra;
+            }
             $seen{$contact->category} = 1;
         }
 
@@ -511,6 +517,7 @@ sub setup_categories_and_councils : Private {
     $c->stash->{area_ids_to_list} = [ keys %area_ids_to_list ];
     $c->stash->{category_label}   = $category_label;
     $c->stash->{category_options} = \@category_options;
+    $c->stash->{category_extras}  = encode_json \%category_extras;
 
     my @missing_details_councils =
       grep { !$area_ids_to_list{$_} }    #
@@ -682,6 +689,24 @@ sub process_report : Private {
             if $council_string && @{ $c->stash->{missing_details_councils} };
         $report->council($council_string);
 
+        my @extra = ();
+        my $metas = $contacts[0]->extra;
+
+        foreach my $field ( @{ $metas->{attribute} } ) {
+            if ( lc( $field->{required} ) eq 'true' ) {
+                unless ( $c->request->param( $field->{code} ) ) {
+                    $c->stash->{field_errors}->{ $field->{code} } = _('This information is required');
+                }
+            }
+            push @extra, {
+                name => $field->{code},
+                description => $field->{description},
+                value => $c->request->param( $field->{code} ),
+            };
+        }
+
+        $c->stash->{report_meta} = \@extra if @extra;
+        $report->extra( \@extra ) if @extra;
     } elsif ( @{ $c->stash->{area_ids_to_list} } ) {
 
         # There was an area with categories, but we've not been given one. Bail.

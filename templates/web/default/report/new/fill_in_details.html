@@ -100,6 +100,24 @@
     <textarea name="detail" id="form_detail" rows="7" cols="26">[% report.detail | html %]</textarea>
 </div>
 
+[% IF category_extras %]
+<div id="category_meta">
+    [% IF report_meta %]
+        [% FOR meta IN report_meta %]
+        [% meta_name = meta.name %]
+[% IF field_errors.$meta_name %]
+    <div class='form-error'>[% field_errors.$meta_name %]</div>
+[% END %]
+
+<div class="form-field">
+    <label for="form_[% meta %]">[% meta.description _ ':' %]</label>
+    <input type="text" value="[% meta.value | html %]" name="[% meta_name %]" id="form_[% meta_name %]">
+</div>
+        [% END %]
+    [% END %]
+</div>
+[% END %]
+
 [% IF c.cobrand.allow_photo_upload %]
     [% IF field_errors.photo %]
         <div class='form-error'>[% field_errors.photo %]</div>

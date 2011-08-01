@@ -4,6 +4,12 @@
 
 [% map_js %]
 
+[% IF category_extras && category_extras != '{}' %]
+<script type="text/javascript">
+    category_extras = [% category_extras %];
+</script>
+[% END %]
+
 [% IF robots %]
     <meta name="robots" content="[% robots %]">
 [% ELSIF c.config.STAGING_SITE %]
