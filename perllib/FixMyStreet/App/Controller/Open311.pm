@@ -379,11 +379,28 @@ sub get_requests : Private {
         $c->stash->{type} = 'new_problems';
         $c->stash->{search_criteria} = $criteria;
         $c->stash->{max_requests} = $max_requests;
-        # Call Controller::Rss::output
+        $c->stash->{query_func} = '/open311/rss_query';
         $c->forward( '/rss/output' );
     } else {
         $c->forward( 'output_requests', [ $criteria, $max_requests ] );
     }
+}
+
+# Based on Controller::Rss::query_main
+sub rss_query : Private {
+    my ( $self, $c ) = @_;
+
+    my $limit = $c->stash->{max_requests};
+    $limit = $c->config->{RSS_LIMIT}
+        unless $limit && $limit <= $c->config->{RSS_LIMIT};
+
+    my $attr = {
+        order_by => { -desc => 'confirmed' },
+        rows => $limit
+    };
+
+    my $problems = $c->cobrand->problems->search( $criteria, $attr );
+    $c->stash->{query_main} = $problems;
 }
 
 # Example

@@ -156,7 +156,8 @@ sub output : Private {
     $c->detach( '/page_error_404_not_found', [ _('Unknown alert type') ] )
         unless $c->stash->{alert_type};
 
-    $c->forward( 'query_main' );
+    my $query_func = $c->stash->{query_func} || 'query_main';
+    $c->forward( $query_func );
 
     # Do our own encoding
     $c->stash->{rss} = new XML::RSS(
@@ -191,16 +192,13 @@ sub query_main : Private {
     my ( $site_restriction, $site_id ) = $c->cobrand->site_restriction( $c->cobrand->extra_data );
     # Only apply a site restriction if the alert uses the problem table
     $site_restriction = '' unless $alert_type->item_table eq 'problem';
-    my $search_criteria = $c->stash->{search_criteria};
 
     # FIXME Do this in a nicer way at some point in the future...
     my $query = 'select * from ' . $alert_type->item_table . ' where '
         . ($alert_type->head_table ? $alert_type->head_table . '_id=? and ' : '')
-        . $alert_type->item_where . $site_restriction .
-        . ($search_criteria ? "and $search_criteria" : '')
-        . ' order by ' . $alert_type->item_order;
+        . $alert_type->item_where . $site_restriction . ' order by '
+        . $alert_type->item_order;
     my $rss_limit = mySociety::Config::get('RSS_LIMIT');
-    $rss_limit = $c->stash->{max_requests} if $c->stash->{max_requests};
     $query .= " limit $rss_limit" unless $c->stash->{type} =~ /^all/;
 
     my $q = $c->model('DB::Alert')->result_source->storage->dbh->prepare($query);
