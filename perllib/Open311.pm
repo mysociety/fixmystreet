@@ -15,6 +15,10 @@ sub get_service_list {
     my $self = shift;
 
     my $service_list_xml = $self->_get( 'services.xml' );
+    my $xml = XML::Simple->new();
+    my $obj = $xml->XMLin( $service_list_xml );
+
+    return $obj;
 }
 
 sub get_service_meta_info {
@@ -22,6 +26,10 @@ sub get_service_meta_info {
     my $service_id = shift;
 
     my $service_meta_xml = $self->_get( "services/$service_id.xml" );
+    my $xml = XML::Simple->new();
+    my $obj = $xml->XMLin( $service_meta_xml );
+
+    return $obj;
 }
 
 sub send_service_request {
