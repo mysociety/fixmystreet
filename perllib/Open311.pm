@@ -24,21 +24,21 @@ sub get_service_meta_info {
     my $service_id = shift;
 
     my $service_meta_xml = $self->_get( "services/$service_id.xml" );
-    my $xml = XML::Simple->new();
-    my $obj = $xml->XMLin( $service_meta_xml );
-
-    return $obj;
+    return $self->_get_xml_object( $service_meta_xml );
 }
 
 sub send_service_request {
     my $self = shift;
     my $problem = shift;
+    my $extra = shift;
     my $service_code = shift;
 
     my $description = <<EOT;
 title:  @{[$problem->title()]}
 
 detail: @{[$problem->detail()]}
+
+url: $extra->{url}
 
 Submitted via FixMyStreet
 EOT
@@ -54,6 +54,10 @@ EOT
 
     if ( $problem->user->phone ) {
         $params->{ phone } = $problem->user->phone;
+    }
+
+    if ( $extra->{image_url} ) {
+        $params->{media_url} = $extra->{image_url};
     }
 
     if ( $problem->extra ) {

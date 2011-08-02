@@ -269,7 +269,7 @@ while (my $row = $unsent->next) {
             api_key      => $conf->api_key,
         );
 
-        my $resp = $open311->send_service_request( $row, $contact->email );
+        my $resp = $open311->send_service_request( $row, \%h, $contact->email );
 
         if ( $resp ) {
             $row->external_id( $resp );
