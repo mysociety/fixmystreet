@@ -15,10 +15,8 @@ sub get_service_list {
     my $self = shift;
 
     my $service_list_xml = $self->_get( 'services.xml' );
-    my $xml = XML::Simple->new();
-    my $obj = $xml->XMLin( $service_list_xml );
 
-    return $obj;
+    return $self->_get_xml_object( $service_list_xml );
 }
 
 sub get_service_meta_info {
@@ -70,14 +68,15 @@ EOT
     my $response = $self->_post( 'requests.xml', $params );
 
     if ( $response ) {
-        my $xml = XML::Simple->new();
-        my $obj = $xml->XMLin( $response );
+        my $obj = $self->_get_xml_object( $response );
 
-        if ( $obj->{ request }->{ service_request_id } ) {
-            return $obj->{ request }->{ service_request_id };
-        } else {
-            my $token = $obj->{ request }->{ token };
-            return $self->get_service_request_id_from_token( $token );
+        if ( $obj ) {
+            if ( $obj->{ request }->{ service_request_id } ) {
+                return $obj->{ request }->{ service_request_id };
+            } else {
+                my $token = $obj->{ request }->{ token };
+                return $self->get_service_request_id_from_token( $token );
+            }
         }
     }
 }
@@ -94,10 +93,9 @@ sub get_service_request_id_from_token {
 
     my $service_token_xml = $self->_get( "tokens/$token.xml" );
 
-    my $xml = XML::Simple->new();
-    my $obj = $xml->XMLin( $service_token_xml );
+    my $obj = $self->_get_xml_object( $service_token_xml );
 
-    if ( $obj->{ request }->{ service_request_id } ) {
+    if ( $obj && $obj->{ request }->{ service_request_id } ) {
         return $obj->{ request }->{ service_request_id };
     } else {
         return 0;
@@ -126,7 +124,6 @@ sub _post {
     my $uri = URI->new( $self->endpoint );
     $uri->path( $uri->path . $path );
 
-    use Data::Dumper;
     my $req = POST $uri->as_string,
     [
         jurisdiction_id => $self->jurisdiction,
@@ -141,8 +138,38 @@ sub _post {
         return $res->decoded_content;
     } else {
         warn "request failed: " . $res->status_line;
-        warn $res->decoded_content;
+        warn $self->_process_error( $res->decoded_content );
         return 0;
     }
+}
+
+sub _process_error {
+    my $self = shift;
+    my $error = shift;
+
+    my $obj = $self->_get_xml_object( $error );
+
+    my $msg = '';
+    if ( ref $obj && exists $obj->{error} ) {
+        my $errors = $obj->{error};
+        $errors = [ $errors ] if ref $errors ne 'ARRAY';
+        $msg .= sprintf( "%s: %s\n", $_->{code}, $_->{description} ) for @{ $errors };
+    }
+
+    return $msg || 'unknown error';
+}
+
+sub _get_xml_object {
+    my $self = shift;
+    my $xml= shift;
+
+    my $simple = XML::Simple->new();
+    my $obj;
+
+    eval {
+        $obj = $simple ->XMLin( $xml );
+    };
+
+    return $obj;
 }
 1;
