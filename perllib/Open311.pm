@@ -35,6 +35,7 @@ sub get_service_meta_info {
 sub send_service_request {
     my $self = shift;
     my $problem = shift;
+    my $service_code = shift;
 
     my $description = <<EOT;
 title:  @{[$problem->title()]}
@@ -50,6 +51,7 @@ EOT
         long => $problem->longitude,
         email => $problem->user->email,
         description => $description,
+        service_code => $service_code,
     };
 
     if ( $problem->user->phone ) {
@@ -59,22 +61,24 @@ EOT
     if ( $problem->extra ) {
         my $extras = $problem->extra;
 
-        for my $attr ( keys %{ $extras } ) {
-            my $name = sprintf( 'attribute[%s]', $attr );
-            $params->{ $name } = $extras->{ $attr };
+        for my $attr ( @$extras ) {
+            my $name = sprintf( 'attribute[%s]', $attr->{name} );
+            $params->{ $name } = $attr->{value};
         }
     }
 
     my $response = $self->_post( 'requests.xml', $params );
 
-    my $xml = XML::Simple->new();
-    my $obj = $xml->XMLin( $response );
+    if ( $response ) {
+        my $xml = XML::Simple->new();
+        my $obj = $xml->XMLin( $response );
 
-    if ( $obj->{ request }->{ service_request_id } ) {
-        return $obj->{ request }->{ service_request_id };
-    } else {
-        my $token = $obj->{ request }->{ token };
-        return $self->get_service_request_id_from_token( $token );
+        if ( $obj->{ request }->{ service_request_id } ) {
+            return $obj->{ request }->{ service_request_id };
+        } else {
+            my $token = $obj->{ request }->{ token };
+            return $self->get_service_request_id_from_token( $token );
+        }
     }
 }
 
@@ -93,7 +97,11 @@ sub get_service_request_id_from_token {
     my $xml = XML::Simple->new();
     my $obj = $xml->XMLin( $service_token_xml );
 
-    return $obj->{ request }->{ service_request_id };
+    if ( $obj->{ request }->{ service_request_id } ) {
+        return $obj->{ request }->{ service_request_id };
+    } else {
+        return 0;
+    }
 }
 
 sub _get {
@@ -132,6 +140,8 @@ sub _post {
     if ( $res->is_success ) {
         return $res->decoded_content;
     } else {
+        warn "request failed: " . $res->status_line;
+        warn $res->decoded_content;
         return 0;
     }
 }
