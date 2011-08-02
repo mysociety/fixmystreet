@@ -28,6 +28,8 @@ use mySociety::EmailUtil;
 use mySociety::MaPit;
 use mySociety::Web qw(ent);
 
+use Open311;
+
 # Set up site, language etc.
 my ($verbose, $nomail) = CronFns::options();
 my $base_url = mySociety::Config::get('BASE_URL');
@@ -136,6 +138,8 @@ while (my $row = $unsent->next) {
                 $h{category} = 'Customer Services' if $h{category} eq 'Other';
             } elsif ($areas_info->{$council}->{type} eq 'LBO') { # London
                 $send_web = 'london';
+            } elsif ( FixMyStreet::App->model("DB::Open311conf")->find( { area_id => $council } ) ) {
+                $send_web = 'open311';
             } else {
                 my $contact = FixMyStreet::App->model("DB::Contact")->find( {
                     deleted => 0,
@@ -247,6 +251,31 @@ while (my $row = $unsent->next) {
         $h{message} = construct_london_message(%h);
         if (!$nomail) {
             $result *= post_london_report( $row, %h );
+        }
+    } elsif ($send_web eq 'open311') {
+        # FIXME - looking this up twice :(
+        my $conf = FixMyStreet::App->model('DB::Open311conf')->find( { area_id => $row->council } );
+
+        # FIXME - doesn't deal with multiple recipients
+        my $contact = FixMyStreet::App->model("DB::Contact")->find( {
+            deleted => 0,
+            area_id => $row->council,
+            category => $row->category
+        } );
+
+        my $open311 = Open311->new(
+            jurisdiction => $conf->jurisdiction,
+            endpoint     => $conf->endpoint,
+            api_key      => $conf->api_key,
+        );
+
+        my $resp = $open311->send_service_request( $row, $contact->email );
+
+        if ( $resp ) {
+            $row->external_id( $resp );
+            $result = 0;
+        } else {
+            $result = 1;
         }
     }
 
