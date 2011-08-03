@@ -4,6 +4,9 @@
 to help unless you leave as much detail as you can, so please describe the exact location of
 the problem (e.g. on a wall), what it is, how long it has been there, a description (and a
 photo of the problem if you have one), etc.');
+        IF category_extras;
+            ' ' _ loc('Some categories may require additional information.');
+        END;
     ELSE;
         loc('Please fill in details of the problem below.');
     END;
