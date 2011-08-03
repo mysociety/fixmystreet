@@ -78,13 +78,15 @@ while ( my $council = $council_list->next ) {
 
                 # turn the data into something a bit more friendly to use
                 my %meta = ();
-                foreach my $attribute ( @{ $meta_data->{attribute} } ) {
+                foreach my $attribute ( @{ $meta_data->{attributes}->{attribute} } ) {
                     $meta{ $attribute->{code} } = $attribute;
                 }
 
                 $contact->extra( \%meta );
                 $contact->update;
             }
+
+            push @found_contacts, $service->{service_code};
             print "created contact for service code " . $service->{service_code} . " for council @{[$council->area_id]}\n";
         }
     }
