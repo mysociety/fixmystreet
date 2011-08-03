@@ -104,7 +104,7 @@ __PACKAGE__->has_many(
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:3sw/1dqxlTvcWEI/eJTm4w
 
 # Add fake relationship to stored procedure table
-__PACKAGE__->has_many(
+__PACKAGE__->has_one(
   "nearby",
   "FixMyStreet::DB::Result::Nearby",
   { "foreign.problem_id" => "self.id" },
