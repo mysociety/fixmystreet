@@ -63,13 +63,19 @@ $(function(){
             if ( category_extras[this.options[ this.selectedIndex ].text] ) {
                 var fields = category_extras[this.options[ this.selectedIndex ].text];
                 $('<h4>Additional information</h4>').appendTo('#category_meta');
-                fields.sort( function(a,b) { return a.order - b.order } );
                 for ( var i in fields) {
-                    var field = '';
                     var meta = fields[i];
-                    field = '<div class="form-field">';
+                    var field = '<div class="form-field">';
                     field += '<label for="form_' + meta.code + '">' + meta.description + ':</label>';
-                    field += '<input type="text" value="" name="' + meta.code + '" id="form_' + meta.code + '">';
+                    if ( meta.values ) {
+                        field += '<select name="' + meta.code + '" id="form_' + meta.code + '">';
+                        for ( var j in meta.values.value ) {
+                            field += '<option value="' + meta.values.value[j].key + '">' + j + '</option>';
+                        }
+                        field += '</select>';
+                    } else {
+                        field += '<input type="text" value="" name="' + meta.code + '" id="form_' + meta.code + '">';
+                    }
                     field += '</div>';
                     $( field ).appendTo('#category_meta');
                 }

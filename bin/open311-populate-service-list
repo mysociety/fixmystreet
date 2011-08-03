@@ -77,12 +77,14 @@ while ( my $council = $council_list->next ) {
                 my $meta_data = $open311->get_service_meta_info( $service->{service_code} );
 
                 # turn the data into something a bit more friendly to use
-                my %meta = ();
-                foreach my $attribute ( @{ $meta_data->{attributes}->{attribute} } ) {
-                    $meta{ $attribute->{code} } = $attribute;
-                }
+                my @meta =
+                    # remove trailing colon as we add this when we display so we don't want 2
+                    map { $_->{description} =~ s/:\s*//; $_ }
+                    # there is a display order and we only want to sort once
+                    sort { $a->{order} <=> $b->{order} }
+                    @{ $meta_data->{attributes}->{attribute} };
 
-                $contact->extra( \%meta );
+                $contact->extra( \@meta );
                 $contact->update;
             }
 

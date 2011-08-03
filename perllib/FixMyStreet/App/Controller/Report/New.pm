@@ -500,7 +500,7 @@ sub setup_categories_and_councils : Private {
             unless ( $seen{$contact->category} ) {
                 push @category_options, $contact->category;
 
-                $category_extras{ $contact->category } = [ values %{$contact->extra} ]
+                $category_extras{ $contact->category } = $contact->extra
                     if $contact->extra;
             }
             $seen{$contact->category} = 1;
@@ -517,7 +517,8 @@ sub setup_categories_and_councils : Private {
     $c->stash->{area_ids_to_list} = [ keys %area_ids_to_list ];
     $c->stash->{category_label}   = $category_label;
     $c->stash->{category_options} = \@category_options;
-    $c->stash->{category_extras}  = encode_json \%category_extras;
+    $c->stash->{category_extras}  = \%category_extras;
+    $c->stash->{category_extras_json}  = encode_json \%category_extras;
 
     my @missing_details_councils =
       grep { !$area_ids_to_list{$_} }    #
@@ -699,7 +700,7 @@ sub process_report : Private {
         my @extra = ();
         my $metas = $contacts[0]->extra;
 
-        foreach my $field ( sort { $a->{order} <=> $b->{order} } values %$metas ) {
+        foreach my $field ( @$metas ) {
             if ( lc( $field->{required} ) eq 'true' ) {
                 unless ( $c->request->param( $field->{code} ) ) {
                     $c->stash->{field_errors}->{ $field->{code} } = _('This information is required');

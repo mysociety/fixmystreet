@@ -4,9 +4,9 @@
 
 [% map_js %]
 
-[% IF category_extras && category_extras != '{}' %]
+[% IF category_extras_json && category_extras_json != '{}' %]
 <script type="text/javascript">
-    category_extras = [% category_extras %];
+    category_extras = [% category_extras_json %];
 </script>
 [% END %]
 
