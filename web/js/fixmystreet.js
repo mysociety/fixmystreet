@@ -62,7 +62,7 @@ $(function(){
             $('#category_meta').empty();
             if ( category_extras[this.options[ this.selectedIndex ].text] ) {
                 fields = category_extras[this.options[ this.selectedIndex ].text];
-                $('<p>Additional information</p>').appendTo('#category_meta');
+                $('<h4>Additional information</h4>').appendTo('#category_meta');
                 fields.sort( function(a,b) { return a.order - b.order } );
                 for ( i in fields) {
                     meta = fields[i];
@@ -70,7 +70,7 @@ $(function(){
                     field += '<label for="form_' + meta.code + '">' + meta.description + ':</label>';
                     field += '<input type="text" value="" name="' + meta.code + '" id="form_' + meta.code + '">';
                     field += '</div>';
-                    $('<p>' + field + '</p>').appendTo('#category_meta');
+                    $( field ).appendTo('#category_meta');
                 }
             }
         }
