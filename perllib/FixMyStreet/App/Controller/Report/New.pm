@@ -500,7 +500,7 @@ sub setup_categories_and_councils : Private {
             unless ( $seen{$contact->category} ) {
                 push @category_options, $contact->category;
 
-                $category_extras{ $contact->category } = $contact->extra
+                $category_extras{ $contact->category } = [ values %{$contact->extra} ]
                     if $contact->extra;
             }
             $seen{$contact->category} = 1;

@@ -61,11 +61,13 @@ $(function(){
         if ( category_extras ) {
             $('#category_meta').empty();
             if ( category_extras[this.options[ this.selectedIndex ].text] ) {
-                extras = category_extras[this.options[ this.selectedIndex ].text];
-                for ( i in extras ) {
-                    meta = extras[i];
+                fields = category_extras[this.options[ this.selectedIndex ].text];
+                $('<p>Additional information</p>').appendTo('#category_meta');
+                fields.sort( function(a,b) { return a.order - b.order } );
+                for ( i in fields) {
+                    meta = fields[i];
                     field = '<div class="form-field">';
-                    field += '<label for="form_' + meta.code + '">' + meta.description + '</label>';
+                    field += '<label for="form_' + meta.code + '">' + meta.description + ':</label>';
                     field += '<input type="text" value="" name="' + meta.code + '" id="form_' + meta.code + '">';
                     field += '</div>';
                     $('<p>' + field + '</p>').appendTo('#category_meta');
