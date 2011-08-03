@@ -296,6 +296,10 @@ sub send_email {
     $email->header_set( ucfirst($_), $vars->{$_} )
       for grep { $vars->{$_} } qw( to from subject);
 
+    $email->header_set( 'Message-ID', sprintf('<fms-%s-%s@%s>',
+        time(), unpack('h*', random_bytes(5, 1)), $c->config->{EMAIL_DOMAIN}
+    ) );
+
     # pass the email into mySociety::Email to construct the on the wire 7bit
     # format - this should probably happen in the transport instead but hohum.
     my $email_text = mySociety::Locale::in_gb_locale { mySociety::Email::construct_email(

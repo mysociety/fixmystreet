@@ -9,7 +9,7 @@ BEGIN {
     FixMyStreet->test_mode(1);
 }
 
-use Test::More tests => 5;
+use Test::More tests => 6;
 
 use Email::Send::Test;
 use Path::Class;
@@ -44,6 +44,7 @@ is scalar(@emails), 1, "caught one email";
 # Get the email, check it has a date and then strip it out
 my $email_as_string = $emails[0]->as_string;
 ok $email_as_string =~ s{\s+Date:\s+\S.*?$}{}xms, "Found and stripped out date";
+ok $email_as_string =~ s{\s+Message-ID:\s+\S.*?$}{}xms, "Found and stripped out message ID (contains epoch)";
 
 my $expected_email_content =   file(__FILE__)->dir->file('send_email_sample.txt')->slurp;
 my $name = FixMyStreet->config('CONTACT_NAME');
