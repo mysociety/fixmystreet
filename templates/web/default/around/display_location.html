@@ -36,7 +36,9 @@
 %]
 
 <form action="[% c.uri_for('/report/new') %]" method="post" name="mapForm" id="mapForm">
-<input type="hidden" name="map" value="[% c.req.params.map | html %]">
+[% IF c.req.params.map_override %]
+<input type="hidden" name="map_override" value="[% c.req.params.map_override | html %]">
+[% END %]
 <input type="hidden" name="pc" value="[% pc | html %]">
 [% c.cobrand.form_elements('mapForm') %]
 

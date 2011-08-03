@@ -2,6 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
     [% INCLUDE 'common_header_tags.html' %]
+    <script type="text/javascript" src="/js/southampton.js"></script>
 
     <link rel="stylesheet" type="text/css" href="/css/core.css" />
 	<link rel="stylesheet" type="text/css" href="/cobrands/southampton/style.css" />
@@ -27,7 +28,7 @@
 				<form id="frmSearch" method="get" action="http://websearch.southampton.gov.uk/search">
 					<fieldset>
 						<label for="searchbox">Search the site<br /></label>
-						<input class="text" type="text" value="Enter keywords" id="searchbox" name="q"/>
+						<input class="text" type="text" value="" placeholder="Enter keywords" id="searchbox" name="q"/>
 	                            		<input type="hidden" id="site" name="site" value="SouthamptonOnline"/>
 			 			<input type="hidden" id="client" name="client" value="SouthamptonOnline"/>
 			 			<input type="hidden" id="proxystylesheet" name="proxystylesheet" value="SouthamptonOnline"/>
@@ -40,7 +41,7 @@
 						<label for="PostCode">Where I live
 						<img class="moreInfo" src="/cobrands/southampton/information.gif" alt="Find information about where you live" title="Find information about where you live" /><br />
 						</label>								
-						<input id="PostCode" name="Postcode" class="text2" type="text" value="Enter street/postcode" />
+						<input id="PostCode" name="Postcode" class="text2" type="text" value="" placeholder="Enter street/postcode" />
 						<input class="button" type="submit" value="go" />
 					</fieldset>
 				</form>

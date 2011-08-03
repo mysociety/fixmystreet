@@ -1,0 +1,97 @@
+#!/usr/bin/perl
+
+# export-norwegian-contacts:
+# Export initial contact list from fiksgatami in a format usable by
+# load-norwegian-contact.
+#
+# The format is
+# ID;Name;email-address;Category1,Category2,...
+#
+# Based on script load-contacts copyright (c) 2006 UK Citizens Online
+# Democracy and script load-norwegian-contacts copyright (c) 2011
+# Petter Reinholdtsen.
+# Copyright 2011 Petter Reinholdtsen.
+#
+# $Id: load-norwegian-contacts,v 1.0 2007-08-02 11:44:59 matthew Exp $
+
+use strict;
+use warnings;
+require 5.8.0;
+use open OUT => ':utf8';
+
+# Horrible boilerplate to set up appropriate library paths.
+use FindBin;
+use lib "$FindBin::Bin/../perllib";
+use lib "$FindBin::Bin/../commonlib/perllib";
+
+use mySociety::Config;
+use mySociety::DBHandle qw(dbh select_all);
+use mySociety::MaPit;
+
+BEGIN {
+    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+    mySociety::DBHandle::configure(
+        Name => mySociety::Config::get('BCI_DB_NAME'),
+        User => mySociety::Config::get('BCI_DB_USER'),
+        Password => mySociety::Config::get('BCI_DB_PASS'),
+        Host => mySociety::Config::get('BCI_DB_HOST', undef),
+        Port => mySociety::Config::get('BCI_DB_PORT', undef)
+    );
+}
+
+my $datafile = shift;
+
+open(my $fh, '>', $datafile) or die "Unable to write to $datafile";
+
+# Categories used by more than half the areas is used as the default
+# list.
+my $sql =
+    "SELECT category FROM (SELECT category, COUNT(*) from contacts ".
+    "                      WHERE confirmed = 'true' AND deleted = 'false' ".
+    "                      GROUP BY category) as c ".
+    "  WHERE count > (SELECT COUNT(*)/2 FROM contacts ".
+    "                 WHERE category = 'Annet') ".
+    "  ORDER BY category";
+my $defcategoriesref = dbh()->selectcol_arrayref($sql);
+print $fh "0000;default;;", join(',', @{$defcategoriesref}), "\n";
+
+my %categorygroup;
+$sql = "SELECT area_id, email, category FROM contacts ORDER BY category";
+my $contactref = dbh()->selectall_arrayref($sql, { Slice => {} });
+my @area_ids;
+for my $row (@{$contactref}) {
+    my $key = $row->{area_id} .':'. $row->{email};
+    push(@area_ids, $row->{area_id});
+    if (exists $categorygroup{$key}) {
+        push(@{$categorygroup{$key}}, $row->{category});
+    } else {
+        $categorygroup{$key} = [ $row->{category} ];
+    }
+}
+
+my $areas_info = mySociety::MaPit::call('areas', \@area_ids);
+
+my @list;
+for my $key (keys %categorygroup) {
+    my ($area_id, $email) = split(/:/, $key);
+    my $categoriesref = $categorygroup{$key};
+    my $areaname = $areas_info->{$area_id}->{name};
+    my $areadigits = ($area_id < 100) ? 2 : 4;
+    if (identical_lists($defcategoriesref, $categoriesref)) {
+        push(@list,sprintf("%0${areadigits}d;%s;%s\n",
+                           $area_id, $areaname, $email));
+    } else {
+        push(@list, sprintf("%0${areadigits}d;%s;%s;%s\n",
+                            $area_id, $areaname, $email,
+                            join(',', @{$categoriesref})));
+    }
+}
+
+print $fh sort @list;
+
+sub identical_lists {
+    my ($a, $b) = @_;
+    return !(join(',', @{$a}) cmp join(',', @{$b}));
+}
+
+exit 0;

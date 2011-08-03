@@ -43,6 +43,7 @@ sub string {
         if FixMyStreet->config('BING_MAPS_API_KEY');
     return FixMyStreet::Geocode::Google::string($s, $c, $params)
         if FixMyStreet->config('GOOGLE_MAPS_API_KEY');
+    die "No geocoding provider configured";
 }
 
 1;
