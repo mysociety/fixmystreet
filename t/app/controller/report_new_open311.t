@@ -134,6 +134,15 @@ foreach my $test (
         is_deeply $mech->visible_form_values, $new_values,
           "values correctly changed";
 
+        if ( $test->{fields}->{category} eq 'Street lighting' ) {
+            my $result = scraper {
+                process 'div#category_meta div select#form_type option', 'option[]' => '@value';
+            }
+            ->scrape( $mech->response );
+
+            is_deeply $result->{option}, [ qw/old modern/], 'displayed streetlight type select';
+        }
+
         $new_values = {
             %{ $test->{fields} },
             %{ $test->{submit_with} },
