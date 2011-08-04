@@ -119,7 +119,7 @@
         [% IF meta.exists('values') %]
         <select name="[% meta_name %]" id="form_[% meta_name %]">
             [% FOR option IN meta.values.value.keys %]
-                <option value="[% meta.$foo.value.$option.key %]">[% option %]</option>
+                <option value="[% meta.values.value.$option.key %]">[% option %]</option>
             [% END %]
         </select>
         [% ELSE %]

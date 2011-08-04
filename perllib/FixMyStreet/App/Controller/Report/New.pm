@@ -709,7 +709,7 @@ sub process_report : Private {
             push @extra, {
                 name => $field->{code},
                 description => $field->{description},
-                value => $c->request->param( $field->{code} ),
+                value => $c->request->param( $field->{code} ) || '',
             };
         }
 
