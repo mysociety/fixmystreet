@@ -363,44 +363,28 @@ sub get_requests : Private {
     }
 
     if ('rss' eq $c->stash->{format}) {
-# FIXME write new implementatin
-#        my $cobrand = Page::get_cobrand($c);
-#        my $alert_type = 'open311_requests_rss';
-#        my $xsl = $c->cobrand->feed_xsl;
-#        my $qs = '';
-#        my %title_params;
-#        my $out =
-#            FixMyStreet::Alert::generate_rss('new_problems', $xsl,
-#                                             $qs, \@args,
-#                                             \%title_params, $cobrand,
-#                                             $c, $criteria, $max_requests);
-#        print $c->header( -type => 'application/xml; charset=utf-8' );
-#        print $out;
-        $c->stash->{search_criteria} = $criteria;
-        $c->stash->{max_requests} = $max_requests;
-        $c->stash->{query_func} = '/open311/rss_query';
-        $c->forward( '/rss/output' );
+        $c->stash->{type} = 'new_problems';
+        $c->forward( '/rss/lookup_type' );
+        $c->forward( 'rss_query', [ $criteria, $max_requests ] );
+        $c->forward( '/rss/generate' );
     } else {
         $c->forward( 'output_requests', [ $criteria, $max_requests ] );
     }
 }
 
-# Based on Controller::Rss::query_main
 sub rss_query : Private {
-    my ( $self, $c ) = @_;
-
-    my $criteria = $c->stash->{search_criteria};
-    my $limit = $c->stash->{max_requests};
+    my ( $self, $c, $criteria, $limit ) = @_;
     $limit = $c->config->{RSS_LIMIT}
         unless $limit && $limit <= $c->config->{RSS_LIMIT};
 
     my $attr = {
+        result_class => 'DBIx::Class::ResultClass::HashRefInflator',
         order_by => { -desc => 'confirmed' },
         rows => $limit
     };
 
     my $problems = $c->cobrand->problems->search( $criteria, $attr );
-    $c->stash->{query_main} = $problems;
+    $c->stash->{problems} = $problems;
 }
 
 # Example

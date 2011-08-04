@@ -151,13 +151,21 @@ sub local_problems_ll : Private {
 
 sub output : Private {
     my ( $self, $c ) = @_;
+    $c->forward( 'lookup_type' );
+    $c->forward( 'query_main' );
+    $c->forward( 'generate' );
+}
+
+sub lookup_type : Private {
+    my ( $self, $c ) = @_;
 
     $c->stash->{alert_type} = $c->model('DB::AlertType')->find( { ref => $c->stash->{type} } );
     $c->detach( '/page_error_404_not_found', [ _('Unknown alert type') ] )
         unless $c->stash->{alert_type};
+}
 
-    my $query_func = $c->stash->{query_func} || 'query_main';
-    $c->forward( $query_func );
+sub generate : Private {
+    my ( $self, $c ) = @_;
 
     # Do our own encoding
     $c->stash->{rss} = new XML::RSS(
@@ -171,8 +179,15 @@ sub output : Private {
         uri    => 'http://www.georss.org/georss'
     );
 
-    while (my $row = $c->stash->{query_main}->fetchrow_hashref) {
-        $c->forward( 'add_row', [ $row ] );
+    my $problems = $c->stash->{problems};
+    if ( $problems->can('fetchrow_hashref') ) {
+        while ( my $row = $problems->fetchrow_hashref ) {
+            $c->forward( 'add_row', [ $row ] );
+        }
+    } else {
+        while ( my $row = $problems->next ) {
+            $c->forward( 'add_row', [ $row ] );
+        }
     }
 
     $c->forward( 'add_parameters' );
@@ -211,7 +226,7 @@ sub query_main : Private {
     } else {
         $q->execute();
     }
-    $c->stash->{query_main} = $q;
+    $c->stash->{problems} = $q;
 }
 
 sub add_row : Private {
