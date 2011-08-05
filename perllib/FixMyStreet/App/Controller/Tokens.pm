@@ -191,7 +191,7 @@ sub questionnaire : Path('/Q') : Args(1) {
 
     $c->authenticate( { email => $c->stash->{questionnaire}->problem->user->email }, 'no_password' );
     $c->set_session_cookie_expire(0);
-    $c->forward( '/questionnaire/index');
+    $c->forward( '/questionnaire/show' );
 }
 
 =head2 load_auth_token
