@@ -235,14 +235,23 @@ the map.
 sub ajax : Path('/ajax') {
     my ( $self, $c ) = @_;
 
+    $c->res->content_type('text/javascript; charset=utf-8');
+
+    unless ( $c->req->param('bbox') ) {
+        $c->res->status(404);
+        $c->res->body('');
+        return;
+    }
+
+    # assume this is not cacheable - may need to be more fine-grained later
+    $c->res->header( 'Cache_Control' => 'max-age=0' );
+
     # how far back should we go?
     my $all_pins = $c->req->param('all_pins') ? 1 : undef;
     my $interval = $all_pins ? undef : $c->cobrand->on_map_default_max_pin_age;
 
     # Need to be the class that can handle it
-    if ($c->req->param('bbox')) {
-        FixMyStreet::Map::set_map_class( 'OSM' );
-    }
+    FixMyStreet::Map::set_map_class( 'OSM' );
 
     # extract the data from the map
     my ( $pins, $on_map, $around_map, $dist ) =
@@ -268,16 +277,7 @@ sub ajax : Path('/ajax') {
         }
     );
 
-    # assume this is not cacheable - may need to be more fine-grained later
-    $c->res->content_type('text/javascript; charset=utf-8');
-    $c->res->header( 'Cache_Control' => 'max-age=0' );
-
-    if ( $c->req->param('bbox') ) {
-        $c->res->body($body);
-    } else {
-        # The JS needs the surrounding brackets for Tilma
-        $c->res->body("($body)");
-    }
+    $c->res->body($body);
 }
 
 __PACKAGE__->meta->make_immutable;
