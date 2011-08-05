@@ -33,10 +33,16 @@ sub confirm_problem : Path('/P') {
 
     # Load the problem
     my $data = $auth_token->data;
-    my $problem_id = $data->{id};
+    my $problem_id = ref $data ? $data->{id} : $data;
     my $problem = $c->cobrand->problems->find( { id => $problem_id } )
       || $c->detach('token_error');
     $c->stash->{problem} = $problem;
+
+    if ( $problem->state eq 'unconfirmed' && $auth_token->created < DateTime->now->subtract( months => 1 ) ) {
+        $c->stash->{template} = 'errors/generic.html';
+        $c->stash->{message} = _("I'm afraid we couldn't validate that token, as the report was made too long ago.");
+        return;
+    }
 
     # check that this email or domain are not the cause of abuse. If so hide it.
     if ( $problem->is_from_abuser ) {
@@ -47,6 +53,7 @@ sub confirm_problem : Path('/P') {
     }
 
     # We have a problem - confirm it if needed!
+    my $old_state = $problem->state;
     $problem->update(
         {
             state      => 'confirmed',
@@ -60,13 +67,18 @@ sub confirm_problem : Path('/P') {
     $c->forward( '/report/new/create_reporter_alert' );
 
     # log the problem creation user in to the site
-    if ( $data->{name} || $data->{password} ) {
+    if ( ref($data) && ( $data->{name} || $data->{password} ) ) {
         $problem->user->name( $data->{name} ) if $data->{name};
         $problem->user->password( $data->{password}, 1 ) if $data->{password};
         $problem->user->update;
     }
     $c->authenticate( { email => $problem->user->email }, 'no_password' );
     $c->set_session_cookie_expire(0);
+
+    if ( $old_state eq 'confirmed' || $old_state eq 'fixed' ) {
+        my $report_uri = $c->uri_for( '/report', $problem->id );
+        $c->res->redirect($report_uri);
+    }
 
     return 1;
 }
@@ -169,10 +181,6 @@ sub confirm_update : Path('/C') {
 sub load_questionnaire : Private {
     my ( $self, $c, $token_code ) = @_;
 
-    # Set up error handling
-    $c->stash->{error_template} = 'errors/generic.html';
-    $c->stash->{message} = _("I'm afraid we couldn't validate that token. If you've copied the URL from an email, please check that you copied it exactly.\n");
-
     my $auth_token = $c->forward( 'load_auth_token', [ $token_code, 'questionnaire' ] );
     $c->stash->{id} = $auth_token->data;
     $c->stash->{token} = $token_code;
@@ -218,21 +226,26 @@ sub load_auth_token : Private {
             scope => $scope,
             token => $token_code,
         }
-    ) || $c->detach('token_error');
+    );
+
+    unless ( $token ) {
+        $c->stash->{template} = 'errors/generic.html';
+        $c->stash->{message} = _("I'm afraid we couldn't validate that token. If you've copied the URL from an email, please check that you copied it exactly.\n");
+        $c->detach;
+    }
 
     return $token;
 }
 
 =head2 token_error
 
-Display an error page saying that there is something wrong with the token.
+Display an error page saying that there is something wrong with the token (our end).
 
 =cut
 
 sub token_error : Private {
     my ( $self, $c ) = @_;
-    $c->stash->{template} = $c->stash->{error_template} || 'tokens/error.html';
-    $c->detach;
+    $c->stash->{template} = 'tokens/error.html';
 }
 
 __PACKAGE__->meta->make_immutable;
