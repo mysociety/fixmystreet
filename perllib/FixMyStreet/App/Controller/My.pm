@@ -30,8 +30,10 @@ sub my : Path : Args(0) {
 
     my $pins = [];
     my $problems = {};
-    my $rs = $c->user->problems->search( undef,
-        { rows => 50 } )->page( $p_page );
+    my $rs = $c->user->problems->search( undef, {
+        order_by => { -desc => 'confirmed' },
+        rows => 50
+    } )->page( $p_page );
 
     while ( my $problem = $rs->next ) {
         push @$pins, {
@@ -48,7 +50,10 @@ sub my : Path : Args(0) {
 
     $rs = $c->user->comments->search(
         { state => 'confirmed' },
-        { rows => 50 } )->page( $u_page );
+        {
+            order_by => { -desc => 'confirmed' },
+            rows => 50
+        } )->page( $u_page );
     my @updates = $rs->all;
     $c->stash->{updates} = \@updates;
     $c->stash->{updates_pager} = $rs->pager;
