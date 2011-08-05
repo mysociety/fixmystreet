@@ -173,7 +173,7 @@ sub questionnaire : Path('questionnaire') : Args(0) {
     );
 
 
-    my %questionnaire_counts = map { $_->get_column( 'reported' ) => $_->get_column( 'questionnaire_count' ) } $questionnaires->all;
+    my %questionnaire_counts = map { ( $_->get_column( 'reported' ) || -1 ) => $_->get_column( 'questionnaire_count' ) } $questionnaires->all;
     $questionnaire_counts{1} ||= 0;
     $questionnaire_counts{0} ||= 0;
     $questionnaire_counts{total} = $questionnaire_counts{0} + $questionnaire_counts{1};
