@@ -326,7 +326,7 @@ msgstr "La til %s"
 
 #: templates/web/default/auth/change_password.html:31
 msgid "Again:"
-msgstr "Igjen:"
+msgstr "Gjenta:"
 
 #: templates/web/default/admin/timeline.html:37
 msgid "Alert %d created for %s, type %s, parameters %s / %s"
@@ -382,7 +382,7 @@ msgstr ""
 "All informasjonen du legger inn her vil bli sendt til <strong>%s</strong>.\n"
 "På dette nettestedet vil vi vise tema og detaljer om problemet, pluss ditt "
 "navn\n"
-"hvis du gir oss lov."
+"dersom du gir oss lov."
 
 #: templates/web/default/questionnaire/index.html:62
 msgid "An update marked this problem as fixed."
@@ -419,7 +419,7 @@ msgstr "Kategori"
 #: templates/web/default/admin/index.html:34
 #, fuzzy
 msgid "Category fix rate for problems > 4 weeks old"
-msgstr "Oppdatering %s opprettet for problem %d, av %s"
+msgstr "Kategoribasert løsningsrate for problemer > 4 uker gamle"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:480
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:506
