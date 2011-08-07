@@ -120,6 +120,9 @@ msgid "%s, within %s ward"
 msgstr "Problemer innenfor %s avdeling/etat"
 
 #: perllib/FixMyStreet/Map/Tilma/Original.pm:82
+# I de tilfeller denne teksten blir brukt er det vel
+# det britiske Ministry of Justice som har copyright,
+# ikke det norske Justisdepartementet?
 msgid ""
 "&copy; Crown copyright. All rights reserved. Ministry of Justice "
 "100037819&nbsp;2008."
@@ -133,7 +136,7 @@ msgstr "(Ingen grunn til bekymring &mdash; %s)"
 
 #: templates/web/default/alert/list.html:53
 msgid "(a default distance which covers roughly 200,000 people)"
-msgstr "(en default-avstand som dekker en befolkning på omtrent 200 000)"
+msgstr "(en standardavstand som dekker en befolkning på omtrent 200 000)"
 
 #: templates/web/default/alert/list.html:58
 msgid "(alternatively the RSS feed can be customised, within"
@@ -146,7 +149,7 @@ msgstr "(løst)"
 
 #: templates/web/default/index.html:12 templates/web/default/index.html:8
 msgid "(like graffiti, fly tipping, broken paving slabs, or street lighting)"
-msgstr "(som tagging, søppel, hull i veien, eller manglende gatelys)"
+msgstr "(som tagging, søppel, hull i veien, eller ødelagte gatelys)"
 
 #: templates/web/default/reports/council.html:133
 msgid "(not sent to council)"
@@ -157,16 +160,17 @@ msgid "(optional)"
 msgstr "(valgfritt)"
 
 #: templates/web/default/reports/council.html:131
+# Denne teksten er lite forklarende
 msgid "(sent to both)"
 msgstr "(sendt til begge)"
 
 #: templates/web/default/report/new/fill_in_details.html:227
 msgid "(we never show your email address or phone number)"
-msgstr "(vi viser aldri din epostadresse eller telefonnummer)"
+msgstr "(vi viser aldri din e-postadresse eller telefonnummer)"
 
 #: templates/web/default/report/display.html:206
 msgid "(we never show your email)"
-msgstr "(vi viser aldri din epostadresse)"
+msgstr "(vi viser aldri din e-postadresse)"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:269
 msgid "*unknown*"
@@ -176,15 +180,16 @@ msgstr "*ukjent*"
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:505
 #: perllib/FixMyStreet/DB/Result/Problem.pm:204
 msgid "-- Pick a category --"
-msgstr "-- velg en kategori --"
+msgstr "-- Velg en kategori --"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:463
 #: perllib/FixMyStreet/DB/Result/Problem.pm:210
 msgid "-- Pick a property type --"
-msgstr "-- velg en eiendomsstype --"
+msgstr "-- Velg en eiendomsstype --"
 
 #: templates/web/default/tokens/confirm_problem.html:14
 #: templates/web/default/tokens/confirm_problem.html:6
+# Bør "portalen" byttes ut med et annet ord? (trenger kontekst)
 msgid ". You can <a href=\"%s\">view the problem on this site</a>."
 msgstr ". Du kan <a href=\"%s\">lese saken på portalen </a>."
 
@@ -203,7 +208,7 @@ msgid ""
 "questionnaire; glad to hear it&rsquo;s been fixed.</p>"
 msgstr ""
 "<p style=\"font-size:150%\">Tusen takk for at du fylte ut vårt spørreskjema. "
-"Veldig glad for å høre at det er blitt fikset.</p>"
+"Vi er glad for å høre at ditt problem er blitt fikset.</p>"
 
 #: templates/web/default/questionnaire/completed.html:15
 #, fuzzy
@@ -267,7 +272,7 @@ msgid ""
 "to the\n"
 "site and leave an update.</p>"
 msgstr ""
-"<p>Tusen takk for at du fylte ut vårt spørreskjema.  Hvis du\n"
+"<p>Tusen takk for at du fylte ut vårt spørreskjema. Hvis du\n"
 "får mer informasjon om status for ditt problem, vær så snill å kom tilbake "
 "hit til\n"
 "nettstedet og legg igjen en oppdatering.</p>\n"
@@ -287,15 +292,15 @@ msgstr "<strong>%d</strong> aktive problemer"
 
 #: templates/web/default/auth/general.html:55
 msgid "<strong>No</strong>, I do not, let me sign in by email:"
-msgstr "<strong>Nei</strong>, det gjør jeg ikke.  La meg logge inn med epost:"
+msgstr "<strong>Nei</strong>, det gjør jeg ikke. La meg logge inn med e-post:"
 
 #: templates/web/default/report/new/fill_in_details.html:175
 msgid "<strong>No</strong>, let me confirm my report by email:"
-msgstr "<strong>No</strong>, la meg bekrefte min rapport med epost:"
+msgstr "<strong>No</strong>, la meg bekrefte min rapport med e-post:"
 
 #: templates/web/default/report/display.html:160
 msgid "<strong>No</strong>, let me confirm my update by email:"
-msgstr "<strong>No</strong>, la meg bekrefte min oppdatering med epost:"
+msgstr "<strong>No</strong>, la meg bekrefte min oppdatering med e-post:"
 
 #: templates/web/default/auth/general.html:37
 #: templates/web/default/report/display.html:142
@@ -593,11 +598,11 @@ msgstr "Oppdatert av"
 #: templates/web/default/admin/list_updates.html:8
 #: templates/web/default/admin/search_reports.html:15
 msgid "Email"
-msgstr "Epost"
+msgstr "E-post"
 
 #: templates/web/default/around/display_location.html:71
 msgid "Email me new local problems"
-msgstr "Send meg epost om lokale problemer"
+msgstr "Send meg e-post om lokale problemer"
 
 #: templates/web/default/report/display.html:42
 msgid "Email me updates"
@@ -610,7 +615,7 @@ msgstr "Send meg oppdateringer"
 #: templates/web/default/alert/updates.html:13
 #: templates/web/default/report/display.html:46
 msgid "Email:"
-msgstr "Epost:"
+msgstr "E-post:"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:465
 msgid "Empty flat or maisonette"
@@ -678,7 +683,7 @@ msgid ""
 "us</a>."
 msgstr ""
 "Vær så snill å forsøk igjen senere, eller <a href=\"mailto:%s\">send oss en "
-"epost</a> og gi oss beskjed."
+"e-post</a> og gi oss beskjed."
 
 #: templates/web/default/questionnaire/index.html:81
 msgid "First time"
@@ -705,7 +710,7 @@ msgid ""
 "problems\n"
 "within a certain distance of a particular location."
 msgstr ""
-"Fiksgatami har ulike RSS-strømmer og epostlister om lokale problemer, dette "
+"Fiksgatami har ulike RSS-strømmer og e-postlister om lokale problemer, dette "
 "inkluderer saker meldt innenfor en bestemt bydel eller administrasjon, eller "
 "et område med problemer\n"
 "innen en angitt distanse fra en bestemt posisjon."
@@ -841,7 +846,7 @@ msgid ""
 "email, please check that you copied it exactly.\n"
 msgstr ""
 "Jeg er redd vi ikke kunne verifisere den referansen. Hvis du kopierte den "
-"URLen fra en annen epost, sjekk at du har kopiert den korrekt.\n"
+"URLen fra en annen e-post, sjekk at du har kopiert den korrekt.\n"
 
 #: templates/web/default/admin/list_updates.html:5
 #: templates/web/default/admin/search_reports.html:12
@@ -945,7 +950,7 @@ msgstr "List alle rapporterte problemer"
 #: templates/web/default/tokens/confirm_alert.html:1
 #: templates/web/default/tokens/confirm_alert.html:3
 msgid "Local RSS feeds and email alerts"
-msgstr "Lokal RSS-strøm og epostvarsel"
+msgstr "Lokal RSS-strøm og e-postvarsel"
 
 #: templates/web/default/alert/list.html:1
 #: templates/web/default/alert/list.html:12
@@ -953,7 +958,7 @@ msgstr "Lokal RSS-strøm og epostvarsel"
 #: templates/web/default/alert/list.html:3
 #, fuzzy
 msgid "Local RSS feeds and email alerts for ‘%s’"
-msgstr "Lokal RSS-strøm og epostvarsel"
+msgstr "Lokal RSS-strøm og e-postvarsel"
 
 #: templates/web/default/footer.html:9 templates/web/emptyhomes/header.html:32
 #: templates/web/fiksgatami/footer.html:7
@@ -1037,7 +1042,7 @@ msgstr "Nærmeste vei til nålen plassert på kartet (automatisk generert ved hj
 
 #: templates/web/default/email_sent.html:20
 msgid "Nearly Done! Now check your email..."
-msgstr "Nesten ferdig!  Nå må du sjekke eposten din..."
+msgstr "Nesten ferdig!  Nå må du sjekke e-posten din..."
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:299
 msgid "New category contact added"
@@ -1292,13 +1297,13 @@ msgstr ""
 #: templates/web/default/auth/token.html:17
 #, fuzzy
 msgid "Please check your email"
-msgstr "Skriv din epost"
+msgstr "Skriv din e-post"
 
 #: templates/web/default/auth/general.html:14
 #: templates/web/default/auth/general.html:8
 #, fuzzy
 msgid "Please check your email address is correct"
-msgstr "Skriv en gyldig epostadresse"
+msgstr "Skriv en gyldig e-postadresse"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:652
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:671
@@ -1349,12 +1354,12 @@ msgstr "Legg inn et tema"
 
 #: perllib/FixMyStreet/DB/Result/User.pm:92
 msgid "Please enter a valid email"
-msgstr "Legg til en gyldig epost"
+msgstr "Legg til en gyldig e-post"
 
 #: perllib/FixMyStreet/App/Controller/Alert.pm:345
 #: perllib/FixMyStreet/App/Controller/Contact.pm:105
 msgid "Please enter a valid email address"
-msgstr "Legg inn din epost"
+msgstr "Legg inn din e-post"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:184
 msgid "Please enter some details"
@@ -1365,7 +1370,7 @@ msgstr "Legg inn opplysninger om saken"
 #: templates/web/default/auth/general.html:13
 #: templates/web/default/auth/general.html:8
 msgid "Please enter your email"
-msgstr "Legg inn din epost"
+msgstr "Legg inn din e-post"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:199
 msgid ""
@@ -1679,7 +1684,7 @@ msgstr "RSS-strøm med oppdateringer for dette problemet"
 #: templates/web/default/alert/updates.html:9
 #: templates/web/default/report/display.html:45
 msgid "Receive email when updates are left on this problem."
-msgstr "Motta epost når det er uppdateringer på denne saken"
+msgstr "Motta e-post når det er uppdateringer på denne saken"
 
 #: templates/web/default/around/display_location.html:0
 #: templates/web/default/around/display_location.html:34
@@ -1824,7 +1829,7 @@ msgid ""
 "or enter your email address to subscribe to an email alert."
 msgstr ""
 "Velg hvilken type varsel du ønsker og klikk på knappen for en RSS-strøm, "
-"eller skriv inn din epostadresse for å abonnere på et epostvarsel."
+"eller skriv inn din e-postadresse for å abonnere på et e-postvarsel."
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:396
 msgid "Sent to %s %s later"
@@ -1969,7 +1974,7 @@ msgstr "Abonner"
 
 #: templates/web/default/alert/list.html:128
 msgid "Subscribe me to an email alert"
-msgstr "Jeg ønsker å abonnere på epostvarsel"
+msgstr "Jeg ønsker å abonnere på e-postvarsel"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:611
 #: templates/web/default/admin/index.html:1
@@ -2135,7 +2140,7 @@ msgstr ""
 msgid ""
 "The confirmation email <strong>may</strong> take a few minutes to arrive "
 "&mdash; <em>please</em> be patient."
-msgstr "Bekrefelseseposten <strong>kan</strong>bruke noen minutter før den kommer frem &mdash; så vær tålmodig."
+msgstr "Bekreftelsese-posten <strong>kan</strong>bruke noen minutter før den kommer frem &mdash; så vær tålmodig."
 
 #: templates/web/default/questionnaire/index.html:51
 msgid ""
@@ -2279,7 +2284,7 @@ msgid ""
 "the correct council to deal with the issue, or let us know what category of "
 "problem this is so we can add it to our system."
 msgstr ""
-"Denne eposten har blitt sendt til begge administrasjonene som dekker stedet "
+"Denne e-posten har blitt sendt til begge administrasjonene som dekker stedet "
 "for problemet, da brukeren ikke kategoriserte det.  Vær så snill å ignorere "
 "den hvis dere ikke er korrekt administrasjon for å håndtere denne saken, "
 "eller gi oss beskjed om hvilken kategori av problemer dette er så vi kan "
@@ -2291,9 +2296,9 @@ msgid ""
 "problem, as the category selected is provided for all of them; please ignore "
 "it if you're not the correct council to deal with the issue."
 msgstr ""
-"Denne eposten har blitt sendt til flere administrasjoner som dekker stedet "
+"Denne e-posten har blitt sendt til flere administrasjoner som dekker stedet "
 "for problemet, da den valgte kategorien er tilgjengelig for disse.  Vær så "
-"snill å ignorere eposten hvis dere ikke er korrekt administrasjon for å "
+"snill å ignorere e-posten hvis dere ikke er korrekt administrasjon for å "
 "håndtere denne saken."
 
 #: templates/web/default/debug_header.html:3
@@ -2556,7 +2561,7 @@ msgid ""
 "send an email to <a href='mailto:%s'>%s</a>:"
 msgstr ""
 "Vi ønsker å få din tilbakemelding om hva du mener om denne tjenesten. Bare "
-"fyll ut skjemaet, eller send en epost <a href='mailto:%s'>%s</a>:"
+"fyll ut skjemaet, eller send en e-post <a href='mailto:%s'>%s</a>:"
 
 #: templates/web/default/admin/council_contacts.html:25
 #: templates/web/default/admin/council_edit.html:41
@@ -2638,8 +2643,8 @@ msgid ""
 "You can help us by finding a contact email address for local problems for %s "
 "and emailing it to us at <a href='mailto:%s'>%s</a>."
 msgstr ""
-"Du kan hjelpe oss ved å finne en kontakt-epostadresse for lokale problemer i "
-"%s, og sende den via epost til oss på <a href='mailto:%s'>%s</a>."
+"Du kan hjelpe oss ved å finne en kontakt-e-post for lokale problemer i "
+"%s, og sende den via e-post til oss på <a href='mailto:%s'>%s</a>."
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:38
 msgid ""
@@ -2733,13 +2738,13 @@ msgstr "Dine rapporter"
 
 #: templates/web/default/auth/general.html:27
 msgid "Your email address:"
-msgstr "Din epostadresse:"
+msgstr "Din e-postadresse:"
 
 #: templates/web/default/alert/list.html:122
 #: templates/web/default/report/display.html:128
 #: templates/web/default/report/new/fill_in_details.html:141
 msgid "Your email:"
-msgstr "Din epost"
+msgstr "Din e-post"
 
 #: templates/web/default/auth/general.html:59
 #: templates/web/default/contact/index.html:68
@@ -2762,7 +2767,7 @@ msgstr "Dine oppdateringer"
 
 #: templates/web/default/contact/index.html:76
 msgid "Your&nbsp;email:"
-msgstr "Din&nbsp;epost:"
+msgstr "Din&nbsp;e-post:"
 
 #: templates/web/default/admin/timeline.html:6
 msgid "by %s"
@@ -2835,17 +2840,17 @@ msgstr "bydel"
 #: templates/web/default/email_sent.html:15
 #: templates/web/default/email_sent.html:3
 msgid "we'll hang on to your alert while you're checking your email."
-msgstr "vi holder på ditt varsel mens du sjekker din epost."
+msgstr "vi holder på ditt varsel mens du sjekker din e-post."
 
 #: templates/web/default/email_sent.html:3
 #: templates/web/default/email_sent.html:7
 msgid "we'll hang on to your problem report while you're checking your email."
-msgstr "vi holder på rapporten din mens du sjekker epost."
+msgstr "vi holder på rapporten din mens du sjekker e-post."
 
 #: templates/web/default/email_sent.html:11
 #: templates/web/default/email_sent.html:3
 msgid "we'll hang on to your update while you're checking your email."
-msgstr "vi holder på din oppdatering mens du sjekker din epost."
+msgstr "vi holder på din oppdatering mens du sjekker din e-post."
 
 #: templates/web/default/email_sent.html:14
 #: templates/web/default/email_sent.html:3
