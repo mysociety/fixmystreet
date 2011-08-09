@@ -198,7 +198,7 @@ sub report_import : Path('/import') {
     # find or create the user
     my $report_user = $c->model('DB::User')->find_or_create(
         {
-            email => $input{email},
+            email => lc $input{email},
             name  => $input{name},
             phone => $input{phone}
         }
