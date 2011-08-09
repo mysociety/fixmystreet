@@ -1,0 +1,21 @@
+[% INCLUDE 'admin/header.html' title=loc('Search Abuse Table') %]
+
+<form method="get" action="[% c.uri_for('search_abuse') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+    <label for="search">[% loc('Search:') %]</label> <input type="text" name="search"  size="30" id="search">
+</form>
+
+
+[% IF emails.size > 0 %]
+<table cellspacing="0" cellpadding="2" border="1">
+    <tr>
+        <th>[% loc('Email') %]</th>
+    </tr>
+[%- FOREACH foo IN emails %]
+    <tr>
+        <td>[%- foo.email | html -%]</td>
+    </tr>
+[%- END -%]
+</table>
+[% END %]
+
+[% INCLUDE 'admin/footer.html' %]

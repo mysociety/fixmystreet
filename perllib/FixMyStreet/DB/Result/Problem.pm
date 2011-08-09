@@ -78,6 +78,8 @@ __PACKAGE__->add_columns(
   { data_type => "timestamp", is_nullable => 1 },
   "send_questionnaire",
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
+  "flagged",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->has_many(
