@@ -98,6 +98,14 @@ function fixmystreet_onload() {
         var select = new OpenLayers.Control.SelectFeature( fixmystreet.markers );
         fixmystreet.map.addControl( select );
         select.activate();
+    } else if (fixmystreet.page == 'new') {
+        var drag = new OpenLayers.Control.DragFeature( fixmystreet.markers, {
+            onComplete: function(feature, e) {
+                fixmystreet_update_pin( feature.geometry.clone() );
+            }
+        } );
+        fixmystreet.map.addControl( drag );
+        drag.activate();
     }
     fixmystreet.map.addLayer(fixmystreet.markers);
 
@@ -281,12 +289,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         if (fixmystreet.page == 'new') {
             fixmystreet.markers.features[0].move(lonlat);
         }
-        lonlat.transform(
-            fixmystreet.map.getProjectionObject(),
-            new OpenLayers.Projection("EPSG:4326")
-        );
-        document.getElementById('fixmystreet.latitude').value = lonlat.lat;
-        document.getElementById('fixmystreet.longitude').value = lonlat.lon;
+        fixmystreet_update_pin(lonlat);
         if (fixmystreet.page == 'new') {
             return;
         }
@@ -294,3 +297,13 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
     }
 });
 
+// This function might be passed either an OpenLayers.LonLat (so has
+// lon and lat) or an OpenLayers.Geometry.Point (so has x and y)
+function fixmystreet_update_pin(lonlat) {
+    lonlat.transform(
+        fixmystreet.map.getProjectionObject(),
+        new OpenLayers.Projection("EPSG:4326")
+    );
+    document.getElementById('fixmystreet.latitude').value = lonlat.lat || lonlat.y;
+    document.getElementById('fixmystreet.longitude').value = lonlat.lon || lonlat.x;
+}
