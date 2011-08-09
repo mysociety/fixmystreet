@@ -160,14 +160,6 @@
   clear: none;
   margin-bottom: 1em;
 }
-#mysociety #watermark {
-  background: url("/i/mojwatermark6.png");
-  height: 113px;
-  width: 231px;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-}
 #mysociety #map_box {
   float: right;
   width: 502px;

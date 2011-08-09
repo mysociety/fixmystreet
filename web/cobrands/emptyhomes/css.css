@@ -7,14 +7,6 @@
     width: 378px;
     height: 378px;
 }
-#watermark {
-    background: url("/i/mojwatermark-378.png");
-    height: 84px;
-    width: 171px;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-}
 
 p#fixed, p#unknown {
     margin-right: 400px;

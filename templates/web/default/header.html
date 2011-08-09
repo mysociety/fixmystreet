@@ -2,13 +2,13 @@
 <html lang="[% lang_code %]">
     <head>
 
-        [% INCLUDE 'common_header_tags.html' %]
-                
         <style type="text/css">@import url("/css/core.css"); @import url("/css/main.css");</style>
         <!--[if LT IE 7]>
              <style type="text/css">@import url("/css/ie6.css");</style>
         <![endif]-->
 
+        [% INCLUDE 'common_header_tags.html' %]
+                
         [% IF c.req.uri.host == 'osm.fixmystreet.com' %]
             <link rel="canonical" href="http://www.fixmystreet.com[% c.req.uri.path_query %]">
         [% END %]
