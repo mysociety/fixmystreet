@@ -98,6 +98,14 @@ function fixmystreet_onload() {
         var select = new OpenLayers.Control.SelectFeature( fixmystreet.markers );
         fixmystreet.map.addControl( select );
         select.activate();
+    } else if (fixmystreet.page == 'new') {
+        var drag = new OpenLayers.Control.DragFeature( fixmystreet.markers, {
+            onComplete: function(feature, e) {
+                fixmystreet_update_pin( feature.geometry.clone() );
+            }
+        } );
+        fixmystreet.map.addControl( drag );
+        drag.activate();
     }
     fixmystreet.map.addLayer(fixmystreet.markers);
 
@@ -105,6 +113,53 @@ function fixmystreet_onload() {
         var bounds = fixmystreet.markers.getDataExtent();
         if (bounds) { fixmystreet.map.zoomToExtent( bounds ); }
     }
+
+    $('#hide_pins_link').click(function(e) {
+        e.preventDefault();
+        var showhide = [
+            'Show pins', 'Hide pins',
+            'Dangos pinnau', 'Cuddio pinnau',
+            "Vis nåler", "Gjem nåler"
+        ];
+        for (var i=0; i<showhide.length; i+=2) {
+            if (this.innerHTML == showhide[i]) {
+                fixmystreet.markers.setVisibility(true);
+                this.innerHTML = showhide[i+1];
+            } else if (this.innerHTML == showhide[i+1]) {
+                fixmystreet.markers.setVisibility(false);
+                this.innerHTML = showhide[i];
+            }
+        }
+    });
+
+    $('#all_pins_link').click(function(e) {
+        e.preventDefault();
+        fixmystreet.markers.setVisibility(true);
+        var welsh = 0;
+        var texts = [
+            'en', 'Include stale reports', 'Hide stale reports',
+            'cy', 'Cynnwys hen adroddiadau', 'Cuddio hen adroddiadau'
+        ];
+        for (var i=0; i<texts.length; i+=3) {
+            if (this.innerHTML == texts[i+1]) {
+                this.innerHTML = texts[i+2];
+                fixmystreet.markers.protocol.options.params = { all_pins: 1 };
+                fixmystreet.markers.refresh( { force: true } );
+                lang = texts[i];
+            } else if (this.innerHTML == texts[i+2]) {
+                this.innerHTML = texts[i+1];
+                fixmystreet.markers.protocol.options.params = { };
+                fixmystreet.markers.refresh( { force: true } );
+                lang = texts[i];
+            }
+        }
+        if (lang == 'cy') {
+            document.getElementById('hide_pins_link').innerHTML = 'Cuddio pinnau';
+        } else {
+            document.getElementById('hide_pins_link').innerHTML = 'Hide pins';
+        }
+    });
+
 }
 
 function fms_markers_list(pins, transform) {
@@ -129,53 +184,6 @@ function fms_markers_list(pins, transform) {
     }
     return markers;
 }
-
-$('#hide_pins_link').click(function(e) {
-    e.preventDefault();
-    var showhide = [
-        'Show pins', 'Hide pins',
-        'Dangos pinnau', 'Cuddio pinnau',
-        "Vis nåler", "Gjem nåler"
-    ];
-    for (var i=0; i<showhide.length; i+=2) {
-        if (this.innerHTML == showhide[i]) {
-            fixmystreet.markers.setVisibility(true);
-            this.innerHTML = showhide[i+1];
-        } else if (this.innerHTML == showhide[i+1]) {
-            fixmystreet.markers.setVisibility(false);
-            this.innerHTML = showhide[i];
-        }
-    }
-});
-
-$('#all_pins_link').click(function(e) {
-    e.preventDefault();
-    fixmystreet.markers.setVisibility(true);
-    var welsh = 0;
-    var texts = [
-        'en', 'Include stale reports', 'Hide stale reports',
-        'cy', 'Cynnwys hen adroddiadau', 'Cuddio hen adroddiadau'
-    ];
-    for (var i=0; i<texts.length; i+=3) {
-        if (this.innerHTML == texts[i+1]) {
-            this.innerHTML = texts[i+2];
-            fixmystreet.markers.protocol.options.params = { all_pins: 1 };
-            fixmystreet.markers.refresh( { force: true } );
-            lang = texts[i];
-        } else if (this.innerHTML == texts[i+2]) {
-            this.innerHTML = texts[i+1];
-            fixmystreet.markers.protocol.options.params = { };
-            fixmystreet.markers.refresh( { force: true } );
-            lang = texts[i];
-        }
-    }
-    if (lang == 'cy') {
-        document.getElementById('hide_pins_link').innerHTML = 'Cuddio pinnau';
-    } else {
-        document.getElementById('hide_pins_link').innerHTML = 'Hide pins';
-    }
-});
-
 
 /* Overridding the buttonDown function of PanZoom so that it does
    zoomTo(0) rather than zoomToMaxExtent()
@@ -281,12 +289,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         if (fixmystreet.page == 'new') {
             fixmystreet.markers.features[0].move(lonlat);
         }
-        lonlat.transform(
-            fixmystreet.map.getProjectionObject(),
-            new OpenLayers.Projection("EPSG:4326")
-        );
-        document.getElementById('fixmystreet.latitude').value = lonlat.lat;
-        document.getElementById('fixmystreet.longitude').value = lonlat.lon;
+        fixmystreet_update_pin(lonlat);
         if (fixmystreet.page == 'new') {
             return;
         }
@@ -294,3 +297,13 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
     }
 });
 
+// This function might be passed either an OpenLayers.LonLat (so has
+// lon and lat) or an OpenLayers.Geometry.Point (so has x and y)
+function fixmystreet_update_pin(lonlat) {
+    lonlat.transform(
+        fixmystreet.map.getProjectionObject(),
+        new OpenLayers.Projection("EPSG:4326")
+    );
+    document.getElementById('fixmystreet.latitude').value = lonlat.lat || lonlat.y;
+    document.getElementById('fixmystreet.longitude').value = lonlat.lon || lonlat.x;
+}
