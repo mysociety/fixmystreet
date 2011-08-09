@@ -57,7 +57,7 @@ sub string {
         my $address = $_->{name};
         next unless $_->{address}->{countryRegion} eq 'United Kingdom'; # FIXME This is UK only
         ( $latitude, $longitude ) = @{ $_->{point}->{coordinates} };
-        push (@$error, $address);
+        push (@$error, { address => $address, latitude => $latitude, longitude => $longitude });
         push (@valid_locations, $_);
     }
     return { latitude => $latitude, longitude => $longitude } if scalar @valid_locations == 1;

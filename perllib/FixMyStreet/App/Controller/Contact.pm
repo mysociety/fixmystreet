@@ -39,6 +39,8 @@ Handle contact us form submission
 sub submit : Path('submit') : Args(0) {
     my ( $self, $c ) = @_;
 
+    $c->res->redirect( '/contact' ) and return unless $c->req->method eq 'POST';
+
     return
       unless $c->forward('setup_request')
           && $c->forward('determine_contact_type')

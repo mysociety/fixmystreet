@@ -252,7 +252,7 @@ sub process_questionnaire : Private {
 }
 
 # Sent here from email token action. Simply load and display questionnaire.
-sub index : Private {
+sub show : Private {
     my ( $self, $c ) = @_;
     $c->forward( 'check_questionnaire' );
     $c->forward( 'display' );
