@@ -720,7 +720,7 @@ sub update_edit : Path('update_edit') : Args(1) {
 sub search_abuse : Path('search_abuse') : Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->forward('set_allowed_pages');
+    $c->forward('check_page_allowed');
 
     my $search = $c->req->param('search');
 
@@ -740,7 +740,7 @@ sub search_abuse : Path('search_abuse') : Args(0) {
 sub list_flagged : Path('list_flagged') : Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->forward('set_allowed_pages');
+    $c->forward('check_page_allowed');
 
     my $problems = $c->model('DB::Problem')->search( { flagged => 1 } );
 
