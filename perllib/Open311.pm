@@ -87,8 +87,16 @@ EOT
 
 sub get_service_requests {
     my $self = shift;
+    my $report_ids = shift;
 
-    my $service_request_xml = $self->_get( 'requests.xml' );
+    my $params = {};
+
+    if ( $report_ids ) {
+        $params->{service_request_id} = join ',', @$report_ids;
+    }
+
+    my $service_request_xml = $self->_get( 'requests.xml', $params || undef );
+    return $self->_get_xml_object( $service_request_xml );
 }
 
 sub get_service_request_id_from_token {
@@ -109,11 +117,13 @@ sub get_service_request_id_from_token {
 sub _get {
     my $self   = shift;
     my $path   = shift;
-    my $params = shift;
+    my $params = shift || {};
 
     my $uri = URI->new( $self->endpoint );
+
+    $params->{ jurisdiction_id } = $self->jurisdiction;
     $uri->path( $uri->path . $path );
-    $uri->query_form( jurisdiction_id => $self->jurisdiction );
+    $uri->query_form( $params );
 
     my $content = get( $uri->as_string );
 

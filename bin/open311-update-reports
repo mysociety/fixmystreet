@@ -1,0 +1,124 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use Open311;
+use FixMyStreet::App;
+
+# FIXME - make this configurable and/or better
+my $system_user = FixMyStreet::App->model('DB::User')->find_or_create(
+    {
+        email => 'fixmystreet@mysociety.org',
+        name => 'System User',
+    }
+);
+
+my $council_list = FixMyStreet::App->model('DB::Open311conf');
+
+while ( my $council = $council_list->next ) {
+
+    my $open311 = Open311->new(
+        endpoint     => $council->endpoint,
+        jurisdiction => $council->jurisdiction,
+        api_key      => $council->api_key
+    );
+
+    my $area_id = $council->area_id;
+
+    my $council_details = mySociety::MaPit::call( 'area', $area_id );
+
+    my $reports = FixMyStreet::App->model('DB::Problem')->search(
+        {
+            council => { like => "\%$area_id\%" },
+            external_id => { '!=', undef },
+            external_id => { '!=', '' },
+
+            # FIXME - only care about visible states
+        }
+    );
+
+    my @report_ids = ();
+    while ( my $report = $reports->next ) {
+        push @report_ids, $report->external_id;
+    }
+
+    next unless @report_ids;
+
+    my $service_requests = $open311->get_service_requests( \@report_ids );
+
+    my $requests;
+
+    # XML::Simple is a bit inconsistent in how it structures
+    # things depending on the number of children an element has :(
+    if ( ref $service_requests->{request} eq 'ARRAY' ) {
+        $requests = $service_requests->{request};
+    }
+    else {
+        $requests = [ $service_requests->{request} ];
+    }
+
+    for my $request (@$requests) {
+        my $request_id = $request->{service_request_id};
+
+        my $problem =
+          FixMyStreet::App->model('DB::Problem')
+          ->search( { external_id => $request_id, } );
+
+        if (my $p = $problem->first) {
+            my ( $updated, $status_notes );
+
+            if ( ! ref $request->{updated_datetime} ) {
+                $updated = $request->{updated_datetime};
+            }
+
+            if ( ! ref $request->{status_notes} ) {
+                $status_notes = $request->{status_notes};
+            }
+
+            my $update = FixMyStreet::App->model('DB::Comment')->new(
+                {
+                    problem_id => $p->id,
+                    state      => 'confirmed',
+                    created    => $updated || \'ms_current_timestamp()',
+                    confirmed => \'ms_current_timestamp()',
+                    text      => $status_notes,
+                    mark_open => 0,
+                    mark_fixed => 0,
+                    user => $system_user,
+                    anonymous => 0,
+                    name => $council_details->{name},
+                }
+            );
+            if ( $request->{status} eq 'closed' ) {
+                if ( $p->state ne 'fixed' ) {
+                    $p->state('fixed');
+                    $update->mark_fixed(1);
+
+                    if ( !$status_notes ) {
+
+                        # FIXME - better text here
+                        $update->text( 'Closed by council' );
+                    }
+
+                    $p->update;
+                    $update->insert;
+                }
+            }
+            else {
+                if ( $p->state eq 'fixed' ) {
+                    $p->state('confirmed');
+                    $update->mark_open(1);
+
+                    if ( !$status_notes ) {
+
+                        # FIXME - better text here
+                        $update->text( 'Re-opened by council' );
+                    }
+
+                    $p->update;
+                    $update->insert;
+                }
+            }
+        }
+    }
+}
