@@ -324,13 +324,13 @@ for my $test (
         form_values => {
             submit_update => 1,
             rznvy         => 'unregistered@example.com',
-            update        => 'update from an unregistered user',
+            update        => "update from an\r\n\r\nunregistered user",
             add_alert     => 1,
             name          => 'Unreg User',
             may_show_name => undef,
         },
         changes => {
-            update => 'Update from an unregistered user',
+            update => "Update from an\n\nUnregistered user",
         },
     }
 ) {
