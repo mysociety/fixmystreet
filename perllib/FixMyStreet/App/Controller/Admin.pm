@@ -802,12 +802,18 @@ sub stats : Path('stats') : Args(0) {
                     $field => { '>=', $start_date->ymd },
                     $field => { '<=', $end_date->ymd },
                 ],
+            },
+            {
+                select => [ 'state', { 'count' => 'me.id' } ],
+                as => [qw/state count/],
+                group_by => [ 'state' ],
+                order_by => [ 'state' ],
             }
         );
 
         # in case the total_report count is 0
         $c->stash->{show_count} = 1;
-        $c->stash->{total_reports} = $p->count;
+        $c->stash->{states} = $p;
     }
 
     return 1;

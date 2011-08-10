@@ -1,7 +1,33 @@
 [% INCLUDE 'admin/header.html' title=loc('Stats') %]
 
 [% IF show_count %]
-<strong>[% tprintf( loc( 'Total %sreports between %s and %s: %d' ), ( unconfirmed ? '' : loc( 'confirmed' ) _ ' ' ), start_date.ymd, end_date.ymd, total_reports ) | html %]</strong>
+<p>
+<strong>[% tprintf( loc( '%sReports between %s and %s' ), ( unconfirmed ? '' : loc( 'Confirmed' ) _ ' ' ), start_date.ymd, end_date.ymd ) | html %]</strong>
+</p>
+<table>
+    <thead>
+        <td style="width: 8em"><strong>[% loc('State') %]</strong></td>
+        <td><strong>[% loc('Count') %]</strong></td>
+    </thead>
+    [% total = 0 %]
+    [% WHILE ( state = states.next ) %]
+    [% total = total + state.get_column( 'count' ) %]
+    <tr>
+        <td>[% state.state | html %]</td>
+        <td>[% state.get_column( 'count' ) %]</td>
+    </tr>
+    [% END %]
+    <tr>
+        <td><strong>[% loc( 'Total' ) %]</strong></td>
+        <td><strong>[% total %]</strong></td>
+    </tr>
+</table>
+
+[% IF unconfirmed %]
+    <p>
+    <small>[% loc( 'Note that when including unconfirmed reports we use the date the report was created which may not be in the same month the report was confirmed so the numbers may jump about a little' ) %]</small>
+    </p>
+[% END %]
 [% END %]
 
 [% IF errors %]
