@@ -426,7 +426,10 @@ EOF
 sub post_barnet_message {
     my ( $problem, %h ) = @_;
     my $return = 1;
-    my $kbid = '00000000000000000000000000000000000000000000000014'; # There is only one category
+
+    my $default_kbid = 14; # This is the default, "Street Scene"
+    my $kbid = sprintf( "%060d",  Utils::barnet_categories()->{$h{category}} || $default_kbid);
+
     my $geo_code = "$h{easting} $h{northing}"; 
 
     my $interface = BarnetInterfaces::service::ZLBB_SERVICE_ORDER->new();
