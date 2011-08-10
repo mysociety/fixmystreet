@@ -796,11 +796,13 @@ sub stats : Path('stats') : Args(0) {
 
         $field = 'created' if $c->req->param('unconfirmed');
 
+        my $one_day = DateTime::Duration->new( days => 1 );
+
         my $p = $c->model('DB::Problem')->search(
             {
                 -AND => [
-                    $field => { '>=', $start_date->ymd },
-                    $field => { '<=', $end_date->ymd },
+                    $field => { '>=', $start_date},
+                    $field => { '<=', $end_date + $one_day },
                 ],
             },
             {
