@@ -2,11 +2,11 @@
 
 [% IF show_count %]
 <p>
-<strong>[% tprintf( loc( '%sReports between %s and %s' ), ( unconfirmed ? '' : loc( 'Confirmed' ) _ ' ' ), start_date.ymd, end_date.ymd ) | html %]</strong>
+<strong>[% tprintf( loc( '%sreports between %s and %s' ), ( unconfirmed ? loc( 'All' ) _ ' ' : loc( 'Confirmed' ) _ ' ' ), start_date.ymd, end_date.ymd ) | html %]</strong>
 </p>
 <table>
     <thead>
-        <td style="width: 8em"><strong>[% loc('State') %]</strong></td>
+        <td style="width: 8em"><strong>[% loc('Current state') %]</strong></td>
         <td><strong>[% loc('Count') %]</strong></td>
     </thead>
     [% total = 0 %]
