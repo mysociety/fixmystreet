@@ -755,6 +755,64 @@ sub list_flagged : Path('list_flagged') : Args(0) {
     return 1;
 }
 
+sub stats : Path('stats') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->forward('check_page_allowed');
+
+    if ( $c->req->param('getcounts') ) {
+
+        my ( $start_date, $end_date, @errors );
+
+        eval {
+            $start_date = DateTime->new(
+                year => $c->req->param('start_date_year'),
+                month => $c->req->param('start_date_month'),
+                day => $c->req->param('start_date_day'),
+            );
+        };
+
+        push @errors, _('Invalid start date') if $@;
+
+        eval {
+            $end_date = DateTime->new(
+                year => $c->req->param('end_date_year'),
+                month => $c->req->param('end_date_month'),
+                day => $c->req->param('end_date_day'),
+            );
+        };
+
+        push @errors, _('Invalid end date') if $@;
+
+        $c->stash->{errors} = \@errors;
+        $c->stash->{start_date} = $start_date;
+        $c->stash->{end_date} = $end_date;
+
+        $c->stash->{unconfirmed} = $c->req->param('unconfirmed') eq 'on' ? 1 : 0;
+
+        return 1 if @errors;
+
+        my $field = 'confirmed';
+
+        $field = 'created' if $c->req->param('unconfirmed');
+
+        my $p = $c->model('DB::Problem')->search(
+            {
+                -AND => [
+                    $field => { '>=', $start_date->ymd },
+                    $field => { '<=', $end_date->ymd },
+                ],
+            }
+        );
+
+        # in case the total_report count is 0
+        $c->stash->{show_count} = 1;
+        $c->stash->{total_reports} = $p->count;
+    }
+
+    return 1;
+}
+
 =head2 set_allowed_pages
 
 Sets up the allowed_pages stash entry for checking if the current page is
@@ -776,6 +834,7 @@ sub set_allowed_pages : Private {
              'questionnaire' => [_('Survey Results'), 4],
              'search_abuse' => [_('Search Abuse'), 5],
              'list_flagged'  => [_('List Flagged'), 6],
+             'stats'  => [_('Stats'), 6],
              'council_contacts' => [undef, undef],
              'council_edit' => [undef, undef],
              'report_edit' => [undef, undef],

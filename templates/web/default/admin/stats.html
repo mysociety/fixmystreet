@@ -1,0 +1,35 @@
+[% INCLUDE 'admin/header.html' title=loc('Stats') %]
+
+[% IF show_count %]
+<strong>[% tprintf( loc( 'Total %sreports between %s and %s: %d' ), ( unconfirmed ? '' : loc( 'confirmed' ) _ ' ' ), start_date.ymd, end_date.ymd, total_reports ) | html %]</strong>
+[% END %]
+
+[% IF errors %]
+    [% FOREACH error IN errors %]
+    <p class="error">[% error %]</p>
+    [% END %]
+[% END %]
+
+<form method="post" action="[% c.uri_for('stats') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+    <p>
+    <label for="start_date_year">[% loc('Start Year:') %]</label><input type="text" name="start_date_year" id="start_date_year" size="5" value="[% start_date ? start_date.year : '' | html %]" />
+    <label for="start_date_month">[% loc('Start month:') %]</label><input type="text" name="start_date_month" id="start_date_month" size="3" value="[% start_date ? start_date.month : '' | html %]" />
+    <label for="start_date_day">[% loc('Start day:') %]</label><input type="text" name="start_date_day" id="start_date_day" size="3" value="[% start_date ? start_date.day : '' | html %]" />
+    </p>
+
+    <p>
+    <label for="end_date_year">[% loc('End Year:') %]</label><input type="text" name="end_date_year" id="end_date_year" size="5" value="[% end_date ? end_date.year : '' | html %]" />
+    <label for="end_date_month">[% loc('End month:') %]</label><input type="text" name="end_date_month" id="end_date_month" size="3" value="[% end_date ? end_date.month : '' | html %]" />
+    <label for="end_date_day">[% loc('End day:') %]</label><input type="text" name="end_date_day" id="end_date_day" size="3" value="[% end_date ? end_date.day : '' | html %]" />
+    </p>
+
+    <p>
+    <input type="checkbox" name="unconfirmed" id="unconfirmed"[% unconfirmed ? ' checked' : '' %] /><label for="unconfirmed">[% loc('Include unconfirmed reports') %]</label>
+    </p>
+
+    <p>
+    <input type="submit" name="getcounts"  size="30" id="getcounts" value="Get Count" />
+    </p>
+</form>
+
+[% INCLUDE 'admin/footer.html' %]
