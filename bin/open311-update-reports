@@ -8,7 +8,7 @@ use FixMyStreet::App;
 # FIXME - make this configurable and/or better
 my $system_user = FixMyStreet::App->model('DB::User')->find_or_create(
     {
-        email => 'fixmystreet@mysociety.org',
+        email => $c->conf('CONTACT_EMAIL'),
         name => 'System User',
     }
 );
@@ -97,13 +97,15 @@ while ( my $council = $council_list->next ) {
                     if ( !$status_notes ) {
 
                         # FIXME - better text here
-                        $update->text( 'Closed by council' );
+                        $update->text( _('Closed by council') );
                     }
 
                     $p->update;
                     $update->insert;
                 }
             }
+            # FIXME - if the council never marks as closed then
+            # we will always re-open problems.
             else {
                 if ( $p->state eq 'fixed' ) {
                     $p->state('confirmed');
@@ -112,7 +114,7 @@ while ( my $council = $council_list->next ) {
                     if ( !$status_notes ) {
 
                         # FIXME - better text here
-                        $update->text( 'Re-opened by council' );
+                        $update->text( _('Re-opened by council') );
                     }
 
                     $p->update;
