@@ -68,7 +68,7 @@
     [% IF url.match('/requests.xml') %]
         [ <a href="http://maps.google.com/?q=[% url.replace('.xml', '.rss') | uri %]">[% loc('GeoRSS on Google Maps') %]</a> ]
     [% END %]
-    <br>[% ent(url) %]</li>
+    <br>[% url | html %]</li>
 [% END %]
 
 </ul>

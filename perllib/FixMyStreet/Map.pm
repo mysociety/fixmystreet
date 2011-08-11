@@ -21,7 +21,6 @@ my @ALL_MAP_CLASSES = allowed_maps();
 use mySociety::Config;
 use mySociety::Gaze;
 use mySociety::Locale;
-use mySociety::Web qw(ent);
 use Utils;
 
 =head2 allowed_maps
