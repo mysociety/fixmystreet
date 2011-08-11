@@ -30,9 +30,11 @@ while ( my $council = $council_list->next ) {
     my $reports = FixMyStreet::App->model('DB::Problem')->search(
         {
             council => { like => "\%$area_id\%" },
-            external_id => { '!=', undef },
-            external_id => { '!=', '' },
-            state => { 'IN', [qw/confirmed fixed/] }
+            state => { 'IN', [qw/confirmed fixed/] },
+            -and => [
+                external_id => { '!=', undef },
+                external_id => { '!=', '' },
+            ],
         }
     );
 
