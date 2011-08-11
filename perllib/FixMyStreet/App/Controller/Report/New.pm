@@ -663,7 +663,7 @@ sub process_report : Private {
 
     } elsif ( $first_council->{id} == COUNCIL_ID_BARNET ) {
 
-        unless ( Utils::barnet_categories()->{ $report->category } or $report->category eq 'Other') {
+        unless ( exists Utils::barnet_categories()->{ $report->category } or $report->category eq 'Other') {
             $c->stash->{field_errors}->{category} = _('Please choose a category');
         }
         $report->council( $first_council->{id} );
