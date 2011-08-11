@@ -172,7 +172,7 @@ sub display_location : Private {
 
     # get the map features
     my ( $on_map_all, $on_map, $around_map, $distance ) =
-      FixMyStreet::Map::map_features( $c, $latitude, $longitude,
+      FixMyStreet::Map::map_features( $c, $short_latitude, $short_longitude,
         $interval );
 
     # copy the found reports to the stash
@@ -199,8 +199,8 @@ sub display_location : Private {
     $c->stash->{page} = 'around'; # So the map knows to make clickable pins, update on pan
     FixMyStreet::Map::display_map(
         $c,
-        latitude  => $latitude,
-        longitude => $longitude,
+        latitude  => $short_latitude,
+        longitude => $short_longitude,
         clickable => 1,
         pins      => \@pins,
     );
