@@ -8,7 +8,7 @@ use FixMyStreet::App;
 # FIXME - make this configurable and/or better
 my $system_user = FixMyStreet::App->model('DB::User')->find_or_create(
     {
-        email => $c->conf('CONTACT_EMAIL'),
+        email => FixMyStreet::App->config->{'CONTACT_EMAIL'},
         name => 'System User',
     }
 );
@@ -58,6 +58,11 @@ while ( my $council = $council_list->next ) {
     }
 
     for my $request (@$requests) {
+        # if it's a ref that means it's an empty element
+        # however, if there's no updated date then we can't
+        # tell if it's newer that what we have so we should skip it
+        next if ref $request->{updated_datetime} || ! exists $request->{updated_datetime};
+
         my $request_id = $request->{service_request_id};
 
         my $problem =
@@ -89,6 +94,15 @@ while ( my $council = $council_list->next ) {
                     name => $council_details->{name},
                 }
             );
+
+            my $w3c = DateTime::Format::W3CDTF->new;
+            my $req_time = $w3c->parse_datetime( $request->{updated_datetime} );
+
+            # update from open311 is older so skip
+            if ( $req_time < $p->lastupdate ) {
+                next;
+            }
+
             if ( $request->{status} eq 'closed' ) {
                 if ( $p->state ne 'fixed' ) {
                     $p->state('fixed');
