@@ -259,5 +259,6 @@ for my $test (
 
 $problem->comments->delete;
 $problem->delete;
+$user->delete;
 
 done_testing();
