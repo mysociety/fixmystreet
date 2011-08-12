@@ -22,6 +22,11 @@ sub set_lang_and_domain {
     return $set_lang;
 }
 
+sub site_title {
+    my ($self) = @_;
+    return 'FiksGataMi';
+}
+
 sub enter_postcode_text {
     my ( $self ) = @_;
     return _('Enter a nearby postcode, or street name and area');
