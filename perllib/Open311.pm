@@ -10,6 +10,9 @@ use HTTP::Request::Common qw(POST);
 has jurisdiction => ( is => 'ro', isa => 'Str' );;
 has api_key => ( is => 'ro', isa => 'Str' );
 has endpoint => ( is => 'ro', isa => 'Str' );
+has test_mode => ( is => 'ro', isa => 'Bool' );
+has test_uri_used => ( is => 'rw', 'isa' => 'Str' );
+has test_get_returns => ( is => 'rw' );
 
 sub get_service_list {
     my $self = shift;
@@ -125,7 +128,13 @@ sub _get {
     $uri->path( $uri->path . $path );
     $uri->query_form( $params );
 
-    my $content = get( $uri->as_string );
+    my $content;
+    if ( $self->test_mode ) {
+        $content = $self->test_get_returns->{ $path };
+        $self->test_uri_used( $uri->as_string );
+    } else {
+        $content = get( $uri->as_string );
+    }
 
     return $content;
 }
