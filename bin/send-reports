@@ -379,7 +379,7 @@ sub post_barnet_message {
     my $return = 1;
 
     my $default_kbid = 14; # This is the default, "Street Scene"
-    my $kbid = sprintf( "%060d",  Utils::barnet_categories()->{$h{category}} || $default_kbid);
+    my $kbid = sprintf( "%050d",  Utils::barnet_categories()->{$h{category}} || $default_kbid);
 
     my $geo_code = "$h{easting} $h{northing}"; 
 
