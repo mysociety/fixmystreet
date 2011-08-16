@@ -78,7 +78,7 @@ create table contacts (
     -- time of last change
     whenedited timestamp not null, 
     -- what the last change was for: author's notes
-    note text not null
+    note text not null,
 
     -- extra fields required for open311
     extra text
@@ -178,7 +178,7 @@ create table problem (
     cobrand_data text not null default '' check (cobrand_data ~* '^[a-z0-9]*$'), -- Extra data used in cobranded versions of the site
     lastupdate timestamp not null default ms_current_timestamp(),
     whensent timestamp,
-    send_questionnaire boolean not null default 't'
+    send_questionnaire boolean not null default 't',
     extra text -- extra fields required for open311
 );
 create index problem_state_latitude_longitude_idx on problem(state, latitude, longitude);
