@@ -180,7 +180,7 @@ create table problem (
     lastupdate timestamp not null default ms_current_timestamp(),
     whensent timestamp,
     send_questionnaire boolean not null default 't',
-    extra text -- extra fields required for open311
+    extra text, -- extra fields required for open311
     flagged boolean not null default 'f'
 );
 create index problem_state_latitude_longitude_idx on problem(state, latitude, longitude);
