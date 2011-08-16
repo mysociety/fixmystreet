@@ -133,7 +133,8 @@ create table users (
     email           text    not null unique,
     name            text,
     phone           text,
-    password        text    not null default ''
+    password        text    not null default '',
+    flagged         boolean not null default 'f'
 );
 
 -- Problems reported by users of site
@@ -180,6 +181,7 @@ create table problem (
     whensent timestamp,
     send_questionnaire boolean not null default 't',
     extra text -- extra fields required for open311
+    flagged boolean not null default 'f'
 );
 create index problem_state_latitude_longitude_idx on problem(state, latitude, longitude);
 create index problem_user_id_idx on problem ( user_id );

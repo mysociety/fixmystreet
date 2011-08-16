@@ -24,6 +24,8 @@ __PACKAGE__->config(
     FILTERS => {
         escape_js => \&escape_js,
     },
+    COMPILE_EXT => '.ttc',
+    STAT_TTL    => FixMyStreet->config('STAGING_SITE') ? 1 : 86400,
 );
 
 =head1 NAME

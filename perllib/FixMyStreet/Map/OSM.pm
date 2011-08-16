@@ -59,7 +59,8 @@ sub display_map {
     }
 
     # Adjust zoom level dependent upon population density
-    my $dist = mySociety::Gaze::get_radius_containing_population( $params{latitude}, $params{longitude}, 200_000 );
+    my $dist = $c->stash->{distance}
+        || mySociety::Gaze::get_radius_containing_population( $params{latitude}, $params{longitude}, 200_000 );
     my $default_zoom = $numZoomLevels - 3;
     $default_zoom = $numZoomLevels - 2 if $dist < 10;
 

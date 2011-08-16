@@ -1,12 +1,9 @@
 [% INCLUDE 'admin/header.html' title=loc('Search Reports') %]
 [% PROCESS 'admin/report_blocks.html' %]
 
-<form method="get" action="[% c.uri_for('search_reports') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
-    <label for="search">[% loc('Search:') %]</label> <input type="text" name="search"  size="30" id="search">
-</form>
 
-
-[% IF searched %]
+<h2>[% loc( 'Problems' ) %]</h2>
+[% IF problems.size > 0 %]
 <table cellspacing="0" cellpadding="2" border="1">
     <tr>
         <th>[% loc('ID') %]</th>
@@ -24,9 +21,31 @@
     </tr>
     [% INCLUDE 'admin/problem_row.html' %]
 </table>
-
-[% INCLUDE 'admin/list_updates.html' %]
-
+[% ELSE %]
+<p>
+[% loc('No flagged problems found') %]
+</p>
 [% END %]
+
+<h2>[% loc( 'Users' ) %]</h2>
+[% IF users%]
+<table cellspacing="0" cellpadding="2" border="1">
+    <tr>
+        <th>[% loc('Name') %]</th>
+        <th>[% loc('Email') %]</th>
+    </tr>
+[% WHILE ( user = users.next ) -%]
+    <tr>
+        <td>[% user.name | html %]</td>
+        <td>[% user.email | html %]</td>
+        <td><a href="[% c.uri_for( 'search_reports', search => user.email ) %]">list content</a></td>
+    </tr>
+[%- END %]
+</table>
+[%- ELSE %]
+<p>
+[% loc('No flagged users found') %]
+</p>
+[%- END %]
 
 [% INCLUDE 'admin/footer.html' %]

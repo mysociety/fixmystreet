@@ -80,6 +80,8 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
   "extra",
   { data_type => "text", is_nullable => 1 },
+  "flagged",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->has_many(

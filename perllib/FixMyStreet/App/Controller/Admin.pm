@@ -480,8 +480,10 @@ sub search_reports : Path('search_reports') {
             }
         );
 
+        # we need to pass this in as an array as we can't
+        # query the object in the template as the quoting
+        # will have been turned off
         $c->stash->{problems} = [ $problems->all ];
-
 
         $c->stash->{edit_council_contacts} = 1
             if ( grep {$_ eq 'councilcontacts'} keys %{$c->stash->{allowed_pages}});
@@ -531,6 +533,7 @@ sub report_edit : Path('report_edit') : Args(1) {
 
     $c->forward('get_token');
     $c->forward('check_page_allowed');
+    $c->forward('check_email_for_abuse', [ $problem->user->email ] );
 
     $c->stash->{updates} =
       [ $c->model('DB::Comment')
@@ -546,6 +549,17 @@ sub report_edit : Path('report_edit') : Args(1) {
           '<p><em>' . _('That problem will now be resent.') . '</em></p>';
 
         $c->forward( 'log_edit', [ $id, 'problem', 'resend' ] );
+    }
+    elsif ( $c->req->param('flaguser') ) {
+        $c->forward('flag_user');
+        $c->stash->{problem}->discard_changes;
+    }
+    elsif ( $c->req->param('removeuserflag') ) {
+        $c->forward('remove_user_flag');
+        $c->stash->{problem}->discard_changes;
+    }
+    elsif ( $c->req->param('banuser') ) {
+        $c->forward('ban_user');
     }
     elsif ( $c->req->param('submit') ) {
         $c->forward('check_token');
@@ -566,12 +580,15 @@ sub report_edit : Path('report_edit') : Args(1) {
             $done = 1;
         }
 
+        my $flagged = $c->req->param('flagged') ? 1 : 0;
+
         # do this here so before we update the values in problem
         if (   $c->req->param('anonymous') ne $problem->anonymous
             || $c->req->param('name')   ne $problem->name
             || $c->req->param('email')  ne $problem->user->email
             || $c->req->param('title')  ne $problem->title
-            || $c->req->param('detail') ne $problem->detail )
+            || $c->req->param('detail') ne $problem->detail
+            || $flagged != $problem->flagged )
         {
             $edited = 1;
         }
@@ -581,6 +598,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         $problem->detail( $c->req->param('detail') );
         $problem->state( $c->req->param('state') );
         $problem->name( $c->req->param('name') );
+        $problem->flagged( $flagged );
 
         if ( $c->req->param('email') ne $problem->user->email ) {
             my $user = $c->model('DB::User')->find_or_create(
@@ -628,6 +646,213 @@ sub report_edit : Path('report_edit') : Args(1) {
     return 1;
 }
 
+sub update_edit : Path('update_edit') : Args(1) {
+    my ( $self, $c, $id ) = @_;
+
+    my ( $site_res_sql, $site_key, $site_restriction ) =
+      $c->cobrand->site_restriction;
+    my $update = $c->model('DB::Comment')->search(
+        {
+            id => $id,
+            %{$site_restriction},
+        }
+    )->first;
+
+    $c->detach( '/page_error_404_not_found',
+        [ _('The requested URL was not found on this server.') ] )
+      unless $update;
+
+    $c->forward('get_token');
+    $c->forward('check_page_allowed');
+
+    $c->stash->{update} = $update;
+
+    $c->forward('check_email_for_abuse', [ $update->user->email ] );
+
+    if ( $c->req->param('banuser') ) {
+        $c->forward('ban_user');
+    }
+    elsif ( $c->req->param('flaguser') ) {
+        $c->forward('flag_user');
+        $c->stash->{update}->discard_changes;
+    }
+    elsif ( $c->req->param('removeuserflag') ) {
+        $c->forward('remove_user_flag');
+        $c->stash->{update}->discard_changes;
+    }
+    elsif ( $c->req->param('submit') ) {
+        $c->forward('check_token');
+
+        my $old_state = $update->state;
+        my $new_state = $c->req->param('state');
+
+        my $edited = 0;
+
+        # $update->name can be null which makes ne unhappy
+        my $name = $update->name || '';
+
+        if ( $c->req->param('name') ne $name
+          || $c->req->param('email')     ne $update->user->email
+          || $c->req->param('anonymous') ne $update->anonymous
+          || $c->req->param('text')      ne $update->text ){
+              $edited = 1;
+          }
+
+        if ( $c->req->param('remove_photo') ) {
+            $update->photo(undef);
+        }
+
+        $update->name( $c->req->param('name') || '' );
+        $update->text( $c->req->param('text') );
+        $update->anonymous( $c->req->param('anonymous') );
+        $update->state( $c->req->param('state') );
+
+        if ( $c->req->param('email') ne $update->user->email ) {
+            my $user =
+              $c->model('DB::User')
+              ->find_or_create( { email => $c->req->param('email') } );
+
+            $user->insert unless $user->in_storage;
+            $update->user($user);
+        }
+
+        if ( $new_state eq 'confirmed' and $old_state eq 'unconfirmed' ) {
+            $update->confirmed( \'ms_current_timestamp()' );
+        }
+
+        $update->update;
+
+        $c->stash->{status_message} = '<p><em>' . _('Updated!') . '</em></p>';
+
+        # If we're hiding an update, see if it marked as fixed and unfix if so
+        if ( $new_state eq 'hidden' && $update->mark_fixed ) {
+            if ( $update->problem->state eq 'fixed' ) {
+                $update->problem->state('confirmed');
+                $update->problem->update;
+            }
+
+            $c->stash->{status_message} .=
+              '<p><em>' . _('Problem marked as open.') . '</em></p>';
+        }
+
+        if ( $new_state ne $old_state ) {
+            $c->forward( 'log_edit',
+                [ $update->id, 'update', 'state_change' ] );
+        }
+
+        if ($edited) {
+            $c->forward( 'log_edit', [ $update->id, 'update', 'edit' ] );
+        }
+
+    }
+
+    return 1;
+}
+
+sub search_abuse : Path('search_abuse') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->forward('check_page_allowed');
+
+    my $search = $c->req->param('search');
+
+    if ($search) {
+        my $emails = $c->model('DB::Abuse')->search(
+            {
+                email => { ilike => "\%$search\%" }
+            }
+        );
+
+        $c->stash->{emails} = [ $emails->all ];
+    }
+
+    return 1;
+}
+
+sub list_flagged : Path('list_flagged') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->forward('check_page_allowed');
+
+    my $problems = $c->model('DB::Problem')->search( { flagged => 1 } );
+
+    # pass in as array ref as using same template as search_reports
+    # which has to use an array ref for sql quoting reasons
+    $c->stash->{problems} = [ $problems->all ];
+
+    my $users = $c->model('DB::User')->search( { flagged => 1 } );
+
+    $c->stash->{users} = $users;
+
+    return 1;
+}
+
+sub stats : Path('stats') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->forward('check_page_allowed');
+
+    if ( $c->req->param('getcounts') ) {
+
+        my ( $start_date, $end_date, @errors );
+
+        eval {
+            $start_date = DateTime->new(
+                year => $c->req->param('start_date_year'),
+                month => $c->req->param('start_date_month'),
+                day => $c->req->param('start_date_day'),
+            );
+        };
+
+        push @errors, _('Invalid start date') if $@;
+
+        eval {
+            $end_date = DateTime->new(
+                year => $c->req->param('end_date_year'),
+                month => $c->req->param('end_date_month'),
+                day => $c->req->param('end_date_day'),
+            );
+        };
+
+        push @errors, _('Invalid end date') if $@;
+
+        $c->stash->{errors} = \@errors;
+        $c->stash->{start_date} = $start_date;
+        $c->stash->{end_date} = $end_date;
+
+        $c->stash->{unconfirmed} = $c->req->param('unconfirmed') eq 'on' ? 1 : 0;
+
+        return 1 if @errors;
+
+        my $field = 'confirmed';
+
+        $field = 'created' if $c->req->param('unconfirmed');
+
+        my $one_day = DateTime::Duration->new( days => 1 );
+
+        my $p = $c->model('DB::Problem')->search(
+            {
+                -AND => [
+                    $field => { '>=', $start_date},
+                    $field => { '<=', $end_date + $one_day },
+                ],
+            },
+            {
+                select => [ 'state', { 'count' => 'me.id' } ],
+                as => [qw/state count/],
+                group_by => [ 'state' ],
+                order_by => [ 'state' ],
+            }
+        );
+
+        # in case the total_report count is 0
+        $c->stash->{show_count} = 1;
+        $c->stash->{states} = $p;
+    }
+
+    return 1;
+}
+
 =head2 set_allowed_pages
 
 Sets up the allowed_pages stash entry for checking if the current page is
@@ -647,10 +872,14 @@ sub set_allowed_pages : Private {
              'search_reports' => [_('Search Reports'), 2],
              'timeline' => [_('Timeline'), 3],
              'questionnaire' => [_('Survey Results'), 4],
-             'council_contacts' => [undef, undef],        
-             'council_edit' => [undef, undef], 
-             'report_edit' => [undef, undef], 
-             'update_edit' => [undef, undef], 
+             'search_abuse' => [_('Search Abuse'), 5],
+             'list_flagged'  => [_('List Flagged'), 6],
+             'stats'  => [_('Stats'), 6],
+             'council_contacts' => [undef, undef],
+             'council_edit' => [undef, undef],
+             'report_edit' => [undef, undef],
+             'update_edit' => [undef, undef],
+             'abuse_edit'  => [undef, undef],
         }
     }
 
@@ -720,97 +949,114 @@ sub log_edit : Private {
     )->insert();
 }
 
-sub update_edit : Path('update_edit') : Args(1) {
-    my ( $self, $c, $id ) = @_;
+=head2 ban_user
 
-    my ( $site_res_sql, $site_key, $site_restriction ) =
-      $c->cobrand->site_restriction;
-    my $update = $c->model('DB::Comment')->search(
-        {
-            id => $id,
-            %{$site_restriction},
-        }
-    )->first;
+Add the email address in the email param of the request object to
+the abuse table if they are not already in there and sets status_message
+accordingly
 
-    $c->detach( '/page_error_404_not_found',
-        [ _('The requested URL was not found on this server.') ] )
-      unless $update;
+=cut
 
-    $c->forward('get_token');
-    $c->forward('check_page_allowed');
+sub ban_user : Private {
+    my ( $self, $c ) = @_;
 
-    $c->stash->{update} = $update;
+    my $email = $c->req->param('email');
 
-    my $status_message = '';
-    if ( $c->req->param('submit') ) {
-        $c->forward('check_token');
+    return unless $email;
 
-        my $old_state = $update->state;
-        my $new_state = $c->req->param('state');
+    my $abuse = $c->model('DB::Abuse')->find_or_new({ email => $email });
 
-        my $edited = 0;
-
-        # $update->name can be null which makes ne unhappy
-        my $name = $update->name || '';
-
-        if ( $c->req->param('name') ne $name
-          || $c->req->param('email')     ne $update->user->email
-          || $c->req->param('anonymous') ne $update->anonymous
-          || $c->req->param('text')      ne $update->text ){
-              $edited = 1;
-          }
-
-        if ( $c->req->param('remove_photo') ) {
-            $update->photo(undef);
-        }
-
-        $update->name( $c->req->param('name') || '' );
-        $update->text( $c->req->param('text') );
-        $update->anonymous( $c->req->param('anonymous') );
-        $update->state( $c->req->param('state') );
-
-        if ( $c->req->param('email') ne $update->user->email ) {
-            my $user =
-              $c->model('DB::User')
-              ->find_or_create( { email => $c->req->param('email') } );
-
-            $user->insert unless $user->in_storage;
-            $update->user($user);
-        }
-
-        if ( $new_state eq 'confirmed' and $old_state eq 'unconfirmed' ) {
-            $update->confirmed( \'ms_current_timestamp()' );
-        }
-
-        $update->update;
-
-        $status_message = '<p><em>' . _('Updated!') . '</em></p>';
-
-        # If we're hiding an update, see if it marked as fixed and unfix if so
-        if ( $new_state eq 'hidden' && $update->mark_fixed ) {
-            if ( $update->problem->state eq 'fixed' ) {
-                $update->problem->state('confirmed');
-                $update->problem->update;
-            }
-
-            $status_message .=
-              '<p><em>' . _('Problem marked as open.') . '</em></p>';
-        }
-
-        if ( $new_state ne $old_state ) {
-            $c->forward( 'log_edit',
-                [ $update->id, 'update', 'state_change' ] );
-        }
-
-        if ($edited) {
-            $c->forward( 'log_edit', [ $update->id, 'update', 'edit' ] );
-        }
-
+    if ( $abuse->in_storage ) {
+        $c->stash->{status_message} = _('Email already in abuse list');
+    } else {
+        $abuse->insert;
+        $c->stash->{status_message} = _('Email added to abuse list');
     }
-    $c->stash->{status_message} = $status_message;
+
+    $c->stash->{email_in_abuse} = 1;
 
     return 1;
 }
+
+=head2 flag_user
+
+Sets the flag on a user with the given email
+
+=cut
+
+sub flag_user : Private {
+    my ( $self, $c ) = @_;
+
+    my $email = $c->req->param('email');
+
+    return unless $email;
+
+    my $user = $c->model('DB::User')->find({ email => $email });
+
+    if ( !$user ) {
+        $c->stash->{status_message} = _('Could not find user');
+    } else {
+        $user->flagged(1);
+        $user->update;
+        $c->stash->{status_message} = _('User flagged');
+    }
+
+    $c->stash->{user_flagged} = 1;
+
+    return 1;
+}
+
+=head2 remove_user_flag
+
+Remove the flag on a user with the given email
+
+=cut
+
+sub remove_user_flag : Private {
+    my ( $self, $c ) = @_;
+
+    my $email = $c->req->param('email');
+
+    return unless $email;
+
+    my $user = $c->model('DB::User')->find({ email => $email });
+
+    if ( !$user ) {
+        $c->stash->{status_message} = _('Could not find user');
+    } else {
+        $user->flagged(0);
+        $user->update;
+        $c->stash->{status_message} = _('User flag removed');
+    }
+
+    return 1;
+}
+
+
+=head2 check_email_for_abuse
+
+    $c->forward('check_email_for_abuse', [ $email ] );
+
+Checks if $email is in the abuse table and sets email_in_abuse accordingly
+
+=cut
+
+sub check_email_for_abuse : Private {
+    my ( $self, $c, $email ) =@_;
+
+    my $is_abuse = $c->model('DB::Abuse')->find({ email => $email });
+
+    $c->stash->{email_in_abuse} = 1 if $is_abuse;
+
+    return 1;
+}
+
+=head2 check_page_allowed
+
+Checks if the current catalyst action is in the list of allowed pages and
+if not then redirects to 404 error page.
+
+=cut
 
 sub check_page_allowed : Private {
     my ( $self, $c ) = @_;

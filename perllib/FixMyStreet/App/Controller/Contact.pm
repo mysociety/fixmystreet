@@ -164,6 +164,10 @@ sub prepare_params_for_email : Private {
             $c->stash->{problem}->id,
             $problem_url, $admin_url
         );
+
+        # flag this so it's automatically listed in the admin interface
+        $c->stash->{problem}->flagged(1);
+        $c->stash->{problem}->update;
     }
 
     return 1;
