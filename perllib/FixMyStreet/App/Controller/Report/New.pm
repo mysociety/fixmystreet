@@ -907,7 +907,7 @@ sub generate_map : Private {
       ( $c->stash->{latitude}, $c->stash->{longitude} );
 
     # Don't do anything if the user skipped the map
-    unless ( $c->req->param('skipped') ) {
+    if ( $c->stash->{report}->used_map ) {
         $c->stash->{page} = 'new';
         FixMyStreet::Map::display_map(
             $c,
