@@ -161,11 +161,11 @@ select, input, textarea {
 #footer {
     clear: both;
     text-align: center;
-    border-top: solid 2px $header_back;
+    border-top: solid 2px #ccc;
     width: 50%;
     margin: 1em auto 0;
     padding: 0;
-    color: $header_darker;
+    color: #333333;
 
     .l, .r {
         margin-top: 0;

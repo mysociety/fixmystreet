@@ -212,6 +212,7 @@ $map_width: 500px;
         float: right;
         width: $map_width + 2px;
         position: relative;
+        padding-left: 20px;
         background-color: #ffffff;
     }
 
@@ -268,14 +269,33 @@ $map_width: 500px;
     }
 
     #text_map {
+        @include problem-banner;
+        padding-left: 0.5em;
+        text-align: left;
         margin-top: 0;
-        padding: 0.5em;
         font-size: 110%;
         background-color: #eeeeee;
-        -moz-border-radius: 1em;
-        -webkit-border-radius: 1em;
-        border-radius: 1em;
+        -moz-border-radius-topleft: 1em;
+        -moz-border-radius-bottomleft: 1em;
+        -webkit-border-top-left-radius: 1em;
+        -webkit-border-bottom-left-radius: 1em;
+        border-top-left-radius: 1em;
+        border-bottom-left-radius: 1em;
     }
+    #text_map_arrow {
+        display: block;
+        position: absolute;
+        top: 0;
+        right: -28px;
+        width: 0;
+        height: 0;
+        line-height: 0;
+        font-size: 0;
+        border-style: solid;
+        border-width: 26px 14px 26px 14px;
+        border-color: #fff #fff #fff #eee;
+    }
+
     #text_no_map {
         margin-top: 0;
         // background-color: #ffeecc;
@@ -496,6 +516,10 @@ $map_width: 500px;
 .olControlAttribution {
     bottom: 3px !important;
     left: 3px;
+}
+.olControlPermalink {
+    bottom: 3px !important;
+    right: 3px;
 }
 
 // Printing, SCSS doesn't handle @media nesting
