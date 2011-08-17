@@ -212,7 +212,6 @@ $map_width: 500px;
         float: right;
         width: $map_width + 2px;
         position: relative;
-        padding-left: 20px;
         background-color: #ffffff;
     }
 
@@ -268,23 +267,14 @@ $map_width: 500px;
         cursor: crosshair;
     }
 
-    #compass {
-        background-color: #ffffff;
-        border: solid 1px #000000;
-        border-width: 0 1px 1px 0;
-        color: #000000;
-        position: absolute;
-        top: 0px;
-        left: 0px;
-        img {
-            border: 0;
-        }
-    }
-
     #text_map {
-        margin-top: 0.5em;
-        margin-bottom: 1em;
+        margin-top: 0;
+        padding: 0.5em;
         font-size: 110%;
+        background-color: #eeeeee;
+        -moz-border-radius: 1em;
+        -webkit-border-radius: 1em;
+        border-radius: 1em;
     }
     #text_no_map {
         margin-top: 0;
@@ -331,7 +321,7 @@ $map_width: 500px;
     }
 
     #nearby_lists h2 {
-        margin-top: 0.5em;
+        margin-top: 1em;
         margin-bottom: 0;
     }
 
@@ -343,12 +333,10 @@ $map_width: 500px;
         float: right;
     }
     #alert_links_area {
-        background-color: #ffeecc;
-        border: solid 1px #ff9900;
-        border-width: 1px 0;
-        padding: 3px 10px;
-        // padding: 0 3px;
+        padding-left: 0.5em;
         margin: 0;
+        color: #666;
+        font-size: smaller;
     }
     #rss_alert {
         text-decoration: none;
