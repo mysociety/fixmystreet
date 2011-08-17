@@ -41,6 +41,17 @@ $(function(){
         return false;
     });
 
+    $(window).hashchange(function(){
+        if (location.hash) return;
+        // Okay, back to around view.
+        fixmystreet.bbox_strategy.activate();
+        fixmystreet.markers.refresh( { force: true } );
+        fixmystreet.drag.deactivate();
+        $('#side-form').hide();
+        $('#side').show();
+        fixmystreet.page = 'around';
+    });
+
     // Vector layers must be added onload as IE sucks
     if ($.browser.msie) {
         $(window).load(fixmystreet_onload);
@@ -288,10 +299,10 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             fixmystreet.markers.features[0].move(lonlat);
         } else {
             var markers = fms_markers_list( [ [ lonlat.lat, lonlat.lon, 'purple' ] ], false );
+            fixmystreet.bbox_strategy.deactivate();
             fixmystreet.markers.removeAllFeatures();
             fixmystreet.markers.addFeatures( markers );
             fixmystreet_activate_drag();
-            fixmystreet.bbox_strategy.deactivate();
         }
         fixmystreet_update_pin(lonlat);
         if (fixmystreet.page == 'new') {
@@ -307,6 +318,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         $('#side-form').show();
         $('#side').hide();
         fixmystreet.page = 'new';
+        location.hash = 'report';
     }
 });
 
@@ -322,12 +334,12 @@ function fixmystreet_update_pin(lonlat) {
 }
 
 function fixmystreet_activate_drag() {
-    var drag = new OpenLayers.Control.DragFeature( fixmystreet.markers, {
+    fixmystreet.drag = new OpenLayers.Control.DragFeature( fixmystreet.markers, {
         onComplete: function(feature, e) {
             fixmystreet_update_pin( feature.geometry.clone() );
         }
     } );
-    fixmystreet.map.addControl( drag );
-    drag.activate();
+    fixmystreet.map.addControl( fixmystreet.drag );
+    fixmystreet.drag.activate();
 }
 
