@@ -8,15 +8,16 @@
 [% END %]
 
 [% IF js %]
-    <p id="council_text">COUNCIL TEXT HERE</p>
+    <p id="councils_text">[%
+        tprintf(
+            loc('All the information you provide here will be sent to <strong>%s</strong>.'),
+            loc('the local council')
+        );
+    %]
+    [% loc('The subject and details of the problem will be public, plus your name if you give us permission.') %]
+    </p>
 [% ELSE %]
-    [% IF area_ids_to_list.size == 0 %]
-        [% INCLUDE 'report/new/no_councils_text.html' %]
-    [% ELSIF area_ids_to_list.size == all_councils.size %]
-        [% INCLUDE 'report/new/all_councils_text.html' %]
-    [% ELSE %]    
-        [% INCLUDE 'report/new/some_councils_text.html' %]
-    [% END %]
+    [% PROCESS 'report/new/councils_text.html' %]
 [% END %]
 
 <p>
@@ -43,21 +44,6 @@
     <div class='form-error'>[% field_errors.council %]</div>
 [% END %]
 
-[% IF category_options.size %]
-    [% IF field_errors.category %]
-        <div class='form-error'>[% field_errors.category %]</div>
-    [% END %]
-    
-    <div class="form-field">
-        <label for="form_category">[% category_label | html %]</label>
-        <select name="category" id="form_category">
-            [%- FOREACH cat_op IN category_options %]
-            <option value="[% cat_op | html %]"[% ' selected' IF report.category == cat_op %]>[% cat_op | html %]</option>
-            [%- END %]
-        </select>
-    </div>
-[% END %]
-
 [% IF field_errors.title %]
     <div class='form-error'>[% field_errors.title %]</div>
 [% END %]
@@ -75,6 +61,23 @@
     <label for="form_detail">[% loc('Details:') %]</label>
     <textarea name="detail" id="form_detail" rows="7" cols="26">[% report.detail | html %]</textarea>
 </div>
+
+[% IF js %]
+    <div class="form-field" id="form_category_row">
+        <label for="form_category">[% loc('Category:') %]</label>
+        <select name="category" id="form_category"><option>[% loc('Loading...') %]</option></select>
+    </div>
+[% ELSE %]
+    [% IF category_options.size %]
+        [% IF field_errors.category %]
+            <div class='form-error'>[% field_errors.category %]</div>
+        [% END %]
+
+        <div class="form-field">
+            [% PROCESS "report/new/category.html" %]
+        </div>
+    [% END %]
+[% END %]
 
 [% IF c.cobrand.allow_photo_upload %]
     [% IF field_errors.photo %]
