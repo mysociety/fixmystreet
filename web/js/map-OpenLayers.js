@@ -304,8 +304,8 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             $('#councils_text').html(data.councils_text);
             $('#form_category_row').html(data.category);
         });
-        $('#side-form').show('slow');
-        $('#side').hide('slow');
+        $('#side-form').show();
+        $('#side').hide();
         fixmystreet.page = 'new';
     }
 });
