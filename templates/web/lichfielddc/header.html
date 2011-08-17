@@ -2,12 +2,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="[% lang_code %]">
 <head>
 
-<style type="text/css">
-    @import url(/css/core.css);
-    @import url(/cobrands/lichfield/css/layout.css);
-</style>
+	<link rel="stylesheet" type="text/css" href="/css/core.css" />
+	<link rel="stylesheet" type="text/css" href="/cobrands/lichfielddc/css/layout.css" />
 
-	<link rel="stylesheet" type="text/css" href="http://www.lichfielddc.gov.uk/site/styles/standard.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="http://www.lichfielddc.gov.uk/site/styles/standard_1_.css" media="screen" />
 <link rel="stylesheet" type="text/css" href="http://www.lichfielddc.gov.uk/site/styles/generic/style.php" media="screen" />
 
 <!--[if lte IE 6]>
@@ -20,9 +18,6 @@
 
 <link rel="stylesheet" type="text/css" href="http://www.lichfielddc.gov.uk/site/styles/generic/print.css" media="print" />
 <link rel="stylesheet" type="text/css" href="http://www.lichfielddc.gov.uk/site/styles/generic/handheld.css" media="handheld" />
-<link rel="stylesheet" type="text/css" href="/assets/lichfielddc/reset.css">
-<link rel="stylesheet" type="text/css" href="/pet.css">
-<link rel="stylesheet" type="text/css" href="/assets/lichfielddc/css.css">
 
 <link rel="Shortcut Icon" type="image/x-icon" href="http://www.lichfielddc.gov.uk/site/favicon.ico" />
 <link rel="ToC" href="http://www.lichfielddc.gov.uk/site/scripts/site_map.php" />
@@ -51,7 +46,7 @@
 	<meta name="DC.publisher" lang="en" content="Lichfield District Council, District Council House, Frog Lane, Lichfield, Staffordshire. WS13 6YY" />
 	<meta name="DC.rights.copyright" lang="en" content="Copyright 2010 Lichfield District Council" />
 	<meta name="DC.coverage" lang="en" content="Worldwide" />
-	<meta name="DC.identifier" content="PARAM_DC_IDENTIFIER" />
+	<meta name="DC.identifier" content="[% c.request.base %]" />
 
 	<!-- eGMS Metadata -->
 	<meta name="eGMS.status" lang="en" content="V1.0 Public Consumption" />
@@ -64,25 +59,25 @@
 	<script type="text/javascript" src="http://www.lichfielddc.gov.uk/site/javascript/global.js"></script>
 
 
-	<meta name="Keywords" content="home, homepage, index, root, Lichfield, UK, England, local authority, council, local government, services, citizen, councillor, community, leisure, tourist, tourism, social services, education, enviroment, fire, emergency planning, road safety, transport, motorways, library, libraries, archive, public record, record office, parish councils, county councillors" />
-	<meta name="Description" content="Lichfield District Council: PARAM_DESCRIPTION" />
+	<meta name="Keywords" content="home, homepage, index, root, Lichfield, UK, England, local authority, council, local government, services, citizen, councillor, community, leisure, tourist, tourism, social services, education, environment, fire, emergency planning, road safety, transport, motorways, library, libraries, archive, public record, record office, parish councils, county councillors" />
+	<meta name="Description" content="Lichfield District Council: FixMyStreet" />
 
-	<meta name="DC.title" lang="en" content="Lichfield District Council: PARAM_TITLE" />
-	<meta name="DC.description" lang="en" content="Lichfield District Council: PARAM_DESCRIPTION" />
+	<meta name="DC.title" lang="en" content="Lichfield District Council: FixMyStreet" />
+	<meta name="DC.description" lang="en" content="Lichfield District Council: FixMyStreet" />
 
 	<meta name="DC.subject" lang="en" scheme="eGMS.IPSV" content="Local government;Government, politics and public administration" />
 	<meta name="DC.subject" lang="en" content="Council, government and democracy" />
 	
 [% INCLUDE 'common_header_tags.html' %]
 </head>
-<body PARAM_BODYID>
+<body>
 <!-- ########## MAIN STRUCTURE ######### -->
 <div id="container">
 <div id="mobile_name">Lichfield District Council</div>
 <div id="mast">
 	<p class="skip">
-		<a accesskey="s" title="Skip to page content, access key S" href="http://www.lichfielddc.gov.uk/site/custom_scripts/mysociety/header.php?#main" rel="nofollow">Jump to content</a> - 
-		<a accesskey="n" title="Skip to main navigation, access key N" href="http://www.lichfielddc.gov.uk/site/custom_scripts/mysociety/header.php?#main-nav" rel="nofollow">Jump to navigation</a> - 
+		<a accesskey="s" title="Skip to page content, access key S" href="[% c.req.url %]#main" rel="nofollow">Jump to content</a> - 
+		<a accesskey="n" title="Skip to main navigation, access key N" href="[% c.req.url %]#main-nav" rel="nofollow">Jump to navigation</a> - 
 		
 		<a class="access" title="Change font size, colour and contrast of this site" href="http://www.lichfielddc.gov.uk/site/scripts/user_settings.php">Accessibility Settings</a> 
 	</p>
@@ -95,10 +90,9 @@
 	<form action="http://www.lichfielddc.gov.uk/site/scripts/google_results.php" method="get" name="search" id="search">
 		<fieldset><a title="Create a specific detailed search" href="http://www.lichfielddc.gov.uk/site/scripts/search_index.php">Need help finding something?</a>
 		<label for="SearchSite">Search this site</label>
-        <input type="text" name="q" size="18" maxlength="40" class="field" id="SearchSite" value=""/>
-        <input type="hidden" name="site" value="ldc"/>
-        <input type="hidden" name="client" value="ldc"/>
+        <input type="text" name="q" size="18" maxlength="40" class="field" id="SearchSite" value="What are you looking for?" style="colour:#666;"/>
         <input type="hidden" name="output" value="xml"/>
+        <input type="hidden" name="as_sitesearch" value="lichfielddc.gov.uk"/>
         <input type="submit" value="Search" class="button" /></fieldset>
 	</form>
 	<div class="pseudoH1">
@@ -132,9 +126,9 @@
 
 	</ul><!-- end navigation -->
 	<!--
-	<span id="postcodebox" style="display: none;">
+	<span id="postcode box" style="display: none;">
 <form action="http://www.lichfielddc.gov.uk/site/custom_scripts/myarea.php" method="get" id="pcodeform">
-<label for="postcode">Your Postcode: </label><input name="postcode" id="postcode" class="text" /> <input value="Go!" name="submit" class="pbutton" type="submit" />
+<label for="postcode">Your Postcode: </label><input name="postcode" id="postcode" class="text" /> <input value="Go!" name="submit" class="button" type="submit" />
 </form>
 </span> -->
 	
@@ -155,23 +149,36 @@
 	var url = li.title;
 	window.location = url;
 	}
+
+$('SearchSite').onfocus = function() {
+   if (this._cleared) return
+   this.clear()
+   this.style.color = '#000'
+   this._cleared = true
+ }
+
 	
 /*	document.observe("dom:loaded", function() {
-		Event.observe($('myarea'), 'click', function(event) {
+		Event.observe($('my area'), 'click', function(event) {
 		$('postcodebox').appear();
 		event.stop(event);
 		});
 	}); */
 	</script>	<div id="page_wrap">
 		<div id="mainContent">
-			<div id="content" class="withWidth">
+			<div id="content">
 				<a name="main"></a>
 
+    [% IF c.user_exists %]
+    <ul class="user">
+        <li>[% tprintf(loc('Signed in as %s'), c.user.name || c.user.email) %] - <a href="/auth/sign_out">[% loc('Sign out') %]</a></li>
+    </ul>
+    [% END %]
                 <!-- BREAD CRUMB NAVIGATION -->
 
                  <!-- Breadcrumb --><!-- googleoff:all -->
                             <ul id="breadcrumb">
-                                <li><a href="http://www.lichfielddc.gov.uk/site/">Home</a></li><li><a href="http://lichfield.fixmystreet.com/">FixMyStreet</a></li>
+                                <li><a href="http://www.lichfielddc.gov.uk/site/">Home</a></li><li><a href="[% c.req.base %]">FixMyStreet</a></li>
                                 <li class="bc_end">
                                 [% SWITCH c.req.uri.path %]Report a problem
                                 [% CASE '/' %]Report a problem
@@ -179,12 +186,25 @@
                                 [% CASE '/my' %]Your reports
                                 [% CASE '/alert' %]Local alerts
                                 [% CASE '/faq' %]Help
-                                [% CASE '/contact' %] Contact
+                                [% CASE '/contact' %]Contact
+                                [% CASE '/around' %]Viewing a location
+                                [% CASE '/report/new' %]Reporting a problem
+                                [% CASE '/auth' %]Sign in
+                                [% CASE '/auth/sign_out' %]Signed out
+                                [% CASE DEFAULT %] [% IF c.req.uri.path.substr(0, 8 ) == '/report/' %][% problem.title %] - Viewing a problem[% END %]
                                 [% END %]
                                 </li></ul>
+
                             <!-- END Breadcrumb --><!-- googleon:all -->
                     <!-- END BREAD CRUMB -->
-      <div id="wrap">
-          <div id="content">
+
+<ul id="nav">
+    <li class="section"><a href="/">Report a problem</a></li>
+    <li class="section"><a href="/reports/Lichfield">All reports</a></li>
+    <li class="section"><a href="/my">Your reports</a></li>
+    <li class="section"><a href="/alert">Local alerts</a></li>
+    <li class="section"><a href="/faq">Help</a></li>
+    <li class="section"><a href="/contact">Contact</a></li>
+</ul>
               <div id="mysociety">
 

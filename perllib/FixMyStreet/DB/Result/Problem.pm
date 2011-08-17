@@ -78,6 +78,8 @@ __PACKAGE__->add_columns(
   { data_type => "timestamp", is_nullable => 1 },
   "send_questionnaire",
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
+  "flagged",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->has_many(
@@ -104,7 +106,7 @@ __PACKAGE__->has_many(
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:3sw/1dqxlTvcWEI/eJTm4w
 
 # Add fake relationship to stored procedure table
-__PACKAGE__->has_many(
+__PACKAGE__->has_one(
   "nearby",
   "FixMyStreet::DB::Result::Nearby",
   { "foreign.problem_id" => "self.id" },

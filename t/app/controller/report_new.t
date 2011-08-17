@@ -151,8 +151,8 @@ foreach my $test (
         msg    => 'title and details tidied up',
         pc     => 'SW1A 1AA',
         fields => {
-            title         => 'DOG SHIT ON WALLS',
-            detail        => 'on this portakabin - more of a portaloo HEH!!',
+            title         => "DOG SHIT\r\nON WALLS",
+            detail        => "on this portakabin -\r\n\r\nmore of a portaloo HEH!!",
             photo         => '',
             name          => 'Bob Jones',
             may_show_name => '1',
@@ -166,7 +166,7 @@ foreach my $test (
         changes => {
             title => 'Dog poo on walls',
             detail =>
-              'On this [portable cabin] - more of a [portable loo] HEH!!',
+              "On this [portable cabin] -\n\nMore of a [portable loo] HEH!!",
         },
         errors => [ 'Please enter your email', ],
     },

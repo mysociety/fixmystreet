@@ -139,7 +139,7 @@ subtest 'check summary counts' => sub {
 my $host = FixMyStreet->config('BASE_URL');
 $mech->get_ok('/admin/council_contacts/2650');
 $mech->content_contains('Aberdeen City Council');
-$mech->content_contains('AB15 8RN');
+$mech->content_like(qr{AB\d\d});
 $mech->content_contains("$host/around");
 
 subtest 'check contact creation' => sub {
@@ -236,6 +236,7 @@ foreach my $test (
             name   => 'Test User',
             email  => $user->email,
             anonymous => 0,
+            flagged => undef,
         },
         changes => {
             title => 'Edited Report',
@@ -253,6 +254,7 @@ foreach my $test (
             name   => 'Test User',
             email  => $user->email,
             anonymous => 0,
+            flagged => undef,
         },
         changes => {
             detail => 'Edited Detail',
@@ -270,12 +272,32 @@ foreach my $test (
             name   => 'Test User',
             email  => $user->email,
             anonymous => 0,
+            flagged => undef,
         },
         changes => {
             name => 'Edited User',
         },
         log_count => 3,
         log_entries => [ qw/edit edit edit/ ],
+        resend => 0,
+        user => $user,
+    },
+    {
+        description => 'edit report set flagged true',
+        fields => {
+            title  => 'Edited Report',
+            detail => 'Edited Detail',
+            state  => 'confirmed',
+            name   => 'Edited User',
+            email  => $user->email,
+            anonymous => 0,
+            flagged => undef,
+        },
+        changes => {
+            flagged => 'on',
+        },
+        log_count => 4,
+        log_entries => [ qw/edit edit edit edit/ ],
         resend => 0,
         user => $user,
     },
@@ -288,12 +310,13 @@ foreach my $test (
             name   => 'Edited User',
             email  => $user->email,
             anonymous => 0,
+            flagged => 'on',
         },
         changes => {
             email => $user2->email,
         },
-        log_count => 4,
-        log_entries => [ qw/edit edit edit edit/ ],
+        log_count => 5,
+        log_entries => [ qw/edit edit edit edit edit/ ],
         resend => 0,
         user => $user2,
     },
@@ -306,12 +329,13 @@ foreach my $test (
             name   => 'Edited User',
             email  => $user2->email,
             anonymous => 0,
+            flagged => 'on',
         },
         changes => {
             state => 'unconfirmed'
         },
-        log_count => 5,
-        log_entries => [ qw/state_change edit edit edit edit/ ],
+        log_count => 6,
+        log_entries => [ qw/state_change edit edit edit edit edit/ ],
         resend => 0,
     },
     {
@@ -323,12 +347,13 @@ foreach my $test (
             name   => 'Edited User',
             email  => $user2->email,
             anonymous => 0,
+            flagged => 'on',
         },
         changes => {
             state => 'confirmed'
         },
-        log_count => 6,
-        log_entries => [ qw/state_change state_change edit edit edit edit/ ],
+        log_count => 7,
+        log_entries => [ qw/state_change state_change edit edit edit edit edit/ ],
         resend => 0,
     },
     {
@@ -340,12 +365,13 @@ foreach my $test (
             name   => 'Edited User',
             email  => $user2->email,
             anonymous => 0,
+            flagged => 'on',
         },
         changes => {
             state => 'fixed'
         },
-        log_count => 7,
-        log_entries => [ qw/state_change state_change state_change edit edit edit edit/ ],
+        log_count => 8,
+        log_entries => [ qw/state_change state_change state_change edit edit edit edit edit/ ],
         resend => 0,
     },
     {
@@ -357,12 +383,13 @@ foreach my $test (
             name   => 'Edited User',
             email  => $user2->email,
             anonymous => 0,
+            flagged => 'on',
         },
         changes => {
             state => 'hidden'
         },
-        log_count => 8,
-        log_entries => [ qw/state_change state_change state_change state_change edit edit edit edit/ ],
+        log_count => 9,
+        log_entries => [ qw/state_change state_change state_change state_change edit edit edit edit edit/ ],
         resend => 0,
     },
     {
@@ -374,13 +401,14 @@ foreach my $test (
             name   => 'Edited User',
             email  => $user2->email,
             anonymous => 0,
+            flagged => 'on',
         },
         changes => {
             state => 'confirmed',
             anonymous => 1,
         },
-        log_count => 10,
-        log_entries => [ qw/edit state_change state_change state_change state_change state_change edit edit edit edit/ ],
+        log_count => 11,
+        log_entries => [ qw/edit state_change state_change state_change state_change state_change edit edit edit edit edit/ ],
         resend => 0,
     },
     {
@@ -392,11 +420,12 @@ foreach my $test (
             name   => 'Edited User',
             email  => $user2->email,
             anonymous => 1,
+            flagged => 'on',
         },
         changes => {
         },
-        log_count => 11,
-        log_entries => [ qw/resend edit state_change state_change state_change state_change state_change edit edit edit edit/ ],
+        log_count => 12,
+        log_entries => [ qw/resend edit state_change state_change state_change state_change state_change edit edit edit edit edit/ ],
         resend => 1,
     },
 ) {
@@ -429,6 +458,7 @@ foreach my $test (
             $mech->content_lacks( 'type="submit" name="resend"', 'no resend button' );
         }
 
+        $test->{changes}->{flagged} = 1 if $test->{changes}->{flagged};
         is $report->$_, $test->{changes}->{$_}, "$_ updated" for grep { $_ ne 'email' } keys %{ $test->{changes} };
 
         if ( $test->{user} ) {
@@ -452,6 +482,7 @@ subtest 'change email to new user' => sub {
         name   => $report->name,
         email  => $report->user->email,
         anonymous => 1,
+        flagged => 'on',
     };
 
     is_deeply( $mech->visible_form_values(), $fields, 'initial form values' );
@@ -489,6 +520,65 @@ subtest 'change email to new user' => sub {
 
     ok $user3, 'new user created';
     is $report->user_id, $user3->id, 'user changed to new user';
+};
+
+subtest 'adding email to abuse list from report page' => sub {
+    my $email = $report->user->email;
+
+    my $abuse = FixMyStreet::App->model('DB::Abuse')->find( { email => $email } );
+    $abuse->delete if $abuse;
+
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->content_contains('Ban email address');
+
+    $mech->click_ok('banuser');
+
+    $mech->content_contains('Email added to abuse list');
+    $mech->content_contains('<small>(Email in abuse table)</small>');
+
+    $abuse = FixMyStreet::App->model('DB::Abuse')->find( { email => $email } );
+    ok $abuse, 'entry created in abuse table';
+
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->content_contains('<small>(Email in abuse table)</small>');
+};
+
+subtest 'flagging user from report page' => sub {
+    $report->user->flagged(0);
+    $report->user->update;
+
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->content_contains('Flag user');
+
+    $mech->click_ok('flaguser');
+
+    $mech->content_contains('User flagged');
+    $mech->content_contains('Remove flag');
+
+    $report->discard_changes;
+    ok $report->user->flagged, 'user flagged';
+
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->content_contains('Remove flag');
+};
+
+subtest 'unflagging user from report page' => sub {
+    $report->user->flagged(1);
+    $report->user->update;
+
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->content_contains('Remove flag');
+
+    $mech->click_ok('removeuserflag');
+
+    $mech->content_contains('User flag removed');
+    $mech->content_contains('Flag user');
+
+    $report->discard_changes;
+    ok !$report->user->flagged, 'user not flagged';
+
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->content_contains('Flag user');
 };
 
 $log_entries->delete;
@@ -605,7 +695,7 @@ for my $test (
         },
         changes => {
             text => 'this is a twice changed update',
-            state => 'hidden',
+            state => 'confirmed',
         },
         log_count => 7,
         log_entries => [qw/edit state_change state_change edit edit edit edit/],
@@ -632,6 +722,9 @@ for my $test (
         $update->discard_changes;
 
         is $update->$_, $test->{changes}->{$_} for grep { $_ ne 'email' } keys %{ $test->{changes} };
+        if ( $test->{changes}{state} && $test->{changes}{state} eq 'confirmed' ) {
+            isnt $update->confirmed, undef;
+        }
 
         if ( $test->{user} ) {
             is $update->user->id, $test->{user}->id, 'update user';
@@ -738,6 +831,65 @@ subtest 'editing update email creates new user if required' => sub {
     is $update->user->id, $user->id, 'update set to new user';
 };
 
+subtest 'adding email to abuse list from update page' => sub {
+    my $email = $update->user->email;
+
+    my $abuse = FixMyStreet::App->model('DB::Abuse')->find( { email => $email } );
+    $abuse->delete if $abuse;
+
+    $mech->get_ok( '/admin/update_edit/' . $update->id );
+    $mech->content_contains('Ban email address');
+
+    $mech->click_ok('banuser');
+
+    $mech->content_contains('Email added to abuse list');
+    $mech->content_contains('<small>(Email in abuse table)</small>');
+
+    $abuse = FixMyStreet::App->model('DB::Abuse')->find( { email => $email } );
+    ok $abuse, 'entry created in abuse table';
+
+    $mech->get_ok( '/admin/update_edit/' . $update->id );
+    $mech->content_contains('<small>(Email in abuse table)</small>');
+};
+
+subtest 'flagging user from update page' => sub {
+    $update->user->flagged(0);
+    $update->user->update;
+
+    $mech->get_ok( '/admin/update_edit/' . $update->id );
+    $mech->content_contains('Flag user');
+
+    $mech->click_ok('flaguser');
+
+    $mech->content_contains('User flagged');
+    $mech->content_contains('Remove flag');
+
+    $update->discard_changes;
+    ok $update->user->flagged, 'user flagged';
+
+    $mech->get_ok( '/admin/update_edit/' . $update->id );
+    $mech->content_contains('Remove flag');
+};
+
+subtest 'unflagging user from update page' => sub {
+    $update->user->flagged(1);
+    $update->user->update;
+
+    $mech->get_ok( '/admin/update_edit/' . $update->id );
+    $mech->content_contains('Remove flag');
+
+    $mech->click_ok('removeuserflag');
+
+    $mech->content_contains('User flag removed');
+    $mech->content_contains('Flag user');
+
+    $update->discard_changes;
+    ok !$update->user->flagged, 'user not flagged';
+
+    $mech->get_ok( '/admin/update_edit/' . $update->id );
+    $mech->content_contains('Flag user');
+};
+
 subtest 'hiding comment marked as fixed reopens report' => sub {
     $update->mark_fixed( 1 );
     $update->update;
@@ -792,6 +944,24 @@ subtest 'report search' => sub {
 
     $mech->get_ok('/admin/search_reports?search=' . $report->user->email);
     $mech->content_like( qr{<tr [^>]*hidden[^>]*> \s* <td> \s* $r_id \s* </td>}xs );
+};
+
+subtest 'search abuse' => sub {
+    $mech->get_ok( '/admin/search_abuse?search=example' );
+
+    $mech->content_contains('test4@example.com');
+};
+
+subtest 'show flagged entries' => sub {
+    $report->flagged( 1 );
+    $report->update;
+
+    $user->flagged( 1 );
+    $user->update;
+
+    $mech->get_ok('/admin/list_flagged');
+    $mech->content_contains( $report->title );
+    $mech->content_contains( $user->email );
 };
 
 subtest 'user search' => sub {
@@ -884,7 +1054,6 @@ for my $test (
         $mech->content_contains( 'Updated!' );
     };
 }
-
 
 $mech->delete_user( $user );
 $mech->delete_user( $user2 );

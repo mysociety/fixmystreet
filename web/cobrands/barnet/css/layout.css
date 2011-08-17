@@ -7,14 +7,6 @@
     width: 378px;
     height: 378px;
 }
-#mysociety #watermark {
-    background: url("/i/mojwatermark-378.png");
-    height: 84px;
-    width: 171px;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-}
 
 #mysociety p#fixed, #mysociety p#unknown {
     margin-right: 400px;

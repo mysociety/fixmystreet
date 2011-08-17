@@ -28,7 +28,7 @@
 </select></li>
 <li>[% loc('Category:') %] [% problem.category | html %] </li>
 <li>[% loc('Name:') %] <input type='text' name='name' id='name' value='[% problem.name | html %]'></li>
-<li>[% loc('Email:') %] <input type='text' id='email' name='email' value='[% problem.user.email | html %]'></li>
+<li>[% loc('Email:') %] <input type='text' id='email' name='email' value='[% problem.user.email | html %]'> [% PROCESS abuse_button %] [% PROCESS flag_button user=problem.user %]</li>
 <li>[% loc('Phone:') %] [% problem.user.phone | html %]</li>
 <li>[% loc('Created:') %] [% PROCESS format_time time=problem.created %]</li>
 <li>[% loc('Confirmed:') %] [% PROCESS format_time time=problem.confirmed no_time='-' %]</li>
@@ -38,6 +38,7 @@
 <li>[% loc('Cobrand:') %] [% problem.cobrand %]</li>
 <li>[% loc('Cobrand data:') %] [% problem.cobrand_data %]</li>
 <li>[% loc('Going to send questionnaire?') %] [% IF problem.send_questionnaire %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</li>
+<li><label for="flagged">[% loc('Flagged:') %]</label> <input type="checkbox" name="flagged"[% ' checked' IF problem.flagged %]></li>
 
 [% IF problem.photo %]
 [% photo = problem.get_photo_params %]

@@ -172,7 +172,7 @@ sub display_location : Private {
 
     # get the map features
     my ( $on_map_all, $on_map, $around_map, $distance ) =
-      FixMyStreet::Map::map_features( $c, $latitude, $longitude,
+      FixMyStreet::Map::map_features( $c, $short_latitude, $short_longitude,
         $interval );
 
     # copy the found reports to the stash
@@ -199,8 +199,8 @@ sub display_location : Private {
     $c->stash->{page} = 'around'; # So the map knows to make clickable pins, update on pan
     FixMyStreet::Map::display_map(
         $c,
-        latitude  => $latitude,
-        longitude => $longitude,
+        latitude  => $short_latitude,
+        longitude => $short_longitude,
         clickable => 1,
         pins      => \@pins,
     );
@@ -235,14 +235,23 @@ the map.
 sub ajax : Path('/ajax') {
     my ( $self, $c ) = @_;
 
+    $c->res->content_type('text/javascript; charset=utf-8');
+
+    unless ( $c->req->param('bbox') ) {
+        $c->res->status(404);
+        $c->res->body('');
+        return;
+    }
+
+    # assume this is not cacheable - may need to be more fine-grained later
+    $c->res->header( 'Cache_Control' => 'max-age=0' );
+
     # how far back should we go?
     my $all_pins = $c->req->param('all_pins') ? 1 : undef;
     my $interval = $all_pins ? undef : $c->cobrand->on_map_default_max_pin_age;
 
     # Need to be the class that can handle it
-    if ($c->req->param('bbox')) {
-        FixMyStreet::Map::set_map_class( 'OSM' );
-    }
+    FixMyStreet::Map::set_map_class( 'OSM' );
 
     # extract the data from the map
     my ( $pins, $on_map, $around_map, $dist ) =
@@ -260,7 +269,7 @@ sub ajax : Path('/ajax') {
     );
 
     # JSON encode the response
-    my $body = JSON->new->utf8(1)->pretty(1)->encode(
+    my $body = JSON->new->utf8(1)->encode(
         {
             pins         => $pins,
             current      => $on_map_list_html,
@@ -268,16 +277,7 @@ sub ajax : Path('/ajax') {
         }
     );
 
-    # assume this is not cacheable - may need to be more fine-grained later
-    $c->res->content_type('text/javascript; charset=utf-8');
-    $c->res->header( 'Cache_Control' => 'max-age=0' );
-
-    if ( $c->req->param('bbox') ) {
-        $c->res->body($body);
-    } else {
-        # The JS needs the surrounding brackets for Tilma
-        $c->res->body("($body)");
-    }
+    $c->res->body($body);
 }
 
 __PACKAGE__->meta->make_immutable;

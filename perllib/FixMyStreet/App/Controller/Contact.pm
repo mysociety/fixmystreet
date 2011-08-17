@@ -39,6 +39,8 @@ Handle contact us form submission
 sub submit : Path('submit') : Args(0) {
     my ( $self, $c ) = @_;
 
+    $c->res->redirect( '/contact' ) and return unless $c->req->method eq 'POST';
+
     return
       unless $c->forward('setup_request')
           && $c->forward('determine_contact_type')
@@ -162,6 +164,10 @@ sub prepare_params_for_email : Private {
             $c->stash->{problem}->id,
             $problem_url, $admin_url
         );
+
+        # flag this so it's automatically listed in the admin interface
+        $c->stash->{problem}->flagged(1);
+        $c->stash->{problem}->update;
     }
 
     return 1;

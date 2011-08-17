@@ -197,7 +197,7 @@ sub cleanup_text {
     }
 
     # Remove unneeded whitespace
-    my @lines = grep { m/\S/ } split m/\n\n/, $input;
+    my @lines = grep { m/\S/ } split m/(?:\r?\n){2,}/, $input;
     for (@lines) {
         $_ = trim_text($_);
         $_ = ucfirst $_;       # start with capital

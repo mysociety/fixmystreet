@@ -1,0 +1,30 @@
+[%- FOR problem IN problems %]
+    <tr[% ' class="hidden"' IF problem.state == 'hidden' %]>
+        <td>[%- IF problem.state == 'confirmed' || problem.state == 'fixed' -%]
+        [%- cobrand_data = problem.cobrand_data %]
+        [%- cobrand_data = c.data_for_generic_problem IF !problem.cobrand %]
+        <a href="[% c.uri_for_email( '/report', problem.id, cobrand_data ) %]">[% problem.id %]</a>
+        [%- ELSE %]
+        [%- problem.id %]
+        [%- END -%]</td> 
+        <td>[% PROCESS value_or_nbsp value=problem.title %]</td> 
+        <td>[% PROCESS value_or_nbsp value=problem.name %]</td> 
+        <td>[% PROCESS value_or_nbsp value=problem.user.email %]</td> 
+        <td>[%- IF edit_council_contacts -%]
+        <a href="[% c.uri_for('council_contacts', problem.council ) %]">[% PROCESS value_or_nbsp value=problem.council %]</a>
+        [%- ELSE -%]
+            [%- PROCESS value_or_nbsp value=problem.council -%]
+        [%- END -%]</td>
+        <td>[% PROCESS value_or_nbsp value=problem.category %]</td> 
+        <td>[% IF problem.anonymous %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td> 
+        <td>[% problem.cobrand %]<br>[% problem.cobrand_data | html %]</td> 
+        <td>[% PROCESS format_time time=problem.created %]</td> 
+        <td>[% problem.state %]<small>
+                [%- IF problem.state == 'fixed' || problem.state == 'confirmed' %]<br>[% loc('Confirmed:' ) %]&nbsp;[% PROCESS format_time time=problem.confirmed %][% END -%]
+                [%- IF problem.state == 'fixed' %]<br>[% loc('Fixed:') %] [% PROCESS format_time time=problem.lastupdate %][% END -%]
+                [%- IF problem.state == 'confirmed' %]<br>[% loc('Last&nbsp;update:') %] [% PROCESS format_time time=problem.lastupdate %][% END -%]</small>
+        </td> 
+        <td>[% PROCESS format_time time=problem.whensent %]</td> 
+        <td><a href="[% c.uri_for( 'report_edit', problem.id ) %]">[% loc('Edit') %]</a></td>
+    </tr>
+[%- END -%]

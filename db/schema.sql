@@ -131,7 +131,8 @@ create table users (
     name            text,
     phone           text,
     password        text    not null default '',
-    from_council    integer -- id of council user is from or null/0 if not
+    from_council    integer, -- id of council user is from or null/0 if not
+    flagged         boolean not null default 'f'
 );
 
 -- Problems reported by users of site
@@ -182,7 +183,8 @@ create table problem (
     cobrand_data text not null default '' check (cobrand_data ~* '^[a-z0-9]*$'), -- Extra data used in cobranded versions of the site
     lastupdate timestamp not null default ms_current_timestamp(),
     whensent timestamp,
-    send_questionnaire boolean not null default 't'
+    send_questionnaire boolean not null default 't',
+    flagged boolean not null default 'f'
 );
 create index problem_state_latitude_longitude_idx on problem(state, latitude, longitude);
 create index problem_user_id_idx on problem ( user_id );

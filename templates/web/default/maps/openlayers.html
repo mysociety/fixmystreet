@@ -9,7 +9,7 @@
 var fixmystreet = {
     'page': '[% page %]',
     'area': '[% map.area %]',
-    'all_pins': [% all_pins || "''" | html %],
+    'all_pins': '[% all_pins %]',
     'latitude': [% map.latitude %],
     'longitude': [% map.longitude %],
 [% IF map.any_zoom -%]

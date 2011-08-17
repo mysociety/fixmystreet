@@ -28,6 +28,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", default_value => "", is_nullable => 0 },
   "from_council",
   { data_type => "integer", is_nullable => 1 },
+  "flagged",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("users_email_key", ["email"]);

@@ -83,11 +83,12 @@ select, input, textarea {
     position: relative;
     margin: 0 auto;
     max-width: 60em;
+    overflow: auto;
 }
 
 /* Can't put the margin in #mysociety because of above IE craziness */
 #wrapper {
-    margin: 1em 2em 2em;
+    margin: 1em 2em;
 }
 
 #meta {
@@ -160,9 +161,22 @@ select, input, textarea {
 #footer {
     clear: both;
     text-align: center;
-    border-top: solid 2px $header_back;
+    border-top: solid 2px #ccc;
     width: 50%;
-    margin: 2em auto 0;
-    padding: 1em;
+    margin: 1em auto 0;
+    padding: 0;
+    color: #333333;
+
+    .l, .r {
+        margin-top: 0;
+        text-align: left;
+        width: 45%;
+    }
+    .l {
+        float: left;
+    }
+    .r {
+        float: right;
+    }
 }
 

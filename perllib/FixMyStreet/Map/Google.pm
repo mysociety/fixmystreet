@@ -9,7 +9,6 @@
 package FixMyStreet::Map::Google;
 
 use strict;
-use mySociety::Web qw(ent);
 
 # display_map C PARAMS
 # PARAMS include:

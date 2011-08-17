@@ -41,6 +41,17 @@ $(function(){
         return false;
     });
 
+    $(window).hashchange(function(){
+        if (location.hash) return;
+        // Okay, back to around view.
+        fixmystreet.bbox_strategy.activate();
+        fixmystreet.markers.refresh( { force: true } );
+        fixmystreet.drag.deactivate();
+        $('#side-form').hide();
+        $('#side').show();
+        fixmystreet.page = 'around';
+    });
+
     // Vector layers must be added onload as IE sucks
     if ($.browser.msie) {
         $(window).load(fixmystreet_onload);
@@ -79,7 +90,8 @@ function fixmystreet_onload() {
         })
     };
     if (fixmystreet.page == 'around') {
-        pin_layer_options.strategies = [ new OpenLayers.Strategy.BBOX() ];
+        fixmystreet.bbox_strategy = new OpenLayers.Strategy.BBOX();
+        pin_layer_options.strategies = [ fixmystreet.bbox_strategy ];
         pin_layer_options.protocol = new OpenLayers.Protocol.HTTP({
             url: '/ajax',
             params: fixmystreet.all_pins ? { all_pins: 1 } : { },
@@ -92,12 +104,16 @@ function fixmystreet_onload() {
     fixmystreet.markers.addFeatures( markers );
     if (fixmystreet.page == 'around' || fixmystreet.page == 'reports' || fixmystreet.page == 'my') {
         fixmystreet.markers.events.register( 'featureselected', fixmystreet.markers, function(evt) {
-            window.location = '/report/' + evt.feature.attributes.id;
+            if (evt.feature.attributes.id) {
+                window.location = '/report/' + evt.feature.attributes.id;
+            }
             OpenLayers.Event.stop(evt);
         });
         var select = new OpenLayers.Control.SelectFeature( fixmystreet.markers );
         fixmystreet.map.addControl( select );
         select.activate();
+    } else if (fixmystreet.page == 'new') {
+        fixmystreet_activate_drag();
     }
     fixmystreet.map.addLayer(fixmystreet.markers);
 
@@ -105,6 +121,53 @@ function fixmystreet_onload() {
         var bounds = fixmystreet.markers.getDataExtent();
         if (bounds) { fixmystreet.map.zoomToExtent( bounds ); }
     }
+
+    $('#hide_pins_link').click(function(e) {
+        e.preventDefault();
+        var showhide = [
+            'Show pins', 'Hide pins',
+            'Dangos pinnau', 'Cuddio pinnau',
+            "Vis nåler", "Gjem nåler"
+        ];
+        for (var i=0; i<showhide.length; i+=2) {
+            if (this.innerHTML == showhide[i]) {
+                fixmystreet.markers.setVisibility(true);
+                this.innerHTML = showhide[i+1];
+            } else if (this.innerHTML == showhide[i+1]) {
+                fixmystreet.markers.setVisibility(false);
+                this.innerHTML = showhide[i];
+            }
+        }
+    });
+
+    $('#all_pins_link').click(function(e) {
+        e.preventDefault();
+        fixmystreet.markers.setVisibility(true);
+        var welsh = 0;
+        var texts = [
+            'en', 'Include stale reports', 'Hide stale reports',
+            'cy', 'Cynnwys hen adroddiadau', 'Cuddio hen adroddiadau'
+        ];
+        for (var i=0; i<texts.length; i+=3) {
+            if (this.innerHTML == texts[i+1]) {
+                this.innerHTML = texts[i+2];
+                fixmystreet.markers.protocol.options.params = { all_pins: 1 };
+                fixmystreet.markers.refresh( { force: true } );
+                lang = texts[i];
+            } else if (this.innerHTML == texts[i+2]) {
+                this.innerHTML = texts[i+1];
+                fixmystreet.markers.protocol.options.params = { };
+                fixmystreet.markers.refresh( { force: true } );
+                lang = texts[i];
+            }
+        }
+        if (lang == 'cy') {
+            document.getElementById('hide_pins_link').innerHTML = 'Cuddio pinnau';
+        } else {
+            document.getElementById('hide_pins_link').innerHTML = 'Hide pins';
+        }
+    });
+
 }
 
 function fms_markers_list(pins, transform) {
@@ -129,53 +192,6 @@ function fms_markers_list(pins, transform) {
     }
     return markers;
 }
-
-$('#hide_pins_link').click(function(e) {
-    e.preventDefault();
-    var showhide = [
-        'Show pins', 'Hide pins',
-        'Dangos pinnau', 'Cuddio pinnau',
-        "Vis nåler", "Gjem nåler"
-    ];
-    for (var i=0; i<showhide.length; i+=2) {
-        if (this.innerHTML == showhide[i]) {
-            fixmystreet.markers.setVisibility(true);
-            this.innerHTML = showhide[i+1];
-        } else if (this.innerHTML == showhide[i+1]) {
-            fixmystreet.markers.setVisibility(false);
-            this.innerHTML = showhide[i];
-        }
-    }
-});
-
-$('#all_pins_link').click(function(e) {
-    e.preventDefault();
-    fixmystreet.markers.setVisibility(true);
-    var welsh = 0;
-    var texts = [
-        'en', 'Include stale reports', 'Hide stale reports',
-        'cy', 'Cynnwys hen adroddiadau', 'Cuddio hen adroddiadau'
-    ];
-    for (var i=0; i<texts.length; i+=3) {
-        if (this.innerHTML == texts[i+1]) {
-            this.innerHTML = texts[i+2];
-            fixmystreet.markers.protocol.options.params = { all_pins: 1 };
-            fixmystreet.markers.refresh( { force: true } );
-            lang = texts[i];
-        } else if (this.innerHTML == texts[i+2]) {
-            this.innerHTML = texts[i+1];
-            fixmystreet.markers.protocol.options.params = { };
-            fixmystreet.markers.refresh( { force: true } );
-            lang = texts[i];
-        }
-    }
-    if (lang == 'cy') {
-        document.getElementById('hide_pins_link').innerHTML = 'Cuddio pinnau';
-    } else {
-        document.getElementById('hide_pins_link').innerHTML = 'Hide pins';
-    }
-});
-
 
 /* Overridding the buttonDown function of PanZoom so that it does
    zoomTo(0) rather than zoomToMaxExtent()
@@ -279,18 +295,51 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
     trigger: function(e) {
         var lonlat = fixmystreet.map.getLonLatFromViewPortPx(e.xy);
         if (fixmystreet.page == 'new') {
+            /* Already have a purple pin */
             fixmystreet.markers.features[0].move(lonlat);
+        } else {
+            var markers = fms_markers_list( [ [ lonlat.lat, lonlat.lon, 'purple' ] ], false );
+            fixmystreet.bbox_strategy.deactivate();
+            fixmystreet.markers.removeAllFeatures();
+            fixmystreet.markers.addFeatures( markers );
+            fixmystreet_activate_drag();
         }
-        lonlat.transform(
-            fixmystreet.map.getProjectionObject(),
-            new OpenLayers.Projection("EPSG:4326")
-        );
-        document.getElementById('fixmystreet.latitude').value = lonlat.lat;
-        document.getElementById('fixmystreet.longitude').value = lonlat.lon;
+        fixmystreet_update_pin(lonlat);
         if (fixmystreet.page == 'new') {
             return;
         }
-        document.getElementById('mapForm').submit();
+        $.getJSON('/report/new/ajax', {
+                latitude: $('#fixmystreet\\.latitude').val(),
+                longitude: $('#fixmystreet\\.longitude').val()
+        }, function(data) {
+            $('#councils_text').html(data.councils_text);
+            $('#form_category_row').html(data.category);
+        });
+        $('#side-form').show();
+        $('#side').hide();
+        fixmystreet.page = 'new';
+        location.hash = 'report';
     }
 });
+
+// This function might be passed either an OpenLayers.LonLat (so has
+// lon and lat) or an OpenLayers.Geometry.Point (so has x and y)
+function fixmystreet_update_pin(lonlat) {
+    lonlat.transform(
+        fixmystreet.map.getProjectionObject(),
+        new OpenLayers.Projection("EPSG:4326")
+    );
+    document.getElementById('fixmystreet.latitude').value = lonlat.lat || lonlat.y;
+    document.getElementById('fixmystreet.longitude').value = lonlat.lon || lonlat.x;
+}
+
+function fixmystreet_activate_drag() {
+    fixmystreet.drag = new OpenLayers.Control.DragFeature( fixmystreet.markers, {
+        onComplete: function(feature, e) {
+            fixmystreet_update_pin( feature.geometry.clone() );
+        }
+    } );
+    fixmystreet.map.addControl( fixmystreet.drag );
+    fixmystreet.drag.activate();
+}
 

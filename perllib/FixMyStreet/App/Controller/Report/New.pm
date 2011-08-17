@@ -98,6 +98,33 @@ sub report_new : Path : Args(0) {
     $c->forward('redirect_or_confirm_creation');
 }
 
+sub report_form_ajax : Path('ajax') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->forward('initialize_report');
+
+    # work out the location for this report and do some checks
+    # XXX We don't want to do this here if this actually happens!
+    return $c->forward('redirect_to_around')
+      unless $c->forward('determine_location');
+
+    $c->forward('setup_categories_and_councils');
+
+    # render templates to get the html
+    my $category = $c->view('Web')->render( $c, 'report/new/category.html');
+    my $councils_text = $c->view('Web')->render( $c, 'report/new/councils_text.html');
+
+    my $body = JSON->new->utf8(1)->encode(
+        {
+            councils_text => $councils_text,
+            category      => $category,
+        }
+    );
+
+    $c->res->content_type('application/json; charset=utf-8');
+    $c->res->body($body);
+}
+
 =head2 report_import
 
 Action to accept report creations from iPhones and other mobile apps. URL is
@@ -198,7 +225,7 @@ sub report_import : Path('/import') {
     # find or create the user
     my $report_user = $c->model('DB::User')->find_or_create(
         {
-            email => $input{email},
+            email => lc $input{email},
             name  => $input{name},
             phone => $input{phone}
         }
@@ -907,7 +934,7 @@ sub generate_map : Private {
       ( $c->stash->{latitude}, $c->stash->{longitude} );
 
     # Don't do anything if the user skipped the map
-    unless ( $c->req->param('skipped') ) {
+    if ( $c->stash->{report}->used_map ) {
         $c->stash->{page} = 'new';
         FixMyStreet::Map::display_map(
             $c,

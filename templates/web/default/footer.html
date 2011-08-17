@@ -12,13 +12,24 @@
 
 [% loc('<a href="http://www.mysociety.org/"><img id="logo" width="133" height="26" src="/i/mysociety-dark.png" alt="View mySociety.org"><span id="logoie"></span></a>') %]
 
-<p id="footer">
-    [% loc('Built by <a href="http://www.mysociety.org/">mySociety</a>') %]
-    | <a href="http://github.com/mysociety/fixmystreet">[% loc('Source code') %]</a>
-    | <a href="/contact">[% loc("Contact FixMyStreet") %]</a>
-</p>
+<div id="footer">
+    <p>[% loc('Built by <a href="http://www.mysociety.org/">mySociety</a>') %]
+    | <a href="/contact">[% loc("Contact FixMyStreet") %]</a></p>
 
-[% INCLUDE 'tracking_code.html' %]
+    <p>Mobile apps:
+        <a href="http://itunes.apple.com/gb/app/fixmystreet/id297456545">iPhone</a>,
+        <a href="http://itunes.apple.com/gb/app/streetreport/id371891859">StreetReport (iPhone)</a>
+    | <a href="https://market.android.com/details?id=com.android.fixmystreet">Android</a>
+    | <a href="http://store.ovi.com/content/107557">Nokia</a>
+    </p>
+
+    <p class="l">[% loc('Are you from a council? Would you like better integration with FixMyStreet?') %]
+    <a href="http://www.mysociety.org/fixmystreet-for-local-council-websites/">[% loc('Find out about FixMyStreet for councils') %]</a>.
+
+    <p class="r">[% loc('Are you a developer? Would you like to contribute to FixMyStreet?') %]
+    [% loc('Our code is open source and <a href="http://github.com/mysociety/fixmystreet">available on GitHub</a>.') %]
+    </p>
+</div>
 
 [% INCLUDE 'debug_footer.html' %]
 
