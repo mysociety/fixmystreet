@@ -121,6 +121,92 @@ use Utils;
 
 with 'FixMyStreet::Roles::Abuser';
 
+=head2
+
+    @states = FixMyStreet::DB::Problem::open_states();
+
+Get a list or states that are regarded as open. If called in
+array context then returns an array of names, otherwise returns a
+HASHREF.
+
+=cut
+
+sub open_states {
+    my $states = {
+        'confirmed'     => 1,
+        'investigating' => 1,
+        'planned'       => 1,
+        'in progress'   => 1,
+    };
+
+    return wantarray ? keys %{$states} : $states;
+}
+
+=head2
+
+    @states = FixMyStreet::DB::Problem::fixed_states();
+
+Get a list or states that should be regarded as fixed. If called in
+array context then returns an array of names, otherwise returns a
+HASHREF.
+
+=cut
+
+sub fixed_states {
+    my $states = {
+        'fixed'           => 1,
+        'fixed - user'    => 1,
+        'fixed - council' => 1,
+    };
+
+    return wantarray ? keys %{ $states } : $states;
+}
+
+=head2
+
+    @states = FixMyStreet::DB::Problem::closed_states();
+
+Get a list or states that should be regarded as closed. If called in
+array context then returns an array of names, otherwise returns a
+HASHREF.
+
+=cut
+
+sub closed_states {
+    my $states = {
+        'closed'          => 1,
+    };
+
+    return wantarray ? keys %{$states} : $states;
+}
+
+
+=head2
+
+    @states = FixMyStreet::DB::Problem::visible_states();
+
+Get a list or states that should be visible on the site. If called in
+array context then returns an array of names, otherwise returns a
+HASHREF.
+
+=cut
+
+sub visible_states {
+    my $states = {
+        'confirmed'       => 1,
+        'planned'         => 1,
+        'investigating'   => 1,
+        'in progress'     => 1,
+        'fixed'           => 1,
+        'fixed - council' => 1,
+        'fixed - user'    => 1,
+        'closed'          => 1,
+    };
+
+    return wantarray ? keys %{$states} : $states;
+}
+
+
 my $tz = DateTime::TimeZone->new( name => "local" );
 
 sub confirmed_local {
@@ -284,6 +370,55 @@ sub get_photo_params {
     $photo->{url} = '/photo?id=' . $self->id;
 
     return $photo;
+}
+
+=head2 is_open
+
+Returns 1 if the problem is in a open state otherwise 0.
+
+=cut
+
+sub is_open {
+    my $self = shift;
+
+    return exists $self->open_states->{ $self->state } ? 1 : 0;
+}
+
+
+=head2 is_fixed
+
+Returns 1 if the problem is in a fixed state otherwise 0.
+
+=cut
+
+sub is_fixed {
+    my $self = shift;
+
+    return exists $self->fixed_states->{ $self->state } ? 1 : 0;
+}
+
+=head2 is_closed
+
+Returns 1 if the problem is in a closed state otherwise 0.
+
+=cut
+
+sub is_closed {
+    my $self = shift;
+
+    return exists $self->closed_states->{ $self->state } ? 1 : 0;
+}
+
+=head2 is_visible
+
+Returns 1 if the problem should be displayed on the site otherwise 0.
+
+=cut
+
+sub is_visible {
+    my $self = shift;
+
+    return exists $self->visible_states->{ $self->state } ? 1 : 0;
 }
 
 =head2 meta_line

@@ -48,7 +48,7 @@ sub index :Path :Args(0) {
         $c->detach( 'no_photo' ) if $id =~ /\D/;
         @photo = $c->cobrand->problems->search( {
             id => $id,
-            state => [ 'confirmed', 'fixed', 'partial' ],
+            state => [ FixMyStreet::DB::Result::Problem->visible_states(), 'partial' ],
             photo => { '!=', undef },
         } );
     }

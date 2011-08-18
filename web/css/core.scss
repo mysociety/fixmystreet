@@ -322,6 +322,18 @@ $map_width: 500px;
         border: solid 2px #990000;
     }
 
+    #closed {
+        @include problem-banner;
+        background-color: #ccccff;
+        border: solid 2px #000099;
+    }
+
+    #progress {
+        @include problem-banner;
+        background-color: #ffffcc;
+        border: solid 2px #999900;
+    }
+
     #updates {
         div {
             padding: 0 0 0.5em;

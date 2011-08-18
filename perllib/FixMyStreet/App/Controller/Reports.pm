@@ -315,7 +315,7 @@ sub load_and_group_problems : Private {
     my $page = $c->req->params->{p} || 1;
 
     my $where = {
-        state => [ 'confirmed', 'fixed' ]
+        state => [ FixMyStreet::DB::Result::Problem->visible_states() ]
     };
     if ($c->stash->{ward}) {
         $where->{areas} = { 'like', '%,' . $c->stash->{ward}->{id} . ',%' };
@@ -411,14 +411,16 @@ sub add_row {
         ? 'unknown'
         : ($problem->{age} > $fourweeks ? 'older' : 'new');
     # Fixed problems are either old or new
-    push @{$fixed->{$council}{$duration_str}}, $problem if $problem->{state} eq 'fixed';
+    push @{$fixed->{$council}{$duration_str}}, $problem if
+        exists FixMyStreet::DB::Result::Problem->fixed_states()->{$problem->{state}};
     # Open problems are either unknown, older, or new
-    push @{$open->{$council}{$type}}, $problem if $problem->{state} eq 'confirmed';
+    push @{$open->{$council}{$type}}, $problem if 
+        exists FixMyStreet::DB::Result::Problem->open_states->{$problem->{state}};
 
     push @$pins, {
         latitude  => $problem->{latitude},
         longitude => $problem->{longitude},
-        colour    => $problem->{state} eq 'fixed' ? 'green' : 'red',
+        colour    => FixMyStreet::DB::Result::Problem->fixed_states()->{$problem->{state}} ? 'green' : 'red',
         id        => $problem->{id},
         title     => $problem->{title},
     };

@@ -1,1 +1,426 @@
-#mysociety blockquote{border-left:solid 4px #666666;padding-left:0.5em}#mysociety blockquote h2,#mysociety blockquote p{margin:0}#mysociety dt{font-weight:bold;margin-top:0.5em}#mysociety .gone{color:#666666;background-color:#cccccc}#mysociety p.dev-site-notice,#mysociety p.error{text-align:center;color:#cc0000;font-size:larger}#mysociety ul{padding:0 0 0 1.5em;margin:0}#mysociety ul.error{color:#cc0000;background-color:#ffeeee;padding-right:4px;text-align:left;font-size:larger}#mysociety div.form-error{color:#cc0000;margin:5px 1em 5px 1em;padding:2px 5px 2px 5px;float:left;background-color:#ffeeee;text-align:left}#mysociety div.form-field{clear:both}#mysociety #advert_thin{width:50%;margin:1em auto;text-align:center;border-top:dotted 1px #999999}#mysociety #advert_hfymp{border-top:dotted 1px #999999;text-align:center}#mysociety p#expl{text-align:center;font-size:150%;margin:0 2em}#mysociety #postcodeForm{display:table;_width:33em;text-align:center;font-size:150%;margin:1em auto;padding:1em;-moz-border-radius:1em;-webkit-border-radius:1em;border-radius:1em}#mysociety #postcodeForm label{float:none;padding-right:0}#mysociety #postcodeForm #submit{font-size:83%}#mysociety #front_intro{float:left;width:48%}#mysociety #front_intro p{clear:both;margin-top:0}#mysociety #front_stats div{text-align:center;width:5.5em;-moz-border-radius:0.5em;-webkit-border-radius:0.5em;border-radius:0.5em;float:left;margin:0 1em 1em}#mysociety #front_stats div big{font-size:150%;display:block}#mysociety #front_recent{float:right;width:48%;margin-bottom:1em}#mysociety #front_recent img,#mysociety #alert_recent img{margin-right:0.25em;margin-bottom:0.25em}#mysociety #front_recent > h2:first-child,#mysociety #front_intro > h2:first-child{margin-top:0}#mysociety form{margin:0}#mysociety label{float:left;text-align:right;padding-right:0.5em;width:5em}#mysociety fieldset,#mysociety #fieldset{border:none;padding:0.5em}#mysociety fieldset div,#mysociety #fieldset div{margin-top:2px;clear:left}#mysociety legend{display:none}#mysociety #fieldset div.checkbox,#mysociety #problem_submit{padding-left:5.5em}#mysociety #fieldset div.checkbox label,#mysociety label.n{float:none;text-align:left;padding-right:0;width:auto;cursor:pointer;cursor:hand}#mysociety #questionnaire label,#mysociety #alerts label{float:none}#mysociety .confirmed{background-color:#ccffcc;border:solid 2px #009900;padding:5px;text-align:center}#mysociety #form_sign_in_yes{float:left;width:47%;padding-right:1%;border-right:solid 1px #999999;margin-bottom:1em}#mysociety #form_sign_in_no,#mysociety #fieldset #form_sign_in_no{float:right;width:47%;padding-left:1%;clear:none;margin-bottom:1em}#mysociety #map_box{float:right;width:502px;position:relative;padding-left:20px;background-color:#ffffff}#mysociety p#copyright{float:right;text-align:right;margin:0 0 1em 0;font-size:78%}#mysociety #map{border:solid 1px #000000;width:500px;height:500px;overflow:hidden;position:relative;background-color:#f1f1f1}#mysociety #drag{position:absolute;width:500px;height:500px;right:0;top:0}#mysociety #drag input,#mysociety #drag img{position:absolute;border:none}#mysociety #drag input{cursor:crosshair;background-color:#cccccc}#mysociety #drag img{cursor:move}#mysociety #drag img.pin{z-index:100;background-color:inherit}#mysociety #drag a img.pin{cursor:pointer;cursor:hand}#mysociety form#mapForm #map{cursor:pointer}#mysociety form#mapForm .olTileImage{cursor:crosshair}#mysociety #text_map{margin:0 530px 1em 0;padding:5px;text-align:center;position:relative;padding-left:0.5em;text-align:left;margin-top:0;font-size:110%;background-color:#eeeeee;-moz-border-radius-topleft:1em;-moz-border-radius-bottomleft:1em;-webkit-border-top-left-radius:1em;-webkit-border-bottom-left-radius:1em;border-top-left-radius:1em;border-bottom-left-radius:1em}#mysociety #text_map_arrow{display:block;position:absolute;top:0;right:-28px;width:0;height:0;line-height:0;font-size:0;border-style:solid;border-width:26px 14px 26px 14px;border-color:#fff #fff #fff #eee}#mysociety #text_no_map{margin-top:0}#mysociety #sub_map_links{float:right;clear:right;margin-top:0}#mysociety #fixed{margin:0 530px 1em 0;padding:5px;text-align:center;position:relative;background-color:#ccffcc;border:solid 2px #009900}#mysociety #unknown{margin:0 530px 1em 0;padding:5px;text-align:center;position:relative;background-color:#ffcccc;border:solid 2px #990000}#mysociety #updates div{padding:0 0 0.5em;margin:0 0 0.25em;border-bottom:dotted 1px #5e552b}#mysociety #updates div .problem-update,#mysociety #updates div .update-text{padding:0;margin:0;border-bottom:0}#mysociety #updates p{margin:0}#mysociety #nearby_lists h2{margin-top:1em;margin-bottom:0}#mysociety #nearby_lists li small{color:#666666}#mysociety #alert_links{float:right}#mysociety #alert_links_area{padding-left:0.5em;margin:0;color:#666;font-size:smaller}#mysociety #rss_alert{text-decoration:none}#mysociety #rss_alert span{text-decoration:underline}#mysociety #email_alert_box{display:none;position:absolute;padding:3px;font-size:83%;border:solid 1px #7399C3;background-color:#eeeeff;color:#000000}#mysociety #email_alert_box p{margin:0}#mysociety .council_sent_info{font-size:smaller}#mysociety #rss_items{width:62%;float:left}#mysociety #rss_rhs{border-left:1px dashed #999;width:36%;float:right;padding:0 0 0 0.5em;margin:0 0 1em 0.5em}#mysociety #rss_box{padding:10px;border:1px solid #999999}#mysociety #rss_feed{list-style-type:none;margin-bottom:2em}#mysociety #rss_feed li{margin-bottom:1em}#mysociety #alert_or{font-style:italic;font-size:125%;margin:0}#mysociety #rss_list{float:left;width:47%}#mysociety #rss_list ul{list-style-type:none}#mysociety #rss_buttons{float:right;width:35%;text-align:center;margin-bottom:2em}#mysociety #rss_local{margin-left:1.5em;margin-bottom:0}#mysociety #rss_local_alt{margin:0 0 2em 4em}#mysociety #alert_photos{text-align:center;float:right;width:150px;margin-left:0.5em}#mysociety #alert_photos h2{font-size:100%}#mysociety #alert_photos img{margin-bottom:0.25em}#mysociety #col_problems,#mysociety #col_fixed{float:left;width:48%;margin-right:1em}#mysociety .contact-details{font-size:80%;margin-top:2em}.olControlAttribution{bottom:3px !important;left:3px}.olControlPermalink{bottom:3px !important;right:3px}@media print{#mysociety #map_box{float:none;margin:0 auto}#mysociety #mysociety{max-width:none}#mysociety #side{margin-right:0}}
+#mysociety blockquote {
+  border-left: solid 4px #666666;
+  padding-left: 0.5em;
+}
+#mysociety blockquote h2, #mysociety blockquote p {
+  margin: 0;
+}
+#mysociety dt {
+  font-weight: bold;
+  margin-top: 0.5em;
+}
+#mysociety .gone {
+  color: #666666;
+  background-color: #cccccc;
+}
+#mysociety p.dev-site-notice, #mysociety p.error {
+  text-align: center;
+  color: #cc0000;
+  font-size: larger;
+}
+#mysociety ul {
+  padding: 0 0 0 1.5em;
+  margin: 0;
+}
+#mysociety ul.error {
+  color: #cc0000;
+  background-color: #ffeeee;
+  padding-right: 4px;
+  text-align: left;
+  font-size: larger;
+}
+#mysociety div.form-error {
+  color: #cc0000;
+  margin: 5px 1em 5px 1em;
+  padding: 2px 5px 2px 5px;
+  float: left;
+  background-color: #ffeeee;
+  text-align: left;
+}
+#mysociety div.form-field {
+  clear: both;
+}
+#mysociety #advert_thin {
+  width: 50%;
+  margin: 1em auto;
+  text-align: center;
+  border-top: dotted 1px #999999;
+}
+#mysociety #advert_hfymp {
+  border-top: dotted 1px #999999;
+  text-align: center;
+}
+#mysociety p#expl {
+  text-align: center;
+  font-size: 150%;
+  margin: 0 2em;
+}
+#mysociety #postcodeForm {
+  display: table;
+  _width: 33em;
+  text-align: center;
+  font-size: 150%;
+  margin: 1em auto;
+  padding: 1em;
+  -moz-border-radius: 1em;
+  -webkit-border-radius: 1em;
+  border-radius: 1em;
+}
+#mysociety #postcodeForm label {
+  float: none;
+  padding-right: 0;
+}
+#mysociety #postcodeForm #submit {
+  font-size: 83%;
+}
+#mysociety #front_intro {
+  float: left;
+  width: 48%;
+}
+#mysociety #front_intro p {
+  clear: both;
+  margin-top: 0;
+}
+#mysociety #front_stats div {
+  text-align: center;
+  width: 5.5em;
+  -moz-border-radius: 0.5em;
+  -webkit-border-radius: 0.5em;
+  border-radius: 0.5em;
+  float: left;
+  margin: 0 1em 1em;
+}
+#mysociety #front_stats div big {
+  font-size: 150%;
+  display: block;
+}
+#mysociety #front_recent {
+  float: right;
+  width: 48%;
+  margin-bottom: 1em;
+}
+#mysociety #front_recent img, #mysociety #alert_recent img {
+  margin-right: 0.25em;
+  margin-bottom: 0.25em;
+}
+#mysociety #front_recent > h2:first-child, #mysociety #front_intro > h2:first-child {
+  margin-top: 0;
+}
+#mysociety form {
+  margin: 0;
+}
+#mysociety label {
+  float: left;
+  text-align: right;
+  padding-right: 0.5em;
+  width: 5em;
+}
+#mysociety fieldset, #mysociety #fieldset {
+  border: none;
+  padding: 0.5em;
+}
+#mysociety fieldset div, #mysociety #fieldset div {
+  margin-top: 2px;
+  clear: left;
+}
+#mysociety legend {
+  display: none;
+}
+#mysociety #fieldset div.checkbox, #mysociety #problem_submit {
+  padding-left: 5.5em;
+}
+#mysociety #fieldset div.checkbox label, #mysociety label.n {
+  float: none;
+  text-align: left;
+  padding-right: 0;
+  width: auto;
+  cursor: pointer;
+  cursor: hand;
+}
+#mysociety #questionnaire label, #mysociety #alerts label {
+  float: none;
+}
+#mysociety .confirmed {
+  background-color: #ccffcc;
+  border: solid 2px #009900;
+  padding: 5px;
+  text-align: center;
+}
+#mysociety #form_sign_in_yes {
+  float: left;
+  width: 47%;
+  padding-right: 1%;
+  border-right: solid 1px #999999;
+  margin-bottom: 1em;
+}
+#mysociety #form_sign_in_no, #mysociety #fieldset #form_sign_in_no {
+  float: right;
+  width: 47%;
+  padding-left: 1%;
+  clear: none;
+  margin-bottom: 1em;
+}
+#mysociety #map_box {
+  float: right;
+  width: 502px;
+  position: relative;
+  padding-left: 20px;
+  background-color: #ffffff;
+}
+#mysociety p#copyright {
+  float: right;
+  text-align: right;
+  margin: 0 0 1em 0;
+  font-size: 78%;
+}
+#mysociety #map {
+  border: solid 1px #000000;
+  width: 500px;
+  height: 500px;
+  overflow: hidden;
+  position: relative;
+  background-color: #f1f1f1;
+}
+#mysociety #drag {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  right: 0;
+  top: 0;
+}
+#mysociety #drag input, #mysociety #drag img {
+  position: absolute;
+  border: none;
+}
+#mysociety #drag input {
+  cursor: crosshair;
+  background-color: #cccccc;
+}
+#mysociety #drag img {
+  cursor: move;
+}
+#mysociety #drag img.pin {
+  z-index: 100;
+  background-color: inherit;
+}
+#mysociety #drag a img.pin {
+  cursor: pointer;
+  cursor: hand;
+}
+#mysociety form#mapForm #map {
+  cursor: pointer;
+}
+#mysociety form#mapForm .olTileImage {
+  cursor: crosshair;
+}
+#mysociety #text_map {
+  margin: 0 530px 1em 0;
+  padding: 5px;
+  text-align: center;
+  position: relative;
+  padding-left: 0.5em;
+  text-align: left;
+  margin-top: 0;
+  font-size: 110%;
+  background-color: #eeeeee;
+  -moz-border-radius-topleft: 1em;
+  -moz-border-radius-bottomleft: 1em;
+  -webkit-border-top-left-radius: 1em;
+  -webkit-border-bottom-left-radius: 1em;
+  border-top-left-radius: 1em;
+  border-bottom-left-radius: 1em;
+}
+#mysociety #text_map_arrow {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: -28px;
+  width: 0;
+  height: 0;
+  line-height: 0;
+  font-size: 0;
+  border-style: solid;
+  border-width: 26px 14px 26px 14px;
+  border-color: #fff #fff #fff #eee;
+}
+#mysociety #text_no_map {
+  margin-top: 0;
+}
+#mysociety #sub_map_links {
+  float: right;
+  clear: right;
+  margin-top: 0;
+}
+#mysociety #fixed {
+  margin: 0 530px 1em 0;
+  padding: 5px;
+  text-align: center;
+  position: relative;
+  background-color: #ccffcc;
+  border: solid 2px #009900;
+}
+#mysociety #unknown {
+  margin: 0 530px 1em 0;
+  padding: 5px;
+  text-align: center;
+  position: relative;
+  background-color: #ffcccc;
+  border: solid 2px #990000;
+}
+#mysociety #closed {
+  margin: 0 530px 1em 0;
+  padding: 5px;
+  text-align: center;
+  position: relative;
+  background-color: #ccccff;
+  border: solid 2px #000099;
+}
+#mysociety #progress {
+  margin: 0 530px 1em 0;
+  padding: 5px;
+  text-align: center;
+  position: relative;
+  background-color: #ffffcc;
+  border: solid 2px #999900;
+}
+#mysociety #updates div {
+  padding: 0 0 0.5em;
+  margin: 0 0 0.25em;
+  border-bottom: dotted 1px #5e552b;
+}
+#mysociety #updates div .problem-update, #mysociety #updates div .update-text {
+  padding: 0;
+  margin: 0;
+  border-bottom: 0;
+}
+#mysociety #updates p {
+  margin: 0;
+}
+#mysociety #nearby_lists h2 {
+  margin-top: 1em;
+  margin-bottom: 0;
+}
+#mysociety #nearby_lists li small {
+  color: #666666;
+}
+#mysociety #alert_links {
+  float: right;
+}
+#mysociety #alert_links_area {
+  padding-left: 0.5em;
+  margin: 0;
+  color: #666;
+  font-size: smaller;
+}
+#mysociety #rss_alert {
+  text-decoration: none;
+}
+#mysociety #rss_alert span {
+  text-decoration: underline;
+}
+#mysociety #email_alert_box {
+  display: none;
+  position: absolute;
+  padding: 3px;
+  font-size: 83%;
+  border: solid 1px #7399C3;
+  background-color: #eeeeff;
+  color: #000000;
+}
+#mysociety #email_alert_box p {
+  margin: 0;
+}
+#mysociety .council_sent_info {
+  font-size: smaller;
+}
+#mysociety #rss_items {
+  width: 62%;
+  float: left;
+}
+#mysociety #rss_rhs {
+  border-left: 1px dashed #999;
+  width: 36%;
+  float: right;
+  padding: 0 0 0 0.5em;
+  margin: 0 0 1em 0.5em;
+}
+#mysociety #rss_box {
+  padding: 10px;
+  border: 1px solid #999999;
+}
+#mysociety #rss_feed {
+  list-style-type: none;
+  margin-bottom: 2em;
+}
+#mysociety #rss_feed li {
+  margin-bottom: 1em;
+}
+#mysociety #alert_or {
+  font-style: italic;
+  font-size: 125%;
+  margin: 0;
+}
+#mysociety #rss_list {
+  float: left;
+  width: 47%;
+}
+#mysociety #rss_list ul {
+  list-style-type: none;
+}
+#mysociety #rss_buttons {
+  float: right;
+  width: 35%;
+  text-align: center;
+  margin-bottom: 2em;
+}
+#mysociety #rss_local {
+  margin-left: 1.5em;
+  margin-bottom: 0;
+}
+#mysociety #rss_local_alt {
+  margin: 0 0 2em 4em;
+}
+#mysociety #alert_photos {
+  text-align: center;
+  float: right;
+  width: 150px;
+  margin-left: 0.5em;
+}
+#mysociety #alert_photos h2 {
+  font-size: 100%;
+}
+#mysociety #alert_photos img {
+  margin-bottom: 0.25em;
+}
+#mysociety #col_problems, #mysociety #col_fixed {
+  float: left;
+  width: 48%;
+  margin-right: 1em;
+}
+#mysociety .contact-details {
+  font-size: 80%;
+  margin-top: 2em;
+}
+
+.olControlAttribution {
+  bottom: 3px !important;
+  left: 3px;
+}
+
+.olControlPermalink {
+  bottom: 3px !important;
+  right: 3px;
+}
+
+@media print {
+  #mysociety #map_box {
+    float: none;
+    margin: 0 auto;
+  }
+  #mysociety #mysociety {
+    max-width: none;
+  }
+  #mysociety #side {
+    margin-right: 0;
+  }
+}

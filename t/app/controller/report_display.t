@@ -235,6 +235,54 @@ for my $test (
         banner_text => 'This problem has been fixed.',
         fixed => 1
     },
+    {
+        description => 'user fixed report',
+        date => DateTime->now,
+        state => 'fixed - user',
+        banner_id => 'fixed',
+        banner_text => 'This problem has been fixed.',
+        fixed => 1
+    },
+    {
+        description => 'council fixed report',
+        date => DateTime->now,
+        state => 'fixed - council',
+        banner_id => 'fixed',
+        banner_text => 'This problem has been fixed.',
+        fixed => 1
+    },
+    {
+        description => 'closed report',
+        date => DateTime->now,
+        state => 'closed',
+        banner_id => 'closed',
+        banner_text => 'This problem has been closed.',
+        fixed => 0
+    },
+    {
+        description => 'investigating report',
+        date => DateTime->now,
+        state => 'investigating',
+        banner_id => 'progress',
+        banner_text => 'This problem is in progress.',
+        fixed => 0
+    },
+    {
+        description => 'planned report',
+        date => DateTime->now,
+        state => 'planned',
+        banner_id => 'progress',
+        banner_text => 'This problem is in progress.',
+        fixed => 0
+    },
+    {
+        description => 'in progressreport',
+        date => DateTime->now,
+        state => 'in progress',
+        banner_id => 'progress',
+        banner_text => 'This problem is in progress.',
+        fixed => 0
+    },
 ) {
     subtest "banner for $test->{description}" => sub {
         $report->confirmed( $test->{date}->ymd . ' ' . $test->{date}->hms );
@@ -259,6 +307,55 @@ for my $test (
         }
     };
 }
+
+for my $test ( 
+    {
+        desc => 'no state dropdown if user not from authority',
+        from_council => 0,
+        no_state => 1,
+        report_council => '2504',
+    },
+    {
+        desc => 'state dropdown if user from authority',
+        from_council => 2504,
+        no_state => 0,
+        report_council => '2504',
+    },
+    {
+        desc => 'no state dropdown if user not from same council as problem',
+        from_council => 2505,
+        no_state => 1,
+        report_council => '2504',
+    },
+    {
+        desc => 'state dropdown if user from authority and problem sent to multiple councils',
+        from_council => 2504,
+        no_state => 0,
+        report_council => '2504,2506',
+    },
+) {
+    subtest $test->{desc} => sub {
+        $mech->log_in_ok( $user->email );
+        $user->from_council( $test->{from_council} );
+        $user->update;
+
+        $report->discard_changes;
+        $report->council( $test->{report_council} );
+        $report->update;
+
+        $mech->get_ok("/report/$report_id");
+        my $fields = $mech->visible_form_values( 'updateForm' );
+        if ( $test->{no_state} ) {
+            ok !$fields->{state};
+        } else {
+            ok $fields->{state};
+        }
+    };
+}
+
+$report->discard_changes;
+$report->council( 2504 );
+$report->update;
 
 # tidy up
 $mech->delete_user('test@example.com');

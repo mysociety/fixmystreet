@@ -59,7 +59,7 @@ href="http://www.emptyhomes.com/getinvolved/campaign.html">http://www.emptyhomes
 [% END %]
 
 <p>
-[% loc('An update marked this problem as fixed.') IF problem.state == 'fixed' %]
+[% loc('An update marked this problem as fixed.') IF problem.is_fixed %]
 [% loc('Has this problem been fixed?') %]
 </p>
 

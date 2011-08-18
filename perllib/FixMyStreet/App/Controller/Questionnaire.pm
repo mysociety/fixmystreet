@@ -41,7 +41,7 @@ sub check_questionnaire : Private {
         $c->detach;
     }
 
-    unless ( $questionnaire->problem->state eq 'confirmed' || $questionnaire->problem->state eq 'fixed' ) {
+    unless ( $questionnaire->problem->is_visible ) {
         $c->detach('missing_problem');
     }
 
@@ -121,13 +121,19 @@ sub submit_creator_fixed : Private {
     my $questionnaire = $c->model( 'DB::Questionnaire' )->find_or_new(
         {
             problem_id => $c->stash->{problem},
-            old_state  => 'confirmed',
-            new_state  => 'fixed',
+            # we want to look for any previous questionnaire here rather than one for
+            # this specific open state -> fixed transistion
+            old_state  => [ FixMyStreet::DB::Result::Problem->open_states() ],
+            new_state  => 'fixed - user',
         }
     );
 
     unless ( $questionnaire->in_storage ) {
+        my $old_state = $c->flash->{old_state};
+        $old_state = 'confirmed' unless FixMyStreet::DB::Result::Problem->open_states->{$old_state};
+
         $questionnaire->ever_reported( $c->stash->{reported} eq 'Yes' ? 1 : 0 );
+        $questionnaire->old_state( $old_state );
         $questionnaire->whensent( \'ms_current_timestamp()' );
         $questionnaire->whenanswered( \'ms_current_timestamp()' );
         $questionnaire->insert;
@@ -149,8 +155,10 @@ sub submit_standard : Private {
     my $problem = $c->stash->{problem};
     my $old_state = $problem->state;
     my $new_state = '';
-    $new_state = 'fixed' if $c->stash->{been_fixed} eq 'Yes' && $old_state eq 'confirmed';
-    $new_state = 'confirmed' if $c->stash->{been_fixed} eq 'No' && $old_state eq 'fixed';
+    $new_state = 'fixed - user' if $c->stash->{been_fixed} eq 'Yes' && 
+        FixMyStreet::DB::Result::Problem->open_states()->{$old_state};
+    $new_state = 'confirmed' if $c->stash->{been_fixed} eq 'No' &&
+        FixMyStreet::DB::Result::Problem->fixed_states()->{$old_state};
 
     # Record state change, if there was one
     if ( $new_state ) {
@@ -159,7 +167,8 @@ sub submit_standard : Private {
     }
 
     # If it's not fixed and they say it's still not been fixed, record time update
-    if ( $c->stash->{been_fixed} eq 'No' && $old_state eq 'confirmed' ) {
+    if ( $c->stash->{been_fixed} eq 'No' &&
+        FixMyStreet::DB::Result::Problem->open_states->{$old_state} ) {
         $problem->lastupdate( \'ms_current_timestamp()' );
     }
 
@@ -186,7 +195,7 @@ sub submit_standard : Private {
                 user         => $problem->user,
                 text         => $update,
                 state        => 'confirmed',
-                mark_fixed   => $new_state eq 'fixed' ? 1 : 0,
+                mark_fixed   => $new_state eq 'fixed - user' ? 1 : 0,
                 mark_open    => $new_state eq 'confirmed' ? 1 : 0,
                 lang         => $c->stash->{lang_code},
                 cobrand      => $c->cobrand->moniker,
@@ -236,7 +245,7 @@ sub process_questionnaire : Private {
         if ($c->stash->{been_fixed} eq 'No' || $c->stash->{been_fixed} eq 'Unknown') && !$c->stash->{another};
 
     push @errors, _('Please provide some explanation as to why you\'re reopening this report')
-        if $c->stash->{been_fixed} eq 'No' && $c->stash->{problem}->state eq 'fixed' && !$c->stash->{update};
+        if $c->stash->{been_fixed} eq 'No' && $c->stash->{problem}->is_fixed() && !$c->stash->{update};
 
     $c->forward('/report/new/process_photo');
     push @errors, $c->stash->{photo_error}
@@ -288,7 +297,7 @@ sub display : Private {
         pins      => [ {
             latitude  => $problem->latitude,
             longitude => $problem->longitude,
-            colour    => $problem->state eq 'fixed' ? 'green' : 'red',
+            colour    => $problem->is_fixed() ? 'green' : 'red',
         } ],
     );
 }

@@ -26,6 +26,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "password",
   { data_type => "text", default_value => "", is_nullable => 0 },
+  "from_council",
+  { data_type => "integer", is_nullable => 1 },
   "flagged",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
@@ -51,8 +53,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-06-23 15:49:48
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:T2JK+KyfoE2hkCLgreq1XQ
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-06-27 10:25:21
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:9IHuqRTcHZCqJeBAaiQxzw
 
 __PACKAGE__->add_columns(
     "password" => {
@@ -132,6 +134,42 @@ sub alert_for_problem {
         alert_type => 'new_updates',
         parameter  => $id,
     } );
+}
+
+sub council {
+    my $self = shift;
+
+    return '' unless $self->from_council;
+
+    my $key = 'council_name:' . $self->from_council;
+    my $result = Memcached::get($key);
+
+    unless ($result) {
+        my $area_info = mySociety::MaPit::call('area', $self->from_council);
+        $result = $area_info->{name};
+        Memcached::set($key, $result, 86400);
+    }
+
+    return $result;
+}
+
+=head2 belongs_to_council
+
+    $belongs_to_council = $user->belongs_to_council( $council_list );
+
+Returns true if the user belongs to the comma seperated list of council ids passed in
+
+=cut
+
+sub belongs_to_council {
+    my $self = shift;
+    my $council = shift;
+
+    my %councils = map { $_ => 1 } split ',', $council;
+
+    return 1 if $self->from_council && $councils{ $self->from_council };
+
+    return 0;
 }
 
 1;

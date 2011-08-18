@@ -264,69 +264,71 @@ subtest "Submit a correct entry (with location)" => sub {
 
 subtest "Submit a correct entry (with location) to cobrand" => sub {
 
-    skip( "Need 'fiksgatami' in ALLOWED_COBRANDS config", 8 )
-      unless FixMyStreet::App->config->{ALLOWED_COBRANDS} =~ m{fiksgatami};
-    mySociety::MaPit::configure('http://mapit.nuug.no/');
-    ok $mech->host("fiksgatami.no"), 'change host to fiksgatami';
+    SKIP: {
+        skip( "Need 'fiksgatami' in ALLOWED_COBRANDS config", 20 )
+          unless FixMyStreet::App->config->{ALLOWED_COBRANDS} =~ m{fiksgatami};
+        mySociety::MaPit::configure('http://mapit.nuug.no/');
+        ok $mech->host("fiksgatami.no"), 'change host to fiksgatami';
 
-    $mech->get_ok('/import');
+        $mech->get_ok('/import');
 
-    $mech->submit_form_ok(    #
-        {
-            with_fields => {
-                service => 'test-script',
-                lat     => '59',
-                lon     => '10',
-                name    => 'Test User ll',
-                email   => 'test-ll@example.com',
-                subject => 'Test report ll',
-                detail  => 'This is a test report ll',
-                photo   => $sample_file,
-            }
-        },
-        "fill in form"
-    );
+        $mech->submit_form_ok(    #
+            {
+                with_fields => {
+                    service => 'test-script',
+                    lat     => '59',
+                    lon     => '10',
+                    name    => 'Test User ll',
+                    email   => 'test-ll@example.com',
+                    subject => 'Test report ll',
+                    detail  => 'This is a test report ll',
+                    photo   => $sample_file,
+                }
+            },
+            "fill in form"
+        );
 
-    is_deeply( $mech->import_errors, [], "got no errors" );
-    is $mech->content, 'SUCCESS', "Got success response";
+        is_deeply( $mech->import_errors, [], "got no errors" );
+        is $mech->content, 'SUCCESS', "Got success response";
 
-    # check that we have received the email
-    $mech->email_count_is(1);
-    my $email = $mech->get_email;
-    $mech->clear_emails_ok;
+        # check that we have received the email
+        $mech->email_count_is(1);
+        my $email = $mech->get_email;
+        $mech->clear_emails_ok;
 
-    my ($token_url) = $email->body =~ m{(http://\S+)};
-    ok $token_url, "Found a token url $token_url";
+        my ($token_url) = $email->body =~ m{(http://\S+)};
+        ok $token_url, "Found a token url $token_url";
 
-    # go to the token url
-    $mech->get_ok($token_url);
+        # go to the token url
+        $mech->get_ok($token_url);
 
-    # check that we are on '/report/new'
-    is $mech->uri->path, '/report/new', "sent to /report/new";
+        # check that we are on '/report/new'
+        is $mech->uri->path, '/report/new', "sent to /report/new";
 
-    # check that fields are prefilled for us
-    is_deeply $mech->visible_form_values,
-      {
-        name          => 'Test User ll',
-        title         => 'Test report ll',
-        detail        => 'This is a test report ll',
-        photo         => '',
-        phone         => '',
-        may_show_name => '1',
-      },
-      "check imported fields are shown";
+        # check that fields are prefilled for us
+        is_deeply $mech->visible_form_values,
+          {
+            name          => 'Test User ll',
+            title         => 'Test report ll',
+            detail        => 'This is a test report ll',
+            photo         => '',
+            phone         => '',
+            may_show_name => '1',
+          },
+          "check imported fields are shown";
 
-    my $user =
-      FixMyStreet::App->model('DB::User')
-      ->find( { email => 'test-ll@example.com' } );
-    ok $user, "Found a user";
+        my $user =
+          FixMyStreet::App->model('DB::User')
+          ->find( { email => 'test-ll@example.com' } );
+        ok $user, "Found a user";
 
-    my $report = $user->problems->first;
-    is $report->state, 'partial',        'is still partial';
-    is $report->title, 'Test report ll', 'title is correct';
-    is $report->lang, 'nb',              'language is correct';
+        my $report = $user->problems->first;
+        is $report->state, 'partial',        'is still partial';
+        is $report->title, 'Test report ll', 'title is correct';
+        is $report->lang, 'nb',              'language is correct';
 
-    $mech->delete_user($user);
+        $mech->delete_user($user);
+    }
 };
 
 done_testing();

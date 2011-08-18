@@ -28,6 +28,11 @@
     [% INCLUDE problem %]
 [% END %]
 
+[% FOREACH p = problems.closed %]
+    [% IF loop.first %]<h2>[% loc('Closed reports') %]</h2>[% END %]
+    [% INCLUDE problem %]
+[% END %]
+
 [%# FOREACH p = problems.unconfirmed;
     IF loop.first;
         '<h2>' _ loc('Unconfirmed reports') _ '</h2>';

@@ -1,0 +1,29 @@
+[% INCLUDE 'admin/header.html' title=loc('Search Users') %]
+[% PROCESS 'admin/report_blocks.html' %]
+
+<form method="get" action="[% c.uri_for('search_users') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+    <label for="search">[% loc('Search:') %]</label> <input type="text" name="search"  size="30" id="search">
+</form>
+
+
+[% IF searched %]
+<table cellspacing="0" cellpadding="2" border="1">
+    <tr>
+        <th>[% loc('Name') %]</th>
+        <th>[% loc('Email') %]</th>
+        <th>[% loc('Council') %]</th>
+        <th>*</th>
+    </tr>
+[%- FOREACH user IN users %]
+    <tr>
+        <td>[% PROCESS value_or_nbsp value=user.name %]</td> 
+        <td>[% PROCESS value_or_nbsp value=user.email %]</td> 
+        <td>[% PROCESS value_or_nbsp value=user.from_council %]</td> 
+        <td><a href="[% c.uri_for( 'user_edit', user.id ) %]">[% loc('Edit') %]</a></td>
+    </tr>
+[%- END -%]
+</table>
+
+[% END %]
+
+[% INCLUDE 'admin/footer.html' %]

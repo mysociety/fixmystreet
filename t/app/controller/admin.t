@@ -77,10 +77,12 @@ my $alert = FixMyStreet::App->model('DB::Alert')->find_or_create(
 );
 
 subtest 'check summary counts' => sub {
-    my $problems = FixMyStreet::App->model('DB::Problem')->search( { state => { -in => [qw/confirmed fixed/] } } );
+    my $problems = FixMyStreet::App->model('DB::Problem')->search( { state => { -in => [qw/confirmed fixed closed investigating planned/, 'in progress', 'fixed - user', 'fixed - council'] } } );
 
     my $problem_count = $problems->count;
     $problems->update( { cobrand => '' } );
+
+    FixMyStreet::App->model('DB::Problem')->search( { council => 2489 } )->update( { council => 1 } );
 
     my $q = FixMyStreet::App->model('DB::Questionnaire')->find_or_new( { problem => $report, });
     $q->whensent( \'ms_current_timestamp()' );
@@ -130,6 +132,7 @@ subtest 'check summary counts' => sub {
     $alert->cobrand('');
     $alert->update;
 
+    FixMyStreet::App->model('DB::Problem')->search( { council => 1 } )->update( { council => 2489 } );
     ok $mech->host('fixmystreet.com');
 };
 
@@ -729,6 +732,76 @@ for my $test (
     };
 }
 
+for my $test (
+    {
+        desc          => 'user is problem owner',
+        problem_user  => $user,
+        update_user   => $user,
+        update_fixed  => 0,
+        update_reopen => 0,
+        update_state  => undef,
+        user_council  => undef,
+        content       => 'user is problem owner',
+    },
+    {
+        desc          => 'user is council user',
+        problem_user  => $user,
+        update_user   => $user2,
+        update_fixed  => 0,
+        update_reopen => 0,
+        update_state  => undef,
+        user_council  => 2504,
+        content       => 'user is from same council as problem - 2504',
+    },
+    {
+        desc          => 'update changed problem state',
+        problem_user  => $user,
+        update_user   => $user2,
+        update_fixed  => 0,
+        update_reopen => 0,
+        update_state  => 'planned',
+        user_council  => 2504,
+        content       => 'Update changed problem state to planned',
+    },
+    {
+        desc          => 'update marked problem as fixed',
+        problem_user  => $user,
+        update_user   => $user3,
+        update_fixed  => 1,
+        update_reopen => 0,
+        update_state  => undef,
+        user_council  => undef,
+        content       => 'Update marked problem as fixed',
+    },
+    {
+        desc          => 'update reopened problem',
+        problem_user  => $user,
+        update_user   => $user,
+        update_fixed  => 0,
+        update_reopen => 1,
+        update_state  => undef,
+        user_council  => undef,
+        content       => 'Update reopened problem',
+    },
+) {
+    subtest $test->{desc} => sub {
+        $report->user( $test->{problem_user} );
+        $report->update;
+
+        $update->user( $test->{update_user} );
+        $update->problem_state( $test->{update_state} );
+        $update->mark_fixed( $test->{update_fixed} );
+        $update->mark_open( $test->{update_reopen} );
+        $update->update;
+
+        $test->{update_user}->from_council( $test->{user_council} );
+        $test->{update_user}->update;
+
+        $mech->get_ok('/admin/update_edit/' . $update->id );
+        $mech->content_contains( $test->{content} );
+    };
+}
+
 subtest 'editing update email creates new user if required' => sub {
     my $user = FixMyStreet::App->model('DB::User')->find(
         { email => 'test4@example.com' } 
@@ -890,6 +963,97 @@ subtest 'show flagged entries' => sub {
     $mech->content_contains( $report->title );
     $mech->content_contains( $user->email );
 };
+
+subtest 'user search' => sub {
+    $mech->get_ok('/admin/search_users');
+    $mech->get_ok('/admin/search_users?search=' . $user->name);
+
+    $mech->content_contains( $user->name);
+    my $u_id = $user->id;
+    $mech->content_like( qr{user_edit/$u_id">Edit</a>} );
+
+    $mech->get_ok('/admin/search_users?search=' . $user->email);
+
+    $mech->content_like( qr{user_edit/$u_id">Edit</a>} );
+
+    $user->from_council(2509);
+    $user->update;
+    $mech->get_ok('/admin/search_users?search=2509' );
+    $mech->content_contains(2509);
+};
+
+$log_entries = FixMyStreet::App->model('DB::AdminLog')->search(
+    {
+        object_type => 'user',
+        object_id   => $user->id
+    },
+    { 
+        order_by => { -desc => 'id' },
+    }
+);
+
+is $log_entries->count, 0, 'no admin log entries';
+
+for my $test (
+    {
+        desc => 'edit user name',
+        fields => {
+            name => 'Test User',
+            email => 'test@example.com',
+            council => 2509,
+        },
+        changes => {
+            name => 'Changed User',
+        },
+        log_count => 1,
+        log_entries => [qw/edit/],
+    },
+    {
+        desc => 'edit user email',
+        fields => {
+            name => 'Changed User',
+            email => 'test@example.com',
+            council => 2509,
+        },
+        changes => {
+            email => 'changed@example.com',
+        },
+        log_count => 2,
+        log_entries => [qw/edit edit/],
+    },
+    {
+        desc => 'edit user council',
+        fields => {
+            name => 'Changed User',
+            email => 'changed@example.com',
+            council => 2509,
+        },
+        changes => {
+            council => 2607,
+        },
+        log_count => 3,
+        log_entries => [qw/edit edit edit/],
+    },
+) {
+    subtest $test->{desc} => sub {
+        $mech->get_ok( '/admin/user_edit/' . $user->id );
+
+        my $visible = $mech->visible_form_values;
+        is_deeply $visible, $test->{fields}, 'expected user';
+
+        my $expected = {
+            %{ $test->{fields} },
+            %{ $test->{changes} }
+        };
+
+        $mech->submit_form_ok( { with_fields => $expected } );
+
+        $visible = $mech->visible_form_values;
+        is_deeply $visible, $expected, 'user updated';
+
+        $mech->content_contains( 'Updated!' );
+    };
+}
 
 $mech->delete_user( $user );
 $mech->delete_user( $user2 );

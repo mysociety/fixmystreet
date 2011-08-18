@@ -189,7 +189,7 @@ sub display_location : Private {
             {
                 latitude  => $p->latitude,
                 longitude => $p->longitude,
-                colour    => $p->state eq 'fixed' ? 'green' : 'red',
+                colour    => $p->is_fixed ? 'green' : 'red',
                 id        => $p->id,
                 title     => $p->title,
             }
