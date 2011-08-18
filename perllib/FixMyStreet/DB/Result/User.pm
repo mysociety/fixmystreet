@@ -165,7 +165,7 @@ sub belongs_to_council {
     my $self = shift;
     my $council = shift;
 
-    my %councils = map { $_ => 1 } split '\|', $council;
+    my %councils = map { $_ => 1 } split ',', $council;
 
     return 1 if $self->from_council && $councils{ $self->from_council };
 

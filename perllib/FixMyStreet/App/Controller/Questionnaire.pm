@@ -245,7 +245,7 @@ sub process_questionnaire : Private {
         if ($c->stash->{been_fixed} eq 'No' || $c->stash->{been_fixed} eq 'Unknown') && !$c->stash->{another};
 
     push @errors, _('Please provide some explanation as to why you\'re reopening this report')
-        if $c->stash->{been_fixed} eq 'No' && $c->stash->{problem}->state eq 'fixed' && !$c->stash->{update};
+        if $c->stash->{been_fixed} eq 'No' && $c->stash->{problem}->is_fixed() && !$c->stash->{update};
 
     $c->forward('/report/new/process_photo');
     push @errors, $c->stash->{photo_error}
