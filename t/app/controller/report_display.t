@@ -331,7 +331,7 @@ for my $test (
         desc => 'state dropdown if user from authority and problem sent to multiple councils',
         from_council => 2504,
         no_state => 0,
-        report_council => '2504|2506',
+        report_council => '2504,2506',
     },
 ) {
     subtest $test->{desc} => sub {
