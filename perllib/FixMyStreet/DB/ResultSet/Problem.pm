@@ -177,7 +177,7 @@ sub unique_users {
     my ( $rs ) = @_;
 
     return $rs->search( {
-        state => [ 'confirmed', 'fixed' ],
+        state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     }, {
         select => [ { count => { distinct => 'user_id' } } ],
         as     => [ 'count' ]
@@ -187,11 +187,12 @@ sub unique_users {
 sub categories_summary {
     my ( $rs ) = @_;
 
+    my $fixed_case = "case when state IN ( '" . join( "', '", FixMyStreet::DB::Result::Problem->fixed_states() ) . "' ) then 1 else null end";
     my $categories = $rs->search( {
-        state    => [ 'confirmed', 'fixed' ],
+        state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
         whensent => { '<' => \"NOW() - INTERVAL '4 weeks'" },
     }, {
-        select   => [ 'category', { count => 'id' }, { count => \"case when state='fixed' then 1 else null end" } ],
+        select   => [ 'category', { count => 'id' }, { count => \$fixed_case } ],
         as       => [ 'category', 'c', 'fixed' ],
         group_by => [ 'category' ],
         result_class => 'DBIx::Class::ResultClass::HashRefInflator'

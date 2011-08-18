@@ -75,7 +75,7 @@ sub confirm_problem : Path('/P') {
     $c->authenticate( { email => $problem->user->email }, 'no_password' );
     $c->set_session_cookie_expire(0);
 
-    if ( $old_state eq 'confirmed' || $old_state eq 'fixed' ) {
+    if ( FixMyStreet::DB::Result::Problem->visible_states()->{$old_state} == 1 ) {
         my $report_uri = $c->uri_for( '/report', $problem->id );
         $c->res->redirect($report_uri);
     }

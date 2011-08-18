@@ -297,7 +297,7 @@ sub display : Private {
         pins      => [ {
             latitude  => $problem->latitude,
             longitude => $problem->longitude,
-            colour    => $problem->state eq 'fixed' ? 'green' : 'red',
+            colour    => $problem->is_fixed() ? 'green' : 'red',
         } ],
     );
 }
