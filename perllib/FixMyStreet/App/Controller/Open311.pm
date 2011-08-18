@@ -216,8 +216,11 @@ sub output_requests : Private {
     # Look up categories for this council or councils
     my $problems = $c->cobrand->problems->search( $criteria, $attr );
 
-    my %statusmap = ( 'fixed' => 'closed',
-                      'confirmed' => 'open');
+    my %statusmap = (
+        map( { $_ => 'open' } FixMyStreet::DB::Result::Problem->open_states() ),
+        map( { $_ => 'closed' } FixMyStreet::DB::Result::Problem->fixed_states() ),
+        'closed' => 'closed'
+    );
 
     my @problemlist;
     my @councils;
@@ -309,13 +312,13 @@ sub get_requests : Private {
 
     # Only provide access to the published reports
     my $criteria = {
-        state => [ 'fixed', 'confirmed' ]
+        state => [ FixMyStreet::DB::Result::Problem->visible_states() ]
     };
 
     my %rules = (
         service_request_id => [ '=', 'id' ],
         service_code       => [ '=', 'category' ],
-        status             => [ '=', 'state' ],
+        status             => [ 'IN', 'state' ],
         start_date         => [ '>=', 'confirmed' ],
         end_date           => [ '<', 'confirmed' ],
         agency_responsible => [ '~', 'council' ],
@@ -329,8 +332,8 @@ sub get_requests : Private {
         my $key = $rules{$param}[1];
         if ( 'status' eq $param ) {
             $value = {
-                'open' => 'confirmed',
-                'closed' => 'fixed'
+                'open' => [ FixMyStreet::DB::Result::Problem->open_states() ],
+                'closed' => [ FixMyStreet::DB::Result::Problem->fixed_states(), 'closed' ],
             }->{$value};
         } elsif ( 'agency_responsible' eq $param ) {
             my @valuelist;
@@ -403,7 +406,7 @@ sub get_request : Private {
     }
 
     my $criteria = {
-        state => [ 'fixed', 'confirmed' ],
+        state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
         id => $id,
     };
     $c->forward( 'output_requests', [ $criteria ] );
