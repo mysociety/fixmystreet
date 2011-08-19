@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: FixMyStreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2011-08-18 11:07+0100\n"
-"PO-Revision-Date: 2011-08-19 20:22CEST\n"
-"Last-Translator: Anders Einar Hilden <hildenae@gmail.com>\n"
+"PO-Revision-Date: 2011-08-19 20:48MET\n"
+"Last-Translator: Petter Reinholdtsen <pere@hungry.com>\n"
 "Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1026,9 +1026,8 @@ msgid "Invalid agency_responsible value %s"
 msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:785
-#, fuzzy
 msgid "Invalid end date"
-msgstr "Bidra med en oppdatering"
+msgstr "Ugyldig slutt-dato"
 
 #: perllib/FixMyStreet/App/Controller/Open311.pm:423
 msgid "Invalid format %s specified."
@@ -1288,14 +1287,12 @@ msgid "No edits have yet been made."
 msgstr "Ingenting endringer har blitt gjort."
 
 #: templates/web/default/admin/list_flagged.html:26
-#, fuzzy
 msgid "No flagged problems found"
-msgstr "Ingen problemer ble funnet."
+msgstr "Ingen flaggede problemer ble funnet"
 
 #: templates/web/default/admin/list_flagged.html:47
-#, fuzzy
 msgid "No flagged users found"
-msgstr "Ingen problemer ble funnet."
+msgstr "Ingen flaggede brukere ble funnet"
 
 #: templates/web/default/admin/council_list.html:38
 msgid "No info at all"
@@ -1340,9 +1337,8 @@ msgid "Note:"
 msgstr "Merk:"
 
 #: templates/web/default/open311/index.html:6
-#, fuzzy
 msgid "Note: <strong>%s</strong>"
-msgstr "<strong>%d</strong> aktive problemer"
+msgstr "Note: <strong>%d</strong>"
 
 #: templates/web/default/report/new/fill_in_details_form.html:127
 msgid "Now to submit your report&hellip; do you have a FixMyStreet password?"
@@ -1654,8 +1650,7 @@ msgstr "Vennligst bidra med litt tekst i tilegg til et bilde"
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:115
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:231
 msgid "Please say whether you've ever reported a problem to your council before"
-msgstr ""
-"Vennligst opplys om du har rapportert et problem til din administrasjon tidligere"
+msgstr "Vennligst opplys om du har rapportert et problem til din administrasjon tidligere"
 
 #: perllib/FixMyStreet/App/Controller/Alert.pm:82
 msgid "Please select the feed you want"
@@ -2137,12 +2132,10 @@ msgid "Source code"
 msgstr "Kildekode"
 
 #: templates/web/default/admin/stats.html:41
-#, fuzzy
 msgid "Start Year:"
 msgstr "Startår:"
 
 #: templates/web/default/admin/stats.html:43
-#, fuzzy
 msgid "Start day:"
 msgstr "Startdag:"
 
@@ -2163,7 +2156,6 @@ msgstr "Tilstand:"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:845
 #: templates/web/default/admin/stats.html:1
-#, fuzzy
 msgid "Stats"
 msgstr "Statistikk"
 
