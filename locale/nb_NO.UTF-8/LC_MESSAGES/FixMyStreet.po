@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: FixMyStreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2011-08-18 11:07+0100\n"
-"PO-Revision-Date: 2011-08-19 20:48MET\n"
+"PO-Revision-Date: 2011-08-19 21:01MET\n"
 "Last-Translator: Petter Reinholdtsen <pere@hungry.com>\n"
 "Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
 "MIME-Version: 1.0\n"
@@ -540,7 +540,7 @@ msgstr "Kontakt prosjektgruppen"
 #: perllib/FixMyStreet/App/Controller/Admin.pm:965
 #: perllib/FixMyStreet/App/Controller/Admin.pm:993
 msgid "Could not find user"
-msgstr ""
+msgstr "Kunne ikke finne bruker"
 
 #: templates/web/default/admin/list_flagged.html:13
 #: templates/web/default/admin/search_reports.html:16
@@ -651,7 +651,7 @@ msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:938
 msgid "Email already in abuse list"
-msgstr ""
+msgstr "Epost allerede i misbrukslisten"
 
 #: templates/web/default/around/display_location.html:84
 msgid "Email me new local problems"
@@ -697,7 +697,7 @@ msgstr "Tom offentlig bygning - skole, sykehos, etc."
 
 #: templates/web/default/admin/stats.html:47
 msgid "End Year:"
-msgstr ""
+msgstr "Sluttår:"
 
 #: templates/web/default/admin/stats.html:49
 msgid "End day:"
@@ -705,7 +705,7 @@ msgstr "Slutt-dag:"
 
 #: templates/web/default/admin/stats.html:48
 msgid "End month:"
-msgstr ""
+msgstr "Sluttmåned:"
 
 #: templates/web/default/around/around_index.html:10
 #: templates/web/default/around/around_index.html:13
@@ -744,7 +744,7 @@ msgstr "Eksempel-postnummer %s"
 
 #: templates/web/default/open311/index.html:27
 msgid "Examples:"
-msgstr ""
+msgstr "Eksempler:"
 
 #: templates/web/default/contact/submit.html:15
 msgid ""
@@ -824,11 +824,11 @@ msgstr "Løst:"
 
 #: templates/web/default/admin/report_blocks.html:16
 msgid "Flag user"
-msgstr ""
+msgstr "Flag bruker"
 
 #: templates/web/default/admin/report_edit.html:38
 msgid "Flagged:"
-msgstr ""
+msgstr "Flagget:"
 
 #: templates/web/default/reports/council.html:23
 msgid "Follow a ward link to view only reports within that ward."
@@ -851,7 +851,7 @@ msgstr "Mer informasjon om vårt arbeid med tomme hjem"
 
 #: templates/web/default/open311/index.html:69
 msgid "GeoRSS on Google Maps"
-msgstr ""
+msgstr "GeoRSS på Google Maps"
 
 #: templates/web/default/alert/list.html:112
 msgid "Give me an RSS feed"
@@ -1996,7 +1996,6 @@ msgid "Save changes"
 msgstr "Lagre endringer"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:843
-#, fuzzy
 msgid "Search Abuse"
 msgstr "Søk etter misbruk"
 
@@ -2299,9 +2298,8 @@ msgstr ""
 
 # Should this be "Norge" or "Storbritannia" ?
 #: perllib/FixMyStreet/App/Controller/Location.pm:107
-#, fuzzy
 msgid "That location does not appear to be in Britain; please try again."
-msgstr "Det stedet virker ikke å være i Norge. Vennligst prøv igjen."
+msgstr "Det stedet virker ikke å være i Storbritannia. Vennligst prøv igjen."
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:509
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:78
@@ -2612,11 +2610,10 @@ msgid "Title"
 msgstr "Tittel"
 
 #: templates/web/default/around/display_location.html:70
-#, fuzzy
 msgid ""
 "To <strong>report a problem</strong>, simply click on the map at the correct "
 "location."
-msgstr "For å rapportere et problem, <strong>klikk på kartet</strong> på riktig sted."
+msgstr "For å <strong>rapportere et problem</strong>, klikk på kartet på riktig sted."
 
 #: templates/web/default/alert/index.html:21
 msgid ""
@@ -2700,7 +2697,7 @@ msgstr "Oppdateringer til dette problemet, FiksGataMi"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:997
 msgid "User flag removed"
-msgstr ""
+msgstr "Brukerflagg fjernet"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:969
 msgid "User flagged"
@@ -2708,7 +2705,7 @@ msgstr ""
 
 #: templates/web/default/admin/list_flagged.html:30
 msgid "Users"
-msgstr ""
+msgstr "Brukere"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:295
 #: perllib/FixMyStreet/App/Controller/Admin.pm:325
@@ -3081,9 +3078,8 @@ msgstr "åpnet på nytt"
 
 #: templates/web/default/report/new/fill_in_details_form.html:11
 #: templates/web/default/report/new/fill_in_details_form.html:14
-#, fuzzy
 msgid "the local council"
-msgstr "(ikke rapportert til administrasjonen)"
+msgstr "den lokale administrasjonen"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:363
 msgid "the map was not used so pin location may be inaccurate"
@@ -3137,7 +3133,7 @@ msgid "your update will not be posted"
 msgstr "din oppdatering vil ikke bli publisert"
 
 #: templates/web/default/front/stats.html:19
-#, fuzzy, perl-format
+#, perl-format
 msgid "<big>%s</big> report recently"
 msgid_plural "<big>%s</big> reports recently"
 msgstr[0] "<big>%s</big> rapportert<br>nylig"
