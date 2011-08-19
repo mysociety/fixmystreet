@@ -1663,7 +1663,7 @@ msgstr "Velg den kilden du ønsker"
 
 #: perllib/FixMyStreet/App/Controller/Alert.pm:120
 msgid "Please select the type of alert you want"
-msgstr "Vennligst velg vilken type varsel du ønsker"
+msgstr "Vennligst velg hvilken type varsel du ønsker"
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:227
 msgid "Please state whether or not the problem has been fixed"
