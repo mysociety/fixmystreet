@@ -2104,7 +2104,7 @@ msgstr "Noen bilder av nylig meldte problemer"
 #: perllib/FixMyStreet/App/View/Email.pm:32
 #: perllib/FixMyStreet/App/View/Web.pm:44
 msgid "Some text to localize"
-msgstr "Noe tekst å oversettes"
+msgstr "Noe tekst å oversette"
 
 #: templates/web/default/admin/council_list.html:42
 msgid "Some unconfirmeds"
