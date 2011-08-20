@@ -378,7 +378,7 @@ msgid ""
 "name if you give us permission."
 msgstr ""
 "All informasjonen du legger inn her vil bli sendt til <strong>%s</strong>.\n"
-"På dette nettestedet vil vi vise tema og detaljer om problemet, inkludert "
+"På dette nettestedet vil vi vise emne og detaljer om problemet, inkludert "
 "ditt navn\n"
 "dersom du gir oss lov."
 
@@ -956,7 +956,7 @@ msgid ""
 "If you submit a problem here the subject and details of the problem will be "
 "public, but the problem will <strong>not</strong> be reported to the council."
 msgstr ""
-"Hvis du sender inn et problem hit, så vil tema og detaljer for problemet "
+"Hvis du sender inn et problem hit, så vil emne og detaljer for problemet "
 "være offentlig, men problemet vil <strong>ikke</strong> bli rapportert til "
 "administrasjonen."
 
@@ -1536,7 +1536,7 @@ msgstr "Skriv inn et passord"
 #: perllib/FixMyStreet/App/Controller/Contact.pm:97
 #: perllib/FixMyStreet/DB/Result/Problem.pm:183
 msgid "Please enter a subject"
-msgstr "Vennligst legg inn et tema"
+msgstr "Vennligst legg inn et emne"
 
 #: perllib/FixMyStreet/DB/Result/User.pm:94
 msgid "Please enter a valid email"
@@ -1645,9 +1645,7 @@ msgstr "Vennligst merk deg:"
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:238
 msgid "Please provide some explanation as to why you're reopening this report"
-msgstr ""
-"Vennligst bidra med en forklaring for hvorfor du åpner denne rapporten på "
-"nytt"
+msgstr "Vennligst bidra med en forklaring for hvorfor du gjenåpner denne problemrapporten"
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:245
 msgid "Please provide some text as well as a photo"
@@ -1657,16 +1655,15 @@ msgstr "Vennligst bidra med litt tekst i tilegg til et bilde"
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:231
 msgid "Please say whether you've ever reported a problem to your council before"
 msgstr ""
-"Gi oss informasjon om du har rapportert et problem til din administrasjon "
-"tidligere"
+"Vennligst opplys om du har rapportert et problem til din administrasjon tidligere"
 
 #: perllib/FixMyStreet/App/Controller/Alert.pm:82
 msgid "Please select the feed you want"
-msgstr "Velg den feed du ønsker"
+msgstr "Velg den kilden du ønsker"
 
 #: perllib/FixMyStreet/App/Controller/Alert.pm:120
 msgid "Please select the type of alert you want"
-msgstr "Velg vilken type varsel du ønsker"
+msgstr "Vennligst velg vilken type varsel du ønsker"
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:227
 msgid "Please state whether or not the problem has been fixed"
@@ -1674,7 +1671,7 @@ msgstr "Vennligs oppgi om dette problemet er blitt fikset eller ikke"
 
 #: templates/web/default/questionnaire/index.html:52
 msgid "Please take a look at the updates that have been left."
-msgstr "Vær sa snill å ta en titt på oppdateringene som har blitt lagt inn."
+msgstr "Vennligst se over oppdateringene som har blitt lagt inn."
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:774
 msgid "Please upload a JPEG image only"
@@ -1717,7 +1714,7 @@ msgstr "Problem %s sendt til administrasjon %s"
 
 #: templates/web/default/admin/index.html:28
 msgid "Problem breakdown by state"
-msgstr "Tilstandsfordeling for problemer"
+msgstr "Tilstandsfordeling av problemer"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:703
 msgid "Problem marked as open."
@@ -1728,9 +1725,8 @@ msgid "Problem state change based on survey results"
 msgstr "Problemtilstandsendring basert på spørreundersøkelsesresultater"
 
 #: templates/web/default/admin/list_flagged.html:5
-#, fuzzy
 msgid "Problems"
-msgstr "Problem"
+msgstr "Problemer"
 
 #: templates/web/default/around/display_location.html:80
 msgid "Problems in this area"
@@ -1869,12 +1865,12 @@ msgstr "RSS-strøm med oppdateringer for dette problemet"
 #: templates/web/default/alert/updates.html:9
 #: templates/web/default/report/display.html:45
 msgid "Receive email when updates are left on this problem."
-msgstr "Motta e-post når det er uppdateringer på dette problemet"
+msgstr "Motta e-post når det er oppdateringer på dette problemet"
 
 #: templates/web/default/around/display_location.html:0
 #: templates/web/default/around/display_location.html:34
 msgid "Recent local problems, FixMyStreet"
-msgstr "Nylig lokalt problem, FiksGataMi."
+msgstr "Nylige lokale problemer, FiksGataMi."
 
 #: templates/web/default/reports/council.html:87
 #: templates/web/default/reports/council.html:88
@@ -1902,7 +1898,7 @@ msgstr ""
 
 #: templates/web/default/admin/report_blocks.html:16
 msgid "Remove flag"
-msgstr ""
+msgstr "Fjern flagg"
 
 #: templates/web/default/admin/report_edit.html:44
 #: templates/web/default/admin/update_edit.html:33
@@ -2007,11 +2003,11 @@ msgstr "Lagre endringer"
 #: perllib/FixMyStreet/App/Controller/Admin.pm:843
 #, fuzzy
 msgid "Search Abuse"
-msgstr "Søk:"
+msgstr "Søk etter misbruk"
 
 #: templates/web/default/admin/search_abuse.html:1
 msgid "Search Abuse Table"
-msgstr ""
+msgstr "Søk i misbrukstabell"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:840
 #: templates/web/default/admin/list_flagged.html:1
@@ -2030,7 +2026,7 @@ msgid ""
 "Select which type of alert you'd like and click the button for an RSS feed, "
 "or enter your email address to subscribe to an email alert."
 msgstr ""
-"Velg hvilken type varsel du ønsker og klikk på knappen for en RSS-strøm, "
+"Velg hvilken type varsel du ønsker og klikk på knappen for en RSS-kilde, "
 "eller skriv inn din e-postadresse for å abonnere på et e-postvarsel."
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:398
@@ -2108,7 +2104,7 @@ msgstr "Noen bilder av nylig meldte problemer"
 #: perllib/FixMyStreet/App/View/Email.pm:32
 #: perllib/FixMyStreet/App/View/Web.pm:44
 msgid "Some text to localize"
-msgstr ""
+msgstr "Noe tekst å oversettes"
 
 #: templates/web/default/admin/council_list.html:42
 msgid "Some unconfirmeds"
@@ -2143,16 +2139,16 @@ msgstr "Kildekode"
 #: templates/web/default/admin/stats.html:41
 #, fuzzy
 msgid "Start Year:"
-msgstr "Tilstand:"
+msgstr "Startår:"
 
 #: templates/web/default/admin/stats.html:43
 #, fuzzy
 msgid "Start day:"
-msgstr "Tilstand:"
+msgstr "Startdag:"
 
 #: templates/web/default/admin/stats.html:42
 msgid "Start month:"
-msgstr ""
+msgstr "Startmåned:"
 
 #: templates/web/default/admin/list_flagged.html:18
 #: templates/web/default/admin/list_updates.html:6
@@ -2169,13 +2165,13 @@ msgstr "Tilstand:"
 #: templates/web/default/admin/stats.html:1
 #, fuzzy
 msgid "Stats"
-msgstr "Tilstand"
+msgstr "Statistikk"
 
 #: templates/web/default/admin/report_edit.html:13
 #: templates/web/default/contact/index.html:83
 #: templates/web/default/report/new/fill_in_details_form.html:52
 msgid "Subject:"
-msgstr "Tema:"
+msgstr "Emne:"
 
 #: templates/web/default/questionnaire/creator_fixed.html:19
 #: templates/web/default/report/new/fill_in_details_form.html:110
@@ -2191,7 +2187,7 @@ msgstr "Send inn endringer"
 
 #: templates/web/default/questionnaire/index.html:114
 msgid "Submit questionnaire"
-msgstr "Lever spørreskjema"
+msgstr "Send inn spørreskjema"
 
 #: templates/web/default/alert/updates.html:17
 #: templates/web/default/report/display.html:50
@@ -2287,14 +2283,14 @@ msgstr ""
 
 #: templates/web/default/contact/submit.html:8
 msgid "Thanks for your feedback.  We'll get back to you as soon as we can!"
-msgstr "Takk for ditt innspill. Vi gir deg en tilbakemelding så raskt som mulig"
+msgstr "Takk for ditt innspill. Vi gir deg en tilbakemelding så raskt vi kan"
 
 #: templates/web/default/questionnaire/creator_fixed.html:9
 msgid ""
 "Thanks, glad to hear it's been fixed! Could we just ask if you have ever "
 "reported a problem to a council before?"
 msgstr ""
-"Takk, glad for å høre at problemet er fikset!  Vi vil gjerne spørre deg om "
+"Takk, glad for å høre at problemet er fikset! Vi vil gjerne spørre deg om "
 "du har rapportert et problem til en administrasjon tidligere?"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:783
@@ -2309,9 +2305,11 @@ msgstr ""
 "Det stedet dekkes ikke av noen administrasjon, kanskje det er til havs - "
 "vennligst forsøk et mer spesifikt sted."
 
+# Should this be "Norge" or "Storbritannia" ?
 #: perllib/FixMyStreet/App/Controller/Location.pm:107
+#, fuzzy
 msgid "That location does not appear to be in Britain; please try again."
-msgstr "Det stedet virker ikke å være i storbritannia. Vennligst prøv igjen."
+msgstr "Det stedet virker ikke å være i Norge. Vennligst prøv igjen."
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:509
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:78
@@ -2362,6 +2360,9 @@ msgid ""
 "administrations that received the problem report, which is not quite the way "
 "the attribute is defined in the Open311 v2 specification."
 msgstr ""
+"Open311 v2-atributten agency_responsible brukes for å liste opp "
+"administrasjonene som mottok problemrapporten, noe som ikke helt stemmer med "
+"hvordan atributten er definert i Open311 v2-spesifikasjonen."
 
 #: templates/web/default/auth/token.html:21
 #: templates/web/default/email_sent.html:22
@@ -2376,7 +2377,7 @@ msgstr ""
 msgid ""
 "The details of your problem are available on the right hand side of this "
 "page."
-msgstr "Detaljene om ditt problem er tilgjengelig på høyre side av denne siden."
+msgstr "Detaljene om ditt problem er tilgjengelig på høyre kant av denne siden."
 
 #: perllib/FixMyStreet/App/Controller/Reports.pm:46
 #: perllib/FixMyStreet/App/Controller/Reports.pm:73
@@ -2389,6 +2390,9 @@ msgid ""
 "service_request_id, description, lat, long, media_url, status, "
 "requested_datetime, updated_datetime, service_code and service_name."
 msgstr ""
+"De følgende Open311 v2-atributtene blir returnert for hver forespørsel: "
+"service_request_id, description, lat, long, media_url, status, "
+"requested_datetime, updated_datetime, service_code and service_name."
 
 #: perllib/FixMyStreet/Geocode/OSM.pm:99
 msgid ""
@@ -2403,11 +2407,11 @@ msgstr ""
 #: db/alert_types.pl:19 db/alert_types.pl:23 db/alert_types.pl:27
 #: db/alert_types.pl:31
 msgid "The latest local problems reported by users"
-msgstr "De siste lokale problemer rapporter av brukere"
+msgstr "De siste lokale problemer rapportert av brukere"
 
 #: db/alert_types_eha.pl:13
 msgid "The latest local reports reported by users"
-msgstr "De siste lokale rapporter rapporter av brukere"
+msgstr "De siste lokale rapporter rapportert av brukere"
 
 #: db/alert_types.pl:35
 msgid "The latest problems for {{COUNCIL}} reported by users"
@@ -2425,7 +2429,7 @@ msgstr "De siste problemene rapportert av brukere"
 
 #: db/alert_types.pl:15
 msgid "The latest problems reported fixed by users"
-msgstr "De siste problemer rapporter fikset av brukere"
+msgstr "De siste problemer rapportert fikset av brukere"
 
 #: db/alert_types.pl:43
 msgid "The latest problems within {{NAME}}'s boundary reported by users"
