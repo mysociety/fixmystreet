@@ -21,7 +21,7 @@ sub recent_fixed {
     my $result = Memcached::get($key);
     unless ($result) {
         $result = $rs->search( {
-            state => 'fixed',
+            state => [ FixMyStreet::DB::Result::Problem->fixed_states() ],
             lastupdate => { '>', \"current_timestamp-'1 month'::interval" },
         } )->count;
         Memcached::set($key, $result, 3600);
@@ -50,7 +50,7 @@ sub recent_new {
     my $result = Memcached::get($key);
     unless ($result) {
         $result = $rs->search( {
-            state => [ 'confirmed', 'fixed' ],
+            state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
             confirmed => { '>', \"current_timestamp-'$interval'::interval" },
         } )->count;
         Memcached::set($key, $result, 3600);
@@ -66,7 +66,7 @@ sub recent {
     my $result = Memcached::get($key);
     unless ($result) {
         $result = [ $rs->search( {
-            state => [ 'confirmed', 'fixed' ]
+            state => [ FixMyStreet::DB::Result::Problem->visible_states() ]
         }, {
             columns => [ 'id', 'title' ],
             order_by => { -desc => 'confirmed' },
@@ -81,7 +81,7 @@ sub recent_photos {
     my ( $rs, $num, $lat, $lon, $dist ) = @_;
     my $probs;
     my $query = {
-        state => [ 'confirmed', 'fixed' ],
+        state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
         photo => { '!=', undef },
     };
     my $attrs = {
@@ -125,7 +125,7 @@ sub around_map {
     $attr->{rows} = $limit if $limit;
 
     my $q = {
-            state => [ 'confirmed', 'fixed' ],
+            state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
             latitude => { '>=', $min_lat, '<', $max_lat },
             longitude => { '>=', $min_lon, '<', $max_lon },
     };
@@ -177,7 +177,7 @@ sub unique_users {
     my ( $rs ) = @_;
 
     return $rs->search( {
-        state => [ 'confirmed', 'fixed' ],
+        state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     }, {
         select => [ { count => { distinct => 'user_id' } } ],
         as     => [ 'count' ]
@@ -187,11 +187,12 @@ sub unique_users {
 sub categories_summary {
     my ( $rs ) = @_;
 
+    my $fixed_case = "case when state IN ( '" . join( "', '", FixMyStreet::DB::Result::Problem->fixed_states() ) . "' ) then 1 else null end";
     my $categories = $rs->search( {
-        state    => [ 'confirmed', 'fixed' ],
+        state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
         whensent => { '<' => \"NOW() - INTERVAL '4 weeks'" },
     }, {
-        select   => [ 'category', { count => 'id' }, { count => \"case when state='fixed' then 1 else null end" } ],
+        select   => [ 'category', { count => 'id' }, { count => \$fixed_case } ],
         as       => [ 'category', 'c', 'fixed' ],
         group_by => [ 'category' ],
         result_class => 'DBIx::Class::ResultClass::HashRefInflator'

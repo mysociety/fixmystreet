@@ -19,7 +19,7 @@ sub send_questionnaires_period {
 
     # Select all problems that need a questionnaire email sending
     my $q_params = {
-        state => [ 'confirmed', 'fixed' ],
+        state => [ FixMyStreet::DB::Result::Problem::visible_states() ],
         whensent => [
             '-and',
             { '!=', undef },

@@ -894,13 +894,23 @@ sub generate_problem_banner {
     my ( $self, $problem ) = @_;
 
     my $banner = {};
-    if ($problem->state eq 'confirmed' && time() - $problem->lastupdate_local->epoch > 8*7*24*60*60) {
-        $banner->{id} = 'unknown';
+    if ( $problem->is_open && time() - $problem->lastupdate_local->epoch > 8 * 7 * 24 * 60 * 60 )
+    {
+        $banner->{id}   = 'unknown';
         $banner->{text} = _('This problem is old and of unknown status.');
     }
-    if ($problem->state eq 'fixed') {
+    if ($problem->is_fixed) {
         $banner->{id} = 'fixed';
         $banner->{text} = _('This problem has been fixed') . '.';
+    }
+    if ($problem->is_closed) {
+        $banner->{id} = 'closed';
+        $banner->{text} = _('This problem has been closed') . '.';
+    }
+
+    if ( grep { $problem->state eq $_ } ( 'investigating', 'in progress', 'planned' ) ) {
+        $banner->{id} = 'progress';
+        $banner->{text} = _('This problem is in progress') . '.';
     }
 
     return $banner;

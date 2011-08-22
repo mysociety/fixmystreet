@@ -19,7 +19,10 @@
 <option [% 'selected ' IF !problem.anonymous %]value="0">[% loc('No') %]</option>
 </select></li>
 <li><label for="state">[% loc('State:') %]</label> <select name="state"  id="state">
-    [% FOREACH state IN [ ['confirmed', loc('Open')], ['fixed', loc('Fixed')], ['hidden', loc('Hidden')], ['partial', loc('Partial')],['unconfirmed',loc('Unconfirmed')] ] %]
+    [% FOREACH state IN [ ['confirmed', loc('Open')], ['investigating',
+    loc('Investigating')], ['planned', loc('Planned')], ['in progress',
+    loc('In Progress')], ['closed', loc('Closed')], ['fixed', loc('Fixed')], ['fixed - user',
+    loc('Fixed - User')], ['fixed - council', loc('Fixed - Council')], ['hidden', loc('Hidden')], ['partial', loc('Partial')],['unconfirmed',loc('Unconfirmed')] ] %]
         <option [% 'selected ' IF state.0 == problem.state %] value="[% state.0 %]">[% state.1 %]</option>
     [% END %]
 </select></li>

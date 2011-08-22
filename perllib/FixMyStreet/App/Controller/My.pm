@@ -31,7 +31,7 @@ sub my : Path : Args(0) {
     my $pins = [];
     my $problems = {};
     my $rs = $c->user->problems->search( {
-        state => [ 'confirmed', 'fixed' ],
+        state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     }, {
         order_by => { -desc => 'confirmed' },
         rows => 50
@@ -41,11 +41,12 @@ sub my : Path : Args(0) {
         push @$pins, {
             latitude  => $problem->latitude,
             longitude => $problem->longitude,
-            colour    => $problem->state eq 'fixed' ? 'green' : 'red',
+            colour    => $problem->is_fixed ? 'green' : 'red',
             id        => $problem->id,
             title     => $problem->title,
         };
-        push @{ $problems->{$problem->state} }, $problem;
+        my $state = $problem->is_fixed ? 'fixed' : $problem->is_closed ? 'closed' : 'confirmed';
+        push @{ $problems->{$state} }, $problem;
     }
     $c->stash->{problems_pager} = $rs->pager;
     $c->stash->{problems} = $problems;

@@ -71,12 +71,12 @@ sub problems : Local {
     }
 
     # query the database
-    my ( $state, $date_col );
+    my ( @state, $date_col );
     if ( $type eq 'new_problems' ) {
-        $state = 'confirmed';
+        @state = FixMyStreet::DB::Result::Problem->open_states();
         $date_col = 'confirmed';
     } elsif ( $type eq 'fixed_problems' ) {
-        $state = 'fixed';
+        @state = FixMyStreet::DB::Result::Problem->fixed_states();
         $date_col = 'lastupdate';
     }
 
@@ -86,7 +86,7 @@ sub problems : Local {
             '>=' => $start_dt,
             '<=' => $end_dt + $one_day,
         },
-        state => $state,
+        state => [ @state ],
     };
     $query->{category} = $category if $category;
     my @problems = $c->cobrand->problems->search( $query, {

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2011-07-14 12:35+0100\n"
+"POT-Creation-Date: 2011-08-18 11:07+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: bin/send-reports:179 perllib/FixMyStreet/DB/Result/Problem.pm:376
+#: bin/send-reports:179 perllib/FixMyStreet/DB/Result/Problem.pm:378
 msgid " and "
 msgstr ""
 
@@ -25,7 +25,7 @@ msgstr ""
 msgid " and <strong>we will now send it to the council</strong>"
 msgstr ""
 
-#: templates/web/default/report/new/all_councils_text.html:10 templates/web/default/report/new/all_councils_text.html:3 templates/web/default/report/new/no_councils_text.html:15 templates/web/default/report/new/no_councils_text.html:3 templates/web/default/report/new/some_councils_text.html:20 templates/web/default/report/new/some_councils_text.html:23 templates/web/default/report/new/some_councils_text.html:5 templates/web/emptyhomes/report/new/all_councils_text.html:2
+#: templates/web/default/report/new/councils_text_all.html:10 templates/web/default/report/new/councils_text_all.html:3 templates/web/default/report/new/councils_text_none.html:15 templates/web/default/report/new/councils_text_none.html:3 templates/web/default/report/new/councils_text_some.html:20 templates/web/default/report/new/councils_text_some.html:23 templates/web/default/report/new/councils_text_some.html:5 templates/web/emptyhomes/report/new/all_councils_text.html:2
 msgid " or "
 msgstr ""
 
@@ -89,28 +89,32 @@ msgstr ""
 msgid "%s - Summary reports"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:836 perllib/FixMyStreet/Cobrand/Default.pm:850
+#: perllib/FixMyStreet/Cobrand/Default.pm:826 perllib/FixMyStreet/Cobrand/Default.pm:840
 msgid "%s ward, %s"
 msgstr ""
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:307
+#: perllib/FixMyStreet/DB/Result/Problem.pm:309
 msgid "%s, reported anonymously at %s"
 msgstr ""
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:309
+#: perllib/FixMyStreet/DB/Result/Problem.pm:311
 msgid "%s, reported by %s at %s"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:867 perllib/FixMyStreet/Cobrand/Default.pm:881
+#: perllib/FixMyStreet/Cobrand/Default.pm:857 perllib/FixMyStreet/Cobrand/Default.pm:871
 msgid "%s, within %s ward"
 msgstr ""
 
-#: perllib/FixMyStreet/Map/Tilma/Original.pm:82
-msgid "&copy; Crown copyright. All rights reserved. Ministry of Justice 100037819&nbsp;2008."
+#: templates/web/default/admin/stats.html:5
+msgid "%sreports between %s and %s"
 msgstr ""
 
 #: templates/web/default/email_sent.html:28
 msgid "(Don't worry &mdash; %s)"
+msgstr ""
+
+#: templates/web/default/admin/report_blocks.html:11
+msgid "(Email in abuse table)"
 msgstr ""
 
 #: templates/web/default/alert/list.html:53
@@ -133,7 +137,7 @@ msgstr ""
 msgid "(not sent to council)"
 msgstr ""
 
-#: templates/web/default/report/new/fill_in_details.html:233
+#: templates/web/default/report/new/fill_in_details_form.html:208
 msgid "(optional)"
 msgstr ""
 
@@ -141,7 +145,7 @@ msgstr ""
 msgid "(sent to both)"
 msgstr ""
 
-#: templates/web/default/report/new/fill_in_details.html:227
+#: templates/web/default/report/new/fill_in_details_form.html:202
 msgid "(we never show your email address or phone number)"
 msgstr ""
 
@@ -149,15 +153,15 @@ msgstr ""
 msgid "(we never show your email)"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:269
+#: perllib/FixMyStreet/App/Controller/Admin.pm:270
 msgid "*unknown*"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:477 perllib/FixMyStreet/App/Controller/Report/New.pm:505 perllib/FixMyStreet/DB/Result/Problem.pm:204
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:504 perllib/FixMyStreet/App/Controller/Report/New.pm:532 perllib/FixMyStreet/DB/Result/Problem.pm:206
 msgid "-- Pick a category --"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:463 perllib/FixMyStreet/DB/Result/Problem.pm:210
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:490 perllib/FixMyStreet/DB/Result/Problem.pm:212
 msgid "-- Pick a property type --"
 msgstr ""
 
@@ -213,7 +217,7 @@ msgid ""
 "site and leave an update.</p>"
 msgstr ""
 
-#: templates/web/default/around/display_location.html:87 templates/web/default/around/display_location.html:89
+#: templates/web/default/around/display_location.html:71 templates/web/default/around/display_location.html:73
 msgid "<small>If you cannot see the map, <a href='%s' rel='nofollow'>skip this step</a>.</small>"
 msgstr ""
 
@@ -225,7 +229,7 @@ msgstr ""
 msgid "<strong>No</strong>, I do not, let me sign in by email:"
 msgstr ""
 
-#: templates/web/default/report/new/fill_in_details.html:175
+#: templates/web/default/report/new/fill_in_details_form.html:154
 msgid "<strong>No</strong>, let me confirm my report by email:"
 msgstr ""
 
@@ -233,11 +237,11 @@ msgstr ""
 msgid "<strong>No</strong>, let me confirm my update by email:"
 msgstr ""
 
-#: templates/web/default/auth/general.html:37 templates/web/default/report/display.html:142 templates/web/default/report/new/fill_in_details.html:157
+#: templates/web/default/auth/general.html:37 templates/web/default/report/display.html:142 templates/web/default/report/new/fill_in_details_form.html:136
 msgid "<strong>Yes</strong>, I have a password:"
 msgstr ""
 
-#: templates/web/default/static/about.html:1 templates/web/default/static/about.html:3 templates/web/emptyhomes/header.html:34 templates/web/emptyhomes/static/about.html:1 templates/web/emptyhomes/static/about.html:3
+#: templates/web/default/static/about.html:1 templates/web/default/static/about.html:3 templates/web/emptyhomes/header.html:32 templates/web/emptyhomes/static/about.html:1 templates/web/emptyhomes/static/about.html:3
 msgid "About us"
 msgstr ""
 
@@ -265,23 +269,27 @@ msgstr ""
 msgid "Alert me to future updates"
 msgstr ""
 
+#: templates/web/default/admin/stats.html:5
+msgid "All"
+msgstr ""
+
 #: templates/web/default/admin/council_list.html:44
 msgid "All confirmed"
 msgstr ""
 
-#: templates/web/default/footer.html:8 templates/web/emptyhomes/header.html:31 templates/web/fiksgatami/footer.html:6
+#: templates/web/default/footer.html:8 templates/web/emptyhomes/header.html:29 templates/web/fiksgatami/footer.html:6
 msgid "All reports"
 msgstr ""
 
-#: templates/web/default/report/new/some_councils_text.html:2
+#: templates/web/default/report/new/councils_text_some.html:2
 msgid "All the information you provide here will be sent to"
 msgstr ""
 
-#: templates/web/default/report/new/all_councils_text.html:3 templates/web/default/report/new/all_councils_text.html:5
+#: templates/web/default/report/new/councils_text_all.html:3 templates/web/default/report/new/councils_text_all.html:5
 msgid "All the information you provide here will be sent to <strong>%s</strong> or a relevant local body such as <strong>TfL</strong>, via the London Report-It system."
 msgstr ""
 
-#: templates/web/default/report/new/all_councils_text.html:10 templates/web/default/report/new/all_councils_text.html:12
+#: templates/web/default/report/new/councils_text_all.html:10 templates/web/default/report/new/councils_text_all.html:12 templates/web/default/report/new/fill_in_details_form.html:11 templates/web/default/report/new/fill_in_details_form.html:13
 msgid "All the information you provide here will be sent to <strong>%s</strong>."
 msgstr ""
 
@@ -293,12 +301,32 @@ msgstr ""
 msgid "An update marked this problem as fixed."
 msgstr ""
 
-#: templates/web/default/admin/list_updates.html:10 templates/web/default/admin/search_reports.html:18
+#: templates/web/default/admin/list_flagged.html:15 templates/web/default/admin/list_updates.html:10 templates/web/default/admin/search_reports.html:18
 msgid "Anonymous"
 msgstr ""
 
 #: templates/web/default/admin/report_edit.html:17 templates/web/default/admin/update_edit.html:14
 msgid "Anonymous:"
+msgstr ""
+
+#: templates/web/default/footer.html:29
+msgid "Are you a developer? Would you like to contribute to FixMyStreet?"
+msgstr ""
+
+#: templates/web/default/footer.html:26
+msgid "Are you from a council? Would you like better integration with FixMyStreet?"
+msgstr ""
+
+#: templates/web/default/open311/index.html:17
+msgid "At most %d requests are returned in each query.  The returned requests are ordered by requested_datetime, so to get all requests, do several searches with rolling start_date and end_date."
+msgstr ""
+
+#: templates/web/default/open311/index.html:9
+msgid "At the moment only searching for and looking at reports work."
+msgstr ""
+
+#: templates/web/default/admin/report_blocks.html:11
+msgid "Ban email address"
 msgstr ""
 
 #: templates/web/default/footer.html:16
@@ -309,7 +337,7 @@ msgstr ""
 msgid "Built by <a href=\"http://www.mysociety.org/\">mySociety</a> and maintained by <a href=\"http://www.nuug.no/\">NUUG</a>"
 msgstr ""
 
-#: templates/web/default/admin/council_contacts.html:19 templates/web/default/admin/index.html:36 templates/web/default/admin/search_reports.html:17
+#: templates/web/default/admin/council_contacts.html:19 templates/web/default/admin/index.html:36 templates/web/default/admin/list_flagged.html:14 templates/web/default/admin/search_reports.html:17
 msgid "Category"
 msgstr ""
 
@@ -317,7 +345,7 @@ msgstr ""
 msgid "Category fix rate for problems > 4 weeks old"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:480 perllib/FixMyStreet/App/Controller/Report/New.pm:506 templates/web/default/admin/council_contacts.html:56 templates/web/default/admin/council_edit.html:23 templates/web/default/admin/report_edit.html:26
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:507 perllib/FixMyStreet/App/Controller/Report/New.pm:533 templates/web/default/admin/council_contacts.html:56 templates/web/default/admin/council_edit.html:23 templates/web/default/admin/report_edit.html:26 templates/web/default/report/new/fill_in_details_form.html:67
 msgid "Category:"
 msgstr ""
 
@@ -329,7 +357,7 @@ msgstr ""
 msgid "Change Password"
 msgstr ""
 
-#: templates/web/default/around/display_location.html:105 templates/web/default/around/display_location.html:107
+#: templates/web/default/around/display_location.html:102 templates/web/default/around/display_location.html:104
 msgid "Closest nearby problems <small>(within&nbsp;%skm)</small>"
 msgstr ""
 
@@ -337,7 +365,7 @@ msgstr ""
 msgid "Co-ordinates:"
 msgstr ""
 
-#: templates/web/default/admin/list_updates.html:11 templates/web/default/admin/search_reports.html:19
+#: templates/web/default/admin/list_flagged.html:16 templates/web/default/admin/list_updates.html:11 templates/web/default/admin/search_reports.html:19
 msgid "Cobrand"
 msgstr ""
 
@@ -361,11 +389,11 @@ msgstr ""
 msgid "Confirmation"
 msgstr ""
 
-#: templates/web/default/admin/council_contacts.html:21 templates/web/default/admin/council_contacts.html:66 templates/web/default/admin/council_edit.html:28 templates/web/default/admin/council_edit.html:43
+#: templates/web/default/admin/council_contacts.html:21 templates/web/default/admin/council_contacts.html:66 templates/web/default/admin/council_edit.html:28 templates/web/default/admin/council_edit.html:43 templates/web/default/admin/stats.html:5
 msgid "Confirmed"
 msgstr ""
 
-#: templates/web/default/admin/report_edit.html:31 templates/web/default/admin/search_reports.html:47
+#: templates/web/default/admin/problem_row.html:23 templates/web/default/admin/report_edit.html:31
 msgid "Confirmed:"
 msgstr ""
 
@@ -373,7 +401,7 @@ msgstr ""
 msgid "Contact"
 msgstr ""
 
-#: templates/web/default/footer.html:18
+#: templates/web/default/footer.html:17
 msgid "Contact FixMyStreet"
 msgstr ""
 
@@ -385,11 +413,15 @@ msgstr ""
 msgid "Contact the team"
 msgstr ""
 
-#: templates/web/default/admin/search_reports.html:16
+#: perllib/FixMyStreet/App/Controller/Admin.pm:965 perllib/FixMyStreet/App/Controller/Admin.pm:993
+msgid "Could not find user"
+msgstr ""
+
+#: templates/web/default/admin/list_flagged.html:13 templates/web/default/admin/search_reports.html:16
 msgid "Council"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:612 templates/web/default/admin/council_list.html:1
+#: perllib/FixMyStreet/App/Controller/Admin.pm:839 templates/web/default/admin/council_list.html:1
 msgid "Council contacts"
 msgstr ""
 
@@ -401,6 +433,10 @@ msgstr ""
 msgid "Councils"
 msgstr ""
 
+#: templates/web/default/admin/stats.html:10
+msgid "Count"
+msgstr ""
+
 #: templates/web/default/email_sent.html:1
 msgid "Create a report"
 msgstr ""
@@ -409,12 +445,16 @@ msgstr ""
 msgid "Create category"
 msgstr ""
 
-#: templates/web/default/admin/list_updates.html:9 templates/web/default/admin/search_reports.html:20
+#: templates/web/default/admin/list_flagged.html:17 templates/web/default/admin/list_updates.html:9 templates/web/default/admin/search_reports.html:20
 msgid "Created"
 msgstr ""
 
 #: templates/web/default/admin/report_edit.html:30 templates/web/default/admin/update_edit.html:27
 msgid "Created:"
+msgstr ""
+
+#: templates/web/default/admin/stats.html:9
+msgid "Current state"
 msgstr ""
 
 #: templates/web/default/admin/council_list.html:40
@@ -425,7 +465,7 @@ msgstr ""
 msgid "Deleted"
 msgstr ""
 
-#: templates/web/default/admin/report_edit.html:14 templates/web/default/report/new/fill_in_details.html:99
+#: templates/web/default/admin/report_edit.html:14 templates/web/default/report/new/fill_in_details_form.html:61
 msgid "Details:"
 msgstr ""
 
@@ -441,7 +481,7 @@ msgstr ""
 msgid "Don&rsquo;t know"
 msgstr ""
 
-#: templates/web/default/admin/list_updates.html:31 templates/web/default/admin/search_reports.html:52
+#: templates/web/default/admin/list_updates.html:31 templates/web/default/admin/problem_row.html:28
 msgid "Edit"
 msgstr ""
 
@@ -457,11 +497,19 @@ msgstr ""
 msgid "Editor"
 msgstr ""
 
-#: templates/web/default/admin/council_contacts.html:20 templates/web/default/admin/council_edit.html:42 templates/web/default/admin/list_updates.html:8 templates/web/default/admin/search_reports.html:15
+#: templates/web/default/admin/council_contacts.html:20 templates/web/default/admin/council_edit.html:42 templates/web/default/admin/list_flagged.html:12 templates/web/default/admin/list_flagged.html:35 templates/web/default/admin/list_updates.html:8 templates/web/default/admin/search_abuse.html:11 templates/web/default/admin/search_reports.html:15
 msgid "Email"
 msgstr ""
 
-#: templates/web/default/around/display_location.html:71
+#: perllib/FixMyStreet/App/Controller/Admin.pm:941
+msgid "Email added to abuse list"
+msgstr ""
+
+#: perllib/FixMyStreet/App/Controller/Admin.pm:938
+msgid "Email already in abuse list"
+msgstr ""
+
+#: templates/web/default/around/display_location.html:84
 msgid "Email me new local problems"
 msgstr ""
 
@@ -473,15 +521,15 @@ msgstr ""
 msgid "Email:"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:465
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:492
 msgid "Empty flat or maisonette"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:464
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:491
 msgid "Empty house or bungalow"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:467
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:494
 msgid "Empty office or other commercial"
 msgstr ""
 
@@ -489,23 +537,35 @@ msgstr ""
 msgid "Empty property details form"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:468
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:495
 msgid "Empty pub or bar"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:469
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:496
 msgid "Empty public building - school, hospital, etc."
+msgstr ""
+
+#: templates/web/default/admin/stats.html:47
+msgid "End Year:"
+msgstr ""
+
+#: templates/web/default/admin/stats.html:49
+msgid "End day:"
+msgstr ""
+
+#: templates/web/default/admin/stats.html:48
+msgid "End month:"
 msgstr ""
 
 #: templates/web/default/around/around_index.html:10 templates/web/default/around/around_index.html:13 templates/web/default/index.html:24 templates/web/default/index.html:27
 msgid "Enter a nearby GB postcode, or street name and area"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:27
+#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:32
 msgid "Enter a nearby postcode, or street name and area"
 msgstr ""
 
-#: templates/web/default/auth/general.html:64 templates/web/default/report/display.html:167 templates/web/default/report/new/fill_in_details.html:182
+#: templates/web/default/auth/general.html:64 templates/web/default/report/display.html:167 templates/web/default/report/new/fill_in_details_form.html:161
 msgid "Enter a new password:"
 msgstr ""
 
@@ -521,19 +581,27 @@ msgstr ""
 msgid "Example postcode %s"
 msgstr ""
 
+#: templates/web/default/open311/index.html:27
+msgid "Examples:"
+msgstr ""
+
 #: templates/web/default/contact/submit.html:15
 msgid "Failed to send message.  Please try again, or <a href=\"mailto:%s\">email us</a>."
+msgstr ""
+
+#: templates/web/default/footer.html:27
+msgid "Find out about FixMyStreet for councils"
 msgstr ""
 
 #: templates/web/default/questionnaire/index.html:81
 msgid "First time"
 msgstr ""
 
-#: templates/web/default/header.html:20 templates/web/fiksgatami/header.html:14
+#: templates/web/default/header.html:22 templates/web/fiksgatami/header.html:13
 msgid "Fix<span id=\"my\">My</span>Street"
 msgstr ""
 
-#: templates/web/default/admin/header.html:12
+#: templates/web/default/admin/header.html:13
 msgid "FixMyStreet admin:"
 msgstr ""
 
@@ -570,8 +638,16 @@ msgstr ""
 msgid "Fixed reports"
 msgstr ""
 
-#: templates/web/default/admin/search_reports.html:48
+#: templates/web/default/admin/problem_row.html:24
 msgid "Fixed:"
+msgstr ""
+
+#: templates/web/default/admin/report_blocks.html:16
+msgid "Flag user"
+msgstr ""
+
+#: templates/web/default/admin/report_edit.html:38
+msgid "Flagged:"
 msgstr ""
 
 #: templates/web/default/reports/council.html:23
@@ -588,6 +664,10 @@ msgstr ""
 
 #: templates/web/emptyhomes/static/about.html:34
 msgid "Further information about our work on empty homes."
+msgstr ""
+
+#: templates/web/default/open311/index.html:69
+msgid "GeoRSS on Google Maps"
 msgstr ""
 
 #: templates/web/default/alert/list.html:112
@@ -618,7 +698,7 @@ msgstr ""
 msgid "Have you ever reported a problem to a council before, or is this your first time?"
 msgstr ""
 
-#: templates/web/default/footer.html:10 templates/web/emptyhomes/header.html:33 templates/web/fiksgatami/footer.html:8
+#: templates/web/default/footer.html:10 templates/web/emptyhomes/header.html:31 templates/web/fiksgatami/footer.html:8
 msgid "Help"
 msgstr ""
 
@@ -630,11 +710,11 @@ msgstr ""
 msgid "Hidden"
 msgstr ""
 
-#: templates/web/default/around/display_location.html:52
+#: templates/web/default/around/display_location.html:54
 msgid "Hide pins"
 msgstr ""
 
-#: templates/web/default/around/display_location.html:57
+#: templates/web/default/around/display_location.html:59
 msgid "Hide stale reports"
 msgstr ""
 
@@ -646,7 +726,7 @@ msgstr ""
 msgid "How to report a problem"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:530
+#: perllib/FixMyStreet/App/Controller/Admin.pm:546
 msgid "I am afraid you cannot confirm unconfirmed reports."
 msgstr ""
 
@@ -654,15 +734,19 @@ msgstr ""
 msgid "I'm afraid we couldn't locate your problem in the database.\n"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Tokens.pm:173
+#: perllib/FixMyStreet/App/Controller/Tokens.pm:43
+msgid "I'm afraid we couldn't validate that token, as the report was made too long ago."
+msgstr ""
+
+#: perllib/FixMyStreet/App/Controller/Tokens.pm:232
 msgid "I'm afraid we couldn't validate that token. If you've copied the URL from an email, please check that you copied it exactly.\n"
 msgstr ""
 
-#: templates/web/default/admin/list_updates.html:5 templates/web/default/admin/search_reports.html:12
+#: templates/web/default/admin/list_flagged.html:9 templates/web/default/admin/list_updates.html:5 templates/web/default/admin/search_reports.html:12
 msgid "ID"
 msgstr ""
 
-#: templates/web/default/report/new/no_councils_text.html:11 templates/web/default/report/new/no_councils_text.html:3
+#: templates/web/default/report/new/councils_text_none.html:11 templates/web/default/report/new/councils_text_none.html:3
 msgid "If you submit a problem here the subject and details of the problem will be public, but the problem will <strong>not</strong> be reported to the council."
 msgstr ""
 
@@ -681,7 +765,7 @@ msgid ""
 "your experience of getting the problem fixed?"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:109
+#: perllib/FixMyStreet/App/Controller/Contact.pm:111
 msgid "Illegal ID"
 msgstr ""
 
@@ -689,15 +773,43 @@ msgstr ""
 msgid "Illegal feed selection"
 msgstr ""
 
-#: templates/web/default/around/display_location.html:59
+#: templates/web/default/open311/index.html:21
+msgid "In addition, the following attributes that are not part of the Open311 v2 specification are returned: agency_sent_datetime, title (also returned as part of description), interface_used, comment_count, requestor_name (only present if requestor allowed the name to be shown on this site)."
+msgstr ""
+
+#: templates/web/default/around/display_location.html:61
 msgid "Include stale reports"
+msgstr ""
+
+#: templates/web/default/admin/stats.html:53
+msgid "Include unconfirmed reports"
+msgstr ""
+
+#: perllib/FixMyStreet/App/Controller/Open311.pm:355
+msgid "Incorrect has_photo value \"%s\""
+msgstr ""
+
+#: perllib/FixMyStreet/App/Controller/Open311.pm:340
+msgid "Invalid agency_responsible value %s"
+msgstr ""
+
+#: perllib/FixMyStreet/App/Controller/Admin.pm:785
+msgid "Invalid end date"
+msgstr ""
+
+#: perllib/FixMyStreet/App/Controller/Open311.pm:423
+msgid "Invalid format %s specified."
+msgstr ""
+
+#: perllib/FixMyStreet/App/Controller/Admin.pm:775
+msgid "Invalid start date"
 msgstr ""
 
 #: templates/web/emptyhomes/tokens/confirm_problem.html:12 templates/web/emptyhomes/tokens/confirm_problem.html:14
 msgid "It is worth noting however that the process can sometimes be slow, especially if the property is in very poor repair or the owner is unwilling to act. In most cases it can take six months or more before you can expect to see anything change and sometimes there may be considerable barries to a property being brought back into use. This doesn&rsquo;t mean the council isn&rsquo;t doing anything. We encourage councils to update the website so you can see what is happening. It may be a long process, but you reporting your concerns about this property to the council is a valuable first step."
 msgstr ""
 
-#: templates/web/default/auth/general.html:44 templates/web/default/report/display.html:149 templates/web/default/report/new/fill_in_details.html:164
+#: templates/web/default/auth/general.html:44 templates/web/default/report/display.html:149 templates/web/default/report/new/fill_in_details_form.html:143
 msgid "Keep me signed in on this computer"
 msgstr ""
 
@@ -709,12 +821,20 @@ msgstr ""
 msgid "Last update:"
 msgstr ""
 
-#: templates/web/default/admin/search_reports.html:49
+#: templates/web/default/admin/problem_row.html:25
 msgid "Last&nbsp;update:"
+msgstr ""
+
+#: perllib/FixMyStreet/App/Controller/Admin.pm:844
+msgid "List Flagged"
 msgstr ""
 
 #: templates/web/default/admin/council_contacts.html:11
 msgid "List all reported problems"
+msgstr ""
+
+#: templates/web/default/report/new/fill_in_details_form.html:68
+msgid "Loading..."
 msgstr ""
 
 #: templates/web/default/alert/choose.html:1 templates/web/default/alert/choose.html:3 templates/web/default/alert/index.html:1 templates/web/default/alert/index.html:3 templates/web/default/alert/list.html:1 templates/web/default/alert/list.html:5 templates/web/default/alert/updates.html:1 templates/web/default/tokens/confirm_alert.html:1 templates/web/default/tokens/confirm_alert.html:3
@@ -725,7 +845,7 @@ msgstr ""
 msgid "Local RSS feeds and email alerts for ‘%s’"
 msgstr ""
 
-#: templates/web/default/footer.html:9 templates/web/emptyhomes/header.html:32 templates/web/fiksgatami/footer.html:7
+#: templates/web/default/footer.html:9 templates/web/emptyhomes/header.html:30 templates/web/fiksgatami/footer.html:7
 msgid "Local alerts"
 msgstr ""
 
@@ -749,11 +869,15 @@ msgstr ""
 msgid "Message:"
 msgstr ""
 
+#: perllib/FixMyStreet/App/Controller/Open311.pm:431
+msgid "Missing jurisdiction_id"
+msgstr ""
+
 #: templates/web/default/report/display.html:38
 msgid "More problems nearby"
 msgstr ""
 
-#: templates/web/default/admin/list_updates.html:7 templates/web/default/admin/search_reports.html:14 templates/web/default/reports/index.html:10 templates/web/emptyhomes/reports/index.html:10 templates/web/fiksgatami/reports/index.html:9
+#: templates/web/default/admin/list_flagged.html:11 templates/web/default/admin/list_flagged.html:34 templates/web/default/admin/list_updates.html:7 templates/web/default/admin/search_reports.html:14 templates/web/default/reports/index.html:10 templates/web/emptyhomes/reports/index.html:10 templates/web/fiksgatami/reports/index.html:9
 msgid "Name"
 msgstr ""
 
@@ -781,7 +905,7 @@ msgstr ""
 msgid "Nearly Done! Now check your email..."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:299
+#: perllib/FixMyStreet/App/Controller/Admin.pm:300
 msgid "New category contact added"
 msgstr ""
 
@@ -845,16 +969,24 @@ msgstr ""
 msgid "New!"
 msgstr ""
 
-#: templates/web/default/admin/council_contacts.html:32 templates/web/default/admin/council_contacts.html:33 templates/web/default/admin/council_edit.html:4 templates/web/default/admin/list_updates.html:28 templates/web/default/admin/report_edit.html:19 templates/web/default/admin/report_edit.html:37 templates/web/default/admin/search_reports.html:43 templates/web/default/admin/update_edit.html:16 templates/web/default/questionnaire/creator_fixed.html:16 templates/web/default/questionnaire/index.html:109 templates/web/default/questionnaire/index.html:70
+#: templates/web/default/admin/council_contacts.html:32 templates/web/default/admin/council_contacts.html:33 templates/web/default/admin/council_edit.html:4 templates/web/default/admin/list_updates.html:28 templates/web/default/admin/problem_row.html:19 templates/web/default/admin/report_edit.html:19 templates/web/default/admin/report_edit.html:37 templates/web/default/admin/update_edit.html:16 templates/web/default/questionnaire/creator_fixed.html:16 templates/web/default/questionnaire/index.html:109 templates/web/default/questionnaire/index.html:70
 msgid "No"
 msgstr ""
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:187
+#: perllib/FixMyStreet/DB/Result/Problem.pm:189
 msgid "No council selected"
 msgstr ""
 
 #: templates/web/default/admin/council_list.html:32
 msgid "No edits have yet been made."
+msgstr ""
+
+#: templates/web/default/admin/list_flagged.html:26
+msgid "No flagged problems found"
+msgstr ""
+
+#: templates/web/default/admin/list_flagged.html:47
+msgid "No flagged users found"
 msgstr ""
 
 #: templates/web/default/admin/council_list.html:38
@@ -885,11 +1017,19 @@ msgstr ""
 msgid "Note"
 msgstr ""
 
+#: templates/web/default/admin/stats.html:28
+msgid "Note that when including unconfirmed reports we use the date the report was created which may not be in the same month the report was confirmed so the numbers may jump about a little"
+msgstr ""
+
 #: templates/web/default/admin/council_contacts.html:73 templates/web/default/admin/council_edit.html:31
 msgid "Note:"
 msgstr ""
 
-#: templates/web/default/report/new/fill_in_details.html:148
+#: templates/web/default/open311/index.html:6
+msgid "Note: <strong>%s</strong>"
+msgstr ""
+
+#: templates/web/default/report/new/fill_in_details_form.html:127
 msgid "Now to submit your report&hellip; do you have a FixMyStreet password?"
 msgstr ""
 
@@ -933,6 +1073,18 @@ msgstr ""
 msgid "Open reports"
 msgstr ""
 
+#: templates/web/default/open311/index.html:3
+msgid "Open311 API for the mySociety FixMyStreet server"
+msgstr ""
+
+#: templates/web/default/open311/index.html:13
+msgid "Open311 initiative web page"
+msgstr ""
+
+#: templates/web/default/open311/index.html:14
+msgid "Open311 specification"
+msgstr ""
+
 #: templates/web/default/alert/list.html:87
 msgid "Or problems reported to:"
 msgstr ""
@@ -941,8 +1093,12 @@ msgstr ""
 msgid "Or you can subscribe to an alert based upon what ward or council you&rsquo;re in:"
 msgstr ""
 
-#: bin/send-reports:171 bin/send-reports:180 perllib/FixMyStreet/App/Controller/Report/New.pm:496 perllib/FixMyStreet/App/Controller/Report/New.pm:505 perllib/FixMyStreet/App/Controller/Report/New.pm:869 perllib/FixMyStreet/DB/Result/Problem.pm:316 perllib/FixMyStreet/DB/Result/Problem.pm:326 perllib/FixMyStreet/DB/Result/Problem.pm:336 perllib/FixMyStreet/DB/Result/Problem.pm:348
+#: bin/send-reports:171 bin/send-reports:180 perllib/FixMyStreet/App/Controller/Report/New.pm:523 perllib/FixMyStreet/App/Controller/Report/New.pm:532 perllib/FixMyStreet/App/Controller/Report/New.pm:903 perllib/FixMyStreet/DB/Result/Problem.pm:318 perllib/FixMyStreet/DB/Result/Problem.pm:328 perllib/FixMyStreet/DB/Result/Problem.pm:338 perllib/FixMyStreet/DB/Result/Problem.pm:350
 msgid "Other"
+msgstr ""
+
+#: templates/web/default/footer.html:30
+msgid "Our code is open source and <a href=\"http://github.com/mysociety/fixmystreet\">available on GitHub</a>."
 msgstr ""
 
 #: templates/web/default/errors/page_error_404_not_found.html:1 templates/web/default/errors/page_error_404_not_found.html:3
@@ -957,11 +1113,11 @@ msgstr ""
 msgid "Password:"
 msgstr ""
 
-#: bin/send-reports:68 templates/web/default/admin/report_edit.html:29 templates/web/default/report/new/fill_in_details.html:231
+#: bin/send-reports:68 templates/web/default/admin/report_edit.html:29 templates/web/default/report/new/fill_in_details_form.html:206
 msgid "Phone:"
 msgstr ""
 
-#: templates/web/default/questionnaire/index.html:97 templates/web/default/report/display.html:109 templates/web/default/report/new/fill_in_details.html:119
+#: templates/web/default/questionnaire/index.html:97 templates/web/default/report/display.html:109 templates/web/default/report/new/fill_in_details_form.html:98
 msgid "Photo:"
 msgstr ""
 
@@ -989,11 +1145,11 @@ msgstr ""
 msgid "Please check your email address is correct"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:652 perllib/FixMyStreet/App/Controller/Report/New.pm:671 perllib/FixMyStreet/App/Controller/Report/New.pm:688 perllib/FixMyStreet/DB/Result/Problem.pm:206
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:686 perllib/FixMyStreet/App/Controller/Report/New.pm:705 perllib/FixMyStreet/App/Controller/Report/New.pm:722 perllib/FixMyStreet/DB/Result/Problem.pm:208
 msgid "Please choose a category"
 msgstr ""
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:212
+#: perllib/FixMyStreet/DB/Result/Problem.pm:214
 msgid "Please choose a property type"
 msgstr ""
 
@@ -1016,31 +1172,31 @@ msgstr ""
 msgid "Please enter a password"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:95 perllib/FixMyStreet/DB/Result/Problem.pm:181
+#: perllib/FixMyStreet/App/Controller/Contact.pm:97 perllib/FixMyStreet/DB/Result/Problem.pm:183
 msgid "Please enter a subject"
 msgstr ""
 
-#: perllib/FixMyStreet/DB/Result/User.pm:92
+#: perllib/FixMyStreet/DB/Result/User.pm:94
 msgid "Please enter a valid email"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Alert.pm:345 perllib/FixMyStreet/App/Controller/Contact.pm:105
+#: perllib/FixMyStreet/App/Controller/Alert.pm:345 perllib/FixMyStreet/App/Controller/Contact.pm:107
 msgid "Please enter a valid email address"
 msgstr ""
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:184
+#: perllib/FixMyStreet/DB/Result/Problem.pm:186
 msgid "Please enter some details"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:94 perllib/FixMyStreet/DB/Result/User.pm:89 templates/web/default/auth/general.html:13 templates/web/default/auth/general.html:8
+#: perllib/FixMyStreet/App/Controller/Contact.pm:96 perllib/FixMyStreet/DB/Result/User.pm:91 templates/web/default/auth/general.html:13 templates/web/default/auth/general.html:8
 msgid "Please enter your email"
 msgstr ""
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:199
+#: perllib/FixMyStreet/DB/Result/Problem.pm:201
 msgid "Please enter your full name, councils need this information - if you do not wish your name to be shown on the site, untick the box"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:93 perllib/FixMyStreet/DB/Result/Comment.pm:108 perllib/FixMyStreet/DB/Result/Problem.pm:192 perllib/FixMyStreet/DB/Result/User.pm:85
+#: perllib/FixMyStreet/App/Controller/Contact.pm:95 perllib/FixMyStreet/DB/Result/Comment.pm:108 perllib/FixMyStreet/DB/Result/Problem.pm:194 perllib/FixMyStreet/DB/Result/User.pm:87
 msgid "Please enter your name"
 msgstr ""
 
@@ -1066,7 +1222,7 @@ msgid ""
 "photo of the problem if you have one), etc."
 msgstr ""
 
-#: templates/web/default/report/new/fill_in_details.html:48
+#: templates/web/default/report/new/fill_in_details_form.html:27
 msgid "Please fill in the form below with details of the problem, and describe the location as precisely as possible in the details box."
 msgstr ""
 
@@ -1078,7 +1234,7 @@ msgstr ""
 msgid "Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href=\"/faq#privacy\">privacy policy</a>"
 msgstr ""
 
-#: templates/web/default/report/new/fill_in_details.html:33
+#: templates/web/default/report/new/fill_in_details_form.html:5
 msgid "Please note your report has <strong>not yet been sent</strong>. Choose a category and add further information below, then submit."
 msgstr ""
 
@@ -1114,11 +1270,11 @@ msgstr ""
 msgid "Please take a look at the updates that have been left."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:740
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:774
 msgid "Please upload a JPEG image only"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:96
+#: perllib/FixMyStreet/App/Controller/Contact.pm:98
 msgid "Please write a message"
 msgstr ""
 
@@ -1134,7 +1290,7 @@ msgstr ""
 msgid "Posted by %s at %s"
 msgstr ""
 
-#: perllib/FixMyStreet/Map/Tilma/Original.pm:92 templates/web/default/maps/openlayers.html:89 templates/web/default/maps/tilma/original.html:63
+#: templates/web/default/maps/openlayers.html:89
 msgid "Problem"
 msgstr ""
 
@@ -1154,7 +1310,7 @@ msgstr ""
 msgid "Problem breakdown by state"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:759
+#: perllib/FixMyStreet/App/Controller/Admin.pm:703
 msgid "Problem marked as open."
 msgstr ""
 
@@ -1162,7 +1318,11 @@ msgstr ""
 msgid "Problem state change based on survey results"
 msgstr ""
 
-#: templates/web/default/around/display_location.html:67
+#: templates/web/default/admin/list_flagged.html:5
+msgid "Problems"
+msgstr ""
+
+#: templates/web/default/around/display_location.html:80
 msgid "Problems in this area"
 msgstr ""
 
@@ -1174,11 +1334,11 @@ msgstr ""
 msgid "Problems within %.1fkm of this location"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:792 perllib/FixMyStreet/Cobrand/EmptyHomes.pm:162 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:172
+#: perllib/FixMyStreet/Cobrand/Default.pm:782 perllib/FixMyStreet/Cobrand/EmptyHomes.pm:162 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:177
 msgid "Problems within %s"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:801 perllib/FixMyStreet/Cobrand/EmptyHomes.pm:170
+#: perllib/FixMyStreet/Cobrand/Default.pm:791 perllib/FixMyStreet/Cobrand/EmptyHomes.pm:170
 msgid "Problems within %s ward"
 msgstr ""
 
@@ -1194,7 +1354,7 @@ msgstr ""
 msgid "Properties recently reported as put back to use on reportemptyhomes.com"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:471
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:498
 msgid "Property type:"
 msgstr ""
 
@@ -1202,7 +1362,7 @@ msgstr ""
 msgid "Provide an update"
 msgstr ""
 
-#: templates/web/default/report/display.html:172 templates/web/default/report/new/fill_in_details.html:187
+#: templates/web/default/report/display.html:172 templates/web/default/report/new/fill_in_details_form.html:166
 msgid "Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports."
 msgstr ""
 
@@ -1226,19 +1386,19 @@ msgstr ""
 msgid "RSS feed"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:830 perllib/FixMyStreet/Cobrand/Default.pm:844
+#: perllib/FixMyStreet/Cobrand/Default.pm:820 perllib/FixMyStreet/Cobrand/Default.pm:834
 msgid "RSS feed for %s"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:837 perllib/FixMyStreet/Cobrand/Default.pm:851
+#: perllib/FixMyStreet/Cobrand/Default.pm:827 perllib/FixMyStreet/Cobrand/Default.pm:841
 msgid "RSS feed for %s ward, %s"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:860 perllib/FixMyStreet/Cobrand/Default.pm:874 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:188 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:196 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:206 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:214
+#: perllib/FixMyStreet/Cobrand/Default.pm:850 perllib/FixMyStreet/Cobrand/Default.pm:864 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:193 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:201 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:211 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:219
 msgid "RSS feed of %s"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:866 perllib/FixMyStreet/Cobrand/Default.pm:880
+#: perllib/FixMyStreet/Cobrand/Default.pm:856 perllib/FixMyStreet/Cobrand/Default.pm:870
 msgid "RSS feed of %s, within %s ward"
 msgstr ""
 
@@ -1250,11 +1410,11 @@ msgstr ""
 msgid "RSS feed of problems in this %s"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:793 perllib/FixMyStreet/Cobrand/EmptyHomes.pm:163 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:171
+#: perllib/FixMyStreet/Cobrand/Default.pm:783 perllib/FixMyStreet/Cobrand/EmptyHomes.pm:163 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:176
 msgid "RSS feed of problems within %s"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:800 perllib/FixMyStreet/Cobrand/EmptyHomes.pm:169
+#: perllib/FixMyStreet/Cobrand/Default.pm:790 perllib/FixMyStreet/Cobrand/EmptyHomes.pm:169
 msgid "RSS feed of problems within %s ward"
 msgstr ""
 
@@ -1286,7 +1446,11 @@ msgstr ""
 msgid "Remember that FixMyStreet is primarily for reporting physical problems that can be fixed. If your problem is not appropriate for submission via this site remember that you can contact your council directly using their own website."
 msgstr ""
 
-#: templates/web/default/admin/report_edit.html:43 templates/web/default/admin/update_edit.html:33
+#: templates/web/default/admin/report_blocks.html:16
+msgid "Remove flag"
+msgstr ""
+
+#: templates/web/default/admin/report_edit.html:44 templates/web/default/admin/update_edit.html:33
 msgid "Remove photo (can't be undone!)"
 msgstr ""
 
@@ -1294,11 +1458,11 @@ msgstr ""
 msgid "Report Empty Homes"
 msgstr ""
 
-#: templates/web/default/footer.html:6 templates/web/emptyhomes/header.html:30 templates/web/fiksgatami/footer.html:5
+#: templates/web/default/footer.html:6 templates/web/emptyhomes/header.html:28 templates/web/fiksgatami/footer.html:5
 msgid "Report a problem"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Rss.pm:252
+#: perllib/FixMyStreet/App/Controller/Rss.pm:268
 msgid "Report on %s"
 msgstr ""
 
@@ -1314,7 +1478,7 @@ msgstr ""
 msgid "Reported %s, to %s"
 msgstr ""
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:331 templates/web/default/contact/index.html:45
+#: perllib/FixMyStreet/DB/Result/Problem.pm:333 templates/web/default/contact/index.html:45
 msgid "Reported anonymously at %s"
 msgstr ""
 
@@ -1322,39 +1486,39 @@ msgstr ""
 msgid "Reported before"
 msgstr ""
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:323
+#: perllib/FixMyStreet/DB/Result/Problem.pm:325
 msgid "Reported by %s anonymously at %s"
 msgstr ""
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:354 templates/web/default/contact/index.html:47
+#: perllib/FixMyStreet/DB/Result/Problem.pm:356 templates/web/default/contact/index.html:47
 msgid "Reported by %s at %s"
 msgstr ""
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:345
+#: perllib/FixMyStreet/DB/Result/Problem.pm:347
 msgid "Reported by %s by %s at %s"
 msgstr ""
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:319
+#: perllib/FixMyStreet/DB/Result/Problem.pm:321
 msgid "Reported by %s in the %s category anonymously at %s"
 msgstr ""
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:339
+#: perllib/FixMyStreet/DB/Result/Problem.pm:341
 msgid "Reported by %s in the %s category by %s at %s"
 msgstr ""
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:327
+#: perllib/FixMyStreet/DB/Result/Problem.pm:329
 msgid "Reported in the %s category anonymously at %s"
 msgstr ""
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:349
+#: perllib/FixMyStreet/DB/Result/Problem.pm:351
 msgid "Reported in the %s category by %s at %s"
 msgstr ""
 
-#: templates/web/default/around/around_index.html:1 templates/web/default/report/new/fill_in_details.html:0 templates/web/default/report/new/fill_in_details.html:29 templates/web/default/report/new/fill_in_details.html:3
+#: templates/web/default/around/around_index.html:1 templates/web/default/report/new/fill_in_details.html:0 templates/web/default/report/new/fill_in_details.html:3 templates/web/default/report/new/fill_in_details_form.html:1
 msgid "Reporting a problem"
 msgstr ""
 
-#: templates/web/default/around/display_location.html:97
+#: templates/web/default/around/display_location.html:94
 msgid "Reports on and around the map"
 msgstr ""
 
@@ -1374,11 +1538,19 @@ msgstr ""
 msgid "Save changes"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:613 templates/web/default/admin/search_reports.html:1
+#: perllib/FixMyStreet/App/Controller/Admin.pm:843
+msgid "Search Abuse"
+msgstr ""
+
+#: templates/web/default/admin/search_abuse.html:1
+msgid "Search Abuse Table"
+msgstr ""
+
+#: perllib/FixMyStreet/App/Controller/Admin.pm:840 templates/web/default/admin/list_flagged.html:1 templates/web/default/admin/search_reports.html:1
 msgid "Search Reports"
 msgstr ""
 
-#: templates/web/default/admin/search_reports.html:5
+#: templates/web/default/admin/search_abuse.html:4 templates/web/default/admin/search_reports.html:5
 msgid "Search:"
 msgstr ""
 
@@ -1386,7 +1558,7 @@ msgstr ""
 msgid "Select which type of alert you'd like and click the button for an RSS feed, or enter your email address to subscribe to an email alert."
 msgstr ""
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:396
+#: perllib/FixMyStreet/DB/Result/Problem.pm:398
 msgid "Sent to %s %s later"
 msgstr ""
 
@@ -1415,11 +1587,11 @@ msgid ""
 "    significant contribution to the supply of affordable homes in Wales."
 msgstr ""
 
-#: templates/web/default/report/display.html:205 templates/web/default/report/new/fill_in_details.html:226
+#: templates/web/default/report/display.html:205 templates/web/default/report/new/fill_in_details_form.html:201
 msgid "Show my name publicly"
 msgstr ""
 
-#: templates/web/default/around/display_location.html:50
+#: templates/web/default/around/display_location.html:52
 msgid "Show pins"
 msgstr ""
 
@@ -1435,11 +1607,11 @@ msgstr ""
 msgid "Sign in or create an account"
 msgstr ""
 
-#: templates/web/default/auth/sign_out.html:1 templates/web/default/header.html:26 templates/web/emptyhomes/header.html:46
+#: templates/web/default/auth/sign_out.html:1 templates/web/default/header.html:28 templates/web/emptyhomes/header.html:44 templates/web/lichfielddc/header.html:174
 msgid "Sign out"
 msgstr ""
 
-#: templates/web/default/header.html:25 templates/web/emptyhomes/header.html:45
+#: templates/web/default/header.html:27 templates/web/emptyhomes/header.html:43 templates/web/lichfielddc/header.html:174
 msgid "Signed in as %s"
 msgstr ""
 
@@ -1447,7 +1619,7 @@ msgstr ""
 msgid "Some photos of recent reports"
 msgstr ""
 
-#: perllib/FixMyStreet/App/View/Email.pm:32 perllib/FixMyStreet/App/View/Web.pm:41
+#: perllib/FixMyStreet/App/View/Email.pm:32 perllib/FixMyStreet/App/View/Web.pm:44
 msgid "Some text to localize"
 msgstr ""
 
@@ -1471,11 +1643,23 @@ msgstr ""
 msgid "Sorry, we could not parse that location. Please try again."
 msgstr ""
 
-#: templates/web/default/footer.html:17 templates/web/fiksgatami/footer.html:15
+#: templates/web/fiksgatami/footer.html:15
 msgid "Source code"
 msgstr ""
 
-#: templates/web/default/admin/list_updates.html:6 templates/web/default/admin/search_reports.html:21
+#: templates/web/default/admin/stats.html:41
+msgid "Start Year:"
+msgstr ""
+
+#: templates/web/default/admin/stats.html:43
+msgid "Start day:"
+msgstr ""
+
+#: templates/web/default/admin/stats.html:42
+msgid "Start month:"
+msgstr ""
+
+#: templates/web/default/admin/list_flagged.html:18 templates/web/default/admin/list_updates.html:6 templates/web/default/admin/search_reports.html:21
 msgid "State"
 msgstr ""
 
@@ -1483,15 +1667,19 @@ msgstr ""
 msgid "State:"
 msgstr ""
 
-#: templates/web/default/admin/report_edit.html:13 templates/web/default/contact/index.html:83 templates/web/default/report/new/fill_in_details.html:90
+#: perllib/FixMyStreet/App/Controller/Admin.pm:845 templates/web/default/admin/stats.html:1
+msgid "Stats"
+msgstr ""
+
+#: templates/web/default/admin/report_edit.html:13 templates/web/default/contact/index.html:83 templates/web/default/report/new/fill_in_details_form.html:52
 msgid "Subject:"
 msgstr ""
 
-#: templates/web/default/questionnaire/creator_fixed.html:19 templates/web/default/report/new/fill_in_details.html:131 templates/web/default/report/new/fill_in_details.html:169 templates/web/default/report/new/fill_in_details.html:190
+#: templates/web/default/questionnaire/creator_fixed.html:19 templates/web/default/report/new/fill_in_details_form.html:110 templates/web/default/report/new/fill_in_details_form.html:148 templates/web/default/report/new/fill_in_details_form.html:169
 msgid "Submit"
 msgstr ""
 
-#: templates/web/default/admin/report_edit.html:46 templates/web/default/admin/update_edit.html:36
+#: templates/web/default/admin/report_edit.html:47 templates/web/default/admin/update_edit.html:36
 msgid "Submit changes"
 msgstr ""
 
@@ -1507,7 +1695,7 @@ msgstr ""
 msgid "Subscribe me to an email alert"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:611 templates/web/default/admin/index.html:1
+#: perllib/FixMyStreet/App/Controller/Admin.pm:838 templates/web/default/admin/index.html:1
 msgid "Summary"
 msgstr ""
 
@@ -1515,7 +1703,7 @@ msgstr ""
 msgid "Summary reports"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:615 templates/web/default/admin/questionnaire.html:1
+#: perllib/FixMyStreet/App/Controller/Admin.pm:842 templates/web/default/admin/questionnaire.html:1
 msgid "Survey Results"
 msgstr ""
 
@@ -1567,7 +1755,7 @@ msgstr ""
 msgid "Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:749
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:783
 msgid "That image doesn't appear to have uploaded correctly (%s), please try again."
 msgstr ""
 
@@ -1579,11 +1767,11 @@ msgstr ""
 msgid "That location does not appear to be in Britain; please try again."
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:509 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:73
+#: perllib/FixMyStreet/Cobrand/Default.pm:509 perllib/FixMyStreet/Cobrand/FiksGataMi.pm:78
 msgid "That postcode was not recognised, sorry."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:512
+#: perllib/FixMyStreet/App/Controller/Admin.pm:517
 msgid "That problem will now be resent."
 msgstr ""
 
@@ -1610,6 +1798,10 @@ msgid ""
 "    the UK."
 msgstr ""
 
+#: templates/web/default/open311/index.html:23
+msgid "The Open311 v2 attribute agency_responsible is used to list the administrations that received the problem report, which is not quite the way the attribute is defined in the Open311 v2 specification."
+msgstr ""
+
 #: templates/web/default/auth/token.html:21 templates/web/default/email_sent.html:22
 msgid "The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient."
 msgstr ""
@@ -1620,6 +1812,10 @@ msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Reports.pm:46 perllib/FixMyStreet/App/Controller/Reports.pm:73
 msgid "The error was: %s"
+msgstr ""
+
+#: templates/web/default/open311/index.html:19
+msgid "The following Open311 v2 attributes are returned for each request: service_request_id, description, lat, long, media_url, status, requested_datetime, updated_datetime, service_code and service_name."
 msgstr ""
 
 #: perllib/FixMyStreet/Geocode/OSM.pm:99
@@ -1678,7 +1874,7 @@ msgstr ""
 msgid "The requested URL '%s' was not found on this server"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:493 perllib/FixMyStreet/App/Controller/Admin.pm:663 perllib/FixMyStreet/App/Controller/Admin.pm:702 perllib/FixMyStreet/App/Controller/Admin.pm:787
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1039 perllib/FixMyStreet/App/Controller/Admin.pm:497 perllib/FixMyStreet/App/Controller/Admin.pm:630 perllib/FixMyStreet/App/Controller/Admin.pm:894
 msgid "The requested URL was not found on this server."
 msgstr ""
 
@@ -1686,7 +1882,7 @@ msgstr ""
 msgid "The simplest alert is our geographic one:"
 msgstr ""
 
-#: templates/web/default/report/new/all_councils_text.html:18 templates/web/default/report/new/some_councils_text.html:10 templates/web/default/report/new/some_councils_text.html:11
+#: templates/web/default/report/new/councils_text_all.html:18 templates/web/default/report/new/councils_text_some.html:10 templates/web/default/report/new/councils_text_some.html:11 templates/web/default/report/new/fill_in_details_form.html:17
 msgid "The subject and details of the problem will be public, plus your name if you give us permission."
 msgstr ""
 
@@ -1698,7 +1894,7 @@ msgstr ""
 msgid "There was a problem showing the All Reports page. Please try again later."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:578 perllib/FixMyStreet/App/Controller/Report/Update.pm:117 templates/web/default/auth/general.html:23
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:605 perllib/FixMyStreet/App/Controller/Report/Update.pm:117 templates/web/default/auth/general.html:23
 msgid "There was a problem with your email/password combination. Passwords and user accounts are a brand <strong>new</strong> service, so you probably do not have one yet &ndash; please fill in the right hand side of this form to get one."
 msgstr ""
 
@@ -1706,12 +1902,16 @@ msgstr ""
 msgid "There was a problem with your email/password combination. Please try again."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:115
+#: perllib/FixMyStreet/App/Controller/Contact.pm:117
 msgid "There were problems with your report. Please see below."
 msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Report/Update.pm:211
 msgid "There were problems with your update. Please see below."
+msgstr ""
+
+#: templates/web/default/open311/index.html:10
+msgid "This API implementation is work in progress and not yet stabilized.  It will change without warnings in the future."
 msgstr ""
 
 #: bin/send-reports:181
@@ -1738,7 +1938,7 @@ msgstr ""
 msgid "This is a summary of all reports on this site; select a particular council to see the reports sent there."
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:913 perllib/FixMyStreet/Cobrand/EmptyHomes.pm:117 templates/web/default/report/display.html:96
+#: perllib/FixMyStreet/Cobrand/Default.pm:903 perllib/FixMyStreet/Cobrand/EmptyHomes.pm:117 templates/web/default/report/display.html:96
 msgid "This problem has been fixed"
 msgstr ""
 
@@ -1746,15 +1946,15 @@ msgstr ""
 msgid "This problem has not been fixed"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:909
+#: perllib/FixMyStreet/Cobrand/Default.pm:899
 msgid "This problem is old and of unknown status."
 msgstr ""
 
-#: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:78
+#: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:79
 msgid "This report is currently marked as fixed."
 msgstr ""
 
-#: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:79
+#: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:80
 msgid "This report is currently marked as open."
 msgstr ""
 
@@ -1762,12 +1962,16 @@ msgstr ""
 msgid "This web page also contains a photo of the problem, provided by the user."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:614 templates/web/default/admin/timeline.html:1
+#: perllib/FixMyStreet/App/Controller/Admin.pm:841 templates/web/default/admin/timeline.html:1
 msgid "Timeline"
 msgstr ""
 
-#: templates/web/default/admin/search_reports.html:13
+#: templates/web/default/admin/list_flagged.html:10 templates/web/default/admin/search_reports.html:13
 msgid "Title"
+msgstr ""
+
+#: templates/web/default/around/display_location.html:70
+msgid "To <strong>report a problem</strong>, simply click on the map at the correct location."
 msgstr ""
 
 #: templates/web/default/alert/index.html:21
@@ -1776,20 +1980,12 @@ msgid ""
 "postcode or street name and area:"
 msgstr ""
 
-#: templates/web/default/around/display_location.html:86
-msgid "To report a problem, simply <strong>click on the map</strong> at the correct location."
-msgstr ""
-
 #: bin/send-reports:76
 msgid "To view a map of the precise location of this issue"
 msgstr ""
 
-#: templates/web/default/admin/index.html:36 templates/web/default/admin/questionnaire.html:24
+#: templates/web/default/admin/index.html:36 templates/web/default/admin/questionnaire.html:24 templates/web/default/admin/stats.html:21
 msgid "Total"
-msgstr ""
-
-#: templates/web/default/maps/tilma/original.html:10
-msgid "Unable to fetch the map tiles from the tile server."
 msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Reports.pm:45
@@ -1800,7 +1996,7 @@ msgstr ""
 msgid "Unconfirmed"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Rss.pm:156
+#: perllib/FixMyStreet/App/Controller/Rss.pm:163
 msgid "Unknown alert type"
 msgstr ""
 
@@ -1836,7 +2032,7 @@ msgstr ""
 msgid "Update:"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:586 perllib/FixMyStreet/App/Controller/Admin.pm:749
+#: perllib/FixMyStreet/App/Controller/Admin.pm:606 perllib/FixMyStreet/App/Controller/Admin.pm:693
 msgid "Updated!"
 msgstr ""
 
@@ -1852,7 +2048,19 @@ msgstr ""
 msgid "Updates to this problem, FixMyStreet"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:294 perllib/FixMyStreet/App/Controller/Admin.pm:324
+#: perllib/FixMyStreet/App/Controller/Admin.pm:997
+msgid "User flag removed"
+msgstr ""
+
+#: perllib/FixMyStreet/App/Controller/Admin.pm:969
+msgid "User flagged"
+msgstr ""
+
+#: templates/web/default/admin/list_flagged.html:30
+msgid "Users"
+msgstr ""
+
+#: perllib/FixMyStreet/App/Controller/Admin.pm:295 perllib/FixMyStreet/App/Controller/Admin.pm:325
 msgid "Values updated"
 msgstr ""
 
@@ -1920,12 +2128,16 @@ msgstr ""
 msgid "When edited"
 msgstr ""
 
-#: templates/web/default/admin/search_reports.html:22
+#: templates/web/default/admin/list_flagged.html:19 templates/web/default/admin/search_reports.html:22
 msgid "When sent"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:466
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:493
 msgid "Whole block of empty flats"
+msgstr ""
+
+#: templates/web/default/open311/index.html:25
+msgid "With request searches, it is also possible to search for agency_responsible to limit the requests to those sent to a single administration.  The search term is the administration ID provided by <a href=\"%s\">MaPit</a>."
 msgstr ""
 
 #: templates/web/default/questionnaire/index.html:104
@@ -1936,7 +2148,7 @@ msgstr ""
 msgid "Writing your message entirely in block capitals makes it hard to read, as does a lack of punctuation."
 msgstr ""
 
-#: templates/web/default/admin/council_contacts.html:32 templates/web/default/admin/council_contacts.html:33 templates/web/default/admin/council_edit.html:5 templates/web/default/admin/list_updates.html:28 templates/web/default/admin/report_edit.html:18 templates/web/default/admin/report_edit.html:37 templates/web/default/admin/search_reports.html:43 templates/web/default/admin/update_edit.html:15 templates/web/default/questionnaire/creator_fixed.html:14 templates/web/default/questionnaire/index.html:107 templates/web/default/questionnaire/index.html:68
+#: templates/web/default/admin/council_contacts.html:32 templates/web/default/admin/council_contacts.html:33 templates/web/default/admin/council_edit.html:5 templates/web/default/admin/list_updates.html:28 templates/web/default/admin/problem_row.html:19 templates/web/default/admin/report_edit.html:18 templates/web/default/admin/report_edit.html:37 templates/web/default/admin/update_edit.html:15 templates/web/default/questionnaire/creator_fixed.html:14 templates/web/default/questionnaire/index.html:107 templates/web/default/questionnaire/index.html:68
 msgid "Yes"
 msgstr ""
 
@@ -1956,7 +2168,7 @@ msgstr ""
 msgid "You can <a href=\"/reports\">show all councils</a>."
 msgstr ""
 
-#: templates/web/default/report/new/no_councils_text.html:14 templates/web/default/report/new/no_councils_text.html:3 templates/web/default/report/new/some_councils_text.html:20 templates/web/default/report/new/some_councils_text.html:22
+#: templates/web/default/report/new/councils_text_none.html:14 templates/web/default/report/new/councils_text_none.html:3 templates/web/default/report/new/councils_text_some.html:20 templates/web/default/report/new/councils_text_some.html:22
 msgid "You can help us by finding a contact email address for local problems for %s and emailing it to us at <a href='mailto:%s'>%s</a>."
 msgstr ""
 
@@ -1964,7 +2176,7 @@ msgstr ""
 msgid "You have already answered this questionnaire. If you have a question, please <a href='%s'>get in touch</a>, or <a href='%s'>view your problem</a>.\n"
 msgstr ""
 
-#: templates/web/default/questionnaire/index.html:94 templates/web/default/report/new/fill_in_details.html:110
+#: templates/web/default/questionnaire/index.html:94 templates/web/default/report/new/fill_in_details_form.html:89
 msgid "You have already attached a photo to this report, attaching another one will replace it."
 msgstr ""
 
@@ -1976,7 +2188,7 @@ msgstr ""
 msgid "You have been signed out"
 msgstr ""
 
-#: templates/web/default/report/new/fill_in_details.html:35
+#: templates/web/default/report/new/fill_in_details_form.html:7
 msgid "You have located the problem at the point marked with a purple pin on the map. If this is not the correct location, simply click on the map again. "
 msgstr ""
 
@@ -2000,7 +2212,7 @@ msgstr ""
 msgid "You have successfully deleted your alert."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:584 perllib/FixMyStreet/App/Controller/Report/Update.pm:123
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:611 perllib/FixMyStreet/App/Controller/Report/Update.pm:123
 msgid "You have successfully signed in; please check and confirm your details are accurate:"
 msgstr ""
 
@@ -2020,11 +2232,11 @@ msgstr ""
 msgid "Your email address:"
 msgstr ""
 
-#: templates/web/default/alert/list.html:122 templates/web/default/report/display.html:128 templates/web/default/report/new/fill_in_details.html:141
+#: templates/web/default/alert/list.html:122 templates/web/default/report/display.html:128 templates/web/default/report/new/fill_in_details_form.html:120
 msgid "Your email:"
 msgstr ""
 
-#: templates/web/default/auth/general.html:59 templates/web/default/contact/index.html:68 templates/web/default/report/display.html:199 templates/web/default/report/new/fill_in_details.html:219
+#: templates/web/default/auth/general.html:59 templates/web/default/contact/index.html:68 templates/web/default/report/display.html:199 templates/web/default/report/new/fill_in_details_form.html:194
 msgid "Your name:"
 msgstr ""
 
@@ -2088,7 +2300,11 @@ msgstr ""
 msgid "reopened"
 msgstr ""
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:361
+#: templates/web/default/report/new/fill_in_details_form.html:11 templates/web/default/report/new/fill_in_details_form.html:14
+msgid "the local council"
+msgstr ""
+
+#: perllib/FixMyStreet/DB/Result/Problem.pm:363
 msgid "the map was not used so pin location may be inaccurate"
 msgstr ""
 
@@ -2139,7 +2355,7 @@ msgid_plural "<big>%s</big> reports recently"
 msgstr[0] ""
 msgstr[1] ""
 
-#: templates/web/default/report/new/no_councils_text.html:5
+#: templates/web/default/report/new/councils_text_none.html:5
 #, perl-format
 msgid "We do not yet have details for the council that covers this location."
 msgid_plural "We do not yet have details for the councils that cover this location."
@@ -2167,7 +2383,7 @@ msgid_plural "<big>%s</big> updates on reports"
 msgstr[0] ""
 msgstr[1] ""
 
-#: templates/web/default/report/new/some_councils_text.html:14
+#: templates/web/default/report/new/councils_text_some.html:14
 #, perl-format
 msgid "We do <strong>not</strong> yet have details for the other council that covers this location."
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."

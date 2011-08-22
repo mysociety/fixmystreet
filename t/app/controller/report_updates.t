@@ -404,6 +404,203 @@ for my $test (
     };
 }
 
+$report->state('confirmed');
+$report->update;
+
+subtest 'check non authority user cannot change set state' => sub {
+    $mech->log_in_ok( $user->email );
+    $user->from_council( 0 );
+    $user->update;
+
+    $mech->get_ok("/report/$report_id");
+    $mech->submit_form_ok( {
+            form_number => 2,
+            fields => {
+                submit_update => 1,
+                id => $report_id,
+                name => $user->name,
+                rznvy => $user->email,
+                may_show_name => 1,
+                add_alert => 0,
+                photo => '',
+                update => 'this is a forbidden update',
+                state => 'fixed - council',
+            },
+        },
+        'submitted with state',
+    );
+
+    is $mech->uri->path, "/report/update", "at /report/update";
+
+    my $errors = $mech->page_errors;
+    is_deeply $errors, [ 'There was a problem with your update. Please try again.' ], 'error message';
+
+    is $report->state, 'confirmed', 'state unchanged';
+};
+
+for my $state ( qw/unconfirmed hidden partial/ ) {
+    subtest "check that update cannot set state to $state" => sub {
+        $mech->log_in_ok( $user->email );
+        $user->from_council( 2504 );
+        $user->update;
+
+        $mech->get_ok("/report/$report_id");
+        $mech->submit_form_ok( {
+                form_number => 2,
+                fields => {
+                    submit_update => 1,
+                    id => $report_id,
+                    name => $user->name,
+                    rznvy => $user->email,
+                    may_show_name => 1,
+                    add_alert => 0,
+                    photo => '',
+                    update => 'this is a forbidden update',
+                    state => $state,
+                },
+            },
+            'submitted with state',
+        );
+
+        is $mech->uri->path, "/report/update", "at /report/update";
+
+        my $errors = $mech->page_errors;
+        is_deeply $errors, [ 'There was a problem with your update. Please try again.' ], 'error message';
+
+        is $report->state, 'confirmed', 'state unchanged';
+    };
+}
+
+for my $test (
+    {
+        desc => 'from authority user marks report as investigating',
+        fields => {
+            name => $user->name,
+            may_show_name => 1,
+            add_alert => 0,
+            photo => '',
+            update => 'Set state to investigating',
+            state => 'investigating',
+        },
+        state => 'investigating',
+    },
+    {
+        desc => 'from authority user marks report as planned',
+        fields => {
+            name => $user->name,
+            may_show_name => 1,
+            add_alert => 0,
+            photo => '',
+            update => 'Set state to planned',
+            state => 'planned',
+        },
+        state => 'planned',
+    },
+    {
+        desc => 'from authority user marks report as in progress',
+        fields => {
+            name => $user->name,
+            may_show_name => 1,
+            add_alert => 0,
+            photo => '',
+            update => 'Set state to in progress',
+            state => 'in progress',
+        },
+        state => 'in progress',
+    },
+    {
+        desc => 'from authority user marks report as closed',
+        fields => {
+            name => $user->name,
+            may_show_name => 1,
+            add_alert => 0,
+            photo => '',
+            update => 'Set state to closed',
+            state => 'closed',
+        },
+        state => 'closed',
+    },
+    {
+        desc => 'from authority user marks report as fixed',
+        fields => {
+            name => $user->name,
+            may_show_name => 1,
+            add_alert => 0,
+            photo => '',
+            update => 'Set state to fixed',
+            state => 'fixed',
+        },
+        state => 'fixed - council',
+    },
+    {
+        desc => 'from authority user marks report as confirmed',
+        fields => {
+            name => $user->name,
+            may_show_name => 1,
+            add_alert => 0,
+            photo => '',
+            update => 'Set state to confirmed',
+            state => 'confirmed',
+        },
+        state => 'confirmed',
+    },
+    {
+        desc => 'from authority user marks report sent to two councils as fixed',
+        fields => {
+            name => $user->name,
+            may_show_name => 1,
+            add_alert => 0,
+            photo => '',
+            update => 'Set state to fixed',
+            state => 'fixed',
+        },
+        state => 'fixed - council',
+        report_councils => '2504,2505',
+    },
+) {
+    subtest $test->{desc} => sub {
+        $report->comments->delete;
+        if ( $test->{ report_councils } ) {
+            $report->council( $test->{ report_councils } );
+            $report->update;
+        }
+
+        $mech->log_in_ok( $user->email );
+        $user->from_council( 2504 );
+        $user->update;
+
+        $mech->get_ok("/report/$report_id");
+
+        $mech->submit_form_ok(
+            {
+                with_fields => $test->{fields},
+            },
+            'submit update'
+        );
+
+        $report->discard_changes;
+        my $update = $report->comments->first;
+        ok $update, 'found update';
+        is $update->text, $test->{fields}->{update}, 'update text';
+        is $update->problem_state, $test->{state}, 'problem state set';
+
+        my $update_meta = $mech->extract_update_metas;
+        like $update_meta->[0], qr/marked as $test->{fields}->{state}$/, 'update meta includes state change';
+        like $update_meta->[0], qr{Test User \(Westminster City Council\)}, 'update meta includes council name';
+        $mech->content_contains( 'Test User (<strong>Westminster City Council</strong>)', 'council name in bold');
+
+        $report->discard_changes;
+        is $report->state, $test->{state}, 'state set';
+    };
+}
+
+$user->from_council(0);
+$user->update;
+
+$report->state('confirmed');
+$report->council('2504');
+$report->update;
+
 for my $test (
     {
         desc => 'submit an update for a registered user, signing in with wrong password',
@@ -738,6 +935,34 @@ foreach my $test (
         },
         changed        => { update => 'Update from owner' },
         initial_banner => '',
+        initial_state  => 'confirmed',
+        alert     => 1,    # we signed up for alerts before, do not unsign us
+        anonymous => 0,
+        answered  => 0,
+        path => '/report/update',
+        content =>
+"Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?",
+    },
+    {
+        desc           => 'logged in reporter submits update and marks in progress problem fixed',
+        initial_values => {
+            name          => 'Test User',
+            may_show_name => 1,
+            add_alert     => 1,
+            photo         => '',
+            update        => '',
+            fixed         => undef,
+        },
+        email  => 'test@example.com',
+        fields => {
+            submit_update => 1,
+            update        => 'update from owner',
+            add_alert     => undef,
+            fixed         => 1,
+        },
+        changed        => { update => 'Update from owner' },
+        initial_banner => ' This problem is in progress. ',
+        initial_state  => 'in progress',
         alert     => 1,    # we signed up for alerts before, do not unsign us
         anonymous => 0,
         answered  => 0,
@@ -765,6 +990,7 @@ foreach my $test (
         },
         changed        => { update => 'Update from owner' },
         initial_banner => '',
+        initial_state  => 'confirmed',
         alert     => 1,    # we signed up for alerts before, do not unsign us
         anonymous => 0,
         answered  => 1,
@@ -783,7 +1009,7 @@ foreach my $test (
         ok( $_->delete, 'deleted comment ' . $_->id ) for $report->comments;
 
         $report->discard_changes;
-        $report->state('confirmed');
+        $report->state( $test->{initial_state} );
         $report->update;
 
         my $questionnaire;
@@ -825,12 +1051,16 @@ foreach my $test (
 
         my $results = { %{ $test->{fields} }, %{ $test->{changed} }, };
 
+        $report->discard_changes;
+
         my $update = $report->comments->first;
         ok $update, 'found update';
         is $update->text, $results->{update}, 'update text';
         is $update->user->email, $test->{email}, 'update user';
         is $update->state, 'confirmed', 'update confirmed';
         is $update->anonymous, $test->{anonymous}, 'user anonymous';
+
+        is $report->state, 'fixed - user', 'report state';
 
         SKIP: {
             skip( 'not answering questionnaire', 5 ) if $questionnaire;
@@ -851,6 +1081,8 @@ foreach my $test (
 
             ok $questionnaire, 'questionnaire exists';
             ok $questionnaire->ever_reported, 'ever reported is yes';
+            is $questionnaire->old_state(), $test->{initial_state}, 'questionnaire old state';
+            is $questionnaire->new_state(), 'fixed - user', 'questionnaire new state';
         };
 
         if ($questionnaire) {

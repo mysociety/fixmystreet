@@ -50,6 +50,7 @@ sub email_alerts ($) {
         # XXX Ugh - needs work
         $query =~ s/\?/alert.parameter/ if ($query =~ /\?/);
         $query =~ s/\?/alert.parameter2/ if ($query =~ /\?/);
+
         $query = dbh()->prepare($query);
         $query->execute();
         my $last_alert_id;
@@ -74,10 +75,13 @@ sub email_alerts ($) {
             }
 
             # create problem status message for the templates
-            $data{state_message} =
-              $row->{state} eq 'fixed'
-              ? _("This report is currently marked as fixed.")
-              : _("This report is currently marked as open.");
+            if ( FixMyStreet::DB::Result::Problem::fixed_states()->{$row->{state}} ) {
+                $data{state_message} = _("This report is currently marked as fixed.");
+            } elsif ( FixMyStreet::DB::Result::Problem::closed_states()->{$row->{state}} ) {
+                $data{state_message} = _("This report is currently marked as closed.")
+            } else {
+                $data{state_message} = _("This report is currently marked as open.");
+            }
 
             my $url = $cobrand->base_url_for_emails( $row->{alert_cobrand_data} );
             if ($row->{item_text}) {
@@ -130,11 +134,12 @@ sub email_alerts ($) {
         $d = mySociety::Locale::in_gb_locale {
             sprintf("%f", int($d*10+0.5)/10);
         };
+        my $states = "'" . join( "', '", FixMyStreet::DB::Result::Problem::visible_states() ) . "'";
         my %data = ( template => $template, data => '', alert_id => $alert->id, alert_email => $alert->user->email, lang => $alert->lang, cobrand => $alert->cobrand, cobrand_data => $alert->cobrand_data );
         my $q = "select problem.id, problem.title from problem_find_nearby(?, ?, ?) as nearby, problem, users
             where nearby.problem_id = problem.id
             and problem.user_id = users.id
-            and problem.state in ('confirmed', 'fixed')
+            and problem.state in ($states)
             and problem.confirmed >= ? and problem.confirmed >= ms_current_timestamp() - '7 days'::interval
             and (select whenqueued from alert_sent where alert_sent.alert_id = ? and alert_sent.parameter::integer = problem.id) is null
             and users.email <> ?

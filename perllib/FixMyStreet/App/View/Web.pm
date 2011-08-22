@@ -23,6 +23,7 @@ __PACKAGE__->config(
     ],
     FILTERS => {
         escape_js => \&escape_js,
+        html      => \&html_filter,
     },
     COMPILE_EXT => '.ttc',
     STAT_TTL    => FixMyStreet->config('STAGING_SITE') ? 1 : 86400,
@@ -141,6 +142,26 @@ sub escape_js {
         '>'  => 'u003e',
     );
     $text =~ s/([\\"'<>])/\\$lookup{$1}/g;
+    return $text;
+}
+
+=head2 html_filter
+
+Same as Template Toolkit's html_filter, but escapes ' too, as we don't (and
+shouldn't have to) know whether we'll be used inbetween single or double
+quotes.
+
+=cut
+
+sub html_filter {
+    my $text = shift;
+    for ($text) {
+        s/&/&amp;/g;
+        s/</&lt;/g;
+        s/>/&gt;/g;
+        s/"/&quot;/g;
+        s/'/&#39;/g;
+    }
     return $text;
 }
 

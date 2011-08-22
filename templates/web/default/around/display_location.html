@@ -66,6 +66,17 @@
 </div>
 <div id="side">
 
+<p id="text_map">
+    [% loc( 'To <strong>report a problem</strong>, simply click on the map at the correct location.' ) %]
+    [%
+        tprintf(
+            loc("<small>If you cannot see the map, <a href='%s' rel='nofollow'>skip this step</a>.</small>"),
+            url_skip
+        )
+    %]
+    <span id="text_map_arrow"></span>
+</p>
+
 <h1>[% loc('Problems in this area') %]</h1>
 
 <p id="alert_links_area">
@@ -76,22 +87,6 @@
         <span>[% rss_alt %]</span>
         <img src="/i/feed.png" width="16" height="16" title="[% rss_title %]" alt="[% rss_alt %]" border="0" style="vertical-align: top">
     </a>
-</p>
-
-[% IF location_error %]
-    <ul class="error">
-        <li>[% location_error | html %]</li>
-    </ul>
-[% END %]
-
-<p id="text_map">
-    [% loc( 'To report a problem, simply <strong>click on the map</strong> at the correct location.' ) %]
-    [%
-        tprintf(
-            loc("<small>If you cannot see the map, <a href='%s' rel='nofollow'>skip this step</a>.</small>"),
-            url_skip
-        )
-    %]
 </p>
 
 <div id="nearby_lists">
@@ -119,6 +114,14 @@
 </div>
 
 </div>
+
+<div style="display:none" id="side-form">
+[% INCLUDE "report/new/fill_in_details_form.html"
+    js = 1,
+    report.used_map = 1
+%]
+</div>
+
 </form>
 
 [% INCLUDE 'footer.html' %]

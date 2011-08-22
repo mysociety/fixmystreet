@@ -51,8 +51,11 @@ sub update_problem : Private {
     my $update = $c->stash->{update};
     my $problem = $c->stash->{problem} || $update->problem;
 
+    # we may need this if we display the questionnaire
+    my $old_state = $problem->state;
+
     if ( $update->mark_fixed ) {
-        $problem->state('fixed');
+        $problem->state('fixed - user');
 
         if ( $update->user->id == $problem->user->id ) {
             $problem->send_questionnaire(0);
@@ -65,6 +68,10 @@ sub update_problem : Private {
         }
     }
 
+    if ( $update->problem_state ) {
+        $problem->state( $update->problem_state );
+    }
+
     if ( $update->mark_open && $update->user->id == $problem->user->id ) {
         $problem->state('confirmed');
     }
@@ -75,6 +82,7 @@ sub update_problem : Private {
     $c->stash->{problem_id} = $problem->id;
 
     if ($display_questionnaire) {
+        $c->flash->{old_state} = $old_state;
         $c->detach('/questionnaire/creator_fixed');
     }
 
@@ -145,7 +153,7 @@ sub process_update : Private {
     my ( $self, $c ) = @_;
 
     my %params =
-      map { $_ => scalar $c->req->param($_) } ( 'update', 'name', 'fixed', 'reopen' );
+      map { $_ => scalar $c->req->param($_) } ( 'update', 'name', 'fixed', 'state', 'reopen' );
 
     $params{update} =
       Utils::cleanup_text( $params{update}, { allow_multiline => 1 } );
@@ -170,6 +178,12 @@ sub process_update : Private {
         }
     );
 
+    if ( $params{state} ) {
+        $params{state} = 'fixed - council' 
+            if $params{state} eq 'fixed' && $c->user && $c->user->belongs_to_council( $update->problem->council );
+        $update->problem_state( $params{state} );
+    }
+
     $c->stash->{update}        = $update;
     $c->stash->{add_alert}     = $c->req->param('add_alert');
 
@@ -186,6 +200,22 @@ return false.
 
 sub check_for_errors : Private {
     my ( $self, $c ) = @_;
+
+    # they have to be an authority user to update the state
+    if ( $c->req->param('state') ) {
+        my $error = 0;
+        $error = 1 unless $c->user && $c->user->belongs_to_council( $c->stash->{update}->problem->council );
+
+        my $state = $c->req->param('state');
+        $error = 1 unless ( grep { $state eq $_ } ( qw/confirmed closed fixed investigating planned/, 'in progress', 'fixed', 'fixed - user', 'fixed - council' ) );
+
+        if ( $error ) {
+            $c->stash->{errors} ||= [];
+            push @{ $c->stash->{errors} }, _('There was a problem with your update. Please try again.');
+            return;
+        }
+
+    }
 
     # let the model check for errors
     $c->stash->{field_errors} ||= {};

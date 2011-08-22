@@ -134,6 +134,7 @@ create table users (
     name            text,
     phone           text,
     password        text    not null default '',
+    from_council    integer, -- id of council user is from or null/0 if not
     flagged         boolean not null default 'f'
 );
 
@@ -169,7 +170,13 @@ create table problem (
     state text not null check (
         state = 'unconfirmed'
         or state = 'confirmed'
+        or state = 'investigating'
+        or state = 'planned'
+        or state = 'in progress'
+        or state = 'closed'
         or state = 'fixed'
+        or state = 'fixed - council'
+        or state = 'fixed - user'
         or state = 'hidden'
         or state = 'partial'
     ),
@@ -285,7 +292,17 @@ create table comment (
     lang text not null default 'en-gb',
     cobrand_data text not null default '' check (cobrand_data ~* '^[a-z0-9]*$'), -- Extra data used in cobranded versions of the site
     mark_fixed boolean not null,
-    mark_open boolean not null default 'f'
+    mark_open boolean not null default 'f',
+    problem_state text check (
+        problem_state = 'confirmed'
+        or problem_state = 'investigating'
+        or problem_state = 'planned'
+        or problem_state = 'in progress'
+        or problem_state = 'closed'
+        or problem_state = 'fixed'
+        or problem_state = 'fixed - council'
+        or problem_state = 'fixed - user'
+    )
     -- other fields? one to indicate whether this was written by the council
     -- and should be highlighted in the display?
 );
@@ -384,6 +401,7 @@ create table admin_log (
     object_type text not null check (
       object_type = 'problem'
       or object_type = 'update'
+      or object_type = 'user'
     ),
     object_id integer not null,
     action text not null check (

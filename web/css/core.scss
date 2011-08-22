@@ -276,24 +276,34 @@ $map_width: 500px;
         cursor: crosshair;
     }
 
-    #compass {
-        background-color: #ffffff;
-        border: solid 1px #000000;
-        border-width: 0 1px 1px 0;
-        color: #000000;
+    #text_map {
+        @include problem-banner;
+        padding-left: 0.5em;
+        text-align: left;
+        margin-top: 0;
+        font-size: 110%;
+        background-color: #eeeeee;
+        -moz-border-radius-topleft: 1em;
+        -moz-border-radius-bottomleft: 1em;
+        -webkit-border-top-left-radius: 1em;
+        -webkit-border-bottom-left-radius: 1em;
+        border-top-left-radius: 1em;
+        border-bottom-left-radius: 1em;
+    }
+    #text_map_arrow {
+        display: block;
         position: absolute;
-        top: 0px;
-        left: 0px;
-        img {
-            border: 0;
-        }
+        top: 0;
+        right: -28px;
+        width: 0;
+        height: 0;
+        line-height: 0;
+        font-size: 0;
+        border-style: solid;
+        border-width: 26px 14px 26px 14px;
+        border-color: #fff #fff #fff #eee;
     }
 
-    #text_map {
-        margin-top: 0.5em;
-        margin-bottom: 1em;
-        font-size: 110%;
-    }
     #text_no_map {
         margin-top: 0;
         // background-color: #ffeecc;
@@ -320,6 +330,18 @@ $map_width: 500px;
         border: solid 2px #990000;
     }
 
+    #closed {
+        @include problem-banner;
+        background-color: #ccccff;
+        border: solid 2px #000099;
+    }
+
+    #progress {
+        @include problem-banner;
+        background-color: #ffffcc;
+        border: solid 2px #999900;
+    }
+
     #updates {
         div {
             padding: 0 0 0.5em;
@@ -339,7 +361,7 @@ $map_width: 500px;
     }
 
     #nearby_lists h2 {
-        margin-top: 0.5em;
+        margin-top: 1em;
         margin-bottom: 0;
     }
 
@@ -351,12 +373,10 @@ $map_width: 500px;
         float: right;
     }
     #alert_links_area {
-        background-color: #ffeecc;
-        border: solid 1px #ff9900;
-        border-width: 1px 0;
-        padding: 3px 10px;
-        // padding: 0 3px;
+        padding-left: 0.5em;
         margin: 0;
+        color: #666;
+        font-size: smaller;
     }
     #rss_alert {
         text-decoration: none;
@@ -516,6 +536,10 @@ $map_width: 500px;
 .olControlAttribution {
     bottom: 3px !important;
     left: 3px;
+}
+.olControlPermalink {
+    bottom: 3px !important;
+    right: 3px;
 }
 
 // Printing, SCSS doesn't handle @media nesting

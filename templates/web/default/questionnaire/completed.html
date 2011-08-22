@@ -10,7 +10,7 @@
 get some more information about the status of your problem, please come back to the
 site and leave an update.</p>') %]
 
-[% ELSIF new_state == 'confirmed' OR (!new_state AND problem.state == 'confirmed') %]
+[% ELSIF new_state == 'confirmed' OR (!new_state AND problem.is_open) %]
 
 [% tprintf( loc('<p style="font-size:150%%">We&rsquo;re sorry to hear that. We have two suggestions: why not try
 <a href="%s">writing direct to your councillor(s)</a>

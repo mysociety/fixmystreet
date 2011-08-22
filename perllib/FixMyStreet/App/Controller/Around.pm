@@ -189,7 +189,7 @@ sub display_location : Private {
             {
                 latitude  => $p->latitude,
                 longitude => $p->longitude,
-                colour    => $p->state eq 'fixed' ? 'green' : 'red',
+                colour    => $p->is_fixed ? 'green' : 'red',
                 id        => $p->id,
                 title     => $p->title,
             }
@@ -269,7 +269,7 @@ sub ajax : Path('/ajax') {
     );
 
     # JSON encode the response
-    my $body = JSON->new->utf8(1)->pretty(1)->encode(
+    my $body = JSON->new->utf8(1)->encode(
         {
             pins         => $pins,
             current      => $on_map_list_html,

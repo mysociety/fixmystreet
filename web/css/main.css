@@ -156,11 +156,11 @@ select, input, textarea {
 #footer {
   clear: both;
   text-align: center;
-  border-top: solid 2px #e3d595;
+  border-top: solid 2px #ccc;
   width: 50%;
   margin: 1em auto 0;
   padding: 0;
-  color: #4e451b;
+  color: #333333;
 }
 #footer .l, #footer .r {
   margin-top: 0;

@@ -172,21 +172,38 @@
 #mysociety form#mapForm #map {
   cursor: pointer; }
 #mysociety form#mapForm .olTileImage {
-  cursor: crosshair; }
-#mysociety #compass {
-  background-color: #ffffff;
-  border: solid 1px #000000;
-  border-width: 0 1px 1px 0;
-  color: #000000;
-  position: absolute;
-  top: 0px;
-  left: 0px; }
-  #mysociety #compass img {
-    border: 0; }
+  cursor: crosshair;
+}
 #mysociety #text_map {
-  margin-top: 0.5em;
-  margin-bottom: 1em;
-  font-size: 110%; }
+  margin: 0 530px 1em 0;
+  padding: 5px;
+  text-align: center;
+  position: relative;
+  padding-left: 0.5em;
+  text-align: left;
+  margin-top: 0;
+  font-size: 110%;
+  background-color: #eeeeee;
+  -moz-border-radius-topleft: 1em;
+  -moz-border-radius-bottomleft: 1em;
+  -webkit-border-top-left-radius: 1em;
+  -webkit-border-bottom-left-radius: 1em;
+  border-top-left-radius: 1em;
+  border-bottom-left-radius: 1em;
+}
+#mysociety #text_map_arrow {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: -28px;
+  width: 0;
+  height: 0;
+  line-height: 0;
+  font-size: 0;
+  border-style: solid;
+  border-width: 26px 14px 26px 14px;
+  border-color: #fff #fff #fff #eee;
+}
 #mysociety #text_no_map {
   margin-top: 0; }
 #mysociety #sub_map_links {
@@ -206,7 +223,24 @@
   text-align: center;
   position: relative;
   background-color: #ffcccc;
-  border: solid 2px #990000; }
+  border: solid 2px #990000;
+}
+#mysociety #closed {
+  margin: 0 530px 1em 0;
+  padding: 5px;
+  text-align: center;
+  position: relative;
+  background-color: #ccccff;
+  border: solid 2px #000099;
+}
+#mysociety #progress {
+  margin: 0 530px 1em 0;
+  padding: 5px;
+  text-align: center;
+  position: relative;
+  background-color: #ffffcc;
+  border: solid 2px #999900;
+}
 #mysociety #updates div {
   padding: 0 0 0.5em;
   margin: 0 0 0.25em;
@@ -218,18 +252,19 @@
 #mysociety #updates p {
   margin: 0; }
 #mysociety #nearby_lists h2 {
-  margin-top: 0.5em;
-  margin-bottom: 0; }
+  margin-top: 1em;
+  margin-bottom: 0;
+}
 #mysociety #nearby_lists li small {
   color: #666666; }
 #mysociety #alert_links {
   float: right; }
 #mysociety #alert_links_area {
-  background-color: #ffeecc;
-  border: solid 1px #ff9900;
-  border-width: 1px 0;
-  padding: 3px 10px;
-  margin: 0; }
+  padding-left: 0.5em;
+  margin: 0;
+  color: #666;
+  font-size: smaller;
+}
 #mysociety #rss_alert {
   text-decoration: none; }
   #mysociety #rss_alert span {
@@ -302,6 +337,11 @@
 .olControlAttribution {
   bottom: 3px !important;
   left: 3px; }
+
+.olControlPermalink {
+  bottom: 3px !important;
+  right: 3px;
+}
 
 @media print {
   #mysociety #map_box {
