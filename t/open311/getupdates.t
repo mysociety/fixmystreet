@@ -146,7 +146,7 @@ $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
 </service_requests>
 };
 
-my $problem2 = $problem_rs->new(
+my $problem2 = $problem_rs->create(
     {
         postcode     => 'EH99 1SP',
         latitude     => 1,
@@ -174,8 +174,8 @@ subtest 'update with two requests' => sub {
     $problem->comments->delete;
     $problem->lastupdate(DateTime->now()->subtract( days => 1 ) ),
 
-    my $date1 = DateTime::Format::W3CDTF->new->formate_datetime( DateTime->now() );
-    my $date2 = DateTime::Format::W3CDTF->new->formate_datetime( DateTime->now->subtract( hour => 1) );
+    my $date1 = DateTime::Format::W3CDTF->new->format_datetime( DateTime->now() );
+    my $date2 = DateTime::Format::W3CDTF->new->format_datetime( DateTime->now->subtract( hours => 1) );
     my $local_requests_xml = $requests_xml;
     $local_requests_xml =~ s/UPDATED_DATETIME2/$date2/;
     $local_requests_xml =~ s/UPDATED_DATETIME/$date1/;
@@ -183,7 +183,7 @@ subtest 'update with two requests' => sub {
     my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'requests.xml' => $local_requests_xml } );
 
     ok $updates->update_reports( [ 638344,638345 ], $o, { name => 'Test Council' } );
-    is $o->test_uri_used, 'http://example.com/requests.xml?jurisdiction_id=mysociety&service_request_id=638344,638345', 'get url';
+    is $o->test_uri_used, 'http://example.com/requests.xml?jurisdiction_id=mysociety&service_request_id=638344%2C638345', 'get url';
 
     is $problem->comments->count, 1, 'added a comment to first problem';
     is $problem2->comments->count, 1, 'added a comment to second problem';
