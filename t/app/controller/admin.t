@@ -1054,6 +1054,20 @@ for my $test (
         log_count => 4,
         log_entries => [qw/edit edit edit edit/],
     },
+    {
+        desc => 'edit user remove flagged',
+        fields => {
+            name => 'Changed User',
+            email => 'changed@example.com',
+            council => 2607,
+            flagged => 'on',
+        },
+        changes => {
+            flagged => undef,
+        },
+        log_count => 4,
+        log_entries => [qw/edit edit edit edit/],
+    },
 ) {
     subtest $test->{desc} => sub {
         $mech->get_ok( '/admin/user_edit/' . $user->id );
