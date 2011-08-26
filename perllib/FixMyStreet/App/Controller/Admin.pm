@@ -801,6 +801,7 @@ sub user_edit : Path('user_edit') : Args(1) {
         $user->name( $c->req->param('name') );
         $user->email( $c->req->param('email') );
         $user->from_council( $c->req->param('council') || undef );
+        $user->flagged( $c->req->param('flagged') );
         $user->update;
 
         if ($edited) {
