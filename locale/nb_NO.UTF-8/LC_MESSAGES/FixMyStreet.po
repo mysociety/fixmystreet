@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: FixMyStreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2011-08-18 11:07+0100\n"
-"PO-Revision-Date: 2011-08-28 15:34MET\n"
+"PO-Revision-Date: 2011-08-29 10:26MET\n"
 "Last-Translator: Petter Reinholdtsen <pere@hungry.com>\n"
 "Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
 "MIME-Version: 1.0\n"
@@ -952,7 +952,6 @@ msgstr ""
 "administrasjonen."
 
 #: templates/web/emptyhomes/report/new/no_councils_text.html:9
-#, fuzzy
 msgid ""
 "If you submit a report here it will be left on the site, but not reported to "
 "the council &ndash; please still leave your report, so that we can show to "
@@ -998,7 +997,7 @@ msgid ""
 "specification are returned: agency_sent_datetime, title (also returned as "
 "part of description), interface_used, comment_count, requestor_name (only "
 "present if requestor allowed the name to be shown on this site)."
-msgstr ""
+msgstr "I tillegg er følgende attributter som ikke er del av Open311 v2-spesifikasjonen returnert: agency_sent_datetime, title (også returnert som del av description), interface_used, comment_count, requestor_name (kun tilstede hvis innsender tillot at navnet kunne vises på dette nettstedet)."
 
 #: templates/web/default/around/display_location.html:61
 msgid "Include stale reports"
@@ -1320,7 +1319,7 @@ msgid ""
 "Note that when including unconfirmed reports we use the date the report was "
 "created which may not be in the same month the report was confirmed so the "
 "numbers may jump about a little"
-msgstr ""
+msgstr "Merk at når vi tar med ubekreftede rapporter så brukes datoen rapporten var opprettet, hvilket ikke trenger være den samme måneden som rapporten var bekreftet, så tallene kan hoppe litt opp og ned."
 
 #: templates/web/default/admin/council_contacts.html:73
 #: templates/web/default/admin/council_edit.html:31
@@ -1748,7 +1747,7 @@ msgstr "Problemer innenfor grensene av:"
 
 #: db/alert_types_eha.pl:8
 msgid "Properties recently reported as put back to use on reportemptyhomes.com"
-msgstr ""
+msgstr "Eiendommer nylig rapportert som gått tilbake i bruk på reportemptyhomes.com"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:498
 msgid "Property type:"
@@ -2006,7 +2005,6 @@ msgid "Search:"
 msgstr "Søk:"
 
 #: templates/web/default/alert/list.html:41
-#, fuzzy
 msgid ""
 "Select which type of alert you'd like and click the button for an RSS feed, "
 "or enter your email address to subscribe to an email alert."
@@ -2028,7 +2026,7 @@ msgstr "Tjeneste:"
 
 #: templates/web/emptyhomes/static/about.html:21
 msgid "Shelter Cymru"
-msgstr ""
+msgstr "Shelter Cymru"
 
 #: templates/web/emptyhomes/static/about.html:23
 msgid ""
@@ -2252,7 +2250,7 @@ msgstr ""
 msgid ""
 "Thank you for using ReportEmptyHomes.com. Your action is already helping to "
 "resolve the UK&rsquo;s empty homes crisis."
-msgstr ""
+msgstr "Takk for at du bruker ReportEmptyHomes.com. Ditt bidrag bidrar allerede for å løse UKs tomme hjem-krise."
 
 #: templates/web/default/around/around_index.html:44
 msgid ""
@@ -2783,16 +2781,14 @@ msgstr ""
 "faq#privacy\">personvernpolicy.</a>"
 
 #: templates/web/emptyhomes/contact/blurb.html:2
-#, fuzzy
 msgid ""
 "We&rsquo;d love to hear what you think about this website. Just fill in the "
 "form. Please don&rsquo;t contact us about individual empty homes; use the "
 "box accessed from <a href=\"/\">the front page</a>."
 msgstr ""
 "Vi vil gjerne høre hva du tenker om dette nettstedet.  Det er bare å fylle "
-"inn skjemaet. Vær så snill å ikke kontakte oss om individuelle tomme hjem.  "
-"For det bør du i stedet bruke boksen tilgjengelig fra <a href=\"/"
-"\">forsiden</a>."
+"inn skjemaet. Vær så snill å ikke kontakte oss om individuelle tomme hjem. "
+"For det bør du i stedet bruke boksen tilgjengelig fra <a href=\"/\">forsiden</a>."
 
 #: templates/web/default/contact/blurb.html:8
 msgid ""
@@ -2821,7 +2817,7 @@ msgid ""
 "With request searches, it is also possible to search for agency_responsible "
 "to limit the requests to those sent to a single administration.  The search "
 "term is the administration ID provided by <a href=\"%s\">MaPit</a>."
-msgstr ""
+msgstr "Når du søker etter forespørsler, så er det også mulig å søke etter agency_responsible for å begrense det til forespørsler som er sendt til en enkelt adminstrasjon. Søktetermen er administrasjons-IDen som oppgitt av <a href=\"%s\">MaPit</a>."
 
 #: templates/web/default/questionnaire/index.html:104
 msgid ""
@@ -2870,13 +2866,10 @@ msgstr ""
 "informasjon, eller lignende:"
 
 #: templates/web/default/reports/council.html:71
-#, fuzzy
 msgid ""
 "You can <a href=\"%s\">view all reports for the council</a> or <a href=\"/"
 "reports\">show all councils</a>."
-msgstr ""
-"Du kan <a href=\"%s\">se mindre detaljer</a> eller gå tilbake og <a href=\"/"
-"reports\">se alle administrasjonene</a>."
+msgstr "Du kan <a href=\"%s\">se alle rapporter for administrasjonen</a> eller <a href=\"/reports\">se alle administrasjonene</a>."
 
 #: templates/web/default/reports/council.html:73
 msgid "You can <a href=\"/reports\">show all councils</a>."
@@ -2924,14 +2917,12 @@ msgid "You have been signed out"
 msgstr "Du er allerede logget ut"
 
 #: templates/web/default/report/new/fill_in_details_form.html:7
-#, fuzzy
 msgid ""
 "You have located the problem at the point marked with a purple pin on the "
 "map. If this is not the correct location, simply click on the map again. "
 msgstr ""
 "Du har plassert problemet ved punktet i kartet som er markert med en lilla "
-"nål.  Hvis dette ikke er korrekt plassering kan du klikke i kartet på nytt "
-"for å flytte problemet."
+"nål.  Hvis dette ikke er korrekt plassering kan du klikke i kartet på nytt."
 
 #: templates/web/default/tokens/confirm_alert.html:7
 msgid "You have successfully confirmed your alert."
@@ -2945,13 +2936,10 @@ msgstr "Du har nå lykkes med å bekrefte ditt problem"
 # "portalen" ?
 #: templates/web/default/tokens/confirm_update.html:11
 #: templates/web/default/tokens/confirm_update.html:12
-#, fuzzy
 msgid ""
 "You have successfully confirmed your update and you can now <a href=\"%s"
 "\">view it on the site</a>."
-msgstr ""
-"Du har nå bekreftet din oppdatering <a href=\"%s\">og kan lese om problemet "
-"på portalen</a>."
+msgstr "Du har nå bekreftet din oppdatering <a href=\"%s\">og kan se den på dette nettstedet</a>."
 
 #: templates/web/default/tokens/confirm_alert.html:11
 msgid "You have successfully created your alert."
