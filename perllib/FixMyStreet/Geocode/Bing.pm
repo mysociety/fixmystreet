@@ -64,4 +64,36 @@ sub string {
     return { error => $error };
 }
 
+sub reverse {
+    my ( $latitude, $longitude, $cache ) = @_;
+
+    # Get nearest road-type thing from Bing
+    my $key = mySociety::Config::get('BING_MAPS_API_KEY', '');
+    if ($key) {
+        my $url = "http://dev.virtualearth.net/REST/v1/Locations/$latitude,$longitude?c=en-GB&key=$key";
+        my $j;
+        if ( $cache ) {
+            my $cache_dir = FixMyStreet->config('GEO_CACHE') . 'bing/';
+            my $cache_file = $cache_dir . md5_hex($url);
+
+            if (-s $cache_file) {
+                $j = File::Slurp::read_file($cache_file);
+            } else {
+                $j = LWP::Simple::get($url);
+                File::Path::mkpath($cache_dir);
+                File::Slurp::write_file($cache_file, $j) if $j;
+            }
+        } else {
+            $j = LWP::Simple::get($url);
+        }
+
+        if ($j) {
+            $j = JSON->new->utf8->allow_nonref->decode($j);
+            return $j;
+        }
+    }
+
+    return undef;
+}
+
 1;
