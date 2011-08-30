@@ -1,0 +1,6 @@
+#!/bin/bash
+#
+# Kill parentless processes still hanging around
+
+pkill -HUP -P 1 -u $1 -f "perl.*fixmystreet_app"
+
