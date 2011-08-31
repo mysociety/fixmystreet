@@ -8,12 +8,14 @@ $(function(){
     $('#pc').focus();
 
     $('input[type=submit]').removeAttr('disabled');
+    /*
     $('#mapForm').submit(function() {
         if (this.submit_problem) {
             $('input[type=submit]', this).prop("disabled", true);
         }
         return true;
     });
+    */
 
     if (!$('#been_fixed_no').prop('checked') && !$('#been_fixed_unknown').prop('checked')) {
         $('#another_qn').hide();
@@ -32,6 +34,49 @@ $(function(){
     function email_alert_close() {
         $('#email_alert_box').hide('fast');
     }
+
+    // add in handling for html5 form types...
+    // should be removed if/when jQuery supports these by default
+    jQuery.event.add(this, "keypress.specialSubmit", function( e ) {
+        var elem = e.target,
+            type = elem.type;
+
+        if ( ( type === "email" || type === "url" ) && jQuery( elem ).closest("form").length && e.keyCode === 13 ) {
+            e.liveFired = undefined;
+            return jQuery.fn.trigger( "submit", this, arguments );
+        }
+    });
+
+    jQuery.expr.filters[ 'email' ] = function( elem ) {
+                        return "email" === elem.type;
+                };
+
+    $("#mapForm").validate({
+        onkeyup: false,
+        errorElement: 'div',
+        errorClass: 'form-error',
+        errorPlacement: function( error, element ) {
+            element.parent('div').before( error );
+        },
+        submitHandler: function(form) {
+            if (form.submit_problem) {
+                $('input[type=submit]', form).prop("disabled", true);
+            }
+
+            form.submit();
+        }
+    });
+
+    /* set correct required status depending on what we submit */
+    $('#submit_sign_in').click( function(e) { 
+        $('#password_sign_in').addClass('required');
+        $('#form_name').removeClass('required');
+    } );
+
+    $('#submit_register').click( function(e) { 
+        $('#password_sign_in').removeClass('required');
+        $('#form_name').addClass('required');
+    } );
 
     $('#email_alert').click(function(e) {
         if (!$('#email_alert_box').length)
