@@ -19,7 +19,7 @@ __PACKAGE__->config(
     render_die     => 1,
     expose_methods => [
         'loc', 'nget', 'tprintf', 'display_crosssell_advert', 'prettify_epoch',
-        'add_links',
+        'add_links', 'css',
     ],
     FILTERS => {
         escape_js => \&escape_js,
@@ -163,6 +163,16 @@ sub html_filter {
         s/'/&#39;/g;
     }
     return $text;
+}
+
+my %css_hash;
+sub css {
+    my ( $self, $c, $file ) = @_;
+    unless ($css_hash{$file}) {
+        my $path = FixMyStreet->path_to('web', $file);
+        $css_hash{$file} = ( stat( $path ) )[9];
+    }
+    return "$file?$css_hash{$file}";
 }
 
 1;
