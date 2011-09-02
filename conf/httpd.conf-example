@@ -16,6 +16,7 @@
 #         # on production servers these are run under fastcgi
 #         Options +ExecCGI
 #         AddHandler cgi-script .cgi
+#         AllowOverride None
 #     </Directory>
 # 
 #     <Directory /home/yourname/fixmystreet/web-admin>
@@ -59,6 +60,14 @@ ProxyPassReverse /mapit/ http://mapit.mysociety.org/
 # serve static files directly
 RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f
 RewriteRule /(.+) /$1 [L]
+
+# Performance things
+ExpiresActive On
+ExpiresByType text/css "access plus 10 years"
+ExpiresByType application/javascript "access plus 10 years"
+<Location /js/>
+    AddOutputFilter DEFLATE js
+</Location>
 
 # Don't want jslib being passed to Catalyst
 RewriteRule ^/jslib(.*)                 /jslib$1 [L,PT]
