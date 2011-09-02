@@ -12,7 +12,4 @@
 
 DIRECTORY=$(cd `dirname $0` && pwd)
 
-for file in `find $DIRECTORY/../ -name "*.scss" ! -name "_*"`; do
-    sass --style compressed $file ${file/scss/css}
-done
-
+sass --scss --update --style compressed $DIRECTORY/..
