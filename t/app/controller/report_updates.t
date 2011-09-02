@@ -418,7 +418,7 @@ subtest 'check non authority user cannot change set state' => sub {
                 id => $report_id,
                 name => $user->name,
                 may_show_name => 1,
-                add_alert => 0,
+                add_alert => undef,
                 photo => '',
                 update => 'this is a forbidden update',
                 state => 'fixed - council',
@@ -441,19 +441,15 @@ for my $state ( qw/unconfirmed hidden partial/ ) {
         $user->update;
 
         $mech->get_ok("/report/$report_id");
-        $mech->submit_form_ok( {
-                form_number => 2,
-                fields => {
+        $mech->post_ok( "/report/update", {
                     submit_update => 1,
                     id => $report_id,
                     name => $user->name,
-                    rznvy => $user->email,
                     may_show_name => 1,
-                    add_alert => 0,
+                    add_alert => undef,
                     photo => '',
                     update => 'this is a forbidden update',
                     state => $state,
-                },
             },
             'submitted with state',
         );
@@ -473,7 +469,7 @@ for my $test (
         fields => {
             name => $user->name,
             may_show_name => 1,
-            add_alert => 0,
+            add_alert => undef,
             photo => '',
             update => 'Set state to investigating',
             state => 'investigating',
@@ -485,7 +481,7 @@ for my $test (
         fields => {
             name => $user->name,
             may_show_name => 1,
-            add_alert => 0,
+            add_alert => undef,
             photo => '',
             update => 'Set state to planned',
             state => 'planned',
@@ -497,7 +493,7 @@ for my $test (
         fields => {
             name => $user->name,
             may_show_name => 1,
-            add_alert => 0,
+            add_alert => undef,
             photo => '',
             update => 'Set state to in progress',
             state => 'in progress',
@@ -509,7 +505,7 @@ for my $test (
         fields => {
             name => $user->name,
             may_show_name => 1,
-            add_alert => 0,
+            add_alert => undef,
             photo => '',
             update => 'Set state to closed',
             state => 'closed',
@@ -521,7 +517,7 @@ for my $test (
         fields => {
             name => $user->name,
             may_show_name => 1,
-            add_alert => 0,
+            add_alert => undef,
             photo => '',
             update => 'Set state to fixed',
             state => 'fixed',
@@ -533,7 +529,7 @@ for my $test (
         fields => {
             name => $user->name,
             may_show_name => 1,
-            add_alert => 0,
+            add_alert => undef,
             photo => '',
             update => 'Set state to confirmed',
             state => 'confirmed',
@@ -545,7 +541,7 @@ for my $test (
         fields => {
             name => $user->name,
             may_show_name => 1,
-            add_alert => 0,
+            add_alert => undef,
             photo => '',
             update => 'Set state to fixed',
             state => 'fixed',
