@@ -413,19 +413,15 @@ subtest 'check non authority user cannot change set state' => sub {
     $user->update;
 
     $mech->get_ok("/report/$report_id");
-    $mech->submit_form_ok( {
-            form_number => 2,
-            fields => {
+    $mech->post_ok( "/report/update", {
                 submit_update => 1,
                 id => $report_id,
                 name => $user->name,
-                rznvy => $user->email,
                 may_show_name => 1,
                 add_alert => 0,
                 photo => '',
                 update => 'this is a forbidden update',
                 state => 'fixed - council',
-            },
         },
         'submitted with state',
     );
