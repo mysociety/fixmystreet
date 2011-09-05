@@ -24,16 +24,16 @@ $mech->not_logged_in_ok;
 $mech->get_ok('/auth');
 
 for my $test (
-    [ ''                         => 'enter your email' ],
-    [ 'not an email'             => 'check your email address is correct' ],
-    [ 'bob@foo'                  => 'check your email address is correct' ],
-    [ 'bob@foonaoedudnueu.co.uk' => 'check your email address is correct' ],
+    [ ''                         => 'Please enter your email' ],
+    [ 'not an email'             => 'Please check your email address is correct' ],
+    [ 'bob@foo'                  => 'Please check your email address is correct' ],
+    [ 'bob@foonaoedudnueu.co.uk' => 'Please check your email address is correct' ],
   )
 {
     my ( $email, $error_message ) = @$test;
     pass "--- testing bad email '$email' gives error '$error_message'";
     $mech->get_ok('/auth');
-    $mech->content_lacks($error_message);
+    is_deeply $mech->form_errors, [], 'no errors initially';
     $mech->submit_form_ok(
         {
             form_name => 'general_auth',
@@ -43,7 +43,7 @@ for my $test (
         "try to create an account with email '$email'"
     );
     is $mech->uri->path, '/auth', "still on auth page";
-    $mech->content_contains($error_message);
+    is_deeply $mech->form_errors, [ $error_message ], 'no errors initially';
 }
 
 # create a new account
