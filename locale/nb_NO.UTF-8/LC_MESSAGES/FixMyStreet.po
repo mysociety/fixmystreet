@@ -2349,7 +2349,7 @@ msgid ""
 "The confirmation email <strong>may</strong> take a few minutes to arrive "
 "&mdash; <em>please</em> be patient."
 msgstr ""
-"Bekreftelsese-posten <strong>kan</strong>bruke noen minutter før den kommer "
+"Bekreftelsese-posten <strong>kan</strong> bruke noen minutter før den kommer "
 "frem &mdash; så vær tålmodig."
 
 #: templates/web/default/questionnaire/index.html:51
