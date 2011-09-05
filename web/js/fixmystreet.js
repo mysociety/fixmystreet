@@ -82,7 +82,6 @@ $(function(){
     $('#submit_sign_in').click( function(e) { 
         $('#form_category').addClass('required validCategory').removeClass('valid');
         $('#form_name').removeClass('required');
-        alert( 'submit sign in');
     } );
 
     $('#submit_register').click( function(e) { 
