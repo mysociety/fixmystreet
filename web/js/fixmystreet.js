@@ -37,6 +37,7 @@ $(function(){
 
     // add in handling for html5 form types...
     // should be removed if/when jQuery supports these by default
+    // NB: required alteration of validation plugin code also
     jQuery.event.add(this, "keypress.specialSubmit", function( e ) {
         var elem = e.target,
             type = elem.type;
@@ -51,10 +52,17 @@ $(function(){
                         return "email" === elem.type;
                 };
 
+    // FIXME - needs to use translated string
     jQuery.validator.addMethod('validCategory', function(value, element) {
-        return this.optional(element) || value != '-- Pick a category --'; }, "Please choose a category" );
+        return this.optional(element) || value != '-- Pick a category --'; }, validation_strings['category'] );
+
+    // TODO - test in older browsers
+    jQuery.validator.addMethod('validName', function(value, element) {
+        var validNamePat = /\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i;
+        return this.optional(element) || value.length > 5 && value.match( /\S/ ) && !value.match( validNamePat ) }, validation_strings['category'] );
 
     $("#mapForm").validate({
+        messages: validation_strings,
         onkeyup: false,
         errorElement: 'div',
         errorClass: 'form-error',
@@ -73,19 +81,17 @@ $(function(){
     /* set correct required status depending on what we submit */
     $('#submit_sign_in').click( function(e) { 
         $('#form_category').addClass('required validCategory').removeClass('valid');
-        $('#password_sign_in').addClass('required');
         $('#form_name').removeClass('required');
+        alert( 'submit sign in');
     } );
 
     $('#submit_register').click( function(e) { 
         $('#form_category').addClass('required validCategory').removeClass('valid');
-        $('#password_sign_in').removeClass('required');
         $('#form_name').addClass('required');
     } );
 
     $('#problem_submit > input[type="submit"]').click( function(e) { 
         $('#form_category').addClass('required validCategory').removeClass('valid');
-        $('#password_sign_in').removeClass('required');
         $('#form_name').addClass('required');
     } );
 

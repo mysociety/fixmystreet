@@ -8,6 +8,8 @@
             <link rel="stylesheet" type="text/css" href="/css/ie6.css">
         <![endif]-->
 
+        [% INCLUDE 'js_validation_msgs.html' %]
+
         [% INCLUDE 'common_header_tags.html' %]
                 
         [% IF c.req.uri.host == 'osm.fixmystreet.com' %]
@@ -15,6 +17,7 @@
         [% END %]
 
         [% INCLUDE 'tracking_code.html' %]
+
     </head>
     <body>
 
