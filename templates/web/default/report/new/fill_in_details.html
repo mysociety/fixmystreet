@@ -4,14 +4,14 @@
 %]
 
 [% IF report.used_map %]
-<form action="[% c.uri_for('/report/new') %]" method="post" name="mapForm" id="mapForm"[% IF c.cobrand.allow_photo_upload %] enctype="multipart/form-data"[% END %]>
+<form action="[% c.uri_for('/report/new') %]" method="post" name="mapForm" id="mapForm"[% IF c.cobrand.allow_photo_upload %] enctype="multipart/form-data"[% END %] class="validate">
 [% IF c.req.params.map_override %]
 <input type="hidden" name="map_override" value="[% c.req.params.map_override | html %]">
 [% END %]
 <input type="hidden" name="pc" value="[% pc | html %]">
 [% c.cobrand.form_elements('mapForm') %]
 [% ELSE %]
-<form action="[% c.uri_for('/report/new') %]" method="post" name="mapSkippedForm"[% IF c.cobrand.allow_photo_upload %] enctype="multipart/form-data"[% END %]>
+<form action="[% c.uri_for('/report/new') %]" method="post" name="mapSkippedForm"[% IF c.cobrand.allow_photo_upload %] enctype="multipart/form-data"[% END %] class="validate">
 <input type="hidden" name="pc" value="[% pc | html %]">
 <input type="hidden" name="skipped" value="1">
 [% c.cobrand.form_elements('mapSkippedForm') %]

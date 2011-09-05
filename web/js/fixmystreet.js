@@ -61,7 +61,7 @@ $(function(){
         var validNamePat = /\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i;
         return this.optional(element) || value.length > 5 && value.match( /\S/ ) && !value.match( validNamePat ) }, validation_strings['category'] );
 
-    $("#mapForm").validate({
+    $("form.validate").validate({
         messages: validation_strings,
         onkeyup: false,
         errorElement: 'div',

@@ -35,7 +35,7 @@
         robots => 'noindex,nofollow';
 %]
 
-<form action="[% c.uri_for('/report/new') %]" method="post" name="mapForm" id="mapForm" enctype="multipart/form-data">
+<form action="[% c.uri_for('/report/new') %]" method="post" name="mapForm" id="mapForm" enctype="multipart/form-data" class="validate">
 [% IF c.req.params.map_override %]
 <input type="hidden" name="map_override" value="[% c.req.params.map_override | html %]">
 [% END %]

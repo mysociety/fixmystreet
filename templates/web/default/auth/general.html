@@ -2,7 +2,7 @@
 
 <h1>[% loc('Sign in') %]</h1>
 
-<form action="[% c.uri_for() %]" method="post" name="general_auth">
+<form action="[% c.uri_for() %]" method="post" name="general_auth" class="validate">
 <input type="hidden" name="r" value="[% c.req.params.r | html %]">
     
     [% IF email_error;
@@ -25,7 +25,7 @@
 
     <div class="form-field">
         <label class="n" for="email">[% loc('Your email address:') %]</label>
-        <input type="email" size="30" id="email" name="email" value="[% email | html %]">
+        <input type="email" class="required email" size="30" id="email" name="email" value="[% email | html %]">
     </div>
 
 <div id="form_sign_in">
