@@ -944,6 +944,12 @@ subtest 'report search' => sub {
 
     $mech->get_ok('/admin/search_reports?search=' . $report->user->email);
     $mech->content_like( qr{<tr [^>]*hidden[^>]*> \s* <td> \s* $r_id \s* </td>}xs );
+
+    $report->state('fixed - user');
+    $report->update;
+
+    $mech->get_ok('/admin/search_reports?search=' . $report->user->email);
+    $mech->content_like( qr{href="http://[^/]*[^.]/report/$r_id/">$r_id</a>} );
 };
 
 subtest 'search abuse' => sub {
