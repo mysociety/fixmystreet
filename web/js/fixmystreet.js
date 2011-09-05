@@ -51,6 +51,9 @@ $(function(){
                         return "email" === elem.type;
                 };
 
+    jQuery.validator.addMethod('validCategory', function(value, element) {
+        return this.optional(element) || value != '-- Pick a category --'; }, "Please choose a category" );
+
     $("#mapForm").validate({
         onkeyup: false,
         errorElement: 'div',
@@ -69,14 +72,23 @@ $(function(){
 
     /* set correct required status depending on what we submit */
     $('#submit_sign_in').click( function(e) { 
+        $('#form_category').addClass('required validCategory').removeClass('valid');
         $('#password_sign_in').addClass('required');
         $('#form_name').removeClass('required');
     } );
 
     $('#submit_register').click( function(e) { 
+        $('#form_category').addClass('required validCategory').removeClass('valid');
         $('#password_sign_in').removeClass('required');
         $('#form_name').addClass('required');
     } );
+
+    $('#problem_submit > input[type="submit"]').click( function(e) { 
+        $('#form_category').addClass('required validCategory').removeClass('valid');
+        $('#password_sign_in').removeClass('required');
+        $('#form_name').addClass('required');
+    } );
+
 
     $('#email_alert').click(function(e) {
         if (!$('#email_alert_box').length)
