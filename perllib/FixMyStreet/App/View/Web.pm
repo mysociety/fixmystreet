@@ -19,7 +19,7 @@ __PACKAGE__->config(
     render_die     => 1,
     expose_methods => [
         'loc', 'nget', 'tprintf', 'display_crosssell_advert', 'prettify_epoch',
-        'add_links', 'css',
+        'add_links', 'version',
     ],
     FILTERS => {
         escape_js => \&escape_js,
@@ -165,14 +165,14 @@ sub html_filter {
     return $text;
 }
 
-my %css_hash;
-sub css {
+my %version_hash;
+sub version {
     my ( $self, $c, $file ) = @_;
-    unless ($css_hash{$file}) {
+    unless ($version_hash{$file}) {
         my $path = FixMyStreet->path_to('web', $file);
-        $css_hash{$file} = ( stat( $path ) )[9];
+        $version_hash{$file} = ( stat( $path ) )[9];
     }
-    return "$file?$css_hash{$file}";
+    return "$file?$version_hash{$file}";
 }
 
 1;
