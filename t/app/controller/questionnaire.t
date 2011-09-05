@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
+use DateTime;
 
 use FixMyStreet::TestMech;
 use FixMyStreet::App::Controller::Questionnaire;
@@ -15,7 +16,10 @@ my $user =
   ->find_or_create( { email => 'test@example.com', name => 'Test User' } );
 ok $user, "created test user";
 
-my $report_time = '2011-03-01 12:00:00';
+my $dt = DateTime->now()->subtract( weeks => 5 );
+my $report_time = $dt->ymd . ' ' . $dt->hms;
+my $sent = $dt->add( minutes => 5 );
+my $sent_time = $sent->ymd . ' ' . $sent->hms;
 
 my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
     {
@@ -31,7 +35,7 @@ my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
         state              => 'confirmed',
         confirmed          => $report_time,
         lastupdate         => $report_time,
-        whensent           => '2011-03-01 12:05:00',
+        whensent           => $sent_time,
         lang               => 'en-gb',
         service            => '',
         cobrand            => 'default',
@@ -334,10 +338,11 @@ $mech->get_ok("/Q/" . $token);
 $mech->content_contains( 'should have reported what they have done' );
 
 # Test already answered the ever reported question, so not shown again
+$dt = $dt->add( weeks => 4 );
 my $questionnaire2 = FixMyStreet::App->model('DB::Questionnaire')->find_or_create(
     {
         problem_id => $report->id,
-        whensent => '2011-03-28 12:00:00',
+        whensent => $dt->ymd . ' ' . $dt->hms,
         ever_reported => 1,
     }
 );

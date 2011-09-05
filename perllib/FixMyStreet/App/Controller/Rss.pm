@@ -265,8 +265,8 @@ sub add_row : Private {
     }
 
     if ( $row->{used_map} ) {
-        my $address = $c->cobrand->find_closest_address_for_rss( $row->{latitude}, $row->{longitude} );
-        $item{description} .= ent("\n<br>$address");
+        #my $address = $c->cobrand->find_closest_address_for_rss( $row->{latitude}, $row->{longitude} );
+        #$item{description} .= ent("\n<br>$address");
     }
 
     my $recipient_name = $c->cobrand->contact_name;
