@@ -79,12 +79,11 @@ $map_width: 500px;
     p#expl {
         text-align: center;
         font-size: 150%;
-        margin: 0 2em;
+        margin: 0;
     }
 
     #postcodeForm {
-        display: table;
-        _width: 33em;
+        display: table; /* IE6 has fixed width set below */
         text-align: center;
         font-size: 150%;
         margin: 1em auto;
@@ -119,14 +118,19 @@ $map_width: 500px;
         }
     }
 
+    #front_stats {
+        margin: 0 auto;
+        display: table; /* IE6 is set to floats below */
+        border-spacing: 2em 1em;
+    }
+
     #front_stats div {
         text-align: center;
         width: 5.5em;
         -moz-border-radius: 0.5em;
         -webkit-border-radius: 0.5em;
         border-radius: 0.5em;
-        float: left;
-        margin: 0 1em 1em;
+        display: table-cell;
 
         big {
             font-size: 150%;
@@ -145,6 +149,10 @@ $map_width: 500px;
     }
     #front_recent > h2:first-child, #front_intro > h2:first-child {
         margin-top: 0;
+    }
+
+    #front_photos {
+        text-align: center;
     }
 
     // Forms
@@ -230,7 +238,7 @@ $map_width: 500px;
     }
 
     #map {
-        border: solid 1px #000000;
+        border: solid 1px #666666;
         width: $map_width; // Twice a tile width
         height: $map_width;
         overflow: hidden;
@@ -539,6 +547,18 @@ $map_width: 500px;
 .olControlPermalink {
     bottom: 3px !important;
     right: 3px;
+}
+
+.ie6 {
+    #mysociety {
+        #front_stats div {
+            float: left;
+            margin: 0 1em 1em;
+        }
+        #postcodeForm {
+            width: 33em;
+        }
+    }
 }
 
 // Printing, SCSS doesn't handle @media nesting
