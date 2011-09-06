@@ -66,6 +66,8 @@ $(function(){
         onkeyup: false,
         errorElement: 'div',
         errorClass: 'form-error',
+        // we do this to stop things jumping around on blur
+        success: function (err) { err.addClass('label-valid').html( '&nbsp;' ) },
         errorPlacement: function( error, element ) {
             element.parent('div').before( error );
         },
@@ -79,19 +81,19 @@ $(function(){
     });
 
     /* set correct required status depending on what we submit */
-    $('#submit_sign_in').click( function(e) { 
+    $('#submit_sign_in').click( function(e) {
         $('#form_category').addClass('required validCategory').removeClass('valid');
-        $('#form_name').removeClass('required');
+        $('#form_name').removeClass();
     } );
 
     $('#submit_register').click( function(e) { 
         $('#form_category').addClass('required validCategory').removeClass('valid');
-        $('#form_name').addClass('required');
+        $('#form_name').addClass('required validName');
     } );
 
     $('#problem_submit > input[type="submit"]').click( function(e) { 
         $('#form_category').addClass('required validCategory').removeClass('valid');
-        $('#form_name').addClass('required');
+        $('#form_name').addClass('required validName');
     } );
 
     $('#update_post').click( function(e) { 
