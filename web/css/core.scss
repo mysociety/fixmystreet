@@ -103,6 +103,12 @@ $map_width: 500px;
         }
     }
 
+    #geolocate_para {
+        font-size: 70%;
+        margin: 2px 0 0 0;
+        text-align: right;
+    }
+
     #front_intro {
         float: left;
         width: 48%;
@@ -232,6 +238,7 @@ $map_width: 500px;
         background-color: #f1f1f1;
     }
 
+    /* Drag is only present in noscript form */
     #drag {
         position: absolute;
         width: $map_width;
