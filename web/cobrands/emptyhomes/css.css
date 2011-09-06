@@ -174,10 +174,16 @@ a:hover, a:active {
     padding: 20px;
     overflow: auto;
 }
+
+.ie6 #emptyhomes-footer {
+    zoom: 1;
+}
+
 #emptyhomes-footer div {
     float: left;
     margin-right: 2em;
 }
+
 #emptyhomes-footer a {
     color: #FFFFFF;
 }
