@@ -29,6 +29,7 @@ h2 {
 
 select, input, textarea {
     font-size: 99%;
+    max-width: 99%;
 }
 
 #mysociety {
@@ -203,6 +204,41 @@ select, input, textarea {
     }
     .r {
         float: right;
+    }
+}
+
+@media all and (max-width: 50em) {
+    #logo {
+        display: none;
+    }
+    #header {
+        font-size: 150%;
+    }
+    #navigation {
+        position: static;
+        border-top: solid 2px $header_colour;
+        border-bottom: solid 2px $header_colour;
+        margin: 1em 0;
+        padding: 0.15em 0.5em;
+        text-align: center;
+        background-color: $header_back;
+        color: $header_colour;
+
+        a:hover, a:active {
+            background-color: $header_colour;
+            color: $header_back;
+            -moz-border-radius: 0.5em;
+            -webkit-border-radius: 0.5em;
+            border-radius: 0.5em;
+        }
+    }
+    #footer {
+        width: auto;
+        padding: 0 1em;
+        border-top: none;
+    }
+    #wrapper {
+        margin: 0em 1em;
     }
 }
 
