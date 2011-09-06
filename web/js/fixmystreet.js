@@ -75,7 +75,7 @@ $(function(){
             }
 
             form.submit();
-        }
+        },
     });
 
     /* set correct required status depending on what we submit */
@@ -94,6 +94,9 @@ $(function(){
         $('#form_name').addClass('required');
     } );
 
+    $('#update_post').click( function(e) { 
+        $('#form_name').addClass('required').removeClass('valid');
+    } );
 
     $('#email_alert').click(function(e) {
         if (!$('#email_alert_box').length)
