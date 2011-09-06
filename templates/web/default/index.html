@@ -29,11 +29,11 @@
 
 <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
     <label for="pc">[% question %]:</label>
-    &nbsp;<input type="text" name="pc" value="" id="pc" size="10" maxlength="200">
-    &nbsp;<input type="submit" value="[% loc('Go') %]" id="submit">
+    <span><input type="text" name="pc" value="" id="pc" size="10" maxlength="200">
+    <input type="submit" value="[% loc('Go') %]" id="submit">
+    </span>
     [% c.cobrand.form_elements('postcodeForm') %]
 </form>
-
 
 <div id="front_intro">
 
@@ -59,22 +59,24 @@
 
 [% IF probs.size || recent_photos.size %]
 <div id="front_recent">
+    <h2>[% loc('Recently reported problems') %]</h2>
     [% IF recent_photos.size %]
-        <h2>[% loc('Photos of recent reports') %]</h2>
+        <p id="front_photos">
         [% FOREACH p IN recent_photos %]
             <a href="/report/[% p.id %]"><img border="0" height="100"
                 src="/photo?tn=1;id=[% p.id %]" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
         [% END %]
+        </p>
     [% END %]
 
     [% IF probs.size %]
 
-        <h2>[% loc('Recently reported problems') %]</h2>
     
-        <ul>
+        <ul id="nearby_lists">
         [% FOREACH p IN probs %]
             <li>
                 <a href="/report/[% p.id %]">[% p.title | html %]</a>
+                <small>[% prettify_epoch( p.confirmed_local.epoch, 1 ) %]</small>
             </li>    
         [% END %]
         </ul>
