@@ -61,13 +61,15 @@ $(function(){
         var validNamePat = /\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i;
         return this.optional(element) || value.length > 5 && value.match( /\S/ ) && !value.match( validNamePat ) }, validation_strings['category'] );
 
+    var form_submitted = 0;
+
     $("form.validate").validate({
         messages: validation_strings,
         onkeyup: false,
         errorElement: 'div',
         errorClass: 'form-error',
         // we do this to stop things jumping around on blur
-        success: function (err) { err.addClass('label-valid').html( '&nbsp;' ) },
+        success: function (err) { if ( form_submitted ) { err.addClass('label-valid').html( '&nbsp;' ); } else { err.addClass('label-valid-hidden'); } },
         errorPlacement: function( error, element ) {
             element.parent('div').before( error );
         },
@@ -79,6 +81,8 @@ $(function(){
             form.submit();
         },
     });
+
+    $('input[type=submit]').click( function(e) { form_submitted = 1; } );
 
     /* set correct required status depending on what we submit */
     $('#submit_sign_in').click( function(e) {

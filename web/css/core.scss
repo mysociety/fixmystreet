@@ -61,6 +61,15 @@ $map_width: 500px;
         background-color: white;
     }
 
+    div.label-valid-hidden {
+        display: none;
+        visibility: hidden;
+        height: 0px;
+        width: 0px;
+        margin: 0px;
+        padding: 0px;
+    }
+
     div.form-field {
         clear: both;
     }
