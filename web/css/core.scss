@@ -79,12 +79,11 @@ $map_width: 500px;
     p#expl {
         text-align: center;
         font-size: 150%;
-        margin: 0 2em;
+        margin: 0;
     }
 
     #postcodeForm {
-        display: table;
-        _width: 33em;
+        display: table; /* IE6 has fixed width set below */
         text-align: center;
         font-size: 150%;
         margin: 1em auto;
@@ -103,6 +102,12 @@ $map_width: 500px;
         }
     }
 
+    #geolocate_para {
+        font-size: 70%;
+        margin: 2px 0 0 0;
+        text-align: right;
+    }
+
     #front_intro {
         float: left;
         width: 48%;
@@ -113,14 +118,19 @@ $map_width: 500px;
         }
     }
 
+    #front_stats {
+        margin: 0 auto;
+        display: table; /* IE6 is set to floats below */
+        border-spacing: 2em 1em;
+    }
+
     #front_stats div {
         text-align: center;
         width: 5.5em;
         -moz-border-radius: 0.5em;
         -webkit-border-radius: 0.5em;
         border-radius: 0.5em;
-        float: left;
-        margin: 0 1em 1em;
+        display: table-cell;
 
         big {
             font-size: 150%;
@@ -139,6 +149,10 @@ $map_width: 500px;
     }
     #front_recent > h2:first-child, #front_intro > h2:first-child {
         margin-top: 0;
+    }
+
+    #front_photos {
+        text-align: center;
     }
 
     // Forms
@@ -224,7 +238,7 @@ $map_width: 500px;
     }
 
     #map {
-        border: solid 1px #000000;
+        border: solid 1px #666666;
         width: $map_width; // Twice a tile width
         height: $map_width;
         overflow: hidden;
@@ -232,6 +246,7 @@ $map_width: 500px;
         background-color: #f1f1f1;
     }
 
+    /* Drag is only present in noscript form */
     #drag {
         position: absolute;
         width: $map_width;
@@ -534,6 +549,18 @@ $map_width: 500px;
     right: 3px;
 }
 
+.ie6 {
+    #mysociety {
+        #front_stats div {
+            float: left;
+            margin: 0 1em 1em;
+        }
+        #postcodeForm {
+            width: 33em;
+        }
+    }
+}
+
 // Printing, SCSS doesn't handle @media nesting
 
 @media print {
@@ -541,6 +568,64 @@ $map_width: 500px;
         #map_box { float: none; margin: 0 auto; }
         #mysociety { max-width: none; }
         #side { margin-right: 0; }
+    }
+}
+
+@media all and (max-width: 50em) {
+    #mysociety {
+        p#expl {
+            font-size: 110%;
+        }
+
+        #postcodeForm {
+            font-size: 100%;
+            span {
+                display: block;
+                font-size: 150%;
+            }
+            #submit {
+                font-size: 100%;
+            }
+        }
+
+        #geolocate_para {
+            font-size: 100%;
+        }
+
+        #front_intro {
+            float: none;
+            width: auto;
+        }
+        #front_recent {
+            margin-top: 1em;
+            float: none;
+            width: auto;
+            clear: both;
+        }
+        #front_photos {
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        #front_stats {
+            border-spacing: 0.5em 1em;
+        }
+
+        #form_sign_in_yes {
+            float: none;
+            width: auto;
+            padding-right: 0;
+            border-right: none;
+            margin-bottom: 1em;
+        }
+
+        #form_sign_in_no, #fieldset #form_sign_in_no {
+            float: none;
+            width: auto;
+            padding-left: 0;
+            clear: none;
+            margin-bottom: 1em;
+        }
+
     }
 }
 

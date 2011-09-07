@@ -57,4 +57,32 @@ $(function(){
         timer = window.setTimeout(email_alert_close, 2000);
     });
 
+    // Geolocation
+    if (geo_position_js.init()) {
+        $('#postcodeForm').append('<p id="geolocate_para">Or <a href="#" id="geolocate_link">locate me automatically</a>').css({ "padding-bottom": "0.5em" });
+        $('#geolocate_link').click(function(e) {
+            e.preventDefault();
+            // Spinny thing!
+            $('#geolocate_para').append(' <img src="/i/flower.gif" alt="" align="bottom">');
+            geo_position_js.getCurrentPosition(function(pos) {
+                $('#geolocate_para img').remove();
+                var latitude = pos.coords.latitude;
+                var longitude = pos.coords.longitude;
+                location.href = '/around?latitude=' + latitude + ';longitude=' + longitude;
+            }, function(err) {
+                $('#geolocate_para img').remove();
+                if (err.code == 1) { // User said no
+                } else if (err.code == 2) { // No position
+                    $('#geolocate_para').html("Could not look up location");
+                } else if (err.code == 3) { // Too long
+                    $('#geolocate_para').html("No result returned");
+                } else { // Unknown
+                    $('#geolocate_para').html("Unknown error");
+                }
+            }, {
+                timeout: 10000
+            });
+        });
+    }
+
 });

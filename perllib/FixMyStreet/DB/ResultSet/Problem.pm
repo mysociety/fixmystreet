@@ -64,11 +64,14 @@ sub recent {
     my ( $rs ) = @_;
     my $key = "recent:$site_key";
     my $result = Memcached::get($key);
-    unless ($result) {
+    if ( $result ) {
+        # Need to reattach schema so that confirmed column gets reinflated.
+        $result->[0]->result_source->schema( $rs->result_source->schema );
+    } else {
         $result = [ $rs->search( {
             state => [ FixMyStreet::DB::Result::Problem->visible_states() ]
         }, {
-            columns => [ 'id', 'title' ],
+            columns => [ 'id', 'title', 'confirmed' ],
             order_by => { -desc => 'confirmed' },
             rows => 5,
         } )->all ];
