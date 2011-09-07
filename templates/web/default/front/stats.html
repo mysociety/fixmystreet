@@ -4,8 +4,6 @@
     # 'Template::Plugin::Number::Format'
 %]
 
-<h2>[% loc('FixMyStreet updates') %]</h2>
-
 [%
     stats = c.cobrand.front_stats_data();
 
@@ -43,4 +41,3 @@
     [% END %]
     <div>[% tprintf( updates_text, stats.updates ) | comma %]</div>
 </div>
-
