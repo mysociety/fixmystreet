@@ -54,6 +54,15 @@
     </p>
 
     <p>
+    [% loc('Council:') %] <select id='council' name='council'>
+        <option value=''>[% loc('No council') %]</option>
+        [% FOR council IN council_ids %]
+        <option value="[% council %]"[% ' selected' IF council == selected_council %]>[% council_details.$council.name %]</option>
+        [% END %]
+    </select>
+    </p>
+
+    <p>
     <input type="submit" name="getcounts"  size="30" id="getcounts" value="Get Count" />
     </p>
 </form>

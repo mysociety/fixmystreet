@@ -778,14 +778,7 @@ sub user_edit : Path('user_edit') : Args(1) {
     my $user = $c->model('DB::User')->find( { id => $id } );
     $c->stash->{user} = $user;
 
-    my @area_types = $c->cobrand->area_types;
-    my $areas = mySociety::MaPit::call('areas', \@area_types);
-
-    my @councils_ids = sort { strcoll($areas->{$a}->{name}, $areas->{$b}->{name}) } keys %$areas;
-    @councils_ids = $c->cobrand->filter_all_council_ids_list( @councils_ids );
-
-    $c->stash->{council_ids} = \@councils_ids;
-    $c->stash->{council_details} = $areas;
+    $c->forward('set_up_council_details');
 
     if ( $c->req->param('submit') ) {
         $c->forward('check_token');
@@ -838,6 +831,8 @@ sub stats : Path('stats') : Args(0) {
 
     $c->forward('check_page_allowed');
 
+    $c->forward('set_up_council_details');
+
     if ( $c->req->param('getcounts') ) {
 
         my ( $start_date, $end_date, @errors );
@@ -870,6 +865,12 @@ sub stats : Path('stats') : Args(0) {
 
         return 1 if @errors;
 
+        my %council;
+        $council{council} = { like => $c->req->param('council') } 
+            if $c->req->param('council');
+
+        $c->stash->{selected_council} = $c->req->param('council');
+
         my $field = 'confirmed';
 
         $field = 'created' if $c->req->param('unconfirmed');
@@ -882,6 +883,7 @@ sub stats : Path('stats') : Args(0) {
                     $field => { '>=', $start_date},
                     $field => { '<=', $end_date + $one_day },
                 ],
+                %council
             },
             {
                 select => [ 'state', { 'count' => 'me.id' } ],
@@ -1118,6 +1120,21 @@ sub check_page_allowed : Private {
     if ( !grep { $_ eq $page } keys %{ $c->stash->{allowed_pages} } ) {
         $c->detach( '/page_error_404_not_found', [ _('The requested URL was not found on this server.') ] );
     }
+
+    return 1;
+}
+
+sub set_up_council_details : Private {
+    my ($self, $c ) = @_;
+
+    my @area_types = $c->cobrand->area_types;
+    my $areas = mySociety::MaPit::call('areas', \@area_types);
+
+    my @councils_ids = sort { strcoll($areas->{$a}->{name}, $areas->{$b}->{name}) } keys %$areas;
+    @councils_ids = $c->cobrand->filter_all_council_ids_list( @councils_ids );
+
+    $c->stash->{council_ids} = \@councils_ids;
+    $c->stash->{council_details} = $areas;
 
     return 1;
 }
