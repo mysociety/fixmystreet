@@ -4,6 +4,28 @@
 <p>
 <strong>[% tprintf( loc( '%sreports between %s and %s' ), ( unconfirmed ? loc( 'All' ) _ ' ' : loc( 'Confirmed' ) _ ' ' ), start_date.ymd, end_date.ymd ) | html %]</strong>
 </p>
+[% IF bymonth %]
+<table>
+    <thead>
+        <td style="width: 8em"><strong>[% loc('Year') %]</strong></td>
+        <td style="width: 8em"><strong>[% loc('Month') %]</strong></td>
+        <td><strong>[% loc('Count') %]</strong></td>
+    </thead>
+    [% total = 0 %]
+    [% WHILE ( state = states.next ) %]
+    [% total = total + state.get_column( 'count' ) %]
+    <tr>
+        <td>[% state.get_column( 'c_year') | html %]</td>
+        <td>[% state.get_column( 'c_month') | html %]</td>
+        <td>[% state.get_column( 'count' ) %]</td>
+    </tr>
+    [% END %]
+    <tr>
+        <td colspan="2"><strong>[% loc( 'Total' ) %]</strong></td>
+        <td><strong>[% total %]</strong></td>
+    </tr>
+</table>
+[% ELSE %]
 <table>
     <thead>
         <td style="width: 8em"><strong>[% loc('Current state') %]</strong></td>
@@ -22,6 +44,7 @@
         <td><strong>[% total %]</strong></td>
     </tr>
 </table>
+[% END %]
 
 [% IF unconfirmed %]
     <p>
@@ -51,6 +74,10 @@
 
     <p>
     <input type="checkbox" name="unconfirmed" id="unconfirmed"[% unconfirmed ? ' checked' : '' %] /><label for="unconfirmed">[% loc('Include unconfirmed reports') %]</label>
+    </p>
+
+    <p>
+    <input type="checkbox" name="bymonth" id="bymonth"[% bymonth ? ' checked' : '' %] /><label for="bymonth">[% loc('By Date') %]</label>
     </p>
 
     <p>

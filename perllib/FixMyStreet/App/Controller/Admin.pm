@@ -865,7 +865,9 @@ sub stats : Path('stats') : Args(0) {
 
         return 1 if @errors;
 
-        my %council;
+        my $bymonth = $c->req->param('bymonth');
+        $c->stash->{bymonth} = $bymonth;
+        my ( %council, %dates );
         $council{council} = { like => $c->req->param('council') } 
             if $c->req->param('council');
 
@@ -877,20 +879,37 @@ sub stats : Path('stats') : Args(0) {
 
         my $one_day = DateTime::Duration->new( days => 1 );
 
+
+        my %select = (
+                select => [ 'state', { 'count' => 'me.id' } ],
+                as => [qw/state count/],
+                group_by => [ 'state' ],
+                order_by => [ 'state' ],
+        );
+
+        if ( $c->req->param('bymonth') ) {
+            %select = (
+                select => [ 
+                    { extract => \"year from $field", -as => 'c_year' },
+                    { extract => \"month from $field", -as => 'c_month' },
+                    { 'count' => 'me.id' }
+                ],
+                as     => [qw/c_year c_month count/],
+                group_by => [qw/c_year c_month/],
+                order_by => [qw/c_year c_month/],
+            );
+        }
+
         my $p = $c->model('DB::Problem')->search(
             {
                 -AND => [
                     $field => { '>=', $start_date},
                     $field => { '<=', $end_date + $one_day },
                 ],
-                %council
+                %council,
+                %dates,
             },
-            {
-                select => [ 'state', { 'count' => 'me.id' } ],
-                as => [qw/state count/],
-                group_by => [ 'state' ],
-                order_by => [ 'state' ],
-            }
+            \%select,
         );
 
         # in case the total_report count is 0
