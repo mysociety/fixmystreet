@@ -5,6 +5,8 @@
 
 $(function(){
 
+    $('html').removeClass('no-js').addClass('js');
+
     $('#pc').focus();
 
     $('input[type=submit]').removeAttr('disabled');

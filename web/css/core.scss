@@ -1,12 +1,5 @@
 $map_width: 500px;
 
-@mixin problem-banner {
-    margin: 0 $map_width + 30px 1em 0;
-    padding: 5px;
-    text-align: center;
-    position: relative;
-}
-
 // Generics
 
 #mysociety {
@@ -168,7 +161,7 @@ $map_width: 500px;
         width: 5em;
     }
 
-    fieldset, #fieldset {
+    fieldset, .fieldset {
         border: none;
         padding: 0.5em;
         div {
@@ -181,10 +174,10 @@ $map_width: 500px;
         display: none;
     }
 
-    #fieldset div.checkbox, #problem_submit {
+    .fieldset div.checkbox, #problem_submit {
         padding-left: 5.5em;
     }
-    #fieldset div.checkbox label, label.n {
+    .fieldset div.checkbox label, label.n {
         float: none;
         text-align: left;
         padding-right: 0;
@@ -212,7 +205,7 @@ $map_width: 500px;
         margin-bottom: 1em;
     }
 
-    #form_sign_in_no, #fieldset #form_sign_in_no {
+    #form_sign_in_no, .fieldset #form_sign_in_no {
         float: right;
         width: 47%;
         padding-left: 1%;
@@ -283,8 +276,14 @@ $map_width: 500px;
         cursor: crosshair;
     }
 
+    .banner {
+        margin: 0 $map_width + 30px 1em 0;
+        padding: 5px;
+        text-align: center;
+        position: relative;
+    }
+
     #text_map {
-        @include problem-banner;
         padding-left: 0.5em;
         text-align: left;
         margin-top: 0;
@@ -326,25 +325,21 @@ $map_width: 500px;
     // Problem pages
 
     #fixed {
-        @include problem-banner;
         background-color: #ccffcc;
         border: solid 2px #009900;
     }
 
     #unknown {
-        @include problem-banner;
         background-color: #ffcccc;
         border: solid 2px #990000;
     }
 
     #closed {
-        @include problem-banner;
         background-color: #ccccff;
         border: solid 2px #000099;
     }
 
     #progress {
-        @include problem-banner;
         background-color: #ffffcc;
         border: solid 2px #999900;
     }
@@ -618,7 +613,7 @@ $map_width: 500px;
             margin-bottom: 1em;
         }
 
-        #form_sign_in_no, #fieldset #form_sign_in_no {
+        #form_sign_in_no, .fieldset #form_sign_in_no {
             float: none;
             width: auto;
             padding-left: 0;
