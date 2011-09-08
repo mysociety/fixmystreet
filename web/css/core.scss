@@ -163,7 +163,7 @@ $map_width: 500px;
 
     fieldset, .fieldset {
         border: none;
-        padding: 0.5em;
+        margin: 0.5em;
         div {
             margin-top: 2px;
             clear: left;
@@ -241,12 +241,6 @@ $map_width: 500px;
 
     /* Drag is only present in noscript form */
     #drag {
-        position: absolute;
-        width: $map_width;
-        height: $map_width;
-        right: 0;
-        top: 0;
-
         input, img {
             position: absolute;
             border: none;
@@ -620,6 +614,83 @@ $map_width: 500px;
             padding-left: 0;
             clear: none;
             margin-bottom: 1em;
+        }
+
+        fieldset, .fieldset {
+            margin: 1em;
+        }
+
+        label {
+            margin-top: 1em;
+            display: block;
+            float: none;
+            text-align: left;
+            padding-right: 0;
+            width: auto;
+        }
+        .fieldset div.checkbox, #problem_submit {
+            padding-left: 0;
+        }
+        .fieldset div.checkbox label, label.n {
+            display: inline;
+        }
+    }
+}
+
+@media all and (max-width: 750px) {
+    $map_width: 365px;
+    #mysociety {
+        #map_box {
+            padding-left: 10px;
+            width: $map_width + 2px;
+            height: $map_width + 2px;
+        }
+        #map {
+            width: $map_width;
+            height: $map_width;
+        }
+        .banner {
+            margin-right: $map_width + 20px;
+        }
+    }
+    .no-js #mysociety {
+        #text_map { }
+        #text_map_arrow { }
+        #side, #side-form { }
+    }
+}
+
+@media all and (max-width: 580px) {
+    $map_width: 235px;
+    #mysociety {
+        #map_box {
+            width: $map_width + 2px;
+            height: $map_width + 2px;
+        }
+        #map {
+            width: $map_width;
+            height: $map_width;
+        }
+        .banner {
+            margin-right: $map_width + 20px;
+        }
+    }
+}
+
+@media all and (max-width: 320px) {
+    #mysociety {
+        #map_box {
+            padding-left: 0;
+            float: none;
+            width: 100%;
+        }
+        #map {
+            width: 99%;
+        }
+
+        .banner {
+            margin-right: 0;
+            margin-top: 1em;
         }
 
     }
