@@ -21,7 +21,7 @@ sub map_template {
 }
 
 sub copyright {
-    return _('Map contains Ordnance Survey data &copy; Crown copyright and database right 2010.<br>&copy; 2011 <a href="http://www.bing.com/maps/">Microsoft</a>. &copy; AND, Navteq, Ordnance Survey.');
+    return '';
 }
 
 sub get_quadkey {

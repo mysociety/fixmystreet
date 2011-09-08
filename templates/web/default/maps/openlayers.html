@@ -47,9 +47,9 @@ var fixmystreet = {
         <div id="pins">[% FOR pin IN map.pins %][% INCLUDE pin %][% END %]</div>
         [% INCLUDE compass %]
     </noscript></div>
-    <p id="copyright">
-        [% map.copyright %]
-    </p>
+    [% IF map.copyright %]
+    <p id="copyright">[% map.copyright %]</p>
+    [% END %]
 
 
 [% BLOCK compass %]
