@@ -64,6 +64,13 @@ $(function(){
 
             form.submit();
         },
+        // make sure we can see the error message when we focus on invalid elements
+        showErrors: function( errorMap, errorList ) {
+            submitted && errorList.length && $(window).scrollTop( $(errorList[0].element).offset().top - 40 );
+            this.defaultShowErrors();
+            submitted = false;
+        },
+        invalidHandler: function(form, validator) { submitted = true; }
     });
 
     $('input[type=submit]').click( function(e) { form_submitted = 1; } );
