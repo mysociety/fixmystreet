@@ -15,6 +15,7 @@
     <option value="[% council %]"[% ' selected' IF council == user.from_council %]>[% council_details.$council.name %]</option>
 [% END %]
 </select>
+<li>[% loc('Flagged:') %] <input type="checkbox" id="flagged" name="flagged"[% user.flagged ? ' checked' : '' %]></li>
 </ul>
 <input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" ></form>
 

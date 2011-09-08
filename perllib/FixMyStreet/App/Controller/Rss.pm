@@ -263,6 +263,12 @@ sub add_row : Private {
         my $key = $alert_type->item_table eq 'comment' ? 'c' : 'id';
         $item{description} .= ent("\n<br><img src=\"". $c->cobrand->base_url . "/photo?$key=$row->{id}\">");
     }
+
+    if ( $row->{used_map} ) {
+        #my $address = $c->cobrand->find_closest_address_for_rss( $row->{latitude}, $row->{longitude} );
+        #$item{description} .= ent("\n<br>$address");
+    }
+
     my $recipient_name = $c->cobrand->contact_name;
     $item{description} .= ent("\n<br><a href='$url'>" .
         sprintf(_("Report on %s"), $recipient_name) . "</a>");

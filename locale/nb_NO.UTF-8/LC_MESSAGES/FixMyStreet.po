@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: FixMyStreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2011-08-18 11:07+0100\n"
-"PO-Revision-Date: 2011-08-18 10:14MET\n"
+"PO-Revision-Date: 2011-08-29 10:26MET\n"
 "Last-Translator: Petter Reinholdtsen <pere@hungry.com>\n"
 "Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
 "MIME-Version: 1.0\n"
@@ -119,9 +119,8 @@ msgid "%s, within %s ward"
 msgstr "%s, innefor bydel %s"
 
 #: templates/web/default/admin/stats.html:5
-#, fuzzy
 msgid "%sreports between %s and %s"
-msgstr "%s, rapportert av %s %s"
+msgstr "%srapporter mellom %s og %s"
 
 #: templates/web/default/email_sent.html:28
 msgid "(Don't worry &mdash; %s)"
@@ -129,7 +128,7 @@ msgstr "(Ingen grunn til bekymring &mdash; %s)"
 
 #: templates/web/default/admin/report_blocks.html:11
 msgid "(Email in abuse table)"
-msgstr ""
+msgstr "(Epost i misbrukstabellen)"
 
 #: templates/web/default/alert/list.html:53
 msgid "(a default distance which covers roughly 200,000 people)"
@@ -208,7 +207,6 @@ msgstr ""
 "Vi er glad for å høre at ditt problem er blitt fikset.</p>"
 
 #: templates/web/default/questionnaire/completed.html:15
-#, fuzzy
 msgid ""
 "<p style=\"font-size:150%%\">We&rsquo;re sorry to hear that. We have two "
 "suggestions: why not try\n"
@@ -219,12 +217,9 @@ msgid ""
 "pledge</a>?\n"
 "</p>"
 msgstr ""
-"<p style=\"font-size:150%%\">Det gjør oss triste å høre dette. Vi har to "
-"forslag: hva med å forsøke\n"
-"<a href=\"%s\">å skrive direkte til dine representanter</a>, eller hvis det "
-"er et problem som kan fikses\n"
-"av naboer som jobber sammen, hva med å <a href=\"http://www.pledgebank.com/"
-"new\">publisere en utfordring om å bidra</a>?</p>\n"
+"<p style=\"font-size:150%%\">Det var trist å høre dette. Vi har to forslag: hva med å forsøke\n"
+"<a href=\"%s\">å skrive direkte til dine representanter</a>, eller hvis det er et problem som kan fikses\n"
+"av folk i nabolaget som jobber sammen, hva med å <a href=\"http://www.pledgebank.com/new\">publisere en utfordring om å bidra</a>?</p>"
 
 #: templates/web/default/questionnaire/index.html:37
 msgid ""
@@ -338,7 +333,7 @@ msgstr "Send meg varsel ved fremtidige oppdateringer"
 
 #: templates/web/default/admin/stats.html:5
 msgid "All"
-msgstr ""
+msgstr "Alle"
 
 #: templates/web/default/admin/council_list.html:44
 msgid "All confirmed"
@@ -368,10 +363,8 @@ msgstr ""
 #: templates/web/default/report/new/councils_text_all.html:12
 #: templates/web/default/report/new/fill_in_details_form.html:11
 #: templates/web/default/report/new/fill_in_details_form.html:13
-msgid ""
-"All the information you provide here will be sent to <strong>%s</strong>."
-msgstr ""
-"All informasjonen du har lagt inn her vil bli sendt til <strong>%s</strong>."
+msgid "All the information you provide here will be sent to <strong>%s</strong>."
+msgstr "All informasjonen du har lagt inn her vil bli sendt til <strong>%s</strong>."
 
 #: templates/web/emptyhomes/report/new/all_councils_text.html:2
 #: templates/web/emptyhomes/report/new/all_councils_text.html:4
@@ -381,7 +374,7 @@ msgid ""
 "name if you give us permission."
 msgstr ""
 "All informasjonen du legger inn her vil bli sendt til <strong>%s</strong>.\n"
-"På dette nettestedet vil vi vise tema og detaljer om problemet, inkludert "
+"På dette nettestedet vil vi vise emne og detaljer om problemet, inkludert "
 "ditt navn\n"
 "dersom du gir oss lov."
 
@@ -402,28 +395,26 @@ msgstr "Anonym:"
 
 #: templates/web/default/footer.html:29
 msgid "Are you a developer? Would you like to contribute to FixMyStreet?"
-msgstr ""
+msgstr "Er du en utvikler? Kunne du tenke deg å bidra til FiksGataMi?"
 
 #: templates/web/default/footer.html:26
-msgid ""
-"Are you from a council? Would you like better integration with FixMyStreet?"
-msgstr ""
+msgid "Are you from a council? Would you like better integration with FixMyStreet?"
+msgstr "Er du fra det offentlige?  Kunne du tenke deg bedre integrasjon med FiksGataMi?"
 
 #: templates/web/default/open311/index.html:17
 msgid ""
 "At most %d requests are returned in each query.  The returned requests are "
 "ordered by requested_datetime, so to get all requests, do several searches "
 "with rolling start_date and end_date."
-msgstr ""
+msgstr "På det meste blir %d forespørsler returnert i hver spørring.  De returnerte forespørslene blir sortert på requested_datetime, så en må gjøre flere søk med rullerende start_date og end_date for å få tak i alle forespørslene."
 
 #: templates/web/default/open311/index.html:9
 msgid "At the moment only searching for and looking at reports work."
-msgstr ""
+msgstr "For øyeblikket er det kun søk etter og å se på rapporter som fungerer."
 
 #: templates/web/default/admin/report_blocks.html:11
-#, fuzzy
 msgid "Ban email address"
-msgstr "Din e-postadresse:"
+msgstr "Bannlys epostadresse"
 
 #: templates/web/default/footer.html:16
 msgid "Built by <a href=\"http://www.mysociety.org/\">mySociety</a>"
@@ -545,7 +536,7 @@ msgstr "Kontakt prosjektgruppen"
 #: perllib/FixMyStreet/App/Controller/Admin.pm:965
 #: perllib/FixMyStreet/App/Controller/Admin.pm:993
 msgid "Could not find user"
-msgstr ""
+msgstr "Kunne ikke finne bruker"
 
 #: templates/web/default/admin/list_flagged.html:13
 #: templates/web/default/admin/search_reports.html:16
@@ -567,9 +558,8 @@ msgid "Councils"
 msgstr "Administrasjoner"
 
 #: templates/web/default/admin/stats.html:10
-#, fuzzy
 msgid "Count"
-msgstr "Kontakt"
+msgstr "Antall"
 
 #: templates/web/default/email_sent.html:1
 msgid "Create a report"
@@ -591,12 +581,10 @@ msgid "Created:"
 msgstr "Opprettet:"
 
 #: templates/web/default/admin/stats.html:9
-#, fuzzy
 msgid "Current state"
-msgstr "Ny tilstand"
+msgstr "Gjeldende tilstand"
 
 #: templates/web/default/admin/council_list.html:40
-#, fuzzy
 msgid "Currently has 1+ deleted"
 msgstr "For tiden har 1+ slettet"
 
@@ -654,11 +642,11 @@ msgstr "E-post"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:941
 msgid "Email added to abuse list"
-msgstr ""
+msgstr "Epost lagt til misbruksliste"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:938
 msgid "Email already in abuse list"
-msgstr ""
+msgstr "Epost allerede i misbrukslisten"
 
 #: templates/web/default/around/display_location.html:84
 msgid "Email me new local problems"
@@ -682,7 +670,6 @@ msgid "Empty flat or maisonette"
 msgstr "Tom leilighet"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:491
-#, fuzzy
 msgid "Empty house or bungalow"
 msgstr "Tomt hus eller bungalow"
 
@@ -704,16 +691,15 @@ msgstr "Tom offentlig bygning - skole, sykehos, etc."
 
 #: templates/web/default/admin/stats.html:47
 msgid "End Year:"
-msgstr ""
+msgstr "Sluttår:"
 
 #: templates/web/default/admin/stats.html:49
-#, fuzzy
 msgid "End day:"
-msgstr "%d dag"
+msgstr "Slutt-dag:"
 
 #: templates/web/default/admin/stats.html:48
 msgid "End month:"
-msgstr ""
+msgstr "Sluttmåned:"
 
 #: templates/web/default/around/around_index.html:10
 #: templates/web/default/around/around_index.html:13
@@ -752,7 +738,7 @@ msgstr "Eksempel-postnummer %s"
 
 #: templates/web/default/open311/index.html:27
 msgid "Examples:"
-msgstr ""
+msgstr "Eksempler:"
 
 #: templates/web/default/contact/submit.html:15
 msgid ""
@@ -764,7 +750,7 @@ msgstr ""
 
 #: templates/web/default/footer.html:27
 msgid "Find out about FixMyStreet for councils"
-msgstr ""
+msgstr "Finn ut om FiksGataMi for det offentlige"
 
 #: templates/web/default/questionnaire/index.html:81
 msgid "First time"
@@ -832,11 +818,11 @@ msgstr "Løst:"
 
 #: templates/web/default/admin/report_blocks.html:16
 msgid "Flag user"
-msgstr ""
+msgstr "Flag bruker"
 
 #: templates/web/default/admin/report_edit.html:38
 msgid "Flagged:"
-msgstr ""
+msgstr "Flagget:"
 
 #: templates/web/default/reports/council.html:23
 msgid "Follow a ward link to view only reports within that ward."
@@ -859,7 +845,7 @@ msgstr "Mer informasjon om vårt arbeid med tomme hjem"
 
 #: templates/web/default/open311/index.html:69
 msgid "GeoRSS on Google Maps"
-msgstr ""
+msgstr "GeoRSS på Google Maps"
 
 #: templates/web/default/alert/list.html:112
 msgid "Give me an RSS feed"
@@ -882,8 +868,7 @@ msgstr "Graf over problemoppretting fordelt på status over tid"
 #: templates/web/default/reports/index.html:5
 #: templates/web/emptyhomes/reports/index.html:5
 msgid "Greyed-out lines are councils that no longer exist."
-msgstr ""
-"Linjer med grå bakgrunn er administrasjoner som ikke lenger eksisterer."
+msgstr "Linjer med grå bakgrunn er administrasjoner som ikke lenger eksisterer."
 
 #: templates/web/default/questionnaire/index.html:63
 msgid "Has this problem been fixed?"
@@ -905,8 +890,7 @@ msgstr "Hjelp"
 
 #: templates/web/default/alert/list.html:39
 msgid "Here are the types of local problem alerts for &lsquo;%s&rsquo;."
-msgstr ""
-"Her er de forskjellige typene lokale problemvarsler for &lsquo;%s&rsquo;."
+msgstr "Her er de forskjellige typene lokale problemvarsler for &lsquo;%s&rsquo;."
 
 #: templates/web/default/admin/report_edit.html:22
 #: templates/web/default/admin/update_edit.html:19
@@ -938,13 +922,10 @@ msgid "I'm afraid we couldn't locate your problem in the database.\n"
 msgstr "Jeg er redd vi ikke klarte å finne ditt problem i databasen.\n"
 
 #: perllib/FixMyStreet/App/Controller/Tokens.pm:43
-#, fuzzy
 msgid ""
 "I'm afraid we couldn't validate that token, as the report was made too long "
 "ago."
-msgstr ""
-"Jeg er redd vi ikke kunne verifisere den referansen. Hvis du kopierte "
-"webadressen fra en e-post, sjekk at du har kopiert den korrekt.\n"
+msgstr "Jeg er redd vi ikke kunne verifisere den referansen, da det er for lenge siden rapporten ble laget."
 
 #: perllib/FixMyStreet/App/Controller/Tokens.pm:232
 msgid ""
@@ -966,12 +947,11 @@ msgid ""
 "If you submit a problem here the subject and details of the problem will be "
 "public, but the problem will <strong>not</strong> be reported to the council."
 msgstr ""
-"Hvis du sender inn et problem hit, så vil tema og detaljer for problemet "
+"Hvis du sender inn et problem hit, så vil emne og detaljer for problemet "
 "være offentlig, men problemet vil <strong>ikke</strong> bli rapportert til "
 "administrasjonen."
 
 #: templates/web/emptyhomes/report/new/no_councils_text.html:9
-#, fuzzy
 msgid ""
 "If you submit a report here it will be left on the site, but not reported to "
 "the council &ndash; please still leave your report, so that we can show to "
@@ -1017,37 +997,35 @@ msgid ""
 "specification are returned: agency_sent_datetime, title (also returned as "
 "part of description), interface_used, comment_count, requestor_name (only "
 "present if requestor allowed the name to be shown on this site)."
-msgstr ""
+msgstr "I tillegg er følgende attributter som ikke er del av Open311 v2-spesifikasjonen returnert: agency_sent_datetime, title (også returnert som del av description), interface_used, comment_count, requestor_name (kun tilstede hvis innsender tillot at navnet kunne vises på dette nettstedet)."
 
 #: templates/web/default/around/display_location.html:61
 msgid "Include stale reports"
 msgstr "Inkludert utdaterte problemer"
 
 #: templates/web/default/admin/stats.html:53
-#, fuzzy
 msgid "Include unconfirmed reports"
-msgstr "Inkludert utdaterte problemer"
+msgstr "Inkluder ubekreftede problemer"
 
 #: perllib/FixMyStreet/App/Controller/Open311.pm:355
 msgid "Incorrect has_photo value \"%s\""
-msgstr ""
+msgstr "Feil has_photo-verdi \"%s\""
 
 #: perllib/FixMyStreet/App/Controller/Open311.pm:340
 msgid "Invalid agency_responsible value %s"
-msgstr ""
+msgstr "Ugyldig agency_responsible-verdi %s"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:785
-#, fuzzy
 msgid "Invalid end date"
-msgstr "Bidra med en oppdatering"
+msgstr "Ugyldig slutt-dato"
 
 #: perllib/FixMyStreet/App/Controller/Open311.pm:423
 msgid "Invalid format %s specified."
-msgstr ""
+msgstr "Ugyldig format %s oppgitt."
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:775
 msgid "Invalid start date"
-msgstr ""
+msgstr "Ugyldig startdato"
 
 #: templates/web/emptyhomes/tokens/confirm_problem.html:12
 #: templates/web/emptyhomes/tokens/confirm_problem.html:14
@@ -1082,7 +1060,7 @@ msgstr "Siste&nbsp;oppdatering:"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:844
 msgid "List Flagged"
-msgstr ""
+msgstr "List flagget"
 
 #: templates/web/default/admin/council_contacts.html:11
 msgid "List all reported problems"
@@ -1090,7 +1068,7 @@ msgstr "List alle rapporterte problemer"
 
 #: templates/web/default/report/new/fill_in_details_form.html:68
 msgid "Loading..."
-msgstr ""
+msgstr "Laster..."
 
 #: templates/web/default/alert/choose.html:1
 #: templates/web/default/alert/choose.html:3
@@ -1154,7 +1132,7 @@ msgstr "Melding:"
 
 #: perllib/FixMyStreet/App/Controller/Open311.pm:431
 msgid "Missing jurisdiction_id"
-msgstr ""
+msgstr "Mangler jurisdiction_id"
 
 #: templates/web/default/report/display.html:38
 msgid "More problems nearby"
@@ -1248,10 +1226,8 @@ msgid "New problems within {{NAME}}'s boundary on FixMyStreet"
 msgstr "Nye rapporter innenfor grensen til {{NAME}} på FiksGataMi"
 
 #: db/alert_types_eha.pl:23
-msgid ""
-"New reports for {{COUNCIL}} within {{WARD}} ward on reportemptyhomes.com"
-msgstr ""
-"Nye rapporter for {{COUNCIL}} innenfor {{WARD}} bydel på reportemptyhomes.com"
+msgid "New reports for {{COUNCIL}} within {{WARD}} ward on reportemptyhomes.com"
+msgstr "Nye rapporter for {{COUNCIL}} innenfor {{WARD}} bydel på reportemptyhomes.com"
 
 #: db/alert_types_eha.pl:5
 msgid "New reports on reportemptyhomes.com"
@@ -1301,14 +1277,12 @@ msgid "No edits have yet been made."
 msgstr "Ingenting endringer har blitt gjort."
 
 #: templates/web/default/admin/list_flagged.html:26
-#, fuzzy
 msgid "No flagged problems found"
-msgstr "Ingen problemer ble funnet."
+msgstr "Ingen flaggede problemer ble funnet"
 
 #: templates/web/default/admin/list_flagged.html:47
-#, fuzzy
 msgid "No flagged users found"
-msgstr "Ingen problemer ble funnet."
+msgstr "Ingen flaggede brukere ble funnet"
 
 #: templates/web/default/admin/council_list.html:38
 msgid "No info at all"
@@ -1345,7 +1319,7 @@ msgid ""
 "Note that when including unconfirmed reports we use the date the report was "
 "created which may not be in the same month the report was confirmed so the "
 "numbers may jump about a little"
-msgstr ""
+msgstr "Merk at når vi tar med ubekreftede rapporter så brukes datoen rapporten var opprettet, hvilket ikke trenger være den samme måneden som rapporten var bekreftet, så tallene kan hoppe litt opp og ned."
 
 #: templates/web/default/admin/council_contacts.html:73
 #: templates/web/default/admin/council_edit.html:31
@@ -1353,9 +1327,8 @@ msgid "Note:"
 msgstr "Merk:"
 
 #: templates/web/default/open311/index.html:6
-#, fuzzy
 msgid "Note: <strong>%s</strong>"
-msgstr "<strong>%d</strong> aktive problemer"
+msgstr "Note: <strong>%d</strong>"
 
 #: templates/web/default/report/new/fill_in_details_form.html:127
 msgid "Now to submit your report&hellip; do you have a FixMyStreet password?"
@@ -1363,8 +1336,7 @@ msgstr "På tide å sende din rapport&hellip; har du et FiksGataMi-passord?"
 
 #: templates/web/default/report/display.html:133
 msgid "Now to submit your update&hellip; do you have a FixMyStreet password?"
-msgstr ""
-"På tide å registrere din oppdatering&hellip; har du et FiksGataMi-passord?"
+msgstr "På tide å registrere din oppdatering&hellip; har du et FiksGataMi-passord?"
 
 #: templates/web/default/report/display.html:33
 #: templates/web/default/report/updates.html:19
@@ -1417,15 +1389,15 @@ msgstr "Åpne rapporter"
 
 #: templates/web/default/open311/index.html:3
 msgid "Open311 API for the mySociety FixMyStreet server"
-msgstr ""
+msgstr "Open311-API for mySocietys FiksGataMi-tjener"
 
 #: templates/web/default/open311/index.html:13
 msgid "Open311 initiative web page"
-msgstr ""
+msgstr "Open311-initiativets nettside"
 
 #: templates/web/default/open311/index.html:14
 msgid "Open311 specification"
-msgstr ""
+msgstr "Open311-spesifikasjon"
 
 #: templates/web/default/alert/list.html:87
 msgid "Or problems reported to:"
@@ -1454,7 +1426,7 @@ msgstr "Annet"
 msgid ""
 "Our code is open source and <a href=\"http://github.com/mysociety/fixmystreet"
 "\">available on GitHub</a>."
-msgstr ""
+msgstr "Vår kildekode er fri programvare og  <a href=\"http://github.com/mysociety/fixmystreet\">tilgjengelig på GitHub</a>."
 
 #: templates/web/default/errors/page_error_404_not_found.html:1
 #: templates/web/default/errors/page_error_404_not_found.html:3
@@ -1550,7 +1522,7 @@ msgstr "Skriv inn et passord"
 #: perllib/FixMyStreet/App/Controller/Contact.pm:97
 #: perllib/FixMyStreet/DB/Result/Problem.pm:183
 msgid "Please enter a subject"
-msgstr "Vennligst legg inn et tema"
+msgstr "Vennligst legg inn et emne"
 
 #: perllib/FixMyStreet/DB/Result/User.pm:94
 msgid "Please enter a valid email"
@@ -1659,9 +1631,7 @@ msgstr "Vennligst merk deg:"
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:238
 msgid "Please provide some explanation as to why you're reopening this report"
-msgstr ""
-"Vennligst bidra med en forklaring for hvorfor du åpner denne rapporten på "
-"nytt"
+msgstr "Vennligst bidra med en forklaring for hvorfor du gjenåpner denne problemrapporten"
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:245
 msgid "Please provide some text as well as a photo"
@@ -1669,19 +1639,16 @@ msgstr "Vennligst bidra med litt tekst i tilegg til et bilde"
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:115
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:231
-msgid ""
-"Please say whether you've ever reported a problem to your council before"
-msgstr ""
-"Gi oss informasjon om du har rapportert et problem til din administrasjon "
-"tidligere"
+msgid "Please say whether you've ever reported a problem to your council before"
+msgstr "Vennligst opplys om du har rapportert et problem til din administrasjon tidligere"
 
 #: perllib/FixMyStreet/App/Controller/Alert.pm:82
 msgid "Please select the feed you want"
-msgstr "Velg den feed du ønsker"
+msgstr "Velg den kilden du ønsker"
 
 #: perllib/FixMyStreet/App/Controller/Alert.pm:120
 msgid "Please select the type of alert you want"
-msgstr "Velg vilken type varsel du ønsker"
+msgstr "Vennligst velg hvilken type varsel du ønsker"
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:227
 msgid "Please state whether or not the problem has been fixed"
@@ -1689,7 +1656,7 @@ msgstr "Vennligs oppgi om dette problemet er blitt fikset eller ikke"
 
 #: templates/web/default/questionnaire/index.html:52
 msgid "Please take a look at the updates that have been left."
-msgstr "Vær sa snill å ta en titt på oppdateringene som har blitt lagt inn."
+msgstr "Vennligst se over oppdateringene som har blitt lagt inn."
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:774
 msgid "Please upload a JPEG image only"
@@ -1732,7 +1699,7 @@ msgstr "Problem %s sendt til administrasjon %s"
 
 #: templates/web/default/admin/index.html:28
 msgid "Problem breakdown by state"
-msgstr "Tilstandsfordeling for problemer"
+msgstr "Tilstandsfordeling av problemer"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:703
 msgid "Problem marked as open."
@@ -1743,9 +1710,8 @@ msgid "Problem state change based on survey results"
 msgstr "Problemtilstandsendring basert på spørreundersøkelsesresultater"
 
 #: templates/web/default/admin/list_flagged.html:5
-#, fuzzy
 msgid "Problems"
-msgstr "Problem"
+msgstr "Problemer"
 
 #: templates/web/default/around/display_location.html:80
 msgid "Problems in this area"
@@ -1781,7 +1747,7 @@ msgstr "Problemer innenfor grensene av:"
 
 #: db/alert_types_eha.pl:8
 msgid "Properties recently reported as put back to use on reportemptyhomes.com"
-msgstr ""
+msgstr "Eiendommer nylig rapportert som gått tilbake i bruk på reportemptyhomes.com"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:498
 msgid "Property type:"
@@ -1884,12 +1850,12 @@ msgstr "RSS-strøm med oppdateringer for dette problemet"
 #: templates/web/default/alert/updates.html:9
 #: templates/web/default/report/display.html:45
 msgid "Receive email when updates are left on this problem."
-msgstr "Motta e-post når det er uppdateringer på dette problemet"
+msgstr "Motta e-post når det er oppdateringer på dette problemet"
 
 #: templates/web/default/around/display_location.html:0
 #: templates/web/default/around/display_location.html:34
 msgid "Recent local problems, FixMyStreet"
-msgstr "Nylig lokalt problem, FiksGataMi."
+msgstr "Nylige lokale problemer, FiksGataMi."
 
 #: templates/web/default/reports/council.html:87
 #: templates/web/default/reports/council.html:88
@@ -1917,7 +1883,7 @@ msgstr ""
 
 #: templates/web/default/admin/report_blocks.html:16
 msgid "Remove flag"
-msgstr ""
+msgstr "Fjern flagg"
 
 #: templates/web/default/admin/report_edit.html:44
 #: templates/web/default/admin/update_edit.html:33
@@ -2020,13 +1986,12 @@ msgid "Save changes"
 msgstr "Lagre endringer"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:843
-#, fuzzy
 msgid "Search Abuse"
-msgstr "Søk:"
+msgstr "Søk etter misbruk"
 
 #: templates/web/default/admin/search_abuse.html:1
 msgid "Search Abuse Table"
-msgstr ""
+msgstr "Søk i misbrukstabell"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:840
 #: templates/web/default/admin/list_flagged.html:1
@@ -2040,12 +2005,11 @@ msgid "Search:"
 msgstr "Søk:"
 
 #: templates/web/default/alert/list.html:41
-#, fuzzy
 msgid ""
 "Select which type of alert you'd like and click the button for an RSS feed, "
 "or enter your email address to subscribe to an email alert."
 msgstr ""
-"Velg hvilken type varsel du ønsker og klikk på knappen for en RSS-strøm, "
+"Velg hvilken type varsel du ønsker og klikk på knappen for en RSS-kilde, "
 "eller skriv inn din e-postadresse for å abonnere på et e-postvarsel."
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:398
@@ -2062,7 +2026,7 @@ msgstr "Tjeneste:"
 
 #: templates/web/emptyhomes/static/about.html:21
 msgid "Shelter Cymru"
-msgstr ""
+msgstr "Shelter Cymru"
 
 #: templates/web/emptyhomes/static/about.html:23
 msgid ""
@@ -2123,15 +2087,14 @@ msgstr "Noen bilder av nylig meldte problemer"
 #: perllib/FixMyStreet/App/View/Email.pm:32
 #: perllib/FixMyStreet/App/View/Web.pm:44
 msgid "Some text to localize"
-msgstr ""
+msgstr "Noe tekst å oversette"
 
 #: templates/web/default/admin/council_list.html:42
 msgid "Some unconfirmeds"
 msgstr "Noen ubekreftede"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:516
-msgid ""
-"Sorry, that appears to be a Crown dependency postcode, which we don't cover."
+msgid "Sorry, that appears to be a Crown dependency postcode, which we don't cover."
 msgstr ""
 "Beklager det ser ut til å være et \"Crown dependency\"-postnummer, som vi "
 "ikke dekker."
@@ -2157,18 +2120,16 @@ msgid "Source code"
 msgstr "Kildekode"
 
 #: templates/web/default/admin/stats.html:41
-#, fuzzy
 msgid "Start Year:"
-msgstr "Tilstand:"
+msgstr "Startår:"
 
 #: templates/web/default/admin/stats.html:43
-#, fuzzy
 msgid "Start day:"
-msgstr "Tilstand:"
+msgstr "Startdag:"
 
 #: templates/web/default/admin/stats.html:42
 msgid "Start month:"
-msgstr ""
+msgstr "Startmåned:"
 
 #: templates/web/default/admin/list_flagged.html:18
 #: templates/web/default/admin/list_updates.html:6
@@ -2183,15 +2144,14 @@ msgstr "Tilstand:"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:845
 #: templates/web/default/admin/stats.html:1
-#, fuzzy
 msgid "Stats"
-msgstr "Tilstand"
+msgstr "Statistikk"
 
 #: templates/web/default/admin/report_edit.html:13
 #: templates/web/default/contact/index.html:83
 #: templates/web/default/report/new/fill_in_details_form.html:52
 msgid "Subject:"
-msgstr "Tema:"
+msgstr "Emne:"
 
 #: templates/web/default/questionnaire/creator_fixed.html:19
 #: templates/web/default/report/new/fill_in_details_form.html:110
@@ -2207,7 +2167,7 @@ msgstr "Send inn endringer"
 
 #: templates/web/default/questionnaire/index.html:114
 msgid "Submit questionnaire"
-msgstr "Lever spørreskjema"
+msgstr "Send inn spørreskjema"
 
 #: templates/web/default/alert/updates.html:17
 #: templates/web/default/report/display.html:50
@@ -2290,7 +2250,7 @@ msgstr ""
 msgid ""
 "Thank you for using ReportEmptyHomes.com. Your action is already helping to "
 "resolve the UK&rsquo;s empty homes crisis."
-msgstr ""
+msgstr "Takk for at du bruker ReportEmptyHomes.com. Ditt bidrag bidrar allerede for å løse UKs tomme hjem-krise."
 
 #: templates/web/default/around/around_index.html:44
 msgid ""
@@ -2303,20 +2263,18 @@ msgstr ""
 
 #: templates/web/default/contact/submit.html:8
 msgid "Thanks for your feedback.  We'll get back to you as soon as we can!"
-msgstr ""
-"Takk for ditt innspill. Vi gir deg en tilbakemelding så raskt som mulig"
+msgstr "Takk for ditt innspill. Vi gir deg en tilbakemelding så raskt vi kan"
 
 #: templates/web/default/questionnaire/creator_fixed.html:9
 msgid ""
 "Thanks, glad to hear it's been fixed! Could we just ask if you have ever "
 "reported a problem to a council before?"
 msgstr ""
-"Takk, glad for å høre at problemet er fikset!  Vi vil gjerne spørre deg om "
+"Takk, glad for å høre at problemet er fikset! Vi vil gjerne spørre deg om "
 "du har rapportert et problem til en administrasjon tidligere?"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:783
-msgid ""
-"That image doesn't appear to have uploaded correctly (%s), please try again."
+msgid "That image doesn't appear to have uploaded correctly (%s), please try again."
 msgstr "Bildet ser ikke ut til å blitt lastet opp riktig (%s), prøv på nytt."
 
 #: templates/web/default/alert/index.html:12
@@ -2327,9 +2285,10 @@ msgstr ""
 "Det stedet dekkes ikke av noen administrasjon, kanskje det er til havs - "
 "vennligst forsøk et mer spesifikt sted."
 
+# Should this be "Norge" or "Storbritannia" ?
 #: perllib/FixMyStreet/App/Controller/Location.pm:107
 msgid "That location does not appear to be in Britain; please try again."
-msgstr "Det stedet virker ikke å være i storbritannia. Vennligst prøv igjen."
+msgstr "Det stedet virker ikke å være i Storbritannia. Vennligst prøv igjen."
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:509
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:78
@@ -2380,6 +2339,9 @@ msgid ""
 "administrations that received the problem report, which is not quite the way "
 "the attribute is defined in the Open311 v2 specification."
 msgstr ""
+"Open311 v2-atributten agency_responsible brukes for å liste opp "
+"administrasjonene som mottok problemrapporten, noe som ikke helt stemmer med "
+"hvordan atributten er definert i Open311 v2-spesifikasjonen."
 
 #: templates/web/default/auth/token.html:21
 #: templates/web/default/email_sent.html:22
@@ -2387,15 +2349,14 @@ msgid ""
 "The confirmation email <strong>may</strong> take a few minutes to arrive "
 "&mdash; <em>please</em> be patient."
 msgstr ""
-"Bekreftelsese-posten <strong>kan</strong>bruke noen minutter før den kommer "
+"Bekreftelsese-posten <strong>kan</strong> bruke noen minutter før den kommer "
 "frem &mdash; så vær tålmodig."
 
 #: templates/web/default/questionnaire/index.html:51
 msgid ""
 "The details of your problem are available on the right hand side of this "
 "page."
-msgstr ""
-"Detaljene om ditt problem er tilgjengelig på høyre side av denne siden."
+msgstr "Detaljene om ditt problem er tilgjengelig på høyre kant av denne siden."
 
 #: perllib/FixMyStreet/App/Controller/Reports.pm:46
 #: perllib/FixMyStreet/App/Controller/Reports.pm:73
@@ -2408,6 +2369,9 @@ msgid ""
 "service_request_id, description, lat, long, media_url, status, "
 "requested_datetime, updated_datetime, service_code and service_name."
 msgstr ""
+"De følgende Open311 v2-atributtene blir returnert for hver forespørsel: "
+"service_request_id, description, lat, long, media_url, status, "
+"requested_datetime, updated_datetime, service_code and service_name."
 
 #: perllib/FixMyStreet/Geocode/OSM.pm:99
 msgid ""
@@ -2422,19 +2386,18 @@ msgstr ""
 #: db/alert_types.pl:19 db/alert_types.pl:23 db/alert_types.pl:27
 #: db/alert_types.pl:31
 msgid "The latest local problems reported by users"
-msgstr "De siste lokale problemer rapporter av brukere"
+msgstr "De siste lokale problemer rapportert av brukere"
 
 #: db/alert_types_eha.pl:13
 msgid "The latest local reports reported by users"
-msgstr "De siste lokale rapporter rapporter av brukere"
+msgstr "De siste lokale rapporter rapportert av brukere"
 
 #: db/alert_types.pl:35
 msgid "The latest problems for {{COUNCIL}} reported by users"
 msgstr "De siste problemer for {{COUNCIL}} rapportert av brukere"
 
 #: db/alert_types.pl:39
-msgid ""
-"The latest problems for {{COUNCIL}} within {{WARD}} ward reported by users"
+msgid "The latest problems for {{COUNCIL}} within {{WARD}} ward reported by users"
 msgstr ""
 "De siste problemene for {{COUNCIL}} innenfor {{WARD}} bydel rapportert av "
 "brukere"
@@ -2445,7 +2408,7 @@ msgstr "De siste problemene rapportert av brukere"
 
 #: db/alert_types.pl:15
 msgid "The latest problems reported fixed by users"
-msgstr "De siste problemer rapporter fikset av brukere"
+msgstr "De siste problemer rapportert fikset av brukere"
 
 #: db/alert_types.pl:43
 msgid "The latest problems within {{NAME}}'s boundary reported by users"
@@ -2460,8 +2423,7 @@ msgid "The latest reports for {{COUNCIL}} reported by users"
 msgstr "De siste rapporter for {{COUNCIL}} rapportert av brukere"
 
 #: db/alert_types_eha.pl:24
-msgid ""
-"The latest reports for {{COUNCIL}} within {{WARD}} ward reported by users"
+msgid "The latest reports for {{COUNCIL}} within {{WARD}} ward reported by users"
 msgstr ""
 "De siste rapporter for {{COUNCIL}} innenfor {{WARD}} bydel rapporter av "
 "brukere"
@@ -2511,8 +2473,7 @@ msgstr ""
 "stedet de skrev inn"
 
 #: perllib/FixMyStreet/App/Controller/Reports.pm:72
-msgid ""
-"There was a problem showing the All Reports page. Please try again later."
+msgid "There was a problem showing the All Reports page. Please try again later."
 msgstr ""
 "Det var problemer med å vise 'Alle rapporter'-siden.  Vennligst prøv igjen "
 "senere."
@@ -2532,8 +2493,7 @@ msgstr ""
 "skjemaet for å skaffe deg en."
 
 #: perllib/FixMyStreet/App/Controller/Alert.pm:354
-msgid ""
-"There was a problem with your email/password combination. Please try again."
+msgid "There was a problem with your email/password combination. Please try again."
 msgstr ""
 "Det var problemer med din epost/passord-kombinasjon.  Vær så snill å forsøk "
 "igjen."
@@ -2550,7 +2510,7 @@ msgstr "Det var problemer med din oppdatering. Vennligst se under."
 msgid ""
 "This API implementation is work in progress and not yet stabilized.  It will "
 "change without warnings in the future."
-msgstr ""
+msgstr "Denne API-implementasjonen er under arbeid og ennå ikke stabil.  Den vil endre seg uten advarsel i fremtiden."
 
 #: bin/send-reports:181
 msgid ""
@@ -2625,10 +2585,8 @@ msgid "This report is currently marked as open."
 msgstr "Denne rapporten er for tiden markert som åpen."
 
 #: bin/send-reports:70
-msgid ""
-"This web page also contains a photo of the problem, provided by the user."
-msgstr ""
-"Denne nettsiden inneholder også et bilde av problemet, sendt inn av brukeren."
+msgid "This web page also contains a photo of the problem, provided by the user."
+msgstr "Denne nettsiden inneholder også et bilde av problemet, sendt inn av brukeren."
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:841
 #: templates/web/default/admin/timeline.html:1
@@ -2641,19 +2599,16 @@ msgid "Title"
 msgstr "Tittel"
 
 #: templates/web/default/around/display_location.html:70
-#, fuzzy
 msgid ""
 "To <strong>report a problem</strong>, simply click on the map at the correct "
 "location."
-msgstr ""
-"For å rapportere et problem, <strong>klikk på kartet</strong> på riktig sted."
+msgstr "For å <strong>rapportere et problem</strong>, klikk på kartet på riktig sted."
 
 #: templates/web/default/alert/index.html:21
 msgid ""
 "To find out what local alerts we have for you, please enter your GB\n"
 "postcode or street name and area:"
-msgstr ""
-"Du finner lokale problemer ved å søke på ditt postnummer, veinavn eller sted:"
+msgstr "Du finner lokale problemer ved å søke på ditt postnummer, veinavn eller sted:"
 
 #: bin/send-reports:76
 msgid "To view a map of the precise location of this issue"
@@ -2731,15 +2686,15 @@ msgstr "Oppdateringer til dette problemet, FiksGataMi"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:997
 msgid "User flag removed"
-msgstr ""
+msgstr "Brukerflagg fjernet"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:969
 msgid "User flagged"
-msgstr ""
+msgstr "Bruker flagget"
 
 #: templates/web/default/admin/list_flagged.html:30
 msgid "Users"
-msgstr ""
+msgstr "Brukere"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:295
 #: perllib/FixMyStreet/App/Controller/Admin.pm:325
@@ -2792,8 +2747,7 @@ msgstr ""
 
 #: templates/web/default/auth/token.html:19
 msgid "We have sent you an email containing a link to confirm your account."
-msgstr ""
-"Vi har sendt deg en epost som inneholder link for å bekrefte din konto."
+msgstr "Vi har sendt deg en epost som inneholder link for å bekrefte din konto."
 
 #: templates/web/emptyhomes/tokens/confirm_problem.html:18
 #: templates/web/emptyhomes/tokens/confirm_problem.html:20
@@ -2827,16 +2781,14 @@ msgstr ""
 "faq#privacy\">personvernpolicy.</a>"
 
 #: templates/web/emptyhomes/contact/blurb.html:2
-#, fuzzy
 msgid ""
 "We&rsquo;d love to hear what you think about this website. Just fill in the "
 "form. Please don&rsquo;t contact us about individual empty homes; use the "
 "box accessed from <a href=\"/\">the front page</a>."
 msgstr ""
 "Vi vil gjerne høre hva du tenker om dette nettstedet.  Det er bare å fylle "
-"inn skjemaet. Vær så snill å ikke kontakte oss om individuelle tomme hjem.  "
-"For det bør du i stedet bruke boksen tilgjengelig fra <a href=\"/"
-"\">forsiden</a>."
+"inn skjemaet. Vær så snill å ikke kontakte oss om individuelle tomme hjem. "
+"For det bør du i stedet bruke boksen tilgjengelig fra <a href=\"/\">forsiden</a>."
 
 #: templates/web/default/contact/blurb.html:8
 msgid ""
@@ -2865,7 +2817,7 @@ msgid ""
 "With request searches, it is also possible to search for agency_responsible "
 "to limit the requests to those sent to a single administration.  The search "
 "term is the administration ID provided by <a href=\"%s\">MaPit</a>."
-msgstr ""
+msgstr "Når du søker etter forespørsler, så er det også mulig å søke etter agency_responsible for å begrense det til forespørsler som er sendt til en enkelt adminstrasjon. Søktetermen er administrasjons-IDen som oppgitt av <a href=\"%s\">MaPit</a>."
 
 #: templates/web/default/questionnaire/index.html:104
 msgid ""
@@ -2914,13 +2866,10 @@ msgstr ""
 "informasjon, eller lignende:"
 
 #: templates/web/default/reports/council.html:71
-#, fuzzy
 msgid ""
 "You can <a href=\"%s\">view all reports for the council</a> or <a href=\"/"
 "reports\">show all councils</a>."
-msgstr ""
-"Du kan <a href=\"%s\">se mindre detaljer</a> eller gå tilbake og <a href=\"/"
-"reports\">se alle administrasjonene</a>."
+msgstr "Du kan <a href=\"%s\">se alle rapporter for administrasjonen</a> eller <a href=\"/reports\">se alle administrasjonene</a>."
 
 #: templates/web/default/reports/council.html:73
 msgid "You can <a href=\"/reports\">show all councils</a>."
@@ -2968,14 +2917,12 @@ msgid "You have been signed out"
 msgstr "Du er allerede logget ut"
 
 #: templates/web/default/report/new/fill_in_details_form.html:7
-#, fuzzy
 msgid ""
 "You have located the problem at the point marked with a purple pin on the "
 "map. If this is not the correct location, simply click on the map again. "
 msgstr ""
 "Du har plassert problemet ved punktet i kartet som er markert med en lilla "
-"nål.  Hvis dette ikke er korrekt plassering kan du klikke i kartet på nytt "
-"for å flytte problemet."
+"nål.  Hvis dette ikke er korrekt plassering kan du klikke i kartet på nytt."
 
 #: templates/web/default/tokens/confirm_alert.html:7
 msgid "You have successfully confirmed your alert."
@@ -2989,18 +2936,14 @@ msgstr "Du har nå lykkes med å bekrefte ditt problem"
 # "portalen" ?
 #: templates/web/default/tokens/confirm_update.html:11
 #: templates/web/default/tokens/confirm_update.html:12
-#, fuzzy
 msgid ""
 "You have successfully confirmed your update and you can now <a href=\"%s"
 "\">view it on the site</a>."
-msgstr ""
-"Du har nå bekreftet din oppdatering <a href=\"%s\">og kan lese om problemet "
-"på portalen</a>."
+msgstr "Du har nå bekreftet din oppdatering <a href=\"%s\">og kan se den på dette nettstedet</a>."
 
 #: templates/web/default/tokens/confirm_alert.html:11
-#, fuzzy
 msgid "You have successfully created your alert."
-msgstr "Opprettelsen av ditt varsel var vellykket."
+msgstr "Du har lykkes med å opprette ditt varsel."
 
 #: templates/web/default/tokens/confirm_alert.html:9
 msgid "You have successfully deleted your alert."
@@ -3008,12 +2951,10 @@ msgstr "Sletting av ditt varsel var vellykket."
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:611
 #: perllib/FixMyStreet/App/Controller/Report/Update.pm:123
-#, fuzzy
 msgid ""
 "You have successfully signed in; please check and confirm your details are "
 "accurate:"
-msgstr ""
-"Du er nå logget på; vennligst sjekk og bekreft at detaljene er riktige:"
+msgstr "Du har lykkes med å logge inn. Vennligst sjekk og bekreft at dine detaljer er korrekte:"
 
 #: templates/web/default/email_sent.html:26
 msgid ""
@@ -3114,9 +3055,8 @@ msgstr "åpnet på nytt"
 
 #: templates/web/default/report/new/fill_in_details_form.html:11
 #: templates/web/default/report/new/fill_in_details_form.html:14
-#, fuzzy
 msgid "the local council"
-msgstr "(ikke rapportert til administrasjonen)"
+msgstr "den lokale administrasjonen"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:363
 msgid "the map was not used so pin location may be inaccurate"
@@ -3170,7 +3110,7 @@ msgid "your update will not be posted"
 msgstr "din oppdatering vil ikke bli publisert"
 
 #: templates/web/default/front/stats.html:19
-#, fuzzy, perl-format
+#, perl-format
 msgid "<big>%s</big> report recently"
 msgid_plural "<big>%s</big> reports recently"
 msgstr[0] "<big>%s</big> rapportert<br>nylig"
@@ -3179,12 +3119,9 @@ msgstr[1] "<big>%s</big> rapportert<br>nylig"
 #: templates/web/default/report/new/councils_text_none.html:5
 #, perl-format
 msgid "We do not yet have details for the council that covers this location."
-msgid_plural ""
-"We do not yet have details for the councils that cover this location."
-msgstr[0] ""
-"Vi har ennå ikke detaljer for administrasjonen som dekker dette stedet."
-msgstr[1] ""
-"Vi har ennå ikke detaljer for administrasjonene som dekker dette stedet."
+msgid_plural "We do not yet have details for the councils that cover this location."
+msgstr[0] "Vi har ennå ikke detaljer for administrasjonen som dekker dette stedet."
+msgstr[1] "Vi har ennå ikke detaljer for administrasjonene som dekker dette stedet."
 
 #: templates/web/default/front/stats.html:14
 #, perl-format
@@ -3222,15 +3159,3 @@ msgstr[1] ""
 "Vi har ennå <strong>ikke</strong> detaljene for de andre administrasjonene "
 "som dekker dette stedet."
 
-# I de tilfeller denne teksten blir brukt, er det vel
-# det britiske Ministry of Justice som har copyright,
-# ikke det norske Justisdepartementet?
-#~ msgid ""
-#~ "&copy; Crown copyright. All rights reserved. Ministry of Justice "
-#~ "100037819&nbsp;2008."
-#~ msgstr ""
-#~ "&copy; Crown copyright. Alle rettigheter reservert. Justisdepartementet "
-#~ "100037819&nbsp;2008."
-
-#~ msgid "Unable to fetch the map tiles from the tile server."
-#~ msgstr "Klarte ikke hente kartfliser fra filtjeneren."

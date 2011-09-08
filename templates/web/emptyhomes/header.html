@@ -1,14 +1,13 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html lang="[% lang_code %]">
+<!doctype html>
+<!--[if lt IE 7]><html class="ie6 oldie" lang="[% lang_code %]"><![endif]-->
+<!--[if IE 7]>   <html class="ie7 oldie" lang="[% lang_code %]"><![endif]-->
+<!--[if IE 8]>   <html class="ie8 oldie" lang="[% lang_code %]"><![endif]-->
+<!--[if gt IE 8]><!--><html lang="[% lang_code %]"><!--<![endif]-->
 <head>
 
-    <link rel="stylesheet" type="text/css" href="/css/core.css">
+    <link rel="stylesheet" type="text/css" href="[% version('/css/core.css') %]">
     <link rel="stylesheet" type="text/css" href="/cobrands/emptyhomes/css.css">
-    <!--[if LT IE 7]>
-        <link rel="stylesheet" type="text/css" href="/css/ie6.css">
-    <![endif]-->
-
-[% INCLUDE 'common_header_tags.html' %]
+    [% INCLUDE 'common_header_tags.html' %]
 
 </head>
 <body>

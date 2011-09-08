@@ -7,7 +7,7 @@ på FiksGataMi:
 
 [% token_url %]
 
-Hvis ditt epost program ikke gir deg mulighet til å klikke på linken,
+Hvis ditt epost-program ikke gir deg mulighet til å klikke på linken,
 kopier linken inn i nettleseren.
 
 Din sak hadde følgende tittel:

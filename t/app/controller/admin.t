@@ -997,6 +997,12 @@ subtest 'report search' => sub {
 
     $mech->get_ok('/admin/search_reports?search=' . $report->user->email);
     $mech->content_like( qr{<tr [^>]*hidden[^>]*> \s* <td> \s* $r_id \s* </td>}xs );
+
+    $report->state('fixed - user');
+    $report->update;
+
+    $mech->get_ok('/admin/search_reports?search=' . $report->user->email);
+    $mech->content_like( qr{href="http://[^/]*[^.]/report/$r_id/">$r_id</a>} );
 };
 
 subtest 'search abuse' => sub {
@@ -1047,6 +1053,9 @@ $log_entries = FixMyStreet::App->model('DB::AdminLog')->search(
 
 is $log_entries->count, 0, 'no admin log entries';
 
+$user->flagged( 0 );
+$user->update;
+
 for my $test (
     {
         desc => 'edit user name',
@@ -1054,6 +1063,7 @@ for my $test (
             name => 'Test User',
             email => 'test@example.com',
             council => 2509,
+            flagged => undef,
         },
         changes => {
             name => 'Changed User',
@@ -1067,6 +1077,7 @@ for my $test (
             name => 'Changed User',
             email => 'test@example.com',
             council => 2509,
+            flagged => undef,
         },
         changes => {
             email => 'changed@example.com',
@@ -1080,12 +1091,41 @@ for my $test (
             name => 'Changed User',
             email => 'changed@example.com',
             council => 2509,
+            flagged => undef,
         },
         changes => {
             council => 2607,
         },
         log_count => 3,
         log_entries => [qw/edit edit edit/],
+    },
+    {
+        desc => 'edit user flagged',
+        fields => {
+            name => 'Changed User',
+            email => 'changed@example.com',
+            council => 2607,
+            flagged => undef,
+        },
+        changes => {
+            flagged => 'on',
+        },
+        log_count => 4,
+        log_entries => [qw/edit edit edit edit/],
+    },
+    {
+        desc => 'edit user remove flagged',
+        fields => {
+            name => 'Changed User',
+            email => 'changed@example.com',
+            council => 2607,
+            flagged => 'on',
+        },
+        changes => {
+            flagged => undef,
+        },
+        log_count => 4,
+        log_entries => [qw/edit edit edit edit/],
     },
 ) {
     subtest $test->{desc} => sub {

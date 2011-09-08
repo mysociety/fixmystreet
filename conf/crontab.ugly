@@ -33,5 +33,5 @@ MAILTO=cron-!!(*= $site *)!!@mysociety.org
 # Once a day on all servers
 39 2 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/problems-filed-graph
 43 2 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/problem-creation-graph
-
+00 8 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/check-for-zombies !!(*= $user *)!!
 

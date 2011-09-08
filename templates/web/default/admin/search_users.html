@@ -12,6 +12,7 @@
         <th>[% loc('Name') %]</th>
         <th>[% loc('Email') %]</th>
         <th>[% loc('Council') %]</th>
+        <th>[% loc('Flagged') %]</th>
         <th>*</th>
     </tr>
 [%- FOREACH user IN users %]
@@ -19,6 +20,7 @@
         <td>[% PROCESS value_or_nbsp value=user.name %]</td> 
         <td>[% PROCESS value_or_nbsp value=user.email %]</td> 
         <td>[% PROCESS value_or_nbsp value=user.from_council %]</td> 
+        <td>[% user.flagged ? loc('Yes') : '&nbsp;' %]</td> 
         <td><a href="[% c.uri_for( 'user_edit', user.id ) %]">[% loc('Edit') %]</a></td>
     </tr>
 [%- END -%]
