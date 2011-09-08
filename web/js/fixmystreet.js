@@ -39,13 +39,14 @@ $(function(){
     jQuery.validator.addMethod('validCategory', function(value, element) {
         return this.optional(element) || value != '-- Pick a category --'; }, validation_strings['category'] );
 
-    // TODO - test in older browsers
     jQuery.validator.addMethod('validName', function(value, element) {
         var validNamePat = /\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i;
         return this.optional(element) || value.length > 5 && value.match( /\S/ ) && !value.match( validNamePat ) }, validation_strings['category'] );
 
     var form_submitted = 0;
 
+    /* NB: we are currently using the dev version of this plugin with 
+    * https://github.com/jzaefferer/jquery-validation/pull/194/ applied */
     $("form.validate").validate({
         messages: validation_strings,
         onkeyup: false,
@@ -67,7 +68,9 @@ $(function(){
 
     $('input[type=submit]').click( function(e) { form_submitted = 1; } );
 
-    /* set correct required status depending on what we submit */
+    /* set correct required status depending on what we submit 
+    * NB: need to add things to form_category as the JS updating 
+    * of this we do after a map click removes them */
     $('#submit_sign_in').click( function(e) {
         $('#form_category').addClass('required validCategory').removeClass('valid');
         $('#form_name').removeClass();
