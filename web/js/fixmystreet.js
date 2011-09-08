@@ -35,23 +35,6 @@ $(function(){
         $('#email_alert_box').hide('fast');
     }
 
-    // add in handling for html5 form types...
-    // should be removed if/when jQuery supports these by default
-    // NB: required alteration of validation plugin code also
-    jQuery.event.add(this, "keypress.specialSubmit", function( e ) {
-        var elem = e.target,
-            type = elem.type;
-
-        if ( ( type === "email" || type === "url" ) && jQuery( elem ).closest("form").length && e.keyCode === 13 ) {
-            e.liveFired = undefined;
-            return jQuery.fn.trigger( "submit", this, arguments );
-        }
-    });
-
-    jQuery.expr.filters[ 'email' ] = function( elem ) {
-                        return "email" === elem.type;
-                };
-
     // FIXME - needs to use translated string
     jQuery.validator.addMethod('validCategory', function(value, element) {
         return this.optional(element) || value != '-- Pick a category --'; }, validation_strings['category'] );

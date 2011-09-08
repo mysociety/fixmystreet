@@ -50,7 +50,7 @@
 
 <div class="form-field">
     <label for="form_title">[% loc('Subject:') %]</label>
-    <input type="text" class="required" value="[% report.title | html %]" name="title" id="form_title" size="25" >
+    <input type="text" value="[% report.title | html %]" name="title" id="form_title" size="25" required>
 </div>
 
 [% IF field_errors.detail %]
@@ -59,13 +59,13 @@
 
 <div class="form-field">
     <label for="form_detail">[% loc('Details:') %]</label>
-    <textarea class="required" name="detail" id="form_detail" rows="7" cols="26">[% report.detail | html %]</textarea>
+    <textarea name="detail" id="form_detail" rows="7" cols="26" required>[% report.detail | html %]</textarea>
 </div>
 
 [% IF js %]
     <div class="form-field" id="form_category_row">
         <label for="form_category">[% loc('Category:') %]</label>
-        <select class="required" name="category" id="form_category"><option>[% loc('Loading...') %]</option></select>
+        <select name="category" id="form_category" required><option>[% loc('Loading...') %]</option></select>
     </div>
 [% ELSE %]
     [% IF category_options.size %]
@@ -118,7 +118,7 @@
 
     <div class="form-field">
         <label for="form_email">[% loc('Your email:') %]</label>
-        <input type="email" class="required email" value="[% report.user.email | html %]" name="email" id="form_email" size="25">
+        <input type="email" value="[% report.user.email | html %]" name="email" id="form_email" size="25" required>
     </div>
 
 [% INCLUDE 'report/new/notes.html' %]
