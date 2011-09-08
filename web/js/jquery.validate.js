@@ -1,5 +1,5 @@
 /**
- * jQuery Validation Plugin 1.8.1
+ * jQuery Validation Plugin @VERSION
  *
  * http://bassistance.de/jquery-plugins/jquery-plugin-validation/
  * http://docs.jquery.com/Plugins/Validation
@@ -29,19 +29,24 @@ $.extend($.fn, {
 			return validator;
 		}
 
+		// Add novalidate tag if HTML5.
+		this.attr('novalidate', 'novalidate');
+
 		validator = new $.validator( options, this[0] );
 		$.data(this[0], 'validator', validator);
 
 		if ( validator.settings.onsubmit ) {
 
+			var inputsAndButtons = this.find("input, button");
+
 			// allow suppresing validation by adding a cancel class to the submit button
-			this.find("input, button").filter(".cancel").click(function() {
+			inputsAndButtons.filter(".cancel").click(function () {
 				validator.cancelSubmit = true;
 			});
 
 			// when a submitHandler is used, capture the submitting button
 			if (validator.settings.submitHandler) {
-				this.find("input, button").filter(":submit").click(function() {
+				inputsAndButtons.filter(":submit").click(function () {
 					validator.submitButton = this;
 				});
 			}
@@ -311,8 +316,13 @@ $.extend($.validator, {
 				validator.settings[eventType] && validator.settings[eventType].call(validator, this[0] );
 			}
 			$(this.currentForm)
-				.validateDelegate(":text, :email, :password, :file, select, textarea", "focusin focusout keyup", delegate)
-				.validateDelegate(":radio, :checkbox, select, option", "click", delegate);
+			       .validateDelegate("[type='text'], [type='password'], [type='file'], select, textarea, " +
+						"[type='number'], [type='search'] ,[type='tel'], [type='url'], " +
+						"[type='email'], [type='datetime'], [type='date'], [type='month'], " +
+						"[type='week'], [type='time'], [type='datetime-local'], " +
+						"[type='range'], [type='color'] ",
+						"focusin focusout keyup", delegate)
+				.validateDelegate("[type='radio'], [type='checkbox'], select, option", "click", delegate);
 
 			if (this.settings.invalidHandler)
 				$(this.currentForm).bind("invalid-form.validate", this.settings.invalidHandler);
@@ -628,7 +638,7 @@ $.extend($.validator, {
 			var label = this.errorsFor( element );
 			if ( label.length ) {
 				// refresh error/success class
-				label.removeClass().addClass( this.settings.errorClass );
+				label.removeClass( this.settings.validClass ).addClass( this.settings.errorClass );
 
 				// check if we have a generated label, replace the message then
 				label.attr("generated") && label.html(message);
@@ -777,12 +787,20 @@ $.extend($.validator, {
 
 	attributeRules: function(element) {
 		var rules = {};
-		var $element = $(element);
+			var $element = $(element);
 
 		for (var method in $.validator.methods) {
-			var value = $element.attr(method);
+			var value;
+			if (method==='required' && typeof $.fn.prop === 'function') {
+				value = $element.prop(method);
+			} else {
+				value = $element.attr(method);
+			}
+
 			if (value) {
 				rules[method] = value;
+			} else if ($element[0].getAttribute("type") === method) {
+				rules[method] = true;
 			}
 		}
 
@@ -1005,7 +1023,7 @@ $.extend($.validator, {
 		// http://docs.jquery.com/Plugins/Validation/Methods/email
 		email: function(value, element) {
 			// contributed by Scott Gonzalez: http://projects.scottsplayground.com/email_address_validation/
-			return this.optional(element) || /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i.test(value);
+			return this.optional(element) || /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i.test(value);
 		},
 
 		// http://docs.jquery.com/Plugins/Validation/Methods/url
