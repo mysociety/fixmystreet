@@ -643,7 +643,6 @@ $map_width: 500px;
         #map_box {
             padding-left: 10px;
             width: $map_width + 2px;
-            height: $map_width + 2px;
         }
         #map {
             width: $map_width;
@@ -652,11 +651,10 @@ $map_width: 500px;
         .banner {
             margin-right: $map_width + 20px;
         }
-    }
-    .no-js #mysociety {
-        #text_map { }
-        #text_map_arrow { }
-        #side, #side-form { }
+        #text_map_arrow {
+            right: -18px;
+            border-width: 16px 9px;
+        }
     }
 }
 
@@ -665,7 +663,6 @@ $map_width: 500px;
     #mysociety {
         #map_box {
             width: $map_width + 2px;
-            height: $map_width + 2px;
         }
         #map {
             width: $map_width;
