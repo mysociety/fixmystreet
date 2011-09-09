@@ -41,9 +41,8 @@ sub string {
     my $params = $c->cobrand->disambiguate_location();
     return FixMyStreet::Geocode::Bing::string($s, $c, $params)
         if FixMyStreet->config('BING_MAPS_API_KEY');
-    return FixMyStreet::Geocode::Google::string($s, $c, $params)
-        if FixMyStreet->config('GOOGLE_MAPS_API_KEY');
-    die "No geocoding provider configured";
+    # Fall back to Google API, which allow acces with and without a key
+    return FixMyStreet::Geocode::Google::string($s, $c, $params);
 }
 
 1;
