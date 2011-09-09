@@ -187,8 +187,11 @@ $map_width: 500px;
         cursor: hand;
     }
 
+    /* Lots of defaults to override small screen CSS */
     #questionnaire label, #alerts label {
         float: none;
+        margin-top: 0;
+        display: inline;
     }
 
     .confirmed {
@@ -634,6 +637,16 @@ $map_width: 500px;
         }
         .fieldset div.checkbox label, label.n {
             display: inline;
+        }
+
+        #rss_list {
+            float: none;
+            width: auto;
+        }
+        #rss_buttons {
+            float: none;
+            width: auto;
+            text-align: left;
         }
     }
 }
