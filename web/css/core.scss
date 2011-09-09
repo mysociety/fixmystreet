@@ -688,9 +688,25 @@ $map_width: 500px;
 
         .banner {
             margin-right: 0;
+            clear: both;
             margin-top: 1em;
         }
-
+        #text_map {
+            padding: 0.25em 0.5em;
+            font-size: 100%;
+            -moz-border-radius-topleft: 0;
+            -moz-border-radius-bottomleft: 1em;
+            -moz-border-radius-bottomright: 1em;
+            -webkit-border-top-left-radius: 0;
+            -webkit-border-bottom-left-radius: 1em;
+            -webkit-border-bottom-right-radius: 1em;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 1em;
+            border-bottom-right-radius: 1em;
+        }
+        #text_map_arrow {
+            display: none;
+        }
     }
 }
 
