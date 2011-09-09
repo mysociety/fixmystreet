@@ -1,0 +1,30 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+require 5.8.0;
+
+use Data::Dumper;
+
+use FixMyStreet::App;
+use FixMyStreet::Geocode::Bing;
+
+my $reports = FixMyStreet::App->model('DB::Problem')->search( {geocode
+        => undef }, { select => [qw/id geocode confirmed latitude longitude/] } );
+
+while ( my $report = $reports->next ) {
+    next unless $report->latitude && $report->longitude;
+    print $report->id . "\n";
+
+    my $j = FixMyStreet::Geocode::Bing::reverse( $report->latitude, $report->longitude );
+
+    # FIXME: something in this string causes RABX to read in 1 too many
+    # characters when pulling it back out the database and hence it explodes
+    # as it reads the ,. I have no idea why :(
+    $j->{copyright} = '';
+
+    $report->geocode( $j );
+    $report->update;
+
+    sleep 10;
+}
