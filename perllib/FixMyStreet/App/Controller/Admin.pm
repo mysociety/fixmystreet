@@ -171,11 +171,16 @@ sub questionnaire : Path('questionnaire') : Args(0) {
     $c->forward('check_page_allowed');
 
     my $questionnaires = $c->model('DB::Questionnaire')->search(
-        { whenanswered => \'is not null' }, { group_by => [ 'ever_reported' ], select => [ 'ever_reported', { count => 'me.id' } ], as => [qw/reported questionnaire_count/] }
+        { whenanswered => { '!=', undef } },
+        { group_by => [ 'ever_reported' ],
+            select => [ 'ever_reported', { count => 'me.id' } ],
+            as     => [ qw/reported questionnaire_count/ ] }
     );
 
-
-    my %questionnaire_counts = map { ( $_->get_column( 'reported' ) || -1 ) => $_->get_column( 'questionnaire_count' ) } $questionnaires->all;
+    my %questionnaire_counts = map {
+        ( defined $_->get_column( 'reported' ) ? $_->get_column( 'reported' ) : -1 )
+            => $_->get_column( 'questionnaire_count' )
+    } $questionnaires->all;
     $questionnaire_counts{1} ||= 0;
     $questionnaire_counts{0} ||= 0;
     $questionnaire_counts{total} = $questionnaire_counts{0} + $questionnaire_counts{1};
