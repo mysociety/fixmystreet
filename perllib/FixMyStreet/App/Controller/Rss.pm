@@ -194,7 +194,7 @@ sub generate : Private {
 
     my $out = $c->stash->{rss}->as_string;
     my $uri = $c->uri_for( '/' . $c->req->path );
-    $out =~ s{<link>(.*?)</link>}{"<link>" . $c->uri_for( $1 ) . "</link><uri>$uri</uri>"}e;
+    $out =~ s{(<link>.*?</link>)}{$1<uri>$uri</uri>};
 
     $c->response->header('Content-Type' => 'application/xml; charset=utf-8');
     $c->response->body( $out );
@@ -306,7 +306,7 @@ sub add_parameters : Private {
 
     $c->stash->{rss}->channel(
         title       => ent($title),
-        link        => $link . ($c->stash->{qs} || ''),
+        link        => $c->uri_for($link) . ($c->stash->{qs} || ''),
         description => ent($desc),
         language    => 'en-gb',
     );

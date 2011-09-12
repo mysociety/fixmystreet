@@ -319,8 +319,20 @@ sub load_and_group_problems : Private {
     };
     if ($c->stash->{ward}) {
         $where->{areas} = { 'like', '%,' . $c->stash->{ward}->{id} . ',%' };
+        $where->{council} = [
+            undef,
+            $c->stash->{council}->{id},
+            { 'like', $c->stash->{council}->{id} . ',%' },
+            { 'like', '%,' . $c->stash->{council}->{id} },
+        ];
     } elsif ($c->stash->{council}) {
         $where->{areas} = { 'like', '%,' . $c->stash->{council}->{id} . ',%' };
+        $where->{council} = [
+            undef,
+            $c->stash->{council}->{id},
+            { 'like', $c->stash->{council}->{id} . ',%' },
+            { 'like', '%,' . $c->stash->{council}->{id} },
+        ];
     }
     my $problems = $c->cobrand->problems->search(
         $where,
