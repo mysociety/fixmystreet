@@ -516,6 +516,7 @@ subtest "test report creation for a user who is signing in as they report" => su
 };
 
 #### test report creation for user with account and logged in
+my ($saved_lat, $saved_lon);
 foreach my $test (
     { category => 'Trees', council => 2326 },
     { category => 'Potholes', council => 2226 },
@@ -564,7 +565,7 @@ foreach my $test (
         $mech->submit_form_ok(
             {
                 with_fields => {
-                    title         => 'Test Report',
+                    title         => "Test Report at caf\xc3\xa9",
                     detail        => 'Test report details.',
                     photo         => '',
                     name          => 'Joe Bloggs',
@@ -604,11 +605,25 @@ foreach my $test (
         # user is still logged in
         $mech->logged_in_ok;
 
+        # Test that AJAX pages return the right data
+        $mech->get_ok(
+            '/ajax?bbox=' . ($report->longitude - 0.01) . ',' .  ($report->latitude - 0.01)
+            . ',' . ($report->longitude + 0.01) . ',' .  ($report->latitude + 0.01)
+        );
+        $mech->content_contains( "Test Report at caf\xc3\xa9" );
+        $saved_lat = $report->latitude;
+        $saved_lon = $report->longitude;
+
         # cleanup
         $mech->delete_user($user);
     };
 
 }
+
+$contact2->category( "Pothol\xe9s" );
+$contact2->update;
+$mech->get_ok( '/report/new/ajax?latitude=' . $saved_lat . '&longitude=' . $saved_lon );
+$mech->content_contains( "Pothol\xc3\xa9s" );
 
 #### test uploading an image
 
