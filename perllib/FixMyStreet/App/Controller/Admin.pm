@@ -209,6 +209,7 @@ sub council_list : Path('council_list') : Args(0) {
         undef,
         {
             select => [ 'editor', { count => 'contacts_history_id', -as => 'c' } ],
+            as     => [ 'editor', 'c' ],
             group_by => ['editor'],
             order_by => { -desc => 'c' }
         }
