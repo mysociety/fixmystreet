@@ -18,11 +18,6 @@ while ( my $report = $reports->next ) {
 
     my $j = FixMyStreet::Geocode::Bing::reverse( $report->latitude, $report->longitude );
 
-    # FIXME: something in this string causes RABX to read in 1 too many
-    # characters when pulling it back out the database and hence it explodes
-    # as it reads the ,. I have no idea why :(
-    $j->{copyright} = '';
-
     $report->geocode( $j );
     $report->update;
 

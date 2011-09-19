@@ -592,10 +592,6 @@ sub find_closest_address_for_rss {
     # if ( !$j ) {
     #     $j = FixMyStreet::Geocode::Bing::reverse( $latitude, $longitude, 1 );
 
-    #     # FIXME: work out why this does not work - see populate bing script for details
-    #     # bad data here
-    #     $j->{copyright} = '';
-
     #     $problem->geocode( $j );
     #     $problem->update;
     # }
