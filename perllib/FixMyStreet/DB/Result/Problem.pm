@@ -83,7 +83,7 @@ __PACKAGE__->add_columns(
   "flagged",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "geocode",
-  { data_type => "text", is_nullable => 1 },
+  { data_type => "bytea", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->has_many(
@@ -106,8 +106,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-09-09 10:22:40
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:T+EtKT6/8cqMXmd/WzY4CA
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-09-19 14:38:43
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:nq8Ufn/SEoDGSrrGlHIxag
 
 # Add fake relationship to stored procedure table
 __PACKAGE__->has_one(
