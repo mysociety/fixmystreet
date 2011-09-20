@@ -12,7 +12,6 @@ require 5.8.0;
 use Digest::MD5;
 use Encode;
 use Error qw(:try);
-use File::Slurp;
 use JSON;
 use LWP::UserAgent;
 use LWP::Simple;
@@ -117,7 +116,7 @@ while (my $row = $unsent->next) {
         push @to, [ $council_email, $name ];
         @recips = ($council_email);
         $send_email = 1;
-        $template = File::Slurp::read_file("$FindBin::Bin/../templates/email/emptyhomes/" . $row->lang . "/submit.txt");
+        $template = Utils::read_file("$FindBin::Bin/../templates/email/emptyhomes/" . $row->lang . "/submit.txt");
 
     } else {
 
@@ -166,7 +165,7 @@ while (my $row = $unsent->next) {
         my $template_path = FixMyStreet->path_to( "templates", "email", $cobrand->moniker, $template )->stringify;
         $template_path = FixMyStreet->path_to( "templates", "email", "default", $template )->stringify
             unless -e $template_path;
-        $template = File::Slurp::read_file( $template_path );
+        $template = Utils::read_file( $template_path );
 
         if ($h{category} eq _('Other')) {
             $h{category_footer} = _('this type of local problem');
