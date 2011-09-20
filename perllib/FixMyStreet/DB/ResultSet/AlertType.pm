@@ -4,8 +4,6 @@ use base 'DBIx::Class::ResultSet';
 use strict;
 use warnings;
 
-use File::Slurp;
-
 use mySociety::DBHandle qw(dbh);
 use mySociety::EmailUtil;
 use mySociety::Gaze;
@@ -189,7 +187,7 @@ sub _send_aggregated_alert_email(%) {
         unless -e $template;
     $template = FixMyStreet->path_to( "templates", "email", "default", "$data{template}.txt" )->stringify
         unless -e $template;
-    $template = File::Slurp::read_file($template);
+    $template = Utils::read_file($template);
 
     my $sender = $cobrand->contact_email;
     (my $from = $sender) =~ s/team/fms-DO-NOT-REPLY/; # XXX
