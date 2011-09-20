@@ -19,8 +19,8 @@ die "You need to run 'commonlib/bin/gettext-makemo --quiet FixMyStreet' "
     'locale/cy_GB.UTF-8/LC_MESSAGES/FixMyStreet-EmptyHomes.mo');
 
 # Example strings
-my $english = "Sorry! Something's gone wrong.";
-my $welsh   = "Ymddiheuriadau! Mae rhywbeth wedi mynd o'i le.";
+my $english = "Please enter a valid email";
+my $welsh   = "Cofnodwch gyfeiriad e-bost dilys";
 
 # set english as the language
 mySociety::Locale::negotiate_language(    #

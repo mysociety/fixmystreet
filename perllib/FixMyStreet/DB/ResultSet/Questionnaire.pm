@@ -3,7 +3,7 @@ use base 'DBIx::Class::ResultSet';
 
 use strict;
 use warnings;
-use File::Slurp;
+use Encode;
 use Utils;
 use mySociety::EmailUtil;
 
@@ -57,12 +57,12 @@ sub send_questionnaires_period {
         my $template;
         if ($params->{site} eq 'emptyhomes') {
             ($template = $period) =~ s/ //;
-            $template = File::Slurp::read_file( FixMyStreet->path_to( "templates/email/emptyhomes/" . $row->lang . "/questionnaire-$template.txt" )->stringify );
+            $template = Utils::read_file( FixMyStreet->path_to( "templates/email/emptyhomes/" . $row->lang . "/questionnaire-$template.txt" )->stringify );
         } else {
             $template = FixMyStreet->path_to( "templates", "email", $cobrand->moniker, "questionnaire.txt" )->stringify;
             $template = FixMyStreet->path_to( "templates", "email", "default", "questionnaire.txt" )->stringify
                 unless -e $template;
-            $template = File::Slurp::read_file( $template );
+            $template = Utils::read_file( $template );
         }
 
         my %h = map { $_ => $row->$_ } qw/name title detail category/;
