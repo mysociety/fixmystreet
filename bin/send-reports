@@ -90,7 +90,7 @@ while (my $row = $unsent->next) {
     }
 
     if ( $row->used_map ) {
-        $h{closest_address} = $cobrand->find_closest( $h{latitude}, $h{longitude} );
+        $h{closest_address} = $cobrand->find_closest( $h{latitude}, $h{longitude}, $row );
     }
 
     my (@to, @recips, $template, $areas_info);
