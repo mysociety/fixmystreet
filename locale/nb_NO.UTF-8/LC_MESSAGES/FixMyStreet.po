@@ -287,11 +287,11 @@ msgstr "<strong>Nei</strong>, det gjør jeg ikke. La meg logge inn med e-post:"
 
 #: templates/web/default/report/new/fill_in_details_form.html:154
 msgid "<strong>No</strong>, let me confirm my report by email:"
-msgstr "<strong>No</strong>, la meg bekrefte min rapport med e-post:"
+msgstr "<strong>Nei</strong>, la meg bekrefte min rapport med e-post:"
 
 #: templates/web/default/report/display.html:160
 msgid "<strong>No</strong>, let me confirm my update by email:"
-msgstr "<strong>No</strong>, la meg bekrefte min oppdatering med e-post:"
+msgstr "<strong>Nei</strong>, la meg bekrefte min oppdatering med e-post:"
 
 #: templates/web/default/auth/general.html:37
 #: templates/web/default/report/display.html:142

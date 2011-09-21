@@ -1,5 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html lang="[% lang_code %]">
+<!doctype html>
+<!--[if lt IE 7]><html class="ie6 oldie" lang="[% lang_code %]"><![endif]-->
+<!--[if IE 7]>   <html class="ie7 oldie" lang="[% lang_code %]"><![endif]-->
+<!--[if IE 8]>   <html class="ie8 oldie" lang="[% lang_code %]"><![endif]-->
+<!--[if gt IE 8]><!--><html lang="[% lang_code %]"><!--<![endif]-->
     <head>
 
         <link rel="stylesheet" type="text/css" href="[% version('/css/core.css') %]">
@@ -9,9 +12,18 @@
     </head>
     <body>
 
-        <div id="header">
-            <a href="/">[% loc('Fix<span id="my">My</span>Street') %]</a>
-        </div>
+        [% IF NOT title AND NOT c.req.path %]<h1 id="header">[% ELSE %]<div id="header"><a href="/">[% END %]
+            [%- loc('Fix<span id="my">My</span>Street') %]
+        [%- IF NOT title AND NOT c.req.path %]</h1>[% ELSE %]</a></div>[% END %]
+
+        <ul id="meta">
+            [% IF c.user_exists %]
+                <li>[% tprintf(loc('Signed in as %s'), c.user.name || c.user.email) %]
+                <li><a href="/auth/sign_out">[% loc('Sign out') %]</a></li>
+            [% ELSE %]
+                <li>&nbsp;</li>
+            [% END %]
+        </ul>
 
         <div id="wrapper"><div id="mysociety">
 

@@ -44,6 +44,8 @@ OpenLayers.Util.onImageLoadError = function() {
  *  - <OpenLayers.Layer.XYZ>
  */
 OpenLayers.Layer.StreetView = OpenLayers.Class(OpenLayers.Layer.XYZ, {
+    attribution: 'Map contains Ordnance Survey data &copy; Crown copyright and database right 2010.',
+
     /**
      * Constructor: OpenLayers.Layer.StreetView
      *

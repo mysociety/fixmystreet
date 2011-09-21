@@ -24,7 +24,6 @@ sub base_tile_url {
 }
 
 sub copyright {
-    return _('Map contains Ordnance Survey data &copy; Crown copyright and database right 2010.');
 }
 
 1;

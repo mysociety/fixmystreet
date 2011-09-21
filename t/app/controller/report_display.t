@@ -193,8 +193,8 @@ for my $test (
         description => 'new report',
         date => DateTime->now,
         state => 'confirmed',
-        banner_id => '',
-        banner_text => '',
+        banner_id => undef,
+        banner_text => undef,
         fixed => 0
     },
     {
@@ -293,8 +293,10 @@ for my $test (
         $mech->get_ok("/report/$report_id");
         is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
         my $banner = $mech->extract_problem_banner;
-        $banner->{text} =~ s/^ //g;
-        $banner->{text} =~ s/ $//g;
+        if ( $banner->{text} ) {
+            $banner->{text} =~ s/^ //g;
+            $banner->{text} =~ s/ $//g;
+        }
 
         is $banner->{id}, $test->{banner_id}, 'banner id';
         is $banner->{text}, $test->{banner_text}, 'banner text';

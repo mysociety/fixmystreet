@@ -1,12 +1,5 @@
 $map_width: 500px;
 
-@mixin problem-banner {
-    margin: 0 $map_width + 30px 1em 0;
-    padding: 5px;
-    text-align: center;
-    position: relative;
-}
-
 // Generics
 
 #mysociety {
@@ -108,6 +101,7 @@ $map_width: 500px;
         label {
             float: none;
             padding-right: 0;
+            margin-top: 0;
         }
 
         #submit {
@@ -181,9 +175,9 @@ $map_width: 500px;
         width: 5em;
     }
 
-    fieldset, #fieldset {
+    fieldset, .fieldset {
         border: none;
-        padding: 0.5em;
+        margin: 0.5em;
         div {
             margin-top: 2px;
             clear: left;
@@ -194,10 +188,10 @@ $map_width: 500px;
         display: none;
     }
 
-    #fieldset div.checkbox, #problem_submit {
+    .fieldset div.checkbox, #problem_submit {
         padding-left: 5.5em;
     }
-    #fieldset div.checkbox label, label.n {
+    .fieldset div.checkbox label, label.n {
         float: none;
         text-align: left;
         padding-right: 0;
@@ -206,8 +200,11 @@ $map_width: 500px;
         cursor: hand;
     }
 
+    /* Lots of defaults to override small screen CSS */
     #questionnaire label, #alerts label {
         float: none;
+        margin-top: 0;
+        display: inline;
     }
 
     .confirmed {
@@ -225,7 +222,7 @@ $map_width: 500px;
         margin-bottom: 1em;
     }
 
-    #form_sign_in_no, #fieldset #form_sign_in_no {
+    #form_sign_in_no, .fieldset #form_sign_in_no {
         float: right;
         width: 47%;
         padding-left: 1%;
@@ -261,12 +258,6 @@ $map_width: 500px;
 
     /* Drag is only present in noscript form */
     #drag {
-        position: absolute;
-        width: $map_width;
-        height: $map_width;
-        right: 0;
-        top: 0;
-
         input, img {
             position: absolute;
             border: none;
@@ -296,8 +287,14 @@ $map_width: 500px;
         cursor: crosshair;
     }
 
+    .banner {
+        margin: 0 $map_width + 30px 1em 0;
+        padding: 5px;
+        text-align: center;
+        position: relative;
+    }
+
     #text_map {
-        @include problem-banner;
         padding-left: 0.5em;
         text-align: left;
         margin-top: 0;
@@ -339,25 +336,21 @@ $map_width: 500px;
     // Problem pages
 
     #fixed {
-        @include problem-banner;
         background-color: #ccffcc;
         border: solid 2px #009900;
     }
 
     #unknown {
-        @include problem-banner;
         background-color: #ffcccc;
         border: solid 2px #990000;
     }
 
     #closed {
-        @include problem-banner;
         background-color: #ccccff;
         border: solid 2px #000099;
     }
 
     #progress {
-        @include problem-banner;
         background-color: #ffffcc;
         border: solid 2px #999900;
     }
@@ -556,6 +549,7 @@ $map_width: 500px;
 .olControlAttribution {
     bottom: 3px !important;
     left: 3px;
+    color: #222222;
 }
 .olControlPermalink {
     bottom: 3px !important;
@@ -631,7 +625,7 @@ $map_width: 500px;
             margin-bottom: 1em;
         }
 
-        #form_sign_in_no, #fieldset #form_sign_in_no {
+        #form_sign_in_no, .fieldset #form_sign_in_no {
             float: none;
             width: auto;
             padding-left: 0;
@@ -639,6 +633,106 @@ $map_width: 500px;
             margin-bottom: 1em;
         }
 
+        fieldset, .fieldset {
+            margin: 1em;
+        }
+
+        label {
+            margin-top: 1em;
+            display: block;
+            float: none;
+            text-align: left;
+            padding-right: 0;
+            width: auto;
+        }
+        .fieldset div.checkbox, #problem_submit {
+            padding-left: 0;
+        }
+        .fieldset div.checkbox label, label.n {
+            display: inline;
+        }
+
+        #rss_list {
+            float: none;
+            width: auto;
+        }
+        #rss_buttons {
+            float: none;
+            width: auto;
+            text-align: left;
+        }
+    }
+}
+
+@media all and (max-width: 750px) {
+    $map_width: 365px;
+    #mysociety {
+        #map_box {
+            padding-left: 10px;
+            width: $map_width + 2px;
+        }
+        #map {
+            width: $map_width;
+            height: $map_width;
+        }
+        .banner {
+            margin-right: $map_width + 20px;
+        }
+        #text_map_arrow {
+            right: -18px;
+            border-width: 16px 9px;
+        }
+    }
+}
+
+@media all and (max-width: 580px) {
+    $map_width: 235px;
+    #mysociety {
+        #map_box {
+            width: $map_width + 2px;
+        }
+        #map {
+            width: $map_width;
+            height: $map_width;
+        }
+        .banner {
+            margin-right: $map_width + 20px;
+        }
+    }
+}
+
+@media all and (max-width: 320px) {
+    #mysociety {
+        #map_box {
+            padding-left: 0;
+            float: none;
+            width: 100%;
+        }
+        #map {
+            width: 99%;
+        }
+
+        .banner {
+            margin-right: 0;
+            clear: both;
+            margin-top: 1em;
+        }
+        #text_map {
+            padding: 0.25em 0.5em;
+            font-size: 100%;
+            -moz-border-radius-topleft: 0;
+            -moz-border-radius-bottomleft: 1em;
+            -moz-border-radius-bottomright: 1em;
+            -webkit-border-top-left-radius: 0;
+            -webkit-border-bottom-left-radius: 1em;
+            -webkit-border-bottom-right-radius: 1em;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 1em;
+            border-bottom-right-radius: 1em;
+        }
+        #text_map_arrow {
+            display: none;
+        }
     }
 }
 

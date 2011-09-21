@@ -49,6 +49,7 @@ $(function(){
         fixmystreet.drag.deactivate();
         $('#side-form').hide();
         $('#side').show();
+        $('#sub_map_links').show();
         fixmystreet.page = 'around';
     });
 
@@ -317,6 +318,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         });
         $('#side-form').show();
         $('#side').hide();
+        $('#sub_map_links').hide();
         fixmystreet.page = 'new';
         location.hash = 'report';
     }

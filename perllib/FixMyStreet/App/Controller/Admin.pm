@@ -171,11 +171,16 @@ sub questionnaire : Path('questionnaire') : Args(0) {
     $c->forward('check_page_allowed');
 
     my $questionnaires = $c->model('DB::Questionnaire')->search(
-        { whenanswered => \'is not null' }, { group_by => [ 'ever_reported' ], select => [ 'ever_reported', { count => 'me.id' } ], as => [qw/reported questionnaire_count/] }
+        { whenanswered => { '!=', undef } },
+        { group_by => [ 'ever_reported' ],
+            select => [ 'ever_reported', { count => 'me.id' } ],
+            as     => [ qw/reported questionnaire_count/ ] }
     );
 
-
-    my %questionnaire_counts = map { ( $_->get_column( 'reported' ) || -1 ) => $_->get_column( 'questionnaire_count' ) } $questionnaires->all;
+    my %questionnaire_counts = map {
+        ( defined $_->get_column( 'reported' ) ? $_->get_column( 'reported' ) : -1 )
+            => $_->get_column( 'questionnaire_count' )
+    } $questionnaires->all;
     $questionnaire_counts{1} ||= 0;
     $questionnaire_counts{0} ||= 0;
     $questionnaire_counts{total} = $questionnaire_counts{0} + $questionnaire_counts{1};
@@ -204,6 +209,7 @@ sub council_list : Path('council_list') : Args(0) {
         undef,
         {
             select => [ 'editor', { count => 'contacts_history_id', -as => 'c' } ],
+            as     => [ 'editor', 'c' ],
             group_by => ['editor'],
             order_by => { -desc => 'c' }
         }
@@ -778,14 +784,7 @@ sub user_edit : Path('user_edit') : Args(1) {
     my $user = $c->model('DB::User')->find( { id => $id } );
     $c->stash->{user} = $user;
 
-    my @area_types = $c->cobrand->area_types;
-    my $areas = mySociety::MaPit::call('areas', \@area_types);
-
-    my @councils_ids = sort { strcoll($areas->{$a}->{name}, $areas->{$b}->{name}) } keys %$areas;
-    @councils_ids = $c->cobrand->filter_all_council_ids_list( @councils_ids );
-
-    $c->stash->{council_ids} = \@councils_ids;
-    $c->stash->{council_details} = $areas;
+    $c->forward('set_up_council_details');
 
     if ( $c->req->param('submit') ) {
         $c->forward('check_token');
@@ -838,6 +837,8 @@ sub stats : Path('stats') : Args(0) {
 
     $c->forward('check_page_allowed');
 
+    $c->forward('set_up_council_details');
+
     if ( $c->req->param('getcounts') ) {
 
         my ( $start_date, $end_date, @errors );
@@ -870,11 +871,40 @@ sub stats : Path('stats') : Args(0) {
 
         return 1 if @errors;
 
+        my $bymonth = $c->req->param('bymonth');
+        $c->stash->{bymonth} = $bymonth;
+        my ( %council, %dates );
+        $council{council} = { like => $c->req->param('council') } 
+            if $c->req->param('council');
+
+        $c->stash->{selected_council} = $c->req->param('council');
+
         my $field = 'confirmed';
 
         $field = 'created' if $c->req->param('unconfirmed');
 
         my $one_day = DateTime::Duration->new( days => 1 );
+
+
+        my %select = (
+                select => [ 'state', { 'count' => 'me.id' } ],
+                as => [qw/state count/],
+                group_by => [ 'state' ],
+                order_by => [ 'state' ],
+        );
+
+        if ( $c->req->param('bymonth') ) {
+            %select = (
+                select => [ 
+                    { extract => \"year from $field", -as => 'c_year' },
+                    { extract => \"month from $field", -as => 'c_month' },
+                    { 'count' => 'me.id' }
+                ],
+                as     => [qw/c_year c_month count/],
+                group_by => [qw/c_year c_month/],
+                order_by => [qw/c_year c_month/],
+            );
+        }
 
         my $p = $c->model('DB::Problem')->search(
             {
@@ -882,13 +912,10 @@ sub stats : Path('stats') : Args(0) {
                     $field => { '>=', $start_date},
                     $field => { '<=', $end_date + $one_day },
                 ],
+                %council,
+                %dates,
             },
-            {
-                select => [ 'state', { 'count' => 'me.id' } ],
-                as => [qw/state count/],
-                group_by => [ 'state' ],
-                order_by => [ 'state' ],
-            }
+            \%select,
         );
 
         # in case the total_report count is 0
@@ -1118,6 +1145,21 @@ sub check_page_allowed : Private {
     if ( !grep { $_ eq $page } keys %{ $c->stash->{allowed_pages} } ) {
         $c->detach( '/page_error_404_not_found', [ _('The requested URL was not found on this server.') ] );
     }
+
+    return 1;
+}
+
+sub set_up_council_details : Private {
+    my ($self, $c ) = @_;
+
+    my @area_types = $c->cobrand->area_types;
+    my $areas = mySociety::MaPit::call('areas', \@area_types);
+
+    my @councils_ids = sort { strcoll($areas->{$a}->{name}, $areas->{$b}->{name}) } keys %$areas;
+    @councils_ids = $c->cobrand->filter_all_council_ids_list( @councils_ids );
+
+    $c->stash->{council_ids} = \@councils_ids;
+    $c->stash->{council_details} = $areas;
 
     return 1;
 }

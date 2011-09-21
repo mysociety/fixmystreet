@@ -235,7 +235,7 @@ the map.
 sub ajax : Path('/ajax') {
     my ( $self, $c ) = @_;
 
-    $c->res->content_type('text/javascript; charset=utf-8');
+    $c->res->content_type('application/json; charset=utf-8');
 
     unless ( $c->req->param('bbox') ) {
         $c->res->status(404);
