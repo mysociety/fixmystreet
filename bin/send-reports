@@ -96,7 +96,7 @@ while (my $row = $unsent->next) {
         $h{closest_address} = $cobrand->find_closest( $h{latitude}, $h{longitude} );
     }
 
-    my (@to, @recips, $template, $areas_info);
+    my (@to, @recips, $template, $areas_info, @open311_councils);
     if ($site eq 'emptyhomes') {
 
         my $council = $row->council;
@@ -138,7 +138,8 @@ while (my $row = $unsent->next) {
                 $h{category} = 'Customer Services' if $h{category} eq 'Other';
             } elsif ($areas_info->{$council}->{type} eq 'LBO') { # London
                 $send_web = 'london';
-            } elsif ( FixMyStreet::App->model("DB::Open311conf")->find( { area_id => $council } ) ) {
+            } elsif ( my $endpoint = FixMyStreet::App->model("DB::Open311conf")->find( { area_id => $council } ) ) {
+                push @open311_councils, $endpoint;
                 $send_web = 'open311';
             } else {
                 my $contact = FixMyStreet::App->model("DB::Contact")->find( {
@@ -254,12 +255,14 @@ while (my $row = $unsent->next) {
         }
     } elsif ($send_web eq 'open311') {
         # FIXME - looking this up twice :(
-        my $conf = FixMyStreet::App->model('DB::Open311conf')->find( { area_id => $row->council } );
+        foreach my $conf ( @open311_councils ) {
+        # my $conf = FixMyStreet::App->model('DB::Open311conf')->find( { area_id => $row->council } );
+        print 'posting to end point for ' . $conf->area_id . "\n";
 
         # FIXME - doesn't deal with multiple recipients
         my $contact = FixMyStreet::App->model("DB::Contact")->find( {
             deleted => 0,
-            area_id => $row->council,
+            area_id => $conf->area_id,
             category => $row->category
         } );
 
@@ -268,6 +271,11 @@ while (my $row = $unsent->next) {
             endpoint     => $conf->endpoint,
             api_key      => $conf->api_key,
         );
+
+        # non standard west berks end points
+        if ( $row->council == 2619 ) {
+            $open311->endpoints( { services => 'Services', requests => 'Requests' } );
+        }
 
         my $resp = $open311->send_service_request( $row, \%h, $contact->email );
 
