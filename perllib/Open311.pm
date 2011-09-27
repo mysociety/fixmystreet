@@ -13,11 +13,12 @@ has endpoint => ( is => 'ro', isa => 'Str' );
 has test_mode => ( is => 'ro', isa => 'Bool' );
 has test_uri_used => ( is => 'rw', 'isa' => 'Str' );
 has test_get_returns => ( is => 'rw' );
+has endpoints => ( is => 'rw', default => sub { { services => 'services.xml', requests => 'requests.xml' } } );
 
 sub get_service_list {
     my $self = shift;
 
-    my $service_list_xml = $self->_get( 'services.xml' );
+    my $service_list_xml = $self->_get( $self->endpoints->{services} );
 
     return $self->_get_xml_object( $service_list_xml );
 }
@@ -72,7 +73,7 @@ EOT
         }
     }
 
-    my $response = $self->_post( 'requests.xml', $params );
+    my $response = $self->_post( $self->endpoints->{requests}, $params );
 
     if ( $response ) {
         my $obj = $self->_get_xml_object( $response );
@@ -98,7 +99,7 @@ sub get_service_requests {
         $params->{service_request_id} = join ',', @$report_ids;
     }
 
-    my $service_request_xml = $self->_get( 'requests.xml', $params || undef );
+    my $service_request_xml = $self->_get( $self->endpoints->{requests}, $params || undef );
     return $self->_get_xml_object( $service_request_xml );
 }
 
