@@ -43,7 +43,7 @@ sub string {
     if (!$js) {
         return { error => _('Sorry, we could not parse that location. Please try again.') };
     } elsif ($js =~ /BT\d/) {
-        return { error => _("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.") };
+        return { error => _("We do not currently cover Northern Ireland, I'm afraid.") };
     }
 
     $js = JSON->new->utf8->allow_nonref->decode($js);

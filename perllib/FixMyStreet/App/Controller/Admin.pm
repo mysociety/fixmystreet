@@ -217,7 +217,8 @@ sub council_list : Path('council_list') : Args(0) {
 
     $c->stash->{edit_activity} = $edit_activity;
 
-    my @area_types = $c->cobrand->area_types;
+    # Not London, as treated separately
+    my @area_types = grep { $_ ne 'LBO' } $c->cobrand->area_types;
     my $areas = mySociety::MaPit::call('areas', \@area_types);
 
     my @councils_ids = sort { strcoll($areas->{$a}->{name}, $areas->{$b}->{name}) } keys %$areas;
