@@ -19,6 +19,16 @@ while ( my $council = $council_list->next ) {
         api_key => $council->api_key
     );
 
+    # west berks end point not standard
+    if ( $council->area_id == 2619 ) {
+        $open311->endpoints(
+            {
+                services => 'Services',
+                requests => 'Requests'
+            }
+        );
+    }
+
     my $list = $open311->get_service_list;
 
     my @found_contacts;
@@ -39,6 +49,11 @@ while ( my $council = $council_list->next ) {
 
         my $contact = $contacts->first;
 
+        # remove trailing whitespace as it upsets db queries
+        # to look up contact details when creating problem
+        my $service_name = $service->{service_name};
+        $service_name =~ s/\s+$//;
+
         # FIXME - handle change of service name or service code
         if ( $contact ) {
 
@@ -48,7 +63,7 @@ while ( my $council = $council_list->next ) {
             if ( $contact->deleted ) {
                 $contact->update(
                     {
-                        category => $service->{service_name},
+                        category => $service_name,
                         email => $service->{service_code},
                         confirmed => 1,
                         deleted => 0,
@@ -63,7 +78,7 @@ while ( my $council = $council_list->next ) {
                 {
                     email => $service->{service_code},
                     area_id => $council->area_id,
-                    category => $service->{service_name},
+                    category => $service_name,
                     confirmed => 1,
                     deleted => 0,
                     editor => $0,
