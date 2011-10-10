@@ -425,7 +425,7 @@ sub post_london_report {
 # Nearest things
 
 sub london_lookup {
-    my $org = shift;
+    my $org = shift || '';
     my $str = "Unknown ($org)";
     open(FP, "$FindBin::Bin/../data/dft.csv");
     while (<FP>) {

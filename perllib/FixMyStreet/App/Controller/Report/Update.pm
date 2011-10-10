@@ -255,6 +255,14 @@ sub save_update : Private {
     my $update = $c->stash->{update};
 
     if ( !$update->user->in_storage ) {
+        # User does not exist.
+        # Store changes in token for when token is validated.
+        $c->stash->{token_data} = {
+            name => $update->user->name,
+            password => $update->user->password,
+        };
+        $update->user->name( undef );
+        $update->user->password( '', 1 );
         $update->user->insert;
     }
     elsif ( $c->user && $c->user->id == $update->user->id ) {

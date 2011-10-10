@@ -874,6 +874,16 @@ sub save_user_and_report : Private {
 
     # Save or update the user if appropriate
     if ( !$report->user->in_storage ) {
+        # User does not exist.
+        # Store changes in token for when token is validated.
+        $c->stash->{token_data} = {
+            name => $report->user->name,
+            phone => $report->user->phone,
+            password => $report->user->password,
+        };
+        $report->user->name( undef );
+        $report->user->phone( undef );
+        $report->user->password( '', 1 );
         $report->user->insert();
     }
     elsif ( $c->user && $report->user->id == $c->user->id ) {

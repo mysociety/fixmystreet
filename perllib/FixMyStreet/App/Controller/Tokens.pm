@@ -69,6 +69,7 @@ sub confirm_problem : Path('/P') {
     # log the problem creation user in to the site
     if ( ref($data) && ( $data->{name} || $data->{password} ) ) {
         $problem->user->name( $data->{name} ) if $data->{name};
+        $problem->user->phone( $data->{phone} ) if $data->{phone};
         $problem->user->password( $data->{password}, 1 ) if $data->{password};
         $problem->user->update;
     }
