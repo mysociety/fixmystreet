@@ -55,7 +55,7 @@ sub index : Path : Args(0) {
 sub old_uri : Regex('^open311\.cgi') : Args(0) {
     my ( $self, $c ) = @_;
     ( my $new = $c->req->path ) =~ s/open311.cgi/open311/;
-    $c->res->redirect( "/$new", 301);
+    $c->res->redirect( $c->uri_for("/$new", $c->req->query_params), 301);
 }
 
 =head2 discovery

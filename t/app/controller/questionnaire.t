@@ -28,7 +28,7 @@ my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
         areas              => ',11808,135007,14419,134935,2651,20728,',
         category           => 'Street lighting',
         title              => 'Testing',
-        detail             => 'Testing Detail',
+        detail             => "Testing \x{2013} Detail",
         used_map           => 1,
         name               => $user->name,
         anonymous          => 0,
@@ -38,7 +38,7 @@ my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
         whensent           => $sent_time,
         lang               => 'en-gb',
         service            => '',
-        cobrand            => 'default',
+        cobrand            => '',
         cobrand_data       => '',
         send_questionnaire => 1,
         latitude           => '55.951963',
@@ -56,6 +56,10 @@ FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires( {
 my $email = $mech->get_email;
 ok $email, "got an email";
 like $email->body, qr/fill in our short questionnaire/i, "got questionnaire email";
+
+like $email->body, qr/Testing =96 Detail/, 'email contains encoded character';
+is $email->header('Content-Type'), 'text/plain; charset="windows-1252"', 'in the right character set';
+
 my ($token) = $email->body =~ m{http://.*?/Q/(\S+)};
 ok $token, "extracted questionnaire token '$token'";
 $mech->clear_emails_ok;
@@ -330,6 +334,8 @@ FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires( {
 } );
 $email = $mech->get_email;
 ok $email, "got an email";
+$mech->clear_emails_ok;
+
 like $email->body, qr/fill in this short questionnaire/i, "got questionnaire email";
 ($token) = $email->body =~ m{http://.*?/Q/(\S+)};
 ok $token, "extracted questionnaire token '$token'";
@@ -346,7 +352,7 @@ my $questionnaire2 = FixMyStreet::App->model('DB::Questionnaire')->find_or_creat
         ever_reported => 1,
     }
 );
-ok $questionnaire, 'added another questionnaire';
+ok $questionnaire2, 'added another questionnaire';
 ok $mech->host("fixmystreet.com"), 'change host to fixmystreet';
 $mech->get_ok("/Q/" . $token);
 $mech->title_like( qr/Questionnaire/ );
@@ -357,6 +363,26 @@ $mech->content_lacks( 'ever reported' );
 ok $mech->host("reportemptyhomes.com"), 'change host to reportemptyhomes';
 $mech->get_ok("/Q/" . $token);
 $mech->content_contains( 'made a lot of progress' );
+
+$token = FixMyStreet::App->model("DB::Token")->find( { scope => 'questionnaire', token => $token } );
+ok $token, 'found token for questionnaire';
+$questionnaire = FixMyStreet::App->model('DB::Questionnaire')->find( { id => $token->data } );
+ok $questionnaire, 'found questionnaire';
+
+# I18N Unicode extra testing using FiksGataMi
+$report->send_questionnaire( 1 );
+$report->cobrand( 'fiksgatami' );
+$report->update;
+$questionnaire->delete;
+$questionnaire2->delete;
+FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires( { site => 'fixmystreet' } ); # It's either fixmystreet or emptyhomes
+$email = $mech->get_email;
+ok $email, "got an email";
+$mech->clear_emails_ok;
+
+like $email->body, qr/Testing =96 Detail/, 'email contains encoded character from user';
+like $email->body, qr/sak p=E5 FiksGataMi/, 'email contains encoded character from template';
+is $email->header('Content-Type'), 'text/plain; charset="windows-1252"', 'email is in right encoding';
 
 $mech->delete_user('test@example.com');
 done_testing();

@@ -674,7 +674,7 @@ sub process_report : Private {
     $report->detail( $detail );
 
     # set these straight from the params
-    $report->category( _ $params{category} );
+    $report->category( _ $params{category} ) if $params{category};
 
     my $areas = $c->stash->{all_areas};
     $report->areas( ',' . join( ',', sort keys %$areas ) . ',' );

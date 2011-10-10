@@ -13,6 +13,7 @@ package Utils;
 
 use strict;
 use Encode;
+use File::Slurp qw();
 use POSIX qw(strftime);
 use mySociety::DBHandle qw(dbh);
 use mySociety::GeoUtil;
@@ -260,6 +261,19 @@ sub _part {
         push @$o, sprintf(mySociety::Locale::nget($w1, $w2, $i), $i);
         $$s -= $i * $m;
     }
+}
+
+=head2 read_file
+
+Reads in a UTF-8 encoded file using File::Slurp and decodes it from UTF-8.
+This appears simplest, rather than getting confused with binmodes and so on.
+
+=cut
+sub read_file {
+    my $filename = shift;
+    my $data = File::Slurp::read_file( $filename );
+    $data = Encode::decode( 'utf8', $data );
+    return $data;
 }
 
 1;

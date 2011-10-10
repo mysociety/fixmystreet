@@ -29,7 +29,7 @@ h2 {
 
 select, input, textarea {
     font-size: 99%;
-    max-width: 99%;
+    max-width: 95%;
 }
 
 #mysociety {
@@ -213,6 +213,12 @@ select, input, textarea {
     }
     #header {
         font-size: 150%;
+    }
+    h1 {
+        font-size: 140%;
+    }
+    h2 {
+        font-size: 130%;
     }
     #navigation {
         position: static;

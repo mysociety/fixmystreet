@@ -4,14 +4,40 @@ function set_map_config(perm) {
         new OpenLayers.Control.ArgParser(),
         new OpenLayers.Control.Navigation(),
         perm,
+        //new OpenLayers.Control.ZoomPanel()
         new OpenLayers.Control.PanZoomFMS()
     ];
     fixmystreet.map_type = OpenLayers.Layer.Bing;
 }
 
 OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
-    attribution: '<a href="http://www.bing.com/maps/">' +
-               '<img border=0 src="http://dev.virtualearth.net/Branding/logo_powered_by.png"></a>',
+    attributionTemplate: '${logo}${copyrights}',
+
+    setMap: function() {
+        OpenLayers.Layer.XYZ.prototype.setMap.apply(this, arguments);
+        this.updateAttribution();
+        this.map.events.register("moveend", this, this.updateAttribution);
+    },
+
+    updateAttribution: function() {
+        var z = this.map.getZoom() + this.zoomOffset;
+        var copyrights;
+        var logo = '';
+        if (z >= 16) {
+            copyrights = 'Contains Ordnance Survey data &copy; Crown copyright and database right 2010';
+        } else {
+            logo = '<a href="http://www.bing.com/maps/"><img border=0 src="http://dev.virtualearth.net/Branding/logo_powered_by.png"></a>';
+            copyrights = '&copy; 2011 <a href="http://www.bing.com/maps/">Microsoft</a>. &copy; AND, Navteq, Ordnance Survey';
+        }
+        this.attribution = OpenLayers.String.format(this.attributionTemplate, {
+            logo: logo,
+            copyrights: copyrights
+        });
+        this.map && this.map.events.triggerEvent("changelayer", {
+            layer: this,
+            property: "attribution"
+        });
+    },
 
     initialize: function(name, options) {
         var url = [];

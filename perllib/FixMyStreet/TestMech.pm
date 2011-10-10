@@ -364,7 +364,7 @@ sub extract_problem_banner {
     my $mech = shift;
 
     my $result = scraper {
-        process 'div#side > p', id => '@id', text => 'TEXT';
+        process 'div#side > p.banner', id => '@id', text => 'TEXT';
     }
     ->scrape( $mech->response );
 

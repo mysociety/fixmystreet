@@ -749,8 +749,8 @@ for my $test (
         changed => {
             update => 'Update from a registered user'
         },
-        initial_banner => '',
-        endstate_banner => '',
+        initial_banner => undef,
+        endstate_banner => undef,
         alert => 0,
         anonymous => 0,
     },
@@ -775,8 +775,8 @@ for my $test (
         changed => {
             update => 'Update from a registered user'
         },
-        initial_banner => '',
-        endstate_banner => '',
+        initial_banner => undef,
+        endstate_banner => undef,
         alert => 0,
         anonymous => 1,
     },
@@ -800,8 +800,8 @@ for my $test (
         changed => {
             update => 'Update from a registered user'
         },
-        initial_banner => '',
-        endstate_banner => '',
+        initial_banner => undef,
+        endstate_banner => undef,
         alert => 1,
         anonymous => 0,
     },
@@ -825,7 +825,7 @@ for my $test (
         changed => {
             update => 'Update from a registered user'
         },
-        initial_banner => '',
+        initial_banner => undef,
         endstate_banner => ' This problem has been fixed. ',
         alert => 1,
         anonymous => 0,
@@ -926,7 +926,7 @@ foreach my $test (
             fixed         => 1,
         },
         changed        => { update => 'Update from owner' },
-        initial_banner => '',
+        initial_banner => undef,
         initial_state  => 'confirmed',
         alert     => 1,    # we signed up for alerts before, do not unsign us
         anonymous => 0,
@@ -981,7 +981,7 @@ foreach my $test (
             fixed         => 1,
         },
         changed        => { update => 'Update from owner' },
-        initial_banner => '',
+        initial_banner => undef,
         initial_state  => 'confirmed',
         alert     => 1,    # we signed up for alerts before, do not unsign us
         anonymous => 0,
@@ -1098,7 +1098,7 @@ for my $test (
             fixed         => 1,
         },
         changed        => { update => 'Update from owner' },
-        initial_banner => '',
+        initial_banner => undef,
         alert     => 1,    # we signed up for alerts before, do not unsign us
         anonymous => 0,
         answered  => 0,
@@ -1119,7 +1119,7 @@ for my $test (
             fixed         => 1,
         },
         changed        => { update => 'Update from owner' },
-        initial_banner => '',
+        initial_banner => undef,
         alert     => 1,    # we signed up for alerts before, do not unsign us
         anonymous => 0,
         answered  => 1,

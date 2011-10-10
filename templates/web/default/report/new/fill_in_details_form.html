@@ -34,7 +34,7 @@
 
 [% INCLUDE 'report/new/form_heading.html' %]
 
-<div id="fieldset">
+<div class="fieldset">
 
 
 
@@ -166,6 +166,8 @@
         <input type="password" name="password_sign_in" id="password_sign_in" value="" size="25">
         </p>
 
+        <div class="fieldset">
+
         <p>
         <input type="checkbox" id="remember_me" name="remember_me" value='1'[% ' checked' IF remember_me %]>
         <label class="n" for="remember_me">
@@ -177,12 +179,14 @@
         <input type="submit" name="submit_sign_in" value="[% loc('Submit') %]">
         </p>
 
+        </div>
+
     </div>
     <div id="form_sign_in_no">
 
         <p>[% loc('<strong>No</strong>, let me confirm my report by email:') %]</p>
 
-        <div id="fieldset">
+        <div class="fieldset">
 
             [% INCLUDE name_phone %]
 
@@ -190,13 +194,14 @@
                 <label for="password_register">[% loc('Enter a new password:') %]</label>
                 <input type="password" name="password_register" id="password_register" value="" size="25">
             </div>
-        </div>
 
         <p style="clear:both"><small>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</small></p>
 
         <p>
         <input type="submit" name="submit_register" value="[% loc('Submit') %]">
         </p>
+
+        </div>
 
     </div>
 
