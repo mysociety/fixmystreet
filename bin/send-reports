@@ -277,9 +277,9 @@ while (my $row = $unsent->next) {
 
             if ( $resp ) {
                 $row->external_id( $resp );
-                $result = 0;
+                $result *= 0;
             } else {
-                $result = 1;
+                $result *= 1;
             }
         }
     }
