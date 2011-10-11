@@ -100,21 +100,29 @@ sub _handle_existing_contact {
     my $service_name = $self->_normalize_service_name;
 
     print $self->_current_council->area_id . " already has a contact for service code " . $self->_current_service->{service_code} . "\n";
-    push @{ $self->found_contacts }, $self->_current_service->{service_code};
 
     if ( $contact->deleted || $service_name ne $contact->category || $self->_current_service->{service_code} ne $contact->email ) {
-        $contact->update(
-            {
-                category => $service_name,
-                email => $self->_current_service->{service_code},
-                confirmed => 1,
-                deleted => 0,
-                editor => $0,
-                whenedited => \'ms_current_timestamp()',
-                note => 'automatically undeleted by script',
-            }
-        );
+        eval {
+            $contact->update(
+                {
+                    category => $service_name,
+                    email => $self->_current_service->{service_code},
+                    confirmed => 1,
+                    deleted => 0,
+                    editor => $0,
+                    whenedited => \'ms_current_timestamp()',
+                    note => 'automatically undeleted by script',
+                }
+            );
+        };
+
+        if ( $@ ) {
+            warn "Failed to update contact for service code " . $self->_current_service->{service_code} . " for council @{[$self->_current_council->area_id]}: $@\n";
+            return;
+        }
     }
+
+    push @{ $self->found_contacts }, $self->_current_service->{service_code};
 }
 
 sub _create_contact {
@@ -122,7 +130,6 @@ sub _create_contact {
 
     my $service_name = $self->_normalize_service_name;
 
-    # FIXME - don't die if existing open311 category with same name
     my $contact;
     eval {
         $contact = FixMyStreet::App->model( 'DB::Contact')->create(
