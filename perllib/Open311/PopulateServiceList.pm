@@ -83,8 +83,22 @@ sub process_service {
         }
     );
 
-    my $contact = $contacts->first;
+    if ( $contacts->count() > 1 ) {
+        sprintf(
+            "Multiple contacts for service code %s, category %s - Skipping\n",
+            $self->_current_service->{service_code},
+            $self->_current_service->{service_name},
+        );
 
+        # best to not mark them as deleted as we don't know what we're doing
+        while ( my $contact = $contacts->next ) {
+            push @{ $self->found_contacts }, $contact->email;
+        }
+
+        return;
+    }
+
+    my $contact = $contacts->first;
 
     if ( $contact ) {
         $self->_handle_existing_contact( $contact );

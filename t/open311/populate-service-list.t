@@ -22,7 +22,7 @@ ok $processor, 'created object';
 subtest 'check basic functionality' => sub {
     FixMyStreet::App->model('DB::Contact')->search( { area_id => 1 } )->delete();
 
-    my $service_list = get_xml_simple_object( get_standard_xml );
+    my $service_list = get_xml_simple_object( get_standard_xml() );
 
     my $council = FixMyStreet::App->model('DB::Open311Conf')->new( {
         area_id => 1
@@ -52,7 +52,7 @@ subtest 'check non open311 contacts marked as deleted' => sub {
         }
     );
 
-    my $service_list = get_xml_simple_object( get_standard_xml );
+    my $service_list = get_xml_simple_object( get_standard_xml() );
 
     my $council = FixMyStreet::App->model('DB::Open311Conf')->new( {
         area_id => 1
@@ -87,7 +87,7 @@ subtest 'check email changed if matching category' => sub {
 
     ok $contact, 'contact created';
 
-    my $service_list = get_xml_simple_object( get_standard_xml );
+    my $service_list = get_xml_simple_object( get_standard_xml() );
 
     my $council = FixMyStreet::App->model('DB::Open311Conf')->new( {
         area_id => 1
@@ -124,7 +124,7 @@ subtest 'check category name changed if updated' => sub {
 
     ok $contact, 'contact created';
 
-    my $service_list = get_xml_simple_object( get_standard_xml );
+    my $service_list = get_xml_simple_object( get_standard_xml() );
 
     my $council = FixMyStreet::App->model('DB::Open311Conf')->new( {
         area_id => 1
@@ -142,6 +142,65 @@ subtest 'check category name changed if updated' => sub {
 
     my $contact_count = FixMyStreet::App->model('DB::Contact')->search( { area_id => 1 } )->count();
     is $contact_count, 3, 'correct number of contacts';
+};
+
+subtest 'check conflicting contacts not changed' => sub {
+    FixMyStreet::App->model('DB::Contact')->search( { area_id => 1 } )->delete();
+
+    my $contact = FixMyStreet::App->model('DB::Contact')->create(
+        {
+            area_id => 1,
+            email =>   'existing@example.com',
+            category => 'Cans left out 24x7',
+            confirmed => 1,
+            deleted => 0,
+            editor => $0,
+            whenedited => \'ms_current_timestamp()',
+            note => 'test contact',
+        }
+    );
+
+    ok $contact, 'contact created';
+
+    my $contact2 = FixMyStreet::App->model('DB::Contact')->create(
+        {
+            area_id => 1,
+            email =>   '001',
+            category => 'Bins left out 24x7',
+            confirmed => 1,
+            deleted => 0,
+            editor => $0,
+            whenedited => \'ms_current_timestamp()',
+            note => 'test contact',
+        }
+    );
+
+    ok $contact2, 'contact created';
+
+    my $service_list = get_xml_simple_object( get_standard_xml() );
+
+    my $council = FixMyStreet::App->model('DB::Open311Conf')->new( {
+        area_id => 1
+    } );
+
+    my $processor = Open311::PopulateServiceList->new( council_list => [] );
+    $processor->_current_council( $council );
+    $processor->process_services( $service_list );
+
+    $contact->discard_changes;
+    is $contact->email, 'existing@example.com', 'first contact email unchanged';
+    is $contact->category, 'Cans left out 24x7', 'first contact category unchanged';
+    is $contact->confirmed, 1, 'first contact contact still confirmed';
+    is $contact->deleted, 0, 'first contact contact still not deleted';
+
+    $contact2->discard_changes;
+    is $contact2->email, '001', 'second contact email unchanged';
+    is $contact2->category, 'Bins left out 24x7', 'second contact category unchanged';
+    is $contact2->confirmed, 1, 'second contact contact still confirmed';
+    is $contact2->deleted, 0, 'second contact contact still not deleted';
+
+    my $contact_count = FixMyStreet::App->model('DB::Contact')->search( { area_id => 1 } )->count();
+    is $contact_count, 4, 'correct number of contacts';
 };
 
 sub get_standard_xml {
