@@ -107,7 +107,6 @@ sub process_service {
     }
 }
 
-# FIXME - handle change of service code
 sub _handle_existing_contact {
     my ( $self, $contact ) = @_;
 
