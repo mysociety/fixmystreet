@@ -61,10 +61,12 @@ sub process_services {
     my $self = shift;
     my $list = shift;
 
+    $self->found_contacts( [] );
     foreach my $service ( @{ $list->{service} } ) {
         $self->_current_service( $service );
         $self->process_service;
     }
+    $self->_delete_contacts_not_in_service_list;
 }
 
 sub process_service {
@@ -100,7 +102,7 @@ sub _handle_existing_contact {
     print $self->_current_council->area_id . " already has a contact for service code " . $self->_current_service->{service_code} . "\n";
     push @{ $self->found_contacts }, $self->_current_service->{service_code};
 
-    if ( $contact->deleted || $service_name ne $contact->category ) {
+    if ( $contact->deleted || $service_name ne $contact->category || $self->_current_service->{service_code} ne $contact->email ) {
         $contact->update(
             {
                 category => $service_name,
