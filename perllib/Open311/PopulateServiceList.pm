@@ -91,7 +91,7 @@ sub process_service {
     }
 }
 
-# FIXME - handle change of service name or service code
+# FIXME - handle change of service code
 sub _handle_existing_contact {
     my ( $self, $contact ) = @_;
 
@@ -100,7 +100,7 @@ sub _handle_existing_contact {
     print $self->_current_council->area_id . " already has a contact for service code " . $self->_current_service->{service_code} . "\n";
     push @{ $self->found_contacts }, $self->_current_service->{service_code};
 
-    if ( $contact->deleted ) {
+    if ( $contact->deleted || $service_name ne $contact->category ) {
         $contact->update(
             {
                 category => $service_name,
