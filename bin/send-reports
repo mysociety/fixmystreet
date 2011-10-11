@@ -41,7 +41,7 @@ my $unsent = FixMyStreet::App->model("DB::Problem")->search( {
 } );
 my (%notgot, %note);
 while (my $row = $unsent->next) {
-    
+
     my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->cobrand)->new();
 
     # Cobranded and non-cobranded messages can share a database. In this case, the conf file 
@@ -77,7 +77,7 @@ while (my $row = $unsent->next) {
     $h{fuzzy} = $row->used_map ? _('To view a map of the precise location of this issue')
         : _('The user could not locate the problem on a map, but to see the area around the location they entered');
     $h{closest_address} = '';
-    
+
     # If we are in the UK include eastings and northings, and nearest stuff
     $h{easting_northing} = '';
     if ( $cobrand->country eq 'GB' ) {
@@ -253,36 +253,34 @@ while (my $row = $unsent->next) {
             $result *= post_london_report( $row, %h );
         }
     } elsif ($send_web eq 'open311') {
-        # FIXME - looking this up twice :(
         foreach my $conf ( @open311_councils ) {
-        # my $conf = FixMyStreet::App->model('DB::Open311conf')->find( { area_id => $row->council } );
-        print 'posting to end point for ' . $conf->area_id . "\n";
+            print 'posting to end point for ' . $conf->area_id . "\n" if $verbose;
 
-        # FIXME - doesn't deal with multiple recipients
-        my $contact = FixMyStreet::App->model("DB::Contact")->find( {
-            deleted => 0,
-            area_id => $conf->area_id,
-            category => $row->category
-        } );
+            my $contact = FixMyStreet::App->model("DB::Contact")->find( {
+                deleted => 0,
+                area_id => $conf->area_id,
+                category => $row->category
+            } );
 
-        my $open311 = Open311->new(
-            jurisdiction => $conf->jurisdiction,
-            endpoint     => $conf->endpoint,
-            api_key      => $conf->api_key,
-        );
+            my $open311 = Open311->new(
+                jurisdiction => $conf->jurisdiction,
+                endpoint     => $conf->endpoint,
+                api_key      => $conf->api_key,
+            );
 
-        # non standard west berks end points
-        if ( $row->council == 2619 ) {
-            $open311->endpoints( { services => 'Services', requests => 'Requests' } );
-        }
+            # non standard west berks end points
+            if ( $row->council =~ /2619/ ) {
+                $open311->endpoints( { services => 'Services', requests => 'Requests' } );
+            }
 
-        my $resp = $open311->send_service_request( $row, \%h, $contact->email );
+            my $resp = $open311->send_service_request( $row, \%h, $contact->email );
 
-        if ( $resp ) {
-            $row->external_id( $resp );
-            $result = 0;
-        } else {
-            $result = 1;
+            if ( $resp ) {
+                $row->external_id( $resp );
+                $result = 0;
+            } else {
+                $result = 1;
+            }
         }
     }
 
