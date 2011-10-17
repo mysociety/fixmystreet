@@ -1,0 +1,34 @@
+$background: #ecf5fd;
+
+    #navigation {
+        margin-top: 110px;
+    }
+
+    #logo {
+        top: 12em;
+    }
+
+    #header, #my {
+        background-color: $background;
+    }
+
+    a {
+        color: #9C2161;
+    }
+
+    body {
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 13.5px;
+        color: black;
+    }
+
+#mysociety {
+    #postcodeForm {
+        background-color: $background;
+    }
+
+    #front_stats div {
+        background-color: $background;
+    }
+
+}
