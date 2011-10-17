@@ -1,0 +1,26 @@
+use strict;
+use JSON;
+use LWP::Simple;
+
+my $id = shift;
+
+my $url = sprintf( 'http://mapit.mysociety.org/area/%s/geometry', $id);
+
+my $json = get( $url );
+my $geo = decode_json( $json );
+
+my $max_lat = $geo->{max_lat};
+my $min_lat = $geo->{min_lat};
+my $max_lon = $geo->{max_lon};
+my $min_lon = $geo->{min_lon};
+my $c_lat = $geo->{centre_lat};
+my $c_lon = $geo->{centre_lon};
+
+my $spn_lat = $max_lat - $min_lat;
+my $spn_lon = $max_lon - $min_lon;
+
+print <<"EOT";
+    centre => '$c_lat,$c_lon',
+    span   => '$spn_lat,$spn_lon',
+    bounds => [ '$min_lat,$min_lon','$max_lat,$max_lon' ],
+EOT
