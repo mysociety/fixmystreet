@@ -22,6 +22,7 @@ use Digest::MD5 qw(md5_hex);
 # may be used to disambiguate the location in cobranded versions of the site.
 sub string {
     my ( $s, $c, $params ) = @_;
+    $s .= '+' . $params->{town} if $params->{town};
     my $url = "http://dev.virtualearth.net/REST/v1/Locations?q=$s&c=en-GB"; # FIXME nb-NO for Norway
     $url .= '&mapView=' . $params->{bounds}[0] . ',' . $params->{bounds}[1]
         if $params->{bounds};
