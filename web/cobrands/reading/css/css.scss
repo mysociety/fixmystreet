@@ -1,15 +1,25 @@
-$background: #ecf5fd;
+// Generics
+
+$header_back: #ecf5fd;
+$header_back_lighter: #ecf5fd;
+$header_colour: #000;
+$header_darker: #000;
+
+$map_width: 420px;
+
+@import "../../../css/_main.scss";
 
     #navigation {
-        margin-top: 110px;
+        margin-top: 125px;
+    }
+
+    h1#header {
+        font-size: 200%;
+        margin-bottom: 0em;
     }
 
     #logo {
-        top: 12em;
-    }
-
-    #header, #my {
-        background-color: $background;
+        top: 12.5em;
     }
 
     a {
@@ -23,12 +33,37 @@ $background: #ecf5fd;
     }
 
 #mysociety {
-    #postcodeForm {
-        background-color: $background;
+
+    #map_box {
+        width: $map_width + 2;
     }
 
-    #front_stats div {
-        background-color: $background;
+    #map {
+        width: $map_width;
+        height: $map_width;
     }
 
+    dd {
+        margin-left: 40px;
+    }
+
+    div {
+        padding-top: 0.2em;
+        padding-bottom: 0.2em;
+    }
+
+    h3 {
+        font-size: 1.17em;
+        font-weight: bold;
+        margin: 1em 0em 1em 0em;
+    }
+
+    h2 {
+        font-weight: bold;
+        margin: 1em 0em 1em 0em;
+    }
+
+    ul, ol {
+        padding-left: 2em;
+    }
 }
