@@ -38,3 +38,7 @@ geolocation.
 There's a script in bin - generate_council_location that takes the
 mapit area code for the council  as a argument and generates the 
 contents of the disambiguate_location hash.
+
+You can also add a town key to the hashref which will be appended 
+on to the end of geolocation queries in order to narrow down results
+for popular road names, e.g High St
