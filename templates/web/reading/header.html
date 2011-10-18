@@ -10,10 +10,9 @@
 	<title>Reading Borough Council | Title of 3rd party product</title>
     <link rel="shortcut icon" href="[% version('/cobrands/reading/images/favicon.ico') %]">
     <link rel="stylesheet" type="text/css" href="[% version('/css/core.css') %]">
-    <link rel="stylesheet" type="text/css" href="[% version('/css/main.css') %]">
-    <link rel="stylesheet" type="text/css" href="[% version('/cobrands/reading/css/mysoc.css') %]" />
     <link rel="stylesheet" type="text/css" href="[% version('/cobrands/reading/css/reading.css') %]" />
     <link rel="stylesheet" type="text/css" href="[% version('/cobrands/reading/css/print3rdParty.css') %]" media="print"/>
+    <link rel="stylesheet" type="text/css" href="[% version('/cobrands/reading/css/mysoc.css') %]" />
 
     [% INCLUDE 'common_header_tags.html' %]
 
@@ -32,7 +31,6 @@
             [%- loc('Fix<span id="my">My</span>Street') %]
         [%- IF NOT title AND NOT c.req.path %]</h1>[% ELSE %]</a></div>[% END %]
 
-        <div id="wrapper"><div id="mysociety">
         <ul id="meta">
             [% IF c.user_exists %]
                 <li>[% tprintf(loc('Signed in as %s'), c.user.name || c.user.email) %]
@@ -41,3 +39,5 @@
                 <li>&nbsp;</li>
             [% END %]
         </ul>
+
+        <div id="wrapper"><div id="mysociety">
