@@ -74,4 +74,13 @@ $map_width: 420px;
     .fieldset div.checkbox, #problem_submit {
         padding-left: 6.5em;
     }
+
+    table {
+        border-collapse: separate;
+        border-spacing: 1px;
+    }
+
+    td {
+        padding: 3px;
+    }
 }
