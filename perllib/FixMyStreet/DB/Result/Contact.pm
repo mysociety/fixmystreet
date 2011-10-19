@@ -40,6 +40,9 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("contacts_area_id_category_idx", ["area_id", "category"]);
 
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-08-01 10:07:59
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:4y6yRz4rMN66pBpkzfJJhg
+
 __PACKAGE__->filter_column(
     extra => {
         filter_from_storage => sub {
@@ -59,8 +62,5 @@ __PACKAGE__->filter_column(
         },
     }
 );
-
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-08-01 10:07:59
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:4y6yRz4rMN66pBpkzfJJhg
 
 1;
