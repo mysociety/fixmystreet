@@ -66,4 +66,12 @@ $map_width: 420px;
     ul, ol {
         padding-left: 2em;
     }
+
+    label {
+       width: 6em;
+    }
+
+    .fieldset div.checkbox, #problem_submit {
+        padding-left: 6.5em;
+    }
 }
