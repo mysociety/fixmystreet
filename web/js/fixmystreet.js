@@ -5,7 +5,8 @@
 
 function form_category_onchange() {
     $.getJSON('/report/new/category_extras', {
-        area_id: 2649,
+        latitude: fixmystreet.latitude,
+        longitude: fixmystreet.longitude,
         category: this.options[ this.selectedIndex ].text,
     }, function(data) {
         if ( data.category_extra ) {

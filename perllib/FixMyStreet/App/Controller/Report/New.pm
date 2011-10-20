@@ -131,21 +131,17 @@ sub report_form_ajax : Path('ajax') : Args(0) {
 sub category_extras_ajax : Path('category_extras') : Args(0) {
     my ( $self, $c ) = @_;
 
-    my $contacts
-      = $c
-      ->model('DB::Contact')
-      ->not_deleted
-      ->search( { area_id => $c->req->param('area_id'), category => $c->req->param('category') } );
+    $c->forward('initialize_report');
+    $c->forward('determine_location') or return 0;
+    $c->forward('setup_categories_and_councils');
 
     my $category_extra = '';
-    if ( my $contact = $contacts->first ) {
-        if ( $contact->extra ) {
-            $c->stash->{report_meta} = {};
-            $c->stash->{report} = { category => $c->req->param('category') };
-            $c->stash->{category_extras} = { $c->req->param('category' ) => $contact->extra };
+    if ( $c->stash->{category_extras}->{ $c->req->param('category') } ) {
+        $c->stash->{report_meta} = {};
+        $c->stash->{report} = { category => $c->req->param('category') };
+        $c->stash->{category_extras} = { $c->req->param('category' ) => $c->stash->{category_extras}->{ $c->req->param('category') } };
 
-            $category_extra= $c->view('Web')->render( $c, 'report/new/category_extras.html');
-        }
+        $category_extra= $c->view('Web')->render( $c, 'report/new/category_extras.html');
     }
 
     my $body = JSON->new->utf8(1)->encode(
