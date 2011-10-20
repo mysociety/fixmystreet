@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
+use utf8;
 
 use FixMyStreet::TestMech;
 use Web::Scraper;
@@ -565,7 +566,7 @@ foreach my $test (
         $mech->submit_form_ok(
             {
                 with_fields => {
-                    title         => "Test Report at caf\xc3\xa9",
+                    title         => "Test Report at café", 
                     detail        => 'Test report details.',
                     photo         => '',
                     name          => 'Joe Bloggs',
@@ -620,7 +621,7 @@ foreach my $test (
 
 }
 
-$contact2->category( "Pothol\xe9s" );
+$contact2->category( "Pothol\xc3\xa9s" );
 $contact2->update;
 $mech->get_ok( '/report/new/ajax?latitude=' . $saved_lat . '&longitude=' . $saved_lon );
 $mech->content_contains( "Pothol\xc3\xa9s" );
