@@ -332,6 +332,32 @@ sub update_contacts : Private {
         );
 
         $c->stash->{updated} = _('Values updated');
+    } elsif ( $posted eq 'open311' ) {
+        $c->forward('check_token');
+
+        my %params = map { $_ => $c->req->param($_) } qw/open311_id endpoint jurisdiction api_key area_id/;
+
+        if ( $params{open311_id} ) {
+            my $conf = $c->model('DB::Open311Conf')->find( { id => $params{open311_id} } );
+
+            $conf->endpoint( $params{endpoint} );
+            $conf->jurisdiction( $params{jurisdiction} );
+            $conf->api_key( $params{api_key} );
+
+            $conf->update();
+
+            $c->stash->{updated} = _('Configuration updated');
+        } else {
+            my $conf = $c->model('DB::Open311Conf')->find_or_new( { area_id => $params{area_id} } );
+
+            $conf->endpoint( $params{endpoint} );
+            $conf->jurisdiction( $params{jurisdiction} );
+            $conf->api_key( $params{api_key} );
+
+            $conf->insert();
+
+            $c->stash->{updated} = _('Configuration updated - contacts will be generated automatically later');
+        }
     }
 }
 
@@ -348,6 +374,12 @@ sub display_contacts : Private {
     );
 
     $c->stash->{contacts} = $contacts;
+
+    my $open311 = $c->model('DB::Open311Conf')->search(
+        { area_id => $area_id }
+    );
+
+    $c->stash->{open311} = $open311;
 
     if ( $c->req->param('text') && $c->req->param('text') == 1 ) {
         $c->stash->{template} = 'admin/council_contacts.txt';

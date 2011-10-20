@@ -205,6 +205,59 @@ subtest 'check contact updating' => sub {
     $mech->content_like(qr{test2\@example.com[^<]*</td>[^<]*<td><strong>Yes}s);
 };
 
+my $open311 =
+  FixMyStreet::App->model('DB::Open311Conf')->search( { area_id => 2650 } );
+$open311->delete if $open311;
+
+subtest 'check open311 configuring' => sub {
+    $mech->get_ok('/admin/council_contacts/2650/');
+    $mech->content_lacks('Council contacts configured via Open311');
+
+    $mech->form_number(3);
+    $mech->submit_form_ok(
+        {
+            with_fields => {
+                api_key      => 'api key',
+                endpoint     => 'http://example.com/open311',
+                jurisdiction => 'mySociety',
+            }
+        }
+    );
+    $mech->content_contains('Council contacts configured via Open311');
+    $mech->content_contains('Configuration updated - contacts will be generated automatically later');
+
+    $open311 =
+      FixMyStreet::App->model('DB::Open311Conf')->search( { area_id => 2650 } );
+
+    is $open311->count, 1, 'only one configuration';
+    my $conf = $open311->first;
+    is $conf->endpoint, 'http://example.com/open311', 'endpoint configured';
+    is $conf->api_key, 'api key', 'api key configured';
+    is $conf->jurisdiction, 'mySociety', 'jurisdiction configures';
+
+    $mech->form_number(3);
+    $mech->submit_form_ok(
+        {
+            with_fields => {
+                api_key      => 'new api key',
+                endpoint     => 'http://example.org/open311',
+                jurisdiction => 'open311',
+            }
+        }
+    );
+
+    $mech->content_contains('Configuration updated');
+
+    $open311 =
+      FixMyStreet::App->model('DB::Open311Conf')->search( { area_id => 2650 } );
+
+    is $open311->count, 1, 'only one configuration';
+    $conf = $open311->first;
+    is $conf->endpoint, 'http://example.org/open311', 'endpoint updated';
+    is $conf->api_key, 'new api key', 'api key updated';
+    is $conf->jurisdiction, 'open311', 'jurisdiction configures';
+};
+
 subtest 'check text output' => sub {
     $mech->get_ok('/admin/council_contacts/2650?text=1');
     is $mech->content_type, 'text/plain';

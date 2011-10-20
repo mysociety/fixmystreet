@@ -78,6 +78,8 @@ __PACKAGE__->add_columns(
   { data_type => "timestamp", is_nullable => 1 },
   "send_questionnaire",
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
+  "extra",
+  { data_type => "text", is_nullable => 1 },
   "flagged",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
@@ -102,8 +104,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-06-23 15:49:48
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:3sw/1dqxlTvcWEI/eJTm4w
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-07-29 16:26:23
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ifvx9FOlbui66hPyzNIAPA
 
 # Add fake relationship to stored procedure table
 __PACKAGE__->has_one(
@@ -113,11 +115,31 @@ __PACKAGE__->has_one(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+__PACKAGE__->filter_column(
+    extra => {
+        filter_from_storage => sub {
+            my $self = shift;
+            my $ser  = shift;
+            return undef unless defined $ser;
+            my $h = new IO::String($ser);
+            return RABX::wire_rd($h);
+        },
+        filter_to_storage => sub {
+            my $self = shift;
+            my $data = shift;
+            my $ser  = '';
+            my $h    = new IO::String($ser);
+            RABX::wire_wr( $data, $h );
+            return $ser;
+        },
+    }
+);
 use DateTime::TimeZone;
 use Image::Size;
 use Moose;
 use namespace::clean -except => [ 'meta' ];
 use Utils;
+use RABX;
 
 with 'FixMyStreet::Roles::Abuser';
 
@@ -533,6 +555,88 @@ sub duration_string {
     return sprintf(_('Sent to %s %s later'), $body,
         Utils::prettify_duration($problem->whensent_local->epoch - $problem->confirmed_local->epoch, 'minute')
     );
+}
+
+=head2 update_from_open311_service_request
+
+    $p->update_from_open311_service_request( $request, $council_details, $system_user );
+
+Updates the problem based on information in the passed in open311 request. If the request
+has an older update time than the problem's lastupdate time then nothing happens.
+
+Otherwise a comment will be created if there is status update text in the open311 request.
+If the open311 request has a state of closed then the problem will be marked as fixed.
+
+NB: a comment will always be created if the problem is being marked as fixed.
+
+Fixed problems will not be re-opened by this method.
+
+=cut
+
+sub update_from_open311_service_request {
+    my ( $self, $request, $council_details, $system_user ) = @_;
+
+    my ( $updated, $status_notes );
+
+    if ( ! ref $request->{updated_datetime} ) {
+        $updated = $request->{updated_datetime};
+    }
+
+    if ( ! ref $request->{status_notes} ) {
+        $status_notes = $request->{status_notes};
+    }
+
+    my $update = FixMyStreet::App->model('DB::Comment')->new(
+        {
+            problem_id => $self->id,
+            state      => 'confirmed',
+            created    => $updated || \'ms_current_timestamp()',
+            confirmed => \'ms_current_timestamp()',
+            text      => $status_notes,
+            mark_open => 0,
+            mark_fixed => 0,
+            user => $system_user,
+            anonymous => 0,
+            name => $council_details->{name},
+        }
+    );
+
+
+    my $w3c = DateTime::Format::W3CDTF->new;
+    my $req_time = $w3c->parse_datetime( $request->{updated_datetime} );
+
+    # set a timezone here as the $req_time will have one and if we don't
+    # use a timezone then the date comparisons are invalid.
+    # of course if local timezone is not the one that went into the data
+    # base then we're also in trouble
+    my $lastupdate = $self->lastupdate;
+    $lastupdate->set_time_zone( DateTime::TimeZone->new( name => 'local' ) );
+
+    # update from open311 is older so skip
+    if ( $req_time < $lastupdate ) {
+        return 0;
+    }
+
+    if ( $request->{status} eq 'closed' ) {
+        if ( $self->state ne 'fixed' ) {
+            $self->state('fixed');
+            $update->mark_fixed(1);
+
+            if ( !$status_notes ) {
+                # FIXME - better text here
+                $status_notes = _('Closed by council');
+            }
+        }
+    }
+
+    if ( $status_notes ) {
+        $update->text( $status_notes );
+        $self->lastupdate( $req_time );
+        $self->update;
+        $update->insert;
+    }
+
+    return 1;
 }
 
 # we need the inline_constructor bit as we don't inherit from Moose

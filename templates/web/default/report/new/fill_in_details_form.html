@@ -79,6 +79,10 @@
     [% END %]
 [% END %]
 
+[%- IF category_extras %]
+[% PROCESS "report/new/category_extras.html" %]
+[%- END %]
+
 [% IF c.cobrand.allow_photo_upload %]
     [% IF field_errors.photo %]
         <div class='form-error'>[% field_errors.photo %]</div>

@@ -3,6 +3,23 @@
  * FixMyStreet JavaScript
  */
 
+function form_category_onchange() {
+    $.getJSON('/report/new/category_extras', {
+        area_id: 2649,
+        category: this.options[ this.selectedIndex ].text,
+    }, function(data) {
+        if ( data.category_extra ) {
+            if ( $('#category_meta').size() ) {
+                $('#category_meta').html( data.category_extra);
+            } else {
+                $('#form_category_row').after( data.category_extra );
+            }
+        } else {
+            $('#category_meta').empty();
+        }
+    });
+}
+
 $(function(){
 
     $('html').removeClass('no-js').addClass('js');
@@ -58,6 +75,9 @@ $(function(){
     }, function() {
         timer = window.setTimeout(email_alert_close, 2000);
     });
+
+
+    $('#form_category').change( form_category_onchange );
 
     // Geolocation
     if (geo_position_js.init()) {

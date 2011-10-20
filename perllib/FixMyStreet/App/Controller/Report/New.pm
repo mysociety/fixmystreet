@@ -15,6 +15,7 @@ use Path::Class;
 use Utils;
 use mySociety::EmailUtil;
 use mySociety::TempFiles;
+use JSON;
 
 =head1 NAME
 
@@ -116,8 +117,38 @@ sub report_form_ajax : Path('ajax') : Args(0) {
 
     my $body = JSON->new->utf8(1)->encode(
         {
-            councils_text => $councils_text,
-            category      => $category,
+            councils_text   => $councils_text,
+            category        => $category,
+        }
+    );
+
+    $c->res->content_type('application/json; charset=utf-8');
+    $c->res->body($body);
+}
+
+sub category_extras_ajax : Path('category_extras') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    my $contacts
+      = $c
+      ->model('DB::Contact')
+      ->not_deleted
+      ->search( { area_id => $c->req->param('area_id'), category => $c->req->param('category') } );
+
+    my $category_extra = '';
+    if ( my $contact = $contacts->first ) {
+        if ( $contact->extra ) {
+            $c->stash->{report_meta} = {};
+            $c->stash->{report} = { category => $c->req->param('category') };
+            $c->stash->{category_extras} = { $c->req->param('category' ) => $contact->extra };
+
+            $category_extra= $c->view('Web')->render( $c, 'report/new/category_extras.html');
+        }
+    }
+
+    my $body = JSON->new->utf8(1)->encode(
+        {
+            category_extra => $category_extra,
         }
     );
 
@@ -476,6 +507,7 @@ sub setup_categories_and_councils : Private {
     my %area_ids_to_list = ();       # Areas with categories assigned
     my @category_options = ();       # categories to show
     my $category_label   = undef;    # what to call them
+    my %category_extras  = ();       # extra fields to fill in for open311
 
     # FIXME - implement in cobrand
     if ( $c->cobrand->moniker eq 'emptyhomes' ) {
@@ -522,8 +554,12 @@ sub setup_categories_and_councils : Private {
 
             next if $contact->category eq _('Other');
 
-            push @category_options, $contact->category
-                unless $seen{$contact->category};
+            unless ( $seen{$contact->category} ) {
+                push @category_options, $contact->category;
+
+                $category_extras{ $contact->category } = $contact->extra
+                    if $contact->extra;
+            }
             $seen{$contact->category} = 1;
         }
 
@@ -538,6 +574,8 @@ sub setup_categories_and_councils : Private {
     $c->stash->{area_ids_to_list} = [ keys %area_ids_to_list ];
     $c->stash->{category_label}   = $category_label;
     $c->stash->{category_options} = \@category_options;
+    $c->stash->{category_extras}  = \%category_extras;
+    $c->stash->{category_extras_json}  = encode_json \%category_extras;
 
     my @missing_details_councils =
       grep { !$area_ids_to_list{$_} }    #
@@ -716,6 +754,26 @@ sub process_report : Private {
             if $council_string && @{ $c->stash->{missing_details_councils} };
         $report->council($council_string);
 
+        my @extra = ();
+        my $metas = $contacts[0]->extra;
+
+        foreach my $field ( @$metas ) {
+            if ( lc( $field->{required} ) eq 'true' ) {
+                unless ( $c->request->param( $field->{code} ) ) {
+                    $c->stash->{field_errors}->{ $field->{code} } = _('This information is required');
+                }
+            }
+            push @extra, {
+                name => $field->{code},
+                description => $field->{description},
+                value => $c->request->param( $field->{code} ) || '',
+            };
+        }
+
+        if ( @extra ) {
+            $c->stash->{report_meta} = \@extra;
+            $report->extra( \@extra );
+        }
     } elsif ( @{ $c->stash->{area_ids_to_list} } ) {
 
         # There was an area with categories, but we've not been given one. Bail.

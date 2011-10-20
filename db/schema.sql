@@ -78,7 +78,10 @@ create table contacts (
     -- time of last change
     whenedited timestamp not null, 
     -- what the last change was for: author's notes
-    note text not null
+    note text not null,
+
+    -- extra fields required for open311
+    extra text
 );
 create unique index contacts_area_id_category_idx on contacts(area_id, category);
 
@@ -184,6 +187,7 @@ create table problem (
     lastupdate timestamp not null default ms_current_timestamp(),
     whensent timestamp,
     send_questionnaire boolean not null default 't',
+    extra text, -- extra fields required for open311
     flagged boolean not null default 'f'
 );
 create index problem_state_latitude_longitude_idx on problem(state, latitude, longitude);
@@ -407,3 +411,12 @@ create table admin_log (
     whenedited timestamp not null default ms_current_timestamp()
 ); 
 
+-- Record open 311 configuration details
+
+create table open311conf (
+    id           serial primary key,
+    area_id      integer not null unique,
+    endpoint     text not null,
+    jurisdiction text,
+    api_key      text
+);

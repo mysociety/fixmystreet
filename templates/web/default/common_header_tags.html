@@ -5,6 +5,12 @@
 
 [% map_js %]
 
+[% IF category_extras_json && category_extras_json != '{}' %]
+<script type="text/javascript">
+    category_extras = [% category_extras_json %];
+</script>
+[% END %]
+
 [% IF robots %]
     <meta name="robots" content="[% robots %]">
 [% ELSIF c.config.STAGING_SITE %]
