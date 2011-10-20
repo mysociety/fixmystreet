@@ -117,8 +117,9 @@ sub report_form_ajax : Path('ajax') : Args(0) {
 
     my $body = JSON->new->utf8(1)->encode(
         {
-            councils_text => $councils_text,
-            category      => $category,
+            councils_text   => $councils_text,
+            category        => $category,
+            category_extras => $c->stash->{category_extras_json},
         }
     );
 
