@@ -114,11 +114,13 @@ sub report_form_ajax : Path('ajax') : Args(0) {
     # render templates to get the html
     my $category = $c->view('Web')->render( $c, 'report/new/category.html');
     my $councils_text = $c->view('Web')->render( $c, 'report/new/councils_text.html');
+    my $has_open311 = keys %{ $c->stash->{category_extras} };
 
     my $body = JSON->new->utf8(1)->encode(
         {
             councils_text   => $councils_text,
             category        => $category,
+            has_open311     => $has_open311,
         }
     );
 
