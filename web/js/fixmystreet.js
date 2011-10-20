@@ -4,35 +4,20 @@
  */
 
 function form_category_onchange() {
-    if ( category_extras ) {
-        if ( $('#category_meta').size() ) {
-            $('#category_meta').empty();
-        } else {
-            $('#form_category_row').after(
-                '<div id="category_meta"></div>'
-            );
-        }
-        if ( category_extras[this.options[ this.selectedIndex ].text] ) {
-            var fields = category_extras[this.options[ this.selectedIndex ].text];
-            $('<h4>Additional information</h4>').appendTo('#category_meta');
-            for ( var i in fields) {
-                var meta = fields[i];
-                var field = '<div class="form-field">';
-                field += '<label for="form_' + meta.code + '">' + meta.description + ':</label>';
-                if ( meta.values ) {
-                    field += '<select name="' + meta.code + '" id="form_' + meta.code + '">';
-                    for ( var j in meta.values.value ) {
-                        field += '<option value="' + meta.values.value[j].key + '">' + j + '</option>';
-                    }
-                    field += '</select>';
-                } else {
-                    field += '<input type="text" value="" name="' + meta.code + '" id="form_' + meta.code + '">';
-                }
-                field += '</div>';
-                $( field ).appendTo('#category_meta');
+    $.getJSON('/report/new/category_extras', {
+        area_id: 2649,
+        category: this.options[ this.selectedIndex ].text,
+    }, function(data) {
+        if ( data.category_extra ) {
+            if ( $('#category_meta').size() ) {
+                $('#category_meta').html( data.category_extra);
+            } else {
+                $('#form_category_row').after( data.category_extra );
             }
+        } else {
+            $('#category_meta').empty();
         }
-    }
+    });
 }
 
 $(function(){

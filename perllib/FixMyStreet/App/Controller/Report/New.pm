@@ -119,7 +119,36 @@ sub report_form_ajax : Path('ajax') : Args(0) {
         {
             councils_text   => $councils_text,
             category        => $category,
-            category_extras => $c->stash->{category_extras_json},
+        }
+    );
+
+    $c->res->content_type('application/json; charset=utf-8');
+    $c->res->body($body);
+}
+
+sub category_extras_ajax : Path('category_extras') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    my $contacts
+      = $c
+      ->model('DB::Contact')
+      ->not_deleted
+      ->search( { area_id => $c->req->param('area_id'), category => $c->req->param('category') } );
+
+    my $category_extra = '';
+    if ( my $contact = $contacts->first ) {
+        if ( $contact->extra ) {
+            $c->stash->{report_meta} = {};
+            $c->stash->{report} = { category => $c->req->param('category') };
+            $c->stash->{category_extras} = { $c->req->param('category' ) => $contact->extra };
+
+            $category_extra= $c->view('Web')->render( $c, 'report/new/category_extras.html');
+        }
+    }
+
+    my $body = JSON->new->utf8(1)->encode(
+        {
+            category_extra => $category_extra,
         }
     );
 

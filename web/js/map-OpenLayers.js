@@ -315,7 +315,6 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         }, function(data) {
             $('#councils_text').html(data.councils_text);
             $('#form_category_row').html(data.category);
-            eval( 'category_extras = ' + data.category_extras + ';');
             /* Need to reset this here as it gets removed when we replace
                the HTML for the dropdown */
             $('#form_category').change( form_category_onchange );
