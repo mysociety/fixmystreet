@@ -212,7 +212,7 @@ while (my $row = $unsent->next) {
         die 'Report not going anywhere for ID ' . $row->id . '!';
     }
 
-    if (mySociety::Config::get('STAGING_SITE')) {
+    if (mySociety::Config::get('STAGING_SITE') and 0) {  ### FIXME DW forcing web send on dev FIXME ###
         # on a staging server send emails to ourselves rather than the councils
         @recips = ( mySociety::Config::get('CONTACT_EMAIL') );
         $send_web = 0;
@@ -434,6 +434,13 @@ sub post_barnet_message {
 
     my $interface = BarnetInterfaces::service::ZLBB_SERVICE_ORDER->new();
     
+    my ($nearest_postcode, $nearest_street);
+    for ($h{closest_address}) {
+        $nearest_postcode = substr($1, 0, 10) if /Nearest postcode [^:]+: (\w+\s?\w+)/;
+        $nearest_street = substr($1, 0, 30) if /Nearest road [^:]+: (.*?)(,|$)/m; # "Foo street, London N11 1XX"
+    }
+    my $postcode = $h{postcode} || $nearest_postcode; # use given postcode if available
+    
     # note: config can be of form 'http://username@password:url' (or https, hopefully)
     if (my $barnet_endpoint = mySociety::Config::get('BARNET_WEBSERVICE_ENDPOINT', undef)) {
         $interface->set_proxy($barnet_endpoint);
@@ -464,8 +471,8 @@ sub post_barnet_message {
               REGION => "",          # char3
               COUNTY => "",          # char30
               CITY => "",            # char30
-              POSTALCODE => $h{postcode},      # char10
-              STREET => "",          # char30
+              POSTALCODE => $postcode,   # char10
+              STREET => $nearest_street, # char30
               STREETNUMBER => "",    # char5
               GEOCODE => $geo_code,  # char32
             },
