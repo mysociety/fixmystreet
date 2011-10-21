@@ -563,6 +563,32 @@ sub body {
 }
 
 # TODO Some/much of this could be moved to the template
+
+# either: 
+#   "sent to council 3 mins later"
+#   "council ref: XYZ"
+# or
+#   "sent to council 3 mins later, their ref: XYZ"
+#
+# Note: some silliness with pronouns and the adjacent comma mean this is
+#       being presented as a single string rather than two
+sub processed_summary_string {
+    my ( $problem, $c ) = @_;
+    my ($duration_clause, $external_ref_clause);
+    if ($problem->whensent) {
+        $duration_clause = $problem->duration_string($c)
+    }
+    if ($problem->external_id) {
+        my $external_body = $duration_clause? _("their") : $problem->external_body;
+        $external_ref_clause = sprintf(_('%s ref:&nbsp;%s'), $external_body, $problem->external_id);                   
+    }
+    if ($duration_clause and $external_ref_clause) {
+        return "$duration_clause, $external_ref_clause"
+    } else { 
+        return $duration_clause || $external_ref_clause
+    }
+}
+
 sub duration_string {
     my ( $problem, $c ) = @_;
     my $body = $problem->body( $c );
