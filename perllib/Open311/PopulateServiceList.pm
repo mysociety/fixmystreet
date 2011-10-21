@@ -19,6 +19,7 @@ sub process_councils {
     my $self = shift;
 
     while ( my $council = $self->council_list->next ) {
+        next unless $council->endpoint;
         $self->_current_council( $council );
         $self->process_council;
     }
@@ -37,6 +38,10 @@ sub process_council {
     $self->_check_endpoints;
 
     my $list = $open311->get_service_list;
+    unless ( $list ) {
+        warn "ERROR: no service list found for " . $self->_current_council->area_id . "\n";
+        return;
+    }
     $self->process_services( $list );
 }
 
