@@ -212,7 +212,7 @@ while (my $row = $unsent->next) {
         die 'Report not going anywhere for ID ' . $row->id . '!';
     }
 
-    if (mySociety::Config::get('STAGING_SITE') and 0) {  ### FIXME DW forcing web send on dev FIXME ###
+    if (mySociety::Config::get('STAGING_SITE')) { 
         # on a staging server send emails to ourselves rather than the councils
         @recips = ( mySociety::Config::get('CONTACT_EMAIL') );
         $send_web = 0;
