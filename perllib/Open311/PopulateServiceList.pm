@@ -77,13 +77,17 @@ sub process_services {
 sub process_service {
     my $self = shift;
 
-    print $self->_current_service->{service_code} . ': ' . $self->_current_service->{service_name} .  "\n";
+    my $category = $self->_current_council->area_id == 2218 ? 
+                    $self->_current_service->{description} : 
+                    $self->_current_service->{service_name};
+
+    print $self->_current_service->{service_code} . ': ' . $category .  "\n";
     my $contacts = FixMyStreet::App->model( 'DB::Contact')->search(
         {
             area_id => $self->_current_council->area_id,
             -OR => [
                 email => $self->_current_service->{service_code},
-                category => $self->_current_service->{service_name}
+                category => $category,
             ]
         }
     );
@@ -92,7 +96,7 @@ sub process_service {
         sprintf(
             "Multiple contacts for service code %s, category %s - Skipping\n",
             $self->_current_service->{service_code},
-            $self->_current_service->{service_name},
+            $category,
         );
 
         # best to not mark them as deleted as we don't know what we're doing
@@ -200,9 +204,13 @@ sub _add_contact_to_meta {
 sub _normalize_service_name {
     my $self = shift;
 
+    # FIXME - at the moment it makes more sense to use the description
+    # for cambridgeshire but need a more flexible way to set this
+    my $service_name = $self->_current_council->area_id == 2218 ? 
+                        $self->_current_service->{description} : 
+                        $self->_current_service->{service_name};
     # remove trailing whitespace as it upsets db queries
     # to look up contact details when creating problem
-    my $service_name = $self->_current_service->{service_name};
     $service_name =~ s/\s+$//;
 
     return $service_name;
