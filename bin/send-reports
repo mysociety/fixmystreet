@@ -137,7 +137,7 @@ while (my $row = $unsent->next) {
                 $h{category} = 'Customer Services' if $h{category} eq 'Other';
             } elsif ($areas_info->{$council}->{type} eq 'LBO') { # London
                 $send_web = 'london';
-            } elsif ( my $endpoint = FixMyStreet::App->model("DB::Open311conf")->find( { area_id => $council } ) ) {
+            } elsif ( my $endpoint = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $council, endpoint => { '!=', '' } } )->first ) {
                 push @open311_councils, $endpoint;
                 $send_web = 'open311';
             } else {
