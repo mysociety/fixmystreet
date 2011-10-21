@@ -132,7 +132,16 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
     my ( $self, $c ) = @_;
 
     $c->forward('initialize_report');
-    $c->forward('determine_location') or return 0;
+    if ( ! $c->forward('determine_location') ) {
+        my $body = JSON->new->utf8(1)->encode(
+            {
+                error => _("Sorry, we could not find that location."),
+            }
+        );
+        $c->res->content_type('application/json; charset=utf-8');
+        $c->res->body($body);
+        return 1;
+    }
     $c->forward('setup_categories_and_councils');
 
     my $category_extra = '';
