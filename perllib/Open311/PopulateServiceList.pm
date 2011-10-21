@@ -93,7 +93,7 @@ sub process_service {
     );
 
     if ( $contacts->count() > 1 ) {
-        sprintf(
+        printf(
             "Multiple contacts for service code %s, category %s - Skipping\n",
             $self->_current_service->{service_code},
             $category,
