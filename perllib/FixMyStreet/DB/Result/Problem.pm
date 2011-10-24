@@ -579,8 +579,11 @@ sub processed_summary_string {
         $duration_clause = $problem->duration_string($c)
     }
     if ($problem->external_id) {
-        my $external_body = $duration_clause? _("their") : $problem->external_body;
-        $external_ref_clause = sprintf(_('%s ref:&nbsp;%s'), $external_body, $problem->external_id);                   
+        if ($duration_clause) {
+            $external_ref_clause = sprintf(_('their ref:&nbsp;%s'), $problem->external_id);
+        } else {
+            $external_ref_clause = sprintf(_('%s ref:&nbsp;%s'), $problem->external_body, $problem->external_id);
+        }
     }
     if ($duration_clause and $external_ref_clause) {
         return "$duration_clause, $external_ref_clause"
