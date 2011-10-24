@@ -207,7 +207,7 @@ while (my $row = $unsent->next) {
         die 'Report not going anywhere for ID ' . $row->id . '!';
     }
 
-    if (mySociety::Config::get('STAGING_SITE')) { 
+    if (mySociety::Config::get('STAGING_SITE')) {
         # on a staging server send emails to ourselves rather than the councils
         @recips = ( mySociety::Config::get('CONTACT_EMAIL') );
         $send_web = 0;
@@ -434,7 +434,7 @@ sub post_barnet_message {
             # currently not using this: get_EV_ORDER_GUID (maybe that's the customer number in the CRM)
             if (my $barnet_id = $result->get_EV_ORDER_NO()) {
                 $problem->external_id( $barnet_id );
-                $problem->external_body( 'Barnet Council CRM' );
+                $problem->external_body( 'Barnet Borough Council' ); # better to use $problem->body()?
                 $return = 0;
             } else {
                 print "Failed (problem id $h{id}): service returned no external id\n";                
