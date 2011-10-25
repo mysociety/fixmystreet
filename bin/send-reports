@@ -214,9 +214,12 @@ while (my $row = $unsent->next) {
 
     if (mySociety::Config::get('STAGING_SITE')) {
         # on a staging server send emails to ourselves rather than the councils
-        @recips = ( mySociety::Config::get('CONTACT_EMAIL') );
-        $send_web = 0;
-        $send_email = 1;
+        # ...unless it's Barnet-staging (for now) 
+        unless ($base_url=~/barnet-staging/) {
+            @recips = ( mySociety::Config::get('CONTACT_EMAIL') );
+            $send_web = 0;
+            $send_email = 1;
+        }
     } elsif ($site eq 'emptyhomes') {
         my $council = $row->council;
         my $country = $areas_info->{$council}->{country};
