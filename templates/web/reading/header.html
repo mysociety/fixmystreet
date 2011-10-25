@@ -19,17 +19,13 @@
 </head>
 <body>
 	<div class="wrapper">
-	<div class="header">
+	<div class="header" id="header">
 		<p id="reading-logo" class="thirdParty"><img src="/cobrands/reading/images/reading-borough-council-logo.gif" width="176" height="38" alt="reading borough council logo" class="printMe" /><a href="http://www.reading.gov.uk/" title="Click to return to home page">Reading Borough Council</a></p>
 	</div>
 	
 	<div id="content">		
 		<div class="thirdParty">
         <!-- end of header -->
-
-        [% IF NOT title AND NOT c.req.path %]<h1 id="header">[% ELSE %]<div id="header"><a href="/">[% END %]
-            [%- loc('Fix<span id="my">My</span>Street') %]
-        [%- IF NOT title AND NOT c.req.path %]</h1>[% ELSE %]</a></div>[% END %]
 
         <ul id="meta">
             [% IF c.user_exists %]

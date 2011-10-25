@@ -9,28 +9,35 @@ $map_width: 420px;
 
 @import "../../../css/_main.scss";
 
-    #navigation {
-        margin-top: 125px;
-    }
+p.thirdParty#reading-logo {
+    margin-top: 0px;
+    padding-bottom: 0px;
+}
 
-    h1#header {
-        font-size: 200%;
-        margin-bottom: 0em;
-    }
+div#header {
+    border-bottom: solid 2px #6D1443;
+}
 
-    #logo {
-        top: 12.5em;
-    }
+#header a:link, #header a:visited, div#header {
+    background-color: transparent;
+}
 
+a {
+    color: #9C2161;
+}
+
+body {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 13.5px;
+    color: black;
+}
+
+#navigation {
+    margin-top: 9px;
     a {
-        color: #9C2161;
+        text-decoration: none;
     }
-
-    body {
-        font-family: Helvetica, Arial, sans-serif;
-        font-size: 13.5px;
-        color: black;
-    }
+}
 
 #mysociety {
 
