@@ -2,8 +2,8 @@
 
 $header_back: #ecf5fd;
 $header_back_lighter: #ecf5fd;
-$header_colour: #000;
-$header_darker: #000;
+$header_colour: #439DC2;
+$header_darker: #ecf5fd;
 
 $map_width: 420px;
 
@@ -15,7 +15,7 @@ p.thirdParty#reading-logo {
 }
 
 div#header {
-    border-bottom: solid 2px #6D1443;
+    border-bottom: solid 1px #CCC;
 }
 
 #header a:link, #header a:visited, div#header {
@@ -33,9 +33,9 @@ body {
 }
 
 #navigation {
-    margin-top: 9px;
+    margin-top: 8px;
     a {
-        text-decoration: none;
+        font-weight: bold;
     }
 }
 
