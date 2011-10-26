@@ -3,7 +3,7 @@ Subject: Bekreft din rapport på FiksGataMi
 Hei [% report.name || report.email %],
 
 For å bekrefte rapporten du har lastet opp til FiksGatami via
-[% report.service %], og for å sjekke eller legge til litt detaljer,
+[% report.service %], og for å sjekke eller legge til detaljer,
 besøk følgende URL:
 
 [% token_url %]
