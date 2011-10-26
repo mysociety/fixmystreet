@@ -90,6 +90,7 @@ EOT
         }
 
         warn sprintf( "Failed to submit problem %s over Open311, response\n: %s", $problem->id, $response );
+        return 0;
     }
 }
 
