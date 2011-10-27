@@ -72,7 +72,6 @@ sub update_reports {
           ->search( { external_id => $request_id, } );
 
         if (my $p = $problem->first) {
-            warn 'updating problem ' . $p->id;
             $p->update_from_open311_service_request( $request, $council_details, $self->system_user );
         }
     }
