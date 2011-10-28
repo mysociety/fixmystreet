@@ -1,0 +1,27 @@
+[%
+    USE Comma;
+    # Note - if we want to i18n the commas we should try 
+    # 'Template::Plugin::Number::Format'
+%]
+
+[%
+    stats = c.cobrand.front_stats_data();
+
+    new_text =
+        stats.recency == '1 week'
+        ? nget(
+            "<big>%s</big> report in past week",
+            "<big>%s</big> reports in past week",
+            stats.new
+          )
+        : nget(
+            "<big>%s</big> report recently",
+            "<big>%s</big> reports recently",
+            stats.new
+         );
+    
+%]
+
+<div id="front_stats">
+    <div>[% tprintf( new_text,     stats.new     ) | comma %]</div>
+</div>
