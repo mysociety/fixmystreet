@@ -151,6 +151,7 @@ sub local_problems_ll : Private {
 
 sub output : Private {
     my ( $self, $c ) = @_;
+    $c->detach( '/page_error_404_not_found', [ 'Feed not found' ] ) if $c->cobrand->moniker eq 'emptyhomes';
     $c->forward( 'lookup_type' );
     $c->forward( 'query_main' );
     $c->forward( 'generate' );
