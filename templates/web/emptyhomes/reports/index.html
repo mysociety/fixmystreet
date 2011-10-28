@@ -20,7 +20,7 @@
 [%- ELSIF loop.count % 2 %] class="a"
 [%- END -%]
 >
-<td align="left"><a href="[% area.url %]">[% area.name %]</a></td>
+<td align="left">[% area.name %]</td>
 <td>[% open.${area.id}.new or 0 %]</td>
 <td>[% (open.${area.id}.older or 0) + (open.${area.id}.unknown or 0) %]</td>
 <td>[% fixed.${area.id}.new or 0 %]</td>

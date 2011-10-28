@@ -1,0 +1,32 @@
+[% 
+    problem_title = loc('Viewing a problem') | html;
+    INCLUDE 'header.html'
+        title = problem_title
+        robots = 'noindex, nofollow'
+%]
+
+<div id="side">
+
+[% IF banner.id %]
+<p class="banner" id="[% banner.id %]">
+    [% banner.text %]
+</p>
+[% END %]
+
+<h1>Empty property report</h1>
+
+<p><em>[% problem.meta_line(c) | html %]
+[% IF problem.council %]
+    [% IF problem.whensent %]
+        <small class="council_sent_info"><br>[% problem.duration_string(c) %]</small>
+    [% END %]
+[% ELSE %]
+<br><small>[% loc('Not reported to council') %]</small>
+[% END %]
+
+</em></p>
+
+</div>
+
+[% INCLUDE 'footer.html' %]
+
