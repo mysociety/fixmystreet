@@ -55,14 +55,6 @@ select, input, textarea {
         background-color: $header_back;
     }
     
-    p.promo {
-        border-top:    1px solid #bbb;
-        border-bottom: 1px solid #bbb;
-        background-color: #eee;
-        text-align: center;
-        padding: 0 0.5em;
-    }
-
 }
 
 // Site layout
@@ -164,6 +156,31 @@ select, input, textarea {
     background-position: 100% 0;
 }
 
+#promo {
+    position: absolute;
+    top: 3.3em;
+    left: 10px;
+    a {
+        display: block;
+        padding:0;
+        border:2px solid white;
+        img {
+            margin:0px;            
+        }
+    }
+    a:hover {
+        border:2px dotted #70CFE3; 
+    }
+}
+
+.promo-background {
+    margin-top:-4px; 
+    background-image:url(/i/promo-icicles.gif);
+    background-repeat:repeat-x;
+    background-position:top left;
+    padding-top:3em;
+}
+
 #logo {
     border: none;
     position: absolute;
@@ -210,6 +227,18 @@ select, input, textarea {
 @media all and (max-width: 50em) {
     #logo {
         display: none;
+    }
+    #promo {
+        position: static;
+        width: 116px;
+        top: none;
+        text-align: center;
+        margin: 0.25em auto;
+        display:block;        
+    }
+    .promo-background img#logo {
+        border:2px solid #fff;
+        background-color: #fff;
     }
     #header {
         font-size: 150%;
