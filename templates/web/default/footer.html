@@ -12,7 +12,13 @@
 
 [% loc('<a href="http://www.mysociety.org/"><img id="logo" width="133" height="26" src="/i/mysociety-dark.png" alt="View mySociety.org"><span id="logoie"></span></a>') %]
 
-<div id="footer">
+<div id="footer">  
+    <!-- winter 2011 promotion -->
+    <p><a href="http://www.mysociety.org/2011/11/02/fix-before-the-freeze/" 
+      title="Fix Before the Freeze - report those dangerous potholes and  broken streetlights before winter hits"><img 
+      src="http://www.mysociety.org/wp/wp-content/uploads/2011/11/fixbeforethefreezebadge165.gif" 
+      style="width:165;height:165;margin:0;border:none;" alt="Fix Before the Freeze - report those dangerous potholes and  broken streetlights before winter hits" ></a></p>
+
     <p>[% loc('Built by <a href="http://www.mysociety.org/">mySociety</a>') %]
     | <a href="/contact">[% loc("Contact FixMyStreet") | replace(' ', '&nbsp;') %]</a></p>
 
@@ -22,13 +28,15 @@
     | <a href="https://market.android.com/details?id=com.android.fixmystreet">Android</a>
     | <a href="http://store.ovi.com/content/107557">Nokia</a>
     </p>
-
+      
     <p class="l">[% loc('Are you from a council? Would you like better integration with FixMyStreet?') %]
-    <a href="http://www.mysociety.org/fixmystreet-for-local-council-websites/">[% loc('Find out about FixMyStreet for councils') %]</a>.
-
+      <a href="http://www.mysociety.org/fixmystreet-for-local-council-websites/">[% loc('Find out about FixMyStreet for councils') %]</a>.
+    </p>
+  
     <p class="r">[% loc('Are you a developer? Would you like to contribute to FixMyStreet?') %]
     [% loc('Our code is open source and <a href="http://github.com/mysociety/fixmystreet">available on GitHub</a>.') %]
     </p>
+
 </div>
 
 [% INCLUDE 'debug_footer.html' %]
