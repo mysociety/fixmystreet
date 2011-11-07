@@ -77,5 +77,32 @@ sub recent_photos {
     return $self->problems->recent_photos( $num, $lat, $lon, $dist );
 }
 
-1;
+sub get_report_stats {
+    my $self = shift;
 
+    my ( $cobrand, $main_site ) = ( 0, 0 );
+
+    $self->{c}->log->debug( 'X' x 60 );
+    my $stats = $self->{c}->model('DB::Problem')->search(
+        { confirmed => { '>=', '2011-11-01' } },
+        {
+            select   => [ { count => 'id', -as => 'cobrand_count' }, 'cobrand' ],
+            group_by => [qw/cobrand/]
+        }
+    );
+
+    while ( my $stat = $stats->next ) {
+        if ( $stat->cobrand eq $self->moniker ) {
+            $cobrand += $stat->get_column( 'cobrand_count' );
+        } else {
+            $main_site += $stat->get_column( 'cobrand_count' );
+        }
+    }
+
+    return {
+        cobrand     => $cobrand,
+        main_site   => $main_site,
+    };
+}
+
+1;

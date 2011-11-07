@@ -110,6 +110,8 @@ sub ward : Path : Args(2) {
 
     $c->stash->{council_url} = '/reports/' . $council_short;
 
+    $c->stash->{stats} = $c->cobrand->get_report_stats();
+
     my $pins = $c->stash->{pins};
 
     $c->stash->{page} = 'reports'; # So the map knows to make clickable pins
@@ -349,17 +351,12 @@ sub load_and_group_problems : Private {
     $c->stash->{pager} = $problems->pager;
     $problems = $problems->cursor; # Raw DB cursor for speed
 
-    my ( %fixed, %open, @pins, $total, $cobrand_total );
+    my ( %fixed, %open, @pins );
     my $re_councils = join('|', keys %{$c->stash->{areas_info}});
     my @cols = ( 'id', 'council', 'state', 'areas', 'latitude', 'longitude', 'title', 'cobrand', 'duration', 'age' );
     while ( my @problem = $problems->next ) {
         my %problem = zip @cols, @problem;
         $c->log->debug( $problem{'cobrand'} . ', cobrand is ' . $c->cobrand->moniker );
-        if ( $problem{'cobrand'} && $problem{'cobrand'} eq $c->cobrand->moniker ) {
-            $cobrand_total++;
-        } else {
-            $total++;
-        }
         if ( !$problem{council} ) {
             # Problem was not sent to any council, add to possible councils
             $problem{councils} = 0;
@@ -382,8 +379,6 @@ sub load_and_group_problems : Private {
         fixed         => \%fixed,
         open          => \%open,
         pins          => \@pins,
-        cobrand_count => $cobrand_total || 0,
-        total_count   => $total || 0,
     );
 
     return 1;
