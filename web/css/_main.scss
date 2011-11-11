@@ -98,7 +98,7 @@ select, input, textarea {
 
 #meta {
     list-style-type: none;
-    margin: 0.25em 0 0 1em;
+    margin: 30px 0 0.5em 1em; /* (was 0.25em 0 0 1em) forced to drop below promo (fix before the freeze) image */
     padding: 0;
     font-size: 0.875em;
     li {
