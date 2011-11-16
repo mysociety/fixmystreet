@@ -48,12 +48,16 @@ Submitted via FixMyStreet
 EOT
 ;
 
+    my ( $firstname, $lastname ) = ( $problem->user->name =~ /(\w+)\s+(.+)/ );
+
     my $params = {
         lat => $problem->latitude,
         long => $problem->longitude,
         email => $problem->user->email,
         description => $description,
         service_code => $service_code,
+        first_name => $firstname,
+        last_name => $lastname || '',
     };
 
     if ( $problem->user->phone ) {
