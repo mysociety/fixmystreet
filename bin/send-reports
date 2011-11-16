@@ -273,7 +273,17 @@ while (my $row = $unsent->next) {
                 $open311->endpoints( { services => 'Services', requests => 'Requests' } );
             }
 
-            my $resp = $open311->send_service_request( $row, \%h, $contact->email );
+            # required to get round issues with CRM constraints
+            if ( $row->council =~ /2218/ ) {
+                $row->user->name( $row->user->id . ' ' . $row->user->name );
+            }
+
+            my $resp = $open311->send_service_request( $row, \%h, $contact->ema
+
+            # make sure we don't save user changes from above
+            if ( $row->council =~ /2218/ ) {
+                $row->discard_changes();
+            }
 
             if ( $resp ) {
                 $row->external_id( $resp );
