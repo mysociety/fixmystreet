@@ -12,13 +12,13 @@
     <div class="form-field">
         <label for="form_[% meta_name %]">[% meta.description _ ':' %]</label>
         [% IF meta.exists('values') %]
-        <select name="[% meta_name %]" id="form_[% meta_name %]">
+        <select name="[% meta_name %]" id="form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
             [% FOR option IN meta.values.value.keys %]
                 <option value="[% meta.values.value.$option.key %]">[% option %]</option>
             [% END %]
         </select>
         [% ELSE %]
-        <input type="text" value="[% report_meta.$meta_name | html %]" name="[% meta_name %]" id="form_[% meta_name %]">
+        <input type="text" value="[% report_meta.$meta_name | html %]" name="[% meta_name %]" id="form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
         [% END %]
     </div>
         [%- END %]
