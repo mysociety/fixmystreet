@@ -14,6 +14,8 @@ has test_mode => ( is => 'ro', isa => 'Bool' );
 has test_uri_used => ( is => 'rw', 'isa' => 'Str' );
 has test_get_returns => ( is => 'rw' );
 has endpoints => ( is => 'rw', default => sub { { services => 'services.xml', requests => 'requests.xml' } } );
+has debug => ( is => 'ro', isa => 'Bool', default => 0 );
+has debug_details => ( is => 'rw', 'isa' => 'Str', default => '' );
 
 sub get_service_list {
     my $self = shift;
@@ -93,7 +95,7 @@ EOT
             }
         }
 
-        warn sprintf( "Failed to submit problem %s over Open311, response\n: %s", $problem->id, $response );
+        warn sprintf( "Failed to submit problem %s over Open311, response\n: %s\n%s", $problem->id, $response, $self->debug_details );
         return 0;
     }
 }
@@ -138,6 +140,8 @@ sub _get {
     $uri->path( $uri->path . $path );
     $uri->query_form( $params );
 
+    $self->debug_details( $self->debug_details . "\nrequest:" . $uri->as_string );
+
     my $content;
     if ( $self->test_mode ) {
         $content = $self->test_get_returns->{ $path };
@@ -164,14 +168,20 @@ sub _post {
         %{ $params }
     ];
 
+    $self->debug_details( $self->debug_details . "\nrequest:" . $req->as_string );
+
     my $ua = LWP::UserAgent->new();
     my $res = $ua->request( $req );
 
     if ( $res->is_success ) {
         return $res->decoded_content;
     } else {
-        warn "request failed: " . $res->status_line;
-        warn $self->_process_error( $res->decoded_content );
+        warn sprintf( 
+            "request failed: %s\nerror: %s\n%s",
+            $res->status_line,
+            $self->_process_error( $res->decoded_content ),
+            $self->debug_details
+        );
         return 0;
     }
 }
