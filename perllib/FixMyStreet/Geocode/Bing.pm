@@ -22,6 +22,7 @@ use Digest::MD5 qw(md5_hex);
 # may be used to disambiguate the location in cobranded versions of the site.
 sub string {
     my ( $s, $c, $params ) = @_;
+    $s .= '+' . $params->{town} if $params->{town} and $s !~ /$params->{town}/i;
     my $url = "http://dev.virtualearth.net/REST/v1/Locations?q=$s&c=en-GB"; # FIXME nb-NO for Norway
     $url .= '&mapView=' . $params->{bounds}[0] . ',' . $params->{bounds}[1]
         if $params->{bounds};
@@ -43,7 +44,7 @@ sub string {
     if (!$js) {
         return { error => _('Sorry, we could not parse that location. Please try again.') };
     } elsif ($js =~ /BT\d/) {
-        return { error => _("We do not cover Northern Ireland, I'm afraid, as our licence doesn't include any maps for the region.") };
+        return { error => _("We do not currently cover Northern Ireland, I'm afraid.") };
     }
 
     $js = JSON->new->utf8->allow_nonref->decode($js);

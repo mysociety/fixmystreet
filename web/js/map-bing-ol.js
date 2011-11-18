@@ -88,11 +88,13 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
                 "http://c.tilma.mysociety.org/sv/${z}/${x}/${y}.png"
             ];
         } else {
+            var type = '';
+            if (z > 10) type = '&productSet=mmOS';
             var url = [
-                "http://ecn.t0.tiles.virtualearth.net/tiles/r${id}.png?g=701&productSet=mmOS",
-                "http://ecn.t1.tiles.virtualearth.net/tiles/r${id}.png?g=701&productSet=mmOS",
-                "http://ecn.t2.tiles.virtualearth.net/tiles/r${id}.png?g=701&productSet=mmOS",
-                "http://ecn.t3.tiles.virtualearth.net/tiles/r${id}.png?g=701&productSet=mmOS"
+                "http://ecn.t0.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type,
+                "http://ecn.t1.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type,
+                "http://ecn.t2.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type,
+                "http://ecn.t3.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type,
             ];
         }
         var s = '' + x + y + z;

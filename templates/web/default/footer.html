@@ -10,9 +10,25 @@
 <li><a href="/faq">[% loc("Help") %]</a></li>
 </ul>
 
-[% loc('<a href="http://www.mysociety.org/"><img id="logo" width="133" height="26" src="/i/mysociety-dark.png" alt="View mySociety.org"><span id="logoie"></span></a>') %]
+[% IF ! c.cobrand.moniker %]
+  <!-- winter 2011 promotion for unbranded site only -->
+  <div id="promo">
+    <a href="http://www.mysociety.org/2011/11/02/fix-before-the-freeze/" 
+      title="Fix Before the Freeze - report those dangerous potholes and  broken streetlights before winter hits"><img 
+      src="/i/promo-fb4tf.gif" 
+      alt="Fix Before the Freeze - report those dangerous potholes and  broken streetlights before winter hits" ></a>
+  </div>
+  [% loc('<a href="http://www.mysociety.org/"><img id="logo" width="159" height="39" src="/i/mysociety-on-white.gif" alt="View mySociety.org"><span id="logoie"></span></a>') %]
+  
+[% ELSE %]
 
-<div id="footer">
+  [% loc('<a href="http://www.mysociety.org/"><img id="logo" width="133" height="26" src="/i/mysociety-dark.png" alt="View mySociety.org"><span id="logoie"></span></a>') %]
+
+[% END %]
+
+</div>
+<div id="footer">  
+
     <p>[% loc('Built by <a href="http://www.mysociety.org/">mySociety</a>') %]
     | <a href="/contact">[% loc("Contact FixMyStreet") | replace(' ', '&nbsp;') %]</a></p>
 
@@ -22,13 +38,15 @@
     | <a href="https://market.android.com/details?id=com.android.fixmystreet">Android</a>
     | <a href="http://store.ovi.com/content/107557">Nokia</a>
     </p>
-
+      
     <p class="l">[% loc('Are you from a council? Would you like better integration with FixMyStreet?') %]
-    <a href="http://www.mysociety.org/fixmystreet-for-local-council-websites/">[% loc('Find out about FixMyStreet for councils') %]</a>.
-
+      <a href="http://www.mysociety.org/fixmystreet-for-local-council-websites/">[% loc('Find out about FixMyStreet for councils') %]</a>.
+    </p>
+  
     <p class="r">[% loc('Are you a developer? Would you like to contribute to FixMyStreet?') %]
     [% loc('Our code is open source and <a href="http://github.com/mysociety/fixmystreet">available on GitHub</a>.') %]
     </p>
+
 </div>
 
 [% INCLUDE 'debug_footer.html' %]

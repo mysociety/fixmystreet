@@ -1,0 +1,39 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js ie6 oldie" lang="[% lang_code %]"><![endif]-->
+<!--[if IE 7]>   <html class="no-js ie7 oldie" lang="[% lang_code %]"><![endif]-->
+<!--[if IE 8]>   <html class="no-js ie8 oldie" lang="[% lang_code %]"><![endif]-->
+<!--[if gt IE 8]><!--><html class="no-js" lang="[% lang_code %]"><!--<![endif]-->
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head id="ctl00_pageHead">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<title>Reading Borough Council | FixMyStreet</title>
+    <link rel="shortcut icon" href="[% version('/cobrands/reading/images/favicon.ico') %]">
+    <link rel="stylesheet" type="text/css" href="[% version('/css/core.css') %]">
+    <link rel="stylesheet" type="text/css" href="[% version('/cobrands/reading/css/reading.css') %]" />
+    <link rel="stylesheet" type="text/css" href="[% version('/cobrands/reading/css/print3rdParty.css') %]" media="print"/>
+    <link rel="stylesheet" type="text/css" href="[% version('/cobrands/reading/css/css.css') %]" />
+
+    [% INCLUDE 'common_header_tags.html' %]
+
+</head>
+<body>
+	<div class="wrapper">
+	<div class="header" id="header">
+		<p id="reading-logo" class="thirdParty"><img src="/cobrands/reading/images/reading-borough-council-logo.gif" width="176" height="38" alt="reading borough council logo" class="printMe" /><a href="http://www.reading.gov.uk/" title="Click to return to home page">Reading Borough Council</a></p>
+	</div>
+	
+	<div id="content">		
+		<div class="thirdParty">
+        <!-- end of header -->
+
+        <ul id="meta">
+            [% IF c.user_exists %]
+                <li>[% tprintf(loc('Signed in as %s'), c.user.name || c.user.email) %]
+                <li><a href="/auth/sign_out">[% loc('Sign out') %]</a></li>
+            [% ELSE %]
+                <li>&nbsp;</li>
+            [% END %]
+        </ul>
+
+        <div id="wrapper"><div id="mysociety">

@@ -144,9 +144,9 @@ function fixmystreet_onload() {
     $('#all_pins_link').click(function(e) {
         e.preventDefault();
         fixmystreet.markers.setVisibility(true);
-        var welsh = 0;
         var texts = [
             'en', 'Include stale reports', 'Hide stale reports',
+            'nb', 'Inkluder utdaterte problemer', 'Skjul utdaterte rapporter',
             'cy', 'Cynnwys hen adroddiadau', 'Cuddio hen adroddiadau'
         ];
         for (var i=0; i<texts.length; i+=3) {
@@ -164,6 +164,8 @@ function fixmystreet_onload() {
         }
         if (lang == 'cy') {
             document.getElementById('hide_pins_link').innerHTML = 'Cuddio pinnau';
+        } else if (lang == 'nb') {
+            document.getElementById('hide_pins_link').innerHTML = 'Gjem nåler';
         } else {
             document.getElementById('hide_pins_link').innerHTML = 'Hide pins';
         }
@@ -315,6 +317,11 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         }, function(data) {
             $('#councils_text').html(data.councils_text);
             $('#form_category_row').html(data.category);
+            /* Need to reset this here as it gets removed when we replace
+               the HTML for the dropdown */
+            if ( data.has_open311 > 0 ) {
+                $('#form_category').change( form_category_onchange );
+            }
         });
         $('#side-form').show();
         $('#side').hide();

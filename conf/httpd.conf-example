@@ -19,13 +19,13 @@
 #         AllowOverride None
 #     </Directory>
 # 
-#     <Directory /home/yourname/fixmystreet/web-admin>
+#     <Location /admin>
 #         # 
 #         #  WARNING - enable auth here on production machine
 #         # 
 #         Options +ExecCGI
 #         AddHandler cgi-script .cgi
-#     </Directory>
+#     </Location>
 #
 #     Alias /admin/ /home/yourname/fixmystreet/web-admin/
 # 

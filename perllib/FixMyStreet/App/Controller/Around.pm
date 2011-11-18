@@ -182,7 +182,7 @@ sub display_location : Private {
 
     # create a list of all the pins
     my @pins;
-    unless ($c->req->param('no_pins')) {
+    unless ($c->req->param('no_pins') || $c->cobrand->moniker eq 'emptyhomes') {
         @pins = map {
             # Here we might have a DB::Problem or a DB::Nearby, we always want the problem.
             my $p = (ref $_ eq 'FixMyStreet::App::Model::DB::Nearby') ? $_->problem : $_;

@@ -47,11 +47,13 @@ sub map_tiles {
             "http://tilma.mysociety.org/sv/$z/$x/$y.png",
         ];
     } else {
+        my $url = "g=701";
+        $url .= "&productSet=mmOS" if $z > 10;
         return [
-            "http://ecn.t0.tiles.virtualearth.net/tiles/r" . get_quadkey($x-1, $y-1, $z) . ".png?g=701&productSet=mmOS",
-            "http://ecn.t1.tiles.virtualearth.net/tiles/r" . get_quadkey($x,   $y-1, $z) . ".png?g=701&productSet=mmOS",
-            "http://ecn.t2.tiles.virtualearth.net/tiles/r" . get_quadkey($x-1, $y,   $z) . ".png?g=701&productSet=mmOS",
-            "http://ecn.t3.tiles.virtualearth.net/tiles/r" . get_quadkey($x,   $y,   $z) . ".png?g=701&productSet=mmOS",
+            "http://ecn.t0.tiles.virtualearth.net/tiles/r" . get_quadkey($x-1, $y-1, $z) . ".png?$url",
+            "http://ecn.t1.tiles.virtualearth.net/tiles/r" . get_quadkey($x,   $y-1, $z) . ".png?$url",
+            "http://ecn.t2.tiles.virtualearth.net/tiles/r" . get_quadkey($x-1, $y,   $z) . ".png?$url",
+            "http://ecn.t3.tiles.virtualearth.net/tiles/r" . get_quadkey($x,   $y,   $z) . ".png?$url",
         ];
     }
 }

@@ -960,5 +960,13 @@ to be resized then return 0;
 
 sub default_photo_resize { return 0; }
 
+=head2 get_report_stats
+
+Get stats to display on the council reports page
+
+=cut
+
+sub get_report_stats { return 0; }
+
 1;
 

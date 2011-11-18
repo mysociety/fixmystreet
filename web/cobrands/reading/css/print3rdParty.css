@@ -1,0 +1,33 @@
+body {
+   background: white;
+   font-size: 12pt;
+   color:#000;
+   }
+#access,   
+.header .social, .nav, .footer  {
+   display: none;
+}
+.wrapper, #content {
+   width: auto;
+   margin: 0 2%;
+   padding: 0;
+   border: 0;
+   float: none !important;
+   color: black;
+   background: transparent none;
+}
+p#logo img.printMe  { display:block; vertical-align: bottom; }   
+div#content {
+   margin-left: 5%;
+   padding-top: 1em;
+   border-top: 1px solid #9c2161;
+}
+p#logo {
+   margin-bottom: -8px;
+}
+a:link, a:visited {
+   color: #9c2161;
+   background: transparent;
+   font-weight: bold;
+   text-decoration: underline;
+}

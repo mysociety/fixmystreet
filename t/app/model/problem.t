@@ -152,6 +152,111 @@ for my $test (
     };
 }
 
+my $user = FixMyStreet::App->model('DB::User')->find_or_create(
+    {
+        email => 'system_user@example.com'
+    }
+);
+
+$problem->user( $user );
+$problem->created( DateTime->now()->subtract( days => 1 ) );
+$problem->lastupdate( DateTime->now()->subtract( days => 1 ) );
+$problem->anonymous(1);
+$problem->insert;
+
+my $tz_local = DateTime::TimeZone->new( name => 'local' );
+
+for my $test (
+    {
+        desc => 'request older than problem ignored',
+        lastupdate => '',
+        request => {
+            updated_datetime => DateTime::Format::W3CDTF->new()->format_datetime( DateTime->now()->set_time_zone( $tz_local )->subtract( days => 2 ) ),
+        },
+        council => {
+            name => 'Edinburgh City Council',
+        },
+        created => 0,
+    },
+    {
+        desc => 'request newer than problem created',
+        lastupdate => '',
+        request => {
+            updated_datetime => DateTime::Format::W3CDTF->new()->format_datetime( DateTime->now()->set_time_zone( $tz_local ) ),
+            status => 'open',
+            status_notes => 'this is an update from the council',
+        },
+        council => {
+            name => 'Edinburgh City Council',
+        },
+        created => 1,
+        state => 'confirmed',
+        mark_fixed => 0,
+        mark_open => 0,
+    },
+    {
+        desc => 'update with state of closed fixes problem',
+        lastupdate => '',
+        request => {
+            updated_datetime => DateTime::Format::W3CDTF->new()->format_datetime( DateTime->now()->set_time_zone( $tz_local ) ),
+            status => 'closed',
+            status_notes => 'the council have fixed this',
+        },
+        council => {
+            name => 'Edinburgh City Council',
+        },
+        created => 1,
+        state => 'fixed',
+        mark_fixed => 1,
+        mark_open => 0,
+    },
+    {
+        desc => 'update with state of open leaves problem as fixed',
+        lastupdate => '',
+        request => {
+            updated_datetime => DateTime::Format::W3CDTF->new()->format_datetime( DateTime->now()->set_time_zone( $tz_local ) ),
+            status => 'open',
+            status_notes => 'the council do not think this is fixed',
+        },
+        council => {
+            name => 'Edinburgh City Council',
+        },
+        created => 1,
+        start_state => 'fixed',
+        state => 'fixed',
+        mark_fixed => 0,
+        mark_open => 0,
+    },
+) {
+    subtest $test->{desc} => sub {
+        # makes testing easier;
+        $problem->comments->delete;
+        $problem->created( DateTime->now()->subtract( days => 1 ) );
+        $problem->lastupdate( DateTime->now()->subtract( days => 1 ) );
+        $problem->state( $test->{start_state} || 'confirmed' );
+        $problem->update;
+        my $w3c = DateTime::Format::W3CDTF->new();
+
+        my $ret = $problem->update_from_open311_service_request( $test->{request}, $test->{council}, $user );
+        is $ret, $test->{created}, 'return value';
+
+        return unless $test->{created};
+
+        $problem->discard_changes;
+        is $problem->lastupdate, $w3c->parse_datetime($test->{request}->{updated_datetime}), 'lastupdate time';
+
+        my $update = $problem->comments->first;
+
+        ok $update, 'updated created';
+
+        is $problem->state, $test->{state}, 'problem state';
+
+        is $update->text, $test->{request}->{status_notes}, 'update text';
+        is $update->mark_open, $test->{mark_open}, 'update mark_open flag';
+        is $update->mark_fixed, $test->{mark_fixed}, 'update mark_fixed flag';
+    };
+}
+
 for my $test ( 
     {
         state => 'partial',
@@ -239,5 +344,9 @@ for my $test (
         is $problem->is_open, $test->{is_open}, 'is_open';
     };
 }
+
+$problem->comments->delete;
+$problem->delete;
+$user->delete;
 
 done_testing();

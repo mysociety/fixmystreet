@@ -12,6 +12,13 @@
 <a href="[% c.uri_for( 'council_contacts', area_id, { text => 1 } ) %]">[% loc('Text only version') %]</a>
 </p>
 
+[% IF open311.count > 0 %]
+    <h2>
+    Council contacts configured via Open311
+    </h2>
+
+[% END %]
+
 <form method="post" action="[% c.uri_for('council_contacts', area_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
 
     <table cellspacing="0" cellpadding="2" border="1">
@@ -84,6 +91,33 @@
             <input type="hidden" name=".cgifields" value="confirmed" >
             <input type="hidden" name=".cgifields" value="deleted" >
         </div>
+    </form>
+
+    <h2>[% loc('Configure Open311 integration') %]</h2>
+    <form method="post" action="[% c.uri_for('council_contacts', area_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+    [% conf = open311.next %]
+    <p>
+        <label for="endpoint">Endpoint</label>: 
+        <input type="text" name="endpoint" id="endpoint" value="[% conf.endpoint %]" size="50">
+    </p>
+
+    <p>
+        <label for="jurisdiction">Jurisdiction</label>: 
+        <input type="text" name="jurisdiction" id="jurisdiction" value="[% conf.jurisdiction %]" size="50">
+    </p>
+
+    <p>
+        <label for="api_key">Api Key</label>: 
+        <input type="text" name="api_key" id="api_key" value="[% conf.api_key %]" size="25">
+    </p>
+
+    <p>
+    <input type="hidden" name="open311_id" value="[% conf.id %]">
+    <input type="hidden" name="area_id" value="[% area_id %]">
+    <input type="hidden" name="posted" value="open311">
+    <input type="hidden" name="token" value="[% token %]">
+    <input type="submit" name="Configure Open311" value="[% loc('Configure Open311') %]">
+    </p>
     </form>
 
 [% INCLUDE 'admin/footer.html' %]

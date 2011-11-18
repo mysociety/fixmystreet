@@ -27,6 +27,8 @@ use mySociety::EmailUtil;
 use mySociety::MaPit;
 use mySociety::Web qw(ent);
 
+use Open311;
+
 # Set up site, language etc.
 my ($verbose, $nomail) = CronFns::options();
 my $base_url = mySociety::Config::get('BASE_URL');
@@ -39,7 +41,7 @@ my $unsent = FixMyStreet::App->model("DB::Problem")->search( {
 } );
 my (%notgot, %note);
 while (my $row = $unsent->next) {
-    
+
     my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->cobrand)->new();
 
     # Cobranded and non-cobranded messages can share a database. In this case, the conf file 
@@ -75,7 +77,7 @@ while (my $row = $unsent->next) {
     $h{fuzzy} = $row->used_map ? _('To view a map of the precise location of this issue')
         : _('The user could not locate the problem on a map, but to see the area around the location they entered');
     $h{closest_address} = '';
-    
+
     # If we are in the UK include eastings and northings, and nearest stuff
     $h{easting_northing} = '';
     if ( $cobrand->country eq 'GB' ) {
@@ -93,7 +95,7 @@ while (my $row = $unsent->next) {
         $h{closest_address} = $cobrand->find_closest( $h{latitude}, $h{longitude} );
     }
 
-    my (@to, @recips, $template, $areas_info);
+    my (@to, @recips, $template, $areas_info, @open311_councils);
     if ($site eq 'emptyhomes') {
 
         my $council = $row->council;
@@ -135,6 +137,9 @@ while (my $row = $unsent->next) {
                 $h{category} = 'Customer Services' if $h{category} eq 'Other';
             } elsif ($areas_info->{$council}->{type} eq 'LBO') { # London
                 $send_web = 'london';
+            } elsif ( my $endpoint = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $council, endpoint => { '!=', '' } } )->first ) {
+                push @open311_councils, $endpoint;
+                $send_web = 'open311';
             } else {
                 my $contact = FixMyStreet::App->model("DB::Contact")->find( {
                     deleted => 0,
@@ -246,6 +251,36 @@ while (my $row = $unsent->next) {
         $h{message} = construct_london_message(%h);
         if (!$nomail) {
             $result *= post_london_report( $row, %h );
+        }
+    } elsif ($send_web eq 'open311') {
+        foreach my $conf ( @open311_councils ) {
+            print 'posting to end point for ' . $conf->area_id . "\n" if $verbose;
+
+            my $contact = FixMyStreet::App->model("DB::Contact")->find( {
+                deleted => 0,
+                area_id => $conf->area_id,
+                category => $row->category
+            } );
+
+            my $open311 = Open311->new(
+                jurisdiction => $conf->jurisdiction,
+                endpoint     => $conf->endpoint,
+                api_key      => $conf->api_key,
+            );
+
+            # non standard west berks end points
+            if ( $row->council =~ /2619/ ) {
+                $open311->endpoints( { services => 'Services', requests => 'Requests' } );
+            }
+
+            my $resp = $open311->send_service_request( $row, \%h, $contact->email );
+
+            if ( $resp ) {
+                $row->external_id( $resp );
+                $result *= 0;
+            } else {
+                $result *= 1;
+            }
         }
     }
 
@@ -425,7 +460,7 @@ sub post_london_report {
 # Nearest things
 
 sub london_lookup {
-    my $org = shift;
+    my $org = shift || '';
     my $str = "Unknown ($org)";
     open(FP, "$FindBin::Bin/../data/dft.csv");
     while (<FP>) {

@@ -1,0 +1,93 @@
+// Generics
+
+$header_back: #ecf5fd;
+$header_back_lighter: #ecf5fd;
+$header_colour: #439DC2;
+$header_darker: #ecf5fd;
+
+$map_width: 420px;
+
+@import "../../../css/_main.scss";
+
+p.thirdParty#reading-logo {
+    margin-top: 0px;
+    padding-bottom: 0px;
+}
+
+div#header {
+    border-bottom: solid 1px #CCC;
+}
+
+#header a:link, #header a:visited, div#header {
+    background-color: transparent;
+}
+
+a {
+    color: #9C2161;
+}
+
+body {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 13.5px;
+    color: black;
+}
+
+#navigation {
+    margin-top: 8px;
+    a {
+        font-weight: bold;
+    }
+}
+
+#mysociety {
+
+    #map_box {
+        width: $map_width + 2;
+    }
+
+    #map {
+        width: $map_width;
+        height: $map_width;
+    }
+
+    dd {
+        margin-left: 40px;
+    }
+
+    div {
+        padding-top: 0.2em;
+        padding-bottom: 0.2em;
+    }
+
+    h3 {
+        font-size: 1.17em;
+        font-weight: bold;
+        margin: 1em 0em 1em 0em;
+    }
+
+    h2 {
+        font-weight: bold;
+        margin: 1em 0em 1em 0em;
+    }
+
+    ul, ol {
+        padding-left: 2em;
+    }
+
+    label {
+       width: 6em;
+    }
+
+    .fieldset div.checkbox, #problem_submit {
+        padding-left: 6.5em;
+    }
+
+    table {
+        border-collapse: separate;
+        border-spacing: 1px;
+    }
+
+    td {
+        padding: 3px;
+    }
+}

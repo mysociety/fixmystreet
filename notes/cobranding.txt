@@ -1,0 +1,44 @@
+Notes on adding a co brand
+--------------------------
+
+Basic steps
+
+Assumes cobrand is for ExampleCom
+
+NB: this is moderately specific to producing cobrands for UK councils
+
+1: copy an exiting perllib/FixMyStreet/Cobrand/ file to perllib/FixMyStreet/Cobrand/ExampleCom.pm
+    * Change package name at top of file
+    * Change following functions accordingly:
+        site_title
+        site_restriction
+        problems_clause
+        enter_postcode_text
+        council_check
+        base_url
+        all_councils_report should return 0
+        disambiguate_location - see below for details on this
+
+2: create a web/cobrands/examplecom folder and put custom css/images/js in here
+
+3: create templates/web/examplecom/ and put a header.html and footer.html with relevant html
+
+4: edit conf/general and add examplecom to allowed cobrands
+
+5: restart server
+
+6: on dev server you can append ?_override_cobrand_moniker=examplecom
+to display the cobrand. ?_override_clear_all=1 will remove this
+
+disambiguate_location
+
+The results of this are used to provide a bounding box for reverse
+geolocation.
+
+There's a script in bin - generate_council_location that takes the
+mapit area code for the council  as a argument and generates the 
+contents of the disambiguate_location hash.
+
+You can also add a town key to the hashref which will be appended 
+on to the end of geolocation queries in order to narrow down results
+for popular road names, e.g High St

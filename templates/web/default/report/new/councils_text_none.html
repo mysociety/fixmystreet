@@ -7,9 +7,11 @@
         "We do not yet have details for the councils that cover this location.",
         all_councils.size
     );
-    
+%]
+[%
     loc("If you submit a problem here the subject and details of the problem will be public, but the problem will <strong>not</strong> be reported to the council.");
-    
+%]
+[%
     tprintf(
         loc("You can help us by finding a contact email address for local problems for %s and emailing it to us at <a href='mailto:%s'>%s</a>."),
         all_council_names.join( loc(' or ') ),
