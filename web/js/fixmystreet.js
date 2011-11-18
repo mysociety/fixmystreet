@@ -65,8 +65,6 @@ $(function(){
 
     var form_submitted = 0;
 
-    /* NB: we are currently using the dev version of this plugin with 
-    * https://github.com/jzaefferer/jquery-validation/pull/194/ applied */
     $("form.validate").validate({
         messages: validation_strings,
         onkeyup: false,

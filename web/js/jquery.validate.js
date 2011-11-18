@@ -1,5 +1,5 @@
 /**
- * jQuery Validation Plugin @VERSION
+ * jQuery Validation Plugin 1.9.0
  *
  * http://bassistance.de/jquery-plugins/jquery-plugin-validation/
  * http://docs.jquery.com/Plugins/Validation
@@ -214,9 +214,9 @@ $.extend($.validator, {
 		errorContainer: $( [] ),
 		errorLabelContainer: $( [] ),
 		onsubmit: true,
-		ignore: [],
+		ignore: ":hidden",
 		ignoreTitle: false,
-		onfocusin: function(element) {
+		onfocusin: function(element, event) {
 			this.lastActive = element;
 
 			// hide error label and remove error class on focus if enabled
@@ -225,17 +225,17 @@ $.extend($.validator, {
 				this.addWrapper(this.errorsFor(element)).hide();
 			}
 		},
-		onfocusout: function(element) {
+		onfocusout: function(element, event) {
 			if ( !this.checkable(element) && (element.name in this.submitted || !this.optional(element)) ) {
 				this.element(element);
 			}
 		},
-		onkeyup: function(element) {
+		onkeyup: function(element, event) {
 			if ( element.name in this.submitted || element == this.lastElement ) {
 				this.element(element);
 			}
 		},
-		onclick: function(element) {
+		onclick: function(element, event) {
 			// click on selects, radiobuttons and checkboxes
 			if ( element.name in this.submitted )
 				this.element(element);
@@ -313,7 +313,7 @@ $.extend($.validator, {
 			function delegate(event) {
 				var validator = $.data(this[0].form, "validator"),
 					eventType = "on" + event.type.replace(/^validate/, "");
-				validator.settings[eventType] && validator.settings[eventType].call(validator, this[0] );
+				validator.settings[eventType] && validator.settings[eventType].call(validator, this[0], event);
 			}
 			$(this.currentForm)
 			       .validateDelegate("[type='text'], [type='password'], [type='file'], select, textarea, " +
@@ -349,7 +349,7 @@ $.extend($.validator, {
 
 		// http://docs.jquery.com/Plugins/Validation/Validator/element
 		element: function( element ) {
-			element = this.clean( element );
+			element = this.validationTargetFor( this.clean( element ) );
 			this.lastElement = element;
 			this.prepareElement( element );
 			this.currentElements = $(element);
@@ -394,6 +394,7 @@ $.extend($.validator, {
 			if ( $.fn.resetForm )
 				$( this.currentForm ).resetForm();
 			this.submitted = {};
+			this.lastElement = null;
 			this.prepareForm();
 			this.hideErrors();
 			this.elements().removeClass( this.settings.errorClass );
@@ -492,12 +493,7 @@ $.extend($.validator, {
 		},
 
 		check: function( element ) {
-			element = this.clean( element );
-
-			// if radio/checkbox, validate first element in group instead
-			if (this.checkable(element)) {
-				element = this.findByName( element.name ).not(this.settings.ignore)[0];
-			}
+			element = this.validationTargetFor( this.clean( element ) );
 
 			var rules = $(element).rules();
 			var dependencyMismatch = false;
@@ -678,6 +674,14 @@ $.extend($.validator, {
 			return this.groups[element.name] || (this.checkable(element) ? element.name : element.id || element.name);
 		},
 
+		validationTargetFor: function(element) {
+			// if radio/checkbox, validate first element in group instead
+			if (this.checkable(element)) {
+				element = this.findByName( element.name ).not(this.settings.ignore)[0];
+			}
+			return element;
+		},
+
 		checkable: function( element ) {
 			return /radio|checkbox/i.test(element.type);
 		},
@@ -787,16 +791,16 @@ $.extend($.validator, {
 
 	attributeRules: function(element) {
 		var rules = {};
-			var $element = $(element);
+		var $element = $(element);
 
 		for (var method in $.validator.methods) {
 			var value;
-			if (method==='required' && typeof $.fn.prop === 'function') {
+			// If .prop exists (jQuery >= 1.6), use it to get true/false for required
+			if (method === 'required' && typeof $.fn.prop === 'function') {
 				value = $element.prop(method);
 			} else {
 				value = $element.attr(method);
 			}
-
 			if (value) {
 				rules[method] = value;
 			} else if ($element[0].getAttribute("type") === method) {
@@ -1057,8 +1061,8 @@ $.extend($.validator, {
 		creditcard: function(value, element) {
 			if ( this.optional(element) )
 				return "dependency-mismatch";
-			// accept only digits and dashes
-			if (/[^0-9-]+/.test(value))
+			// accept only spaces, digits and dashes
+			if (/[^0-9 -]+/.test(value))
 				return false;
 			var nCheck = 0,
 				nDigit = 0,
