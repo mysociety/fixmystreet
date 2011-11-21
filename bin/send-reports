@@ -278,7 +278,7 @@ while (my $row = $unsent->next) {
                 $row->user->name( $row->user->id . ' ' . $row->user->name );
             }
 
-            my $resp = $open311->send_service_request( $row, \%h, $contact->ema
+            my $resp = $open311->send_service_request( $row, \%h, $contact->email );
 
             # make sure we don't save user changes from above
             if ( $row->council =~ /2218/ ) {
