@@ -65,7 +65,7 @@
 
     [% INCLUDE 'errors.html' %]
 
-    <form method="post" action="[% c.uri_for( '/report/update' ) %]" name="updateForm" class="fieldset"[% IF c.cobrand.allow_photo_upload %] enctype="multipart/form-data"[% END %]>
+    <form method="post" action="[% c.uri_for( '/report/update' ) %]" name="updateForm" class="fieldset validate"[% IF c.cobrand.allow_photo_upload %] enctype="multipart/form-data"[% END %]>
 
         <input type="hidden" name="submit_update" value="1">
         <input type="hidden" name="id" value="[% problem.id | html %]">
@@ -75,7 +75,7 @@
         [% END %]
         <div class="form-field">
             <label for="form_update">[% loc( 'Update:' ) %]</label>
-            <textarea name="update" id="form_update" rows="7" cols="30">[% update.text | html %]</textarea>
+            <textarea name="update" id="form_update" rows="7" cols="30" required>[% update.text | html %]</textarea>
         </div>
 
         [% IF c.user && c.user.belongs_to_council( problem.council ) %]
@@ -132,7 +132,7 @@
     [% END %]
     <div class="form-field">
         <label for="form_rznvy">[% loc('Your email:' ) %]</label>
-        <input type="email" name="rznvy" id="form_rznvy" value="[% update.user.email | html %]" size="30">
+        <input type="email" name="rznvy" id="form_rznvy" value="[% update.user.email | html %]" size="30" required>
     </div>
 
 <div id="form_sign_in">
@@ -159,7 +159,7 @@
         </p>
 
         <p>
-        <input type="submit" name="submit_sign_in" value="[% loc('Post') %]">
+        <input type="submit" name="submit_sign_in" id="submit_sign_in" value="[% loc('Post') %]">
         </p>
 
         </div>
@@ -181,7 +181,7 @@
         <p style="clear:both"><small>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</small></p>
 
         <p>
-        <input type="submit" name="submit_register" value="[% loc('Post') %]">
+        <input type="submit" name="submit_register" id="submit_register" value="[% loc('Post') %]">
         </p>
 
         </div>

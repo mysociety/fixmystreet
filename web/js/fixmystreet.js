@@ -28,12 +28,14 @@ $(function(){
     $('#pc').focus();
 
     $('input[type=submit]').removeAttr('disabled');
+    /*
     $('#mapForm').submit(function() {
         if (this.submit_problem) {
             $('input[type=submit]', this).prop("disabled", true);
         }
         return true;
     });
+    */
 
     if (!$('#been_fixed_no').prop('checked') && !$('#been_fixed_unknown').prop('checked')) {
         $('#another_qn').hide();
@@ -52,6 +54,66 @@ $(function(){
     function email_alert_close() {
         $('#email_alert_box').hide('fast');
     }
+
+    // FIXME - needs to use translated string
+    jQuery.validator.addMethod('validCategory', function(value, element) {
+        return this.optional(element) || value != '-- Pick a category --'; }, validation_strings['category'] );
+
+    jQuery.validator.addMethod('validName', function(value, element) {
+        var validNamePat = /\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i;
+        return this.optional(element) || value.length > 5 && value.match( /\S/ ) && !value.match( validNamePat ) }, validation_strings['category'] );
+
+    var form_submitted = 0;
+
+    $("form.validate").validate({
+        messages: validation_strings,
+        onkeyup: false,
+        errorElement: 'div',
+        errorClass: 'form-error',
+        // we do this to stop things jumping around on blur
+        success: function (err) { if ( form_submitted ) { err.addClass('label-valid').html( '&nbsp;' ); } else { err.addClass('label-valid-hidden'); } },
+        errorPlacement: function( error, element ) {
+            element.parent('div').before( error );
+        },
+        submitHandler: function(form) {
+            if (form.submit_problem) {
+                $('input[type=submit]', form).prop("disabled", true);
+            }
+
+            form.submit();
+        },
+        // make sure we can see the error message when we focus on invalid elements
+        showErrors: function( errorMap, errorList ) {
+            submitted && errorList.length && $(window).scrollTop( $(errorList[0].element).offset().top - 40 );
+            this.defaultShowErrors();
+            submitted = false;
+        },
+        invalidHandler: function(form, validator) { submitted = true; }
+    });
+
+    $('input[type=submit]').click( function(e) { form_submitted = 1; } );
+
+    /* set correct required status depending on what we submit 
+    * NB: need to add things to form_category as the JS updating 
+    * of this we do after a map click removes them */
+    $('#submit_sign_in').click( function(e) {
+        $('#form_category').addClass('required validCategory').removeClass('valid');
+        $('#form_name').removeClass();
+    } );
+
+    $('#submit_register').click( function(e) { 
+        $('#form_category').addClass('required validCategory').removeClass('valid');
+        $('#form_name').addClass('required validName');
+    } );
+
+    $('#problem_submit > input[type="submit"]').click( function(e) { 
+        $('#form_category').addClass('required validCategory').removeClass('valid');
+        $('#form_name').addClass('required validName');
+    } );
+
+    $('#update_post').click( function(e) { 
+        $('#form_name').addClass('required').removeClass('valid');
+    } );
 
     $('#email_alert').click(function(e) {
         if (!$('#email_alert_box').length)

@@ -911,6 +911,13 @@ sub check_for_errors : Private {
         %{ $c->stash->{report}->check_for_errors },
     );
 
+    # if they're got the login details wrong when signing in then
+    # we don't care about the name field even though it's validated
+    # by the user object
+    if ( $c->req->param('submit_sign_in') and $field_errors{password} ) {
+        delete $field_errors{name};
+    }
+
     # add the photo error if there is one.
     if ( my $photo_error = delete $c->stash->{photo_error} ) {
         $field_errors{photo} = $photo_error;

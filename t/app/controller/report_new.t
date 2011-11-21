@@ -1,4 +1,5 @@
 use strict;
+use utf8; # sign in error message has &ndash; in it
 use warnings;
 use Test::More;
 use utf8;
@@ -427,6 +428,55 @@ foreach my $test (
         if $test->{user};
   };
 }
+
+# this test to make sure that we don't see spurious error messages about
+# the name being blank when there is a sign in error
+subtest "test password errors for a user who is signing in as they report" => sub {
+    $mech->log_out_ok;
+    $mech->clear_emails_ok;
+
+    # check that the user does not exist
+    my $test_email = 'test-2@example.com';
+
+    my $user = FixMyStreet::App->model('DB::User')->find_or_create( { email => $test_email } );
+    ok $user, "test user does exist";
+
+    # setup the user.
+    ok $user->update( {
+        name     => 'Joe Bloggs',
+        phone    => '01234 567 890',
+        password => 'secret2',
+    } ), "set user details";
+
+    # submit initial pc form
+    $mech->get_ok('/around');
+    $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } },
+        "submit location" );
+
+    # click through to the report page
+    $mech->follow_link_ok( { text => 'skip this step', },
+        "follow 'skip this step' link" );
+
+    $mech->submit_form_ok(
+        {
+            button      => 'submit_sign_in',
+            with_fields => {
+                title         => 'Test Report',
+                detail        => 'Test report details.',
+                photo         => '',
+                email         => 'test-2@example.com',
+                password_sign_in => 'secret1',
+                category      => 'Street lighting',
+            }
+        },
+        "submit with wrong password"
+    );
+
+    # check that we got the errors expected
+    is_deeply $mech->form_errors, [
+        'There was a problem with your email/password combination. Passwords and user accounts are a brand new service, so you probably do not have one yet – please fill in the right hand side of this form to get one.'
+    ], "check there were errors";
+};
 
 subtest "test report creation for a user who is signing in as they report" => sub {
     $mech->log_out_ok;

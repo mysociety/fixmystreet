@@ -50,7 +50,7 @@
 
 <div class="form-field">
     <label for="form_title">[% loc('Subject:') %]</label>
-    <input type="text" value="[% report.title | html %]" name="title" id="form_title" size="25">
+    <input type="text" value="[% report.title | html %]" name="title" id="form_title" size="25" required>
 </div>
 
 [% IF field_errors.detail %]
@@ -59,13 +59,13 @@
 
 <div class="form-field">
     <label for="form_detail">[% loc('Details:') %]</label>
-    <textarea name="detail" id="form_detail" rows="7" cols="26">[% report.detail | html %]</textarea>
+    <textarea name="detail" id="form_detail" rows="7" cols="26" required>[% report.detail | html %]</textarea>
 </div>
 
 [% IF js %]
     <div class="form-field" id="form_category_row">
         <label for="form_category">[% loc('Category:') %]</label>
-        <select name="category" id="form_category"><option>[% loc('Loading...') %]</option></select>
+        <select name="category" id="form_category" required><option>[% loc('Loading...') %]</option></select>
     </div>
 [% ELSE %]
     [% IF category_options.size %]
@@ -122,7 +122,7 @@
 
     <div class="form-field">
         <label for="form_email">[% loc('Your email:') %]</label>
-        <input type="email" value="[% report.user.email | html %]" name="email" id="form_email" size="25">
+        <input type="email" value="[% report.user.email | html %]" name="email" id="form_email" size="25" required>
     </div>
 
 [% INCLUDE 'report/new/notes.html' %]
@@ -136,10 +136,10 @@
             <div class='form-error'>[% field_errors.password %]</div>
         [% END %]
 
-        <p>
+        <div class="form-field">
         <label class="n" for="password_sign_in">[% loc('<strong>Yes</strong>, I have a password:') %]</label>
         <input type="password" name="password_sign_in" id="password_sign_in" value="" size="25">
-        </p>
+        </div>
 
         <div class="fieldset">
 
@@ -151,7 +151,7 @@
         </p>
 
         <p>
-        <input type="submit" name="submit_sign_in" value="[% loc('Submit') %]">
+        <input type="submit" id="submit_sign_in" name="submit_sign_in" value="[% loc('Submit') %]">
         </p>
 
         </div>
@@ -173,7 +173,7 @@
         <p style="clear:both"><small>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</small></p>
 
         <p>
-        <input type="submit" name="submit_register" value="[% loc('Submit') %]">
+        <input type="submit" id="submit_register" name="submit_register" value="[% loc('Submit') %]">
         </p>
 
         </div>
@@ -201,7 +201,7 @@
 
     <div class="form-field">
         <label for="form_name">[% loc('Your name:') %]</label>
-        <input type="text" value="[% report.name | html %]" name="name" id="form_name" size="25">
+        <input type="text" class="validName" value="[% report.name | html %]" name="name" id="form_name" size="25">
     </div>
 
     <div class="checkbox">
