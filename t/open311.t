@@ -35,7 +35,7 @@ my $p = FixMyStreet::App->model('DB::Problem')->new( {
     user => $u,
 } );
 
-my $expected_error = qr{.*request failed: 500 Can.t connect to 192.168.50.1:80 \(Operation timed out\).*};
+my $expected_error = qr{.*request failed: 500 Can.t connect to 192.168.50.1:80 \([^)]*\).*};
 
 warning_like {$o2->send_service_request( $p, { url => 'http://example.com/' }, 1 )} $expected_error, 'warning generated on failed call';
 
