@@ -6,13 +6,13 @@ Følgende oppdateringer har blitt lagt inn for dette problemet:
 
 <?=$values['state_message']?>
 
-For å se på eller svare på disse oppdateringene, besøk denne URLen:
+For å se på eller svare på disse oppdateringene, besøk denne lenken:
     <?=$values['problem_url']?>
 
-Du kan ikke kontakte noen ved å svare på denne eposten.
+Du kan ikke kontakte noen ved å svare på denne e-posten.
 
-Vennlig hilsen,  
-Fiksgata-laget
+Vennlig hilsen,
+Fiksgata-gruppen
 
-For å slutte å motta epost når det er nye oppdateringer om dettte
+For å slutte å motta e-post ved nye oppdateringer om dette
 problemet, følg denne lenken: <?=$values['unsubscribe_url']?>

@@ -8,6 +8,6 @@ innenfor <?=$values['ward_name']?>:
 Vennlig hilsen,  
 FiksGataMi-gruppen
 
-Hvis du ikke ønsker å abonnere via epost på saker som er sendt til
+Hvis du ikke ønsker å motta e-post om saker som er sendt til
 <?=$values['area_name']?> innenfor <?=$values['ward_name']?>,
 klikk på denne linken: <?=$values['unsubscribe_url']?>
