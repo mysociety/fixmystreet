@@ -1,0 +1,5 @@
+*Subject: *FMS *message: [% *subject %]
+
+[% *message %]
+
+[ Seint by *contact.*cgi *on [% host %]. *IP *address [% *ip %] ]

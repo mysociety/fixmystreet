@@ -1,0 +1,13 @@
+Subject: Nye saker sendt til <?=$values['area_name']?> innanfor <?=$values['ward_name']?> vigde FiksGataMi.no
+
+Følgjande saker er sendt til <?=$values['area_name']?>
+innanfor <?=$values['ward_name']?>:
+
+<?=$values['data']?>
+
+*Vennlig helsing,  
+*FiksGataMi-gruppa
+
+Viss du ikkje ynskjer å motta e-post om saker som er send til
+<?=$values['area_name']?> innanfor <?=$values['ward_name']?>,
+klikk på denne linken: <?=$values['unsubscribe_url']?>

@@ -1,0 +1,23 @@
+Subject: *Spørreskjema for saka di på FiksGataMi
+
+Hei <?=$values['name']?>,
+
+for <?=$values['created']?> sidan, la du til ei sak på FiksGataMi.no
+med detaljane som vist i denne ea-posten. For å halda nettsida vår oppdatert
+og relevant, vil vi setja pris på om du kunne fylla ut følgjande skjema for å
+oppdatera saka:
+
+    <?=$values['url']?>
+
+*Vennligst ikkje svar på denne ea-posten; det er høve for å kommentera i skjemaet.
+
+*Vennlig helsing,  
+*FiksGataMi-gruppa
+
+Saka du la til var som følgjer:
+
+<?=$values['title']?>
+
+<?=$values['detail']?>
+
+
