@@ -73,7 +73,15 @@ $(function(){
         // we do this to stop things jumping around on blur
         success: function (err) { if ( form_submitted ) { err.addClass('label-valid').html( '&nbsp;' ); } else { err.addClass('label-valid-hidden'); } },
         errorPlacement: function( error, element ) {
-            element.parent('div').before( error );
+            /* And all because the .before thing doesn't seem to work in
+               mobile safari on iOS 5. However outerHTML is not cross
+               browser so we have to have two solutions :( */
+            if ( element[0].outerHTML ) {
+                var html = element.parent('div').html();
+                element.parent('div').html( error[0].outerHTML + html );
+            } else {
+                element.parent('div').before( error );
+            }
         },
         submitHandler: function(form) {
             if (form.submit_problem) {
