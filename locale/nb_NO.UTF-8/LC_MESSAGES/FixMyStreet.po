@@ -490,7 +490,7 @@ msgstr "Fiksede rapporter"
 
 #: templates/web/default/admin/problem_row.html:25
 msgid "Closed:"
-msgstr "Lukket."
+msgstr "Lukket:"
 
 #: templates/web/default/around/display_location.html:102
 #: templates/web/default/around/display_location.html:104
