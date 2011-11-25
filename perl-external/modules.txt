@@ -34,6 +34,7 @@ Email::Simple
 Email::Valid
 File::Path
 HTML::Entities
+HTML::Form
 HTTP::Server::Simple
 HTTP::Server::Simple::CGI
 IO::String

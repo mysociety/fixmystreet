@@ -126,6 +126,7 @@
 /authors/id/G/GA/GAAS/Digest-HMAC-1.02.tar.gz
 /authors/id/G/GA/GAAS/Encode-Locale-1.01.tar.gz
 /authors/id/G/GA/GAAS/File-Listing-6.00.tar.gz
+/authors/id/G/GA/GAAS/HTML-Form-6.00.tar.gz
 /authors/id/G/GA/GAAS/HTML-Parser-3.68.tar.gz
 /authors/id/G/GA/GAAS/HTTP-Cookies-6.00.tar.gz
 /authors/id/G/GA/GAAS/HTTP-Daemon-6.00.tar.gz
