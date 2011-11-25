@@ -94,7 +94,7 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
                 "http://ecn.t0.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type,
                 "http://ecn.t1.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type,
                 "http://ecn.t2.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type,
-                "http://ecn.t3.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type,
+                "http://ecn.t3.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type
             ];
         }
         var s = '' + x + y + z;
