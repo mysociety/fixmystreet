@@ -66,6 +66,13 @@ $(function(){
     var form_submitted = 0;
 
     $("form.validate").validate({
+        rules: {
+            title: { required: true },
+            detail: { required: true },
+            email: { required: true },
+            update: { required: true },
+            rznvy: { required: true }
+        },
         messages: validation_strings,
         onkeyup: false,
         errorElement: 'div',
