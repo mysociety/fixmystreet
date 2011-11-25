@@ -145,6 +145,7 @@
 /authors/id/G/GE/GETTY/HTTP-Body-1.11.tar.gz
 /authors/id/G/GR/GRODITI/MooseX-Types-Common-0.001002.tar.gz
 /authors/id/G/GR/GROMMEL/Math-Round-0.06.tar.gz
+/authors/id/G/GW/GWILLIAMS/DateTime-Format-W3CDTF-0.06.tar.gz
 /authors/id/I/IL/ILMARI/Class-Unload-0.07.tar.gz
 /authors/id/I/IN/INGY/Spiffy-0.30.tar.gz
 /authors/id/I/IN/INGY/Test-Base-0.59.tar.gz
