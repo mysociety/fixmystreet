@@ -1,14 +1,14 @@
-Subject: *Bekreftelse på ny sak lagt til på FiksGataMi.no
+Subject: Stadfesting om ny sak lagt til på FiksGataMi.no
 
 Hei [% report.name %],
 
-*Vennligst klikk på linken under for å stadfesta saka du har lagt til
-på FiksGataMi:
+Ver venleg og klikk på lenkja under for å stadfesta saka du har lagt
+til på FiksGataMi:
 
 [% token_url %]
 
-Viss ea di-post-program ikkje gjev deg høve til å klikka på lenkja,
-kan du kopiera lenkja inn i nettlesaren din.
+Viss e-post-programmet ditt ikkje lèt deg klikka på lenkja, kan du
+kopiera lenkja inn i nettlesaren din.
 
 Saka di hadde følgjande tittel:
 [% report.title %]
@@ -16,5 +16,5 @@ Saka di hadde følgjande tittel:
 Med følgjande informasjon:
 [% report.detail %]
 
-*Vennlig helsing,  
-*FiksGataMi-gruppa
+Venleg helsing,  
+FiksGataMi-gruppa

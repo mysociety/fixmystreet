@@ -1,9 +1,9 @@
 Subject: [% loc('Your FixMyStreet.com account details') %]
 
-*Vennligst klikk på linken under for å stadfesta ea di-post. Når dette
-er gjort vil du lett kunna halda oversyn over problemrapportane dine.
-[% c.uri_for_action( 'auth/token', token ) %]
+Ver venleg og klikk på lenkja under for å stadfesta e-posten din. Når
+dette er gjort vil du lett kunna halda oversyn over problemrapportane
+dine. [% c.uri_for_action( 'auth/token', token ) %]
 
-*Vennlig helsing,  
-*FiksGataMi-gruppa
+Venleg helsing,  
+FiksGataMi-gruppa
 

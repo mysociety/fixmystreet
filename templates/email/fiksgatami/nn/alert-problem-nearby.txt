@@ -4,8 +4,8 @@ Følgjande saker i nærleiken er lagd inn på FiksGataMi.no:
 
 <?=$values['data']?>
 
-*Vennlig helsing,  
-*FiksGataMi-gruppa
+Venleg helsing,  
+FiksGataMi-gruppa
 
-Viss du ikkje ynskjer å motta e-post om ny problem i nærleiken,
+Viss du ikkje ynskjer å motta e-post om nye problem i nærleiken,
 klikk på følgjande lenkje: <?=$values['unsubscribe_url']?>

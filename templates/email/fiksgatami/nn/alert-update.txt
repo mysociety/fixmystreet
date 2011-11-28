@@ -1,4 +1,4 @@
-Subject: Nye oppdateringar for problem - '<?=$values['title']?>'
+Subject: Nye oppdateringar for problem – '<?=$values['title']?>'
 
 Følgjande oppdateringar har vorte lagt inn for dette problemet:
 
@@ -9,10 +9,10 @@ Følgjande oppdateringar har vorte lagt inn for dette problemet:
 For å sjå på eller svara på desse oppdateringane, besøk denne lenkja:
     <?=$values['problem_url']?>
 
-Du kan ikkje kontakta nokon ved å svara på denne ea-posten.
+Du kan ikkje kontakta nokon ved å svara på denne e-posten.
 
-*Vennlig helsing,
-*Fiksgata-gruppa
+Venleg helsing,
+Fiksgata-gruppa
 
 For å slutta å motta e-post ved nye oppdateringar om dette
 problemet, følg denne lenkja: <?=$values['unsubscribe_url']?>

@@ -2,16 +2,16 @@ Subject: Problemrapport: <?=$values['title']?>
 
 Til <?=$values['councils_name']?>,
 
-<?=$values['missing']?><?=$values['multiple']?>Ein nytter av
-FiksGataMi har sendt inn følgjande rapport om eit lokalt
-problem som vi trur treng merksemda deira.
+<?=$values['missing']?><?=$values['multiple']?>Ein brukar av
+FiksGataMi har sendt inn følgjande rapport om eit lokalt problem som
+vi trur treng merksemda deira.
 
-<?=$values['fuzzy']?>, eller for å bidra med ei oppdatering om problemet,
-*vennligst besøk følgjande lenkje:
+<?=$values['fuzzy']?>, eller for å bidra med ei oppdatering om
+problemet, ver venleg og besøk følgjande lenkje:
 
     <?=$values['url']?>
 
-<?=$values['vert hatt_photo']?>----------
+<?=$values['has_photo']?>----------
 
 Namn: <?=$values['name']?>
 
@@ -19,23 +19,23 @@ E-post: <?=$values['email']?>
 
 <?=$values['phone_line']?><?=$values['category_line']?>Tema: <?=$values['title']?>
 
-*Detajer: <?=$values['detail']?>
+Detaljer: <?=$values['detail']?>
 
 <?=$values['easting_northing']?>Breiddegrad: <?=$values['latitude']?>
 
-Lengjegrad: <?=$values['longitude']?>
+Lengdegrad: <?=$values['longitude']?>
 
 <?=$values['closest_address']?>----------
 
-Svar på denne ea-posten går til brukaren som sende inn problemet.
+Svar på denne e-posten går til brukaren som sende inn problemet.
 
-*Vennlig helsing,  
-*FiksGataMi-gruppa
+Venleg helsing,  
+FiksGataMi-gruppa
 
-[ Denne meldinga vart send inn via FiksGataMi, eit prosjekt hos samskipnaden NUUG.
+[ Denne meldinga vart send inn via FiksGataMi, eit prosjekt hos foreininga NUUG.
 Viss det er ei meir passande e-postadresse for meldingar om
-<?=$values['category_footer']?>, vêr så snill å gje oss melding ved å vitja
+<?=$values['category_footer']?>, ver så snill å gje oss melding ved å vitja
 <http://www.fiksgatami.no/contact>.
-Dette vil bidra til å forbetra tenesta for lokalfolkesetnaden. Vi
-tek òg gjerne imot andre *tilbakemeldinger. ]
+Dette vil bidra til å forbetra tenesta for lokalbefolkinga. Vi
+tek òg gjerne imot andre tilbakemeldingar. ]
 

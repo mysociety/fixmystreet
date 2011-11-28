@@ -2,13 +2,13 @@ Subject: Stadfest varselet ditt frå FiksGataMi.no
 
 Hei,
 
-*Vennligst klikk på lenkja under for å stadfesta varselet du
+Ver venleg og klikk på lenkja under for å stadfesta varselet du
 har bede om å abonnera på hos FiksGataMi:
 
     [% token_url %]
 
-Viss du ikkje kan klikka på lenkja, kan du kopiera han til
-*addressefeltet i nettlesaren din.
+Viss du ikkje kan klikka på lenkja, kan du kopiera ho til
+addressefeltet i nettlesaren din.
 
-*Vennlig helsing,  
-*FiksGataMi-gruppa
+Venleg helsing,  
+FiksGataMi-gruppa

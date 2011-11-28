@@ -1,5 +1,5 @@
-*Subject: *FMS *message: [% *subject %]
+Subject: FiksGataMi-melding: [% subject %]
 
-[% *message %]
+[% message %]
 
-[ Seint by *contact.*cgi *on [% host %]. *IP *address [% *ip %] ]
+[ Sendt av contact.cgi på [% host %]. IP-addresse [% ip %] ]

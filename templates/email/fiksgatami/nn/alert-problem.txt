@@ -4,8 +4,8 @@ Følgjande nye saker er lagt til:
 
 <?=$values['data']?>
 
-*Vennlig helsing,  
-*FiksGataMi-gruppa
+Venleg helsing,  
+FiksGataMi-gruppa
 
 Viss du ikkje ynskjer å motta e-post om nye saker,
 klikk på følgjande lenkje: <?=$values['unsubscribe_url']?>
