@@ -91,7 +91,8 @@ sub email_alerts ($) {
                 # $data{data} .= _get_address_from_gecode( $row->{geocode} ) if exists $row->{geocode} and $ref =~ /ward|council/;
                 $data{data} .= $row->{item_text} . "\n\n------\n\n";
             } else {
-                $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}\n\n";
+                my $postcode = $row->{postcode} ? ", $row->{postcode}" : '';
+                $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}$postcode\n\n";
                 # comment out untill we've populated the geocode field
                 # $data{data} .= _get_address_from_gecode( $row->{geocode} ) if exists $row->{geocode} and $ref =~ /ward|council/;
                 # $data{data} .= "\n\n------\n\n";
@@ -141,7 +142,7 @@ sub email_alerts ($) {
         };
         my $states = "'" . join( "', '", FixMyStreet::DB::Result::Problem::visible_states() ) . "'";
         my %data = ( template => $template, data => '', alert_id => $alert->id, alert_email => $alert->user->email, lang => $alert->lang, cobrand => $alert->cobrand, cobrand_data => $alert->cobrand_data );
-        my $q = "select problem.id, problem.geocode, problem.title from problem_find_nearby(?, ?, ?) as nearby, problem, users
+        my $q = "select problem.id, problem.postcode, problem.geocode, problem.title from problem_find_nearby(?, ?, ?) as nearby, problem, users
             where nearby.problem_id = problem.id
             and problem.user_id = users.id
             and problem.state in ($states)
@@ -157,7 +158,8 @@ sub email_alerts ($) {
                 alert_id  => $alert->id,
                 parameter => $row->{id},
             } );
-            $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}\n\n";
+            my $postcode = $row->{postcode} ? ", $row->{postcode}" : '';
+            $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}$postcode\n\n";
             # comment out untill we've populated the geocode field
             # $data{data} .= _get_address_from_gecode( $row->{geocode} ) . "\n\n" if exists $row->{geocode};
             # $data{data} .= "\n\n------\n\n";
