@@ -252,9 +252,7 @@ sub add_row : Private {
     my $url = $c->uri_for( $link );
 
     if ( $row->{postcode} ) {
-        my $pc = $row->{postcode};
-        $pc = mySociety::PostcodeUtil::canonicalise_postcode($pc)
-        if mySociety::PostcodeUtil::is_valid_postcode($pc);
+        my $pc = $c->cobrand->format_postcode( $row->{postcode} );
         $title .= ", $pc";
     }
 
