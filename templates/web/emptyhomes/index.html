@@ -1,5 +1,27 @@
 [% INCLUDE 'header.html', title => '' %]
 
+[% IF c.req.uri.host == 'reportemptyhomes.com' or c.req.uri.host == 'emptyhomes.matthew.fixmystreet.com' %]
+
+<h2>Channel 4: The Great British Property Scandal</h2>
+
+<iframe style="float:right; margin-left: 15px;" width="560" height="315" src="http://www.youtube.com/embed/N3OPfTlEEsw" frameborder="0" allowfullscreen></iframe>
+
+<p>We&#8217;re really excited to be offical advisors to the forthcoming new
+empty homes TV series <strong>The Great British Property Scandal</strong>!</p>
+<p>The series will highlight the nearly two million British families who don’t
+have adequate housing, and the million-odd homes lying empty across the UK.</p>
+
+<ul style="font-size: 125%; line-height: 2">
+
+<li><a href="http://www.channel4.com/programmes/the-great-british-property-scandal/articles/report-an-empty">Report an empty property</a></li>
+<li><a href="http://cy.reportemptyhomes.com/">Rhoi gwybod am eiddo gwag</a></li>
+
+<!-- <li><strong>Download the iPhone app</strong> from the App Store.</li> -->
+
+</ul>
+
+[% ELSE %]
+
 [% IF error %]
     <p class="error">[% error %]</p>
 [% END %]
@@ -36,5 +58,7 @@
     [% INCLUDE "front/stats.html" %]
 
 </div>
+
+[% END %]
 
 [% INCLUDE 'footer.html' %]
