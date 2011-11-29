@@ -113,6 +113,12 @@ $mech->get_ok("/rss/pc/EH11BB/2");
 $mech->content_contains( "Testing, 10th October, EH1 1BB" );
 $mech->content_contains( '18 North Bridge, Edinburgh' );
 
+$report->postcode('Princes St, Edinburgh');
+$report->update();
+
+$mech->get_ok("/rss/pc/EH11BB/2");
+$mech->content_contains( "Testing, 10th October, Princes St, Edinburgh" );
+
 $report->delete();
 $user1->delete();
 
