@@ -613,6 +613,23 @@ sub find_closest_address_for_rss {
     return $str;
 }
 
+=head2 format_postcode
+
+Takes a postcode string and if it looks like a valid postcode then transforms it
+into the canonical postcode.
+
+=cut
+
+sub format_postcode {
+    my ( $self, $postcode ) = @_;
+
+    if ( $postcode ) {
+        $postcode = mySociety::PostcodeUtil::canonicalise_postcode($postcode)
+            if $postcode && mySociety::PostcodeUtil::is_valid_postcode($postcode);
+    }
+
+    return $postcode;
+}
 =head2 council_check
 
 Paramters are COUNCILS, QUERY, CONTEXT. Return a boolean indicating whether

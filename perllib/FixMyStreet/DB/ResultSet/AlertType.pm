@@ -91,7 +91,8 @@ sub email_alerts ($) {
                 $data{data} .= $row->{item_text} . "\n\n------\n\n";
             # this is ward and council problems
             } else {
-                my $postcode = _format_postcode( $row->{postcode} );
+                my $postcode = $cobrand->format_postcode( $row->{postcode} );
+                $postcode = ", $postcode" if $postcode;
                 $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}$postcode\n\n";
                 if ( exists $row->{geocode} && $row->{geocode} && $ref =~ /ward|council/ ) {
                     my $nearest_st = _get_address_from_gecode( $row->{geocode} );
@@ -160,7 +161,8 @@ sub email_alerts ($) {
                 alert_id  => $alert->id,
                 parameter => $row->{id},
             } );
-            my $postcode = _format_postcode( $row->{postcode} );
+            my $postcode = $cobrand->format_postcode( $row->{postcode} );
+            $postcode = ", $postcode" if $postcode;
             $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}$postcode\n\n";
             if ( exists $row->{geocode} && $row->{geocode} ) {
                 my $nearest_st = _get_address_from_gecode( $row->{geocode} );
@@ -241,18 +243,6 @@ sub _get_address_from_gecode {
         join( ', ', @address ) );
 
     return $str;
-}
-
-sub _format_postcode {
-    my $postcode = shift;
-
-    if ( $postcode ) {
-        $postcode = mySociety::PostcodeUtil::canonicalise_postcode($postcode)
-            if $postcode && mySociety::PostcodeUtil::is_valid_postcode($postcode);
-        $postcode = ", $postcode";
-    }
-
-    return $postcode;
 }
 
 1;
