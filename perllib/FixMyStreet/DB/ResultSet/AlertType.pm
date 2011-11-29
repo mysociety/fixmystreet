@@ -84,18 +84,20 @@ sub email_alerts ($) {
             }
 
             my $url = $cobrand->base_url_for_emails( $row->{alert_cobrand_data} );
+            # this is currently only for new_updates
             if ($row->{item_text}) {
                 $data{problem_url} = $url . "/report/" . $row->{id};
                 $data{data} .= $row->{item_name} . ' : ' if $row->{item_name} && !$row->{item_anonymous};
-                # comment out untill we've populated the geocode field
-                # $data{data} .= _get_address_from_gecode( $row->{geocode} ) if exists $row->{geocode} and $ref =~ /ward|council/;
                 $data{data} .= $row->{item_text} . "\n\n------\n\n";
+            # this is ward and council problems
             } else {
-                my $postcode = $row->{postcode} ? ", $row->{postcode}" : '';
+                my $postcode = _format_postcode( $row->{postcode} );
                 $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}$postcode\n\n";
-                # comment out untill we've populated the geocode field
-                # $data{data} .= _get_address_from_gecode( $row->{geocode} ) if exists $row->{geocode} and $ref =~ /ward|council/;
-                # $data{data} .= "\n\n------\n\n";
+                if ( exists $row->{geocode} && $row->{geocode} && $ref =~ /ward|council/ ) {
+                    my $nearest_st = _get_address_from_gecode( $row->{geocode} );
+                    $data{data} .= $nearest_st if $nearest_st;
+                }
+                $data{data} .= "\n\n------\n\n";
             }
             if (!$data{alert_user_id}) {
                 %data = (%data, %$row);
@@ -158,11 +160,13 @@ sub email_alerts ($) {
                 alert_id  => $alert->id,
                 parameter => $row->{id},
             } );
-            my $postcode = $row->{postcode} ? ", $row->{postcode}" : '';
+            my $postcode = _format_postcode( $row->{postcode} );
             $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}$postcode\n\n";
-            # comment out untill we've populated the geocode field
-            # $data{data} .= _get_address_from_gecode( $row->{geocode} ) . "\n\n" if exists $row->{geocode};
-            # $data{data} .= "\n\n------\n\n";
+            if ( exists $row->{geocode} && $row->{geocode} ) {
+                my $nearest_st = _get_address_from_gecode( $row->{geocode} );
+                $data{data} .= $nearest_st if $nearest_st;
+            }
+            $data{data} .= "\n\n------\n\n";
         }
         _send_aggregated_alert_email(%data) if $data{data};
     }
@@ -237,6 +241,18 @@ sub _get_address_from_gecode {
         join( ', ', @address ) );
 
     return $str;
+}
+
+sub _format_postcode {
+    my $postcode = shift;
+
+    if ( $postcode ) {
+        $postcode = mySociety::PostcodeUtil::canonicalise_postcode($postcode)
+            if $postcode && mySociety::PostcodeUtil::is_valid_postcode($postcode);
+        $postcode = ", $postcode";
+    }
+
+    return $postcode;
 }
 
 1;
