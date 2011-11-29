@@ -8,6 +8,7 @@ $darker: #768EB5;
 
     #map_box {
         width: $map_width + 2px;
+        margin-bottom: 10px;
     }
     #map, #drag {
         width: $map_width;
@@ -60,4 +61,7 @@ $darker: #768EB5;
         padding: 0.5em;
     }
 
+    #update_form {
+        clear: right;
+    }
 }
