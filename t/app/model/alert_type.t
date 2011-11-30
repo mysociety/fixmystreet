@@ -140,5 +140,74 @@ for my $test (
     };
 }
 
+my $now = DateTime->now();
+$report->confirmed( $now->ymd . ' ' . $now->hms );
+$report->update();
+
+my $council_alert = FixMyStreet::App->model('DB::Alert')->find_or_create(
+    {
+        user => $user2,
+        parameter => 2504,
+        parameter2 => 2504,
+        alert_type => 'council_problems',
+        whensubscribed => $dt->ymd . ' ' . $dt->hms,
+        confirmed => 1,
+    }
+);
+
+for my $test (
+    {
+        postcode           => 'SW1A 1AA',
+        expected_postcode  => 'SW1A 1AA',
+    },
+    {
+        postcode           => 'sw1a 1AA',
+        expected_postcode  => 'SW1A 1AA',
+    },
+    {
+        postcode           => 'SW1A 1aa',
+        expected_postcode  => 'SW1A 1AA',
+    },
+    {
+        postcode           => 'SW1A1AA',
+        expected_postcode  => 'SW1A 1AA',
+    },  
+    {
+        postcode           => 'Buckingham Gate',
+        expected_postcode  => 'Buckingham Gate',
+    },  
+    {
+        postcode           => 'Buckingham gate',
+        expected_postcode  => 'Buckingham gate',
+    },  
+) {
+    subtest "correct text for postcode $test->{postcode}" => sub {
+        $mech->clear_emails_ok;
+
+        my $sent = FixMyStreet::App->model('DB::AlertSent')->search(
+            {
+                alert_id => $council_alert->id,
+                parameter => $report->id,
+            }
+        )->delete;
+
+        $report->postcode( $test->{postcode} );
+        $report->update;
+
+        FixMyStreet::App->model('DB::AlertType')->email_alerts();
+            
+        $mech->email_count_is( 1 );
+        my $email = $mech->get_email;
+        my $pc = $test->{expected_postcode};
+        my $title = $report->title;
+        my $body = $email->body;
+
+        like $body, qr#report/$report_id - $title, $pc#, 'email contains expected postcode';
+    };
+}
+
+$report->postcode( 'SW1A 1AA' );
+$report->update;
+
 done_testing();
 
