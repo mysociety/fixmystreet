@@ -452,8 +452,9 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
         $count++ if $_->body =~ /The following updates have been left on this problem:/;
         $count++ if $_->body =~ /The following new problems have been reported to City of\s*Edinburgh Council:/;
         $count++ if $_->body =~ /The following nearby problems have been added:/;
+        $count++ if $_->body =~ / - Testing, EH1 1BB/;
     }
-    is $count, 3, 'Three emails with the right things in them';
+    is $count, 5, 'Five emails with the right things in them';
 
     my $email = $emails[0];
     like $email->body, qr/Other User/, 'Update name given';
