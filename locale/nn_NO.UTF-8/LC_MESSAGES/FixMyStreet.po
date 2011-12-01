@@ -608,22 +608,22 @@ msgstr "Merkevaresamarbeid:"
 #: perllib/FixMyStreet/App/Controller/Admin.pm:349
 #, fuzzy
 msgid "Configuration updated"
-msgstr "Konfigurasjon oppdatert:"
+msgstr "Oppsett oppdatert"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:359
 #, fuzzy
 msgid "Configuration updated - contacts will be generated automatically later"
-msgstr "Konfigurasjon oppdatert - kontaktar vil genererast seinare"
+msgstr "Oppsett oppdatert - kontaktar vil genererast automatisk seinare"
 
 #: templates/web/default/admin/council_contacts.html:119
 #, fuzzy
 msgid "Configure Open311"
-msgstr "Konfigurer Open311"
+msgstr "Sett opp Open311"
 
 #: templates/web/default/admin/council_contacts.html:96
 #, fuzzy
 msgid "Configure Open311 integration"
-msgstr "Konfigurer Open311-integrasjon"
+msgstr "Sett opp Open311-integrasjon"
 
 #: templates/web/default/admin/council_contacts.html:33
 #, fuzzy

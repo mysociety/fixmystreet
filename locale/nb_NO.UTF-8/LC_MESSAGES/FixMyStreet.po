@@ -519,19 +519,19 @@ msgstr "Merkevaresamarbeid:"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:349
 msgid "Configuration updated"
-msgstr "Konfigurasjon oppdatert:"
+msgstr "Oppsett oppdatert"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:359
 msgid "Configuration updated - contacts will be generated automatically later"
-msgstr "Konfigurasjon oppdatert - kontakter vil bli generert senere"
+msgstr "Oppsett oppdatert - kontakter vil bli generert automatisk senere"
 
 #: templates/web/default/admin/council_contacts.html:119
 msgid "Configure Open311"
-msgstr "Konfigurer Open311"
+msgstr "Sett opp Open311"
 
 #: templates/web/default/admin/council_contacts.html:96
 msgid "Configure Open311 integration"
-msgstr "Konfigurer Open311-integrasjon"
+msgstr "Sett opp Open311-integrasjon"
 
 #: templates/web/default/admin/council_contacts.html:33
 msgid "Confirm"
