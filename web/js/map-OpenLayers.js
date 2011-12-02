@@ -308,6 +308,12 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             fixmystreet_activate_drag();
         }
         fixmystreet_update_pin(lonlat);
+        // check to see if markers are visible. We click the
+        // link so that it updates the text in case they go
+        // back
+        if ( ! fixmystreet.markers.getVisibility() ) {
+            $('#hide_pins_link').click();
+        }
         if (fixmystreet.page == 'new') {
             return;
         }
