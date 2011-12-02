@@ -7,13 +7,12 @@
 # Petter Reinholdtsen <pere@hungry.com>, 2011.
 # Anders Einar Hilden <hildenae@gmail.com>, 2011.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2011-10-21 15:56+0100\n"
-"PO-Revision-Date: 2011-11-23 22:49+0100 \n"
+"PO-Revision-Date: 2011-12-02 15:06+0100\n"
 "Last-Translator: Anders Einar Hilden <hildenae@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,13 +20,11 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
 #: bin/send-reports:183 perllib/FixMyStreet/DB/Result/Problem.pm:535
-#, fuzzy
 msgid " and "
 msgstr " og "
 
 #: templates/web/default/tokens/confirm_problem.html:10
 #: templates/web/default/tokens/confirm_problem.html:6
-#, fuzzy
 msgid " and <strong>we will now send it to the council</strong>"
 msgstr " og <strong>vi sender det no til administrasjonen</strong>"
 
@@ -39,214 +36,171 @@ msgstr " og <strong>vi sender det no til administrasjonen</strong>"
 #: templates/web/default/report/new/councils_text_some.html:23
 #: templates/web/default/report/new/councils_text_some.html:5
 #: templates/web/emptyhomes/report/new/all_councils_text.html:2
-#, fuzzy
 msgid " or "
 msgstr " eller "
 
 #: templates/web/default/admin/council_list.html:17
-#, fuzzy
 msgid "%d addresses"
 msgstr "%d adresser"
 
 #: templates/web/default/admin/index.html:17
-#, fuzzy
 msgid "%d confirmed alerts, %d unconfirmed"
-msgstr "%d stadfeste varsel, %d ubekreftede"
+msgstr "%d stadfesta varsel, %d ikkje stadfesta"
 
 #: templates/web/default/admin/index.html:19
-#, fuzzy
 msgid "%d council contacts &ndash; %d confirmed, %d unconfirmed"
-msgstr "%d administrasjonskontaktar &ndash; %d stadfesta, %d ubekreftet"
+msgstr "%d administrasjonskontaktar &ndash; %d stadfesta, %d ikkje stadfesta"
 
 #: perllib/Utils.pm:252
-#, fuzzy
 msgid "%d day"
 msgstr "%d dag"
 
 #: perllib/Utils.pm:252
-#, fuzzy
 msgid "%d days"
 msgstr "%d dagar"
 
 #: templates/web/default/admin/council_list.html:27
-#, fuzzy
 msgid "%d edits by %s"
 msgstr "%d redigeringar av %s"
 
 #: perllib/Utils.pm:253
-#, fuzzy
 msgid "%d hour"
 msgstr "%d time"
 
 #: perllib/Utils.pm:253
-#, fuzzy
 msgid "%d hours"
 msgstr "%d timar"
 
 #: templates/web/default/admin/index.html:16
-#, fuzzy
 msgid "%d live updates"
 msgstr "%d aktive oppdateringar"
 
 #: perllib/Utils.pm:254
-#, fuzzy
 msgid "%d minute"
 msgstr "%d minutt"
 
 #: perllib/Utils.pm:254
-#, fuzzy
 msgid "%d minutes"
 msgstr "%d minutt"
 
 #: templates/web/default/admin/index.html:18
-#, fuzzy
 msgid "%d questionnaires sent &ndash; %d answered (%s%%)"
-msgstr "%d spørreskjema send &ndash; %d besvart (%s%%)"
+msgstr "%d spørreskjema sendt &ndash; %d svart (%s%%)"
 
 #: perllib/Utils.pm:251
-#, fuzzy
 msgid "%d week"
 msgstr "%d veke"
 
 #: perllib/Utils.pm:251
-#, fuzzy
 msgid "%d weeks"
 msgstr "%d veker"
 
 #: templates/web/default/reports/council.html
 #: templates/web/default/reports/council.html:14
-#, fuzzy
 msgid "%s - Summary reports"
-msgstr "%s - oppsummeringsrapporter"
+msgstr "%s – oppsummeringsrapportar"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:844
 #: perllib/FixMyStreet/Cobrand/Default.pm:858
-#, fuzzy
 msgid "%s ward, %s"
 msgstr "%s bydel, %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:466
-#, fuzzy
 msgid "%s, reported anonymously at %s"
 msgstr "%s, rapportert anonymt %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:468
-#, fuzzy
 msgid "%s, reported by %s at %s"
 msgstr "%s, rapportert av %s %s"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:875
 #: perllib/FixMyStreet/Cobrand/Default.pm:889
-#, fuzzy
 msgid "%s, within %s ward"
-msgstr "%s, innefor bydel %s"
+msgstr "%s, innanfor bydelen %s"
 
 #: templates/web/default/admin/stats.html:5
-#, fuzzy
 msgid "%sreports between %s and %s"
-msgstr "%srapporter mellom %s og %s"
+msgstr "%srapportar mellom %s og %s"
 
 #: templates/web/default/email_sent.html:28
-#, fuzzy
 msgid "(Don't worry &mdash; %s)"
-msgstr "(Ingen grunn til bekymring &mdash; %s)"
+msgstr "(Ingen grunn til å uroa seg &mdash; %s)"
 
 #: templates/web/default/admin/report_blocks.html:11
-#, fuzzy
 msgid "(Email in abuse table)"
 msgstr "(Epost i misbruktabellen)"
 
 #: templates/web/default/alert/list.html:53
-#, fuzzy
 msgid "(a default distance which covers roughly 200,000 people)"
-msgstr "(ein standardavstand som dekker ein folkesetnad på omtrent 200 000)"
+msgstr "(ein standardavstand som dekkjer ein folkesetnad på omtrent 200 000)"
 
 #: templates/web/default/alert/list.html:58
-#, fuzzy
 msgid "(alternatively the RSS feed can be customised, within"
 msgstr "(alternativt kan RSS-straumen tilpassast, innanfor"
 
 #: templates/web/default/around/around_map_list_items.html:10
 #: templates/web/default/around/on_map_list_items.html:7
-#, fuzzy
 msgid "(fixed)"
-msgstr "(laust)"
+msgstr "(løyst)"
 
 #: templates/web/default/index.html:12 templates/web/default/index.html:8
-#, fuzzy
 msgid "(like graffiti, fly tipping, broken paving slabs, or street lighting)"
 msgstr "(som tagging, søppel, hol i vegen, eller øydelagte gatelys)"
 
 #: templates/web/default/reports/council.html:133
-#, fuzzy
 msgid "(not sent to council)"
 msgstr "(ikkje rapportert til administrasjonen)"
 
 #: templates/web/default/report/new/fill_in_details_form.html:217
-#, fuzzy
 msgid "(optional)"
 msgstr "(valfritt)"
 
 #: templates/web/default/reports/council.html:131
-#, fuzzy
 msgid "(sent to both)"
-msgstr "(send til begge)"
+msgstr "(sendt til begge)"
 
 #: templates/web/default/report/new/fill_in_details_form.html:211
-#, fuzzy
 msgid "(we never show your email address or phone number)"
-msgstr "(vi viser aldri ea di-postadresse eller telefonnummer)"
+msgstr "(vi viser aldri e-postadressa di eller telefonnummeret ditt)"
 
 #: templates/web/default/report/display.html:217
-#, fuzzy
 msgid "(we never show your email)"
-msgstr "(vi viser aldri ea di-postadresse)"
+msgstr "(vi viser aldri e-postadressa di)"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:279
-#, fuzzy
 msgid "*unknown*"
 msgstr "*ukjent*"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:534
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:566
 #: perllib/FixMyStreet/DB/Result/Problem.pm:314
-#, fuzzy
 msgid "-- Pick a category --"
 msgstr "-- Vel ein kategori --"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:520
 #: perllib/FixMyStreet/DB/Result/Problem.pm:320
-#, fuzzy
 msgid "-- Pick a property type --"
-msgstr "-- Vel ein eiendomsstype --"
+msgstr "-- Vel ein eigedomstype --"
 
 #: templates/web/default/tokens/confirm_problem.html:14
 #: templates/web/default/tokens/confirm_problem.html:6
-#, fuzzy
 msgid ". You can <a href=\"%s\">view the problem on this site</a>."
-msgstr ". Du kan <a href=\"%s\">lesa om problemet på portalen </a>."
+msgstr ". Du kan <a href=\"%s\">lesa om problemet på portalen</a>."
 
 #: templates/web/default/footer.html:13 templates/web/reading/footer.html:16
-#, fuzzy
 msgid ""
 "<a href=\"http://www.mysociety.org/\"><img id=\"logo\" width=\"133\" "
 "height=\"26\" src=\"/i/mysociety-dark.png\" alt=\"View mySociety.org\"><span "
 "id=\"logoie\"></span></a>"
-msgstr ""
-"<div id=\"logo\" align=\"center\"><a href=\"http://www.nuug.no/\">Foreningen "
-"NUUG</a></div>"
+msgstr "<div id=\"logo\" align=\"center\"><a href=\"http://www.nuug.no/\">Foreininga NUUG</a></div>"
 
 #: templates/web/default/questionnaire/completed.html:25
-#, fuzzy
 msgid ""
 "<p style=\"font-size:150%\">Thank you very much for filling in our "
 "questionnaire; glad to hear it&rsquo;s been fixed.</p>"
-msgstr ""
-"<p style=\"font-size:150%\">Tusen takk for at du fylte ut vårt spørreskjema. "
-"Vi er glad for å høyra at problemet ditt er vorte fiksa.</p>"
+msgstr "<p style=\"font-size:150%\">Tusen takk for at du fylte ut spørreskjemaet vårt. Vi er glade for å høyra at problemet ditt er løyst.</p>"
 
 #: templates/web/default/questionnaire/completed.html:15
-#, fuzzy
 msgid ""
 "<p style=\"font-size:150%%\">We&rsquo;re sorry to hear that. We have two "
 "suggestions: why not try\n"
@@ -257,12 +211,9 @@ msgid ""
 "pledge</a>?\n"
 "</p>"
 msgstr ""
-"<p style=\"font-size:150%%\">Det var trist å høyra dette. Vi har to forslag: "
-"kva med å freista\n"
-"<a href=\"%s\">å skriva direkte til representantane dine</a>, eller viss det "
-"er eit problem som kan fiksast\n"
-"av folk i nabolaget som jobbar saman, kva med å <a href=\"http://www."
-"pledgebank.com/new\">publisera ei utfordring om å bidra</a>?</p>"
+"<p style=\"font-size:150%%\">Det var trist å høyra dette. Vi har to forslag: kva med å freista\n"
+"<a href=\"%s\">å skriva direkte til representantane dine</a>, eller viss det er eit problem som kan fiksast\n"
+"av folk i nabolaget som jobbar saman, kva med å <a href=\"http://www.pledgebank.com/new\">publisera ei utfordring om å bidra</a>?</p>"
 
 #: templates/web/default/questionnaire/index.html:37
 msgid ""
@@ -300,52 +251,42 @@ msgid ""
 msgstr ""
 
 #: templates/web/default/questionnaire/completed.html:9
-#, fuzzy
 msgid ""
 "<p>Thank you very much for filling in our questionnaire; if you\n"
 "get some more information about the status of your problem, please come back "
 "to the\n"
 "site and leave an update.</p>"
 msgstr ""
-"<p>Tusen takk for at du fylte ut vårt spørreskjema. Viss du\n"
-"får meir informasjon om status for problemet ditt, vêr så snill å kom "
-"tilbake hitåt\n"
-"nettstaden og legg igjen ei oppdatering.</p>"
+"<p>Tusen takk for at du fylte ut spørreskjemaet vårt. Viss du får meir\n"
+"informasjon om status for problemet ditt, ver så snill og kom tilbake\n"
+"til nettstaden og legg igjen ei oppdatering.</p>"
 
 #: templates/web/default/around/display_location.html:71
 #: templates/web/default/around/display_location.html:73
-#, fuzzy
 msgid ""
 "<small>If you cannot see the map, <a href='%s' rel='nofollow'>skip this "
 "step</a>.</small>"
-msgstr ""
-"<small>Viss du ikkje kan sjå kartet, <a href='%s' rel='nofollow'>hopp over "
-"dette steget</a>.</small>"
+msgstr "<small>Viss du ikkje kan sjå kartet, <a href='%s' rel='nofollow'>hopp over dette steget</a>.</small>"
 
 #: templates/web/default/admin/index.html:14
-#, fuzzy
 msgid "<strong>%d</strong> live problems"
 msgstr "<strong>%d</strong> aktive problem"
 
 #: templates/web/default/auth/general.html:55
-#, fuzzy
 msgid "<strong>No</strong>, I do not, let me sign in by email:"
 msgstr "<strong>Nei</strong>, det gjer eg ikkje. La meg logga inn med e-post:"
 
 #: templates/web/default/report/new/fill_in_details_form.html:162
-#, fuzzy
 msgid "<strong>No</strong>, let me confirm my report by email:"
 msgstr "<strong>Nei</strong>, la meg stadfesta rapporten min med e-post:"
 
 #: templates/web/default/report/display.html:170
-#, fuzzy
 msgid "<strong>No</strong>, let me confirm my update by email:"
 msgstr "<strong>Nei</strong>, la meg stadfesta oppdateringa mi med e-post:"
 
 #: templates/web/default/auth/general.html:37
 #: templates/web/default/report/display.html:148
 #: templates/web/default/report/new/fill_in_details_form.html:140
-#, fuzzy
 msgid "<strong>Yes</strong>, I have a password:"
 msgstr "<strong>Ja</strong>, eg har eit passord:"
 
@@ -354,34 +295,28 @@ msgstr "<strong>Ja</strong>, eg har eit passord:"
 #: templates/web/emptyhomes/header.html:31
 #: templates/web/emptyhomes/static/about.html:1
 #: templates/web/emptyhomes/static/about.html:3
-#, fuzzy
 msgid "About us"
 msgstr "Om oss"
 
 #: templates/web/default/admin/council_contacts.html:57
-#, fuzzy
 msgid "Add new category"
 msgstr "Legg til ny kategori"
 
 #: templates/web/default/my/my.html:56
-#, fuzzy
 msgid "Added %s"
 msgstr "La til %s"
 
 #: templates/web/default/auth/change_password.html:29
-#, fuzzy
 msgid "Again:"
 msgstr "Gjenta:"
 
 #: templates/web/default/admin/timeline.html:37
-#, fuzzy
 msgid "Alert %d created for %s, type %s, parameters %s / %s"
 msgstr "Varsel %d oppretta for %s, type %s, parameter %s / %s"
 
 #: templates/web/default/admin/timeline.html:39
-#, fuzzy
 msgid "Alert %d disabled (created %s)"
-msgstr "Varsel %d koblet ut (oppretta %s)"
+msgstr "Varsel %d kobla ut (oppretta %s)"
 
 #: templates/web/default/report/display.html:222
 #, fuzzy
@@ -613,7 +548,7 @@ msgstr "Konfigurasjon oppdatert:"
 #: perllib/FixMyStreet/App/Controller/Admin.pm:359
 #, fuzzy
 msgid "Configuration updated - contacts will be generated automatically later"
-msgstr "Konfigurasjon oppdatert - kontaktar vil genererast seinare"
+msgstr "Konfigurasjon oppdatert – kontaktar vil genererast seinare"
 
 #: templates/web/default/admin/council_contacts.html:119
 #, fuzzy
@@ -887,7 +822,7 @@ msgstr "Tom pub eller bar"
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:526
 #, fuzzy
 msgid "Empty public building - school, hospital, etc."
-msgstr "Tom offentleg bygning - skule, sykehos, etc."
+msgstr "Tom offentleg bygning – skule, sykehos, etc."
 
 #: templates/web/default/admin/stats.html:70
 #, fuzzy
@@ -1029,13 +964,13 @@ msgstr "Løyst"
 #: templates/web/default/admin/report_edit.html:25
 #, fuzzy
 msgid "Fixed - Council"
-msgstr "Løyst - Administrasjon"
+msgstr "Løyst – Administrasjon"
 
 #: templates/web/default/admin/report_edit.html:22
 #: templates/web/default/admin/report_edit.html:25
 #, fuzzy
 msgid "Fixed - User"
-msgstr "Løyst - Brukar"
+msgstr "Løyst – Brukar"
 
 #: templates/web/default/my/my.html:27
 #, fuzzy
@@ -1962,7 +1897,7 @@ msgid ""
 "wish your name to be shown on the site, untick the box"
 msgstr ""
 "Legg inn det fulle namnet ditt, administrasjonar som mottek problemet ditt "
-"treng dette - viss du ikkje ynskjer at namnet ditt skal visast, fjerne haka "
+"treng dette – viss du ikkje ynskjer at namnet ditt skal visast, fjerne haka "
 "under"
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:95
@@ -2528,7 +2463,7 @@ msgid ""
 "or enter your email address to subscribe to an email alert."
 msgstr ""
 "Vel kva for ein type varsel du ynskjer og klikk på knappen for ein RSS-"
-"kjelde, eller skriv inn ea di-postadresse for å abonnera på ei e-postvarsel."
+"kjelde, eller skriv inn e-postadressa di for å abonnera på ei e-postvarsel."
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:555
 #, fuzzy
@@ -2862,7 +2797,7 @@ msgid ""
 "offshore - please try somewhere more specific."
 msgstr ""
 "Den staden vert ikkje dekt av nokon administrasjon, kanskje det er til hav "
-"sitt - vennligst forsøk eit meir spesifikt stad."
+"sitt – vennligst forsøk eit meir spesifikt stad."
 
 #: perllib/FixMyStreet/App/Controller/Location.pm:107
 #, fuzzy
@@ -3732,20 +3667,18 @@ msgstr "Rapportane dine"
 #: templates/web/default/auth/general.html:27
 #, fuzzy
 msgid "Your email address:"
-msgstr "Ea di-postadresse:"
+msgstr "e-postadressa di:"
 
 #: templates/web/default/alert/list.html:122
 #: templates/web/default/report/display.html:134
 #: templates/web/default/report/new/fill_in_details_form.html:124
-#, fuzzy
 msgid "Your email:"
-msgstr "Ea di-post"
+msgstr "E-posten din"
 
 #: templates/web/default/auth/general.html:59
 #: templates/web/default/contact/index.html:68
 #: templates/web/default/report/display.html:210
 #: templates/web/default/report/new/fill_in_details_form.html:203
-#, fuzzy
 msgid "Your name:"
 msgstr "Namnet ditt:"
 
@@ -3862,7 +3795,7 @@ msgstr "brukte kart"
 #: templates/web/default/admin/update_edit.html:26
 #, fuzzy
 msgid "user is from same council as problem - %d"
-msgstr "nytter er frå same administrasjon som problemet - %d"
+msgstr "nytter er frå same administrasjon som problemet – %d"
 
 #: templates/web/default/admin/update_edit.html:29
 #, fuzzy
