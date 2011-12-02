@@ -43,6 +43,11 @@
 [% IF problem.photo %]
 [% photo = problem.get_photo_params %]
 <li><img alt="" height="[% photo.height %]" width="[% photo.width %]" src="[% c.cobrand.base_url %][% photo.url %]">
+<br>
+[% IF rotated %]Photo may be cached. View image directly to check<br>[% END %]
+<input type="submit" name="rotate_photo" value="Rotate Left" />
+<input type="submit" name="rotate_photo" value="Rotate Right" />
+<br>
 <input type="checkbox" id="remove_photo" name="remove_photo" value="1">
 <label for="remove_photo">[% loc("Remove photo (can't be undone!)") %]</label></li>
 [% END %]

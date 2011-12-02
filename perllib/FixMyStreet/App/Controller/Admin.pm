@@ -572,6 +572,9 @@ sub report_edit : Path('report_edit') : Args(1) {
     elsif ( $c->req->param('banuser') ) {
         $c->forward('ban_user');
     }
+    elsif ( $c->req->param('rotate_photo') ) {
+        $c->forward('rotate_photo');
+    }
     elsif ( $c->req->param('submit') ) {
         $c->forward('check_token');
 
@@ -1161,6 +1164,31 @@ sub check_email_for_abuse : Private {
     return 1;
 }
 
+=head2 rotate_photo
+
+Rotate a photo 90 degrees left or right
+
+=cut
+
+sub rotate_photo : Private {
+    my ( $self, $c ) =@_;
+
+    my $direction = $c->req->param('rotate_photo');
+
+    return unless $direction =~ /Left/ or $direction =~ /Right/;
+
+    my $photo = _rotate_image( $c->stash->{problem}->photo, $direction =~ /Left/ ? -90 : 90 );
+
+    if ( $photo ) {
+        $c->stash->{rotated} = 1;
+        $c->stash->{problem}->photo( $photo );
+        $c->stash->{problem}->update();
+    }
+
+    return 1;
+}
+
+
 =head2 check_page_allowed
 
 Checks if the current catalyst action is in the list of allowed pages and
@@ -1206,6 +1234,19 @@ sub trim {
     $e =~ s/\s+$//;
     return $e;
 }
+
+sub _rotate_image {
+    my ($photo, $direction) = @_;
+    use Image::Magick;
+    my $image = Image::Magick->new;
+    $image->BlobToImage($photo);
+    my $err = $image->Rotate($direction);
+    return 0 if $err;
+    my @blobs = $image->ImageToBlob();
+    undef $image;
+    return $blobs[0];
+}
+
 
 =head1 AUTHOR
 
