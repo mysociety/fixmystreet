@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2011-10-21 15:56+0100\n"
-"PO-Revision-Date: 2011-12-02 19:33+0100\n"
+"PO-Revision-Date: 2011-12-03 17:12+0100\n"
 "Last-Translator: Anders Einar Hilden <hildenae@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -954,42 +954,34 @@ msgstr "Her er dei ulike typane lokale problemvarsel for &laquo;%s&raquo;."
 #: templates/web/default/admin/report_edit.html:22
 #: templates/web/default/admin/report_edit.html:25
 #: templates/web/default/admin/update_edit.html:19
-#, fuzzy
 msgid "Hidden"
-msgstr "Skjul"
+msgstr "Skjult"
 
 #: templates/web/default/around/display_location.html:54
-#, fuzzy
 msgid "Hide pins"
 msgstr "Skjul nåler"
 
 #: templates/web/default/around/display_location.html:59
-#, fuzzy
 msgid "Hide stale reports"
 msgstr "Skjul utdaterte rapportar"
 
 #: templates/web/default/admin/council_edit.html:38
-#, fuzzy
 msgid "History"
 msgstr "Historie"
 
 #: templates/web/default/index.html:40
-#, fuzzy
 msgid "How to report a problem"
 msgstr "Korleis rapportera eit problem"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:587
-#, fuzzy
 msgid "I am afraid you cannot confirm unconfirmed reports."
-msgstr "Eg er redd du ikkje kan stadfesta ubekreftede rapportar."
+msgstr "Eg er redd du ikkje kan stadfesta ustadfesta rapportar."
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:89
-#, fuzzy
 msgid "I'm afraid we couldn't locate your problem in the database.\n"
 msgstr "Eg er redd vi ikkje klarte å finna problemet ditt i databasen.\n"
 
 #: perllib/FixMyStreet/App/Controller/Tokens.pm:43
-#, fuzzy
 msgid ""
 "I'm afraid we couldn't validate that token, as the report was made too long "
 "ago."
@@ -998,130 +990,97 @@ msgstr ""
 "sidan rapporten vart laga."
 
 #: perllib/FixMyStreet/App/Controller/Tokens.pm:233
-#, fuzzy
 msgid ""
 "I'm afraid we couldn't validate that token. If you've copied the URL from an "
 "email, please check that you copied it exactly.\n"
-msgstr ""
-"Eg er redd vi ikkje kunne verifisera den referansen. Viss du kopierte "
-"webadressen frå ei e-post, sjekk at du har kopiert den korrekt.\n"
+msgstr "Eg er redd vi ikkje kunne verifisera den referansen. Viss du kopierte nettadressa frå ein e-post, sjekk at du har kopiert ho korrekt.\n"
 
 #: templates/web/default/admin/list_flagged.html:9
 #: templates/web/default/admin/list_updates.html:5
 #: templates/web/default/admin/search_reports.html:12
-#, fuzzy
 msgid "ID"
 msgstr "ID"
 
 #: templates/web/default/report/new/councils_text_none.html:11
 #: templates/web/default/report/new/councils_text_none.html:12
-#, fuzzy
 msgid ""
 "If you submit a problem here the subject and details of the problem will be "
 "public, but the problem will <strong>not</strong> be reported to the council."
-msgstr ""
-"Viss du sender inn eit problem hit, så vil emna og detaljar for problemet "
-"vera offentleg, men problemet vil <strong>ikkje</strong> rapporterast til "
-"administrasjonen."
+msgstr "Viss du sender inn eit problem hit, så vil emnet og detaljar for problemet vera offentlege, men problemet vil <strong>ikkje</strong> rapporterast til administrasjonen."
 
 #: templates/web/emptyhomes/report/new/no_councils_text.html:9
-#, fuzzy
 msgid ""
 "If you submit a report here it will be left on the site, but not reported to "
 "the council &ndash; please still leave your report, so that we can show to "
 "the council the activity in their area."
-msgstr ""
-"Viss du sender inn ein rapport her så vil han verta tilgjengeleg her men "
-"ikkje rapportert til administrasjonen. &ndash; det er fint om du likevel "
-"sender inn rapporten din, slik at vi kan visa administrasjonen aktiviteten i "
-"området dykkar."
+msgstr "Viss du sender inn ein rapport her så vil han verta tilgjengeleg her, men ikkje rapporterast til administrasjonen. &mdash; det er fint om du likevel sender inn rapporten din, slik at vi kan visa administrasjonen aktiviteten i området ditt."
 
 #: templates/web/default/auth/token.html:23
 #: templates/web/default/email_sent.html:24
-#, fuzzy
 msgid ""
 "If you use web-based email or have 'junk mail' filters, you may wish to "
 "check your bulk/spam mail folders: sometimes, our messages are marked that "
 "way."
-msgstr ""
-"Viss du brukar web-basert e-post eller har filter for søppel-e-post på ea di-"
-"postkonto, kan du i nokon tilfellet måtta sjå etter meldingane våre der."
+msgstr "Viss du brukar vevbasert e-post eller har filter for søppel-e-post på e-postkontoen din, kan du i visse tilfelle måtta sjå etter meldingane våre der."
 
 #: templates/web/default/questionnaire/index.html:85
-#, fuzzy
 msgid ""
 "If you wish to leave a public update on the problem, please enter it here\n"
 "(please note it will not be sent to the council). For example, what was\n"
 "your experience of getting the problem fixed?"
 msgstr ""
-"Viss du ynskjer å leggja til ein offentleg kommentar på problemet, legg "
-"henne til her\n"
+"Viss du ynskjer å leggja til ein offentleg kommentar på problemet, legg han til her\n"
 "(denne vert ikkje send til administrasjonen). Du kan til dømes\n"
 "dela røynsla di med korleis problemet ditt vart løyst."
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:111
-#, fuzzy
 msgid "Illegal ID"
 msgstr "Ugyldig ID"
 
 #: perllib/FixMyStreet/App/Controller/Alert.pm:102
-#, fuzzy
 msgid "Illegal feed selection"
-msgstr "Ugyldig val av feed"
+msgstr "Ugyldig val av straum"
 
 #: templates/web/default/admin/report_edit.html:22
 #: templates/web/default/admin/report_edit.html:24
 #: templates/web/default/report/display.html:85
 #: templates/web/default/report/display.html:87
-#, fuzzy
 msgid "In Progress"
 msgstr "Under arbeid"
 
 #: templates/web/default/open311/index.html:21
-#, fuzzy
 msgid ""
 "In addition, the following attributes that are not part of the Open311 v2 "
 "specification are returned: agency_sent_datetime, title (also returned as "
 "part of description), interface_used, comment_count, requestor_name (only "
 "present if requestor allowed the name to be shown on this site)."
-msgstr ""
-"I tillegg er følgjande attributt som ikkje er del av Open311 v2-"
-"spesifikasjonen returnert: agency_seint_datetime, title (òg returnert som "
-"del av description), interface_used, comment_count, requestor_name (berre "
-"tilstades viss innsender tillét at namnet kunne visast på denne nettstaden)."
+msgstr "I tillegg er følgjande attributt som ikkje er del av Open311 v2-spesifikasjonen returnert: agency_sent_datetime, title (òg returnert som del av description), interface_used, comment_count, requestor_name (berre tilstades viss innsendar tillét at namnet kunne visast på denne nettstaden)."
 
 #: templates/web/default/around/display_location.html:61
-#, fuzzy
 msgid "Include stale reports"
 msgstr "Inkluder utdaterte problem"
 
 #: templates/web/default/admin/stats.html:76
-#, fuzzy
 msgid "Include unconfirmed reports"
-msgstr "Inkluder ubekreftede problem"
+msgstr "Inkluder ikkje-stadfesta problem"
 
 #: perllib/FixMyStreet/App/Controller/Open311.pm:358
-#, fuzzy
 msgid "Incorrect has_photo value \"%s\""
-msgstr "Feil vert hatt_photo-verd \"%s\""
+msgstr "Feil has_photo-verdi «%s»"
 
 #: perllib/FixMyStreet/App/Controller/Open311.pm:343
-#, fuzzy
 msgid "Invalid agency_responsible value %s"
-msgstr "Ugyldig agency_responsible-verd %s"
+msgstr "Ugyldig agency_responsible-verdi %s"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:897
-#, fuzzy
 msgid "Invalid end date"
 msgstr "Ugyldig slutt-dato"
 
 #: perllib/FixMyStreet/App/Controller/Open311.pm:426
-#, fuzzy
 msgid "Invalid format %s specified."
 msgstr "Ugyldig format %s oppgjeve."
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:887
-#, fuzzy
 msgid "Invalid start date"
 msgstr "Ugyldig startdato"
 
@@ -1129,9 +1088,8 @@ msgstr "Ugyldig startdato"
 #: templates/web/default/admin/report_edit.html:23
 #: templates/web/default/report/display.html:85
 #: templates/web/default/report/display.html:86
-#, fuzzy
 msgid "Investigating"
-msgstr "Undersøkjast"
+msgstr "Undersøkjer"
 
 #: templates/web/emptyhomes/tokens/confirm_problem.html:12
 #: templates/web/emptyhomes/tokens/confirm_problem.html:14
@@ -1149,39 +1107,32 @@ msgstr ""
 #: templates/web/default/auth/general.html:44
 #: templates/web/default/report/display.html:157
 #: templates/web/default/report/new/fill_in_details_form.html:149
-#, fuzzy
 msgid "Keep me signed in on this computer"
-msgstr "Hugs min innlogging på denne datamaskina"
+msgstr "Hugs mi innlogging på denne datamaskina"
 
 #: templates/web/default/admin/council_contacts.html:30
-#, fuzzy
 msgid "Last editor"
 msgstr "Sist redigert av"
 
 #: templates/web/default/admin/report_edit.html:36
-#, fuzzy
 msgid "Last update:"
 msgstr "Siste oppdatering:"
 
 #: templates/web/default/admin/problem_row.html:26
-#, fuzzy
 msgid "Last&nbsp;update:"
-msgstr "Siste oppdatering:"
+msgstr "Siste&nbsp;oppdatering:"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:983
-#, fuzzy
 msgid "List Flagged"
-msgstr "List flagget"
+msgstr "Vis flagga"
 
 #: templates/web/default/admin/council_contacts.html:11
-#, fuzzy
 msgid "List all reported problems"
-msgstr "List alle rapporterte problem"
+msgstr "Vis alle rapporterte problem"
 
 #: templates/web/default/report/new/fill_in_details_form.html:68
-#, fuzzy
 msgid "Loading..."
-msgstr "Lastar..."
+msgstr "Lastar …"
 
 #: templates/web/default/alert/choose.html:1
 #: templates/web/default/alert/choose.html:3
@@ -1192,7 +1143,6 @@ msgstr "Lastar..."
 #: templates/web/default/alert/updates.html:1
 #: templates/web/default/tokens/confirm_alert.html:1
 #: templates/web/default/tokens/confirm_alert.html:3
-#, fuzzy
 msgid "Local RSS feeds and email alerts"
 msgstr "Lokal RSS-straum og e-postvarsel"
 
@@ -1200,23 +1150,19 @@ msgstr "Lokal RSS-straum og e-postvarsel"
 #: templates/web/default/alert/list.html:12
 #: templates/web/default/alert/list.html:14
 #: templates/web/default/alert/list.html:3
-#, fuzzy
 msgid "Local RSS feeds and email alerts for ‘%s’"
-msgstr "Lokal RSS-straum og e-postvarsel for ‘%s’"
+msgstr "Lokal RSS-straum og e-postvarsel for «%s»"
 
 #: templates/web/default/footer.html:9 templates/web/emptyhomes/header.html:29
 #: templates/web/fiksgatami/footer.html:8 templates/web/reading/footer.html:9
-#, fuzzy
 msgid "Local alerts"
-msgstr "Lokale varslar"
+msgstr "Lokale varsel"
 
 #: templates/web/default/index.html:44
-#, fuzzy
 msgid "Locate the problem on a map of the area"
 msgstr "Lokaliser problemet på kartet over området"
 
 #: perllib/FixMyStreet/Map/OSM.pm:43
-#, fuzzy
 msgid ""
 "Map &copy; <a id=\"osm_link\" href=\"http://www.openstreetmap.org/"
 "\">OpenStreetMap</a> and contributors, <a href=\"http://creativecommons.org/"
@@ -1227,22 +1173,18 @@ msgstr ""
 "licenses/by-sa/2.0/\">CC-BY-SA</a>"
 
 #: templates/web/default/contact/index.html:90
-#, fuzzy
 msgid "Message:"
 msgstr "Melding:"
 
 #: perllib/FixMyStreet/App/Controller/Open311.pm:434
-#, fuzzy
 msgid "Missing jurisdiction_id"
 msgstr "Manglar jurisdiction_id"
 
 #: templates/web/default/admin/stats.html:11
-#, fuzzy
 msgid "Month"
 msgstr "Månad"
 
 #: templates/web/default/report/display.html:31
-#, fuzzy
 msgid "More problems nearby"
 msgstr "Fleire problem i nærleiken"
 
@@ -1254,68 +1196,52 @@ msgstr "Fleire problem i nærleiken"
 #: templates/web/default/reports/index.html:10
 #: templates/web/emptyhomes/reports/index.html:10
 #: templates/web/fiksgatami/reports/index.html:9
-#, fuzzy
 msgid "Name"
 msgstr "Namn"
 
 #: templates/web/default/admin/report_edit.html:30
 #: templates/web/default/admin/update_edit.html:23
 #: templates/web/default/admin/user_edit.html:10
-#, fuzzy
 msgid "Name:"
 msgstr "Namn:"
 
 #: templates/web/default/footer.html:4 templates/web/fiksgatami/footer.html:3
 #: templates/web/reading/footer.html:4
-#, fuzzy
 msgid "Navigation"
 msgstr "Navigasjon"
 
 #: perllib/FixMyStreet/Geocode/OSM.pm:100
-#, fuzzy
 msgid ""
 "Nearest named road to the pin placed on the map (automatically generated "
 "using OpenStreetMap): %s%s"
-msgstr ""
-"Næraste navngitte veg til nålen plassert på karta (automatisk generert ved "
-"hjelp av OpenStreetMap): %s%s"
+msgstr "Næraste namngjevne veg til nålen plassert på kartet (automatisk generert ved hjelp av OpenStreetMap): %s%s"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:564
-#, fuzzy
 msgid ""
 "Nearest postcode to the pin placed on the map (automatically generated): %s ("
 "%sm away)"
-msgstr ""
-"Næraste postnummer til nålen plassert på karta (automatisk generert): %s ("
-"%sm unna)"
+msgstr "Næraste postnummer til nålen plassert på kartet (automatisk generert): %s (%sm unna)"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:553
 #: perllib/FixMyStreet/Cobrand/Default.pm:588
-#, fuzzy
 msgid ""
 "Nearest road to the pin placed on the map (automatically generated by Bing "
 "Maps): %s"
-msgstr ""
-"Næraste veg til nålen plassert på karta (automatisk generert ved hjelp av "
-"Bing Maps): %s"
+msgstr "Næraste veg til nålen plassert på karta (automatisk generert ved hjelp av Bing Maps): %s"
 
 #: templates/web/default/email_sent.html:20
-#, fuzzy
 msgid "Nearly Done! Now check your email..."
-msgstr "Nesten ferdig! No må du sjekka e-posten din..."
+msgstr "Nesten ferdig! No må du sjekka e-posten din …"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:309
-#, fuzzy
 msgid "New category contact added"
 msgstr "Ny kategorikontakt lagt til"
 
 #: db/alert_types.pl:18 db/alert_types.pl:22
-#, fuzzy
 msgid "New local problems on FixMyStreet"
 msgstr "Nye lokale problem på FiksGataMi"
 
 #: db/alert_types_eha.pl:12
-#, fuzzy
 msgid "New local reports on reportemptyhomes.com"
 msgstr "Nye lokale rapportar på reportemptyhomes.com"
 
@@ -1324,70 +1250,57 @@ msgstr "Nye lokale rapportar på reportemptyhomes.com"
 #: templates/web/default/reports/index.html:11
 #: templates/web/emptyhomes/reports/index.html:11
 #: templates/web/fiksgatami/reports/index.html:10
-#, fuzzy
 msgid "New problems"
 msgstr "Nye problem"
 
 #: db/alert_types.pl:38
-#, fuzzy
 msgid "New problems for {{COUNCIL}} within {{WARD}} ward on FixMyStreet"
 msgstr "Nye problem for {{COUNCIL}} innanfor {{WARD}} bydel på FiksGataMi"
 
 #: db/alert_types.pl:26 db/alert_types.pl:30
-#, fuzzy
 msgid "New problems near {{POSTCODE}} on FixMyStreet"
 msgstr "Nye problem nær postnummer {{POSTCODE}} på FiksGataMi"
 
 #: db/alert_types.pl:10
-#, fuzzy
 msgid "New problems on FixMyStreet"
 msgstr "Nye problem på Fiksgatami"
 
 #: db/alert_types.pl:34
-#, fuzzy
 msgid "New problems to {{COUNCIL}} on FixMyStreet"
 msgstr "Nye problem i {{COUNCIL}} på FiksGataMi"
 
 #: db/alert_types.pl:42
-#, fuzzy
 msgid "New problems within {{NAME}}'s boundary on FixMyStreet"
 msgstr "Nye rapportar innanfor grensa til {{NAME}} på FiksGataMi"
 
 #: db/alert_types_eha.pl:23
-#, fuzzy
 msgid ""
 "New reports for {{COUNCIL}} within {{WARD}} ward on reportemptyhomes.com"
 msgstr ""
 "Nye rapportar for {{COUNCIL}} innanfor {{WARD}} bydel på reportemptyhomes.com"
 
 #: db/alert_types_eha.pl:5
-#, fuzzy
 msgid "New reports on reportemptyhomes.com"
 msgstr "Nye rapportar på reportemptyhomes.com"
 
 #: db/alert_types_eha.pl:16
-#, fuzzy
 msgid "New reports on reportemptyhomes.com near {{POSTCODE}}"
 msgstr "Nye rapportar på reportemptyhomes.com nær postnummer {{POSTCODE}}"
 
 #: db/alert_types_eha.pl:19
-#, fuzzy
 msgid "New reports to {{COUNCIL}} on reportemptyhomes.com"
 msgstr "Nye rapportar til {{COUNCIL}} på reportemptyhomes.com"
 
 #: db/alert_types_eha.pl:27
-#, fuzzy
 msgid "New reports within {{NAME}}'s boundary on reportemptyhomes.com"
 msgstr "Nye rapportar innanfor grensa til {{NAME}} på reportemptyhomes.com"
 
 #: templates/web/default/admin/questionnaire.html:24
-#, fuzzy
 msgid "New state"
 msgstr "Ny tilstand"
 
 #: templates/web/default/front/news.html:8
 #: templates/web/fiksgatami/front/news.html:9
-#, fuzzy
 msgid "New!"
 msgstr "Ny!"
 
@@ -1404,70 +1317,57 @@ msgstr "Ny!"
 #: templates/web/default/questionnaire/creator_fixed.html:16
 #: templates/web/default/questionnaire/index.html:109
 #: templates/web/default/questionnaire/index.html:70
-#, fuzzy
 msgid "No"
 msgstr "Nei"
 
 #: templates/web/default/admin/stats.html:85
 #: templates/web/default/admin/user_edit.html:13
-#, fuzzy
 msgid "No council"
 msgstr "Ingen administrasjon"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:297
-#, fuzzy
 msgid "No council selected"
 msgstr "Ingen administrasjon er vald"
 
 #: templates/web/default/admin/council_list.html:32
-#, fuzzy
 msgid "No edits have yet been made."
-msgstr "Ikkje noko endringar har vorte gjord."
+msgstr "Ingen endringar er gjort."
 
 #: templates/web/default/admin/list_flagged.html:26
-#, fuzzy
 msgid "No flagged problems found"
-msgstr "Ingen flagga problem vart funne"
+msgstr "Fann ingen flagga problem"
 
 #: templates/web/default/admin/list_flagged.html:47
-#, fuzzy
 msgid "No flagged users found"
-msgstr "Ingen flagga brukarar vart funne"
+msgstr "Fann ingen flagga brukarar"
 
 #: templates/web/default/admin/council_list.html:38
-#, fuzzy
 msgid "No info at all"
 msgstr "Heilt utan informasjon"
 
 #: templates/web/default/around/around_map_list_items.html:15
-#, fuzzy
 msgid "No problems found."
-msgstr "Ingen problem vart funne."
+msgstr "Fann ingen problem."
 
 #: templates/web/default/around/on_map_list_items.html:12
-#, fuzzy
 msgid "No problems have been reported yet."
 msgstr "Ingen problem er rapporterte"
 
 #: templates/web/default/admin/council_list.html:5
 #: templates/web/default/admin/report_edit.html:16
-#, fuzzy
 msgid "None"
 msgstr "Ingen"
 
 #: templates/web/default/admin/questionnaire.html:6
-#, fuzzy
 msgid "Not reported before"
 msgstr "Ikkje rapportert tidlegare"
 
 #: templates/web/default/report/_main.html:9
-#, fuzzy
 msgid "Not reported to council"
 msgstr "Ikkje rapportert til administrasjonen"
 
 #: templates/web/default/admin/council_contacts.html:31
 #: templates/web/default/admin/council_edit.html:46
-#, fuzzy
 msgid "Note"
 msgstr "Merk"
 
