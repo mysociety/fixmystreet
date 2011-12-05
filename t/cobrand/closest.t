@@ -59,6 +59,7 @@ ok !$report->geocode, 'no gecode entry for report';
 my $near = $c->find_closest( $report->latitude, $report->longitude, $report );
 
 ok $report->geocode, 'geocode entry added to report';
+ok $report->geocode->{resourceSets}, 'geocode entry looks like right sort of thing';
 
 like $near, qr/Constitution Hill/i, 'nearest street looks right';
 like $near, qr/Nearest postcode .*: SW1A 1AA/i, 'nearest postcode looks right';
