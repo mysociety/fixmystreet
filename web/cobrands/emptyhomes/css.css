@@ -223,3 +223,14 @@ a:hover, a:active {
     margin-bottom: 1em;
 }
 
+.video {
+    float: right;
+    margin-left: 35px;
+}
+
+.channel4 {
+    font-size: 125%;
+}
+.channel4 > li:first-child + li {
+    margin-bottom: 1em;
+}
