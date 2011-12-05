@@ -64,6 +64,7 @@ sub all_councils_report {
 
 sub disambiguate_location {
     return {
+        town   => 'Southampton',
         centre => '50.913822,-1.400493',
         span   => '0.084628,0.15701',
         bounds => [ '50.871508,-1.478998', '50.956136,-1.321988' ],

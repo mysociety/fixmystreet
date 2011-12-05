@@ -18,18 +18,18 @@
         [%- ", " _ tprintf(loc( 'marked as %s' ), update.meta_problem_state) IF update.problem_state %]
         </em></p>
 
-    [% IF c.cobrand.allow_update_reporting %]
-        <p>
-            <a rel="nofollow" class="unsuitable-problem" href="[% c.uri_for( '/contact?id=' _ update.problem_id _ ';update_id' _ update.id ) %]">[% loc('Offensive? Unsuitable? Tell us') %]</a>
-        </p>
-    [% END %]
-
     </div>
 
     <div class="update-text">
         [% add_links( update.text ) | html_para %]
 
         [% INCLUDE 'report/photo.html' object=update %]
+
+        [% IF c.cobrand.allow_update_reporting %]
+        <p align="right">
+            <small><a rel="nofollow" class="unsuitable-problem" href="[% c.uri_for( '/contact', { id => update.problem_id, update_id => update.id } ) %]">[% loc('Offensive? Unsuitable? Tell us') %]</a></small>
+        </p>
+        [% END %]
     </div>
     </div>
 [% '</div>' IF loop.last %]
