@@ -13,10 +13,13 @@ my $reports = FixMyStreet::App->model('DB::Problem')->search(
     {
         geocode   => undef,
         confirmed => { '!=', undef },
-        latitude => { '!=', 0 },
+        latitude  => { '!=', 0 },
         longitude => { '!=', 0 },
     },
-    { select => [qw/id geocode confirmed latitude longitude/] }
+    {
+        select   => [qw/id geocode confirmed latitude longitude/],
+        order_by => { -desc => 'confirmed' }
+    }
 );
 
 my $num_reports = $reports->count();
@@ -24,14 +27,17 @@ print "Found $num_reports lacking geocode information\n";
 
 my $time_to_do = ( $num_reports * 10 ) / 60 / 60;
 if ( $time_to_do > 24 ) {
-    my $days = $time_to_do / 24;
+    my $days  = $time_to_do / 24;
     my $hours = $time_to_do % 24;
     printf( "Should take %d days and %d hours to finish\n", $days, $hours );
-} elsif ( $time_to_do < 1 ) {
+}
+elsif ( $time_to_do < 1 ) {
     printf( "Should take %d minutes to finish\n", $time_to_do * 60 );
-} else {
+}
+else {
     my $mins = ( $num_reports * 10 ) / 60 % 60;
-    printf( "Should take %d hours and %d minutes to finish\n", $time_to_do, $mins );
+    printf( "Should take %d hours and %d minutes to finish\n",
+        $time_to_do, $mins );
 }
 
 while ( my $report = $reports->next ) {
