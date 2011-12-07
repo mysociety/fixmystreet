@@ -1,19 +1,228 @@
-
 =head1 NAME
 
 FixMyStreet
 
-=head1 DESCRIPTION
+=head1 ABOUT
 
 FixMyStreet is a project that allows anyone to report an issue such as potholes,
 broken street lights, severe littering, water leaks. These issues are then
-routed to the correct body who can arrange to have them fixed.
+routed to the correct body who can arrange to have them fixed. By default it
+supports routing problems via email or using an Open311 WebService.
 
-=head1 INSTALLING
+It's written in Perl and uses the Catalyst web framework.
 
-Installing from scratch can be a bit daunting but is fully documented in the
-notes/INSTALL file.
+=head1 QUICKSTART
 
-We are hoping to make it much easier for you to try the code by letting you
-start a fully installed system with test data pre-loaded on Amazon's servers.
-More details will follow soon.
+=over
+
+=item *
+
+Install PostgreSQL and the PostGIS extension
+
+=item *
+
+Create a new PostGIS enabled database
+
+=item *
+
+Download latest version from [THIS BIT TODO]
+
+=item *
+
+Untar this in the vhost location [TODO - more detail here]
+
+=item *
+
+Run db/schema.sql and the db/alert_types.sql
+
+=item *
+
+Run ./bin/cron-wrapper ./perl-external/bin/module-manage.pl setup
+
+=item *
+
+Create a new Apache vhost based on conf/httpd-conf.example
+
+=item *
+
+Copy conf/general-example to conf/general and update accordingly [FIXME!]
+
+=item *
+
+Restart apache
+
+=back
+
+=head1 DOWNLOADING
+
+Download from [URL GOES HERE]
+
+or get the latest version from github: http://github.com/mysociety/fixmystreet
+
+=head1 REQUIREMENTS
+
+On the server you are installing FixMyStreet on you will need the following things:
+
+=over
+
+=item *
+
+PostgreSQL and the PostGis extension
+
+=item *
+
+Perl 5.8+
+
+=item *
+
+ImageMagick and the perl bindings
+
+=item *
+
+A webserver that supports FastCGI
+
+=back
+
+For most uses of FixMyStreet you'll also need access to a MaPit server with
+data for the types of bodies you are reporting issues to. For more details on
+how to install MaPit see [TODO: MaPit URL GOES HERE]
+
+=head1 DETAILED INSTALLATION INSTRUCTIONS
+
+=head2 Creating the database
+
+Notes about PostGIS templates go here
+
+=head2 Unpacking the Code
+
+Create directory for vhost, unpack there. 
+
+=head2 Set up the database
+
+Run db/schema.sql and the db/alert_types.sql
+
+=head2 Install Perl modules
+
+There are many CPAN dependencies that should be dealt with using
+module-manage.pl which takes care of fetching specific versions of packages
+from CPAN and building them. To install all the CPAN packages needed:
+
+    eval `./setenv.pl`
+    module-manage.pl setup
+
+Look in the perl-external directory for details. Notably the following are important:
+
+=over
+
+=item urls.txt
+
+url to the specific packages to fetch
+
+=item modules.txt
+
+list of all modules that need to be built
+
+=item minicpan/
+
+local subset of cpan - used as source for all packages
+
+=item local-lib
+
+where the cpan modules get built to
+
+=item lib
+
+some initial modules needed for bootstrap
+
+=item bin
+
+scripts to make it all work
+
+
+=back
+
+Read the perl-external/bin/module-manage.pl code to see how it all works. It is
+basically a wrapper around cpanm (which builds the packages) and dpan (which
+helps maintain the fake cpan subset).
+
+If you need to add a module do it using:
+
+    module-manage.pl add Module::To::Add
+
+and it will update all the relevant bits.
+
+=head2 Set up Webserver
+
+It is recommended that you run FixMyStreet using FastCGI. It should also be
+possible to run it using Plack/PSGI.
+
+There is an example Apache vhost configuration file on conf/httpd.conf-example
+which you can copy and update the paths in if you are running FixMyStreet under
+FastCGI.
+
+=head1 SETTINGS
+
+The settings for FixMyStreet are in conf/general which is actually a PHP file.
+There are some defaults in conf/general-example which you should copy to
+conf/general.
+
+The bare minimum of settings you will need to fill in or update are:
+
+=over
+
+=item OPTION_BCI_DB_PASS
+
+This is the password for the database.
+
+=item OPTION_BASE_URL
+
+The URL for the homepage of your FixMyStreet install.
+
+=item OPTION_EMAIL_DOMAIN
+
+The email domain that emails will be sent from
+
+=item OPTION_CONTACT_EMAIL
+
+The email address to be used on the site for the contact us form.
+
+=item OPTION_STAGING_SITE
+
+If this is 1 then all email ( alerts and reports ) will be sent to the
+contact email address. Use this for development sites.
+
+=item OPTION_UPLOAD_CACHE
+
+This is the location where imaged will be stored as they are being uploaded.
+It should be accessible by and writeable by the FixMyStreet process.
+
+=item OPTION_GEO_CACHE
+
+This is the location where Geolocation data will be cached.
+It should be accessible by and writeable by the FixMyStreet process.
+
+If you are using Bing or Google maps you should also set one of
+OPTION_BING_MAPS_API_KEY or OPTION_GOOGLE_MAPS_API_KEY.
+
+If you are using a MaPit install you should update OPTION_MAPIT_URL.
+
+=head1 COMMON PROBLEMS
+
+=head2 CPAN MODULE PROBLEMS
+
+Currently, you probably need to add EncodedColumn manually:
+
+    module-manage.pl add DBIx::Class::EncodedColumn
+
+...because it's explicitly overridden in the code, which is fooling the installer.
+
+If a module won't build (Test::WWW::Mechanize and HTTP::Server::Simple fail
+tests for me but the failures are not pertinent) then the module-manage script
+will bail out. Look in ~/.cpanm/build_log to see what went wrong. You can force
+an install if the test failures are not important by running cpanm directly:
+
+    cpanm                                                   \
+        --mirror /absolute/path/to/perl-external/minicpan   \
+        --mirror-only                                       \
+        --force                                             \
+        Test::WWW::Mechanize
