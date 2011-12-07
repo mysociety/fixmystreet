@@ -14,9 +14,9 @@ conf/packages is a list of Debian packages that are needed, so install them if
 you're on Debian/Ubuntu. You'll also probably need to install lots of CPAN
 modules, see the section on that below.
 
-FixMyStreet expects a PostgreSQL database, so set one of them up - the schema
-is available in db/schema.sql. You will also need to load in db/alert_types.sql
-to populate the alert types table.
+FixMyStreet expects a PostgreSQL database with the postGIS extension, so set one
+of them up - the schema is available in db/schema.sql. You will also need to load
+in db/alert_types.sql to populate the alert types table.
 
 Copy conf/general-example to conf/general and set it up appropriately:
 * provide the relevant database connection details
