@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2011-10-21 15:56+0100\n"
-"PO-Revision-Date: 2011-12-04 12:13+0100\n"
+"PO-Revision-Date: 2011-12-07 10:28+0100\n"
 "Last-Translator: Anders Einar Hilden <hildenae@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -2318,67 +2318,55 @@ msgstr ""
 "allereie til å løyse Storbritannias krise med tomme heimar."
 
 #: templates/web/default/around/around_index.html:44
-#, fuzzy
 msgid ""
 "Thanks for uploading your photo. We now need to locate your problem, so "
 "please enter a nearby street name or postcode in the box below&nbsp;:"
 msgstr ""
-"Takk for at du lasta opp biletet ditt.  No treng vi å plassera problemet "
-"ditt,såg vêr så snill å skriv inn namn på veg i nærleiken, eller postnummer "
-"i boksen under :"
+"Takk for at du lasta opp biletet ditt. No treng vi å plassera\n"
+"problemet ditt, så ver venleg og skriv inn namn på ein veg i\n"
+"nærleiken, eller eit postnummer, i boksen under&nbsp:"
 
 #: templates/web/default/contact/submit.html:8
-#, fuzzy
 msgid "Thanks for your feedback.  We'll get back to you as soon as we can!"
-msgstr "Takk for ditt innspill. Vi gjev deg ein tilbakemelding så raskt vi kan"
+msgstr "Takk for innspillet ditt. Vi gjev deg ei tilbakemelding så snart vi kan."
 
 #: templates/web/default/questionnaire/creator_fixed.html:9
-#, fuzzy
 msgid ""
 "Thanks, glad to hear it's been fixed! Could we just ask if you have ever "
 "reported a problem to a council before?"
-msgstr ""
-"Takk, glad for å høyra at problemet er fiksa! Vi vil gjerne spørja deg om du "
-"har rapportert eit problem til ein administrasjon tidlegare?"
+msgstr "Takk, glad for å høyra at problemet er løyst! Vi vil gjerne spørja deg om du har rapportert eit problem til ein administrasjon tidlegare?"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:839
-#, fuzzy
 msgid ""
 "That image doesn't appear to have uploaded correctly (%s), please try again."
-msgstr "Biletet ser ikkje ut til å vorte lasta opp riktig (%s), prøv på nytt."
+msgstr "Biletet ser ikkje ut til å ha vorte lasta opp riktig (%s), prøv på nytt."
 
 #: templates/web/default/alert/index.html:12
-#, fuzzy
 msgid ""
 "That location does not appear to be covered by a council, perhaps it is "
 "offshore - please try somewhere more specific."
 msgstr ""
-"Den staden vert ikkje dekt av nokon administrasjon, kanskje det er til hav "
-"sitt – ver venleg og forsøk eit meir spesifikt stad."
+"Den staden vert ikkje dekt av nokon administrasjon, kanskje det er til\n"
+"havs – ver venleg og prøv ein meir spesifikk stad."
 
 #: perllib/FixMyStreet/App/Controller/Location.pm:107
-#, fuzzy
 msgid "That location does not appear to be in Britain; please try again."
-msgstr "Den staden verkar ikkje å vera i Storbritannia. Ver venleg og prøv igjen."
+msgstr "Den staden synest ikkje å vera i Storbritannia. Ver venleg og prøv igjen."
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:510
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:78
-#, fuzzy
 msgid "That postcode was not recognised, sorry."
-msgstr "Det postnummeret vart ikkje gjenkjent, beklagar."
+msgstr "Det postnummeret vart ikkje gjenkjent, orsak."
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:558
-#, fuzzy
 msgid "That problem will now be resent."
 msgstr "Det problemet vil no sendast på nytt."
 
 #: perllib/FixMyStreet/App/Controller/Report.pm:75
-#, fuzzy
 msgid "That report has been removed from FixMyStreet."
 msgstr "Den rapporten har vorte fjerna frå FiksGataMi."
 
 #: templates/web/default/around/around_index.html:27
-#, fuzzy
 msgid ""
 "That spot does not appear to be covered by a council. If you have tried to "
 "report an issue past the shoreline, for example, please specify the closest "
@@ -2409,53 +2397,38 @@ msgid ""
 msgstr ""
 
 #: templates/web/default/open311/index.html:23
-#, fuzzy
 msgid ""
 "The Open311 v2 attribute agency_responsible is used to list the "
 "administrations that received the problem report, which is not quite the way "
 "the attribute is defined in the Open311 v2 specification."
-msgstr ""
-"Open311 v2-atributten agency_responsible vert brukte for å liste opp "
-"administrasjonane som mottok problemrapporten, noko som ikkje heilt røystar "
-"med korleis atributten er definert i Open311 v2-spesifikasjonen."
+msgstr "Open311 v2-attributten agency_responsible vert brukt for å lista opp administrasjonane som mottok problemrapporten, noko som ikkje heilt passar med korleis attributten er definert i Open311 v2-spesifikasjonen."
 
 #: templates/web/default/auth/token.html:21
 #: templates/web/default/email_sent.html:22
-#, fuzzy
 msgid ""
 "The confirmation email <strong>may</strong> take a few minutes to arrive "
 "&mdash; <em>please</em> be patient."
-msgstr ""
-"Bekreftelsese-posten <strong>kan</strong> bruka nokre minutt før han kjem "
-"fram &mdash; så vêr tålmodig."
+msgstr "Stadfestingse-posten <strong>kan</strong> bruka nokre minutt før han kjem fram &mdash; så ver tålmodig."
 
 #: templates/web/default/questionnaire/index.html:51
-#, fuzzy
 msgid ""
 "The details of your problem are available on the right hand side of this "
 "page."
-msgstr ""
-"Detaljane om problemet ditt er tilgjengeleg på høgre kant av denne sida."
+msgstr "Detaljane om problemet ditt er tilgjengelege på høgre kant av denne sida."
 
 #: perllib/FixMyStreet/App/Controller/Reports.pm:46
 #: perllib/FixMyStreet/App/Controller/Reports.pm:73
-#, fuzzy
 msgid "The error was: %s"
 msgstr "Feilen var: %s"
 
 #: templates/web/default/open311/index.html:19
-#, fuzzy
 msgid ""
 "The following Open311 v2 attributes are returned for each request: "
 "service_request_id, description, lat, long, media_url, status, "
 "requested_datetime, updated_datetime, service_code and service_name."
-msgstr ""
-"Dei følgjande Open311 v2-atributtene vert returnerte for kvar førespurnad: "
-"service_request_id, description, la, long, media_url, status, "
-"requested_datetime, updated_datetime, service_code and service_name."
+msgstr "Dei følgjande Open311 v2-attributtene vert returnerte for kvar førespurnad: service_request_id, description, lat, long, media_url, status, requested_datetime, updated_datetime, service_code og service_name."
 
 #: perllib/FixMyStreet/Geocode/OSM.pm:99
-#, fuzzy
 msgid ""
 "The following information about the nearest road might be inaccurate or "
 "irrelevant, if the problem is close to several roads or close to a road "
@@ -2467,22 +2440,18 @@ msgstr ""
 
 #: db/alert_types.pl:19 db/alert_types.pl:23 db/alert_types.pl:27
 #: db/alert_types.pl:31
-#, fuzzy
 msgid "The latest local problems reported by users"
 msgstr "Dei siste lokale problema rapportert av brukarar"
 
 #: db/alert_types_eha.pl:13
-#, fuzzy
 msgid "The latest local reports reported by users"
 msgstr "Dei siste lokale rapportane rapportert av brukarar"
 
 #: db/alert_types.pl:35
-#, fuzzy
 msgid "The latest problems for {{COUNCIL}} reported by users"
 msgstr "Dei siste problema for {{COUNCIL}} rapportert av brukarar"
 
 #: db/alert_types.pl:39
-#, fuzzy
 msgid ""
 "The latest problems for {{COUNCIL}} within {{WARD}} ward reported by users"
 msgstr ""
@@ -2490,68 +2459,55 @@ msgstr ""
 "brukarar"
 
 #: db/alert_types.pl:11
-#, fuzzy
 msgid "The latest problems reported by users"
 msgstr "Dei siste problema rapportert av brukarar"
 
 #: db/alert_types.pl:15
-#, fuzzy
 msgid "The latest problems reported fixed by users"
 msgstr "Dei siste problema rapportert fiksa av brukarar"
 
 #: db/alert_types.pl:43
-#, fuzzy
 msgid "The latest problems within {{NAME}}'s boundary reported by users"
 msgstr "Dei siste problema innanfor grensa til {{NAME}} rapportert av brukarar"
 
 #: db/alert_types_eha.pl:9
-#, fuzzy
 msgid "The latest properties reported back to use by users"
 msgstr "Dei siste eigedomane rapportert tilbake i bruk av brukarar"
 
 #: db/alert_types_eha.pl:20
-#, fuzzy
 msgid "The latest reports for {{COUNCIL}} reported by users"
 msgstr "Dei siste rapportane for {{COUNCIL}} rapportert av brukarar"
 
 #: db/alert_types_eha.pl:24
-#, fuzzy
 msgid ""
 "The latest reports for {{COUNCIL}} within {{WARD}} ward reported by users"
-msgstr ""
-"Dei siste rapportane for {{COUNCIL}} innanfor {{WARD}} bydel rapportar av "
-"brukarar"
+msgstr "Dei siste rapportane for {{COUNCIL}} innanfor {{WARD}} bydel rapportert av brukarar"
 
 #: db/alert_types_eha.pl:28
-#, fuzzy
 msgid "The latest reports within {{NAME}}'s boundary reported by users"
 msgstr ""
 "Dei siste rapportane innanfor grensa til {{NAME}} rapportert av brukarar"
 
 #: templates/web/default/auth/change_password.html:12
 #: templates/web/default/auth/change_password.html:16
-#, fuzzy
 msgid "The passwords do not match"
 msgstr "Passorda er ikkje like"
 
 #: templates/web/default/errors/page_error_404_not_found.html:10
 #: templates/web/default/errors/page_error_404_not_found.html:12
-#, fuzzy
 msgid "The requested URL '%s' was not found on this server"
-msgstr "Den forespurte URL '%s' vart ikkje funnen på denne tenaren"
+msgstr "Fann ikkje URL-en «%s» på denne tenaren"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1034
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1179
 #: perllib/FixMyStreet/App/Controller/Admin.pm:538
 #: perllib/FixMyStreet/App/Controller/Admin.pm:701
-#, fuzzy
 msgid "The requested URL was not found on this server."
-msgstr "Den forespurte URL-ein vart ikkje funnen på denne tenaren"
+msgstr "Fann ikkje URL-ein du spurde etter på denne tenaren"
 
 #: templates/web/default/alert/list.html:47
-#, fuzzy
 msgid "The simplest alert is our geographic one:"
-msgstr "Den enklaste meldinga er vår geografiske:"
+msgstr "Den enklaste meldinga er den geografiske:"
 
 #: templates/web/default/report/new/councils_text_all.html:18
 #: templates/web/default/report/new/councils_text_some.html:10
