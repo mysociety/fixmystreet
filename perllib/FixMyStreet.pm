@@ -107,15 +107,15 @@ sub dbic_connect_info {
     my $class  = shift;
     my $config = $class->config;
 
-    my $dsn = "dbi:Pg:dbname=" . $config->{BCI_DB_NAME};
-    $dsn .= ";host=$config->{BCI_DB_HOST}"
-      if $config->{BCI_DB_HOST};
-    $dsn .= ";port=$config->{BCI_DB_PORT}"
-      if $config->{BCI_DB_PORT};
+    my $dsn = "dbi:Pg:dbname=" . $config->{FMS_DB_NAME};
+    $dsn .= ";host=$config->{FMS_DB_HOST}"
+      if $config->{FMS_DB_HOST};
+    $dsn .= ";port=$config->{FMS_DB_PORT}"
+      if $config->{FMS_DB_PORT};
     $dsn .= ";sslmode=allow";
 
-    my $user     = $config->{BCI_DB_USER} || undef;
-    my $password = $config->{BCI_DB_PASS} || undef;
+    my $user     = $config->{FMS_DB_USER} || undef;
+    my $password = $config->{FMS_DB_PASS} || undef;
 
     my $dbi_args = {
         AutoCommit     => 1,
@@ -146,11 +146,11 @@ sub configure_mysociety_dbhandle {
     my $config = $class->config;
 
     mySociety::DBHandle::configure(
-        Name     => $config->{BCI_DB_NAME},
-        User     => $config->{BCI_DB_USER},
-        Password => $config->{BCI_DB_PASS},
-        Host     => $config->{BCI_DB_HOST} || undef,
-        Port     => $config->{BCI_DB_PORT} || undef,
+        Name     => $config->{FMS_DB_NAME},
+        User     => $config->{FMS_DB_USER},
+        Password => $config->{FMS_DB_PASS},
+        Host     => $config->{FMS_DB_HOST} || undef,
+        Port     => $config->{FMS_DB_PORT} || undef,
     );
 
 }
