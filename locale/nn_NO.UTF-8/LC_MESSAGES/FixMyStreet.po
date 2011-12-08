@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2011-10-21 15:56+0100\n"
-"PO-Revision-Date: 2011-12-07 10:28+0100\n"
+"PO-Revision-Date: 2011-12-08 10:56+0100\n"
 "Last-Translator: Anders Einar Hilden <hildenae@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -463,7 +463,6 @@ msgstr "Lukka"
 
 # skal det vera forskjellig tyding frå engelsken her? --KBU
 #: perllib/FixMyStreet/DB/Result/Problem.pm:627
-#, fuzzy
 msgid "Closed by council"
 msgstr "(ikkje rapportert til administrasjonen)"
 
@@ -2160,7 +2159,7 @@ msgstr "Nokre ustadfesta"
 #: perllib/FixMyStreet/Cobrand/Default.pm:517
 msgid ""
 "Sorry, that appears to be a Crown dependency postcode, which we don't cover."
-msgstr "Orsak, det ser ut til å vera eit «Crown dependency»-postnummer, som vi ikkje dekker."
+msgstr "Orsak, det ser ut til å vera eit «Crown dependency»-postnummer, som vi ikkje dekkjer."
 
 #: templates/web/default/tokens/abuse.html:5
 msgid "Sorry, there has been an error confirming your problem."
@@ -2513,202 +2512,148 @@ msgstr "Den enklaste meldinga er den geografiske:"
 #: templates/web/default/report/new/councils_text_some.html:10
 #: templates/web/default/report/new/councils_text_some.html:11
 #: templates/web/default/report/new/fill_in_details_form.html:17
-#, fuzzy
 msgid ""
 "The subject and details of the problem will be public, plus your name if you "
 "give us permission."
 msgstr ""
-"Tittelen og detaljane for problemet vil verta offentleg, pluss namnet ditt\n"
-"viss du gjev oss løyve til det."
+"Tittelen og detaljane for problemet vil verta offentlege, pluss namnet ditt\n"
+"viss du gjev oss lov til det."
 
 #: bin/send-reports:78
-#, fuzzy
 msgid ""
 "The user could not locate the problem on a map, but to see the area around "
 "the location they entered"
-msgstr ""
-"Brukaren kunne ikkje plassera problemet på eit kart, men sjekk områdde rundt "
-"staden dei skreiv inn"
+msgstr "Brukaren kunne ikkje plassera problemet på eit kart, men sjekk områdde rundt staden dei skreiv inn"
 
 #: perllib/FixMyStreet/App/Controller/Reports.pm:72
-#, fuzzy
 msgid ""
 "There was a problem showing the All Reports page. Please try again later."
-msgstr ""
-"Det var problem med å visa 'Alle rapportar'-sidan.  Ver venleg og prøv igjen "
-"seinare."
+msgstr "Det oppstod problem med å visa «Alle rapportar»-sida.  Ver venleg og prøv igjen seinare."
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:641
 #: perllib/FixMyStreet/App/Controller/Report/Update.pm:125
 #: templates/web/default/auth/general.html:23
-#, fuzzy
 msgid ""
 "There was a problem with your email/password combination. Passwords and user "
 "accounts are a brand <strong>new</strong> service, so you probably do not "
 "have one yet &ndash; please fill in the right hand side of this form to get "
 "one."
-msgstr ""
-"Det var problem med din epost/passord-kombinasjon. Passord og brukarkontoar "
-"er ei heilt <strong>ny</strong> teneste, så du har antakeleg ikkje ein konto "
-"enno. &ndash; ver så snill å fyll inn høgresida av dette skjemaet for å "
-"skaffa deg ein."
+msgstr "Det var problem med e-post/passord-kombinasjonen din. Passord og brukarkontoar er ei heilt <strong>ny</strong> teneste, så du har sannsynlegvis ikkje ein konto enno. &ndash; ver venleg og fyll inn høgresida av dette skjemaet for å skaffa deg ein."
 
 #: perllib/FixMyStreet/App/Controller/Alert.pm:354
-#, fuzzy
 msgid ""
 "There was a problem with your email/password combination. Please try again."
-msgstr ""
-"Det var problem med din epost/passord-kombinasjon.  Ver så snill å forsøk "
-"igjen."
+msgstr "Det var problem med e-post/passord-kombinasjonen din. Ver venleg og prøv igjen."
 
 #: perllib/FixMyStreet/App/Controller/Report/Update.pm:214
-#, fuzzy
 msgid "There was a problem with your update. Please try again."
-msgstr "Det var problem med oppdateringa di.  Ver så snill å forsøk igjen."
+msgstr "Det var problem med oppdateringa di. Ver venleg og prøv igjen."
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:117
-#, fuzzy
 msgid "There were problems with your report. Please see below."
-msgstr "Det var problem med rapporten din.  Ver venleg og sjå under."
+msgstr "Det var problem med rapporten din. Ver venleg og sjå under."
 
 #: perllib/FixMyStreet/App/Controller/Report/Update.pm:241
-#, fuzzy
 msgid "There were problems with your update. Please see below."
 msgstr "Det var problem med oppdateringa di. Ver venleg og sjå under."
 
 #: templates/web/default/open311/index.html:10
-#, fuzzy
 msgid ""
 "This API implementation is work in progress and not yet stabilized.  It will "
 "change without warnings in the future."
-msgstr ""
-"Denne API-implementasjonen er under arbeid og enno ikkje stabil.  Han vil "
-"endra seg utan advarsel i framtida."
+msgstr "Denne API-implementasjonen er under arbeid og ikkje enno stabil. Han vil endra seg utan åtvaring i framtida."
 
 #: bin/send-reports:185
-#, fuzzy
 msgid ""
 "This email has been sent to both councils covering the location of the "
 "problem, as the user did not categorise it; please ignore it if you're not "
 "the correct council to deal with the issue, or let us know what category of "
 "problem this is so we can add it to our system."
-msgstr ""
-"Denne ea-posten har vorte send til begge administrasjonane som dekker staden "
-"for problemet, då brukaren ikkje kategoriserte det.  Vêr så snill å ignorera "
-"henne viss de ikkje er korrekt administrasjon for å handtera denne saka, "
-"eller gje oss melding om kva for ein kategori av problem dette er så vi kan "
-"leggja det til i systemet vårt."
+msgstr "Denne e-posten er sendt til begge administrasjonane som dekkjer staden for problemet, sidan brukaren ikkje kategoriserte det.  Ver venleg og ignorer e-posten viss de ikkje er korrekt administrasjon for å handtera denne saka, eller gjev oss melding om kva for ein kategori av problem dette er så vi kan leggja det til i systemet vårt."
 
 #: bin/send-reports:188
-#, fuzzy
 msgid ""
 "This email has been sent to several councils covering the location of the "
 "problem, as the category selected is provided for all of them; please ignore "
 "it if you're not the correct council to deal with the issue."
-msgstr ""
-"Denne ea-posten har vorte send til fleire administrasjonar som dekker staden "
-"for problemet, då den valde kategorien er tilgjengeleg for desse.  Vêr så "
-"snill å ignorera e-posten viss de ikkje er korrekt administrasjon for å "
-"handtera denne saka."
+msgstr "Denne e-posten er sendt til fleire administrasjonar som dekkjer staden for problemet, sidan den valde kategorien er tilgjengeleg for desse. Ver venleg og ignorer e-posten viss de ikkje er korrekt administrasjon for å handtera denne saka."
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:761
-#, fuzzy
 msgid "This information is required"
 msgstr "Denne informasjonen er påkravd"
 
 #: templates/web/default/debug_header.html:3
-#, fuzzy
 msgid ""
 "This is a developer site; things might break at any time, and the database "
 "will be periodically deleted."
-msgstr ""
-"Dette er ein utviklarnettstad. Ting kan knekka når som helst og databasen "
-"vil verta periodisk sletta."
+msgstr "Dette er ein utviklarnettstad. Ting kan knekka når som helst og databasen vil verta periodisk sletta."
 
 #: templates/web/default/reports/council.html:65
-#, fuzzy
 msgid "This is a summary of all reports for one %s."
-msgstr "Dette er ein oppsummering av alle rapportar for ein %s."
+msgstr "Dette er ei oppsummering av alle rapportar for ein %s."
 
 #: templates/web/default/reports/council.html:67
-#, fuzzy
 msgid "This is a summary of all reports for this %s."
-msgstr "Dette er ein oppsummering for alle rapportar for denne %s-en."
+msgstr "Dette er ei oppsummering for alle rapportar for denne %s-en."
 
 #: templates/web/default/reports/index.html:4
 #: templates/web/emptyhomes/reports/index.html:4
 #: templates/web/fiksgatami/reports/index.html:4
-#, fuzzy
 msgid ""
 "This is a summary of all reports on this site; select a particular council "
 "to see the reports sent there."
-msgstr ""
-"Dette er ein opplisting av alle problema i denne tenesta; vel ein bestemd "
-"administrasjon for å sjå problem som er send dit."
+msgstr "Dette er ei opplisting av alle problema i denne tenesta; vel ein viss administrasjon for å sjå problem som er sende dit."
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:926
-#, fuzzy
 msgid "This problem has been closed"
 msgstr "Dette problemet er lukka"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:922
 #: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:117
 #: templates/web/default/report/display.html:101
-#, fuzzy
 msgid "This problem has been fixed"
 msgstr "Dette problemet er løyst"
 
 #: templates/web/default/report/display.html:96
-#, fuzzy
 msgid "This problem has not been fixed"
 msgstr "Dette problemet har ikkje vorte løyst"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:931
-#, fuzzy
 msgid "This problem is in progress"
 msgstr "Dette problemet er under arbeid"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:918
-#, fuzzy
 msgid "This problem is old and of unknown status."
-msgstr "Dette problemet er gammal og med ukjend status."
+msgstr "Dette problemet er gammalt og med ukjend status."
 
 #: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:79
-#, fuzzy
 msgid "This report is currently marked as closed."
 msgstr "Denne rapporten er for tida markert som lukka."
 
 #: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:77
-#, fuzzy
 msgid "This report is currently marked as fixed."
 msgstr "Denne rapporten er for tida markert som fiksa."
 
 #: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:81
-#, fuzzy
 msgid "This report is currently marked as open."
 msgstr "Denne rapporten er for tida markert som open."
 
 #: bin/send-reports:71
-#, fuzzy
 msgid ""
 "This web page also contains a photo of the problem, provided by the user."
-msgstr ""
-"Denne nettsida inneheld òg eit bilete av problemet, sendt inn av brukaren."
+msgstr "Denne nettsida inneheld òg eit bilete av problemet, sendt inn av brukaren."
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:979
 #: templates/web/default/admin/timeline.html:1
-#, fuzzy
 msgid "Timeline"
 msgstr "Tidslinje"
 
 #: templates/web/default/admin/list_flagged.html:10
 #: templates/web/default/admin/search_reports.html:13
-#, fuzzy
 msgid "Title"
 msgstr "Tittel"
 
 #: templates/web/default/around/display_location.html:70
-#, fuzzy
 msgid ""
 "To <strong>report a problem</strong>, simply click on the map at the correct "
 "location."
@@ -2717,196 +2662,158 @@ msgstr ""
 "stad."
 
 #: templates/web/default/alert/index.html:21
-#, fuzzy
 msgid ""
 "To find out what local alerts we have for you, please enter your GB\n"
 "postcode or street name and area:"
-msgstr ""
-"Du finn lokale problem ved å søkja på postnummeret ditt, veinavn eller stad:"
+msgstr "Du finn lokale problem ved å søkja på postnummeret ditt, vegnamn eller stad:"
 
 #: bin/send-reports:77
-#, fuzzy
 msgid "To view a map of the precise location of this issue"
-msgstr "For å sjå ein kart med ei meir presis plassering for dette problemet."
+msgstr "For å sjå eit kart med ei meir presis plassering for dette problemet"
 
 #: templates/web/default/admin/index.html:36
 #: templates/web/default/admin/questionnaire.html:24
 #: templates/web/default/admin/stats.html:24
 #: templates/web/default/admin/stats.html:43
-#, fuzzy
 msgid "Total"
 msgstr "Totalt"
 
 #: perllib/FixMyStreet/App/Controller/Reports.pm:45
-#, fuzzy
 msgid "Unable to look up areas in MaPit. Please try again later."
-msgstr "Klarte ikkje slå opp område i MaPit.  Ver venleg og forsøk igjen seinare."
+msgstr "Klarte ikkje slå opp område i MaPit.  Ver venleg og prøv igjen seinare."
 
 #: templates/web/default/admin/report_edit.html:22
 #: templates/web/default/admin/report_edit.html:25
 #: templates/web/default/admin/update_edit.html:19
-#, fuzzy
 msgid "Unconfirmed"
-msgstr "Ubekreftet"
+msgstr "Ikkje stadfesta"
 
 #: perllib/FixMyStreet/App/Controller/Rss.pm:163
-#, fuzzy
 msgid "Unknown alert type"
-msgstr "Ukjent varsel-type"
+msgstr "Ukjend varsel-type"
 
 #: perllib/FixMyStreet/App/Controller/Report.pm:70
-#, fuzzy
 msgid "Unknown problem ID"
-msgstr "Ukjent problem-Id"
+msgstr "Ukjend problem-ID"
 
 #: templates/web/default/admin/timeline.html:35
-#, fuzzy
 msgid "Update %s created for problem %d; by %s"
 msgstr "Oppdatering %s oppretta for problem %d, av %s"
 
 #: templates/web/default/contact/index.html:21
-#, fuzzy
 msgid "Update below added anonymously at %s"
-msgstr "Oppdateringa under lagt inn anonymt %s"
+msgstr "Oppdateringa under vart lagt inn anonymt %s"
 
 #: templates/web/default/contact/index.html:23
-#, fuzzy
 msgid "Update below added by %s at %s"
-msgstr "Oppdateringa under lagt til av %s %s"
+msgstr "Oppdateringa under vart lagt til av %s %s"
 
 #: templates/web/default/admin/index.html:30
-#, fuzzy
 msgid "Update breakdown by state"
 msgstr "Tilstandsfordeling for oppdateringar"
 
 #: db/alert_types.pl:7
-#, fuzzy
 msgid "Update by {{name}}"
 msgstr "Oppdatert av {{name}}"
 
 #: templates/web/default/admin/update_edit.html:33
-#, fuzzy
 msgid "Update changed problem state to %s"
-msgstr "Ei oppdatering endra statusen til problemet til %s"
+msgstr "Ei oppdatering endra problemstatusen til %s"
 
 #: templates/web/default/admin/update_edit.html:35
-#, fuzzy
 msgid "Update marked problem as fixed"
 msgstr "Ei oppdatering markerte dette problemet som fiksa."
 
 #: templates/web/default/admin/update_edit.html:37
-#, fuzzy
 msgid "Update reopened problem"
-msgstr "Ei oppdatering gjennåpnet problemet"
+msgstr "Ei oppdatering gjenopna problemet"
 
 #: templates/web/default/admin/council_contacts.html:53
-#, fuzzy
 msgid "Update statuses"
 msgstr "Oppdater tilstanden"
 
 #: templates/web/default/report/display.html:77
-#, fuzzy
 msgid "Update:"
 msgstr "Oppdatering:"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:647
 #: perllib/FixMyStreet/App/Controller/Admin.pm:764
 #: perllib/FixMyStreet/App/Controller/Admin.pm:844
-#, fuzzy
 msgid "Updated!"
 msgstr "Oppdatert!"
 
 #: templates/web/default/admin/list_updates.html:1
 #: templates/web/default/report/updates.html:4
-#, fuzzy
 msgid "Updates"
 msgstr "Oppdateringar"
 
 #: db/alert_types.pl:5 db/alert_types.pl:6
-#, fuzzy
 msgid "Updates on {{title}}"
 msgstr "Oppdateringar av {{title}}"
 
 #: templates/web/default/report/display.html
 #: templates/web/default/report/display.html:7
-#, fuzzy
 msgid "Updates to this problem, FixMyStreet"
 msgstr "Oppdateringar til dette problemet, FiksGataMi"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1137
-#, fuzzy
 msgid "User flag removed"
 msgstr "Brukarflagg fjerna"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1109
-#, fuzzy
 msgid "User flagged"
-msgstr "Brukar flagget"
+msgstr "Brukar flagga"
 
 #: templates/web/default/admin/list_flagged.html:30
-#, fuzzy
 msgid "Users"
 msgstr "Brukarar"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:304
 #: perllib/FixMyStreet/App/Controller/Admin.pm:334
-#, fuzzy
 msgid "Values updated"
-msgstr "Verd oppdatert"
+msgstr "Verdi oppdatert"
 
 #: templates/web/default/admin/report_edit.html:12
 #: templates/web/default/admin/update_edit.html:12
-#, fuzzy
 msgid "View report on site"
 msgstr "Sjå rapport på nettstaden"
 
 #: templates/web/emptyhomes/tokens/confirm_problem.html:39
-#, fuzzy
 msgid "View your report"
 msgstr "Vis rapporten din"
 
 #: templates/web/default/around/display_location.html
 #: templates/web/default/around/display_location.html:33
-#, fuzzy
 msgid "Viewing a location"
 msgstr "Ser på ein stad"
 
 #: templates/web/default/report/display.html
-#, fuzzy
 msgid "Viewing a problem"
 msgstr "Ser på eit problem"
 
 #: templates/web/default/reports/council.html:22
-#, fuzzy
 msgid "Wards of this council"
 msgstr "Bydelar innanfor denne administrasjonen"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:521
 #: perllib/FixMyStreet/Geocode/Bing.pm:47
 #: perllib/FixMyStreet/Geocode/Google.pm:63
-#, fuzzy
 msgid "We do not currently cover Northern Ireland, I'm afraid."
-msgstr "Vi dekker desverre ikkje Nord-Irland."
+msgstr "Vi dekkjer diverre ikkje Nord-Irland."
 
 #: templates/web/default/alert/choose.html:6
 #: templates/web/default/around/around_index.html:33
-#, fuzzy
 msgid ""
 "We found more than one match for that location. We show up to ten matches, "
 "please try a different search if yours is not here."
-msgstr ""
-"Vi fann meir ein eitt treff for den plassen.  Vi viser opp til ti treff, såg "
-"forsøk eit anna søk viss plassen din ikkje er her."
+msgstr "Vi fann meir ein eitt treff for den staden. Vi viser opp til ti treff, så prøv eit anna søk viss staden din ikkje er her."
 
 #: templates/web/default/auth/token.html:19
-#, fuzzy
 msgid "We have sent you an email containing a link to confirm your account."
-msgstr ""
-"Vi har sendt deg ein epost som inneheld link for å stadfesta kontoen din."
+msgstr "Vi har sendt deg ein epost som inneheld ei lenkje for å stadfesta kontoen din."
 
 #: templates/web/emptyhomes/tokens/confirm_problem.html:18
 #: templates/web/emptyhomes/tokens/confirm_problem.html:20
-#, fuzzy
 msgid ""
 "We may contact you periodically to ask if anything has changed with the "
 "property you reported."
@@ -2915,7 +2822,6 @@ msgstr ""
 "endra seg med eiedommen du rapporterte."
 
 #: bin/send-reports:195
-#, fuzzy
 msgid ""
 "We realise this problem might be the responsibility of %s; however, we don't "
 "currently have any contact details for them. If you know of an appropriate "
@@ -2926,89 +2832,62 @@ msgstr ""
 "kontakt med oss."
 
 #: templates/web/default/index.html:46
-#, fuzzy
 msgid "We send it to the council on your behalf"
-msgstr "Vi sender til administrasjon på dine vegne"
+msgstr "Vi sender til administrasjon på dine vegner"
 
 #: templates/web/default/report/new/notes.html:5
-#, fuzzy
 msgid ""
 "We will only use your personal information in accordance with our <a href=\"/"
 "faq#privacy\">privacy policy.</a>"
-msgstr ""
-"Vi vil berre bruka personleg informasjon om deg i samsvar med vår <a href=\"/"
-"faq#privacy\">personvernpolicy.</a>"
+msgstr "Vi vil berre bruka personleg informasjon om deg i samsvar med <a href=\"/faq#privacy\">personvernpolicyen</a> vår."
 
 #: templates/web/emptyhomes/contact/blurb.html:2
-#, fuzzy
 msgid ""
 "We&rsquo;d love to hear what you think about this website. Just fill in the "
 "form. Please don&rsquo;t contact us about individual empty homes; use the "
 "box accessed from <a href=\"/\">the front page</a>."
-msgstr ""
-"Vi vil gjerne høyra kva du tenkjer om denne nettstaden.  Det er berre å "
-"fylla inn skjemaet. Ver så snill å ikkje kontakta oss om individuelle tomme "
-"heim. For det bør du i staden bruka boksen tilgjengeleg frå <a href=\"/"
-"\">forsida</a>."
+msgstr "Vi vil gjerne høyra kva du tenkjer om denne nettstaden.  Det er berre å fylla inn skjemaet. Ver venleg og ikkje kontakt oss om individuelle tomme heimar. For det bør du i staden bruka boksen som er på <a href=\"/\">forsida</a>."
 
 #: templates/web/default/contact/blurb.html:8
-#, fuzzy
 msgid ""
 "We'd love to hear what you think about this site. Just fill in the form, or "
 "send an email to <a href='mailto:%s'>%s</a>:"
-msgstr ""
-"Vi ynskjer å få din tilbakemelding om kva du meiner om denne tenesta. Berre "
-"fyll ut skjemaet, eller send ei e-post <a href='mailto:%s'>%s</a>:"
+msgstr "Vi ynskjer å få tilbakemelding frå deg om kva du meiner om denne tenesta. Berre fyll ut skjemaet, eller send ein e-post <a href='mailto:%s'>%s</a>:"
 
 #: templates/web/default/admin/council_contacts.html:32
 #: templates/web/default/admin/council_edit.html:41
-#, fuzzy
 msgid "When edited"
 msgstr "Når redigert"
 
 #: templates/web/default/admin/list_flagged.html:19
 #: templates/web/default/admin/search_reports.html:22
-#, fuzzy
 msgid "When sent"
 msgstr "Når sendt"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:523
-#, fuzzy
 msgid "Whole block of empty flats"
 msgstr "Heil blokk med tomme leilegheiter"
 
 #: templates/web/default/open311/index.html:25
-#, fuzzy
 msgid ""
 "With request searches, it is also possible to search for agency_responsible "
 "to limit the requests to those sent to a single administration.  The search "
 "term is the administration ID provided by <a href=\"%s\">MaPit</a>."
-msgstr ""
-"Når du søkjer etter førespurnader, så er det òg mogleg å søkja etter "
-"agency_responsible for å avgrensa det til førespurnader som er sendt til ein "
-"einskild adminstrasjon. Søktetermen er administrasjon sin-Ida som oppgjeve "
-"av <a href=\"%s\">MaPit</a>."
+msgstr "Når du søkjer etter førespurnader, så er det òg mogleg å søkja etter agency_responsible for å avgrensa det til førespurnader som er sendt til ein einskild adminstrasjon. Søkjetermen er administrasjonssida som du får frå <a href=\"%s\">MaPit</a>."
 
 #: templates/web/default/questionnaire/index.html:104
-#, fuzzy
 msgid ""
 "Would you like to receive another questionnaire in 4 weeks, reminding you to "
 "check the status?"
-msgstr ""
-"Kunne du tenkja deg å motta ein ny førespurnad om 4 veker, som minner deg om "
-"å sjekka status?"
+msgstr "Kunne du tenkja deg å motta ein ny førespurnad om 4 veker, som minner deg om å sjekka status?"
 
 #: templates/web/default/report/new/notes.html:8
-#, fuzzy
 msgid ""
 "Writing your message entirely in block capitals makes it hard to read, as "
 "does a lack of punctuation."
-msgstr ""
-"Når du skriv meldinga di med berre store bokstavar vert den vanskeleg å "
-"lesa. Det same gjeld manglande tegnsetting."
+msgstr "Når du skriv meldinga di med berre store bokstavar vert ho vanskeleg å lesa. Det same gjeld manglande tegnsetting."
 
 #: templates/web/default/admin/stats.html:10
-#, fuzzy
 msgid "Year"
 msgstr "År"
 
@@ -3026,12 +2905,10 @@ msgstr "År"
 #: templates/web/default/questionnaire/creator_fixed.html:14
 #: templates/web/default/questionnaire/index.html:107
 #: templates/web/default/questionnaire/index.html:68
-#, fuzzy
 msgid "Yes"
 msgstr "Ja"
 
 #: templates/web/default/contact/index.html:37
-#, fuzzy
 msgid ""
 "You are reporting the following problem report for being abusive, containing "
 "personal information, or similar:"
@@ -3040,7 +2917,6 @@ msgstr ""
 "informasjon eller liknande:"
 
 #: templates/web/default/contact/index.html:15
-#, fuzzy
 msgid ""
 "You are reporting the following update for being abusive, containing "
 "personal information, or similar:"
@@ -3049,7 +2925,6 @@ msgstr ""
 "informasjon, eller liknande:"
 
 #: templates/web/default/reports/council.html:71
-#, fuzzy
 msgid ""
 "You can <a href=\"%s\">view all reports for the council</a> or <a href=\"/"
 "reports\">show all councils</a>."
@@ -3058,7 +2933,6 @@ msgstr ""
 "href=\"/reports\">sjå alle administrasjonane</a>."
 
 #: templates/web/default/reports/council.html:73
-#, fuzzy
 msgid "You can <a href=\"/reports\">show all councils</a>."
 msgstr "Du kan <a href=\"/reports/\">sjå alle administrasjonar</a>."
 
@@ -3066,7 +2940,6 @@ msgstr "Du kan <a href=\"/reports/\">sjå alle administrasjonar</a>."
 #: templates/web/default/report/new/councils_text_none.html:16
 #: templates/web/default/report/new/councils_text_some.html:20
 #: templates/web/default/report/new/councils_text_some.html:22
-#, fuzzy
 msgid ""
 "You can help us by finding a contact email address for local problems for %s "
 "and emailing it to us at <a href='mailto:%s'>%s</a>."
@@ -3075,17 +2948,13 @@ msgstr ""
 "senda han via e-post til oss på <a href='mailto:%s'>%s</a>."
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:38
-#, fuzzy
 msgid ""
 "You have already answered this questionnaire. If you have a question, please "
 "<a href='%s'>get in touch</a>, or <a href='%s'>view your problem</a>.\n"
-msgstr ""
-"Du har allereie besvart dette spørjeskjemaet. Viss du har spurnad, ver venleg og "
-"<a href='%s'>ta kontakt</a>, eller <a href='%s'>sjå på problemet ditt</a>.\n"
+msgstr "Du har allereie svart på dette spørjeskjemaet. Viss du har spurnader, ver venleg og <a href='%s'>ta kontakt</a>, eller <a href='%s'>sjå på problemet ditt</a>.\n"
 
 #: templates/web/default/questionnaire/index.html:94
 #: templates/web/default/report/new/fill_in_details_form.html:93
-#, fuzzy
 msgid ""
 "You have already attached a photo to this report, attaching another one will "
 "replace it."
@@ -3094,7 +2963,6 @@ msgstr ""
 "anna vil byta ut dette."
 
 #: templates/web/default/report/display.html:112
-#, fuzzy
 msgid ""
 "You have already attached a photo to this update, attaching another one will "
 "replace it."
@@ -3103,62 +2971,47 @@ msgstr ""
 "anna vil byta ut dette."
 
 #: templates/web/default/auth/sign_out.html:3
-#, fuzzy
 msgid "You have been signed out"
 msgstr "Du er allereie logga ut"
 
 #: templates/web/default/report/new/fill_in_details_form.html:7
-#, fuzzy
 msgid ""
 "You have located the problem at the point marked with a purple pin on the "
 "map. If this is not the correct location, simply click on the map again. "
-msgstr ""
-"Du har plassert problemet ved punktet i kartet som er markert med ein lilla "
-"nål.  Viss dette ikkje er korrekt plassering kan du klikka i kartet på nytt."
+msgstr "Du har plassert problemet ved punktet i kartet som er markert med ein lilla nål.  Viss dette ikkje er korrekt plassering, kan du klikka i kartet på nytt."
 
 #: templates/web/default/tokens/confirm_alert.html:7
-#, fuzzy
 msgid "You have successfully confirmed your alert."
-msgstr "Du har no lukkast med å stadfesta varselet ditt."
+msgstr "Du har no stadfesta varselet ditt."
 
 #: templates/web/default/tokens/confirm_problem.html:6
 #: templates/web/default/tokens/confirm_problem.html:7
-#, fuzzy
 msgid "You have successfully confirmed your problem"
-msgstr "Du har no lukkast med å stadfesta problemet ditt"
+msgstr "Du har no stadfesta problemet ditt"
 
 #: templates/web/default/tokens/confirm_update.html:11
 #: templates/web/default/tokens/confirm_update.html:12
-#, fuzzy
 msgid ""
 "You have successfully confirmed your update and you can now <a href=\""
 "%s\">view it on the site</a>."
-msgstr ""
-"Du har no stadfesta oppdateringa di <a href=\"%s\">og kan sjå han på denne "
-"nettstaden</a>."
+msgstr "Du har no stadfesta oppdateringa di <a href=\"%s\">og kan sjå ho på denne nettstaden</a>."
 
 #: templates/web/default/tokens/confirm_alert.html:11
-#, fuzzy
 msgid "You have successfully created your alert."
-msgstr "Du har lukkast med å oppretta varselet ditt."
+msgstr "Du har oppretta varselet ditt."
 
 #: templates/web/default/tokens/confirm_alert.html:9
-#, fuzzy
 msgid "You have successfully deleted your alert."
 msgstr "Sletting av varselet ditt var vellukka."
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:647
 #: perllib/FixMyStreet/App/Controller/Report/Update.pm:131
-#, fuzzy
 msgid ""
 "You have successfully signed in; please check and confirm your details are "
 "accurate:"
-msgstr ""
-"Du har lukkast med å logga inn. Ver venleg og sjekk og stadfest at detaljane "
-"dine er korrekte:"
+msgstr "Du har no logga inn. Ver venleg og sjekk og stadfest at detaljane dine er korrekte:"
 
 #: templates/web/default/email_sent.html:26
-#, fuzzy
 msgid ""
 "You must now click the link in the email we've just sent you &mdash; if you "
 "do not, %s."
@@ -3167,18 +3020,15 @@ msgstr ""
 "gjer det, %s"
 
 #: templates/web/default/admin/report_edit.html:35
-#, fuzzy
 msgid "You really want to resend?"
 msgstr "Ynskjer du verkeleg å senda på nytt?"
 
 #: templates/web/default/my/my.html templates/web/default/my/my.html:14
 #: templates/web/default/my/my.html:3
-#, fuzzy
 msgid "Your Reports"
 msgstr "Rapportane dine"
 
 #: templates/web/default/auth/general.html:27
-#, fuzzy
 msgid "Your email address:"
 msgstr "e-postadressa di:"
 
@@ -3196,128 +3046,104 @@ msgid "Your name:"
 msgstr "Namnet ditt:"
 
 #: templates/web/default/auth/change_password.html:6
-#, fuzzy
 msgid "Your password has been changed"
 msgstr "Passordet ditt har vorte endra"
 
 #: templates/web/default/footer.html:7 templates/web/fiksgatami/footer.html:6
 #: templates/web/reading/footer.html:7
-#, fuzzy
 msgid "Your reports"
 msgstr "Oppdateringane dine"
 
 #: templates/web/default/my/my.html:45
-#, fuzzy
 msgid "Your updates"
 msgstr "Oppdateringane dine"
 
 #: templates/web/default/contact/index.html:76
-#, fuzzy
 msgid "Your&nbsp;email:"
-msgstr "Ea di-post:"
+msgstr "E-posten&nbsp;din:"
 
 #: templates/web/default/admin/timeline.html:6
-#, fuzzy
 msgid "by %s"
 msgstr "av %s"
 
 #: templates/web/default/reports/council.html:6
 #: templates/web/default/reports/council.html:7
-#, fuzzy
 msgid "council"
 msgstr "administrasjon"
 
 #: templates/web/default/admin/report_edit.html:15
-#, fuzzy
 msgid "didn't use map"
 msgstr "brukte ikkje kart"
 
 #: templates/web/default/admin/index.html:15
-#, fuzzy
 msgid "from %d different users"
 msgstr "frå %d ulike brukarar"
 
 #: perllib/Utils.pm:248
-#, fuzzy
 msgid "less than a minute"
-msgstr "mindre enn eit minutt"
+msgstr "mindre enn eitt minutt"
 
 #: templates/web/default/report/updates.html:18
-#, fuzzy
 msgid "marked as %s"
 msgstr "markert som %s"
 
 #: templates/web/default/report/updates.html:16
-#, fuzzy
 msgid "marked as fixed"
-msgstr "markert som fiksa"
+msgstr "markert som løyst"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:109
 #: templates/web/default/admin/questionnaire.html:15
 #: templates/web/default/admin/questionnaire.html:16
-#, fuzzy
 msgid "n/a"
-msgstr "n/a"
+msgstr "i/t"
 
 #: templates/web/default/alert/list.html:116
-#, fuzzy
 msgid "or"
 msgstr "eller"
 
 #: templates/web/default/admin/report_edit.html:15
-#, fuzzy
 msgid "originally entered"
 msgstr "søkte etter"
 
 #: templates/web/default/admin/report_edit.html:16
-#, fuzzy
 msgid "other areas:"
 msgstr "andre område:"
 
 #: templates/web/default/report/updates.html:17
-#, fuzzy
 msgid "reopened"
 msgstr "opna på nytt"
 
 #: templates/web/default/report/new/fill_in_details_form.html:11
 #: templates/web/default/report/new/fill_in_details_form.html:14
-#, fuzzy
 msgid "the local council"
 msgstr "den lokale administrasjonen"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:520
-#, fuzzy
 msgid "the map was not used so pin location may be inaccurate"
 msgstr "karta vart ikkje brukt, så nåleposisjon kan vera unøyaktig"
 
 #: bin/send-reports:176
-#, fuzzy
 msgid "this type of local problem"
 msgstr "denne typen lokalt problem"
 
 #: perllib/Utils.pm:222
-#, fuzzy
 msgid "today"
-msgstr "idag"
+msgstr "i dag"
 
 #: templates/web/default/admin/report_edit.html:15
-#, fuzzy
 msgid "used map"
 msgstr "brukte kart"
 
 #: templates/web/default/admin/update_edit.html:26
-#, fuzzy
 msgid "user is from same council as problem - %d"
-msgstr "nytter er frå same administrasjon som problemet – %d"
+msgstr "brukaren er frå same administrasjon som problemet – %d"
 
 #: templates/web/default/admin/update_edit.html:29
-#, fuzzy
 msgid "user is problem owner"
-msgstr "nytter er eige av problemet"
+msgstr "brukaren er eigaren av problemet"
 
 #: templates/web/default/reports/council.html
 #: templates/web/default/reports/council.html:3
-#, fuzzy
 msgid "ward"
 msgstr "bydel"
 
@@ -3333,77 +3159,67 @@ msgstr "vi tek vare på rapporten din medan du sjekkar e-posten din."
 
 #: templates/web/default/email_sent.html:11
 #: templates/web/default/email_sent.html:3
-#, fuzzy
 msgid "we'll hang on to your update while you're checking your email."
-msgstr "vi tek vare på oppdateringa di medan du sjekkar ea di-post."
+msgstr "vi tek vare på oppdateringa di medan du sjekkar e-posten din."
 
 #: templates/web/default/email_sent.html:14
 #: templates/web/default/email_sent.html:3
-#, fuzzy
 msgid "your alert will not be activated"
 msgstr "varselet ditt vil ikkje aktiverast"
 
 #: templates/web/default/email_sent.html:3
 #: templates/web/default/email_sent.html:6
-#, fuzzy
 msgid "your problem will not be posted"
 msgstr "vil problemet ditt ikkje publiserast"
 
 #: templates/web/default/email_sent.html:10
 #: templates/web/default/email_sent.html:3
-#, fuzzy
 msgid "your update will not be posted"
 msgstr "oppdateringa di vil ikkje publiserast"
 
 #: templates/web/default/front/stats.html:17
-#, fuzzy, perl-format
+#, perl-format
 msgid "<big>%s</big> report recently"
 msgid_plural "<big>%s</big> reports recently"
-msgstr[0] "<big>%s</big> rapportert<br>nyleg"
-msgstr[1] "<big>%s</big> rapportert<br>nyleg"
+msgstr[0] "<big>%s</big> rapport nyleg"
+msgstr[1] "<big>%s</big> rapportar nyleg"
 
 #: templates/web/default/report/new/councils_text_none.html:5
-#, fuzzy, perl-format
+#, perl-format
 msgid "We do not yet have details for the council that covers this location."
 msgid_plural ""
 "We do not yet have details for the councils that cover this location."
-msgstr[0] ""
-"Vi har enno ikkje detaljar for administrasjonen som dekker denne staden."
-msgstr[1] ""
-"Vi har enno ikkje detaljar for administrasjonane som dekker denne staden."
+msgstr[0] "Vi har enno ikkje detaljar for administrasjonen som dekkjer denne staden."
+msgstr[1] "Vi har enno ikkje detaljar for administrasjonane som dekkjer denne staden."
 
 #: templates/web/default/front/stats.html:12
-#, fuzzy, perl-format
+#, perl-format
 msgid "<big>%s</big> report in past week"
 msgid_plural "<big>%s</big> reports in past week"
 msgstr[0] "<big>%s</big> rapport siste veke"
 msgstr[1] "<big>%s</big> rapportar siste veke"
 
 #: templates/web/default/front/stats.html:23
-#, fuzzy, perl-format
+#, perl-format
 msgid "<big>%s</big> fixed in past month"
 msgid_plural "<big>%s</big> fixed in past month"
-msgstr[0] "<big>%s</big> fiksa siste månad"
-msgstr[1] "<big>%s</big> fiksa siste månad"
+msgstr[0] "<big>%s</big> løyst siste månad"
+msgstr[1] "<big>%s</big> løyst siste månad"
 
 #: templates/web/default/front/stats.html:29
-#, fuzzy, perl-format
+#, perl-format
 msgid "<big>%s</big> update on reports"
 msgid_plural "<big>%s</big> updates on reports"
-msgstr[0] "<big>%s</big> rapport-<br>oppdatering"
-msgstr[1] "<big>%s</big> rapport-<br>oppdateringar"
+msgstr[0] "<big>%s</big> rapportoppdatering"
+msgstr[1] "<big>%s</big> rapportoppdateringar"
 
 #: templates/web/default/report/new/councils_text_some.html:14
-#, fuzzy, perl-format
+#, perl-format
 msgid ""
 "We do <strong>not</strong> yet have details for the other council that "
 "covers this location."
 msgid_plural ""
 "We do <strong>not</strong> yet have details for the other councils that "
 "cover this location."
-msgstr[0] ""
-"Vi har enno <strong>ikkje</strong> detaljane for den andre administrasjonen "
-"som dekker denne staden."
-msgstr[1] ""
-"Vi har enno <strong>ikkje</strong> detaljane for dei andre administrasjonane "
-"som dekker denne staden."
+msgstr[0] "Vi har enno <strong>ikkje</strong> detaljane for den andre administrasjonen som dekkjer denne staden."
+msgstr[1] "Vi har enno <strong>ikkje</strong> detaljane for dei andre administrasjonane som dekkjer denne staden."
