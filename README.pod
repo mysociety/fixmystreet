@@ -57,7 +57,7 @@ Restart apache
 
 Download from [URL GOES HERE]
 
-or get the latest version from github: http://github.com/mysociety/fixmystreet
+or get the latest version from L<github|http://github.com/mysociety/fixmystreet>
 
 =head1 REQUIREMENTS
 
@@ -81,29 +81,42 @@ ImageMagick and the perl bindings
 
 A webserver that supports FastCGI
 
+=item *
+
+The CSS for FixMyStreet is generated from SASS sources so you will need a SASS
+to CSS convertor.
+
 =back
 
 For most uses of FixMyStreet you'll also need access to a MaPit server with
 data for the types of bodies you are reporting issues to. For more details on
-how to install MaPit see [TODO: MaPit URL GOES HERE]
+how to install MaPit see the L<mapit pypi page|http://pypi.python.org/pypi/django-mapit/>
 
 =head1 DETAILED INSTALLATION INSTRUCTIONS
 
-=head2 Creating the database
-
-Notes about PostGIS templates go here
-
 =head2 Unpacking the Code
 
-Create directory for vhost, unpack there. 
+Once you've downloaded the code you should unpack it. The best place to do this
+is in the location you want the web server vhost to be.
+
+=head2 Creating the database
+
+The default settings file assumes the database is called fms and the user the same. 
+You can change these if you like.
+
+The database you create for FixMyStreet should be a PostGis enabled one. The best way
+to do this is to use a PostGIS template database. There are good instructions on how
+to create one L<on the django site|https://docs.djangoproject.com/en/dev/ref/contrib/gis/install/#spatialdb-template>
 
 =head2 Set up the database
 
-Run db/schema.sql and the db/alert_types.sql
+Once you've created the database you can use the sql in db/schema.sql to create the required
+tables, triggers and stored procedures. You will also need to run db/alert_types.sql which
+populates the alert_types table.
 
 =head2 Install Perl modules
 
-There are many CPAN dependencies that should be dealt with using
+FixMyStreet uses a number of CPAN modules which can be installed using
 module-manage.pl which takes care of fetching specific versions of packages
 from CPAN and building them. To install all the CPAN packages needed:
 
@@ -138,7 +151,6 @@ some initial modules needed for bootstrap
 
 scripts to make it all work
 
-
 =back
 
 Read the perl-external/bin/module-manage.pl code to see how it all works. It is
@@ -170,7 +182,7 @@ The bare minimum of settings you will need to fill in or update are:
 
 =over
 
-=item OPTION_BCI_DB_PASS
+=item OPTION_FMS_DB_PASS
 
 This is the password for the database.
 
@@ -200,6 +212,8 @@ It should be accessible by and writeable by the FixMyStreet process.
 
 This is the location where Geolocation data will be cached.
 It should be accessible by and writeable by the FixMyStreet process.
+
+=back
 
 If you are using Bing or Google maps you should also set one of
 OPTION_BING_MAPS_API_KEY or OPTION_GOOGLE_MAPS_API_KEY.
