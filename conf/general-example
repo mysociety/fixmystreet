@@ -18,12 +18,12 @@
  * 
  */
 
-// PostgreSQL database for BCI
-define('OPTION_BCI_DB_HOST', 'localhost');
-define('OPTION_BCI_DB_PORT', '5432');
-define('OPTION_BCI_DB_NAME', 'bci');
-define('OPTION_BCI_DB_USER', 'bci');
-define('OPTION_BCI_DB_PASS', '');
+// PostgreSQL database for FMS
+define('OPTION_FMS_DB_HOST', 'localhost');
+define('OPTION_FMS_DB_PORT', '5432');
+define('OPTION_FMS_DB_NAME', 'bci');
+define('OPTION_FMS_DB_USER', 'bci');
+define('OPTION_FMS_DB_PASS', '');
 
 define('OPTION_BASE_URL', 'http://www.example.org');
 
