@@ -45,7 +45,7 @@ Create a new Apache vhost based on conf/httpd-conf.example
 
 =item *
 
-Copy conf/general-example to conf/general and update accordingly [FIXME!]
+Copy conf/general-example.yml to conf/general.yml and update accordingly [FIXME!]
 
 =item *
 
@@ -174,41 +174,41 @@ FastCGI.
 
 =head1 SETTINGS
 
-The settings for FixMyStreet are in conf/general which is actually a PHP file.
-There are some defaults in conf/general-example which you should copy to
-conf/general.
+The settings for FixMyStreet are defined in conf/general.yml using the YAML
+markup language. There are some defaults in conf/general-example.yml which 
+you should copy to conf/general.yml.
 
 The bare minimum of settings you will need to fill in or update are:
 
 =over
 
-=item OPTION_FMS_DB_PASS
+=item FMS_DB_PASS
 
 This is the password for the database.
 
-=item OPTION_BASE_URL
+=item BASE_URL
 
 The URL for the homepage of your FixMyStreet install.
 
-=item OPTION_EMAIL_DOMAIN
+=item EMAIL_DOMAIN
 
 The email domain that emails will be sent from
 
-=item OPTION_CONTACT_EMAIL
+=item CONTACT_EMAIL
 
 The email address to be used on the site for the contact us form.
 
-=item OPTION_STAGING_SITE
+=item STAGING_SITE
 
 If this is 1 then all email ( alerts and reports ) will be sent to the
 contact email address. Use this for development sites.
 
-=item OPTION_UPLOAD_CACHE
+=item UPLOAD_CACHE
 
 This is the location where imaged will be stored as they are being uploaded.
 It should be accessible by and writeable by the FixMyStreet process.
 
-=item OPTION_GEO_CACHE
+=item GEO_CACHE
 
 This is the location where Geolocation data will be cached.
 It should be accessible by and writeable by the FixMyStreet process.
@@ -216,9 +216,9 @@ It should be accessible by and writeable by the FixMyStreet process.
 =back
 
 If you are using Bing or Google maps you should also set one of
-OPTION_BING_MAPS_API_KEY or OPTION_GOOGLE_MAPS_API_KEY.
+BING_MAPS_API_KEY or GOOGLE_MAPS_API_KEY.
 
-If you are using a MaPit install you should update OPTION_MAPIT_URL.
+If you are using a MaPit install you should update MAPIT_URL.
 
 =head1 COMMON PROBLEMS
 
