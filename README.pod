@@ -17,19 +17,15 @@ It's written in Perl and uses the Catalyst web framework.
 
 =item *
 
-Install PostgreSQL and the PostGIS extension
-
-=item *
-
-Create a new PostGIS enabled database
-
-=item *
-
 Download latest version from [THIS BIT TODO]
 
 =item *
 
 Untar this in the vhost location [TODO - more detail here]
+
+=item *
+
+Create a new PostGIS enabled database
 
 =item *
 
@@ -53,7 +49,7 @@ Generate the CSS by running bin/make_css
 
 =item *
 
-Restart apache
+Restart the webserver
 
 =back
 
@@ -75,7 +71,7 @@ PostgreSQL and the PostGis extension
 
 =item *
 
-Perl 5.8+
+Perl 5.8 or above
 
 =item *
 
@@ -95,6 +91,9 @@ to CSS convertor. You can get one from http://sass-lang.com/
 For most uses of FixMyStreet you'll also need access to a MaPit server with
 data for the types of bodies you are reporting issues to. For more details on
 how to install MaPit see the L<mapit pypi page|http://pypi.python.org/pypi/django-mapit/>
+
+If you are using a Debian based linux distribution there is a list of relevant
+packages in conf/packages.
 
 =head1 DETAILED INSTALLATION INSTRUCTIONS
 
@@ -228,6 +227,11 @@ If you are using a MaPit install you should update MAPIT_URL.
 
 There is a script, bin/make_css, that uses L<sass|http://sass-lang.com/> to
 convert the SCSS files to CSS files.
+
+=head2 Restart the webserver
+
+At this point you be able to restart the webserver and see your FixMyStreet
+installation at the configured URL.
 
 =head1 COMMON PROBLEMS
 
