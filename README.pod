@@ -49,6 +49,10 @@ Copy conf/general-example.yml to conf/general.yml and update accordingly [FIXME!
 
 =item *
 
+Generate the CSS by running bin/make_css
+
+=item *
+
 Restart apache
 
 =back
@@ -83,8 +87,8 @@ A webserver that supports FastCGI
 
 =item *
 
-The CSS for FixMyStreet is generated from SASS sources so you will need a SASS
-to CSS convertor.
+The CSS for FixMyStreet is generated from SCSS sources so you will need a SCSS
+to CSS convertor. You can get one from http://sass-lang.com/
 
 =back
 
@@ -219,6 +223,11 @@ If you are using Bing or Google maps you should also set one of
 BING_MAPS_API_KEY or GOOGLE_MAPS_API_KEY.
 
 If you are using a MaPit install you should update MAPIT_URL.
+
+=head2 Generate CSS
+
+There is a script, bin/make_css, that uses L<sass|http://sass-lang.com/> to
+convert the SCSS files to CSS files.
 
 =head1 COMMON PROBLEMS
 
