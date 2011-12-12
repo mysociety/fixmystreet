@@ -1,12 +1,5 @@
 Unfamiliar terms that you may come across in the code:
 
-
-BCI: Broken Civic Infrastructure - project name before it became FixMyStreet -
-still to be found used in some config variable names
-
 MaPit: The mySociety database and web service that maps postcodes and points to
 current or past administrative area information and polygons for all the United
 Kingdom. http://mapit.mysociety.org/
-
-EvEl: A generic email sending and mailing list functionality, with bounce
-detection: https://secure.mysociety.org/cvstrac/dir?d=mysociety/services/EvEl
