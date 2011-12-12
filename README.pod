@@ -83,6 +83,10 @@ A webserver that supports FastCGI
 
 =item *
 
+gettext
+
+=item *
+
 The CSS for FixMyStreet is generated from SCSS sources so you will need a SCSS
 to CSS convertor. You can get one from http://sass-lang.com/
 
@@ -91,6 +95,8 @@ to CSS convertor. You can get one from http://sass-lang.com/
 For most uses of FixMyStreet you'll also need access to a MaPit server with
 data for the types of bodies you are reporting issues to. For more details on
 how to install MaPit see the L<mapit pypi page|http://pypi.python.org/pypi/django-mapit/>
+
+If you're expecting a lot of traffic it's recommended that you install L<memcached|http://memcached.org/>
 
 If you are using a Debian based linux distribution there is a list of relevant
 packages in conf/packages.
