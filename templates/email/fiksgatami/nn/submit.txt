@@ -1,0 +1,41 @@
+Subject: Problemrapport: <?=$values['title']?>
+
+Til <?=$values['councils_name']?>,
+
+<?=$values['missing']?><?=$values['multiple']?>Ein brukar av
+FiksGataMi har sendt inn følgjande rapport om eit lokalt problem som
+vi trur treng merksemda deira.
+
+<?=$values['fuzzy']?>, eller for å bidra med ei oppdatering om
+problemet, ver venleg og besøk følgjande lenkje:
+
+    <?=$values['url']?>
+
+<?=$values['has_photo']?>----------
+
+Namn: <?=$values['name']?>
+
+E-post: <?=$values['email']?>
+
+<?=$values['phone_line']?><?=$values['category_line']?>Tema: <?=$values['title']?>
+
+Detaljer: <?=$values['detail']?>
+
+<?=$values['easting_northing']?>Breiddegrad: <?=$values['latitude']?>
+
+Lengdegrad: <?=$values['longitude']?>
+
+<?=$values['closest_address']?>----------
+
+Svar på denne e-posten går til brukaren som sende inn problemet.
+
+Venleg helsing,  
+FiksGataMi-gruppa
+
+[ Denne meldinga vart send inn via FiksGataMi, eit prosjekt hos foreininga NUUG.
+Viss det er ei meir passande e-postadresse for meldingar om
+<?=$values['category_footer']?>, ver så snill å gje oss melding ved å vitja
+<http://www.fiksgatami.no/contact>.
+Dette vil bidra til å forbetra tenesta for lokalbefolkinga. Vi
+tek òg gjerne imot andre tilbakemeldingar. ]
+

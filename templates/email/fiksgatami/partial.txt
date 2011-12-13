@@ -1,14 +1,12 @@
-Subject: Bekreft din rapport på FiksGataMi
+Subject: Bekreft din rapport på FiksGataMi.no
 
 Hei [% report.name || report.email %],
 
-For å bekrefte rapporten du har lastet opp til FiksGatami via
-[% report.service %], og for å sjekke eller legge til litt detaljer,
-besøk følgende URL:
+For å bekrefte rapporten du har lastet opp til FiksGataMi via
+[% report.service %], og for å sjekke eller legge til detaljer,
+besøk følgende lenke:
 
 [% token_url %]
 
-Takk!
-
-Vennlig hilsen,  
+Vennlig hilsen,
 FiksGataMi-gruppen

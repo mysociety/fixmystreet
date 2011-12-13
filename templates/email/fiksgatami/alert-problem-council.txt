@@ -7,6 +7,6 @@ Følgende saker er sendt til <?=$values['area_name']?>:
 Vennlig hilsen,  
 FiksGataMi-gruppen
 
-Hvis du ikke ønsker å motta epost om saker som er sendt til
-<?=$values['area_name']?> i fremtiden, klikk på følgende link: 
+Hvis du ikke ønsker å motta e-post om saker som er sendt til
+<?=$values['area_name']?> i fremtiden, klikk på følgende lenke: 
 <?=$values['unsubscribe_url']?>
