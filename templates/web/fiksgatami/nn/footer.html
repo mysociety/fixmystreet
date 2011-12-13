@@ -1,0 +1,22 @@
+</div></div>
+
+<h2 class="v">[% loc('Navigation') %]</h2>
+<ul id="navigation">
+<li><a href="/">[% loc("Report a problem") %]</a></li>
+<li id="nav_new"><a href="/my">[% loc("Your reports") %]</a></li>
+<li><a href="/reports">[% loc("All reports") %]</a></li>
+<li><a href="[% c.uri_for('/alert', {pc =>  pc}) | html %]">[% loc("Local alerts") %]</a></li>
+<li><a href="/faq">[% loc("Help") %]</a></li>
+<li><a href="/contact">[% loc("Contact") %]</a></li>
+</ul>
+
+<div id="logo" align="center"><a href="http://www.nuug.no/">Foreininga NUUG</a></div> 
+
+<p id="footer">
+    [% loc('Built by <a href="http://www.mysociety.org/">mySociety</a> and maintained by <a href="http://www.nuug.no/">NUUG</a>') %] | <a href="http://github.com/mysociety/fixmystreet">[% loc('Source code') %]</a>
+</p>
+
+[% INCLUDE 'debug_footer.html' %]
+
+</body>
+</html>

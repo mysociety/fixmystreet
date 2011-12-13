@@ -1,0 +1,12 @@
+Subject: Stadfest rapporten din på FiksGataMi.no
+
+Hei [% report.name || report.email %],
+
+For å stadfesta rapporten du har lasta opp til FiksGataMi via
+[% report.service %], og for å sjekka eller leggja til detaljar,
+besøk følgjande lenkje:
+
+[% token_url %]
+
+Venleg helsing,
+FiksGataMi-gruppa
