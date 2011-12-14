@@ -116,6 +116,7 @@ You can change these if you like.
 The database you create for FixMyStreet should be a PostGis enabled one. The best way
 to do this is to use a PostGIS template database. There are good instructions on how
 to create one L<on the django site|https://docs.djangoproject.com/en/dev/ref/contrib/gis/install/#spatialdb-template>
+as well as some bash scripts that automate the process.
 
 =head2 Set up the database
 
@@ -131,6 +132,11 @@ from CPAN and building them. To install all the CPAN packages needed:
 
     eval `./setenv.pl`
     module-manage.pl setup
+
+Note that unless you have already installed the DBD::Pg module then you will need
+the postgresql source available, most likely through your distributions postgresql-dev
+package. You will also need a development toolchain in place ( make, gcc etc ) for
+some modules.
 
 Look in the perl-external directory for details. Notably the following are important:
 
@@ -180,6 +186,29 @@ possible to run it using Plack/PSGI.
 There is an example Apache vhost configuration file on conf/httpd.conf-example
 which you can copy and update the paths in if you are running FixMyStreet under
 FastCGI.
+
+If you are using Apache and the sample configuration you will need the following 
+modules enabled:
+
+=over
+
+=item *
+
+mod_rewrite
+
+=item *
+
+mod_proxy
+
+=item *
+
+mod_expires
+
+=item *
+
+mod_fastcgi
+
+=over
 
 =head1 SETTINGS
 
@@ -259,3 +288,14 @@ an install if the test failures are not important by running cpanm directly:
         --mirror-only                                       \
         --force                                             \
         Test::WWW::Mechanize
+
+=head2 locale
+
+By default FixMyStreet used the en_GB.UTF-8 locale. If it is not installed then
+it may not start
+
+=head2 Template caching
+
+FixMyStreet caches compiled templates alongside the source files so the templates
+directory needs to be writable by the process that is running FixMyStreet.
+
