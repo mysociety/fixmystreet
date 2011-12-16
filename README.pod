@@ -75,7 +75,7 @@ Perl 5.8 or above
 
 =item *
 
-ImageMagick and the perl bindings
+ImageMagick and the perl bindings.
 
 =item *
 
@@ -299,3 +299,7 @@ it may not start
 FixMyStreet caches compiled templates alongside the source files so the templates
 directory needs to be writable by the process that is running FixMyStreet.
 
+=head2 Image::Magick
+
+If your OS has a way to install a binary version of Image::Magick then it's recommended
+that you do that rather than install via CPAN. 
