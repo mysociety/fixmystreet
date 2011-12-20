@@ -6,7 +6,7 @@
 function form_category_onchange() {
     var cat = $('#form_category');
     var args = {
-        category: cat.val(),
+        category: cat.val()
     };
 
     if ( typeof fixmystreet !== 'undefined' ) {
