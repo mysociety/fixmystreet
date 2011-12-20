@@ -15,7 +15,7 @@ vennligst besøk følgende lenke:
 
 Navn: <?=$values['name']?>
 
-Epost: <?=$values['email']?>
+E-post: <?=$values['email']?>
 
 <?=$values['phone_line']?><?=$values['category_line']?>Tema: <?=$values['title']?>
 
@@ -27,15 +27,15 @@ Lengegrad: <?=$values['longitude']?>
 
 <?=$values['closest_address']?>----------
 
-Svar på denne eposten går til brukeren som sendte inn problemet.
+Svar på denne e-posten går til brukeren som sendte inn problemet.
 
 Vennlig hilsen,  
 FiksGataMi-gruppen
 
 [ Denne meldingen ble sendt inn via FiksGataMi, et prosjekt hos foreningen NUUG.
-Hvis det er en mer passende epostadresse for meldinger om
+Hvis det er en mer passende e-postadresse for meldinger om
 <?=$values['category_footer']?>, vær så snill å gi oss beskjed ved å besøke
 <http://www.fiksgatami.no/contact>.
 Dette vil bidra til å forbedre tjenesten for lokalbefolkningen. Vi
-tar også gjerne imot andre tilbakemeldinger om du har noen. ]
+tar også gjerne imot andre tilbakemeldinger. ]
 

@@ -1,0 +1,18 @@
+Subject: Stadfest oppdateringa di på FiksGataMi.no
+
+Hei [% update.name %],
+
+Ver venleg og klikk på lenkja under for å stadfesta oppdateringa du nettopp
+skreiv:
+
+[% token_url %]
+
+Viss du ikkje kan klikka på lenkja, kan du kopiera ho til
+addressefeltet i nettlesaren din.
+
+Oppdateringa di inneheld:
+
+[% update.text %]
+
+Venleg hilsen,  
+FiksGataMi-gruppa

@@ -1,0 +1,11 @@
+Subject: Nye saker i nærleiken på FiksGataMi.no
+
+Følgjande saker i nærleiken er lagd inn på FiksGataMi.no:
+
+<?=$values['data']?>
+
+Venleg helsing,  
+FiksGataMi-gruppa
+
+Viss du ikkje ynskjer å motta e-post om nye problem i nærleiken,
+klikk på følgjande lenkje: <?=$values['unsubscribe_url']?>
