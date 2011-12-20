@@ -1,0 +1,14 @@
+Subject: Stadfest varselet ditt frå FiksGataMi.no
+
+Hei,
+
+Ver venleg og klikk på lenkja under for å stadfesta varselet du
+har bede om å abonnera på hos FiksGataMi:
+
+    [% token_url %]
+
+Viss du ikkje kan klikka på lenkja, kan du kopiera ho til
+addressefeltet i nettlesaren din.
+
+Venleg helsing,  
+FiksGataMi-gruppa
