@@ -13,9 +13,9 @@ It's written in Perl and uses the Catalyst web framework.
 
 =head1 EXAMPLES
 
-http://www.fixmystreet.com
+L<http://www.fixmystreet.com>
 
-http://www.fiksgatami.no/
+L<http://www.fiksgatami.no/>
 
 =head1 QUICKSTART
 
@@ -39,28 +39,32 @@ Create a new PostGIS enabled database
 
 =item *
 
-Run db/schema.sql and the db/alert_types.sql
+Run C<db/schema.sql> and the C<db/alert_types.sql>
 
 =item *
 
-Run ./bin/install_perl_modules
+Run C<./bin/install_perl_modules>
 
 =item *
 
-Create a new Apache vhost based on conf/httpd-conf.example
+Create a new Apache vhost based on C<conf/httpd-conf.example>
 
 =item *
 
-Copy conf/general-example.yml to conf/general.yml and update 
+Copy C<conf/general-example.yml> to C<conf/general.yml> and update
 the defaults accordingly
 
 =item *
 
-Generate the CSS by running bin/make_css
+Generate the CSS by running C<bin/make_css>
 
 =item *
 
 Restart the webserver
+
+=item *
+
+Install the crontab from C<conf/crontab>
 
 =back
 
@@ -105,22 +109,22 @@ gettext
 =item *
 
 The CSS for FixMyStreet is generated from SCSS sources so you will need a SCSS
-to CSS convertor. You can get one from http://sass-lang.com/
+to CSS convertor. You can get one from L<http://sass-lang.com/>
 
 =back
 
 If you're expecting a lot of traffic it's recommended that you install L<memcached|http://memcached.org/>
 
-=head1 DETAILED INSTALLATION INSTRUCTIONS
-
 If you are using a Debian based linux distribution there is a list of relevant
-packages in conf/packages.
+packages in C<conf/packages>.
 
 =head2 Service dependencies
 
 For most uses of FixMyStreet you'll also need access to a MaPit server with
 data for the types of bodies you are reporting issues to. For more details on
 how to install MaPit see the L<mapit pypi page|http://pypi.python.org/pypi/django-mapit/>
+
+=head1 DETAILED INSTALLATION INSTRUCTIONS
 
 =head2 Unpacking the Code
 
@@ -139,23 +143,30 @@ as well as some bash scripts that automate the process.
 
 =head2 Set up the database
 
-Once you've created the database you can use the sql in db/schema.sql to create the required
-tables, triggers and stored procedures. You will also need to run db/alert_types.sql which
+Once you've created the database you can use the sql in C<db/schema.sql> to create the required
+tables, triggers and stored procedures. You will also need to run
+C<db/alert_types.sql> which
 populates the alert_types table.
 
 =head2 Install Perl modules
 
 FixMyStreet uses a number of CPAN modules which are installed by the
-install_perl_modules script. This will install them into a directory
+C<install_perl_modules> script. This will install them into a directory
 called local.
 
 It uses cpanminus and Carton under the hood but should install these
 of they are missing. You may need to install some source packages to
 allow some of the included modules to be built, including:
 
-expat
-Postgresql
-The GMP math library
+=over
+
+=item expat
+
+=item Postgresql
+
+=item The GMP math library
+
+=back
 
 You will also need a development toolchain in place ( gcc, make etc )
 
@@ -170,7 +181,7 @@ which will install the module into the local directory
 It is recommended that you run FixMyStreet using FastCGI. It should also be
 possible to run it using Plack/PSGI.
 
-There is an example Apache vhost configuration file on conf/httpd.conf-example
+There is an example Apache vhost configuration file on C<conf/httpd.conf-example>
 which you can copy and update the paths in if you are running FixMyStreet under
 FastCGI.
 
@@ -195,13 +206,13 @@ mod_expires
 
 mod_fastcgi
 
-=over
+=back
 
 =head1 SETTINGS
 
-The settings for FixMyStreet are defined in conf/general.yml using the YAML
-markup language. There are some defaults in conf/general-example.yml which 
-you should copy to conf/general.yml.
+The settings for FixMyStreet are defined in C<conf/general.yml> using the YAML
+markup language. There are some defaults in C<conf/general-example.yml> which
+you should copy to C<conf/general.yml>.
 
 The bare minimum of settings you will need to fill in or update are:
 
@@ -284,4 +295,4 @@ directory needs to be writable by the process that is running FixMyStreet.
 =head2 Image::Magick perl module
 
 If your OS has a way to install a binary version of Image::Magick then it's recommended
-that you do that rather than install via CPAN. 
+that you do that rather than install via CPAN.
