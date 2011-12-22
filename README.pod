@@ -271,25 +271,6 @@ TODO
 
 =head1 COMMON PROBLEMS
 
-=head2 CPAN MODULE PROBLEMS
-
-Currently, you probably need to add EncodedColumn manually:
-
-    module-manage.pl add DBIx::Class::EncodedColumn
-
-...because it's explicitly overridden in the code, which is fooling the installer.
-
-If a module won't build (Test::WWW::Mechanize and HTTP::Server::Simple fail
-tests for me but the failures are not pertinent) then the module-manage script
-will bail out. Look in ~/.cpanm/build_log to see what went wrong. You can force
-an install if the test failures are not important by running cpanm directly:
-
-    cpanm                                                   \
-        --mirror /absolute/path/to/perl-external/minicpan   \
-        --mirror-only                                       \
-        --force                                             \
-        Test::WWW::Mechanize
-
 =head2 locale
 
 By default FixMyStreet used the en_GB.UTF-8 locale. If it is not installed then
