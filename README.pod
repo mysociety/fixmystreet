@@ -11,7 +11,17 @@ supports routing problems via email or using an Open311 WebService.
 
 It's written in Perl and uses the Catalyst web framework.
 
+=head1 EXAMPLES
+
+http://www.fixmystreet.com
+
+http://www.fiksgatami.no/
+
 =head1 QUICKSTART
+
+If you're reasonably sure what you are doing then you can follow the
+quickstart instructions. Otherwise there are more detailed instructions
+further down.
 
 =over
 
@@ -21,7 +31,7 @@ Download latest version from [THIS BIT TODO]
 
 =item *
 
-Untar this in the vhost location [TODO - more detail here]
+Untar this in the vhost directory
 
 =item *
 
@@ -33,7 +43,7 @@ Run db/schema.sql and the db/alert_types.sql
 
 =item *
 
-Run ./bin/cron-wrapper ./perl-external/bin/module-manage.pl setup
+Run ./bin/install_perl_modules
 
 =item *
 
@@ -41,7 +51,8 @@ Create a new Apache vhost based on conf/httpd-conf.example
 
 =item *
 
-Copy conf/general-example.yml to conf/general.yml and update accordingly [FIXME!]
+Copy conf/general-example.yml to conf/general.yml and update 
+the defaults accordingly
 
 =item *
 
@@ -126,57 +137,25 @@ populates the alert_types table.
 
 =head2 Install Perl modules
 
-FixMyStreet uses a number of CPAN modules which can be installed using
-module-manage.pl which takes care of fetching specific versions of packages
-from CPAN and building them. To install all the CPAN packages needed:
+FixMyStreet uses a number of CPAN modules which are installed by the
+install_perl_modules script. This will install them into a directory
+called local.
 
-    eval `./setenv.pl`
-    module-manage.pl setup
+It uses cpanminus and Carton under the hood but should install these
+of they are missing. You may need to install some source packages to
+allow some of the included modules to be built, including:
 
-Note that unless you have already installed the DBD::Pg module then you will need
-the postgresql source available, most likely through your distributions postgresql-dev
-package. You will also need a development toolchain in place ( make, gcc etc ) for
-some modules.
+expat
+Postgresql
+The GMP math library
 
-Look in the perl-external directory for details. Notably the following are important:
+You will also need a development toolchain in place ( gcc, make etc )
 
-=over
+If you need to add a module manually you can do it using:
 
-=item urls.txt
+    ./bin/cron_wrapper ./local/bin/carton install Module::To::Add
 
-url to the specific packages to fetch
-
-=item modules.txt
-
-list of all modules that need to be built
-
-=item minicpan/
-
-local subset of cpan - used as source for all packages
-
-=item local-lib
-
-where the cpan modules get built to
-
-=item lib
-
-some initial modules needed for bootstrap
-
-=item bin
-
-scripts to make it all work
-
-=back
-
-Read the perl-external/bin/module-manage.pl code to see how it all works. It is
-basically a wrapper around cpanm (which builds the packages) and dpan (which
-helps maintain the fake cpan subset).
-
-If you need to add a module do it using:
-
-    module-manage.pl add Module::To::Add
-
-and it will update all the relevant bits.
+which will install the module into the local directory
 
 =head2 Set up Webserver
 
@@ -299,7 +278,7 @@ it may not start
 FixMyStreet caches compiled templates alongside the source files so the templates
 directory needs to be writable by the process that is running FixMyStreet.
 
-=head2 Image::Magick
+=head2 Image::Magick perl module
 
 If your OS has a way to install a binary version of Image::Magick then it's recommended
 that you do that rather than install via CPAN. 
