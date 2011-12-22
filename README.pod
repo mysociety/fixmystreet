@@ -74,6 +74,12 @@ or get the latest version from L<github|http://github.com/mysociety/fixmystreet>
 
 On the server you are installing FixMyStreet on you will need the following things:
 
+=head2 Data Requirements
+
+TODO
+
+=head2 Software requirements
+
 =over
 
 =item *
@@ -103,16 +109,18 @@ to CSS convertor. You can get one from http://sass-lang.com/
 
 =back
 
-For most uses of FixMyStreet you'll also need access to a MaPit server with
-data for the types of bodies you are reporting issues to. For more details on
-how to install MaPit see the L<mapit pypi page|http://pypi.python.org/pypi/django-mapit/>
-
 If you're expecting a lot of traffic it's recommended that you install L<memcached|http://memcached.org/>
+
+=head1 DETAILED INSTALLATION INSTRUCTIONS
 
 If you are using a Debian based linux distribution there is a list of relevant
 packages in conf/packages.
 
-=head1 DETAILED INSTALLATION INSTRUCTIONS
+=head2 Service dependencies
+
+For most uses of FixMyStreet you'll also need access to a MaPit server with
+data for the types of bodies you are reporting issues to. For more details on
+how to install MaPit see the L<mapit pypi page|http://pypi.python.org/pypi/django-mapit/>
 
 =head2 Unpacking the Code
 
@@ -246,6 +254,20 @@ convert the SCSS files to CSS files.
 
 At this point you be able to restart the webserver and see your FixMyStreet
 installation at the configured URL.
+
+=head2 Cron jobs
+
+TODO
+
+=head2 Check it's working
+
+TODO
+
+prove -r t
+
+=head2 Next Steps
+
+TODO
 
 =head1 COMMON PROBLEMS
 
