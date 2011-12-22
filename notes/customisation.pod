@@ -1,0 +1,99 @@
+=head1 NAME
+
+Customising FixMyStreet
+
+=head1 ABOUT
+
+This document explains how to tailor the default installation of
+FixMyStreet to your requirements, including limiting the geographic
+area it accepts queries for and translating the text.
+
+It also includes information about how to change the design.
+
+=head1 TEMPLATES
+
+FixMyStreet uses a cobrand system to implement customisation. There
+are two parts to a cobrand: the templates and the cobrand module.
+
+Templates are found in the templates directory. Within that there are
+seperate directories for web templates and email templates. Under each
+of these there is a directory for each cobrand.
+
+The full set of templates is stored in the default cobrand and if no
+equivalent template is found in a cobrand directory FixMyStreet will
+use the default template.
+
+At a bare minimum you will probably want to change the header and footer
+templates.
+
+=head1 CSS
+
+The CSS is stored in web/css/ under which there are directories for cobrands
+but this is only by custom. The loading of the css is controled by the header
+templates.
+
+The CSS is structured into two main files:
+
+=over
+
+=item core.css
+
+This contains all the styling for the content of the pages. This should not
+need changed unless you are significantly changing the layout of the site.
+
+=item main.css
+
+This contains the CSS for the header and footer as well as the colour scheme.
+
+=back
+
+=head1 Cobrand modules
+
+Much of the rest of the customisation takes place in the Cobrand modules. These
+are automatically loaded according to the current cobrand and can be found in
+perllib/FixMyStreet/Cobrands/. There is a default cobrand ( Default.pm ) which
+all cobrands should inherit from. A cobrand module can then override any of the
+methods from the default cobrand. There is documentation in Default.pm that
+explains what all the methods do, where they are used and what they should
+return. However, a list of the most common ones to change is:
+
+=over
+
+=item site_title
+
+Returns the name of the site and is used anywhere the name of the site appears.
+
+=item country
+
+The country that the cobrand is used in.
+
+=item allow_photo_upload
+
+Return 0 to disallow photo upload.
+
+=item allow_photo_display
+
+Return 0 to disallow photo display.
+
+=item disambiguate_location
+
+FIXME: Used when geolocating to identify if a report is within the area covered
+by the site.
+
+=item geocode_postcode
+
+This is used to check if an address entered on the search form is a valid
+postcode and if so it returns the lat/long for that postcode.
+
+=item find_closest and find_closest_address_for_rss
+
+These are used to provide information on th closes street to the point of 
+the address in reports and rss feeds or alerts. 
+
+=back
+
+=head1 Translations
+
+gettext
+
+cobrand->set_lang_and_domain
