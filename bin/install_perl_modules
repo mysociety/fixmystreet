@@ -8,7 +8,7 @@ chmod +x bin/cpanm
 export PATH=local/bin:$PATH
 export PERL5LIB=local/lib/perl5
 
-./local/bin/carton install --deployment
+carton install --deployment
 
 perl -MImage::Magick -e 'exit()' >/dev/null 2>&1
 
