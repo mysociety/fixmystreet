@@ -290,6 +290,10 @@ while (my $row = $unsent->next) {
                 $result *= 0;
             } else {
                 $result *= 1;
+                # temporary fix to resolve some issues with west berks
+                if ( $row->council =~ /2619/ ) {
+                    $result *= 0;
+                }
             }
         }
     }
