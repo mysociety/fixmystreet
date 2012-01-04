@@ -82,7 +82,14 @@ sub config {
     return \%CONFIG unless scalar @_;
 
     my $key = shift;
-    return exists $CONFIG{$key} ? $CONFIG{$key} : undef;
+
+    if ( exists $CONFIG{$key} ) {
+        return $CONFIG{$key};
+    } elsif ( my $val = FixMyStreet::App->model('DB::Config')->get_value( $key ) ) {
+        return $val;
+    }
+
+    return undef;
 }
 
 =head2 dbic_connect_info
