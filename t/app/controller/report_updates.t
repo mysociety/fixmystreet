@@ -81,7 +81,7 @@ for my $test (
         anonymous  => 'f',
         mark_fixed => 'false',
         mark_open  => 'false',
-        meta       => 'Posted by Other User at 15:47, Saturday 16 April 2011',
+        meta       => 'Posted by Other User at 15:47, Sat 16 April 2011',
     },
     {
         description => 'blank user, anon is false',
@@ -89,7 +89,7 @@ for my $test (
         anonymous  => 'f',
         mark_fixed => 'false',
         mark_open  => 'false',
-        meta       => 'Posted anonymously at 15:47, Saturday 16 April 2011',
+        meta       => 'Posted anonymously at 15:47, Sat 16 April 2011',
     },
     {
         description => 'named user, anon is true',
@@ -97,7 +97,7 @@ for my $test (
         anonymous  => 't',
         mark_fixed => 'false',
         mark_open  => 'false',
-        meta       => 'Posted anonymously at 15:47, Saturday 16 April 2011',
+        meta       => 'Posted anonymously at 15:47, Sat 16 April 2011',
     },
     {
         description => 'named user, anon is true, fixed',
@@ -106,7 +106,7 @@ for my $test (
         mark_fixed => 'true',
         mark_open  => 'false',
         meta =>
-'Posted anonymously at 15:47, Saturday 16 April 2011, marked as fixed',
+'Posted anonymously at 15:47, Sat 16 April 2011, marked as fixed',
     },
     {
         description => 'named user, anon is true, reopened',
@@ -114,7 +114,7 @@ for my $test (
         anonymous  => 't',
         mark_fixed => 'false',
         mark_open  => 'true',
-        meta => 'Posted anonymously at 15:47, Saturday 16 April 2011, reopened',
+        meta => 'Posted anonymously at 15:47, Sat 16 April 2011, reopened',
     }
   )
 {
@@ -185,9 +185,9 @@ subtest "several updates shown in correct order" => sub {
 
     my $meta = $mech->extract_update_metas;
     is scalar @$meta, 3, 'number of updates';
-    is $meta->[0], 'Posted by Other User at 12:23, Thursday 10 March 2011', 'first update';
-    is $meta->[1], 'Posted by Main User at 12:23, Thursday 10 March 2011', 'second update';
-    is $meta->[2], 'Posted anonymously at 08:12, Tuesday 15 March 2011, marked as fixed', 'third update';
+    is $meta->[0], 'Posted by Other User at 12:23, Thu 10 March 2011', 'first update';
+    is $meta->[1], 'Posted by Main User at 12:23, Thu 10 March 2011', 'second update';
+    is $meta->[2], 'Posted anonymously at 08:12, Tue 15 March 2011, marked as fixed', 'third update';
 };
 
 for my $test (

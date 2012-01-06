@@ -32,4 +32,4 @@ libyaml-perl
 liblist-moreutils-perl
 libhaml-ruby
 libtemplate-perl
-postgresql-server-dev-8.3
+postgresql-server-dev-8.4

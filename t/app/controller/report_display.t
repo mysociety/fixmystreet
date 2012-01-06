@@ -103,7 +103,7 @@ subtest "test a good report" => sub {
     is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
     is $mech->extract_problem_title, 'Test 2', 'problem title';
     is $mech->extract_problem_meta,
-      'Reported by Test User at 15:47, Saturday 16 April 2011',
+      'Reported by Test User at 15:47, Sat 16 April 2011',
       'correct problem meta information';
     $mech->content_contains('Test 2 Detail');
 
@@ -124,55 +124,55 @@ foreach my $meta (
         anonymous => 'f',
         category  => 'Other',
         service   => '',
-        meta      => 'Reported by Test User at 15:47, Saturday 16 April 2011'
+        meta      => 'Reported by Test User at 15:47, Sat 16 April 2011'
     },
     {
         anonymous => 'f',
         category  => 'Roads',
         service   => '',
         meta =>
-'Reported in the Roads category by Test User at 15:47, Saturday 16 April 2011'
+'Reported in the Roads category by Test User at 15:47, Sat 16 April 2011'
     },
     {
         anonymous => 'f',
         category  => '',
         service   => 'Transport service',
         meta =>
-'Reported by Transport service by Test User at 15:47, Saturday 16 April 2011'
+'Reported by Transport service by Test User at 15:47, Sat 16 April 2011'
     },
     {
         anonymous => 'f',
         category  => 'Roads',
         service   => 'Transport service',
         meta =>
-'Reported by Transport service in the Roads category by Test User at 15:47, Saturday 16 April 2011'
+'Reported by Transport service in the Roads category by Test User at 15:47, Sat 16 April 2011'
     },
     {
         anonymous => 't',
         category  => 'Other',
         service   => '',
-        meta      => 'Reported anonymously at 15:47, Saturday 16 April 2011'
+        meta      => 'Reported anonymously at 15:47, Sat 16 April 2011'
     },
     {
         anonymous => 't',
         category  => 'Roads',
         service   => '',
         meta =>
-'Reported in the Roads category anonymously at 15:47, Saturday 16 April 2011'
+'Reported in the Roads category anonymously at 15:47, Sat 16 April 2011'
     },
     {
         anonymous => 't',
         category  => '',
         service   => 'Transport service',
         meta =>
-'Reported by Transport service anonymously at 15:47, Saturday 16 April 2011'
+'Reported by Transport service anonymously at 15:47, Sat 16 April 2011'
     },
     {
         anonymous => 't',
         category  => 'Roads',
         service   => 'Transport service',
         meta =>
-'Reported by Transport service in the Roads category anonymously at 15:47, Saturday 16 April 2011'
+'Reported by Transport service in the Roads category anonymously at 15:47, Sat 16 April 2011'
     },
   )
 {
