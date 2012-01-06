@@ -199,7 +199,7 @@ for my $test (
         $mech->email_count_is( 1 );
         my $email = $mech->get_email;
         my $pc = $test->{expected_postcode};
-        my $title = $report->title;
+        (my $title = $report->title) =~ s/ /\\s+/;
         my $body = $email->body;
 
         like $body, qr#report/$report_id - $title, $pc#, 'email contains expected postcode';
