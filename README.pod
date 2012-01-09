@@ -27,7 +27,7 @@ further down.
 
 =item *
 
-Download latest version from [THIS BIT TODO]
+Fetch the latest version from L<Github|https://github.com/mysociety/fixmystreet/>
 
 =item *
 
@@ -70,9 +70,7 @@ Install the crontab from C<conf/crontab>
 
 =head1 DOWNLOADING
 
-Download from [URL GOES HERE]
-
-or get the latest version from L<github|http://github.com/mysociety/fixmystreet>
+Fetch the latest version from L<github|http://github.com/mysociety/fixmystreet>
 
 =head1 REQUIREMENTS
 
@@ -268,17 +266,37 @@ installation at the configured URL.
 
 =head2 Cron jobs
 
-TODO
+There is an example crontab in conf/crontab.ugly. At the moment this is in
+the format used by mySociety's internal deployment tools. To convert this to
+a valid crontab the following should be done:
+
+=over
+
+=item *
+
+Replace C<!!(*= $user *)!!> with the name of the user the cron should run under
+
+=item *
+
+Replace C<!!(* $vhost *)!!> with the path to the FixMyStreet code.
+
+=back
 
 =head2 Check it's working
 
-TODO
-
-prove -r t
+You can run the unit tests using C<prove -r t> in the FixMyStreet directory. Note
+that this may leave entries in your database at the moment and should not be run 
+on a live site.
 
 =head2 Next Steps
 
-TODO
+The admin site should be protected using HTTP AUTH.
+
+Customise your install using Templates, CSS and a Cobrand module.
+
+Add contact details for authorities and categories using the admin interface.
+
+Add authority boundaries to the MaPit install if required.
 
 =head1 COMMON PROBLEMS
 
