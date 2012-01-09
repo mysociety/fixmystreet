@@ -94,6 +94,6 @@ the address in reports and rss feeds or alerts.
 
 =head1 Translations
 
-gettext
-
-cobrand->set_lang_and_domain
+The translations for FixMyStreet are stored as gettext files and the
+language for a Cobrand is set in the C<set_lang_and_domain> call of
+the Cobrand module.
