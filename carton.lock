@@ -13420,6 +13420,67 @@
          },
          "version" : "3.69"
       },
+      "HTML::Selector::XPath" : {
+         "dist" : "HTML-Selector-XPath-0.12",
+         "module" : "HTML::Selector::XPath",
+         "mymeta" : {
+            "abstract" : "CSS Selector to XPath compiler",
+            "author" : [
+               "Tatsuhiko Miyagawa <miyagawa@bulknews.net>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "Module::Install version 0.81, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "HTML-Selector-XPath",
+            "no_index" : {
+               "directory" : [
+                  "inc",
+                  "t"
+               ]
+            },
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : 0
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "6.50"
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "6.62",
+                     "Test::Base" : 0,
+                     "Test::More" : 0
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "resources" : {
+               "license" : [
+                  "http://dev.perl.org/licenses/"
+               ]
+            },
+            "version" : "0.12"
+         },
+         "name" : "HTML::Selector::XPath",
+         "pathname" : "C/CO/CORION/HTML-Selector-XPath-0.12.tar.gz",
+         "provides" : {
+            "HTML::Selector::XPath" : {
+               "file" : "HTML/Selector/XPath.pm",
+               "version" : "0.12"
+            }
+         },
+         "version" : "0.12"
+      },
       "HTML::Tagset" : {
          "dist" : "HTML-Tagset-3.20",
          "module" : "HTML::Tagset",
@@ -13565,6 +13626,77 @@
             }
          },
          "version" : "4.2"
+      },
+      "HTML::TreeBuilder::XPath" : {
+         "dist" : "HTML-TreeBuilder-XPath-0.14",
+         "module" : "HTML::TreeBuilder::XPath",
+         "mymeta" : {
+            "abstract" : "add XPath support to HTML::TreeBuilder",
+            "author" : [
+               "Michel Rodriguez <mrodrigu@localdomain>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "ExtUtils::MakeMaker version 6.58, CPAN::Meta::Converter version 2.110930001, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "HTML-TreeBuilder-XPath",
+            "no_index" : {
+               "directory" : [
+                  "t",
+                  "inc"
+               ]
+            },
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : 0
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : 0
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "HTML::TreeBuilder" : 0,
+                     "List::Util" : 0,
+                     "XML::XPathEngine" : "0.12"
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "version" : "0.14"
+         },
+         "name" : "HTML::TreeBuilder::XPath",
+         "pathname" : "M/MI/MIROD/HTML-TreeBuilder-XPath-0.14.tar.gz",
+         "provides" : {
+            "HTML::Element" : {
+               "file" : "HTML/TreeBuilder/XPath.pm"
+            },
+            "HTML::TreeBuilder::XPath" : {
+               "file" : "HTML/TreeBuilder/XPath.pm",
+               "version" : "0.14"
+            },
+            "HTML::TreeBuilder::XPath::Attribute" : {
+               "file" : "HTML/TreeBuilder/XPath.pm"
+            },
+            "HTML::TreeBuilder::XPath::Node" : {
+               "file" : "HTML/TreeBuilder/XPath.pm"
+            },
+            "HTML::TreeBuilder::XPath::Root" : {
+               "file" : "HTML/TreeBuilder/XPath.pm"
+            },
+            "HTML::TreeBuilder::XPath::TextNode" : {
+               "file" : "HTML/TreeBuilder/XPath.pm"
+            }
+         },
+         "version" : "0.14"
       },
       "HTTP::Body" : {
          "dist" : "HTTP-Body-1.15",
@@ -20224,6 +20356,56 @@
          },
          "version" : "1.28"
       },
+      "Spiffy" : {
+         "dist" : "Spiffy-0.30",
+         "module" : "Spiffy",
+         "mymeta" : {
+            "abstract" : "Spiffy Perl Interface Framework For You",
+            "author" : [
+               "Ingy dÃ¶t Net <ingy@cpan.org>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "Module::Install version 0.54, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "Spiffy",
+            "no_index" : {
+               "directory" : [
+                  "inc",
+                  "t"
+               ]
+            },
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : 0
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "Filter::Util::Call" : 0,
+                     "Scalar::Util" : 0
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "version" : "0.25"
+         },
+         "name" : "Spiffy",
+         "pathname" : "I/IN/INGY/Spiffy-0.30.tar.gz",
+         "provides" : {
+            "Spiffy" : {
+               "file" : "Spiffy.pm",
+               "version" : "0.30"
+            }
+         },
+         "version" : "0.30"
+      },
       "Statistics::Distributions" : {
          "dist" : "Statistics-Distributions-1.02",
          "module" : "Statistics::Distributions",
@@ -21289,6 +21471,84 @@
             }
          },
          "version" : "1.00"
+      },
+      "Test::Base" : {
+         "dist" : "Test-Base-0.60",
+         "module" : "Test::Base",
+         "mymeta" : {
+            "abstract" : "A Data Driven Testing Framework",
+            "author" : [
+               "Ingy döt Net <ingy@cpan.org>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "Module::Install version 1.00, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "Test-Base",
+            "no_index" : {
+               "directory" : [
+                  "inc",
+                  "t"
+               ]
+            },
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "6.42"
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "6.42"
+                  }
+               },
+               "runtime" : {
+                  "recommends" : {
+                     "Test::Deep" : 0
+                  },
+                  "requires" : {
+                     "Filter::Util::Call" : 0,
+                     "Spiffy" : "0.30",
+                     "Test::More" : "0.62",
+                     "perl" : "5.006001"
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "resources" : {
+               "license" : [
+                  "http://dev.perl.org/licenses/"
+               ]
+            },
+            "version" : "0.60"
+         },
+         "name" : "Test::Base",
+         "pathname" : "I/IN/INGY/Test-Base-0.60.tar.gz",
+         "provides" : {
+            "Module::Install::TestBase" : {
+               "file" : "Module/Install/TestBase.pm",
+               "version" : "0.60"
+            },
+            "Test::Base" : {
+               "file" : "Test/Base.pm",
+               "version" : "0.60"
+            },
+            "Test::Base::Block" : {
+               "file" : "Test/Base.pm"
+            },
+            "Test::Base::Filter" : {
+               "file" : "Test/Base/Filter.pm"
+            },
+            "Test::Base::Handle" : {
+               "file" : "Test/Base.pm"
+            }
+         },
+         "version" : "0.60"
       },
       "Test::Deep" : {
          "dist" : "Test-Deep-0.108",
@@ -23500,6 +23760,77 @@
          },
          "version" : "0.11"
       },
+      "UNIVERSAL::require" : {
+         "dist" : "UNIVERSAL-require-0.13",
+         "module" : "UNIVERSAL::require",
+         "mymeta" : {
+            "abstract" : "require() modules from a variable",
+            "author" : [
+               "Michael G Schwern <schwern@pobox.com>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "ExtUtils::MakeMaker version 6.50, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "UNIVERSAL-require",
+            "no_index" : {
+               "directory" : [
+                  "t",
+                  "inc"
+               ],
+               "package" : [
+                  "UNIVERSAL"
+               ]
+            },
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : 0
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : 0
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "Test::More" : "0.47"
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "resources" : {
+               "bugtracker" : {
+                  "web" : "http://rt.cpan.org/Public/Dist/Display.html?Name=UNIVERSAL-require"
+               },
+               "license" : [
+                  "http://dev.perl.org/licenses/"
+               ],
+               "repository" : {
+                  "url" : "http://svn.schwern.org/repos/CPAN/UNIVERSAL-require/trunk/"
+               }
+            },
+            "version" : "0.13"
+         },
+         "name" : "UNIVERSAL::require",
+         "pathname" : "M/MS/MSCHWERN/UNIVERSAL-require-0.13.tar.gz",
+         "provides" : {
+            "UNIVERSAL" : {
+               "file" : "UNIVERSAL/require.pm"
+            },
+            "UNIVERSAL::require" : {
+               "file" : "UNIVERSAL/require.pm",
+               "version" : "0.13"
+            }
+         },
+         "version" : "0.13"
+      },
       "URI" : {
          "dist" : "URI-1.59",
          "module" : "URI",
@@ -24010,6 +24341,90 @@
          },
          "version" : "6.01"
       },
+      "Web::Scraper" : {
+         "dist" : "Web-Scraper-0.36",
+         "module" : "Web::Scraper",
+         "mymeta" : {
+            "abstract" : "Web Scraping Toolkit using HTML and CSS Selectors or XPath expressions",
+            "author" : [
+               "Tatsuhiko Miyagawa <miyagawa@bulknews.net>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "Module::Install version 1.04, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "Web-Scraper",
+            "no_index" : {
+               "directory" : [
+                  "inc",
+                  "t",
+                  "xt"
+               ]
+            },
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "6.62",
+                     "Test::Base" : 0,
+                     "Test::More" : 0,
+                     "Test::Requires" : 0
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "6.62"
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "HTML::Entities" : 0,
+                     "HTML::Selector::XPath" : "0.03",
+                     "HTML::Tagset" : 0,
+                     "HTML::TreeBuilder" : "3.23",
+                     "HTML::TreeBuilder::XPath" : "0.08",
+                     "LWP" : "5.827",
+                     "Scalar::Util" : 0,
+                     "UNIVERSAL::require" : 0,
+                     "URI" : 0,
+                     "XML::XPathEngine" : "0.08",
+                     "YAML" : 0,
+                     "perl" : "5.008001"
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "resources" : {
+               "license" : [
+                  "http://dev.perl.org/licenses/"
+               ],
+               "repository" : {
+                  "type" : "git",
+                  "url" : "git://github.com/miyagawa/web-scraper.git"
+               }
+            },
+            "version" : "0.36"
+         },
+         "name" : "Web::Scraper",
+         "pathname" : "M/MI/MIYAGAWA/Web-Scraper-0.36.tar.gz",
+         "provides" : {
+            "Web::Scraper" : {
+               "file" : "Web/Scraper.pm",
+               "version" : "0.36"
+            },
+            "Web::Scraper::Filter" : {
+               "file" : "Web/Scraper/Filter.pm"
+            },
+            "Web::Scraper::LibXML" : {
+               "file" : "Web/Scraper/LibXML.pm"
+            }
+         },
+         "version" : "0.36"
+      },
       "XML::Parser" : {
          "dist" : "XML-Parser-2.41",
          "module" : "XML::Parser",
@@ -24274,6 +24689,90 @@
             }
          },
          "version" : "2.18"
+      },
+      "XML::XPathEngine" : {
+         "dist" : "XML-XPathEngine-0.13",
+         "module" : "XML::XPathEngine",
+         "mymeta" : {
+            "abstract" : "a re-usable XPath engine for DOM-like trees",
+            "author" : [
+               "Michel Rodriguez <mirod@cpan.org>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "ExtUtils::MakeMaker version 6.59, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "unknown"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "XML-XPathEngine",
+            "no_index" : {
+               "directory" : [
+                  "t",
+                  "inc"
+               ]
+            },
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : 0
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : 0
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "Test::More" : 0
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "version" : "0.13"
+         },
+         "name" : "XML::XPathEngine",
+         "pathname" : "M/MI/MIROD/XML-XPathEngine-0.13.tar.gz",
+         "provides" : {
+            "XML::XPathEngine" : {
+               "file" : "XML/XPathEngine.pm",
+               "version" : "0.13"
+            },
+            "XML::XPathEngine::Boolean" : {
+               "file" : "XML/XPathEngine/Boolean.pm"
+            },
+            "XML::XPathEngine::Expr" : {
+               "file" : "XML/XPathEngine/Expr.pm"
+            },
+            "XML::XPathEngine::Function" : {
+               "file" : "XML/XPathEngine/Function.pm"
+            },
+            "XML::XPathEngine::Literal" : {
+               "file" : "XML/XPathEngine/Literal.pm"
+            },
+            "XML::XPathEngine::LocationPath" : {
+               "file" : "XML/XPathEngine/LocationPath.pm"
+            },
+            "XML::XPathEngine::NodeSet" : {
+               "file" : "XML/XPathEngine/NodeSet.pm"
+            },
+            "XML::XPathEngine::Number" : {
+               "file" : "XML/XPathEngine/Number.pm"
+            },
+            "XML::XPathEngine::Root" : {
+               "file" : "XML/XPathEngine/Root.pm"
+            },
+            "XML::XPathEngine::Step" : {
+               "file" : "XML/XPathEngine/Step.pm"
+            },
+            "XML::XPathEngine::Variable" : {
+               "file" : "XML/XPathEngine/Variable.pm"
+            }
+         },
+         "version" : "0.13"
       },
       "YAML" : {
          "dist" : "YAML-0.77",
