@@ -118,6 +118,13 @@ For most uses of FixMyStreet you'll also need access to a MaPit server with
 data for the types of bodies you are reporting issues to. For more details on
 how to install MaPit see the L<mapit pypi page|http://pypi.python.org/pypi/django-mapit/>
 
+You will also need a Tile Server to serve up Map tiles. FixMyStreet can use
+Google, Bing and OpenStreetMap Tile servers.
+
+Finally, you will need a geolocation service to turn addresses into longitude
+and latitudes. FixMyStreet currently includes code to use both Bing and Googles
+geolocation services.
+
 =head1 DETAILED INSTALLATION INSTRUCTIONS
 
 =head2 Unpacking the Code
