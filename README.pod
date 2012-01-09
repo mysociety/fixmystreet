@@ -76,10 +76,6 @@ Fetch the latest version from L<github|http://github.com/mysociety/fixmystreet>
 
 On the server you are installing FixMyStreet on you will need the following things:
 
-=head2 Data Requirements
-
-TODO
-
 =head2 Software requirements
 
 =over
