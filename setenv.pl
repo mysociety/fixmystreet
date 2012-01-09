@@ -17,11 +17,10 @@ BEGIN {    # add the local perllibs too
 # Set the environment for the FixMyStreet project
 
 # Add the lib/perl5 in perl-external so that we can load local::lib from there
-use lib "$root/perl-external/lib/perl5";
+use lib "$root/local/lib/perl5";
 
 # Add the perl-external dirs properly using local::lib
-use local::lib "$root/perl-external";
-use local::lib "$root/perl-external/local-lib";
+use local::lib "$root/local";
 
 use lib "$root/commonlib/perllib";
 use lib "$root/perllib";
