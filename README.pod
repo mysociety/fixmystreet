@@ -51,7 +51,7 @@ Create a new Apache vhost based on C<conf/httpd-conf.example>
 
 =item *
 
-Copy C<conf/general-example.yml> to C<conf/general.yml> and update
+Copy C<conf/general.yml-example> to C<conf/general.yml> and update
 the defaults accordingly
 
 =item *
@@ -212,7 +212,7 @@ mod_fastcgi
 =head1 SETTINGS
 
 The settings for FixMyStreet are defined in C<conf/general.yml> using the YAML
-markup language. There are some defaults in C<conf/general-example.yml> which
+markup language. There are some defaults in C<conf/general.yml-example> which
 you should copy to C<conf/general.yml>.
 
 The bare minimum of settings you will need to fill in or update are:
