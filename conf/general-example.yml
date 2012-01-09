@@ -13,17 +13,12 @@ FMS_DB_NAME: 'fms'
 FMS_DB_USER: 'fms'
 FMS_DB_PASS: ''
 
-BASE_URL: 'http://www.example.org'
-
 EMAIL_DOMAIN: 'example.org'
-CONTACT_EMAIL: 'team@example.org'
 TEST_EMAIL_PREFIX: ''
 
 CONTACT_NAME: 'FixMyStreet'
 STAGING_SITE: 1
 
-UPLOAD_CACHE: '/upload/'
-GEO_CACHE: '/cache/'
 GOOGLE_MAPS_API_KEY: ''
 BING_MAPS_API_KEY: ''
 
@@ -50,11 +45,6 @@ IPHONE_URL: ''
 
 # Log file (used in test harness, and later in admin scripts)
 HTTPD_ERROR_LOG: '/var/log/apache/error.log'
-
-ALLOWED_COBRANDS: 'cobrand_one|cobrand_two'
-
-# How many items are returned in the GeoRSS feeds by default
-RSS_LIMIT: '20'
 
 # Should problem reports link to the council summary pages?
 AREA_LINKS_FROM_PROBLEMS: '0'

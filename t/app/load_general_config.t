@@ -15,11 +15,11 @@ is FixMyStreet::App->config->{GAZE_URL},    #
 my $conf = FixMyStreet::App->model('DB::Config')->find( { key => 'DOESNOTEXIST' } );
 $conf->delete() if $conf;
 
-ok !defined( FixMyStreet->config('DOESNOTEXIST') ), 'missing config is undef';
+ok !defined( FixMyStreet::App->get_conf('DOESNOTEXIST') ), 'missing config is undef';
 
 ok FixMyStreet::App->model('DB::Config')->new( { key => 'DOESNOTEXIST', value => 'VALUE' } )->insert, 'created key';
 
-my $value = FixMyStreet->config('DOESNOTEXIST');
+my $value = FixMyStreet::App->get_conf('DOESNOTEXIST');
 
 is $value, 'VALUE', 'config created';
 
@@ -28,6 +28,6 @@ ok FixMyStreet::App->model('DB::Config')->find_or_create( { key => 'GAZE_URL', v
 my $c = FixMyStreet::App->model('DB::Config')->find( { key => 'GAZE_URL' } );
 is $c->value, 'http://example.com/gaze', 'config in db';
 
-$value = FixMyStreet->config('GAZE_URL');
+$value = FixMyStreet::App->get_conf('GAZE_URL');
 is $value, 'http://gaze.mysociety.org/gaze', 'uses value from file';
 

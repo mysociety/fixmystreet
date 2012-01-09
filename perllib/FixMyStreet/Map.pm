@@ -31,7 +31,7 @@ are permitted by the config.
 =cut
 
 sub allowed_maps {
-    my @allowed = split /,/, mySociety::Config::get('MAP_TYPE');
+    my @allowed = split /,/, FixMyStreet::App->get_conf('MAP_TYPE');
     @allowed = map { __PACKAGE__.'::'.$_ } @allowed;
     my %avail = map { $_ => 1 } __PACKAGE__->maps;
     return grep { $avail{$_} } @allowed;

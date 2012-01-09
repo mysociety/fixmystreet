@@ -17,14 +17,14 @@ $mech->follow_link_ok( { text_regex => qr/Birmingham/ } );
 
 SKIP: {
     skip( "Need 'emptyhomes' in ALLOWED_COBRANDS config", 8 )
-      unless FixMyStreet::App->config->{ALLOWED_COBRANDS} =~ m{emptyhomes};
+      unless FixMyStreet::App->get_conf('ALLOWED_COBRANDS') =~ m{emptyhomes};
     ok $mech->host("reportemptyhomes.com"), 'change host to reportemptyhomes';
     $mech->get_ok('/reports');
     # EHA lacks one column the others have
     $mech->content_lacks('state unknown');
 
     skip( "Need 'fiksgatami' in ALLOWED_COBRANDS config", 8 )
-      unless FixMyStreet::App->config->{ALLOWED_COBRANDS} =~ m{fiksgatami};
+      unless FixMyStreet::App->get_conf('ALLOWED_COBRANDS') =~ m{fiksgatami};
     mySociety::MaPit::configure('http://mapit.nuug.no/');
     ok $mech->host("fiksgatami.no"), 'change host to fiksgatami';
     $mech->get_ok('/reports');

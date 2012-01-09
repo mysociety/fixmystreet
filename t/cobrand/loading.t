@@ -14,7 +14,7 @@ use_ok 'FixMyStreet::Cobrand';
     ok $allowed,     "got the allowed_cobrands";
     isa_ok $allowed, "ARRAY";
     cmp_ok scalar @$allowed, '>', 1, "got more than one";
-    is join( '|', @$allowed ), FixMyStreet->config('ALLOWED_COBRANDS'),
+    is join( '|', @$allowed ), FixMyStreet::App->get_conf('ALLOWED_COBRANDS'),
       "matches config value";
 }
 

@@ -100,7 +100,7 @@ sub error : Private {
 sub get_discovery : Private {
     my ( $self, $c ) = @_;
 
-    my $contact_email = $c->config->{CONTACT_EMAIL};
+    my $contact_email = FixMyStreet::App->get_conf('CONTACT_EMAIL');
     my $prod_url = 'http://www.fiksgatami.no/open311';
     my $test_url = 'http://fiksgatami-dev.nuug.no/open311';
     my $prod_changeset = '2011-04-08T00:00:00Z';
@@ -112,7 +112,7 @@ sub get_discovery : Private {
         'changeset' => [$prod_changeset],
         # XXX rewrite to match
         'key_service' => ["Read access is open to all according to our \u003Ca href='/open_data' target='_blank'\u003Eopen data license\u003C/a\u003E. For write access either: 1. return the 'guid' cookie on each call (unique to each client) or 2. use an api key from a user account which can be generated here: http://seeclickfix.com/register The unversioned url will always point to the latest supported version."],
-        'max_requests' => [ $c->config->{RSS_LIMIT} ],
+        'max_requests' => [ FixMyStreet::App->get_conf('RSS_LIMIT') ],
         'endpoints' => [
             {
                 'endpoint' => [
@@ -205,8 +205,8 @@ sub get_services : Private {
 
 sub output_requests : Private {
     my ( $self, $c, $criteria, $limit ) = @_;
-    $limit = $c->config->{RSS_LIMIT}
-        unless $limit && $limit <= $c->config->{RSS_LIMIT};
+    $limit = FixMyStreet::App->get_conf('RSS_LIMIT')
+        unless $limit && $limit <= FixMyStreet::App->get_conf('RSS_LIMIT');
 
     my $attr = {
         order_by => { -desc => 'confirmed' },
@@ -377,8 +377,8 @@ sub get_requests : Private {
 
 sub rss_query : Private {
     my ( $self, $c, $criteria, $limit ) = @_;
-    $limit = $c->config->{RSS_LIMIT}
-        unless $limit && $limit <= $c->config->{RSS_LIMIT};
+    $limit = FixMyStreet::App->get_conf('RSS_LIMIT')
+        unless $limit && $limit <= FixMyStreet::App->get_conf('RSS_LIMIT');
 
     my $attr = {
         result_class => 'DBIx::Class::ResultClass::HashRefInflator',

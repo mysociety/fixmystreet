@@ -9,7 +9,6 @@ use Memcached;
 use mySociety::Email;
 use mySociety::EmailUtil;
 use mySociety::Random qw(random_bytes);
-use FixMyStreet::Map;
 
 use URI;
 use URI::QueryParam;
@@ -189,6 +188,23 @@ sub setup_request {
 
     return $c;
 }
+
+sub get_conf {
+    my $self = shift;
+    my $key = shift;
+    warn "------------\n$self\n------------\n" if $self !~ /FixMyStreet/;
+
+    return undef unless $key;
+
+    if ( my $value = FixMyStreet::App->config->{ $key } ) {
+        return $value;
+    } elsif ( $value = FixMyStreet::App->model('DB::Config')->get_value( $key ) ) {
+        return $value;
+    }
+
+    return undef;
+}
+# sub get_conf { return 'OSM' }
 
 =head2 setup_dev_overrides
 
