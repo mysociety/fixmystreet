@@ -29,7 +29,7 @@ use mySociety::WebTestHarness;
 
 print_log('notice', "started");
 our $wth = new mySociety::WebTestHarness();
-$wth->database_connect('BCI_');
+$wth->database_connect('FMS_');
 print_log('notice', "reading mail from STDIN");
 my $slurped = read_file(\*STDIN);
 print_log('notice', "calling email_incoming");
