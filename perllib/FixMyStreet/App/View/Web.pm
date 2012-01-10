@@ -168,7 +168,7 @@ sub html_filter {
 my %version_hash;
 sub version {
     my ( $self, $c, $file ) = @_;
-    unless ($version_hash{$file}) {
+    unless ($version_hash{$file} && !FixMyStreet->config('STAGING_SITE')) {
         my $path = FixMyStreet->path_to('web', $file);
         $version_hash{$file} = ( stat( $path ) )[9];
     }
