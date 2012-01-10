@@ -42,7 +42,7 @@ function grab_data {
         $1
         group by date(created)
         order by date(created)
-        ;" | psql --host $OPTION_BCI_DB_HOST --port $OPTION_BCI_DB_PORT -A -F " " $OPTION_BCI_DB_NAME $OPTION_BCI_DB_USER | egrep -v "date|rows" >$2
+        ;" | psql --host $FMS_DB_HOST --port $FMS_DB_PORT -A -F " " $FMS_DB_NAME $FMS_DB_USER | egrep -v "date|rows" >$2
 }
 
 # rather nastily, work out the cumulative heights in reverse, so can plot impulses on top of each other

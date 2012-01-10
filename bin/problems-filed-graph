@@ -29,7 +29,7 @@ echo "select
     where state not in ('unconfirmed', 'hidden') 
     group by date(created)
     order by date(created)
-    ;" | psql --host $OPTION_BCI_DB_HOST --port $OPTION_BCI_DB_PORT -A -F " " $OPTION_BCI_DB_NAME $OPTION_BCI_DB_USER | egrep -v "date|rows" >$SOURCEO
+    ;" | psql --host $FMS_DB_HOST --port $FMS_DB_PORT -A -F " " $FMS_DB_NAME $FMS_DB_USER | egrep -v "date|rows" >$SOURCEO
 #echo "source $SOURCEO"
 
 cat >$GPSCRIPT <<END 
