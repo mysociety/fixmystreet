@@ -18,7 +18,7 @@ cd `dirname $0`
 cd ../../
 source fixmystreet/commonlib/shlib/deployfns
 
-read_conf fixmystreet/conf/general
+read_conf fixmystreet/conf/general.yml
 
 if [ $OPTION_BASE_URL = "http://reportemptyhomes.com" ]; then
     DATE="2008-10-01"
@@ -42,7 +42,7 @@ function grab_data {
         $1
         group by date(created)
         order by date(created)
-        ;" | psql --host $OPTION_BCI_DB_HOST --port $OPTION_BCI_DB_PORT -A -F " " $OPTION_BCI_DB_NAME $OPTION_BCI_DB_USER | egrep -v "date|rows" >$2
+        ;" | psql --host $OPTION_FMS_DB_HOST --port $OPTION_FMS_DB_PORT -A -F " " $OPTION_FMS_DB_NAME $OPTION_FMS_DB_USER | egrep -v "date|rows" >$2
 }
 
 # rather nastily, work out the cumulative heights in reverse, so can plot impulses on top of each other

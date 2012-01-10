@@ -251,6 +251,12 @@ sub add_row : Private {
     (my $link = $alert_type->item_link) =~ s/{{(.*?)}}/$row->{$1}/g;
     (my $desc = _($alert_type->item_description)) =~ s/{{(.*?)}}/$row->{$1}/g;
     my $url = $c->uri_for( $link );
+
+    if ( $row->{postcode} ) {
+        my $pc = $c->cobrand->format_postcode( $row->{postcode} );
+        $title .= ", $pc";
+    }
+
     my %item = (
         title => ent($title),
         link => $url,
@@ -266,8 +272,8 @@ sub add_row : Private {
     }
 
     if ( $row->{used_map} ) {
-        #my $address = $c->cobrand->find_closest_address_for_rss( $row->{latitude}, $row->{longitude} );
-        #$item{description} .= ent("\n<br>$address");
+        my $address = $c->cobrand->find_closest_address_for_rss( $row->{latitude}, $row->{longitude}, $row );
+        $item{description} .= ent("\n<br>$address") if $address;
     }
 
     my $recipient_name = $c->cobrand->contact_name;

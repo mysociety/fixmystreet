@@ -1,0 +1,11 @@
+Subject: Nye saker på FiksGataMi.no
+
+Følgjande nye saker er lagt til:
+
+<?=$values['data']?>
+
+Venleg helsing,  
+FiksGataMi-gruppa
+
+Viss du ikkje ynskjer å motta e-post om nye saker,
+klikk på følgjande lenkje: <?=$values['unsubscribe_url']?>

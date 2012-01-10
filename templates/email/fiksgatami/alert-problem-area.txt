@@ -1,4 +1,4 @@
-Subject: Nye saker i <?=$values['area_name']?> sendt via FiksGataMi.no
+Subject: Nye saker i <?=$values['area_name']?> hos FiksGataMi.no
 
 Følgende saker er sendt til
 <?=$values['area_name']?>:
@@ -8,6 +8,6 @@ Følgende saker er sendt til
 Vennlig hilsen,  
 FiksGataMi-gruppen
 
-Hvis du ikke ønsker å motta epost om saker som er sendt til
-<?=$values['area_name']?> i fremtiden, klikk på følgende link: 
+Hvis du ikke ønsker å motta e-post om saker som er sendt til
+<?=$values['area_name']?> i fremtiden, klikk på følgende lenke: 
 <?=$values['unsubscribe_url']?>

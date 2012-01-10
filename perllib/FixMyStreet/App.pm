@@ -178,7 +178,7 @@ sub setup_request {
 
     $c->model('DB::Problem')->set_restriction( $cobrand->site_restriction() );
 
-    Memcached::set_namespace( FixMyStreet->config('BCI_DB_NAME') . ":" );
+    Memcached::set_namespace( FixMyStreet->config('FMS_DB_NAME') . ":" );
 
     my $map = $host =~ /^osm\./ ? 'OSM' : $c->req->param('map_override');
     #if ($c->sessionid) {

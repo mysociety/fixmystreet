@@ -441,7 +441,7 @@ msgstr ""
 
 #: templates/web/default/admin/stats.html:80
 msgid "By Date"
-msgstr ""
+msgstr "På dato"
 
 #: templates/web/default/admin/council_contacts.html:26
 #: templates/web/default/admin/index.html:36
@@ -478,21 +478,19 @@ msgstr "Bytt passord"
 #: templates/web/default/report/display.html:85
 #: templates/web/default/report/display.html:87
 msgid "Closed"
-msgstr ""
+msgstr "Lukket"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:627
-#, fuzzy
 msgid "Closed by council"
 msgstr "(ikke rapportert til administrasjonen)"
 
 #: templates/web/default/my/my.html:32
-#, fuzzy
 msgid "Closed reports"
 msgstr "Fiksede rapporter"
 
 #: templates/web/default/admin/problem_row.html:25
 msgid "Closed:"
-msgstr ""
+msgstr "Lukket:"
 
 #: templates/web/default/around/display_location.html:102
 #: templates/web/default/around/display_location.html:104
@@ -507,34 +505,33 @@ msgstr "Koordinater:"
 #: templates/web/default/admin/list_updates.html:13
 #: templates/web/default/admin/search_reports.html:19
 msgid "Cobrand"
-msgstr ""
+msgstr "Merkevaresamarbeid"
 
 #: templates/web/default/admin/report_edit.html:39
 #: templates/web/default/admin/update_edit.html:41
 msgid "Cobrand data:"
-msgstr ""
+msgstr "Merkevaresamarbeidsdata:"
 
 #: templates/web/default/admin/report_edit.html:38
 #: templates/web/default/admin/update_edit.html:40
 msgid "Cobrand:"
-msgstr ""
+msgstr "Merkevaresamarbeid:"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:349
-#, fuzzy
 msgid "Configuration updated"
-msgstr "Bekreftelse"
+msgstr "Oppsett oppdatert"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:359
 msgid "Configuration updated - contacts will be generated automatically later"
-msgstr ""
+msgstr "Oppsett oppdatert - kontakter vil bli generert automatisk senere"
 
 #: templates/web/default/admin/council_contacts.html:119
 msgid "Configure Open311"
-msgstr ""
+msgstr "Sett opp Open311"
 
 #: templates/web/default/admin/council_contacts.html:96
 msgid "Configure Open311 integration"
-msgstr ""
+msgstr "Sett opp Open311-integrasjon"
 
 #: templates/web/default/admin/council_contacts.html:33
 msgid "Confirm"
@@ -610,9 +607,8 @@ msgstr "Administrasjonskontakter for %s"
 
 #: templates/web/default/admin/stats.html:84
 #: templates/web/default/admin/user_edit.html:12
-#, fuzzy
 msgid "Council:"
-msgstr "Administrasjon"
+msgstr "Administrasjon:"
 
 #: templates/web/default/admin/council_list.html:36
 msgid "Councils"
@@ -662,10 +658,9 @@ msgstr "Slettet"
 msgid "Details:"
 msgstr "Detaljer:"
 
-# Trenger kontekst / Needs context
 #: templates/web/default/admin/council_list.html:23
 msgid "Diligency prize league table"
-msgstr ""
+msgstr "Arbeidshester"
 
 #: templates/web/default/auth/general.html:32
 msgid "Do you have a FixMyStreet password?"
@@ -690,9 +685,8 @@ msgid "Editing update %d"
 msgstr "Redigerer oppdatering %d"
 
 #: templates/web/default/admin/user_edit.html:1
-#, fuzzy
 msgid "Editing user %d"
-msgstr "Redigerer oppdatering %d"
+msgstr "Redigerer bruker %d"
 
 #: templates/web/default/admin/council_edit.html:45
 msgid "Editor"
@@ -880,15 +874,13 @@ msgstr "Løst"
 
 #: templates/web/default/admin/report_edit.html:22
 #: templates/web/default/admin/report_edit.html:25
-#, fuzzy
 msgid "Fixed - Council"
-msgstr "Administrasjon"
+msgstr "Løst - Administrasjon"
 
 #: templates/web/default/admin/report_edit.html:22
 #: templates/web/default/admin/report_edit.html:25
-#, fuzzy
 msgid "Fixed - User"
-msgstr "Fiksede rapporter"
+msgstr "Løst - Bruker"
 
 #: templates/web/default/my/my.html:27
 msgid "Fixed reports"
@@ -903,7 +895,6 @@ msgid "Flag user"
 msgstr "Flag bruker"
 
 #: templates/web/default/admin/search_users.html:15
-#, fuzzy
 msgid "Flagged"
 msgstr "Flagget:"
 
@@ -1089,7 +1080,7 @@ msgstr "Ugyldig valg av feed"
 #: templates/web/default/report/display.html:85
 #: templates/web/default/report/display.html:87
 msgid "In Progress"
-msgstr ""
+msgstr "Under arbeid"
 
 #: templates/web/default/open311/index.html:21
 msgid ""
@@ -1135,9 +1126,8 @@ msgstr "Ugyldig startdato"
 #: templates/web/default/admin/report_edit.html:23
 #: templates/web/default/report/display.html:85
 #: templates/web/default/report/display.html:86
-#, fuzzy
 msgid "Investigating"
-msgstr "Navigasjon"
+msgstr "Undersøkes"
 
 #: templates/web/emptyhomes/tokens/confirm_problem.html:12
 #: templates/web/emptyhomes/tokens/confirm_problem.html:14
@@ -1229,9 +1219,8 @@ msgid "Missing jurisdiction_id"
 msgstr "Mangler jurisdiction_id"
 
 #: templates/web/default/admin/stats.html:11
-#, fuzzy
 msgid "Month"
-msgstr "Antall"
+msgstr "Måned"
 
 #: templates/web/default/report/display.html:31
 msgid "More problems nearby"
@@ -1377,9 +1366,8 @@ msgstr "Nei"
 
 #: templates/web/default/admin/stats.html:85
 #: templates/web/default/admin/user_edit.html:13
-#, fuzzy
 msgid "No council"
-msgstr "administrasjon"
+msgstr "Ingen administrasjon"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:297
 msgid "No council selected"
@@ -1549,9 +1537,8 @@ msgstr ""
 "fixmystreet\">tilgjengelig på GitHub</a>."
 
 #: templates/web/default/admin/list_updates.html:11
-#, fuzzy
 msgid "Owner"
-msgstr "Annet"
+msgstr "Eier"
 
 #: templates/web/default/errors/page_error_404_not_found.html:1
 #: templates/web/default/errors/page_error_404_not_found.html:3
@@ -1587,7 +1574,7 @@ msgstr "Bilder av nye problemer i nærheten"
 #: templates/web/default/report/display.html:85
 #: templates/web/default/report/display.html:86
 msgid "Planned"
-msgstr ""
+msgstr "Planlagt"
 
 #: templates/web/default/report/new/notes.html:6
 msgid "Please be polite, concise and to the point."
@@ -1812,9 +1799,8 @@ msgid "Posted anonymously at %s"
 msgstr "Publisert anonymt %s"
 
 #: templates/web/default/report/updates.html:11
-#, fuzzy
 msgid "Posted by %s (<strong>%s</strong>) at %s"
-msgstr "Note: <strong>%d</strong>"
+msgstr "Lagt inn av %s (<strong>%s</strong>) %s"
 
 #: templates/web/default/report/updates.html:13
 msgid "Posted by %s at %s"
@@ -2141,9 +2127,8 @@ msgstr "Søk i rapporter"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:981
 #: templates/web/default/admin/search_users.html:1
-#, fuzzy
 msgid "Search Users"
-msgstr "Søk i rapporter"
+msgstr "Søk i brukere"
 
 #: templates/web/default/admin/search_abuse.html:4
 #: templates/web/default/admin/search_reports.html:5
@@ -2233,7 +2218,7 @@ msgstr "Logget inn som %s"
 
 #: templates/web/default/report/new/fill_in_details_text.html:1
 msgid "Some categories may require additional information."
-msgstr ""
+msgstr "Noen kategorier krever kanskje mer informasjon"
 
 #: templates/web/default/alert/index.html:31
 msgid "Some photos of recent reports"
@@ -2665,10 +2650,9 @@ msgstr ""
 "igjen."
 
 #: perllib/FixMyStreet/App/Controller/Report/Update.pm:214
-#, fuzzy
 msgid "There was a problem with your update. Please try again."
 msgstr ""
-"Det var problemer med din epost/passord-kombinasjon.  Vær så snill å forsøk "
+"Det var problemer med din oppdatering.  Vær så snill å forsøk "
 "igjen."
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:117
@@ -2713,7 +2697,7 @@ msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:761
 msgid "This information is required"
-msgstr ""
+msgstr "Denne informasjonen er påkrevd"
 
 #: templates/web/default/debug_header.html:3
 msgid ""
@@ -2742,9 +2726,8 @@ msgstr ""
 "administrasjon for å se problemer som er sendt dit."
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:926
-#, fuzzy
 msgid "This problem has been closed"
-msgstr "Dette problemet er løst"
+msgstr "Dette problemet er lukket"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:922
 #: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:117
@@ -2757,18 +2740,16 @@ msgid "This problem has not been fixed"
 msgstr "Dette problemet har ikke blitt løst"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:931
-#, fuzzy
 msgid "This problem is in progress"
-msgstr "Dette problemet er løst"
+msgstr "Dette problemet er under arbeid"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:918
 msgid "This problem is old and of unknown status."
 msgstr "Dette problemet er gammel og med ukjent status."
 
 #: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:79
-#, fuzzy
 msgid "This report is currently marked as closed."
-msgstr "Denne rapporten er for tiden markert som åpen."
+msgstr "Denne rapporten er for tiden markert som lukket."
 
 #: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:77
 msgid "This report is currently marked as fixed."
@@ -2858,19 +2839,16 @@ msgid "Update by {{name}}"
 msgstr "Oppdatert av {{name}}"
 
 #: templates/web/default/admin/update_edit.html:33
-#, fuzzy
 msgid "Update changed problem state to %s"
-msgstr "Oppdatering %s opprettet for problem %d, av %s"
+msgstr "En oppdatering endret problemets status til %s"
 
 #: templates/web/default/admin/update_edit.html:35
-#, fuzzy
 msgid "Update marked problem as fixed"
 msgstr "En oppdatering markerte dette problemet som fikset."
 
 #: templates/web/default/admin/update_edit.html:37
-#, fuzzy
 msgid "Update reopened problem"
-msgstr "Oppdatering %s opprettet for problem %d, av %s"
+msgstr "En oppdatering gjennåpnet problemet"
 
 #: templates/web/default/admin/council_contacts.html:53
 msgid "Update statuses"
@@ -3051,9 +3029,8 @@ msgstr ""
 "lese. Det samme gjelder manglende tegnsetting."
 
 #: templates/web/default/admin/stats.html:10
-#, fuzzy
 msgid "Year"
-msgstr "Sluttår:"
+msgstr "År"
 
 #: templates/web/default/admin/council_contacts.html:39
 #: templates/web/default/admin/council_contacts.html:40
@@ -3258,9 +3235,8 @@ msgid "less than a minute"
 msgstr "mindre enn et minutt"
 
 #: templates/web/default/report/updates.html:18
-#, fuzzy
 msgid "marked as %s"
-msgstr "markert som fikset"
+msgstr "markert som %s"
 
 #: templates/web/default/report/updates.html:16
 msgid "marked as fixed"
@@ -3311,12 +3287,11 @@ msgstr "brukte kart"
 
 #: templates/web/default/admin/update_edit.html:26
 msgid "user is from same council as problem - %d"
-msgstr ""
+msgstr "bruker er fra samme administrasjon som problemet - %d"
 
 #: templates/web/default/admin/update_edit.html:29
-#, fuzzy
 msgid "user is problem owner"
-msgstr "Flere problemer i nærheten"
+msgstr "bruker er eier av problemet"
 
 #: templates/web/default/reports/council.html:0
 #: templates/web/default/reports/council.html:3

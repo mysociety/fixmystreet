@@ -1,0 +1,20 @@
+Subject: Stadfesting om ny sak lagt til på FiksGataMi.no
+
+Hei [% report.name %],
+
+Ver venleg og klikk på lenkja under for å stadfesta saka du har lagt
+til på FiksGataMi:
+
+[% token_url %]
+
+Viss e-post-programmet ditt ikkje lèt deg klikka på lenkja, kan du
+kopiera lenkja inn i nettlesaren din.
+
+Saka di hadde følgjande tittel:
+[% report.title %]
+
+Med følgjande informasjon:
+[% report.detail %]
+
+Venleg helsing,  
+FiksGataMi-gruppa

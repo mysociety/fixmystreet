@@ -1,0 +1,12 @@
+Subject: Nye saker sendt til <?=$values['area_name']?> via FiksGataMi.no
+
+Følgjande saker er sendt til <?=$values['area_name']?>:
+
+<?=$values['data']?>
+
+Venleg helsing,  
+FiksGataMi-gruppa
+
+Viss du ikkje ynskjer å motta e-post om saker som er sendt til
+<?=$values['area_name']?> i framtida, klikk på følgjande lenkje: 
+<?=$values['unsubscribe_url']?>

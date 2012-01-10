@@ -1,0 +1,58 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+require 5.8.0;
+
+use Data::Dumper;
+
+use FixMyStreet::App;
+use FixMyStreet::Geocode::Bing;
+
+my $reports = FixMyStreet::App->model('DB::Problem')->search(
+    {
+        geocode   => undef,
+        confirmed => { '!=', undef },
+        latitude  => { '!=', 0 },
+        longitude => { '!=', 0 },
+    },
+    {
+        select   => [qw/id geocode confirmed latitude longitude/],
+        order_by => { -desc => 'confirmed' }
+    }
+);
+
+my $num_reports = $reports->count();
+print "Found $num_reports lacking geocode information\n";
+
+my $time_to_do = ( $num_reports * 10 ) / 60 / 60;
+if ( $time_to_do > 24 ) {
+    my $days  = $time_to_do / 24;
+    my $hours = $time_to_do % 24;
+    printf( "Should take %d days and %d hours to finish\n", $days, $hours );
+}
+elsif ( $time_to_do < 1 ) {
+    printf( "Should take %d minutes to finish\n", $time_to_do * 60 );
+}
+else {
+    my $mins = ( $num_reports * 10 ) / 60 % 60;
+    printf( "Should take %d hours and %d minutes to finish\n",
+        $time_to_do, $mins );
+}
+
+while ( my $report = $reports->next ) {
+    $num_reports--;
+    next unless $report->latitude && $report->longitude;
+    next if $report->geocode;
+
+    my $j = FixMyStreet::Geocode::Bing::reverse( $report->latitude,
+        $report->longitude );
+
+    $report->geocode($j);
+    $report->update;
+
+    print "$num_reports left to populate\n" unless $num_reports % 100;
+    sleep 10;
+}
+
+print "done\n";

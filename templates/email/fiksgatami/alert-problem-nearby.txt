@@ -1,11 +1,11 @@
 Subject: Nye saker i nærheten på FiksGataMi.no
 
-Følgende saker i nærheten er sendt via FiksGataMi.no:
+Følgende saker i nærheten er lagt inn på FiksGataMi.no:
 
 <?=$values['data']?>
 
 Vennlig hilsen,  
 FiksGataMi-gruppen
 
-Hvis du ikke ønsker å abonnere på epost om problemer i nærheten,
-klikk på følgende link: <?=$values['unsubscribe_url']?>
+Hvis du ikke ønsker å motta e-post om ny problemer i nærheten,
+klikk på følgende lenke: <?=$values['unsubscribe_url']?>

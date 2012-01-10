@@ -188,7 +188,8 @@ create table problem (
     whensent timestamp,
     send_questionnaire boolean not null default 't',
     extra text, -- extra fields required for open311
-    flagged boolean not null default 'f'
+    flagged boolean not null default 'f',
+    geocode bytea
 );
 create index problem_state_latitude_longitude_idx on problem(state, latitude, longitude);
 create index problem_user_id_idx on problem ( user_id );

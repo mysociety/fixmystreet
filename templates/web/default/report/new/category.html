@@ -1,7 +1,7 @@
 [% FILTER collapse %]
 [% IF category_options.size %]
     <label for='form_category'>[% category_label | html %]</label>
-    <select name='category' id='form_category'>
+    <select name='category' id='form_category'[% ' onchange="form_category_onchange()"' IF category_extras.size %]>
         [% FOREACH cat_op IN category_options %]
         <option value='[% cat_op | html %]'[% ' selected' IF report.category == cat_op %]>[% cat_op | html %]</option>
         [% END %]

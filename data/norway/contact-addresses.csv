@@ -91,13 +91,14 @@
 0215;Frogn;postmottak@frogn.kommune.no
 0216;Nesodden;postmottak@nesodden.kommune.no
 0217;Oppegård;postmottak@oppegard.kommune.no
-0219;Bærum;veiledningstorget@baerum.kommune.no;Annet,Buss- og togstopp,Dumpet skrot,Forlatte kjøretøy,Forsøpling,Fortau/gangstier,Gatefeiing,Gatelys,Gater/Veier,Graffiti/tagging,Hull i vei,Offentlige toaletter,Oljesøl,Parkering,Park/landskap,Snøbrøyting,Sykkelveier,Tette avløpsrister,Trafikklys,Trafikkskilter,Trær,Turveier,Ulovlige oppslag,Universell utforming,Vannforsyning,Veinavn-skilter
+0219;Bærum;veiledningstorget@baerum.kommune.no;Annet,Buss- og togstopp,Dumpet skrot,Forlatte kjøretøy,Forsøpling,Fortau/gangstier,Gatefeiing,Gater/Veier,Graffiti/tagging,Hull i vei,Offentlige toaletter,Oljesøl,Parkering,Park/landskap,Snøbrøyting,Sykkelveier,Tette avløpsrister,Trafikklys,Trafikkskilter,Trær,Turveier,Ulovlige oppslag,Universell utforming,Vannforsyning,Veinavn-skilter
+0219;Bærum;veilys@hafslund.no;Gatelys
 0220;Asker;post@asker.kommune.no
 0221;Aurskog-Høland;postmottak@ahk.no
 0226;Sørum;postmottak@sorum.kommune.no
 0227;Fet;postmottak@fet.kommune.no
 0228;Rælingen;postmottak@ralingen.kommune.no
-0229;Enebakk;postmottak@enebakk.kommune.no
+0229;Enebakk;servicetorget@enebakk.kommune.no
 0230;Lørenskog;postmottak@lorenskog.kommune.no
 0231;Skedsmo;ekspedts@skedsmo.kommune.no
 0233;Nittedal;postmottak@nittedal.kommune.no
@@ -160,7 +161,7 @@
 0545;Vang;post@vang.kommune.no
 05;Oppland;postmottak@oppland.org;Annet
 0602;Drammen;kommunepost@drammen.kommune.no
-0604;Kongsberg;postmottak@kongsberg.kommune.no
+0604;Kongsberg;servicetorget@kongsberg.kommune.no
 0605;Ringerike;postmottak@ringerike.kommune.no
 0612;Hole;publikumskontoret@hole.kommune.no
 0615;Flå;postmottak@flaa.kommune.no

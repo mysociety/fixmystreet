@@ -4,11 +4,20 @@
  */
 
 function form_category_onchange() {
-    $.getJSON('/report/new/category_extras', {
-        latitude: fixmystreet.latitude,
-        longitude: fixmystreet.longitude,
-        category: this.options[ this.selectedIndex ].text,
-    }, function(data) {
+    var cat = $('#form_category');
+    var args = {
+        category: cat.val()
+    };
+
+    if ( typeof fixmystreet !== 'undefined' ) {
+        args['latitude'] = fixmystreet.latitude;
+        args['longitude'] = fixmystreet.longitude;
+    } else {
+        args['latitude'] = $('input[name="latitude"]').val();
+        args['longitude'] = $('input[name="longitude"]').val();
+    }
+
+    $.getJSON('/report/new/category_extras', args, function(data) {
         if ( data.category_extra ) {
             if ( $('#category_meta').size() ) {
                 $('#category_meta').html( data.category_extra);

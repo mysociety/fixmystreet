@@ -86,8 +86,12 @@ $map_width: 500px;
         margin: 0;
     }
 
+    p#expl small {
+        display: block;
+    }
+
     #postcodeForm {
-        display: table; /* IE6 has fixed width set below */
+        display: table; /* Full width in IE6 and IE7 */
         text-align: center;
         font-size: 150%;
         margin: 1em auto;
@@ -95,6 +99,9 @@ $map_width: 500px;
         -moz-border-radius: 1em;
         -webkit-border-radius: 1em;
         border-radius: 1em;
+        -moz-box-shadow: 2px 2px 4px #999;
+        -webkit-box-shadow: 2px 2px 4px #999;
+        box-shadow: 2px 2px 4px #999;
 
         label {
             float: none;
@@ -170,7 +177,7 @@ $map_width: 500px;
         float: left;
         text-align: right;
         padding-right: 0.5em;
-        width: 5em;
+        width: 6em;
     }
 
     fieldset, .fieldset {
@@ -562,14 +569,11 @@ $map_width: 500px;
     right: 3px;
 }
 
-.ie6 {
+.ie6, .ie7 {
     #mysociety {
         #front_stats div {
             float: left;
             margin: 0 1em 1em;
-        }
-        #postcodeForm {
-            width: 33em;
         }
     }
 }
@@ -587,7 +591,11 @@ $map_width: 500px;
 @media all and (max-width: 50em) {
     #mysociety {
         p#expl {
-            font-size: 110%;
+            font-size: 120%;
+        }
+
+        p#expl small {
+            display: inline;
         }
 
         #postcodeForm {
