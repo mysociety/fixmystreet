@@ -18,7 +18,7 @@ cd `dirname $0`
 cd ../../
 source fixmystreet/commonlib/shlib/deployfns
 
-read_conf fixmystreet/conf/general
+read_conf fixmystreet/conf/general.yml
 
 if [ $OPTION_BASE_URL = "http://reportemptyhomes.com" ]; then
     DATE="2008-10-01"

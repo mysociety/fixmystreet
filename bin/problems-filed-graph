@@ -18,7 +18,7 @@ cd `dirname $0`
 cd ../../
 source fixmystreet/commonlib/shlib/deployfns
 
-read_conf fixmystreet/conf/general
+read_conf fixmystreet/conf/general.yml
 
 SOURCEO=/tmp/bci-report-rate-graph-data-nonwmc-$RANDOM$RANDOM
 GPSCRIPT=/tmp/bci-report-rate-graph-script-$RANDOM$RANDOM
