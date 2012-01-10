@@ -65,12 +65,6 @@ If you need to add a module do it using:
   
 and it will update all the relevant bits.
 
-Currently, you probably need to add EncodedColumn manually:
-
-    module-manage.pl add DBIx::Class::EncodedColumn
-
-...because it's explicitly overridden in the code, which is fooling the installer.
-
 If a module won't build (Test::WWW::Mechanize and HTTP::Server::Simple fail
 tests for me but the failures are not pertinent) then the module-manage script
 will bail out. Look in ~/.cpanm/build_log to see what went wrong. You can force

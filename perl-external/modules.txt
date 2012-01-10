@@ -21,6 +21,7 @@ Config::General
 Crypt::Eksblowfish::Bcrypt
 DBIx::Class
 DBIx::Class::EncodedColumn
+DBIx::Class::EncodedColumn::Crypt::Eksblowfish::Bcrypt
 DBIx::Class::FilterColumn
 DBIx::Class::Schema::Loader
 DBIx::Class::Storage::DBI

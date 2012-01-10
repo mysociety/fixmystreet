@@ -21,7 +21,7 @@ for my $test (
         postcode  => 'EH99 1SP',
         confirmed => '2011-05-04 10:44:28.145168',
         anonymous => 0,
-        meta      => 'Reported by A User at 10:44, Wednesday  4 May 2011',
+        meta      => 'Reported by A User at 10:44, Wed  4 May 2011',
         main      => 1,
     },
     {
@@ -32,7 +32,7 @@ for my $test (
         postcode  => 'EH99 1SP',
         confirmed => '2011-05-03 13:24:28.145168',
         anonymous => 1,
-        meta      => 'Reported anonymously at 13:24, Tuesday  3 May 2011',
+        meta      => 'Reported anonymously at 13:24, Tue  3 May 2011',
     },
     {
         name      => 'A User',
@@ -42,7 +42,7 @@ for my $test (
         postcode  => 'EH99 1SP',
         confirmed => '2011-05-03 13:24:28.145168',
         anonymous => 1,
-        meta      => 'Reported anonymously at 13:24, Tuesday  3 May 2011',
+        meta      => 'Reported anonymously at 13:24, Tue  3 May 2011',
         update    => {
             name  => 'Different User',
             email => 'commenter@example.com',

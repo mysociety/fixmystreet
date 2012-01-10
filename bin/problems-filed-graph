@@ -18,7 +18,7 @@ cd `dirname $0`
 cd ../../
 source fixmystreet/commonlib/shlib/deployfns
 
-read_conf fixmystreet/conf/general
+read_conf fixmystreet/conf/general.yml
 
 SOURCEO=/tmp/bci-report-rate-graph-data-nonwmc-$RANDOM$RANDOM
 GPSCRIPT=/tmp/bci-report-rate-graph-script-$RANDOM$RANDOM
@@ -29,7 +29,7 @@ echo "select
     where state not in ('unconfirmed', 'hidden') 
     group by date(created)
     order by date(created)
-    ;" | psql --host $OPTION_BCI_DB_HOST --port $OPTION_BCI_DB_PORT -A -F " " $OPTION_BCI_DB_NAME $OPTION_BCI_DB_USER | egrep -v "date|rows" >$SOURCEO
+    ;" | psql --host $OPTION_FMS_DB_HOST --port $OPTION_FMS_DB_PORT -A -F " " $OPTION_FMS_DB_NAME $OPTION_FMS_DB_USER | egrep -v "date|rows" >$SOURCEO
 #echo "source $SOURCEO"
 
 cat >$GPSCRIPT <<END 
