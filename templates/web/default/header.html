@@ -4,7 +4,6 @@
 <!--[if IE 8]>   <html class="no-js ie8 oldie" lang="[% lang_code %]"><![endif]-->
 <!--[if gt IE 8]><!--><html class="no-js" lang="[% lang_code %]"><!--<![endif]-->
     <head>
-
         <meta name="viewport" content="initial-scale=1.0">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -12,8 +11,12 @@
         <meta name="HandHeldFriendly" content="true">
         <meta name="mobileoptimized" content="0">
 
-        <link rel="stylesheet" type="text/css" href="[% version('/css/core.css') %]">
-        <link rel="stylesheet" type="text/css" href="[% version('/css/main.css') %]">
+        <link rel="stylesheet" href="[% version('/css/core.css') %]">
+        <link rel="stylesheet" href="[% version('/cobrands/fixmystreet/base.css') %]">
+        <link rel="stylesheet" href="[% version('/cobrands/fixmystreet/layout.css') %]" media="(min-width:40em)">
+        <!--[if (lt IE 9) & (!IEMobile)]>
+            <link rel="stylesheet" href="[% version('/cobrands/fixmystreet/layout.css') %]">
+        <![endif]-->
 
         [% INCLUDE 'common_header_tags.html' %]
                 
@@ -26,23 +29,21 @@
     </head>
     <body>
 
+<div id="wrapper"><div id="wrapper2"><div id="wrapper3">
+
         [% IF NOT title AND NOT c.req.path %]<h1 id="header">[% ELSE %]<div id="header"><a href="/">[% END %]
             [%- loc('Fix<span id="my">My</span>Street') %]
         [%- IF NOT title AND NOT c.req.path %]</h1>[% ELSE %]</a></div>[% END %]
 
-      <div [% IF ! c.cobrand.moniker %]class="promo-background"[% END %] >
         <ul id="meta">
             [% IF c.user_exists %]
                 <li>[% tprintf(loc('Signed in as %s'), c.user.name || c.user.email) %]
-                <li><a href="/auth/sign_out">[% loc('Sign out') %]</a></li>
+                <li class="last"><a href="/auth/sign_out">[% loc('Sign out') %]</a></li>
             [% ELSE %]
                 <li>&nbsp;</li>
             [% END %]
         </ul>
-        <div id="wrapper"><div id="mysociety">
-          
-          [% IF ! c.cobrand.moniker %]
-          
-          [% END %]
+
+    <div id="mysociety" class="container">
 
     [% INCLUDE 'debug_header.html' %]
