@@ -26,9 +26,10 @@ BEGIN {
 
 my $query = "SELECT council, COUNT(*) AS total, SUM(fixed) AS fixed
   FROM (SELECT council,
-        CASE WHEN state = 'fixed' THEN 1 ELSE 0 END AS fixed
+        CASE WHEN state in ('fixed','fixed - user', 'fixed - council')
+             THEN 1 ELSE 0 END AS fixed
         FROM problem WHERE confirmed IS NOT NULL AND
-        state IN ('fixed', 'confirmed') AND
+        state IN ('fixed', 'fixed - user', 'fixed - council', 'confirmed') AND
         whensent < NOW() - INTERVAL '4 weeks') AS a
   GROUP BY council";
 
