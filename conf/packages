@@ -35,3 +35,5 @@ liblist-moreutils-perl
 libhaml-ruby
 libtemplate-perl
 postgresql-server-dev-8.4
+gnuplot
+ttf-bitstream-vera
