@@ -947,7 +947,7 @@ subtest 'hiding comment marked as fixed reopens report' => sub {
     $update->mark_fixed( 1 );
     $update->update;
 
-    $report->state('fixed');
+    $report->state('fixed - user');
     $report->update;
 
 
