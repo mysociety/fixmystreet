@@ -66,18 +66,22 @@ body {
     display: inline-block;
 }
 
-.nav a {
+.nav a, .nav span {
     text-decoration: none;
     display: block;
     padding: 10px;
 }
 
-#site-nav li a {
+.nav span {
+    text-decoration: underline;
+}
+
+#site-nav a, #site-nav span {
     color: $colour;
     padding: 9px 20px 8px 0px;
 }
 
-#site-nav li a:hover {
+#site-nav a:hover {
     color: #000;
 }
 
