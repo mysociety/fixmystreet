@@ -3336,6 +3336,54 @@
          },
          "version" : "1.4"
       },
+      "Class::Unload" : {
+         "dist" : "Class-Unload-0.07",
+         "module" : "Class::Unload",
+         "mymeta" : {
+            "abstract" : "Unload a class",
+            "author" : [
+               "Dagfinn Ilmari Mannsåker <ilmari@ilmari.org>;"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "Dist::Zilla version 4.200001, CPAN::Meta::Converter version 2.102400, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "Class-Unload",
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "Test::More" : 0
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "6.31"
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "Class::Inspector" : 0
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "version" : "0.07"
+         },
+         "name" : "Class::Unload",
+         "pathname" : "I/IL/ILMARI/Class-Unload-0.07.tar.gz",
+         "provides" : {
+            "Class::Unload" : {
+               "file" : "Class/Unload.pm",
+               "version" : "0.07"
+            }
+         },
+         "version" : "0.07"
+      },
       "Class::XSAccessor" : {
          "dist" : "Class-XSAccessor-1.13",
          "module" : "Class::XSAccessor",
@@ -13987,7 +14035,7 @@
       },
       "HTTP::Message" : {
          "dist" : "HTTP-Message-6.02",
-         "module" : "HTTP::Headers",
+         "module" : "HTTP::Status",
          "mymeta" : {
             "abstract" : "HTTP style messages",
             "author" : [
@@ -14694,7 +14742,7 @@
       },
       "LWP" : {
          "dist" : "libwww-perl-6.03",
-         "module" : "LWP::UserAgent",
+         "module" : "LWP",
          "mymeta" : {
             "abstract" : "The World-Wide Web library for Perl",
             "author" : [
