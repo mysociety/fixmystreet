@@ -3,6 +3,7 @@
 /private_locale
 ._*
 .DS_Store
+.carton
 local-lib5
 META.yml
 Makefile
