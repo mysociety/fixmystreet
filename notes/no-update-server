@@ -1,0 +1,534 @@
+#!/bin/sh
+#
+# This is a script used by Norway to bootstrap/update their FixMyStreet and
+# mapit installations. It may be helpful to you in order to see what it does,
+# but also is quite specific about where things are located and so on.
+# We hope to improve the installation process in the near future.
+# 
+# Single argument is one of 'bootstrap' 'update' 'remove' or 'update_map'
+
+# Exit on first error
+set -e
+
+PATH=/sbin:/usr/sbin:$PATH
+export PATH
+
+servername=$(hostname)
+basedir=/srv/$servername
+codename=$(lsb_release -cs)
+
+install_debs() {
+    # Statistics::Distributions is created locally
+    dpkg -i /root/libstatistics-distributions-perl_1.02-1_all.deb
+
+    # Install fixmystreet dependencies
+    apt-get install -y $(cat fixmystreet/conf/packages) \
+	libregexp-common-perl
+#   libcache-memcached-perl libfile-slurp-perl \
+#	libgeography-nationalgrid-perl liberror-perl libwww-perl \
+#	libimage-magick-perl libdbd-pg-perl libio-string-perl \
+#	libregexp-common-perl libmath-bigint-gmp-perl libdigest-sha1-perl \
+#	libxml-rss-perl libfcgi-perl libjson-perl libimage-size-perl \
+#	php5-cli postgresql apache2 libtext-template-perl libtext-csv-perl
+
+    # Install mapit dependencies
+    apt-get install -y $(cat mapit/conf/packages)
+
+    apt-get install -y libapache2-mod-fcgid
+    apt-get install -y pwgen
+
+    apt-get install -y gnuplot ttf-bitstream-vera
+
+    # XXX Also need to fetch and compile 
+    # https://secure.mysociety.org/cvstrac/dir?d=mysociety/run-with-lockfile
+}
+
+# Load Debian and CPAN packages needed for the Catalyst version
+install_dev_catalyst() {
+    apt-get install -y libcatalyst-perl \
+	libreadonly-perl \
+	libclass-c3-componentised-perl \
+	libfile-find-rule-perl \
+	libcatalyst-modules-perl \
+	libcatalyst-modules-extra-perl \
+	libdatetime-format-iso8601-perl \
+	libdatetime-format-http-perl \
+	libdatetime-format-pg-perl \
+	libdbd-pg-perl \
+	libsub-override-perl \
+	libhtml-treebuilder-xpath-perl \
+	libtest-requires-perl \
+	libhtml-selector-xpath-perl \
+	libtest-base-perl \
+	libdbix-class-encodedcolumn-perl \
+	libcrypt-eksblowfish-perl \
+	libdatetime-format-w3cdtf-perl \
+	libhaml-ruby
+
+    # Workaround for missing Perl modules in Debian
+    (
+	installcpandeb() {
+	    pkg=$1
+	    echo "info: Generating deb for $pkg"
+	    debs=$(LC_ALL=C cpan2deb $pkg 2>&1 |grep 'dpkg-deb: building package'| sed "s/.* in \`\(.*\)'./\1/" | sed 's%^../%%')
+	    echo "info: Installing $debs"
+	    dpkg -i $debs
+	}
+
+	mkdir -p /srv/src
+	cd /srv/src
+
+	apt-get install -y dh-make-perl apt-file
+	apt-file update
+
+	installcpandeb URI::SmartURI
+	installcpandeb Catalyst::Plugin::SmartURI
+	installcpandeb Catalyst::Plugin::Unicode::Encoding
+	installcpandeb Web::Scraper
+	installcpandeb Sort::Key
+	installcpandeb Term::Size::Perl
+	installcpandeb Devel::Hide
+	installcpandeb Term::Size::Any    
+	installcpandeb Template::Plugin::DateTime::Format
+	installcpandeb Template::Plugin::Comma
+	# Upgrade from 0.34 in Squeeze, to get expose_methods provided
+	# since 0.35.
+	installcpandeb Catalyst::View::TT
+
+	# App::cpanminus, Bundle::DBD::Pg, CPAN::ParseDistribution
+    )
+}
+
+pgsql_createuser() {
+    dbuser="$1"
+    dbpassword="$2"
+    su postgres -c "createuser -SDRl $dbuser"
+    su postgres -c "psql -c \"alter user \\\"$dbuser\\\" with password '$dbpassword';\""
+}
+
+pgsql_fixmystreet_bootstrap() {
+    dbuser="$1"
+    dbname="$2"
+    su postgres -c "createdb -E UTF8 --owner $dbuser $dbname; createlang plpgsql $dbname"
+    su $dbuser -c "psql $dbname -f $basedir/fixmystreet/db/schema.sql"
+    su $dbuser -c "psql $dbname -f $basedir/fixmystreet/db/alert_types.sql"
+}
+
+pgsql_mapit_bootstrap() {
+    dbuser="$1"
+    dbname="$2"
+    su postgres -c "createdb -E UTF8 -T template_postgis --owner $dbuser $dbname"
+    # No need to use "createlang plpgsql $dbname", as template_postgis
+    # already include it.
+}
+
+pgsql_remove_db() {
+    dbname="$1"
+    su postgres -c "dropdb $dbname"
+}
+pgsql_remove_user() {
+    dbuser="$1"
+    su postgres -c "dropuser $dbuser"
+}
+
+postgis_bootstrap() {
+    case "$codename" in
+	lenny)
+	    POSTGIS_SQL_PATH=/usr/share/postgresql-8.3-postgis
+	    POSTGISSQL=lwpostgis.sql
+	    ;;
+	*)
+	    POSTGIS_SQL_PATH=/usr/share/postgresql/8.4/contrib/postgis-1.5
+	    POSTGISSQL=postgis.sql
+	    ;;
+    esac
+
+    su postgres -c "createdb -E UTF8 template_postgis"
+    su postgres -c "createlang -d template_postgis plpgsql"
+    su postgres -c "psql -d postgres -c \"UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis';\""
+
+    # Loading the PostGIS SQL routines
+    su postgres -c "psql -d template_postgis -f $POSTGIS_SQL_PATH/$POSTGISSQL"
+    su postgres -c "psql -d template_postgis -f $POSTGIS_SQL_PATH/spatial_ref_sys.sql"
+    # Enabling users to alter spatial tables.
+    su postgres -c "psql -d template_postgis -c \"GRANT ALL ON geometry_columns TO PUBLIC;\""
+    su postgres -c "psql -d template_postgis -c \"GRANT ALL ON spatial_ref_sys TO PUBLIC;\""
+}
+
+postgis_remove() {
+    # Change template status to make it possible to drop the database
+    su postgres -c "psql -d postgres -c \"UPDATE pg_database SET datistemplate='false' WHERE datname='template_postgis';\""
+    su postgres -c "dropdb template_postgis"
+}
+
+apache_config() {
+    cat > /etc/apache2/sites-available/fixmystreet <<EOF
+<VirtualHost *:80>
+    ServerName $servername
+    ServerAlias fiksgatami.no www.fiksgatami.no
+    DocumentRoot $basedir/fixmystreet/web/
+
+    # 5 MB limit to allow large images to be uploaded
+    FcgidMaxRequestLen 5242880
+
+    RewriteEngine on
+    RewriteCond %{HTTP_HOST} ^fiksgatami\.no
+    RewriteRule ^(.*)$ http://www.fiksgatami.no$1 [R=permanent,L]
+    RewriteCond %{HTTP_HOST} ^fiksgatami\.nuug\.no
+    RewriteRule ^(.*)$ http://www.fiksgatami.no$1 [R=permanent,L]
+
+    # Pull in the specific config
+    Include $basedir/fixmystreet/conf/httpd.conf
+
+    <Directory $basedir/fixmystreet/web>
+        # You also need to enable cgi files to run as CGI scripts.  For example:
+        # on production servers these are run under fastcgi
+        Options +ExecCGI
+        AddHandler fcgid-script .cgi
+    </Directory>
+
+    <Location /admin>
+        Options +ExecCGI
+        AddHandler fcgid-script .cgi
+
+        AllowOverride AuthConfig
+        Order Allow,Deny
+        Allow From All
+
+        AuthName "Fiksgatami Admin Access"
+        AuthType Basic
+        AuthUserFile /etc/apache2/htpasswd.fixmystreet.users
+        require valid-user
+    </Location>
+
+    Alias /admin/ $basedir/fixmystreet/web-admin/
+    Alias /jslib/ $basedir/fixmystreet/commonlib/jslib/
+</VirtualHost>
+EOF
+
+    (
+	cd $basedir
+	sed s/mapit.mysociety.org/mapit.nuug.no/ \
+	    < fixmystreet/conf/httpd.conf-example \
+	    > fixmystreet/conf/httpd.conf
+    )
+
+    htpwdfile=/etc/apache2/htpasswd.fixmystreet.users
+    if [ ! -e $htpwdfile ] ; then
+	htpasswd -cmb $htpwdfile admin "$webpassword"
+    fi
+
+    case "$codename" in
+	lenny)
+	    djangodir=/var/lib/python-support/python2.5/django
+	    ;;
+	*)
+	    djangodir=/var/lib/python-support/python2.6/django
+	    ;;
+    esac
+    cat > /etc/apache2/sites-available/mapit <<EOF
+<VirtualHost *:80>
+    ServerName mapit.nuug.no
+    ServerAlias mapit-dev.nuug.no
+    DocumentRoot $basedir/mapit/web/
+
+    WSGIDaemonProcess mapit.nuug.no user=www-data group=www-data processes=5 threads=1 display-name=mapit.nuug.no
+    WSGIProcessGroup mapit.nuug.no
+
+    WSGIScriptAlias / $basedir/mapit/web/django.wsgi
+
+    Alias /media $djangodir/contrib/admin/media
+    Alias /static $basedir/mapit/mapit/static
+
+    <Directory $basedir/mapit/web>
+        # You also need to enable cgi files to run as CGI scripts.  For example:
+        # on production servers these are run under fastcgi
+        Options +ExecCGI
+        AddHandler fcgid-script .cgi
+    </Directory>
+</VirtualHost>
+EOF
+    a2dissite default
+    a2ensite fixmystreet
+    a2ensite mapit
+    a2enmod proxy rewrite
+    a2enmod proxy_http
+    a2enmod expires
+    /etc/init.d/apache2 restart
+}
+
+apache_stop() {
+    /etc/init.d/apache2 stop
+}
+
+apache_remove() {
+    a2dissite fixmystreet
+    a2dissite mapit
+    /etc/init.d/apache2 restart
+    rm /etc/apache2/sites-available/fixmystreet
+    rm /etc/apache2/sites-available/mapit
+}
+
+
+fetch_git_source() {
+    for gitmodule in fixmystreet mapit ; do
+	if [ ! -d $gitmodule ] ; then
+	    git clone git://github.com/petterreinholdtsen/$gitmodule.git -b $servername || \
+		git clone https://github.com/mysociety/$gitmodule.git
+	    (cd $gitmodule &&
+		git submodule update --init)
+	else
+	    (cd $gitmodule &&
+		git pull &&
+		git submodule update &&
+		git diff) | cat
+	fi
+    done
+
+    # Update translation files
+    (cd fixmystreet && commonlib/bin/gettext-makemo)
+
+    # Generate CSS files
+    (cd fixmystreet && bin/make_css)
+
+    # Not quite sure why this directory is needed
+    mkdir -p fixmystreet/perl-external/local-lib
+}
+
+update_fixmystreet_config() {
+    dbuser="$1"
+    fgmdbpassword="$2"
+    dbname="$3"
+    cat > $basedir/fixmystreet/conf/general.yml <<EOF
+# general-example.yml:
+# Example values for the "general" config file.
+#
+# Configuration parameters, in YAML syntax.
+#
+# Copy this file to one called "general.yml" in the same directory.  Or
+# have multiple config files and use a symlink to change between them.
+
+FMS_DB_HOST: 'localhost'
+FMS_DB_PORT: '5432'
+FMS_DB_NAME: '$dbname'
+FMS_DB_USER: '$dbuser'
+FMS_DB_PASS: '$fgmdbpassword'
+
+BASE_URL: 'http://$servername'
+
+EMAIL_DOMAIN: 'nuug.no'
+CONTACT_EMAIL: ''
+TEST_EMAIL_PREFIX: ''
+
+CONTACT_NAME: 'FiksGataMi'
+STAGING_SITE: 1
+
+UPLOAD_CACHE: '/var/lib/fixmystreet/upload/'
+GEO_CACHE: '/var/lib/fixmystreet/cache/'
+GOOGLE_MAPS_API_KEY: ''
+
+MAPIT_URL: 'http://mapit.nuug.no'
+MAP_TYPE: 'OSM'
+EVEL_URL: ''
+GAZE_URL: 'http://gaze.mysociety.org/gaze'
+
+# empty = use /usr/sbin/sendmail'
+SMTP_SMARTHOST: ''
+
+AUTH_SHARED_SECRET: ''
+HEARFROMYOURMP_BASE_URL: ''
+
+IPHONE_URL: ''
+ANDROID_URL: 'http://wiki.nuug.no/grupper/fiksgatami/android'
+
+# Log file (used in test harness, and later in admin scripts)
+HTTPD_ERROR_LOG: '/var/log/apache/error.log
+
+ALLOWED_COBRANDS: 'fiksgatami'
+
+# How many items are returned in the GeoRSS feeds by default
+RSS_LIMIT: '200'
+
+OSM_GUESS_OPERATOR: 1
+
+# Should problem reports link to the council summary pages?
+AREA_LINKS_FROM_PROBLEMS: 1
+
+EOF
+    if [ ! -d /var/lib/fixmystreet ] ; then
+	(
+	mkdir /var/lib/fixmystreet && \
+	    cd /var/lib/fixmystreet && \
+	    mkdir cache && \
+	    mkdir upload && \
+	    chown www-data cache && \
+	    chown www-data upload
+	)
+    fi
+}
+
+update_mapit_config() {
+    dbuser="$1"
+    dbpassword="$2"
+    dbname="$3"
+
+    if [ -e $basedir/mapit/conf/general ] ; then
+	mv $basedir/mapit/conf/general $basedir/mapit/conf/general.old-$$
+    fi
+    cat > $basedir/mapit/conf/general.yml <<EOF
+# Connection details for database
+MAPIT_DB_NAME: '$dbname'
+MAPIT_DB_USER: '$dbuser'
+MAPIT_DB_PASS: '$dbpassword'
+
+MAPIT_DB_HOST: null
+MAPIT_DB_PORT: null
+
+# Country is currently one of GB, NO, or KE
+COUNTRY: 'NO'
+# An EPSG code for what the areas are stored as. 27700 is OSGB, 4326 for WGS84.
+AREA_SRID: 4326
+STAGING: 0
+RATE_LIMIT: []
+BUGS_EMAIL: ''
+
+DJANGO_SECRET_KEY: ''
+EOF
+}
+
+mapit_manage="$basedir/mapit/project/manage.py"
+
+load_mapit_n5000() {
+    N5000SHP="$basedir/N5000 shape/N5000_AdministrativFlate.shp"
+    su www-data -c "$mapit_manage generation_create --commit --desc 'N5000 Norway'"
+    su www-data -c "$mapit_manage import_norway_n5000 --commit '$N5000SHP'"
+#    su www-data -c "$mapit_manage find_parents"
+    su www-data -c "$mapit_manage generation_activate --commit"
+}
+
+load_mapit_osm() {
+    python $basedir/mapit/bin/osm_to_kml
+    # This require changes in the code
+    if [ new-generation = "$1" ] ; then
+	su www-data -c "$mapit_manage generation_create --commit --desc 'OpenStreetmap.org'"
+    fi
+    su www-data -c "$mapit_manage import_norway_osm --commit $basedir/mapit/data/cache/*.kml"
+#    su www-data -c "$mapit_manage find_parents"
+#    su www-data -c "$mapit_manage import_area_unions --commit data/norway/regions.csv"
+    if [ new-generation = "$1" ] ; then
+	su www-data -c "$mapit_manage generation_activate --commit"
+    fi
+}
+
+load_mapit_postcodes() {
+    rm -f postnummer-utf8.txt postnummer-ekstra.csv
+    wget http://www.erikbolstad.no/nedlasting/postnummer-utf8.txt
+    wget http://www.nuug.no/prosjekt/fiksgatami/postnummer-ekstra.csv
+    su www-data -c "$mapit_manage import_bolstad_postcodes postnummer-utf8.txt"
+    su www-data -c "$mapit_manage import_bolstad_postcodes postnummer-ekstra.csv"
+}
+
+# This one need to run as user www-data
+load_mapit() {
+    su www-data -c "$mapit_manage syncdb --noinput"
+    su www-data -c "$mapit_manage migrate"
+    su www-data -c "$mapit_manage loaddata norway"
+    #load_mapit_n5000
+    load_mapit_osm new-generation
+    load_mapit_postcodes || true
+}
+
+setup_locale() {
+    cat > /etc/locale.gen  <<EOF
+en_GB.UTF-8 UTF-8
+en_US.UTF-8 UTF-8
+nb_NO.UTF-8 UTF-8
+nn_NO.UTF-8 UTF-8
+EOF
+    locale-gen
+}
+
+flush_memcache() {
+    (echo flush_all; sleep 1) | telnet localhost 11211 || true
+}
+
+append_if_missing() {
+    file="$1"
+    string="$2"
+    if [ -e "$file" ] ; then
+	if ! grep -qxF "$string" "$file" ; then
+	    echo "Appending '$string' to $file."
+	    echo "$string" >> $file
+	fi
+    fi
+}
+tune_postgresql() {
+    conf=/etc/postgresql/8.4/main/postgresql.conf
+    append_if_missing $conf "effective_cache_size = 256MB"
+    append_if_missing $conf "shared_buffers = 128MB"
+    append_if_missing $conf "log_min_duration_statement = 250"
+
+    touch /etc/sysctl.d/postgresql.conf
+    append_if_missing /etc/sysctl.d/postgresql.conf "kernel.shmmax = 136314880"
+    sysctl -w kernel.shmmax=$(( 130 * 1024 * 1024 ))
+    /etc/init.d/postgresql reload
+}
+
+cd /srv/$servername/
+
+case "$1" in 
+    bootstrap)
+	fetch_git_source
+	install_debs
+	if [ yes = "$CATALYST" ] ; then
+	    install_dev_catalyst
+	fi
+
+
+# Not yet ready, should adjust dynamically based on memory size
+#	tune_postgresql
+
+        # Password to use when connecting to the postgresql database.
+	fgmdbpassword="$(pwgen -1)"
+	midbpassword="$(pwgen -1)"
+	webpassword="$(pwgen -1)"
+
+	postgis_bootstrap
+	pgsql_createuser www-data "$fgmdbpassword"
+	pgsql_createuser mapit "$midbpassword"
+	pgsql_fixmystreet_bootstrap www-data fixmystreet
+	update_fixmystreet_config www-data "$fgmdbpassword" fixmystreet
+	pgsql_mapit_bootstrap www-data mapit
+	update_mapit_config www-data "$midbpassword" mapit
+	load_mapit
+	setup_locale
+	apache_config
+	;;
+    remove)
+	apache_stop
+	flush_memcache
+	pgsql_remove_db fixmystreet || true
+	pgsql_remove_db mapit || true
+	pgsql_remove_user mapit || true
+	pgsql_remove_user www-data || true
+	postgis_remove || true
+	apache_remove || true
+	rm $basedir/mapit/data/cache/relation-*
+	;;
+    update)
+	fetch_git_source
+	fgmdbpassword=$(grep OPTION_BCI_DB_PASS $basedir/fixmystreet/conf/general | cut -d\' -f4)
+	midbpassword=$(grep OPTION_MAPIT_DB_PASS $basedir/mapit/conf/general | cut -d\' -f4)
+
+	update_fixmystreet_config www-data $fgmdbpassword fixmystreet
+	update_mapit_config www-data $midbpassword mapit
+	apache_config
+	flush_memcache
+	;;
+    update_map)
+	rm $basedir/mapit/data/cache/relation-*
+	load_mapit_osm
+	flush_memcache
+	;;
+esac
+

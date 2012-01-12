@@ -13,7 +13,7 @@
 
         <link rel="stylesheet" href="[% version('/css/core.css') %]">
         <link rel="stylesheet" href="[% version('/cobrands/fixmystreet/base.css') %]">
-        <link rel="stylesheet" href="[% version('/cobrands/fixmystreet/layout.css') %]" media="(min-width:40em)">
+        <link rel="stylesheet" href="[% version('/cobrands/fixmystreet/layout.css') %]" media="(min-width:48em)">
         <!--[if (lt IE 9) & (!IEMobile)]>
             <link rel="stylesheet" href="[% version('/cobrands/fixmystreet/layout.css') %]">
         <![endif]-->
@@ -31,7 +31,7 @@
 
 <div id="wrapper"><div id="wrapper2"><div id="wrapper3">
 
-        [% IF NOT title AND NOT c.req.path %]<h1 id="header">[% ELSE %]<div id="header"><a href="/">[% END %]
+        [% IF NOT title AND NOT c.req.path %]<h1 id="header" role="banner">[% ELSE %]<div id="header" role="banner"><a href="/">[% END %]
             [%- loc('Fix<span id="my">My</span>Street') %]
         [%- IF NOT title AND NOT c.req.path %]</h1>[% ELSE %]</a></div>[% END %]
 
@@ -44,6 +44,6 @@
             [% END %]
         </ul>
 
-    <div id="mysociety" class="container">
+    <div id="mysociety" class="container" role="main">
 
     [% INCLUDE 'debug_header.html' %]

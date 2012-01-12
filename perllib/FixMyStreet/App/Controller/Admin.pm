@@ -770,7 +770,7 @@ sub update_edit : Path('update_edit') : Args(1) {
 
         # If we're hiding an update, see if it marked as fixed and unfix if so
         if ( $new_state eq 'hidden' && $update->mark_fixed ) {
-            if ( $update->problem->state eq 'fixed' ) {
+            if ( $update->problem->state =~ /^fixed/ ) {
                 $update->problem->state('confirmed');
                 $update->problem->update;
             }

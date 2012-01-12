@@ -37,7 +37,7 @@ body {
 /* Giving this a display: table-caption, and #wrapper3 a caption-side: top,
  * means that this div appears above the main content, even though it is below
  * it in source order. */
-#top {
+#navigation {
     border: none;
     padding-top: 0;
     margin: 0;
@@ -45,7 +45,7 @@ body {
     line-height: 1.2;
 }
 
-#top .spacer {
+#navigation .spacer {
     display: table-cell;
     width: 100%;
 }
@@ -66,22 +66,26 @@ body {
     display: inline-block;
 }
 
-.nav a {
+.nav a, .nav span {
     text-decoration: none;
     display: block;
     padding: 10px;
 }
 
-ul#top-nav li a {
+.nav span {
+    text-decoration: underline;
+}
+
+#site-nav a, #site-nav span {
     color: $colour;
     padding: 9px 20px 8px 0px;
 }
 
-ul#top-nav li a:hover {
+#site-nav a:hover {
     color: #000;
 }
 
-ul#mysociety-tab {
+#mysociety-nav {
     line-height: 1.5;
     font-size: 68.75%;
     text-transform: uppercase;
@@ -91,11 +95,11 @@ ul#mysociety-tab {
     -webkit-border-radius: 0 0 6px 6px;
 }
 
-ul#mysociety-tab li a {
+#mysociety-nav li a {
     color: #fff;
 }
 
-ul#mysociety-tab li a:hover {
+#mysociety-nav li a:hover {
     color: #000;
 }
 
@@ -126,14 +130,14 @@ ul#mysociety-tab li a:hover {
  * items. */
 .ie6, .ie7 {
 
-    #top {
+    #navigation {
         position: absolute;
         top: 7px;
         right: 0;
         width: 38em;
     }
 
-    #top .spacer {
+    #navigation .spacer {
         display: none;
     }
 
