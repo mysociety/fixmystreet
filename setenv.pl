@@ -3,8 +3,6 @@
 use strict;
 use warnings;
 
-use List::MoreUtils 'uniq';
-
 my $root;
 
 BEGIN {    # add the local perllibs too
@@ -27,6 +25,10 @@ use lib "$root/perllib";
 for ( "$root/commonlib/perllib", "$root/perllib" ) {
     $ENV{PERL5LIB} = "$_:$ENV{PERL5LIB}";
 }
+
+# need to make sure we fetch this after our libs are in INC as some 
+# vendor provided versions are old an incompatible with Moose
+use List::MoreUtils 'uniq';
 
 # also set the path to our scripts etc
 $ENV{PATH} = join ':', uniq "$root/bin", split( m/:/, $ENV{PATH} );
