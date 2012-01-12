@@ -31,8 +31,8 @@
 
 <div id="wrapper"><div id="wrapper2"><div id="wrapper3">
 
-        [% IF NOT title AND NOT c.req.path %]<h1 id="header" role="banner">[% ELSE %]<div id="header" role="banner"><a href="/">[% END %]
-            [%- loc('Fix<span id="my">My</span>Street') %]
+        [% IF NOT title AND NOT c.req.path %]<h1 id="header" role="banner">[% ELSE %]<div id="header" role="banner"><a href="/">[% END
+            %]<img src="/cobrands/fixmystreet/fms-logo-flat.png" width=327 height=62 alt="[% loc('FixMyStreet') %]">
         [%- IF NOT title AND NOT c.req.path %]</h1>[% ELSE %]</a></div>[% END %]
 
         <ul id="meta">

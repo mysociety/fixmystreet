@@ -12,6 +12,10 @@ body {
     background-image:         linear-gradient(top, $colour_dark, $colour 6px);
 }
 
+#wrapper2 {
+    padding: 0 0.5em;
+}
+
 /* A third wrapper is needed because display:table cannot be given a max-width.
  * The other two wrappers (to set full width white background and the
  * max-width, are defined in base.scss. */
@@ -28,6 +32,11 @@ body {
     #wrapper3 {
         padding-top: 2em;
     }
+}
+
+#meta {
+    float: right;
+    margin: -3em 0 0 1em;
 }
 
 #mysociety {
@@ -134,7 +143,7 @@ body {
         position: absolute;
         top: 7px;
         right: 0;
-        width: 38em;
+        width: 47em;
     }
 
     #navigation .spacer {
