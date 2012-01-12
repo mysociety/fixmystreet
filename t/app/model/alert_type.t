@@ -174,11 +174,11 @@ for my $test (
     },  
     {
         postcode           => 'Buckingham Gate',
-        expected_postcode  => 'Buckingham Gate',
+        expected_postcode  => 'Buckingham\s+Gate',
     },  
     {
         postcode           => 'Buckingham gate',
-        expected_postcode  => 'Buckingham gate',
+        expected_postcode  => 'Buckingham\s+gate',
     },  
 ) {
     subtest "correct text for postcode $test->{postcode}" => sub {
