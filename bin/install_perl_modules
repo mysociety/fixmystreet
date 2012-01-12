@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIR="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DIR="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd | sed -e 's/\/bin$//' )"
 
 curl -LO http://xrl.us/cpanm
 mv cpanm $DIR/bin
