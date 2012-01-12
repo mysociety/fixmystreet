@@ -72,9 +72,9 @@ function fixmystreet_onload() {
                 backgroundWidth: 50,
                 backgroundHeight: 19,
                 backgroundXOffset: -7,
-                backgroundYOffset: -19
-                //graphicZIndex: 11,
-                //backgroundGraphicZIndex: 10,
+                backgroundYOffset: -19,
+                graphicZIndex: 11,
+                backgroundGraphicZIndex: 10
             })
         })
     };
