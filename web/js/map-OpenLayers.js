@@ -59,6 +59,9 @@ function fixmystreet_onload() {
     }
 
     var pin_layer_options = {
+        rendererOptions: {
+            yOrdering: true
+        },
         styleMap: new OpenLayers.StyleMap({
             'default': new OpenLayers.Style({
                 externalGraphic: "/i/pin${type}.png",
