@@ -964,6 +964,51 @@ sub stats : Path('stats') : Args(0) {
     return 1;
 }
 
+sub edit_config : Path('config') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->forward('check_page_allowed');
+
+    $c->forward('set_up_council_details');
+
+    my @options = qw/
+        BASE_URL EMAIL_DOMAIN CONTACT_EMAIL TEST_EMAIL_PREFIX CONTACT_NAME
+        STAGING_SITE UPLOAD_CACHE GEO_CACHE GOOGLE_MAPS_API_KEY BING_MAPS_API_KEY
+        LONDON_REPORTIT_URL LONDON_REPORTIT_KEY LONDON_REPORTIT_SECRET
+        MAPIT_URL MAP_TYPE EVEL_URL GAZE_URL TRACKING TRACKING_URL TRACKING_SECRET
+        AUTH_SHARED_SECRET HEARFROMYOURMP_BASE_URL SMTP_SMARTHOST IPHONE_URL
+        HTTPD_ERROR_LOG ALLOWED_COBRANDS RSS_LIMIT AREA_LINKS_FROM_PROBLEMS
+    /;
+
+    if ( $c->req->method eq 'POST' ) {
+        use YAML qw/LoadFile DumpFile/;
+
+        my $file = '/Users/struan/src/mysociety/fixmystreet/conf/general.yml';
+        my $y = LoadFile( $file );
+
+        my $update = 0;
+        foreach my $option ( @options ) {
+            if ( $c->req->param( $option ) ne $y->{ $option } ) {
+                $update = 1;
+                $y->{ $option } = $c->req->param( $option );
+                $c->config->{ $option } = $c->req->param( $option );
+            }
+        }
+
+        DumpFile( $file, $y ) if $update;
+    }
+
+    my %config;
+
+    foreach my $option ( @options ) {
+        $config{$option} = $c->config->{$option};
+    }
+
+    $c->stash->{config} = \%config;
+
+    return 1;
+}
+
 =head2 set_allowed_pages
 
 Sets up the allowed_pages stash entry for checking if the current page is
@@ -987,6 +1032,7 @@ sub set_allowed_pages : Private {
              'search_abuse' => [_('Search Abuse'), 5],
              'list_flagged'  => [_('List Flagged'), 6],
              'stats'  => [_('Stats'), 6],
+             'config'  => [_('Config'), 7],
              'user_edit' => [undef, undef], 
              'council_contacts' => [undef, undef],
              'council_edit' => [undef, undef],
