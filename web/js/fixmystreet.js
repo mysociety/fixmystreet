@@ -73,6 +73,7 @@ $(function(){
         return this.optional(element) || value.length > 5 && value.match( /\S/ ) && !value.match( validNamePat ); }, validation_strings.category );
 
     var form_submitted = 0;
+    var submitted = false;
 
     $("form.validate").validate({
         rules: {
@@ -92,7 +93,7 @@ $(function(){
             /* And all because the .before thing doesn't seem to work in
                mobile safari on iOS 5. However outerHTML is not cross
                browser so we have to have two solutions :( */
-            if ( element[0].outerHTML ) {
+            if (navigator.userAgent.match(/like Mac OS X/i)) {
                 var html = element.parent('div').html();
                 element.parent('div').html( error[0].outerHTML + html );
             } else {
