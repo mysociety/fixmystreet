@@ -3,13 +3,8 @@
 body {
     margin: 7px 0 0 0;
     padding: 0;
-    background-attachment: fixed;
-    background-color: $colour;
-    background-image: -webkit-linear-gradient(top, $colour_dark, $colour 6px); /* Chrome 10+, Saf5.1+, iOS 5+ */
-    background-image:    -moz-linear-gradient(top, $colour_dark, $colour 6px); /* FF3.6 */
-    background-image:     -ms-linear-gradient(top, $colour_dark, $colour 6px); /* IE10 */
-    background-image:      -o-linear-gradient(top, $colour_dark, $colour 6px); /* Opera 11.10+ */
-    background-image:         linear-gradient(top, $colour_dark, $colour 6px);
+    background-color: #3c3c3c;
+    background-image: url(/cobrands/fixmystreet/texture.png);
 }
 
 #wrapper2 {
@@ -98,7 +93,8 @@ body {
     line-height: 1.5;
     font-size: 68.75%;
     text-transform: uppercase;
-    background: $colour;
+    background-color: #3c3c3c;
+    background-image: url(/cobrands/fixmystreet/texture.png);
     border-radius: 0 0 6px 6px;
     -moz-border-radius: 0 0 6px 6px;
     -webkit-border-radius: 0 0 6px 6px;
@@ -109,7 +105,7 @@ body {
 }
 
 #mysociety-nav li a:hover {
-    color: #000;
+    color: #ffe600;
 }
 
 #mysociety-logo {
@@ -122,7 +118,7 @@ body {
  * any colour), we generate a static non-transparent PNG on the right
  * background colour and use that here. */
 .ie6 #mysociety-logo {
-    background: url(mysociety-logo-ie6.png) center center no-repeat;
+    background: url(mysociety-logo-ie6.gif) center center no-repeat;
 }
 
 #footer p {

@@ -87,7 +87,6 @@ a:active, a:hover {
 /* header is a div containing a link on all pages bar the front page, when it
  * is a h1 that is not a link. It should always display the same. */
 #header {
-    color: $colour;
     display: block;
     margin: 0 0 0.5em 0;
     font-size: 200%;
@@ -96,17 +95,6 @@ a:active, a:hover {
     a {
         text-decoration: none;
     }
-    a:visited {
-        color: $colour;
-    }
-    a:hover {
-        color: #200;
-    }
-}
-
-/* The "My" of "FixMyStreet" in the heading is coloured differently. */
-#my {
-    color: $colour_dark;
 }
 
 #meta {
@@ -168,19 +156,15 @@ a:active, a:hover {
 #footer {
     color: #fff;
     padding: 0.5em;
-    background-color: $colour;
-    background-image: -webkit-linear-gradient(top, $colour_dark, $colour 6px); /* Chrome 10+, Saf5.1+, iOS 5+ */
-    background-image:    -moz-linear-gradient(top, $colour_dark, $colour 6px); /* FF3.6 */
-    background-image:     -ms-linear-gradient(top, $colour_dark, $colour 6px); /* IE10 */
-    background-image:      -o-linear-gradient(top, $colour_dark, $colour 6px); /* Opera 11.10+ */
-    background-image:         linear-gradient(top, $colour_dark, $colour 6px);
+    background-color: #3c3c3c;
+    background-image: url(/cobrands/fixmystreet/texture.png);
 
     a {
         color: #fff;
     }
 
     a:hover {
-       color: #000;
+       color: #ffe600;
     }
 
     p {
