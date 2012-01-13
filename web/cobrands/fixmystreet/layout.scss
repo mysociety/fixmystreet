@@ -3,13 +3,6 @@
 body {
     margin: 7px 0 0 0;
     padding: 0;
-    background-attachment: fixed;
-    background-color: $colour;
-    background-image: -webkit-linear-gradient(top, $colour_dark, $colour 6px); /* Chrome 10+, Saf5.1+, iOS 5+ */
-    background-image:    -moz-linear-gradient(top, $colour_dark, $colour 6px); /* FF3.6 */
-    background-image:     -ms-linear-gradient(top, $colour_dark, $colour 6px); /* IE10 */
-    background-image:      -o-linear-gradient(top, $colour_dark, $colour 6px); /* Opera 11.10+ */
-    background-image:         linear-gradient(top, $colour_dark, $colour 6px);
     background-color: #3c3c3c;
     background-image: url(/cobrands/fixmystreet/texture.png);
 }

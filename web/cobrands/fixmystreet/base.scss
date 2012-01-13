@@ -87,7 +87,6 @@ a:active, a:hover {
 /* header is a div containing a link on all pages bar the front page, when it
  * is a h1 that is not a link. It should always display the same. */
 #header {
-    color: $colour;
     display: block;
     margin: 0 0 0.5em 0;
     font-size: 200%;
@@ -96,17 +95,6 @@ a:active, a:hover {
     a {
         text-decoration: none;
     }
-    a:visited {
-        color: $colour;
-    }
-    a:hover {
-        color: #200;
-    }
-}
-
-/* The "My" of "FixMyStreet" in the heading is coloured differently. */
-#my {
-    color: $colour_dark;
 }
 
 #meta {
