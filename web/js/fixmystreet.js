@@ -90,9 +90,9 @@ $(function(){
         // we do this to stop things jumping around on blur
         success: function (err) { if ( form_submitted ) { err.addClass('label-valid').html( '&nbsp;' ); } else { err.addClass('label-valid-hidden'); } },
         errorPlacement: function( error, element ) {
-            /* And all because the .before thing doesn't seem to work in
-               mobile safari on iOS 5. However outerHTML is not cross
-               browser so we have to have two solutions :( */
+            /* Manipulating elements that were hidden and have now
+             * been shown doesn't seem to work very well on at least
+             * iOS5 so we have to treat it differently */
             if (navigator.userAgent.match(/like Mac OS X/i)) {
                 var html = element.parent('div').html();
                 element.parent('div').html( error[0].outerHTML + html );
