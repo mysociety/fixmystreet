@@ -88,7 +88,7 @@ $(function(){
         errorElement: 'div',
         errorClass: 'form-error',
         // we do this to stop things jumping around on blur
-        success: function (err) { if ( form_submitted ) { err.addClass('label-valid').html( '&nbsp;' ); } else { err.addClass('label-valid-hidden'); } },
+        success: function (err) { if ( form_submitted ) { err.addClass('label-valid').removeClass('label-valid-hidden').html( '&nbsp;' ); } else { err.addClass('label-valid-hidden'); } },
         errorPlacement: function( error, element ) {
             element.parent('div').before( error );
         },
