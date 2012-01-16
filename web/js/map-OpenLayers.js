@@ -362,6 +362,13 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             }
         });
         $('#side-form').show();
+        /* For some reason on IOS5 if you use the jQuery show method it
+         * doesn't display the JS validation error messages unless you do this
+         * or you cause a screen redraw by changing the phone orientation.
+         * NB: This has to happen after the call to show() */
+        if ( navigator.userAgent.match(/like Mac OS X/i)) {
+            document.getElementById('side-form').style.display = 'block';
+        }
         $('#side').hide();
         $('#sub_map_links').hide();
         fixmystreet.page = 'new';
