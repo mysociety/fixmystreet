@@ -53,9 +53,17 @@ Much of the rest of the customisation takes place in the Cobrand modules. These
 are automatically loaded according to the current cobrand and can be found in
 perllib/FixMyStreet/Cobrands/. There is a default cobrand ( Default.pm ) which
 all cobrands should inherit from. A cobrand module can then override any of the
-methods from the default cobrand. There is documentation in Default.pm that
-explains what all the methods do, where they are used and what they should
-return. However, a list of the most common ones to change is:
+methods from the default cobrand. 
+
+You use the cobrand by listed only your cobrand in the ALLOWED_COBRANDS config
+option. The name of your cobrand is the module name in lower case - e.g. if
+your Cobrand is C<FixMyStreet::Cobrand::Example> then you should put C<example>
+in ALLOWED_COBRANDS.
+
+Many of the functions in the Cobrand module are used by FixMyStreet in the UK
+to allow the site to offer versions localised to a single authority and should
+not be needed for most installs. Listed below are the most useful options that
+can be changed.
 
 =over
 
@@ -67,18 +75,37 @@ Returns the name of the site and is used anywhere the name of the site appears.
 
 The country that the cobrand is used in.
 
-=item allow_photo_upload
-
-Return 0 to disallow photo upload.
-
-=item allow_photo_display
-
-Return 0 to disallow photo display.
-
 =item disambiguate_location
 
-FIXME: Used when geolocating to identify if a report is within the area covered
-by the site.
+This is used by the Geocoding module of FixMyStreet to constrain the area for
+which results are returned when locating an address. It should return a hash
+reference of parameters that are compatible with the arguments of the geocoding module
+you are using.
+
+At a most basic level it should limit it to the country you are in:
+
+    sub disambiguate_location {
+        return {
+            country => 'uk',
+        };
+    }
+
+You can limit it to a smaller area using bounding boxes to contrain the area
+that the geocoder will consider:
+
+    sub disambiguate_location {
+        return {
+            centre => '52.688198,-1.804966',
+            span   => '0.1196,0.218675',
+            bounds => [ '52.807793,-1.586291', '52.584891,-1.963232' ],
+        };
+    }
+
+The centre and span are used by the Google geocoding API and the bounds by
+Bing.
+
+Note that these areguments are only as good a limiting results as the API 
+that they are used by.
 
 =item geocode_postcode
 
@@ -87,13 +114,41 @@ postcode and if so it returns the lat/long for that postcode.
 
 =item find_closest and find_closest_address_for_rss
 
-These are used to provide information on th closes street to the point of 
-the address in reports and rss feeds or alerts. 
+These are used to provide information on the closest street to the point of
+the address in reports and rss feeds or alerts.
+
+=item allow_photo_upload
+
+Return 0 to disallow photo upload.
+
+=item allow_photo_display
+
+Return 0 to disallow photo display.
+
+=item area_types
+
+This returns a list of MaPit area type codes that the site handles.
+
+=item remove_redundant_councils
+
+This is used to filter out any overlapping jurisdictions from MaPit results
+where only one of the authorities actually has reponsability for the events
+reported by the site. And example woulbe be a report in a city where MaPit
+has an id for the city council and the state council but we only ever report
+problems to the state.
+
+=item short_name
+
+This is used to turn the full authority name returned by MaPit into a short
+name.
 
 =back
 
-=head1 Translations
+=head1 Translations and Language
 
 The translations for FixMyStreet are stored as gettext files and the
 language for a Cobrand is set in the C<set_lang_and_domain> call of
 the Cobrand module.
+
+The templates use the C<loc> method to pass strings to gettext for
+translation.
