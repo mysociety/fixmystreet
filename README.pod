@@ -122,7 +122,7 @@ You will also need a Tile Server to serve up Map tiles. FixMyStreet can use
 Google, Bing and OpenStreetMap Tile servers.
 
 Finally, you will need a geolocation service to turn addresses into longitude
-and latitudes. FixMyStreet currently includes code to use both Bing and Googles
+and latitudes. FixMyStreet currently includes code to use both Bing and Google
 geolocation services.
 
 =head1 DETAILED INSTALLATION INSTRUCTIONS
