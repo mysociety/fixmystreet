@@ -55,7 +55,7 @@ perllib/FixMyStreet/Cobrands/. There is a default cobrand ( Default.pm ) which
 all cobrands should inherit from. A cobrand module can then override any of the
 methods from the default cobrand. 
 
-You use the cobrand by listed only your cobrand in the ALLOWED_COBRANDS config
+You use the cobrand by listing only your cobrand in the ALLOWED_COBRANDS config
 option. The name of your cobrand is the module name in lower case - e.g. if
 your Cobrand is C<FixMyStreet::Cobrand::Example> then you should put C<example>
 in ALLOWED_COBRANDS.
@@ -69,11 +69,11 @@ can be changed.
 
 =item site_title
 
-Returns the name of the site and is used anywhere the name of the site appears.
+This should be set to the name of your site.
 
 =item country
 
-The country that the cobrand is used in.
+This should be set to the two letter ISO code for the country your site is for.
 
 =item disambiguate_location
 
@@ -104,13 +104,24 @@ that the geocoder will consider:
 The centre and span are used by the Google geocoding API and the bounds by
 Bing.
 
-Note that these areguments are only as good a limiting results as the API 
+Note that these areguments are only as good a limiting results as the API
 that they are used by.
 
 =item geocode_postcode
 
-This is used to check if an address entered on the search form is a valid
-postcode and if so it returns the lat/long for that postcode.
+This function is used to convert postcodes entered into a latitude and 
+longitude. If the text passed is not a valid postcode then an error should
+be returned. If you do not want to use postcodes and always use a geocoding
+service then always return an error.
+
+If the postcode is valid and can be converted then the return value should
+look like this:
+
+    return { latitude => $latitude, longitude => $longitude };
+
+If there is an error it should look like this:
+
+    return { error => $error_message };
 
 =item find_closest and find_closest_address_for_rss
 
