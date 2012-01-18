@@ -295,17 +295,18 @@ on a live site.
 
 The admin site should be protected using HTTP AUTH.
 
-Customise your install using Templates, CSS and a Cobrand module.
+Customise your install using Templates, CSS and a Cobrand module. See L<notes/customisation.pod>
+for details.
 
 Add contact details for authorities and categories using the admin interface.
 
-Add authority boundaries to the MaPit install if required.
+Add authority data to the MaPit install if required.
 
 =head1 COMMON PROBLEMS
 
 =head2 locale
 
-By default FixMyStreet used the en_GB.UTF-8 locale. If it is not installed then
+By default FixMyStreet uses the en_GB.UTF-8 locale. If it is not installed then
 it may not start
 
 =head2 Template caching
