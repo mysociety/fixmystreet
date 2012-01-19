@@ -1,18 +1,30 @@
 <html>
 <head>
-<title>[% title %] - [% loc('FixMyStreet administration') %]</title>
-<style type="text/css">
-dt { clear: left; float: left; font-weight: bold; }
-dd { margin-left: 8em; }
-.hidden { color: #666666; }
-.error { color: red; }
-</style>
+    <title>[% title %] - [% loc('FixMyStreet administration') %]</title>
+
+    <link rel="stylesheet" href="[% version('/cobrands/fixmystreet/base.css') %]">
+    <link rel="stylesheet" href="[% version('/cobrands/fixmystreet/layout.css') %]" media="(min-width:48em)">
+    <link rel="stylesheet" href="[% version('/cobrands/fixmystreet/admin.css') %]" media="(min-width:48em)">
+
+    <style type="text/css">
+        dt { clear: left; float: left; font-weight: bold; }
+        dd { margin-left: 8em; }
+        .hidden { color: #666666; }
+        .error { color: red; }
+    </style>
+
 </head>
 <body>
+<div id="wrapper"><div id="wrapper2"><div id="wrapper3">
+    <h1 id="header" role="banner">Fix<span id="my">My</span>Street Administration - [% title %]</h1>
 
-    <strong>[% loc('FixMyStreet admin:') %]</strong>
-    [%- FOREACH link IN allowed_links %]
-    <a href="[% c.uri_for( link ) %]">[% allowed_pages.$link.0 %]</a>
-    [%- END %]
+    <div id="navigation" class="container" role="navigation">
 
-    <h1>[% title %]</h1>
+        <ul id="admin-nav" class="nav">
+        [%- FOREACH link IN allowed_links %]
+            <li><a href="[% c.uri_for( link ) %]">[% allowed_pages.$link.0 %]</a></li>
+        [%- END %]
+        </ul>
+
+    </div>
+    <div id="mysociety" class="container" role="main">

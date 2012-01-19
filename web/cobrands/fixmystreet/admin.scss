@@ -1,0 +1,26 @@
+@import "_colours";
+
+#navigation {
+    width: auto;
+    float: left;
+}
+
+/* The two lists in the navigation are displayed as simple horizontal lists in
+ * table cells. */
+.nav {
+    display: block;
+    width: auto;
+}
+
+.nav li {
+    display: block;
+}
+
+#admin-nav a, #site-nav span {
+    color: $colour;
+    padding: 9px 20px 8px 0px;
+}
+
+#admin-nav a:hover {
+    color: #000;
+}
