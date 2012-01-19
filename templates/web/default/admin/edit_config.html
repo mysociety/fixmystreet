@@ -1,0 +1,13 @@
+[% INCLUDE 'admin/header.html' title=loc('Config') %]
+
+<form action='/admin/config' method="POST">
+[% FOR option IN config.keys %]
+    <p>
+    [% option %]: <input type="text" name="[% option %]" value="[% config.$option %]" />
+    </p>
+[% END %]
+
+<input type="submit">
+</form>
+
+[% INCLUDE 'admin/footer.html' %]
