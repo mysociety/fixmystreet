@@ -969,21 +969,18 @@ sub edit_config : Path('config') : Args(0) {
 
     $c->forward('check_page_allowed');
 
-    $c->forward('set_up_council_details');
-
     my @options = qw/
         BASE_URL EMAIL_DOMAIN CONTACT_EMAIL TEST_EMAIL_PREFIX CONTACT_NAME
         STAGING_SITE UPLOAD_CACHE GEO_CACHE GOOGLE_MAPS_API_KEY BING_MAPS_API_KEY
-        LONDON_REPORTIT_URL LONDON_REPORTIT_KEY LONDON_REPORTIT_SECRET
         MAPIT_URL MAP_TYPE EVEL_URL GAZE_URL TRACKING TRACKING_URL TRACKING_SECRET
-        AUTH_SHARED_SECRET HEARFROMYOURMP_BASE_URL SMTP_SMARTHOST IPHONE_URL
+        AUTH_SHARED_SECRET SMTP_SMARTHOST IPHONE_URL
         HTTPD_ERROR_LOG ALLOWED_COBRANDS RSS_LIMIT AREA_LINKS_FROM_PROBLEMS
     /;
 
     if ( $c->req->method eq 'POST' ) {
         use YAML qw/LoadFile DumpFile/;
 
-        my $file = '/Users/struan/src/mysociety/fixmystreet/conf/general.yml';
+        my $file = FixMyStreet->path_to( 'conf/general.yml' );
         my $y = LoadFile( $file );
 
         my $update = 0;
