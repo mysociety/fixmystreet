@@ -134,7 +134,8 @@ sub process_user : Private {
 
     $update->user->name( Utils::trim_text( $params{name} ) )
         if $params{name};
-    $update->user->password( Utils::trim_text( $params{password_register} ) );
+    $update->user->password( Utils::trim_text( $params{password_register} ) )
+        if $params{password_register};
 
     return 1;
 }

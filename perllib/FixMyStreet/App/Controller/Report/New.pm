@@ -660,7 +660,8 @@ sub process_user : Private {
     # set the user's name, phone, and password
     $report->user->name( Utils::trim_text( $params{name} ) ) if $params{name};
     $report->user->phone( Utils::trim_text( $params{phone} ) );
-    $report->user->password( Utils::trim_text( $params{password_register} ) );
+    $report->user->password( Utils::trim_text( $params{password_register} ) )
+        if $params{password_register};
     $report->name( Utils::trim_text( $params{name} ) );
 
     return 1;

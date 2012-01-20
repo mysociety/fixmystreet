@@ -313,15 +313,24 @@ foreach my $test (
     };
 }
 
+my $first_user;
 foreach my $test (
     {
-        desc => 'does not have an account',
-        user => 0,
+        desc => 'does not have an account, does not set a password',
+        user => 0, password => 0,
     },
     {
-        desc => 'does have an account and is not signed in; does not sign in',
-        user => 1,
-    }
+        desc => 'does not have an account, sets a password',
+        user => 0, password => 1,
+    },
+    {
+        desc => 'does have an account and is not signed in; does not sign in, does not set a password',
+        user => 1, password => 0,
+    },
+    {
+        desc => 'does have an account and is not signed in; does not sign in, sets a password',
+        user => 1, password => 1,
+    },
 ) {
   subtest "test report creation for a user who " . $test->{desc} => sub {
     $mech->log_out_ok;
@@ -336,9 +345,13 @@ foreach my $test (
         $user->name( 'Old Name' );
         $user->password( 'old_password' );
         $user->update;
-    } else {
+    } elsif (!$first_user) {
         ok !FixMyStreet::App->model('DB::User')->find( { email => $test_email } ),
           "test user does not exist";
+        $first_user = 1;
+    } else {
+        # Not first pass, so will exist, but want no user to start, so delete it.
+        $mech->delete_user($test_email);
     }
 
     # submit initial pc form
@@ -362,7 +375,7 @@ foreach my $test (
                 email         => 'test-1@example.com',
                 phone         => '07903 123 456',
                 category      => 'Street lighting',
-                password_register => 'secret',
+                password_register => $test->{password} ? 'secret' : '',
             }
         },
         "submit good details"
@@ -410,7 +423,13 @@ foreach my $test (
     $mech->get_ok( '/report/' . $report->id );
 
     is $report->name, 'Joe Bloggs', 'name updated correctly';
-    ok $report->user->check_password('secret'), 'password updated correctly';
+    if ($test->{password}) {
+        ok $report->user->check_password('secret'), 'password updated correctly';
+    } elsif ($test->{user}) {
+        ok $report->user->check_password('old_password'), 'password unchanged, as no new one given';
+    } else {
+        is $report->user->password, '', 'password still not set, as none given';
+    }
 
     # check that the reporter has an alert
     my $alert = FixMyStreet::App->model('DB::Alert')->find( {
@@ -425,7 +444,7 @@ foreach my $test (
 
     # cleanup
     $mech->delete_user($user)
-        if $test->{user};
+        if $test->{user} && $test->{password};
   };
 }
 
