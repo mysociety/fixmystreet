@@ -27,8 +27,6 @@ Show the alerts page
 sub index : Path('') : Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->stash->{cobrand_form_elements} = $c->cobrand->form_elements('alerts');
-
     unless ( $c->req->referer && $c->req->referer =~ /fixmystreet\.com/ ) {
         $c->forward( 'add_recent_photos', [10] );
     }
@@ -149,7 +147,6 @@ sub updates : Path('updates') : Args(0) {
 
     $c->stash->{email} = $c->req->param('rznvy');
     $c->stash->{problem_id} = $c->req->param('id');
-    $c->stash->{cobrand_form_elements} = $c->cobrand->form_elements('alerts');
 }
 
 =head2 confirm
@@ -507,8 +504,6 @@ sub setup_request : Private {
     if ( $c->user ) {
         $c->stash->{rznvy} ||= $c->user->email;
     }
-
-    $c->stash->{cobrand_form_elements} = $c->cobrand->form_elements('alerts');
 
     return 1;
 }
