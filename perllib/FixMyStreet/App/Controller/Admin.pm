@@ -969,13 +969,19 @@ sub edit_config : Path('config') : Args(0) {
 
     $c->forward('check_page_allowed');
 
-    my @options = qw/
+    my @allowed_options = qw/
         BASE_URL EMAIL_DOMAIN CONTACT_EMAIL TEST_EMAIL_PREFIX CONTACT_NAME
         STAGING_SITE UPLOAD_CACHE GEO_CACHE GOOGLE_MAPS_API_KEY BING_MAPS_API_KEY
-        MAPIT_URL MAP_TYPE EVEL_URL GAZE_URL TRACKING TRACKING_URL TRACKING_SECRET
+        MAPIT_URL MAP_TYPE GAZE_URL TRACKING TRACKING_URL TRACKING_SECRET
         AUTH_SHARED_SECRET SMTP_SMARTHOST IPHONE_URL
         HTTPD_ERROR_LOG ALLOWED_COBRANDS RSS_LIMIT AREA_LINKS_FROM_PROBLEMS
     /;
+
+    my %checkboxes = (
+        STAGING_SITE => 1,
+        AREA_LINKS_FROM_PROBLEMS => 1,
+        TRACKING => 1,
+    );
 
     if ( $c->req->method eq 'POST' ) {
         use YAML qw/LoadFile DumpFile/;
@@ -984,11 +990,17 @@ sub edit_config : Path('config') : Args(0) {
         my $y = LoadFile( $file );
 
         my $update = 0;
-        foreach my $option ( @options ) {
-            if ( $c->req->param( $option ) ne $y->{ $option } ) {
+        foreach my $option ( @allowed_options ) {
+            my $value = $c->req->param( $option );
+
+            if ( $checkboxes{ $option } ) {
+                $value = $value eq 'on' ? 1 : 0;
+            }
+
+            if ( $value ne $y->{ $option } ) {
                 $update = 1;
-                $y->{ $option } = $c->req->param( $option );
-                $c->config->{ $option } = $c->req->param( $option );
+                $y->{ $option } = $value;
+                $c->config->{ $option } = $value;
             }
         }
 
@@ -997,7 +1009,7 @@ sub edit_config : Path('config') : Args(0) {
 
     my %config;
 
-    foreach my $option ( @options ) {
+    foreach my $option ( @allowed_options ) {
         $config{$option} = $c->config->{$option};
     }
 
