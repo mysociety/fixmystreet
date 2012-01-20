@@ -1148,6 +1148,13 @@ for my $test (
     };
 }
 
+subtest 'check config updating' => sub {
+    $mech->get_ok( '/admin/config' );
+    my $visible = $mech->visible_form_values;
+
+    is $visible->{GAZE_URL}, mySociety::Config::get('GAZE_URL'), 'Sample config value the same';
+};
+
 $mech->delete_user( $user );
 $mech->delete_user( $user2 );
 $mech->delete_user( $user3 );
