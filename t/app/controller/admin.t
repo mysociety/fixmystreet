@@ -2,6 +2,8 @@ use strict;
 use warnings;
 use Test::More;
 
+use YAML qw/LoadFile DumpFile/;
+
 use FixMyStreet::TestMech;
 
 my $mech = FixMyStreet::TestMech->new;
@@ -1148,12 +1150,58 @@ for my $test (
     };
 }
 
+my $conf = FixMyStreet->path_to( 'conf/general.yml' );
+my $orig_conf = LoadFile( $conf );
+
 subtest 'check config updating' => sub {
     $mech->get_ok( '/admin/config' );
     my $visible = $mech->visible_form_values;
 
-    is $visible->{GAZE_URL}, mySociety::Config::get('GAZE_URL'), 'Sample config value the same';
+    my $test_conf = LoadFile( $conf );
+
+    my $new_url = $test_conf->{GAZE_URL} eq 'http://example.com' ? 
+        'http://example.org' :
+        'http://example.com';
+
+    is $visible->{GAZE_URL}, $test_conf->{GAZE_URL}, 'Sample config value the same';
+
+    $visible->{GAZE_URL} = $new_url;
+
+    $mech->submit_form_ok( { with_fields => $visible } );
+
+    $test_conf = LoadFile( $conf );
+    $visible = $mech->visible_form_values;
+
+    is $visible->{GAZE_URL}, $new_url, 'New Gaze URL set';
+    is $test_conf->{GAZE_URL}, $new_url, 'Sample config value the same as changed value';
+
+    my $checked = $visible->{AREA_LINKS_FROM_PROBLEMS} eq 'on' ? 0 : 1;
+
+    $visible->{AREA_LINKS_FROM_PROBLEMS} = $checked ? 'on' : 'off';
+    $mech->submit_form_ok( { with_fields => $visible } );
+
+    $test_conf = LoadFile( $conf );
+    is $test_conf->{AREA_LINKS_FROM_PROBLEMS}, $checked, 'Checkbox field correctly set';
+
+    # also, detect for yaml file and if not then can't edit config
+
+    my $existing_db_host = $test_conf->{FMS_DB_HOST};
+    $visible->{GAZE_URL} = 'http://example.net';
+
+    $mech->post_ok( "/admin/config", {
+            %{ $visible },
+            DMS_DB_HOST => 'a db host',
+        },
+        'submitted with a db host',
+    );
+
+    $test_conf = LoadFile( $conf );
+    is $test_conf->{GAZE_URL}, 'http://example.net', 'Gaze host updated';
+    is $test_conf->{FMS_DB_HOST}, $existing_db_host, 'DB host not updated';
 };
+
+# restore original config in lieu of using a test file :(
+DumpFile( $conf, $orig_conf );
 
 $mech->delete_user( $user );
 $mech->delete_user( $user2 );
