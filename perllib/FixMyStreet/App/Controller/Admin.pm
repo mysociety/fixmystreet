@@ -972,15 +972,14 @@ sub edit_config : Path('config') : Args(0) {
     my @allowed_options = qw/
         BASE_URL EMAIL_DOMAIN CONTACT_EMAIL TEST_EMAIL_PREFIX CONTACT_NAME
         STAGING_SITE UPLOAD_CACHE GEO_CACHE GOOGLE_MAPS_API_KEY BING_MAPS_API_KEY
-        MAPIT_URL MAP_TYPE GAZE_URL TRACKING TRACKING_URL TRACKING_SECRET
+        MAPIT_URL MAP_TYPE GAZE_URL
         AUTH_SHARED_SECRET SMTP_SMARTHOST IPHONE_URL
-        HTTPD_ERROR_LOG ALLOWED_COBRANDS RSS_LIMIT AREA_LINKS_FROM_PROBLEMS
+        ALLOWED_COBRANDS RSS_LIMIT AREA_LINKS_FROM_PROBLEMS
     /;
 
     my %checkboxes = (
         STAGING_SITE => 1,
-        AREA_LINKS_FROM_PROBLEMS => 1,
-        TRACKING => 1,
+        AREA_LINKS_FROM_PROBLEMS => 1
     );
 
     if ( $c->req->method eq 'POST' ) {
@@ -992,6 +991,7 @@ sub edit_config : Path('config') : Args(0) {
         my $update = 0;
         foreach my $option ( @allowed_options ) {
             my $value = $c->req->param( $option );
+            $value = defined $value ? $value : '';
 
             if ( $checkboxes{ $option } ) {
                 $value = $value eq 'on' ? 1 : 0;
