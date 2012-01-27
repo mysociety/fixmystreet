@@ -1,0 +1,169 @@
+@import "_colours";
+
+body {
+    margin: 7px 0 0 0;
+    padding: 0;
+    background-color: #3c3c3c;
+    background-image: url(/cobrands/fixmystreet/texture.png);
+}
+
+#wrapper2 {
+    padding: 0 0.5em;
+}
+
+/* A third wrapper is needed because display:table cannot be given a max-width.
+ * The other two wrappers (to set full width white background and the
+ * max-width, are defined in base.scss. */
+#wrapper3 {
+    display: table;
+    caption-side: top;
+    width: 100%;
+    background-color: #fff;
+}
+
+/* As the navigation is put in place using position:absolute in IE6+7, add some
+ * extra space here to cover it. */
+.ie6, .ie7 {
+    #wrapper3 {
+        padding-top: 2em;
+    }
+}
+
+#meta {
+    float: right;
+    margin: -3em 0 0 1em;
+}
+
+#mysociety {
+    padding: 0 0 1em 0;
+}
+
+/* Giving this a display: table-caption, and #wrapper3 a caption-side: top,
+ * means that this div appears above the main content, even though it is below
+ * it in source order. */
+#navigation {
+    border: none;
+    padding-top: 0;
+    margin: 0;
+    display: table-caption;
+    line-height: 1.2;
+}
+
+#navigation .spacer {
+    display: table-cell;
+    width: 100%;
+}
+
+/* The two lists in the navigation are displayed as simple horizontal lists in
+ * table cells. */
+.nav {
+    display: table-cell;
+    width: auto;
+    white-space: nowrap;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    vertical-align: top;
+}
+
+.nav li {
+    display: inline-block;
+}
+
+.nav a, .nav span {
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+}
+
+.nav span {
+    text-decoration: underline;
+}
+
+#site-nav a, #site-nav span {
+    color: $colour;
+    padding: 9px 20px 8px 0px;
+}
+
+#site-nav a:hover {
+    color: #000;
+}
+
+#mysociety-nav {
+    line-height: 1.5;
+    font-size: 68.75%;
+    text-transform: uppercase;
+    background-color: #3c3c3c;
+    background-image: url(/cobrands/fixmystreet/texture.png);
+    border-radius: 0 0 6px 6px;
+    -moz-border-radius: 0 0 6px 6px;
+    -webkit-border-radius: 0 0 6px 6px;
+}
+
+#mysociety-nav li a {
+    color: #fff;
+}
+
+#mysociety-nav li a:hover {
+    color: #ffe600;
+}
+
+#mysociety-logo {
+    width: 78px;
+    background: url(mysociety-logo.png) center center no-repeat;
+    text-indent: -999999em;
+}
+
+/* As IE6 cannot cope with the PNG transparency (the above logo will work on
+ * any colour), we generate a static non-transparent PNG on the right
+ * background colour and use that here. */
+.ie6 #mysociety-logo {
+    background: url(mysociety-logo-ie6.gif) center center no-repeat;
+}
+
+#footer p {
+    text-align: center;
+    display: table-cell;
+    width: 31%;
+    padding: 0 1%;
+    margin: 0;
+}
+
+/* IE6 and IE7 do no understand display:table, but we'd like them to get the
+ * grasp of the right thing, rather than the mobile-first default. So move the
+ * navigation bar into place with position:absolute, and float all the list
+ * items. */
+.ie6, .ie7 {
+
+    #navigation {
+        position: absolute;
+        top: 7px;
+        right: 0;
+        width: 47em;
+    }
+
+    #navigation .spacer {
+        display: none;
+    }
+
+    .nav {
+        float: left;
+    }
+
+    .nav li {
+        float: left;
+        display: block;
+    }
+
+    .nav a {
+        display: block;
+    }
+
+    #footer p {
+        text-align: left;
+        width: auto;
+        padding: 0;
+        margin: 0.5em 0;
+    }
+
+}

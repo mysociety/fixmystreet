@@ -5,7 +5,7 @@
 # 
 # Requires:
 # * ../conf/general file set up for FixMyStreet, and matching the below requirements
-# * apache configured to serve ../web on OPTION_BASE_URL
+# * apache configured to serve ../web on BASE_URL
 # * a database with name ending "_testharness"; this script will drop and remake the
 #   database, so make sure it is never used for anything important
 # * email addresses (email_n below) configured to pipe to ./test-mailin with fast
@@ -54,7 +54,7 @@ date_print("Set up web test harness...");
 my ($wth, $action, $verbose, $pause, $multispawn) = mySociety::WebTestHarness::setup({
     actions => \@actions,
     actions_desc => \%actions_desc,
-    dbname => 'BCI',
+    dbname => 'FMS',
     'sql_extra' => ['../db/alert_types.sql'],
 });
 $multispawn = 1;

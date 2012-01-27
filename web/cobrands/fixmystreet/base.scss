@@ -1,0 +1,198 @@
+/* Base stylesheet for FixMyStreet look
+ *
+ * In a mobile first way, this contains the look of the site, and a basic
+ * layout for browsers that can't handle media queries. Baseline grid of 1.5em.
+ */
+
+@import "_h5bp";
+@import "_colours";
+
+/* HEADINGS and TYPOGRAPHY */
+
+@font-face {
+    font-family: 'MuseoSansRounded-500';
+    src: url('fonts/MuseoSansRounded500.eot');
+    src: url('fonts/MuseoSansRounded500.eot?#iefix') format('embedded-opentype'),
+         url('fonts/MuseoSansRounded500.woff') format('woff'),
+         url('fonts/MuseoSansRounded500.ttf') format('truetype'),
+         url('fonts/MuseoSansRounded500.svg#MuseoSansRounded-500') format('svg');
+}
+
+h1, h2, h3, h4, h5, h6, #header {
+    font-family: 'MuseoSansRounded-500', sans-serif;
+    font-weight: normal;
+}
+
+/* Opera has a bug (from around 10.5 upwards to current 11.6) with showing the
+ * table caption *at all* if the header is set to a font-face :( */
+noindex:-o-prefocus, #header {
+    font-family: sans-serif;
+}
+
+/* Headings fit within the baseline grid, skewed towards the bottom. As the h1
+ * appears first, if it appears, it needs no margin at all. */
+h1 {
+    font-size: 2em;
+    margin: 0;
+}
+
+h2 {
+    font-size: 1.5em;
+    line-height: 1;
+    margin: 1.5em 0 0.5em;
+}
+
+h3 {
+    font-size: 1.25em;
+    line-height: 1.2;
+    margin: 1.8em 0 0.6em;
+}
+
+h4 {
+    font-size: 1.2em;
+    line-height: 1.25;
+    margin: 1.875em 0 0.625em;
+}
+
+p {
+    margin: 0 0 1.5em;
+}
+
+select, input, textarea {
+    font-size: 99%;
+    max-width: 95%;
+}
+
+img {
+    max-width: 100%;
+}
+
+/* LINKS */
+
+a:link {
+    color: $colour;
+}
+
+a:visited {
+    color: $colour_dark;
+}
+
+a:active, a:hover {
+    color: #200;
+}
+
+
+/* LAYOUT */
+
+/* header is a div containing a link on all pages bar the front page, when it
+ * is a h1 that is not a link. It should always display the same. */
+#header {
+    display: block;
+    margin: 0 0 0.5em 0;
+    font-size: 200%;
+
+    /* The link of the heading should not be underlined. */
+    a {
+        text-decoration: none;
+    }
+}
+
+#meta {
+    list-style-type: none;
+    margin: 0.5em 0;
+    padding: 0;
+    font-size: 0.875em;
+    li {
+        display: inline;
+        margin: 0;
+        padding: 0 0 0 0.25em;
+    }
+    li.last {
+        border-left: solid 1px $colour_dark;
+    }
+}
+
+.container {
+    position: relative;
+    margin: auto;
+    overflow: hidden;
+}
+
+/* Three wrapper divs are used in the source. At large screen widths, the
+ * default background colour is $colour, in order for the footer to stay the
+ * same at any depth. So the outermost wrapper changes this back to white at
+ * full width; the second wrapper sets a maximum width for the main content,
+ * with a little padding so it never hits the browser edge, and centred; and
+ * the third wrapper is a full width table, so that a table caption can be used
+ * to have correct source order.*/
+#wrapper {
+    background: #fff;
+}
+
+#wrapper2 {
+    max-width: 59em;
+    padding: 0.5em;
+    margin: 0 auto;
+}
+
+#navigation {
+    display: table;
+    width: 100%;
+    border-top: solid 1px $colour;
+    padding-top: 1.5em;
+    margin: 1.5em 0;
+}
+
+.nav {
+    display: table-cell;
+    // width: 50%;
+}
+.ie6, .ie7 {
+    .nav {
+        float: left;
+    }
+}
+
+#footer {
+    color: #fff;
+    padding: 0.5em;
+    background-color: #3c3c3c;
+    background-image: url(/cobrands/fixmystreet/texture.png);
+
+    a {
+        color: #fff;
+    }
+
+    a:hover {
+       color: #ffe600;
+    }
+
+    p {
+        margin: 0.5em 0;
+    }
+}
+
+
+/* DISPLAY BITS */
+
+a.unsuitable-report {
+    font-size: small;
+}
+
+blockquote {
+    border-left: solid 4px $colour;
+}
+
+.a {
+    color: #000000;
+    background-color: $colour_alt;
+}
+
+#postcodeForm {
+    background-color: $colour_alt;
+}
+
+#front_stats div {
+    background-color: $colour_alt;
+}
+

@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 # update-all-reports:
 # Generate the data for the /reports page

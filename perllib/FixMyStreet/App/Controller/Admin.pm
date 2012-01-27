@@ -81,7 +81,7 @@ sub index : Path : Args(0) {
 
     $c->stash->{alerts} = \%alert_counts;
 
-    my $contacts = $c->model('DB::Contact')->summary_count( $c->cobrand->contact_restriction );
+    my $contacts = $c->model('DB::Contact')->summary_count();
 
     my %contact_counts =
       map { $_->confirmed => $_->get_column('confirmed_count') } $contacts->all;
@@ -770,7 +770,7 @@ sub update_edit : Path('update_edit') : Args(1) {
 
         # If we're hiding an update, see if it marked as fixed and unfix if so
         if ( $new_state eq 'hidden' && $update->mark_fixed ) {
-            if ( $update->problem->state eq 'fixed' ) {
+            if ( $update->problem->state =~ /^fixed/ ) {
                 $update->problem->state('confirmed');
                 $update->problem->update;
             }

@@ -1,4 +1,5 @@
 package FixMyStreet::Cobrand::Default;
+use base 'FixMyStreet::Cobrand::Base';
 
 use strict;
 use warnings;
@@ -9,69 +10,6 @@ use Digest::MD5 qw(md5_hex);
 use Carp;
 use mySociety::MaPit;
 use mySociety::PostcodeUtil;
-
-=head2 new
-
-    my $cobrand = $class->new;
-    my $cobrand = $class->new( { c => $c } );
-
-Create a new cobrand object, optionally setting the context.
-
-You probably shouldn't need to do this and should get the cobrand object via a
-method in L<FixMyStreet::Cobrand> instead.
-
-=cut
-
-sub new {
-    my $class = shift;
-    my $self = shift || {};
-    return bless $self, $class;
-}
-
-=head2 moniker
-
-    $moniker = $cobrand_class->moniker();
-
-Returns a moniker that can be used to identify this cobrand. By default this is
-the last part of the class name lowercased - eg 'F::C::SomeCobrand' becomes
-'somecobrand'.
-
-=cut
-
-sub moniker {
-    my $class = ref( $_[0] ) || $_[0];    # deal with object or class
-    my ($last_part) = $class =~ m{::(\w+)$};
-    $last_part = lc($last_part);
-    return '' if $last_part eq 'default';
-    return $last_part;
-}
-
-=head2 is_default
-
-    $bool = $cobrand->is_default();
-
-Returns true if this is the default cobrand, false otherwise.
-
-=cut
-
-sub is_default {
-    my $self = shift;
-    return $self->moniker eq '';
-}
-
-=head2 path_to_web_templates
-
-    $path = $cobrand->path_to_web_templates(  );
-
-Returns the path to the templates for this cobrand - by default
-"templates/web/$moniker"
-
-=cut
-
-sub path_to_web_templates {
-    my $self = shift;
-    return FixMyStreet->path_to( 'templates/web', $self->moniker );
-}
 
 =head1 country
 
@@ -113,17 +51,6 @@ empty string and site key 0 if the cobrand uses all the data.
 =cut
 
 sub site_restriction { return ( "", 0, {} ) }
-
-=head2 contact_restriction
-
-Return a contact restriction clause if the cobrand uses a subset of the
-FixMyStreet contact data.
-
-=cut
-
-sub contact_restriction {
-    {};
-}
 
 =head2 restriction
 
@@ -315,15 +242,6 @@ sub disambiguate_location {
     };
 }
 
-=head2 form_elements
-
-Parameters are FORM_NAME, QUERY. Return HTML for any extra needed elements for
-FORM_NAME
-
-=cut
-
-sub form_elements { '' }
-
 =head2 cobrand_data_for_generic_update
 
 Parameter is UPDATE_DATA, a reference to a hash of non-cobranded update data.
@@ -421,15 +339,6 @@ Return any params to be added to responses
 =cut
 
 sub header_params { return {} }
-
-=head2 root_path_js
-
-Parameter is QUERY. Return some js to set the root path from which AJAX queries
-should be made.
-
-=cut
-
-sub root_path_js { 'var root_path = "";' }
 
 =head2 site_title
 

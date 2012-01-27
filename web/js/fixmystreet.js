@@ -10,11 +10,11 @@ function form_category_onchange() {
     };
 
     if ( typeof fixmystreet !== 'undefined' ) {
-        args['latitude'] = fixmystreet.latitude;
-        args['longitude'] = fixmystreet.longitude;
+        args.latitude = fixmystreet.latitude;
+        args.longitude = fixmystreet.longitude;
     } else {
-        args['latitude'] = $('input[name="latitude"]').val();
-        args['longitude'] = $('input[name="longitude"]').val();
+        args.latitude = $('input[name="latitude"]').val();
+        args.longitude = $('input[name="longitude"]').val();
     }
 
     $.getJSON('/report/new/category_extras', args, function(data) {
@@ -66,13 +66,14 @@ $(function(){
 
     // FIXME - needs to use translated string
     jQuery.validator.addMethod('validCategory', function(value, element) {
-        return this.optional(element) || value != '-- Pick a category --'; }, validation_strings['category'] );
+        return this.optional(element) || value != '-- Pick a category --'; }, validation_strings.category );
 
     jQuery.validator.addMethod('validName', function(value, element) {
         var validNamePat = /\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i;
-        return this.optional(element) || value.length > 5 && value.match( /\S/ ) && !value.match( validNamePat ) }, validation_strings['category'] );
+        return this.optional(element) || value.length > 5 && value.match( /\S/ ) && !value.match( validNamePat ); }, validation_strings.category );
 
     var form_submitted = 0;
+    var submitted = false;
 
     $("form.validate").validate({
         rules: {
@@ -87,17 +88,9 @@ $(function(){
         errorElement: 'div',
         errorClass: 'form-error',
         // we do this to stop things jumping around on blur
-        success: function (err) { if ( form_submitted ) { err.addClass('label-valid').html( '&nbsp;' ); } else { err.addClass('label-valid-hidden'); } },
+        success: function (err) { if ( form_submitted ) { err.addClass('label-valid').removeClass('label-valid-hidden').html( '&nbsp;' ); } else { err.addClass('label-valid-hidden'); } },
         errorPlacement: function( error, element ) {
-            /* And all because the .before thing doesn't seem to work in
-               mobile safari on iOS 5. However outerHTML is not cross
-               browser so we have to have two solutions :( */
-            if ( element[0].outerHTML ) {
-                var html = element.parent('div').html();
-                element.parent('div').html( error[0].outerHTML + html );
-            } else {
-                element.parent('div').before( error );
-            }
+            element.parent('div').before( error );
         },
         submitHandler: function(form) {
             if (form.submit_problem) {
@@ -108,7 +101,9 @@ $(function(){
         },
         // make sure we can see the error message when we focus on invalid elements
         showErrors: function( errorMap, errorList ) {
-            submitted && errorList.length && $(window).scrollTop( $(errorList[0].element).offset().top - 40 );
+            if ( submitted && errorList.length ) {
+               $(window).scrollTop( $(errorList[0].element).offset().top - 40 );
+            }
             this.defaultShowErrors();
             submitted = false;
         },
@@ -140,8 +135,9 @@ $(function(){
     } );
 
     $('#email_alert').click(function(e) {
-        if (!$('#email_alert_box').length)
+        if (!$('#email_alert_box').length) {
             return true;
+        }
         e.preventDefault();
         if ($('#email_alert_box').is(':visible')) {
             email_alert_close();

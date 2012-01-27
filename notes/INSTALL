@@ -14,14 +14,14 @@ conf/packages is a list of Debian packages that are needed, so install them if
 you're on Debian/Ubuntu. You'll also probably need to install lots of CPAN
 modules, see the section on that below.
 
-FixMyStreet expects a PostgreSQL database with the postGIS extension, so set one
-of them up - the schema is available in db/schema.sql. You will also need to load
-in db/alert_types.sql to populate the alert types table.
+FixMyStreet expects a PostgreSQL database, so set one of them up - the schema
+is available in db/schema.sql. You will also need to load in db/alert_types.sql
+to populate the alert types table.
 
-Copy conf/general-example to conf/general and set it up appropriately:
+Copy conf/general.yml-example to conf/general.yml and set it up appropriately:
 * provide the relevant database connection details
-* the OPTION_BASE_URL to be where your test site will run - eg 'http://localhost'
-* set OPTION_UPLOAD_CACHE and OPTION_GEO_CACHE to your preferred values
+* the BASE_URL to be where your test site will run - eg 'http://localhost'
+* set UPLOAD_CACHE and GEO_CACHE to your preferred values
 * MAP_TYPE - OSM is probably the best one to try to start with, it's being
   successfully used.
 
@@ -65,12 +65,6 @@ If you need to add a module do it using:
   
 and it will update all the relevant bits.
 
-Currently, you probably need to add EncodedColumn manually:
-
-    module-manage.pl add DBIx::Class::EncodedColumn
-
-...because it's explicitly overridden in the code, which is fooling the installer.
-
 If a module won't build (Test::WWW::Mechanize and HTTP::Server::Simple fail
 tests for me but the failures are not pertinent) then the module-manage script
 will bail out. Look in ~/.cpanm/build_log to see what went wrong. You can force
@@ -88,6 +82,12 @@ in order to make sure that the setup is current.
 Note: Others are starting to work on this and it might be a good idea to switch
 to their output:
 http://blogs.perl.org/users/sebastian_willert/2011/03/how-i-distribute-my-projects.html
+
+Notes
+-----
+
+* no-update-server is a shell script used by NUUG for setting up
+  www.fiksgatami.no using the FixMyStreet codebase.
 
 Running the code
 ================

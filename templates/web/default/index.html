@@ -15,7 +15,7 @@
     <strong>[% loc('Report, view, or discuss local problems') %]</strong>
     
     [% IF subhead != ' ' %]
-        <br><small>[% subhead %]</small>
+        <small>[% subhead %]</small>
     [% END %]
 </p>
 
@@ -32,7 +32,6 @@
     <span><input type="text" name="pc" value="" id="pc" size="10" maxlength="200">
     <input type="submit" value="[% loc('Go') %]" id="submit">
     </span>
-    [% c.cobrand.form_elements('postcodeForm') %]
 </form>
 
 <div id="front_intro">

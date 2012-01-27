@@ -1,65 +1,46 @@
-$(function(){
+// This function might be passed either an OpenLayers.LonLat (so has
+// lon and lat) or an OpenLayers.Geometry.Point (so has x and y)
+function fixmystreet_update_pin(lonlat) {
+    lonlat.transform(
+        fixmystreet.map.getProjectionObject(),
+        new OpenLayers.Projection("EPSG:4326")
+    );
+    document.getElementById('fixmystreet.latitude').value = lonlat.lat || lonlat.y;
+    document.getElementById('fixmystreet.longitude').value = lonlat.lon || lonlat.x;
+}
 
-    var perm = new OpenLayers.Control.Permalink();
-    set_map_config(perm);
+function fixmystreet_activate_drag() {
+    fixmystreet.drag = new OpenLayers.Control.DragFeature( fixmystreet.markers, {
+        onComplete: function(feature, e) {
+            fixmystreet_update_pin( feature.geometry.clone() );
+        }
+    } );
+    fixmystreet.map.addControl( fixmystreet.drag );
+    fixmystreet.drag.activate();
+}
 
-    fixmystreet.map = new OpenLayers.Map("map", {
-        controls: fixmystreet.controls,
-        displayProjection: new OpenLayers.Projection("EPSG:4326")
-    });
-
-    fixmystreet.layer_options = OpenLayers.Util.extend({
-        zoomOffset: fixmystreet.zoomOffset,
-        transitionEffect: 'resize',
-        numZoomLevels: fixmystreet.numZoomLevels
-    }, fixmystreet.layer_options);
-    var layer = new fixmystreet.map_type("", fixmystreet.layer_options);
-    fixmystreet.map.addLayer(layer);
-
-    if (!fixmystreet.map.getCenter()) {
-        var centre = new OpenLayers.LonLat( fixmystreet.longitude, fixmystreet.latitude );
-        centre.transform(
-            new OpenLayers.Projection("EPSG:4326"),
-            fixmystreet.map.getProjectionObject()
-        );
-        fixmystreet.map.setCenter(centre, fixmystreet.zoom || 3);
+function fms_markers_list(pins, transform) {
+    var cols = { 'red':'R', 'green':'G', 'blue':'B', 'purple':'P' };
+    var markers = [];
+    for (var i=0; i<pins.length; i++) {
+        var pin = pins[i];
+        var loc = new OpenLayers.Geometry.Point(pin[1], pin[0]);
+        if (transform) {
+            // The Strategy does this for us, so don't do it in that case.
+            loc.transform(
+                new OpenLayers.Projection("EPSG:4326"),
+                fixmystreet.map.getProjectionObject()
+            );
+        }
+        var marker = new OpenLayers.Feature.Vector(loc, {
+            type: cols[pin[2]],
+            id: pin[3],
+            title: pin[4] || ''
+        });
+        markers.push( marker );
     }
-
-    if (document.getElementById('mapForm')) {
-        var click = new OpenLayers.Control.Click();
-        fixmystreet.map.addControl(click);
-        click.activate();
-    }
-
-    /* To let permalink not be caught by the Click layer, answer found
-     * at http://www.mail-archive.com/users@openlayers.org/msg12958.html
-     * Not sure why you can't use eventListeners or events.register...
-     */
-    OpenLayers.Event.observe( perm.element, "click", function(e) {
-        OpenLayers.Event.stop(e);
-        location.href = OpenLayers.Event.element(e).href;
-        return false;
-    });
-
-    $(window).hashchange(function(){
-        if (location.hash) return;
-        // Okay, back to around view.
-        fixmystreet.bbox_strategy.activate();
-        fixmystreet.markers.refresh( { force: true } );
-        fixmystreet.drag.deactivate();
-        $('#side-form').hide();
-        $('#side').show();
-        $('#sub_map_links').show();
-        fixmystreet.page = 'around';
-    });
-
-    // Vector layers must be added onload as IE sucks
-    if ($.browser.msie) {
-        $(window).load(fixmystreet_onload);
-    } else {
-        fixmystreet_onload();
-    }
-});
+    return markers;
+}
 
 function fixmystreet_onload() {
     if ( fixmystreet.area ) {
@@ -78,15 +59,25 @@ function fixmystreet_onload() {
     }
 
     var pin_layer_options = {
+        rendererOptions: {
+            yOrdering: true
+        },
         styleMap: new OpenLayers.StyleMap({
             'default': new OpenLayers.Style({
-                externalGraphic: "/i/pin${type}.gif",
+                externalGraphic: "/i/pin${type}.png",
                 graphicTitle: "${title}",
-                graphicWidth: 32,
-                graphicHeight: 59,
+                graphicWidth: 44,
+                graphicHeight: 58,
                 graphicOpacity: 1,
-                graphicXOffset: -2,
-                graphicYOffset: -59
+                graphicXOffset: -22,
+                graphicYOffset: -58,
+                backgroundGraphic: "/i/pin-shadow.png",
+                backgroundWidth: 50,
+                backgroundHeight: 19,
+                backgroundXOffset: -7,
+                backgroundYOffset: -19,
+                graphicZIndex: 11,
+                backgroundGraphicZIndex: 10
             })
         })
     };
@@ -173,28 +164,68 @@ function fixmystreet_onload() {
 
 }
 
-function fms_markers_list(pins, transform) {
-    var cols = { 'red':'R', 'green':'G', 'blue':'B', 'purple':'P' };
-    var markers = [];
-    for (var i=0; i<pins.length; i++) {
-        var pin = pins[i];
-        var loc = new OpenLayers.Geometry.Point(pin[1], pin[0]);
-        if (transform) {
-            // The Strategy does this for us, so don't do it in that case.
-            loc.transform(
-                new OpenLayers.Projection("EPSG:4326"),
-                fixmystreet.map.getProjectionObject()
-            );
-        }
-        var marker = new OpenLayers.Feature.Vector(loc, {
-            type: cols[pin[2]],
-            id: pin[3],
-            title: pin[4]
-        });
-        markers.push( marker );
+$(function(){
+
+    var perm = new OpenLayers.Control.Permalink();
+    set_map_config(perm);
+
+    fixmystreet.map = new OpenLayers.Map("map", {
+        controls: fixmystreet.controls,
+        displayProjection: new OpenLayers.Projection("EPSG:4326")
+    });
+
+    fixmystreet.layer_options = OpenLayers.Util.extend({
+        zoomOffset: fixmystreet.zoomOffset,
+        transitionEffect: 'resize',
+        numZoomLevels: fixmystreet.numZoomLevels
+    }, fixmystreet.layer_options);
+    var layer = new fixmystreet.map_type("", fixmystreet.layer_options);
+    fixmystreet.map.addLayer(layer);
+
+    if (!fixmystreet.map.getCenter()) {
+        var centre = new OpenLayers.LonLat( fixmystreet.longitude, fixmystreet.latitude );
+        centre.transform(
+            new OpenLayers.Projection("EPSG:4326"),
+            fixmystreet.map.getProjectionObject()
+        );
+        fixmystreet.map.setCenter(centre, fixmystreet.zoom || 3);
     }
-    return markers;
-}
+
+    if (document.getElementById('mapForm')) {
+        var click = new OpenLayers.Control.Click();
+        fixmystreet.map.addControl(click);
+        click.activate();
+    }
+
+    /* To let permalink not be caught by the Click layer, answer found
+     * at http://www.mail-archive.com/users@openlayers.org/msg12958.html
+     * Not sure why you can't use eventListeners or events.register...
+     */
+    OpenLayers.Event.observe( perm.element, "click", function(e) {
+        OpenLayers.Event.stop(e);
+        location.href = OpenLayers.Event.element(e).href;
+        return false;
+    });
+
+    $(window).hashchange(function(){
+        if (location.hash) { return; }
+        // Okay, back to around view.
+        fixmystreet.bbox_strategy.activate();
+        fixmystreet.markers.refresh( { force: true } );
+        fixmystreet.drag.deactivate();
+        $('#side-form').hide();
+        $('#side').show();
+        $('#sub_map_links').show();
+        fixmystreet.page = 'around';
+    });
+
+    // Vector layers must be added onload as IE sucks
+    if ($.browser.msie) {
+        $(window).load(fixmystreet_onload);
+    } else {
+        fixmystreet_onload();
+    }
+});
 
 /* Overridding the buttonDown function of PanZoom so that it does
    zoomTo(0) rather than zoomToMaxExtent()
@@ -261,10 +292,13 @@ OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
         } else {
             obj = json;
         }
-        if (typeof(obj.current) != 'undefined')
-            document.getElementById('current').innerHTML = obj.current;
-        if (typeof(obj.current_near) != 'undefined')
-            document.getElementById('current_near').innerHTML = obj.current_near;
+        var current, current_near;
+        if (typeof(obj.current) != 'undefined' && (current = document.getElementById('current'))) {
+            current.innerHTML = obj.current;
+        }
+        if (typeof(obj.current_near) != 'undefined' && (current_near = document.getElementById('current_near'))) {
+            current_near.innerHTML = obj.current_near;
+        }
         var markers = fms_markers_list( obj.pins, false );
         return markers;
     },
@@ -283,16 +317,14 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 
     initialize: function(options) {
         this.handlerOptions = OpenLayers.Util.extend(
-            {}, this.defaultHandlerOptions
-        );
+            {}, this.defaultHandlerOptions);
         OpenLayers.Control.prototype.initialize.apply(
             this, arguments
         ); 
         this.handler = new OpenLayers.Handler.Click(
             this, {
                 'click': this.trigger
-            }, this.handlerOptions
-        );
+            }, this.handlerOptions);
     }, 
 
     trigger: function(e) {
@@ -330,31 +362,17 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             }
         });
         $('#side-form').show();
+        /* For some reason on IOS5 if you use the jQuery show method it
+         * doesn't display the JS validation error messages unless you do this
+         * or you cause a screen redraw by changing the phone orientation.
+         * NB: This has to happen after the call to show() */
+        if ( navigator.userAgent.match(/like Mac OS X/i)) {
+            document.getElementById('side-form').style.display = 'block';
+        }
         $('#side').hide();
         $('#sub_map_links').hide();
         fixmystreet.page = 'new';
         location.hash = 'report';
     }
 });
-
-// This function might be passed either an OpenLayers.LonLat (so has
-// lon and lat) or an OpenLayers.Geometry.Point (so has x and y)
-function fixmystreet_update_pin(lonlat) {
-    lonlat.transform(
-        fixmystreet.map.getProjectionObject(),
-        new OpenLayers.Projection("EPSG:4326")
-    );
-    document.getElementById('fixmystreet.latitude').value = lonlat.lat || lonlat.y;
-    document.getElementById('fixmystreet.longitude').value = lonlat.lon || lonlat.x;
-}
-
-function fixmystreet_activate_drag() {
-    fixmystreet.drag = new OpenLayers.Control.DragFeature( fixmystreet.markers, {
-        onComplete: function(feature, e) {
-            fixmystreet_update_pin( feature.geometry.clone() );
-        }
-    } );
-    fixmystreet.map.addControl( fixmystreet.drag );
-    fixmystreet.drag.activate();
-}
 
