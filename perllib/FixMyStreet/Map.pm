@@ -9,6 +9,7 @@
 package FixMyStreet::Map;
 
 use strict;
+use FixMyStreet::App;
 
 use Module::Pluggable
   sub_name    => 'maps',
@@ -16,7 +17,7 @@ use Module::Pluggable
   require     => 1;
 
 # Get the list of maps we want and load map classes at compile time
-my @ALL_MAP_CLASSES = allowed_maps();
+my @ALL_MAP_CLASSES;
 
 use mySociety::Config;
 use mySociety::Gaze;
@@ -47,6 +48,7 @@ our $map_class;
 sub set_map_class {
     my $str = shift;
     $str = __PACKAGE__.'::'.$str if $str;
+    @ALL_MAP_CLASSES = allowed_maps() unless @ALL_MAP_CLASSES;
     my %avail = map { $_ => 1 } @ALL_MAP_CLASSES;
     $str = $ALL_MAP_CLASSES[0] unless $str && $avail{$str};
     $map_class = $str;
