@@ -194,7 +194,6 @@ sub setup_request {
 sub get_conf {
     my $self = shift;
     my $key = shift;
-    warn "------------\n$self\n------------\n" if $self !~ /FixMyStreet/;
 
     return undef unless $key;
 
