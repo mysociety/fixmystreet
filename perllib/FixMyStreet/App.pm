@@ -336,6 +336,8 @@ sub send_email {
 sub send_email_cron {
     my ( $c, $params, $env_from, $env_to, $nomail ) = @_;
 
+    mySociety::EmailUtil::set_smarthost( $c->get_conf('SMTP_SMARTHOST') );
+
     $params->{'Message-ID'} = sprintf('<fms-cron-%s-%s@mysociety.org>', time(),
         unpack('h*', random_bytes(5, 1))
     );
