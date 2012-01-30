@@ -315,7 +315,7 @@ sub send_email {
       for grep { $vars->{$_} } qw( to from subject);
 
     $email->header_set( 'Message-ID', sprintf('<fms-%s-%s@%s>',
-        time(), unpack('h*', random_bytes(5, 1)), $c->config->{EMAIL_DOMAIN}
+        time(), unpack('h*', random_bytes(5, 1)), $c->get_conf('EMAIL_DOMAIN')
     ) );
 
     # pass the email into mySociety::Email to construct the on the wire 7bit
