@@ -3,7 +3,7 @@ use warnings;
 
 use Test::More;
 
-use FixMyStreet;
+use FixMyStreet::App;
 
 # check that all the fields listed in general-example are also present in
 # general - helps prevent later test failures due to un-noticed additions to the
@@ -14,11 +14,11 @@ use FixMyStreet;
 
 # load the config file and store the contents in a readonly hash
 
-mySociety::Config::set_file( FixMyStreet->path_to("conf/general") );
+my $staging = FixMyStreet::App->get_conf( 'STAGING_SITE' );
 
 BAIL_OUT( "Test suite modifies databases so should not be run on live servers" )
-    unless mySociety::Config::get('STAGING_SITE', undef);
+    unless $staging;
 
-ok mySociety::Config::get('STAGING_SITE', undef), 'staging server';
+ok $staging, 'staging server';
 
 done_testing();
