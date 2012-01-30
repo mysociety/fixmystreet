@@ -25,12 +25,22 @@ SKIP: {
 
     skip( "Need 'fiksgatami' in ALLOWED_COBRANDS config", 8 )
       unless FixMyStreet::App->get_conf('ALLOWED_COBRANDS') =~ m{fiksgatami};
-    mySociety::MaPit::configure('http://mapit.nuug.no/');
+
+    my $config = FixMyStreet::App->model('DB::Config');
+    my $mapit_conf = $config->find( { KEY => 'MAPIT_URL' });
+    my $orig_MaPit_URL = $mapit_conf->value;
+
+    $mapit_conf->value('http://mapit.nuug.no');
+    $mapit_conf->update;
+
     ok $mech->host("fiksgatami.no"), 'change host to fiksgatami';
     $mech->get_ok('/reports');
     # There should only be one Oslo
     $mech->content_contains('Oslo');
     $mech->content_unlike(qr{Oslo">Oslo.*Oslo}s);
+
+    $mapit_conf->value($orig_MaPit_URL);
+    $mapit_conf->update;
 }
 
 done_testing();
