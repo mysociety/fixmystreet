@@ -29,7 +29,7 @@ sub string {
       $url .=  '&gl=' . $params->{country} if $params->{country};
       $url .=  '&hl=' . $params->{lang}    if $params->{lang};
 
-    my $cache_dir = FixMyStreet->config('GEO_CACHE') . 'google/';
+    my $cache_dir = FixMyStreet::App->get_conf('GEO_CACHE') . 'google/';
     my $cache_file = $cache_dir . md5_hex($url);
     my $js;
     if (-s $cache_file) {
@@ -49,7 +49,7 @@ sub string {
                 $url .= ',+UK';
             }
         }
-        $url .= '&sensor=false&key=' . FixMyStreet->config('GOOGLE_MAPS_API_KEY');
+        $url .= '&sensor=false&key=' . FixMyStreet::App->get_conf('GOOGLE_MAPS_API_KEY');
         $js = LWP::Simple::get($url);
         $js = encode_utf8($js) if utf8::is_utf8($js);
         File::Path::mkpath($cache_dir);
