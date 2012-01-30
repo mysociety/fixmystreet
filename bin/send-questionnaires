@@ -18,7 +18,7 @@ use mySociety::Config;
 
 my %params;
 ( $params{verbose}, $params{nomail} ) = CronFns::options();
-$params{site} = CronFns::site(mySociety::Config::get('BASE_URL'));
+$params{site} = CronFns::site(FixMyStreet::App->get_conf('BASE_URL'));
 CronFns::language($params{site});
 
 FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires( \%params );

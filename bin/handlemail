@@ -29,6 +29,8 @@ use mySociety::Email;
 use mySociety::EmailUtil;
 use mySociety::HandleMail;
 use mySociety::SystemMisc;
+use FixMyStreet::App;
+
 
 # Don't print diagnostics to standard error, as this can result in bounce
 # messages being generated (only in response to non-bounce input, obviously).
@@ -53,12 +55,14 @@ close FP;
 
 # We generate this as a bounce.
 my $mail = mySociety::Email::construct_email({
-    From => [ mySociety::Config::get('CONTACT_EMAIL'), 'FixMyStreet' ],
+    From => [ FixMyStreet::App->get_conf('CONTACT_EMAIL'), 'FixMyStreet' ],
     To => $data{return_path},
     _template_ => $template,
     _parameters_ => { },
 });
 
+mySociety::EmailUtil::set_smarthost(
+    FixMyStreet::App->get_conf('SMTP_SMARTHOST'));
 if (mySociety::EmailUtil::EMAIL_SUCCESS
         != mySociety::EmailUtil::send_email($mail, '<>', $data{return_path})) {
     exit(75);

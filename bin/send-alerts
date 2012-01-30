@@ -15,7 +15,7 @@ use CronFns;
 use mySociety::Config;
 use FixMyStreet::App;
 
-my $site = CronFns::site(mySociety::Config::get('BASE_URL'));
+my $site = CronFns::site(FixMyStreet::App->get_conf('BASE_URL'));
 CronFns::language($site);
 
 FixMyStreet::App->model('DB::AlertType')->email_alerts();

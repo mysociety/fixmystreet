@@ -31,8 +31,11 @@ use Open311;
 
 # Set up site, language etc.
 my ($verbose, $nomail) = CronFns::options();
-my $base_url = mySociety::Config::get('BASE_URL');
+my $base_url = FixMyStreet::App->get_conf('BASE_URL');
 my $site = CronFns::site($base_url);
+
+mySociety::Gaze::configure(FixMyStreet::App->get_conf('GAZE_URL'));
+mySociety::MaPit::configure(FixMyStreet::App->get_conf('MAPIT_URL'));
 
 my $unsent = FixMyStreet::App->model("DB::Problem")->search( {
     state => [ 'confirmed', 'fixed' ],
@@ -202,18 +205,18 @@ while (my $row = $unsent->next) {
         die 'Report not going anywhere for ID ' . $row->id . '!';
     }
 
-    if (mySociety::Config::get('STAGING_SITE')) {
+    if (FixMyStreet::App->get_conf('STAGING_SITE')) {
         # on a staging server send emails to ourselves rather than the councils
-        @recips = ( mySociety::Config::get('CONTACT_EMAIL') );
+        @recips = ( FixMyStreet::App->get_conf('CONTACT_EMAIL') );
         $send_web = 0;
         $send_email = 1;
     } elsif ($site eq 'emptyhomes') {
         my $council = $row->council;
         my $country = $areas_info->{$council}->{country};
         if ($country eq 'W') {
-            push @recips, 'shelter@' . mySociety::Config::get('EMAIL_DOMAIN');
+            push @recips, 'shelter@' . FixMyStreet::App->get_conf('EMAIL_DOMAIN');
         } else {
-            push @recips, 'eha@' . mySociety::Config::get('EMAIL_DOMAIN');
+            push @recips, 'eha@' . FixMyStreet::App->get_conf('EMAIL_DOMAIN');
         }
     }
 
@@ -236,7 +239,7 @@ while (my $row = $unsent->next) {
                 To => \@to,
                 From => [ $row->user->email, $row->name ],
             },
-            mySociety::Config::get('CONTACT_EMAIL'),
+            FixMyStreet::App->get_conf('CONTACT_EMAIL'),
             \@recips,
             $nomail
         );
@@ -422,8 +425,8 @@ sub post_london_report {
     }
     my ($first, $last) = $h{name} =~ /^(\S*)(?: (.*))?$/;
     my %params = (
-        Key => mySociety::Config::get('LONDON_REPORTIT_KEY'),
-        Signature => Digest::MD5::md5_hex( $h{confirmed} . mySociety::Config::get('LONDON_REPORTIT_SECRET') ),
+        Key => FixMyStreet::App->get_conf('LONDON_REPORTIT_KEY'),
+        Signature => Digest::MD5::md5_hex( $h{confirmed} . FixMyStreet::App->get_conf('LONDON_REPORTIT_SECRET') ),
         Type => Utils::london_categories()->{$h{category}},
         RequestDate => $h{confirmed},
         RequestMethod => 'Web',
@@ -454,7 +457,7 @@ sub post_london_report {
         $params{'Document1.URLPublic'} = 'true';
     }
     my $browser = LWP::UserAgent->new;
-    my $response = $browser->post( mySociety::Config::get('LONDON_REPORTIT_URL'), \%params );
+    my $response = $browser->post( FixMyStreet::App->get_conf('LONDON_REPORTIT_URL'), \%params );
     my $out = $response->content;
     if ($response->code ne 200) {
         print "Failed to post $h{id} to London API, response was " . $response->code . " $out\n";
