@@ -185,6 +185,8 @@ sub setup_request {
     #    $map = undef unless $map eq 'OSM';
     #}
     FixMyStreet::Map::set_map_class( $map );
+    mySociety::MaPit::configure( $c->get_conf('MAPIT_URL') );
+    mySociety::Gaze::configure( $c->get_conf('GAZE_URL') );
 
     return $c;
 }
