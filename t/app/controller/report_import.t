@@ -267,7 +267,15 @@ subtest "Submit a correct entry (with location) to cobrand" => sub {
     SKIP: {
         skip( "Need 'fiksgatami' in ALLOWED_COBRANDS config", 20 )
           unless FixMyStreet::App->get_conf('ALLOWED_COBRANDS') =~ m{fiksgatami};
-        mySociety::MaPit::configure('http://mapit.nuug.no/');
+
+        my $config = FixMyStreet::App->model('DB::Config');
+
+        my $mapit_conf = $config->find( { KEY => 'MAPIT_URL' });
+        my $orig_MaPit_URL = $mapit_conf->value;
+
+        $mapit_conf->value('http://mapit.nuug.no');
+        $mapit_conf->update;
+
         ok $mech->host("fiksgatami.no"), 'change host to fiksgatami';
 
         $mech->get_ok('/import');
@@ -328,6 +336,8 @@ subtest "Submit a correct entry (with location) to cobrand" => sub {
         is $report->lang, 'nb',              'language is correct';
 
         $mech->delete_user($user);
+        $mapit_conf->value($orig_MaPit_URL);
+        $mapit_conf->update;
     }
 };
 
