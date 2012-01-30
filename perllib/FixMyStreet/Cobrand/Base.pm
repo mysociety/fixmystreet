@@ -35,7 +35,6 @@ sub moniker {
     my $class = ref( $_[0] ) || $_[0];    # deal with object or class
     my ($last_part) = $class =~ m{::(\w+)$};
     $last_part = lc($last_part);
-    return '' if $last_part eq 'default';
     return $last_part;
 }
 
@@ -49,7 +48,7 @@ Returns true if this is the default cobrand, false otherwise.
 
 sub is_default {
     my $self = shift;
-    return $self->moniker eq '';
+    return $self->moniker eq 'default';
 }
 
 =head2 path_to_web_templates
