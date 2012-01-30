@@ -3,12 +3,12 @@
 use strict;
 use warnings;
 
-use Test::More tests => 8;
+use Test::More tests => 5;
 
 use_ok 'FixMyStreet::App';
 
 # GAZE_URL chosen as it is unlikely to change
-is FixMyStreet::App->get_conf->{GAZE_URL},    #
+is FixMyStreet::App->get_conf('GAZE_URL'),    #
   'http://gaze.mysociety.org/gaze',         #
   "check that known config param is loaded";
 
