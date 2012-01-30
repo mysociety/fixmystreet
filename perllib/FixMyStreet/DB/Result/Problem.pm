@@ -558,7 +558,7 @@ sub body {
         $body = join( _(' and '),
             map {
                 my $name = $areas_info->{$_}->{name};
-                if (mySociety::Config::get('AREA_LINKS_FROM_PROBLEMS')) {
+                if (FixMyStreet::App->get_conf('AREA_LINKS_FROM_PROBLEMS')) {
                     '<a href="'
                     . $c->uri_for( '/reports/' . $c->cobrand->short_name( $areas_info->{$_} ) )
                     . '">' . $name . '</a>';
