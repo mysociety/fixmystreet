@@ -4,9 +4,9 @@ use warnings;
 use Test::More;
 use Sub::Override;
 
-use FixMyStreet;
-
-use_ok 'FixMyStreet::Cobrand';
+# this loads FixMyStreetCobrand and if we load it twice things
+# get confused, I suspect due to Module::Plugabble magic
+use_ok 'FixMyStreet::App';
 
 # check that the allowed cobrands is correctly loaded from config
 {
