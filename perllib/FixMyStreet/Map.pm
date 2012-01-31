@@ -38,6 +38,14 @@ sub allowed_maps {
     return grep { $avail{$_} } @allowed;
 }
 
+=head2 reset
+
+Deletes any cached data.
+
+=cut
+
+sub reset () { @ALL_MAP_CLASSES = (); }
+
 =head2 map_class
 
 Set and return the appropriate class given a query parameter string.
