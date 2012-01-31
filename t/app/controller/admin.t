@@ -1150,58 +1150,61 @@ for my $test (
     };
 }
 
-my $conf = FixMyStreet->path_to( 'conf/general.yml' );
-my $orig_conf = LoadFile( $conf );
+
+my $config = FixMyStreet::App->model('DB::Config');
+
+my %orig;
+
+foreach my $key ( qw/ GAZE_URL AREA_LINKS_FROM_PROBLEMS / ) {
+    $orig{ $key } = $config->search( { key => $key } )->first->value;
+}
 
 subtest 'check config updating' => sub {
     $mech->get_ok( '/admin/config' );
     my $visible = $mech->visible_form_values;
 
-    my $test_conf = LoadFile( $conf );
+    is $visible->{GAZE_URL}, $orig{GAZE_URL}, 'Sample config value the same';
 
-    my $new_url = $test_conf->{GAZE_URL} eq 'http://example.com' ? 
-        'http://example.org' :
-        'http://example.com';
-
-    is $visible->{GAZE_URL}, $test_conf->{GAZE_URL}, 'Sample config value the same';
-
+    my $new_url = 'http://example.org/' . time();
     $visible->{GAZE_URL} = $new_url;
 
     $mech->submit_form_ok( { with_fields => $visible } );
 
-    $test_conf = LoadFile( $conf );
+    my $current_gaze = $config->search( { key => 'GAZE_URL' } )->first->value;
     $visible = $mech->visible_form_values;
 
     is $visible->{GAZE_URL}, $new_url, 'New Gaze URL set';
-    is $test_conf->{GAZE_URL}, $new_url, 'Sample config value the same as changed value';
+    is $current_gaze, $new_url, 'Sample config value the same as changed value';
 
     my $checked = $visible->{AREA_LINKS_FROM_PROBLEMS} eq 'on' ? 0 : 1;
 
     $visible->{AREA_LINKS_FROM_PROBLEMS} = $checked ? 'on' : 'off';
     $mech->submit_form_ok( { with_fields => $visible } );
 
-    $test_conf = LoadFile( $conf );
-    is $test_conf->{AREA_LINKS_FROM_PROBLEMS}, $checked, 'Checkbox field correctly set';
+    my $current_area = $config->search( { key => 'AREA_LINKS_FROM_PROBLEMS' } )->first->value;
+    is $current_area, $checked, 'Checkbox field correctly set';
 
-    # also, detect for yaml file and if not then can't edit config
-
-    my $existing_db_host = $test_conf->{FMS_DB_HOST};
     $visible->{GAZE_URL} = 'http://example.net';
 
     $mech->post_ok( "/admin/config", {
             %{ $visible },
-            DMS_DB_HOST => 'a db host',
+            FMS_DB_HOST => 'a db host',
         },
         'submitted with a db host',
     );
 
-    $test_conf = LoadFile( $conf );
-    is $test_conf->{GAZE_URL}, 'http://example.net', 'Gaze host updated';
-    is $test_conf->{FMS_DB_HOST}, $existing_db_host, 'DB host not updated';
+    my $db_host = $config->search( { key => 'FMS_DB_HOST' })->count;
+    $current_gaze = $config->search( { key => 'GAZE_URL' } )->first->value;
+    is $current_gaze, 'http://example.net', 'Gaze host updated';
+    is $db_host, 0, 'DB host not updated';
 };
 
-# restore original config in lieu of using a test file :(
-DumpFile( $conf, $orig_conf );
+
+foreach my $key ( qw/ GAZE_URL AREA_LINKS_FROM_PROBLEMS / ) {
+    my $config = $config->search( { key => $key } )->first;
+    $config->value( $orig{ $key } );
+    $config->update;
+}
 
 $mech->delete_user( $user );
 $mech->delete_user( $user2 );

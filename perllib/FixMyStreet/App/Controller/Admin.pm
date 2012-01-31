@@ -982,35 +982,37 @@ sub edit_config : Path('config') : Args(0) {
         AREA_LINKS_FROM_PROBLEMS => 1
     );
 
+    my $options = FixMyStreet::App->model('DB::Config')->search( 
+        { key => { IN => [ @allowed_options ] } }
+    );
+
+    my %config;
     if ( $c->req->method eq 'POST' ) {
-        use YAML qw/LoadFile DumpFile/;
 
-        my $file = FixMyStreet->path_to( 'conf/general.yml' );
-        my $y = LoadFile( $file );
-
-        my $update = 0;
-        foreach my $option ( @allowed_options ) {
-            my $value = $c->req->param( $option );
+        while ( my $option = $options->next ) {
+            my $value = $c->req->param( $option->key );
             $value = defined $value ? $value : '';
 
-            if ( $checkboxes{ $option } ) {
+            if ( $checkboxes{ $option->key } ) {
                 $value = $value eq 'on' ? 1 : 0;
             }
 
-            if ( $value ne $y->{ $option } ) {
-                $update = 1;
-                $y->{ $option } = $value;
-                $c->config->{ $option } = $value;
+            if ( $value ne $option->value ) {
+                $option->value( $value );
+                $option->update;
+
+                if ( $option->key eq 'MAP_TYPE' ) {
+                    FixMyStreet::Map::reset();
+                }
             }
+
+            $config{$option->key} = $option->value;
         }
 
-        DumpFile( $file, $y ) if $update;
-    }
-
-    my %config;
-
-    foreach my $option ( @allowed_options ) {
-        $config{$option} = $c->config->{$option};
+    } else {
+        while ( my $option = $options->next ) {
+            $config{$option->key} = $option->value;
+        }
     }
 
     $c->stash->{config} = \%config;
