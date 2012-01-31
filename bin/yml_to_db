@@ -1,0 +1,21 @@
+#!/usr/bin/env perl -w
+
+use strict;
+use warnings;
+use YAML 'LoadFile';
+use FixMyStreet::App;
+
+my $file = shift;
+
+die "Can't find $file" unless -f $file;
+
+my $y = LoadFile( $file );
+
+for my $key ( keys %$y ) {
+    next if $key =~ /FMS_DB/;
+
+    FixMyStreet::App->model('DB::Config')->find_or_create({
+        key => $key,
+        value => $y->{ $key }
+    })->insert;
+}
