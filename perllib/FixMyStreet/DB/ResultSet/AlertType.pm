@@ -18,6 +18,8 @@ use RABX;
 sub email_alerts ($) {
     my ( $rs ) = @_;
 
+    mySociety::Gaze::configure(FixMyStreet::App->get_conf('GAZE_URL'));
+    mySociety::MaPit::configure(FixMyStreet::App->get_conf('MAPIT_URL'));
     my $q = $rs->search( { ref => { -not_like => '%local_problems%' } } );
     while (my $alert_type = $q->next) {
         my $ref = $alert_type->ref;

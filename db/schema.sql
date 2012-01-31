@@ -421,3 +421,10 @@ create table open311conf (
     jurisdiction text,
     api_key      text
 );
+
+-- Record configuration values
+
+CREATE TABLE config (
+    key           TEXT PRIMARY KEY,
+    value         TEXT
+);

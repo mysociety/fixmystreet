@@ -113,7 +113,7 @@ Return the base url for the cobranded version of the site
 
 =cut
 
-sub base_url { mySociety::Config::get('BASE_URL') }
+sub base_url { FixMyStreet::App->get_conf('BASE_URL') }
 
 =head2 base_host
 
@@ -636,7 +636,7 @@ sub get_cobrand_conf {
 
     # If we didn't find a value use one from normal config
     if ( !defined($value) ) {
-        $value = mySociety::Config::get($key);
+        $value = FixMyStreet::App->get_conf($key);
     }
 
     return $value;

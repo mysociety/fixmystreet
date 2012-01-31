@@ -1,0 +1,24 @@
+#!/bin/bash
+
+curl -LO http://xrl.us/cpanm
+mv cpanm bin
+chmod +x bin/cpanm 
+./bin/cpanm -l local Carton
+
+export PATH=local/bin:$PATH
+export PERL5LIB=local/lib/perl5
+
+carton install --deployment
+
+perl -MImage::Magick -e 'exit()' >/dev/null 2>&1
+
+HAVE_IM=$?
+
+if [ $HAVE_IM -ne 0 ]
+then
+    read -p "Image::Magick is not installed. Do you want to attempt to install it?" yn
+    case $yn in 
+        [Yy]* ) ./local/bin/carton install Image::Magick;;
+        * ) echo 'You will need to install it for FixMyStreet to work';;
+    esac
+fi

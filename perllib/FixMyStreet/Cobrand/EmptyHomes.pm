@@ -15,7 +15,7 @@ Return the base url for this cobranded site
 =cut
 
 sub base_url {
-    my $base_url = FixMyStreet->config('BASE_URL');
+    my $base_url = FixMyStreet::App->get_conf('BASE_URL');
     if ( $base_url !~ /emptyhomes/ ) {
         $base_url =~ s/http:\/\//http:\/\/emptyhomes\./g;
     }

@@ -28,13 +28,13 @@ sub string {
         if $params->{bounds};
     $url .= '&userLocation=' . $params->{centre} if $params->{centre};
 
-    my $cache_dir = FixMyStreet->config('GEO_CACHE') . 'bing/';
+    my $cache_dir = FixMyStreet::App->get_conf('GEO_CACHE') . 'bing/';
     my $cache_file = $cache_dir . md5_hex($url);
     my $js;
     if (-s $cache_file) {
         $js = File::Slurp::read_file($cache_file);
     } else {
-        $url .= '&key=' . FixMyStreet->config('BING_MAPS_API_KEY');
+        $url .= '&key=' . FixMyStreet::App->get_conf('BING_MAPS_API_KEY');
         $js = LWP::Simple::get($url);
         $js = encode_utf8($js) if utf8::is_utf8($js);
         File::Path::mkpath($cache_dir);
@@ -69,12 +69,12 @@ sub reverse {
     my ( $latitude, $longitude, $cache ) = @_;
 
     # Get nearest road-type thing from Bing
-    my $key = mySociety::Config::get('BING_MAPS_API_KEY', '');
+    my $key = FixMyStreet::App->get_conf('BING_MAPS_API_KEY', '');
     if ($key) {
         my $url = "http://dev.virtualearth.net/REST/v1/Locations/$latitude,$longitude?c=en-GB&key=$key";
         my $j;
         if ( $cache ) {
-            my $cache_dir = FixMyStreet->config('GEO_CACHE') . 'bing/';
+            my $cache_dir = FixMyStreet::App->get_conf('GEO_CACHE') . 'bing/';
             my $cache_file = $cache_dir . md5_hex($url);
 
             if (-s $cache_file) {

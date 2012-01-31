@@ -23,7 +23,7 @@ Return an array reference of allowed cobrand subdomains
 =cut
 
 sub get_allowed_cobrands {
-    my $allowed_cobrand_string = FixMyStreet->config('ALLOWED_COBRANDS');
+    my $allowed_cobrand_string = FixMyStreet::App->get_conf('ALLOWED_COBRANDS');
     my @allowed_cobrands = split( /\|/, $allowed_cobrand_string );
     return \@allowed_cobrands;
 }

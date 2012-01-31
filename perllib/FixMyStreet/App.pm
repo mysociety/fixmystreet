@@ -9,7 +9,6 @@ use Memcached;
 use mySociety::Email;
 use mySociety::EmailUtil;
 use mySociety::Random qw(random_bytes);
-use FixMyStreet::Map;
 
 use URI;
 use URI::QueryParam;
@@ -186,9 +185,27 @@ sub setup_request {
     #    $map = undef unless $map eq 'OSM';
     #}
     FixMyStreet::Map::set_map_class( $map );
+    mySociety::MaPit::configure( $c->get_conf('MAPIT_URL') );
+    mySociety::Gaze::configure( $c->get_conf('GAZE_URL') );
 
     return $c;
 }
+
+sub get_conf {
+    my $self = shift;
+    my $key = shift;
+
+    return undef unless $key;
+
+    if ( my $value = FixMyStreet::App->config->{ $key } ) {
+        return $value;
+    } elsif ( $value = FixMyStreet::App->model('DB::Config')->get_value( $key ) ) {
+        return $value;
+    }
+
+    return undef;
+}
+# sub get_conf { return 'OSM' }
 
 =head2 setup_dev_overrides
 
@@ -297,7 +314,7 @@ sub send_email {
       for grep { $vars->{$_} } qw( to from subject);
 
     $email->header_set( 'Message-ID', sprintf('<fms-%s-%s@%s>',
-        time(), unpack('h*', random_bytes(5, 1)), $c->config->{EMAIL_DOMAIN}
+        time(), unpack('h*', random_bytes(5, 1)), $c->get_conf('EMAIL_DOMAIN')
     ) );
 
     # pass the email into mySociety::Email to construct the on the wire 7bit
@@ -318,6 +335,8 @@ sub send_email {
 
 sub send_email_cron {
     my ( $c, $params, $env_from, $env_to, $nomail ) = @_;
+
+    mySociety::EmailUtil::set_smarthost( $c->get_conf('SMTP_SMARTHOST') );
 
     $params->{'Message-ID'} = sprintf('<fms-cron-%s-%s@mysociety.org>', time(),
         unpack('h*', random_bytes(5, 1))

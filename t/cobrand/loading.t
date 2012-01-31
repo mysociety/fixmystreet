@@ -4,9 +4,9 @@ use warnings;
 use Test::More;
 use Sub::Override;
 
-use FixMyStreet;
-
-use_ok 'FixMyStreet::Cobrand';
+# this loads FixMyStreetCobrand and if we load it twice things
+# get confused, I suspect due to Module::Plugabble magic
+use_ok 'FixMyStreet::App';
 
 # check that the allowed cobrands is correctly loaded from config
 {
@@ -14,7 +14,7 @@ use_ok 'FixMyStreet::Cobrand';
     ok $allowed,     "got the allowed_cobrands";
     isa_ok $allowed, "ARRAY";
     cmp_ok scalar @$allowed, '>', 1, "got more than one";
-    is join( '|', @$allowed ), FixMyStreet->config('ALLOWED_COBRANDS'),
+    is join( '|', @$allowed ), FixMyStreet::App->get_conf('ALLOWED_COBRANDS'),
       "matches config value";
 }
 

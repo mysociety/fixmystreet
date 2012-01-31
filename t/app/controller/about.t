@@ -13,7 +13,7 @@ $mech->content_contains('html class="no-js" lang="en-gb"');
 
 SKIP: {
     skip( "Need 'emptyhomes' in ALLOWED_COBRANDS config", 8 )
-      unless FixMyStreet::App->config->{ALLOWED_COBRANDS} =~ m{emptyhomes};
+      unless FixMyStreet::App->get_conf('ALLOWED_COBRANDS') =~ m{emptyhomes};
 
     # check that geting the page as EHA produces a different page
     ok $mech->host("reportemptyhomes.co.uk"), 'change host to reportemptyhomes';

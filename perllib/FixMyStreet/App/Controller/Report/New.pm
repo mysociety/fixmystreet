@@ -293,7 +293,7 @@ sub report_import : Path('/import') {
 
     # If there was a photo add that too
     if ( $photo ) {
-        my $file = file( $c->config->{UPLOAD_CACHE}, "$photo.jpg" );
+        my $file = file( FixMyStreet::App->get_conf('UPLOAD_CACHE'), "$photo.jpg" );
         my $blob = $file->slurp;
         $file->remove;
         $report->photo($blob);
@@ -855,7 +855,7 @@ sub process_photo_upload : Private {
 
     # we have an image we can use - save it to the cache in case there is an
     # error
-    my $cache_dir = dir( $c->config->{UPLOAD_CACHE} );
+    my $cache_dir = dir( FixMyStreet::App->get_conf('UPLOAD_CACHE') );
     $cache_dir->mkpath;
     unless ( -d $cache_dir && -w $cache_dir ) {
         warn "Can't find/write to photo cache directory '$cache_dir'";
@@ -888,7 +888,7 @@ sub process_photo_cache : Private {
     $fileid =~ s{\D+}{}g;
     return unless $fileid;
 
-    my $file = file( $c->config->{UPLOAD_CACHE}, "$fileid.jpg" );
+    my $file = file( FixMyStreet::App->get_conf('UPLOAD_CACHE'), "$fileid.jpg" );
     return unless -e $file;
 
     $c->stash->{upload_fileid} = $fileid;
@@ -980,7 +980,7 @@ sub save_user_and_report : Private {
 
     # If there was a photo add that too
     if ( my $fileid = $c->stash->{upload_fileid} ) {
-        my $file = file( $c->config->{UPLOAD_CACHE}, "$fileid.jpg" );
+        my $file = file( FixMyStreet::App->get_conf('UPLOAD_CACHE'), "$fileid.jpg" );
         my $blob = $file->slurp;
         $file->remove;
         $report->photo($blob);

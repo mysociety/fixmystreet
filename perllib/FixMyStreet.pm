@@ -79,10 +79,20 @@ it can't find it.
 
 sub config {
     my $class = shift;
+    # can only return the non DB config as this is called
+    # at start up when there won't be a DB connection
     return \%CONFIG unless scalar @_;
 
     my $key = shift;
-    return exists $CONFIG{$key} ? $CONFIG{$key} : undef;
+
+    if ( exists $CONFIG{$key} ) {
+        return $CONFIG{$key};
+    # } elsif ( my $rs = FixMyStreet::App->model('DB::Config') ) {
+    #     my $val = $rs->get_value( $key );
+    #     return $val if defined $val;
+    }
+
+    return undef;
 }
 
 =head2 dbic_connect_info

@@ -1,0 +1,50 @@
+# general-example.yml:
+# Example values for the "general" config file.
+#
+# Configuration parameters, in YAML syntax.
+#
+# Copy this file to one called "general.yml" in the same directory.  Or
+# have multiple config files and use a symlink to change between them.
+
+# PostgreSQL database for FMS
+FMS_DB_HOST: 'localhost'
+FMS_DB_PORT: '5432'
+FMS_DB_NAME: 'fms'
+FMS_DB_USER: 'fms'
+FMS_DB_PASS: ''
+
+EMAIL_DOMAIN: 'example.org'
+TEST_EMAIL_PREFIX: ''
+
+CONTACT_NAME: 'FixMyStreet'
+STAGING_SITE: 1
+
+GOOGLE_MAPS_API_KEY: ''
+BING_MAPS_API_KEY: ''
+
+LONDON_REPORTIT_URL: ''
+LONDON_REPORTIT_KEY: ''
+LONDON_REPORTIT_SECRET: ''
+
+MAPIT_URL: 'http://mapit.mysociety.org/'
+MAP_TYPE: 'OSM'
+EVEL_URL: 'http://services.mysociety.org/evel'
+GAZE_URL: 'http://gaze.mysociety.org/gaze'
+
+# Tracking
+TRACKING: 0   # off by default
+TRACKING_URL: 'http://path/to/web/bug'
+TRACKING_SECRET: 'really-secret-value'
+
+AUTH_SHARED_SECRET: ''
+HEARFROMYOURMP_BASE_URL: ''
+
+SMTP_SMARTHOST: 'localhost'
+
+IPHONE_URL: ''
+
+# Log file (used in test harness, and later in admin scripts)
+HTTPD_ERROR_LOG: '/var/log/apache/error.log'
+
+# Should problem reports link to the council summary pages?
+AREA_LINKS_FROM_PROBLEMS: '0'

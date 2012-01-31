@@ -4,7 +4,6 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
-use FixMyStreet::Map;
 use List::MoreUtils qw(any);
 use Encode;
 use FixMyStreet::Map;
