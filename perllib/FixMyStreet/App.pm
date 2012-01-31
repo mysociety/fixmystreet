@@ -232,7 +232,7 @@ sub setup_dev_overrides {
     my $c = shift;
 
     # If not on STAGING_SITE bail out
-    return unless $c->config->{STAGING_SITE};
+    return unless $c->get_conf('STAGING_SITE');
 
     # Extract all the _override_xxx parameters
     my %params = %{ $c->req->parameters };
@@ -270,7 +270,7 @@ hash in session and so creating a session for all users).
 
 sub get_override {
     my ( $c, $key ) = @_;
-    return unless $c->config->{STAGING_SITE};
+    return unless $c->get_conf('STAGING_SITE');
     return $c->session->{overrides}->{$key};
 }
 
