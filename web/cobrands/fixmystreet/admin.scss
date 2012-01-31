@@ -5,6 +5,15 @@
     float: left;
 }
 
+#wrapper2 {
+    max-width: none;
+    margin-left: 1em;
+}
+
+table {
+    font-size: 0.9em;
+}
+
 /* The two lists in the navigation are displayed as simple horizontal lists in
  * table cells. */
 .nav {
@@ -14,6 +23,10 @@
 
 .nav li {
     display: block;
+}
+
+.container {
+    overflow: scroll;
 }
 
 #admin-nav a, #site-nav span {
