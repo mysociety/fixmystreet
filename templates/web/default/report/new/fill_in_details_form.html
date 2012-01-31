@@ -206,7 +206,7 @@
 
     <div class="checkbox">
         [%# if there is nothing in the name field then set check box as default on form %]
-        <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF !report.anonymous || !report.name %]>
+        <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF !report.anonymous %]>
         <label for="form_may_show_name">[% loc('Show my name publicly') %]</label>
         <br><small>[% loc('(we never show your email address or phone number)') %]</small>
     </div>

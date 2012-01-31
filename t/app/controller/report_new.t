@@ -80,7 +80,7 @@ foreach my $test (
         ],
     },
     {
-        msg    => 'may_show_name defaults to true',
+        msg    => 'may_show_name is remembered',
         pc     => 'SW1A 1AA',
         fields => {
             title         => '',
@@ -95,7 +95,7 @@ foreach my $test (
             password_register => '',
             remember_me => undef,
         },
-        changes => { may_show_name => '1' },
+        changes => {},
         errors  => [
             'Please enter a subject',
             'Please enter some details',

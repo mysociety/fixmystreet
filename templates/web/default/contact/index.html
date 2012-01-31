@@ -94,6 +94,6 @@
 
 </form>
 
-[% INCLUDE 'contact/address.html' %]
+[% TRY %][% INCLUDE 'contact/address.html' %][% CATCH file %][% END %]
 
 [% INCLUDE 'footer.html' %]

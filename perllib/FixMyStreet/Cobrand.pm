@@ -84,6 +84,9 @@ sub get_class_for_moniker {
         return $avail if $moniker eq $avail->moniker;
     }
 
+    # Special case for old blank cobrand entries in fixmystreet.com.
+    return 'FixMyStreet::Cobrand::FixMyStreet' if $moniker eq '';
+
     # if none match then use the default
     return 'FixMyStreet::Cobrand::Default';
 }

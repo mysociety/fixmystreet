@@ -12,16 +12,27 @@
         <meta name="mobileoptimized" content="0">
 
         <link rel="stylesheet" href="[% version('/css/core.css') %]">
+        <link rel="stylesheet" href="[% version('/cobrands/fixmystreet/base.css') %]">
+        <link rel="stylesheet" href="[% version('/cobrands/fixmystreet/layout.css') %]" media="(min-width:48em)">
+        <!--[if (lt IE 9) & (!IEMobile)]>
+            <link rel="stylesheet" href="[% version('/cobrands/fixmystreet/layout.css') %]">
+        <![endif]-->
 
         [% INCLUDE 'common_header_tags.html' %]
                 
+        [% IF c.req.uri.host == 'osm.fixmystreet.com' %]
+            <link rel="canonical" href="http://www.fixmystreet.com[% c.req.uri.path_query %]">
+        [% END %]
+
+        [% INCLUDE 'tracking_code.html' %]
+
     </head>
     <body>
 
 <div id="wrapper"><div id="wrapper2"><div id="wrapper3">
 
         [% IF NOT title AND NOT c.req.path %]<h1 id="header" role="banner">[% ELSE %]<div id="header" role="banner"><a href="/">[% END
-            %][% loc('FixMyStreet') %]
+            %]<img src="/cobrands/fixmystreet/fms-logo-flat.png" width=327 height=62 alt="[% loc('FixMyStreet') %]">
         [%- IF NOT title AND NOT c.req.path %]</h1>[% ELSE %]</a></div>[% END %]
 
         <ul id="meta">
