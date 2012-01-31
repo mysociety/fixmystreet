@@ -167,7 +167,7 @@ EOF
 sub display_advert ($$;$%) {
     my ($c, $email, $name, %data) = @_;
 
-    return '' unless $c->cobrand->is_default;
+    return '' unless $c->cobrand->moniker eq 'fixmystreet';
 
     #if (defined $data{council} && $data{council} eq '2326') {
     #    my ($out, $ad) = display_hfyc_cheltenham_advert($email, $name);

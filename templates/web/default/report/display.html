@@ -41,7 +41,6 @@
         <input type="hidden" name="id" value="[% problem.id %]">
         <input type="hidden" name="type" value="updates">
         <input type="submit" value="[% loc('Subscribe') %]">
-        [% cobrand_alert_fields %]
     </form>
     &nbsp;
     <a href="[% c.uri_for( '/rss', problem.id ) %]">
@@ -191,8 +190,6 @@
 </div>
 
 [% END %]
-
-        [% cobrand_update_fields %]
 
     </form>
 </div>

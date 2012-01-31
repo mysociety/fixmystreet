@@ -100,10 +100,6 @@ sub format_problem_for_display : Private {
 
     $c->stash->{banner} = $c->cobrand->generate_problem_banner($problem);
 
-    $c->stash->{cobrand_alert_fields} = $c->cobrand->form_elements('/alerts');
-    $c->stash->{cobrand_update_fields} =
-      $c->cobrand->form_elements('/updateForm');
-
     ( $c->stash->{short_latitude}, $c->stash->{short_longitude} ) =
       map { Utils::truncate_coordinate($_) }
       ( $problem->latitude, $problem->longitude );
