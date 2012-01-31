@@ -654,13 +654,15 @@ sub process_user : Private {
         $report->user( $user );
         $report->name( $user->name );
         $c->stash->{field_errors}->{name} = _('You have successfully signed in; please check and confirm your details are accurate:');
+        $c->log->info($user->id . ' logged in during problem creation');
         return 1;
     }
 
     # set the user's name, phone, and password
     $report->user->name( Utils::trim_text( $params{name} ) ) if $params{name};
     $report->user->phone( Utils::trim_text( $params{phone} ) );
-    $report->user->password( Utils::trim_text( $params{password_register} ) );
+    $report->user->password( Utils::trim_text( $params{password_register} ) )
+        if $params{password_register};
     $report->name( Utils::trim_text( $params{name} ) );
 
     return 1;
@@ -957,10 +959,12 @@ sub save_user_and_report : Private {
         $report->user->phone( undef );
         $report->user->password( '', 1 );
         $report->user->insert();
+        $c->log->info($report->user->id . ' created for this report');
     }
     elsif ( $c->user && $report->user->id == $c->user->id ) {
         $report->user->update();
         $report->confirm;
+        $c->log->info($report->user->id . ' is logged in for this report');
     }
     else {
         # User exists and we are not logged in as them.
@@ -971,6 +975,7 @@ sub save_user_and_report : Private {
             password => $report->user->password,
         };
         $report->user->discard_changes();
+        $c->log->info($report->user->id . ' exists, but is not logged in for this report');
     }
 
     # If there was a photo add that too
@@ -1050,6 +1055,7 @@ sub redirect_or_confirm_creation : Private {
         # Subscribe problem reporter to email updates
         $c->forward( 'create_reporter_alert' );
         my $report_uri = $c->uri_for( '/report', $report->id );
+        $c->log->info($report->user->id . ' was logged in, redirecting to /report/' . $report->id);
         $c->res->redirect($report_uri);
         $c->detach;
     }
@@ -1071,6 +1077,7 @@ sub redirect_or_confirm_creation : Private {
     # tell user that they've been sent an email
     $c->stash->{template}   = 'email_sent.html';
     $c->stash->{email_type} = 'problem';
+    $c->log->info($report->user->id . ' created ' . $report->id . ', email sent, ' . ($data->{password} ? 'password set' : 'password not set'));
 }
 
 sub create_reporter_alert : Private {

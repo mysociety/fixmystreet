@@ -35,7 +35,7 @@ function fms_markers_list(pins, transform) {
         var marker = new OpenLayers.Feature.Vector(loc, {
             type: cols[pin[2]],
             id: pin[3],
-            title: pin[4]
+            title: pin[4] || ''
         });
         markers.push( marker );
     }
@@ -59,15 +59,25 @@ function fixmystreet_onload() {
     }
 
     var pin_layer_options = {
+        rendererOptions: {
+            yOrdering: true
+        },
         styleMap: new OpenLayers.StyleMap({
             'default': new OpenLayers.Style({
-                externalGraphic: "/i/pin${type}.gif",
+                externalGraphic: "/i/pin${type}.png",
                 graphicTitle: "${title}",
-                graphicWidth: 32,
-                graphicHeight: 59,
+                graphicWidth: 44,
+                graphicHeight: 58,
                 graphicOpacity: 1,
-                graphicXOffset: -2,
-                graphicYOffset: -59
+                graphicXOffset: -22,
+                graphicYOffset: -58,
+                backgroundGraphic: "/i/pin-shadow.png",
+                backgroundWidth: 50,
+                backgroundHeight: 19,
+                backgroundXOffset: -7,
+                backgroundYOffset: -19,
+                graphicZIndex: 11,
+                backgroundGraphicZIndex: 10
             })
         })
     };
@@ -352,6 +362,13 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             }
         });
         $('#side-form').show();
+        /* For some reason on IOS5 if you use the jQuery show method it
+         * doesn't display the JS validation error messages unless you do this
+         * or you cause a screen redraw by changing the phone orientation.
+         * NB: This has to happen after the call to show() */
+        if ( navigator.userAgent.match(/like Mac OS X/i)) {
+            document.getElementById('side-form').style.display = 'block';
+        }
         $('#side').hide();
         $('#sub_map_links').hide();
         fixmystreet.page = 'new';
