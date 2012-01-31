@@ -199,8 +199,13 @@ sub get_conf {
 
     if ( my $value = FixMyStreet::App->config->{ $key } ) {
         return $value;
-    } elsif ( $value = FixMyStreet::App->model('DB::Config')->get_value( $key ) ) {
-        return $value;
+    } else {
+        if ( $value = Memcached::get( $key ) ) {
+            return $value;
+        } elsif ( $value = FixMyStreet::App->model('DB::Config')->get_value( $key ) ) {
+            Memcached::set( $key, $value, 24 * 60 * 60 );
+            return $value;
+        }
     }
 
     return undef;

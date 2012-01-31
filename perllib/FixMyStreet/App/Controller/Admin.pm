@@ -1004,6 +1004,8 @@ sub edit_config : Path('config') : Args(0) {
                 if ( $option->key eq 'MAP_TYPE' ) {
                     FixMyStreet::Map::reset();
                 }
+
+                Memcached::set( $option->key, $option->value, 24 * 60 * 60 );
             }
 
             $config{$option->key} = $option->value;
