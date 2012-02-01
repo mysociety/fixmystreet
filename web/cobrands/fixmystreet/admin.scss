@@ -10,8 +10,52 @@
     margin-left: 1em;
 }
 
-table {
+.container {
+    overflow: scroll;
     font-size: 0.9em;
+
+    h2 {
+        font-size: 1.2em;
+    }
+
+    table {
+        font-size: 0.9em;
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
+        border-color: #ccc;
+    }
+
+    tr:nth-child(even) {
+        background-color: #eee;
+    }
+
+    form {
+        span.fauxlabel {
+            float: left;
+            width: 7em;
+            padding-right: 0.5em;
+        }
+
+        li {
+            list-style: none;
+            margin: 0.3em 0em;
+            clear: both;
+        }
+    }
+
+    label {
+        float: left;
+        width: 7em;
+        padding-right: 0.5em;
+    }
+
+    label.nofloat{
+        float: none;
+    }
+
+    input[type=checkbox] {
+        margin-right: 0.5em;
+    }
 }
 
 /* The two lists in the navigation are displayed as simple horizontal lists in
@@ -19,14 +63,10 @@ table {
 .nav {
     display: block;
     width: auto;
-}
 
-.nav li {
-    display: block;
-}
-
-.container {
-    overflow: scroll;
+    li {
+        display: block;
+    }
 }
 
 #admin-nav a, #site-nav span {

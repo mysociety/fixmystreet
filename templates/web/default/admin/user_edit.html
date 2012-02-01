@@ -7,15 +7,15 @@
     <input type="hidden" name="token" value="[% token %]" >
     <input type="hidden" name="submit" value="1" >
 <ul>
-<li>[% loc('Name:') %] <input type='text' name='name' id='name' value='[% user.name | html %]'></li>
-<li>[% loc('Email:') %] <input type='text' id='email' name='email' value='[% user.email | html %]'></li>
-<li>[% loc('Council:') %] <select id='council' name='council'>
+<li><label>[% loc('Name:') %]</label> <input type='text' name='name' id='name' value='[% user.name | html %]'></li>
+<li><label>[% loc('Email:') %]</label> <input type='text' id='email' name='email' value='[% user.email | html %]'></li>
+<li><label>[% loc('Council:') %]</label> <select id='council' name='council'>
     <option value=''>[% loc('No council') %]</option>
 [% FOR council IN council_ids %]
     <option value="[% council %]"[% ' selected' IF council == user.from_council %]>[% council_details.$council.name %]</option>
 [% END %]
 </select>
-<li>[% loc('Flagged:') %] <input type="checkbox" id="flagged" name="flagged"[% user.flagged ? ' checked' : '' %]></li>
+<li><label>[% loc('Flagged:') %]</label> <input type="checkbox" id="flagged" name="flagged"[% user.flagged ? ' checked' : '' %]></li>
 </ul>
 <input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" ></form>
 
