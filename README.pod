@@ -31,10 +31,6 @@ Fetch the latest version from L<Github|https://github.com/mysociety/fixmystreet/
 
 =item *
 
-Untar this in the vhost directory
-
-=item *
-
 Create a new PostGIS enabled database
 
 =item *
