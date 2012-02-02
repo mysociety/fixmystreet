@@ -2,9 +2,6 @@
 
 DIR="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd | sed -e 's/\/bin$//' )"
 
-curl -LO http://xrl.us/cpanm
-mv cpanm $DIR/bin
-chmod +x $DIR/bin/cpanm 
 $DIR/bin/cpanm -l local Carton
 
 export PATH=$DIR/local/bin:$PATH
