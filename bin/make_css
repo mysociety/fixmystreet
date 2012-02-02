@@ -2,8 +2,8 @@
 #
 # make_css:
 # Generate CSS files from SCSS files.
-# Curerntly the CSS files are also in version control, though I guess
-# in future they don't need to be, and compressed style could then be used.
+#
+# Requires sass which you can get from http://sass-lang.com/
 #
 # Copyright (c) 2011 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org

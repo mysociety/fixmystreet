@@ -1,19 +1,320 @@
-
 =head1 NAME
 
 FixMyStreet
 
-=head1 DESCRIPTION
+=head1 ABOUT
 
 FixMyStreet is a project that allows anyone to report an issue such as potholes,
 broken street lights, severe littering, water leaks. These issues are then
-routed to the correct body who can arrange to have them fixed.
+routed to the correct body who can arrange to have them fixed. By default it
+supports routing problems via email or using an Open311 WebService.
 
-=head1 INSTALLING
+It's written in Perl and uses the Catalyst web framework.
 
-Installing from scratch can be a bit daunting but is fully documented in the
-notes/INSTALL file.
+=head1 EXAMPLES
 
-We are hoping to make it much easier for you to try the code by letting you
-start a fully installed system with test data pre-loaded on Amazon's servers.
-More details will follow soon.
+L<http://www.fixmystreet.com>
+
+L<http://www.fiksgatami.no/>
+
+=head1 QUICKSTART
+
+If you're reasonably sure what you are doing then you can follow the
+quickstart instructions. Otherwise there are more detailed instructions
+further down.
+
+=over
+
+=item *
+
+Fetch the latest version from L<Github|https://github.com/mysociety/fixmystreet/>
+
+=item *
+
+Untar this in the vhost directory
+
+=item *
+
+Create a new PostGIS enabled database
+
+=item *
+
+Run C<db/schema.sql> and the C<db/alert_types.sql>
+
+=item *
+
+Run C<./bin/install_perl_modules>
+
+=item *
+
+Create a new Apache vhost based on C<conf/httpd-conf.example>
+
+=item *
+
+Copy C<conf/general.yml-example> to C<conf/general.yml> and update
+the defaults accordingly
+
+=item *
+
+Generate the CSS by running C<bin/make_css>
+
+=item *
+
+Restart the webserver
+
+=item *
+
+Install the crontab from C<conf/crontab>
+
+=back
+
+=head1 DOWNLOADING
+
+Fetch the latest version from L<github|http://github.com/mysociety/fixmystreet>
+
+=head1 REQUIREMENTS
+
+On the server you are installing FixMyStreet on you will need the following things:
+
+=head2 Software requirements
+
+=over
+
+=item *
+
+PostgreSQL and the PostGis extension
+
+=item *
+
+Perl 5.8 or above
+
+=item *
+
+ImageMagick and the perl bindings.
+
+=item *
+
+A webserver that supports FastCGI
+
+=item *
+
+gettext
+
+=item *
+
+The CSS for FixMyStreet is generated from SCSS sources so you will need a SCSS
+to CSS convertor. You can get one from L<http://sass-lang.com/>
+
+=back
+
+If you're expecting a lot of traffic it's recommended that you install L<memcached|http://memcached.org/>
+
+If you are using a Debian based linux distribution there is a list of relevant
+packages in C<conf/packages>.
+
+=head2 Service dependencies
+
+For most uses of FixMyStreet you'll also need access to a MaPit server with
+data for the types of bodies you are reporting issues to. For more details on
+how to install MaPit see the L<mapit pypi page|http://pypi.python.org/pypi/django-mapit/>
+
+You will also need a Tile Server to serve up Map tiles. FixMyStreet can use
+Google, Bing and OpenStreetMap Tile servers.
+
+Finally, you will need a geolocation service to turn addresses into longitude
+and latitudes. FixMyStreet currently includes code to use both Bing and Google
+geolocation services.
+
+=head1 DETAILED INSTALLATION INSTRUCTIONS
+
+=head2 Unpacking the Code
+
+Once you've downloaded the code you should unpack it. The best place to do this
+is in the location you want the web server vhost to be.
+
+=head2 Creating the database
+
+The default settings file assumes the database is called fms and the user the same. 
+You can change these if you like.
+
+The database you create for FixMyStreet should be a PostGis enabled one. The best way
+to do this is to use a PostGIS template database. There are good instructions on how
+to create one L<on the django site|https://docs.djangoproject.com/en/dev/ref/contrib/gis/install/#spatialdb-template>
+as well as some bash scripts that automate the process.
+
+=head2 Set up the database
+
+Once you've created the database you can use the sql in C<db/schema.sql> to create the required
+tables, triggers and stored procedures. You will also need to run
+C<db/alert_types.sql> which
+populates the alert_types table.
+
+=head2 Install Perl modules
+
+FixMyStreet uses a number of CPAN modules which are installed by the
+C<install_perl_modules> script. This will install them into a directory
+called local.
+
+It uses cpanminus and Carton under the hood but should install these
+of they are missing. You may need to install some source packages to
+allow some of the included modules to be built, including:
+
+=over
+
+=item expat
+
+=item Postgresql
+
+=item The GMP math library
+
+=back
+
+You will also need a development toolchain in place ( gcc, make etc )
+
+If you need to add a module manually you can do it using:
+
+    ./bin/cron_wrapper ./local/bin/carton install Module::To::Add
+
+which will install the module into the local directory
+
+=head2 Set up Webserver
+
+It is recommended that you run FixMyStreet using FastCGI. It should also be
+possible to run it using Plack/PSGI.
+
+There is an example Apache vhost configuration file on C<conf/httpd.conf-example>
+which you can copy and update the paths in if you are running FixMyStreet under
+FastCGI.
+
+If you are using Apache and the sample configuration you will need the following 
+modules enabled:
+
+=over
+
+=item *
+
+mod_rewrite
+
+=item *
+
+mod_proxy
+
+=item *
+
+mod_expires
+
+=item *
+
+mod_fastcgi
+
+=back
+
+=head1 SETTINGS
+
+The settings for FixMyStreet are defined in C<conf/general.yml> using the YAML
+markup language. There are some defaults in C<conf/general.yml-example> which
+you should copy to C<conf/general.yml>.
+
+The bare minimum of settings you will need to fill in or update are:
+
+=over
+
+=item FMS_DB_PASS
+
+This is the password for the database.
+
+=item BASE_URL
+
+The URL for the homepage of your FixMyStreet install.
+
+=item EMAIL_DOMAIN
+
+The email domain that emails will be sent from
+
+=item CONTACT_EMAIL
+
+The email address to be used on the site for the contact us form.
+
+=item STAGING_SITE
+
+If this is 1 then all email ( alerts and reports ) will be sent to the
+contact email address. Use this for development sites.
+
+=item UPLOAD_CACHE
+
+This is the location where imaged will be stored as they are being uploaded.
+It should be accessible by and writeable by the FixMyStreet process.
+
+=item GEO_CACHE
+
+This is the location where Geolocation data will be cached.
+It should be accessible by and writeable by the FixMyStreet process.
+
+=back
+
+If you are using Bing or Google maps you should also set one of
+BING_MAPS_API_KEY or GOOGLE_MAPS_API_KEY.
+
+If you are using a MaPit install you should update MAPIT_URL.
+
+=head2 Generate CSS
+
+There is a script, bin/make_css, that uses L<sass|http://sass-lang.com/> to
+convert the SCSS files to CSS files.
+
+=head2 Restart the webserver
+
+At this point you be able to restart the webserver and see your FixMyStreet
+installation at the configured URL.
+
+=head2 Cron jobs
+
+There is an example crontab in conf/crontab.ugly. At the moment this is in
+the format used by mySociety's internal deployment tools. To convert this to
+a valid crontab the following should be done:
+
+=over
+
+=item *
+
+Replace C<!!(*= $user *)!!> with the name of the user the cron should run under
+
+=item *
+
+Replace C<!!(* $vhost *)!!> with the path to the FixMyStreet code.
+
+=back
+
+=head2 Check it's working
+
+You can run the unit tests using C<prove -r t> in the FixMyStreet directory. Note
+that this may leave entries in your database at the moment and should not be run 
+on a live site.
+
+=head2 Next Steps
+
+The admin site should be protected using HTTP AUTH.
+
+Customise your install using Templates, CSS and a Cobrand module. See L<notes/customisation.pod>
+for details.
+
+Add contact details for authorities and categories using the admin interface.
+
+Add authority data to the MaPit install if required.
+
+=head1 COMMON PROBLEMS
+
+=head2 locale
+
+By default FixMyStreet uses the en_GB.UTF-8 locale. If it is not installed then
+it may not start
+
+=head2 Template caching
+
+FixMyStreet caches compiled templates alongside the source files so the templates
+directory needs to be writable by the process that is running FixMyStreet.
+
+=head2 Image::Magick perl module
+
+If your OS has a way to install a binary version of Image::Magick then it's recommended
+that you do that rather than install via CPAN.
