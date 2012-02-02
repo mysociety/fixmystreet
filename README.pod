@@ -3,7 +3,7 @@
 FixMyStreet is an open source project to develop a website for reporting
 issues such as potholes and broken street lights to the appropriate authority.
 
-It was created in 2005 by mySociety for reporting problems to UK councils and
+It was created in 2005 by L<mySociety|http://www.mysociety.org> for reporting problems to UK councils and
 has been copied around the world.
 
 We're working hard to make it easy to install and re-use in other
