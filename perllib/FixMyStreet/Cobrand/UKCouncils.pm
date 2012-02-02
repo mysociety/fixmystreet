@@ -12,6 +12,10 @@ sub site_restriction {
     return ( "and council='" . $self->council_id . "'", $self->council_url, { council => sprintf('%d', $self->council_id) } );
 }
 
+sub restriction {
+    return { cobrand => shift->moniker };
+}
+
 sub problems_clause {
     my $self = shift;
     return { council => sprintf('%d', $self->council_id) };
