@@ -1,13 +1,13 @@
-=head1 NAME
+=head1 Welcome to FixMyStreet
 
-FixMyStreet
+FixMyStreet is an open source project to develop a website for reporting
+issues such as potholes and broken street lights to the appropriate authority.
 
-=head1 ABOUT
+It was created in 2005 by mySociety for reporting problems to UK councils and
+has been copied around the world.
 
-FixMyStreet is a project that allows anyone to report an issue such as potholes,
-broken street lights, severe littering, water leaks. These issues are then
-routed to the correct body who can arrange to have them fixed. By default it
-supports routing problems via email or using an Open311 WebService.
+We're working hard to make it easy to install and re-use in other
+countries and welcome questions about how it works. 
 
 It's written in Perl and uses the Catalyst web framework.
 
