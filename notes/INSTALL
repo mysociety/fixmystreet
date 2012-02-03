@@ -1,141 +1,261 @@
-Installing FixMyStreet
-======================
+=head1 Installing FixMyStreet
 
-mySociety applications have generally been run on Debian systems. Other Linux
-distributions (and more) may well work but may also require some tweaking.
+=head1 DOWNLOADING
 
-Clone the repository (you've probably already done this):
-    git clone git://github.com/mysociety/fixmystreet.git
-and be sure to run:
+Fetch the latest version from L<github|http://github.com/mysociety/fixmystreet>
+
+At the moment the best way is to clone it using git:
+
+    git clone https://github.com/mysociety/fixmystreet.git
+
+You'll then need to install mySociety's common library of code by running the 
+following command from inside the fixmystreet directory:
+
     git submodule update --init
-inside to fetch the shared commonlib submodule.
 
-conf/packages is a list of Debian packages that are needed, so install them if
-you're on Debian/Ubuntu. You'll also probably need to install lots of CPAN
-modules, see the section on that below.
+=head1 REQUIREMENTS
 
-FixMyStreet expects a PostgreSQL database, so set one of them up - the schema
-is available in db/schema.sql. You will also need to load in db/alert_types.sql
-to populate the alert types table.
+On the server you are installing FixMyStreet on you will need the following things:
 
-Copy conf/general.yml-example to conf/general.yml and set it up appropriately:
-* provide the relevant database connection details
-* the BASE_URL to be where your test site will run - eg 'http://localhost'
-* set UPLOAD_CACHE and GEO_CACHE to your preferred values
-* MAP_TYPE - OSM is probably the best one to try to start with, it's being
-  successfully used.
+=head2 Software requirements
 
-Environment setup
------------------
+=over
 
-There is a little script that is used to set up the correct environment needed
-for FMS to run (perl library paths, cpan install locations, bin paths etc). It
-should be eval-ed in a bash shell to set environment variables:
-   eval `./setenv.pl`
+=item *
 
-Cron scripts can be run through the bin/cron-wrapper script in order to be run
-within the right environment.
+PostgreSQL and the PostGis extension
 
-CPAN module dependencies
-------------------------
+=item *
 
-There are many CPAN dependencies that should be dealt with using
-module-manage.pl which takes care of fetching specific versions of packages
-from CPAN and building them. To install all the CPAN packages needed:
+Perl 5.8 or above
 
-    eval `./setenv.pl`
-    module-manage.pl setup
+=item *
 
-Look in the perl-external directory for details. Notably the following are important:
+ImageMagick and the perl bindings.
 
-urls.txt    - url to the specific packages to fetch
-modules.txt - list of all modules that need to be built
-minicpan/   - local subset of cpan - used as source for all packages
-local-lib   - where the cpan modules get built to
-lib         - some initial modules needed for bootstrap
-bin         - scripts to make it all work
+=item *
 
-Read the perl-external/bin/module-manage.pl code to see how it all works. It is
-basically a wrapper around cpanm (which builds the packages) and dpan (which
-helps maintain the fake cpan subset).
+A webserver that supports FastCGI
 
-If you need to add a module do it using:
+=item *
 
-    module-manage.pl add Module::To::Add
-  
-and it will update all the relevant bits.
+gettext
 
-If a module won't build (Test::WWW::Mechanize and HTTP::Server::Simple fail
-tests for me but the failures are not pertinent) then the module-manage script
-will bail out. Look in ~/.cpanm/build_log to see what went wrong. You can force
-an install if the test failures are not important by running cpanm directly:
+=item *
 
-    cpanm                                                   \
-        --mirror /absolute/path/to/perl-external/minicpan   \
-        --mirror-only                                       \
-        --force                                             \
-        Test::WWW::Mechanize
+The CSS for FixMyStreet is generated from SCSS sources so you will need a SCSS
+to CSS convertor. You can get one from L<http://sass-lang.com/>
 
-Hopefully once it is all built we can automate the running of module-manage.pl
-in order to make sure that the setup is current.
+=back
 
-Note: Others are starting to work on this and it might be a good idea to switch
-to their output:
-http://blogs.perl.org/users/sebastian_willert/2011/03/how-i-distribute-my-projects.html
+If you're expecting a lot of traffic it's recommended that you install L<memcached|http://memcached.org/>
 
-Notes
------
+If you are using a Debian based linux distribution there is a list of relevant
+packages in C<conf/packages>.
 
-* no-update-server is a shell script used by NUUG for setting up
-  www.fiksgatami.no using the FixMyStreet codebase.
+=head2 Service dependencies
 
-Running the code
-================
+For most uses of FixMyStreet you'll also need access to a MaPit server with
+data for the types of bodies you are reporting issues to. For more details on
+how to install MaPit see the L<mapit pypi page|http://pypi.python.org/pypi/django-mapit/>
 
-Development
------------
+You will also need a Tile Server to serve up Map tiles. FixMyStreet can use
+Google, Bing and OpenStreetMap Tile servers.
 
-Start the catalyst dev server using:
+Finally, you will need a geolocation service to turn addresses into longitude
+and latitudes. FixMyStreet currently includes code to use both Bing and Google
+geolocation services.
 
-  CATALYST_DEBUG=1 ./script/fixmystreet_app_server.pl -r
+=head1 DETAILED INSTALLATION INSTRUCTIONS
 
-CATALYST_DEBUG turns on the very verbose debug output which is helpful to see what the code is actually doing. The '-r' flag watches for files to change and then restarts the dev server.
+=head2 Unpacking the Code
 
-Production
-----------
+Once you've downloaded the code you should unpack it. The best place to do this
+is in the location you want the web server vhost to be.
 
-mySociety currently use Apache, our httpd.conf performs a few redirect checks
-and then passes everything else to the Catalyst app using FastCGI. Other
-options are available with Catalyst, including PSGI, mod_perl, and so on.
+=head2 Creating the database
 
-What's where in the code?
-=========================
+The default settings file assumes the database is called fms and the user the same. 
+You can change these if you like.
 
-FixMyStreet::App is a fairly standard Catalyst app; there aren't any really big
-surprises.
+The database you create for FixMyStreet should be a PostGis enabled one. The best way
+to do this is to use a PostGIS template database. There are good instructions on how
+to create one L<on the django site|https://docs.djangoproject.com/en/dev/ref/contrib/gis/install/#spatialdb-template>
+as well as some bash scripts that automate the process.
 
-Note that the FixMyStreet.pm file is used though to abstract some config
-related things. The FixMyStreet->test_mode(1) which will do things like send
-all emails to a memory queue for the test scripts. test_mode should only be
-used in test scripts, and so is different from setting STAGING to true.
+=head2 Set up the database
 
-Testing
-=======
+Once you've created the database you can use the sql in C<db/schema.sql> to create the required
+tables, triggers and stored procedures. You will also need to run
+C<db/alert_types.sql> which
+populates the alert_types table.
 
-There are several tests in the t directory - organized into subdirs. Note that
-there is a module FixMyStreet::TestMech that abstracts some things like logging
-in as a user and grabbing all the form error messages. This makes testing much
-slicker and less fiddly.
+=head2 Install Perl modules
 
-Run all the tests (within the correct environment) using:
+FixMyStreet uses a number of CPAN modules which are installed by the
+C<install_perl_modules> script. This will install them into a directory
+called local.
 
-  prove -lr t
+It uses cpanminus and Carton under the hood but should install these
+of they are missing. You may need to install some source packages to
+allow some of the included modules to be built, including:
 
-or a specific test in verbose mode using:
+=over
 
-  prove -lv t/app/controller/report_new.t
+=item expat
 
-For all the lovely options do 'prove --help'. Note I've made no attempt to make
-the tests be able to run in parallel, the database fiddling would not be worth
-it. The tests currently assume MAPIT_URL is set to the UK version.
+=item Postgresql
 
+=item The GMP math library
+
+=back
+
+You will also need a development toolchain in place ( gcc, make etc )
+
+If you need to add a module manually you can do it using:
+
+    ./bin/cron_wrapper ./local/bin/carton install Module::To::Add
+
+which will install the module into the local directory
+
+=head2 Set up Webserver
+
+It is recommended that you run FixMyStreet using FastCGI. It should also be
+possible to run it using Plack/PSGI.
+
+There is an example Apache vhost configuration file on C<conf/httpd.conf-example>
+which you can copy and update the paths in if you are running FixMyStreet under
+FastCGI.
+
+If you are using Apache and the sample configuration you will need the following 
+modules enabled:
+
+=over
+
+=item *
+
+mod_rewrite
+
+=item *
+
+mod_proxy
+
+=item *
+
+mod_expires
+
+=item *
+
+mod_fastcgi
+
+=back
+
+=head1 SETTINGS
+
+The settings for FixMyStreet are defined in C<conf/general.yml> using the YAML
+markup language. There are some defaults in C<conf/general.yml-example> which
+you should copy to C<conf/general.yml>.
+
+The bare minimum of settings you will need to fill in or update are:
+
+=over
+
+=item FMS_DB_PASS
+
+This is the password for the database.
+
+=item BASE_URL
+
+The URL for the homepage of your FixMyStreet install.
+
+=item EMAIL_DOMAIN
+
+The email domain that emails will be sent from
+
+=item CONTACT_EMAIL
+
+The email address to be used on the site for the contact us form.
+
+=item STAGING_SITE
+
+If this is 1 then all email ( alerts and reports ) will be sent to the
+contact email address. Use this for development sites.
+
+=item UPLOAD_CACHE
+
+This is the location where imaged will be stored as they are being uploaded.
+It should be accessible by and writeable by the FixMyStreet process.
+
+=item GEO_CACHE
+
+This is the location where Geolocation data will be cached.
+It should be accessible by and writeable by the FixMyStreet process.
+
+=back
+
+If you are using Bing or Google maps you should also set one of
+BING_MAPS_API_KEY or GOOGLE_MAPS_API_KEY.
+
+If you are using a MaPit install you should update MAPIT_URL.
+
+=head2 Generate CSS
+
+There is a script, bin/make_css, that uses L<sass|http://sass-lang.com/> to
+convert the SCSS files to CSS files.
+
+=head2 Restart the webserver
+
+At this point you be able to restart the webserver and see your FixMyStreet
+installation at the configured URL.
+
+=head2 Cron jobs
+
+There is an example crontab in conf/crontab.ugly. At the moment this is in
+the format used by mySociety's internal deployment tools. To convert this to
+a valid crontab the following should be done:
+
+=over
+
+=item *
+
+Replace C<!!(*= $user *)!!> with the name of the user the cron should run under
+
+=item *
+
+Replace C<!!(* $vhost *)!!> with the path to the FixMyStreet code.
+
+=back
+
+=head2 Check it's working
+
+You can run the unit tests using C<prove -r t> in the FixMyStreet directory. Note
+that this may leave entries in your database at the moment and should not be run 
+on a live site.
+
+=head2 Next Steps
+
+The admin site should be protected using HTTP AUTH.
+
+Customise your install using Templates, CSS and a Cobrand module. See L<notes/customisation.pod>
+for details.
+
+Add contact details for authorities and categories using the admin interface.
+
+Add authority data to the MaPit install if required.
+
+=head1 COMMON PROBLEMS
+
+=head2 locale
+
+By default FixMyStreet uses the en_GB.UTF-8 locale. If it is not installed then
+it may not start
+
+=head2 Template caching
+
+FixMyStreet caches compiled templates alongside the source files so the templates
+directory needs to be writable by the process that is running FixMyStreet.
+
+=head2 Image::Magick perl module
+
+If your OS has a way to install a binary version of Image::Magick then it's recommended
+that you do that rather than install via CPAN.
