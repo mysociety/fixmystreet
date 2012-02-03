@@ -13,10 +13,10 @@ if (!@include "../conf/general") {
         }
     }
 }
-define('DB_NAME', OPTION_FMSCODE_DB_NAME);     // The name of the database
-define('DB_USER', OPTION_FMSCODE_DB_USER);     // Your MySQL username
-define('DB_PASSWORD', OPTION_FMSCODE_DB_PASS); // ...and password
-define('DB_HOST', OPTION_FMSCODE_DB_HOST);     // 99% chance you won't need to change this value
+define('DB_NAME', OPTION_FMSBLOG_DB_NAME);     // The name of the database
+define('DB_USER', OPTION_FMSBLOG_DB_USER);     // Your MySQL username
+define('DB_PASSWORD', OPTION_FMSBLOG_DB_PASS); // ...and password
+define('DB_HOST', OPTION_FMSBLOG_DB_HOST);     // 99% chance you won't need to change this value
 
 // Change the prefix if you want to have multiple blogs in a single database.
 
