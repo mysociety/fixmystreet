@@ -26,7 +26,7 @@ L<http://www.fiksgatami.no/>
 
 If you're reasonably sure what you are doing then you can follow the
 quickstart instructions. Otherwise there are more detailed instructions
-in L<notes/INSTALL.pod>
+in C<notes/INSTALL.pod>
 
 =over
 
@@ -66,6 +66,6 @@ Restart the webserver
 =item *
 
 Edit the crontab from C<conf/crontab> to replace the placeholders and
-install it. See L<notes/INSTALL.pod> for more details on the placeholders.
+install it. See C<notes/INSTALL.pod> for more details on the placeholders.
 
 =back
