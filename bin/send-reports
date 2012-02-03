@@ -1,4 +1,4 @@
-#!/usr/bin/env perl -w
+#!/usr/bin/env perl
 
 # send-reports:
 # Send new problem reports to councils
@@ -7,6 +7,7 @@
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 
 use strict;
+use warnings;
 require 5.8.0;
 
 use Digest::MD5;
