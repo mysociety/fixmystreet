@@ -1,8 +1,10 @@
 [% INCLUDE 'admin/header.html' title=tprintf(loc('Council contacts for %s'), council_name) -%]
 
+[% IF updated %]
 <p>
 <em>[% updated %]</em>
 </p>
+[% END %]
 
 <p>
 [% IF example_pc %]
@@ -16,7 +18,10 @@
     <h2>
     Council contacts configured via Open311
     </h2>
+[% END %]
 
+[% IF c.cobrand.moniker == 'fixmystreet' %]
+<p class="error">Do not give these out except to people at the council.</p>
 [% END %]
 
 <form method="post" action="[% c.uri_for('council_contacts', area_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
