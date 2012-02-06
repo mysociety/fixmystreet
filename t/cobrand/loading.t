@@ -14,16 +14,14 @@ use_ok 'FixMyStreet::Cobrand';
     ok $allowed,     "got the allowed_cobrands";
     isa_ok $allowed, "ARRAY";
     cmp_ok scalar @$allowed, '>', 1, "got more than one";
-    is join( '|', @$allowed ), FixMyStreet->config('ALLOWED_COBRANDS'),
-      "matches config value";
 }
 
 # fake the allowed cobrands for testing
 my $override = Sub::Override->new(    #
-    'FixMyStreet::Cobrand::get_allowed_cobrands' =>
+    'FixMyStreet::Cobrand::_get_allowed_cobrands' =>
       sub { return ['emptyhomes'] }
 );
-is_deeply FixMyStreet::Cobrand->get_allowed_cobrands, ['emptyhomes'],
+is_deeply FixMyStreet::Cobrand->get_allowed_cobrands, [ { moniker => 'emptyhomes', host => 'emptyhomes' } ],
   'overidden get_allowed_cobrands';
 
 sub run_host_tests {
@@ -45,7 +43,7 @@ run_host_tests(
 
 # now enable barnet too and check that it works
 $override->replace(                           #
-    'FixMyStreet::Cobrand::get_allowed_cobrands' =>
+    'FixMyStreet::Cobrand::_get_allowed_cobrands' =>
       sub { return [ 'emptyhomes', 'barnet' ] }
 );
 
