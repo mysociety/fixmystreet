@@ -208,7 +208,7 @@ If you are using a MaPit install you should update MAPIT_URL.
 
 =head2 Generate CSS
 
-There is a script, bin/make_css, that uses L<sass|http://sass-lang.com/> to
+There is a script, bin/make_css, that uses sass (L<http://sass-lang.com/>) to
 convert the SCSS files to CSS files.
 
 =head2 Restart the webserver
