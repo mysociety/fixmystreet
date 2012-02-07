@@ -50,8 +50,8 @@ to CSS convertor. You can get one from L<http://sass-lang.com/>
 
 If you're expecting a lot of traffic it's recommended that you install memcached: L<http://memcached.org/>
 
-If you are using a Debian based linux distribution there is a list of relevant
-packages in C<conf/packages>.
+If you're using a Debian based Linux distribution then the packages to
+install all the required dependencies are listed in C<conf/packages>.
 
 =head2 Service dependencies
 
