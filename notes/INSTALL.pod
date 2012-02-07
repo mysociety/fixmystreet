@@ -125,15 +125,13 @@ You will also need development tools installed. If you have installed the
 above source packages from distribution packages this should also install
 the required development tools.
 
-
 =head2 Set up Webserver
 
 It is recommended that you run FixMyStreet using FastCGI. It should also be
 possible to run it using Plack/PSGI.
 
-There is an example Apache vhost configuration file on C<conf/httpd.conf-example>
-which you can copy and update the paths in if you are running FixMyStreet under
-FastCGI.
+There is an example Apache vhost configuration file in C<conf/httpd.conf-example>
+which contains a sample configuration and the required redirect rules.
 
 If you are using Apache and the sample configuration you will need the following 
 modules enabled:
@@ -157,6 +155,9 @@ mod_expires
 mod_fastcgi
 
 =back
+
+For most Linux distributuions you should be able to install these using the distribution's
+packaging system.
 
 =head1 SETTINGS
 
