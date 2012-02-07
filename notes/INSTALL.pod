@@ -2,7 +2,7 @@
 
 =head1 DOWNLOADING
 
-Fetch the latest version from L<github|http://github.com/mysociety/fixmystreet>
+Fetch the latest version from L<http://github.com/mysociety/fixmystreet>
 
 At the moment the best way is to clone it using git:
 
@@ -48,7 +48,7 @@ to CSS convertor. You can get one from L<http://sass-lang.com/>
 
 =back
 
-If you're expecting a lot of traffic it's recommended that you install L<memcached|http://memcached.org/>
+If you're expecting a lot of traffic it's recommended that you install memcached: L<http://memcached.org/>
 
 If you are using a Debian based linux distribution there is a list of relevant
 packages in C<conf/packages>.
@@ -57,7 +57,11 @@ packages in C<conf/packages>.
 
 For most uses of FixMyStreet you'll also need access to a MaPit server with
 data for the types of bodies you are reporting issues to. For more details on
-how to install MaPit see the L<mapit pypi page|http://pypi.python.org/pypi/django-mapit/>
+how to install MaPit see the mapit pypi page: <http://pypi.python.org/pypi/django-mapit/>
+
+If you are in the UK then you can always use the mySociety's MaPit: L<http://mapit.mysociety.org>
+although please check with us if you are expecting to generate a lot of
+requests.
 
 You will also need a Tile Server to serve up Map tiles. FixMyStreet can use
 Google, Bing and OpenStreetMap Tile servers.
@@ -80,7 +84,8 @@ You can change these if you like.
 
 The database you create for FixMyStreet should be a PostGis enabled one. The best way
 to do this is to use a PostGIS template database. There are good instructions on how
-to create one L<on the django site|https://docs.djangoproject.com/en/dev/ref/contrib/gis/install/#spatialdb-template>
+to create one on the django site: 
+L<https://docs.djangoproject.com/en/dev/ref/contrib/gis/install/#spatialdb-template>
 as well as some bash scripts that automate the process.
 
 =head2 Set up the database
@@ -93,7 +98,7 @@ populates the alert_types table.
 =head2 Install Perl modules
 
 FixMyStreet uses a number of CPAN modules which are installed by the
-C<install_perl_modules> script. This will install them into a directory
+C<bin/install_perl_modules> script. This will install them into a directory
 called local.
 
 It uses cpanminus and Carton under the hood but should install these
@@ -110,13 +115,10 @@ allow some of the included modules to be built, including:
 
 =back
 
-You will also need a development toolchain in place ( gcc, make etc )
+You will also need development tools installed. If you have installed the
+above source packages from distribution packages this should also install
+the required development tools.
 
-If you need to add a module manually you can do it using:
-
-    ./bin/cron_wrapper ./local/bin/carton install Module::To::Add
-
-which will install the module into the local directory
 
 =head2 Set up Webserver
 
@@ -210,7 +212,7 @@ installation at the configured URL.
 
 =head2 Cron jobs
 
-There is an example crontab in conf/crontab.ugly. At the moment this is in
+There is an example crontab in C<conf/crontab.ugly>. At the moment this is in
 the format used by mySociety's internal deployment tools. To convert this to
 a valid crontab the following should be done:
 
@@ -236,7 +238,7 @@ on a live site.
 
 The admin site should be protected using HTTP AUTH.
 
-Customise your install using Templates, CSS and a Cobrand module. See L<notes/customisation.pod>
+Customise your install using Templates, CSS and a Cobrand module. See C<notes/customisation.pod>
 for details.
 
 Add contact details for authorities and categories using the admin interface.
@@ -259,3 +261,14 @@ directory needs to be writable by the process that is running FixMyStreet.
 
 If your OS has a way to install a binary version of Image::Magick then it's recommended
 that you do that rather than install via CPAN.
+
+=head2 Missing Perl modules
+
+We think we've included all the modules you should need to run and develop FixMyStreet on your
+machine but it we've missed one (please let us know if this is the case), or you want to add one
+for something you are developing then you can do so using:
+
+    ./bin/cron-wrapper ./local/bin/carton install Module::To::Add
+
+which will install the module into the local directory. C<./bin/cron-wrapper> is a script to
+make sure the correct library paths are set up for running scripts.
