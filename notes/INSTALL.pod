@@ -57,7 +57,7 @@ packages in C<conf/packages>.
 
 For most uses of FixMyStreet you'll also need access to a MaPit server with
 data for the types of bodies you are reporting issues to. For more details on
-how to install MaPit see the mapit pypi page: <http://pypi.python.org/pypi/django-mapit/>
+how to install MaPit see the mapit pypi page: L<http://pypi.python.org/pypi/django-mapit/>
 
 If you are in the UK then you can always use the mySociety's MaPit: L<http://mapit.mysociety.org>
 although please check with us if you are expecting to generate a lot of
@@ -107,11 +107,17 @@ allow some of the included modules to be built, including:
 
 =over
 
-=item expat
+=item *
 
-=item Postgresql
+expat
 
-=item The GMP math library
+=item *
+
+Postgresql
+
+=item *
+
+The GMP math library
 
 =back
 
