@@ -1,8 +1,4 @@
-=head1 NAME
-
-Customising FixMyStreet
-
-=head1 ABOUT
+=head1 Customising FixMyStreet
 
 This document explains how to tailor the default installation of
 FixMyStreet to your requirements, including limiting the geographic
@@ -82,13 +78,19 @@ methods from the default Cobrand.
 
 FixMyStreet uses the hostname of the current request along with the contents
 of the C<ALLOWED_COBRANDS> config option to determine which cobrand to use.
-If your Cobrand is listd in <ALLOWED_COBRANDS> and matches the hostname of
-the current request then it is loaded. If no Cobrand listed in C<ALLOWED_COBRANDS>
-matches then the default Cobrand will be used.
+C<ALLOWED_COBRANDS> is a list of cobrand names with an optional hostname match.
+override. If there is no hostname override then the first cobrand name that
+matches all or part of the hostname of the current request is used. If there is
+a hostname override then that is compared against the hostname of the current
+request. For example if C<ALLOWED_COBRANDS> is
 
-In our FixMyPark example you would put C<fixmypark> in C<ALLOWED_COBRANDS> and
-as long as the hostname of the site contains C<fixmypark> then the FixMyPark
-Cobrand will be used.
+    ALLOWED_COBRANDS:
+        - fixmypark_fr: 'fr.fixmypark'
+        - fixmypark
+
+then a request to www.fixmypark.com will use the fixmypark cobrand but a
+request to fr.fixmypark.com will use fixmypark_fr. If no Cobrand listed in
+C<ALLOWED_COBRANDS> matches then the default Cobrand will be used.
 
 This means you can provide multiple Cobrands for the site if you require, e.g.
 for providing different languages, and FixMyStreet will use the first match
