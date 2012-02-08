@@ -12,7 +12,8 @@ It was created in 2005 by L<mySociety|http://www.mysociety.org> for reporting pr
 has been copied around the world.
 
 We're working hard to make it easy to install and re-use in other
-countries and welcome questions about how it works. 
+countries and welcome questions about how it works on our mailing list:
+L<https://secure.mysociety.org/admin/lists/mailman/listinfo/fixmystreet>.
 
 It's written in Perl and uses the Catalyst web framework.
 
