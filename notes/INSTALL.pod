@@ -23,7 +23,7 @@ On the server you are installing FixMyStreet on you will need the following thin
 
 =item *
 
-PostgreSQL and the PostGis extension
+PostgreSQL.
 
 =item *
 
@@ -50,9 +50,9 @@ to CSS convertor. You can get one from L<http://sass-lang.com/>
 
 If you're expecting a lot of traffic it's recommended that you install memcached: L<http://memcached.org/>
 
-If you're using a Debian based Linux distribution then the packages to
-install all the required dependencies are listed in C<conf/packages>. To
-install all of them you can run:
+If you're using a Debian based Linux distribution then the packages to install
+some required dependencies (though not all the required Perl modules) are
+listed in C<conf/packages>. To install all of them you can run:
 
     xargs -a conf/packages apt-get install
 
@@ -91,12 +91,6 @@ is in the location you want the web server vhost to be.
 The default settings file assumes the database is called fms and the user the same. 
 You can change these if you like.
 
-The database you create for FixMyStreet should be a PostGis enabled one. The best way
-to do this is to use a PostGIS template database. There are good instructions on how
-to create one on the django site: 
-L<https://docs.djangoproject.com/en/dev/ref/contrib/gis/install/#spatialdb-template>
-as well as some bash scripts that automate the process.
-
 =head2 Set up the database
 
 Once you've created the database you can use the sql in C<db/schema.sql> to create the required
@@ -107,8 +101,8 @@ populates the alert_types table.
 =head2 Install Perl modules
 
 FixMyStreet uses a number of CPAN modules which are installed by the
-C<bin/install_perl_modules> script. This will install them into a directory
-called local.
+C<bin/install_perl_modules> script, so run that now. This will install them
+into a directory called local.
 
 It uses cpanminus and Carton under the hood but should install these
 of they are missing. You may need to install some source packages to
