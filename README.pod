@@ -8,7 +8,7 @@ in a map without worrying about the correct authority to report it to.
 FixMyStreet then works out the correct authority to report it to using 
 the problem location and type and sends a report. 
 
-It was created in 2005 by L<mySociety|http://www.mysociety.org> for reporting problems to UK councils and
+It was created in 2007 by L<mySociety|http://www.mysociety.org> for reporting problems to UK councils and
 has been copied around the world.
 
 We're working hard to make it easy to install and re-use in other
