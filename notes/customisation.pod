@@ -28,27 +28,27 @@ The default Cobrand is called Default.
 Templates are found in the templates directory. Within that there are
 seperate directories for web templates and email templates. Under each
 of these there is a directory for each Cobrand. In our FixMyPark example
-this would be L<templates/web/fixmypark> for the web templates and
-L<templates/email/fixmypark> for the email templates.
+this would be C<templates/web/fixmypark> for the web templates and
+C<templates/email/fixmypark> for the email templates.
 
 The full set of templates is stored in the default Cobrand and if no
 equivalent template is found in a Cobrand directory FixMyStreet will
 use the default template.
 
 At a bare minimum you will probably want to copy the header and footer
-web templates found in L<templates/web/default/header.html> and
-L<templates/web/default/footer.html> into your Cobrand and make appropriate
+web templates found in C<templates/web/default/header.html> and
+C<templates/web/default/footer.html> into your Cobrand and make appropriate
 changes.
 
 The other template you should make your own version of is the FAQ which
-is in L<templates/web/default/faq-en-gb.html>
+is in C<templates/web/default/faq-en-gb.html>
 
 =head1 CSS
 
 The CSS is stored in web/css/ under which there are directories for Cobrands
 but this is only by custom. The loading of the css is controled by the header
 templates. Note that FixMyStreet uses sccs files to generate our CSS so by there
-are no CSS files until L<bin/make_css> has been run.
+are no CSS files until C<bin/make_css> has been run.
 
 The CSS provided with FixMyStreet uses CSS3 media queries in order to adapt
 the layout to work on different devices.
@@ -72,7 +72,7 @@ This contains the CSS for the header and footer as well as the colour scheme.
 
 Much of the rest of the customisation takes place in the Cobrand modules. These
 are automatically loaded according to the current Cobrand and can be found in
-L<perllib/FixMyStreet/Cobrands/>. There is a default Cobrand ( Default.pm ) which
+C<perllib/FixMyStreet/Cobrands/>. There is a default Cobrand ( Default.pm ) which
 all Cobrands should inherit from. A Cobrand module can then override any of the
 methods from the default Cobrand.
 
