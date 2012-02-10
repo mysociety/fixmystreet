@@ -6,22 +6,69 @@
 
 @import "_h5bp";
 @import "_colours";
+@import "_mixins";
+@import "compass";
+
 
 /* HEADINGS and TYPOGRAPHY */
 
 @font-face {
-    font-family: 'MuseoSansRounded-500';
-    src: url('fonts/MuseoSansRounded500.eot');
-    src: url('fonts/MuseoSansRounded500.eot?#iefix') format('embedded-opentype'),
-         url('fonts/MuseoSansRounded500.woff') format('woff'),
-         url('fonts/MuseoSansRounded500.ttf') format('truetype'),
-         url('fonts/MuseoSansRounded500.svg#MuseoSansRounded-500') format('svg');
+    font-family: 'MuseoSans';
+    src: url('fonts/MuseoSans_300-webfont.eot');
+    src: url('fonts/MuseoSans_300-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/MuseoSans_300-webfont.woff') format('woff'),
+         url('fonts/MuseoSans_300-webfont.ttf') format('truetype'),
+         url('fonts/MuseoSans_300-webfont.svg#MuseoSans300') format('svg');
+    font-weight: normal;
+    font-style: normal;
 }
 
-h1, h2, h3, h4, h5, h6, #header {
-    font-family: 'MuseoSansRounded-500', sans-serif;
+@font-face {
+    font-family: 'MuseoSans';
+    src: url('fonts/MuseoSans_300_Italic-webfont.eot');
+    src: url('fonts/MuseoSans_300_Italic-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/MuseoSans_300_Italic-webfont.woff') format('woff'),
+         url('fonts/MuseoSans_300_Italic-webfont.ttf') format('truetype'),
+         url('fonts/MuseoSans_300_Italic-webfont.svg#MuseoSans300Italic') format('svg');
     font-weight: normal;
+    font-style: italic;
 }
+
+@font-face {
+    font-family: 'MuseoSans';
+    src: url('fonts/MuseoSans_500-webfont.eot');
+    src: url('fonts/MuseoSans_500-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/MuseoSans_500-webfont.woff') format('woff'),
+         url('fonts/MuseoSans_500-webfont.ttf') format('truetype'),
+         url('fonts/MuseoSans_500-webfont.svg#MuseoSans500') format('svg');
+    font-weight: bold;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'MuseoSans';
+    src: url('fonts/MuseoSans_500_Italic-webfont.eot');
+    src: url('fonts/MuseoSans_500_Italic-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/MuseoSans_500_Italic-webfont.woff') format('woff'),
+         url('fonts/MuseoSans_500_Italic-webfont.ttf') format('truetype'),
+         url('fonts/MuseoSans_500_Italic-webfont.svg#MuseoSans500Italic') format('svg');
+    font-weight: bold;
+    font-style: italic;
+
+}
+
+@font-face {
+    font-family: 'Museo300-display';
+    src: url('fonts/Museo300-Regular-webfont.eot');
+    src: url('fonts/Museo300-Regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/Museo300-Regular-webfont.woff') format('woff'),
+         url('fonts/Museo300-Regular-webfont.ttf') format('truetype'),
+         url('fonts/Museo300-Regular-webfont.svg#Museo300') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
 
 /* Opera has a bug (from around 10.5 upwards to current 11.6) with showing the
  * table caption *at all* if the header is set to a font-face :( */
@@ -29,33 +76,103 @@ noindex:-o-prefocus, #header {
     font-family: sans-serif;
 }
 
-/* Headings fit within the baseline grid, skewed towards the bottom. As the h1
- * appears first, if it appears, it needs no margin at all. */
-h1 {
-    font-size: 2em;
-    margin: 0;
+
+body {
+  font-family: 'MuseoSans', 'Helvetica', 'Arial', sans-serif;
+  margin:0;
+  font-size:1em;
+  line-height:1.5;
+  color:#222222;
 }
 
+
+p {
+  font-size: 1em;
+  font-weight: normal;
+  margin:0 0 1em 0;
+}
+
+h1 {
+  font-family:'Museo300-display', 'Helvetica', 'Arial', sans-serif;
+  font-size: 2em;
+  line-height: 1em;
+  font-weight: normal;
+  margin-bottom: 0.5em;
+  }
+  
 h2 {
-    font-size: 1.5em;
-    line-height: 1;
-    margin: 1.5em 0 0.5em;
+  font-family:'Museo300-display', 'Helvetica', 'Arial', sans-serif;
+  font-size: 1.5em; /*24px*/
+  line-height: 1.3333em; /*32px*/
+  font-weight: normal;
+  margin-top: 1.333333333em; /*32px*/
+  margin-bottom: 0.666666666em; /*16px*/
 }
 
 h3 {
-    font-size: 1.25em;
-    line-height: 1.2;
-    margin: 1.8em 0 0.6em;
+  font-size: 1.25em;
+  line-height: 1.20em;
+  margin-top: 1.2em;
+  margin-bottom: 0.8em;
+  font-weight: bold
 }
 
 h4 {
-    font-size: 1.2em;
-    line-height: 1.25;
-    margin: 1.875em 0 0.625em;
+  font-size: 1em;
+  font-weight: bold;
+  margin-bottom: 1em; 
 }
 
-p {
-    margin: 0 0 1.5em;
+ul, ol {
+  font-size: 1em;
+  margin-bottom: 2em;  
+  margin-left: 2em;
+}
+
+li{
+  margin-bottom: 0.5em;
+}
+
+ul li{
+  list-style: square;
+}
+
+ol li {
+  list-style:decimal;
+}
+
+dl {
+  margin: 0px;
+  padding: 0px;
+  dt {
+    font-size: 1em;
+    line-height: 1.5em;
+    font-weight: bold;
+  }
+
+  dd {
+    font-weight: 1em;
+    line-height: 1.5em;
+    margin-bottom: 1em;
+  }
+}
+
+blockquote {
+  p:before {
+    content: '“';
+  }
+  p:after {
+    content: '”';
+  }
+}
+
+pre {
+  font-family: monospace;
+}
+
+// huh? We're confused and it breaks our other stuff :S
+img {
+    // max-width: 100%;
 }
 
 select, input, textarea {
@@ -63,136 +180,271 @@ select, input, textarea {
     max-width: 95%;
 }
 
-img {
-    max-width: 100%;
-}
 
 /* LINKS */
-
-a:link {
-    color: $colour;
+a {
+    text-decoration:none;
+    color:$contrast1;
+    &:hover,
+    &:active {
+        text-decoration:underline;
+        color:$contrast2;    
+    }
+    &:visited {
+        color: $colour_dark;
+    }
 }
 
-a:visited {
-    color: $colour_dark;
+/*CUSTOM TYPE*/
+
+h4.static{
+  font-family: 'helvetica', 'arial',sans-serif;
+  text-transform: uppercase;
+  font-size: 0.875em;
+  line-height: 1.71428em;
+  color:#888;
+  margin-top: 2em;
 }
 
-a:active, a:hover {
-    color: #200;
+h4.static-with-rule{
+  @extend.static;
+  background: #f6f6f6;
+  border-top: 0.25em solid $primary;
+  margin-bottom:0.25em;
+  padding: 0.5em 1em;  
 }
+
+
+.meta{
+  color:#555555;
+  font-style: italic;
+  margin-bottom: 0px;
+}
+.meta-2{
+  font-family: 'helvetica', 'arial',sans-serif;
+  color:#888888;
+  font-style: italic;
+  font-size: 0.75em;
+}
+
+.small-print{
+  font-family: 'helvetica', 'arial',sans-serif;
+  font-style: italic;
+  font-size: 0.8125em;
+  line-height: 1.2307em;
+  margin-bottom: 1.2307em;  
+  color:#888888;  
+}
+
+
+/*OTHER*/
+
+.issue-list{
+  margin: 0 0 1em 0;
+  padding: 0px;
+  border-bottom: 0.25em solid $primary;
+  li{
+    list-style: none;
+    background: #f6f6f6;    
+    margin: 0.25em 0 0 0;
+    padding: 0.5em 1em;
+    display:block;
+    .update-wrap {
+        display:table;
+        width:100%;
+        .update-text,
+        .update-img {
+            display:table-cell;
+            vertical-align:top;
+            p {
+                margin-bottom: 0.5em;
+            }
+        }
+        .update-img {
+            text-align:right;
+            img {
+                margin:-0.5em -1em 0 0.5em;
+            }
+        }
+    }
+  }
+}
+
+.map{
+  display: 100%;
+  background: #333;
+  height: 10em;
+  @extend .full-width;
+  margin-bottom: 1em;
+}
+
+/*FORM*/
+form{  margin: 1em;}
+
+input[type=text], textarea{
+  width: 100%;
+  padding: 0.5em;
+  margin: 0 0 0 -0.5em;
+}
+
+
+textarea{
+  border: 0.125em solid #888888;
+  @include border-radius(0.25em);
+  display: block;
+  font-size: 1em;
+  line-height: 1.5em;
+  color: #888888;
+  font-family: 'helvetica', 'arial',sans-serif;
+}
+
+input[type=text]{
+  border: 0.125em solid #888888;
+  @include border-radius(0.25em);
+  display: block;
+  font-size: 1em;
+  line-height: 1.5em;
+  color: #888888;
+}
+
+
+label{
+  display: block;
+  margin-top: 1.25em;
+  margin-bottom: 0.25em;
+  font-weight: bold;
+  &.inline{
+    display: inline;
+    padding: 0 2em 0 1em;
+    font-weight: normal;
+  }
+}
+
+
+
 
 
 /* LAYOUT */
 
-/* header is a div containing a link on all pages bar the front page, when it
- * is a h1 that is not a link. It should always display the same. */
-#header {
+// Padding creates page margins on mobile
+.container{
+  padding: 0 1em;
+}
+
+// Use full width to reverse .container margins
+.full-width{
+  margin: 0em -1em 0 -1em;
+}
+
+// #header creates grey bar in mobile, .header is used on desktop
+#header{
+  @include background-image(linear-gradient(#000, #222 10%, #222 90%, #000));
+  border-top: 0.25em solid $primary;
+  height: 4em;
+  #site-logo{
+    width: 175px;
+    height: 40px;
+    margin-top: 0.75em;
+    background: url('images/main-sprite.png') -3px -3px no-repeat;
     display: block;
-    margin: 0 0 0.5em 0;
-    font-size: 200%;
+    text-indent: -999999px;
+    position: absolute;
+    z-index:2;
+  }
+}
 
-    /* The link of the heading should not be underlined. */
-    a {
+#main-nav{
+  ul{
+    @include list-reset-soft;
+    li{
+      a, span {
+        display: block;
+        padding: 0.5em 1em;
+        background:#f6f6f6;
+        color:#333;
+        font-size: 1.25em;
+        border-bottom: 0.25em solid #333;
+      }
+      a:hover{
+        background:  #333;
+        color:#fff;
         text-decoration: none;
+      }
     }
-}
-
-#meta {
-    list-style-type: none;
-    margin: 0.5em 0;
-    padding: 0;
-    font-size: 0.875em;
-    li {
-        display: inline;
-        margin: 0;
-        padding: 0 0 0 0.25em;
+    &#mysoc-menu{
+      li{
+        a{background:$primary;}
+      }
     }
-    li.last {
-        border-left: solid 1px $colour_dark;
-    }
+  }
 }
 
-.container {
-    position: relative;
-    margin: auto;
-    overflow: hidden;
-}
+// #key-tools is the list that's pulled out an stick to the bottom of the page of desktop, below is mostly just aesthetic
 
-/* Three wrapper divs are used in the source. At large screen widths, the
- * default background colour is $colour, in order for the footer to stay the
- * same at any depth. So the outermost wrapper changes this back to white at
- * full width; the second wrapper sets a maximum width for the main content,
- * with a little padding so it never hits the browser edge, and centred; and
- * the third wrapper is a full width table, so that a table caption can be used
- * to have correct source order.*/
-#wrapper {
-    background: #fff;
-}
-
-#wrapper2 {
-    max-width: 59em;
-    padding: 0.5em;
-    margin: 0 auto;
-}
-
-#navigation {
-    display: table;
-    width: 100%;
-    border-top: solid 1px $colour;
-    padding-top: 1.5em;
-    margin: 1.5em 0;
-}
-
-.nav {
+ul#key-tools{
+  display: block;
+  margin: 0px;
+  padding: 0px;
+  li{
     display: table-cell;
-    // width: 50%;
-}
-.ie6, .ie7 {
-    .nav {
-        float: left;
+    padding: 0em;
+    margin:0em;
+    width: 33.333%;
+    float: left;
+    vertical-align: bottom;
+    text-align: center;
+    a{
+      display: block;
+      background: #444;
+      color:#fff;      
     }
-}
-
-#footer {
-    color: #fff;
-    padding: 0.5em;
-    background-color: #3c3c3c;
-    background-image: url(/cobrands/fixmystreet/texture.png);
-
-    a {
-        color: #fff;
-    }
-
-    a:hover {
-       color: #ffe600;
-    }
-
-    p {
-        margin: 0.5em 0;
-    }
+  }
 }
 
 
-/* DISPLAY BITS */
+/*BUTTONS*/
 
-a.unsuitable-report {
-    font-size: small;
+// Default style set for buttons, inputs and .btn class. Red and green class available.
+
+button, input[type=submit],.btn{
+  @include button-reset;
 }
 
-blockquote {
-    border-left: solid 4px $colour;
+.green-btn,
+button.green-btn,
+input.green-btn{
+  @include button-reset;
+  @include background (linear-gradient(#9FDE23, #7FB900)) ;
+  color:#fff;
+  border-color: #5B9700;
+  &:hover{
+    @include background (linear-gradient(#7FB900, #9FDE23)) ;    
+    border-color: #5B9700;
+  }
 }
 
-.a {
-    color: #000000;
-    background-color: $colour_alt;
+.red-btn,
+button.red-btn,
+input.red-btn{
+  @include button-reset;
+  @include background (linear-gradient(#FF0038, #BF002A)) ;
+  color:#fff;
+  border-color: #80001C;
+  &:hover{
+    @include background (linear-gradient(#BF002A, #FF0038)) ;    
+    border-color: #80001C;
+  }
+}
+  
+
+
+// this is a bit of a hack to get some differentation between desk and mobile
+.desk-only {
+    display:none !important;
 }
 
-#postcodeForm {
-    background-color: $colour_alt;
-}
 
-#front_stats div {
-    background-color: $colour_alt;
+// this is the user's logged in details or the login link etc
+#user-meta {
+    @include list-reset;
 }
-

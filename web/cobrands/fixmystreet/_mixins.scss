@@ -1,0 +1,69 @@
+// Button reset
+@mixin button-reset {
+  cursor:pointer;
+  font-size: 1em;
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  line-height: 1;
+  padding:0.7em 0.5em 0.5em 0.5em;
+  margin:0;
+  width: auto;
+  height: auto;
+  @include border-radius(4px);
+  background: #eee;
+  @include background (linear-gradient(#eee, #ccc)) ;
+  border:1px solid #999;  
+  color:#333;
+  &:hover{
+    color:#fff;
+    background:#777;
+    @include background (linear-gradient(#999, #777)) ;    
+    text-decoration: none;
+    border:1px solid #666;  
+  }
+}
+
+
+
+// list resets
+@mixin list-reset-copy {
+  padding-left:30px;
+  margin-bottom:20px;
+  li {
+    font-size:14px;
+    line-height:20px;
+    list-style:disc;
+    margin-bottom:10px;
+    background:none;
+    padding:0;
+  }
+}
+
+@mixin list-reset-soft {
+  list-style-type:none;
+  padding: 0;
+  margin: 0;
+  li{
+    list-style-type:none;
+    padding: 0;
+    margin: 0;
+    border: 0;
+  }
+}
+
+@mixin list-reset {
+  list-style-type:none;
+  padding: 0;
+  margin: 0;
+  li{
+    list-style-type:none;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    float:left;
+    display:inline;
+    a {
+      float:left;
+      display:block;
+    }
+  }
+}
