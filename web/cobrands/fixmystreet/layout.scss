@@ -1,139 +1,224 @@
+@import "compass";
 @import "_colours";
+@import "_mixins";
 
-body {
-    margin: 7px 0 0 0;
-    padding: 0;
-    background-color: #3c3c3c;
-    background-image: url(/cobrands/fixmystreet/texture.png);
+
+//hacks for desk/mob only stuff
+.desk-only {
+  display:block !important;
+}
+.mob-only {
+  display:none !important;
 }
 
-#wrapper2 {
-    padding: 0 0.5em;
+
+// Page wrapper and header bits follow
+
+.container{
+  margin: 0 auto;
+  padding: 0em;
+  width: 60em;
+  position: relative;
 }
 
-/* A third wrapper is needed because display:table cannot be given a max-width.
- * The other two wrappers (to set full width white background and the
- * max-width, are defined in base.scss. */
-#wrapper3 {
-    display: table;
-    caption-side: top;
-    width: 100%;
-    background-color: #fff;
+.wrapper{ 
+  display: table;
+  caption-side: top;
+  width: 100%;
 }
 
-/* As the navigation is put in place using position:absolute in IE6+7, add some
- * extra space here to cover it. */
-.ie6, .ie7 {
-    #wrapper3 {
-        padding-top: 2em;
+.nav-wrapper{
+  display: table-caption;
+    .nav-wrapper-2{
+        background: #222;
+        width: 100%;
+        height: 3.5em;
+        position: fixed;
+        border-top: 0.25em solid $primary;
+        z-index:2;
+        @include background(linear-gradient(#000, #222 10%, #222 90%, #000));
     }
 }
 
-#meta {
-    float: right;
-    margin: -3em 0 0 1em;
-}
 
-#mysociety {
-    padding: 0 0 1em 0;
-}
-
-/* Giving this a display: table-caption, and #wrapper3 a caption-side: top,
- * means that this div appears above the main content, even though it is below
- * it in source order. */
-#navigation {
-    border: none;
-    padding-top: 0;
-    margin: 0;
-    display: table-caption;
-    line-height: 1.2;
-}
-
-#navigation .spacer {
-    display: table-cell;
-    width: 100%;
-}
-
-/* The two lists in the navigation are displayed as simple horizontal lists in
- * table cells. */
-.nav {
-    display: table-cell;
-    width: auto;
-    white-space: nowrap;
-    margin: 0;
-    padding: 0;
-    list-style-type: none;
-    vertical-align: top;
-}
-
-.nav li {
-    display: inline-block;
-}
-
-.nav a, .nav span {
-    text-decoration: none;
-    display: block;
-    padding: 10px;
-}
-
-.nav span {
-    text-decoration: underline;
-}
-
-#site-nav a, #site-nav span {
-    color: $colour;
-    padding: 9px 20px 8px 0px;
-}
-
-#site-nav a:hover {
-    color: #000;
+// Resets a lot of the mobile styling. #header only used to help position logo on desktop
+#header{
+  height: auto;
+  background: none;
+  border-top: 0px;
+  #site-logo{
+    margin-top: 0.75em;
+    position: fixed;
+    z-index: 3;
+  }
 }
 
 
-
-#footer p {
-    text-align: center;
-    display: table-cell;
-    width: 31%;
-    padding: 0 1%;
-    margin: 0;
-}
-
-/* IE6 and IE7 do no understand display:table, but we'd like them to get the
- * grasp of the right thing, rather than the mobile-first default. So move the
- * navigation bar into place with position:absolute, and float all the list
- * items. */
-.ie6, .ie7 {
-
-    #navigation {
-        position: absolute;
-        top: 7px;
-        right: 0;
-        width: 47em;
-    }
-
-    #navigation .spacer {
-        display: none;
-    }
-
-    .nav {
-        float: left;
-    }
-
-    .nav li {
-        float: left;
+#main-nav{
+  margin: 0 auto;
+  padding: 0em;
+  width: 60em;
+  
+  ul{
+    list-style: none;
+    padding: 0px;
+    margin: 0px;
+    float:right;
+    li{
+      list-style: none;
+      display: inline;
+      margin: 0px;
+      padding: 0px;
+      float:left;
+      a{
         display: block;
+        color:#fff;
+        background: none;  
+        border-bottom: none;      
+      }
+    }
+    &#main-menu{
+      li{
+        a{
+          padding: 1em 0.75em 1.3em 0.75em;
+          font-size: 0.9em;
+          &:hover{
+          @include background(linear-gradient(#000, #444 10%, #444 95%, #111));
+          }
+        }
+      }
+    }
+    &#mysoc-menu{
+        padding: 0em 0.5em;
+        margin-left: 0.25em;
+        background:$primary;
+        @include border-radius(0 0 0.25em 0.25em);
+        @include box-shadow(0em 0.3em 0.1em 0em #000);
+        li{
+            a{
+                color:#000;
+                text-transform: uppercase;
+                font-size: 0.75em;
+                padding: 1.25em 0.3em 0.75em 0.3em;
+                &:hover{
+                    color:#fff;
+                }
+            }
+        }
+    }
+  }
+}
+
+
+
+
+// .content Is the white box
+
+// The narrow single column box
+.content{
+  width: 27em;
+  margin-top: 3em;
+  background: #fff;
+  padding: 1em;
+  padding-bottom: 3em;
+  margin-left: 0.5em;
+  margin-bottom: -1em;
+  @include box-shadow(0px 0px 6px 1px #000);
+}
+
+#map_box{
+  position: absolute;
+  height: 25em;
+  width: 30em;
+  right: 0em;
+  top: 0em;
+  z-index:1;
+}
+
+
+
+
+
+// Wraps around #key-tools to bo
+.shadow-wrap{
+    position:fixed;
+    bottom: 0em;
+    margin-left: -1em;
+    width: 29em;
+    overflow: hidden;
+    padding-top: 3em;
+    // List sticks to the bottom of the page on desktop
+    ul#key-tools{
+      border-top: 0.25em solid $primary;
+      @include box-shadow(-0em 0px 1em 1em #fff);
+      display: block;
+      overflow:hidden;
+      background: #f6f6f6;
+      li{
+        display: inline;
+        a{
+          font-family: 'helvetica', 'arial',sans-serif;
+          font-size: 0.75em;
+          color:#888888;  
+          background: none;      
+          padding: 0.5em 0;
+        }
+      }
+    }
+}
+
+.full-width{
+    margin: 0 0 0em -1em;
+    width: 29em;
+}
+
+
+/*FORMS*/
+input[type=text],
+textarea{
+    width: 25em;
+}
+
+
+
+/* MEDIA QUERIES */
+@media only screen and (min-width: 640px) and (max-width: 960px) {
+    .container {
+        width: 100%;
     }
 
-    .nav a {
-        display: block;
-    }
+    // Remove central positioning of mainmenu and float right.
+    // Left padding is to ensure no overlap of the site-logo
+    // Background styling replicates header styling
 
-    #footer p {
-        text-align: left;
+    #main-nav{
         width: auto;
-        padding: 0;
-        margin: 0.5em 0;
+        float:right;
+        padding-left: 180px;
+        background: #222;
+        @include background(linear-gradient(#000, #222 10%, #222 90%, #000));
     }
 
+    //Main menu drops below logo and my-soc menu
+    #main-menu{
+        margin-top: 3em;
+    }
+
+    //Map become percentage width
+    #map_box{
+        width: 40%;
+        margin-right: 5%;
+    }
+
+    //Revert to mobile use of the .full-width class
+    .full-width{
+        width: auto;
+        margin: 0em -1em 0 -1em;
+    }
+
+    //Remove all styling from the .content box
+    .content{ 
+        width: 50%;
+        @include box-shadow(0px 0px 0px 0px #000); 
+    }
 }

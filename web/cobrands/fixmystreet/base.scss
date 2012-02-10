@@ -92,6 +92,13 @@ p {
   margin:0 0 1em 0;
 }
 
+small{
+    font-family: 'helvetica', 'arial',sans-serif;
+    font-style: italic;
+    font-size: 0.8125em;
+    line-height: 1.2307em;
+}
+
 h1 {
   font-family:'Museo300-display', 'Helvetica', 'Arial', sans-serif;
   font-size: 2em;
@@ -198,24 +205,11 @@ a {
 
 /*CUSTOM TYPE*/
 
-h4.static{
-  font-family: 'helvetica', 'arial',sans-serif;
-  text-transform: uppercase;
-  font-size: 0.875em;
-  line-height: 1.71428em;
-  color:#888;
-  margin-top: 2em;
+.small-print {
+    @extend small;
+    margin-bottom: 1.2307em;  
+    color:#888888;  
 }
-
-h4.static-with-rule{
-  @extend.static;
-  background: #f6f6f6;
-  border-top: 0.25em solid $primary;
-  margin-bottom:0.25em;
-  padding: 0.5em 1em;  
-}
-
-
 .meta{
     color:#555555;
     font-style: italic;
@@ -228,15 +222,21 @@ h4.static-with-rule{
     font-size: 0.75em;
 }
 
-.small-print{
+h4.static{
     font-family: 'helvetica', 'arial',sans-serif;
-    font-style: italic;
-    font-size: 0.8125em;
-    line-height: 1.2307em;
-    margin-bottom: 1.2307em;  
-    color:#888888;  
+    text-transform: uppercase;
+    font-size: 0.875em;
+    line-height: 1.71428em;
+    color:#888;
+    margin-top: 2em;
 }
-
+h4.static-with-rule{
+    @extend.static;
+    background: #f6f6f6;
+    border-top: 0.25em solid $primary;
+    margin-bottom:0.25em;
+    padding: 0.5em 1em;  
+}
 
 /*FORM*/
 fieldset{
@@ -296,11 +296,14 @@ label{
   margin: 0em -1em 0 -1em;
 }
 
-// #header creates grey bar in mobile, .header is used on desktop
+// #header creates grey bar in mobile, .nav-wrapper-2 is used on desktop
 #header{
   @include background-image(linear-gradient(#000, #222 10%, #222 90%, #000));
   border-top: 0.25em solid $primary;
   height: 4em;
+  .container {
+    min-height:4em;
+  }
   #site-logo{
     width: 175px;
     height: 40px;
