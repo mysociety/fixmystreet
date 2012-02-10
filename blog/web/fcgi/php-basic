@@ -1,0 +1,3 @@
+#!/bin/sh
+PHP_FCGI_CHILDREN=1 PHPRC=/etc/php5/fcgi exec /usr/bin/php5-cgi
+

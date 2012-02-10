@@ -3,6 +3,7 @@
 /private_locale
 ._*
 .DS_Store
+.carton
 local-lib5
 META.yml
 Makefile
@@ -18,3 +19,8 @@ tags
 /web/css/core.css
 /web/css/main.css
 /web/cobrands/fixmystreet/*.css
+/local
+
+blog/web/wp
+blog/conf/general
+blog/conf/general.deployed

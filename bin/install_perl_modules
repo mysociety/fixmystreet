@@ -1,12 +1,11 @@
 #!/bin/bash
 
-curl -LO http://xrl.us/cpanm
-mv cpanm bin
-chmod +x bin/cpanm 
-./bin/cpanm -l local Carton
+DIR="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd | sed -e 's/\/bin$//' )"
 
-export PATH=local/bin:$PATH
-export PERL5LIB=local/lib/perl5
+$DIR/bin/cpanm -l local Carton
+
+export PATH=$DIR/local/bin:$PATH
+export PERL5LIB=$DIR/local/lib/perl5
 
 carton install --deployment
 
