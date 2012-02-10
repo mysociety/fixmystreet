@@ -127,6 +127,7 @@ ul, ol {
   font-size: 1em;
   margin-bottom: 2em;  
   margin-left: 2em;
+  padding:0;
 }
 
 li{
@@ -142,8 +143,8 @@ ol li {
 }
 
 dl {
-  margin: 0px;
-  padding: 0px;
+  margin: 0;
+  padding: 0;
   dt {
     font-size: 1em;
     line-height: 1.5em;
@@ -158,16 +159,16 @@ dl {
 }
 
 blockquote {
-  p:before {
-    content: '“';
-  }
-  p:after {
-    content: '”';
-  }
+    p:before {
+        content: '“';
+    }
+    p:after {
+        content: '”';
+    }
 }
 
 pre {
-  font-family: monospace;
+    font-family: monospace;
 }
 
 // huh? We're confused and it breaks our other stuff :S
@@ -216,75 +217,36 @@ h4.static-with-rule{
 
 
 .meta{
-  color:#555555;
-  font-style: italic;
-  margin-bottom: 0px;
+    color:#555555;
+    font-style: italic;
+    margin-bottom: 0px;
 }
 .meta-2{
-  font-family: 'helvetica', 'arial',sans-serif;
-  color:#888888;
-  font-style: italic;
-  font-size: 0.75em;
+    font-family: 'helvetica', 'arial',sans-serif;
+    color:#888888;
+    font-style: italic;
+    font-size: 0.75em;
 }
 
 .small-print{
-  font-family: 'helvetica', 'arial',sans-serif;
-  font-style: italic;
-  font-size: 0.8125em;
-  line-height: 1.2307em;
-  margin-bottom: 1.2307em;  
-  color:#888888;  
+    font-family: 'helvetica', 'arial',sans-serif;
+    font-style: italic;
+    font-size: 0.8125em;
+    line-height: 1.2307em;
+    margin-bottom: 1.2307em;  
+    color:#888888;  
 }
 
-
-/*OTHER*/
-
-.issue-list{
-  margin: 0 0 1em 0;
-  padding: 0px;
-  border-bottom: 0.25em solid $primary;
-  li{
-    list-style: none;
-    background: #f6f6f6;    
-    margin: 0.25em 0 0 0;
-    padding: 0.5em 1em;
-    display:block;
-    .update-wrap {
-        display:table;
-        width:100%;
-        .update-text,
-        .update-img {
-            display:table-cell;
-            vertical-align:top;
-            p {
-                margin-bottom: 0.5em;
-            }
-        }
-        .update-img {
-            text-align:right;
-            img {
-                margin:-0.5em -1em 0 0.5em;
-            }
-        }
-    }
-  }
-}
-
-.map{
-  display: 100%;
-  background: #333;
-  height: 10em;
-  @extend .full-width;
-  margin-bottom: 1em;
-}
 
 /*FORM*/
-form{  margin: 1em;}
+fieldset{
+    margin: 1em;
+}
 
 input[type=text], textarea{
-  width: 100%;
-  padding: 0.5em;
-  margin: 0 0 0 -0.5em;
+    width: 100%;
+    padding: 0.5em;
+    margin: 0 0 0 -0.5em;
 }
 
 
@@ -319,8 +281,6 @@ label{
     font-weight: normal;
   }
 }
-
-
 
 
 
@@ -438,13 +398,62 @@ input.red-btn{
   
 
 
-// this is a bit of a hack to get some differentation between desk and mobile
-.desk-only {
-    display:none !important;
+
+
+/*OTHER*/
+
+.issue-list{
+  margin: 0 0 1em 0;
+  padding: 0px;
+  border-bottom: 0.25em solid $primary;
+  li{
+    list-style: none;
+    background: #f6f6f6;    
+    margin: 0.25em 0 0 0;
+    padding: 0.5em 1em;
+    display:block;
+    .update-wrap {
+        display:table;
+        width:100%;
+        .update-text,
+        .update-img {
+            display:table-cell;
+            vertical-align:top;
+            p {
+                margin-bottom: 0.5em;
+            }
+        }
+        .update-img {
+            text-align:right;
+            img {
+                margin:-0.5em -1em 0 0.5em;
+            }
+        }
+    }
+  }
 }
+
+#map_box{
+    background: #333;
+    height: 10em;
+    @extend .full-width;
+    margin-bottom: 1em;
+    #map {
+        width:100%;
+        height:100%;
+    }
+}
+
 
 
 // this is the user's logged in details or the login link etc
 #user-meta {
-    @include list-reset;
+    @include list-reset-soft;
+}
+
+
+
+// this is a bit of a hack to get some differentation between desk and mobile
+.desk-only {
+    display:none !important;
 }
