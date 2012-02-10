@@ -451,7 +451,9 @@ input.red-btn{
 
 // this is the user's logged in details or the login link etc
 #user-meta {
-    @include list-reset-soft;
+    ul {
+        @include list-reset-soft;
+    }
 }
 
 
