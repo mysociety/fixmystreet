@@ -70,7 +70,8 @@
       margin: 0px;
       padding: 0px;
       float:left;
-      a{
+      a,
+      span {
         display: block;
         color:#fff;
         background: none;  
@@ -79,12 +80,16 @@
     }
     &#main-menu{
       li{
-        a{
+        a, span{
           padding: 1em 0.75em 1.3em 0.75em;
           font-size: 0.9em;
-          &:hover{
-          @include background(linear-gradient(#000, #444 10%, #444 95%, #111));
-          }
+        }
+        a:hover{
+            background:#444;
+            @include background(linear-gradient(#000, #444 10%, #444 95%, #111));
+        }
+        span {
+            color:$primary;
         }
       }
     }
