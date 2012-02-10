@@ -1,0 +1,220 @@
+<h1>[% loc('Reporting a problem') %]</h1>
+
+[% IF report.used_map %]
+    [% IF partial_token %]
+        <p id="unknown">[% loc('Please note your report has <strong>not yet been sent</strong>. Choose a category and add further information below, then submit.') %]</p>
+    [% END %]
+<p>[% loc('You have located the problem at the point marked with a purple pin on the map. If this is not the correct location, simply click on the map again. ') %]</p>
+[% END %]
+
+[% IF js %]
+    <p id="councils_text">[%
+        tprintf(
+            loc('All the information you provide here will be sent to <strong>%s</strong>.'),
+            loc('the local council')
+        );
+    %]
+    [% loc('The subject and details of the problem will be public, plus your name if you give us permission.') %]
+    </p>
+[% ELSE %]
+    [% PROCESS 'report/new/councils_text.html' %]
+[% END %]
+
+<p>
+[% IF report.used_map %]
+    [% INCLUDE 'report/new/fill_in_details_text.html' %]
+[% ELSE %]
+    [% loc('Please fill in the form below with details of the problem, and describe the location as precisely as possible in the details box.') %]
+[% END %]
+</p>
+
+[% INCLUDE 'errors.html' %]
+
+<div id="problem_form">
+
+[% INCLUDE 'report/new/form_heading.html' %]
+
+<div class="fieldset">
+
+
+
+
+
+[% IF field_errors.council %]
+    <div class='form-error'>[% field_errors.council %]</div>
+[% END %]
+
+[% IF field_errors.title %]
+    <div class='form-error'>[% field_errors.title %]</div>
+[% END %]
+
+<div class="form-field">
+    <label for="form_title">[% loc('Subject:') %]</label>
+    <input type="text" value="[% report.title | html %]" name="title" id="form_title" size="25" required>
+</div>
+
+[% IF field_errors.detail %]
+    <div class='form-error'>[% field_errors.detail %]</div>
+[% END %]
+
+<div class="form-field">
+    <label for="form_detail">[% loc('Details:') %]</label>
+    <textarea name="detail" id="form_detail" rows="7" cols="26" required>[% report.detail | html %]</textarea>
+</div>
+
+[% IF js %]
+    <div class="form-field" id="form_category_row">
+        <label for="form_category">[% loc('Category:') %]</label>
+        <select name="category" id="form_category" required><option>[% loc('Loading...') %]</option></select>
+    </div>
+[% ELSE %]
+    [% IF category_options.size %]
+        [% IF field_errors.category %]
+            <div class='form-error'>[% field_errors.category %]</div>
+        [% END %]
+
+        <div class="form-field">
+            [% PROCESS "report/new/category.html" %]
+        </div>
+    [% END %]
+[% END %]
+
+[%- IF category_extras %]
+[% PROCESS "report/new/category_extras.html" %]
+[%- END %]
+
+[% IF c.cobrand.allow_photo_upload %]
+    [% IF field_errors.photo %]
+        <div class='form-error'>[% field_errors.photo %]</div>
+    [% END %]
+    
+    <div class='form-field'>
+    [% IF upload_fileid || report.photo %]
+        <p>[% loc('You have already attached a photo to this report, attaching another one will replace it.') %]</p>
+        [% IF upload_fileid %]
+        <input type="hidden" name="upload_fileid" value="[% upload_fileid %]" />
+        [% END %]
+        [% IF report.photo %]
+        <img align="right" src="/photo?id=[% report.id %]" hspace="5">
+        [% END %]
+    [% END %]
+    
+        <label for="form_photo">[% loc('Photo:') %]</label>
+        <input type="file" name="photo" id="form_photo" style="width:20em">
+    </div>
+[% END %]
+
+[% IF c.user_exists %]
+
+    [% INCLUDE name_phone %]
+
+    [% INCLUDE 'report/new/notes.html' %]
+
+    <p id="problem_submit">
+        <input type="submit" value="[% loc('Submit') %]">
+    </p>
+
+[% ELSE %]
+
+    [% IF field_errors.email %]
+        <div class='form-error'>[% field_errors.email %]</div>
+    [% END %]
+
+    <div class="form-field">
+        <label for="form_email">[% loc('Your email:') %]</label>
+        <input type="email" value="[% report.user.email | html %]" name="email" id="form_email" size="25" required>
+    </div>
+
+[% INCLUDE 'report/new/notes.html' %]
+
+<div id="form_sign_in">
+    <h3>[% loc("Now to submit your report&hellip; do you have a FixMyStreet password?") %]</h3>
+
+    <div id="form_sign_in_yes">
+
+        [% IF field_errors.password %]
+            <div class='form-error'>[% field_errors.password %]</div>
+        [% END %]
+
+        <div class="form-field">
+        <label class="n" for="password_sign_in">[% loc('<strong>Yes</strong>, I have a password:') %]</label>
+        <input type="password" name="password_sign_in" id="password_sign_in" value="" size="25">
+        </div>
+
+        <div class="fieldset">
+
+        <p>
+        <input type="checkbox" id="remember_me" name="remember_me" value='1'[% ' checked' IF remember_me %]>
+        <label class="n" for="remember_me">
+        [% loc('Keep me signed in on this computer') %]
+        </label>
+        </p>
+
+        <p>
+        <input type="submit" id="submit_sign_in" name="submit_sign_in" value="[% loc('Submit') %]">
+        </p>
+
+        </div>
+
+    </div>
+    <div id="form_sign_in_no">
+
+        <p>[% loc('<strong>No</strong>, let me confirm my report by email:') %]</p>
+
+        <div class="fieldset">
+
+            [% INCLUDE name_phone %]
+
+            <div class="form-field">
+                <label for="password_register">[% loc('Enter a new password:') %]</label>
+                <input type="password" name="password_register" id="password_register" value="" size="25">
+            </div>
+
+        <p style="clear:both"><small>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</small></p>
+
+        <p>
+        <input type="submit" id="submit_register" name="submit_register" value="[% loc('Submit') %]">
+        </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+[% END %]
+
+[% IF partial_token %]
+    <input type="hidden" name="partial" value="[% partial_token.token %]">
+[% END %]
+
+<input type="hidden" name="submit_problem" value="1">
+
+</div>
+</div>
+
+
+[% BLOCK name_phone %]
+    [% IF field_errors.name %]
+        <div class='form-error'>[% field_errors.name %]</div>
+    [% END %]
+
+    <div class="form-field">
+        <label for="form_name">[% loc('Your name:') %]</label>
+        <input type="text" class="validName" value="[% report.name | html %]" name="name" id="form_name" size="25">
+    </div>
+
+    <div class="checkbox">
+        [%# if there is nothing in the name field then set check box as default on form %]
+        <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF !report.anonymous %]>
+        <label for="form_may_show_name">[% loc('Show my name publicly') %]</label>
+        <br><small>[% loc('(we never show your email address or phone number)') %]</small>
+    </div>
+
+    <div>
+        <label for="form_phone">[% loc('Phone:') %]</label>
+        <input type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" size="15">
+        <small>[% loc('(optional)') %]</small>
+    </div>
+[% END %]
+

@@ -1,0 +1,224 @@
+[% 
+    PROCESS "maps/${map.type}.html";
+
+    problem_title = problem.title _ ' - ' _ loc('Viewing a problem') | html;
+    INCLUDE 'header.html'
+        title = problem_title
+        rss = [ loc('Updates to this problem, FixMyStreet'), "/rss/$problem.id" ]
+        robots = 'index, nofollow'
+%]
+
+[% map_html %]
+
+</div>
+<div id="side">
+
+[% IF banner.id %]
+<p class="banner" id="[% banner.id %]">
+    [% banner.text %]
+</p>
+[% END %]
+
+[% INCLUDE 'report/_main.html' %]
+
+
+        
+
+
+<div class="shadow-wrap">
+    <ul id="key-tools">
+        <li><a rel="nofollow" href="[% c.uri_for( '/contact', { id => problem.id } ) %]">[% loc('Offensive? Unsuitable?' ) %]</a></li>
+        <li><a rel="nofollow" id="email_alert" href="[% c.uri_for( '/alert/subscribe', { id => problem.id } ) %]">[% loc('Receive updates' ) %]</a></li>
+        <li><a href="[% c.uri_for( '/around', { lat => short_latitude, lon => short_longitude } ) %]">[% loc( 'More problems nearby' ) %]</a></li>
+    </ul>
+</div>
+
+<!-- <div id="alert_links">
+    <a rel="nofollow" id="email_alert" href="[% c.uri_for( '/alert/subscribe', { id => problem.id } ) %]">[% loc('Email me updates' ) %]</a>
+
+    <form action="[% c.uri_for( '/alert/subscribe' ) %]" method="post" id="email_alert_box">
+        <p>[% loc('Receive email when updates are left on this problem.' ) %]</p>
+        <label class="n" for="alert_rznvy">[% loc('Email:') %]</label>
+        <input type="email" name="rznvy" id="alert_rznvy" value="[% email | html %]" size="30">
+        <input type="hidden" name="id" value="[% problem.id %]">
+        <input type="hidden" name="type" value="updates">
+        <input type="submit" value="[% loc('Subscribe') %]">
+    </form>
+    &nbsp;
+    <a href="[% c.uri_for( '/rss', problem.id ) %]">
+        <img src="/i/feed.png" width="16" height="16" title="[% loc('RSS feed') %]" alt="[% loc('RSS feed of updates to this problem' ) %]" border="0" style="vertical-align: middle">
+    </a>
+</div>
+ -->
+
+[% INCLUDE 'report/updates.html' %]
+
+<div id="update_form">
+
+    <h2>
+        [% loc( 'Provide an update') %]
+    </h2>
+
+    [% IF c.cobrand.moniker != 'emptyhomes' %]
+    <p>
+    <small>[% loc( 'Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href="/faq#privacy">privacy policy</a>' ) %]</small>
+    </p>
+    [% END %]
+
+    [% INCLUDE 'errors.html' %]
+
+    <form method="post" action="[% c.uri_for( '/report/update' ) %]" name="updateForm" class="fieldset validate"[% IF c.cobrand.allow_photo_upload %] enctype="multipart/form-data"[% END %]>
+
+        <input type="hidden" name="submit_update" value="1">
+        <input type="hidden" name="id" value="[% problem.id | html %]">
+
+        [% IF field_errors.update %]
+            <div class='form-error'>[% field_errors.update %]</div>
+        [% END %]
+        <div class="form-field">
+            <label for="form_update">[% loc( 'Update:' ) %]</label>
+            <textarea name="update" id="form_update" rows="7" cols="30" required>[% update.text | html %]</textarea>
+        </div>
+
+        [% IF c.user && c.user.belongs_to_council( problem.council ) %]
+        <div class="form-field">
+            <label for="form_state">[% loc( 'State:' ) %]</label>
+            <select name="state" id="form_state">
+            [% FOREACH state IN [ ['confirmed', loc('Open')], ['investigating',
+            loc('Investigating')], ['planned', loc('Planned')], ['in progress',
+            loc('In Progress')], ['closed', loc('Closed')], ['fixed', loc('Fixed')] ] %]
+                <option [% 'selected ' IF state.0 == problem.state %] value="[% state.0 %]">[% state.1 %]</option>
+            [% END %]
+            </select>
+        </div>
+        [% ELSE %]
+            [% IF problem.is_fixed AND c.user_exists AND c.user.id == problem.user_id %]
+            <div class="checkbox">
+             <input type="checkbox" name="reopen" id="form_reopen" value="1"[% ' checked' IF update.mark_open %]>
+             <label for="form_reopen">[% loc('This problem has not been fixed') %]</label>
+            </div>
+            [% ELSIF !problem.is_fixed %]
+            <div class="checkbox">
+             <input type="checkbox" name="fixed" id="form_fixed" value="1"[% ' checked' IF update.mark_fixed %]>
+             <label for="form_fixed">[% loc('This problem has been fixed') %]</label>
+            </div>
+            [% END %]
+        [% END %]
+
+        [% IF c.cobrand.allow_photo_upload %]
+        [% IF field_errors.photo %]
+            <div class='form-error'>[% field_errors.photo %]</div>
+        [% END %]
+        <div id="fileupload_normalUI">
+        [% IF upload_fileid %]
+            <p>[% loc('You have already attached a photo to this update, attaching another one will replace it.') %]</p>
+            <input type="hidden" name="upload_fileid" value="[% upload_fileid %]">
+        [% END %]
+        <label for="form_photo">[% loc('Photo:') %]</label>
+        <input type="file" name="photo" id="form_photo" style="width:20em">
+        </div>
+        [% END %]
+
+[% IF c.user_exists %]
+
+    [% INCLUDE name %]
+
+        <div class="checkbox">
+            <input type="submit" id="update_post" value="[% loc('Post') %]">
+        </div>
+
+[% ELSE %]
+
+    [% IF field_errors.email %]
+        <div class='form-error'>[% field_errors.email %]</div>
+    [% END %]
+    <div class="form-field">
+        <label for="form_rznvy">[% loc('Your email:' ) %]</label>
+        <input type="email" name="rznvy" id="form_rznvy" value="[% update.user.email | html %]" size="30" required>
+    </div>
+
+<div id="form_sign_in">
+    <h3>[% loc("Now to submit your update&hellip; do you have a FixMyStreet password?") %]</h3>
+
+    <div id="form_sign_in_yes">
+
+        [% IF field_errors.password %]
+            <div class='form-error'>[% field_errors.password %]</div>
+        [% END %]
+
+        <p>
+        <label class="n" for="password_sign_in">[% loc('<strong>Yes</strong>, I have a password:') %]</label>
+        <input type="password" name="password_sign_in" id="password_sign_in" value="" size="25">
+        </p>
+
+        <div class="fieldset">
+
+        <p>
+        <input type="checkbox" id="remember_me" name="remember_me" value='1'[% ' checked' IF remember_me %]>
+        <label class="n" for="remember_me">
+        [% loc('Keep me signed in on this computer') %]
+        </label>
+        </p>
+
+        <p>
+        <input type="submit" name="submit_sign_in" id="submit_sign_in" value="[% loc('Post') %]">
+        </p>
+
+        </div>
+
+    </div>
+    <div id="form_sign_in_no">
+
+        <p>[% loc('<strong>No</strong>, let me confirm my update by email:') %]</p>
+
+        <div class="fieldset">
+
+            [% INCLUDE name %]
+
+            <div class="form-field">
+                <label for="password_register">[% loc('Enter a new password:') %]</label>
+                <input type="password" name="password_register" id="password_register" value="" size="25">
+            </div>
+
+        <p style="clear:both"><small>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</small></p>
+
+        <p>
+        <input type="submit" name="submit_register" id="submit_register" value="[% loc('Post') %]">
+        </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+[% END %]
+
+    </form>
+</div>
+
+</div>
+
+[% INCLUDE 'footer.html' %]
+
+[% BLOCK name %]
+    [% IF field_errors.name %]
+        <div class='form-error'>[% field_errors.name %]</div>
+    [% END %]
+
+    <div>
+        <label for="form_name">[% loc('Your name:') %]</label>
+        <input type="text" name="name" id="form_name" value="[% update.name || c.user.name | html %]" size="25">
+    </div>
+
+    <div class="checkbox">
+        <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' UNLESS update.anonymous %]>
+        <label for="form_may_show_name">[% loc('Show my name publicly') %]</label>
+        <small>[% loc('(we never show your email)') %]</small>
+    </div>
+
+    <div class="checkbox">
+        <input type="checkbox" name="add_alert" id="form_add_alert" value="1"[% ' checked' IF add_alert %]>
+        <label for="form_add_alert">[% loc( 'Alert me to future updates' ) %]</label>
+    </div>
+[% END %]
