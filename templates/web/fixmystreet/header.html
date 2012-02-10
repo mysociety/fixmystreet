@@ -29,21 +29,23 @@
     </head>
     <body>
 
-<div id="wrapper"><div id="wrapper2"><div id="wrapper3">
+    <div class="wrapper">
 
-        [% IF NOT title AND NOT c.req.path %]<h1 id="header" role="banner">[% ELSE %]<div id="header" role="banner"><a href="/">[% END
-            %]<img src="/cobrands/fixmystreet/fms-logo-flat.png" width=327 height=62 alt="[% loc('FixMyStreet') %]">
-        [%- IF NOT title AND NOT c.req.path %]</h1>[% ELSE %]</a></div>[% END %]
+        <header id="header" role="banner">
+            <div class="container">
+                <a href="/" id="site-logo">FixMyStreet</a>
+            </div>
+        </header>
 
-        <ul id="meta">
-            [% IF c.user_exists %]
-                <li>[% tprintf(loc('Signed in as %s'), c.user.name || c.user.email) %]
-                <li class="last"><a href="/auth/sign_out">[% loc('Sign out') %]</a></li>
-            [% ELSE %]
-                <li>&nbsp;</li>
-            [% END %]
-        </ul>
+        <div class="container">
+            <div class="content" role="main">
+                <ul id="user-meta">
+                    [% IF c.user_exists %]
+                        <li>[% tprintf(loc('Signed in as %s'), c.user.name || c.user.email) %]
+                        <li class="last"><a href="/auth/sign_out">[% loc('Sign out') %]</a></li>
+                    [% ELSE %]
+                        <li>&nbsp;</li>
+                    [% END %]
+                </ul>
 
-    <div id="mysociety" class="container" role="main">
-
-    [% INCLUDE 'debug_header.html' %]
+    <!-- [% INCLUDE 'debug_header.html' %] -->
