@@ -67,40 +67,41 @@
 
 
 
+    <div id="side">
+
+        <h1>[% loc( 'Click on the map to report a problem.' ) %]</h1>
+
+        <p>
+            [%
+                tprintf(
+                    loc("<small>Can't see the map? <a href='%s' rel='nofollow'>Skip this step</a>.</small>"),
+                    url_skip
+                )
+            %]
+        </p>
+
+        <div class="shadow-wrap">
+            <ul id="key-tools">
+                <li><a href="[% rss_url | html %]" id="rss_alert">[% rss_alt %]</a></li>
+                <li><a id="email_alert" rel="nofollow" href="[% email_url | html %]">[%- loc('Email me new local problems') -%]</a></li>
+            </ul>
+        </div>
 
 
-    <h1>[% loc( 'Click on the map to report a problem.' ) %]</h1>
+        <section class="full-width">
+            <h4 class="static-with-rule">[% loc('Problems on the map') %]</h4>
+            
+            <ul class="issue-list">
+                [% INCLUDE "around/on_map_list_items.html" %]
+            </ul>
 
-    <p>
-        [%
-            tprintf(
-                loc("<small>Can't see the map? <a href='%s' rel='nofollow'>Skip this step</a>.</small>"),
-                url_skip
-            )
-        %]
-    </p>
-
-    <div class="shadow-wrap">
-        <ul id="key-tools">
-            <li><a href="[% rss_url | html %]" id="rss_alert">[% rss_alt %]</a></li>
-            <li><a id="email_alert" rel="nofollow" href="[% email_url | html %]">[%- loc('Email me new local problems') -%]</a></li>
-        </ul>
+            <h4 class="static-with-rule">[% loc( 'Problems nearby' ) %]</h4>
+            
+            <ul class="issue-list">
+                [% INCLUDE "around/around_map_list_items.html" %]
+            </ul>
+        </section>
     </div>
-
-
-    <section class="full-width">
-        <h4 class="static-with-rule">[% loc('Problems on the map') %]</h4>
-        
-        <ul class="issue-list">
-            [% INCLUDE "around/on_map_list_items.html" %]
-        </ul>
-
-        <h4 class="static-with-rule">[% loc( 'Problems nearby' ) %]</h4>
-        
-        <ul class="issue-list">
-            [% INCLUDE "around/around_map_list_items.html" %]
-        </ul>
-    </section>
 
     <div style="display:none" id="side-form">
     [% INCLUDE "report/new/fill_in_details_form.html"
