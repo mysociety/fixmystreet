@@ -141,104 +141,109 @@
 }
 
 #user-meta{
-    position: absolute;
-    top: -2.2em;
+  position: absolute;
+  top: -2.2em;
+  background:#fff;
+  height:2em;
+  @include box-shadow(#000000 0 0 6px 1px);
+  ul {
+    display:block;
     background:#fff;
     height:2em;
-    @include box-shadow(#000000 0 0 6px 1px);
-    ul {
-        display:block;
-        background:#fff;
-        height:2em;
-        border-bottom:10px solid #fff;
-        padding:0 0.5em;
-        li {
-            float:left;
-            padding:0.25em 0.25em;
-        }
+    border-bottom:10px solid #fff;
+    padding:0 0.5em;
+    li {
+      float:left;
+      padding:0.25em 0.25em;
     }
+  }
 }
 
 // Wraps around #key-tools to bo
 .shadow-wrap{
-    position:fixed;
-    bottom: 0em;
-    margin-left: -1em;
-    width: 29em;
-    overflow: hidden;
-    padding-top: 3em;
-    // List sticks to the bottom of the page on desktop
-    ul#key-tools{
-      border-top: 0.25em solid $primary;
-      @include box-shadow(-0em 0px 1em 1em #fff);
-      display: block;
-      overflow:hidden;
-      background: #f6f6f6;
-      li{
-        display: inline;
-        a{
-          font-family: 'helvetica', 'arial',sans-serif;
-          font-size: 0.75em;
-          color:#888888;  
-          background: none;      
-          padding: 0.5em 0;
-        }
+  position:fixed;
+  bottom: 0em;
+  margin-left: -1em;
+  width: 29em;
+  overflow: hidden;
+  padding-top: 3em;
+  // List sticks to the bottom of the page on desktop
+  ul#key-tools{
+    border-top: 0.25em solid $primary;
+    @include box-shadow(-0em 0px 1em 1em #fff);
+    display: block;
+    overflow:hidden;
+    background: #f6f6f6;
+    li{
+      display: inline;
+      a{
+        font-family: 'helvetica', 'arial',sans-serif;
+        font-size: 0.75em;
+        color:#888888;  
+        background: none;      
+        padding: 0.5em 0;
       }
     }
+  }
 }
 
 .full-width{
-    margin: 0 0 0em -1em;
-    width: 29em;
+  margin: 0 0 0em -1em;
+  width: 29em;
 }
 
 
 /*FORMS*/
 input[type=text],
 textarea{
-    width: 25em;
+  width: 25em;
 }
 
 
 
 /* MEDIA QUERIES */
 @media only screen and (min-width: 640px) and (max-width: 960px) {
-    .container {
-        width: 100%;
-    }
+  .container {
+      width: 100%;
+  }
+  /*FORMS*/
+  input[type=text],
+  textarea{
+    width: 95%;
+  }
 
-    // Remove central positioning of mainmenu and float right.
-    // Left padding is to ensure no overlap of the site-logo
-    // Background styling replicates header styling
+  // Remove central positioning of mainmenu and float right.
+  // Left padding is to ensure no overlap of the site-logo
+  // Background styling replicates header styling
 
-    #main-nav{
-        width: auto;
-        float:right;
-        padding-left: 180px;
-        background: #222;
-        @include background(linear-gradient(#000, #222 10%, #222 90%, #000));
-    }
+  #main-nav{
+    width: auto;
+    float:right;
+    padding-left: 180px;
+    background: #222;
+    @include background(linear-gradient(#000, #222 10%, #222 90%, #000));
+  }
 
-    //Main menu drops below logo and my-soc menu
-    #main-menu{
-        margin-top: 3em;
-    }
+  //Main menu drops below logo and my-soc menu
+  #main-menu{
+    margin-top: 3em;
+  }
 
-    //Map become percentage width
-    #map_box{
-        width: 40%;
-        margin-right: 5%;
-    }
+  //Map become percentage width
+  #map_box{
+    width: 40%;
+    margin-right: 5%;
+  }
 
-    //Revert to mobile use of the .full-width class
-    .full-width{
-        width: auto;
-        margin: 0em -1em 0 -1em;
-    }
+  //Revert to mobile use of the .full-width class
+  .full-width{
+    width: auto;
+    margin: 0em -1em 0 -1em;
+  }
 
-    //Remove all styling from the .content box
-    .content{ 
-        width: 50%;
-        @include box-shadow(0px 0px 0px 0px #000); 
-    }
+  //Remove all styling from the .content box
+  .content{ 
+    width: 50%;
+    @include box-shadow(0px 0px 0px 0px #000);
+  }
 }
