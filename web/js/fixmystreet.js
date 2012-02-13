@@ -193,5 +193,13 @@ $(function(){
         });
     }
 
+    /* 
+     * Report a problem page 
+     */
+    //desktop
+    if($('#report-a-poblem-sidebar:visible').length > 0){
+        $('.content[role=main]').addClass('report-a-poblem-page');
+    }
+    //hide on mobile
     $('.mobile #report-a-poblem-sidebar').hide();
 });

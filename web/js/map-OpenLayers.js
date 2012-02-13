@@ -216,6 +216,7 @@ $(function(){
         $('#side-form').hide();
         $('#side').show();
         $('#sub_map_links').show();
+        $('.content[role=main]').addClass('report-a-poblem-page');
         fixmystreet.page = 'around';
     });
 
@@ -371,6 +372,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         }
         $('#side').hide();
         $('#sub_map_links').hide();
+        $('.content[role=main]').addClass('report-a-poblem-page');
         fixmystreet.page = 'new';
         location.hash = 'report';
     }

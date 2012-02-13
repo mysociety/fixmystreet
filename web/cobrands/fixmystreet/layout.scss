@@ -158,7 +158,7 @@
   }
 }
 
-// Wraps around #key-tools to bo
+// Wraps around #key-tools box
 .shadow-wrap{
   position:fixed;
   bottom: 0em;
@@ -200,6 +200,34 @@ textarea{
   width: 25em;
 }
 
+
+/* Report a problem page*/
+.report-a-poblem-page {
+  width: 41.25em;
+  #map_box {
+    width:15em;
+  }
+  #report-a-poblem-main {
+    width: 27em;
+  }
+  #report-a-poblem-sidebar {
+    position:absolute;
+    left:29em;
+    top:0;
+    width:15em;
+    .sidebar-tips {
+      background:#eeeeee;
+      padding:1em;
+      font-size:0.75em;
+    }
+    .sidebar-notes {
+      background:#333333;
+      padding:1em;
+      color:#ffffff;
+      font-size:0.75em;
+    }
+  }
+}
 
 
 /* MEDIA QUERIES */

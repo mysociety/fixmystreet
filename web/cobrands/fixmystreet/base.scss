@@ -187,16 +187,14 @@ select, input, textarea {
 
 
 /* LINKS */
-a {
+a,
+a:visited {
   text-decoration:none;
   color:$contrast1;
   &:hover,
   &:active {
-      text-decoration:underline;
-      color:$contrast2;    
-  }
-  &:visited {
-      color: $colour_dark;
+    text-decoration:underline;
+    color:$contrast2;    
   }
 }
 
@@ -406,6 +404,13 @@ input.red-btn{
 
 
 /*OTHER*/
+
+.plain-list {
+  @include list-reset-soft;
+  li {
+    margin-bottom:1em;
+  }
+}
 
 .issue-list{
   margin: 0 0 1em 0;
