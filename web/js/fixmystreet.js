@@ -31,6 +31,9 @@ function form_category_onchange() {
 }
 
 $(function(){
+    if(Modernizr.mq('only screen and (max-width:48em)')) {
+        $('html').addClass('mobile');
+    }
 
     $('html').removeClass('no-js').addClass('js');
 
@@ -190,4 +193,5 @@ $(function(){
         });
     }
 
+    $('.mobile #report-a-poblem-sidebar').hide();
 });

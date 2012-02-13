@@ -1,32 +1,38 @@
 <h1>[% loc('Reporting a problem') %]</h1>
 
-[% IF report.used_map %]
-    [% IF partial_token %]
-        <p id="unknown">[% loc('Please note your report has <strong>not yet been sent</strong>. Choose a category and add further information below, then submit.') %]</p>
+<div id="report-a-poblem-sidebar">
+    
+    [% IF report.used_map %]
+        [% IF partial_token %]
+            <p id="unknown">[% loc('Please note your report has <strong>not yet been sent</strong>. Choose a category and add further information below, then submit.') %]</p>
+        [% END %]
+    <p>[% loc('You have located the problem at the point marked with a purple pin on the map. If this is not the correct location, simply click on the map again. ') %]</p>
     [% END %]
-<p>[% loc('You have located the problem at the point marked with a purple pin on the map. If this is not the correct location, simply click on the map again. ') %]</p>
-[% END %]
 
-[% IF js %]
-    <p id="councils_text">[%
-        tprintf(
-            loc('All the information you provide here will be sent to <strong>%s</strong>.'),
-            loc('the local council')
-        );
-    %]
-    [% loc('The subject and details of the problem will be public, plus your name if you give us permission.') %]
+    [% IF js %]
+        <p id="councils_text">
+        [%
+            tprintf(
+                loc('All the information you provide here will be sent to <strong>%s</strong>.'),
+                loc('the local council')
+            );
+        %]
+        [% loc('The subject and details of the problem will be public, plus your name if you give us permission.') %]
+        </p>
+    [% ELSE %]
+        [% PROCESS 'report/new/councils_text.html' %]
+    [% END %]
+
+    <p>
+    [% IF report.used_map %]
+        [% INCLUDE 'report/new/fill_in_details_text.html' %]
+    [% ELSE %]
+        [% loc('Please fill in the form below with details of the problem, and describe the location as precisely as possible in the details box.') %]
+    [% END %]
     </p>
-[% ELSE %]
-    [% PROCESS 'report/new/councils_text.html' %]
-[% END %]
 
-<p>
-[% IF report.used_map %]
-    [% INCLUDE 'report/new/fill_in_details_text.html' %]
-[% ELSE %]
-    [% loc('Please fill in the form below with details of the problem, and describe the location as precisely as possible in the details box.') %]
-[% END %]
-</p>
+    [% INCLUDE 'report/new/notes.html' %]
+</div>
 
 [% INCLUDE 'errors.html' %]
 <fieldset>
@@ -100,8 +106,6 @@
 
             [% INCLUDE name_phone %]
 
-            [% INCLUDE 'report/new/notes.html' %]
-
             <p id="problem_submit">
                 <input type="submit" value="[% loc('Submit') %]">
             </p>
@@ -115,47 +119,45 @@
             <label for="form_email">[% loc('Your email:') %]</label>
             <input type="email" value="[% report.user.email | html %]" name="email" id="form_email" size="25" required>
 
-        [% INCLUDE 'report/new/notes.html' %]
+            <div id="form_sign_in">
+                <h3>[% loc("Now to submit your report&hellip; do you have a FixMyStreet password?") %]</h3>
 
-        <div id="form_sign_in">
-            <h3>[% loc("Now to submit your report&hellip; do you have a FixMyStreet password?") %]</h3>
+                <div id="form_sign_in_yes">
+                    [% IF field_errors.password %]
+                        <p class='form-error'>[% field_errors.password %]</p>
+                    [% END %]
 
-            <div id="form_sign_in_yes">
-                [% IF field_errors.password %]
-                    <p class='form-error'>[% field_errors.password %]</p>
-                [% END %]
+                    <label class="n" for="password_sign_in">[% loc('<strong>Yes</strong>, I have a password:') %]</label>
+                    <input type="password" name="password_sign_in" id="password_sign_in" value="">
 
-                <label class="n" for="password_sign_in">[% loc('<strong>Yes</strong>, I have a password:') %]</label>
-                <input type="password" name="password_sign_in" id="password_sign_in" value="">
+                    <p>
+                        <input type="checkbox" id="remember_me" name="remember_me" value='1'[% ' checked' IF remember_me %]>
+                        <label class="n" for="remember_me">[% loc('Keep me signed in on this computer') %]</label>
+                    </p>
 
-                <p>
-                    <input type="checkbox" id="remember_me" name="remember_me" value='1'[% ' checked' IF remember_me %]>
-                    <label class="n" for="remember_me">[% loc('Keep me signed in on this computer') %]</label>
-                </p>
+                    <p>
+                        <input type="submit" id="submit_sign_in" name="submit_sign_in" value="[% loc('Submit') %]">
+                    </p>
+                </div>
 
-                <p>
-                    <input type="submit" id="submit_sign_in" name="submit_sign_in" value="[% loc('Submit') %]">
-                </p>
+                <div id="form_sign_in_no">
+                    <p>[% loc('<strong>No</strong>, let me confirm my report by email:') %]</p>
+
+                    [% INCLUDE name_phone %]
+            
+                    <label for="password_register">[% loc('Enter a new password:') %]</label>
+                    <input type="password" name="password_register" id="password_register" value="">
+                        
+
+                    <p><small>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</small></p>
+
+                    <p>
+                        <input type="submit" id="submit_register" name="submit_register" value="[% loc('Submit') %]">
+                    </p>
+
+                </div>
+
             </div>
-
-            <div id="form_sign_in_no">
-                <p>[% loc('<strong>No</strong>, let me confirm my report by email:') %]</p>
-
-                [% INCLUDE name_phone %]
-        
-                <label for="password_register">[% loc('Enter a new password:') %]</label>
-                <input type="password" name="password_register" id="password_register" value="">
-                    
-
-                <p><small>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</small></p>
-
-                <p>
-                    <input type="submit" id="submit_register" name="submit_register" value="[% loc('Submit') %]">
-                </p>
-
-            </div>
-
-        </div>
 
         [% END %]
     </div>
