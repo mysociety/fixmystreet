@@ -13,67 +13,65 @@
 /* HEADINGS and TYPOGRAPHY */
 
 @font-face {
-    font-family: 'MuseoSans';
-    src: url('fonts/MuseoSans_300-webfont.eot');
-    src: url('fonts/MuseoSans_300-webfont.eot?#iefix') format('embedded-opentype'),
-         url('fonts/MuseoSans_300-webfont.woff') format('woff'),
-         url('fonts/MuseoSans_300-webfont.ttf') format('truetype'),
-         url('fonts/MuseoSans_300-webfont.svg#MuseoSans300') format('svg');
-    font-weight: normal;
-    font-style: normal;
+  font-family: 'MuseoSans';
+  src: url('fonts/MuseoSans_300-webfont.eot');
+  src: url('fonts/MuseoSans_300-webfont.eot?#iefix') format('embedded-opentype'),
+       url('fonts/MuseoSans_300-webfont.woff') format('woff'),
+       url('fonts/MuseoSans_300-webfont.ttf') format('truetype'),
+       url('fonts/MuseoSans_300-webfont.svg#MuseoSans300') format('svg');
+  font-weight: normal;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: 'MuseoSans';
-    src: url('fonts/MuseoSans_300_Italic-webfont.eot');
-    src: url('fonts/MuseoSans_300_Italic-webfont.eot?#iefix') format('embedded-opentype'),
-         url('fonts/MuseoSans_300_Italic-webfont.woff') format('woff'),
-         url('fonts/MuseoSans_300_Italic-webfont.ttf') format('truetype'),
-         url('fonts/MuseoSans_300_Italic-webfont.svg#MuseoSans300Italic') format('svg');
-    font-weight: normal;
-    font-style: italic;
+  font-family: 'MuseoSans';
+  src: url('fonts/MuseoSans_300_Italic-webfont.eot');
+  src: url('fonts/MuseoSans_300_Italic-webfont.eot?#iefix') format('embedded-opentype'),
+       url('fonts/MuseoSans_300_Italic-webfont.woff') format('woff'),
+       url('fonts/MuseoSans_300_Italic-webfont.ttf') format('truetype'),
+       url('fonts/MuseoSans_300_Italic-webfont.svg#MuseoSans300Italic') format('svg');
+  font-weight: normal;
+  font-style: italic;
 }
 
 @font-face {
-    font-family: 'MuseoSans';
-    src: url('fonts/MuseoSans_500-webfont.eot');
-    src: url('fonts/MuseoSans_500-webfont.eot?#iefix') format('embedded-opentype'),
-         url('fonts/MuseoSans_500-webfont.woff') format('woff'),
-         url('fonts/MuseoSans_500-webfont.ttf') format('truetype'),
-         url('fonts/MuseoSans_500-webfont.svg#MuseoSans500') format('svg');
-    font-weight: bold;
-    font-style: normal;
-
+  font-family: 'MuseoSans';
+  src: url('fonts/MuseoSans_500-webfont.eot');
+  src: url('fonts/MuseoSans_500-webfont.eot?#iefix') format('embedded-opentype'),
+       url('fonts/MuseoSans_500-webfont.woff') format('woff'),
+       url('fonts/MuseoSans_500-webfont.ttf') format('truetype'),
+       url('fonts/MuseoSans_500-webfont.svg#MuseoSans500') format('svg');
+  font-weight: bold;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: 'MuseoSans';
-    src: url('fonts/MuseoSans_500_Italic-webfont.eot');
-    src: url('fonts/MuseoSans_500_Italic-webfont.eot?#iefix') format('embedded-opentype'),
-         url('fonts/MuseoSans_500_Italic-webfont.woff') format('woff'),
-         url('fonts/MuseoSans_500_Italic-webfont.ttf') format('truetype'),
-         url('fonts/MuseoSans_500_Italic-webfont.svg#MuseoSans500Italic') format('svg');
-    font-weight: bold;
-    font-style: italic;
-
+  font-family: 'MuseoSans';
+  src: url('fonts/MuseoSans_500_Italic-webfont.eot');
+  src: url('fonts/MuseoSans_500_Italic-webfont.eot?#iefix') format('embedded-opentype'),
+       url('fonts/MuseoSans_500_Italic-webfont.woff') format('woff'),
+       url('fonts/MuseoSans_500_Italic-webfont.ttf') format('truetype'),
+       url('fonts/MuseoSans_500_Italic-webfont.svg#MuseoSans500Italic') format('svg');
+  font-weight: bold;
+  font-style: italic;
 }
 
 @font-face {
-    font-family: 'Museo300-display';
-    src: url('fonts/Museo300-Regular-webfont.eot');
-    src: url('fonts/Museo300-Regular-webfont.eot?#iefix') format('embedded-opentype'),
-         url('fonts/Museo300-Regular-webfont.woff') format('woff'),
-         url('fonts/Museo300-Regular-webfont.ttf') format('truetype'),
-         url('fonts/Museo300-Regular-webfont.svg#Museo300') format('svg');
-    font-weight: normal;
-    font-style: normal;
+  font-family: 'Museo300-display';
+  src: url('fonts/Museo300-Regular-webfont.eot');
+  src: url('fonts/Museo300-Regular-webfont.eot?#iefix') format('embedded-opentype'),
+       url('fonts/Museo300-Regular-webfont.woff') format('woff'),
+       url('fonts/Museo300-Regular-webfont.ttf') format('truetype'),
+       url('fonts/Museo300-Regular-webfont.svg#Museo300') format('svg');
+  font-weight: normal;
+  font-style: normal;
 }
 
 
 /* Opera has a bug (from around 10.5 upwards to current 11.6) with showing the
  * table caption *at all* if the header is set to a font-face :( */
 noindex:-o-prefocus, #header {
-    font-family: sans-serif;
+  font-family: sans-serif;
 }
 
 
@@ -93,10 +91,10 @@ p {
 }
 
 small{
-    font-family: 'helvetica', 'arial',sans-serif;
-    font-style: italic;
-    font-size: 0.8125em;
-    line-height: 1.2307em;
+  font-family: 'helvetica', 'arial',sans-serif;
+  font-style: italic;
+  font-size: 0.8125em;
+  line-height: 1.2307em;
 }
 
 h1 {
@@ -157,96 +155,95 @@ dl {
     line-height: 1.5em;
     font-weight: bold;
   }
-
   dd {
     font-weight: 1em;
     line-height: 1.5em;
-    margin-bottom: 1em;
+    margin:0 0 1em 0;
   }
 }
 
 blockquote {
-    p:before {
-        content: '“';
-    }
-    p:after {
-        content: '”';
-    }
+  p:before {
+    content: '“';
+  }
+  p:after {
+    content: '”';
+  }
 }
 
 pre {
-    font-family: monospace;
+  font-family: monospace;
 }
 
 // huh? We're confused and it breaks our other stuff :S
 img {
-    // max-width: 100%;
+  // max-width: 100%;
 }
 
 select, input, textarea {
-    font-size: 99%;
-    max-width: 95%;
+  font-size: 99%;
+  max-width: 95%;
 }
 
 
 /* LINKS */
 a {
-    text-decoration:none;
-    color:$contrast1;
-    &:hover,
-    &:active {
-        text-decoration:underline;
-        color:$contrast2;    
-    }
-    &:visited {
-        color: $colour_dark;
-    }
+  text-decoration:none;
+  color:$contrast1;
+  &:hover,
+  &:active {
+      text-decoration:underline;
+      color:$contrast2;    
+  }
+  &:visited {
+      color: $colour_dark;
+  }
 }
 
 /*CUSTOM TYPE*/
 
 .small-print {
-    @extend small;
-    margin-bottom: 1.2307em;  
-    color:#888888;  
+  @extend small;
+  margin-bottom: 1.2307em;
+  color:#888888;
 }
 .meta{
-    color:#555555;
-    font-style: italic;
-    margin-bottom: 0px;
+  color:#555555;
+  font-style: italic;
+  margin-bottom: 0px;
 }
 .meta-2{
-    font-family: 'helvetica', 'arial',sans-serif;
-    color:#888888;
-    font-style: italic;
-    font-size: 0.75em;
+  font-family: 'helvetica', 'arial',sans-serif;
+  color:#888888;
+  font-style: italic;
+  font-size: 0.75em;
 }
 
 h4.static{
-    font-family: 'helvetica', 'arial',sans-serif;
-    text-transform: uppercase;
-    font-size: 0.875em;
-    line-height: 1.71428em;
-    color:#888;
-    margin-top: 2em;
+  font-family: 'helvetica', 'arial',sans-serif;
+  text-transform: uppercase;
+  font-size: 0.875em;
+  line-height: 1.71428em;
+  color:#888;
+  margin-top: 2em;
 }
 h4.static-with-rule{
-    @extend.static;
-    background: #f6f6f6;
-    border-top: 0.25em solid $primary;
-    margin-bottom:0.25em;
-    padding: 0.5em 1em;  
+  @extend.static;
+  background: #f6f6f6;
+  border-top: 0.25em solid $primary;
+  margin-bottom:0.25em;
+  padding: 0.5em 1em;
 }
 
 /*FORM*/
 fieldset{
-    margin: 1em;
+  margin: 1em;
 }
 
 input[type=text], textarea{
-    width: 100%;
-    padding: 0.5em;
-    margin: 0 0 0 -0.5em;
+  width: 100%;
+  padding: 0.5em;
+  margin: 0 0 0 -0.5em;
 }
 
 
@@ -416,49 +413,49 @@ input.red-btn{
     padding: 0.5em 1em;
     display:block;
     .update-wrap {
-        display:table;
-        width:100%;
-        .update-text,
-        .update-img {
-            display:table-cell;
-            vertical-align:top;
-            p {
-                margin-bottom: 0.5em;
-            }
+      display:table;
+      width:100%;
+      .update-text,
+      .update-img {
+        display:table-cell;
+        vertical-align:top;
+        p {
+          margin-bottom: 0.5em;
         }
-        .update-img {
-            text-align:right;
-            img {
-                margin:-0.5em -1em 0 0.5em;
-            }
+      }
+      .update-img {
+        text-align:right;
+        img {
+          margin:-0.5em -1em 0 0.5em;
         }
+      }
     }
   }
 }
 
 #map_box{
-    background: #333;
-    height: 10em;
-    @extend .full-width;
-    margin-bottom: 1em;
-    #map {
-        width:100%;
-        height:100%;
-    }
+  background: #333;
+  height: 10em;
+  @extend .full-width;
+  margin-bottom: 1em;
+  #map {
+    width:100%;
+    height:100%;
+  }
 }
 
 
 
 // this is the user's logged in details or the login link etc
 #user-meta {
-    ul {
-        @include list-reset-soft;
-    }
+  ul {
+    @include list-reset-soft;
+  }
 }
 
 
 
 // this is a bit of a hack to get some differentation between desk and mobile
 .desk-only {
-    display:none !important;
+  display:none !important;
 }
