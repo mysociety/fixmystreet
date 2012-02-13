@@ -240,7 +240,10 @@ fieldset{
   margin: 1em;
 }
 
-input[type=text], textarea{
+input[type=text],
+input[type=password],
+input[type=email],
+textarea{
   width: 100%;
   padding: 0.5em;
   margin: 0 0 0 -0.5em;
@@ -257,7 +260,9 @@ textarea{
   font-family: 'helvetica', 'arial',sans-serif;
 }
 
-input[type=text]{
+input[type=text],
+input[type=password],
+input[type=email] {
   border: 0.125em solid #888888;
   @include border-radius(0.25em);
   display: block;

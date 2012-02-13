@@ -194,6 +194,8 @@
 
 /*FORMS*/
 input[type=text],
+input[type=password],
+input[type=email],
 textarea{
   width: 25em;
 }
@@ -207,6 +209,8 @@ textarea{
   }
   /*FORMS*/
   input[type=text],
+  input[type=password],
+  input[type=email],
   textarea{
     width: 95%;
   }

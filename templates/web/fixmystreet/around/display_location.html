@@ -36,91 +36,78 @@
 %]
 
 <form action="[% c.uri_for('/report/new') %]" method="post" name="mapForm" id="mapForm" enctype="multipart/form-data" class="validate">
-[% IF c.req.params.map_override %]
-<input type="hidden" name="map_override" value="[% c.req.params.map_override | html %]">
-[% END %]
-<input type="hidden" name="pc" value="[% pc | html %]">
-
-<input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% short_latitude | html %]">
-<input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% short_longitude | html %]">
-
-[% map_html %]
-
-<p id='sub_map_links'>
-    [% IF c.req.params.no_pins %]
-        <a id='hide_pins_link' rel='nofollow' href='[% c.uri_with( { no_pins => 0 } ) %]'>[% loc('Show pins') %]</a>
-    [% ELSE %]
-        <a id='hide_pins_link' rel='nofollow' href='[% c.uri_with( { no_pins => 1 } ) %]'>[% loc('Hide pins') %]</a>
+    [% IF c.req.params.map_override %]
+        <input type="hidden" name="map_override" value="[% c.req.params.map_override | html %]">
     [% END %]
-    [% IF c.cobrand.country == 'GB' || c.cobrand.country == 'NO' %]
-        |
-        [% IF c.req.params.all_pins %]
-            <a id='all_pins_link' rel='nofollow' href='[% c.uri_with( { no_pins => undef, all_pins => undef } ) %]'>[% loc('Hide stale reports') %]</a>
-        [% ELSE %]
-            <a id='all_pins_link' rel='nofollow' href='[% c.uri_with( { no_pins => undef, all_pins => 1 } ) %]'>[% loc('Include stale reports') %]</a>
-        [% END %]
-    [% END %]
-</p>
+    <input type="hidden" name="pc" value="[% pc | html %]">
 
-</div>
-<div id="side">
+    <input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% short_latitude | html %]">
+    <input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% short_longitude | html %]">
 
-<p id="text_map" class="banner">
-    [% loc( 'To <strong>report a problem</strong>, click on the map at the correct location.' ) %]
-    [%
-        tprintf(
-            loc("<small>If you cannot see the map, <a href='%s' rel='nofollow'>skip this step</a>.</small>"),
-            url_skip
-        )
-    %]
-    <span id="text_map_arrow"></span>
-</p>
+    [% map_html %]
 
-<h1>[% loc('Problems in this area') %]</h1>
+        <p id='sub_map_links'>
+            [% IF c.req.params.no_pins %]
+                <a id='hide_pins_link' rel='nofollow' href='[% c.uri_with( { no_pins => 0 } ) %]'>[% loc('Show pins') %]</a>
+            [% ELSE %]
+                <a id='hide_pins_link' rel='nofollow' href='[% c.uri_with( { no_pins => 1 } ) %]'>[% loc('Hide pins') %]</a>
+            [% END %]
+            [% IF c.cobrand.country == 'GB' || c.cobrand.country == 'NO' %]
+                |
+                [% IF c.req.params.all_pins %]
+                    <a id='all_pins_link' rel='nofollow' href='[% c.uri_with( { no_pins => undef, all_pins => undef } ) %]'>[% loc('Hide stale reports') %]</a>
+                [% ELSE %]
+                    <a id='all_pins_link' rel='nofollow' href='[% c.uri_with( { no_pins => undef, all_pins => 1 } ) %]'>[% loc('Include stale reports') %]</a>
+                [% END %]
+            [% END %]
+        </p>
 
-<p id="alert_links_area">
-    <a id="email_alert" rel="nofollow" href="[% email_url | html %]">
-        [%- loc('Email me new local problems') -%]
-</a> |
-    <a href="[% rss_url | html %]" id="rss_alert">
-        <span>[% rss_alt %]</span>
-        <img src="/i/feed.png" width="16" height="16" title="[% rss_title %]" alt="[% rss_alt %]" border="0" style="vertical-align: top">
-    </a>
-</p>
+    </div>
 
-<div id="nearby_lists">
 
-    <h2>[% loc('Reports on and around the map') %]</h2>
-    
-    <ul id="current">
-        [% INCLUDE "around/on_map_list_items.html" %]
-    </ul>
-    
 
-    <h2>
+
+
+
+    <h1>[% loc( 'Click on the map to report a problem.' ) %]</h1>
+
+    <p>
         [%
             tprintf(
-                loc( 'Closest nearby problems <small>(within&nbsp;%skm)</small>' ),
-                distance
+                loc("<small>Can't see the map? <a href='%s' rel='nofollow'>Skip this step</a>.</small>"),
+                url_skip
             )
         %]
-    </h2>
-    
-    <ul id="current_near">
-        [% INCLUDE "around/around_map_list_items.html" %]
-    </ul>
+    </p>
 
-</div>
+    <div class="shadow-wrap">
+        <ul id="key-tools">
+            <li><a href="[% rss_url | html %]" id="rss_alert">[% rss_alt %]</a></li>
+            <li><a id="email_alert" rel="nofollow" href="[% email_url | html %]">[%- loc('Email me new local problems') -%]</a></li>
+        </ul>
+    </div>
 
-</div>
 
-<div style="display:none" id="side-form">
-[% INCLUDE "report/new/fill_in_details_form.html"
-    js = 1,
-    report.used_map = 1
-%]
-</div>
+    <section class="full-width">
+        <h4 class="static-with-rule">[% loc('Problems on the map') %]</h4>
+        
+        <ul class="issue-list">
+            [% INCLUDE "around/on_map_list_items.html" %]
+        </ul>
 
+        <h4 class="static-with-rule">[% loc( 'Problems nearby' ) %]</h4>
+        
+        <ul class="issue-list">
+            [% INCLUDE "around/around_map_list_items.html" %]
+        </ul>
+    </section>
+
+    <div style="display:none" id="side-form">
+    [% INCLUDE "report/new/fill_in_details_form.html"
+        js = 1,
+        report.used_map = 1
+    %]
+    </div>
 </form>
 
 [% INCLUDE 'footer.html' %]

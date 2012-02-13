@@ -45,7 +45,7 @@
                             <li>[% tprintf(loc('Hi %s'), c.user.name || c.user.email) %]
                             <li class="last"><a href="/auth/sign_out">[% loc('Sign out') %]</a></li>
                         [% ELSE %]
-                            <li>&nbsp;</li>
+                            <li><a href="/auth">[% loc('Sign in') %]</a></li>
                         [% END %]
                     </ul>
                 </div>
