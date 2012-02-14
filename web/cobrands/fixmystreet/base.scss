@@ -527,7 +527,7 @@ a:hover.button-left {
 
 .issue-list{
   margin: 0 0 1em 0;
-  padding: 0px;
+  padding: 0;
   border-bottom: 0.25em solid $primary;
   li{
     list-style: none;
@@ -558,7 +558,7 @@ a:hover.button-left {
 
 .issue-list-a {
   margin: 0 0 1em 0;
-  padding: 0px;
+  padding: 0;
   border-bottom: 0.25em solid $primary;
   li {
     list-style: none;
@@ -566,17 +566,35 @@ a:hover.button-left {
     padding:0;
     a {
       margin: 0.25em 0 0 0;
-      padding: 0.5em 1em;
-      display:block;
+      padding: 0 1em;
+      display:table;
       background: #f6f6f6;
       color:#222222;
+      width:100%;
       &:hover {
         text-decoration:none;
         color:#222222;
         background:#e6e6e6;
       }
-      h4 {
-        margin:0;
+      .text,
+      .img {
+        display:table-cell;
+        vertical-align:top;
+      }
+      .img {
+        text-align:right;
+        img {
+          margin:0 -1em 0 0.5em;
+        }
+      }
+      .text {
+        padding:0.5em 0;
+        h4 {
+          margin:0;
+        }
+        small {
+          color:#808080;
+        }
       }
     }
     >p {
@@ -617,6 +635,18 @@ a:hover.rap-notes-trigger {
   margin:1em 0;
 }
 
+//report a problem tabs
+#problems-nav {
+  padding:0;
+  overflow:hidden;
+  border-bottom:0.25em solid #333;
+  ul {
+    @include list-reset;
+    li {
+
+    }
+  }
+}
 
 // this is a bit of a hack to get some differentation between desk and mobile
 .desk-only {

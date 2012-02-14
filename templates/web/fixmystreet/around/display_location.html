@@ -89,15 +89,18 @@
 
 
         <section class="full-width">
-            <h4 class="static-with-rule">[% loc('Problems on the map') %]</h4>
+            <menu id="problems-nav">
+                <ul>
+                    <li><a href="#problems-on-the-map">[% loc('Problems on the map') %]</a></li>
+                    <li><a href="#problems-nearby">[% loc( 'Problems nearby' ) %]</a></li>
+                </ul>
+            </menu>
             
-            <ul class="issue-list-a">
+            <ul id="problems-on-the-map" class="issue-list-a">
                 [% INCLUDE "around/on_map_list_items.html" %]
             </ul>
 
-            <h4 class="static-with-rule">[% loc( 'Problems nearby' ) %]</h4>
-            
-            <ul class="issue-list-a">
+            <ul id="problems-nearby" class="issue-list-a">
                 [% INCLUDE "around/around_map_list_items.html" %]
             </ul>
         </section>

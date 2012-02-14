@@ -5,11 +5,16 @@
         
         <li>
             <a href="[% c.uri_for('/report', p.problem.id ) %]">
-                <h4>[% p.problem.title | html %]</h4>
-                <small>[% prettify_epoch( p.problem.confirmed_local.epoch, 1 ) %], [% dist %]km</small>
-                [% IF p.problem.is_fixed %]
-                    <small>[% loc('(fixed)') %]</small>
-                [% END %]
+                <div class="text">
+                    <h4>[% p.problem.title | html %]</h4>
+                    <small>[% prettify_epoch( p.problem.confirmed_local.epoch, 1 ) %], [% dist %]km</small>
+                    [% IF p.problem.is_fixed %]
+                        <small>[% loc('(fixed)') %]</small>
+                    [% END %]
+                </div>
+                <div class="img">
+                    <img alt="" height="" width="100px" src="/photo?id=[%p.id%]">
+                </div>
             </a>
         </li>
     [% END %]
