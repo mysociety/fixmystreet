@@ -30,6 +30,18 @@ function form_category_onchange() {
     });
 }
 
+
+function heightFix(elem1, elem2, offset){
+    var h1 = $(elem1).height(),
+        h2 = $(elem2).height();
+    if(offset === undefined){
+        offset = 0;
+    }
+    if(h1 > h2){
+        $(elem2).css({'min-height':h1+offset});
+    }
+}
+
 $(function(){
     if(Modernizr.mq('only screen and (max-width:48em)')) {
         $('html').addClass('mobile');
@@ -199,6 +211,7 @@ $(function(){
     //desktop
     if($('#report-a-poblem-sidebar:visible').length > 0){
         $('.content[role=main]').addClass('report-a-poblem-page');
+        heightFix('#report-a-poblem-sidebar:visible', '.content.report-a-poblem-page', 26);
     }
     //hide on mobile
     $('.mobile #report-a-poblem-sidebar').hide();
