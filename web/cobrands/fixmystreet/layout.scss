@@ -11,6 +11,13 @@
   display:none !important;
 }
 
+body {
+  // temp map background
+  background:url(images/temp-map.jpg) center fixed;
+  z-index: -2;
+  position: relative;
+  // temp map background
+}
 
 // Page wrapper and header bits follow
 
