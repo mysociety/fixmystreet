@@ -8,7 +8,15 @@ dd { margin-left: 8em; }
 .error { color: red; }
 #config label { float: left; text-align: right; padding-right: 0.5em; width: 15em; }
 #config input[type=submit] { margin-left: 15.5em; font-size: 1em; }
+p.cobrand-entry { padding-left: 15.5em; }
 </style>
+
+[% IF jquery || admin_script %]
+<script type="text/javascript" src="/jslib/jquery-1.7.0.min.js"></script>
+[% END %]
+[% IF admin_script %]
+<script type="text/javascript" src="/js/admin.js"></script>
+[% END %]
 </head>
 <body>
 

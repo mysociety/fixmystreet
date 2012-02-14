@@ -1,4 +1,4 @@
-[% INCLUDE 'admin/header.html' title=loc('Config') %]
+[% INCLUDE 'admin/header.html' title=loc('Config') admin_script=1 %]
 
 <div id="config">
     <form action='/admin/config' method="POST">
@@ -17,14 +17,36 @@
             </p>
 
             <p>
-            <label title="List of Cobrands that can be displayed ( Pipe separated )" for="allowed_cobrands">Allowed Cobrands</label>
-            <input id="allowed_cobrands" type="text" name="ALLOWED_COBRANDS" value="[% config.ALLOWED_COBRANDS %]" size="50" />
-            </p>
-
-            <p>
             <label title="List of map types that can be used ( comma separated )" for="map_type">Map Type</label>
             <input id="map_type" type="text" name="MAP_TYPE" value="[% config.MAP_TYPE %]" size="40" />
             </p>
+        </fieldset>
+
+        <fieldset>
+            <legend>Allowed Cobrands</legend>
+
+            <p class="cobrand-entry">
+            Cobrand Name : Cobrand host ( optional )
+            </p>
+            [% IF cobrands.size %] 
+                [% FOREACH cobrand IN cobrands %]
+                    <p class="cobrand-entry">
+                    <input id="cobrand_name_[% loop.index %]"
+                    name="cobrand_name_[% loop.index %]" value="[%
+                    cobrand.moniker %]" />  :
+                    <input id="cobrand_host_[% loop.index %]"
+                    name="cobrand_host_[% loop.index %]" value="[%
+                    cobrand.host IF cobrand.host != cobrand.moniker %]"
+                    /> [% '<strong id="add_allowed_row">+</strong>' IF loop.last %]
+                    </p>
+                [% END %]
+            [% ELSE %]
+                    <p class="cobrand-entry">
+                    <input id="cobrand_name_0" name="cobrand_name_0" />  :
+                    <input id="cobrand_host_0" name="cobrand_host_0" /> 
+                    <strong id="add_allowed_row">+</strong>'
+                    </p>
+            [% END %]
         </fieldset>
 
         <fieldset>

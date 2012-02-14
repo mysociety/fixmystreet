@@ -2,6 +2,8 @@ package FixMyStreet::App::Controller::Admin;
 use Moose;
 use namespace::autoclean;
 
+use YAML;
+
 BEGIN { extends 'Catalyst::Controller'; }
 
 use POSIX qw(strftime strcoll);
@@ -989,6 +991,19 @@ sub edit_config : Path('config') : Args(0) {
     my %config;
     if ( $c->req->method eq 'POST' ) {
 
+        # we need to deal with allowed cobrands differently as
+        # there are multiple fields for them and we store them
+        # in the DB as a YAML string
+        my $allowed = [];
+        my $count = 0;
+        while ( my $name = $c->req->param( "cobrand_name_$count" ) ) {
+            my $host = $c->req->param( "cobrand_host_$count" );
+
+            push @$allowed, $host ? { $name => $host } : $name;
+
+            $count++;
+        }
+
         while ( my $option = $options->next ) {
             my $value = $c->req->param( $option->key );
             $value = defined $value ? $value : '';
@@ -997,7 +1012,13 @@ sub edit_config : Path('config') : Args(0) {
                 $value = $value eq 'on' ? 1 : 0;
             }
 
+
             if ( $value ne $option->value ) {
+                # Dump allowed cobrands to YAML
+                if ( $option->key eq 'ALLOWED_COBRANDS' ) {
+                    $value = Dump( $allowed );
+                }
+
                 $option->value( $value );
                 $option->update;
 
@@ -1018,6 +1039,8 @@ sub edit_config : Path('config') : Args(0) {
     }
 
     $c->stash->{config} = \%config;
+
+    $c->stash->{cobrands} = FixMyStreet::Cobrand->get_allowed_cobrands();
 
     return 1;
 }

@@ -3,6 +3,7 @@ use base 'DBIx::Class::ResultSet';
 
 use strict;
 use warnings;
+use YAML;
 
 sub get_value {
     my $rs = shift;
@@ -14,6 +15,15 @@ sub get_value {
         my $r = $rs->find( { key => $key } );
         if ( $r ) {
             $result = $r->value;
+            if ( $key eq 'ALLOWED_COBRANDS' ) {
+                eval {
+                    $result = Load( $result );
+                };
+                if ( $@ ) {
+                    warn "Failed to load ALLOWED_COBRANDS: $@";
+                    $result = [];
+                }
+            }
             Memcached::set($mc_key, $result, 3600);
             return $result;
         }
