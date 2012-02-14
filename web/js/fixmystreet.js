@@ -213,6 +213,18 @@ $(function(){
         $('.content[role=main]').addClass('report-a-poblem-page');
         heightFix('#report-a-poblem-sidebar:visible', '.content.report-a-poblem-page', 26);
     }
-    //hide on mobile
-    $('.mobile #report-a-poblem-sidebar').hide();
+
+    //show/hide on mobile
+    $('.mobile #report-a-poblem-sidebar').after('<a href="#" class="rap-notes-trigger btn">How to send successful reports</a>').hide();
+    $('.mobile').on('click', '.rap-notes-trigger', function(e){
+        e.preventDefault();
+        $('.mobile .report-a-poblem-page').after('<div class="content rap-notes"></div>').hide();
+        $('#report-a-poblem-sidebar').appendTo('.rap-notes').show().after('<a href="#" class="rap-notes-close btn">close</a>');
+    });
+
+    $('.mobile').on('click', '.rap-notes-close', function(e){
+        e.preventDefault();
+        $('.mobile .report-a-poblem-page').show();
+        $('.rap-notes').hide();
+    });
 });
