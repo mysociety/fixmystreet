@@ -133,9 +133,9 @@
 #map_box{
   position: absolute;
   height: 25em;
-  width: 30em;
-  right: 0em;
-  top: 0em;
+  width: 29em;
+  right: 1em;
+  top: 0;
   z-index:1;
 }
 
@@ -212,9 +212,9 @@ textarea{
   }
   #report-a-poblem-sidebar {
     position:absolute;
-    left:29em;
+    left:28.5em;
     top:0;
-    width:15em;
+    width:15.25em;
     .sidebar-tips {
       background:#eeeeee;
       padding:1em;

@@ -4,13 +4,15 @@
         [% dist = tprintf("%.1f", (p.distance || 0) ) %]
         
         <li>
-            <a href="[% c.uri_for('/report', p.problem.id ) %]">[% p.problem.title | html %]</a>
-            <small>[% prettify_epoch( p.problem.confirmed_local.epoch, 1 ) %], [% dist %]km</small>
-            [% IF p.problem.is_fixed %]
-                <small>[% loc('(fixed)') %]</small>
-            [% END %]
+            <a href="[% c.uri_for('/report', p.problem.id ) %]">
+                <h4>[% p.problem.title | html %]</h4>
+                <small>[% prettify_epoch( p.problem.confirmed_local.epoch, 1 ) %], [% dist %]km</small>
+                [% IF p.problem.is_fixed %]
+                    <small>[% loc('(fixed)') %]</small>
+                [% END %]
+            </a>
         </li>
     [% END %]
 [% ELSE %]
-    <li>[% loc('No problems found.') %]</li>
+    <li><p>[% loc('No problems found.') %]</p></li>
 [% END %]
