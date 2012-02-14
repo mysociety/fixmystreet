@@ -399,7 +399,24 @@ input.red-btn{
   }
 }
   
-
+.button-right,
+a.button-right {
+  cursor:pointer;
+  font-size: 1em;
+  line-height: 1;
+  padding:0.5em 2em 0.5em 0.5em;
+  margin:0;
+  border:1px solid #999;  
+  color:#333;
+  background: #eee;
+  @include border-radius(4px);
+  &:hover{
+    color:#fff;
+    background:#777;
+    text-decoration: none;
+    border:1px solid #666;  
+  }
+}
 
 
 

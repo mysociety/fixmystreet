@@ -215,7 +215,7 @@ $(function(){
     }
 
     //show/hide on mobile
-    $('.mobile #report-a-poblem-sidebar').after('<a href="#" class="rap-notes-trigger btn">How to send successful reports</a>').hide();
+    $('.mobile #report-a-poblem-sidebar').after('<a href="#" class="rap-notes-trigger button-right">How to send successful reports</a>').hide();
     $('.mobile').on('click', '.rap-notes-trigger', function(e){
         e.preventDefault();
         $('.mobile .report-a-poblem-page').after('<div class="content rap-notes"></div>').hide();
