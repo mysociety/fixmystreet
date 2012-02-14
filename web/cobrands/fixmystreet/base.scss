@@ -238,6 +238,30 @@ fieldset{
   margin: 1em;
 }
 
+// input placeholders, these need to be on separate lines as if the browser
+// can't understand a selector it will invalidate the whole line.
+::-webkit-input-placeholder {
+  color: #888888;
+  font: {
+    style:italic;
+    size:0.9375em;
+  }
+}
+:-moz-placeholder {
+  color: #888888;
+  font: {
+    style:italic;
+    size:0.9375em;
+  }
+}
+:-ms-placeholder {
+  color: #888888;
+  font: {
+    style:italic;
+    size:0.9375em;
+  }
+}
+
 input[type=text],
 input[type=password],
 input[type=email],
@@ -247,15 +271,14 @@ textarea{
   margin: 0 0 0 -0.5em;
 }
 
-
 textarea{
   border: 0.125em solid #888888;
   @include border-radius(0.25em);
   display: block;
   font-size: 1em;
   line-height: 1.5em;
-  color: #888888;
   font-family: 'helvetica', 'arial',sans-serif;
+  min-height:8em;
 }
 
 input[type=text],
@@ -266,9 +289,7 @@ input[type=email] {
   display: block;
   font-size: 1em;
   line-height: 1.5em;
-  color: #888888;
 }
-
 
 label{
   display: block;
@@ -279,6 +300,47 @@ label{
     display: inline;
     padding: 0 2em 0 1em;
     font-weight: normal;
+  }
+}
+
+.form-box {
+  margin: 0 -2em 0.25em -2em;
+  background:#eeeeee;
+  padding:1em 2em 1em 2em;
+  max-width:25em;
+  .form-txt-submit-box {
+    min-height:3em;
+    input[type=password],
+    input[type=text] {
+      width: 69%;
+      float:left;
+    }
+    input[type=submit] {
+      float:right;
+      width:24%;
+      margin-right:0.25em;
+      padding-top:0.9em;
+      padding-bottom:0.8em;
+    }
+  }
+  >input[type=text] {
+    margin-bottom:1em;
+    // margin-top:1em;
+  }
+  .title {
+    font-size:1.25em;
+    margin:0.5em 0;
+  }
+  h5 {
+    margin:0;
+    font: {
+      size:1.125em;
+      weight:normal;
+    }
+    strong {
+      font-size:2em;
+      margin-right:0.25em;
+    }
   }
 }
 
@@ -413,11 +475,13 @@ input.red-btn{
 }
   
 .button-right,
-a.button-right {
+.button-left,
+a.button-right,
+a.button-left {
+  @include inline-block;
   cursor:pointer;
   font-size: 1em;
   line-height: 1;
-  padding:0.5em 2em 0.5em 0.5em;
   margin:0;
   border:1px solid #999;  
   color:#333;
@@ -429,6 +493,25 @@ a.button-right {
     text-decoration: none;
     border:1px solid #666;  
   }
+}
+.button-right,
+a.button-right,
+:hover.button-right,
+a:hover.button-right {
+  padding:1em 3em 1em 1em;
+  background-image: url(images/sprite.png);
+  background-repeat:no-repeat;
+  background-position:right -686px;
+}
+
+.button-left,
+a.button-left,
+:hover.button-left,
+a:hover.button-left {
+  padding:1em 1em 1em 3em;
+  background-image: url(images/sprite.png);
+  background-repeat:no-repeat;
+  background-position:-18px -802px;
 }
 
 
@@ -516,7 +599,6 @@ a.button-right {
 }
 
 
-
 // this is the user's logged in details or the login link etc
 #user-meta {
   ul {
@@ -524,6 +606,16 @@ a.button-right {
   }
 }
 
+
+// only on mobile, this is a sidebar on desk (#report-a-poblem-sidebar)
+a.rap-notes-trigger,
+a:hover.rap-notes-trigger {
+  display:block;
+  margin:0 1.25em 0 0.5em;
+}
+.rap-notes {
+  margin:1em 0;
+}
 
 
 // this is a bit of a hack to get some differentation between desk and mobile

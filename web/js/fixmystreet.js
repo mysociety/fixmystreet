@@ -210,21 +210,29 @@ $(function(){
      */
     //desktop
     if($('#report-a-poblem-sidebar:visible').length > 0){
-        $('.content[role=main]').addClass('report-a-poblem-page');
-        heightFix('#report-a-poblem-sidebar:visible', '.content.report-a-poblem-page', 26);
+        heightFix('#report-a-poblem-sidebar:visible', '.content', 26);
     }
 
     //show/hide on mobile
     $('.mobile #report-a-poblem-sidebar').after('<a href="#" class="rap-notes-trigger button-right">How to send successful reports</a>').hide();
     $('.mobile').on('click', '.rap-notes-trigger', function(e){
         e.preventDefault();
-        $('.mobile .report-a-poblem-page').after('<div class="content rap-notes"></div>').hide();
-        $('#report-a-poblem-sidebar').appendTo('.rap-notes').show().after('<a href="#" class="rap-notes-close btn">close</a>');
+        //check if we've already moved the notes
+        if($('.rap-notes').length > 0){
+            //if we have, show and hide .content
+            $('.mobile .content').hide();
+            $('.rap-notes').show();
+        }else{
+            //if not, move them and show, hiding .content
+            $('.mobile .content').after('<div class="content rap-notes"></div>').hide();
+            $('#report-a-poblem-sidebar').appendTo('.rap-notes').show().after('<a href="#" class="rap-notes-close button-left">BACK</a>');
+        }
     });
 
     $('.mobile').on('click', '.rap-notes-close', function(e){
+        //hide notes, show .content
         e.preventDefault();
-        $('.mobile .report-a-poblem-page').show();
+        $('.mobile .content').show();
         $('.rap-notes').hide();
     });
 });

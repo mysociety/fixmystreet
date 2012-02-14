@@ -205,32 +205,27 @@ textarea{
 
 
 /* Report a problem page*/
-.report-a-poblem-page {
-  width: 41.25em;
-  #map_box {
-    width:15em;
+
+#report-a-poblem-sidebar {
+  position:absolute;
+  left:29.5em;
+  top:2em;
+  width:15em;
+  z-index: -1;
+  @include box-shadow(rgba(0, 0, 0, 0.6) 0px 0px 4px 1px);
+  .sidebar-tips {
+    background:#eeeeee;
+    padding:1em;
+    font-size:0.75em;
   }
-  #report-a-poblem-main {
-    width: 27em;
-  }
-  #report-a-poblem-sidebar {
-    position:absolute;
-    left:28.5em;
-    top:0;
-    width:15.25em;
-    .sidebar-tips {
-      background:#eeeeee;
-      padding:1em;
-      font-size:0.75em;
-    }
-    .sidebar-notes {
-      background:#333333;
-      padding:1em;
-      color:#ffffff;
-      font-size:0.75em;
-    }
+  .sidebar-notes {
+    background:#333333;
+    padding:1em;
+    color:#ffffff;
+    font-size:0.75em;
   }
 }
+
 
 
 /* MEDIA QUERIES */

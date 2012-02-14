@@ -56,20 +56,20 @@
             [% END %]
 
 
-            <label for="form_title">[% loc('Subject:') %]</label>
-            <input type="text" value="[% report.title | html %]" name="title" id="form_title" required>
+            <label for="form_title">[% loc('Subject') %]</label>
+            <input type="text" value="[% report.title | html %]" name="title" id="form_title" placeholder="[% loc('Provide a title') %]" required>
 
             [% IF field_errors.detail %]
                 <p class='form-error'>[% field_errors.detail %]</p>
             [% END %]
 
 
-            <label for="form_detail">[% loc('Details:') %]</label>
-            <textarea name="detail" id="form_detail" required>[% report.detail | html %]</textarea>
+            <label for="form_detail">[% loc('Details') %]</label>
+            <textarea name="detail" id="form_detail" placeholder="[% loc('Please fill in details of the problem here') %]" required>[% report.detail | html %]</textarea>
 
             [% IF js %]
                 <div id="form_category_row">
-                    <label for="form_category">[% loc('Category:') %]</label>
+                    <label class="inline" for="form_category">[% loc('Category') %]</label>
                     <select name="category" id="form_category" required><option>[% loc('Loading...') %]</option></select>
                 </div>
             [% ELSE %]
@@ -104,7 +104,7 @@
                     [% END %]
                 [% END %]
                 
-                <label for="form_photo">[% loc('Photo:') %]</label>
+                <label class="inline" for="form_photo">[% loc('Photo') %]</label>
                 <input type="file" name="photo" id="form_photo">
             [% END %]
 
@@ -122,45 +122,43 @@
                     <p class='form-error'>[% field_errors.email %]</p>
                 [% END %]
 
-                <label for="form_email">[% loc('Your email:') %]</label>
+                <label for="form_email">[% loc('Your email') %]</label>
                 <input type="email" value="[% report.user.email | html %]" name="email" id="form_email" size="25" required>
 
                 <div id="form_sign_in">
-                    <h3>[% loc("Now to submit your report&hellip; do you have a FixMyStreet password?") %]</h3>
+                    <h3>[% loc("Now to submit your report&hellip;") %]</h3>
+                    <h2>[% loc("Do you have a FixMyStreet password?") %]</h2>
 
-                    <div id="form_sign_in_yes">
+                    <div id="form_sign_in_yes" class="form-box">
                         [% IF field_errors.password %]
                             <p class='form-error'>[% field_errors.password %]</p>
                         [% END %]
 
-                        <label class="n" for="password_sign_in">[% loc('<strong>Yes</strong>, I have a password:') %]</label>
-                        <input type="password" name="password_sign_in" id="password_sign_in" value="">
+                        <h5>[% loc('<strong>Yes</strong> I have a password') %]</h5>
 
-                        <p>
-                            <input type="checkbox" id="remember_me" name="remember_me" value='1'[% ' checked' IF remember_me %]>
-                            <label class="n" for="remember_me">[% loc('Keep me signed in on this computer') %]</label>
-                        </p>
-
-                        <p>
-                            <input type="submit" id="submit_sign_in" name="submit_sign_in" value="[% loc('Submit') %]">
-                        </p>
+                        <label class="hidden n" for="password_sign_in">[% loc('<strong>Yes</strong> I have a password') %]</label>
+                        <div class="form-txt-submit-box">
+                            <input type="password" name="password_sign_in" id="password_sign_in" placeholder="[% loc('Your password') %]" value="">
+                            <input class="green-btn" type="submit" id="submit_sign_in" name="submit_sign_in" value="[% loc('Submit') %]">
+                        </div>
+                        
+                        <input type="checkbox" id="remember_me" name="remember_me" value='1'[% ' checked' IF remember_me %]>
+                        <label class="n inline" for="remember_me">[% loc('Keep me signed in on this computer') %]</label>
                     </div>
 
-                    <div id="form_sign_in_no">
-                        <p>[% loc('<strong>No</strong>, let me confirm my report by email:') %]</p>
+                    <div id="form_sign_in_no" class="form-box">
+                        <h5>[% loc('<strong>No</strong> Let me confirm my report by email') %]</h5>
 
                         [% INCLUDE name_phone %]
                 
-                        <label for="password_register">[% loc('Enter a new password:') %]</label>
-                        <input type="password" name="password_register" id="password_register" value="">
-                            
+                        <label class="hidden" for="password_register">[% loc('Enter a new password (optional)') %]</label>
 
-                        <p><small>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</small></p>
+                        <p>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</p>
 
-                        <p>
-                            <input type="submit" id="submit_register" name="submit_register" value="[% loc('Submit') %]">
-                        </p>
-
+                        <div class="form-txt-submit-box">
+                            <input type="password" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a new password (optional)') %]">
+                            <input class="green-btn" type="submit" id="submit_register" name="submit_register" value="[% loc('Submit') %]">
+                        </div>
                     </div>
 
                 </div>
@@ -181,17 +179,16 @@
             <p class='form-error'>[% field_errors.name %]</p>
         [% END %]
 
-        <label for="form_name">[% loc('Your name:') %]</label>
-        <input type="text" class="validName" value="[% report.name | html %]" name="name" id="form_name">
+        <label class="hidden" for="form_may_show_nameme">[% loc('Your name') %]</label>
+        <input type="text" class="validName" value="[% report.name | html %]" name="name" id="form_name" placeholder="[% loc('Your name') %]">
 
         [%# if there is nothing in the name field then set check box as default on form %]
         <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF !report.anonymous %]>
-        <label for="form_may_show_name">[% loc('Show my name publicly') %]</label>
-        <p><small>[% loc('(we never show your email address or phone number)') %]</small></p>
+        <label class="title inline" for="form_may_show_name">[% loc('Show my name publicly') %]</label>
+        <p>[% loc('We never show your email address or phone number') %]</p>
 
 
-        <label for="form_phone">[% loc('Phone:') %]</label>
-        <input type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" size="15">
-        <p><small>[% loc('(optional)') %]</small></p>
+        <label class="hidden" for="form_phone">[% loc('Your phone number (optional)') %]</label>
+        <input type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number (optional)') %]">
     [% END %]
 </div>
