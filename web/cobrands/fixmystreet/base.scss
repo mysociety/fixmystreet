@@ -147,6 +147,32 @@ ol li {
   list-style:decimal;
 }
 
+ol.big-numbers {
+  padding: 0;
+  margin: 0;
+  counter-reset: li;
+  > li {
+    position: relative;
+    list-style: none;
+    padding:0 0 0 2.5em;
+    margin-bottom:2em;
+    &:before {
+      content: counter(li);
+      counter-increment: li;
+      position: absolute;
+      left: 0;
+      top:-0.2em;
+      color:#eeeeee;
+      line-height:1;
+      font: {
+        family: 'helvetica', 'arial', sans-serif;
+        weight:bold;
+        size:2.5em;
+      }
+    }
+  }
+}
+
 dl {
   margin: 0;
   padding: 0;
@@ -724,4 +750,125 @@ a:hover.rap-notes-trigger {
 // this is a bit of a hack to get some differentation between desk and mobile
 .desk-only {
   display:none !important;
+}
+
+
+
+/* Front page */
+#front-main {
+  text-align:center;
+  h1 {
+    
+  }
+  h2 {
+    font: {
+      style:italic;
+      family: 'helvetica', 'arial', sans-serif;
+      size:1.1875em;
+    }
+    color:#4d4d4d;
+  }
+  #postcodeForm {
+    @extend .full-width;
+    padding:1em;
+    background:$primary;
+    font-family: 'helvetica', 'arial', sans-serif;
+    label {
+      margin:0;
+    }
+    div {
+      display:table;
+      width:100%;
+      background:#fff;
+      border:1px solid #F3B11E;
+      input#pc {
+        display:table-cell;
+        margin:0;
+        padding:0.25em 2%;
+        width:82%;
+        border:none;
+        background:none;
+      }
+      input#submit {
+        display:table-cell;
+        border:none;
+        padding:0;
+        margin:0;
+        width:14%;
+        height:35px;
+        background:#000;
+        color:#fff;
+        text-transform:uppercase;
+        @include border-radius(0);
+      }
+    }
+  }
+  a#geolocate_link {
+    @include inline-block;
+    vertical-align:top;
+    background:#1a1a1a;
+    color:#C8C8C8;
+    padding:0.5em;
+    font: {
+      family: 'helvetica', 'arial', sans-serif;
+      size:0.8125em;
+    }
+    @include border-radius(0 0 0.25em 0.25em);
+    &:hover {
+      text-decoration:none;
+      background:#2a2a2a;
+    }
+  }
+}
+
+
+#front-howto {
+  #front_stats {
+    display:table;
+    width:100%;
+    background:$primary;
+    font-family: 'helvetica', 'arial', sans-serif;
+    div {
+      display:table-cell;
+      text-align:center;
+      padding:1em;
+      line-height:1.25em;
+      font: {
+        size:0.8125em;
+        weight:bold;
+      }
+      big {
+        display:block;
+        margin-bottom:0.5em;
+        font-size:1.5385em;
+      }
+    }
+  }
+}
+
+#front-recently {}
+
+#front-mobileapps {
+  @extend .full-width;
+  background:#333;
+  padding:1em;
+  @include box-shadow(inset rgba(0, 0, 0, 0.9) 0 0 8px);
+  h2 {
+    color:#fff;
+    margin-top:0;
+  }
+  ul {
+    @include list-reset-soft;
+    li {
+      border-bottom:1px solid #AFAFAF;
+      &:last-child {
+        border-bottom:none;
+      }
+      a {
+        display:block;
+        color:#fff;
+        padding:0.5em 0;
+      }
+    }
+  }
 }

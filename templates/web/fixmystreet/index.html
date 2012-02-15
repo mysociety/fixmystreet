@@ -4,60 +4,53 @@
     <p class="error">[% error %]</p>
 [% END %]
 
-<p id="expl">
-    [% 
-        subhead
-            = c.cobrand.moniker == 'southampton'
-            ? '(like graffiti, fly tipping, or broken paving slabs)'
-            : loc('(like graffiti, fly tipping, broken paving slabs, or street lighting)');
+
+<div id="front-main">
+    <h1>[% loc('Report, view, or discuss local problems') %]</h1>
+
+    <h2>[% loc('(like graffiti, fly tipping, broken paving slabs, or street lighting)') %]</h2>
+
+    [%
+        question
+            =  c.cobrand.enter_postcode_text()
+            || loc("Enter a nearby GB postcode, or street name and area");
     %]
-    
-    <strong>[% loc('Report, view, or discuss local problems') %]</strong>
-    
-    [% IF subhead != ' ' %]
-        <small>[% subhead %]</small>
-    [% END %]
-</p>
 
-[% TRY %][% INCLUDE 'front/news.html' %][% CATCH file %][% END %]
+    <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
+        <label for="pc">[% question %]:</label>
+        <div>
+            <input type="text" name="pc" value="" id="pc" size="10" maxlength="200" placeholder="e.g. ‘B1’ or ‘Hockley Birmingham’">
+            <input type="submit" value="[% loc('Go') %]" id="submit">
+        </div>
+    </form>
+</div>
 
-[%
-    question
-        =  c.cobrand.enter_postcode_text()
-        || loc("Enter a nearby GB postcode, or street name and area");
-%]
 
-<form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
-    <label for="pc">[% question %]:</label>
-    <span><input type="text" name="pc" value="" id="pc" size="10" maxlength="200">
-    <input type="submit" value="[% loc('Go') %]" id="submit">
-    </span>
-</form>
-
-<div id="front_intro">
-
+<div id="front-howto">
     <h2>[% loc('How to report a problem') %]</h2>
     
-    <ol>
+    <ol class="big-numbers">
         <li>[% question %]</li>
         <li>[% loc('Locate the problem on a map of the area') %]</li>
         <li>[% loc('Enter details of the problem') %]</li>
         <li>[% loc('We send it to the council on your behalf') %]</li>
     </ol>
     
+    <section class="full-width">
     [% INCLUDE "front/stats.html" %]
     [% TRY %][% INCLUDE "front/tips.html" %][% CATCH file %][% END %]
-
+    </section>
 </div>
+
+
 
 [% 
     recent_photos = c.cobrand.recent_photos(3);
     probs         = c.cobrand.recent();
 %]
 
-
 [% IF probs.size || recent_photos.size %]
-<div id="front_recent">
+<div id="front-recently">
     <h2>[% loc('Recently reported problems') %]</h2>
     [% IF recent_photos.size %]
         <p id="front_photos">
@@ -69,18 +62,48 @@
     [% END %]
 
     [% IF probs.size %]
-
-    
-        <ul id="nearby_lists">
+    <section class="full-width">
+        <ul class="issue-list-a">
         [% FOREACH p IN probs %]
             <li>
-                <a href="/report/[% p.id %]">[% p.title | html %]</a>
-                <small>[% prettify_epoch( p.confirmed_local.epoch, 1 ) %]</small>
+                <a href="/report/[% p.id %]">
+                    <div class="text">
+                        <h4>[% p.title | html %]</h4>
+                        <small>[% prettify_epoch( p.confirmed_local.epoch, 1 ) %]</small>
+                    </div>
+                </a>
             </li>    
         [% END %]
         </ul>
+    </section>
     [% END %]
 </div>
 [% END %]
+
+
+<div id="front-mobileapps">
+    <h2>Mobile apps</h2>
+
+    <ul>
+        <li><a href="http://itunes.apple.com/gb/app/fixmystreet/id297456545">iPhone</a></li>
+        <li><a href="http://itunes.apple.com/gb/app/streetreport/id371891859">iPhone Street Report</a></li>
+        <li><a href="https://market.android.com/details?id=com.android.fixmystreet">Android</a></li>
+        <li><a href="http://store.ovi.com/content/107557">Nokia</a></li>
+    </ul>
+    
+</div>
+
+<div id="">
+    <h4>[% loc('Are you a developer? Would you like to contribute to FixMyStreet?') %]</h4>
+    <p>[% loc('Our code is open source and <a href="http://github.com/mysociety/fixmystreet">available on GitHub</a>.') %]</p>
+
+    <h4>[% loc('Are you from a council? Would you like better integration with FixMyStreet?') %]</h4>
+    <p><a href="http://www.mysociety.org/fixmystreet-for-local-council-websites/">[% loc('Find out about FixMyStreet for councils') %]</a>.</p>
+</div>
+
+
+
+<!-- [% TRY %][% INCLUDE 'front/news.html' %][% CATCH file %][% END %] -->
+
 
 [% INCLUDE 'footer.html' %]
