@@ -30,7 +30,13 @@ function form_category_onchange() {
     });
 }
 
-
+/*
+ * general height fixing function
+ *
+ * elem1: element to check against
+ * elem2: target element
+ * offest: this will be added (if present) to the final value, useful for height errors
+ */
 function heightFix(elem1, elem2, offset){
     var h1 = $(elem1).height(),
         h2 = $(elem2).height();
@@ -41,6 +47,27 @@ function heightFix(elem1, elem2, offset){
         $(elem2).css({'min-height':h1+offset});
     }
 }
+
+
+/*
+ * very simple tab function
+ *
+ * elem: trigger element, must have an href attribute (so probably needs to be an <a>)
+ */
+function tabs(elem)
+{
+    var target = elem.attr('href');
+    if(!$(target).hasClass('open'))
+    {
+        //toggle class on nav
+        $('.tab-nav .active').removeClass('active');
+        elem.addClass('active');
+        //hide / show the right tab
+        $('.tab.open').removeClass('open').hide();
+        $(target).addClass('open').show();
+    }
+}
+
 
 $(function(){
     if(Modernizr.mq('only screen and (max-width:48em)')) {
@@ -234,5 +261,22 @@ $(function(){
         e.preventDefault();
         $('.mobile .content').show();
         $('.rap-notes').hide();
+    });
+
+
+    /*
+     * Tabs
+     */
+    //make initial tab active
+    $('.tab-nav a:first').addClass('active');
+    $('.tab:first').addClass('open');
+    
+    //hide other tabs
+    $('.tab').not('.open').hide();
+    
+    //set up click event
+    $(".tab-nav").on('click', 'a', function(e){
+        e.preventDefault();
+        tabs($(this));
     });
 });
