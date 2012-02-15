@@ -168,30 +168,55 @@ body {
 }
 
 // Wraps around #key-tools box
-.shadow-wrap{
+.shadow-wrap {
   position:fixed;
-  bottom: 0em;
-  margin-left: -1em;
+  bottom: 0;
   width: 29em;
   overflow: hidden;
   padding-top: 3em;
   // List sticks to the bottom of the page on desktop
-  ul#key-tools{
+  ul#key-tools {
     border-top: 0.25em solid $primary;
     @include box-shadow(-0em 0px 1em 1em #fff);
-    display: block;
-    overflow:hidden;
-    background: #f6f6f6;
-    li{
-      display: inline;
-      a{
-        font-family: 'helvetica', 'arial',sans-serif;
+    li {
+      border:none;
+      a {
         font-size: 0.75em;
         color:#888888;  
-        background: none;      
-        padding: 0.5em 0;
+        padding: 0.5em 1em 0.5em 0;
+        text-transform:none;
+        &.abuse {
+          background-image:url(images/sprite.png);
+          background-position:right -2935px;
+        }
+        &.feed {
+          background-image:url(images/sprite.png);
+          background-position:right -3074px;
+        }
+        &.chevron {
+          background-image:url(images/sprite.png);
+          background-position:right -3225px;
+        }
       }
     }
+  }
+}
+
+
+.big-green-banner {
+  right:-1.25em;
+  margin-left:-2em;
+  font-size:1.375em;
+  padding:1em 3em 1em 1em;
+  background: $contrast1 url(images/sprite.png) right -2188px no-repeat;
+  &:before {
+    right:0;
+    left:auto;
+    top:-0.5em;
+    position: absolute;
+    border-top: 0.5em solid transparent;
+    border-left: 0.5em solid #4B8304;
+    border-bottom:none;
   }
 }
 

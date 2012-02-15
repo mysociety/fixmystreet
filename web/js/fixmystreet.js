@@ -240,7 +240,7 @@ $(function(){
         heightFix('#report-a-poblem-sidebar:visible', '.content', 26);
     }
 
-    //show/hide on mobile
+    //show/hide notes on mobile
     $('.mobile #report-a-poblem-sidebar').after('<a href="#" class="rap-notes-trigger button-right">How to send successful reports</a>').hide();
     $('.mobile').on('click', '.rap-notes-trigger', function(e){
         e.preventDefault();
@@ -255,14 +255,17 @@ $(function(){
             $('#report-a-poblem-sidebar').appendTo('.rap-notes').show().after('<a href="#" class="rap-notes-close button-left">BACK</a>');
         }
     });
-
     $('.mobile').on('click', '.rap-notes-close', function(e){
-        //hide notes, show .content
         e.preventDefault();
+        //hide notes, show .content
         $('.mobile .content').show();
         $('.rap-notes').hide();
+        $('html, body').animate({scrollTop:0}, 1000);
     });
 
+    //move 'skip this step' link on mobile
+    $('.mobile #skip-this-step').hide();
+    $('.mobile #skip-this-step a').appendTo('#key-tools').addClass('chevron').wrap('<li>');
 
     /*
      * Tabs
