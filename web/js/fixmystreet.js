@@ -70,7 +70,7 @@ function tabs(elem)
 
 
 $(function(){
-    if(Modernizr.mq('only screen and (max-width:48em)')) {
+    if(Modernizr.mq('only screen and (max-width:47em)')) {
         $('html').addClass('mobile');
     }
 
@@ -288,7 +288,7 @@ $(function(){
      */
     $('.mobile').on('click', '#nav-link', function(e){
         e.preventDefault();
-        var foo = $('.wrapper').height() - $('main-nav').height();
+        var foo = $('.wrapper').height() - 500;
         $('html, body').animate({scrollTop:foo}, 1000);
     });
 });

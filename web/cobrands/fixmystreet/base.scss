@@ -445,6 +445,7 @@ label{
 
 // this is the user's logged in details or the login link etc
 .wrapper {
+  width:100%;
   display:table;
   caption-side:bottom;
 }
@@ -688,7 +689,9 @@ a:hover.button-left {
 a.rap-notes-trigger,
 a:hover.rap-notes-trigger {
   display:block;
-  margin:0 1.25em 0 0.5em;
+  width:90%;
+  padding-left:5%;
+  padding-right:5%;
 }
 .rap-notes {
   margin:1em 0;
