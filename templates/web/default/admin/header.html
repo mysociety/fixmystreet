@@ -20,7 +20,7 @@ p.cobrand-entry { padding-left: 15.5em; }
 </head>
 <body>
 
-    <strong>[% loc('FixMyStreet admin:') %]</strong>
+    <strong>[% loc('FixMyStreet admin:') %][% ' ' _ c.cobrand.moniker _ ' cobrand' IF c.cobrand.monkiker != 'fixmystreet' %]</strong>
     [%- FOREACH link IN allowed_links %]
     <a href="[% c.uri_for( link ) %]">[% allowed_pages.$link.0 %]</a>
     [%- END %]

@@ -110,6 +110,8 @@ subtest 'check summary counts' => sub {
     ok $mech->host('barnet.fixmystreet.com');
 
     $mech->get_ok('/admin');
+
+    $mech->content_contains( 'barnet cobrand', 'using barnet cobrand admin' ); 
     $mech->title_like(qr/Summary/);
 
     my ($num_live) = $mech->content =~ /(\d+)<\/strong> live problems/;
@@ -125,9 +127,13 @@ subtest 'check summary counts' => sub {
 
     $mech->get_ok('/admin');
 
-    $mech->content_contains( ($num_live+1) . "</strong> live problems" );
-    $mech->content_contains( ($num_alerts+1) . " confirmed alerts" );
-    $mech->content_contains( ($num_qs+1) . " questionnaires sent" );
+    $mech->content_contains( ($num_live+1) . "</strong> live problems",
+        'problem count for cobrand increased by changing problem cobrand' );
+    $mech->content_contains( ($num_alerts+1) . " confirmed alerts",
+        'alert count for cobrand increased by changing alert cobrand' );
+    $mech->content_contains( ($num_qs+1) . " questionnaires sent",
+        'questionnaire count for cobrand by changing questionnaire
+        cobrand' );
 
     $report->council(2504);
     $report->cobrand('');
