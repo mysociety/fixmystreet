@@ -1,4 +1,4 @@
-[% INCLUDE 'header.html', title => '' %]
+[% INCLUDE 'header.html', title => '' , mainclass => 'fullwidthpage', bodyclass => 'frontpage' %]
 
 [% IF error %]
     <p class="error">[% error %]</p>
@@ -6,23 +6,25 @@
 
 
 <div id="front-main">
-    <h1>[% loc('Report, view, or discuss local problems') %]</h1>
+    <div id="front-main-container">
+        <h1>[% loc('Report, view, or discuss local problems') %]</h1>
 
-    <h2>[% loc('(like graffiti, fly tipping, broken paving slabs, or street lighting)') %]</h2>
+        <h2>[% loc('(like graffiti, fly tipping, broken paving slabs, or street lighting)') %]</h2>
 
-    [%
-        question
-            =  c.cobrand.enter_postcode_text()
-            || loc("Enter a nearby GB postcode, or street name and area");
-    %]
+        [%
+            question
+                =  c.cobrand.enter_postcode_text()
+                || loc("Enter a nearby GB postcode, or street name and area");
+        %]
 
-    <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
-        <label for="pc">[% question %]:</label>
-        <div>
-            <input type="text" name="pc" value="" id="pc" size="10" maxlength="200" placeholder="e.g. ‘B1’ or ‘Hockley Birmingham’">
-            <input type="submit" value="[% loc('Go') %]" id="submit">
-        </div>
-    </form>
+        <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
+            <label for="pc">[% question %]:</label>
+            <div>
+                <input type="text" name="pc" value="" id="pc" size="10" maxlength="200" placeholder="e.g. ‘B1’ or ‘Hockley Birmingham’">
+                <input type="submit" value="[% loc('Go') %]" id="submit">
+            </div>
+        </form>
+    </div>
 </div>
 
 

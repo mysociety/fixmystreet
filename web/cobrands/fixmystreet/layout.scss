@@ -139,6 +139,9 @@ body {
   margin-bottom: -1em;
   @include box-shadow(0px 0px 6px 1px #000);
 }
+.fullwidthpage {
+  width: 57em;
+}
 
 #map_box{
   position: absolute;
@@ -225,6 +228,11 @@ body {
   width: 29em;
 }
 
+.fullwidthpage {
+  .full-width {
+    width:58em;
+  }
+}
 
 /*FORMS*/
 input[type=text],
@@ -256,6 +264,86 @@ textarea{
     font-size:0.75em;
   }
 }
+
+
+/* Frontpage */
+body.frontpage {
+  background:#1a1a1a;
+  .wrapper {
+    >.container {
+      position:static;
+    }
+    .content {
+      padding-top:15em;
+    }
+  }
+  .nav-wrapper-2{
+    background: #1a1a1a;
+    height:6em;
+  }
+  #header{
+    #site-logo{
+      margin-top:2em;
+      width: 300px;
+      height: 60px;
+      background-position:-2px -108px;
+    }
+  }
+  #user-meta {
+    display:none;
+  }
+}
+
+#front-main {
+  background:$primary;
+  position:absolute;
+  width:100%;
+  left:0;
+  top:8em;
+  #front-main-container {
+    width: 57em;
+    margin:0 auto;
+  }
+  h2 {
+    font-style:normal;
+    margin:0;
+    color:#222;
+  }
+  #postcodeForm {
+    float:right;
+    overflow:hidden;
+    width:47em;
+    margin-right:0.5em;
+    label {
+      float:left;
+      margin-top:0.25em;
+    }
+    div {
+      float:right;
+      width:20em;
+      input#pc {
+        padding:0.25em 0.5em;
+        width:16em;
+      }
+      input#submit {
+        width:3em;
+      }
+    }
+  }
+  a#geolocate_link {
+    background:none;
+    color:#222;
+    float:right;
+    margin:-1em 7.5em 0.5em 0;
+    &:hover {
+      text-decoration:underline;
+      background:none;
+    }
+  }
+}
+
+
+
 
 
 

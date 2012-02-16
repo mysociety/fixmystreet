@@ -27,7 +27,7 @@
         [% INCLUDE 'tracking_code.html' %]
 
     </head>
-    <body>
+    <body class="[% "$bodyclass" | html IF bodyclass %]">
 
     <div class="wrapper">
 
@@ -39,7 +39,7 @@
         </header>
 
         <div class="container">
-            <div class="content" role="main">
+            <div class="content [% "$mainclass" | html IF mainclass %]" role="main">
                 <div id="user-meta">
                     <ul>
                         [% IF c.user_exists %]
