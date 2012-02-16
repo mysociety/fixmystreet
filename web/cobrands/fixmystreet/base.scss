@@ -443,6 +443,20 @@ label{
   }
 }
 
+// this is the user's logged in details or the login link etc
+.wrapper {
+  display:table;
+  caption-side:bottom;
+}
+#user-meta {
+  display:table-caption;
+  p {
+    background:$primary;
+    padding:1em;
+  }
+}
+
+
 // #key-tools is the list that's pulled out an stick to the bottom of the page of desktop, below is mostly just aesthetic
 
 .shadow-wrap {
@@ -666,14 +680,6 @@ a:hover.button-left {
   #map {
     width:100%;
     height:100%;
-  }
-}
-
-
-// this is the user's logged in details or the login link etc
-#user-meta {
-  ul {
-    @include list-reset-soft;
   }
 }
 

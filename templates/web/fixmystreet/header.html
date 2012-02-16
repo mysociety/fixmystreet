@@ -38,17 +38,18 @@
             </div>
         </header>
 
+        <div id="user-meta">
+            <p>
+                [% IF c.user_exists %]
+                    [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %] | 
+                    <a href="/auth/sign_out">[% loc('sign out') %]</a>
+                [% ELSE %]
+                    <a href="/auth">[% loc('Sign in') %]</a>
+                [% END %]
+            </p>
+        </div>
+
         <div class="container">
             <div class="content [% "$mainclass" | html IF mainclass %]" role="main">
-                <div id="user-meta">
-                    <ul>
-                        [% IF c.user_exists %]
-                            <li>[% tprintf(loc('Hi %s'), c.user.name || c.user.email) %]
-                            <li class="last"><a href="/auth/sign_out">[% loc('Sign out') %]</a></li>
-                        [% ELSE %]
-                            <li><a href="/auth">[% loc('Sign in') %]</a></li>
-                        [% END %]
-                    </ul>
-                </div>
 
     <!-- [% INCLUDE 'debug_header.html' %] -->

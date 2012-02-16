@@ -153,20 +153,18 @@ body {
 }
 
 #user-meta{
-  position: absolute;
-  top: -2em;
-  background:#fff;
-  height:3em;
-  z-index: -1;
-  @include box-shadow(rgba(0, 0, 0, 0.6) 0px 0px 4px 1px);
-  ul {
-    display:block;
+  display:block;
+  position: relative;
+  max-width: 57em;
+  margin:0 auto;
+  p {
+    @include inline-block;
+    position:absolute;
+    top:1em;
     height:2em;
-    padding:0 0.5em;
-    li {
-      float:left;
-      padding:0.25em 0.25em;
-    }
+    background:#fff;
+    padding:0.25em 0.5em;
+    @include box-shadow(rgba(0, 0, 0, 0.6) 0px 0px 4px 1px);
   }
 }
 
@@ -271,10 +269,11 @@ body.frontpage {
   background:#1a1a1a;
   .wrapper {
     >.container {
-      position:static;
+      width:100%;
     }
     .content {
-      padding-top:12em;
+      padding-top:13em;
+      margin:0 auto;
     }
   }
   .nav-wrapper-2{
@@ -282,6 +281,7 @@ body.frontpage {
     height:6em;
   }
   #header{
+    height:10em;
     #site-logo{
       margin-top:2em;
       width: 300px;
@@ -290,7 +290,10 @@ body.frontpage {
     }
   }
   #user-meta {
-    display:none;
+    top:-3em;
+    p {
+      right:0;
+    }
   }
 }
 
@@ -299,7 +302,7 @@ body.frontpage {
   position:absolute;
   width:100%;
   left:0;
-  top:8em;
+  top:1em;
   #front-main-container {
     width: 57em;
     margin:0 auto;
@@ -310,16 +313,13 @@ body.frontpage {
     color:#222;
   }
   #postcodeForm {
-    float:right;
     overflow:hidden;
-    width:47em;
     margin-right:0.5em;
     label {
-      float:left;
-      margin-top:0.25em;
+      margin:0.5em 0;
     }
     div {
-      float:right;
+      margin:0 auto;
       width:20em;
       input#pc {
         padding:0.25em 0.5em;
@@ -333,8 +333,7 @@ body.frontpage {
   a#geolocate_link {
     background:none;
     color:#222;
-    float:right;
-    margin:-1em 7.5em 0.5em 0;
+    margin:-1em 0 0.5em 0;
     &:hover {
       text-decoration:underline;
       background:none;
