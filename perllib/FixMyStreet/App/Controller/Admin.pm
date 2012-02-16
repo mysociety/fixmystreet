@@ -1026,7 +1026,9 @@ sub edit_config : Path('config') : Args(0) {
                     FixMyStreet::Map::reset();
                 }
 
-                Memcached::set( $option->key, $option->value, 24 * 60 * 60 );
+                $value = $allowed if $option->key eq 'ALLOWED_COBRANDS';
+
+                Memcached::set( $option->key, $value, 24 * 60 * 60 );
             }
 
             $config{$option->key} = $option->value;
