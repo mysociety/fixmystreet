@@ -26,7 +26,7 @@ __PACKAGE__->config(
         html      => \&html_filter,
     },
     COMPILE_EXT => '.ttc',
-    STAT_TTL    => FixMyStreet->config('STAGING_SITE') ? 1 : 86400,
+    STAT_TTL    => FixMyStreet::App->get_conf('STAGING_SITE') ? 1 : 86400,
 );
 
 =head1 NAME
