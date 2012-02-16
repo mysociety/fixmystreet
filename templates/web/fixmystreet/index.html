@@ -27,87 +27,87 @@
     </div>
 </div>
 
+<div class="front-tablewrapper">
+    <div id="front-howto">
+        <h2>[% loc('How to report a problem') %]</h2>
+        
+        <ol class="big-numbers">
+            <li>[% question %]</li>
+            <li>[% loc('Locate the problem on a map of the area') %]</li>
+            <li>[% loc('Enter details of the problem') %]</li>
+            <li>[% loc('We send it to the council on your behalf') %]</li>
+        </ol>
+        
+        <section class="full-width">
+        [% INCLUDE "front/stats.html" %]
+        [% TRY %][% INCLUDE "front/tips.html" %][% CATCH file %][% END %]
+        </section>
+    </div>
 
-<div id="front-howto">
-    <h2>[% loc('How to report a problem') %]</h2>
-    
-    <ol class="big-numbers">
-        <li>[% question %]</li>
-        <li>[% loc('Locate the problem on a map of the area') %]</li>
-        <li>[% loc('Enter details of the problem') %]</li>
-        <li>[% loc('We send it to the council on your behalf') %]</li>
-    </ol>
-    
-    <section class="full-width">
-    [% INCLUDE "front/stats.html" %]
-    [% TRY %][% INCLUDE "front/tips.html" %][% CATCH file %][% END %]
-    </section>
+
+    [% 
+        recent_photos = c.cobrand.recent_photos(3);
+        probs         = c.cobrand.recent();
+    %]
+
+    [% IF probs.size || recent_photos.size %]
+    <div id="front-recently">
+        <h2>[% loc('Recently reported problems') %]</h2>
+
+<!--         [% IF recent_photos.size %]
+            <p id="front_photos">
+            [% FOREACH p IN recent_photos %]
+                <a href="/report/[% p.id %]"><img border="0" height="100"
+                    src="/photo?tn=1;id=[% p.id %]" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
+            [% END %]
+            </p>
+        [% END %] -->
+
+        [% IF probs.size %]
+        <section class="full-width">
+            <ul class="issue-list-a">
+            [% FOREACH p IN probs %]
+                <li>
+                    <a href="/report/[% p.id %]">
+                        <div class="text">
+                            <h4>[% p.title | html %]</h4>
+                            <small>[% prettify_epoch( p.confirmed_local.epoch, 1 ) %]</small>
+                        </div>
+                    </a>
+                </li>    
+            [% END %]
+            </ul>
+        </section>
+        [% END %]
+    </div>
+    [% END %]
 </div>
 
+<div class="front-tablewrapper bordered">
+    <div id="front-mobileapps">
+        <h2>Mobile apps</h2>
 
-
-[% 
-    recent_photos = c.cobrand.recent_photos(3);
-    probs         = c.cobrand.recent();
-%]
-
-[% IF probs.size || recent_photos.size %]
-<div id="front-recently">
-    <h2>[% loc('Recently reported problems') %]</h2>
-    [% IF recent_photos.size %]
-        <p id="front_photos">
-        [% FOREACH p IN recent_photos %]
-            <a href="/report/[% p.id %]"><img border="0" height="100"
-                src="/photo?tn=1;id=[% p.id %]" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
-        [% END %]
-        </p>
-    [% END %]
-
-    [% IF probs.size %]
-    <section class="full-width">
-        <ul class="issue-list-a">
-        [% FOREACH p IN probs %]
-            <li>
-                <a href="/report/[% p.id %]">
-                    <div class="text">
-                        <h4>[% p.title | html %]</h4>
-                        <small>[% prettify_epoch( p.confirmed_local.epoch, 1 ) %]</small>
-                    </div>
-                </a>
-            </li>    
-        [% END %]
+        <ul>
+            <li><a class="m-app-iphone" href="http://itunes.apple.com/gb/app/fixmystreet/id297456545">iPhone</a></li>
+            <li><a class="m-app-droid" href="https://market.android.com/details?id=com.android.fixmystreet">Android</a></li>
+            <li><a class="m-app-nokia" href="http://store.ovi.com/content/107557">Nokia</a></li>
+            <li><a class="m-app-iphone-streetreport" href="http://itunes.apple.com/gb/app/streetreport/id371891859">iPhone Street Report</a></li>
         </ul>
-    </section>
-    [% END %]
+    </div>
+
+    <div id="front-ads">
+        <ul>
+            <li>
+                <h4>[% loc('Are you a developer?') %]</h4>
+                <p>[% loc('Would you like to contribute to FixMyStreet? Our code is open source and <a href="http://github.com/mysociety/fixmystreet">available on GitHub</a>.') %]</p>
+            </li>
+            <li>
+                <h4>[% loc('Are you from a council?') %]</h4>
+                <p>[% loc('Would you like better integration with FixMyStreet? <a href="http://www.mysociety.org/fixmystreet-for-local-council-websites/">Find out about FixMyStreet for councils</a>.') %]</p>
+            </li>
+        </ul>
+    </div>
 </div>
-[% END %]
-
-
-<div id="front-mobileapps">
-    <h2>Mobile apps</h2>
-
-    <ul>
-        <li><a href="http://itunes.apple.com/gb/app/fixmystreet/id297456545">iPhone</a></li>
-        <li><a href="http://itunes.apple.com/gb/app/streetreport/id371891859">iPhone Street Report</a></li>
-        <li><a href="https://market.android.com/details?id=com.android.fixmystreet">Android</a></li>
-        <li><a href="http://store.ovi.com/content/107557">Nokia</a></li>
-    </ul>
-    
-</div>
-
-<div id="front-ads">
-    <ul>
-        <li>
-            <h4>[% loc('Are you a developer?') %]</h4>
-            <p>[% loc('Would you like to contribute to FixMyStreet? Our code is open source and <a href="http://github.com/mysociety/fixmystreet">available on GitHub</a>.') %]</p>
-        </li>
-        <li>
-            <h4>[% loc('Are you from a council?') %]</h4>
-            <p>[% loc('Would you like better integration with FixMyStreet? <a href="http://www.mysociety.org/fixmystreet-for-local-council-websites/">Find out about FixMyStreet for councils</a>.') %]</p>
-        </li>
-    </ul>
-</div>
-
 
 
 <!-- [% TRY %][% INCLUDE 'front/news.html' %][% CATCH file %][% END %] -->

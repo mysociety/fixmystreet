@@ -274,7 +274,7 @@ body.frontpage {
       position:static;
     }
     .content {
-      padding-top:15em;
+      padding-top:12em;
     }
   }
   .nav-wrapper-2{
@@ -338,6 +338,105 @@ body.frontpage {
     &:hover {
       text-decoration:underline;
       background:none;
+    }
+  }
+}
+
+.front-tablewrapper {
+  display:table;
+  width:100%;
+  padding:1em 0;
+  >div {
+    display:table-cell;
+    width:50%;
+  }
+  #front-howto,
+  #front-mobileapps {
+    border-right:1em solid #fff;
+  }
+  #front-recently,
+  #front-ads {
+    border-left:1em solid #fff;
+  }
+  .full-width {
+    width:auto;
+    margin:0;
+  }
+}
+.bordered {
+  margin:0 -1em;
+  padding:0 1em;
+  width:auto;
+  border-top:0.25em solid $primary;
+}
+
+#front-howto {
+  #front_stats {
+    background:none;
+    border-top:0.25em solid $primary;
+    padding-top:1em;
+    div {
+      big {
+        color:$primary;
+        font-size:3.2308em;
+      }
+    }
+  }
+}
+
+#front-mobileapps {
+  background:none;
+  padding:0;
+  @include box-shadow(inset rgba(0, 0, 0, 0) 0 0 0);
+  h2 {
+    color:#222;
+    margin-top:0;
+  }
+  ul {
+    li {
+      border-bottom:none;
+      float:left;
+      margin:0 1em 1em 0;
+      a {
+        color:#222;
+        padding:0;
+        width: 96px;
+        height: 32px;
+        margin:0 auto;
+        text-indent: -999999px;
+        background: url(images/sprite.png) -12px -3610px no-repeat;
+        @include opacity(0.8);
+        &:hover {
+          @include opacity(1);
+        }
+        &.m-app-iphone {
+          background-position: -12px -3610px;
+        }
+        &.m-app-iphone-streetreport {
+          background-position: -12px -3678px;
+          height:50px;
+        }
+        &.m-app-droid {
+          background-position: -12px -3756px;
+        }
+        &.m-app-nokia {
+          background-position: -12px -3820px;
+          width:74px;
+        }
+      }
+    }
+  }
+}
+
+#front-ads {
+  ul {
+    display:table;
+    li {
+      display:table-cell;
+      border-bottom:none;
+      &:last-child {
+        border-left:1.25em solid #fff;
+      }
     }
   }
 }
