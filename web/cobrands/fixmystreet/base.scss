@@ -846,7 +846,12 @@ a:hover.rap-notes-trigger {
   }
 }
 
-#front-recently {}
+#front-recently {
+  .issue-list-a {
+    border-bottom:none;
+    margin-bottom:0;
+  }
+}
 
 #front-mobileapps {
   @extend .full-width;
@@ -868,6 +873,24 @@ a:hover.rap-notes-trigger {
         display:block;
         color:#fff;
         padding:0.5em 0;
+      }
+    }
+  }
+}
+
+#front-ads {
+  ul {
+    @include list-reset-soft;
+    li {
+      border-bottom:1px solid #AFAFAF;
+      &:last-child {
+        border-bottom:none;
+      }
+      h4 {
+        margin:0.75em 0 0.25em 0;
+      }
+      p {
+        font-size:0.75em;
       }
     }
   }
