@@ -282,4 +282,13 @@ $(function(){
         e.preventDefault();
         tabs($(this));
     });
+
+    /*
+     * Skip to nav on mobile
+     */
+    $('.mobile').on('click', '#nav-link', function(e){
+        e.preventDefault();
+        var foo = $('.wrapper').height() - $('main-nav').height();
+        $('html, body').animate({scrollTop:foo}, 1000);
+    });
 });
