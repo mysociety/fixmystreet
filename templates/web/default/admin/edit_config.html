@@ -25,28 +25,53 @@
         <fieldset>
             <legend>Allowed Cobrands</legend>
 
-            <p class="cobrand-entry">
-            Cobrand Name : Cobrand host ( optional )
+            <p>
+            This is a list of the cobrands that can be displayed on the
+            site. By default the name of the cobrand is matched against
+            the hostname ( so the fixmypark cobrand will be used of the
+            host is http://www.fixmypark.com/ but not for
+            http://www.fixmystadium.com/ ). You can override this by
+            putting the match string to use in the second column.
             </p>
+
+            <p class="cobrand-entry">
+            <table>
+                <thead>
+                    <tr>
+                        <td>Cobrand Name</td>
+                        <td>Cobrand host ( optional )</td>
+                    </tr>
+                </thead>
+                <tbody>
             [% IF cobrands.size %] 
                 [% FOREACH cobrand IN cobrands %]
-                    <p class="cobrand-entry">
-                    <input id="cobrand_name_[% loop.index %]"
+                <tr>
+                    <td>
+                        <input id="cobrand_name_[% loop.index %]"
                     name="cobrand_name_[% loop.index %]" value="[%
-                    cobrand.moniker %]" />  :
+                    cobrand.moniker %]" /> 
+                    </td>
+                    <td>
                     <input id="cobrand_host_[% loop.index %]"
                     name="cobrand_host_[% loop.index %]" value="[%
                     cobrand.host IF cobrand.host != cobrand.moniker %]"
                     /> [% '<strong id="add_allowed_row">+</strong>' IF loop.last %]
-                    </p>
+                    </td>
+                </tr>
                 [% END %]
             [% ELSE %]
-                    <p class="cobrand-entry">
-                    <input id="cobrand_name_0" name="cobrand_name_0" />  :
-                    <input id="cobrand_host_0" name="cobrand_host_0" /> 
-                    <strong id="add_allowed_row">+</strong>'
-                    </p>
+                    <tr>
+                        <td>
+                        <input id="cobrand_name_0" name="cobrand_name_0" />  :
+                        </td>
+                        <td>
+                            <input id="cobrand_host_0" name="cobrand_host_0" /> 
+                            <strong id="add_allowed_row">+</strong>'
+                        </td>
+                    </tr>
             [% END %]
+                </tbody>
+            </table>
         </fieldset>
 
         <fieldset>
