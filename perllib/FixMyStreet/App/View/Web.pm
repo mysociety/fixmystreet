@@ -26,8 +26,15 @@ __PACKAGE__->config(
         html      => \&html_filter,
     },
     COMPILE_EXT => '.ttc',
-    STAT_TTL    => FixMyStreet::App->get_conf('STAGING_SITE') ? 1 : 86400,
+    STAT_TTL    => 1,
 );
+
+
+sub change_ttl {
+    my ( $self, $ttl ) = @_;
+
+    $self->{template}->{SERVICE}->{CONTEXT}->{LOAD_TEMPLATES}->[0]->{STAT_TTL} = $ttl;
+}
 
 =head1 NAME
 

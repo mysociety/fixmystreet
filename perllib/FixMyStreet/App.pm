@@ -149,6 +149,10 @@ sub setup_request {
 
     my $cobrand = $c->cobrand;
 
+    $c->view('Web')->change_ttl(
+        FixMyStreet::App->get_conf('STAGING_SITE') ? 1 : 86400,
+    );
+
     # append the cobrand templates to the include path
     $c->stash->{additional_template_paths} =
       [ $cobrand->path_to_web_templates->stringify ]
@@ -202,7 +206,7 @@ sub get_conf {
     } else {
         if ( $value = Memcached::get( $key ) ) {
             return $value;
-        } elsif ( $value = FixMyStreet::App->model('DB::Config')->get_value( $key ) ) {
+        } elsif ( $value = $self->model('DB::Config')->get_value( $key ) ) {
             Memcached::set( $key, $value, 24 * 60 * 60 );
             return $value;
         }
