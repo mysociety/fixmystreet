@@ -55,14 +55,15 @@
     <h2>[% loc( 'Provide an update') %]</h2>
 
     [% IF c.cobrand.moniker != 'emptyhomes' %]
-    <p><small>[% loc( 'Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href="/faq#privacy">privacy policy</a>' ) %]</small></p>
+    <div class="general-sidebar-notes">
+        <p>[% loc( 'Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href="/faq#privacy">privacy policy</a>' ) %]</p>
+    </div>
     [% END %]
 
     [% INCLUDE 'errors.html' %]
 
     <form method="post" action="[% c.uri_for( '/report/update' ) %]" name="updateForm" class="validate"[% IF c.cobrand.allow_photo_upload %] enctype="multipart/form-data"[% END %]>
         <fieldset>
-
             <input type="hidden" name="submit_update" value="1">
             <input type="hidden" name="id" value="[% problem.id | html %]">
 
@@ -70,11 +71,11 @@
                 <div class='form-error'>[% field_errors.update %]</div>
             [% END %]
             
-            <label for="form_update">[% loc( 'Update:' ) %]</label>
-            <textarea name="update" id="form_update" required>[% update.text | html %]</textarea>
+            <label for="form_update">[% loc( 'Update' ) %]</label>
+            <textarea name="update" id="form_update" placeholder="[% loc('Please write your update here') %]" required>[% update.text | html %]</textarea>
 
             [% IF c.user && c.user.belongs_to_council( problem.council ) %]
-                <label for="form_state">[% loc( 'State:' ) %]</label>
+                <label for="form_state">[% loc( 'State' ) %]</label>
                 <select name="state" id="form_state">
                 [% FOREACH state IN [ ['confirmed', loc('Open')], ['investigating',
                 loc('Investigating')], ['planned', loc('Planned')], ['in progress',
@@ -106,7 +107,7 @@
                 <p>[% loc('You have already attached a photo to this update, attaching another one will replace it.') %]</p>
                 <input type="hidden" name="upload_fileid" value="[% upload_fileid %]">
             [% END %]
-                <label for="form_photo">[% loc('Photo:') %]</label>
+                <label for="form_photo">[% loc('Photo') %]</label>
                 <input type="file" name="photo" id="form_photo">
             </div>
         [% END %]
@@ -124,37 +125,41 @@
                 <p class='form-error'>[% field_errors.email %]</p>
             [% END %]
 
-            <label for="form_rznvy">[% loc('Your email:' ) %]</label>
+            <label for="form_rznvy">[% loc('Your email address' ) %]</label>
             <input type="email" name="rznvy" id="form_rznvy" value="[% update.user.email | html %]" required>
 
             <div id="form_sign_in">
-                <h3>[% loc("Now to submit your update&hellip; do you have a FixMyStreet password?") %]</h3>
+                <h3>[% loc("Now to submit your report&hellip;") %]</h3>
+                <h2>[% loc("Do you have a FixMyStreet password?") %]</h2>
 
-                <div id="form_sign_in_yes">
+                <div id="form_sign_in_yes" class="form-box">
                     [% IF field_errors.password %]
                         <p class='form-error'>[% field_errors.password %]</p>
                     [% END %]
 
-                    <label class="n" for="password_sign_in">[% loc('<strong>Yes</strong>, I have a password:') %]</label>
-                    <input type="password" name="password_sign_in" id="password_sign_in" value="">
+                    <h5>[% loc('<strong>Yes</strong> I have a password') %]</h5>
+
+                    <label class="hidden n" for="password_sign_in">[% loc('Yes I have a password') %]</label>
+                    <div class="form-txt-submit-box">
+                        <input type="password" name="password_sign_in" id="password_sign_in" value="" placeholder="[% loc('Your password') %]">
+                        <input class="green-btn" type="submit" name="submit_sign_in" id="submit_sign_in" value="[% loc('Post') %]">
+                    </div>
 
                     <input type="checkbox" id="remember_me" name="remember_me" value='1'[% ' checked' IF remember_me %]>
                     <label class="inline n" for="remember_me">[% loc('Keep me signed in on this computer') %]</label>
-                    <input type="submit" name="submit_sign_in" id="submit_sign_in" value="[% loc('Post') %]">
                 </div>
-                <div id="form_sign_in_no">
-                    <p>[% loc('<strong>No</strong>, let me confirm my update by email:') %]</p>
+                <div id="form_sign_in_no" class="form-box">
+                    <h5>[% loc('<strong>No</strong> Let me confirm my update by email') %]</h5>
 
                     [% INCLUDE name %]
                     
-                    <label for="password_register">[% loc('Enter a new password:') %]</label>
-                    <input type="password" name="password_register" id="password_register" value="">
+                    <label class="hidden" for="password_register">[% loc('Enter a new password (optional)') %]</label>
 
-                    <p><small>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</small></p>
-
-                    <input type="submit" name="submit_register" id="submit_register" value="[% loc('Post') %]">
+                    <div class="form-txt-submit-box">
+                        <input type="password" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a new password (optional)') %]">
+                        <input class="green-btn" type="submit" name="submit_register" id="submit_register" value="[% loc('Post') %]">
+                    </div>
                 </div>
-
             </div>
 
         [% END %]
@@ -171,15 +176,20 @@
         <p class='form-error'>[% field_errors.name %]</p>
     [% END %]
 
-    <label for="form_name">[% loc('Your name:') %]</label>
-    <input type="text" name="name" id="form_name" value="[% update.name || c.user.name | html %]" size="25">
+    <label class="hidden" for="form_name">[% loc('Your name') %]</label>
+    <input type="text" name="name" id="form_name" value="[% update.name || c.user.name | html %]" placeholder="[% loc('Your name') %]">
 
+    <div class="general-sidebar-notes">
+        <p class="dark">[% loc('We never show your email') %]</p>
+        <p>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</p>
+    </div>
 
-    <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' UNLESS update.anonymous %]>
-    <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %]</label>
-    <p><small>[% loc('(we never show your email)') %]</small></p>
-
-
-    <input type="checkbox" name="add_alert" id="form_add_alert" value="1"[% ' checked' IF add_alert %]>
-    <label class="inline" for="form_add_alert">[% loc( 'Alert me to future updates' ) %]</label>
+    <div class="checkbox-group">
+        <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' UNLESS update.anonymous %]>
+        <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %]</label>
+    </div>
+    <div class="checkbox-group">
+        <input type="checkbox" name="add_alert" id="form_add_alert" value="1"[% ' checked' IF add_alert %]>
+        <label class="inline" for="form_add_alert">[% loc( 'Alert me to future updates' ) %]</label>
+    </div>
 [% END %]

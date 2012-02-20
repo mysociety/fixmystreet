@@ -288,8 +288,7 @@ textarea{
   max-width:25em;
 }
 
-/* Report a problem page*/
-
+/* Report a problem sidebar notes */
 #report-a-poblem-sidebar {
   position:absolute;
   left:29.5em;
@@ -309,7 +308,30 @@ textarea{
     font-size:0.75em;
   }
 }
+.ie6, .ie7 {
+  #report-a-poblem-sidebar {
+    top:5em;
+  }
+}
 
+/* More general sidebar notes */
+.general-sidebar-notes {
+  position: absolute;
+  left:29.5em;
+  width:15em;
+  z-index: -1;
+  @include box-shadow(rgba(0, 0, 0, 0.6) 0px 0px 4px 1px);
+  p {
+    background:#eeeeee;
+    font-size:0.75em;
+    padding:0.75em;
+    margin:0;
+    &.dark {
+      background:#333333;
+      color:#ffffff;
+    }
+  }
+}
 
 /* Frontpage */
 body.frontpage {
@@ -343,19 +365,30 @@ body.frontpage {
     }
   }
 }
-.ie6, .ie7 {
-  body.frontpage {
-    .wrapper{
-      // padding-top:8em;
-    }
-    #site-logo{
-      position:relative;
-      top:-2em;
-      width:60em;
-      margin:0 auto;
-    }
+//logo fix
+.ie6, .ie7, .ie8 {
+  body.frontpage #site-logo {
+    position:relative;
+    width:60em;
+    margin:0 auto;
   }
 }
+.ie6, .ie7 {
+  body.frontpage #site-logo {
+    top:-2em;
+  }
+}
+//weird margining thing for ie8
+.ie8,
+.ie8 body.frontpage {
+  .wrapper .content {
+    margin-top:7em;
+  }
+  #user-meta p {
+    top:5em;
+  }
+}
+
 
 #front-main {
   background:$primary;
@@ -405,6 +438,11 @@ body.frontpage {
       text-decoration:underline;
       background:none;
     }
+  }
+}
+.ie6, .ie7 {
+  #front-main {
+    padding-top:1em;
   }
 }
 
