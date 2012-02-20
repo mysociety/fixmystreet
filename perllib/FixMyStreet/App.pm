@@ -189,8 +189,8 @@ sub setup_request {
     #    $map = undef unless $map eq 'OSM';
     #}
     FixMyStreet::Map::set_map_class( $map );
-    mySociety::MaPit::configure( $c->get_conf('MAPIT_URL') );
-    mySociety::Gaze::configure( $c->get_conf('GAZE_URL') );
+    mySociety::MaPit::configure( $c->get_conf('MAPIT_URL') ) if $c->get_conf('MAPIT_URL');
+    mySociety::Gaze::configure( $c->get_conf('GAZE_URL') ) if $c->get_conf('GAZE_URL');
 
     return $c;
 }
@@ -206,15 +206,22 @@ sub get_conf {
     } else {
         if ( $value = Memcached::get( $key ) ) {
             return $value;
-        } elsif ( $value = $self->model('DB::Config')->get_value( $key ) ) {
-            Memcached::set( $key, $value, 24 * 60 * 60 );
+        } else {
+            $value = $self->model('DB::Config')->get_value( $key );
+
+            if ( defined( $value ) ) {
+                Memcached::set( $key, $value, 24 * 60 * 60 );
+            # if STAGING_SITE isn't set then things haven't been
+            # set up properly so we shouldn't act like a real site
+            } elsif ( $key eq 'STAGING_SITE' ) {
+                return 1;
+            }
             return $value;
         }
     }
 
     return undef;
 }
-# sub get_conf { return 'OSM' }
 
 =head2 setup_dev_overrides
 

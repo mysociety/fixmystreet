@@ -322,6 +322,8 @@ to null/0.
 sub uri {
     my ( $self, $uri ) = @_;
 
+    return $uri unless $FixMyStreet::Map::map_class;
+
     (my $map_class = $FixMyStreet::Map::map_class) =~ s/^FixMyStreet::Map:://;
     return $uri unless $map_class =~ /OSM|FMS/;
 
