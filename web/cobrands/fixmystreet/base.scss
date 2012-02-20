@@ -338,24 +338,8 @@ label{
   background:#eeeeee;
   padding:1em 2em 1em 2em;
   max-width:26em;
-  .form-txt-submit-box {
-    min-height:3em;
-    input[type=password],
-    input[type=text] {
-      width: 65%;
-      float:left;
-    }
-    input[type=submit] {
-      float:right;
-      width:28%;
-      margin-right:0.25em;
-      padding-top:0.9em;
-      padding-bottom:0.8em;
-    }
-  }
   >input[type=text] {
     margin-bottom:1em;
-    // margin-top:1em;
   }
   .title {
     font-size:1.25em;
@@ -371,6 +355,22 @@ label{
       font-size:2em;
       margin-right:0.25em;
     }
+  }
+}
+
+.form-txt-submit-box {
+  min-height:3em;
+  input[type=password],
+  input[type=text] {
+    width: 65%;
+    float:left;
+  }
+  input[type=submit] {
+    float:right;
+    width:28%;
+    margin-right:0.25em;
+    padding-top:0.9em;
+    padding-bottom:0.8em;
   }
 }
 
