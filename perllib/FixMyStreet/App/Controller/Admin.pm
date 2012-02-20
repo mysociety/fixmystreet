@@ -979,10 +979,22 @@ sub edit_config : Path('config') : Args(0) {
         ALLOWED_COBRANDS RSS_LIMIT AREA_LINKS_FROM_PROBLEMS
     /;
 
+    # make a list of the options that are in the database and hence
+    # editable.
+    my %active_options =
+        map { $_ => 1 }
+        grep {
+            eval { mySociety::Config::get( $_ ); };
+            $@ ? 1 : 0;
+    } @allowed_options;
+
     my %checkboxes = (
         STAGING_SITE => 1,
         AREA_LINKS_FROM_PROBLEMS => 1
     );
+
+    local $" = ' | ';
+    $c->log->debug( "@allowed_options" );
 
     my $options = FixMyStreet::App->model('DB::Config')->search( 
         { key => { IN => [ @allowed_options ] } }
@@ -1005,6 +1017,7 @@ sub edit_config : Path('config') : Args(0) {
         }
 
         while ( my $option = $options->next ) {
+            next unless $active_options{ $option->key };
             my $value = $c->req->param( $option->key );
             $value = defined $value ? $value : '';
 
@@ -1041,6 +1054,7 @@ sub edit_config : Path('config') : Args(0) {
     }
 
     $c->stash->{config} = \%config;
+    $c->stash->{active_config} = \%active_options;
 
     $c->stash->{cobrands} = FixMyStreet::Cobrand->get_allowed_cobrands();
 

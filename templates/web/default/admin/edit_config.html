@@ -3,22 +3,29 @@
 <div id="config">
     <form action='/admin/config' method="POST">
 
+        [% IF active_config.size < config.size %]
+        <p>
+        Disabled options are set in a config file and not the database so
+        cannot be edited.
+        </p>
+        [% END %]
+
         <fieldset>
             <legend>Basic Configuration</legend>
 
             <p>
             <label title="Check if this is a development site" for="staging_site">Is this a Staging Site?</label>
-            <input id="staging_site" type="checkbox" name="STAGING_SITE"[% config.STAGING_SITE ? ' checked' : '' %] />
+            <input id="staging_site" type="checkbox" name="STAGING_SITE"[% ' disabled' IF !active_config.exists('STAGING_SITE') %][% config.STAGING_SITE ? ' checked' : '' %] />
             </p>
 
             <p>
             <label title="URL from which the site will be served" for="base_url">Site URL</label>
-            <input id="base_url" type="text" name="BASE_URL" value="[% config.BASE_URL %]" size="50" />
+            <input id="base_url" type="text" name="BASE_URL"[% ' disabled' IF !active_config.exists('BASE_URL') %] value="[% config.BASE_URL %]" size="50" />
             </p>
 
             <p>
             <label title="List of map types that can be used ( comma separated )" for="map_type">Map Type</label>
-            <input id="map_type" type="text" name="MAP_TYPE" value="[% config.MAP_TYPE %]" size="40" />
+            <input id="map_type" type="text" name="MAP_TYPE"[% ' disabled' IF !active_config.exists('MAP_TYPE') %] value="[% config.MAP_TYPE %]" size="40" />
             </p>
         </fieldset>
 
@@ -48,12 +55,12 @@
                 <tr>
                     <td>
                         <input id="cobrand_name_[% loop.index %]"
-                    name="cobrand_name_[% loop.index %]" value="[%
+                    name="cobrand_name_[% loop.index %]"[% ' disabled' IF !active_config.exists('ALLOWED_COBRANDS') %] value="[%
                     cobrand.moniker %]" /> 
                     </td>
                     <td>
                     <input id="cobrand_host_[% loop.index %]"
-                    name="cobrand_host_[% loop.index %]" value="[%
+                    name="cobrand_host_[% loop.index %]"[% ' disabled' IF !active_config.exists('ALLOWED_COBRANDS') %] value="[%
                     cobrand.host IF cobrand.host != cobrand.moniker %]"
                     /> [% '<strong id="add_allowed_row">+</strong>' IF loop.last %]
                     </td>
@@ -62,10 +69,10 @@
             [% ELSE %]
                     <tr>
                         <td>
-                        <input id="cobrand_name_0" name="cobrand_name_0" />  :
+                        <input id="cobrand_name_0" name="cobrand_name_0"[% ' disabled' IF !active_config.exists('ALLOWED_COBRANDS') %] />  :
                         </td>
                         <td>
-                            <input id="cobrand_host_0" name="cobrand_host_0" /> 
+                            <input id="cobrand_host_0" name="cobrand_host_0"[% ' disabled' IF !active_config.exists('ALLOWED_COBRANDS') %] /> 
                             <strong id="add_allowed_row">+</strong>'
                         </td>
                     </tr>
@@ -79,22 +86,22 @@
 
             <p>
             <label title="Name used in the emails" for="contact_name">Contact Name:</label>
-            <input id="contact_name" type="text" name="CONTACT_NAME" value="[% config.CONTACT_NAME %]" size="40" />
+            <input id="contact_name" type="text" name="CONTACT_NAME"[% ' disabled' IF !active_config.exists('CONTACT_NAME') %] value="[% config.CONTACT_NAME %]" size="40" />
             </p>
 
             <p>
             <label title="Reply To email addressed used on outgoing mails" for="contact_email">Contact email</label>
-            <input id="contact_email" type="text" name="CONTACT_EMAIL" value="[% config.CONTACT_EMAIL %]" size="50" />
+            <input id="contact_email" type="text" name="CONTACT_EMAIL"[% ' disabled' IF !active_config.exists('CONTACT_EMAIL') %] value="[% config.CONTACT_EMAIL %]" size="50" />
             </p>
 
             <p>
             <label title="Smarthost to use for sending mail, If empty then localhost will be used" for="smtp_smarthost">SMTP Smarthost</label>
-            <input id="smtp_smarthost" type="text" name="SMTP_SMARTHOST" value="[% config.SMTP_SMARTHOST %]" size="30" />
+            <input id="smtp_smarthost" type="text" name="SMTP_SMARTHOST"[% ' disabled' IF !active_config.exists('SMTP_SMARTHOST') %] value="[% config.SMTP_SMARTHOST %]" size="30" />
             </p>
 
             <p>
             <label title="Domain name from which emails are sent. This is most likely to be the hostname of the site without the www" for="email_domain">Email Domain name</label>
-            <input id="email_domain" type="text" name="EMAIL_DOMAIN" value="[% config.EMAIL_DOMAIN %]" size="30" />
+            <input id="email_domain" type="text" name="EMAIL_DOMAIN"[% ' disabled' IF !active_config.exists('EMAIL_DOMAIN') %] value="[% config.EMAIL_DOMAIN %]" size="30" />
             </p>
         </fieldset>
 
@@ -108,12 +115,12 @@
 
             <p>
             <label for="bing_maps_api_key">Bing Maps API Key</label>
-            <input id="bing_maps_api_key" type="text" name="BING_MAPS_API_KEY" value="[% config.BING_MAPS_API_KEY %]" size="90" />
+            <input id="bing_maps_api_key" type="text" name="BING_MAPS_API_KEY"[% ' disabled' IF !active_config.exists('BING_MAPS_API_KEY') %] value="[% config.BING_MAPS_API_KEY %]" size="90" />
             </p>
 
             <p>
             <label for="google_maps_api_key">Google Maps API key</label>
-            <input id="google_maps_api_key" type="text" name="GOOGLE_MAPS_API_KEY" value="[% config.GOOGLE_MAPS_API_KEY %]" size="90" />
+            <input id="google_maps_api_key" type="text" name="GOOGLE_MAPS_API_KEY"[% ' disabled' IF !active_config.exists('GOOGLE_MAPS_API_KEY') %] value="[% config.GOOGLE_MAPS_API_KEY %]" size="90" />
             </p>
 
             <p>
@@ -124,7 +131,7 @@
 
             <p>
             <label for="mapit_url">MaPit URL</label>
-            <input id="mapit_url" type="text" name="MAPIT_URL" value="[% config.MAPIT_URL %]" size="30" />
+            <input id="mapit_url" type="text" name="MAPIT_URL"[% ' disabled' IF !active_config.exists('MAPIT_URL') %] value="[% config.MAPIT_URL %]" size="30" />
             </p>
 
             <p>
@@ -134,7 +141,7 @@
 
             <p>
             <label for="gaze_url">Gaze URL</label>
-            <input id="gaze_url" type="text" name="GAZE_URL" value="[% config.GAZE_URL %]" size="50" />
+            <input id="gaze_url" type="text" name="GAZE_URL"[% ' disabled' IF !active_config.exists('GAZE_URL') %] value="[% config.GAZE_URL %]" size="50" />
             </p>
         </fieldset>
 
@@ -143,12 +150,12 @@
 
             <p>
             <label for="rss_limit">Max entries in the RSS Feed</label>
-            <input id="rss_limit" type="text" name="RSS_LIMIT" value="[% config.RSS_LIMIT %]" size="5" />
+            <input id="rss_limit" type="text" name="RSS_LIMIT"[% ' disabled' IF !active_config.exists('RSS_LIMIT') %] value="[% config.RSS_LIMIT %]" size="5" />
             </p>
 
             <p>
             <label title="Controls whether the area name in a problem is also a link to the problems for this area page" for="area_links_from_problems">Area links from problems</label>
-            <input id="area_links_from_problems" type="checkbox" name="AREA_LINKS_FROM_PROBLEMS"[% config.AREA_LINKS_FROM_PROBLEMS ? ' checked' : '' %] />
+            <input id="area_links_from_problems" type="checkbox" name="AREA_LINKS_FROM_PROBLEMS"[% ' disabled' IF !active_config.exists('AREA_LINKS_FROM_PROBLEMS') %][% config.AREA_LINKS_FROM_PROBLEMS ? ' checked' : '' %] />
             </p>
         </fieldset>
 
@@ -157,12 +164,12 @@
 
             <p>
             <label title="Directory to use to cache results of Geolocation lookups. Must be full path" for="geo_cache">Geolocation Cache Location</label>
-            <input id="geo_cache" type="text" name="GEO_CACHE" value="[% config.GEO_CACHE %]" size="50" />
+            <input id="geo_cache" type="text" name="GEO_CACHE"[% ' disabled' IF !active_config.exists('GEO_CACHE') %] value="[% config.GEO_CACHE %]" size="50" />
             </p>
 
             <p>
             <label title="Directory where uploaded images are temporarily stored while awaiting processing" for="upload_cache">Image Upload Cache Location</label>
-            <input id="upload_cache" type="text" name="UPLOAD_CACHE" value="[% config.UPLOAD_CACHE %]" size="50" />
+            <input id="upload_cache" type="text" name="UPLOAD_CACHE"[% ' disabled' IF !active_config.exists('UPLOAD_CACHE') %] value="[% config.UPLOAD_CACHE %]" size="50" />
             </p>
         </fieldset>
 
