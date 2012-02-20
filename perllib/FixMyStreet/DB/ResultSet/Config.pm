@@ -28,6 +28,9 @@ sub get_value {
             return $result;
         }
     }
+    if ( $key eq 'ALLOWED_COBRANDS' ) {
+        return [];
+    }
     return undef;
 }
 
