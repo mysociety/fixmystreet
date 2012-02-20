@@ -109,7 +109,7 @@
                     [% END %]
                 [% END %]
                 
-                <label class="inline" for="form_photo">[% loc('Photo') %]</label>
+                <label for="form_photo">[% loc('Photo') %]</label>
                 <input type="file" name="photo" id="form_photo">
             [% END %]
 
@@ -128,7 +128,7 @@
                 [% END %]
 
                 <label for="form_email">[% loc('Your email') %]</label>
-                <input type="email" value="[% report.user.email | html %]" name="email" id="form_email" size="25" required>
+                <input type="email" value="[% report.user.email | html %]" name="email" id="form_email" required>
 
                 <div id="form_sign_in">
                     <h3>[% loc("Now to submit your report&hellip;") %]</h3>
@@ -141,7 +141,7 @@
 
                         <h5>[% loc('<strong>Yes</strong> I have a password') %]</h5>
 
-                        <label class="hidden n" for="password_sign_in">[% loc('<strong>Yes</strong> I have a password') %]</label>
+                        <label class="hidden n" for="password_sign_in">[% loc('Yes I have a password') %]</label>
                         <div class="form-txt-submit-box">
                             <input type="password" name="password_sign_in" id="password_sign_in" placeholder="[% loc('Your password') %]" value="">
                             <input class="green-btn" type="submit" id="submit_sign_in" name="submit_sign_in" value="[% loc('Submit') %]">
@@ -191,7 +191,6 @@
         <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF !report.anonymous %]>
         <label class="title inline" for="form_may_show_name">[% loc('Show my name publicly') %]</label>
         <p>[% loc('We never show your email address or phone number') %]</p>
-
 
         <label class="hidden" for="form_phone">[% loc('Your phone number (optional)') %]</label>
         <input type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number (optional)') %]">
