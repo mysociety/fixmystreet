@@ -150,6 +150,15 @@ body {
           text-transform: uppercase;
           font-size: 0.75em;
           padding: 1.25em 0.3em 0.75em 0.3em;
+          &#mysoc-logo {
+            width:110px;
+            height:20px;
+            background-position:-250px -42px;
+            @include opacity(0.8);
+            &:hover {
+              @include opacity(1);
+            }
+          }
           &:hover{
             color:#fff;
           }

@@ -441,8 +441,16 @@ label{
       }
     }
     &#mysoc-menu{
-      li{
-        a{background:$primary;}
+      li {
+        a {
+          background:$primary;
+          &#mysoc-logo {
+            background-image:url(images/sprite.png);
+            background-repeat:no-repeat;
+            background-position:-240px -38px;
+            text-indent:-999999px;
+          }
+        }
       }
     }
   }
