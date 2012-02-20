@@ -274,14 +274,12 @@ fieldset{
   }
 }
 :-moz-placeholder {
-  color: #888888;
   font: {
     style:italic;
     size:0.9375em;
   }
 }
 :-ms-placeholder {
-  color: #888888;
   font: {
     style:italic;
     size:0.9375em;
@@ -291,6 +289,7 @@ fieldset{
 input[type=text],
 input[type=password],
 input[type=email],
+input[type=file],
 textarea{
   width: 100%;
   padding: 0.5em;
@@ -309,7 +308,8 @@ textarea{
 
 input[type=text],
 input[type=password],
-input[type=email] {
+input[type=email],
+input[type=file] {
   border: 0.125em solid #888888;
   @include border-radius(0.25em);
   display: block;
@@ -333,17 +333,17 @@ label{
   margin: 0 -2em 0.25em -2em;
   background:#eeeeee;
   padding:1em 2em 1em 2em;
-  max-width:25em;
+  max-width:26em;
   .form-txt-submit-box {
     min-height:3em;
     input[type=password],
     input[type=text] {
-      width: 69%;
+      width: 65%;
       float:left;
     }
     input[type=submit] {
       float:right;
-      width:24%;
+      width:28%;
       margin-right:0.25em;
       padding-top:0.9em;
       padding-bottom:0.8em;
@@ -377,6 +377,8 @@ label{
 // Padding creates page margins on mobile
 .container{
   padding: 0 1em;
+  // width:100%;
+  // box-sizing: border-box;
 }
 
 // Use full width to reverse .container margins
@@ -443,12 +445,13 @@ label{
   }
 }
 
-// this is the user's logged in details or the login link etc
+//defines where the table caption is (login stuff on mob, nav menu on desktop)
 .wrapper {
   width:100%;
   display:table;
   caption-side:bottom;
 }
+// this is the user's logged in details or the login link etc
 #user-meta {
   display:table-caption;
   p {
