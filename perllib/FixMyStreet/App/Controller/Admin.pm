@@ -993,9 +993,6 @@ sub edit_config : Path('config') : Args(0) {
         AREA_LINKS_FROM_PROBLEMS => 1
     );
 
-    local $" = ' | ';
-    $c->log->debug( "@allowed_options" );
-
     my $options = FixMyStreet::App->model('DB::Config')->search( 
         { key => { IN => [ @allowed_options ] } }
     );
