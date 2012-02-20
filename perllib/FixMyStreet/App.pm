@@ -214,6 +214,7 @@ sub get_conf {
             # if STAGING_SITE isn't set then things haven't been
             # set up properly so we shouldn't act like a real site
             } elsif ( $key eq 'STAGING_SITE' ) {
+                $self->log->warn( 'STAGING_SITE not set so defaulting to 1' );
                 return 1;
             }
             return $value;
