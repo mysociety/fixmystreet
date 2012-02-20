@@ -14,8 +14,6 @@
 body {
   // temp map background
   background:url(images/temp-map.jpg) center fixed;
-  z-index: -2;
-  position: relative;
   // temp map background
 }
 
@@ -26,13 +24,30 @@ body {
   padding: 0em;
   width: 60em;
   position: relative;
-  box-sizing: content-box;
 }
 
-.wrapper{ 
+//z-index stack order gets reset to 0 in ie6/7 if you position anything,
+//so to fix things we give it a high value (don't ask me why)
+//see: http://brenelz.com/blog/squish-the-internet-explorer-z-index-bug/
+//this affects #site-logo
+.ie7, .ie7 {
+  .container {
+    z-index:100;
+  }
+}
+
+.wrapper{
   display: table;
   caption-side: top;
   width: 100%;
+}
+
+//pad the top of the wrapper to allow space for the menu to fit in
+//when its positioned absolute below
+.ie6, .ie7 {
+  .wrapper{
+    padding-top:4em;
+  }
 }
 
 .nav-wrapper{
@@ -49,22 +64,42 @@ body {
 }
 
 
-// Resets a lot of the mobile styling. #header only used to help position logo on desktop
-#header{
-  height: auto;
-  background: none;
-  border-top: 0px;
-  #site-logo{
-    margin-top: 0.75em;
-    position: fixed;
-    z-index: 3;
-  }
-  #nav-link {
-    left:-999999px;
+//position absolute the menu as ie doesn't like display:table
+.ie6, .ie7 {
+  .nav-wrapper {
+    position: absolute;
+    top:0;
+    left:0;
+    .nav-wrapper-2 {
+      // position static as well so we fix lots of the z-index issues
+      // and revert to normal scrolling
+      position:static;
+    }
   }
 }
 
-
+// Resets a lot of the mobile styling. #site-header only used to help position logo on desktop
+#site-header {
+  height: auto;
+  background: none;
+  border-top: 0px;
+}
+#site-logo {
+  top: 0.75em;
+  position: fixed;
+  z-index: 3;
+}
+#nav-link {
+  left:-999999px;
+}
+//fix logo position as a result of fiddling the with position attributes
+//on the parent elements
+.ie6, .ie7 {
+  #site-logo {
+    position: absolute;
+    top:-3.25em;
+  }
+}
 #main-nav{
   margin: 0 auto;
   padding: 0em;
@@ -240,7 +275,9 @@ input[type=email],
 textarea{
   width: 25em;
 }
-
+.form-box {
+  max-width:25em;
+}
 
 /* Report a problem page*/
 
@@ -281,19 +318,32 @@ body.frontpage {
     background: #1a1a1a;
     height:6em;
   }
-  #header{
+  #site-header{
     height:10em;
-    #site-logo{
-      margin-top:2em;
-      width: 300px;
-      height: 60px;
-      background-position:-2px -108px;
-    }
+  }
+  #site-logo{
+    top:2em;
+    width: 300px;
+    height: 60px;
+    background-position:-2px -108px;
   }
   #user-meta {
     p {
       top:-2em;
       right:0;
+    }
+  }
+}
+.ie6, .ie7 {
+  body.frontpage {
+    .wrapper{
+      // padding-top:8em;
+    }
+    #site-logo{
+      position:relative;
+      top:-2em;
+      width:60em;
+      margin:0 auto;
     }
   }
 }
@@ -370,6 +420,26 @@ body.frontpage {
     margin:0;
   }
 }
+
+.ie6, .ie7 {
+  .front-tablewrapper {
+    display:block;
+    >div {
+      width:48%;
+      display:block;
+      float: left;
+      border:none !important;
+    }
+    #front-howto,
+    #front-mobileapps {
+      margin-right:2%;
+    }
+    #front-recently,
+    #front-ads {
+      margin-left:2%;
+    }
+  }
+}
 .bordered {
   margin:0 -1em;
   padding:0 1em;
@@ -391,6 +461,14 @@ body.frontpage {
   }
 }
 
+.ie6, .ie7 {
+  #front_stats {
+    div {
+      float:left;
+    }
+  }
+}
+
 #front-mobileapps {
   background:none;
   padding:0;
@@ -400,6 +478,7 @@ body.frontpage {
     margin-top:0;
   }
   ul {
+    @include list-reset;
     li {
       border-bottom:none;
       float:left;
@@ -434,6 +513,11 @@ body.frontpage {
     }
   }
 }
+.ie6, .ie7 {
+  #front-mobileapps {
+      margin:0 0.5em;
+  }
+}
 
 #front-ads {
   ul {
@@ -443,6 +527,17 @@ body.frontpage {
       border-bottom:none;
       &:last-child {
         border-left:1.25em solid #fff;
+      }
+    }
+  }
+}
+.ie6, .ie7 {
+  #front-ads {
+    ul {
+      width:100%;
+      li {
+        float:left;
+        width:45%
       }
     }
   }
@@ -487,7 +582,7 @@ body.frontpage {
     margin-top: 3em;
   }
   //therefore header needs to open up
-  #header {
+  #site-header {
     height:6em;
   }
 

@@ -70,7 +70,7 @@
 
 /* Opera has a bug (from around 10.5 upwards to current 11.6) with showing the
  * table caption *at all* if the header is set to a font-face :( */
-noindex:-o-prefocus, #header {
+noindex:-o-prefocus, #site-header {
   font-family: sans-serif;
 }
 
@@ -201,9 +201,13 @@ pre {
   font-family: monospace;
 }
 
-// huh? We're confused and it breaks our other stuff :S
 img {
+  // huh? We're confused and it breaks our other stuff :S
   // max-width: 100%;
+
+  //do this otherwise IE will just not display
+  //any img without a height defined
+  height:auto;
 }
 
 select, input, textarea {
@@ -377,47 +381,46 @@ label{
 // Padding creates page margins on mobile
 .container{
   padding: 0 1em;
-  // width:100%;
-  // box-sizing: border-box;
 }
 
 // Use full width to reverse .container margins
-.full-width{
+.full-width {
   margin: 0 -1em;
 }
 
-// #header creates grey bar in mobile, .nav-wrapper-2 is used on desktop
-#header{
+// #site-header creates grey bar in mobile, .nav-wrapper-2 is used on desktop
+#site-header{
   border-top: 0.25em solid $primary;
   height: 4em;
   @include background(linear-gradient(#000, #222 10%, #222 90%, #000));
   .container {
     min-height:4em;
   }
-  #site-logo{
-    width: 175px;
-    height: 40px;
-    margin-top: 0.75em;
-    background: url('images/sprite.png') -3px -3px no-repeat;
-    display: block;
-    text-indent: -999999px;
-    position: absolute;
-    z-index:2;
-  }
-  #nav-link {
-    width: 50px;
-    height: 48px;
-    background: url('images/sprite.png') -5px -916px no-repeat;
-    display: block;
-    text-indent: -999999px;
-    position: absolute;
-    right:2em;
-    top:-2px;
-    &:hover {
-      top:2px;
-    }
+}
+#site-logo{
+  display: block;
+  width: 175px;
+  height: 40px;
+  top: 0;
+  background: url('images/sprite.png') -3px -3px no-repeat;
+  text-indent: -999999px;
+  position: absolute;
+  z-index:2;
+}
+#nav-link {
+  width: 50px;
+  height: 48px;
+  background: url('images/sprite.png') -5px -916px no-repeat;
+  display: block;
+  text-indent: -999999px;
+  position: absolute;
+  right:2em;
+  top:-2px;
+  &:hover {
+    top:2px;
   }
 }
+
 
 #main-nav{
   ul{
@@ -462,7 +465,6 @@ label{
 
 
 // #key-tools is the list that's pulled out an stick to the bottom of the page of desktop, below is mostly just aesthetic
-
 .shadow-wrap {
   @extend .full-width;
   ul#key-tools{
@@ -510,6 +512,21 @@ label{
   }
 }
 
+//because display:table doesn't work we float
+.ie6, .ie7 {
+  .shadow-wrap {
+    ul#key-tools{
+      background:#f5f5f5;
+      li{
+        float:left;
+        a {
+          padding-left:1.5em;
+          padding-right:3em;
+        }
+      }
+    }
+  }
+}
 
 /*BUTTONS*/
 
@@ -621,8 +638,21 @@ a:hover.button-left {
         text-align:right;
         img {
           margin:-0.5em -1em 0 0.5em;
+          height:auto;
         }
       }
+    }
+  }
+}
+//display:table fixes
+.ie7, .ie7 {
+  .issue-list li .update-wrap {
+    .update-text {
+      float:left;
+      width:19em;
+    }
+    .update-img {
+      float:right;
     }
   }
 }
@@ -656,6 +686,7 @@ a:hover.button-left {
         text-align:right;
         img {
           margin:0 -1em 0 0.5em;
+          height:auto;
         }
       }
       .text {
@@ -673,6 +704,30 @@ a:hover.button-left {
       padding: 0.5em 1em;
       background: #f6f6f6;
     }
+  }
+}
+//display:table fixes
+.ie6, .ie7 {
+  .issue-list-a {
+    overflow:hidden;
+    li a {
+      clear:both;
+      width:auto;
+      display:block;
+      overflow:hidden;
+      .text {
+        float:left;
+        width:18em;
+      }
+      .img {
+        float:right;
+      }
+    }
+  }
+}
+.ie8 {
+  .issue-list-a li a {
+    width:25em;
   }
 }
 
@@ -733,6 +788,18 @@ a:hover.rap-notes-trigger {
           color:#fff;
         }
       }
+    }
+  }
+}
+
+//display:table fixes
+.ie6, .ie7 {
+  #problems-nav {
+    clear:both;
+    margin:0;
+    padding:0;
+    ul li {
+      float:left;
     }
   }
 }
@@ -829,7 +896,6 @@ a:hover.rap-notes-trigger {
     }
   }
 }
-
 
 #front-howto {
   #front_stats {

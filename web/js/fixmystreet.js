@@ -56,15 +56,20 @@ function heightFix(elem1, elem2, offset){
  */
 function tabs(elem)
 {
-    var target = elem.attr('href');
+    var href = elem.attr('href');
+    //stupid IE sometimes adds the full uri into the href attr, so trim
+    var start = href.indexOf('#'),
+        target = href.slice(start, href.length);
+
     if(!$(target).hasClass('open'))
     {
         //toggle class on nav
         $('.tab-nav .active').removeClass('active');
         elem.addClass('active');
+ 
         //hide / show the right tab
-        $('.tab.open').removeClass('open').hide();
-        $(target).addClass('open').show();
+        $('.tab.open').hide().removeClass('open');
+        $(target).show().addClass('open');
     }
 }
 
