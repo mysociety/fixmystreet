@@ -1,0 +1,21 @@
+[% title = loc('Local RSS feeds and email alerts') %]
+
+[% INCLUDE 'header.html', title => title %]
+
+
+[% INCLUDE 'errors.html' %]
+
+<p>
+[% loc('Receive email when updates are left on this problem.') %]
+</p>
+
+<form action="/alert/subscribe" method="post">
+<label class="n" for="alert_rznvy">[% loc('Email:') %]</label>
+<input type="email" name="rznvy" id="alert_rznvy" value="[% email | html %]" size="30">
+<input type="hidden" name="id" value="[% problem_id | html %]">
+<input type="hidden" name="type" value="updates">
+<input type="submit" value="[% loc('Subscribe') %]">
+</form>
+
+
+[% INCLUDE 'footer.html' %]

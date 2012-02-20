@@ -1,0 +1,38 @@
+[% INCLUDE 'header.html', title =>  loc('Local RSS feeds and email alerts') %]
+
+<h1>[% loc('Local RSS feeds and email alerts') %]</h1>
+
+<p>
+[% loc('FixMyStreet has a variety of RSS feeds and email alerts for local problems, including
+alerts for all problems within a particular ward or council, or all problems
+within a certain distance of a particular location.') %]
+</p>
+
+[% IF location_offshore %]
+  <ul class="error"><li>[% loc('That location does not appear to be covered by a council, perhaps it is offshore - please try somewhere more specific.') %]</li></ul>
+[% ELSIF location_error %]
+  <ul class="error"><li>[% location_error %]</li></ul>
+[% ELSE %]
+  [% INCLUDE 'errors.html' %]
+[% END %]
+
+<form method="get" action="/alert/list">
+  <p>
+  [% loc('To find out what local alerts we have for you, please enter your GB
+postcode or street name and area:' ) %]
+  <input type="text" name="pc" value="[% pc | html %]">
+  <input type="submit" value="[% loc('Go') %]">
+  </p>
+</form>
+
+[% IF photos.size %]
+<div id="alert_recent">
+  <h2>[% loc('Some photos of recent reports') %]</h2>
+    [% FOREACH p IN photos %]
+        <a href="/report/[% p.id %]"><img border="0" height="100"
+            src="/photo?tn=1;id=[% p.id %]" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
+    [% END %]
+</div>
+[% END %]
+
+[% INCLUDE 'footer.html' %]
