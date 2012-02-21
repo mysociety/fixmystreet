@@ -94,8 +94,10 @@
                 
                 [% ELSIF !problem.is_fixed %]
                 
-                <input type="checkbox" name="fixed" id="form_fixed" value="1"[% ' checked' IF update.mark_fixed %]>
-                <label class="inline" for="form_fixed">[% loc('This problem has been fixed') %]</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" name="fixed" id="form_fixed" value="1"[% ' checked' IF update.mark_fixed %]>
+                    <label class="inline" for="form_fixed">[% loc('This problem has been fixed') %]</label>
+                </div>
 
                 [% END %]
             [% END %]
@@ -148,8 +150,10 @@
                         <input class="green-btn" type="submit" name="submit_sign_in" id="submit_sign_in" value="[% loc('Post') %]">
                     </div>
 
-                    <input type="checkbox" id="remember_me" name="remember_me" value='1'[% ' checked' IF remember_me %]>
-                    <label class="inline n" for="remember_me">[% loc('Keep me signed in on this computer') %]</label>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="remember_me" name="remember_me" value='1'[% ' checked' IF remember_me %]>
+                        <label class="inline n" for="remember_me">[% loc('Keep me signed in on this computer') %]</label>
+                    </div>
                 </div>
                 <div id="form_sign_in_no" class="form-box">
                     <h5>[% loc('<strong>No</strong> Let me confirm my update by email') %]</h5>
