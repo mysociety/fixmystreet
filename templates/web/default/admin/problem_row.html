@@ -1,6 +1,6 @@
 [%- IF problems.size -%]
 [%- FOR problem IN problems %]
-    <tr[% ' class="hidden"' IF problem.state == 'hidden' %]>
+    <tr[% ' class="inactive"' IF problem.state == 'hidden' %]>
         <td>[%- IF problem.is_visible -%]
         [%- cobrand_data = problem.cobrand_data %]
         [%- cobrand_data = c.data_for_generic_problem IF !problem.cobrand %]

@@ -16,7 +16,7 @@
     </tr>
 [%- IF updates.size -%]
 [% FOREACH update IN updates -%]
-    <tr[% ' class="hidden"' IF update.state == 'hidden' || update.problem.state == 'hidden' %]>
+    <tr[% ' class="inactive"' IF update.state == 'hidden' || update.problem.state == 'hidden' %]>
         <td>[%- IF update.state == 'confirmed' && update.problem.state != 'hidden' -%]
         [%- cobrand_data = update.cobrand_data %]
         [%- cobrand_data = c.data_for_generic_update IF !update.cobrand %]
