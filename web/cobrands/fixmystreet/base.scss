@@ -613,7 +613,57 @@ a:hover.button-left {
   background-position:-18px -802px;
 }
 
+.big-green-banner {
+  position: relative;
+  background: $contrast1;
+  color: #fff;
+  padding:1em;
+  text: {
+    transform:uppercase;
+    align:center;
+  }
+  font-size:0.875em;
+  &:before {
+    content: "";
+    left:-0.5em;
+    top:0;
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 0.5em solid transparent;
+    border-bottom: 0.5em solid #4B8304;
+  }
+}
 
+.banner {
+  position: relative;
+  z-index:1000;
+  #fixed {
+    position: absolute;
+    top:-1.95em;
+    right:0;
+    @include inline-block;
+    font-size:0.6875em;//11px
+    line-height:1em;
+    padding:0.5em 1em;
+    color:#fff;
+    background: $contrast1;
+    text: {
+      transform:uppercase;
+      align:center;
+    }
+    &:before {
+      content: "";
+      left:-0.5em;
+      top:0;
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-left: 0.5em solid transparent;
+      border-bottom: 0.5em solid #4B8304;
+    }
+  }
+}
 
 /*OTHER*/
 
@@ -812,28 +862,6 @@ a:hover.rap-notes-trigger {
     ul li {
       float:left;
     }
-  }
-}
-
-.big-green-banner {
-  position: relative;
-  background: $contrast1;
-  color: #fff;
-  padding:1em;
-  text: {
-    transform:uppercase;
-    align:center;
-  }
-  font-size:0.875em;
-  &:before {
-    content: "";
-    left:-0.5em;
-    top:0;
-    position: absolute;
-    width: 0;
-    height: 0;
-    border-left: 0.5em solid transparent;
-    border-bottom: 0.5em solid #4B8304;
   }
 }
 

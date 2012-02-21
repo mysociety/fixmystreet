@@ -14,7 +14,10 @@
 
 
 [% IF banner.id %]
-    <p class="banner" id="[% banner.id %]">[% banner.text %]</p>
+    <!-- This text needs to change: [% banner.text %] -->
+    <div class="banner">
+        <p id="[% banner.id %]">Fixed</p>
+    </div>
 [% END %]
 
 [% INCLUDE 'report/_main.html' %]
