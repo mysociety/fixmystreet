@@ -20,7 +20,7 @@ function fixmystreet_activate_drag() {
 }
 
 function fms_markers_list(pins, transform) {
-    var cols = { 'red':'R', 'green':'G', 'blue':'B', 'purple':'P' };
+    var cols = { 'red':'R', 'green':'G', 'yellow':'Y' };
     var markers = [];
     for (var i=0; i<pins.length; i++) {
         var pin = pins[i];
@@ -66,16 +66,16 @@ function fixmystreet_onload() {
             'default': new OpenLayers.Style({
                 externalGraphic: "/i/pin${type}.png",
                 graphicTitle: "${title}",
-                graphicWidth: 44,
-                graphicHeight: 58,
+                graphicWidth: 48,
+                graphicHeight: 64,
                 graphicOpacity: 1,
-                graphicXOffset: -22,
-                graphicYOffset: -58,
+                graphicXOffset: -24,
+                graphicYOffset: -64,
                 backgroundGraphic: "/i/pin-shadow.png",
-                backgroundWidth: 50,
-                backgroundHeight: 19,
+                backgroundWidth: 60,
+                backgroundHeight: 30,
                 backgroundXOffset: -7,
-                backgroundYOffset: -19,
+                backgroundYOffset: -30,
                 graphicZIndex: 11,
                 backgroundGraphicZIndex: 10
             })
@@ -334,7 +334,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             /* Already have a purple pin */
             fixmystreet.markers.features[0].move(lonlat);
         } else {
-            var markers = fms_markers_list( [ [ lonlat.lat, lonlat.lon, 'purple' ] ], false );
+            var markers = fms_markers_list( [ [ lonlat.lat, lonlat.lon, 'yellow' ] ], false );
             fixmystreet.bbox_strategy.deactivate();
             fixmystreet.markers.removeAllFeatures();
             fixmystreet.markers.addFeatures( markers );
