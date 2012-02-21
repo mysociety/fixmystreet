@@ -955,6 +955,9 @@ a:hover.rap-notes-trigger {
         color:#fff;
         text-transform:uppercase;
         @include border-radius(0);
+        &:hover {
+          background:#333;
+        }
       }
     }
   }
