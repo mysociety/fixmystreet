@@ -572,7 +572,14 @@ input.red-btn{
     border-color: #80001C;
   }
 }
-  
+
+.final-submit,
+input.final-submit {
+  margin:1em 0.5em;
+  float:right;
+  text-transform:uppercase;
+}
+
 .button-right,
 .button-left,
 a.button-right,
