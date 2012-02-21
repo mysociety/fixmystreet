@@ -145,8 +145,10 @@
                             <input class="green-btn" type="submit" id="submit_sign_in" name="submit_sign_in" value="[% loc('Submit') %]">
                         </div>
                         
-                        <input type="checkbox" id="remember_me" name="remember_me" value='1'[% ' checked' IF remember_me %]>
-                        <label class="n inline" for="remember_me">[% loc('Keep me signed in on this computer') %]</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="remember_me" name="remember_me" value='1'[% ' checked' IF remember_me %]>
+                            <label class="n inline" for="remember_me">[% loc('Keep me signed in on this computer') %]</label>
+                        </div>
                     </div>
 
                     <div id="form_sign_in_no" class="form-box">
@@ -155,8 +157,6 @@
                         [% INCLUDE name_phone %]
                 
                         <label class="hidden" for="password_register">[% loc('Enter a new password (optional)') %]</label>
-
-                        <p>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</p>
 
                         <div class="form-txt-submit-box">
                             <input type="password" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a new password (optional)') %]">
@@ -185,10 +185,16 @@
         <label class="hidden" for="form_may_show_nameme">[% loc('Your name') %]</label>
         <input type="text" class="validName" value="[% report.name | html %]" name="name" id="form_name" placeholder="[% loc('Your name') %]">
 
+        <div class="general-sidebar-notes">
+            <p class="dark">[% loc('We never show your email address or phone number.') %]</p>
+            <p>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</p>
+        </div>
+
         [%# if there is nothing in the name field then set check box as default on form %]
-        <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF !report.anonymous %]>
-        <label class="title inline" for="form_may_show_name">[% loc('Show my name publicly') %]</label>
-        <p>[% loc('We never show your email address or phone number') %]</p>
+        <div class="checkbox-group">
+            <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF !report.anonymous %]>
+            <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %]</label>
+        </div>
 
         <label class="hidden" for="form_phone">[% loc('Your phone number (optional)') %]</label>
         <input type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number (optional)') %]">
