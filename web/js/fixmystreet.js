@@ -75,8 +75,15 @@ function tabs(elem)
 
 
 $(function(){
+    //add mobile class if small screen
     if(Modernizr.mq('only screen and (max-width:47em)')) {
         $('html').addClass('mobile');
+    }
+    //heightfix the desktop .content div
+    if(Modernizr.mq('only screen and (min-width:48em)')) {
+        if (!($('body').hasClass('frontpage'))){
+            heightFix(window, '.content', -176);
+        }
     }
 
     $('html').removeClass('no-js').addClass('js');
@@ -272,6 +279,9 @@ $(function(){
     });
 
 
+    /*
+     * Show stuff on input focus
+     */
     $('.form-focus-hidden').hide();
     $('.form-focus-trigger').on('focus', function(){
         $('.form-focus-hidden').fadeIn(500);
