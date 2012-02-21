@@ -320,6 +320,9 @@ input[type=file] {
   font-size: 1em;
   line-height: 1.5em;
 }
+input[type=file] {
+  margin-bottom:1em;
+}
 
 label{
   display: block;
@@ -361,7 +364,8 @@ label{
 .form-txt-submit-box {
   min-height:3em;
   input[type=password],
-  input[type=text] {
+  input[type=text],
+  input[type=email] {
     width: 65%;
     float:left;
   }
