@@ -41,14 +41,14 @@
         </header>
 
         <div id="user-meta">
+            [% IF c.user_exists %]
             <p>
-                [% IF c.user_exists %]
-                    [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %] | 
-                    <a href="/auth/sign_out">[% loc('sign out') %]</a>
-                [% ELSE %]
-                    <a href="/auth">[% loc('Sign in') %]</a>
-                [% END %]
+                [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %] 
+                <a href="/auth/sign_out">[% loc('sign out') %]</a>
             </p>
+            [% ELSE %]
+                <!-- <a href="/auth">[% loc('Sign in') %]</a> -->
+            [% END %]
         </div>
 
         <div class="container">

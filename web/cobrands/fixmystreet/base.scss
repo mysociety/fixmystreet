@@ -383,6 +383,24 @@ label{
 }
 
 
+/* form errors */
+div.form-error,
+p.form-error {
+  background:#ff0000;
+  color:#fff;
+  padding:0.5em;
+  margin:0 1em 0 0;
+  width:auto;
+  margin-bottom:0.5em;
+  @include border-radius(0.25em);
+}
+
+input.form-error,
+textarea.form-error {
+  border-color:#ff0000;
+  background-color:#ffeeee;
+}
+
 /* LAYOUT */
 
 // Padding creates page margins on mobile
@@ -473,8 +491,20 @@ label{
 #user-meta {
   display:table-caption;
   p {
+    position: relative;
     background:$primary;
-    padding:1em;
+    padding:1em 6em 1em 1em;
+    a {
+      position: absolute;
+      right:1em;
+      @include inline-block;
+      text-transform:uppercase;
+      font-size:0.75em;
+      background:#333;
+      padding:0.25em 0.75em;
+      color:#fff;
+      @include border-radius(0.25em);
+    }
   }
 }
 
