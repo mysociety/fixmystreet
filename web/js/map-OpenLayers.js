@@ -20,7 +20,7 @@ function fixmystreet_activate_drag() {
 }
 
 function fms_markers_list(pins, transform) {
-    var cols = { 'red':'R', 'green':'G', 'yellow':'Y' };
+    var cols = { 'red':'R', 'green':'G', 'yellow':'Y', 'big':'-big' };
     var markers = [];
     for (var i=0; i<pins.length; i++) {
         var pin = pins[i];
