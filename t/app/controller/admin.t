@@ -1163,7 +1163,7 @@ my $config = FixMyStreet::App->model('DB::Config');
 
 my %orig;
 
-foreach my $key ( qw/ GAZE_URL AREA_LINKS_FROM_PROBLEMS / ) {
+foreach my $key ( qw/ GAZE_URL AREA_LINKS_FROM_PROBLEMS ALLOWED_COBRANDS / ) {
     $orig{ $key } = $config->search( { key => $key } )->first->value;
 }
 
@@ -1184,7 +1184,7 @@ subtest 'check config updating' => sub {
     is $visible->{GAZE_URL}, $new_url, 'New Gaze URL set';
     is $current_gaze, $new_url, 'Sample config value the same as changed value';
 
-    my $checked = $visible->{AREA_LINKS_FROM_PROBLEMS} eq 'on' ? 0 : 1;
+    my $checked = $visible->{AREA_LINKS_FROM_PROBLEMS} && $visible->{AREA_LINKS_FROM_PROBLEMS} eq 'on' ? 0 : 1;
 
     $visible->{AREA_LINKS_FROM_PROBLEMS} = $checked ? 'on' : 'off';
     $mech->submit_form_ok( { with_fields => $visible } );
@@ -1207,8 +1207,29 @@ subtest 'check config updating' => sub {
     is $db_host, 0, 'DB host not updated';
 };
 
+subtest 'check allowed cobrands editing' => sub {
+    $mech->get_ok('/admin/config');
+    my $visible = $mech->visible_form_values;
 
-foreach my $key ( qw/ GAZE_URL AREA_LINKS_FROM_PROBLEMS / ) {
+    $visible->{cobrand_name_0} = 'test_cobrand';
+    $visible->{cobrand_host_0} = '';
+
+    $mech->submit_form_ok( { with_fields => $visible } );
+
+    my $allowed_cobrands = FixMyStreet::App->get_conf('ALLOWED_COBRANDS');
+
+    is $allowed_cobrands->[0], 'test_cobrand', 'set single value cobrand correctly';
+
+    $visible->{cobrand_name_0} = 'second_cobrand';
+    $visible->{cobrand_host_0} = 'example.org';
+
+    $mech->submit_form_ok( { with_fields => $visible } );
+
+    $allowed_cobrands = FixMyStreet::App->get_conf('ALLOWED_COBRANDS');
+    is_deeply $allowed_cobrands->[0], { second_cobrand => 'example.org' }, 'set host override cobrand correctly';
+};
+
+foreach my $key ( qw/ GAZE_URL AREA_LINKS_FROM_PROBLEMS ALLOWED_COBRANDS / ) {
     my $config = $config->search( { key => $key } )->first;
     $config->value( $orig{ $key } );
     $config->update;
