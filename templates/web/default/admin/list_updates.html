@@ -14,6 +14,7 @@
         <th>[% loc('Text') %]</th>
         <th>*</th>
     </tr>
+[%- IF updates.size -%]
 [% FOREACH update IN updates -%]
     <tr[% ' class="hidden"' IF update.state == 'hidden' || update.problem.state == 'hidden' %]>
         <td>[%- IF update.state == 'confirmed' && update.problem.state != 'hidden' -%]
@@ -34,5 +35,10 @@
         <td>[% update.text | html %]</td> 
         <td><a href="[% c.uri_for( 'update_edit', update.id ) %]">[% loc('Edit') %]</a></td>
     <tr>
+[% END -%]
+[%- ELSE %]
+    <tr>
+        <td colspan="11" class="nomatch">No updates found</td>
+    </tr>
 [% END -%]
 </table>

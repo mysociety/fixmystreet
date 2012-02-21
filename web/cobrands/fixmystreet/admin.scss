@@ -56,6 +56,12 @@
     input[type=checkbox] {
         margin-right: 0.5em;
     }
+
+    td.nomatch {
+        text-align: center;
+        background-color: #fff;
+    }
+
 }
 
 /* The two lists in the navigation are displayed as simple horizontal lists in
