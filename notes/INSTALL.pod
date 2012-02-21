@@ -164,41 +164,39 @@ packaging system.
 
 =head1 SETTINGS
 
-The settings for FixMyStreet are defined in C<conf/general.yml> using the YAML
-markup language. There are some defaults in C<conf/general.yml-example> which
-you should copy to C<conf/general.yml>.
+The database settings for FixMyStreet are defined in C<conf/general.yml> using
+YAML. You can copy C<conf/general.yml-example> and edit the settings in there.
 
-The bare minimum of settings you will need to fill in or update are:
+All other configuration is done through the admin interface which should be
+accessible from C</admin/config> once your server is running. There's explanation
+there of what the settings do ( hover over the form labels for more details ), however
+the minimum you will need to fill in are:
 
 =over
 
-=item FMS_DB_PASS
+=item Staging Site
 
-This is the password for the database.
+If this is checked then all email ( alerts and reports ) will be sent to the
+contact email address (see below). Use this for development sites.
 
-=item BASE_URL
+=item Site URL
 
 The URL for the homepage of your FixMyStreet install.
 
-=item EMAIL_DOMAIN
-
-The email domain that emails will be sent from
-
-=item CONTACT_EMAIL
+=item Contact Email
 
 The email address to be used on the site for the contact us form.
 
-=item STAGING_SITE
+=item Email Domain Name
 
-If this is 1 then all email ( alerts and reports ) will be sent to the
-contact email address. Use this for development sites.
+The email domain that emails will be sent from
 
-=item UPLOAD_CACHE
+=item Upload Cache
 
 This is the location where imaged will be stored as they are being uploaded.
 It should be accessible by and writeable by the FixMyStreet process.
 
-=item GEO_CACHE
+=item Geo Cache
 
 This is the location where Geolocation data will be cached.
 It should be accessible by and writeable by the FixMyStreet process.
@@ -206,9 +204,9 @@ It should be accessible by and writeable by the FixMyStreet process.
 =back
 
 If you are using Bing or Google maps you should also set one of
-BING_MAPS_API_KEY or GOOGLE_MAPS_API_KEY.
+Bing Maps API key or Google Maps API key.
 
-If you are using a MaPit install you should update MAPIT_URL.
+If you are using a MaPit install you should update the MaPit URL.
 
 =head2 Generate CSS
 
@@ -246,7 +244,7 @@ on a live site.
 
 =head2 Next Steps
 
-The admin site should be protected using HTTP AUTH.
+The admin site ( C</admin> ) should be protected using HTTP AUTH.
 
 Customise your install using Templates, CSS and a Cobrand module. See C<notes/customisation.pod>
 for details.

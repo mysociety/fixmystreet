@@ -58,7 +58,7 @@ Create a new Apache vhost based on C<conf/httpd-conf.example>
 =item *
 
 Copy C<conf/general.yml-example> to C<conf/general.yml> and update
-the defaults accordingly.
+the database details.
 
 =item *
 
@@ -67,6 +67,10 @@ Generate the CSS by running C<bin/make_css>
 =item *
 
 Restart the webserver
+
+=item *
+
+Visit C</admin/config> and update the configuration for your site.
 
 =item *
 

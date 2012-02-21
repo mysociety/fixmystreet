@@ -30,6 +30,44 @@
         </fieldset>
 
         <fieldset>
+            <legend>Email configuration</legend>
+
+            <p>
+            <label title="Name used in the emails" for="contact_name">Contact Name:</label>
+            <input id="contact_name" type="text" name="CONTACT_NAME"[% ' disabled' IF !active_config.exists('CONTACT_NAME') %] value="[% config.CONTACT_NAME %]" size="40" />
+            </p>
+
+            <p>
+            <label title="Reply To email addressed used on outgoing mails" for="contact_email">Contact email</label>
+            <input id="contact_email" type="text" name="CONTACT_EMAIL"[% ' disabled' IF !active_config.exists('CONTACT_EMAIL') %] value="[% config.CONTACT_EMAIL %]" size="50" />
+            </p>
+
+            <p>
+            <label title="Smarthost to use for sending mail, If empty then localhost will be used" for="smtp_smarthost">SMTP Smarthost</label>
+            <input id="smtp_smarthost" type="text" name="SMTP_SMARTHOST"[% ' disabled' IF !active_config.exists('SMTP_SMARTHOST') %] value="[% config.SMTP_SMARTHOST %]" size="30" />
+            </p>
+
+            <p>
+            <label title="Domain name from which emails are sent. This is most likely to be the hostname of the site without the www" for="email_domain">Email Domain name</label>
+            <input id="email_domain" type="text" name="EMAIL_DOMAIN"[% ' disabled' IF !active_config.exists('EMAIL_DOMAIN') %] value="[% config.EMAIL_DOMAIN %]" size="30" />
+            </p>
+        </fieldset>
+
+        <fieldset>
+            <legend>Cache locations</legend>
+
+            <p>
+            <label title="Directory to use to cache results of Geolocation lookups. Must be full path" for="geo_cache">Geolocation Cache Location</label>
+            <input id="geo_cache" type="text" name="GEO_CACHE"[% ' disabled' IF !active_config.exists('GEO_CACHE') %] value="[% config.GEO_CACHE %]" size="50" />
+            </p>
+
+            <p>
+            <label title="Directory where uploaded images are temporarily stored while awaiting processing" for="upload_cache">Image Upload Cache Location</label>
+            <input id="upload_cache" type="text" name="UPLOAD_CACHE"[% ' disabled' IF !active_config.exists('UPLOAD_CACHE') %] value="[% config.UPLOAD_CACHE %]" size="50" />
+            </p>
+        </fieldset>
+
+        <fieldset>
             <legend>Allowed Cobrands</legend>
 
             <p>
@@ -79,30 +117,6 @@
             [% END %]
                 </tbody>
             </table>
-        </fieldset>
-
-        <fieldset>
-            <legend>Email configuration</legend>
-
-            <p>
-            <label title="Name used in the emails" for="contact_name">Contact Name:</label>
-            <input id="contact_name" type="text" name="CONTACT_NAME"[% ' disabled' IF !active_config.exists('CONTACT_NAME') %] value="[% config.CONTACT_NAME %]" size="40" />
-            </p>
-
-            <p>
-            <label title="Reply To email addressed used on outgoing mails" for="contact_email">Contact email</label>
-            <input id="contact_email" type="text" name="CONTACT_EMAIL"[% ' disabled' IF !active_config.exists('CONTACT_EMAIL') %] value="[% config.CONTACT_EMAIL %]" size="50" />
-            </p>
-
-            <p>
-            <label title="Smarthost to use for sending mail, If empty then localhost will be used" for="smtp_smarthost">SMTP Smarthost</label>
-            <input id="smtp_smarthost" type="text" name="SMTP_SMARTHOST"[% ' disabled' IF !active_config.exists('SMTP_SMARTHOST') %] value="[% config.SMTP_SMARTHOST %]" size="30" />
-            </p>
-
-            <p>
-            <label title="Domain name from which emails are sent. This is most likely to be the hostname of the site without the www" for="email_domain">Email Domain name</label>
-            <input id="email_domain" type="text" name="EMAIL_DOMAIN"[% ' disabled' IF !active_config.exists('EMAIL_DOMAIN') %] value="[% config.EMAIL_DOMAIN %]" size="30" />
-            </p>
         </fieldset>
 
         <fieldset>
@@ -156,20 +170,6 @@
             <p>
             <label title="Controls whether the area name in a problem is also a link to the problems for this area page" for="area_links_from_problems">Area links from problems</label>
             <input id="area_links_from_problems" type="checkbox" name="AREA_LINKS_FROM_PROBLEMS"[% ' disabled' IF !active_config.exists('AREA_LINKS_FROM_PROBLEMS') %][% config.AREA_LINKS_FROM_PROBLEMS ? ' checked' : '' %] />
-            </p>
-        </fieldset>
-
-        <fieldset>
-            <legend>Cache locations</legend>
-
-            <p>
-            <label title="Directory to use to cache results of Geolocation lookups. Must be full path" for="geo_cache">Geolocation Cache Location</label>
-            <input id="geo_cache" type="text" name="GEO_CACHE"[% ' disabled' IF !active_config.exists('GEO_CACHE') %] value="[% config.GEO_CACHE %]" size="50" />
-            </p>
-
-            <p>
-            <label title="Directory where uploaded images are temporarily stored while awaiting processing" for="upload_cache">Image Upload Cache Location</label>
-            <input id="upload_cache" type="text" name="UPLOAD_CACHE"[% ' disabled' IF !active_config.exists('UPLOAD_CACHE') %] value="[% config.UPLOAD_CACHE %]" size="50" />
             </p>
         </fieldset>
 

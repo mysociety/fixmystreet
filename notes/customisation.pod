@@ -77,24 +77,26 @@ all Cobrands should inherit from. A Cobrand module can then override any of the
 methods from the default Cobrand.
 
 FixMyStreet uses the hostname of the current request along with the contents
-of the C<ALLOWED_COBRANDS> config option to determine which cobrand to use.
-C<ALLOWED_COBRANDS> is a list of cobrand names with an optional hostname match.
+of the C<Allowed Cobrands> config option to determine which cobrand to use.
+C<Allowed Cobrands> is a list of cobrand names with an optional hostname match.
 override. If there is no hostname override then the first cobrand name that
 matches all or part of the hostname of the current request is used. If there is
 a hostname override then that is compared against the hostname of the current
-request. For example if C<ALLOWED_COBRANDS> is
+request. C<Allowed Cobrands> can be configured through the admin interface.
 
-    ALLOWED_COBRANDS:
-        - fixmypark_fr: 'fr.fixmypark'
-        - fixmypark
+As an example if C<Allowed Cobrands> has the following:
+
+    Cobrand Name        Cobrand host
+    fixmypark_fr        fr.fixmypark
+    fixmypark
 
 then a request to www.fixmypark.com will use the fixmypark cobrand but a
 request to fr.fixmypark.com will use fixmypark_fr. If no Cobrand listed in
-C<ALLOWED_COBRANDS> matches then the default Cobrand will be used.
+C<Allowed Cobrands> matches then the default Cobrand will be used.
 
 This means you can provide multiple Cobrands for the site if you require, e.g.
 for providing different languages, and FixMyStreet will use the first match
-listed in C<ALLOWED_COBRANDS>.
+listed in C<Allowed Cobrands>.
 
 Many of the functions in the Cobrand module are used by FixMyStreet in the UK
 to allow the site to offer versions localised to a single authority and should
