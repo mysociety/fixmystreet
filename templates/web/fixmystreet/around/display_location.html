@@ -81,17 +81,17 @@
         </p>
 
         <div class="shadow-wrap">
-            <ul id="key-tools">
-                <li><a id="email_alert" class="feed" href="#">Recieve Updates</a></li>
+            <ul id="key-tools" class="singleton">
+                <li><a class="feed" href="[% email_url | html %]">Recieve Updates</a></li>
             </ul>
         </div>
 
-        <div id="email_alert_box">
+<!--         <div id="email_alert_box">
             <ul>
                 <li><a href="[% rss_url | html %]" id="rss_alert">[% rss_alt %]</a></li>
                 <li><a rel="nofollow" href="[% email_url | html %]">[%- loc('Email me new local problems') -%]</a></li>
             </ul>
-        </div>
+        </div> -->
 
 
         <section class="full-width">

@@ -259,6 +259,14 @@ body {
         }
       }
     }
+    &.singleton {
+      li {
+        text-align:right;
+        a {
+          padding-right:3em;
+        }
+      }
+    }
   }
 }
 
