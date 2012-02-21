@@ -51,7 +51,9 @@ IPHONE_URL: ''
 # Log file (used in test harness, and later in admin scripts)
 HTTPD_ERROR_LOG: '/var/log/apache/error.log'
 
-ALLOWED_COBRANDS: 'cobrand_one|cobrand_two'
+ALLOWED_COBRANDS:
+  - cobrand_one
+  - cobrand_two: 'hostname_substring2'
 
 # How many items are returned in the GeoRSS feeds by default
 RSS_LIMIT: '20'

@@ -1,19 +1,76 @@
+=head1 Welcome to FixMyStreet
 
-=head1 NAME
+FixMyStreet is an open source project to develop a website for reporting
+problems such as potholes and broken street lights to the appropriate authority.
 
-FixMyStreet
+Users locate problems using a combination of address and sticking a pin
+in a map without worrying about the correct authority to report it to. 
+FixMyStreet then works out the correct authority to report it to using 
+the problem location and type and sends a report. 
 
-=head1 DESCRIPTION
+It was created in 2007 by L<mySociety|http://www.mysociety.org> for reporting problems to UK councils and
+has been copied around the world.
 
-FixMyStreet is a project that allows anyone to report an issue such as potholes,
-broken street lights, severe littering, water leaks. These issues are then
-routed to the correct body who can arrange to have them fixed.
+We're working hard to make it easy to install and re-use in other
+countries and welcome questions about how it works on our mailing list:
+L<https://secure.mysociety.org/admin/lists/mailman/listinfo/fixmystreet>.
 
-=head1 INSTALLING
+We've also got a new site and blog which over time will become a useful
+resource for people interested in installing or developing FixMyStreet
+at L<http://code.fixmystreet.com/>.
 
-Installing from scratch can be a bit daunting but is fully documented in the
-notes/INSTALL file.
+FixMyStreet is written in Perl and uses the Catalyst web framework.
 
-We are hoping to make it much easier for you to try the code by letting you
-start a fully installed system with test data pre-loaded on Amazon's servers.
-More details will follow soon.
+=head1 EXAMPLES
+
+L<http://www.fixmystreet.com>
+
+L<http://www.fiksgatami.no/>
+
+=head1 QUICKSTART
+
+If you're reasonably sure what you are doing then you can follow the
+quickstart instructions. Otherwise there are more detailed instructions
+in C<notes/INSTALL.pod>
+
+=over
+
+=item *
+
+Fetch the latest version from L<Github|https://github.com/mysociety/fixmystreet/>
+
+=item *
+
+Create a new PostGIS enabled database
+
+=item *
+
+Create the database using C<db/schema.sql> and the C<db/alert_types.sql>
+
+=item *
+
+Run C<./bin/install_perl_modules> to install the required Perl modules.
+
+=item *
+
+Create a new Apache vhost based on C<conf/httpd-conf.example>
+
+=item *
+
+Copy C<conf/general.yml-example> to C<conf/general.yml> and update
+the defaults accordingly.
+
+=item *
+
+Generate the CSS by running C<bin/make_css>
+
+=item *
+
+Restart the webserver
+
+=item *
+
+Edit the crontab from C<conf/crontab> to replace the placeholders and
+install it. See C<notes/INSTALL.pod> for more details on the placeholders.
+
+=back

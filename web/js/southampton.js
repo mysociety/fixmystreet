@@ -15,13 +15,16 @@ $(function(){
         }
     }).blur(function(){
         var input = $(this);
-        if (input.val() == '' || input.val() == input.attr('placeholder')) {
+        if (input.val() === '' || input.val() == input.attr('placeholder')) {
             input.css({ 'color': '#999999' });
             input.val(input.attr('placeholder'));
         }
     }).blur();
-
-    $('#form_category').change(function(){
+        
+    // use on() here because the #form_category may be replaced 
+    // during the page's lifetime
+    $("#problem_form").on("change.southampton", "select#form_category", 
+      function() {    
         var category = $(this).val();
         if ('Potholes' == category) {
             if (!$('#potholes_extra').length) {
@@ -39,12 +42,13 @@ $(function(){
                 '<option>Deeper than a tennis ball' +
                 '</select></div></div>';
                 $('#form_title').closest('div.form-field').after(qns);
-            }
+            } 
             $('#potholes_extra').show('fast');
         } else {
             $('#potholes_extra').hide('fast');
-        }
-    }).change();
+        }   
+    }
+    ).change(); // change called to trigger (in case we've come in with potholes selected)
 
 });
 

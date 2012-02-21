@@ -8,7 +8,7 @@ function form_category_onchange() {
     var args = {
         category: cat.val()
     };
-
+    
     if ( typeof fixmystreet !== 'undefined' ) {
         args.latitude = fixmystreet.latitude;
         args.longitude = fixmystreet.longitude;
@@ -159,8 +159,9 @@ $(function(){
         timer = window.setTimeout(email_alert_close, 2000);
     });
 
-
-    $('#form_category').change( form_category_onchange );
+    // Using delegate here because we *might* be running under a cobrand which isn't jQuery 1.7+
+    // Delegation is necessary because #form_category may be replaced during the lifetime of the page
+    $("#problem_form").delegate("select#form_category", "change", form_category_onchange );
 
     // Geolocation
     if (geo_position_js.init()) {

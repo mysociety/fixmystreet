@@ -355,11 +355,6 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         }, function(data) {
             $('#councils_text').html(data.councils_text);
             $('#form_category_row').html(data.category);
-            /* Need to reset this here as it gets removed when we replace
-               the HTML for the dropdown */
-            if ( data.has_open311 > 0 ) {
-                $('#form_category').change( form_category_onchange );
-            }
         });
         $('#side-form').show();
         /* For some reason on IOS5 if you use the jQuery show method it

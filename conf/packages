@@ -16,7 +16,6 @@ libsoap-lite-perl
 libstatistics-distributions-perl
 liburi-perl
 libwww-perl
-libwww-perl
 libxml-rss-perl
 memcached
 perl
@@ -26,7 +25,6 @@ perlmagick
 libjson-perl
 libimage-size-perl
 libmath-bigint-gmp-perl
-libtext-template-perl
 gettext
 libtest-exception-perl
 libipc-run3-perl
