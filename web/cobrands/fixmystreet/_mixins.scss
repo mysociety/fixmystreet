@@ -1,9 +1,13 @@
 // Button reset
 @mixin button-reset {
   cursor:pointer;
-  font-size: 1em;
-  font-family: 'Helvetica', 'Arial', sans-serif;
-  line-height: 1;
+  font:{
+    size: 0.875em;
+    family: 'Helvetica', 'Arial', sans-serif;
+    weight:bold;
+  }
+  text-transform:uppercase;
+  line-height: 1.375em;
   padding:0.7em 0.5em 0.5em 0.5em;
   margin:0;
   width: auto;

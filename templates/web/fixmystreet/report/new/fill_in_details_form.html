@@ -159,12 +159,13 @@
                         [% END %]
 
                         <label class="hidden" for="form_may_show_nameme">[% loc('Your name') %]</label>
-                        <input type="text" class="validName" value="[% report.name | html %]" name="name" id="form_name" placeholder="[% loc('Your name') %]">
+                        <input type="text" class="form-focus-trigger validName" value="[% report.name | html %]" name="name" id="form_name" placeholder="[% loc('Your name') %]">
 
-                        <div class="general-sidebar-notes">
+                        <div class="general-sidebar-notes form-focus-hidden">
                             <p class="dark">[% loc('We never show your email address or phone number.') %]</p>
                             <p>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</p>
                         </div>
+
 
                         [%# if there is nothing in the name field then set check box as default on form %]
                         <div class="checkbox-group">
@@ -173,16 +174,15 @@
                         </div>
 
                         <label class="hidden" for="form_phone">[% loc('Your phone number (optional)') %]</label>
-                        <input type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number (optional)') %]">
+                        <input class="form-focus-hidden" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number (optional)') %]">
                 
                         <label class="hidden" for="password_register">[% loc('Enter a new password (optional)') %]</label>
 
-                        <div class="form-txt-submit-box">
+                        <div class="form-txt-submit-box form-focus-hidden">
                             <input type="password" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a new password (optional)') %]">
                             <input class="green-btn" type="submit" id="submit_register" name="submit_register" value="[% loc('Submit') %]">
                         </div>
                     </div>
-
                 </div>
 
             [% END %]

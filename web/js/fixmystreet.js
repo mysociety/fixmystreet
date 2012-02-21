@@ -270,4 +270,10 @@ $(function(){
         var foo = $('.wrapper').height() - 500;
         $('html, body').animate({scrollTop:foo}, 1000);
     });
+
+
+    $('.form-focus-hidden').hide();
+    $('.form-focus-trigger').on('focus', function(){
+        $('.form-focus-hidden').fadeIn(500);
+    });
 });
