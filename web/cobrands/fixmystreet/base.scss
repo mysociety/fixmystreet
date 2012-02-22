@@ -401,6 +401,11 @@ textarea.form-error {
   background-color:#ffeeee;
 }
 
+// XXX This is a repeat from core
+div.label-valid {
+    background-color: white;
+}
+
 /* LAYOUT */
 
 // Padding creates page margins on mobile
