@@ -45,6 +45,14 @@
             margin: 0.3em 0em;
             clear: both;
         }
+
+        li.indented {
+            padding-left: 7.5em;
+
+            img {
+                margin-bottom: 0.5em;
+            }
+        }
     }
 
     label {

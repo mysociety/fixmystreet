@@ -11,9 +11,9 @@
     [%- cobrand_data = c.data_for_generic_problem IF !problem.cobrand %]
 <li><a href="[% c.uri_for_email( '/report', problem.id, cobrand_data ) %]">[% loc('View report on site' )%]</a></li>
 <li><label for='title'>[% loc('Subject:') %]</label> <input size=60 type='text' id='title' name='title' value='[% problem.title | html %]'></li>
-<li><label for='detail'>[% loc('Details:') %]</label><br><textarea name='detail' id='detail' cols=60 rows=10>[% problem.detail | html %]</textarea></li>
+<li><label for='detail'>[% loc('Details:') %]</label><textarea name='detail' id='detail' cols=60 rows=10>[% problem.detail | html %]</textarea></li>
 <li><span class="fauxlabel">[% loc('Co-ordinates:') %]</span> [% problem.latitude %], [% problem.longitude %] ( [% loc('originally entered') %] [% problem.postcode | html %] , [% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</li>
-<li><span class="fauxlabel">[% loc('For council(s):') %]</span> [% IF problem.council %][% problem.council %][% ELSE %]<em>[% loc('None' ) %]</em>[% END %] ([% loc('other areas:') %] [% problem.areas | remove('^,') | remove( ',$' ) %])</li>
+<li><span class="fauxlabel" title="[% loc('Details of the councils the report will be sent to. Pipe separated if more than one') %]">[% loc('For council(s):') %]</span> [% IF problem.council %][% problem.council %][% ELSE %]<em>[% loc('None' ) %]</em>[% END %] ([% loc('other areas:') %] [% problem.areas | remove('^,') | remove( ',$' ) %])</li>
 <li><label for="state">[% loc('State:') %]</label> <select name="state"  id="state">
     [% FOREACH state IN [ ['confirmed', loc('Open')], ['investigating',
     loc('Investigating')], ['planned', loc('Planned')], ['in progress',
@@ -30,29 +30,32 @@
 <li><label for="name">[% loc('Name:') %]</label> <input type='text' name='name' id='name' value='[% problem.name | html %]'></li>
 <li><label for="email">[% loc('Email:') %]</label> <input type='text' id='email' name='email' value='[% problem.user.email | html %]'> [% PROCESS abuse_button %] [% PROCESS flag_button user=problem.user %]</li>
 <li><span class="fauxlabel">[% loc('Phone:') %]</span> [% problem.user.phone | html %]</li>
-<li><span class="fauxlabel">[% loc('Created:') %]</span> [% PROCESS format_time time=problem.created %]</li>
-<li><span class="fauxlabel">[% loc('Confirmed:') %]</span> [% PROCESS format_time time=problem.confirmed no_time='-' %]</li>
-<li><span class="fauxlabel">[% loc('Sent:') %]</span> [% PROCESS format_time time=problem.whensent %] [% IF problem.state == 'confirmed' %]<input onclick="return confirm('[% loc('You really want to resend?') %]')" type="submit" name="resend" value="[% loc('Resend report') %]">[% END %]</li>
-<li><span class="fauxlabel">[% loc('Last update:') %]</span> [% PROCESS format_time time=problem.lastupdate %]</li>
-<li><span class="fauxlabel">[% loc('Service:') %]</span> [% problem.service %]</li>
-<li><span class="fauxlabel">[% loc('Cobrand:') %]</span> [% problem.cobrand %]</li>
-<li><span class="fauxlabel">[% loc('Cobrand data:') %]</span> [% problem.cobrand_data %]</li>
-<li><span class="fauxlabel">[% loc('Going to send questionnaire?') %]</span> [% IF problem.send_questionnaire %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</li>
-<li><label for="flagged">[% loc('Flagged:') %]</label> <input type="checkbox" name="flagged"[% ' checked' IF problem.flagged %]></li>
+<li><span class="fauxlabel" title="[% loc('Date and time the report was created') %]">[% loc('Created:') %]</span> [% PROCESS format_time time=problem.created %]</li>
+<li><span class="fauxlabel" title="[% loc('Date and time the report was confirmed') %]">[% loc('Confirmed:') %]</span> [% PROCESS format_time time=problem.confirmed no_time='-' %]</li>
+<li><span class="fauxlabel" title="[% loc('Date and time the report was sent to the council') %]">[% loc('Sent:') %]</span> [% PROCESS format_time time=problem.whensent %] [% IF problem.state == 'confirmed' %]<input onclick="return confirm('[% loc('You really want to resend?') %]')" type="submit" name="resend" value="[% loc('Resend report') %]">[% END %]</li>
+<li><span class="fauxlabel" title="[% loc('Date and time of last update to report') %]">[% loc('Last update:') %]</span> [% PROCESS format_time time=problem.lastupdate %]</li>
+<li><span class="fauxlabel" title="[% loc('How the problem was submitted. Blank if via website') %]">[% loc('Service:') %]</span> [% problem.service %]</li>
+<li><span class="fauxlabel" title="[% loc('Which cobrand the report was submitted via.') %]">[% loc('Cobrand:') %]</span> [% problem.cobrand %]</li>
+<li><span class="fauxlabel" title="[% loc('Any extra data associated with the cobrand') %]">[% loc('Cobrand data:') %]</span> [% problem.cobrand_data %]</li>
+<li><span class="fauxlabel" title="[% loc('Will a questionnaire be sent to the problem creator about this') %]">[% loc('Going to send questionnaire?') %]</span> [% IF problem.send_questionnaire %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</li>
+<li><label for="flagged" title="[% loc('Mark the problem as flagged so it appears in the list of flagged content') %]">[% loc('Flagged:') %]</label> <input type="checkbox" name="flagged" id="flagged"[% ' checked' IF problem.flagged %]></li>
 
 [% IF problem.photo %]
 [% photo = problem.get_photo_params %]
-<li><img alt="" height="[% photo.height %]" width="[% photo.width %]" src="[% c.cobrand.base_url %][% photo.url %]">
+<li class="problem-image"><img alt="" height="[% photo.height %]" width="[% photo.width %]" src="[% c.cobrand.base_url %][% photo.url %]">
 <br>
 [% IF rotated %]Photo may be cached. View image directly to check<br>[% END %]
 <input type="submit" name="rotate_photo" value="Rotate Left" />
 <input type="submit" name="rotate_photo" value="Rotate Right" />
-<br>
+</li>
+<li>
 <input type="checkbox" id="remove_photo" name="remove_photo" value="1">
 <label for="remove_photo">[% loc("Remove photo (can't be undone!)") %]</label></li>
+</li>
 [% END %]
+<li><input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" ></li>
 </ul>
-<input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" ></form>
+</form>
 
 [% INCLUDE 'admin/list_updates.html' %]
 
