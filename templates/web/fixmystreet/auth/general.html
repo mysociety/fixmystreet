@@ -17,14 +17,12 @@
                 
                 loc_email_error = errors.$email_error || errors.other;
             END %]
-            
-            [% IF loc_email_error  %]
-                <div class="form-error">[% loc_email_error %]</div>
-            [% ELSIF sign_in_error %]
-                <div class="form-error">[% loc('There was a problem with your email/password combination. Passwords and user accounts are a brand <strong>new</strong> service, so you probably do not have one yet &ndash; please fill in the right hand side of this form to get one.') %]</div>
-            [% END %]
-
-        <label class="hidden n" for="email">[% loc('Your email address') %]</label>
+        <label class="hidden-js n" for="email">[% loc('Your email address') %]</label>
+        [% IF loc_email_error  %]
+            <div class="form-error">[% loc_email_error %]</div>
+        [% ELSIF sign_in_error %]
+            <div class="form-error">[% loc('There was a problem with your email/password combination. Passwords and user accounts are a brand <strong>new</strong> service, so you probably do not have one yet &ndash; please fill in the right hand side of this form to get one.') %]</div>
+        [% END %]
         <input type="email" class="required email" id="email" name="email" value="[% email | html %]" placeholder="[% loc('Your email address') %]">
 
         <div id="form_sign_in">
@@ -33,7 +31,7 @@
             <div id="form_sign_in_yes" class="form-box">
                 <h5>[% loc('<strong>Yes</strong> I have a password') %]</h5>
                 
-                <label class="hidden n" for="password_sign_in">[% loc('<strong>Yes</strong>, I have a password') %]</label>
+                <label class="hidden-js n" for="password_sign_in">[% loc('<strong>Yes</strong>, I have a password') %]</label>
 
                 <div class="form-txt-submit-box">
                     <input type="password" name="password_sign_in" id="password_sign_in" value="" placeholder="[% loc('Your password') %]">
@@ -51,10 +49,10 @@
                     <p>Providing a name and password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.</p>
                 </div>
 
-                <label class="hidden" for="name">[% loc('Your name') %]</label>
+                <label class="hidden-js" for="name">[% loc('Your name') %]</label>
                 <input type="text" name="name" value="" placeholder="[% loc('Your name') %]">
 
-                <label class="hidden" for="password_register">[% loc('Enter a new password (optional)') %]</label>
+                <label class="hidden-js" for="password_register">[% loc('Enter a new password (optional)') %]</label>
 
                 <div class="form-txt-submit-box">
                     <input type="password" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a new password (optional)') %]">

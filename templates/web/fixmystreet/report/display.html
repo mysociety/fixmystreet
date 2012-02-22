@@ -70,11 +70,10 @@
             <input type="hidden" name="submit_update" value="1">
             <input type="hidden" name="id" value="[% problem.id | html %]">
 
+            <label for="form_update">[% loc( 'Update' ) %]</label>
             [% IF field_errors.update %]
                 <div class='form-error'>[% field_errors.update %]</div>
             [% END %]
-            
-            <label for="form_update">[% loc( 'Update' ) %]</label>
             <textarea name="update" id="form_update" placeholder="[% loc('Please write your update here') %]" required>[% update.text | html %]</textarea>
 
             [% IF c.user && c.user.belongs_to_council( problem.council ) %]
@@ -103,16 +102,15 @@
             [% END %]
 
         [% IF c.cobrand.allow_photo_upload %]
-            [% IF field_errors.photo %]
-                <p class='form-error'>[% field_errors.photo %]</p>
-            [% END %]
-
             <div id="fileupload_normalUI">
             [% IF upload_fileid %]
                 <p>[% loc('You have already attached a photo to this update, attaching another one will replace it.') %]</p>
                 <input type="hidden" name="upload_fileid" value="[% upload_fileid %]">
             [% END %]
                 <label for="form_photo">[% loc('Photo') %]</label>
+                [% IF field_errors.photo %]
+                    <p class='form-error'>[% field_errors.photo %]</p>
+                [% END %]
                 <input type="file" name="photo" id="form_photo">
             </div>
         [% END %]
@@ -126,11 +124,10 @@
 
         [% ELSE %]
 
+            <label for="form_rznvy">[% loc('Your email address' ) %]</label>
             [% IF field_errors.email %]
                 <p class='form-error'>[% field_errors.email %]</p>
             [% END %]
-
-            <label for="form_rznvy">[% loc('Your email address' ) %]</label>
             <input type="email" name="rznvy" id="form_rznvy" value="[% update.user.email | html %]" required>
 
             <div id="form_sign_in">
@@ -138,13 +135,12 @@
                 <h2>[% loc("Do you have a FixMyStreet password?") %]</h2>
 
                 <div id="form_sign_in_yes" class="form-box">
+                    <h5>[% loc('<strong>Yes</strong> I have a password') %]</h5>
+
+                    <label class="hidden-js n" for="password_sign_in">[% loc('Yes I have a password') %]</label>
                     [% IF field_errors.password %]
                         <p class='form-error'>[% field_errors.password %]</p>
                     [% END %]
-
-                    <h5>[% loc('<strong>Yes</strong> I have a password') %]</h5>
-
-                    <label class="hidden n" for="password_sign_in">[% loc('Yes I have a password') %]</label>
                     <div class="form-txt-submit-box">
                         <input type="password" name="password_sign_in" id="password_sign_in" value="" placeholder="[% loc('Your password') %]">
                         <input class="green-btn" type="submit" name="submit_sign_in" id="submit_sign_in" value="[% loc('Post') %]">
@@ -160,7 +156,7 @@
 
                     [% INCLUDE name %]
                     
-                    <label class="hidden" for="password_register">[% loc('Enter a new password (optional)') %]</label>
+                    <label class="hidden-js" for="password_register">[% loc('Enter a new password (optional)') %]</label>
 
                     <div class="form-txt-submit-box">
                         <input type="password" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a new password (optional)') %]">
@@ -179,11 +175,10 @@
 [% INCLUDE 'footer.html' %]
 
 [% BLOCK name %]
+    <label class="hidden-js" for="form_name">[% loc('Your name') %]</label>
     [% IF field_errors.name %]
         <p class='form-error'>[% field_errors.name %]</p>
     [% END %]
-
-    <label class="hidden" for="form_name">[% loc('Your name') %]</label>
     <input type="text" name="name" id="form_name" value="[% update.name || c.user.name | html %]" placeholder="[% loc('Your name') %]">
 
     <div class="general-sidebar-notes">
