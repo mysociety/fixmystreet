@@ -1,5 +1,13 @@
 [% INCLUDE 'admin/header.html' title=loc('Summary') -%]
 
+[% IF contacts.total <= 0 %]
+<p>
+<strong>
+[% loc('You have no categories or contacts defined. You should add some on the Council Contacts page' ) %]
+</strong>
+</p>
+[% END %]
+
 [%- BLOCK states -%]
 <h2>[% title %]</h2>
 
