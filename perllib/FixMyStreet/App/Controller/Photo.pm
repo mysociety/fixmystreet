@@ -57,9 +57,11 @@ sub index :Path :Args(0) {
 
     my $photo = $photo[0]->photo;
     if ( $c->req->param('tn' ) ) {
-        $photo = _resize( $photo, 'x100' );
+        $photo = _shrink( $photo, 'x100' );
+    } elsif ( $c->req->param('fp' ) ) {
+        $photo = _crop( $photo );
     } elsif ( $c->cobrand->default_photo_resize ) {
-        $photo = _resize( $photo, $c->cobrand->default_photo_resize );
+        $photo = _shrink( $photo, $c->cobrand->default_photo_resize );
     }
 
     my $dt = DateTime->now();
@@ -75,12 +77,28 @@ sub no_photo : Private {
     $c->detach( '/page_error_404_not_found', [ 'No photo' ] );
 }
 
-sub _resize {
+# Shrinks a picture to the specified size, but keeping in proportion.
+sub _shrink {
     my ($photo, $size) = @_;
     use Image::Magick;
     my $image = Image::Magick->new;
     $image->BlobToImage($photo);
     my $err = $image->Scale(geometry => "$size>");
+    throw Error::Simple("resize failed: $err") if "$err";
+    my @blobs = $image->ImageToBlob();
+    undef $image;
+    return $blobs[0];
+}
+
+# Shrinks a picture to 90x60, cropping so that it is exactly that.
+sub _crop {
+    my ($photo) = @_;
+    use Image::Magick;
+    my $image = Image::Magick->new;
+    $image->BlobToImage($photo);
+    my $err = $image->Resize( geometry => "90x60^" );
+    throw Error::Simple("resize failed: $err") if "$err";
+    my $err = $image->Extent( geometry => '90x60', gravity => 'Center' );
     throw Error::Simple("resize failed: $err") if "$err";
     my @blobs = $image->ImageToBlob();
     undef $image;
