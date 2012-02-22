@@ -388,22 +388,24 @@ div.form-error,
 p.form-error {
   background:#ff0000;
   color:#fff;
-  padding:0.5em;
-  margin:0 1em 0 0;
+  padding:0 0.5em;
+  margin:0 0.6em 0 -0.5em;
   width:auto;
-  margin-bottom:0.5em;
-  @include border-radius(0.25em);
+  @include border-radius(0.25em 0.25em 0 0);
 }
 
 input.form-error,
 textarea.form-error {
   border-color:#ff0000;
-  background-color:#ffeeee;
+  @include border-radius(0 0 0.25em 0.25em);
 }
 
-// XXX This is a repeat from core
-div.label-valid {
-    background-color: white;
+// don't display valid error boxes as now the jump won't be
+// until the user submits, which is fine
+div.label-valid,
+p.label-valid {
+  display:none !important;
+  visibility: hidden;
 }
 
 /* LAYOUT */
@@ -849,7 +851,7 @@ a:hover.button-left {
 }
 
 
-// only on mobile, this is a sidebar on desk (#report-a-poblem-sidebar)
+// only on mobile, this is a sidebar on desk (#report-a-problem-sidebar)
 a.rap-notes-trigger,
 a:hover.rap-notes-trigger {
   display:block;
@@ -915,6 +917,11 @@ a:hover.rap-notes-trigger {
   display:none !important;
 }
 
+// hide anything with this class if js is working
+.js .hidden-js {
+  display: none !important;
+  visibility: hidden;
+}
 
 
 /* Front page */

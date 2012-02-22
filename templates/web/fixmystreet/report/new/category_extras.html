@@ -5,12 +5,10 @@
         [%- FOR meta IN category_extras.$category %]
         [%- meta_name = meta.code -%]
 
+            <label for="form_[% meta_name %]">[% meta.description _ ':' %]</label>
             [% IF field_errors.$meta_name %]
                 <p class='form-error'>[% field_errors.$meta_name %]</p>
             [% END -%]
-
-            <label for="form_[% meta_name %]">[% meta.description _ ':' %]</label>
-            
             [% IF meta.exists('values') %]
                 <select name="[% meta_name %]" id="form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
                     [% FOR option IN meta.values.value.keys %]

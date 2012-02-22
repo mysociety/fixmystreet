@@ -1,10 +1,10 @@
-<div id="report-a-poblem-main">
+<div id="report-a-problem-main">
     <h1>[% loc('Reporting a problem') %]</h1>
 
     <!-- THIS NEED THE NAME OF THE COUNCIL -->
     <p>[% loc('This report will be sent to <strong>Name of the Council</strong>.') %]</p>
 
-    <div id="report-a-poblem-sidebar">
+    <div id="report-a-problem-sidebar">
         <!--
             The text for this section needs checking, but I can't work out which bit comes from where
         -->
@@ -56,20 +56,18 @@
                 <p class='form-error'>[% field_errors.council %]</p>
             [% END %]
 
-            [% IF field_errors.title %]
-                <p class='form-error'>[% field_errors.title %]</p>
-            [% END %]
 
 
             <label for="form_title">[% loc('Subject') %]</label>
+            [% IF field_errors.title %]
+                <p class='form-error'>[% field_errors.title %]</p>
+            [% END %]
             <input type="text" value="[% report.title | html %]" name="title" id="form_title" placeholder="[% loc('Provide a title') %]" required>
 
+            <label for="form_detail">[% loc('Details') %]</label>
             [% IF field_errors.detail %]
                 <p class='form-error'>[% field_errors.detail %]</p>
             [% END %]
-
-
-            <label for="form_detail">[% loc('Details') %]</label>
             <textarea name="detail" id="form_detail" placeholder="[% loc('Please fill in details of the problem here') %]" required>[% report.detail | html %]</textarea>
 
             [% IF js %]
@@ -121,26 +119,25 @@
 
             [% ELSE %]
 
+                <label for="form_email">[% loc('Your email') %]</label>
                 [% IF field_errors.email %]
                     <p class='form-error'>[% field_errors.email %]</p>
                 [% END %]
-
-                <label for="form_email">[% loc('Your email') %]</label>
-                <input type="email" value="[% report.user.email | html %]" name="email" id="form_email" required>
+                <input type="email" value="[% report.user.email | html %]" name="email" id="form_email" placeholder="[% loc('Please enter your email address') %]" required>
 
                 <div id="form_sign_in">
                     <h3>[% loc("Now to submit your report&hellip;") %]</h3>
                     <h2>[% loc("Do you have a FixMyStreet password?") %]</h2>
 
                     <div id="form_sign_in_yes" class="form-box">
-                        [% IF field_errors.password %]
-                            <p class='form-error'>[% field_errors.password %]</p>
-                        [% END %]
 
                         <h5>[% loc('<strong>Yes</strong> I have a password') %]</h5>
 
-                        <label class="hidden n" for="password_sign_in">[% loc('Yes I have a password') %]</label>
+                        <label class="hidden-js n" for="password_sign_in">[% loc('Yes I have a password') %]</label>
                         <div class="form-txt-submit-box">
+                            [% IF field_errors.password %]
+                                <p class='form-error'>[% field_errors.password %]</p>
+                            [% END %]
                             <input type="password" name="password_sign_in" id="password_sign_in" placeholder="[% loc('Your password') %]" value="">
                             <input class="green-btn" type="submit" id="submit_sign_in" name="submit_sign_in" value="[% loc('Submit') %]">
                         </div>
@@ -154,11 +151,10 @@
                     <div id="form_sign_in_no" class="form-box">
                         <h5>[% loc('<strong>No</strong> Let me confirm my report by email') %]</h5>
 
+                        <label class="hidden-js" for="form_may_show_nameme">[% loc('Your name') %]</label>
                         [% IF field_errors.name %]
                             <p class='form-error'>[% field_errors.name %]</p>
                         [% END %]
-
-                        <label class="hidden" for="form_may_show_nameme">[% loc('Your name') %]</label>
                         <input type="text" class="form-focus-trigger validName" value="[% report.name | html %]" name="name" id="form_name" placeholder="[% loc('Your name') %]">
 
                         <div class="general-sidebar-notes form-focus-hidden">
@@ -173,10 +169,10 @@
                             <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %]</label>
                         </div>
 
-                        <label class="hidden" for="form_phone">[% loc('Your phone number (optional)') %]</label>
+                        <label class="hidden-js" for="form_phone">[% loc('Your phone number (optional)') %]</label>
                         <input class="form-focus-hidden" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number (optional)') %]">
                 
-                        <label class="hidden" for="password_register">[% loc('Enter a new password (optional)') %]</label>
+                        <label class="hidden-js" for="password_register">[% loc('Enter a new password (optional)') %]</label>
 
                         <div class="form-txt-submit-box form-focus-hidden">
                             <input type="password" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a new password (optional)') %]">
