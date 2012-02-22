@@ -144,7 +144,8 @@ $(function(){
         // we do this to stop things jumping around on blur
         success: function (err) { if ( form_submitted ) { err.addClass('label-valid').removeClass('label-valid-hidden').html( '&nbsp;' ); } else { err.addClass('label-valid-hidden'); } },
         errorPlacement: function( error, element ) {
-            element.parent('div').before( error );
+            var l = element.prev('label') || element;
+            l.before( error );
         },
         submitHandler: function(form) {
             if (form.submit_problem) {
