@@ -20,6 +20,7 @@
 [%- END %]
 [%- END %]
 
+[% IF c.cobrand == 'fixmystreet' -%]
 <h2>[% loc('Diligency prize league table') %]</h2>
 [% IF edit_activity.count %]
 <ul>
@@ -32,6 +33,7 @@
 [% loc('No edits have yet been made.') %]
 </p>
 [% END %]
+[% END -%]
 
 <h2>[% loc('Councils') %]</h2>
 
