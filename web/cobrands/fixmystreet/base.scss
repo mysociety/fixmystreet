@@ -400,10 +400,12 @@ textarea.form-error {
   @include border-radius(0 0 0.25em 0.25em);
 }
 
-// XXX This is a repeat from core
+// don't display valid error boxes as now the jump won't be
+// until the user submits, which is fine
 div.label-valid,
 p.label-valid {
-  background: #fff;
+  display:none !important;
+  visibility: hidden;
 }
 
 /* LAYOUT */
