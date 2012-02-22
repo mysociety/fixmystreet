@@ -36,6 +36,19 @@ sub summary : Path( 'summary' ) : Args(0) {
     $c->go( 'index' );
 }
 
+=head2 cobrands
+
+This is to allow CSS files etc to be served when hiding the admin
+interface behind a proxy for authentication purposes.
+
+=cut
+
+sub cobrands : Local {
+    my ( $self, $c ) = @_;
+    my ( $path ) = $c->req->path =~ m#^admin(.*)#;
+    $c->serve_static_file( FixMyStreet->path_to( 'web' . $path ) );
+}
+
 =head2 index
 
 Displays some summary information for the requests.
