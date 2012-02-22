@@ -46,27 +46,16 @@
 
 
     [% 
-        recent_photos = c.cobrand.recent_photos(3);
-        probs         = c.cobrand.recent();
+        recent_photos = c.cobrand.recent_photos(5);
     %]
 
-    [% IF probs.size || recent_photos.size %]
+    [% IF recent_photos.size %]
     <div id="front-recently">
         <h2>[% loc('Recently reported problems') %]</h2>
 
-<!--         [% IF recent_photos.size %]
-            <p id="front_photos">
-            [% FOREACH p IN recent_photos %]
-                <a href="/report/[% p.id %]"><img border="0" height="100"
-                    src="/photo?tn=1;id=[% p.id %]" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
-            [% END %]
-            </p>
-        [% END %] -->
-
-        [% IF probs.size %]
         <section class="full-width">
             <ul class="issue-list-a">
-            [% FOREACH p IN probs %]
+            [% FOREACH p IN recent_photos %]
                 <li>
                     <a href="/report/[% p.id %]">
                         <div class="text">
@@ -74,14 +63,14 @@
                             <small>[% prettify_epoch( p.confirmed_local.epoch, 1 ) %]</small>
                         </div>
                         <div class="img">
-                            <img alt="" height="60px" width="90px" src="/photo?id=[%p.id%]">
+                            <img alt="[% p.title | html %]" title="[% p.title | html %]" height="60" width="90" src="/photo?id=[% p.id %];fp=1">
                         </div>
                     </a>
                 </li>    
             [% END %]
             </ul>
         </section>
-        [% END %]
+
     </div>
     [% END %]
 </div>

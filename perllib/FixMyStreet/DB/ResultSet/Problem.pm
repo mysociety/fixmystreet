@@ -122,7 +122,8 @@ sub around_map {
     my $attr = {
         order_by => { -desc => 'created' },
         columns => [
-            'id', 'title' ,'latitude', 'longitude', 'state', 'confirmed'
+            'id', 'title', 'latitude', 'longitude', 'state', 'confirmed',
+            { photo => 'photo is not null' },
         ],
     };
     $attr->{rows} = $limit if $limit;

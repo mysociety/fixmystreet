@@ -12,9 +12,11 @@
                         <small>[% loc('(fixed)') %]</small>
                     [% END %]
                 </div>
+                [% IF p.photo %]
                 <div class="img">
-                    <img alt="" height="" width="100px" src="/photo?id=[%p.id%]">
+                    <img alt="" height="" width="100" src="/photo?id=[% p.id %]">
                 </div>
+                [% END %]
             </a>
         </li>
     [% END %]
