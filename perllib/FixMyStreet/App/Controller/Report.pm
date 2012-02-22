@@ -127,7 +127,8 @@ sub generate_map_tags : Private {
         ? [ {
             latitude  => $problem->latitude,
             longitude => $problem->longitude,
-            colour    => 'big',
+            colour    => 'yellow',
+            type      => 'big',
           } ]
         : [],
     );

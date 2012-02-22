@@ -20,7 +20,6 @@ function fixmystreet_activate_drag() {
 }
 
 function fms_markers_list(pins, transform) {
-    var cols = { 'red':'R', 'green':'G', 'yellow':'Y', 'big':'-big' };
     var markers = [];
     for (var i=0; i<pins.length; i++) {
         var pin = pins[i];
@@ -33,7 +32,8 @@ function fms_markers_list(pins, transform) {
             );
         }
         var marker = new OpenLayers.Feature.Vector(loc, {
-            type: cols[pin[2]],
+            colour: pin[2],
+            size: pin[5] || 'normal',
             id: pin[3],
             title: pin[4] || ''
         });
@@ -58,28 +58,45 @@ function fixmystreet_onload() {
         });
     }
 
+    var pin_layer_style_map = new OpenLayers.StyleMap({
+        'default': new OpenLayers.Style({
+            graphicTitle: "${title}",
+            graphicOpacity: 1,
+            graphicZIndex: 11,
+            backgroundGraphicZIndex: 10
+        })
+    });
+    pin_layer_style_map.addUniqueValueRules('default', 'size', {
+        'normal': {
+            externalGraphic: "/i/pin-${colour}.png",
+            graphicWidth: 48,
+            graphicHeight: 64,
+            graphicXOffset: -24,
+            graphicYOffset: -64,
+            backgroundGraphic: "/i/pin-shadow.png",
+            backgroundWidth: 60,
+            backgroundHeight: 30,
+            backgroundXOffset: -7,
+            backgroundYOffset: -30
+        },
+        'big': {
+            externalGraphic: "/i/pin-${colour}-big.png",
+            graphicWidth: 78,
+            graphicHeight: 105,
+            graphicXOffset: -39,
+            graphicYOffset: -105,
+            backgroundGraphic: "/i/pin-shadow-big.png",
+            backgroundWidth: 88,
+            backgroundHeight: 40,
+            backgroundXOffset: -10,
+            backgroundYOffset: -35
+        }
+    });
     var pin_layer_options = {
         rendererOptions: {
             yOrdering: true
         },
-        styleMap: new OpenLayers.StyleMap({
-            'default': new OpenLayers.Style({
-                externalGraphic: "/i/pin${type}.png",
-                graphicTitle: "${title}",
-                graphicWidth: 48,
-                graphicHeight: 64,
-                graphicOpacity: 1,
-                graphicXOffset: -24,
-                graphicYOffset: -64,
-                backgroundGraphic: "/i/pin-shadow.png",
-                backgroundWidth: 60,
-                backgroundHeight: 30,
-                backgroundXOffset: -7,
-                backgroundYOffset: -30,
-                graphicZIndex: 11,
-                backgroundGraphicZIndex: 10
-            })
-        })
+        styleMap: pin_layer_style_map
     };
     if (fixmystreet.page == 'around') {
         fixmystreet.bbox_strategy = new OpenLayers.Strategy.BBOX();
