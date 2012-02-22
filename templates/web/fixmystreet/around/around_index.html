@@ -17,7 +17,7 @@
     <fieldset>
         <label for="pc">[% question %]:</label>
         <input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200">
-        <input type="submit" value="[% loc('Go') %]" id="submit">
+        <input class="green-btn final-submit" type="submit" value="[% loc('Go') %]" id="submit">
 
         [% IF partial_token %]
             <input type="hidden" name="partial" value="[% partial_token.token %]">
