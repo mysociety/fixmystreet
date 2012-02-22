@@ -325,7 +325,7 @@ textarea{
 }
 
 /* Report a problem sidebar notes */
-#report-a-poblem-sidebar {
+#report-a-problem-sidebar {
   position:absolute;
   left:29.5em;
   top:2em;
@@ -345,7 +345,7 @@ textarea{
   }
 }
 .ie6, .ie7 {
-  #report-a-poblem-sidebar {
+  #report-a-problem-sidebar {
     top:5em;
   }
 }
@@ -697,7 +697,7 @@ body.frontpage {
   }
 
   //put the RAP notes into the main copy area
-  #report-a-poblem-sidebar {
+  #report-a-problem-sidebar {
     position: static;
     width: auto;
     @include box-shadow(rgba(0, 0, 0, 0), 0, 0, 0);
