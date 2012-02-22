@@ -220,11 +220,11 @@ select, input, textarea {
 a,
 a:visited {
   text-decoration:none;
-  color:$contrast1;
+  color:#0BA7D1;
   &:hover,
   &:active {
     text-decoration:underline;
-    color:$contrast2;    
+    color:#0D7CCE;    
   }
 }
 
