@@ -78,15 +78,11 @@ var fixmystreet = {
 
 [% BLOCK pin %]
 
-[% cols = {
-    red = 'R', green = 'G', blue = 'B', purple = 'P',
-   }
-%]
 [% IF pin.id %]
 <a title="[% pin.title | html %]" href="[% c.uri_for('/report/' _ pin.id) %]">
 [%- END -%]
-<img border="0" class="pin" src="[% c.uri_for('/i/pin' _ cols.${pin.colour} _ '.png') %]"
-    alt="[% loc('Problem') %]" style="top:[% pin.py - 58 %]px; left:[% pin.px - 22 %]px; position: absolute;">
+<img border="0" class="pin" src="[% c.uri_for('/i/pin-' _ pin.colour _ '.png') %]"
+    alt="[% loc('Problem') %]" style="top:[% pin.py - 64 %]px; left:[% pin.px - 24 %]px; position: absolute;">
 [%- IF pin.id -%]
 </a>
 [% END %]
