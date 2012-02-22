@@ -47,6 +47,10 @@ sub index : Path : Args(0) {
 
     $c->forward('check_page_allowed');
 
+    my $secret = $c->model('DB::Secret')->search()->first;
+
+    $c->stash->{no_secret} = 1 unless $secret;
+
     my ( $sql_restriction, $id, $site_restriction ) = $c->cobrand->site_restriction();
 
     my $problems = $c->cobrand->problems->summary_count;

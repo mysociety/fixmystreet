@@ -1,12 +1,20 @@
 [% INCLUDE 'admin/header.html' title=loc('Summary') -%]
 
-[% IF contacts.total <= 0 %]
-<p>
-<strong>
-[% loc('You have no categories or contacts defined. You should add some on the Council Contacts page' ) %]
-</strong>
-</p>
-[% END %]
+[% IF no_secret || contacts.total == 0 -%]
+<h2>Setup steps to complete</h2>
+<ul id="setup-todo">
+[% IF no_secret -%]
+<li>
+    [% loc('Put a value in the secret table') %]
+</li>
+[% END -%]
+[% IF contacts.total == 0 %]
+<li>
+[% loc('Add contacts on the Council Contacts page' ) %]
+</li>
+[% END -%]
+</ul>
+[% ELSE -%]
 
 [%- BLOCK states -%]
 <h2>[% title %]</h2>
@@ -45,6 +53,7 @@
     [% END %]
         <tr><td>[% category.key %]</td><td>[% category.value.total %]</td><td>[% category.value.fixed / category.value.total * 100 | format('%.1f') %]%</td></tr>
     [% '</table>' IF loop.last %]
+[% END %]
 [% END %]
 
 [% INCLUDE 'admin/footer.html' %]
