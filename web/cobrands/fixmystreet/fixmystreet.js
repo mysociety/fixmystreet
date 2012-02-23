@@ -223,12 +223,12 @@ $(function(){
      * Report a problem page 
      */
     //desktop
-    if($('#report-a-poblem-sidebar:visible').length > 0){
-        heightFix('#report-a-poblem-sidebar:visible', '.content', 26);
+    if($('#report-a-problem-sidebar:visible').length > 0){
+        heightFix('#report-a-problem-sidebar:visible', '.content', 26);
     }
 
     //show/hide notes on mobile
-    $('.mobile #report-a-poblem-sidebar').after('<a href="#" class="rap-notes-trigger button-right">How to send successful reports</a>').hide();
+    $('.mobile #report-a-problem-sidebar').after('<a href="#" class="rap-notes-trigger button-right">How to send successful reports</a>').hide();
     $('.mobile').on('click', '.rap-notes-trigger', function(e){
         e.preventDefault();
         //check if we've already moved the notes
@@ -239,7 +239,7 @@ $(function(){
         }else{
             //if not, move them and show, hiding .content
             $('.mobile .content').after('<div class="content rap-notes"></div>').hide();
-            $('#report-a-poblem-sidebar').appendTo('.rap-notes').show().after('<a href="#" class="rap-notes-close button-left">BACK</a>');
+            $('#report-a-problem-sidebar').appendTo('.rap-notes').show().after('<a href="#" class="rap-notes-close button-left">BACK</a>');
         }
     });
     $('.mobile').on('click', '.rap-notes-close', function(e){
