@@ -58,7 +58,7 @@ body {
   display: table-caption;
   .nav-wrapper-2{
     width: 100%;
-    min-height: 3.5em;
+    min-height: 4em;
     position: absolute;
     border-top: 0.25em solid $primary;
     z-index:2;
@@ -86,7 +86,7 @@ body {
   border-top: 0px;
 }
 #site-logo {
-  top: 0.75em;
+  top: 0.9em;
   position: absolute;
   z-index: 3;
 }
@@ -127,7 +127,7 @@ body {
     &#main-menu{
       li{
         a, span{
-          padding: 1em 0.75em 1.3em 0.75em;
+          padding: 0.75em;
           font-size: 0.9em;
         }
         a:hover{
@@ -143,18 +143,18 @@ body {
       padding: 0em 0.5em;
       margin-left: 0.25em;
       background:$primary;
-      @include border-radius(0 0 0.25em 0.25em);
+      @include border-radius(0 0 0.375em 0.375em);
       @include box-shadow(0em 0.3em 0.1em 0em #000);
       li{
         a{
           color:#000;
           text-transform: uppercase;
-          font-size: 0.75em;
-          padding: 1.25em 0.3em 0.75em 0.3em;
+          font-size: 0.6875em;
+          padding: 1.3em 0.7em 1em 0.7em;
           &#mysoc-logo {
-            width:110px;
-            height:20px;
-            background-position:-250px -42px;
+            width:84px;
+            height:16px;
+            background-position:-260px -43px;
             @include opacity(0.8);
             &:hover {
               @include opacity(1);
@@ -192,8 +192,12 @@ body {
   }
 }
 
-// map page - has fixed header with a gradient
+// map page - has fixed header and different styling
 body.mappage {
+  #main-nav ul#main-menu li a,
+  #main-nav ul#main-menu li span {
+    padding: 1.4em 0.75em 1.35em 0.75em;
+  }
   .nav-wrapper{
     .nav-wrapper-2{
       position: fixed;
