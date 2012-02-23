@@ -98,7 +98,7 @@ sub _crop {
     $image->BlobToImage($photo);
     my $err = $image->Resize( geometry => "90x60^" );
     throw Error::Simple("resize failed: $err") if "$err";
-    my $err = $image->Extent( geometry => '90x60', gravity => 'Center' );
+    $err = $image->Extent( geometry => '90x60', gravity => 'Center' );
     throw Error::Simple("resize failed: $err") if "$err";
     my @blobs = $image->ImageToBlob();
     undef $image;

@@ -112,8 +112,8 @@ sub report_form_ajax : Path('ajax') : Args(0) {
     $c->forward('setup_categories_and_councils');
 
     # render templates to get the html
-    my $category = $c->view('Web')->render( $c, 'report/new/category.html');
-    my $councils_text = $c->view('Web')->render( $c, 'report/new/councils_text.html');
+    my $category = $c->render_fragment( 'report/new/category.html');
+    my $councils_text = $c->render_fragment( 'report/new/councils_text.html');
     my $has_open311 = keys %{ $c->stash->{category_extras} };
 
     my $body = JSON->new->utf8(1)->encode(
@@ -150,7 +150,7 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
         $c->stash->{report} = { category => $c->req->param('category') };
         $c->stash->{category_extras} = { $c->req->param('category' ) => $c->stash->{category_extras}->{ $c->req->param('category') } };
 
-        $category_extra= $c->view('Web')->render( $c, 'report/new/category_extras.html');
+        $category_extra= $c->render_fragment( 'report/new/category_extras.html');
     }
 
     my $body = JSON->new->utf8(1)->encode(

@@ -402,6 +402,22 @@ sub finalize {
     delete $c->stash->{cobrand};
 }
 
+=head2 render_fragment
+
+If a page needs to render a template fragment internally (e.g. for an Ajax
+call), use this method.
+
+=cut
+
+sub render_fragment {
+    my ($c, $template, $vars) = @_;
+    $vars ||= {};
+    $vars->{additional_template_paths} = [ $c->cobrand->path_to_web_templates->stringify ]
+        unless $c->cobrand->is_default;
+    $c->view('Web')->render($c, $template, $vars);
+}
+
+
 =head1 SEE ALSO
 
 L<FixMyStreet::App::Controller::Root>, L<Catalyst>
