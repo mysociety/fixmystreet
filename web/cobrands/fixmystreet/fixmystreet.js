@@ -76,8 +76,18 @@ function tabs(elem)
 
 $(function(){
     //add mobile class if small screen
-    if(Modernizr.mq('only screen and (max-width:47em)')) {
+    if(Modernizr.mq('only screen and (max-width:48em)')) {
         $('html').addClass('mobile');
+    } else {
+
+        // Make map full screen on non-mobile sizes.
+        $('#map_box').prependTo('.wrapper').css({
+            zIndex: 0, position: 'fixed',
+            top: 0, left: 0, right: 0, bottom: 0,
+            width: '100%', height: '100%',
+            margin: 0
+        }).data('size', 'full');
+
     }
     //heightfix the desktop .content div
     if(Modernizr.mq('only screen and (min-width:48em)')) {

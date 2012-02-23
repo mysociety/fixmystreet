@@ -207,6 +207,9 @@ $(function(){
         );
         fixmystreet.map.setCenter(centre, fixmystreet.zoom || 3);
     }
+    if ($('#map_box').data('size')=='full') {
+        fixmystreet.map.pan(-200, -25, { animate: false });
+    }
 
     if (document.getElementById('mapForm')) {
         var click = new OpenLayers.Control.Click();

@@ -2,6 +2,12 @@
 @import "_colours";
 @import "_mixins";
 
+// OpenLayers fix for navigation being top right
+.olControlPanZoom {
+    right: 44px !important;
+    top: 4em !important;
+    left: auto !important;
+}
 
 //hacks for desk/mob only stuff
 .desk-only {
@@ -353,10 +359,6 @@ body.twothirdswidthpage {
   top: 0;
   z-index:1;
 }
-#mapForm #map_box {
-  width: 15em;
-  top:2em;
-}
 
 // log in bit, pokes above the .content div
 #user-meta{
@@ -506,7 +508,7 @@ textarea.form-error {
   left:29.5em;
   top:2em;
   width:15em;
-  z-index: -1;
+  //z-index: -1;
   @include box-shadow(rgba(0, 0, 0, 0.6) 0px 0px 4px 1px);
   .sidebar-tips {
     background:#eeeeee;
@@ -531,7 +533,7 @@ textarea.form-error {
   position: absolute;
   left:29.5em;
   width:15em;
-  z-index: -1;
+  //z-index: -1;
   @include box-shadow(rgba(0, 0, 0, 0.6) 0px 0px 4px 1px);
   p {
     background:#eeeeee;
