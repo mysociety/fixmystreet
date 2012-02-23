@@ -112,11 +112,29 @@
             [% END %]
 
             [% IF c.user_exists %]
+                <div class="form-box">
+                    <label class="hidden-js" for="form_may_show_nameme">[% loc('Your name') %]</label>
+                    [% IF field_errors.name %]
+                        <p class='form-error'>[% field_errors.name %]</p>
+                    [% END %]
+                    <input type="text" class="validName" value="[% report.name | html %]" name="name" id="form_name" placeholder="[% loc('Your name') %]">
 
-                [% INCLUDE name_phone %]
+                    [%# if there is nothing in the name field then set check box as default on form %]
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF !report.anonymous %]>
+                        <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %]</label>
+                    </div>
 
-                <input class="green-btn final-submit" type="submit" value="[% loc('Submit') %]">
+                    <label class="hidden-js" for="form_phone">[% loc('Your phone number (optional)') %]</label>
+                    <input class="" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number (optional)') %]">
+            
+                    <label class="hidden-js" for="password_register">[% loc('Enter a new password (optional)') %]</label>
 
+                    <div class="form-txt-submit-box">
+                        <input type="password" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a new password (optional)') %]">
+                        <input class="green-btn" type="submit" id="submit_register" name="submit_register" value="[% loc('Submit') %]">
+                    </div>
+                </div>
             [% ELSE %]
 
                 <label for="form_email">[% loc('Your email') %]</label>
