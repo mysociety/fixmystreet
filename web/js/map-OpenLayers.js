@@ -208,7 +208,28 @@ $(function(){
         fixmystreet.map.setCenter(centre, fixmystreet.zoom || 3);
     }
     if ($('#map_box').data('size')=='full') {
-        fixmystreet.map.pan(-200, -25, { animate: false });
+        // TODO Work better with window resizing, this is pretty 'set up' only at present
+        var q = $(window).width() / 4;
+        // Need to try and fake the 'centre' being 75% from the left
+        fixmystreet.map.pan(-q, -25, { animate: false });
+        fixmystreet.map.events.register("movestart", null, function(e){
+            fixmystreet.map.moveStart = { zoom: this.getZoom(), center: this.getCenter() };
+        });
+        fixmystreet.map.events.register("zoomend", null, function(e){
+            if ( !this.getCenter().equals(fixmystreet.map.moveStart.center) ) {
+                // Centre has moved, e.g. by double-click. Same whether zoom in or out
+                fixmystreet.map.pan(-q, -25, { animate: false });
+                return;
+            }
+            var zoom_change = this.getZoom() - fixmystreet.map.moveStart.zoom;
+            if (zoom_change == -1) {
+                // Zoomed out, need to re'centre'
+                fixmystreet.map.pan(-q/2, 0, { animate: false });
+            } else if (zoom_change == 1) {
+                // Using a zoom button
+                fixmystreet.map.pan(q, 0, { animate: false });
+            }
+        });
     }
 
     if (document.getElementById('mapForm')) {
