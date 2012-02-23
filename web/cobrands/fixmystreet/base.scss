@@ -580,10 +580,48 @@ p.label-valid {
   }
 }
 
-//hide page footer on mobile
-.mobile #page-footer {
-  display:none;
+
+//footer blocks
+#footer-mobileapps {
+  @extend .full-width;
+  padding:1em;
+  h4 {
+    margin:0;
+  }
+  ul {
+    @include list-reset-soft;
+    li {
+      border-bottom:1px solid #AFAFAF;
+      &:last-child {
+        border-bottom:none;
+      }
+      a {
+        display:block;
+        padding:0.5em 0;
+      }
+    }
+  }
 }
+
+#footer-ads {
+  ul {
+    @include list-reset-soft;
+    li {
+      border-bottom:1px solid #AFAFAF;
+      &:last-child {
+        border-bottom:none;
+      }
+      h4 {
+        margin:0.75em 0 0.25em 0;
+      }
+      p {
+        font-size:0.75em;
+      }
+    }
+  }
+}
+
+
 
 /*BUTTONS*/
 
@@ -1024,48 +1062,5 @@ a:hover.rap-notes-trigger {
   .issue-list-a {
     border-bottom:none;
     margin-bottom:0;
-  }
-}
-
-#front-mobileapps {
-  @extend .full-width;
-  background:#333;
-  padding:1em;
-  @include box-shadow(inset rgba(0, 0, 0, 0.9) 0 0 8px);
-  h2 {
-    color:#fff;
-    margin-top:0;
-  }
-  ul {
-    @include list-reset-soft;
-    li {
-      border-bottom:1px solid #AFAFAF;
-      &:last-child {
-        border-bottom:none;
-      }
-      a {
-        display:block;
-        color:#fff;
-        padding:0.5em 0;
-      }
-    }
-  }
-}
-
-#front-ads {
-  ul {
-    @include list-reset-soft;
-    li {
-      border-bottom:1px solid #AFAFAF;
-      &:last-child {
-        border-bottom:none;
-      }
-      h4 {
-        margin:0.75em 0 0.25em 0;
-      }
-      p {
-        font-size:0.75em;
-      }
-    }
   }
 }

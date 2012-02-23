@@ -184,6 +184,12 @@ body {
   margin-bottom: -1em;
   @include box-shadow(0px 0px 6px 1px #000);
 }
+//weird margining thing for ie8
+.ie8 {
+  .wrapper .content {
+    margin-top:7em;
+  }
+}
 // full width page
 body.fullwidthpage {
   background:#1a1a1a;
@@ -201,6 +207,7 @@ body.fullwidthpage {
     width:40em;
   }
 }
+// two thirds width page
 body.twothirdswidthpage {
   @extend .fullwidthpage;
   .content {
@@ -217,6 +224,127 @@ body.twothirdswidthpage {
     }
   }
 }
+
+
+// table wrapper
+.tablewrapper {
+  display:table;
+  width:100%;
+  padding:1em 0;
+  >div {
+    display:table-cell;
+    width:50%;
+  }
+  #footer-mobileapps {
+    border-right:1em solid #fff;
+  }
+  #footer-ads {
+    border-left:1em solid #fff;
+  }
+  .full-width {
+    width:auto;
+    margin:0;
+  }
+}
+.ie6, .ie7 {
+  .tablewrapper {
+    display:block;
+    >div {
+      width:48%;
+      display:block;
+      float: left;
+      border:none !important;
+    }
+  }
+}
+
+// adds border to the top and goes full width
+.bordered {
+  margin:0 -1em;
+  padding:0 1em;
+  width:auto;
+  border-top:0.25em solid $primary;
+}
+
+//footer blocks
+#footer-mobileapps {
+  border-right:1em solid #fff;
+  background:none;
+  padding:0;
+  @include box-shadow(inset rgba(0, 0, 0, 0) 0 0 0);
+  h2 {
+    color:#222;
+    margin-top:0;
+  }
+  ul {
+    @include list-reset;
+    li {
+      border-bottom:none;
+      float:left;
+      margin:0 1em 1em 0;
+      a {
+        color:#222;
+        padding:0;
+        width: 96px;
+        height: 32px;
+        margin:0 auto;
+        text-indent: -999999px;
+        background: url(images/sprite.png) -12px -3610px no-repeat;
+        @include opacity(0.8);
+        &:hover {
+          @include opacity(1);
+        }
+        &.m-app-iphone {
+          background-position: -12px -3610px;
+        }
+        &.m-app-iphone-streetreport {
+          background-position: -12px -3678px;
+          height:50px;
+        }
+        &.m-app-droid {
+          background-position: -12px -3756px;
+        }
+        &.m-app-nokia {
+          background-position: -12px -3820px;
+          width:74px;
+        }
+      }
+    }
+  }
+}
+.ie6, .ie7 {
+  #footer-mobileapps {
+      margin:0 0.5em;
+      margin-right:2%;
+  }
+}
+
+#footer-ads {
+  border-left:1em solid #fff;
+  ul {
+    display:table;
+    li {
+      display:table-cell;
+      border-bottom:none;
+      &:last-child {
+        border-left:1.25em solid #fff;
+      }
+    }
+  }
+}
+.ie6, .ie7 {
+  #footer-ads {
+    margin-left:2%;
+    ul {
+      width:100%;
+      li {
+        float:left;
+        width:45%
+      }
+    }
+  }
+}
+
 
 #map_box{
   position: absolute;
@@ -254,6 +382,11 @@ body.twothirdswidthpage {
         background:#444;
       }
     }
+  }
+}
+.ie8 {
+  #user-meta p {
+    top:5em;
   }
 }
 
@@ -300,16 +433,6 @@ body.twothirdswidthpage {
   }
 }
 
-
-// page footer - style it full width
-#page-footer {
-  border-top:3px solid $primary;
-  margin:1em -1em 0 -1em;
-  padding:1em;
-}
-
-
-
 .big-green-banner {
   right:-1.25em;
   margin-left:-2em;
@@ -345,12 +468,6 @@ body.twothirdswidthpage {
 .full-width{
   margin: 0 0 0em -1em;
   width: 29em;
-}
-
-.fullwidthpage {
-  .full-width {
-    width:58em;
-  }
 }
 
 /*FORMS*/
@@ -481,14 +598,6 @@ body.frontpage {
   }
 }
 //weird margining thing for ie8
-.ie8 {
-  .wrapper .content {
-    margin-top:7em;
-  }
-  #user-meta p {
-    top:5em;
-  }
-}
 .ie8 body.frontpage {
   .wrapper .content {
     margin-top:5em;
@@ -497,7 +606,6 @@ body.frontpage {
     top:3em;
   }
 }
-
 
 #front-main {
   background:$primary;
@@ -557,55 +665,20 @@ body.frontpage {
   }
 }
 
-.front-tablewrapper {
-  display:table;
-  width:100%;
-  padding:1em 0;
-  >div {
-    display:table-cell;
-    width:50%;
-  }
-  #front-howto,
-  #front-mobileapps {
-    border-right:1em solid #fff;
-  }
-  #front-recently,
-  #front-ads {
-    border-left:1em solid #fff;
-  }
-  .full-width {
-    width:auto;
-    margin:0;
-  }
-}
 
 .ie6, .ie7 {
-  .front-tablewrapper {
-    display:block;
-    >div {
-      width:48%;
-      display:block;
-      float: left;
-      border:none !important;
-    }
-    #front-howto,
-    #front-mobileapps {
+  .tablewrapper {
+    #front-howto {
       margin-right:2%;
     }
-    #front-recently,
-    #front-ads {
+    #front-recently {
       margin-left:2%;
     }
   }
 }
-.bordered {
-  margin:0 -1em;
-  padding:0 1em;
-  width:auto;
-  border-top:0.25em solid $primary;
-}
 
 #front-howto {
+  border-right:1em solid #fff;
   #front_stats {
     background:none;
     border-top:0.25em solid $primary;
@@ -627,84 +700,10 @@ body.frontpage {
   }
 }
 
-#front-mobileapps {
-  background:none;
-  padding:0;
-  @include box-shadow(inset rgba(0, 0, 0, 0) 0 0 0);
-  h2 {
-    color:#222;
-    margin-top:0;
-  }
-  ul {
-    @include list-reset;
-    li {
-      border-bottom:none;
-      float:left;
-      margin:0 1em 1em 0;
-      a {
-        color:#222;
-        padding:0;
-        width: 96px;
-        height: 32px;
-        margin:0 auto;
-        text-indent: -999999px;
-        background: url(images/sprite.png) -12px -3610px no-repeat;
-        @include opacity(0.8);
-        &:hover {
-          @include opacity(1);
-        }
-        &.m-app-iphone {
-          background-position: -12px -3610px;
-        }
-        &.m-app-iphone-streetreport {
-          background-position: -12px -3678px;
-          height:50px;
-        }
-        &.m-app-droid {
-          background-position: -12px -3756px;
-        }
-        &.m-app-nokia {
-          background-position: -12px -3820px;
-          width:74px;
-        }
-      }
-    }
-  }
+
+#front-recently {
+  border-left:1em solid #fff;
 }
-.ie6, .ie7 {
-  #front-mobileapps {
-      margin:0 0.5em;
-  }
-}
-
-#front-ads {
-  ul {
-    display:table;
-    li {
-      display:table-cell;
-      border-bottom:none;
-      &:last-child {
-        border-left:1.25em solid #fff;
-      }
-    }
-  }
-}
-.ie6, .ie7 {
-  #front-ads {
-    ul {
-      width:100%;
-      li {
-        float:left;
-        width:45%
-      }
-    }
-  }
-}
-
-
-
-
-
 
 /* MEDIA QUERIES */
 @media only screen and (min-width: 48em) and (max-width: 64em) {

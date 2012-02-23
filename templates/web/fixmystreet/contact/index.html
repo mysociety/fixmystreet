@@ -1,6 +1,7 @@
 [% INCLUDE 'header.html',
     title = loc('Contact Us')
     robots = 'noindex,nofollow'
+    bodyclass => 'twothirdswidthpage'
 %]
 
 <h1>[% loc('Contact the team') %]</h1>
@@ -96,4 +97,4 @@
 
 [% TRY %][% INCLUDE 'contact/address.html' %][% CATCH file %][% END %]
 
-[% INCLUDE 'footer.html' %]
+[% INCLUDE 'footer.html' pagefooter = 'yes' %]

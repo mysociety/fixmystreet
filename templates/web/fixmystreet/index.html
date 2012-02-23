@@ -27,7 +27,7 @@
     </div>
 </div>
 
-<div class="front-tablewrapper">
+<div class="tablewrapper">
     <div id="front-howto">
         <h2>[% loc('How to report a problem') %]</h2>
         
@@ -75,34 +75,8 @@
     [% END %]
 </div>
 
-<div class="front-tablewrapper bordered">
-    <div id="front-mobileapps">
-        <h2>Mobile apps</h2>
-
-        <ul>
-            <li><a class="m-app-iphone" href="http://itunes.apple.com/gb/app/fixmystreet/id297456545">iPhone</a></li>
-            <li><a class="m-app-droid" href="https://market.android.com/details?id=com.android.fixmystreet">Android</a></li>
-            <li><a class="m-app-nokia" href="http://store.ovi.com/content/107557">Nokia</a></li>
-            <li><a class="m-app-iphone-streetreport" href="http://itunes.apple.com/gb/app/streetreport/id371891859">iPhone Street Report</a></li>
-        </ul>
-    </div>
-
-    <div id="front-ads">
-        <ul>
-            <li>
-                <h4>[% loc('Are you a developer?') %]</h4>
-                <p>[% loc('Would you like to contribute to FixMyStreet? Our code is open source and <a href="http://github.com/mysociety/fixmystreet">available on GitHub</a>.') %]</p>
-            </li>
-            <li>
-                <h4>[% loc('Are you from a council?') %]</h4>
-                <p>[% loc('Would you like better integration with FixMyStreet? <a href="http://www.mysociety.org/fixmystreet-for-local-council-websites/">Find out about FixMyStreet for councils</a>.') %]</p>
-            </li>
-        </ul>
-    </div>
-</div>
-
 
 <!-- [% TRY %][% INCLUDE 'front/news.html' %][% CATCH file %][% END %] -->
 
 
-[% INCLUDE 'footer.html' %]
+[% INCLUDE 'footer.html' pagefooter = 'yes' %]
