@@ -209,7 +209,7 @@ body.fullwidthpage {
     width:40em;
   }
 }
-// two thirds width page
+// two thirds width page, also has option for a sidebar
 body.twothirdswidthpage {
   @extend .fullwidthpage;
   .content {
@@ -228,7 +228,8 @@ body.twothirdswidthpage {
 }
 
 
-// table wrapper
+// table wrapper - this enables anything to become a
+// table with div children as table cells
 .tablewrapper {
   display:table;
   width:100%;
@@ -236,12 +237,6 @@ body.twothirdswidthpage {
   >div {
     display:table-cell;
     width:50%;
-  }
-  #footer-mobileapps {
-    border-right:1em solid #fff;
-  }
-  #footer-ads {
-    border-left:1em solid #fff;
   }
   .full-width {
     width:auto;
@@ -348,6 +343,8 @@ body.twothirdswidthpage {
 }
 
 
+// map box (fallback for non js really as most users
+// will have fullscreen map)
 #map_box{
   position: absolute;
   height: 25em;
@@ -361,6 +358,7 @@ body.twothirdswidthpage {
   top:2em;
 }
 
+// log in bit, pokes above the .content div
 #user-meta{
   display:block;
   position: relative;
@@ -392,14 +390,13 @@ body.twothirdswidthpage {
   }
 }
 
-// Wraps around #key-tools box
+// Wraps around #key-tools box - sticks to the bottom of the screen on desktop
 .shadow-wrap {
   position:fixed;
   bottom: 0;
   width: 29em;
   overflow: hidden;
   padding-top: 3em;
-  // List sticks to the bottom of the page on desktop
   ul#key-tools {
     border-top: 0.25em solid $primary;
     @include box-shadow(-0em 0px 1em 1em #fff);
@@ -435,6 +432,7 @@ body.twothirdswidthpage {
   }
 }
 
+// pokes over the RHS with a little triangle
 .big-green-banner {
   right:-1.25em;
   margin-left:-2em;
@@ -452,7 +450,9 @@ body.twothirdswidthpage {
   }
 }
 
+
 .banner {
+  // fixed banner image
   #fixed {
     top:-2.25em;
     padding-top:5em;
@@ -467,6 +467,9 @@ body.twothirdswidthpage {
   }
 }
 
+
+// for pulling elements fullwidth regardless
+// of .contents' padding
 .full-width{
   margin: 0 0 0em -1em;
   width: 29em;
@@ -497,7 +500,7 @@ textarea.form-error {
 }
 
 
-/* Report a problem sidebar notes */
+// Report a problem sidebar notes
 #report-a-problem-sidebar {
   position:absolute;
   left:29.5em;
@@ -523,7 +526,7 @@ textarea.form-error {
   }
 }
 
-/* More general sidebar notes */
+// More general sidebar notes
 .general-sidebar-notes {
   position: absolute;
   left:29.5em;
@@ -542,14 +545,15 @@ textarea.form-error {
   }
 }
 
-/* Report page */
+// Report page
 .problem-header {
   min-height:19em;
 }
 
-/* Frontpage */
+// Frontpage
 body.frontpage {
   .wrapper {
+    // we do this so we can have full screen width elements
     >.container {
       width:100%;
     }
@@ -609,6 +613,7 @@ body.frontpage {
   }
 }
 
+// big yellow bit full screen width
 #front-main {
   background:$primary;
   position:absolute;
@@ -668,17 +673,6 @@ body.frontpage {
 }
 
 
-.ie6, .ie7 {
-  .tablewrapper {
-    #front-howto {
-      margin-right:2%;
-    }
-    #front-recently {
-      margin-left:2%;
-    }
-  }
-}
-
 #front-howto {
   border-right:1em solid #fff;
   #front_stats {
@@ -693,7 +687,6 @@ body.frontpage {
     }
   }
 }
-
 .ie6, .ie7 {
   #front_stats {
     div {
@@ -702,10 +695,24 @@ body.frontpage {
   }
 }
 
-
 #front-recently {
   border-left:1em solid #fff;
 }
+
+
+.ie6, .ie7 {
+  .tablewrapper {
+    #front-howto {
+      margin-right:2%;
+    }
+    #front-recently {
+      margin-left:2%;
+    }
+  }
+}
+
+
+
 
 /* MEDIA QUERIES */
 @media only screen and (min-width: 48em) and (max-width: 64em) {
@@ -759,7 +766,7 @@ body.frontpage {
     }
   }
 
-  //Map become percentage width
+  //Map becomes percentage width
   #map_box{
     width: 38%;
   }
