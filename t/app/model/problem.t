@@ -7,6 +7,7 @@ use Test::More;
 
 use FixMyStreet;
 use FixMyStreet::App;
+use FixMyStreet::TestMech;
 use mySociety::Locale;
 
 mySociety::Locale::gettext_domain('FixMyStreet');
@@ -16,8 +17,8 @@ my $problem_rs = FixMyStreet::App->model('DB::Problem');
 my $problem = $problem_rs->new(
     {
         postcode     => 'EH99 1SP',
-        latitude     => 1,
-        longitude    => 1,
+        latitude     => '51.5016605453401',
+        longitude    => '-0.142497580865087',
         areas        => 1,
         title        => '',
         detail       => '',
@@ -342,6 +343,36 @@ for my $test (
         is $problem->is_fixed, $test->{is_fixed}, 'is_fixed';
         is $problem->is_closed, $test->{is_closed}, 'is_closed';
         is $problem->is_open, $test->{is_open}, 'is_open';
+    };
+}
+
+my $mech = FixMyStreet::TestMech->new();
+
+foreach my $test ( {
+    }
+) {
+    subtest "sending report" => sub {
+        $mech->clear_emails_ok;
+
+        FixMyStreet::App->model('DB::Problem')->search(
+            {
+                whensent => undef
+            }
+        )->update( { whensent => \'ms_current_timestamp()' } );
+
+        $problem->discard_changes;
+        $problem->update( {
+            council => 2651,
+            state => 'confirmed',
+            confirmed => \'ms_current_timestamp()',
+            whensent => undef,
+        } );
+
+        FixMyStreet::App->model('DB::Problem')->send_reports();
+
+        $mech->email_count_is( 1 );
+        my $email = $mech->get_email;
+        like $email->body, qr/A user of FixMyStreet/, 'email body looks a bit like a report';
     };
 }
 
