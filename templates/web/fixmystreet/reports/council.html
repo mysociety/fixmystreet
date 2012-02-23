@@ -13,6 +13,7 @@
     INCLUDE 'header.html',
     title = tprintf(loc('%s - Summary reports'), name)
     context = 'reports'
+    bodyclass = 'mappage'
     rss = [ tprintf(loc('Problems within %s, FixMyStreet'), name), rss_url ]
 %]
 
