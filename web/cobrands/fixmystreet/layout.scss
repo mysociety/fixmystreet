@@ -12,9 +12,7 @@
 }
 
 body {
-  // temp map background
-  background:url(images/temp-map.jpg) center fixed;
-  // temp map background
+  background: #1A1A1A;
 }
 
 // Page wrapper and header bits follow
@@ -55,11 +53,9 @@ body {
   .nav-wrapper-2{
     width: 100%;
     min-height: 3.5em;
-    position: fixed;
+    position: absolute;
     border-top: 0.25em solid $primary;
     z-index:2;
-    background: #222;
-    @include background(linear-gradient(#000, #222 10%, #222 90%, #000));
   }
 }
 
@@ -72,7 +68,6 @@ body {
     left:0;
     .nav-wrapper-2 {
       // position static as well so we fix lots of the z-index issues
-      // and revert to normal scrolling
       position:static;
     }
   }
@@ -86,7 +81,7 @@ body {
 }
 #site-logo {
   top: 0.75em;
-  position: fixed;
+  position: absolute;
   z-index: 3;
 }
 #nav-link {
@@ -190,18 +185,25 @@ body {
     margin-top:7em;
   }
 }
-// full width page
-body.fullwidthpage {
-  background:#1a1a1a;
-  .content {
-    width: 57em;
-  }
-  .nav-wrapper-2{
-    background: #1a1a1a;
-    position:absolute;
+
+// map page - has fixed header with a gradient
+body.mappage {
+  .nav-wrapper{
+    .nav-wrapper-2{
+      position: fixed;
+      background: #222;
+      @include background(linear-gradient(#000, #222 10%, #222 90%, #000));
+    }
   }
   #site-logo{
-    position: absolute;
+    position: fixed;
+  }
+}
+
+// full width page
+body.fullwidthpage {
+  .content {
+    width: 57em;
   }
   .intro {
     width:40em;
@@ -486,7 +488,7 @@ textarea{
 div.form-error,
 p.form-error {
   display:block;
-  width:25.25em;
+  width:24.7em;
 }
 
 input.form-error,
