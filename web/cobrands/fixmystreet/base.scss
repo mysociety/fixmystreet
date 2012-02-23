@@ -580,11 +580,9 @@ p.label-valid {
   }
 }
 
-
-#site-footer {
-  border-top:3px solid $primary;
-  margin:1em -1em 0 -1em;
-  padding:1em;
+//hide page footer on mobile
+.mobile #page-footer {
+  display:none;
 }
 
 /*BUTTONS*/

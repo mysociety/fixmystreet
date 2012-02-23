@@ -198,7 +198,13 @@ body.fullwidthpage {
     position: absolute;
   }
   .intro {
-    width:43em;
+    width:40em;
+  }
+}
+body.twothirdswidthpage {
+  @extend .fullwidthpage;
+  .content {
+    width:40em;
   }
 }
 
@@ -283,6 +289,16 @@ body.fullwidthpage {
     }
   }
 }
+
+
+// page footer - style it full width
+#page-footer {
+  border-top:3px solid $primary;
+  margin:1em -1em 0 -1em;
+  padding:1em;
+}
+
+
 
 .big-green-banner {
   right:-1.25em;
