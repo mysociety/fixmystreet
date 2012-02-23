@@ -94,7 +94,7 @@ body {
 }
 //fix logo position as a result of fiddling the with position attributes
 //on the parent elements
-.ie6, .ie7 {
+.ie6, .ie7, .ie8 {
   #site-logo {
     position: absolute;
     top:-3.25em;
@@ -184,8 +184,28 @@ body {
   margin-bottom: -1em;
   @include box-shadow(0px 0px 6px 1px #000);
 }
-.fullwidthpage {
-  width: 57em;
+// full width page
+body.fullwidthpage {
+  background:#1a1a1a;
+  .content {
+    width: 57em;
+  }
+  .nav-wrapper-2{
+    background: #1a1a1a;
+    position:absolute;
+  }
+  #site-logo{
+    position: absolute;
+  }
+  .intro {
+    width:40em;
+  }
+}
+body.twothirdswidthpage {
+  @extend .fullwidthpage;
+  .content {
+    width:40em;
+  }
 }
 
 #map_box{
@@ -269,6 +289,16 @@ body {
     }
   }
 }
+
+
+// page footer - style it full width
+#page-footer {
+  border-top:3px solid $primary;
+  margin:1em -1em 0 -1em;
+  padding:1em;
+}
+
+
 
 .big-green-banner {
   right:-1.25em;
@@ -376,7 +406,6 @@ textarea{
 
 /* Frontpage */
 body.frontpage {
-  background:#1a1a1a;
   .wrapper {
     >.container {
       width:100%;
@@ -387,15 +416,12 @@ body.frontpage {
     }
   }
   .nav-wrapper-2{
-    background: #1a1a1a;
     height:6em;
-    position:absolute;
   }
   #site-header{
     height:9em;
   }
   #site-logo{
-    position: absolute;
     top:3em;
     width: 300px;
     height: 60px;
@@ -410,25 +436,41 @@ body.frontpage {
 }
 //logo fix
 .ie6, .ie7, .ie8 {
-  body.frontpage #site-logo {
-    position:relative;
-    width:60em;
-    margin:0 auto;
+  body.frontpage {
+    #site-logo {
+      position:relative;
+      width:60em;
+      margin:0 auto;
+    }
+    .wrapper .content{
+      padding-top:12em;
+      margin-top:1em;
+    }
+    #user-meta p {
+      top:-1em;
+    }
   }
 }
 .ie6, .ie7 {
   body.frontpage #site-logo {
-    top:-2em;
+    top:-1em;
   }
 }
 //weird margining thing for ie8
-.ie8,
-.ie8 body.frontpage {
+.ie8 {
   .wrapper .content {
     margin-top:7em;
   }
   #user-meta p {
     top:5em;
+  }
+}
+.ie8 body.frontpage {
+  .wrapper .content {
+    margin-top:5em;
+  }
+  #user-meta p {
+    top:3em;
   }
 }
 
@@ -486,6 +528,7 @@ body.frontpage {
 }
 .ie6, .ie7 {
   #front-main {
+    top:2em;
     padding-top:1em;
   }
 }
@@ -714,7 +757,7 @@ body.frontpage {
   }
 
   //make fullpage auto width
-  .fullwidthpage {
+  body.fullwidthpage .content {
     width: auto;
   }
 

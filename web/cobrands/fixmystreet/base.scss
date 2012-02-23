@@ -580,6 +580,11 @@ p.label-valid {
   }
 }
 
+//hide page footer on mobile
+.mobile #page-footer {
+  display:none;
+}
+
 /*BUTTONS*/
 
 // Default style set for buttons, inputs and .btn class. Red and green class available.
