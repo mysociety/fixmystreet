@@ -818,7 +818,6 @@ a:hover.button-left {
     padding:0;
     a {
       margin: 0.25em 0 0 0;
-      padding: 0 1em;
       display:table;
       background: #f6f6f6;
       color:#222222;
@@ -836,12 +835,11 @@ a:hover.button-left {
       .img {
         text-align:right;
         img {
-          margin:0 -1em 0 0.5em;
           height:auto;
         }
       }
       .text {
-        padding:0.5em 0;
+        padding:0.5em 1em 0 1em;
         h4 {
           margin:0;
         }
