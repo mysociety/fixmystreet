@@ -364,6 +364,20 @@ textarea{
   max-width:25em;
 }
 
+
+/* form errors */
+div.form-error,
+p.form-error {
+  display:block;
+  width:25.25em;
+}
+
+input.form-error,
+textarea.form-error {
+  @include border-radius(0 0 0.25em 0.25em);
+}
+
+
 /* Report a problem sidebar notes */
 #report-a-problem-sidebar {
   position:absolute;

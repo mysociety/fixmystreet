@@ -386,18 +386,18 @@ label{
 /* form errors */
 div.form-error,
 p.form-error {
+  @include inline-block;
   background:#ff0000;
   color:#fff;
   padding:0 0.5em;
-  margin:0 0.6em 0 -0.5em;
-  width:auto;
+  margin:0 0 0 -0.5em;
   @include border-radius(0.25em 0.25em 0 0);
 }
 
 input.form-error,
 textarea.form-error {
   border-color:#ff0000;
-  @include border-radius(0 0 0.25em 0.25em);
+  @include border-radius(0 0.25em 0.25em 0.25em);
 }
 
 // don't display valid error boxes as now the jump won't be
