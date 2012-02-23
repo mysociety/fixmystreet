@@ -411,9 +411,8 @@ call), use this method.
 
 sub render_fragment {
     my ($c, $template, $vars) = @_;
-    $vars ||= {};
     $vars->{additional_template_paths} = [ $c->cobrand->path_to_web_templates->stringify ]
-        unless $c->cobrand->is_default;
+        if $vars && !$c->cobrand->is_default;
     $c->view('Web')->render($c, $template, $vars);
 }
 
