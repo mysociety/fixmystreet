@@ -97,16 +97,16 @@
         <section class="full-width">
             <menu id="problems-nav" class="tab-nav">
                 <ul>
-                    <li><a href="#problems-on-the-map">[% loc('Problems on the map') %]</a></li>
-                    <li><a href="#problems-nearby">[% loc( 'Problems nearby' ) %]</a></li>
+                    <li><a href="#current">[% loc('Problems on the map') %]</a></li>
+                    <li><a href="#current_near">[% loc( 'Problems nearby' ) %]</a></li>
                 </ul>
             </menu>
             
-            <ul id="problems-on-the-map" class="issue-list-a tab">
+            <ul id="current" class="issue-list-a tab">
                 [% INCLUDE "around/on_map_list_items.html" %]
             </ul>
 
-            <ul id="problems-nearby" class="issue-list-a tab">
+            <ul id="current_near" class="issue-list-a tab">
                 [% INCLUDE "around/around_map_list_items.html" %]
             </ul>
         </section>
