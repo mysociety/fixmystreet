@@ -156,9 +156,9 @@ body {
             width:84px;
             height:16px;
             background-position:-260px -43px;
-            @include opacity(0.8);
+            opacity: 0.8;
             &:hover {
-              @include opacity(1);
+              opacity: 1;
             }
           }
           &:hover{
@@ -345,9 +345,9 @@ body.twothirdswidthpage {
         margin:0 auto;
         text-indent: -999999px;
         background: url(images/sprite.png) -12px -3610px no-repeat;
-        @include opacity(0.8);
+        opacity: 0.8;
         &:hover {
-          @include opacity(1);
+          opacity: 1;
         }
         &.m-app-iphone {
           background-position: -12px -3610px;
