@@ -35,7 +35,7 @@ body {
 //so to fix things we give it a high value (don't ask me why)
 //see: http://brenelz.com/blog/squish-the-internet-explorer-z-index-bug/
 //this affects #site-logo
-.ie7, .ie7 {
+.ie6, .ie7 {
   .container {
     z-index:100;
   }
@@ -66,7 +66,6 @@ body {
   }
 }
 
-
 //position absolute the menu as ie doesn't like display:table
 .ie6, .ie7 {
   .nav-wrapper {
@@ -77,7 +76,7 @@ body {
       // position static as well so we fix lots of the z-index issues
       position:static;
     }
-  }
+  }   
 }
 
 // Resets a lot of the mobile styling. #site-header only used to help position logo on desktop
@@ -94,16 +93,14 @@ body {
   position: absolute;
   z-index: 3;
 }
-#nav-link {
-  left:-999999px;
-}
-//fix logo position as a result of fiddling the with position attributes
-//on the parent elements
-.ie6, .ie7, .ie8 {
+.ie6, .ie7 {
   #site-logo {
     position: absolute;
     top:-3.25em;
   }
+}
+#nav-link {
+  left:-999999px;
 }
 #main-nav{
   margin: 0 auto;
@@ -214,9 +211,10 @@ body.mappage {
   }
   #site-logo{
     position: fixed;
-    z-index:10000;
   }
 }
+
+
 
 // full width page
 body.fullwidthpage {
