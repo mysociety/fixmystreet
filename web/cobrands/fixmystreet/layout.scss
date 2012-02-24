@@ -532,6 +532,16 @@ textarea.form-error {
   }
 }
 
+.no-js #report-a-problem-sidebar {
+  position: static;
+  width: auto;
+  @include box-shadow(rgba(0, 0, 0, 0), 0, 0, 0);
+  .sidebar-tips,
+  .sidebar-notes {
+    font-size:1em;
+  }
+}
+
 // More general sidebar notes
 .general-sidebar-notes {
   position: absolute;
@@ -778,6 +788,7 @@ body.frontpage {
   }
 
   //put the RAP notes into the main copy area
+  // Note: Also used for the non-JS case.
   #report-a-problem-sidebar {
     position: static;
     width: auto;

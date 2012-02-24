@@ -897,6 +897,7 @@ a:hover.button-left {
     input, img {
         position: absolute;
         border: none;
+        max-width: none;
     }
     input {
         cursor: crosshair;
