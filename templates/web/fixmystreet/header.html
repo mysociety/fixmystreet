@@ -29,7 +29,7 @@
         [% INCLUDE 'tracking_code.html' %]
 
     </head>
-    <body class="[% "$bodyclass" | html IF bodyclass %]">
+    <body class="[% bodyclass | html IF bodyclass %]">
 
     <div class="wrapper">
 
@@ -52,6 +52,6 @@
         </div>
 
         <div class="container">
-            <div class="content [% "$mainclass" | html IF mainclass %]" role="main">
+            <div class="content[% " $mainclass" | html IF mainclass %]" role="main">
 
     <!-- [% INCLUDE 'debug_header.html' %] -->
