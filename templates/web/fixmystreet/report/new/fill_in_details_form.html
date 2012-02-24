@@ -1,8 +1,19 @@
 <div id="report-a-problem-main">
     <h1>[% loc('Reporting a problem') %]</h1>
 
-    <!-- THIS NEED THE NAME OF THE COUNCIL -->
-    <p>[% loc('This report will be sent to <strong>Name of the Council</strong>.') %]</p>
+    [% IF js %]
+        <p id="councils_text">
+        [%
+            tprintf(
+                loc('All the information you provide here will be sent to <strong>%s</strong>.'),
+                loc('the local council')
+            );
+        %]
+        [% loc('The subject and details of the problem will be public, plus your name if you give us permission.') %]
+        </p>
+    [% ELSE %]
+        [% PROCESS 'report/new/councils_text.html' %]
+    [% END %]
 
     <div id="report-a-problem-sidebar">
         <!--
@@ -13,21 +24,7 @@
                 [% IF partial_token %]
                     <p id="unknown">[% loc('Please note your report has <strong>not yet been sent</strong>. Choose a category and add further information below, then submit.') %]</p>
                 [% END %]
-            <p>[% loc('You have located the problem at the point marked with a purple pin on the map. If this is not the correct location, simply click on the map again. ') %]</p>
-            [% END %]
-
-            [% IF js %]
-                <p id="councils_text">
-                [%
-                    tprintf(
-                        loc('All the information you provide here will be sent to <strong>%s</strong>.'),
-                        loc('the local council')
-                    );
-                %]
-                [% loc('The subject and details of the problem will be public, plus your name if you give us permission.') %]
-                </p>
-            [% ELSE %]
-                [% PROCESS 'report/new/councils_text.html' %]
+            <p>[% loc('You have located the problem at the point marked with a yellow pin on the map. If this is not the correct location, simply click on the map again. ') %]</p>
             [% END %]
 
             <p>
