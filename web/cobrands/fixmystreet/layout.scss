@@ -50,7 +50,7 @@ body {
 //pad the top of the wrapper to allow space for the menu to fit in
 //when its positioned absolute below
 .ie6, .ie7 {
-  .wrapper{
+  .wrapper {
     padding-top:4em;
   }
 }
@@ -211,6 +211,46 @@ body.mappage {
   }
   #site-logo{
     position: fixed;
+  }
+}
+.ie6, .ie7 {
+  body.mappage {
+    .nav-wrapper{
+      z-index:1;
+      .nav-wrapper-2 {
+        position:static;
+      }
+    }
+    #site-logo {
+      position: absolute;
+      top:-3.25em;
+    }
+  }
+}
+
+//ie8 needs different stuff on .nav-wrapper so we 
+//have to define all the rest of it again as this resets
+//the z-index base yet again :S
+.ie8 {
+  body.mappage {
+    .nav-wrapper{
+      position: relative;
+      z-index:0;
+      .nav-wrapper-2 {
+        position:static;
+      }
+    }
+    #site-logo {
+      position: absolute;
+      top:-3.25em;
+    }
+    //also need to reset some weird margining stuff...
+    #user-meta p {
+      top:1em;
+    }
+    .content {      
+      margin-top:3em;
+    }
   }
 }
 
@@ -393,6 +433,15 @@ body.twothirdswidthpage {
         text-decoration:none;
         background:#444;
       }
+    }
+  }
+}
+.ie6, .ie7 {
+  #user-meta {
+    // position: relative;
+    z-index:1;
+    p {
+      // top:5em;
     }
   }
 }
