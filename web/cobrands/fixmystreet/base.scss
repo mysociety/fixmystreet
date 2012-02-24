@@ -885,12 +885,35 @@ a:hover.button-left {
   height: 10em;
   @extend .full-width;
   margin-bottom: 1em;
+  overflow: hidden;
   #map {
     width:100%;
     height:100%;
   }
 }
 
+/* Drag is only present in noscript form. XXX Copy from core. */
+#drag {
+    input, img {
+        position: absolute;
+        border: none;
+    }
+    input {
+        cursor: crosshair;
+        background-color: #cccccc;
+    }
+    img {
+        cursor: move;
+    }
+    img.pin {
+        z-index: 100;
+        background-color: inherit;
+    }
+    a img.pin {
+        cursor: pointer;
+        cursor: hand;
+    }
+}
 
 // only on mobile, this is a sidebar on desk (#report-a-problem-sidebar)
 a.rap-notes-trigger,

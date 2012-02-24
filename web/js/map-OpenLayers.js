@@ -216,7 +216,7 @@ $(function(){
             fixmystreet.map.moveStart = { zoom: this.getZoom(), center: this.getCenter() };
         });
         fixmystreet.map.events.register("zoomend", null, function(e){
-            if ( !this.getCenter().equals(fixmystreet.map.moveStart.center) ) {
+            if ( !fixmystreet.map.moveStart || !this.getCenter().equals(fixmystreet.map.moveStart.center) ) {
                 // Centre has moved, e.g. by double-click. Same whether zoom in or out
                 fixmystreet.map.pan(-q, -25, { animate: false });
                 return;
@@ -414,10 +414,20 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         $('#side').hide();
         $('#sub_map_links').hide();
         heightFix('#report-a-problem-sidebar:visible', '.content', 26);
+
+        // If we clicked the map somewhere inconvenient
         var sidebar = $('#report-a-problem-sidebar');
         if (sidebar.css('position') == 'absolute') {
             var w = sidebar.width(), h = sidebar.height(), o = sidebar.offset();
-            if (e.xy.x >= o.left && e.xy.x <= o.left + w && e.xy.y >= o.top && e.xy.y <= o.top + h) {
+            if (e.xy.y <= o.top) {
+                // top of the page, pin hidden by header
+                lonlat.transform(
+                    new OpenLayers.Projection("EPSG:4326"),
+                    fixmystreet.map.getProjectionObject()
+                );
+                fixmystreet.map.setCenter(lonlat, fixmystreet.map.getZoom(), true, true);
+            } else if (e.xy.x >= o.left && e.xy.x <= o.left + w + 24 && e.xy.y >= o.top && e.xy.y <= o.top + h + 64) {
+                // underneath where the new sidebar will appear
                 fixmystreet.map.pan(-w, 0, { animate: false });
             }
         }
