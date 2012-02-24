@@ -50,7 +50,7 @@ body {
 //pad the top of the wrapper to allow space for the menu to fit in
 //when its positioned absolute below
 .ie6, .ie7 {
-  .wrapper{
+  .wrapper {
     padding-top:4em;
   }
 }
@@ -156,9 +156,9 @@ body {
             width:84px;
             height:16px;
             background-position:-260px -43px;
-            @include opacity(0.8);
+            opacity: 0.8;
             &:hover {
-              @include opacity(1);
+              opacity: 1;
             }
           }
           &:hover{
@@ -213,6 +213,46 @@ body.mappage {
     position: fixed;
   }
 }
+.ie6, .ie7 {
+  body.mappage {
+    .nav-wrapper{
+      z-index:1;
+      .nav-wrapper-2 {
+        position:static;
+      }
+    }
+    #site-logo {
+      position: absolute;
+      top:-3.25em;
+    }
+  }
+}
+
+//ie8 needs different stuff on .nav-wrapper so we 
+//have to define all the rest of it again as this resets
+//the z-index base yet again :S
+.ie8 {
+  body.mappage {
+    .nav-wrapper{
+      position: relative;
+      z-index:0;
+      .nav-wrapper-2 {
+        position:static;
+      }
+    }
+    #site-logo {
+      position: absolute;
+      top:-3.25em;
+    }
+    //also need to reset some weird margining stuff...
+    #user-meta p {
+      top:1em;
+    }
+    .content {      
+      margin-top:3em;
+    }
+  }
+}
 
 
 
@@ -259,10 +299,12 @@ body.twothirdswidthpage {
     margin:0;
   }
 }
+
+//fix table to be a block for ie, float the children
 .ie6, .ie7 {
   .tablewrapper {
     display:block;
-    >div {
+    div {//ie6 doesn't support '>div', so we'll go with the somewhat risker 'div'
       width:48%;
       display:block;
       float: left;
@@ -303,9 +345,9 @@ body.twothirdswidthpage {
         margin:0 auto;
         text-indent: -999999px;
         background: url(images/sprite.png) -12px -3610px no-repeat;
-        @include opacity(0.8);
+        opacity: 0.8;
         &:hover {
-          @include opacity(1);
+          opacity: 1;
         }
         &.m-app-iphone {
           background-position: -12px -3610px;
@@ -393,6 +435,15 @@ body.twothirdswidthpage {
         text-decoration:none;
         background:#444;
       }
+    }
+  }
+}
+.ie6, .ie7 {
+  #user-meta {
+    // position: relative;
+    z-index:1;
+    p {
+      // top:5em;
     }
   }
 }
@@ -713,6 +764,7 @@ body.frontpage {
 .ie6, .ie7 {
   #front_stats {
     div {
+      width:8em;
       float:left;
     }
   }
