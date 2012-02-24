@@ -194,6 +194,9 @@ body {
 
 // map page - has fixed header and different styling
 body.mappage {
+  .content {
+    float:left;
+  }
   #main-nav ul#main-menu li a,
   #main-nav ul#main-menu li span {
     padding: 1.4em 0.75em 1.35em 0.75em;
