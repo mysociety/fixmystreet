@@ -28,7 +28,7 @@ body {
   padding: 0em;
   width: 60em;
   position: relative;
-  z-index:0;
+  z-index:1;
 }
 
 //z-index stack order gets reset to 0 in ie6/7 if you position anything,
@@ -85,6 +85,9 @@ body {
   height: auto;
   background: none;
   border-top: 0px;
+  .container {
+    position: static;//reset position so z-index resets
+  }
 }
 #site-logo {
   top: 0.9em;
@@ -211,6 +214,7 @@ body.mappage {
   }
   #site-logo{
     position: fixed;
+    z-index:10000;
   }
 }
 
@@ -736,7 +740,7 @@ body.frontpage {
 
 
 /* MEDIA QUERIES */
-@media only screen and (min-width: 48em) and (max-width: 64em) {
+@media only screen and (min-width: 48em) and (max-width: 61em) {
   .container {
       width: 100%;
   }
