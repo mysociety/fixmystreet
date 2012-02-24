@@ -28,6 +28,7 @@ body {
   padding: 0em;
   width: 60em;
   position: relative;
+  z-index:0;
 }
 
 //z-index stack order gets reset to 0 in ie6/7 if you position anything,
@@ -512,8 +513,9 @@ textarea.form-error {
 // Report a problem sidebar notes
 #report-a-problem-sidebar {
   position:absolute;
+  z-index:-1;//push behind .content, .container resets z-index for this
   left:29.5em;
-  top:2em;
+  top:5em;
   width:15em;
   //z-index: -1;
   @include box-shadow(rgba(0, 0, 0, 0.6) 0px 0px 4px 1px);
@@ -550,7 +552,7 @@ textarea.form-error {
   position: absolute;
   left:29.5em;
   width:15em;
-  //z-index: -1;
+  z-index: -1; //push behind .content, .container resets z-index for this
   @include box-shadow(rgba(0, 0, 0, 0.6) 0px 0px 4px 1px);
   p {
     background:#eeeeee;
