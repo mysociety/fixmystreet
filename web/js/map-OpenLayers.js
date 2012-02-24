@@ -372,7 +372,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
     trigger: function(e) {
         var lonlat = fixmystreet.map.getLonLatFromViewPortPx(e.xy);
         if (fixmystreet.page == 'new') {
-            /* Already have a purple pin */
+            /* Already have a pin */
             fixmystreet.markers.features[0].move(lonlat);
         } else {
             var markers = fms_markers_list( [ [ lonlat.lat, lonlat.lon, 'yellow' ] ], false );
@@ -414,6 +414,13 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         $('#side').hide();
         $('#sub_map_links').hide();
         heightFix('#report-a-problem-sidebar:visible', '.content', 26);
+        var sidebar = $('#report-a-problem-sidebar');
+        if (sidebar.css('position') == 'absolute') {
+            var w = sidebar.width(), h = sidebar.height(), o = sidebar.offset();
+            if (e.xy.x >= o.left && e.xy.x <= o.left + w && e.xy.y >= o.top && e.xy.y <= o.top + h) {
+                fixmystreet.map.pan(-w, 0, { animate: false });
+            }
+        }
         fixmystreet.page = 'new';
         location.hash = 'report';
     }
