@@ -874,9 +874,16 @@ a:hover.button-left {
         width:18em;
       }
       .img {
+        width:6.25em;
         float:right;
       }
     }
+  }
+}
+.ie6 .issue-list-a li a {
+  height:5.5em;
+  .img img {
+    height:60px;
   }
 }
 
