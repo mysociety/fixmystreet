@@ -206,7 +206,7 @@ sub categories_summary {
     return \%categories;
 }
 
-    sub send_reports {
+sub send_reports {
 
 
     use Digest::MD5;
@@ -404,6 +404,6 @@ sub categories_summary {
             }
         }
     }
-    }
+}
 
 1;
