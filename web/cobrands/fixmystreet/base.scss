@@ -984,6 +984,45 @@ a:hover.rap-notes-trigger {
   }
 }
 
+
+table.nicetable {
+  width:100%;
+  margin-bottom:2em;
+  thead {
+    border-bottom:0.25em solid #ccc;
+    th {
+      font-size:0.75em;
+    }
+  }
+  tr {
+    &:nth-child(even) {
+      background:#f6f6f6;
+    }
+    &:hover {
+      background:#FFF5CC;
+      cursor:pointer;
+    }
+    td {
+      padding:0.25em;
+      a {
+        color:#333;
+        &:hover {
+          text-decoration:none;
+        }
+      }
+    }
+  }
+  .title {
+    text-align:left;
+  }
+  .data {
+    width:12%;
+  }
+}
+
+
+
+
 // this is a bit of a hack to get some differentation between desk and mobile
 .desk-only {
   display:none !important;
