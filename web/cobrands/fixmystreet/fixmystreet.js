@@ -96,6 +96,10 @@ $(function(){
         }
     }
 
+    if ($.browser.opera) {
+        $('html').addClass('opera');
+    }
+
     $('html').removeClass('no-js').addClass('js');
 
     $('#pc').focus();

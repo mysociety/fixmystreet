@@ -67,11 +67,12 @@ body {
 }
 
 //position absolute the menu as ie doesn't like display:table
-.ie6, .ie7 {
+.ie6, .ie7, .opera {
   .nav-wrapper {
     position: absolute;
     top:0;
     left:0;
+    width:100%;
     .nav-wrapper-2 {
       // position static as well so we fix lots of the z-index issues
       position:static;
