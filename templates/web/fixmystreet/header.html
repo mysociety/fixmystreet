@@ -32,26 +32,26 @@
     <body class="[% bodyclass | html IF bodyclass %]">
 
     <div class="wrapper">
+        <div class="table-cell">
+            <header id="site-header" role="banner">
+                <div class="container">
+                    <a href="/" id="site-logo">FixMyStreet</a>
+                    <a href="#main-nav" id="nav-link">Main Navigation</a>
+                </div>
+            </header>
 
-        <header id="site-header" role="banner">
-            <div class="container">
-                <a href="/" id="site-logo">FixMyStreet</a>
-                <a href="#main-nav" id="nav-link">Main Navigation</a>
+            <div id="user-meta">
+                [% IF c.user_exists %]
+                <p>
+                    [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %] 
+                    <a href="/auth/sign_out">[% loc('sign out') %]</a>
+                </p>
+                [% ELSE %]
+                    <!-- <a href="/auth">[% loc('Sign in') %]</a> -->
+                [% END %]
             </div>
-        </header>
 
-        <div id="user-meta">
-            [% IF c.user_exists %]
-            <p>
-                [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %] 
-                <a href="/auth/sign_out">[% loc('sign out') %]</a>
-            </p>
-            [% ELSE %]
-                <!-- <a href="/auth">[% loc('Sign in') %]</a> -->
-            [% END %]
-        </div>
+            <div class="container">
+                <div class="content[% " $mainclass" | html IF mainclass %]" role="main">
 
-        <div class="container">
-            <div class="content[% " $mainclass" | html IF mainclass %]" role="main">
-
-    <!-- [% INCLUDE 'debug_header.html' %] -->
+        <!-- [% INCLUDE 'debug_header.html' %] -->

@@ -45,6 +45,9 @@ body {
   display: table;
   caption-side: top;
   width: 100%;
+  .table-cell {
+    display:table-cell;
+  }
 }
 
 //pad the top of the wrapper to allow space for the menu to fit in
@@ -67,7 +70,7 @@ body {
 }
 
 //position absolute the menu as ie doesn't like display:table
-.ie6, .ie7, .opera {
+.ie6, .ie7 {
   .nav-wrapper {
     position: absolute;
     top:0;
@@ -626,8 +629,9 @@ textarea.form-error {
 }
 
 // Frontpage
+
 body.frontpage {
-  .wrapper {
+  .table-cell {
     // we do this so we can have full screen width elements
     >.container {
       width:100%;
