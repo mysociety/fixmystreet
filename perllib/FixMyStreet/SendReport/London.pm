@@ -1,5 +1,11 @@
 package FixMyStreet::SendReport::Email;
 
+use Digest::MD5;
+use LWP::UserAgent;
+use LWP::Simple;
+
+use Utils;
+
 my %councils = ();
 my @to;
 

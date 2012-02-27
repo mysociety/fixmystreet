@@ -1,5 +1,10 @@
 package FixMyStreet::SendReport::Email;
 
+use Error qw(:try);
+use Encode;
+use mySociety::Web qw(ent);
+use EastHantsWSDL;
+
 my %councils = ();
 my @to;
 

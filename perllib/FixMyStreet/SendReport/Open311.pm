@@ -1,5 +1,9 @@
 package FixMyStreet::SendReport::Open311;
 
+use FixMyStreet::App;
+use mySociety::Config;
+use Open311;
+
 my %councils = ();
 my @to;
 

@@ -4,6 +4,14 @@ use base 'DBIx::Class::ResultSet';
 use strict;
 use warnings;
 
+use CronFns;
+
+use Utils;
+use mySociety::Config;
+use mySociety::EmailUtil;
+use mySociety::MaPit;
+
+use FixMyStreet::App;
 use FixMyStreet::SendReport::Email;
 
 my $site_restriction;
@@ -207,28 +215,6 @@ sub categories_summary {
 }
 
 sub send_reports {
-
-
-    use Digest::MD5;
-    use Encode;
-    use Error qw(:try);
-    use JSON;
-    use LWP::UserAgent;
-    use LWP::Simple;
-    use CGI; # Trying awkward kludge
-    use CronFns;
-
-    use FixMyStreet::App;
-
-    use EastHantsWSDL;
-    use Utils;
-    use mySociety::Config;
-    use mySociety::EmailUtil;
-    use mySociety::MaPit;
-    use mySociety::Web qw(ent);
-
-    use Open311;
-
     # Set up site, language etc.
     my ($verbose, $nomail) = CronFns::options();
     my $base_url = mySociety::Config::get('BASE_URL');
