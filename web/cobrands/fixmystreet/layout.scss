@@ -231,7 +231,10 @@ body.mappage {
     }
   }
 }
-
+//colour background the same as that of the ie_logo.gif
+.ie6 body.mappage .nav-wrapper .nav-wrapper-2 {
+  background: #1a1a1a;
+}
 //ie8 needs different stuff on .nav-wrapper so we 
 //have to define all the rest of it again as this resets
 //the z-index base yet again :S
@@ -377,6 +380,20 @@ body.twothirdswidthpage {
       margin-right:2%;
   }
 }
+.ie6 #footer-mobileapps ul li a {
+  background:url(images/ie_mobileapps.gif) -1px -1px no-repeat;
+  &.m-app-iphone-streetreport {
+    background-position: -1px -69px;
+    height:50px;
+  }
+  &.m-app-droid {
+    background-position: -1px -148px;
+  }
+  &.m-app-nokia {
+    background-position: -1px -212px;
+    width:74px;
+  }
+}
 
 #footer-ads {
   border-left:1em solid #fff;
@@ -516,7 +533,9 @@ body.twothirdswidthpage {
     border-bottom:none;
   }
 }
-
+.ie6 .big-green-banner {
+  background: $contrast1 url(images/ie_green_chevron.gif) right center no-repeat;
+}
 
 .banner {
   // fixed banner image
@@ -681,6 +700,9 @@ body.frontpage {
   body.frontpage #site-logo {
     top:-1em;
   }
+}
+.ie6 body.frontpage #site-logo {
+  background:url(images/ie_front_logo.gif) 0 0 no-repeat;
 }
 //weird margining thing for ie8
 .ie8 body.frontpage {

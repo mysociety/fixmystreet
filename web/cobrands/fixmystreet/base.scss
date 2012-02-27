@@ -439,6 +439,9 @@ p.label-valid {
   position: absolute;
   z-index:2;
 }
+.ie6 #site-logo {
+  background: url('images/ie_logo.gif') 0 -5px no-repeat;
+}
 #nav-link {
   width: 50px;
   height: 48px;
@@ -487,7 +490,9 @@ p.label-valid {
     }
   }
 }
-
+.ie6 #main-nav ul#mysoc-menu li a#mysoc-logo {
+  background: url('images/ie_mysoc_logo.gif') center no-repeat;
+}
 //defines where the table caption is (login stuff on mob, nav menu on desktop)
 .wrapper {
   width:100%;
