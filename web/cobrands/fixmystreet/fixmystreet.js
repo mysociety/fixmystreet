@@ -80,13 +80,16 @@ $(function(){
         $('html').addClass('mobile');
     } else {
 
-        // Make map full screen on non-mobile sizes.
+    // Make map full screen on non-mobile sizes.
+    // temp: exclude ie6 as it doesn't like the height part of this
+    if(!$('html').hasClass('ie6')){
         $('#map_box').prependTo('.wrapper').css({
             zIndex: 0, position: 'fixed',
             top: 0, left: 0, right: 0, bottom: 0,
             width: '100%', height: '100%',
             margin: 0
         }).data('size', 'full');
+    }
 
     }
     //heightfix the desktop .content div
