@@ -914,5 +914,7 @@ Get stats to display on the council reports page
 
 sub get_report_stats { return 0; }
 
+sub get_council_sender { return 'Email' };
+
 1;
 

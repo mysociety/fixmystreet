@@ -348,6 +348,19 @@ for my $test (
 
 my $mech = FixMyStreet::TestMech->new();
 
+FixMyStreet::App->model('DB::Contact')->find_or_create(
+    {
+        area_id => 2663,
+        category => 'potholes',
+        email => 'test@example.org',
+        confirmed => 1,
+        deleted => 0,
+        editor => 'test',
+        whenedited => \'ms_current_timestamp()',
+        note => '',
+    }
+);
+
 foreach my $test ( {
     }
 ) {
@@ -362,10 +375,11 @@ foreach my $test ( {
 
         $problem->discard_changes;
         $problem->update( {
-            council => 2651,
+            council => 2663,
             state => 'confirmed',
             confirmed => \'ms_current_timestamp()',
             whensent => undef,
+            category => 'potholes',
         } );
 
         FixMyStreet::App->model('DB::Problem')->send_reports();

@@ -4,6 +4,8 @@ use base 'DBIx::Class::ResultSet';
 use strict;
 use warnings;
 
+use FixMyStreet::SendReport::Email;
+
 my $site_restriction;
 my $site_key;
 
@@ -293,6 +295,7 @@ while (my $row = $unsent->next) {
         $h{closest_address} = $cobrand->find_closest( $h{latitude}, $h{longitude}, $row );
     }
 
+    my %reporters = ();
     my (@to, @recips, $template, $areas_info, @open311_councils);
     if ($site eq 'emptyhomes') {
 
@@ -327,39 +330,16 @@ while (my $row = $unsent->next) {
         $areas_info = mySociety::MaPit::call('areas', \@all_councils);
         my (@dear, %recips);
         my $all_confirmed = 1;
+
         foreach my $council (@councils) {
             my $name = $areas_info->{$council}->{name};
             push @dear, $name;
-            if ($council == 2330) { # E. Hants have a web service
-                $send_web = 'easthants';
-                $h{category} = 'Customer Services' if $h{category} eq 'Other';
-            } elsif ($areas_info->{$council}->{type} eq 'LBO') { # London
-                $send_web = 'london';
-            } elsif ( my $endpoint = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $council, endpoint => { '!=', '' } } )->first ) {
-                push @open311_councils, $endpoint;
-                $send_web = 'open311';
-            } else {
-                my $contact = FixMyStreet::App->model("DB::Contact")->find( {
-                    deleted => 0,
-                    area_id => $council,
-                    category => $row->category
-                } );
-                my ($council_email, $confirmed, $note) = ( $contact->email, $contact->confirmed, $contact->note );
-                $council_email = essex_contact($row->latitude, $row->longitude) if $council == 2225;
-                $council_email = oxfordshire_contact($row->latitude, $row->longitude) if $council == 2237 && $council_email eq 'SPECIAL';
-                unless ($confirmed) {
-                    $all_confirmed = 0;
-                    $note = 'Council ' . $row->council . ' deleted'
-                        unless $note;
-                    $council_email = 'N/A' unless $council_email;
-                    $notgot{$council_email}{$row->category}++;
-                    $note{$council_email}{$row->category} = $note;
-                }
-                push @to, [ $council_email, $name ];
-                $recips{$council_email} = 1;
-                $send_email = 1;
-            }
+            my $sender = $cobrand->get_council_sender( $council, $areas_info->{$council} );
+            $sender = "FixMyStreet::SendReport::$sender";
+            $reporters{ $sender } = $sender->new() unless $reporters{$sender};
+            $reporters{ $sender }->add_council( $council, $name );
         }
+
         @recips = keys %recips;
         next unless $all_confirmed;
 
@@ -396,7 +376,7 @@ while (my $row = $unsent->next) {
 
     }
 
-    unless ($send_email || $send_web) {
+    unless ($send_email || $send_web || keys %reporters ) {
         die 'Report not going anywhere for ID ' . $row->id . '!';
     }
 
@@ -405,6 +385,9 @@ while (my $row = $unsent->next) {
         @recips = ( mySociety::Config::get('CONTACT_EMAIL') );
         $send_web = 0;
         $send_email = 1;
+        %reporters = (
+            'FixMyStreet::SendReport::Email' => $reporters{ 'FixMyStreet::SendReport::Email' }
+        );
     } elsif ($site eq 'emptyhomes') {
         my $council = $row->council;
         my $country = $areas_info->{$council}->{country};
@@ -426,75 +409,15 @@ while (my $row = $unsent->next) {
     # Multiply results together, so one success counts as a success.
     my $result = -1;
 
-    if ($send_email) {
-        $result *= FixMyStreet::App->send_email_cron(
-            {
-                _template_ => $template,
-                _parameters_ => \%h,
-                To => \@to,
-                From => [ $row->user->email, $row->name ],
-            },
-            mySociety::Config::get('CONTACT_EMAIL'),
-            \@recips,
-            $nomail
+    for my $sender ( keys %reporters ) {
+        $result *= $reporters{ $sender }->send(
+            $row, \%h, \@to, $template, \@recips, $nomail
         );
     }
-
-    if ($send_web eq 'easthants') {
-        $h{message} = construct_easthants_message(%h);
-        if (!$nomail) {
-            $result *= post_easthants_message(%h);
-        }
-    } elsif ($send_web eq 'london') {
-        $h{message} = construct_london_message(%h);
-        if (!$nomail) {
-            $result *= post_london_report( $row, %h );
-        }
-    } elsif ($send_web eq 'open311') {
-        foreach my $conf ( @open311_councils ) {
-            print 'posting to end point for ' . $conf->area_id . "\n" if $verbose;
-
-            my $contact = FixMyStreet::App->model("DB::Contact")->find( {
-                deleted => 0,
-                area_id => $conf->area_id,
-                category => $row->category
-            } );
-
-            my $open311 = Open311->new(
-                jurisdiction => $conf->jurisdiction,
-                endpoint     => $conf->endpoint,
-                api_key      => $conf->api_key,
-            );
-
-            # non standard west berks end points
-            if ( $row->council =~ /2619/ ) {
-                $open311->endpoints( { services => 'Services', requests => 'Requests' } );
-            }
-
-            # required to get round issues with CRM constraints
-            if ( $row->council =~ /2218/ ) {
-                $row->user->name( $row->user->id . ' ' . $row->user->name );
-            }
-
-            my $resp = $open311->send_service_request( $row, \%h, $contact->email );
-
-            # make sure we don't save user changes from above
-            if ( $row->council =~ /2218/ ) {
-                $row->discard_changes();
-            }
-
-            if ( $resp ) {
-                $row->external_id( $resp );
-                $result *= 0;
-            } else {
-                $result *= 1;
-                # temporary fix to resolve some issues with west berks
-                if ( $row->council =~ /2619/ ) {
-                    $result *= 0;
-                }
-            }
-        }
-    }
+    #if ($send_email) {
+        #$result *= FixMyStreet::SendReport::Email::send(
+        #);
+    #}
 
     if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
         $row->update( {
@@ -512,179 +435,6 @@ if ($verbose) {
         }
     }
 }
-}
-
-sub _get_district_for_contact {
-    my ( $lat, $lon ) = @_;
-    my $district =
-      mySociety::MaPit::call( 'point', "4326/$lon,$lat", type => 'DIS' );
-    ($district) = keys %$district;
-    return $district;
-}
-
-# Essex has different contact addresses depending upon the district
-# Might be easier if we start storing in the db all areas covered by a point
-# Will do for now :)
-sub essex_contact {
-    my $district = _get_district_for_contact(@_);
-    my $email;
-    $email = 'eastarea' if $district == 2315 || $district == 2312;
-    $email = 'midarea' if $district == 2317 || $district == 2314 || $district == 2316;
-    $email = 'southarea' if $district == 2319 || $district == 2320 || $district == 2310;
-    $email = 'westarea' if $district == 2309 || $district == 2311 || $district == 2318 || $district == 2313;
-    die "Returned district $district which is not in Essex!" unless $email;
-    return "highways.$email\@essexcc.gov.uk";
-}
-
-# Oxfordshire has different contact addresses depending upon the district
-sub oxfordshire_contact {
-    my $district = _get_district_for_contact(@_);
-    my $email;
-    $email = 'northernarea' if $district == 2419 || $district == 2420 || $district == 2421;
-    $email = 'southernarea' if $district == 2417 || $district == 2418;
-    die "Returned district $district which is not in Oxfordshire!" unless $email;
-    return "$email\@oxfordshire.gov.uk";
-}
-
-# East Hampshire
-
-sub construct_easthants_message {
-    my %h = @_;
-    my $message = '';
-    $message .= "[ This report was also sent to the district council covering the location of the problem, as the user did not categorise it; please ignore if you're not the correct council to deal with the issue. ]\n\n"
-        if $h{multiple};
-    $message .= <<EOF;
-Subject: $h{title}
-
-Details: $h{detail}
-
-$h{fuzzy}, or to provide an update on the problem, please visit the following link:
-
-$h{url}
-
-$h{closest_address}
-EOF
-    return $message;
-}
-
-my $eh_service;
-sub post_easthants_message {
-    my %h = @_;
-    my $return = 1;
-    $eh_service ||= EastHantsWSDL->on_fault(sub { my($soap, $res) = @_; die ref $res ? $res->faultstring : $soap->transport->status, "\n"; });
-    try {
-        # ServiceName, RemoteCreatedBy, Salutation, FirstName, Name, Email, Telephone, HouseNoName, Street, Town, County, Country, Postcode, Comments, FurtherInfo, ImageURL
-        my $message = ent(encode_utf8($h{message}));
-        my $name = ent(encode_utf8($h{name}));
-        my $result = $eh_service->INPUTFEEDBACK(
-            $h{category}, 'FixMyStreet', '', '', $name, $h{email}, $h{phone},
-            '', '', '', '', '', '', $message, 'Yes', $h{image_url}
-        );
-        $return = 0 if $result eq 'Report received';
-    } otherwise {
-        my $e = shift;
-        print "Caught an error: $e\n";
-    };
-    return $return;
-}
-
-# London
-
-sub construct_london_message {
-    my %h = @_;
-    return <<EOF,
-A user of FixMyStreet has submitted the following report of a local
-problem that they believe might require your attention.
-
-Subject: $h{title}
-
-Details: $h{detail}
-
-$h{fuzzy}, or to provide an update on the problem, please visit the
-following link:
-
-$h{url}
-
-$h{closest_address}
-Yours,
-The FixMyStreet team
-EOF
-}
-
-sub post_london_report {
-    my ( $problem, %h ) = @_;
-    my $phone = $h{phone};
-    my $mobile = '';
-    if ($phone && $phone =~ /^\s*07/) {
-        $mobile = $phone;
-        $phone = '';
-    }
-    my ($first, $last) = $h{name} =~ /^(\S*)(?: (.*))?$/;
-    my %params = (
-        Key => mySociety::Config::get('LONDON_REPORTIT_KEY'),
-        Signature => Digest::MD5::md5_hex( $h{confirmed} . mySociety::Config::get('LONDON_REPORTIT_SECRET') ),
-        Type => Utils::london_categories()->{$h{category}},
-        RequestDate => $h{confirmed},
-        RequestMethod => 'Web',
-        ExternalId => $h{url},
-        'Customer.Title' => '',
-        'Customer.FirstName' => $first,
-        'Customer.Surname' => $last,
-        'Customer.Email' => $h{email},
-        'Customer.Phone' => $phone,
-        'Customer.Mobile' => $mobile,
-        'ProblemDescription' => $h{message},
-    );
-    if ($h{used_map}) {
-        $params{'Location.Latitude'} = $h{latitude};
-        $params{'Location.Longitude'} = $h{longitude};
-    } elsif (mySociety::PostcodeUtil::is_valid_postcode($h{query})) {
-        # Didn't use map, and entered postcode, so use that.
-        $params{'Location.Postcode'} = $h{query};
-    } else {
-        # Otherwise, lat/lon is all we have, even if it's wrong.
-        $params{'Location.Latitude'} = $h{latitude};
-        $params{'Location.Longitude'} = $h{longitude};
-    }
-    if ($h{has_photo}) {
-        $params{'Document1.Name'} = 'Photograph';
-        $params{'Document1.MimeType'} = 'image/jpeg';
-        $params{'Document1.URL'} = $h{image_url};
-        $params{'Document1.URLPublic'} = 'true';
-    }
-    my $browser = LWP::UserAgent->new;
-    my $response = $browser->post( mySociety::Config::get('LONDON_REPORTIT_URL'), \%params );
-    my $out = $response->content;
-    if ($response->code ne 200) {
-        print "Failed to post $h{id} to London API, response was " . $response->code . " $out\n";
-        return 1;
-    }
-    my ($id) = $out =~ /<caseid>(.*?)<\/caseid>/;
-    my ($org) = $out =~ /<organisation>(.*?)<\/organisation>/;
-    my ($team) = $out =~ /<team>(.*?)<\/team>/;
-
-    $org = london_lookup($org);
-    $problem->external_id( $id );
-    $problem->external_body( $org );
-    $problem->external_team( $team );
-    return 0;
-}
-
-# Nearest things
-
-sub london_lookup {
-    my $org = shift || '';
-    my $str = "Unknown ($org)";
-    open(FP, "$FindBin::Bin/../data/dft.csv");
-    while (<FP>) {
-        /^(.*?),(.*)/;
-        if ($org eq $1) {
-            $str = $2;
-            last;
-        }
-    }
-    close FP;
-    return $str;
 }
 
 1;
