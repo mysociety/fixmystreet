@@ -254,6 +254,7 @@ $(function(){
             $('.mobile .content').after('<div class="content rap-notes"></div>').hide();
             $('#report-a-problem-sidebar').appendTo('.rap-notes').show().after('<a href="#" class="rap-notes-close button-left">BACK</a>');
         }
+        $('html, body').animate({scrollTop:0}, 1000);
     });
     $('.mobile').on('click', '.rap-notes-close', function(e){
         e.preventDefault();
