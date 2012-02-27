@@ -1,25 +1,16 @@
 package FixMyStreet::SendReport::Email;
 
+use Moose;
+use namespace::autoclean;
+
+BEGIN { extends 'FixMyStreet::SendReport'; }
+
 use Digest::MD5;
 use LWP::UserAgent;
 use LWP::Simple;
 
 use Utils;
 
-my %councils = ();
-my @to;
-
-sub reset {
-    %councils = ();
-    @to = ();
-}
-
-sub add_council {
-    my $council = shift;
-    my $name = shift;
-
-    $councils{ $council } = $name;
-}
 sub construct_message {
     my %h = @_;
     return <<EOF,

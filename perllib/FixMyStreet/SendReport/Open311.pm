@@ -1,28 +1,21 @@
 package FixMyStreet::SendReport::Open311;
 
+use Moose;
+use namespace::autoclean;
+
+BEGIN { extends 'FixMyStreet::SendReport'; }
+
 use FixMyStreet::App;
 use mySociety::Config;
 use Open311;
-
-my %councils = ();
-my @to;
-
-sub reset {
-    %councils = ();
-    @to = ();
-}
-
-sub add_council {
-    my $council = shift;
-    my $name = shift;
-
-    $councils{ $council } = $name;
-}
 
 sub send {
     return if mySociety::Config::get('STAGING_SITE');
     my $self = shift;
     my ( $row, $h, $to, $template, $recips, $nomail ) = @_;
+
+    my $result = -1;
+
     foreach my $council ( keys %{ $self->councils } ) {
         my $conf = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $self->councils->{ $council }, endpoint => { '!=', '' } } )->first;
         #print 'posting to end point for ' . $conf->area_id . "\n" if $verbose;
@@ -69,6 +62,8 @@ sub send {
             }
         }
     }
+
+    return $result;
 }
 
 1;

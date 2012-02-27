@@ -1,24 +1,14 @@
 package FixMyStreet::SendReport::Email;
 
+use Moose;
+use namespace::autoclean;
+
+BEGIN { extends 'FixMyStreet::SendReport'; }
+
 use Error qw(:try);
 use Encode;
 use mySociety::Web qw(ent);
 use EastHantsWSDL;
-
-my %councils = ();
-my @to;
-
-sub reset {
-    %councils = ();
-    @to = ();
-}
-
-sub add_council {
-    my $council = shift;
-    my $name = shift;
-
-    $councils{ $council } = $name;
-}
 
 sub construct_message {
     my %h = @_;
@@ -43,6 +33,9 @@ sub send {
     return if mySociety::Config::get('STAGING_SITE');
 
     my ( $row, $h, $to, $template, $recips, $nomail ) = @_;
+
+    # FIXME: should not recreate this each time
+    my $eh_service;
 
     $h->{category} = 'Customer Services' if $h->{category} eq 'Other';
     $h->{message} = construct_message( %$h );

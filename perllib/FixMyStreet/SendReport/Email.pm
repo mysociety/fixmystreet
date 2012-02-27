@@ -5,27 +5,6 @@ use namespace::autoclean;
 
 BEGIN { extends 'FixMyStreet::SendReport'; }
 
-has 'councils' => (is => 'rw', isa => 'HashRef', default => sub { {} } );
-has 'to' => (is => 'rw', isa => 'ArrayRef', default => sub { [] } );
-
-my %councils = ();
-my @to;
-
-sub reset {
-    my $self = shift;
-
-    $self->councils( {} );
-    $self->to( [] );
-}
-
-sub add_council {
-    my $self = shift;
-    my $council = shift;
-    my $name = shift;
-
-    $self->councils->{ $council } = $name;
-}
-
 sub build_recipient_list {
     my $self = shift;
     my $row = shift;
