@@ -350,7 +350,7 @@ my $mech = FixMyStreet::TestMech->new();
 
 FixMyStreet::App->model('DB::Contact')->find_or_create(
     {
-        area_id => 2663,
+        area_id => 2651,
         category => 'potholes',
         email => 'test@example.org',
         confirmed => 1,
@@ -361,10 +361,74 @@ FixMyStreet::App->model('DB::Contact')->find_or_create(
     }
 );
 
-foreach my $test ( {
+FixMyStreet::App->model('DB::Contact')->find_or_create(
+    {
+        area_id => 2226,
+        category => 'potholes',
+        email => '2226@example.org',
+        confirmed => 1,
+        deleted => 0,
+        editor => 'test',
+        whenedited => \'ms_current_timestamp()',
+        note => '',
     }
+);
+
+FixMyStreet::App->model('DB::Contact')->find_or_create(
+    {
+        area_id => 2326,
+        category => 'potholes',
+        email => '2326@example.org',
+        confirmed => 1,
+        deleted => 0,
+        editor => 'test',
+        whenedited => \'ms_current_timestamp()',
+        note => '',
+    }
+);
+
+foreach my $test ( {
+        desc          => 'sends an email',
+        unset_whendef => 1,
+        email_count   => 1,
+        email         => 'system_user@example.com',
+        name          => 'Andrew Smith',
+        dear          => qr'Dear City of Edinburgh Council',
+        to            => qr'City of Edinburgh Council',
+        council       => 2651,
+    },
+    {
+        desc          => 'no email sent if no unsent problems',
+        unset_whendef => 0,
+        email_count   => 0,
+        email         => 'system_user@example.com',
+        name          => 'Andrew Smith',
+        council       => 2651,
+    },
+    {
+        desc          => 'email to two tier council',
+        unset_whendef => 1,
+        email_count   => 1,
+        email         => 'system_user@example.com',
+        name          => 'Andrew Smith',
+        to            => qr'Gloucestershire County Council.*Cheltenham Borough Council',
+        dear          => qr'Dear Gloucestershire County Council and Cheltenham Borough',
+        council       => '2226,2326',
+        multiple      => 1,
+    },
+    {
+        desc          => 'email to two tier council with one missing details',
+        unset_whendef => 1,
+        email_count   => 1,
+        email         => 'system_user@example.com',
+        name          => 'Andrew Smith',
+        to            => qr'Gloucestershire County Council',
+        dear          => qr'Dear Gloucestershire County Council,',
+        council       => '2226|2649',
+        missing       => qr'problem might be the responsibility of Fife.*Council'ms,
+    },
 ) {
-    subtest "sending report" => sub {
+    subtest $test->{ desc } => sub {
         $mech->clear_emails_ok;
 
         FixMyStreet::App->model('DB::Problem')->search(
@@ -375,18 +439,35 @@ foreach my $test ( {
 
         $problem->discard_changes;
         $problem->update( {
-            council => 2663,
+            council => $test->{ council },
             state => 'confirmed',
             confirmed => \'ms_current_timestamp()',
-            whensent => undef,
+            whensent => $test->{ unset_whendef } ? undef : \'ms_current_timestamp()',
             category => 'potholes',
+            name => $test->{ name },
         } );
 
         FixMyStreet::App->model('DB::Problem')->send_reports();
 
-        $mech->email_count_is( 1 );
-        my $email = $mech->get_email;
-        like $email->body, qr/A user of FixMyStreet/, 'email body looks a bit like a report';
+        $mech->email_count_is( $test->{ email_count } );
+        if ( $test->{ email_count } ) {
+            my $email = $mech->get_email;
+            like $email->header('To'), $test->{ to }, 'to line looks correct';
+            is $email->header('From'), sprintf('"%s" <%s>', $test->{ name }, $test->{ email } ), 'from line looks correct';
+            like $email->header('Subject'), qr/A Title/, 'subject line looks correct';
+            like $email->body, qr/A user of FixMyStreet/, 'email body looks a bit like a report';
+            like $email->body, qr/Subject: A Title/, 'more email body checking';
+            like $email->body, $test->{ dear }, 'Salutation looks correct';
+
+            if ( $test->{multiple} ) {
+                like $email->body, qr/This email has been sent to several councils /, 'multiple council text correct';
+            } elsif ( $test->{ missing } ) {
+                like $email->body, $test->{ missing }, 'missing council information correct';
+            }
+
+            $problem->discard_changes;
+            ok defined( $problem->whensent ), 'whensent set';
+        }
     };
 }
 

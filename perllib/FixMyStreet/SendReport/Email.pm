@@ -46,11 +46,11 @@ sub send {
 
     my @recips;
 
+    @recips = $self->build_recipient_list( $row, $areas_info );
+
     # on a staging server send emails to ourselves rather than the councils
     if (mySociety::Config::get('STAGING_SITE')) {
         @recips = ( mySociety::Config::get('CONTACT_EMAIL') );
-    } else {
-        @recips = $self->build_recipient_list( $row, $areas_info );
     }
 
     return unless @recips;
