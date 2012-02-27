@@ -2,7 +2,6 @@ package FixMyStreet::SendReport::Email;
 
 use Moose;
 use namespace::autoclean;
-use Data::Printer;
 
 BEGIN { extends 'FixMyStreet::SendReport'; }
 
@@ -64,7 +63,7 @@ sub build_recipient_list {
 
 sub send {
     my $self = shift;
-    my ( $row, $h, $to, $template, $recips, $nomail ) = @_;
+    my ( $row, $h, $to, $template, $recips, $nomail, $areas_info ) = @_;
 
     my @recips;
 
@@ -72,7 +71,7 @@ sub send {
     if (mySociety::Config::get('STAGING_SITE')) {
         @recips = ( mySociety::Config::get('CONTACT_EMAIL') );
     } else {
-        @recips = $self->build_recipient_list( $row );
+        @recips = $self->build_recipient_list( $row, $areas_info );
     }
 
     return unless @recips;

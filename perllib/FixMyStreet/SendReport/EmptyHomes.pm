@@ -2,30 +2,8 @@ package FixMyStreet::SendReport::EmptyHomes;
 
 use Moose;
 use namespace::autoclean;
-use Data::Printer;
 
 BEGIN { extends 'FixMyStreet::SendReport::Email'; }
-
-has 'councils' => (is => 'rw', isa => 'HashRef', default => sub { {} } );
-has 'to' => (is => 'rw', isa => 'ArrayRef', default => sub { [] } );
-
-my %councils = ();
-my @to;
-
-sub reset {
-    my $self = shift;
-
-    $self->councils( {} );
-    $self->to( [] );
-}
-
-sub add_council {
-    my $self = shift;
-    my $council = shift;
-    my $name = shift;
-
-    $self->councils->{ $council } = $name;
-}
 
 sub build_recipient_list {
     my $self = shift;
@@ -70,66 +48,4 @@ sub build_recipient_list {
     return keys %recips;
 }
 
-sub send {
-    my $self = shift;
-    my ( $row, $h, $to, $template, $recips, $nomail, $areas_info ) = @_;
-
-    my @recips;
-
-    # on a staging server send emails to ourselves rather than the councils
-    if (mySociety::Config::get('STAGING_SITE')) {
-        @recips = ( mySociety::Config::get('CONTACT_EMAIL') );
-    } else {
-        @recips = $self->build_recipient_list( $row, $areas_info );
-    }
-
-
-    return unless @recips;
-
-    my $result = FixMyStreet::App->send_email_cron(
-        {
-            _template_ => $template,
-            _parameters_ => $h,
-            To => $self->to,
-            From => [ $row->user->email, $row->name ],
-        },
-        mySociety::Config::get('CONTACT_EMAIL'),
-        \@recips,
-        $nomail
-    );
-
-    return $result;
-}
-
-# Essex has different contact addresses depending upon the district
-# Might be easier if we start storing in the db all areas covered by a point
-# Will do for now :)
-sub essex_contact {
-    my $district = _get_district_for_contact(@_);
-    my $email;
-    $email = 'eastarea' if $district == 2315 || $district == 2312;
-    $email = 'midarea' if $district == 2317 || $district == 2314 || $district == 2316;
-    $email = 'southarea' if $district == 2319 || $district == 2320 || $district == 2310;
-    $email = 'westarea' if $district == 2309 || $district == 2311 || $district == 2318 || $district == 2313;
-    die "Returned district $district which is not in Essex!" unless $email;
-    return "highways.$email\@essexcc.gov.uk";
-}
-
-# Oxfordshire has different contact addresses depending upon the district
-sub oxfordshire_contact {
-    my $district = _get_district_for_contact(@_);
-    my $email;
-    $email = 'northernarea' if $district == 2419 || $district == 2420 || $district == 2421;
-    $email = 'southernarea' if $district == 2417 || $district == 2418;
-    die "Returned district $district which is not in Oxfordshire!" unless $email;
-    return "$email\@oxfordshire.gov.uk";
-}
-
-sub _get_district_for_contact {
-    my ( $lat, $lon ) = @_;
-    my $district =
-      mySociety::MaPit::call( 'point', "4326/$lon,$lat", type => 'DIS' );
-    ($district) = keys %$district;
-    return $district;
-}
 1;
