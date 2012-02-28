@@ -59,9 +59,9 @@ Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a
 [% END %]
 
 [% IF ward %]
-[% tprintf( loc('You can <a href="%s">view all reports for the council</a> or <a href="/reports">show all councils</a>.'), council_url ) %]
+    [% tprintf( loc('You can <a href="%s">view all reports for the council</a> or <a href="/reports">show all councils</a>.'), council_url ) %]
 [% ELSE %]
-[% loc('You can <a href="/reports">show all councils</a>.') %]
+    [% loc('You can <a href="/reports">show all councils</a>.') %]
 [% END %]
 
 <h2>[% name %]</h2>
@@ -94,38 +94,47 @@ Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a
 
 
 [% INCLUDE 'pagination.html', param = 'p' %]
+
+<section class="full-width">
+    <menu id="problems-nav" class="tab-nav">
+        <ul>
+            [% IF fixed.${council.id}.new %]<li><a href="#recently_fixed">[% loc('Recently fixed') %]</a></li>[% END %]
+            [% IF open.${council.id}.new %]<li><a href="#new_problems">[% loc( 'New problems' ) %]</a></li>[% END %]
+            [% IF open.${council.id}.older%]<li><a href="#older_problems">[% loc( 'Older problems' ) %]</a></li>[% END %]
+            [% IF open.${council.id}.unknown %]<li><a href="#old_unknown_problems">[% loc( 'Old / unknown problems' ) %]</a></li>[% END %]
+            [% IF fixed.${council.id}.old %]<li><a href="#old_fixed">[% loc( 'Old fixed' ) %]</a></li>[% END %]
+        </ul>
+    </menu>
     [% INCLUDE column
         title = loc('Recently fixed')
+        tab_id = 'recently_fixed'
         problems = fixed.${council.id}.new
     %]
 
     [% INCLUDE column
         title = loc('New problems')
+        tab_id = 'new_problems'
         problems = open.${council.id}.new
     %]
 
-    [%# This doesn't really need a whole separate template %]
-    [% IF c.cobrand.moniker == 'emptyhomes' %]
-        [% 
-           INCLUDE column
-            title = loc('Older problems')
-            problems = open.${council.id}.older.merge( open.${council.id}.unknown )
-        %]
-    [% ELSE %]
-        [% INCLUDE column
-            title = loc('Older problems')
-            problems = open.${council.id}.older
-        %]
-        [% INCLUDE column
-            title = loc('Old problems, state unknown')
-            problems = open.${council.id}.unknown
-        %]
-    [% END %]
+    [% INCLUDE column
+        title = loc('Older problems')
+        tab_id = 'older_problems'
+        problems = open.${council.id}.older
+    %]
+
+    [% INCLUDE column
+        title = loc('Old / unknown problems')
+        tab_id = 'old_unknown_problems'
+        problems = open.${council.id}.unknown
+    %]
 
     [% INCLUDE column
         title = loc('Old fixed')
+        tab_id = 'old_fixed'
         problems = fixed.${council.id}.old
     %]
+</section>
 
 
 </div>
@@ -134,15 +143,25 @@ Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a
 [% BLOCK column %]
 [% IF problems %]
 
-<h3>[% title %]</h3>
+<h3 class="hidden-js">[% title %]</h3>
 
-<ul>
+<ul id="[% tab_id %]" class="issue-list-a tab">
 [% FOREACH problem IN problems %]
-    <li><a href="[% c.uri_for('/report/' _ problem.id) %]">[% problem.title | html %]</a>
-    [% IF problem.councils > 1 %] <small>[% loc('(sent to both)') %]</small> [% END %]
-    [% IF c.cobrand.moniker != 'emptyhomes' %]
-        [% IF problem.councils == 0 %] <small>[% loc('(not sent to council)') %]</small> [% END %]
-    [% END %]
+    <li>
+        <a href="[% c.uri_for('/report/' _ problem.id) %]">
+            <div class="text">
+                <h4>[% problem.title | html %]</h4>
+                [% IF problem.councils > 1 %] <small>[% loc('(sent to both)') %]</small> [% END %]
+                [% IF c.cobrand.moniker != 'emptyhomes' %]
+                    [% IF problem.councils == 0 %] <small>[% loc('(not sent to council)') %]</small> [% END %]
+                [% END %]
+            </div>
+            [% IF problem.photo %]
+            <div class="img">
+                <img height="60" width="90" src="/photo?id=[% p.id %];fp=1" alt="">
+            </div>
+            [% END %]
+        </a>
     </li>
 [% END %]
 </ul>

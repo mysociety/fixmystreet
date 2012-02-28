@@ -860,6 +860,13 @@ a:hover.button-left {
     }
   }
 }
+.list-a {
+  @extend .issue-list-a;
+  a {
+    padding:0.5em 1em;
+    font-weight:bold;
+  }
+}
 //display:table fixes
 .ie6, .ie7 {
   .issue-list-a {
@@ -1020,8 +1027,15 @@ table.nicetable {
   }
 }
 
-
-
+.promo {
+  @extend .full-width;
+  background:$contrast1;
+  padding:1em;
+  margin-bottom:1em;
+  a, a:hover {
+    color:#fff;
+  }
+}
 
 // this is a bit of a hack to get some differentation between desk and mobile
 .desk-only {
