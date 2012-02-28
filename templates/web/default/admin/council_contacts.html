@@ -1,28 +1,28 @@
 [% INCLUDE 'admin/header.html' title=tprintf(loc('Council contacts for %s'), council_name) -%]
 
-[% IF updated %]
+[%- IF updated %]
 <p>
 <em>[% updated %]</em>
 </p>
-[% END %]
+[%- END %]
 
 <p>
-[% IF example_pc %]
+[%- IF example_pc %]
 <a href="[% c.uri_for_email( '/around', { pc => example_pc } ) %]">[% tprintf( loc('Example postcode %s'), example_pc ) | html %]</a> |
-[% END %]
+[%- END %]
 <a href="[% c.uri_for_email( '/reports/' _ area_id ) %]">[% loc('List all reported problems' ) %]</a>
 <a href="[% c.uri_for( 'council_contacts', area_id, { text => 1 } ) %]">[% loc('Text only version') %]</a>
 </p>
 
-[% IF open311.count > 0 %]
+[%- IF open311.count > 0 %]
     <h2>
     Council contacts configured via Open311
     </h2>
-[% END %]
+[%- END %]
 
-[% IF c.cobrand.moniker == 'fixmystreet' %]
+[%- IF c.cobrand.moniker == 'fixmystreet' %]
 <p class="error">Do not give these out except to people at the council.</p>
-[% END %]
+[%- END %]
 
 <form method="post" action="[% c.uri_for('council_contacts', area_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
 
@@ -37,18 +37,25 @@
             <th>[% loc('When edited') %]</th>
             <th>[% loc('Confirm') %]</th>
         </tr>
-        [% WHILE ( contact = contacts.next ) %]
-            <tr[% ' class="inactive"' IF contact.deleted || !contact.confirmed %]>
-                <td><a href="[% c.uri_for( 'council_edit', area_id, contact.category ) %]">[% contact.category %]</a></td>
-                <td>[% contact.email | html %]</td>
-                <td>[% IF contact.confirmed %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
-                <td>[% IF contact.deleted %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
-                <td>[% contact.editor %]</td>
-                <td>[% contact.note | html %]</td>
-                <td>[% contact.whenedited.ymd _ ' ' _ contact.whenedited.hms %]</td>
-                <td><input type="checkbox" name="confirmed" value="[% contact.category %]"></td>
-            </tr>
-        [% END %]
+        [%- count = 0 %]
+        [%- WHILE ( contact = contacts.next ) -%]
+            [%- count = count + 1 %]
+        <tr[% ' class="inactive"' IF contact.deleted || !contact.confirmed %]>
+            <td><a href="[% c.uri_for( 'council_edit', area_id, contact.category ) %]">[% contact.category %]</a></td>
+            <td>[% contact.email | html %]</td>
+            <td>[% IF contact.confirmed %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
+            <td>[% IF contact.deleted %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
+            <td>[% contact.editor %]</td>
+            <td>[% contact.note | html %]</td>
+            <td>[% contact.whenedited.ymd _ ' ' _ contact.whenedited.hms %]</td>
+            <td><input type="checkbox" name="confirmed" value="[% contact.category %]"></td>
+        </tr>
+        [%- END -%]
+        [%- IF count == 0 %]
+        <tr>
+            <td colspan="8" class="nomatch">[% loc( 'This council has no contacts' ) %]</td>
+        </tr>
+        [%- END %]
     </table>
 
     <p>

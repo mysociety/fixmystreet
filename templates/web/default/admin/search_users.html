@@ -15,6 +15,7 @@
         <th>[% loc('Flagged') %]</th>
         <th>*</th>
     </tr>
+[% IF users.size -%]
 [%- FOREACH user IN users %]
     <tr>
         <td>[% PROCESS value_or_nbsp value=user.name %]</td> 
@@ -24,6 +25,11 @@
         <td><a href="[% c.uri_for( 'user_edit', user.id ) %]">[% loc('Edit') %]</a></td>
     </tr>
 [%- END -%]
+[% ELSE -%]
+    <tr>
+        <td colspan="5" class="nomatch">[% loc('No matching users found') %]</td>
+    </tr>
+[% END -%]
 </table>
 
 [% END %]
