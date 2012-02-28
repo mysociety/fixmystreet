@@ -327,4 +327,18 @@ $(function(){
     });
     // $('.mobile .nicetable tr.heading > td.title').css({'min-width':'300px'});
     // $('.mobile .nicetable tr > td.data').css({'max-width':'12%'});
+
+    /*
+     * Map controls prettiness
+     */
+    //add links container (if its not there)
+    if($('#sub_map_links').length === 0){
+        $('<p id="sub_map_links" />').insertAfter($('#map'));
+    }
+
+    //add permalink
+    $('#sub_map_links').append('<a href="#" id="map_permalink">Permalink</a>');
+
+    //open/close toggle button on desk
+    $('#sub_map_links').prepend('<span id="map_links_toggle">&nbsp;</span>');
 });

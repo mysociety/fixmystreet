@@ -183,7 +183,7 @@ function fixmystreet_onload() {
 
 $(function(){
 
-    var perm = new OpenLayers.Control.Permalink();
+    var perm = new OpenLayers.Control.Permalink('map_permalink');
     set_map_config(perm);
 
     fixmystreet.map = new OpenLayers.Map("map", {

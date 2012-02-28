@@ -894,16 +894,108 @@ a:hover.button-left {
   }
 }
 
+// map stuff
 #map_box{
+  @extend .full-width;
   background: #333;
   height: 10em;
-  @extend .full-width;
   margin-bottom: 1em;
   overflow: hidden;
+  position: relative;
   #map {
     width:100%;
     height:100%;
   }
+}
+
+// OpenLayers fix for navigation being top right
+.olControlPanZoom {
+  width:48px;
+  right: 1em !important;
+  top: 1em !important;
+  left: auto !important;
+}
+
+// Openlayers map controls (overrides)
+#OpenLayers\.Control\.PanZoom_6_panup,
+#OpenLayers\.Control\.PanZoom_6_pandown,
+#OpenLayers\.Control\.PanZoom_6_panleft,
+#OpenLayers\.Control\.PanZoom_6_panright,
+#OpenLayers\.Control\.PanZoom_6_zoomin,
+#OpenLayers\.Control\.PanZoom_6_zoomout {
+  text-indent:-999999px;
+  background:url(images/sprite.png) no-repeat;
+}
+#OpenLayers\.Control\.PanZoom_6_zoomworld {
+  display:none !important;
+  visibility:none !important;
+}
+
+#OpenLayers\.Control\.PanZoom_6_panup {
+  background-position:-25px -218px;
+  left:15px !important;
+  top:0 !important;
+}
+#OpenLayers\.Control\.PanZoom_6_pandown {
+  background-position:-25px -248px;
+  left:15px !important;
+  top:36px !important;
+}
+#OpenLayers\.Control\.PanZoom_6_panleft {
+  background-position:-10px -233px;
+  width:24px !important;
+  left:0px !important;
+  top:18px !important;
+}
+#OpenLayers\.Control\.PanZoom_6_panright {
+  background-position:-34px -233px;
+  width:24px !important;
+  left:24px !important;
+  top:18px !important;
+}
+#OpenLayers\.Control\.PanZoom_6_zoomin {
+  background-position:-25px -280px;
+  height:22px !important;
+  left:15px !important;
+  top:70px !important;
+}
+#OpenLayers\.Control\.PanZoom_6_zoomout {
+  background-position:-25px -298px;
+  height:22px !important;
+  left:15px !important;
+  top:92px !important;
+}
+
+//hide pins, show old reports etc
+#sub_map_links {
+  position: absolute;
+  left: 0;
+  right:0;
+  bottom: 0;
+  z-index: 1000;
+  background:#333;
+  margin:0;
+  a {
+    @include inline-block;
+    font-size:0.6875em;
+    color:#fff;
+    padding:0.6em 3em 0.5em 1em;
+    background:url(images/sprite.png) right -4066px no-repeat;
+    &#hide_pins_link {
+      background-position:right -3976px;
+    }
+    &#all_pins_link {
+      background-position:right -4022px;
+    }
+    &#map_permalink {
+      background-position:right -4070px;
+    }
+  }
+}
+
+//copyright attribution 
+#OpenLayers\.Control\.Attribution_3 {
+  bottom:2em !important;
 }
 
 /* Drag is only present in noscript form. XXX Copy from core. */
@@ -1181,55 +1273,4 @@ ul.breadcrumb {
     border-bottom:none;
     margin-bottom:0;
   }
-}
-
-
-// openlayers overrides
-#OpenLayers\.Control\.PanZoom_6_panup,
-#OpenLayers\.Control\.PanZoom_6_pandown,
-#OpenLayers\.Control\.PanZoom_6_panleft,
-#OpenLayers\.Control\.PanZoom_6_panright,
-#OpenLayers\.Control\.PanZoom_6_zoomin,
-#OpenLayers\.Control\.PanZoom_6_zoomout {
-  text-indent:-999999px;
-  background:url(images/sprite.png) no-repeat;
-}
-#OpenLayers\.Control\.PanZoom_6_zoomworld {
-  display:none !important;
-  visibility:none !important;
-}
-
-#OpenLayers\.Control\.PanZoom_6_panup {
-  background-position:-25px -218px;
-  left:15px !important;
-  top:0 !important;
-}
-#OpenLayers\.Control\.PanZoom_6_pandown {
-  background-position:-25px -248px;
-  left:15px !important;
-  top:36px !important;
-}
-#OpenLayers\.Control\.PanZoom_6_panleft {
-  background-position:-10px -233px;
-  width:24px !important;
-  left:0px !important;
-  top:18px !important;
-}
-#OpenLayers\.Control\.PanZoom_6_panright {
-  background-position:-34px -233px;
-  width:24px !important;
-  left:24px !important;
-  top:18px !important;
-}
-#OpenLayers\.Control\.PanZoom_6_zoomin {
-  background-position:-25px -280px;
-  height:22px !important;
-  left:15px !important;
-  top:70px !important;
-}
-#OpenLayers\.Control\.PanZoom_6_zoomout {
-  background-position:-25px -298px;
-  height:22px !important;
-  left:15px !important;
-  top:92px !important;
 }

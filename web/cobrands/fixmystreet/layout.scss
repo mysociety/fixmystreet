@@ -2,14 +2,6 @@
 @import "_colours";
 @import "_mixins";
 
-// OpenLayers fix for navigation being top right
-.olControlPanZoom {
-  width:48px;
-  right: 1em !important;
-  top: 5em !important;
-  left: auto !important;
-}
-
 //hacks for desk/mob only stuff
 .desk-only {
   display:block !important;
@@ -446,6 +438,26 @@ body.twothirdswidthpage {
   right: 1em;
   top: 3em;
   z-index:1;
+}
+
+// Pull OpenLayers navigation down a bit
+.olControlPanZoom {
+  top: 5em !important;
+}
+
+#sub_map_links {
+  left:auto;
+  bottom:auto;
+  top:14em;
+  #map_links_toggle {
+    display:block;
+    position:absolute;
+    left:-1em;
+    background:#000;
+    width:1em;
+    height:100%;
+    @include border-radius(0.25em 0 0 0.25em);
+  }
 }
 
 // log in bit, pokes above the .content div
