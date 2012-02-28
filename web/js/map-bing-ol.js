@@ -2,7 +2,7 @@ function set_map_config(perm) {
     fixmystreet.controls = [
         new OpenLayers.Control.Attribution(),
         new OpenLayers.Control.ArgParser(),
-        new OpenLayers.Control.Navigation(),
+        new OpenLayers.Control.Navigation({ zoomWheelEnabled: false }),
         perm,
         //new OpenLayers.Control.ZoomPanel()
         new OpenLayers.Control.PanZoomFMS()
