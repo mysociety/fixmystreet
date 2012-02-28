@@ -1029,11 +1029,40 @@ table.nicetable {
 
 .promo {
   @extend .full-width;
-  background:$contrast1;
+  background:$primary;
   padding:1em;
   margin-bottom:1em;
+}
+
+.alert {
+  @extend .full-width;
+  background:#ff0000;
+  padding:1em;
+  margin-bottom:1em;
+  color:#fff;
   a, a:hover {
-    color:#fff;
+    color:$primary;
+  }
+}
+
+ul.breadcrumb {
+  @include list-reset;
+  margin:-1em -1em 1em -1em;
+  overflow:hidden;
+  li {
+    span {
+      display:block;
+      padding:0.5em 1em 0.5em 0;
+    }
+    a {
+      background:url(images/sprite.png) right -3220px no-repeat;
+      padding:0.5em 2.5em 0.5em 1em;
+      color:#333;
+      &:hover {
+        color:#000;
+        text-decoration:none;
+      }
+    }
   }
 }
 

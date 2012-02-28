@@ -21,48 +21,60 @@
 </div>
 
 <div id="side">
-
 [% IF council.generation_high == 10 AND c.cobrand.country == 'GB' %]
-<p id="unknown">This council no longer exists.
-[% IF council.name.match('Penwith|Kerrier|Carrick|Restormel|Caradon|North Cornwall') %]
-Its area is now covered by <a href="/reports/Cornwall">Cornwall Council</a>.
-[% ELSIF council.name.match('Durham|Easington|Sedgefield|Teesdale|Wear Valley|Derwentside|Chester le Street') %]
-Its area is now covered by <a href="/reports/Durham+County">Durham County Council</a>.
-[% ELSIF council.name.match('Blyth Valley|Wansbeck|Castle Morpeth|Tynedale|Alnwick|Berwick upon Tweed') %]
-Its area is now covered by <a href="/reports/Northumberland">Northumberland County Council</a>.
-[% ELSIF council.name.match('North Shropshire|Oswestry|Shrewsbury and Atcham|South Shropshire|Bridgnorth') %]
-Its area is now covered by <a href="/reports/Shropshire">Shropshire Council</a>.
-[% ELSIF council.name.match('Salisbury|West Wiltshire|Kennet|North Wiltshire') %]
-Its area is now covered by <a href="/reports/Wiltshire">Wiltshire Council</a>.
-[% ELSIF council.name.match('Ellesmere Port and Neston|Vale Royal|Chester') %]
-Its area is now covered by <a href="/reports/Cheshire+West+and+Chester">Cheshire West and Chester Council</a>.
-[% ELSIF council.name.match('Macclesfield|Congleton|Crewe and Nantwich') %]
-Its area is now covered by <a href="/reports/Cheshire+East">Cheshire East Council</a>.
-[% ELSIF council.name.match('Mid Bedfordshire|South Bedfordshire') %]
-Its area is now covered by <a href="/reports/Central+Bedfordshire">Central Bedfordshire Council</a>.
-[% ELSIF council.name.match('Cheshire') %]
-Its area is now covered by <a href="/reports/Cheshire+West+and+Chester">Cheshire West and Chester Council</a> or
-<a href="/reports/Cheshire+East">Cheshire East Council</a>.
-[% ELSIF council.name.match('Bedfordshire') %]
-Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a> or
-<a href="/reports/Central+Bedfordshire">Central Bedfordshire Council</a>.
-[% END %]
-</p>
+    <p class="alert">This council no longer exists.
+    [% IF council.name.match('Penwith|Kerrier|Carrick|Restormel|Caradon|North Cornwall') %]
+    Its area is now covered by <a href="/reports/Cornwall">Cornwall Council</a>.
+    [% ELSIF council.name.match('Durham|Easington|Sedgefield|Teesdale|Wear Valley|Derwentside|Chester le Street') %]
+    Its area is now covered by <a href="/reports/Durham+County">Durham County Council</a>.
+    [% ELSIF council.name.match('Blyth Valley|Wansbeck|Castle Morpeth|Tynedale|Alnwick|Berwick upon Tweed') %]
+    Its area is now covered by <a href="/reports/Northumberland">Northumberland County Council</a>.
+    [% ELSIF council.name.match('North Shropshire|Oswestry|Shrewsbury and Atcham|South Shropshire|Bridgnorth') %]
+    Its area is now covered by <a href="/reports/Shropshire">Shropshire Council</a>.
+    [% ELSIF council.name.match('Salisbury|West Wiltshire|Kennet|North Wiltshire') %]
+    Its area is now covered by <a href="/reports/Wiltshire">Wiltshire Council</a>.
+    [% ELSIF council.name.match('Ellesmere Port and Neston|Vale Royal|Chester') %]
+    Its area is now covered by <a href="/reports/Cheshire+West+and+Chester">Cheshire West and Chester Council</a>.
+    [% ELSIF council.name.match('Macclesfield|Congleton|Crewe and Nantwich') %]
+    Its area is now covered by <a href="/reports/Cheshire+East">Cheshire East Council</a>.
+    [% ELSIF council.name.match('Mid Bedfordshire|South Bedfordshire') %]
+    Its area is now covered by <a href="/reports/Central+Bedfordshire">Central Bedfordshire Council</a>.
+    [% ELSIF council.name.match('Cheshire') %]
+    Its area is now covered by <a href="/reports/Cheshire+West+and+Chester">Cheshire West and Chester Council</a> or
+    <a href="/reports/Cheshire+East">Cheshire East Council</a>.
+    [% ELSIF council.name.match('Bedfordshire') %]
+    Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a> or
+    <a href="/reports/Central+Bedfordshire">Central Bedfordshire Council</a>.
+    [% END %]
+    </p>
 [% ELSE %]
-<p><a href="[% rss_url %]"><img align="right" src="/i/feed.png" width="16" height="16" title="[% loc('RSS feed') %]" alt="[% tprintf(loc('RSS feed of problems in this %s'), thing) %]" border="0" hspace="4"></a>
+    <div class="shadow-wrap">
+        <ul id="key-tools" class="singleton">
+            <li><a rel="nofollow" id="email_alert" class="feed" href="[% rss_url %]">[% tprintf(loc('Receive updates of problems in this %s'), thing) %]</a></li>
+        </ul>
+    </div>
 [% END %]
 
+
+<ul class="breadcrumb">
+    <li><a href="/reports">[% loc('All councils') %]</a></li>
+    [% IF ward %]
+    <li><a href="[% council_url %]">[% council.name %]</a></li>
+    <li><span>[% ward.name %]</span></li>
+    [% ELSE %]
+    <li><span>[% council.name %]</span></li>
+    [% END %]
+</ul>
+
+
+<p>
 [% IF c.cobrand.all_councils_report %]
     [% tprintf( loc('This is a summary of all reports for one %s.'), thing ) %]
 [% ELSE %]
     [% tprintf( loc('This is a summary of all reports for this %s.'), thing ) %]
 [% END %]
+</p>
 
-[% IF ward %]
-    [% tprintf( loc('You can <a href="%s">view all reports for the council</a> or <a href="/reports">show all councils</a>.'), council_url ) %]
-[% ELSE %]
-    [% loc('You can <a href="/reports">show all councils</a>.') %]
-[% END %]
 
 <h2>[% name %]</h2>
 
