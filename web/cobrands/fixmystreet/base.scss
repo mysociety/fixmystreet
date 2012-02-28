@@ -1182,3 +1182,54 @@ ul.breadcrumb {
     margin-bottom:0;
   }
 }
+
+
+// openlayers overrides
+#OpenLayers\.Control\.PanZoom_6_panup,
+#OpenLayers\.Control\.PanZoom_6_pandown,
+#OpenLayers\.Control\.PanZoom_6_panleft,
+#OpenLayers\.Control\.PanZoom_6_panright,
+#OpenLayers\.Control\.PanZoom_6_zoomin,
+#OpenLayers\.Control\.PanZoom_6_zoomout {
+  text-indent:-999999px;
+  background:url(images/sprite.png) no-repeat;
+}
+#OpenLayers\.Control\.PanZoom_6_zoomworld {
+  display:none !important;
+  visibility:none !important;
+}
+
+#OpenLayers\.Control\.PanZoom_6_panup {
+  background-position:-25px -218px;
+  left:15px !important;
+  top:0 !important;
+}
+#OpenLayers\.Control\.PanZoom_6_pandown {
+  background-position:-25px -248px;
+  left:15px !important;
+  top:36px !important;
+}
+#OpenLayers\.Control\.PanZoom_6_panleft {
+  background-position:-10px -233px;
+  width:24px !important;
+  left:0px !important;
+  top:18px !important;
+}
+#OpenLayers\.Control\.PanZoom_6_panright {
+  background-position:-34px -233px;
+  width:24px !important;
+  left:24px !important;
+  top:18px !important;
+}
+#OpenLayers\.Control\.PanZoom_6_zoomin {
+  background-position:-25px -280px;
+  height:22px !important;
+  left:15px !important;
+  top:70px !important;
+}
+#OpenLayers\.Control\.PanZoom_6_zoomout {
+  background-position:-25px -298px;
+  height:22px !important;
+  left:15px !important;
+  top:92px !important;
+}
