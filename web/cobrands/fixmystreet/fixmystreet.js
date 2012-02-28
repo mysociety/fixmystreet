@@ -92,7 +92,7 @@ $(function(){
             }).data('size', 'full');
         }
     }
-    
+
     //heightfix the desktop .content div
     if(Modernizr.mq('only screen and (min-width:48em)')) {
         if (!($('body').hasClass('frontpage'))){
@@ -299,5 +299,20 @@ $(function(){
     $('.form-focus-hidden').hide();
     $('.form-focus-trigger').on('focus', function(){
         $('.form-focus-hidden').fadeIn(500);
+    });
+
+    /*
+     * Show on click - pretty generic
+     */
+    $('.hideshow-trigger').on('click', function(e){
+        e.preventDefault();
+        var href = $(this).attr('href'),
+            //stupid IE sometimes adds the full uri into the href attr, so trim
+            start = href.indexOf('#'),
+            target = href.slice(start, href.length);
+
+        $(target).removeClass('hidden-js');
+
+        $(this).hide();
     });
 });

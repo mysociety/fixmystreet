@@ -75,8 +75,25 @@ Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a
 </p>
 [% END %]
 
-    [% INCLUDE 'pagination.html', param = 'p' %]
 
+[% IF children.size %]
+
+<a href="#council_wards" class="button-right hidden-nojs hideshow-trigger">[% loc('Wards of this council') %]</a>
+
+<section id="council_wards" class="hidden-js">
+    <h2>[% loc('Wards of this council') %]</h2>
+    <p>[% loc('Follow a ward link to view only reports within that ward.') %]</p>
+    <ul class="list-a full-width">
+        [% FOR child IN children.values.sort('name') %]
+        <li><a href="[% child.url %]">[% child.name %]</a></li>
+        [% END %]
+    </ul>
+</section>
+[% END %]
+
+
+
+[% INCLUDE 'pagination.html', param = 'p' %]
     [% INCLUDE column
         title = loc('Recently fixed')
         problems = fixed.${council.id}.new
@@ -110,16 +127,6 @@ Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a
         problems = fixed.${council.id}.old
     %]
 
-
-[% IF children.size %]
-<h2>[% loc('Wards of this council') %]</h2>
-<p>[% loc('Follow a ward link to view only reports within that ward.') %]</p>
-<ul>
-    [% FOR child IN children.values.sort('name') %]
-    <li><a href="[% child.url %]">[% child.name %]</a></li>
-    [% END %]
-</ul>
-[% END %]
 
 </div>
 [% INCLUDE 'footer.html' %]

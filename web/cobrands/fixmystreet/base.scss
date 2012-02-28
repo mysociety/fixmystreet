@@ -1034,6 +1034,12 @@ table.nicetable {
   visibility: hidden;
 }
 
+// hide anything with this class if js is NOT working
+.no-js .hidden-nojs {
+  display: none !important;
+  visibility: hidden;
+}
+
 
 /* Front page */
 #front-main {
