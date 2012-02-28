@@ -1,8 +1,10 @@
 @import "_colours";
 
 #navigation {
-    width: auto;
-    float: left;
+    li {
+        display: inline;
+        float: left;
+    }
 }
 
 #wrapper2 {
