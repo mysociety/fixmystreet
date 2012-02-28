@@ -139,6 +139,16 @@ body {
           background:#444;
           @include background(linear-gradient(#000, #444 10%, #444 95%, #111));
         }
+        a.report-a-problem-btn {
+          background:$primary;
+          padding:0.25em;
+          margin:0.5em;
+          color:#333;
+          @include border-radius(0.25em);
+          &:hover {
+            background:$primary/0.9;
+          }
+        }
         span {
           color:$primary;
         }
@@ -205,6 +215,10 @@ body.mappage {
   #main-nav ul#main-menu li a,
   #main-nav ul#main-menu li span {
     padding: 1.4em 0.75em 1.35em 0.75em;
+  }
+  #main-nav ul#main-menu li a.report-a-problem-btn {
+    padding: 0.5em;
+    margin:0.9em 0.25em 0.85em 0.25em;
   }
   .nav-wrapper{
     .nav-wrapper-2{
