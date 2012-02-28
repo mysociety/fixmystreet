@@ -474,6 +474,7 @@ sub search_reports : Path('search_reports') {
 
     if (my $search = $c->req->param('search')) {
         $c->stash->{searched} = 1;
+        $c->stash->{search} = $search;
 
         my ( $site_res_sql, $site_key, $site_restriction ) = $c->cobrand->site_restriction;
 
@@ -490,18 +491,52 @@ sub search_reports : Path('search_reports') {
         $c->model('DB')->schema->storage->sql_maker->quote_char( '"' );
         $c->model('DB')->schema->storage->sql_maker->name_sep( '.' );
 
-        my $problems = $c->cobrand->problems->search(
-            {
+        my $search_criteria = {
+            -or => [
+                'me.id' => $search_n,
+                'user.email' => { ilike => $like_search },
+                'me.name' => { ilike => $like_search },
+                title => { ilike => $like_search },
+                detail => { ilike => $like_search },
+                council => { like => $like_search },
+                cobrand_data => { like => $like_search },
+            ]
+        };
+
+        my $update_search_criteria = {
+            -or => [
+                'me.id' => $search_n,
+                'problem.id' => $search_n,
+                'user.email' => { ilike => $like_search },
+                'me.name' => { ilike => $like_search },
+                text => { ilike => $like_search },
+                'me.cobrand_data' => { ilike => $like_search },
+                %{ $site_restriction },
+            ]
+        };
+
+        # special shortcuts to speed up common searches
+        if ( mySociety::EmailUtil::is_valid_email( $search ) ) {
+            $search_criteria = {
+                'user.email' => $search,
+            };
+
+            $update_search_criteria = $search_criteria;
+        } elsif ( $search =~ /^id:(\d+)/ ) {
+            $search_criteria = {
+                'me.id' => $1,
+            };
+
+            $update_search_criteria = {
                 -or => [
-                    'me.id' => $search_n,
-                    'user.email' => { ilike => $like_search },
-                    'me.name' => { ilike => $like_search },
-                    title => { ilike => $like_search },
-                    detail => { ilike => $like_search },
-                    council => { like => $like_search },
-                    cobrand_data => { like => $like_search },
+                    'me.id' => $1,
+                    'problem.id' => $1,
                 ]
-            },
+            };
+        }
+
+        my $problems = $c->cobrand->problems->search(
+            $search_criteria,
             {
                 prefetch => 'user',
                 order_by => [\"(state='hidden')",'created']
@@ -517,17 +552,7 @@ sub search_reports : Path('search_reports') {
             if ( grep {$_ eq 'councilcontacts'} keys %{$c->stash->{allowed_pages}});
 
         my $updates = $c->model('DB::Comment')->search(
-            {
-                -or => [
-                    'me.id' => $search_n,
-                    'problem.id' => $search_n,
-                    'user.email' => { ilike => $like_search },
-                    'me.name' => { ilike => $like_search },
-                    text => { ilike => $like_search },
-                    'me.cobrand_data' => { ilike => $like_search },
-                    %{ $site_restriction },
-                ]
-            },
+            $update_search_criteria,
             {
                 -select   => [ 'me.*', qw/problem.council problem.state/ ],
                 prefetch => [qw/user problem/],

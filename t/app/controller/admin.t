@@ -33,6 +33,19 @@ if ( $user3 ) {
   $mech->delete_user( $user3 );
 }
 
+my $contact = FixMyStreet::App->model('DB::Contact')->find_or_create(
+    {
+        area_id    => 2649,
+        category   => 'potholes',
+        email      => 'test@example.org',
+        confirmed  => 1,
+        deleted    => 0,
+        editor     => 'test',
+        whenedited => \'ms_current_timestamp()',
+        note       => 'note',
+    }
+);
+
 my $dt = DateTime->new(
     year   => 2011,
     month  => 04,
@@ -982,6 +995,11 @@ subtest 'report search' => sub {
     my $r_id = $report->id;
     $mech->content_like( qr{href="http://[^/]*[^.]/report/$r_id/">$r_id</a>} );
 
+    $mech->get_ok('/admin/search_reports?search=id:' . $report->id );
+
+    $mech->content_contains( $report->title );
+    $mech->content_like( qr{href="http://[^/]*[^.]/report/$r_id/">$r_id</a>} );
+
     $mech->get_ok('/admin/search_reports?search=' . $report->user->email);
 
     my $u_id = $update->id;
@@ -992,13 +1010,13 @@ subtest 'report search' => sub {
     $update->update;
 
     $mech->get_ok('/admin/search_reports?search=' . $report->user->email);
-    $mech->content_like( qr{<tr [^>]*hidden[^>]*> \s* <td> \s* $u_id \s* </td>}xs );
+    $mech->content_like( qr{<tr [^>]*inactive[^>]*> \s* <td> \s* $u_id \s* </td>}xs );
 
     $report->state('hidden');
     $report->update;
 
     $mech->get_ok('/admin/search_reports?search=' . $report->user->email);
-    $mech->content_like( qr{<tr [^>]*hidden[^>]*> \s* <td> \s* $r_id \s* </td>}xs );
+    $mech->content_like( qr{<tr [^>]*inactive[^>]*> \s* <td> \s* $r_id \s* </td>}xs );
 
     $report->state('fixed - user');
     $report->update;
