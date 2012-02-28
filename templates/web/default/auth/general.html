@@ -20,7 +20,7 @@
     [% IF loc_email_error  %]
         <div class="form-error">[% loc_email_error %]</div>
     [% ELSIF sign_in_error %]
-        <div class="form-error">[% loc('There was a problem with your email/password combination. Passwords and user accounts are a brand <strong>new</strong> service, so you probably do not have one yet &ndash; please fill in the right hand side of this form to get one.') %]</div>
+        <div class="form-error">[% loc('There was a problem with your email/password combination. If you cannot remember your password, or do not have one, please fill in the &lsquo;sign in by email&rsquo; section of the form.') %]</div>
     [% END %]
 
     <div class="form-field">

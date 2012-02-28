@@ -343,6 +343,7 @@ sub load_and_group_problems : Private {
                 'id', 'council', 'state', 'areas', 'latitude', 'longitude', 'title', 'cobrand',
                 { duration => { extract => "epoch from current_timestamp-lastupdate" } },
                 { age      => { extract => "epoch from current_timestamp-confirmed"  } },
+                { photo    => 'photo is not null' },
             ],
             order_by => { -desc => 'lastupdate' },
             rows => 100,
