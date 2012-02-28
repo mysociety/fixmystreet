@@ -3,7 +3,7 @@
 [%- END %]
 
 [% BLOCK format_time -%]
-    [%- IF time %][% time.ymd %]&nbsp;[% time.hms %][% ELSE %][% no_time || '&nbsp;' %][% END %][% no_time = '' %]
+    [%- IF time %][% time.ymd %] [% time.hms %][% ELSE %][% no_time || '&nbsp;' %][% END %][% no_time = '' %]
 [%- END %]
 
 [% BLOCK abuse_button -%]
