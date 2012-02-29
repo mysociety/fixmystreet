@@ -153,7 +153,7 @@ function fixmystreet_onload() {
         e.preventDefault();
         fixmystreet.markers.setVisibility(true);
         var texts = [
-            'en', 'Include stale reports', 'Hide stale reports',
+            'en', 'Include old reports', 'Hide old reports',
             'nb', 'Inkluder utdaterte problemer', 'Skjul utdaterte rapporter',
             'cy', 'Cynnwys hen adroddiadau', 'Cuddio hen adroddiadau'
         ];
