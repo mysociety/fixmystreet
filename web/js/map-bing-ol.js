@@ -9,7 +9,7 @@ function set_map_config(perm) {
             new OpenLayers.Control.Attribution(),
             new OpenLayers.Control.ArgParser(),
             new OpenLayers.Control.Navigation({ zoomWheelEnabled: false }),
-            new OpenLayers.Control.Permalink(),
+            new OpenLayers.Control.Permalink('map_permalink'),
             new OpenLayers.Control.PanZoomFMS()
         ];
     }
