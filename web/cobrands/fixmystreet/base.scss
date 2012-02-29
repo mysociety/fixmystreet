@@ -128,6 +128,7 @@ h4 {
   margin-bottom: 1em; 
 }
 
+// default list styles
 ul, ol {
   font-size: 1em;
   margin-bottom: 2em;  
@@ -147,18 +148,20 @@ ol li {
   list-style:decimal;
 }
 
+// lets you have a traditional ol but with nicely styled numbers
+// for older browsers it just falls back to the normal ol
 ol.big-numbers {
   padding: 0;
   margin: 0;
-  counter-reset: li;
+  counter-reset: li; // reset counter to be 'li' instead of a number
   > li {
     position: relative;
     list-style: none;
     padding:0 0 0 2.5em;
     margin-bottom:2em;
     &:before {
-      content: counter(li);
-      counter-increment: li;
+      content: counter(li); // set the content to be whatever the 'li' var is
+      counter-increment: li; // add to the counter var
       position: absolute;
       left: 0;
       top:-0.2em;
@@ -202,9 +205,6 @@ pre {
 }
 
 img {
-  // huh? We're confused and it breaks our other stuff :S
-  // max-width: 100%;
-
   //do this otherwise IE will just not display
   //any img without a height defined
   height:auto;
@@ -216,7 +216,7 @@ select, input, textarea {
 }
 
 
-/* LINKS */
+// links
 a,
 a:visited {
   text-decoration:none;
@@ -228,8 +228,7 @@ a:visited {
   }
 }
 
-/*CUSTOM TYPE*/
-
+// custom type
 .small-print {
   @extend small;
   margin-bottom: 1.2307em;
@@ -263,10 +262,7 @@ h4.static-with-rule{
   padding: 0.5em 1em;
 }
 
-/*FORM*/
-fieldset{
-  margin: 1em;
-}
+/* FORMS */
 
 // input placeholders, these need to be on separate lines as if the browser
 // can't understand a selector it will invalidate the whole line.
@@ -290,23 +286,30 @@ fieldset{
   }
 }
 
+// wrap anything inside the form in a fieldset to give
+// us the right spacing
+fieldset {
+  margin: 1em;
+}
+
 input[type=text],
 input[type=password],
 input[type=email],
 input[type=file],
-textarea{
+textarea {
   width: 100%;
+  // adjust so the sides line up
   padding: 0.5em;
   margin: 0 0 0 -0.5em;
 }
 
-textarea{
+textarea {
   border: 0.125em solid #888888;
   @include border-radius(0.25em);
   display: block;
   font-size: 1em;
   line-height: 1.5em;
-  font-family: 'helvetica', 'arial',sans-serif;
+  font-family: 'helvetica', 'arial', sans-serif;
   min-height:8em;
 }
 
@@ -336,6 +339,7 @@ label{
   }
 }
 
+// grey background, full width box
 .form-box {
   margin: 0 -2em 0.25em -2em;
   background:#eeeeee;
@@ -383,7 +387,7 @@ label{
 }
 
 
-/* form errors */
+// form errors
 div.form-error,
 p.form-error {
   @include inline-block;
@@ -400,15 +404,17 @@ textarea.form-error {
   @include border-radius(0 0.25em 0.25em 0.25em);
 }
 
-// don't display valid error boxes as now the jump won't be
-// until the user submits, which is fine
+// don't display valid error boxes as now the page jump
+// won't be until the user submits, which is fine
 div.label-valid,
 p.label-valid {
   display:none !important;
   visibility: hidden;
 }
 
-/* LAYOUT */
+
+
+/*** LAYOUT ***/
 
 // Padding creates page margins on mobile
 .container{
@@ -420,7 +426,8 @@ p.label-valid {
   margin: 0 -1em;
 }
 
-// #site-header creates grey bar in mobile, .nav-wrapper-2 is used on desktop
+// #site-header creates grey bar in mobile
+// .nav-wrapper-2 is used on desktop
 #site-header{
   border-top: 0.25em solid $primary;
   height: 3em;
@@ -442,6 +449,7 @@ p.label-valid {
 .ie6 #site-logo {
   background: url('images/ie_logo.gif') 0 -5px no-repeat;
 }
+// this is a skip to nav for mobile users only
 #nav-link {
   width: 50px;
   height: 48px;
@@ -480,7 +488,7 @@ p.label-valid {
         a {
           background:$primary;
           &#mysoc-logo {
-            background-image:url(images/sprite.png);
+            background-image:url('images/sprite.png');
             background-repeat:no-repeat;
             background-position:-240px -38px;
             text-indent:-999999px;
@@ -553,15 +561,15 @@ p.label-valid {
           color:#fff;
         }
         &.abuse {
-          background-image:url(images/sprite.png);
+          background-image:url('images/sprite.png');
           background-position:center -2424px;
         }
         &.feed {
-          background-image:url(images/sprite.png);
+          background-image:url('images/sprite.png');
           background-position:center -2563px;
         }
         &.chevron {
-          background-image:url(images/sprite.png);
+          background-image:url('images/sprite.png');
           background-position:center -2716px;
         }
       }
@@ -693,7 +701,7 @@ a.button-right,
 :hover.button-right,
 a:hover.button-right {
   padding:1em 3em 1em 1em;
-  background-image: url(images/sprite.png);
+  background-image: url('images/sprite.png');
   background-repeat:no-repeat;
   background-position:right -686px;
 }
@@ -703,7 +711,7 @@ a.button-left,
 :hover.button-left,
 a:hover.button-left {
   padding:1em 1em 1em 3em;
-  background-image: url(images/sprite.png);
+  background-image: url('images/sprite.png');
   background-repeat:no-repeat;
   background-position:-18px -802px;
 }
@@ -927,7 +935,7 @@ a:hover.button-left {
 #fms_pan_zoom_zoomout {
   text-indent:-999999px;
   opacity:0.85;
-  background:url(images/sprite.png) no-repeat;
+  background:url('images/sprite.png') no-repeat;
   &:hover {
     opacity:1;
   }
@@ -986,7 +994,7 @@ a:hover.button-left {
     font-size:0.6875em;
     color:#fff;
     padding:0.6em 3em 0.5em 1em;
-    background:url(images/sprite.png) right -3976px no-repeat;
+    background:url('images/sprite.png') right -3976px no-repeat;
     &#hide_pins_link {
       background-position:right -3976px;
     }
@@ -1014,7 +1022,7 @@ a:hover.button-left {
   height:30px;
   text-indent:-999999px;
   opacity: 0.85;
-  background:url(images/sprite.png) -105px -284px no-repeat;
+  background:url('images/sprite.png') -105px -284px no-repeat;
   &:hover {
     opacity:1;
   }
@@ -1182,7 +1190,7 @@ ul.breadcrumb {
       padding:0.5em 1em 0.5em 0;
     }
     a {
-      background:url(images/sprite.png) right -3220px no-repeat;
+      background:url('images/sprite.png') right -3220px no-repeat;
       padding:0.5em 2.5em 0.5em 1em;
       color:#333;
       &:hover {
