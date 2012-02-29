@@ -369,7 +369,6 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                     margin: '0 -1em'
                 });
                 fixmystreet.map.updateSize();
-                // Also remove panzoom and permalink?
             } else {
                 this.mobile_full_screen_map(e);
             }
@@ -380,12 +379,17 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 
     mobile_full_screen_map: function(e) {
         if ( fixmystreet.markers.getVisibility() ) {
-            $('#hide_pins_link').click();
+            //hide pins and update text
+            $('#hide_pins_link').click().text('Show pins');
+        }
+        var permalink_id;
+        if ($('#map_permalink').length) {
+            permalink_id = 'map_permalink';
         }
         fixmystreet.map.addControls([
             new OpenLayers.Control.Navigation({ zoomWheelEnabled: false }),
-            new OpenLayers.Control.Permalink(),
-            new OpenLayers.Control.PanZoomFMS()
+            new OpenLayers.Control.Permalink(permalink_id),
+            new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
         ]);
         $('#map_box').css({
             zIndex: 0, position: 'fixed',
@@ -393,7 +397,18 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             width: '100%', height: '100%',
             margin: 0
         });
-        // Also need to move green banner, add close button, etc.
+        
+        // move and alter green banner, add close button
+        $('#map_box').append('<span id="close-mobile-map">Close</span>');
+        $('.big-green-banner').addClass('mobile-map-banner');
+        // hide site-logo (z-index madness), show sub_map_links
+        // and push map zoom down a notch
+        $('#site-logo').hide();
+        $('#sub_map_links').show();
+        $('#fms_pan_zoom').css({'top':'3.5em !important'});
+
+        // need to set up a click for #close-mobile-map somehow
+        
         fixmystreet.map.updateSize();
         fixmystreet.page = 'mobile-full-map';
         // To make sure the click control is on top
@@ -435,7 +450,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                 $('#form_category').change( form_category_onchange );
             }
         });
-        $('#side-form').show();
+        $('#side-form, #site-logo').show();
         /* For some reason on IOS5 if you use the jQuery show method it
          * doesn't display the JS validation error messages unless you do this
          * or you cause a screen redraw by changing the phone orientation.
@@ -444,7 +459,8 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             document.getElementById('side-form').style.display = 'block';
         }
         $('#side').hide();
-        $('#sub_map_links').hide();
+        //hide lots of the map ui on mobile
+        $('#sub_map_links, #fms_pan_zoom, #close-mobile-map', '.mobile').hide();
         heightFix('#report-a-problem-sidebar:visible', '.content', 26);
 
         // If we clicked the map somewhere inconvenient

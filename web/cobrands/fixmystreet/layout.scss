@@ -441,7 +441,7 @@ body.twothirdswidthpage {
 }
 
 // Pull OpenLayers navigation down a bit
-.olControlPanZoom {
+#fms_pan_zoom {
   top: 5em !important;
 }
 
@@ -554,6 +554,7 @@ body.twothirdswidthpage {
 
 // pokes over the RHS with a little triangle
 .big-green-banner {
+  top:auto;
   right:-1.25em;
   margin-left:-2em;
   font-size:1.375em;

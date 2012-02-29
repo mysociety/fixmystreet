@@ -710,6 +710,8 @@ a:hover.button-left {
 
 .big-green-banner {
   position: relative;
+  z-index:1000;
+  top:-1.75em;
   background: $contrast1;
   color: #fff;
   padding:1em;
@@ -909,7 +911,7 @@ a:hover.button-left {
 }
 
 // OpenLayers fix for navigation being top right
-.olControlPanZoom {
+#fms_pan_zoom {
   width:48px;
   right: 1em !important;
   top: 1em !important;
@@ -917,12 +919,12 @@ a:hover.button-left {
 }
 
 // Openlayers map controls (overrides)
-#OpenLayers\.Control\.PanZoom_6_panup,
-#OpenLayers\.Control\.PanZoom_6_pandown,
-#OpenLayers\.Control\.PanZoom_6_panleft,
-#OpenLayers\.Control\.PanZoom_6_panright,
-#OpenLayers\.Control\.PanZoom_6_zoomin,
-#OpenLayers\.Control\.PanZoom_6_zoomout {
+#fms_pan_zoom_panup,
+#fms_pan_zoom_pandown,
+#fms_pan_zoom_panleft,
+#fms_pan_zoom_panright,
+#fms_pan_zoom_zoomin,
+#fms_pan_zoom_zoomout {
   text-indent:-999999px;
   opacity:0.85;
   background:url(images/sprite.png) no-repeat;
@@ -930,40 +932,40 @@ a:hover.button-left {
     opacity:1;
   }
 }
-#OpenLayers\.Control\.PanZoom_6_zoomworld {
+#fms_pan_zoom_zoomworld {
   display:none !important;
   visibility:none !important;
 }
 
-#OpenLayers\.Control\.PanZoom_6_panup {
+#fms_pan_zoom_panup {
   background-position:-25px -218px;
   left:15px !important;
   top:0 !important;
 }
-#OpenLayers\.Control\.PanZoom_6_pandown {
+#fms_pan_zoom_pandown {
   background-position:-25px -248px;
   left:15px !important;
   top:36px !important;
 }
-#OpenLayers\.Control\.PanZoom_6_panleft {
+#fms_pan_zoom_panleft {
   background-position:-10px -233px;
   width:24px !important;
   left:0px !important;
   top:18px !important;
 }
-#OpenLayers\.Control\.PanZoom_6_panright {
+#fms_pan_zoom_panright {
   background-position:-34px -233px;
   width:24px !important;
   left:24px !important;
   top:18px !important;
 }
-#OpenLayers\.Control\.PanZoom_6_zoomin {
+#fms_pan_zoom_zoomin {
   background-position:-25px -280px;
   height:22px !important;
   left:15px !important;
   top:70px !important;
 }
-#OpenLayers\.Control\.PanZoom_6_zoomout {
+#fms_pan_zoom_zoomout {
   background-position:-25px -298px;
   height:22px !important;
   left:15px !important;
@@ -976,7 +978,7 @@ a:hover.button-left {
   left: 0;
   right:0;
   bottom: 0;
-  z-index: 1000;
+  z-index: 1100;
   background:rgba(0, 0, 0, 0.7);
   margin:0;
   a {
@@ -1000,10 +1002,35 @@ a:hover.button-left {
     }
   }
 }
+//close the mobile map span
+#close-mobile-map {
+  cursor:pointer  ;
+  position:absolute;
+  top:3.5em;
+  left:1em;
+  z-index:1000;
+  display:block;
+  width:30px;
+  height:30px;
+  text-indent:-999999px;
+  opacity: 0.85;
+  background:url(images/sprite.png) -105px -284px no-repeat;
+  &:hover {
+    opacity:1;
+  }
+}
+
+.mobile-map-banner {
+  position: fixed;
+  top:-0.65em;
+  left:0;
+  right:0;
+  background:rgba(0, 0, 0, 0.7);
+}
 
 //copyright attribution 
-#OpenLayers\.Control\.Attribution_3 {
-  bottom:2em !important;
+.olControlAttribution {
+  bottom:0.5em !important;
 }
 
 /* Drag is only present in noscript form. XXX Copy from core. */

@@ -8,13 +8,14 @@ function set_map_config(perm) {
             new OpenLayers.Control.Attribution(),
             new OpenLayers.Control.ArgParser()
         ];
+        $('#sub_map_links').hide();
     } else {
         fixmystreet.controls = [
             new OpenLayers.Control.Attribution(),
             new OpenLayers.Control.ArgParser(),
             new OpenLayers.Control.Navigation({ zoomWheelEnabled: false }),
             new OpenLayers.Control.Permalink(permalink_id),
-            new OpenLayers.Control.PanZoomFMS()
+            new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
         ];
     }
     fixmystreet.map_type = OpenLayers.Layer.Bing;
