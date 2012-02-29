@@ -16,8 +16,10 @@
     overflow: scroll;
     font-size: 0.9em;
 
-    div#context {
-        width: 20em;
+    div#help {
+        font-size: 0.8em;
+        padding-left: 10px;
+        max-width: 30em;
         float: right;
     }
 
@@ -48,6 +50,7 @@
         }
 
         li {
+            clear: left;
             list-style: none;
             margin: 0.3em 0em;
         }
