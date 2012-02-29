@@ -379,8 +379,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 
     mobile_full_screen_map: function(e) {
         if ( fixmystreet.markers.getVisibility() ) {
-            //hide pins and update text
-            $('#hide_pins_link').click().text('Show pins');
+            $('#hide_pins_link').click();
         }
         var permalink_id;
         if ($('#map_permalink').length) {
@@ -405,7 +404,6 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         // and push map zoom down a notch
         $('#site-logo').hide();
         $('#sub_map_links').show();
-        $('#fms_pan_zoom').css({'top':'3.5em !important'});
 
         // need to set up a click for #close-mobile-map somehow
         
