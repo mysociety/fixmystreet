@@ -37,7 +37,7 @@ OpenLayers.Util.onImageLoadError = function() {
     } else if (this.src.match(/^http:\/\/[def]\.tah\.openstreetmap\.org\//)) {
         // do nothing - this layer is transparent
     } else {
-        OpenLayers.Util.OSM.originalOnImageLoadError;
+        OpenLayers.Util.OSM.originalOnImageLoadError();
     }
 };
 

@@ -32,7 +32,7 @@ OpenLayers.Util.OS.originalOnImageLoadError = OpenLayers.Util.onImageLoadError;
  * Function: onImageLoadError
  */
 OpenLayers.Util.onImageLoadError = function() {
-    OpenLayers.Util.OS.originalOnImageLoadError;
+    OpenLayers.Util.OS.originalOnImageLoadError();
 };
 
 /**
