@@ -62,8 +62,7 @@ sub index :Path :Args(0) {
         $photo = _resize( $photo, $c->cobrand->default_photo_resize );
     }
 
-    my $dt = DateTime->now();
-    $dt->set_year( $dt->year + 1 );
+    my $dt = DateTime->now()->add( years => 1 );
 
     $c->res->content_type( 'image/jpeg' );
     $c->res->header( 'expires', DateTime::Format::HTTP->format_datetime( $dt ) );
