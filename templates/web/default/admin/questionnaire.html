@@ -20,10 +20,25 @@
 
 <h2>[% loc('Problem state change based on survey results') %]</h2>
 
-<table>
-<tr><th>[% loc('Old state') %]</th><th>[% loc('New state') %]</th><th>[% loc('Total') %]</th></tr>
+<table cellspacing="0" cellpadding="2" border="1">
+    <tr>
+        <th>[% loc('Old state') %]</th>
+        <th>[% loc('New state') %]</th>
+        <th>[% loc('Total') %]</th>
+    </tr>
+[% state_count = 0 %]
 [% WHILE ( s = state_changes.next ) %]
-<tr><td>[% s.old_state %]</td><td>[% s.new_state %]</td><td>[% s.get_column('c') %] ([% 100 * s.get_column('c') / state_changes_count | format('%.1f') %]%)</td></tr>
+[% state_count = state_count + 1 %]
+    <tr>
+        <td>[% s.old_state %]</td>
+        <td>[% s.new_state %]</td>
+        <td>[% s.get_column('c') %] ([% 100 * s.get_column('c') / state_changes_count | format('%.1f') %]%)</td>
+    </tr>
+[% END %]
+[% IF state_count == 0 %]
+    <tr>
+        <td colspan="3" class="nomatch">[% loc('No state changes found') %]</td>
+    </tr>
 [% END %]
 </table>
 
