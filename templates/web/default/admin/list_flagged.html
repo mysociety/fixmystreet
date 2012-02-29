@@ -3,7 +3,6 @@
 
 
 <h2>[% loc( 'Problems' ) %]</h2>
-[% IF problems.size > 0 %]
 <table cellspacing="0" cellpadding="2" border="1">
     <tr>
         <th>[% loc('ID') %]</th>
@@ -21,31 +20,29 @@
     </tr>
     [% INCLUDE 'admin/problem_row.html' %]
 </table>
-[% ELSE %]
-<p>
-[% loc('No flagged problems found') %]
-</p>
-[% END %]
 
 <h2>[% loc( 'Users' ) %]</h2>
-[% IF users%]
 <table cellspacing="0" cellpadding="2" border="1">
     <tr>
         <th>[% loc('Name') %]</th>
         <th>[% loc('Email') %]</th>
     </tr>
+[%- user_count = 0 %]
 [% WHILE ( user = users.next ) -%]
+[% user_count = user_count + 1 -%]
     <tr>
         <td>[% user.name | html %]</td>
         <td>[% user.email | html %]</td>
         <td><a href="[% c.uri_for( 'search_reports', search => user.email ) %]">list content</a></td>
     </tr>
 [%- END %]
-</table>
-[%- ELSE %]
-<p>
-[% loc('No flagged users found') %]
-</p>
+[% IF user_count == 0 %]
+    <tr>
+        <td colspan="3" class="nomatch">
+        [% loc('No flagged users found') %]
+        </td>
+    </tr>
 [%- END %]
+</table>
 
 [% INCLUDE 'admin/footer.html' %]
