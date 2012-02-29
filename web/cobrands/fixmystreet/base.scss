@@ -924,7 +924,11 @@ a:hover.button-left {
 #OpenLayers\.Control\.PanZoom_6_zoomin,
 #OpenLayers\.Control\.PanZoom_6_zoomout {
   text-indent:-999999px;
+  opacity:0.85;
   background:url(images/sprite.png) no-repeat;
+  &:hover {
+    opacity:1;
+  }
 }
 #OpenLayers\.Control\.PanZoom_6_zoomworld {
   display:none !important;
@@ -973,14 +977,14 @@ a:hover.button-left {
   right:0;
   bottom: 0;
   z-index: 1000;
-  background:#333;
+  background:rgba(0, 0, 0, 0.7);
   margin:0;
   a {
     @include inline-block;
     font-size:0.6875em;
     color:#fff;
     padding:0.6em 3em 0.5em 1em;
-    background:url(images/sprite.png) right -4066px no-repeat;
+    background:url(images/sprite.png) right -3976px no-repeat;
     &#hide_pins_link {
       background-position:right -3976px;
     }
@@ -989,6 +993,10 @@ a:hover.button-left {
     }
     &#map_permalink {
       background-position:right -4070px;
+    }
+    &:hover {
+      background-color:#000;
+      text-decoration:none;
     }
   }
 }
@@ -1274,12 +1282,3 @@ ul.breadcrumb {
     margin-bottom:0;
   }
 }
-
-// OpenLayers fix for navigation being top right
-.olControlPanZoom {
-    right: 44px !important;
-    top: 4em !important;
-    left: auto !important;
-}
-
-

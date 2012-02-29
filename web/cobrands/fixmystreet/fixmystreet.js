@@ -339,6 +339,18 @@ $(function(){
     //add permalink
     $('#sub_map_links').append('<a href="#" id="map_permalink">Permalink</a>');
 
-    //open/close toggle button on desk
+    //add open/close toggle button on desk
     $('#sub_map_links').prepend('<span id="map_links_toggle">&nbsp;</span>');
+
+    //set up map_links_toggle click event
+    var maplinks_width = $('#sub_map_links').width()+16;
+    $('#map_links_toggle').on('click', function(){
+        if($(this).hasClass('closed')){
+            $(this).removeClass('closed');
+            $('#sub_map_links').animate({'right':'0'}, 1200);
+        }else{
+            $(this).addClass('closed');
+            $('#sub_map_links').animate({'right':-maplinks_width}, 1200);
+        }
+    });
 });

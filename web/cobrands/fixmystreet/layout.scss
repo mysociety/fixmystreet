@@ -451,12 +451,21 @@ body.twothirdswidthpage {
   top:14em;
   #map_links_toggle {
     display:block;
+    cursor: pointer;
     position:absolute;
     left:-1em;
-    background:#000;
     width:1em;
     height:100%;
+    background:#000 url(images/sprite.png) right -4119px no-repeat;
     @include border-radius(0.25em 0 0 0.25em);
+    &:hover {
+      left:-1.5em;
+      //use border so we don't have to redefine the background-position
+      border-right:0.5em solid #000;
+    }
+    &.closed {
+      background-position: right -4159px;
+    }
   }
 }
 
