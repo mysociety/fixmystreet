@@ -1,4 +1,7 @@
 function set_map_config(perm) {
+    if ($('#map_permalink').length) {
+        permalink_id = 'map_permalink';
+    }
     if ($('html').hasClass('mobile')) {
         fixmystreet.controls = [
             new OpenLayers.Control.Attribution(),
@@ -9,7 +12,7 @@ function set_map_config(perm) {
             new OpenLayers.Control.Attribution(),
             new OpenLayers.Control.ArgParser(),
             new OpenLayers.Control.Navigation({ zoomWheelEnabled: false }),
-            new OpenLayers.Control.Permalink('map_permalink'),
+            new OpenLayers.Control.Permalink(permalink_id),
             new OpenLayers.Control.PanZoomFMS()
         ];
     }

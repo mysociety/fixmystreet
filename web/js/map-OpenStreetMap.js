@@ -1,9 +1,12 @@
 function set_map_config(perm) {
+    if ($('#map_permalink').length) {
+        permalink_id = 'map_permalink';
+    }
     fixmystreet.controls = [
         new OpenLayers.Control.ArgParser(),
         //new OpenLayers.Control.LayerSwitcher(),
         new OpenLayers.Control.Navigation(),
-        new OpenLayers.Control.Permalink(),
+        new OpenLayers.Control.Permalink(permalink_id),
         new OpenLayers.Control.PermalinkFMS('osm_link', 'http://www.openstreetmap.org/'),
         new OpenLayers.Control.PanZoomFMS()
     ];
