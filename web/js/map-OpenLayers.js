@@ -183,8 +183,7 @@ function fixmystreet_onload() {
 
 $(function(){
 
-    var perm = new OpenLayers.Control.Permalink();
-    set_map_config(perm);
+    set_map_config();
 
     fixmystreet.map = new OpenLayers.Map("map", {
         controls: fixmystreet.controls,
@@ -207,6 +206,7 @@ $(function(){
         );
         fixmystreet.map.setCenter(centre, fixmystreet.zoom || 3);
     }
+
     if ($('#map_box').data('size')=='full') {
         // TODO Work better with window resizing, this is pretty 'set up' only at present
         var q = $(window).width() / 4;
@@ -237,16 +237,6 @@ $(function(){
         fixmystreet.map.addControl(click);
         click.activate();
     }
-
-    /* To let permalink not be caught by the Click layer, answer found
-     * at http://www.mail-archive.com/users@openlayers.org/msg12958.html
-     * Not sure why you can't use eventListeners or events.register...
-     */
-    OpenLayers.Event.observe( perm.element, "click", function(e) {
-        OpenLayers.Event.stop(e);
-        location.href = OpenLayers.Event.element(e).href;
-        return false;
-    });
 
     $(window).hashchange(function(){
         if (location.hash) { return; }
@@ -370,6 +360,48 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
     }, 
 
     trigger: function(e) {
+        if ($('html').hasClass('mobile') && fixmystreet.page != 'new') {
+            if (fixmystreet.page == 'mobile-full-map') {
+                this.locate_report(e);
+                $('#map_box').css({
+                    zIndex: 'auto', position: 'static',
+                    width: 'auto', height: '10em',
+                    margin: '0 -1em'
+                });
+                fixmystreet.map.updateSize();
+                // Also remove panzoom and permalink?
+            } else {
+                this.mobile_full_screen_map(e);
+            }
+        } else {
+            this.locate_report(e);
+        }
+    },
+
+    mobile_full_screen_map: function(e) {
+        if ( fixmystreet.markers.getVisibility() ) {
+            $('#hide_pins_link').click();
+        }
+        fixmystreet.map.addControls([
+            new OpenLayers.Control.Navigation({ zoomWheelEnabled: false }),
+            new OpenLayers.Control.Permalink(),
+            new OpenLayers.Control.PanZoomFMS()
+        ]);
+        $('#map_box').css({
+            zIndex: 0, position: 'fixed',
+            top: 0, left: 0, right: 0, bottom: 0,
+            width: '100%', height: '100%',
+            margin: 0
+        });
+        // Also need to move green banner, add close button, etc.
+        fixmystreet.map.updateSize();
+        fixmystreet.page = 'mobile-full-map';
+        // To make sure the click control is on top
+        this.deactivate();
+        this.activate();
+    },
+
+    locate_report: function(e) {
         var lonlat = fixmystreet.map.getLonLatFromViewPortPx(e.xy);
         if (fixmystreet.page == 'new') {
             /* Already have a pin */
@@ -431,6 +463,15 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                 fixmystreet.map.pan(-w, 0, { animate: false });
             }
         }
+
+        if (fixmystreet.page == 'mobile-full-map') {
+            lonlat.transform(
+                new OpenLayers.Projection("EPSG:4326"),
+                fixmystreet.map.getProjectionObject()
+            );
+            fixmystreet.map.setCenter(lonlat);
+        }
+
         fixmystreet.page = 'new';
         location.hash = 'report';
     }

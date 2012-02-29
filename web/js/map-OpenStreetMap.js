@@ -3,7 +3,7 @@ function set_map_config(perm) {
         new OpenLayers.Control.ArgParser(),
         //new OpenLayers.Control.LayerSwitcher(),
         new OpenLayers.Control.Navigation(),
-        perm,
+        new OpenLayers.Control.Permalink(),
         new OpenLayers.Control.PermalinkFMS('osm_link', 'http://www.openstreetmap.org/'),
         new OpenLayers.Control.PanZoomFMS()
     ];

@@ -3,7 +3,7 @@ function set_map_config(perm) {
         new OpenLayers.Control.ArgParser(),
         //new OpenLayers.Control.LayerSwitcher(),
         new OpenLayers.Control.Navigation(),
-        perm,
+        new OpenLayers.Control.Permalink(),
         new OpenLayers.Control.PanZoomFMS()
     ];
     fixmystreet.map_type = OpenLayers.Layer.StreetView;

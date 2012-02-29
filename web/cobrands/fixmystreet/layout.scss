@@ -2,13 +2,6 @@
 @import "_colours";
 @import "_mixins";
 
-// OpenLayers fix for navigation being top right
-.olControlPanZoom {
-    right: 44px !important;
-    top: 4em !important;
-    left: auto !important;
-}
-
 //hacks for desk/mob only stuff
 .desk-only {
   display:block !important;
