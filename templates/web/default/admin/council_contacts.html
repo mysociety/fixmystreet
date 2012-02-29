@@ -20,6 +20,22 @@
     </h2>
 [%- END %]
 
+<div id="context">
+<h2>[% loc('Help') %]</h2>
+
+<p>
+[% loc('This list of contacts is used to populate the category dropdown displayed when reporting a problem. Only entries marked as confirmed and not marked as deleted are displayed on the site.') %]
+</p>
+
+<p>
+[% loc('The Category is the text that is displayed in the dropdown and the Email is where the report will be sent') %]
+</p>
+
+<p>
+[% loc('NB: if there is a direct integration with the back end systems of the council then the information may only be partially used, or not used at all' ) %]
+</p>
+</div>
+
 [%- IF c.cobrand.moniker == 'fixmystreet' %]
 <p class="error">Do not give these out except to people at the council.</p>
 [%- END %]
