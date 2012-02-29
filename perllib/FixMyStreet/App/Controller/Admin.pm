@@ -45,8 +45,10 @@ interface behind a proxy for authentication purposes.
 
 sub cobrands : LocalRegex( 'cobrands' ) {
     my ( $self, $c ) = @_;
-    my ( $path ) = $c->req->path =~ m#^admin.*?(/cobrands.*)$#;
-    $c->log->debug( "cobrand path is $path" );
+    my ( $path ) = $c->req->path =~ m#^admin.*?(/cobrands[a-z/_\-]*\.(?:css|js))$#;
+
+    return unless $path;
+
     $c->serve_static_file( FixMyStreet->path_to( 'web' . $path ) );
 }
 
