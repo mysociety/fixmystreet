@@ -1,4 +1,5 @@
 function set_map_config(perm) {
+    var permalink_id;
     if ($('#map_permalink').length) {
         permalink_id = 'map_permalink';
     }
