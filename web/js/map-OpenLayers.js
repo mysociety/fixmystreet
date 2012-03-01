@@ -456,6 +456,13 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                 '</p>'
             );
             $('.mobile-map-banner').text('Right place?');
+
+            // mobile user clicks 'ok' on map
+            $('#mob_ok').on('click', function(e){
+                e.preventDefault();
+                var height = $('#map_box').height();
+                $('html, body').animate({scrollTop:height}, 1000);
+            });
         }
 
         fixmystreet.page = 'new';
