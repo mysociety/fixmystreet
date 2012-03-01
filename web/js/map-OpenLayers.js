@@ -108,17 +108,36 @@ function fixmystreet_onload() {
         });
     }
     fixmystreet.markers = new OpenLayers.Layer.Vector("Pins", pin_layer_options);
+    fixmystreet.markers.events.register( 'loadend', fixmystreet.markers, function(evt) {
+        if (fixmystreet.map.popups.length) fixmystreet.map.removePopup(fixmystreet.map.popups[0]);
+    });
 
     var markers = fms_markers_list( fixmystreet.pins, true );
     fixmystreet.markers.addFeatures( markers );
     if (fixmystreet.page == 'around' || fixmystreet.page == 'reports' || fixmystreet.page == 'my') {
-        fixmystreet.markers.events.register( 'featureselected', fixmystreet.markers, function(evt) {
-            if (evt.feature.attributes.id) {
-                window.location = '/report/' + evt.feature.attributes.id;
-            }
-            OpenLayers.Event.stop(evt);
-        });
         var select = new OpenLayers.Control.SelectFeature( fixmystreet.markers );
+        var selectedFeature;
+        function onPopupClose(evt) {
+            select.unselect(selectedFeature);
+            OpenLayers.Event.stop(evt);
+        }
+        fixmystreet.markers.events.register( 'featureunselected', fixmystreet.markers, function(evt) {
+            var feature = evt.feature, popup = feature.popup;
+            fixmystreet.map.removePopup(popup);
+            popup.destroy();
+            feature.popup = null;
+        });
+        fixmystreet.markers.events.register( 'featureselected', fixmystreet.markers, function(evt) {
+            var feature = evt.feature;
+            selectedFeature = feature;
+            var popup = new OpenLayers.Popup.FramedCloud("popup",
+                feature.geometry.getBounds().getCenterLonLat(),
+                null,
+                "TITLE<br><a href=/report/id>More</a>",
+                null, true, onPopupClose);
+            feature.popup = popup;
+            fixmystreet.map.addPopup(popup);
+        });
         fixmystreet.map.addControl( select );
         select.activate();
     } else if (fixmystreet.page == 'new') {
