@@ -436,7 +436,7 @@ sub add_row {
     push @$pins, {
         latitude  => $problem->{latitude},
         longitude => $problem->{longitude},
-        colour    => FixMyStreet::DB::Result::Problem->fixed_states()->{$problem->{state}} ? 'green' : 'red',
+        colour    => 'yellow', # FixMyStreet::DB::Result::Problem->fixed_states()->{$problem->{state}} ? 'green' : 'red',
         id        => $problem->{id},
         title     => $problem->{title},
     };

@@ -116,7 +116,10 @@ sub map_pins {
         #    id        => $p->id,
         #    title     => $p->title,
         #}
-        [ $p->latitude, $p->longitude, $p->is_fixed ? 'green' : 'red', $p->id, $p->title ]
+        [ $p->latitude, $p->longitude,
+          'yellow', # $p->is_fixed ? 'green' : 'red',
+          $p->id, $p->title
+        ]
     } @$around_map, @$nearby;
 
     return (\@pins, $around_map_list, $nearby, $dist);
