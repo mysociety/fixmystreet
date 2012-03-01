@@ -226,7 +226,7 @@ $open311->delete if $open311;
 
 subtest 'check open311 configuring' => sub {
     $mech->get_ok('/admin/council_contacts/2650/');
-    $mech->content_lacks('Council contacts configured via Open311');
+    $mech->content_lacks('This council uses Open311 to configure');
 
     $mech->form_number(3);
     $mech->submit_form_ok(
@@ -238,7 +238,7 @@ subtest 'check open311 configuring' => sub {
             }
         }
     );
-    $mech->content_contains('Council contacts configured via Open311');
+    $mech->content_contains('This council uses Open311 to configure');
     $mech->content_contains('Configuration updated - contacts will be generated automatically later');
 
     $open311 =
