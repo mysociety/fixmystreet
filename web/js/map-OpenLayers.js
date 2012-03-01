@@ -267,6 +267,9 @@ $(function(){
         $('#side').show();
         $('#sub_map_links').show();
         heightFix('#report-a-problem-sidebar:visible', '.content', 26);
+        //only on mobile
+        $('.mobile #mob_sub_map_links').remove();
+        $('.mobile-map-banner').text('Place pin on map');
         fixmystreet.page = 'around';
     });
 
@@ -434,7 +437,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         $('#map_box').append(
             '<p id="mob_sub_map_links">'+
             '<a href="#">Try again</a>'+
-            '<a href="#">OK</a>'+
+            '<a href="#ok" id="mob_ok">OK</a>'+
             '</p>'
         );
         $('.mobile-map-banner').text('Right place?');
