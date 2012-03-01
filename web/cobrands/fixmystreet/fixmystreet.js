@@ -84,7 +84,9 @@ $(function(){
             // Immediately go full screen map if on around page
             $('#site-header').hide();
             $('#map_box').prependTo('.wrapper').css({
-                height: $(window).height(),
+                position: 'absolute',
+                top: 0, left: 0, right: 0, bottom: 0,
+                height: 'auto',
                 margin: 0
             });
             $('.big-green-banner')
@@ -371,3 +373,14 @@ $(function(){
         }
     });
 });
+
+// Hide URL bar
+$(window).load(function(){
+    window.setTimeout(function(){
+        var s = window.pageYOffset || document.compatMode === "CSS1Compat" && document.documentElement.scrollTop || document.body.scrollTop || 0;
+        if (s < 20 && !location.hash) {
+            window.scrollTo(0, 1);
+        }
+    }, 0);
+});
+
