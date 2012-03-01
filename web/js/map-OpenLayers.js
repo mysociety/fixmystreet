@@ -469,8 +469,12 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                 //scroll the height of the map box instead of the offset
                 //of the #side-form or whatever as we will probably want
                 //to do this on other pages where #side-form might not be
-                var height = $('#map_box').height();
-                $('html, body').animate({scrollTop:height-60}, 1000);
+                if($(this).parent().hasClass('map_complete')){
+                    $('html, body').animate({scrollTop:0}, 1000);
+                }else{
+                    var height = $('#map_box').height();
+                    $('html, body').animate({scrollTop:height-60}, 1000);
+                }
 
                 //add this class so we can modify the look of the links inside
                 $('#mob_sub_map_links').addClass('map_complete');
