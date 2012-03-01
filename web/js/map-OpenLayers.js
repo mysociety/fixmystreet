@@ -451,7 +451,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             $('#sub_map_links').hide();
             $('#map_box').append(
                 '<p id="mob_sub_map_links">' +
-                '<a href="#">Try again</a>' +
+                '<a href="#" id="try_again">Try again</a>' +
                 '<a href="#ok" id="mob_ok">OK</a>' +
                 '</p>'
             );
@@ -465,6 +465,9 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                 //to do this on other pages where #side-form might not be
                 var height = $('#map_box').height();
                 $('html, body').animate({scrollTop:height}, 1000);
+
+                //add this class so we can modify the look of the links inside
+                $('#mob_sub_map_links').addClass('map_complete');
             });
         }
 
