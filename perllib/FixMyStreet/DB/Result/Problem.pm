@@ -329,7 +329,7 @@ sub check_for_errors {
         || $self->name =~ m/\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i )
     {
         $errors{name} = _(
-'Please enter your full name, councils need this information - if you do not wish your name to be shown on the site, untick the box'
+'Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below'
         );
     }
 
