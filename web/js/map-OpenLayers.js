@@ -424,7 +424,8 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
     },
 
     locate_report_mobile: function(e) {
-        if (this.locate_report_pin_and_council(e)) {
+        var lonlat = this.locate_report_pin_and_council(e);
+        if (!lonlat) {
             return;
         }
         fixmystreet.page = 'new';
