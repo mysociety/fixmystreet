@@ -3,13 +3,23 @@
 
 [% status_message %]
 
+<div class="help">
+    <p>
+    [% loc('Changing the name of a user only changes the default name that isused to fill in the name field when they submit reports. To change the name on a report you will need to edit the report itself.') %]
+    </p>
+
+    <p>
+    [% loc('Associating a user with a council gives them access to extra statuses when making updates on reports.') %]
+    </p>
+</div>
+
 <form method="post" action="[% c.uri_for( 'user_edit', user.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <input type="hidden" name="token" value="[% token %]" >
     <input type="hidden" name="submit" value="1" >
 <ul>
 <li><label for="name">[% loc('Name:') %]</label> <input type='text' name='name' id='name' value='[% user.name | html %]'></li>
 <li><label for="email">[% loc('Email:') %]</label> <input type='text' id='email' name='email' value='[% user.email | html %]'></li>
-<li><label for="council" title="[% loc('Associating a user with a council gives them access to extra statuses when making updates on reports') %]">[% loc('Council:') %]</label> <select id='council' name='council'>
+<li><label for="council" title="[% loc('Associating a user with a council gives them access to extra statuses when making updates on reports.') %]">[% loc('Council:') %]</label> <select id='council' name='council'>
     <option value=''>[% loc('No council') %]</option>
 [% FOR council IN council_ids %]
     <option value="[% council %]"[% ' selected' IF council == user.from_council %]>[% council_details.$council.name %]</option>

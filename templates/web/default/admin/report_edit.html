@@ -3,6 +3,28 @@
 
 [% status_message %]
 
+<div class="help">
+    <p>
+    [% loc('To remove a report from the site set the state to hidden.') %]
+    </p>
+
+    <p>
+    [% loc('To remove a user\'s name from report on the site set Anonymous to Yes.') %]
+    </p>
+
+    <p>
+    [% loc('Changing the name for a report will only change the name displayed for that report and not the name of the user who created the report.') %]
+    </p>
+
+    <p>
+    [% loc('Changing the email address on a report will assign the report to the user with that email address. If no user with that email address exists then a new user will be created. If you want to change the email address for a user then do so through Search Users.') %]
+    </p>
+
+    <p>
+    [% loc('Clicking on Resend Report will cause the report to be sent next time the report sending process runs. If the report was sent to multiple councils this will cause it to be resent to all of them again.') %]
+    </p>
+</div>
+
 <form method="post" action="[% c.uri_for( 'report_edit', problem.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <input type="hidden" name="token" value="[% token %]" >
     <input type="hidden" name="submit" value="1" >
