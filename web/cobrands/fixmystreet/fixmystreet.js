@@ -78,7 +78,7 @@ $(function(){
     $('html').removeClass('no-js').addClass('js');
 
     //add mobile class if small screen
-    if(Modernizr.mq('only screen and (max-width:48em)')) {
+    if(!Modernizr.mq('only screen and (min-width:48em)')) {
         $('html').addClass('mobile');
         if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
             // Immediately go full screen map if on around page
