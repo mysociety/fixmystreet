@@ -903,6 +903,10 @@ body.frontpage {
   #site-header {
     height:6em;
   }
+  // Pull OpenLayers navigation down a bit more
+  #fms_pan_zoom {
+    top: 7em !important;
+  }
 
   //fix the left margin on login bit
   #user-meta {
