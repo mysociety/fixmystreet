@@ -920,7 +920,7 @@ a:hover.button-left {
 
 // OpenLayers fix for navigation being top right
 #fms_pan_zoom {
-  width:48px;
+  width:96px;
   right: 1em !important;
   top: 1em !important;
   left: auto !important;
@@ -933,6 +933,8 @@ a:hover.button-left {
 #fms_pan_zoom_panright,
 #fms_pan_zoom_zoomin,
 #fms_pan_zoom_zoomout {
+  width:36px !important;
+  height:36px !important;
   text-indent:-999999px;
   opacity:0.85;
   background:url('images/sprite.png') no-repeat;
@@ -946,38 +948,38 @@ a:hover.button-left {
 }
 
 #fms_pan_zoom_panup {
-  background-position:-25px -218px;
-  left:15px !important;
+  background-position:-42px -222px;
+  left:30px !important;
   top:0 !important;
 }
 #fms_pan_zoom_pandown {
-  background-position:-25px -248px;
-  left:15px !important;
-  top:36px !important;
+  background-position:-42px -282px;
+  left:30px !important;
+  top:72px !important;
 }
 #fms_pan_zoom_panleft {
-  background-position:-10px -233px;
-  width:24px !important;
+  background-position:-12px -252px;
+  width:48px !important;
   left:0px !important;
-  top:18px !important;
+  top:36px !important;
 }
 #fms_pan_zoom_panright {
-  background-position:-34px -233px;
-  width:24px !important;
-  left:24px !important;
-  top:18px !important;
+  background-position:-60px -252px;
+  width:48px !important;
+  left:48px !important;
+  top:36px !important;
 }
 #fms_pan_zoom_zoomin {
-  background-position:-25px -280px;
-  height:22px !important;
-  left:15px !important;
-  top:70px !important;
+  background-position:-152px -223px;
+  height:44px !important;
+  left:30px !important;
+  top:140px !important;
 }
 #fms_pan_zoom_zoomout {
-  background-position:-25px -298px;
-  height:22px !important;
-  left:15px !important;
-  top:92px !important;
+  background-position:-152px -259px;
+  height:44px !important;
+  left:30px !important;
+  top:184px !important;
 }
 
 //hide pins, show old reports etc
