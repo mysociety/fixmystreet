@@ -89,6 +89,9 @@ $(function(){
                 height: 'auto',
                 margin: 0
             });
+            $('#side-form').css({
+                paddingTop: $(window).height()
+            });
             $('.big-green-banner')
                 .addClass('mobile-map-banner')
                 .removeClass('.big-green-banner')
