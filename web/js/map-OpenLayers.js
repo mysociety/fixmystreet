@@ -268,7 +268,7 @@ $(function(){
         $('#sub_map_links').show();
         heightFix('#report-a-problem-sidebar:visible', '.content', 26);
         //only on mobile
-        $('.mobile #mob_sub_map_links').remove();
+        $('#mob_sub_map_links').remove();
         $('.mobile-map-banner').text('Place pin on map');
         fixmystreet.page = 'around';
     });
@@ -382,14 +382,6 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
     }, 
 
     trigger: function(e) {
-        if ($('html').hasClass('mobile')) {
-            this.locate_report_mobile(e);
-        } else {
-            this.locate_report(e);
-        }
-    },
-
-    locate_report_pin_and_council: function(e) {
         var lonlat = fixmystreet.map.getLonLatFromViewPortPx(e.xy);
         if (fixmystreet.page == 'new') {
             /* Already have a pin */
@@ -409,7 +401,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             $('#hide_pins_link').click();
         }
         if (fixmystreet.page == 'new') {
-            return false;
+            return;
         }
         $.getJSON('/report/new/ajax', {
                 latitude: $('#fixmystreet\\.latitude').val(),
@@ -423,31 +415,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                 $('#form_category').change( form_category_onchange );
             }
         });
-        return lonlat;
-    },
 
-    locate_report_mobile: function(e) {
-        var lonlat = this.locate_report_pin_and_council(e);
-        if (!lonlat) {
-            return;
-        }
-        fixmystreet.page = 'new';
-        location.hash = 'report';
-        $('#sub_map_links').hide();
-        $('#map_box').append(
-            '<p id="mob_sub_map_links">'+
-            '<a href="#">Try again</a>'+
-            '<a href="#ok" id="mob_ok">OK</a>'+
-            '</p>'
-        );
-        $('.mobile-map-banner').text('Right place?');
-    },
-
-    locate_report: function(e) {
-        var lonlat = this.locate_report_pin_and_council(e);
-        if (!lonlat) {
-            return;
-        }
         $('#side-form, #site-logo').show();
         /* For some reason on IOS5 if you use the jQuery show method it
          * doesn't display the JS validation error messages unless you do this
@@ -477,6 +445,17 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                 // underneath where the new sidebar will appear
                 fixmystreet.map.pan(-w, 0, { animate: true });
             }
+        }
+
+        if ($('html').hasClass('mobile')) {
+            $('#sub_map_links').hide();
+            $('#map_box').append(
+                '<p id="mob_sub_map_links">' +
+                '<a href="#">Try again</a>' +
+                '<a href="#ok" id="mob_ok">OK</a>' +
+                '</p>'
+            );
+            $('.mobile-map-banner').text('Right place?');
         }
 
         fixmystreet.page = 'new';
