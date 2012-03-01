@@ -303,8 +303,8 @@ $(function(){
      */
     $('.mobile').on('click', '#nav-link', function(e){
         e.preventDefault();
-        var foo = $('.wrapper').height() - 500;
-        $('html, body').animate({scrollTop:foo}, 1000);
+        var offset = $('#main-nav').offset().top;
+        $('html, body').animate({scrollTop:offset}, 1000);
     });
 
 
