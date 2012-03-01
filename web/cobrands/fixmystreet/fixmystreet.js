@@ -374,6 +374,8 @@ $(function(){
     });
 });
 
+/*
+XXX Disabled because jerky on Android and makes map URL bar height too small on iPhone.
 // Hide URL bar
 $(window).load(function(){
     window.setTimeout(function(){
@@ -383,4 +385,5 @@ $(window).load(function(){
         }
     }, 0);
 });
+*/
 
