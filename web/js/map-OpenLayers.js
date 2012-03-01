@@ -134,7 +134,8 @@ function fixmystreet_onload() {
                 feature.geometry.getBounds().getCenterLonLat(),
                 null,
                 feature.attributes.title + "<br><a href=/report/" + feature.attributes.id + ">More details</a>",
-                null, true, onPopupClose);
+                { size: new OpenLayers.Size(0,0), offset: new OpenLayers.Pixel(0,-40) },
+                true, onPopupClose);
             feature.popup = popup;
             fixmystreet.map.addPopup(popup);
         });
@@ -262,6 +263,10 @@ $(function(){
         // Okay, back to around view.
         fixmystreet.bbox_strategy.activate();
         fixmystreet.markers.refresh( { force: true } );
+        if ( fixmystreet.state_pins_were_hidden ) {
+            // If we had pins hidden when we clicked map (which had to show the pin layer as I'm doing it in one layer), hide them again.
+            $('#hide_pins_link').click();
+        }
         fixmystreet.drag.deactivate();
         $('#side-form').hide();
         $('#side').show();
@@ -398,6 +403,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         // link so that it updates the text in case they go
         // back
         if ( ! fixmystreet.markers.getVisibility() ) {
+            fixmystreet.state_pins_were_hidden = true;
             $('#hide_pins_link').click();
         }
         if (fixmystreet.page == 'new') {
