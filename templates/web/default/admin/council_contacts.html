@@ -1,6 +1,6 @@
 [% INCLUDE 'admin/header.html' title=tprintf(loc('Council contacts for %s'), council_name) -%]
 
-<div id="help">
+<div class="help">
 <p>
 [% loc('This is the list of categories used in the category dropdown. Only confirmed, undeleted entries are used.') %]
 [% loc('Email is where the report will be sent.') %]
@@ -115,6 +115,11 @@
         </ul>
     </form>
 
+    <div class="help">
+        <p>
+        [% loc('To set up Open311 integration for a council fill in these details and then run the open311-populate-service-script. This will fetch the list of categories from the Open311 endpoint and mark all existing categories as deleted') %]
+        </p>
+    </div>
     <h2>[% loc('Configure Open311 integration') %]</h2>
     <form method="post" action="[% c.uri_for('council_contacts', area_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     [% conf = open311.next %]
