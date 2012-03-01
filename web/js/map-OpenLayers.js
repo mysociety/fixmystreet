@@ -133,7 +133,7 @@ function fixmystreet_onload() {
             var popup = new OpenLayers.Popup.FramedCloud("popup",
                 feature.geometry.getBounds().getCenterLonLat(),
                 null,
-                "TITLE<br><a href=/report/id>More</a>",
+                feature.attributes.title + "<br><a href=/report/" + feature.attributes.id + ">More details</a>",
                 null, true, onPopupClose);
             feature.popup = popup;
             fixmystreet.map.addPopup(popup);
@@ -379,61 +379,14 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
     }, 
 
     trigger: function(e) {
-        if ($('html').hasClass('mobile') && fixmystreet.page != 'new') {
-            if (fixmystreet.page == 'mobile-full-map') {
-                this.locate_report(e);
-                $('#map_box').css({
-                    zIndex: 'auto', position: 'static',
-                    width: 'auto', height: '10em',
-                    margin: '0 -1em'
-                });
-                fixmystreet.map.updateSize();
-            } else {
-                this.mobile_full_screen_map(e);
-            }
+        if ($('html').hasClass('mobile')) {
+            this.locate_report_mobile(e);
         } else {
             this.locate_report(e);
         }
     },
 
-    mobile_full_screen_map: function(e) {
-        if ( fixmystreet.markers.getVisibility() ) {
-            $('#hide_pins_link').click();
-        }
-        var permalink_id;
-        if ($('#map_permalink').length) {
-            permalink_id = 'map_permalink';
-        }
-        fixmystreet.map.addControls([
-            new OpenLayers.Control.Navigation({ zoomWheelEnabled: false }),
-            new OpenLayers.Control.Permalink(permalink_id),
-            new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
-        ]);
-        $('#map_box').css({
-            zIndex: 0, position: 'fixed',
-            top: 0, left: 0, right: 0, bottom: 0,
-            width: '100%', height: '100%',
-            margin: 0
-        });
-        
-        // move and alter green banner, add close button
-        $('#map_box').append('<span id="close-mobile-map">Close</span>');
-        $('.big-green-banner').addClass('mobile-map-banner');
-        // hide site-logo (z-index madness), show sub_map_links
-        // and push map zoom down a notch
-        $('#site-logo').hide();
-        $('#sub_map_links').show();
-
-        // need to set up a click for #close-mobile-map somehow
-        
-        fixmystreet.map.updateSize();
-        fixmystreet.page = 'mobile-full-map';
-        // To make sure the click control is on top
-        this.deactivate();
-        this.activate();
-    },
-
-    locate_report: function(e) {
+    locate_report_pin_and_council: function(e) {
         var lonlat = fixmystreet.map.getLonLatFromViewPortPx(e.xy);
         if (fixmystreet.page == 'new') {
             /* Already have a pin */
@@ -453,7 +406,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             $('#hide_pins_link').click();
         }
         if (fixmystreet.page == 'new') {
-            return;
+            return true;
         }
         $.getJSON('/report/new/ajax', {
                 latitude: $('#fixmystreet\\.latitude').val(),
@@ -467,6 +420,21 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                 $('#form_category').change( form_category_onchange );
             }
         });
+        return false;
+    },
+
+    locate_report_mobile: function(e) {
+        if (this.locate_report_pin_and_council(e)) {
+            return;
+        }
+        fixmystreet.page = 'new';
+        location.hash = 'report';
+    },
+
+    locate_report: function(e) {
+        if (this.locate_report_pin_and_council(e)) {
+            return;
+        }
         $('#side-form, #site-logo').show();
         /* For some reason on IOS5 if you use the jQuery show method it
          * doesn't display the JS validation error messages unless you do this
@@ -476,8 +444,6 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             document.getElementById('side-form').style.display = 'block';
         }
         $('#side').hide();
-        //hide lots of the map ui on mobile
-        $('#sub_map_links, #fms_pan_zoom, #close-mobile-map', '.mobile').hide();
         heightFix('#report-a-problem-sidebar:visible', '.content', 26);
 
         // If we clicked the map somewhere inconvenient
@@ -498,14 +464,6 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                 // underneath where the new sidebar will appear
                 fixmystreet.map.pan(-w, 0, { animate: true });
             }
-        }
-
-        if (fixmystreet.page == 'mobile-full-map') {
-            lonlat.transform(
-                new OpenLayers.Projection("EPSG:4326"),
-                fixmystreet.map.getProjectionObject()
-            );
-            fixmystreet.map.setCenter(lonlat);
         }
 
         fixmystreet.page = 'new';

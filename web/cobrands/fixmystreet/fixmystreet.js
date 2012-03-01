@@ -80,6 +80,13 @@ $(function(){
     //add mobile class if small screen
     if(Modernizr.mq('only screen and (max-width:48em)')) {
         $('html').addClass('mobile');
+// XXX Make map full screen here?
+//        if (fixmystreet.page == 'around') {
+//            $('#map_box').css({
+//                height: $(window).height(),
+//                margin: 0
+//            });
+//        }
     } else {
         // Make map full screen on non-mobile sizes.
         var map_pos = 'fixed', map_height = '100%';
