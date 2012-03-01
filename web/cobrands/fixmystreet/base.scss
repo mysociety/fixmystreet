@@ -920,10 +920,9 @@ a:hover.button-left {
 
 // OpenLayers fix for navigation being top right
 #fms_pan_zoom {
-  width:96px;
-  right: 1em !important;
-  top: 1em !important;
-  left: auto !important;
+  right: 0.5em !important;
+  top: 2.75em !important;
+  left: 0.5em !important;
 }
 
 // Openlayers map controls (overrides)
@@ -949,37 +948,41 @@ a:hover.button-left {
 
 #fms_pan_zoom_panup {
   background-position:-42px -222px;
-  left:30px !important;
+  right:30px !important;
+  left: auto !important;
   top:0 !important;
 }
 #fms_pan_zoom_pandown {
   background-position:-42px -282px;
-  left:30px !important;
+  right:30px !important;
+  left: auto !important;
   top:72px !important;
 }
 #fms_pan_zoom_panleft {
   background-position:-12px -252px;
   width:48px !important;
-  left:0px !important;
+  right:48px !important;
+  left: auto !important;
   top:36px !important;
 }
 #fms_pan_zoom_panright {
   background-position:-60px -252px;
   width:48px !important;
-  left:48px !important;
+  right:0 !important;
+  left: auto !important;
   top:36px !important;
 }
 #fms_pan_zoom_zoomin {
   background-position:-152px -223px;
   height:44px !important;
-  left:30px !important;
-  top:140px !important;
+  left:0 !important;
+  top:0 !important;
 }
 #fms_pan_zoom_zoomout {
   background-position:-152px -259px;
   height:44px !important;
-  left:30px !important;
-  top:184px !important;
+  left:0 !important;
+  top:44px !important;
 }
 
 //hide pins, show old reports etc
@@ -996,15 +999,18 @@ a:hover.button-left {
     font-size:0.6875em;
     color:#fff;
     padding:0.6em 3em 0.5em 1em;
-    background:url('images/sprite.png') right -3976px no-repeat;
+    background-repeat:no-repeat;
     &#hide_pins_link {
-      background-position:right -3976px;
+      background-image:url('images/sprite.png');
+      background-position: right -3976px;
     }
     &#all_pins_link {
-      background-position:right -4022px;
+      background-image:url('images/sprite.png');
+      background-position: right -4022px;
     }
     &#map_permalink {
-      background-position:right -4070px;
+      background-image:url('images/sprite.png');
+      background-position: right -4070px;
     }
     &:hover {
       background-color:#000;
@@ -1012,29 +1018,36 @@ a:hover.button-left {
     }
   }
 }
-//close the mobile map span
-#close-mobile-map {
-  cursor:pointer  ;
-  position:absolute;
-  top:3.5em;
-  left:1em;
-  z-index:1000;
-  display:block;
-  width:30px;
-  height:30px;
-  text-indent:-999999px;
-  opacity: 0.85;
-  background:url('images/sprite.png') -105px -284px no-repeat;
-  &:hover {
-    opacity:1;
+
+#mob_sub_map_links {
+  position: absolute;
+  z-index:1100;
+  bottom:0;
+  display:table;
+  margin:0;
+  width:100%;
+  background:rgba(0, 0, 0, 0.7);
+  a {
+    color:#fff;
+    width:50%;
+    padding:0.5em 0;
+    font-size:1em;
+    display:table-cell;
+    text-align:center;
+    &:hover {
+      background:#000;
+      text-decoration:none;
+    }
   }
 }
 
 .mobile-map-banner {
-  position: fixed;
-  top:-0.65em;
+  margin:0;
+  position: absolute;
+  top:0;
   left:0;
   right:0;
+  font-size:0.75em;
   background:rgba(0, 0, 0, 0.7);
 }
 

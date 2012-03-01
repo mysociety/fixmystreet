@@ -442,7 +442,19 @@ body.twothirdswidthpage {
 
 // Pull OpenLayers navigation down a bit
 #fms_pan_zoom {
-  top: 5em !important;
+  top: 4.75em !important;
+}
+
+// push zoom back over to right
+#fms_pan_zoom_zoomin {
+  left:auto !important;
+  right:30px;
+  top:130px !important;
+}
+#fms_pan_zoom_zoomout {
+  left:auto !important;
+  right:30px;
+  top:174px !important;
 }
 
 #sub_map_links {

@@ -87,6 +87,14 @@ $(function(){
                 height: $(window).height(),
                 margin: 0
             });
+            $('.big-green-banner').addClass('mobile-map-banner').removeClass('.big-green-banner');
+            $('#sub_map_links').hide();
+            $('#map_box').append(
+                '<p id="mob_sub_map_links">'+
+                '<a href="#">Try again?</a>'+
+                '<a href="#">OK</a>'+
+                '</p>'
+            );
         }
     } else {
         // Make map full screen on non-mobile sizes.
