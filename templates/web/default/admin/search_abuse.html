@@ -1,11 +1,12 @@
 [% INCLUDE 'admin/header.html' title=loc('Search Abuse Table') %]
 
 <form method="get" action="[% c.uri_for('search_abuse') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
-    <label for="search">[% loc('Search:') %]</label> <input type="text" name="search"  size="30" id="search">
+    <ul>
+        <li><label for="search">[% loc('Search:') %]</label> <input type="text" name="search"  size="30" id="search"></li>
+    </ul>
 </form>
 
 
-[% IF emails.size > 0 %]
 <table cellspacing="0" cellpadding="2" border="1">
     <tr>
         <th>[% loc('Email') %]</th>
@@ -15,7 +16,11 @@
         <td>[%- foo.email | html -%]</td>
     </tr>
 [%- END -%]
-</table>
+[% IF emails.size == 0 %]
+    <tr>
+        <td class="nomatch">[% loc('No matches found') %]</td>
+    </tr>
 [% END %]
+</table>
 
 [% INCLUDE 'admin/footer.html' %]

@@ -4,7 +4,7 @@
 <form method="get" action="[% c.uri_for('search_reports') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <ul>
         <li><label for="search">[% loc('Search:') %]</label> <input type="text" name="search" value="[% search | html %]" size="30" id="search" placeholder="enter id:nnnn to search on IDs"></li>
-        <li>( Searches ID, email, name, title, detail and areaid for reports and updates )</li>
+        <li><small>[% loc('Searches ID, email, name, title, detail and areaid for reports and updates') %]</small></li>
     </ul>
 </form>
 
