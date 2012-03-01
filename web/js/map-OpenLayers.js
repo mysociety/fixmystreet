@@ -392,7 +392,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             /* Already have a pin */
             fixmystreet.markers.features[0].move(lonlat);
         } else {
-            var markers = fms_markers_list( [ [ lonlat.lat, lonlat.lon, 'yellow' ] ], false );
+            var markers = fms_markers_list( [ [ lonlat.lat, lonlat.lon, 'green' ] ], false );
             fixmystreet.bbox_strategy.deactivate();
             fixmystreet.markers.removeAllFeatures();
             fixmystreet.markers.addFeatures( markers );

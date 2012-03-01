@@ -1031,7 +1031,7 @@ sub generate_map : Private {
             pins      => [ {
                 latitude  => $latitude,
                 longitude => $longitude,
-                colour    => 'yellow',
+                colour    => 'green', # 'yellow',
             } ],
         );
     }
