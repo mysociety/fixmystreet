@@ -271,6 +271,9 @@ $(function(){
         }else{
             //if not, move them and show, hiding .content
             $('.mobile .content').after('<div class="content rap-notes"></div>').hide();
+            $('.rap-notes').css({
+                paddingTop: $(window).height()
+            });
             $('#report-a-problem-sidebar').appendTo('.rap-notes').show().after('<a href="#" class="rap-notes-close button-left">BACK</a>');
         }
         $('html, body').scrollTop($('#report-a-problem-sidebar').offset().top);
