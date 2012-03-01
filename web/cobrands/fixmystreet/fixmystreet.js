@@ -262,14 +262,14 @@ $(function(){
             $('.mobile .content').after('<div class="content rap-notes"></div>').hide();
             $('#report-a-problem-sidebar').appendTo('.rap-notes').show().after('<a href="#" class="rap-notes-close button-left">BACK</a>');
         }
-        $('html, body').animate({scrollTop:0}, 1000);
+        $('html, body').scrollTop(0);
     });
     $('.mobile').on('click', '.rap-notes-close', function(e){
         e.preventDefault();
         //hide notes, show .content
         $('.mobile .content').show();
         $('.rap-notes').hide();
-        $('html, body').animate({scrollTop:0}, 1000);
+        $('html, body').scrollTop(0);
     });
 
     //move 'skip this step' link on mobile
