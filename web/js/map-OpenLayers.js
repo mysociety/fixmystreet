@@ -460,6 +460,9 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             // mobile user clicks 'ok' on map
             $('#mob_ok').on('click', function(e){
                 e.preventDefault();
+                //scroll the height of the map box instead of the offset
+                //of the #side-form or whatever as we will probably want
+                //to do this on other pages where #side-form might not be
                 var height = $('#map_box').height();
                 $('html, body').animate({scrollTop:height}, 1000);
             });
