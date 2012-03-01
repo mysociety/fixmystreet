@@ -87,7 +87,11 @@ $(function(){
                 height: $(window).height(),
                 margin: 0
             });
-            $('.big-green-banner').addClass('mobile-map-banner').removeClass('.big-green-banner').text('Place pin on map');
+            $('.big-green-banner')
+                .addClass('mobile-map-banner')
+                .removeClass('.big-green-banner')
+                .appendTo('#map_box')
+                .text('Place pin on map');
         }
     } else {
         // Make map full screen on non-mobile sizes.
