@@ -259,7 +259,15 @@ $(function(){
     }
 
     $(window).hashchange(function(){
-        if (location.hash) { return; }
+        if (location.hash == '#report' && $('.rap-notes').is(':visible')) {
+            $('.rap-notes-close').click();
+            return;
+        }
+
+        if (location.hash) {
+            return;
+        }
+
         // Okay, back to around view.
         fixmystreet.bbox_strategy.activate();
         fixmystreet.markers.refresh( { force: true } );

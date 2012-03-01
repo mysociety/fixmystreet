@@ -261,29 +261,31 @@ $(function(){
 
     //show/hide notes on mobile
     $('.mobile #report-a-problem-sidebar').after('<a href="#" class="rap-notes-trigger button-right">How to send successful reports</a>').hide();
-    $('.mobile').on('click', '.rap-notes-trigger', function(e){
+    $('.rap-notes-trigger').click(function(e){
         e.preventDefault();
         //check if we've already moved the notes
         if($('.rap-notes').length > 0){
             //if we have, show and hide .content
-            $('.mobile .content').hide();
+            $('.content').hide();
             $('.rap-notes').show();
         }else{
             //if not, move them and show, hiding .content
-            $('.mobile .content').after('<div class="content rap-notes"></div>').hide();
+            $('.content').after('<div class="content rap-notes"></div>').hide();
             $('.rap-notes').css({
                 paddingTop: $(window).height()
             });
-            $('#report-a-problem-sidebar').appendTo('.rap-notes').show().after('<a href="#" class="rap-notes-close button-left">BACK</a>');
+            $('#report-a-problem-sidebar').appendTo('.rap-notes').show().after('<a href="#" class="rap-notes-close button-left">Back</a>');
         }
         $('html, body').scrollTop($('#report-a-problem-sidebar').offset().top);
+        location.hash = 'rap-notes';
     });
     $('.mobile').on('click', '.rap-notes-close', function(e){
         e.preventDefault();
         //hide notes, show .content
-        $('.mobile .content').show();
+        $('.content').show();
         $('.rap-notes').hide();
-        $('html, body').scrollTop($('#report-a-problem-main').offset().top);
+        $('html, body').scrollTop($('#mob_ok').offset().top);
+        location.hash = 'report';
     });
 
     //move 'skip this step' link on mobile
