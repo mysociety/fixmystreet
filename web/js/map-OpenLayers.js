@@ -430,6 +430,14 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         }
         fixmystreet.page = 'new';
         location.hash = 'report';
+        $('#sub_map_links').hide();
+        $('#map_box').append(
+            '<p id="mob_sub_map_links">'+
+            '<a href="#">Try again</a>'+
+            '<a href="#">OK</a>'+
+            '</p>'
+        );
+        $('.mobile-map-banner').text('Right place?');
     },
 
     locate_report: function(e) {

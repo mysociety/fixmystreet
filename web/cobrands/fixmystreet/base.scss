@@ -1012,6 +1012,10 @@ a:hover.button-left {
       background-image:url('images/sprite.png');
       background-position: right -4070px;
     }
+    &.feed {
+      background-image:url('images/sprite.png');
+      background-position: right -3936px;
+    }
     &:hover {
       background-color:#000;
       text-decoration:none;

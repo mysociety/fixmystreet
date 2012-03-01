@@ -87,14 +87,7 @@ $(function(){
                 height: $(window).height(),
                 margin: 0
             });
-            $('.big-green-banner').addClass('mobile-map-banner').removeClass('.big-green-banner');
-            $('#sub_map_links').hide();
-            $('#map_box').append(
-                '<p id="mob_sub_map_links">'+
-                '<a href="#">Try again?</a>'+
-                '<a href="#">OK</a>'+
-                '</p>'
-            );
+            $('.big-green-banner').addClass('mobile-map-banner').removeClass('.big-green-banner').text('Place pin on map');
         }
     } else {
         // Make map full screen on non-mobile sizes.
@@ -352,9 +345,12 @@ $(function(){
         $('<p id="sub_map_links" />').insertAfter($('#map'));
     }
 
-    //add permalink
+    //add permalink on desktop, force hide on mobile
     $('#sub_map_links').append('<a href="#" id="map_permalink">Permalink</a>');
-
+    if($('.mobile').length){
+        $('#map_permalink').hide();
+        $('#key-tools a.feed').appendTo('#sub_map_links');
+    }
     //add open/close toggle button on desk
     $('#sub_map_links').prepend('<span id="map_links_toggle">&nbsp;</span>');
 
