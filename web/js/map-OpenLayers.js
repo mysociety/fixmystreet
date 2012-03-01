@@ -392,7 +392,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             /* Already have a pin */
             fixmystreet.markers.features[0].move(lonlat);
         } else {
-            var markers = fms_markers_list( [ [ lonlat.lat, lonlat.lon, 'yellow' ] ], false );
+            var markers = fms_markers_list( [ [ lonlat.lat, lonlat.lon, 'green' ] ], false );
             fixmystreet.bbox_strategy.deactivate();
             fixmystreet.markers.removeAllFeatures();
             fixmystreet.markers.addFeatures( markers );
@@ -406,7 +406,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             $('#hide_pins_link').click();
         }
         if (fixmystreet.page == 'new') {
-            return true;
+            return false;
         }
         $.getJSON('/report/new/ajax', {
                 latitude: $('#fixmystreet\\.latitude').val(),
@@ -420,11 +420,12 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                 $('#form_category').change( form_category_onchange );
             }
         });
-        return false;
+        return lonlat;
     },
 
     locate_report_mobile: function(e) {
-        if (this.locate_report_pin_and_council(e)) {
+        var lonlat = this.locate_report_pin_and_council(e);
+        if (!lonlat) {
             return;
         }
         fixmystreet.page = 'new';
@@ -432,7 +433,8 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
     },
 
     locate_report: function(e) {
-        if (this.locate_report_pin_and_council(e)) {
+        var lonlat = this.locate_report_pin_and_council(e);
+        if (!lonlat) {
             return;
         }
         $('#side-form, #site-logo').show();
