@@ -351,8 +351,9 @@ $(function(){
     $('#sub_map_links').prepend('<span id="map_links_toggle">&nbsp;</span>');
 
     //set up map_links_toggle click event
-    var maplinks_width = $('#sub_map_links').width()+16;
     $('#map_links_toggle').on('click', function(){
+        var maplinks_width = $('#sub_map_links').width();
+
         if($(this).hasClass('closed')){
             $(this).removeClass('closed');
             $('#sub_map_links').animate({'right':'0'}, 1200);
