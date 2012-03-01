@@ -490,10 +490,13 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                     new OpenLayers.Projection("EPSG:4326"),
                     fixmystreet.map.getProjectionObject()
                 );
-                fixmystreet.map.setCenter(lonlat, fixmystreet.map.getZoom(), true, true);
+                var p = fixmystreet.map.getViewPortPxFromLonLat(lonlat)
+                p.x -= $(window).width() / 3;
+                lonlat = fixmystreet.map.getLonLatFromViewPortPx(p);
+                fixmystreet.map.panTo(lonlat);
             } else if (e.xy.x >= o.left && e.xy.x <= o.left + w + 24 && e.xy.y >= o.top && e.xy.y <= o.top + h + 64) {
                 // underneath where the new sidebar will appear
-                fixmystreet.map.pan(-w, 0, { animate: false });
+                fixmystreet.map.pan(-w, 0, { animate: true });
             }
         }
 
