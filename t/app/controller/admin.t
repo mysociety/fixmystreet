@@ -611,6 +611,30 @@ subtest 'adding email to abuse list from report page' => sub {
     $mech->content_contains('<small>(Email in abuse table)</small>');
 };
 
+subtest 'Changing user from banned one removed banned text' => sub {
+    my $email = $report->user->email;
+
+    my $abuse = FixMyStreet::App->model('DB::Abuse')->find_or_create( { email => $email } );
+    $abuse->insert unless $abuse->in_storage;
+
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->content_contains('Email in abuse table');
+
+    my $fields = $mech->visible_form_values;
+    $fields->{ email } = 'unbanned@example.com';
+
+    $mech->submit_form_ok( 
+        {
+            with_fields => $fields,
+        }
+    );
+
+    $mech->content_lacks('<small>(Email in abuse table)</small>');
+
+    $report->discard_changes;
+    is $report->user->email, 'unbanned@example.com';
+};
+
 subtest 'flagging user from report page' => sub {
     $report->user->flagged(0);
     $report->user->update;

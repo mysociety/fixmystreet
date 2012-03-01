@@ -589,7 +589,6 @@ sub report_edit : Path('report_edit') : Args(1) {
 
     $c->forward('get_token');
     $c->forward('check_page_allowed');
-    $c->forward('check_email_for_abuse', [ $problem->user->email ] );
 
     $c->stash->{updates} =
       [ $c->model('DB::Comment')
@@ -701,6 +700,10 @@ sub report_edit : Path('report_edit') : Args(1) {
             $problem->discard_changes;
         }
     }
+
+    # we check this here in case the user was changed by the editing 
+    # process
+    $c->forward('check_email_for_abuse', [ $problem->user->email ] );
 
     return 1;
 }
