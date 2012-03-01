@@ -80,7 +80,7 @@ $(function(){
     //add mobile class if small screen
     if(Modernizr.mq('only screen and (max-width:48em)')) {
         $('html').addClass('mobile');
-        if (fixmystreet.page == 'around') {
+        if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
             // Immediately go full screen map if on around page
             $('#site-header').hide();
             $('#map_box').prependTo('.wrapper').css({
