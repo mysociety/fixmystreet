@@ -852,6 +852,7 @@ sub search_abuse : Path('search_abuse') : Args(0) {
             }
         );
 
+        $c->stash->{searched} = 1;
         $c->stash->{emails} = [ $emails->all ];
     }
 
