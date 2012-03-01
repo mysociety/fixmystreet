@@ -1043,6 +1043,28 @@ a:hover.button-left {
       text-decoration:none;
     }
   }
+  &.map_complete {
+    background:none;
+    display:block;
+    border-bottom:4px solid #fff;
+    a#try_again {
+      display:block;
+      margin:0 auto 6em auto;
+      background:rgba(0, 0, 0, 0.8);
+      @include border-radius(0.5em);
+    }
+    a#mob_ok {
+      position:absolute;
+      right:1em;
+      bottom:0;
+      height:20px;
+      padding-top:30px;
+      display:block;
+      width:4em;
+      background:#fff url('images/sprite.png') 12px -4140px no-repeat;
+      color:#000;
+    }
+  }
 }
 
 .mobile-map-banner {
