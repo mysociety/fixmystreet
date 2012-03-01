@@ -437,7 +437,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                     new OpenLayers.Projection("EPSG:4326"),
                     fixmystreet.map.getProjectionObject()
                 );
-                var p = fixmystreet.map.getViewPortPxFromLonLat(lonlat)
+                var p = fixmystreet.map.getViewPortPxFromLonLat(lonlat);
                 p.x -= $(window).width() / 3;
                 lonlat = fixmystreet.map.getLonLatFromViewPortPx(p);
                 fixmystreet.map.panTo(lonlat);
