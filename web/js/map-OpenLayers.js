@@ -473,12 +473,12 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                     $('html, body').animate({scrollTop:0}, 1000);
                 }else{
                     var height = $('#map_box').height();
-                    $('html, body').animate({scrollTop:height-60}, 1000);
+                    $('html, body').animate({scrollTop:height-60}, 1000, function(){
+                        //add this class so we can modify the look of the links inside
+                        $('#mob_sub_map_links').addClass('map_complete');
+                        $('#mob_ok').text('MAP');
+                    });
                 }
-
-                //add this class so we can modify the look of the links inside
-                $('#mob_sub_map_links').addClass('map_complete');
-                $('#mob_ok').text('MAP');
             });
         }
 
