@@ -65,7 +65,7 @@
             [% IF field_errors.detail %]
                 <p class='form-error'>[% field_errors.detail %]</p>
             [% END %]
-            <textarea name="detail" id="form_detail" placeholder="[% loc('Please fill in details of the problem.') %]" required>[% report.detail | html %]</textarea>
+            <textarea rows="7" cols="26" name="detail" id="form_detail" placeholder="[% loc('Please fill in details of the problem.') %]" required>[% report.detail | html %]</textarea>
 
             [% IF js %]
                 <div id="form_category_row">

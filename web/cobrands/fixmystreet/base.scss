@@ -647,6 +647,7 @@ button, input[type=submit],.btn{
 button.green-btn,
 input.green-btn{
   @include button-reset;
+  background-color: #9FDE23;
   @include background (linear-gradient(#9FDE23, #7FB900)) ;
   color:#fff;
   border-color: #5B9700;
@@ -660,6 +661,7 @@ input.green-btn{
 button.red-btn,
 input.red-btn{
   @include button-reset;
+  background-color: #FF0038;
   @include background (linear-gradient(#FF0038, #BF002A)) ;
   color:#fff;
   border-color: #80001C;
@@ -921,7 +923,7 @@ a:hover.button-left {
 #fms_pan_zoom {
   right: 0.5em !important;
   top: 2.75em !important;
-  left: 0.5em !important;
+  left: auto !important;
 }
 
 // Openlayers map controls (overrides)
@@ -1177,6 +1179,13 @@ table.nicetable {
     }
   }
   tr {
+    &.gone {
+        color: #666666;
+        background-color: #cccccc;
+    }
+    &.a {
+      background:#f6f6f6;
+    }
     &:nth-child(even) {
       background:#f6f6f6;
     }
@@ -1187,7 +1196,6 @@ table.nicetable {
     td {
       padding:0.25em;
       a {
-        color:#333;
         &:hover {
           text-decoration:none;
         }

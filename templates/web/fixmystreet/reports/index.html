@@ -3,7 +3,10 @@
 <h1>[% loc('All Reports') %]</h1>
 
 <div class="intro">
-	<p>[% loc('This is a summary of all reports on this site; select a particular council to see the reports sent there.') %][% loc('Greyed-out lines are councils that no longer exist.') %]</p>
+    <p>
+    [% loc('This is a summary of all reports on this site; select a particular council to see the reports sent there.') %]
+    [% loc('Greyed-out lines are councils that no longer exist.') %]
+    </p>
 </div>
 
 <table cellpadding="3" cellspacing="1" border="0" class="nicetable">
@@ -19,9 +22,8 @@
 	[% FOREACH area IN areas_info_sorted %]
 	<tr align="center"
 	[%- IF area.generation_high == 10 %] class="gone"
-	[%- ELSIF loop.count % 2 %] class="a"
-	[%- END -%]
-	>
+	[%- ELSIF ! (loop.count % 2) %] class="a"
+	[%- END %]>
 		<td class="title"><a href="[% area.url %]">[% area.name %]</a></td>
 		<td class="data">[% open.${area.id}.new or 0 %]</td>
 		<td class="data">[% open.${area.id}.older or 0 %]</td>
