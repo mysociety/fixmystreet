@@ -926,9 +926,15 @@ a:hover.button-left {
 }
 
 // OpenLayers fix for navigation being top right
+// Left and right so that zoom can be left, pan right.
 #fms_pan_zoom {
   right: 0.5em !important;
   top: 2.75em !important;
+  left: 0.5em !important;
+}
+// The left and right of the above causes the navigation to move off-screen left in IE6.
+// XXX Need to check IE7
+.ie6 #fms_pan_zoom {
   left: auto !important;
 }
 
@@ -947,7 +953,9 @@ a:hover.button-left {
   &:hover {
     opacity:1;
   }
+  filter: none !important; // Override OpenLayers PNG handling of the navigation
 }
+
 #fms_pan_zoom_zoomworld {
   display:none !important;
   visibility:none !important;
