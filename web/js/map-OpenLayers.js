@@ -463,13 +463,18 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         }
 
         if ($('html').hasClass('mobile')) {
+            var $map_box = $('#map_box'),
+                width = $map_box.width(),
+                height = $map_box.height();
             $('#sub_map_links').hide();
-            $('#map_box').append(
+            $map_box.append(
                 '<p id="mob_sub_map_links">' +
                 '<a href="#" id="try_again">Try again</a>' +
                 '<a href="#ok" id="mob_ok">OK</a>' +
                 '</p>'
-            );
+            ).css({ position: 'relative', width: width, height: height });
+            // Making it relative here makes it much easier to do the scrolling later
+
             $('.mobile-map-banner').text('Right place?');
 
             // mobile user clicks 'ok' on map
@@ -481,7 +486,6 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                 if($(this).parent().hasClass('map_complete')){
                     $('html, body').animate({scrollTop:0}, 1000);
                 }else{
-                    var height = $('#map_box').height();
                     $('html, body').animate({scrollTop:height-60}, 1000, function(){
                         //add this class so we can modify the look of the links inside
                         $('#mob_sub_map_links').addClass('map_complete');

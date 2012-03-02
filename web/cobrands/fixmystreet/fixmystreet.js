@@ -92,9 +92,6 @@ $(function(){
                 height: 'auto',
                 margin: 0
             });
-            $('#side-form').css({
-                paddingTop: $(window).height()
-            });
             $('.big-green-banner')
                 .addClass('mobile-map-banner')
                 .removeClass('.big-green-banner')
@@ -275,9 +272,6 @@ $(function(){
         }else{
             //if not, move them and show, hiding .content
             $('.content').after('<div class="content rap-notes"></div>').hide();
-            $('.rap-notes').css({
-                paddingTop: $(window).height()
-            });
             $('#report-a-problem-sidebar').appendTo('.rap-notes').show().after('<a href="#" class="rap-notes-close button-left">Back</a>');
         }
         $('html, body').scrollTop($('#report-a-problem-sidebar').offset().top);
