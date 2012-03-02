@@ -56,31 +56,31 @@ my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
 for my $test ( 
     {
         state => 'fixed', 
-        colour => 'green',
+        colour => 'yellow',
     },
     {
         state => 'fixed - user', 
-        colour => 'green',
+        colour => 'yellow',
     },
     {
         state => 'fixed - council', 
-        colour => 'green',
+        colour => 'yellow',
     },
     {
         state => 'confirmed', 
-        colour => 'red',
+        colour => 'yellow',
     },
     {
         state => 'investigating', 
-        colour => 'red',
+        colour => 'yellow',
     },
     {
         state => 'planned', 
-        colour => 'red',
+        colour => 'yellow',
     },
     {
         state => 'in progress', 
-        colour => 'red',
+        colour => 'yellow',
     },
 ) {
     subtest "pin colour for state $test->{state}" => sub {

@@ -23,7 +23,7 @@ FixMyStreet::App::Controller::Report::New
 
 =head1 DESCRIPTION
 
-Create a new report, or complete a partial one .
+Create a new report, or complete a partial one.
 
 =head1 PARAMETERS
 

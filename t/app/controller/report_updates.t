@@ -826,7 +826,7 @@ for my $test (
             update => 'Update from a registered user'
         },
         initial_banner => undef,
-        endstate_banner => ' This problem has been fixed. ',
+        endstate_banner => 'Fixed',
         alert => 1,
         anonymous => 0,
     },
@@ -848,8 +848,8 @@ for my $test (
         changed => {
             update => 'Another update from a registered user'
         },
-        initial_banner => ' This problem has been fixed. ',
-        endstate_banner => ' This problem has been fixed. ',
+        initial_banner => 'Fixed',
+        endstate_banner => 'Fixed',
         alert => 0,
         anonymous => 0,
     },
@@ -953,7 +953,7 @@ foreach my $test (
             fixed         => 1,
         },
         changed        => { update => 'Update from owner' },
-        initial_banner => ' This problem is in progress. ',
+        initial_banner => 'In progress',
         initial_state  => 'in progress',
         alert     => 1,    # we signed up for alerts before, do not unsign us
         anonymous => 0,
