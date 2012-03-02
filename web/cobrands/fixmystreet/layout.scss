@@ -231,6 +231,10 @@ body.mappage {
 }
 .ie6, .ie7 {
   body.mappage {
+    .container {
+      float: left;
+      width: 27em;
+    }
     .nav-wrapper{
       z-index:1;
       .nav-wrapper-2 {
