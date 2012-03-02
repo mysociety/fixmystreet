@@ -81,7 +81,7 @@ $(function(){
     document.createElement('img').src = '/i/pin-green.png';
 
     //add mobile class if small screen
-    if (Modernizr.mq('only screen and (max-width:48em)') && !Modernizr.mq('only screen and (width:48em)')) {
+    if (Modernizr.mq('only screen and (max-width:47.9375em)')) {
         $('html').addClass('mobile');
         if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
             // Immediately go full screen map if on around page
@@ -249,6 +249,7 @@ $(function(){
                     $('this').html("Unknown error");
                 }
             }, {
+                enableHighAccuracy: true,
                 timeout: 10000
             });
         });
