@@ -75,23 +75,29 @@ function tabs(elem)
 
 
 $(function(){
-    $('html').removeClass('no-js').addClass('js');
+    var $html = $('html'),
+        $map_box = $('#map_box');
+
+    $html.removeClass('no-js').addClass('js');
 
     // Preload the new report pin
     document.createElement('img').src = '/i/pin-green.png';
 
     //add mobile class if small screen
     if (Modernizr.mq('only screen and (max-width:47.9375em)')) {
-        $('html').addClass('mobile');
+        $html.addClass('mobile');
+        $map_box.css({ height: '10em' });
         if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
             // Immediately go full screen map if on around page
             $('#site-header').hide();
-            $('#map_box').prependTo('.wrapper').css({
+            $map_box.prependTo('.wrapper').css({
                 position: 'absolute',
                 top: 0, left: 0, right: 0, bottom: 0,
                 height: 'auto',
                 margin: 0
             });
+            // Bit yucky, but the ID doesn't exist yet.
+            $("<style>#fms_pan_zoom { top: 2.75em !important; }</style>").appendTo(document.documentElement);
             $('.big-green-banner')
                 .addClass('mobile-map-banner')
                 .removeClass('.big-green-banner')
@@ -101,11 +107,11 @@ $(function(){
     } else {
         // Make map full screen on non-mobile sizes.
         var map_pos = 'fixed', map_height = '100%';
-        if ($('html').hasClass('ie6')) {
+        if ($html.hasClass('ie6')) {
             map_pos = 'absolute';
             map_height = $(window).height();
         }
-        $('#map_box').prependTo('.wrapper').css({
+        $map_box.prependTo('.wrapper').css({
             zIndex: 0, position: map_pos,
             top: 0, left: 0, right: 0, bottom: 0,
             width: '100%', height: map_height,

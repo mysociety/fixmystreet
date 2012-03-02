@@ -915,7 +915,7 @@ a:hover.button-left {
 #map_box{
   @extend .full-width;
   background: #333;
-  height: 10em;
+  height: 29em;
   margin-bottom: 1em;
   overflow: hidden;
   position: relative;
@@ -929,7 +929,7 @@ a:hover.button-left {
 // Left and right so that zoom can be left, pan right.
 #fms_pan_zoom {
   right: 0.5em !important;
-  top: 2.75em !important;
+  top: 0.5em !important;
   left: 0.5em !important;
 }
 // The left and right of the above causes the navigation to move off-screen left in IE6.
