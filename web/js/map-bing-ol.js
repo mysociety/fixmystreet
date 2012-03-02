@@ -3,10 +3,17 @@ function set_map_config(perm) {
     if ($('#map_permalink').length) {
         permalink_id = 'map_permalink';
     }
+
+    var nav_opts = { zoomWheelEnabled: false };
+    if (fixmystreet.page == 'around' && $('html').hasClass('mobile')) {
+        nav_opts = {};
+    }
+    fixmystreet.nav_control = new OpenLayers.Control.Navigation(nav_opts);
+
     fixmystreet.controls = [
         new OpenLayers.Control.Attribution(),
         new OpenLayers.Control.ArgParser(),
-        new OpenLayers.Control.Navigation({ zoomWheelEnabled: false }),
+        fixmystreet.nav_control,
         new OpenLayers.Control.Permalink(permalink_id),
         new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
     ];
