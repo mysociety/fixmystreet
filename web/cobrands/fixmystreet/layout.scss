@@ -199,6 +199,11 @@ body {
     margin-top:7em;
   }
 }
+// If no box-shadow, just want a boring black border to stand it out from the map.
+.ie6 .content, .ie7 .content, .ie8 .content {
+  border: solid 1px black;
+  margin-bottom: 0;
+}
 
 // map page - has fixed header and different styling
 body.mappage {
@@ -562,6 +567,10 @@ body.twothirdswidthpage {
       }
     }
   }
+}
+// The padding is for the fading out when it's fixed positioned, which it isn't in IE6.
+.ie6 .shadow-wrap {
+  padding-top: 0;
 }
 
 // pokes over the RHS with a little triangle

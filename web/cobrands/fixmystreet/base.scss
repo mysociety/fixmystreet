@@ -364,6 +364,12 @@ label{
     }
   }
 }
+// IE6 doesn't extend the grey box back with the above negative margins, and
+// the password box falls off screen for some reason. Just have boring margins,
+// it looks okay.
+.ie6 .form-box {
+    margin: 0 0 0.25em 0;
+}
 
 .form-txt-submit-box {
   min-height:3em;
