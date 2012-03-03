@@ -6,7 +6,7 @@
     END;
 %]
 
-[% INCLUDE 'header.html', title => title %]
+[% INCLUDE 'header.html', title = title, bodyclass = 'twothirdswidthpage' %]
 
 [% IF pretty_pc %]
     [%
@@ -22,6 +22,7 @@
   <input type="hidden" name="type" value="local">
   <input type="hidden" name="pc" value="[% pc | html %]">
 
+[%# XXX These photos should perhaps be in a vertical column on the right hand side, as currently. %]
   [% IF photos.size %]
     <div id="alert_photos">
       <h2>[% loc('Photos of recent nearby reports') %]</h2>
@@ -67,17 +68,17 @@
         <p><strong>
           [% loc('Problems within the boundary of:') %]
         </strong></p>
-        <ul>
+        <ul class="plain-list">
     [% ELSE %]
       <ul id="rss_feed" class="plain-list">
     [% END %]
 
   [% FOREACH option IN options %]
-  <li>
+  <li[% IF ! (loop.count % 2) %] class="a"[% END %]>
     <input type="radio" name="feed" id="[% option.id %]" value="[% option.id %]"[% IF option.id == selected_feed %] checked[% END %]>
-    <label class="inline" for="[% option.id %]">[% option.text %]</label>
     <a href="[% option.uri %]"><img src="/i/feed.png" width="16" height="16"
 title="[% option.rss_text %]" alt="RSS feed" border="0"></a>
+    <label class="inline" for="[% option.id %]">[% option.text %]</label>
   </li>
   [% END %]
 </ul>
@@ -85,13 +86,13 @@ title="[% option.rss_text %]" alt="RSS feed" border="0"></a>
         <p><strong>
           [% loc('Or problems reported to:') %]
         </strong></p>
-        <ul>
+        <ul class="plain-list">
       [% FOREACH option IN reported_to_options %]
-      <li>
+      <li[% IF ! (loop.count % 2) %] class="a"[% END %]>
         <input type="radio" name="feed" id="[% option.id %]" value="[% option.id %]"[% IF option.id == selected_feed %] checked[% END %]>
-        <label for="[% option.id %]">[% option.text %]</label>
         <a href="[% option.uri %]"><img src="/i/feed.png" width="16" height="16"
     title="[% option.rss_text %]" alt="RSS feed" border="0"></a>
+        <label class="inline" for="[% option.id %]">[% option.text %]</label>
       </li>
       [% END %]
     </ul>

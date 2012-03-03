@@ -1092,9 +1092,14 @@ a:hover.button-left {
   background:rgba(0, 0, 0, 0.7);
 }
 
-//copyright attribution 
 .olControlAttribution {
-  bottom:0.5em !important;
+    bottom: 0.5em !important;
+    left: 3px;
+    color: #222222;
+}
+.olControlPermalink {
+    bottom: 3px !important;
+    right: 3px;
 }
 
 /* Drag is only present in noscript form. XXX Copy from core. */
@@ -1379,3 +1384,20 @@ ul.breadcrumb {
     margin-bottom:0;
   }
 }
+
+#alerts {
+    ul {
+        margin-bottom: 1em;
+    }
+    li {
+        padding: 0em;
+        margin-bottom: 0.5em;
+    }
+    .a {
+        background: #f6f6f6;
+    }
+    img {
+        float: right;
+    }
+}
+
