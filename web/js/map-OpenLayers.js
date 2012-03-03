@@ -478,20 +478,19 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             $('.mobile-map-banner').text('Right place?');
 
             // mobile user clicks 'ok' on map
-            $('#mob_ok').on('click', function(e){
-                e.preventDefault();
+            $('#mob_ok').toggle(function(){
                 //scroll the height of the map box instead of the offset
                 //of the #side-form or whatever as we will probably want
                 //to do this on other pages where #side-form might not be
-                if($(this).parent().hasClass('map_complete')){
-                    $('html, body').animate({scrollTop:0}, 1000);
-                }else{
-                    $('html, body').animate({scrollTop:height-60}, 1000, function(){
-                        //add this class so we can modify the look of the links inside
-                        $('#mob_sub_map_links').addClass('map_complete');
-                        $('#mob_ok').text('MAP');
-                    });
-                }
+                $('html, body').animate({ scrollTop: height-60 }, 1000, function(){
+                    $('#mob_sub_map_links').addClass('map_complete');
+                    $('#mob_ok').text('MAP');
+                });
+            }, function(){
+                $('html, body').animate({ scrollTop: 0 }, 1000, function(){
+                    $('#mob_sub_map_links').removeClass('map_complete');
+                    $('#mob_ok').text('OK');
+                });
             });
         }
 
