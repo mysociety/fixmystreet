@@ -75,8 +75,7 @@ function tabs(elem)
 
 
 $(function(){
-    var $html = $('html'),
-        $map_box = $('#map_box');
+    var $html = $('html');
 
     $html.removeClass('no-js').addClass('js');
 
@@ -86,11 +85,11 @@ $(function(){
     //add mobile class if small screen
     if (Modernizr.mq('only screen and (max-width:47.9375em)')) {
         $html.addClass('mobile');
-        $map_box.css({ height: '10em' });
+        $('#map_box').css({ height: '10em' });
         if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
             // Immediately go full screen map if on around page
             $('#site-header').hide();
-            $map_box.prependTo('.wrapper').css({
+            $('#map_box').prependTo('.wrapper').css({
                 position: 'absolute',
                 top: 0, left: 0, right: 0, bottom: 0,
                 height: 'auto',
@@ -111,7 +110,7 @@ $(function(){
             map_pos = 'absolute';
             map_height = $(window).height();
         }
-        $map_box.prependTo('.wrapper').css({
+        $('#map_box').prependTo('.wrapper').css({
             zIndex: 0, position: map_pos,
             top: 0, left: 0, right: 0, bottom: 0,
             width: '100%', height: map_height,
