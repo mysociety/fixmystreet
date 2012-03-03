@@ -54,12 +54,15 @@ function heightFix(elem1, elem2, offset){
  *
  * elem: trigger element, must have an href attribute (so probably needs to be an <a>)
  */
-function tabs(elem)
-{
+function tabs(elem, indirect) {
     var href = elem.attr('href');
     //stupid IE sometimes adds the full uri into the href attr, so trim
     var start = href.indexOf('#'),
         target = href.slice(start, href.length);
+
+    if (indirect) {
+        elem = $(target + '_tab');
+    }
 
     if(!$(target).hasClass('open'))
     {
@@ -309,6 +312,10 @@ $(function(){
     $(".tab-nav").on('click', 'a', function(e){
         e.preventDefault();
         tabs($(this));
+    });
+    $('.tab_link').click(function(e) {
+        e.preventDefault();
+        tabs($(this), 1);
     });
 
     /*
