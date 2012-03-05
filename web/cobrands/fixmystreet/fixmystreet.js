@@ -35,7 +35,7 @@ function form_category_onchange() {
  *
  * elem1: element to check against
  * elem2: target element
- * offest: this will be added (if present) to the final value, useful for height errors
+ * offset: this will be added (if present) to the final value, useful for height errors
  */
 function heightFix(elem1, elem2, offset){
     var h1 = $(elem1).height(),
@@ -264,8 +264,8 @@ $(function(){
      * Report a problem page 
      */
     //desktop
-    if($('#report-a-problem-sidebar:visible').length > 0){
-        heightFix('#report-a-problem-sidebar:visible', '.content', 26);
+    if ($('#report-a-problem-sidebar').is(':visible')) {
+        heightFix('#report-a-problem-sidebar', '.content', 26);
     }
 
     //show/hide notes on mobile
@@ -302,8 +302,8 @@ $(function(){
      * Tabs
      */
     //make initial tab active
-    $('.tab-nav a:first').addClass('active');
-    $('.tab:first').addClass('open');
+    $('.tab-nav a').first().addClass('active');
+    $('.tab').first().addClass('open');
     
     //hide other tabs
     $('.tab').not('.open').hide();

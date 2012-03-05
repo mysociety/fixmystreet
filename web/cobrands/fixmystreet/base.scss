@@ -103,8 +103,15 @@ h1 {
   line-height: 1em;
   font-weight: normal;
   margin-bottom: 0.5em;
-  }
-  
+}
+h1#reports_heading span {
+  display: none;
+}
+h1#reports_heading a {
+  display: block;
+  font-size: 50%;
+}
+
 h2 {
   font-family:'Museo300-display', 'Helvetica', 'Arial', sans-serif;
   font-size: 1.5em; /*24px*/

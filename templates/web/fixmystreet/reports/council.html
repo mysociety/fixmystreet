@@ -55,28 +55,13 @@
     </div>
 [% END %]
 
-
-<ul class="breadcrumb">
-    <li><a href="/reports">[% loc('All councils') %]</a></li>
+<h1 id="reports_heading">
     [% IF ward %]
-    <li><a href="[% council_url %]">[% council.name %]</a></li>
-    <li><span>[% ward.name %]</span></li>
+    [% ward.name %]<span>, </span><a href="[% council_url %]">[% council.name %]</a>
     [% ELSE %]
-    <li><span>[% council.name %]</span></li>
+    [% council.name %]
     [% END %]
-</ul>
-
-
-<p>
-[% IF c.cobrand.all_councils_report %]
-    [% tprintf( loc('This is a summary of all reports for one %s.'), thing ) %]
-[% ELSE %]
-    [% tprintf( loc('This is a summary of all reports for this %s.'), thing ) %]
-[% END %]
-</p>
-
-
-<h2>[% name %]</h2>
+</h1>
 
 [% INCLUDE 'reports/cobrand_stats.html' %]
 
