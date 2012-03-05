@@ -200,11 +200,11 @@ sub display_advert ($$;$%) {
 #EOF
 
     #unless (defined $data{done_tms} && $data{done_tms}==1) {
-    #$c->stash->{scratch} = 'advert=news';
-    #my $auth_signature = '';
-    #unless (defined $data{emailunvalidated} && $data{emailunvalidated}==1) {
-    #    $auth_signature = mySociety::AuthToken::sign_with_shared_secret($email, mySociety::Config::get('AUTH_SHARED_SECRET'));
-    #}
+    $c->stash->{scratch} = 'advert=news';
+    my $auth_signature = '';
+    unless (defined $data{emailunvalidated} && $data{emailunvalidated}==1) {
+        $auth_signature = mySociety::AuthToken::sign_with_shared_secret($email, mySociety::Config::get('AUTH_SHARED_SECRET'));
+    }
     return '<div style="margin: 0 5em; border-top: dotted 1px #666666;">'
         . display_news_form(email => $email, name => $name, signed_email => $auth_signature)
         . '</div>';
