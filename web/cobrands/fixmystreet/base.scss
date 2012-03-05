@@ -102,7 +102,11 @@ h1 {
   font-size: 2em;
   line-height: 1em;
   font-weight: normal;
+  margin-top: 0;
   margin-bottom: 0.5em;
+}
+#front-main h1 {
+  margin-top: 0.7em;
 }
 h1#reports_heading span {
   display: none;

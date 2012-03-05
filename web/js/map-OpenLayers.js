@@ -472,7 +472,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                 '<a href="#" id="try_again">Try again</a>' +
                 '<a href="#ok" id="mob_ok">OK</a>' +
                 '</p>'
-            ).css({ position: 'relative', width: width, height: height });
+            ).css({ position: 'relative', width: width, height: height, marginBottom: '1em' });
             // Making it relative here makes it much easier to do the scrolling later
 
             $('.mobile-map-banner').text('Right place?');
