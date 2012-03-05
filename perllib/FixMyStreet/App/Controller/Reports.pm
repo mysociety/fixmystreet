@@ -343,6 +343,7 @@ sub load_and_group_problems : Private {
                 'id', 'council', 'state', 'areas', 'latitude', 'longitude', 'title', 'cobrand',
                 { duration => { extract => "epoch from current_timestamp-lastupdate" } },
                 { age      => { extract => "epoch from current_timestamp-confirmed"  } },
+                { confirmed => { extract => 'epoch from confirmed' } },
                 { photo    => 'photo is not null' },
             ],
             order_by => { -desc => 'lastupdate' },
@@ -354,7 +355,7 @@ sub load_and_group_problems : Private {
 
     my ( %fixed, %open, @pins );
     my $re_councils = join('|', keys %{$c->stash->{areas_info}});
-    my @cols = ( 'id', 'council', 'state', 'areas', 'latitude', 'longitude', 'title', 'cobrand', 'duration', 'age' );
+    my @cols = ( 'id', 'council', 'state', 'areas', 'latitude', 'longitude', 'title', 'cobrand', 'duration', 'age', 'confirmed', 'photo' );
     while ( my @problem = $problems->next ) {
         my %problem = zip @cols, @problem;
         $c->log->debug( $problem{'cobrand'} . ', cobrand is ' . $c->cobrand->moniker );

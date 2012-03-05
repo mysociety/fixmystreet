@@ -571,7 +571,7 @@ p.label-valid {
           size:0.6875em;
           family: 'helvetica', 'arial', sans-serif;
         }
-        &:hover {
+        &:hover, &.hover {
           text-decoration:none;
           background-color:#333;
           color:#fff;
@@ -872,7 +872,7 @@ a:hover.button-left {
         }
       }
       .text {
-        padding:0.5em 1em 0 1em;
+        padding:0.5em 1em;
         h4 {
           margin:0;
         }

@@ -49,8 +49,11 @@
     </p>
 [% ELSE %]
     <div class="shadow-wrap">
-        <ul id="key-tools" class="singleton">
+        <ul id="key-tools"[% IF NOT children.size %] class="singleton"[% END %]>
             <li><a rel="nofollow" id="email_alert" class="feed" href="[% rss_url %]">[% tprintf(loc('Get updates of problems in this %s'), thing) %]</a></li>
+            [% IF children.size %]
+            <li><a href="#council_wards" id="council_wards_link" class="chevron">[% loc('Wards of this council') %]</a>
+            [% END %]
         </ul>
     </div>
 [% END %]
@@ -74,15 +77,12 @@
 
 
 [% IF children.size %]
-
-<a href="#council_wards" class="button-right hidden-nojs hideshow-trigger">[% loc('Wards of this council') %]</a>
-
 <section id="council_wards" class="hidden-js">
     <h2>[% loc('Wards of this council') %]</h2>
     <p>[% loc('Follow a ward link to view only reports within that ward.') %]</p>
-    <ul class="list-a full-width">
+    <ul class="issue-list-a">
         [% FOR child IN children.values.sort('name') %]
-        <li><a href="[% child.url %]">[% child.name %]</a></li>
+        <li><a href="[% child.url %]"><span class="text">[% child.name %]</span></a></li>
         [% END %]
     </ul>
 </section>
@@ -148,6 +148,7 @@
         <a href="[% c.uri_for('/report/' _ problem.id) %]">
             <div class="text">
                 <h4>[% problem.title | html %]</h4>
+                <small>[% prettify_epoch( problem.confirmed, 1 ) %]</small>
                 [% IF problem.councils > 1 %] <small>[% loc('(sent to both)') %]</small> [% END %]
                 [% IF c.cobrand.moniker != 'emptyhomes' %]
                     [% IF problem.councils == 0 %] <small>[% loc('(not sent to council)') %]</small> [% END %]

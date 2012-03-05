@@ -369,6 +369,29 @@ $(function(){
         $('<p id="sub_map_links" />').insertAfter($('#map'));
     }
 
+    // Open list of wards on council page
+    // TODO Change chevron when open to point down
+    $('#council_wards_link').toggle(function(e){
+        var $this = $(this), d = $('#council_wards');
+        if (!$this.addClass('hover').data('setup')) {
+            d.css({
+                backgroundColor: 'white',
+                height: $(window).height() - $('.content').offset().top - $('.shadow-wrap').height(),
+                display: 'none',
+                overflow: 'auto',
+                padding: '1em'
+            }).removeClass('hidden-js');
+            d.find('h2').css({ marginTop: 0 });
+            $('.shadow-wrap').append(d);
+            $this.data('setup', true);
+        }
+        d.animate( { height: 'show' } );
+    }, function(e){
+        var $this = $(this), d = $('#council_wards');
+        $this.removeClass('hover');
+        d.animate( { height: 'hide' } );
+    });
+
     //add permalink on desktop, force hide on mobile
     $('#sub_map_links').append('<a href="#" id="map_permalink">Permalink</a>');
     if($('.mobile').length){
