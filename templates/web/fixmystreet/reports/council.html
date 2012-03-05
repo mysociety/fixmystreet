@@ -93,46 +93,10 @@
 [% INCLUDE 'pagination.html', param = 'p' %]
 
 <section class="full-width">
-    <menu id="problems-nav" class="tab-nav">
-        <ul>
-            [% IF fixed.${council.id}.new %]<li><a href="#recently_fixed">[% loc('Recently fixed') %]</a></li>[% END %]
-            [% IF open.${council.id}.new %]<li><a href="#new_problems">[% loc( 'New problems' ) %]</a></li>[% END %]
-            [% IF open.${council.id}.older%]<li><a href="#older_problems">[% loc( 'Older problems' ) %]</a></li>[% END %]
-            [% IF open.${council.id}.unknown %]<li><a href="#old_unknown_problems">[% loc( 'Old / unknown problems' ) %]</a></li>[% END %]
-            [% IF fixed.${council.id}.old %]<li><a href="#old_fixed">[% loc( 'Old fixed' ) %]</a></li>[% END %]
-        </ul>
-    </menu>
     [% INCLUDE column
-        title = loc('Recently fixed')
-        tab_id = 'recently_fixed'
-        problems = fixed.${council.id}.new
-    %]
-
-    [% INCLUDE column
-        title = loc('New problems')
-        tab_id = 'new_problems'
-        problems = open.${council.id}.new
-    %]
-
-    [% INCLUDE column
-        title = loc('Older problems')
-        tab_id = 'older_problems'
-        problems = open.${council.id}.older
-    %]
-
-    [% INCLUDE column
-        title = loc('Old / unknown problems')
-        tab_id = 'old_unknown_problems'
-        problems = open.${council.id}.unknown
-    %]
-
-    [% INCLUDE column
-        title = loc('Old fixed')
-        tab_id = 'old_fixed'
-        problems = fixed.${council.id}.old
+        problems = problems.${council.id}
     %]
 </section>
-
 
 </div>
 [% INCLUDE 'footer.html' %]
@@ -140,9 +104,7 @@
 [% BLOCK column %]
 [% IF problems %]
 
-<h3 class="hidden-js">[% title %]</h3>
-
-<ul id="[% tab_id %]" class="issue-list-a tab">
+<ul class="issue-list-a">
 [% FOREACH problem IN problems %]
     <li>
         <a href="[% c.uri_for('/report/' _ problem.id) %]">
