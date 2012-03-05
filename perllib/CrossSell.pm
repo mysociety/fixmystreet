@@ -208,7 +208,7 @@ sub display_advert ($$;$%) {
     return '<div style="margin: 0 5em; border-top: dotted 1px #666666;">'
         . display_news_form(email => $email, name => $name, signed_email => $auth_signature)
         . '</div>';
-    }
+    #}
 
     my @adverts = (
         [ 'gny0', '<h2>Are you a member of a local group&hellip;</h2> &hellip;which uses the internet to coordinate itself, such as a neighbourhood watch? If so, please help the charity that runs FixMyStreet by <a href="http://www.groupsnearyou.com/add/about/">adding some information about it</a> to our new site, GroupsNearYou.' ],
