@@ -237,7 +237,11 @@ $(function(){
         $('#geolocate_link').click(function(e) {
             e.preventDefault();
             // Spinny thing!
-            $(this).append(' <img src="/i/flower.gif" alt="" align="bottom">');
+            if($('.mobile').length){
+                $(this).append(' <img src="/cobrands/fixmystreet/images/spinner-black.gif" alt="" align="bottom">');
+            }else{
+                $(this).append(' <img src="/cobrands/fixmystreet/images/spinner-yellow.gif" alt="" align="bottom">');
+            }
             geo_position_js.getCurrentPosition(function(pos) {
                 $('img', this).remove();
                 var latitude = pos.coords.latitude;

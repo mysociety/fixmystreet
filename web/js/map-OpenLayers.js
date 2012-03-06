@@ -279,7 +279,6 @@ $(function(){
         $('#side-form').hide();
         $('#side').show();
         $('#sub_map_links').show();
-        heightFix('#report-a-problem-sidebar:visible', '.content', 26);
         //only on mobile
         $('#mob_sub_map_links').remove();
         $('.mobile-map-banner').text('Place pin on map');

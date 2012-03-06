@@ -466,10 +466,15 @@ body.twothirdswidthpage {
   top:174px !important;
 }
 
+.olControlAttribution {
+  bottom:0.5em !important;
+  left: auto !important;
+}
+
 #sub_map_links {
   left:auto;
   bottom:auto;
-  bottom:1em;
+  bottom:2em;
   #map_links_toggle {
     display:block;
     cursor: pointer;

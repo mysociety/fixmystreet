@@ -156,7 +156,7 @@
 
                     [% INCLUDE name %]
                     
-                    <label class="hidden-js" for="password_register">[% loc('Enter a password (optional)') %]</label>
+                    <label for="password_register">[% loc('Password') %]</label>
 
                     <div class="form-txt-submit-box">
                         <input type="password" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a password (optional)') %]">
@@ -175,7 +175,7 @@
 [% INCLUDE 'footer.html' %]
 
 [% BLOCK name %]
-    <label class="hidden-js" for="form_name">[% loc('Your name') %]</label>
+    <label for="form_name">[% loc('Name') %]</label>
     [% IF field_errors.name %]
         <p class='form-error'>[% field_errors.name %]</p>
     [% END %]

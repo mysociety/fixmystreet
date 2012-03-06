@@ -394,8 +394,8 @@ label{
     float:right;
     width:28%;
     margin-right:0.25em;
-    padding-top:0.9em;
-    padding-bottom:0.8em;
+    padding-top:0.7em;
+    padding-bottom:0.6em;
   }
 }
 
@@ -1112,9 +1112,11 @@ a:hover.button-left {
 }
 
 .olControlAttribution {
-    bottom: 0.5em !important;
-    left: 3px;
+    bottom: 3.25em !important;
+    right: 0.25em !important;
+    left: 0.25em !important;
     color: #222222;
+    font-size:0.75em !important;
 }
 .olControlPermalink {
     bottom: 3px !important;
