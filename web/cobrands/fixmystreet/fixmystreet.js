@@ -153,11 +153,6 @@ $(function(){
         $('#another_qn').hide('fast');
     });
 
-    var timer;
-    function email_alert_close() {
-        $('#email_alert_box').hide('fast');
-    }
-
     // FIXME - needs to use translated string
     jQuery.validator.addMethod('validCategory', function(value, element) {
         return this.optional(element) || value != '-- Pick a category --'; }, validation_strings.category );
@@ -382,9 +377,14 @@ $.fn.drawer = function(id, ajax) {
             if (!d.length) {
                 d = $('<div id="' + id + '">');
             }
+            var max_height = $(window).height() - $('.content').offset().top - $('.shadow-wrap').height();
+            var height = d.height();
+            if (!height || height > max_height) {
+                height = max_height;
+            }
             d.css({
                 backgroundColor: 'white',
-                height: $(window).height() - $('.content').offset().top - $('.shadow-wrap').height(),
+                height: height,
                 display: 'none', zIndex: 1001, position: 'relative',
                 overflow: 'auto',
                 padding: '1em'
@@ -405,8 +405,9 @@ $.fn.drawer = function(id, ajax) {
     });
 };
 
-    $('#council_wards_link').drawer('council_wards', false);
-    $('#updates_link').drawer('updates_ajax', true);
+    $('#key-tool-wards').drawer('council_wards', false);
+    $('#key-tool-around-updates').drawer('updates_ajax', true);
+    $('#key-tool-report-updates').drawer('report-updates-data', false);
 
     // Go directly to RSS feed if RSS button clicked on alert page
     // (due to not wanting around form to submit, though good thing anyway)
