@@ -5,6 +5,11 @@
 
 [% INCLUDE 'errors.html' %]
 
+<p><a href="[% c.uri_for( '/rss', problem_id ) %]">
+        <img src="/i/feed.png" width="16" height="16" title="[% loc('RSS feed') %]" alt="[% loc('RSS feed of updates to this problem' ) %]" border="0" style="float:right">
+    </a>
+</p>
+
 <p>
 [% loc('Receive email when updates are left on this problem.') %]
 </p>
