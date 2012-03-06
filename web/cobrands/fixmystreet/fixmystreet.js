@@ -373,27 +373,56 @@ $(function(){
         $('<p id="sub_map_links" />').insertAfter($('#map'));
     }
 
-    // Open list of wards on council page
-    // TODO Change chevron when open to point down
-    $('#council_wards_link').toggle(function(e){
-        var $this = $(this), d = $('#council_wards');
+// A sliding drawer from the bottom of the page
+// TODO Not have independent scrolling; height broken in IE6 (at least). Think fixing former will fix latter.
+$.fn.drawer = function(id, ajax) {
+    this.toggle(function(){
+        var $this = $(this), d = $('#' + id);
         if (!$this.addClass('hover').data('setup')) {
+            if (!d.length) {
+                d = $('<div id="' + id + '">');
+            }
             d.css({
                 backgroundColor: 'white',
                 height: $(window).height() - $('.content').offset().top - $('.shadow-wrap').height(),
-                display: 'none',
+                display: 'none', zIndex: 1001, position: 'relative',
                 overflow: 'auto',
                 padding: '1em'
             }).removeClass('hidden-js');
+            if (ajax) {
+                var href = $this.attr('href') + ';ajax=1';
+                d.load(href);
+            }
             d.find('h2').css({ marginTop: 0 });
             $('.shadow-wrap').append(d);
             $this.data('setup', true);
         }
         d.animate( { height: 'show' } );
     }, function(e){
-        var $this = $(this), d = $('#council_wards');
+        var $this = $(this), d = $('#' + id);
         $this.removeClass('hover');
         d.animate( { height: 'hide' } );
+    });
+};
+
+    $('#council_wards_link').drawer('council_wards', false);
+    $('#updates_link').drawer('updates_ajax', true);
+
+    // Go directly to RSS feed if RSS button clicked on alert page
+    // (due to not wanting around form to submit, though good thing anyway)
+    $('.shadow-wrap').on('click', '#alert_rss_button', function(e){
+        e.preventDefault();
+        var feed = $('input[name=feed][type=radio]:checked').nextAll('a').attr('href');
+        window.location.href = feed;
+    });
+    $('.shadow-wrap').on('click', '#alert_email_button', function(e){
+        e.preventDefault();
+        var form = $('<form/>').attr({ method:'post', action:"/alert/subscribe" });
+        $('#alerts input[type=text], #alerts input[type=hidden], #alerts input[type=radio]:checked').each(function() {
+            var $v = $(this);
+            $('<input/>').attr({ name:$v.attr('name'), value:$v.val(), type:'hidden' }).appendTo(form);
+        });
+        form.submit();
     });
 
     //add permalink on desktop, force hide on mobile

@@ -77,7 +77,7 @@
 
 
 [% IF children.size %]
-<section id="council_wards" class="hidden-js">
+<div id="council_wards" class="hidden-js">
     <h2>[% loc('Wards of this council') %]</h2>
     <p>[% loc('Follow a ward link to view only reports within that ward.') %]</p>
     <ul class="issue-list-a">
@@ -85,7 +85,7 @@
         <li><a href="[% child.url %]"><span class="text">[% child.name %]</span></a></li>
         [% END %]
     </ul>
-</section>
+</div>
 [% END %]
 
 
