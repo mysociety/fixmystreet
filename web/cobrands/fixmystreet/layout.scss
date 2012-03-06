@@ -494,6 +494,13 @@ body.twothirdswidthpage {
     }
   }
 }
+.ie6 #sub_map_links #map_links_toggle {
+  height:1.75em;
+  background:#000 url('images/ie_sprite.gif') center -341px no-repeat;
+  &.closed {
+    background-position: center -381px;
+  }
+}
 
 // log in bit, pokes above the .content div
 #user-meta{

@@ -616,6 +616,23 @@ p.label-valid {
     }
   }
 }
+.ie6 .shadow-wrap ul#key-tools li a {
+  &.abuse {
+    background-image:url('images/ie_key_tools_sprite.gif');
+    background-position: right 0px;
+  }
+  &.feed {
+    background-image:url('images/ie_key_tools_sprite.gif');
+    background-position: right -58px;
+  }
+  &.chevron {
+    background-image:url('images/ie_key_tools_sprite.gif');
+    background-position: right -116px;
+  }
+  &:hover {
+    background-image:url('images/ie_key_tools_sprite_dark.gif');
+  }
+}
 
 
 //footer blocks
@@ -1026,6 +1043,7 @@ a:hover.button-left {
   right:0;
   bottom: 0;
   z-index: 1100;
+  background:#333;
   background:rgba(0, 0, 0, 0.7);
   margin:0;
   a {
@@ -1054,6 +1072,21 @@ a:hover.button-left {
       background-color:#000;
       text-decoration:none;
     }
+  }
+}
+
+.ie6 #sub_map_links a {
+  &#hide_pins_link {
+    background-image:url('images/ie_sub_map_links_sprite.gif');
+    background-position: right 1px;
+  }
+  &#all_pins_link {
+    background-image:url('images/ie_sub_map_links_sprite.gif');
+    background-position: right -45px;
+  }
+  &#map_permalink {
+    background-image:url('images/ie_sub_map_links_sprite.gif');
+    background-position: right -93px;
   }
 }
 
