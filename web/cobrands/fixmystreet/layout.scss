@@ -82,7 +82,7 @@ body {
   background: none;
   border-top: 0px;
   .container {
-    position: static;//reset position so z-index resets
+    position: static;//reset position so the nav links become clickable
   }
 }
 #site-logo {
@@ -91,6 +91,14 @@ body {
   z-index: 3;
 }
 .ie6, .ie7 {
+  #site-header {
+    height:3em;
+    .container {
+      //ie broken z-index bug: the site-logo won't appear if we don't do this
+      //doesn't seem to render the nav link unclickable like in other browsers
+      position: relative;
+    }
+  }
   #site-logo {
     position: absolute;
     top:-3.25em;
@@ -193,16 +201,17 @@ body {
   margin-bottom: -1em;
   @include box-shadow(0px 0px 6px 1px #000);
 }
-//weird margining thing for ie8
-.ie8 {
-  .wrapper .content {
-    margin-top:7em;
+.ie6, .ie7, .ie8  {
+  .content {
+    // If no box-shadow, just want a boring black border to stand it out from the map.
+    border: 1px solid black;
+    //take off margins so we line up properly
+    margin: 0;
   }
 }
-// If no box-shadow, just want a boring black border to stand it out from the map.
-.ie6 .content, .ie7 .content, .ie8 .content {
-  border: solid 1px black;
-  margin-bottom: 0;
+//weird margining thing for ie8
+.ie8 .content {
+  margin-top:3em;
 }
 
 // map page - has fixed header and different styling
@@ -231,10 +240,6 @@ body.mappage {
 }
 .ie6, .ie7 {
   body.mappage {
-    .container {
-      float: left;
-      width: 27em;
-    }
     .nav-wrapper{
       z-index:1;
       .nav-wrapper-2 {
@@ -246,10 +251,6 @@ body.mappage {
       top:-3.25em;
     }
   }
-}
-//colour background the same as that of the ie_logo.gif
-.ie6 body.mappage .nav-wrapper .nav-wrapper-2 {
-  background: #1a1a1a;
 }
 //ie8 needs different stuff on .nav-wrapper so we 
 //have to define all the rest of it again as this resets
@@ -322,7 +323,7 @@ body.twothirdswidthpage {
     }
   }
 }
-//as ie6 doesn;t like 'fixed' we will make it absolute again
+//as ie6 doesn't like 'fixed' we will make it absolute again
 .ie6 body.twothirdswidthpage .content .sticky-sidebar {
   position:static;
   aside {
@@ -330,10 +331,6 @@ body.twothirdswidthpage {
     left:42em;
     top:0;
   }
-}
-//bit of extra space for ie7
-.ie7 body.twothirdswidthpage .content .sticky-sidebar aside {
-  top:11em;
 }
 
 
@@ -660,11 +657,13 @@ body.twothirdswidthpage {
         border-bottom: 0.75em solid #4B8304;
       }
     }
-    &#unknown,
-    &#closed,
-    &#progress {
-      // do we need other colours/images for these states?
-    }
+  }
+}
+.ie6 .banner p {
+  top:-1.5em;
+  &#fixed {
+    padding-top:1em;
+    background-image:none;
   }
 }
 
@@ -797,6 +796,9 @@ body.frontpage {
 //logo fix
 .ie6, .ie7, .ie8 {
   body.frontpage {
+    #site-header{
+      height:4em;
+    }
     #site-logo {
       position:relative;
       width:60em;
