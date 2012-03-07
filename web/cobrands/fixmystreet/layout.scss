@@ -597,7 +597,7 @@ body.twothirdswidthpage {
       a {
         font-size: 0.75em;
         color:#888888;  
-        padding: 0.5em 1em 0.5em 0;
+        padding: 0.5em 1.5em 0.5em 0;
         text-transform:none;
         &.abuse {
           background-image:url(images/sprite.png);
@@ -610,6 +610,10 @@ body.twothirdswidthpage {
         &.chevron {
           background-image:url(images/sprite.png);
           background-position:right -3225px;
+        }
+        &.hover {
+          background-image:url(images/sprite.png);
+          background-position:right -1876px;
         }
       }
     }

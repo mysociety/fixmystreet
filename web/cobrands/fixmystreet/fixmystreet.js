@@ -377,33 +377,24 @@ $.fn.drawer = function(id, ajax) {
             if (!d.length) {
                 d = $('<div id="' + id + '">');
             }
-            // Put the padding on an inner div to prevent the jarring jump at end of hide/show animation
-            var innerDiv = $('<div>').css({ padding: '1em' });
-            d.wrapInner(innerDiv);
-            var max_height = $(window).height() - $('.content').offset().top - $('.shadow-wrap').height();
-            var height = d.height();
-            if (!height || height > max_height) {
-                height = max_height;
-            }
-            d.css({
-                backgroundColor: 'white',
-                height: height,
-                display: 'none', zIndex: 1001, position: 'relative',
-                overflow: 'auto'
-            }).removeClass('hidden-js');
+            d.removeClass('hidden-js');
             if (ajax) {
                 var href = $this.attr('href') + ';ajax=1';
-                innerDiv.load(href);
+                d.load(href);
             }
             d.find('h2').css({ marginTop: 0 });
-            $('.shadow-wrap').append(d);
+            $('.content').append(d);
+            d_offset = d.offset().top;
+            d.hide();
             $this.data('setup', true);
         }
-        d.animate( { height: 'show' } );
+        d.animate({height:'show'},1000);
+        $('html, body').animate({scrollTop:d_offset-80}, 1000);
+        
     }, function(e){
         var $this = $(this), d = $('#' + id);
         $this.removeClass('hover');
-        d.animate( { height: 'hide' } );
+        d.animate({height:'hide'});
     });
 };
 
