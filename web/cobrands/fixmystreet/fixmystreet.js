@@ -449,6 +449,26 @@ $.fn.drawer = function(id, ajax) {
             $('#sub_map_links').animate({'right':-maplinks_width}, 1200);
         }
     });
+
+
+    /*
+     * Add close buttons for .promo's
+     */
+    if($('.promo').length){
+        $('.promo').append('<a href="#" class="close-promo">x</a>');
+    }
+    //only close its own parent
+    $('.promo').on('click', '.close-promo', function(e){
+        e.preventDefault();
+        $(this).parent('.promo').animate({
+            'height':0,
+            'padding-top':0,
+            'padding-bottom':0
+        },{
+            duration:500,
+            queue:false
+        }).fadeOut(500);
+    });
 });
 
 /*

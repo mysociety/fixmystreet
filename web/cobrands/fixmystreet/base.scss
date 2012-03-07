@@ -1299,6 +1299,22 @@ table.nicetable {
   background:$primary;
   padding:1em;
   margin-bottom:1em;
+  overflow:hidden;
+  position: relative;
+  .close-promo {
+    position:absolute;
+    top:0.5em;
+    right:0.5em;
+    display:block;
+    width:16px;
+    height:16px;
+    text-indent:-999999px;
+    background:url(images/sprite.png) -341px -263px no-repeat;
+    @include border-radius(4px);
+    &:hover {
+      background:#222 url(images/sprite.png) -341px -223px no-repeat;
+    }
+  }
 }
 
 .alert {
