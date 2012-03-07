@@ -558,6 +558,7 @@ p.label-valid {
   @extend .full-width;
   ul#key-tools{
     @include list-reset-soft;
+    margin-bottom: 1em;
     display: table;
     width:100%;
     li{
