@@ -28,12 +28,14 @@ within a certain distance of a particular location.') %]
 </form>
 
 [% IF photos.size %]
-<div id="alert_recent">
-  <h2>[% loc('Some photos of recent reports') %]</h2>
+<div class="sticky-sidebar">
+  <aside>
+    <h2>[% loc('Some photos of recent reports') %]</h2>
     [% FOREACH p IN photos %]
         <a href="/report/[% p.id %]"><img border="0" height="100"
             src="/photo?tn=1;id=[% p.id %]" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
     [% END %]
+  </aside>
 </div>
 [% END %]
 
