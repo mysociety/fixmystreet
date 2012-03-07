@@ -1340,7 +1340,7 @@ ul.breadcrumb {
 
 // hide anything with this class if js is working
 .js .hidden-js {
-  display: none !important;
+  display: none;
   visibility: hidden;
 }
 
