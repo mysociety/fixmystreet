@@ -240,6 +240,11 @@ body.mappage {
 }
 .ie6, .ie7 {
   body.mappage {
+    .container {
+      float: left;
+      width: 27em;
+      margin-left: 1.4em;
+    }
     .nav-wrapper{
       z-index:1;
       .nav-wrapper-2 {
@@ -249,6 +254,13 @@ body.mappage {
     #site-logo {
       position: absolute;
       top:-3.25em;
+    }
+  }
+}
+.ie6 {
+  body.mappage {
+    .container {
+      margin-left: 0.7em;
     }
   }
 }
