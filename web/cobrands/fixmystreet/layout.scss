@@ -627,6 +627,10 @@ body.twothirdswidthpage {
       }
     }
   }
+  &.active {
+    padding:3em 0;
+    position: static;
+  }
 }
 // The padding is for the fading out when it's fixed positioned, which it isn't in IE6.
 .ie6 .shadow-wrap {

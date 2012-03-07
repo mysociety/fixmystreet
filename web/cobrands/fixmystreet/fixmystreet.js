@@ -369,18 +369,25 @@ $(function(){
     }
 
 // A sliding drawer from the bottom of the page
-// TODO Not have independent scrolling; height broken in IE6 (at least). Think fixing former will fix latter.
 $.fn.drawer = function(id, ajax) {
     this.toggle(function(){
-        var $this = $(this), d = $('#' + id);
+        var $this = $(this), d = $('#' + id), $sw = $('.shadow-wrap');
         if (!$this.addClass('hover').data('setup')) {
+            // move .shadow-wrap to end of .content first
+            if(!$('.shadow-wrap.moved').length){
+                $sw.appendTo('.content').addClass('moved');
+            }
+
             if (!d.length) {
                 d = $('<div id="' + id + '">');
             }
+            // Put the padding on an inner div to prevent the jarring jump at end of hide/show animation
+            var innerDiv = $('<div>');
+            d.wrapInner(innerDiv);
             d.removeClass('hidden-js');
             if (ajax) {
                 var href = $this.attr('href') + ';ajax=1';
-                d.load(href);
+                innerDiv.load(href);
             }
             d.find('h2').css({ marginTop: 0 });
             $('.content').append(d);
@@ -388,13 +395,14 @@ $.fn.drawer = function(id, ajax) {
             d.hide();
             $this.data('setup', true);
         }
-        d.animate({height:'show'},1000);
-        $('html, body').animate({scrollTop:d_offset-80}, 1000);
-        
+        $sw.addClass('active');
+        d.animate({height:'show'},500);
+        $('html, body').animate({scrollTop:d_offset-60}, 1000);
     }, function(e){
-        var $this = $(this), d = $('#' + id);
+        var $this = $(this), d = $('#' + id), $sw = $('.shadow-wrap');
         $this.removeClass('hover');
-        d.animate({height:'hide'});
+        $sw.removeClass('active');
+        d.animate( { height: 'hide' } );
     });
 };
 
