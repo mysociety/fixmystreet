@@ -377,6 +377,9 @@ $.fn.drawer = function(id, ajax) {
             if (!d.length) {
                 d = $('<div id="' + id + '">');
             }
+            // Put the padding on an inner div to prevent the jarring jump at end of hide/show animation
+            var innerDiv = $('<div>').css({ padding: '1em' });
+            d.wrapInner(innerDiv);
             var max_height = $(window).height() - $('.content').offset().top - $('.shadow-wrap').height();
             var height = d.height();
             if (!height || height > max_height) {
@@ -386,12 +389,11 @@ $.fn.drawer = function(id, ajax) {
                 backgroundColor: 'white',
                 height: height,
                 display: 'none', zIndex: 1001, position: 'relative',
-                overflow: 'auto',
-                padding: '1em'
+                overflow: 'auto'
             }).removeClass('hidden-js');
             if (ajax) {
                 var href = $this.attr('href') + ';ajax=1';
-                d.load(href);
+                innerDiv.load(href);
             }
             d.find('h2').css({ marginTop: 0 });
             $('.shadow-wrap').append(d);

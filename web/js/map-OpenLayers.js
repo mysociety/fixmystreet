@@ -441,7 +441,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             document.getElementById('side-form').style.display = 'block';
         }
         $('#side').hide();
-        heightFix('#report-a-problem-sidebar:visible', '.content', 26);
+        heightFix('#report-a-problem-sidebar', '.content', 26);
 
         // If we clicked the map somewhere inconvenient
         var sidebar = $('#report-a-problem-sidebar');
