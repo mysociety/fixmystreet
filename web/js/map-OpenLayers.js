@@ -461,11 +461,11 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             }
         }
 
+        $('#sub_map_links').hide();
         if ($('html').hasClass('mobile')) {
             var $map_box = $('#map_box'),
                 width = $map_box.width(),
                 height = $map_box.height();
-            $('#sub_map_links').hide();
             $map_box.append(
                 '<p id="mob_sub_map_links">' +
                 '<a href="#" id="try_again">Try again</a>' +

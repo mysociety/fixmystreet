@@ -591,6 +591,7 @@ body.twothirdswidthpage {
   padding-top: 3em;
   ul#key-tools {
     border-top: 0.25em solid $primary;
+    margin: 0;
     @include box-shadow(-0em 0px 1em 1em #fff);
     li {
       border:none;
