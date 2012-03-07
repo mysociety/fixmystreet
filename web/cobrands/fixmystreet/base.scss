@@ -785,8 +785,8 @@ a:hover.button-left {
 
 .banner {
   position: relative;
-  z-index:1000;
-  #fixed {
+  z-index:1100;
+  p {
     position: absolute;
     top:-1.95em;
     right:0;
@@ -794,8 +794,9 @@ a:hover.button-left {
     font-size:0.6875em;//11px
     line-height:1em;
     padding:0.5em 1em;
-    color:#fff;
-    background: $contrast1;
+    margin:0;
+    color:#1a1a1a;
+    background: #ccc;
     text: {
       transform:uppercase;
       align:center;
@@ -808,7 +809,19 @@ a:hover.button-left {
       width: 0;
       height: 0;
       border-left: 0.5em solid transparent;
-      border-bottom: 0.5em solid #4B8304;
+      border-bottom: 0.5em solid #888;
+    }
+    &#fixed {
+      color:#fff;
+      background: $contrast1;
+      &:before {
+        border-bottom: 0.5em solid #4B8304;
+      }
+    }
+    &#unknown,
+    &#closed,
+    &#progress {
+      // do we need other colours for these states?
     }
   }
 }

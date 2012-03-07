@@ -636,17 +636,28 @@ body.twothirdswidthpage {
 }
 
 .banner {
-  // fixed banner image
-  #fixed {
+  // state banners
+  p {
     top:-2.25em;
-    padding-top:5em;
-    background-image:url(images/sprite.png);
-    background-position:-324px -326px;
-    background-repeat:no-repeat;
+    padding:1em;
     &:before {
       left:-0.75em;
       border-left: 0.75em solid transparent;
-      border-bottom: 0.75em solid #4B8304;
+      border-bottom: 0.75em solid #888;
+    }
+    &#fixed {
+      padding-top:5em;
+      background-image:url(images/sprite.png);
+      background-position:-324px -326px;
+      background-repeat:no-repeat;
+      &:before {
+        border-bottom: 0.75em solid #4B8304;
+      }
+    }
+    &#unknown,
+    &#closed,
+    &#progress {
+      // do we need other colours/images for these states?
     }
   }
 }

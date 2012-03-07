@@ -121,11 +121,11 @@
 
         [% ELSE %]
 
-            <label for="form_rznvy">[% loc('Your email address' ) %]</label>
+            <label for="form_rznvy">[% loc('Email' ) %]</label>
             [% IF field_errors.email %]
                 <p class='form-error'>[% field_errors.email %]</p>
             [% END %]
-            <input type="email" name="rznvy" id="form_rznvy" value="[% update.user.email | html %]" required>
+            <input type="email" name="rznvy" id="form_rznvy" value="[% update.user.email | html %]" placeholder="[% loc('Your email address' ) %]" required>
 
             <div id="form_sign_in">
                 <h3>[% loc("Now to submit your update&hellip;") %]</h3>
