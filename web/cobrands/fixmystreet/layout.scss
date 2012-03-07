@@ -662,8 +662,8 @@ body.twothirdswidthpage {
 .ie6 .banner p {
   top:-1.5em;
   &#fixed {
-    padding-top:1em;
-    background-image:none;
+    background-image:url(images/ie_fixed.gif);
+    background-position:center 0.75em;
   }
 }
 
