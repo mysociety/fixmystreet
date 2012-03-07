@@ -387,7 +387,10 @@ $.fn.drawer = function(id, ajax) {
             d.removeClass('hidden-js');
             if (ajax) {
                 var href = $this.attr('href') + ';ajax=1';
-                innerDiv.load(href);
+                $this.prepend(' <img src="/cobrands/fixmystreet/images/spinner-black-333.gif" style="margin-right:2em;">');
+                innerDiv.load(href, function(){
+                    $('img', $this).remove();
+                });
             }
             d.find('h2').css({ marginTop: 0 });
             $('.content').append(d);
@@ -396,13 +399,14 @@ $.fn.drawer = function(id, ajax) {
             $this.data('setup', true);
         }
         $sw.addClass('active');
-        d.animate({height:'show'},500);
+        d.animate({height:'show'}, 300);
         $('html, body').animate({scrollTop:d_offset-60}, 1000);
     }, function(e){
         var $this = $(this), d = $('#' + id), $sw = $('.shadow-wrap');
         $this.removeClass('hover');
-        $sw.removeClass('active');
-        d.animate( { height: 'hide' } );
+        d.animate({height: 'hide'}, 600, function(){
+            $sw.removeClass('active');
+        });
     });
 };
 
