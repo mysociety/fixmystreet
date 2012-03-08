@@ -1,3 +1,4 @@
+use utf8;
 package FixMyStreet::DB::Result::Problem;
 
 # Created by DBIx::Class::Schema::Loader
@@ -7,7 +8,6 @@ use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
-
 __PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "EncodedColumn");
 __PACKAGE__->table("problem");
 __PACKAGE__->add_columns(
@@ -92,22 +92,22 @@ __PACKAGE__->has_many(
   { "foreign.problem_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
-__PACKAGE__->belongs_to(
-  "user",
-  "FixMyStreet::DB::Result::User",
-  { id => "user_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
-);
 __PACKAGE__->has_many(
   "questionnaires",
   "FixMyStreet::DB::Result::Questionnaire",
   { "foreign.problem_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
+__PACKAGE__->belongs_to(
+  "user",
+  "FixMyStreet::DB::Result::User",
+  { id => "user_id" },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-09-19 14:38:43
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:nq8Ufn/SEoDGSrrGlHIxag
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-08 17:19:55
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:B5hs93gt+TwgPbdTFTJMjA
 
 # Add fake relationship to stored procedure table
 __PACKAGE__->has_one(

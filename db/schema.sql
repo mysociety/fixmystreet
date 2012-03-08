@@ -419,5 +419,6 @@ create table open311conf (
     area_id      integer not null unique,
     endpoint     text not null,
     jurisdiction text,
-    api_key      text
+    api_key      text,
+    send_method  text
 );

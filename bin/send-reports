@@ -30,11 +30,19 @@ use mySociety::MaPit;
 use mySociety::Web qw(ent);
 
 use Open311;
-
+ 
 # specific council numbers
 use constant COUNCIL_ID_BARNET     => 2489;
 use constant COUNCIL_ID_EAST_HANTS => 2330;
+
 use constant MAX_LINE_LENGTH       => 132;
+
+# send_method config values found in by-area config data, for selecting to appropriate method
+use constant SEND_METHOD_EMAIL      => 'email';
+use constant SEND_METHOD_OPEN311    => 'open311';
+use constant SEND_METHOD_BARNET     => 'barnet';
+use constant SEND_METHOD_EAST_HANTS => 'easthants';
+use constant SEND_METHOD_LONDON     => 'london';
 
 # Set up site, language etc.
 my ($verbose, $nomail) = CronFns::options();
@@ -62,8 +70,10 @@ while (my $row = $unsent->next) {
         next;
     }
 
-    my $send_email = 0;
-    my $send_web = 0;
+    # Due to multiple councils, it's possible to want to send both by email *and* another method
+    # NB: might need to revist this if multiple councils have custom send methods
+    my $send_email = 0; 
+    my $send_method = 0;
 
     # Template variables for the email
     my $email_base_url = $cobrand->base_url_for_emails($row->cobrand_data);
@@ -124,6 +134,7 @@ while (my $row = $unsent->next) {
 
         push @to, [ $council_email, $name ];
         @recips = ($council_email);
+        $send_method = 0;
         $send_email = 1;
         $template = Utils::read_file("$FindBin::Bin/../templates/email/emptyhomes/" . $row->lang . "/submit.txt");
 
@@ -139,18 +150,37 @@ while (my $row = $unsent->next) {
         foreach my $council (@councils) {
             my $name = $areas_info->{$council}->{name};
             push @dear, $name;
+            
+            # look in the DB to determine if there is a special handler for this council (e.g., open311, or custom)
+            my $council_config = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $council} )->first;
+            $send_method = $council_config->send_method if $council_config;
             if ($council == COUNCIL_ID_EAST_HANTS) { # E. Hants have a web service
-                $send_web = 'easthants';
+                $send_method = SEND_METHOD_EAST_HANTS; # TODO: delete? should be in the db
                 $h{category} = 'Customer Services' if $h{category} eq 'Other';
-            } elsif ($council == COUNCIL_ID_BARNET) { # Barnet have a web service
-                $send_web = 'barnet';                
-                # Barnet use a category mapping (see KBID when the message is posted)
-            } elsif ($areas_info->{$council}->{type} eq 'LBO') { # London
-                $send_web = 'london';
-            } elsif ( my $endpoint = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $council, endpoint => { '!=', '' } } )->first ) {
-                push @open311_councils, $endpoint;
-                $send_web = 'open311';
-            } else {
+            } 
+
+            # if council lookup provided no explicit send_method, maybe there's some other criterion for setting it:
+            if (! $send_method) {
+                if ($areas_info->{$council}->{type} eq 'LBO') { # London
+                    $send_method = SEND_METHOD_LONDON;
+                }
+            }
+            $send_email = 1 unless $send_method; # default to email if nothing explicit was provided
+            
+            # currently: open311 or Barnet without an endpoint is useless, so check the endpoint is set
+            if ($send_method eq SEND_METHOD_OPEN311 or $send_method eq SEND_METHOD_BARNET) { 
+                if ($council_config->endpoint) {
+                    if ($send_method eq SEND_METHOD_OPEN311) {
+                        push @open311_councils, $council_config;                        
+                    }
+                } else {
+                    print "Warning: no endpoint specified in config data for council=$council (will try email instead)\n";
+                    $send_method = 0;
+                    $send_email = 1;
+                }
+            }
+            
+            if ($send_email) {
                 my $contact = FixMyStreet::App->model("DB::Contact")->find( {
                     deleted => 0,
                     area_id => $council,
@@ -169,7 +199,6 @@ while (my $row = $unsent->next) {
                 }
                 push @to, [ $council_email, $name ];
                 $recips{$council_email} = 1;
-                $send_email = 1;
             }
         }
         @recips = keys %recips;
@@ -208,16 +237,17 @@ while (my $row = $unsent->next) {
 
     }
 
-    unless ($send_email || $send_web) {
+    unless ($send_method) {
         die 'Report not going anywhere for ID ' . $row->id . '!';
     }
 
     if (mySociety::Config::get('STAGING_SITE')) {
         # on a staging server send emails to ourselves rather than the councils
-        # ...unless it's Barnet-staging (for now) 
-        unless ($base_url=~/barnet-staging/) {
+        # ...webservice calls will only go through if explictly allowed here:
+        my @testing_councils = (COUNCIL_ID_BARNET);
+        unless (grep {$row->council eq $_} @testing_councils) {
             @recips = ( mySociety::Config::get('CONTACT_EMAIL') );
-            $send_web = 0;
+            $send_method = 0;
             $send_email = 1;
         }
     } elsif ($site eq 'emptyhomes') {
@@ -255,22 +285,22 @@ while (my $row = $unsent->next) {
         );
     }
 
-    if ($send_web eq 'easthants') {
+    if ($send_method eq SEND_METHOD_EAST_HANTS) {
         $h{message} = construct_easthants_message(%h);
         if (!$nomail) {
             $result *= post_easthants_message(%h);
         }
-    } elsif ($send_web eq 'barnet') {
+    } elsif ($send_method eq SEND_METHOD_BARNET) {
         $h{message} = construct_barnet_message(%h);
         if (!$nomail) {
             $result *= post_barnet_message( $row, %h );
         }
-    } elsif ($send_web eq 'london') {
+    } elsif ($send_method eq SEND_METHOD_LONDON) {
         $h{message} = construct_london_message(%h);
         if (!$nomail) {
             $result *= post_london_report( $row, %h );
         }
-    } elsif ($send_web eq 'open311') {
+    } elsif ($send_method eq SEND_METHOD_OPEN311) {
         foreach my $conf ( @open311_councils ) {
             print 'posting to end point for ' . $conf->area_id . "\n" if $verbose;
 
@@ -444,11 +474,14 @@ sub post_barnet_message {
     }
     my $postcode = $h{postcode} || $nearest_postcode; # use given postcode if available
     
-    # note: config can be of form 'http://username@password:url' (or https, hopefully)
-    if (my $barnet_endpoint = mySociety::Config::get('BARNET_WEBSERVICE_ENDPOINT', undef)) {
-        $interface->set_proxy($barnet_endpoint);
+    # note: endpoint can be of form 'http://username@password:url' (or https, hopefully)
+    my $council_config = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => COUNCIL_ID_BARNET} )->first;
+    if ($council_config and $council_config->endpoint) {
+        $interface->set_proxy($council_config->endpoint);
         # Barnet web service doesn't like namespaces in the elements so use a prefix
         $interface->set_prefix('urn');
+    } else {
+        die "Barnet webservice FAIL: looks like you're missing some config data: no endpoint (URL) found for area_id=" . COUNCIL_ID_BARNET;
     }
     
     eval {    
