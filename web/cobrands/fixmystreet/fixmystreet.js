@@ -465,6 +465,7 @@ $.fn.drawer = function(id, ajax) {
         e.preventDefault();
         $(this).parent('.promo').animate({
             'height':0,
+            'margin-bottom':0,
             'padding-top':0,
             'padding-bottom':0
         },{
