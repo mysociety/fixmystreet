@@ -282,10 +282,7 @@ sub save_update : Private {
 
     # If there was a photo add that too
     if ( my $fileid = $c->stash->{upload_fileid} ) {
-        my $file = file( $c->config->{UPLOAD_CACHE}, "$fileid.jpg" );
-        my $blob = $file->slurp;
-        $file->remove;
-        $update->photo($blob);
+        $update->photo($fileid);
     }
 
     if ( $update->in_storage ) {

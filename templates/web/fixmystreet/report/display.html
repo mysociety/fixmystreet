@@ -101,6 +101,7 @@
         [% IF c.cobrand.allow_photo_upload %]
             <div id="fileupload_normalUI">
             [% IF upload_fileid %]
+                <img align="right" src="/photo/[% upload_fileid %].temp.jpeg" alt="">
                 <p>[% loc('You have already attached a photo to this update, attaching another one will replace it.') %]</p>
                 <input type="hidden" name="upload_fileid" value="[% upload_fileid %]">
             [% END %]

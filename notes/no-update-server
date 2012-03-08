@@ -323,7 +323,7 @@ TEST_EMAIL_PREFIX: ''
 CONTACT_NAME: 'FiksGataMi'
 STAGING_SITE: 1
 
-UPLOAD_CACHE: '/var/lib/fixmystreet/upload/'
+UPLOAD_DIR: '/var/lib/fixmystreet/upload/'
 GEO_CACHE: '/var/lib/fixmystreet/cache/'
 GOOGLE_MAPS_API_KEY: ''
 

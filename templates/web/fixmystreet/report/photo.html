@@ -1,6 +1,8 @@
 [% IF c.cobrand.allow_photo_display && object.photo %]
 [% photo = object.get_photo_params %]
 <div class="update-img">
-    <img src="[% photo.url %]">
+    [% IF photo.url_full %]<a href="[% photo.url_full %]">[% END
+    %]<img alt="Photo of this report" [% IF photo.height %]height="[% photo.height %]" width="[% photo.width %]"[% END %] src="[% photo.url %]">
+    [%- IF photo.url_full %]</a>[% END %]
 </div>
 [% END %]

@@ -11,6 +11,7 @@ use mySociety::EmailUtil;
 use mySociety::Random qw(random_bytes);
 use FixMyStreet::Map;
 
+use Path::Class;
 use URI;
 use URI::QueryParam;
 
@@ -415,6 +416,30 @@ sub render_fragment {
     $c->view('Web')->render($c, $template, $vars);
 }
 
+=head2 get_photo_params
+
+Returns a hashref of details of any attached photo for use in templates.
+Hashref contains height, width and url keys.
+
+=cut
+
+sub get_photo_params {
+    my ($self, $key) = @_;
+    $key = ($key eq 'id') ? '' : "/$key";
+
+    return {} unless $self->photo;
+
+    my $photo = {};
+    if (length($self->photo) == 40) {
+        $photo->{url_full} = '/photo' . $key . '/' . $self->id . '.full.jpeg';
+    } else {
+        ( $photo->{width}, $photo->{height} ) =
+          Image::Size::imgsize( \$self->photo );
+    }
+    $photo->{url} = '/photo' . $key . '/' . $self->id . '.jpeg';
+
+    return $photo;
+}
 
 =head1 SEE ALSO
 

@@ -5,6 +5,7 @@ use namespace::autoclean;
 BEGIN {extends 'Catalyst::Controller'; }
 
 use DateTime::Format::HTTP;
+use Path::Class;
 
 =head1 NAME
 
@@ -25,17 +26,30 @@ Display a photo
 
 =cut
 
-sub index :Path :Args(0) {
+sub during :LocalRegex('^([0-9a-f]{40})\.temp\.jpeg$') {
     my ( $self, $c ) = @_;
+    my ( $hash ) = @{ $c->req->captures };
 
-    my $id = $c->req->param('id');
-    my $comment = $c->req->param('c');
-    $c->detach( 'no_photo' ) unless $id || $comment;
+    my $file = file( $c->config->{UPLOAD_DIR}, "$hash.jpeg" );
+    my $photo = $file->slurp;
+
+    if ( $c->cobrand->default_photo_resize ) {
+        $photo = _shrink( $photo, $c->cobrand->default_photo_resize );
+    } else {
+        $photo = _shrink( $photo, 'x250' );
+    }
+
+    $c->forward( 'output', [ $photo ] );
+}
+
+sub index :LocalRegex('^(c/)?(\d+)(?:\.(full|tn|fp))?\.jpeg$') {
+    my ( $self, $c ) = @_;
+    my ( $is_update, $id, $size ) = @{ $c->req->captures };
 
     my @photo;
-    if ( $comment ) {
+    if ( $is_update ) {
         @photo = $c->model('DB::Comment')->search( {
-            id => $comment,
+            id => $id,
             state => 'confirmed',
             photo => { '!=', undef },
         } );
@@ -56,13 +70,29 @@ sub index :Path :Args(0) {
     $c->detach( 'no_photo' ) unless @photo;
 
     my $photo = $photo[0]->photo;
-    if ( $c->req->param('tn' ) ) {
+
+    # If photo field contains a hash
+    if (length($photo) == 40) {
+        my $file = file( $c->config->{UPLOAD_DIR}, "$photo.jpeg" );
+        $photo = $file->slurp;
+    }
+
+    if ( $size eq 'tn' ) {
         $photo = _shrink( $photo, 'x100' );
-    } elsif ( $c->req->param('fp' ) ) {
+    } elsif ( $size eq 'fp' ) {
         $photo = _crop( $photo );
+    } elsif ( $size eq 'full' ) {
     } elsif ( $c->cobrand->default_photo_resize ) {
         $photo = _shrink( $photo, $c->cobrand->default_photo_resize );
+    } else {
+        $photo = _shrink( $photo, 'x250' );
     }
+
+    $c->forward( 'output', [ $photo ] );
+}
+
+sub output : Private {
+    my ( $self, $c, $photo ) = @_;
 
     my $dt = DateTime->now();
     $dt->set_year( $dt->year + 1 );

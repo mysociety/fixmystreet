@@ -21,7 +21,7 @@ to populate the alert types table.
 Copy conf/general.yml-example to conf/general.yml and set it up appropriately:
 * provide the relevant database connection details
 * the BASE_URL to be where your test site will run - eg 'http://localhost'
-* set UPLOAD_CACHE and GEO_CACHE to your preferred values
+* set UPLOAD_DIR and GEO_CACHE to your preferred values
 * MAP_TYPE - OSM is probably the best one to try to start with, it's being
   successfully used.
 

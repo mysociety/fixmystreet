@@ -267,8 +267,8 @@ sub add_row : Private {
     $item{category} = $row->{category} if $row->{category};
 
     if ($c->cobrand->allow_photo_display && $row->{photo}) {
-        my $key = $alert_type->item_table eq 'comment' ? 'c' : 'id';
-        $item{description} .= ent("\n<br><img src=\"". $c->cobrand->base_url . "/photo?$key=$row->{id}\">");
+        my $key = $alert_type->item_table eq 'comment' ? 'c/' : '';
+        $item{description} .= ent("\n<br><img src=\"". $c->cobrand->base_url . "/photo/$key$row->{id}.jpeg\">");
     }
 
     if ( $row->{used_map} ) {
