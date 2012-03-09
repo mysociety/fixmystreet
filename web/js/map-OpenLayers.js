@@ -236,6 +236,9 @@ $(function(){
             fixmystreet.map.moveStart = { zoom: this.getZoom(), center: this.getCenter() };
         });
         fixmystreet.map.events.register("zoomend", null, function(e){
+            if ( fixmystreet.map.moveStart && !fixmystreet.map.moveStart.zoom ) {
+                return true; // getZoom() on Firefox appears to return null at first?
+            }
             if ( !fixmystreet.map.moveStart || !this.getCenter().equals(fixmystreet.map.moveStart.center) ) {
                 // Centre has moved, e.g. by double-click. Same whether zoom in or out
                 fixmystreet.map.pan(-q, -25, { animate: false });
@@ -433,6 +436,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         });
 
         $('#side-form, #site-logo').show();
+        fixmystreet.map.updateSize(); // might have done, and otherwise Firefox gets confused.
         /* For some reason on IOS5 if you use the jQuery show method it
          * doesn't display the JS validation error messages unless you do this
          * or you cause a screen redraw by changing the phone orientation.
