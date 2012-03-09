@@ -338,6 +338,42 @@ $.fn.drawer = function(id, ajax) {
     }
     $('#key-tool-report-updates').small_drawer('report-updates-data');
 
+    $('#dkey-tool-problems-nearby').click(function(e){
+        e.preventDefault();
+        $('.table-cell > .container').load($(this).attr('href') + ' .content', function(){
+            $('form #map_box').remove();
+            heightFix(window, '.content', -176);
+            $('.tab-nav a').first().addClass('active');
+            $('.tab').first().addClass('open');
+            $('.tab').not('.open').hide();
+            //set up click event
+            $(".tab-nav").on('click', 'a', function(e){
+                e.preventDefault();
+                tabs($(this));
+            });
+            $('.tab_link').click(function(e) {
+                e.preventDefault();
+                tabs($(this), 1);
+            });
+        });
+        var click = new OpenLayers.Control.Click();
+        fixmystreet.map.addControl(click);
+        click.activate();
+        fixmystreet.bbox_strategy = new OpenLayers.Strategy.BBOX({ ratio: 1 });
+        fixmystreet.markers.strategies = [ fixmystreet.bbox_strategy ];
+        fixmystreet.markers.protocol = new OpenLayers.Protocol.HTTP({
+            url: '/ajax',
+            params: fixmystreet.all_pins ? { all_pins: 1 } : { },
+            format: new OpenLayers.Format.FixMyStreet()
+        });
+        fixmystreet.bbox_strategy.setLayer(fixmystreet.markers);
+        fixmystreet.bbox_strategy.activate();
+        fixmystreet.markers.refresh( { force: true } );
+        // sub map links (hide pins etc.)
+        // selecting pins
+        fixmystreet.page = 'around';
+    });
+
     // Go directly to RSS feed if RSS button clicked on alert page
     // (due to not wanting around form to submit, though good thing anyway)
     $('.container').on('click', '#alert_rss_button', function(e){
