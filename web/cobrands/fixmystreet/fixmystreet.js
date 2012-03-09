@@ -368,10 +368,30 @@ $(function(){
         $('<p id="sub_map_links" />').insertAfter($('#map'));
     }
 
-// A sliding drawer from the bottom of the page
+// A sliding drawer from the bottom of the page, small version
+// that doesn't change the main content at all.
+$.fn.small_drawer = function(id) {
+    this.toggle(function(){
+        var $this = $(this), d = $('#' + id);
+        if (!$this.addClass('hover').data('setup')) {
+            d.hide().removeClass('hidden-js').css({
+                padding: '1em',
+                background: '#fff'
+            }).appendTo($('.shadow-wrap'));
+            $this.data('setup', true);
+        }
+        d.slideDown();
+    }, function(e){
+        var $this = $(this), d = $('#' + id);
+        $this.removeClass('hover');
+        d.slideUp();
+    });
+};
+
+// A sliding drawer from the bottom of the page, large version
 $.fn.drawer = function(id, ajax) {
     this.toggle(function(){
-        var $this = $(this), d = $('#' + id), $sw = $('.shadow-wrap'), tot_height = $(window).height() - $('.content[role="main"]').offset().top;
+        var $this = $(this), d = $('#' + id), $content = $('.content[role="main"]');
         if (!$this.addClass('hover').data('setup')) {
             // make a drawer div with an innerDiv
             if (!d.length) {
@@ -388,71 +408,39 @@ $.fn.drawer = function(id, ajax) {
                     $('.spinner').remove();
                 });
             }
-            // do some css
-            d.removeClass('hidden-js');
-            d.find('h2').css({ marginTop: 0 });
             
-            // check to see if drawer is taller than the window or not
-            var height = d.height();
-            if (!height || height > $(window).height()) {
-              // its tall - so put it after .content
-              $('.content[role="main"]').after(d);
-              d.addClass('content');
-              // position over the top of the main .content but hide below the bottom of the window
-              d.css({
+            // Tall drawer - put after .content for scrolling to work okay.
+            // position over the top of the main .content in precisely the right location
+            d.insertAfter($content).addClass('content').css({
                 position: 'absolute',
                 zIndex: '1100',
-                top: tot_height
-              });
-              if(!$('.shadow-wrap.static').length){
-                $sw.prependTo(d).addClass('static');
-              }
-            }else{
-              // its short, so add to shadow-wrap and tweak css
-              d.hide();
-              $sw.append(d);
-              $('div', d).css({
-                padding: '1em',
-                background: '#fff'
-              });
-            }
-
+                marginTop: 0,
+                top: $(window).height() - $content.offset().top
+            }).removeClass('hidden-js').find('h2').css({ marginTop: 0 });
             $this.data('setup', true);
         }
 
         //do the animation
-        if (!height || height > $(window).height()) {
-          if(!$('.shadow-wrap.static').length){
-            $sw.prependTo(d).addClass('static');
-          }
-          d.animate({top:'0'}, 1300, function(){
-            $('.content[role="main"]').fadeOut();
-          });
-        }else{
-          d.animate({height:'show'}, 600);
-        }
+        $('.shadow-wrap').prependTo(d).addClass('static');
+        d.show().animate({top:'3em'}, 1000, function(){
+            $content.fadeOut();
+        });
     }, function(e){
-        var $this = $(this), d = $('#' + id), $sw = $('.shadow-wrap'), tot_height = $(window).height() - $('.content[role="main"]').offset().top;
+        var $this = $(this), d = $('#' + id), $sw = $('.shadow-wrap'),
+            $content = $('.content[role="main"]'),
+            tot_height = $(window).height() - d.offset().top;
         $this.removeClass('hover');
-        
-        //do the animation
-        if ($('.content[role="main"]').is(':hidden')) {
-          $('.content[role="main"]').show();
-          d.animate({top: tot_height}, 1300, function(){
-            // move tools back
-            if($('.shadow-wrap.static').length){
-              $sw.appendTo($('.content[role="main"]')).removeClass('static');
-            }
-          });
-        }else{
-          d.animate({height: 'hide'}, 600);
-        }
+        $content.show();
+        d.animate({ top: tot_height }, 1000, function(){
+            d.hide();
+            $sw.appendTo($content).removeClass('static');
+        });
     });
 };
 
     $('#key-tool-wards').drawer('council_wards', false);
     $('#key-tool-around-updates').drawer('updates_ajax', true);
-    $('#key-tool-report-updates').drawer('report-updates-data', false);
+    $('#key-tool-report-updates').small_drawer('report-updates-data');
 
     // Go directly to RSS feed if RSS button clicked on alert page
     // (due to not wanting around form to submit, though good thing anyway)
