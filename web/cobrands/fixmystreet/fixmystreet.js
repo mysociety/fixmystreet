@@ -371,42 +371,82 @@ $(function(){
 // A sliding drawer from the bottom of the page
 $.fn.drawer = function(id, ajax) {
     this.toggle(function(){
-        var $this = $(this), d = $('#' + id), $sw = $('.shadow-wrap');
+        var $this = $(this), d = $('#' + id), $sw = $('.shadow-wrap'), tot_height = $(window).height() - $('.content[role="main"]').offset().top;
         if (!$this.addClass('hover').data('setup')) {
-            // move .shadow-wrap to end of .content first
-            if(!$('.shadow-wrap.moved').length){
-                $sw.appendTo('.content').addClass('moved');
-            }
-
+            // make a drawer div with an innerDiv
             if (!d.length) {
                 d = $('<div id="' + id + '">');
             }
-            // Put the padding on an inner div to prevent the jarring jump at end of hide/show animation
             var innerDiv = $('<div>');
             d.wrapInner(innerDiv);
-            d.removeClass('hidden-js');
+
+            // if ajax, load it with a spinner
             if (ajax) {
                 var href = $this.attr('href') + ';ajax=1';
-                $this.prepend(' <img src="/cobrands/fixmystreet/images/spinner-black-333.gif" style="margin-right:2em;">');
+                $this.prepend(' <img class="spinner" src="/cobrands/fixmystreet/images/spinner-black-333.gif" style="margin-right:2em;">');
                 innerDiv.load(href, function(){
-                    $('img', $this).remove();
+                    $('.spinner').remove();
                 });
             }
+            // do some css
+            d.removeClass('hidden-js');
             d.find('h2').css({ marginTop: 0 });
-            $('.content').append(d);
-            d_offset = d.offset().top;
-            d.hide();
+            
+            // check to see if drawer is taller than the window or not
+            var height = d.height();
+            if (!height || height > $(window).height()) {
+              // its tall - so put it after .content
+              $('.content[role="main"]').after(d);
+              d.addClass('content');
+              // position over the top of the main .content but hide below the bottom of the window
+              d.css({
+                position: 'absolute',
+                zIndex: '1100',
+                top: tot_height
+              });
+              if(!$('.shadow-wrap.static').length){
+                $sw.prependTo(d).addClass('static');
+              }
+            }else{
+              // its short, so add to shadow-wrap and tweak css
+              d.hide();
+              $sw.append(d);
+              $('div', d).css({
+                padding: '1em',
+                background: '#fff'
+              });
+            }
+
             $this.data('setup', true);
         }
-        $sw.addClass('active');
-        d.animate({height:'show'}, 300);
-        $('html, body').animate({scrollTop:d_offset-60}, 1000);
+
+        //do the animation
+        if (!height || height > $(window).height()) {
+          if(!$('.shadow-wrap.static').length){
+            $sw.prependTo(d).addClass('static');
+          }
+          d.animate({top:'0'}, 1300, function(){
+            $('.content[role="main"]').fadeOut();
+          });
+        }else{
+          d.animate({height:'show'}, 600);
+        }
     }, function(e){
-        var $this = $(this), d = $('#' + id), $sw = $('.shadow-wrap');
+        var $this = $(this), d = $('#' + id), $sw = $('.shadow-wrap'), tot_height = $(window).height() - $('.content[role="main"]').offset().top;
         $this.removeClass('hover');
-        d.animate({height: 'hide'}, 600, function(){
-            $sw.removeClass('active');
-        });
+        
+        //do the animation
+        if ($('.content[role="main"]').is(':hidden')) {
+          $('.content[role="main"]').show();
+          d.animate({top: tot_height}, 1300, function(){
+            // move tools back
+            if($('.shadow-wrap.static').length){
+              $sw.appendTo($('.content[role="main"]')).removeClass('static');
+            }
+          });
+        }else{
+          d.animate({height: 'hide'}, 600);
+        }
     });
 };
 
