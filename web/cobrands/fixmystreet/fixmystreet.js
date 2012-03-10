@@ -377,7 +377,7 @@ $.fn.small_drawer = function(id) {
             d.hide().removeClass('hidden-js').css({
                 padding: '1em',
                 background: '#fff'
-            }).appendTo($('.shadow-wrap'));
+            });
             $this.data('setup', true);
         }
         d.slideDown();
@@ -464,6 +464,7 @@ $.fn.drawer = function(id, ajax) {
     if($('.mobile').length){
         $('#map_permalink').hide();
         $('#key-tools a.feed').appendTo('#sub_map_links');
+        $('#report-updates-data').insertAfter($('#map_box'));
     }
     //add open/close toggle button on desk
     $('#sub_map_links').prepend('<span id="map_links_toggle">&nbsp;</span>');
