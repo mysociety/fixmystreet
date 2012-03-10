@@ -455,12 +455,12 @@ $.fn.drawer = function(id, ajax) {
 
     // Go directly to RSS feed if RSS button clicked on alert page
     // (due to not wanting around form to submit, though good thing anyway)
-    $('.shadow-wrap').on('click', '#alert_rss_button', function(e){
+    $('.container').on('click', '#alert_rss_button', function(e){
         e.preventDefault();
         var feed = $('input[name=feed][type=radio]:checked').nextAll('a').attr('href');
         window.location.href = feed;
     });
-    $('.shadow-wrap').on('click', '#alert_email_button', function(e){
+    $('.container').on('click', '#alert_email_button', function(e){
         e.preventDefault();
         var form = $('<form/>').attr({ method:'post', action:"/alert/subscribe" });
         $('#alerts input[type=text], #alerts input[type=hidden], #alerts input[type=radio]:checked').each(function() {
