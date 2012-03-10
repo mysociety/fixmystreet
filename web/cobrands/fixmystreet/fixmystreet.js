@@ -355,7 +355,7 @@ $(function(){
      */
     $('.mobile .nicetable th.title').remove();
     $('.mobile .nicetable td.title').each(function(i){
-        $(this).insertBefore($(this).parent('tr')).wrap('<tr class="heading" />');
+        $(this).attr('colspan', 5).insertBefore($(this).parent('tr')).wrap('<tr class="heading" />');
     });
     // $('.mobile .nicetable tr.heading > td.title').css({'min-width':'300px'});
     // $('.mobile .nicetable tr > td.data').css({'max-width':'12%'});

@@ -1268,15 +1268,15 @@ table.nicetable {
     }
   }
   tr {
-    &.gone {
-        color: #666666;
-        background-color: #cccccc;
-    }
     &.a {
       background:#f6f6f6;
     }
     &:nth-child(even) {
       background:#f6f6f6;
+    }
+    &.gone {
+        color: #666666;
+        background-color: #cccccc;
     }
     &:hover {
       background:#FFF5CC;
