@@ -390,6 +390,13 @@ $.fn.small_drawer = function(id) {
 
 // A sliding drawer from the bottom of the page, large version
 $.fn.drawer = function(id, ajax) {
+    // IE7 positions the fixed tool bar 1em to the left unless it comes after
+    // the full-width section, ho-hum. Move it to where it would be after an
+    // open/close anyway
+    if ($('html.ie7').length) {
+        var $sw = $('.shadow-wrap'), $content = $('.content[role="main"]');
+        $sw.appendTo($content);
+    }
     this.toggle(function(){
         var $this = $(this), d = $('#' + id), $content = $('.content[role="main"]');
         if (!$this.addClass('hover').data('setup')) {
@@ -414,7 +421,7 @@ $.fn.drawer = function(id, ajax) {
             d.insertAfter($content).addClass('content').css({
                 position: 'absolute',
                 zIndex: '1100',
-                marginTop: 0,
+                marginTop: $('html.ie6, html.ie7').length ? '-3em' : 0, // IE6/7 otherwise include the 3em padding and stay too low
                 left: 0,
                 top: $(window).height() - $content.offset().top
             }).removeClass('hidden-js').find('h2').css({ marginTop: 0 });
