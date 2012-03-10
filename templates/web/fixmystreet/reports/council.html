@@ -21,6 +21,15 @@
 </div>
 
 <div id="side">
+
+<h1 id="reports_heading">
+    [% IF ward %]
+    [% ward.name %]<span>, </span><a href="[% council_url %]">[% council.name %]</a>
+    [% ELSE %]
+    [% council.name %]
+    [% END %]
+</h1>
+
 [% IF council.generation_high == 10 AND c.cobrand.country == 'GB' %]
     <p class="alert">This council no longer exists.
     [% IF council.name.match('Penwith|Kerrier|Carrick|Restormel|Caradon|North Cornwall') %]
@@ -58,23 +67,7 @@
     </div>
 [% END %]
 
-<h1 id="reports_heading">
-    [% IF ward %]
-    [% ward.name %]<span>, </span><a href="[% council_url %]">[% council.name %]</a>
-    [% ELSE %]
-    [% council.name %]
-    [% END %]
-</h1>
-
 [% INCLUDE 'reports/cobrand_stats.html' %]
-
-[% IF c.cobrand.moniker == 'fixmystreet' %]
-<p class="promo">
-    FixMyStreet is now available for local council websites.
-    <a href="http://www.mysociety.org/fixmystreet-for-local-council-websites/">Find&nbsp;out&nbsp;more</a>.
-</p>
-[% END %]
-
 
 [% IF children.size %]
 <section id="council_wards" class="hidden-js">
@@ -88,7 +81,12 @@
 </section>
 [% END %]
 
-
+[% IF c.cobrand.moniker == 'fixmystreet' %]
+<p class="promo">
+    FixMyStreet is now available for local council websites.
+    <a href="http://www.mysociety.org/fixmystreet-for-local-council-websites/">Find&nbsp;out&nbsp;more</a>.
+</p>
+[% END %]
 
 [% INCLUDE 'pagination.html', param = 'p' %]
 

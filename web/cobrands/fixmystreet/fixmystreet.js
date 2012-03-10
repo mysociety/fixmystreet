@@ -441,8 +441,16 @@ $.fn.drawer = function(id, ajax) {
     });
 };
 
-    $('#key-tool-wards').drawer('council_wards', false);
-    $('#key-tool-around-updates').drawer('updates_ajax', true);
+    if ($('html.mobile').length) {
+        $('#council_wards').hide().removeClass('hidden-js').find('h2').hide();
+        $('#key-tool-wards').click(function(e){
+            e.preventDefault();
+            $('#council_wards').slideToggle();
+        });
+    } else {
+        $('#key-tool-wards').drawer('council_wards', false);
+        $('#key-tool-around-updates').drawer('updates_ajax', true);
+    }
     $('#key-tool-report-updates').small_drawer('report-updates-data');
 
     // Go directly to RSS feed if RSS button clicked on alert page
