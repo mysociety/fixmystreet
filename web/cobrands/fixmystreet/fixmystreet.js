@@ -415,6 +415,7 @@ $.fn.drawer = function(id, ajax) {
                 position: 'absolute',
                 zIndex: '1100',
                 marginTop: 0,
+                left: 0,
                 top: $(window).height() - $content.offset().top
             }).removeClass('hidden-js').find('h2').css({ marginTop: 0 });
             $this.data('setup', true);
@@ -423,18 +424,20 @@ $.fn.drawer = function(id, ajax) {
         //do the animation
         $('.shadow-wrap').prependTo(d).addClass('static');
         d.show().animate({top:'3em'}, 1000, function(){
-            $content.fadeOut();
+            $content.fadeOut(function() {
+                d.css({ position: 'relative' });
+            });
         });
     }, function(e){
         var $this = $(this), d = $('#' + id), $sw = $('.shadow-wrap'),
             $content = $('.content[role="main"]'),
             tot_height = $(window).height() - d.offset().top;
         $this.removeClass('hover');
-        $content.show();
-        d.animate({ top: tot_height }, 1000, function(){
+        d.css({ position: 'absolute' }).animate({ top: tot_height }, 1000, function(){
             d.hide();
             $sw.appendTo($content).removeClass('static');
         });
+        $content.show();
     });
 };
 
