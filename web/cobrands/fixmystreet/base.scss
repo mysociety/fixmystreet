@@ -693,29 +693,13 @@ button, input[type=submit],.btn{
 .green-btn,
 button.green-btn,
 input.green-btn{
-  @include button-reset;
-  background-color: #9FDE23;
-  @include background (linear-gradient(#9FDE23, #7FB900)) ;
-  color:#fff;
-  border-color: #5B9700;
-  &:hover{
-    @include background (linear-gradient(#7FB900, #9FDE23)) ;    
-    border-color: #5B9700;
-  }
+  @include button-reset(#9FDE23, #7FB900, #5B9700, #fff, #9FDE23, #7FB900, #5B9700, #fff);
 }
 
 .red-btn,
 button.red-btn,
 input.red-btn{
-  @include button-reset;
-  background-color: #FF0038;
-  @include background (linear-gradient(#FF0038, #BF002A)) ;
-  color:#fff;
-  border-color: #80001C;
-  &:hover{
-    @include background (linear-gradient(#BF002A, #FF0038)) ;    
-    border-color: #80001C;
-  }
+  @include button-reset(#FF0038, #BF002A, #80001C, #fff, #FF0038, #BF002A, #80001C, #fff);
 }
 
 .final-submit,
@@ -1155,6 +1139,19 @@ a:hover.button-left {
   right:0;
   font-size:0.75em;
   background:rgba(0, 0, 0, 0.7);
+  padding:0.75em 30px;
+  a {
+    @include button-reset(#333, #1a1a1a, #1a1a1a, #fff, #333, #1a1a1a, #1a1a1a, #fff);
+    font: {
+      weight:normal;
+      size:0.875em;
+    }
+    line-height:1;
+    padding:0.5em 0.75em;
+    position:absolute;
+    left:0.3em;
+    top:0.3em;
+  }
 }
 
 .olControlAttribution {

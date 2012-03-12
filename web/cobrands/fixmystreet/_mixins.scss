@@ -1,5 +1,5 @@
 // Button reset
-@mixin button-reset {
+@mixin button-reset($c1: #eee, $c2: #ccc, $c3: #999, $c4: #333, $c5: #777, $c6: #999, $c7: #666, $c8: #fff){
   cursor:pointer;
   font:{
     size: 0.875em;
@@ -13,16 +13,16 @@
   width: auto;
   height: auto;
   @include border-radius(4px);
-  background: #eee;
-  @include background (linear-gradient(#eee, #ccc)) ;
-  border:1px solid #999;  
-  color:#333;
+  background: $c1;
+  @include background (linear-gradient($c1, $c2)) ;
+  border:1px solid $c3;  
+  color:$c4;
   &:hover{
-    color:#fff;
-    background:#777;
-    @include background (linear-gradient(#999, #777)) ;    
+    background:$c5;
+    @include background (linear-gradient($c6, $c5)); 
     text-decoration: none;
-    border:1px solid #666;  
+    border:1px solid $c7;  
+    color:$c8;
   }
 }
 

@@ -104,7 +104,8 @@ $(function(){
                 .addClass('mobile-map-banner')
                 .removeClass('.big-green-banner')
                 .appendTo('#map_box')
-                .text('Place pin on map');
+                .text('Place pin on map')
+	        .prepend('<a href="/">home</a>');
         }
     } else {
         // Make map full screen on non-mobile sizes.
