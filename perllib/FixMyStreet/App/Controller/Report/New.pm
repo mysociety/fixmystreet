@@ -99,6 +99,64 @@ sub report_new : Path : Args(0) {
     $c->forward('redirect_or_confirm_creation');
 }
 
+# This is for the new phonegap versions of the app. It looks a lot like
+# report_new but there's a few workflow differences as we only ever want
+# to sent JSON back here
+
+sub report_new_ajax : Path('mobile') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    # create the report - loading a partial if available
+    $c->forward('initialize_report');
+
+    unless ( $c->forward('determine_location') ) {
+        $c->stash->{ json_response } = { errors => 'Unable to determine location' };
+        $c->forward('send_json_response');
+        return 1;
+    }
+
+    $c->forward('setup_categories_and_councils');
+    $c->forward('process_user');
+    $c->forward('process_report');
+    $c->forward('process_photo');
+
+    unless ($c->forward('check_for_errors')) {
+        $c->stash->{ json_response } = { errors => $c->stash->{field_errors} };
+        $c->forward('send_json_response');
+        return 1;
+    }
+
+    $c->forward('save_user_and_report');
+
+    my $report = $c->stash->{report};
+    my $data = $c->stash->{token_data} || {};
+    my $token = $c->model("DB::Token")->create( {
+        scope => 'problem',
+        data => {
+            %$data,
+            id => $report->id
+        }
+    } );
+    $c->stash->{token_url} = $c->uri_for_email( '/P', $token->token );
+    $c->send_email( 'problem-confirm.txt', {
+        to => [ [ $report->user->email, $report->name ] ],
+    } );
+
+    $c->stash->{ json_response } = { success => 1 };
+    $c->forward('send_json_response');
+}
+
+sub send_json_response : Private {
+    my ( $self, $c ) = @_;
+
+    my $body = JSON->new->utf8(1)->encode(
+        $c->stash->{json_response},
+    );
+
+    $c->res->content_type('application/json; charset=utf-8');
+    $c->res->body($body);
+}
+
 sub report_form_ajax : Path('ajax') : Args(0) {
     my ( $self, $c ) = @_;
 
