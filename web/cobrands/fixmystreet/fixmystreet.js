@@ -520,6 +520,13 @@ $.fn.drawer = function(id, ajax) {
             queue:false
         }).fadeOut(500);
     });
+
+
+
+    /*
+     * Fancybox fullscreen images
+     */
+     $('.fancy-image').fancybox();
 });
 
 /*
