@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <title></title>
+  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+	<meta charset="utf-8">
+
+    <link rel="stylesheet" href="css/base.css">
+	<!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www directory and include it here -->
+	<script type="text/javascript" charset="utf-8" src="cordova-1.5.0.js"></script>
+    <script type="text/javascript" src="js/jquery-1.7.0.min.js"></script>
+    <script src="js/jquery.validate.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="js/modernizr.custom.61367.js" type="text/javascript" charset="utf-8"></script>
+
+        <script type="text/javascript" src="js/geo.min.js"></script>
+        <script type="text/javascript" src="js/fixmystreet.js"></script>
+        <script type="text/javascript" src="js/mobile.js"></script>
+
+        <script type="text/javascript">
+            validation_strings = {
+                update: 'Please enter a message',
+                title: 'Please enter a subject',
+                detail: 'Please enter some details',
+                name: {
+                    required: 'Please enter your name',
+                    validName: 'Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below'
+                },
+                category: 'Please choose a category',
+                rznvy: {
+                    required: 'Please enter your email',
+                    email: 'Please enter a valid email'
+                },
+                email: {
+                    required: 'Please enter your email',
+                    email: 'Please enter a valid email'
+                }
+            };
+            </script>
+  </head>
+    <body class="frontpage fullwidthpage">
+        
+        <div class="wrapper">
+            <div class="table-cell">
+                <header id="site-header" role="banner">
+                    <div class="container">
+                        <a href="/" id="site-logo">FixMyStreet</a>
+                        <a href="#main-nav" id="nav-link">Main Navigation</a>
+                    </div>
+                </header>
+                
+                <div id="user-meta">
+                    
+                    <!-- <a href="/auth">Sign in</a> -->
+                    
+                </div>
+                
+                <div class="container">
+                    <div class="content" role="main">
+ 
+                        
+                        <div id="front-main">
+                            <div id="front-main-container">
+                                <h1>Report, view, or discuss local problems</h1>
+                                
+                                <h2>(like graffiti, fly tipping, broken paving slabs, or street lighting)</h2>
+                                
+                                
+                                
+                                <form action="" method="get" name="postcodeForm" id="postcodeForm">
+                                    <label for="pc">Enter a nearby GB postcode, or street name and area:</label>
+                                    <div>
+                                        <input type="text" name="pc" value="" id="pc" size="10" maxlength="200" placeholder="e.g. ‘B2 4QA’ or ‘Tib St, Manchester’">
+                                            <input type="submit" value="Go" id="submit"> 
+                                                </div>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <div class="tablewrapper">
+                            <div id="front-howto">
+                                <h2>How to report a problem</h2>
+                                
+                                <ol class="big-numbers">
+                                    <li>Enter a nearby GB postcode, or street name and area</li>
+                                    <li>Locate the problem on a map of the area</li>
+                                    <li>Enter details of the problem</li>
+                                    <li>We send it to the council on your behalf</li>
+                                </ol>
+                            </div>
+     
+                        </div>
+                     
+                        
+                        <footer role="content-info">
+                            <div class="tablewrapper bordered">
+                                <div id="footer-ads">
+                                    <ul>
+                                        <li>
+                                            <h4>Are you a developer?</h4>
+                                            <p>Would you like to contribute to FixMyStreet? Our code is open source and <a href="http://github.com/mysociety/fixmystreet">available on GitHub</a>.</p>
+                                        </li>
+                                        <li>
+                                            <h4>Are you from a council?</h4>
+                                            <p>Would you like better integration with FixMyStreet? <a href="http://www.mysociety.org/fixmystreet-for-local-council-websites/">Find out about FixMyStreet for councils</a>.</p>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </footer>
+                        
+                    </div><!-- .content role=main -->
+                </div><!-- .container -->
+            </div><!-- .table-cell -->
+            
+            <div class="nav-wrapper">
+                <div class="nav-wrapper-2">
+                    <div id="main-nav" role="navigation">
+                        <ul id="mysoc-menu">
+                            <li><a id="mysoc-logo" href="http://www.mysociety.org/">mySociety</a></li><li><a href="http://mysociety.org/donate/">Donate</a></li><li><a href="http://www.mysociety.org/projects/">Our Sites</a></li>
+                        </ul>
+                        
+                        <ul id="main-menu">
+                            <li><span>Report a problem</span></li><li><a href="/my">Your reports</a></li><li><a href="/reports">All reports</a></li><li><a href="/alert">Local alerts</a></li><li><a href="/faq">Help</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 
+             
+             -->
+        </div> <!-- .wrapper -->
+    </body>
+</html>
+</html>
