@@ -62,7 +62,10 @@ h1 {
     width: 100%;
     min-height: 4em;
     position: absolute;
-    border-top: 0.25em solid $primary;
+    border-top:4px solid #1a1a1a;
+    @include border-image(url(images/tile-y.jpg) 4 0 0 0);
+    border-left:0;
+    border-right:0;
     z-index:2;
   }
 }
@@ -163,11 +166,12 @@ h1 {
     &#mysoc-menu{
       padding: 0em 0.5em;
       margin-left: 0.25em;
-      background:$primary;
+      background:$primary url(images/tile-y.jpg);
       @include border-radius(0 0 0.375em 0.375em);
-      @include box-shadow(0em 0.3em 0.1em 0em #000);
+      //@include box-shadow(0em 0.3em 0.1em 0em #000);
       li{
         a{
+          background:none;
           color:#000;
           text-transform: uppercase;
           font-size: 0.6875em;
@@ -356,7 +360,7 @@ body.twothirdswidthpage {
 .tablewrapper {
   display:table;
   width:100%;
-  padding:1em 0;
+  padding:0 0 1em 0;
   >div {
     display:table-cell;
     width:50%;
@@ -792,8 +796,7 @@ body.frontpage {
       width:100%;
     }
     .content {
-      padding-top:14em;
-      margin:0 auto;
+      margin:14em auto 0 auto;
     }
   }
   .nav-wrapper-2{
@@ -855,11 +858,11 @@ body.frontpage {
 
 // big yellow bit full screen width
 #front-main {
-  background:$primary;
+  background:$primary url(images/tile-y.jpg);
   position:absolute;
   width:100%;
   left:0;
-  top:1em;
+  top:-15em;
   #front-main-container {
     max-width: 57em;
     margin:0 auto;
@@ -870,6 +873,7 @@ body.frontpage {
     color:#222;
   }
   #postcodeForm {
+    background:none;
     overflow:hidden;
     margin-right:0.5em;
     label {
@@ -939,6 +943,11 @@ body.frontpage {
 
 #front-recently {
   border-left:1em solid #fff;
+}
+
+#front-howto h2,
+#front-recently h2 {
+   margin-top:0;
 }
 
 
