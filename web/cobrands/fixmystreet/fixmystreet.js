@@ -497,6 +497,7 @@ $.fn.drawer = function(id, ajax) {
     if($('.mobile').length){
         $('#map_permalink').hide();
         $('#key-tools a.feed').appendTo('#sub_map_links');
+        $('#key-tools li:empty').remove();
         $('#report-updates-data').insertAfter($('#map_box'));
     }
     //add open/close toggle button on desk

@@ -248,6 +248,12 @@ body.mappage {
 }
 .ie6, .ie7 {
   body.mappage {
+    // The below is *mandatory* to allow pins/zoom to be clickable in IE6/7. Do NOT remove.
+    .container {
+      float: left;
+      width: 27em;
+      margin-left: 1.4em;
+    }
     .nav-wrapper{
       z-index:1;
       .nav-wrapper-2 {
