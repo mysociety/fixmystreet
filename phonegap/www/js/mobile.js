@@ -57,7 +57,7 @@ function lookup_string(q) {
     }
 
     var url = "http://dev.virtualearth.net/REST/v1/Locations?q=" + escape(q);
-    url += '&c=en-GB&key=Au4rfRu-kpWgzddOjaTRlLhvB8wkTAr5_ky96BOxlmtjM-3FRJhjSsfauaWQnS0Z';
+    url += '&c=en-GB&key=' + CONFIG.BING_KEY;
     var x = jQuery.get( url, function(data, status) {
         if ( status == 'success' ) {
             var valid_locations = 0;
@@ -105,7 +105,7 @@ function locate() {
     location_error('');
     $("#multiple").remove();
     var pc = $('#pc').val();
-
+                    
     if (!pc) {
         location_error( "Please enter your location" );
         return false;
@@ -119,7 +119,7 @@ function locate() {
     }
     loadingStart( { 'backgroundOpacity' : 0.5, labelText: 'Getting Location...', minDuration: 1 } );
     if ( valid_postcode( pc ) ) {
-        jQuery.get( 'http://mapit.mysociety.org/postcode/' + pc + '.json', function(data, status) {
+        jQuery.get( CONFIG.MAPIT_URL + 'postcode/' + pc + '.json', function(data, status) {
             if ( status == 'success' ) {
                show_around( data.wgs84_lat, data.wgs84_lon );
                loadingStop();
@@ -221,10 +221,10 @@ function postReport(e) {
         options.params = params;
 
         var ft = new FileTransfer();
-        ft.upload(fileURI, "http://photek.local:3000/report/new/mobile", fileUploadSuccess, fileUploadFail, options);
+        ft.upload(fileURI, CONFIG.FMS_URL + "report/new/mobile", fileUploadSuccess, fileUploadFail, options);
     } else {
         jQuery.ajax( { 
-            url: "http://photek.local:3000/report/new/mobile",
+            url: CONFIG.FMS_URL + "report/new/mobile",
             type: 'POST',
             data: params, 
             timeout: 30000,

@@ -17,7 +17,7 @@ function form_category_onchange() {
         args.longitude = $('input[name="longitude"]').val();
     }
 
-    $.getJSON('http://struan.fixmystreet.com/report/new/category_extras', args, function(data) {
+    $.getJSON( CONFIG.FMS_URL + 'report/new/category_extras', args, function(data) {
         if ( data.category_extra ) {
             if ( $('#category_meta').size() ) {
                 $('#category_meta').html( data.category_extra);
