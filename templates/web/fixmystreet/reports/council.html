@@ -61,7 +61,7 @@
         <ul id="key-tools"[% IF NOT children.size %] class="singleton"[% END %]>
             <li><a rel="nofollow" id="key-tool-updates-area" class="feed" href="[% rss_url %]">[% tprintf(loc('Get updates of problems in this %s'), thing) %]</a></li>
             [% IF children.size %]
-            <li><a href="#council_wards" id="key-tool-wards" class="chevron">[% loc('Wards of this council') %]</a>
+            <li><a href="#council_wards" id="key-tool-wards" class="chevron">[% loc('Wards of this council') %]</a></li>
             [% END %]
         </ul>
     </div>
@@ -95,6 +95,8 @@
         problems = problems.${council.id}
     %]
 </section>
+
+[% INCLUDE 'pagination.html', param = 'p' %]
 
 </div>
 [% INCLUDE 'footer.html' %]

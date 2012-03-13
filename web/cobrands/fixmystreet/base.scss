@@ -580,7 +580,7 @@ p.label-valid {
           size:0.6875em;
           family: 'helvetica', 'arial', sans-serif;
         }
-        &:hover, &.hover {
+        &:hover, &.hover, &.active {
           text-decoration:none;
           background-color:#333;
           color:#fff;
@@ -597,7 +597,7 @@ p.label-valid {
           background-image:url('images/sprite.png');
           background-position:center -2716px;
         }
-        &.hover {
+        &.hover, &.active {
           background-image:url('images/sprite.png');
           background-position:center -2064px;
         }
@@ -943,6 +943,41 @@ a:hover.button-left {
     height:60px;
   }
 }
+
+// fancybox gallery images have a magnifying glass in the corner
+.update-img {
+  a {
+    @include inline-block;
+    position:relative;
+    span {
+      position:absolute;
+      top:0;
+      right:0;
+      display:block;
+      width:20px;
+      height:20px;
+      opacity: 0.5;
+      background:#fff url(images/sprite.png) -16px -1098px no-repeat;
+      //hide text - http://nicolasgallagher.com/another-css-image-replacement-technique/
+      font: 0/0 a;
+      color: transparent;
+    }
+    &:hover span {
+      opacity: 1;
+    }
+  }
+}
+//bit of a hack - as we can't use em's, push the span out to the right
+//by how much it would be if the user did not resize the text
+.issue-list li .update-wrap .update-img a span {
+  right:-16px;
+  top:-8px;
+}
+
+.problem-header {
+  margin-bottom:1em;
+}
+
 
 // map stuff
 #map_box{
@@ -1330,23 +1365,29 @@ table.nicetable {
   }
 }
 
-ul.breadcrumb {
-  @include list-reset;
-  margin:-1em -1em 1em -1em;
-  overflow:hidden;
-  li {
-    span {
-      display:block;
-      padding:0.5em 1em 0.5em 0;
-    }
-    a {
-      background:url('images/sprite.png') right -3220px no-repeat;
-      padding:0.5em 2.5em 0.5em 1em;
-      color:#333;
-      &:hover {
-        color:#000;
-        text-decoration:none;
-      }
+.pagination {
+  text-align:center;
+  padding:0.5em 1em;
+  background:#eee;
+  position:relative;
+  .prev {
+    position:absolute;
+    left:0.5em;
+  }
+  .next {
+    position:absolute;
+    right:0.5em;
+  }
+  a {
+    @include inline-block;
+    background:$primary;
+    padding-left:0.5em;
+    padding-right:0.5em;
+    color:#1a1a1a;
+    &:hover {
+      color:#1a1a1a;
+      text-decoration:none;
+      background:$primary/1.1;
     }
   }
 }

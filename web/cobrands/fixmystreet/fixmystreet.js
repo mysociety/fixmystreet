@@ -308,7 +308,7 @@ $(function(){
 
     //move 'skip this step' link on mobile
     $('.mobile #skip-this-step').hide();
-    $('.mobile #skip-this-step a').appendTo('#key-tools').addClass('chevron').wrap('<li>');
+    $('.mobile #skip-this-step a').addClass('chevron').wrap('<li>').appendTo('#key-tools');
 
     /*
      * Tabs
@@ -465,7 +465,9 @@ $.fn.drawer = function(id, ajax) {
         $('#council_wards').hide().removeClass('hidden-js').find('h2').hide();
         $('#key-tool-wards').click(function(e){
             e.preventDefault();
-            $('#council_wards').slideToggle();
+            $('#council_wards').slideToggle('800', function(){
+              $('#key-tool-wards').toggleClass('active');
+            });
         });
     } else {
         $('#key-tool-wards').drawer('council_wards', false);

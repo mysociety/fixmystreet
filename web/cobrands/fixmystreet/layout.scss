@@ -683,36 +683,6 @@ body.twothirdswidthpage {
   width: 29em;
 }
 
-// fancybox gallery images have a magnifying glass in the corner
-.update-img {
-  a {
-    @include inline-block;
-    position:relative;
-    span {
-      position:absolute;
-      top:0;
-      right:0;
-      display:block;
-      width:20px;
-      height:20px;
-      opacity: 0.5;
-      background:#fff url(images/sprite.png) -16px -1098px no-repeat;
-      //hide text - http://nicolasgallagher.com/another-css-image-replacement-technique/
-      font: 0/0 a;
-      color: transparent;
-    }
-    &:hover span {
-      opacity: 1;
-    }
-  }
-}
-//bit of a hack - as we can't use em's, push the span out to the right
-//by how much it would be if the user did not resize the text
-.issue-list li .update-wrap .update-img a span {
-  right:-16px;
-  top:-8px;
-}
-
 /*FORMS*/
 input[type=text],
 input[type=password],
