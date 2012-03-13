@@ -168,7 +168,6 @@ h1 {
       margin-left: 0.25em;
       background:$primary url(images/tile-y.jpg);
       @include border-radius(0 0 0.375em 0.375em);
-      //@include box-shadow(0em 0.3em 0.1em 0em #000);
       li{
         a{
           background:none;
@@ -249,11 +248,6 @@ body.mappage {
 }
 .ie6, .ie7 {
   body.mappage {
-    .container {
-      float: left;
-      width: 27em;
-      margin-left: 1.4em;
-    }
     .nav-wrapper{
       z-index:1;
       .nav-wrapper-2 {
@@ -262,7 +256,6 @@ body.mappage {
     }
     #site-logo {
       position: absolute;
-      top:-3.25em;
     }
   }
 }
@@ -287,14 +280,6 @@ body.mappage {
     }
     #site-logo {
       position: absolute;
-      top:-3.25em;
-    }
-    //also need to reset some weird margining stuff...
-    #user-meta p {
-      top:1em;
-    }
-    .content {      
-      margin-top:3em;
     }
   }
 }
@@ -578,18 +563,10 @@ body.twothirdswidthpage {
 }
 .ie6, .ie7 {
   #user-meta {
-    // position: relative;
     z-index:1;
-    p {
-      // top:5em;
-    }
   }
 }
-.ie8 {
-  #user-meta p {
-    top:5em;
-  }
-}
+
 
 // Wraps around #key-tools box - sticks to the bottom of the screen on desktop
 .shadow-wrap {
@@ -768,7 +745,6 @@ textarea.form-error {
   left:29.5em;
   top:5em;
   width:15em;
-  //z-index: -1;
   @include box-shadow(rgba(0, 0, 0, 0.6) 0px 0px 4px 1px);
   .sidebar-tips {
     background:#eeeeee;
@@ -843,35 +819,44 @@ body.frontpage {
     background-position:-2px -108px;
   }
   #user-meta {
+    z-index:10;
     p {
-      top:-2em;
+      top:-4em;
       right:0;
+      color:#FFD000;
+      background:none;
+      @include box-shadow(rgba(0, 0, 0, 0) 0 0 0);
+      a {
+        background:#fff;
+        color:#1a1a1a;
+        &:hover {
+          background:#ddd;
+        }
+      }
     }
   }
 }
 //logo fix
 .ie6, .ie7, .ie8 {
   body.frontpage {
-    #site-header{
-      height:4em;
-    }
     #site-logo {
       position:relative;
       width:60em;
       margin:0 auto;
     }
-    .wrapper .content{
-      padding-top:12em;
-      margin-top:1em;
-    }
-    #user-meta p {
-      top:-1em;
-    }
   }
 }
 .ie6, .ie7 {
-  body.frontpage #site-logo {
-    top:-1em;
+  body.frontpage {
+    #site-header {
+      height:3em;
+    }
+    #site-logo {
+      top:-1em;
+    }
+    #user-meta p {
+      top:-2em;
+    }
   }
 }
 .ie6 body.frontpage #site-logo {
@@ -879,11 +864,11 @@ body.frontpage {
 }
 //weird margining thing for ie8
 .ie8 body.frontpage {
-  .wrapper .content {
-    margin-top:5em;
+  #front-main {
+    top:-12em;
   }
-  #user-meta p {
-    top:3em;
+  .table-cell .content {
+    margin-top:12em;
   }
 }
 
@@ -944,7 +929,6 @@ body.frontpage {
 .ie6, .ie7 {
   #front-main {
     top:2em;
-    padding-top:1em;
   }
 }
 

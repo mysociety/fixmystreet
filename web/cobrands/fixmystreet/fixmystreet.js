@@ -3,6 +3,15 @@
  * FixMyStreet JavaScript
  */
 
+//test for and load placeholder polyfill if neccessary 
+Modernizr.load({
+     test: Modernizr.input.placeholder,
+     nope: [
+             '/js/placeholder_polyfill/placeholder_polyfill.min.css',
+             '/js/placeholder_polyfill/placeholder_polyfill.jquery.min.js'
+           ]
+});
+
 function form_category_onchange() {
     var cat = $('#form_category');
     var args = {
