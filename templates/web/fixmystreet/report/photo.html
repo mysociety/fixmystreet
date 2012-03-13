@@ -3,6 +3,6 @@
 <div class="update-img">
     [% IF photo.url_full %]<a href="[% photo.url_full %]" rel="fancy">[% END
     %]<img alt="Photo of this report" [% IF photo.height %]height="[% photo.height %]" width="[% photo.width %]"[% END %] src="[% photo.url %]">
-    [%- IF photo.url_full %]</a>[% END %]
+    [%- IF photo.url_full %]<span>zoom</span></a>[% END %]
 </div>
 [% END %]
