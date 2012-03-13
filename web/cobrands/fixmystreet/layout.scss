@@ -155,7 +155,7 @@ h1 {
           color:#333;
           @include border-radius(0.25em);
           &:hover {
-            background:$primary/0.9;
+            background:$primary/1.1;
           }
         }
         span {
