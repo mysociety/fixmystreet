@@ -90,8 +90,8 @@ var fixmystreet = {
     'page': 'around',
     'area': '',
     'all_pins': '',
-    'latitude': urlParams.latitude,
-    'longitude': urlParams.longitude,
+    'latitude': localStorage.latitude,
+    'longitude': localStorage.longitude,
 
     'zoom': 2,
     'numZoomLevels': 5,
@@ -101,9 +101,9 @@ var fixmystreet = {
 
 }
     
-    $('#fixmystreet\\.latitude').val( urlParams.latitude );
-    $('#fixmystreet\\.longitude').val( urlParams.longitude );
-    $('#pc').val( urlParams.pc );
+    $('#fixmystreet\\.latitude').val( localStorage.latitude );
+    $('#fixmystreet\\.longitude').val( localStorage.longitude );
+    $('#pc').val( localStorage.pc );
 </script>
     <div id="map_box">
         

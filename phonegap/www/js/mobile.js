@@ -1,22 +1,9 @@
-var urlParams = {};
-(function () {
-    var e,
-    a = /\+/g,  // Regex for replacing addition symbol with a space
-    r = /([^&=]+)=?([^&]*)/g,
-    d = function (s) { return decodeURIComponent(s.replace(a, " ")); },
-    q = window.location.search.substring(1);
-
-    // do it this way to get round jslint complaints
-    for (;;) {
-        e = r.exec(q);
-        if (!e) { break; }
-        urlParams[d(e[1])] = d(e[2]);
-    }
-})();
-
 function show_around( lat, long ) {
     pc = $('#pc').val();
-    window.location='around.html?pc=' + pc + '&latitude=' + lat + '&longitude=' + long;
+    localStorage.latitude = lat;
+    localStorage.longitude = long;
+    localStorage.pc = pc;
+    window.location='around.html';
     return false;
 }
 
