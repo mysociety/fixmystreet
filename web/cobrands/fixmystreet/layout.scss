@@ -63,7 +63,7 @@ h1 {
     min-height: 4em;
     position: absolute;
     border-top:4px solid #1a1a1a;
-    @include border-image(url(images/tile-y.jpg) 4 0 0 0);
+    @include border-image(url(images/tile-y-border.jpg) 4 0 0 0);
     border-left:0;
     border-right:0;
     z-index:2;
