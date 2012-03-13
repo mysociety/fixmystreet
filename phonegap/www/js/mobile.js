@@ -46,6 +46,18 @@ function use_lat_long( lat, long ) {
     show_around( lat, long );
 }
 
+function location_error( msg ) {
+    if ( msg === '' ) {
+        $('#location_error').remove();
+        return;
+    }
+
+    if ( !$('#location_error') ) {
+        $('#postcodeForm').after('<p id="location_error"></p>');
+    }
+
+    $('#location_error').text( msg );
+}
 
 function lookup_string(q) {
     q = q.toLowerCase();
@@ -53,8 +65,7 @@ function lookup_string(q) {
     q = q.replace(/\s+/, ' ');
 
     if (!q) {
-        alert('no location');
-        $('#postcodeForm').after("<p>Please enter location</p>");
+        location_error("Please enter location");
         return false;
     }
 
@@ -84,9 +95,11 @@ function lookup_string(q) {
             if ( valid_locations == 1 ) {
                 show_around( latitude, longitude );
             } else if ( valid_locations === 0 ) {
-                $('#postcodeForm').after('<p>Location not found</p>');
+                location_error('Location not found');
                 $('#pc').select();
             } else {
+                location_error('');
+                $('#multiple').remove();
                 var multiple_html = '<ul id="multiple"><li>Multiple locations found, please select one:';
                 for ( i = 0; i < multiple.length; i++ ) {
                     multiple_html += '<li><a href="#" onclick="use_lat_long( ' + multiple[i].latitude + ',' + multiple[i].longitude +')">' + multiple[i].address + '</a></li>';
@@ -95,19 +108,19 @@ function lookup_string(q) {
                 $('#postcodeForm').after( multiple_html );
             }
         } else {
-            $('#postcode_error').html('<span>Lookup failed</span>');
+            location_error("Could not find your location");
         }
         if (navigator.notificationEx) { navigator.notificationEx.loadingStop(); }
     });
 }
 
 function locate() {
-    $("#postcode_error").html("");
+    location_error('');
     $("#multiple").remove();
     var pc = $('#pc').val();
 
     if (!pc) {
-        $('#postcode_error').html("Please enter location");
+        location_error( "Please enter your location" );
         return false;
     }
 
@@ -141,7 +154,7 @@ function foundLocation(myLocation) {
     show_around( lat, long );
 }
 
-function notFoundLocation() { alert( 'not found' ); }
+function notFoundLocation() { location_error( 'Could not find location' ); }
 
 function getPosition() {
     var loadingStart = function() {};
@@ -157,7 +170,7 @@ function getPosition() {
 }
 
 
-function onSuccess(imageURI) {
+function takePhotoSuccess(imageURI) {
     $('#form_photo').val(imageURI);
     $('#photo').attr('src', imageURI );
     $('#add_photo').hide();
@@ -171,27 +184,27 @@ function delPhoto() {
     $('#add_photo').show();
 }
 
-function onFail(message) {
-    // $('#photo').val('failed to get photo: ' + message );
+function takePhotoFail(message) {
+    alert('There was a problem taking your photo');
 }
 
 function takePhoto(type) {
-    navigator.camera.getPicture(onSuccess, onFail, { quality: 50, destinationType: Camera.DestinationType.FILE_URI, sourceType: type }); 
+    navigator.camera.getPicture(takePhotoSuccess, takePhotoFail, { quality: 50, destinationType: Camera.DestinationType.FILE_URI, sourceType: type }); 
 }
 
-function win(r) {
+function fileUploadSuccess(r) {
     console.log( r.response );
     console.log( typeof r.response );
     if ( r.response.indexOf( 'success' ) >= 0  ) {
         window.location = 'email_sent.html';
     } else {
-        alert('!woot');
+        alert('Could not submit report');
         $('input[type=submit]').prop("disabled", false);
     }
 }
 
-function fail() {
-    alert('boo!');
+function fileUploadFail() {
+    alert('Could not submit report');
 }
 
 
@@ -221,7 +234,7 @@ function postReport(e) {
         options.params = params;
 
         var ft = new FileTransfer();
-        ft.upload(fileURI, "http://photek.local:3000/report/new/mobile", win, fail, options);
+        ft.upload(fileURI, "http://photek.local:3000/report/new/mobile", fileUploadSuccess, fileUploadFail, options);
     } else {
         jQuery.ajax( { 
             url: "http://photek.local:3000/report/new/mobile",
@@ -233,13 +246,12 @@ function postReport(e) {
                 if ( data.success ) {
                     window.location = 'email_sent.html';
                 } else {
-                    alert( 'ruh roh!');
+                    alert( 'Could not upload report');
                     $('input[type=submit]').prop("disabled", false);
                 }
                 return false;
             },
             error: function (data, status, errorThrown ) {
-                console.log( data );
                 alert( 'There was a problem submitting your report, please try again: ' + data, function(){}, 'Submit report' );
             }
         } );
