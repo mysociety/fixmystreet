@@ -227,7 +227,7 @@ $(function(){
         fixmystreet.map.setCenter(centre, fixmystreet.zoom || 3);
     }
 
-    if ($('#map_box').data('size')=='full') {
+    if (fixmystreet.state_map && fixmystreet.state_map == 'full') {
         // TODO Work better with window resizing, this is pretty 'set up' only at present
         var q = $(window).width() / 4;
         // Need to try and fake the 'centre' being 75% from the left
@@ -445,7 +445,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             document.getElementById('side-form').style.display = 'block';
         }
         $('#side').hide();
-        if (typeof heightFix !== undefined) {
+        if (typeof heightFix !== 'undefined') {
             heightFix('#report-a-problem-sidebar', '.content', 26);
         }
 

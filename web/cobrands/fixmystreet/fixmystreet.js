@@ -119,7 +119,10 @@ $(function(){
             top: 0, left: 0, right: 0, bottom: 0,
             width: '100%', height: map_height,
             margin: 0
-        }).data('size', 'full');
+        });
+        if (typeof fixmystreet !== 'undefined') {
+            fixmystreet.state_map = 'full';
+        }
     }
 
     //heightfix the desktop .content div
@@ -527,7 +530,10 @@ $.fn.drawer = function(id, ajax) {
     /*
      * Fancybox fullscreen images
      */
-     $('.fancy-image').fancybox();
+    $('a[rel=fancy]').fancybox({
+        'overlayColor': '#000000'
+    });
+
 });
 
 /*
