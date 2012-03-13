@@ -22,12 +22,10 @@
 	<false/>
 	<key>ExternalHosts</key>
 	<array>
-		<string>photek.local</string>
 		<string>mapit.mysociety.org</string>
-		<string>matthew.fixmystreet.dev.mysociety.org</string>
 		<string>*.tile.openstreetmap.org</string>
-		<string>struan.fixmystreet.com</string>
 		<string>*.virtualearth.net</string>
+		<string>192.168.1.*</string>
 	</array>
 	<key>Plugins</key>
 	<dict>
