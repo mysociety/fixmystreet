@@ -531,23 +531,17 @@ $.fn.drawer = function(id, ajax) {
         'overlayColor': '#000000'
     });
 
-
-
-
-
-
     /*
      * heightfix the desktop .content div
      *
      * this must be kept near the end so that the
      * rendered height is used after any page manipulation (such as tabs)
      */
-    if(Modernizr.mq('only screen and (min-width:48em)')) {
+    if (!$('html.mobile').length) {
         if (!($('body').hasClass('frontpage'))){
             heightFix(window, '.content', -176);
         }
     }
-
 
     /*
      * Placeholder polyfill from https://github.com/mathiasbynens/jquery-placeholder/
