@@ -134,13 +134,6 @@ $(function(){
         }
     }
 
-    //heightfix the desktop .content div
-    if(Modernizr.mq('only screen and (min-width:48em)')) {
-        if (!($('body').hasClass('frontpage'))){
-            heightFix(window, '.content', -176);
-        }
-    }
-
     $('#pc').focus();
 
     $('input[type=submit]').removeAttr('disabled');
@@ -546,6 +539,19 @@ $.fn.drawer = function(id, ajax) {
         'overlayColor': '#000000'
     });
 
+
+
+    /*
+     * heightfix the desktop .content div
+     *
+     * this must be kept as the last thing done so that the
+     * rendered height is used after any page manipulation (such as tabs)
+     */
+    if(Modernizr.mq('only screen and (min-width:48em)')) {
+        if (!($('body').hasClass('frontpage'))){
+            heightFix(window, '.content', -176);
+        }
+    }
 });
 
 /*
