@@ -86,45 +86,72 @@ $(function(){
     // Preload the new report pin
     document.createElement('img').src = '/i/pin-green.png';
 
-    //add mobile class if small screen
-    if (Modernizr.mq('only screen and (max-width:47.9375em)')) {
-        $html.addClass('mobile');
-        $('#map_box').css({ height: '10em' });
-        if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
-            // Immediately go full screen map if on around page
-            $('#site-header').hide();
+    var last_type;
+    $(window).resize(function(){
+        var type = $('#site-header').css('borderTopWidth');
+        if (type == '4px') { type = 'mobile'; }
+        else if (type == '0px') { type = 'desktop'; }
+        else { return; }
+        if (last_type == type) { return; }
+        if (type == 'mobile') {
+            $html.addClass('mobile');
+            $('#map_box').prependTo('.content').css({
+                zIndex: '', position: '',
+                top: '', left: '', right: '', bottom: '',
+                width: '', height: '10em',
+                margin: ''
+            });
+            if (typeof fixmystreet !== 'undefined') {
+                fixmystreet.state_map = ''; // XXX
+            }
+            if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
+                // Immediately go full screen map if on around page
+                $('#site-header').hide();
+                $('#map_box').prependTo('.wrapper').css({
+                    position: 'absolute',
+                    top: 0, left: 0, right: 0, bottom: 0,
+                    height: 'auto',
+                    margin: 0
+                });
+                $('#fms_pan_zoom').css({ top: '2.75em !important' });
+                $('.big-green-banner')
+                    .addClass('mobile-map-banner')
+                    .appendTo('#map_box')
+                    .text('Place pin on map')
+	            .prepend('<a href="/">home</a>');
+            }
+        } else {
+            // Make map full screen on non-mobile sizes.
+            $html.removeClass('mobile');
+            var map_pos = 'fixed', map_height = '100%';
+            if ($html.hasClass('ie6')) {
+                map_pos = 'absolute';
+                map_height = $(window).height();
+            }
             $('#map_box').prependTo('.wrapper').css({
-                position: 'absolute',
+                zIndex: 0, position: map_pos,
                 top: 0, left: 0, right: 0, bottom: 0,
-                height: 'auto',
+                width: '100%', height: map_height,
                 margin: 0
             });
-            // Bit yucky, but the ID doesn't exist yet.
-            $("<style>#fms_pan_zoom { top: 2.75em !important; }</style>").appendTo(document.documentElement);
-            $('.big-green-banner')
-                .addClass('mobile-map-banner')
-                .removeClass('.big-green-banner')
-                .appendTo('#map_box')
-                .text('Place pin on map')
-	        .prepend('<a href="/">home</a>');
+            if (typeof fixmystreet !== 'undefined') {
+                fixmystreet.state_map = 'full';
+            }
+            if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
+                // Remove full-screen-ness
+                $('#site-header').show();
+                $('#fms_pan_zoom').css({ top: '4.75em !important' });
+                $('.big-green-banner')
+                    .removeClass('mobile-map-banner')
+                    .prependTo('#side')
+                    .text('Click map to report a problem');
+            }
         }
-    } else {
-        // Make map full screen on non-mobile sizes.
-        var map_pos = 'fixed', map_height = '100%';
-        if ($html.hasClass('ie6')) {
-            map_pos = 'absolute';
-            map_height = $(window).height();
-        }
-        $('#map_box').prependTo('.wrapper').css({
-            zIndex: 0, position: map_pos,
-            top: 0, left: 0, right: 0, bottom: 0,
-            width: '100%', height: map_height,
-            margin: 0
-        });
-        if (typeof fixmystreet !== 'undefined') {
-            fixmystreet.state_map = 'full';
-        }
-    }
+        last_type = type;
+    });
+
+    //add mobile class if small screen
+    $(window).resize();
 
     $('#pc').focus();
 

@@ -210,6 +210,10 @@ $(function(){
         displayProjection: new OpenLayers.Projection("EPSG:4326")
     });
 
+    if ($('html').hasClass('mobile')) {
+        $('#fms_pan_zoom').css({ top: '2.75em !important' });
+    }
+
     fixmystreet.layer_options = OpenLayers.Util.extend({
         zoomOffset: fixmystreet.zoomOffset,
         transitionEffect: 'resize',
