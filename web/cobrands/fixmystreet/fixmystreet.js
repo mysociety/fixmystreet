@@ -543,12 +543,6 @@ $.fn.drawer = function(id, ajax) {
         }
     }
 
-    /*
-     * Placeholder polyfill from https://github.com/mathiasbynens/jquery-placeholder/
-     * 
-     * It needs to be at the end or it won't behave as expected
-     */
-     $('input, textarea').placeholder();
 });
 
 /*
