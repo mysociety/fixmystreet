@@ -570,8 +570,15 @@ body.twothirdswidthpage {
 .ie6, .ie7 {
   #user-meta {
     z-index:1;
+    p {
+      top:-2em;
+    }
   }
 }
+.ie6 #user-meta {
+  width:57em; //ie6 doesn't like max-width
+}
+
 
 
 // Wraps around #key-tools box - sticks to the bottom of the screen on desktop
