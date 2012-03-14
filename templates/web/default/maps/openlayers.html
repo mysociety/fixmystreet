@@ -59,8 +59,8 @@ var fixmystreet = {
     east     = c.uri_with( { lat = map.compass.east.0,  lon = map.compass.east.1,  zoom = map.zoom } )
     west     = c.uri_with( { lat = map.compass.west.0,  lon = map.compass.west.1,  zoom = map.zoom } )
     world    = c.uri_with( { zoom = 0 } );
-    SET zoom_in  = c.uri_with( { zoom = map.zoom + 1 } ) IF map.zoom < map.numZoomLevels - 1;
-    SET zoom_out = c.uri_with( { zoom = map.zoom - 1 } ) IF map.zoom > 0;
+    SET zoom_in  = c.uri_with( { lat = map.latitude, lon = map.longitude, zoom = map.zoom + 1 } ) IF map.zoom < map.numZoomLevels - 1;
+    SET zoom_out = c.uri_with( { lat = map.latitude, lon = map.longitude, zoom = map.zoom - 1 } ) IF map.zoom > 0;
     SET zoom_in  = '#' IF map.zoom >= map.numZoomLevels - 1;
     SET zoom_out = '#' IF map.zoom <= 0;
 %]
@@ -78,15 +78,11 @@ var fixmystreet = {
 
 [% BLOCK pin %]
 
-[% cols = {
-    red = 'R', green = 'G', blue = 'B', purple = 'P',
-   }
-%]
 [% IF pin.id %]
 <a title="[% pin.title | html %]" href="[% c.uri_for('/report/' _ pin.id) %]">
 [%- END -%]
-<img border="0" class="pin" src="[% c.uri_for('/i/pin' _ cols.${pin.colour} _ '.png') %]"
-    alt="[% loc('Problem') %]" style="top:[% pin.py - 58 %]px; left:[% pin.px - 22 %]px; position: absolute;">
+<img border="0" class="pin" src="[% c.uri_for('/i/pin-' _ pin.colour _ '.png') %]"
+    alt="[% loc('Problem') %]" style="top:[% pin.py - 64 %]px; left:[% pin.px - 24 %]px; position: absolute;">
 [%- IF pin.id -%]
 </a>
 [% END %]

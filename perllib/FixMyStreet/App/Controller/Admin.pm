@@ -627,10 +627,6 @@ sub report_edit : Path('report_edit') : Args(1) {
             $problem->photo(undef);
         }
 
-        if ( $new_state ne $old_state ) {
-            $problem->lastupdate( \'ms_current_timestamp()' );
-        }
-
         if ( $new_state eq 'confirmed' and $old_state eq 'unconfirmed' ) {
             $problem->confirmed( \'ms_current_timestamp()' );
         }
@@ -639,6 +635,7 @@ sub report_edit : Path('report_edit') : Args(1) {
             $problem->discard_changes;
         }
         else {
+            $problem->lastupdate( \'ms_current_timestamp()' ) if $edited || $new_state ne $old_state;
             $problem->update;
 
             if ( $new_state ne $old_state ) {

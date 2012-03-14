@@ -24,7 +24,7 @@ sub nearby {
         columns => [
             'problem.id', 'problem.title', 'problem.latitude',
             'problem.longitude', 'distance', 'problem.state',
-            'problem.confirmed'
+            'problem.confirmed', { 'problem.photo' => 'problem.photo is not null' },
         ],
         bind => [ $mid_lat, $mid_lon, $dist ],
         order_by => [ 'distance', { -desc => 'created' } ],

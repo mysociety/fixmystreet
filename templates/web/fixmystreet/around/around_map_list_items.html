@@ -1,0 +1,25 @@
+[% IF around_map.size %]
+    [% FOREACH p IN around_map %]
+
+        [% dist = tprintf("%.1f", (p.distance || 0) ) %]
+        
+        <li>
+            <a href="[% c.uri_for('/report', p.problem.id ) %]">
+                <div class="text">
+                    <h4>[% p.problem.title | html %]</h4>
+                    <small>[% prettify_epoch( p.problem.confirmed_local.epoch, 1 ) %], [% dist %]km</small>
+                    [% IF p.problem.is_fixed %]
+                        <small>[% loc('(fixed)') %]</small>
+                    [% END %]
+                </div>
+                [% IF p.problem.photo %]
+                <div class="img">
+                    <img height="60" width="90" src="/photo/[% p.problem.id %].fp.jpeg" alt="">
+                </div>
+                [% END %]
+            </a>
+        </li>
+    [% END %]
+[% ELSE %]
+    <li><p>[% loc('No problems found.') %]</p></li>
+[% END %]

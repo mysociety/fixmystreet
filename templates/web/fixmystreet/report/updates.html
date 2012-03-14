@@ -1,0 +1,36 @@
+[% FOREACH update IN updates.all %]
+[% IF loop.first %]
+<section class="full-width">
+    <h4 class="static-with-rule">[% loc('Updates') %]</h4>
+    <ul class="issue-list">
+[% END %]
+        <li>
+            <div class="update-wrap">
+                <div class="update-text">
+                    [% add_links( update.text ) | html_para %]
+
+                    <p class="meta-2">
+                        <a name="update_[% update.id %]"></a>
+                        [% IF update.anonymous || update.name == '' %]
+                            [% tprintf( loc( 'Posted anonymously at %s' ), prettify_epoch( update.confirmed_local.epoch ) ) -%]
+                        [%- ELSIF update.user.from_council %]
+                            [% user_name = update.user.name | html %]
+                            [% tprintf( loc( 'Posted by %s (<strong>%s</strong>) at %s' ), user_name, update.user.council, prettify_epoch( update.confirmed_local.epoch ) ) -%]
+                        [%- ELSE %]
+                            [% tprintf( loc( 'Posted by %s at %s' ), update.name, prettify_epoch( update.confirmed_local.epoch ) ) | html -%]
+                        [%- END -%]
+                        [%- c.cobrand.extra_update_meta_text(update) -%]
+                        [%- ", " _ loc( 'marked as fixed' ) IF update.mark_fixed %]
+                        [%- ", " _ loc( 'reopened' ) IF update.mark_open %]
+                        [%- ", " _ tprintf(loc( 'marked as %s' ), update.meta_problem_state) IF update.problem_state %]
+                    </p>
+                </div>
+
+                [% INCLUDE 'report/photo.html' object=update %]
+            </div>
+        </li>
+[% IF loop.last %]
+    </ul>
+</section>
+[% END %]
+[% END %]

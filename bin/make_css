@@ -4,12 +4,20 @@
 # Generate CSS files from SCSS files.
 #
 # Requires sass which you can get from http://sass-lang.com/
+# FixMyStreet cobrand requires compass
 #
-# Copyright (c) 2011 UK Citizens Online Democracy. All rights reserved.
+# Copyright (c) 2012 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
 # $Id: send-reports,v 1.79 2010-01-06 16:50:26 louise Exp $
 
-DIRECTORY=$(cd `dirname $0` && pwd)
+DIRECTORY=$(cd `dirname $0`/../web && pwd)
 
-sass --scss --update --style compressed $DIRECTORY/..
+# FixMyStreet uses compass
+compass compile --output-style compressed $DIRECTORY/cobrands/fixmystreet
+
+# The rest are plain sass
+for scss in `find $DIRECTORY -name "*.scss" -exec dirname {} \; | uniq | grep -v cobrands/fixmystreet`
+do
+    sass --scss --update --style compressed $scss
+done

@@ -62,39 +62,36 @@ sub recent_new {
 
 sub recent {
     my ( $rs ) = @_;
-    my $key = "recent:$site_key";
-    my $result = Memcached::get($key);
-    if ( $result ) {
-        # Need to reattach schema so that confirmed column gets reinflated.
-        $result->[0]->result_source->schema( $rs->result_source->schema ) if $result->[0];
-    } else {
-        $result = [ $rs->search( {
-            state => [ FixMyStreet::DB::Result::Problem->visible_states() ]
-        }, {
-            columns => [ 'id', 'title', 'confirmed' ],
-            order_by => { -desc => 'confirmed' },
-            rows => 5,
-        } )->all ];
-        Memcached::set($key, $result, 3600);
-    }
-    return $result;
+    return _recent( $rs, 5 );
 }
 
 sub recent_photos {
     my ( $rs, $num, $lat, $lon, $dist ) = @_;
-    my $probs;
+    return _recent( $rs, $num, $lat, $lon, $dist, 1);
+}
+
+sub _recent {
+    my ( $rs, $num, $lat, $lon, $dist, $photos ) = @_;
+
+    my $key = $photos ? 'recent_photos' : 'recent';
+    $key .= ":$site_key:$num";
+
     my $query = {
         state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
-        photo => { '!=', undef },
     };
+    $query->{photo} = { '!=', undef } if $photos;
+
     my $attrs = {
-        columns => [ 'id', 'title' ],
+        columns => [ 'id', 'title', 'confirmed' ],
         order_by => { -desc => 'confirmed' },
         rows => $num,
     };
+
+    my $probs;
+    my $new = 0;
     if (defined $lat) {
         my $dist2 = $dist; # Create a copy of the variable to stop it being stringified into a locale in the next line!
-        my $key = "recent_photos:$site_key:$num:$lat:$lon:$dist2";
+        $key .= ":$lat:$lon:$dist2";
         $probs = Memcached::get($key);
         unless ($probs) {
             $attrs->{bind} = [ $lat, $lon, $dist ];
@@ -102,16 +99,23 @@ sub recent_photos {
             $probs = [ mySociety::Locale::in_gb_locale {
                 $rs->search( $query, $attrs )->all;
             } ];
-            Memcached::set($key, $probs, 3600);
+            $new = 1;
         }
     } else {
-        my $key = "recent_photos:$site_key:$num";
         $probs = Memcached::get($key);
         unless ($probs) {
             $probs = [ $rs->search( $query, $attrs )->all ];
-            Memcached::set($key, $probs, 3600);
+            $new = 1;
         }
     }
+
+    if ( $new ) {
+        Memcached::set($key, $probs, 3600);
+    } else {
+        # Need to reattach schema so that confirmed column gets reinflated.
+        $probs->[0]->result_source->schema( $rs->result_source->schema ) if $probs->[0];
+    }
+
     return $probs;
 }
 
@@ -122,7 +126,8 @@ sub around_map {
     my $attr = {
         order_by => { -desc => 'created' },
         columns => [
-            'id', 'title' ,'latitude', 'longitude', 'state', 'confirmed'
+            'id', 'title', 'latitude', 'longitude', 'state', 'confirmed',
+            { photo => 'photo is not null' },
         ],
     };
     $attr->{rows} = $limit if $limit;

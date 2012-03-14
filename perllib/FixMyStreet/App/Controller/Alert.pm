@@ -505,6 +505,8 @@ sub setup_request : Private {
         $c->stash->{rznvy} ||= $c->user->email;
     }
 
+    $c->stash->{template} = 'alert/list-ajax.html' if $c->req->param('ajax');
+
     return 1;
 }
 

@@ -6,193 +6,1536 @@
 
 @import "_h5bp";
 @import "_colours";
+@import "_mixins";
+@import "compass";
+
 
 /* HEADINGS and TYPOGRAPHY */
 
 @font-face {
-    font-family: 'MuseoSansRounded-500';
-    src: url('fonts/MuseoSansRounded500.eot');
-    src: url('fonts/MuseoSansRounded500.eot?#iefix') format('embedded-opentype'),
-         url('fonts/MuseoSansRounded500.woff') format('woff'),
-         url('fonts/MuseoSansRounded500.ttf') format('truetype'),
-         url('fonts/MuseoSansRounded500.svg#MuseoSansRounded-500') format('svg');
+  font-family: 'MuseoSans';
+  src: url('fonts/MuseoSans_300-webfont.eot');
+  src: url('fonts/MuseoSans_300-webfont.eot?#iefix') format('embedded-opentype'),
+       url('fonts/MuseoSans_300-webfont.woff') format('woff'),
+       url('fonts/MuseoSans_300-webfont.ttf') format('truetype'),
+       url('fonts/MuseoSans_300-webfont.svg#MuseoSans300') format('svg');
+  font-weight: normal;
+  font-style: normal;
 }
 
-h1, h2, h3, h4, h5, h6, #header {
-    font-family: 'MuseoSansRounded-500', sans-serif;
-    font-weight: normal;
+@font-face {
+  font-family: 'MuseoSans';
+  src: url('fonts/MuseoSans_300_Italic-webfont.eot');
+  src: url('fonts/MuseoSans_300_Italic-webfont.eot?#iefix') format('embedded-opentype'),
+       url('fonts/MuseoSans_300_Italic-webfont.woff') format('woff'),
+       url('fonts/MuseoSans_300_Italic-webfont.ttf') format('truetype'),
+       url('fonts/MuseoSans_300_Italic-webfont.svg#MuseoSans300Italic') format('svg');
+  font-weight: normal;
+  font-style: italic;
 }
+
+@font-face {
+  font-family: 'MuseoSans';
+  src: url('fonts/MuseoSans_500-webfont.eot');
+  src: url('fonts/MuseoSans_500-webfont.eot?#iefix') format('embedded-opentype'),
+       url('fonts/MuseoSans_500-webfont.woff') format('woff'),
+       url('fonts/MuseoSans_500-webfont.ttf') format('truetype'),
+       url('fonts/MuseoSans_500-webfont.svg#MuseoSans500') format('svg');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'MuseoSans';
+  src: url('fonts/MuseoSans_500_Italic-webfont.eot');
+  src: url('fonts/MuseoSans_500_Italic-webfont.eot?#iefix') format('embedded-opentype'),
+       url('fonts/MuseoSans_500_Italic-webfont.woff') format('woff'),
+       url('fonts/MuseoSans_500_Italic-webfont.ttf') format('truetype'),
+       url('fonts/MuseoSans_500_Italic-webfont.svg#MuseoSans500Italic') format('svg');
+  font-weight: bold;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Museo300-display';
+  src: url('fonts/Museo300-Regular-webfont.eot');
+  src: url('fonts/Museo300-Regular-webfont.eot?#iefix') format('embedded-opentype'),
+       url('fonts/Museo300-Regular-webfont.woff') format('woff'),
+       url('fonts/Museo300-Regular-webfont.ttf') format('truetype'),
+       url('fonts/Museo300-Regular-webfont.svg#Museo300') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
 
 /* Opera has a bug (from around 10.5 upwards to current 11.6) with showing the
  * table caption *at all* if the header is set to a font-face :( */
-noindex:-o-prefocus, #header {
-    font-family: sans-serif;
+noindex:-o-prefocus, #site-header {
+  font-family: sans-serif;
 }
 
-/* Headings fit within the baseline grid, skewed towards the bottom. As the h1
- * appears first, if it appears, it needs no margin at all. */
+
+body {
+  font-family: 'MuseoSans', 'Helvetica', 'Arial', sans-serif;
+  margin:0;
+  font-size:1em;
+  line-height:1.5;
+  color:#222;
+}
+
+
+p {
+  font-size: 1em;
+  font-weight: normal;
+  margin:0 0 1em 0;
+}
+
+small{
+  font-family: 'helvetica', 'arial',sans-serif;
+  font-style: italic;
+  font-size: 0.8125em;
+  line-height: 1.2307em;
+}
+
 h1 {
-    font-size: 2em;
-    margin: 0;
+  font-family:'Museo300-display', 'Helvetica', 'Arial', sans-serif;
+  font-size: 2em;
+  line-height: 1em;
+  font-weight: normal;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+#front-main h1 {
+  margin-top: 0.7em;
+}
+h1#reports_heading span {
+  display: none;
+}
+h1#reports_heading a {
+  display: block;
+  font-size: 50%;
 }
 
 h2 {
-    font-size: 1.5em;
-    line-height: 1;
-    margin: 1.5em 0 0.5em;
+  font-family:'Museo300-display', 'Helvetica', 'Arial', sans-serif;
+  font-size: 1.5em; /*24px*/
+  line-height: 1.3333em; /*32px*/
+  font-weight: normal;
+  margin-top: 1.333333333em; /*32px*/
+  margin-bottom: 0.666666666em; /*16px*/
 }
 
 h3 {
-    font-size: 1.25em;
-    line-height: 1.2;
-    margin: 1.8em 0 0.6em;
+  font-size: 1.25em;
+  line-height: 1.20em;
+  margin-top: 1.2em;
+  margin-bottom: 0.8em;
+  font-weight: bold
 }
 
 h4 {
-    font-size: 1.2em;
-    line-height: 1.25;
-    margin: 1.875em 0 0.625em;
+  font-size: 1em;
+  font-weight: bold;
+  margin-bottom: 1em; 
 }
 
-p {
-    margin: 0 0 1.5em;
+// default list styles
+ul, ol {
+  font-size: 1em;
+  margin-bottom: 2em;  
+  margin-left: 2em;
+  padding:0;
 }
 
-select, input, textarea {
-    font-size: 99%;
-    max-width: 95%;
+li{
+  margin-bottom: 0.5em;
 }
 
-img {
-    max-width: 100%;
+ul li{
+  list-style: square;
 }
 
-/* LINKS */
-
-a:link {
-    color: $colour;
+ol li {
+  list-style:decimal;
 }
 
-a:visited {
-    color: $colour_dark;
-}
-
-a:active, a:hover {
-    color: #200;
-}
-
-
-/* LAYOUT */
-
-/* header is a div containing a link on all pages bar the front page, when it
- * is a h1 that is not a link. It should always display the same. */
-#header {
-    display: block;
-    margin: 0 0 0.5em 0;
-    font-size: 200%;
-
-    /* The link of the heading should not be underlined. */
-    a {
-        text-decoration: none;
-    }
-}
-
-#meta {
-    list-style-type: none;
-    margin: 0.5em 0;
-    padding: 0;
-    font-size: 0.875em;
-    li {
-        display: inline;
-        margin: 0;
-        padding: 0 0 0 0.25em;
-    }
-    li.last {
-        border-left: solid 1px $colour_dark;
-    }
-}
-
-.container {
+// lets you have a traditional ol but with nicely styled numbers
+// for older browsers it just falls back to the normal ol
+ol.big-numbers {
+  padding: 0;
+  margin: 0;
+  counter-reset: li; // reset counter to be 'li' instead of a number
+  > li {
     position: relative;
-    margin: auto;
-    overflow: hidden;
-}
-
-/* Three wrapper divs are used in the source. At large screen widths, the
- * default background colour is $colour, in order for the footer to stay the
- * same at any depth. So the outermost wrapper changes this back to white at
- * full width; the second wrapper sets a maximum width for the main content,
- * with a little padding so it never hits the browser edge, and centred; and
- * the third wrapper is a full width table, so that a table caption can be used
- * to have correct source order.*/
-#wrapper {
-    background: #fff;
-}
-
-#wrapper2 {
-    max-width: 59em;
-    padding: 0.5em;
-    margin: 0 auto;
-}
-
-#navigation {
-    display: table;
-    width: 100%;
-    border-top: solid 1px $colour;
-    padding-top: 1.5em;
-    margin: 1.5em 0;
-}
-
-.nav {
-    display: table-cell;
-    // width: 50%;
-}
-.ie6, .ie7 {
-    .nav {
-        float: left;
+    list-style: none;
+    padding:0 0 0 2.5em;
+    margin-bottom:2em;
+    &:before {
+      content: counter(li); // set the content to be whatever the 'li' var is
+      counter-increment: li; // add to the counter var
+      position: absolute;
+      left: 0;
+      top:-0.2em;
+      color:#eeeeee;
+      line-height:1;
+      font: {
+        family: 'helvetica', 'arial', sans-serif;
+        weight:bold;
+        size:2.5em;
+      }
     }
+  }
 }
 
-#footer {
-    color: #fff;
-    padding: 0.5em;
-    background-color: #3c3c3c;
-    background-image: url(/cobrands/fixmystreet/texture.png);
-
-    a {
-        color: #fff;
-    }
-
-    a:hover {
-       color: #ffe600;
-    }
-
-    p {
-        margin: 0.5em 0;
-    }
-}
-
-
-/* DISPLAY BITS */
-
-a.unsuitable-report {
-    font-size: small;
+dl {
+  margin: 0;
+  padding: 0;
+  dt {
+    font-size: 1em;
+    line-height: 1.5em;
+    font-weight: bold;
+  }
+  dd {
+    font-weight: 1em;
+    line-height: 1.5em;
+    margin:0 0 1em 0;
+  }
 }
 
 blockquote {
-    border-left: solid 4px $colour;
+  p:before {
+    content: '“';
+  }
+  p:after {
+    content: '”';
+  }
 }
 
-.a {
-    color: #000000;
-    background-color: $colour_alt;
+pre {
+  font-family: monospace;
 }
 
-#postcodeForm {
-    background-color: $colour_alt;
+img {
+  //do this otherwise IE will just not display
+  //any img without a height defined
+  height:auto;
 }
 
-#front_stats div {
-    background-color: $colour_alt;
+select, input, textarea {
+  font-size: 99%;
+  max-width: 95%;
+}
+
+
+// links
+a,
+a:visited {
+  text-decoration:none;
+  color:#0BA7D1;
+  &:hover,
+  &:active {
+    text-decoration:underline;
+    color:#0D7CCE;    
+  }
+}
+
+// custom type
+.small-print {
+  @extend small;
+  margin-bottom: 1.2307em;
+  color:#888888;
+}
+.meta{
+  color:#555555;
+  font-style: italic;
+  margin-bottom: 0px;
+}
+.meta-2{
+  font-family: 'helvetica', 'arial',sans-serif;
+  color:#888888;
+  font-style: italic;
+  font-size: 0.75em;
+}
+
+h4.static{
+  font-family: 'helvetica', 'arial',sans-serif;
+  text-transform: uppercase;
+  font-size: 0.875em;
+  line-height: 1.71428em;
+  color:#888;
+  margin-top: 2em;
+}
+h4.static-with-rule{
+  @extend.static;
+  background: #f6f6f6;
+  border-top: 0.25em solid $primary;
+  margin-bottom:0.25em;
+  padding: 0.5em 1em;
+}
+
+/* FORMS */
+
+// input placeholders, these need to be on separate lines as if the browser
+// can't understand a selector it will invalidate the whole line.
+::-webkit-input-placeholder {
+  color: #888888;
+  font: {
+    style:italic;
+    size:0.9375em;
+  }
+}
+:-moz-placeholder {
+  color:#888888;
+  font: {
+    style:italic;
+    size:0.9375em;
+  }
+}
+:-ms-placeholder {
+  color:#888888;
+  font: {
+    style:italic;
+    size:0.9375em;
+  }
+}
+//this only gets used when the browser doesn't support @placeholder
+.placeholder {
+  color:#888888;
+  font: {
+    style:italic;
+    size:0.9375em;
+  }
+}
+
+// wrap anything inside the form in a fieldset to give
+// us the right spacing
+fieldset {
+  margin: 1em;
+}
+
+input[type=text],
+input[type=password],
+input[type=email],
+input[type=file],
+textarea {
+  width: 100%;
+  // adjust so the sides line up
+  padding: 0.5em;
+  margin: 0 0 0 -0.5em;
+}
+
+textarea {
+  border: 0.125em solid #888888;
+  @include border-radius(0.25em);
+  display: block;
+  font-size: 1em;
+  line-height: 1.5em;
+  font-family: 'helvetica', 'arial', sans-serif;
+  min-height:8em;
+}
+
+input[type=text],
+input[type=password],
+input[type=email],
+input[type=file] {
+  border: 0.125em solid #888888;
+  @include border-radius(0.25em);
+  display: block;
+  font-size: 1em;
+  line-height: 1em;
+}
+input[type=file] {
+  margin-bottom:1em;
+}
+
+label{
+  display: block;
+  margin-top: 1.25em;
+  margin-bottom: 0.25em;
+  font-weight: bold;
+  &.inline{
+    display: inline;
+    padding: 0 2em 0 1em;
+    font-weight: normal;
+  }
+}
+
+// grey background, full width box
+.form-box {
+  margin: 0 -2em 0.25em -2em;
+  background:#eeeeee;
+  padding:1em 2em 1em 2em;
+  max-width:26em;
+  >input[type=text] {
+    margin-bottom:1em;
+  }
+  .title {
+    font-size:1.25em;
+    margin:0.5em 0;
+  }
+  h5 {
+    margin:0;
+    font: {
+      size:1.125em;
+      weight:normal;
+    }
+    strong {
+      font-size:2em;
+      margin-right:0.25em;
+    }
+  }
+}
+// IE6 doesn't extend the grey box back with the above negative margins, and
+// the password box falls off screen for some reason. Just have boring margins,
+// it looks okay.
+.ie6 .form-box {
+    margin: 0 0 0.25em 0;
+}
+
+.form-txt-submit-box {
+  min-height:3em;
+  input[type=password],
+  input[type=text],
+  input[type=email] {
+    width: 65%;
+    float:left;
+  }
+  input[type=submit] {
+    float:right;
+    width:28%;
+    margin-right:0.25em;
+    padding-top:0.7em;
+    padding-bottom:0.6em;
+  }
+}
+
+.checkbox-group {
+  margin:1em 0;
+}
+
+
+// form errors
+div.form-error,
+p.form-error {
+  @include inline-block;
+  background:#ff0000;
+  color:#fff;
+  padding:0 0.5em;
+  margin:0 0 0 -0.5em;
+  @include border-radius(0.25em 0.25em 0 0);
+}
+
+input.form-error,
+textarea.form-error {
+  border-color:#ff0000;
+  @include border-radius(0 0.25em 0.25em 0.25em);
+}
+
+ul.error {
+  background:#ff0000;
+  color:#fff;
+  padding:0 0.5em;
+  margin:0 0 0 -0.5em;
+  @include border-radius(0.25em);
+}
+
+// don't display valid error boxes as now the page jump
+// won't be until the user submits, which is fine
+div.label-valid,
+p.label-valid {
+  display:none !important;
+  visibility: hidden;
+}
+
+
+
+/*** LAYOUT ***/
+
+// Padding creates page margins on mobile
+.container{
+  padding: 0 1em;
+}
+
+// Use full width to reverse .container margins
+.full-width {
+  margin: 0 -1em;
+}
+
+// #site-header creates grey bar in mobile
+// .nav-wrapper-2 is used on desktop
+#site-header{
+  border-top: 0.25em solid $primary;
+  height: 3em;
+  @include background(linear-gradient(#000, #222 10%, #222 90%, #000));
+  .container {
+    min-height:4em;
+  }
+}
+#site-logo{
+  display: block;
+  width: 175px;
+  height: 40px;
+  top: 0.4em;
+  background: url('images/sprite.png') -3px -3px no-repeat;
+  text-indent: -999999px;
+  position: absolute;
+  z-index:2;
+}
+.ie6 #site-logo {
+  background: url('images/ie_logo.gif') 0 -5px no-repeat;
+}
+// this is a skip to nav for mobile users only
+#nav-link {
+  width: 50px;
+  height: 48px;
+  background: url('images/sprite.png') -5px -916px no-repeat;
+  display: block;
+  text-indent: -999999px;
+  position: absolute;
+  right:2em;
+  top:-2px;
+  &:hover {
+    top:2px;
+  }
+}
+
+
+#main-nav{
+  ul{
+    @include list-reset-soft;
+    li{
+      a, span {
+        display: block;
+        padding: 0.5em 1em;
+        background:#f6f6f6;
+        color:#333;
+        font-size: 1.25em;
+        border-bottom: 0.25em solid #333;
+      }
+      a:hover, span.hover {
+        background:  #333;
+        color:#fff;
+        text-decoration: none;
+      }
+    }
+    &#mysoc-menu{
+      li {
+        a {
+          background:$primary;
+          &#mysoc-logo {
+            background-image:url('images/sprite.png');
+            background-repeat:no-repeat;
+            background-position:-240px -38px;
+            text-indent:-999999px;
+          }
+        }
+      }
+    }
+  }
+}
+.ie6 #main-nav ul#mysoc-menu li a#mysoc-logo {
+  background: url('images/ie_mysoc_logo.gif') center no-repeat;
+}
+//defines where the table caption is (login stuff on mob, nav menu on desktop)
+.wrapper {
+  width:100%;
+  display:table;
+  caption-side:bottom;
+}
+// this is the user's logged in details or the login link etc
+#user-meta {
+  p {
+    position: relative;
+    background:$primary;
+    padding:1em 6em 1em 1em;
+    a {
+      position: absolute;
+      right:1em;
+      @include inline-block;
+      text-transform:uppercase;
+      font-size:0.75em;
+      background:#333;
+      padding:0.25em 0.75em;
+      color:#fff;
+      @include border-radius(0.25em);
+    }
+  }
+}
+
+
+// #key-tools is the list that's pulled out an stick to the bottom of the page of desktop, below is mostly just aesthetic
+.shadow-wrap {
+  @extend .full-width;
+  ul#key-tools{
+    @include list-reset-soft;
+    margin-bottom: 1em;
+    display: table;
+    width:100%;
+    li{
+      display: table-cell;
+      vertical-align: bottom;
+      text-align: center;
+      border-right:0.25em solid #fff;
+      &:last-child {
+        border-right:none;
+      }
+      a {
+        display: block;
+        background-color: #f5f5f5;
+        background-repeat: no-repeat;
+        color:#333;
+        padding:4em 2em 1em 2em;
+        text-transform:uppercase;
+        font: {
+          size:0.6875em;
+          family: 'helvetica', 'arial', sans-serif;
+        }
+        &:hover, &.hover, &.active {
+          text-decoration:none;
+          background-color:#333;
+          color:#fff;
+        }
+        &.abuse {
+          background-image:url('images/sprite.png');
+          background-position:center -2424px;
+        }
+        &.feed {
+          background-image:url('images/sprite.png');
+          background-position:center -2563px;
+        }
+        &.chevron {
+          background-image:url('images/sprite.png');
+          background-position:center -2716px;
+        }
+        &.hover, &.active {
+          background-image:url('images/sprite.png');
+          background-position:center -2064px;
+        }
+      }
+    }
+  }
+}
+
+//because display:table doesn't work we float
+.ie6, .ie7 {
+  .shadow-wrap {
+    ul#key-tools{
+      background:#f5f5f5;
+      li{
+        float:left;
+        a {
+          padding-left:1.5em;
+          padding-right:3em;
+        }
+      }
+    }
+  }
+}
+.ie6 .shadow-wrap ul#key-tools li a {
+  &.abuse {
+    background-image:url('images/ie_key_tools_sprite.gif');
+    background-position: right 0px;
+  }
+  &.feed {
+    background-image:url('images/ie_key_tools_sprite.gif');
+    background-position: right -58px;
+  }
+  &.chevron {
+    background-image:url('images/ie_key_tools_sprite.gif');
+    background-position: right -116px;
+  }
+  &:hover {
+    background-image:url('images/ie_key_tools_sprite_dark.gif');
+  }
+}
+
+
+//footer blocks
+#footer-mobileapps {
+  @extend .full-width;
+  padding:1em;
+  h4 {
+    margin:0;
+  }
+  ul {
+    @include list-reset-soft;
+    li {
+      border-bottom:1px solid #AFAFAF;
+      &:last-child {
+        border-bottom:none;
+      }
+      a {
+        display:block;
+        padding:0.5em 0;
+      }
+    }
+  }
+}
+
+#footer-help {
+  ul {
+    @include list-reset-soft;
+    li {
+      border-bottom:1px solid #AFAFAF;
+      &:last-child {
+        border-bottom:none;
+      }
+      h4 {
+        margin:0.75em 0 0.25em 0;
+      }
+      p {
+        font-size:0.75em;
+      }
+    }
+  }
+}
+
+
+
+/*BUTTONS*/
+
+// Default style set for buttons, inputs and .btn class. Red and green class available.
+
+button, input[type=submit],.btn{
+  @include button-reset;
+}
+
+.green-btn,
+button.green-btn,
+input.green-btn{
+  @include button-reset(#9FDE23, #7FB900, #5B9700, #fff, #9FDE23, #7FB900, #5B9700, #fff);
+}
+
+.red-btn,
+button.red-btn,
+input.red-btn{
+  @include button-reset(#FF0038, #BF002A, #80001C, #fff, #FF0038, #BF002A, #80001C, #fff);
+}
+
+.final-submit,
+input.final-submit {
+  margin:1em 0.5em;
+  float:right;
+}
+
+.button-right,
+.button-left,
+a.button-right,
+a.button-left {
+  @include inline-block;
+  cursor:pointer;
+  font-size: 1em;
+  line-height: 1;
+  margin:0;
+  border:1px solid #999;  
+  color:#333;
+  background: #eee;
+  @include border-radius(4px);
+  &:hover{
+    color:#fff;
+    background:#777;
+    text-decoration: none;
+    border:1px solid #666;  
+  }
+}
+.button-right,
+a.button-right,
+:hover.button-right,
+a:hover.button-right {
+  padding:1em 3em 1em 1em;
+  background-image: url('images/sprite.png');
+  background-repeat:no-repeat;
+  background-position:right -686px;
+}
+
+.button-left,
+a.button-left,
+:hover.button-left,
+a:hover.button-left {
+  padding:1em 1em 1em 3em;
+  background-image: url('images/sprite.png');
+  background-repeat:no-repeat;
+  background-position:-18px -802px;
+}
+
+.big-green-banner {
+  position: relative;
+  z-index:1000;
+  top:-1.75em;
+  background: $contrast1;
+  color: #fff;
+  padding:1em;
+  text: {
+    transform:uppercase;
+    align:center;
+  }
+  font-size:0.875em;
+  &:before {
+    content: "";
+    left:-0.5em;
+    top:0;
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 0.5em solid transparent;
+    border-bottom: 0.5em solid #4B8304;
+  }
+}
+
+.banner {
+  position: relative;
+  z-index:1100;
+  p {
+    position: absolute;
+    top:-1.95em;
+    right:0;
+    @include inline-block;
+    font-size:0.6875em;//11px
+    line-height:1em;
+    padding:0.5em 1em;
+    margin:0;
+    color:#1a1a1a;
+    background: #ccc;
+    text: {
+      transform:uppercase;
+      align:center;
+    }
+    &:before {
+      content: "";
+      left:-0.5em;
+      top:0;
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-left: 0.5em solid transparent;
+      border-bottom: 0.5em solid #888;
+    }
+    &#fixed {
+      color:#fff;
+      background: $contrast1;
+      &:before {
+        border-bottom: 0.5em solid #4B8304;
+      }
+    }
+  }
+}
+
+/*OTHER*/
+
+.plain-list {
+  @include list-reset-soft;
+  li {
+    margin-bottom:1em;
+  }
+}
+
+.issue-list{
+  margin: 0 0 1em 0;
+  padding: 0;
+  border-bottom: 0.25em solid $primary;
+  li{
+    list-style: none;
+    background: #f6f6f6;
+    margin: 0.25em 0 0 0;
+    padding: 0.5em 1em;
+    display:block;
+    .update-wrap {
+      display:table;
+      width:100%;
+      .update-text,
+      .update-img {
+        display:table-cell;
+        vertical-align:top;
+        p {
+          margin-bottom: 0.5em;
+        }
+      }
+      .update-img {
+        text-align:right;
+        img {
+          margin:-0.5em -1em 0 0.5em;
+          height:auto;
+        }
+      }
+    }
+  }
+}
+//display:table fixes
+.ie7, .ie7 {
+  .issue-list li .update-wrap {
+    .update-text {
+      float:left;
+      width:19em;
+    }
+    .update-img {
+      float:right;
+    }
+  }
+}
+
+.issue-list-a {
+  margin: 0 0 1em 0;
+  padding: 0;
+  border-bottom: 0.25em solid $primary;
+  li {
+    list-style: none;
+    margin:0;
+    padding:0;
+    a {
+      margin: 0.25em 0 0 0;
+      display:table;
+      background: #f6f6f6;
+      color:#222222;
+      width:100%;
+      &:hover {
+        text-decoration:none;
+        color:#222222;
+        background:#e6e6e6;
+      }
+      .text,
+      .img {
+        display:table-cell;
+        vertical-align:top;
+      }
+      .img {
+        text-align:right;
+        img {
+          height:auto;
+        }
+      }
+      .text {
+        padding:0.25em 1em;
+        h4 {
+          margin:0;
+        }
+        small {
+          color:#808080;
+        }
+      }
+    }
+    >p {
+      margin: 0.25em 0 0 0;
+      padding: 0.5em 1em;
+      background: #f6f6f6;
+    }
+  }
+}
+.list-a {
+  @extend .issue-list-a;
+  a {
+    padding:0.5em 1em;
+    font-weight:bold;
+  }
+}
+//display:table fixes
+.ie6, .ie7 {
+  .issue-list-a {
+    overflow:hidden;
+    li a {
+      clear:both;
+      width:auto;
+      display:block;
+      overflow:hidden;
+      .text {
+        float:left;
+        width:18em;
+      }
+      .img {
+        width:6.25em;
+        float:right;
+      }
+    }
+  }
+}
+.ie6 .issue-list-a li a {
+  height:5.5em;
+  .img img {
+    height:60px;
+  }
+}
+
+// fancybox gallery images have a magnifying glass in the corner
+.update-img {
+  a {
+    @include inline-block;
+    position:relative;
+    span {
+      position:absolute;
+      top:0;
+      right:0;
+      display:block;
+      width:20px;
+      height:20px;
+      opacity: 0.5;
+      background:#fff url(images/sprite.png) -16px -1098px no-repeat;
+      //hide text - http://nicolasgallagher.com/another-css-image-replacement-technique/
+      font: 0/0 a;
+      color: transparent;
+    }
+    &:hover span {
+      opacity: 1;
+    }
+  }
+}
+//bit of a hack - as we can't use em's, push the span out to the right
+//by how much it would be if the user did not resize the text
+.issue-list li .update-wrap .update-img a span {
+  right:-16px;
+  top:-8px;
+}
+
+.problem-header {
+  margin-bottom:1em;
+}
+.problem-header .update-img {
+    float: right;
+    margin-left: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+// map stuff
+#map_box{
+  @extend .full-width;
+  background: #333;
+  height: 29em;
+  margin-bottom: 1em;
+  overflow: hidden;
+  position: relative;
+  #map {
+    width:100%;
+    height:100%;
+  }
+}
+
+// OpenLayers fix for navigation being top right
+// Left and right so that zoom can be left, pan right.
+#fms_pan_zoom {
+  right: 0.5em !important;
+  top: 0.5em !important;
+  left: 0.5em !important;
+}
+// The left and right of the above causes the navigation to move off-screen left in IE6.
+// XXX Need to check IE7
+.ie6 #fms_pan_zoom {
+  left: auto !important;
+}
+
+// Openlayers map controls (overrides)
+#fms_pan_zoom_panup,
+#fms_pan_zoom_pandown,
+#fms_pan_zoom_panleft,
+#fms_pan_zoom_panright,
+#fms_pan_zoom_zoomin,
+#fms_pan_zoom_zoomout {
+  width:36px !important;
+  height:36px !important;
+  text-indent:-999999px;
+  opacity:0.85;
+  background:url('images/sprite.png') no-repeat;
+  &:hover {
+    opacity:1;
+  }
+  filter: none !important; // Override OpenLayers PNG handling of the navigation
+}
+
+#fms_pan_zoom_zoomworld {
+  display:none !important;
+  visibility:none !important;
+}
+
+#fms_pan_zoom_panup {
+  background-position:-42px -222px;
+  right:30px !important;
+  left: auto !important;
+  top:0 !important;
+}
+#fms_pan_zoom_pandown {
+  background-position:-42px -282px;
+  right:30px !important;
+  left: auto !important;
+  top:72px !important;
+}
+#fms_pan_zoom_panleft {
+  background-position:-12px -252px;
+  width:48px !important;
+  right:48px !important;
+  left: auto !important;
+  top:36px !important;
+}
+#fms_pan_zoom_panright {
+  background-position:-60px -252px;
+  width:48px !important;
+  right:0 !important;
+  left: auto !important;
+  top:36px !important;
+}
+#fms_pan_zoom_zoomin {
+  background-position:-152px -223px;
+  height:44px !important;
+  left:0 !important;
+  top:0 !important;
+}
+#fms_pan_zoom_zoomout {
+  background-position:-152px -259px;
+  height:44px !important;
+  left:0 !important;
+  top:44px !important;
+}
+
+//hide pins, show old reports etc
+#sub_map_links {
+  position: absolute;
+  left: 0;
+  right:0;
+  bottom: 0;
+  z-index: 1100;
+  background:#333;
+  background:rgba(0, 0, 0, 0.7);
+  margin:0;
+  a {
+    @include inline-block;
+    font-size:0.6875em;
+    color:#fff;
+    padding:0.6em 3em 0.5em 1em;
+    background-repeat:no-repeat;
+    &#hide_pins_link {
+      background-image:url('images/sprite.png');
+      background-position: right -3976px;
+    }
+    &#all_pins_link {
+      background-image:url('images/sprite.png');
+      background-position: right -4022px;
+    }
+    &#map_permalink {
+      background-image:url('images/sprite.png');
+      background-position: right -4070px;
+    }
+    &.feed {
+      background-image:url('images/sprite.png');
+      background-position: right -3936px;
+    }
+    &:hover {
+      background-color:#000;
+      text-decoration:none;
+    }
+  }
+}
+
+.ie6 #sub_map_links a {
+  &#hide_pins_link {
+    background-image:url('images/ie_sub_map_links_sprite.gif');
+    background-position: right 1px;
+  }
+  &#all_pins_link {
+    background-image:url('images/ie_sub_map_links_sprite.gif');
+    background-position: right -45px;
+  }
+  &#map_permalink {
+    background-image:url('images/ie_sub_map_links_sprite.gif');
+    background-position: right -93px;
+  }
+}
+
+#mob_sub_map_links {
+  position: absolute;
+  z-index:1100;
+  bottom:0;
+  display:table;
+  margin:0;
+  width:100%;
+  background:rgba(0, 0, 0, 0.7);
+  a {
+    color:#fff;
+    width:50%;
+    padding:0.5em 0;
+    font-size:1em;
+    display:table-cell;
+    text-align:center;
+    &:hover {
+      background:#000;
+      text-decoration:none;
+    }
+  }
+  &.map_complete {
+    background:none;
+    display:block;
+    border-bottom:4px solid #fff;
+    a#try_again {
+      display:block;
+      margin:0 auto 6em auto;
+      background:rgba(0, 0, 0, 0.8);
+      @include border-radius(0.5em);
+    }
+    a#mob_ok {
+      position:absolute;
+      right:1em;
+      bottom:0;
+      height:20px;
+      padding-top:30px;
+      display:block;
+      width:4em;
+      background:#fff url('images/sprite.png') 12px -4140px no-repeat;
+      color:#000;
+    }
+  }
+}
+
+.mobile-map-banner {
+  margin:0;
+  position: absolute;
+  top:0;
+  left:0;
+  right:0;
+  font-size:0.75em;
+  background:rgba(0, 0, 0, 0.7);
+  padding:0.75em 30px;
+  a {
+    @include button-reset(#333, #1a1a1a, #1a1a1a, #fff, #333, #1a1a1a, #1a1a1a, #fff);
+    font: {
+      weight:normal;
+      size:0.875em;
+    }
+    line-height:1;
+    padding:0.5em 0.75em;
+    position:absolute;
+    left:0.3em;
+    top:0.3em;
+  }
+}
+
+.olControlAttribution {
+    bottom: 3.25em !important;
+    right: 0.25em !important;
+    left: 0.25em !important;
+    color: #222222;
+    font-size:0.75em !important;
+}
+.olControlAttribution img {
+    vertical-align: bottom;
+}
+.olControlPermalink {
+    bottom: 3px !important;
+    right: 3px;
+}
+
+/* Drag is only present in noscript form. XXX Copy from core. */
+#drag {
+    input, img {
+        position: absolute;
+        border: none;
+        max-width: none;
+    }
+    input {
+        cursor: crosshair;
+        background-color: #cccccc;
+    }
+    img {
+        cursor: move;
+    }
+    img.pin {
+        z-index: 100;
+        background-color: inherit;
+    }
+    a img.pin {
+        cursor: pointer;
+        cursor: hand;
+    }
+}
+
+// only on mobile, this is a sidebar on desk (#report-a-problem-sidebar)
+a.rap-notes-trigger,
+a:hover.rap-notes-trigger {
+  display:block;
+  width:90%;
+  padding-left:5%;
+  padding-right:5%;
+}
+.rap-notes {
+  margin:1em 0;
+}
+
+//report a problem tabs
+#problems-nav {
+  padding:0 1em;
+  overflow:hidden;
+  border-bottom:0.25em solid #333;
+  ul {
+    @include list-reset-soft;
+    display:table;
+    width:100%;
+    li {
+      display:table-cell;
+      border-right:0.25em solid #fff;
+      &:last-child {
+        border-right:none;
+      }
+      a {
+        display:block;
+        background:#e2e2e2;
+        color:#333;
+        padding:1em;
+        text: {
+          transform:uppercase;
+          align:center;
+        }
+        &:hover {
+          text-decoration:none;
+          background:#e6e6e6;
+        }
+        &.active {
+          background:#333;
+          color:#fff;
+        }
+      }
+    }
+  }
+}
+
+//display:table fixes
+.ie6, .ie7 {
+  #problems-nav {
+    clear:both;
+    margin:0;
+    padding:0;
+    ul li {
+      float:left;
+    }
+  }
+}
+
+
+table.nicetable {
+  width:100%;
+  margin-bottom:2em;
+  thead {
+    border-bottom:0.25em solid #ccc;
+    th {
+      font-size:0.75em;
+    }
+  }
+  tr {
+    &.a {
+      background:#f6f6f6;
+    }
+    &:nth-child(even) {
+      background:#f6f6f6;
+    }
+    &.gone {
+        color: #666666;
+        background-color: #cccccc;
+    }
+    &:hover {
+      background:#FFF5CC;
+      cursor:pointer;
+    }
+    td {
+      padding:0.25em;
+      a {
+        &:hover {
+          text-decoration:none;
+        }
+      }
+    }
+  }
+  .title {
+    text-align:left;
+  }
+  .data {
+    width:12%;
+  }
+}
+
+.promo {
+  @extend .full-width;
+  background:$primary;
+  padding:1em;
+  margin-bottom:1em;
+  overflow:hidden;
+  position: relative;
+  .close-promo {
+    position:absolute;
+    top:0.5em;
+    right:0.5em;
+    display:block;
+    width:16px;
+    height:16px;
+    text-indent:-999999px;
+    background:url(images/sprite.png) -341px -263px no-repeat;
+    @include border-radius(4px);
+    &:hover {
+      background:#222 url(images/sprite.png) -341px -223px no-repeat;
+    }
+  }
+}
+
+.alert {
+  @extend .full-width;
+  background:#ff0000;
+  padding:1em;
+  margin-bottom:1em;
+  color:#fff;
+  a, a:hover {
+    color:$primary;
+  }
+}
+
+.pagination {
+  text-align:center;
+  padding:0.5em 1em;
+  background:#eee;
+  position:relative;
+  .prev {
+    position:absolute;
+    left:0.5em;
+  }
+  .next {
+    position:absolute;
+    right:0.5em;
+  }
+  a {
+    @include inline-block;
+    background:$primary;
+    padding-left:0.5em;
+    padding-right:0.5em;
+    color:#1a1a1a;
+    &:hover {
+      color:#1a1a1a;
+      text-decoration:none;
+      background:$primary/1.1;
+    }
+  }
+}
+
+// this is a bit of a hack to get some differentation between desk and mobile
+.desk-only {
+  display:none !important;
+}
+
+// hide anything with this class if js is working
+.js .hidden-js {
+  display: none;
+  visibility: hidden;
+}
+
+// hide anything with this class if js is NOT working
+.no-js .hidden-nojs {
+  display: none !important;
+  visibility: hidden;
+}
+
+
+/* Front page */
+#front-main {
+  text-align:center;
+  h2 {
+    font: {
+      style:italic;
+      family: 'helvetica', 'arial', sans-serif;
+      size:1.1875em;
+    }
+    color:#4d4d4d;
+  }
+  #postcodeForm {
+    @extend .full-width;
+    padding:1em;
+    background:$primary;
+    font-family: 'helvetica', 'arial', sans-serif;
+    label {
+      margin:0;
+    }
+    div {
+      display:table;
+      width:100%;
+      background:#fff;
+      border:1px solid #F3B11E;
+      input#pc {
+        display:table-cell;
+        margin:0;
+        padding:0.25em 2%;
+        width:82%;
+        border:none;
+        background:none;
+        line-height:1.5em;
+      }
+      input#submit {
+        display:table-cell;
+        border:none;
+        padding:0;
+        margin:0;
+        width:14%;
+        height:35px;
+        background:#000;
+        color:#fff;
+        text-transform:uppercase;
+        @include border-radius(0);
+        &:hover {
+          background:#333;
+        }
+      }
+    }
+  }
+  a#geolocate_link {
+    @include inline-block;
+    vertical-align:top;
+    background:#1a1a1a;
+    color:#C8C8C8;
+    padding:0.5em;
+    font: {
+      family: 'helvetica', 'arial', sans-serif;
+      size:0.8125em;
+    }
+    @include border-radius(0 0 0.25em 0.25em);
+    &:hover {
+      text-decoration:none;
+      background:#2a2a2a;
+    }
+  }
+}
+
+#front-howto {
+  #front_stats {
+    display:table;
+    width:100%;
+    background:$primary;
+    font-family: 'helvetica', 'arial', sans-serif;
+    div {
+      display:table-cell;
+      text-align:center;
+      padding:1em;
+      line-height:1.25em;
+      font: {
+        size:0.8125em;
+        weight:bold;
+      }
+      big {
+        display:block;
+        margin-bottom:0.5em;
+        font-size:1.5385em;
+      }
+    }
+  }
+}
+
+#front-recently {
+  .issue-list-a {
+    border-bottom:none;
+    margin-bottom:0;
+  }
+}
+
+#alerts {
+    ul {
+        margin-bottom: 1em;
+    }
+    li {
+        padding: 0em;
+        margin-bottom: 0.5em;
+    }
+    .a {
+        background: #f6f6f6;
+    }
+    img[width="16"] {
+        float: right;
+    }
 }
 
