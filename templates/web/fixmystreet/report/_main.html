@@ -1,4 +1,4 @@
-<div class="problem-header">
+<div class="problem-header cf">
 	<h1>[% problem.title | html %]</h1>
 
 	<p><em>
@@ -12,9 +12,8 @@
 	[% END %]
 	</em></p>
 
+	[% INCLUDE 'report/photo.html' object=problem center=1 %]
 
 	[% add_links( problem.detail ) | html_para %]
 
-
-	[% INCLUDE 'report/photo.html' object=problem center=1 %]
 </div>

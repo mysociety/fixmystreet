@@ -987,7 +987,11 @@ a:hover.button-left {
 .problem-header {
   margin-bottom:1em;
 }
-
+.problem-header .update-img {
+    float: right;
+    margin-left: 0.5em;
+    margin-bottom: 0.5em;
+}
 
 // map stuff
 #map_box{
