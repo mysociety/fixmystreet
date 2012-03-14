@@ -512,7 +512,7 @@ p.label-valid {
         font-size: 1.25em;
         border-bottom: 0.25em solid #333;
       }
-      a:hover{
+      a:hover, span.hover {
         background:  #333;
         color:#fff;
         text-decoration: none;

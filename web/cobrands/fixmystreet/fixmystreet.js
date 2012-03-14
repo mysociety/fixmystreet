@@ -120,6 +120,11 @@ $(function(){
                     .text('Place pin on map')
 	            .prepend('<a href="/">home</a>');
             }
+            $('span.report-a-problem-btn').on('click.reportBtn', function(){
+                $('html, body').animate({scrollTop:0}, 500);
+            }).css({ cursor:'pointer' }).on('hover.reportBtn', function(){
+                $(this).toggleClass('hover');
+            });
         } else {
             // Make map full screen on non-mobile sizes.
             $html.removeClass('mobile');
@@ -146,6 +151,7 @@ $(function(){
                     .prependTo('#side')
                     .text('Click map to report a problem');
             }
+            $('span.report-a-problem-btn').css({ cursor:'' }).off('.reportBtn');
         }
         last_type = type;
     });
