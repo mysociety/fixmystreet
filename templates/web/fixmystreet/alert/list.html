@@ -1,0 +1,40 @@
+[%
+    IF pretty_pc;
+        title = tprintf( loc("Local RSS feeds and email alerts for ‘%s’"), pretty_pc );
+    ELSE;
+        title = loc('Local RSS feeds and email alerts');
+    END;
+%]
+
+[% INCLUDE 'header.html', title = title, bodyclass = 'twothirdswidthpage' %]
+
+[% IF pretty_pc %]
+    [%
+        pretty_pc = pretty_pc | html | replace(' ', '&nbsp;');
+        title = tprintf( loc("Local RSS feeds and email alerts for ‘%s’"), pretty_pc );
+    %]
+[% END %]
+
+
+<h1>[% title %]</h1>
+
+<form id="alerts" name="alerts" method="post" action="/alert/subscribe">
+
+[%# XXX These photos should perhaps be in a vertical column on the right hand side, as currently. %]
+  [% IF photos.size %]
+    <div class="sticky-sidebar">
+      <aside>
+        <h2>[% loc('Photos of recent nearby reports') %]</h2>
+        [% FOREACH p IN photos %]
+            <a href="/report/[% p.id %]"><img border="0" height="100"
+                src="/photo/[% p.id %].tn.jpeg" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
+        [% END %]
+      </aside>
+    </div>
+  [% END %]
+
+  [% INCLUDE 'alert/_list.html' %]
+
+</form>
+
+[% INCLUDE 'footer.html' %]

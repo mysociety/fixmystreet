@@ -1,0 +1,86 @@
+[%
+    PROCESS "maps/${map.type}.html" IF problems.size;
+    INCLUDE 'header.html', title = loc('Your Reports'), bodyclass = 'mappage'
+%]
+
+[% IF problems.size %]
+    [% map_html %]
+    </div>
+    <div id="side">
+[% ELSE %]
+    <div id="skipped-map">
+[% END %]
+
+<h1>[% loc('Your Reports') %]</h1>
+
+[% INCLUDE 'pagination.html',
+    pager = problems_pager,
+    param = 'p'
+%]
+
+[% FOREACH p = problems.confirmed %]
+    [% IF loop.first %]<h2>[% loc('Open reports') %]</h2>[% END %]
+    [% INCLUDE problem %]
+[% END %]
+
+[% FOREACH p = problems.fixed %]
+    [% IF loop.first %]<h2>[% loc('Fixed reports') %]</h2>[% END %]
+    [% INCLUDE problem %]
+[% END %]
+
+[% FOREACH p = problems.closed %]
+    [% IF loop.first %]<h2>[% loc('Closed reports') %]</h2>[% END %]
+    [% INCLUDE problem %]
+[% END %]
+
+[%# FOREACH p = problems.unconfirmed;
+    IF loop.first;
+        '<h2>' _ loc('Unconfirmed reports') _ '</h2>';
+    END;
+    INCLUDE problem;
+END %]
+
+[% FOREACH u IN updates %]
+    [% IF loop.first %]
+        <h2>[% loc('Your updates') %]</h2>
+        [% INCLUDE 'pagination.html',
+            pager = updates_pager,
+            param = 'u'
+        %]
+        <ul class="issue-list full-width">
+    [% END %]
+
+    <li>&ldquo;[% u.text | html %]&rdquo;
+    &ndash; <a href="[% c.uri_for( '/report', u.problem_id ) %]#update_[% u.id %]">[% u.problem.title | html %]</a>.
+        <p><small class="council_sent_info">
+        [% tprintf( loc("Added %s"), prettify_epoch( u.confirmed_local.epoch, 'date' ) ) %]
+        </small></p>
+    </li>
+    [% "</ul>" IF loop.last %]
+[% END %]
+
+</div>
+
+[% INCLUDE 'footer.html' %]
+
+[% BLOCK problem %]
+    [% "<ul class='issue-list-a full-width'>" IF loop.first %]
+
+    <li>
+        <a href="[% c.uri_for( '/report', p.id ) %]">
+            <div class="text">
+                <h4>[% p.title | html %]</h4>
+                <small>
+                    [% IF p.whensent %]
+                        [% tprintf( loc("Reported %s, to %s"), prettify_epoch( p.confirmed_local.epoch, 'date' ), p.body(c) ) %]
+                    [% ELSE %]
+                        [% tprintf( loc("Reported %s"), prettify_epoch( p.confirmed_local.epoch, 'date' ) ) %]
+                    [% END %]
+                </small>
+            </div>    
+        </a>
+    </li>
+
+    [% "</ul>" IF loop.last %]
+[% END %]
+

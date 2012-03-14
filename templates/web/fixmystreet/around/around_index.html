@@ -1,0 +1,52 @@
+[% INCLUDE 'header.html', title => loc('Reporting a problem'), bodyclass => 'mappage' %]
+
+[%
+    # NOTE ON PARTIAL REPORTS:
+    #
+    # partial reports get a bit of extra text added, the form goes to
+    # '/report/new' and the partial hidden field is added to the form.
+%]
+
+[%
+    question
+        =  c.cobrand.enter_postcode_text()
+        || loc("Enter a nearby GB postcode, or street name and area");
+%]
+
+<form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
+    <fieldset>
+        <label for="pc">[% question %]:</label>
+        <input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200">
+        <input class="green-btn final-submit" type="submit" value="[% loc('Go') %]" id="submit">
+
+        [% IF partial_token %]
+            <input type="hidden" name="partial" value="[% partial_token.token %]">
+        [% END %]
+    </fieldset>
+</form>
+
+[% IF location_offshore %]
+  <p class="error">[% loc('That spot does not appear to be covered by a council. If you have tried to report an issue past the shoreline, for example, please specify the closest point on land.') %]</p>
+[% ELSIF location_error %]
+    <p class="error">[% location_error %]</p>
+[% END %]
+
+[% IF possible_location_matches %]
+    <p>[% loc('We found more than one match for that location. We show up to ten matches, please try a different search if yours is not here.') %]</p>
+    <ul class="pc_alternatives">
+        [% FOREACH match IN possible_location_matches %]
+        <li><a href="/around?latitude=[% match.latitude | uri %];longitude=[% match.longitude | uri %]">[% match.address | html %]</a></li>
+        [% END %]
+    </ul>
+[% END %]
+
+[% IF partial_token %]
+    <p style="margin-top: 0; color: #cc0000;">
+        <img align="right" src="/photo/[% partial_report.id %].jpeg" hspace="5">
+        [% loc("Thanks for uploading your photo. We now need to locate your problem, so please enter a nearby street name or postcode in the box below&nbsp;:") %]
+    </p>
+[% END %]
+
+
+
+[% INCLUDE 'footer.html' %]

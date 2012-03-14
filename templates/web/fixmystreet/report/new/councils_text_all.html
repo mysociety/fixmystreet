@@ -1,0 +1,19 @@
+<p>
+[% IF all_councils.${area_ids_to_list.0}.type == 'LBO' %]
+[%
+    tprintf(
+        loc('All the information you provide here will be sent to <strong>%s</strong> or a relevant local body such as <strong>TfL</strong>, via the London Report-It system.'),
+        all_council_names.join( '</strong>' _ loc(' or ') _ '<strong>' )
+    );
+%]
+[% ELSE %]
+[%
+    tprintf(
+        loc('All the information you provide here will be sent to <strong>%s</strong>.'),
+        all_council_names.join( '</strong>' _ loc(' or ') _ '<strong>' )
+    );
+%]
+[% END %]
+
+[% loc('The subject and details of the problem will be public, plus your name if you give us permission.') %]
+</p>

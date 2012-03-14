@@ -1,11 +1,15 @@
 function set_map_config(perm) {
+    var permalink_id;
+    if ($('#map_permalink').length) {
+        permalink_id = 'map_permalink';
+    }
     fixmystreet.controls = [
         new OpenLayers.Control.ArgParser(),
         //new OpenLayers.Control.LayerSwitcher(),
         new OpenLayers.Control.Navigation(),
-        perm,
+        new OpenLayers.Control.Permalink(permalink_id),
         new OpenLayers.Control.PermalinkFMS('osm_link', 'http://www.openstreetmap.org/'),
-        new OpenLayers.Control.PanZoomFMS()
+        new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
     ];
 }
 
@@ -37,7 +41,7 @@ OpenLayers.Util.onImageLoadError = function() {
     } else if (this.src.match(/^http:\/\/[def]\.tah\.openstreetmap\.org\//)) {
         // do nothing - this layer is transparent
     } else {
-        OpenLayers.Util.OSM.originalOnImageLoadError;
+        OpenLayers.Util.OSM.originalOnImageLoadError();
     }
 };
 

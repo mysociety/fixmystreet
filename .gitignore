@@ -21,6 +21,7 @@ tags
 /web/cobrands/fixmystreet/*.css
 /local
 
+/web/cobrands/fixmystreet/compass_app_log.txt
 blog/web/wp
 blog/conf/general
 blog/conf/general.deployed

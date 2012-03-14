@@ -283,7 +283,7 @@ sub output_requests : Private {
         my $display_photos = $c->cobrand->allow_photo_display;
         if ($display_photos && $problem->photo) {
             my $url = $c->cobrand->base_url();
-            my $imgurl = $url . "/photo?id=$id";
+            my $imgurl = $url . "/photo/$id.full.jpeg";
             $request->{'media_url'} = [ $imgurl ];
         }
         push(@problemlist, $request);

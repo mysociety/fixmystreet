@@ -30,7 +30,7 @@ libtest-exception-perl
 libipc-run3-perl
 libyaml-perl
 liblist-moreutils-perl
-libhaml-ruby
+ruby-compass | libhaml-ruby
 libtemplate-perl
 postgresql-server-dev-8.4
 gnuplot

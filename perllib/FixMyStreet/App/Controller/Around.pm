@@ -189,7 +189,7 @@ sub display_location : Private {
             {
                 latitude  => $p->latitude,
                 longitude => $p->longitude,
-                colour    => $p->is_fixed ? 'green' : 'red',
+                colour    => 'yellow', # $p->is_fixed ? 'green' : 'red',
                 id        => $p->id,
                 title     => $p->title,
             }
@@ -258,12 +258,11 @@ sub ajax : Path('/ajax') {
       FixMyStreet::Map::map_pins( $c, $interval );
 
     # render templates to get the html
-    my $on_map_list_html =
-      $c->view('Web')
-      ->render( $c, 'around/on_map_list_items.html', { on_map => $on_map } );
-
-    my $around_map_list_html = $c->view('Web')->render(
-        $c,
+    my $on_map_list_html = $c->render_fragment(
+        'around/on_map_list_items.html',
+        { on_map => $on_map }
+    );
+    my $around_map_list_html = $c->render_fragment(
         'around/around_map_list_items.html',
         { around_map => $around_map, dist => $dist }
     );

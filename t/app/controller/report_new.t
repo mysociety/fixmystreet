@@ -191,7 +191,7 @@ foreach my $test (
         changes => {},
         errors  => [
             'Please enter your email',
-'Please enter your full name, councils need this information - if you do not wish your name to be shown on the site, untick the box',
+'Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below',
         ],
     },
     {
@@ -213,7 +213,7 @@ foreach my $test (
         changes => {},
         errors  => [
             'Please enter your email',
-'Please enter your full name, councils need this information - if you do not wish your name to be shown on the site, untick the box',
+'Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below',
         ],
     },
     {
@@ -360,7 +360,7 @@ foreach my $test (
         "submit location" );
 
     # click through to the report page
-    $mech->follow_link_ok( { text => 'skip this step', },
+    $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
         "follow 'skip this step' link" );
 
     $mech->submit_form_ok(
@@ -473,7 +473,7 @@ subtest "test password errors for a user who is signing in as they report" => su
         "submit location" );
 
     # click through to the report page
-    $mech->follow_link_ok( { text => 'skip this step', },
+    $mech->follow_link_ok( { text => 'Skip this step', },
         "follow 'skip this step' link" );
 
     $mech->submit_form_ok(
@@ -493,7 +493,7 @@ subtest "test password errors for a user who is signing in as they report" => su
 
     # check that we got the errors expected
     is_deeply $mech->form_errors, [
-        'There was a problem with your email/password combination. Passwords and user accounts are a brand new service, so you probably do not have one yet – please fill in the right hand side of this form to get one.'
+        "There was a problem with your email/password combination. If you cannot remember your password, or do not have one, please fill in the \x{2018}sign in by email\x{2019} section of the form.",
     ], "check there were errors";
 };
 
@@ -520,7 +520,7 @@ subtest "test report creation for a user who is signing in as they report" => su
         "submit location" );
 
     # click through to the report page
-    $mech->follow_link_ok( { text => 'skip this step', },
+    $mech->follow_link_ok( { text => 'Skip this step', },
         "follow 'skip this step' link" );
 
     $mech->submit_form_ok(
@@ -614,7 +614,7 @@ foreach my $test (
             "submit location" );
 
         # click through to the report page
-        $mech->follow_link_ok( { text => 'skip this step', },
+        $mech->follow_link_ok( { text => 'Skip this step', },
             "follow 'skip this step' link" );
 
         # check that the fields are correctly prefilled

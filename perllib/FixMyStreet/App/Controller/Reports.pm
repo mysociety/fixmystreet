@@ -102,7 +102,6 @@ sub ward : Path : Args(2) {
     $c->forward( 'load_parent' );
     $c->forward( 'check_canonical_url', [ $council ] );
     $c->forward( 'load_and_group_problems' );
-    $c->forward( 'sort_problems' );
 
     my $council_short = $c->cobrand->short_name( $c->stash->{council}, $c->stash->{areas_info} );
     $c->stash->{rss_url} = '/rss/reports/' . $council_short;
@@ -344,6 +343,8 @@ sub load_and_group_problems : Private {
                 'id', 'council', 'state', 'areas', 'latitude', 'longitude', 'title', 'cobrand',
                 { duration => { extract => "epoch from current_timestamp-lastupdate" } },
                 { age      => { extract => "epoch from current_timestamp-confirmed"  } },
+                { confirmed => { extract => 'epoch from confirmed' } },
+                { photo    => 'photo is not null' },
             ],
             order_by => { -desc => 'lastupdate' },
             rows => 100,
@@ -352,9 +353,9 @@ sub load_and_group_problems : Private {
     $c->stash->{pager} = $problems->pager;
     $problems = $problems->cursor; # Raw DB cursor for speed
 
-    my ( %fixed, %open, @pins );
+    my ( %problems, @pins );
     my $re_councils = join('|', keys %{$c->stash->{areas_info}});
-    my @cols = ( 'id', 'council', 'state', 'areas', 'latitude', 'longitude', 'title', 'cobrand', 'duration', 'age' );
+    my @cols = ( 'id', 'council', 'state', 'areas', 'latitude', 'longitude', 'title', 'cobrand', 'duration', 'age', 'confirmed', 'photo' );
     while ( my @problem = $problems->next ) {
         my %problem = zip @cols, @problem;
         $c->log->debug( $problem{'cobrand'} . ', cobrand is ' . $c->cobrand->moniker );
@@ -362,7 +363,7 @@ sub load_and_group_problems : Private {
             # Problem was not sent to any council, add to possible councils
             $problem{councils} = 0;
             while ($problem{areas} =~ /,($re_councils)(?=,)/g) {
-                add_row( \%problem, $1, \%fixed, \%open, \@pins );
+                add_row( \%problem, $1, \%problems, \@pins );
             }
         } else {
             # Add to councils it was sent to
@@ -371,35 +372,17 @@ sub load_and_group_problems : Private {
             $problem{councils} = scalar @council;
             foreach ( @council ) {
                 next if $c->stash->{council} && $_ != $c->stash->{council}->{id};
-                add_row( \%problem, $_, \%fixed, \%open, \@pins );
+                add_row( \%problem, $_, \%problems, \@pins );
             }
         }
     }
 
     $c->stash(
-        fixed         => \%fixed,
-        open          => \%open,
+        problems      => \%problems,
         pins          => \@pins,
     );
 
     return 1;
-}
-
-sub sort_problems : Private {
-    my ( $self, $c ) = @_;
-
-    my $id = $c->stash->{council}->{id};
-    my $fixed = $c->stash->{fixed};
-    my $open = $c->stash->{open};
-
-    foreach (qw/new old/) {
-        $c->stash->{fixed}{$id}{$_} = [ sort { $a->{duration} <=> $b->{duration} } @{$fixed->{$id}{$_}} ]
-            if $fixed->{$id}{$_};
-    }
-    foreach (qw/new older unknown/) {
-        $c->stash->{open}{$id}{$_} = [ sort { $a->{age} <=> $b->{age} } @{$open->{$id}{$_}} ]
-            if $open->{$id}{$_};
-    }
 }
 
 sub redirect_index : Private {
@@ -419,24 +402,13 @@ sub redirect_area : Private {
     $c->res->redirect( $c->uri_for($url) );
 }
 
-my $fourweeks = 4*7*24*60*60;
 sub add_row {
-    my ( $problem, $council, $fixed, $open, $pins ) = @_;
-    my $duration_str = ( $problem->{duration} > 2 * $fourweeks ) ? 'old' : 'new';
-    my $type = ( $problem->{duration} > 2 * $fourweeks )
-        ? 'unknown'
-        : ($problem->{age} > $fourweeks ? 'older' : 'new');
-    # Fixed problems are either old or new
-    push @{$fixed->{$council}{$duration_str}}, $problem if
-        exists FixMyStreet::DB::Result::Problem->fixed_states()->{$problem->{state}};
-    # Open problems are either unknown, older, or new
-    push @{$open->{$council}{$type}}, $problem if 
-        exists FixMyStreet::DB::Result::Problem->open_states->{$problem->{state}};
-
+    my ( $problem, $council, $problems, $pins ) = @_;
+    push @{$problems->{$council}}, $problem;
     push @$pins, {
         latitude  => $problem->{latitude},
         longitude => $problem->{longitude},
-        colour    => FixMyStreet::DB::Result::Problem->fixed_states()->{$problem->{state}} ? 'green' : 'red',
+        colour    => 'yellow', # FixMyStreet::DB::Result::Problem->fixed_states()->{$problem->{state}} ? 'green' : 'red',
         id        => $problem->{id},
         title     => $problem->{title},
     };

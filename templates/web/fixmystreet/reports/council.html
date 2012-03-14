@@ -1,0 +1,131 @@
+[% IF ward %]
+    [% name = "$ward.name, $council.name"
+       thing = loc('ward')
+    %]
+[% ELSE %]
+    [% name = council.name
+       thing = loc('council')
+    %]
+[% END %]
+
+[%
+    PROCESS "maps/${map.type}.html";
+    INCLUDE 'header.html',
+    title = tprintf(loc('%s - Summary reports'), name)
+    context = 'reports'
+    bodyclass = 'mappage'
+    rss = [ tprintf(loc('Problems within %s, FixMyStreet'), name), rss_url ]
+%]
+
+[% map_html %]
+</div>
+
+<div id="side">
+
+<h1 id="reports_heading">
+    [% IF ward %]
+    [% ward.name %]<span>, </span><a href="[% council_url %]">[% council.name %]</a>
+    [% ELSE %]
+    [% council.name %]
+    [% END %]
+</h1>
+
+[% IF council.generation_high == 10 AND c.cobrand.country == 'GB' %]
+    <p class="alert">This council no longer exists.
+    [% IF council.name.match('Penwith|Kerrier|Carrick|Restormel|Caradon|North Cornwall') %]
+    Its area is now covered by <a href="/reports/Cornwall">Cornwall Council</a>.
+    [% ELSIF council.name.match('Durham|Easington|Sedgefield|Teesdale|Wear Valley|Derwentside|Chester le Street') %]
+    Its area is now covered by <a href="/reports/Durham+County">Durham County Council</a>.
+    [% ELSIF council.name.match('Blyth Valley|Wansbeck|Castle Morpeth|Tynedale|Alnwick|Berwick upon Tweed') %]
+    Its area is now covered by <a href="/reports/Northumberland">Northumberland County Council</a>.
+    [% ELSIF council.name.match('North Shropshire|Oswestry|Shrewsbury and Atcham|South Shropshire|Bridgnorth') %]
+    Its area is now covered by <a href="/reports/Shropshire">Shropshire Council</a>.
+    [% ELSIF council.name.match('Salisbury|West Wiltshire|Kennet|North Wiltshire') %]
+    Its area is now covered by <a href="/reports/Wiltshire">Wiltshire Council</a>.
+    [% ELSIF council.name.match('Ellesmere Port and Neston|Vale Royal|Chester') %]
+    Its area is now covered by <a href="/reports/Cheshire+West+and+Chester">Cheshire West and Chester Council</a>.
+    [% ELSIF council.name.match('Macclesfield|Congleton|Crewe and Nantwich') %]
+    Its area is now covered by <a href="/reports/Cheshire+East">Cheshire East Council</a>.
+    [% ELSIF council.name.match('Mid Bedfordshire|South Bedfordshire') %]
+    Its area is now covered by <a href="/reports/Central+Bedfordshire">Central Bedfordshire Council</a>.
+    [% ELSIF council.name.match('Cheshire') %]
+    Its area is now covered by <a href="/reports/Cheshire+West+and+Chester">Cheshire West and Chester Council</a> or
+    <a href="/reports/Cheshire+East">Cheshire East Council</a>.
+    [% ELSIF council.name.match('Bedfordshire') %]
+    Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a> or
+    <a href="/reports/Central+Bedfordshire">Central Bedfordshire Council</a>.
+    [% END %]
+    </p>
+[% ELSE %]
+    <div class="shadow-wrap">
+        <ul id="key-tools"[% IF NOT children.size %] class="singleton"[% END %]>
+            <li><a rel="nofollow" id="key-tool-updates-area" class="feed" href="[% rss_url %]">[% tprintf(loc('Get updates of problems in this %s'), thing) %]</a></li>
+            [% IF children.size %]
+            <li><a href="#council_wards" id="key-tool-wards" class="chevron">[% loc('Wards of this council') %]</a></li>
+            [% END %]
+        </ul>
+    </div>
+[% END %]
+
+[% INCLUDE 'reports/cobrand_stats.html' %]
+
+[% IF children.size %]
+<section id="council_wards" class="hidden-js">
+    <h2>[% loc('Wards of this council') %]</h2>
+    <p>[% loc('Follow a ward link to view only reports within that ward.') %]</p>
+    <ul class="issue-list-a full-width">
+        [% FOR child IN children.values.sort('name') %]
+        <li><a href="[% child.url %]"><span class="text">[% child.name %]</span></a></li>
+        [% END %]
+    </ul>
+</section>
+[% END %]
+
+[% IF c.cobrand.moniker == 'fixmystreet' %]
+<p class="promo">
+    FixMyStreet is now available for local council websites.
+    <a href="/for-councils">Find&nbsp;out&nbsp;more</a>.
+</p>
+[% END %]
+
+[% INCLUDE 'pagination.html', param = 'p' %]
+
+<section class="full-width">
+    [% INCLUDE column
+        problems = problems.${council.id}
+    %]
+</section>
+
+[% INCLUDE 'pagination.html', param = 'p' %]
+
+</div>
+[% INCLUDE 'footer.html' %]
+
+[% BLOCK column %]
+[% IF problems %]
+
+<ul class="issue-list-a">
+[% FOREACH problem IN problems %]
+    <li>
+        <a href="[% c.uri_for('/report/' _ problem.id) %]">
+            <div class="text">
+                <h4>[% problem.title | html %]</h4>
+                <small>[% prettify_epoch( problem.confirmed, 1 ) %]</small>
+                [% IF problem.councils > 1 %] <small>[% loc('(sent to both)') %]</small> [% END %]
+                [% IF c.cobrand.moniker != 'emptyhomes' %]
+                    [% IF problem.councils == 0 %] <small>[% loc('(not sent to council)') %]</small> [% END %]
+                [% END %]
+            </div>
+            [% IF problem.photo %]
+            <div class="img">
+                <img height="60" width="90" src="/photo/[% problem.id %].fp.jpeg" alt="">
+            </div>
+            [% END %]
+        </a>
+    </li>
+[% END %]
+</ul>
+
+[% END %]
+[% END %]
+

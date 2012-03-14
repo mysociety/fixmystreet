@@ -62,7 +62,7 @@ Returns the path to the templates for this cobrand - by default
 
 sub path_to_web_templates {
     my $self = shift;
-    return FixMyStreet->path_to( 'templates/web', $self->moniker );
+    return [ FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify ];
 }
 
 1;

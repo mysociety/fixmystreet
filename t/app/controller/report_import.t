@@ -128,7 +128,7 @@ subtest "Submit a correct entry" => sub {
       "check imported fields are shown";
 
     # Check photo present, and still there after map submission (testing bug #18)
-    $mech->content_contains( '<img align="right" src="/photo?id' );
+    $mech->content_contains( '<img align="right" src="/photo/' );
     $mech->content_contains('latitude" value="51.50101"', 'Check latitude');
     $mech->content_contains('longitude" value="-0.141587"', 'Check longitude');
     $mech->submit_form_ok(
@@ -139,7 +139,7 @@ subtest "Submit a correct entry" => sub {
         },
         "New map location"
     );
-    $mech->content_contains( '<img align="right" src="/photo?id' );
+    $mech->content_contains( '<img align="right" src="/photo/' );
     $mech->content_contains('latitude" value="51.50519"', 'Check latitude');
     $mech->content_contains('longitude" value="-0.142608"', 'Check longitude');
 
