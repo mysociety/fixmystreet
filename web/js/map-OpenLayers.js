@@ -54,7 +54,10 @@ function fixmystreet_onload() {
         fixmystreet.map.addLayer(area);
         area.events.register('loadend', null, function(a,b,c) {
             var bounds = area.getDataExtent();
-            if (bounds) { fixmystreet.map.zoomToExtent( bounds ); }
+            if (bounds) {
+                var center = bounds.getCenterLonLat();
+                fixmystreet.map.setCenter(center, fixmystreet.map.getZoomForExtent(bounds), false, true);
+            }
         });
     }
 
