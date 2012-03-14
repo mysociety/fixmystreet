@@ -285,12 +285,22 @@ h4.static-with-rule{
   }
 }
 :-moz-placeholder {
+  color:#888888;
   font: {
     style:italic;
     size:0.9375em;
   }
 }
 :-ms-placeholder {
+  color:#888888;
+  font: {
+    style:italic;
+    size:0.9375em;
+  }
+}
+//this only gets used when the browser doesn't support @placeholder
+.placeholder {
+  color:#888888;
   font: {
     style:italic;
     size:0.9375em;

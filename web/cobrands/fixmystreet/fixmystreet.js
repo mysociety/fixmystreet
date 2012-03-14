@@ -3,15 +3,6 @@
  * FixMyStreet JavaScript
  */
 
-//test for and load placeholder polyfill if neccessary 
-Modernizr.load({
-     test: Modernizr.input.placeholder,
-     nope: [
-             '/js/placeholder_polyfill/placeholder_polyfill.min.css',
-             '/js/placeholder_polyfill/placeholder_polyfill.jquery.min.js'
-           ]
-});
-
 function form_category_onchange() {
     var cat = $('#form_category');
     var args = {
@@ -90,6 +81,7 @@ $(function(){
     var $html = $('html');
 
     $html.removeClass('no-js').addClass('js');
+
 
     // Preload the new report pin
     document.createElement('img').src = '/i/pin-green.png';
@@ -541,10 +533,13 @@ $.fn.drawer = function(id, ajax) {
 
 
 
+
+
+
     /*
      * heightfix the desktop .content div
      *
-     * this must be kept as the last thing done so that the
+     * this must be kept near the end so that the
      * rendered height is used after any page manipulation (such as tabs)
      */
     if(Modernizr.mq('only screen and (min-width:48em)')) {
@@ -552,6 +547,14 @@ $.fn.drawer = function(id, ajax) {
             heightFix(window, '.content', -176);
         }
     }
+
+
+    /*
+     * Placeholder polyfill from https://github.com/mathiasbynens/jquery-placeholder/
+     * 
+     * It needs to be at the end or it won't behave as expected
+     */
+     $('input, textarea').placeholder();
 });
 
 /*
