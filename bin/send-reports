@@ -469,12 +469,15 @@ sub post_barnet_message {
     
     my ($nearest_postcode, $nearest_street);
     for ($h{closest_address}) {
-        $nearest_postcode = substr($1, 0, 10) if /Nearest postcode [^:]+: (\w+\s?\w+)/;
-        $nearest_street = substr($1, 0, 30) if /Nearest road [^:]+: (.*?)(,|$)/m; # "Foo street, London N11 1XX"
+        $nearest_postcode = sprintf("%-10s", $1) if /Nearest postcode [^:]+: ((\w{1,4}\s?\w+|\w+))/;
+        # use partial postcode or comma as delimiter:
+        #    "Foo Street, London N11 1XX" becomes Foo Street
+        #    "Foo Street N11 1XX" becomes Foo Street
+        $nearest_street = sprintf("%-30s", $1) if /Nearest road [^:]+: (.*?)(\b[A-Z]+\d|,|$)/m;         
     }
     my $postcode = $h{postcode} || $nearest_postcode; # use given postcode if available
     
-    # note: endpoint can be of form 'http://username@password:url' (or https, hopefully)
+    # note: endpoint can be of form 'https://username:password@:url'
     my $council_config = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => COUNCIL_ID_BARNET} )->first;
     if ($council_config and $council_config->endpoint) {
         $interface->set_proxy($council_config->endpoint);
