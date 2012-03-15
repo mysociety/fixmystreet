@@ -36,7 +36,7 @@ sub during :LocalRegex('^([0-9a-f]{40})\.temp\.jpeg$') {
     if ( $c->cobrand->default_photo_resize ) {
         $photo = _shrink( $photo, $c->cobrand->default_photo_resize );
     } else {
-        $photo = _shrink( $photo, 'x250' );
+        $photo = _shrink( $photo, '250x250' );
     }
 
     $c->forward( 'output', [ $photo ] );
@@ -85,7 +85,7 @@ sub index :LocalRegex('^(c/)?(\d+)(?:\.(full|tn|fp))?\.jpeg$') {
     } elsif ( $c->cobrand->default_photo_resize ) {
         $photo = _shrink( $photo, $c->cobrand->default_photo_resize );
     } else {
-        $photo = _shrink( $photo, 'x250' );
+        $photo = _shrink( $photo, '250x250' );
     }
 
     $c->forward( 'output', [ $photo ] );
