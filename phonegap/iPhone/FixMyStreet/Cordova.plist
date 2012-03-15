@@ -22,6 +22,7 @@
 	<false/>
 	<key>ExternalHosts</key>
 	<array>
+		<string>*.tilma.mysociety.org</string>
 		<string>mapit.mysociety.org</string>
 		<string>*.tile.openstreetmap.org</string>
 		<string>*.virtualearth.net</string>
