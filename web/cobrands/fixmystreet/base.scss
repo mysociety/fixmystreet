@@ -243,7 +243,7 @@ a:visited {
 .small-print {
   @extend small;
   margin-bottom: 1.2307em;
-  color:#888888;
+  color:#666666;
 }
 .meta{
   color:#555555;
@@ -252,7 +252,7 @@ a:visited {
 }
 .meta-2{
   font-family: 'helvetica', 'arial',sans-serif;
-  color:#888888;
+  color:#666666;
   font-style: italic;
   font-size: 0.75em;
 }
@@ -262,7 +262,7 @@ h4.static{
   text-transform: uppercase;
   font-size: 0.875em;
   line-height: 1.71428em;
-  color:#888;
+  color:#666;
   margin-top: 2em;
 }
 h4.static-with-rule{
@@ -278,21 +278,21 @@ h4.static-with-rule{
 // input placeholders, these need to be on separate lines as if the browser
 // can't understand a selector it will invalidate the whole line.
 ::-webkit-input-placeholder {
-  color: #888888;
+  color: #666666;
   font: {
     style:italic;
     size:0.9375em;
   }
 }
 :-moz-placeholder {
-  color:#888888;
+  color:#666666;
   font: {
     style:italic;
     size:0.9375em;
   }
 }
 :-ms-placeholder {
-  color:#888888;
+  color:#666666;
   font: {
     style:italic;
     size:0.9375em;
@@ -300,7 +300,7 @@ h4.static-with-rule{
 }
 //this only gets used when the browser doesn't support @placeholder
 .placeholder {
-  color:#888888;
+  color:#666666;
   font: {
     style:italic;
     size:0.9375em;
@@ -909,7 +909,7 @@ a:hover.button-left {
           margin:0;
         }
         small {
-          color:#808080;
+          color:#666;
         }
       }
     }
