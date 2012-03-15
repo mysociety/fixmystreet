@@ -126,6 +126,7 @@ sub report_new_ajax : Path('mobile') : Args(0) {
 
     unless ($c->forward('check_for_errors')) {
         $c->stash->{ json_response } = { errors => $c->stash->{field_errors} };
+        $c->stash->{ json_response }->{check_name} = $c->user->name if $c->stash->{check_name};
         $c->forward('send_json_response');
         return 1;
     }
@@ -141,12 +142,16 @@ sub report_new_ajax : Path('mobile') : Args(0) {
             id => $report->id
         }
     } );
-    $c->stash->{token_url} = $c->uri_for_email( '/P', $token->token );
-    $c->send_email( 'problem-confirm.txt', {
-        to => [ [ $report->user->email, $report->name ] ],
-    } );
+    if ( $report->confirmed ) {
+        $c->stash->{ json_response } = { success => 1, report => $report->id };
+    } else {
+        $c->stash->{token_url} = $c->uri_for_email( '/P', $token->token );
+        $c->send_email( 'problem-confirm.txt', {
+            to => [ [ $report->user->email, $report->name ] ],
+        } );
+        $c->stash->{ json_response } = { success => 1 };
+    }
 
-    $c->stash->{ json_response } = { success => 1 };
     $c->forward('send_json_response');
 }
 
@@ -156,7 +161,6 @@ sub send_json_response : Private {
     my $body = JSON->new->utf8(1)->encode(
         $c->stash->{json_response},
     );
-
     $c->res->content_type('application/json; charset=utf-8');
     $c->res->body($body);
 }
@@ -712,6 +716,7 @@ sub process_user : Private {
         my $user = $c->user->obj;
         $report->user( $user );
         $report->name( $user->name );
+        $c->stash->{check_name} = 1;
         $c->stash->{field_errors}->{name} = _('You have successfully signed in; please check and confirm your details are accurate:');
         $c->log->info($user->id . ' logged in during problem creation');
         return 1;

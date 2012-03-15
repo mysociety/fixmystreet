@@ -195,12 +195,14 @@ function fileUploadFail() {
 }
 
 
+var submit_clicked = null;
+
 function postReport(e) {
     e.preventDefault();
     
     // the .stopImmediatePropogation call in invalidHandler should render this
     // redundant but it doesn't seem to work so belt and braces :(
-    if ( !$('#map_form').valid() ) { return; }
+    if ( !$('#mapForm').valid() ) { return; }
 
     var params = {
         service: 'iphone',
@@ -212,8 +214,16 @@ function postReport(e) {
         category: $('#form_category').val(),
         lat: $('#fixmystreet\\.latitude').val(),
         lon: $('#fixmystreet\\.longitude').val(),
+        password_sign_in: $('#password_sign_in').val(),
+        phone: $('#form_phone').val(),
         pc: $('#pc').val()
     };
+
+    if ( submit_clicked.attr('id') == 'submit_sign_in' ) {
+        params.submit_sign_in = 1;
+    } else {
+        params.submit_register = 1;
+    }
 
     if ( $('#form_photo').val() !== '' ) {
         fileURI = $('#form_photo').val();
@@ -227,20 +237,29 @@ function postReport(e) {
         var ft = new FileTransfer();
         ft.upload(fileURI, CONFIG.FMS_URL + "report/new/mobile", fileUploadSuccess, fileUploadFail, options);
     } else {
-        jQuery.ajax( { 
+        jQuery.ajax( {
             url: CONFIG.FMS_URL + "report/new/mobile",
             type: 'POST',
             data: params, 
             timeout: 30000,
             success: function(data) {
-                console.log( data );
                 if ( data.success ) {
-                    window.location = 'email_sent.html';
+                    localStorage.pc = null;
+                    localStorage.lat = null;
+                    localStorage.long = null;
+                    if ( data.report ) {
+                        localStorage.report = data.report;
+                        window.location = 'report_created.html';
+                    } else {
+                        window.location = 'email_sent.html';
+                    }
                 } else {
-                    alert( 'Could not upload report');
+                    if ( data.check_name ) {
+                        $('#form_name').val( data.check_name );
+                        $('#form_name').focus();
+                    }
                     $('input[type=submit]').prop("disabled", false);
                 }
-                return false;
             },
             error: function (data, status, errorThrown ) {
                 alert( 'There was a problem submitting your report, please try again: ' + data, function(){}, 'Submit report' );
@@ -254,5 +273,6 @@ $(function(){
     $('#postcodeForm').submit(locate);
     $('#mapForm').submit(postReport);
     $('#ffo').click(getPosition);
+    $('#mapForm :input[type=submit]').on('click', function() { submit_clicked = $(this); });
 });
 
