@@ -197,6 +197,10 @@ function fileUploadFail() {
 
 function postReport(e) {
     e.preventDefault();
+    
+    // the .stopImmediatePropogation call in invalidHandler should render this
+    // redundant but it doesn't seem to work so belt and braces :(
+    if ( !$('#map_form').valid() ) { return; }
 
     var params = {
         service: 'iphone',

@@ -186,8 +186,6 @@ $(function(){
             if (form.submit_problem) {
                 $('input[type=submit]', form).prop("disabled", true);
             }
-
-            // form.submit();
         },
         // make sure we can see the error message when we focus on invalid elements
         showErrors: function( errorMap, errorList ) {
@@ -197,7 +195,12 @@ $(function(){
             this.defaultShowErrors();
             submitted = false;
         },
-        invalidHandler: function(form, validator) { submitted = true; }
+        invalidHandler: function(form, validator) { 
+            form.stopImmediatePropagation();
+            form.stopPropagation();
+            form.preventDefault();
+            submitted = true;
+        }
     });
 
     $('input[type=submit]').click( function(e) { form_submitted = 1; } );
