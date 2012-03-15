@@ -213,7 +213,7 @@ $(function(){
         displayProjection: new OpenLayers.Projection("EPSG:4326")
     });
 
-    if ($('html').hasClass('mobile')) {
+    if ($('html').hasClass('mobile') && fixmystreet.page == 'around') {
         $('#fms_pan_zoom').css({ top: '2.75em !important' });
     }
 
