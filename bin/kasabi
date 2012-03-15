@@ -77,7 +77,6 @@ def main():
             changeset.remove_report(report)
             changeset.add_report(report, states)
         changeset.apply()
-        print '{id} change applied'.format(id=report['id'])
 
 class FixMyStreetChangeSet(object):
     """Something that hosts either or both of a BatchChangeSet and a Turtle
@@ -108,15 +107,11 @@ class FixMyStreetChangeSet(object):
     def apply(self):
         if len(self.changeset.changesets):
             response, data = self.dataset.apply_changeset(self.changeset)
-            if response.status in range(200, 300):
-                print 'Change accepted:', data
-            else:
+            if response.status not in range(200, 300):
                 print 'Error:', response.status, response.reason, data
         if self.data:
             response, data = self.dataset.store_data(self.data, media_type='text/turtle') 
-            if response.status in range(200, 300):
-                print 'New data accepted:', data
-            else:
+            if response.status not in range(200, 300):
                 print 'Error:', response.status, response.reason, data
 
     def remove_report(self, report):
