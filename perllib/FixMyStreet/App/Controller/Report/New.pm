@@ -109,9 +109,14 @@ sub report_form_ajax : Path('ajax') : Args(0) {
     $c->forward('initialize_report');
 
     # work out the location for this report and do some checks
-    # XXX We don't want to do this here if this actually happens!
-    return $c->forward('redirect_to_around')
-      unless $c->forward('determine_location');
+    if ( ! $c->forward('determine_location') ) {
+        my $body = JSON->new->utf8(1)->encode( {
+            error => $c->stash->{location_error},
+        } );
+        $c->res->content_type('application/json; charset=utf-8');
+        $c->res->body($body);
+        return;
+    }
 
     $c->forward('setup_categories_and_councils');
 

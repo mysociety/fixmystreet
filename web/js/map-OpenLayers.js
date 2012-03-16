@@ -433,6 +433,11 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                 latitude: $('#fixmystreet\\.latitude').val(),
                 longitude: $('#fixmystreet\\.longitude').val()
         }, function(data) {
+            if (data.error) {
+                // XXX If they then click back and click somewhere in the area, this error will still show.
+                $('#side-form').html('<h1>Reporting a problem</h1><p>' + data.error + '</p>');
+                return;
+            }
             $('#councils_text').html(data.councils_text);
             $('#form_category_row').html(data.category);
         });
