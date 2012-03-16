@@ -57,6 +57,9 @@ my $unsent = FixMyStreet::App->model("DB::Problem")->search( {
     whensent => undef,
     council => { '!=', undef },
 } );
+
+my %sending_skipped_by_method = ();
+
 my (%notgot, %note);
 while (my $row = $unsent->next) {
 
@@ -296,8 +299,8 @@ while (my $row = $unsent->next) {
     } elsif ($send_method eq SEND_METHOD_BARNET) {
         $h{message} = construct_barnet_message(%h);
         if (!$nomail) {
-            if (my $err_msg = does_exceed_cutoff_limit($row, "barnet")) {
-                print "$err_msg\n"; # if $verbose
+            if (my $cutoff_msg = does_exceed_cutoff_limit($row, "barnet")) {
+                print "$cutoff_msg\n" if $verbose;
             } else {
                 my ($barnet_result, $err_msg) = post_barnet_message( $row, %h );
                 update_send_fail_data($row, $err_msg) if $barnet_result;
@@ -370,6 +373,17 @@ if ($verbose) {
             print $notgot{$e}{$c} . " problem, to $e category $c (" . $note{$e}{$c}. ")\n";
         }
     }
+}
+
+# not conditional on verbose because these can be considered failures (more relevant than one-off error messages?)
+if (keys %sending_skipped_by_method) {
+    my $c = 0;
+    print "\nProblem reports that send-reports did not attempt to send because retries >= " . SEND_FAIL_RETRIES_CUTOFF . ":\n";
+    foreach my $send_method (sort keys %sending_skipped_by_method) {
+        printf "    %-24s %4d\n", "$send_method:", $sending_skipped_by_method{$send_method};
+        $c+=$sending_skipped_by_method{$send_method};
+    }
+    printf "    %-24s %4d\n", "Total:", $c;
 }
 
 sub _get_district_for_contact {
@@ -714,6 +728,7 @@ sub does_exceed_cutoff_limit {
     my ($problem, $council_name) = @_;
     my $err_msg = "";
     if ($problem->send_fail_count >= SEND_FAIL_RETRIES_CUTOFF) {
+        $sending_skipped_by_method{$council_name || '?'}++;
         $council_name &&= " to $council_name";
         $err_msg = "skipped: problem id=" . $problem->id . " send$council_name has failed " 
                 . $problem->send_fail_count . " times, cutoff is " . SEND_FAIL_RETRIES_CUTOFF;
