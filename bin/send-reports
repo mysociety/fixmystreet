@@ -30,7 +30,10 @@ use mySociety::MaPit;
 use mySociety::Web qw(ent);
 
 use Open311;
- 
+
+# maximum number of webservice attempts to send before not trying any more (XXX may be better in config?)
+use constant SEND_FAIL_RETRIES_CUTOFF => 3;
+
 # specific council numbers
 use constant COUNCIL_ID_BARNET     => 2489;
 use constant COUNCIL_ID_EAST_HANTS => 2330;
@@ -293,7 +296,13 @@ while (my $row = $unsent->next) {
     } elsif ($send_method eq SEND_METHOD_BARNET) {
         $h{message} = construct_barnet_message(%h);
         if (!$nomail) {
-            $result *= post_barnet_message( $row, %h );
+            if (my $err_msg = does_exceed_cutoff_limit($row, "barnet")) {
+                print "$err_msg\n"; # if $verbose
+            } else {
+                my ($barnet_result, $err_msg) = post_barnet_message( $row, %h );
+                update_send_fail_data($row, $err_msg) if $barnet_result;
+                $result *= $barnet_result;
+            } 
         }
     } elsif ($send_method eq SEND_METHOD_LONDON) {
         $h{message} = construct_london_message(%h);
@@ -453,12 +462,12 @@ $h{url}
 
 $h{closest_address}
 EOF
-    return $message;
 }
 
 sub post_barnet_message {
     my ( $problem, %h ) = @_;
     my $return = 1;
+    my $err_msg = "";
 
     my $default_kbid = 14; # This is the default, "Street Scene"
     my $kbid = sprintf( "%050d",  Utils::barnet_categories()->{$h{category}} || $default_kbid);
@@ -524,27 +533,28 @@ sub post_barnet_message {
                 $problem->external_id( $barnet_id );
                 $problem->external_body( 'Barnet Borough Council' ); # better to use $problem->body()?
                 $return = 0;
-            } else {
-                print "Failed (problem id $h{id}): service returned no external id\n";                
+            } else { 
+                $err_msg = "Failed (problem id $h{id}): service returned no external id";
             }
         } else {
             my %fault = (
                     'code' =>  $result->get_faultcode(),
                     'actor' =>  $result->get_faultactor(),
                     'string' =>  $result->get_faultstring(),
-                    # 'detail' =>  $result->get_detail(), # possibly only contains debug info
+                    # 'detail' =>  $result->get_detail(), # possibly only contains debug info
                 );
             $fault{$_}=~s/^\s*|\s*$//g foreach keys %fault;
             $fault{actor}&&=" (actor: $fault{actor})";
-            print "Failed (problem id $h{id}): Fault $fault{code}$fault{actor}\n$fault{string}\n";
+            $err_msg = "Failed (problem id $h{id}): Fault $fault{code}$fault{actor}\n$fault{string}";
         }
 
     };
+    print "$err_msg\n" if $err_msg;
     if ($@) {
         my $e = shift;
         print "Caught an error: $@\n"; 
     }
-    return $return;
+    return ($return, $err_msg);
 }
 
 # London
@@ -695,4 +705,30 @@ sub split_text_with_entities {
         push @lines, $line;
     }
     return @lines;
+}
+
+# tests send_fail_count agains cutoff limit
+#   args: problem (row from problem db)
+#   returns false if there is no cutoff, otherwise error message
+sub does_exceed_cutoff_limit {
+    my ($problem, $council_name) = @_;
+    my $err_msg = "";
+    if ($problem->send_fail_count >= SEND_FAIL_RETRIES_CUTOFF) {
+        $council_name &&= " to $council_name";
+        $err_msg = "skipped: problem id=" . $problem->id . " send$council_name has failed " 
+                . $problem->send_fail_count . " times, cutoff is " . SEND_FAIL_RETRIES_CUTOFF;
+    }
+    return $err_msg;
+}
+
+# update_send_fail_data records the failure (of a webservice send)
+#  args: problem (row from problem db)
+#  returns: no return value (updates record)
+sub update_send_fail_data {
+    my ($problem, $err_msg) = @_;
+    $problem->update( {
+        send_fail_count => $problem->send_fail_count + 1,
+        send_fail_timestamp => \'ms_current_timestamp()',
+        send_fail_reason => $err_msg
+    } ); 
 }
