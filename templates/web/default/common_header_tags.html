@@ -1,12 +1,13 @@
-[% INCLUDE 'js_validation_msgs.html' %]
-
+[% USE date %][% USE Math %]
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<script type="text/javascript" src="/jslib/jquery-1.7.0.min.js"></script>
 
+<script type="text/javascript" src="/js/validation_strings.[% lang_code %].js?[% Math.int( date.now / 3600 ) %]"></script>
+
+<script type="text/javascript" src="/jslib/jquery-1.7.0.min.js"></script>
 <script src="[% version('/js/jquery.validate.min.js') %]" type="text/javascript" charset="utf-8"></script>
 
 <script type="text/javascript" src="[% version('/js/geo.min.js') %]"></script>
-<script type="text/javascript" src="[% version('/js/fixmystreet.js') %]"></script>
+<script type="text/javascript" src="[% version(js_override || '/js/fixmystreet.js') %]"></script>
 
 [% map_js %]
 
