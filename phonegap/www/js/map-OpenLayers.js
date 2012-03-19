@@ -441,7 +441,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             document.getElementById('side-form').style.display = 'block';
         }
         $('#side').hide();
-        // heightFix('#report-a-problem-sidebar', '.content', 26);
+        heightFix('#report-a-problem-sidebar', '.content', 26);
 
         // If we clicked the map somewhere inconvenient
         var sidebar = $('#report-a-problem-sidebar');
@@ -462,7 +462,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         }
 
         $('#sub_map_links').hide();
-        //if ($('html').hasClass('mobile')) {
+        if ($('html').hasClass('mobile')) {
             var $map_box = $('#map_box'),
                 width = $map_box.width(),
                 height = $map_box.height();
@@ -491,7 +491,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                     $('#mob_ok').text('OK');
                 });
             });
-        //}
+        }
 
         fixmystreet.page = 'new';
         location.hash = 'report';
