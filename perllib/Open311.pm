@@ -13,7 +13,7 @@ has endpoint => ( is => 'ro', isa => 'Str' );
 has test_mode => ( is => 'ro', isa => 'Bool' );
 has test_uri_used => ( is => 'rw', 'isa' => 'Str' );
 has test_get_returns => ( is => 'rw' );
-has endpoints => ( is => 'rw', default => sub { { services => 'services.xml', requests => 'requests.xml' } } );
+has endpoints => ( is => 'rw', default => sub { { services => 'services.xml', requests => 'requests.xml', service_request_updates => 'update.xml' } } );
 has debug => ( is => 'ro', isa => 'Bool', default => 0 );
 has debug_details => ( is => 'rw', 'isa' => 'Str', default => '' );
 
@@ -127,6 +127,15 @@ sub get_service_request_id_from_token {
     } else {
         return 0;
     }
+}
+
+sub get_service_request_updates {
+    my $self = shift;
+
+    my $params = {};
+
+    my $xml = $self->_get( $self->endpoints->{service_request_updates}, $params || undef );
+    return $self->_get_xml_object( $xml );
 }
 
 sub _get {
