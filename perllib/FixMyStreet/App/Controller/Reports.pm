@@ -344,6 +344,7 @@ sub load_and_group_problems : Private {
                 #{ duration => { extract => "epoch from current_timestamp-lastupdate" } },
                 #{ age      => { extract => "epoch from current_timestamp-confirmed"  } },
                 { confirmed  => { extract => 'epoch from confirmed' } },
+                { whensent   => { extract => 'epoch from whensent' } },
                 { lastupdate => { extract => 'epoch from lastupdate' } },
                 { photo    => 'photo is not null' },
             ],
@@ -356,7 +357,7 @@ sub load_and_group_problems : Private {
 
     my ( %problems, @pins );
     my $re_councils = join('|', keys %{$c->stash->{areas_info}});
-    my @cols = ( 'id', 'council', 'state', 'areas', 'latitude', 'longitude', 'title', 'cobrand', 'confirmed', 'lastupdate', 'photo' );
+    my @cols = ( 'id', 'council', 'state', 'areas', 'latitude', 'longitude', 'title', 'cobrand', 'confirmed', 'whensent', 'lastupdate', 'photo' );
     while ( my @problem = $problems->next ) {
         my %problem = zip @cols, @problem;
         $problem{is_fixed} = FixMyStreet::DB::Result::Problem->fixed_states()->{$problem{state}};

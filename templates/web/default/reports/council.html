@@ -79,7 +79,7 @@ Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a
     <p><a href="[% rss_url %]"><img align="right" src="/i/feed.png" width="16" height="16" title="[% loc('RSS feed') %]" alt="[% tprintf(loc('RSS feed of problems in this %s'), thing) %]" border="0" hspace="4"></a>
 [% END %]
 
-[% INCLUDE 'reports/cobrand_stats.html' %]
+[% TRY %][% INCLUDE 'reports/cobrand_stats.html' %][% CATCH file %][% END %]
 
 [% IF c.cobrand.moniker == 'fixmystreet' AND children.size %]
 <section id="council_wards" class="hidden-js">
@@ -125,7 +125,7 @@ Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a
             <div class="text">
                 <h4>[% problem.title | html %]</h4>
                 <small>[% prettify_epoch( problem.confirmed, 1 ) %]
-                [%- IF problem.confirmed != problem.lastupdate %], last updated [% prettify_epoch( problem.lastupdate, 1 ) %]
+                [%- IF problem.confirmed != problem.lastupdate AND problem.whensent != problem.lastupdate %], last updated [% prettify_epoch( problem.lastupdate, 1 ) %]
                 [%- END %]</small>
                 [% IF problem.councils > 1 %] <small>[% loc('(sent to both)') %]</small>
                 [% ELSIF problem.councils == 0 %] <small>[% loc('(not sent to council)') %]</small>
