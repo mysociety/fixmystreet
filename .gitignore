@@ -25,3 +25,7 @@ tags
 blog/web/wp
 blog/conf/general
 blog/conf/general.deployed
+
+phonegap/Android/bin/Android.apk
+phonegap/Android/bin/resources.ap_
+phonegap/iPhone/FixMyStreet.xcodeproj/project.xcworkspace/xcuserdata
