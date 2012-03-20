@@ -54,13 +54,14 @@ sub update_comments {
                 );
                 $comment->confirm;
 
+
                 if ( $p->is_open and $request->{status} eq 'closed' ) {
-                    $p->state( 'closed' );
+                    $p->state( 'fixed - council' );
                     $p->update;
 
                     $comment->mark_fixed( 1 );
-                } elsif ( $p->is_closed and $request->{status} eq 'open' ) {
-                    $p->state( 'open' );
+                } elsif ( ( $p->is_closed || $p->is_fixed ) and $request->{status} eq 'open' ) {
+                    $p->state( 'confirmed' );
                     $p->update;
 
                     $comment->mark_open( 1 );

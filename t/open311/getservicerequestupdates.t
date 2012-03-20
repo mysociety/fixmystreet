@@ -107,6 +107,55 @@ for my $test (
         updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
         external_id => 638344,
+        start_state => 'confirmed',
+        close_comment => 0,
+        mark_fixed=> 0,
+        mark_open => 0,
+        end_state => 'confirmed',
+    },
+    {
+        desc => 'comment closes report',
+        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
+        description => 'This is a note',
+        external_id => 638344,
+        start_state => 'confirmed',
+        close_comment => 1,
+        mark_fixed=> 1,
+        mark_open => 0,
+        end_state => 'fixed - council',
+    },
+    {
+        desc => 'comment re-opens fixed report',
+        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
+        description => 'This is a note',
+        external_id => 638344,
+        start_state => 'fixed - user',
+        close_comment => 0,
+        mark_fixed => 0,
+        mark_open => 1,
+        end_state => 'confirmed',
+    },
+    {
+        desc => 'comment re-opens closed report',
+        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
+        description => 'This is a note',
+        external_id => 638344,
+        start_state => 'closed',
+        close_comment => 0,
+        mark_fixed => 0,
+        mark_open => 1,
+        end_state => 'confirmed',
+    },
+    {
+        desc => 'comment leaves report closed',
+        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
+        description => 'This is a note',
+        external_id => 638344,
+        start_state => 'closed',
+        close_comment => 1,
+        mark_fixed => 0,
+        mark_open => 0,
+        end_state => 'closed',
     },
 ) {
     subtest $test->{desc} => sub {
@@ -114,19 +163,26 @@ for my $test (
         $local_requests_xml =~ s/UPDATED_DATETIME/$test->{updated_datetime}/;
         $local_requests_xml =~ s#<service_request_id>\d+</service_request_id>#<service_request_id>@{[$problem->external_id]}</service_request_id>#;
         $local_requests_xml =~ s#<service_request_id_ext>\d+</service_request_id_ext>#<service_request_id_ext>@{[$problem->id]}</service_request_id_ext>#;
+        $local_requests_xml =~ s#<status>\w+</status>#<status>closed</status># if $test->{close_comment};
 
         my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'update.xml' => $local_requests_xml } );
 
         $problem->comments->delete;
+        $problem->state( $test->{start_state} );
+        $problem->update;
 
         my $update = Open311::GetServiceRequestUpdates->new( system_user => $user );
         $update->update_comments( $o );
 
         is $problem->comments->count, 1, 'comment count';
+        $problem->discard_changes;
 
         my $c = FixMyStreet::App->model('DB::Comment')->search( { external_id => $test->{external_id} } )->first;
         ok $c, 'comment exists';
         is $c->text, $test->{description}, 'text correct';
+        is $c->mark_fixed, $test->{mark_fixed}, 'mark_closed correct';
+        is $c->mark_open, $test->{mark_open}, 'mark_open correct';
+        is $problem->state, $test->{end_state}, 'correct problem state';
     };
 }
 
