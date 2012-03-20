@@ -99,7 +99,12 @@ OpenLayers.Layer.OSM.MapQuestOpen = OpenLayers.Class(OpenLayers.Layer.OSM, {
             "http://otile3.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
             "http://otile4.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png"
         ];
-        options = OpenLayers.Util.extend({ numZoomLevels: 19, buffer: 0 }, options);
+        options = OpenLayers.Util.extend({
+            /* Below line added to OSM's file in order to allow minimum zoom level */
+            maxResolution: 156543.0339/Math.pow(2, options.zoomOffset || 0),
+            numZoomLevels: 19,
+            buffer: 0
+        }, options);
         var newArguments = [name, url, options];
         OpenLayers.Layer.OSM.prototype.initialize.apply(this, newArguments);
     },
