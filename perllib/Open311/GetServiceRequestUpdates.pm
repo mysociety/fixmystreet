@@ -13,11 +13,6 @@ sub update_comments {
     my $requests = $open311->get_service_request_updates( );
 
     for my $request (@$requests) {
-        # if it's a ref that means it's an empty element
-        # however, if there's no updated date then we can't
-        # tell if it's newer that what we have so we should skip it
-        next if ref $request->{updated_datetime} || ! exists $request->{updated_datetime};
-
         my $request_id = $request->{service_request_id};
 
         my $problem =
