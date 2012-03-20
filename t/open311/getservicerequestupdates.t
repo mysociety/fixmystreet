@@ -96,6 +96,7 @@ my $problem = $problem_rs->new(
         lastupdate   => DateTime->now()->subtract( days => 1 ),
         anonymous    => 1,
         external_id  => time(),
+        council      => 2482,
     }
 );
 
@@ -171,8 +172,9 @@ for my $test (
         $problem->state( $test->{start_state} );
         $problem->update;
 
+        my $council_details = { areaid => 2482 };
         my $update = Open311::GetServiceRequestUpdates->new( system_user => $user );
-        $update->update_comments( $o );
+        $update->update_comments( $o, $council_details );
 
         is $problem->comments->count, 1, 'comment count';
         $problem->discard_changes;
@@ -186,7 +188,76 @@ for my $test (
     };
 }
 
+my $problem2 = $problem_rs->new(
+    {
+        postcode     => 'EH99 1SP',
+        latitude     => 1,
+        longitude    => 1,
+        areas        => 1,
+        title        => '',
+        detail       => '',
+        used_map     => 1,
+        user_id      => 1,
+        name         => '',
+        state        => 'confirmed',
+        service      => '',
+        cobrand      => 'default',
+        cobrand_data => '',
+        user         => $user,
+        created      => DateTime->now(),
+        lastupdate   => DateTime->now(),
+        anonymous    => 1,
+        external_id  => $problem->external_id,
+        council      => 2651,
+    }
+);
+
+$problem2->insert();
+$problem->comments->delete;
+$problem2->comments->delete;
+
+for my $test (
+    {
+        desc => 'identical external_ids on problem resolved using council',
+        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
+        external_id => 638344,
+        area_id => 2651,
+        request_id => $problem2->external_id,
+        request_id_ext => $problem2->id,
+        p1_comments => 0,
+        p2_comments => 1,
+    },
+    {
+        desc => 'identical external_ids on comments resolved',
+        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
+        external_id => 638344,
+        area_id => 2482,
+        request_id => $problem->external_id,
+        request_id_ext => $problem->id,
+        p1_comments => 1,
+        p2_comments => 1,
+    },
+) {
+    subtest $test->{desc} => sub {
+        my $local_requests_xml = $requests_xml;
+        $local_requests_xml =~ s/UPDATED_DATETIME/$test->{updated_datetime}/;
+        $local_requests_xml =~ s#<service_request_id>\d+</service_request_id>#<service_request_id>$test->{request_id}</service_request_id>#;
+        $local_requests_xml =~ s#<service_request_id_ext>\d+</service_request_id_ext>#<service_request_id_ext>$test->{request_id_ext}</service_request_id_ext>#;
+
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'update.xml' => $local_requests_xml } );
+
+
+        my $council_details = { areaid => $test->{area_id} };
+        my $update = Open311::GetServiceRequestUpdates->new( system_user => $user );
+        $update->update_comments( $o, $council_details );
+
+        is $problem->comments->count, $test->{p1_comments}, 'comment count for first problem';
+        is $problem2->comments->count, $test->{p2_comments}, 'comment count for second problem';
+    };
+}
+$problem2->comments->delete();
 $problem->comments->delete();
+$problem2->delete;
 $problem->delete;
 $user->comments->delete;
 $user->problems->delete;

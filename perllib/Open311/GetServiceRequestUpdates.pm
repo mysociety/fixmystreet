@@ -33,11 +33,13 @@ sub update_comments {
 
         my $problem =
           FixMyStreet::App->model('DB::Problem')
-          ->search( { external_id => $request_id, } );
+          ->search( {
+                  external_id => $request_id,
+                  council     => { like => '%' . $council_details->{areaid} . '%' },
+          } );
 
         if (my $p = $problem->first) {
-            my $c = FixMyStreet::App->model('DB::Comment')
-                ->search( { external_id => $request->{update_id} } );
+            my $c = $p->comments->search( { external_id => $request->{update_id} } );
 
             if ( !$c->first ) {
                 my $comment = FixMyStreet::App->model('DB::Comment')->new(
