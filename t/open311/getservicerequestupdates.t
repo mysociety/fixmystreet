@@ -105,8 +105,8 @@ for my $test (
     {
         desc => 'element with content',
         updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
-        res =>  { update_id => 638344, service_request_id => $problem->external_id, service_request_id_ext => 1, 
-                status => 'open', description => 'This is a note', updated_datetime => $dt } ,
+        description => 'This is a note',
+        external_id => 638344,
     },
 ) {
     subtest $test->{desc} => sub {
@@ -124,9 +124,9 @@ for my $test (
 
         is $problem->comments->count, 1, 'comment count';
 
-        my $c = FixMyStreet::App->model('DB::Comment')->search( { external_id => $test->{res}->{update_id} } )->first;
+        my $c = FixMyStreet::App->model('DB::Comment')->search( { external_id => $test->{external_id} } )->first;
         ok $c, 'comment exists';
-        is $c->text, $test->{res}->{description}, 'text correct';
+        is $c->text, $test->{description}, 'text correct';
     };
 }
 
