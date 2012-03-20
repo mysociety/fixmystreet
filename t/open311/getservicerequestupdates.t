@@ -70,7 +70,7 @@ for my $test (
         my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'update.xml' => $local_requests_xml } );
 
         my $res = $o->get_service_request_updates;
-        is_deeply $res->{ request_update }, $test->{ res }, 'result looks correct';
+        is_deeply $res->[0], $test->{ res }, 'result looks correct';
 
     };
 }

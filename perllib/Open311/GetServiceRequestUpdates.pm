@@ -10,18 +10,7 @@ has system_user => ( is => 'ro' );
 sub update_comments {
     my ( $self, $open311, $council_details ) = @_;
 
-    my $service_requests = $open311->get_service_request_updates( );
-
-    my $requests;
-
-    # XML::Simple is a bit inconsistent in how it structures
-    # things depending on the number of children an element has :(
-    if ( ref $service_requests->{request_update } eq 'ARRAY' ) {
-        $requests = $service_requests->{requesti_update};
-    }
-    else {
-        $requests = [ $service_requests->{request_update} ];
-    }
+    my $requests = $open311->get_service_request_updates( );
 
     for my $request (@$requests) {
         # if it's a ref that means it's an empty element

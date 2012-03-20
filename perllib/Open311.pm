@@ -135,7 +135,16 @@ sub get_service_request_updates {
     my $params = {};
 
     my $xml = $self->_get( $self->endpoints->{service_request_updates}, $params || undef );
-    return $self->_get_xml_object( $xml );
+    my $service_requests = $self->_get_xml_object( $xml );
+    my $requests;
+    if ( ref $service_requests->{request_update } eq 'ARRAY' ) {
+        $requests = $service_requests->{request_update};
+    }
+    else {
+        $requests = [ $service_requests->{request_update} ];
+    }
+
+    return $requests;
 }
 
 sub _get {
