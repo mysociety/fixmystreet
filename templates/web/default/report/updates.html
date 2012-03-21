@@ -6,7 +6,7 @@
 
     [% IF update.whenanswered %]
         [%# A questionnaire update, currently saying report is still open %]
-        [% tprintf( loc( 'Reporter confirmed report open, via questionnaire at %s' ), prettify_epoch( update.whenanswered_local.epoch ) ) %]
+        [% tprintf( loc( 'Still open, via questionnaire, %s' ), prettify_epoch( update.whenanswered_local.epoch ) ) %]
         [% RETURN %]
     [% END %]
 

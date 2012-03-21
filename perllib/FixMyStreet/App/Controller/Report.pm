@@ -99,10 +99,10 @@ sub load_updates : Private {
 
     my @combined;
     while (my $update = $updates->next) {
-        push @combined, [ $update->{confirmed}, $update ];
+        push @combined, [ $update->confirmed, $update ];
     }
     while (my $update = $questionnaires->next) {
-        push @combined, [ $update->{whenanswered}, $update ];
+        push @combined, [ $update->whenanswered, $update ];
     }
     @combined = map { $_->[1] } sort { $a->[0] <=> $b->[0] } @combined;
     $c->stash->{updates} = \@combined;
