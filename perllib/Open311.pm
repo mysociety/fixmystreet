@@ -12,8 +12,9 @@ has api_key => ( is => 'ro', isa => 'Str' );
 has endpoint => ( is => 'ro', isa => 'Str' );
 has test_mode => ( is => 'ro', isa => 'Bool' );
 has test_uri_used => ( is => 'rw', 'isa' => 'Str' );
+has test_req_used => ( is => 'rw' );
 has test_get_returns => ( is => 'rw' );
-has endpoints => ( is => 'rw', default => sub { { services => 'services.xml', requests => 'requests.xml', service_request_updates => 'update.xml' } } );
+has endpoints => ( is => 'rw', default => sub { { services => 'services.xml', requests => 'requests.xml', service_request_updates => 'update.xml', update => 'update.xml' } } );
 has debug => ( is => 'ro', isa => 'Bool', default => 0 );
 has debug_details => ( is => 'rw', 'isa' => 'Str', default => '' );
 
@@ -147,6 +148,48 @@ sub get_service_request_updates {
     return $requests;
 }
 
+sub post_service_request_update {
+    my $self = shift;
+    my $comment = shift;
+
+    my $params = {
+        update_id_ext => $comment->id,
+        updated_datetime => $comment->confirmed,
+        service_request_id => $comment->problem->external_id,
+        service_request_id_ext => $comment->problem->id,
+        status => $comment->problem->is_open ? 'OPEN' : 'CLOSED',
+        email => $comment->user->email,
+        description => $comment->text,
+        public_anonymity_required => $comment->anonymous ? 'TRUE' : 'FALSE',
+        # also need last_name, title
+    };
+
+    my $response = $self->_post( $self->endpoints->{update}, $params );
+
+    if ( $response ) {
+        my $obj = $self->_get_xml_object( $response );
+
+        if ( $obj ) {
+            if ( $obj->{ request_update }->{ update_id } ) {
+                my $update_id = $obj->{request_update}->{update_id};
+
+                # if there's nothing in the update_id element we get a HASHREF back
+                unless ( ref $update_id ) {
+                    return $obj->{ request_update }->{ update_id };
+                }
+            } else {
+                my $token = $obj->{ request_update }->{ token };
+                if ( $token ) {
+                    return $self->get_service_request_id_from_token( $token );
+                }
+            }
+        }
+
+        warn sprintf( "Failed to submit comment %s over Open311, response\n: %s\n%s", $comment->id, $response, $self->debug_details );
+        return 0;
+    }
+}
+
 sub _get {
     my $self   = shift;
     my $path   = shift;
@@ -189,7 +232,14 @@ sub _post {
     $self->debug_details( $self->debug_details . "\nrequest:" . $req->as_string );
 
     my $ua = LWP::UserAgent->new();
-    my $res = $ua->request( $req );
+    my $res;
+
+    if ( $self->test_mode ) {
+        $res = $self->test_get_returns->{ $path };
+        $self->test_req_used( $req );
+    } else {
+        $res = $ua->request( $req );
+    }
 
     if ( $res->is_success ) {
         return $res->decoded_content;
