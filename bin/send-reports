@@ -30,6 +30,9 @@ use mySociety::Web qw(ent);
 
 use Open311;
 
+# maximum number of webservice attempts to send before not trying any more (XXX may be better in config?)
+use constant SEND_FAIL_RETRIES_CUTOFF => 3;
+
 # specific council numbers
 use constant COUNCIL_ID_EAST_HANTS => 2330;
 
@@ -540,3 +543,29 @@ sub london_lookup {
     return $str;
 }
 
+
+# tests send_fail_count agains cutoff limit
+#   args: problem (row from problem db)
+#   returns false if there is no cutoff, otherwise error message
+sub does_exceed_cutoff_limit {
+    my ($problem, $council_name) = @_;
+    my $err_msg = "";
+    if ($problem->send_fail_count >= SEND_FAIL_RETRIES_CUTOFF) {
+        $council_name &&= " to $council_name";
+        $err_msg = "skipped: problem id=" . $problem->id . " send$council_name has failed " 
+                . $problem->send_fail_count . " times, cutoff is " . SEND_FAIL_RETRIES_CUTOFF;
+    }
+    return $err_msg;
+}
+
+# update_send_fail_data records the failure (of a webservice send)
+#  args: problem (row from problem db)
+#  returns: no return value (updates record)
+sub update_send_fail_data {
+    my ($problem, $err_msg) = @_;
+    $problem->update( {
+        send_fail_count => $problem->send_fail_count + 1,
+        send_fail_timestamp => \'ms_current_timestamp()',
+        send_fail_reason => $err_msg
+    } ); 
+}
