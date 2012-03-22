@@ -189,6 +189,12 @@ sub _add_contact_to_meta {
     print "Fetching meta data for $self->_current_service->{service_code}\n";
     my $meta_data = $self->_current_open311->get_service_meta_info( $self->_current_service->{service_code} );
 
+    if ( ref $meta_data->{ attributes }->{ attribute } eq 'HASH' ) {
+        $meta_data->{ attributes }->{ attribute } = [
+            $meta_data->{ attributes }->{ attribute }
+        ];
+    }
+
     # turn the data into something a bit more friendly to use
     my @meta =
         # remove trailing colon as we add this when we display so we don't want 2
@@ -196,6 +202,26 @@ sub _add_contact_to_meta {
         # there is a display order and we only want to sort once
         sort { $a->{order} <=> $b->{order} }
         @{ $meta_data->{attributes}->{attribute} };
+
+    # we add these later on from bromley so don't list them here
+    # as we don't want to display them
+    if ( $self->_current_council->area_id == 2482 ) {
+        my %ignore = map { $_ => 1 } qw/
+            service_request_id_ext
+            requested_datetime
+            report_url
+            title
+            last_name
+            email
+            easting
+            northing
+            report_title
+            public_anonymity_required
+            email_alerts_requested
+        /;
+
+        @meta = grep { ! $ignore{ $_->{ code } } } @meta;
+    }
 
     $contact->extra( \@meta );
     $contact->update;

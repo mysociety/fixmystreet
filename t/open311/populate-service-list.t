@@ -203,6 +203,304 @@ subtest 'check conflicting contacts not changed' => sub {
     is $contact_count, 4, 'correct number of contacts';
 };
 
+subtest 'check meta data population' => sub {
+    my $processor = Open311::PopulateServiceList->new( council_list => [] );
+
+    my $meta_xml = '<?xml version="1.0" encoding="utf-8"?>
+<service_definition>
+    <service_code>100</service_code>
+    <attributes>
+        <attribute>
+            <variable>true</variable>
+            <code>type</code>
+            <datatype>string</datatype>
+            <required>true</required>
+            <datatype_description>Type of bin</datatype_description>
+            <order>1</order>
+            <description>Type of bin</description>
+        </attribute>
+    </attributes>
+</service_definition>
+    ';
+
+    my $contact = FixMyStreet::App->model('DB::Contact')->find_or_create(
+        {
+            area_id => 1,
+            email =>   '001',
+            category => 'Bins left out 24x7',
+            confirmed => 1,
+            deleted => 0,
+            editor => $0,
+            whenedited => \'ms_current_timestamp()',
+            note => 'test contact',
+        }
+    );
+
+    my $o = Open311->new(
+        jurisdiction => 'mysociety',
+        endpoint => 'http://example.com',
+        test_mode => 1,
+        test_get_returns => { 'services/100.xml' => $meta_xml }
+    );
+
+    my $council = FixMyStreet::App->model('DB::Open311conf')->new( {
+        area_id => 2482
+    } );
+
+    $processor->_current_open311( $o );
+    $processor->_current_council( $council );
+    $processor->_current_service( { service_code => 100 } );
+
+    $processor->_add_contact_to_meta( $contact );
+
+    my $extra = [ {
+            variable => 'true',
+            code => 'type',
+            datatype => 'string',
+            required => 'true',
+            datatype_description => 'Type of bin',
+            order => 1,
+            description => 'Type of bin'
+
+    } ];
+
+    $contact->discard_changes;
+
+    is_deeply $contact->extra, $extra, 'meta data saved';
+};
+
+subtest 'check attribute ordering' => sub {
+    my $processor = Open311::PopulateServiceList->new( council_list => [] );
+
+    my $meta_xml = '<?xml version="1.0" encoding="utf-8"?>
+<service_definition>
+    <service_code>100</service_code>
+    <attributes>
+        <attribute>
+            <variable>true</variable>
+            <code>type</code>
+            <datatype>string</datatype>
+            <required>true</required>
+            <datatype_description>Type of bin</datatype_description>
+            <order>1</order>
+            <description>Type of bin</description>
+        </attribute>
+        <attribute>
+            <variable>true</variable>
+            <code>colour</code>
+            <datatype>string</datatype>
+            <required>true</required>
+            <datatype_description>Colour of bin</datatype_description>
+            <order>3</order>
+            <description>Colour of bin</description>
+        </attribute>
+        <attribute>
+            <variable>true</variable>
+            <code>size</code>
+            <datatype>string</datatype>
+            <required>true</required>
+            <datatype_description>Size of bin</datatype_description>
+            <order>2</order>
+            <description>Size of bin</description>
+        </attribute>
+    </attributes>
+</service_definition>
+    ';
+
+    my $contact = FixMyStreet::App->model('DB::Contact')->find_or_create(
+        {
+            area_id => 1,
+            email =>   '001',
+            category => 'Bins left out 24x7',
+            confirmed => 1,
+            deleted => 0,
+            editor => $0,
+            whenedited => \'ms_current_timestamp()',
+            note => 'test contact',
+        }
+    );
+
+    my $o = Open311->new(
+        jurisdiction => 'mysociety',
+        endpoint => 'http://example.com',
+        test_mode => 1,
+        test_get_returns => { 'services/100.xml' => $meta_xml }
+    );
+
+    my $council = FixMyStreet::App->model('DB::Open311conf')->new( {
+        area_id => 1
+    } );
+
+    $processor->_current_open311( $o );
+    $processor->_current_council( $council );
+    $processor->_current_service( { service_code => 100 } );
+
+    $processor->_add_contact_to_meta( $contact );
+
+    my $extra = [
+        {
+            variable => 'true',
+            code => 'type',
+            datatype => 'string',
+            required => 'true',
+            datatype_description => 'Type of bin',
+            order => 1,
+            description => 'Type of bin'
+
+        },
+        {
+            variable => 'true',
+            code => 'size',
+            datatype => 'string',
+            required => 'true',
+            datatype_description => 'Size of bin',
+            order => 2,
+            description => 'Size of bin'
+
+        },
+        {
+            variable => 'true',
+            code => 'colour',
+            datatype => 'string',
+            required => 'true',
+            datatype_description => 'Colour of bin',
+            order => 3,
+            description => 'Colour of bin'
+
+        },
+    ];
+
+    $contact->discard_changes;
+
+    is_deeply $contact->extra, $extra, 'meta data re-ordered correctly';
+};
+
+subtest 'check bromely skip code' => sub {
+    my $processor = Open311::PopulateServiceList->new( council_list => [] );
+
+    my $meta_xml = '<?xml version="1.0" encoding="utf-8"?>
+<service_definition>
+    <service_code>100</service_code>
+    <attributes>
+        <attribute>
+            <variable>true</variable>
+            <code>type</code>
+            <datatype>string</datatype>
+            <required>true</required>
+            <datatype_description>Type of bin</datatype_description>
+            <order>1</order>
+            <description>Type of bin</description>
+        </attribute>
+        <attribute>
+            <variable>true</variable>
+            <code>title</code>
+            <datatype>string</datatype>
+            <required>true</required>
+            <datatype_description>Type of bin</datatype_description>
+            <order>1</order>
+            <description>Type of bin</description>
+        </attribute>
+        <attribute>
+            <variable>true</variable>
+            <code>report_url</code>
+            <datatype>string</datatype>
+            <required>true</required>
+            <datatype_description>Type of bin</datatype_description>
+            <order>1</order>
+            <description>Type of bin</description>
+        </attribute>
+    </attributes>
+</service_definition>
+    ';
+
+    my $contact = FixMyStreet::App->model('DB::Contact')->find_or_create(
+        {
+            area_id => 1,
+            email =>   '001',
+            category => 'Bins left out 24x7',
+            confirmed => 1,
+            deleted => 0,
+            editor => $0,
+            whenedited => \'ms_current_timestamp()',
+            note => 'test contact',
+        }
+    );
+
+    my $o = Open311->new(
+        jurisdiction => 'mysociety',
+        endpoint => 'http://example.com',
+        test_mode => 1,
+        test_get_returns => { 'services/100.xml' => $meta_xml }
+    );
+
+    my $council = FixMyStreet::App->model('DB::Open311conf')->new( {
+        area_id => 2482
+    } );
+
+    $processor->_current_open311( $o );
+    $processor->_current_council( $council );
+    $processor->_current_service( { service_code => 100 } );
+
+    $processor->_add_contact_to_meta( $contact );
+
+    my $extra = [ {
+            variable => 'true',
+            code => 'type',
+            datatype => 'string',
+            required => 'true',
+            datatype_description => 'Type of bin',
+            order => 1,
+            description => 'Type of bin'
+
+    } ];
+
+    $contact->discard_changes;
+
+    is_deeply $contact->extra, $extra, 'only non std bromley meta data saved';
+
+    $council->area_id(1);
+
+    $processor->_current_council( $council );
+    $processor->_add_contact_to_meta( $contact );
+
+    $extra = [
+        {
+            variable => 'true',
+            code => 'type',
+            datatype => 'string',
+            required => 'true',
+            datatype_description => 'Type of bin',
+            order => 1,
+            description => 'Type of bin'
+
+        },
+        {
+            variable => 'true',
+            code => 'title',
+            datatype => 'string',
+            required => 'true',
+            datatype_description => 'Type of bin',
+            order => 1,
+            description => 'Type of bin'
+
+        },
+        {
+            variable => 'true',
+            code => 'report_url',
+            datatype => 'string',
+            required => 'true',
+            datatype_description => 'Type of bin',
+            order => 1,
+            description => 'Type of bin'
+
+        },
+    ];
+
+    $contact->discard_changes;
+
+    is_deeply $contact->extra, $extra, 'all meta data saved for non bromley';
+};
+
 sub get_standard_xml {
     return qq{<?xml version="1.0" encoding="utf-8"?>
 <services>
