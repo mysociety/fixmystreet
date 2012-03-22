@@ -7,5 +7,10 @@ body {
 
 #front-main {
     background: $primary;
+
+    // layout sets this because base has it slightly lighter
+    h2 {
+        color: $primary_text;
+    }
 }
 

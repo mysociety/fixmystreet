@@ -147,7 +147,8 @@ h1 {
           @include background(linear-gradient(#000, #444 10%, #444 95%, #111));
         }
         a.report-a-problem-btn {
-          background:$primary;
+          color: $primary_text;
+          background: $primary;
           padding:0.25em;
           margin:0.5em;
           color:#333;
