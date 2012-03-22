@@ -24,7 +24,7 @@ sub string {
     my ( $s, $c, $params ) = @_;
     $s .= '+' . $params->{town} if $params->{town} and $s !~ /$params->{town}/i;
     my $url = "http://dev.virtualearth.net/REST/v1/Locations?q=$s";
-    $url .= '&mapView=' . $params->{bounds}[0] . ',' . $params->{bounds}[1]
+    $url .= '&userMapView=' . $params->{bounds}[0] . ',' . $params->{bounds}[1]
         if $params->{bounds};
     $url .= '&userLocation=' . $params->{centre} if $params->{centre};
     $url .= '&c=' . $params->{bing_culture} if $params->{bing_culture};
