@@ -459,7 +459,7 @@ sub find_closest {
     my ( $self, $latitude, $longitude, $problem ) = @_;
     my $str = '';
 
-    if ( my $j = FixMyStreet::Geocode::Bing::reverse( $latitude, $longitude ) ) {
+    if ( my $j = FixMyStreet::Geocode::Bing::reverse( $latitude, $longitude, disambiguate_location()->{bing_culture} ) ) {
         # cache the bing results for use in alerts
         if ( $problem ) {
             $problem->geocode( $j );
@@ -506,7 +506,7 @@ sub find_closest_address_for_rss {
     # if we've not cached it then we don't want to look it up in order to avoid
     # hammering the bing api
     # if ( !$j ) {
-    #     $j = FixMyStreet::Geocode::Bing::reverse( $latitude, $longitude, 1 );
+    #     $j = FixMyStreet::Geocode::Bing::reverse( $latitude, $longitude, disambiguate_location()->{bing_culture}, 1 );
 
     #     $problem->geocode( $j );
     #     $problem->update;

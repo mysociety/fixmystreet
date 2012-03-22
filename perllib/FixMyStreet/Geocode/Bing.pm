@@ -68,13 +68,13 @@ sub string {
 }
 
 sub reverse {
-    my ( $latitude, $longitude, $cache ) = @_;
+    my ( $latitude, $longitude, $bing_culture, $cache ) = @_;
 
     # Get nearest road-type thing from Bing
     my $key = mySociety::Config::get('BING_MAPS_API_KEY', '');
     if ($key) {
         my $url = "http://dev.virtualearth.net/REST/v1/Locations/$latitude,$longitude?key=$key";
-        $url .= '&c=' . $params->{bing_culture} if $params->{bing_culture};
+        $url .= '&c=' . $bing_culture if $bing_culture;
         my $j;
         if ( $cache ) {
             my $cache_dir = FixMyStreet->config('GEO_CACHE') . 'bing/';
