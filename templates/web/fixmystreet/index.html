@@ -38,7 +38,7 @@ Modernizr.load({
         <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
             <label for="pc">[% question %]:</label>
             <div>
-                <input type="text" name="pc" value="" id="pc" size="10" maxlength="200" placeholder="[% loc('e.g. ‘B2 4QA’ or ‘Tib St, Manchester’') %]">
+                <input type="text" name="pc" value="" id="pc" size="10" maxlength="200" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]">
                 <input type="submit" value="[% loc('Go') %]" id="submit">
             </div>
         </form>

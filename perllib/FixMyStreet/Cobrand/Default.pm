@@ -916,5 +916,9 @@ Get stats to display on the council reports page
 
 sub get_report_stats { return 0; }
 
+sub example_places {
+    return [ 'B2 4QA', 'Tib St, Manchester' ];
+}
+
 1;
 
