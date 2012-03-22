@@ -239,6 +239,8 @@ Returns disambiguating information available
 sub disambiguate_location {
     return {
         country => 'uk',
+        bing_culture => 'en-GB',
+        bing_country => 'United Kingdom'
     };
 }
 
