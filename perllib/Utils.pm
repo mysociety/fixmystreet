@@ -143,27 +143,19 @@ sub london_categories {
 sub barnet_categories {
     # The values here are KBIDs from Barnet's system: see bin/send-reports for formatting 
     #    category                   KBID    Barnet's title for this KBID
-    return {
-        'Abandoned vehicle'      => 0,
-        'Blocked gully/drain'    => 255,    # Gullies-Blocked
-        'Bus stop'               => 0,
-        'Dead animal'            => 286,    # Animals-Dead-Removal
-        'Dog fouling'            => 288,    # Dog Fouling-Clear
-        'Flyposting'             => 0,
-        'Flytipping'             => 347,    # Fly tipping-Clear
-        'Graffiti'               => 292,    # Graffiti-Removal
-        'Park/landscape'         => 0,
-        'Pavement/footpath'      => 195,    # Pavements-Damaged/Cracked
-        'Pothole'                => 204,    # Pothole
-        'Public toilet'          => 0,
-        'Road sign'              => 432,    # Roads Signs - Maintenance
-        'Roads/highways'         => 190,    # Complaint-Highways Maintenance
-        'Rubbish/litter'         => 349,    # Accumulated Litter
-        'Street cleaning'        => 0,
-        'Street lighting'        => 251,    # Street Lighting
-        'Street nameplate'       => 0,
-        'Traffic lights'         => 103,    # Traffic lights
-        'Tree'                   => 162,    # Tree section
+    return {    
+        'Blocked drain'             => 255,  # Gullies-Blocked
+        'Dead animal'               => 286,  # Animals-Dead-Removal
+        'Dog fouling'               => 288,  # Dog Fouling-Clear
+        'Fly tipping'               => 347,  # Fly tipping-Clear
+        'Graffiti'                  => 292,  # Graffiti-Removal
+        'Litter, accumulated'       => 349,  # Accumulated Litter
+        'Litter, overflowing bins'  => 205,  # Litter Bins-Overflowing
+        'Pavements'                 => 195,  # Pavements-Damaged/Cracked
+        'Pothole'                   => 204,  # Pothole
+        'Roads Signs'               => 432,  # Roads Signs - Maintenance
+        'Street Lighting'           => 251,  # Street Lighting
+        'Traffic Lights'            => 103,  # Traffic Lights
     };
 }
 

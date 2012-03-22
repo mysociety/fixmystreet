@@ -549,7 +549,7 @@ sub setup_categories_and_councils : Private {
         $area_ids_to_list{ $first_council->{id} } = 1;
         my @local_categories;
         if ($first_council->{id} == COUNCIL_ID_BARNET) {
-            @local_categories =  (sort(keys %{ Utils::barnet_categories() }), _('Other') )
+            @local_categories =  sort(keys %{ Utils::barnet_categories() }); # removed 'Other' option
         } else {
             @local_categories =  sort keys %{ Utils::london_categories() }            
         }
