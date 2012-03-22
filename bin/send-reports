@@ -136,11 +136,11 @@ while (my $row = $unsent->next) {
             if ($council == 2330) { # E. Hants have a web service
                 $send_web = 'easthants';
                 $h{category} = 'Customer Services' if $h{category} eq 'Other';
-            } elsif ($areas_info->{$council}->{type} eq 'LBO') { # London
-                $send_web = 'london';
             } elsif ( my $endpoint = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $council, endpoint => { '!=', '' } } )->first ) {
                 push @open311_councils, $endpoint;
                 $send_web = 'open311';
+            } elsif ($areas_info->{$council}->{type} eq 'LBO') { # London
+                $send_web = 'london';
             } else {
                 my $contact = FixMyStreet::App->model("DB::Contact")->find( {
                     deleted => 0,
@@ -279,10 +279,22 @@ while (my $row = $unsent->next) {
                 $row->user->name( $row->user->id . ' ' . $row->user->name );
             }
 
+            # Extra bromley fields
+            if ( $row->council =~ /2482/ ) {
+                my $extra = $row->extra;
+                push @$extra, { name => 'northing', value => $h{northing} };
+                push @$extra, { name => 'easting', value => $h{easting} };
+                push @$extra, { name => 'report_url', value => $h{url} };
+                push @$extra, { name => 'service_request_id', value => $row->id };
+                push @$extra, { name => 'report_title', value => $row->title };
+                push @$extra, { name => 'public_anonymity_required', value => $row->anonymous ? 'TRUE' : 'FALSE' };
+                $row->extra( $extra );
+            }
+
             my $resp = $open311->send_service_request( $row, \%h, $contact->email );
 
             # make sure we don't save user changes from above
-            if ( $row->council =~ /2218/ ) {
+            if ( $row->council =~ /2218/ or $row->council =~ /2482/ ) {
                 $row->discard_changes();
             }
 
