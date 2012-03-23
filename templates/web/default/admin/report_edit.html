@@ -37,6 +37,7 @@
 <li>[% loc('Service:') %] [% problem.service %]</li>
 <li>[% loc('Cobrand:') %] [% problem.cobrand %]</li>
 <li>[% loc('Cobrand data:') %] [% problem.cobrand_data %]</li>
+<li>[% loc('Extra data:') %] [% problem.extra ? 'Yes' : 'No' %]</li>
 <li>[% loc('Going to send questionnaire?') %] [% IF problem.send_questionnaire %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</li>
 <li><label for="flagged">[% loc('Flagged:') %]</label> <input type="checkbox" name="flagged"[% ' checked' IF problem.flagged %]></li>
 
