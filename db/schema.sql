@@ -311,7 +311,8 @@ create table comment (
     ),
     -- other fields? one to indicate whether this was written by the council
     -- and should be highlighted in the display?
-    external_id text
+    external_id text,
+    extra text
 );
 
 create index comment_user_id_idx on comment(user_id);
