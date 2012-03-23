@@ -1,3 +1,9 @@
+[% IF c.cobrand.moniker == 'fixmystreet' OR c.cobrand.moniker == 'bromley';
+     style = 'new';
+   ELSE;
+     style = 'old';
+   END;
+%]
 [% IF ward %]
     [% name = "$ward.name, $council.name"
        thing = loc('ward')
@@ -19,7 +25,7 @@
 
 [% map_html %]
 
-[% IF c.cobrand.moniker != 'fixmystreet' AND children.size %]
+[% IF style != 'new' AND children.size %]
 <h2 style="clear:right">[% loc('Wards of this council') %]</h2>
 <p>[% loc('Follow a ward link to view only reports within that ward.') %]</p>
 <ul>
@@ -66,7 +72,7 @@ Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a
 <a href="/reports/Central+Bedfordshire">Central Bedfordshire Council</a>.
 [% END %]
 </p>
-[% ELSIF c.cobrand.moniker == 'fixmystreet' %]
+[% ELSIF style == 'new' %]
     <div class="shadow-wrap">
         <ul id="key-tools"[% IF NOT children.size %] class="singleton"[% END %]>
             <li><a rel="nofollow" id="key-tool-updates-area" class="feed" href="[% rss_url %]">[% tprintf(loc('Get updates of problems in this %s'), thing) %]</a></li>
@@ -81,7 +87,7 @@ Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a
 
 [% TRY %][% INCLUDE 'reports/cobrand_stats.html' %][% CATCH file %][% END %]
 
-[% IF c.cobrand.moniker == 'fixmystreet' AND children.size %]
+[% IF style == 'new' AND children.size %]
 <section id="council_wards" class="hidden-js">
     <h2>[% loc('Wards of this council') %]</h2>
     <p>[% loc('Follow a ward link to view only reports within that ward.') %]</p>
@@ -117,7 +123,7 @@ Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a
 [% IF problems %]
 
 <ul class="issue-list-a">
-[% IF c.cobrand.moniker == 'fixmystreet' %]
+[% IF style == 'new' %]
 
 [% FOREACH problem IN problems %]
     <li>

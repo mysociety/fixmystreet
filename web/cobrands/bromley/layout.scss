@@ -7,10 +7,30 @@ body {
 
 #front-main {
     background: $primary;
-
     // layout sets this because base has it slightly lighter
     h2 {
         color: $primary_text;
     }
 }
 
+// Don't want FixMyStreet logo on desktop, and we have a skip to content in
+// Bromley header
+#site-header {
+    display: none;
+}
+
+// Currently hiding, but do want some internal navigation somewhere at the end
+.nav-wrapper {
+    display: none;
+}
+
+// Bit of extra spacing needed under Bromley header
+body.frontpage .table-cell .content {
+    margin-top: 15em;
+}
+
+// White background, so no shadow needed (unless map goes full screen, so
+// JavaScript should put it in at that point? Or just put it on all map pages?
+.content {
+    @include box-shadow(none);
+}
