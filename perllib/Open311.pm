@@ -167,7 +167,7 @@ sub post_service_request_update {
     };
 
     if ( $comment->extra ) {
-        $params{'email_alerts_request'}
+        $params->{'email_alerts_request'}
             = $comment->extra->{email_alerts_requested} ? 'TRUE' : 'FALSE';
         $params->{'title'} = $comment->extra->{title};
     }
