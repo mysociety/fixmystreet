@@ -51,6 +51,22 @@ body { color: #333; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
 #bromley-footer .footer-nav li 			{ border-right:1px solid #fff; float: left; line-height: 1; padding: 0 20px; }
 #bromley-footer .footer-nav li:last-child 	{ border: none; }
 
+// Bromley IE specific CSS
+.ie6 {
+    #search input { padding: 8px 5px 2px; }
+    #search input.button { padding: 0; width: 68px; line-height: 24px; }
+    input.button { overflow: visible; width: 1%; }
+}
+.ie7 {
+    #search input { padding: 8px 5px 2px; }
+    #search input.button { padding: 0; width: 68px; line-height: 24px; }
+    input.button { overflow: visible; }
+}
+.ie8 {
+    #search input { padding: 8px 5px 2px; }
+    #search input.button { padding: 0; line-height: 24px; }
+}
+
 // mySociety additions
 #bromley-header { font-size: 12px; }
 .header-nav ul { margin: 0; }

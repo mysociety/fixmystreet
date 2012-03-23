@@ -28,9 +28,29 @@ body {
 body.frontpage .table-cell .content {
     margin-top: 15em;
 }
+.ie6, .ie7 {
+    #front-main {
+        top: -2em;
+        left: 1.5em;
+    }
+    body.frontpage .table-cell .content {
+        margin-top: 11em;
+    }
+}
 
 // White background, so no shadow needed (unless map goes full screen, so
 // JavaScript should put it in at that point? Or just put it on all map pages?
 .content {
     @include box-shadow(none);
 }
+.ie6, .ie7, .ie8  {
+    .content {
+        border: none;
+    }
+}
+
+// Perhaps fix map location (should be in central?)
+.ie6 #map_box {
+    right: -32em;
+}
+
