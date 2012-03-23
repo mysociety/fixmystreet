@@ -56,6 +56,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "external_id",
   { data_type => "text", is_nullable => 1 },
+  "extra",
+  { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->belongs_to(
@@ -72,13 +74,34 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-19 17:32:28
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:2N8KFSUsilae7mWkyHchhQ
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-23 14:36:14
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:QUnX6SvdgvK/4GlCzoMU6Q
+
+__PACKAGE__->filter_column(
+    extra => {
+        filter_from_storage => sub {
+            my $self = shift;
+            my $ser  = shift;
+            return undef unless defined $ser;
+            my $h = new IO::String($ser);
+            return RABX::wire_rd($h);
+        },
+        filter_to_storage => sub {
+            my $self = shift;
+            my $data = shift;
+            my $ser  = '';
+            my $h    = new IO::String($ser);
+            RABX::wire_wr( $data, $h );
+            return $ser;
+        },
+    }
+);
 
 use DateTime::TimeZone;
 use Image::Size;
 use Moose;
 use namespace::clean -except => [ 'meta' ];
+use RABX;
 
 with 'FixMyStreet::Roles::Abuser';
 
