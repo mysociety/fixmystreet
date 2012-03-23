@@ -440,6 +440,10 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             }
             $('#councils_text').html(data.councils_text);
             $('#form_category_row').html(data.category);
+            if ( data.extra_name_info ) {
+                var lb = $('#form_name').prev();
+                lb.before(data.extra_name_info);
+            }
         });
 
         $('#side-form, #site-logo').show();

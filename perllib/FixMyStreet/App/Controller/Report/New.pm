@@ -124,12 +124,14 @@ sub report_form_ajax : Path('ajax') : Args(0) {
     my $category = $c->render_fragment( 'report/new/category.html');
     my $councils_text = $c->render_fragment( 'report/new/councils_text.html');
     my $has_open311 = keys %{ $c->stash->{category_extras} };
+    my $extra_name_info = $c->render_fragment('report/new/extra_name.html');
 
     my $body = JSON->new->utf8(1)->encode(
         {
             councils_text   => $councils_text,
             category        => $category,
             has_open311     => $has_open311,
+            extra_name_info => $extra_name_info,
         }
     );
 
@@ -542,7 +544,7 @@ sub setup_categories_and_councils : Private {
         );
         $category_label = _('Property type:');
 
-    } elsif ($first_council->{type} eq 'LBO') {
+    } elsif ($first_council->{id} != 2482 && $first_council->{type} eq 'LBO') {
 
         $area_ids_to_list{ $first_council->{id} } = 1;
         @category_options = (
@@ -589,6 +591,7 @@ sub setup_categories_and_councils : Private {
     $c->stash->{category_options} = \@category_options;
     $c->stash->{category_extras}  = \%category_extras;
     $c->stash->{category_extras_json}  = encode_json \%category_extras;
+    $c->stash->{extra_name_info} = $first_council->{id} == 2482 ? 1 : 0;
 
     my @missing_details_councils =
       grep { !$area_ids_to_list{$_} }    #
@@ -733,7 +736,7 @@ sub process_report : Private {
         $councils = join( ',', @{ $c->stash->{area_ids_to_list} } ) || -1;
         $report->council( $councils );
 
-    } elsif ( $first_council->{type} eq 'LBO') {
+    } elsif ( $first_council->{id} != 2482 && $first_council->{type} eq 'LBO') {
 
         unless ( Utils::london_categories()->{ $report->category } ) {
             $c->stash->{field_errors}->{category} = _('Please choose a category');
@@ -783,6 +786,16 @@ sub process_report : Private {
                 description => $field->{description},
                 value => $c->request->param( $field->{code} ) || '',
             };
+        }
+
+        if ( $contacts[0]->area_id == 2482 ) {
+            for my $field ( qw/ fms_extra_title / ) {
+                push @extra, {
+                    name => $field,
+                    description => uc( $field),
+                    value => $c->request->param( $field ) || '',
+                };
+            }
         }
 
         if ( @extra ) {
@@ -915,6 +928,8 @@ sub check_for_errors : Private {
         %{ $c->stash->{report}->user->check_for_errors },
         %{ $c->stash->{report}->check_for_errors },
     );
+
+    # FIXME: need to check for required bromley fields here
 
     # if they're got the login details wrong when signing in then
     # we don't care about the name field even though it's validated

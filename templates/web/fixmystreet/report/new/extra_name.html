@@ -1,0 +1,15 @@
+[% IF extra_name_info %]
+<label for="form_fms_extra_title">Title</label>
+[% IF field_errors.fms_extra_title %]
+    <p class='form-error'>[% field_errors.fms_extra_title %]</p>
+[% END %]
+<select class="form-focus-trigger" id="form_fms_extra_title"
+    name="fms_extra_title" required>
+    <option></option>
+    <option value="Mr">Mr</option>
+    <option value="Miss">Miss</option>
+    <option value="Mrs">Mrs</option>
+    <option value="Ms">Ms</option>
+    <option value="Dr">Dr</option>
+</select>
+[% END %]

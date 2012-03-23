@@ -75,7 +75,9 @@ EOT
         my $extras = $problem->extra;
 
         for my $attr ( @$extras ) {
-            my $name = sprintf( 'attribute[%s]', $attr->{name} );
+            my $attr_name = $attr->{name};
+            $attr_name =~ s/fms_extra_//;
+            my $name = sprintf( 'attribute[%s]', $attr_name );
             $params->{ $name } = $attr->{value};
         }
     }
