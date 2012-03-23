@@ -166,6 +166,12 @@ sub post_service_request_update {
         # also need last_name, title
     };
 
+    if ( $comment->extra ) {
+        $params{'email_alerts_request'}
+            = $comment->extra->{email_alerts_requested} ? 'TRUE' : 'FALSE';
+        $params->{'title'} = $comment->extra->{title};
+    }
+
     my $response = $self->_post( $self->endpoints->{update}, $params );
 
     if ( $response ) {
