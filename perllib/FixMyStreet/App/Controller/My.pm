@@ -30,9 +30,16 @@ sub my : Path : Args(0) {
 
     my $pins = [];
     my $problems = {};
-    my $rs = $c->user->problems->search( {
+
+    my $params = {
         state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
-    }, {
+    };
+    $params = {
+        %{ $c->cobrand->problems_clause },
+        %$params
+    } if $c->cobrand->problems_clause;
+
+    my $rs = $c->user->problems->search( $params, {
         order_by => { -desc => 'confirmed' },
         rows => 50
     } )->page( $p_page );
