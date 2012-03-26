@@ -1,0 +1,92 @@
+#!/usr/bin/env perl
+
+# send-reports:
+# Send new problem reports to councils
+#
+# Copyright (c) 2011 UK Citizens Online Democracy. All rights reserved.
+# Email: matthew@mysociety.org. WWW: http://www.mysociety.org
+
+use strict;
+use warnings;
+require 5.8.0;
+
+use Digest::MD5;
+use Encode;
+use Error qw(:try);
+use CronFns;
+
+use FixMyStreet::App;
+
+use Utils;
+use mySociety::Config;
+use mySociety::EmailUtil;
+
+use Open311;
+
+# maximum number of webservice attempts to send before not trying any more (XXX may be better in config?)
+use constant SEND_FAIL_RETRIES_CUTOFF => 3;
+
+# send_method config values found in by-area config data, for selecting to appropriate method
+use constant SEND_METHOD_EMAIL      => 'email';
+use constant SEND_METHOD_OPEN311    => 'open311';
+
+# Set up site, language etc.
+my ($verbose, $nomail) = CronFns::options();
+my $base_url = mySociety::Config::get('BASE_URL');
+my $site = CronFns::site($base_url);
+
+my $councils = FixMyStreet::App->model('DB::Open311Conf')->search( {
+    send_method => SEND_METHOD_OPEN311,
+    send_comments => 1,
+} );
+
+while ( my $council = $councils->next ) {
+    my $comments = FixMyStreet::App->model('DB::Comment')->search( {
+            'me.when_sent'    => undef,
+            'problem.whensent'    => { '!=' => undef },
+            'problem.external_id'  => { '!=' => undef },
+            'problem.council'      => { -like => '%' . $council->area_id .'%' },
+        },
+        {
+            join => 'problem',
+        }
+    );
+
+    my $o = Open311->new(
+            endpoint => $council->endpoint
+    );
+
+    while ( my $comment = $comments->next ) {
+        my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($comment->cobrand)->new();
+
+        if ( $comment->send_fail_count ) {
+            next if bromley_retry_timeout( $comment );
+        }
+
+        my $id = $o->post_service_request_update( $comment );
+
+        if ( $id ) {
+            $comment->external_id( $id );
+            $comment->update();
+        } else {
+            $comment->update( {
+                send_fail_count => $comment->send_fail_count + 1,
+                send_fail_timestamp => \'ms_current_timestamp()',
+                send_fail_reason => 'Failed to post over Open311',
+            } );
+        }
+    }
+}
+
+sub bromley_retry_timeout {
+    my $row = shift;
+
+    my $tz = DateTime::TimeZone->new( name => 'local' );
+    my $now = DateTime->now( time_zone => $tz );
+    my $diff = $now - $row->send_fail_timestamp;
+    if ( $diff->minutes < 30 ) {
+        return 1;
+    }
+
+    return 0;
+}
