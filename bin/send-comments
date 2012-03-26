@@ -42,7 +42,7 @@ my $councils = FixMyStreet::App->model('DB::Open311Conf')->search( {
 
 while ( my $council = $councils->next ) {
     my $comments = FixMyStreet::App->model('DB::Comment')->search( {
-            'me.when_sent'    => undef,
+            'me.whensent'    => undef,
             'problem.whensent'    => { '!=' => undef },
             'problem.external_id'  => { '!=' => undef },
             'problem.council'      => { -like => '%' . $council->area_id .'%' },

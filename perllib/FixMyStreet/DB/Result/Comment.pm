@@ -64,7 +64,7 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "send_fail_timestamp",
   { data_type => "timestamp", is_nullable => 1 },
-  "when_sent",
+  "whensent",
   { data_type => "timestamp", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
@@ -82,8 +82,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-26 13:29:28
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:UDoQkVj1Gvow4fZ1yO94jA
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-26 15:44:18
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:nvkElEgSU6XcLd9znSqhmQ
 
 __PACKAGE__->filter_column(
     extra => {
