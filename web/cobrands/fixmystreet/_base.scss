@@ -1338,7 +1338,7 @@ table.nicetable {
 
 // this is a bit of a hack to get some differentation between desk and mobile
 .desk-only {
-  display:none !important;
+  display:none;
 }
 
 // hide anything with this class if js is working

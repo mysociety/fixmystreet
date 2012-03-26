@@ -1,6 +1,10 @@
 @import "_colours";
 @import "../fixmystreet/_layout";
 
+.wrapper {
+    position: relative;
+}
+
 body {
     background: #fff;
 }
@@ -38,8 +42,7 @@ body.frontpage .table-cell .content {
     }
 }
 
-// White background, so no shadow needed (unless map goes full screen, so
-// JavaScript should put it in at that point? Or just put it on all map pages?
+// White background, so no shadow needed.
 .content {
     @include box-shadow(none);
 }
@@ -48,9 +51,22 @@ body.frontpage .table-cell .content {
         border: none;
     }
 }
+// Except on map pages
+body.mappage .content {
+    @include box-shadow(0px 0px 6px 1px #000);
+}
+.ie6, .ie7, .ie8  {
+    body.mappage .content {
+        border: solid 1px #666;
+    }
+}
+
+#map_box {
+    border-top: solid 1px #666;
+}
 
 // Perhaps fix map location (should be in central?)
 .ie6 #map_box {
-    right: -32em;
+    right: -30em;
 }
 

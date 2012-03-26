@@ -106,7 +106,7 @@ $(function(){
             }
             if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
                 // Immediately go full screen map if on around page
-                $('#site-header').hide();
+                // $('#site-header').hide();
                 $('#map_box').prependTo('.wrapper').css({
                     position: 'absolute',
                     top: 0, left: 0, right: 0, bottom: 0,
@@ -127,31 +127,32 @@ $(function(){
             });
         } else {
             // Make map full screen on non-mobile sizes.
-            //$html.removeClass('mobile');
-            //var map_pos = 'fixed', map_height = '100%';
+            $html.removeClass('mobile');
+            var map_pos = 'fixed', map_height = '100%';
             //if ($html.hasClass('ie6')) {
-            //    map_pos = 'absolute';
-            //    map_height = $(window).height();
+                map_pos = 'absolute';
+                map_height = $(window).height();
             //}
-            //$('#map_box').prependTo('.wrapper').css({
-            //    zIndex: 0, position: map_pos,
-            //    top: 0, left: 0, right: 0, bottom: 0,
-            //    width: '100%', height: map_height,
-            //    margin: 0
-            //});
-            //if (typeof fixmystreet !== 'undefined') {
-            //    fixmystreet.state_map = 'full';
-            //}
-            //if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
-            //    // Remove full-screen-ness
-            //    $('#site-header').show();
-            //    $('#fms_pan_zoom').css({ top: '4.75em !important' });
-            //    $('.big-green-banner')
-            //        .removeClass('mobile-map-banner')
-            //        .prependTo('#side')
-            //        .text('Click map to report a problem');
-            //}
-            //$('span.report-a-problem-btn').css({ cursor:'' }).off('.reportBtn');
+            $('#map_box').prependTo('.wrapper').css({
+                zIndex: 0, position: map_pos,
+                top: 0, left: 0, right: 0, bottom: 0,
+                width: '100%', height: map_height,
+                margin: 0
+            });
+            $('#bromley-footer').hide();
+            if (typeof fixmystreet !== 'undefined') {
+                fixmystreet.state_map = 'full';
+            }
+            if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
+                // Remove full-screen-ness
+                // $('#site-header').show();
+                $('#fms_pan_zoom').css({ top: '4.75em !important' });
+                $('.big-green-banner')
+                    .removeClass('mobile-map-banner')
+                    .prependTo('#side')
+                    .text('Click map to report a problem');
+            }
+            $('span.report-a-problem-btn').css({ cursor:'' }).off('.reportBtn');
         }
         last_type = type;
     });
