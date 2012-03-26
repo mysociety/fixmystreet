@@ -236,7 +236,7 @@ $(function(){
 
     if (fixmystreet.state_map && fixmystreet.state_map == 'full') {
         // TODO Work better with window resizing, this is pretty 'set up' only at present
-        var q = $(window).width() / 4;
+        var q = $('#map_box').width() / 4;
         // Need to try and fake the 'centre' being 75% from the left
         fixmystreet.map.pan(-q, -25, { animate: false });
         fixmystreet.map.events.register("movestart", null, function(e){
@@ -459,7 +459,12 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         // If we clicked the map somewhere inconvenient
         var sidebar = $('#report-a-problem-sidebar');
         if (sidebar.css('position') == 'absolute') {
-            var w = sidebar.width(), h = sidebar.height(), o = sidebar.offset();
+            var w = sidebar.width(), h = sidebar.height(),
+                o = sidebar.offset(),
+                $map_box = $('#map_box'), bo = $map_box.offset();
+            // e.xy is relative to top left of map, which might not be top left of page
+            e.xy.x += bo.left;
+            e.xy.y += bo.top;
             if (e.xy.y <= o.top || (e.xy.x >= o.left && e.xy.x <= o.left + w + 24 && e.xy.y >= o.top && e.xy.y <= o.top + h + 64)) {
                 // top of the page, pin hidden by header;
                 // or underneath where the new sidebar will appear
@@ -468,7 +473,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                     fixmystreet.map.getProjectionObject()
                 );
                 var p = fixmystreet.map.getViewPortPxFromLonLat(lonlat);
-                p.x -= $(window).width() / 3;
+                p.x -= $map_box.width() / 3;
                 lonlat = fixmystreet.map.getLonLatFromViewPortPx(p);
                 fixmystreet.map.panTo(lonlat);
             }
