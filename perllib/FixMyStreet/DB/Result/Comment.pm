@@ -58,6 +58,14 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "extra",
   { data_type => "text", is_nullable => 1 },
+  "send_fail_count",
+  { data_type => "integer", default_value => 0, is_nullable => 0 },
+  "send_fail_reason",
+  { data_type => "text", is_nullable => 1 },
+  "send_fail_timestamp",
+  { data_type => "timestamp", is_nullable => 1 },
+  "when_sent",
+  { data_type => "timestamp", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->belongs_to(
@@ -74,8 +82,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-23 14:36:14
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:QUnX6SvdgvK/4GlCzoMU6Q
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-26 13:29:28
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:UDoQkVj1Gvow4fZ1yO94jA
 
 __PACKAGE__->filter_column(
     extra => {

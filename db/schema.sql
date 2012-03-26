@@ -312,7 +312,11 @@ create table comment (
     -- other fields? one to indicate whether this was written by the council
     -- and should be highlighted in the display?
     external_id text,
-    extra text
+    extra text,
+    send_fail_count integer not null default 0,
+    send_fail_reason text,
+    send_fail_timestamp timestamp,
+    whensent timestamp
 );
 
 create index comment_user_id_idx on comment(user_id);
@@ -427,5 +431,6 @@ create table open311conf (
     endpoint     text not null,
     jurisdiction text,
     api_key      text,
-    send_method  text
+    send_method  text,
+    send_comments boolean not null default 'f'
 );

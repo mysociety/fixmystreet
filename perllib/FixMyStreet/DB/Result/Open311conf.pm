@@ -28,13 +28,15 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "send_method",
   { data_type => "text", is_nullable => 1 },
+  "send_comments",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("open311conf_area_id_key", ["area_id"]);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-08 17:19:55
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ClYnPB2gsKapnfHuco5d/w
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-26 13:10:56
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:u4BOIa2AayJq99eKAzZfJw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
