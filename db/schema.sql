@@ -432,5 +432,6 @@ create table open311conf (
     jurisdiction text,
     api_key      text,
     send_method  text,
-    send_comments boolean not null default 'f'
+    send_comments boolean not null default 'f',
+    comment_user_id int references users(id)
 );
