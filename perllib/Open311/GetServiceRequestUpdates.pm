@@ -15,6 +15,10 @@ sub update_comments {
     for my $request (@$requests) {
         my $request_id = $request->{service_request_id};
 
+        # If there's no request id then we can't work out
+        # what problem it belongs to so just skip
+        next unless $request_id;
+
         my $problem =
           FixMyStreet::App->model('DB::Problem')
           ->search( {
