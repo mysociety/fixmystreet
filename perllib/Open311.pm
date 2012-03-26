@@ -193,7 +193,7 @@ sub post_service_request_update {
             }
         }
 
-        warn sprintf( "Failed to submit comment %s over Open311, response\n: %s\n%s", $comment->id, $response, $self->debug_details );
+        warn sprintf( "Failed to submit comment %s over Open311, response - %s\n%s", $comment->id, $response, $self->debug_details );
         return 0;
     }
 }

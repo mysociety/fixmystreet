@@ -156,7 +156,7 @@ subtest 'error reponse' => sub {
     my $results;
     warning_like {
         $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><errors><error><code>400</code><description>There was an error</description</error></errors>' )
-    } qr/There was an error/, 'correct error message';
+    } qr/Failed to submit comment \d+ over Open311.*There was an error/, 'correct error messages';
 
     is $results->{ res }, 0, 'error in response is a failure';
 };
