@@ -7,5 +7,5 @@ ALTER table comment
 ALTER table comment
     ADD column send_fail_timestamp timestamp;
 ALTER table comment
-    ADD column when_sent timestamp;
+    ADD column whensent timestamp;
 commit;
