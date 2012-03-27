@@ -82,7 +82,6 @@ $(function(){
 
     $html.removeClass('no-js').addClass('js');
 
-
     // Preload the new report pin
     document.createElement('img').src = '/i/pin-green.png';
 
@@ -139,8 +138,8 @@ $(function(){
                 width: '100%', height: map_height,
                 margin: 0
             });
-            $('#bromley-footer').hide();
             if (typeof fixmystreet !== 'undefined') {
+                $('#bromley-footer').hide();
                 fixmystreet.state_map = 'full';
             }
             if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
