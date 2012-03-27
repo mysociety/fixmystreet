@@ -447,7 +447,8 @@ p.label-valid {
     &#mysoc-menu{
       li {
         a {
-          background:$primary;
+          color: $primary_text;
+          background: $primary;
           &#mysoc-logo {
             background-image:url('/cobrands/fixmystreet/images/sprite.png');
             background-repeat:no-repeat;
@@ -472,7 +473,8 @@ p.label-valid {
 #user-meta {
   p {
     position: relative;
-    background:$primary;
+    color: $primary_text;
+    background: $primary;
     padding:1em 6em 1em 1em;
     a {
       position: absolute;
@@ -893,7 +895,7 @@ a:hover.button-left {
       width:20px;
       height:20px;
       opacity: 0.5;
-      background:#fff url(images/sprite.png) -16px -1098px no-repeat;
+      background:#fff url(/cobrands/fixmystreet/images/sprite.png) -16px -1098px no-repeat;
       //hide text - http://nicolasgallagher.com/another-css-image-replacement-technique/
       font: 0/0 a;
       color: transparent;
@@ -1273,7 +1275,8 @@ table.nicetable {
 
 .promo {
   @extend .full-width;
-  background:$primary;
+  color: $primary_text;
+  background: $primary;
   padding:1em;
   margin-bottom:1em;
   overflow:hidden;
@@ -1286,10 +1289,10 @@ table.nicetable {
     width:16px;
     height:16px;
     text-indent:-999999px;
-    background:url(images/sprite.png) -341px -263px no-repeat;
+    background:url(/cobrands/fixmystreet/images/sprite.png) -341px -263px no-repeat;
     @include border-radius(4px);
     &:hover {
-      background:#222 url(images/sprite.png) -341px -223px no-repeat;
+      background:#222 url(/cobrands/fixmystreet/images/sprite.png) -341px -223px no-repeat;
     }
   }
 }
@@ -1320,7 +1323,8 @@ table.nicetable {
   }
   a {
     @include inline-block;
-    background:$primary;
+    color: $primary_text;
+    background: $primary;
     padding-left:0.5em;
     padding-right:0.5em;
     color:#1a1a1a;
@@ -1334,7 +1338,7 @@ table.nicetable {
 
 // this is a bit of a hack to get some differentation between desk and mobile
 .desk-only {
-  display:none !important;
+  display:none;
 }
 
 // hide anything with this class if js is working
