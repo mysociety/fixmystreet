@@ -247,7 +247,7 @@ while (my $row = $unsent->next) {
     if (mySociety::Config::get('STAGING_SITE')) {
         # on a staging server send emails to ourselves rather than the councils
         # ...webservice calls will only go through if explictly allowed here:
-        my @testing_councils = ();
+        my @testing_councils = ( 2482 );
         unless (grep {$row->council eq $_} @testing_councils) {
             @recips = ( mySociety::Config::get('CONTACT_EMAIL') );
             $send_method = 0;
@@ -587,7 +587,7 @@ sub update_send_fail_data {
         send_fail_count => $problem->send_fail_count + 1,
         send_fail_timestamp => \'ms_current_timestamp()',
         send_fail_reason => $err_msg
-    } ); 
+    } );
 }
 
 sub bromley_retry_timeout {
