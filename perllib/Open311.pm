@@ -156,6 +156,9 @@ sub post_service_request_update {
     my $self = shift;
     my $comment = shift;
 
+    my $name = $comment->name || $comment->user->name;
+    my ( $firstname, $lastname ) = ( $name =~ /(\w+)\s+(.+)/ );
+
     my $params = {
         update_id_ext => $comment->id,
         updated_datetime => $comment->confirmed,
@@ -165,11 +168,12 @@ sub post_service_request_update {
         email => $comment->user->email,
         description => $comment->text,
         public_anonymity_required => $comment->anonymous ? 'TRUE' : 'FALSE',
-        # also need last_name, title
+        last_name => $lastname,
+        first_name => $firstname,
     };
 
     if ( $comment->extra ) {
-        $params->{'email_alerts_request'}
+        $params->{'email_alerts_requested'}
             = $comment->extra->{email_alerts_requested} ? 'TRUE' : 'FALSE';
         $params->{'title'} = $comment->extra->{title};
     }

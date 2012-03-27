@@ -45,6 +45,7 @@ warning_like {$o2->send_service_request( $p, { url => 'http://example.com/' }, 1
 my $dt = DateTime->now();
 
 my $user = FixMyStreet::App->model('DB::User')->new( {
+    name => 'Test User',
     email => 'test@example.com',
 } );
 
@@ -61,6 +62,7 @@ my $comment = FixMyStreet::App->model('DB::Comment')->new( {
     anonymous => 0,
     text => 'this is a comment',
     confirmed => $dt,
+    extra => { title => 'Mr', email_alerts_requested => 0 },
 } );
 
 subtest 'testing posting updates' => sub {
@@ -79,6 +81,10 @@ subtest 'testing posting updates' => sub {
     is $c->param('service_request_id'), 81, 'request id correct';
     is $c->param('public_anonymity_required'), 'FALSE', 'anon status correct';
     is $c->param('updated_datetime'), $dt, 'correct date';
+    is $c->param('title'), 'Mr', 'correct title';
+    is $c->param('last_name'), 'User', 'correct first name';
+    is $c->param('first_name'), 'Test', 'correct second name';
+    is $c->param('email_alerts_requested'), 'FALSE', 'email alerts flag correct';
 };
 
 foreach my $test (
@@ -142,6 +148,24 @@ foreach my $test (
         is $c->param('public_anonymity_required'), $test->{anon} ? 'TRUE' : 'FALSE', 'correct anonymity';
     };
 }
+
+
+subtest 'check correct name used' => sub {
+    $comment->name( 'First Last' );
+    $user->name( 'Personal Family');
+
+    my $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>' );
+
+    my $c = CGI::Simple->new( $results->{ req }->content );
+    is $c->param('first_name'), 'First', 'Name from comment';
+
+    $comment->name( '' );
+
+    $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>' );
+
+    $c = CGI::Simple->new( $results->{ req }->content );
+    is $c->param('first_name'), 'Personal', 'Name from user';
+};
 
 subtest 'No update id in reponse' => sub {
     my $results;
