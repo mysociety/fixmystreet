@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 use Test::More;
+use CGI::Simple;
 
 use FindBin;
 use lib "$FindBin::Bin/../perllib";
@@ -255,6 +256,51 @@ for my $test (
         is $problem2->comments->count, $test->{p2_comments}, 'comment count for second problem';
     };
 }
+
+subtest 'using start and end date' => sub {
+    my $local_requests_xml = $requests_xml;
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'update.xml' => $local_requests_xml } );
+
+    my $start_dt = DateTime->now();
+    $start_dt->subtract( days => 1 );
+    my $end_dt = DateTime->now();
+
+
+    my $update = Open311::GetServiceRequestUpdates->new( 
+        system_user => $user,
+        start_date => $start_dt,
+    );
+
+    my $res = $update->update_comments( $o );
+    is $res, 0, 'returns 0 if start but no end date';
+
+    $update = Open311::GetServiceRequestUpdates->new( 
+        system_user => $user,
+        end_date => $end_dt,
+    );
+
+    $res = $update->update_comments( $o );
+    is $res, 0, 'returns 0 if end but no start date';
+
+    $update = Open311::GetServiceRequestUpdates->new( 
+        system_user => $user,
+        start_date => $start_dt,
+        end_date => $end_dt,
+    );
+
+    my $council_details = { areaid => 2482 };
+    $update->update_comments( $o, $council_details );
+
+    my $start = $start_dt . '';
+    my $end = $end_dt . '';
+
+    my $uri = URI->new( $o->test_uri_used );
+    my $c = CGI::Simple->new( $uri->query );
+
+    is $c->param('start_date'), $start, 'start date used';
+    is $c->param('end_date'), $end, 'end date used';
+};
+
 $problem2->comments->delete();
 $problem->comments->delete();
 $problem2->delete;

@@ -6,11 +6,22 @@ use FixMyStreet::App;
 
 has council_list => ( is => 'ro' );
 has system_user => ( is => 'ro' );
+has start_date => ( is => 'ro', default => undef );
+has end_date => ( is => 'ro', default => undef );
 
 sub update_comments {
     my ( $self, $open311, $council_details ) = @_;
 
-    my $requests = $open311->get_service_request_updates( );
+    my @args = ();
+
+    if ( $self->start_date || $self->end_date ) {
+        return 0 unless $self->start_date && $self->end_date;
+
+        push @args, $self->start_date;
+        push @args, $self->end_date;
+    }
+
+    my $requests = $open311->get_service_request_updates( @args );
 
     return 0 unless $open311->success;
 

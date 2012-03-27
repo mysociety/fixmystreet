@@ -136,8 +136,17 @@ sub get_service_request_id_from_token {
 
 sub get_service_request_updates {
     my $self = shift;
+    my $start_date = shift;
+    my $end_date = shift;
 
     my $params = {};
+
+    if ( $start_date || $end_date ) {
+        return 0 unless $start_date && $end_date;
+
+        $params->{start_date} = $start_date;
+        $params->{end_date} = $end_date;
+    }
 
     my $xml = $self->_get( $self->endpoints->{service_request_updates}, $params || undef );
     my $service_requests = $self->_get_xml_object( $xml );
