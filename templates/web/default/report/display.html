@@ -1,7 +1,7 @@
 [% 
     PROCESS "maps/${map.type}.html";
 
-    problem_title = problem.title _ ' - ' _ loc('Viewing a problem') | html;
+    problem_title = problem.title _ ' - ' _ loc('Viewing a problem');
     INCLUDE 'header.html'
         title = problem_title
         rss = [ loc('Updates to this problem, FixMyStreet'), "/rss/$problem.id" ]

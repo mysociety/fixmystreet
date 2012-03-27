@@ -1,0 +1,22 @@
+[% IF loop.first %]
+<div id="updates">
+    <h2 class="problem-update-list-header">[% loc('Updates') %]</h2>
+[% END %]
+    <div><div class="problem-update"><p><a name="update_[% update.id %]"></a><em>
+        [% INCLUDE meta_line %]
+    </em></p></div>
+[% IF NOT update.whenanswered %]
+    <div class="update-text">
+        [% add_links( update.text ) | html_para %]
+
+        [% INCLUDE 'report/photo.html' object=update %]
+
+        [% IF c.cobrand.allow_update_reporting %]
+        <p align="right">
+            <small><a rel="nofollow" class="unsuitable-problem" href="[% c.uri_for( '/contact', { id => update.problem_id, update_id => update.id } ) %]">[% loc('Offensive? Unsuitable? Tell us') %]</a></small>
+        </p>
+        [% END %]
+    </div>
+[% END %]
+    </div>
+[% '</div>' IF loop.last %]

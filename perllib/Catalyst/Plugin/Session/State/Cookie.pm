@@ -50,6 +50,9 @@ sub update_session_cookie {
 sub cookie_is_rejecting {
     my ( $c, $cookie ) = @_;
 
+    # Don't output cookie for JS files. mySociety addition
+    return 1 if substr($c->request->path, -3) eq '.js';
+
     if ( $cookie->{path} ) {
         return 1 if index '/'.$c->request->path, $cookie->{path};
     }

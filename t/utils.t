@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 9;
+use Test::More;
 
 use FindBin;
 use lib "$FindBin::Bin/../perllib";
@@ -39,3 +39,26 @@ foreach my $test (@convert_en_to_latlon_tests) {
       [ $lat, $lon ],                                         #
       "convert ($e,$n) to ($lat,$lon)";
 }
+
+my @cleanup_tests = (
+    [ 'dog shit', 'Dog poo', 'dog poo' ],
+    [ 'dog   shit', 'Dog poo', 'with spaces' ],
+    [ 'dog shite', 'Dog poo', 'with extra e' ],
+    [ 'there is dog shit here', 'There is dog poo here', 'with surrounding text' ],
+    [ 'portacabin', '[portable cabin]', 'cabin' ],
+    [ 'portaloo', '[portable loo]', 'loo' ],
+    [ 'porta loo', '[portable loo]', 'with spaces' ],
+    [ '   this is a report    ', 'This is a report', 'leading and trailing spaces' ],
+    [ 'This     is a   report    ', 'This is a report', 'spaces in the middle' ],
+    [ 'I AM SHOUTING AT YOU', 'I am shouting at you', 'all shouting' ],
+    [ 'I am EMPHASISING something', 'I am EMPHASISING something', 'some shouting' ],
+    [ "This has new\n\n\nlines in it", 'This has new Lines in it', 'no new lines' ],
+);
+
+foreach my $test ( @cleanup_tests ) {
+    is Utils::cleanup_text( $test->[0]), $test->[1], $test->[2];
+}
+
+is Utils::cleanup_text( "This has new\n\n\nlines in it", { allow_multiline => 1 } ),  "This has new\n\nLines in it", 'new lines allowed';
+
+done_testing();

@@ -21,7 +21,9 @@ sub problems_clause {
 
 # FIXME - need to double check this is all correct
 sub disambiguate_location {
+    my $self = shift;
     return {
+        %{ $self->SUPER::disambiguate_location() },
         centre => '52.688198,-1.804966',
         span   => '0.1196,0.218675',
         bounds => [ '52.807793,-1.586291', '52.584891,-1.963232' ],

@@ -23,10 +23,11 @@ use Digest::MD5 qw(md5_hex);
 sub string {
     my ( $s, $c, $params ) = @_;
     $s .= '+' . $params->{town} if $params->{town} and $s !~ /$params->{town}/i;
-    my $url = "http://dev.virtualearth.net/REST/v1/Locations?q=$s&c=en-GB"; # FIXME nb-NO for Norway
-    $url .= '&mapView=' . $params->{bounds}[0] . ',' . $params->{bounds}[1]
+    my $url = "http://dev.virtualearth.net/REST/v1/Locations?q=$s";
+    $url .= '&userMapView=' . $params->{bounds}[0] . ',' . $params->{bounds}[1]
         if $params->{bounds};
     $url .= '&userLocation=' . $params->{centre} if $params->{centre};
+    $url .= '&c=' . $params->{bing_culture} if $params->{bing_culture};
 
     my $cache_dir = FixMyStreet->config('GEO_CACHE') . 'bing/';
     my $cache_file = $cache_dir . md5_hex($url);
@@ -43,7 +44,7 @@ sub string {
 
     if (!$js) {
         return { error => _('Sorry, we could not parse that location. Please try again.') };
-    } elsif ($js =~ /BT\d/) {
+    } elsif ($js =~ /BT\d/ && $params->{bing_country} eq 'United Kingdom') {
         return { error => _("We do not currently cover Northern Ireland, I'm afraid.") };
     }
 
@@ -54,9 +55,10 @@ sub string {
 
     my $results = $js->{resourceSets}->[0]->{resources};
     my ( $error, @valid_locations, $latitude, $longitude );
+
     foreach (@$results) {
         my $address = $_->{name};
-        next unless $_->{address}->{countryRegion} eq 'United Kingdom'; # FIXME This is UK only
+        next unless $_->{address}->{countryRegion} eq $params->{bing_country};
         ( $latitude, $longitude ) = @{ $_->{point}->{coordinates} };
         push (@$error, { address => $address, latitude => $latitude, longitude => $longitude });
         push (@valid_locations, $_);
@@ -66,12 +68,13 @@ sub string {
 }
 
 sub reverse {
-    my ( $latitude, $longitude, $cache ) = @_;
+    my ( $latitude, $longitude, $bing_culture, $cache ) = @_;
 
     # Get nearest road-type thing from Bing
     my $key = mySociety::Config::get('BING_MAPS_API_KEY', '');
     if ($key) {
-        my $url = "http://dev.virtualearth.net/REST/v1/Locations/$latitude,$longitude?c=en-GB&key=$key";
+        my $url = "http://dev.virtualearth.net/REST/v1/Locations/$latitude,$longitude?key=$key";
+        $url .= '&c=' . $bing_culture if $bing_culture;
         my $j;
         if ( $cache ) {
             my $cache_dir = FixMyStreet->config('GEO_CACHE') . 'bing/';

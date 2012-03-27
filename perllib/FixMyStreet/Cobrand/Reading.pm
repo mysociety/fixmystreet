@@ -12,11 +12,13 @@ sub council_name { return 'Reading City Council'; }
 sub council_url { return 'reading'; }
 
 sub disambiguate_location {
+    my $self = shift;
     return {
+        %{ $self->SUPER::disambiguate_location() },
         town   => 'Reading',
-        centre => '51.452983169803964,-0.98382678731985973',
-        span   => '0.0833543573028663,0.124500468843446',
-        bounds => [ '51.409779668156361,-1.0529948144525243', '51.493134025459227,-0.92849434560907829' ],
+        centre => '51.452983,-0.983827',
+        span   => '0.083355,0.1245',
+        bounds => [ '51.409779,-1.052994', '51.493134,-0.928494' ],
     };
 }
 
