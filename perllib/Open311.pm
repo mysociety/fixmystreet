@@ -17,6 +17,8 @@ has test_get_returns => ( is => 'rw' );
 has endpoints => ( is => 'rw', default => sub { { services => 'services.xml', requests => 'requests.xml', service_request_updates => 'update.xml', update => 'update.xml' } } );
 has debug => ( is => 'ro', isa => 'Bool', default => 0 );
 has debug_details => ( is => 'rw', 'isa' => 'Str', default => '' );
+has success => ( is => 'rw', 'isa' => 'Bool', default => 0 );
+has error => ( is => 'rw', 'isa' => 'Str', default => '' );
 
 sub get_service_list {
     my $self = shift;
@@ -213,10 +215,17 @@ sub _get {
 
     my $content;
     if ( $self->test_mode ) {
+        $self->success(1);
         $content = $self->test_get_returns->{ $path };
         $self->test_uri_used( $uri->as_string );
     } else {
         $content = get( $uri->as_string );
+        if ( $content == undef ) {
+            $self->success(0);
+            $self->error('Failed to fetch');
+        } else {
+            $self->success(1);
+        }
     }
 
     return $content;
@@ -250,14 +259,17 @@ sub _post {
     }
 
     if ( $res->is_success ) {
+        $self->success(1);
         return $res->decoded_content;
     } else {
-        warn sprintf( 
+        $self->success(0);
+        $self->error( sprintf( 
             "request failed: %s\nerror: %s\n%s",
             $res->status_line,
             $self->_process_error( $res->decoded_content ),
             $self->debug_details
-        );
+        ) );
+        warn $self->error;
         return 0;
     }
 }

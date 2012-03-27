@@ -12,6 +12,8 @@ sub update_comments {
 
     my $requests = $open311->get_service_request_updates( );
 
+    return 0 unless $open311->success;
+
     for my $request (@$requests) {
         my $request_id = $request->{service_request_id};
 
