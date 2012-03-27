@@ -572,7 +572,7 @@ $.fn.drawer = function(id, ajax) {
      */
     if (!$('html.mobile').length) {
         if (!($('body').hasClass('frontpage'))){
-            heightFix(window, '.content', -128);
+            heightFix(window, '.content', -110);
         }
     }
 
