@@ -312,9 +312,11 @@ while (my $row = $unsent->next) {
                 push @$extra, { name => 'northing', value => $h{northing} };
                 push @$extra, { name => 'easting', value => $h{easting} };
                 push @$extra, { name => 'report_url', value => $h{url} };
-                push @$extra, { name => 'service_request_id', value => $row->id };
+                push @$extra, { name => 'service_request_id_ext', value => $row->id };
                 push @$extra, { name => 'report_title', value => $row->title };
                 push @$extra, { name => 'public_anonymity_required', value => $row->anonymous ? 'TRUE' : 'FALSE' };
+                push @$extra, { name => 'email_alerts_requested', value => 'FALSE' }; # always false as can never request them
+                push @$extra, { name => 'requested_datetime', value => $row->confirmed };
                 $row->extra( $extra );
             }
 
