@@ -84,7 +84,7 @@ sub bromley_retry_timeout {
     my $tz = DateTime::TimeZone->new( name => 'local' );
     my $now = DateTime->now( time_zone => $tz );
     my $diff = $now - $row->send_fail_timestamp;
-    if ( $diff->minutes < 30 ) {
+    if ( $diff->in_units( 'minutes' ) < 30 ) {
         return 1;
     }
 
