@@ -124,7 +124,9 @@ sub report_form_ajax : Path('ajax') : Args(0) {
     my $category = $c->render_fragment( 'report/new/category.html');
     my $councils_text = $c->render_fragment( 'report/new/councils_text.html');
     my $has_open311 = keys %{ $c->stash->{category_extras} };
-    my $extra_name_info = $c->render_fragment('report/new/extra_name.html');
+    my $extra_name_info = $c->stash->{extra_name_info}
+        ? $c->render_fragment('report/new/extra_name.html')
+        : '';
 
     my $body = JSON->new->utf8(1)->encode(
         {
