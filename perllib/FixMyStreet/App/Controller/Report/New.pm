@@ -553,7 +553,7 @@ sub setup_categories_and_councils : Private {
             _('-- Pick a category --'),
             sort keys %{ Utils::london_categories() }
         );
-        $category_label = _('Category:');
+        $category_label = _('Category');
 
     } else {
 
@@ -583,7 +583,7 @@ sub setup_categories_and_councils : Private {
         if (@category_options) {
             @category_options =
               ( _('-- Pick a category --'), @category_options, _('Other') );
-            $category_label = _('Category:');
+            $category_label = _('Category');
         }
     }
 
