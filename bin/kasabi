@@ -12,6 +12,7 @@ import pytassium
 import psycopg2
 import psycopg2.extras
 from rdfchangesets import BatchChangeSet
+from rdflib.namespace import XSD
 
 # Set up data access
 config = yaml.load(open(os.path.abspath(os.path.join(os.path.dirname(__file__), '../conf/general.yml'))))
@@ -54,8 +55,8 @@ def main():
             # Canonicalise some values
             report['latitude'] = round(report['latitude'], 6) # <10cm
             report['longitude'] = round(report['longitude'], 6)
-            report['title'] = report['title'].replace('\\', '\\\\').replace('"', r'\"') # Escape double quotes
-            report['detail'] = report['detail'].replace('\\', '\\\\').replace('"', r'\"')
+            report['title'] = tidy_string(report['title'])
+            report['detail'] = tidy_string(report['detail'])
             report['confirmed'] = report['confirmed'].replace(microsecond=0).isoformat() # Don't want microseconds
             report['lastupdate'] = report['lastupdate'].replace(microsecond=0).isoformat()
             report['council'] = sorted(re.sub('\|.*', '', report['council']).split(',')) # Remove missing councils
@@ -81,6 +82,10 @@ def main():
             changeset.remove_report(report)
             changeset.add_report(report, states)
         changeset.apply()
+
+# Escape double quotes and backslashes, remove carriage returns
+def tidy_string(s):
+    return s.replace('\r', '').replace('\\', '\\\\').replace('"', r'\"')
 
 class FixMyStreetChangeSet(object):
     """Something that hosts either or both of a BatchChangeSet and a Turtle
@@ -110,7 +115,13 @@ class FixMyStreetChangeSet(object):
         
     def apply(self):
         if len(self.changeset.changesets):
-            response, data = self.dataset.apply_changeset(self.changeset)
+            #response, data = self.dataset.apply_changeset(self.changeset)
+            # XXX Do everything the above call does, but additionally escape carriage returns to prevent 409 error
+            api = self.dataset.get_api('update')
+            g = self.changeset.getGraph()
+            data = g.serialize(format='xml')
+            data = data.replace('\r', '&#13;')
+            response, data = api.client.request(api.uri, "POST", body=data, headers={"accept" : "*/*", 'content-type':'application/vnd.talis.changeset+xml', 'X_KASABI_APIKEY':api.apikey})
             if response.status not in range(200, 300):
                 print 'Error:', response.status, response.reason, data
         if self.data:
@@ -122,9 +133,10 @@ class FixMyStreetChangeSet(object):
         uri = 'http://data.kasabi.com/dataset/fixmystreet/report/{id}'.format(**report)
         response, data = self.dataset.select('select ?p ?o where {{ <{0}> ?p ?o }}'.format(uri))
         for row in data[1]:
-            # XXX This throws an error
+            # Need to set the datatype correctly for the lastUpdate
             if str(row['p']) == 'http://data.kasabi.com/dataset/fixmystreet/def/lastUpdate':
-                continue
+                row['o'].datatype = XSD.dateTime
+            # Delete the referenced statuses
             if re.match('http://data.kasabi.com/dataset/fixmystreet/report/\d+/status/\d+$', unicode(row['o'])):
                 uri2 = unicode(row['o'])
                 response2, data2 = self.dataset.select('select ?p ?o where {{ <{0}> ?p ?o }}'.format(uri2))
