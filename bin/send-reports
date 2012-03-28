@@ -171,7 +171,7 @@ while (my $row = $unsent->next) {
             $send_email = 1 unless $send_method; # default to email if nothing explicit was provided
             
             # currently: open311 without an endpoint is useless, so check the endpoint is set
-            if ($send_method eq SEND_METHOD_OPEN311) { 
+            if ($send_method && $send_method eq SEND_METHOD_OPEN311) { 
                 if ($council_config->endpoint) {
                     if ($send_method eq SEND_METHOD_OPEN311) {
                         push @open311_councils, $council_config;                        
@@ -240,7 +240,7 @@ while (my $row = $unsent->next) {
 
     }
 
-    unless ($send_method) {
+    unless ($send_method || $send_email) {
         die 'Report not going anywhere for ID ' . $row->id . '!';
     }
 
