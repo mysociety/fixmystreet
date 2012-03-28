@@ -53,6 +53,11 @@ function tabs(elem, indirect) {
 $(function(){
     var $html = $('html');
 
+    var cobrand;
+    if (window.location.href.indexOf('bromley') != -1) {
+        cobrand = 'bromley';
+    }
+
     // Deal with switching between mobile and desktop versions on resize
     var last_type;
     $(window).resize(function(){
@@ -74,7 +79,9 @@ $(function(){
             }
             if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
                 // Immediately go full screen map if on around page
-                $('#site-header').hide();
+                if (cobrand != 'bromley') {
+                    $('#site-header').hide();
+                }
                 $('#map_box').prependTo('.wrapper').css({
                     position: 'absolute',
                     top: 0, left: 0, right: 0, bottom: 0,
@@ -97,7 +104,7 @@ $(function(){
             // Make map full screen on non-mobile sizes.
             $html.removeClass('mobile');
             var map_pos = 'fixed', map_height = '100%';
-            if ($html.hasClass('ie6')) {
+            if (cobrand == 'bromley' || $html.hasClass('ie6')) {
                 map_pos = 'absolute';
                 map_height = $(window).height();
             }
@@ -107,12 +114,17 @@ $(function(){
                 width: '100%', height: map_height,
                 margin: 0
             });
+            if (cobrand == 'bromley') {
+                $('#bromley-footer').hide();
+            }
             if (typeof fixmystreet !== 'undefined') {
                 fixmystreet.state_map = 'full';
             }
             if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
                 // Remove full-screen-ness
-                $('#site-header').show();
+                if (cobrand != 'bromley') {
+                    $('#site-header').show();
+                }
                 $('#fms_pan_zoom').css({ top: '4.75em !important' });
                 $('.big-green-banner')
                     .removeClass('mobile-map-banner')
@@ -406,7 +418,11 @@ $.fn.drawer = function(id, ajax) {
      */
     if (!$('html.mobile').length) {
         if (!($('body').hasClass('frontpage'))){
-            heightFix(window, '.content', -176);
+            var offset = -176;
+            if (cobrand == 'bromley') {
+                offset = -110;
+            }
+            heightFix(window, '.content', offset);
         }
     }
 
