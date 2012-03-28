@@ -6,9 +6,34 @@ use FixMyStreet::App;
 use DateTime::Format::W3CDTF;
 
 has council_list => ( is => 'ro' );
-has system_user => ( is => 'ro' );
+has system_user => ( is => 'rw' );
 has start_date => ( is => 'ro', default => undef );
 has end_date => ( is => 'ro', default => undef );
+
+sub fetch {
+    my $self = shift;
+
+    my $councils = FixMyStreet::App->model('DB::Open311Conf')->search(
+        {
+            send_method     => 'open311',
+            send_comments   => 1,
+            comment_user_id => { '!=', undef },
+            endpoint        => { '!=', '' },
+        }
+    );
+
+    while ( my $council = $councils->next ) {
+
+        my $o = Open311->new(
+            endpoint     => $council->endpoint,
+            api_key      => $council->api_key,
+            jurisdiction => $council->jurisdiction,
+        );
+
+        $self->system_user( $council->comment_user );
+        $self->update_comments( $o, { areaid => $council->area_id }, );
+    }
+}
 
 sub update_comments {
     my ( $self, $open311, $council_details ) = @_;

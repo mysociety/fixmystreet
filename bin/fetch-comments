@@ -1,58 +1,15 @@
 #!/usr/bin/env perl
 
-# send-reports:
-# Send new problem reports to councils
-#
-# Copyright (c) 2011 UK Citizens Online Democracy. All rights reserved.
-# Email: matthew@mysociety.org. WWW: http://www.mysociety.org
-
 use strict;
 use warnings;
 require 5.8.0;
 
-use Digest::MD5;
-use Encode;
-use Error qw(:try);
-use CronFns;
-
 use FixMyStreet::App;
-
-use Utils;
-use mySociety::Config;
-use mySociety::EmailUtil;
 
 use Open311;
 use Open311::GetServiceRequestUpdates;
 
-# send_method config values found in by-area config data, for selecting to appropriate method
-use constant SEND_METHOD_EMAIL   => 'email';
-use constant SEND_METHOD_OPEN311 => 'open311';
 
-# Set up site, language etc.
-my ( $verbose, $nomail ) = CronFns::options();
-my $base_url = mySociety::Config::get('BASE_URL');
-my $site     = CronFns::site($base_url);
+my $updates = Open311::GetServiceRequestUpdates->new;
 
-my $councils = FixMyStreet::App->model('DB::Open311Conf')->search(
-    {
-        send_method   => SEND_METHOD_OPEN311,
-        send_comments => 1,
-        comment_user_id  => { '!=', undef },
-        endpoint      => { '!=', '' },
-    }
-);
-
-while ( my $council = $councils->next ) {
-
-    my $o = Open311->new(
-        endpoint     => $council->endpoint,
-        api_key      => $council->api_key,
-        jurisdiction => $council->jurisdiction,
-    );
-
-    my $updates =
-      Open311::GetServiceRequestUpdates->new(
-        system_user => $council->comment_user );
-
-    $updates->update_comments( $o, { areaid => $council->area_id }, );
-}
+$updates->fetch;
