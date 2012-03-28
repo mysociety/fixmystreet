@@ -899,10 +899,18 @@ body.frontpage {
       }
     }
   }
+  a {
+    color: $primary_text;
+    text-decoration: underline;
+    &:hover {
+      text-decoration: none;
+    }
+  }
   a#geolocate_link {
     background:none;
     color:#222;
     margin:-1em 0 0.5em 0;
+    text-decoration: none;
     &:hover {
       text-decoration:underline;
       background:none;
