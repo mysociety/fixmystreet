@@ -164,7 +164,7 @@ while (my $row = $unsent->next) {
 
             # if council lookup provided no explicit send_method, maybe there's some other criterion for setting it:
             if (! $send_method) {
-                if ($areas_info->{$council}->{type} eq 'LBO') { # London
+                if ($council != 2482 && $areas_info->{$council}->{type} eq 'LBO') { # London
                     $send_method = SEND_METHOD_LONDON;
                 }
             }
