@@ -232,12 +232,20 @@ sub _get {
         $content = $self->test_get_returns->{ $path };
         $self->test_uri_used( $uri->as_string );
     } else {
-        $content = get( $uri->as_string );
-        if ( $content == undef ) {
-            $self->success(0);
-            $self->error('Failed to fetch');
-        } else {
+        my $ua = LWP::UserAgent->new;
+
+        my $req = HTTP::Request->new(
+            GET => $uri->as_string
+        );
+
+        my $res = $ua->request( $req );
+
+        if ( $res->is_success ) {
+            $content = $res->decoded_content;
             $self->success(1);
+        } else {
+            $self->success(0);
+            $self->error( $res->status_line );
         }
     }
 
