@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import sys
 import datetime
 import json
 import os.path
@@ -28,15 +29,18 @@ def main():
     # Fetch reports that have changed recently
     #response, data = dataset.select('select (max(?lastupdate) as ?max) where { ?report <http://data.kasabi.com/dataset/fixmystreet/def/lastUpdate> ?lastupdate }')
     #max_lastUpdate = data[1][0]['max']
-    last_hour = datetime.datetime.now().replace(minute=0, second=0, microsecond=0) - datetime.timedelta(hours=1)
-    cursor.execute("""
+    query = """
         SELECT id, latitude, longitude, used_map, council,
             category, title, detail, (photo IS NOT NULL) as photo,
             confirmed, lastupdate, whensent, state
         FROM problem
         WHERE state not in ('unconfirmed', 'partial')
-            AND date_trunc('hour', lastupdate) = %s
-    """, (last_hour,))
+    """
+    if len(sys.argv) > 1 and sys.argv[1].isdigit():
+        cursor.execute("%s AND id=%%s" % query, (sys.argv[1],))
+    else:
+        last_hour = datetime.datetime.now().replace(minute=0, second=0, microsecond=0) - datetime.timedelta(hours=1)
+        cursor.execute("%s AND date_trunc('hour', lastupdate) = %%s" % query, (last_hour,))
 #            AND lastupdate > %s
 #    """, (max_lastUpdate,))
 
@@ -50,8 +54,8 @@ def main():
             # Canonicalise some values
             report['latitude'] = round(report['latitude'], 6) # <10cm
             report['longitude'] = round(report['longitude'], 6)
-            report['title'] = report['title'].replace('"', r'\"') # Escape double quotes
-            report['detail'] = report['detail'].replace('"', r'\"')
+            report['title'] = report['title'].replace('\\', '\\\\').replace('"', r'\"') # Escape double quotes
+            report['detail'] = report['detail'].replace('\\', '\\\\').replace('"', r'\"')
             report['confirmed'] = report['confirmed'].replace(microsecond=0).isoformat() # Don't want microseconds
             report['lastupdate'] = report['lastupdate'].replace(microsecond=0).isoformat()
             report['council'] = sorted(re.sub('\|.*', '', report['council']).split(',')) # Remove missing councils
@@ -121,8 +125,8 @@ class FixMyStreetChangeSet(object):
             # XXX This throws an error
             if str(row['p']) == 'http://data.kasabi.com/dataset/fixmystreet/def/lastUpdate':
                 continue
-            if re.match('http://data.kasabi.com/dataset/fixmystreet/report/\d+/status/\d+$', str(row['o'])):
-                uri2 = str(row['o'])
+            if re.match('http://data.kasabi.com/dataset/fixmystreet/report/\d+/status/\d+$', unicode(row['o'])):
+                uri2 = unicode(row['o'])
                 response2, data2 = self.dataset.select('select ?p ?o where {{ <{0}> ?p ?o }}'.format(uri2))
                 for row2 in data2[1]:
                     self.changeset.remove(uri2, row2['p'], row2['o'])
