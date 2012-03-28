@@ -114,7 +114,9 @@ $map_width: 500px;
         }
     }
 
-    #geolocate_para {
+    #geolocate_link {
+        display: block;
+        border: none;
         font-size: 70%;
         margin: 2px 0 0 0;
         text-align: right;
@@ -609,7 +611,7 @@ $map_width: 500px;
             }
         }
 
-        #geolocate_para {
+        #geolocate_link {
             font-size: 100%;
         }
 
