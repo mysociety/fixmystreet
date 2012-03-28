@@ -189,6 +189,38 @@ for my $test (
     };
 }
 
+
+foreach my $test (
+    {
+        desc => 'date for comment correct',
+        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
+        external_id => 638344,
+    },
+) {
+    subtest $test->{desc} => sub {
+        my $dt = DateTime->now();
+        $dt->subtract( minutes => 10 );
+        my $local_requests_xml = $requests_xml;
+
+        my $updated = sprintf( '<updated_datetime>%s</updated_datetime>', $dt );
+        $local_requests_xml =~ s/UPDATED_DATETIME/$updated/;
+        $local_requests_xml =~ s#<service_request_id>\d+</service_request_id>#<service_request_id>@{[$problem->external_id]}</service_request_id>#;
+        $local_requests_xml =~ s#<service_request_id_ext>\d+</service_request_id_ext>#<service_request_id_ext>@{[$problem->id]}</service_request_id_ext>#;
+
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'update.xml' => $local_requests_xml } );
+
+        $problem->comments->delete;
+
+        my $council_details = { areaid => 2482 };
+        my $update = Open311::GetServiceRequestUpdates->new( system_user => $user );
+        $update->update_comments( $o, $council_details );
+
+        my $comment = $problem->comments->first;
+        is $comment->created, $dt, 'created date set to date from XML';
+        is $comment->confirmed, $dt, 'confirmed date set to date from XML';
+    };
+}
+
 my $problem2 = $problem_rs->new(
     {
         postcode     => 'EH99 1SP',
@@ -299,6 +331,71 @@ subtest 'using start and end date' => sub {
 
     is $c->param('start_date'), $start, 'start date used';
     is $c->param('end_date'), $end, 'end date used';
+};
+
+subtest 'check that existing comments are not duplicated' => sub {
+    my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+    <service_requests_updates>
+    <request_update>
+    <update_id>638344</update_id>
+    <service_request_id>@{[ $problem->external_id ]}</service_request_id>
+    <service_request_id_ext>@{[ $problem->id ]}</service_request_id_ext>
+    <status>open</status>
+    <description>This is a note</description>
+    <updated_datetime>UPDATED_DATETIME</updated_datetime>
+    </request_update>
+    <request_update>
+    <update_id>638354</update_id>
+    <service_request_id>@{[ $problem->external_id ]}</service_request_id>
+    <service_request_id_ext>@{[ $problem->id ]}</service_request_id_ext>
+    <status>open</status>
+    <description>This is a different note</description>
+    <updated_datetime>UPDATED_DATETIME2</updated_datetime>
+    </request_update>
+    </service_requests_updates>
+    };
+
+    $problem->comments->delete;
+
+    my $comment = FixMyStreet::App->model('DB::Comment')->new(
+        {
+            problem => $problem,
+            external_id => 638344,
+            text => 'This is a note',
+            user => $user,
+            state => 'confirmed',
+            mark_fixed => 0,
+            anonymous => 0,
+            confirmed => $dt,
+        }
+    );
+    $comment->insert;
+
+    is $problem->comments->count, 1, 'one comment before fetching updates';
+
+    $requests_xml =~ s/UPDATED_DATETIME2/$dt/;
+    $requests_xml =~ s/UPDATED_DATETIME/@{[ $comment->confirmed ]}/;
+
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'update.xml' => $requests_xml } );
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+    );
+
+    my $council_details = { areaid => 2482 };
+    $update->update_comments( $o, $council_details );
+
+    $problem->discard_changes;
+    is $problem->comments->count, 2, 'two comments after fetching updates';
+
+    $update->update_comments( $o, $council_details );
+    $problem->discard_changes;
+    is $problem->comments->count, 2, 're-fetching updates does not add comments';
+
+    $problem->comments->delete;
+    $update->update_comments( $o, $council_details );
+    $problem->discard_changes;
+    is $problem->comments->count, 2, 'if comments are deleted then they are added';
 };
 
 $problem2->comments->delete();

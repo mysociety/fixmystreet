@@ -3,6 +3,7 @@ package Open311::GetServiceRequestUpdates;
 use Moose;
 use Open311;
 use FixMyStreet::App;
+use DateTime::Format::W3CDTF;
 
 has council_list => ( is => 'ro' );
 has system_user => ( is => 'ro' );
@@ -43,6 +44,8 @@ sub update_comments {
             my $c = $p->comments->search( { external_id => $request->{update_id} } );
 
             if ( !$c->first ) {
+                my $comment_time = DateTime::Format::W3CDTF->parse_datetime( $request->{updated_datetime} );
+
                 my $comment = FixMyStreet::App->model('DB::Comment')->new(
                     {
                         problem => $p,
@@ -52,11 +55,12 @@ sub update_comments {
                         mark_fixed => 0,
                         mark_open => 0,
                         anonymous => 0,
-                        name => $self->system_user->name
+                        name => $self->system_user->name,
+                        confirmed => $comment_time,
+                        created => $comment_time,
+                        state => 'confirmed',
                     }
                 );
-                $comment->confirm;
-
 
                 if ( $p->is_open and $request->{status} eq 'closed' ) {
                     $p->state( 'fixed - council' );
