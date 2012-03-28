@@ -30,16 +30,19 @@ body {
 }
 
 // Bit of extra spacing needed under Bromley header
+#front-main {
+    top: -16em;
+}
 body.frontpage .table-cell .content {
-    margin-top: 15em;
+    margin-top: 16em;
 }
 .ie6, .ie7 {
     #front-main {
-        top: -2em;
+        top: -3em;
         left: 1.5em;
     }
     body.frontpage .table-cell .content {
-        margin-top: 11em;
+        margin-top: 12em;
     }
 }
 
