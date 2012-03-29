@@ -104,20 +104,25 @@ $(function(){
             // Make map full screen on non-mobile sizes.
             $html.removeClass('mobile');
             if (cobrand == 'bromley') {
+                var $window = $(window), $content = $('.content'), o = $content.offset();
                 if ($html.hasClass('ie6')) {
                     $('#map_box').prependTo('.wrapper').css({
                         zIndex: 0, position: 'absolute',
-                        right: 0, top: '4em',// left: $('.content').offset().left + $('.content').width(),
-                        width: $(window).width() - $('.content').offset().left - $('.content').width() - 32,
-                        height: $(window).height() - $('.content').offset().top + 32,
+                        right: 0, top: '4em',
+                        width: $window.width() - o.left - $content.outerWidth(),
+                        height: $window.height() - o.top + 32,
                         margin: 0
                     });
                 } else {
+                    var map_height = $window.height() - o.top;
+                    if ($html.hasClass('ie7')) {
+                        map_height += 16; // XXX
+                    }
                     $('#map_box').prependTo('.wrapper').css({
                         zIndex: 0, position: 'fixed',
-                        right: 0, top: $('.content').offset().top, bottom: 0,// left: $('.content').offset().left + $('.content').width(),
-                        width: $(window).width() - $('.content').offset().left - $('.content').width() - 32,
-                        height: $(window).height() - $('.content').offset().top,
+                        right: 0, top: o.top, bottom: 0,
+                        width: $window.width() - o.left - $content.outerWidth(),
+                        height: map_height,
                         margin: 0
                     });
                 }
