@@ -115,9 +115,6 @@ $(function(){
                     });
                 } else {
                     var map_height = $window.height() - o.top;
-                    if ($html.hasClass('ie7')) {
-                        map_height += 16; // XXX
-                    }
                     $('#map_box').prependTo('.wrapper').css({
                         zIndex: 0, position: 'fixed',
                         right: 0, top: o.top, bottom: 0,
