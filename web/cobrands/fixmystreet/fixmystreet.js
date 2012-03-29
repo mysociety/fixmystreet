@@ -53,6 +53,11 @@ function tabs(elem, indirect) {
 $(function(){
     var $html = $('html');
 
+    var cobrand;
+    if (window.location.href.indexOf('bromley') != -1) {
+        cobrand = 'bromley';
+    }
+
     // Deal with switching between mobile and desktop versions on resize
     var last_type;
     $(window).resize(function(){
@@ -74,7 +79,9 @@ $(function(){
             }
             if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
                 // Immediately go full screen map if on around page
-                $('#site-header').hide();
+                if (cobrand != 'bromley') {
+                    $('#site-header').hide();
+                }
                 $('#map_box').prependTo('.wrapper').css({
                     position: 'absolute',
                     top: 0, left: 0, right: 0, bottom: 0,
@@ -96,23 +103,52 @@ $(function(){
         } else {
             // Make map full screen on non-mobile sizes.
             $html.removeClass('mobile');
-            var map_pos = 'fixed', map_height = '100%';
-            if ($html.hasClass('ie6')) {
-                map_pos = 'absolute';
-                map_height = $(window).height();
+            if (cobrand == 'bromley') {
+                var $window = $(window), $content = $('.content'), o = $content.offset();
+                if ($html.hasClass('ie6')) {
+                    $('#map_box').prependTo('.wrapper').css({
+                        zIndex: 0, position: 'absolute',
+                        right: 0, top: '4em',
+                        width: $window.width() - o.left - $content.outerWidth(),
+                        height: $window.height() - o.top + 32,
+                        margin: 0
+                    });
+                } else {
+                    var map_height = $window.height() - o.top;
+                    $('#map_box').prependTo('.wrapper').css({
+                        zIndex: 0, position: 'fixed',
+                        right: 0, top: o.top, bottom: 0,
+                        width: $window.width() - o.left - $content.outerWidth(),
+                        height: map_height,
+                        margin: 0
+                    });
+                }
+            } else if ($html.hasClass('ie6')) {
+                $('#map_box').prependTo('.wrapper').css({
+                    zIndex: 0, position: 'absolute',
+                    top: 0, left: 0, right: 0, bottom: 0,
+                    width: '100%', height: $(window).height(),
+                    margin: 0
+                });
+            } else {
+                $('#map_box').prependTo('.wrapper').css({
+                    zIndex: 0, position: 'fixed',
+                    top: 0, left: 0, right: 0, bottom: 0,
+                    width: '100%', height: '100%',
+                    margin: 0
+                });
             }
-            $('#map_box').prependTo('.wrapper').css({
-                zIndex: 0, position: map_pos,
-                top: 0, left: 0, right: 0, bottom: 0,
-                width: '100%', height: map_height,
-                margin: 0
-            });
+            if (cobrand == 'bromley') {
+                $('#bromley-footer').hide();
+            }
             if (typeof fixmystreet !== 'undefined') {
                 fixmystreet.state_map = 'full';
             }
             if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
                 // Remove full-screen-ness
-                $('#site-header').show();
+                if (cobrand != 'bromley') {
+                    $('#site-header').show();
+                }
                 $('#fms_pan_zoom').css({ top: '4.75em !important' });
                 $('.big-green-banner')
                     .removeClass('mobile-map-banner')
@@ -406,7 +442,11 @@ $.fn.drawer = function(id, ajax) {
      */
     if (!$('html.mobile').length) {
         if (!($('body').hasClass('frontpage'))){
-            heightFix(window, '.content', -176);
+            var offset = -176;
+            if (cobrand == 'bromley') {
+                offset = -110;
+            }
+            heightFix(window, '.content', offset);
         }
     }
 

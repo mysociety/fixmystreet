@@ -64,7 +64,9 @@ sub string {
         next if @valid_locations
             && $valid_locations[-1]{address}{postalCode} eq $_->{address}{postalCode}
             && ( $valid_locations[-1]{address}{locality} eq $_->{address}{adminDistrict2}
-                || $valid_locations[-1]{address}{adminDistrict2} eq $_->{address}{locality} );
+                || $valid_locations[-1]{address}{adminDistrict2} eq $_->{address}{locality}
+                || $valid_locations[-1]{address}{locality} eq $_->{address}{locality}
+               );
 
         ( $latitude, $longitude ) = @{ $_->{point}->{coordinates} };
         push (@$error, { address => $address, latitude => $latitude, longitude => $longitude });

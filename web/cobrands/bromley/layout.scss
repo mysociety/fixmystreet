@@ -1,6 +1,7 @@
 @import "_colours";
 @import "../fixmystreet/_layout";
 
+// So that map appears underneath the header
 .wrapper {
     position: relative;
 }
@@ -29,16 +30,23 @@ body {
 }
 
 // Bit of extra spacing needed under Bromley header
+#front-main {
+    top: -16em;
+}
 body.frontpage .table-cell .content {
-    margin-top: 15em;
+    margin-top: 16em;
+}
+.ie6 {
+    #front-main {
+        left: 1.5em;
+    }
 }
 .ie6, .ie7 {
     #front-main {
-        top: -2em;
-        left: 1.5em;
+        top: -3em;
     }
     body.frontpage .table-cell .content {
-        margin-top: 11em;
+        margin-top: 12em;
     }
 }
 
@@ -61,13 +69,15 @@ body.mappage .content {
     }
 }
 
+// As map can scroll and isn't at the top, give it an edge
 #map_box {
-    border-top: solid 1px #666;
-    border-bottom: solid 1px #666;
+    border-top: solid 1px #999;
+    border-bottom: solid 1px #999;
 }
 
 // Perhaps fix map location (should be in central?)
-.ie6 #map_box {
+.ie6 #map_box, .ie7 #map_box {
     right: -30em;
+    top: 0;
 }
 

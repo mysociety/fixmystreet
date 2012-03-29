@@ -223,6 +223,9 @@ h1 {
 
 // map page - has fixed header and different styling
 body.mappage {
+  .container {
+    width: auto;
+  }
   .content {
     float:left;
   }
@@ -741,7 +744,7 @@ textarea.form-error {
   }
 }
 .ie6, .ie7 {
-  #report-a-problem-sidebar {
+  #report-a-problem-sidebar, .general-sidebar-notes {
     left: 29em; // 0.5em left margin gone on .content in IE6/7, so reduce this accordingly.
   }
 }
@@ -899,10 +902,18 @@ body.frontpage {
       }
     }
   }
+  a {
+    color: $primary_text;
+    text-decoration: underline;
+    &:hover {
+      text-decoration: none;
+    }
+  }
   a#geolocate_link {
     background:none;
     color:#222;
     margin:-1em 0 0.5em 0;
+    text-decoration: none;
     &:hover {
       text-decoration:underline;
       background:none;
