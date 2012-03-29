@@ -744,7 +744,7 @@ textarea.form-error {
   }
 }
 .ie6, .ie7 {
-  #report-a-problem-sidebar {
+  #report-a-problem-sidebar, .general-sidebar-notes {
     left: 29em; // 0.5em left margin gone on .content in IE6/7, so reduce this accordingly.
   }
 }
