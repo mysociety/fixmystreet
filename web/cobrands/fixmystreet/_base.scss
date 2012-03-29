@@ -351,6 +351,13 @@ p.form-error {
   padding:0 0.5em;
   margin:0 0 0 -0.5em;
   @include border-radius(0.25em 0.25em 0 0);
+  a {
+    color: white;
+    text-decoration: underline;
+  }
+  a:hover {
+    text-decoration: none;
+  }
 }
 
 input.form-error,
