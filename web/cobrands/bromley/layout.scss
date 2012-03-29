@@ -36,10 +36,14 @@ body {
 body.frontpage .table-cell .content {
     margin-top: 16em;
 }
+.ie6 {
+    #front-main {
+        left: 1.5em;
+    }
+}
 .ie6, .ie7 {
     #front-main {
         top: -3em;
-        left: 1.5em;
     }
     body.frontpage .table-cell .content {
         margin-top: 12em;

@@ -151,6 +151,11 @@ select, input, textarea {
   font-size: 99%;
   max-width: 95%;
 }
+.ie7 {
+    select, input, textarea {
+        max-width: none;
+    }
+}
 
 
 // links
