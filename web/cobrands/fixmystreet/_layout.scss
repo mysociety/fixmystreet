@@ -223,6 +223,9 @@ h1 {
 
 // map page - has fixed header and different styling
 body.mappage {
+  .container {
+    width: auto;
+  }
   .content {
     float:left;
   }
