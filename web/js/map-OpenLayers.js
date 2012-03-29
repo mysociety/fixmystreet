@@ -236,8 +236,9 @@ $(function(){
 
     if (fixmystreet.state_map && fixmystreet.state_map == 'full') {
         // TODO Work better with window resizing, this is pretty 'set up' only at present
-        var $content = $('.content'),
-            q = ( $content.offset().left + $content.width() ) / 2;
+        var $content = $('.content'), mb = $('#map_box'),
+            q = ( $content.offset().left - mb.offset().left + $content.width() ) / 2;
+        if (q < 0) { q = 0; }
         // Need to try and fake the 'centre' being 75% from the left
         fixmystreet.map.pan(-q, -25, { animate: false });
         fixmystreet.map.events.register("movestart", null, function(e){
@@ -478,7 +479,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                     fixmystreet.map.getProjectionObject()
                 );
                 var p = fixmystreet.map.getViewPortPxFromLonLat(lonlat);
-                p.x -= ( o.left + w ) / 2;
+                p.x -= ( o.left - bo.left + w ) / 2;
                 lonlat = fixmystreet.map.getLonLatFromViewPortPx(p);
                 fixmystreet.map.panTo(lonlat);
             }
