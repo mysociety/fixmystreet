@@ -103,17 +103,39 @@ $(function(){
         } else {
             // Make map full screen on non-mobile sizes.
             $html.removeClass('mobile');
-            var map_pos = 'fixed', map_height = '100%';
-            if (cobrand == 'bromley' || $html.hasClass('ie6')) {
-                map_pos = 'absolute';
-                map_height = $(window).height();
+            if (cobrand == 'bromley') {
+                if ($html.hasClass('ie6')) {
+                    $('#map_box').prependTo('.wrapper').css({
+                        zIndex: 0, position: 'absolute',
+                        right: 0, top: '4em',// left: $('.content').offset().left + $('.content').width(),
+                        width: $(window).width() - $('.content').offset().left - $('.content').width() - 32,
+                        height: $(window).height() - $('.content').offset().top + 32,
+                        margin: 0
+                    });
+                } else {
+                    $('#map_box').prependTo('.wrapper').css({
+                        zIndex: 0, position: 'fixed',
+                        right: 0, top: $('.content').offset().top, bottom: 0,// left: $('.content').offset().left + $('.content').width(),
+                        width: $(window).width() - $('.content').offset().left - $('.content').width() - 32,
+                        height: $(window).height() - $('.content').offset().top,
+                        margin: 0
+                    });
+                }
+            } else if ($html.hasClass('ie6')) {
+                $('#map_box').prependTo('.wrapper').css({
+                    zIndex: 0, position: 'absolute',
+                    top: 0, left: 0, right: 0, bottom: 0,
+                    width: '100%', height: $(window).height(),
+                    margin: 0
+                });
+            } else {
+                $('#map_box').prependTo('.wrapper').css({
+                    zIndex: 0, position: 'fixed',
+                    top: 0, left: 0, right: 0, bottom: 0,
+                    width: '100%', height: '100%',
+                    margin: 0
+                });
             }
-            $('#map_box').prependTo('.wrapper').css({
-                zIndex: 0, position: map_pos,
-                top: 0, left: 0, right: 0, bottom: 0,
-                width: '100%', height: map_height,
-                margin: 0
-            });
             if (cobrand == 'bromley') {
                 $('#bromley-footer').hide();
             }
