@@ -67,12 +67,13 @@ body.mappage .content {
 
 // As map can scroll and isn't at the top, give it an edge
 #map_box {
-    border-top: solid 1px #666;
-    border-bottom: solid 1px #666;
+    border-top: solid 1px #999;
+    border-bottom: solid 1px #999;
 }
 
 // Perhaps fix map location (should be in central?)
-.ie6 #map_box {
+.ie6 #map_box, .ie7 #map_box {
     right: -30em;
+    top: 0;
 }
 
