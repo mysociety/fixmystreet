@@ -783,19 +783,15 @@ textarea.form-error {
 
 body.frontpage {
   .table-cell {
-    // we do this so we can have full screen width elements
-    >.container {
-      width:100%;
-    }
     .content {
-      margin:14em auto 0 auto;
+      margin: 1em auto 0;
     }
   }
   .nav-wrapper-2{
     height:6em;
   }
   #site-header{
-    height:9em;
+    height:8em;
   }
   #site-logo{
     top:3em;
@@ -834,7 +830,7 @@ body.frontpage {
 .ie6, .ie7 {
   body.frontpage {
     #site-header {
-      height:3em;
+      height:4em;
     }
     #site-logo {
       top:-1em;
@@ -847,24 +843,13 @@ body.frontpage {
 .ie6 body.frontpage #site-logo {
   background:url(/cobrands/fixmystreet/images/ie_front_logo.gif) 0 0 no-repeat;
 }
-//weird margining thing for ie8
-.ie8 body.frontpage {
-  #front-main {
-    top:-12em;
-  }
-  .table-cell .content {
-    margin-top:12em;
-  }
-}
 
 // big yellow bit full screen width
 #front-main {
   color: $primary_text;
   background: $primary url(/cobrands/fixmystreet/images/tile-y.jpg);
-  position:absolute;
-  width:100%;
-  left:0;
-  top:-15em;
+  margin: 0;
+  padding: 1em;
   #front-main-container {
     max-width: 57em;
     margin:0 auto;
@@ -877,6 +862,7 @@ body.frontpage {
   #postcodeForm {
     background:none;
     overflow:hidden;
+    padding-bottom: 0;
     margin-right:0.5em;
     label {
       margin:0.5em 0;
@@ -912,20 +898,14 @@ body.frontpage {
   a#geolocate_link {
     background:none;
     color:#222;
-    margin:-1em 0 0.5em 0;
     text-decoration: none;
+    padding-bottom: 0;
     &:hover {
       text-decoration:underline;
       background:none;
     }
   }
 }
-.ie6, .ie7 {
-  #front-main {
-    top:2em;
-  }
-}
-
 
 #front-howto {
   border-right:1em solid #fff;

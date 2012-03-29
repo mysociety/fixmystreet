@@ -16,13 +16,7 @@ Modernizr.load({
 </script>
 [% END %]
 
-[% INCLUDE 'header.html', title => '' , bodyclass => 'frontpage fullwidthpage' %]
-
-[% IF error %]
-    <p class="error">[% error %]</p>
-[% END %]
-
-
+[% pre_container_extra = BLOCK %]
 <div id="front-main">
     <div id="front-main-container">
         <h1>Reporting a problem in Bromley&rsquo;s streets or parks</h1>
@@ -49,6 +43,13 @@ Modernizr.load({
 
     </div>
 </div>
+[% END %]
+
+[% INCLUDE 'header.html', title => '' , bodyclass => 'frontpage fullwidthpage' %]
+
+[% IF error %]
+    <p class="error">[% error %]</p>
+[% END %]
 
 <div class="tablewrapper">
     <div id="front-howto">
