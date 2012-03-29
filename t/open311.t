@@ -53,7 +53,47 @@ my $problem = FixMyStreet::App->model('DB::Problem')->new( {
     id => 80,
     external_id => 81,
     state => 'confirmed',
+    title => 'a problem',
+    detail => 'problem detail',
+    category => 'pothole',
+    latitude => 1,
+    longitude => 2,
+    user => $user,
 } );
+
+subtest 'posting service request' => sub {
+    my $extra = {
+        url => 'http://example.com/report/1',
+    };
+
+    my $results = make_service_req( $problem, $extra, $problem->category, '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>248</service_request_id></request></service_requests>' );
+
+    is $results->{ res }, 248, 'got request id';
+
+    my $req = $o->test_req_used;
+
+    my $description = <<EOT;
+title: a problem
+
+detail: problem detail
+
+url: http://example.com/report/1
+
+Submitted via FixMyStreet
+EOT
+;
+
+    my $c = CGI::Simple->new( $results->{ req }->content );
+
+    is $c->param('email'), $user->email, 'correct email';
+    is $c->param('first_name'), 'Test', 'correct first name';
+    is $c->param('last_name'), 'User', 'correct last name';
+    is $c->param('lat'), 1, 'latitide correct';
+    is $c->param('long'), 2, 'longitude correct';
+    is $c->param('description'), $description, 'descritpion correct';
+    is $c->param('service_code'), 'pothole', 'service code correct';
+
+};
 
 my $comment = FixMyStreet::App->model('DB::Comment')->new( {
     id => 38362,
@@ -191,18 +231,36 @@ sub make_update_req {
     my $comment = shift;
     my $xml = shift;
 
-    my $o = Open311->new( test_mode => 1, end_point => 'http://localhost/o311' );
+    return make_req( $comment, $xml, 'post_service_request_update', 'update.xml' );
+}
+
+sub make_service_req {
+    my $problem = shift;
+    my $extra = shift;
+    my $service_code = shift;
+    my $xml = shift;
+
+    return make_req( $problem, $xml, 'send_service_request', 'requests.xml', $extra, $service_code );
+}
+
+sub make_req {
+    my $object = shift;
+    my $xml    = shift;
+    my $method = shift;
+    my $path   = shift;
+    my @args   = @_;
+
+    my $o =
+      Open311->new( test_mode => 1, end_point => 'http://localhost/o311' );
 
     my $test_res = HTTP::Response->new();
-    $test_res->code( 200 );
-    $test_res->message( 'OK' );
-    $test_res->content( $xml );
+    $test_res->code(200);
+    $test_res->message('OK');
+    $test_res->content($xml);
 
-    $o->test_get_returns( {
-            'update.xml' => $test_res
-    } );
+    $o->test_get_returns( { $path => $test_res } );
 
-    my $res = $o->post_service_request_update( $comment );
+    my $res = $o->$method($object, @args);
 
     my $req = $o->test_req_used;
 

@@ -43,7 +43,7 @@ sub send_service_request {
     my $service_code = shift;
 
     my $description = <<EOT;
-title:  @{[$problem->title()]}
+title: @{[$problem->title()]}
 
 detail: @{[$problem->detail()]}
 
