@@ -4,12 +4,12 @@
     <p class='form-error'>[% field_errors.fms_extra_title %]</p>
 [% END %]
 <select class="form-focus-trigger" id="form_fms_extra_title"
-    name="fms_extra_title" required>
+    name="fms_extra_title">
     <option></option>
-    <option value="Mr">Mr</option>
-    <option value="Miss">Miss</option>
-    <option value="Mrs">Mrs</option>
-    <option value="Ms">Ms</option>
-    <option value="Dr">Dr</option>
+    <option value="Mr"[% ' selected' IF fms_extra_title == 'Mr' %]>Mr</option>
+    <option value="Miss"[% ' selected' IF fms_extra_title == 'Miss' %]>Miss</option>
+    <option value="Mrs"[% ' selected' IF fms_extra_title == 'Mrs' %]>Mrs</option>
+    <option value="Ms"[% ' selected' IF fms_extra_title == 'Ms' %]>Ms</option>
+    <option value="Dr"[% ' selected' IF fms_extra_title == 'Dr' %]>Dr</option>
 </select>
 [% END %]

@@ -398,6 +398,13 @@ sub initialize_report : Private {
 
     }
 
+    if ( $c->req->param('first_name') && $c->req->param('last_name') ) {
+        $c->stash->{first_name} = $c->req->param('first_name');
+        $c->stash->{last_name} = $c->req->param('last_name');
+
+        $c->req->param( 'name', sprintf( '%s %s', $c->req->param('first_name'), $c->req->param('last_name') ) );
+    }
+
     # Capture whether the map was used
     $report->used_map( $c->req->param('skipped') ? 0 : 1 );
 
@@ -791,12 +798,21 @@ sub process_report : Private {
         }
 
         if ( $contacts[0]->area_id == 2482 ) {
-            for my $field ( qw/ fms_extra_title / ) {
+            for my $field ( qw/ fms_extra_title first_name last_name / ) {
+                my $value = $c->request->param( $field );
+                if ( !$value ) {
+                    $c->stash->{field_errors}->{ $field } = _('This information is required');
+                }
                 push @extra, {
                     name => $field,
                     description => uc( $field),
-                    value => $c->request->param( $field ) || '',
+                    value => $value || '',
                 };
+            }
+
+            if ( $c->request->param('fms_extra_title') ) {
+                $c->stash->{fms_extra_title} = $c->request->param('fms_extra_title');
+                $c->stash->{extra_name_info} = 1;
             }
         }
 

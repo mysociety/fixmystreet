@@ -111,11 +111,21 @@
 
             [% IF c.user_exists %]
                 <div class="form-box">
-                    <label for="form_may_show_nameme">[% loc('Name') %]</label>
-                    [% IF field_errors.name %]
-                        <p class='form-error'>[% field_errors.name %]</p>
+                    [% INCLUDE 'report/new/extra_name.html' %]
+
+                    [% names = c.user.split_name %]
+                    <label for="form_first_name">[% loc('First Name') %]</label>
+                    [% IF field_errors.first_name %]
+                        <p class='form-error'>[% field_errors.first_name %]</p>
                     [% END %]
-                    <input type="text" class="validName" value="[% report.name | html %]" name="name" id="form_name" placeholder="[% loc('Your name') %]">
+                    <input type="text" value="[% ( first_name || names.first ) | html %]" name="first_name" id="form_first_name" placeholder="[% loc('Your first name') %]">
+
+                    <label for="form_last_name">[% loc('Last Name') %]</label>
+                    [% IF field_errors.last_name %]
+                        <p class='form-error'>[% field_errors.last_name %]</p>
+                    [% END %]
+                    <input type="text" value="[% ( last_name || names.last ) | html %]" name="last_name" id="form_last_name" placeholder="[% loc('Your last name') %]">
+
 
                     [%# if there is nothing in the name field then set check box as default on form %]
                     <div class="checkbox-group">
@@ -151,12 +161,17 @@
 
                         [% INCLUDE 'report/new/extra_name.html' %]
 
-                        <label for="form_may_show_nameme">[% loc('Name') %]</label>
-                        [% IF field_errors.name %]
-                            <p class='form-error'>[% field_errors.name %]</p>
+                        <label for="form_first_name">[% loc('First Name') %]</label>
+                        [% IF field_errors.first_name %]
+                            <p class='form-error'>[% field_errors.first_name %]</p>
                         [% END %]
+                        <input type="text" class="form-focus-trigger" value="[% first_name | html %]" name="first_name" id="form_first_name" placeholder="[% loc('Your first name') %]">
 
-                        <input type="text" class="form-focus-trigger validName" value="[% report.name | html %]" name="name" id="form_name" placeholder="[% loc('Your name') %]">
+                        <label for="form_last_name">[% loc('Last Name') %]</label>
+                        [% IF field_errors.last_name %]
+                            <p class='form-error'>[% field_errors.last_name %]</p>
+                        [% END %]
+                        <input type="text" class="form-focus-trigger" value="[% last_name | html %]" name="last_name" id="form_last_name" placeholder="[% loc('Your last name') %]">
 
                         [%# if there is nothing in the name field then set check box as default on form %]
                         <div class="checkbox-group">

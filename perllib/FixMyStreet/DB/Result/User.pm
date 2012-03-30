@@ -172,4 +172,22 @@ sub belongs_to_council {
     return 0;
 }
 
+=head2 split_name
+
+    $name = $user->split_name;
+    printf( 'Welcome %s %s', $name->{first}, $name->{last} );
+
+Returns a hashref with first and last keys with first name(s) and last name.
+NB: the spliting algorithm is extremely basic.
+
+=cut
+
+sub split_name {
+    my $self = shift;
+
+    my ($first, $last) = $self->name =~ /^(\S*)(?: (.*))?$/;
+
+    return { first => $first, last => $last };
+}
+
 1;

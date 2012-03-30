@@ -101,16 +101,25 @@ $(function(){
     $('#submit_sign_in').click( function(e) {
         $('#form_category').addClass('required validCategory').removeClass('valid');
         $('#form_name').removeClass();
+        $('#form_first_name').removeClass();
+        $('#form_last_name').removeClass();
+        $('#form_fms_extra_title').removeClass();
     } );
 
     $('#submit_register').click( function(e) {
         $('#form_category').addClass('required validCategory').removeClass('valid');
         $('#form_name').addClass('required validName');
+        $('#form_first_name').addClass('required');
+        $('#form_last_name').addClass('required');
+        $('#form_fms_extra_title').addClass('required');
     } );
 
     $('#problem_submit > input[type="submit"]').click( function(e) {
         $('#form_category').addClass('required validCategory').removeClass('valid');
         $('#form_name').addClass('required validName');
+        $('#form_first_name').addClass('required');
+        $('#form_last_name').addClass('required');
+        $('#form_fms_extra_title').addClass('required');
     } );
 
     $('#update_post').click( function(e) {
