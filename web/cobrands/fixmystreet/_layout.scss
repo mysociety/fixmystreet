@@ -703,12 +703,8 @@ input[type=text],
 input[type=password],
 input[type=email],
 textarea{
-  width: 25em;
+    max-width: 25em;
 }
-.form-box {
-  max-width:25em;
-}
-
 
 /* form errors */
 div.form-error,
