@@ -75,3 +75,27 @@ body.mappage .content {
     top: 0;
 }
 
+// Fix location of aside sidebar
+body.twothirdswidthpage {
+    .content {
+        aside {
+            @include box-shadow(none);
+        }
+        .sticky-sidebar {
+            aside {
+                position: absolute;
+                top: 0;
+            }
+        }
+    }
+}
+@media only screen and (min-width: 48em) and (max-width: 61em) {
+    body.twothirdswidthpage {
+        .content {
+            .sticky-sidebar {
+                top: auto;
+            }
+        }
+    }
+}
+
