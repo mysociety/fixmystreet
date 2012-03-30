@@ -799,7 +799,7 @@ body.frontpage {
     p {
       top:-4em;
       right:0;
-      color:#FFD000;
+      color:$primary;
       background:none;
       @include box-shadow(rgba(0, 0, 0, 0) 0 0 0);
       a {
