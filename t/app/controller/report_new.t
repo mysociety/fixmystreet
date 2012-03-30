@@ -293,7 +293,7 @@ foreach my $test (
         is_deeply $mech->form_errors, [], "no errors for pc '$test->{pc}'";
 
         # click through to the report page
-        $mech->follow_link_ok( { text => 'skip this step', },
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
             "follow 'skip this step' link" );
 
         # submit the main form
@@ -473,7 +473,7 @@ subtest "test password errors for a user who is signing in as they report" => su
         "submit location" );
 
     # click through to the report page
-    $mech->follow_link_ok( { text => 'Skip this step', },
+    $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
         "follow 'skip this step' link" );
 
     $mech->submit_form_ok(
@@ -520,7 +520,7 @@ subtest "test report creation for a user who is signing in as they report" => su
         "submit location" );
 
     # click through to the report page
-    $mech->follow_link_ok( { text => 'Skip this step', },
+    $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
         "follow 'skip this step' link" );
 
     $mech->submit_form_ok(
@@ -614,7 +614,7 @@ foreach my $test (
             "submit location" );
 
         # click through to the report page
-        $mech->follow_link_ok( { text => 'Skip this step', },
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
             "follow 'skip this step' link" );
 
         # check that the fields are correctly prefilled
