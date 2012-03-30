@@ -31,9 +31,6 @@ h1 {
   margin-top: 0.5em;
   margin-bottom: 0.5em;
 }
-#front-main h1 {
-  margin-top: 0.7em;
-}
 h1#reports_heading span {
   display: none;
 }
@@ -354,6 +351,13 @@ p.form-error {
   padding:0 0.5em;
   margin:0 0 0 -0.5em;
   @include border-radius(0.25em 0.25em 0 0);
+  a {
+    color: white;
+    text-decoration: underline;
+  }
+  a:hover {
+    text-decoration: none;
+  }
 }
 
 input.form-error,
@@ -1362,6 +1366,7 @@ table.nicetable {
 /* Front page */
 #front-main {
   text-align:center;
+  margin: 1em;
   h2 {
     font: {
       style:italic;
@@ -1369,6 +1374,9 @@ table.nicetable {
       size:1.1875em;
     }
     color:#4d4d4d;
+  }
+  p {
+    margin: 0.5em 0 0;
   }
   #postcodeForm {
     @extend .full-width;

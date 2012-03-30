@@ -108,7 +108,7 @@ $(function(){
                 if ($html.hasClass('ie6')) {
                     $('#map_box').prependTo('.wrapper').css({
                         zIndex: 0, position: 'absolute',
-                        right: 0, top: '4em',
+                        right: 0, top: '1em',
                         width: $window.width() - o.left - $content.outerWidth(),
                         height: $window.height() - o.top + 32,
                         margin: 0
@@ -138,10 +138,10 @@ $(function(){
                     margin: 0
                 });
             }
-            if (cobrand == 'bromley') {
-                $('#bromley-footer').hide();
-            }
             if (typeof fixmystreet !== 'undefined') {
+                if (cobrand == 'bromley') {
+                    $('#bromley-footer').hide();
+                }
                 fixmystreet.state_map = 'full';
             }
             if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {

@@ -1,7 +1,9 @@
 <p>[% loc("Please note:") %]</p>
 
 <ul class="plain-list">
+[% IF c.cobrand.moniker != 'bromley' %]
     <li>[% loc("We will only use your personal information in accordance with our <a href=\"/faq#privacy\">privacy policy.</a>") %]</li>
+[% END %]
     <li>[% loc("Please be polite, concise and to the point.") %]</li>
     <li>[% loc("Please do not be abusive &mdash; abusing your council devalues the service for all users.") %]</li>
     <li>[% loc("Writing your message entirely in block capitals makes it hard to read, as does a lack of punctuation.") %]</li>

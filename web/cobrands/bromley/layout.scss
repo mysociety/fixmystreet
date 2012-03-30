@@ -5,6 +5,11 @@
 .wrapper {
     position: relative;
 }
+.ie6, .ie7 {
+    .wrapper {
+        padding-top: 1em;
+    }
+}
 
 body {
     background: #fff;
@@ -18,6 +23,15 @@ body {
     }
 }
 
+// Don't want gap that normal site has
+body.frontpage {
+    .table-cell {
+        .content {
+            margin-top: 0;
+        }
+    }
+}
+
 // Don't want FixMyStreet logo on desktop, and we have a skip to content in
 // Bromley header
 #site-header {
@@ -27,27 +41,6 @@ body {
 // Currently hiding, but do want some internal navigation somewhere at the end
 .nav-wrapper {
     display: none;
-}
-
-// Bit of extra spacing needed under Bromley header
-#front-main {
-    top: -16em;
-}
-body.frontpage .table-cell .content {
-    margin-top: 16em;
-}
-.ie6 {
-    #front-main {
-        left: 1.5em;
-    }
-}
-.ie6, .ie7 {
-    #front-main {
-        top: -3em;
-    }
-    body.frontpage .table-cell .content {
-        margin-top: 12em;
-    }
 }
 
 // White background, so no shadow needed.
