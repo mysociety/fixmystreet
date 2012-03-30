@@ -52,7 +52,7 @@ sub cookie_is_rejecting {
 
     # Don't output cookie for JS or JPEG files. mySociety addition
     return 1 if substr($c->request->path, -3) eq '.js'
-        || substr($c->request->Path, -5) eq '.jpeg';
+        || substr($c->request->path, -5) eq '.jpeg';
 
     if ( $cookie->{path} ) {
         return 1 if index '/'.$c->request->path, $cookie->{path};
