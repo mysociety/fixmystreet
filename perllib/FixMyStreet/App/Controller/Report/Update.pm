@@ -153,6 +153,15 @@ want to move adding these elsewhere
 sub process_update : Private {
     my ( $self, $c ) = @_;
 
+    if ( $c->req->param('first_name' ) && $c->req->param('last_name' ) ) {
+        my $first_name = $c->req->param('first_name');
+        my $last_name = $c->req->param('last_name');
+        $c->req->param('name', sprintf( '%s %s', $first_name, $last_name ) );
+
+        $c->stash->{first_name} = $first_name;
+        $c->stash->{last_name} = $last_name;
+    }
+
     my %params =
       map { $_ => scalar $c->req->param($_) } ( 'update', 'name', 'fixed', 'state', 'reopen' );
 
@@ -190,7 +199,18 @@ sub process_update : Private {
         $extras{title} = $c->req->param('fms_extra_title');
         $extras{email_alerts_required} = $c->req->param('add_alert');
         $update->extra( \%extras );
+
+        $c->stash->{fms_extra_title} = $c->req->param('fms_extra_title');
     }
+
+    if ( $c->stash->{ first_name } && $c->stash->{ last_name } ) {
+        my $extra = $update->extra || {};
+        $extra->{first_name} = $c->stash->{ first_name };
+        $extra->{last_name} = $c->stash->{ last_name };
+        $update->extra( $extra );
+    }
+
+    $c->log->debug( 'name is ' . $c->req->param('name') );
 
     $c->stash->{update}        = $update;
     $c->stash->{add_alert}     = $c->req->param('add_alert');
