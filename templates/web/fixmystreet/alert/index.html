@@ -2,6 +2,18 @@
 
 <h1>[% loc('Local RSS feeds and email alerts') %]</h1>
 
+[% IF photos.size %]
+<div class="sticky-sidebar">
+  <aside>
+    <h2>[% loc('Some photos of recent reports') %]</h2>
+    [% FOREACH p IN photos %]
+        <a href="/report/[% p.id %]"><img border="0" height="100"
+            src="/photo/[% p.id %].tn.jpeg" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
+    [% END %]
+  </aside>
+</div>
+[% END %]
+
 <p>
 [% loc('FixMyStreet has a variety of RSS feeds and email alerts for local problems, including
 alerts for all problems within a particular ward or council, or all problems
@@ -26,17 +38,5 @@ within a certain distance of a particular location.') %]
     </div>
   </fieldset>
 </form>
-
-[% IF photos.size %]
-<div class="sticky-sidebar">
-  <aside>
-    <h2>[% loc('Some photos of recent reports') %]</h2>
-    [% FOREACH p IN photos %]
-        <a href="/report/[% p.id %]"><img border="0" height="100"
-            src="/photo/[% p.id %].tn.jpeg" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
-    [% END %]
-  </aside>
-</div>
-[% END %]
 
 [% INCLUDE 'footer.html' %]
