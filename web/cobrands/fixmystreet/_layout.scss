@@ -901,6 +901,16 @@ body.frontpage {
     }
   }
 }
+.ie7 #front-main {
+  #postcodeForm {
+    div {
+      input#pc {
+        height:1.5em;
+        width:16em;
+      }
+    }
+  }
+}
 
 #front-howto {
   border-right:1em solid #fff;

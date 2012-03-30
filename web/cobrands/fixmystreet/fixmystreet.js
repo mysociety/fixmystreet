@@ -117,7 +117,7 @@ $(function(){
                     var map_height = $window.height() - o.top;
                     $('#map_box').prependTo('.wrapper').css({
                         zIndex: 0, position: 'fixed',
-                        right: 0, top: o.top, bottom: 0,
+                        right: 0, top: o.top, bottom: 0, left: 'auto',
                         width: $window.width() - o.left - $content.outerWidth(),
                         height: map_height,
                         margin: 0
