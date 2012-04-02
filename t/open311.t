@@ -208,22 +208,47 @@ foreach my $test (
 }
 
 
-subtest 'check correct name used' => sub {
-    $comment->name( 'First Last' );
-    $user->name( 'Personal Family');
+for my $test (
+    {
+        desc         => 'update name name taken from comment over user',
+        comment_name => 'First Last',
+        user_name    => 'Personal Family',
+        extra        => undef,
+        first_name   => 'First',
+        last_name    => 'Last'
+    },
+    {
+        desc         => 'update name name taken from user if no comment name',
+        comment_name => '',
+        user_name    => 'Personal Family',
+        extra        => undef,
+        first_name   => 'Personal',
+        last_name    => 'Family'
+    },
+    {
+        desc         => 'update name taken from extra if available',
+        comment_name => 'First Last',
+        user_name    => 'Personal Family',
+        extra        => { first_name => 'Forename', last_name => 'Surname' },
+        first_name   => 'Forename',
+        last_name    => 'Surname'
+    },
+  )
+{
+    subtest $test->{desc} => sub {
+        $comment->name( $test->{comment_name} );
+        $user->name( $test->{user_name} );
+        $comment->extra( $test->{ extra } );
 
-    my $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>' );
+        my $results = make_update_req( $comment,
+'<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>'
+        );
 
-    my $c = CGI::Simple->new( $results->{ req }->content );
-    is $c->param('first_name'), 'First', 'Name from comment';
-
-    $comment->name( '' );
-
-    $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>' );
-
-    $c = CGI::Simple->new( $results->{ req }->content );
-    is $c->param('first_name'), 'Personal', 'Name from user';
-};
+        my $c = CGI::Simple->new( $results->{req}->content );
+        is $c->param('first_name'), $test->{first_name}, 'first name correct';
+        is $c->param('last_name'),  $test->{last_name},  'last name correct';
+    };
+}
 
 subtest 'No update id in reponse' => sub {
     my $results;
