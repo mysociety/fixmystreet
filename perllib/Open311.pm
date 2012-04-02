@@ -78,6 +78,10 @@ EOT
 
         for my $attr ( @$extras ) {
             my $attr_name = $attr->{name};
+            if ( $attr_name eq 'first_name' || $attr_name eq 'last_name' ) {
+                $params->{$attr_name} = $attr->{value} if $attr->{value};
+                next;
+            }
             $attr_name =~ s/fms_extra_//;
             my $name = sprintf( 'attribute[%s]', $attr_name );
             $params->{ $name } = $attr->{value};

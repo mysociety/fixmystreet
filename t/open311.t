@@ -94,24 +94,72 @@ EOT
     is $c->param('service_code'), 'pothole', 'service code correct';
 };
 
-subtest 'extra values in service request' => sub {
-    $problem->extra([
-        {
-            name => 'title',
-            value => 'A title',
+for my $test (
+    {
+        desc  => 'extra values in service request',
+        extra => [
+            {
+                name  => 'title',
+                value => 'A title',
+            }
+        ],
+        params => [
+            [ 'attribute[title]', 'A title', 'extra paramater used correctly' ]
+        ]
+    },
+    {
+        desc  => 'first and last names in extra used correctly',
+        extra => [
+            {
+                name  => 'first_name',
+                value => 'First',
+            },
+            {
+                name  => 'last_name',
+                value => 'Last',
+            },
+        ],
+        params => [
+            [ 'first_name', 'First', 'first name correct' ],
+            [ 'last_name',  'Last',  'last name correct' ],
+            [ 'attribute[first_name]', undef, 'no first_name attribute param' ],
+            [ 'attribute[last_name]',  undef, 'no last_name attribute param' ],
+        ],
+    },
+    {
+        title => 'magic fms_extra parameters handled correctly',
+        extra => [
+            {
+                name  => 'fms_extra_title',
+                value => 'Extra title',
+            }
+        ],
+        params => [
+            [
+                'attribute[title]',
+                'Extra title',
+                'fms_extra extra param used correctly'
+            ]
+        ],
+    },
+  )
+{
+    subtest $test->{desc} => sub {
+        $problem->extra( $test->{extra} );
+
+        my $extra = { url => 'http://example.com/report/1', };
+
+        my $results = make_service_req( $problem, $extra, $problem->category,
+'<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>248</service_request_id></request></service_requests>'
+        );
+        my $req = $o->test_req_used;
+        my $c   = CGI::Simple->new( $results->{req}->content );
+
+        for my $param ( @{ $test->{params} } ) {
+            is $c->param( $param->[0] ), $param->[1], $param->[2];
         }
-    ]);
-
-    my $extra = {
-        url => 'http://example.com/report/1',
     };
-
-    my $results = make_service_req( $problem, $extra, $problem->category, '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>248</service_request_id></request></service_requests>' );
-    my $req = $o->test_req_used;
-    my $c = CGI::Simple->new( $results->{ req }->content );
-
-    is $c->param('attribute[title]'), 'A title', 'extra parameter used correctly';
-};
+}
 
 my $comment = FixMyStreet::App->model('DB::Comment')->new( {
     id => 38362,
