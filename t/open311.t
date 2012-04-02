@@ -171,7 +171,7 @@ my $comment = FixMyStreet::App->model('DB::Comment')->new( {
     extra => { title => 'Mr', email_alerts_requested => 0 },
 } );
 
-subtest 'testing posting updates' => sub {
+subtest 'basic request update post parameters' => sub {
     my $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>' );
 
     is $results->{ res }, 248, 'got update id';
@@ -195,49 +195,49 @@ subtest 'testing posting updates' => sub {
 
 foreach my $test (
     {
-        desc => 'fixed is CLOSED',
+        desc => 'comment with fixed state sends status of CLOSED',
         state => 'fixed',
         anon  => 0,
         status => 'CLOSED',
     },
     {
-        desc => 'fixed - user is CLOSED',
+        desc => 'comment with fixed - user state sends status of CLOSED',
         state => 'fixed - user',
         anon  => 0,
         status => 'CLOSED',
     },
     {
-        desc => 'fixed - council is CLOSED',
+        desc => 'comment with fixed - council state sends status of CLOSED',
         state => 'fixed - council',
         anon  => 0,
         status => 'CLOSED',
     },
     {
-        desc => 'closed is CLOSED',
+        desc => 'comment with closed state sends status of CLOSED',
         state => 'closed',
         anon  => 0,
         status => 'CLOSED',
     },
     {
-        desc => 'investigating is OPEN',
+        desc => 'comment with investigating state sends status of OPEN',
         state => 'investigating',
         anon  => 0,
         status => 'OPEN',
     },
     {
-        desc => 'planned is OPEN',
+        desc => 'comment with planned state sends status of OPEN',
         state => 'planned',
         anon  => 0,
         status => 'OPEN',
     },
     {
-        desc => 'in progress is OPEN',
+        desc => 'comment with in progress state sends status of OPEN',
         state => 'in progress',
         anon  => 0,
         status => 'OPEN',
     },
     {
-        desc => 'anonymous set to true',
+        desc => 'anonymous commment sets public_anonymity_required to true',
         state => 'confirmed',
         anon  => 1,
         status => 'OPEN',
