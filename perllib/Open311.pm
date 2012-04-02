@@ -42,16 +42,40 @@ sub send_service_request {
     my $extra = shift;
     my $service_code = shift;
 
-    my $description = <<EOT;
-title: @{[$problem->title()]}
+    my $params = $self->_populate_service_request_params(
+        $problem, $extra, $service_code
+    );
 
-detail: @{[$problem->detail()]}
+    my $response = $self->_post( $self->endpoints->{requests}, $params );
 
-url: $extra->{url}
+    if ( $response ) {
+        my $obj = $self->_get_xml_object( $response );
 
-Submitted via FixMyStreet
-EOT
-;
+        if ( $obj ) {
+            if ( $obj->{ request }->{ service_request_id } ) {
+                return $obj->{ request }->{ service_request_id };
+            } else {
+                my $token = $obj->{ request }->{ token };
+                if ( $token ) {
+                    return $self->get_service_request_id_from_token( $token );
+                }
+            }
+        }
+
+        warn sprintf( "Failed to submit problem %s over Open311, response\n: %s\n%s", $problem->id, $response, $self->debug_details );
+        return 0;
+    }
+}
+
+sub _populate_service_request_params {
+    my $self = shift;
+    my $problem = shift;
+    my $extra = shift;
+    my $service_code = shift;
+
+    my $description = $self->_generate_service_request_description(
+        $problem, $extra
+    );
 
     my ( $firstname, $lastname ) = ( $problem->user->name =~ /(\w+)\s+(.+)/ );
 
@@ -88,25 +112,26 @@ EOT
         }
     }
 
-    my $response = $self->_post( $self->endpoints->{requests}, $params );
+    return $params;
+}
 
-    if ( $response ) {
-        my $obj = $self->_get_xml_object( $response );
+sub _generate_service_request_description {
+    my $self = shift;
+    my $problem = shift;
+    my $extra = shift;
 
-        if ( $obj ) {
-            if ( $obj->{ request }->{ service_request_id } ) {
-                return $obj->{ request }->{ service_request_id };
-            } else {
-                my $token = $obj->{ request }->{ token };
-                if ( $token ) {
-                    return $self->get_service_request_id_from_token( $token );
-                }
-            }
-        }
+    my $description = <<EOT;
+title: @{[$problem->title()]}
 
-        warn sprintf( "Failed to submit problem %s over Open311, response\n: %s\n%s", $problem->id, $response, $self->debug_details );
-        return 0;
-    }
+detail: @{[$problem->detail()]}
+
+url: $extra->{url}
+
+Submitted via FixMyStreet
+EOT
+;
+
+    return $description;
 }
 
 sub get_service_requests {
@@ -169,30 +194,7 @@ sub post_service_request_update {
     my $self = shift;
     my $comment = shift;
 
-    my $name = $comment->name || $comment->user->name;
-    my ( $firstname, $lastname ) = ( $name =~ /(\w+)\s+(.+)/ );
-
-    my $params = {
-        update_id_ext => $comment->id,
-        updated_datetime => $comment->confirmed,
-        service_request_id => $comment->problem->external_id,
-        service_request_id_ext => $comment->problem->id,
-        status => $comment->problem->is_open ? 'OPEN' : 'CLOSED',
-        email => $comment->user->email,
-        description => $comment->text,
-        public_anonymity_required => $comment->anonymous ? 'TRUE' : 'FALSE',
-        last_name => $lastname,
-        first_name => $firstname,
-    };
-
-    if ( $comment->extra ) {
-        $params->{'email_alerts_requested'}
-            = $comment->extra->{email_alerts_requested} ? 'TRUE' : 'FALSE';
-        $params->{'title'} = $comment->extra->{title};
-
-        $params->{first_name} = $comment->extra->{first_name} if $comment->extra->{first_name};
-        $params->{last_name} = $comment->extra->{last_name} if $comment->extra->{last_name};
-    }
+    my $params = $self->_populate_service_request_update_params( $comment );
 
     my $response = $self->_post( $self->endpoints->{update}, $params );
 
@@ -218,6 +220,38 @@ sub post_service_request_update {
         warn sprintf( "Failed to submit comment %s over Open311, response - %s\n%s", $comment->id, $response, $self->debug_details );
         return 0;
     }
+}
+
+sub _populate_service_request_update_params {
+    my $self = shift;
+    my $comment = shift;
+
+    my $name = $comment->name || $comment->user->name;
+    my ( $firstname, $lastname ) = ( $name =~ /(\w+)\s+(.+)/ );
+
+    my $params = {
+        update_id_ext => $comment->id,
+        updated_datetime => $comment->confirmed,
+        service_request_id => $comment->problem->external_id,
+        service_request_id_ext => $comment->problem->id,
+        status => $comment->problem->is_open ? 'OPEN' : 'CLOSED',
+        email => $comment->user->email,
+        description => $comment->text,
+        public_anonymity_required => $comment->anonymous ? 'TRUE' : 'FALSE',
+        last_name => $lastname,
+        first_name => $firstname,
+    };
+
+    if ( $comment->extra ) {
+        $params->{'email_alerts_requested'}
+            = $comment->extra->{email_alerts_requested} ? 'TRUE' : 'FALSE';
+        $params->{'title'} = $comment->extra->{title};
+
+        $params->{first_name} = $comment->extra->{first_name} if $comment->extra->{first_name};
+        $params->{last_name} = $comment->extra->{last_name} if $comment->extra->{last_name};
+    }
+
+    return $params;
 }
 
 sub _get {
