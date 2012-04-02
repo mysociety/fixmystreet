@@ -800,6 +800,11 @@ sub process_report : Private {
         if ( $contacts[0]->area_id == 2482 ) {
             for my $field ( qw/ fms_extra_title first_name last_name / ) {
                 my $value = $c->request->param( $field );
+                next if (
+                    $c->cobrand->moniker ne 'bromley' &&
+                    ( $field eq 'first_name' || $field eq 'last_name' )
+                );
+
                 if ( !$value ) {
                     $c->stash->{field_errors}->{ $field } = _('This information is required');
                 }
