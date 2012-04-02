@@ -32,5 +32,31 @@ sub generate_problem_banner {
     return $banner;
 }
 
+sub process_extras {
+    my $self     = shift;
+    my $ctx      = shift;
+    my $contacts = shift;
+    my $extra    = shift;
+
+    if ( $contacts->[0]->area_id == 2482 ) {
+        for my $field ( qw/ fms_extra_title / ) {
+            my $value = $ctx->request->param( $field );
+
+            if ( !$value ) {
+                $ctx->stash->{field_errors}->{ $field } = _('This information is required');
+            }
+            push @$extra, {
+                name => $field,
+                description => uc( $field),
+                value => $value || '',
+            };
+        }
+
+        if ( $ctx->request->param('fms_extra_title') ) {
+            $ctx->stash->{fms_extra_title} = $ctx->request->param('fms_extra_title');
+            $ctx->stash->{extra_name_info} = 1;
+        }
+    }
+}
 1;
 

@@ -797,29 +797,7 @@ sub process_report : Private {
             };
         }
 
-        if ( $contacts[0]->area_id == 2482 ) {
-            for my $field ( qw/ fms_extra_title first_name last_name / ) {
-                my $value = $c->request->param( $field );
-                next if (
-                    $c->cobrand->moniker ne 'bromley' &&
-                    ( $field eq 'first_name' || $field eq 'last_name' )
-                );
-
-                if ( !$value ) {
-                    $c->stash->{field_errors}->{ $field } = _('This information is required');
-                }
-                push @extra, {
-                    name => $field,
-                    description => uc( $field),
-                    value => $value || '',
-                };
-            }
-
-            if ( $c->request->param('fms_extra_title') ) {
-                $c->stash->{fms_extra_title} = $c->request->param('fms_extra_title');
-                $c->stash->{extra_name_info} = 1;
-            }
-        }
+        $c->cobrand->process_extras( $c, \@contacts, \@extra );
 
         if ( @extra ) {
             $c->stash->{report_meta} = \@extra;

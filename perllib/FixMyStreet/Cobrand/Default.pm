@@ -920,5 +920,7 @@ sub example_places {
     return [ 'B2 4QA', 'Tib St, Manchester' ];
 }
 
+sub process_extras {}
+
 1;
 
