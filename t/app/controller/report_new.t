@@ -828,9 +828,6 @@ for my $test (
         my $extras = $report->extra;
         is_deeply $extras, $test->{extra}, 'extra contains correct values';
 
-        use Data::Printer;
-        p $extras;
-
         $user->problems->delete;
         $user->delete;
     };
