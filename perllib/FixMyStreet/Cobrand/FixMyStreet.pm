@@ -9,12 +9,14 @@ sub restriction {
 sub get_council_sender {
     my ( $self, $area_id, $area_info ) = shift;
 
-    my $sender_conf = mySociety::Config::get( 'SENDERS' );
-    return $sender_conf->{ $council } if exists $sender_conf->{ $council };
+    my $send_method;
+
+    my $council_config = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $area_id } )->first;
+    $send_method = $council_config->send_method if $council_config;
+
+    return $send_method if $send_method;
 
     return 'London' if $area_info->{type} eq 'LBO';
-
-    return 'Open311' if FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $council, endpoint => { '!=', '' } } )->first;
 
     return 'Email';
 }
