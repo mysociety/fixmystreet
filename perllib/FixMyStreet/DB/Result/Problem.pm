@@ -659,6 +659,17 @@ sub update_from_open311_service_request {
     return 1;
 }
 
+sub update_send_failed {
+    my $self = shift;
+    my $msg  = shift;
+
+    $self->update( {
+        send_fail_count => $self->send_fail_count + 1,
+        send_fail_timestamp => \'ms_current_timestamp()',
+        send_fail_reason => $msg
+    } );
+}
+
 # we need the inline_constructor bit as we don't inherit from Moose
 __PACKAGE__->meta->make_immutable( inline_constructor => 0 );
 
