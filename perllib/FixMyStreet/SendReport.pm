@@ -7,8 +7,10 @@ use Module::Pluggable
     search_path => __PACKAGE__,
     require     => 1;
 
-has 'councils' => (is => 'rw', isa => 'HashRef', default => sub { {} } );
-has 'to' => (is => 'rw', isa => 'ArrayRef', default => sub { [] } );
+has 'councils' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
+has 'to' => ( is => 'rw', isa => 'ArrayRef', default => sub { [] } );
+has 'success' => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'error' => ( is => 'rw', isa => 'Str', default => '' );
 
 sub get_senders {
     my $self = shift;

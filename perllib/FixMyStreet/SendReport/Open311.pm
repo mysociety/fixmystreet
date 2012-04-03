@@ -54,6 +54,7 @@ sub send {
         if ( $resp ) {
             $row->external_id( $resp );
             $result *= 0;
+            $self->success( 1 )
         } else {
             $result *= 1;
             # temporary fix to resolve some issues with west berks
@@ -62,6 +63,8 @@ sub send {
             }
         }
     }
+
+    $self->error( 'Failed to send over Open311' ) unless $self->success;
 
     return $result;
 }

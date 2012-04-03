@@ -33,7 +33,7 @@ EOF
 
 sub send {
     return if mySociety::Config::get('STAGING_SITE');
-    my ( $row, $h, $to, $template, $recips, $nomail ) = @_;
+    my ( $self, $row, $h, $to, $template, $recips, $nomail ) = @_;
 
     $h->{message} = construct_message( %$h );
     my $phone = $h->{phone};
@@ -80,6 +80,7 @@ sub send {
     my $out = $response->content;
     if ($response->code ne 200) {
         print "Failed to post $h->{id} to London API, response was " . $response->code . " $out\n";
+        $self->error( "Failed to post $h->{id} to London API, response was " . $response->code . " $out" );
         return 1;
     }
     my ($id) = $out =~ /<caseid>(.*?)<\/caseid>/;
@@ -90,6 +91,7 @@ sub send {
     $row->external_id( $id );
     $row->external_body( $org );
     $row->external_team( $team );
+    $self->success(1);
     return 0;
 }
 

@@ -4,6 +4,8 @@ use Moose;
 
 BEGIN { extends 'FixMyStreet::SendReport'; }
 
+use mySociety::EmailUtil;
+
 sub build_recipient_list {
     my $self = shift;
     my $row = shift;
@@ -65,6 +67,12 @@ sub send {
         \@recips,
         $nomail
     );
+
+    if ( $result == mySociety::EmailUtil::EMAIL_SUCCESS ) {
+        $self->success(1);
+    } else {
+        $self->error( 'Failed to send email' );
+    }
 
     return $result;
 }

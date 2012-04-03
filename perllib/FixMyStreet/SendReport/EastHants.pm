@@ -32,7 +32,7 @@ EOF
 sub send {
     return if mySociety::Config::get('STAGING_SITE');
 
-    my ( $row, $h, $to, $template, $recips, $nomail ) = @_;
+    my ( $self, $row, $h, $to, $template, $recips, $nomail ) = @_;
 
     # FIXME: should not recreate this each time
     my $eh_service;
@@ -53,7 +53,9 @@ sub send {
     } otherwise {
         my $e = shift;
         print "Caught an error: $e\n";
+        $self->error( "Error sending to East Hants: $e" );
     };
+    $self->success( !$return );
     return $return;
 }
 

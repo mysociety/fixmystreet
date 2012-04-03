@@ -232,8 +232,8 @@ sub send_reports {
     } );
     my (%notgot, %note);
 
-    my $s = FixMyStreet::SendReport->new();
-    my $senders = $s->get_senders;
+    my $send_report = FixMyStreet::SendReport->new();
+    my $senders = $send_report->get_senders;
 
     while (my $row = $unsent->next) {
 
@@ -370,14 +370,6 @@ sub send_reports {
             );
         }
 
-        # Special case for this parish council
-        # if ($address && $address =~ /Sprowston/ && $row->council == 2233 && $row->category eq 'Street lighting') {
-        #     $h{councils_name} = 'Sprowston Parish Council';
-        #     my $e = 'parishclerk' . '@' . 'sprowston-pc.gov.uk';
-        #     @to = ( [ $e, $h{councils_name} ] );
-        #     @recips = ($e);
-        # }
-
         # Multiply results together, so one success counts as a success.
         my $result = -1;
 
@@ -392,6 +384,14 @@ sub send_reports {
                 whensent => \'ms_current_timestamp()',
                 lastupdate => \'ms_current_timestamp()',
             } );
+        } else {
+            my @errors;
+            for my $sender ( keys %reporters ) {
+                unless ( $reporters{ $sender }->sucess ) {
+                    push @errors, $reporters{ $sender }->error;
+                }
+            }
+            $row->update_send_failed( join( '|', @errors ) );
         }
     }
 
