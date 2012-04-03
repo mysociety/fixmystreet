@@ -1,7 +1,6 @@
-package FixMyStreet::SendReport::Email;
+package FixMyStreet::SendReport::London;
 
 use Moose;
-use namespace::autoclean;
 
 BEGIN { extends 'FixMyStreet::SendReport'; }
 
@@ -88,9 +87,9 @@ sub send {
     my ($team) = $out =~ /<team>(.*?)<\/team>/;
 
     $org = london_lookup($org);
-    $problem->external_id( $id );
-    $problem->external_body( $org );
-    $problem->external_team( $team );
+    $row->external_id( $id );
+    $row->external_body( $org );
+    $row->external_team( $team );
     return 0;
 }
 

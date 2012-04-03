@@ -1,7 +1,6 @@
 package FixMyStreet::SendReport::Email;
 
 use Moose;
-use namespace::autoclean;
 
 BEGIN { extends 'FixMyStreet::SendReport'; }
 

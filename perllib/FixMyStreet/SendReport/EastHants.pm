@@ -1,11 +1,11 @@
-package FixMyStreet::SendReport::Email;
+package FixMyStreet::SendReport::EastHants;
 
 use Moose;
-use namespace::autoclean;
 
 BEGIN { extends 'FixMyStreet::SendReport'; }
 
-use Error qw(:try);
+# export just what we need as error if we use :try
+use Error qw(try otherwise);
 use Encode;
 use mySociety::Web qw(ent);
 use EastHantsWSDL;
