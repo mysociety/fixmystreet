@@ -75,6 +75,7 @@ sprintf (different name to avoid clash)
 
 sub tprintf {
     my ( $self, $c, $format, @args ) = @_;
+    @args = @{$args[0]} if ref $args[0] eq 'ARRAY';
     return sprintf $format, @args;
 }
 

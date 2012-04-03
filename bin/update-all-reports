@@ -20,7 +20,7 @@ my $fourweeks = 4*7*24*60*60;
 
 my $problems = FixMyStreet::App->model("DB::Problem")->search(
     {
-        state => [ 'confirmed', 'fixed' ]
+        state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     },
     {
         columns => [
@@ -52,10 +52,13 @@ while ( my @problem = $problems->next ) {
         my $type = ( $problem{duration} > 2 * $fourweeks )
             ? 'unknown'
             : ($problem{age} > $fourweeks ? 'older' : 'new');
-        # Fixed problems are either old or new
-        $fixed{$council}{$duration_str}++ if $problem{state} eq 'fixed';
-        # Open problems are either unknown, older, or new
-        $open{$council}{$type}++ if $problem{state} eq 'confirmed';
+        if (FixMyStreet::DB::Result::Problem->fixed_states()->{$problem{state}}) {
+            # Fixed problems are either old or new
+            $fixed{$council}{$duration_str}++ if FixMyStreet::DB::Result::Problem->fixed_states()->{$problem{state}};
+        } else {
+            # Open problems are either unknown, older, or new
+            $open{$council}{$type}++ if $problem{state} eq 'confirmed';
+        }
     }
 }
 

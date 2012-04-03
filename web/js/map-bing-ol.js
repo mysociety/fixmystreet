@@ -1,11 +1,21 @@
 function set_map_config(perm) {
+    var permalink_id;
+    if ($('#map_permalink').length) {
+        permalink_id = 'map_permalink';
+    }
+
+    var nav_opts = { zoomWheelEnabled: false };
+    if (fixmystreet.page == 'around' && $('html').hasClass('mobile')) {
+        nav_opts = {};
+    }
+    fixmystreet.nav_control = new OpenLayers.Control.Navigation(nav_opts);
+
     fixmystreet.controls = [
         new OpenLayers.Control.Attribution(),
         new OpenLayers.Control.ArgParser(),
-        new OpenLayers.Control.Navigation(),
-        perm,
-        //new OpenLayers.Control.ZoomPanel()
-        new OpenLayers.Control.PanZoomFMS()
+        fixmystreet.nav_control,
+        new OpenLayers.Control.Permalink(permalink_id),
+        new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
     ];
     fixmystreet.map_type = OpenLayers.Layer.Bing;
 }
@@ -33,10 +43,12 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
             logo: logo,
             copyrights: copyrights
         });
-        this.map && this.map.events.triggerEvent("changelayer", {
-            layer: this,
-            property: "attribution"
-        });
+        if (this.map) {
+            this.map.events.triggerEvent("changelayer", {
+                layer: this,
+                property: "attribution"
+            });
+        }
     },
 
     initialize: function(name, options) {
@@ -59,10 +71,10 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
         for (var i = level; i > 0; i--) {
             var digit = 0;
             var mask = 1 << (i - 1);
-            if ((x & mask) != 0) {
+            if ((x & mask) !== 0) {
                 digit++;
             }
-            if ((y & mask) != 0) {
+            if ((y & mask) !== 0) {
                 digit += 2;
             }
             key += digit;
@@ -72,16 +84,17 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 
     getURL: function (bounds) {
         var res = this.map.getResolution();
-        var x = Math.round((bounds.left - this.maxExtent.left)
-            / (res * this.tileSize.w));
-        var y = Math.round((this.maxExtent.top - bounds.top)
-            / (res * this.tileSize.h));
-        var z = this.serverResolutions != null ?
+        var x = Math.round((bounds.left - this.maxExtent.left) /
+            (res * this.tileSize.w));
+        var y = Math.round((this.maxExtent.top - bounds.top) /
+            (res * this.tileSize.h));
+        var z = this.serverResolutions !== null ?
             OpenLayers.Util.indexOf(this.serverResolutions, res) :
             this.map.getZoom() + this.zoomOffset;
 
+        var url;
         if (z >= 16) {
-            var url = [
+            url = [
                 "http://tilma.mysociety.org/sv/${z}/${x}/${y}.png",
                 "http://a.tilma.mysociety.org/sv/${z}/${x}/${y}.png",
                 "http://b.tilma.mysociety.org/sv/${z}/${x}/${y}.png",
@@ -89,8 +102,8 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
             ];
         } else {
             var type = '';
-            if (z > 10) type = '&productSet=mmOS';
-            var url = [
+            if (z > 10) { type = '&productSet=mmOS'; }
+            url = [
                 "http://ecn.t0.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type,
                 "http://ecn.t1.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type,
                 "http://ecn.t2.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type,

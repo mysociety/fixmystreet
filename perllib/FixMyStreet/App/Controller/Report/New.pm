@@ -5,6 +5,7 @@ use namespace::autoclean;
 BEGIN { extends 'Catalyst::Controller'; }
 
 use FixMyStreet::Geocode;
+use Digest::SHA1 qw(sha1_hex);
 use Encode;
 use Image::Magick;
 use List::MoreUtils qw(uniq);
@@ -23,7 +24,7 @@ FixMyStreet::App::Controller::Report::New
 
 =head1 DESCRIPTION
 
-Create a new report, or complete a partial one .
+Create a new report, or complete a partial one.
 
 =head1 PARAMETERS
 
@@ -47,7 +48,10 @@ back into lat/lng by the map code.
 
 =head2 image related
 
-Parameters are 'photo' or 'upload_fileid'. The 'photo' is used when a user has selected a file. Once it has been uploaded it is cached on disk so that if there are errors on the form it need not be uploaded again. The cache location is stored in 'upload_fileid'. 
+Parameters are 'photo' or 'upload_fileid'. The 'photo' is used when a user has
+selected a file. Once it has been uploaded it is cached on disk so that if
+there are errors on the form it need not be uploaded again. The hash of the
+photo is stored in 'upload_fileid'.
 
 =head2 optional
 
@@ -105,15 +109,20 @@ sub report_form_ajax : Path('ajax') : Args(0) {
     $c->forward('initialize_report');
 
     # work out the location for this report and do some checks
-    # XXX We don't want to do this here if this actually happens!
-    return $c->forward('redirect_to_around')
-      unless $c->forward('determine_location');
+    if ( ! $c->forward('determine_location') ) {
+        my $body = JSON->new->utf8(1)->encode( {
+            error => $c->stash->{location_error},
+        } );
+        $c->res->content_type('application/json; charset=utf-8');
+        $c->res->body($body);
+        return;
+    }
 
     $c->forward('setup_categories_and_councils');
 
     # render templates to get the html
-    my $category = $c->view('Web')->render( $c, 'report/new/category.html');
-    my $councils_text = $c->view('Web')->render( $c, 'report/new/councils_text.html');
+    my $category = $c->render_fragment( 'report/new/category.html');
+    my $councils_text = $c->render_fragment( 'report/new/councils_text.html');
     my $has_open311 = keys %{ $c->stash->{category_extras} };
 
     my $body = JSON->new->utf8(1)->encode(
@@ -150,7 +159,7 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
         $c->stash->{report} = { category => $c->req->param('category') };
         $c->stash->{category_extras} = { $c->req->param('category' ) => $c->stash->{category_extras}->{ $c->req->param('category') } };
 
-        $category_extra= $c->view('Web')->render( $c, 'report/new/category_extras.html');
+        $category_extra= $c->render_fragment( 'report/new/category_extras.html');
     }
 
     my $body = JSON->new->utf8(1)->encode(
@@ -200,8 +209,8 @@ sub report_import : Path('/import') {
     }
 
     # handle the photo upload
-    $c->forward( 'process_photo_upload', [ { rotate_photo => 1 } ] );
-    my $photo = $c->stash->{upload_fileid};
+    $c->forward( 'process_photo_upload' );
+    my $fileid = $c->stash->{upload_fileid};
     if ( my $error = $c->stash->{photo_error} ) {
         push @errors, $error;
     }
@@ -224,7 +233,7 @@ sub report_import : Path('/import') {
           if $@;
     }
 
-    unless ( $photo || ( $latitude || $longitude ) ) {
+    unless ( $fileid || ( $latitude || $longitude ) ) {
         push @errors, 'Either a location or a photo must be provided.';
     }
 
@@ -292,11 +301,8 @@ sub report_import : Path('/import') {
     );
 
     # If there was a photo add that too
-    if ( $photo ) {
-        my $file = file( $c->config->{UPLOAD_CACHE}, "$photo.jpg" );
-        my $blob = $file->slurp;
-        $file->remove;
-        $report->photo($blob);
+    if ( $fileid ) {
+        $report->photo($fileid);
     }
 
     # save the report;
@@ -647,7 +653,7 @@ sub process_user : Private {
     # The user is trying to sign in. We only care about email from the params.
     if ( $c->req->param('submit_sign_in') || $c->req->param('password_sign_in') ) {
         unless ( $c->forward( '/auth/sign_in' ) ) {
-            $c->stash->{field_errors}->{password} = _('There was a problem with your email/password combination. Passwords and user accounts are a brand <strong>new</strong> service, so you probably do not have one yet &ndash; please fill in the right hand side of this form to get one.');
+            $c->stash->{field_errors}->{password} = _('There was a problem with your email/password combination. If you cannot remember your password, or do not have one, please fill in the &lsquo;sign in by email&rsquo; section of the form.');
             return 1;
         }
         my $user = $c->user->obj;
@@ -825,11 +831,7 @@ sub process_photo : Private {
 }
 
 sub process_photo_upload : Private {
-    my ( $self, $c, $args ) = @_;
-
-    # setup args and set defaults
-    $args ||= {};
-    $args->{rotate_photo} ||= 0;
+    my ( $self, $c ) = @_;
 
     # check for upload or return
     my $upload = $c->req->upload('photo')
@@ -842,9 +844,13 @@ sub process_photo_upload : Private {
         return;
     }
 
-    # convert the photo into a blob (also resize etc)
-    my $photo_blob =
-      eval { _process_photo( $upload->fh, $args->{rotate_photo} ) };
+    # get the photo into a variable
+    my $photo_blob = eval {
+        my $filename = $upload->tempname;
+        my $out = `jhead -se -autorot $filename`;
+        my $photo = $upload->slurp;
+        return $photo;
+    };
     if ( my $error = $@ ) {
         my $format = _(
 "That image doesn't appear to have uploaded correctly (%s), please try again."
@@ -853,21 +859,18 @@ sub process_photo_upload : Private {
         return;
     }
 
-    # we have an image we can use - save it to the cache in case there is an
-    # error
-    my $cache_dir = dir( $c->config->{UPLOAD_CACHE} );
+    # we have an image we can use - save it to the upload dir for storage
+    my $cache_dir = dir( $c->config->{UPLOAD_DIR} );
     $cache_dir->mkpath;
     unless ( -d $cache_dir && -w $cache_dir ) {
         warn "Can't find/write to photo cache directory '$cache_dir'";
         return;
     }
 
-    # create a random name and store the file there
-    my $fileid = int rand 1_000_000_000;
-    my $file   = $cache_dir->file("$fileid.jpg");
-    $file->openw->print($photo_blob);
+    my $fileid = sha1_hex($photo_blob);
+    $upload->copy_to( file($cache_dir, $fileid . '.jpeg') );
 
-    # stick the random number on the stash
+    # stick the hash on the stash, so don't have to reupload in case of error
     $c->stash->{upload_fileid} = $fileid;
 
     return 1;
@@ -883,12 +886,12 @@ does return true and put fileid on stash, otherwise false.
 sub process_photo_cache : Private {
     my ( $self, $c ) = @_;
 
-    # get the fileid and make sure it is just a number
+    # get the fileid and make sure it is just a hex number
     my $fileid = $c->req->param('upload_fileid') || '';
-    $fileid =~ s{\D+}{}g;
+    $fileid =~ s{[^0-9a-f]}{}gi;
     return unless $fileid;
 
-    my $file = file( $c->config->{UPLOAD_CACHE}, "$fileid.jpg" );
+    my $file = file( $c->config->{UPLOAD_DIR}, "$fileid.jpeg" );
     return unless -e $file;
 
     $c->stash->{upload_fileid} = $fileid;
@@ -980,10 +983,7 @@ sub save_user_and_report : Private {
 
     # If there was a photo add that too
     if ( my $fileid = $c->stash->{upload_fileid} ) {
-        my $file = file( $c->config->{UPLOAD_CACHE}, "$fileid.jpg" );
-        my $blob = $file->slurp;
-        $file->remove;
-        $report->photo($blob);
+        $report->photo($fileid);
     }
 
     # Set a default if possible
@@ -1031,7 +1031,7 @@ sub generate_map : Private {
             pins      => [ {
                 latitude  => $latitude,
                 longitude => $longitude,
-                colour    => 'purple',
+                colour    => 'green', # 'yellow',
             } ],
         );
     }
@@ -1121,41 +1121,6 @@ sub redirect_to_around : Private {
     my $around_uri = $c->uri_for( '/around', $params );
 
     return $c->res->redirect($around_uri);
-}
-
-sub _process_photo {
-    my $fh = shift;
-    my $import = shift;
-
-    my $blob = join('', <$fh>);
-    close $fh;
-    my ($handle, $filename) = mySociety::TempFiles::named_tempfile('.jpeg');
-    print $handle $blob;
-    close $handle;
-
-    my $photo = Image::Magick->new;
-    my $err = $photo->Read($filename);
-    unlink $filename;
-    throw Error::Simple("read failed: $err") if "$err";
-    $err = $photo->Scale(geometry => "250x250>");
-    throw Error::Simple("resize failed: $err") if "$err";
-    my @blobs = $photo->ImageToBlob();
-    undef $photo;
-    $photo = $blobs[0];
-    return $photo unless $import; # Only check orientation for iPhone imports at present
-
-    # Now check if it needs orientating
-    ($fh, $filename) = mySociety::TempFiles::named_tempfile('.jpeg');
-    print $fh $photo;
-    close $fh;
-    my $out = `jhead -se -autorot $filename`;
-    if ($out) {
-        open(FP, $filename) or throw Error::Simple($!);
-        $photo = join('', <FP>);
-        close FP;
-    }
-    unlink $filename;
-    return $photo;
 }
 
 __PACKAGE__->meta->make_immutable;

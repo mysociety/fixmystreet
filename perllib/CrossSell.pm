@@ -189,25 +189,25 @@ sub display_advert ($$;$%) {
     #$c->stash->{scratch} = 'advert=demclub0';
     #return display_democracyclub();
 
-    return <<EOF;
-<div id="advert_thin">
-<p>Do you have an issue that&rsquo;s too big for FixMyStreet?
-It could be time to petition your council. Try our new site:
-<h2 style="margin-top:0; font-size: 150%">
-<a href="http://www.petitionyourcouncil.com/">PetitionYourCouncil</a></p>
-</h2>
-</div>
-EOF
+#    return <<EOF;
+#<div id="advert_thin">
+#<p>Do you have an issue that&rsquo;s too big for FixMyStreet?
+#It could be time to petition your council. Try our new site:
+#<h2 style="margin-top:0; font-size: 150%">
+#<a href="http://www.petitionyourcouncil.com/">PetitionYourCouncil</a></p>
+#</h2>
+#</div>
+#EOF
 
     #unless (defined $data{done_tms} && $data{done_tms}==1) {
-    #$c->stash->{scratch} = 'advert=news';
-    #my $auth_signature = '';
-    #unless (defined $data{emailunvalidated} && $data{emailunvalidated}==1) {
-    #    $auth_signature = mySociety::AuthToken::sign_with_shared_secret($email, mySociety::Config::get('AUTH_SHARED_SECRET'));
-    #}
-    #return '<div style="margin: 0 5em; border-top: dotted 1px #666666;">'
-    #    . display_news_form(email => $email, name => $name, signed_email => $auth_signature)
-    #    . '</div>';
+    $c->stash->{scratch} = 'advert=news';
+    my $auth_signature = '';
+    unless (defined $data{emailunvalidated} && $data{emailunvalidated}==1) {
+        $auth_signature = mySociety::AuthToken::sign_with_shared_secret($email, mySociety::Config::get('AUTH_SHARED_SECRET'));
+    }
+    return '<div style="margin: 0 5em; border-top: dotted 1px #666666;">'
+        . display_news_form(email => $email, name => $name, signed_email => $auth_signature)
+        . '</div>';
     #}
 
     my @adverts = (

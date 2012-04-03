@@ -11,6 +11,7 @@ use mySociety::EmailUtil;
 use mySociety::Random qw(random_bytes);
 use FixMyStreet::Map;
 
+use Path::Class;
 use URI;
 use URI::QueryParam;
 
@@ -151,8 +152,7 @@ sub setup_request {
     my $cobrand = $c->cobrand;
 
     # append the cobrand templates to the include path
-    $c->stash->{additional_template_paths} =
-      [ $cobrand->path_to_web_templates->stringify ]
+    $c->stash->{additional_template_paths} = $cobrand->path_to_web_templates
       unless $cobrand->is_default;
 
     # work out which language to use
@@ -400,6 +400,45 @@ sub finalize {
     # get git rid of this to stop circular references and
     # memory leaks
     delete $c->stash->{cobrand};
+}
+
+=head2 render_fragment
+
+If a page needs to render a template fragment internally (e.g. for an Ajax
+call), use this method.
+
+=cut
+
+sub render_fragment {
+    my ($c, $template, $vars) = @_;
+    $vars->{additional_template_paths} = $c->cobrand->path_to_web_templates
+        if $vars && !$c->cobrand->is_default;
+    $c->view('Web')->render($c, $template, $vars);
+}
+
+=head2 get_photo_params
+
+Returns a hashref of details of any attached photo for use in templates.
+Hashref contains height, width and url keys.
+
+=cut
+
+sub get_photo_params {
+    my ($self, $key) = @_;
+    $key = ($key eq 'id') ? '' : "/$key";
+
+    return {} unless $self->photo;
+
+    my $photo = {};
+    if (length($self->photo) == 40) {
+        $photo->{url_full} = '/photo' . $key . '/' . $self->id . '.full.jpeg';
+    } else {
+        ( $photo->{width}, $photo->{height} ) =
+          Image::Size::imgsize( \$self->photo );
+    }
+    $photo->{url} = '/photo' . $key . '/' . $self->id . '.jpeg';
+
+    return $photo;
 }
 
 =head1 SEE ALSO

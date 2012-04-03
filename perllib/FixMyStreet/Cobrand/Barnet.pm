@@ -10,7 +10,9 @@ sub council_name { return 'Barnet Council'; }
 sub council_url { return 'barnet'; }
 
 sub disambiguate_location {
+    my $self = shift;
     return {
+        %{ $self->SUPER::disambiguate_location() },
         centre => '51.612832,-0.218169',
         span   => '0.0563,0.09',
         bounds => [ '51.584682,-0.263169', '51.640982,-0.173169' ],

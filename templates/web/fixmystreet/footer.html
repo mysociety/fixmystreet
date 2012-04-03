@@ -1,51 +1,62 @@
-    </div><!-- #mysociety .container -->
+                    [% IF pagefooter %]
+                    <footer role="content-info">
+                        <div class="tablewrapper bordered">
+                            <div id="footer-mobileapps">
+                                <h4>Mobile apps</h4>
 
-    <div id="navigation" class="container" role="navigation">
-        <div class="spacer"></div>
-        <ul id="site-nav" class="nav">
-            <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END
-                %]>[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
-            %]<li><[% IF c.req.uri.path == '/my' %]span[% ELSE %]a href="/my"[% END
-                %]>[% loc("Your reports") %]</[% c.req.uri.path == '/my' ? 'span' : 'a' %]></li>[%
-            %]<li><[% IF c.req.uri.path == '/reports' %]span[% ELSE %]a href="/reports"[% END
-                %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
-            %]<li><[% IF c.req.uri.path == '/alert' %]span[% ELSE %]a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END
-                %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>[%
-            %]<li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
-                %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
-        </ul>
+                                <ul>
+                                    <li><a class="m-app-iphone" href="http://itunes.apple.com/gb/app/fixmystreet/id297456545">iPhone</a></li>
+                                    <li><a class="m-app-droid" href="https://market.android.com/details?id=com.android.fixmystreet">Android</a></li>
+                                    <li><a class="m-app-nokia" href="http://store.ovi.com/content/107557">Nokia</a></li>
+                                    <li><a class="m-app-iphone-streetreport" href="http://itunes.apple.com/gb/app/streetreport/id371891859">iPhone Street Report</a></li>
+                                </ul>
+                            </div>
 
-        <ul id="mysociety-nav" class="nav">
-            <li><a id="mysociety-logo" href="http://www.mysociety.org/">mySociety</a></li>[%
-            %]<li><a href="http://mysociety.org/donate/">Donate</a></li>[%
-            %]<li><a href="http://www.mysociety.org/projects/">Our Sites</a></li>
-        </ul>
+                            <div id="footer-help">
+                                <ul>
+                                    <li>
+                                        <h4>[% loc('Are you a developer?') %]</h4>
+                                        <p>[% loc('Would you like to contribute to FixMyStreet? Our code is open source and <a href="http://github.com/mysociety/fixmystreet">available on GitHub</a>.') %]</p>
+                                    </li>
+                                    <li>
+                                        <h4>[% loc('Are you from a council?') %]</h4>
+                                        <p>[% loc('Would you like better integration with FixMyStreet? <a href="/for-councils">Find out about FixMyStreet for councils</a>.') %]</p>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </footer>
+                    [% END %]
+                </div><!-- .content role=main -->
+            </div><!-- .container -->
+        </div><!-- .table-cell -->
 
-    </div>
+        <div class="nav-wrapper">
+            <div class="nav-wrapper-2">
+                <div id="main-nav" role="navigation">
+                    <ul id="mysoc-menu">
+                        <li><a id="mysoc-logo" href="http://www.mysociety.org/">mySociety</a></li>[%
+                        %]<li><a href="http://mysociety.org/donate/">Donate</a></li>[%
+                        %]<li><a href="http://www.mysociety.org/projects/">Our Sites</a></li>
+                    </ul>
 
-</div></div></div><!-- wrappers -->
+                    <ul id="main-menu">
+                        <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
+                            >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/my' %]span[% ELSE %]a href="/my"[% END
+                            %]>[% loc("Your reports") %]</[% c.req.uri.path == '/my' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/reports' %]span[% ELSE %]a href="/reports"[% END
+                            %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/alert' %]span[% ELSE %]a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END
+                            %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
+                            %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
-<div id="footer">
-
-    <p><a href="/contact">[% loc("Contact FixMyStreet") | replace(' ', '&nbsp;') %]</a>
-    <br>Mobile apps:
-        <a href="http://itunes.apple.com/gb/app/fixmystreet/id297456545">iPhone</a>,
-        <a href="http://itunes.apple.com/gb/app/streetreport/id371891859">StreetReport (iPhone)</a>
-    | <a href="https://market.android.com/details?id=com.android.fixmystreet">Android</a>
-    | <a href="http://store.ovi.com/content/107557">Nokia</a>
-    </p>
-      
-    <p>[% loc('Are you from a <strong>council</strong>? Would you like better integration with FixMyStreet?') %]
-      <a href="http://www.mysociety.org/fixmystreet-for-local-council-websites/">[% loc('Find out about FixMyStreet for councils') %]</a>.
-    </p>
-  
-    <p>[% loc('Are you a <strong>developer</strong>? Would you like to contribute to FixMyStreet?') %]
-    [% loc('Our code is open source and <a href="http://github.com/mysociety/fixmystreet">available on GitHub</a>.') %]
-    </p>
-
-</div>
-
-[% INCLUDE 'debug_footer.html' %]
-
+<!-- [% INCLUDE 'debug_footer.html' %] -->
+    </div> <!-- .wrapper -->
 </body>
 </html>

@@ -13,12 +13,13 @@
     INCLUDE 'header.html',
     title = tprintf(loc('%s - Summary reports'), name)
     context = 'reports'
+    bodyclass = 'mappage'
     rss = [ tprintf(loc('Problems within %s, FixMyStreet'), name), rss_url ]
 %]
 
 [% map_html %]
 
-[% IF children.size %]
+[% IF c.cobrand.moniker != 'fixmystreet' AND children.size %]
 <h2 style="clear:right">[% loc('Wards of this council') %]</h2>
 <p>[% loc('Follow a ward link to view only reports within that ward.') %]</p>
 <ul>
@@ -31,8 +32,16 @@
 </div>
 <div id="side">
 
+<h1 id="reports_heading">
+    [% IF ward %]
+    [% ward.name %]<span>, </span><a href="[% council_url %]">[% council.name %]</a>
+    [% ELSE %]
+    [% council.name %]
+    [% END %]
+</h1>
+
 [% IF council.generation_high == 10 AND c.cobrand.country == 'GB' %]
-<p id="unknown">This council no longer exists.
+<p id="unknown" class="alert">This council no longer exists.
 [% IF council.name.match('Penwith|Kerrier|Carrick|Restormel|Caradon|North Cornwall') %]
 Its area is now covered by <a href="/reports/Cornwall">Cornwall Council</a>.
 [% ELSIF council.name.match('Durham|Easington|Sedgefield|Teesdale|Wear Valley|Derwentside|Chester le Street') %]
@@ -57,67 +66,49 @@ Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a
 <a href="/reports/Central+Bedfordshire">Central Bedfordshire Council</a>.
 [% END %]
 </p>
+[% ELSIF c.cobrand.moniker == 'fixmystreet' %]
+    <div class="shadow-wrap">
+        <ul id="key-tools"[% IF NOT children.size %] class="singleton"[% END %]>
+            <li><a rel="nofollow" id="key-tool-updates-area" class="feed" href="[% rss_url %]">[% tprintf(loc('Get updates of problems in this %s'), thing) %]</a></li>
+            [% IF children.size %]
+            <li><a href="#council_wards" id="key-tool-wards" class="chevron">[% loc('Wards of this council') %]</a></li>
+            [% END %]
+        </ul>
+    </div>
 [% ELSE %]
-<p><a href="[% rss_url %]"><img align="right" src="/i/feed.png" width="16" height="16" title="[% loc('RSS feed') %]" alt="[% tprintf(loc('RSS feed of problems in this %s'), thing) %]" border="0" hspace="4"></a>
+    <p><a href="[% rss_url %]"><img align="right" src="/i/feed.png" width="16" height="16" title="[% loc('RSS feed') %]" alt="[% tprintf(loc('RSS feed of problems in this %s'), thing) %]" border="0" hspace="4"></a>
 [% END %]
 
-[% IF c.cobrand.all_councils_report %]
-    [% tprintf( loc('This is a summary of all reports for one %s.'), thing ) %]
-[% ELSE %]
-    [% tprintf( loc('This is a summary of all reports for this %s.'), thing ) %]
+[% TRY %][% INCLUDE 'reports/cobrand_stats.html' %][% CATCH file %][% END %]
+
+[% IF c.cobrand.moniker == 'fixmystreet' AND children.size %]
+<section id="council_wards" class="hidden-js">
+    <h2>[% loc('Wards of this council') %]</h2>
+    <p>[% loc('Follow a ward link to view only reports within that ward.') %]</p>
+    <ul class="issue-list-a full-width">
+        [% FOR child IN children.values.sort('name') %]
+        <li><a href="[% child.url %]"><span class="text">[% child.name %]</span></a></li>
+        [% END %]
+    </ul>
+</section>
 [% END %]
-
-[% IF ward %]
-[% tprintf( loc('You can <a href="%s">view all reports for the council</a> or <a href="/reports">show all councils</a>.'), council_url ) %]
-[% ELSE %]
-[% loc('You can <a href="/reports">show all councils</a>.') %]
-[% END %]
-
-<h2>[% name %]</h2>
-
-[% INCLUDE 'reports/cobrand_stats.html' %]
 
 [% IF c.cobrand.moniker == 'fixmystreet' %]
 <p class="promo">
     FixMyStreet is now available for local council websites.
-    <a href="http://www.mysociety.org/fixmystreet-for-local-council-websites/">Find&nbsp;out&nbsp;more</a>.
+    <a href="/for-councils">Find&nbsp;out&nbsp;more</a>.
 </p>
 [% END %]
 
-    [% INCLUDE 'pagination.html', param = 'p' %]
+[% INCLUDE 'pagination.html', param = 'p' %]
 
+<section class="full-width">
     [% INCLUDE column
-        title = loc('Recently fixed')
-        problems = fixed.${council.id}.new
+        problems = problems.${council.id}
     %]
+</section>
 
-    [% INCLUDE column
-        title = loc('New problems')
-        problems = open.${council.id}.new
-    %]
-
-    [%# This doesn't really need a whole separate template %]
-    [% IF c.cobrand.moniker == 'emptyhomes' %]
-        [% 
-           INCLUDE column
-            title = loc('Older problems')
-            problems = open.${council.id}.older.merge( open.${council.id}.unknown )
-        %]
-    [% ELSE %]
-        [% INCLUDE column
-            title = loc('Older problems')
-            problems = open.${council.id}.older
-        %]
-        [% INCLUDE column
-            title = loc('Old problems, state unknown')
-            problems = open.${council.id}.unknown
-        %]
-    [% END %]
-
-    [% INCLUDE column
-        title = loc('Old fixed')
-        problems = fixed.${council.id}.old
-    %]
+[% INCLUDE 'pagination.html', param = 'p' %]
 
 </div>
 [% INCLUDE 'footer.html' %]
@@ -125,9 +116,35 @@ Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a
 [% BLOCK column %]
 [% IF problems %]
 
-<h3>[% title %]</h3>
+<ul class="issue-list-a">
+[% IF c.cobrand.moniker == 'fixmystreet' %]
 
-<ul>
+[% FOREACH problem IN problems %]
+    <li>
+        <a href="[% c.uri_for('/report/' _ problem.id) %]">
+            <div class="text">
+                <h4>[% problem.title | html %]</h4>
+                <small>[% prettify_epoch( problem.confirmed, 1 ) %]
+                [%- IF problem.confirmed != problem.lastupdate AND problem.whensent != problem.lastupdate %], last updated [% prettify_epoch( problem.lastupdate, 1 ) %]
+                [%- END %]</small>
+                [% IF problem.councils > 1 %] <small>[% loc('(sent to both)') %]</small>
+                [% ELSIF problem.councils == 0 %] <small>[% loc('(not sent to council)') %]</small>
+                [% END %]
+                [% IF problem.is_fixed %]
+                    <small>[% loc('(fixed)') %]</small>
+                [% END %]
+            </div>
+            [% IF problem.photo %]
+            <div class="img">
+                <img height="60" width="90" src="/photo/[% problem.id %].fp.jpeg" alt="">
+            </div>
+            [% END %]
+        </a>
+    </li>
+[% END %]
+
+[% ELSE %]
+
 [% FOREACH problem IN problems %]
     <li><a href="[% c.uri_for('/report/' _ problem.id) %]">[% problem.title | html %]</a>
     [% IF problem.councils > 1 %] <small>[% loc('(sent to both)') %]</small> [% END %]
@@ -135,6 +152,8 @@ Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a
         [% IF problem.councils == 0 %] <small>[% loc('(not sent to council)') %]</small> [% END %]
     [% END %]
     </li>
+[% END %]
+
 [% END %]
 </ul>
 

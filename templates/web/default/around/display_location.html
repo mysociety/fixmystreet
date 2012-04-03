@@ -55,9 +55,9 @@
     [% IF c.cobrand.country == 'GB' || c.cobrand.country == 'NO' %]
         |
         [% IF c.req.params.all_pins %]
-            <a id='all_pins_link' rel='nofollow' href='[% c.uri_with( { no_pins => undef, all_pins => undef } ) %]'>[% loc('Hide stale reports') %]</a>
+            <a id='all_pins_link' rel='nofollow' href='[% c.uri_with( { no_pins => undef, all_pins => undef } ) %]'>[% loc('Hide old') %]</a>
         [% ELSE %]
-            <a id='all_pins_link' rel='nofollow' href='[% c.uri_with( { no_pins => undef, all_pins => 1 } ) %]'>[% loc('Include stale reports') %]</a>
+            <a id='all_pins_link' rel='nofollow' href='[% c.uri_with( { no_pins => undef, all_pins => 1 } ) %]'>[% loc('Show old') %]</a>
         [% END %]
     [% END %]
 </p>

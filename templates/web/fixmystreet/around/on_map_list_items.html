@@ -1,0 +1,22 @@
+[% IF on_map.size %]
+    [% FOREACH p IN on_map %]
+        <li>
+            <a href="[% c.uri_for('/report', p.id ) %]">
+                <div class="text">
+                    <h4>[% p.title | html %]</h4>
+                    <small>[% prettify_epoch( p.confirmed_local.epoch, 1 ) %]</small>
+                    [% IF p.is_fixed %]
+                        <small>[% loc('(fixed)') %]</small>
+                    [% END %]
+                </div>
+                [% IF p.photo %]
+                <div class="img">
+                    <img height="60" width="90" src="/photo/[% p.id %].fp.jpeg" alt="">
+                </div>
+                [% END %]
+            </a>
+        </li>
+    [% END %]
+[% ELSE %]
+    <li><p>[% loc('No problems have been reported yet.') %]</p></li>
+[% END %]

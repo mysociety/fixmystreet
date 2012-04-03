@@ -190,7 +190,7 @@ sub cleanup_text {
     for ($input) {
 
         # shit -> poo
-        s{\bdog\s*shit\b}{dog poo}ig;
+        s{\bdog\s*shite*?\b}{dog poo}ig;
 
         # 'portakabin' to '[portable cabin]' (and variations)
         s{\b(porta)\s*([ck]abin|loo)\b}{[$1ble $2]}ig;

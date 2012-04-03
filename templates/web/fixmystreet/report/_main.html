@@ -1,0 +1,19 @@
+<div class="problem-header cf">
+	<h1>[% problem.title | html %]</h1>
+
+	<p><em>
+	[% problem.meta_line(c) | html %]
+	[% IF problem.council %]
+	    [% IF problem.whensent %]
+	        <small class="council_sent_info"><br>[% problem.duration_string(c) %]</small>
+	    [% END %]
+	[% ELSE %]
+	<br><small>[% loc('Not reported to council') %]</small>
+	[% END %]
+	</em></p>
+
+	[% INCLUDE 'report/photo.html' object=problem center=1 %]
+
+	[% add_links( problem.detail ) | html_para %]
+
+</div>

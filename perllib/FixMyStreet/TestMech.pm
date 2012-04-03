@@ -224,6 +224,7 @@ sub form_errors {
     my $mech   = shift;
     my $result = scraper {
         process 'div.form-error', 'errors[]', 'TEXT';
+        process 'p.form-error', 'errors[]', 'TEXT';
     }
     ->scrape( $mech->response );
     return $result->{errors} || [];
@@ -365,6 +366,7 @@ sub extract_problem_banner {
 
     my $result = scraper {
         process 'div#side > p.banner', id => '@id', text => 'TEXT';
+        process 'div.banner > p', id => '@id', text => 'TEXT';
     }
     ->scrape( $mech->response );
 

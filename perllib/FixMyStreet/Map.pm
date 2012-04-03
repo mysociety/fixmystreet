@@ -95,8 +95,10 @@ sub _map_features {
     my $around_limit = $c->cobrand->on_map_list_limit || undef;
 
     my @around_args = ( $min_lat, $max_lat, $min_lon, $max_lon, $interval );
-    my $around_map_list = $c->cobrand->problems->around_map( @around_args, $around_limit );
     my $around_map      = $c->cobrand->problems->around_map( @around_args, undef );
+    my $around_map_list = $around_limit
+        ? $c->cobrand->problems->around_map( @around_args, $around_limit )
+        : $around_map;
 
     my $dist;
     mySociety::Locale::in_gb_locale {

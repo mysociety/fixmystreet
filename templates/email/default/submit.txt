@@ -40,6 +40,5 @@ also welcome any other feedback you may have.
 
 FixMyStreet is now available for full integration into council
 websites, making life easier for both you and your residents.
-Read more here:
-http://www.mysociety.org/fixmystreet-for-local-council-websites/
+Read more here: http://www.fixmystreet.com/for-councils
 

@@ -1,11 +1,15 @@
 function set_map_config(perm) {
+    var permalink_id;
+    if ($('#map_permalink').length) {
+        permalink_id = 'map_permalink';
+    }
     fixmystreet.controls = [
         new OpenLayers.Control.ArgParser(),
         //new OpenLayers.Control.LayerSwitcher(),
         new OpenLayers.Control.Navigation(),
-        perm,
+        new OpenLayers.Control.Permalink(permalink_id),
         new OpenLayers.Control.PermalinkFMS('osm_link', 'http://www.openstreetmap.org/'),
-        new OpenLayers.Control.PanZoomFMS()
+        new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
     ];
 }
 
@@ -37,7 +41,7 @@ OpenLayers.Util.onImageLoadError = function() {
     } else if (this.src.match(/^http:\/\/[def]\.tah\.openstreetmap\.org\//)) {
         // do nothing - this layer is transparent
     } else {
-        OpenLayers.Util.OSM.originalOnImageLoadError;
+        OpenLayers.Util.OSM.originalOnImageLoadError();
     }
 };
 
@@ -75,14 +79,14 @@ OpenLayers.Layer.OSM.Mapnik = OpenLayers.Class(OpenLayers.Layer.OSM, {
 });
 
 /**
- * Class: OpenLayers.Layer.OSM.Osmarender
+ * Class: OpenLayers.Layer.OSM.MapQuestOpen
  *
  * Inherits from:
  *  - <OpenLayers.Layer.OSM>
  */
-OpenLayers.Layer.OSM.Osmarender = OpenLayers.Class(OpenLayers.Layer.OSM, {
+OpenLayers.Layer.OSM.MapQuestOpen = OpenLayers.Class(OpenLayers.Layer.OSM, {
     /**
-     * Constructor: OpenLayers.Layer.OSM.Osmarender
+     * Constructor: OpenLayers.Layer.OSM.MapQuestOpen
      *
      * Parameters:
      * name - {String}
@@ -90,16 +94,22 @@ OpenLayers.Layer.OSM.Osmarender = OpenLayers.Class(OpenLayers.Layer.OSM, {
      */
     initialize: function(name, options) {
         var url = [
-            "http://a.tah.openstreetmap.org/Tiles/tile/${z}/${x}/${y}.png",
-            "http://b.tah.openstreetmap.org/Tiles/tile/${z}/${x}/${y}.png",
-            "http://c.tah.openstreetmap.org/Tiles/tile/${z}/${x}/${y}.png"
+            "http://otile1.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
+            "http://otile2.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
+            "http://otile3.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
+            "http://otile4.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png"
         ];
-        options = OpenLayers.Util.extend({ numZoomLevels: 18, buffer: 0 }, options);
+        options = OpenLayers.Util.extend({
+            /* Below line added to OSM's file in order to allow minimum zoom level */
+            maxResolution: 156543.0339/Math.pow(2, options.zoomOffset || 0),
+            numZoomLevels: 19,
+            buffer: 0
+        }, options);
         var newArguments = [name, url, options];
         OpenLayers.Layer.OSM.prototype.initialize.apply(this, newArguments);
     },
 
-    CLASS_NAME: "OpenLayers.Layer.OSM.Osmarender"
+    CLASS_NAME: "OpenLayers.Layer.OSM.MapQuestOpen"
 });
 
 /**
