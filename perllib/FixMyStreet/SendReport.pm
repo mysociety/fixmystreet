@@ -2,8 +2,21 @@ package FixMyStreet::SendReport;
 
 use Moose;
 
+use Module::Pluggable
+    sub_name    => 'senders',
+    search_path => __PACKAGE__,
+    require     => 1;
+
 has 'councils' => (is => 'rw', isa => 'HashRef', default => sub { {} } );
 has 'to' => (is => 'rw', isa => 'ArrayRef', default => sub { [] } );
+
+sub get_senders {
+    my $self = shift;
+
+    my %senders = map { $_ => 1 } $self->senders;
+
+    return \%senders;
+}
 
 sub reset {
     my $self = shift;

@@ -12,7 +12,7 @@ use mySociety::EmailUtil;
 use mySociety::MaPit;
 
 use FixMyStreet::App;
-use FixMyStreet::SendReport::Email;
+use FixMyStreet::SendReport;
 
 my $site_restriction;
 my $site_key;
@@ -231,6 +231,10 @@ sub send_reports {
         council => { '!=', undef },
     } );
     my (%notgot, %note);
+
+    my $s = FixMyStreet::SendReport->new();
+    my $senders = $s->get_senders;
+
     while (my $row = $unsent->next) {
 
         my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->cobrand)->new();
@@ -312,6 +316,10 @@ sub send_reports {
                 push @dear, $name;
                 my $sender = $cobrand->get_council_sender( $council, $areas_info->{$council} );
                 $sender = "FixMyStreet::SendReport::$sender";
+                if ( ! exists $senders->{ $sender } ) {
+                    warn "No such sender [ $sender ] for council $name ( $council )";
+                    next;
+                }
                 $reporters{ $sender } = $sender->new() unless $reporters{$sender};
                 $reporters{ $sender }->add_council( $council, $name );
             }
