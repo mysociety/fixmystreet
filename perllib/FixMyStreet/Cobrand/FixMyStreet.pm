@@ -7,7 +7,7 @@ sub restriction {
 }
 
 sub get_council_sender {
-    my ( $self, $area_id, $area_info ) = shift;
+    my ( $self, $area_id, $area_info ) = @_;
 
     my $send_method;
 
