@@ -9,6 +9,17 @@ use FixMyStreet::App;
 use mySociety::Config;
 use Open311;
 
+sub should_skip {
+    my $self = shift;
+    my $row  = shift;
+
+    if ( $row->send_fail_count > 0 ) {
+        if ( bromley_retry_timeout($row) ) {
+            return 1;
+        }
+    }
+}
+
 sub send {
     return if mySociety::Config::get('STAGING_SITE');
     my $self = shift;
@@ -17,14 +28,11 @@ sub send {
     my $result = -1;
 
     foreach my $council ( keys %{ $self->councils } ) {
-        my $conf = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $self->councils->{ $council }, endpoint => { '!=', '' } } )->first;
+        my $conf = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $council, endpoint => { '!=', '' } } )->first;
         #print 'posting to end point for ' . $conf->area_id . "\n" if $verbose;
 
         # Extra bromley fields
         if ( $row->council =~ /2482/ ) {
-            if ( $row->send_fail_count > 0 ) {
-                next if bromley_retry_timeout( $row );
-            }
 
             my $extra = $row->extra;
             push @$extra, { name => 'northing', value => $h->{northing} };

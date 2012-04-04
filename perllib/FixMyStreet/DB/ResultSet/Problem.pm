@@ -250,9 +250,6 @@ sub send_reports {
             next;
         }
 
-        my $send_email = 0;
-        my $send_web = 0;
-
         # Template variables for the email
         my $email_base_url = $cobrand->base_url_for_emails($row->cobrand_data);
         my %h = map { $_ => $row->$_ } qw/id title detail name category latitude longitude used_map/;
@@ -291,7 +288,7 @@ sub send_reports {
         }
 
         my %reporters = ();
-        my (@to, @recips, $template, $areas_info );
+        my (@to, @recips, $template, $areas_info, $sender_count );
         if ($site eq 'emptyhomes') {
 
             my $council = $row->council;
@@ -313,15 +310,20 @@ sub send_reports {
 
             foreach my $council (@councils) {
                 my $name = $areas_info->{$council}->{name};
-                push @dear, $name;
+
                 my $sender = $cobrand->get_council_sender( $council, $areas_info->{$council} );
                 $sender = "FixMyStreet::SendReport::$sender";
+
                 if ( ! exists $senders->{ $sender } ) {
                     warn "No such sender [ $sender ] for council $name ( $council )";
                     next;
                 }
-                $reporters{ $sender } = $sender->new() unless $reporters{$sender};
-                $reporters{ $sender }->add_council( $council, $name );
+                $reporters{ $sender } ||= $sender->new();
+
+                unless ( $reporters{ $sender }->should_skip( $row ) ) {
+                    push @dear, $name;
+                    $reporters{ $sender }->add_council( $council, $name );
+                }
             }
 
             $template = 'submit.txt';
@@ -355,19 +357,23 @@ sub send_reports {
                   . " ]\n\n";
             }
 
+            $sender_count = scalar @dear;
         }
 
-        unless ($send_email || $send_web || keys %reporters ) {
+        unless ( keys %reporters ) {
             die 'Report not going anywhere for ID ' . $row->id . '!';
         }
 
+        next unless $sender_count;
+
         if (mySociety::Config::get('STAGING_SITE')) {
             # on a staging server send emails to ourselves rather than the councils
-            $send_web = 0;
-            $send_email = 1;
-            %reporters = (
-                'FixMyStreet::SendReport::Email' => $reporters{ 'FixMyStreet::SendReport::Email' }
-            );
+            my @testing_councils = split( '\|', mySociety::Config::get('TESTING_COUNCILS') );
+            unless ( grep { $row->council eq $_ } @testing_councils ) {
+                %reporters = (
+                    'FixMyStreet::SendReport::Email' => $reporters{ 'FixMyStreet::SendReport::Email' }
+                );
+            }
         }
 
         # Multiply results together, so one success counts as a success.
@@ -387,7 +393,7 @@ sub send_reports {
         } else {
             my @errors;
             for my $sender ( keys %reporters ) {
-                unless ( $reporters{ $sender }->sucess ) {
+                unless ( $reporters{ $sender }->success ) {
                     push @errors, $reporters{ $sender }->error;
                 }
             }
