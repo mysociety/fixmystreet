@@ -27,9 +27,16 @@ cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 report_cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
 def main():
-    # Fetch reports that have changed recently
-    #response, data = dataset.select('select (max(?lastupdate) as ?max) where { ?report <http://data.kasabi.com/dataset/fixmystreet/def/lastUpdate> ?lastupdate }')
-    #max_lastUpdate = data[1][0]['max']
+
+    # Check the status of our dataset
+    response, status = dataset.status()
+    if response.status not in range(200, 300) or status['storageMode'] == 'read-only':
+        # We can't import anything, so let's not bother
+        sys.exit()
+
+    # Fetch reports that have changed since last update in dataset
+    response, data = dataset.select('select (max(?lastupdate) as ?max) where { ?report <http://data.kasabi.com/dataset/fixmystreet/def/lastUpdate> ?lastupdate }')
+    max_lastUpdate = data[1][0]['max']
     query = """
         SELECT id, latitude, longitude, used_map, council,
             category, title, detail, (photo IS NOT NULL) as photo,
@@ -40,10 +47,7 @@ def main():
     if len(sys.argv) > 1 and sys.argv[1].isdigit():
         cursor.execute("%s AND id=%%s" % query, (sys.argv[1],))
     else:
-        last_hour = datetime.datetime.now().replace(minute=0, second=0, microsecond=0) - datetime.timedelta(hours=1)
-        cursor.execute("%s AND date_trunc('hour', lastupdate) = %%s" % query, (last_hour,))
-#            AND lastupdate > %s
-#    """, (max_lastUpdate,))
+        cursor.execute("%s AND lastupdate > %%s" % query, (max_lastUpdate,))
 
     for report in cursor:
         changeset = FixMyStreetChangeSet(dataset)
