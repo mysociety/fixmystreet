@@ -27,3 +27,11 @@
   background: url('/cobrands/bromley/bromley-logo.s.jpg') 0 0 no-repeat;
 }
 
+#problems-nav {
+    border-bottom:0.25em solid $primary;
+    ul li a.active {
+        background: $primary;
+        color: #fff;
+    }
+}
+

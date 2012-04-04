@@ -142,6 +142,7 @@ img {
   //do this otherwise IE will just not display
   //any img without a height defined
   height:auto;
+  max-width: 100%;
 }
 
 select, input, textarea {
