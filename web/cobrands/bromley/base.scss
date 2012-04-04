@@ -29,9 +29,15 @@
 
 #problems-nav {
     border-bottom:0.25em solid $primary;
-    ul li a.active {
-        background: $primary;
-        color: #fff;
+    ul li a {
+        text-transform: none;
+        &.active {
+            background: $primary;
+            color: #fff;
+        }
     }
 }
 
+.big-green-banner {
+    text-transform: none;
+}
