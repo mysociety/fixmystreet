@@ -724,7 +724,7 @@ a:hover.button-left {
     width: 0;
     height: 0;
     border-left: 0.5em solid transparent;
-    border-bottom: 0.5em solid #4B8304;
+    border-bottom: 0.5em solid $contrast1_dark;
   }
 }
 
@@ -760,7 +760,7 @@ a:hover.button-left {
       color:#fff;
       background: $contrast1;
       &:before {
-        border-bottom: 0.5em solid #4B8304;
+        border-bottom: 0.5em solid $contrast1_dark;
       }
     }
   }

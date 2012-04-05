@@ -653,8 +653,13 @@ body.twothirdswidthpage {
     top:-0.5em;
     position: absolute;
     border-top: 0.5em solid transparent;
-    border-left: 0.5em solid #4B8304;
+    border-left: 0.5em solid $contrast1_dark;
     border-bottom:none;
+  }
+  span {
+    display: block;
+    font-size: 80%;
+    padding-top: 0.5em;
   }
 }
 .ie6 .big-green-banner {
@@ -677,7 +682,7 @@ body.twothirdswidthpage {
       background-position:-324px -326px;
       background-repeat:no-repeat;
       &:before {
-        border-bottom: 0.75em solid #4B8304;
+        border-bottom: 0.75em solid $contrast1_dark;
       }
     }
   }

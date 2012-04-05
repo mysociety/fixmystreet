@@ -139,14 +139,18 @@ $(function(){
             }
             if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
                 // Remove full-screen-ness
-                if (cobrand != 'bromley') {
+                var banner_text;
+                if (cobrand == 'bromley') {
+                    banner_text = 'Click map to report a problem<span>Yellow pins show existing reports</span>';
+                } else {
                     $('#site-header').show();
+                    banner_text = 'Click map to report a problem';
                 }
                 $('#fms_pan_zoom').css({ top: '4.75em !important' });
                 $('.big-green-banner')
                     .removeClass('mobile-map-banner')
                     .prependTo('#side')
-                    .text('Click map to report a problem');
+                    .html(banner_text);
             }
             $('span.report-a-problem-btn').css({ cursor:'' }).off('.reportBtn');
         }
