@@ -371,7 +371,7 @@ sub send_reports {
             my @testing_councils = split( '\|', mySociety::Config::get('TESTING_COUNCILS') );
             unless ( grep { $row->council eq $_ } @testing_councils ) {
                 %reporters = (
-                    'FixMyStreet::SendReport::Email' => $reporters{ 'FixMyStreet::SendReport::Email' }
+                    'FixMyStreet::SendReport::Email' => $reporters{ 'FixMyStreet::SendReport::Email' } || FixMyStreet::SendReport::Email->new()
                 );
             }
         }
