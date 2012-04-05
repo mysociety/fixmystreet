@@ -480,11 +480,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                     fixmystreet.map.getProjectionObject()
                 );
                 var p = fixmystreet.map.getViewPortPxFromLonLat(lonlat);
-<<<<<<< HEAD
                 p.x -= ( o.left - bo.left + w ) / 2;
-=======
-                p.x -= ( o.left + w ) / 2;
->>>>>>> send-report-rewrite
                 lonlat = fixmystreet.map.getLonLatFromViewPortPx(p);
                 fixmystreet.map.panTo(lonlat);
             }
