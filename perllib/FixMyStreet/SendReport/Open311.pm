@@ -21,7 +21,6 @@ sub should_skip {
 }
 
 sub send {
-    return if mySociety::Config::get('STAGING_SITE');
     my $self = shift;
     my ( $row, $h, $to, $template, $recips, $nomail ) = @_;
 
@@ -29,7 +28,6 @@ sub send {
 
     foreach my $council ( keys %{ $self->councils } ) {
         my $conf = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $council, endpoint => { '!=', '' } } )->first;
-        #print 'posting to end point for ' . $conf->area_id . "\n" if $verbose;
 
         # Extra bromley fields
         if ( $row->council =~ /2482/ ) {
@@ -79,7 +77,7 @@ sub send {
         if ( $resp ) {
             $row->external_id( $resp );
             $result *= 0;
-            $self->success( 1 )
+            $self->success( 1 );
         } else {
             $result *= 1;
             # temporary fix to resolve some issues with west berks
