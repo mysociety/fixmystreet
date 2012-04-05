@@ -16,7 +16,12 @@ Modernizr.load({
 </script>
 [% END %]
 
-[% pre_container_extra = BLOCK %]
+[% INCLUDE 'header.html', title => '' , bodyclass => 'frontpage fullwidthpage' %]
+
+[% IF error %]
+    <p class="error">[% error %]</p>
+[% END %]
+
 <div id="front-main">
     <div id="front-main-container">
         <h1>Reporting a problem in Bromley&rsquo;s streets or parks</h1>
@@ -28,7 +33,7 @@ Modernizr.load({
         %]
 
         <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
-            <label for="pc">Enter a London Borough of Bromley postcode, or street name and area:</label>
+            <label for="pc">Enter a Bromley Council postcode, or street name and area:</label>
             <div>
                 <input type="text" name="pc" value="" id="pc" size="10" maxlength="200" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]">
                 <input type="submit" value="[% loc('Go') %]" id="submit">
@@ -43,13 +48,6 @@ Modernizr.load({
 
     </div>
 </div>
-[% END %]
-
-[% INCLUDE 'header.html', title => '' , bodyclass => 'frontpage fullwidthpage' %]
-
-[% IF error %]
-    <p class="error">[% error %]</p>
-[% END %]
 
 <div class="tablewrapper">
     <div id="front-howto">
@@ -59,7 +57,7 @@ Modernizr.load({
             <li>[% question %]</li>
             <li>[% loc('Locate the problem on a map of the area') %]</li>
             <li>[% loc('Enter details of the problem') %]</li>
-            <li>It gets sent to the council</li>
+            <li>Confirm the report and it will be sent to Bromley</li>
         </ol>
         
         <section class="full-width">

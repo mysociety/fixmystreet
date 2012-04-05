@@ -49,20 +49,8 @@
 			
 	<div class="main-menu">
 		<ul>
-			<li class="home"><a href="http://www.bromley.gov.uk">Home</a></li>
-			<li><a href="http://www.bromley.gov.uk/a_to_z">A to Z</a></li>
-			<li><a href="http://www.bromley.gov.uk/site_map">Site map</a></li>
-		</ul>
-		<form action="http://www.bromley.gov.uk/site/scripts/google_results.aspx" method="get" id="search">
-			<label for="SearchSite">Search by Keyword</label>
-			<input type="text" size="18" maxlength="40" class="field" name="q" id="SearchSite" value="Search by keyword" onclick="if (this.value == 'Search by keyword') { this.value = ''; }" onblur="if (this.value == '') { this.value = 'Search by keyword'; }" />
-			<input value="Search" id="SearchSubmit" type="submit" class="button" />
-		</form>
-	</div>
-
-    <ul id="main-menu">
-        <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
-            >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
+        <li class="home"><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
+            >[% "Report" %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
         %]<li><[% IF c.req.uri.path == '/my' %]span[% ELSE %]a href="/my"[% END
             %]>[% loc("Your reports") %]</[% c.req.uri.path == '/my' ? 'span' : 'a' %]></li>[%
         %]<li><[% IF c.req.uri.path == '/reports/Bromley' %]span[% ELSE %]a href="/reports/Bromley"[% END
@@ -71,7 +59,8 @@
             %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>[%
         %]<li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
             %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
-    </ul>
+		</ul>
+	</div>
 
 </div>
 		
