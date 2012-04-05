@@ -7,6 +7,8 @@ BEGIN { extends 'Catalyst::Controller'; }
 use POSIX qw(strftime strcoll);
 use Digest::MD5 qw(md5_hex);
 
+use FixMyStreet::SendReport;
+
 =head1 NAME
 
 FixMyStreet::App::Controller::Admin- Catalyst Controller
@@ -345,6 +347,9 @@ sub update_contacts : Private {
             $conf->endpoint( $params{endpoint} );
             $conf->jurisdiction( $params{jurisdiction} );
             $conf->api_key( $params{api_key} );
+            $conf->send_method( $params{send_method} );
+            $conf->send_comments( $params{send_comments} );
+            $conf->comment_user_id( $params{comment_user_id} );
 
             $conf->update();
 
@@ -355,6 +360,9 @@ sub update_contacts : Private {
             $conf->endpoint( $params{endpoint} );
             $conf->jurisdiction( $params{jurisdiction} );
             $conf->api_key( $params{api_key} );
+            $conf->send_method( $params{send_method} );
+            $conf->send_comments( $params{send_comments} );
+            $conf->comment_user_id( $params{comment_user_id} );
 
             $conf->insert();
 
@@ -376,6 +384,9 @@ sub display_contacts : Private {
     );
 
     $c->stash->{contacts} = $contacts;
+
+    my @methods = map { $_ =~ s/FixMyStreet::SendReport:://; $_ } keys %{ FixMyStreet::SendReport->get_senders };
+    $c->stash->{send_methods} = \@methods;
 
     my $open311 = $c->model('DB::Open311Conf')->search(
         { area_id => $area_id }
