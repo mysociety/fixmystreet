@@ -1,6 +1,10 @@
 @import "_colours";
 @import "../fixmystreet/_layout";
 
+body { background: #9b9b9b url('http://www.bromley.gov.uk/site/styles/css_img/repeater.gif') repeat-x; }
+#bromley-wrapper { background: #fff url('http://www.bromley.gov.uk/site/styles/css_img/header-corners.gif') center 110px no-repeat; margin: 1px auto 0; padding: 0 15px; width: 955px;}
+.offline #bromley-wrapper { padding: 0 15px 20px; }
+
 // So that map appears underneath the header
 .wrapper {
     position: relative;
@@ -11,21 +15,15 @@
     }
 }
 
-body {
-    background: #fff;
-}
-
 #front-main {
     background: $primary;
     @include border-radius(1em 1em 0 0);
+    margin-bottom: 1em;
+    padding-top: 0;
     // layout sets this because base has it slightly lighter
     h2 {
         color: $primary_text;
     }
-}
-
-.tablewrapper {
-    padding-top: 1em;
 }
 
 // Don't want gap that normal site has

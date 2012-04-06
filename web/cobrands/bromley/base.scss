@@ -5,6 +5,12 @@
 
 @import "../fixmystreet/_base";
 
+h1.main {
+    color: $primary;
+    text-align: center;
+    margin: 0.5em 0;
+}
+
 // Want a white header, and logo is slightly bigger
 #site-header {
     @include background(linear-gradient(#ddd, #fff 10%, #fff));

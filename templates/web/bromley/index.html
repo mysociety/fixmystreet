@@ -18,14 +18,14 @@ Modernizr.load({
 
 [% INCLUDE 'header.html', title => '' , bodyclass => 'frontpage fullwidthpage' %]
 
+<h1 class="main mob-only">Reporting a problem in Bromley&rsquo;s streets or parks</h1>
+
 [% IF error %]
     <p class="error">[% error %]</p>
 [% END %]
 
 <div id="front-main">
     <div id="front-main-container">
-        <h1>Reporting a problem in Bromley&rsquo;s streets or parks</h1>
-
         [%
             question
                 =  c.cobrand.enter_postcode_text()
@@ -40,14 +40,14 @@ Modernizr.load({
             </div>
         </form>
 
-        <p>This is primarily for reporting physical problems that can be fixed
-        like graffiti, fly tipping, or broken paving slabs to report other
-        kinds of problems like missed bins use our
-        <a href="http://www.bromley.gov.uk/report">online report it forms</a>.
-        </p>
-
     </div>
 </div>
+
+<p>This is primarily for reporting physical problems that can be fixed
+like graffiti, fly tipping, or broken paving slabs to report other
+kinds of problems like missed bins use our
+<a href="http://www.bromley.gov.uk/report">online report it forms</a>.
+</p>
 
 <div class="tablewrapper">
     <div id="front-howto">

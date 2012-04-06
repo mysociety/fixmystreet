@@ -40,8 +40,8 @@ body { color: #333; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
 #search input { background: #ececec; border: 1px solid #768b9a; border-color: #768b9a #d1dee8 #d1dee8 #768b9a; line-height: 9px; padding: 6px 5px 4px; width: 184px; }
 #search input.button { background: #fff; border: 1px solid #8596a8; color: #333; font-family: 'Gill Sans', 'Trebuchet MS', Calibri, sans-serif; font-size:133%; height: 27px; line-height: 27px; padding: 0; vertical-align: top; width: 70px; }
 
-// #footer renamed to #bromley-footer, image removed from background, width removed for no scrollbar, fixed font size.
-#bromley-footer { background: #666; clear: both; padding:15px 15px 50px; margin-left:-15px; color:#fff; font-size:11px;}
+// #footer renamed to #bromley-footer, fixed font size.
+#bromley-footer { background: #666 url('http://www.bromley.gov.uk/site/styles/css_img/footer.gif') top center no-repeat; clear: both; width:100%; padding:30px 15px 50px; margin-left:-15px; color:#fff; font-size:92%;}
 #bromley-footer a:link, 
 #bromley-footer a:visited 				{ color: #fff; text-decoration: none; }
 #bromley-footer a:hover,
@@ -75,7 +75,7 @@ body { color: #333; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
 .main-menu li { list-style-type: none; }
 #search input { display: inline; margin: 0; @include border-radius(0em); }
 #search input.button { font-weight: normal; text-transform: none; }
-#bromley-footer { margin: 2em 0 0; }
+#bromley-footer { padding-bottom: 60px; }
 #bromley-footer .footer-nav li { list-style-type: none; }
 #bromley-footer p { margin: 0; }
 
