@@ -26,7 +26,8 @@
 
     </head>
     <body class="[% bodyclass | html IF bodyclass %]">
-        <div id="bromley-wrapper">
+        [%# ie_wrapper is to prevent a horizontal scrollbar in IE7, it appears (from Bromley site) %]
+        <div id="bromley-wrapper"><div id="bromley-ie_wrapper">
 
 <div id="bromley-header" class="desk-only">
 	<ul class="header-nav"> 
