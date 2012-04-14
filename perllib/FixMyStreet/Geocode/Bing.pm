@@ -59,10 +59,20 @@ sub string {
     foreach (@$results) {
         my $address = $_->{name};
         next unless $_->{address}->{countryRegion} eq $params->{bing_country};
+
+        # Getting duplicate, yet different, results from Bing sometimes
+        next if @valid_locations
+            && $_->{address}{postalCode} && $valid_locations[-1]{address}{postalCode} eq $_->{address}{postalCode}
+            && ( $valid_locations[-1]{address}{locality} eq $_->{address}{adminDistrict2}
+                || $valid_locations[-1]{address}{adminDistrict2} eq $_->{address}{locality}
+                || $valid_locations[-1]{address}{locality} eq $_->{address}{locality}
+               );
+
         ( $latitude, $longitude ) = @{ $_->{point}->{coordinates} };
         push (@$error, { address => $address, latitude => $latitude, longitude => $longitude });
         push (@valid_locations, $_);
     }
+
     return { latitude => $latitude, longitude => $longitude } if scalar @valid_locations == 1;
     return { error => $error };
 }

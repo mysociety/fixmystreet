@@ -78,9 +78,13 @@ END %]
                     [% END %]
                 </small>
             </div>    
+            [% IF p.photo %]
+            <div class="img">
+                <img height="60" width="90" src="/photo/[% p.id %].fp.jpeg" alt="">
+            </div>
+            [% END %]
         </a>
     </li>
 
     [% "</ul>" IF loop.last %]
 [% END %]
-
