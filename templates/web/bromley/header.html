@@ -42,12 +42,14 @@
 		<a href="http://www.bromley.gov.uk"><img src="/cobrands/bromley/bromley-logo.jpg" alt="London Borough of Bromley logo" width="159" height="114" style="width:159px; height:114px;" /></a>
 	</div>
 			
-	<!-- <div class="sign-in">
-		<p>
-			You are not signed in. <a href="https://www.bromley.gov.uk/sign_in?referer=%2fa_to_z">Sign in</a>
-			or <a href="https://www.bromley.gov.uk/register">register</a>?
-		</p>
-	</div> -->
+	<div class="sign-in">
+        [% IF c.user_exists %]
+            <p>
+                [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %] 
+                <a href="/auth/sign_out">[% loc('sign out') %]</a>
+            </p>
+        [% END %]
+	</div>
 			
 	<div class="main-menu">
 		<ul>
@@ -76,14 +78,6 @@
             </header>
 
             <div id="user-meta">
-                [% IF c.user_exists %]
-                <p>
-                    [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %] 
-                    <a href="/auth/sign_out">[% loc('sign out') %]</a>
-                </p>
-                [% ELSE %]
-                    <!-- <a href="/auth">[% loc('Sign in') %]</a> -->
-                [% END %]
             </div>
 
             <h1 class="main desk-only">Reporting a problem in Bromley&rsquo;s streets or parks</h1>
