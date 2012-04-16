@@ -77,7 +77,13 @@
                 </div>
             </header>
 
-            <div id="user-meta">
+            <div id="user-meta" class="mob-only">
+                [% IF c.user_exists %]
+                <p>
+                    [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %] 
+                    <a href="/auth/sign_out">[% loc('sign out') %]</a>
+                </p>
+                [% END %]
             </div>
 
             <h1 class="main desk-only">Reporting a problem in Bromley&rsquo;s streets or parks</h1>
