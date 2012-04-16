@@ -104,16 +104,17 @@ $(function(){
             // Make map full screen on non-mobile sizes.
             $html.removeClass('mobile');
             if (cobrand == 'bromley') {
-                var $window = $(window), $content = $('.content'), o = $content.offset();
-                var map_height = $window.height() - o.top;
-                if ($html.hasClass('ie6')) {
-                    map_height = $window.height() - o.top + 32;
+                var bromley_right;
+                if ($html.hasClass('ie6') || $html.hasClass('ie7')) {
+                    bromley_right = '-32em';
+                } else {
+                    bromley_right = '0em';
                 }
-                $('#map_box').prependTo('.wrapper').css({
-                    zIndex: 0, position: 'absolute',
-                    right: 0, top: '1em',
-                    width: $window.width() - o.left - $content.outerWidth(),
-                    height: map_height,
+                // Do the same as CSS (in case resized from mobile).
+                $('#map_box').prependTo('.content').css({
+                    zIndex: 1, position: 'absolute',
+                    top: '1em', left: '', right: bromley_right, bottom: '',
+                    width: '29em', height: '29em',
                     margin: 0
                 });
             } else if ($html.hasClass('ie6')) {
@@ -134,8 +135,9 @@ $(function(){
             if (typeof fixmystreet !== 'undefined') {
                 if (cobrand == 'bromley') {
                     $('#bromley-footer').hide();
+                } else {
+                    fixmystreet.state_map = 'full';
                 }
-                fixmystreet.state_map = 'full';
             }
             if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
                 // Remove full-screen-ness
