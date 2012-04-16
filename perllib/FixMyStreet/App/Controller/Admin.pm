@@ -339,7 +339,10 @@ sub update_contacts : Private {
     } elsif ( $posted eq 'open311' ) {
         $c->forward('check_token');
 
-        my %params = map { $_ => $c->req->param($_) } qw/open311_id endpoint jurisdiction api_key area_id/;
+        my %params = map { $_ => $c->req->param($_) } qw/open311_id endpoint jurisdiction api_key area_id send_method username password/;
+
+        utf8::encode( $params{password});
+        $c->log->debug( 'passwrd is ' . $params{password} );
 
         if ( $params{open311_id} ) {
             my $conf = $c->model('DB::Open311Conf')->find( { id => $params{open311_id} } );
@@ -348,8 +351,10 @@ sub update_contacts : Private {
             $conf->jurisdiction( $params{jurisdiction} );
             $conf->api_key( $params{api_key} );
             $conf->send_method( $params{send_method} );
-            $conf->send_comments( $params{send_comments} );
+            $conf->send_comments( $params{send_comments} || 0 );
             $conf->comment_user_id( $params{comment_user_id} );
+            $conf->username( $params{username} );
+            $conf->password( $params{password} );
 
             $conf->update();
 
@@ -361,8 +366,10 @@ sub update_contacts : Private {
             $conf->jurisdiction( $params{jurisdiction} );
             $conf->api_key( $params{api_key} );
             $conf->send_method( $params{send_method} );
-            $conf->send_comments( $params{send_comments} );
+            $conf->send_comments( $params{send_comments} || 0 );
             $conf->comment_user_id( $params{comment_user_id} );
+            $conf->username( $params{username} );
+            $conf->password( $params{password} );
 
             $conf->insert();
 
