@@ -56,7 +56,7 @@
 
     [% IF c.cobrand.moniker != 'emptyhomes' %]
     <div class="general-sidebar-notes">
-        <p>[% loc( 'Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href="/faq#privacy">privacy policy</a>' ) %]</p>
+        <p>If you leave your name it will be public. Your information will only be used in accordance with our <a href="/faq#privacy">privacy policy</a></p>
     </div>
     [% END %]
 
@@ -199,7 +199,7 @@
     <input type="text" value="[% names.last || last_name | html %]" name="last_name" id="form_last_name" placeholder="[% loc('Your last name') %]">
 
     <div class="checkbox-group">
-        <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' UNLESS update.anonymous %]>
+        <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF update AND NOT update.anonymous %]>
         <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %]</label>
     </div>
     <div class="checkbox-group">
