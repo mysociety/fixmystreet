@@ -156,6 +156,7 @@ sub barnet_categories {
         'Highways'                  => 186,
         'Litter Bin Overflowing'    => 205,
         'Manhole Cover'             => 417,
+        'Overhanging Foliage'       => 421,
         'Pavement Damaged/Cracked'  => 195,
         'Pothole'                   => 204,
         'Road Sign'                 => 80,
