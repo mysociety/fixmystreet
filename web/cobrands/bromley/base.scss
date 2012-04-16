@@ -5,6 +5,13 @@
 
 @import "../fixmystreet/_base";
 
+a, a:visited {
+    color: #369;
+    &:hover, &:active {
+        color: #369;
+    }
+}
+
 h1.main {
     color: $primary;
     text-align: center;

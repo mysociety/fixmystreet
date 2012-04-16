@@ -5,6 +5,23 @@
 
 @import "compass";
 
+// Bits of Bromley's forms.css, adjusted
+input[type=text],
+input[type=password],
+input[type=email],
+input[type=file],
+textarea, 
+select { background: #fff; border: 1px solid #768b9a; border-color: #768b9a #d1dee8 #d1dee8 #768b9a; color: #333; font: 12px/18px Arial, 'Helvetica Neue', Helvetica, sans-serif; padding: 8px; width: 300px;
+@include border-radius(0); }
+
+.green-btn, button.green-btn, input.green-btn {
+    background: #5b7189 url("http://www.bromley.gov.uk/site/styles/css_img/button.gif") repeat-x 0 -1px; border: 1px solid #8e9eb0; color: #fff; font-family: 'Gill Sans', 'Trebuchet MS', Calibri, sans-serif; font-weight: normal; margin: 0; min-height: 23px; outline: 1px solid #405062; padding: 4px 8px; text-transform: uppercase; }
+.green-btn:hover, button.green-btn:hover, input.green-btn:hover { background: #5b7189; border: 1px solid #8e9eb0; }
+.form-txt-submit-box input[type=submit] {
+    padding-top: 0; padding-bottom: 0; width: auto;
+}
+
+
 h1, h2, h3, h4, h5, h6, legend { font-family: 'Gill Sans', 'Trebuchet MS', Calibri, sans-serif; }
 body { color: #333; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; line-height: 1.4; }
 
@@ -35,10 +52,10 @@ body { color: #333; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
 .main-menu li a:hover, .main-menu li a:active {background:url('http://www.bromley.gov.uk/site/styles/css_img/main-menu-hover.gif') repeat-x;}
 .main-menu li.home a:hover, .main-menu li.home a:active {background:url('http://www.bromley.gov.uk/site/styles/css_img/main-menu-hover-home.gif') repeat-x;}
 
-#search { float: right; padding: 10px 17px; width: 270px; }
-#search label {display:none;}
-#search input { background: #ececec; border: 1px solid #768b9a; border-color: #768b9a #d1dee8 #d1dee8 #768b9a; line-height: 9px; padding: 6px 5px 4px; width: 184px; }
-#search input.button { background: #fff; border: 1px solid #8596a8; color: #333; font-family: 'Gill Sans', 'Trebuchet MS', Calibri, sans-serif; font-size:133%; height: 27px; line-height: 27px; padding: 0; vertical-align: top; width: 70px; }
+//#search { float: right; padding: 10px 17px; width: 270px; }
+//#search label {display:none;}
+//#search input { background: #ececec; border: 1px solid #768b9a; border-color: #768b9a #d1dee8 #d1dee8 #768b9a; line-height: 9px; padding: 6px 5px 4px; width: 184px; }
+//#search input.button { background: #fff; border: 1px solid #8596a8; color: #333; font-family: 'Gill Sans', 'Trebuchet MS', Calibri, sans-serif; font-size:133%; height: 27px; line-height: 27px; padding: 0; vertical-align: top; width: 70px; }
 
 // #footer renamed to #bromley-footer, fixed font size.
 #bromley-footer { background: #666 url('http://www.bromley.gov.uk/site/styles/css_img/footer.gif') top center no-repeat; clear: both; width:100%; padding:30px 15px 50px; margin-left:-15px; color:#fff; font-size:92%;}
@@ -56,29 +73,31 @@ body { color: #333; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
     div { zoom: 1; }
     #bromley-wrapper { padding: 0; }
     #bromley-footer { margin: 0; }
-    #search input { padding: 8px 5px 2px; }
-    #search input.button { padding: 0; width: 68px; line-height: 24px; }
+    //#search input { padding: 8px 5px 2px; }
+    //#search input.button { padding: 0; width: 68px; line-height: 24px; }
     input.button { overflow: visible; width: 1%; }
 }
 .ie7 {
     div { zoom: 1; }
-    #search input { padding: 8px 5px 2px; }
-    #search input.button { padding: 0; width: 68px; line-height: 24px; }
+    //#search input { padding: 8px 5px 2px; }
+    //#search input.button { padding: 0; width: 68px; line-height: 24px; }
     input.button { overflow: visible; }
 }
 .ie8 {
-    #search input { padding: 8px 5px 2px; }
-    #search input.button { padding: 0; line-height: 24px; }
+    //#search input { padding: 8px 5px 2px; }
+    //#search input.button { padding: 0; line-height: 24px; }
 }
 
 // mySociety additions
 #bromley-header { font-size: 12px; }
 .header-nav ul { margin: 0; }
 .header-nav li { list-style-type: none; }
+// Width is actually 637, but that causes wrap-around, need to ask for fixes and corner image
+.main-menu { background: url('/cobrands/bromley/main-menu1.gif') no-repeat; width: 640px; }
 .main-menu ul { margin: 0; }
 .main-menu li { list-style-type: none; }
-#search input { display: inline; margin: 0; @include border-radius(0em); }
-#search input.button { font-weight: normal; text-transform: none; }
+//#search input { display: inline; margin: 0; @include border-radius(0em); }
+//#search input.button { font-weight: normal; text-transform: none; }
 #bromley-footer { padding-bottom: 60px; }
 #bromley-footer .footer-nav li { list-style-type: none; }
 #bromley-footer p { margin: 0; }
