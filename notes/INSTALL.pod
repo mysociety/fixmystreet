@@ -89,14 +89,14 @@ is in the location you want the web server vhost to be.
 =head2 Creating the database
 
 The default settings file assumes the database is called fms and the user the same. 
-You can change these if you like.
+You can change these if you like. Of course the database should be owned by the user.
 
 =head2 Set up the database
 
 Once you've created the database you can use the sql in C<db/schema.sql> to create the required
 tables, triggers and stored procedures. You will also need to run
 C<db/alert_types.sql> which
-populates the alert_types table.
+populates the alert_types table. You should ensure you run these as the user you've just created.
 
 =head2 Install Perl modules
 
