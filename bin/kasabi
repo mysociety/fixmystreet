@@ -47,7 +47,7 @@ def main():
     if len(sys.argv) > 1 and sys.argv[1].isdigit():
         cursor.execute("%s AND id=%%s" % query, (sys.argv[1],))
     else:
-        cursor.execute("%s AND lastupdate > %%s" % query, (max_lastUpdate,))
+        cursor.execute("%s AND lastupdate > %%s ORDER BY lastupdate" % query, (str(max_lastUpdate),))
 
     for report in cursor:
         changeset = FixMyStreetChangeSet(dataset)

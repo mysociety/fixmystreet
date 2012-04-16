@@ -36,13 +36,7 @@ MAILTO=cron-!!(*= $site *)!!@mysociety.org
 00 8 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/check-for-zombies !!(*= $user *)!!
 
 
-# Commented out as there was an error with the code
-# 
-#  File "/data/vhost/www.fixmystreet.com/fixmystreet/bin/kasabi", line 50, in main
-#    cursor.execute("%s AND lastupdate > %%s" % query, (max_lastUpdate,))
-# psycopg2.ProgrammingError: can't adapt type 'Literal'
-#
-# !!(* if ($vhost eq 'www.fixmystreet.com') { *)!!
-# 10 * * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/fixmystreet-virtualenv/bin/python /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/kasabi
-# !!(* } *)!!
+!!(* if ($vhost eq 'www.fixmystreet.com') { *)!!
+10 * * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/fixmystreet-virtualenv/bin/python /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/kasabi
+!!(* } *)!!
 
