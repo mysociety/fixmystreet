@@ -144,6 +144,10 @@ img {
   height:auto;
   max-width: 100%;
 }
+// So that map popups display correctly
+#popup img {
+    max-width: none;
+}
 
 select, input, textarea {
   font-size: 99%;

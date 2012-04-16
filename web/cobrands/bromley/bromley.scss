@@ -93,9 +93,10 @@ body { color: #333; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
 .header-nav ul { margin: 0; }
 .header-nav li { list-style-type: none; }
 // Width is actually 637, but that causes wrap-around, need to ask for fixes and corner image
-.main-menu { background: url('/cobrands/bromley/main-menu1.gif') no-repeat; width: 640px; }
+.main-menu { background: url('/cobrands/bromley/main-menu1.gif') no-repeat; width: 638px; }
 .main-menu ul { margin: 0; }
 .main-menu li { list-style-type: none; }
+.main-menu li.last { padding-right: 0; }
 //#search input { display: inline; margin: 0; @include border-radius(0em); }
 //#search input.button { font-weight: normal; text-transform: none; }
 #bromley-footer { padding-bottom: 60px; }
