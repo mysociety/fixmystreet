@@ -50,7 +50,7 @@
 <!-- googleoff:all -->
 							<ul>
 								<li><a href="/">FixMyStreet Home</a></li>
-								<li class="bc_end"><span>[% IF NOT title %]FixMyStreet[% ELSE %] [% "$title" | html %][% END %]</span></li>
+								<li class="bc_end"><span>[% c.req.uri.path == '/'? 'Report a problem' : "$title" | html  %]</span></li>
 							</ul>
 <!-- googleon:all -->
 						</div>
