@@ -198,14 +198,13 @@ h1 {
 // .content Is the white box
 
 // The narrow single column box
-.content{
+.content {
   width: 27em;
   margin-top: 3em;
-  background: #fff;
-  padding: 1em;
-  padding-bottom: 3em;
-  margin-left: 0.5em;
   margin-bottom: -1em;
+  margin-left: 0.5em;
+  padding: 1em 1em 3em;
+  background: #fff;
   @include box-shadow(0px 0px 6px 1px #000);
 }
 .ie6, .ie7, .ie8  {

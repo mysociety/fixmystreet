@@ -50,10 +50,9 @@ body.frontpage {
     display: none;
 }
 
-// White background, so no shadow needed.
+// White background, so no shadow or margin needed.
 .content {
-    margin-top: 0;
-    margin-bottom: 0;
+    margin: 0;
     @include box-shadow(none);
 }
 .ie6, .ie7, .ie8  {
@@ -66,6 +65,7 @@ body.frontpage {
 #map_box {
     border: solid 1px #999;
     top: 1em;
+    right: 0em;
     margin: 0;
 }
 
