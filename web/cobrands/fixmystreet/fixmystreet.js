@@ -230,10 +230,15 @@ $(function(){
     /*
      * Show stuff on input focus
      */
-    $('.form-focus-hidden').hide();
-    $('.form-focus-trigger').on('focus', function(){
-        $('.form-focus-hidden').fadeIn(500);
-    });
+    var form_focus_data = $('.form-focus-trigger').map(function() {
+        return $(this).val();
+    }).get().join('');
+    if (!form_focus_data) {
+        $('.form-focus-hidden').hide();
+        $('.form-focus-trigger').on('focus', function(){
+            $('.form-focus-hidden').fadeIn(500);
+        });
+    }
 
     /*
      * Show on click - pretty generic
