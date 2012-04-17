@@ -118,3 +118,14 @@ body.twothirdswidthpage {
     }
 }
 
+// So as not to interfere with the Bromley footer, make the fixed nav static.
+.shadow-wrap {
+  position: static;
+  padding-top: 0;
+  margin-bottom: 1em;
+  ul#key-tools {
+    border-top: none;
+    border-bottom: 1px solid $primary;
+  }
+}
+

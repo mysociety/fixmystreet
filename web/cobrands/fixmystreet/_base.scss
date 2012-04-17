@@ -540,7 +540,7 @@ p.label-valid {
           size:0.6875em;
           family: 'helvetica', 'arial', sans-serif;
         }
-        &:hover, &.hover, &.active {
+        &:hover, &.hover {
           text-decoration:none;
           background-color:#333;
           color:#fff;
@@ -557,7 +557,7 @@ p.label-valid {
           background-image:url('/cobrands/fixmystreet/images/sprite.png');
           background-position:center -2716px;
         }
-        &.hover, &.active {
+        &.hover {
           background-image:url('/cobrands/fixmystreet/images/sprite.png');
           background-position:center -2064px;
         }

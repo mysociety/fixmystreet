@@ -134,7 +134,7 @@ $(function(){
             }
             if (typeof fixmystreet !== 'undefined') {
                 if (cobrand == 'bromley') {
-                    $('#bromley-footer').hide();
+                    //$('#bromley-footer').hide();
                 } else {
                     fixmystreet.state_map = 'full';
                 }
@@ -348,12 +348,12 @@ $.fn.drawer = function(id, ajax) {
     });
 };
 
-    if ($('html.mobile').length) {
+    if ($('html.mobile').length || cobrand == 'bromley') {
         $('#council_wards').hide().removeClass('hidden-js').find('h2').hide();
         $('#key-tool-wards').click(function(e){
             e.preventDefault();
             $('#council_wards').slideToggle('800', function(){
-              $('#key-tool-wards').toggleClass('active');
+              $('#key-tool-wards').toggleClass('hover');
             });
         });
     } else {
