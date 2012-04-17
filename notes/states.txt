@@ -8,7 +8,7 @@ closed
 
 When a problem is created it will be unconfirmed, The problem
 becomes confirmed when the user clicks on the link sent to them in
-the confirmation email. At this point the problem is confirmed.
+the confirmation email. 
 
 If a problem is uploaded from a mobile app then it is initally 
 created with a state of partial.
