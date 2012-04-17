@@ -17,7 +17,7 @@ If a user is logged in then any problem they create is confirmed
 automatically.
 
 If a council user is logged in then they can change the state of the 
-problem to one of the following provifing they are from the council that
+problem to one of the following, providing they are from the council that
 the problem has been reported to:
     Open ( a synonym for confirmed )
     Investigating
