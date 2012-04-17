@@ -2,7 +2,7 @@ Problems exist in four broad state categories:
     unconfirmed - the report has been made but the user hasn't clicked
 the confirmation link.
     open - the report has been confirmed
-    fixed - exactly what it says
+    fixed - any user has marked this problem as fixed
     closed - a registered user from a council has marked the problem as
 closed
 
