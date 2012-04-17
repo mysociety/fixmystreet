@@ -7,10 +7,10 @@
 						<div class="navigation active">
 							<h2><a href="/">FixMyStreet</a></h2>
               <ul>
-                  <li class="section">[% c.req.uri.path == '/'               ? '<strong>Report a problem</strong>' : '<a href="/">Report a problem</a>'           %]</li>
-                  <li class="section">[% c.req.uri.path == '/reports/Barnet' ? '<strong>All reports</strong>'      : '<a href="/reports/Barnet">All reports</a>'  %]</li>
-                  <li class="section">[% c.req.uri.path == '/alert'          ? '<strong>Local alerts</strong>'     : '<a href="/alert">Local alerts</a>'          %]</li>
-                  <li class="section">[% c.req.uri.path == '/faq'            ? '<strong>Help</strong>'             : '<a href="/faq">Help</a>'                    %]</li>
+                  <li>[% c.req.uri.path == '/'               ? '<strong>Report a problem</strong>' : '<a href="/">Report a problem</a>'           %]</li>
+                  <li>[% c.req.uri.path == '/reports/Barnet' ? '<strong>All reports</strong>'      : '<a href="/reports/Barnet">All reports</a>'  %]</li>
+                  <li>[% c.req.uri.path == '/alert'          ? '<strong>Local alerts</strong>'     : '<a href="/alert">Local alerts</a>'          %]</li>
+                  <li class="lastItem">[% c.req.uri.path == '/faq'            ? '<strong>Help</strong>'             : '<a href="/faq">Help</a>'                    %]</li>
               </ul>
 						</div>
 						<div class="clear"></div>
