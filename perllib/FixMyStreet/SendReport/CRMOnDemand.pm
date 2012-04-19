@@ -6,6 +6,7 @@ BEGIN { extends 'FixMyStreet::SendReport'; }
 
 use SOAP::Lite;
 use WebService::CRMOnDemand;
+use WebService::CRMOnDemandContact;
 
 sub construct_message {
     my $self    = shift;
@@ -60,8 +61,77 @@ sub send {
         );
         $sr->{endpoint} = $conf->endpoint;
 
+        my $contact = WebService::CRMOnDemandContact->on_fault(
+            sub {
+                my ( $soap, $res ) = @_;
+                die ref $res
+                  ? 'faultstring: ' . $res->faultstring . ', faultcode: ' . $res->faultcode
+                  : 'transport status: ' . $soap->transport->status, "\n";
+            }
+        );
+        $contact->{endpoint} = $conf->endpoint;
+
         eval {
-            my $data = SOAP::Data->name(
+            my $q_data = SOAP::Data->name(
+                "ListOfContact" => \SOAP::Data->value(
+                    SOAP::Data->name(
+                        'Contact' => \SOAP::Data->value(
+                            SOAP::Data->name(
+                                'ContactEmail' => sprintf( "='%s'", $h->{email} )
+                            ),
+                            SOAP::Data->name( 'Id' => '' ),
+                        )
+                    )
+                  )->type('xsdLocal1:ContactQueryPage')
+            );
+
+            my $q_res = $contact->ContactQueryPage_Input(
+                $q_data,
+                $security->value( \$userToken ),
+            );
+
+            my $contact_id;
+            if ( $q_res && $q_res->{Contact} ) {
+                if ( ref( $q_res->{Contact} ) eq 'ARRAY' ) {
+                    my @contacts = @{ $q_res->{Contact} };
+                    print " multiple contacts found \n ";
+                }
+                else {
+                    $contact_id = $q_res->{Contact}->{Id};
+                }
+            }
+            else {
+                my ( $firstname, $lastname ) = $h->{name} =~ /^(\S*)(?: (.*))?$/;
+
+                my $insert_data = SOAP::Data->name(
+                    "ListOfContact" => \SOAP::Data->value(
+                        SOAP::Data->name(
+                            'Contact' => \SOAP::Data->value(
+                                SOAP::Data->name(
+                                    'ContactFirstName' => $firstname
+                                ),
+                                SOAP::Data->name(
+                                    'ContactLastName' => $lastname
+                                ),
+                                SOAP::Data->name(
+                                    'ContactEmail' => $h->{email}
+                                ),
+                            )
+                        )
+                      )->type('xsdLocal1:ContactInsert')
+                );
+
+                my $insert_res = $contact->ContactInsert_Input(
+                    $insert_data,
+                    $security->value( \$userToken ),
+                );
+
+                $contact_id = $insert_res->{Contact}->{Id};
+            }
+
+            die "No contact found or created for CRMOnDemand for $h->{id}" unless $contact_id;
+
+            my $sr_data = SOAP::Data->name(
                 "ListOfServiceRequest" => \SOAP::Data->value(
                     SOAP::Data->name(
                         'ServiceRequest' => \SOAP::Data->value(
@@ -73,15 +143,26 @@ sub send {
                             SOAP::Data->name(
                                 'Description' => $self->construct_message(%$h)
                             ),
+                            SOAP::Data->name( 'ContactId' => $contact_id ),
                         )
                     )
                   )->type('xsdLocal1:ListOfServiceRequestData')
             );
 
-            my $res =
-              $sr->ServiceRequestInsert_Input( $data,
-                $security->value( \$userToken ),
-              );
+            my $sr_res = $sr->ServiceRequestInsert_Input(
+                $sr_data, $security->value( \$userToken )
+            );
+
+            my $id = $sr_res->{ServiceRequest}->{Id};
+
+            if ( !$id ) {
+                print "Failed to get external id for $h->{id} using WebService::CrmOnDemand";
+                $return *= 1;
+                next;
+            }
+
+            $row->external_id( $id );
+            $row->update;
 
             $return *= 0;
         };
