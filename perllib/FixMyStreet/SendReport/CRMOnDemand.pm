@@ -11,7 +11,14 @@ use WebService::CRMOnDemandContact;
 sub construct_message {
     my $self    = shift;
     my %h       = @_;
-    my $message = $h{details};
+    my $message = <<EOF;
+$h{details}
+
+$h{fuzzy}, or to provide an update on the problem, please visit the
+following link:
+
+$h{url}
+EOF
 
     return $message;
 }
