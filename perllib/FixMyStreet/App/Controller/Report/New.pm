@@ -533,6 +533,12 @@ sub setup_categories_and_councils : Private {
     my $category_label   = undef;    # what to call them
     my %category_extras  = ();       # extra fields to fill in for open311
 
+    my $conf = $c->model('DB::Open311Conf')->search( { area_id => $first_council->{id} } )->first;
+    my $delivery_method;
+    if ( $conf ) {
+        $delivery_method = $conf->send_method;
+    }
+
     # FIXME - implement in cobrand
     if ( $c->cobrand->moniker eq 'emptyhomes' ) {
 
@@ -553,7 +559,7 @@ sub setup_categories_and_councils : Private {
         );
         $category_label = _('Property type:');
 
-    } elsif ($first_council->{id} != 2482 && $first_council->{type} eq 'LBO') {
+    } elsif (!$delivery_method && $first_council->{type} eq 'LBO') {
 
         $area_ids_to_list{ $first_council->{id} } = 1;
         @category_options = (
