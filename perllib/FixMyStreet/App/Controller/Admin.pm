@@ -512,17 +512,31 @@ sub search_reports : Path('search_reports') {
         $c->stash->{edit_council_contacts} = 1
             if ( grep {$_ eq 'councilcontacts'} keys %{$c->stash->{allowed_pages}});
 
+        if (is_valid_email($search)) {
+            $query = [
+                'user.email' => { ilike => $like_search },
+                %{ $site_restriction },
+            ];
+        } elsif ($search =~ /^id:(\d+)$/) {
+            $query = [
+                'me.id' => int($1),
+                'problem.id' => int($1),
+                %{ $site_restriction },
+            ];
+        } else {
+            $query = [
+                'me.id' => $search_n,
+                'problem.id' => $search_n,
+                'user.email' => { ilike => $like_search },
+                'me.name' => { ilike => $like_search },
+                text => { ilike => $like_search },
+                'me.cobrand_data' => { ilike => $like_search },
+                %{ $site_restriction },
+            ];
+        }
         my $updates = $c->model('DB::Comment')->search(
             {
-                -or => [
-                    'me.id' => $search_n,
-                    'problem.id' => $search_n,
-                    'user.email' => { ilike => $like_search },
-                    'me.name' => { ilike => $like_search },
-                    text => { ilike => $like_search },
-                    'me.cobrand_data' => { ilike => $like_search },
-                    %{ $site_restriction },
-                ]
+                -or => $query,
             },
             {
                 -select   => [ 'me.*', qw/problem.council problem.state/ ],
