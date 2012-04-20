@@ -752,7 +752,7 @@ sub process_report : Private {
         $councils = join( ',', @{ $c->stash->{area_ids_to_list} } ) || -1;
         $report->council( $councils );
 
-    } elsif ( $first_council->{id} != 2482 && $first_council->{type} eq 'LBO') {
+    } elsif ( !$c->stash->{delivery_method} && $first_council->{type} eq 'LBO') {
 
         unless ( Utils::london_categories()->{ $report->category } ) {
             $c->stash->{field_errors}->{category} = _('Please choose a category');
