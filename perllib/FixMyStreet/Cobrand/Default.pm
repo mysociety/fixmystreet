@@ -134,7 +134,7 @@ Parameter is QUERY
 
 =cut
 
-sub enter_postcode_text { '' }
+sub enter_postcode_text { _('Enter a nearby street name and area') }
 
 =head2 set_lang_and_domain
 

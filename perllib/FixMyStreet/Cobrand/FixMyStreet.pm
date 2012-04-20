@@ -6,6 +6,11 @@ sub restriction {
     return {};
 }
 
+sub enter_postcode_text {
+    my ( $self ) = @_;
+    return _("Enter a nearby GB postcode, or street name and area");
+}
+
 sub generate_problem_banner {
     my ( $self, $problem ) = @_;
 

@@ -30,9 +30,7 @@ Modernizr.load({
         <h2>[% loc('(like graffiti, fly tipping, broken paving slabs, or street lighting)') %]</h2>
 
         [%
-            question
-                =  c.cobrand.enter_postcode_text()
-                || loc("Enter a nearby GB postcode, or street name and area");
+            question =  c.cobrand.enter_postcode_text();
         %]
 
         <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
