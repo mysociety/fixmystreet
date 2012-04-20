@@ -6,6 +6,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 use POSIX qw(strftime strcoll);
 use Digest::MD5 qw(md5_hex);
+use mySociety::EmailUtil qw(is_valid_email);
 
 =head1 NAME
 
@@ -473,17 +474,29 @@ sub search_reports : Path('search_reports') {
         $c->model('DB')->schema->storage->sql_maker->quote_char( '"' );
         $c->model('DB')->schema->storage->sql_maker->name_sep( '.' );
 
+        my $query;
+        if (is_valid_email($search)) {
+            $query = [
+                'user.email' => { ilike => $like_search },
+            ];
+        } elsif ($search =~ /^id:(\d+)$/) {
+            $query = [
+                'me.id' => int($1),
+            ];
+        } else {
+            $query = [
+                'me.id' => $search_n,
+                'user.email' => { ilike => $like_search },
+                'me.name' => { ilike => $like_search },
+                title => { ilike => $like_search },
+                detail => { ilike => $like_search },
+                council => { like => $like_search },
+                cobrand_data => { like => $like_search },
+            ];
+        }
         my $problems = $c->cobrand->problems->search(
             {
-                -or => [
-                    'me.id' => $search_n,
-                    'user.email' => { ilike => $like_search },
-                    'me.name' => { ilike => $like_search },
-                    title => { ilike => $like_search },
-                    detail => { ilike => $like_search },
-                    council => { like => $like_search },
-                    cobrand_data => { like => $like_search },
-                ]
+                -or => $query,
             },
             {
                 prefetch => 'user',
