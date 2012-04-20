@@ -1,0 +1,93 @@
+[% INCLUDE 'header.html', title => '' %]
+
+[% IF error %]
+    <p class="error">[% error %]</p>
+[% END %]
+<p id="expl">        
+    [% 
+        subhead
+            = c.cobrand.moniker == 'southampton'
+            ? '(like graffiti, fly tipping, or broken paving slabs)'
+            : loc('(like graffiti, fly tipping, broken paving slabs, or street lighting)');
+    %]
+    
+    <strong>[% loc('Report, view, or discuss local problems') %]</strong>
+    
+    [% IF subhead != ' ' %]
+        <small>[% subhead %]</small>
+    [% END %]
+</p>
+
+[% TRY %][% INCLUDE 'front/news.html' %][% CATCH file %][% END %]
+
+[%
+    question
+        =  c.cobrand.enter_postcode_text()
+        || loc("Enter a nearby GB postcode, or street name and area");
+%]
+
+<form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
+    <label for="pc">[% question %]:</label>
+    <span><input type="text" name="pc" value="" id="pc" size="10" maxlength="200">
+    <input type="submit" value="[% loc('Go') %]" id="submit">
+    </span>
+</form>
+
+<div id="front_intro">
+
+    <h2>[% loc('How to report a problem') %]</h2>
+    
+    <ol>
+        <li>[% question %]</li>
+        <li>[% loc('Locate the problem on a map of the area') %]</li>
+        <li>[% loc('Enter details of the problem') %]</li>
+        <li>[% loc('We send it to the council on your behalf') %]</li>
+    </ol>
+    
+    [% INCLUDE "front/stats.html" %]
+    [% TRY %][% INCLUDE "front/tips.html" %][% CATCH file %][% END %]
+
+</div>
+
+[% 
+    recent_photos = c.cobrand.recent_photos(3);
+    probs         = c.cobrand.recent();
+%]
+
+<!-- =============================================================================== -->
+[% IF c.user AND c.user.belongs_to_council %] 
+  <p>user</p>
+[% ELSE %] 
+  <p>read-only user</p> 
+[% END %]
+</div>
+<!-- =============================================================================== -->
+
+[% IF probs.size || recent_photos.size %]
+<div id="front_recent">
+    <h2>[% loc('Recently reported problems') %]</h2>
+    [% IF recent_photos.size %]
+        <p id="front_photos">
+        [% FOREACH p IN recent_photos %]
+            <a href="/report/[% p.id %]"><img border="0" height="100"
+                src="/photo/[% p.id %].tn.jpeg" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
+        [% END %]
+        </p>
+    [% END %]
+
+    [% IF probs.size %]
+
+    
+        <ul id="nearby_lists">
+        [% FOREACH p IN probs %]
+            <li>
+                <a href="/report/[% p.id %]">[% p.title | html %]</a>
+                <small>[% prettify_epoch( p.confirmed_local.epoch, 1 ) %]</small>
+            </li>    
+        [% END %]
+        </ul>
+    [% END %]
+</div>
+[% END %]
+
+[% INCLUDE 'footer.html' %]
