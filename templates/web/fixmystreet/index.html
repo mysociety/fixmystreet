@@ -27,9 +27,7 @@ Modernizr.load({
         [% END %]
 
         [%
-            question
-                =  c.cobrand.enter_postcode_text()
-                || loc("Enter a nearby GB postcode, or street name and area");
+            question =  c.cobrand.enter_postcode_text();
         %]
 
         <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">

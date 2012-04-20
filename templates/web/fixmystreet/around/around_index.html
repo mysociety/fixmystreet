@@ -1,9 +1,7 @@
 [% pre_container_extra = BLOCK %]
 <div id="front-main"><div id="front-main-container">
 [%
-    question
-        =  c.cobrand.enter_postcode_text()
-        || loc("Enter a nearby GB postcode, or street name and area");
+    question =  c.cobrand.enter_postcode_text();
 %]
 <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
     <label for="pc">[% question %]:</label>

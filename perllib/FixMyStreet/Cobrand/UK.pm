@@ -8,6 +8,11 @@ sub area_types          { return qw(DIS LBO MTD UTA CTY COI); }
 sub area_types_children { return @$mySociety::VotingArea::council_child_types }
 sub area_min_generation { 10 }
 
+sub enter_postcode_text {
+    my ( $self ) = @_;
+    return _("Enter a nearby GB postcode, or street name and area");
+}
+
 sub disambiguate_location {
     return {
         country => 'gb',
