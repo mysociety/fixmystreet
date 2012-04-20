@@ -920,5 +920,15 @@ sub example_places {
     return [ 'B2 4QA', 'Tib St, Manchester' ];
 }
 
+=head2 only_authed_can_create
+
+If true, only users with the from_council flag set are able to create reports.
+
+=cut
+
+sub only_authed_can_create {
+    return 0;
+}
+
 1;
 

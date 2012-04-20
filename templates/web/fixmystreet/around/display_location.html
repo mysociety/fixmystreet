@@ -69,6 +69,7 @@
 
     <div id="side">
 
+        [% IF NOT c.cobrand.only_authed_can_create OR (c.user AND c.user.belongs_to_council) %]
         <h1 class="big-green-banner">[% loc( 'Click map to report a problem' ) %]</h1>
 
         <p id="skip-this-step">
@@ -79,6 +80,7 @@
                 )
             %]
         </p>
+        [% END %]
 
         <div class="shadow-wrap">
             <ul id="key-tools" class="singleton">
@@ -104,6 +106,7 @@
         </section>
     </div>
 
+    [% IF NOT c.cobrand.only_authed_can_create OR (c.user AND c.user.belongs_to_council) %]
     <div style="display:none" id="side-form">
     [% INCLUDE "report/new/fill_in_details_form.html"
         js = 1,
@@ -111,6 +114,8 @@
         report.name = c.user.name
     %]
     </div>
+    [% END %]
+
 </form>
 
 [% INCLUDE 'footer.html' %]

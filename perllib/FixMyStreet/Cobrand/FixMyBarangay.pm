@@ -28,5 +28,9 @@ sub site_title {
     return 'FixMyBarangay';
 }
 
+sub only_authed_can_create {
+    return 1;
+}
+
 1;
 
