@@ -37,6 +37,7 @@ there are no councils then return false.
 
 sub load_and_check_councils : Private {
     my ( $self, $c ) = @_;
+
     my $latitude  = $c->stash->{latitude};
     my $longitude = $c->stash->{longitude};
 

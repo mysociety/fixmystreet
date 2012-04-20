@@ -131,8 +131,7 @@ for my $test (
             message => '',
         },
         page_errors =>
-          [ 'There were problems with your report. Please see below.', ],
-        field_errors => [
+          [ 'There were problems with your report. Please see below.',
             'Please enter your name',
             'Please enter your email',
             'Please enter a subject',
@@ -147,8 +146,7 @@ for my $test (
             message => '',
         },
         page_errors =>
-          [ 'There were problems with your report. Please see below.', ],
-        field_errors => [
+          [ 'There were problems with your report. Please see below.',
             'Please enter your name',
             'Please enter a valid email address',
             'Please enter a subject',
@@ -162,9 +160,10 @@ for my $test (
             subject => '',
             message => '',
         },
-        page_errors =>
-          [ 'There were problems with your report. Please see below.', ],
-        field_errors => [ 'Please enter a subject', 'Please write a message', ]
+        page_errors => [
+            'There were problems with your report. Please see below.',
+            'Please enter a subject', 'Please write a message',
+        ]
     },
     {
         fields => {
@@ -173,9 +172,10 @@ for my $test (
             subject => 'A subject',
             message => '',
         },
-        page_errors =>
-          [ 'There were problems with your report. Please see below.', ],
-        field_errors => [ 'Please write a message', ]
+        page_errors => [
+            'There were problems with your report. Please see below.',
+            'Please write a message',
+        ]
     },
     {
         fields => {
@@ -184,9 +184,11 @@ for my $test (
             subject => '  ',
             message => '',
         },
-        page_errors =>
-          [ 'There were problems with your report. Please see below.', ],
-        field_errors => [ 'Please enter a subject', 'Please write a message', ]
+        page_errors => [
+            'There were problems with your report. Please see below.',
+            'Please enter a subject',
+            'Please write a message',
+        ]
     },
     {
         fields => {
@@ -195,9 +197,10 @@ for my $test (
             subject => 'A subject',
             message => ' ',
         },
-        page_errors =>
-          [ 'There were problems with your report. Please see below.', ],
-        field_errors => [ 'Please write a message', ]
+        page_errors => [
+            'There were problems with your report. Please see below.',
+            'Please write a message',
+        ]
     },
     {
         url    => '/contact?id=' . $problem_main->id,
@@ -209,7 +212,6 @@ for my $test (
             id      => 'invalid',
         },
         page_errors  => [ 'Illegal ID' ],
-        field_errors => []
     },
   )
 {
@@ -217,7 +219,6 @@ for my $test (
         $mech->get_ok( $test->{url} ? $test->{url} : '/contact' );
         $mech->submit_form_ok( { with_fields => $test->{fields} } );
         is_deeply $mech->page_errors, $test->{page_errors}, 'page errors';
-        is_deeply $mech->form_errors, $test->{field_errors}, 'field_errors';
 
         # we santise this when we submit so need to remove it
         delete $test->{fields}->{id}

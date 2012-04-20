@@ -209,7 +209,7 @@ for my $test (
         ),
         state => 'confirmed',
         banner_id => 'unknown',
-        banner_text => 'This problem is old and of unknown status.',
+        banner_text => 'unknown',
         fixed => 0
     },
     {
@@ -224,7 +224,7 @@ for my $test (
         ),
         state => 'fixed',
         banner_id => 'fixed',
-        banner_text => 'This problem has been fixed.',
+        banner_text => 'fixed',
         fixed => 1
     },
     {
@@ -232,7 +232,7 @@ for my $test (
         date => DateTime->now,
         state => 'fixed',
         banner_id => 'fixed',
-        banner_text => 'This problem has been fixed.',
+        banner_text => 'fixed',
         fixed => 1
     },
     {
@@ -240,7 +240,7 @@ for my $test (
         date => DateTime->now,
         state => 'fixed - user',
         banner_id => 'fixed',
-        banner_text => 'This problem has been fixed.',
+        banner_text => 'fixed',
         fixed => 1
     },
     {
@@ -248,7 +248,7 @@ for my $test (
         date => DateTime->now,
         state => 'fixed - council',
         banner_id => 'fixed',
-        banner_text => 'This problem has been fixed.',
+        banner_text => 'fixed',
         fixed => 1
     },
     {
@@ -256,7 +256,7 @@ for my $test (
         date => DateTime->now,
         state => 'closed',
         banner_id => 'closed',
-        banner_text => 'This problem has been closed.',
+        banner_text => 'closed',
         fixed => 0
     },
     {
@@ -264,7 +264,7 @@ for my $test (
         date => DateTime->now,
         state => 'investigating',
         banner_id => 'progress',
-        banner_text => 'This problem is in progress.',
+        banner_text => 'progress',
         fixed => 0
     },
     {
@@ -272,7 +272,7 @@ for my $test (
         date => DateTime->now,
         state => 'planned',
         banner_id => 'progress',
-        banner_text => 'This problem is in progress.',
+        banner_text => 'progress',
         fixed => 0
     },
     {
@@ -280,7 +280,7 @@ for my $test (
         date => DateTime->now,
         state => 'in progress',
         banner_id => 'progress',
-        banner_text => 'This problem is in progress.',
+        banner_text => 'progress',
         fixed => 0
     },
 ) {
@@ -299,7 +299,11 @@ for my $test (
         }
 
         is $banner->{id}, $test->{banner_id}, 'banner id';
-        is $banner->{text}, $test->{banner_text}, 'banner text';
+        if ($test->{banner_text}) {
+            ok $banner->{text} =~ /$test->{banner_text}/i, 'banner text';
+        } else {
+            is $banner->{text}, $test->{banner_text}, 'banner text';
+        }
 
         my $update_form = $mech->form_name( 'updateForm' );
         if ( $test->{fixed} ) {

@@ -33,7 +33,7 @@ for my $test (
     my ( $email, $error_message ) = @$test;
     pass "--- testing bad email '$email' gives error '$error_message'";
     $mech->get_ok('/auth');
-    is_deeply $mech->form_errors, [], 'no errors initially';
+    is_deeply $mech->page_errors, [], 'no errors initially';
     $mech->submit_form_ok(
         {
             form_name => 'general_auth',
@@ -43,7 +43,7 @@ for my $test (
         "try to create an account with email '$email'"
     );
     is $mech->uri->path, '/auth', "still on auth page";
-    is_deeply $mech->form_errors, [ $error_message ], 'no errors initially';
+    is_deeply $mech->page_errors, [ $error_message ], 'no errors initially';
 }
 
 # create a new account

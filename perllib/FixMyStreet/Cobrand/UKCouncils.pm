@@ -7,6 +7,9 @@ use warnings;
 use Carp;
 use URI::Escape;
 
+sub area_types          { return qw(DIS LBO MTD UTA CTY COI); }
+sub area_min_generation { 10 }
+
 sub is_council {
     1;
 }

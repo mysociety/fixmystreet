@@ -43,6 +43,7 @@ sub index : Path : Args(0) {
         $c->stash->{message} = _("Unable to look up areas in MaPit. Please try again later.") . ' ' .
             sprintf(_('The error was: %s'), $@);
         $c->stash->{template} = 'errors/generic.html';
+        return;
     }
 
     # For each area, add its link and perhaps alter its name if we need to for
@@ -70,6 +71,7 @@ sub index : Path : Args(0) {
         $c->stash->{message} = _("There was a problem showing the All Reports page. Please try again later.") . ' ' .
             sprintf(_('The error was: %s'), $@);
         $c->stash->{template} = 'errors/generic.html';
+        return;
     }
 
     # Down here so that error pages aren't cached.
@@ -126,7 +128,7 @@ sub ward : Path : Args(2) {
 
     # List of wards
     unless ($c->stash->{ward}) {
-        my $children = mySociety::MaPit::call('area/children', $c->stash->{council}->{id},
+        my $children = mySociety::MaPit::call('area/children', [ $c->stash->{council}->{id} ],
             type => $mySociety::VotingArea::council_child_types,
         );
         foreach (values %$children) {

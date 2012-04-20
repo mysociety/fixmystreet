@@ -211,26 +211,6 @@ sub get_email {
     return $emails[0];
 }
 
-=head2 form_errors
-
-    my $arrayref = $mech->form_errors;
-
-Find all the form errors on the current page and return them in page order as an
-arrayref of TEXTs. If none found return empty arrayref.
-
-=cut
-
-sub form_errors {
-    my $mech   = shift;
-    my $result = scraper {
-        process 'div.form-error', 'errors[]', 'TEXT';
-        process 'p.form-error', 'errors[]', 'TEXT';
-        process 'p.error', 'errors[]', 'TEXT';
-    }
-    ->scrape( $mech->response );
-    return $result->{errors} || [];
-}
-
 =head2 page_errors
 
     my $arrayref = $mech->page_errors;
@@ -243,8 +223,7 @@ arrayref of TEXTs. If none found return empty arrayref.
 sub page_errors {
     my $mech   = shift;
     my $result = scraper {
-        process 'p.error',  'errors[]', 'TEXT';
-        process 'ul.error li', 'errors[]', 'TEXT';
+        process 'div.form-error, p.form-error, p.error, ul.error li', 'errors[]', 'TEXT';
     }
     ->scrape( $mech->response );
     return $result->{errors} || [];
@@ -327,6 +306,7 @@ sub extract_problem_meta {
 
     my $result = scraper {
         process 'div#side p em', 'meta', 'TEXT';
+        process '.problem-header p em', 'meta', 'TEXT';
     }
     ->scrape( $mech->response );
 
@@ -348,6 +328,7 @@ sub extract_problem_title {
 
     my $result = scraper {
         process 'div#side h1', 'title', 'TEXT';
+        process '.problem-header h1', 'title', 'TEXT';
     }
     ->scrape( $mech->response );
 
@@ -388,6 +369,7 @@ sub extract_update_metas {
 
     my $result = scraper {
         process 'div#updates div.problem-update p em', 'meta[]', 'TEXT';
+        process '.update-text .meta-2', 'meta[]', 'TEXT';
     }
     ->scrape( $mech->response );
 

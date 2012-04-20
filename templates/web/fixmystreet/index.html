@@ -45,6 +45,10 @@ Modernizr.load({
 
 [% INCLUDE 'header.html', title = '', bodyclass = 'frontpage fullwidthpage' %]
 
+[% IF error %]
+    <p class="form-error">[% error %]</p>
+[% END %]
+
 [% IF c.cobrand.moniker == 'bromley' %]
 <p>This is primarily for reporting physical problems that can be fixed
 like graffiti, cleansing issues or road defects. To report other

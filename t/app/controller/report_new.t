@@ -374,7 +374,7 @@ foreach my $test (
         # submit initial pc form
         $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
             "submit location" );
-        is_deeply $mech->form_errors, [], "no errors for pc '$test->{pc}'";
+        is_deeply $mech->page_errors, [], "no errors for pc '$test->{pc}'";
 
         # click through to the report page
         $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
@@ -385,7 +385,7 @@ foreach my $test (
             "submit form" );
 
         # check that we got the errors expected
-        is_deeply $mech->form_errors, $test->{errors}, "check errors";
+        is_deeply $mech->page_errors, $test->{errors}, "check errors";
 
         # check that fields have changed as expected
         my $new_values = {
@@ -466,7 +466,7 @@ foreach my $test (
     );
 
     # check that we got the errors expected
-    is_deeply $mech->form_errors, [], "check there were no errors";
+    is_deeply $mech->page_errors, [], "check there were no errors";
 
     # check that the user has been created/ not changed
     my $user =
@@ -576,7 +576,7 @@ subtest "test password errors for a user who is signing in as they report" => su
     );
 
     # check that we got the errors expected
-    is_deeply $mech->form_errors, [
+    is_deeply $mech->page_errors, [
         "There was a problem with your email/password combination. If you cannot remember your password, or do not have one, please fill in the \x{2018}sign in by email\x{2019} section of the form.",
     ], "check there were errors";
 };
@@ -623,7 +623,7 @@ subtest "test report creation for a user who is signing in as they report" => su
     );
 
     # check that we got the errors expected
-    is_deeply $mech->form_errors, [
+    is_deeply $mech->page_errors, [
         'You have successfully signed in; please check and confirm your details are accurate:',
     ], "check there were errors";
 
@@ -801,7 +801,7 @@ subtest "check that a lat/lon off coast leads to /around" => sub {
     is $mech->uri->path, '/around', "redirected to '/around'";
 
     is_deeply         #
-      $mech->form_errors,
+      $mech->page_errors,
       [     'That spot does not appear to be covered by a council. If you have'
           . ' tried to report an issue past the shoreline, for example, please'
           . ' specify the closest point on land.' ],    #
