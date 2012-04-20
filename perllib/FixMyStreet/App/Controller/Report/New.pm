@@ -537,6 +537,7 @@ sub setup_categories_and_councils : Private {
     my $delivery_method;
     if ( $conf ) {
         $delivery_method = $conf->send_method;
+	$c->stash->{delivery_method} = $delivery_method;
     }
 
     # FIXME - implement in cobrand
