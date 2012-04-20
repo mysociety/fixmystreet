@@ -67,6 +67,7 @@ ExpiresByType text/css "access plus 10 years"
 ExpiresByType application/javascript "access plus 10 years"
 <Location /js/>
     AddOutputFilter DEFLATE js
+    Header append Cache-Control "no-transform"
 </Location>
 
 # Don't want jslib being passed to Catalyst
