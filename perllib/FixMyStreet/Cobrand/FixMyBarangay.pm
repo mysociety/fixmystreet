@@ -12,7 +12,7 @@ sub council_url { return 'fmb'; }
 sub disambiguate_location {
     return {
         country => 'ph',
-        bing_culture => 'ph',
+        bing_culture => 'en',
         bing_country => 'The Philippines'
     };
 }
