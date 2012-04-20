@@ -13,6 +13,11 @@ following command from inside the fixmystreet directory:
 
     git submodule update --init
 
+If you're using git version 1.6.5 or later, you can do those steps in
+one go with:
+
+    git clone --recursive https://github.com/mysociety/fixmystreet.git
+
 =head1 REQUIREMENTS
 
 On the server you are installing FixMyStreet on you will need the following things:
