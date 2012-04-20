@@ -34,8 +34,11 @@
         rss    => [ loc('Recent local problems, FixMyStreet'), rss_url ],
         bodyclass => 'mappage',
         robots => 'noindex,nofollow';
+
+    allow_creation = !c.cobrand.only_authed_can_create || (c.user && c.user.belongs_to_council);
 %]
 
+[% IF allow_creation %]
 <form action="[% c.uri_for('/report/new') %]" method="post" name="mapForm" id="mapForm" enctype="multipart/form-data" class="validate">
     [% IF c.req.params.map_override %]
         <input type="hidden" name="map_override" value="[% c.req.params.map_override | html %]">
@@ -44,6 +47,7 @@
 
     <input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% short_latitude | html %]">
     <input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% short_longitude | html %]">
+[% END %]
 
     [% map_html %]
 
@@ -69,7 +73,7 @@
 
     <div id="side">
 
-        [% IF NOT c.cobrand.only_authed_can_create OR (c.user AND c.user.belongs_to_council) %]
+        [% IF allow_creation %]
         <h1 class="big-green-banner">[% loc( 'Click map to report a problem' ) %]</h1>
 
         <p id="skip-this-step">
@@ -89,6 +93,7 @@
         </div>
 
         <section class="full-width">
+            [%# TODO For Cebu, factor this bit out to a new template, for message manager tab %]
             <menu id="problems-nav" class="tab-nav">
                 <ul>
                     <li><a href="#current">[% loc('Problems on the map') %]</a></li>
@@ -106,7 +111,7 @@
         </section>
     </div>
 
-    [% IF NOT c.cobrand.only_authed_can_create OR (c.user AND c.user.belongs_to_council) %]
+    [% IF allow_creation %]
     <div style="display:none" id="side-form">
     [% INCLUDE "report/new/fill_in_details_form.html"
         js = 1,
@@ -116,6 +121,8 @@
     </div>
     [% END %]
 
+[% IF allow_creation %]
 </form>
+[% END %]
 
 [% INCLUDE 'footer.html' %]
