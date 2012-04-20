@@ -82,7 +82,7 @@ sub load_and_check_councils : Private {
     $c->cobrand->remove_redundant_councils($all_councils) if $c->stash->{remove_redundant_councils};
 
     # If we don't have any councils we can't accept the report
-    if ( !scalar keys %$all_councils ) {
+    if ( !scalar keys %$all_councils || $all_councils->{error}) {
         $c->stash->{location_offshore} = 1;
         return;
     }

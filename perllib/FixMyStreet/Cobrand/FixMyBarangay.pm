@@ -1,22 +1,32 @@
 package FixMyStreet::Cobrand::FixMyBarangay;
-use base 'FixMyStreet::Cobrand::UKCouncils';
+use base 'FixMyStreet::Cobrand::Default';
 
 use strict;
 use warnings;
 
-sub council_id { return 0; }
-sub council_area { return 'FixMyBarangay'; }
-sub council_name { return 'FixMyBarangay'; }
-sub council_url { return 'fmb'; }
+sub path_to_web_templates {
+    my $self = shift;
+    return [
+        FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify,
+        FixMyStreet->path_to( 'templates/web/fixmystreet' )->stringify
+    ];
+}
+
+sub country {
+    return 'PH';
+}
 
 sub disambiguate_location {
     return {
         country => 'ph',
-        bing_culture => 'en',
-        bing_country => 'The Philippines'
+        bing_country => 'Philippines',
     };
 }
 
+sub site_title {
+    my ($self) = @_;
+    return 'FixMyBarangay';
+}
 
 1;
 
