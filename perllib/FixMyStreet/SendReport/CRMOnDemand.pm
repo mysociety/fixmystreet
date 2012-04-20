@@ -12,7 +12,7 @@ sub construct_message {
     my $self    = shift;
     my %h       = @_;
     my $message = <<EOF;
-$h{details}
+$h{detail}
 
 $h{fuzzy}, or to provide an update on the problem, please visit the
 following link:
