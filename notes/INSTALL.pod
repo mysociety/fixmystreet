@@ -86,15 +86,13 @@ geolocation services.
 
 =head1 DETAILED INSTALLATION INSTRUCTIONS
 
-=head2 Unpacking the Code
-
-Once you've downloaded the code you should unpack it. The best place to do this
-is in the location you want the web server vhost to be.
-
 =head2 Creating the database
 
 The default settings file assumes the database is called fms and the user the same. 
 You can change these if you like.
+
+
+
 
 =head2 Set up the database
 
