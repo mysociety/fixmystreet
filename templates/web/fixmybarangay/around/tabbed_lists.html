@@ -1,14 +1,20 @@
+[% allow_creation = !c.cobrand.only_authed_can_create || (c.user && c.user.from_council);
+
+IF allow_creation %]
 <menu id="problems-nav" class="tab-nav">
     <ul>
         <li><a href="#current">Problems on the map</a></li>
         <li><a href="#message_manager">Problems via text</a></li>
     </ul>
 </menu>
+[% END %]
         
 <ul id="current" class="issue-list-a tab">
     [% INCLUDE "around/on_map_list_items.html" %]
 </ul>
 
+[% IF allow_creation %]
 <ul id="message_manager" class="issue-list-a tab">
     <li><p>Message Manager texts listed here</p></li>
 </ul>
+[% END %]
