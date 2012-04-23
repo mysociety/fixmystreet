@@ -56,7 +56,7 @@
 
     [% IF c.cobrand.moniker != 'emptyhomes' %]
     <div class="general-sidebar-notes">
-        <p>[% loc( 'Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href="/faq#privacy">privacy policy</a>' ) %]</p>
+        <p>If you leave your name it will be public. Your information will only be used in accordance with our <a href="/faq#privacy">privacy policy</a></p>
     </div>
     [% END %]
 
@@ -129,11 +129,10 @@
             <input type="email" name="rznvy" id="form_rznvy" value="[% update.user.email | html %]" placeholder="[% loc('Your email address' ) %]" required>
 
             <div id="form_sign_in">
-                <h3>[% loc("Now to submit your update&hellip;") %]</h3>
-                <h2>[% loc("Do you have a FixMyStreet password?") %]</h2>
+                <p>To submit your update you now need to confirm it either by email or by using a FixMyStreet password.</p>
 
                 <div id="form_sign_in_no" class="form-box">
-                    <h5>[% loc('<strong>No</strong> Let me confirm my update by email') %]</h5>
+                    <h5>Confirm my report by email</h5>
 
                     [% INCLUDE name %]
                     
@@ -150,7 +149,7 @@
                     </div>
                 </div>
                 <div id="form_sign_in_yes" class="form-box">
-                    <h5>[% loc('<strong>Yes</strong> I have a password') %]</h5>
+                    <h5>Confirm my report with my FixMyStreet password</h5>
 
                     <label class="hidden-js n" for="password_sign_in">[% loc('Yes I have a password') %]</label>
                     [% IF field_errors.password %]
@@ -199,7 +198,7 @@
     <input type="text" value="[% names.last || last_name | html %]" name="last_name" id="form_last_name" placeholder="[% loc('Your last name') %]">
 
     <div class="checkbox-group">
-        <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' UNLESS update.anonymous %]>
+        <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF update AND NOT update.anonymous %]>
         <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %]</label>
     </div>
     <div class="checkbox-group">

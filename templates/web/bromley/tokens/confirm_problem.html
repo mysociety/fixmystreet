@@ -1,0 +1,11 @@
+[% INCLUDE 'header.html', title = loc('Confirmation') %]
+
+<h1>[% loc('Confirmation') %]</h1>
+
+<p class="confirmed">
+Thank you. You have successfully confirmed your report
+and this will now be investigated by the council.
+You can <a href="[% c.uri_for( '/report', problem.id ) %]">view the problem on this site</a>.
+</p>
+
+[% INCLUDE 'footer.html' %]

@@ -26,6 +26,8 @@
 
     </head>
     <body class="[% bodyclass | html IF bodyclass %]">
+        [%# ie_wrapper is to prevent a horizontal scrollbar in IE7, it appears (from Bromley site) %]
+        <div id="bromley-wrapper"><div id="bromley-ie_wrapper">
 
 <div id="bromley-header" class="desk-only">
 	<ul class="header-nav"> 
@@ -40,12 +42,14 @@
 		<a href="http://www.bromley.gov.uk"><img src="/cobrands/bromley/bromley-logo.jpg" alt="London Borough of Bromley logo" width="159" height="114" style="width:159px; height:114px;" /></a>
 	</div>
 			
-	<!-- <div class="sign-in">
-		<p>
-			You are not signed in. <a href="https://www.bromley.gov.uk/sign_in?referer=%2fa_to_z">Sign in</a>
-			or <a href="https://www.bromley.gov.uk/register">register</a>?
-		</p>
-	</div> -->
+	<div class="sign-in">
+        [% IF c.user_exists %]
+            <p>
+                [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %] 
+                <a href="/auth/sign_out">[% loc('sign out') %]</a>
+            </p>
+        [% END %]
+	</div>
 			
 	<div class="main-menu">
 		<ul>
@@ -57,7 +61,7 @@
             %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
         %]<li><[% IF c.req.uri.path == '/alert' %]span[% ELSE %]a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END
             %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>[%
-        %]<li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
+        %]<li class="last"><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
             %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
 		</ul>
 	</div>
@@ -79,14 +83,12 @@
                     [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %] 
                     <a href="/auth/sign_out">[% loc('sign out') %]</a>
                 </p>
-                [% ELSE %]
-                    <!-- <a href="/auth">[% loc('Sign in') %]</a> -->
                 [% END %]
             </div>
 
-            [% pre_container_extra %]
+            <h1 class="main desk-only">Reporting a problem in Bromley&rsquo;s streets or parks</h1>
 
             <div class="container">
                 <div class="content[% " $mainclass" | html IF mainclass %]" role="main">
 
-        <!-- [% INCLUDE 'debug_header.html' %] -->
+

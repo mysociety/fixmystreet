@@ -198,14 +198,13 @@ h1 {
 // .content Is the white box
 
 // The narrow single column box
-.content{
+.content {
   width: 27em;
   margin-top: 3em;
-  background: #fff;
-  padding: 1em;
-  padding-bottom: 3em;
-  margin-left: 0.5em;
   margin-bottom: -1em;
+  margin-left: 0.5em;
+  padding: 1em 1em 3em;
+  background: #fff;
   @include box-shadow(0px 0px 6px 1px #000);
 }
 .ie6, .ie7, .ie8  {
@@ -653,8 +652,13 @@ body.twothirdswidthpage {
     top:-0.5em;
     position: absolute;
     border-top: 0.5em solid transparent;
-    border-left: 0.5em solid #4B8304;
+    border-left: 0.5em solid $contrast1_dark;
     border-bottom:none;
+  }
+  span {
+    display: block;
+    font-size: 80%;
+    padding-top: 0.5em;
   }
 }
 .ie6 .big-green-banner {
@@ -677,7 +681,7 @@ body.twothirdswidthpage {
       background-position:-324px -326px;
       background-repeat:no-repeat;
       &:before {
-        border-bottom: 0.75em solid #4B8304;
+        border-bottom: 0.75em solid $contrast1_dark;
       }
     }
   }

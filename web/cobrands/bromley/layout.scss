@@ -1,6 +1,10 @@
 @import "_colours";
 @import "../fixmystreet/_layout";
 
+body { background: #9b9b9b url('http://www.bromley.gov.uk/site/styles/css_img/repeater.gif') repeat-x; }
+#bromley-wrapper { background: #fff url('http://www.bromley.gov.uk/site/styles/css_img/header-corners.gif') center 110px no-repeat; margin: 1px auto 0; padding: 0 15px; width: 955px;}
+.offline #bromley-wrapper { padding: 0 15px 20px; }
+
 // So that map appears underneath the header
 .wrapper {
     position: relative;
@@ -11,21 +15,15 @@
     }
 }
 
-body {
-    background: #fff;
-}
-
 #front-main {
     background: $primary;
     @include border-radius(1em 1em 0 0);
+    margin-bottom: 1em;
+    padding-top: 0;
     // layout sets this because base has it slightly lighter
     h2 {
         color: $primary_text;
     }
-}
-
-.tablewrapper {
-    padding-top: 1em;
 }
 
 // Don't want gap that normal site has
@@ -36,22 +34,14 @@ body.frontpage {
         }
     }
 }
-#user-meta {
-    p {
-        top: -1em;
-    }
-}
-body.frontpage {
-    #user-meta {
-        p {
-            top: -2em;
-        }
-    }
-}
 
 // Don't want FixMyStreet logo on desktop, and we have a skip to content in
 // Bromley header
 #site-header {
+    display: none;
+}
+
+#user-meta {
     display: none;
 }
 
@@ -60,9 +50,9 @@ body.frontpage {
     display: none;
 }
 
-// White background, so no shadow needed.
+// White background, so no shadow or margin needed.
 .content {
-    margin-top: 1em;
+    margin: 0;
     @include box-shadow(none);
 }
 .ie6, .ie7, .ie8  {
@@ -70,26 +60,38 @@ body.frontpage {
         border: none;
     }
 }
-// Except on map pages
-body.mappage .content {
-    @include box-shadow(0px 0px 6px 1px #000);
-}
-.ie6, .ie7, .ie8  {
-    body.mappage .content {
-        border: solid 1px #666;
-    }
-}
 
 // As map can scroll and isn't at the top, give it an edge
 #map_box {
-    border-top: solid 1px #999;
-    border-bottom: solid 1px #999;
+    border: solid 1px #999;
+    top: 1em;
+    right: 0em;
+    margin: 0;
 }
 
 // Perhaps fix map location (should be in central?)
 .ie6 #map_box, .ie7 #map_box {
-    right: -30em;
-    top: 0;
+    right: -32em;
+}
+
+.general-sidebar-notes,
+#report-a-problem-sidebar {
+  position: static;
+  width: auto;
+  @include box-shadow(rgba(0, 0, 0, 0), 0, 0, 0);
+  .sidebar-tips,
+  .sidebar-notes {
+    font-size:1em;
+  }
+}
+
+.ie7 .big-green-banner {
+    right: 0;
+}
+
+// Pull OpenLayers navigation down a bit
+#fms_pan_zoom {
+    top: 0.5em !important;
 }
 
 // Fix location of aside sidebar
@@ -114,5 +116,16 @@ body.twothirdswidthpage {
             }
         }
     }
+}
+
+// So as not to interfere with the Bromley footer, make the fixed nav static.
+.shadow-wrap {
+  position: static;
+  padding-top: 0;
+  margin-bottom: 1em;
+  ul#key-tools {
+    border-top: none;
+    border-bottom: 1px solid $primary;
+  }
 }
 

@@ -18,14 +18,14 @@ Modernizr.load({
 
 [% INCLUDE 'header.html', title => '' , bodyclass => 'frontpage fullwidthpage' %]
 
+<h1 class="main mob-only">Reporting a problem in Bromley&rsquo;s streets or parks</h1>
+
 [% IF error %]
     <p class="error">[% error %]</p>
 [% END %]
 
 <div id="front-main">
     <div id="front-main-container">
-        <h1>Reporting a problem in Bromley&rsquo;s streets or parks</h1>
-
         [%
             question
                 =  c.cobrand.enter_postcode_text()
@@ -33,21 +33,21 @@ Modernizr.load({
         %]
 
         <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
-            <label for="pc">Enter a Bromley Council postcode, or street name and area:</label>
+            <label for="pc">Enter a Bromley postcode, or street name and area:</label>
             <div>
                 <input type="text" name="pc" value="" id="pc" size="10" maxlength="200" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]">
                 <input type="submit" value="[% loc('Go') %]" id="submit">
             </div>
         </form>
 
-        <p>This is primarily for reporting physical problems that can be fixed
-        like graffiti, fly tipping, or broken paving slabs to report other
-        kinds of problems like missed bins use our
-        <a href="http://www.bromley.gov.uk/report">online report it forms</a>.
-        </p>
-
     </div>
 </div>
+
+<p>This is primarily for reporting physical problems that can be fixed
+like graffiti, cleansing issues or road defects. To report other
+kinds of problems like missed bins use our
+<a href="http://www.bromley.gov.uk/report">online report it forms</a>.
+</p>
 
 <div class="tablewrapper">
     <div id="front-howto">
@@ -57,7 +57,7 @@ Modernizr.load({
             <li>[% question %]</li>
             <li>[% loc('Locate the problem on a map of the area') %]</li>
             <li>[% loc('Enter details of the problem') %]</li>
-            <li>Confirm the report and it will be sent to Bromley</li>
+            <li>Confirm the report and Bromley Council will investigate</li>
         </ol>
         
         <section class="full-width">
@@ -92,10 +92,6 @@ Modernizr.load({
             [% END %]
             </ul>
         </section>
-
-        <p id="bromley-powered-by" class="desk-only">
-            <a href="http://www.fixmystreet.com/">Powered by <img src="/cobrands/bromley/fms-logo.png" style="height:20px;"></a>
-        </p>
 
     </div>
     [% END %]

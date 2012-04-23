@@ -1,6 +1,4 @@
 <div id="report-a-problem-main">
-    <h1>[% loc('Reporting a problem') %]</h1>
-
     [% IF js %]
         <p id="councils_text">
         [%
@@ -9,7 +7,7 @@
                 loc('the local council')
             );
         %]
-        [% loc('The subject and details of the problem will be public, plus your name if you give us permission.') %]
+        Details of the problem will be public, plus your name if you give us permission.
         </p>
     [% ELSE %]
         [% PROCESS 'report/new/councils_text.html' %]
@@ -29,17 +27,16 @@
 
             <p>
             [% IF report.used_map %]
-                [% INCLUDE 'report/new/fill_in_details_text.html' %]
+	We won&rsquo;t be able to help unless you leave as much
+detail as you can. Please describe the exact location of the problem (e.g. on a
+wall), what it is, how long it has been there, a description (and a photo of
+the problem if you have one), etc.
             [% ELSE %]
                 [% loc('Please fill in the form below with details of the problem, and describe the location as precisely as possible in the details box.') %]
             [% END %]
             </p>
         </div>
         
-        <div class="sidebar-notes">
-            [% INCLUDE 'report/new/notes.html' %]
-        </div>
-
     </div>
 
     [% INCLUDE 'errors.html' %]
@@ -134,10 +131,11 @@
                     </div>
 
                         <div class="general-sidebar-notes">
-                            <p>[% loc('We never show your email address.') %]</p>
+                            <p>[% loc('We never show your email address or phone number.') %]</p>
                         </div>
 
-                    <input type="hidden" value="" name="phone">
+                    <label for="form_phone">[% loc('Phone number (optional)') %]</label>
+                    <input class="" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]">
             
                     <div class="form-txt-submit-box">
                         <input class="green-btn" type="submit" id="submit_register" name="submit_register" value="[% loc('Submit') %]">
@@ -152,11 +150,11 @@
                 <input type="email" value="[% report.user.email | html %]" name="email" id="form_email" placeholder="[% loc('Please enter your email address') %]" required>
 
                 <div id="form_sign_in">
-                    <h3>[% loc("Now to submit your report&hellip;") %]</h3>
-                    <h2>[% loc("Do you have a FixMyStreet password?") %]</h2>
+
+                    <p>To submit your report you now need to confirm it either by email or by using a  FixMyStreet password.</p>
 
                     <div id="form_sign_in_no" class="form-box">
-                        <h5>[% loc('<strong>No</strong> Let me confirm my report by email') %]</h5>
+                        <h5>Confirm my report by email</h5>
 
                         [% INCLUDE 'report/new/extra_name.html' %]
 
@@ -179,12 +177,13 @@
                         </div>
 
                         <div class="general-sidebar-notes form-focus-hidden">
-                            <p class="dark">[% loc('We never show your email address.') %]</p>
+                            <p class="dark">[% loc('We never show your email address or phone number.') %]</p>
                             <p>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</p>
                         </div>
 
-                        <input type="hidden" value="" name="phone">
-            
+                        <label class="form-focus-hidden" for="form_phone">[% loc('Phone number (optional)') %]</label>
+                        <input class="form-focus-hidden" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]">
+                
                         <label class="form-focus-hidden" for="password_register">[% loc('Password (optional)') %]</label>
 
                         <div class="form-txt-submit-box form-focus-hidden">
@@ -195,7 +194,7 @@
 
                     <div id="form_sign_in_yes" class="form-box">
 
-                        <h5>[% loc('<strong>Yes</strong> I have a password') %]</h5>
+                        <h5>Confirm my report with my FixMyStreet password</h5>
 
                         <label class="hidden-js n" for="password_sign_in">[% loc('Yes I have a password') %]</label>
                         <div class="form-txt-submit-box">
@@ -214,11 +213,16 @@
 
                 </div>
 
-                <p>[% loc("We will only use your personal information in accordance with our <a href=\"/faq#privacy\">privacy policy.</a>") %]</p>
-
             [% END %]
+
+            <p>[% loc("We will only use your personal information in accordance with our <a href=\"/faq#privacy\">privacy policy.</a>") %]</p>
+
         </div>
     </fieldset>
+
+        <div class="sidebar-notes">
+            [% INCLUDE 'report/new/notes.html' %]
+        </div>
 
     [% IF partial_token %]
         <input type="hidden" name="partial" value="[% partial_token.token %]">

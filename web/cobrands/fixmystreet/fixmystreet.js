@@ -104,16 +104,17 @@ $(function(){
             // Make map full screen on non-mobile sizes.
             $html.removeClass('mobile');
             if (cobrand == 'bromley') {
-                var $window = $(window), $content = $('.content'), o = $content.offset();
-                var map_height = $window.height() - o.top;
-                if ($html.hasClass('ie6')) {
-                    map_height = $window.height() - o.top + 32;
+                var bromley_right;
+                if ($html.hasClass('ie6') || $html.hasClass('ie7')) {
+                    bromley_right = '-32em';
+                } else {
+                    bromley_right = '0em';
                 }
-                $('#map_box').prependTo('.wrapper').css({
-                    zIndex: 0, position: 'absolute',
-                    right: 0, top: '1em',
-                    width: $window.width() - o.left - $content.outerWidth(),
-                    height: map_height,
+                // Do the same as CSS (in case resized from mobile).
+                $('#map_box').prependTo('.content').css({
+                    zIndex: 1, position: 'absolute',
+                    top: '1em', left: '', right: bromley_right, bottom: '',
+                    width: '29em', height: '29em',
                     margin: 0
                 });
             } else if ($html.hasClass('ie6')) {
@@ -133,20 +134,25 @@ $(function(){
             }
             if (typeof fixmystreet !== 'undefined') {
                 if (cobrand == 'bromley') {
-                    $('#bromley-footer').hide();
+                    //$('#bromley-footer').hide();
+                } else {
+                    fixmystreet.state_map = 'full';
                 }
-                fixmystreet.state_map = 'full';
             }
             if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
                 // Remove full-screen-ness
-                if (cobrand != 'bromley') {
+                var banner_text;
+                if (cobrand == 'bromley') {
+                    banner_text = 'Click map to report a problem<span>Yellow pins show existing reports</span>';
+                } else {
                     $('#site-header').show();
+                    banner_text = 'Click map to report a problem';
                 }
                 $('#fms_pan_zoom').css({ top: '4.75em !important' });
                 $('.big-green-banner')
                     .removeClass('mobile-map-banner')
                     .prependTo('#side')
-                    .text('Click map to report a problem');
+                    .html(banner_text);
             }
             $('span.report-a-problem-btn').css({ cursor:'' }).off('.reportBtn');
         }
@@ -224,10 +230,15 @@ $(function(){
     /*
      * Show stuff on input focus
      */
-    $('.form-focus-hidden').hide();
-    $('.form-focus-trigger').on('focus', function(){
-        $('.form-focus-hidden').fadeIn(500);
-    });
+    var form_focus_data = $('.form-focus-trigger').map(function() {
+        return $(this).val();
+    }).get().join('');
+    if (!form_focus_data) {
+        $('.form-focus-hidden').hide();
+        $('.form-focus-trigger').on('focus', function(){
+            $('.form-focus-hidden').fadeIn(500);
+        });
+    }
 
     /*
      * Show on click - pretty generic
@@ -342,12 +353,12 @@ $.fn.drawer = function(id, ajax) {
     });
 };
 
-    if ($('html.mobile').length) {
+    if ($('html.mobile').length || cobrand == 'bromley') {
         $('#council_wards').hide().removeClass('hidden-js').find('h2').hide();
         $('#key-tool-wards').click(function(e){
             e.preventDefault();
             $('#council_wards').slideToggle('800', function(){
-              $('#key-tool-wards').toggleClass('active');
+              $('#key-tool-wards').toggleClass('hover');
             });
         });
     } else {

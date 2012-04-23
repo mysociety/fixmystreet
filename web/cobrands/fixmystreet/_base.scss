@@ -144,6 +144,10 @@ img {
   height:auto;
   max-width: 100%;
 }
+// So that map popups display correctly
+#popup img {
+    max-width: none;
+}
 
 select, input, textarea {
   font-size: 99%;
@@ -305,7 +309,7 @@ label{
     margin:0.5em 0;
   }
   h5 {
-    margin:0;
+    margin:0 0 1em;
     font: {
       size:1.125em;
       weight:normal;
@@ -536,7 +540,7 @@ p.label-valid {
           size:0.6875em;
           family: 'helvetica', 'arial', sans-serif;
         }
-        &:hover, &.hover, &.active {
+        &:hover, &.hover {
           text-decoration:none;
           background-color:#333;
           color:#fff;
@@ -553,7 +557,7 @@ p.label-valid {
           background-image:url('/cobrands/fixmystreet/images/sprite.png');
           background-position:center -2716px;
         }
-        &.hover, &.active {
+        &.hover {
           background-image:url('/cobrands/fixmystreet/images/sprite.png');
           background-position:center -2064px;
         }
@@ -724,7 +728,7 @@ a:hover.button-left {
     width: 0;
     height: 0;
     border-left: 0.5em solid transparent;
-    border-bottom: 0.5em solid #4B8304;
+    border-bottom: 0.5em solid $contrast1_dark;
   }
 }
 
@@ -760,7 +764,7 @@ a:hover.button-left {
       color:#fff;
       background: $contrast1;
       &:before {
-        border-bottom: 0.5em solid #4B8304;
+        border-bottom: 0.5em solid $contrast1_dark;
       }
     }
   }
