@@ -183,7 +183,7 @@ sub _create_contact {
     }
 }
 
-sub _add_contact_to_meta {
+sub _add_meta_to_contact {
     my ( $self, $contact ) = @_;
 
     print "Fetching meta data for $self->_current_service->{service_code}\n";
