@@ -19,6 +19,7 @@ has debug => ( is => 'ro', isa => 'Bool', default => 0 );
 has debug_details => ( is => 'rw', 'isa' => 'Str', default => '' );
 has success => ( is => 'rw', 'isa' => 'Bool', default => 0 );
 has error => ( is => 'rw', 'isa' => 'Str', default => '' );
+has extended_sendrequest => ( is => 'ro', isa => 'Bool', default => 0 );
 
 sub get_service_list {
     my $self = shift;
@@ -97,14 +98,32 @@ sub _populate_service_request_params {
         $params->{media_url} = $extra->{image_url};
     }
 
+    if ( $self->extended_sendrequest ) {
+        $params->{northing}               = $extra->{northing};
+        $params->{easting}                = $extra->{easting};
+        $params->{report_url}             = $extra->{url};
+        $params->{service_request_id_ext} = $problem->id;
+        $params->{report_title}           = $problem->title;
+        $params->{email_alerts_requested} = 'FALSE';              # always false
+        $params->{requested_datetime}     = $problem->confirmed;
+
+        $params->{public_anonymity_required} = $problem->anonymous ? 'TRUE' : 'FALSE';
+    }
+
     if ( $problem->extra ) {
         my $extras = $problem->extra;
 
         for my $attr ( @$extras ) {
             my $attr_name = $attr->{name};
-            if ( $attr_name eq 'first_name' || $attr_name eq 'last_name' ) {
-                $params->{$attr_name} = $attr->{value} if $attr->{value};
-                next;
+            if ( $self->extended_sendrequest ) {
+                if ( $attr_name eq 'first_name' || $attr_name eq 'last_name' ) {
+                    $params->{$attr_name} = $attr->{value} if $attr->{value};
+                    next;
+                }
+                if ( $attr_name eq 'fms_extra_title' ) {
+                    $params->{title} = $attr->{value} if $attr->{value};
+                    next;
+                }
             }
             $attr_name =~ s/fms_extra_//;
             my $name = sprintf( 'attribute[%s]', $attr_name );

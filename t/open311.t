@@ -59,6 +59,7 @@ my $problem = FixMyStreet::App->model('DB::Problem')->new( {
     latitude => 1,
     longitude => 2,
     user => $user,
+    confirmed => $dt,
 } );
 
 subtest 'posting service request' => sub {
@@ -92,6 +93,57 @@ EOT
     is $c->param('long'), 2, 'longitude correct';
     is $c->param('description'), $description, 'descritpion correct';
     is $c->param('service_code'), 'pothole', 'service code correct';
+    is $c->param('northing'), undef, 'northing correct';
+    is $c->param('easting'), undef, 'easting is not set';
+    is $c->param('report_url'), undef, 'report_url is not set';
+    is $c->param('service_request_id_ext'), undef, 'service_request_id_ext is not set';
+    is $c->param('report_title'), undef, 'report_title is not set';
+    is $c->param('email_alerts_requested'), undef, 'email_alerts_requested is not set';
+    is $c->param('requested_datetime'), undef, 'requested_datetime is not set';
+    is $c->param('public_anonymity_required'), undef, 'public_anonymity_required is not set';
+};
+
+subtest 'posting extended service request' => sub {
+    my $extra = {
+        northing => 'N',
+        easting => 'E',
+        url => 'http://example.com/report/1',
+    };
+
+    my $results = make_service_req( $problem, $extra, $problem->category, '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>248</service_request_id></request></service_requests>', 1 );
+
+    is $results->{ res }, 248, 'got request id';
+
+    my $req = $o->test_req_used;
+
+    my $description = <<EOT;
+title: a problem
+
+detail: problem detail
+
+url: http://example.com/report/1
+
+Submitted via FixMyStreet
+EOT
+;
+
+    my $c = CGI::Simple->new( $results->{ req }->content );
+
+    is $c->param('email'), $user->email, 'correct email';
+    is $c->param('first_name'), 'Test', 'correct first name';
+    is $c->param('last_name'), 'User', 'correct last name';
+    is $c->param('lat'), 1, 'latitide correct';
+    is $c->param('long'), 2, 'longitude correct';
+    is $c->param('description'), $description, 'descritpion correct';
+    is $c->param('service_code'), 'pothole', 'service code correct';
+    is $c->param('northing'), 'N', 'northing correct';
+    is $c->param('easting'), 'E', 'easting correct';
+    is $c->param('report_url'), 'http://example.com/report/1', 'report_url correct';
+    is $c->param('service_request_id_ext'), $problem->id, 'service_request_id_ext correct';
+    is $c->param('report_title'), 'a problem', 'report_title correct';
+    is $c->param('email_alerts_requested'), 'FALSE', 'email_alerts_requested correct';
+    is $c->param('requested_datetime'), $problem->confirmed, 'requested_datetime correct';
+    is $c->param('public_anonymity_required'), 'FALSE', 'public_anonymity_required correct';
 };
 
 for my $test (
@@ -109,6 +161,26 @@ for my $test (
     },
     {
         desc  => 'first and last names in extra used correctly',
+        extra => [
+            {
+                name  => 'first_name',
+                value => 'First',
+            },
+            {
+                name  => 'last_name',
+                value => 'Last',
+            },
+        ],
+        params => [
+            [ 'first_name', 'Test', 'first name correct' ],
+            [ 'last_name',  'User',  'last name correct' ],
+            [ 'attribute[first_name]', 'First', 'correct first_name attribute param' ],
+            [ 'attribute[last_name]',  'Last', 'correct last_name attribute param' ],
+        ],
+    },
+    {
+        desc  => 'first and last names in extra used correctly with extended send request',
+        extended_sendrequest => 1,
         extra => [
             {
                 name  => 'first_name',
@@ -142,6 +214,23 @@ for my $test (
             ]
         ],
     },
+    {
+        title => 'magic fms_extra parameters handled correctly with extended send request',
+        extended_sendrequest => 1,
+        extra => [
+            {
+                name  => 'fms_extra_title',
+                value => 'Extra title',
+            }
+        ],
+        params => [
+            [
+                'attribute[title]',
+                undef,
+                'no title attribute param'
+            ]
+        ],
+    },
   )
 {
     subtest $test->{desc} => sub {
@@ -150,7 +239,8 @@ for my $test (
         my $extra = { url => 'http://example.com/report/1', };
 
         my $results = make_service_req( $problem, $extra, $problem->category,
-'<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>248</service_request_id></request></service_requests>'
+'<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>248</service_request_id></request></service_requests>',
+        $test->{extended_sendrequest}
         );
         my $req = $o->test_req_used;
         my $c   = CGI::Simple->new( $results->{req}->content );
@@ -330,8 +420,9 @@ sub make_service_req {
     my $extra = shift;
     my $service_code = shift;
     my $xml = shift;
+    my $extended = shift || 0;
 
-    return make_req( $problem, $xml, 'send_service_request', 'requests.xml', $extra, $service_code );
+    return make_req( $problem, $xml, 'send_service_request', 'requests.xml', $extended, $extra, $service_code );
 }
 
 sub make_req {
@@ -339,10 +430,11 @@ sub make_req {
     my $xml    = shift;
     my $method = shift;
     my $path   = shift;
+    my $extended = shift;
     my @args   = @_;
 
     my $o =
-      Open311->new( test_mode => 1, end_point => 'http://localhost/o311' );
+      Open311->new( test_mode => 1, end_point => 'http://localhost/o311', extended_sendrequest => $extended );
 
     my $test_res = HTTP::Response->new();
     $test_res->code(200);
