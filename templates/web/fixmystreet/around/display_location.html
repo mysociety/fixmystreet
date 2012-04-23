@@ -35,7 +35,7 @@
         bodyclass => 'mappage',
         robots => 'noindex,nofollow';
 
-    allow_creation = !c.cobrand.only_authed_can_create || (c.user && c.user.belongs_to_council);
+    allow_creation = !c.cobrand.only_authed_can_create || (c.user && c.user.from_council);
 %]
 
 [% IF allow_creation %]
@@ -93,21 +93,7 @@
         </div>
 
         <section class="full-width">
-            [%# TODO For Cebu, factor this bit out to a new template, for message manager tab %]
-            <menu id="problems-nav" class="tab-nav">
-                <ul>
-                    <li><a href="#current">[% loc('Problems on the map') %]</a></li>
-                    <li><a href="#current_near">[% loc( 'Problems nearby' ) %]</a></li>
-                </ul>
-            </menu>
-            
-            <ul id="current" class="issue-list-a tab">
-                [% INCLUDE "around/on_map_list_items.html" %]
-            </ul>
-
-            <ul id="current_near" class="issue-list-a tab">
-                [% INCLUDE "around/around_map_list_items.html" %]
-            </ul>
+            [% INCLUDE "around/tabbed_lists.html" %]
         </section>
     </div>
 

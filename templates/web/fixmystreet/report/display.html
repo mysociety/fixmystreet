@@ -8,7 +8,7 @@
         robots = 'index, nofollow'
         bodyclass = 'mappage'
 
-    allow_creation = !c.cobrand.only_authed_can_create || (c.user && c.user.belongs_to_council);
+    allow_creation = !c.cobrand.only_authed_can_create || (c.user && c.user.from_council);
 %]
 
 [% map_html %]
