@@ -339,7 +339,7 @@ sub update_contacts : Private {
     } elsif ( $posted eq 'open311' ) {
         $c->forward('check_token');
 
-        my %params = map { $_ => $c->req->param($_) } qw/open311_id endpoint jurisdiction api_key area_id/;
+        my %params = map { $_ => $c->req->param($_) } qw/open311_id endpoint jurisdiction api_key area_id send_method send_comments comment_user_id/;
 
         if ( $params{open311_id} ) {
             my $conf = $c->model('DB::Open311Conf')->find( { id => $params{open311_id} } );
