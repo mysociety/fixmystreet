@@ -183,6 +183,21 @@ the required development tools.
 
 =head2 Set up Webserver
 
+For production use of FixMyStreet, we suggest you use Apache and
+FastCGI.  (See below.)  For local development, however, you can use
+the Catalyst development server.  First, install the Catalyst
+development tools with:
+
+    ./bin/cron-wrapper local/bin/carton install Catalyst::Devel
+
+Then the development server can be run with:
+
+     CATALYST_DEBUG=1 ./bin/cron-wrapper ./script/fixmystreet_app_server.pl -r
+
+The server will be accessible as L<http://localhost:3000/>.
+
+=head3 Setting up Apache
+
 It is recommended that you run FixMyStreet using FastCGI. It should also be
 possible to run it using Plack/PSGI.
 
