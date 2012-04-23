@@ -38,15 +38,6 @@ there are no councils then return false.
 sub load_and_check_councils : Private {
     my ( $self, $c ) = @_;
 
-    # If no mapit is set up, let it through wherever
-    unless ($c->config->{MAPIT_URL}) {
-        my $area = { "name" => "Default Area", "type" => "ZZZ", "id" => 0 };
-        $c->stash->{all_areas} = { 0 => $area };
-        $c->stash->{all_councils} = { 0 => $area };
-        $c->stash->{all_council_names} = [ 'Default Area' ];
-        return 1;
-    }
-
     my $latitude  = $c->stash->{latitude};
     my $longitude = $c->stash->{longitude};
 

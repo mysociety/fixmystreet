@@ -1,6 +1,9 @@
 package FixMyStreet::Cobrand::FixMyStreet;
 use base 'FixMyStreet::Cobrand::Default';
 
+sub area_types          { return qw(DIS LBO MTD UTA CTY COI); }
+sub area_min_generation { 10 }
+
 # FixMyStreet should return all cobrands
 sub restriction {
     return {};

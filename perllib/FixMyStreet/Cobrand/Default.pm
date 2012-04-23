@@ -597,8 +597,8 @@ The MaPit types this site handles
 
 =cut
 
-sub area_types          { return qw(DIS LBO MTD UTA CTY COI); }
-sub area_min_generation { 10 }
+sub area_types          { qw(ZZZ) }
+sub area_min_generation { '' }
 
 =head2 contact_name, contact_email
 
