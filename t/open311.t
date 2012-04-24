@@ -122,7 +122,7 @@ for my $test (
         params => [
             [ 'first_name', 'First', 'first name correct' ],
             [ 'last_name',  'Last',  'last name correct' ],
-            [ 'attribute[first_name]', 'First', 'first_name attribute param correct' ],
+            [ 'attribute[first_name]', undef, 'no first_name attribute param' ],
             [ 'attribute[last_name]',  'Last', 'last_name attribute param correct' ],
         ],
     },
