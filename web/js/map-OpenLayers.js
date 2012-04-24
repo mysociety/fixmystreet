@@ -23,7 +23,7 @@ function fixmystreet_update_pin(lonlat) {
         $('#side-form, #site-logo').show();
         $('#councils_text').html(data.councils_text);
         $('#form_category_row').html(data.category);
-        if ( data.extra_name_info ) {
+        if ( data.extra_name_info && !$('#form_fms_extra_title').length ) {
             // there might be a first name field on some cobrands
             var lb = $('#form_first_name').prev() || $('#form_name').prev();
             lb.before(data.extra_name_info);

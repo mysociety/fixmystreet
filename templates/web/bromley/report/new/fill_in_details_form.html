@@ -23,18 +23,11 @@
                     <p id="unknown">[% loc('Please note your report has <strong>not yet been sent</strong>. Choose a category and add further information below, then submit.') %]</p>
                 [% END %]
             <p>[% loc('You have located the problem at the point marked with a green pin on the map. If this is not the correct location, simply click on the map again. ') %]</p>
-            [% END %]
-
-            <p>
-            [% IF report.used_map %]
-	We won&rsquo;t be able to help unless you leave as much
-detail as you can. Please describe the exact location of the problem (e.g. on a
-wall), what it is, how long it has been there, a description (and a photo of
-the problem if you have one), etc.
             [% ELSE %]
+            <p>
                 [% loc('Please fill in the form below with details of the problem, and describe the location as precisely as possible in the details box.') %]
-            [% END %]
             </p>
+            [% END %]
         </div>
         
     </div>
@@ -59,6 +52,13 @@ the problem if you have one), etc.
             <input type="text" value="[% report.title | html %]" name="title" id="form_title" placeholder="[% loc('Provide a title') %]" required>
 
             <label for="form_detail">[% loc('Details') %]</label>
+            [% IF report.used_map %]
+            <p>
+	We won&rsquo;t be able to help unless you leave as much
+detail as you can. Please describe the exact location of the problem (e.g. on a
+wall).
+            </p>
+            [% END %]
             [% IF field_errors.detail %]
                 <p class='form-error'>[% field_errors.detail %]</p>
             [% END %]
@@ -178,7 +178,7 @@ the problem if you have one), etc.
 
                         <div class="general-sidebar-notes form-focus-hidden">
                             <p class="dark">[% loc('We never show your email address or phone number.') %]</p>
-                            <p>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</p>
+                            <p>[% loc('Providing a password is optional, but doing so will allow you to more easily report future problems, leave updates and manage your reports.') %]</p>
                         </div>
 
                         <label class="form-focus-hidden" for="form_phone">[% loc('Phone number (optional)') %]</label>
@@ -219,10 +219,6 @@ the problem if you have one), etc.
 
         </div>
     </fieldset>
-
-        <div class="sidebar-notes">
-            [% INCLUDE 'report/new/notes.html' %]
-        </div>
 
     [% IF partial_token %]
         <input type="hidden" name="partial" value="[% partial_token.token %]">
