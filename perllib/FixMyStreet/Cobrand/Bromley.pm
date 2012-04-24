@@ -31,6 +31,12 @@ sub example_places {
     return ( 'BR1 3UH', 'Glebe Rd, Bromley' );
 }
 
+sub recent_photos {
+    my ( $self, $area, $num, $lat, $lon, $dist ) = @_;
+    $num = 3 if $num > 3 && $area eq 'alert';
+    return $self->problems->recent_photos( $num, $lat, $lon, $dist );
+}
+
 sub process_extras {
     my $self     = shift;
     my $ctx      = shift;

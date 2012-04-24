@@ -77,7 +77,7 @@ sub all_councils_report {
 }
 
 sub recent_photos {
-    my ( $self, $num, $lat, $lon, $dist ) = @_;
+    my ( $self, $area, $num, $lat, $lon, $dist ) = @_;
     $num = 2 if $num == 3;
     return $self->problems->recent_photos( $num, $lat, $lon, $dist );
 }

@@ -68,7 +68,7 @@ kinds of problems like missed bins use our
 
 
     [% 
-        recent_photos = c.cobrand.recent_photos(5);
+        recent_photos = c.cobrand.recent_photos('front', 5);
     %]
 
     [% IF recent_photos.size %]

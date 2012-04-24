@@ -173,6 +173,7 @@ EASTING and NORTHING.
 
 sub recent_photos {
     my $self = shift;
+    my $area = shift;
     return $self->problems->recent_photos(@_);
 }
 
