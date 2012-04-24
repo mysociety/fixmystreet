@@ -29,10 +29,19 @@ sub send {
     foreach my $council ( keys %{ $self->councils } ) {
         my $conf = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $council, endpoint => { '!=', '' } } )->first;
 
-        my $extended_sendrequest = 0;
         # Extra bromley fields
         if ( $row->council =~ /2482/ ) {
-            $extended_sendrequest = 1;
+
+            my $extra = $row->extra;
+            push @$extra, { name => 'northing', value => $h->{northing} };
+            push @$extra, { name => 'easting', value => $h->{easting} };
+            push @$extra, { name => 'report_url', value => $h->{url} };
+            push @$extra, { name => 'service_request_id_ext', value => $row->id };
+            push @$extra, { name => 'report_title', value => $row->title };
+            push @$extra, { name => 'public_anonymity_required', value => $row->anonymous ? 'TRUE' : 'FALSE' };
+            push @$extra, { name => 'email_alerts_requested', value => 'FALSE' }; # always false as can never request them
+            push @$extra, { name => 'requested_datetime', value => $row->confirmed };
+            $row->extra( $extra );
         }
 
         # FIXME: we've already looked this up before
@@ -43,10 +52,9 @@ sub send {
         } );
 
         my $open311 = Open311->new(
-            jurisdiction         => $conf->jurisdiction,
-            endpoint             => $conf->endpoint,
-            api_key              => $conf->api_key,
-            extended_sendrequest => $extended_sendrequest,
+            jurisdiction => $conf->jurisdiction,
+            endpoint     => $conf->endpoint,
+            api_key      => $conf->api_key,
         );
 
         # non standard west berks end points
