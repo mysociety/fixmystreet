@@ -1,0 +1,17 @@
+/* Parts of barnet's main CSS needed for its header/footer and adjusted (see
+ * bottom) to not be affected by main FixMyStreet CSS. Not very sustainable;
+ * perhaps we should wrap all council CSS within a SCSS #council ID? Hmm.
+ */
+
+@import "compass";
+
+#column_nav li { list-style: none ;}
+
+#content ol.big-numbers li {
+    padding: 0 0 0 2.5em;
+}
+
+#front-howto #front_stats div big,
+ol.big-numbers > li::before {
+    color: #C0E8E8;
+}
