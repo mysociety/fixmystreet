@@ -53,7 +53,9 @@ while ( my $council = $councils->next ) {
     );
 
     my $o = Open311->new(
-            endpoint => $council->endpoint
+            endpoint => $council->endpoint,
+            jurisdiction => $council->jurisdiction,
+            api_key => $council->api_key,
     );
 
     while ( my $comment = $comments->next ) {
