@@ -15,7 +15,7 @@ sub fetch {
 
     my $councils = FixMyStreet::App->model('DB::Open311Conf')->search(
         {
-            send_method     => 'open311',
+            send_method     => 'Open311',
             send_comments   => 1,
             comment_user_id => { '!=', undef },
             endpoint        => { '!=', '' },

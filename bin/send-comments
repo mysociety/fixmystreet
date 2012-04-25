@@ -28,7 +28,7 @@ use constant SEND_FAIL_RETRIES_CUTOFF => 3;
 
 # send_method config values found in by-area config data, for selecting to appropriate method
 use constant SEND_METHOD_EMAIL      => 'email';
-use constant SEND_METHOD_OPEN311    => 'open311';
+use constant SEND_METHOD_OPEN311    => 'Open311';
 
 # Set up site, language etc.
 my ($verbose, $nomail) = CronFns::options();
