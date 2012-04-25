@@ -68,8 +68,10 @@ while ( my $council = $councils->next ) {
         my $id = $o->post_service_request_update( $comment );
 
         if ( $id ) {
-            $comment->external_id( $id );
-            $comment->update();
+            $comment->update( {
+                external_id => $id,
+                whensent    => \'ms_current_timestamp()',
+            } );
         } else {
             $comment->update( {
                 send_fail_count => $comment->send_fail_count + 1,
