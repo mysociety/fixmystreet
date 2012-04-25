@@ -1,0 +1,34 @@
+@import "_colours";
+@import "../fixmystreet/_layout";
+
+body {
+  background: #1A1A1A;
+}
+
+#front-main {
+  color: $primary_text;
+  background: $primary;
+}
+
+.nav-wrapper {
+    .nav-wrapper-2 {
+        border-top: solid 4px $primary;
+        @include border-image(none);
+    }
+}
+#main-nav {
+    ul {
+        &#mysoc-menu {
+            background:$primary;
+        }
+    }
+}
+
+body.mappage {
+    #site-logo {
+        background: none;
+        text-indent: 0;
+        left: 0.5em;
+    }
+}
+
