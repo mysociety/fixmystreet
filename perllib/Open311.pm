@@ -5,6 +5,7 @@ use Moose;
 use XML::Simple;
 use LWP::Simple;
 use LWP::UserAgent;
+use DateTime::Format::W3CDTF;
 use HTTP::Request::Common qw(POST);
 
 has jurisdiction => ( is => 'ro', isa => 'Str' );;
@@ -231,7 +232,7 @@ sub _populate_service_request_update_params {
 
     my $params = {
         update_id_ext => $comment->id,
-        updated_datetime => $comment->confirmed,
+        updated_datetime => DateTime::Format::W3CDTF->format_datetime($comment->confirmed_local),
         service_request_id => $comment->problem->external_id,
         service_request_id_ext => $comment->problem->id,
         status => $comment->problem->is_open ? 'OPEN' : 'CLOSED',

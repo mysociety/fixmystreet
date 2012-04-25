@@ -8,6 +8,7 @@ use FixMyStreet::App;
 use CGI::Simple;
 use HTTP::Response;
 use DateTime;
+use DateTime::Format::W3CDTF;
 
 use FindBin;
 use lib "$FindBin::Bin/../perllib";
@@ -186,7 +187,7 @@ subtest 'basic request update post parameters' => sub {
     is $c->param('service_request_id_ext'), 80, 'external request id correct';
     is $c->param('service_request_id'), 81, 'request id correct';
     is $c->param('public_anonymity_required'), 'FALSE', 'anon status correct';
-    is $c->param('updated_datetime'), $dt, 'correct date';
+    is $c->param('updated_datetime'), DateTime::Format::W3CDTF->format_datetime($dt), 'correct date';
     is $c->param('title'), 'Mr', 'correct title';
     is $c->param('last_name'), 'User', 'correct first name';
     is $c->param('first_name'), 'Test', 'correct second name';

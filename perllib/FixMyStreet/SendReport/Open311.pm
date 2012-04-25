@@ -7,6 +7,7 @@ BEGIN { extends 'FixMyStreet::SendReport'; }
 
 use FixMyStreet::App;
 use mySociety::Config;
+use DateTime::Format::W3CDTF;
 use Open311;
 
 sub should_skip {
@@ -40,7 +41,7 @@ sub send {
             push @$extra, { name => 'report_title', value => $row->title };
             push @$extra, { name => 'public_anonymity_required', value => $row->anonymous ? 'TRUE' : 'FALSE' };
             push @$extra, { name => 'email_alerts_requested', value => 'FALSE' }; # always false as can never request them
-            push @$extra, { name => 'requested_datetime', value => $row->confirmed };
+            push @$extra, { name => 'requested_datetime', value => DateTime::Format::W3CDTF->format_datetime($row->confirmed_local) };
             push @$extra, { name => 'email', value => $row->user->email };
             $row->extra( $extra );
         }
