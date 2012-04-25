@@ -41,7 +41,7 @@ sub send {
             push @$extra, { name => 'report_title', value => $row->title };
             push @$extra, { name => 'public_anonymity_required', value => $row->anonymous ? 'TRUE' : 'FALSE' };
             push @$extra, { name => 'email_alerts_requested', value => 'FALSE' }; # always false as can never request them
-            push @$extra, { name => 'requested_datetime', value => DateTime::Format::W3CDTF->format_datetime($row->confirmed_local) };
+            push @$extra, { name => 'requested_datetime', value => DateTime::Format::W3CDTF->format_datetime($row->confirmed_local->set_nanosecond(0)) };
             push @$extra, { name => 'email', value => $row->user->email };
             $row->extra( $extra );
         }
