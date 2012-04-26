@@ -28,16 +28,11 @@ Modernizr.load({
         <h1>View local problems</h1>
         <h2>(like potholes or street lighting)</h2>
 
-        [%
-            question =  c.cobrand.enter_postcode_text();
-        %]
-
         <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
-            <label for="pc">[% question %]:</label>
-            <div>
-                <input type="text" name="pc" value="" id="pc" size="10" maxlength="200" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]">
-                <input type="submit" value="[% loc('Go') %]" id="submit">
-            </div>
+        <p>
+            <a href="/around?latitude=10.322;longitude=123.907">Luz</a> |
+            <a href="/around?latitude=10.295;longitude=123.888">San Nicolas Proper</a>
+            </p>
         </form>
     </div>
 </div>
