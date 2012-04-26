@@ -16,6 +16,10 @@ sub country {
     return 'PH';
 }
 
+sub area_types {
+    return ( 'BGY' );
+}
+
 sub disambiguate_location {
     return {
         country => 'ph',
