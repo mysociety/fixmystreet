@@ -251,7 +251,7 @@ subtest 'check meta data population' => sub {
     $processor->_current_council( $council );
     $processor->_current_service( { service_code => 100 } );
 
-    $processor->_add_contact_to_meta( $contact );
+    $processor->_add_meta_to_contact( $contact );
 
     my $extra = [ {
             variable => 'true',
@@ -335,7 +335,7 @@ subtest 'check attribute ordering' => sub {
     $processor->_current_council( $council );
     $processor->_current_service( { service_code => 100 } );
 
-    $processor->_add_contact_to_meta( $contact );
+    $processor->_add_meta_to_contact( $contact );
 
     my $extra = [
         {
@@ -441,7 +441,7 @@ subtest 'check bromely skip code' => sub {
     $processor->_current_council( $council );
     $processor->_current_service( { service_code => 100 } );
 
-    $processor->_add_contact_to_meta( $contact );
+    $processor->_add_meta_to_contact( $contact );
 
     my $extra = [ {
             variable => 'true',
@@ -461,7 +461,7 @@ subtest 'check bromely skip code' => sub {
     $council->area_id(1);
 
     $processor->_current_council( $council );
-    $processor->_add_contact_to_meta( $contact );
+    $processor->_add_meta_to_contact( $contact );
 
     $extra = [
         {
