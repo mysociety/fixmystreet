@@ -349,7 +349,7 @@ sub update_contacts : Private {
             $conf->api_key( $params{api_key} );
             $conf->send_method( $params{send_method} );
             $conf->send_comments( $params{send_comments} );
-            $conf->comment_user_id( $params{comment_user_id} );
+            $conf->comment_user_id( $params{comment_user_id} || undef );
 
             $conf->update();
 
@@ -362,7 +362,7 @@ sub update_contacts : Private {
             $conf->api_key( $params{api_key} );
             $conf->send_method( $params{send_method} );
             $conf->send_comments( $params{send_comments} );
-            $conf->comment_user_id( $params{comment_user_id} );
+            $conf->comment_user_id( $params{comment_user_id} || undef );
 
             $conf->insert();
 
