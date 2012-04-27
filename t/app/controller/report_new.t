@@ -738,7 +738,7 @@ for my $test (
         extra => [
             {
                 name        => 'fms_extra_title',
-                value       => 'Mr',
+                value       => 'MR',
                 description => 'FMS_EXTRA_TITLE',
             },
         ],
@@ -752,7 +752,7 @@ for my $test (
         extra      => [
             {
                 name        => 'fms_extra_title',
-                value       => 'Mr',
+                value       => 'MR',
                 description => 'FMS_EXTRA_TITLE',
             },
             {
@@ -801,7 +801,7 @@ for my $test (
             detail            => 'Test report details.',
             photo             => '',
             email             => 'firstlast@example.com',
-            fms_extra_title   => 'Mr',
+            fms_extra_title   => 'MR',
             may_show_name     => '1',
             phone             => '07903 123 456',
             category          => 'Trees',
