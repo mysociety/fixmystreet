@@ -222,6 +222,8 @@ subtest 'check open311 configuring' => sub {
                 api_key      => 'api key',
                 endpoint     => 'http://example.com/open311',
                 jurisdiction => 'mySociety',
+                send_comments => 0,
+                send_method  => 'Open311',
             }
         }
     );
@@ -244,6 +246,8 @@ subtest 'check open311 configuring' => sub {
                 api_key      => 'new api key',
                 endpoint     => 'http://example.org/open311',
                 jurisdiction => 'open311',
+                send_comments => 0,
+                send_method  => 'Open311',
             }
         }
     );
