@@ -93,16 +93,16 @@ sub update_comments {
                 # if the comment is older than the last update
                 # do not change the status of the problem as it's
                 # tricky to determine the right thing to do.
-                if ( $comment->created > $p->lastupdate ) {
+                if ( $comment->created_local > $p->lastupdate_local ) {
                     if ( $p->is_open and lc($request->{status}) eq 'closed' ) {
                         $p->state( 'fixed - council' );
-                        $p->last_update( $comment->created );
+                        $p->lastupdate( $comment->created );
                         $p->update;
 
                         $comment->mark_fixed( 1 );
                     } elsif ( ( $p->is_closed || $p->is_fixed ) and lc($request->{status}) eq 'open' ) {
                         $p->state( 'confirmed' );
-                        $p->last_update( $comment->created );
+                        $p->lastupdate( $comment->created );
                         $p->update;
 
                         $comment->mark_open( 1 );

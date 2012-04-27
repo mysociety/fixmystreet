@@ -170,6 +170,7 @@ for my $test (
         my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'update.xml' => $local_requests_xml } );
 
         $problem->comments->delete;
+        $problem->lastupdate( DateTime->now()->subtract( days => 1 ) );
         $problem->state( $test->{start_state} );
         $problem->update;
 
@@ -397,6 +398,62 @@ subtest 'check that existing comments are not duplicated' => sub {
     $problem->discard_changes;
     is $problem->comments->count, 2, 'if comments are deleted then they are added';
 };
+
+foreach my $test ( {
+        desc => 'check that closed and then open comment results in correct state',
+        dt1  => $dt->subtract( hours => 1 ),
+        dt2  => $dt,
+    },
+    {
+        desc => 'check that old comments do not change problem status',
+        dt1  => $dt->subtract( hours => 2 ),
+        dt2  => $dt,
+    }
+) {
+    subtest $test->{desc}  => sub {
+        my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+        <service_requests_updates>
+        <request_update>
+        <update_id>638344</update_id>
+        <service_request_id>@{[ $problem->external_id ]}</service_request_id>
+        <service_request_id_ext>@{[ $problem->id ]}</service_request_id_ext>
+        <status>closed</status>
+        <description>This is a note</description>
+        <updated_datetime>UPDATED_DATETIME</updated_datetime>
+        </request_update>
+        <request_update>
+        <update_id>638354</update_id>
+        <service_request_id>@{[ $problem->external_id ]}</service_request_id>
+        <service_request_id_ext>@{[ $problem->id ]}</service_request_id_ext>
+        <status>open</status>
+        <description>This is a different note</description>
+        <updated_datetime>UPDATED_DATETIME2</updated_datetime>
+        </request_update>
+        </service_requests_updates>
+        };
+
+        $problem->comments->delete;
+        $problem->state( 'confirmed' );
+        $problem->lastupdate( $dt->subtract( hours => 3 ) );
+        $problem->update;
+
+        $requests_xml =~ s/UPDATED_DATETIME/$test->{dt1}/;
+        $requests_xml =~ s/UPDATED_DATETIME2/$test->{dt2}/;
+
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'update.xml' => $requests_xml } );
+
+        my $update = Open311::GetServiceRequestUpdates->new(
+            system_user => $user,
+        );
+
+        my $council_details = { areaid => 2482 };
+        $update->update_comments( $o, $council_details );
+
+        $problem->discard_changes;
+        is $problem->comments->count, 2, 'two comments after fetching updates';
+        is $problem->state, 'confirmed', 'correct problem status';
+    };
+}
 
 $problem2->comments->delete();
 $problem->comments->delete();
