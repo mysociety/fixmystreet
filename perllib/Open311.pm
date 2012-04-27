@@ -21,6 +21,13 @@ has debug_details => ( is => 'rw', 'isa' => 'Str', default => '' );
 has success => ( is => 'rw', 'isa' => 'Bool', default => 0 );
 has error => ( is => 'rw', 'isa' => 'Str', default => '' );
 
+before [
+    qw/get_service_list get_service_meta_info get_service_requests get_service_request_updates
+      send_service_request post_service_request_update/
+  ] => sub {
+    shift->debug_details('');
+  };
+
 sub get_service_list {
     my $self = shift;
 
@@ -221,7 +228,7 @@ sub post_service_request_update {
             }
         }
 
-        warn sprintf( "Failed to submit comment %s over Open311, response - %s\n%s", $comment->id, $response, $self->debug_details );
+        warn sprintf( "Failed to submit comment %s over Open311, response - %s\n%s\n", $comment->id, $response, $self->debug_details );
         return 0;
     }
 }
@@ -330,7 +337,7 @@ sub _post {
     } else {
         $self->success(0);
         $self->error( sprintf( 
-            "request failed: %s\nerror: %s\n%s",
+            "request failed: %s\nerror: %s\n%s\n",
             $res->status_line,
             $self->_process_error( $res->decoded_content ),
             $self->debug_details
