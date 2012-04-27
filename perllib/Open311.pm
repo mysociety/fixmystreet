@@ -169,7 +169,10 @@ sub get_service_request_updates {
     my $start_date = shift;
     my $end_date = shift;
 
-    my $params = {};
+    my $params = {
+        api_key => $self->api_key,
+        jurisdiction => $self->jurisdiction,
+    };
 
     if ( $start_date || $end_date ) {
         return 0 unless $start_date && $end_date;

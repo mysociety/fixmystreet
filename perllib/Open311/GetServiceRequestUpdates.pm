@@ -49,7 +49,10 @@ sub update_comments {
 
     my $requests = $open311->get_service_request_updates( @args );
 
-    return 0 unless $open311->success;
+    unless ( $open311->success ) {
+        warn "Failed to fetch ServiceRquest Updates: " . $open311->error;
+        return 0;
+    }
 
     for my $request (@$requests) {
         my $request_id = $request->{service_request_id};
