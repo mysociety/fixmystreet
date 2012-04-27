@@ -24,6 +24,9 @@ body { background: #9b9b9b url('http://www.bromley.gov.uk/site/styles/css_img/re
     h2 {
         color: $primary_text;
     }
+    a#geolocate_link {
+        color: $primary_text;
+    }
 }
 
 // Don't want gap that normal site has
