@@ -90,16 +90,23 @@ sub update_comments {
                     }
                 );
 
-                if ( $p->is_open and lc($request->{status}) eq 'closed' ) {
-                    $p->state( 'fixed - council' );
-                    $p->update;
+                # if the comment is older than the last update
+                # do not change the status of the problem as it's
+                # tricky to determine the right thing to do.
+                if ( $comment->created > $p->lastupdate ) {
+                    if ( $p->is_open and lc($request->{status}) eq 'closed' ) {
+                        $p->state( 'fixed - council' );
+                        $p->last_update( $comment->created );
+                        $p->update;
 
-                    $comment->mark_fixed( 1 );
-                } elsif ( ( $p->is_closed || $p->is_fixed ) and lc($request->{status}) eq 'open' ) {
-                    $p->state( 'confirmed' );
-                    $p->update;
+                        $comment->mark_fixed( 1 );
+                    } elsif ( ( $p->is_closed || $p->is_fixed ) and lc($request->{status}) eq 'open' ) {
+                        $p->state( 'confirmed' );
+                        $p->last_update( $comment->created );
+                        $p->update;
 
-                    $comment->mark_open( 1 );
+                        $comment->mark_open( 1 );
+                    }
                 }
 
                 $comment->insert();
