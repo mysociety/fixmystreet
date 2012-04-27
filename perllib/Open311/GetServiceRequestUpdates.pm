@@ -90,12 +90,12 @@ sub update_comments {
                     }
                 );
 
-                if ( $p->is_open and $request->{status} eq 'closed' ) {
+                if ( $p->is_open and lc($request->{status}) eq 'closed' ) {
                     $p->state( 'fixed - council' );
                     $p->update;
 
                     $comment->mark_fixed( 1 );
-                } elsif ( ( $p->is_closed || $p->is_fixed ) and $request->{status} eq 'open' ) {
+                } elsif ( ( $p->is_closed || $p->is_fixed ) and lc($request->{status}) eq 'open' ) {
                     $p->state( 'confirmed' );
                     $p->update;
 
