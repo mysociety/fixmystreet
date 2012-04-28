@@ -18,8 +18,19 @@ MAILTO=cron-!!(*= $site *)!!@mysociety.org
 #2 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-alerts.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-alerts" || echo "stalled?"
 0,30 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-questionnaires.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-questionnaires" || echo "stalled?"
 
-!!(* } elsif (($vhost eq 'www.fixmystreet.com') || ($vhost eq 'matthew.fixmystreet.com')|| ($vhost eq 'bromley.test.mysociety.org') || ($vhost eq 'oracle.test.mysociety.org')) { *)!!
+!!(* } elsif (($vhost eq 'www.fixmystreet.com') || ($vhost eq 'matthew.fixmystreet.com')|| ($vhost eq 'bromley.test.mysociety.org')) { *)!!
 5,10,15,20,25,30,35,40,45,50,55 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-reports" || echo "stalled?"
+0 0-8,10,11,13,14,16,17,19-23 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-reports" || echo "stalled?"
+0 9,12,15,18 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-reports --verbose" || echo "stalled?"
+2 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-alerts.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-alerts" || echo "stalled?"
+0,30 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-questionnaires.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-questionnaires" || echo "stalled?"
+5,10,15,20,25,30,35,40,45,50,55 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-comments.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-comments" || echo "stalled?"
+5,10,15,20,25,30,35,40,45,50,55 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/fetch-comments.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper fetch-comments" || echo "stalled?"
+0,30 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/open311-populate-service-list.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper open311-populate-service-list" || echo "stalled?"
+
+# run send-reports once a minute for oracle demo site
+!!(* } elsif (($vhost eq 'oracle.test.mysociety.org')) { *)!!
+* * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-reports" || echo "stalled?"
 0 0-8,10,11,13,14,16,17,19-23 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-reports" || echo "stalled?"
 0 9,12,15,18 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-reports --verbose" || echo "stalled?"
 2 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-alerts.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-alerts" || echo "stalled?"
