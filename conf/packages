@@ -32,6 +32,7 @@ libyaml-perl
 liblist-moreutils-perl
 ruby-compass | libhaml-ruby
 libtemplate-perl
+postgresql-8.4
 postgresql-server-dev-8.4
 gnuplot
 ttf-bitstream-vera

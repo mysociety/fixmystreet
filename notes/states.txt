@@ -2,13 +2,13 @@ Problems exist in four broad state categories:
     unconfirmed - the report has been made but the user hasn't clicked
 the confirmation link.
     open - the report has been confirmed
-    fixed - exactly what it says
+    fixed - any user has marked this problem as fixed
     closed - a registered user from a council has marked the problem as
 closed
 
 When a problem is created it will be unconfirmed, The problem
 becomes confirmed when the user clicks on the link sent to them in
-the confirmation email. At this point the problem is confirmed.
+the confirmation email. 
 
 If a problem is uploaded from a mobile app then it is initally 
 created with a state of partial.
@@ -17,7 +17,7 @@ If a user is logged in then any problem they create is confirmed
 automatically.
 
 If a council user is logged in then they can change the state of the 
-problem to one of the following provifing they are from the council that
+problem to one of the following, providing they are from the council that
 the problem has been reported to:
     Open ( a synonym for confirmed )
     Investigating

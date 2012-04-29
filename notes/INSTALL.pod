@@ -105,7 +105,7 @@ C<bin/install_perl_modules> script, so run that now. This will install them
 into a directory called local.
 
 It uses cpanminus and Carton under the hood but should install these
-of they are missing. You may need to install some source packages to
+if they are missing. You may need to install some source packages to
 allow some of the included modules to be built, including:
 
 =over

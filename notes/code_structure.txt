@@ -3,7 +3,7 @@ The code is broken down into the following sections:
 website: code to display the website and handle user submissions
 
 backend: send alerts to the councils, work out who should get the alert, various
-confirmtaion emails
+confirmation emails
 
 mobile apps: currently for iPhone and Android - two separate apps
 
