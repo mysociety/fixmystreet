@@ -1,3 +1,4 @@
+use utf8;
 package FixMyStreet::DB::Result::Comment;
 
 # Created by DBIx::Class::Schema::Loader
@@ -7,7 +8,6 @@ use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
-
 __PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "EncodedColumn");
 __PACKAGE__->table("comment");
 __PACKAGE__->add_columns(
@@ -20,6 +20,10 @@ __PACKAGE__->add_columns(
   },
   "problem_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "user_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "anonymous",
+  { data_type => "boolean", is_nullable => 0 },
   "name",
   { data_type => "text", is_nullable => 1 },
   "website",
@@ -48,30 +52,26 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", is_nullable => 0 },
   "mark_open",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
-  "user_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "anonymous",
-  { data_type => "boolean", is_nullable => 0 },
   "problem_state",
   { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
-__PACKAGE__->belongs_to(
-  "user",
-  "FixMyStreet::DB::Result::User",
-  { id => "user_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
-);
 __PACKAGE__->belongs_to(
   "problem",
   "FixMyStreet::DB::Result::Problem",
   { id => "problem_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
+__PACKAGE__->belongs_to(
+  "user",
+  "FixMyStreet::DB::Result::User",
+  { id => "user_id" },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-06-27 10:07:32
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ilLn3dlagg5COdpZDmzrVQ
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-08 17:19:55
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:E+96vo/AB0zz1jAEPj/OKw
 
 use DateTime::TimeZone;
 use Image::Size;

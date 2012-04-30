@@ -1,3 +1,4 @@
+use utf8;
 package FixMyStreet::DB::Result::User;
 
 # Created by DBIx::Class::Schema::Loader
@@ -7,7 +8,6 @@ use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
-
 __PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "EncodedColumn");
 __PACKAGE__->table("users");
 __PACKAGE__->add_columns(
@@ -53,8 +53,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-06-27 10:25:21
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:9IHuqRTcHZCqJeBAaiQxzw
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-08 17:19:55
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:tM1LUGrqDeQnF4BDgnYXGQ
 
 __PACKAGE__->add_columns(
     "password" => {
