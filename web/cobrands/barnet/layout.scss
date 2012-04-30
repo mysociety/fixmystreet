@@ -91,13 +91,15 @@
     display: none !important;
 }
 
-#side-form {
-    width: 30em;
-}
 
 #report-a-problem-sidebar {
-    left: 33.5em;
+    left: 30em;
     top: 7em;
+}
+.ie6 {
+    #report-a-problem-sidebar {
+        left: 30em;
+    }
 }
 
 .general-sidebar-notes {
