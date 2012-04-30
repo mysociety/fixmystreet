@@ -86,8 +86,9 @@
   padding: 0 1em;
 }
 
-#site-header {
-    display: none;
+#site-header,
+#site-logo {
+    display: none !important;
 }
 
 #side-form {
@@ -136,8 +137,23 @@ body > html {font-size: 12px;}
 #content.fullWidth {width: 678px;}
 #content.home {margin-top: 18px;}
 
-.mappage #content.withWidth {margin: 0 0 0 0px; width: auto; overflow: hidden; float: left; display: inline;}
-.mappage #content.fullWidth {width: 900px;}
+.mappage {
+    #content.withWidth {margin: 0 0 0 0px; width: auto; overflow: hidden; float: left; display: inline;}
+    #content.fullWidth {width: 900px;}
+}
+
+/* IE6 ignore the second #foo.bar rule so we have to fudge it another way */
+.ie6 {
+    .mappage {
+        .wrapper {
+            margin: 0 0 0 -232px;
+            overflow: hidden;
+            float: left;
+            display: inline;
+            width: 900px;
+        }
+    }
+}
 
 #breadcrumb {font-size: .9em; color: #5c6267; padding: 6px 0; margin: 0 0 0 232px;}
 #breadcrumb.full {margin: 0;}
@@ -149,6 +165,9 @@ body > html {font-size: 12px;}
 /* ############################################################## */
 
 #column_nav {width: 214px; float: left; display: inline; padding: 0; margin: -35px 0 0 -910px; border-right: 3px solid #fff;}
+.ie6 #column_nav {
+    margin: -590px 0 0 0px;
+}
 body.mappage #column_nav { display: none; }
 
 
