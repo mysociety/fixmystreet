@@ -171,9 +171,14 @@ body > html {font-size: 12px;}
 /* ############################################################## */
 
 #column_nav {width: 214px; float: left; display: inline; padding: 0; margin: -35px 0 0 -910px; border-right: 3px solid #fff;}
+
 .ie6 #column_nav {
-    margin: -590px 0 0 0px;
+    float: none;
+    position: absolute;
+    top: 85px;
+    margin: 0 0 0 0px;
 }
+
 body.mappage #column_nav { display: none; }
 
 
