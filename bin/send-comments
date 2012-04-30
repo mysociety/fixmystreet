@@ -44,6 +44,8 @@ while ( my $council = $councils->next ) {
     my $comments = FixMyStreet::App->model('DB::Comment')->search( {
             'me.whensent'    => undef,
             'me.external_id' => undef,
+            'state'          => 'confirmed',
+            'confirmed'      => { '!=' => undef },
             'problem.whensent'    => { '!=' => undef },
             'problem.external_id'  => { '!=' => undef },
             'problem.council'      => { -like => '%' . $council->area_id .'%' },
