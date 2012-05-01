@@ -213,6 +213,8 @@ body > html {font-size: 12px;}
 
 body.mappage #column_nav { display: none; }
 
+#content h1 {margin: 0 0 20px; font-size: 1.8em; border-bottom: 6px solid #bed9dd; font-family: Georgia, Times, 'Times New Roman', serif; color: #5d6167;}
+#content h1 span {padding: 6px 7px 3px; border: 1px solid #eff1f2; border-bottom: 0 none; display: block;}
 
 #column_nav .navigation {background: #fff; margin: 0 0 4px;}
 #column_nav h2 {font-size: 1.2em; padding: 0; height: 29px; margin: 0; border-radius: 0 0 3px 3px; background: url(img/nav-bg-active.gif) left bottom repeat-x; border-top: 6px solid #bddadc;}
