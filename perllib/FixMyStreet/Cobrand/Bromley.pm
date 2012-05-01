@@ -17,6 +17,11 @@ sub path_to_web_templates {
     ];
 }
 
+sub site_title {
+    my ($self) = @_;
+    return "London Borough of Bromley - Report a problem in Bromley\x{2019}s streets or parks";
+}
+
 sub disambiguate_location {
     my $self = shift;
     return {
