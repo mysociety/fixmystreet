@@ -5,8 +5,26 @@
 
 @import "../fixmystreet/_base";
 
-#site-logo {
-    background: none;
-    text-indent: 0;
+#site-logo{
+  width: 225px !important;
+  background: url('/cobrands/fixmybarangay/images/sprite.png') -3px -3px no-repeat;
+}
+.ie6 #site-logo {
+  background: url('/cobrands/fixmybarangay/images/ie_logo.gif') 0 -5px no-repeat;
 }
 
+body.frontpage {
+  #site-logo{
+    width: 370px !important;
+  }
+}
+
+.ie6 body.frontpage #site-logo {
+  background:url(/cobrands/fixmybarangay/images/ie_front_logo.gif) 0 0 no-repeat;
+}
+
+.yellow-btn,
+button.yellow-btn,
+input.yellow-btn{
+  @include button-reset(#FFD000, #cc9000, #aa7000, #300, #FFD000, #cc9000, #aa7000, #300);
+}
