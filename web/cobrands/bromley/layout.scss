@@ -15,6 +15,33 @@ body { background: #9b9b9b url('http://www.bromley.gov.uk/site/styles/css_img/re
     }
 }
 
+// To prevent font size larger interfering with the fixed Bromley layout
+.container { width: auto; }
+.full-width { width: 464px; }
+.shadow-wrap { width: 464px; }
+#map_box { width: 464px; }
+.content { width: 432px; }
+body.fullwidthpage .content { width: auto; }
+body.twothirdswidthpage .content {
+    width: 640px;
+    aside {
+        left: 672px;
+        width: 208px;
+        padding: 16px;
+    }
+    .sticky-sidebar {
+        left: 672px;
+        aside {
+            top:7em;
+        }
+    }
+}
+.ie6, .ie7 {
+    body.mappage .container {
+        width: 432px;
+    }
+}
+
 #front-main {
     background: $primary;
     @include border-radius(1em 1em 0 0);
@@ -124,12 +151,12 @@ body.twothirdswidthpage {
 
 // So as not to interfere with the Bromley footer, make the fixed nav static.
 .shadow-wrap {
-  position: static;
-  padding-top: 0;
-  margin-bottom: 1em;
-  ul#key-tools {
-    border-top: none;
-    border-bottom: 1px solid $primary;
-  }
+    position: static;
+    padding-top: 0;
+    margin-bottom: 1em;
+    ul#key-tools {
+        border-top: none;
+        border-bottom: 1px solid $primary;
+    }
 }
 

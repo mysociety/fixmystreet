@@ -114,7 +114,7 @@ $(function(){
                 $('#map_box').prependTo('.content').css({
                     zIndex: 1, position: 'absolute',
                     top: '1em', left: '', right: bromley_right, bottom: '',
-                    width: '29em', height: '29em',
+                    width: '464px', height: '464px',
                     margin: 0
                 });
             } else if ($html.hasClass('ie6')) {
