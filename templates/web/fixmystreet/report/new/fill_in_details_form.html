@@ -111,6 +111,9 @@
 
             [% IF c.user_exists %]
                 <div class="form-box">
+
+                    [% INCLUDE 'report/new/extra_name.html' %]
+
                     <label for="form_name">[% loc('Name') %]</label>
                     [% IF field_errors.name %]
                         <p class='form-error'>[% field_errors.name %]</p>
