@@ -37,6 +37,12 @@ sub recent_photos {
     return $self->problems->recent_photos( $num, $lat, $lon, $dist );
 }
 
+sub pin_colour {
+    my ( $self, $p ) = @_;
+    return 'green' if time() - $p->confirmed_local->epoch < 7 * 24 * 60 * 60;
+    return 'yellow';
+}
+
 sub process_extras {
     my $self     = shift;
     my $ctx      = shift;

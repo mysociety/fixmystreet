@@ -925,5 +925,9 @@ sub example_places {
 
 sub process_extras {}
 
+sub pin_colour {
+    'yellow';
+}
+
 1;
 

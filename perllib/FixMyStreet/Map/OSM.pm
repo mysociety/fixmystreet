@@ -109,15 +109,9 @@ sub map_pins {
     my @pins = map {
         # Here we might have a DB::Problem or a DB::Nearby, we always want the problem.
         my $p = (ref $_ eq 'FixMyStreet::App::Model::DB::Nearby') ? $_->problem : $_;
-        #{
-        #    latitude  => $p->latitude,
-        #    longitude => $p->longitude,
-        #    colour    => $p->state eq 'fixed' ? 'green' : 'red',
-        #    id        => $p->id,
-        #    title     => $p->title,
-        #}
+        my $colour = $c->cobrand->pin_colour( $p );
         [ $p->latitude, $p->longitude,
-          'yellow', # $p->is_fixed ? 'green' : 'red',
+          $colour,
           $p->id, $p->title
         ]
     } @$around_map, @$nearby;
