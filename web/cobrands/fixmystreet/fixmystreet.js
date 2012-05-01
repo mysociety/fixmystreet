@@ -143,7 +143,7 @@ $(function(){
                 // Remove full-screen-ness
                 var banner_text;
                 if (cobrand == 'bromley') {
-                    banner_text = 'Click map to report a problem<span>Yellow pins show existing reports</span>';
+                    banner_text = 'Click map to report a problem<span>Pins show existing reports</span>';
                 } else {
                     $('#site-header').show();
                     banner_text = 'Click map to report a problem';
