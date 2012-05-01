@@ -38,6 +38,10 @@ use constant SEND_FAIL_RETRIES_CUTOFF => 3;
 use constant COUNCIL_ID_BARNET     => 2489;
 use constant COUNCIL_ID_EAST_HANTS => 2330;
 
+# FMB aka FixMyBarangay numbers
+use constant FMB_ID_LUZ     => 1;   # barangay Luz
+use constant FMB_ID_BSN     => 2;   # barangay Basak San Nicolas
+
 use constant MAX_LINE_LENGTH       => 132;
 
 # send_method config values found in by-area config data, for selecting to appropriate method
@@ -250,7 +254,7 @@ while (my $row = $unsent->next) {
     if (mySociety::Config::get('STAGING_SITE')) {
         # on a staging server send emails to ourselves rather than the councils
         # ...webservice calls will only go through if explictly allowed here:
-        my @testing_councils = (COUNCIL_ID_BARNET);
+        my @testing_councils = (COUNCIL_ID_BARNET, FMB_ID_LUZ, FMB_ID_BSN);
         unless (grep {$row->council eq $_} @testing_councils) {
             @recips = ( mySociety::Config::get('CONTACT_EMAIL') );
             $send_method = 0;
