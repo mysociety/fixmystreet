@@ -54,9 +54,17 @@ my $contact4 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     category => 'Trees',
     email => 'trees@example.com',
 } );
+my $contact5 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
+    %contact_params,
+    area_id => 2651, # Edinburgh
+    category => 'Trees',
+    email => 'trees@example.com',
+} );
 ok $contact1, "created test contact 1";
 ok $contact2, "created test contact 2";
 ok $contact3, "created test contact 3";
+ok $contact4, "created test contact 4";
+ok $contact5, "created test contact 5";
 
 # test that the various bit of form get filled in and errors correctly
 # generated.
@@ -733,8 +741,18 @@ subtest "check that a lat/lon off coast leads to /around" => sub {
 
 for my $test (
     {
+        desc  => 'user title not set if not bromley problem',
+        host  => 'http://www.fixmystreet.com',
+        postcode => 'EH99 1SP',
+        fms_extra_title => '',
+        extra => undef,
+        user_title => undef,
+    },
+    {
         desc  => 'title shown for bromley problem on main site',
         host  => 'http://www.fixmystreet.com',
+        postcode => 'BR1 3UH',
+        fms_extra_title => 'MR',
         extra => [
             {
                 name        => 'fms_extra_title',
@@ -742,13 +760,16 @@ for my $test (
                 description => 'FMS_EXTRA_TITLE',
             },
         ],
+        user_title => 'MR',
     },
     {
         desc =>
           'title, first and last name shown for bromley problem on cobrand',
         host       => 'http://bromley.fixmystreet.com',
+        postcode => 'BR1 3UH',
         first_name => 'Test',
         last_name  => 'User',
+        fms_extra_title => 'MR',
         extra      => [
             {
                 name        => 'fms_extra_title',
@@ -766,6 +787,7 @@ for my $test (
                 description => 'LAST_NAME',
             },
         ],
+        user_title => 'MR',
     },
   )
 {
@@ -773,9 +795,10 @@ for my $test (
         $mech->host( $test->{host} );
 
         $mech->log_out_ok;
+        $mech->clear_emails_ok;
 
-        $mech->get_ok('/around');
-        $mech->submit_form_ok( { with_fields => { pc => 'BR1 3UH', } },
+        $mech->get_ok('/');
+        $mech->submit_form_ok( { with_fields => { pc => $test->{postcode}, } },
             "submit location" );
         $mech->follow_link_ok(
             { text_regex => qr/skip this step/i, },
@@ -783,7 +806,11 @@ for my $test (
         );
 
         my $fields = $mech->visible_form_values('mapSkippedForm');
-        ok exists( $fields->{fms_extra_title} ), 'user title field displayed';
+        if ( $test->{fms_extra_title} ) {
+            ok exists( $fields->{fms_extra_title} ), 'user title field displayed';
+        } else {
+            ok !exists( $fields->{fms_extra_title} ), 'user title field not displayed';
+        }
         if ( $test->{first_name} ) {
             ok exists( $fields->{first_name} ), 'first name field displayed';
             ok exists( $fields->{last_name} ),  'last name field displayed';
@@ -801,12 +828,14 @@ for my $test (
             detail            => 'Test report details.',
             photo             => '',
             email             => 'firstlast@example.com',
-            fms_extra_title   => 'MR',
             may_show_name     => '1',
             phone             => '07903 123 456',
             category          => 'Trees',
             password_register => '',
         };
+
+        $submission_fields->{fms_extra_title} = $test->{fms_extra_title}
+            if $test->{fms_extra_title};
 
         if ( $test->{first_name} ) {
             $submission_fields->{first_name} = $test->{first_name};
@@ -819,6 +848,16 @@ for my $test (
         $mech->submit_form_ok( { with_fields => $submission_fields },
             "submit good details" );
 
+        my $email = $mech->get_email;
+        ok $email, "got an email";
+        like $email->body, qr/confirm the problem/i, "confirm the problem";
+
+        my ($url) = $email->body =~ m{(http://\S+)};
+        ok $url, "extracted confirm url '$url'";
+
+        # confirm token in order to update the user details
+        $mech->get_ok($url);
+
         my $user =
           FixMyStreet::App->model('DB::User')
           ->find( { email => 'firstlast@example.com' } );
@@ -826,9 +865,11 @@ for my $test (
         my $report = $user->problems->first;
         ok $report, "Found the report";
         my $extras = $report->extra;
+        is $user->title, $test->{'user_title'}, 'user title correct';
         is_deeply $extras, $test->{extra}, 'extra contains correct values';
 
         $user->problems->delete;
+        $user->alerts->delete;
         $user->delete;
     };
 }
@@ -836,5 +877,7 @@ for my $test (
 $contact1->delete;
 $contact2->delete;
 $contact3->delete;
+$contact4->delete;
+$contact5->delete;
 
 done_testing();

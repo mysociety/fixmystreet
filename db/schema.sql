@@ -135,7 +135,8 @@ create table users (
     phone           text,
     password        text    not null default '',
     from_council    integer, -- id of council user is from or null/0 if not
-    flagged         boolean not null default 'f'
+    flagged         boolean not null default 'f',
+    title           text
 );
 
 -- Problems reported by users of site

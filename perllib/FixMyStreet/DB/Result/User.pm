@@ -1,3 +1,4 @@
+use utf8;
 package FixMyStreet::DB::Result::User;
 
 # Created by DBIx::Class::Schema::Loader
@@ -7,7 +8,6 @@ use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
-
 __PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "EncodedColumn");
 __PACKAGE__->table("users");
 __PACKAGE__->add_columns(
@@ -30,6 +30,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_nullable => 1 },
   "flagged",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "title",
+  { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("users_email_key", ["email"]);
@@ -46,6 +48,12 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 __PACKAGE__->has_many(
+  "open311confs",
+  "FixMyStreet::DB::Result::Open311conf",
+  { "foreign.comment_user_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+__PACKAGE__->has_many(
   "problems",
   "FixMyStreet::DB::Result::Problem",
   { "foreign.user_id" => "self.id" },
@@ -53,8 +61,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-06-27 10:25:21
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:9IHuqRTcHZCqJeBAaiQxzw
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-05-01 16:20:29
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:LKi8u5IYnHW1+Mez64nvGg
 
 __PACKAGE__->add_columns(
     "password" => {

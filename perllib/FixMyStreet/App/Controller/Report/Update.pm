@@ -104,13 +104,16 @@ sub process_user : Private {
         my $user = $c->user->obj;
         my $name = scalar $c->req->param('name');
         $user->name( Utils::trim_text( $name ) ) if $name;
+        my $title = scalar $c->req->param('fms_extra_title');
+        $c->log->debug( 'user exists and title is ' . $title );
+        $user->title( Utils::trim_text( $title ) ) if $title;
         $update->user( $user );
         return 1;
     }
 
     # Extract all the params to a hash to make them easier to work with
     my %params = map { $_ => scalar $c->req->param($_) }
-      ( 'rznvy', 'name', 'password_register' );
+      ( 'rznvy', 'name', 'password_register', 'fms_extra_title' );
 
     # cleanup the email address
     my $email = $params{rznvy} ? lc $params{rznvy} : '';
@@ -136,6 +139,8 @@ sub process_user : Private {
         if $params{name};
     $update->user->password( Utils::trim_text( $params{password_register} ) )
         if $params{password_register};
+    $update->user->title( Utils::trim_text( $params{fms_extra_title} ) )
+        if $params{fms_extra_title};
 
     return 1;
 }
@@ -295,6 +300,7 @@ sub save_update : Private {
     }
     elsif ( $c->user && $c->user->id == $update->user->id ) {
         # Logged in and same user, so can confirm update straight away
+        $c->log->debug( 'user exists' );
         $update->user->update;
         $update->confirm;
     } else {

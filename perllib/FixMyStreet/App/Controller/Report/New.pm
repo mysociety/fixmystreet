@@ -643,9 +643,10 @@ sub process_user : Private {
     # The user is already signed in
     if ( $c->user_exists ) {
         my $user = $c->user->obj;
-        my %params = map { $_ => scalar $c->req->param($_) } ( 'name', 'phone' );
+        my %params = map { $_ => scalar $c->req->param($_) } ( 'name', 'phone', 'fms_extra_title' );
         $user->name( Utils::trim_text( $params{name} ) ) if $params{name};
         $user->phone( Utils::trim_text( $params{phone} ) );
+        $user->title( Utils::trim_text( $params{fms_extra_title} ) );
         $report->user( $user );
         $report->name( $user->name );
         return 1;
@@ -653,7 +654,7 @@ sub process_user : Private {
 
     # Extract all the params to a hash to make them easier to work with
     my %params = map { $_ => scalar $c->req->param($_) }
-      ( 'email', 'name', 'phone', 'password_register' );
+      ( 'email', 'name', 'phone', 'password_register', 'fms_extra_title' );
 
     # cleanup the email address
     my $email = $params{email} ? lc $params{email} : '';
@@ -681,6 +682,7 @@ sub process_user : Private {
     $report->user->phone( Utils::trim_text( $params{phone} ) );
     $report->user->password( Utils::trim_text( $params{password_register} ) )
         if $params{password_register};
+    $report->user->title( Utils::trim_text( $params{fms_extra_title} ) );
     $report->name( Utils::trim_text( $params{name} ) );
 
     return 1;
@@ -973,10 +975,12 @@ sub save_user_and_report : Private {
             name => $report->user->name,
             phone => $report->user->phone,
             password => $report->user->password,
+            title   => $report->user->title,
         };
         $report->user->name( undef );
         $report->user->phone( undef );
         $report->user->password( '', 1 );
+        $report->user->title( undef );
         $report->user->insert();
         $c->log->info($report->user->id . ' created for this report');
     }
@@ -992,6 +996,7 @@ sub save_user_and_report : Private {
             name => $report->user->name,
             phone => $report->user->phone,
             password => $report->user->password,
+            title   => $report->user->title,
         };
         $report->user->discard_changes();
         $c->log->info($report->user->id . ' exists, but is not logged in for this report');

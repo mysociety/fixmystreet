@@ -490,7 +490,7 @@ sub search_reports : Path('search_reports') {
                     'me.id' => $search_n,
                     'user.email' => { ilike => $like_search },
                     'me.name' => { ilike => $like_search },
-                    title => { ilike => $like_search },
+                    'me.title' => { ilike => $like_search },
                     detail => { ilike => $like_search },
                     council => { like => $like_search },
                     cobrand_data => { like => $like_search },
