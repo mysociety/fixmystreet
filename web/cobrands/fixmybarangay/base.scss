@@ -19,12 +19,20 @@ body.frontpage {
   }
 }
 
+#front-main #postcodeForm {
+  margin-right: 0 !important;
+}
+
 .ie6 body.frontpage #site-logo {
   background:url(/cobrands/fixmybarangay/images/ie_front_logo.gif) 0 0 no-repeat;
 }
 
 .yellow-btn,
+a.yellow-btn,
 button.yellow-btn,
 input.yellow-btn{
   @include button-reset(#FFD000, #cc9000, #aa7000, #300, #FFD000, #cc9000, #aa7000, #300);
+  &:visited, &:hover {
+    color:#300;
+  }
 }

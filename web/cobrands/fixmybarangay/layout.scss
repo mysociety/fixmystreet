@@ -9,6 +9,11 @@ body {
   color: $primary_text;
   background: $primary;
   
+  #postcodeForm {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
 }
 
 .nav-wrapper {
