@@ -212,12 +212,8 @@ h1 {
     // If no box-shadow, just want a boring black border to stand it out from the map.
     border: 1px solid #666;
     //take off margins so we line up properly
-    margin: 0;
+    margin: 0 0 0 0.5em;
   }
-}
-//weird margining thing for ie8
-.ie8 .content {
-  margin-top:3em;
 }
 
 // map page - has fixed header and different styling
