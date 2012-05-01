@@ -58,6 +58,16 @@ body.fullwidthpage {
     }
 }
 
+body.twothirdswidthpage {
+    .content {
+        .sticky-sidebar {
+            aside {
+                top: 25em;
+            }
+        }
+    }
+}
+
 .nav-wrapper {
     display: none;
 }
