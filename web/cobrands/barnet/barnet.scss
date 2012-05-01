@@ -53,8 +53,8 @@ body > html {font-size: 12px;}
 /* IE6 ignore the second #foo.bar rule so we have to fudge it another way */
 .ie6 {
     .mappage {
-        .wrapper {
-            margin: 0 0 0 -232px;
+        #content {
+            margin: 0 0 0 0px;
             overflow: hidden;
             float: left;
             display: inline;
