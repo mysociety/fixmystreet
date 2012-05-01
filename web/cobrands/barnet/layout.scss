@@ -31,12 +31,44 @@
     margin-left: 3em;
 }
 
+body.fullwidthpage {
+    .content {
+        width: 52em;
+    }
+}
+.ie6 {
+    body.fullwidthpage {
+        #front-main {
+            margin-top: -4em;
+        }
+        #front-howto,
+        #front-recently {
+            width: 26em;
+        }
+        .container {
+            padding: 0;
+        }
+        .content {
+            margin-left: 0px;
+            width: 55em;
+        }
+        div.img {
+            margin-top: -3.3em;
+        }
+    }
+}
+
 .nav-wrapper {
     display: none;
 }
 
-.mappage .content {
-    margin-top: 6em;
+.mappage {
+    .content {
+        margin-top: 6em;
+    }
+    #breadcrumb {
+        margin-left: 0px;
+    }
 }
 
 .frontpage .content {
@@ -103,7 +135,7 @@
 }
 
 .general-sidebar-notes {
-    left: 31.75em;
+    left: 30.2em;
     p {
         margin-bottom: 0 !important;
     }
