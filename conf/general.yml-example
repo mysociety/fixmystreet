@@ -61,3 +61,5 @@ RSS_LIMIT: '20'
 
 # Should problem reports link to the council summary pages?
 AREA_LINKS_FROM_PROBLEMS: '0'
+
+
