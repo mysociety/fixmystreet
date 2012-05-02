@@ -118,6 +118,33 @@ body.twothirdswidthpage {
     background: #e1e3e4 url(/cobrands/fixmystreet/images/sprite.png) right -2192px no-repeat
 }
 
+body.frontpage {
+    #user-meta {
+        p {
+            top: 1em;
+            color: $primary_text;
+            a {
+                background: none;
+            }
+        }
+    }
+}
+#user-meta {
+    float: right;
+    p {
+        @include box-shadow(none);
+        color: $primary_text;
+        position: relative;
+        background: none;
+        a {
+            color: $primary_text;
+            background: none;
+        }
+        a:hover {
+            background: $primary;
+        }
+    }
+}
 /* barnet styles */
 
 .clear {

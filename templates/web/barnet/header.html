@@ -69,9 +69,19 @@
         <!-- googleon:all -->
                     </div>
                     <div id="content" class="withWidth fullWidth">
+                        <div id="user-meta">
+                            [% IF c.user_exists %]
+                            <p>
+                                [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %] 
+                                <a href="/auth/sign_out">[% loc('sign out') %]</a>
+                            </p>
+                            [% END %]
+                        </div>
+
                         <h1>
                             <span>FixMyStreet</span>
                         </h1>
+
         <div class="wrapper">
         <div class="table-cell">
             <header id="site-header" role="banner">
@@ -80,15 +90,6 @@
                     <a href="#main-nav" id="nav-link">Main Navigation</a>
                 </div>
             </header>
-
-            <div id="user-meta">
-                [% IF c.user_exists %]
-                <p>
-                    [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %] 
-                    <a href="/auth/sign_out">[% loc('sign out') %]</a>
-                </p>
-                [% END %]
-            </div>
 
             <div class="container">
                 <div class="content[% " $mainclass" | html IF mainclass %]" role="main">
