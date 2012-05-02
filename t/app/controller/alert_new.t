@@ -452,7 +452,7 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
         $count++ if $_->body =~ /The following updates have been left on this problem:/;
         $count++ if $_->body =~ /The following new problems have been reported to City of\s*Edinburgh Council:/;
         $count++ if $_->body =~ /The following nearby problems have been added:/;
-        $count++ if $_->body =~ / -\s+Testing, EH1 1BB/;
+        $count++ if $_->body =~ /\s+-\s+Testing,\s+EH1\s+1BB/;
     }
     is $count, 5, 'Five emails with the right things in them';
 
