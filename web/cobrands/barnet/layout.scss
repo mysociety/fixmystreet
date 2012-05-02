@@ -145,6 +145,27 @@ body.frontpage {
         }
     }
 }
+.ie6 {
+    #user-meta {
+        float: none;
+        p {
+            position: absolute;
+            margin-top: 35px;
+            margin-right: 20px;
+            right: 0px;
+            left: auto;
+        }
+
+    }
+    .mappage {
+        #user-meta {
+            p {
+                margin-right: -100px;
+            }
+        }
+    }
+}
+
 /* barnet styles */
 
 .clear {
