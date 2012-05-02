@@ -485,7 +485,7 @@ sub search_reports : Path('search_reports') {
             ];
         } elsif ($search =~ /^area:(\d+)$/) {
             $query = [
-                'me.areas' => { like => ",$1," }
+                'me.areas' => { like => "%,$1,%" }
             ];
         } else {
             $query = [
