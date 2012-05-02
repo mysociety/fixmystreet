@@ -151,7 +151,7 @@ sub delete_user {
         ok( $p->delete, "delete problem " . $p->title );
     }
     for my $a ( $user->alerts ) {
-        $a->alert_sents->delete;
+        $a->alerts_sent->delete;
         ok( $a->delete, "delete alert " . $a->alert_type );
     }
     ok( $_->delete, "delete comment " . $_->text )     for $user->comments;
