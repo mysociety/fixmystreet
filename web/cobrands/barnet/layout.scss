@@ -1,6 +1,15 @@
 @import "_colours";
 @import "../fixmystreet/_layout";
 
+#mast,
+#breadcrumb,
+#page-title,
+#column_nav,
+#footer,
+#bottomBar {
+    display: block;
+}
+
 // So that map appears underneath the header
 .wrapper {
     position: relative;
