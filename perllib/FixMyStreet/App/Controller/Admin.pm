@@ -483,6 +483,10 @@ sub search_reports : Path('search_reports') {
             $query = [
                 'me.id' => int($1),
             ];
+        } elsif ($search =~ /^area:(\d+)$/) {
+            $query = [
+                'me.areas' => { like => ",$1," }
+            ];
         } else {
             $query = [
                 'me.id' => $search_n,
@@ -523,6 +527,8 @@ sub search_reports : Path('search_reports') {
                 'problem.id' => int($1),
                 %{ $site_restriction },
             ];
+        } elsif ($search =~ /^area:(\d+)$/) {
+            $query = [];
         } else {
             $query = [
                 'me.id' => $search_n,
@@ -534,7 +540,8 @@ sub search_reports : Path('search_reports') {
                 %{ $site_restriction },
             ];
         }
-        my $updates = $c->model('DB::Comment')->search(
+        my $updates;
+        $updates = $c->model('DB::Comment')->search(
             {
                 -or => $query,
             },
@@ -543,7 +550,7 @@ sub search_reports : Path('search_reports') {
                 prefetch => [qw/user problem/],
                 order_by => [\"(me.state='hidden')",\"(problem.state='hidden')",'me.created']
             }
-        );
+        ) if @$query;
 
         $c->stash->{updates} = [ $updates->all ];
 
