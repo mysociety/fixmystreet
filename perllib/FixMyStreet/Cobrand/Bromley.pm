@@ -36,6 +36,10 @@ sub example_places {
     return ( 'BR1 3UH', 'Glebe Rd, Bromley' );
 }
 
+sub on_map_default_max_pin_age {
+    return '1 month';
+}
+
 sub recent_photos {
     my ( $self, $area, $num, $lat, $lon, $dist ) = @_;
     $num = 3 if $num > 3 && $area eq 'alert';
