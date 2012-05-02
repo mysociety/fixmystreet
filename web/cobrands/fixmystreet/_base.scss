@@ -1,7 +1,7 @@
 /* HEADINGS and TYPOGRAPHY */
 
 body {
-  font-family: 'MuseoSans', 'Helvetica', 'Arial', sans-serif;
+  font-family: MuseoSans, Helmet, Freesans, sans-serif;
   margin:0;
   font-size:1em;
   line-height:1.5;
@@ -17,14 +17,14 @@ p {
 }
 
 small{
-  font-family: 'helvetica', 'arial',sans-serif;
+  font-family: Helmet, Freesans, sans-serif;
   font-style: italic;
   font-size: 0.8125em;
   line-height: 1.2307em;
 }
 
 h1 {
-  font-family:'Museo300-display', 'Helvetica', 'Arial', sans-serif;
+  font-family: 'Museo300-display', MuseoSans, Helmet, Freesans, sans-serif;
   font-size: 2em;
   line-height: 1em;
   font-weight: normal;
@@ -43,7 +43,7 @@ h1#reports_heading a {
 }
 
 h2 {
-  font-family:'Museo300-display', 'Helvetica', 'Arial', sans-serif;
+  font-family:'Museo300-display', MuseoSans, Helmet, Freesans, sans-serif;
   font-size: 1.5em; /*24px*/
   line-height: 1.3333em; /*32px*/
   font-weight: normal;
@@ -56,12 +56,12 @@ h3 {
   line-height: 1.20em;
   margin-top: 1.2em;
   margin-bottom: 0.8em;
-  font-weight: bold
+  font-weight: normal;
 }
 
 h4 {
   font-size: 1em;
-  font-weight: bold;
+  font-weight: normal;
   margin-bottom: 1em; 
 }
 
@@ -105,7 +105,7 @@ ol.big-numbers {
       color:#ccc;
       line-height:1;
       font: {
-        family: 'helvetica', 'arial', sans-serif;
+        family: Helmet, Freesans, sans-serif;
         weight:bold;
         size:2.5em;
       }
@@ -177,14 +177,14 @@ a:visited {
   margin-bottom: 0px;
 }
 .meta-2{
-  font-family: 'helvetica', 'arial',sans-serif;
+  font-family: Helmet, Freesans, sans-serif;
   color:#666666;
   font-style: italic;
   font-size: 0.75em;
 }
 
 h4.static{
-  font-family: 'helvetica', 'arial',sans-serif;
+  font-family: Helmet, Freesans, sans-serif;
   text-transform: uppercase;
   font-size: 0.875em;
   line-height: 1.71428em;
@@ -256,7 +256,7 @@ textarea {
   display: block;
   font-size: 1em;
   line-height: 1.5em;
-  font-family: 'helvetica', 'arial', sans-serif;
+  font-family: Helmet, Freesans, sans-serif;
   min-height:8em;
 }
 
@@ -514,7 +514,7 @@ p.label-valid {
         text-transform:uppercase;
         font: {
           size:0.6875em;
-          family: 'helvetica', 'arial', sans-serif;
+          family: Helmet, Freesans, sans-serif;
         }
         &:hover, &.hover, &.active {
           text-decoration:none;
@@ -1356,7 +1356,7 @@ table.nicetable {
   h2 {
     font: {
       style:italic;
-      family: 'helvetica', 'arial', sans-serif;
+      family: Helmet, Freesans, sans-serif;
       size:1.1875em;
     }
     color:#4d4d4d;
@@ -1366,7 +1366,7 @@ table.nicetable {
     padding:1em;
     color: $primary_text;
     background: $primary;
-    font-family: 'helvetica', 'arial', sans-serif;
+    font-family: Helmet, Freesans, sans-serif;
     label {
       margin:0;
     }
@@ -1408,7 +1408,7 @@ table.nicetable {
     color:#C8C8C8;
     padding:0.5em;
     font: {
-      family: 'helvetica', 'arial', sans-serif;
+      family: Helmet, Freesans, sans-serif;
       size:0.8125em;
     }
     @include border-radius(0 0 0.25em 0.25em);
@@ -1425,7 +1425,7 @@ table.nicetable {
     width:100%;
     color: $primary_text;
     background: $primary;
-    font-family: 'helvetica', 'arial', sans-serif;
+    font-family: Helmet, Freesans, sans-serif;
     div {
       display:table-cell;
       text-align:center;
