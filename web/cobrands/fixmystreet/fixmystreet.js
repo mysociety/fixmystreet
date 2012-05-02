@@ -560,9 +560,11 @@ $.fn.drawer = function(id, ajax) {
     /*
      * Fancybox fullscreen images
      */
-    $('a[rel=fancy]').fancybox({
-        'overlayColor': '#000000'
-    });
+    if (typeof $.fancybox == 'function') {
+        $('a[rel=fancy]').fancybox({
+            'overlayColor': '#000000'
+        });
+    }
 
     /*
      * heightfix the desktop .content div
