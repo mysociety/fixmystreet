@@ -114,6 +114,7 @@ sub _shrink {
     $image->BlobToImage($photo);
     my $err = $image->Scale(geometry => "$size>");
     throw Error::Simple("resize failed: $err") if "$err";
+    $image->Strip();
     my @blobs = $image->ImageToBlob();
     undef $image;
     return $blobs[0];
@@ -129,6 +130,7 @@ sub _crop {
     throw Error::Simple("resize failed: $err") if "$err";
     $err = $image->Extent( geometry => '90x60', gravity => 'Center' );
     throw Error::Simple("resize failed: $err") if "$err";
+    $image->Strip();
     my @blobs = $image->ImageToBlob();
     undef $image;
     return $blobs[0];
