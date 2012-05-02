@@ -731,7 +731,7 @@ subtest "check that a lat/lon off coast leads to /around" => sub {
     is $mech->uri->path, '/around', "redirected to '/around'";
 
     is_deeply         #
-      $mech->page_errors,
+      $mech->form_errors,
       [     'That spot does not appear to be covered by a council. If you have'
           . ' tried to report an issue past the shoreline, for example, please'
           . ' specify the closest point on land.' ],    #
