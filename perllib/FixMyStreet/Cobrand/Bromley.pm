@@ -44,7 +44,7 @@ sub recent_photos {
 
 sub pin_colour {
     my ( $self, $p ) = @_;
-    return 'green' if time() - $p->confirmed_local->epoch < 7 * 24 * 60 * 60;
+    #return 'green' if time() - $p->confirmed_local->epoch < 7 * 24 * 60 * 60;
     return 'yellow';
 }
 
