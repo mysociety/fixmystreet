@@ -8,6 +8,7 @@ sub council_id { return 2489; }
 sub council_area { return 'Barnet'; }
 sub council_name { return 'Barnet Council'; }
 sub council_url { return 'barnet'; }
+sub all_reports_style { return 'detailed'; }
 
 sub path_to_web_templates {
     my $self = shift;

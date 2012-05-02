@@ -117,7 +117,7 @@ Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a
 [% IF problems %]
 
 <ul class="issue-list-a">
-[% IF c.cobrand.moniker == 'fixmystreet' %]
+[% IF c.cobrand.all_reports_style == 'detailed' %]
 
 [% FOREACH problem IN problems %]
     <li>
