@@ -153,6 +153,36 @@ sub generate_map_tags : Private {
     return 1;
 }
 
+sub delete :Local :Args(1) {
+    my ( $self, $c, $id ) = @_;
+
+    $c->forward( 'load_problem_or_display_error', [ $id ] );
+    my $p = $c->stash->{problem};
+
+    my $uri = $c->uri_for( '/report', $id );
+
+    return $c->res->redirect($uri) unless $c->user_exists;
+
+    my $council = $c->user->obj->from_council;
+    return $c->res->redirect($uri) unless $council;
+
+    my %councils = map { $_ => 1 } @{$p->councils};
+    return $c->res->redirect($uri) unless $councils{$council};
+
+    $p->state('hidden');
+    $p->lastupdate( \'ms_current_timestamp()' );
+    $p->update;
+
+    $c->model('DB::AdminLog')->create( {
+        admin_user => $c->user->email,
+        object_type => 'problem',
+        action => 'state_change',
+        object_id => $id,
+    } );
+
+    return $c->res->redirect($uri);
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
