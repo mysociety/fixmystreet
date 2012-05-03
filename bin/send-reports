@@ -243,7 +243,7 @@ while (my $row = $unsent->next) {
 
     }
 
-    unless ($send_method) {
+    unless ($send_email || $send_method) {
         die 'Report not going anywhere for ID ' . $row->id . '!';
     }
 
