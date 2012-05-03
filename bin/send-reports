@@ -375,8 +375,7 @@ if ($verbose) {
     }
 }
 
-# not conditional on verbose because these can be considered failures (more relevant than one-off error messages?)
-if (keys %sending_skipped_by_method) {
+if ($verbose and keys %sending_skipped_by_method) {
     my $c = 0;
     print "\nProblem reports that send-reports did not attempt to send because retries >= " . SEND_FAIL_RETRIES_CUTOFF . ":\n";
     foreach my $send_method (sort keys %sending_skipped_by_method) {
