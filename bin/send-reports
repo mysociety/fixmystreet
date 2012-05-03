@@ -163,7 +163,7 @@ while (my $row = $unsent->next) {
             
             # look in the DB to determine if there is a special handler for this council (e.g., open311, or custom)
             my $council_config = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $council} )->first;
-            $send_method = $council_config->send_method if $council_config;
+            $send_method = $council_config->send_method if ($council_config and $council_config->send_method);
             if ($council == COUNCIL_ID_EAST_HANTS) { # E. Hants have a web service
                 $send_method = SEND_METHOD_EAST_HANTS; # TODO: delete? should be in the db
                 $h{category} = 'Customer Services' if $h{category} eq 'Other';
@@ -247,7 +247,7 @@ while (my $row = $unsent->next) {
 
     }
 
-    unless ($send_method) {
+    unless ($send_email || $send_method) {
         die 'Report not going anywhere for ID ' . $row->id . '!';
     }
 
@@ -379,8 +379,7 @@ if ($verbose) {
     }
 }
 
-# not conditional on verbose because these can be considered failures (more relevant than one-off error messages?)
-if (keys %sending_skipped_by_method) {
+if ($verbose and keys %sending_skipped_by_method) {
     my $c = 0;
     print "\nProblem reports that send-reports did not attempt to send because retries >= " . SEND_FAIL_RETRIES_CUTOFF . ":\n";
     foreach my $send_method (sort keys %sending_skipped_by_method) {
@@ -550,6 +549,7 @@ sub post_barnet_message {
             if (my $barnet_id = $result->get_EV_ORDER_NO()) {
                 $problem->external_id( $barnet_id );
                 $problem->external_body( 'Barnet Borough Council' ); # better to use $problem->body()?
+                $problem->send_method_used('barnet');
                 $return = 0;
             } else { 
                 $err_msg = "Failed (problem id $h{id}): service returned no external id";

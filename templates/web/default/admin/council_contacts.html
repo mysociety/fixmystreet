@@ -10,7 +10,11 @@
 [% IF example_pc %]
 <a href="[% c.uri_for_email( '/around', { pc => example_pc } ) %]">[% tprintf( loc('Example postcode %s'), example_pc ) | html %]</a> |
 [% END %]
+[% IF c.cobrand.moniker == 'emptyhomes' %]
+<a href="[% c.uri_for( 'search_reports', search => 'area:' _ area_id ) %]">[% loc('List all reported problems' ) %]</a>
+[% ELSE %]
 <a href="[% c.uri_for_email( '/reports/' _ area_id ) %]">[% loc('List all reported problems' ) %]</a>
+[% END %]
 <a href="[% c.uri_for( 'council_contacts', area_id, { text => 1 } ) %]">[% loc('Text only version') %]</a>
 </p>
 
