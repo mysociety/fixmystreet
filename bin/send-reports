@@ -159,7 +159,7 @@ while (my $row = $unsent->next) {
             
             # look in the DB to determine if there is a special handler for this council (e.g., open311, or custom)
             my $council_config = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $council} )->first;
-            $send_method = $council_config->send_method if $council_config;
+            $send_method = $council_config->send_method if ($council_config and $council_config->send_method);
             if ($council == COUNCIL_ID_EAST_HANTS) { # E. Hants have a web service
                 $send_method = SEND_METHOD_EAST_HANTS; # TODO: delete? should be in the db
                 $h{category} = 'Customer Services' if $h{category} eq 'Other';
