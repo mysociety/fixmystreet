@@ -66,6 +66,14 @@ A similar list of packages should work for other Debian-based
 distributions.  (Please let us know if you would like to contribute
 such a package list or instructions for other distributions.)
 
+To generate the CSS for the current design of FixMyStreet you will
+also need Compass L<http://compass-style.org/>, but unfortunately
+it is not packaged in Debian squeeze (or squeeze-backports).  You
+will either need to install the package from testing, or you could
+install it from the Ruby gem with:
+
+    gem install compass
+
 =head2 Service dependencies
 
 For most uses of FixMyStreet you'll also need access to a MaPit server with
