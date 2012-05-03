@@ -546,6 +546,7 @@ sub post_barnet_message {
             if (my $barnet_id = $result->get_EV_ORDER_NO()) {
                 $problem->external_id( $barnet_id );
                 $problem->external_body( 'Barnet Borough Council' ); # better to use $problem->body()?
+                $problem->send_method_used('barnet');
                 $return = 0;
             } else { 
                 $err_msg = "Failed (problem id $h{id}): service returned no external id";

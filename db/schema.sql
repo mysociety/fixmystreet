@@ -194,7 +194,10 @@ create table problem (
     -- logging sending failures (used by webservices)
     send_fail_count integer not null default 0, 
     send_fail_reason text, 
-    send_fail_timestamp timestamp
+    send_fail_timestamp timestamp,
+    
+    -- record send_method used, which can be used to infer usefulness of external_id
+    send_method_used text
 );
 create index problem_state_latitude_longitude_idx on problem(state, latitude, longitude);
 create index problem_user_id_idx on problem ( user_id );
