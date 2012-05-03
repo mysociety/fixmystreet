@@ -213,3 +213,13 @@ ol.big-numbers > li::before {
     color: #C0E8E8;
 }
 
+.banner {
+    p {
+        top: -2em;
+    }
+    p#fixed {
+        padding-top: 4em;
+        background: #00BD08;
+    }
+}
+
