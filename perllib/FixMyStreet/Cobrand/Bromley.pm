@@ -52,6 +52,33 @@ sub pin_colour {
     return 'yellow';
 }
 
+# Copy of function from FixMyStreet.pm cobrand as it's not inherited currently
+sub generate_problem_banner {
+    my ( $self, $problem ) = @_;
+
+    my $banner = {};
+    if ( $problem->is_open && time() - $problem->lastupdate_local->epoch > 8 * 7 * 24 * 60 * 60 )
+    {
+        $banner->{id}   = 'unknown';
+        $banner->{text} = _('Unknown');
+    }
+    if ($problem->is_fixed) {
+        $banner->{id} = 'fixed';
+        $banner->{text} = _('Fixed');
+    }
+    if ($problem->is_closed) {
+        $banner->{id} = 'closed';
+        $banner->{text} = _('Closed');
+    }
+
+    if ( grep { $problem->state eq $_ } ( 'investigating', 'in progress', 'planned' ) ) {
+        $banner->{id} = 'progress';
+        $banner->{text} = _('In progress');
+    }
+
+    return $banner;
+}
+
 sub process_extras {
     my $self     = shift;
     my $ctx      = shift;
