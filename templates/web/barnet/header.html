@@ -55,8 +55,8 @@
                     <div id="breadcrumb">
         <!-- googleoff:all -->
                         <ul>
-                            <li><a href="http://www.barnet.gov.uk/">Home</a> > </li>
-                            <li><a href="/">FixMyStreet</a> > </li>
+                            <li><a href="http://www.barnet.gov.uk/">Home</a></li>
+                            <li><a href="/">FixMyStreet</a></li>
                             <li class="bc_end"><span>
                             [% IF c.req.uri.path == '/' || c.req.uri.path == '/around' %]Report a problem[% END %]
                             [% IF ( matches = c.req.uri.path.match( '/report/\d+' ) ) %]Report[% IF problem %] [% problem.id %][% END %][% END %]
