@@ -25,9 +25,13 @@
     @include border-radius(1em 1em 0 0);
     margin-bottom: 1em;
     padding-top: 0;
+    width: 678px;
     // layout sets this because base has it slightly lighter
     h2 {
         color: $primary_text;
+    }
+    #front-main-container {
+        padding: 1em;
     }
 }
 
