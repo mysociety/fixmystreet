@@ -571,8 +571,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         }
     )->first;
 
-    $c->detach( '/page_error_404_not_found',
-        [ _('The requested URL was not found on this server.') ] )
+    $c->detach( '/page_error_404_not_found' )
       unless $problem;
 
     $c->stash->{problem} = $problem;
@@ -734,8 +733,7 @@ sub update_edit : Path('update_edit') : Args(1) {
         }
     )->first;
 
-    $c->detach( '/page_error_404_not_found',
-        [ _('The requested URL was not found on this server.') ] )
+    $c->detach( '/page_error_404_not_found' )
       unless $update;
 
     $c->forward('get_token');
@@ -1068,7 +1066,7 @@ sub check_token : Private {
     my ( $self, $c ) = @_;
 
     if ( !$c->req->param('token') || $c->req->param('token' ) ne $c->stash->{token} ) {
-        $c->detach( '/page_error_404_not_found', [ _('The requested URL was not found on this server.') ] );
+        $c->detach( '/page_error_404_not_found' );
     }
 
     return 1;
@@ -1238,7 +1236,7 @@ sub check_page_allowed : Private {
     $page ||= 'summary';
 
     if ( !grep { $_ eq $page } keys %{ $c->stash->{allowed_pages} } ) {
-        $c->detach( '/page_error_404_not_found', [ _('The requested URL was not found on this server.') ] );
+        $c->detach( '/page_error_404_not_found' );
     }
 
     return 1;
