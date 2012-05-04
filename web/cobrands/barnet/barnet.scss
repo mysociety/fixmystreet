@@ -67,7 +67,7 @@ body > html {font-size: 12px;}
 #breadcrumb.full {margin: 0;}
 #breadcrumb ul {margin: 0; padding: 0; list-style: none;}
 #breadcrumb ul li {margin: 0; padding: 0 4px 0 0; display: inline;}
-#breadcrumb ul li a:link, #breadcrumb ul li a:visited, #breadcrumb ul li a:hover, #breadcrumb ul li a:active {color: #5c6267; background: url(../css_img/bcArrow.gif) no-repeat right center; padding: 0 10px 0 0; font-weight: normal;}
+#breadcrumb ul li a:link, #breadcrumb ul li a:visited, #breadcrumb ul li a:hover, #breadcrumb ul li a:active {color: #5c6267; background: url(img/bcArrow.gif) no-repeat right center; padding: 0 10px 0 0; font-weight: normal;}
 #breadcrumb ul li span {font-weight: normal; color: #5c6267;}
 
 /* ############################################################## */
@@ -111,5 +111,4 @@ body.mappage #column_nav { display: none; }
 #footer a#share_twitter {background-image: url(img/social2-twitter.gif);}
 #footer a#share_youtube {background-image: url(img/social3-youtube.gif);}
 #footer a#share_flickr {background-image: url(img/social4-flickr.gif);}
-#footer a#share_sharethis {background-image: url(img/social5-sharethis.gif);}
 #bottomBar {background: url(img/barnet-footer-logo.gif) 771px 12px no-repeat #21aaaa; display: block; width: 100%; height: 56px; border-top: 6px solid #bddadc;}
