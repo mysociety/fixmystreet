@@ -20,6 +20,7 @@ has debug => ( is => 'ro', isa => 'Bool', default => 0 );
 has debug_details => ( is => 'rw', 'isa' => 'Str', default => '' );
 has success => ( is => 'rw', 'isa' => 'Bool', default => 0 );
 has error => ( is => 'rw', 'isa' => 'Str', default => '' );
+has always_send_latlong => ( is => 'ro', isa => 'Bool', default => 1 );
 
 before [
     qw/get_service_list get_service_meta_info get_service_requests get_service_request_updates
@@ -88,14 +89,19 @@ sub _populate_service_request_params {
     my ( $firstname, $lastname ) = ( $problem->user->name =~ /(\w+)\s+(.+)/ );
 
     my $params = {
-        lat => $problem->latitude,
-        long => $problem->longitude,
         email => $problem->user->email,
         description => $description,
         service_code => $service_code,
         first_name => $firstname,
         last_name => $lastname || '',
     };
+
+    if ( $problem->used_map || $self->always_send_latlong ) {
+        $params->{lat} = $problem->latitude;
+        $params->{long} = $problem->longitude;
+    } else {
+        $params->{address} = $problem->postcode;
+    }
 
     if ( $problem->user->phone ) {
         $params->{ phone } = $problem->user->phone;

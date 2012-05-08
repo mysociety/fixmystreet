@@ -30,6 +30,7 @@ sub send {
     foreach my $council ( keys %{ $self->councils } ) {
         my $conf = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $council, endpoint => { '!=', '' } } )->first;
 
+        my $always_send_latlong = 1;
         # Extra bromley fields
         if ( $row->council =~ /2482/ ) {
 
@@ -44,6 +45,7 @@ sub send {
             push @$extra, { name => 'requested_datetime', value => DateTime::Format::W3CDTF->format_datetime($row->confirmed_local->set_nanosecond(0)) };
             push @$extra, { name => 'email', value => $row->user->email };
             $row->extra( $extra );
+            $always_send_latlong = 0;
         }
 
         # FIXME: we've already looked this up before
@@ -54,9 +56,10 @@ sub send {
         } );
 
         my $open311 = Open311->new(
-            jurisdiction => $conf->jurisdiction,
-            endpoint     => $conf->endpoint,
-            api_key      => $conf->api_key,
+            jurisdiction        => $conf->jurisdiction,
+            endpoint            => $conf->endpoint,
+            api_key             => $conf->api_key,
+            always_send_latlong => $always_send_latlong,
         );
 
         # non standard west berks end points

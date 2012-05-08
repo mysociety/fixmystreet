@@ -299,6 +299,58 @@ for my $test (
     };
 }
 
+for my $test (
+    {
+        desc             => 'use lat long forces lat long even if map not used',
+        use_latlong      => 1,
+        postcode         => 'EH99 1SP',
+        used_map         => 0,
+        includes_latlong => 1,
+    },
+    {
+        desc => 'no use lat long and no map sends address instead of lat long',
+        use_latlong      => 0,
+        postcode         => 'EH99 1SP',
+        used_map         => 0,
+        includes_latlong => 0,
+    },
+    {
+        desc             => 'no use lat long but used map sends lat long',
+        use_latlong      => 0,
+        postcode         => 'EH99 1SP',
+        used_map         => 1,
+        includes_latlong => 1,
+    }
+) {
+    subtest $test->{desc} => sub {
+        my $extra = { url => 'http://example.com/report/1', };
+        $problem->used_map( $test->{used_map} );
+        $problem->postcode( $test->{postcode} );
+
+        my $results = make_service_req(
+            $problem,
+            $extra,
+            $problem->category,
+            '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>248</service_request_id></request></service_requests>',
+            { always_send_latlong => $test->{use_latlong} },
+        );
+
+        is $results->{ res }, 248, 'got request id';
+
+        my $c = CGI::Simple->new( $results->{ req }->content );
+
+        if ( $test->{includes_latlong} ) {
+            ok $c->param('lat'), 'has latitude';
+            ok $c->param('long'), 'has longitude';
+            is $c->param('address'), undef, 'no address';
+        } else {
+            is $c->param('lat'), undef, 'no latitude';
+            is $c->param('long'), undef, 'no latitude';
+            is $c->param('address'), $test->{postcode}, 'has address';
+        }
+    };
+}
+
 subtest 'No update id in reponse' => sub {
     my $results;
     warning_like {
@@ -323,27 +375,49 @@ sub make_update_req {
     my $comment = shift;
     my $xml = shift;
 
-    return make_req( $comment, $xml, 'post_service_request_update', 'update.xml' );
+    return make_req(
+        {
+            object => $comment,
+              xml  => $xml,
+            method => 'post_service_request_update',
+            path   => 'update.xml',
+        }
+    );
 }
 
 sub make_service_req {
-    my $problem = shift;
-    my $extra = shift;
+    my $problem      = shift;
+    my $extra        = shift;
     my $service_code = shift;
-    my $xml = shift;
+    my $xml          = shift;
+    my $open311_args = shift || {};
 
-    return make_req( $problem, $xml, 'send_service_request', 'requests.xml', $extra, $service_code );
+    return make_req(
+        {
+            object       => $problem,
+            xml          => $xml,
+            method       => 'send_service_request',
+            path         => 'requests.xml',
+            method_args  => [ $extra, $service_code ],
+            open311_conf => $open311_args,
+        }
+    );
 }
 
 sub make_req {
-    my $object = shift;
-    my $xml    = shift;
-    my $method = shift;
-    my $path   = shift;
-    my @args   = @_;
+    my $args = shift;
 
+    my $object       = $args->{object};
+    my $xml          = $args->{xml};
+    my $method       = $args->{method};
+    my $path         = $args->{path};
+    my %open311_conf = %{ $args->{open311_conf} || {} };
+    my @args         = @{ $args->{method_args} || [] };
+
+    $open311_conf{'test_mode'} = 1;
+    $open311_conf{'end_point'} = 'http://localhost/o311';
     my $o =
-      Open311->new( test_mode => 1, end_point => 'http://localhost/o311' );
+      Open311->new( %open311_conf );
 
     my $test_res = HTTP::Response->new();
     $test_res->code(200);
