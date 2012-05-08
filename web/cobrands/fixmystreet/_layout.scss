@@ -592,7 +592,7 @@ body.twothirdswidthpage {
     @include box-shadow(-0em 0px 1em 1em #fff);
     li {
       border:none;
-      a {
+      a, input[type=submit] {
         font-size: 0.75em;
         color:#666;
         padding: 0.5em 1.5em 0.5em 0;

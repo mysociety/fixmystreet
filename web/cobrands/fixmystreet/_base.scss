@@ -529,7 +529,11 @@ p.label-valid {
       &:last-child {
         border-right:none;
       }
-      a {
+      input[type=submit] {
+          width: 100%;
+          border: none;
+      }
+      a, input[type=submit] {
         display: block;
         background-color: #f5f5f5;
         background-repeat: no-repeat;

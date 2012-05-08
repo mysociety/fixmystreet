@@ -195,7 +195,7 @@ sub split_name {
 
     my ($first, $last) = $self->name =~ /^(\S*)(?: (.*))?$/;
 
-    return { first => $first, last => $last };
+    return { first => $first || '', last => $last || '' };
 }
 
 1;

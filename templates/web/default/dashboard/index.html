@@ -1,0 +1,131 @@
+[% 
+    INCLUDE 'header.html'
+        title = loc('Dashboard')
+        robots = 'noindex, nofollow'
+        bodyclass = 'fullwidthpage'
+%]
+
+<style>
+    th[scope=row] { text-align: left; }
+    tr.subtotal { background-color: #eee; }
+    #overview tr:nth-child(2) { background-color: #fee; }
+</style>
+
+<p>Ward: <select name="ward"><option>All</option>
+    [% FOR ward IN children.values.sort('name') %]
+        <option value="[% ward.id %]">[% ward.name %]</option>
+    [% END %]
+</select>
+
+<h2>Performance Overview</h2>
+
+<p>Report category: <select name="category"><option>All</option>
+    [% FOR category IN categories %]
+        <option></option>
+    [% END %]
+</select>
+
+<table width="100%" id="overview">
+    <tr>
+        <td>&nbsp;</td>
+        <th scope="col">WTD</th>
+        <th scope="col">Last 7 days</th>
+        <th scope="col">Last 4 weeks</th>
+        <th scope="col">YTD</th>
+    </tr>
+
+    [%
+    rows = {
+        '0' => [ "total", "Total reports received" ]
+        '1' => [ "fixed - council", "Council has marked as fixed" ]
+        '2' => [ "fixed_user", "User has marked as fixed" ]
+    };
+    FOR row IN rows %]
+    <tr>
+        <th scope="row">[% row.value.1 %]</th>
+        <td>[% problems.wtd.${row.value.0} %]</td>
+        <td>[% problems.week.${row.value.0} %]</td>
+        <td>[% problems.weeks.${row.value.0} %]</td>
+        <td>[% problems.ytd.${row.value.0} %]</td>
+    </tr>
+    [% END %]
+
+    <tr class='subtotal'>
+        <th scope="row">Total marked as fixed</th>
+        <td>[% problems.wtd.${"fixed - council"} + problems.wtd.fixed_user %]</td>
+        <td>[% problems.week.${"fixed - council"} + problems.week.fixed_user %]</td>
+        <td>[% problems.weeks.${"fixed - council"} + problems.weeks.fixed_user %]</td>
+        <td>[% problems.ytd.${"fixed - council"} + problems.ytd.fixed_user %]</td>
+    </tr>
+
+    [%
+    rows = {
+        '0' => [ "in progress", "Council has marked as in progress" ]
+        '1' => [ "planned", "Council has marked as planned" ]
+        '2' => [ "investigating", "Council has marked as investigating" ]
+    };
+    wtd = 0, week = 0, weeks = 0, ytd = 0;
+    FOR row IN rows %]
+    <tr>
+        <th scope="row">[% row.value.1 %]</th>
+        <td>[% problems.wtd.${row.value.0} %]</td>
+        <td>[% problems.week.${row.value.0} %]</td>
+        <td>[% problems.weeks.${row.value.0} %]</td>
+        <td>[% problems.ytd.${row.value.0} %]</td>
+    </tr>
+    [% END %]
+
+    <tr class='subtotal'>
+        <th scope="row">Total marked</th>
+        <td>[% problems.wtd.${"in progress"} + problems.wtd.planned + problems.wtd.investigating %]</td>
+        <td>[% problems.week.${"in progress"} + problems.week.planned + problems.week.investigating %]</td>
+        <td>[% problems.weeks.${"in progress"} + problems.weeks.planned + problems.weeks.investigating %]</td>
+        <td>[% problems.ytd.${"in progress"} + problems.ytd.planned + problems.ytd.investigating %]</td>
+    </tr>
+
+    <tr>
+        <th scope="row">Average time to fix</th>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+    </tr>
+
+    <tr>
+        <th scope="row">Average time to mark</th>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+    </tr>
+
+    <tr class='subtotal'>
+        <th scope="row">Total not marked</th>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+    </tr>
+
+</table>
+
+<h2>Reports</h2>
+
+<p>Report state: <select name="state"><option>All</option></select>
+
+<table width="100%">
+    <tr>
+        <th scope="col">Less than 7 days old</th>
+        <th scope="col">7-14 days old</th>
+        <th scope="col">14-30 days old</th>
+        <th scope="col">30+ days old</th>
+    </tr>
+    <tr>
+        <td><ul><li></li></ul></td>
+        <td><ul><li></li></ul></td>
+        <td><ul><li></li></ul></td>
+        <td><ul><li></li></ul></td>
+    </tr>
+</table>
+
+[% INCLUDE 'footer.html' %]

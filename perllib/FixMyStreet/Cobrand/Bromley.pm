@@ -36,6 +36,10 @@ sub example_places {
     return ( 'BR1 3UH', 'Glebe Rd, Bromley' );
 }
 
+sub on_map_default_max_pin_age {
+    return '1 month';
+}
+
 sub recent_photos {
     my ( $self, $area, $num, $lat, $lon, $dist ) = @_;
     $num = 3 if $num > 3 && $area eq 'alert';
@@ -44,8 +48,35 @@ sub recent_photos {
 
 sub pin_colour {
     my ( $self, $p ) = @_;
-    return 'green' if time() - $p->confirmed_local->epoch < 7 * 24 * 60 * 60;
+    #return 'green' if time() - $p->confirmed_local->epoch < 7 * 24 * 60 * 60;
     return 'yellow';
+}
+
+# Copy of function from FixMyStreet.pm cobrand as it's not inherited currently
+sub generate_problem_banner {
+    my ( $self, $problem ) = @_;
+
+    my $banner = {};
+    if ( $problem->is_open && time() - $problem->lastupdate_local->epoch > 8 * 7 * 24 * 60 * 60 )
+    {
+        $banner->{id}   = 'unknown';
+        $banner->{text} = _('Unknown');
+    }
+    if ($problem->is_fixed) {
+        $banner->{id} = 'fixed';
+        $banner->{text} = _('Fixed');
+    }
+    if ($problem->is_closed) {
+        $banner->{id} = 'closed';
+        $banner->{text} = _('Closed');
+    }
+
+    if ( grep { $problem->state eq $_ } ( 'investigating', 'in progress', 'planned' ) ) {
+        $banner->{id} = 'progress';
+        $banner->{text} = _('In progress');
+    }
+
+    return $banner;
 }
 
 sub process_extras {
