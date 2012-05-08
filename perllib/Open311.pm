@@ -21,6 +21,7 @@ has debug_details => ( is => 'rw', 'isa' => 'Str', default => '' );
 has success => ( is => 'rw', 'isa' => 'Bool', default => 0 );
 has error => ( is => 'rw', 'isa' => 'Str', default => '' );
 has always_send_latlong => ( is => 'ro', isa => 'Bool', default => 1 );
+has basic_description => ( is => 'ro', isa => 'Bool', default => 0 );
 
 before [
     qw/get_service_list get_service_meta_info get_service_requests get_service_request_updates
@@ -82,9 +83,14 @@ sub _populate_service_request_params {
     my $extra = shift;
     my $service_code = shift;
 
-    my $description = $self->_generate_service_request_description(
-        $problem, $extra
-    );
+    my $description;
+    if ( $self->basic_description ) {
+        $description = $problem->detail;
+    } else {
+        $description = $self->_generate_service_request_description(
+            $problem, $extra
+        );
+    }
 
     my ( $firstname, $lastname ) = ( $problem->user->name =~ /(\w+)\s+(.+)/ );
 

@@ -91,8 +91,30 @@ EOT
     is $c->param('last_name'), 'User', 'correct last name';
     is $c->param('lat'), 1, 'latitide correct';
     is $c->param('long'), 2, 'longitude correct';
-    is $c->param('description'), $description, 'descritpion correct';
+    is $c->param('description'), $description, 'description correct';
     is $c->param('service_code'), 'pothole', 'service code correct';
+};
+
+subtest 'posting service request with basic_description' => sub {
+    my $extra = {
+        url => 'http://example.com/report/1',
+    };
+
+    my $results = make_service_req(
+        $problem,
+        $extra,
+        $problem->category,
+        '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>248</service_request_id></request></service_requests>',
+        { basic_description => 1 },
+    );
+
+    is $results->{ res }, 248, 'got request id';
+
+    my $req = $o->test_req_used;
+
+    my $c = CGI::Simple->new( $results->{ req }->content );
+
+    is $c->param('description'), $problem->detail, 'description correct';
 };
 
 for my $test (
