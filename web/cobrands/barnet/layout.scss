@@ -194,7 +194,12 @@ body.frontpage {
 
 #report-a-problem-sidebar {
     left: 30em;
-    top: 7em;
+    top: 4em;
+    width: 17em;
+    .sidebar-tips,
+    .sidebar-notes {
+        font-size: 0.9em;
+    }
 }
 .ie6 {
     #report-a-problem-sidebar {
@@ -202,8 +207,11 @@ body.frontpage {
     }
 }
 
+
 .general-sidebar-notes {
-    left: 30.2em;
+    left: 25em;
+    width: 14em;
+    font-size: 1.2em;
     p {
         margin-bottom: 0 !important;
     }
