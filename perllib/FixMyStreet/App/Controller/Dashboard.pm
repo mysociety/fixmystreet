@@ -27,6 +27,8 @@ Checks if we can view this page, and if not redirect to 404.
 sub check_page_allowed : Private {
     my ( $self, $c ) = @_;
 
+    $c->detach( '/auth/redirect' ) unless $c->user_exists;
+
     $c->detach( '/page_error_404_not_found' )
         unless $c->user_exists && $c->user->from_council;
 
