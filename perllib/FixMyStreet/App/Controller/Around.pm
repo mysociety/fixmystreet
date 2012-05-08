@@ -203,6 +203,7 @@ sub display_location : Private {
         longitude => $short_longitude,
         clickable => 1,
         pins      => \@pins,
+        area      => $c->cobrand->areas_on_around,
     );
 
     return 1;

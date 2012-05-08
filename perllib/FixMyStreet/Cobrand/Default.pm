@@ -930,5 +930,14 @@ sub only_authed_can_create {
     return 0;
 }
 
+=head2 areas_on_around
+
+If set to an arrayref, will plot those area ID(s) from mapit on all the /around pages.
+
+=cut
+
+sub areas_on_around {
+}
+
 1;
 

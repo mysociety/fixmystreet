@@ -36,5 +36,9 @@ sub only_authed_can_create {
     return 1;
 }
 
+sub areas_on_around {
+    return [ 1, 2 ];
+}
+
 1;
 

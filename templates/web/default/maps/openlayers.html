@@ -8,7 +8,7 @@
 <script type="text/javascript">
 var fixmystreet = {
     'page': '[% page %]',
-    'area': '[% map.area %]',
+    'area': [ [% map.area.join(',') %] ],
     'all_pins': '[% all_pins %]',
     'latitude': [% map.latitude %],
     'longitude': [% map.longitude %],
