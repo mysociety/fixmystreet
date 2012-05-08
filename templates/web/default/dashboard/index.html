@@ -11,19 +11,23 @@
     #overview tr:nth-child(2) { background-color: #fee; }
 </style>
 
-<p>Ward: <select name="ward"><option>All</option>
-    [% FOR ward IN children.values.sort('name') %]
-        <option value="[% ward.id %]">[% ward.name %]</option>
+<form>
+
+<p>Ward: <select name="ward"><option value=''>All</option>
+    [% FOR w IN children.values.sort('name') %]
+        <option value="[% w.id %]"[% ' selected' IF w.id == ward %]>[% w.name %]</option>
     [% END %]
 </select>
+<input type="submit" value="Look up">
 
 <h2>Performance Overview</h2>
 
-<p>Report category: <select name="category"><option>All</option>
-    [% FOR category IN categories %]
-        <option></option>
+<p>Report category: <select name="category"><option value=''>All</option>
+    [% FOR cat_op IN category_options %]
+        <option value='[% cat_op | html %]'[% ' selected' IF category == cat_op %]>[% cat_op | html %]</option>
     [% END %]
-</select>
+    </select>
+<input type="submit" value="Look up">
 
 <table width="100%" id="overview">
     <tr>
@@ -111,7 +115,16 @@
 
 <h2>Reports</h2>
 
-<p>Report state: <select name="state"><option>All</option></select>
+                </select>
+<p>Report state: <select name="state">
+<option value=''>All</option>
+                [% FOREACH state IN [ ['confirmed', loc('Open')], ['investigating',
+                loc('Investigating')], ['planned', loc('Planned')], ['in progress',
+                loc('In Progress')], ['closed', loc('Closed')], ['fixed', loc('Fixed')] ] %]
+                    <option [% 'selected ' IF state.0 == q_state %] value="[% state.0 %]">[% state.1 %]</option>
+                [% END %]
+</select>
+<input type="submit" value="Look up">
 
 <table width="100%">
     <tr>
@@ -127,5 +140,7 @@
         <td><ul><li></li></ul></td>
     </tr>
 </table>
+
+</form>
 
 [% INCLUDE 'footer.html' %]
