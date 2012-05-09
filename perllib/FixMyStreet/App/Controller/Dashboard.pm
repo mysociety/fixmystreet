@@ -18,6 +18,35 @@ Catalyst Controller.
 
 =cut
 
+sub example : Local : Args(0) {
+    my ( $self, $c ) = @_;
+    $c->stash->{template} = 'dashboard/index.html';
+
+    $c->stash->{children} = {};
+    for my $i (1..3) {
+        $c->stash->{children}{$i} = { id => $i, name => "Ward $i" };
+    }
+
+    # TODO Set up manual version of what the below would do
+    #$c->forward( '/report/new/setup_categories_and_councils' );
+
+    # See if we've had anything from the dropdowns - perhaps vary results if so
+    $c->stash->{ward} = $c->req->param('ward');
+    $c->stash->{category} = $c->req->param('category');
+    #$c->stash->{q_state} = $c->req->param('state');
+
+    my %counts;
+    $counts{wtd} = {
+        total => 10,
+        'planned' => 2, 'in progress' => 1, investigating => 1,
+        'fixed - council' => 3, fixed_user => 2,
+        time_to_fix => 8, time_to_mark => 2,
+    };
+    # TODO Repeat for week/weeks/ytd? Or another way?
+
+    $c->stash->{problems} = \%counts;
+}
+
 =head2 check_page_allowed
 
 Checks if we can view this page, and if not redirect to 404.
