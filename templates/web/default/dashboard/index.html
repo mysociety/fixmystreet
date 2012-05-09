@@ -18,16 +18,16 @@
         <option value="[% w.id %]"[% ' selected' IF w.id == ward %]>[% w.name %]</option>
     [% END %]
 </select>
-<input type="submit" value="Look up">
-
-<h2>Performance Overview</h2>
 
 <p>Report category: <select name="category"><option value=''>All</option>
     [% FOR cat_op IN category_options %]
         <option value='[% cat_op | html %]'[% ' selected' IF category == cat_op %]>[% cat_op | html %]</option>
     [% END %]
     </select>
-<input type="submit" value="Look up">
+
+<p><input type="submit" value="Look up">
+
+<h2>Performance Overview</h2>
 
 <table width="100%" id="overview">
     <tr>
@@ -105,10 +105,10 @@
 
     <tr class='subtotal'>
         <th scope="row">Total not marked</th>
-        <td>-</td>
-        <td>-</td>
-        <td>-</td>
-        <td>-</td>
+        <td>[% problems.wtd.not_marked %]</td>
+        <td>[% problems.week.not_marked %]</td>
+        <td>[% problems.weeks.not_marked %]</td>
+        <td>[% problems.ytd.not_marked %]</td>
     </tr>
 
 </table>

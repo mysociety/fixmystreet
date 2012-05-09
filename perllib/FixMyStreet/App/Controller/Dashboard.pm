@@ -90,7 +90,6 @@ sub index : Path : Args(0) {
 
     $c->stash->{ward} = $c->req->param('ward');
     $c->stash->{category} = $c->req->param('category');
-    $c->stash->{q_state} = $c->req->param('state') || '';
 
     my %where = (
         council => $council, # XXX This will break in a two tier council. Restriction needs looking at...
@@ -100,11 +99,6 @@ sub index : Path : Args(0) {
         if $c->stash->{ward};
     $where{category} = $c->stash->{category}
         if $c->stash->{category};
-    if ( $c->stash->{q_state} eq 'fixed' ) {
-        $where{'problem.state'} = [ FixMyStreet::DB::Result::Problem->fixed_states() ];
-    } elsif ( $c->stash->{q_state} ) {
-        $where{'problem.state'} = $c->stash->{q_state}
-    }
     $c->stash->{where} = \%where;
     my $prob_where = { %where };
     $prob_where->{state} = $prob_where->{'problem.state'};
@@ -119,6 +113,15 @@ sub index : Path : Args(0) {
     $counts{ytd} = $c->forward( 'updates_search', [ DateTime->today->set( day => 1, month => 1 ) ] );
 
     $c->stash->{problems} = \%counts;
+
+    # List of reports underneath summary table
+
+    #$c->stash->{q_state} = $c->req->param('state') || '';
+    #if ( $c->stash->{q_state} eq 'fixed' ) {
+    #    $where{'problem.state'} = [ FixMyStreet::DB::Result::Problem->fixed_states() ];
+    #} elsif ( $c->stash->{q_state} ) {
+    #    $where{'problem.state'} = $c->stash->{q_state}
+    #}
 }
 
 sub updates_search : Private {
@@ -180,6 +183,14 @@ sub updates_search : Private {
         'me.confirmed' => { '>=', $time },
     };
     $counts{total} = $c->cobrand->problems->search( $params )->count;
+
+    $params = {
+        %{$c->stash->{prob_where}},
+        'me.confirmed' => { '>=', $time },
+        state => 'confirmed',
+        '(select min(id) from comment where me.id=problem_id and problem_state is not null)' => undef,
+    };
+    $counts{not_marked} = $c->cobrand->problems->search( $params )->count;
 
     return \%counts;
 }
