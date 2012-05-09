@@ -61,7 +61,7 @@ sub index : Path : Args(0) {
 
     $c->stash->{ward} = $c->req->param('ward');
     $c->stash->{category} = $c->req->param('category');
-    $c->stash->{q_state} = $c->req->param('state');
+    $c->stash->{q_state} = $c->req->param('state') || '';
 
     my %where = (
         council => $council, # XXX This will break in a two tier council. Restriction needs looking at...
@@ -76,35 +76,29 @@ sub index : Path : Args(0) {
     } elsif ( $c->stash->{q_state} ) {
         $where{'problem.state'} = $c->stash->{q_state}
     }
+    $c->stash->{where} = \%where;
+    my $prob_where = { %where };
+    $prob_where->{state} = $prob_where->{'problem.state'};
+    delete $prob_where->{'problem.state'};
+    $c->stash->{prob_where} = $prob_where;
 
     my %counts;
     my $t = DateTime->today;
-
-    $counts{wtd} = $c->forward( 'updates_search', [ {
-        %where,
-        'me.confirmed' => { '>=', $t->subtract( days => $t->dow - 1 )
-    } } ] );
-
-    $counts{week} = $c->forward( 'updates_search', [ {
-        %where,
-        'me.confirmed' => { '>=', DateTime->now->subtract( weeks => 1 )
-    } } ] );
-
-    $counts{weeks} = $c->forward( 'updates_search', [ {
-        %where,
-        'me.confirmed' => { '>=', DateTime->now->subtract( weeks => 4 )
-    } } ] );
-
-    $counts{ytd} = $c->forward( 'updates_search', [ {
-        %where,
-        'me.confirmed' => { '>=', DateTime->today->set( day => 1, month => 1 )
-    } } ] );
+    $counts{wtd} = $c->forward( 'updates_search', [ $t->subtract( days => $t->dow - 1 ) ] );
+    $counts{week} = $c->forward( 'updates_search', [ DateTime->now->subtract( weeks => 1 ) ] );
+    $counts{weeks} = $c->forward( 'updates_search', [ DateTime->now->subtract( weeks => 4 ) ] );
+    $counts{ytd} = $c->forward( 'updates_search', [ DateTime->today->set( day => 1, month => 1 ) ] );
 
     $c->stash->{problems} = \%counts;
 }
 
 sub updates_search : Private {
-    my ( $self, $c, $params ) = @_;
+    my ( $self, $c, $time ) = @_;
+
+    my $params = {
+        %{$c->stash->{where}},
+        'me.confirmed' => { '>=', $time },
+    };
 
     my $comments = $c->model('DB::Comment')->search(
         $params,
@@ -124,12 +118,38 @@ sub updates_search : Private {
           'fixed - user', 'fixed', 'unconfirmed', 'hidden',
           'partial', 'planned');
 
+    for my $vars (
+        [ 'time_to_fix', 'fixed - council' ],
+        [ 'time_to_mark', 'in progress', 'planned', 'investigating' ],
+    ) {
+        my $col = shift @$vars;
+        my $substmt = "select min(id) from comment where me.problem_id=comment.problem_id and problem_state in ('"
+            . join("','", @$vars) . "')";
+        $comments = $c->model('DB::Comment')->search(
+            { %$params,
+                problem_state => $vars,
+                'me.id' => \"= ($substmt)",
+            },
+            {
+                select   => [
+                    { count => 'me.id' },
+                    { avg => { extract => "epoch from me.confirmed-problem.confirmed" } },
+                ],
+                as       => [ qw/state_count time/ ],
+                join     => 'problem'
+            }
+        )->first;
+        $counts{$col} = int( $comments->get_column('time') / 60 / 60 / 24 + 0.5 );
+    }
+
     $counts{fixed_user} = $c->model('DB::Comment')->search(
         { %$params, mark_fixed => 1 }, { join     => 'problem' }
     )->count;
 
-    $params->{state} = $params->{'problem.state'};
-    delete $params->{'problem.state'};
+    $params = {
+        %{$c->stash->{prob_where}},
+        'me.confirmed' => { '>=', $time },
+    };
     $counts{total} = $c->cobrand->problems->search( $params )->count;
 
     return \%counts;
