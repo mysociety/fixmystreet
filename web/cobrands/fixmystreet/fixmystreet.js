@@ -563,6 +563,8 @@ $.fn.drawer = function(id, ajax) {
     if (!$('html.mobile').length) {
         if (!($('body').hasClass('frontpage'))){
             heightFix(window, '.content', -176);
+            // in case we have a map that isn't full screen
+            map_fix();
         }
     }
 

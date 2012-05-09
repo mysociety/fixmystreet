@@ -11,3 +11,5 @@ function position_map_box() {
         margin: 0
     });
 }
+
+function map_fix() {}
