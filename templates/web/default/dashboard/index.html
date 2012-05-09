@@ -133,12 +133,18 @@
         <th scope="col">14-30 days old</th>
     </tr>
     <tr>
-        <td><ul><li></li></ul></td>
-        <td><ul><li></li></ul></td>
-        <td><ul><li></li></ul></td>
+        <td><ul>[% INCLUDE list, list = lists.1 %]</ul></td>
+        <td><ul>[% INCLUDE list, list = lists.2 %]</ul></td>
+        <td><ul>[% INCLUDE list, list = lists.3 %]</ul></td>
     </tr>
 </table>
 
 </form>
 
 [% INCLUDE 'footer.html' %]
+
+[% BLOCK list %]
+[% FOR p IN list %]
+<li><a href="/report/[% p.id %]">[% p.title | html %]</a></li>
+[% END %]
+[% END %]

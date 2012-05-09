@@ -116,12 +116,28 @@ sub index : Path : Args(0) {
 
     # List of reports underneath summary table
 
-    #$c->stash->{q_state} = $c->req->param('state') || '';
-    #if ( $c->stash->{q_state} eq 'fixed' ) {
-    #    $where{'problem.state'} = [ FixMyStreet::DB::Result::Problem->fixed_states() ];
-    #} elsif ( $c->stash->{q_state} ) {
-    #    $where{'problem.state'} = $c->stash->{q_state}
-    #}
+    $c->stash->{q_state} = $c->req->param('state') || '';
+    if ( $c->stash->{q_state} eq 'fixed' ) {
+        $prob_where->{state} = [ FixMyStreet::DB::Result::Problem->fixed_states() ];
+    } elsif ( $c->stash->{q_state} ) {
+        $prob_where->{state} = $c->stash->{q_state};
+    }
+    my $params = {
+        %$prob_where,
+        'me.confirmed' => { '>=', DateTime->now->subtract( days => 30 ) },
+    };
+    my @problems = $c->cobrand->problems->search( $params )->all;
+    my %problems;
+    foreach (@problems) {
+        if ($_->confirmed >= DateTime->now->subtract(days => 7)) {
+            push @{$problems{1}}, $_;
+        } elsif ($_->confirmed >= DateTime->now->subtract(days => 14)) {
+            push @{$problems{2}}, $_;
+        } else {
+            push @{$problems{3}}, $_;
+        }
+    }
+    $c->stash->{lists} = \%problems;
 }
 
 sub updates_search : Private {
@@ -171,7 +187,7 @@ sub updates_search : Private {
                 join     => 'problem'
             }
         )->first;
-        $counts{$col} = int( $comments->get_column('time') / 60 / 60 / 24 + 0.5 );
+        $counts{$col} = int( ($comments->get_column('time')||0) / 60 / 60 / 24 + 0.5 );
     }
 
     $counts{fixed_user} = $c->model('DB::Comment')->search(
