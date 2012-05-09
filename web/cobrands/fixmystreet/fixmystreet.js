@@ -469,7 +469,7 @@ $.fn.drawer = function(id, ajax) {
     });
 };
 
-    if ($('html.mobile').length) {
+    if ($('html.mobile').length || 'slide_wards_down' ) {
         $('#council_wards').hide().removeClass('hidden-js').find('h2').hide();
         $('#key-tool-wards').click(function(e){
             e.preventDefault();

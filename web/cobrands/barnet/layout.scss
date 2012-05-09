@@ -114,6 +114,14 @@ body.twothirdswidthpage {
   ul#key-tools {
     border-top: none;
     border-bottom: 1px solid $primary;
+    li {
+        a.chevron {
+            background-position: right -3230px;
+        }
+        a.feed {
+            background-position: right -3080px;
+        }
+    }
   }
   ul#key-tools.singleton {
     li a {

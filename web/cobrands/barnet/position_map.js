@@ -13,3 +13,5 @@ function map_fix() {
     var height = $('.wrapper').height() - 3;
     $('#map_box').height(height);
 }
+
+var slide_wards_down = 1;
