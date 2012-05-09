@@ -58,14 +58,7 @@
                             <li><a href="http://www.barnet.gov.uk/">Home</a></li>
                             <li><a href="/">FixMyStreet</a></li>
                             <li class="bc_end"><span>
-                            [% IF c.req.uri.path == '/' || c.req.uri.path == '/around' %]Report a problem[% END %]
-                            [% IF ( matches = c.req.uri.path.match( '/report/\d+' ) ) %]Report[% IF problem %] [% problem.id %][% END %][% END %]
-                            [% IF c.req.uri.path == '/my' %]Your reports[% END %]
-                            [% IF c.req.uri.path == '/reports/Barnet' %]All reports[% END %]
-                            [% IF c.req.uri.path == '/alert' %]Local alerts[% END %]
-                            [% IF c.req.uri.path == '/faq' %]Help[% END %]
-                            [% IF c.req.uri.path == '/privacy' %]Privacy and Cookies[% END %]
-                            [% IF c.req.uri.path == '/contact' %]Contact[% END %]
+                            [% IF c.req.uri.path == '/' %]Report a problem[% ELSE %][% title %][% END %]
                             </span></li>
                         </ul>
         <!-- googleon:all -->
