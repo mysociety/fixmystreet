@@ -3,6 +3,7 @@ use Moose;
 use namespace::autoclean;
 
 use DateTime;
+use File::Slurp;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -33,18 +34,25 @@ sub example : Local : Args(0) {
     # See if we've had anything from the dropdowns - perhaps vary results if so
     $c->stash->{ward} = $c->req->param('ward');
     $c->stash->{category} = $c->req->param('category');
-    #$c->stash->{q_state} = $c->req->param('state');
+    $c->stash->{q_state} = $c->req->param('state');
 
-    my %counts;
-    $counts{wtd} = {
-        total => 10,
-        'planned' => 2, 'in progress' => 1, investigating => 1,
-        'fixed - council' => 3, fixed_user => 2,
-        time_to_fix => 8, time_to_mark => 2,
+    eval {
+        my $data = File::Slurp::read_file(
+            FixMyStreet->path_to( 'data/dashboard.json' )->stringify
+        );
+        my $j = JSON->new->utf8->decode($data);
+        $c->stash->{problems} = $j->{counts};
+        if ( lc($c->stash->{q_state}) eq 'all' or !$c->stash->{q_state} ) {
+            $c->stash->{lists} = $j->{lists}->{all};
+        } else {
+            $c->stash->{lists} = $j->{lists}->{filtered};
+        }
     };
-    # TODO Repeat for week/weeks/ytd? Or another way?
-
-    $c->stash->{problems} = \%counts;
+    if ($@) {
+        $c->stash->{message} = _("There was a problem showing this page. Please try again later.") . ' ' .
+            sprintf(_('The error was: %s'), $@);
+        $c->stash->{template} = 'errors/generic.html';
+    }
 }
 
 =head2 check_page_allowed
