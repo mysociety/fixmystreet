@@ -41,7 +41,12 @@ sub example : Local : Args(0) {
             FixMyStreet->path_to( 'data/dashboard.json' )->stringify
         );
         my $j = JSON->new->utf8->decode($data);
-        $c->stash->{problems} = $j->{counts};
+        if ( !$c->stash->{ward} && !$c->stash->{category} ) {
+            $c->stash->{problems} = $j->{counts_all};
+        } else {
+            $c->stash->{problems} = $j->{counts_some};
+        }
+        $c->stash->{category_options} = $j->{category_options};
         if ( lc($c->stash->{q_state}) eq 'all' or !$c->stash->{q_state} ) {
             $c->stash->{lists} = $j->{lists}->{all};
         } else {

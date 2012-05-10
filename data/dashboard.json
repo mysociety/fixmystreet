@@ -1,5 +1,13 @@
 {
-    "counts": {
+    "category_options": [
+        "Abandoned vehicles",
+        "Grafitti",
+        "Potholes",
+        "Street lighting",
+        "Trees",
+        "Other"
+    ],
+    "counts_all": {
         "wtd": {
             "total": 10,
             "planned": 2,
@@ -40,6 +48,52 @@
             "investigating": 9,
             "fixed - council": 72,
             "fixed_user": 33,
+            "time_to_fix": 2,
+            "time_to_mark": 2,
+            "not_marked": 1
+        }
+    },
+    "counts_some": {
+        "wtd": {
+            "total": 5,
+            "planned": 0,
+            "in progress": 1,
+            "investigating": 1,
+            "fixed - council": 2,
+            "fixed_user": 1,
+            "time_to_fix": 2,
+            "time_to_mark": 2,
+            "not_marked": 0
+        },
+        "week": {
+            "total": 7,
+            "planned": 1,
+            "in progress": 2,
+            "investigating": 1,
+            "fixed - council": 2,
+            "fixed_user": 1,
+            "time_to_fix": 3,
+            "time_to_mark": 2,
+            "not_marked": 0
+        },
+        "weeks": {
+            "total": 57,
+            "planned": 5,
+            "in progress": 16,
+            "investigating": 4,
+            "fixed - council": 23,
+            "fixed_user": 9,
+            "time_to_fix": 2,
+            "time_to_mark": 2,
+            "not_marked": 1
+        },
+        "ytd": {
+            "total": 57,
+            "planned": 5,
+            "in progress": 16,
+            "investigating": 4,
+            "fixed - council": 23,
+            "fixed_user": 9,
             "time_to_fix": 2,
             "time_to_mark": 2,
             "not_marked": 1
