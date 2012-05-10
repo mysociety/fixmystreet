@@ -218,7 +218,14 @@ body.frontpage {
 }
 .ie6 {
     #report-a-problem-sidebar {
+        margin-top: -4em;
         left: 30em;
+        .sidebar-notes {
+            padding-bottom: 0.5em;
+        }
+        p {
+            margin-bottom: 0.4em;
+        }
     }
 }
 
