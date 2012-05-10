@@ -75,6 +75,10 @@ sub string {
         my $address = $_->{address};
         next unless $c->cobrand->geocoded_string_check( $address );
         ( $longitude, $latitude ) = @{ $_->{Point}->{coordinates} };
+        mySociety::Locale::in_gb_locale {
+            $longitude = "$longitude";
+            $latitude = "$latitude";
+        };
         push (@$error, { address => $address, latitude => $latitude, longitude => $longitude });
         push (@valid_locations, $_);
     }
