@@ -44,8 +44,6 @@ sub string {
 
     if (!$js) {
         return { error => _('Sorry, we could not parse that location. Please try again.') };
-    } elsif ($js =~ /BT\d/ && $params->{bing_country} eq 'United Kingdom') {
-        return { error => _("We do not currently cover Northern Ireland, I'm afraid.") };
     }
 
     $js = JSON->new->utf8->allow_nonref->decode($js);
@@ -54,11 +52,15 @@ sub string {
     }
 
     my $results = $js->{resourceSets}->[0]->{resources};
-    my ( $error, @valid_locations, $latitude, $longitude );
+    my ( $error, @valid_locations, $latitude, $longitude, $ni );
 
     foreach (@$results) {
         my $address = $_->{name};
         next unless $_->{address}->{countryRegion} eq $params->{bing_country};
+        if ($params->{bing_country} eq 'United Kingdom' && $_->{address}{adminDistrict} eq 'Northern Ireland') {
+            $ni = 1;
+            next;
+        }
 
         # Getting duplicate, yet different, results from Bing sometimes
         next if @valid_locations
@@ -71,6 +73,10 @@ sub string {
         ( $latitude, $longitude ) = @{ $_->{point}->{coordinates} };
         push (@$error, { address => $address, latitude => $latitude, longitude => $longitude });
         push (@valid_locations, $_);
+    }
+
+    if ($ni && !scalar @valid_locations) {
+        return { error => _("We do not currently cover Northern Ireland, I'm afraid.") };
     }
 
     return { latitude => $latitude, longitude => $longitude } if scalar @valid_locations == 1;
