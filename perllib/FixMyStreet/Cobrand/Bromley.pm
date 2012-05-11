@@ -26,6 +26,7 @@ sub disambiguate_location {
     my $self = shift;
     return {
         %{ $self->SUPER::disambiguate_location() },
+        town => 'Bromley',
         centre => '51.366836,0.040623',
         span   => '0.154963,0.24347',
         bounds => [ '51.289355,-0.081112', '51.444318,0.162358' ],
