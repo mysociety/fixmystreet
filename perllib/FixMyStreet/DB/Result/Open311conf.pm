@@ -32,10 +32,6 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "comment_user_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
-  "username",
-  { data_type => "text", is_nullable => 1 },
-  "password",
-  { data_type => "text", is_nullable => 1 },
   "suppress_alerts",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
@@ -54,8 +50,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-05-11 13:07:38
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Mckkx2rjx9ug3+HaXKzw5g
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-05-11 13:30:31
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ByJbRe/Y/9Z1WHdG8kaIHg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
