@@ -1,3 +1,5 @@
+var tile_base = 'tilma.mysociety.org/sv';
+
 function set_map_config(perm) {
     var permalink_id;
     if ($('#map_permalink').length) {
@@ -17,6 +19,9 @@ function set_map_config(perm) {
         new OpenLayers.Control.Permalink(permalink_id),
         new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
     ];
+    if (fixmystreet.map_type) {
+        tile_base = fixmystreet.map_type;
+    }
     fixmystreet.map_type = OpenLayers.Layer.Bing;
 }
 
@@ -95,10 +100,10 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
         var url;
         if (z >= 16) {
             url = [
-                "http://tilma.mysociety.org/sv/${z}/${x}/${y}.png",
-                "http://a.tilma.mysociety.org/sv/${z}/${x}/${y}.png",
-                "http://b.tilma.mysociety.org/sv/${z}/${x}/${y}.png",
-                "http://c.tilma.mysociety.org/sv/${z}/${x}/${y}.png"
+                "http://" + tile_base + "/${z}/${x}/${y}.png",
+                "http://a." + tile_base + "/${z}/${x}/${y}.png",
+                "http://b." + tile_base + "/${z}/${x}/${y}.png",
+                "http://c." + tile_base + "/${z}/${x}/${y}.png"
             ];
         } else {
             var type = '';

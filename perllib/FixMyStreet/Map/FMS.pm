@@ -37,14 +37,19 @@ sub get_quadkey {
     return $key;
 }
 
+sub map_tile_base {
+    "tilma.mysociety.org/sv";
+}
+
 sub map_tiles {
     my ($self, $x, $y, $z) = @_;
     if ($z >= 16) {
+        my $tile_base = $self->map_tile_base;
         return [
-            "http://a.tilma.mysociety.org/sv/$z/" . ($x-1) . "/" . ($y-1) . ".png",
-            "http://b.tilma.mysociety.org/sv/$z/$x/" . ($y-1) . ".png",
-            "http://c.tilma.mysociety.org/sv/$z/" . ($x-1) . "/$y.png",
-            "http://tilma.mysociety.org/sv/$z/$x/$y.png",
+            "http://a.$tile_base/$z/" . ($x-1) . "/" . ($y-1) . ".png",
+            "http://b.$tile_base/$z/$x/" . ($y-1) . ".png",
+            "http://c.$tile_base/$z/" . ($x-1) . "/$y.png",
+            "http://$tile_base/$z/$x/$y.png",
         ];
     } else {
         my $url = "g=701";

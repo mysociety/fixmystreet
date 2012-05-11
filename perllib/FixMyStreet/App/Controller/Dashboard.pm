@@ -46,31 +46,57 @@ sub index : Path : Args(0) {
 
     my $council = $c->forward('check_page_allowed');
 
+    # Set up the data for the dropdowns
+
     my $children = mySociety::MaPit::call('area/children', $council,
         type => $mySociety::VotingArea::council_child_types,
     );
     $c->stash->{children} = $children;
 
+    # XXX Hmm, this is probably the best way to go
+    $c->stash->{all_councils} = { $council => { id => $council } };
+    $c->forward( '/report/new/setup_categories_and_councils' );
+
+    # See if we've had anything from the dropdowns
+
+    $c->stash->{ward} = $c->req->param('ward');
+    $c->stash->{category} = $c->req->param('category');
+    $c->stash->{q_state} = $c->req->param('state');
+
+    my %where = (
+        council => $council, # XXX This will break in a two tier council. Restriction needs looking at...
+        'problem.state' => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+    );
+    $where{areas} = { 'like', '%,' . $c->stash->{ward} . ',%' }
+        if $c->stash->{ward};
+    $where{category} = $c->stash->{category}
+        if $c->stash->{category};
+    if ( $c->stash->{q_state} eq 'fixed' ) {
+        $where{'problem.state'} = [ FixMyStreet::DB::Result::Problem->fixed_states() ];
+    } elsif ( $c->stash->{q_state} ) {
+        $where{'problem.state'} = $c->stash->{q_state}
+    }
+
     my %counts;
     my $t = DateTime->today;
 
     $counts{wtd} = $c->forward( 'updates_search', [ {
-        council => $council,
+        %where,
         'me.confirmed' => { '>=', $t->subtract( days => $t->dow - 1 )
     } } ] );
 
     $counts{week} = $c->forward( 'updates_search', [ {
-        council => $council,
+        %where,
         'me.confirmed' => { '>=', DateTime->now->subtract( weeks => 1 )
     } } ] );
 
     $counts{weeks} = $c->forward( 'updates_search', [ {
-        council => $council,
+        %where,
         'me.confirmed' => { '>=', DateTime->now->subtract( weeks => 4 )
     } } ] );
 
     $counts{ytd} = $c->forward( 'updates_search', [ {
-        council => $council,
+        %where,
         'me.confirmed' => { '>=', DateTime->today->set( day => 1, month => 1 )
     } } ] );
 
@@ -102,9 +128,9 @@ sub updates_search : Private {
         { %$params, mark_fixed => 1 }, { join     => 'problem' }
     )->count;
 
-    $counts{total} = $c->cobrand->problems->search(
-        { %$params, state => [ FixMyStreet::DB::Result::Problem::visible_states() ] }
-    )->count;
+    $params->{state} = $params->{'problem.state'};
+    delete $params->{'problem.state'};
+    $counts{total} = $c->cobrand->problems->search( $params )->count;
 
     return \%counts;
 }
