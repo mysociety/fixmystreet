@@ -75,6 +75,7 @@ sub string {
         my $address = $_->{address};
         next unless $c->cobrand->geocoded_string_check( $address );
         ( $longitude, $latitude ) = @{ $_->{Point}->{coordinates} };
+        # These co-ordinates are output as query parameters in a URL, make sure they have a "."
         mySociety::Locale::in_gb_locale {
             push (@$error, {
                 address => $address,
