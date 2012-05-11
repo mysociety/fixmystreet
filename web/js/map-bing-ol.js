@@ -41,7 +41,7 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
         if (z >= 16) {
             copyrights = 'Contains Ordnance Survey data &copy; Crown copyright and database right 2010';
         } else {
-            logo = '<a href="http://www.bing.com/maps/"><img border=0 src="http://dev.virtualearth.net/Branding/logo_powered_by.png"></a>';
+            logo = '<a href="http://www.bing.com/maps/"><img border=0 src="//dev.virtualearth.net/Branding/logo_powered_by.png"></a>';
             copyrights = '&copy; 2011 <a href="http://www.bing.com/maps/">Microsoft</a>. &copy; AND, Navteq, Ordnance Survey';
         }
         this.attribution = OpenLayers.String.format(this.attributionTemplate, {
@@ -99,20 +99,26 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 
         var url;
         if (z >= 16) {
-            url = [
-                "http://" + tile_base + "/${z}/${x}/${y}.png",
-                "http://a." + tile_base + "/${z}/${x}/${y}.png",
-                "http://b." + tile_base + "/${z}/${x}/${y}.png",
-                "http://c." + tile_base + "/${z}/${x}/${y}.png"
-            ];
+            if (tile_base.substring(0,1) == '/') {
+                url = [
+                    tile_base + "/${z}/${x}/${y}.png"
+                ];
+            } else {
+                url = [
+                    "http://" + tile_base + "/${z}/${x}/${y}.png",
+                    "http://a." + tile_base + "/${z}/${x}/${y}.png",
+                    "http://b." + tile_base + "/${z}/${x}/${y}.png",
+                    "http://c." + tile_base + "/${z}/${x}/${y}.png"
+                ];
+            }
         } else {
             var type = '';
             if (z > 10) { type = '&productSet=mmOS'; }
             url = [
-                "http://ecn.t0.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type,
-                "http://ecn.t1.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type,
-                "http://ecn.t2.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type,
-                "http://ecn.t3.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type
+                "//ecn.t0.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type,
+                "//ecn.t1.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type,
+                "//ecn.t2.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type,
+                "//ecn.t3.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type
             ];
         }
         var s = '' + x + y + z;

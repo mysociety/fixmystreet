@@ -12,12 +12,11 @@ use base 'FixMyStreet::Map::FMS';
 use strict;
 
 sub map_type {
-    my $self = shift;
-    return '"' . $self->map_tile_base . '"';
+    return '"/tilma"';
 }
 
 sub map_tile_base {
-    return "tilma.mysociety.org/bromley";
+    "/tilma/%d/%d/%d.png";
 }
 
 1;
