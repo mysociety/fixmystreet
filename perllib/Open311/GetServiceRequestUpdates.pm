@@ -9,6 +9,7 @@ has council_list => ( is => 'ro' );
 has system_user => ( is => 'rw' );
 has start_date => ( is => 'ro', default => undef );
 has end_date => ( is => 'ro', default => undef );
+has suppress_alerts => ( is => 'rw', default => 0 );
 
 sub fetch {
     my $self = shift;
@@ -30,6 +31,7 @@ sub fetch {
             jurisdiction => $council->jurisdiction,
         );
 
+        $self->suppress_alerts( $council->suppress_alerts );
         $self->system_user( $council->comment_user );
         $self->update_comments( $o, { areaid => $council->area_id }, );
     }
@@ -110,6 +112,20 @@ sub update_comments {
                 }
 
                 $comment->insert();
+
+                if ( $self->suppress_alerts ) {
+                    my $alert = FixMyStreet::App->model('DB::Alert')->find( {
+                        alert_type => 'new_updates',
+                        parameter  => $p->id,
+                        confirmed  => 1,
+                        user_id    => $p->user->id,
+                    } );
+
+                    my $alerts_sent = FixMyStreet::App->model('DB::AlertSent')->find_or_create( {
+                        alert_id  => $alert->id,
+                        parameter => $comment->id,
+                    } );
+                }
             }
         }
     }

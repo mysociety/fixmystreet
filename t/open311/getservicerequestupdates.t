@@ -455,6 +455,72 @@ foreach my $test ( {
     };
 }
 
+foreach my $test ( {
+        desc => 'normally alerts are not suppressed',
+        suppress_alerts => 0,
+    },
+    {
+        desc => 'alerts suppressed if suppress_alerts set',
+        suppress_alerts => 1,
+    }
+) {
+    subtest $test->{desc}  => sub {
+        my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+        <service_requests_updates>
+        <request_update>
+        <update_id>638344</update_id>
+        <service_request_id>@{[ $problem->external_id ]}</service_request_id>
+        <service_request_id_ext>@{[ $problem->id ]}</service_request_id_ext>
+        <status>closed</status>
+        <description>This is a note</description>
+        <updated_datetime>UPDATED_DATETIME</updated_datetime>
+        </request_update>
+        </service_requests_updates>
+        };
+
+        $problem->comments->delete;
+        $problem->state( 'confirmed' );
+        $problem->lastupdate( $dt->subtract( hours => 3 ) );
+        $problem->update;
+
+        my $alert = FixMyStreet::App->model('DB::Alert')->find_or_create( {
+            alert_type => 'new_updates',
+            parameter  => $problem->id,
+            confirmed  => 1,
+            user_id    => $problem->user->id,
+        } );
+
+        $requests_xml =~ s/UPDATED_DATETIME/$dt/;
+
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'update.xml' => $requests_xml } );
+
+        my $update = Open311::GetServiceRequestUpdates->new(
+            system_user => $user,
+            suppress_alerts => $test->{suppress_alerts},
+        );
+
+        my $council_details = { areaid => 2482 };
+        $update->update_comments( $o, $council_details );
+        $problem->discard_changes;
+
+        my $alerts_sent = FixMyStreet::App->model('DB::AlertSent')->search(
+            {
+                alert_id => $alert->id,
+                parameter => $problem->comments->first->id,
+            }
+        );
+
+        if ( $test->{suppress_alerts} ) {
+            ok $alerts_sent->count(), 'alerts suppressed';
+        } else {
+            is $alerts_sent->count(), 0, 'alerts not suppressed';
+        }
+
+        $alerts_sent->delete;
+        $alert->delete;
+    }
+}
+
 $problem2->comments->delete();
 $problem->comments->delete();
 $problem2->delete;

@@ -137,6 +137,11 @@
     </p>
 
     <p>
+        <label for="suppress_alerts">Do not send email alerts on fetched comments to problem creator</label>:
+        <input type="checkbox" name="suppress_alerts"[% ' checked' IF conf.suppress_alerts %]>
+    </p>
+
+    <p>
     <input type="hidden" name="open311_id" value="[% conf.id %]">
     <input type="hidden" name="area_id" value="[% area_id %]">
     <input type="hidden" name="posted" value="open311">

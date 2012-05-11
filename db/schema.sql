@@ -434,5 +434,6 @@ create table open311conf (
     api_key      text,
     send_method  text,
     send_comments boolean not null default 'f',
-    comment_user_id int references users(id)
+    comment_user_id int references users(id),
+    suppress_alerts boolean not null default 'f'
 );

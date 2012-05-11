@@ -339,7 +339,7 @@ sub update_contacts : Private {
     } elsif ( $posted eq 'open311' ) {
         $c->forward('check_token');
 
-        my %params = map { $_ => $c->req->param($_) } qw/open311_id endpoint jurisdiction api_key area_id send_method send_comments comment_user_id/;
+        my %params = map { $_ => $c->req->param($_) } qw/open311_id endpoint jurisdiction api_key area_id send_method send_comments suppress_alerts comment_user_id/;
 
         if ( $params{open311_id} ) {
             my $conf = $c->model('DB::Open311Conf')->find( { id => $params{open311_id} } );
@@ -349,6 +349,7 @@ sub update_contacts : Private {
             $conf->api_key( $params{api_key} );
             $conf->send_method( $params{send_method} );
             $conf->send_comments( $params{send_comments} );
+            $conf->suppress_alerts( $params{suppress_alerts} );
             $conf->comment_user_id( $params{comment_user_id} || undef );
 
             $conf->update();
@@ -362,6 +363,7 @@ sub update_contacts : Private {
             $conf->api_key( $params{api_key} );
             $conf->send_method( $params{send_method} );
             $conf->send_comments( $params{send_comments} );
+            $conf->suppress_alerts( $params{suppress_alerts} );
             $conf->comment_user_id( $params{comment_user_id} || undef );
 
             $conf->insert();

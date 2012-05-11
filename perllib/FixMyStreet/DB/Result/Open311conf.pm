@@ -32,6 +32,12 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "comment_user_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  "username",
+  { data_type => "text", is_nullable => 1 },
+  "password",
+  { data_type => "text", is_nullable => 1 },
+  "suppress_alerts",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("open311conf_area_id_key", ["area_id"]);
@@ -48,8 +54,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-26 17:03:34
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:fC6Ws8p/pXyjgqfm2LRKsw
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-05-11 13:07:38
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Mckkx2rjx9ug3+HaXKzw5g
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
