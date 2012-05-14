@@ -149,10 +149,12 @@ img {
 
 select, input, textarea {
   font-size: 99%;
-  width: 100%;
   max-width: 95%;
 }
-
+// To deal with bug from drop-down being wider than holder
+select {
+  width: 100%;
+}
 
 // links
 a,
