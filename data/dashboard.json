@@ -1,4 +1,10 @@
 {
+    "wards": {
+        "1": { "id": 1, "name": "West Ward" },
+        "2": { "id": 2, "name": "East Ward" },
+        "3": { "id": 3, "name": "North Ward" },
+        "4": { "id": 4, "name": "South Ward" }
+    },
     "category_options": [
         "Abandoned vehicles",
         "Grafitti",

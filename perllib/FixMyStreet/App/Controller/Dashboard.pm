@@ -46,6 +46,7 @@ sub example : Local : Args(0) {
         } else {
             $c->stash->{problems} = $j->{counts_some};
         }
+        $c->stash->{children} = $j->{wards};
         $c->stash->{category_options} = $j->{category_options};
         if ( lc($c->stash->{q_state}) eq 'all' or !$c->stash->{q_state} ) {
             $c->stash->{lists} = $j->{lists}->{all};
