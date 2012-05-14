@@ -2,18 +2,6 @@
 
 <h1>[% loc('Local RSS feeds and email alerts') %]</h1>
 
-[% IF photos.size %]
-<div class="sticky-sidebar">
-  <aside>
-    <h2>[% loc('Some photos of recent reports') %]</h2>
-    [% FOREACH p IN photos %]
-        <a href="/report/[% p.id %]"><img border="0" height="100"
-            src="/photo/[% p.id %].tn.jpeg" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
-    [% END %]
-  </aside>
-</div>
-[% END %]
-
 <p>
 [% IF c.cobrand.is_council %]
 FixMyStreet has a variety of RSS feeds and email alerts for local problems, including
@@ -49,5 +37,17 @@ To find out what local alerts we have for you, please enter your [% c.cobrand.co
     </div>
   </fieldset>
 </form>
+
+[% IF photos.size %]
+<div class="sticky-sidebar">
+  <aside>
+    <h2>[% loc('Some photos of recent reports') %]</h2>
+    [% FOREACH p IN photos %]
+        <a href="/report/[% p.id %]"><img border="0" height="100"
+            src="/photo/[% p.id %].tn.jpeg" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
+    [% END %]
+  </aside>
+</div>
+[% END %]
 
 [% INCLUDE 'footer.html' %]

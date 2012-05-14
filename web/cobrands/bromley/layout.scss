@@ -132,18 +132,10 @@ body.twothirdswidthpage {
             @include box-shadow(none);
         }
         .sticky-sidebar {
+            top: 1em;
             aside {
                 position: absolute;
                 top: 0;
-            }
-        }
-    }
-}
-@media only screen and (min-width: 48em) and (max-width: 61em) {
-    body.twothirdswidthpage {
-        .content {
-            .sticky-sidebar {
-                top: auto;
             }
         }
     }
