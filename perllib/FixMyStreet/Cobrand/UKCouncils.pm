@@ -7,6 +7,10 @@ use warnings;
 use Carp;
 use URI::Escape;
 
+sub is_council {
+    1;
+}
+
 sub site_restriction {
     my $self = shift;
     return ( "and council='" . $self->council_id . "'", $self->council_url, { council => sprintf('%d', $self->council_id) } );
