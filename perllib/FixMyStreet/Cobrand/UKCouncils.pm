@@ -75,5 +75,7 @@ sub recent_photos {
     return $self->problems->recent_photos( $num, $lat, $lon, $dist );
 }
 
+sub is_council_cobrand { return 1 }
+
 1;
 
