@@ -56,7 +56,7 @@
 
     [% IF c.cobrand.moniker != 'emptyhomes' %]
     <div class="general-sidebar-notes">
-        <p>[% loc( 'Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href="/faq#privacy">privacy policy</a>' ) %]</p>
+        [% INCLUDE 'report/updates-sidebar-notes.html' %]
     </div>
     [% END %]
 

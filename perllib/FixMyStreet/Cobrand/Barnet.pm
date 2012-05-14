@@ -54,5 +54,49 @@ sub generate_problem_banner {
     return $banner;
 }
 
+sub council_rss_alert_options {
+  my $self = shift;
+  my $all_councils = shift;
+  my $c            = shift;
+
+  my %councils = map { $_ => 1 } $self->area_types();
+
+  my $num_councils = scalar keys %$all_councils;
+
+  my ( @options, @reported_to_options );
+  if ( $num_councils == 1 or $num_councils == 2 ) {
+    my ($council, $ward);
+    foreach (values %$all_councils) {
+        if ($councils{$_->{type}}) {
+            $council = $_;
+            $council->{short_name} = $self->short_name( $council );
+            ( $council->{id_name} = $council->{short_name} ) =~ tr/+/_/;
+        } else {
+            $ward = $_;
+            $ward->{short_name} = $self->short_name( $ward );
+            ( $ward->{id_name} = $ward->{short_name} ) =~ tr/+/_/;
+        }
+    }
+
+    push @options,
+      {
+        type      => 'council',
+        id        => sprintf( 'council:%s:%s', $council->{id}, $council->{id_name} ),
+        text      => 'All problems within the council.',
+        rss_text  => sprintf( _('RSS feed of problems within %s'), $council->{name}),
+        uri       => $c->uri_for( '/rss/reports/' . $council->{short_name} ),
+      };
+    push @options,
+      {
+        type     => 'ward',
+        id       => sprintf( 'ward:%s:%s:%s:%s', $council->{id}, $ward->{id}, $council->{id_name}, $ward->{id_name} ),
+        rss_text => sprintf( _('RSS feed of problems within %s ward'), $ward->{name}),
+        text     => sprintf( _('Problems within %s ward'), $ward->{name}),
+        uri      => $c->uri_for( '/rss/reports/' . $council->{short_name} . '/' . $ward->{short_name} ),
+      } if $ward;
+    }
+
+    return ( \@options, @reported_to_options ? \@reported_to_options : undef );
+}
 1;
 
