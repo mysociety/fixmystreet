@@ -741,6 +741,8 @@ sub council_rss_alert_options {
             ( $ward->{id_name} = $ward->{short_name} ) =~ tr/+/_/;
         }
     }
+    $council->{name} = 'London Borough of Bromley'
+        if $council->{name} eq 'Bromley Council';
 
     push @options,
       {
