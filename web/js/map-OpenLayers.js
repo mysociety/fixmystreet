@@ -84,9 +84,10 @@ function fixmystreet_onload() {
             if (bounds) {
                 var center = bounds.getCenterLonLat();
                 var z = fixmystreet.map.getZoomForExtent(bounds);
-                if ( z >= 13 || !$('html').hasClass('mobile') ) {
-                    fixmystreet.map.setCenter(center, z, false, true);
+                if ( z < 13 && $('html').hasClass('mobile') ) {
+                    z = 13;
                 }
+                fixmystreet.map.setCenter(center, z, false, true);
             }
         });
     }
@@ -182,10 +183,12 @@ function fixmystreet_onload() {
     if ( fixmystreet.zoomToBounds ) {
         var bounds = fixmystreet.markers.getDataExtent();
         if (bounds) {
+            var center = bounds.getCenterLonLat();
             var z = fixmystreet.map.getZoomForExtent(bounds);
-            if ( z >= 13 || !$('html').hasClass('mobile') ) {
-                fixmystreet.map.zoomToExtent( bounds );
+            if ( z < 13 && $('html').hasClass('mobile') ) {
+                z = 13;
             }
+            fixmystreet.map.setCenter(center, z);
         }
     }
 
