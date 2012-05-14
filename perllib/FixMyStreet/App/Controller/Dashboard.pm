@@ -46,6 +46,7 @@ sub example : Local : Args(0) {
         } else {
             $c->stash->{problems} = $j->{counts_some};
         }
+        $c->stash->{council} = $j->{council};
         $c->stash->{children} = $j->{wards};
         $c->stash->{category_options} = $j->{category_options};
         if ( lc($c->stash->{q_state}) eq 'all' or !$c->stash->{q_state} ) {
@@ -90,6 +91,9 @@ sub index : Path : Args(0) {
     my $council = $c->forward('check_page_allowed');
 
     # Set up the data for the dropdowns
+
+    my $council_detail = mySociety::MaPit::call('area', $council );
+    $c->stash->{council} = $council_detail;
 
     my $children = mySociety::MaPit::call('area/children', $council,
         type => $mySociety::VotingArea::council_child_types,

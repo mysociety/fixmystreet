@@ -36,7 +36,6 @@ $mech->submit_form_ok( {
     with_fields => { email => $test_user, password_sign_in => $test_pass }
 } );
 
-$mech->content_contains( 'Summary Statistics' );
-$mech->content_contains( 'Edinburgh' );
+$mech->content_contains( 'Summary Statistics for City of Edinburgh' );
 
 done_testing;

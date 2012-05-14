@@ -1,4 +1,5 @@
 {
+    "council": { "name": "South Borsetshire District Council" },
     "wards": {
         "1": { "id": 1, "name": "West Ward" },
         "2": { "id": 2, "name": "East Ward" },
