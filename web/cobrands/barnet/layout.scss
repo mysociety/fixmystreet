@@ -74,7 +74,7 @@ body.fullwidthpage {
 body.twothirdswidthpage {
     .content {
         @include box-shadow(none);
-        width: 100%;
+        width: 640px;
         margin-top: 0;
         .sticky-sidebar {
             display: none;
