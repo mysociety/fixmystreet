@@ -856,6 +856,7 @@ sub process_photo_upload : Private {
     # check that the photo is a jpeg
     my $ct = $upload->type;
     unless ( $ct eq 'image/jpeg' || $ct eq 'image/pjpeg' ) {
+        $c->log->info('Bad photo tried to upload, type=' . $ct);
         $c->stash->{photo_error} = _('Please upload a JPEG image only');
         return;
     }
