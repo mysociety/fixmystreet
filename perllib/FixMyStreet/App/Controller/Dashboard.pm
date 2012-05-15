@@ -208,7 +208,7 @@ sub updates_search : Private {
     }
 
     $counts{fixed_user} = $c->model('DB::Comment')->search(
-        { %$params, mark_fixed => 1 }, { join     => 'problem' }
+        { %$params, mark_fixed => 1, 'problem_state' => { IN => [ 'fixed - user', 'fixed' ] } }, { join     => 'problem' }
     )->count;
 
     $params = {
