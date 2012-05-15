@@ -171,6 +171,111 @@ foreach my $test (
             total_fixed => [2,2,2,2],
             avg_marked => [1,1,1,1],
             investigating => [1,1,1,1],
+            marked => [1,1,1,1]
+        }
+    },
+    {
+        desc => 'marked in progress today',
+        confirm_dt   => DateTime->now->subtract( days => 1 ),
+        mark_dt      => DateTime->now,
+        state => 'in progress',
+        counts => {
+            totals => [4,4,4,4],
+            user => [1,1,1,1],
+            council => [1,1,1,1],
+            total_fixed => [2,2,2,2],
+            avg_marked => [1,1,1,1],
+            investigating => [1,1,1,1],
+            in_progress => [1,1,1,1],
+            marked => [2,2,2,2]
+        }
+    },
+    {
+        desc => 'marked as planned today',
+        confirm_dt   => DateTime->now->subtract( days => 1 ),
+        mark_dt      => DateTime->now,
+        state => 'planned',
+        counts => {
+            totals => [5,5,5,5],
+            user => [1,1,1,1],
+            council => [1,1,1,1],
+            total_fixed => [2,2,2,2],
+            avg_marked => [1,1,1,1],
+            investigating => [1,1,1,1],
+            in_progress => [1,1,1,1],
+            planned => [1,1,1,1],
+            marked => [3,3,3,3]
+        }
+    },
+    {
+        desc => 'marked as planned today, confirmed a week ago',
+        confirm_dt   => DateTime->now->subtract( days => 8 ),
+        mark_dt      => DateTime->now,
+        state => 'planned',
+        counts => {
+            totals => [5,5,6,6],
+            user => [1,1,1,1],
+            council => [1,1,1,1],
+            total_fixed => [2,2,2,2],
+            avg_marked => [3,3,3,3],
+            investigating => [1,1,1,1],
+            in_progress => [1,1,1,1],
+            planned => [2,2,2,2],
+            marked => [4,4,4,4]
+        }
+    },
+    {
+        desc => 'marked as council fixed today, confirmed a week ago',
+        confirm_dt   => DateTime->now->subtract( days => 8 ),
+        mark_dt      => DateTime->now,
+        state => 'fixed - council',
+        counts => {
+            totals => [5,5,7,7],
+            user => [1,1,1,1],
+            council => [2,2,2,2],
+            total_fixed => [3,3,3,3],
+            avg_fixed => [5,5,5,5],
+            avg_marked => [3,3,3,3],
+            investigating => [1,1,1,1],
+            in_progress => [1,1,1,1],
+            planned => [2,2,2,2],
+            marked => [4,4,4,4]
+        }
+    },
+    {
+        desc => 'marked as council fixed a week ago, confirmed 3 weeks ago',
+        confirm_dt   => DateTime->now->subtract( days => 21),
+        mark_dt      => DateTime->now->subtract( days => 8 ),
+        state => 'fixed - council',
+        counts => {
+            totals => [5,5,8,8],
+            user => [1,1,1,1],
+            council => [2,2,3,3],
+            total_fixed => [3,3,4,4],
+            avg_fixed => [5,5,7,7],
+            avg_marked => [3,3,3,3],
+            investigating => [1,1,1,1],
+            in_progress => [1,1,1,1],
+            planned => [2,2,2,2],
+            marked => [4,4,4,4]
+        }
+    },
+    {
+        desc => 'marked as user fixed 6 weeks ago, confirmed 7 weeks ago',
+        confirm_dt   => DateTime->now->subtract( weeks => 6 ),
+        mark_dt      => DateTime->now->subtract( weeks => 7 ),
+        state => 'fixed - user',
+        counts => {
+            totals => [5,5,8,9],
+            user => [1,1,1,2],
+            council => [2,2,3,3],
+            total_fixed => [3,3,4,5],
+            avg_fixed => [5,5,7,7],
+            avg_marked => [3,3,3,3],
+            investigating => [1,1,1,1],
+            in_progress => [1,1,1,1],
+            planned => [2,2,2,2],
+            marked => [4,4,4,4]
         }
     },
 ) {
@@ -188,6 +293,126 @@ foreach my $test (
 
         foreach my $row ( keys %{ $test->{counts} } ) {
             check_row( $res, $row, $test->{counts}->{$row} );
+        }
+    };
+}
+
+delete_problems();
+
+for my $test (
+    {
+        desc => 'Selecting no category does nothing',
+        p1 => {
+                state   => 'confirmed',
+                conf_dt => DateTime->now(),
+                category => 'Potholes',
+        },
+        p2 => {
+                state   => 'confirmed',
+                conf_dt => DateTime->now(),
+                category => 'Litter',
+        },
+        category => '',
+        counts => {
+            totals => [2,2,2,2],
+        },
+        counts_after => {
+            totals => [2,2,2,2],
+        }
+    },
+    {
+        desc => 'Limit display by category',
+        category => 'Potholes',
+        counts => {
+            totals => [2,2,2,2],
+        },
+        counts_after => {
+            totals => [1,1,1,1],
+        }
+    },
+    {
+        desc => 'Limit display for category with no entries',
+        category => 'Grafitti',
+        counts => {
+            totals => [2,2,2,2],
+        },
+        counts_after => {
+            totals => [0,0,0,0],
+        }
+    },
+    {
+        desc => 'Limit display by category for council fixed',
+        p1 => {
+                state   => 'fixed - council',
+                conf_dt => DateTime->now()->subtract( weeks => 1 ),
+                mark_dt => DateTime->now()->subtract( weeks => 1 ),
+                category => 'Potholes',
+        },
+        p2 => {
+                state   => 'fixed - council',
+                conf_dt => DateTime->now()->subtract( weeks => 1 ),
+                mark_dt => DateTime->now()->subtract( weeks => 1 ),
+                category => 'Litter',
+        },
+        category => 'Potholes',
+        counts => {
+            council => [0,0,2,2],
+            totals => [2,2,4,4],
+        },
+        counts_after => {
+            council => [0,0,1,1],
+            totals => [1,1,2,2],
+        }
+    },
+    {
+        desc => 'Limit display by category for user fixed',
+        p1 => {
+                state   => 'fixed - user',
+                conf_dt => DateTime->now()->subtract( weeks => 1 ),
+                mark_dt => DateTime->now()->subtract( weeks => 1 ),
+                category => 'Potholes',
+        },
+        p2 => {
+                state   => 'fixed - user',
+                conf_dt => DateTime->now()->subtract( weeks => 1 ),
+                mark_dt => DateTime->now()->subtract( weeks => 1 ),
+                category => 'Litter',
+        },
+        category => 'Potholes',
+        counts => {
+            user => [0,0,2,2],
+            council => [0,0,2,2],
+            totals => [2,2,6,6],
+        },
+        counts_after => {
+            user => [0,0,1,1],
+            council => [0,0,1,1],
+            totals => [1,1,3,3],
+        }
+    },
+) {
+    subtest $test->{desc} => sub {
+        make_problem( $test->{p1} ) if $test->{p1};
+        make_problem( $test->{p2} ) if $test->{p2};
+
+        $mech->get_ok('/dashboard');
+
+        $res = $categories->scrape( $mech->content );
+
+        foreach my $row ( keys %{ $test->{counts} } ) {
+            check_row( $res, $row, $test->{counts}->{$row} );
+        }
+
+        $mech->submit_form_ok( {
+            with_fields => {
+                category => $test->{category},
+            }
+        } );
+
+        $res = $categories->scrape( $mech->content );
+
+        foreach my $row ( keys %{ $test->{counts_after} } ) {
+            check_row( $res, $row, $test->{counts_after}->{$row} );
         }
     };
 }
@@ -211,6 +436,7 @@ sub make_problem {
         areas      => $test_ward,
         used_map => 0,
         user_id => $p_user->id,
+        category => $args->{category} || 'Other',
     } );
 
     if ( $args->{state} ne 'confirmed' ) {
