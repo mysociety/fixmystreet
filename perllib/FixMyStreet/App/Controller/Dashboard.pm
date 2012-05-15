@@ -100,8 +100,7 @@ sub index : Path : Args(0) {
     );
     $c->stash->{children} = $children;
 
-    # XXX Hmm, this is probably the best way to go
-    $c->stash->{all_councils} = { $council => { id => $council } };
+    $c->stash->{all_councils} = { $council => $council_detail };
     $c->forward( '/report/new/setup_categories_and_councils' );
 
     # See if we've had anything from the dropdowns
