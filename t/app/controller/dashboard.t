@@ -390,6 +390,35 @@ for my $test (
             totals => [1,1,3,3],
         }
     },
+    {
+        desc => 'Limit display by ward',
+        p1 => {
+                state   => 'confirmed',
+                conf_dt => DateTime->now()->subtract( weeks => 1 ),
+                category => 'Potholes',
+                # in real life it has commas around it and the search
+                # uses them
+                areas => ',20720,',
+        },
+        p2 => {
+                state   => 'fixed - council',
+                conf_dt => DateTime->now()->subtract( weeks => 1 ),
+                mark_dt => DateTime->now()->subtract( weeks => 1 ),
+                category => 'Litter',
+                areas => ',20720,',
+        },
+        ward => 20720,
+        counts => {
+            user => [0,0,2,2],
+            council => [0,0,3,3],
+            totals => [2,2,8,8],
+        },
+        counts_after => {
+            user => [0,0,0,0],
+            council => [0,0,1,1],
+            totals => [0,0,2,2],
+        }
+    },
 ) {
     subtest $test->{desc} => sub {
         make_problem( $test->{p1} ) if $test->{p1};
@@ -406,6 +435,7 @@ for my $test (
         $mech->submit_form_ok( {
             with_fields => {
                 category => $test->{category},
+                ward     => $test->{ward},
             }
         } );
 
@@ -433,7 +463,7 @@ sub make_problem {
         postcode => 'EH99 1SP',
         latitude => '51',
         longitude => '1',
-        areas      => $test_ward,
+        areas      => $args->{areas} || $test_ward,
         used_map => 0,
         user_id => $p_user->id,
         category => $args->{category} || 'Other',
