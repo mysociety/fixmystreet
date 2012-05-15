@@ -46,7 +46,7 @@
         '2' => [ "fixed_user", "User has marked as fixed" ]
     };
     FOR row IN rows %]
-    <tr>
+    <tr id="[% row.value.0.replace('[^\w]+', '_' ) %]">
         <th scope="row">[% row.value.1 %]</th>
         <td>[% problems.wtd.${row.value.0} %]</td>
         <td>[% problems.week.${row.value.0} %]</td>
@@ -55,7 +55,7 @@
     </tr>
     [% END %]
 
-    <tr class='subtotal'>
+    <tr class='subtotal' id="total_fixed">
         <th scope="row">Total marked as fixed</th>
         <td>[% problems.wtd.${"fixed - council"} + problems.wtd.fixed_user %]</td>
         <td>[% problems.week.${"fixed - council"} + problems.week.fixed_user %]</td>
@@ -71,7 +71,7 @@
     };
     wtd = 0, week = 0, weeks = 0, ytd = 0;
     FOR row IN rows %]
-    <tr>
+    <tr id="[% row.value.0.replace('[^\w]+', '_' ) %]">
         <th scope="row">[% row.value.1 %]</th>
         <td>[% problems.wtd.${row.value.0} %]</td>
         <td>[% problems.week.${row.value.0} %]</td>
@@ -80,7 +80,7 @@
     </tr>
     [% END %]
 
-    <tr class='subtotal'>
+    <tr class='subtotal' id="marked">
         <th scope="row">Total marked</th>
         <td>[% problems.wtd.${"in progress"} + problems.wtd.planned + problems.wtd.investigating %]</td>
         <td>[% problems.week.${"in progress"} + problems.week.planned + problems.week.investigating %]</td>
@@ -88,7 +88,7 @@
         <td>[% problems.ytd.${"in progress"} + problems.ytd.planned + problems.ytd.investigating %]</td>
     </tr>
 
-    <tr>
+    <tr id="avg_fixed">
         <th scope="row">Average time to council marking fixed (days)</th>
         <td>[% problems.wtd.time_to_fix %]</td>
         <td>[% problems.week.time_to_fix %]</td>
@@ -96,7 +96,7 @@
         <td>[% problems.ytd.time_to_fix %]</td>
     </tr>
 
-    <tr>
+    <tr id="avg_marked">
         <th scope="row">Average time to first council state change (days)</th>
         <td>[% problems.wtd.time_to_mark %]</td>
         <td>[% problems.week.time_to_mark %]</td>
@@ -104,7 +104,7 @@
         <td>[% problems.ytd.time_to_mark %]</td>
     </tr>
 
-    <tr class='subtotal'>
+    <tr class='subtotal' id="not_marked">
         <th scope="row">Total not marked</th>
         <td>[% problems.wtd.not_marked %]</td>
         <td>[% problems.week.not_marked %]</td>
