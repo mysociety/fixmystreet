@@ -7,10 +7,10 @@
 # $Id: crontab.ugly,v 1.23 2010-01-07 10:32:24 louise Exp $
 
 PATH=/usr/local/bin:/usr/bin:/bin
-!!(* if ($vhost eq 'integration-staging.fixmystreet.com') { *)!!
-MAILTO=dave@mysociety.org
-!!(* } else { *)!!
+!!(* if ($vhost eq 'www.fixmystreet.com' || $vhost eq 'reportemptyhomes.com') { *)!!
 MAILTO=cron-!!(*= $site *)!!@mysociety.org
+!!(* } else { *)!!
+MAILTO=!!(*= $user *)!!@mysociety.org
 !!(* } *)!!
 
 # On only one server
