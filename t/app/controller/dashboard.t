@@ -504,8 +504,23 @@ for my $test (
         state => 'fixed',
         report_counts => [2,0,0],
         report_counts_after => [1,0,0],
-    }
-
+    },
+    {
+        desc => 'All fixed states count as fixed',
+        p1 => {
+                state   => 'fixed - council',
+                conf_dt => DateTime->now(),
+                category => 'Potholes',
+        },
+        p2 => {
+                state   => 'fixed',
+                conf_dt => DateTime->now(),
+                category => 'Potholes',
+        },
+        state => 'fixed',
+        report_counts => [4,0,0],
+        report_counts_after => [3,0,0],
+    },
 ) {
     subtest $test->{desc} => sub {
         make_problem( $test->{p1} ) if $test->{p1};
