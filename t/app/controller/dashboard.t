@@ -84,6 +84,7 @@ my $categories = scraper {
     process "tr[id=avg_marked] > td", 'avg_marked[]' => 'TEXT',
     process "tr[id=avg_fixed] > td", 'avg_fixed[]' => 'TEXT',
     process "tr[id=not_marked] > td", 'not_marked[]' => 'TEXT',
+    process "tr[id=closed] > td", 'closed[]' => 'TEXT',
     process "table[id=reports] > tr > td", 'report_lists[]' => scraper {
         process 'ul > li', 'reports[]' => 'TEXT'
     },
@@ -294,6 +295,25 @@ foreach my $test (
             in_progress => [1,1,1,1],
             planned => [2,2,2,2],
             marked => [4,4,4,4]
+        }
+    },
+    {
+        desc => 'marked as closed',
+        confirm_dt   => DateTime->now->subtract( days => 1 ),
+        mark_dt      => DateTime->now,
+        state => 'closed',
+        counts => {
+            totals => [6,6,9,10],
+            user => [1,1,1,2],
+            council => [2,2,3,3],
+            total_fixed => [3,3,4,5],
+            avg_fixed => [5,5,7,7],
+            avg_marked => [2,2,2,2],
+            investigating => [1,1,1,1],
+            in_progress => [1,1,1,1],
+            planned => [2,2,2,2],
+            closed => [1,1,1,1],
+            marked => [5,5,5,5]
         }
     },
 ) {

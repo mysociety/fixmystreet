@@ -185,7 +185,7 @@ sub updates_search : Private {
 
     for my $vars (
         [ 'time_to_fix', 'fixed - council' ],
-        [ 'time_to_mark', 'in progress', 'planned', 'investigating' ],
+        [ 'time_to_mark', 'in progress', 'planned', 'investigating', 'closed' ],
     ) {
         my $col = shift @$vars;
         my $substmt = "select min(id) from comment where me.problem_id=comment.problem_id and problem_state in ('"
