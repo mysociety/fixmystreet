@@ -29,6 +29,10 @@ sub for_councils_faq : Path('/for-councils/faq') : Args(0) {
     my ( $self, $c ) = @_;
 }
 
+sub privacy : Global : Args(0) {
+    my ( $self, $c ) = @_;
+}
+
 sub faq : Global : Args(0) {
     my ( $self, $c ) = @_;
 

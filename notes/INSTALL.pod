@@ -13,6 +13,11 @@ following command from inside the fixmystreet directory:
 
     git submodule update --init
 
+If you're using git version 1.6.5 or later, you can do those steps in
+one go with:
+
+    git clone --recursive https://github.com/mysociety/fixmystreet.git
+
 =head1 REQUIREMENTS
 
 On the server you are installing FixMyStreet on you will need the following things:
@@ -50,17 +55,24 @@ to CSS convertor. You can get one from L<http://sass-lang.com/>
 
 If you're expecting a lot of traffic it's recommended that you install memcached: L<http://memcached.org/>
 
-If you're using a Debian based Linux distribution then the packages to install
-some required dependencies (though not all the required Perl modules) are
-listed in C<conf/packages>. To install all of them you can run:
+If you're using Debian 6.0 ("squeeze") then the packages to install
+some required dependencies (though not all the required Perl modules)
+are listed in C<conf/packages.debian-squeeze>. To install all of them
+you can run:
 
-    xargs -a conf/packages apt-get install
+    sudo xargs -a conf/packages.debian-squeeze apt-get install
 
-Note, you will need to either be logged in as root or to use
+A similar list of packages should work for other Debian-based
+distributions.  (Please let us know if you would like to contribute
+such a package list or instructions for other distributions.)
 
-    sudo xargs -a conf/packages apt-get install
+To generate the CSS for the current design of FixMyStreet you will
+also need Compass L<http://compass-style.org/>, but unfortunately
+it is not packaged in Debian squeeze (or squeeze-backports).  You
+will either need to install the package from testing, or you could
+install it from the Ruby gem with:
 
-for this to work.
+    gem install compass
 
 =head2 Service dependencies
 
@@ -81,22 +93,70 @@ geolocation services.
 
 =head1 DETAILED INSTALLATION INSTRUCTIONS
 
-=head2 Unpacking the Code
-
-Once you've downloaded the code you should unpack it. The best place to do this
-is in the location you want the web server vhost to be.
-
 =head2 Creating the database
 
-The default settings file assumes the database is called fms and the user the same. 
+The default settings file (C<conf/general.yml>) assumes the database is called fms and the user the same.
 You can change these if you like.
+
+If you wish to create this new database and database user with
+password authentication, the following steps may help.  First, create
+the fms user:
+
+    $ sudo -u postgres createuser fms
+    Shall the new role be a superuser? (y/n) n
+    Shall the new role be allowed to create databases? (y/n) n
+    Shall the new role be allowed to create more new roles? (y/n) n
+
+Then create the fms database:
+
+    $ sudo -u postgres createdb fms
+
+Set the password of the fms user, and change the owner of the fms database to be the fms user:
+
+    $ sudo -u postgres psql
+    postgres=# ALTER USER fms WITH PASSWORD 'somepassword'
+    ALTER ROLE
+    postgres=# ALTER DATABASE fms OWNER to fms;
+    ALTER DATABASE
+    postgres=# \q
+    $
+
+Then you need to configure PostgreSQL to allow password-based access
+to the fms database as the user fms from using Unix-domain sockets.
+Edit the file C</etc/postgresql/8.4/main/pg_hba.conf> and add as the
+first line:
+
+    local   fms     fms     md5
+
+You will then need to restart PostgreSQL with:
+
+    $ sudo /etc/init.d/postgresql restart
+
+If you want to access the database from the command line, you can add
+the following line to C<~/.pgpass>:
+
+    localhost:*:fms:fms:somepassword
+
+Then you should be able to access the database with:
+
+    $ psql -U fms fms
 
 =head2 Set up the database
 
-Once you've created the database you can use the sql in C<db/schema.sql> to create the required
+Before creating the database schema, you will need to install the
+PostgreSQL's SQL procedural language into the database:
+
+    createlang -U fms plpgsql fms
+
+Now you can use the sql in C<db/schema.sql> to create the required
 tables, triggers and stored procedures. You will also need to run
-C<db/alert_types.sql> which
-populates the alert_types table.
+C<db/alert_types.sql> which populates the alert_types table.  For
+example, you might run:
+
+    $ psql -U fms fms < db/schema.sql
+    ...
+    $ psql -U fms fms < db/alert_types.sql
+    ...
 
 =head2 Install Perl modules
 
@@ -105,7 +165,7 @@ C<bin/install_perl_modules> script, so run that now. This will install them
 into a directory called local.
 
 It uses cpanminus and Carton under the hood but should install these
-of they are missing. You may need to install some source packages to
+if they are missing. You may need to install some source packages to
 allow some of the included modules to be built, including:
 
 =over
@@ -129,6 +189,21 @@ above source packages from distribution packages this should also install
 the required development tools.
 
 =head2 Set up Webserver
+
+For production use of FixMyStreet, we suggest you use Apache and
+FastCGI.  (See below.)  For local development, however, you can use
+the Catalyst development server.  First, install the Catalyst
+development tools with:
+
+    ./bin/cron-wrapper local/bin/carton install Catalyst::Devel
+
+Then the development server can be run with:
+
+     CATALYST_DEBUG=1 ./bin/cron-wrapper ./script/fixmystreet_app_server.pl -r
+
+The server will be accessible as L<http://localhost:3000/>.
+
+=head3 Setting up Apache
 
 It is recommended that you run FixMyStreet using FastCGI. It should also be
 possible to run it using Plack/PSGI.

@@ -1,3 +1,4 @@
+use utf8;
 package FixMyStreet::DB::Result::Problem;
 
 # Created by DBIx::Class::Schema::Loader
@@ -7,7 +8,6 @@ use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
-
 __PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "EncodedColumn");
 __PACKAGE__->table("problem");
 __PACKAGE__->add_columns(
@@ -90,11 +90,19 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "send_fail_timestamp",
   { data_type => "timestamp", is_nullable => 1 },
+  "send_method_used",
+  { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->has_many(
   "comments",
   "FixMyStreet::DB::Result::Comment",
+  { "foreign.problem_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+__PACKAGE__->has_many(
+  "questionnaires",
+  "FixMyStreet::DB::Result::Questionnaire",
   { "foreign.problem_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
@@ -104,16 +112,10 @@ __PACKAGE__->belongs_to(
   { id => "user_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
-__PACKAGE__->has_many(
-  "questionnaires",
-  "FixMyStreet::DB::Result::Questionnaire",
-  { "foreign.problem_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-16 10:08:56
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:VODeZlWk8l/+IzBBlRNV0A
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-05-03 16:05:20
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:EvwI91Ot7SioQWqwnXRTBQ
 
 # Add fake relationship to stored procedure table
 __PACKAGE__->has_one(
@@ -568,7 +570,50 @@ sub body {
     return $body;
 }
 
+# returns true if the external id is the council's ref, i.e., useful to publish it
+# (by way of an example, the barnet send method returns a useful reference when
+# it succeeds, so that is the ref we should show on the problem report page).
+#     Future: this is installation-dependent so maybe should be using the contact
+#             data to determine if the external id is public on a council-by-council basis.
+#     Note:   this only makes sense when called on a problem that has been sent!
+sub can_display_external_id {
+    my $self = shift;
+    if ($self->external_id && $self->send_method_used eq 'barnet') {
+        return 1;
+    }
+    return 0;    
+}
+
 # TODO Some/much of this could be moved to the template
+
+# either: 
+#   "sent to council 3 mins later"
+#   "[Council name] ref: XYZ"
+# or
+#   "sent to council 3 mins later, their ref: XYZ"
+#
+# Note: some silliness with pronouns and the adjacent comma mean this is
+#       being presented as a single string rather than two
+sub processed_summary_string {
+    my ( $problem, $c ) = @_;
+    my ($duration_clause, $external_ref_clause);
+    if ($problem->whensent) {
+        $duration_clause = $problem->duration_string($c)
+    }
+    if ($problem->can_display_external_id) {
+        if ($duration_clause) {
+            $external_ref_clause = sprintf(_('their ref:&nbsp;%s'), $problem->external_id);
+        } else {
+            $external_ref_clause = sprintf(_('%s ref:&nbsp;%s'), $problem->external_body, $problem->external_id);
+        }
+    }
+    if ($duration_clause and $external_ref_clause) {
+        return "$duration_clause, $external_ref_clause"
+    } else { 
+        return $duration_clause || $external_ref_clause
+    }
+}
+
 sub duration_string {
     my ( $problem, $c ) = @_;
     my $body = $problem->body( $c );

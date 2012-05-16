@@ -2,9 +2,11 @@
 
 <p><em>[% problem.meta_line(c) | html %]
 [% IF problem.council %]
-    [% IF problem.whensent %]
-        <small class="council_sent_info"><br>[% problem.duration_string(c) %]</small>
-    [% END %]
+    [% IF problem.whensent || problem.can_display_external_id %]
+        <small class="council_sent_info"><br>
+          [% problem.processed_summary_string(c) %]
+        </small>
+    [% END %]    
 [% ELSE %]
 <br><small>[% loc('Not reported to council') %]</small>
 [% END %]

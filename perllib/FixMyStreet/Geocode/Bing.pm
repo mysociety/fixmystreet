@@ -71,7 +71,14 @@ sub string {
                );
 
         ( $latitude, $longitude ) = @{ $_->{point}->{coordinates} };
-        push (@$error, { address => $address, latitude => $latitude, longitude => $longitude });
+        # These co-ordinates are output as query parameters in a URL, make sure they have a "."
+        mySociety::Locale::in_gb_locale {
+            push (@$error, {
+                address => $address,
+                latitude => sprintf('%0.6f', $latitude),
+                longitude => sprintf('%0.6f', $longitude)
+            });
+        };
         push (@valid_locations, $_);
     }
 

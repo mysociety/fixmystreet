@@ -149,10 +149,10 @@ function fixmystreet_onload() {
     var markers = fms_markers_list( fixmystreet.pins, true );
     fixmystreet.markers.addFeatures( markers );
     if (fixmystreet.page == 'around' || fixmystreet.page == 'reports' || fixmystreet.page == 'my') {
-        var select = new OpenLayers.Control.SelectFeature( fixmystreet.markers );
+        fixmystreet.select_feature = new OpenLayers.Control.SelectFeature( fixmystreet.markers );
         var selectedFeature;
         function onPopupClose(evt) {
-            select.unselect(selectedFeature);
+            fixmystreet.select_feature.unselect(selectedFeature);
             OpenLayers.Event.stop(evt);
         }
         fixmystreet.markers.events.register( 'featureunselected', fixmystreet.markers, function(evt) {
@@ -173,8 +173,8 @@ function fixmystreet_onload() {
             feature.popup = popup;
             fixmystreet.map.addPopup(popup);
         });
-        fixmystreet.map.addControl( select );
-        select.activate();
+        fixmystreet.map.addControl( fixmystreet.select_feature );
+        fixmystreet.select_feature.activate();
     } else if (fixmystreet.page == 'new') {
         fixmystreet_activate_drag();
     }
@@ -202,9 +202,11 @@ function fixmystreet_onload() {
         for (var i=0; i<showhide.length; i+=2) {
             if (this.innerHTML == showhide[i]) {
                 fixmystreet.markers.setVisibility(true);
+                fixmystreet.select_feature.activate();
                 this.innerHTML = showhide[i+1];
             } else if (this.innerHTML == showhide[i+1]) {
                 fixmystreet.markers.setVisibility(false);
+                fixmystreet.select_feature.deactivate();
                 this.innerHTML = showhide[i];
             }
         }

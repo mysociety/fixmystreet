@@ -57,5 +57,5 @@ END
 #echo "gpscript $GPSCRIPT"
 
 export GDFONTPATH=/usr/share/fonts/truetype/ttf-bitstream-vera
-gnuplot < $GPSCRIPT > fixmystreet/web/bci-live-line$EXTENSION
+gnuplot < $GPSCRIPT > fixmystreet/web/bci-live-line$EXTENSION 2>/dev/null
 

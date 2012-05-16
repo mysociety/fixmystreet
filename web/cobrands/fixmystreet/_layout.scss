@@ -177,7 +177,7 @@ h1 {
           &#mysoc-logo {
             width:84px;
             height:16px;
-            background-position:-260px -43px;
+            background-position: -20px -5px;
             opacity: 0.8;
             &:hover {
               opacity: 1;
@@ -191,9 +191,9 @@ h1 {
     }
   }
 }
-
-
-
+.ie7 #main-nav ul#mysoc-menu li a#mysoc-logo {
+    background-position: -260px -43px;
+}
 
 // .content Is the white box
 
@@ -792,7 +792,7 @@ body.frontpage {
     top:3em;
     width: 300px;
     height: 60px;
-    background-position:-2px -108px;
+    background: url('/cobrands/fixmystreet/images/sprite.png') -2px -108px no-repeat;
   }
   #user-meta {
     z-index:10;
