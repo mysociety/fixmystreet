@@ -25,7 +25,6 @@ sub should_skip {
     my $err_msg = "";
 
     if ($problem->send_fail_count >= SEND_FAIL_RETRIES_CUTOFF) {
-        $sending_skipped_by_method{$council_name || '?'}++;
         $council_name &&= " to $council_name";
         $err_msg = "skipped: problem id=" . $problem->id . " send$council_name has failed " 
                 . $problem->send_fail_count . " times, cutoff is " . SEND_FAIL_RETRIES_CUTOFF;
