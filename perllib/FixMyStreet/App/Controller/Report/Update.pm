@@ -105,8 +105,10 @@ sub process_user : Private {
         my $name = scalar $c->req->param('name');
         $user->name( Utils::trim_text( $name ) ) if $name;
         my $title = scalar $c->req->param('fms_extra_title');
-        $c->log->debug( 'user exists and title is ' . $title );
-        $user->title( Utils::trim_text( $title ) ) if $title;
+        if ( $title ) {
+            $c->log->debug( 'user exists and title is ' . $title );
+            $user->title( Utils::trim_text( $title ) );
+        }
         $update->user( $user );
         return 1;
     }

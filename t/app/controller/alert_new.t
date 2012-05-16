@@ -445,6 +445,7 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
     ok $update, "created test update - $update_id";
 
     FixMyStreet::App->model('DB::AlertType')->email_alerts();
+    # TODO Note the below will fail if the db has an existing alert that matches
     $mech->email_count_is(3);
     my @emails = $mech->get_email;
     my $count;
