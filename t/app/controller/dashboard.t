@@ -84,6 +84,9 @@ my $categories = scraper {
     process "tr[id=avg_marked] > td", 'avg_marked[]' => 'TEXT',
     process "tr[id=avg_fixed] > td", 'avg_fixed[]' => 'TEXT',
     process "tr[id=not_marked] > td", 'not_marked[]' => 'TEXT',
+    process "table[id=reports] > tr > td", 'report_lists[]' => scraper {
+        process 'ul > li', 'reports[]' => 'TEXT'
+    },
 };
 
 my $expected_cats = [ 'All', '-- Pick a category --', @cats, 'Other' ];
@@ -96,27 +99,40 @@ foreach my $row ( @{ $res->{rows} }[1 .. 11] ) {
     }
 }
 
+for my $reports ( @{ $res->{report_lists} } ) {
+    is_deeply $reports, {}, 'No reports';
+}
 
 foreach my $test (
     {
         desc => 'confirmed today with no state',
         dt   => DateTime->now,
         counts => [1,1,1,1],
+        report_counts => [1, 0, 0],
     },
     {
         desc => 'confirmed last 7 days with no state',
         dt   => DateTime->now->subtract( days => 6, hours => 23 ),
         counts => [1,2,2,2],
+        report_counts => [2, 0, 0],
+    },
+    {
+        desc => 'confirmed last 8 days with no state',
+        dt   => DateTime->now->subtract( days => 8 ),
+        counts => [1,2,3,3],
+        report_counts => [2, 1, 0],
     },
     {
         desc => 'confirmed last 4 weeks with no state',
         dt   => DateTime->now->subtract( weeks => 2 ),
-        counts => [1,2,3,3],
+        counts => [1,2,4,4],
+        report_counts => [2, 1, 1],
     },
     {
         desc => 'confirmed this year with no state',
         dt   => DateTime->now->subtract( weeks => 7 ),
-        counts => [1,2,3,4],
+        counts => [1,2,4,5],
+        report_counts => [2, 1, 1],
     },
 ) {
     subtest $test->{desc} => sub {
@@ -127,6 +143,8 @@ foreach my $test (
 
         check_row( $res, 'totals', $test->{counts} );
         check_row( $res, 'not_marked', $test->{counts} );
+
+        check_report_counts( $res, $test->{report_counts} );
     };
 }
 
@@ -318,7 +336,9 @@ for my $test (
         },
         counts_after => {
             totals => [2,2,2,2],
-        }
+        },
+        report_counts => [2,0,0],
+        report_counts_after => [2,0,0],
     },
     {
         desc => 'Limit display by category',
@@ -328,7 +348,9 @@ for my $test (
         },
         counts_after => {
             totals => [1,1,1,1],
-        }
+        },
+        report_counts => [2,0,0],
+        report_counts_after => [1,0,0],
     },
     {
         desc => 'Limit display for category with no entries',
@@ -338,7 +360,9 @@ for my $test (
         },
         counts_after => {
             totals => [0,0,0,0],
-        }
+        },
+        report_counts => [2,0,0],
+        report_counts_after => [0,0,0],
     },
     {
         desc => 'Limit display by category for council fixed',
@@ -362,7 +386,9 @@ for my $test (
         counts_after => {
             council => [0,0,1,1],
             totals => [1,1,2,2],
-        }
+        },
+        report_counts => [2,2,0],
+        report_counts_after => [1,1,0],
     },
     {
         desc => 'Limit display by category for user fixed',
@@ -388,7 +414,9 @@ for my $test (
             user => [0,0,1,1],
             council => [0,0,1,1],
             totals => [1,1,3,3],
-        }
+        },
+        report_counts => [2,4,0],
+        report_counts_after => [1,2,0],
     },
     {
         desc => 'Limit display by ward',
@@ -417,7 +445,9 @@ for my $test (
             user => [0,0,0,0],
             council => [0,0,1,1],
             totals => [0,0,2,2],
-        }
+        },
+        report_counts => [2,6,0],
+        report_counts_after => [0,2,0],
     },
 ) {
     subtest $test->{desc} => sub {
@@ -432,6 +462,8 @@ for my $test (
             check_row( $res, $row, $test->{counts}->{$row} );
         }
 
+        check_report_counts( $res, $test->{report_counts} );
+
         $mech->submit_form_ok( {
             with_fields => {
                 category => $test->{category},
@@ -444,6 +476,56 @@ for my $test (
         foreach my $row ( keys %{ $test->{counts_after} } ) {
             check_row( $res, $row, $test->{counts_after}->{$row} );
         }
+        check_report_counts( $res, $test->{report_counts_after} );
+    };
+}
+
+delete_problems();
+
+for my $test (
+    {
+        desc => 'Selecting no state does nothing',
+        p1 => {
+                state   => 'fixed - user',
+                conf_dt => DateTime->now(),
+                category => 'Potholes',
+        },
+        p2 => {
+                state   => 'confirmed',
+                conf_dt => DateTime->now(),
+                category => 'Litter',
+        },
+        state => '',
+        report_counts => [2,0,0],
+        report_counts_after => [2,0,0],
+    },
+    {
+        desc => 'limit by state works',
+        state => 'fixed',
+        report_counts => [2,0,0],
+        report_counts_after => [1,0,0],
+    }
+
+) {
+    subtest $test->{desc} => sub {
+        make_problem( $test->{p1} ) if $test->{p1};
+        make_problem( $test->{p2} ) if $test->{p2};
+
+        $mech->get_ok('/dashboard');
+
+        $res = $categories->scrape( $mech->content );
+
+        check_report_counts( $res, $test->{report_counts} );
+
+        $mech->submit_form_ok( {
+            with_fields => {
+                state => $test->{state},
+            }
+        } );
+
+        $res = $categories->scrape( $mech->content );
+
+        check_report_counts( $res, $test->{report_counts_after} );
     };
 }
 
@@ -492,6 +574,23 @@ sub check_row {
     is $res->{ $row }->[1], $totals->[1], "Correct count in $row for last 7 days";
     is $res->{ $row }->[2], $totals->[2], "Correct count in $row for last 4 weeks";
     is $res->{ $row }->[3], $totals->[3], "Correct count in $row for YTD";
+}
+
+sub check_report_counts {
+    my $res = shift;
+    my $counts = shift;
+
+    for my $i ( 0 .. 2 ) {
+        if ( $counts->[$i] == 0 ) {
+            is_deeply $res->{report_lists}->[$i], {}, "No reports for column $i";
+        } else {
+            if ( ref( $res->{report_lists}->[$i]->{reports} ) eq 'ARRAY' ) {
+                is scalar @{ $res->{report_lists}->[$i]->{reports} }, $counts->[$i], "Correct report count for column $i";
+            } else {
+                fail "Correct report count for column $i ( no reports )";
+            }
+        }
+    }
 }
 
 sub delete_problems {
