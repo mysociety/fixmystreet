@@ -106,7 +106,7 @@ $(function(){
             if (cobrand == 'bromley') {
                 var bromley_right;
                 if ($html.hasClass('ie6') || $html.hasClass('ie7')) {
-                    bromley_right = '-32em';
+                    bromley_right = '-480px';
                 } else {
                     bromley_right = '0em';
                 }

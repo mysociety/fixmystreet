@@ -249,7 +249,7 @@ body.mappage {
     .container {
       float: left;
       width: 27em;
-      margin-left: 1.4em;
+      margin-left: 0.7em;
     }
     .nav-wrapper{
       z-index:1;
@@ -259,13 +259,6 @@ body.mappage {
     }
     #site-logo {
       position: absolute;
-    }
-  }
-}
-.ie6 {
-  body.mappage {
-    .container {
-      margin-left: 0.7em;
     }
   }
 }

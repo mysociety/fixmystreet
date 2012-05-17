@@ -38,7 +38,8 @@ body.twothirdswidthpage .content {
 }
 .ie6, .ie7 {
     body.mappage .container {
-        width: 432px;
+        width: 464px;
+        margin-left: 0;
     }
 }
 
@@ -102,7 +103,7 @@ body.frontpage {
 
 // Perhaps fix map location (should be in central?)
 .ie6 #map_box, .ie7 #map_box {
-    right: -32em;
+    right: -480px;
 }
 
 .general-sidebar-notes,
