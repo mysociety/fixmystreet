@@ -8,7 +8,7 @@
     %]
 [% END %]
 
-[% IF c.cobrand.is_council_cobrand %]
+[% IF c.cobrand.is_council %]
     [% ward_text = loc( 'View reports by ward' ) %]
 [% ELSE %]
     [% ward_text = loc( 'Wards of this council' ) %]
@@ -75,7 +75,7 @@ Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a
 [% ELSIF c.cobrand.all_reports_style == 'detailed' %]
     <div class="shadow-wrap">
         <ul id="key-tools"[% IF NOT children.size %] class="singleton"[% END %]>
-            <li><a rel="nofollow" id="key-tool-updates-area" class="feed" href="[% rss_url %]">[% IF c.cobrand.is_council_cobrand %][% tprintf(loc('Get updates of %s problems'), thing) %][% ELSE %][% tprintf(loc('Get updates of problems in this %s'), thing) %][% END %]</a></li>
+            <li><a rel="nofollow" id="key-tool-updates-area" class="feed" href="[% rss_url %]">[% IF c.cobrand.is_council %][% tprintf(loc('Get updates of %s problems'), thing) %][% ELSE %][% tprintf(loc('Get updates of problems in this %s'), thing) %][% END %]</a></li>
             [% IF children.size %]
             <li><a href="#council_wards" id="key-tool-wards" class="chevron">[% ward_text %]</a></li>
             [% END %]

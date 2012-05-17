@@ -7,6 +7,10 @@ use warnings;
 use Carp;
 use URI::Escape;
 
+sub is_council {
+    return 1;
+}
+
 sub site_restriction {
     my $self = shift;
     return ( "and council='" . $self->council_id . "'", $self->council_url, { council => sprintf('%d', $self->council_id) } );
@@ -74,8 +78,6 @@ sub recent_photos {
     $num = 2 if $num == 3;
     return $self->problems->recent_photos( $num, $lat, $lon, $dist );
 }
-
-sub is_council_cobrand { return 1 }
 
 1;
 
