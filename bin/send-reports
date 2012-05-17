@@ -342,8 +342,9 @@ while (my $row = $unsent->next) {
                 $row->user->name( $row->user->id . ' ' . $row->user->name );
             }
 
-            if ($cobrand eq 'fixmybarangay') {
+            if ($cobrand->moniker eq 'fixmybarangay') {
                 # FixMyBarangay endpoints expect external_id as an attribute
+                # TODO: nice if this was indicated in the open311conf entry?
                 $row->extra( [ { 'name' => 'external_id', 'value' => $row->id  } ]  ); 
             }
             
@@ -354,7 +355,7 @@ while (my $row = $unsent->next) {
                 $row->discard_changes();
             }
 
-            if ($cobrand eq 'fixmybarangay') {
+            if ($cobrand->moniker eq 'fixmybarangay') {
                 $row->discard_changes();              
             }
 
