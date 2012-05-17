@@ -149,10 +149,12 @@ img {
 
 select, input, textarea {
   font-size: 99%;
-  width: 100%;
   max-width: 95%;
 }
-
+// To deal with bug from drop-down being wider than holder
+select {
+  width: 100%;
+}
 
 // links
 a,
@@ -380,7 +382,7 @@ p.label-valid {
 
 // Padding creates page margins on mobile
 .container{
-  padding: 0 1em;
+  padding: 0 1em 1em;
 }
 
 // Use full width to reverse .container margins
@@ -447,6 +449,9 @@ p.label-valid {
         background:  #333;
         color:#fff;
         text-decoration: none;
+      }
+      span {
+        background-color: #ccc;
       }
     }
     &#mysoc-menu{

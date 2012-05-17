@@ -561,19 +561,28 @@ sub post_barnet_message {
                 $problem->external_body( 'Barnet Borough Council' ); # better to use $problem->body()?
                 $problem->send_method_used('barnet');
                 $return = 0;
-            } else { 
-                $err_msg = "Failed (problem id $h{id}): service returned no external id";
+            } else {
+                my @returned_items = split  /<item[^>]*>/, $result->get_ET_RETURN;
+                my @messages = ();
+                foreach my $item (@returned_items) {
+                    if ($item=~/<MESSAGE [^>]*>\s*(\S.*?)<\/MESSAGE>/) { # if there's a non-null MESSAGE in there, grab it
+                        push @messages, $1;  # best stab at extracting useful error message back from convoluted response
+                    }
+                }
+                push @messages, "service returned no external id" unless @messages;
+                $err_msg = "Failed (problem id $h{id}): " . join(" \n ", @messages);
             }
         } else {
             my %fault = (
                     'code' =>  $result->get_faultcode(),
                     'actor' =>  $result->get_faultactor(),
                     'string' =>  $result->get_faultstring(),
-                    # 'detail' =>  $result->get_detail(), # possibly only contains debug info
+                    'detail' =>  $result->get_detail(), # possibly only contains debug info
                 );
             $fault{$_}=~s/^\s*|\s*$//g foreach keys %fault;
             $fault{actor}&&=" (actor: $fault{actor})";
-            $err_msg = "Failed (problem id $h{id}): Fault $fault{code}$fault{actor}\n$fault{string}";
+            $fault{'detail'} &&= "\n" . $fault{'detail'};
+            $err_msg = "Failed (problem id $h{id}): Fault $fault{code}$fault{actor}\n$fault{string}$fault{detail}";
         }
 
     };
