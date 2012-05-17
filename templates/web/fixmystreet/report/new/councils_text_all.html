@@ -1,5 +1,5 @@
 <p>
-[% IF all_councils.${area_ids_to_list.0}.type == 'LBO' %]
+[% IF area_ids_to_list.0 != 2489 && all_councils.${area_ids_to_list.0}.type == 'LBO' %]
 [%
     tprintf(
         loc('All the information you provide here will be sent to <strong>%s</strong> or a relevant local body such as <strong>TfL</strong>, via the London Report-It system.'),

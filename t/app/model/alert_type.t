@@ -202,7 +202,7 @@ for my $test (
         (my $title = $report->title) =~ s/ /\\s+/;
         my $body = $email->body;
 
-        like $body, qr#report/$report_id - $title, $pc#, 'email contains expected postcode';
+        like $body, qr#report/$report_id\s+-\s+$title,\s+$pc#, 'email contains expected postcode';
     };
 }
 

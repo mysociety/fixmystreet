@@ -78,6 +78,8 @@ partial
 
 =cut
 
+use constant COUNCIL_ID_BARNET => 2489;
+
 sub report_new : Path : Args(0) {
     my ( $self, $c ) = @_;
 
@@ -545,9 +547,15 @@ sub setup_categories_and_councils : Private {
     } elsif ($first_council->{type} eq 'LBO') {
 
         $area_ids_to_list{ $first_council->{id} } = 1;
+        my @local_categories;
+        if ($first_council->{id} == COUNCIL_ID_BARNET) {
+            @local_categories =  sort(keys %{ Utils::barnet_categories() }); # removed 'Other' option
+        } else {
+            @local_categories =  sort keys %{ Utils::london_categories() }            
+        }
         @category_options = (
             _('-- Pick a category --'),
-            sort keys %{ Utils::london_categories() }
+            @local_categories 
         );
         $category_label = _('Category:');
 
@@ -733,8 +741,15 @@ sub process_report : Private {
         $councils = join( ',', @{ $c->stash->{area_ids_to_list} } ) || -1;
         $report->council( $councils );
 
-    } elsif ( $first_council->{type} eq 'LBO') {
+    } elsif ( $first_council->{id} == COUNCIL_ID_BARNET ) {
 
+        unless ( exists Utils::barnet_categories()->{ $report->category } or $report->category eq 'Other') {
+            $c->stash->{field_errors}->{category} = _('Please choose a category');
+        }
+        $report->council( $first_council->{id} );
+        
+    } elsif ( $first_council->{type} eq 'LBO') {
+        
         unless ( Utils::london_categories()->{ $report->category } ) {
             $c->stash->{field_errors}->{category} = _('Please choose a category');
         }

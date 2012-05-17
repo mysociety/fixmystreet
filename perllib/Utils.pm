@@ -140,6 +140,47 @@ sub london_categories {
     };
 }
 
+sub barnet_categories {
+    # The values here are KBIDs from Barnet's system: see bin/send-reports for formatting 
+    if (mySociety::Config::get('STAGING_SITE')) { # note staging site must use different KBIDs
+        return {
+             'Blocked drain'             => 255,  # Gullies-Blocked
+             'Dead animal'               => 286,  # Animals-Dead-Removal
+             'Dog fouling'               => 288,  # Dog Fouling-Clear
+             'Fly tipping'               => 347,  # Fly tipping-Clear
+             'Graffiti'                  => 292,  # Graffiti-Removal
+             'Litter, accumulated'       => 349,  # Accumulated Litter
+             'Litter, overflowing bins'  => 205,  # Litter Bins-Overflowing
+             'Pavements'                 => 195,  # Pavements-Damaged/Cracked
+             'Pothole'                   => 204,  # Pothole
+             'Roads Signs'               => 432,  # Roads Signs - Maintenance
+             'Street Lighting'           => 251,  # Street Lighting
+             'Traffic Lights'            => 103,  # Traffic Lights
+        }
+    } else {
+        return {
+            'Abandoned Vehicle'         => 468,
+            'Accumulated Litter'        => 349,
+            'Dog Bin'                   => 203,
+            'Dog Fouling'               => 288,
+            'Drain or Gully'            => 256,
+            'Fly Posting'               => 465,
+            'Fly Tipping'               => 449,
+            'Graffiti'                  => 292,
+            'Gritting'                  => 200,
+            'Highways'                  => 186,
+            'Litter Bin Overflowing'    => 205,
+            'Manhole Cover'             => 417,
+            'Overhanging Foliage'       => 421,
+            'Pavement Damaged/Cracked'  => 195,
+            'Pothole'                   => 204,
+            'Road Sign'                 => 80,
+            'Roadworks'                 => 246,
+            'Street Lighting'           => 251,
+        };
+    }
+}
+
 =head2 trim_text
 
     my $text = trim_text( $text_to_trim );
