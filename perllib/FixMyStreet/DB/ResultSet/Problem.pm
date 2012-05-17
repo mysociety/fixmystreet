@@ -234,6 +234,7 @@ sub send_reports {
 
     my $send_report = FixMyStreet::SendReport->new();
     my $senders = $send_report->get_senders;
+    my %sending_skipped_by_method;
 
     while (my $row = $unsent->next) {
 
@@ -320,7 +321,10 @@ sub send_reports {
                 }
                 $reporters{ $sender } ||= $sender->new();
 
-                unless ( $reporters{ $sender }->should_skip( $row ) ) {
+                if ( $reporters{ $sender }->should_skip( $row ) ) {
+                    $sending_skipped_by_method{ $sender }++ if 
+                        $reporters{ $sender }->skipped;
+                } else {
                     push @dear, $name;
                     $reporters{ $sender }->add_council( $council, $name );
                 }
@@ -407,6 +411,15 @@ sub send_reports {
             foreach my $c (keys %{$notgot{$e}}) {
                 print $notgot{$e}{$c} . " problem, to $e category $c (" . $note{$e}{$c}. ")\n";
             }
+        }
+        if (keys %sending_skipped_by_method) {
+            my $c = 0;
+            print "\nProblem reports that send-reports did not attempt to send the following:\n";
+            foreach my $send_method (sort keys %sending_skipped_by_method) {
+                printf "    %-24s %4d\n", "$send_method:", $sending_skipped_by_method{$send_method};
+                $c+=$sending_skipped_by_method{$send_method};
+            }
+            printf "    %-24s %4d\n", "Total:", $c;
         }
     }
 }

@@ -11,6 +11,7 @@ has 'councils' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
 has 'to' => ( is => 'rw', isa => 'ArrayRef', default => sub { [] } );
 has 'success' => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'error' => ( is => 'rw', isa => 'Str', default => '' );
+has 'skipped' => ( 'is' => 'rw', isa => 'Str', default => '' );
 
 
 sub should_skip {

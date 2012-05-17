@@ -5,6 +5,7 @@ use Moose;
 BEGIN { extends 'FixMyStreet::SendReport'; }
 
 use BarnetInterfaces::service::ZLBB_SERVICE_ORDER;
+use Encode;
 use Utils;
 use mySociety::Config;
 use mySociety::Web qw(ent);
@@ -14,7 +15,6 @@ use constant SEND_FAIL_RETRIES_CUTOFF => 3;
 
 # specific council numbers
 use constant COUNCIL_ID_BARNET     => 2489;
-
 use constant MAX_LINE_LENGTH       => 132;
 
 sub should_skip {
@@ -29,11 +29,12 @@ sub should_skip {
         $err_msg = "skipped: problem id=" . $problem->id . " send$council_name has failed " 
                 . $problem->send_fail_count . " times, cutoff is " . SEND_FAIL_RETRIES_CUTOFF;
 
+        $self->skipped( $err_msg );
+
         return 1;
     }
 }
 
-# currently just blind copy of construct_easthants_message
 sub construct_message {
     my %h = @_;
     my $message = <<EOF;
@@ -55,7 +56,7 @@ sub send {
 
     my %h = %$h;
 
-    $h{message} = construct_barnet_message(%h);
+    $h{message} = construct_message(%h);
 
     my $return = 1;
     my $err_msg = "";
@@ -83,6 +84,10 @@ sub send {
         $interface->set_proxy($council_config->endpoint);
         # Barnet web service doesn't like namespaces in the elements so use a prefix
         $interface->set_prefix('urn');
+        # uncomment these lines to print XML that will be sent rather
+        # than connecting to the endpoint
+        #$interface->outputxml(1);
+        #$interface->no_dispatch(1);
     } else {
         die "Barnet webservice FAIL: looks like you're missing some config data: no endpoint (URL) found for area_id=" . COUNCIL_ID_BARNET;
     }
