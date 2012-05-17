@@ -46,7 +46,7 @@ body.twothirdswidthpage .content {
 #front-main {
     background: $primary;
     @include border-radius(1em 1em 0 0);
-    margin-bottom: 1em;
+    margin: 2em 1em 0;
     padding-top: 0;
     // layout sets this because base has it slightly lighter
     h2 {

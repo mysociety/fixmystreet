@@ -19,9 +19,12 @@ Modernizr.load({
 [% pre_container_extra = BLOCK %]
 <div id="front-main">
     <div id="front-main-container">
-        <h1>[% loc('Report, view, or discuss local problems') %]</h1>
-
-        <h2>[% loc('(like graffiti, fly tipping, broken paving slabs, or street lighting)') %]</h2>
+        [% IF c.cobrand.moniker == 'bromley' %]
+            <h1 class="main mob-only">Reporting a problem in Bromley&rsquo;s streets or parks</h1>
+        [% ELSE %]
+            <h1>[% loc('Report, view, or discuss local problems') %]</h1>
+            <h2>[% loc('(like graffiti, fly tipping, broken paving slabs, or street lighting)') %]</h2>
+        [% END %]
 
         [%
             question
@@ -42,8 +45,12 @@ Modernizr.load({
 
 [% INCLUDE 'header.html', title = '', bodyclass = 'frontpage fullwidthpage' %]
 
-[% IF error %]
-    <p class="error">[% error %]</p>
+[% IF c.cobrand.moniker == 'bromley' %]
+<p>This is primarily for reporting physical problems that can be fixed
+like graffiti, cleansing issues or road defects. To report other
+kinds of problems like missed bins use our
+<a href="http://www.bromley.gov.uk/report">online report it forms</a>.
+</p>
 [% END %]
 
 <div class="tablewrapper">
@@ -54,7 +61,11 @@ Modernizr.load({
             <li>[% question %]</li>
             <li>[% loc('Locate the problem on a map of the area') %]</li>
             <li>[% loc('Enter details of the problem') %]</li>
-            <li>[% loc('We send it to the council on your behalf') %]</li>
+            [% IF c.cobrand.is_council %]
+                <li>Confirm the report and [% c.cobrand.council_name %] will investigate</li>
+            [% ELSE %]
+                <li>[% loc('We send it to the council on your behalf') %]</li>
+            [% END %]
         </ol>
         
         <section class="full-width">
