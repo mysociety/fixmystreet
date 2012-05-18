@@ -495,7 +495,7 @@ sub post_barnet_message {
         # use partial postcode or comma as delimiter, strip leading number (possible letter 221B) off too
         #    "99 Foo Street, London N11 1XX" becomes Foo Street
         #    "99 Foo Street N11 1XX" becomes Foo Street
-        $nearest_street = sprintf("%-30s", $1) if /Nearest road [^:]+: (?:\d+\w? )?(.*?)(\b[A-Z]+\d|,|$)/m;         
+        $nearest_street = $1 if /Nearest road [^:]+: (?:\d+\w? )?(.*?)(\b[A-Z]+\d|,|$)/m;
     }
     my $postcode = $h{postcode} || $nearest_postcode; # use given postcode if available
     
