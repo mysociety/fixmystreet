@@ -854,6 +854,7 @@ sub process_photo_upload : Private {
 
     # check that the photo is a jpeg
     my $ct = $upload->type;
+    $ct =~ s/x-citrix-//;
     unless ( $ct eq 'image/jpeg' || $ct eq 'image/pjpeg' ) {
         $c->stash->{photo_error} = _('Please upload a JPEG image only');
         return;
