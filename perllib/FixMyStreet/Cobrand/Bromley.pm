@@ -1,5 +1,6 @@
 package FixMyStreet::Cobrand::Bromley;
-use base 'FixMyStreet::Cobrand::UKCouncils';
+use parent 'FixMyStreet::Cobrand::FixMyStreet';
+use parent 'FixMyStreet::Cobrand::UKCouncils';
 
 use strict;
 use warnings;
@@ -51,61 +52,6 @@ sub pin_colour {
     my ( $self, $p ) = @_;
     #return 'green' if time() - $p->confirmed_local->epoch < 7 * 24 * 60 * 60;
     return 'yellow';
-}
-
-# Copy of function from FixMyStreet.pm cobrand as it's not inherited currently
-sub generate_problem_banner {
-    my ( $self, $problem ) = @_;
-
-    my $banner = {};
-    if ( $problem->is_open && time() - $problem->lastupdate_local->epoch > 8 * 7 * 24 * 60 * 60 )
-    {
-        $banner->{id}   = 'unknown';
-        $banner->{text} = _('Unknown');
-    }
-    if ($problem->is_fixed) {
-        $banner->{id} = 'fixed';
-        $banner->{text} = _('Fixed');
-    }
-    if ($problem->is_closed) {
-        $banner->{id} = 'closed';
-        $banner->{text} = _('Closed');
-    }
-
-    if ( grep { $problem->state eq $_ } ( 'investigating', 'in progress', 'planned' ) ) {
-        $banner->{id} = 'progress';
-        $banner->{text} = _('In progress');
-    }
-
-    return $banner;
-}
-
-sub process_extras {
-    my $self     = shift;
-    my $ctx      = shift;
-    my $contacts = shift;
-    my $extra    = shift;
-
-    for my $field (qw/ fms_extra_title first_name last_name /) {
-        my $value = $ctx->request->param($field);
-
-        if ( !$value ) {
-            $ctx->stash->{field_errors}->{$field} =
-              _('This information is required');
-        }
-        push @$extra,
-          {
-            name        => $field,
-            description => uc($field),
-            value       => $value || '',
-          };
-    }
-
-    if ( $ctx->request->param('fms_extra_title') ) {
-        $ctx->stash->{fms_extra_title} =
-          $ctx->request->param('fms_extra_title');
-        $ctx->stash->{extra_name_info} = 1;
-    }
 }
 
 1;
