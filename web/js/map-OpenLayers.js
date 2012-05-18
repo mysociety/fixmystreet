@@ -82,7 +82,11 @@ function fixmystreet_onload() {
             var bounds = area.getDataExtent();
             if (bounds) {
                 var center = bounds.getCenterLonLat();
-                fixmystreet.map.setCenter(center, fixmystreet.map.getZoomForExtent(bounds), false, true);
+                var z = fixmystreet.map.getZoomForExtent(bounds);
+                if ( z < 13 && $('html').hasClass('mobile') ) {
+                    z = 13;
+                }
+                fixmystreet.map.setCenter(center, z, false, true);
             }
         });
     }
@@ -177,7 +181,14 @@ function fixmystreet_onload() {
 
     if ( fixmystreet.zoomToBounds ) {
         var bounds = fixmystreet.markers.getDataExtent();
-        if (bounds) { fixmystreet.map.zoomToExtent( bounds ); }
+        if (bounds) {
+            var center = bounds.getCenterLonLat();
+            var z = fixmystreet.map.getZoomForExtent(bounds);
+            if ( z < 13 && $('html').hasClass('mobile') ) {
+                z = 13;
+            }
+            fixmystreet.map.setCenter(center, z);
+        }
     }
 
     $('#hide_pins_link').click(function(e) {
