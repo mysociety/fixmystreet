@@ -499,7 +499,7 @@ sub post_barnet_message {
     }
     my $postcode = $h{postcode} || $nearest_postcode; # use given postcode if available
     
-    # note: endpoint can be of form 'https://username:password@:url'
+    # note: endpoint can be of form 'https://username:password@url'
     my $council_config = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => COUNCIL_ID_BARNET} )->first;
     if ($council_config and $council_config->endpoint) {
         $interface->set_proxy($council_config->endpoint);
@@ -533,7 +533,7 @@ sub post_barnet_message {
               COUNTY => "",          # char30
               CITY => "",            # char30
               POSTALCODE => $postcode,   # char10
-              STREET => $nearest_street, # char30
+              STREET => truncate_string_with_entities(ent(encode_utf8($nearest_street)), 30), # char30
               STREETNUMBER => "",    # char5
               GEOCODE => $geo_code,  # char32
             },
