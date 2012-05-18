@@ -578,7 +578,7 @@ sub body {
 #     Note:   this only makes sense when called on a problem that has been sent!
 sub can_display_external_id {
     my $self = shift;
-    if ($self->external_id && $self->send_method_used eq 'barnet') {
+    if ($self->external_id && $self->send_method_used && $self->send_method_used eq 'barnet') {
         return 1;
     }
     return 0;    
