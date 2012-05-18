@@ -22,6 +22,7 @@ sub disambiguate_location {
     my $self = shift;
     return {
         %{ $self->SUPER::disambiguate_location() },
+        town   => 'Barnet',
         centre => '51.612832,-0.218169',
         span   => '0.0563,0.09',
         bounds => [ '51.584682,-0.263169', '51.640982,-0.173169' ],
@@ -97,6 +98,10 @@ sub council_rss_alert_options {
     }
 
     return ( \@options, @reported_to_options ? \@reported_to_options : undef );
+}
+
+sub example_places {
+    return [ 'N11 1NP', 'Wood St' ];
 }
 1;
 
