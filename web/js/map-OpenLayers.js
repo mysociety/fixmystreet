@@ -7,6 +7,32 @@ function fixmystreet_update_pin(lonlat) {
     );
     document.getElementById('fixmystreet.latitude').value = lonlat.lat || lonlat.y;
     document.getElementById('fixmystreet.longitude').value = lonlat.lon || lonlat.x;
+
+    $.getJSON('/report/new/ajax', {
+            latitude: $('#fixmystreet\\.latitude').val(),
+            longitude: $('#fixmystreet\\.longitude').val()
+    }, function(data) {
+        if (data.error) {
+            if (!$('#side-form-error').length) {
+                $('<div id="side-form-error"/>').insertAfter($('#side-form'));
+            }
+            $('#side-form-error').html('<h1>Reporting a problem</h1><p>' + data.error + '</p>').show();
+            $('#side-form').hide();
+            return;
+        }
+        $('#side-form, #site-logo').show();
+        $('#councils_text').html(data.councils_text);
+        $('#form_category_row').html(data.category);
+        if ( data.extra_name_info ) {
+            // there might be a first name field on some cobrands
+            var lb = $('#form_first_name').prev() || $('#form_name').prev();
+            lb.before(data.extra_name_info);
+        }
+    });
+
+    if (!$('#side-form-error').is(':visible')) {
+        $('#side-form, #site-logo').show();
+    }
 }
 
 function fixmystreet_activate_drag() {
@@ -421,7 +447,6 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             fixmystreet.markers.addFeatures( markers );
             fixmystreet_activate_drag();
         }
-        fixmystreet_update_pin(lonlat);
         // check to see if markers are visible. We click the
         // link so that it updates the text in case they go
         // back
@@ -429,23 +454,15 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             fixmystreet.state_pins_were_hidden = true;
             $('#hide_pins_link').click();
         }
+
+        // Store pin location in form fields, and check coverage of point
+        fixmystreet_update_pin(lonlat);
+
+        // Already did this first time map was clicked, so no need to do it again.
         if (fixmystreet.page == 'new') {
             return;
         }
-        $.getJSON('/report/new/ajax', {
-                latitude: $('#fixmystreet\\.latitude').val(),
-                longitude: $('#fixmystreet\\.longitude').val()
-        }, function(data) {
-            if (data.error) {
-                // XXX If they then click back and click somewhere in the area, this error will still show.
-                $('#side-form').html('<h1>Reporting a problem</h1><p>' + data.error + '</p>');
-                return;
-            }
-            $('#councils_text').html(data.councils_text);
-            $('#form_category_row').html(data.category);
-        });
 
-        $('#side-form, #site-logo').show();
         fixmystreet.map.updateSize(); // might have done, and otherwise Firefox gets confused.
         /* For some reason on IOS5 if you use the jQuery show method it
          * doesn't display the JS validation error messages unless you do this
