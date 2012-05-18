@@ -415,10 +415,6 @@ body.twothirdswidthpage {
         &.m-app-iphone {
           background-position: -12px -3610px;
         }
-        &.m-app-iphone-streetreport {
-          background-position: -12px -3678px;
-          height:50px;
-        }
         &.m-app-droid {
           background-position: -12px -3756px;
         }
@@ -438,10 +434,6 @@ body.twothirdswidthpage {
 }
 .ie6 #footer-mobileapps ul li a {
   background:url(/cobrands/fixmystreet/images/ie_mobileapps.gif) -1px -1px no-repeat;
-  &.m-app-iphone-streetreport {
-    background-position: -1px -69px;
-    height:50px;
-  }
   &.m-app-droid {
     background-position: -1px -148px;
   }
