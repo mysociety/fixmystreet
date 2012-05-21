@@ -52,9 +52,11 @@ sub process_extras {
     my $ctx      = shift;
     my $contacts = shift;
     my $extra    = shift;
+    my $fields   = shift || [];
 
     if ( $contacts->[0]->area_id == 2482 ) {
-        for my $field ( qw/ fms_extra_title first_name last_name / ) {
+        my @fields = ( 'fms_extra_title', @$fields );
+        for my $field ( @fields ) {
             my $value = $ctx->request->param( $field );
 
             if ( !$value ) {

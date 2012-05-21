@@ -56,5 +56,10 @@ sub ask_ever_reported {
     return 0;
 }
 
+sub process_extras {
+    my $self = shift;
+    $self->SUPER::process_extras( @_, [ 'first_name', 'last_name' ] );
+}
+
 1;
 
