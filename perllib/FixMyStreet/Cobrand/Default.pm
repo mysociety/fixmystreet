@@ -577,6 +577,14 @@ first time they' ve reported a problem
 
 sub ask_ever_reported { 1 }
 
+=head2 send_questionnaires
+
+Return a boolean indicating whether people should be sent questionnaire emails.
+
+=cut
+
+sub send_questionnaires { 1 }
+
 =head2 admin_pages
 
 List of names of pages to display on the admin interface
@@ -927,8 +935,16 @@ sub example_places {
 
 sub process_extras {}
 
+=head 2 pin_colour
+
+Returns the colour of pin to be used for a particular report
+(so perhaps different depending upon the age of the report).
+
+=cut
 sub pin_colour {
-    'yellow';
+    my ( $self, $p ) = @_;
+    #return 'green' if time() - $p->confirmed_local->epoch < 7 * 24 * 60 * 60;
+    return 'yellow';
 }
 
 1;
