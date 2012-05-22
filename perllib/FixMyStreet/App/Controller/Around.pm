@@ -186,7 +186,7 @@ sub display_location : Private {
         @pins = map {
             # Here we might have a DB::Problem or a DB::Nearby, we always want the problem.
             my $p = (ref $_ eq 'FixMyStreet::App::Model::DB::Nearby') ? $_->problem : $_;
-            my $colour = $c->cobrand->pin_colour( $p );
+            my $colour = $c->cobrand->pin_colour( $p, 'around' );
             {
                 latitude  => $p->latitude,
                 longitude => $p->longitude,
