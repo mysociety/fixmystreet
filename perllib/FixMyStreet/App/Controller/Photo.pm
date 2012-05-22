@@ -163,8 +163,9 @@ sub process_photo_upload : Private {
 
     # check that the photo is a jpeg
     my $ct = $upload->type;
-    $ct =~ s/x-citrix-//;
-    unless ( $ct eq 'image/jpeg' || $ct eq 'image/pjpeg' ) {
+    $ct =~ s/x-citrix-//; # Thanks, Citrix
+    # Had a report of a JPEG from an Android 2.1 coming through as a byte stream
+    unless ( $ct eq 'image/jpeg' || $ct eq 'image/pjpeg' || $ct eq 'application/octet-stream' ) {
         $c->stash->{photo_error} = _('Please upload a JPEG image only');
         return;
     }
@@ -172,7 +173,8 @@ sub process_photo_upload : Private {
     # get the photo into a variable
     my $photo_blob = eval {
         my $filename = $upload->tempname;
-        my $out = `jhead -se -autorot $filename`;
+        my $out = `jhead -se -autorot $filename 2>&1`;
+        die _("Please upload a JPEG image only"."\n") if $out =~ /Not JPEG:/;
         my $photo = $upload->slurp;
         return $photo;
     };
