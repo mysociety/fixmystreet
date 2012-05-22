@@ -23,7 +23,7 @@ sub report_update : Path : Args(0) {
     $c->forward( '/report/load_problem_or_display_error', [ $c->req->param('id') ] );
     $c->forward('process_update');
     $c->forward('process_user');
-    $c->forward('/report/new/process_photo');
+    $c->forward('/photo/process_photo');
     $c->forward('check_for_errors')
       or $c->go( '/report/display', [ $c->req->param('id') ] );
 
