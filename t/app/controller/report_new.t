@@ -6,9 +6,13 @@ use utf8;
 
 use FixMyStreet::TestMech;
 use Web::Scraper;
+use Path::Class;
 
 my $mech = FixMyStreet::TestMech->new;
 $mech->get_ok('/report/new');
+
+my $sample_file = file(__FILE__)->parent->file("sample.jpg")->stringify;
+ok -e $sample_file, "sample file $sample_file exists";
 
 subtest "test that bare requests to /report/new get redirected" => sub {
 
@@ -295,6 +299,69 @@ foreach my $test (
             email => 'bob@example.com',
         },
         errors => [ 'Please enter a subject', 'Please enter some details', ],
+    },
+    {
+        msg    => 'non-photo upload gives error',
+        pc     => 'SW1A 1AA',
+        fields => {
+            title         => 'Title',
+            detail        => 'Detail',
+            photo         => [ [ undef, 'bad.txt', Content => 'This is not a JPEG', Content_Type => 'text/plain' ], 1 ],
+            name          => 'Bob Jones',
+            may_show_name => '1',
+            email         => 'bob@example.com',
+            phone         => '',
+            category      => 'Street lighting',
+            password_sign_in => '',
+            password_register => '',
+            remember_me => undef,
+        },
+        changes => {
+            photo => '',
+        },
+        errors => [ "Please upload a JPEG image only" ],
+    },
+    {
+        msg    => 'bad photo upload gives error',
+        pc     => 'SW1A 1AA',
+        fields => {
+            title         => 'Title',
+            detail        => 'Detail',
+            photo         => [ [ undef, 'fake.jpeg', Content => 'This is not a JPEG', Content_Type => 'image/jpeg' ], 1 ],
+            name          => 'Bob Jones',
+            may_show_name => '1',
+            email         => 'bob@example.com',
+            phone         => '',
+            category      => 'Street lighting',
+            password_sign_in => '',
+            password_register => '',
+            remember_me => undef,
+        },
+        changes => {
+            photo => '',
+        },
+        errors => [ "That image doesn't appear to have uploaded correctly (Please upload a JPEG image only ), please try again." ],
+    },
+    {
+        msg    => 'photo with octet-stream gets through okay',
+        pc     => 'SW1A 1AA',
+        fields => {
+            title         => '',
+            detail        => 'Detail',
+            photo         => [ [ $sample_file, undef, Content_Type => 'application/octet-stream' ], 1 ],
+            name          => 'Bob Jones',
+            may_show_name => '1',
+            email         => 'bob@example.com',
+            phone         => '',
+            category      => 'Street lighting',
+            password_sign_in => '',
+            password_register => '',
+            remember_me => undef,
+        },
+        changes => {
+            photo => '',
+        },
+        errors => [ "Please enter a subject" ],
     },
   )
 {

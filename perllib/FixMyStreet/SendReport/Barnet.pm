@@ -68,17 +68,18 @@ sub send {
 
     my $interface = BarnetInterfaces::service::ZLBB_SERVICE_ORDER->new();
     
-    my ($nearest_postcode, $nearest_street);
+    my ($nearest_postcode, $nearest_street) = ('', '');
     for ($h{closest_address}) {
         $nearest_postcode = sprintf("%-10s", $1) if /Nearest postcode [^:]+: ((\w{1,4}\s?\w+|\w+))/;
         # use partial postcode or comma as delimiter, strip leading number (possible letter 221B) off too
         #    "99 Foo Street, London N11 1XX" becomes Foo Street
         #    "99 Foo Street N11 1XX" becomes Foo Street
-        $nearest_street = sprintf("%-30s", $1) if /Nearest road [^:]+: (?:\d+\w? )?(.*?)(\b[A-Z]+\d|,|$)/m;         
+        $nearest_street = $1 if /Nearest road [^:]+: (?:\d+\w? )?(.*?)(\b[A-Z]+\d|,|$)/m;
     }
-    my $postcode = $h{postcode} || $nearest_postcode; # use given postcode if available
+    my $postcode = mySociety::PostcodeUtil::is_valid_postcode($h{query})
+        ? $h{query} : $nearest_postcode; # use given postcode if available
     
-    # note: endpoint can be of form 'https://username:password@:url'
+    # note: endpoint can be of form 'https://username:password@url'
     my $council_config = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => COUNCIL_ID_BARNET} )->first;
     if ($council_config and $council_config->endpoint) {
         $interface->set_proxy($council_config->endpoint);
@@ -116,7 +117,7 @@ sub send {
               COUNTY => "",          # char30
               CITY => "",            # char30
               POSTALCODE => $postcode,   # char10
-              STREET => $nearest_street, # char30
+              STREET => truncate_string_with_entities(ent(encode_utf8($nearest_street)), 30), # char30
               STREETNUMBER => "",    # char5
               GEOCODE => $geo_code,  # char32
             },
