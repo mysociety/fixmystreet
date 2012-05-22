@@ -342,6 +342,13 @@ for my $test (
         postcode         => 'EH99 1SP',
         used_map         => 1,
         includes_latlong => 1,
+    },
+    {
+        desc             => 'no use lat long, no map and no postcode sends lat long',
+        use_latlong      => 0,
+        postcode         => '',
+        used_map         => 0,
+        includes_latlong => 1,
     }
 ) {
     subtest $test->{desc} => sub {

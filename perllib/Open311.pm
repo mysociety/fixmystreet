@@ -102,7 +102,11 @@ sub _populate_service_request_params {
         last_name => $lastname || '',
     };
 
-    if ( $problem->used_map || $self->always_send_latlong ) {
+    # if you click nearby reports > skip map then it's possible
+    # to end up with used_map = f and nothing in postcode
+    if ( $problem->used_map || $self->always_send_latlong
+        || ( !$problem->used_map && !$problem->postcode ) )
+    {
         $params->{lat} = $problem->latitude;
         $params->{long} = $problem->longitude;
     } else {
