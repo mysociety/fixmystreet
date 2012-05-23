@@ -349,6 +349,14 @@ for my $test (
         postcode         => '',
         used_map         => 0,
         includes_latlong => 1,
+    },
+    {
+        desc             => 'no use lat long, no map and no postcode sends lat long',
+        use_latlong      => 0,
+        notpinpoint      => 1,
+        postcode         => '',
+        used_map         => 0,
+        includes_latlong => 0,
     }
 ) {
     subtest $test->{desc} => sub {
@@ -361,14 +369,20 @@ for my $test (
             $extra,
             $problem->category,
             '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>248</service_request_id></request></service_requests>',
-            { always_send_latlong => $test->{use_latlong} },
+            { always_send_latlong => $test->{use_latlong},
+              send_notpinpointed => $test->{notpinpoint} },
         );
 
         is $results->{ res }, 248, 'got request id';
 
         my $c = CGI::Simple->new( $results->{ req }->content );
 
-        if ( $test->{includes_latlong} ) {
+        if ( $test->{notpinpoint} ) {
+            is $c->param('lat'), undef, 'no latitude';
+            is $c->param('long'), undef, 'no longitude';
+            is $c->param('address_string'), undef, 'no address';
+            is $c->param('address_id'), '#NOTPINPOINTED#', 'has not pinpointed';
+        } elsif ( $test->{includes_latlong} ) {
             ok $c->param('lat'), 'has latitude';
             ok $c->param('long'), 'has longitude';
             is $c->param('address_string'), undef, 'no address';

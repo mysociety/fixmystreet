@@ -31,6 +31,7 @@ sub send {
         my $conf = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $council, endpoint => { '!=', '' } } )->first;
 
         my $always_send_latlong = 1;
+        my $send_notpinpointed  = 0;
 
         my $basic_desc = 0;
 
@@ -38,8 +39,10 @@ sub send {
         if ( $row->council =~ /2482/ ) {
 
             my $extra = $row->extra;
-            push @$extra, { name => 'northing', value => $h->{northing} };
-            push @$extra, { name => 'easting', value => $h->{easting} };
+            if ( $row->used_map || ( !$row->used_map && !$row->postcode ) ) {
+                push @$extra, { name => 'northing', value => $h->{northing} };
+                push @$extra, { name => 'easting', value => $h->{easting} };
+            }
             push @$extra, { name => 'report_url', value => $h->{url} };
             push @$extra, { name => 'service_request_id_ext', value => $row->id };
             push @$extra, { name => 'report_title', value => $row->title };
@@ -50,6 +53,7 @@ sub send {
             $row->extra( $extra );
 
             $always_send_latlong = 0;
+            $send_notpinpointed = 1;
 
             $basic_desc = 1;
         }
@@ -66,6 +70,7 @@ sub send {
             endpoint            => $conf->endpoint,
             api_key             => $conf->api_key,
             always_send_latlong => $always_send_latlong,
+            send_notpinpointed  => $send_notpinpointed,
             basic_description   => $basic_desc,
         );
 

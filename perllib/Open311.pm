@@ -21,6 +21,7 @@ has debug_details => ( is => 'rw', 'isa' => 'Str', default => '' );
 has success => ( is => 'rw', 'isa' => 'Bool', default => 0 );
 has error => ( is => 'rw', 'isa' => 'Str', default => '' );
 has always_send_latlong => ( is => 'ro', isa => 'Bool', default => 1 );
+has send_notpinpointed => ( is => 'ro', isa => 'Bool', default => 0 );
 has basic_description => ( is => 'ro', isa => 'Bool', default => 0 );
 
 before [
@@ -105,10 +106,18 @@ sub _populate_service_request_params {
     # if you click nearby reports > skip map then it's possible
     # to end up with used_map = f and nothing in postcode
     if ( $problem->used_map || $self->always_send_latlong
-        || ( !$problem->used_map && !$problem->postcode ) )
+        || ( !$self->send_notpinpointed && !$problem->used_map
+             && !$problem->postcode ) )
     {
         $params->{lat} = $problem->latitude;
         $params->{long} = $problem->longitude;
+    # this is a special case for sending to Bromley so they can
+    # report accuracy levels correctly. We include easting and
+    # northing as attributes elsewhere.
+    } elsif ( $self->send_notpinpointed && !$problem->used_map
+              && !$problem->postcode )
+    {
+        $params->{address_id} = '#NOTPINPOINTED#';
     } else {
         $params->{address_string} = $problem->postcode;
     }
