@@ -371,11 +371,11 @@ for my $test (
         if ( $test->{includes_latlong} ) {
             ok $c->param('lat'), 'has latitude';
             ok $c->param('long'), 'has longitude';
-            is $c->param('address'), undef, 'no address';
+            is $c->param('address_string'), undef, 'no address';
         } else {
             is $c->param('lat'), undef, 'no latitude';
             is $c->param('long'), undef, 'no latitude';
-            is $c->param('address'), $test->{postcode}, 'has address';
+            is $c->param('address_string'), $test->{postcode}, 'has address';
         }
     };
 }

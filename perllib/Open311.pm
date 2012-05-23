@@ -110,7 +110,7 @@ sub _populate_service_request_params {
         $params->{lat} = $problem->latitude;
         $params->{long} = $problem->longitude;
     } else {
-        $params->{address} = $problem->postcode;
+        $params->{address_string} = $problem->postcode;
     }
 
     if ( $problem->user->phone ) {
