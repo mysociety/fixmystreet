@@ -341,9 +341,11 @@ sub load_and_group_problems : Private {
         {
             columns => [
                 'id', 'council', 'state', 'areas', 'latitude', 'longitude', 'title', 'cobrand',
-                { duration => { extract => "epoch from current_timestamp-lastupdate" } },
-                { age      => { extract => "epoch from current_timestamp-confirmed"  } },
-                { confirmed => { extract => 'epoch from confirmed' } },
+                #{ duration => { extract => "epoch from current_timestamp-lastupdate" } },
+                #{ age      => { extract => "epoch from current_timestamp-confirmed"  } },
+                { confirmed  => { extract => 'epoch from confirmed' } },
+                { whensent   => { extract => 'epoch from whensent' } },
+                { lastupdate => { extract => 'epoch from lastupdate' } },
                 { photo    => 'photo is not null' },
             ],
             order_by => { -desc => 'lastupdate' },
@@ -355,9 +357,10 @@ sub load_and_group_problems : Private {
 
     my ( %problems, @pins );
     my $re_councils = join('|', keys %{$c->stash->{areas_info}});
-    my @cols = ( 'id', 'council', 'state', 'areas', 'latitude', 'longitude', 'title', 'cobrand', 'duration', 'age', 'confirmed', 'photo' );
+    my @cols = ( 'id', 'council', 'state', 'areas', 'latitude', 'longitude', 'title', 'cobrand', 'confirmed', 'whensent', 'lastupdate', 'photo' );
     while ( my @problem = $problems->next ) {
         my %problem = zip @cols, @problem;
+        $problem{is_fixed} = FixMyStreet::DB::Result::Problem->fixed_states()->{$problem{state}};
         $c->log->debug( $problem{'cobrand'} . ', cobrand is ' . $c->cobrand->moniker );
         if ( !$problem{council} ) {
             # Problem was not sent to any council, add to possible councils

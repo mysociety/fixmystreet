@@ -10,7 +10,9 @@ sub council_name { return 'Southampton City Council'; }
 sub council_url { return 'southampton'; }
 
 sub disambiguate_location {
+    my $self = shift;
     return {
+        %{ $self->SUPER::disambiguate_location() },
         town   => 'Southampton',
         centre => '50.913822,-1.400493',
         span   => '0.084628,0.15701',

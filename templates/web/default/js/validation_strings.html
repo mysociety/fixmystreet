@@ -1,0 +1,18 @@
+    validation_strings = {
+        update: '[% loc('Please enter a message') | replace("'", "\\'") %]',
+        title: '[% loc('Please enter a subject') | replace("'", "\\'") %]',
+        detail: '[% loc('Please enter some details') | replace("'", "\\'") %]',
+        name: {
+            required: '[% loc('Please enter your name') | replace("'", "\\'") %]',
+            validName: '[% loc('Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below') | replace("'", "\\'") %]'
+        },
+        category: '[% loc('Please choose a category') | replace("'", "\\'") %]',
+        rznvy: {
+            required: '[% loc('Please enter your email') | replace("'", "\\'") %]',
+            email: '[% loc('Please enter a valid email') | replace("'", "\\'") %]'
+        },
+        email: {
+            required: '[% loc('Please enter your email') | replace("'", "\\'") %]',
+            email: '[% loc('Please enter a valid email') | replace("'", "\\'") %]'
+        }
+    };

@@ -5,7 +5,6 @@ use namespace::autoclean;
 BEGIN { extends 'Catalyst::Controller'; }
 
 use FixMyStreet::Geocode;
-use Digest::SHA1 qw(sha1_hex);
 use Encode;
 use Image::Magick;
 use List::MoreUtils qw(uniq);
@@ -78,6 +77,8 @@ partial
 
 =cut
 
+use constant COUNCIL_ID_BARNET => 2489;
+
 sub report_new : Path : Args(0) {
     my ( $self, $c ) = @_;
 
@@ -97,7 +98,7 @@ sub report_new : Path : Args(0) {
     return unless $c->forward('check_form_submitted');
     $c->forward('process_user');
     $c->forward('process_report');
-    $c->forward('process_photo');
+    $c->forward('/photo/process_photo');
     return unless $c->forward('check_for_errors');
     $c->forward('save_user_and_report');
     $c->forward('redirect_or_confirm_creation');
@@ -171,9 +172,14 @@ sub report_form_ajax : Path('ajax') : Args(0) {
     $c->forward('initialize_report');
 
     # work out the location for this report and do some checks
-    # XXX We don't want to do this here if this actually happens!
-    return $c->forward('redirect_to_around')
-      unless $c->forward('determine_location');
+    if ( ! $c->forward('determine_location') ) {
+        my $body = JSON->new->utf8(1)->encode( {
+            error => $c->stash->{location_error},
+        } );
+        $c->res->content_type('application/json; charset=utf-8');
+        $c->res->body($body);
+        return;
+    }
 
     $c->forward('setup_categories_and_councils');
 
@@ -266,7 +272,7 @@ sub report_import : Path('/import') {
     }
 
     # handle the photo upload
-    $c->forward( 'process_photo_upload' );
+    $c->forward( '/photo/process_photo_upload' );
     my $fileid = $c->stash->{upload_fileid};
     if ( my $error = $c->stash->{photo_error} ) {
         push @errors, $error;
@@ -602,9 +608,15 @@ sub setup_categories_and_councils : Private {
     } elsif ($first_council->{type} eq 'LBO') {
 
         $area_ids_to_list{ $first_council->{id} } = 1;
+        my @local_categories;
+        if ($first_council->{id} == COUNCIL_ID_BARNET) {
+            @local_categories =  sort(keys %{ Utils::barnet_categories() }); # removed 'Other' option
+        } else {
+            @local_categories =  sort keys %{ Utils::london_categories() }            
+        }
         @category_options = (
             _('-- Pick a category --'),
-            sort keys %{ Utils::london_categories() }
+            @local_categories 
         );
         $category_label = _('Category:');
 
@@ -791,8 +803,15 @@ sub process_report : Private {
         $councils = join( ',', @{ $c->stash->{area_ids_to_list} } ) || -1;
         $report->council( $councils );
 
-    } elsif ( $first_council->{type} eq 'LBO') {
+    } elsif ( $first_council->{id} == COUNCIL_ID_BARNET ) {
 
+        unless ( exists Utils::barnet_categories()->{ $report->category } or $report->category eq 'Other') {
+            $c->stash->{field_errors}->{category} = _('Please choose a category');
+        }
+        $report->council( $first_council->{id} );
+        
+    } elsif ( $first_council->{type} eq 'LBO') {
+        
         unless ( Utils::london_categories()->{ $report->category } ) {
             $c->stash->{field_errors}->{category} = _('Please choose a category');
         }
@@ -868,91 +887,6 @@ sub process_report : Private {
     $report->cobrand_data( $c->cobrand->extra_problem_data );
     $report->lang( $c->stash->{lang_code} );
 
-    return 1;
-}
-
-=head2 process_photo
-
-Handle the photo - either checking and storing it after an upload or retrieving
-it from the cache.
-
-Store any error message onto 'photo_error' in stash.
-=cut
-
-sub process_photo : Private {
-    my ( $self, $c ) = @_;
-
-    return
-         $c->forward('process_photo_upload')
-      || $c->forward('process_photo_cache')
-      || 1;    # always return true
-}
-
-sub process_photo_upload : Private {
-    my ( $self, $c ) = @_;
-
-    # check for upload or return
-    my $upload = $c->req->upload('photo')
-      || return;
-
-    # check that the photo is a jpeg
-    my $ct = $upload->type;
-    unless ( $ct eq 'image/jpeg' || $ct eq 'image/pjpeg' ) {
-        $c->stash->{photo_error} = _('Please upload a JPEG image only');
-        return;
-    }
-
-    # get the photo into a variable
-    my $photo_blob = eval {
-        my $filename = $upload->tempname;
-        my $out = `jhead -se -autorot $filename`;
-        my $photo = $upload->slurp;
-        return $photo;
-    };
-    if ( my $error = $@ ) {
-        my $format = _(
-"That image doesn't appear to have uploaded correctly (%s), please try again."
-        );
-        $c->stash->{photo_error} = sprintf( $format, $error );
-        return;
-    }
-
-    # we have an image we can use - save it to the upload dir for storage
-    my $cache_dir = dir( $c->config->{UPLOAD_DIR} );
-    $cache_dir->mkpath;
-    unless ( -d $cache_dir && -w $cache_dir ) {
-        warn "Can't find/write to photo cache directory '$cache_dir'";
-        return;
-    }
-
-    my $fileid = sha1_hex($photo_blob);
-    $upload->copy_to( file($cache_dir, $fileid . '.jpeg') );
-
-    # stick the hash on the stash, so don't have to reupload in case of error
-    $c->stash->{upload_fileid} = $fileid;
-
-    return 1;
-}
-
-=head2 process_photo_cache
-
-Look for the upload_fileid parameter and check it matches a file on disk. If it
-does return true and put fileid on stash, otherwise false.
-
-=cut
-
-sub process_photo_cache : Private {
-    my ( $self, $c ) = @_;
-
-    # get the fileid and make sure it is just a hex number
-    my $fileid = $c->req->param('upload_fileid') || '';
-    $fileid =~ s{[^0-9a-f]}{}gi;
-    return unless $fileid;
-
-    my $file = file( $c->config->{UPLOAD_DIR}, "$fileid.jpeg" );
-    return unless -e $file;
-
-    $c->stash->{upload_fileid} = $fileid;
     return 1;
 }
 

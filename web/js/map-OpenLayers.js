@@ -118,10 +118,10 @@ function fixmystreet_onload() {
     var markers = fms_markers_list( fixmystreet.pins, true );
     fixmystreet.markers.addFeatures( markers );
     if (fixmystreet.page == 'around' || fixmystreet.page == 'reports' || fixmystreet.page == 'my') {
-        var select = new OpenLayers.Control.SelectFeature( fixmystreet.markers );
+        fixmystreet.select_feature = new OpenLayers.Control.SelectFeature( fixmystreet.markers );
         var selectedFeature;
         function onPopupClose(evt) {
-            select.unselect(selectedFeature);
+            fixmystreet.select_feature.unselect(selectedFeature);
             OpenLayers.Event.stop(evt);
         }
         fixmystreet.markers.events.register( 'featureunselected', fixmystreet.markers, function(evt) {
@@ -142,8 +142,8 @@ function fixmystreet_onload() {
             feature.popup = popup;
             fixmystreet.map.addPopup(popup);
         });
-        fixmystreet.map.addControl( select );
-        select.activate();
+        fixmystreet.map.addControl( fixmystreet.select_feature );
+        fixmystreet.select_feature.activate();
     } else if (fixmystreet.page == 'new') {
         fixmystreet_activate_drag();
     }
@@ -164,9 +164,11 @@ function fixmystreet_onload() {
         for (var i=0; i<showhide.length; i+=2) {
             if (this.innerHTML == showhide[i]) {
                 fixmystreet.markers.setVisibility(true);
+                fixmystreet.select_feature.activate();
                 this.innerHTML = showhide[i+1];
             } else if (this.innerHTML == showhide[i+1]) {
                 fixmystreet.markers.setVisibility(false);
+                fixmystreet.select_feature.deactivate();
                 this.innerHTML = showhide[i];
             }
         }
@@ -213,7 +215,7 @@ $(function(){
         displayProjection: new OpenLayers.Projection("EPSG:4326")
     });
 
-    if ($('html').hasClass('mobile')) {
+    if ($('html').hasClass('mobile') && fixmystreet.page == 'around') {
         $('#fms_pan_zoom').css({ top: '2.75em !important' });
     }
 
@@ -236,14 +238,15 @@ $(function(){
 
     if (fixmystreet.state_map && fixmystreet.state_map == 'full') {
         // TODO Work better with window resizing, this is pretty 'set up' only at present
-        var q = $(window).width() / 4;
+        var $content = $('.content'),
+            q = ( $content.offset().left + $content.width() ) / 2;
         // Need to try and fake the 'centre' being 75% from the left
         fixmystreet.map.pan(-q, -25, { animate: false });
         fixmystreet.map.events.register("movestart", null, function(e){
             fixmystreet.map.moveStart = { zoom: this.getZoom(), center: this.getCenter() };
         });
         fixmystreet.map.events.register("zoomend", null, function(e){
-            if ( fixmystreet.map.moveStart && !fixmystreet.map.moveStart.zoom ) {
+            if ( fixmystreet.map.moveStart && !fixmystreet.map.moveStart.zoom && fixmystreet.map.moveStart.zoom !== 0 ) {
                 return true; // getZoom() on Firefox appears to return null at first?
             }
             if ( !fixmystreet.map.moveStart || !this.getCenter().equals(fixmystreet.map.moveStart.center) ) {
@@ -433,6 +436,11 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                 latitude: $('#fixmystreet\\.latitude').val(),
                 longitude: $('#fixmystreet\\.longitude').val()
         }, function(data) {
+            if (data.error) {
+                // XXX If they then click back and click somewhere in the area, this error will still show.
+                $('#side-form').html('<h1>Reporting a problem</h1><p>' + data.error + '</p>');
+                return;
+            }
             $('#councils_text').html(data.councils_text);
             $('#form_category_row').html(data.category);
         });
@@ -454,7 +462,12 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         // If we clicked the map somewhere inconvenient
         var sidebar = $('#report-a-problem-sidebar');
         if (sidebar.css('position') == 'absolute') {
-            var w = sidebar.width(), h = sidebar.height(), o = sidebar.offset();
+            var w = sidebar.width(), h = sidebar.height(),
+                o = sidebar.offset(),
+                $map_box = $('#map_box'), bo = $map_box.offset();
+            // e.xy is relative to top left of map, which might not be top left of page
+            e.xy.x += bo.left;
+            e.xy.y += bo.top;
             if (e.xy.y <= o.top || (e.xy.x >= o.left && e.xy.x <= o.left + w + 24 && e.xy.y >= o.top && e.xy.y <= o.top + h + 64)) {
                 // top of the page, pin hidden by header;
                 // or underneath where the new sidebar will appear
@@ -463,7 +476,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                     fixmystreet.map.getProjectionObject()
                 );
                 var p = fixmystreet.map.getViewPortPxFromLonLat(lonlat);
-                p.x -= $(window).width() / 3;
+                p.x -= ( o.left + w ) / 2;
                 lonlat = fixmystreet.map.getLonLatFromViewPortPx(p);
                 fixmystreet.map.panTo(lonlat);
             }

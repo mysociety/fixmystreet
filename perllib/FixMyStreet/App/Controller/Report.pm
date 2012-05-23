@@ -51,7 +51,7 @@ sub display : Path('') : Args(1) {
         return $c->res->redirect( $c->uri_for($1), 301 );
     }
 
-    $c->forward('load_problem_or_display_error', [ $id ] );
+    $c->forward( 'load_problem_or_display_error', [ $id ] );
     $c->forward( 'load_updates' );
     $c->forward( 'format_problem_for_display' );
 }
@@ -88,7 +88,24 @@ sub load_updates : Private {
         { order_by => 'confirmed' }
     );
 
-    $c->stash->{updates} = $updates;
+    my $questionnaires = $c->model('DB::Questionnaire')->search(
+        {
+            problem_id => $c->stash->{problem}->id,
+            whenanswered => { '!=', undef },
+            old_state => 'confirmed', new_state => 'confirmed',
+        },
+        { order_by => 'whenanswered' }
+    );
+
+    my @combined;
+    while (my $update = $updates->next) {
+        push @combined, [ $update->confirmed, $update ];
+    }
+    while (my $update = $questionnaires->next) {
+        push @combined, [ $update->whenanswered, $update ];
+    }
+    @combined = map { $_->[1] } sort { $a->[0] <=> $b->[0] } @combined;
+    $c->stash->{updates} = \@combined;
 
     return 1;
 }

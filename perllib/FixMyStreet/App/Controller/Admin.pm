@@ -6,6 +6,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 use POSIX qw(strftime strcoll);
 use Digest::MD5 qw(md5_hex);
+use mySociety::EmailUtil qw(is_valid_email);
 
 =head1 NAME
 
@@ -473,17 +474,33 @@ sub search_reports : Path('search_reports') {
         $c->model('DB')->schema->storage->sql_maker->quote_char( '"' );
         $c->model('DB')->schema->storage->sql_maker->name_sep( '.' );
 
+        my $query;
+        if (is_valid_email($search)) {
+            $query = [
+                'user.email' => { ilike => $like_search },
+            ];
+        } elsif ($search =~ /^id:(\d+)$/) {
+            $query = [
+                'me.id' => int($1),
+            ];
+        } elsif ($search =~ /^area:(\d+)$/) {
+            $query = [
+                'me.areas' => { like => "%,$1,%" }
+            ];
+        } else {
+            $query = [
+                'me.id' => $search_n,
+                'user.email' => { ilike => $like_search },
+                'me.name' => { ilike => $like_search },
+                title => { ilike => $like_search },
+                detail => { ilike => $like_search },
+                council => { like => $like_search },
+                cobrand_data => { like => $like_search },
+            ];
+        }
         my $problems = $c->cobrand->problems->search(
             {
-                -or => [
-                    'me.id' => $search_n,
-                    'user.email' => { ilike => $like_search },
-                    'me.name' => { ilike => $like_search },
-                    title => { ilike => $like_search },
-                    detail => { ilike => $like_search },
-                    council => { like => $like_search },
-                    cobrand_data => { like => $like_search },
-                ]
+                -or => $query,
             },
             {
                 prefetch => 'user',
@@ -499,26 +516,44 @@ sub search_reports : Path('search_reports') {
         $c->stash->{edit_council_contacts} = 1
             if ( grep {$_ eq 'councilcontacts'} keys %{$c->stash->{allowed_pages}});
 
-        my $updates = $c->model('DB::Comment')->search(
-            {
-                -or => [
-                    'me.id' => $search_n,
-                    'problem.id' => $search_n,
-                    'user.email' => { ilike => $like_search },
-                    'me.name' => { ilike => $like_search },
-                    text => { ilike => $like_search },
-                    'me.cobrand_data' => { ilike => $like_search },
-                    %{ $site_restriction },
-                ]
-            },
-            {
-                -select   => [ 'me.*', qw/problem.council problem.state/ ],
-                prefetch => [qw/user problem/],
-                order_by => [\"(me.state='hidden')",\"(problem.state='hidden')",'me.created']
-            }
-        );
+        if (is_valid_email($search)) {
+            $query = [
+                'user.email' => { ilike => $like_search },
+                %{ $site_restriction },
+            ];
+        } elsif ($search =~ /^id:(\d+)$/) {
+            $query = [
+                'me.id' => int($1),
+                'problem.id' => int($1),
+                %{ $site_restriction },
+            ];
+        } elsif ($search =~ /^area:(\d+)$/) {
+            $query = [];
+        } else {
+            $query = [
+                'me.id' => $search_n,
+                'problem.id' => $search_n,
+                'user.email' => { ilike => $like_search },
+                'me.name' => { ilike => $like_search },
+                text => { ilike => $like_search },
+                'me.cobrand_data' => { ilike => $like_search },
+                %{ $site_restriction },
+            ];
+        }
 
-        $c->stash->{updates} = [ $updates->all ];
+        if (@$query) {
+            my $updates = $c->model('DB::Comment')->search(
+                {
+                    -or => $query,
+                },
+                {
+                    -select   => [ 'me.*', qw/problem.council problem.state/ ],
+                    prefetch => [qw/user problem/],
+                    order_by => [\"(me.state='hidden')",\"(problem.state='hidden')",'me.created']
+                }
+            );
+            $c->stash->{updates} = [ $updates->all ];
+        }
 
         # Switch quoting back off. See above for explanation of this.
         $c->model('DB')->schema->storage->sql_maker->quote_char( '' );

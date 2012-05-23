@@ -15,9 +15,10 @@ DIRECTORY=$(cd `dirname $0`/../web && pwd)
 
 # FixMyStreet uses compass
 compass compile --output-style compressed $DIRECTORY/cobrands/fixmystreet
+compass compile --output-style compressed $DIRECTORY/cobrands/bromley
 
 # The rest are plain sass
-for scss in `find $DIRECTORY -name "*.scss" -exec dirname {} \; | uniq | grep -v cobrands/fixmystreet`
+for scss in `find $DIRECTORY -name "*.scss" -exec dirname {} \; | uniq | grep -v "cobrands/\(fixmystreet\|bromley\)"`
 do
     sass --scss --update --style compressed $scss
 done

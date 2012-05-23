@@ -189,7 +189,15 @@ create table problem (
     send_questionnaire boolean not null default 't',
     extra text, -- extra fields required for open311
     flagged boolean not null default 'f',
-    geocode bytea
+    geocode bytea,
+    
+    -- logging sending failures (used by webservices)
+    send_fail_count integer not null default 0, 
+    send_fail_reason text, 
+    send_fail_timestamp timestamp,
+    
+    -- record send_method used, which can be used to infer usefulness of external_id
+    send_method_used text
 );
 create index problem_state_latitude_longitude_idx on problem(state, latitude, longitude);
 create index problem_user_id_idx on problem ( user_id );
@@ -419,5 +427,6 @@ create table open311conf (
     area_id      integer not null unique,
     endpoint     text not null,
     jurisdiction text,
-    api_key      text
+    api_key      text,
+    send_method  text
 );

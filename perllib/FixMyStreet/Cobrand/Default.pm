@@ -239,6 +239,8 @@ Returns disambiguating information available
 sub disambiguate_location {
     return {
         country => 'uk',
+        bing_culture => 'en-GB',
+        bing_country => 'United Kingdom'
     };
 }
 
@@ -457,7 +459,7 @@ sub find_closest {
     my ( $self, $latitude, $longitude, $problem ) = @_;
     my $str = '';
 
-    if ( my $j = FixMyStreet::Geocode::Bing::reverse( $latitude, $longitude ) ) {
+    if ( my $j = FixMyStreet::Geocode::Bing::reverse( $latitude, $longitude, disambiguate_location()->{bing_culture} ) ) {
         # cache the bing results for use in alerts
         if ( $problem ) {
             $problem->geocode( $j );
@@ -504,7 +506,7 @@ sub find_closest_address_for_rss {
     # if we've not cached it then we don't want to look it up in order to avoid
     # hammering the bing api
     # if ( !$j ) {
-    #     $j = FixMyStreet::Geocode::Bing::reverse( $latitude, $longitude, 1 );
+    #     $j = FixMyStreet::Geocode::Bing::reverse( $latitude, $longitude, disambiguate_location()->{bing_culture}, 1 );
 
     #     $problem->geocode( $j );
     #     $problem->update;
@@ -913,6 +915,10 @@ Get stats to display on the council reports page
 =cut
 
 sub get_report_stats { return 0; }
+
+sub example_places {
+    return [ 'B2 4QA', 'Tib St, Manchester' ];
+}
 
 1;
 
