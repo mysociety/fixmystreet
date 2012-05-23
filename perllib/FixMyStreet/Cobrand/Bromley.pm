@@ -42,6 +42,12 @@ sub on_map_default_max_pin_age {
     return '1 month';
 }
 
+# Bromley pins always yellow
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+    return 'yellow';
+}
+
 sub recent_photos {
     my ( $self, $area, $num, $lat, $lon, $dist ) = @_;
     $num = 3 if $num > 3 && $area eq 'alert';

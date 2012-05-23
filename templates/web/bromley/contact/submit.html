@@ -1,0 +1,19 @@
+[% INCLUDE 'header.html', title = loc('Contact Us') %]
+
+<h1>[% loc('Contact the team') %]</h1>
+
+[% IF success %]
+
+<p>Thank you for letting us know about this report. We will review, and if
+necessary, edit the report, or remove it from the site. You can contact us at
+<a href="mailto:[% contact_email %]">[% contact_email %]</a>.
+
+[% ELSE %]
+
+    <p>
+    [% tprintf( loc('Failed to send message.  Please try again, or <a href="mailto:%s">email us</a>.'), contact_email ) %]
+    </p>
+
+[% END %]
+
+[% INCLUDE 'footer.html' %]
