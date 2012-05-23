@@ -191,7 +191,11 @@ sub create_alert : Private {
         $alert->insert();
     }
 
-    $alert->confirm() if $c->user && $c->user->id == $alert->user->id;
+    if ( $c->user && $c->user->id == $alert->user->id ) {
+        $alert->confirm();
+    } else {
+        $alert->confirmed(0);
+    }
 
     $c->stash->{alert} = $alert;
 }
