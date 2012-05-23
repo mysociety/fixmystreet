@@ -246,7 +246,7 @@ $(function(){
             fixmystreet.map.moveStart = { zoom: this.getZoom(), center: this.getCenter() };
         });
         fixmystreet.map.events.register("zoomend", null, function(e){
-            if ( fixmystreet.map.moveStart && !fixmystreet.map.moveStart.zoom ) {
+            if ( fixmystreet.map.moveStart && !fixmystreet.map.moveStart.zoom && fixmystreet.map.moveStart.zoom !== 0 ) {
                 return true; // getZoom() on Firefox appears to return null at first?
             }
             if ( !fixmystreet.map.moveStart || !this.getCenter().equals(fixmystreet.map.moveStart.center) ) {
