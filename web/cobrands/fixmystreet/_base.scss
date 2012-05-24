@@ -262,6 +262,14 @@ textarea {
     textarea {
         max-width: 95%;
     }
+    // In order to work around the IE7 specific issue of inheriting left margins
+    // http://techblog.willshouse.com/2009/07/12/ie6ie7-form-element-margin-inheritance-bug/
+    fieldset > input[type=text],
+    fieldset > input[type=password],
+    fieldset > input[type=email],
+    fieldset > textarea {
+        margin-left: -1em;
+    }
 }
 
 textarea {
