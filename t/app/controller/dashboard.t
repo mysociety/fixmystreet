@@ -591,7 +591,7 @@ sub make_problem {
             problem => $p,
             user_id => $p_user->id,
             state => 'confirmed',
-            problem_state => $args->{state},
+            problem_state => $args->{state} =~ /^fixed - user|fixed$/ ? undef : $args->{state},
             confirmed => $args->{mark_dt},
             text => 'an update',
             mark_fixed => $args->{state} =~ /fixed/ ? 1 : 0,
