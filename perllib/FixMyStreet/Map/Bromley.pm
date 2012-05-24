@@ -12,7 +12,7 @@ use base 'FixMyStreet::Map::FMS';
 use strict;
 
 sub map_type {
-    return '"https://{S}-fix.bromley.gov.uk/tilma"';
+    return '[ [ "", "a-" ], "https://{S}fix.bromley.gov.uk/tilma" ]';
 }
 
 sub map_tile_base {
