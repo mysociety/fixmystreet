@@ -214,6 +214,22 @@ subtest 'basic request update post parameters' => sub {
     is $c->param('last_name'), 'User', 'correct first name';
     is $c->param('first_name'), 'Test', 'correct second name';
     is $c->param('email_alerts_requested'), 'FALSE', 'email alerts flag correct';
+    is $c->param('media_url'), undef, 'no media url';
+};
+
+subtest 'check media url set' => sub {
+    $comment->photo(1);
+    $comment->cobrand('fixmystreet');
+
+    my $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>' );
+
+    is $results->{ res }, 248, 'got update id';
+
+    my $req = $o->test_req_used;
+
+    my $c = CGI::Simple->new( $results->{ req }->content );
+    my $expected_path = '/c/' . $comment->id . '.full.jpeg';
+    like $c->param('media_url'), qr/$expected_path/, 'image url included';
 };
 
 foreach my $test (
