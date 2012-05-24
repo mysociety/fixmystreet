@@ -82,51 +82,82 @@ $(function(){
 
     $html.removeClass('no-js').addClass('js');
 
+
     // Preload the new report pin
     document.createElement('img').src = '../i/pin-green.png';
 
-    //add mobile class if small screen
-    if (Modernizr.mq('only screen and (max-width:47.9375em)')) {
-        $html.addClass('mobile');
-        $('#map_box').css({ height: '10em' });
-        if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
-            // Immediately go full screen map if on around page
-            $('#site-header').hide();
+    var last_type;
+    $(window).resize(function(){
+        var type = $('#site-header').css('borderTopWidth');
+        if (type == '4px') { type = 'mobile'; }
+        else if (type == '0px') { type = 'desktop'; }
+        else { return; }
+        if (last_type == type) { return; }
+        if (type == 'mobile') {
+            $html.addClass('mobile');
+            $('#map_box').prependTo('.content').css({
+                zIndex: '', position: '',
+                top: '', left: '', right: '', bottom: '',
+                width: '', height: '10em',
+                margin: ''
+            });
+            if (typeof fixmystreet !== 'undefined') {
+                fixmystreet.state_map = ''; // XXX
+            }
+            if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
+                // Immediately go full screen map if on around page
+                $('#site-header').hide();
+                $('#map_box').prependTo('.wrapper').css({
+                    position: 'absolute',
+                    top: 0, left: 0, right: 0, bottom: 0,
+                    height: 'auto',
+                    margin: 0
+                });
+                $('#fms_pan_zoom').css({ top: '2.75em !important' });
+                $('.big-green-banner')
+                    .addClass('mobile-map-banner')
+                    .appendTo('#map_box')
+                    .text('Place pin on map')
+	            .prepend('<a href="index.html">home</a>');
+            }
+            $('span.report-a-problem-btn').on('click.reportBtn', function(){
+                $('html, body').animate({scrollTop:0}, 500);
+            }).css({ cursor:'pointer' }).on('hover.reportBtn', function(){
+                $(this).toggleClass('hover');
+            });
+        } else {
+            // Make map full screen on non-mobile sizes.
+            $html.removeClass('mobile');
+            var map_pos = 'fixed', map_height = '100%';
+            if ($html.hasClass('ie6')) {
+                map_pos = 'absolute';
+                map_height = $(window).height();
+            }
             $('#map_box').prependTo('.wrapper').css({
-                position: 'absolute',
+                zIndex: 0, position: map_pos,
                 top: 0, left: 0, right: 0, bottom: 0,
-                height: 'auto',
+                width: '100%', height: map_height,
                 margin: 0
             });
-            // Bit yucky, but the ID doesn't exist yet.
-            $("<style>#fms_pan_zoom { top: 2.75em !important; }</style>").appendTo(document.documentElement);
-            $('.big-green-banner')
-                .addClass('mobile-map-banner')
-                .removeClass('.big-green-banner')
-                .appendTo('#map_box')
-                .text('Place pin on map');
+            if (typeof fixmystreet !== 'undefined') {
+                fixmystreet.state_map = 'full';
+            }
+            if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
+                // Remove full-screen-ness
+                $('#site-header').show();
+                $('#fms_pan_zoom').css({ top: '4.75em !important' });
+                $('.big-green-banner')
+                    .removeClass('mobile-map-banner')
+                    .prependTo('#side')
+                    .text('Click map to report a problem');
+            }
+            $('span.report-a-problem-btn').css({ cursor:'' }).off('.reportBtn');
         }
-    } else {
-        // Make map full screen on non-mobile sizes.
-        var map_pos = 'fixed', map_height = '100%';
-        if ($html.hasClass('ie6')) {
-            map_pos = 'absolute';
-            map_height = $(window).height();
-        }
-        $('#map_box').prependTo('.wrapper').css({
-            zIndex: 0, position: map_pos,
-            top: 0, left: 0, right: 0, bottom: 0,
-            width: '100%', height: map_height,
-            margin: 0
-        }).data('size', 'full');
-    }
+        last_type = type;
+    });
 
-    //heightfix the desktop .content div
-    if(Modernizr.mq('only screen and (min-width:48em)')) {
-        if (!($('body').hasClass('frontpage'))){
-            heightFix(window, '.content', -176);
-        }
-    }
+    //add mobile class if small screen
+    $(window).resize();
 
     $('#pc').focus();
 
@@ -186,6 +217,8 @@ $(function(){
             if (form.submit_problem) {
                 $('input[type=submit]', form).prop("disabled", true);
             }
+
+            form.submit();
         },
         // make sure we can see the error message when we focus on invalid elements
         showErrors: function( errorMap, errorList ) {
@@ -195,12 +228,7 @@ $(function(){
             this.defaultShowErrors();
             submitted = false;
         },
-        invalidHandler: function(form, validator) { 
-            form.stopImmediatePropagation();
-            form.stopPropagation();
-            form.preventDefault();
-            submitted = true;
-        }
+        invalidHandler: function(form, validator) { submitted = true; }
     });
 
     $('input[type=submit]').click( function(e) { form_submitted = 1; } );
@@ -271,7 +299,7 @@ $(function(){
 
     //move 'skip this step' link on mobile
     $('.mobile #skip-this-step').hide();
-    $('.mobile #skip-this-step a').appendTo('#key-tools').addClass('chevron').wrap('<li>');
+    $('.mobile #skip-this-step a').addClass('chevron').wrap('<li>').appendTo('#key-tools');
 
     /*
      * Tabs
@@ -331,7 +359,7 @@ $(function(){
      */
     $('.mobile .nicetable th.title').remove();
     $('.mobile .nicetable td.title').each(function(i){
-        $(this).insertBefore($(this).parent('tr')).wrap('<tr class="heading" />');
+        $(this).attr('colspan', 5).insertBefore($(this).parent('tr')).wrap('<tr class="heading" />');
     });
     // $('.mobile .nicetable tr.heading > td.title').css({'min-width':'300px'});
     // $('.mobile .nicetable tr > td.data').css({'max-width':'12%'});
@@ -344,62 +372,111 @@ $(function(){
         $('<p id="sub_map_links" />').insertAfter($('#map'));
     }
 
-// A sliding drawer from the bottom of the page
-$.fn.drawer = function(id, ajax) {
+// A sliding drawer from the bottom of the page, small version
+// that doesn't change the main content at all.
+$.fn.small_drawer = function(id) {
     this.toggle(function(){
-        var $this = $(this), d = $('#' + id), $sw = $('.shadow-wrap');
+        var $this = $(this), d = $('#' + id);
         if (!$this.addClass('hover').data('setup')) {
-            // move .shadow-wrap to end of .content first
-            if(!$('.shadow-wrap.moved').length){
-                $sw.appendTo('.content').addClass('moved');
-            }
-
-            if (!d.length) {
-                d = $('<div id="' + id + '">');
-            }
-            // Put the padding on an inner div to prevent the jarring jump at end of hide/show animation
-            var innerDiv = $('<div>');
-            d.wrapInner(innerDiv);
-            d.removeClass('hidden-js');
-            if (ajax) {
-                var href = $this.attr('href') + ';ajax=1';
-                $this.prepend(' <img src="/cobrands/fixmystreet/images/spinner-black-333.gif" style="margin-right:2em;">');
-                innerDiv.load(href, function(){
-                    $('img', $this).remove();
-                });
-            }
-            d.find('h2').css({ marginTop: 0 });
-            $('.content').append(d);
-            d_offset = d.offset().top;
-            d.hide();
+            d.hide().removeClass('hidden-js').css({
+                padding: '1em',
+                background: '#fff'
+            });
             $this.data('setup', true);
         }
-        $sw.addClass('active');
-        d.animate({height:'show'}, 300);
-        $('html, body').animate({scrollTop:d_offset-60}, 1000);
+        d.slideDown();
     }, function(e){
-        var $this = $(this), d = $('#' + id), $sw = $('.shadow-wrap');
+        var $this = $(this), d = $('#' + id);
         $this.removeClass('hover');
-        d.animate({height: 'hide'}, 600, function(){
-            $sw.removeClass('active');
-        });
+        d.slideUp();
     });
 };
 
-    $('#key-tool-wards').drawer('council_wards', false);
-    $('#key-tool-around-updates').drawer('updates_ajax', true);
-    $('#key-tool-report-updates').drawer('report-updates-data', false);
+// A sliding drawer from the bottom of the page, large version
+$.fn.drawer = function(id, ajax) {
+    // IE7 positions the fixed tool bar 1em to the left unless it comes after
+    // the full-width section, ho-hum. Move it to where it would be after an
+    // open/close anyway
+    if ($('html.ie7').length) {
+        var $sw = $('.shadow-wrap'), $content = $('.content[role="main"]');
+        $sw.appendTo($content);
+    }
+    this.toggle(function(){
+        var $this = $(this), d = $('#' + id), $content = $('.content[role="main"]');
+        if (!$this.addClass('hover').data('setup')) {
+            // make a drawer div with an innerDiv
+            if (!d.length) {
+                d = $('<div id="' + id + '">');
+            }
+            var innerDiv = $('<div>');
+            d.wrapInner(innerDiv);
+
+            // if ajax, load it with a spinner
+            if (ajax) {
+                var href = $this.attr('href') + ';ajax=1';
+                $this.prepend(' <img class="spinner" src="/cobrands/fixmystreet/images/spinner-black-333.gif" style="margin-right:2em;">');
+                innerDiv.load(href, function(){
+                    $('.spinner').remove();
+                });
+            }
+            
+            // Tall drawer - put after .content for scrolling to work okay.
+            // position over the top of the main .content in precisely the right location
+            d.insertAfter($content).addClass('content').css({
+                position: 'absolute',
+                zIndex: '1100',
+                marginTop: $('html.ie6, html.ie7').length ? '-3em' : 0, // IE6/7 otherwise include the 3em padding and stay too low
+                left: 0,
+                top: $(window).height() - $content.offset().top
+            }).removeClass('hidden-js').find('h2').css({ marginTop: 0 });
+            $this.data('setup', true);
+        }
+
+        //do the animation
+        $('.shadow-wrap').prependTo(d).addClass('static');
+        d.show().animate({top:'3em'}, 1000, function(){
+            $content.fadeOut(function() {
+                d.css({ position: 'relative' });
+            });
+        });
+    }, function(e){
+        var $this = $(this), d = $('#' + id), $sw = $('.shadow-wrap'),
+            $content = $('.content[role="main"]'),
+            tot_height = $(window).height() - d.offset().top;
+        $this.removeClass('hover');
+        d.css({ position: 'absolute' }).animate({ top: tot_height }, 1000, function(){
+            d.hide();
+            $sw.appendTo($content).removeClass('static');
+        });
+        $content.show();
+    });
+};
+
+    if ($('html.mobile').length) {
+        $('#council_wards').hide().removeClass('hidden-js').find('h2').hide();
+        $('#key-tool-wards').click(function(e){
+            e.preventDefault();
+            $('#council_wards').slideToggle('800', function(){
+              $('#key-tool-wards').toggleClass('active');
+            });
+        });
+    } else {
+        $('#key-tool-wards').drawer('council_wards', false);
+        $('#key-tool-around-updates').drawer('updates_ajax', true);
+    }
+    $('#key-tool-report-updates').small_drawer('report-updates-data');
 
     // Go directly to RSS feed if RSS button clicked on alert page
     // (due to not wanting around form to submit, though good thing anyway)
-    $('.shadow-wrap').on('click', '#alert_rss_button', function(e){
+    $('.container').on('click', '#alert_rss_button', function(e){
         e.preventDefault();
         var feed = $('input[name=feed][type=radio]:checked').nextAll('a').attr('href');
         window.location.href = feed;
     });
-    $('.shadow-wrap').on('click', '#alert_email_button', function(e){
+    $('.container').on('click', '#alert_email_button', function(e){
         e.preventDefault();
         var form = $('<form/>').attr({ method:'post', action:"/alert/subscribe" });
+        form.append($('<input name="alert" value="Subscribe me to an email alert" type="hidden" />'));
         $('#alerts input[type=text], #alerts input[type=hidden], #alerts input[type=radio]:checked').each(function() {
             var $v = $(this);
             $('<input/>').attr({ name:$v.attr('name'), value:$v.val(), type:'hidden' }).appendTo(form);
@@ -412,6 +489,8 @@ $.fn.drawer = function(id, ajax) {
     if($('.mobile').length){
         $('#map_permalink').hide();
         $('#key-tools a.feed').appendTo('#sub_map_links');
+        $('#key-tools li:empty').remove();
+        $('#report-updates-data').insertAfter($('#map_box'));
     }
     //add open/close toggle button on desk
     $('#sub_map_links').prepend('<span id="map_links_toggle">&nbsp;</span>');
@@ -449,6 +528,30 @@ $.fn.drawer = function(id, ajax) {
             queue:false
         }).fadeOut(500);
     });
+
+
+
+    /*
+     * Fancybox fullscreen images
+     */
+    if (typeof $.fancybox == 'function') {
+        $('a[rel=fancy]').fancybox({
+            'overlayColor': '#000000'
+        });
+    }
+
+    /*
+     * heightfix the desktop .content div
+     *
+     * this must be kept near the end so that the
+     * rendered height is used after any page manipulation (such as tabs)
+     */
+    if (!$('html.mobile').length) {
+        if (!($('body').hasClass('frontpage'))){
+            heightFix(window, '.content', -176);
+        }
+    }
+
 });
 
 /*

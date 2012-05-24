@@ -407,10 +407,9 @@ td {
    Print styles.
    Inlined to avoid required HTTP connection: h5bp.com/r
    ========================================================================== */
+/* mySociety removal: bits of * and :after */
 @media print {
   * {
-    background: transparent !important;
-    color: black !important;
     box-shadow: none !important;
     text-shadow: none !important;
     filter: none !important;
@@ -422,19 +421,10 @@ td {
     text-decoration: underline;
   }
 
-  a[href]:after {
-    content: " (" attr(href) ")";
-  }
-
   abbr[title]:after {
     content: " (" attr(title) ")";
   }
 
-  .ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after {
-    content: "";
-  }
-
-  /* Don't show links for images, or javascript/internal links */
   pre, blockquote {
     border: 1px solid #999;
     page-break-inside: avoid;
@@ -468,58 +458,13 @@ td {
 }
 /* COLOURS */
 /* HEADINGS and TYPOGRAPHY */
-@font-face {
-  font-family: 'MuseoSans';
-  src: url("../fonts/MuseoSans_300-webfont.eot");
-  src: url("../fonts/MuseoSans_300-webfont.eot?#iefix") format("embedded-opentype"), url("../fonts/MuseoSans_300-webfont.woff") format("woff"), url("../fonts/MuseoSans_300-webfont.ttf") format("truetype"), url("../fonts/MuseoSans_300-webfont.svg#MuseoSans300") format("svg");
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'MuseoSans';
-  src: url("../fonts/MuseoSans_300_Italic-webfont.eot");
-  src: url("../fonts/MuseoSans_300_Italic-webfont.eot?#iefix") format("embedded-opentype"), url("../fonts/MuseoSans_300_Italic-webfont.woff") format("woff"), url("../fonts/MuseoSans_300_Italic-webfont.ttf") format("truetype"), url("../fonts/MuseoSans_300_Italic-webfont.svg#MuseoSans300Italic") format("svg");
-  font-weight: normal;
-  font-style: italic;
-}
-
-@font-face {
-  font-family: 'MuseoSans';
-  src: url("../fonts/MuseoSans_500-webfont.eot");
-  src: url("../fonts/MuseoSans_500-webfont.eot?#iefix") format("embedded-opentype"), url("../fonts/MuseoSans_500-webfont.woff") format("woff"), url("../fonts/MuseoSans_500-webfont.ttf") format("truetype"), url("../fonts/MuseoSans_500-webfont.svg#MuseoSans500") format("svg");
-  font-weight: bold;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'MuseoSans';
-  src: url("../fonts/MuseoSans_500_Italic-webfont.eot");
-  src: url("../fonts/MuseoSans_500_Italic-webfont.eot?#iefix") format("embedded-opentype"), url("../fonts/MuseoSans_500_Italic-webfont.woff") format("woff"), url("../fonts/MuseoSans_500_Italic-webfont.ttf") format("truetype"), url("../fonts/MuseoSans_500_Italic-webfont.svg#MuseoSans500Italic") format("svg");
-  font-weight: bold;
-  font-style: italic;
-}
-
-@font-face {
-  font-family: 'Museo300-display';
-  src: url("../fonts/Museo300-Regular-webfont.eot");
-  src: url("../fonts/Museo300-Regular-webfont.eot?#iefix") format("embedded-opentype"), url("../fonts/Museo300-Regular-webfont.woff") format("woff"), url("../fonts/Museo300-Regular-webfont.ttf") format("truetype"), url("../fonts/Museo300-Regular-webfont.svg#Museo300") format("svg");
-  font-weight: normal;
-  font-style: normal;
-}
-
-/* Opera has a bug (from around 10.5 upwards to current 11.6) with showing the
- * table caption *at all* if the header is set to a font-face :( */
-noindex:-o-prefocus, #site-header {
-  font-family: sans-serif;
-}
-
 body {
-  font-family: 'MuseoSans', 'Helvetica', 'Arial', sans-serif;
+  font-family: MuseoSans, Helmet, Freesans, sans-serif;
   margin: 0;
   font-size: 1em;
   line-height: 1.5;
   color: #222;
+  background-color: #fff;
 }
 
 p {
@@ -529,18 +474,18 @@ p {
 }
 
 small, .small-print {
-  font-family: 'helvetica', 'arial',sans-serif;
+  font-family: Helmet, Freesans, sans-serif;
   font-style: italic;
   font-size: 0.8125em;
   line-height: 1.2307em;
 }
 
 h1 {
-  font-family: 'Museo300-display', 'Helvetica', 'Arial', sans-serif;
+  font-family: 'Museo300-display', MuseoSans, Helmet, Freesans, sans-serif;
   font-size: 2em;
   line-height: 1em;
   font-weight: normal;
-  margin-top: 0;
+  margin-top: 0.5em;
   margin-bottom: 0.5em;
 }
 
@@ -558,7 +503,7 @@ h1#reports_heading a {
 }
 
 h2 {
-  font-family: 'Museo300-display', 'Helvetica', 'Arial', sans-serif;
+  font-family: 'Museo300-display', MuseoSans, Helmet, Freesans, sans-serif;
   font-size: 1.5em;
   /*24px*/
   line-height: 1.3333em;
@@ -575,12 +520,12 @@ h3 {
   line-height: 1.20em;
   margin-top: 1.2em;
   margin-bottom: 0.8em;
-  font-weight: bold;
+  font-weight: normal;
 }
 
 h4 {
   font-size: 1em;
-  font-weight: bold;
+  font-weight: normal;
   margin-bottom: 1em;
 }
 
@@ -620,9 +565,9 @@ ol.big-numbers > li:before {
   position: absolute;
   left: 0;
   top: -0.2em;
-  color: #eeeeee;
+  color: #ccc;
   line-height: 1;
-  font-family: 'helvetica', 'arial', sans-serif;
+  font-family: Helmet, Freesans, sans-serif;
   font-weight: bold;
   font-size: 2.5em;
 }
@@ -662,6 +607,10 @@ select, input, textarea {
   max-width: 95%;
 }
 
+select {
+  width: 100%;
+}
+
 a,
 a:visited {
   text-decoration: none;
@@ -676,7 +625,7 @@ a:visited:active {
 
 .small-print {
   margin-bottom: 1.2307em;
-  color: #888888;
+  color: #666666;
 }
 
 .meta {
@@ -686,18 +635,18 @@ a:visited:active {
 }
 
 .meta-2 {
-  font-family: 'helvetica', 'arial',sans-serif;
-  color: #888888;
+  font-family: Helmet, Freesans, sans-serif;
+  color: #666666;
   font-style: italic;
   font-size: 0.75em;
 }
 
 h4.static, h4.static-with-rule {
-  font-family: 'helvetica', 'arial',sans-serif;
+  font-family: Helmet, Freesans, sans-serif;
   text-transform: uppercase;
   font-size: 0.875em;
   line-height: 1.71428em;
-  color: #888;
+  color: #666;
   margin-top: 2em;
 }
 
@@ -710,17 +659,25 @@ h4.static-with-rule {
 
 /* FORMS */
 ::-webkit-input-placeholder {
-  color: #888888;
+  color: #666666;
   font-style: italic;
   font-size: 0.9375em;
 }
 
 :-moz-placeholder {
+  color: #666666;
   font-style: italic;
   font-size: 0.9375em;
 }
 
 :-ms-placeholder {
+  color: #666666;
+  font-style: italic;
+  font-size: 0.9375em;
+}
+
+.placeholder {
+  color: #666666;
   font-style: italic;
   font-size: 0.9375em;
 }
@@ -750,7 +707,7 @@ textarea {
   display: block;
   font-size: 1em;
   line-height: 1.5em;
-  font-family: 'helvetica', 'arial', sans-serif;
+  font-family: Helmet, Freesans, sans-serif;
   min-height: 8em;
 }
 
@@ -816,9 +773,7 @@ label.inline {
 .form-txt-submit-box {
   min-height: 3em;
 }
-.form-txt-submit-box input[type=password],
-.form-txt-submit-box input[type=text],
-.form-txt-submit-box input[type=email] {
+.form-txt-submit-box input[type=password], .form-txt-submit-box input[type=text], .form-txt-submit-box input[type=email] {
   width: 65%;
   float: left;
 }
@@ -889,7 +844,7 @@ p.label-valid {
 
 /*** LAYOUT ***/
 .container {
-  padding: 0 1em;
+  padding: 0 1em 1em;
 }
 
 .full-width, .shadow-wrap, #footer-mobileapps, #map_box, .promo, .alert, #front-main #postcodeForm {
@@ -925,6 +880,10 @@ p.label-valid {
   background: url("../images/ie_logo.gif") 0 -5px no-repeat;
 }
 
+.ie7 #site-logo {
+  background: url("../images/sprite.png") -3px -3px no-repeat;
+}
+
 #nav-link {
   width: 50px;
   height: 48px;
@@ -958,10 +917,13 @@ p.label-valid {
   font-size: 1.25em;
   border-bottom: 0.25em solid #333;
 }
-#main-nav ul li a:hover {
+#main-nav ul li a:hover, #main-nav ul li span.hover {
   background: #333;
   color: #fff;
   text-decoration: none;
+}
+#main-nav ul li span {
+  background-color: #ccc;
 }
 #main-nav ul#mysoc-menu li a {
   background: #ffd000;
@@ -975,6 +937,10 @@ p.label-valid {
 
 .ie6 #main-nav ul#mysoc-menu li a#mysoc-logo {
   background: url("../images/ie_mysoc_logo.gif") center no-repeat;
+}
+
+.ie7 #main-nav ul#mysoc-menu li a#mysoc-logo {
+  background: url("../images/sprite.png") -240px -38px no-repeat;
 }
 
 .wrapper {
@@ -1043,9 +1009,9 @@ p.label-valid {
   padding: 4em 2em 1em 2em;
   text-transform: uppercase;
   font-size: 0.6875em;
-  font-family: 'helvetica', 'arial', sans-serif;
+  font-family: Helmet, Freesans, sans-serif;
 }
-.shadow-wrap ul#key-tools li a:hover, .shadow-wrap ul#key-tools li a.hover {
+.shadow-wrap ul#key-tools li a:hover, .shadow-wrap ul#key-tools li a.hover, .shadow-wrap ul#key-tools li a.active {
   text-decoration: none;
   background-color: #333;
   color: #fff;
@@ -1062,7 +1028,7 @@ p.label-valid {
   background-image: url("../images/sprite.png");
   background-position: center -2716px;
 }
-.shadow-wrap ul#key-tools li a.hover {
+.shadow-wrap ul#key-tools li a.hover, .shadow-wrap ul#key-tools li a.active {
   background-image: url("../images/sprite.png");
   background-position: center -2064px;
 }
@@ -1122,27 +1088,27 @@ p.label-valid {
   padding: 0.5em 0;
 }
 
-#footer-ads ul {
+#footer-help ul {
   list-style-type: none;
   padding: 0;
   margin: 0;
 }
-#footer-ads ul li {
+#footer-help ul li {
   list-style-type: none;
   padding: 0;
   margin: 0;
   border: 0;
 }
-#footer-ads ul li {
+#footer-help ul li {
   border-bottom: 1px solid #AFAFAF;
 }
-#footer-ads ul li:last-child {
+#footer-help ul li:last-child {
   border-bottom: none;
 }
-#footer-ads ul li h4 {
+#footer-help ul li h4 {
   margin: 0.75em 0 0.25em 0;
 }
-#footer-ads ul li p {
+#footer-help ul li p {
   font-size: 0.75em;
 }
 
@@ -1150,7 +1116,7 @@ p.label-valid {
 button, input[type=submit], .btn {
   cursor: pointer;
   font-size: 0.875em;
-  font-family: 'Helvetica', 'Arial', sans-serif;
+  font-family: Helmet, Freesans, sans-serif;
   font-weight: bold;
   text-transform: uppercase;
   line-height: 1.375em;
@@ -1164,19 +1130,18 @@ button, input[type=submit], .btn {
   -ms-border-radius: 4px;
   -khtml-border-radius: 4px;
   border-radius: 4px;
-  background: #eee;
+  background: #eeeeee;
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #eeeeee), color-stop(100%, #cccccc));
   background: -webkit-linear-gradient(#eeeeee, #cccccc);
   background: -moz-linear-gradient(#eeeeee, #cccccc);
   background: -o-linear-gradient(#eeeeee, #cccccc);
   background: -ms-linear-gradient(#eeeeee, #cccccc);
   background: linear-gradient(#eeeeee, #cccccc);
-  border: 1px solid #999;
-  color: #333;
+  border: 1px solid #999999;
+  color: #333333;
 }
 button:hover, input[type=submit]:hover, .btn:hover {
-  color: #fff;
-  background: #777;
+  background: #777777;
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #999999), color-stop(100%, #777777));
   background: -webkit-linear-gradient(#999999, #777777);
   background: -moz-linear-gradient(#999999, #777777);
@@ -1184,7 +1149,8 @@ button:hover, input[type=submit]:hover, .btn:hover {
   background: -ms-linear-gradient(#999999, #777777);
   background: linear-gradient(#999999, #777777);
   text-decoration: none;
-  border: 1px solid #666;
+  border: 1px solid #666666;
+  color: white;
 }
 
 .green-btn,
@@ -1192,7 +1158,7 @@ button.green-btn,
 input.green-btn {
   cursor: pointer;
   font-size: 0.875em;
-  font-family: 'Helvetica', 'Arial', sans-serif;
+  font-family: Helmet, Freesans, sans-serif;
   font-weight: bold;
   text-transform: uppercase;
   line-height: 1.375em;
@@ -1206,49 +1172,29 @@ input.green-btn {
   -ms-border-radius: 4px;
   -khtml-border-radius: 4px;
   border-radius: 4px;
-  background: #eee;
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #eeeeee), color-stop(100%, #cccccc));
-  background: -webkit-linear-gradient(#eeeeee, #cccccc);
-  background: -moz-linear-gradient(#eeeeee, #cccccc);
-  background: -o-linear-gradient(#eeeeee, #cccccc);
-  background: -ms-linear-gradient(#eeeeee, #cccccc);
-  background: linear-gradient(#eeeeee, #cccccc);
-  border: 1px solid #999;
-  color: #333;
-  background-color: #9FDE23;
+  background: #9fde23;
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #9fde23), color-stop(100%, #7fb900));
   background: -webkit-linear-gradient(#9fde23, #7fb900);
   background: -moz-linear-gradient(#9fde23, #7fb900);
   background: -o-linear-gradient(#9fde23, #7fb900);
   background: -ms-linear-gradient(#9fde23, #7fb900);
   background: linear-gradient(#9fde23, #7fb900);
-  color: #fff;
-  border-color: #5B9700;
+  border: 1px solid #5b9700;
+  color: white;
 }
 .green-btn:hover,
 button.green-btn:hover,
 input.green-btn:hover {
-  color: #fff;
-  background: #777;
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #999999), color-stop(100%, #777777));
-  background: -webkit-linear-gradient(#999999, #777777);
-  background: -moz-linear-gradient(#999999, #777777);
-  background: -o-linear-gradient(#999999, #777777);
-  background: -ms-linear-gradient(#999999, #777777);
-  background: linear-gradient(#999999, #777777);
-  text-decoration: none;
-  border: 1px solid #666;
-}
-.green-btn:hover,
-button.green-btn:hover,
-input.green-btn:hover {
+  background: #9fde23;
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #7fb900), color-stop(100%, #9fde23));
   background: -webkit-linear-gradient(#7fb900, #9fde23);
   background: -moz-linear-gradient(#7fb900, #9fde23);
   background: -o-linear-gradient(#7fb900, #9fde23);
   background: -ms-linear-gradient(#7fb900, #9fde23);
   background: linear-gradient(#7fb900, #9fde23);
-  border-color: #5B9700;
+  text-decoration: none;
+  border: 1px solid #5b9700;
+  color: white;
 }
 
 .red-btn,
@@ -1256,7 +1202,7 @@ button.red-btn,
 input.red-btn {
   cursor: pointer;
   font-size: 0.875em;
-  font-family: 'Helvetica', 'Arial', sans-serif;
+  font-family: Helmet, Freesans, sans-serif;
   font-weight: bold;
   text-transform: uppercase;
   line-height: 1.375em;
@@ -1270,49 +1216,29 @@ input.red-btn {
   -ms-border-radius: 4px;
   -khtml-border-radius: 4px;
   border-radius: 4px;
-  background: #eee;
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #eeeeee), color-stop(100%, #cccccc));
-  background: -webkit-linear-gradient(#eeeeee, #cccccc);
-  background: -moz-linear-gradient(#eeeeee, #cccccc);
-  background: -o-linear-gradient(#eeeeee, #cccccc);
-  background: -ms-linear-gradient(#eeeeee, #cccccc);
-  background: linear-gradient(#eeeeee, #cccccc);
-  border: 1px solid #999;
-  color: #333;
-  background-color: #FF0038;
+  background: #ff0038;
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #ff0038), color-stop(100%, #bf002a));
   background: -webkit-linear-gradient(#ff0038, #bf002a);
   background: -moz-linear-gradient(#ff0038, #bf002a);
   background: -o-linear-gradient(#ff0038, #bf002a);
   background: -ms-linear-gradient(#ff0038, #bf002a);
   background: linear-gradient(#ff0038, #bf002a);
-  color: #fff;
-  border-color: #80001C;
+  border: 1px solid #80001c;
+  color: white;
 }
 .red-btn:hover,
 button.red-btn:hover,
 input.red-btn:hover {
-  color: #fff;
-  background: #777;
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #999999), color-stop(100%, #777777));
-  background: -webkit-linear-gradient(#999999, #777777);
-  background: -moz-linear-gradient(#999999, #777777);
-  background: -o-linear-gradient(#999999, #777777);
-  background: -ms-linear-gradient(#999999, #777777);
-  background: linear-gradient(#999999, #777777);
-  text-decoration: none;
-  border: 1px solid #666;
-}
-.red-btn:hover,
-button.red-btn:hover,
-input.red-btn:hover {
+  background: #ff0038;
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #bf002a), color-stop(100%, #ff0038));
   background: -webkit-linear-gradient(#bf002a, #ff0038);
   background: -moz-linear-gradient(#bf002a, #ff0038);
   background: -o-linear-gradient(#bf002a, #ff0038);
   background: -ms-linear-gradient(#bf002a, #ff0038);
   background: linear-gradient(#bf002a, #ff0038);
-  border-color: #80001C;
+  text-decoration: none;
+  border: 1px solid #80001c;
+  color: white;
 }
 
 .final-submit,
@@ -1477,13 +1403,11 @@ a:hover.button-left {
   display: table;
   width: 100%;
 }
-.issue-list li .update-wrap .update-text,
-.issue-list li .update-wrap .update-img {
+.issue-list li .update-wrap .update-text, .issue-list li .update-wrap .update-img {
   display: table-cell;
   vertical-align: top;
 }
-.issue-list li .update-wrap .update-text p,
-.issue-list li .update-wrap .update-img p {
+.issue-list li .update-wrap .update-text p, .issue-list li .update-wrap .update-img p {
   margin-bottom: 0.5em;
 }
 .issue-list li .update-wrap .update-img {
@@ -1524,9 +1448,7 @@ a:hover.button-left {
   color: #222222;
   background: #e6e6e6;
 }
-.issue-list-a li a .text, .list-a li a .text,
-.issue-list-a li a .img,
-.list-a li a .img {
+.issue-list-a li a .text, .list-a li a .text, .issue-list-a li a .img, .list-a li a .img {
   display: table-cell;
   vertical-align: top;
 }
@@ -1543,7 +1465,7 @@ a:hover.button-left {
   margin: 0;
 }
 .issue-list-a li a .text small, .list-a li a .text small, .issue-list-a li a .text .small-print, .list-a li a .text .small-print {
-  color: #808080;
+  color: #666;
 }
 .issue-list-a li > p, .list-a li > p {
   margin: 0.25em 0 0 0;
@@ -1579,6 +1501,48 @@ a:hover.button-left {
 }
 .ie6 .issue-list-a li a .img img, .ie6 .list-a li a .img img {
   height: 60px;
+}
+
+.update-img a {
+  display: -moz-inline-box;
+  -moz-box-orient: vertical;
+  display: inline-block;
+  vertical-align: middle;
+  *vertical-align: auto;
+  position: relative;
+}
+.update-img a {
+  *display: inline;
+}
+.update-img a span {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: block;
+  width: 20px;
+  height: 20px;
+  opacity: 0.5;
+  background: white url(images/sprite.png) -16px -1098px no-repeat;
+  font: 0/0 a;
+  color: transparent;
+}
+.update-img a:hover span {
+  opacity: 1;
+}
+
+.issue-list li .update-wrap .update-img a span {
+  right: -16px;
+  top: -8px;
+}
+
+.problem-header {
+  margin-bottom: 1em;
+}
+
+.problem-header .update-img {
+  float: right;
+  margin-left: 0.5em;
+  margin-bottom: 0.5em;
 }
 
 #map_box {
@@ -1789,6 +1753,53 @@ a:hover.button-left {
   right: 0;
   font-size: 0.75em;
   background: rgba(0, 0, 0, 0.7);
+  padding: 0.75em 30px;
+}
+.mobile-map-banner a {
+  cursor: pointer;
+  font-size: 0.875em;
+  font-family: Helmet, Freesans, sans-serif;
+  font-weight: bold;
+  text-transform: uppercase;
+  line-height: 1.375em;
+  padding: 0.7em 0.5em 0.5em 0.5em;
+  margin: 0;
+  width: auto;
+  height: auto;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -o-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -khtml-border-radius: 4px;
+  border-radius: 4px;
+  background: #333333;
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #333333), color-stop(100%, #1a1a1a));
+  background: -webkit-linear-gradient(#333333, #1a1a1a);
+  background: -moz-linear-gradient(#333333, #1a1a1a);
+  background: -o-linear-gradient(#333333, #1a1a1a);
+  background: -ms-linear-gradient(#333333, #1a1a1a);
+  background: linear-gradient(#333333, #1a1a1a);
+  border: 1px solid #1a1a1a;
+  color: white;
+  font-weight: normal;
+  font-size: 0.875em;
+  line-height: 1;
+  padding: 0.5em 0.75em;
+  position: absolute;
+  left: 0.3em;
+  top: 0.3em;
+}
+.mobile-map-banner a:hover {
+  background: #333333;
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #1a1a1a), color-stop(100%, #333333));
+  background: -webkit-linear-gradient(#1a1a1a, #333333);
+  background: -moz-linear-gradient(#1a1a1a, #333333);
+  background: -o-linear-gradient(#1a1a1a, #333333);
+  background: -ms-linear-gradient(#1a1a1a, #333333);
+  background: linear-gradient(#1a1a1a, #333333);
+  text-decoration: none;
+  border: 1px solid #1a1a1a;
+  color: white;
 }
 
 .olControlAttribution {
@@ -1903,15 +1914,15 @@ table.nicetable thead {
 table.nicetable thead th {
   font-size: 0.75em;
 }
-table.nicetable tr.gone {
-  color: #666666;
-  background-color: #cccccc;
-}
 table.nicetable tr.a {
   background: #f6f6f6;
 }
 table.nicetable tr:nth-child(even) {
   background: #f6f6f6;
+}
+table.nicetable tr.gone {
+  color: #666666;
+  background-color: #cccccc;
 }
 table.nicetable tr:hover {
   background: #FFF5CC;
@@ -1945,7 +1956,7 @@ table.nicetable .data {
   width: 16px;
   height: 16px;
   text-indent: -999999px;
-  background: url(../images/sprite.png) -341px -263px no-repeat;
+  background: url(images/sprite.png) -341px -263px no-repeat;
   -moz-border-radius: 4px;
   -webkit-border-radius: 4px;
   -o-border-radius: 4px;
@@ -1954,7 +1965,7 @@ table.nicetable .data {
   border-radius: 4px;
 }
 .promo .close-promo:hover {
-  background: #222222 url(../images/sprite.png) -341px -223px no-repeat;
+  background: #222222 url(images/sprite.png) -341px -223px no-repeat;
 }
 
 .alert {
@@ -1967,36 +1978,38 @@ table.nicetable .data {
   color: #ffd000;
 }
 
-ul.breadcrumb {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-  margin: -1em -1em 1em -1em;
-  overflow: hidden;
+.pagination {
+  text-align: center;
+  padding: 0.5em 1em;
+  background: #eee;
+  position: relative;
 }
-ul.breadcrumb li {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-  border: 0;
-  float: left;
+.pagination .prev {
+  position: absolute;
+  left: 0.5em;
 }
-ul.breadcrumb li a {
-  float: left;
-  display: block;
+.pagination .next {
+  position: absolute;
+  right: 0.5em;
 }
-ul.breadcrumb li span {
-  display: block;
-  padding: 0.5em 1em 0.5em 0;
+.pagination a {
+  display: -moz-inline-box;
+  -moz-box-orient: vertical;
+  display: inline-block;
+  vertical-align: middle;
+  *vertical-align: auto;
+  background: #ffd000;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  color: #1a1a1a;
 }
-ul.breadcrumb li a {
-  background: url("../images/sprite.png") right -3220px no-repeat;
-  padding: 0.5em 2.5em 0.5em 1em;
-  color: #333;
+.pagination a {
+  *display: inline;
 }
-ul.breadcrumb li a:hover {
-  color: #000;
+.pagination a:hover {
+  color: #1a1a1a;
   text-decoration: none;
+  background: #e7bd00;
 }
 
 .desk-only {
@@ -2019,14 +2032,15 @@ ul.breadcrumb li a:hover {
 }
 #front-main h2 {
   font-style: italic;
-  font-family: 'helvetica', 'arial', sans-serif;
+  font-family: Helmet, Freesans, sans-serif;
   font-size: 1.1875em;
   color: #4d4d4d;
 }
 #front-main #postcodeForm {
   padding: 1em;
+  color: #222222;
   background: #ffd000;
-  font-family: 'helvetica', 'arial', sans-serif;
+  font-family: Helmet, Freesans, sans-serif;
 }
 #front-main #postcodeForm label {
   margin: 0;
@@ -2035,7 +2049,7 @@ ul.breadcrumb li a:hover {
   display: table;
   width: 100%;
   background: #fff;
-  border: 1px solid #F3B11E;
+  border: 1px solid #f3b11e;
 }
 #front-main #postcodeForm div input#pc {
   display: table-cell;
@@ -2076,7 +2090,7 @@ ul.breadcrumb li a:hover {
   background: #1a1a1a;
   color: #C8C8C8;
   padding: 0.5em;
-  font-family: 'helvetica', 'arial', sans-serif;
+  font-family: Helmet, Freesans, sans-serif;
   font-size: 0.8125em;
   -moz-border-radius: 0 0 0.25em 0.25em;
   -webkit-border-radius: 0 0 0.25em 0.25em;
@@ -2096,8 +2110,9 @@ ul.breadcrumb li a:hover {
 #front-howto #front_stats {
   display: table;
   width: 100%;
+  color: #222222;
   background: #ffd000;
-  font-family: 'helvetica', 'arial', sans-serif;
+  font-family: Helmet, Freesans, sans-serif;
 }
 #front-howto #front_stats div {
   display: table-cell;
@@ -2127,4 +2142,7 @@ ul.breadcrumb li a:hover {
 }
 #alerts .a {
   background: #f6f6f6;
+}
+#alerts img[width="16"] {
+  float: right;
 }
