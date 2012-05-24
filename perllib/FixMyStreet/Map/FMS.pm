@@ -38,17 +38,17 @@ sub get_quadkey {
 }
 
 sub map_tile_base {
-    "http://%stilma.mysociety.org/sv/%d/%d/%d.png";
+    '.', "http://%stilma.mysociety.org/sv/%d/%d/%d.png";
 }
 
 sub map_tiles {
     my ($self, $x, $y, $z) = @_;
     if ($z >= 16) {
-        my $tile_base = $self->map_tile_base;
+        my ($tile_sep, $tile_base) = $self->map_tile_base;
         return [
-            sprintf($tile_base, 'a.', $z, $x-1, $y-1),
-            sprintf($tile_base, 'b.', $z, $x, $y-1),
-            sprintf($tile_base, 'c.', $z, $x-1, $y),
+            sprintf($tile_base, 'a' . $tile_sep, $z, $x-1, $y-1),
+            sprintf($tile_base, 'b' . $tile_sep, $z, $x, $y-1),
+            sprintf($tile_base, 'c' . $tile_sep, $z, $x-1, $y),
             sprintf($tile_base, '', $z, $x, $y),
         ];
     } else {

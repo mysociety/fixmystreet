@@ -12,11 +12,11 @@ use base 'FixMyStreet::Map::FMS';
 use strict;
 
 sub map_type {
-    return '"/tilma"';
+    return '"https://{S}-fix.bromley.gov.uk/tilma"';
 }
 
 sub map_tile_base {
-    "/tilma/%d/%d/%d.png";
+    '-', "https://%sfix.bromley.gov.uk/tilma/%d/%d/%d.png";
 }
 
 1;

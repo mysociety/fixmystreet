@@ -1,4 +1,4 @@
-var tile_base = 'tilma.mysociety.org/sv';
+var tile_base = 'http://{S}.tilma.mysociety.org/sv';
 
 function set_map_config(perm) {
     var permalink_id;
@@ -99,18 +99,12 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 
         var url;
         if (z >= 16) {
-            if (tile_base.substring(0,1) == '/') {
-                url = [
-                    tile_base + "/${z}/${x}/${y}.png"
-                ];
-            } else {
-                url = [
-                    "http://" + tile_base + "/${z}/${x}/${y}.png",
-                    "http://a." + tile_base + "/${z}/${x}/${y}.png",
-                    "http://b." + tile_base + "/${z}/${x}/${y}.png",
-                    "http://c." + tile_base + "/${z}/${x}/${y}.png"
-                ];
-            }
+            url = [
+                tile_base.replace('{S}.', '').replace('{S}-', '') + "/${z}/${x}/${y}.png", // Yuck
+                tile_base.replace('{S}', 'a') + "/${z}/${x}/${y}.png",
+                tile_base.replace('{S}', 'b') + "/${z}/${x}/${y}.png",
+                tile_base.replace('{S}', 'c') + "/${z}/${x}/${y}.png"
+            ];
         } else {
             var type = '';
             if (z > 10) { type = '&productSet=mmOS'; }
