@@ -218,7 +218,10 @@ $(function(){
                 $('input[type=submit]', form).prop("disabled", true);
             }
 
-            form.submit();
+            // this needs to be disabled otherwise it submits the form normally rather than
+            // over AJAX. This comment is to make this more likely to happen when updating
+            // this code.
+            //form.submit();
         },
         // make sure we can see the error message when we focus on invalid elements
         showErrors: function( errorMap, errorList ) {
