@@ -159,7 +159,7 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
     $c->forward('setup_categories_and_councils');
 
     my $category_extra = '';
-    if ( $c->stash->{category_extras}->{ $c->req->param('category') } ) {
+    if ( $c->stash->{category_extras}->{ $c->req->param('category') } && @{ $c->stash->{category_extras}->{ $c->req->param('category') } } >= 1  ) {
         $c->stash->{report_meta} = {};
         $c->stash->{report} = { category => $c->req->param('category') };
         $c->stash->{category_extras} = { $c->req->param('category' ) => $c->stash->{category_extras}->{ $c->req->param('category') } };

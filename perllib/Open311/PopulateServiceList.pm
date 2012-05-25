@@ -224,7 +224,11 @@ sub _add_meta_to_contact {
         @meta = grep { ! $ignore{ $_->{ code } } } @meta;
     }
 
-    $contact->extra( \@meta );
+    if ( @meta ) {
+        $contact->extra( \@meta );
+    } else {
+        $contact->extra( undef );
+    }
     $contact->update;
 }
 
