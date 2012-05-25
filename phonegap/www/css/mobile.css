@@ -1,3 +1,7 @@
+.mobile-nav-banner {
+    background: black;
+}
+
 .mobile-info {
     position: fixed;
     bottom: 0px;
@@ -39,4 +43,18 @@
   position: absolute;
   right: 0.3em;
   bottom: 0.3em;
+}
+
+.mobile-map-banner {
+    position: fixed;
+}
+
+.mobile-header {
+    margin-top: 35px;
+}
+
+
+
+.mobile-header #site-logo {
+    margin-top: 35px;
 }

@@ -13,34 +13,12 @@
 	<script type="text/javascript" charset="utf-8" src="cordova-1.5.0.js"></script>
     <script type="text/javascript" src="js/jquery-1.7.0.min.js"></script>
     <script src="js/jquery.validate.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="js/modernizr.custom.61367.js" type="text/javascript" charset="utf-8"></script>
 
-        <script type="text/javascript" src="js/geo.min.js"></script>
         <script type="text/javascript" src="js/fixmystreet.js"></script>
         <script type="text/javascript" src="js/mobile.js"></script>
 
-        <script type="text/javascript">
-            validation_strings = {
-                update: 'Please enter a message',
-                title: 'Please enter a subject',
-                detail: 'Please enter some details',
-                name: {
-                    required: 'Please enter your name',
-                    validName: 'Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below'
-                },
-                category: 'Please choose a category',
-                rznvy: {
-                    required: 'Please enter your email',
-                    email: 'Please enter a valid email'
-                },
-                email: {
-                    required: 'Please enter your email',
-                    email: 'Please enter a valid email'
-                }
-            };
-            </script>
   </head>
-    <body class="frontpage fullwidthpage">
+    <body class="frontpage fullwidthpage mobile-header">
         
         <div class="wrapper">
             <div class="table-cell">
@@ -55,6 +33,8 @@
                     <div class="content" role="main">                        
                         
                         <div class="tablewrapper">
+                            <div class="container">
+                                <div class="content" role="main">
      
                             <h1><a name="faq"></a>Frequently Asked Questions</h1>
     <dl>
@@ -172,12 +152,11 @@ our servers).
 
 Let us know if we&rsquo;ve missed anyone.</dd>
     </dl>
-                        </div>
                     </div><!-- .content role=main -->
                 </div><!-- .container -->
             </div><!-- .table-cell -->
             
-            <div class="big-green-banner mobile-map-banner">
+            <div class="big-green-banner mobile-map-banner mobile-nav-banner">
                 <a href="index.html">home</a>
                 About
             </div>
