@@ -919,7 +919,7 @@ for my $test (
         ok $email, "got an email";
         like $email->body, qr/confirm the problem/i, "confirm the problem";
 
-        my ($url) = $email->body =~ m{(http://\S+)};
+        my ($url) = $email->body =~ m{(https?://\S+)};
         ok $url, "extracted confirm url '$url'";
 
         # confirm token in order to update the user details

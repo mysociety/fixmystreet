@@ -11,6 +11,10 @@ sub council_area { return 'Bromley'; }
 sub council_name { return 'Bromley Council'; }
 sub council_url { return 'bromley'; }
 
+sub base_url {
+    'https://fix.bromley.gov.uk';
+}
+
 sub path_to_web_templates {
     my $self = shift;
     return [
@@ -67,6 +71,14 @@ sub process_extras {
     my $self = shift;
     $self->SUPER::process_extras( @_, [ 'first_name', 'last_name' ] );
 }
+
+sub contact_email {
+    my $self = shift;
+    my $type = shift || '';
+    return join( '@', 'info', 'bromley.gov.uk' ) if $type eq 'contact';
+    return $self->next::method();
+}
+sub contact_name { 'Bromley Council (do not reply)'; }
 
 1;
 
