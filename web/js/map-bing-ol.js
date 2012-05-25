@@ -1,4 +1,4 @@
-var tile_base = 'tilma.mysociety.org/sv';
+var tile_base = [ [ '', 'a.', 'b.', 'c.' ], 'http://{S}tilma.mysociety.org/sv' ];
 
 function set_map_config(perm) {
     var permalink_id;
@@ -99,17 +99,9 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 
         var url;
         if (z >= 16) {
-            if (tile_base.substring(0,1) == '/') {
-                url = [
-                    tile_base + "/${z}/${x}/${y}.png"
-                ];
-            } else {
-                url = [
-                    "http://" + tile_base + "/${z}/${x}/${y}.png",
-                    "http://a." + tile_base + "/${z}/${x}/${y}.png",
-                    "http://b." + tile_base + "/${z}/${x}/${y}.png",
-                    "http://c." + tile_base + "/${z}/${x}/${y}.png"
-                ];
+            url = [];
+            for (var i=0; i< tile_base[0].length; i++) {
+                url.push( tile_base[1].replace('{S}', tile_base[0][i]) + "/${z}/${x}/${y}.png" );
             }
         } else {
             var type = '';

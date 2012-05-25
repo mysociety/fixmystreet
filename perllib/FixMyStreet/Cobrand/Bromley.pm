@@ -1,4 +1,5 @@
 package FixMyStreet::Cobrand::Bromley;
+use mro 'c3';
 use parent 'FixMyStreet::Cobrand::FixMyStreet';
 use parent 'FixMyStreet::Cobrand::UKCouncils';
 
@@ -9,6 +10,10 @@ sub council_id { return 2482; }
 sub council_area { return 'Bromley'; }
 sub council_name { return 'Bromley Council'; }
 sub council_url { return 'bromley'; }
+
+sub base_url {
+    'https://fix.bromley.gov.uk';
+}
 
 sub path_to_web_templates {
     my $self = shift;
@@ -36,6 +41,10 @@ sub disambiguate_location {
 
 sub example_places {
     return ( 'BR1 3UH', 'Glebe Rd, Bromley' );
+}
+
+sub map_type {
+    'Bromley';
 }
 
 sub on_map_default_max_pin_age {
@@ -66,6 +75,14 @@ sub process_extras {
     my $self = shift;
     $self->SUPER::process_extras( @_, [ 'first_name', 'last_name' ] );
 }
+
+sub contact_email {
+    my $self = shift;
+    my $type = shift || '';
+    return join( '@', 'info', 'bromley.gov.uk' ) if $type eq 'contact';
+    return $self->next::method();
+}
+sub contact_name { 'Bromley Council (do not reply)'; }
 
 1;
 
