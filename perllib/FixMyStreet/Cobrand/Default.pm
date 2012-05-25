@@ -351,6 +351,17 @@ Return the title to be used in page heads.
 
 sub site_title { 'FixMyStreet' }
 
+=head2 map_type
+
+Return an override type of map if necessary.
+
+=cut
+sub map_type {
+    my $self = shift;
+    return 'OSM' if $self->{c}->req->uri->host =~ /^osm\./;
+    return;
+}
+
 =head2 on_map_list_limit
 
 Return the maximum number of items to be given in the list of reports on the map

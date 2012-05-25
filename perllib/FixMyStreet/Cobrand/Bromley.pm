@@ -43,6 +43,10 @@ sub example_places {
     return ( 'BR1 3UH', 'Glebe Rd, Bromley' );
 }
 
+sub map_type {
+    'Bromley';
+}
+
 sub on_map_default_max_pin_age {
     return '1 month';
 }
