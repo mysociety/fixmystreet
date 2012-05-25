@@ -47,7 +47,7 @@ function fixmystreet_onload() {
         var area = new OpenLayers.Layer.Vector("KML", {
             strategies: [ new OpenLayers.Strategy.Fixed() ],
             protocol: new OpenLayers.Protocol.HTTP({
-                url: "/mapit/area/" + fixmystreet.area + ".kml?simplify_tolerance=0.0001",
+                url: CONFIG.FMS_URL + "/mapit/area/" + fixmystreet.area + ".kml?simplify_tolerance=0.0001",
                 format: new OpenLayers.Format.KML()
             })
         });
@@ -105,7 +105,7 @@ function fixmystreet_onload() {
         fixmystreet.bbox_strategy = new OpenLayers.Strategy.BBOX({ ratio: 1 });
         pin_layer_options.strategies = [ fixmystreet.bbox_strategy ];
         pin_layer_options.protocol = new OpenLayers.Protocol.HTTP({
-            url: '/ajax',
+            url: CONFIG.FMS_URL + '/ajax',
             params: fixmystreet.all_pins ? { all_pins: 1 } : { },
             format: new OpenLayers.Format.FixMyStreet()
         });
@@ -136,7 +136,7 @@ function fixmystreet_onload() {
             var popup = new OpenLayers.Popup.FramedCloud("popup",
                 feature.geometry.getBounds().getCenterLonLat(),
                 null,
-                feature.attributes.title + "<br><a href=/report/" + feature.attributes.id + ">More details</a>",
+                feature.attributes.title + "<br><a href=" + CONFIG.FMS_URL + "/report/" + feature.attributes.id + ">More details</a>",
                 { size: new OpenLayers.Size(0,0), offset: new OpenLayers.Pixel(0,-40) },
                 true, onPopupClose);
             feature.popup = popup;
