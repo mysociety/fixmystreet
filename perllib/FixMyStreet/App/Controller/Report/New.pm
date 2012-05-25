@@ -123,7 +123,7 @@ sub report_new_ajax : Path('mobile') : Args(0) {
     $c->forward('setup_categories_and_councils');
     $c->forward('process_user');
     $c->forward('process_report');
-    $c->forward('process_photo');
+    $c->forward('/photo/process_photo');
 
     unless ($c->forward('check_for_errors')) {
         $c->stash->{ json_response } = { errors => $c->stash->{field_errors} };
