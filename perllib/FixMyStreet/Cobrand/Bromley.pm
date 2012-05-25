@@ -1,4 +1,5 @@
 package FixMyStreet::Cobrand::Bromley;
+use mro 'c3';
 use parent 'FixMyStreet::Cobrand::FixMyStreet';
 use parent 'FixMyStreet::Cobrand::UKCouncils';
 
