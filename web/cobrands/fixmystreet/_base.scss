@@ -151,6 +151,12 @@ select, input, textarea {
   font-size: 99%;
   max-width: 95%;
 }
+.ie7 {
+    select, input, textarea {
+        max-width: none;
+    }
+}
+
 // To deal with bug from drop-down being wider than holder
 select {
   width: 100%;
