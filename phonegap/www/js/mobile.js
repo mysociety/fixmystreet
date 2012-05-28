@@ -259,14 +259,25 @@ function postReport(e) {
                     }
                 } else {
                     if ( data.check_name ) {
+                        $('#email_label').hide();
+                        $('#form_email').hide();
+                        $('#now_submit').hide();
+                        $('#have_password').hide();
+                        $('#form_sign_in_yes').hide();
+                        $('#let_me_confirm').hide();
+                        $('#password_register').hide();
+                        $('#password_surround').hide();
+                        $('#providing_password').hide();
                         $('#form_name').val( data.check_name );
                         $('#form_name').focus();
+                        $('#form_name').before('<div class="form-error">' + data.errors.name + '</div>' );
                     }
                     $('input[type=submit]').prop("disabled", false);
                 }
             },
             error: function (data, status, errorThrown ) {
-                alert( 'There was a problem submitting your report, please try again: ' + data, function(){}, 'Submit report' );
+                alert( 'There was a problem submitting your report, please try again (' + status + '): ' + JSON.stringify(data), function(){}, 'Submit report' );
+                $('input[type=submit]').prop("disabled", false);
             }
         } );
     }
