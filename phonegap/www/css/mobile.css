@@ -1,3 +1,13 @@
+/* stop scrolling on iphone */
+#container {
+    width: 100%;
+    height: 100%;
+}
+
+#container .container {
+    padding-bottom: 0;
+}
+
 .mobile-nav-banner {
     background: black;
 }
@@ -53,8 +63,15 @@
     margin-top: 35px;
 }
 
-
-
 .mobile-header #site-logo {
     margin-top: 35px;
+}
+
+
+#front-howto h2 {
+    margin-top: 0.8em;
+}
+
+ol.big-numbers > li {
+    margin-bottom: 0.8em;
 }

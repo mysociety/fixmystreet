@@ -1,3 +1,7 @@
+function touchmove(e) {
+    e.preventDefault();
+}
+
 function show_around( lat, long ) {
     pc = $('#pc').val();
     localStorage.latitude = lat;
