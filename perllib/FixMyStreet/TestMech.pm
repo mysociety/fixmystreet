@@ -225,6 +225,7 @@ sub form_errors {
     my $result = scraper {
         process 'div.form-error', 'errors[]', 'TEXT';
         process 'p.form-error', 'errors[]', 'TEXT';
+        process 'p.error', 'errors[]', 'TEXT';
     }
     ->scrape( $mech->response );
     return $result->{errors} || [];

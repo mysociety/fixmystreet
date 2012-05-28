@@ -943,7 +943,7 @@
 		$(window).unbind("resize.fb scroll.fb");
 		$(document).unbind('keydown.fb');
 
-		content.find('iframe').attr('src', isIE6 && /^https/i.test(window.location.href || '') ? 'javascript:void(false)' : 'about:blank');
+		content.find('iframe').attr('src', isIE6 && /^https/i.test(window.location.href || '') ? '/js/fancybox/blank.gif' : 'about:blank');
 
 		if (currentOpts.titlePosition !== 'inside') {
 			title.empty();
@@ -1090,7 +1090,7 @@
 			loading.addClass('fancybox-ie6');
 			wrap.addClass('fancybox-ie6');
 
-			$('<iframe id="fancybox-hide-sel-frame" src="' + (/^https/i.test(window.location.href || '') ? 'javascript:void(false)' : 'about:blank' ) + '" scrolling="no" border="0" frameborder="0" tabindex="-1"></iframe>').prependTo(outer);
+			$('<iframe id="fancybox-hide-sel-frame" src="' + (/^https/i.test(window.location.href || '') ? '/js/fancybox/blank.gif' : 'about:blank' ) + '" scrolling="no" border="0" frameborder="0" tabindex="-1"></iframe>').prependTo(outer);
 		}
 	};
 

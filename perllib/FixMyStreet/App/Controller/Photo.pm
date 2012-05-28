@@ -166,6 +166,7 @@ sub process_photo_upload : Private {
     $ct =~ s/x-citrix-//; # Thanks, Citrix
     # Had a report of a JPEG from an Android 2.1 coming through as a byte stream
     unless ( $ct eq 'image/jpeg' || $ct eq 'image/pjpeg' || $ct eq 'application/octet-stream' ) {
+        $c->log->info('Bad photo tried to upload, type=' . $ct);
         $c->stash->{photo_error} = _('Please upload a JPEG image only');
         return;
     }

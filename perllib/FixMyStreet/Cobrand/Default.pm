@@ -173,6 +173,7 @@ EASTING and NORTHING.
 
 sub recent_photos {
     my $self = shift;
+    my $area = shift;
     return $self->problems->recent_photos(@_);
 }
 
@@ -349,6 +350,17 @@ Return the title to be used in page heads.
 =cut
 
 sub site_title { 'FixMyStreet' }
+
+=head2 map_type
+
+Return an override type of map if necessary.
+
+=cut
+sub map_type {
+    my $self = shift;
+    return 'OSM' if $self->{c}->req->uri->host =~ /^osm\./;
+    return;
+}
 
 =head2 on_map_list_limit
 
@@ -576,6 +588,14 @@ first time they' ve reported a problem
 
 sub ask_ever_reported { 1 }
 
+=head2 send_questionnaires
+
+Return a boolean indicating whether people should be sent questionnaire emails.
+
+=cut
+
+sub send_questionnaires { 1 }
+
 =head2 admin_pages
 
 List of names of pages to display on the admin interface
@@ -740,6 +760,8 @@ sub council_rss_alert_options {
             ( $ward->{id_name} = $ward->{short_name} ) =~ tr/+/_/;
         }
     }
+    $council->{name} = 'London Borough of Bromley'
+        if $council->{name} eq 'Bromley Council';
 
     push @options,
       {
@@ -916,8 +938,25 @@ Get stats to display on the council reports page
 
 sub get_report_stats { return 0; }
 
+sub get_council_sender { return 'Email' };
+
 sub example_places {
     return [ 'B2 4QA', 'Tib St, Manchester' ];
+}
+
+sub process_extras {}
+
+=head 2 pin_colour
+
+Returns the colour of pin to be used for a particular report
+(so perhaps different depending upon the age of the report).
+
+=cut
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+    #return 'green' if time() - $p->confirmed_local->epoch < 7 * 24 * 60 * 60;
+    return 'yellow' if $context eq 'around';
+    return $p->is_fixed ? 'green' : 'red';
 }
 
 1;

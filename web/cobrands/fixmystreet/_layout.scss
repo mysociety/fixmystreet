@@ -3,10 +3,10 @@
 
 //hacks for desk/mob only stuff
 .desk-only {
-  display:block !important;
+    display: block;
 }
 .mob-only {
-  display:none !important;
+    display: none;
 }
 
 body {
@@ -147,7 +147,8 @@ h1 {
           @include background(linear-gradient(#000, #444 10%, #444 95%, #111));
         }
         a.report-a-problem-btn {
-          background:$primary;
+          color: $primary_text;
+          background: $primary;
           padding:0.25em;
           margin:0.5em;
           color:#333;
@@ -197,27 +198,22 @@ h1 {
 // .content Is the white box
 
 // The narrow single column box
-.content{
+.content {
   width: 27em;
   margin-top: 3em;
-  background: #fff;
-  padding: 1em;
-  padding-bottom: 3em;
-  margin-left: 0.5em;
   margin-bottom: -1em;
+  margin-left: 0.5em;
+  padding: 1em 1em 3em;
+  background: #fff;
   @include box-shadow(0px 0px 6px 1px #000);
 }
 .ie6, .ie7, .ie8  {
   .content {
     // If no box-shadow, just want a boring black border to stand it out from the map.
-    border: 1px solid black;
+    border: 1px solid #666;
     //take off margins so we line up properly
-    margin: 0;
+    margin: 0 0 0 0.5em;
   }
-}
-//weird margining thing for ie8
-.ie8 .content {
-  margin-top:3em;
 }
 
 // map page - has fixed header and different styling
@@ -253,7 +249,7 @@ body.mappage {
     .container {
       float: left;
       width: 27em;
-      margin-left: 1.4em;
+      margin-left: 0.7em;
     }
     .nav-wrapper{
       z-index:1;
@@ -263,13 +259,6 @@ body.mappage {
     }
     #site-logo {
       position: absolute;
-    }
-  }
-}
-.ie6 {
-  body.mappage {
-    .container {
-      margin-left: 0.7em;
     }
   }
 }
@@ -588,7 +577,7 @@ body.twothirdswidthpage {
     @include box-shadow(-0em 0px 1em 1em #fff);
     li {
       border:none;
-      a {
+      a, input[type=submit] {
         font-size: 0.75em;
         color:#666;
         padding: 0.5em 1.5em 0.5em 0;
@@ -644,8 +633,13 @@ body.twothirdswidthpage {
     top:-0.5em;
     position: absolute;
     border-top: 0.5em solid transparent;
-    border-left: 0.5em solid #4B8304;
+    border-left: 0.5em solid $contrast1_dark;
     border-bottom:none;
+  }
+  span {
+    display: block;
+    font-size: 80%;
+    padding-top: 0.5em;
   }
 }
 .ie6 .big-green-banner {
@@ -668,7 +662,7 @@ body.twothirdswidthpage {
       background-position:-324px -326px;
       background-repeat:no-repeat;
       &:before {
-        border-bottom: 0.75em solid #4B8304;
+        border-bottom: 0.75em solid $contrast1_dark;
       }
     }
   }
@@ -694,18 +688,13 @@ input[type=text],
 input[type=password],
 input[type=email],
 textarea{
-  width: 25em;
+    max-width: 25em;
 }
-.form-box {
-  max-width:25em;
-}
-
 
 /* form errors */
 div.form-error,
 p.form-error {
   display:block;
-  width:24.7em;
 }
 
 input.form-error,
@@ -735,7 +724,7 @@ textarea.form-error {
   }
 }
 .ie6, .ie7 {
-  #report-a-problem-sidebar {
+  #report-a-problem-sidebar, .general-sidebar-notes {
     left: 29em; // 0.5em left margin gone on .content in IE6/7, so reduce this accordingly.
   }
 }
@@ -774,19 +763,15 @@ textarea.form-error {
 
 body.frontpage {
   .table-cell {
-    // we do this so we can have full screen width elements
-    >.container {
-      width:100%;
-    }
     .content {
-      margin:14em auto 0 auto;
+      margin: 1em auto 0;
     }
   }
   .nav-wrapper-2{
     height:6em;
   }
   #site-header{
-    height:9em;
+    height:8em;
   }
   #site-logo{
     top:3em;
@@ -799,7 +784,7 @@ body.frontpage {
     p {
       top:-4em;
       right:0;
-      color:#FFD000;
+      color:$primary;
       background:none;
       @include box-shadow(rgba(0, 0, 0, 0) 0 0 0);
       a {
@@ -825,7 +810,7 @@ body.frontpage {
 .ie6, .ie7 {
   body.frontpage {
     #site-header {
-      height:3em;
+      height:4em;
     }
     #site-logo {
       top:-1em;
@@ -838,24 +823,13 @@ body.frontpage {
 .ie6 body.frontpage #site-logo {
   background:url(/cobrands/fixmystreet/images/ie_front_logo.gif) 0 0 no-repeat;
 }
-//weird margining thing for ie8
-.ie8 body.frontpage {
-  #front-main {
-    top:-12em;
-  }
-  .table-cell .content {
-    margin-top:12em;
-  }
-}
 
 // big yellow bit full screen width
 #front-main {
   color: $primary_text;
   background: $primary url(/cobrands/fixmystreet/images/tile-y.jpg);
-  position:absolute;
-  width:100%;
-  left:0;
-  top:-15em;
+  margin: 0;
+  padding: 1em;
   #front-main-container {
     max-width: 57em;
     margin:0 auto;
@@ -868,6 +842,7 @@ body.frontpage {
   #postcodeForm {
     background:none;
     overflow:hidden;
+    padding-bottom: 0;
     margin-right:0.5em;
     label {
       margin:0.5em 0;
@@ -881,8 +856,8 @@ body.frontpage {
         display:block;
         float:left;
         padding:0.25em 0.5em;
-        height:1.5em;
-        width:16em;
+        height:2em;
+        width:17em;
       }
       input#submit {
         display:block;
@@ -893,27 +868,40 @@ body.frontpage {
       }
     }
   }
+  a {
+    color: $primary_text;
+    text-decoration: underline;
+    &:hover {
+      text-decoration: none;
+    }
+  }
   a#geolocate_link {
     background:none;
     color:#222;
-    margin:-1em 0 0.5em 0;
+    text-decoration: none;
+    padding-bottom: 0;
     &:hover {
       text-decoration:underline;
       background:none;
     }
   }
 }
-.ie6, .ie7 {
-  #front-main {
-    top:2em;
+.ie7 #front-main {
+  #postcodeForm {
+    div {
+      input#pc {
+        height:1.5em;
+        width:16em;
+      }
+    }
   }
 }
-
 
 #front-howto {
   border-right:1em solid #fff;
   #front_stats {
     background:none;
+    color: #222;
     border-top:0.25em solid $primary;
     padding-top:1em;
     div {

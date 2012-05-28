@@ -71,6 +71,7 @@ sub confirm_problem : Path('/P') {
         $problem->user->name( $data->{name} ) if $data->{name};
         $problem->user->phone( $data->{phone} ) if $data->{phone};
         $problem->user->password( $data->{password}, 1 ) if $data->{password};
+        $problem->user->title( $data->{title} ) if $data->{title};
         $problem->user->update;
     }
     $c->authenticate( { email => $problem->user->email }, 'no_password' );

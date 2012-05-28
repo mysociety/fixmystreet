@@ -52,9 +52,23 @@ my $contact3 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     category => 'Trees',
     email => 'trees@example.com',
 } );
+my $contact4 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
+    %contact_params,
+    area_id => 2482, # Bromley
+    category => 'Trees',
+    email => 'trees@example.com',
+} );
+my $contact5 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
+    %contact_params,
+    area_id => 2651, # Edinburgh
+    category => 'Trees',
+    email => 'trees@example.com',
+} );
 ok $contact1, "created test contact 1";
 ok $contact2, "created test contact 2";
 ok $contact3, "created test contact 3";
+ok $contact4, "created test contact 4";
+ok $contact5, "created test contact 5";
 
 # test that the various bit of form get filled in and errors correctly
 # generated.
@@ -360,7 +374,7 @@ foreach my $test (
         is_deeply $mech->form_errors, [], "no errors for pc '$test->{pc}'";
 
         # click through to the report page
-        $mech->follow_link_ok( { text => 'skip this step', },
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
             "follow 'skip this step' link" );
 
         # submit the main form
@@ -540,7 +554,7 @@ subtest "test password errors for a user who is signing in as they report" => su
         "submit location" );
 
     # click through to the report page
-    $mech->follow_link_ok( { text => 'Skip this step', },
+    $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
         "follow 'skip this step' link" );
 
     $mech->submit_form_ok(
@@ -587,7 +601,7 @@ subtest "test report creation for a user who is signing in as they report" => su
         "submit location" );
 
     # click through to the report page
-    $mech->follow_link_ok( { text => 'Skip this step', },
+    $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
         "follow 'skip this step' link" );
 
     $mech->submit_form_ok(
@@ -681,7 +695,7 @@ foreach my $test (
             "submit location" );
 
         # click through to the report page
-        $mech->follow_link_ok( { text => 'Skip this step', },
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
             "follow 'skip this step' link" );
 
         # check that the fields are correctly prefilled
@@ -784,7 +798,7 @@ subtest "check that a lat/lon off coast leads to /around" => sub {
     is $mech->uri->path, '/around', "redirected to '/around'";
 
     is_deeply         #
-      $mech->page_errors,
+      $mech->form_errors,
       [     'That spot does not appear to be covered by a council. If you have'
           . ' tried to report an issue past the shoreline, for example, please'
           . ' specify the closest point on land.' ],    #
@@ -792,8 +806,145 @@ subtest "check that a lat/lon off coast leads to /around" => sub {
 
 };
 
+for my $test (
+    {
+        desc  => 'user title not set if not bromley problem',
+        host  => 'http://www.fixmystreet.com',
+        postcode => 'EH99 1SP',
+        fms_extra_title => '',
+        extra => undef,
+        user_title => undef,
+    },
+    {
+        desc  => 'title shown for bromley problem on main site',
+        host  => 'http://www.fixmystreet.com',
+        postcode => 'BR1 3UH',
+        fms_extra_title => 'MR',
+        extra => [
+            {
+                name        => 'fms_extra_title',
+                value       => 'MR',
+                description => 'FMS_EXTRA_TITLE',
+            },
+        ],
+        user_title => 'MR',
+    },
+    {
+        desc =>
+          'title, first and last name shown for bromley problem on cobrand',
+        host       => 'http://bromley.fixmystreet.com',
+        postcode => 'BR1 3UH',
+        first_name => 'Test',
+        last_name  => 'User',
+        fms_extra_title => 'MR',
+        extra      => [
+            {
+                name        => 'fms_extra_title',
+                value       => 'MR',
+                description => 'FMS_EXTRA_TITLE',
+            },
+            {
+                name        => 'first_name',
+                value       => 'Test',
+                description => 'FIRST_NAME',
+            },
+            {
+                name        => 'last_name',
+                value       => 'User',
+                description => 'LAST_NAME',
+            },
+        ],
+        user_title => 'MR',
+    },
+  )
+{
+    subtest $test->{desc} => sub {
+        $mech->host( $test->{host} );
+
+        $mech->log_out_ok;
+        $mech->clear_emails_ok;
+
+        $mech->get_ok('/');
+        $mech->submit_form_ok( { with_fields => { pc => $test->{postcode}, } },
+            "submit location" );
+        $mech->follow_link_ok(
+            { text_regex => qr/skip this step/i, },
+            "follow 'skip this step' link"
+        );
+
+        my $fields = $mech->visible_form_values('mapSkippedForm');
+        if ( $test->{fms_extra_title} ) {
+            ok exists( $fields->{fms_extra_title} ), 'user title field displayed';
+        } else {
+            ok !exists( $fields->{fms_extra_title} ), 'user title field not displayed';
+        }
+        if ( $test->{first_name} ) {
+            ok exists( $fields->{first_name} ), 'first name field displayed';
+            ok exists( $fields->{last_name} ),  'last name field displayed';
+            ok !exists( $fields->{name} ), 'no name field displayed';
+        }
+        else {
+            ok !exists( $fields->{first_name} ),
+              'first name field not displayed';
+            ok !exists( $fields->{last_name} ), 'last name field not displayed';
+            ok exists( $fields->{name} ), 'name field displayed';
+        }
+
+        my $submission_fields = {
+            title             => "Test Report",
+            detail            => 'Test report details.',
+            photo             => '',
+            email             => 'firstlast@example.com',
+            may_show_name     => '1',
+            phone             => '07903 123 456',
+            category          => 'Trees',
+            password_register => '',
+        };
+
+        $submission_fields->{fms_extra_title} = $test->{fms_extra_title}
+            if $test->{fms_extra_title};
+
+        if ( $test->{first_name} ) {
+            $submission_fields->{first_name} = $test->{first_name};
+            $submission_fields->{last_name}  = $test->{last_name};
+        }
+        else {
+            $submission_fields->{name} = 'Test User';
+        }
+
+        $mech->submit_form_ok( { with_fields => $submission_fields },
+            "submit good details" );
+
+        my $email = $mech->get_email;
+        ok $email, "got an email";
+        like $email->body, qr/confirm the problem/i, "confirm the problem";
+
+        my ($url) = $email->body =~ m{(https?://\S+)};
+        ok $url, "extracted confirm url '$url'";
+
+        # confirm token in order to update the user details
+        $mech->get_ok($url);
+
+        my $user =
+          FixMyStreet::App->model('DB::User')
+          ->find( { email => 'firstlast@example.com' } );
+
+        my $report = $user->problems->first;
+        ok $report, "Found the report";
+        my $extras = $report->extra;
+        is $user->title, $test->{'user_title'}, 'user title correct';
+        is_deeply $extras, $test->{extra}, 'extra contains correct values';
+
+        $user->problems->delete;
+        $user->alerts->delete;
+        $user->delete;
+    };
+}
+
 $contact1->delete;
 $contact2->delete;
 $contact3->delete;
+$contact4->delete;
+$contact5->delete;
 
 done_testing();

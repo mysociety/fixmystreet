@@ -266,7 +266,7 @@ subtest "Submit a correct entry (with location) to cobrand" => sub {
 
     SKIP: {
         skip( "Need 'fiksgatami' in ALLOWED_COBRANDS config", 20 )
-          unless FixMyStreet::App->config->{ALLOWED_COBRANDS} =~ m{fiksgatami};
+            unless FixMyStreet::Cobrand->exists('fiksgatami');
         mySociety::MaPit::configure('http://mapit.nuug.no/');
         ok $mech->host("fiksgatami.no"), 'change host to fiksgatami';
 

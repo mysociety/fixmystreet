@@ -7,6 +7,33 @@ function fixmystreet_update_pin(lonlat) {
     );
     document.getElementById('fixmystreet.latitude').value = lonlat.lat || lonlat.y;
     document.getElementById('fixmystreet.longitude').value = lonlat.lon || lonlat.x;
+
+    $.getJSON('/report/new/ajax', {
+            latitude: $('#fixmystreet\\.latitude').val(),
+            longitude: $('#fixmystreet\\.longitude').val()
+    }, function(data) {
+        if (data.error) {
+            if (!$('#side-form-error').length) {
+                $('<div id="side-form-error"/>').insertAfter($('#side-form'));
+            }
+            $('#side-form-error').html('<h1>Reporting a problem</h1><p>' + data.error + '</p>').show();
+            $('#side-form').hide();
+            return;
+        }
+        $('#side-form, #site-logo').show();
+        $('#councils_text').html(data.councils_text);
+        $('#form_category_row').html(data.category);
+        if ( data.extra_name_info && !$('#form_fms_extra_title').length ) {
+            // there might be a first name field on some cobrands
+            var lb = $('#form_first_name').prev();
+            if ( lb.length == 0 ) { lb = $('#form_name').prev(); }
+            lb.before(data.extra_name_info);
+        }
+    });
+
+    if (!$('#side-form-error').is(':visible')) {
+        $('#side-form, #site-logo').show();
+    }
 }
 
 function fixmystreet_activate_drag() {
@@ -56,7 +83,11 @@ function fixmystreet_onload() {
             var bounds = area.getDataExtent();
             if (bounds) {
                 var center = bounds.getCenterLonLat();
-                fixmystreet.map.setCenter(center, fixmystreet.map.getZoomForExtent(bounds), false, true);
+                var z = fixmystreet.map.getZoomForExtent(bounds);
+                if ( z < 13 && $('html').hasClass('mobile') ) {
+                    z = 13;
+                }
+                fixmystreet.map.setCenter(center, z, false, true);
             }
         });
     }
@@ -151,7 +182,14 @@ function fixmystreet_onload() {
 
     if ( fixmystreet.zoomToBounds ) {
         var bounds = fixmystreet.markers.getDataExtent();
-        if (bounds) { fixmystreet.map.zoomToExtent( bounds ); }
+        if (bounds) {
+            var center = bounds.getCenterLonLat();
+            var z = fixmystreet.map.getZoomForExtent(bounds);
+            if ( z < 13 && $('html').hasClass('mobile') ) {
+                z = 13;
+            }
+            fixmystreet.map.setCenter(center, z);
+        }
     }
 
     $('#hide_pins_link').click(function(e) {
@@ -238,8 +276,9 @@ $(function(){
 
     if (fixmystreet.state_map && fixmystreet.state_map == 'full') {
         // TODO Work better with window resizing, this is pretty 'set up' only at present
-        var $content = $('.content'),
-            q = ( $content.offset().left + $content.width() ) / 2;
+        var $content = $('.content'), mb = $('#map_box'),
+            q = ( $content.offset().left - mb.offset().left + $content.width() ) / 2;
+        if (q < 0) { q = 0; }
         // Need to try and fake the 'centre' being 75% from the left
         fixmystreet.map.pan(-q, -25, { animate: false });
         fixmystreet.map.events.register("movestart", null, function(e){
@@ -421,7 +460,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             fixmystreet.markers.addFeatures( markers );
             fixmystreet_activate_drag();
         }
-        fixmystreet_update_pin(lonlat);
+
         // check to see if markers are visible. We click the
         // link so that it updates the text in case they go
         // back
@@ -429,23 +468,15 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             fixmystreet.state_pins_were_hidden = true;
             $('#hide_pins_link').click();
         }
+
+        // Store pin location in form fields, and check coverage of point
+        fixmystreet_update_pin(lonlat);
+
+        // Already did this first time map was clicked, so no need to do it again.
         if (fixmystreet.page == 'new') {
             return;
         }
-        $.getJSON('/report/new/ajax', {
-                latitude: $('#fixmystreet\\.latitude').val(),
-                longitude: $('#fixmystreet\\.longitude').val()
-        }, function(data) {
-            if (data.error) {
-                // XXX If they then click back and click somewhere in the area, this error will still show.
-                $('#side-form').html('<h1>Reporting a problem</h1><p>' + data.error + '</p>');
-                return;
-            }
-            $('#councils_text').html(data.councils_text);
-            $('#form_category_row').html(data.category);
-        });
 
-        $('#side-form, #site-logo').show();
         fixmystreet.map.updateSize(); // might have done, and otherwise Firefox gets confused.
         /* For some reason on IOS5 if you use the jQuery show method it
          * doesn't display the JS validation error messages unless you do this
@@ -476,7 +507,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                     fixmystreet.map.getProjectionObject()
                 );
                 var p = fixmystreet.map.getViewPortPxFromLonLat(lonlat);
-                p.x -= ( o.left + w ) / 2;
+                p.x -= ( o.left - bo.left + w ) / 2;
                 lonlat = fixmystreet.map.getLonLatFromViewPortPx(p);
                 fixmystreet.map.panTo(lonlat);
             }

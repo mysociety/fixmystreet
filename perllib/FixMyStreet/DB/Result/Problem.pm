@@ -85,7 +85,7 @@ __PACKAGE__->add_columns(
   "geocode",
   { data_type => "bytea", is_nullable => 1 },
   "send_fail_count",
-  { data_type => "integer", default_value => 0, is_nullable => 0 },
+  { data_type => "integer", is_nullable => 1 },
   "send_fail_reason",
   { data_type => "text", is_nullable => 1 },
   "send_fail_timestamp",
@@ -702,6 +702,17 @@ sub update_from_open311_service_request {
     }
 
     return 1;
+}
+
+sub update_send_failed {
+    my $self = shift;
+    my $msg  = shift;
+
+    $self->update( {
+        send_fail_count => $self->send_fail_count + 1,
+        send_fail_timestamp => \'ms_current_timestamp()',
+        send_fail_reason => $msg
+    } );
 }
 
 # we need the inline_constructor bit as we don't inherit from Moose

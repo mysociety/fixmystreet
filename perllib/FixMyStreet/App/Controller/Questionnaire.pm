@@ -294,7 +294,7 @@ sub display : Private {
         pins      => [ {
             latitude  => $problem->latitude,
             longitude => $problem->longitude,
-            colour    => $problem->is_fixed() ? 'green' : 'red',
+            colour    => $c->cobrand->pin_colour( $problem, 'questionnaire' ),
         } ],
     );
 }

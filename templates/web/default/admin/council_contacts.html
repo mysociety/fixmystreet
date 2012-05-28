@@ -121,6 +121,31 @@
     </p>
 
     <p>
+        <label for="send_method">Send Method</label>:
+        <select name="send_method">
+            <option value=""> -- Select a method -- </option>
+            [% FOR method IN send_methods %]
+            <option value="[% method %]"[% ' selected' IF conf.send_method == method %]>[% method %]</option>
+            [% END %]
+        </select>
+    </p>
+
+    <p>
+        <label for="send_comments">Use Open311 comment sending extension</label>:
+        <input type="checkbox" name="send_comments"[% ' checked' IF conf.send_comments %]>
+    </p>
+
+    <p>
+        <label for"comment_user_id">User to attribute fetched comments to</label>:
+        <input type="text" name="comment_user_id" value="[% conf.comment_user_id %]">
+    </p>
+
+    <p>
+        <label for="suppress_alerts">Do not send email alerts on fetched comments to problem creator</label>:
+        <input type="checkbox" name="suppress_alerts"[% ' checked' IF conf.suppress_alerts %]>
+    </p>
+
+    <p>
     <input type="hidden" name="open311_id" value="[% conf.id %]">
     <input type="hidden" name="area_id" value="[% area_id %]">
     <input type="hidden" name="posted" value="open311">

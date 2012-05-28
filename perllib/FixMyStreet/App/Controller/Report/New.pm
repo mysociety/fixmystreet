@@ -125,12 +125,16 @@ sub report_form_ajax : Path('ajax') : Args(0) {
     my $category = $c->render_fragment( 'report/new/category.html');
     my $councils_text = $c->render_fragment( 'report/new/councils_text.html');
     my $has_open311 = keys %{ $c->stash->{category_extras} };
+    my $extra_name_info = $c->stash->{extra_name_info}
+        ? $c->render_fragment('report/new/extra_name.html')
+        : '';
 
     my $body = JSON->new->utf8(1)->encode(
         {
             councils_text   => $councils_text,
             category        => $category,
             has_open311     => $has_open311,
+            extra_name_info => $extra_name_info,
         }
     );
 
@@ -155,7 +159,7 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
     $c->forward('setup_categories_and_councils');
 
     my $category_extra = '';
-    if ( $c->stash->{category_extras}->{ $c->req->param('category') } ) {
+    if ( $c->stash->{category_extras}->{ $c->req->param('category') } && @{ $c->stash->{category_extras}->{ $c->req->param('category') } } >= 1  ) {
         $c->stash->{report_meta} = {};
         $c->stash->{report} = { category => $c->req->param('category') };
         $c->stash->{category_extras} = { $c->req->param('category' ) => $c->stash->{category_extras}->{ $c->req->param('category') } };
@@ -395,6 +399,13 @@ sub initialize_report : Private {
 
     }
 
+    if ( $c->req->param('first_name') && $c->req->param('last_name') ) {
+        $c->stash->{first_name} = $c->req->param('first_name');
+        $c->stash->{last_name} = $c->req->param('last_name');
+
+        $c->req->param( 'name', sprintf( '%s %s', $c->req->param('first_name'), $c->req->param('last_name') ) );
+    }
+
     # Capture whether the map was used
     $report->used_map( $c->req->param('skipped') ? 0 : 1 );
 
@@ -543,7 +554,7 @@ sub setup_categories_and_councils : Private {
         );
         $category_label = _('Property type:');
 
-    } elsif ($first_council->{type} eq 'LBO') {
+    } elsif ($first_council->{id} != 2482 && $first_council->{type} eq 'LBO') {
 
         $area_ids_to_list{ $first_council->{id} } = 1;
         my @local_categories;
@@ -556,7 +567,7 @@ sub setup_categories_and_councils : Private {
             _('-- Pick a category --'),
             @local_categories 
         );
-        $category_label = _('Category:');
+        $category_label = _('Category');
 
     } else {
 
@@ -586,7 +597,7 @@ sub setup_categories_and_councils : Private {
         if (@category_options) {
             @category_options =
               ( _('-- Pick a category --'), @category_options, _('Other') );
-            $category_label = _('Category:');
+            $category_label = _('Category');
         }
     }
 
@@ -596,6 +607,7 @@ sub setup_categories_and_councils : Private {
     $c->stash->{category_options} = \@category_options;
     $c->stash->{category_extras}  = \%category_extras;
     $c->stash->{category_extras_json}  = encode_json \%category_extras;
+    $c->stash->{extra_name_info} = $first_council->{id} == 2482 ? 1 : 0;
 
     my @missing_details_councils =
       grep { !$area_ids_to_list{$_} }    #
@@ -638,9 +650,10 @@ sub process_user : Private {
     # The user is already signed in
     if ( $c->user_exists ) {
         my $user = $c->user->obj;
-        my %params = map { $_ => scalar $c->req->param($_) } ( 'name', 'phone' );
+        my %params = map { $_ => scalar $c->req->param($_) } ( 'name', 'phone', 'fms_extra_title' );
         $user->name( Utils::trim_text( $params{name} ) ) if $params{name};
         $user->phone( Utils::trim_text( $params{phone} ) );
+        $user->title( Utils::trim_text( $params{fms_extra_title} ) );
         $report->user( $user );
         $report->name( $user->name );
         return 1;
@@ -648,7 +661,7 @@ sub process_user : Private {
 
     # Extract all the params to a hash to make them easier to work with
     my %params = map { $_ => scalar $c->req->param($_) }
-      ( 'email', 'name', 'phone', 'password_register' );
+      ( 'email', 'name', 'phone', 'password_register', 'fms_extra_title' );
 
     # cleanup the email address
     my $email = $params{email} ? lc $params{email} : '';
@@ -676,6 +689,7 @@ sub process_user : Private {
     $report->user->phone( Utils::trim_text( $params{phone} ) );
     $report->user->password( Utils::trim_text( $params{password_register} ) )
         if $params{password_register};
+    $report->user->title( Utils::trim_text( $params{fms_extra_title} ) );
     $report->name( Utils::trim_text( $params{name} ) );
 
     return 1;
@@ -747,7 +761,7 @@ sub process_report : Private {
         }
         $report->council( $first_council->{id} );
         
-    } elsif ( $first_council->{type} eq 'LBO') {
+    } elsif ( $first_council->{id} != 2482 && $first_council->{type} eq 'LBO') {
         
         unless ( Utils::london_categories()->{ $report->category } ) {
             $c->stash->{field_errors}->{category} = _('Please choose a category');
@@ -799,6 +813,8 @@ sub process_report : Private {
             };
         }
 
+        $c->cobrand->process_extras( $c, \@contacts, \@extra );
+
         if ( @extra ) {
             $c->stash->{report_meta} = \@extra;
             $report->extra( \@extra );
@@ -845,6 +861,8 @@ sub check_for_errors : Private {
         %{ $c->stash->{report}->check_for_errors },
     );
 
+    # FIXME: need to check for required bromley fields here
+
     # if they're got the login details wrong when signing in then
     # we don't care about the name field even though it's validated
     # by the user object
@@ -886,10 +904,12 @@ sub save_user_and_report : Private {
             name => $report->user->name,
             phone => $report->user->phone,
             password => $report->user->password,
+            title   => $report->user->title,
         };
         $report->user->name( undef );
         $report->user->phone( undef );
         $report->user->password( '', 1 );
+        $report->user->title( undef );
         $report->user->insert();
         $c->log->info($report->user->id . ' created for this report');
     }
@@ -905,6 +925,7 @@ sub save_user_and_report : Private {
             name => $report->user->name,
             phone => $report->user->phone,
             password => $report->user->password,
+            title   => $report->user->title,
         };
         $report->user->discard_changes();
         $c->log->info($report->user->id . ' exists, but is not logged in for this report');

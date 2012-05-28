@@ -53,6 +53,7 @@ __PACKAGE__->config(
     'Plugin::Session' => {    # Catalyst::Plugin::Session::Store::DBIC
         dbic_class     => 'DB::Session',
         expires        => 3600 * 24 * 7 * 4, # 4 weeks
+        cookie_secure  => 2,
     },
 
     'Plugin::Authentication' => {
@@ -180,12 +181,7 @@ sub setup_request {
 
     Memcached::set_namespace( FixMyStreet->config('FMS_DB_NAME') . ":" );
 
-    my $map = $host =~ /^osm\./ ? 'OSM' : $c->req->param('map_override');
-    #if ($c->sessionid) {
-    #    $map = $c->session->{map};
-    #    $map = undef unless $map eq 'OSM';
-    #}
-    FixMyStreet::Map::set_map_class( $map );
+    FixMyStreet::Map::set_map_class( $cobrand->map_type || $c->req->param('map_override') );
 
     return $c;
 }

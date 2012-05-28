@@ -4,6 +4,16 @@ use base 'DBIx::Class::ResultSet';
 use strict;
 use warnings;
 
+use CronFns;
+
+use Utils;
+use mySociety::Config;
+use mySociety::EmailUtil;
+use mySociety::MaPit;
+
+use FixMyStreet::App;
+use FixMyStreet::SendReport;
+
 my $site_restriction;
 my $site_key;
 
@@ -207,6 +217,211 @@ sub categories_summary {
     } );
     my %categories = map { $_->{category} => { total => $_->{c}, fixed => $_->{fixed} } } $categories->all;
     return \%categories;
+}
+
+sub send_reports {
+    # Set up site, language etc.
+    my ($verbose, $nomail) = CronFns::options();
+    my $base_url = mySociety::Config::get('BASE_URL');
+    my $site = CronFns::site($base_url);
+
+    my $unsent = FixMyStreet::App->model("DB::Problem")->search( {
+        state => [ 'confirmed', 'fixed' ],
+        whensent => undef,
+        council => { '!=', undef },
+    } );
+    my (%notgot, %note);
+
+    my $send_report = FixMyStreet::SendReport->new();
+    my $senders = $send_report->get_senders;
+    my %sending_skipped_by_method;
+
+    while (my $row = $unsent->next) {
+
+        my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->cobrand)->new();
+
+        # Cobranded and non-cobranded messages can share a database. In this case, the conf file 
+        # should specify a vhost to send the reports for each cobrand, so that they don't get sent 
+        # more than once if there are multiple vhosts running off the same database. The email_host
+        # call checks if this is the host that sends mail for this cobrand.
+        next unless $cobrand->email_host();
+        $cobrand->set_lang_and_domain($row->lang, 1);
+        if ( $row->is_from_abuser ) {
+            $row->update( { state => 'hidden' } );
+            next;
+        }
+
+        # Template variables for the email
+        my $email_base_url = $cobrand->base_url_for_emails($row->cobrand_data);
+        my %h = map { $_ => $row->$_ } qw/id title detail name category latitude longitude used_map/;
+        map { $h{$_} = $row->user->$_ } qw/email phone/;
+        $h{confirmed} = DateTime::Format::Pg->format_datetime( $row->confirmed->truncate (to => 'second' ) );
+
+        $h{query} = $row->postcode;
+        $h{url} = $email_base_url . '/report/' . $row->id;
+        $h{phone_line} = $h{phone} ? _('Phone:') . " $h{phone}\n\n" : '';
+        if ($row->photo) {
+            $h{has_photo} = _("This web page also contains a photo of the problem, provided by the user.") . "\n\n";
+            $h{image_url} = $email_base_url . '/photo/' . $row->id . '.full.jpeg';
+        } else {
+            $h{has_photo} = '';
+            $h{image_url} = '';
+        }
+        $h{fuzzy} = $row->used_map ? _('To view a map of the precise location of this issue')
+            : _('The user could not locate the problem on a map, but to see the area around the location they entered');
+        $h{closest_address} = '';
+
+        # If we are in the UK include eastings and northings, and nearest stuff
+        $h{easting_northing} = '';
+        if ( $cobrand->country eq 'GB' ) {
+
+            ( $h{easting}, $h{northing} ) = Utils::convert_latlon_to_en( $h{latitude}, $h{longitude} );
+
+            # email templates don't have conditionals so we need to farmat this here
+            $h{easting_northing}                             #
+              = "Easting: $h{easting}\n\n"                   #
+              . "Northing: $h{northing}\n\n";
+
+        }
+
+        if ( $row->used_map ) {
+            $h{closest_address} = $cobrand->find_closest( $h{latitude}, $h{longitude}, $row );
+        }
+
+        my %reporters = ();
+        my (@to, @recips, $template, $areas_info, $sender_count );
+        if ($site eq 'emptyhomes') {
+
+            my $council = $row->council;
+            $areas_info = mySociety::MaPit::call('areas', $council);
+            my $name = $areas_info->{$council}->{name};
+            my $sender = "FixMyStreet::SendReport::EmptyHomes";
+            $reporters{ $sender } = $sender->new() unless $reporters{$sender};
+            $reporters{ $sender }->add_council( $council, $name );
+            $template = Utils::read_file("$FindBin::Bin/../templates/email/emptyhomes/" . $row->lang . "/submit.txt");
+
+        } else {
+
+            # XXX Needs locks!
+            my @all_councils = split /,|\|/, $row->council;
+            my ($councils, $missing) = $row->council =~ /^([\d,]+)(?:\|([\d,]+))?/;
+            my @councils = split(/,/, $councils);
+            $areas_info = mySociety::MaPit::call('areas', \@all_councils);
+            my @dear;
+
+            foreach my $council (@councils) {
+                my $name = $areas_info->{$council}->{name};
+
+                my $sender = $cobrand->get_council_sender( $council, $areas_info->{$council} );
+                $sender = "FixMyStreet::SendReport::$sender";
+
+                if ( ! exists $senders->{ $sender } ) {
+                    warn "No such sender [ $sender ] for council $name ( $council )";
+                    next;
+                }
+                $reporters{ $sender } ||= $sender->new();
+
+                if ( $reporters{ $sender }->should_skip( $row ) ) {
+                    $sending_skipped_by_method{ $sender }++ if 
+                        $reporters{ $sender }->skipped;
+                } else {
+                    push @dear, $name;
+                    $reporters{ $sender }->add_council( $council, $name );
+                }
+            }
+
+            $template = 'submit.txt';
+            $template = 'submit-brent.txt' if $row->council eq 2488 || $row->council eq 2237;
+            my $template_path = FixMyStreet->path_to( "templates", "email", $cobrand->moniker, $template )->stringify;
+            $template_path = FixMyStreet->path_to( "templates", "email", "default", $template )->stringify
+                unless -e $template_path;
+            $template = Utils::read_file( $template_path );
+
+            if ($h{category} eq _('Other')) {
+                $h{category_footer} = _('this type of local problem');
+                $h{category_line} = '';
+            } else {
+                $h{category_footer} = "'" . $h{category} . "'";
+                $h{category_line} = sprintf(_("Category: %s"), $h{category}) . "\n\n";
+            }
+
+            $h{councils_name} = join(_(' and '), @dear);
+            if ($h{category} eq _('Other')) {
+                $h{multiple} = @dear>1 ? "[ " . _("This email has been sent to both councils covering the location of the problem, as the user did not categorise it; please ignore it if you're not the correct council to deal with the issue, or let us know what category of problem this is so we can add it to our system.") . " ]\n\n"
+                    : '';
+            } else {
+                $h{multiple} = @dear>1 ? "[ " . _("This email has been sent to several councils covering the location of the problem, as the category selected is provided for all of them; please ignore it if you're not the correct council to deal with the issue.") . " ]\n\n"
+                    : '';
+            }
+            $h{missing} = ''; 
+            if ($missing) {
+                my $name = $areas_info->{$missing}->{name};
+                $h{missing} = '[ '
+                  . sprintf(_('We realise this problem might be the responsibility of %s; however, we don\'t currently have any contact details for them. If you know of an appropriate contact address, please do get in touch.'), $name)
+                  . " ]\n\n";
+            }
+
+            $sender_count = scalar @dear;
+        }
+
+        unless ( keys %reporters ) {
+            die 'Report not going anywhere for ID ' . $row->id . '!';
+        }
+
+        next unless $sender_count;
+
+        if (mySociety::Config::get('STAGING_SITE')) {
+            # on a staging server send emails to ourselves rather than the councils
+            my @testing_councils = split( '\|', mySociety::Config::get('TESTING_COUNCILS') );
+            unless ( grep { $row->council eq $_ } @testing_councils ) {
+                %reporters = (
+                    'FixMyStreet::SendReport::Email' => $reporters{ 'FixMyStreet::SendReport::Email' } || FixMyStreet::SendReport::Email->new()
+                );
+            }
+        }
+
+        # Multiply results together, so one success counts as a success.
+        my $result = -1;
+
+        for my $sender ( keys %reporters ) {
+            $result *= $reporters{ $sender }->send(
+                $row, \%h, \@to, $template, \@recips, $nomail, $areas_info
+            );
+        }
+
+        if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
+            $row->update( {
+                whensent => \'ms_current_timestamp()',
+                lastupdate => \'ms_current_timestamp()',
+            } );
+        } else {
+            my @errors;
+            for my $sender ( keys %reporters ) {
+                unless ( $reporters{ $sender }->success ) {
+                    push @errors, $reporters{ $sender }->error;
+                }
+            }
+            $row->update_send_failed( join( '|', @errors ) );
+        }
+    }
+
+    if ($verbose) {
+        print "Council email addresses that need checking:\n" if keys %notgot;
+        foreach my $e (keys %notgot) {
+            foreach my $c (keys %{$notgot{$e}}) {
+                print $notgot{$e}{$c} . " problem, to $e category $c (" . $note{$e}{$c}. ")\n";
+            }
+        }
+        if (keys %sending_skipped_by_method) {
+            my $c = 0;
+            print "\nProblem reports that send-reports did not attempt to send the following:\n";
+            foreach my $send_method (sort keys %sending_skipped_by_method) {
+                printf "    %-24s %4d\n", "$send_method:", $sending_skipped_by_method{$send_method};
+                $c+=$sending_skipped_by_method{$send_method};
+            }
+            printf "    %-24s %4d\n", "Total:", $c;
+        }
+    }
 }
 
 1;

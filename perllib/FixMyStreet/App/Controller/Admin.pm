@@ -8,6 +8,8 @@ use POSIX qw(strftime strcoll);
 use Digest::MD5 qw(md5_hex);
 use mySociety::EmailUtil qw(is_valid_email);
 
+use FixMyStreet::SendReport;
+
 =head1 NAME
 
 FixMyStreet::App::Controller::Admin- Catalyst Controller
@@ -338,7 +340,7 @@ sub update_contacts : Private {
     } elsif ( $posted eq 'open311' ) {
         $c->forward('check_token');
 
-        my %params = map { $_ => $c->req->param($_) } qw/open311_id endpoint jurisdiction api_key area_id/;
+        my %params = map { $_ => $c->req->param($_) || '' } qw/open311_id endpoint jurisdiction api_key area_id send_method send_comments suppress_alerts comment_user_id/;
 
         if ( $params{open311_id} ) {
             my $conf = $c->model('DB::Open311Conf')->find( { id => $params{open311_id} } );
@@ -346,6 +348,10 @@ sub update_contacts : Private {
             $conf->endpoint( $params{endpoint} );
             $conf->jurisdiction( $params{jurisdiction} );
             $conf->api_key( $params{api_key} );
+            $conf->send_method( $params{send_method} );
+            $conf->send_comments( $params{send_comments} || 0);
+            $conf->suppress_alerts( $params{suppress_alerts} || 0);
+            $conf->comment_user_id( $params{comment_user_id} || undef );
 
             $conf->update();
 
@@ -356,6 +362,10 @@ sub update_contacts : Private {
             $conf->endpoint( $params{endpoint} );
             $conf->jurisdiction( $params{jurisdiction} );
             $conf->api_key( $params{api_key} );
+            $conf->send_method( $params{send_method} );
+            $conf->send_comments( $params{send_comments} || 0);
+            $conf->suppress_alerts( $params{suppress_alerts} || 0);
+            $conf->comment_user_id( $params{comment_user_id} || undef );
 
             $conf->insert();
 
@@ -377,6 +387,9 @@ sub display_contacts : Private {
     );
 
     $c->stash->{contacts} = $contacts;
+
+    my @methods = map { $_ =~ s/FixMyStreet::SendReport:://; $_ } keys %{ FixMyStreet::SendReport->get_senders };
+    $c->stash->{send_methods} = \@methods;
 
     my $open311 = $c->model('DB::Open311Conf')->search(
         { area_id => $area_id }
@@ -492,7 +505,7 @@ sub search_reports : Path('search_reports') {
                 'me.id' => $search_n,
                 'user.email' => { ilike => $like_search },
                 'me.name' => { ilike => $like_search },
-                title => { ilike => $like_search },
+                'me.title' => { ilike => $like_search },
                 detail => { ilike => $like_search },
                 council => { like => $like_search },
                 cobrand_data => { like => $like_search },
@@ -571,8 +584,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         }
     )->first;
 
-    $c->detach( '/page_error_404_not_found',
-        [ _('The requested URL was not found on this server.') ] )
+    $c->detach( '/page_error_404_not_found' )
       unless $problem;
 
     $c->stash->{problem} = $problem;
@@ -734,8 +746,7 @@ sub update_edit : Path('update_edit') : Args(1) {
         }
     )->first;
 
-    $c->detach( '/page_error_404_not_found',
-        [ _('The requested URL was not found on this server.') ] )
+    $c->detach( '/page_error_404_not_found' )
       unless $update;
 
     $c->forward('get_token');
@@ -1068,7 +1079,7 @@ sub check_token : Private {
     my ( $self, $c ) = @_;
 
     if ( !$c->req->param('token') || $c->req->param('token' ) ne $c->stash->{token} ) {
-        $c->detach( '/page_error_404_not_found', [ _('The requested URL was not found on this server.') ] );
+        $c->detach( '/page_error_404_not_found' );
     }
 
     return 1;
@@ -1238,7 +1249,7 @@ sub check_page_allowed : Private {
     $page ||= 'summary';
 
     if ( !grep { $_ eq $page } keys %{ $c->stash->{allowed_pages} } ) {
-        $c->detach( '/page_error_404_not_found', [ _('The requested URL was not found on this server.') ] );
+        $c->detach( '/page_error_404_not_found' );
     }
 
     return 1;

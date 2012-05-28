@@ -31,9 +31,6 @@ h1 {
   margin-top: 0.5em;
   margin-bottom: 0.5em;
 }
-#front-main h1 {
-  margin-top: 0.7em;
-}
 h1#reports_heading span {
   display: none;
 }
@@ -145,6 +142,11 @@ img {
   //do this otherwise IE will just not display
   //any img without a height defined
   height:auto;
+  max-width: 100%;
+}
+// So that map popups display correctly
+#popup img {
+    max-width: none;
 }
 
 select, input, textarea {
@@ -253,10 +255,27 @@ input[type=password],
 input[type=email],
 input[type=file],
 textarea {
+  @include box-sizing(border-box);
   width: 100%;
   // adjust so the sides line up
   padding: 0.5em;
-  margin: 0 0 0 -0.5em;
+}
+.ie7 {
+    input[type=text],
+    input[type=password],
+    input[type=email],
+    input[type=file],
+    textarea {
+        max-width: 95%;
+    }
+    // In order to work around the IE7 specific issue of inheriting left margins
+    // http://techblog.willshouse.com/2009/07/12/ie6ie7-form-element-margin-inheritance-bug/
+    fieldset > input[type=text],
+    fieldset > input[type=password],
+    fieldset > input[type=email],
+    fieldset > textarea {
+        margin-left: -1em;
+    }
 }
 
 textarea {
@@ -300,7 +319,6 @@ label{
   margin: 0 -2em 0.25em -2em;
   background:#eeeeee;
   padding:1em 2em 1em 2em;
-  max-width:26em;
   >input[type=text] {
     margin-bottom:1em;
   }
@@ -309,7 +327,7 @@ label{
     margin:0.5em 0;
   }
   h5 {
-    margin:0;
+    margin:0 0 1em;
     font: {
       size:1.125em;
       weight:normal;
@@ -325,6 +343,14 @@ label{
 // it looks okay.
 .ie6 .form-box {
     margin: 0 0 0.25em 0;
+    padding: 1em;
+}
+// Prevent grey displaying oddly by giving it a width, and stop odd left margin issue
+.ie7 .form-box {
+    width: 100%;
+    > input[type=text] {
+        margin-left: 2em;
+    }
 }
 
 .form-txt-submit-box {
@@ -356,8 +382,14 @@ p.form-error {
   background:#ff0000;
   color:#fff;
   padding:0 0.5em;
-  margin:0 0 0 -0.5em;
   @include border-radius(0.25em 0.25em 0 0);
+  a {
+    color: white;
+    text-decoration: underline;
+  }
+  a:hover {
+    text-decoration: none;
+  }
 }
 
 input.form-error,
@@ -370,7 +402,6 @@ ul.error {
   background:#ff0000;
   color:#fff;
   padding:0 0.5em;
-  margin:0 0 0 -0.5em;
   @include border-radius(0.25em);
 }
 
@@ -463,7 +494,8 @@ p.label-valid {
     &#mysoc-menu{
       li {
         a {
-          background:$primary;
+          color: $primary_text;
+          background: $primary;
           &#mysoc-logo {
             background-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIkAAAAyCAMAAABf9whNAAAACW9GRnMAAADwAAAAJgAMZizzAAAACXBIWXMAAABIAAAASABGyWs+AAAACXZwQWcAAAF5AAAQZgCwCYXlAAAANlBMVEUAAAAiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiL///90WH2CAAAAEHRSTlMADx8vP09fb3+Pn6+/z9/v+t8hjgAAAAFiS0dEEeK1PboAAAGqSURBVFjD7ZbNjtwgEAY/oIE2YKj3f9ocPDOZ3eN6FCUKdWsJQ+H+saXNZrPZbDabzf/GovwdIhH8LUzHn/PqI32Jcw1v0fjidQf30EZPqmMURXeT5F5kbYwqSQbeWpAU6xg961pT+mgm+WR4Ke6SzG9JwQRWB6iaTClCzQBLknT0AibZAnCBSx2ALACGQ5JOznsmq1TA82LKIalC6Jwh5seaMGdUWKxiJQpclWVqLNlJsxThUIB6z8Qft3FQgEODrs4qUuj9qoljpAr2euKkmxVIjzrpTBUI90xMGgzJQGrMAEUGrGKQn6c7/HbngT1MMqRO1wdNDA6WpNgW5Ld38s1kuLt7fPbO5Lg7Z76ZaLJoV3WAa6wsxbmiyrMMruyMVxc3SaqvAv+YSQWS1Fs9oAi8jQKmsGB4zwJXgdO9VWnAkaUAHJ81CTAkLYAm5ZbB/QhSmm9d7Ff7Splr5jaI90zMgpQsScHsGmRFUsheH6O1jecR5m5BZlFSzF5NkpJ7lMJ85etDlPWjHdMJ6aMiFdYPdgzw6Q90Yvwo2+fM+3dps9lsNpvNP8gvi7UYry9B6TcAAAAldEVYdGRhdGU6Y3JlYXRlADIwMTItMDUtMDJUMTk6NDY6NTErMDE6MDAcdbR4AAAAJXRFWHRkYXRlOm1vZGlmeQAyMDEyLTA1LTAyVDE5OjQ2OjUxKzAxOjAwbSgMxAAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAASUVORK5CYII=');
             background-repeat:no-repeat;
@@ -491,7 +523,8 @@ p.label-valid {
 #user-meta {
   p {
     position: relative;
-    background:$primary;
+    color: $primary_text;
+    background: $primary;
     padding:1em 6em 1em 1em;
     a {
       position: absolute;
@@ -524,7 +557,11 @@ p.label-valid {
       &:last-child {
         border-right:none;
       }
-      a {
+      input[type=submit] {
+          width: 100%;
+          border: none;
+      }
+      a, input[type=submit] {
         display: block;
         background-color: #f5f5f5;
         background-repeat: no-repeat;
@@ -535,7 +572,7 @@ p.label-valid {
           size:0.6875em;
           family: Helmet, Freesans, sans-serif;
         }
-        &:hover, &.hover, &.active {
+        &:hover, &.hover {
           text-decoration:none;
           background-color:#333;
           color:#fff;
@@ -552,7 +589,7 @@ p.label-valid {
           background-image:url('/cobrands/fixmystreet/images/sprite.png');
           background-position:center -2716px;
         }
-        &.hover, &.active {
+        &.hover {
           background-image:url('/cobrands/fixmystreet/images/sprite.png');
           background-position:center -2064px;
         }
@@ -723,7 +760,7 @@ a:hover.button-left {
     width: 0;
     height: 0;
     border-left: 0.5em solid transparent;
-    border-bottom: 0.5em solid #4B8304;
+    border-bottom: 0.5em solid $contrast1_dark;
   }
 }
 
@@ -759,7 +796,7 @@ a:hover.button-left {
       color:#fff;
       background: $contrast1;
       &:before {
-        border-bottom: 0.5em solid #4B8304;
+        border-bottom: 0.5em solid $contrast1_dark;
       }
     }
   }
@@ -844,6 +881,7 @@ a:hover.button-left {
       }
       .img {
         text-align:right;
+        width: 90px;
         img {
           height:auto;
         }
@@ -912,7 +950,7 @@ a:hover.button-left {
       width:20px;
       height:20px;
       opacity: 0.5;
-      background:#fff url(images/sprite.png) -16px -1098px no-repeat;
+      background:#fff url(/cobrands/fixmystreet/images/sprite.png) -16px -1098px no-repeat;
       //hide text - http://nicolasgallagher.com/another-css-image-replacement-technique/
       font: 0/0 a;
       color: transparent;
@@ -1292,7 +1330,8 @@ table.nicetable {
 
 .promo {
   @extend .full-width;
-  background:$primary;
+  color: $primary_text;
+  background: $primary;
   padding:1em;
   margin-bottom:1em;
   overflow:hidden;
@@ -1305,10 +1344,10 @@ table.nicetable {
     width:16px;
     height:16px;
     text-indent:-999999px;
-    background:url(images/sprite.png) -341px -263px no-repeat;
+    background:url(/cobrands/fixmystreet/images/sprite.png) -341px -263px no-repeat;
     @include border-radius(4px);
     &:hover {
-      background:#222 url(images/sprite.png) -341px -223px no-repeat;
+      background:#222 url(/cobrands/fixmystreet/images/sprite.png) -341px -223px no-repeat;
     }
   }
 }
@@ -1339,7 +1378,8 @@ table.nicetable {
   }
   a {
     @include inline-block;
-    background:$primary;
+    color: $primary_text;
+    background: $primary;
     padding-left:0.5em;
     padding-right:0.5em;
     color:#1a1a1a;
@@ -1353,7 +1393,7 @@ table.nicetable {
 
 // this is a bit of a hack to get some differentation between desk and mobile
 .desk-only {
-  display:none !important;
+  display:none;
 }
 
 // hide anything with this class if js is working
@@ -1372,6 +1412,7 @@ table.nicetable {
 /* Front page */
 #front-main {
   text-align:center;
+  margin: 1em;
   h2 {
     font: {
       style:italic;
@@ -1379,6 +1420,9 @@ table.nicetable {
       size:1.1875em;
     }
     color:#4d4d4d;
+  }
+  p {
+    margin: 0.5em 0 0;
   }
   #postcodeForm {
     @extend .full-width;
@@ -1398,7 +1442,7 @@ table.nicetable {
         display:table-cell;
         margin:0;
         padding:0.25em 2%;
-        width:82%;
+        width:86%;
         border:none;
         background:none;
         line-height:1.5em;
@@ -1466,7 +1510,6 @@ table.nicetable {
 #front-recently {
   .issue-list-a {
     border-bottom:none;
-    margin-bottom:0;
   }
 }
 

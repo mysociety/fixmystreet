@@ -35,7 +35,7 @@ elsif ( my $smtp_host = FixMyStreet->config('SMTP_SMARTHOST') ) {
 
     # Email::Send::SMTP
     $args = {
-        mailer      => 'SMTP',
+        mailer      => 'FixMyStreet::EmailSend',
         mailer_args => [ Host => $smtp_host ],
     };
 }

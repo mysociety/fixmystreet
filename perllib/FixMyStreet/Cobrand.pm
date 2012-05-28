@@ -109,4 +109,22 @@ sub get_class_for_moniker {
     return 'FixMyStreet::Cobrand::Default';
 }
 
+=head2 exists
+
+    FixMyStreet::Cobrand->exists( $moniker );
+
+Given a moniker, returns true if that cobrand is available to us for use
+
+=cut
+
+sub exists {
+    my ( $class, $moniker ) = @_;
+
+    foreach my $avail ( $class->available_cobrand_classes ) {
+        return 1 if $moniker eq $avail->{moniker};
+    }
+
+    return 0;
+}
+
 1;
