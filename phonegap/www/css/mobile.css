@@ -75,3 +75,13 @@
 ol.big-numbers > li {
     margin-bottom: 0.8em;
 }
+
+#multiple {
+    margin: auto;
+    margin-bottom: 1em;
+}
+
+#multiple li {
+    list-style: none;
+    margin: auto;
+}

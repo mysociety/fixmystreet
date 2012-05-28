@@ -42,6 +42,8 @@ function location_error( msg ) {
         $('#location_error').remove();
         return;
     }
+    
+    alert(msg);
 
     if ( !$('#location_error') ) {
         $('#postcodeForm').after('<p id="location_error"></p>');
@@ -61,7 +63,7 @@ function lookup_string(q) {
     }
 
     var url = "http://dev.virtualearth.net/REST/v1/Locations?q=" + escape(q);
-    url += '&c=en-GB&key=' + CONFIG.BING_KEY;
+    url += '&c=en-GB&key=' + CONFIG.BING_API_KEY;
     var x = jQuery.get( url, function(data, status) {
         if ( status == 'success' ) {
             var valid_locations = 0;
@@ -96,6 +98,7 @@ function lookup_string(q) {
                     multiple_html += '<li><a href="#" onclick="use_lat_long( ' + multiple[i].latitude + ',' + multiple[i].longitude +')">' + multiple[i].address + '</a></li>';
                 }
                 multiple_html += '</ul>';
+                $('#front-howto').hide();
                 $('#postcodeForm').after( multiple_html );
             }
         } else {
@@ -106,7 +109,7 @@ function lookup_string(q) {
 }
 
 function locate() {
-    location_error('');
+    //location_error('');
     $("#multiple").remove();
     var pc = $('#pc').val();
                     
@@ -121,14 +124,12 @@ function locate() {
         loadingStart = navigator.notificationEx.loadingStart;
         loadingStop = navigator.notificationEx.loadingStop;
     }
-    loadingStart( { 'backgroundOpacity' : 0.5, labelText: 'Getting Location...', minDuration: 1 } );
+
     if ( valid_postcode( pc ) ) {
         jQuery.get( CONFIG.MAPIT_URL + 'postcode/' + pc + '.json', function(data, status) {
             if ( status == 'success' ) {
                show_around( data.wgs84_lat, data.wgs84_lon );
-               loadingStop();
            } else {
-               loadingStop();
            }
         });
     } else {
