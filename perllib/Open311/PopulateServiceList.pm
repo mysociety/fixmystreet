@@ -8,6 +8,7 @@ use Open311;
 
 has council_list => ( is => 'ro' );
 has found_contacts => ( is => 'rw', default => sub { [] } );
+has verbose => ( is => 'ro', default => 0 );
 
 has _current_council => ( is => 'rw' );
 has _current_open311 => ( is => 'rw' );
@@ -82,7 +83,7 @@ sub process_service {
                     $self->_current_service->{description} : 
                     $self->_current_service->{service_name};
 
-    print $self->_current_service->{service_code} . ': ' . $category .  "\n";
+    print $self->_current_service->{service_code} . ': ' . $category .  "\n" if $self->verbose;
     my $contacts = FixMyStreet::App->model( 'DB::Contact')->search(
         {
             area_id => $self->_current_council->area_id,
@@ -122,7 +123,7 @@ sub _handle_existing_contact {
 
     my $service_name = $self->_normalize_service_name;
 
-    print $self->_current_council->area_id . " already has a contact for service code " . $self->_current_service->{service_code} . "\n";
+    print $self->_current_council->area_id . " already has a contact for service code " . $self->_current_service->{service_code} . "\n" if $self->verbose;
 
     if ( $contact->deleted || $service_name ne $contact->category || $self->_current_service->{service_code} ne $contact->email ) {
         eval {
@@ -180,15 +181,21 @@ sub _create_contact {
 
     if ( $contact ) {
         push @{ $self->found_contacts }, $self->_current_service->{service_code};
-        print "created contact for service code " . $self->_current_service->{service_code} . " for council @{[$self->_current_council->area_id]}\n";
+        print "created contact for service code " . $self->_current_service->{service_code} . " for council @{[$self->_current_council->area_id]}\n" if $self->verbose;
     }
 }
 
-sub _add_contact_to_meta {
+sub _add_meta_to_contact {
     my ( $self, $contact ) = @_;
 
-    print "Fetching meta data for $self->_current_service->{service_code}\n";
+    print "Fetching meta data for $self->_current_service->{service_code}\n" if $self->verbose;
     my $meta_data = $self->_current_open311->get_service_meta_info( $self->_current_service->{service_code} );
+
+    if ( ref $meta_data->{ attributes }->{ attribute } eq 'HASH' ) {
+        $meta_data->{ attributes }->{ attribute } = [
+            $meta_data->{ attributes }->{ attribute }
+        ];
+    }
 
     # turn the data into something a bit more friendly to use
     my @meta =
@@ -198,7 +205,31 @@ sub _add_contact_to_meta {
         sort { $a->{order} <=> $b->{order} }
         @{ $meta_data->{attributes}->{attribute} };
 
-    $contact->extra( \@meta );
+    # we add these later on from bromley so don't list them here
+    # as we don't want to display them
+    if ( $self->_current_council->area_id == 2482 ) {
+        my %ignore = map { $_ => 1 } qw/
+            service_request_id_ext
+            requested_datetime
+            report_url
+            title
+            last_name
+            email
+            easting
+            northing
+            report_title
+            public_anonymity_required
+            email_alerts_requested
+        /;
+
+        @meta = grep { ! $ignore{ $_->{ code } } } @meta;
+    }
+
+    if ( @meta ) {
+        $contact->extra( \@meta );
+    } else {
+        $contact->extra( undef );
+    }
     $contact->update;
 }
 

@@ -30,6 +30,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_nullable => 1 },
   "flagged",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "title",
+  { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("users_email_key", ["email"]);
@@ -46,6 +48,12 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 __PACKAGE__->has_many(
+  "open311confs",
+  "FixMyStreet::DB::Result::Open311conf",
+  { "foreign.comment_user_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+__PACKAGE__->has_many(
   "problems",
   "FixMyStreet::DB::Result::Problem",
   { "foreign.user_id" => "self.id" },
@@ -53,8 +61,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-08 17:19:55
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:tM1LUGrqDeQnF4BDgnYXGQ
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-05-01 16:20:29
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:LKi8u5IYnHW1+Mez64nvGg
 
 __PACKAGE__->add_columns(
     "password" => {
@@ -170,6 +178,24 @@ sub belongs_to_council {
     return 1 if $self->from_council && $councils{ $self->from_council };
 
     return 0;
+}
+
+=head2 split_name
+
+    $name = $user->split_name;
+    printf( 'Welcome %s %s', $name->{first}, $name->{last} );
+
+Returns a hashref with first and last keys with first name(s) and last name.
+NB: the spliting algorithm is extremely basic.
+
+=cut
+
+sub split_name {
+    my $self = shift;
+
+    my ($first, $last) = $self->name =~ /^(\S*)(?: (.*))?$/;
+
+    return { first => $first || '', last => $last || '' };
 }
 
 1;

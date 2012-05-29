@@ -68,7 +68,7 @@ Forward to the standard 404 error page
 
 sub default : Path {
     my ( $self, $c ) = @_;
-    $c->detach('/page_error_404_not_found');
+    $c->detach('/page_error_404_not_found', []);
 }
 
 =head2 page_error_404_not_found, page_error_410_gone

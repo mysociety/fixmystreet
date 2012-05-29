@@ -244,7 +244,7 @@ sub process_questionnaire : Private {
     push @errors, _('Please provide some explanation as to why you\'re reopening this report')
         if $c->stash->{been_fixed} eq 'No' && $c->stash->{problem}->is_fixed() && !$c->stash->{update};
 
-    $c->forward('/report/new/process_photo');
+    $c->forward('/photo/process_photo');
     push @errors, $c->stash->{photo_error}
         if $c->stash->{photo_error};
 
@@ -294,7 +294,7 @@ sub display : Private {
         pins      => [ {
             latitude  => $problem->latitude,
             longitude => $problem->longitude,
-            colour    => $problem->is_fixed() ? 'green' : 'red',
+            colour    => $c->cobrand->pin_colour( $problem, 'questionnaire' ),
         } ],
     );
 }

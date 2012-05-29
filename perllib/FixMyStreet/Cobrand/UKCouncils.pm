@@ -7,6 +7,10 @@ use warnings;
 use Carp;
 use URI::Escape;
 
+sub is_council {
+    1;
+}
+
 sub site_restriction {
     my $self = shift;
     return ( "and council='" . $self->council_id . "'", $self->council_url, { council => sprintf('%d', $self->council_id) } );
@@ -77,10 +81,24 @@ sub all_councils_report {
 }
 
 sub recent_photos {
-    my ( $self, $num, $lat, $lon, $dist ) = @_;
+    my ( $self, $area, $num, $lat, $lon, $dist ) = @_;
     $num = 2 if $num == 3;
     return $self->problems->recent_photos( $num, $lat, $lon, $dist );
 }
 
-1;
+sub get_council_sender {
+    my ( $self, $area_id, $area_info ) = @_;
 
+    my $send_method;
+
+    my $council_config = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $area_id } )->first;
+    $send_method = $council_config->send_method if $council_config;
+
+    return $send_method if $send_method;
+
+    return 'London' if $area_info->{type} eq 'LBO';
+
+    return 'Email';
+}
+
+1;

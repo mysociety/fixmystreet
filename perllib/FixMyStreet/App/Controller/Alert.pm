@@ -191,7 +191,11 @@ sub create_alert : Private {
         $alert->insert();
     }
 
-    $alert->confirm() if $c->user && $c->user->id == $alert->user->id;
+    if ( $c->user && $c->user->id == $alert->user->id ) {
+        $alert->confirm();
+    } else {
+        $alert->confirmed(0);
+    }
 
     $c->stash->{alert} = $alert;
 }
@@ -470,6 +474,7 @@ sub add_recent_photos : Private {
     {
 
         $c->stash->{photos} = $c->cobrand->recent_photos(
+            'alert',
             $num_photos,
             $c->stash->{latitude},
             $c->stash->{longitude},
@@ -477,7 +482,7 @@ sub add_recent_photos : Private {
         );
     }
     else {
-        $c->stash->{photos} = $c->cobrand->recent_photos($num_photos);
+        $c->stash->{photos} = $c->cobrand->recent_photos('alert', $num_photos);
     }
 
     return 1;

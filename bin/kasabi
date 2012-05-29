@@ -63,7 +63,7 @@ def main():
             report['detail'] = tidy_string(report['detail'])
             report['confirmed'] = report['confirmed'].replace(microsecond=0).isoformat() # Don't want microseconds
             report['lastupdate'] = report['lastupdate'].replace(microsecond=0).isoformat()
-            report['council'] = sorted(re.sub('\|.*', '', report['council']).split(',')) # Remove missing councils
+            report['council'] = sorted(re.sub('\|.*', '', report['council'] or '').split(',')) # Remove missing councils
 
             # Fetch updates to note state changes
             states = [ { 'state': 'confirmed', 'time': report['confirmed'] } ]
@@ -166,6 +166,7 @@ class FixMyStreetChangeSet(object):
         # Get info for the councils
         council_data = { 'sentTo': '', 'areaNames': [] }
         for council in report['council']:
+            if not council: continue
             js = json.load(urllib.urlopen('http://mapit.mysociety.org/area/{0}'.format(council)))
             os_id = int(js['codes']['unit_id']) + 7000000000000000
             if report['whensent']:
@@ -173,6 +174,7 @@ class FixMyStreetChangeSet(object):
             council_data['areaNames'].append(js['name'])
             council_data.setdefault('firstCouncil', council)
         council_data['areaNames'] = ' / '.join(council_data['areaNames'])
+        council_data.setdefault('firstCouncil', '0')
 
 # easting/northing
 

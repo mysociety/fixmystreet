@@ -3,33 +3,6 @@
  * FixMyStreet JavaScript
  */
 
-function form_category_onchange() {
-    var cat = $('#form_category');
-    var args = {
-        category: cat.val()
-    };
-
-    if ( typeof fixmystreet !== 'undefined' ) {
-        args.latitude = fixmystreet.latitude;
-        args.longitude = fixmystreet.longitude;
-    } else {
-        args.latitude = $('input[name="latitude"]').val();
-        args.longitude = $('input[name="longitude"]').val();
-    }
-
-    $.getJSON('/report/new/category_extras', args, function(data) {
-        if ( data.category_extra ) {
-            if ( $('#category_meta').size() ) {
-                $('#category_meta').html( data.category_extra);
-            } else {
-                $('#form_category_row').after( data.category_extra );
-            }
-        } else {
-            $('#category_meta').empty();
-        }
-    });
-}
-
 /*
  * general height fixing function
  *
@@ -80,12 +53,12 @@ function tabs(elem, indirect) {
 $(function(){
     var $html = $('html');
 
-    $html.removeClass('no-js').addClass('js');
+    var cobrand;
+    if (window.location.href.indexOf('bromley') != -1) {
+        cobrand = 'bromley';
+    }
 
-
-    // Preload the new report pin
-    document.createElement('img').src = '/i/pin-green.png';
-
+    // Deal with switching between mobile and desktop versions on resize
     var last_type;
     $(window).resize(function(){
         var type = $('#site-header').css('borderTopWidth');
@@ -106,7 +79,9 @@ $(function(){
             }
             if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
                 // Immediately go full screen map if on around page
-                $('#site-header').hide();
+                if (cobrand != 'bromley') {
+                    $('#site-header').hide();
+                }
                 $('#map_box').prependTo('.wrapper').css({
                     position: 'absolute',
                     top: 0, left: 0, right: 0, bottom: 0,
@@ -128,167 +103,61 @@ $(function(){
         } else {
             // Make map full screen on non-mobile sizes.
             $html.removeClass('mobile');
-            var map_pos = 'fixed', map_height = '100%';
-            if ($html.hasClass('ie6')) {
-                map_pos = 'absolute';
-                map_height = $(window).height();
+            if (cobrand == 'bromley') {
+                var bromley_right;
+                if ($html.hasClass('ie6') || $html.hasClass('ie7')) {
+                    bromley_right = '-480px';
+                } else {
+                    bromley_right = '0em';
+                }
+                // Do the same as CSS (in case resized from mobile).
+                $('#map_box').prependTo('.content').css({
+                    zIndex: 1, position: 'absolute',
+                    top: '1em', left: '', right: bromley_right, bottom: '',
+                    width: '464px', height: '464px',
+                    margin: 0
+                });
+            } else if ($html.hasClass('ie6')) {
+                $('#map_box').prependTo('.wrapper').css({
+                    zIndex: 0, position: 'absolute',
+                    top: 0, left: 0, right: 0, bottom: 0,
+                    width: '100%', height: $(window).height(),
+                    margin: 0
+                });
+            } else {
+                $('#map_box').prependTo('.wrapper').css({
+                    zIndex: 0, position: 'fixed',
+                    top: 0, left: 0, right: 0, bottom: 0,
+                    width: '100%', height: '100%',
+                    margin: 0
+                });
             }
-            $('#map_box').prependTo('.wrapper').css({
-                zIndex: 0, position: map_pos,
-                top: 0, left: 0, right: 0, bottom: 0,
-                width: '100%', height: map_height,
-                margin: 0
-            });
             if (typeof fixmystreet !== 'undefined') {
-                fixmystreet.state_map = 'full';
+                if (cobrand == 'bromley') {
+                    //$('#bromley-footer').hide();
+                } else {
+                    fixmystreet.state_map = 'full';
+                }
             }
             if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
                 // Remove full-screen-ness
-                $('#site-header').show();
+                var banner_text;
+                if (cobrand == 'bromley') {
+                    banner_text = 'Click map to report a problem<span>Yellow pins show existing reports</span>';
+                } else {
+                    $('#site-header').show();
+                    banner_text = 'Click map to report a problem';
+                }
                 $('#fms_pan_zoom').css({ top: '4.75em !important' });
                 $('.big-green-banner')
                     .removeClass('mobile-map-banner')
                     .prependTo('#side')
-                    .text('Click map to report a problem');
+                    .html(banner_text);
             }
             $('span.report-a-problem-btn').css({ cursor:'' }).off('.reportBtn');
         }
         last_type = type;
-    });
-
-    //add mobile class if small screen
-    $(window).resize();
-
-    $('#pc').focus();
-
-    $('input[type=submit]').removeAttr('disabled');
-    /*
-    $('#mapForm').submit(function() {
-        if (this.submit_problem) {
-            $('input[type=submit]', this).prop("disabled", true);
-        }
-        return true;
-    });
-    */
-
-    if (!$('#been_fixed_no').prop('checked') && !$('#been_fixed_unknown').prop('checked')) {
-        $('#another_qn').hide();
-    }
-    $('#been_fixed_no').click(function() {
-        $('#another_qn').show('fast');
-    });
-    $('#been_fixed_unknown').click(function() {
-        $('#another_qn').show('fast');
-    });
-    $('#been_fixed_yes').click(function() {
-        $('#another_qn').hide('fast');
-    });
-
-    // FIXME - needs to use translated string
-    jQuery.validator.addMethod('validCategory', function(value, element) {
-        return this.optional(element) || value != '-- Pick a category --'; }, validation_strings.category );
-
-    jQuery.validator.addMethod('validName', function(value, element) {
-        var validNamePat = /\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i;
-        return this.optional(element) || value.length > 5 && value.match( /\S/ ) && !value.match( validNamePat ); }, validation_strings.category );
-
-    var form_submitted = 0;
-    var submitted = false;
-
-    $("form.validate").validate({
-        rules: {
-            title: { required: true },
-            detail: { required: true },
-            email: { required: true },
-            update: { required: true },
-            rznvy: { required: true }
-        },
-        messages: validation_strings,
-        onkeyup: false,
-        onfocusout: false,
-        errorElement: 'div',
-        errorClass: 'form-error',
-        // we do this to stop things jumping around on blur
-        success: function (err) { if ( form_submitted ) { err.addClass('label-valid').removeClass('label-valid-hidden').html( '&nbsp;' ); } else { err.addClass('label-valid-hidden'); } },
-        errorPlacement: function( error, element ) {
-            element.before( error );
-        },
-        submitHandler: function(form) {
-            if (form.submit_problem) {
-                $('input[type=submit]', form).prop("disabled", true);
-            }
-
-            form.submit();
-        },
-        // make sure we can see the error message when we focus on invalid elements
-        showErrors: function( errorMap, errorList ) {
-            if ( submitted && errorList.length ) {
-               $(window).scrollTop( $(errorList[0].element).offset().top - 120 );
-            }
-            this.defaultShowErrors();
-            submitted = false;
-        },
-        invalidHandler: function(form, validator) { submitted = true; }
-    });
-
-    $('input[type=submit]').click( function(e) { form_submitted = 1; } );
-
-    /* set correct required status depending on what we submit 
-    * NB: need to add things to form_category as the JS updating 
-    * of this we do after a map click removes them */
-    $('#submit_sign_in').click( function(e) {
-        $('#form_category').addClass('required validCategory').removeClass('valid');
-        $('#form_name').removeClass();
-    } );
-
-    $('#submit_register').click( function(e) { 
-        $('#form_category').addClass('required validCategory').removeClass('valid');
-        $('#form_name').addClass('required validName');
-    } );
-
-    $('#problem_submit > input[type="submit"]').click( function(e) { 
-        $('#form_category').addClass('required validCategory').removeClass('valid');
-        $('#form_name').addClass('required validName');
-    } );
-
-    $('#update_post').click( function(e) { 
-        $('#form_name').addClass('required').removeClass('valid');
-    } );
-
-    $('#form_category').change( form_category_onchange );
-
-    // Geolocation
-    if (geo_position_js.init()) {
-        $('#postcodeForm').after('<a href="#" id="geolocate_link">&hellip; or locate me automatically</a>');
-        $('#geolocate_link').click(function(e) {
-            e.preventDefault();
-            // Spinny thing!
-            if($('.mobile').length){
-                $(this).append(' <img src="/cobrands/fixmystreet/images/spinner-black.gif" alt="" align="bottom">');
-            }else{
-                $(this).append(' <img src="/cobrands/fixmystreet/images/spinner-yellow.gif" alt="" align="bottom">');
-            }
-            geo_position_js.getCurrentPosition(function(pos) {
-                $('img', this).remove();
-                var latitude = pos.coords.latitude;
-                var longitude = pos.coords.longitude;
-                location.href = '/around?latitude=' + latitude + ';longitude=' + longitude;
-            }, function(err) {
-                $('img', this).remove();
-                if (err.code == 1) { // User said no
-                } else if (err.code == 2) { // No position
-                    $(this).html("Could not look up location");
-                } else if (err.code == 3) { // Too long
-                    $('this').html("No result returned");
-                } else { // Unknown
-                    $('this').html("Unknown error");
-                }
-            }, {
-                enableHighAccuracy: true,
-                timeout: 10000
-            });
-        });
-    }
+    }).resize();
 
     /* 
      * Report a problem page 
@@ -361,10 +230,15 @@ $(function(){
     /*
      * Show stuff on input focus
      */
-    $('.form-focus-hidden').hide();
-    $('.form-focus-trigger').on('focus', function(){
-        $('.form-focus-hidden').fadeIn(500);
-    });
+    var form_focus_data = $('.form-focus-trigger').map(function() {
+        return $(this).val();
+    }).get().join('');
+    if (!form_focus_data) {
+        $('.form-focus-hidden').hide();
+        $('.form-focus-trigger').on('focus', function(){
+            $('.form-focus-hidden').fadeIn(500);
+        });
+    }
 
     /*
      * Show on click - pretty generic
@@ -479,12 +353,12 @@ $.fn.drawer = function(id, ajax) {
     });
 };
 
-    if ($('html.mobile').length) {
+    if ($('html.mobile').length || cobrand == 'bromley') {
         $('#council_wards').hide().removeClass('hidden-js').find('h2').hide();
         $('#key-tool-wards').click(function(e){
             e.preventDefault();
             $('#council_wards').slideToggle('800', function(){
-              $('#key-tool-wards').toggleClass('active');
+              $('#key-tool-wards').toggleClass('hover');
             });
         });
     } else {
@@ -575,7 +449,11 @@ $.fn.drawer = function(id, ajax) {
      */
     if (!$('html.mobile').length) {
         if (!($('body').hasClass('frontpage'))){
-            heightFix(window, '.content', -176);
+            var offset = -176;
+            if (cobrand == 'bromley') {
+                offset = -110;
+            }
+            heightFix(window, '.content', offset);
         }
     }
 

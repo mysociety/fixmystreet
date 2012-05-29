@@ -105,34 +105,39 @@ subtest 'check summary counts' => sub {
 
     $mech->content_contains( "$q_count questionnaires sent" );
 
-    ok $mech->host('barnet.fixmystreet.com');
+    SKIP: {
+        skip( "Need 'barnet' in ALLOWED_COBRANDS config", 7 )
+            unless FixMyStreet::Cobrand->exists('barnet');
 
-    $mech->get_ok('/admin');
-    $mech->title_like(qr/Summary/);
+        ok $mech->host('barnet.fixmystreet.com');
 
-    my ($num_live) = $mech->content =~ /(\d+)<\/strong> live problems/;
-    my ($num_alerts) = $mech->content =~ /(\d+) confirmed alerts/;
-    my ($num_qs) = $mech->content =~ /(\d+) questionnaires sent/;
+        $mech->get_ok('/admin');
+        $mech->title_like(qr/Summary/);
 
-    $report->council(2489);
-    $report->cobrand('barnet');
-    $report->update;
+        my ($num_live) = $mech->content =~ /(\d+)<\/strong> live problems/;
+        my ($num_alerts) = $mech->content =~ /(\d+) confirmed alerts/;
+        my ($num_qs) = $mech->content =~ /(\d+) questionnaires sent/;
 
-    $alert->cobrand('barnet');
-    $alert->update;
+        $report->council(2489);
+        $report->cobrand('barnet');
+        $report->update;
 
-    $mech->get_ok('/admin');
+        $alert->cobrand('barnet');
+        $alert->update;
 
-    $mech->content_contains( ($num_live+1) . "</strong> live problems" );
-    $mech->content_contains( ($num_alerts+1) . " confirmed alerts" );
-    $mech->content_contains( ($num_qs+1) . " questionnaires sent" );
+        $mech->get_ok('/admin');
 
-    $report->council(2504);
-    $report->cobrand('');
-    $report->update;
+        $mech->content_contains( ($num_live+1) . "</strong> live problems" );
+        $mech->content_contains( ($num_alerts+1) . " confirmed alerts" );
+        $mech->content_contains( ($num_qs+1) . " questionnaires sent" );
 
-    $alert->cobrand('');
-    $alert->update;
+        $report->council(2504);
+        $report->cobrand('');
+        $report->update;
+
+        $alert->cobrand('');
+        $alert->update;
+    }
 
     FixMyStreet::App->model('DB::Problem')->search( { council => 1 } )->update( { council => 2489 } );
     ok $mech->host('fixmystreet.com');
@@ -222,6 +227,8 @@ subtest 'check open311 configuring' => sub {
                 api_key      => 'api key',
                 endpoint     => 'http://example.com/open311',
                 jurisdiction => 'mySociety',
+                send_comments => 0,
+                send_method  => 'Open311',
             }
         }
     );
@@ -244,6 +251,8 @@ subtest 'check open311 configuring' => sub {
                 api_key      => 'new api key',
                 endpoint     => 'http://example.org/open311',
                 jurisdiction => 'open311',
+                send_comments => 0,
+                send_method  => 'Open311',
             }
         }
     );

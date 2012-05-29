@@ -135,7 +135,8 @@ create table users (
     phone           text,
     password        text    not null default '',
     from_council    integer, -- id of council user is from or null/0 if not
-    flagged         boolean not null default 'f'
+    flagged         boolean not null default 'f',
+    title           text
 );
 
 -- Problems reported by users of site
@@ -311,9 +312,15 @@ create table comment (
         or problem_state = 'fixed'
         or problem_state = 'fixed - council'
         or problem_state = 'fixed - user'
-    )
+    ),
     -- other fields? one to indicate whether this was written by the council
     -- and should be highlighted in the display?
+    external_id text,
+    extra text,
+    send_fail_count integer not null default 0,
+    send_fail_reason text,
+    send_fail_timestamp timestamp,
+    whensent timestamp
 );
 
 create index comment_user_id_idx on comment(user_id);
@@ -428,5 +435,8 @@ create table open311conf (
     endpoint     text not null,
     jurisdiction text,
     api_key      text,
-    send_method  text
+    send_method  text,
+    send_comments boolean not null default 'f',
+    comment_user_id int references users(id),
+    suppress_alerts boolean not null default 'f'
 );

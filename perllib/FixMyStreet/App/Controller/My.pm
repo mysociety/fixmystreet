@@ -48,7 +48,7 @@ sub my : Path : Args(0) {
         push @$pins, {
             latitude  => $problem->latitude,
             longitude => $problem->longitude,
-            colour    => $problem->is_fixed ? 'green' : 'red',
+            colour    => $c->cobrand->pin_colour( $problem, 'my' ),
             id        => $problem->id,
             title     => $problem->title,
         };

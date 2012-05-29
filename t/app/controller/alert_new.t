@@ -142,25 +142,18 @@ foreach my $test (
 }
 
 foreach my $test (
-    {
-        email      => 'test-new@example.com',
-        type       => 'area',
-        content    => 'your alert will not be activated',
-        email_text => 'confirm the alert',
-        uri =>
-'/alert/subscribe?type=local&rznvy=test-new@example.com&feed=area:1000:A_Location',
-        param1 => 1000
-    }
+    { exist => 0 },
+    { exist => 1 },
   )
 {
-    subtest "use existing unlogged in user in a alert" => sub {
+    subtest "use existing unlogged in user in a alert ($test->{exist})" => sub {
         $mech->log_out_ok();
 
-        my $type = $test->{type} . '_problems';
+        my $type = 'area_problems';
 
         my $user =
           FixMyStreet::App->model('DB::User')
-          ->find_or_create( { email => $test->{email} } );
+          ->find_or_create( { email => 'test-new@example.com' } );
 
         my $alert = FixMyStreet::App->model('DB::Alert')->find(
             {
@@ -169,24 +162,26 @@ foreach my $test (
             }
         );
         # clear existing data so we can be sure we're creating it
-        ok $alert->delete() if $alert;
+        ok $alert->delete() if $alert && !$test->{exist};
 
-        $mech->get_ok( $test->{uri} );
+        $mech->get_ok( '/alert/subscribe?type=local&rznvy=test-new@example.com&feed=area:1000:A_Location' );
 
         $alert = FixMyStreet::App->model('DB::Alert')->find(
             {
                 user       => $user,
                 alert_type => $type,
-                parameter  => $test->{param1},
-                parameter2 => $test->{param2},
-                confirmed  => 0,
+                parameter  => 1000,
+                parameter2 => undef,
+                confirmed  => $test->{exist},
             }
         );
 
         $mech->content_contains( 'Now check your email' );
 
+        $alert->confirm();
         ok $alert, 'New alert created with existing user';
-        $mech->delete_user($user);
+
+        $mech->delete_user($user) if $test->{exist};
     };
 }
 
@@ -445,6 +440,7 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
     ok $update, "created test update - $update_id";
 
     FixMyStreet::App->model('DB::AlertType')->email_alerts();
+    # TODO Note the below will fail if the db has an existing alert that matches
     $mech->email_count_is(3);
     my @emails = $mech->get_email;
     my $count;

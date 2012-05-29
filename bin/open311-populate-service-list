@@ -6,7 +6,9 @@ use FixMyStreet::App;
 use Open311::PopulateServiceList;
 
 
-my $council_list = FixMyStreet::App->model('DB::Open311conf');
+my $council_list = FixMyStreet::App->model('DB::Open311conf')->search( {
+    send_method => 'Open311'
+} );
 my $p = Open311::PopulateServiceList->new( council_list => $council_list );
 
 $p->process_councils;

@@ -74,8 +74,13 @@
     <div id="side">
 
         [% IF allow_creation %]
-        <h1 class="big-green-banner">[% loc( 'Click map to report a problem' ) %]</h1>
-
+        <h1 class="big-green-banner">
+            [% loc( 'Click map to report a problem' )
+            IF c.cobrand.moniker == 'bromley';
+                '<span>Yellow pins show existing reports</span>';
+            END
+            %]
+		</h1>
         <p id="skip-this-step">
             [%
                 tprintf(

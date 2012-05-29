@@ -3,9 +3,15 @@
 <h1>[% loc('Local RSS feeds and email alerts') %]</h1>
 
 <p>
+[% IF c.cobrand.is_council %]
+FixMyStreet has a variety of RSS feeds and email alerts for local problems, including
+alerts for all problems within a particular ward, or all problems
+within a certain distance of a particular location.
+[% ELSE %]
 [% loc('FixMyStreet has a variety of RSS feeds and email alerts for local problems, including
 alerts for all problems within a particular ward or council, or all problems
 within a certain distance of a particular location.') %]
+[% END %]
 </p>
 
 [% IF location_offshore %]
@@ -16,12 +22,17 @@ within a certain distance of a particular location.') %]
   [% INCLUDE 'errors.html' %]
 [% END %]
 
-<p>[% loc('To find out what local alerts we have for you, please fill in the form below.') %]</p>
+<p>
+[% IF c.cobrand.is_council %]
+To find out what local alerts we have for you, please enter your [% c.cobrand.council_area %] postcode or street name and area:
+[% ELSE %]
+[% loc('To find out what local alerts we have for you, please enter your GB postcode or street name and area' ) %]
+[% END %]
+</p>
 <form method="get" action="/alert/list" class="full-width">
   <fieldset>
     <div class="form-txt-submit-box">
-        <label for="pc">[% c.cobrand.enter_postcode_text %]:</label>
-      <input type="text" id="pc" name="pc" value="[% pc | html %]" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]">
+      <input type="text" name="pc" value="[% pc | html %]" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]">
       <input class="green-btn" type="submit" value="[% loc('Go') %]">
     </div>
   </fieldset>

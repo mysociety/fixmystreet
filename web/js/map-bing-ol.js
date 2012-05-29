@@ -1,3 +1,5 @@
+var tile_base = [ [ '', 'a.', 'b.', 'c.' ], 'http://{S}tilma.mysociety.org/sv' ];
+
 function set_map_config(perm) {
     var permalink_id;
     if ($('#map_permalink').length) {
@@ -17,6 +19,9 @@ function set_map_config(perm) {
         new OpenLayers.Control.Permalink(permalink_id),
         new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
     ];
+    if (fixmystreet.map_type) {
+        tile_base = fixmystreet.map_type;
+    }
     fixmystreet.map_type = OpenLayers.Layer.Bing;
 }
 
@@ -36,7 +41,7 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
         if (z >= 16) {
             copyrights = 'Contains Ordnance Survey data &copy; Crown copyright and database right 2010';
         } else {
-            logo = '<a href="http://www.bing.com/maps/"><img border=0 src="http://dev.virtualearth.net/Branding/logo_powered_by.png"></a>';
+            logo = '<a href="http://www.bing.com/maps/"><img border=0 src="//dev.virtualearth.net/Branding/logo_powered_by.png"></a>';
             copyrights = '&copy; 2011 <a href="http://www.bing.com/maps/">Microsoft</a>. &copy; AND, Navteq, Ordnance Survey';
         }
         this.attribution = OpenLayers.String.format(this.attributionTemplate, {
@@ -94,20 +99,18 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 
         var url;
         if (z >= 16) {
-            url = [
-                "http://tilma.mysociety.org/sv/${z}/${x}/${y}.png",
-                "http://a.tilma.mysociety.org/sv/${z}/${x}/${y}.png",
-                "http://b.tilma.mysociety.org/sv/${z}/${x}/${y}.png",
-                "http://c.tilma.mysociety.org/sv/${z}/${x}/${y}.png"
-            ];
+            url = [];
+            for (var i=0; i< tile_base[0].length; i++) {
+                url.push( tile_base[1].replace('{S}', tile_base[0][i]) + "/${z}/${x}/${y}.png" );
+            }
         } else {
             var type = '';
             if (z > 10) { type = '&productSet=mmOS'; }
             url = [
-                "http://ecn.t0.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type,
-                "http://ecn.t1.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type,
-                "http://ecn.t2.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type,
-                "http://ecn.t3.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type
+                "//ecn.t0.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type,
+                "//ecn.t1.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type,
+                "//ecn.t2.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type,
+                "//ecn.t3.tiles.virtualearth.net/tiles/r${id}.png?g=701" + type
             ];
         }
         var s = '' + x + y + z;

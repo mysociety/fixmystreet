@@ -37,23 +37,28 @@ sub get_quadkey {
     return $key;
 }
 
+sub map_tile_base {
+    '.', "http://%stilma.mysociety.org/sv/%d/%d/%d.png";
+}
+
 sub map_tiles {
     my ($self, $x, $y, $z) = @_;
     if ($z >= 16) {
+        my ($tile_sep, $tile_base) = $self->map_tile_base;
         return [
-            "http://a.tilma.mysociety.org/sv/$z/" . ($x-1) . "/" . ($y-1) . ".png",
-            "http://b.tilma.mysociety.org/sv/$z/$x/" . ($y-1) . ".png",
-            "http://c.tilma.mysociety.org/sv/$z/" . ($x-1) . "/$y.png",
-            "http://tilma.mysociety.org/sv/$z/$x/$y.png",
+            sprintf($tile_base, 'a' . $tile_sep, $z, $x-1, $y-1),
+            sprintf($tile_base, 'b' . $tile_sep, $z, $x, $y-1),
+            sprintf($tile_base, 'c' . $tile_sep, $z, $x-1, $y),
+            sprintf($tile_base, '', $z, $x, $y),
         ];
     } else {
         my $url = "g=701";
         $url .= "&productSet=mmOS" if $z > 10;
         return [
-            "http://ecn.t0.tiles.virtualearth.net/tiles/r" . get_quadkey($x-1, $y-1, $z) . ".png?$url",
-            "http://ecn.t1.tiles.virtualearth.net/tiles/r" . get_quadkey($x,   $y-1, $z) . ".png?$url",
-            "http://ecn.t2.tiles.virtualearth.net/tiles/r" . get_quadkey($x-1, $y,   $z) . ".png?$url",
-            "http://ecn.t3.tiles.virtualearth.net/tiles/r" . get_quadkey($x,   $y,   $z) . ".png?$url",
+            "//ecn.t0.tiles.virtualearth.net/tiles/r" . get_quadkey($x-1, $y-1, $z) . ".png?$url",
+            "//ecn.t1.tiles.virtualearth.net/tiles/r" . get_quadkey($x,   $y-1, $z) . ".png?$url",
+            "//ecn.t2.tiles.virtualearth.net/tiles/r" . get_quadkey($x-1, $y,   $z) . ".png?$url",
+            "//ecn.t3.tiles.virtualearth.net/tiles/r" . get_quadkey($x,   $y,   $z) . ".png?$url",
         ];
     }
 }

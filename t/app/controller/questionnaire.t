@@ -322,67 +322,79 @@ for my $test (
     };
 }
 
-# EHA extra checking
-ok $mech->host("reportemptyhomes.com"), 'change host to reportemptyhomes';
+SKIP: {
+    skip( "Need 'emptyhomes' in ALLOWED_COBRANDS config", 18 )
+        unless FixMyStreet::Cobrand->exists('emptyhomes');
 
-# Reset, and all the questionaire sending function - FIXME should it detect site itself somehow?
-$report->send_questionnaire( 1 );
-$report->update;
-$questionnaire->delete;
-FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires( {
-    site => 'emptyhomes'
-} );
-$email = $mech->get_email;
-ok $email, "got an email";
-$mech->clear_emails_ok;
+    # EHA extra checking
+    ok $mech->host("reportemptyhomes.com"), 'change host to reportemptyhomes';
 
-like $email->body, qr/fill in this short questionnaire/i, "got questionnaire email";
-($token) = $email->body =~ m{http://.*?/Q/(\S+)};
-ok $token, "extracted questionnaire token '$token'";
+    # Reset, and all the questionaire sending function - FIXME should it detect site itself somehow?
+    $report->send_questionnaire( 1 );
+    $report->update;
+    $questionnaire->delete;
 
-$mech->get_ok("/Q/" . $token);
-$mech->content_contains( 'should have reported what they have done' );
+    FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires( {
+        site => 'emptyhomes'
+    } );
+    $email = $mech->get_email;
+    ok $email, "got an email";
+    $mech->clear_emails_ok;
 
-# Test already answered the ever reported question, so not shown again
-$dt = $dt->add( weeks => 4 );
-my $questionnaire2 = FixMyStreet::App->model('DB::Questionnaire')->find_or_create(
-    {
-        problem_id => $report->id,
-        whensent => $dt->ymd . ' ' . $dt->hms,
-        ever_reported => 1,
-    }
-);
-ok $questionnaire2, 'added another questionnaire';
-ok $mech->host("fixmystreet.com"), 'change host to fixmystreet';
-$mech->get_ok("/Q/" . $token);
-$mech->title_like( qr/Questionnaire/ );
-$mech->content_contains( 'Has this problem been fixed?' );
-$mech->content_lacks( 'ever reported' );
+    like $email->body, qr/fill in this short questionnaire/i, "got questionnaire email";
+    ($token) = $email->body =~ m{http://.*?/Q/(\S+)};
+    ok $token, "extracted questionnaire token '$token'";
 
-# EHA extra checking
-ok $mech->host("reportemptyhomes.com"), 'change host to reportemptyhomes';
-$mech->get_ok("/Q/" . $token);
-$mech->content_contains( 'made a lot of progress' );
+    $mech->get_ok("/Q/" . $token);
+    $mech->content_contains( 'should have reported what they have done' );
 
-$token = FixMyStreet::App->model("DB::Token")->find( { scope => 'questionnaire', token => $token } );
-ok $token, 'found token for questionnaire';
-$questionnaire = FixMyStreet::App->model('DB::Questionnaire')->find( { id => $token->data } );
-ok $questionnaire, 'found questionnaire';
+    # Test already answered the ever reported question, so not shown again
+    $dt = $dt->add( weeks => 4 );
+    my $questionnaire2 = FixMyStreet::App->model('DB::Questionnaire')->find_or_create(
+        {
+            problem_id => $report->id,
+            whensent => $dt->ymd . ' ' . $dt->hms,
+            ever_reported => 1,
+        }
+    );
+    ok $questionnaire2, 'added another questionnaire';
+    ok $mech->host("fixmystreet.com"), 'change host to fixmystreet';
+    $mech->get_ok("/Q/" . $token);
+    $mech->title_like( qr/Questionnaire/ );
+    $mech->content_contains( 'Has this problem been fixed?' );
+    $mech->content_lacks( 'ever reported' );
 
-# I18N Unicode extra testing using FiksGataMi
-$report->send_questionnaire( 1 );
-$report->cobrand( 'fiksgatami' );
-$report->update;
-$questionnaire->delete;
-$questionnaire2->delete;
-FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires( { site => 'fixmystreet' } ); # It's either fixmystreet or emptyhomes
-$email = $mech->get_email;
-ok $email, "got an email";
-$mech->clear_emails_ok;
+    # EHA extra checking
+    ok $mech->host("reportemptyhomes.com"), 'change host to reportemptyhomes';
+    $mech->get_ok("/Q/" . $token);
+    $mech->content_contains( 'made a lot of progress' );
 
-like $email->body, qr/Testing =96 Detail/, 'email contains encoded character from user';
-like $email->body, qr/sak p=E5 FiksGataMi/, 'email contains encoded character from template';
-is $email->header('Content-Type'), 'text/plain; charset="windows-1252"', 'email is in right encoding';
+    $token = FixMyStreet::App->model("DB::Token")->find( { scope => 'questionnaire', token => $token } );
+    ok $token, 'found token for questionnaire';
+    $questionnaire = FixMyStreet::App->model('DB::Questionnaire')->find( { id => $token->data } );
+    ok $questionnaire, 'found questionnaire';
+
+    $questionnaire2->delete;
+}
+
+SKIP: {
+    skip( "Need 'fiksgatami' in ALLOWED_COBRANDS config", 5 )
+        unless FixMyStreet::Cobrand->exists('fiksgatami');
+
+    # I18N Unicode extra testing using FiksGataMi
+    $report->send_questionnaire( 1 );
+    $report->cobrand( 'fiksgatami' );
+    $report->update;
+    $questionnaire->delete;
+    FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires( { site => 'fixmystreet' } ); # It's either fixmystreet or emptyhomes
+    $email = $mech->get_email;
+    ok $email, "got an email";
+    $mech->clear_emails_ok;
+
+    like $email->body, qr/Testing =96 Detail/, 'email contains encoded character from user';
+    like $email->body, qr/sak p=E5 FiksGataMi/, 'email contains encoded character from template';
+    is $email->header('Content-Type'), 'text/plain; charset="windows-1252"', 'email is in right encoding';
+}
 
 $mech->delete_user('test@example.com');
 done_testing();

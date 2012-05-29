@@ -14,6 +14,21 @@ sub enter_postcode_text {
     return _("Enter a nearby GB postcode, or street name and area");
 }
 
+sub get_council_sender {
+    my ( $self, $area_id, $area_info ) = @_;
+
+    my $send_method;
+
+    my $council_config = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $area_id } )->first;
+    $send_method = $council_config->send_method if $council_config;
+
+    return $send_method if $send_method;
+
+    return 'London' if $area_info->{type} eq 'LBO';
+
+    return 'Email';
+}
+
 sub generate_problem_banner {
     my ( $self, $problem ) = @_;
 
@@ -40,5 +55,33 @@ sub generate_problem_banner {
     return $banner;
 }
 
+sub process_extras {
+    my $self     = shift;
+    my $ctx      = shift;
+    my $contacts = shift;
+    my $extra    = shift;
+    my $fields   = shift || [];
+
+    if ( $contacts->[0]->area_id == 2482 ) {
+        my @fields = ( 'fms_extra_title', @$fields );
+        for my $field ( @fields ) {
+            my $value = $ctx->request->param( $field );
+
+            if ( !$value ) {
+                $ctx->stash->{field_errors}->{ $field } = _('This information is required');
+            }
+            push @$extra, {
+                name => $field,
+                description => uc( $field),
+                value => $value || '',
+            };
+        }
+
+        if ( $ctx->request->param('fms_extra_title') ) {
+            $ctx->stash->{fms_extra_title} = $ctx->request->param('fms_extra_title');
+            $ctx->stash->{extra_name_info} = 1;
+        }
+    }
+}
 1;
 

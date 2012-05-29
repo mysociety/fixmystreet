@@ -23,7 +23,7 @@ sub report_update : Path : Args(0) {
     $c->forward( '/report/load_problem_or_display_error', [ $c->req->param('id') ] );
     $c->forward('process_update');
     $c->forward('process_user');
-    $c->forward('/report/new/process_photo');
+    $c->forward('/photo/process_photo');
     $c->forward('check_for_errors')
       or $c->go( '/report/display', [ $c->req->param('id') ] );
 
@@ -104,13 +104,18 @@ sub process_user : Private {
         my $user = $c->user->obj;
         my $name = scalar $c->req->param('name');
         $user->name( Utils::trim_text( $name ) ) if $name;
+        my $title = scalar $c->req->param('fms_extra_title');
+        if ( $title ) {
+            $c->log->debug( 'user exists and title is ' . $title );
+            $user->title( Utils::trim_text( $title ) );
+        }
         $update->user( $user );
         return 1;
     }
 
     # Extract all the params to a hash to make them easier to work with
     my %params = map { $_ => scalar $c->req->param($_) }
-      ( 'rznvy', 'name', 'password_register' );
+      ( 'rznvy', 'name', 'password_register', 'fms_extra_title' );
 
     # cleanup the email address
     my $email = $params{rznvy} ? lc $params{rznvy} : '';
@@ -136,6 +141,8 @@ sub process_user : Private {
         if $params{name};
     $update->user->password( Utils::trim_text( $params{password_register} ) )
         if $params{password_register};
+    $update->user->title( Utils::trim_text( $params{fms_extra_title} ) )
+        if $params{fms_extra_title};
 
     return 1;
 }
@@ -152,6 +159,15 @@ want to move adding these elsewhere
 
 sub process_update : Private {
     my ( $self, $c ) = @_;
+
+    if ( $c->req->param('first_name' ) && $c->req->param('last_name' ) ) {
+        my $first_name = $c->req->param('first_name');
+        my $last_name = $c->req->param('last_name');
+        $c->req->param('name', sprintf( '%s %s', $first_name, $last_name ) );
+
+        $c->stash->{first_name} = $first_name;
+        $c->stash->{last_name} = $last_name;
+    }
 
     my %params =
       map { $_ => scalar $c->req->param($_) } ( 'update', 'name', 'fixed', 'state', 'reopen' );
@@ -184,6 +200,24 @@ sub process_update : Private {
             if $params{state} eq 'fixed' && $c->user && $c->user->belongs_to_council( $update->problem->council );
         $update->problem_state( $params{state} );
     }
+
+    if ( $c->req->param('fms_extra_title') ) {
+        my %extras = ();
+        $extras{title} = $c->req->param('fms_extra_title');
+        $extras{email_alerts_required} = $c->req->param('add_alert');
+        $update->extra( \%extras );
+
+        $c->stash->{fms_extra_title} = $c->req->param('fms_extra_title');
+    }
+
+    if ( $c->stash->{ first_name } && $c->stash->{ last_name } ) {
+        my $extra = $update->extra || {};
+        $extra->{first_name} = $c->stash->{ first_name };
+        $extra->{last_name} = $c->stash->{ last_name };
+        $update->extra( $extra );
+    }
+
+    $c->log->debug( 'name is ' . $c->req->param('name') );
 
     $c->stash->{update}        = $update;
     $c->stash->{add_alert}     = $c->req->param('add_alert');
@@ -268,6 +302,7 @@ sub save_update : Private {
     }
     elsif ( $c->user && $c->user->id == $update->user->id ) {
         # Logged in and same user, so can confirm update straight away
+        $c->log->debug( 'user exists' );
         $update->user->update;
         $update->confirm;
     } else {

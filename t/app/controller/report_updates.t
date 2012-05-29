@@ -872,7 +872,11 @@ for my $test (
 
         is_deeply $values, $test->{initial_values}, 'initial form values';
 
-        is $mech->extract_problem_banner->{text}, $test->{initial_banner}, 'initial banner';
+        if ( !defined( $test->{initial_banner} ) ) {
+            is $mech->extract_problem_banner->{text}, undef, 'initial banner';
+        } else {
+            like $mech->extract_problem_banner->{text}, qr/@{[ $test->{initial_banner} ]}/i, 'initial banner';
+        }
 
         $mech->submit_form_ok(
             {
@@ -883,7 +887,11 @@ for my $test (
 
         is $mech->uri->path, "/report/" . $report_id, "redirected to report page";
 
-        is $mech->extract_problem_banner->{text}, $test->{endstate_banner}, 'submitted banner';
+        if ( !defined( $test->{endstate_banner} ) ) {
+            is $mech->extract_problem_banner->{text}, undef, 'endstate banner';
+        } else {
+            like $mech->extract_problem_banner->{text}, qr/@{[ $test->{endstate_banner} ]}/i, 'endstate banner';
+        }
 
         $mech->email_count_is(0);
 
@@ -1029,8 +1037,12 @@ foreach my $test (
 
         is_deeply $values, $test->{initial_values}, 'initial form values';
 
-        is $mech->extract_problem_banner->{text}, $test->{initial_banner},
-          'initial banner';
+        if ( !defined( $test->{initial_banner} ) ) {
+            is $mech->extract_problem_banner->{text}, undef, 'initial banner';
+        } else {
+            like $mech->extract_problem_banner->{text}, qr/@{[ $test->{initial_banner} ]}/i,
+              'initial banner';
+        }
 
         $mech->submit_form_ok( { with_fields => $test->{fields}, },
             'submit update' );

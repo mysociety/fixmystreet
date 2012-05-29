@@ -182,6 +182,10 @@
 [% INCLUDE 'footer.html' %]
 
 [% BLOCK name %]
+    [% IF problem.council == '2482' %]
+        [% extra_name_info = 1 %]
+        [% INCLUDE 'report/new/extra_name.html' %]
+    [% END %]
     <label for="form_name">[% loc('Name') %]</label>
     [% IF field_errors.name %]
         <p class='form-error'>[% field_errors.name %]</p>

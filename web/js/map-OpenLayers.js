@@ -23,9 +23,10 @@ function fixmystreet_update_pin(lonlat) {
         $('#side-form, #site-logo').show();
         $('#councils_text').html(data.councils_text);
         $('#form_category_row').html(data.category);
-        if ( data.extra_name_info ) {
+        if ( data.extra_name_info && !$('#form_fms_extra_title').length ) {
             // there might be a first name field on some cobrands
-            var lb = $('#form_first_name').prev() || $('#form_name').prev();
+            var lb = $('#form_first_name').prev();
+            if ( lb.length == 0 ) { lb = $('#form_name').prev(); }
             lb.before(data.extra_name_info);
         }
     });
@@ -69,6 +70,7 @@ function fms_markers_list(pins, transform) {
 }
 
 function fixmystreet_onload() {
+<<<<<<< HEAD
     if ( fixmystreet.area.length ) {
         for (var i=0; i<fixmystreet.area.length; i++) {
             var area = new OpenLayers.Layer.Vector("KML", {
@@ -84,7 +86,11 @@ function fixmystreet_onload() {
                     var bounds = area.getDataExtent();
                     if (bounds) {
                         var center = bounds.getCenterLonLat();
-                        fixmystreet.map.setCenter(center, fixmystreet.map.getZoomForExtent(bounds), false, true);
+                        var z = fixmystreet.map.getZoomForExtent(bounds);
+                        if ( z < 13 && $('html').hasClass('mobile') ) {
+                            z = 13;
+                        }
+                        fixmystreet.map.setCenter(center, z, false, true);
                     }
                 });
             }
@@ -181,7 +187,14 @@ function fixmystreet_onload() {
 
     if ( fixmystreet.zoomToBounds ) {
         var bounds = fixmystreet.markers.getDataExtent();
-        if (bounds) { fixmystreet.map.zoomToExtent( bounds ); }
+        if (bounds) {
+            var center = bounds.getCenterLonLat();
+            var z = fixmystreet.map.getZoomForExtent(bounds);
+            if ( z < 13 && $('html').hasClass('mobile') ) {
+                z = 13;
+            }
+            fixmystreet.map.setCenter(center, z);
+        }
     }
 
     $('#hide_pins_link').click(function(e) {
@@ -268,15 +281,16 @@ $(function(){
 
     if (fixmystreet.state_map && fixmystreet.state_map == 'full') {
         // TODO Work better with window resizing, this is pretty 'set up' only at present
-        var $content = $('.content'),
-            q = ( $content.offset().left + $content.width() ) / 2;
+        var $content = $('.content'), mb = $('#map_box'),
+            q = ( $content.offset().left - mb.offset().left + $content.width() ) / 2;
+        if (q < 0) { q = 0; }
         // Need to try and fake the 'centre' being 75% from the left
         fixmystreet.map.pan(-q, -25, { animate: false });
         fixmystreet.map.events.register("movestart", null, function(e){
             fixmystreet.map.moveStart = { zoom: this.getZoom(), center: this.getCenter() };
         });
         fixmystreet.map.events.register("zoomend", null, function(e){
-            if ( fixmystreet.map.moveStart && !fixmystreet.map.moveStart.zoom ) {
+            if ( fixmystreet.map.moveStart && !fixmystreet.map.moveStart.zoom && fixmystreet.map.moveStart.zoom !== 0 ) {
                 return true; // getZoom() on Firefox appears to return null at first?
             }
             if ( !fixmystreet.map.moveStart || !this.getCenter().equals(fixmystreet.map.moveStart.center) ) {
@@ -498,7 +512,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                     fixmystreet.map.getProjectionObject()
                 );
                 var p = fixmystreet.map.getViewPortPxFromLonLat(lonlat);
-                p.x -= ( o.left + w ) / 2;
+                p.x -= ( o.left - bo.left + w ) / 2;
                 lonlat = fixmystreet.map.getLonLatFromViewPortPx(p);
                 fixmystreet.map.panTo(lonlat);
             }

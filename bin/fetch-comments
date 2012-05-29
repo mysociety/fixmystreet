@@ -1,0 +1,15 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+require 5.8.0;
+
+use FixMyStreet::App;
+
+use Open311;
+use Open311::GetServiceRequestUpdates;
+
+
+my $updates = Open311::GetServiceRequestUpdates->new;
+
+$updates->fetch;
