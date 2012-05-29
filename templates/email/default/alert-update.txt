@@ -11,7 +11,7 @@ To view or reply to these updates, please visit the following URL:
 
 You cannot contact anyone by replying to this email.
 
-[% INCLUDE 'signature.txt' %]
+<?=$values['signature']?>
 
 To stop receiving emails when there are new updates on this problem,
 please follow this link: <?=$values['unsubscribe_url']?>

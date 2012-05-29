@@ -4,7 +4,7 @@ The following new problems have been added:
 
 <?=$values['data']?>
 
-[% INCLUDE 'signature.txt' %]
+<?=$values['signature']?>
 
 To stop receiving emails when there are new problems,
 please follow this link: <?=$values['unsubscribe_url']?>

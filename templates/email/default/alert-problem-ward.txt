@@ -5,7 +5,7 @@ within <?=$values['ward_name']?>:
 
 <?=$values['data']?>
 
-[% INCLUDE 'signature.txt' %]
+<?=$values['signature']?>
 
 To stop receiving emails when there are new problems reported to
 <?=$values['area_name']?> within <?=$values['ward_name']?>,
