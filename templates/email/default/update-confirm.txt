@@ -14,5 +14,4 @@ Your update reads:
 
 [% update.text %]
 
-Yours,  
-The FixMyStreet team
+[% INCLUDE 'signature.txt' %]
