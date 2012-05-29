@@ -319,14 +319,15 @@ sub send_email_cron {
         unpack('h*', random_bytes(5, 1))
     );
 
-    $params->{_parameters_}->{signature} = $c->view('Email')->render(
-        $c, 'signature.txt', {
-            additional_template_paths => [
-                FixMyStreet->path_to( 'templates', 'email', $c->cobrand->moniker, $c->stash->{lang_code} )->stringify,
-                FixMyStreet->path_to( 'templates', 'email', $c->cobrand->moniker )->stringify,
-            ]
-        }
-    );
+    $params->{_parameters_}->{signature} = '';
+    #$params->{_parameters_}->{signature} = $c->view('Email')->render(
+    #    $c, 'signature.txt', {
+    #        additional_template_paths => [
+    #            FixMyStreet->path_to( 'templates', 'email', $c->cobrand->moniker, $c->stash->{lang_code} )->stringify,
+    #            FixMyStreet->path_to( 'templates', 'email', $c->cobrand->moniker )->stringify,
+    #        ]
+    #    }
+    #);
 
     my $email = mySociety::Locale::in_gb_locale { mySociety::Email::construct_email($params) };
 
