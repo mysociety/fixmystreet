@@ -1,4 +1,4 @@
-Subject: Confirm your update on FixMyStreet
+Subject: Confirm your update on [% c.cobrand.site_name %]
 
 Hi [% update.name %],
 

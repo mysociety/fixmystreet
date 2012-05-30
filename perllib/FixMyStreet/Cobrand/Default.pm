@@ -351,6 +351,16 @@ Return the title to be used in page heads.
 
 sub site_title { 'FixMyStreet' }
 
+=head2 site_name
+
+Return short name for use in emails.
+
+=cut
+sub site_name {
+    my $self = shift;
+    $self->site_title;
+}
+
 =head2 map_type
 
 Return an override type of map if necessary.

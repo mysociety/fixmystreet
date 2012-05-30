@@ -27,6 +27,9 @@ sub site_title {
     my ($self) = @_;
     return "London Borough of Bromley - Report a problem in Bromley\x{2019}s streets or parks";
 }
+sub site_name {
+    return 'Bromley FixMyStreet';
+}
 
 sub disambiguate_location {
     my $self = shift;
