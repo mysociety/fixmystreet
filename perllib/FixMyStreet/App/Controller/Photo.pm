@@ -6,6 +6,8 @@ BEGIN {extends 'Catalyst::Controller'; }
 
 use DateTime::Format::HTTP;
 use Digest::SHA1 qw(sha1_hex);
+use File::Path;
+use File::Slurp;
 use Path::Class;
 
 =head1 NAME
@@ -94,6 +96,10 @@ sub index :LocalRegex('^(c/)?(\d+)(?:\.(full|tn|fp))?\.jpeg$') {
 
 sub output : Private {
     my ( $self, $c, $photo ) = @_;
+
+    # Save to file
+    File::Path::make_path( FixMyStreet->path_to( 'web', 'photo', 'c' )->stringify );
+    File::Slurp::write_file( FixMyStreet->path_to( 'web', $c->req->path )->stringify, \$photo );
 
     my $dt = DateTime->now()->add( years => 1 );
 
