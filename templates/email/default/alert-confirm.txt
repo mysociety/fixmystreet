@@ -1,9 +1,9 @@
-Subject: Confirm your alert on FixMyStreet
+Subject: Confirm your alert on [% c.cobrand.site_name %]
 
 Hi,
 
 Please click on the link below to confirm the alert you just
-asked to subscribe to on FixMyStreet:
+asked to subscribe to on [% c.cobrand.site_name %]:
 
     [% token_url %]
 

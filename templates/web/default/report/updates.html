@@ -15,7 +15,7 @@
     [%- ELSIF update.user.from_council;
         user_name = update.user.name | html;
         council = update.user.council;
-        IF c.cobrand.moniker == 'bromley';
+        IF council == 'Bromley Council';
             council = "$council <img src='/cobrands/bromley/favicon.png' alt=''>";
         END %]
         [% tprintf( loc( 'Posted by %s (<strong>%s</strong>) at %s' ), user_name, council, prettify_epoch( update.confirmed_local.epoch ) ) -%]

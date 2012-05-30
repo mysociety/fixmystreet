@@ -1,9 +1,9 @@
-Subject: Confirm your problem on FixMyStreet
+Subject: Confirm your problem on [% c.cobrand.site_name %]
 
 Hi [% report.name %],
 
 Please click on the link below to confirm the problem you just
-added to FixMyStreet:
+added to [% c.cobrand.site_name %]:
 
 [% token_url %]
 
