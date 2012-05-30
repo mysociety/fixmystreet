@@ -187,8 +187,19 @@ function takePhoto(type) {
 function fileUploadSuccess(r) {
     console.log( r.response );
     console.log( typeof r.response );
-    if ( r.response.indexOf( 'success' ) >= 0  ) {
-        window.location = 'email_sent.html';
+    if ( r.response ) {
+        var data = JSON.parse( r.response );
+        if ( data.success ) {
+            if ( data.report ) {
+                localStorage.report = data.report;
+                window.location = 'report_created.html';
+            } else {
+                window.location = 'email_sent.html';
+            }
+        } else {
+            alert('Could not submit report');
+            $('input[type=submit]').prop("disabled", false);
+        }
     } else {
         alert('Could not submit report');
         $('input[type=submit]').prop("disabled", false);
@@ -197,6 +208,7 @@ function fileUploadSuccess(r) {
 
 function fileUploadFail() {
     alert('Could not submit report');
+    $('input[type=submit]').prop("disabled", false);
 }
 
 
