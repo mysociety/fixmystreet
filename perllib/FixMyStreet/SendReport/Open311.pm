@@ -55,6 +55,13 @@ sub send {
             $always_send_latlong = 0;
             $send_notpinpointed = 1;
 
+            # make sure we have first_name and last_name attributes
+            if ( $row->cobrand ne 'bromley' ) {
+                my ( $firstname, $lastname ) = ( $row->user->name =~ /(\w+)\s+(.+)/ );
+                push @$extra, { name => 'first_name', value => $firstname };
+                push @$extra, { name => 'last_name', value => $lastname };
+            }
+
             $basic_desc = 1;
         }
 
