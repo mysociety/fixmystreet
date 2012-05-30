@@ -13,8 +13,7 @@ updating the status of your problem:
 Please do not reply to this email; there is a public comment
 box on the questionnaire.
 
-Yours,  
-The FixMyStreet team
+<?=$values['signature']?>
 
 Your problem was as follows:
 

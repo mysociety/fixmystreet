@@ -595,8 +595,9 @@ sub setup_categories_and_councils : Private {
         }
 
         if (@category_options) {
-            @category_options =
-              ( _('-- Pick a category --'), @category_options, _('Other') );
+            @category_options = ( _('-- Pick a category --'), @category_options );
+            push @category_options, _('Other')
+                unless $first_council->{id} == 2482;
             $category_label = _('Category');
         }
     }

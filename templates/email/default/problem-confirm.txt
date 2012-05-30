@@ -16,5 +16,4 @@ Your problem had the title:
 And details:
 [% report.detail %]
 
-Yours,  
-The FixMyStreet team
+[% INCLUDE 'signature.txt' %]

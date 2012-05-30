@@ -1,8 +1,16 @@
-[% INCLUDE 'header.html', title => loc('Confirmation') %]
+[% INCLUDE 'header.html', title = loc('Confirmation') %]
 
 <h1>[% loc('Confirmation') %]</h1>
 
 <p class="confirmed">
+[% IF c.cobrand.is_council %]
+Thank you. You have successfully confirmed your report
+and this will now be investigated by the council.
+You can <a href="[% c.uri_for( '/report', problem.id ) %]">view the problem on this site</a>.
+</p>
+
+<p>Your reference for this problem is [% problem.id %], please quote it in any enquiries.
+[% ELSE %]
 [%    
     loc('You have successfully confirmed your problem');
 
@@ -15,6 +23,7 @@
         c.uri_for( '/report', problem.id )
     );
 %]
+[% END %]
 </p>
 
 [% display_crosssell_advert( problem.user.email, problem.name ) %]
