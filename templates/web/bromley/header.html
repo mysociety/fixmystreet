@@ -12,15 +12,15 @@
 
         <link rel="stylesheet" href="[% version('/cobrands/bromley/base.css') %]">
         <link rel="stylesheet" href="[% version('/cobrands/bromley/layout.css') %]" media="(min-width:48em)">
-	<link rel="stylesheet" href="[% version('/js/fancybox/jquery.fancybox-1.3.4.css') %]">
 	<link rel="stylesheet" href="[% version('/cobrands/bromley/bromley.css') %]">
+        [% extra_css %]
         <!--[if (lt IE 9) & (!IEMobile)]>
             <link rel="stylesheet" href="[% version('/cobrands/bromley/layout.css') %]">
         <![endif]-->
 
         <script src="[% version('/js/modernizr.custom.js') %]" charset="utf-8"></script>
         [% INCLUDE 'common_header_tags.html', js_override = '/cobrands/fixmystreet/fixmystreet.js' %]
-        <script src="[% version('/js/fancybox/jquery.fancybox-1.3.4.pack.js') %]" charset="utf-8"></script>
+        [% extra_js %]
                 
 	<link rel="Shortcut Icon" type="image/x-icon" href="/cobrands/bromley/favicon.ico">
 
