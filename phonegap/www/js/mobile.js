@@ -183,6 +183,21 @@ function takePhotoFail(message) {
 function takePhoto(type) {
     navigator.camera.getPicture(takePhotoSuccess, takePhotoFail, { quality: 50, destinationType: Camera.DestinationType.FILE_URI, sourceType: type }); 
 }
+                    
+function check_name( name, msg ) {
+    $('#email_label').hide();
+    $('#form_email').hide();
+    $('#now_submit').hide();
+    $('#have_password').hide();
+    $('#form_sign_in_yes').hide();
+    $('#let_me_confirm').hide();
+    $('#password_register').hide();
+    $('#password_surround').hide();
+    $('#providing_password').hide();
+    $('#form_name').val( name );
+    $('#form_name').focus();
+    $('#form_name').before('<div class="form-error">' + msg + '</div>' );
+}
 
 function fileUploadSuccess(r) {
     console.log( r.response );
@@ -197,7 +212,11 @@ function fileUploadSuccess(r) {
                 window.location = 'email_sent.html';
             }
         } else {
-            alert('Could not submit report');
+            if ( data.check_name ) {
+                check_name( data.check_name, data.errors.name );
+            } else {
+                alert('Could not submit report');
+            }
             $('input[type=submit]').prop("disabled", false);
         }
     } else {
@@ -272,18 +291,7 @@ function postReport(e) {
                     }
                 } else {
                     if ( data.check_name ) {
-                        $('#email_label').hide();
-                        $('#form_email').hide();
-                        $('#now_submit').hide();
-                        $('#have_password').hide();
-                        $('#form_sign_in_yes').hide();
-                        $('#let_me_confirm').hide();
-                        $('#password_register').hide();
-                        $('#password_surround').hide();
-                        $('#providing_password').hide();
-                        $('#form_name').val( data.check_name );
-                        $('#form_name').focus();
-                        $('#form_name').before('<div class="form-error">' + data.errors.name + '</div>' );
+                        check_name( data.check_name, data.errors.name );
                     }
                     $('input[type=submit]').prop("disabled", false);
                 }
