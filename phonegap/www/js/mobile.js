@@ -195,8 +195,10 @@ function check_name( name, msg ) {
     $('#password_surround').hide();
     $('#providing_password').hide();
     $('#form_name').val( name );
-    $('#form_name').focus();
-    $('#form_name').before('<div class="form-error">' + msg + '</div>' );
+    if ( msg ) {
+        $('#form_name').focus();
+        $('#form_name').before('<div class="form-error">' + msg + '</div>' );
+    }
 }
 
 function fileUploadSuccess(r) {
@@ -305,10 +307,95 @@ function postReport(e) {
     return false;
 }
 
+function sign_in() {
+    jQuery.ajax( {
+        url: CONFIG.FMS_URL + "auth/ajax/sign_in",
+        type: 'POST',
+        data: {
+            email: $('#form_email').val(),
+            password_sign_in: $('#password_sign_in').val(),
+            remember_me: 1
+        },
+        success: function(data) {
+            if ( data.name ) {
+                localStorage.name = data.name;
+                window.location = 'signed_in.html';
+                $('#sign_out').show();
+                $('#sign_in').hide();
+            } else {
+                alert('Sign in Failed :(');
+            }
+        }
+    } );
+
+}
+
+function display_signed_out_msg() {
+    if ( localStorage.signed_out == 1 ) {
+        $('#user-meta').html('<p>You&rsquo;ve been signed out.</p>');
+        localStorage.signed_out = null;
+    }
+}
+
+function sign_out() {
+    jQuery.ajax( {
+        url: CONFIG.FMS_URL + "auth/ajax/sign_out",
+        type: 'GET',
+        success: function(data) {
+            if ( data.signed_out ) {
+                localStorage.signed_out = 1;
+                localStorage.name = null;
+                document.location = 'sign_in.html';
+            }
+        }
+    } );
+}
+
+function check_auth() {
+    if ( $('#user-meta').length ) {
+        jQuery.ajax( {
+            url: CONFIG.FMS_URL + "auth/ajax/check_auth",
+            type: 'GET',
+            statusCode: {
+                200: function(data) {
+                    localStorage.name = data.name;
+                    $('#user-meta').html('<p>Hi ' + localStorage.name + '<a href="#" onclick="sign_out(); return false;">Sign out</a></p>');
+                    $('.mobile-sign-in-banner').show();
+                    $('#sign_in').hide();
+                    $('#sign_out').show();
+                },
+                401: function() {
+                    $('#user-meta').html('');
+                    localStorage.name = '';
+                    $('.mobile-sign-in-banner').show();
+                    $('#sign_out').hide();
+                    $('#sign_in').show();
+                    $('#user-meta').html('');
+                }
+            }
+        } );
+    }
+}
+
+function signed_in() {
+    if ( $('body').hasClass('signed-in-page') ) {
+        $('#user-meta').html('<p>Hi ' + localStorage.name + '<a href="#" onclick="sign_out(); return false;">Sign out</a></p>');
+    }
+
+    if ( $('#form_sign_in').length ) {
+        ('form sign in exists');
+        check_name( localStorage.name );
+        $('.form-focus-hidden').show();
+    }
+}
+
 $(function(){
     $('#postcodeForm').submit(locate);
     $('#mapForm').submit(postReport);
+    $('#signInForm').submit(sign_in);
     $('#ffo').click(getPosition);
     $('#mapForm :input[type=submit]').on('click', function() { submit_clicked = $(this); });
+    check_auth();
+    signed_in();
 });
 

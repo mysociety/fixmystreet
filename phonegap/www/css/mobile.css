@@ -12,6 +12,18 @@
     background: black;
 }
 
+.mobile-sign-in-banner {
+    display: none;
+    background: none;
+}
+
+.mobile-sign-in-banner a {
+  position: absolute;
+  left: auto;
+  right: 0.3em;
+  top: 0.8em;
+}
+
 .mobile-info {
     position: fixed;
     bottom: 0px;
@@ -84,4 +96,17 @@ ol.big-numbers > li {
 #multiple li {
     list-style: none;
     margin: auto;
+}
+
+#nav-link {
+    display: none;
+}
+
+#form_sign_in {
+    margin-top: 1em;
+}
+
+#sign_out,
+#sign_in {
+    display: none;
 }
