@@ -42,7 +42,7 @@ function location_error( msg ) {
         $('#location_error').remove();
         return;
     }
-    
+
     alert(msg);
 
     if ( !$('#location_error') ) {
@@ -109,10 +109,9 @@ function lookup_string(q) {
 }
 
 function locate() {
-    //location_error('');
     $("#multiple").remove();
     var pc = $('#pc').val();
-                    
+
     if (!pc) {
         location_error( "Please enter your location" );
         return false;
@@ -183,7 +182,7 @@ function takePhotoFail(message) {
 function takePhoto(type) {
     navigator.camera.getPicture(takePhotoSuccess, takePhotoFail, { quality: 50, destinationType: Camera.DestinationType.FILE_URI, sourceType: type }); 
 }
-                    
+
 function check_name( name, msg ) {
     $('#email_label').hide();
     $('#form_email').hide();
@@ -237,7 +236,7 @@ var submit_clicked = null;
 
 function postReport(e) {
     e.preventDefault();
-    
+
     // the .stopImmediatePropogation call in invalidHandler should render this
     // redundant but it doesn't seem to work so belt and braces :(
     if ( !$('#mapForm').valid() ) { return; }

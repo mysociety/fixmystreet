@@ -310,10 +310,10 @@ $(function(){
     //make initial tab active
     $('.tab-nav a').first().addClass('active');
     $('.tab').first().addClass('open');
-    
+
     //hide other tabs
     $('.tab').not('.open').hide();
-    
+
     //set up click event
     $(".tab-nav").on('click', 'a', function(e){
         e.preventDefault();
@@ -422,7 +422,7 @@ $.fn.drawer = function(id, ajax) {
                     $('.spinner').remove();
                 });
             }
-            
+
             // Tall drawer - put after .content for scrolling to work okay.
             // position over the top of the main .content in precisely the right location
             d.insertAfter($content).addClass('content').css({
