@@ -404,18 +404,20 @@ function check_auth() {
 }
 
 function signed_in() {
-    if ( $('body').hasClass('signed-in-page') ) {
-        var sign_out_function = sign_out;
-        if ( $('body').hasClass('mappage') ) {
-            sign_out_function = sign_out_around;
+    if ( localStorage.name ) {
+        if ( $('body').hasClass('signed-in-page') ) {
+            var sign_out_function = sign_out;
+            if ( $('body').hasClass('mappage') ) {
+                sign_out_function = sign_out_around;
+            }
+            $('#user-meta').html('<p>Hi ' + localStorage.name + '<a href="#" id="meta_sign_out">Sign out</a></p>');
+            $('#meta_sign_out').on('click', sign_out_function );
         }
-        $('#user-meta').html('<p>Hi ' + localStorage.name + '<a href="#" id="meta_sign_out">Sign out</a></p>');
-        $('#meta_sign_out').on('click', sign_out_function );
-    }
 
-    if ( $('#form_sign_in').length ) {
-        check_name( localStorage.name );
-        $('.form-focus-hidden').show();
+        if ( $('#form_sign_in').length ) {
+            check_name( localStorage.name );
+            $('.form-focus-hidden').show();
+        }
     }
 }
 
