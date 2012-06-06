@@ -350,15 +350,41 @@ function sign_out() {
     } );
 }
 
+function sign_out_around() {
+    jQuery.ajax( {
+        url: CONFIG.FMS_URL + "auth/ajax/sign_out",
+        type: 'GET',
+        success: function(data) {
+            $('#user-meta').html('');
+            $('#email_label').show();
+            $('#form_email').show();
+            $('#now_submit').show();
+            $('#have_password').show();
+            $('#form_sign_in_yes').show();
+            $('#let_me_confirm').show();
+            $('#password_register').show();
+            $('#password_surround').show();
+            $('#providing_password').show();
+            $('#form_name').val( '' );
+            $('.form-focus-hidden').hide();
+        }
+    } );
+}
+
 function check_auth() {
     if ( $('#user-meta').length ) {
+        var sign_out_function = sign_out;
+        if ( $('body').hasClass('mappage') ) {
+            sign_out_function = sign_out_around;
+        }
         jQuery.ajax( {
             url: CONFIG.FMS_URL + "auth/ajax/check_auth",
             type: 'GET',
             statusCode: {
                 200: function(data) {
                     localStorage.name = data.name;
-                    $('#user-meta').html('<p>Hi ' + localStorage.name + '<a href="#" onclick="sign_out(); return false;">Sign out</a></p>');
+                    $('#user-meta').html('<p>Hi ' + localStorage.name + '<a href="#" id="meta_sign_out">Sign out</a></p>');
+                    $('#meta_sign_out').on('click', sign_out_function );
                     $('.mobile-sign-in-banner').show();
                     $('#sign_in').hide();
                     $('#sign_out').show();
@@ -378,11 +404,15 @@ function check_auth() {
 
 function signed_in() {
     if ( $('body').hasClass('signed-in-page') ) {
-        $('#user-meta').html('<p>Hi ' + localStorage.name + '<a href="#" onclick="sign_out(); return false;">Sign out</a></p>');
+        var sign_out_function = sign_out;
+        if ( $('body').hasClass('mappage') ) {
+            sign_out_function = sign_out_around;
+        }
+        $('#user-meta').html('<p>Hi ' + localStorage.name + '<a href="#" id="meta_sign_out">Sign out</a></p>');
+        $('#meta_sign_out').on('click', sign_out_function );
     }
 
     if ( $('#form_sign_in').length ) {
-        ('form sign in exists');
         check_name( localStorage.name );
         $('.form-focus-hidden').show();
     }
