@@ -316,13 +316,14 @@ function sign_in() {
             remember_me: 1
         },
         success: function(data) {
+            console.log(data);
             if ( data.name ) {
                 localStorage.name = data.name;
                 window.location = 'signed_in.html';
                 $('#sign_out').show();
                 $('#sign_in').hide();
             } else {
-                alert('Sign in Failed :(');
+                $('#form_email').before('<div class="form-error">There was a problem with your email/password combination.</div>');
             }
         }
     } );
