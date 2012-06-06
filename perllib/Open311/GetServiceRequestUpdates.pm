@@ -98,12 +98,10 @@ sub update_comments {
                 if ( $comment->created_local > $p->lastupdate_local ) {
                     if ( $p->is_open and lc($request->{status}) eq 'closed' ) {
                         $p->state( 'fixed - council' );
-
-                        $comment->mark_fixed( 1 );
+                        $comment->problem_state( 'fixed - council' );
                     } elsif ( ( $p->is_closed || $p->is_fixed ) and lc($request->{status}) eq 'open' ) {
                         $p->state( 'confirmed' );
-
-                        $comment->mark_open( 1 );
+                        $comment->problem_state( 'confirmed' );
                     }
                 }
 
