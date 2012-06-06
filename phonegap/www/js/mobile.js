@@ -428,3 +428,13 @@ $(function(){
     signed_in();
 });
 
+function onDeviceReady() {
+    var location = document.location + '';
+    if ( location.indexOf('no_connection.html') < 0 && (
+            navigator.network.connection.type == Connection.NONE ||
+            navigator.network.connection.type == Connection.UNKNOWN ) ) {
+        document.location = 'no_connection.html';
+    }
+}
+
+document.addEventListener("deviceready", onDeviceReady, false);
