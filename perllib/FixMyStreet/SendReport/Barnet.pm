@@ -149,7 +149,10 @@ sub send {
                     'string' =>  $result->get_faultstring(),
                     'detail' =>  $result->get_detail(), # possibly only contains debug info
                 );
-            $fault{$_}=~s/^\s*|\s*$//g foreach keys %fault;
+            foreach (keys %fault) {
+                $fault{$_}="" unless defined $fault{$_};
+                $fault{$_}=~s/^\s*|\s*$//g;
+            }
             $fault{actor}&&=" (actor: $fault{actor})";
             $fault{'detail'} &&= "\n" . $fault{'detail'};
             $err_msg = "Failed (problem id $h{id}): Fault $fault{code}$fault{actor}\n$fault{string}$fault{detail}";
@@ -162,6 +165,8 @@ sub send {
         print "Caught an error: $@\n"; 
     }
     if ( $return ) {
+        # for timeouts, we can tidy the message a wee bit (i.e. strip the 'error deserializing...' message)
+        $err_msg=~s/(?:Error deserializing message:.*)(Can't connect to [a-zA-Z0-9.:]+\s*\(Connection timed out\)).*/$1/s;
         $self->error( "Error sending to Barnet: $err_msg" );
     }
     $self->success( !$return );
