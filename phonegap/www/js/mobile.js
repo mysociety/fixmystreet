@@ -373,7 +373,7 @@ function sign_out_around() {
 }
 
 function check_auth() {
-    if ( $('#user-meta').length ) {
+    if ( $('#user-meta').length && localStorage.signed_out != 1 ) {
         var sign_out_function = sign_out;
         if ( $('body').hasClass('mappage') ) {
             sign_out_function = sign_out_around;
