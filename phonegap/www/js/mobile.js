@@ -339,7 +339,7 @@ function display_signed_out_msg() {
 
 function sign_out() {
     jQuery.ajax( {
-        url: CONFIG.FMS_URL + "auth/ajax/sign_out",
+        url: CONFIG.FMS_URL + "auth/ajax/sign_out?" + new Date().getTime(),
         type: 'GET',
         success: function(data) {
             if ( data.signed_out ) {
@@ -353,7 +353,7 @@ function sign_out() {
 
 function sign_out_around() {
     jQuery.ajax( {
-        url: CONFIG.FMS_URL + "auth/ajax/sign_out",
+        url: CONFIG.FMS_URL + "auth/ajax/sign_out?" + new Date().getTime(),
         type: 'GET',
         success: function(data) {
             $('#user-meta').html('');
@@ -379,7 +379,7 @@ function check_auth() {
             sign_out_function = sign_out_around;
         }
         jQuery.ajax( {
-            url: CONFIG.FMS_URL + "auth/ajax/check_auth",
+            url: CONFIG.FMS_URL + "auth/ajax/check_auth?" + new Date().getTime() ,
             type: 'GET',
             statusCode: {
                 200: function(data) {
