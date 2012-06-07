@@ -9,6 +9,7 @@
 }
 
 .mobile-nav-banner {
+    position: fixed;
     background: black;
 }
 
@@ -65,10 +66,6 @@
   position: absolute;
   right: 0.3em;
   bottom: 0.3em;
-}
-
-.mobile-map-banner {
-    position: fixed;
 }
 
 .mobile-header {
