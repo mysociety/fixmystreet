@@ -6,6 +6,10 @@ sub restriction {
     return {};
 }
 
+sub admin_base_url {
+    return 'https://secure.mysociety.org/admin/bci/';
+}
+
 sub get_council_sender {
     my ( $self, $area_id, $area_info ) = @_;
 

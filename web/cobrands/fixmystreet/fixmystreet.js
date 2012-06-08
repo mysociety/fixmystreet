@@ -354,6 +354,7 @@ $.fn.drawer = function(id, ajax) {
             var $v = $(this);
             $('<input/>').attr({ name:$v.attr('name'), value:$v.val(), type:'hidden' }).appendTo(form);
         });
+        $('body').append(form);
         form.submit();
     });
 
