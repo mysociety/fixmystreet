@@ -19,9 +19,9 @@
 
 //
 //  MainViewController.h
-//  FixMyStreet
+//  cordova1.8.0
 //
-//  Created by Struan Donald on 08/03/2012.
+//  Created by Struan Donald on 08/06/2012.
 //  Copyright __MyCompanyName__ 2012. All rights reserved.
 //
 

@@ -19,9 +19,9 @@
 
 //
 //  AppDelegate.h
-//  FixMyStreet
+//  cordova1.8.0
 //
-//  Created by Struan Donald on 08/03/2012.
+//  Created by Struan Donald on 08/06/2012.
 //  Copyright __MyCompanyName__ 2012. All rights reserved.
 //
 
@@ -34,17 +34,15 @@
 #endif
 
 
-@interface AppDelegate : NSObject < UIApplicationDelegate, UIWebViewDelegate, CDVCommandDelegate > {
+@interface AppDelegate : NSObject < UIApplicationDelegate > {
 
-	NSString* invokeString;
 }
 
 // invoke string is passed to your app on launch, this is only valid if you 
-// edit FooBar.plist to add a protocol
+// edit cordova1.8.0-Info.plist to add a protocol
 // a simple tutorial can be found here : 
 // http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
 
-@property (nonatomic, copy)  NSString* invokeString;
 @property (nonatomic, retain) IBOutlet UIWindow* window;
 @property (nonatomic, retain) IBOutlet CDVViewController* viewController;
 
