@@ -159,14 +159,16 @@ sub send {
         }
 
     };
-    print "$err_msg\n" if $err_msg;
+    if ($err_msg) {
+        # for timeouts, we can tidy the message a wee bit (i.e. strip the 'error deserializing...' message)
+        $err_msg=~s/(?:Error deserializing message:.*)(Can't connect to [a-zA-Z0-9.:]+\s*\(Connection timed out\)).*/$1/s;
+        print "$err_msg\n";
+    }
     if ($@) {
         my $e = shift;
         print "Caught an error: $@\n"; 
     }
     if ( $return ) {
-        # for timeouts, we can tidy the message a wee bit (i.e. strip the 'error deserializing...' message)
-        $err_msg=~s/(?:Error deserializing message:.*)(Can't connect to [a-zA-Z0-9.:]+\s*\(Connection timed out\)).*/$1/s;
         $self->error( "Error sending to Barnet: $err_msg" );
     }
     $self->success( !$return );
