@@ -58,6 +58,7 @@ function lookup_string(q) {
     q = q.replace(/\s+/, ' ');
 
     if (!q) {
+        if (navigator.notification.activityStop) { navigator.notification.activityStop(); }
         location_error("Please enter location");
         return false;
     }
@@ -104,7 +105,7 @@ function lookup_string(q) {
         } else {
             location_error("Could not find your location");
         }
-        if (navigator.notificationEx) { navigator.notificationEx.loadingStop(); }
+        if (navigator.notification.activityStop) { navigator.notification.activityStop(); }
     });
 }
 
@@ -117,16 +118,18 @@ function locate() {
         return false;
     }
 
-    var loadingStart = function() {};
-    var loadingStop = function() {};
-    if (typeof navigator.notificationEx !== "undefined") {
-        loadingStart = navigator.notificationEx.loadingStart;
-        loadingStop = navigator.notificationEx.loadingStop;
+    var activityStart = function() {};
+    var activityStop = function() {};
+    if (typeof navigator.notification.activityStart !== "undefined") {
+        activityStart = navigator.notification.activityStart;
+        activityStop = navigator.notification.activityStop;
     }
+    activityStart();
 
     if ( valid_postcode( pc ) ) {
         jQuery.get( CONFIG.MAPIT_URL + 'postcode/' + pc + '.json', function(data, status) {
             if ( status == 'success' ) {
+                activityStop();
                show_around( data.wgs84_lat, data.wgs84_lon );
            } else {
            }
@@ -138,7 +141,7 @@ function locate() {
 }
 
 function foundLocation(myLocation) {
-    if (navigator.notificationEx) { navigator.notificationEx.loadingStop(); }
+    if (navigator.notification.activityStop) { navigator.notification.activityStop(); }
     var lat = myLocation.coords.latitude;
     var long = myLocation.coords.longitude;
 
@@ -148,14 +151,14 @@ function foundLocation(myLocation) {
 function notFoundLocation() { location_error( 'Could not find location' ); }
 
 function getPosition() {
-    var loadingStart = function() {};
-    var loadingStop = function() {};
+    var activityStart = function() {};
+    var activityStop = function() {};
 
-    if (typeof navigator.notificationEx !== "undefined") {
-        loadingStart = navigator.notificationEx.loadingStart;
-        loadingStop = navigator.notificationEx.loadingStop;
+    if (typeof navigator.notification.activityStart !== "undefined") {
+        activityStart = navigator.notification.activityStart;
+        activityStop = navigator.notification.activityStop;
     }
-    loadingStart( { 'backgroundOpacity' : 0.5, labelText: 'Getting Location...', minDuration: 1 } );
+    activityStart( );
 
     navigator.geolocation.getCurrentPosition(foundLocation, notFoundLocation);
 }
@@ -177,6 +180,7 @@ function delPhoto() {
 
 function takePhotoFail(message) {
     alert('There was a problem taking your photo');
+    console.log('error taking picture: ' + message);
 }
 
 function takePhoto(type) {
