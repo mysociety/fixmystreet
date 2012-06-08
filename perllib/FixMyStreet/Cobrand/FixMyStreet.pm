@@ -21,6 +21,8 @@ sub get_council_sender {
     return 'Email';
 }
 
+sub all_reports_style { return 'detailed'; }
+
 sub generate_problem_banner {
     my ( $self, $problem ) = @_;
 

@@ -30,7 +30,11 @@
   </p>
 
   <p>
+  [% IF c.cobrand.is_council %]
+  Or you can subscribe to an alert for all council problems or one based upon what ward you&rsquo;re in:
+  [% ELSE %]
   [% loc("Or you can subscribe to an alert based upon what ward or council you&rsquo;re in:") %]
+  [% END %]
   </p>
 
     [% IF reported_to_options %]

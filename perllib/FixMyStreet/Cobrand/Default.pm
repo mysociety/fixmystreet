@@ -136,6 +136,15 @@ Parameter is QUERY
 
 sub enter_postcode_text { '' }
 
+=head2 all_reports_style
+
+Return the type of problem information to display on the all reports
+pages for councils. Can be either simple or detailed.
+
+=cut
+
+sub all_reports_style { return 'simple'; }
+
 =head2 set_lang_and_domain
 
     my $set_lang = $cobrand->set_lang_and_domain( $lang, $unicode, $dir )

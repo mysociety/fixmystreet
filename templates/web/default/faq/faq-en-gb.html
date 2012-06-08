@@ -25,11 +25,11 @@ or clearing</strong>, such as:
     </dd>
 
     <dt>What isn&rsquo;t FixMyStreet for?</dt>
-    <dd>FixMyStreet is not a way of getting in touch with [% c.cobrand.moniker == 'southampton' ? 'the' : 'your' %] council for all
+    <dd>FixMyStreet is not a way of getting in touch with [% c.cobrand.is_council ? 'the' : 'your' %] council for all
     issues &ndash; please use FixMyStreet only for problems such as the above. We
     often route problem reports via cleansing services or highways and so using
     FixMyStreet for other matters may result in a delay in your report getting
-    to the right department. <strong>You will need to contact [% c.cobrand.moniker == 'southampton' ? 'the' : 'your' %] council
+    to the right department. <strong>You will need to contact [% c.cobrand.is_council ? 'the' : 'your' %] council
     directly for problems such as</strong>: 
 
     <ul><li>Anti-social behaviour
@@ -51,7 +51,7 @@ with a map of that area. You can view problems already reported in that area,
 or report ones of your own simply by clicking on the map at the location of
 the problem.</dd>
         <dt>How are the problems solved?</dt>
-        <dd>They are reported to the [% IF c.cobrand.moniker != 'southampton' %]relevant[% END %] council by email. The
+        <dd>They are reported to the [% IF !c.cobrand.is_council %]relevant[% END %] council by email. The
 council can then resolve the problem the way they normally would.
 Alternatively, you can discuss the problem on the website with others[% IF c.cobrand.moniker != 'southampton' %], and
 then together lobby the council to fix it, or fix it directly yourselves[% END %].</dd>
