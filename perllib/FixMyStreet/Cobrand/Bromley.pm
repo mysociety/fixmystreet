@@ -10,6 +10,7 @@ sub council_id { return 2482; }
 sub council_area { return 'Bromley'; }
 sub council_name { return 'Bromley Council'; }
 sub council_url { return 'bromley'; }
+sub all_reports_style { return 'detailed'; }
 
 sub base_url {
     'https://fix.bromley.gov.uk';
