@@ -28,6 +28,5 @@ blog/conf/general
 blog/conf/general.deployed
 
 phonegap/www/js/config.js
-phonegap/Android/bin/Android.apk
-phonegap/Android/bin/resources.ap_
+phonegap/Android/bin/
 phonegap/iPhone/FixMyStreet.xcodeproj/project.xcworkspace/xcuserdata
