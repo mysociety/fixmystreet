@@ -1,5 +1,10 @@
 function position_map_box() {
     var map_pos = 'absolute', map_height = $('.wrapper').height();
+    // on the all reports page the height of the wrapper leads to a very
+    // large map so we set a maximum size
+    if ( map_height > 600 ) {
+        map_height = 600;
+    }
     $('#map_box').prependTo('.wrapper').css({
         zIndex: 0, position: map_pos,
         top: 1, left: $('.wrapper').left,
@@ -11,6 +16,9 @@ function position_map_box() {
 
 function map_fix() {
     var height = $('.wrapper').height() - 3;
+    if ( height > 600 ) {
+        height = 600;
+    }
     $('#map_box').height(height);
 }
 
