@@ -16,6 +16,8 @@ sub base_url {
     'https://fix.bromley.gov.uk';
 }
 
+sub admin_base_url { '' }
+
 sub path_to_web_templates {
     my $self = shift;
     return [

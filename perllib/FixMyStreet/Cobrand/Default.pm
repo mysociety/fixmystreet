@@ -97,7 +97,7 @@ Base URL for the admin interface.
 
 =cut
 
-sub admin_base_url { 0 }
+sub admin_base_url { '' }
 
 =head2 writetothem_url
 
