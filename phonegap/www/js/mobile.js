@@ -205,10 +205,14 @@ function check_name( name, msg ) {
 }
 
 function fileUploadSuccess(r) {
-    console.log( r.response );
-    console.log( typeof r.response );
     if ( r.response ) {
-        var data = JSON.parse( r.response );
+        var data;
+        try {
+            data = JSON.parse( decodeURIComponent(r.response) );
+        }
+        catch(err) {
+            data = {};
+        }
         if ( data.success ) {
             if ( data.report ) {
                 localStorage.report = data.report;
@@ -272,8 +276,9 @@ function postReport(e) {
         var options = new FileUploadOptions();
         options.fileKey="photo";
         options.fileName=fileURI.substr(fileURI.lastIndexOf('/')+1);
-        options.mimeType="image/jpeg";  
+        options.mimeType="image/jpeg";
         options.params = params;
+        options.chunkedMode = false;
 
         var ft = new FileTransfer();
         ft.upload(fileURI, CONFIG.FMS_URL + "report/new/mobile", fileUploadSuccess, fileUploadFail, options);
