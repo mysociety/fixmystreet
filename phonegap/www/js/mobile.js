@@ -430,16 +430,6 @@ function signed_in() {
     }
 }
 
-$(function(){
-    $('#postcodeForm').submit(locate);
-    $('#mapForm').submit(postReport);
-    $('#signInForm').submit(sign_in);
-    $('#ffo').click(getPosition);
-    $('#mapForm :input[type=submit]').on('click', function() { submit_clicked = $(this); });
-    check_auth();
-    signed_in();
-});
-
 function onDeviceReady() {
     var location = document.location + '';
     if ( location.indexOf('no_connection.html') < 0 && (
@@ -447,6 +437,14 @@ function onDeviceReady() {
             navigator.network.connection.type == Connection.UNKNOWN ) ) {
         document.location = 'no_connection.html';
     }
+    $('#postcodeForm').submit(locate);
+    $('#mapForm').submit(postReport);
+    $('#signInForm').submit(sign_in);
+    $('#ffo').click(getPosition);
+    $('#mapForm :input[type=submit]').on('click', function() { submit_clicked = $(this); });
+    check_auth();
+    signed_in();
+    hideBusy();
 }
 
 document.addEventListener("deviceready", onDeviceReady, false);
