@@ -2,6 +2,39 @@ function touchmove(e) {
     e.preventDefault();
 }
 
+function loadingSpinner(method){
+    if (method == "on") {
+        //Adjust to screen size
+        var pHeight = window.innerHeight;
+        var pWidth = window.innerWidth;
+        var sH = parseInt($('#loadingSpinner').css('height'),10);
+        var sW = parseInt($('#loadingSpinner').css('width'),10);
+        $('#loadingSpinner').css('top',(pHeight-sH)/2+$('body').scrollTop());
+        $('#loadingSpinner').css('left',(pWidth-sW)/2);
+        $('#loadingSpinner').css('z-index',1000);
+        //Show
+        $('#loadingSpinner').show();
+    } else if (method == 'off'){
+        $('#loadingSpinner').hide();
+    }
+}
+
+function showBusy( title, msg ) {
+    if ( navigator && navigator.notification && typeof navigator.notification.activityStart !== "undefined") {
+        navigator.notification.activityStart( title, msg );
+    } else {
+        loadingSpinner('on');
+    }
+}
+
+function hideBusy() {
+    if ( navigator && navigator.notification && navigator.notification.activityStop) {
+        navigator.notification.activityStop();
+    } else {
+        loadingSpinner('off');
+    }
+}
+
 function show_around( lat, long ) {
     pc = $('#pc').val();
     localStorage.latitude = lat;
@@ -38,6 +71,7 @@ function use_lat_long( lat, long ) {
 }
 
 function location_error( msg ) {
+    hideBusy();
     if ( msg === '' ) {
         $('#location_error').remove();
         return;
@@ -58,7 +92,7 @@ function lookup_string(q) {
     q = q.replace(/\s+/, ' ');
 
     if (!q) {
-        if (navigator.notification.activityStop) { navigator.notification.activityStop(); }
+        hideBusy();
         location_error("Please enter location");
         return false;
     }
@@ -105,7 +139,7 @@ function lookup_string(q) {
         } else {
             location_error("Could not find your location");
         }
-        if (navigator.notification.activityStop) { navigator.notification.activityStop(); }
+        hideBusy();
     });
 }
 
@@ -118,20 +152,16 @@ function locate() {
         return false;
     }
 
-    var activityStart = function() {};
-    var activityStop = function() {};
-    if (typeof navigator.notification.activityStart !== "undefined") {
-        activityStart = navigator.notification.activityStart;
-        activityStop = navigator.notification.activityStop;
-    }
-    activityStart();
+    showBusy('Locating', 'Looking up location');
 
     if ( valid_postcode( pc ) ) {
         jQuery.get( CONFIG.MAPIT_URL + 'postcode/' + pc + '.json', function(data, status) {
             if ( status == 'success' ) {
-                activityStop();
+                //activityStop();
                show_around( data.wgs84_lat, data.wgs84_lon );
            } else {
+               activityStop();
+               alert('Could not locate postcode');
            }
         });
     } else {
@@ -141,7 +171,6 @@ function locate() {
 }
 
 function foundLocation(myLocation) {
-    if (navigator.notification.activityStop) { navigator.notification.activityStop(); }
     var lat = myLocation.coords.latitude;
     var long = myLocation.coords.longitude;
 
@@ -151,14 +180,7 @@ function foundLocation(myLocation) {
 function notFoundLocation() { location_error( 'Could not find location' ); }
 
 function getPosition() {
-    var activityStart = function() {};
-    var activityStop = function() {};
-
-    if (typeof navigator.notification.activityStart !== "undefined") {
-        activityStart = navigator.notification.activityStart;
-        activityStop = navigator.notification.activityStop;
-    }
-    activityStart( );
+    showBusy( 'Locating', 'Looking up location' );
 
     navigator.geolocation.getCurrentPosition(foundLocation, notFoundLocation);
 }
@@ -229,12 +251,14 @@ function fileUploadSuccess(r) {
             $('input[type=submit]').prop("disabled", false);
         }
     } else {
+        hideBusy();
         alert('Could not submit report');
         $('input[type=submit]').prop("disabled", false);
     }
 }
 
 function fileUploadFail() {
+    hideBusy();
     alert('Could not submit report');
     $('input[type=submit]').prop("disabled", false);
 }
@@ -270,6 +294,7 @@ function postReport(e) {
         params.submit_register = 1;
     }
 
+    showBusy( 'Sending Report', 'Please wait while your report is sent' );
     if ( $('#form_photo').val() !== '' ) {
         fileURI = $('#form_photo').val();
 
@@ -304,9 +329,11 @@ function postReport(e) {
                         check_name( data.check_name, data.errors.name );
                     }
                     $('input[type=submit]').prop("disabled", false);
+                    hideBusy();
                 }
             },
             error: function (data, status, errorThrown ) {
+                hideBusy();
                 alert( 'There was a problem submitting your report, please try again (' + status + '): ' + JSON.stringify(data), function(){}, 'Submit report' );
                 $('input[type=submit]').prop("disabled", false);
             }
@@ -316,6 +343,7 @@ function postReport(e) {
 }
 
 function sign_in() {
+    showBusy( 'Signing In', 'Please wait while you are signed in' );
     jQuery.ajax( {
         url: CONFIG.FMS_URL + "auth/ajax/sign_in",
         type: 'POST',
@@ -332,6 +360,7 @@ function sign_in() {
                 $('#sign_out').show();
                 $('#sign_in').hide();
             } else {
+                hideBusy();
                 $('#form_email').before('<div class="form-error">There was a problem with your email/password combination.</div>');
             }
         }
