@@ -76,6 +76,25 @@
     margin-top: 35px;
 }
 
+#front-main #postcodeForm {
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+}
+
+#front-main #postcodeForm label {
+    font-size: 0.9em
+}
+
+#front-main a#geolocate_link {
+    font-size: 1.2em;
+    -moz-border-radius: 0.25em;
+    -webkit-border-radius: 0.25em;
+    -o-border-radius: 0.25em;
+    -ms-border-radius: 0.25em;
+    -khtml-border-radius: 0.25em;
+    border-radius: 0.25em;
+    margin-top: 0.5em;
+}
 
 #front-howto h2 {
     margin-top: 0.8em;
