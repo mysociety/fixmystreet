@@ -22,13 +22,6 @@ sub about : Global : Args(0) {
     # don't need to do anything here - should just pass through.
 }
 
-sub for_councils : Path('/for-councils') : Args(0) {
-    my ( $self, $c ) = @_;
-}
-sub for_councils_faq : Path('/for-councils/faq') : Args(0) {
-    my ( $self, $c ) = @_;
-}
-
 sub privacy : Global : Args(0) {
     my ( $self, $c ) = @_;
 }
