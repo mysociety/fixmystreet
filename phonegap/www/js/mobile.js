@@ -40,6 +40,7 @@ function show_around( lat, long ) {
     localStorage.latitude = lat;
     localStorage.longitude = long;
     localStorage.pc = pc;
+    hideBusy();
     window.location='around.html';
     return false;
 }
@@ -141,6 +142,7 @@ function lookup_string(q) {
         }
         hideBusy();
     });
+    return false;
 }
 
 function locate() {
@@ -238,8 +240,10 @@ function fileUploadSuccess(r) {
         if ( data.success ) {
             if ( data.report ) {
                 localStorage.report = data.report;
+                hideBusy();
                 window.location = 'report_created.html';
             } else {
+                hideBusy();
                 window.location = 'email_sent.html';
             }
         } else {
@@ -320,8 +324,10 @@ function postReport(e) {
                     localStorage.long = null;
                     if ( data.report ) {
                         localStorage.report = data.report;
+                        hideBusy();
                         window.location = 'report_created.html';
                     } else {
+                        hideBusy();
                         window.location = 'email_sent.html';
                     }
                 } else {
@@ -356,6 +362,7 @@ function sign_in() {
             console.log(data);
             if ( data.name ) {
                 localStorage.name = data.name;
+                hideBusy();
                 window.location = 'signed_in.html';
                 $('#sign_out').show();
                 $('#sign_in').hide();
@@ -383,6 +390,7 @@ function sign_out() {
             if ( data.signed_out ) {
                 localStorage.signed_out = 1;
                 localStorage.name = null;
+                hideBusy();
                 document.location = 'sign_in.html';
             }
         }
