@@ -13,7 +13,8 @@ sub council_url { return 'bromley'; }
 sub all_reports_style { return 'detailed'; }
 
 sub base_url {
-    'https://fix.bromley.gov.uk';
+    return FixMyStreet->config('BASE_URL') if FixMyStreet->config('STAGING_SITE');
+    return 'https://fix.bromley.gov.uk';
 }
 
 sub admin_base_url { '' }
