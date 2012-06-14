@@ -127,6 +127,15 @@ ol.big-numbers > li {
     display: none;
 }
 
+input.green-btn,
+input.green-btn:hover {
+    border-radius: 2px;
+    background: #9fde23;
+    border-top: #CAEF80;
+    border-left: #BCEF58;
+    border-right: #BCEF58;
+}
+
 #loadingSpinner {
     display: none;
 }
