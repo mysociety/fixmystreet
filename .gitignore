@@ -29,3 +29,8 @@ tags
 blog/web/wp
 blog/conf/general
 blog/conf/general.deployed
+
+phonegap/www/js/config.js
+phonegap/Android/bin/
+phonegap/iPhone/FixMyStreet.xcodeproj/project.xcworkspace/xcuserdata
+phonegap/Android/gen/
