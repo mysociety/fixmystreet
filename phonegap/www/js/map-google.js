@@ -16,7 +16,7 @@ $(function(){
     });
 
     google.maps.event.addListener(map, "zoom_changed", function() {
-        if (map.getZoom() < 13) map.setZoom(13);
-        if (map.getZoom() > 17) map.setZoom(17);
+        if (map.getZoom() < 13) { map.setZoom(13); }
+        if (map.getZoom() > 17) { map.setZoom(17); }
     });
 });

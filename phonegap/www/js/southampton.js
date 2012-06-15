@@ -15,7 +15,7 @@ $(function(){
         }
     }).blur(function(){
         var input = $(this);
-        if (input.val() == '' || input.val() == input.attr('placeholder')) {
+        if (input.val() === '' || input.val() == input.attr('placeholder')) {
             input.css({ 'color': '#999999' });
             input.val(input.attr('placeholder'));
         }

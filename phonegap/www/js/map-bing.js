@@ -17,6 +17,6 @@ $(function(){
 
     Microsoft.Maps.Events.addHandler(map, "viewchangestart", function(e) {
         /* Doesn't work */
-        if (map.getTargetZoom() < 12) return false;
+        if (map.getTargetZoom() < 12) { return false; }
     });
 });
