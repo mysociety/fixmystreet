@@ -151,6 +151,8 @@ foreach my $test (
 
 delete_problems();
 
+my $is_monday = DateTime->now->day_of_week == 1 ? 1 : 0;
+
 foreach my $test (
     {
         desc => 'user fixed today',
@@ -158,7 +160,7 @@ foreach my $test (
         mark_dt      => DateTime->now,
         state => 'fixed - user',
         counts => {
-            totals => [1,1,1,1],
+            totals => $is_monday ? [0,1,1,1] : [1,1,1,1],
             user => [1,1,1,1],
             council => [0,0,0,0],
             avg_fixed => [0,0,0,0],
@@ -171,7 +173,7 @@ foreach my $test (
         mark_dt      => DateTime->now,
         state => 'fixed - council',
         counts => {
-            totals => [2,2,2,2],
+            totals => $is_monday ? [0,2,2,2] : [2,2,2,2],
             user => [1,1,1,1],
             council => [1,1,1,1],
             avg_fixed => [1,1,1,1],
@@ -184,7 +186,7 @@ foreach my $test (
         mark_dt      => DateTime->now,
         state => 'investigating',
         counts => {
-            totals => [3,3,3,3],
+            totals => $is_monday ? [0,3,3,3] : [3,3,3,3],
             user => [1,1,1,1],
             council => [1,1,1,1],
             total_fixed => [2,2,2,2],
@@ -199,7 +201,7 @@ foreach my $test (
         mark_dt      => DateTime->now,
         state => 'in progress',
         counts => {
-            totals => [4,4,4,4],
+            totals => $is_monday ? [0,4,4,4] : [4,4,4,4],
             user => [1,1,1,1],
             council => [1,1,1,1],
             total_fixed => [2,2,2,2],
@@ -215,7 +217,7 @@ foreach my $test (
         mark_dt      => DateTime->now,
         state => 'planned',
         counts => {
-            totals => [5,5,5,5],
+            totals => $is_monday ? [ 0,5,5,5] : [5,5,5,5],
             user => [1,1,1,1],
             council => [1,1,1,1],
             total_fixed => [2,2,2,2],
@@ -232,7 +234,7 @@ foreach my $test (
         mark_dt      => DateTime->now,
         state => 'planned',
         counts => {
-            totals => [5,5,6,6],
+            totals => $is_monday ? [0,5,6,6] : [5,5,6,6],
             user => [1,1,1,1],
             council => [1,1,1,1],
             total_fixed => [2,2,2,2],
@@ -249,7 +251,7 @@ foreach my $test (
         mark_dt      => DateTime->now,
         state => 'fixed - council',
         counts => {
-            totals => [5,5,7,7],
+            totals => $is_monday ? [0,5,7,7] : [5,5,7,7],
             user => [1,1,1,1],
             council => [2,2,2,2],
             total_fixed => [3,3,3,3],
@@ -267,7 +269,7 @@ foreach my $test (
         mark_dt      => DateTime->now->subtract( days => 8 ),
         state => 'fixed - council',
         counts => {
-            totals => [5,5,8,8],
+            totals => $is_monday ? [0,5,8,8] : [5,5,8,8],
             user => [1,1,1,1],
             council => [2,2,3,3],
             total_fixed => [3,3,4,4],
@@ -285,7 +287,7 @@ foreach my $test (
         mark_dt      => DateTime->now->subtract( weeks => 7 ),
         state => 'fixed - user',
         counts => {
-            totals => [5,5,8,9],
+            totals => $is_monday ? [0,5,8,9] : [5,5,8,9],
             user => [1,1,1,2],
             council => [2,2,3,3],
             total_fixed => [3,3,4,5],
@@ -303,7 +305,7 @@ foreach my $test (
         mark_dt      => DateTime->now,
         state => 'closed',
         counts => {
-            totals => [6,6,9,10],
+            totals => $is_monday ? [0,6,9,10] : [6,6,9,10],
             user => [1,1,1,2],
             council => [2,2,3,3],
             total_fixed => [3,3,4,5],
