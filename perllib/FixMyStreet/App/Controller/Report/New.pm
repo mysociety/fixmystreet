@@ -641,10 +641,6 @@ sub setup_categories_and_councils : Private {
 
             $area_ids_to_list{ $contact->area_id } = 1;
 
-            next    # TODO - move this to the cobrand
-              if $c->cobrand->moniker eq 'southampton'
-                  && $contact->category =~ /Street lighting|Traffic lights/;
-
             next if $contact->category eq _('Other');
 
             unless ( $seen{$contact->category} ) {
@@ -776,6 +772,7 @@ sub process_report : Private {
       (
         'title', 'detail', 'pc',                 #
         'detail_size', 'detail_depth',
+        'detail_offensive',
         'may_show_name',                         #
         'category',                              #
         'partial',                               #
@@ -796,7 +793,7 @@ sub process_report : Private {
     $report->title( Utils::cleanup_text( $params{title} ) );
 
     my $detail = Utils::cleanup_text( $params{detail}, { allow_multiline => 1 } );
-    for my $w ('depth', 'size') {
+    for my $w ('depth', 'size', 'offensive') {
         next unless $params{"detail_$w"};
         next if $params{"detail_$w"} eq '-- Please select --';
         $detail .= "\n\n\u$w: " . $params{"detail_$w"};
