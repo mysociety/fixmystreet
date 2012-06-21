@@ -186,10 +186,7 @@
 [% INCLUDE 'footer.html' %]
 
 [% BLOCK name %]
-    [% IF problem.council == '2482' %]
-        [% extra_name_info = 1 %]
-        [% INCLUDE 'report/new/extra_name.html' %]
-    [% END %]
+    [% INCLUDE 'report/new/extra_name.html' %]
 
     [% IF c.user_exists %]
         [% names = c.user.split_name %]
