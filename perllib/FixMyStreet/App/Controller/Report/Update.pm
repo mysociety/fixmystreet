@@ -204,7 +204,7 @@ sub process_update : Private {
     if ( $c->req->param('fms_extra_title') ) {
         my %extras = ();
         $extras{title} = $c->req->param('fms_extra_title');
-        $extras{email_alerts_required} = $c->req->param('add_alert');
+        $extras{email_alerts_requested} = $c->req->param('add_alert');
         $update->extra( \%extras );
 
         $c->stash->{fms_extra_title} = $c->req->param('fms_extra_title');
