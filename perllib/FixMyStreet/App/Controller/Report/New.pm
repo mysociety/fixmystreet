@@ -186,7 +186,6 @@ sub report_form_ajax : Path('ajax') : Args(0) {
     # render templates to get the html
     my $category = $c->render_fragment( 'report/new/category.html');
     my $councils_text = $c->render_fragment( 'report/new/councils_text.html');
-    my $has_open311 = keys %{ $c->stash->{category_extras} };
     my $extra_name_info = $c->stash->{extra_name_info}
         ? $c->render_fragment('report/new/extra_name.html')
         : '';
@@ -195,7 +194,6 @@ sub report_form_ajax : Path('ajax') : Args(0) {
         {
             councils_text   => $councils_text,
             category        => $category,
-            has_open311     => $has_open311,
             extra_name_info => $extra_name_info,
         }
     );
