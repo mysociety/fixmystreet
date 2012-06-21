@@ -201,13 +201,16 @@ sub process_update : Private {
         $update->problem_state( $params{state} );
     }
 
+    my @extra; # Next function fills this, but we don't need it here.
+    # This is just so that the error checkign for these extra fields runs.
+    # TODO Use extra here as it is used on reports.
+    $c->cobrand->process_extras( $c, $update->problem->council, \@extra );
+
     if ( $c->req->param('fms_extra_title') ) {
         my %extras = ();
         $extras{title} = $c->req->param('fms_extra_title');
         $extras{email_alerts_requested} = $c->req->param('add_alert');
         $update->extra( \%extras );
-
-        $c->stash->{fms_extra_title} = $c->req->param('fms_extra_title');
     }
 
     if ( $c->stash->{ first_name } && $c->stash->{ last_name } ) {

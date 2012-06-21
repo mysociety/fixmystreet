@@ -872,7 +872,7 @@ sub process_report : Private {
             };
         }
 
-        $c->cobrand->process_extras( $c, \@contacts, \@extra );
+        $c->cobrand->process_extras( $c, $contacts[0]->area_id, \@extra );
 
         if ( @extra ) {
             $c->stash->{report_meta} = \@extra;
