@@ -70,7 +70,6 @@ function fms_markers_list(pins, transform) {
 }
 
 function fixmystreet_onload() {
-<<<<<<< HEAD
     if ( fixmystreet.area.length ) {
         for (var i=0; i<fixmystreet.area.length; i++) {
             var area = new OpenLayers.Layer.Vector("KML", {
