@@ -49,6 +49,7 @@ while ( my $council = $councils->next ) {
             'problem.whensent'    => { '!=' => undef },
             'problem.external_id'  => { '!=' => undef },
             'problem.council'      => { -like => '%' . $council->area_id .'%' },
+            'problem.send_method_used' => 'Open311',
         },
         {
             join => 'problem',

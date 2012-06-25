@@ -36,3 +36,4 @@ postgresql-8.4
 postgresql-server-dev-8.4
 gnuplot
 ttf-bitstream-vera
+libexpat1-dev

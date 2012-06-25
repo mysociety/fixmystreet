@@ -103,35 +103,7 @@ $(function(){
         } else {
             // Make map full screen on non-mobile sizes.
             $html.removeClass('mobile');
-            if (cobrand == 'bromley') {
-                var bromley_right;
-                if ($html.hasClass('ie6') || $html.hasClass('ie7')) {
-                    bromley_right = '-480px';
-                } else {
-                    bromley_right = '0em';
-                }
-                // Do the same as CSS (in case resized from mobile).
-                $('#map_box').prependTo('.content').css({
-                    zIndex: 1, position: 'absolute',
-                    top: '1em', left: '', right: bromley_right, bottom: '',
-                    width: '464px', height: '464px',
-                    margin: 0
-                });
-            } else if ($html.hasClass('ie6')) {
-                $('#map_box').prependTo('.wrapper').css({
-                    zIndex: 0, position: 'absolute',
-                    top: 0, left: 0, right: 0, bottom: 0,
-                    width: '100%', height: $(window).height(),
-                    margin: 0
-                });
-            } else {
-                $('#map_box').prependTo('.wrapper').css({
-                    zIndex: 0, position: 'fixed',
-                    top: 0, left: 0, right: 0, bottom: 0,
-                    width: '100%', height: '100%',
-                    margin: 0
-                });
-            }
+            position_map_box();
             if (typeof fixmystreet !== 'undefined') {
                 if (cobrand == 'bromley') {
                     //$('#bromley-footer').hide();
@@ -353,7 +325,7 @@ $.fn.drawer = function(id, ajax) {
     });
 };
 
-    if ($('html.mobile').length || cobrand == 'bromley') {
+    if ($('html.mobile').length || slide_wards_down ) {
         $('#council_wards').hide().removeClass('hidden-js').find('h2').hide();
         $('#key-tool-wards').click(function(e){
             e.preventDefault();
@@ -382,6 +354,7 @@ $.fn.drawer = function(id, ajax) {
             var $v = $(this);
             $('<input/>').attr({ name:$v.attr('name'), value:$v.val(), type:'hidden' }).appendTo(form);
         });
+        $('body').append(form);
         form.submit();
     });
 
@@ -454,6 +427,8 @@ $.fn.drawer = function(id, ajax) {
                 offset = -110;
             }
             heightFix(window, '.content', offset);
+            // in case we have a map that isn't full screen
+            map_fix();
         }
     }
 

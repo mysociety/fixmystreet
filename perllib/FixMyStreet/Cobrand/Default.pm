@@ -97,7 +97,7 @@ Base URL for the admin interface.
 
 =cut
 
-sub admin_base_url { 0 }
+sub admin_base_url { '' }
 
 =head2 writetothem_url
 
@@ -135,6 +135,15 @@ Parameter is QUERY
 =cut
 
 sub enter_postcode_text { _('Enter a nearby street name and area') }
+
+=head2 all_reports_style
+
+Return the type of problem information to display on the all reports
+pages for councils. Can be either simple or detailed.
+
+=cut
+
+sub all_reports_style { return 'simple'; }
 
 =head2 set_lang_and_domain
 
@@ -350,6 +359,16 @@ Return the title to be used in page heads.
 =cut
 
 sub site_title { 'FixMyStreet' }
+
+=head2 site_name
+
+Return short name for use in emails.
+
+=cut
+sub site_name {
+    my $self = shift;
+    $self->site_title;
+}
 
 =head2 map_type
 

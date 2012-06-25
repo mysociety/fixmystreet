@@ -54,7 +54,6 @@ sub send {
 
             $always_send_latlong = 0;
             $send_notpinpointed = 1;
-
             $basic_desc = 1;
         }
 
@@ -93,6 +92,7 @@ sub send {
 
         if ( $resp ) {
             $row->external_id( $resp );
+            $row->send_method_used('Open311');
             $result *= 0;
             $self->success( 1 );
         } else {

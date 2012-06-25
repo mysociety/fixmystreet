@@ -504,6 +504,8 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             // e.xy is relative to top left of map, which might not be top left of page
             e.xy.x += bo.left;
             e.xy.y += bo.top;
+
+            // 24 and 64 is the width and height of the marker pin
             if (e.xy.y <= o.top || (e.xy.x >= o.left && e.xy.x <= o.left + w + 24 && e.xy.y >= o.top && e.xy.y <= o.top + h + 64)) {
                 // top of the page, pin hidden by header;
                 // or underneath where the new sidebar will appear

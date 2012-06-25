@@ -10,10 +10,14 @@ sub council_id { return 2482; }
 sub council_area { return 'Bromley'; }
 sub council_name { return 'Bromley Council'; }
 sub council_url { return 'bromley'; }
+sub all_reports_style { return 'detailed'; }
 
 sub base_url {
-    'https://fix.bromley.gov.uk';
+    return FixMyStreet->config('BASE_URL') if FixMyStreet->config('STAGING_SITE');
+    return 'https://fix.bromley.gov.uk';
 }
+
+sub admin_base_url { '' }
 
 sub path_to_web_templates {
     my $self = shift;
@@ -26,6 +30,9 @@ sub path_to_web_templates {
 sub site_title {
     my ($self) = @_;
     return "London Borough of Bromley - Report a problem in Bromley\x{2019}s streets or parks";
+}
+sub site_name {
+    return 'Bromley FixMyStreet';
 }
 
 sub disambiguate_location {

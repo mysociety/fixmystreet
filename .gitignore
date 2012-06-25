@@ -22,9 +22,16 @@ tags
 /web/cobrands/fixmystreet/*.css
 /web/cobrands/bromley/*.css
 /web/cobrands/fixmybarangay/*.css
+/web/photo
+/web/cobrands/barnet/*.css
 /local
 
 /web/cobrands/fixmystreet/compass_app_log.txt
 blog/web/wp
 blog/conf/general
 blog/conf/general.deployed
+
+phonegap/www/js/config.js
+phonegap/Android/bin/
+phonegap/iPhone/FixMyStreet.xcodeproj/project.xcworkspace/xcuserdata
+phonegap/Android/gen/

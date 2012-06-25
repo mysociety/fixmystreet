@@ -47,7 +47,7 @@ $(function(){
 
     jQuery.validator.addMethod('validName', function(value, element) {
         var validNamePat = /\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i;
-        return this.optional(element) || value.length > 5 && value.match( /\S/ ) && !value.match( validNamePat ); }, validation_strings.category );
+        return this.optional(element) || value.length > 5 && value.match( /\S/ ) && value.match( /\s/ ) && !value.match( validNamePat ); }, validation_strings.category );
 
     var form_submitted = 0;
     var submitted = false;
@@ -108,7 +108,10 @@ $(function(){
 
     $('#submit_register').click( function(e) {
         $('#form_category').addClass('required validCategory').removeClass('valid');
-        $('#form_name').addClass('required validName');
+        $('#form_name').addClass('required');
+        if ( $('#mapForm').length ) {
+            $('#form_name').addClass('validName');
+        }
         $('#form_first_name').addClass('required');
         $('#form_last_name').addClass('required');
         $('#form_fms_extra_title').addClass('required');
@@ -116,7 +119,10 @@ $(function(){
 
     $('#problem_submit > input[type="submit"]').click( function(e) {
         $('#form_category').addClass('required validCategory').removeClass('valid');
-        $('#form_name').addClass('required validName');
+        $('#form_name').addClass('required');
+        if ( $('#mapForm').length ) {
+            $('#form_name').addClass('validName');
+        }
         $('#form_first_name').addClass('required');
         $('#form_last_name').addClass('required');
         $('#form_fms_extra_title').addClass('required');

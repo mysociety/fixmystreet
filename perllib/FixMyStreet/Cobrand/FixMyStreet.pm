@@ -14,6 +14,10 @@ sub enter_postcode_text {
     return _("Enter a nearby GB postcode, or street name and area");
 }
 
+sub admin_base_url {
+    return 'https://secure.mysociety.org/admin/bci/';
+}
+
 sub get_council_sender {
     my ( $self, $area_id, $area_info ) = @_;
 
@@ -28,6 +32,8 @@ sub get_council_sender {
 
     return 'Email';
 }
+
+sub all_reports_style { return 'detailed'; }
 
 sub generate_problem_banner {
     my ( $self, $problem ) = @_;
@@ -56,13 +62,13 @@ sub generate_problem_banner {
 }
 
 sub process_extras {
-    my $self     = shift;
-    my $ctx      = shift;
-    my $contacts = shift;
-    my $extra    = shift;
-    my $fields   = shift || [];
+    my $self    = shift;
+    my $ctx     = shift;
+    my $area_id = shift;
+    my $extra   = shift;
+    my $fields  = shift || [];
 
-    if ( $contacts->[0]->area_id == 2482 ) {
+    if ( $area_id == 2482 ) {
         my @fields = ( 'fms_extra_title', @$fields );
         for my $field ( @fields ) {
             my $value = $ctx->request->param( $field );

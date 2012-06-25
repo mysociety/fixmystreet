@@ -347,6 +347,150 @@ foreach my $test (
     };
 }
 
+my $ward_alert = FixMyStreet::App->model('DB::Alert')->find_or_create(
+    {
+        user => $user,
+        parameter => 7117,
+        alert_type => 'area_problems',
+        whensubscribed => $dt->ymd . ' ' . $dt->hms,
+        confirmed => 1,
+        cobrand => 'lichfielddc',
+    }
+);
+
+my $report_to_council = FixMyStreet::App->model('DB::Problem')->find_or_create(
+    {
+        postcode           => 'WS13 6YY',
+        council            => '2434',
+        areas              => ',105255,11806,11828,2247,2504,7117,',
+        category           => 'Other',
+        title              => 'council report',
+        detail             => 'Test 2 Detail',
+        used_map           => 't',
+        name               => 'Test User',
+        anonymous          => 'f',
+        state              => 'closed',
+        confirmed          => $now->ymd . ' ' . $now->hms,
+        lang               => 'en-gb',
+        service            => '',
+        cobrand            => 'default',
+        cobrand_data       => '',
+        send_questionnaire => 't',
+        latitude           => '52.727588',
+        longitude          => '-1.731322',
+        user_id            => $user2->id,
+    }
+);
+
+my $report_to_county_council = FixMyStreet::App->model('DB::Problem')->find_or_create(
+    {
+        postcode           => 'WS13 6YY',
+        council            => '2240',
+        areas              => ',105255,11806,11828,2247,2504,7117,',
+        category           => 'Other',
+        title              => 'county report',
+        detail             => 'Test 2 Detail',
+        used_map           => 't',
+        name               => 'Test User',
+        anonymous          => 'f',
+        state              => 'closed',
+        confirmed          => $now->ymd . ' ' . $now->hms,
+        lang               => 'en-gb',
+        service            => '',
+        cobrand            => 'default',
+        cobrand_data       => '',
+        send_questionnaire => 't',
+        latitude           => '52.727588',
+        longitude          => '-1.731322',
+        user_id            => $user2->id,
+    }
+);
+
+my $report_outside_district = FixMyStreet::App->model('DB::Problem')->find_or_create(
+    {
+        postcode           => 'WS13 6YY',
+        council            => '2221',
+        areas              => ',105255,11806,11828,2247,2504,7117,',
+        category           => 'Other',
+        title              => 'outside district report',
+        detail             => 'Test 2 Detail',
+        used_map           => 't',
+        name               => 'Test User',
+        anonymous          => 'f',
+        state              => 'closed',
+        confirmed          => $now->ymd . ' ' . $now->hms,
+        lang               => 'en-gb',
+        service            => '',
+        cobrand            => 'default',
+        cobrand_data       => '',
+        send_questionnaire => 't',
+        latitude           => '52.7352866189',
+        longitude          => '-1.69540489214',
+        user_id            => $user2->id,
+    }
+);
+
+subtest "check alerts from cobrand send main site url for alerts for different council" => sub {
+    $mech->clear_emails_ok;
+
+    my $sent = FixMyStreet::App->model('DB::AlertSent')->search(
+        {
+            alert_id => $ward_alert->id,
+        }
+    )->delete;
+
+    FixMyStreet::App->model('DB::AlertType')->email_alerts();
+
+    $mech->email_count_is( 1 );
+    my $email = $mech->get_email;
+    my $body = $email->body;
+
+    my $expected1 = mySociety::Config::get('BASE_URL') . '/report/' . $report_to_county_council->id;
+    my $expected3 = mySociety::Config::get('BASE_URL') . '/report/' . $report_outside_district->id;
+    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('lichfielddc')->new();
+    my $expected2 = $cobrand->base_url_for_emails . '/report/' . $report_to_council->id;
+
+    like $body, qr#$expected1#, 'non cobrand area report point to fixmystreet.com';
+    like $body, qr#$expected2#, 'cobrand area report point to cobrand url';
+    like $body, qr#$expected3#, 'report outside district report point to fixmystreet.com';
+};
+
+
+my $local_alert = FixMyStreet::App->model('DB::Alert')->find_or_create(
+    {
+        user => $user,
+        parameter => -1.731322,
+        parameter2 => 52.727588,
+        alert_type => 'local_problems',
+        whensubscribed => $dt->ymd . ' ' . $dt->hms,
+        cobrand     => 'lichfielddc',
+        confirmed => 1,
+    }
+);
+
+subtest "check local alerts from cobrand send main site url for alerts for different council" => sub {
+    $mech->clear_emails_ok;
+
+    my $sent = FixMyStreet::App->model('DB::AlertSent')->search(
+        {
+            alert_id => $local_alert->id,
+        }
+    )->delete;
+
+    FixMyStreet::App->model('DB::AlertType')->email_alerts();
+
+    $mech->email_count_is( 1 );
+    my $email = $mech->get_email;
+    my $body = $email->body;
+
+    my $expected1 = mySociety::Config::get('BASE_URL') . '/report/' . $report_to_county_council->id;
+    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('lichfielddc')->new();
+    my $expected2 = $cobrand->base_url_for_emails . '/report/' . $report_to_council->id;
+
+    like $body, qr#$expected1#, 'non cobrand area report point to fixmystreet.com';
+    like $body, qr#$expected2#, 'cobrand area report point to cobrand url';
+};
+
 $report->comments->delete();
 $report->delete();
 done_testing();

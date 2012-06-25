@@ -293,7 +293,6 @@ body.fullwidthpage {
 }
 // two thirds width page, also has option for a sidebar which can be sticky or not
 body.twothirdswidthpage {
-  @extend .fullwidthpage;
   .content {
     width:40em;
     position: relative;

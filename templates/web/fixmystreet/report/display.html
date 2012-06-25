@@ -60,7 +60,7 @@
 
     [% IF c.cobrand.moniker != 'emptyhomes' %]
     <div class="general-sidebar-notes">
-        <p>[% loc( 'Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href="/faq#privacy">privacy policy</a>' ) %]</p>
+        [% INCLUDE 'report/updates-sidebar-notes.html' %]
     </div>
     [% END %]
 
@@ -182,15 +182,12 @@
 [% INCLUDE 'footer.html' %]
 
 [% BLOCK name %]
-    [% IF problem.council == '2482' %]
-        [% extra_name_info = 1 %]
-        [% INCLUDE 'report/new/extra_name.html' %]
-    [% END %]
+    [% INCLUDE 'report/new/extra_name.html' %]
     <label for="form_name">[% loc('Name') %]</label>
     [% IF field_errors.name %]
         <p class='form-error'>[% field_errors.name %]</p>
     [% END %]
-    <input type="text" name="name" id="form_name" value="[% update.name || c.user.name | html %]" placeholder="[% loc('Your name') %]">
+    <input type="text" [% IF problem.council == '2482' %]class="validName" [% END %]name="name" id="form_name" value="[% update.name || c.user.name | html %]" placeholder="[% loc('Your name') %]">
 
     <div class="checkbox-group">
         <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' UNLESS update.anonymous %]>

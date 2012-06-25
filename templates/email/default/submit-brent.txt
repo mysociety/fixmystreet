@@ -29,8 +29,7 @@ Longitude: <?=$values['longitude']?>
 
 Replies to this email will go to the user who submitted the problem.
 
-Yours,  
-The FixMyStreet team
+<?=$values['signature']?>
 
 This message was sent via FixMyStreet, a project of UKCOD, registered charity
 number 1076346. If there is a more appropriate email address for messages about
@@ -40,5 +39,5 @@ also welcome any other feedback you may have.
 
 FixMyStreet is now available for full integration into council
 websites, making life easier for both you and your residents.
-Read more here: http://www.fixmystreet.com/for-councils
+Read more here: http://www.mysociety.org/for-councils/fixmystreet/
 

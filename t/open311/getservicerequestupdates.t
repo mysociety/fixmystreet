@@ -113,6 +113,7 @@ for my $test (
         close_comment => 0,
         mark_fixed=> 0,
         mark_open => 0,
+        problem_state => undef,
         end_state => 'confirmed',
     },
     {
@@ -122,8 +123,9 @@ for my $test (
         external_id => 638344,
         start_state => 'confirmed',
         close_comment => 1,
-        mark_fixed=> 1,
+        mark_fixed=> 0,
         mark_open => 0,
+        problem_state => 'fixed - council',
         end_state => 'fixed - council',
     },
     {
@@ -134,7 +136,8 @@ for my $test (
         start_state => 'fixed - user',
         close_comment => 0,
         mark_fixed => 0,
-        mark_open => 1,
+        mark_open => 0,
+        problem_state => 'confirmed',
         end_state => 'confirmed',
     },
     {
@@ -145,7 +148,8 @@ for my $test (
         start_state => 'closed',
         close_comment => 0,
         mark_fixed => 0,
-        mark_open => 1,
+        mark_open => 0,
+        problem_state => 'confirmed',
         end_state => 'confirmed',
     },
     {
@@ -185,6 +189,7 @@ for my $test (
         ok $c, 'comment exists';
         is $c->text, $test->{description}, 'text correct';
         is $c->mark_fixed, $test->{mark_fixed}, 'mark_closed correct';
+        is $c->problem_state, $test->{problem_state}, 'problem_state correct';
         is $c->mark_open, $test->{mark_open}, 'mark_open correct';
         is $problem->state, $test->{end_state}, 'correct problem state';
     };

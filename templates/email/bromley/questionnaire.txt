@@ -11,9 +11,7 @@ updating the status of your problem:
 This email has been sent automatically from an unmonitored
 mailbox, please do not reply.
 
-Customer Service Centre  
-London Borough of Bromley  
-Email: csc@bromley.gov.uk
+[% INCLUDE 'signature.txt' %]
 
 
 Your problem was as follows:

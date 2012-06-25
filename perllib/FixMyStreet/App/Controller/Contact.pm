@@ -139,17 +139,17 @@ sub prepare_params_for_email : Private {
     $c->stash->{message} =~ s/\r\n/\n/g;
     $c->stash->{subject} =~ s/\r|\n/ /g;
 
-    my $base_url       = $c->cobrand->base_url_for_emails( $c->cobrand->extra_data );
-    my $admin_base_url = $c->cobrand->admin_base_url
-      || 'https://secure.mysociety.org/admin/bci/';
+    my $base_url = $c->cobrand->base_url_for_emails( $c->cobrand->extra_data );
+    my $admin_url = $c->cobrand->admin_base_url;
 
     if ( $c->stash->{update} ) {
 
         my $problem_url = $base_url . '/report/' . $c->stash->{update}->problem_id
             . '#update_' . $c->stash->{update}->id;
-        my $admin_url   = $admin_base_url . 'update_edit/' . $c->stash->{update}->id;
+        my $admin_url = " - $admin_url" . 'update_edit/' . $c->stash->{update}->id
+            if $admin_url;
         $c->stash->{message} .= sprintf(
-            " \n\n[ Complaint about update %d on report %d - %s - %s ]",
+            " \n\n[ Complaint about update %d on report %d - %s%s ]",
             $c->stash->{update}->id,
             $c->stash->{update}->problem_id,
             $problem_url, $admin_url
@@ -158,9 +158,10 @@ sub prepare_params_for_email : Private {
     elsif ( $c->stash->{problem} ) {
 
         my $problem_url = $base_url . '/report/' . $c->stash->{problem}->id;
-        my $admin_url   = $admin_base_url . 'report_edit/' . $c->stash->{problem}->id;
+        $admin_url = " - $admin_url" . 'report_edit/' . $c->stash->{problem}->id
+            if $admin_url;
         $c->stash->{message} .= sprintf(
-            " \n\n[ Complaint about report %d - %s - %s ]",
+            " \n\n[ Complaint about report %d - %s%s ]",
             $c->stash->{problem}->id,
             $problem_url, $admin_url
         );

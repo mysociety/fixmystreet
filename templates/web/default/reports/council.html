@@ -14,6 +14,12 @@
     %]
 [% END %]
 
+[% IF c.cobrand.is_council %]
+    [% ward_text = loc( 'View reports by ward' ) %]
+[% ELSE %]
+    [% ward_text = loc( 'Wards of this council' ) %]
+[% END %]
+
 [%
     PROCESS "maps/${map.type}.html";
     INCLUDE 'header.html',
@@ -25,8 +31,8 @@
 
 [% map_html %]
 
-[% IF style != 'new' AND children.size %]
-<h2 style="clear:right">[% loc('Wards of this council') %]</h2>
+[% IF c.cobrand.all_reports_style != 'detailed' AND children.size %]
+<h2 style="clear:right">[% ward_text %]</h2>
 <p>[% loc('Follow a ward link to view only reports within that ward.') %]</p>
 <ul>
 [% FOR child IN children.values.sort('name') %]
@@ -72,7 +78,7 @@ Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a
 <a href="/reports/Central+Bedfordshire">Central Bedfordshire Council</a>.
 [% END %]
 </p>
-[% ELSIF style == 'new' %]
+[% ELSIF c.cobrand.all_reports_style == 'detailed' %]
     <div class="shadow-wrap">
         <ul id="key-tools"[% IF NOT children.size %] class="singleton"[% END %]>
             <li><a rel="nofollow" id="key-tool-updates-area" class="feed" href="[% rss_url %]">[%
@@ -80,18 +86,14 @@ Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a
                     'Get updates of reports in Bromley';
                 ELSIF c.cobrand.moniker == 'bromley';
                     'Get updates of reports in this ward';
+                ELSIF c.cobrand.is_council;
+                    tprintf(loc('Get updates of %s problems'), thing);
                 ELSE;
                     tprintf(loc('Get updates of problems in this %s'), thing);
                 END
             %]</a></li>
             [% IF children.size %]
-            <li><a href="#council_wards" id="key-tool-wards" class="chevron">[%
-                IF c.cobrand.moniker == 'bromley';
-                    'View reports by ward';
-                ELSE;
-                    loc('Wards of this council');
-                END
-            %]</a></li>
+            <li><a href="#council_wards" id="key-tool-wards" class="chevron">[% ward_text %]</a></li>
             [% END %]
         </ul>
     </div>
@@ -101,9 +103,9 @@ Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a
 
 [% TRY %][% INCLUDE 'reports/cobrand_stats.html' %][% CATCH file %][% END %]
 
-[% IF style == 'new' AND children.size %]
+[% IF c.cobrand.all_reports_style == 'detailed' AND children.size %]
 <section id="council_wards" class="hidden-js">
-    <h2>[% loc('Wards of this council') %]</h2>
+<h2>[% ward_text %]</h2>
     <p>[% loc('Follow a ward link to view only reports within that ward.') %]</p>
     <ul class="issue-list-a full-width">
         [% FOR child IN children.values.sort('name') %]
@@ -116,7 +118,7 @@ Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a
 [% IF c.cobrand.moniker == 'fixmystreet' %]
 <p class="promo">
     FixMyStreet is now available for local council websites.
-    <a href="/for-councils">Find&nbsp;out&nbsp;more</a>.
+    <a href="http://www.mysociety.org/for-councils/fixmystreet/">Find&nbsp;out&nbsp;more</a>.
 </p>
 [% END %]
 
@@ -137,7 +139,7 @@ Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a
 [% IF problems %]
 
 <ul class="issue-list-a">
-[% IF style == 'new' %]
+[% IF c.cobrand.all_reports_style == 'detailed' %]
 
 [% FOREACH problem IN problems %]
     <li>
