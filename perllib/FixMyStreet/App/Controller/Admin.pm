@@ -532,13 +532,11 @@ sub search_reports : Path('search_reports') {
         if (is_valid_email($search)) {
             $query = [
                 'user.email' => { ilike => $like_search },
-                %{ $site_restriction },
             ];
         } elsif ($search =~ /^id:(\d+)$/) {
             $query = [
                 'me.id' => int($1),
                 'problem.id' => int($1),
-                %{ $site_restriction },
             ];
         } elsif ($search =~ /^area:(\d+)$/) {
             $query = [];
@@ -550,13 +548,13 @@ sub search_reports : Path('search_reports') {
                 'me.name' => { ilike => $like_search },
                 text => { ilike => $like_search },
                 'me.cobrand_data' => { ilike => $like_search },
-                %{ $site_restriction },
             ];
         }
 
         if (@$query) {
             my $updates = $c->model('DB::Comment')->search(
                 {
+                    %{ $site_restriction },
                     -or => $query,
                 },
                 {
