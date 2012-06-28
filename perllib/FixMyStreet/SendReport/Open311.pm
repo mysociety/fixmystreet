@@ -55,10 +55,10 @@ sub send {
             $always_send_latlong = 0;
             $send_notpinpointed = 1;
 
-            # make sure we have first_name and last_name attributes
+            # make sure we have last_name attribute present in row's extra, so
+            # it is passed correctly to Bromley as attribute[]
             if ( $row->cobrand ne 'bromley' ) {
                 my ( $firstname, $lastname ) = ( $row->user->name =~ /(\w+)\s+(.+)/ );
-                push @$extra, { name => 'first_name', value => $firstname };
                 push @$extra, { name => 'last_name', value => $lastname };
             }
 
