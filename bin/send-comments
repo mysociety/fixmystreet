@@ -69,6 +69,18 @@ while ( my $council = $councils->next ) {
             next if bromley_retry_timeout( $comment );
         }
 
+        if ( $council->area_id == 2482 ) {
+            my $extra = $comment->extra;
+            if ( !$extra ) {
+                $extra = {};
+            }
+
+            unless ( $extra->{title} ) {
+                $extra->{title} = $comment->user->title;
+                $comment->extra( $extra );
+            }
+        }
+
         my $id = $o->post_service_request_update( $comment );
 
         if ( $id ) {
