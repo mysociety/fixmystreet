@@ -5,6 +5,14 @@ body {
   background: #1A1A1A;
 }
 
+
+body.frontpage {
+  #site-logo{
+    width: 370px !important;
+	  background: url('/cobrands/fixmybarangay/images/sprite.png') -3px -106px no-repeat;
+  }
+}
+
 #front-main {
   color: $primary_text;
   background: $primary;
@@ -14,6 +22,13 @@ body {
     margin-right: 0;
   }
 
+ 	a {
+		text-decoration:none;
+	}
+
+	p {
+		padding-bottom:4px;
+	}
 }
 
 .nav-wrapper {
