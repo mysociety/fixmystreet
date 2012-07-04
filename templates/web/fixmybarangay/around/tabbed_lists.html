@@ -15,6 +15,57 @@ IF allow_creation %]
 
 [% IF allow_creation %]
 <ul id="message_manager" class="issue-list-a tab">
-    <li><p>Message Manager texts listed here</p></li>
+	<li id="message-control">
+		<div id="mm-username-container">username:&nbsp;<span id="mm-received-username"></span></div>
+		<div id="mm-status-message-container">
+			<div id="mm-status-message"></div>
+		</div>
+		<div id="mm-login-container">
+			<div class="input text">
+				<label for="mm-htauth-username">MM username</label>
+				<input name="mm-htauth-username" id="mm-htauth-username" type="text"/>
+			</div>
+			<div class="input password">
+				<label for="mm-htauth-password">Password</label>
+				<input name="mm-htauth-password" id="mm-htauth-password" type="password"/>
+			</div>
+			<div class="submit">
+				<input  id="available-submit" type="submit" value="Get available messages"/>
+			</div>
+		</div>
+	</li>
+	<li>
+		<div id="mm-message-list" style="min-height:1em;"></div>
+		</div>
+	</li>
 </ul>
+<script type="text/javascript">
+	
+$(document).ready(function() {
+		
+	var mm_populate_username = function(data) {
+		$('#mm-status-message-container').text("Logged in to MM as " + data['username']);
+	}
+	
+	message_manager.config({url_root: "http://dave.message-manager.dev.mysociety.org/"});
+
+	message_manager.setup_click_listener();
+	
+	$('#available-submit').click(function(e){
+		e.preventDefault();
+		message_manager.get_available_messages({callback:mm_populate_username});
+		
+		console.log("called available-submit.click");
+	});
+
+	// submit available-submit on page load if we have a username
+	
+	/*
+	$('#assign-fms-submit').click(function() {
+		message_manager.assign_fms_id($('#message_id').val(), $('#fms_id').val(), {callback:dummy_clear_assign_boxes});
+	});
+	*/
+});
+	
+</script>
 [% END %]

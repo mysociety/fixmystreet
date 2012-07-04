@@ -1,0 +1,63 @@
+$mm_status_message_color:			 #caa;
+$mm_border_color:			#eee;
+
+#message_manager {
+
+	#message-control {
+		#mm-username-container {
+			display: none; // hidden during dev?
+			padding: 8px;
+			text-align: right;
+			color: $mm_status_message_color;
+			font-style: italic;
+			span {
+				color: #000;
+				font-style: normal;
+			}
+		}
+		#mm-status-message-container {
+			min-height: 1.4em;
+			margin: 0 0 8px 0;
+			padding: 8px 4px;
+			color: $mm_status_message_color;
+			font-style: italic;
+		}
+		#mm-login-container {
+			display: block; // only shown on/after a 403
+			border: 1px solid $mm_border_color;
+			padding: 0 1em;
+			margin: 1em;
+			input {
+				margin-bottom: 1em;
+			}
+		}
+	}
+
+	#mm-message-list {
+		ul {
+			list-style-type: none;
+			padding: 0;
+			margin: 0;
+			li {
+				margin: 4px 0 0 0;
+				padding: 0;
+				background-color: white;
+				cursor: pointer;
+				&.msg-is-locked { background-color: #fdd;}
+				&.msg-is-owned { background-color: #dfd;}
+				&.msg-is-busy { background-color: #ffd;}
+				&:hover { background-color: #efe;}
+				div.msg-text {
+					margin-left: 3.5em;
+					padding: 12px;
+					border-left: 1px solid $mm_border_color;
+				}
+				div.msg-tag {
+					padding: 12px;
+					width: 3em;
+					float:left;
+				}
+			}
+		}
+	}
+}
