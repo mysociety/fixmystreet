@@ -133,11 +133,11 @@ var message_manager = new function() {
         }
     }
 
-    // accept an element (e.g., message_list) and add the click event to the li's within it
+    // accept an element (e.g., message_list) and add the click event to the *radio button* within it
     // A bit specific to expect li's perhaps.
     // options are passed through to the lock 
     this.setup_click_listener = function(options) {
-        $message_list_element.on('click', 'li', function(event){ 
+        $message_list_element.on('click', 'input[type=radio]', function(event) {
             var $li = $(this).closest('li');
             var id = $li.attr('id').replace(msg_prefix, '');
             if ($li.hasClass('msg-is-locked')) {
