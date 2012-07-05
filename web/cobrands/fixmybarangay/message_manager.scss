@@ -39,23 +39,30 @@ $mm_border_color:			#eee;
 			padding: 0;
 			margin: 0;
 			li {
+				clear: both;
 				margin: 4px 0 0 0;
 				padding: 0;
-				background-color: white;
 				cursor: pointer;
+				background-color: #F6F6F6;
+				p {
+					background-color: inherit;
+				}
 				&.msg-is-locked { background-color: #fdd;}
 				&.msg-is-owned { background-color: #dfd;}
 				&.msg-is-busy { background-color: #ffd;}
 				&:hover { background-color: #efe;}
-				div.msg-text {
-					margin-left: 3.5em;
-					padding: 12px;
-					border-left: 1px solid $mm_border_color;
-				}
-				div.msg-tag {
-					padding: 12px;
+				span.msg-tag {
 					width: 3em;
 					float:left;
+				}
+				input[type=radio] {
+					display: block;
+					float: left;
+				}
+				label, span.msg-text {
+					display: block;
+					font-weight: normal;
+					margin: 0.1em 0 0.1em 4.5em;
 				}
 			}
 		}

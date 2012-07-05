@@ -104,25 +104,29 @@ var message_manager = new function() {
                 $output.html('<p>No messages available.</p>');
             } else {
                 var $ul = $('<ul/>');
-                $output.empty().append($ul);
-                for (var i = 0; i < messages.length; i++) {
-                    var message = messages[i]['Message'];
-                    var css_class = '';
+                for(var i=0; i< messages.length; i++) {
+                    var msg = messages[i]['Message']; // or use label value
                     var lockkeeper = messages[i]['Lockkeeper']['username'];
+                    var escaped_text = $('<div/>').text(msg.message).html();
+                    var tag = (!msg.tag || msg.tag == 'null')? '&nbsp;' : msg.tag;
+                    tag = $('<span class="msg-tag"/>').html(tag);
+                    var radio = $('<input type="radio"/>').attr({
+                        'id': 'mm_text_' + msg.id,
+                        'name': 'mm_text',
+                        'value': escaped_text
+                    }).wrap('<p/>').parent().html();
+                    var label = $('<label/>', {
+                        'class': 'msg-text',
+                        'for': 'mm_text_' + msg.id
+                    }).text(escaped_text).wrap('<p/>').parent().html();
+                    var p = $('<p/>').append(tag).append(radio).append(label);
+                    var litem = $('<li id="' + msg_prefix + msg.id + '">').append(p);
                     if (lockkeeper) {
-                        css_class = lockkeeper==username? 'msg-is-owned':'msg-is-locked'; 
+                        litem.addClass(lockkeeper==username? 'msg-is-owned':'msg-is-locked'); 
                     }
-                    var escaped_text = $('<div/>').text(message['message']).html(); 
-                    var tag = message['tag'];
-                    if (tag == 'null' || tag == "") {
-                        tag = '&nbsp;'
-                    }
-                    $ul.append(
-                        $('<li id="' + msg_prefix + message['id'] + '"></li>').
-                            addClass(css_class).
-                            append($('<div class="msg-tag"/>').html(message['tag'])).
-                            append($('<div class="msg-text"/>').html(escaped_text + '&nbsp;')));
-                }
+                    $ul.append(litem);
+                };
+                $output.empty().append($ul);
             }
         } else {
             $output.html('<p>No messages (server did not send a list).</p>');
@@ -139,7 +143,7 @@ var message_manager = new function() {
             if ($li.hasClass('msg-is-locked')) {
                 say_status("Trying for lock...");
             } else if ($li.hasClass('msg-is-owned')) {
-                say_status("Checking lock...)");
+                say_status("Checking lock...");
             } else {
                 say_status("Trying for lock...");
             }
@@ -188,7 +192,6 @@ var message_manager = new function() {
     this.request_lock = function(msg_id, options) {
         var $li = $('#' + msg_prefix + msg_id);
         var lock_unique = want_unique_locks;
-        console.log("lock_unique = " + lock_unique + ", want_unique_locks=" + want_unique_locks);
         var callback = null;
         if (options) {
             if (typeof(options['callback']) == 'function') {
@@ -218,13 +221,13 @@ var message_manager = new function() {
                         $('.msg-is-owned', $message_list_element).removeClass('msg-is-owned')
                     }
                     $li.removeClass('msg-is-busy msg-is-locked').addClass('msg-is-owned');
-                    say_status("Lock granted"); // to data['data']['Lockkeeper']['username']?
-                    if (typeof(callback) == "function") {
-                        callback.call($(this), data['data']); // returned data['data'] is 'Message', 'Source', 'Lockkeeper' for success
-                    }
+                    say_status("Lock granted OK"); // to data['data']['Lockkeeper']['username']?
                 } else {
                     $li.removeClass('msg-is-busy').addClass('msg-is-locked');
                     say_status("failed: " + data['error']);
+                }
+                if (typeof(callback) == "function") { // note callbacks must check data['success']
+                    callback.call($(this), data); // returned data['data'] is 'Message', 'Source', 'Lockkeeper' for success
                 }
             }, 
             error: function(jqXHR, textStatus, errorThrown) {

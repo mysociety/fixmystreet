@@ -43,19 +43,30 @@ IF allow_creation %]
 	
 $(document).ready(function() {
 		
-	var mm_populate_username = function(data) {
-		$('#mm-status-message-container').text("Logged in to MM as " + data['username']);
+	var mm_populate_list = function(data) {
+		$('#mm-status-message-container').text("Got messages as " + data['username']);
+		$('input[name=mm_text]').prop('checked', false); // uncheck all
+	}
+	
+	
+	var mm_selected_message = function(data) {
+		var msg_text = "";
+		if (data['success']) {
+			msg_text = data['data']['Message']['message'];
+			// $('#form_detail').val( $('input[name=mm_text]:checked').val() );
+		} else {
+			$('input[name=mm_text]').prop('checked', false); // uncheck all
+		}
+		$('#form_detail').val(msg_text);
 	}
 	
 	message_manager.config({url_root: "http://dave.message-manager.dev.mysociety.org/"});
 
-	message_manager.setup_click_listener();
+	message_manager.setup_click_listener({callback:mm_selected_message});
 	
 	$('#available-submit').click(function(e){
 		e.preventDefault();
-		message_manager.get_available_messages({callback:mm_populate_username});
-		
-		console.log("called available-submit.click");
+		message_manager.get_available_messages({callback:mm_populate_list});		
 	});
 
 	// submit available-submit on page load if we have a username
