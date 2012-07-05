@@ -51,13 +51,16 @@ $(document).ready(function() {
 	
 	var mm_selected_message = function(data) {
 		var msg_text = "";
+		var msg_id = "";
 		if (data['success']) {
 			msg_text = data['data']['Message']['message'];
+			msg_id = data['data']['Message']['id'];
 			// $('#form_detail').val( $('input[name=mm_text]:checked').val() );
 		} else {
 			$('input[name=mm_text]').prop('checked', false); // uncheck all
 		}
 		$('#form_detail').val(msg_text);
+		$('#form_mm_msg_id').val(msg_id);
 	}
 	
 	message_manager.config({url_root: "http://dave.message-manager.dev.mysociety.org/"});
@@ -68,6 +71,12 @@ $(document).ready(function() {
 		e.preventDefault();
 		message_manager.get_available_messages({callback:mm_populate_list});		
 	});
+
+	// problem form hidden input "form_mm_msg_id": pass the MM id into FMS, if used
+	$('<input type="hidden"/>').attr({
+        'id': 'form_mm_msg_id',
+        'name': 'form_mm_msg_id',
+    }).appendTo($('#problem_form'));
 
 	$('#available-submit').click();
 	
