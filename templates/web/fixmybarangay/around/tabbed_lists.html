@@ -36,9 +36,9 @@ IF allow_creation %]
 	</li>
 	<li>
 		<div id="mm-message-list" style="min-height:1em;"></div>
-		</div>
 	</li>
 </ul>
+
 <script type="text/javascript">
 	
 $(document).ready(function() {
@@ -69,7 +69,7 @@ $(document).ready(function() {
 		message_manager.get_available_messages({callback:mm_populate_list});		
 	});
 
-	// submit available-submit on page load if we have a username
+	$('#available-submit').click();
 	
 	/*
 	$('#assign-fms-submit').click(function() {
