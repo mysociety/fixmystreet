@@ -79,6 +79,8 @@ var message_manager = new function() {
         $message_list_element = $(selectors['message_list_selector']);
         $status_element = $(selectors['status_selector']);
         $login_element = $(selectors['login_selector']);
+        $htauth_username = $(selectors['htauth_username_selector']);
+        $htauth_password = $(selectors['htauth_password_selector']);
     }
 
     // btoa doesn't work on all browers?
@@ -88,13 +90,29 @@ var message_manager = new function() {
         return "Basic " + hash;
     }
 
+    function getCurrentAuthCredentials() {
+        var base_auth = "";
+        if ($htauth_username.val().length==0 && Modernizr.localstorage) {
+            base_auth = localStorage['mm_auth'] == undefined? "" : localStorage['mm_auth'];
+        } else {
+            base_auth = make_base_auth(
+                $htauth_username.val(),
+                $htauth_password.val()
+            );
+            if (Modernizr.localstorage) {
+                localStorage['mm_auth'] = base_auth;
+            }
+        }
+        return base_auth;
+    }
+
     function say_status(msg) {
         if ($status_element) {
             $status_element.stop().show()
             $status_element.text(msg);
         }
     }
-
+    
     this.show_available_messages = function(data) {
         var messages = data['messages'];
         username = data['username'];        
@@ -153,6 +171,11 @@ var message_manager = new function() {
     
     // gets messages or else requests login
     this.get_available_messages = function(options) {
+        var base_auth = getCurrentAuthCredentials();
+        if (base_auth == "") {
+            $login_element.stop().slideDown();
+            return;
+        }
         if (options) {
             if (typeof(options['callback']) == 'function') {
                 callback = options['callback'];
@@ -164,10 +187,7 @@ var message_manager = new function() {
             type:     "post", 
             url:      url_root +"messages/available.json",
             beforeSend: function (xhr){
-                xhr.setRequestHeader('Authorization', make_base_auth(
-                    $('#mm-htauth-username').val(),
-                    $('#mm-htauth-password').val()
-                ));
+                xhr.setRequestHeader('Authorization', getCurrentAuthCredentials());
                 xhr.withCredentials = true;
             },
             success:  function(data, textStatus) {
@@ -209,10 +229,7 @@ var message_manager = new function() {
                 (lock_unique? "lock_unique" : "lock") + 
                 "/" + msg_id + ".json",
             beforeSend: function (xhr){
-                xhr.setRequestHeader('Authorization', make_base_auth(
-                    $('#mm-htauth-username').val(),
-                    $('#mm-htauth-password').val()
-                ));
+                xhr.setRequestHeader('Authorization', getCurrentAuthCredentials());
                 xhr.withCredentials = true;
             },
             success:function(data, textStatus) { 
@@ -259,10 +276,7 @@ var message_manager = new function() {
             data:$("#assign-fms-submit").closest("form").serialize(),
             url: url_root +"messages/assign_fms_id/" + msg_id + ".json",
             beforeSend: function (xhr){
-                xhr.setRequestHeader('Authorization', make_base_auth(
-                    $('#mm-htauth-username').val(),
-                    $('#mm-htauth-password').val()
-                ));
+                xhr.setRequestHeader('Authorization', getCurrentAuthCredentials());
                 xhr.withCredentials = true;
             },
             success:function(data, textStatus) {
