@@ -106,6 +106,11 @@ var message_manager = new function() {
         return base_auth;
     }
 
+    function showLoginForm() {
+        $('.mm-msg', $message_list_element).remove(); // remove (old) messages
+        $login_element.stop().slideDown();
+    }
+
     function say_status(msg) {
         if ($status_element) {
             $status_element.stop().show()
@@ -138,7 +143,7 @@ var message_manager = new function() {
                         'for': 'mm_text_' + msg.id
                     }).text(escaped_text).wrap('<p/>').parent().html();
                     var p = $('<p/>').append(tag).append(radio).append(label);
-                    var litem = $('<li id="' + msg_prefix + msg.id + '">').append(p);
+                    var litem = $('<li id="' + msg_prefix + msg.id + '" class="mm-msg">').append(p);
                     if (lockkeeper) {
                         litem.addClass(lockkeeper==username? 'msg-is-owned':'msg-is-locked'); 
                     }
@@ -173,7 +178,7 @@ var message_manager = new function() {
     this.get_available_messages = function(options) {
         var base_auth = getCurrentAuthCredentials();
         if (base_auth == "") {
-            $login_element.stop().slideDown();
+            showLoginForm();
             return;
         }
         if (options) {
@@ -201,7 +206,7 @@ var message_manager = new function() {
                         if (st == 401 || st == 403) {
                             var msg = (st == 401)? "Invalid username or password" : "Access denied: please log in";
                             say_status(msg);
-                            $login_element.stop().slideDown();
+                            showLoginForm();
                         } else {
                             say_status("Error: " + st + " " + textStatus);
                         }
