@@ -5,7 +5,7 @@ $mm_border_color:			#eee;
 
 	#message-control {
 		#mm-username-container {
-			display: none; // hidden during dev?
+			display: none; // hidden during dev
 			padding: 8px;
 			text-align: right;
 			color: $mm_status_message_color;
@@ -23,7 +23,7 @@ $mm_border_color:			#eee;
 			font-style: italic;
 		}
 		#mm-login-container {
-			display: block; // only shown on/after a 403
+			display: none; // only shown on/after a 403
 			border: 1px solid $mm_border_color;
 			padding: 0 1em;
 			margin: 1em;
