@@ -11,16 +11,6 @@ sub council_url { return 'lichfielddc'; }
 
 # Different to councils parent due to this being a two-tier council. If we get
 # more, this can be genericised in the parent.
-sub site_restriction {
-    return { council => '2434' };
-}
-sub sql_restriction {
-    return "and council like '%2434%'";
-}
-sub site_key {
-    return 'lichfield';
-}
-
 sub problems_clause {
     return { council => { like => '%2434%' } };
 }

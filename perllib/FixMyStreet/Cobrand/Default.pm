@@ -44,13 +44,12 @@ sub problems {
 
 =head1 site_restriction
 
-Return a site restriction clause and a site key if the cobrand uses a subset of
-the FixMyStreet data. Parameter is any extra data the cobrand needs. Returns an
-empty string and site key 0 if the cobrand uses all the data.
+Return a site key and a hash of extra query parameters if the cobrand uses a
+subset of the FixMyStreet data. Parameter is any extra data the cobrand needs.
+Returns a site key of 0 and an empty hash if the cobrand uses all the data.
 
 =cut
 
-sub sql_restriction { return ""; }
 sub site_restriction { return {}; }
 sub site_key { return 0; }
 

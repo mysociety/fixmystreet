@@ -15,10 +15,6 @@ sub site_restriction {
     my $self = shift;
     return { council => sprintf('%d', $self->council_id) };
 }
-sub sql_restriction {
-    my $self = shift;
-    return "and council='" . $self->council_id . "'";
-}
 sub site_key {
     my $self = shift;
     return $self->council_url;
@@ -28,6 +24,7 @@ sub restriction {
     return { cobrand => shift->moniker };
 }
 
+# Different function to site_restriction due to two-tier use
 sub problems_clause {
     my $self = shift;
     return { council => sprintf('%d', $self->council_id) };
