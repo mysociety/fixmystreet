@@ -17,7 +17,7 @@ use FixMyStreet::SendReport;
 my $site_key;
 
 sub set_restriction {
-    my ( $rs, $key, $restriction ) = @_;
+    my ( $rs, $key ) = @_;
     $site_key = $key;
 }
 

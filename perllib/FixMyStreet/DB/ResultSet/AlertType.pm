@@ -65,7 +65,7 @@ sub email_alerts ($) {
             # call checks if this is the host that sends mail for this cobrand.
             next unless $cobrand->email_host;
 
-            my ( $name_restictions, $hashref_restriction ) = $cobrand->site_restriction( $row->{cobrand_data} );
+            my $hashref_restriction = $cobrand->site_restriction( $row->{cobrand_data} );
 
             FixMyStreet::App->model('DB::AlertSent')->create( {
                 alert_id  => $row->{alert_id},
@@ -141,7 +141,7 @@ sub email_alerts ($) {
 
         my $longitude = $alert->parameter;
         my $latitude  = $alert->parameter2;
-        my ($site_id, $hashref_restriction) = $cobrand->site_restriction( $alert->cobrand_data );
+        my $hashref_restriction = $cobrand->site_restriction( $alert->cobrand_data );
         my $d = mySociety::Gaze::get_radius_containing_population($latitude, $longitude, 200000);
         # Convert integer to GB locale string (with a ".")
         $d = mySociety::Locale::in_gb_locale {

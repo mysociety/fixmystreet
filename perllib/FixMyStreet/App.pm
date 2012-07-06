@@ -177,7 +177,7 @@ sub setup_request {
     $c->log->debug( sprintf "Set lang to '%s' and cobrand to '%s'",
         $set_lang, $cobrand->moniker );
 
-    $c->model('DB::Problem')->set_restriction( $cobrand->site_restriction() );
+    $c->model('DB::Problem')->set_restriction( $cobrand->site_key() );
 
     Memcached::set_namespace( FixMyStreet->config('FMS_DB_NAME') . ":" );
 
