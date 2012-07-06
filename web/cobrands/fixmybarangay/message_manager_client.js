@@ -2,7 +2,7 @@
  *  message_manager.config(settings)
  *
  * Accepts settings for the Message Manager client. Even if you accept all the defaults,
- * you *must* call config when the page is loaded (i.e., call message_manager.config())
+ * you *MUST* call config when the page is loaded (i.e., call message_manager.config())
  *
  * The (optional) single parameter is a hash of name-value pairs:
  *
@@ -23,26 +23,25 @@
  *
  *
  *   Summary of all methods:
- *   message_manager.config([options])
- *   message_manager.setup_click_listener([options])
- *   message_manager.get_available_messages([options])
- *   message_manager.request_lock(msg_id, [options])  (default use: client code doesn't need to call this explicitly)
- *   message_manager.assign_fms_id(msg_id, fms_id, [options])
+ *     message_manager.config([options])
+ *     message_manager.setup_click_listener([options])
+ *     message_manager.get_available_messages([options])
+ *     message_manager.request_lock(msg_id, [options])  (default use: client code doesn't need to call this explicitly)
+ *     message_manager.assign_fms_id(msg_id, fms_id, [options])
  *
- *  Note: options are {name:value, ...} hashes and often include "callback" which is a function that is executed on success.
- *  Some methods take 'callback' as the only option, but you still need to pass it explicitly.
+ *  Note: options are {name:value, ...} hashes and often include "callback" which is a function that is executed on success
+ *        but see the docs (request_lock executes callback if the call is successful even if the lock was denied, for example).
+ *        Some methods take 'callback' as the only option, but you still need to pass it as a named option.
 */
 
+var message_manager = (function() {
 
+    // default/config values: to be overridden using "config({name:value, ...})"
 
-var message_manager = new function() {
-
-    // default/config values: can be overridden using "config({name:value, ...})"
-
-    var url_root              = 'http://www.example.com/message_manager/';
-    var want_unique_locks     = true; 
-    var msg_prefix            = "msg-";
-    var username;
+    var _url_root              = 'http://www.example.com/message_manager/';
+    var _want_unique_locks     = true; 
+    var _msg_prefix            = "msg-";
+    var _username;
 
     // cached jQuery elements, populated by the (mandatory) call to config()
     var $message_list_element;
@@ -51,7 +50,7 @@ var message_manager = new function() {
     var $htauth_username;
     var $htauth_password;
 
-    this.config = function(settings) {
+    var config = function(settings) {
         var selectors = {
             message_list_selector:    '#mm-message-list',
             status_selector:          '#mm-status-message-container',
@@ -62,13 +61,13 @@ var message_manager = new function() {
         };
         if (settings) {
             if (typeof settings.url_root === 'string') {
-                url_root = settings.url_root;
+                _url_root = settings.url_root;
             }
             if (typeof settings.want_unique_locks !== 'undefined') {
-                want_unique_locks = settings.want_unique_locks;
+                _want_unique_locks = settings.want_unique_locks;
             }
             if (typeof settings.msg_prefix === 'string') {
-                want_unique_locks = settings.msg_prefix;
+                _msg_prefix = settings.msg_prefix;
             }
             for (var sel in selectors) {
                 if (typeof settings[sel] === 'string') {
@@ -84,13 +83,13 @@ var message_manager = new function() {
     };
 
     // btoa doesn't work on all browers?
-    function make_base_auth(user, password) {
+    var make_base_auth = function(user, password) {
         var tok = user + ':' + password;
         var hash = btoa(tok);
         return "Basic " + hash;
-    }
+    };
 
-    function getCurrentAuthCredentials() {
+    var get_current_auth_credentials = function() {
         var base_auth = "";
         if ($htauth_username.val().length === 0 && Modernizr.localstorage) {
             base_auth = localStorage.mm_auth === undefined? "" : localStorage.mm_auth;
@@ -104,22 +103,22 @@ var message_manager = new function() {
             }
         }
         return base_auth;
-    }
+    };
 
-    function showLoginForm() {
+    var show_login_form = function() {
         $('.mm-msg', $message_list_element).remove(); // remove (old) messages
         $login_element.stop().slideDown();
-    }
+    };
 
-    function say_status(msg) {
+    var say_status = function (msg) {
         if ($status_element) {
             $status_element.stop().show().text(msg);
         }
-    }
+    };
 
-    this.show_available_messages = function(data) {
+    var show_available_messages = function(data) {
         var messages = data.messages;
-        username = data.username;        
+        _username = data.username;
         var $output = $message_list_element;
         if (messages instanceof Array) {
             if (messages.length === 0) {
@@ -142,9 +141,9 @@ var message_manager = new function() {
                         'for': 'mm_text_' + msg.id
                     }).text(escaped_text).wrap('<p/>').parent().html();
                     var p = $('<p/>').append(tag).append(radio).append(label);
-                    var litem = $('<li id="' + msg_prefix + msg.id + '" class="mm-msg">').append(p);
+                    var litem = $('<li id="' + _msg_prefix + msg.id + '" class="mm-msg">').append(p);
                     if (lockkeeper) {
-                        litem.addClass(lockkeeper == username? 'msg-is-owned' : 'msg-is-locked'); 
+                        litem.addClass(lockkeeper == _username? 'msg-is-owned' : 'msg-is-locked'); 
                     }
                     $ul.append(litem);
                 }
@@ -158,10 +157,10 @@ var message_manager = new function() {
     // accept an element (e.g., message_list) and add the click event to the *radio button* within it
     // A bit specific to expect li's perhaps.
     // options are passed through to the lock 
-    this.setup_click_listener = function(options) {
+    var setup_click_listener = function(options) {
         $message_list_element.on('click', 'input[type=radio]', function(event) {
             var $li = $(this).closest('li');
-            var id = $li.attr('id').replace(msg_prefix, '');
+            var id = $li.attr('id').replace(_msg_prefix, '');
             if ($li.hasClass('msg-is-locked')) {
                 say_status("Trying for lock...");
             } else if ($li.hasClass('msg-is-owned')) {
@@ -169,15 +168,15 @@ var message_manager = new function() {
             } else {
                 say_status("Trying for lock...");
             }
-            message_manager.request_lock(id, options);
+            request_lock(id, options);
         });
     };
 
     // gets messages or else requests login
-    this.get_available_messages = function(options) {
-        var base_auth = getCurrentAuthCredentials();
+    var get_available_messages = function(options) {
+        var base_auth = get_current_auth_credentials();
         if (base_auth === "") {
-            showLoginForm();
+            show_login_form();
             return;
         }
         if (options) {
@@ -189,13 +188,13 @@ var message_manager = new function() {
         $.ajax({
             dataType: "json", 
             type:     "post", 
-            url:      url_root +"messages/available.json",
+            url:      _url_root +"messages/available.json",
             beforeSend: function (xhr){
-                xhr.setRequestHeader('Authorization', getCurrentAuthCredentials());
+                xhr.setRequestHeader('Authorization', get_current_auth_credentials());
                 xhr.withCredentials = true;
             },
             success:  function(data, textStatus) {
-                          message_manager.show_available_messages(data);
+                          show_available_messages(data);
                           if (typeof(callback) === "function") {
                               callback.call($(this), data); // execute callback
                           }
@@ -205,7 +204,7 @@ var message_manager = new function() {
                         if (st == 401 || st == 403) {
                             var msg = (st == 401)? "Invalid username or password" : "Access denied: please log in";
                             say_status(msg);
-                            showLoginForm();
+                            show_login_form();
                         } else {
                             say_status("Error: " + st + " " + textStatus);
                         }
@@ -213,9 +212,9 @@ var message_manager = new function() {
         });    
     };
 
-    this.request_lock = function(msg_id, options) {
-        var $li = $('#' + msg_prefix + msg_id);
-        var lock_unique = want_unique_locks;
+    var request_lock = function(msg_id, options) {
+        var $li = $('#' + _msg_prefix + msg_id);
+        var lock_unique = _want_unique_locks;
         var callback = null;
         if (options) {
             if (typeof(options.callback) === 'function') {
@@ -229,11 +228,11 @@ var message_manager = new function() {
         $.ajax({
             dataType:"json", 
             type:"post", 
-            url: url_root +"messages/" +
+            url: _url_root +"messages/" +
                 (lock_unique? "lock_unique" : "lock") + 
                 "/" + msg_id + ".json",
             beforeSend: function (xhr){
-                xhr.setRequestHeader('Authorization', getCurrentAuthCredentials());
+                xhr.setRequestHeader('Authorization', get_current_auth_credentials());
                 xhr.withCredentials = true;
             },
             success:function(data, textStatus) { 
@@ -258,13 +257,13 @@ var message_manager = new function() {
         });
     };
 
-    this.assign_fms_id = function(msg_id, fms_id, options) {
+    var assign_fms_id = function(msg_id, fms_id, options) {
         if (options) {
             if (typeof(options.callback) === 'function') {
-                callback = options['callback'];
+                callback = options.callback;
             }
         }
-        var $li = $('#' + msg_prefix + msg_id);
+        var $li = $('#' + _msg_prefix + msg_id);
         if ($li.size() === 0) {
             say_status("Couldn't find message with ID " + msg_id);
             return;
@@ -278,9 +277,9 @@ var message_manager = new function() {
             dataType:"json", 
             type:"post", 
             data:$("#assign-fms-submit").closest("form").serialize(),
-            url: url_root +"messages/assign_fms_id/" + msg_id + ".json",
+            url: _url_root +"messages/assign_fms_id/" + msg_id + ".json",
             beforeSend: function (xhr){
-                xhr.setRequestHeader('Authorization', getCurrentAuthCredentials());
+                xhr.setRequestHeader('Authorization', get_current_auth_credentials());
                 xhr.withCredentials = true;
             },
             success:function(data, textStatus) {
@@ -301,4 +300,13 @@ var message_manager = new function() {
             }
         });
     };
-};
+
+    // revealed public methods:
+    return {
+       config: config,
+       setup_click_listener: setup_click_listener,
+       get_available_messages: get_available_messages,
+       request_lock: request_lock,
+       assign_fms_id: assign_fms_id
+     };
+})();
