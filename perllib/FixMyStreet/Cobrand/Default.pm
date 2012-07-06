@@ -364,6 +364,16 @@ sub map_type {
     return;
 }
 
+=head2 reports_per_page
+
+The number of reports to show per page on all reports page.
+
+=cut
+
+sub reports_per_page {
+    return 100;
+}
+
 =head2 on_map_list_limit
 
 Return the maximum number of items to be given in the list of reports on the map

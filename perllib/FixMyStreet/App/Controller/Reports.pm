@@ -349,7 +349,7 @@ sub load_and_group_problems : Private {
                 { photo    => 'photo is not null' },
             ],
             order_by => { -desc => 'lastupdate' },
-            rows => 100,
+            rows => $c->cobrand->reports_per_page,
         }
     )->page( $page );
     $c->stash->{pager} = $problems->pager;
