@@ -34,6 +34,9 @@ my %contact_params = (
     note => 'Created for test',
 );
 # Let's make some contacts to send things to!
+FixMyStreet::App->model('DB::Contact')->search( {
+    email => { 'like', '%example.com' },
+} )->delete;
 my $contact1 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
     area_id => 2651, # Edinburgh
@@ -859,6 +862,11 @@ for my $test (
   )
 {
     subtest $test->{desc} => sub {
+        if ( $test->{host} =~ /bromley/ && !FixMyStreet::Cobrand->exists('bromley') ) {
+            ok 1, 'Skipping Bromley tests without Bromley cobrand';
+            return;
+        }
+
         $mech->host( $test->{host} );
 
         $mech->log_out_ok;

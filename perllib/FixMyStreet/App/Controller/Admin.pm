@@ -50,7 +50,7 @@ sub index : Path : Args(0) {
 
     $c->forward('check_page_allowed');
 
-    my ( $sql_restriction, $id, $site_restriction ) = $c->cobrand->site_restriction();
+    my ( $id, $site_restriction ) = $c->cobrand->site_restriction();
 
     my $problems = $c->cobrand->problems->summary_count;
 
@@ -122,7 +122,7 @@ sub timeline : Path( 'timeline' ) : Args(0) {
 
     $c->forward('check_page_allowed');
 
-    my ( $sql_restriction, $id, $site_restriction ) = $c->cobrand->site_restriction();
+    my ( $id, $site_restriction ) = $c->cobrand->site_restriction();
     my %time;
 
     $c->model('DB')->schema->storage->sql_maker->quote_char( '"' );
@@ -472,7 +472,7 @@ sub search_reports : Path('search_reports') {
     if (my $search = $c->req->param('search')) {
         $c->stash->{searched} = 1;
 
-        my ( $site_res_sql, $site_key, $site_restriction ) = $c->cobrand->site_restriction;
+        my ( $site_key, $site_restriction ) = $c->cobrand->site_restriction;
 
         my $search_n = 0;
         $search_n = int($search) if $search =~ /^\d+$/;
@@ -574,7 +574,7 @@ sub search_reports : Path('search_reports') {
 sub report_edit : Path('report_edit') : Args(1) {
     my ( $self, $c, $id ) = @_;
 
-    my ( $site_res_sql, $site_key, $site_restriction ) = $c->cobrand->site_restriction;
+    my ( $site_key, $site_restriction ) = $c->cobrand->site_restriction;
 
     my $problem = $c->cobrand->problems->search(
         {
@@ -735,8 +735,7 @@ sub search_users: Path('search_users') : Args(0) {
 sub update_edit : Path('update_edit') : Args(1) {
     my ( $self, $c, $id ) = @_;
 
-    my ( $site_res_sql, $site_key, $site_restriction ) =
-      $c->cobrand->site_restriction;
+    my ( $site_key, $site_restriction ) = $c->cobrand->site_restriction;
     my $update = $c->model('DB::Comment')->search(
         {
             id => $id,

@@ -205,14 +205,14 @@ sub query_main : Private {
     my ( $self, $c ) = @_;
     my $alert_type = $c->stash->{alert_type};
 
-    my ( $site_restriction, $site_id ) = $c->cobrand->site_restriction( $c->cobrand->extra_data );
+    my ( $sql_restriction ) = $c->cobrand->sql_restriction( $c->cobrand->extra_data );
     # Only apply a site restriction if the alert uses the problem table
-    $site_restriction = '' unless $alert_type->item_table eq 'problem';
+    $sql_restriction = '' unless $alert_type->item_table eq 'problem';
 
     # FIXME Do this in a nicer way at some point in the future...
     my $query = 'select * from ' . $alert_type->item_table . ' where '
         . ($alert_type->head_table ? $alert_type->head_table . '_id=? and ' : '')
-        . $alert_type->item_where . $site_restriction . ' order by '
+        . $alert_type->item_where . $sql_restriction . ' order by '
         . $alert_type->item_order;
     my $rss_limit = mySociety::Config::get('RSS_LIMIT');
     $query .= " limit $rss_limit" unless $c->stash->{type} =~ /^all/;

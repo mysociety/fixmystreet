@@ -13,7 +13,11 @@ sub is_council {
 
 sub site_restriction {
     my $self = shift;
-    return ( "and council='" . $self->council_id . "'", $self->council_url, { council => sprintf('%d', $self->council_id) } );
+    return ( $self->council_url, { council => sprintf('%d', $self->council_id) } );
+}
+sub sql_restriction {
+    my $self = shift;
+    return "and council='" . $self->council_id . "'";
 }
 
 sub restriction {

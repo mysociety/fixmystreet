@@ -50,7 +50,8 @@ empty string and site key 0 if the cobrand uses all the data.
 
 =cut
 
-sub site_restriction { return ( "", 0, {} ) }
+sub site_restriction { return ( 0, {} ) }
+sub sql_restriction { return ""; }
 
 =head2 restriction
 

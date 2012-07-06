@@ -38,7 +38,7 @@ Simply returns the config variable (so this function can be overridden in test s
 =cut
 
 sub _get_allowed_cobrands {
-    return FixMyStreet->config('ALLOWED_COBRANDS');
+    return FixMyStreet->config('ALLOWED_COBRANDS') || [];
 }
 
 =head2 available_cobrand_classes

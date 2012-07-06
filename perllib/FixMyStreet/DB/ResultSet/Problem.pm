@@ -14,13 +14,11 @@ use mySociety::MaPit;
 use FixMyStreet::App;
 use FixMyStreet::SendReport;
 
-my $site_restriction;
 my $site_key;
 
 sub set_restriction {
-    my ( $rs, $sql, $key, $restriction ) = @_;
+    my ( $rs, $key, $restriction ) = @_;
     $site_key = $key;
-    $site_restriction = $restriction;
 }
 
 # Front page statistics
