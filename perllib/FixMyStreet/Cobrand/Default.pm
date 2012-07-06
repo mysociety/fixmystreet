@@ -65,31 +65,13 @@ sub restriction {
     return $self->moniker ? { cobrand => $self->moniker } : {};
 }
 
-=head2 base_url_for_emails
-
-Return the base url to use in links in emails for the cobranded version of the
-site, parameter is extra data.
-
-=cut
-
-sub base_url_for_emails {
-    my $self = shift;
-    return $self->base_url;
-}
-
 =head2 base_url_with_lang 
 
 =cut
 
 sub base_url_with_lang {
     my $self = shift;
-    my $email = shift;
-
-    if ($email) {
-        return $self->base_url_for_emails;
-    } else {
-        return $self->base_url;
-    }
+    return $self->base_url;
 }
 
 =head2 admin_base_url

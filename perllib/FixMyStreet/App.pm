@@ -387,11 +387,10 @@ and uses that.
 =cut
 
 sub uri_for_email {
-    my $c    = shift;
-    my @args = @_;
+    my $c = shift;
 
     my $normal_uri = $c->uri_for(@_)->absolute;
-    my $base       = $c->cobrand->base_url_with_lang( 1 );
+    my $base       = $c->cobrand->base_url_with_lang;
 
     my $email_uri = $base . $normal_uri->path_query;
 

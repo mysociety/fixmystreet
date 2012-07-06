@@ -280,7 +280,7 @@ sub _populate_service_request_update_params {
 
     if ( $comment->photo ) {
         my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($comment->cobrand)->new();
-        my $email_base_url = $cobrand->base_url_for_emails($comment->cobrand_data);
+        my $email_base_url = $cobrand->base_url($comment->cobrand_data);
         my $url = $email_base_url . '/photo/c/' . $comment->id . '.full.jpeg';
         $params->{media_url} = $url;
     }

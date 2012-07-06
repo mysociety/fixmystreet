@@ -139,7 +139,7 @@ sub prepare_params_for_email : Private {
     $c->stash->{message} =~ s/\r\n/\n/g;
     $c->stash->{subject} =~ s/\r|\n/ /g;
 
-    my $base_url = $c->cobrand->base_url_for_emails( $c->cobrand->extra_data );
+    my $base_url = $c->cobrand->base_url( $c->cobrand->extra_data );
     my $admin_url = $c->cobrand->admin_base_url;
 
     if ( $c->stash->{update} ) {

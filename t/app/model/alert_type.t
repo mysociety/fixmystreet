@@ -448,7 +448,7 @@ subtest "check alerts from cobrand send main site url for alerts for different c
     my $expected1 = mySociety::Config::get('BASE_URL') . '/report/' . $report_to_county_council->id;
     my $expected3 = mySociety::Config::get('BASE_URL') . '/report/' . $report_outside_district->id;
     my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('lichfielddc')->new();
-    my $expected2 = $cobrand->base_url_for_emails . '/report/' . $report_to_council->id;
+    my $expected2 = $cobrand->base_url . '/report/' . $report_to_council->id;
 
     like $body, qr#$expected1#, 'non cobrand area report point to fixmystreet.com';
     like $body, qr#$expected2#, 'cobrand area report point to cobrand url';
@@ -485,7 +485,7 @@ subtest "check local alerts from cobrand send main site url for alerts for diffe
 
     my $expected1 = mySociety::Config::get('BASE_URL') . '/report/' . $report_to_county_council->id;
     my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('lichfielddc')->new();
-    my $expected2 = $cobrand->base_url_for_emails . '/report/' . $report_to_council->id;
+    my $expected2 = $cobrand->base_url . '/report/' . $report_to_council->id;
 
     like $body, qr#$expected1#, 'non cobrand area report point to fixmystreet.com';
     like $body, qr#$expected2#, 'cobrand area report point to cobrand url';

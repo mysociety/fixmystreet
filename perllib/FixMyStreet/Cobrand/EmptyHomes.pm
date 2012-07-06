@@ -33,13 +33,8 @@ sub area_types {
 
 sub base_url_with_lang {
     my $self = shift;
-    my $email = shift;
 
     my $base = $self->base_url;
-
-    if ($email) {
-        $base = $self->base_url_for_emails;
-    }
 
     my $lang = $mySociety::Locale::lang;
     if ($lang eq 'cy') {

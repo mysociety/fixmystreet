@@ -85,7 +85,7 @@ sub email_alerts ($) {
                 $data{state_message} = _("This report is currently marked as open.");
             }
 
-            my $url = $cobrand->base_url_for_emails( $row->{alert_cobrand_data} );
+            my $url = $cobrand->base_url( $row->{alert_cobrand_data} );
             if ( $hashref_restriction && $hashref_restriction->{council} && $row->{council} ne $hashref_restriction->{council} ) {
                 $url = mySociety::Config::get('BASE_URL');
             }
@@ -164,7 +164,7 @@ sub email_alerts ($) {
                 alert_id  => $alert->id,
                 parameter => $row->{id},
             } );
-            my $url = $cobrand->base_url_for_emails( $alert->cobrand_data );
+            my $url = $cobrand->base_url( $alert->cobrand_data );
             if ( $hashref_restriction && $hashref_restriction->{council} && $row->{council} ne $hashref_restriction->{council} ) {
                 $url = mySociety::Config::get('BASE_URL');
             }
@@ -203,7 +203,7 @@ sub _send_aggregated_alert_email(%) {
             email => $data{alert_email},
         }
     } );
-    $data{unsubscribe_url} = $cobrand->base_url_for_emails( $data{cobrand_data} ) . '/A/' . $token->token;
+    $data{unsubscribe_url} = $cobrand->base_url( $data{cobrand_data} ) . '/A/' . $token->token;
 
     my $template = FixMyStreet->path_to(
         "templates", "email", $cobrand->moniker, $data{lang}, "$data{template}.txt"
