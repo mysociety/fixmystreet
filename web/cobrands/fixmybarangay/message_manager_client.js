@@ -36,21 +36,21 @@
 
 
 var message_manager = new function() {
-    
+
     // default/config values: can be overridden using "config({name:value, ...})"
-    
+
     var url_root              = 'http://www.example.com/message_manager/';
     var want_unique_locks     = true; 
     var msg_prefix            = "msg-";
     var username;
-    
+
     // cached jQuery elements, populated by the (mandatory) call to config()
     var $message_list_element;
     var $status_element;
     var $login_element;
     var $htauth_username;
     var $htauth_password;
-    
+
     this.config = function(settings) {
         var selectors = {
             message_list_selector:    '#mm-message-list',
@@ -59,29 +59,29 @@ var message_manager = new function() {
             username_selector:        '#mm-received-username',
             htauth_username_selector: '#mm-htauth-username',
             htauth_password_selector: '#mm-htauth-password'
-        }
+        };
         if (settings) {
-            if (typeof settings['url_root'] == 'string') {
-                url_root = settings['url_root'];
+            if (typeof settings.url_root === 'string') {
+                url_root = settings.url_root;
             }
-            if (typeof settings['want_unique_locks'] != 'undefined') {
-                want_unique_locks = settings['want_unique_locks'];
+            if (typeof settings.want_unique_locks !== 'undefined') {
+                want_unique_locks = settings.want_unique_locks;
             }
-            if (typeof settings['msg_prefix'] == 'string') {
-                want_unique_locks = settings['msg_prefix'];
+            if (typeof settings.msg_prefix === 'string') {
+                want_unique_locks = settings.msg_prefix;
             }
             for (var sel in selectors) {
-                if (typeof settings[sel] == 'string') {
+                if (typeof settings[sel] === 'string') {
                     selectors[sel] = settings[sel];
                 }
             }
         }
-        $message_list_element = $(selectors['message_list_selector']);
-        $status_element = $(selectors['status_selector']);
-        $login_element = $(selectors['login_selector']);
-        $htauth_username = $(selectors['htauth_username_selector']);
-        $htauth_password = $(selectors['htauth_password_selector']);
-    }
+        $message_list_element = $(selectors.message_list_selector);
+        $status_element = $(selectors.status_selector);
+        $login_element = $(selectors.login_selector);
+        $htauth_username = $(selectors.htauth_username_selector);
+        $htauth_password = $(selectors.htauth_password_selector);
+    };
 
     // btoa doesn't work on all browers?
     function make_base_auth(user, password) {
@@ -92,15 +92,15 @@ var message_manager = new function() {
 
     function getCurrentAuthCredentials() {
         var base_auth = "";
-        if ($htauth_username.val().length==0 && Modernizr.localstorage) {
-            base_auth = localStorage['mm_auth'] == undefined? "" : localStorage['mm_auth'];
+        if ($htauth_username.val().length === 0 && Modernizr.localstorage) {
+            base_auth = localStorage.mm_auth === undefined? "" : localStorage.mm_auth;
         } else {
             base_auth = make_base_auth(
                 $htauth_username.val(),
                 $htauth_password.val()
             );
             if (Modernizr.localstorage) {
-                localStorage['mm_auth'] = base_auth;
+                localStorage.mm_auth = base_auth;
             }
         }
         return base_auth;
@@ -113,25 +113,24 @@ var message_manager = new function() {
 
     function say_status(msg) {
         if ($status_element) {
-            $status_element.stop().show()
-            $status_element.text(msg);
+            $status_element.stop().show().text(msg);
         }
     }
-    
+
     this.show_available_messages = function(data) {
-        var messages = data['messages'];
-        username = data['username'];        
+        var messages = data.messages;
+        username = data.username;        
         var $output = $message_list_element;
         if (messages instanceof Array) {
-            if (messages.length==0) {
+            if (messages.length === 0) {
                 $output.html('<p>No messages available.</p>');
             } else {
                 var $ul = $('<ul/>');
                 for(var i=0; i< messages.length; i++) {
-                    var msg = messages[i]['Message']; // or use label value
-                    var lockkeeper = messages[i]['Lockkeeper']['username'];
+                    var msg = messages[i].Message; // or use label value
+                    var lockkeeper = messages[i].Lockkeeper.username;
                     var escaped_text = $('<div/>').text(msg.message).html();
-                    var tag = (!msg.tag || msg.tag == 'null')? '&nbsp;' : msg.tag;
+                    var tag = (!msg.tag || msg.tag === 'null')? '&nbsp;' : msg.tag;
                     tag = $('<span class="msg-tag"/>').html(tag);
                     var radio = $('<input type="radio"/>').attr({
                         'id': 'mm_text_' + msg.id,
@@ -145,16 +144,16 @@ var message_manager = new function() {
                     var p = $('<p/>').append(tag).append(radio).append(label);
                     var litem = $('<li id="' + msg_prefix + msg.id + '" class="mm-msg">').append(p);
                     if (lockkeeper) {
-                        litem.addClass(lockkeeper==username? 'msg-is-owned':'msg-is-locked'); 
+                        litem.addClass(lockkeeper == username? 'msg-is-owned' : 'msg-is-locked'); 
                     }
                     $ul.append(litem);
-                };
+                }
                 $output.empty().append($ul);
             }
         } else {
             $output.html('<p>No messages (server did not send a list).</p>');
         }
-    }
+    };
 
     // accept an element (e.g., message_list) and add the click event to the *radio button* within it
     // A bit specific to expect li's perhaps.
@@ -172,18 +171,18 @@ var message_manager = new function() {
             }
             message_manager.request_lock(id, options);
         });
-    }
-    
+    };
+
     // gets messages or else requests login
     this.get_available_messages = function(options) {
         var base_auth = getCurrentAuthCredentials();
-        if (base_auth == "") {
+        if (base_auth === "") {
             showLoginForm();
             return;
         }
         if (options) {
-            if (typeof(options['callback']) == 'function') {
-                callback = options['callback'];
+            if (typeof(options.callback) === 'function') {
+                callback = options.callback;
             }
         }
         $login_element.stop().hide();
@@ -197,7 +196,7 @@ var message_manager = new function() {
             },
             success:  function(data, textStatus) {
                           message_manager.show_available_messages(data);
-                          if (typeof(callback) == "function") {
+                          if (typeof(callback) === "function") {
                               callback.call($(this), data); // execute callback
                           }
                       }, 
@@ -213,17 +212,17 @@ var message_manager = new function() {
                       }
         });    
     };
-        
+
     this.request_lock = function(msg_id, options) {
         var $li = $('#' + msg_prefix + msg_id);
         var lock_unique = want_unique_locks;
         var callback = null;
         if (options) {
-            if (typeof(options['callback']) == 'function') {
-                callback = options['callback'];
+            if (typeof(options.callback) === 'function') {
+                callback = options.callback;
             }
-            if (typeof(options['lock_unique']) != undefined && options['lock_unique'] != undefined) {
-                lock_unique = options['lock_unique'];
+            if (typeof(options.lock_unique) !== undefined && options.lock_unique !== undefined) {
+                lock_unique = options.lock_unique;
             }
         }
         $li.addClass('msg-is-busy');
@@ -238,17 +237,17 @@ var message_manager = new function() {
                 xhr.withCredentials = true;
             },
             success:function(data, textStatus) { 
-                if (data['success']) {
+                if (data.success) {
                     if (lock_unique) {
-                        $('.msg-is-owned', $message_list_element).removeClass('msg-is-owned')
+                        $('.msg-is-owned', $message_list_element).removeClass('msg-is-owned');
                     }
                     $li.removeClass('msg-is-busy msg-is-locked').addClass('msg-is-owned');
                     say_status("Lock granted OK"); // to data['data']['Lockkeeper']['username']?
                 } else {
                     $li.removeClass('msg-is-busy').addClass('msg-is-locked');
-                    say_status("failed: " + data['error']);
+                    say_status("failed: " + data.error);
                 }
-                if (typeof(callback) == "function") { // note callbacks must check data['success']
+                if (typeof(callback) === "function") { // note callbacks must check data['success']
                     callback.call($(this), data); // returned data['data'] is 'Message', 'Source', 'Lockkeeper' for success
                 }
             }, 
@@ -258,15 +257,15 @@ var message_manager = new function() {
             }
         });
     };
-    
+
     this.assign_fms_id = function(msg_id, fms_id, options) {
         if (options) {
-            if (typeof(options['callback']) == 'function') {
+            if (typeof(options.callback) === 'function') {
                 callback = options['callback'];
             }
         }
         var $li = $('#' + msg_prefix + msg_id);
-        if ($li.size() == 0) {
+        if ($li.size() === 0) {
             say_status("Couldn't find message with ID " + msg_id);
             return;
         }
@@ -285,15 +284,15 @@ var message_manager = new function() {
                 xhr.withCredentials = true;
             },
             success:function(data, textStatus) {
-                if (data['success']) {
+                if (data.success) {
                     $li.removeClass('msg-is-busy msg-is-locked').addClass('msg-is-owned').fadeOut('slow'); // no longer available
                     say_status("FMS ID assigned"); // to data['data']['Lockkeeper']['username']?
-                    if (typeof(callback) == "function") {
-                        callback.call($(this), data['data']); // returned data['data'] is 'Message', 'Source', 'Lockkeeper' for success
+                    if (typeof(callback) === "function") {
+                        callback.call($(this), data.data); // returned data['data'] is 'Message', 'Source', 'Lockkeeper' for success
                     }
                 } else {
                     $li.removeClass('msg-is-busy').addClass('msg-is-locked');
-                    say_status("failed: " + data['error']);
+                    say_status("failed: " + data.error);
                 }
             }, 
             error: function(jqXHR, textStatus, errorThrown) {
@@ -301,5 +300,5 @@ var message_manager = new function() {
                 $li.removeClass('msg-is-busy');
             }
         });
-    }
+    };
 };
