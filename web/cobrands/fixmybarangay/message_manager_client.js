@@ -91,12 +91,18 @@ var message_manager = (function() {
 
     var get_current_auth_credentials = function() {
         var base_auth = "";
-        if ($htauth_username.val().length === 0 && Modernizr.localstorage) {
+        var htauth_un = "";
+        var htauth_pw = "";
+        if ($htauth_username.size()) {
+            htauth_un = $htauth_username.val();
+            htauth_pw = $htauth_password.val();
+        }
+        if (htauth_un.length === 0 && Modernizr.localstorage) {
             base_auth = localStorage.mm_auth === undefined? "" : localStorage.mm_auth;
         } else {
             base_auth = make_base_auth(
-                $htauth_username.val(),
-                $htauth_password.val()
+                htauth_un,
+                htauth_pw
             );
             if (Modernizr.localstorage) {
                 localStorage.mm_auth = base_auth;
@@ -258,17 +264,23 @@ var message_manager = (function() {
     };
 
     var assign_fms_id = function(msg_id, fms_id, options) {
+        var check_li_exists = false;
         if (options) {
             if (typeof(options.callback) === 'function') {
                 callback = options.callback;
             }
+            if (typeof(options.check_li_exists) !== undefined && options.check_li_exists !== undefined) {
+                check_li_exists = true; // MM dummy
+            }
         }
         var $li = $('#' + _msg_prefix + msg_id);
-        if ($li.size() === 0) {
-            say_status("Couldn't find message with ID " + msg_id);
-            return;
+        if (check_li_exists) {
+            if ($li.size() === 0) {
+                say_status("Couldn't find message with ID " + msg_id);
+                return;
+            }
         }
-        if (isNaN(parseInt(fms_id,0))) {
+        if (isNaN(parseInt(fms_id,10))) {
             say_status("missing FMS id");
             return;            
         }
@@ -276,7 +288,7 @@ var message_manager = (function() {
         $.ajax({
             dataType:"json", 
             type:"post", 
-            data:$("#assign-fms-submit").closest("form").serialize(),
+            data: {fms_id: fms_id},
             url: _url_root +"messages/assign_fms_id/" + msg_id + ".json",
             beforeSend: function (xhr){
                 xhr.setRequestHeader('Authorization', get_current_auth_credentials());
