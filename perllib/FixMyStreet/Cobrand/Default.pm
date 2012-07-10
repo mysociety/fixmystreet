@@ -98,6 +98,18 @@ Return the base url for the cobranded version of the site
 
 sub base_url { mySociety::Config::get('BASE_URL') }
 
+=head2 url_for_report
+
+Return the url for a report (might be different in a two-tier county, but
+most of the time will be same as base_url).
+
+=cut
+
+sub url_for_report {
+    my ( $self, $problem ) = @_;
+    return $self->base_url . $problem->url;
+}
+
 =head2 base_host
 
 Return the base host for the cobranded version of the site

@@ -551,9 +551,8 @@ sub body {
     if ($problem->external_body) {
         $body = $problem->external_body;
     } else {
-        (my $council = $problem->council) =~ s/\|.*//g;
-        my @councils = split( /,/, $council );
-        my $areas_info = mySociety::MaPit::call('areas', \@councils);
+        my $councils = $problem->councils;
+        my $areas_info = mySociety::MaPit::call('areas', $councils);
         $body = join( _(' and '),
             map {
                 my $name = $areas_info->{$_}->{name};
@@ -564,7 +563,7 @@ sub body {
                 } else {
                     $name;
                 }
-            } @councils
+            } @$councils
         );
     }
     return $body;
