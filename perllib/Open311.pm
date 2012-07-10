@@ -93,7 +93,7 @@ sub _populate_service_request_params {
         );
     }
 
-    my ( $firstname, $lastname ) = ( $problem->user->name =~ /(\w+)\s+(.+)/ );
+    my ( $firstname, $lastname ) = ( $problem->user->name =~ /(\w+)\.?\s+(.+)/ );
 
     my $params = {
         email => $problem->user->email,
@@ -263,7 +263,7 @@ sub _populate_service_request_update_params {
     my $comment = shift;
 
     my $name = $comment->name || $comment->user->name;
-    my ( $firstname, $lastname ) = ( $name =~ /(\w+)\s+(.+)/ );
+    my ( $firstname, $lastname ) = ( $name =~ /(\w+)\.?\s+(.+)/ );
 
     my $params = {
         update_id_ext => $comment->id,
