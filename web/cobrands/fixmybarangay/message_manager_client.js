@@ -100,10 +100,7 @@ var message_manager = (function() {
         if (htauth_un.length === 0 && Modernizr.localstorage) {
             base_auth = localStorage.mm_auth === undefined? "" : localStorage.mm_auth;
         } else {
-            base_auth = make_base_auth(
-                htauth_un,
-                htauth_pw
-            );
+            base_auth = make_base_auth(htauth_un, htauth_pw);
             if (Modernizr.localstorage) {
                 localStorage.mm_auth = base_auth;
             }
