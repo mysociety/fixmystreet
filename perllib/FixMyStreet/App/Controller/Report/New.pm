@@ -1001,6 +1001,11 @@ sub save_user_and_report : Private {
     # Set unknown to DB unknown
     $report->council( undef ) if $report->council eq '-1';
 
+    # if there is a Message Manager message ID, pass it back to the client view
+    if ($c->req->param('mm_msg_id')) {
+        $report->service( $c->req->param('mm_msg_id') );
+    }
+
     # save the report;
     $report->in_storage ? $report->update : $report->insert();
 

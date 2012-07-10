@@ -24,7 +24,20 @@
         <script src="[% version('/js/fancybox/jquery.fancybox-1.3.4.pack.js') %]" charset="utf-8"></script>
 
         <script src="[% version('/cobrands/fixmybarangay/message_manager_client.js') %]" charset="utf-8"></script>
-                
+
+        [% allow_creation = !c.cobrand.only_authed_can_create || (c.user && c.user.from_council); %]
+        [%IF allow_creation && problem.service %]
+            <script>
+                $(document).ready(function() {
+                    var mm_msg_id ="[% problem.service %]".match(/\d+$/);
+                    var fms_id = "[% problem.id %]";
+                    if (mm_msg_id && fms_id) {
+                        message_manager.config({url_root: "http://dave.message-manager.dev.mysociety.org/"});
+                        message_manager.assign_fms_id(mm_msg_id, fms_id);
+                    }
+                });
+            </script>
+        [% END %]
     </head>
     <body class="[% bodyclass | html IF bodyclass %]">
 
