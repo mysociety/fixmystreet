@@ -128,7 +128,7 @@ var message_manager = (function() {
         var $output = $message_list_element;
         if (messages instanceof Array) {
             if (messages.length === 0) {
-                $output.html('<p>No messages available.</p>');
+                $output.html('<p class="mm-empty">No messages available.</p>');
             } else {
                 var $ul = $('<ul/>');
                 for(var i=0; i< messages.length; i++) {

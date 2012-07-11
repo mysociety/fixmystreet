@@ -1,5 +1,5 @@
-$mm_status_message_color:			 #caa;
-$mm_border_color:			#eee;
+$mm_status_message_color: #a66;
+$mm_border_color: #eee;
 
 #message_manager {
 
@@ -17,7 +17,7 @@ $mm_border_color:			#eee;
 		}
 		#mm-status-message-container {
 			min-height: 1.4em;
-			margin: 0 0 8px 0;
+			margin: 0 0 8px 0.5em;
 			padding: 8px 4px;
 			color: $mm_status_message_color;
 			font-style: italic;
@@ -66,5 +66,8 @@ $mm_border_color:			#eee;
 				}
 			}
 		}
+	}
+	p.mm-empty {
+		margin: 1em;
 	}
 }
