@@ -85,13 +85,15 @@ __PACKAGE__->add_columns(
   "geocode",
   { data_type => "bytea", is_nullable => 1 },
   "send_fail_count",
-  { data_type => "integer", is_nullable => 1 },
+  { data_type => "integer", default_value => 0, is_nullable => 0 },
   "send_fail_reason",
   { data_type => "text", is_nullable => 1 },
   "send_fail_timestamp",
   { data_type => "timestamp", is_nullable => 1 },
   "send_method_used",
   { data_type => "text", is_nullable => 1 },
+  "mm_msg_id",
+  { data_type => "integer", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->has_many(
@@ -114,8 +116,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-05-03 16:05:20
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:EvwI91Ot7SioQWqwnXRTBQ
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-07-11 18:53:26
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:F1NQHntuovV9YpE5FFr8QA
 
 # Add fake relationship to stored procedure table
 __PACKAGE__->has_one(
