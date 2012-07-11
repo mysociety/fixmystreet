@@ -64,3 +64,7 @@ AREA_LINKS_FROM_PROBLEMS: '0'
 
 # used to override the STAGING SERVER safety mechanism in send-reports
 TESTING_COUNCILS:
+
+# if you're using Message Manager, include the URL here (see https://github.com/mysociety/message-manager/)
+MESSAGE_MANAGER_URL: ''
+

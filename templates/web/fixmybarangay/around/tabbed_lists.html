@@ -43,10 +43,10 @@ IF allow_creation %]
 	
 $(document).ready(function() {
 
-	var mm_url = "http://dave.message-manager.dev.mysociety.org/";
+	var mm_url = "[% c.config.MESSAGE_MANAGER_URL %]"; // from config
 
 	var mm_populate_list = function(data) {
-		$('#mm-status-message-container').text("Got messages as " + data['username']);
+		$('#mm-status-message-container').text("Accessed message server as " + data['username']);
 		$('input[name=mm_text]').prop('checked', false); // uncheck all
 	}
 

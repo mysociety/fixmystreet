@@ -32,7 +32,7 @@
                     var mm_msg_id ="[% problem.service %]".match(/\d+$/);
                     var fms_id = "[% problem.id %]";
                     if (mm_msg_id && fms_id) {
-                        message_manager.config({url_root: "http://dave.message-manager.dev.mysociety.org/"});
+                        message_manager.config({url_root: "[% c.config.MESSAGE_MANAGER_URL %]"});
                         message_manager.assign_fms_id(mm_msg_id, fms_id);
                     }
                 });
