@@ -62,6 +62,9 @@ var message_manager = (function() {
         if (settings) {
             if (typeof settings.url_root === 'string') {
                 _url_root = settings.url_root;
+                if (_url_root.charAt(_url_root.length-1) !== "/") {
+                    _url_root+="/";
+                }
             }
             if (typeof settings.want_unique_locks !== 'undefined') {
                 _want_unique_locks = settings.want_unique_locks;
