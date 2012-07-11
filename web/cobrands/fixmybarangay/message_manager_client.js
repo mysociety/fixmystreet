@@ -209,7 +209,13 @@ var message_manager = (function() {
                             say_status(msg);
                             show_login_form();
                         } else {
-                            say_status("Error: " + st + " " + textStatus);
+                            var err_msg = "Unable to load messages: ";
+                            if (st === 0 && textStatus === 'error') { // x-domain hard to detect, sometimes intermittent?
+                                err_msg += "maybe try refreshing page?";
+                            } else {
+                                err_msg += textStatus + " (" + st + ")";
+                            }
+                            say_status(err_msg);
                         }
                       }
         });    
