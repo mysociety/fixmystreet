@@ -1074,7 +1074,6 @@ sub redirect_or_confirm_creation : Private {
             $report_uri = $c->uri_for( '/report', $report->id );
         }
         $c->log->info($report->user->id . ' was logged in, redirecting to /report/' . $report->id);
-        XXXX
         $c->res->redirect($report_uri);
         $c->detach;
     }
