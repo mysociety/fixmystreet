@@ -1066,7 +1066,13 @@ sub redirect_or_confirm_creation : Private {
     if ( $report->confirmed ) {
         # Subscribe problem reporter to email updates
         $c->forward( 'create_reporter_alert' );
-        my $report_uri = $c->uri_for( '/report', $report->id );
+        my $report_uri;
+
+        if ( $c->cobrand->moniker eq 'fixmybarangay' && $c->user->from_council && $c->stash->{mm_msg_id}) {
+            $report_uri = $c->uri_for( '/report', $report->id, undef, { mm_msg_id => $c->stash->{mm_msg_id} } );
+        } else {
+            $report_uri = $c->uri_for( '/report', $report->id );
+        }
         $c->log->info($report->user->id . ' was logged in, redirecting to /report/' . $report->id);
         XXXX
         $c->res->redirect($report_uri);

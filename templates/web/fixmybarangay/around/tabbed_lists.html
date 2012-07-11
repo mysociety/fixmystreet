@@ -56,7 +56,7 @@ $(document).ready(function() {
 		if (data['success']) {
 			// msg_text = $('#form_detail').val( $('input[name=mm_text]:checked').val() ); # == message data
 			msg_text = data['data']['Message']['message'];
-			service_id = mm_url + "messages/view/" + data['data']['Message']['id'];
+			service_id = data['data']['Message']['id'];
 		} else {
 			$('input[name=mm_text]').prop('checked', false); // uncheck all
 		}
