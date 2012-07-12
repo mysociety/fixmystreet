@@ -198,7 +198,11 @@ create table problem (
     send_fail_timestamp timestamp,
     
     -- record send_method used, which can be used to infer usefulness of external_id
-    send_method_used text
+    send_method_used text,
+
+    -- record details about messages from external sources, eg. message manager
+    external_source text,
+    external_source_id text
 );
 create index problem_state_latitude_longitude_idx on problem(state, latitude, longitude);
 create index problem_user_id_idx on problem ( user_id );
