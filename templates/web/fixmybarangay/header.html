@@ -23,20 +23,22 @@
         [% INCLUDE 'common_header_tags.html', js_override = '/cobrands/fixmystreet/fixmystreet.js' %]
         <script src="[% version('/js/fancybox/jquery.fancybox-1.3.4.pack.js') %]" charset="utf-8"></script>
 
-        <script src="[% version('/cobrands/fixmybarangay/message_manager_client.js') %]" charset="utf-8"></script>
 
         [% allow_creation = !c.cobrand.only_authed_can_create || (c.user && c.user.from_council); %]
-        [%IF allow_creation && problem.service %]
-            <script>
-                $(document).ready(function() {
-                    var mm_msg_id ="[% problem.service %]".match(/\d+$/);
-                    var fms_id = "[% problem.id %]";
-                    if (mm_msg_id && fms_id) {
-                        message_manager.config({url_root: "[% c.config.MESSAGE_MANAGER_URL %]"});
-                        message_manager.assign_fms_id(mm_msg_id, fms_id);
-                    }
-                });
-            </script>
+        [% IF allow_creation %]
+            <script src="[% version('/cobrands/fixmybarangay/message_manager_client.js') %]" charset="utf-8"></script>
+            [% IF c.req.params.external_source_id && problem && problem.external_source_id.match('^\d+$') %]
+                <script>
+                    $(document).ready(function() {
+                        var mm_msg_id ="[% c.req.params.external_source_id %]";
+                        var fms_id = "[% problem.id %]";
+                        if (mm_msg_id && fms_id) {
+                            message_manager.config({url_root: "[% c.config.MESSAGE_MANAGER_URL %]"});
+                            message_manager.assign_fms_id(mm_msg_id, fms_id);
+                        }
+                    });
+                </script>
+            [% END %]
         [% END %]
     </head>
     <body class="[% bodyclass | html IF bodyclass %]">
