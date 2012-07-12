@@ -27,10 +27,10 @@
         [% allow_creation = !c.cobrand.only_authed_can_create || (c.user && c.user.from_council); %]
         [% IF allow_creation %]
             <script src="[% version('/cobrands/fixmybarangay/message_manager_client.js') %]" charset="utf-8"></script>
-            [% IF c.req.params.mm_msg_id && problem && problem.mm_msg_id.match('^\d+$') %]
+            [% IF c.req.params.external_source_id && problem && problem.external_source_id.match('^\d+$') %]
                 <script>
                     $(document).ready(function() {
-                        var mm_msg_id ="[% c.req.params.mm_msg_id %]";
+                        var mm_msg_id ="[% c.req.params.external_source_id %]";
                         var fms_id = "[% problem.id %]";
                         if (mm_msg_id && fms_id) {
                             message_manager.config({url_root: "[% c.config.MESSAGE_MANAGER_URL %]"});

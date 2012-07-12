@@ -92,7 +92,9 @@ __PACKAGE__->add_columns(
   { data_type => "timestamp", is_nullable => 1 },
   "send_method_used",
   { data_type => "text", is_nullable => 1 },
-  "mm_msg_id",
+  "external_source",
+  { data_type => "text", is_nullable => 1 },
+  "external_source_id",
   { data_type => "integer", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
@@ -116,8 +118,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-07-11 18:53:26
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:F1NQHntuovV9YpE5FFr8QA
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-07-12 11:05:48
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:sOVQRjsQJUtpzElZvuCp8Q
 
 # Add fake relationship to stored procedure table
 __PACKAGE__->has_one(

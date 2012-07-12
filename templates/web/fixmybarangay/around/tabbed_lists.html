@@ -61,16 +61,16 @@ $(document).ready(function() {
 			$('input[name=mm_text]').prop('checked', false); // uncheck all
 		}
 		$('#form_detail').val(msg_text);
-		$('#mm_msg_id').val(service_id);
+		$('#external_source_id').val(service_id);
 	}
 
 	message_manager.config({url_root: mm_url});
 	message_manager.setup_click_listener({callback:mm_selected_message});
 
-	// problem form hidden input "mm_msg_id": pass the MM id into FMS, if used
+	// problem form hidden input "external_source_id": pass the MM id into FMS, if used
 	$('<input type="hidden"/>').attr({
-        'id': 'mm_msg_id',
-        'name': 'mm_msg_id',
+        'id': 'external_source_id',
+        'name': 'external_source_id',
     }).appendTo($('#problem_form'));
 
 	$('#available-submit').click(function(e){
