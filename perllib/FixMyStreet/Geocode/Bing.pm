@@ -52,15 +52,11 @@ sub string {
     }
 
     my $results = $js->{resourceSets}->[0]->{resources};
-    my ( $error, @valid_locations, $latitude, $longitude, $ni );
+    my ( $error, @valid_locations, $latitude, $longitude );
 
     foreach (@$results) {
         my $address = $_->{name};
         next if $params->{bing_country} && $_->{address}->{countryRegion} ne $params->{bing_country};
-        if ($params->{bing_country} eq 'United Kingdom' && $_->{address}{adminDistrict} eq 'Northern Ireland') {
-            $ni = 1;
-            next;
-        }
 
         # Getting duplicate, yet different, results from Bing sometimes
         next if @valid_locations
@@ -80,10 +76,6 @@ sub string {
             });
         };
         push (@valid_locations, $_);
-    }
-
-    if ($ni && !scalar @valid_locations) {
-        return { error => _("We do not currently cover Northern Ireland, I'm afraid.") };
     }
 
     return { latitude => $latitude, longitude => $longitude } if scalar @valid_locations == 1;

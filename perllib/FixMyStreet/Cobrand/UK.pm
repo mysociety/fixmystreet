@@ -15,7 +15,7 @@ sub area_min_generation { 10 }
 
 sub enter_postcode_text {
     my ( $self ) = @_;
-    return _("Enter a nearby GB postcode, or street name and area");
+    return _("Enter a nearby UK postcode, or street name and area");
 }
 
 sub example_places {
@@ -80,7 +80,7 @@ sub geocode_postcode {
 
     if ($s =~ /^\d+$/) {
         return {
-            error => 'FixMyStreet is a UK-based website that currently works in England, Scotland, and Wales. Please enter either a postcode, or a Great British street name and area.'
+            error => 'FixMyStreet is a UK-based website. Please enter either a UK postcode, or street name and area.'
         };
     } elsif (mySociety::PostcodeUtil::is_valid_postcode($s)) {
         my $location = mySociety::MaPit::call('postcode', $s);
@@ -95,10 +95,6 @@ sub geocode_postcode {
         if (!$island) {
             return {
                 error => _("Sorry, that appears to be a Crown dependency postcode, which we don't cover.")
-            };
-        } elsif ($island eq 'I') {
-            return {
-                error => _("We do not currently cover Northern Ireland, I'm afraid.")
             };
         }
         return {

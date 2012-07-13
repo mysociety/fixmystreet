@@ -17,9 +17,8 @@ use FixMyStreet::Geocode::OSM;
 # lookup STRING CONTEXT
 # Given a user-inputted string, try and convert it into co-ordinates using either
 # MaPit if it's a postcode, or some web API otherwise. Returns an array of
-# data, including an error if there is one (which includes a location being in
-# Northern Ireland). The information in the query may be used by cobranded versions
-# of the site to diambiguate locations.
+# data, including an error if there is one. The information in the query may be
+# used by cobranded versions of the site to diambiguate locations.
 sub lookup {
     my ($s, $c) = @_;
     my $data = $c->cobrand->geocode_postcode($s);
