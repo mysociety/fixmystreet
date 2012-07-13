@@ -65,26 +65,6 @@ END %]
 
 [% BLOCK problem %]
     [% "<ul class='issue-list-a full-width'>" IF loop.first %]
-
-    <li>
-        <a href="[% c.uri_for( '/report', p.id ) %]">
-            <div class="text">
-                <h4>[% p.title | html %]</h4>
-                <small>
-                    [% IF p.whensent %]
-                        [% tprintf( loc("Reported %s, to %s"), prettify_epoch( p.confirmed_local.epoch, 'date' ), p.body(c) ) %]
-                    [% ELSE %]
-                        [% tprintf( loc("Reported %s"), prettify_epoch( p.confirmed_local.epoch, 'date' ) ) %]
-                    [% END %]
-                </small>
-            </div>    
-            [% IF p.photo %]
-            <div class="img">
-                <img height="60" width="90" src="/photo/[% p.id %].fp.jpeg" alt="">
-            </div>
-            [% END %]
-        </a>
-    </li>
-
+    [% INCLUDE 'report/_item.html', problem = p, no_fixed =1 %]
     [% "</ul>" IF loop.last %]
 [% END %]
