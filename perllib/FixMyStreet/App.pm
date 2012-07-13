@@ -183,6 +183,10 @@ sub setup_request {
 
     FixMyStreet::Map::set_map_class( $cobrand->map_type || $c->req->param('map_override') );
 
+    unless ( FixMyStreet->config('MAPIT_URL') ) {
+        mySociety::MaPit::configure( "http://$host/fakemapit/" );
+    }
+
     return $c;
 }
 
