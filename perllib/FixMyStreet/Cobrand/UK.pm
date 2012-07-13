@@ -10,7 +10,8 @@ sub area_min_generation { 10 }
 
 sub disambiguate_location {
     return {
-        country => 'uk',
+        country => 'gb',
+        google_country => 'uk',
         bing_culture => 'en-GB',
         bing_country => 'United Kingdom'
     };

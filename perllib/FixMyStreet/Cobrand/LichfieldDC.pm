@@ -22,7 +22,7 @@ sub disambiguate_location {
         %{ $self->SUPER::disambiguate_location() },
         centre => '52.688198,-1.804966',
         span   => '0.1196,0.218675',
-        bounds => [ '52.584891,-1.963232', '52.807793,-1.586291' ],
+        bounds => [ 52.584891, -1.963232, 52.807793, -1.586291 ],
     };
 }
 

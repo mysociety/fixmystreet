@@ -12,6 +12,7 @@ use strict;
 use URI::Escape;
 use FixMyStreet::Geocode::Bing;
 use FixMyStreet::Geocode::Google;
+use FixMyStreet::Geocode::OSM;
 
 # lookup STRING CONTEXT
 # Given a user-inputted string, try and convert it into co-ordinates using either
@@ -41,8 +42,10 @@ sub string {
     my $params = $c->cobrand->disambiguate_location();
     return FixMyStreet::Geocode::Bing::string($s, $c, $params)
         if FixMyStreet->config('BING_MAPS_API_KEY');
-    # Fall back to Google API, which allow acces with and without a key
-    return FixMyStreet::Geocode::Google::string($s, $c, $params);
+    # Fall back to Google API, which allow access with and without a key
+    return FixMyStreet::Geocode::Google::string($s, $c, $params)
+        if FixMyStreet->config('GOOGLE_MAPS_API_KEY');
+    return FixMyStreet::Geocode::OSM::string($s, $c, $params);
 }
 
 1;
