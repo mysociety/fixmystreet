@@ -1,5 +1,5 @@
 package FixMyStreet::Cobrand::EmptyHomes;
-use base 'FixMyStreet::Cobrand::FixMyStreet';
+use base 'FixMyStreet::Cobrand::UK';
 
 use strict;
 use warnings;

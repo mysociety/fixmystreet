@@ -1,6 +1,4 @@
 package FixMyStreet::Cobrand::Bromley;
-use mro 'c3';
-use parent 'FixMyStreet::Cobrand::FixMyStreet';
 use parent 'FixMyStreet::Cobrand::UKCouncils';
 
 use strict;
@@ -15,8 +13,6 @@ sub base_url {
     return FixMyStreet->config('BASE_URL') if FixMyStreet->config('STAGING_SITE');
     return 'https://fix.bromley.gov.uk';
 }
-
-sub admin_base_url { '' }
 
 sub path_to_web_templates {
     my $self = shift;

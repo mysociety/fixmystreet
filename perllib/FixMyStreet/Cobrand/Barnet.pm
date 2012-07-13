@@ -1,15 +1,8 @@
 package FixMyStreet::Cobrand::Barnet;
-use mro 'c3';
-use parent 'FixMyStreet::Cobrand::FixMyStreet';
 use parent 'FixMyStreet::Cobrand::UKCouncils';
 
 use strict;
 use warnings;
-
-# As parent FixMyStreet has blank. XXX Do this better?
-sub restriction {
-    return { cobrand => 'barnet' };
-}
 
 sub council_id { return 2489; }
 sub council_area { return 'Barnet'; }
