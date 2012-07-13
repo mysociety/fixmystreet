@@ -1,14 +1,11 @@
 package FixMyStreet::Cobrand::UKCouncils;
-use base 'FixMyStreet::Cobrand::Default';
+use base 'FixMyStreet::Cobrand::UK';
 
 use strict;
 use warnings;
 
 use Carp;
 use URI::Escape;
-
-sub area_types          { return qw(DIS LBO MTD UTA CTY COI); }
-sub area_min_generation { 10 }
 
 sub is_council {
     1;
@@ -92,21 +89,6 @@ sub recent_photos {
     my ( $self, $area, $num, $lat, $lon, $dist ) = @_;
     $num = 2 if $num == 3;
     return $self->problems->recent_photos( $num, $lat, $lon, $dist );
-}
-
-sub get_council_sender {
-    my ( $self, $area_id, $area_info ) = @_;
-
-    my $send_method;
-
-    my $council_config = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $area_id } )->first;
-    $send_method = $council_config->send_method if $council_config;
-
-    return $send_method if $send_method;
-
-    return 'London' if $area_info->{type} eq 'LBO';
-
-    return 'Email';
 }
 
 1;

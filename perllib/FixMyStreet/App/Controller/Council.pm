@@ -23,7 +23,7 @@ there are no councils then return false.
 
 sub load_and_check_councils_and_wards : Private {
     my ( $self, $c ) = @_;
-    my @area_types = ( $c->cobrand->area_types(), @$mySociety::VotingArea::council_child_types );
+    my @area_types = ( $c->cobrand->area_types(), $c->cobrand->area_types_children() );
     $c->stash->{area_types} = \@area_types;
     $c->forward('load_and_check_councils');
 }
@@ -68,6 +68,10 @@ sub load_and_check_councils : Private {
         $all_councils =
           mySociety::MaPit::call( 'point', "4326/$short_longitude,$short_latitude",
             type => \@area_types );
+    }
+    if ($all_councils->{error}) {
+        $c->stash->{location_error} = $all_councils->{error};
+        return;
     }
 
     # Let cobrand do a check

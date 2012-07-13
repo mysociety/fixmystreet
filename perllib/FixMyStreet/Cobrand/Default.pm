@@ -14,11 +14,12 @@ use mySociety::PostcodeUtil;
 =head1 country
 
 Returns the country that this cobrand operates in, as an ISO3166-alpha2 code.
+Default is none.
 
 =cut
 
 sub country {
-    return 'GB';
+    return '';
 }
 
 =head1 problems_clause
@@ -237,17 +238,11 @@ sub front_stats_data {
 
 =head2 disambiguate_location
 
-Returns disambiguating information available
+Returns any disambiguating information available. Defaults to none.
 
 =cut 
 
-sub disambiguate_location {
-    return {
-        country => 'uk',
-        bing_culture => 'en-GB',
-        bing_country => 'United Kingdom'
-    };
-}
+sub disambiguate_location { return {}; }
 
 =head2 cobrand_data_for_generic_update
 
@@ -417,7 +412,7 @@ adverts
 
 =cut
 
-sub allow_crosssell_adverts { return 1; }
+sub allow_crosssell_adverts { return 0; }
 
 =head2 allow_photo_display
 
@@ -444,35 +439,6 @@ Given a QUERY, return LAT/LON and/or ERROR.
 
 sub geocode_postcode {
     my ( $self, $s ) = @_;
-
-    if ($s =~ /^\d+$/) {
-        return {
-            error => 'FixMyStreet is a UK-based website that currently works in England, Scotland, and Wales. Please enter either a postcode, or a Great British street name and area.'
-        };
-    } elsif (mySociety::PostcodeUtil::is_valid_postcode($s)) {
-        my $location = mySociety::MaPit::call('postcode', $s);
-        if ($location->{error}) {
-            return {
-                error => $location->{code} =~ /^4/
-                    ? _('That postcode was not recognised, sorry.')
-                    : $location->{error}
-            };
-        }
-        my $island = $location->{coordsyst};
-        if (!$island) {
-            return {
-                error => _("Sorry, that appears to be a Crown dependency postcode, which we don't cover.")
-            };
-        } elsif ($island eq 'I') {
-            return {
-                error => _("We do not currently cover Northern Ireland, I'm afraid.")
-            };
-        }
-        return {
-            latitude  => $location->{wgs84_lat},
-            longitude => $location->{wgs84_lon},
-        };
-    }
     return {};
 }
 
@@ -642,6 +608,7 @@ The MaPit types this site handles
 =cut
 
 sub area_types          { qw(ZZZ) }
+sub area_types_children { qw() }
 sub area_min_generation { '' }
 
 =head2 contact_name, contact_email
@@ -707,16 +674,6 @@ Remove councils whose reports go to another council
 sub remove_redundant_councils {
   my $self = shift;
   my $all_councils = shift;
-
-  # Ipswich & St Edmundsbury are responsible for everything in their
-  # areas, not Suffolk
-  delete $all_councils->{2241}
-    if $all_councils->{2446}    #
-        || $all_councils->{2443};
-
-  # Norwich is responsible for everything in its areas, not Norfolk
-  delete $all_councils->{2233}    #
-    if $all_councils->{2391};
 }
 
 =item filter_all_council_ids_list
@@ -738,21 +695,12 @@ Remove extra information from council names for tidy URIs
 =cut
 
 sub short_name {
-  my $self = shift;
-  my ($area, $info) = @_;
-  # Special case Durham as it's the only place with two councils of the same name
-  return 'Durham+County' if $area->{name} eq 'Durham County Council';
-  return 'Durham+City' if $area->{name} eq 'Durham City Council';
-
-  my $name = $area->{name};
-  $name =~ s/ (Borough|City|District|County) Council$//;
-  $name =~ s/ Council$//;
-  $name =~ s/ & / and /;
-  $name =~ s{/}{_}g;
-  $name = URI::Escape::uri_escape_utf8($name);
-  $name =~ s/%20/+/g;
-  return $name;
-
+    my $self = shift;
+    my ($area, $info) = @_;
+    my $name = $area->{name};
+    $name = URI::Escape::uri_escape_utf8($name);
+    $name =~ s/%20/+/g;
+    return $name;
 }
 
 =item is_council

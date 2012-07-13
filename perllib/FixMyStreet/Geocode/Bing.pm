@@ -56,7 +56,7 @@ sub string {
 
     foreach (@$results) {
         my $address = $_->{name};
-        next unless $_->{address}->{countryRegion} eq $params->{bing_country};
+        next if $params->{bing_country} && $_->{address}->{countryRegion} ne $params->{bing_country};
         if ($params->{bing_country} eq 'United Kingdom' && $_->{address}{adminDistrict} eq 'Northern Ireland') {
             $ni = 1;
             next;
