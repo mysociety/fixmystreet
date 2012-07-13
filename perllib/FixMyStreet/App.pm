@@ -153,8 +153,7 @@ sub setup_request {
     my $cobrand = $c->cobrand;
 
     # append the cobrand templates to the include path
-    $c->stash->{additional_template_paths} = $cobrand->path_to_web_templates
-      unless $cobrand->is_default;
+    $c->stash->{additional_template_paths} = $cobrand->path_to_web_templates;
 
     # work out which language to use
     my $lang_override = $c->get_override('lang');
@@ -421,7 +420,7 @@ call), use this method.
 sub render_fragment {
     my ($c, $template, $vars) = @_;
     $vars->{additional_template_paths} = $c->cobrand->path_to_web_templates
-        if $vars && !$c->cobrand->is_default;
+        if $vars;
     $c->view('Web')->render($c, $template, $vars);
 }
 

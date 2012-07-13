@@ -3,6 +3,11 @@ use base 'FixMyStreet::Cobrand::Default';
 
 use mySociety::VotingArea;
 
+sub path_to_web_templates {
+    my $self = shift;
+    return [ FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify ];
+}
+
 sub country             { return 'GB'; }
 sub area_types          { return qw(DIS LBO MTD UTA CTY COI); }
 sub area_types_children { return @$mySociety::VotingArea::council_child_types }

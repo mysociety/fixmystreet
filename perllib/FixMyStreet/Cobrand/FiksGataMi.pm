@@ -8,6 +8,11 @@ use Carp;
 use mySociety::MaPit;
 use FixMyStreet::Geocode::OSM;
 
+sub path_to_web_templates {
+    my $self = shift;
+    return [ FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify ];
+}
+
 sub country {
     return 'NO';
 }

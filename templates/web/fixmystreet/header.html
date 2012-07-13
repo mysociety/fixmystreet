@@ -11,11 +11,11 @@
         <meta name="HandHeldFriendly" content="true">
         <meta name="mobileoptimized" content="0">
 
-        <link rel="stylesheet" href="[% version('/cobrands/fixmystreet/base.css') %]">
-        <link rel="stylesheet" href="[% version('/cobrands/fixmystreet/layout.css') %]" media="(min-width:48em)">
+        <link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.moniker _ '/base.css') %]">
+        <link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]" media="(min-width:48em)">
         [% extra_css %]
         <!--[if (lt IE 9) & (!IEMobile)]>
-            <link rel="stylesheet" href="[% version('/cobrands/fixmystreet/layout.css') %]">
+            <link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]">
         <![endif]-->
 
         <script src="[% version('/js/modernizr.custom.js') %]" charset="utf-8"></script>

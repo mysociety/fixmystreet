@@ -19,10 +19,11 @@ tags
 /web/cobrands/reading/css/css.css
 /web/css/core.css
 /web/css/main.css
+/web/cobrands/default/*.css
 /web/cobrands/fixmystreet/*.css
 /web/cobrands/bromley/*.css
-/web/photo
 /web/cobrands/barnet/*.css
+/web/photo
 /local
 
 /web/cobrands/fixmystreet/compass_app_log.txt
