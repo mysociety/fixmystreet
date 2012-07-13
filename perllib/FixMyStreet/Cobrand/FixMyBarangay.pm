@@ -4,6 +4,19 @@ use base 'FixMyStreet::Cobrand::Default';
 use strict;
 use warnings;
 
+sub get_council_sender {
+    my ( $self, $area_id, $area_info ) = @_;
+
+    my $send_method;
+
+    my $council_config = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $area_id } )->first;
+    $send_method = $council_config->send_method if $council_config;
+
+    return $send_method if $send_method;
+
+    return 'Email';
+}
+
 sub path_to_web_templates {
     my $self = shift;
     return [
