@@ -2,7 +2,11 @@
 <a href="[% c.uri_for('/report', problem.id ) %]">
     <div class="text">
         <h4>[% problem.title | html %]</h4>
-        <small>[% prettify_epoch( problem.confirmed_local.epoch, 1 ) %]
+        <small>[% IF problem.confirmed_local %]
+            [%- prettify_epoch( problem.confirmed_local.epoch, 1 ) %]
+            [%- ELSE %]
+            [%- prettify_epoch( problem.confirmed, 1 ) %]
+            [%- END %]
             [%- IF dist %], [% dist %]km[% END %]
             [%- IF include_lastupdate AND problem.confirmed != problem.lastupdate AND problem.whensent != problem.lastupdate %], last updated [% prettify_epoch( problem.lastupdate, 1 ) %]
             [%- END %]</small>
