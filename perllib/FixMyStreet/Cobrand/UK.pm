@@ -13,6 +13,10 @@ sub enter_postcode_text {
     return _("Enter a nearby GB postcode, or street name and area");
 }
 
+sub example_places {
+    return [ 'B2 4QA', 'Tib St, Manchester' ];
+}
+
 sub disambiguate_location {
     return {
         country => 'gb',
