@@ -4,6 +4,10 @@ use base 'Catalyst::View::TT';
 use strict;
 use warnings;
 
+use Digest::MD5 qw(md5_hex);
+use File::stat;
+use List::Util qw(max);
+
 use mySociety::Locale;
 use mySociety::Web qw(ent);
 use FixMyStreet;
@@ -166,10 +170,28 @@ sub html_filter {
 
 my %version_hash;
 sub version {
-    my ( $self, $c, $file ) = @_;
+    my ( $self, $c, $files ) = @_;
+    my $file = ref $files
+        ? '/js/compiled/' . md5_hex(join "\n", @$files) . '.js'
+        : $files;
     unless ($version_hash{$file} && !FixMyStreet->config('STAGING_SITE')) {
-        my $path = FixMyStreet->path_to('web', $file);
-        $version_hash{$file} = ( stat( $path ) )[9];
+        my $mtime = 0;
+        if (ref $files) {
+            my $out = '';
+            for (@$files) {
+                my $path = FixMyStreet->path_to('web', $_);
+                $out .= $path->slurp . "\n";
+                $mtime = max $mtime, ( stat "$path" )->mtime;
+            }
+            mkdir FixMyStreet->path_to('web', 'js', 'compiled');
+            open(FP, '>', FixMyStreet->path_to('web', $file));
+            print FP $out;
+            close FP;
+        } else {
+            my $path = FixMyStreet->path_to('web', $file);
+            $mtime = ( stat "$path" )->mtime;
+        }
+        $version_hash{$file} = $mtime;
     }
     $version_hash{$file} ||= '';
     return "$file?$version_hash{$file}";
