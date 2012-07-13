@@ -10,7 +10,6 @@ sub council_id { return 2482; }
 sub council_area { return 'Bromley'; }
 sub council_name { return 'Bromley Council'; }
 sub council_url { return 'bromley'; }
-sub all_reports_style { return 'detailed'; }
 
 sub base_url {
     return FixMyStreet->config('BASE_URL') if FixMyStreet->config('STAGING_SITE');
