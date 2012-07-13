@@ -115,8 +115,6 @@ sub format_problem_for_display : Private {
 
     my $problem = $c->stash->{problem};
 
-    $c->stash->{banner} = $c->cobrand->generate_problem_banner($problem);
-
     ( $c->stash->{short_latitude}, $c->stash->{short_longitude} ) =
       map { Utils::truncate_coordinate($_) }
       ( $problem->latitude, $problem->longitude );
