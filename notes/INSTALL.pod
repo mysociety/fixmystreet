@@ -48,8 +48,8 @@ gettext
 
 =item *
 
-The CSS for FixMyStreet is generated from SCSS sources so you will need a SCSS
-to CSS convertor. You can get one from L<http://sass-lang.com/>
+The CSS for FixMyStreet is generated from SCSS sources and uses Compass,
+so you'll need to install Compass: L<http://compass-style.org/>
 
 =back
 
@@ -66,40 +66,51 @@ A similar list of packages should work for other Debian-based
 distributions.  (Please let us know if you would like to contribute
 such a package list or instructions for other distributions.)
 
-To generate the CSS for the current design of FixMyStreet you will
-also need Compass L<http://compass-style.org/>, but unfortunately
-it is not packaged in Debian squeeze (or squeeze-backports).  You
-will either need to install the package from testing, or you could
-install it from the Ruby gem with:
+Unfortunately, Compass is not packaged in Debian squeeze (or
+squeeze-backports).  You will either need to install the package
+from testing, or you could install it from the Ruby gem with:
 
     gem install compass
 
+=head2 Installing on Mac OS X
+
+The github wiki page at 
+L<https://github.com/mysociety/fixmystreet/wiki/Installing-on-Mac-OS-X>
+has a basic runthrough of installation steps to get FiMyStreet running
+on a Mac OS X machine. This does not include the setting up of the database.
+
 =head2 Service dependencies
 
-For most uses of FixMyStreet you'll also need access to a MaPit server with
-data for the types of bodies you are reporting issues to. For more details on
-how to install MaPit see the mapit pypi page: L<http://pypi.python.org/pypi/django-mapit/>
+FixMyStreet works by mapping points to administrative areas to which reports
+can be sent. It normally does this using a different mySociety service called
+MapIt. By default, in the absence of a MapIt installation, FixMyStreet will map
+any point to the same administrative area, to allow for ease of set up and
+testing.
 
-If you are in the UK then you can always use the mySociety's MaPit: L<http://mapit.mysociety.org>
-although please check with us if you are expecting to generate a lot of
-requests.
+If you are in the UK then you can use mySociety's UK MapIt:
+L<http://mapit.mysociety.org> although please check with us if you are
+expecting to generate a lot of requests or are using it commercially. We also
+have a global MapIt at L<http://global.mapit.mysociety.org> that may be
+suitable for you. If you have some other boundary data, you can set up your
+own MapIt server to serve it out; for more details on how to install MapIt see
+the mapit repository at L<https://github.com/mysociety/mapit>
 
-You will also need a Tile Server to serve up Map tiles. FixMyStreet can use
-Google, Bing and OpenStreetMap Tile servers.
+You will also need a tile server to serve up map tiles. FixMyStreet can
+currently use Bing and OpenStreetMap tile servers, defaulting to OpenStreetMap.
 
 Finally, you will need a geolocation service to turn addresses into longitude
-and latitudes. FixMyStreet currently includes code to use both Bing and Google
-geolocation services.
+and latitudes. FixMyStreet currently includes code to use Bing, Google, and
+OpenStreetMap geolocation services, again defaulting to OpenStreetMap.
 
 =head1 DETAILED INSTALLATION INSTRUCTIONS
 
 =head2 Creating the database
 
-The default settings file (C<conf/general.yml>) assumes the database is called fms and the user the same.
-You can change these if you like.
+The default settings file (C<conf/general.yml>) assumes the database is called
+fms and the user the same. You can change these if you like.
 
 If you wish to create this new database and database user with
-password authentication, the following steps may help.  First, create
+password authentication, the following steps may help. First, create
 the fms user:
 
     $ sudo -u postgres createuser fms
@@ -121,7 +132,7 @@ Set the password of the fms user, and change the owner of the fms database to be
     postgres=# \q
     $
 
-Then you need to configure PostgreSQL to allow password-based access
+Then you might need to configure PostgreSQL to allow password-based access
 to the fms database as the user fms from using Unix-domain sockets.
 Edit the file C</etc/postgresql/8.4/main/pg_hba.conf> and add as the
 first line:
@@ -143,7 +154,7 @@ Then you should be able to access the database with:
 
 =head2 Set up the database
 
-Before creating the database schema, you will need to install the
+Before creating the database schema, you might need to install the
 PostgreSQL's SQL procedural language into the database:
 
     createlang -U fms plpgsql fms
@@ -199,7 +210,7 @@ development tools with:
 
 Then the development server can be run with:
 
-     CATALYST_DEBUG=1 ./bin/cron-wrapper ./script/fixmystreet_app_server.pl -r
+     CATALYST_DEBUG=1 ./bin/cron-wrapper ./script/fixmystreet_app_server.pl -r --fork
 
 The server will be accessible as L<http://localhost:3000/>.
 
@@ -287,7 +298,7 @@ If you are using a MaPit install you should update MAPIT_URL.
 
 =head2 Generate CSS
 
-There is a script, bin/make_css, that uses sass (L<http://sass-lang.com/>) to
+There is a script, bin/make_css, that uses Compass and sass to
 convert the SCSS files to CSS files.
 
 =head2 Restart the webserver

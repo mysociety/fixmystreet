@@ -23,7 +23,7 @@ FixMyStreet is written in Perl and uses the Catalyst web framework.
 
 =head1 EXAMPLES
 
-L<http://www.fixmystreet.com>
+L<http://www.fixmystreet.com/>
 
 L<http://www.fiksgatami.no/>
 
@@ -37,15 +37,15 @@ in C<notes/INSTALL.pod>
 
 =item *
 
-Fetch the latest version from L<Github|https://github.com/mysociety/fixmystreet/>
+Fetch the latest version from L<Github|https://github.com/mysociety/fixmystreet>
 
 =item *
 
-Create a new PostGIS enabled database
+Create a new Postgres database
 
 =item *
 
-Create the database using C<db/schema.sql> and the C<db/alert_types.sql>
+Set up the database using C<db/schema.sql> and C<db/alert_types.sql>
 
 =item *
 
