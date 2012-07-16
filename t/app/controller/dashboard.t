@@ -42,7 +42,7 @@ $mech->submit_form_ok( {
     with_fields => { email => $test_user, password_sign_in => $test_pass }
 } );
 
-$mech->content_contains( 'Summary Statistics for City of Edinburgh' );
+$mech->content_contains( 'City of Edinburgh' );
 
 FixMyStreet::App->model('DB::Contact')->search( { area_id => $test_council } )
   ->delete;
