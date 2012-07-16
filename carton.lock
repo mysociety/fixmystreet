@@ -28565,6 +28565,216 @@
          },
          "version" : "1.11"
       },
+      "XML::Parser" : {
+         "dist" : "XML-Parser-2.41",
+         "mymeta" : {
+            "abstract" : "A perl module for parsing XML documents",
+            "author" : [
+               "Clark Cooper (coopercc@netheaven.com)"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "ExtUtils::MakeMaker version 6.56, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "XML-Parser",
+            "no_index" : {
+               "directory" : [
+                  "t",
+                  "inc"
+               ]
+            },
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : 0
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : 0
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "LWP" : 0,
+                     "perl" : "5.00405"
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "resources" : {
+               "repository" : {
+                  "url" : "http://github.com/chorny/XML-Parser"
+               }
+            },
+            "version" : "2.41"
+         },
+         "name" : "XML::Parser",
+         "pathname" : "T/TO/TODDR/XML-Parser-2.41.tar.gz",
+         "provides" : {
+            "XML::Parser" : {
+               "file" : "XML/Parser.pm",
+               "version" : "2.41"
+            },
+            "XML::Parser::Expat" : {
+               "file" : "XML/Parser/Expat.pm",
+               "version" : "2.41"
+            },
+            "XML::Parser::Style::Debug" : {
+               "file" : "XML/Parser/Style/Debug.pm"
+            },
+            "XML::Parser::Style::Objects" : {
+               "file" : "XML/Parser/Style/Objects.pm"
+            },
+            "XML::Parser::Style::Stream" : {
+               "file" : "XML/Parser/Style/Stream.pm"
+            },
+            "XML::Parser::Style::Subs" : {
+               "file" : "XML/Parser/Style/Subs.pm"
+            },
+            "XML::Parser::Style::Tree" : {
+               "file" : "XML/Parser/Style/Tree.pm"
+            }
+         },
+         "target" : "XML::Parser::Expat",
+         "version" : "2.41"
+      },
+      "XML::RSS" : {
+         "dist" : "XML-RSS-1.49",
+         "mymeta" : {
+            "abstract" : "creates and updates RSS files",
+            "author" : [
+               "Shlomi Fish <shlomif@cpan.org>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "Module::Build version 0.4001, CPAN::Meta::Converter version 2.112150",
+            "keywords" : [
+               "feed",
+               "feeds",
+               "generate",
+               "generating",
+               "parse",
+               "parsing",
+               "rss",
+               "RSS",
+               "web-feed",
+               "web-feeds",
+               "xml"
+            ],
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "XML-RSS",
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "Test::Manifest" : "0.9",
+                     "Test::More" : 0
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "Module::Build" : "0.36"
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "DateTime" : 0,
+                     "DateTime::Format::Mail" : 0,
+                     "DateTime::Format::W3CDTF" : 0,
+                     "HTML::Entities" : 0,
+                     "XML::Parser" : "2.23",
+                     "perl" : "5.008"
+                  }
+               }
+            },
+            "provides" : {
+               "XML::RSS" : {
+                  "file" : "lib/XML/RSS.pm",
+                  "version" : "1.49"
+               },
+               "XML::RSS::Private::Output::Base" : {
+                  "file" : "lib/XML/RSS/Private/Output/Base.pm",
+                  "version" : 0
+               },
+               "XML::RSS::Private::Output::Roles::ImageDims" : {
+                  "file" : "lib/XML/RSS/Private/Output/Roles/ImageDims.pm",
+                  "version" : 0
+               },
+               "XML::RSS::Private::Output::Roles::ModulesElems" : {
+                  "file" : "lib/XML/RSS/Private/Output/Roles/ModulesElems.pm",
+                  "version" : 0
+               },
+               "XML::RSS::Private::Output::V0_9" : {
+                  "file" : "lib/XML/RSS/Private/Output/V0_9.pm",
+                  "version" : 0
+               },
+               "XML::RSS::Private::Output::V0_91" : {
+                  "file" : "lib/XML/RSS/Private/Output/V0_91.pm",
+                  "version" : 0
+               },
+               "XML::RSS::Private::Output::V1_0" : {
+                  "file" : "lib/XML/RSS/Private/Output/V1_0.pm",
+                  "version" : 0
+               },
+               "XML::RSS::Private::Output::V2_0" : {
+                  "file" : "lib/XML/RSS/Private/Output/V2_0.pm",
+                  "version" : 0
+               }
+            },
+            "release_status" : "stable",
+            "resources" : {
+               "homepage" : "http://perl-rss.sourceforge.net/",
+               "license" : [
+                  "http://dev.perl.org/licenses/"
+               ],
+               "repository" : {
+                  "url" : "https://svn.perl.org/modules/XML-RSS/trunk"
+               }
+            },
+            "version" : "1.49"
+         },
+         "name" : "XML::RSS",
+         "pathname" : "S/SH/SHLOMIF/XML-RSS-1.49.tar.gz",
+         "provides" : {
+            "XML::RSS" : {
+               "file" : "XML/RSS.pm",
+               "version" : "1.49"
+            },
+            "XML::RSS::Private::Output::Base" : {
+               "file" : "XML/RSS/Private/Output/Base.pm"
+            },
+            "XML::RSS::Private::Output::Roles::ImageDims" : {
+               "file" : "XML/RSS/Private/Output/Roles/ImageDims.pm"
+            },
+            "XML::RSS::Private::Output::Roles::ModulesElems" : {
+               "file" : "XML/RSS/Private/Output/Roles/ModulesElems.pm"
+            },
+            "XML::RSS::Private::Output::V0_9" : {
+               "file" : "XML/RSS/Private/Output/V0_9.pm"
+            },
+            "XML::RSS::Private::Output::V0_91" : {
+               "file" : "XML/RSS/Private/Output/V0_91.pm"
+            },
+            "XML::RSS::Private::Output::V1_0" : {
+               "file" : "XML/RSS/Private/Output/V1_0.pm"
+            },
+            "XML::RSS::Private::Output::V2_0" : {
+               "file" : "XML/RSS/Private/Output/V2_0.pm"
+            }
+         },
+         "target" : "XML::RSS",
+         "version" : "1.49"
+      },
       "XML::SAX" : {
          "dist" : "XML-SAX-0.99",
          "module" : "XML::SAX",
