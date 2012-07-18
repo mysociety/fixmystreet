@@ -281,10 +281,10 @@ sub display : Private {
       map { Utils::truncate_coordinate($_) }
       ( $problem->latitude, $problem->longitude );
 
-    $c->stash->{updates} = $c->model('DB::Comment')->search(
+    $c->stash->{updates} = [ $c->model('DB::Comment')->search(
         { problem_id => $problem->id, state => 'confirmed' },
         { order_by => 'confirmed' }
-    );
+    )->all ];
 
     $c->stash->{page} = 'questionnaire';
     FixMyStreet::Map::display_map(

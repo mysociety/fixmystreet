@@ -273,6 +273,23 @@ foreach my $test (
     };
 }
 
+my $comment = FixMyStreet::App->model('DB::Comment')->find_or_create(
+    {
+        problem_id => $report->id,
+        user_id    => $user->id,
+        name       => 'A User',
+        mark_fixed => 'false',
+        text       => 'This is some update text',
+        state      => 'confirmed',
+        confirmed  => $sent_time,
+        anonymous  => 'f',
+    }
+);
+subtest 'Check updates are shown correctly on questionnaire page' => sub {
+    $mech->get_ok("/Q/" . $token->token);
+    $mech->content_contains( 'updates that have been left' );
+    $mech->content_contains( 'This is some update text' );
+};
 
 for my $test ( 
     {
