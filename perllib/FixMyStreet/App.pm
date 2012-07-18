@@ -183,6 +183,8 @@ sub setup_request {
     FixMyStreet::Map::set_map_class( $cobrand->map_type || $c->req->param('map_override') );
 
     unless ( FixMyStreet->config('MAPIT_URL') ) {
+        my $port = $c->req->uri->port;
+        $host = "$host:$port" unless $port == 80;
         mySociety::MaPit::configure( "http://$host/fakemapit/" );
     }
 

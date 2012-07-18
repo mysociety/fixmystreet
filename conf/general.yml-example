@@ -36,7 +36,9 @@ GOOGLE_MAPS_API_KEY: ''
 BING_MAPS_API_KEY: ''
 
 # Location of MapIt, to map points to administrative areas.
-# If left blank, a default area will be used everywhere.
+# If left blank, a default area will be used everywhere
+# (a URL needs to be given for non-web things, like sending
+# of reports, to function).
 MAPIT_URL: ''
 # If using the Catalyst development server, set to
 # MAPIT_URL: 'http://localhost:3000/fakemapit/'
