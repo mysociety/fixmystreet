@@ -250,13 +250,13 @@ sub send_reports {
         }
 
         # Template variables for the email
-        my $email_base_url = $cobrand->base_url($row->cobrand_data);
+        my $email_base_url = $cobrand->base_url_for_report($row);
         my %h = map { $_ => $row->$_ } qw/id title detail name category latitude longitude used_map/;
         map { $h{$_} = $row->user->$_ } qw/email phone/;
         $h{confirmed} = DateTime::Format::Pg->format_datetime( $row->confirmed->truncate (to => 'second' ) );
 
         $h{query} = $row->postcode;
-        $h{url} = $email_base_url . '/report/' . $row->id;
+        $h{url} = $email_base_url . $row->url;
         $h{phone_line} = $h{phone} ? _('Phone:') . " $h{phone}\n\n" : '';
         if ($row->photo) {
             $h{has_photo} = _("This web page also contains a photo of the problem, provided by the user.") . "\n\n";

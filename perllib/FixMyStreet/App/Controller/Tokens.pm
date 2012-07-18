@@ -79,7 +79,7 @@ sub confirm_problem : Path('/P') {
     $c->set_session_cookie_expire(0);
 
     if ( FixMyStreet::DB::Result::Problem->visible_states()->{$old_state} ) {
-        my $report_uri = $c->uri_for( '/report', $problem->id );
+        my $report_uri = $c->cobrand->base_url_for_report( $problem ) . $problem->url;
         $c->res->redirect($report_uri);
     }
 

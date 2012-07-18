@@ -348,44 +348,52 @@ for my $test (
 
 my $mech = FixMyStreet::TestMech->new();
 
-FixMyStreet::App->model('DB::Contact')->find_or_create(
-    {
-        area_id => 2651,
-        category => 'potholes',
-        email => 'test@example.org',
-        confirmed => 1,
-        deleted => 0,
-        editor => 'test',
-        whenedited => \'ms_current_timestamp()',
-        note => '',
-    }
+my %contact_params = (
+    confirmed => 1,
+    deleted => 0,
+    editor => 'Test',
+    whenedited => \'ms_current_timestamp()',
+    note => 'Created for test',
 );
-
-FixMyStreet::App->model('DB::Contact')->find_or_create(
-    {
-        area_id => 2226,
-        category => 'potholes',
-        email => '2226@example.org',
-        confirmed => 1,
-        deleted => 0,
-        editor => 'test',
-        whenedited => \'ms_current_timestamp()',
-        note => '',
-    }
-);
-
-FixMyStreet::App->model('DB::Contact')->find_or_create(
-    {
-        area_id => 2326,
-        category => 'potholes',
-        email => '2326@example.org',
-        confirmed => 1,
-        deleted => 0,
-        editor => 'test',
-        whenedited => \'ms_current_timestamp()',
-        note => '',
-    }
-);
+# Let's make some contacts to send things to!
+FixMyStreet::App->model('DB::Contact')->search( {
+    email => { 'like', '%example.com' },
+} )->delete;
+my $contact1 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
+    %contact_params,
+    area_id => 2651, # Edinburgh
+    category => 'potholes',
+    email => 'test@example.org',
+} );
+my $contact2 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
+    %contact_params,
+    area_id => 2226, # Gloucestershire
+    category => 'potholes',
+    email => '2226@example.org',
+} );
+my $contact3 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
+    %contact_params,
+    area_id => 2326, # Cheltenham
+    category => 'potholes',
+    email => '2326@example.org',
+} );
+my $contact4 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
+    %contact_params,
+    area_id => 2434, # Lichfield
+    category => 'potholes',
+    email => 'trees@example.com',
+} );
+my $contact5 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
+    %contact_params,
+    area_id => 2240, # Staffordshire
+    category => 'potholes',
+    email => 'highways@example.com',
+} );
+ok $contact1, "created test contact 1";
+ok $contact2, "created test contact 2";
+ok $contact3, "created test contact 3";
+ok $contact4, "created test contact 4";
+ok $contact5, "created test contact 5";
 
 foreach my $test ( {
         desc          => 'sends an email',
@@ -427,6 +435,30 @@ foreach my $test ( {
         council       => '2226|2649',
         missing       => qr'problem might be the responsibility of Fife.*Council'ms,
     },
+    {
+        desc          => 'email to two tier council that only shows district, district',
+        unset_whendef => 1,
+        email_count   => 1,
+        email         => 'system_user@example.com',
+        name          => 'Andrew Smith',
+        to            => qr'Lichfield District Council',
+        dear          => qr'Dear Lichfield District Council,',
+        council       => '2434',
+        cobrand       => 'lichfielddc',
+        url           => 'lichfielddc.',
+    },
+    {
+        desc          => 'email to two tier council that only shows district, county',
+        unset_whendef => 1,
+        email_count   => 1,
+        email         => 'system_user@example.com',
+        name          => 'Andrew Smith',
+        to            => qr'Staffordshire County Council',
+        dear          => qr'Dear Staffordshire County Council,',
+        council       => '2240',
+        cobrand       => 'lichfielddc',
+        url           => '',
+    },
 ) {
     subtest $test->{ desc } => sub {
         $mech->clear_emails_ok;
@@ -445,6 +477,7 @@ foreach my $test ( {
             whensent => $test->{ unset_whendef } ? undef : \'ms_current_timestamp()',
             category => 'potholes',
             name => $test->{ name },
+            cobrand => $test->{ cobrand } || 'fixmystreet',
         } );
 
         FixMyStreet::App->model('DB::Problem')->send_reports();
@@ -465,6 +498,12 @@ foreach my $test ( {
                 like $email->body, $test->{ missing }, 'missing council information correct';
             }
 
+            if ( $test->{url} ) {
+                (my $base_url = FixMyStreet->config('BASE_URL')) =~ s{http://}{};
+                my $id = $problem->id;
+                like $email->body, qr[$test->{url}$base_url/report/$id], 'URL present is correct';
+            }
+
             $problem->discard_changes;
             ok defined( $problem->whensent ), 'whensent set';
         }
@@ -474,5 +513,11 @@ foreach my $test ( {
 $problem->comments->delete;
 $problem->delete;
 $user->delete;
+
+$contact1->delete;
+$contact2->delete;
+$contact3->delete;
+$contact4->delete;
+$contact5->delete;
 
 done_testing();

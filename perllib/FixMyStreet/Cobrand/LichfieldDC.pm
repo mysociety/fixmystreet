@@ -27,13 +27,13 @@ sub disambiguate_location {
 }
 
 # If we ever link to a county problem report, needs to be to main FixMyStreet
-sub url_for_report {
-    my ( $self, $problem ) = @_;
-    my %councils = map { $_ => 1 } @{$problem->councils};
+sub base_url_for_report {
+    my ( $self, $report ) = @_;
+    my %councils = map { $_ => 1 } @{$report->councils};
     if ( $councils{2434} ) {
-        return $self->base_url . $problem->url;
+        return $self->base_url;
     } else {
-        return FixMyStreet->config('BASE_URL') . $problem->url;
+        return FixMyStreet->config('BASE_URL');
     }
 }
 

@@ -1063,7 +1063,7 @@ sub redirect_or_confirm_creation : Private {
     if ( $report->confirmed ) {
         # Subscribe problem reporter to email updates
         $c->forward( 'create_reporter_alert' );
-        my $report_uri = $c->uri_for( '/report', $report->id );
+        my $report_uri = $c->cobrand->base_url_for_report( $report ) . $report->url;
         $c->log->info($report->user->id . ' was logged in, redirecting to /report/' . $report->id);
         $c->res->redirect($report_uri);
         $c->detach;

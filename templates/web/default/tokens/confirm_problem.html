@@ -6,7 +6,7 @@
 [% IF c.cobrand.is_council %]
 Thank you. You have successfully confirmed your report
 and this will now be investigated by the council.
-You can <a href="[% c.cobrand.url_for_report( problem ) %]">view the problem on this site</a>.
+You can <a href="[% c.cobrand.base_url_for_report( problem ) %][% problem.url %]">view the problem on this site</a>.
 </p>
 
 <p>Your reference for this problem is [% problem.id %], please quote it in any enquiries.
@@ -19,8 +19,9 @@ You can <a href="[% c.cobrand.url_for_report( problem ) %]">view the problem on 
     END;
     
     tprintf(
-        loc( '. You can <a href="%s">view the problem on this site</a>.' ),
-        c.cobrand.url_for_report( problem )
+        loc( '. You can <a href="%s%s">view the problem on this site</a>.' ),
+        c.cobrand.base_url_for_report( problem ),
+        problem.url
     );
 %]
 [% END %]
