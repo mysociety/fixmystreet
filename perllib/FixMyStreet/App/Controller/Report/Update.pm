@@ -348,7 +348,7 @@ sub redirect_or_confirm_creation : Private {
     if ( $update->confirmed ) {
         $c->forward( 'update_problem' );
         $c->forward( 'signup_for_alerts' );
-        my $report_uri = $c->uri_for( '/report', $update->problem_id );
+        my $report_uri = $c->cobrand->base_url_for_report( $update->problem ) . $update->problem->url;
         $c->res->redirect($report_uri);
         $c->detach;
     }
