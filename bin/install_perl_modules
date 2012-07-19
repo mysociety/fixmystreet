@@ -2,7 +2,7 @@
 
 DIR="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd | sed -e 's/\/bin$//' )"
 
-$DIR/bin/cpanm -l local Carton
+$DIR/bin/cpanm -l $DIR/local Carton
 
 export PATH=$DIR/local/bin:$PATH
 export PERL5LIB=$DIR/local/lib/perl5
@@ -17,7 +17,7 @@ if [ $HAVE_IM -ne 0 ]
 then
     read -p "Image::Magick is not installed. Do you want to attempt to install it?" yn
     case $yn in 
-        [Yy]* ) ./local/bin/carton install Image::Magick;;
+        [Yy]* ) $DIR/local/bin/carton install Image::Magick;;
         * ) echo 'You will need to install it for FixMyStreet to work';;
     esac
 fi
