@@ -9,7 +9,7 @@ sub path_to_web_templates {
 }
 
 sub country             { return 'GB'; }
-sub area_types          { return qw(DIS LBO MTD UTA CTY COI); }
+sub area_types          { return qw(DIS LBO MTD UTA CTY COI LGD); }
 sub area_types_children { return @$mySociety::VotingArea::council_child_types }
 sub area_min_generation { 10 }
 
