@@ -94,6 +94,7 @@ sub report_new : Path : Args(0) {
     $c->stash->{template} = "report/new/fill_in_details.html";
     $c->forward('setup_categories_and_councils');
     $c->forward('generate_map');
+    $c->forward('check_for_category');
 
     # deal with the user and report and check both are happy
     return unless $c->forward('check_form_submitted');
@@ -1043,6 +1044,14 @@ sub generate_map : Private {
             } ],
         );
     }
+
+    return 1;
+}
+
+sub check_for_category : Private {
+    my ( $self, $c ) = @_;
+
+    $c->stash->{category} = $c->req->param('category');
 
     return 1;
 }
