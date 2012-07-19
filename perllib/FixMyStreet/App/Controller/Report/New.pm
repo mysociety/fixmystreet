@@ -620,7 +620,7 @@ sub setup_categories_and_councils : Private {
         $area_ids_to_list{ $first_council->{id} } = 1;
         my @local_categories;
         if ($first_council->{id} == COUNCIL_ID_BARNET) {
-            @local_categories =  sort(keys %{ Utils::barnet_categories() }); # removed 'Other' option
+            @local_categories =  sort keys %{ Utils::barnet_categories() }
         } else {
             @local_categories =  sort keys %{ Utils::london_categories() }            
         }
@@ -640,8 +640,6 @@ sub setup_categories_and_councils : Private {
 
             $area_ids_to_list{ $contact->area_id } = 1;
 
-            next if $contact->category eq _('Other');
-
             unless ( $seen{$contact->category} ) {
                 push @category_options, $contact->category;
 
@@ -652,9 +650,9 @@ sub setup_categories_and_councils : Private {
         }
 
         if (@category_options) {
-            @category_options = ( _('-- Pick a category --'), @category_options );
-            push @category_options, _('Other')
-                unless $first_council->{id} == COUNCIL_ID_BROMLEY;
+            # If there's an Other category present, put it at the bottom
+            @category_options = ( _('-- Pick a category --'), grep { $_ ne _('Other') } @category_options );
+            push @category_options, _('Other') if $seen{_('Other')};
             $category_label = _('Category');
         }
     }
@@ -816,7 +814,7 @@ sub process_report : Private {
 
     } elsif ( $first_council->{id} == COUNCIL_ID_BARNET ) {
 
-        unless ( exists Utils::barnet_categories()->{ $report->category } or $report->category eq 'Other') {
+        unless ( exists Utils::barnet_categories()->{ $report->category } ) {
             $c->stash->{field_errors}->{category} = _('Please choose a category');
         }
         $report->council( $first_council->{id} );

@@ -49,7 +49,7 @@ FixMyStreet::App->model('DB::Contact')->search( { area_id => $test_council } )
 
 delete_problems();
 
-my @cats = qw( Grafitti Litter Potholes );
+my @cats = qw( Grafitti Litter Potholes Other );
 for my $contact ( @cats ) {
     FixMyStreet::App->model('DB::Contact')->create(
         {
@@ -90,7 +90,7 @@ my $categories = scraper {
     },
 };
 
-my $expected_cats = [ 'All', '-- Pick a category --', @cats, 'Other' ];
+my $expected_cats = [ 'All', '-- Pick a category --', @cats ];
 my $res = $categories->scrape( $mech->content );
 is_deeply( $res->{cats}, $expected_cats, 'correct list of categories' );
 
