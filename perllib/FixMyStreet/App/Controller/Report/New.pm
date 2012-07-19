@@ -78,6 +78,7 @@ partial
 =cut
 
 use constant COUNCIL_ID_BARNET => 2489;
+use constant COUNCIL_ID_BROMLEY => 2482;
 
 sub report_new : Path : Args(0) {
     my ( $self, $c ) = @_;
@@ -614,7 +615,7 @@ sub setup_categories_and_councils : Private {
         );
         $category_label = _('Property type:');
 
-    } elsif ($first_council->{id} != 2482 && $first_council->{type} eq 'LBO') {
+    } elsif ($first_council->{id} != COUNCIL_ID_BROMLEY && $first_council->{type} eq 'LBO') {
 
         $area_ids_to_list{ $first_council->{id} } = 1;
         my @local_categories;
@@ -653,7 +654,7 @@ sub setup_categories_and_councils : Private {
         if (@category_options) {
             @category_options = ( _('-- Pick a category --'), @category_options );
             push @category_options, _('Other')
-                unless $first_council->{id} == 2482;
+                unless $first_council->{id} == COUNCIL_ID_BROMLEY;
             $category_label = _('Category');
         }
     }
@@ -664,7 +665,7 @@ sub setup_categories_and_councils : Private {
     $c->stash->{category_options} = \@category_options;
     $c->stash->{category_extras}  = \%category_extras;
     $c->stash->{category_extras_json}  = encode_json \%category_extras;
-    $c->stash->{extra_name_info} = $first_council->{id} == 2482 ? 1 : 0;
+    $c->stash->{extra_name_info} = $first_council->{id} == COUNCIL_ID_BROMLEY ? 1 : 0;
 
     my @missing_details_councils =
       grep { !$area_ids_to_list{$_} }    #
@@ -820,7 +821,7 @@ sub process_report : Private {
         }
         $report->council( $first_council->{id} );
         
-    } elsif ( $first_council->{id} != 2482 && $first_council->{type} eq 'LBO') {
+    } elsif ( $first_council->{id} != COUNCIL_ID_BROMLEY && $first_council->{type} eq 'LBO') {
         
         unless ( Utils::london_categories()->{ $report->category } ) {
             $c->stash->{field_errors}->{category} = _('Please choose a category');
