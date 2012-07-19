@@ -214,13 +214,6 @@ sub council_check : Private {
     $q_council =~ s/\+/ /g;
     $q_council =~ s/\.html//;
 
-    # Manual misspelling redirect
-    if ($q_council =~ /^rhondda cynon taff$/i) {
-        my $url = $c->uri_for( '/reports/rhondda+cynon+taf' );
-        $c->res->redirect( $url );
-        $c->detach();
-    }
-
     # Check cobrand specific incantations - e.g. ONS codes for UK,
     # Oslo/ kommunes sharing a name in Norway
     return if $c->cobrand->reports_council_check( $c, $q_council );

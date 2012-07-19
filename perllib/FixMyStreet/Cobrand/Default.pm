@@ -464,17 +464,6 @@ sub find_closest {
         }
     }
 
-    # Get nearest postcode from Matthew's random gazetteer (put in MaPit? Or elsewhere?)
-    my $url = "http://gazetteer.dracos.vm.bytemark.co.uk/point/$latitude,$longitude.json";
-    my $j = LWP::Simple::get($url);
-    if ($j) {
-        $j = JSON->new->utf8->allow_nonref->decode($j);
-        if ($j->{postcode}) {
-            $str .= sprintf(_("Nearest postcode to the pin placed on the map (automatically generated): %s (%sm away)"),
-                $j->{postcode}[0], $j->{postcode}[1]) . "\n\n";
-        }
-    }
-
     return $str;
 }
 
@@ -708,159 +697,34 @@ Generate a set of options for council rss alerts.
 =cut
 
 sub council_rss_alert_options {
-  my $self = shift;
-  my $all_councils = shift;
-  my $c            = shift;
+    my ( $self, $all_councils, $c ) = @_;
 
-  my %councils = map { $_ => 1 } $self->area_types();
-
-  my $num_councils = scalar keys %$all_councils;
-
-  my ( @options, @reported_to_options );
-  if ( $num_councils == 1 or $num_councils == 2 ) {
-    my ($council, $ward);
+    my ( @options, @reported_to_options );
     foreach (values %$all_councils) {
-        if ($councils{$_->{type}}) {
-            $council = $_;
-            $council->{short_name} = $self->short_name( $council );
-            ( $council->{id_name} = $council->{short_name} ) =~ tr/+/_/;
-        } else {
-            $ward = $_;
-            $ward->{short_name} = $self->short_name( $ward );
-            ( $ward->{id_name} = $ward->{short_name} ) =~ tr/+/_/;
-        }
-    }
-    $council->{name} = 'London Borough of Bromley'
-        if $council->{name} eq 'Bromley Council';
-
-    my $council_text;
-    if ( $c->cobrand->is_council ) {
-        $council_text = 'All problems within the council';
-    } else {
-        $council_text = sprintf( _('Problems within %s'), $council->{name});
-    }
-
-    push @options,
-      {
-        type      => 'council',
-        id        => sprintf( 'council:%s:%s', $council->{id}, $council->{id_name} ),
-        text      => $council_text,
-        rss_text  => sprintf( _('RSS feed of problems within %s'), $council->{name}),
-        uri       => $c->uri_for( '/rss/reports/' . $council->{short_name} ),
-      };
-    push @options,
-      {
-        type     => 'ward',
-        id       => sprintf( 'ward:%s:%s:%s:%s', $council->{id}, $ward->{id}, $council->{id_name}, $ward->{id_name} ),
-        rss_text => sprintf( _('RSS feed of problems within %s ward'), $ward->{name}),
-        text     => sprintf( _('Problems within %s ward'), $ward->{name}),
-        uri      => $c->uri_for( '/rss/reports/' . $council->{short_name} . '/' . $ward->{short_name} ),
-      } if $ward;
-
-    } elsif ( $num_councils == 4 ) {
-#        # Two-tier council
-      my ($county, $district, $c_ward, $d_ward);
-      foreach (values %$all_councils) {
-          $_->{short_name} = $self->short_name( $_ );
-          ( $_->{id_name} = $_->{short_name} ) =~ tr/+/_/;
-         if ($_->{type} eq 'CTY') {
-             $county = $_;
-         } elsif ($_->{type} eq 'DIS') {
-             $district = $_;
-         } elsif ($_->{type} eq 'CED') {
-             $c_ward = $_;
-         } elsif ($_->{type} eq 'DIW') {
-             $d_ward = $_;
-         }
-      }
-      my $district_name = $district->{name};
-      my $d_ward_name = $d_ward->{name};
-      my $county_name = $county->{name};
-      my $c_ward_name = $c_ward->{name};
-
-      push @options,
-        {
-          type  => 'area',
-          id    => sprintf( 'area:%s:%s', $district->{id}, $district->{id_name} ),
-          text  => $district_name,
-          rss_text => sprintf( _('RSS feed for %s'), $district_name ),
-          uri => $c->uri_for( '/rss/area/' . $district->{short_name}  )
-        },
-        {
-          type      => 'area',
-          id        => sprintf( 'area:%s:%s:%s:%s', $district->{id}, $d_ward->{id}, $district->{id_name}, $d_ward->{id_name} ),
-          text      => sprintf( _('%s ward, %s'), $d_ward_name, $district_name ),
-          rss_text  => sprintf( _('RSS feed for %s ward, %s'), $d_ward_name, $district_name ),
-          uri       => $c->uri_for( '/rss/area/' . $district->{short_name} . '/' . $d_ward->{short_name} )
-        },
-        {
-          type  => 'area',
-          id    => sprintf( 'area:%s:%s', $county->{id}, $county->{id_name} ),
-          text  => $county_name,
-          rss_text => sprintf( _('RSS feed for %s'), $county_name ),
-          uri => $c->uri_for( '/rss/area/' . $county->{short_name}  )
-        },
-        {
-          type      => 'area',
-          id        => sprintf( 'area:%s:%s:%s:%s', $county->{id}, $c_ward->{id}, $county->{id_name}, $c_ward->{id_name} ),
-          text      => sprintf( _('%s ward, %s'), $c_ward_name, $county_name ),
-          rss_text  => sprintf( _('RSS feed for %s ward, %s'), $c_ward_name, $county_name ),
-          uri       => $c->uri_for( '/rss/area/' . $county->{short_name} . '/' . $c_ward->{short_name} )
+        $_->{short_name} = $self->short_name( $_ );
+        ( $_->{id_name} = $_->{short_name} ) =~ tr/+/_/;
+        push @options, {
+            type      => 'council',
+            id        => sprintf( 'council:%s:%s', $_->{id}, $_->{id_name} ),
+            text      => sprintf( _('Problems within %s'), $_->{name}),
+            rss_text  => sprintf( _('RSS feed of problems within %s'), $_->{name}),
+            uri       => $c->uri_for( '/rss/reports/' . $_->{short_name} ),
         };
-
-        push @reported_to_options,
-          {
-            type      => 'council',
-            id        => sprintf( 'council:%s:%s', $district->{id}, $district->{id_name} ),
-            text      => $district->{name},
-            rss_text  => sprintf( _('RSS feed of %s'), $district->{name}),
-            uri       => $c->uri_for( '/rss/reports/' . $district->{short_name} ),
-          },
-          {
-            type     => 'ward',
-            id       => sprintf( 'ward:%s:%s:%s:%s', $district->{id}, $d_ward->{id}, $district->{id_name}, $d_ward->{id_name} ),
-            rss_text => sprintf( _('RSS feed of %s, within %s ward'), $district->{name}, $d_ward->{name}),
-            text     => sprintf( _('%s, within %s ward'), $district->{name}, $d_ward->{name}),
-            uri      => $c->uri_for( '/rss/reports/' . $district->{short_name} . '/' . $d_ward->{short_name} ),
-          },
-          {
-            type      => 'council',
-            id        => sprintf( 'council:%s:%s', $county->{id}, $county->{id_name} ),
-            text      => $county->{name},
-            rss_text  => sprintf( _('RSS feed of %s'), $county->{name}),
-            uri       => $c->uri_for( '/rss/reports/' . $county->{short_name} ),
-          },
-          {
-            type     => 'ward',
-            id       => sprintf( 'ward:%s:%s:%s:%s', $county->{id}, $c_ward->{id}, $county->{id_name}, $c_ward->{id_name} ),
-            rss_text => sprintf( _('RSS feed of %s, within %s ward'), $county->{name}, $c_ward->{name}),
-            text     => sprintf( _('%s, within %s ward'), $county->{name}, $c_ward->{name}),
-            uri      => $c->uri_for( '/rss/reports/' . $county->{short_name} . '/' . $c_ward->{short_name} ),
-          };
-
-
-    } else {
-        throw Error::Simple('An area with three tiers of council? Impossible! '. join('|',keys %$all_councils));
     }
 
     return ( \@options, @reported_to_options ? \@reported_to_options : undef );
 }
 
+=head2 reports_council_check
+
+This function is called by the All Reports page, and lets you do some cobrand
+specific checking on the URL passed to try and match to a relevant area.
+
+=cut
+
 sub reports_council_check {
     my ( $self, $c, $code ) = @_;
-
-    if ($code =~ /^(\d\d)([a-z]{2})?([a-z]{2})?$/i) {
-        my $area = mySociety::MaPit::call( 'area', uc $code );
-        $c->detach( 'redirect_index' ) if $area->{error}; # Given a bad/old ONS code
-        if (length($code) == 6) {
-            my $council = mySociety::MaPit::call( 'area', $area->{parent_area} );
-            $c->stash->{ward} = $area;
-            $c->stash->{council} = $council;
-        } else {
-            $c->stash->{council} = $area;
-        }
-        $c->detach( 'redirect_area' );
-    }
+    return 0;
 }
 
 =head2 default_photo_resize

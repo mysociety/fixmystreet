@@ -10,7 +10,7 @@ use_ok 'FixMyStreet::Cobrand';
 
 mySociety::Locale::gettext_domain( 'FixMyStreet' );
 
-my $c = FixMyStreet::Cobrand::Default->new();
+my $c = FixMyStreet::Cobrand::UK->new();
 
 my $user =
   FixMyStreet::App->model('DB::User')
