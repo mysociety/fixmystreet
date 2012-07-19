@@ -86,5 +86,7 @@ sub contact_email {
 }
 sub contact_name { 'Bromley Council (do not reply)'; }
 
+sub reports_per_page { return 20; }
+
 1;
 
