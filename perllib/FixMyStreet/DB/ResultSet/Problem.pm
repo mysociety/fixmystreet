@@ -287,16 +287,14 @@ sub send_reports {
         }
 
         my %reporters = ();
-        my (@to, @recips, $template, $areas_info, $sender_count );
+        my ( $sender_count );
         if ($site eq 'emptyhomes') {
 
             my $council = $row->council;
-            $areas_info = mySociety::MaPit::call('areas', $council);
-            my $name = $areas_info->{$council}->{name};
+            my $areas_info = mySociety::MaPit::call('areas', $council);
             my $sender = "FixMyStreet::SendReport::EmptyHomes";
             $reporters{ $sender } = $sender->new() unless $reporters{$sender};
-            $reporters{ $sender }->add_council( $council, $name );
-            $template = Utils::read_file("$FindBin::Bin/../templates/email/emptyhomes/" . $row->lang . "/submit.txt");
+            $reporters{ $sender }->add_council( $council, $areas_info->{$council} );
 
         } else {
 
@@ -304,7 +302,7 @@ sub send_reports {
             my @all_councils = split /,|\|/, $row->council;
             my ($councils, $missing) = $row->council =~ /^([\d,]+)(?:\|([\d,]+))?/;
             my @councils = split(/,/, $councils);
-            $areas_info = mySociety::MaPit::call('areas', \@all_councils);
+            my $areas_info = mySociety::MaPit::call('areas', \@all_councils);
             my @dear;
 
             foreach my $council (@councils) {
@@ -324,16 +322,9 @@ sub send_reports {
                         $reporters{ $sender }->skipped;
                 } else {
                     push @dear, $name;
-                    $reporters{ $sender }->add_council( $council, $name );
+                    $reporters{ $sender }->add_council( $council, $areas_info->{$council} );
                 }
             }
-
-            $template = 'submit.txt';
-            $template = 'submit-brent.txt' if $row->council eq 2488 || $row->council eq 2237;
-            my $template_path = FixMyStreet->path_to( "templates", "email", $cobrand->moniker, $template )->stringify;
-            $template_path = FixMyStreet->path_to( "templates", "email", "default", $template )->stringify
-                unless -e $template_path;
-            $template = Utils::read_file( $template_path );
 
             if ($h{category} eq _('Other')) {
                 $h{category_footer} = _('this type of local problem');
@@ -382,9 +373,7 @@ sub send_reports {
         my $result = -1;
 
         for my $sender ( keys %reporters ) {
-            $result *= $reporters{ $sender }->send(
-                $row, \%h, \@to, $template, \@recips, $nomail, $areas_info
-            );
+            $result *= $reporters{ $sender }->send( $row, \%h );
         }
 
         if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {

@@ -7,8 +7,7 @@ BEGIN { extends 'FixMyStreet::SendReport'; }
 use mySociety::EmailUtil;
 
 sub build_recipient_list {
-    my $self = shift;
-    my $row = shift;
+    my ( $self, $row, $h ) = @_;
     my %recips;
 
     my $all_confirmed = 1;
@@ -33,7 +32,7 @@ sub build_recipient_list {
             #$note{$council_email}{$row->category} = $note;
         }
 
-        push @{ $self->to }, [ $council_email, $self->councils->{ $council } ];
+        push @{ $self->to }, [ $council_email, $self->councils->{ $council }->{name} ];
         $recips{$council_email} = 1;
     }
 
@@ -41,13 +40,23 @@ sub build_recipient_list {
     return keys %recips;
 }
 
+sub get_template {
+    my ( $self, $row ) = @_;
+
+    my $template = 'submit.txt';
+    $template = 'submit-brent.txt' if $row->council eq 2488 || $row->council eq 2237;
+    my $template_path = FixMyStreet->path_to( "templates", "email", $row->cobrand, $template )->stringify;
+    $template_path = FixMyStreet->path_to( "templates", "email", "default", $template )->stringify
+        unless -e $template_path;
+    $template = Utils::read_file( $template_path );
+    return $template;
+}
+
 sub send {
     my $self = shift;
-    my ( $row, $h, $to, $template, $recips, $nomail, $areas_info ) = @_;
+    my ( $row, $h ) = @_;
 
-    my @recips;
-
-    @recips = $self->build_recipient_list( $row, $areas_info );
+    my @recips = $self->build_recipient_list( $row, $h );
 
     # on a staging server send emails to ourselves rather than the councils
     if (mySociety::Config::get('STAGING_SITE')) {
@@ -56,9 +65,10 @@ sub send {
 
     return unless @recips;
 
+    my ($verbose, $nomail) = CronFns::options();
     my $result = FixMyStreet::App->send_email_cron(
         {
-            _template_ => $template,
+            _template_ => $self->get_template( $row ),
             _parameters_ => $h,
             To => $self->to,
             From => [ $row->user->email, $row->name ],

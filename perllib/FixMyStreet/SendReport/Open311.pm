@@ -23,7 +23,7 @@ sub should_skip {
 
 sub send {
     my $self = shift;
-    my ( $row, $h, $to, $template, $recips, $nomail ) = @_;
+    my ( $row, $h ) = @_;
 
     my $result = -1;
 

@@ -36,9 +36,9 @@ sub reset {
 sub add_council {
     my $self = shift;
     my $council = shift;
-    my $name = shift;
+    my $info = shift;
 
-    $self->councils->{ $council } = $name;
+    $self->councils->{ $council } = $info;
 }
 
 
