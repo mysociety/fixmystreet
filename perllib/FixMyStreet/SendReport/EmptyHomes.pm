@@ -21,9 +21,6 @@ sub build_recipient_list {
 
         my ($council_email, $confirmed, $note) = ( $contact->email, $contact->confirmed, $contact->note );
 
-        $council_email = essex_contact($row->latitude, $row->longitude) if $council == 2225;
-        $council_email = oxfordshire_contact($row->latitude, $row->longitude) if $council == 2237 && $council_email eq 'SPECIAL';
-
         unless ($confirmed) {
             $all_confirmed = 0;
             #$note = 'Council ' . $row->council . ' deleted'
