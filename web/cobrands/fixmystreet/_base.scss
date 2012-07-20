@@ -863,7 +863,6 @@ a:hover.button-left {
     list-style: none;
     margin:0;
     padding:0;
-    a {
       margin: 0.25em 0 0 0;
       display:table;
       background: #f6f6f6;
@@ -874,6 +873,9 @@ a:hover.button-left {
         color:#222222;
         background:#e6e6e6;
       }
+      a:hover {
+          text-decoration: none;
+      }
       .text,
       .img {
         display:table-cell;
@@ -882,11 +884,11 @@ a:hover.button-left {
       .img {
         text-align:right;
         width: 90px;
-        img {
-          height:auto;
-        }
+        float: right;
+        height:auto;
       }
       .text {
+        width: 100%;
         padding:0.25em 1em;
         h4 {
           margin:0;
@@ -895,7 +897,6 @@ a:hover.button-left {
           color:#666;
         }
       }
-    }
     >p {
       margin: 0.25em 0 0 0;
       padding: 0.5em 1em;
@@ -914,7 +915,7 @@ a:hover.button-left {
 .ie6, .ie7 {
   .issue-list-a {
     overflow:hidden;
-    li a {
+    li {
       clear:both;
       width:auto;
       display:block;

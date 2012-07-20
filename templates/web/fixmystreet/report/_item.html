@@ -1,6 +1,5 @@
 <li>
-<a href="[% c.uri_for('/report', problem.id ) %]">
-    <div class="text">
+<a class="text" href="[% c.uri_for('/report', problem.id ) %]">
         <h4>[% problem.title | html %]</h4>
         <small>[% IF problem.confirmed_local %]
             [%- prettify_epoch( problem.confirmed_local.epoch, 1 ) %]
@@ -20,11 +19,10 @@
         [% ELSIF NOT no_fixed AND problem.is_closed %]
             <small>[% loc('(closed)') %]</small>
         [% END %]
-    </div>
+    </a>
     [% IF problem.photo %]
-        <div class="img">
-            <img height="60" width="90" src="/photo/[% problem.id %].fp.jpeg" alt="">
-        </div>
-    [% END %]
+<a class="img" href="[% c.uri_for('/report', problem.id ) %]">
+        <img height="60" width="90" src="/photo/[% problem.id %].fp.jpeg" alt="">
 </a>
+    [% END %]
 </li>
