@@ -816,9 +816,7 @@ subtest "check that a lat/lon off coast leads to /around" => sub {
 
     is_deeply         #
       $mech->page_errors,
-      [     'That spot does not appear to be covered by a council. If you have'
-          . ' tried to report an issue past the shoreline, for example, please'
-          . ' specify the closest point on land.' ],    #
+      [ 'That location does not appear to be covered by a council; perhaps it is offshore or outside the country. Please try again.' ],
       "Found location error";
 
 };
