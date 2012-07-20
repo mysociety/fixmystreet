@@ -42,7 +42,7 @@ sub get_council_sender {
     return $send_method if $send_method;
 
     return 'London' if $area_info->{type} eq 'LBO';
-
+    return 'NI' if $area_info->{type} eq 'LGD';
     return 'Email';
 }
 

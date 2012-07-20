@@ -389,75 +389,100 @@ my $contact5 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     category => 'potholes',
     email => 'highways@example.com',
 } );
+my $contact6 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
+    %contact_params,
+    area_id => 14279, # Ballymoney
+    category => 'Street lighting',
+    email => 'roads.western@drdni.example.org',
+} );
+my $contact7 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
+    %contact_params,
+    area_id => 14279, # Ballymoney
+    category => 'Graffiti',
+    email => 'highways@example.com',
+} );
 ok $contact1, "created test contact 1";
 ok $contact2, "created test contact 2";
 ok $contact3, "created test contact 3";
 ok $contact4, "created test contact 4";
 ok $contact5, "created test contact 5";
+ok $contact6, "created test contact 6";
+ok $contact7, "created test contact 7";
 
+my %common = (
+    email => 'system_user@example.com',
+    name => 'Andrew Smith',
+);
 foreach my $test ( {
+        %common,
         desc          => 'sends an email',
         unset_whendef => 1,
         email_count   => 1,
-        email         => 'system_user@example.com',
-        name          => 'Andrew Smith',
         dear          => qr'Dear City of Edinburgh Council',
         to            => qr'City of Edinburgh Council',
         council       => 2651,
-    },
-    {
+    }, {
+        %common,
         desc          => 'no email sent if no unsent problems',
         unset_whendef => 0,
         email_count   => 0,
-        email         => 'system_user@example.com',
-        name          => 'Andrew Smith',
         council       => 2651,
-    },
-    {
+    }, {
+        %common,
         desc          => 'email to two tier council',
         unset_whendef => 1,
         email_count   => 1,
-        email         => 'system_user@example.com',
-        name          => 'Andrew Smith',
         to            => qr'Gloucestershire County Council.*Cheltenham Borough Council',
         dear          => qr'Dear Gloucestershire County Council and Cheltenham Borough',
         council       => '2226,2326',
         multiple      => 1,
-    },
-    {
+    }, {
+        %common,
         desc          => 'email to two tier council with one missing details',
         unset_whendef => 1,
         email_count   => 1,
-        email         => 'system_user@example.com',
-        name          => 'Andrew Smith',
         to            => qr'Gloucestershire County Council',
         dear          => qr'Dear Gloucestershire County Council,',
         council       => '2226|2649',
         missing       => qr'problem might be the responsibility of Fife.*Council'ms,
-    },
-    {
+    }, {
+        %common,
         desc          => 'email to two tier council that only shows district, district',
         unset_whendef => 1,
         email_count   => 1,
-        email         => 'system_user@example.com',
-        name          => 'Andrew Smith',
         to            => qr'Lichfield District Council',
         dear          => qr'Dear Lichfield District Council,',
         council       => '2434',
         cobrand       => 'lichfielddc',
         url           => 'lichfielddc.',
-    },
-    {
+    }, {
+        %common,
         desc          => 'email to two tier council that only shows district, county',
         unset_whendef => 1,
         email_count   => 1,
-        email         => 'system_user@example.com',
-        name          => 'Andrew Smith',
         to            => qr'Staffordshire County Council',
         dear          => qr'Dear Staffordshire County Council,',
         council       => '2240',
         cobrand       => 'lichfielddc',
         url           => '',
+    }, {
+        %common,
+        desc          => 'directs NI correctly, 1',
+        unset_whendef => 1,
+        email_count   => 1,
+        dear          => qr'Dear Ballymoney Borough Council',
+        to            => qr'Ballymoney Borough Council',
+        council       => 14279,
+        category      => 'Graffiti',
+    }, {
+        %common,
+        desc          => 'directs NI correctly, 2',
+        unset_whendef => 1,
+        email_count   => 1,
+        dear          => qr'Dear Roads Service \(Western\)',
+        to            => qr'Roads Service \(Western\)',
+        council       => 14279,
+        category      => 'Street lighting',
     },
 ) {
     subtest $test->{ desc } => sub {
@@ -475,7 +500,7 @@ foreach my $test ( {
             state => 'confirmed',
             confirmed => \'ms_current_timestamp()',
             whensent => $test->{ unset_whendef } ? undef : \'ms_current_timestamp()',
-            category => 'potholes',
+            category => $test->{ category } || 'potholes',
             name => $test->{ name },
             cobrand => $test->{ cobrand } || 'fixmystreet',
         } );
@@ -519,5 +544,7 @@ $contact2->delete;
 $contact3->delete;
 $contact4->delete;
 $contact5->delete;
+$contact6->delete;
+$contact7->delete;
 
 done_testing();
