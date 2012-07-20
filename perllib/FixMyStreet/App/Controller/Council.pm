@@ -88,7 +88,7 @@ sub load_and_check_councils : Private {
 
     # If we don't have any councils we can't accept the report
     if ( !scalar keys %$all_councils ) {
-        $c->stash->{location_offshore} = 1;
+        $c->stash->{location_error} = _('That location does not appear to be covered by a council; perhaps it is offshore or outside the country. Please try again.');
         return;
     }
 

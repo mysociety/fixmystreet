@@ -14,9 +14,7 @@ within a certain distance of a particular location.') %]
 [% END %]
 </p>
 
-[% IF location_offshore %]
-  <div class="error">[% loc('That location does not appear to be covered by a council, perhaps it is offshore - please try somewhere more specific.') %]</div>
-[% ELSIF location_error %]
+[% IF location_error %]
   <div class="error">[% location_error %]</div>
 [% ELSE %]
   [% INCLUDE 'errors.html' %]

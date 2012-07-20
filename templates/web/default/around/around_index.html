@@ -20,9 +20,7 @@
 
 </form>
 
-[% IF location_offshore %]
-  <p class="error">[% loc('That spot does not appear to be covered by a council. If you have tried to report an issue past the shoreline, for example, please specify the closest point on land.') %]</p>
-[% ELSIF location_error %]
+[% IF location_error %]
     <p class="error">[% location_error %]</p>
 [% END %]
 
