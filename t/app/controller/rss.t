@@ -41,7 +41,7 @@ my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
 
 
 $mech->get_ok("/rss/pc/EH11BB/2");
-$mech->content_contains( "Testing, 10th October, EH1 1BB" );
+$mech->content_contains( "Testing, 10th October" );
 $mech->content_lacks( 'Nearest road to the pin' );
 
 $report->geocode( 
@@ -106,18 +106,11 @@ $report->geocode(
           'authenticationResultCode' => 'ValidCredentials'
         }
 );
-$report->postcode('eh11bb');
 $report->update();
 
 $mech->get_ok("/rss/pc/EH11BB/2");
-$mech->content_contains( "Testing, 10th October, EH1 1BB" );
+$mech->content_contains( "Testing, 10th October" );
 $mech->content_contains( '18 North Bridge, Edinburgh' );
-
-$report->postcode('Princes St, Edinburgh');
-$report->update();
-
-$mech->get_ok("/rss/pc/EH11BB/2");
-$mech->content_contains( "Testing, 10th October, Princes St, Edinburgh" );
 
 $report->delete();
 $user1->delete();

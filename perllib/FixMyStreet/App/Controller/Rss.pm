@@ -254,11 +254,6 @@ sub add_row : Private {
     }
     my $url = $base_url . $link;
 
-    if ( $row->{postcode} ) {
-        my $pc = $c->cobrand->format_postcode( $row->{postcode} );
-        $title .= ", $pc";
-    }
-
     my %item = (
         title => ent($title),
         link => $url,

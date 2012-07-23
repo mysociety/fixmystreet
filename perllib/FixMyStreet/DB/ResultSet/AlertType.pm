@@ -96,9 +96,7 @@ sub email_alerts ($) {
                 $data{data} .= $row->{item_text} . "\n\n------\n\n";
             # this is ward and council problems
             } else {
-                my $postcode = $cobrand->format_postcode( $row->{postcode} );
-                $postcode = ", $postcode" if $postcode;
-                $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}$postcode\n\n";
+                $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}\n\n";
                 if ( exists $row->{geocode} && $row->{geocode} && $ref =~ /ward|council/ ) {
                     my $nearest_st = _get_address_from_gecode( $row->{geocode} );
                     $data{data} .= $nearest_st if $nearest_st;
@@ -168,9 +166,7 @@ sub email_alerts ($) {
             if ( $hashref_restriction && $hashref_restriction->{council} && $row->{council} ne $hashref_restriction->{council} ) {
                 $url = mySociety::Config::get('BASE_URL');
             }
-            my $postcode = $cobrand->format_postcode( $row->{postcode} );
-            $postcode = ", $postcode" if $postcode;
-            $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}$postcode\n\n";
+            $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}\n\n";
             if ( exists $row->{geocode} && $row->{geocode} ) {
                 my $nearest_st = _get_address_from_gecode( $row->{geocode} );
                 $data{data} .= $nearest_st if $nearest_st;
