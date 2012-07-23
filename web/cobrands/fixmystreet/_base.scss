@@ -878,6 +878,7 @@ a:hover.button-left {
       }
       a:hover {
           color:#222222;
+          background:#e6e6e6;
           text-decoration: none;
       }
       .text,
@@ -921,12 +922,12 @@ a:hover.button-left {
     overflow:hidden;
     li {
       clear:both;
-      width:auto;
+      width:100%;
       display:block;
       overflow:hidden;
       .text {
         float:left;
-        width:18em;
+        width:19em;
       }
       .img {
         width:6.25em;
