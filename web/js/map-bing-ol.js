@@ -56,7 +56,9 @@ OpenLayers.Layer.BingUK = OpenLayers.Class(OpenLayers.Layer.XYZ, {
         var z = this.map.getZoom() + this.zoomOffset;
         var copyrights;
         var logo = '';
-        if (z >= 16) {
+        var c = this.map.getCenter();
+        var in_uk = c ? this.in_uk(c) : true;
+        if (z >= 16 && in_uk) {
             copyrights = 'Contains Ordnance Survey data &copy; Crown copyright and database right 2010';
         } else {
             logo = '<a href="http://www.bing.com/maps/"><img border=0 src="//dev.virtualearth.net/Branding/logo_powered_by.png"></a>';
