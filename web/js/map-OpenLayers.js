@@ -46,11 +46,17 @@ function fixmystreet_activate_drag() {
     fixmystreet.drag.activate();
 }
 
+var marker_big = null;
 function fms_markers_list(pins, transform) {
     var markers = [];
     for (var i=0; i<pins.length; i++) {
         var pin = pins[i];
         var loc = new OpenLayers.Geometry.Point(pin[1], pin[0]);
+        if ( pin[5] == 'big' ) {
+            marker_big = loc.clone();
+        } else if ( loc.equals(marker_big) ) {
+            pin[5] = 'big';
+        }
         if (transform) {
             // The Strategy does this for us, so don't do it in that case.
             loc.transform(
@@ -136,7 +142,7 @@ function fixmystreet_onload() {
         },
         styleMap: pin_layer_style_map
     };
-    if (fixmystreet.page == 'around') {
+    if (fixmystreet.page == 'around' || fixmystreet.page == 'report') {
         fixmystreet.bbox_strategy = new OpenLayers.Strategy.BBOX({ ratio: 1 });
         pin_layer_options.strategies = [ fixmystreet.bbox_strategy ];
         pin_layer_options.protocol = new OpenLayers.Protocol.HTTP({
