@@ -359,55 +359,45 @@ my %contact_params = (
 FixMyStreet::App->model('DB::Contact')->search( {
     email => { 'like', '%example.com' },
 } )->delete;
-my $contact1 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
-    %contact_params,
+my @contacts;
+for my $contact ( {
     area_id => 2651, # Edinburgh
     category => 'potholes',
     email => 'test@example.org',
-} );
-my $contact2 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
-    %contact_params,
+}, {
     area_id => 2226, # Gloucestershire
     category => 'potholes',
     email => '2226@example.org',
-} );
-my $contact3 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
-    %contact_params,
+}, {
     area_id => 2326, # Cheltenham
     category => 'potholes',
     email => '2326@example.org',
-} );
-my $contact4 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
-    %contact_params,
+}, {
     area_id => 2434, # Lichfield
     category => 'potholes',
     email => 'trees@example.com',
-} );
-my $contact5 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
-    %contact_params,
+}, {
     area_id => 2240, # Staffordshire
     category => 'potholes',
     email => 'highways@example.com',
-} );
-my $contact6 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
-    %contact_params,
+}, {
     area_id => 14279, # Ballymoney
     category => 'Street lighting',
     email => 'roads.western@drdni.example.org',
-} );
-my $contact7 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
-    %contact_params,
+}, {
     area_id => 14279, # Ballymoney
     category => 'Graffiti',
     email => 'highways@example.com',
-} );
-ok $contact1, "created test contact 1";
-ok $contact2, "created test contact 2";
-ok $contact3, "created test contact 3";
-ok $contact4, "created test contact 4";
-ok $contact5, "created test contact 5";
-ok $contact6, "created test contact 6";
-ok $contact7, "created test contact 7";
+}, {
+    confirmed => 0,
+    area_id => 2636, # Isle of Wight
+    category => 'potholes',
+    email => '2636@example.com',
+} ) {
+    my $new_contact = FixMyStreet::App->model('DB::Contact')->find_or_create( { %contact_params, %$contact } );
+    ok $new_contact, "created test contact";
+    push @contacts, $new_contact;
+}
 
 my %common = (
     email => 'system_user@example.com',
@@ -441,7 +431,7 @@ foreach my $test ( {
         desc          => 'email to two tier council with one missing details',
         unset_whendef => 1,
         email_count   => 1,
-        to            => qr'Gloucestershire County Council',
+        to            => qr'Gloucestershire County Council" <2226@example',
         dear          => qr'Dear Gloucestershire County Council,',
         council       => '2226|2649',
         missing       => qr'problem might be the responsibility of Fife.*Council'ms,
@@ -460,7 +450,7 @@ foreach my $test ( {
         desc          => 'email to two tier council that only shows district, county',
         unset_whendef => 1,
         email_count   => 1,
-        to            => qr'Staffordshire County Council',
+        to            => qr'Staffordshire County Council" <highways@example',
         dear          => qr'Dear Staffordshire County Council,',
         council       => '2240',
         cobrand       => 'lichfielddc',
@@ -480,9 +470,16 @@ foreach my $test ( {
         unset_whendef => 1,
         email_count   => 1,
         dear          => qr'Dear Roads Service \(Western\)',
-        to            => qr'Roads Service \(Western\)',
+        to            => qr'Roads Service \(Western\)" <roads',
         council       => 14279,
         category      => 'Street lighting',
+    }, {
+        %common,
+        desc          => 'does not send to unconfirmed contact',
+        unset_whendef => 1,
+        stays_unsent  => 1,
+        email_count   => 0,
+        council       => 2636,
     },
 ) {
     subtest $test->{ desc } => sub {
@@ -532,6 +529,10 @@ foreach my $test ( {
             $problem->discard_changes;
             ok defined( $problem->whensent ), 'whensent set';
         }
+        if ( $test->{stays_unsent} ) {
+            $problem->discard_changes;
+            ok !defined( $problem->whensent ), 'whensent not set';
+        }
     };
 }
 
@@ -539,12 +540,8 @@ $problem->comments->delete;
 $problem->delete;
 $user->delete;
 
-$contact1->delete;
-$contact2->delete;
-$contact3->delete;
-$contact4->delete;
-$contact5->delete;
-$contact6->delete;
-$contact7->delete;
+foreach (@contacts) {
+    $_->delete;
+}
 
 done_testing();

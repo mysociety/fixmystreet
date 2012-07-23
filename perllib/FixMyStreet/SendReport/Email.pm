@@ -59,11 +59,14 @@ sub send {
     my @recips = $self->build_recipient_list( $row, $h );
 
     # on a staging server send emails to ourselves rather than the councils
-    if (mySociety::Config::get('STAGING_SITE')) {
+    if (mySociety::Config::get('STAGING_SITE') && !FixMyStreet->test_mode) {
         @recips = ( mySociety::Config::get('CONTACT_EMAIL') );
     }
 
-    return unless @recips;
+    unless ( @recips ) {
+        $self->error( 'No recipients' );
+        return 1;
+    }
 
     my ($verbose, $nomail) = CronFns::options();
     my $result = FixMyStreet::App->send_email_cron(
