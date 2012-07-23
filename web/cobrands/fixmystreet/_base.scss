@@ -864,6 +864,7 @@ a:hover.button-left {
     margin:0;
     padding:0;
       margin: 0.25em 0 0 0;
+      /* see note below about this */
       display:table;
       background: #f6f6f6;
       color:#222222;
@@ -881,25 +882,25 @@ a:hover.button-left {
           background:#e6e6e6;
           text-decoration: none;
       }
-      .text,
-      .img {
-        display:table-cell;
-        vertical-align:top;
-      }
-      .img {
-        text-align:right;
-        width: 90px;
-        float: right;
-        height:auto;
-      }
       .text {
+        /* this is and the display:table above are required otherwise
+           on iphone the rows end up being slightly wider than the screen */
+        display: table-cell;
         width: 100%;
-        padding:0.25em 1em;
+        vertical-align:top;
+        padding: 0px 0px 0px 1em;
+        .img {
+          width: 90px;
+          float: right;
+          height:auto;
+        }
         h4 {
+          padding-top: 0.25em;
           margin:0;
         }
         small {
           color:#666;
+          padding-bottom: 0.25em;
         }
       }
     >p {
@@ -927,18 +928,16 @@ a:hover.button-left {
       overflow:hidden;
       .text {
         float:left;
-        width:19em;
-      }
-      .img {
-        width:6.25em;
-        float:right;
+        small {
+            display: block;
+        }
       }
     }
   }
 }
 .ie6 .issue-list-a li a {
   height:5.5em;
-  .img img {
+  .img {
     height:60px;
   }
 }
