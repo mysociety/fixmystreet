@@ -895,11 +895,14 @@ a:hover.button-left {
           height:auto;
         }
         h4 {
+          padding-right: 1em;
           padding-top: 0.25em;
           margin:0;
         }
         small {
           color:#666;
+          display: block;
+          padding-right: 1em;
           padding-bottom: 0.25em;
         }
       }
@@ -928,9 +931,6 @@ a:hover.button-left {
       overflow:hidden;
       .text {
         float:left;
-        small {
-            display: block;
-        }
       }
     }
   }
