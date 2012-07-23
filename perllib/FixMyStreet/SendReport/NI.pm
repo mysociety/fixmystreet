@@ -27,6 +27,7 @@ sub build_recipient_list {
         if ( $email =~ /^roads.([^@]*)\@drdni/ ) {
             $name = "Roads Service (\u$1)";
             $h->{councils_name} = $name;
+            $row->external_body( 'Roads Service' );
         }
         push @{ $self->to }, [ $email, $name ];
         $recips{$email} = 1;
