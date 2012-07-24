@@ -375,6 +375,17 @@ sub send_reports {
 
         for my $sender ( keys %reporters ) {
             $result *= $reporters{ $sender }->send( $row, \%h );
+            if ( $reporters{ $sender }->unconfirmed_counts) {
+                foreach my $e (keys %{ $reporters{ $sender }->unconfirmed_counts } ) {
+                    foreach my $c (keys %{ $reporters{ $sender }->unconfirmed_counts->{$e} }) {
+                        $notgot{$e}{$c} += $reporters{ $sender }->unconfirmed_counts->{$e}{$c};
+                    }
+                }
+                %note = (
+                    %note,
+                    %{ $reporters{ $sender }->unconfirmed_notes }
+                );
+            }
         }
 
         if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
@@ -397,7 +408,7 @@ sub send_reports {
         print "Council email addresses that need checking:\n" if keys %notgot;
         foreach my $e (keys %notgot) {
             foreach my $c (keys %{$notgot{$e}}) {
-                print $notgot{$e}{$c} . " problem, to $e category $c (" . $note{$e}{$c}. ")\n";
+                print "    " . $notgot{$e}{$c} . " problem, to $e category $c (" . $note{$e}{$c}. ")\n";
             }
         }
         if (keys %sending_skipped_by_method) {

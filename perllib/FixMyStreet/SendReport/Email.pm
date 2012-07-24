@@ -25,11 +25,11 @@ sub build_recipient_list {
 
         unless ($confirmed) {
             $all_confirmed = 0;
-            #$note = 'Council ' . $row->council . ' deleted'
-                #unless $note;
+            $note = 'Council ' . $row->council . ' deleted'
+                unless $note;
             $council_email = 'N/A' unless $council_email;
-            #$notgot{$council_email}{$row->category}++;
-            #$note{$council_email}{$row->category} = $note;
+            $self->unconfirmed_counts->{$council_email}{$row->category}++;
+            $self->unconfirmed_notes->{$council_email}{$row->category} = $note;
         }
 
         push @{ $self->to }, [ $council_email, $self->councils->{ $council }->{name} ];
