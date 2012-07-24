@@ -100,15 +100,24 @@ var message_manager = (function() {
             htauth_un = $htauth_username.val();
             htauth_pw = $htauth_password.val();
         }
-        if (htauth_un.length === 0 && Modernizr.localstorage) {
-            base_auth = localStorage.mm_auth === undefined? "" : localStorage.mm_auth;
+        if (htauth_un.length === 0 && Modernizr.sessionstorage && sessionStorage.getItem('mm_auth')) {
+            base_auth = sessionStorage.getItem('mm_auth');
         } else {
             base_auth = make_base_auth(htauth_un, htauth_pw);
-            if (Modernizr.localstorage) {
-                localStorage.mm_auth = base_auth;
+            if (Modernizr.sessionstorage) {
+                sessionStorage.mm_auth = base_auth;
             }
         }
         return base_auth;
+    };
+    
+    var sign_out = function() { // clear_current_auth_credentials
+        if (Modernizr.sessionstorage) {
+            sessionStorage.removeItem('mm_auth'); // FF doesn't support .clear()?
+        }
+        if ($htauth_password) {
+            $htauth_password.val('');
+        }
     };
 
     var show_login_form = function() {
@@ -325,6 +334,7 @@ var message_manager = (function() {
        setup_click_listener: setup_click_listener,
        get_available_messages: get_available_messages,
        request_lock: request_lock,
-       assign_fms_id: assign_fms_id
+       assign_fms_id: assign_fms_id,
+       sign_out: sign_out
      };
 })();
