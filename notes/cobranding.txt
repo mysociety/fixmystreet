@@ -1,5 +1,5 @@
-Notes on adding a co brand
---------------------------
+Notes on adding a cobrand
+-------------------------
 
 Basic steps
 

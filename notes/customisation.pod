@@ -35,36 +35,46 @@ The full set of templates is stored in the default Cobrand and if no
 equivalent template is found in a Cobrand directory FixMyStreet will
 use the default template.
 
+By default, the Default cobrand uses the templates in
+C<templates/web/fixmystreet> that are used for the www.fixmystreet.com website.
+If you want to base your design off this, you can inherit from those templates,
+rather than the "bare bones" default ones.
+
 At a bare minimum you will probably want to copy the header and footer
-web templates found in C<templates/web/default/header.html> and
-C<templates/web/default/footer.html> into your Cobrand and make appropriate
+web templates found in C<templates/web/fixmystreet/header.html> and
+C<templates/web/fixmystreet/footer.html> into your Cobrand and make appropriate
 changes.
 
 The other template you should make your own version of is the FAQ which
-is in C<templates/web/default/faq-en-gb.html>
+is in C<templates/web/fixmystreet/faq/faq-en-gb.html>
 
 =head1 CSS
 
-The CSS is stored in web/css/ under which there are directories for Cobrands
-but this is only by custom. The loading of the css is controled by the header
-templates. Note that FixMyStreet uses sccs files to generate our CSS so by there
-are no CSS files until C<bin/make_css> has been run.
+The CSS is stored in web/cobrands/ under which there are directories for Cobrands.
+The loading of the CSS is controlled by the header templates. Note that
+FixMyStreet uses SCSS and Compass to generate our CSS so there are no CSS files
+until C<bin/make_css> has been run.
 
-The CSS provided with FixMyStreet uses CSS3 media queries in order to adapt
-the layout to work on different devices.
+The CSS provided with FixMyStreet uses CSS3 media queries in a mobile first
+format order to adapt the layout to work on different devices.
 
-The CSS is structured into two main files:
+The CSS is structured into main files:
 
 =over
 
-=item core.css
+=item base.css
 
-This contains all the styling for the content of the pages. This should not
-need changed unless you are significantly changing the layout of the site.
+This contains all the styling for the content of the pages in a mobile sized browser.
 
-=item main.css
+=item layout.css
 
-This contains the CSS for the header and footer as well as the colour scheme.
+This contains all the styling for the content of the pages in a desktop sized browser.
+
+=item _colours.css
+
+This contains basic colour information, so you can easily make a site that
+looks different simply by copying these files to your own cobrand CSS
+directory, and changing the colours.
 
 =back
 
@@ -174,23 +184,23 @@ Return 0 to disable the display of uploaded photos.
 
 =item area_types
 
-If you are using MaPit alongside FixMyStreet this should return a
+If you are using MapIt alongside FixMyStreet this should return a
 list of the area type codes that the site will handle. This is used
-to filter the data returned from MaPit so that only appropriate areas are
+to filter the data returned from MapIt so that only appropriate areas are
 displayed.
 
 =item remove_redundant_councils
 
-This is used to filter out any overlapping jurisdictions from MaPit results
+This is used to filter out any overlapping jurisdictions from MapIt results
 where only one of the authorities actually has reponsability for the events
-reported by the site. An example would be be a report in a city where MaPit
+reported by the site. An example would be be a report in a city where MapIt
 has an id for the city council and the state council but problems are only
-reported to the state. In this case you would remove the id for the the city
+reported to the state. In this case you would remove the id for the city
 council from the results.
 
 =item short_name
 
-This is used to turn the full authority name returned by MaPit into a short
+This is used to turn the full authority name returned by MapIt into a short
 name.
 
 =back
