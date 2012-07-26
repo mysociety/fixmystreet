@@ -129,6 +129,8 @@ sub ward : Path : Args(2) {
         any_zoom  => 1,
     );
 
+    $c->cobrand->tweak_all_reports_map( $c );
+
     # List of wards
     unless ($c->stash->{ward}) {
         my $children = mySociety::MaPit::call('area/children', [ $c->stash->{council}->{id} ],

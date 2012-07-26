@@ -88,5 +88,18 @@ sub contact_name { 'Bromley Council (do not reply)'; }
 
 sub reports_per_page { return 20; }
 
+sub tweak_all_reports_map {
+    my $self = shift;
+    my $c = shift;
+
+    if ( !$c->stash->{ward} ) {
+        $c->stash->{map}->{longitude} = 0.040622967881348;
+        $c->stash->{map}->{latitude} = 51.36690161822;
+        $c->stash->{map}->{any_zoom} = 0;
+        $c->stash->{map}->{zoom} = 11;
+    }
+}
+
+
 1;
 

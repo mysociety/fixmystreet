@@ -783,5 +783,15 @@ sub pin_colour {
     return $p->is_fixed ? 'green' : 'red';
 }
 
+=head2 tweak_all_reports_map
+
+Used to tweak the display settings of the map on the all reports pages.
+
+Used in some cobrands to improve the intial display for Internet Explorer.
+
+=cut
+
+sub tweak_all_reports_map {}
+
 1;
 
