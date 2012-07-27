@@ -25,6 +25,9 @@ We're working hard to make FixMyStreet Platform easy to install and re-use in
 other countries and welcome questions about how it works
 [on our mailing list](https://secure.mysociety.org/admin/lists/mailman/listinfo/fixmystreet).
 
+We also have a [guide](The-FixMyStreet-Platform-DIY-Guide-v1.1.pdf) on the technical and non-technical how and why of
+using the FixMyStreet platform for your own site.
+
 We've also got a [new blog](http://code.fixmystreet.com/) which over time will
 become a useful resource for people interested in installing or developing
 FixMyStreet Platform.
