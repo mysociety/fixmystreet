@@ -107,10 +107,10 @@ img {
   max-width:100%;
 }
 
-header {
+.side {
   width: 20em;
-  float:left;
-  position:fixed;
+  float: left;
+  position: fixed;
 }
 
 ul.buttons {
@@ -195,9 +195,9 @@ ul.buttons a strong {
 }
 
 section {
-  width: 60%;
-  float:right;
-  padding-bottom:50px;
+  padding-left: 23em;
+  float: right;
+  padding-bottom: 3em;
 }
 
 small {
@@ -211,13 +211,6 @@ hr {
   margin:0 0 20px;
 }
 
-footer {
-  width:270px;
-  float:left;
-  position:fixed;
-  bottom:50px;
-}
-
 @media print, screen and (max-width: 960px) {
   
   div.wrapper {
@@ -225,14 +218,10 @@ footer {
     margin:0;
   }
   
-  header, section, footer {
+  .side, section {
     float:none;
     position:static;
     width:auto;
-  }
-  
-  header {
-    padding-right:320px;
   }
   
   section {
