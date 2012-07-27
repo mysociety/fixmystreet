@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Installing FixMyStreet
+title: Installing
 ---
 
-# Installing FixMyStreet
+# Installing FixMyStreet Platform
 
 ## 1. Get the code
 

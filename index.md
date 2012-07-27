@@ -3,12 +3,12 @@ layout: default
 title: Welcome
 ---
 
-Welcome to FixMyStreet
-======================
+Welcome to FixMyStreet Platform
+===============================
 
-[FixMyStreet](http://www.fixmystreet.com/) is an open source project to help
-people run websites for reporting common street problems such as potholes and
-broken street lights to the appropriate authority.
+[FixMyStreet](http://www.fixmystreet.com/) Platform is an open source project
+to help people run websites for reporting common street problems such as
+potholes and broken street lights to the appropriate authority.
 
 Users locate problems using a combination of address and sticking a pin in a
 map without worrying about the correct authority to report it to. FixMyStreet
@@ -21,13 +21,13 @@ problems in their area.
 It was created in 2007 by [mySociety](http://www.mysociety.org/) for reporting
 problems to UK councils and has been copied around the world.
 
-We're working hard to make it easy to install and re-use in other
-countries and welcome questions about how it works
+We're working hard to make FixMyStreet Platform easy to install and re-use in
+other countries and welcome questions about how it works
 [on our mailing list](https://secure.mysociety.org/admin/lists/mailman/listinfo/fixmystreet).
 
 We've also got a [new blog](http://code.fixmystreet.com/) which over time will
 become a useful resource for people interested in installing or developing
-FixMyStreet.
+FixMyStreet Platform.
 
 Installation
 ------------
