@@ -1,2 +1,5 @@
 safe: true
 pygments: true
+baseurl: /fixmystreet
+auto: true
+server: true
