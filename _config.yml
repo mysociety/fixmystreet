@@ -3,3 +3,10 @@ pygments: true
 baseurl: /
 auto: true
 server: true
+permalink: pretty
+
+authors:
+  struan:
+    display_name: Struan
+  matthew:
+    display_name: Matthew

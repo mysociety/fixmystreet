@@ -28,9 +28,8 @@ other countries and welcome questions about how it works
 We also have a [guide](The-FixMyStreet-Platform-DIY-Guide-v1.1.pdf) on the technical and non-technical how and why of
 using the FixMyStreet platform for your own site.
 
-We've also got a [new blog](http://code.fixmystreet.com/) which over time will
-become a useful resource for people interested in installing or developing
-FixMyStreet Platform.
+We've also got a [blog](blog/) where we will post updates in our progress
+in making the code easier to install and develop.
 
 Installation
 ------------
