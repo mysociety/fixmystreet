@@ -17,6 +17,8 @@
         [% END %]
         [% IF NOT no_fixed AND problem.is_fixed %]
             <small>[% loc('(fixed)') %]</small>
+        [% ELSIF NOT no_fixed AND problem.is_closed %]
+            <small>[% loc('(closed)') %]</small>
         [% END %]
     </div>
     [% IF problem.photo %]
