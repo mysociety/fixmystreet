@@ -31,10 +31,18 @@ sub site_name {
 }
 
 sub disambiguate_location {
-    my $self = shift;
+    my $self    = shift;
+    my $string  = shift;
+
+    my $town = 'Bromley';
+    # Bing turns High St Bromley into Bromley High St which is in 
+    # Bromley by Bow.
+    if ( $string =~ /high\+st/i ) {
+        $town .= ', BR1';
+    }
     return {
         %{ $self->SUPER::disambiguate_location() },
-        town => 'Bromley',
+        town => $town,
         centre => '51.366836,0.040623',
         span   => '0.154963,0.24347',
         bounds => [ 51.289355, -0.081112, 51.444318, 0.162358 ],
