@@ -32,6 +32,7 @@ sub send {
 
         my $always_send_latlong = 1;
         my $send_notpinpointed  = 0;
+        my $use_service_as_deviceid = 0;
 
         my $basic_desc = 0;
 
@@ -54,6 +55,7 @@ sub send {
 
             $always_send_latlong = 0;
             $send_notpinpointed = 1;
+            $use_service_as_deviceid = 0;
 
             # make sure we have last_name attribute present in row's extra, so
             # it is passed correctly to Bromley as attribute[]
@@ -73,12 +75,13 @@ sub send {
         } );
 
         my $open311 = Open311->new(
-            jurisdiction        => $conf->jurisdiction,
-            endpoint            => $conf->endpoint,
-            api_key             => $conf->api_key,
-            always_send_latlong => $always_send_latlong,
-            send_notpinpointed  => $send_notpinpointed,
-            basic_description   => $basic_desc,
+            jurisdiction            => $conf->jurisdiction,
+            endpoint                => $conf->endpoint,
+            api_key                 => $conf->api_key,
+            always_send_latlong     => $always_send_latlong,
+            send_notpinpointed      => $send_notpinpointed,
+            use_service_as_deviceid => $use_service_as_deviceid,
+            basic_description       => $basic_desc,
         );
 
         # non standard west berks end points

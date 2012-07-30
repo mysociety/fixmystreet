@@ -23,6 +23,7 @@ has error => ( is => 'rw', 'isa' => 'Str', default => '' );
 has always_send_latlong => ( is => 'ro', isa => 'Bool', default => 1 );
 has send_notpinpointed => ( is => 'ro', isa => 'Bool', default => 0 );
 has basic_description => ( is => 'ro', isa => 'Bool', default => 0 );
+has use_service_as_deviceid => ( is => 'ro', isa => 'Bool', default => 0 );
 
 before [
     qw/get_service_list get_service_meta_info get_service_requests get_service_request_updates
@@ -128,6 +129,10 @@ sub _populate_service_request_params {
 
     if ( $extra->{image_url} ) {
         $params->{media_url} = $extra->{image_url};
+    }
+
+    if ( $self->use_service_as_deviceid && $problem->service ) {
+        $params->{deviceid} = $problem->service;
     }
 
     if ( $problem->extra ) {
