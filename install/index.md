@@ -209,7 +209,7 @@ modules enabled:
 * mod_expires
 * mod_fastcgi
 
-For most Linux distributuions you should be able to install these using the distribution's
+For most Linux distributions you should be able to install these using the distribution's
 packaging system.
 
 At this point you be able to restart the webserver and see your FixMyStreet
