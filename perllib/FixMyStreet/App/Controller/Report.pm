@@ -123,7 +123,7 @@ sub format_problem_for_display : Private {
         $c->stash->{add_alert} = 1;
     }
 
-    $c->stash->{extra_name_info} = $problem->council eq '2482' ? 1 : 0;
+    $c->stash->{extra_name_info} = $problem->council && $problem->council eq '2482' ? 1 : 0;
 
     $c->forward('generate_map_tags');
 
