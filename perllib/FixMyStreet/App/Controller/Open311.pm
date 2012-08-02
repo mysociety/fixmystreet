@@ -319,8 +319,6 @@ sub get_requests : Private {
         service_request_id => [ '=', 'id' ],
         service_code       => [ '=', 'category' ],
         status             => [ 'IN', 'state' ],
-        start_date         => [ '>=', 'confirmed' ],
-        end_date           => [ '<', 'confirmed' ],
         agency_responsible => [ '~', 'council' ],
         interface_used     => [ '=', 'service' ],
         has_photo          => [ '=', 'photo' ],
@@ -363,6 +361,14 @@ sub get_requests : Private {
             $value = undef if 'Web interface' eq $value;
         }
         $criteria->{$key} = { $op, $value };
+    }
+
+    if ( $c->req->param('start_date') and $c->req->param('end_date') ) {
+        $criteria->{confirmed} = [ '-and' => { '>=', $c->req->param('start_date') }, { '<', $c->req->param('end_date') } ];
+    } elsif ( $c->req->param('start_date') ) {
+        $criteria->{confirmed} = { '>=', $c->req->param('start_date') };
+    } elsif ( $c->req->param('end_date') ) {
+        $criteria->{confirmed} = { '<', $c->req->param('end_date') };
     }
 
     if ('rss' eq $c->stash->{format}) {
