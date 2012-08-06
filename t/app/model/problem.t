@@ -491,6 +491,10 @@ foreach my $test ( {
             }
         )->update( { whensent => \'ms_current_timestamp()' } );
 
+        if ( $test->{cobrand} && $test->{cobrand} =~ /lichfielddc/ && !FixMyStreet::Cobrand->exists('lichfielddc') ) {
+            plan skip_all => 'Skipping Lichfield tests without Lichfield cobrand';
+        }
+
         $problem->discard_changes;
         $problem->update( {
             council => $test->{ council },

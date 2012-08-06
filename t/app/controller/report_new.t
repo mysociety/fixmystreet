@@ -875,8 +875,7 @@ for my $test (
 {
     subtest $test->{desc} => sub {
         if ( $test->{host} =~ /bromley/ && !FixMyStreet::Cobrand->exists('bromley') ) {
-            ok 1, 'Skipping Bromley tests without Bromley cobrand';
-            return;
+            plan skip_all => 'Skipping Bromley tests without Bromley cobrand';
         }
 
         $mech->host( $test->{host} );
