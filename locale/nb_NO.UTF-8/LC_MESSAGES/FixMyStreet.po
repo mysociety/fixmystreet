@@ -10,10 +10,9 @@ msgstr ""
 "Project-Id-Version: FixMyStreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2012-03-28 19:23+0100\n"
-"PO-Revision-Date: 2011-08-29 10:26MET\n"
-"Last-Translator: Petter Reinholdtsen <pere@hungry.com>\n"
+"PO-Revision-Date: 2012-08-07 01:09+0100\n"
+"Last-Translator: Anders Einar Hilden <hildenae@gmail.com>\n"
 "Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -296,19 +295,16 @@ msgid "<strong>%d</strong> live problems"
 msgstr "<strong>%d</strong> aktive problemer"
 
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:169
-#, fuzzy
 msgid "<strong>No</strong> Let me confirm my report by email"
-msgstr "<strong>Nei</strong>, la meg bekrefte min rapport med e-post:"
+msgstr "<strong>Nei</strong> La meg bekrefte min rapport med e-post"
 
 #: templates/web/fixmystreet/report/display.html:153
-#, fuzzy
 msgid "<strong>No</strong> Let me confirm my update by email"
-msgstr "<strong>Nei</strong>, la meg bekrefte min oppdatering med e-post:"
+msgstr "<strong>Nei</strong> La meg bekrefte min oppdatering med e-post"
 
 #: templates/web/fixmystreet/auth/general.html:46
-#, fuzzy
 msgid "<strong>No</strong> let me sign in by email"
-msgstr "<strong>Nei</strong>, det gjør jeg ikke. La meg logge inn med e-post:"
+msgstr "<strong>Nei</strong>, la meg logge inn med e-post:"
 
 #: templates/web/default/auth/general.html:55
 msgid "<strong>No</strong>, I do not, let me sign in by email:"
@@ -329,9 +325,8 @@ msgstr "<strong>Nei</strong>, la meg bekrefte min oppdatering med e-post:"
 #: templates/web/fixmystreet/auth/general.html:34
 #: templates/web/fixmystreet/report/display.html:136
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:151
-#, fuzzy
 msgid "<strong>Yes</strong> I have a password"
-msgstr "<strong>Ja</strong>, jeg har et passord:"
+msgstr "<strong>Ja</strong> Jeg har et passord"
 
 #: templates/web/default/static/about.html:1
 #: templates/web/default/static/about.html:3
@@ -372,7 +367,6 @@ msgid "All"
 msgstr "Alle"
 
 #: templates/web/default/reports/index.html:3
-#, fuzzy
 msgid "All Reports"
 msgstr "Alle rapporter"
 
@@ -448,20 +442,20 @@ msgid "Anonymous:"
 msgstr "Anonym:"
 
 #: templates/web/default/footer.html:26
-#, fuzzy
 msgid ""
 "Are you a <strong>developer</strong>? Would you like to contribute to "
 "FixMyStreet?"
-msgstr "Er du en utvikler? Kunne du tenke deg å bidra til FiksGataMi?"
+msgstr ""
+"Er du en <strong>utvikler</strong>? Kunne du tenke deg å bidra til "
+"FiksGataMi?"
 
 #: templates/web/fixmystreet/footer.html:18
 msgid "Are you a developer?"
-msgstr ""
+msgstr "Er du en utvikler?"
 
 #: templates/web/fixmystreet/footer.html:22
-#, fuzzy
 msgid "Are you from a council?"
-msgstr "den lokale administrasjonen"
+msgstr "Der du fra den lokale administrasjonen?"
 
 #: templates/web/default/open311/index.html:17
 msgid ""
@@ -496,11 +490,10 @@ msgstr "På dato"
 
 #: templates/web/fixmystreet/around/display_location.html:75
 #: templates/web/fixmystreet/around/display_location.html:77
-#, fuzzy
 msgid "Can't see the map? <a href='%s' rel='nofollow'>Skip this step</a>"
 msgstr ""
-"<small>Hvis du ikke kan se kartet, <a href='%s' rel='nofollow'>hopp over "
-"dette steget</a>.</small>"
+"Hvis du ikke kan se kartet, <a href='%s' rel='nofollow'>hopp over dette "
+"steget</a>."
 
 #: templates/web/default/admin/council_contacts.html:31
 #: templates/web/default/admin/index.html:36
@@ -537,9 +530,8 @@ msgid "Change Password"
 msgstr "Bytt passord"
 
 #: templates/web/fixmystreet/around/display_location.html:72
-#, fuzzy
 msgid "Click map to report a problem"
-msgstr "Hvordan rapportere et problem"
+msgstr "Klikk i kartet for å rapportere et problem"
 
 #: perllib/FixMyStreet/Cobrand/FixMyStreet.pm:24
 #: templates/web/default/admin/report_edit.html:18
@@ -730,9 +722,8 @@ msgid "Deleted"
 msgstr "Slettet"
 
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:64
-#, fuzzy
 msgid "Details"
-msgstr "Detaljer:"
+msgstr "Detaljer"
 
 #: templates/web/default/admin/report_edit.html:14
 #: templates/web/default/report/new/fill_in_details_form.html:61
@@ -877,9 +868,8 @@ msgstr "Skriv inn et nytt passord:"
 #: templates/web/fixmystreet/auth/general.html:57
 #: templates/web/fixmystreet/report/display.html:165
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:194
-#, fuzzy
 msgid "Enter a password"
-msgstr "Skriv inn et nytt passord:"
+msgstr "Skriv inn et nytt passord"
 
 #: templates/web/default/index.html:44 templates/web/emptyhomes/index.html:60
 #: templates/web/fixmystreet/index.html:55
@@ -925,9 +915,8 @@ msgid "Fix<span id=\"my\">My</span>Street"
 msgstr "Fiks<span id=\"my\">Gata</span>Mi"
 
 #: templates/web/default/header.html:24
-#, fuzzy
 msgid "FixMyStreet"
-msgstr "FiksGataMi-administrator:"
+msgstr "FiksGataMi"
 
 #: templates/web/default/admin/header.html:13
 msgid "FixMyStreet admin:"
@@ -938,9 +927,8 @@ msgid "FixMyStreet administration"
 msgstr "Fiksgatami-administrasjon"
 
 #: templates/web/fixmystreet/static/for_councils.html:1
-#, fuzzy
 msgid "FixMyStreet for Councils"
-msgstr "Finn ut om FiksGataMi for det offentlige"
+msgstr "FiksGataMi for det offentlige"
 
 #: templates/web/default/alert/index.html:6
 #: templates/web/fixmystreet/alert/index.html:6
@@ -1044,14 +1032,12 @@ msgid "GeoRSS on Google Maps"
 msgstr "GeoRSS på Google Maps"
 
 #: templates/web/fixmystreet/report/display.html:28
-#, fuzzy
 msgid "Get updates"
-msgstr "Siste oppdatering:"
+msgstr "Få oppdateringer"
 
 #: templates/web/default/reports/council.html:72
-#, fuzzy
 msgid "Get updates of problems in this %s"
-msgstr "RSS-strøm for problemer i denne %s"
+msgstr "Få oppdateringer for problemer i denne %s"
 
 #: templates/web/default/alert/list.html:110
 #: templates/web/fixmystreet/alert/_list.html:78
@@ -1113,7 +1099,7 @@ msgstr ""
 #: templates/web/bromley/header.html:46
 #: templates/web/fixmystreet/header.html:46
 msgid "Hi %s"
-msgstr ""
+msgstr "Hei, %s"
 
 #: templates/web/default/admin/report_edit.html:18
 #: templates/web/default/admin/report_edit.html:21
@@ -1124,7 +1110,7 @@ msgstr "Skjul"
 #: templates/web/default/around/display_location.html:58
 #: templates/web/fixmystreet/around/display_location.html:58
 msgid "Hide old"
-msgstr ""
+msgstr "Skjul gamle"
 
 #: templates/web/default/around/display_location.html:53
 #: templates/web/fixmystreet/around/display_location.html:54
@@ -1246,7 +1232,6 @@ msgstr ""
 "tilstede hvis innsender tillot at navnet kunne vises på dette nettstedet)."
 
 #: perllib/FixMyStreet/Cobrand/FixMyStreet.pm:29
-#, fuzzy
 msgid "In progress"
 msgstr "Under arbeid"
 
@@ -1386,9 +1371,8 @@ msgstr ""
 "licenses/by-sa/2.0/\">CC-BY-SA</a>"
 
 #: templates/web/fixmystreet/contact/index.html:86
-#, fuzzy
 msgid "Message"
-msgstr "Melding:"
+msgstr "Melding"
 
 #: templates/web/default/contact/index.html:90
 msgid "Message:"
@@ -1460,23 +1444,22 @@ msgstr ""
 "Bing Maps): %s"
 
 #: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:242
-#, fuzzy
 msgid ""
 "Nearest road to the pin placed on the map (automatically generated by Bing "
 "Maps): %s\n"
 "\n"
 msgstr ""
 "Nærmeste vei til nålen plassert på kartet (automatisk generert ved hjelp av "
-"Bing Maps): %s"
+"Bing Maps) er: %s\n"
+"\n"
 
 #: templates/web/default/email_sent.html:20
 msgid "Nearly Done! Now check your email..."
 msgstr "Nesten ferdig! Nå må du sjekke e-posten din..."
 
 #: templates/web/default/reports/index.html:16
-#, fuzzy
 msgid "New <br>problems"
-msgstr "Nye problemer"
+msgstr "Nye <br>problemer"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:311
 msgid "New category contact added"
@@ -1641,19 +1624,16 @@ msgid "Note: <strong>%s</strong>"
 msgstr "Note: <strong>%d</strong>"
 
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:146
-#, fuzzy
 msgid "Now to submit your report&hellip;"
-msgstr "På tide å sende din rapport&hellip; har du et FiksGataMi-passord?"
+msgstr "På tide å sende din rapport&hellip;"
 
 #: templates/web/default/report/new/fill_in_details_form.html:131
 msgid "Now to submit your report&hellip; do you have a FixMyStreet password?"
 msgstr "På tide å sende din rapport&hellip; har du et FiksGataMi-passord?"
 
 #: templates/web/fixmystreet/report/display.html:132
-#, fuzzy
 msgid "Now to submit your update&hellip;"
-msgstr ""
-"På tide å registrere din oppdatering&hellip; har du et FiksGataMi-passord?"
+msgstr "På tide å registrere din oppdatering&hellip;"
 
 #: templates/web/default/report/display.html:138
 msgid "Now to submit your update&hellip; do you have a FixMyStreet password?"
@@ -1666,9 +1646,8 @@ msgid "Offensive? Unsuitable? Tell us"
 msgstr "Støtende? Upassende? Gi oss beskjed"
 
 #: templates/web/default/reports/index.html:18
-#, fuzzy
 msgid "Old / unknown <br>problems"
-msgstr "Ukjent problem-Id"
+msgstr "Gamle / ukjente <br>problemer"
 
 #: templates/web/fiksgatami/nn/reports/index.html:12
 #: templates/web/fiksgatami/reports/index.html:12
@@ -1680,14 +1659,12 @@ msgid "Old state"
 msgstr "Gammel tilstand"
 
 #: templates/web/default/reports/index.html:20
-#, fuzzy
 msgid "Older <br>fixed"
-msgstr "Eldre løste"
+msgstr "Eldre <br>løste"
 
 #: templates/web/default/reports/index.html:17
-#, fuzzy
 msgid "Older <br>problems"
-msgstr "Eldre problemer"
+msgstr "Eldre <br>problemer"
 
 #: templates/web/emptyhomes/reports/index.html:14
 #: templates/web/fiksgatami/nn/reports/index.html:14
@@ -1774,9 +1751,8 @@ msgstr "Delvis"
 #: templates/web/fixmystreet/auth/general.html:55
 #: templates/web/fixmystreet/report/display.html:162
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:191
-#, fuzzy
 msgid "Password (optional)"
-msgstr "(valgfritt)"
+msgstr "Passord (valgfritt)"
 
 #: templates/web/default/auth/change_password.html:25
 #: templates/web/fixmystreet/auth/change_password.html:25
@@ -1785,9 +1761,8 @@ msgstr "Passord:"
 
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:130
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:188
-#, fuzzy
 msgid "Phone number (optional)"
-msgstr "(valgfritt)"
+msgstr "Telefonnummer (valgfritt)"
 
 #: bin/send-reports:70 templates/web/default/admin/report_edit.html:32
 #: templates/web/default/report/new/fill_in_details_form.html:215
@@ -1796,9 +1771,8 @@ msgstr "Telefon:"
 
 #: templates/web/fixmystreet/report/display.html:108
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:108
-#, fuzzy
 msgid "Photo"
-msgstr "Bilde:"
+msgstr "Bilde"
 
 #: templates/web/default/questionnaire/index.html:95
 #: templates/web/default/report/display.html:114
@@ -1822,11 +1796,12 @@ msgid "Planned"
 msgstr "Planlagt"
 
 #: templates/web/fixmystreet/questionnaire/index.html:44
-#, fuzzy
 msgid ""
 "Please <a class=\"tab_link\" href=\"#report\">take a look</a> at the updates "
 "that have been left."
-msgstr "Vennligst se over oppdateringene som har blitt lagt inn."
+msgstr ""
+"Vennligst <a class=\"tab_link\" href=\"#report\">se over</a> oppdateringene "
+"som har blitt lagt inn."
 
 #: templates/web/default/report/new/notes.html:6
 #: templates/web/fixmystreet/report/new/notes.html:5
@@ -1932,19 +1907,18 @@ msgid "Please enter your email"
 msgstr "Legg inn din e-post"
 
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:143
-#, fuzzy
 msgid "Please enter your email address"
-msgstr "Legg inn din e-post"
+msgstr "Vennligst tast inn din e-postadresse"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:332
 #: templates/web/default/js/validation_strings.html:7
-#, fuzzy
 msgid ""
 "Please enter your full name, councils need this information – if you do not "
 "wish your name to be shown on the site, untick the box below"
 msgstr ""
-"Legg inn ditt fulle navn, administrasjoner som mottar ditt problem trenger "
-"dette - hvis du ikke ønsker at ditt navn skal vises, fjern haken under"
+"Vennligst legg inn ditt fulle navn, administrasjoner som mottar ditt problem "
+"trenger dette - hvis du ikke ønsker at ditt navn skal vises, fjern haken "
+"under"
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:95
 #: perllib/FixMyStreet/DB/Result/Comment.pm:110
@@ -1992,9 +1966,8 @@ msgstr ""
 "vært der, en beskrivelse (og et bilde av problemet hvis du har et), osv."
 
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:68
-#, fuzzy
 msgid "Please fill in details of the problem."
-msgstr "Vennligst fyll ut detaljer om problemet under"
+msgstr "Vennligst fyll ut detaljer om problemet."
 
 #: templates/web/default/report/new/fill_in_details_form.html:27
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:34
@@ -2078,9 +2051,8 @@ msgid "Please write a message"
 msgstr "Skriv inn en melding"
 
 #: templates/web/fixmystreet/report/display.html:74
-#, fuzzy
 msgid "Please write your update here"
-msgstr "Skriv inn en melding"
+msgstr "Vennligst skriv inn din oppdatering her"
 
 #: templates/web/default/contact/index.html:93
 #: templates/web/default/report/display.html:124
@@ -2143,14 +2115,12 @@ msgstr "Problemer i dette området"
 
 #: templates/web/fixmystreet/around/display_location.html:93
 #: templates/web/fixmystreet/report/display.html:29
-#, fuzzy
 msgid "Problems nearby"
-msgstr "Flere problemer i nærheten"
+msgstr "Problemer i nærheten"
 
 #: templates/web/fixmystreet/around/display_location.html:92
-#, fuzzy
 msgid "Problems on the map"
-msgstr "Problemer i dette området"
+msgstr "Problemer på kartet"
 
 #: db/alert_types.pl:14
 msgid "Problems recently reported fixed on FixMyStreet"
@@ -2192,9 +2162,8 @@ msgid "Property type:"
 msgstr "Type egenskap:"
 
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:62
-#, fuzzy
 msgid "Provide a title"
-msgstr "Bidra med en oppdatering"
+msgstr "Oppgi en tittel"
 
 #: templates/web/default/report/display.html:56
 #: templates/web/fixmystreet/report/display.html:55
@@ -2238,9 +2207,8 @@ msgid "Questionnaire filled in by problem reporter"
 msgstr "Spørreskjema fylt inn av feilrapportøren"
 
 #: templates/web/fixmystreet/static/for_councils_faq.html:1
-#, fuzzy
 msgid "Questions and Answers :: FixMyStreet for Councils"
-msgstr "Finn ut om FiksGataMi for det offentlige"
+msgstr "Spørsmål og svar :: FiksGataMi for det offentlige"
 
 #: templates/web/default/alert/list.html:52
 #: templates/web/default/around/display_location.html:1
@@ -2327,9 +2295,8 @@ msgid "Recent local problems, FixMyStreet"
 msgstr "Nylige lokale problemer, FiksGataMi."
 
 #: templates/web/default/reports/index.html:19
-#, fuzzy
 msgid "Recently <br>fixed"
-msgstr "Nylig løste problemer"
+msgstr "Nylig løste <br>problemer"
 
 #: templates/web/emptyhomes/reports/index.html:13
 #: templates/web/fiksgatami/nn/reports/index.html:13
@@ -2377,12 +2344,10 @@ msgid "Report a problem"
 msgstr "Rapporter et problem"
 
 #: templates/web/fixmystreet/report/display.html:27
-#, fuzzy
 msgid "Report abuse"
-msgstr "Rapporter et problem"
+msgstr "Rapporter misbruk"
 
 #: templates/web/emptyhomes/index.html:37
-#, fuzzy
 msgid "Report empty properties"
 msgstr "Rapporter tomme hjem"
 
@@ -2557,7 +2522,7 @@ msgstr "Vis mitt navn offentlig"
 #: templates/web/default/around/display_location.html:60
 #: templates/web/fixmystreet/around/display_location.html:60
 msgid "Show old"
-msgstr ""
+msgstr "Vis gamle"
 
 #: templates/web/default/around/display_location.html:51
 #: templates/web/fixmystreet/around/display_location.html:52
@@ -2682,15 +2647,13 @@ msgid "Stats"
 msgstr "Statistikk"
 
 #: templates/web/default/report/updates.html:9
-#, fuzzy
 msgid "Still open, via questionnaire, %s"
-msgstr "Skal det sendes spørreskjema?"
+msgstr "Fortsatt åpen via spørreskjema, %s"
 
 #: templates/web/fixmystreet/contact/index.html:79
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:58
-#, fuzzy
 msgid "Subject"
-msgstr "Emne:"
+msgstr "Emne"
 
 #: templates/web/default/admin/report_edit.html:13
 #: templates/web/default/contact/index.html:83
@@ -2915,7 +2878,6 @@ msgstr ""
 
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:1
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:3
-#, fuzzy
 msgid ""
 "The council won&rsquo;t be able to help unless you leave as much\n"
 "detail as you can. Please describe the exact location of the problem (e.g. "
@@ -2924,18 +2886,17 @@ msgid ""
 "of\n"
 "the problem if you have one), etc."
 msgstr ""
-"Vennligst fyll inn detaljene om problemet under. Administrasjonen vil ikke "
-"være i stand\n"
-"til å hjelpe med mindre du legger inn så mange detaljer som du kan. Beskriv\n"
-"eksakt plassering for problemet (f.eks. på en vegg), hva det er, hvor lenge "
-"det har\n"
-"vært der, en beskrivelse (og et bilde av problemet hvis du har et), osv."
+"Administrasjonen vil ikke være i stand til å hjelpe med mindre du legger inn "
+"så mange\n"
+" detaljer som du kan. Beskriv eksakt plassering for problemet (f.eks. på en\n"
+" vegg), hva det er, hvor lenge det har vært der, en beskrivelse (og et bilde "
+"av\n"
+" problemet hvis du har et), osv."
 
 #: templates/web/fixmystreet/questionnaire/index.html:43
-#, fuzzy
 msgid "The details of your problem are available from the other tab above."
 msgstr ""
-"Detaljene om ditt problem er tilgjengelig på høyre kant av denne siden."
+"Detaljene om ditt problem er tilgjengelig under den andre fanen ovenfor."
 
 #: templates/web/default/questionnaire/index.html:49
 msgid ""
@@ -3078,16 +3039,14 @@ msgstr ""
 #: perllib/FixMyStreet/App/Controller/Report/Update.pm:125
 #: templates/web/default/auth/general.html:23
 #: templates/web/fixmystreet/auth/general.html:24
-#, fuzzy
 msgid ""
 "There was a problem with your email/password combination. If you cannot "
 "remember your password, or do not have one, please fill in the &lsquo;sign "
 "in by email&rsquo; section of the form."
 msgstr ""
-"Det var problemer med din epost/passord-kombinasjon. Passord og "
-"brukerkontoer er en helt <strong>ny</strong> tjeneste, så du har antagelig "
-"ikke en konto ennå. &ndash; vær så snill å fyll inn høyresiden av dette "
-"skjemaet for å skaffe deg en."
+"Det var problemer med din e-post/passord-kombinasjon. Hvis du har glemt ditt "
+"passord, eller hvis du ikke har et, vennligst fyll inn «Logg inn via e-post»-"
+"delen av skjemaet"
 
 #: perllib/FixMyStreet/App/Controller/Alert.pm:351
 msgid ""
@@ -3224,12 +3183,11 @@ msgid "Title"
 msgstr "Tittel"
 
 #: templates/web/default/around/display_location.html:69
-#, fuzzy
 msgid ""
 "To <strong>report a problem</strong>, click on the map at the correct "
 "location."
 msgstr ""
-"For å <strong>rapportere et problem</strong>, klikk på kartet på riktig sted."
+"For å <strong>rapportere et problem</strong>, klikk på riktig sted på kartet."
 
 #: templates/web/emptyhomes/around/display_location.html:35
 msgid ""
@@ -3239,12 +3197,11 @@ msgstr ""
 "For å <strong>rapportere et problem</strong>, klikk på kartet på riktig sted."
 
 #: templates/web/fixmystreet/alert/index.html:19
-#, fuzzy
 msgid ""
 "To find out what local alerts we have for you, please enter your GB\n"
 "  postcode or street name and area"
 msgstr ""
-"Du finner lokale problemer ved å søke på ditt postnummer, veinavn eller sted:"
+"Du finner lokale problemer ved å søke på ditt postnummer, veinavn eller sted"
 
 #: templates/web/default/alert/index.html:21
 msgid ""
@@ -3275,9 +3232,8 @@ msgid "Unconfirmed"
 msgstr "Ubekreftet"
 
 #: perllib/FixMyStreet/Cobrand/FixMyStreet.pm:16
-#, fuzzy
 msgid "Unknown"
-msgstr "*ukjent*"
+msgstr "Ukjent"
 
 #: perllib/FixMyStreet/App/Controller/Rss.pm:164
 msgid "Unknown alert type"
@@ -3288,9 +3244,8 @@ msgid "Unknown problem ID"
 msgstr "Ukjent problem-Id"
 
 #: templates/web/fixmystreet/report/display.html:70
-#, fuzzy
 msgid "Update"
-msgstr "Oppdatering:"
+msgstr "Oppdatering"
 
 #: templates/web/default/admin/timeline.html:35
 msgid "Update %s created for problem %d; by %s"
@@ -3439,15 +3394,13 @@ msgstr ""
 "endret seg med eiedommen du rapporterte."
 
 #: templates/web/fixmystreet/report/display.html:158
-#, fuzzy
 msgid "We never show your email"
-msgstr "(vi viser aldri din e-postadresse)"
+msgstr "Vi viser aldri din e-postadresse"
 
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:127
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:184
-#, fuzzy
 msgid "We never show your email address or phone number."
-msgstr "(vi viser aldri din e-postadresse eller telefonnummer)"
+msgstr "Vi viser aldri din e-postadresse eller ditt telefonnummer"
 
 #: bin/send-reports:196
 msgid ""
@@ -3522,15 +3475,16 @@ msgid ""
 "Would you like better integration with FixMyStreet? <a href=\"/for-councils"
 "\">Find out about FixMyStreet for councils</a>."
 msgstr ""
+"Ønsker dere bedre integrasjon med FiksGataMi? <a href=\"/for-councils\"> "
+"Finn ut mer om FiksGataMi for administrajoner</a>."
 
 #: templates/web/fixmystreet/footer.html:19
-#, fuzzy
 msgid ""
 "Would you like to contribute to FixMyStreet? Our code is open source and <a "
 "href=\"http://github.com/mysociety/fixmystreet\">available on GitHub</a>."
 msgstr ""
-"Vår kildekode er fri programvare og  <a href=\"http://github.com/mysociety/"
-"fixmystreet\">tilgjengelig på GitHub</a>."
+"Ønsker du å bidra til FiksGataMi? Kildekoden vår er fri programvare og  <a "
+"href=\"http://github.com/mysociety/fixmystreet\">tilgjengelig på GitHub</a>."
 
 #: templates/web/default/questionnaire/index.html:102
 #: templates/web/fixmystreet/questionnaire/index.html:96
@@ -3575,9 +3529,8 @@ msgstr "Ja"
 
 #: templates/web/fixmystreet/report/display.html:138
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:153
-#, fuzzy
 msgid "Yes I have a password"
-msgstr "<strong>Ja</strong>, jeg har et passord:"
+msgstr "<strong>Ja</strong>, jeg har et passord"
 
 #: templates/web/default/contact/index.html:37
 #: templates/web/fixmystreet/contact/index.html:38
@@ -3660,12 +3613,11 @@ msgstr "Du er allerede logget ut"
 
 #: templates/web/default/report/new/fill_in_details_form.html:7
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:27
-#, fuzzy
 msgid ""
 "You have located the problem at the point marked with a green pin on the "
 "map. If this is not the correct location, simply click on the map again. "
 msgstr ""
-"Du har plassert problemet ved punktet i kartet som er markert med en lilla "
+"Du har plassert problemet ved punktet i kartet som er markert med en grønn "
 "nål.  Hvis dette ikke er korrekt plassering kan du klikke i kartet på nytt."
 
 #: templates/web/default/tokens/confirm_alert.html:7
@@ -3730,15 +3682,13 @@ msgstr "Dine rapporter"
 #: templates/web/fixmystreet/report/display.html:39
 #: templates/web/fixmystreet/report/display.html:41
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:139
-#, fuzzy
 msgid "Your email"
 msgstr "Din e-post"
 
 #: templates/web/fixmystreet/auth/general.html:26
 #: templates/web/fixmystreet/report/display.html:129
-#, fuzzy
 msgid "Your email address"
-msgstr "Din e-postadresse:"
+msgstr "Din e-postadresse"
 
 #: templates/web/default/auth/general.html:27
 msgid "Your email address:"
@@ -3755,9 +3705,8 @@ msgstr "Din e-post"
 #: templates/web/fixmystreet/report/display.html:185
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:118
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:175
-#, fuzzy
 msgid "Your name"
-msgstr "Ditt navn:"
+msgstr "Ditt navn"
 
 #: templates/web/default/auth/general.html:59
 #: templates/web/default/contact/index.html:68
@@ -3769,9 +3718,8 @@ msgstr "Ditt navn:"
 #: templates/web/fixmystreet/auth/general.html:37
 #: templates/web/fixmystreet/report/display.html:143
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:158
-#, fuzzy
 msgid "Your password"
-msgstr "Dine rapporter"
+msgstr "Ditt passord"
 
 #: templates/web/default/auth/change_password.html:6
 #: templates/web/fixmystreet/auth/change_password.html:6
@@ -3781,12 +3729,11 @@ msgstr "Ditt passord har blitt endret"
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:131
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:189
 msgid "Your phone number"
-msgstr ""
+msgstr "Ditt telefonnummer"
 
 #: templates/web/fixmystreet/questionnaire/index.html:16
-#, fuzzy
 msgid "Your report"
-msgstr "Dine oppdateringer"
+msgstr "Dine rapporter"
 
 #: templates/web/bromley/footer.html:35 templates/web/default/footer.html:9
 #: templates/web/fiksgatami/footer.html:6
@@ -3822,7 +3769,7 @@ msgstr "brukte ikke kart"
 #: templates/web/fixmystreet/alert/index.html:24
 #: templates/web/fixmystreet/index.html:41
 msgid "e.g. ‘%s’ or ‘%s’"
-msgstr ""
+msgstr "for eksempel «%s» eller «%s»"
 
 #: templates/web/default/admin/index.html:15
 msgid "from %d different users"
@@ -3865,9 +3812,8 @@ msgstr "åpnet på nytt"
 
 #: templates/web/bromley/header.html:47
 #: templates/web/fixmystreet/header.html:47
-#, fuzzy
 msgid "sign out"
-msgstr "Logg ut"
+msgstr "logg ut"
 
 #: templates/web/default/report/new/fill_in_details_form.html:11
 #: templates/web/default/report/new/fill_in_details_form.html:14
