@@ -58,21 +58,27 @@ ok !$report->geocode, 'no gecode entry for report';
 
 my $near = $c->find_closest( $report->latitude, $report->longitude, $report );
 
-ok $report->geocode, 'geocode entry added to report';
-ok $report->geocode->{resourceSets}, 'geocode entry looks like right sort of thing';
+SKIP: {
+    if (!FixMyStreet->config('BING_MAPS_API_KEY')) {
+        skip 'No Bing Maps key', 0;
+    }
 
-like $near, qr/Constitution Hill/i, 'nearest street looks right';
-like $near, qr/Nearest postcode .*: SW1A 1AA/i, 'nearest postcode looks right';
+    ok $report->geocode, 'geocode entry added to report';
+    ok $report->geocode->{resourceSets}, 'geocode entry looks like right sort of thing';
 
-$near = $c->find_closest_address_for_rss( $report->latitude, $report->longitude, $report );
+    like $near, qr/Constitution Hill/i, 'nearest street looks right';
+    like $near, qr/Nearest postcode .*: SW1A 1AA/i, 'nearest postcode looks right';
 
-like $near, qr/Constitution Hill/i, 'nearest street for RSS looks right';
-unlike $near, qr/Nearest postcode/i, 'no nearest postcode in RSS text';
+    $near = $c->find_closest_address_for_rss( $report->latitude, $report->longitude, $report );
 
-$report->geocode( undef );
-$near = $c->find_closest_address_for_rss( $report->latitude, $report->longitude, $report );
+    like $near, qr/Constitution Hill/i, 'nearest street for RSS looks right';
+    unlike $near, qr/Nearest postcode/i, 'no nearest postcode in RSS text';
 
-ok !$near, 'no closest address for RSS if not cached';
+    $report->geocode( undef );
+    $near = $c->find_closest_address_for_rss( $report->latitude, $report->longitude, $report );
+
+    ok !$near, 'no closest address for RSS if not cached';
+}
 
 # all done
 done_testing();
