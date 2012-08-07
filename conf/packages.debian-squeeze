@@ -13,7 +13,6 @@ libio-string-perl
 liblingua-en-inflect-perl
 liblocale-gettext-perl
 libsoap-lite-perl
-libstatistics-distributions-perl
 liburi-perl
 libwww-perl
 libxml-rss-perl
