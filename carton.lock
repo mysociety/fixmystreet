@@ -25319,6 +25319,235 @@
          },
          "version" : "0.04"
       },
+      "Template::Plugin::DateTime::Format" : {
+         "dist" : "Template-Plugin-DateTime-Format-0.02",
+         "module" : "Template::Plugin::DateTime::Format",
+         "mymeta" : {
+            "abstract" : "format DateTime objects from inside TT with C<DateTime::Format>-style formatters",
+            "author" : [
+               "Jonathan Rockway <jrockway@cpan.org>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "Dist::Zilla version 4.102342, CPAN::Meta::Converter version 2.101670, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "Template-Plugin-DateTime-Format",
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "Template" : 0,
+                     "Test::Exception" : 0,
+                     "Test::More" : 0,
+                     "ok" : 0
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "6.31"
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "Class::MOP" : 0,
+                     "DateTime" : 0,
+                     "Template::Plugin" : 0
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "resources" : {
+               "repository" : {
+                  "url" : "http://github.com/jrockway/template-plugin-datetime-format"
+               }
+            },
+            "version" : "0.02",
+            "x_Dist_Zilla" : {
+               "plugins" : [
+                  {
+                     "class" : "Dist::Zilla::Plugin::BeJROCKWAY",
+                     "name" : "@JROCKWAY/BeJROCKWAY",
+                     "version" : "1.102911"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::AutoPrereqs",
+                     "name" : "@JROCKWAY/AutoPrereqs",
+                     "version" : "4.102342"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::PkgVersion",
+                     "name" : "@JROCKWAY/PkgVersion",
+                     "version" : "4.102342"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::PodSyntaxTests",
+                     "name" : "@JROCKWAY/PodSyntaxTests",
+                     "version" : "4.102342"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::PodWeaver",
+                     "name" : "@JROCKWAY/PodWeaver",
+                     "version" : "3.101640"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::Repository",
+                     "name" : "@JROCKWAY/Repository",
+                     "version" : "0.13"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::GatherDir",
+                     "name" : "@JROCKWAY/GatherDir",
+                     "version" : "4.102342"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::PruneCruft",
+                     "name" : "@JROCKWAY/PruneCruft",
+                     "version" : "4.102342"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::ManifestSkip",
+                     "name" : "@JROCKWAY/ManifestSkip",
+                     "version" : "4.102342"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::MetaConfig",
+                     "name" : "@JROCKWAY/MetaConfig",
+                     "version" : "4.102342"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::MetaJSON",
+                     "name" : "@JROCKWAY/MetaJSON",
+                     "version" : "4.102342"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::MetaYAML",
+                     "name" : "@JROCKWAY/MetaYAML",
+                     "version" : "4.102342"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::License",
+                     "name" : "@JROCKWAY/License",
+                     "version" : "4.102342"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::Readme",
+                     "name" : "@JROCKWAY/Readme",
+                     "version" : "4.102342"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::ExtraTests",
+                     "name" : "@JROCKWAY/ExtraTests",
+                     "version" : "4.102342"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::ExecDir",
+                     "name" : "@JROCKWAY/ExecDir",
+                     "version" : "4.102342"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::ShareDir",
+                     "name" : "@JROCKWAY/ShareDir",
+                     "version" : "4.102342"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::MakeMaker",
+                     "name" : "@JROCKWAY/MakeMaker",
+                     "version" : "4.102342"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::Manifest",
+                     "name" : "@JROCKWAY/Manifest",
+                     "version" : "4.102342"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::TestRelease",
+                     "name" : "@JROCKWAY/TestRelease",
+                     "version" : "4.102342"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::ConfirmRelease",
+                     "name" : "@JROCKWAY/ConfirmRelease",
+                     "version" : "4.102342"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::UploadToCPAN",
+                     "name" : "@JROCKWAY/UploadToCPAN",
+                     "version" : "4.102342"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::NextRelease",
+                     "name" : "@JROCKWAY/NextRelease",
+                     "version" : "4.102342"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::Git::NextVersion",
+                     "name" : "@JROCKWAY/Git::NextVersion",
+                     "version" : "1.102810"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::Git::Check",
+                     "name" : "@JROCKWAY/@Git/Check",
+                     "version" : "1.102810"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::Git::Commit",
+                     "name" : "@JROCKWAY/@Git/Commit",
+                     "version" : "1.102810"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::Git::Tag",
+                     "name" : "@JROCKWAY/@Git/Tag",
+                     "version" : "1.102810"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::Git::Push",
+                     "name" : "@JROCKWAY/@Git/Push",
+                     "version" : "1.102810"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::FinderCode",
+                     "name" : ":InstallModules",
+                     "version" : "4.102342"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::FinderCode",
+                     "name" : ":TestFiles",
+                     "version" : "4.102342"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::FinderCode",
+                     "name" : ":ExecFiles",
+                     "version" : "4.102342"
+                  },
+                  {
+                     "class" : "Dist::Zilla::Plugin::FinderCode",
+                     "name" : ":ShareFiles",
+                     "version" : "4.102342"
+                  }
+               ],
+               "zilla" : {
+                  "class" : "Dist::Zilla::Dist::Builder",
+                  "config" : {
+                     "is_trial" : 0
+                  },
+                  "version" : "4.102342"
+               }
+            }
+         },
+         "name" : "Template::Plugin::DateTime::Format",
+         "pathname" : "J/JR/JROCKWAY/Template-Plugin-DateTime-Format-0.02.tar.gz",
+         "provides" : {
+            "Template::Plugin::DateTime::Format" : {
+               "file" : "Template/Plugin/DateTime/Format.pm",
+               "version" : "0.02"
+            }
+         },
+         "version" : "0.02"
+      },
       "Template::Timer" : {
          "dist" : "Template-Timer-1.00",
          "module" : "Template::Timer",
