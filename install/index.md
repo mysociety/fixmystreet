@@ -154,7 +154,7 @@ The server will be accessible as <http://localhost:3000/>.
 ### Next Steps
 
 * The admin site should be protected using HTTP AUTH.
-* Customise your install using Templates, CSS and a Cobrand module. See `notes/customisation.pod` in the repository for details.
+* [Customise your install using Templates, CSS and a Cobrand module](/customising/).
 * Add contact details for authorities and categories using the admin interface.
 * Add an installation of MapIt if required, and add the required authority data to it.
 
