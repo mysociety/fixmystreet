@@ -11,6 +11,24 @@ use Carp;
 use mySociety::MaPit;
 use mySociety::PostcodeUtil;
 
+=head1 path_to_web_templates
+
+    $path = $cobrand->path_to_web_templates(  );
+
+Returns the path to the templates for this cobrand - by default
+"templates/web/$moniker" and "templates/web/fixmystreet"
+
+=cut
+
+sub path_to_web_templates {
+    my $self = shift;
+    my $paths = [];
+    push @$paths, FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify
+        unless $self->is_default;
+    push @$paths, FixMyStreet->path_to( 'templates/web/fixmystreet' )->stringify;
+    return $paths;
+}
+
 =head1 country
 
 Returns the country that this cobrand operates in, as an ISO3166-alpha2 code.

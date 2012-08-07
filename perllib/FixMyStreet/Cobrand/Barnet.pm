@@ -31,5 +31,6 @@ sub disambiguate_location {
 sub example_places {
     return [ 'N11 1NP', 'Wood St' ];
 }
+
 1;
 
