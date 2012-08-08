@@ -1277,6 +1277,112 @@
          "target" : "Catalyst::Component::InstancePerContext",
          "version" : "0.001001"
       },
+      "Catalyst::Devel" : {
+         "dist" : "Catalyst-Devel-1.33",
+         "module" : "http://search.cpan.org/CPAN/authors/id/F/FL/FLORA/Catalyst-Devel-1.33.tar.gz",
+         "mymeta" : {
+            "abstract" : "Catalyst Development Tools",
+            "author" : [
+               "Catalyst Contributors, see Catalyst.pm"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "Module::Install version 1.00, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "Catalyst-Devel",
+            "no_index" : {
+               "directory" : [
+                  "inc",
+                  "share",
+                  "t"
+               ]
+            },
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "6.42",
+                     "Test::Fatal" : "0.003",
+                     "Test::More" : "0.94"
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "6.42"
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "Catalyst" : "5.80015",
+                     "Catalyst::Action::RenderView" : "0.10",
+                     "Catalyst::Plugin::ConfigLoader" : "0.30",
+                     "Catalyst::Plugin::Static::Simple" : "0.28",
+                     "Config::General" : "2.42",
+                     "ExtUtils::MakeMaker" : "6.11",
+                     "File::ChangeNotify" : "0.07",
+                     "File::Copy::Recursive" : 0,
+                     "File::ShareDir" : 0,
+                     "Module::Install" : "0.91",
+                     "Moose" : 0,
+                     "MooseX::Emulate::Class::Accessor::Fast" : 0,
+                     "Path::Class" : "0.09",
+                     "Template" : "2.14",
+                     "Test::Fatal" : "0.003",
+                     "Test::More" : "0.94",
+                     "namespace::autoclean" : 0,
+                     "namespace::clean" : 0
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "resources" : {
+               "homepage" : "http://dev.catalyst.perl.org/",
+               "license" : [
+                  "http://dev.perl.org/licenses/"
+               ],
+               "repository" : {
+                  "type" : "git",
+                  "url" : "git://git.shadowcat.co.uk/catagits/Catalyst-Devel.git"
+               },
+               "x_IRC" : "irc://irc.perl.org/#catalyst",
+               "x_MailingList" : "http://lists.scsys.co.uk/cgi-bin/mailman/listinfo/catalyst"
+            },
+            "version" : "1.33"
+         },
+         "name" : "Catalyst::Devel",
+         "pathname" : "http:/search.cpan.org/CPAN/authors/id/F/FL/FLORA/Catalyst-Devel-1.33.tar.gz",
+         "provides" : {
+            "Catalyst::Devel" : {
+               "file" : "Catalyst/Devel.pm",
+               "version" : "1.33"
+            },
+            "Catalyst::Helper" : {
+               "file" : "Catalyst/Helper.pm",
+               "version" : "1.33"
+            },
+            "Catalyst::Module::Install" : {
+               "file" : "Module/Install/Catalyst.pm"
+            },
+            "Catalyst::Restarter" : {
+               "file" : "Catalyst/Restarter.pm"
+            },
+            "Catalyst::Restarter::Forking" : {
+               "file" : "Catalyst/Restarter/Forking.pm"
+            },
+            "Catalyst::Restarter::Win32" : {
+               "file" : "Catalyst/Restarter/Win32.pm"
+            },
+            "Module::Install::Catalyst" : {
+               "file" : "Module/Install/Catalyst.pm"
+            },
+            "http://search.cpan.org/CPAN/authors/id/F/FL/FLORA/Catalyst-Devel-1.33.tar.gz" : {}
+         },
+         "version" : "1.33"
+      },
       "Catalyst::Model::Adaptor" : {
          "dist" : "Catalyst-Model-Adaptor-0.10",
          "mymeta" : {
@@ -1602,6 +1708,73 @@
          },
          "target" : "Catalyst::Plugin::Authentication",
          "version" : "0.10017"
+      },
+      "Catalyst::Plugin::ConfigLoader" : {
+         "dist" : "Catalyst-Plugin-ConfigLoader-0.30",
+         "module" : "Catalyst::Plugin::ConfigLoader",
+         "mymeta" : {
+            "abstract" : "Load config files of various types",
+            "author" : [
+               "Brian Cassidy <bricas@cpan.org>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "Module::Install version 1.00, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "Catalyst-Plugin-ConfigLoader",
+            "no_index" : {
+               "directory" : [
+                  "inc",
+                  "t"
+               ]
+            },
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "6.42",
+                     "Test::More" : 0
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "6.42"
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "Catalyst::Runtime" : "5.7008",
+                     "Config::Any" : "0.20",
+                     "Data::Visitor" : "0.24",
+                     "MRO::Compat" : "0.09",
+                     "perl" : "5.008"
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "resources" : {
+               "license" : [
+                  "http://dev.perl.org/licenses/"
+               ],
+               "repository" : {
+                  "url" : "http://dev.catalystframework.org/repos/Catalyst/Catalyst-Plugin-ConfigLoader/trunk/"
+               }
+            },
+            "version" : "0.30"
+         },
+         "name" : "Catalyst::Plugin::ConfigLoader",
+         "pathname" : "B/BR/BRICAS/Catalyst-Plugin-ConfigLoader-0.30.tar.gz",
+         "provides" : {
+            "Catalyst::Plugin::ConfigLoader" : {
+               "file" : "Catalyst/Plugin/ConfigLoader.pm",
+               "version" : "0.30"
+            }
+         },
+         "version" : "0.30"
       },
       "Catalyst::Plugin::Session" : {
          "dist" : "Catalyst-Plugin-Session-0.31",
@@ -4003,6 +4176,71 @@
          },
          "target" : "Config::Any",
          "version" : "0.20"
+      },
+      "Config::General" : {
+         "dist" : "Config-General-2.51",
+         "module" : "Config::General",
+         "mymeta" : {
+            "abstract" : "unknown",
+            "author" : [
+               "unknown"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "ExtUtils::MakeMaker version 6.55_02, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "Config-General",
+            "no_index" : {
+               "directory" : [
+                  "t",
+                  "inc"
+               ]
+            },
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : 0
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : 0
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "File::Glob" : 0,
+                     "File::Spec::Functions" : 0,
+                     "FileHandle" : 0,
+                     "IO::File" : 0
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "version" : "2.51"
+         },
+         "name" : "Config::General",
+         "pathname" : "T/TL/TLINDEN/Config-General-2.51.tar.gz",
+         "provides" : {
+            "Config::General" : {
+               "file" : "Config/General.pm",
+               "version" : "2.51"
+            },
+            "Config::General::Extended" : {
+               "file" : "Config/General/Extended.pm",
+               "version" : "2.05"
+            },
+            "Config::General::Interpolated" : {
+               "file" : "Config/General/Interpolated.pm",
+               "version" : "2.14"
+            }
+         },
+         "version" : "2.51"
       },
       "ConfigReader::Simple" : {
          "dist" : "ConfigReader-Simple-1.28",
@@ -11861,6 +12099,61 @@
          "target" : "DateTime::TimeZone",
          "version" : "1.42"
       },
+      "Devel::Caller" : {
+         "dist" : "Devel-Caller-2.05",
+         "module" : "Devel::Caller",
+         "mymeta" : {
+            "abstract" : "unknown",
+            "author" : [
+               "unknown"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "ExtUtils::MakeMaker version 6.48, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "unknown"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "Devel-Caller",
+            "no_index" : {
+               "directory" : [
+                  "t",
+                  "inc"
+               ]
+            },
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : 0
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : 0
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "PadWalker" : "0.08",
+                     "Test::More" : 0
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "version" : "2.05"
+         },
+         "name" : "Devel::Caller",
+         "pathname" : "R/RC/RCLAMP/Devel-Caller-2.05.tar.gz",
+         "provides" : {
+            "Devel::Caller" : {
+               "file" : "Devel/Caller.pm",
+               "version" : "2.05"
+            }
+         },
+         "version" : "2.05"
+      },
       "Devel::GlobalDestruction" : {
          "dist" : "Devel-GlobalDestruction-0.04",
          "mymeta" : {
@@ -14206,6 +14499,107 @@
          "target" : "FCGI",
          "version" : "0.74"
       },
+      "File::ChangeNotify" : {
+         "dist" : "File-ChangeNotify-0.22",
+         "module" : "File::ChangeNotify",
+         "mymeta" : {
+            "abstract" : "Watch for changes to files, cross-platform style",
+            "author" : [
+               "Dave Rolsky <autarch@urth.org>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "Module::Build version 0.4002, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "artistic_2"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "File-ChangeNotify",
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "Data::Dumper" : 0,
+                     "Exporter" : 0,
+                     "File::Path" : 0,
+                     "File::Temp" : 0,
+                     "FindBin" : 0,
+                     "Module::Build" : "0.3601",
+                     "Test::Exception" : 0,
+                     "Test::More" : 0,
+                     "base" : 0
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "Module::Build" : "0.3601"
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "Carp" : 0,
+                     "Class::Load" : 0,
+                     "File::Find" : 0,
+                     "File::Spec" : 0,
+                     "List::MoreUtils" : 0,
+                     "Module::Pluggable::Object" : 0,
+                     "Moose" : 0,
+                     "Moose::Util::TypeConstraints" : 0,
+                     "MooseX::Params::Validate" : 0,
+                     "MooseX::SemiAffordanceAccessor" : 0,
+                     "Time::HiRes" : 0,
+                     "namespace::autoclean" : 0,
+                     "strict" : 0,
+                     "warnings" : 0
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "resources" : {
+               "bugtracker" : {
+                  "web" : "http://rt.cpan.org/NoAuth/Bugs.html?Dist=File-ChangeNotify"
+               },
+               "repository" : {
+                  "type" : "git",
+                  "url" : "git://git.urth.org/File-ChangeNotify.git"
+               }
+            },
+            "version" : "0.22"
+         },
+         "name" : "File::ChangeNotify",
+         "pathname" : "D/DR/DROLSKY/File-ChangeNotify-0.22.tar.gz",
+         "provides" : {
+            "File::ChangeNotify" : {
+               "file" : "File/ChangeNotify.pm",
+               "version" : "0.22"
+            },
+            "File::ChangeNotify::ConfigData" : {
+               "file" : "File/ChangeNotify/ConfigData.pm"
+            },
+            "File::ChangeNotify::Event" : {
+               "file" : "File/ChangeNotify/Event.pm",
+               "version" : "0.22"
+            },
+            "File::ChangeNotify::Watcher" : {
+               "file" : "File/ChangeNotify/Watcher.pm",
+               "version" : "0.22"
+            },
+            "File::ChangeNotify::Watcher::Default" : {
+               "file" : "File/ChangeNotify/Watcher/Default.pm",
+               "version" : "0.22"
+            },
+            "File::ChangeNotify::Watcher::Inotify" : {
+               "file" : "File/ChangeNotify/Watcher/Inotify.pm",
+               "version" : "0.22"
+            },
+            "File::ChangeNotify::Watcher::KQueue" : {
+               "file" : "File/ChangeNotify/Watcher/KQueue.pm",
+               "version" : "0.22"
+            }
+         },
+         "version" : "0.22"
+      },
       "File::Find::Closures" : {
          "dist" : "File-Find-Closures-1.09",
          "mymeta" : {
@@ -14450,6 +14844,77 @@
          },
          "target" : "File::Remove",
          "version" : "1.48"
+      },
+      "File::ShareDir" : {
+         "dist" : "File-ShareDir-1.03",
+         "module" : "File::ShareDir",
+         "mymeta" : {
+            "abstract" : "Locate per-dist and per-module shared files",
+            "author" : [
+               "Adam Kennedy <adamk@cpan.org>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "Module::Install version 1.00, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "File-ShareDir",
+            "no_index" : {
+               "directory" : [
+                  "foo",
+                  "inc",
+                  "share",
+                  "t",
+                  "xt"
+               ]
+            },
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "6.42",
+                     "Test::More" : "0.47"
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "6.42"
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "Carp" : 0,
+                     "Class::Inspector" : "1.12",
+                     "File::Spec" : "0.80",
+                     "perl" : "5.005"
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "resources" : {
+               "license" : [
+                  "http://dev.perl.org/licenses/"
+               ],
+               "repository" : {
+                  "url" : "http://svn.ali.as/cpan/trunk/File-ShareDir"
+               },
+               "x_ChangeLog" : "http://fisheye2.atlassian.com/changelog/cpan/trunk/File-ShareDir"
+            },
+            "version" : "1.03",
+            "x_module_name" : "File::ShareDir"
+         },
+         "name" : "File::ShareDir",
+         "pathname" : "A/AD/ADAMK/File-ShareDir-1.03.tar.gz",
+         "provides" : {
+            "File::ShareDir" : {
+               "file" : "File/ShareDir.pm",
+               "version" : "1.03"
+            }
+         },
+         "version" : "1.03"
       },
       "File::Slurp" : {
          "dist" : "File-Slurp-9999.19",
@@ -19159,6 +19624,229 @@
          "target" : "Module::Find",
          "version" : "0.10"
       },
+      "Module::Install" : {
+         "dist" : "Module-Install-1.06",
+         "module" : "Module::Install",
+         "mymeta" : {
+            "abstract" : "Standalone, extensible Perl module installer",
+            "author" : [
+               "Adam Kennedy <adamk@cpan.org>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "Module::Install version 1.06, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "Module-Install",
+            "no_index" : {
+               "directory" : [
+                  "inc",
+                  "t",
+                  "xt"
+               ]
+            },
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "6.36",
+                     "Test::Harness" : "3.13",
+                     "Test::More" : "0.86",
+                     "YAML::Tiny" : "1.33"
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "6.36",
+                     "YAML::Tiny" : "1.33"
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "Archive::Tar" : "1.44",
+                     "Devel::PPPort" : "3.16",
+                     "ExtUtils::Install" : "1.52",
+                     "ExtUtils::MakeMaker" : "6.59",
+                     "ExtUtils::ParseXS" : "2.19",
+                     "File::Remove" : "1.42",
+                     "File::Spec" : "3.28",
+                     "JSON" : "2.14",
+                     "LWP::UserAgent" : "5.812",
+                     "Module::Build" : "0.29",
+                     "Module::CoreList" : "2.17",
+                     "Module::ScanDeps" : "0.89",
+                     "PAR::Dist" : "0.29",
+                     "Parse::CPAN::Meta" : "1.39",
+                     "YAML::Tiny" : "1.38",
+                     "perl" : "5.005"
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "resources" : {
+               "license" : [
+                  "http://dev.perl.org/licenses/"
+               ],
+               "repository" : {
+                  "url" : "http://svn.ali.as/cpan/trunk/Module-Install"
+               },
+               "x_ChangeLog" : "http://fisheye2.atlassian.com/changelog/cpan/trunk/Module-Install"
+            },
+            "version" : "1.06"
+         },
+         "name" : "Module::Install",
+         "pathname" : "A/AD/ADAMK/Module-Install-1.06.tar.gz",
+         "provides" : {
+            "Module::AutoInstall" : {
+               "file" : "Module/AutoInstall.pm",
+               "version" : "1.06"
+            },
+            "Module::Install" : {
+               "file" : "Module/Install.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::Admin" : {
+               "file" : "Module/Install/Admin.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::Admin::Bundle" : {
+               "file" : "Module/Install/Admin/Bundle.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::Admin::Compiler" : {
+               "file" : "Module/Install/Admin/Compiler.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::Admin::Find" : {
+               "file" : "Module/Install/Admin/Find.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::Admin::Include" : {
+               "file" : "Module/Install/Admin/Include.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::Admin::Makefile" : {
+               "file" : "Module/Install/Admin/Makefile.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::Admin::Manifest" : {
+               "file" : "Module/Install/Admin/Manifest.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::Admin::Metadata" : {
+               "file" : "Module/Install/Admin/Metadata.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::Admin::ScanDeps" : {
+               "file" : "Module/Install/Admin/ScanDeps.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::Admin::WriteAll" : {
+               "file" : "Module/Install/Admin/WriteAll.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::AutoInstall" : {
+               "file" : "Module/Install/AutoInstall.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::Base" : {
+               "file" : "Module/Install/Base.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::Base::FakeAdmin" : {
+               "file" : "Module/Install/Base.pm",
+               "version" : "0"
+            },
+            "Module::Install::Bundle" : {
+               "file" : "Module/Install/Bundle.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::Can" : {
+               "file" : "Module/Install/Can.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::Compiler" : {
+               "file" : "Module/Install/Compiler.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::DSL" : {
+               "file" : "Module/Install/DSL.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::Deprecated" : {
+               "file" : "Module/Install/Deprecated.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::External" : {
+               "file" : "Module/Install/External.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::Fetch" : {
+               "file" : "Module/Install/Fetch.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::Include" : {
+               "file" : "Module/Install/Include.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::Inline" : {
+               "file" : "Module/Install/Inline.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::MakeMaker" : {
+               "file" : "Module/Install/MakeMaker.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::Makefile" : {
+               "file" : "Module/Install/Makefile.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::Metadata" : {
+               "file" : "Module/Install/Metadata.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::PAR" : {
+               "file" : "Module/Install/PAR.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::Run" : {
+               "file" : "Module/Install/Run.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::Scripts" : {
+               "file" : "Module/Install/Scripts.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::Share" : {
+               "file" : "Module/Install/Share.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::Win32" : {
+               "file" : "Module/Install/Win32.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::With" : {
+               "file" : "Module/Install/With.pm",
+               "version" : "1.06"
+            },
+            "Module::Install::WriteAll" : {
+               "file" : "Module/Install/WriteAll.pm",
+               "version" : "1.06"
+            },
+            "inc::Module::Install" : {
+               "file" : "inc/Module/Install.pm",
+               "version" : "1.06"
+            },
+            "inc::Module::Install::DSL" : {
+               "file" : "inc/Module/Install/DSL.pm",
+               "version" : "1.06"
+            }
+         },
+         "version" : "1.06"
+      },
       "Module::Metadata" : {
          "dist" : "Module-Metadata-1.000010",
          "module" : "Module::Metadata",
@@ -19290,6 +19978,83 @@
          },
          "target" : "Module::Runtime",
          "version" : "0.011"
+      },
+      "Module::ScanDeps" : {
+         "dist" : "Module-ScanDeps-1.08",
+         "module" : "Module::ScanDeps",
+         "mymeta" : {
+            "abstract" : "Recursively scan Perl code for dependencies",
+            "author" : [
+               "Audrey Tang <cpan@audreyt.org>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "Module::Install version 1.04, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "Module-ScanDeps",
+            "no_index" : {
+               "directory" : [
+                  "inc",
+                  "t"
+               ],
+               "x_module" : [
+                  "Module::ScanDeps::Cache",
+                  "Module::ScanDeps::DataFeed"
+               ]
+            },
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "6.62",
+                     "Test::More" : 0
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "6.57"
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "File::Spec" : 0,
+                     "File::Temp" : 0,
+                     "Module::Build::ModuleInfo" : 0,
+                     "perl" : "5.008001",
+                     "version" : 0
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "resources" : {
+               "license" : [
+                  "http://dev.perl.org/licenses/"
+               ],
+               "repository" : {
+                  "url" : "http://svn.openfoundry.org/par/Module-ScanDeps/trunk/"
+               }
+            },
+            "version" : "1.08"
+         },
+         "name" : "Module::ScanDeps",
+         "pathname" : "R/RS/RSCHUPP/Module-ScanDeps-1.08.tar.gz",
+         "provides" : {
+            "Module::ScanDeps" : {
+               "file" : "Module/ScanDeps.pm",
+               "version" : "1.08"
+            },
+            "Module::ScanDeps::Cache" : {
+               "file" : "Module/ScanDeps/Cache.pm"
+            },
+            "Module::ScanDeps::DataFeed" : {
+               "file" : "Module/ScanDeps/DataFeed.pm"
+            }
+         },
+         "version" : "1.08"
       },
       "Moose" : {
          "dist" : "Moose-2.0401",
@@ -20727,6 +21492,70 @@
          "target" : "MooseX::MethodAttributes::Inheritable",
          "version" : "0.25"
       },
+      "MooseX::Params::Validate" : {
+         "dist" : "MooseX-Params-Validate-0.16",
+         "module" : "MooseX::Params::Validate",
+         "mymeta" : {
+            "abstract" : "an extension of Params::Validate using Moose's types",
+            "author" : [
+               "Stevan Little <stevan.little@iinteractive.com>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "Dist::Zilla version 4.200001, CPAN::Meta::Converter version 2.102400, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "MooseX-Params-Validate",
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "Test::Fatal" : "0.001",
+                     "Test::More" : "0.88"
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "6.31"
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "Carp" : 0,
+                     "Devel::Caller" : 0,
+                     "Moose" : "0.58",
+                     "Params::Validate" : "0.88",
+                     "Scalar::Util" : 0,
+                     "Sub::Exporter" : 0
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "resources" : {
+               "bugtracker" : {
+                  "web" : "http://rt.cpan.org/NoAuth/Bugs.html?Dist=MooseX::Params::Validate"
+               },
+               "repository" : {
+                  "type" : "git",
+                  "url" : "git://git.moose.perl.org/MooseX-Params-Validate.git"
+               }
+            },
+            "version" : "0.16",
+            "x_authority" : "cpan:STEVAN"
+         },
+         "name" : "MooseX::Params::Validate",
+         "pathname" : "D/DR/DROLSKY/MooseX-Params-Validate-0.16.tar.gz",
+         "provides" : {
+            "MooseX::Params::Validate" : {
+               "file" : "MooseX/Params/Validate.pm",
+               "version" : "0.16"
+            }
+         },
+         "version" : "0.16"
+      },
       "MooseX::Role::WithOverloading" : {
          "dist" : "MooseX-Role-WithOverloading-0.09",
          "mymeta" : {
@@ -20995,6 +21824,67 @@
             }
          },
          "target" : "MooseX::Role::WithOverloading",
+         "version" : "0.09"
+      },
+      "MooseX::SemiAffordanceAccessor" : {
+         "dist" : "MooseX-SemiAffordanceAccessor-0.09",
+         "module" : "MooseX::SemiAffordanceAccessor",
+         "mymeta" : {
+            "abstract" : "Name your accessors foo() and set_foo()",
+            "author" : [
+               "Dave Rolsky <autarch@urth.org>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "Dist::Zilla version 4.200004, CPAN::Meta::Converter version 2.110240, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "artistic_2"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "MooseX-SemiAffordanceAccessor",
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "Test::More" : "0.88"
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "6.31"
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "Moose" : "1.16"
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "resources" : {
+               "bugtracker" : {
+                  "web" : "http://rt.cpan.org/NoAuth/Bugs.html?Dist=MooseX-SemiAffordanceAccessor"
+               },
+               "repository" : {
+                  "type" : "git",
+                  "url" : "git://git.moose.perl.org/MooseX-SemiAffordanceAccessor.git"
+               }
+            },
+            "version" : "0.09"
+         },
+         "name" : "MooseX::SemiAffordanceAccessor",
+         "pathname" : "D/DR/DROLSKY/MooseX-SemiAffordanceAccessor-0.09.tar.gz",
+         "provides" : {
+            "MooseX::SemiAffordanceAccessor" : {
+               "file" : "MooseX/SemiAffordanceAccessor.pm",
+               "version" : "0.09"
+            },
+            "MooseX::SemiAffordanceAccessor::Role::Attribute" : {
+               "file" : "MooseX/SemiAffordanceAccessor/Role/Attribute.pm",
+               "version" : "0.09"
+            }
+         },
          "version" : "0.09"
       },
       "MooseX::Traits::Pluggable" : {
@@ -21997,6 +22887,63 @@
          },
          "target" : "Object::Signature",
          "version" : "1.05"
+      },
+      "PAR::Dist" : {
+         "dist" : "PAR-Dist-0.48",
+         "module" : "PAR::Dist",
+         "mymeta" : {
+            "abstract" : "Create and manipulate PAR distributions",
+            "author" : [
+               "Audrey Tang <cpan@audreyt.org>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "ExtUtils::MakeMaker version 6.58, CPAN::Meta::Converter version 2.110930, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "unknown"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "PAR-Dist",
+            "no_index" : {
+               "directory" : [
+                  "t",
+                  "inc"
+               ]
+            },
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : 0
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : 0
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "File::Find" : 0,
+                     "File::Path" : 0,
+                     "File::Spec" : 0,
+                     "File::Temp" : 0
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "version" : "0.48"
+         },
+         "name" : "PAR::Dist",
+         "pathname" : "S/SM/SMUELLER/PAR-Dist-0.48.tar.gz",
+         "provides" : {
+            "PAR::Dist" : {
+               "file" : "PAR/Dist.pm",
+               "version" : "0.48"
+            }
+         },
+         "version" : "0.48"
       },
       "PPI" : {
          "dist" : "PPI-1.215",
@@ -23111,6 +24058,60 @@
          },
          "target" : "Package::Stash::XS",
          "version" : "0.25"
+      },
+      "PadWalker" : {
+         "dist" : "PadWalker-1.94",
+         "module" : "PadWalker",
+         "mymeta" : {
+            "abstract" : "unknown",
+            "author" : [
+               "unknown"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "ExtUtils::MakeMaker version 6.6302, CPAN::Meta::Converter version 2.120921, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "unknown"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "PadWalker",
+            "no_index" : {
+               "directory" : [
+                  "t",
+                  "inc"
+               ]
+            },
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : 0
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : 0
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "perl" : "5.008002"
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "version" : "1.94"
+         },
+         "name" : "PadWalker",
+         "pathname" : "R/RO/ROBIN/PadWalker-1.94.tar.gz",
+         "provides" : {
+            "PadWalker" : {
+               "file" : "PadWalker.pm",
+               "version" : "1.94"
+            }
+         },
+         "version" : "1.94"
       },
       "Parallel::ForkManager" : {
          "dist" : "Parallel-ForkManager-0.7.9",
@@ -30639,6 +31640,69 @@
          },
          "target" : "YAML",
          "version" : "0.77"
+      },
+      "YAML::Tiny" : {
+         "dist" : "YAML-Tiny-1.51",
+         "module" : "YAML::Tiny",
+         "mymeta" : {
+            "abstract" : "Read/Write YAML files with as little code as possible",
+            "author" : [
+               "Adam Kennedy <adamk@cpan.org>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "ExtUtils::MakeMaker version 6.62, CPAN::Meta::Converter version 2.112621, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "YAML-Tiny",
+            "no_index" : {
+               "directory" : [
+                  "t",
+                  "inc"
+               ]
+            },
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "File::Spec" : "0.80",
+                     "Test::More" : "0.47"
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : 0
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "perl" : "5.004"
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "resources" : {
+               "bugtracker" : {
+                  "web" : "http://rt.cpan.org/NoAuth/ReportBug.html?Queue=YAML-Tiny"
+               },
+               "repository" : {
+                  "url" : "http://svn.ali.as/cpan/trunk/YAML-Tiny"
+               }
+            },
+            "version" : "1.51"
+         },
+         "name" : "YAML::Tiny",
+         "pathname" : "A/AD/ADAMK/YAML-Tiny-1.51.tar.gz",
+         "provides" : {
+            "YAML::Tiny" : {
+               "file" : "YAML/Tiny.pm",
+               "version" : "1.51"
+            }
+         },
+         "version" : "1.51"
       },
       "aliased" : {
          "dist" : "aliased-0.30",
