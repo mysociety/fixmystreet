@@ -146,7 +146,8 @@ The development server can now hopefully be run with:
 
      ./bin/cron-wrapper ./script/fixmystreet_app_server.pl -d --fork
 
-The server will be accessible as <http://localhost:3000/>.
+The server will be accessible as <http://localhost:3000/>. You can run with -r
+in order for the server to automatically restart when you update the code.
 
 
 ## Post-install: Things you might want to change
@@ -246,11 +247,7 @@ that you do that rather than install via CPAN.
 ### Missing Perl modules
 
 We think we've included all the modules you should need to run and develop FixMyStreet on your
-machine but it we've missed one (please let us know if this is the case), or you want to add one
-for something you are developing then you can do so using:
-
-    ./bin/cron-wrapper ./local/bin/carton install Module::To::Add
-
-which will install the module into the local directory. `./bin/cron-wrapper` is a script to
-make sure the correct library paths are set up for running scripts.
+machine but if we've missed one, please let us know. If you need a new module for something
+you're developing, please get in touch as adding things to carton is currently not as simple
+as we would like.
 
