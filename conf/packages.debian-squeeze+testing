@@ -1,3 +1,4 @@
+make
 jhead
 libdatetime-format-w3cdtf-perl
 libcache-memcached-perl
