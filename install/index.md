@@ -44,7 +44,7 @@ $
 {% endhighlight %}
 
 You should be able to connect to the database with `psql -U fms fms` - if not,
-you will need to investigate [how to allow access to your PostgreSQL database](database.html).
+you will need to investigate [how to allow access to your PostgreSQL database](database).
 
 Now you can use the sql in `db/schema.sql` to create the required
 tables, triggers and stored procedures. You will also need to run
