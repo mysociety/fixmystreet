@@ -30,6 +30,11 @@ STAGING_SITE: 1
 # Defaults to High Street, Main Street
 EXAMPLE_PLACES:
 
+# An array of languages for the site, in the following format:
+# <language code>,<pretty name>,<locale>
+LANGUAGES:
+  - 'en-gb,English,en_GB'
+
 # File locations for uploaded photos and cached geocoding results.
 UPLOAD_DIR: '../upload/'
 GEO_CACHE: '../cache/'

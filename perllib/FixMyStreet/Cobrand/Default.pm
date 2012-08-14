@@ -32,7 +32,8 @@ sub path_to_web_templates {
 =head1 country
 
 Returns the country that this cobrand operates in, as an ISO3166-alpha2 code.
-Default is none.
+Default is none. This is not really used for anything important (minor GB only
+things involving eastings/northings mostly).
 
 =cut
 
@@ -160,13 +161,19 @@ Set the language and domain of the site based on the cobrand and host.
 
 sub set_lang_and_domain {
     my ( $self, $lang, $unicode, $dir ) = @_;
-    my $set_lang = mySociety::Locale::negotiate_language(
-        'en-gb,English,en_GB', $lang
-    );
-    mySociety::Locale::gettext_domain( 'FixMyStreet', $unicode, $dir );
+
+    my $languages = join('|', @{$self->languages});
+    my $lang_override = $self->language_override || $lang;
+    my $lang_domain = $self->language_domain || 'FixMyStreet';
+
+    my $set_lang = mySociety::Locale::negotiate_language( $languages, $lang_override );
+    mySociety::Locale::gettext_domain( $lang_domain, $unicode, $dir );
     mySociety::Locale::change();
     return $set_lang;
 }
+sub languages { FixMyStreet->config('LANGUAGES') || [ 'en-gb,English,en_GB' ] }
+sub language_domain { }
+sub language_override { }
 
 =head2 alert_list_options
 
