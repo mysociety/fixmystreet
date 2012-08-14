@@ -765,7 +765,7 @@ sub get_report_stats { return 0; }
 sub get_council_sender { return 'Email' };
 
 sub example_places {
-    return [ 'High Street', 'Main Street' ];
+    return FixMyStreet->config('EXAMPLE_PLACES') || [ 'High Street', 'Main Street' ];
 }
 
 sub process_extras {}

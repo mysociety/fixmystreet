@@ -26,6 +26,10 @@ CONTACT_NAME: 'FixMyStreet'
 # Whether this is a live site or not.
 STAGING_SITE: 1
 
+# What to use as front page/alert example places placeholder
+# Defaults to High Street, Main Street
+EXAMPLE_PLACES:
+
 # File locations for uploaded photos and cached geocoding results.
 UPLOAD_DIR: '../upload/'
 GEO_CACHE: '../cache/'
