@@ -278,54 +278,6 @@ Return cobrand extra data for the problem
 
 sub cobrand_data_for_generic_problem { '' }
 
-=head2 extra_problem_data
-
-Parameter is QUERY. Return a string of extra data to be stored with a problem
-
-=cut
-
-sub extra_problem_data { '' }
-
-=head2 extra_update_data
-
-Parameter is QUERY. Return a string of extra data to be stored with an update
-
-=cut 
-
-sub extra_update_data { '' }
-
-=head2 extra_alert_data
-
-Parameter is QUERY. Return a string of extra data to be stored with an alert
-
-=cut 
-
-sub extra_alert_data { '' }
-
-=head2 extra_data
-
-Given a QUERY, extract any extra data required by the cobrand
-
-=cut
-
-sub extra_data { '' }
-
-=head2 extra_problem_meta_text
-
-Returns any extra text to be displayed with a PROBLEM.
-
-=cut
-
-sub extra_problem_meta_text { '' }
-
-=head2 extra_update_meta_text
-
-Returns any extra text to be displayed with an UPDATE.
-
-=cut 
-
-sub extra_update_meta_text { '' }
-
 =head2 uri
 
 Given a URL ($_[1]), QUERY, EXTRA_DATA, return a URL with any extra params

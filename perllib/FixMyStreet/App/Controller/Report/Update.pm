@@ -189,7 +189,7 @@ sub process_update : Private {
             mark_fixed   => $params{fixed} ? 1 : 0,
             mark_open    => $params{reopen} ? 1 : 0,
             cobrand      => $c->cobrand->moniker,
-            cobrand_data => $c->cobrand->extra_update_data,
+            cobrand_data => '',
             lang         => $c->stash->{lang_code},
             anonymous    => $anonymous,
         }

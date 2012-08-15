@@ -199,7 +199,7 @@ sub submit_standard : Private {
                 mark_open    => $new_state eq 'confirmed' ? 1 : 0,
                 lang         => $c->stash->{lang_code},
                 cobrand      => $c->cobrand->moniker,
-                cobrand_data => $c->cobrand->extra_update_data,
+                cobrand_data => '',
                 confirmed    => \'ms_current_timestamp()',
                 anonymous    => $problem->anonymous,
             }

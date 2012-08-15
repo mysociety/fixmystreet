@@ -538,7 +538,6 @@ sub meta_line {
 
     }
 
-    $meta .= $c->cobrand->extra_problem_meta_text($problem);
     $meta .= '; ' . _('the map was not used so pin location may be inaccurate')
         unless $problem->used_map;
 
