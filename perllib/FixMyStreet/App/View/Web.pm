@@ -83,14 +83,12 @@ sub tprintf {
 
     [% display_crosssell_advert( email, name ) %]
 
-Displays a crosssell advert if permitted by the cobrand.
+Displays a crosssell advert (will be fixmystreet cobrand only).
 
 =cut
 
 sub display_crosssell_advert {
     my ( $self, $c, $email, $name, %data ) = @_;
-
-    return unless $c->cobrand->allow_crosssell_adverts();
     return CrossSell::display_advert( $c, $email, $name, %data );
 }
 

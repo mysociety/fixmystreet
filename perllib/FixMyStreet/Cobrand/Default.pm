@@ -421,15 +421,6 @@ Return a boolean indicating whether the cobrand allows photo uploads
 
 sub allow_photo_upload { return 1; }
 
-=head2 allow_crosssell_adverts
-
-Return a boolean indicating whether the cobrand allows the display of crosssell
-adverts
-
-=cut
-
-sub allow_crosssell_adverts { return 0; }
-
 =head2 allow_photo_display
 
 Return a boolean indicating whether the cobrand allows photo display
