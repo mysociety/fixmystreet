@@ -41,10 +41,6 @@ sub admin_base_url {
     return 'http://www.fiksgatami.no/admin/';
 }
 
-sub writetothem_url {
-    return 'http://www.norge.no/styresmakter/';
-}
-
 # If lat/lon are present in the URL, OpenLayers will use that to centre the map.
 # Need to specify a zoom to stop it defaulting to null/0.
 sub uri {

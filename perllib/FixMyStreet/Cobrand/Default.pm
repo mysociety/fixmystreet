@@ -102,14 +102,6 @@ Base URL for the admin interface.
 
 sub admin_base_url { '' }
 
-=head2 writetothem_url
-
-URL for writetothem; parameter is COBRAND_DATA.
-
-=cut
-
-sub writetothem_url { 0 }
-
 =head2 base_url
 
 Return the base url for the cobranded version of the site
