@@ -116,7 +116,7 @@ Return the base url for the cobranded version of the site
 
 =cut
 
-sub base_url { mySociety::Config::get('BASE_URL') }
+sub base_url { FixMyStreet->config('BASE_URL') }
 
 =head2 base_url_for_report
 
@@ -614,42 +614,8 @@ used in emails).
 
 =cut
 
-sub contact_name  { $_[0]->get_cobrand_conf('CONTACT_NAME') }
-sub contact_email { $_[0]->get_cobrand_conf('CONTACT_EMAIL') }
-
-=head2 get_cobrand_conf COBRAND KEY
-
-Get the value for KEY from the config file for COBRAND
-
-=cut
-
-sub get_cobrand_conf {
-    my ( $self, $key ) = @_;
-    my $value           = undef;
-    my $cobrand_moniker = $self->moniker;
-
-    my $cobrand_config_file =
-      FixMyStreet->path_to("conf/cobrands/$cobrand_moniker/general");
-    my $normal_config_file = FixMyStreet->path_to('conf/general');
-
-    if ( -e $cobrand_config_file ) {
-
-        # FIXME - don't rely on the config file name - should
-        # change mySociety::Config so that it can return values from a
-        # particular config file instead
-        mySociety::Config::set_file("$cobrand_config_file");
-        my $config_key = $key . "_" . uc($cobrand_moniker);
-        $value = mySociety::Config::get( $config_key, undef );
-        mySociety::Config::set_file("$normal_config_file");
-    }
-
-    # If we didn't find a value use one from normal config
-    if ( !defined($value) ) {
-        $value = mySociety::Config::get($key);
-    }
-
-    return $value;
-}
+sub contact_name  { FixMyStreet->config('CONTACT_NAME') }
+sub contact_email { FixMyStreet->config('CONTACT_EMAIL') }
 
 =item email_host
 
