@@ -48,17 +48,6 @@ sub base_url_with_lang {
 sub languages { [ 'en-gb,English,en_GB', 'cy,Cymraeg,cy_GB' ] }
 sub language_domain { 'FixMyStreet-EmptyHomes' }
 
-=item feed_xsl
-
-Return the XSL file path to be used for feeds'
-
-=cut
-
-sub feed_xsl {
-    my ($self) = @_;
-    return '/xsl.eha.xsl';
-}
-
 =item shorten_recency_if_new_greater_than_fixed
 
 For empty homes we don't want to shorten the recency

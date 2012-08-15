@@ -474,14 +474,6 @@ COUNCILS pass any extra checks. CONTEXT is where we are on the site.
 
 sub council_check { return ( 1, '' ); }
 
-=head2 feed_xsl
-
-Return an XSL to be used in rendering feeds
-
-=cut
-
-sub feed_xsl { '/xsl.xsl' }
-
 =head2 all_councils_report
 
 Return a boolean indicating whether the cobrand displays a report of all

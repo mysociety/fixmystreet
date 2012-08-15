@@ -172,7 +172,6 @@ sub generate : Private {
     $c->stash->{rss} = new XML::RSS(
         version       => '2.0',
         encoding      => 'UTF-8',
-        stylesheet    => $c->cobrand->feed_xsl,
         encode_output => undef
     );
     $c->stash->{rss}->add_module(
