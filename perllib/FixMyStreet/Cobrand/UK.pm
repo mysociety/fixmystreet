@@ -9,8 +9,8 @@ sub path_to_web_templates {
 }
 
 sub country             { return 'GB'; }
-sub area_types          { return qw(DIS LBO MTD UTA CTY COI LGD); }
-sub area_types_children { return @$mySociety::VotingArea::council_child_types }
+sub area_types          { [ 'DIS', 'LBO', 'MTD', 'UTA', 'CTY', 'COI', 'LGD' ] }
+sub area_types_children { $mySociety::VotingArea::council_child_types }
 sub area_min_generation { 10 }
 
 sub enter_postcode_text {
@@ -212,7 +212,7 @@ sub council_rss_alert_options {
     my $all_councils = shift;
     my $c            = shift;
 
-    my %councils = map { $_ => 1 } $self->area_types();
+    my %councils = map { $_ => 1 } @{$self->area_types};
 
     my $num_councils = scalar keys %$all_councils;
 

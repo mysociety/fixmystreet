@@ -537,8 +537,8 @@ The MaPit types this site handles
 
 =cut
 
-sub area_types          { qw(ZZZ) }
-sub area_types_children { qw() }
+sub area_types          { FixMyStreet->config('MAPIT_TYPES') || [ 'ZZZ' ] }
+sub area_types_children { FixMyStreet->config('MAPIT_TYPES_CHILDREN') || [] }
 sub area_min_generation { '' }
 
 =head2 contact_name, contact_email

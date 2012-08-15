@@ -221,10 +221,10 @@ sub council_list : Path('council_list') : Args(0) {
     $c->stash->{edit_activity} = $edit_activity;
 
     # Not London, as treated separately
-    my @area_types = $c->cobrand->moniker eq 'emptyhomes'
+    my $area_types = $c->cobrand->moniker eq 'emptyhomes'
         ? $c->cobrand->area_types
-        : grep { $_ ne 'LBO' } $c->cobrand->area_types;
-    my $areas = mySociety::MaPit::call('areas', \@area_types);
+        : [ grep { $_ ne 'LBO' } @{ $c->cobrand->area_types } ];
+    my $areas = mySociety::MaPit::call('areas', $area_types);
 
     my @councils_ids = sort { strcoll($areas->{$a}->{name}, $areas->{$b}->{name}) } keys %$areas;
     @councils_ids = $c->cobrand->filter_all_council_ids_list( @councils_ids );
@@ -1255,8 +1255,7 @@ sub check_page_allowed : Private {
 sub set_up_council_details : Private {
     my ($self, $c ) = @_;
 
-    my @area_types = $c->cobrand->area_types;
-    my $areas = mySociety::MaPit::call('areas', \@area_types);
+    my $areas = mySociety::MaPit::call('areas', $c->cobrand->area_types);
 
     my @councils_ids = sort { strcoll($areas->{$a}->{name}, $areas->{$b}->{name}) } keys %$areas;
     @councils_ids = $c->cobrand->filter_all_council_ids_list( @councils_ids );

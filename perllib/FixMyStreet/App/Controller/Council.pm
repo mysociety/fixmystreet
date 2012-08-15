@@ -23,8 +23,8 @@ there are no councils then return false.
 
 sub load_and_check_councils_and_wards : Private {
     my ( $self, $c ) = @_;
-    my @area_types = ( $c->cobrand->area_types(), $c->cobrand->area_types_children() );
-    $c->stash->{area_types} = \@area_types;
+    my $area_types = [ @{$c->cobrand->area_types}, @{$c->cobrand->area_types_children} ];
+    $c->stash->{area_types} = $area_types;
     $c->forward('load_and_check_councils');
 }
 
@@ -42,11 +42,11 @@ sub load_and_check_councils : Private {
     my $longitude = $c->stash->{longitude};
 
     # Look up councils and do checks for the point we've got
-    my @area_types;
+    my $area_types;
     if ( $c->stash->{area_types} and scalar @{ $c->stash->{area_types} } ) {
-      @area_types = @{ $c->stash->{area_types} };
+        $area_types = $c->stash->{area_types};
     } else {
-      @area_types = $c->cobrand->area_types();
+        $area_types = $c->cobrand->area_types;
     }
 
     my $short_latitude  = Utils::truncate_coordinate($latitude);
@@ -55,7 +55,7 @@ sub load_and_check_councils : Private {
     # TODO: I think we want in_gb_locale around the MaPit line, needs testing
     my $all_councils;
     if ( $c->stash->{fetch_all_areas} ) {
-        my %area_types = map { $_ => 1 } @area_types;
+        my %area_types = map { $_ => 1 } @$area_types;
         my $all_areas =
           mySociety::MaPit::call( 'point', "4326/$short_longitude,$short_latitude" );
         $c->stash->{all_areas} = $all_areas;
@@ -67,7 +67,7 @@ sub load_and_check_councils : Private {
     } else {
         $all_councils =
           mySociety::MaPit::call( 'point', "4326/$short_longitude,$short_latitude",
-            type => \@area_types );
+            type => $area_types );
     }
     if ($all_councils->{error}) {
         $c->stash->{location_error} = $all_councils->{error};

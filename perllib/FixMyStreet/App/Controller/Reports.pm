@@ -34,8 +34,8 @@ sub index : Path : Args(0) {
     # Fetch all areas of the types we're interested in
     my $areas_info;
     eval {
-        my @area_types = $c->cobrand->area_types;
-        $areas_info = mySociety::MaPit::call('areas', \@area_types,
+        my $area_types = $c->cobrand->area_types;
+        $areas_info = mySociety::MaPit::call('areas', $area_types,
             min_generation => $c->cobrand->area_min_generation
         );
     };
@@ -231,9 +231,9 @@ sub council_check : Private {
     }
 
     # We must now have a string to check
-    my @area_types = $c->cobrand->area_types;
+    my $area_types = $c->cobrand->area_types;
     my $areas = mySociety::MaPit::call( 'areas', $q_council,
-        type => \@area_types,
+        type => $area_types,
         min_generation => $c->cobrand->area_min_generation
     );
     if (keys %$areas == 1) {

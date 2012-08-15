@@ -163,10 +163,10 @@ sub get_services : Private {
     my $categories = $c->model('DB::Contact')->not_deleted;
 
     if ($lat || $lon) {
-        my @area_types = $c->cobrand->area_types;
+        my $area_types = $c->cobrand->area_types;
         my $all_councils = mySociety::MaPit::call('point',
                                                   "4326/$lon,$lat",
-                                                  type => \@area_types);
+                                                  type => $area_types);
         $categories = $categories->search( {
             area_id => [ keys %$all_councils ],
         } );

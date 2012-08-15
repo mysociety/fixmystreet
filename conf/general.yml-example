@@ -44,15 +44,30 @@ GEO_CACHE: '../cache/'
 GOOGLE_MAPS_API_KEY: ''
 BING_MAPS_API_KEY: ''
 
-# Location of MapIt, to map points to administrative areas.
-# If left blank, a default area will be used everywhere
-# (a URL needs to be given for non-web things, like sending
-# of reports, to function).
-MAPIT_URL: ''
+# Location of MapIt, to map points to administrative areas, and what types of
+# area from it you want to use. If left blank, a default area will be used
+# everywhere (a URL needs to be given for non-web things, like sending of
+# reports, to function).
 # If using the Catalyst development server, set to
 # MAPIT_URL: 'http://localhost:3000/fakemapit/'
-# In the UK, you probably want:
+# MAPIT_TYPES: [ 'ZZZ' ]
+# In the UK, you probably want, to cover all councils:
 # MAPIT_URL: 'http://mapit.mysociety.org/'
+# MAPIT_TYPES: [ 'DIS', 'LBO', 'MTD', 'UTA', 'CTY', 'COI', 'LGD' ]
+# But perhaps MAPIT_TYPES: [ 'WMC' ] if you want to report on a per-constituency basis?
+# If our global MapIt (using OpenStreetMap data) contains boundaries you can use:
+# MAPIT_URL: 'http://global.mapit.mysociety.org/'
+# And then specify whichever type code have the boundaries you want:
+# MAPIT_TYPES: [ 'O06' ]
+MAPIT_URL: ''
+MAPIT_TYPES: [ 'ZZZ' ]
+
+# If your MapIt has the concept of council wards (subareas of councils, where
+# people can sign up for alerts, but not report things), then you can give the
+# MapIt type codes for them here.
+# You can probably leave this blank, but in the UK we use something like:
+# MAPIT_TYPES_CHILDREN: [ 'DIW', 'LBW', 'MTW', 'UTE', 'UTW', 'CED', 'COP', 'LGW' ]
+MAPIT_TYPES_CHILDREN:
 
 # The type of map you want to use. If left blank, the default is OpenStreetMap.
 # Other options are currently pretty UK specific, including "FMS" for UK

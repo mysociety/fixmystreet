@@ -27,7 +27,7 @@ sub admin_base_url {
 }
 
 sub area_types {
-    return qw(DIS LBO MTD UTA LGD COI);    # No CTY
+    [ 'DIS', 'LBO', 'MTD', 'UTA', 'LGD', 'COI' ]; # No CTY
 }
 
 
@@ -89,7 +89,7 @@ sub council_rss_alert_options {
     my $all_councils = shift;
     my $c            = shift;
 
-    my %councils = map { $_ => 1 } $self->area_types();
+    my %councils = map { $_ => 1 } @{$self->area_types};
 
     my $num_councils = scalar keys %$all_councils;
 

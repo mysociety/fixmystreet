@@ -34,11 +34,7 @@ sub disambiguate_location {
 }
 
 sub area_types {
-    return ( 'NKO', 'NFY', 'NRA' );
-}
-
-sub area_min_generation {
-    return '';
+    [ 'NKO', 'NFY', 'NRA' ];
 }
 
 sub admin_base_url {
@@ -236,9 +232,9 @@ sub reports_council_check {
 
         # Some kommunes have the same name, use the fylke name to work out which.
         my ($kommune, $fylke) = split /\s*,\s*/, $council;
-        my @area_types = $c->cobrand->area_types;
-        my $areas_k = mySociety::MaPit::call('areas', $kommune, type => \@area_types);
-        my $areas_f = mySociety::MaPit::call('areas', $fylke, type => \@area_types);
+        my $area_types = $c->cobrand->area_types;
+        my $areas_k = mySociety::MaPit::call('areas', $kommune, type => $area_types);
+        my $areas_f = mySociety::MaPit::call('areas', $fylke, type => $area_types);
         if (keys %$areas_f == 1) {
             ($fylke) = values %$areas_f;
             foreach (values %$areas_k) {
