@@ -1,8 +1,10 @@
 #!/usr/bin/env perl
 
 BEGIN {    # set all the paths to the perl code
-    use FindBin;
-    require "$FindBin::Bin/../setenv.pl";
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
 }
 
 use Catalyst::ScriptRunner;
