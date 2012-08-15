@@ -43,7 +43,7 @@ for my $test (
         "try to create an account with email '$email'"
     );
     is $mech->uri->path, '/auth', "still on auth page";
-    is_deeply $mech->page_errors, [ $error_message ], 'no errors initially';
+    is_deeply $mech->page_errors, [ $error_message ], 'errors match';
 }
 
 # create a new account

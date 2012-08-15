@@ -48,17 +48,6 @@ sub base_url_with_lang {
 sub languages { [ 'en-gb,English,en_GB', 'cy,Cymraeg,cy_GB' ] }
 sub language_domain { 'FixMyStreet-EmptyHomes' }
 
-=item site_title
-
-Return the title to be used in page heads
-
-=cut 
-
-sub site_title {
-    my ($self) = @_;
-    return _('Report Empty Homes');
-}
-
 =item feed_xsl
 
 Return the XSL file path to be used for feeds'

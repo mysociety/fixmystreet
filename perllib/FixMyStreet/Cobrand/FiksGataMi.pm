@@ -20,11 +20,6 @@ sub country {
 sub languages { [ 'en-gb,English,en_GB', 'nb,Norwegian,nb_NO' ] }
 sub language_override { 'nb' }
 
-sub site_title {
-    my ($self) = @_;
-    return 'FiksGataMi';
-}
-
 sub enter_postcode_text {
     my ( $self ) = @_;
     return _('Enter a nearby postcode, or street name and area');

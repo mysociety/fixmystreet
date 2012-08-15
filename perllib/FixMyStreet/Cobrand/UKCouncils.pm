@@ -46,11 +46,6 @@ sub base_url {
     return $base_url;
 }
 
-sub site_title {
-    my ($self) = @_;
-    return $self->council_name . ' FixMyStreet';
-}
-
 sub enter_postcode_text {
     my ($self) = @_;
     return 'Enter a ' . $self->council_area . ' postcode, or street name and area';

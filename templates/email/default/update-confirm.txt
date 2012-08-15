@@ -1,4 +1,4 @@
-Subject: Confirm your update on [% c.cobrand.site_name %]
+Subject: Confirm your update on [% INCLUDE 'site-name.txt' | trim %]
 
 Hi [% update.name %],
 
