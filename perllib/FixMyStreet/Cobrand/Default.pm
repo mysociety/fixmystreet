@@ -250,7 +250,7 @@ Returns any disambiguating information available. Defaults to none.
 
 =cut 
 
-sub disambiguate_location { return {}; }
+sub disambiguate_location { FixMyStreet->config('GEOCODING_DISAMBIGUATION') or {}; }
 
 =head2 cobrand_data_for_generic_update
 

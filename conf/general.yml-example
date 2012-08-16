@@ -16,19 +16,19 @@ FMS_DB_PASS: ''
 # The base URL of the install.
 BASE_URL: 'http://www.example.org'
 # Use the below if you're using the Catalyst development server
-#BASE_URL: 'http://localhost:3000'
+#   BASE_URL: 'http://localhost:3000'
 
 # Email domain used for emails, and contact name/email for admin use.
 EMAIL_DOMAIN: 'example.org'
 CONTACT_EMAIL: 'team@example.org'
 CONTACT_NAME: 'FixMyStreet'
 
-# Whether this is a live site or not.
+# Whether this is a development site or not.
 STAGING_SITE: 1
 
 # What to use as front page/alert example places placeholder
 # Defaults to High Street, Main Street
-EXAMPLE_PLACES:
+EXAMPLE_PLACES: [ 'High Street', 'Main Street' ]
 
 # An array of languages for the site, in the following format:
 # <language code>,<pretty name>,<locale>
@@ -39,26 +39,21 @@ LANGUAGES:
 UPLOAD_DIR: '../upload/'
 GEO_CACHE: '../cache/'
 
-# If you wish to use Google Maps or Bing Maps Geocoding, get and put the
-# relevant key here. Without a key, geocoding will use OSM's Nominatim.
-GOOGLE_MAPS_API_KEY: ''
-BING_MAPS_API_KEY: ''
-
 # Location of MapIt, to map points to administrative areas, and what types of
 # area from it you want to use. If left blank, a default area will be used
 # everywhere (a URL needs to be given for non-web things, like sending of
 # reports, to function).
 # If using the Catalyst development server, set to
-# MAPIT_URL: 'http://localhost:3000/fakemapit/'
-# MAPIT_TYPES: [ 'ZZZ' ]
+#   MAPIT_URL: 'http://localhost:3000/fakemapit/'
+#   MAPIT_TYPES: [ 'ZZZ' ]
 # In the UK, you probably want, to cover all councils:
-# MAPIT_URL: 'http://mapit.mysociety.org/'
-# MAPIT_TYPES: [ 'DIS', 'LBO', 'MTD', 'UTA', 'CTY', 'COI', 'LGD' ]
+#   MAPIT_URL: 'http://mapit.mysociety.org/'
+#   MAPIT_TYPES: [ 'DIS', 'LBO', 'MTD', 'UTA', 'CTY', 'COI', 'LGD' ]
 # But perhaps MAPIT_TYPES: [ 'WMC' ] if you want to report on a per-constituency basis?
 # If our global MapIt (using OpenStreetMap data) contains boundaries you can use:
-# MAPIT_URL: 'http://global.mapit.mysociety.org/'
+#   MAPIT_URL: 'http://global.mapit.mysociety.org/'
 # And then specify whichever type code have the boundaries you want:
-# MAPIT_TYPES: [ 'O06' ]
+#   MAPIT_TYPES: [ 'O06' ]
 MAPIT_URL: ''
 MAPIT_TYPES: [ 'ZZZ' ]
 
@@ -66,8 +61,34 @@ MAPIT_TYPES: [ 'ZZZ' ]
 # people can sign up for alerts, but not report things), then you can give the
 # MapIt type codes for them here.
 # You can probably leave this blank, but in the UK we use something like:
-# MAPIT_TYPES_CHILDREN: [ 'DIW', 'LBW', 'MTW', 'UTE', 'UTW', 'CED', 'COP', 'LGW' ]
+#   MAPIT_TYPES_CHILDREN: [ 'DIW', 'LBW', 'MTW', 'UTE', 'UTW', 'CED', 'COP', 'LGW' ]
 MAPIT_TYPES_CHILDREN:
+
+# If you wish to use Google Maps or Bing Maps Geocoding, get and put the
+# relevant key here. Without a key, geocoding will use OSM's Nominatim.
+GOOGLE_MAPS_API_KEY: ''
+BING_MAPS_API_KEY: ''
+
+# This provdes parameters that are included in geocoding requests, to hopefully
+# return more useful results. The options vary depending which geocoder you use,
+# or you can specify all for if you change geocoder. For the default OSM, you can use:
+#   GEOCODING_DISAMBIGUATION:
+#     bounds: [ <min lat>, <min lon>, <max lat>, <max lon> ]
+#     country: <country code to restrict results to>
+#     town: <string added to geocoding requests if not already there>
+#
+# If using Bing, you can use town and bounds, plus any of:
+#     centre: "<lat>,<lon>"
+#     bing_culture: <culture code, see http://msdn.microsoft.com/en-us/library/hh441729.aspx>
+#     bing_country: <country name, only accept results that match this>
+#
+# If using Google, you can use:
+#     centre: "<lat>,<lon>"
+#     span: "<lat span>,<lon span>"
+#     google_country: <.ccTLD to restrict results to>
+#     lang: <language for results>
+#
+GEOCODING_DISAMBIGUATION: ''
 
 # The type of map you want to use. If left blank, the default is OpenStreetMap.
 # Other options are currently pretty UK specific, including "FMS" for UK
@@ -81,8 +102,8 @@ SMTP_SMARTHOST: 'localhost'
 # FixMyStreet uses a templating cobrand system to provide different looks for
 # different installations. If your site was at moon.example.org, and your templates
 # were in the templates/web/moon directory, you would use:
-# ALLOWED_COBRANDS:
-#   - moon: 'moon.example.org'
+#   ALLOWED_COBRANDS:
+#     - moon: 'moon.example.org'
 # This also allows development servers to map to different cobrands if needed,
 # using DNS subdomains for example.
 ALLOWED_COBRANDS:
@@ -99,7 +120,7 @@ RSS_LIMIT: '20'
 # Should problem reports link to the council summary pages?
 AREA_LINKS_FROM_PROBLEMS: '0'
 
-# used to override the STAGING SERVER safety mechanism in send-reports
+# Used to override the STAGING SERVER safety mechanism in send-reports
 TESTING_COUNCILS: ''
 
 # -----------------------------------------------------------------------
