@@ -100,7 +100,7 @@ Base URL for the admin interface.
 
 =cut
 
-sub admin_base_url { '' }
+sub admin_base_url { FixMyStreet->config('ADMIN_BASE_URL') || '' }
 
 =head2 base_url
 
@@ -136,12 +136,12 @@ sub base_host {
 
 =head2 enter_postcode_text
 
-Return the text that prompts the user to enter their postcode/place name.
-Parameter is QUERY
+Return override text that prompts the user to enter their postcode/place name.
+Can be specified in template.
 
 =cut
 
-sub enter_postcode_text { _('Enter a nearby street name and area') }
+sub enter_postcode_text { }
 
 =head2 set_lang_and_domain
 

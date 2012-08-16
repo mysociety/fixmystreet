@@ -7,18 +7,7 @@
     # '/report/new' and the partial hidden field is added to the form.
 %]
 
-[%
-    question =  c.cobrand.enter_postcode_text();
-%]
-
-<form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
-    <label for="pc">[% question %]:</label>&nbsp;<input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200">&nbsp;<input type="submit" value="[% loc('Go') %]" id="submit">
-
-[% IF partial_token %]
-    <input type="hidden" name="partial" value="[% partial_token.token %]">
-[% END %]
-
-</form>
+[% INCLUDE 'around/postcode_form.html' %]
 
 [% IF location_error %]
     <p class="error">[% location_error %]</p>

@@ -16,31 +16,7 @@ Modernizr.load({
 </script>
 [% END %]
 
-[% pre_container_extra = BLOCK %]
-<div id="front-main">
-    <div id="front-main-container">
-        [% IF c.cobrand.moniker == 'bromley' %]
-            <h1 class="main mob-only">Reporting a problem in Bromley&rsquo;s streets or parks</h1>
-        [% ELSE %]
-            <h1>[% loc('Report, view, or discuss local problems') %]</h1>
-            <h2>[% loc('(like graffiti, fly tipping, broken paving slabs, or street lighting)') %]</h2>
-        [% END %]
-
-        [%
-            question =  c.cobrand.enter_postcode_text();
-        %]
-
-        <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
-            <label for="pc">[% question %]:</label>
-            <div>
-                <input type="text" name="pc" value="" id="pc" size="10" maxlength="200" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]">
-                <input type="submit" value="[% loc('Go') %]" id="submit">
-            </div>
-        </form>
-    </div>
-</div>
-[% END %]
-
+[% pre_container_extra = INCLUDE 'around/postcode_form.html' %]
 [% INCLUDE 'header.html', title = '', bodyclass = 'frontpage fullwidthpage' %]
 
 [% IF error %]

@@ -22,14 +22,9 @@ sub base_url {
     return $base_url;
 }
 
-sub admin_base_url {
-    return 'https://secure.mysociety.org/admin/emptyhomes/';
-}
-
 sub area_types {
     [ 'DIS', 'LBO', 'MTD', 'UTA', 'LGD', 'COI' ]; # No CTY
 }
-
 
 sub base_url_with_lang {
     my $self = shift;

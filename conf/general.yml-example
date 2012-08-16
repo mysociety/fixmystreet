@@ -110,6 +110,10 @@ ALLOWED_COBRANDS:
   - cobrand_one
   - cobrand_two: 'hostname_substring2'
 
+# This is only used in "offensive report" emails to provide a link directly to
+# the admin interface. If wanted, set to the full URL of your admin interface.
+ADMIN_BASE_URL: ''
+
 # Gaze is a world-wide service for population density lookups. You can leave
 # this as is.
 GAZE_URL: 'http://gaze.mysociety.org/gaze'
