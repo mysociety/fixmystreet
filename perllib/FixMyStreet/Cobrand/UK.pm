@@ -120,6 +120,15 @@ sub remove_redundant_councils {
     if $all_councils->{2391};
 }
 
+sub filter_all_council_ids_list {
+    my $self = shift;
+    my @all_councils_ids = @_;
+
+    # Ignore the four council areas introduced because of generation 15
+    # (where we put the new boundaries under the old IDs)
+    return grep { $_ < 141648 || $_ > 141651 } @all_councils_ids;
+}
+
 sub short_name {
   my $self = shift;
   my ($area, $info) = @_;

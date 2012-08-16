@@ -57,6 +57,7 @@ sub index : Path : Args(0) {
 
     $c->stash->{areas_info} = $areas_info;
     my @keys = sort { strcoll($areas_info->{$a}{name}, $areas_info->{$b}{name}) } keys %$areas_info;
+    @keys = $c->cobrand->filter_all_council_ids_list( @keys );
     $c->stash->{areas_info_sorted} = [ map { $areas_info->{$_} } @keys ];
 
     eval {
