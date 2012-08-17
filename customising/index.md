@@ -124,7 +124,12 @@ and German, you would have:
         - 'de,German,de_DE'
 
 This would then set up things appropriately to use the relevant language files
-you have made.
+you have made. Always keep the en-gb line, as some things need that to work
+properly.
+
+By default, FixMyStreet is set up so visiting a hostname starting with the
+two-letter language code will use that language; otherwise it will detect based
+upon the browser.
 
 ### MAPIT_AREA_TYPES
 
