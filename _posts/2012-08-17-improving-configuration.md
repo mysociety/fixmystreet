@@ -15,8 +15,8 @@ hopefully a standard customisation might not need a Cobrand .pm file at all.
 These changes range from simple text strings that are now in templates, through
 to specifying what areas from MapIt you are interested in, or what languages
 the site is available in. The general.yml-example file contains information on
-each option, and we've updated our [/customising/](customisation
-documentation) as well.
+each option, and we've updated our [customisation documentation](/customising/)
+as well.
 
 Also, thanks to some testing of a current installation by
 [Anders](https://github.com/kagee) for FiksGataMi, we've made more incremental
