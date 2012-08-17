@@ -160,9 +160,9 @@ sub setup_request {
     my $host          = $c->req->uri->host;
     my $lang =
         $lang_override ? $lang_override
-      : $host =~ /^en\./ ? 'en-gb'
-      : $host =~ /cy/    ? 'cy'
-      :                    undef;
+      : $host =~ /^(..)\./ ? $1
+      : undef;
+    $lang = 'en-gb' if $lang && $lang eq 'en';
 
     # set the language and the translation file to use - store it on stash
     my $set_lang = $cobrand->set_lang_and_domain(
