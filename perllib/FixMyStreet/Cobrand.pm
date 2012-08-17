@@ -46,9 +46,9 @@ sub _get_allowed_cobrands {
     @available_cobrand_classes =
       FixMyStreet::Cobrand->available_cobrand_classes();
 
-Return an array of all the classes that were found and that have monikers
-that match the values from get_allowed_cobrands, in the order of
-get_allowed_cobrands.
+Return an array of all the classes from get_allowed_cobrands, in
+the order of get_allowed_cobrands, with added class information
+for those that have found classes.
 
 =cut
 
@@ -58,12 +58,26 @@ sub available_cobrand_classes {
     my %all = map { $_->moniker => $_ } @ALL_COBRAND_CLASSES;
     my @avail;
     foreach (@{ $class->get_allowed_cobrands }) {
-        next unless $all{$_->{moniker}};
+        #next unless $all{$_->{moniker}};
         $_->{class} = $all{$_->{moniker}};
         push @avail, $_;
     }
 
     return @avail;
+}
+
+=head2 class
+
+=cut
+
+sub class {
+    my $avail = shift;
+    return $avail->{class} if $avail->{class};
+    my $moniker = $avail->{moniker};
+    Class::MOP::Class->create("FixMyStreet::Cobrand::$moniker" => (
+        superclasses => [ 'FixMyStreet::Cobrand::Default' ],
+    ));
+    return "FixMyStreet::Cobrand::$moniker";
 }
 
 =head2 get_class_for_host
@@ -79,7 +93,7 @@ sub get_class_for_host {
     my $host  = shift;
 
     foreach my $avail ( $class->available_cobrand_classes ) {
-        return $avail->{class} if $host =~ /$avail->{host}/;
+        return class($avail) if $host =~ /$avail->{host}/;
     }
 
     # if none match then use the default
@@ -99,7 +113,7 @@ sub get_class_for_moniker {
     my $moniker = shift;
 
     foreach my $avail ( $class->available_cobrand_classes ) {
-        return $avail->{class} if $moniker eq $avail->{moniker};
+        return class($avail) if $moniker eq $avail->{moniker};
     }
 
     # Special case for old blank cobrand entries in fixmystreet.com.
