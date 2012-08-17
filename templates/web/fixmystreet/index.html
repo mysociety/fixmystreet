@@ -16,7 +16,7 @@ Modernizr.load({
 </script>
 [% END %]
 
-[% pre_container_extra = INCLUDE 'around/postcode_form.html' %]
+[% pre_container_extra = PROCESS 'around/postcode_form.html' %]
 [% INCLUDE 'header.html', title = '', bodyclass = 'frontpage fullwidthpage' %]
 
 [% IF error %]
