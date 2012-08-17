@@ -320,7 +320,7 @@ The number of reports to show per page on all reports page.
 =cut
 
 sub reports_per_page {
-    return 100;
+    return FixMyStreet->config('ALL_REPORTS_PER_PAGE') || 100;
 }
 
 =head2 on_map_list_limit
