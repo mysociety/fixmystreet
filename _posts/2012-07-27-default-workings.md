@@ -40,7 +40,3 @@ Lastly, the default cobrand now uses the new style that you can see on
 colour scheme, in order to remind you that you almost certainly want to change
 the colours being used for your own installation :)
 
-If you have any questions, or problems installing the code, please do
-[get in touch](/contact/), or post on our [mailing
-list](https://secure.mysociety.org/admin/lists/mailman/listinfo/fixmystreet).
-

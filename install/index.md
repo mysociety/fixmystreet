@@ -190,7 +190,8 @@ OpenStreetMap geolocation services, again defaulting to OpenStreetMap.
 
 There is an example crontab in `conf/crontab.ugly`. At the moment this is in
 the format used by mySociety's internal deployment tools. To convert this to
-a valid crontab the following should be done:
+a valid crontab the following should be done - copy the file to somewhere else,
+and:
 
 * Replace `!!(*= $user *)!!` with the name of the user the cron should run under
 * Replace `!!(* $vhost *)!!` with the path to the FixMyStreet code.

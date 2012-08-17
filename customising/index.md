@@ -11,11 +11,12 @@ area it accepts queries for, translating the text, and changing the look and fee
 
 ## Overview
 
-FixMyStreet implements a "Cobrand" system in order to allow customisation
-of the default behavior. The Cobrand is made up of a set of templates for
-the Cobrand and a Cobrand module that contains code that customises the
-way the Cobrand behaves. There are defaults for both of these so the
-Cobrand only needs to override things that are specific to it.
+FixMyStreet implements a "Cobrand" system in order to allow customisation of
+the default behavior. As well as configuration options you specify in the
+`conf/general.yml` file, a Cobrand is made up of a set of templates and an
+optional Cobrand module that contains Perl code that customises the way the
+Cobrand behaves. There are defaults for all of these so the Cobrand only needs
+to override things that are specific to it.
 
 Customisations should be implemented like this as this means that any
 upgrade to FixMyStreet will not overwrite your changes.
@@ -34,9 +35,10 @@ of these there is a directory for each Cobrand. In our FixMyPark example
 this would be `templates/web/fixmypark` for the web templates and
 `templates/email/fixmypark` for the email templates.
 
-The full set of templates is stored in the default Cobrand and if no
-equivalent template is found in a Cobrand directory FixMyStreet will
-use the default template.
+The full set of templates is stored in the default Cobrand and if no equivalent
+template is found in a Cobrand directory FixMyStreet will use the default
+template. Only make template files for those things you need to do differently,
+you do not need to copy all the files into your own templates folder.
 
 By default, the Default cobrand uses the templates in
 `templates/web/fixmystreet` that are used for the www.fixmystreet.com website.
@@ -50,6 +52,16 @@ changes.
 
 The other template you should make your own version of is the FAQ which
 is in `templates/web/fixmystreet/faq/faq-en-gb.html`.
+
+## Translations and Language
+
+The translations for FixMyStreet are stored as gettext files and the
+language for a Cobrand is set in the `set_lang_and_domain` call of
+the Cobrand module.
+
+The templates use the `loc` function to pass strings to gettext for
+translation. The `commonlib/bin/gettext-makemo` script may be useful
+for compiling the .po files for use with Apache.
 
 ## CSS
 
@@ -72,13 +84,13 @@ This contains basic colour information, so you can easily make a site that
 looks different simply by copying these files to your own cobrand CSS
 directory, and changing the colours.
 
-## Cobrand modules
+## Configuration options
 
-Much of the rest of the customisation takes place in the Cobrand modules. These
-are automatically loaded according to the current Cobrand and can be found in
-`perllib/FixMyStreet/Cobrands/`. There is a default Cobrand ( Default.pm ) which
-all Cobrands should inherit from. A Cobrand module can then override any of the
-methods from the default Cobrand.
+Most standard customisation can be carried by setting options in the
+`conf/general.yml` file. The example file explains each option, and how it
+should be used. Some more information is also given below.
+
+### ALLOWED_COBRANDS
 
 FixMyStreet uses the hostname of the current request along with the contents
 of the `ALLOWED_COBRANDS` config option to determine which cobrand to use.
@@ -100,106 +112,45 @@ This means you can provide multiple Cobrands for the site if you require, e.g.
 for providing different designs, and FixMyStreet will use the first match
 listed in `ALLOWED_COBRANDS`.
 
-Many of the functions in the Cobrand module are used by FixMyStreet in the UK
-to allow the site to offer versions localised to a single authority and should
-not be needed for most installs. Listed below are the most useful options that
-can be changed:
+### LANGUAGES
 
-* site_title
+This is an array of strings specifying what language or languages your
+installation uses. For example, if your site is available in English, French,
+and German, you would have:
 
-    This should be set to the name of your site.
+    LANGUAGES:
+        - 'en-gb,English,en_GB'
+        - 'fr,French,fr_FR'
+        - 'de,German,de_DE'
 
-* item country
+This would then set up things appropriately to use the relevant language files
+you have made.
 
-    This should be set to the two letter ISO code for the country your site is for.
+### MAPIT_AREA_TYPES
 
-* disambiguate_location
+If you are using a MapIt installation, then as well as specifying its URL in
+`MAPIT_URL`, you can specify the types of area that matter to your FixMyStreet
+installation in `MAPIT_AREA_TYPES`. For example, if using Global MapIt (using
+OpenStreetMap data), then `MAPIT_URL` will be
+'http://global.mapit.mysociety.org/' and `MAPIT_TYPES` might be `[ 'O06' ]`.
 
-    This is used by the Geocoding module of FixMyStreet to constrain the area for
-which results are returned when locating an address. It should return a hash
-reference of parameters that are compatible with the arguments of the geocoding module
-you are using.
+### GEOCODING_DISAMBIGUATION
 
-    At a most basic level it should limit it to the country you are in:
+You can customise the geocoding by providing limiting parameters in
+`GEOCODING_DISAMBIGUATION`. The options vary depending which geocoder you use,
+or you can specify all for if you change geocoder. For the default OSM
+geocoder, you can use the bounds, country, and town parameters. Bing adds
+centre, bing_culture, and bing_country, and with Google you have centre, span,
+google_country, and lang. See the `general.yml-example` file for more details.
+Note that these arguments are only as good a limiting results as the API that
+they are used by.
 
-        sub disambiguate_location {
-            return {
-                country => 'uk',
-            };
-        }
+## Cobrand module
 
-    You can limit it to a smaller area using bounding boxes to contrain the area
-that the geocoder will consider:
+If you need customistation beyond the above, you will need to make a Cobrand
+module. These are automatically loaded according to the current Cobrand and can
+be found in `perllib/FixMyStreet/Cobrands/`. There is a default Cobrand
+( `Default.pm` ) which all Cobrands should inherit from. A Cobrand module can
+then override any of the methods from the default Cobrand.
+[More information on Cobrand modules](/customising/cobrand-module/).
 
-        sub disambiguate_location {
-            return {
-                centre => '52.688198,-1.804966',
-                span   => '0.1196,0.218675',
-                bounds => [ 52.807793, -1.586291, 52.584891, -1.963232 ],
-            };
-        }
-
-    The centre and span are used by the Google geocoding API and the bounds by
-Bing. Note that these arguments are only as good a limiting results as the API
-that they are used by.
-
-* geocode_postcode
-
-    This function is used to convert postcodes (zip codes, etc.) entered into a
-latitude and longitude, if there's a different way from your geocoder of doing so
-(e.g. a MapIt install). If the text passed is not a valid postcode then an
-error should be returned. If you do not want to use postcodes, just do not define
-this function.
-
-    If the postcode is valid and can be converted then the return value should
-look like this:
-
-        return { latitude => $latitude, longitude => $longitude };
-
-    If there is an error it should look like this:
-
-        return { error => $error_message };
-
-* find_closest and find_closest_address_for_rss
-
-    These are used to provide information on the closest street to the point of
-the address in reports and RSS feeds or alerts.
-
-* allow_photo_upload
-
-    Return 0 to disable the photo upload field.
-
-* allow_photo_display
-
-    Return 0 to disable the display of uploaded photos.
-
-* area_types
-
-    If you are using MapIt alongside FixMyStreet this should return a
-list of the area type codes that the site will handle. This is used
-to filter the data returned from MapIt so that only appropriate areas are
-displayed.
-
-* remove_redundant_councils
-
-    This is used to filter out any overlapping jurisdictions from MapIt results
-where only one of the authorities actually has reponsability for the events
-reported by the site. An example would be be a report in a city where MapIt
-has an ID for the city council and the state council (and they are both the
-same MapIt area type) but problems are only reported to the state. In this case
-you would remove the ID for the city council from the results.
-
-* short_name
-
-    This is used to turn the full authority name returned by MapIt into a short
-name.
-
-## Translations and Language
-
-The translations for FixMyStreet are stored as gettext files and the
-language for a Cobrand is set in the `set_lang_and_domain` call of
-the Cobrand module.
-
-The templates use the `loc` function to pass strings to gettext for
-translation. The `commonlib/bin/gettext-makemo` script may be useful
-for compiling the .po files for use with Apache.
