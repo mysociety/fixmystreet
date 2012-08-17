@@ -63,7 +63,7 @@ MAPIT_TYPES: [ 'ZZZ' ]
 # MapIt type codes for them here.
 # You can probably leave this blank, but in the UK we use something like:
 #   MAPIT_TYPES_CHILDREN: [ 'DIW', 'LBW', 'MTW', 'UTE', 'UTW', 'CED', 'COP', 'LGW' ]
-MAPIT_TYPES_CHILDREN:
+MAPIT_TYPES_CHILDREN: ''
 
 # If you wish to use Google Maps or Bing Maps Geocoding, get and put the
 # relevant key here. Without a key, geocoding will use OSM's Nominatim.
