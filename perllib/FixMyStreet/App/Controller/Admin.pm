@@ -536,7 +536,7 @@ sub search_reports : Path('search_reports') {
         } elsif ($search =~ /^id:(\d+)$/) {
             $query = [
                 'me.id' => int($1),
-                'problem.id' => int($1),
+                'me.problem_id' => int($1),
             ];
         } elsif ($search =~ /^area:(\d+)$/) {
             $query = [];
