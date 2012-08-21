@@ -7,13 +7,13 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2012-03-28 19:23+0100\n"
-"PO-Revision-Date: 2012-08-13 14:41+0100\n"
+"PO-Revision-Date: 2012-08-21 09:08+0100\n"
 "Last-Translator: FULL NAME &lt;EMAIL@ADDRESS&gt;\n"
 "Language-Team: LANGUAGE &lt;team@fixmystreet.com&gt;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 
 #: bin/send-reports:184 perllib/FixMyStreet/DB/Result/Problem.pm:549
 msgid " and "
@@ -156,7 +156,7 @@ msgstr "(gel&ouml;st)"
 #: templates/web/default/index.html:12 templates/web/default/index.html:8
 #: templates/web/fixmystreet/index.html:30
 msgid "(like graffiti, fly tipping, broken paving slabs, or street lighting)"
-msgstr ""
+msgstr "(z.B. illegale Deponien, Strassensch&auml;den, Graffitis usw.)"
 
 #: templates/web/default/reports/council.html:131
 #: templates/web/default/reports/council.html:152
@@ -269,6 +269,8 @@ msgid ""
 "&lt;small&gt;If you cannot see the map, &lt;a href='%s' rel='nofollow'&gt;"
 "skip this step&lt;/a&gt;.&lt;/small&gt;"
 msgstr ""
+"Karte nicht sichtbar? &lt;a href='%s' rel='nofollow'&gt;&Uuml;berspringen "
+"Sie diesen Schritt&lt;/a&gt;.&lt;/small&gt;"
 
 #: templates/web/default/admin/index.html:14
 msgid "&lt;strong&gt;%d&lt;/strong&gt; live problems"
@@ -276,7 +278,7 @@ msgstr ""
 
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:169
 msgid "&lt;strong&gt;No&lt;/strong&gt; Let me confirm my report by email"
-msgstr ""
+msgstr "Meldung per eMail best&auml;tigen"
 
 #: templates/web/fixmystreet/report/display.html:153
 msgid "&lt;strong&gt;No&lt;/strong&gt; Let me confirm my update by email"
@@ -459,6 +461,8 @@ msgstr ""
 msgid ""
 "Can't see the map? &lt;a href='%s' rel='nofollow'&gt;Skip this step&lt;/a&gt;"
 msgstr ""
+"Karte nicht sichtbar? &lt;a href='%s' rel='nofollow'&gt;&Uuml;berspringen "
+"Sie diesen Schritt&lt;/a&gt;"
 
 #: templates/web/default/admin/council_contacts.html:31
 #: templates/web/default/admin/index.html:36
@@ -689,12 +693,12 @@ msgstr "Gel&ouml;scht"
 
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:64
 msgid "Details"
-msgstr ""
+msgstr "Beschreibung"
 
 #: templates/web/default/admin/report_edit.html:14
 #: templates/web/default/report/new/fill_in_details_form.html:61
 msgid "Details:"
-msgstr ""
+msgstr "Beschreibung:"
 
 #: templates/web/default/admin/council_list.html:23
 msgid "Diligency prize league table"
@@ -1291,12 +1295,12 @@ msgstr ""
 #: templates/web/fixmystreet/footer.html:51
 #: templates/web/reading/footer.html:9
 msgid "Local alerts"
-msgstr ""
+msgstr "RSS"
 
 #: templates/web/default/index.html:43 templates/web/emptyhomes/index.html:59
 #: templates/web/fixmystreet/index.html:54
 msgid "Locate the problem on a map of the area"
-msgstr ""
+msgstr "Identifizieren Sie den Mangel auf der Karte"
 
 #: perllib/FixMyStreet/Map/OSM.pm:43
 msgid ""
@@ -1771,6 +1775,8 @@ msgid ""
 "Please do not be abusive &amp;mdash; abusing your council devalues the "
 "service for all users."
 msgstr ""
+"Bitte missbrauchen Sie diesen Service nicht. Die Schaden damit nicht nur der "
+"Verwaltung, sondern s&auml;mtlichen Bewohnern von Z&uuml,rich."
 
 #: perllib/FixMyStreet/DB/Result/Comment.pm:113
 #: templates/web/default/js/validation_strings.html:2
@@ -1866,6 +1872,11 @@ msgid ""
 "description (and a\n"
 "photo of the problem if you have one), etc."
 msgstr ""
+"Bitte beschreiben sie Ihre Meldung weiter unten. Wir k&ouml;nnen den Mangel "
+"nur beheben, wenn Sie soviel Details wie m&ouml;glich angeben: Beschreiben "
+"sie die exakte Lage (z.B. An der Wand Richtung Strasse), was genau der "
+"Mangel ist, wie lange dieser schon da ist und laden sie wenn m&ouml;glich "
+"ein Photo des Mangels hoch."
 
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:68
 msgid "Please fill in details of the problem."
@@ -1900,7 +1911,7 @@ msgstr ""
 #: templates/web/default/report/new/notes.html:1
 #: templates/web/fixmystreet/report/new/notes.html:1
 msgid "Please note:"
-msgstr ""
+msgstr "Hinweise:"
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:244
 msgid "Please provide some explanation as to why you're reopening this report"
@@ -2057,7 +2068,7 @@ msgstr ""
 #: templates/web/default/report/display.html:56
 #: templates/web/fixmystreet/report/display.html:55
 msgid "Provide an update"
-msgstr ""
+msgstr "Meldung aktualisieren"
 
 #: templates/web/default/report/display.html:180
 #: templates/web/default/report/new/fill_in_details_form.html:173
@@ -2202,6 +2213,10 @@ msgid ""
 "site remember that you can contact your council directly using their own "
 "website."
 msgstr ""
+"Fix My Z&uuml;rich wird prim&auml;r daf&uuml;r verwendet, physische M&auml;"
+"ngel zu melden, welche behoben werden k&ouml;nnen. Wenn Ihr Problem daf&uuml;"
+"r nicht passend erscheint, k&ouml;nnen sie die entsprechende Dienststelle "
+"weiterhin telefonisch oder per eMail erreichen."
 
 #: templates/web/default/admin/report_blocks.html:16
 msgid "Remove flag"
@@ -2227,7 +2242,7 @@ msgstr "Eine Meldung erfassen"
 
 #: templates/web/fixmystreet/report/display.html:27
 msgid "Report abuse"
-msgstr ""
+msgstr "Missbrauch melden"
 
 #: templates/web/emptyhomes/index.html:37
 msgid "Report empty properties"
@@ -2239,7 +2254,7 @@ msgstr ""
 
 #: templates/web/default/index.html:15 templates/web/fixmystreet/index.html:28
 msgid "Report, view, or discuss local problems"
-msgstr ""
+msgstr "Melden sie M&auml;ngel an der Infrastruktur von Z&uuml;rich"
 
 #: templates/web/default/my/my.html:74 templates/web/fixmystreet/my/my.html:77
 msgid "Reported %s"
@@ -2253,7 +2268,7 @@ msgstr ""
 #: templates/web/default/contact/index.html:45
 #: templates/web/fixmystreet/contact/index.html:46
 msgid "Reported anonymously at %s"
-msgstr ""
+msgstr "Anonym gemeldet um"
 
 #: templates/web/default/admin/questionnaire.html:5
 #: templates/web/default/questionnaire/index.html:77
@@ -2263,13 +2278,13 @@ msgstr ""
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:496
 msgid "Reported by %s anonymously at %s"
-msgstr ""
+msgstr "Anonym gemeldet von %s um %s "
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:527
 #: templates/web/default/contact/index.html:47
 #: templates/web/fixmystreet/contact/index.html:48
 msgid "Reported by %s at %s"
-msgstr ""
+msgstr "Gemeldet von %s um %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:518
 msgid "Reported by %s by %s at %s"
@@ -2300,7 +2315,7 @@ msgstr ""
 #: templates/web/fixmystreet/report/new/fill_in_details.html:5
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:2
 msgid "Reporting a problem"
-msgstr ""
+msgstr "Verfassen Sie eine Meldung"
 
 #: templates/web/default/around/display_location.html:93
 msgid "Reports on and around the map"
@@ -2527,13 +2542,13 @@ msgstr ""
 #: templates/web/fixmystreet/contact/index.html:79
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:58
 msgid "Subject"
-msgstr ""
+msgstr "Titel"
 
 #: templates/web/default/admin/report_edit.html:13
 #: templates/web/default/contact/index.html:83
 #: templates/web/default/report/new/fill_in_details_form.html:52
 msgid "Subject:"
-msgstr ""
+msgstr "Titel:"
 
 #: templates/web/default/questionnaire/creator_fixed.html:19
 #: templates/web/default/report/new/fill_in_details_form.html:114
@@ -3049,7 +3064,7 @@ msgstr ""
 
 #: templates/web/fixmystreet/report/display.html:70
 msgid "Update"
-msgstr ""
+msgstr "Beschreibung"
 
 #: templates/web/default/admin/timeline.html:35
 msgid "Update %s created for problem %d; by %s"
@@ -3219,6 +3234,8 @@ msgid ""
 "We will only use your personal information in accordance with our &lt;a href="
 "\"/faq#privacy\"&gt;privacy policy.&lt;/a&gt;"
 msgstr ""
+"Wir verwenden Ihre pers&ouml;nlichen Daten nur entsprechend unserer &lt;a "
+"href=\"/faq#privacy\"&gt;Datenschutzrichtlinien.&lt;/a&gt;"
 
 #: templates/web/emptyhomes/contact/blurb.html:2
 msgid ""
@@ -3281,6 +3298,8 @@ msgid ""
 "Writing your message entirely in block capitals makes it hard to read, as "
 "does a lack of punctuation."
 msgstr ""
+"Meldungen g&auml;nzlich in Grossbuchstaben zu schreiben macht diese "
+"unleserlich. Ebenso wenn keine Satzzeichen verwendet werden."
 
 #: templates/web/default/admin/stats.html:10
 msgid "Year"
@@ -3381,6 +3400,9 @@ msgid ""
 "You have located the problem at the point marked with a green pin on the "
 "map. If this is not the correct location, simply click on the map again. "
 msgstr ""
+"Der gr&uml;ne Pin auf der Karte repr&auml;sentiert ihre Meldung. Falls "
+"dieser Ort nicht der Richtige ist, klicken Sie einfach nochmals am richtigen "
+"Ort auf die Karte."
 
 #: templates/web/default/tokens/confirm_alert.html:7
 msgid "You have successfully confirmed your alert."
@@ -3653,28 +3675,27 @@ msgid "We do not yet have details for the council that covers this location."
 msgid_plural ""
 "We do not yet have details for the councils that cover this location."
 msgstr[0] ""
-msgstr[1] ""
 
 #: templates/web/emptyhomes/front/stats.html:12
 #, perl-format
 msgid "&lt;big&gt;%s&lt;/big&gt; report in past week"
 msgid_plural "&lt;big&gt;%s&lt;/big&gt; reports in past week"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "&lt;big&gt;%s&lt;/big&gt; Meldung in der letzten Woche"
+msgstr[1] "&lt;big&gt;%s&lt;/big&gt; Meldungen in der letzten Woche"
 
 #: templates/web/default/front/stats.html:23
 #, perl-format
 msgid "&lt;big&gt;%s&lt;/big&gt; fixed in past month"
 msgid_plural "&lt;big&gt;%s&lt;/big&gt; fixed in past month"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "&lt;big&gt;%s&lt;/big&gt; im letzten Monat behoben"
+msgstr[1] "&lt;big&gt;%s&lt;/big&gt; im letzten Monat gehoben"
 
 #: templates/web/default/front/stats.html:29
 #, perl-format
 msgid "&lt;big&gt;%s&lt;/big&gt; update on reports"
 msgid_plural "&lt;big&gt;%s&lt;/big&gt; updates on reports"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "&lt;big&gt;%s&lt;/big&gt; Meldung bearbeitet"
+msgstr[1] "&lt;big&gt;%s&lt;/big&gt; Meldungen bearbeitet"
 
 #: templates/web/fixmystreet/report/new/councils_text_some.html:14
 #, perl-format
