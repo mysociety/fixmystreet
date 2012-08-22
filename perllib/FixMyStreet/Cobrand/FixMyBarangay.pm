@@ -30,7 +30,7 @@ sub country {
 }
 
 sub area_types {
-    return ( 'BGY' );
+    return [ 'BGY' ];
 }
 
 sub disambiguate_location {
