@@ -78,6 +78,7 @@ partial
 =cut
 
 use constant COUNCIL_ID_BARNET => 2489;
+use constant COUNCIL_ID_BROMLEY => 2482;
 
 sub report_new : Path : Args(0) {
     my ( $self, $c ) = @_;
@@ -93,6 +94,7 @@ sub report_new : Path : Args(0) {
     $c->stash->{template} = "report/new/fill_in_details.html";
     $c->forward('setup_categories_and_councils');
     $c->forward('generate_map');
+    $c->forward('check_for_category');
 
     # deal with the user and report and check both are happy
     return unless $c->forward('check_form_submitted');
@@ -614,12 +616,12 @@ sub setup_categories_and_councils : Private {
         );
         $category_label = _('Property type:');
 
-    } elsif ($first_council->{id} != 2482 && $first_council->{type} eq 'LBO') {
+    } elsif ($first_council->{id} != COUNCIL_ID_BROMLEY && $first_council->{type} eq 'LBO') {
 
         $area_ids_to_list{ $first_council->{id} } = 1;
         my @local_categories;
         if ($first_council->{id} == COUNCIL_ID_BARNET) {
-            @local_categories =  sort(keys %{ Utils::barnet_categories() }); # removed 'Other' option
+            @local_categories =  sort keys %{ Utils::barnet_categories() }
         } else {
             @local_categories =  sort keys %{ Utils::london_categories() }            
         }
@@ -639,8 +641,6 @@ sub setup_categories_and_councils : Private {
 
             $area_ids_to_list{ $contact->area_id } = 1;
 
-            next if $contact->category eq _('Other');
-
             unless ( $seen{$contact->category} ) {
                 push @category_options, $contact->category;
 
@@ -651,9 +651,9 @@ sub setup_categories_and_councils : Private {
         }
 
         if (@category_options) {
-            @category_options = ( _('-- Pick a category --'), @category_options );
-            push @category_options, _('Other')
-                unless $first_council->{id} == 2482;
+            # If there's an Other category present, put it at the bottom
+            @category_options = ( _('-- Pick a category --'), grep { $_ ne _('Other') } @category_options );
+            push @category_options, _('Other') if $seen{_('Other')};
             $category_label = _('Category');
         }
     }
@@ -664,7 +664,7 @@ sub setup_categories_and_councils : Private {
     $c->stash->{category_options} = \@category_options;
     $c->stash->{category_extras}  = \%category_extras;
     $c->stash->{category_extras_json}  = encode_json \%category_extras;
-    $c->stash->{extra_name_info} = $first_council->{id} == 2482 ? 1 : 0;
+    $c->stash->{extra_name_info} = $first_council->{id} == COUNCIL_ID_BROMLEY ? 1 : 0;
 
     my @missing_details_councils =
       grep { !$area_ids_to_list{$_} }    #
@@ -815,12 +815,12 @@ sub process_report : Private {
 
     } elsif ( $first_council->{id} == COUNCIL_ID_BARNET ) {
 
-        unless ( exists Utils::barnet_categories()->{ $report->category } or $report->category eq 'Other') {
+        unless ( exists Utils::barnet_categories()->{ $report->category } ) {
             $c->stash->{field_errors}->{category} = _('Please choose a category');
         }
         $report->council( $first_council->{id} );
         
-    } elsif ( $first_council->{id} != 2482 && $first_council->{type} eq 'LBO') {
+    } elsif ( $first_council->{id} != COUNCIL_ID_BROMLEY && $first_council->{type} eq 'LBO') {
         
         unless ( Utils::london_categories()->{ $report->category } ) {
             $c->stash->{field_errors}->{category} = _('Please choose a category');
@@ -896,7 +896,7 @@ sub process_report : Private {
 
     # save the cobrand and language related information
     $report->cobrand( $c->cobrand->moniker );
-    $report->cobrand_data( $c->cobrand->extra_problem_data );
+    $report->cobrand_data( '' );
     $report->lang( $c->stash->{lang_code} );
 
     return 1;
@@ -1055,6 +1055,14 @@ sub generate_map : Private {
     return 1;
 }
 
+sub check_for_category : Private {
+    my ( $self, $c ) = @_;
+
+    $c->stash->{category} = $c->req->param('category');
+
+    return 1;
+}
+
 =head2 redirect_or_confirm_creation
 
 Now that the report has been created either redirect the user to its page if it
@@ -1075,7 +1083,7 @@ sub redirect_or_confirm_creation : Private {
         if ( $c->cobrand->moniker eq 'fixmybarangay' && $c->user->from_council && $c->stash->{external_source_id}) {
             $report_uri = $c->uri_for( '/report', $report->id, undef, { external_source_id => $c->stash->{external_source_id} } );
         } else {
-            $report_uri = $c->uri_for( '/report', $report->id );
+            $report_uri = $c->cobrand->base_url_for_report( $report ) . $report->url;
         }
         $c->log->info($report->user->id . ' was logged in, redirecting to /report/' . $report->id);
         $c->res->redirect($report_uri);

@@ -542,7 +542,6 @@ sub meta_line {
 
     }
 
-    $meta .= $c->cobrand->extra_problem_meta_text($problem);
     $meta .= '; ' . _('the map was not used so pin location may be inaccurate')
         unless $problem->used_map;
 
@@ -555,9 +554,8 @@ sub body {
     if ($problem->external_body) {
         $body = $problem->external_body;
     } else {
-        (my $council = $problem->council) =~ s/\|.*//g;
-        my @councils = split( /,/, $council );
-        my $areas_info = mySociety::MaPit::call('areas', \@councils);
+        my $councils = $problem->councils;
+        my $areas_info = mySociety::MaPit::call('areas', $councils);
         $body = join( _(' and '),
             map {
                 my $name = $areas_info->{$_}->{name};
@@ -568,7 +566,7 @@ sub body {
                 } else {
                     $name;
                 }
-            } @councils
+            } @$councils
         );
     }
     return $body;

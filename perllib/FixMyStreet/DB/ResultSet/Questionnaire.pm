@@ -85,7 +85,7 @@ sub send_questionnaires_period {
             scope => 'questionnaire',
             data  => $questionnaire->id,
         } );
-        $h{url} = $cobrand->base_url_for_emails($row->cobrand_data) . '/Q/' . $token->token;
+        $h{url} = $cobrand->base_url($row->cobrand_data) . '/Q/' . $token->token;
 
         my $sender = $cobrand->contact_email;
         my $sender_name = _($cobrand->contact_name);

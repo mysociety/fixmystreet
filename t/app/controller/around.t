@@ -72,7 +72,7 @@ foreach my $test (
         $mech->get_ok('/');
         $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
             "good location" );
-        is_deeply $mech->form_errors, [], "no errors for pc '$test->{pc}'";
+        is_deeply $mech->page_errors, [], "no errors for pc '$test->{pc}'";
         is_deeply $mech->extract_location, $test,
           "got expected location for pc '$test->{pc}'";
     };

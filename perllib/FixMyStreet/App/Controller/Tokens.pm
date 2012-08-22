@@ -34,7 +34,8 @@ sub confirm_problem : Path('/P') {
     # Load the problem
     my $data = $auth_token->data;
     my $problem_id = ref $data ? $data->{id} : $data;
-    my $problem = $c->cobrand->problems->find( { id => $problem_id } )
+    # Look at all problems, not just cobrand, in case am approving something we don't actually show
+    my $problem = $c->model('DB::Problem')->find( { id => $problem_id } )
       || $c->detach('token_error');
     $c->stash->{problem} = $problem;
 
@@ -78,7 +79,7 @@ sub confirm_problem : Path('/P') {
     $c->set_session_cookie_expire(0);
 
     if ( FixMyStreet::DB::Result::Problem->visible_states()->{$old_state} ) {
-        my $report_uri = $c->uri_for( '/report', $problem->id );
+        my $report_uri = $c->cobrand->base_url_for_report( $problem ) . $problem->url;
         $c->res->redirect($report_uri);
     }
 

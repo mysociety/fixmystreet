@@ -1,5 +1,5 @@
 package FixMyStreet::Cobrand::UKCouncils;
-use base 'FixMyStreet::Cobrand::Default';
+use base 'FixMyStreet::Cobrand::UK';
 
 use strict;
 use warnings;
@@ -13,13 +13,18 @@ sub is_council {
 
 sub site_restriction {
     my $self = shift;
-    return ( "and council='" . $self->council_id . "'", $self->council_url, { council => sprintf('%d', $self->council_id) } );
+    return { council => sprintf('%d', $self->council_id) };
+}
+sub site_key {
+    my $self = shift;
+    return $self->council_url;
 }
 
 sub restriction {
     return { cobrand => shift->moniker };
 }
 
+# Different function to site_restriction due to two-tier use
 sub problems_clause {
     my $self = shift;
     return { council => sprintf('%d', $self->council_id) };
@@ -39,11 +44,6 @@ sub base_url {
         $base_url =~ s{http://www\.}{http://$u.}g;
     }
     return $base_url;
-}
-
-sub site_title {
-    my ($self) = @_;
-    return $self->council_name . ' FixMyStreet';
 }
 
 sub enter_postcode_text {
@@ -84,21 +84,6 @@ sub recent_photos {
     my ( $self, $area, $num, $lat, $lon, $dist ) = @_;
     $num = 2 if $num == 3;
     return $self->problems->recent_photos( $num, $lat, $lon, $dist );
-}
-
-sub get_council_sender {
-    my ( $self, $area_id, $area_info ) = @_;
-
-    my $send_method;
-
-    my $council_config = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $area_id } )->first;
-    $send_method = $council_config->send_method if $council_config;
-
-    return $send_method if $send_method;
-
-    return 'London' if $area_info->{type} eq 'LBO';
-
-    return 'Email';
 }
 
 1;

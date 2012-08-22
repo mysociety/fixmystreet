@@ -7,9 +7,9 @@
 
 <div id="side">
 
-[% IF banner.id %]
-<p class="banner" id="[% banner.id %]">
-    [% banner.text %]
+[% IF problem.is_fixed %]
+<p class="banner" id="fixed">
+    [% loc('This problem has been fixed') . '.' %];
 </p>
 [% END %]
 

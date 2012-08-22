@@ -1,6 +1,6 @@
 [%
     PROCESS "maps/${map.type}.html" IF problems.size;
-    INCLUDE 'header.html', title = loc('Your Reports')
+    INCLUDE 'header.html', title = loc('Your Reports'), bodyclass = 'mappage'
 %]
 
 [% IF problems.size %]
@@ -47,7 +47,7 @@ END %]
             pager = updates_pager,
             param = 'u'
         %]
-        <ul>
+        <ul class="issue-list full-width">
     [% END %]
 
     <li>&ldquo;[% u.text | html %]&rdquo;
@@ -64,7 +64,7 @@ END %]
 [% INCLUDE 'footer.html' %]
 
 [% BLOCK problem %]
-    [% "<ul>" IF loop.first %]
+    [% "<ul class='issue-list-a full-width'>" IF loop.first %]
 
     <li><a href="[% c.uri_for( '/report', p.id ) %]">[% p.title | html %]</a>
     <em class="council_sent_info"> &ndash;

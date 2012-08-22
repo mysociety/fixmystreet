@@ -1,22 +1,4 @@
-[% pre_container_extra = BLOCK %]
-<div id="front-main"><div id="front-main-container">
-[%
-    question =  c.cobrand.enter_postcode_text();
-%]
-<form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
-    <label for="pc">[% question %]:</label>
-    <div>
-        <input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200">
-        <input type="submit" value="[% loc('Go') %]" id="submit">
-    </div>
-
-    [% IF partial_token %]
-        <input type="hidden" name="partial" value="[% partial_token.token %]">
-    [% END %]
-</form>
-</div></div>
-[% END %]
-
+[% pre_container_extra = INCLUDE 'around/postcode_form.html' %]
 [% INCLUDE 'header.html', title = loc('Reporting a problem'), bodyclass = 'frontpage fullwidthpage' %]
 
 [%
@@ -26,9 +8,7 @@
     # '/report/new' and the partial hidden field is added to the form.
 %]
 
-[% IF location_offshore %]
-  <p class="form-error">[% loc('That spot does not appear to be covered by a council. If you have tried to report an issue past the shoreline, for example, please specify the closest point on land.') %]</p>
-[% ELSIF location_error %]
+[% IF location_error %]
     <p class="form-error">[% location_error %]</p>
 [% END %]
 

@@ -1,11 +1,32 @@
 The code is broken down into the following sections:
 
-website: code to display the website and handle user submissions
+* Website: code to display the website and handle user submissions
 
-backend: send alerts to the councils, work out who should get the alert, various
-confirmation emails
+* Backend: send reports to the councils, work out who should get alerts,
+  send questionnaires, and so on
 
-mobile apps: currently for iPhone and Android - two separate apps
+* Mobile apps: currently for iPhone and Android - two separate apps, with
+  a PhoneGap app being worked on.
 
-utility scripts: odds and ends - eg importing photos from Flickr tagged
-'fixmystreet'
+* Utility scripts: odds and ends
+
+Main top level directories
+--------------------------
+
+android     Native Android phone app source code
+bin         Scripts, ranging from the ones that send reports to councils to
+            one-offs to fix data import errors
+commonlib   Shared mySociety functions
+conf        Configuration file, needed Debian packages, example Apache config,
+            and example crontab
+db          Schema for PostgreSQL database
+iphone      Native iPhone phone app source code
+local       Local store of Perl modules
+locale      Translation files
+perllib     Source code of the FixMyStreet project
+phonegap    PhoneGap mobile app, in progress
+script      Catalyst management commands
+t           Test suite
+templates   Email and web templates
+web         Front end static files; CSS, JS, images
+

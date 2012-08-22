@@ -30,5 +30,5 @@
 
 <title>
     [% "$title :: " | html IF title %]
-    [% c.cobrand.site_title %]
+    [% site_title || 'FixMyStreet' %]
 </title>

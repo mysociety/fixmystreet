@@ -428,6 +428,49 @@ subtest 'error reponse' => sub {
     is $results->{ res }, 0, 'error in response is a failure';
 };
 
+for my $test (
+    {
+        desc              => 'deviceid not sent by default',
+        use_service_as_id => 0,
+        service           => 'iPhone',
+    },
+    {
+        desc              => 'if use_service_as_id set then deviceid sent with service as id',
+        use_service_as_id => 1,
+        service           => 'iPhone',
+    },
+    {
+        desc              => 'no deviceid sent if service is blank',
+        use_service_as_id => 1,
+        service           => '',
+    },
+  )
+{
+    subtest $test->{desc} => sub {
+        my $extra = { url => 'http://example.com/report/1', };
+        $problem->service( $test->{service} );
+
+        my $results = make_service_req(
+            $problem,
+            $extra,
+            $problem->category,
+            '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>248</service_request_id></request></service_requests>',
+            { use_service_as_deviceid => $test->{use_service_as_id} },
+        );
+
+        is $results->{res}, 248, 'got request id';
+
+        my $c = CGI::Simple->new( $results->{req}->content );
+
+        if ( $test->{use_service_as_id} and $test->{service} ) {
+            is $c->param('deviceid'), $test->{service}, 'deviceid set to service';
+        }
+        else {
+            is $c->param('deviceid'), undef, 'no deviceid is set';
+        }
+    };
+}
+
 done_testing();
 
 sub make_update_req {

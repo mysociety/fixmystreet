@@ -13,12 +13,7 @@
 </div>
 <div id="side">
 
-[% IF banner.id %]
-<p class="banner" id="[% banner.id %]">
-    [% banner.text %]
-</p>
-[% END %]
-
+[% INCLUDE 'report/banner.html' %]
 [% INCLUDE 'report/_main.html' %]
 
 <p align="right">

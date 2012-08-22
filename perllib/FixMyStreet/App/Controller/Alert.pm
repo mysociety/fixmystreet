@@ -184,7 +184,7 @@ sub create_alert : Private {
 
     unless ($alert) {
         $options->{cobrand}      = $c->cobrand->moniker();
-        $options->{cobrand_data} = $c->cobrand->extra_update_data();
+        $options->{cobrand_data} = '';
         $options->{lang}         = $c->stash->{lang_code};
 
         $alert = $c->model('DB::Alert')->new($options);

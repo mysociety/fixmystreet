@@ -271,7 +271,7 @@ for my $test (
         $mech->submit_form_ok( { with_fields => $test->{fields} },
             'submit update' );
 
-        is_deeply $mech->form_errors, $test->{field_errors}, 'field errors';
+        is_deeply $mech->page_errors, $test->{field_errors}, 'field errors';
 
         my $values = {
             %{ $test->{fields} },
@@ -640,7 +640,7 @@ for my $test (
             'submit update'
         );
 
-        is_deeply $mech->form_errors, $test->{field_errors}, 'check there were errors';
+        is_deeply $mech->page_errors, $test->{field_errors}, 'check there were errors';
 
         SKIP: {
             skip( "Incorrect password", 5 ) unless $test->{form_values}{password_sign_in} eq $pw;

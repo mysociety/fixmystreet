@@ -1,0 +1,97 @@
+    select {
+        width: auto;
+    }
+
+    #overview {
+        margin-top: 1em;
+
+        th[scope=col] {
+            font-size:0.8em;
+        }
+
+        tr:nth-child(2) {
+            background-color:#fee;
+        }
+    }
+
+    th {
+        text-align:left;
+        &[scope=col] {
+            border-left:1px solid #ccc;
+            padding:10px 0 10px 10px;
+            font-weight:bold;
+        }
+
+        &[scope=row] {
+            font-weight: normal;text-align:left;
+            border-top:1px solid #ddd;
+            padding-left:10px;
+        }
+
+        abbr[title] {
+            border: none;
+        }
+    }
+
+    td {
+        width:10%;
+        border-left:1px solid #ccc;
+        border-top:1px solid #ddd;
+        padding-left:10px;
+    }
+
+    tr.subtotal {
+        background-color:#eee;
+        border-bottom:20px solid white;
+        border-top:2px solid #aaa;
+        font-weight: bold;
+
+        th {
+            font-weight: bold;
+        }
+    }
+
+
+    #reports{
+        th {
+            padding-left: 20px;
+            border-bottom: none;
+        }
+        date {
+            font-size: 0.7em;
+            color: #ccc;
+        }
+    }
+
+    .filters{
+        background-color:#ffec99;
+        margin:0 -1em;
+        border-top:#ffd000 solid 0.75em;
+        padding:0 1em;
+
+        p {
+            float:left;
+            padding:0 1em;
+            width:25%;
+            font-size:0.75em;
+            color:#333333;
+            input {
+                margin-top: 2.5em;
+            }
+        }
+        select {
+            width:100%;
+        }
+    }
+
+    hgroup {
+        h2 {
+            color:#737373;
+            font-size:1.25em;
+            margin-bottom:0.5em;
+        }
+        h1 {
+            color:#333;
+            font-size:2.25em;
+        }
+    }

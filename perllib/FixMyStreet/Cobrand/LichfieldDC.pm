@@ -11,10 +11,6 @@ sub council_url { return 'lichfielddc'; }
 
 # Different to councils parent due to this being a two-tier council. If we get
 # more, this can be genericised in the parent.
-sub site_restriction {
-    return ( "and council like '%2434%'", 'lichfield', { council => '2434' } );
-}
-
 sub problems_clause {
     return { council => { like => '%2434%' } };
 }
@@ -26,8 +22,19 @@ sub disambiguate_location {
         %{ $self->SUPER::disambiguate_location() },
         centre => '52.688198,-1.804966',
         span   => '0.1196,0.218675',
-        bounds => [ '52.584891,-1.963232', '52.807793,-1.586291' ],
+        bounds => [ 52.584891, -1.963232, 52.807793, -1.586291 ],
     };
+}
+
+# If we ever link to a county problem report, needs to be to main FixMyStreet
+sub base_url_for_report {
+    my ( $self, $report ) = @_;
+    my %councils = map { $_ => 1 } @{$report->councils};
+    if ( $councils{2434} ) {
+        return $self->base_url;
+    } else {
+        return FixMyStreet->config('BASE_URL');
+    }
 }
 
 1;

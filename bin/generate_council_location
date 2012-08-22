@@ -1,3 +1,5 @@
+#!/usr/bin/perl
+
 use strict;
 use JSON;
 use LWP::Simple;
@@ -22,5 +24,5 @@ my $spn_lon = $max_lon - $min_lon;
 print <<"EOT";
     centre => '$c_lat,$c_lon',
     span   => '$spn_lat,$spn_lon',
-    bounds => [ '$min_lat,$min_lon','$max_lat,$max_lon' ],
+    bounds => [ $min_lat, $min_lon, $max_lat, $max_lon ],
 EOT

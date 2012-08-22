@@ -16,13 +16,7 @@
 
 </div>
 
-
-[% IF banner.id %]
-    <div class="banner">
-        <p id="[% banner.id %]">[% banner.text %]</p>
-    </div>
-[% END %]
-
+[% INCLUDE 'report/banner.html' %]
 [% INCLUDE 'report/_main.html' %]
 
 <div class="shadow-wrap">

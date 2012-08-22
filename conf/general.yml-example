@@ -1,4 +1,4 @@
-# general-example.yml:
+# general.yml-example:
 # Example values for the "general" config file.
 #
 # Configuration parameters, in YAML syntax.
@@ -6,58 +6,123 @@
 # Copy this file to one called "general.yml" in the same directory.  Or
 # have multiple config files and use a symlink to change between them.
 
-# PostgreSQL database for FMS
+# PostgreSQL database details for FixMyStreet
 FMS_DB_HOST: 'localhost'
 FMS_DB_PORT: '5432'
 FMS_DB_NAME: 'fms'
 FMS_DB_USER: 'fms'
 FMS_DB_PASS: ''
 
+# The base URL of the install.
 BASE_URL: 'http://www.example.org'
+# Use the below if you're using the Catalyst development server
+#   BASE_URL: 'http://localhost:3000'
 
+# Email domain used for emails, and contact name/email for admin use.
 EMAIL_DOMAIN: 'example.org'
 CONTACT_EMAIL: 'team@example.org'
-TEST_EMAIL_PREFIX: ''
-
 CONTACT_NAME: 'FixMyStreet'
+
+# Whether this is a development site or not.
 STAGING_SITE: 1
 
-UPLOAD_DIR: '/upload/'
-GEO_CACHE: '/cache/'
+# What to use as front page/alert example places placeholder
+# Defaults to High Street, Main Street
+EXAMPLE_PLACES: [ 'High Street', 'Main Street' ]
+
+# An array of languages for the site, in the following format:
+# <language code>,<pretty name>,<locale>
+# Do not remove the en-gb line as it is needed for correct operation.
+LANGUAGES:
+  - 'en-gb,English,en_GB'
+
+# File locations for uploaded photos and cached geocoding results.
+UPLOAD_DIR: '../upload/'
+GEO_CACHE: '../cache/'
+
+# Location of MapIt, to map points to administrative areas, and what types of
+# area from it you want to use. If left blank, a default area will be used
+# everywhere (a URL needs to be given for non-web things, like sending of
+# reports, to function).
+# If using the Catalyst development server, set to
+#   MAPIT_URL: 'http://localhost:3000/fakemapit/'
+#   MAPIT_TYPES: [ 'ZZZ' ]
+# In the UK, you probably want, to cover all councils:
+#   MAPIT_URL: 'http://mapit.mysociety.org/'
+#   MAPIT_TYPES: [ 'DIS', 'LBO', 'MTD', 'UTA', 'CTY', 'COI', 'LGD' ]
+# But perhaps MAPIT_TYPES: [ 'WMC' ] if you want to report on a per-constituency basis?
+# If our global MapIt (using OpenStreetMap data) contains boundaries you can use:
+#   MAPIT_URL: 'http://global.mapit.mysociety.org/'
+# And then specify whichever type code have the boundaries you want:
+#   MAPIT_TYPES: [ 'O06' ]
+MAPIT_URL: ''
+MAPIT_TYPES: [ 'ZZZ' ]
+
+# If your MapIt has the concept of council wards (subareas of councils, where
+# people can sign up for alerts, but not report things), then you can give the
+# MapIt type codes for them here.
+# You can probably leave this blank, but in the UK we use something like:
+#   MAPIT_TYPES_CHILDREN: [ 'DIW', 'LBW', 'MTW', 'UTE', 'UTW', 'CED', 'COP', 'LGW' ]
+MAPIT_TYPES_CHILDREN: ''
+
+# If you wish to use Google Maps or Bing Maps Geocoding, get and put the
+# relevant key here. Without a key, geocoding will use OSM's Nominatim.
 GOOGLE_MAPS_API_KEY: ''
 BING_MAPS_API_KEY: ''
-KASABI_API_KEY: ''
 
-LONDON_REPORTIT_URL: ''
-LONDON_REPORTIT_KEY: ''
-LONDON_REPORTIT_SECRET: ''
+# This provdes parameters that are included in geocoding requests, to hopefully
+# return more useful results. The options vary depending which geocoder you use,
+# or you can specify all for if you change geocoder. For the default OSM, you can use:
+#   GEOCODING_DISAMBIGUATION:
+#     bounds: [ <min lat>, <min lon>, <max lat>, <max lon> ]
+#     country: <country code to restrict results to>
+#     town: <string added to geocoding requests if not already there>
+#
+# If using Bing, you can use town and bounds, plus any of:
+#     centre: "<lat>,<lon>"
+#     bing_culture: <culture code, see http://msdn.microsoft.com/en-us/library/hh441729.aspx>
+#     bing_country: <country name, only accept results that match this>
+#
+# If using Google, you can use:
+#     centre: "<lat>,<lon>"
+#     span: "<lat span>,<lon span>"
+#     google_country: <.ccTLD to restrict results to>
+#     lang: <language for results>
+#
+GEOCODING_DISAMBIGUATION: ''
 
-MAPIT_URL: 'http://mapit.mysociety.org/'
+# The type of map you want to use. If left blank, the default is OpenStreetMap.
+# Other options are currently pretty UK specific, including "FMS" for UK
+# FixMyStreet.
 MAP_TYPE: 'OSM'
-EVEL_URL: 'http://services.mysociety.org/evel'
-GAZE_URL: 'http://gaze.mysociety.org/gaze'
 
-# Tracking
-TRACKING: 0   # off by default
-TRACKING_URL: 'http://path/to/web/bug'
-TRACKING_SECRET: 'really-secret-value'
-
-AUTH_SHARED_SECRET: ''
-HEARFROMYOURMP_BASE_URL: ''
-
-SMTP_SMARTHOST: 'localhost'
-
-IPHONE_URL: ''
-
-# Log file (used in test harness, and later in admin scripts)
-HTTPD_ERROR_LOG: '/var/log/apache/error.log'
-
+# FixMyStreet uses a templating cobrand system to provide different looks for
+# different installations. If your site was at moon.example.org, and your templates
+# were in the templates/web/moon directory, you would use:
+#   ALLOWED_COBRANDS:
+#     - moon: 'moon.example.org'
+# This also allows development servers to map to different cobrands if needed,
+# using DNS subdomains for example.
 ALLOWED_COBRANDS:
   - cobrand_one
   - cobrand_two: 'hostname_substring2'
 
+# This is only used in "offensive report" emails to provide a link directly to
+# the admin interface. If wanted, set to the full URL of your admin interface.
+ADMIN_BASE_URL: ''
+
 # How many items are returned in the GeoRSS feeds by default
 RSS_LIMIT: '20'
+# How many reports to show per page on the All Reports pages
+ALL_REPORTS_PER_PAGE: 100
+
+# If you wish to send email through a SMTP server elsewhere, change this
+# variable.
+SMTP_SMARTHOST: 'localhost'
+
+# Gaze is a world-wide service for population density lookups. You can leave
+# this as is.
+GAZE_URL: 'http://gaze.mysociety.org/gaze'
 
 # Should problem reports link to the council summary pages?
 AREA_LINKS_FROM_PROBLEMS: '0'
@@ -68,3 +133,12 @@ TESTING_COUNCILS: ''
 # if you're using Message Manager, include the URL here (see https://github.com/mysociety/message-manager/)
 MESSAGE_MANAGER_URL: ''
 
+# -----------------------------------------------------------------------
+
+# fixmystreet.com specific config variables. You won't need any of these.
+KASABI_API_KEY: ''
+LONDON_REPORTIT_URL: ''
+LONDON_REPORTIT_KEY: ''
+LONDON_REPORTIT_SECRET: ''
+AUTH_SHARED_SECRET: ''
+HEARFROMYOURMP_BASE_URL: ''

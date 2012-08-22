@@ -42,8 +42,10 @@ sub map_tile_base {
 }
 
 sub map_tiles {
-    my ($self, $x, $y, $z) = @_;
-    if ($z >= 16) {
+    my ( $self, %params ) = @_;
+    my ( $x, $y, $z ) = ( $params{x_tile}, $params{y_tile}, $params{zoom_act} );
+    my $ni = in_northern_ireland_box( $params{latitude}, $params{longitude} );
+    if (!$ni && $z >= 16) {
         my ($tile_sep, $tile_base) = $self->map_tile_base;
         return [
             sprintf($tile_base, 'a' . $tile_sep, $z, $x-1, $y-1),
@@ -53,7 +55,7 @@ sub map_tiles {
         ];
     } else {
         my $url = "g=701";
-        $url .= "&productSet=mmOS" if $z > 10;
+        $url .= "&productSet=mmOS" if $z > 10 && !$ni;
         return [
             "//ecn.t0.tiles.virtualearth.net/tiles/r" . get_quadkey($x-1, $y-1, $z) . ".png?$url",
             "//ecn.t1.tiles.virtualearth.net/tiles/r" . get_quadkey($x,   $y-1, $z) . ".png?$url",
@@ -61,6 +63,12 @@ sub map_tiles {
             "//ecn.t3.tiles.virtualearth.net/tiles/r" . get_quadkey($x,   $y,   $z) . ".png?$url",
         ];
     }
+}
+
+sub in_northern_ireland_box {
+    my ($lat, $lon) = @_;
+    return 1 if $lat >= 54.015 && $lat <= 55.315 && $lon >= -8.18 && $lon <= -5.415;
+    return 0;
 }
 
 1;

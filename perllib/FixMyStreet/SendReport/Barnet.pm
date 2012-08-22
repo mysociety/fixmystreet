@@ -19,15 +19,15 @@ use constant MAX_LINE_LENGTH       => 132;
 
 sub should_skip {
     my $self = shift;
-    my $problem = shift;
+    my $row = shift;
 
     my $council_name = 'Barnet';
     my $err_msg = "";
 
-    if ($problem->send_fail_count >= SEND_FAIL_RETRIES_CUTOFF) {
+    if ($row->send_fail_count >= SEND_FAIL_RETRIES_CUTOFF) {
         $council_name &&= " to $council_name";
-        $err_msg = "skipped: problem id=" . $problem->id . " send$council_name has failed " 
-                . $problem->send_fail_count . " times, cutoff is " . SEND_FAIL_RETRIES_CUTOFF;
+        $err_msg = "skipped: problem id=" . $row->id . " send$council_name has failed " 
+                . $row->send_fail_count . " times, cutoff is " . SEND_FAIL_RETRIES_CUTOFF;
 
         $self->skipped( $err_msg );
 
@@ -52,7 +52,7 @@ EOF
 
 
 sub send {
-    my ( $self, $problem, $h, $to, $template, $recips, $nomail ) = @_;
+    my ( $self, $row, $h ) = @_;
 
     my %h = %$h;
 
@@ -127,9 +127,9 @@ sub send {
         if ($result) {
             # currently not using this: get_EV_ORDER_GUID (maybe that's the customer number in the CRM)
             if (my $barnet_id = $result->get_EV_ORDER_NO()) {
-                $problem->external_id( $barnet_id );
-                $problem->external_body( 'Barnet Borough Council' ); # better to use $problem->body()?
-                $problem->send_method_used('barnet');
+                $row->external_id( $barnet_id );
+                $row->external_body( 'Barnet Borough Council' ); # better to use $row->body()?
+                $row->send_method_used('barnet');
                 $return = 0;
             } else {
                 my @returned_items = split  /<item[^>]*>/, $result->get_ET_RETURN;

@@ -1,0 +1,339 @@
+package FixMyStreet::Cobrand::UK;
+use base 'FixMyStreet::Cobrand::Default';
+
+use mySociety::VotingArea;
+
+sub path_to_web_templates {
+    my $self = shift;
+    return [ FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify ];
+}
+
+sub country             { return 'GB'; }
+sub area_types          { [ 'DIS', 'LBO', 'MTD', 'UTA', 'CTY', 'COI', 'LGD' ] }
+sub area_types_children { $mySociety::VotingArea::council_child_types }
+sub area_min_generation { 10 }
+
+sub enter_postcode_text {
+    my ( $self ) = @_;
+    return _("Enter a nearby UK postcode, or street name and area");
+}
+
+sub example_places {
+    return [ 'B2 4QA', 'Tib St, Manchester' ];
+}
+
+sub disambiguate_location {
+    return {
+        country => 'gb',
+        google_country => 'uk',
+        bing_culture => 'en-GB',
+        bing_country => 'United Kingdom'
+    };
+}
+
+sub get_council_sender {
+    my ( $self, $area_id, $area_info ) = @_;
+
+    my $send_method;
+
+    my $council_config = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $area_id } )->first;
+    $send_method = $council_config->send_method if $council_config;
+
+    return $send_method if $send_method;
+
+    return 'London' if $area_info->{type} eq 'LBO';
+    return 'NI' if $area_info->{type} eq 'LGD';
+    return 'Email';
+}
+
+sub process_extras {
+    my $self    = shift;
+    my $ctx     = shift;
+    my $area_id = shift;
+    my $extra   = shift;
+    my $fields  = shift || [];
+
+    if ( $area_id == 2482 ) {
+        my @fields = ( 'fms_extra_title', @$fields );
+        for my $field ( @fields ) {
+            my $value = $ctx->request->param( $field );
+
+            if ( !$value ) {
+                $ctx->stash->{field_errors}->{ $field } = _('This information is required');
+            }
+            push @$extra, {
+                name => $field,
+                description => uc( $field),
+                value => $value || '',
+            };
+        }
+
+        if ( $ctx->request->param('fms_extra_title') ) {
+            $ctx->stash->{fms_extra_title} = $ctx->request->param('fms_extra_title');
+            $ctx->stash->{extra_name_info} = 1;
+        }
+    }
+}
+
+sub geocode_postcode {
+    my ( $self, $s ) = @_;
+
+    if ($s =~ /^\d+$/) {
+        return {
+            error => 'FixMyStreet is a UK-based website. Please enter either a UK postcode, or street name and area.'
+        };
+    } elsif (mySociety::PostcodeUtil::is_valid_postcode($s)) {
+        my $location = mySociety::MaPit::call('postcode', $s);
+        if ($location->{error}) {
+            return {
+                error => $location->{code} =~ /^4/
+                    ? _('That postcode was not recognised, sorry.')
+                    : $location->{error}
+            };
+        }
+        my $island = $location->{coordsyst};
+        if (!$island) {
+            return {
+                error => _("Sorry, that appears to be a Crown dependency postcode, which we don't cover.")
+            };
+        }
+        return {
+            latitude  => $location->{wgs84_lat},
+            longitude => $location->{wgs84_lon},
+        };
+    }
+    return {};
+}
+
+sub remove_redundant_councils {
+  my $self = shift;
+  my $all_councils = shift;
+
+  # Ipswich & St Edmundsbury are responsible for everything in their
+  # areas, not Suffolk
+  delete $all_councils->{2241}
+    if $all_councils->{2446}    #
+        || $all_councils->{2443};
+
+  # Norwich is responsible for everything in its areas, not Norfolk
+  delete $all_councils->{2233}    #
+    if $all_councils->{2391};
+}
+
+sub filter_all_council_ids_list {
+    my $self = shift;
+    my @all_councils_ids = @_;
+
+    # Ignore the four council areas introduced because of generation 15
+    # (where we put the new boundaries under the old IDs)
+    return grep { $_ < 141648 || $_ > 141651 } @all_councils_ids;
+}
+
+sub short_name {
+  my $self = shift;
+  my ($area, $info) = @_;
+  # Special case Durham as it's the only place with two councils of the same name
+  return 'Durham+County' if $area->{name} eq 'Durham County Council';
+  return 'Durham+City' if $area->{name} eq 'Durham City Council';
+
+  my $name = $area->{name};
+  $name =~ s/ (Borough|City|District|County) Council$//;
+  $name =~ s/ Council$//;
+  $name =~ s/ & / and /;
+  $name =~ s{/}{_}g;
+  $name = URI::Escape::uri_escape_utf8($name);
+  $name =~ s/%20/+/g;
+  return $name;
+
+}
+
+sub find_closest {
+    my ( $self, $latitude, $longitude, $problem ) = @_;
+
+    my $str = $self->SUPER::find_closest( $latitude, $longitude, $problem );
+
+    # Get nearest postcode from Matthew's random gazetteer (put in MaPit? Or elsewhere?)
+    my $url = "http://gazetteer.dracos.vm.bytemark.co.uk/point/$latitude,$longitude.json";
+    my $j = LWP::Simple::get($url);
+    if ($j) {
+        $j = JSON->new->utf8->allow_nonref->decode($j);
+        if ($j->{postcode}) {
+            $str .= sprintf(_("Nearest postcode to the pin placed on the map (automatically generated): %s (%sm away)"),
+                $j->{postcode}[0], $j->{postcode}[1]) . "\n\n";
+        }
+    }
+
+    return $str;
+}
+
+sub reports_council_check {
+    my ( $self, $c, $code ) = @_;
+
+    # Manual misspelling redirect
+    if ($code =~ /^rhondda cynon taff$/i) {
+        my $url = $c->uri_for( '/reports/Rhondda+Cynon+Taf' );
+        $c->res->redirect( $url );
+        $c->detach();
+    }
+
+    # Old ONS codes
+    if ($code =~ /^(\d\d)([a-z]{2})?([a-z]{2})?$/i) {
+        my $area = mySociety::MaPit::call( 'area', uc $code );
+        $c->detach( 'redirect_index' ) if $area->{error}; # Given a bad/old ONS code
+        if (length($code) == 6) {
+            my $council = mySociety::MaPit::call( 'area', $area->{parent_area} );
+            $c->stash->{ward} = $area;
+            $c->stash->{council} = $council;
+        } else {
+            $c->stash->{council} = $area;
+        }
+        $c->detach( 'redirect_area' );
+    }
+
+    # New ONS codes
+    if ($code =~ /^[ESWN]\d{8}$/i) {
+        my $area = mySociety::MaPit::call( 'area', uc $code );
+        $c->detach( 'redirect_index' ) if $area->{error}; # Given a bad/old ONS code
+        if ($code =~ /^(E05|W05|S13)/) {
+            my $council = mySociety::MaPit::call( 'area', $area->{parent_area} );
+            $c->stash->{ward} = $area;
+            $c->stash->{council} = $council;
+            $c->detach( 'redirect_area' );
+        } elsif ($code =~ /^(W06|S12|E0[6-9]|E10)/) {
+            $c->stash->{council} = $area;
+            $c->detach( 'redirect_area' );
+        }
+    }
+
+}
+
+sub council_rss_alert_options {
+    my $self = shift;
+    my $all_councils = shift;
+    my $c            = shift;
+
+    my %councils = map { $_ => 1 } @{$self->area_types};
+
+    my $num_councils = scalar keys %$all_councils;
+
+    my ( @options, @reported_to_options );
+    if ( $num_councils == 1 or $num_councils == 2 ) {
+        my ($council, $ward);
+        foreach (values %$all_councils) {
+            if ($councils{$_->{type}}) {
+                $council = $_;
+                $council->{short_name} = $self->short_name( $council );
+                ( $council->{id_name} = $council->{short_name} ) =~ tr/+/_/;
+            } else {
+                $ward = $_;
+                $ward->{short_name} = $self->short_name( $ward );
+                ( $ward->{id_name} = $ward->{short_name} ) =~ tr/+/_/;
+            }
+        }
+        $council->{name} = 'London Borough of Bromley'
+            if $council->{name} eq 'Bromley Council';
+
+        my $council_text;
+        if ( $c->cobrand->is_council ) {
+            $council_text = 'All problems within the council';
+        } else {
+            $council_text = sprintf( _('Problems within %s'), $council->{name});
+        }
+
+        push @options, {
+            type      => 'council',
+            id        => sprintf( 'council:%s:%s', $council->{id}, $council->{id_name} ),
+            text      => $council_text,
+            rss_text  => sprintf( _('RSS feed of problems within %s'), $council->{name}),
+            uri       => $c->uri_for( '/rss/reports/' . $council->{short_name} ),
+        };
+        push @options, {
+            type     => 'ward',
+            id       => sprintf( 'ward:%s:%s:%s:%s', $council->{id}, $ward->{id}, $council->{id_name}, $ward->{id_name} ),
+            rss_text => sprintf( _('RSS feed of problems within %s ward'), $ward->{name}),
+            text     => sprintf( _('Problems within %s ward'), $ward->{name}),
+            uri      => $c->uri_for( '/rss/reports/' . $council->{short_name} . '/' . $ward->{short_name} ),
+        } if $ward;
+
+    } elsif ( $num_councils == 4 ) {
+        # Two-tier council
+        my ($county, $district, $c_ward, $d_ward);
+        foreach (values %$all_councils) {
+            $_->{short_name} = $self->short_name( $_ );
+            ( $_->{id_name} = $_->{short_name} ) =~ tr/+/_/;
+            if ($_->{type} eq 'CTY') {
+                $county = $_;
+            } elsif ($_->{type} eq 'DIS') {
+                $district = $_;
+            } elsif ($_->{type} eq 'CED') {
+                $c_ward = $_;
+            } elsif ($_->{type} eq 'DIW') {
+                $d_ward = $_;
+            }
+        }
+        my $district_name = $district->{name};
+        my $d_ward_name = $d_ward->{name};
+        my $county_name = $county->{name};
+        my $c_ward_name = $c_ward->{name};
+
+        push @options, {
+            type  => 'area',
+            id    => sprintf( 'area:%s:%s', $district->{id}, $district->{id_name} ),
+            text  => $district_name,
+            rss_text => sprintf( _('RSS feed for %s'), $district_name ),
+            uri => $c->uri_for( '/rss/area/' . $district->{short_name}  )
+        }, {
+            type      => 'area',
+            id        => sprintf( 'area:%s:%s:%s:%s', $district->{id}, $d_ward->{id}, $district->{id_name}, $d_ward->{id_name} ),
+            text      => sprintf( _('%s ward, %s'), $d_ward_name, $district_name ),
+            rss_text  => sprintf( _('RSS feed for %s ward, %s'), $d_ward_name, $district_name ),
+            uri       => $c->uri_for( '/rss/area/' . $district->{short_name} . '/' . $d_ward->{short_name} )
+        }, {
+            type  => 'area',
+            id    => sprintf( 'area:%s:%s', $county->{id}, $county->{id_name} ),
+            text  => $county_name,
+            rss_text => sprintf( _('RSS feed for %s'), $county_name ),
+            uri => $c->uri_for( '/rss/area/' . $county->{short_name}  )
+        }, {
+            type      => 'area',
+            id        => sprintf( 'area:%s:%s:%s:%s', $county->{id}, $c_ward->{id}, $county->{id_name}, $c_ward->{id_name} ),
+            text      => sprintf( _('%s ward, %s'), $c_ward_name, $county_name ),
+            rss_text  => sprintf( _('RSS feed for %s ward, %s'), $c_ward_name, $county_name ),
+            uri       => $c->uri_for( '/rss/area/' . $county->{short_name} . '/' . $c_ward->{short_name} )
+        };
+
+        push @reported_to_options, {
+            type      => 'council',
+            id        => sprintf( 'council:%s:%s', $district->{id}, $district->{id_name} ),
+            text      => $district->{name},
+            rss_text  => sprintf( _('RSS feed of %s'), $district->{name}),
+            uri       => $c->uri_for( '/rss/reports/' . $district->{short_name} ),
+        }, {
+            type     => 'ward',
+            id       => sprintf( 'ward:%s:%s:%s:%s', $district->{id}, $d_ward->{id}, $district->{id_name}, $d_ward->{id_name} ),
+            rss_text => sprintf( _('RSS feed of %s, within %s ward'), $district->{name}, $d_ward->{name}),
+            text     => sprintf( _('%s, within %s ward'), $district->{name}, $d_ward->{name}),
+            uri      => $c->uri_for( '/rss/reports/' . $district->{short_name} . '/' . $d_ward->{short_name} ),
+        }, {
+            type      => 'council',
+            id        => sprintf( 'council:%s:%s', $county->{id}, $county->{id_name} ),
+            text      => $county->{name},
+            rss_text  => sprintf( _('RSS feed of %s'), $county->{name}),
+            uri       => $c->uri_for( '/rss/reports/' . $county->{short_name} ),
+        }, {
+            type     => 'ward',
+            id       => sprintf( 'ward:%s:%s:%s:%s', $county->{id}, $c_ward->{id}, $county->{id_name}, $c_ward->{id_name} ),
+            rss_text => sprintf( _('RSS feed of %s, within %s ward'), $county->{name}, $c_ward->{name}),
+            text     => sprintf( _('%s, within %s ward'), $county->{name}, $c_ward->{name}),
+            uri      => $c->uri_for( '/rss/reports/' . $county->{short_name} . '/' . $c_ward->{short_name} ),
+        };
+
+    } else {
+        throw Error::Simple('An area with three tiers of council? Impossible! '. join('|',keys %$all_councils));
+    }
+
+    return ( \@options, @reported_to_options ? \@reported_to_options : undef );
+}
+
+1;
+

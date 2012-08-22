@@ -24,10 +24,14 @@ sub string {
     my ( $s, $c, $params ) = @_;
 
     my $url = 'http://maps.google.com/maps/geo?q=' . $s;
-      $url .=  '&ll=' . $params->{centre}  if $params->{centre};
-      $url .= '&spn=' . $params->{span}    if $params->{span};
-      $url .=  '&gl=' . $params->{country} if $params->{country};
-      $url .=  '&hl=' . $params->{lang}    if $params->{lang};
+    $url .=  '&ll=' . $params->{centre}  if $params->{centre};
+    $url .= '&spn=' . $params->{span}    if $params->{span};
+    if ($params->{google_country}) {
+        $url .=  '&gl=' . $params->{google_country};
+    } elsif ($params->{country}) {
+        $url .=  '&gl=' . $params->{country};
+    }
+    $url .=  '&hl=' . $params->{lang}    if $params->{lang};
 
     my $cache_dir = FixMyStreet->config('GEO_CACHE') . 'google/';
     my $cache_file = $cache_dir . md5_hex($url);
@@ -58,9 +62,6 @@ sub string {
 
     if (!$js) {
         return { error => _('Sorry, we could not parse that location. Please try again.') };
-    } elsif ($js =~ /BT\d/) {
-        # Northern Ireland, hopefully
-        return { error => _("We do not currently cover Northern Ireland, I'm afraid.") };
     }
 
     $js = JSON->new->utf8->allow_nonref->decode($js);

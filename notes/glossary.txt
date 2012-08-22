@@ -1,5 +1,0 @@
-Unfamiliar terms that you may come across in the code:
-
-MaPit: The mySociety database and web service that maps postcodes and points to
-current or past administrative area information and polygons for all the United
-Kingdom. http://mapit.mysociety.org/

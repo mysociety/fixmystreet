@@ -14,8 +14,7 @@
 DIRECTORY=$(cd `dirname $0`/../web && pwd)
 
 # FixMyStreet uses compass
-
-NEWSTYLE="fixmystreet bromley fixmybarangay barnet"
+NEWSTYLE="fixmystreet bromley fixmybarangay barnet zurich default"
 NEWSTYLE_REGEX=${NEWSTYLE// /\\|}
 for site in $NEWSTYLE; do
     compass compile --output-style compressed $DIRECTORY/cobrands/$site

@@ -5,6 +5,8 @@
             <small>[% prettify_epoch( p.confirmed_local.epoch, 1 ) %]</small>
             [% IF p.is_fixed %]
                 <small>[% loc('(fixed)') %]</small>
+            [% ELSIF p.is_closed %]
+                <small>[% loc('(closed)') %]</small>
             [% END %]
         </li>
     [% END %]

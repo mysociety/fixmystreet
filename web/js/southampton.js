@@ -120,7 +120,11 @@ $(function(){
             $('#category_extra').hide('fast');
             var lighting_content =
                 '<div id="street_light_report" style="margin: 1em 0em 1em 6.5em">Please report Street light problems using the Southampton Street Lighting site at: <a href="http://www.lightsoninsouthampton.co.uk/Public/ReportFault.aspx">http://www.lightsoninsouthampton.co.uk/Public/ReportFault.aspx</a></div>';
-            $('#form_category_row').after(lighting_content);
+            if ( $('#form_category_row').count ) {
+                $('#form_category_row').after(lighting_content);
+            } else {
+                $('#form_category:parent').after(lighting_content);
+            }
         } else {
             $('#category_extra').hide('fast');
         }

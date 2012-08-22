@@ -1,6 +1,4 @@
 package FixMyStreet::Cobrand::Bromley;
-use mro 'c3';
-use parent 'FixMyStreet::Cobrand::FixMyStreet';
 use parent 'FixMyStreet::Cobrand::UKCouncils';
 
 use strict;
@@ -10,14 +8,11 @@ sub council_id { return 2482; }
 sub council_area { return 'Bromley'; }
 sub council_name { return 'Bromley Council'; }
 sub council_url { return 'bromley'; }
-sub all_reports_style { return 'detailed'; }
 
 sub base_url {
     return FixMyStreet->config('BASE_URL') if FixMyStreet->config('STAGING_SITE');
     return 'https://fix.bromley.gov.uk';
 }
-
-sub admin_base_url { '' }
 
 sub path_to_web_templates {
     my $self = shift;
@@ -27,22 +22,22 @@ sub path_to_web_templates {
     ];
 }
 
-sub site_title {
-    my ($self) = @_;
-    return "London Borough of Bromley - Report a problem in Bromley\x{2019}s streets or parks";
-}
-sub site_name {
-    return 'Bromley FixMyStreet';
-}
-
 sub disambiguate_location {
-    my $self = shift;
+    my $self    = shift;
+    my $string  = shift;
+
+    my $town = 'Bromley';
+    # Bing turns High St Bromley into Bromley High St which is in 
+    # Bromley by Bow.
+    if ( $string =~ /high\+st/i ) {
+        $town .= ', BR1';
+    }
     return {
         %{ $self->SUPER::disambiguate_location() },
-        town => 'Bromley',
+        town => $town,
         centre => '51.366836,0.040623',
         span   => '0.154963,0.24347',
-        bounds => [ '51.289355,-0.081112', '51.444318,0.162358' ],
+        bounds => [ 51.289355, -0.081112, 51.444318, 0.162358 ],
     };
 }
 
@@ -90,6 +85,21 @@ sub contact_email {
     return $self->next::method();
 }
 sub contact_name { 'Bromley Council (do not reply)'; }
+
+sub reports_per_page { return 20; }
+
+sub tweak_all_reports_map {
+    my $self = shift;
+    my $c = shift;
+
+    if ( !$c->stash->{ward} ) {
+        $c->stash->{map}->{longitude} = 0.040622967881348;
+        $c->stash->{map}->{latitude} = 51.36690161822;
+        $c->stash->{map}->{any_zoom} = 0;
+        $c->stash->{map}->{zoom} = 11;
+    }
+}
+
 
 1;
 

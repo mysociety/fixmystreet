@@ -1,39 +1,52 @@
-[% 
+[% extra_css = BLOCK %]
+	    <link rel="stylesheet" href="[% version('/cobrands/fixmystreet/dashboard.css') %]">
+[% END %]
+
+[%
     INCLUDE 'header.html'
         title = loc('Dashboard')
         robots = 'noindex, nofollow'
         bodyclass = 'fullwidthpage'
 %]
 
-<style>
-    th[scope=row] { text-align: left; }
-    tr.subtotal { background-color: #eee; }
-    #overview tr:nth-child(2) { background-color: #fee; }
-    select { width: auto; }
-</style>
-
 <form>
 
-<p>Ward: <select name="ward"><option value=''>All</option>
-    [% FOR w IN children.values.sort('name') %]
-        <option value="[% w.id %]"[% ' selected' IF w.id == ward %]>[% w.name %]</option>
-    [% END %]
-</select>
+<hgroup>
+    <h2>Reports, Statistics and Actions for</h2>
+    <h1>[% council.name %]</h1>
+</hgroup>
 
-<p>Report category: <select name="category"><option value=''>All</option>
-    [% FOR cat_op IN category_options %]
-        <option value='[% cat_op | html %]'[% ' selected' IF category == cat_op %]>[% cat_op | html %]</option>
-    [% END %]
-    </select>
+<div class="filters">
+    <p>
+        <label for="ward">Ward:</label>
+        <select name="ward"><option value=''>All</option>
+            [% FOR w IN children.values.sort('name') %]
+                <option value="[% w.id %]"[% ' selected' IF w.id == ward %]>[% w.name %]</option>
+            [% END %]
+        </select>
+    </p>
 
-<p><input type="submit" value="Look up">
+    <p>
+        <label for="category">Report category:</label>
+        <select name="category"><option value=''>All</option>
+            [% FOR cat_op IN category_options %]
+                <option value='[% cat_op | html %]'[% ' selected' IF category == cat_op %]>[% cat_op | html %]</option>
+            [% END %]
+        </select>
+    </p>
 
-<h2>Summary Statistics for [% council.name %]</h2>
+    <p>
+        <input type="submit" value="Look up">
+    </p>
+
+    <br clear="all" />
+</div>
+
 
 <table width="100%" id="overview">
     <tr>
-        <td>&nbsp;</td>
-        <th scope="col">WTD</th>
+        <th>&nbsp;</th>
+        <th scope="col"><abbr title="Week To Date">WTD</abbr></th>
         <th scope="col">Last 7 days</th>
         <th scope="col">Last 4 weeks</th>
         <th scope="col">YTD</th>
@@ -147,6 +160,6 @@
 
 [% BLOCK list %]
 [% FOR p IN list %]
-<li><a href="/report/[% p.id %]">[% p.title | html %]</a></li>
+<li><a href="/report/[% p.id %]">[% p.title | html %]</a> <date>[% p.confirmed.dmy('/') %]</date></li>
 [% END %]
 [% END %]

@@ -50,7 +50,7 @@ sub index : Path : Args(0) {
 
     $c->forward('check_page_allowed');
 
-    my ( $sql_restriction, $id, $site_restriction ) = $c->cobrand->site_restriction();
+    my $site_restriction = $c->cobrand->site_restriction();
 
     my $problems = $c->cobrand->problems->summary_count;
 
@@ -122,7 +122,7 @@ sub timeline : Path( 'timeline' ) : Args(0) {
 
     $c->forward('check_page_allowed');
 
-    my ( $sql_restriction, $id, $site_restriction ) = $c->cobrand->site_restriction();
+    my $site_restriction = $c->cobrand->site_restriction();
     my %time;
 
     $c->model('DB')->schema->storage->sql_maker->quote_char( '"' );
@@ -221,10 +221,10 @@ sub council_list : Path('council_list') : Args(0) {
     $c->stash->{edit_activity} = $edit_activity;
 
     # Not London, as treated separately
-    my @area_types = $c->cobrand->moniker eq 'emptyhomes'
+    my $area_types = $c->cobrand->moniker eq 'emptyhomes'
         ? $c->cobrand->area_types
-        : grep { $_ ne 'LBO' } $c->cobrand->area_types;
-    my $areas = mySociety::MaPit::call('areas', \@area_types);
+        : [ grep { $_ ne 'LBO' } @{ $c->cobrand->area_types } ];
+    my $areas = mySociety::MaPit::call('areas', $area_types);
 
     my @councils_ids = sort { strcoll($areas->{$a}->{name}, $areas->{$b}->{name}) } keys %$areas;
     @councils_ids = $c->cobrand->filter_all_council_ids_list( @councils_ids );
@@ -472,7 +472,7 @@ sub search_reports : Path('search_reports') {
     if (my $search = $c->req->param('search')) {
         $c->stash->{searched} = 1;
 
-        my ( $site_res_sql, $site_key, $site_restriction ) = $c->cobrand->site_restriction;
+        my $site_restriction = $c->cobrand->site_restriction;
 
         my $search_n = 0;
         $search_n = int($search) if $search =~ /^\d+$/;
@@ -532,13 +532,11 @@ sub search_reports : Path('search_reports') {
         if (is_valid_email($search)) {
             $query = [
                 'user.email' => { ilike => $like_search },
-                %{ $site_restriction },
             ];
         } elsif ($search =~ /^id:(\d+)$/) {
             $query = [
                 'me.id' => int($1),
-                'problem.id' => int($1),
-                %{ $site_restriction },
+                'me.problem_id' => int($1),
             ];
         } elsif ($search =~ /^area:(\d+)$/) {
             $query = [];
@@ -550,13 +548,13 @@ sub search_reports : Path('search_reports') {
                 'me.name' => { ilike => $like_search },
                 text => { ilike => $like_search },
                 'me.cobrand_data' => { ilike => $like_search },
-                %{ $site_restriction },
             ];
         }
 
         if (@$query) {
             my $updates = $c->model('DB::Comment')->search(
                 {
+                    %{ $site_restriction },
                     -or => $query,
                 },
                 {
@@ -576,7 +574,7 @@ sub search_reports : Path('search_reports') {
 sub report_edit : Path('report_edit') : Args(1) {
     my ( $self, $c, $id ) = @_;
 
-    my ( $site_res_sql, $site_key, $site_restriction ) = $c->cobrand->site_restriction;
+    my $site_restriction = $c->cobrand->site_restriction;
 
     my $problem = $c->cobrand->problems->search(
         {
@@ -737,8 +735,7 @@ sub search_users: Path('search_users') : Args(0) {
 sub update_edit : Path('update_edit') : Args(1) {
     my ( $self, $c, $id ) = @_;
 
-    my ( $site_res_sql, $site_key, $site_restriction ) =
-      $c->cobrand->site_restriction;
+    my $site_restriction = $c->cobrand->site_restriction;
     my $update = $c->model('DB::Comment')->search(
         {
             id => $id,
@@ -1258,8 +1255,7 @@ sub check_page_allowed : Private {
 sub set_up_council_details : Private {
     my ($self, $c ) = @_;
 
-    my @area_types = $c->cobrand->area_types;
-    my $areas = mySociety::MaPit::call('areas', \@area_types);
+    my $areas = mySociety::MaPit::call('areas', $c->cobrand->area_types);
 
     my @councils_ids = sort { strcoll($areas->{$a}->{name}, $areas->{$b}->{name}) } keys %$areas;
     @councils_ids = $c->cobrand->filter_all_council_ids_list( @councils_ids );

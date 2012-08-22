@@ -1,9 +1,13 @@
 [% FILTER collapse %]
 [% IF category_options.size %]
+    [% IF category;
+        category = category | lower;
+       END; %]
     <label for='form_category'>[% category_label | html %]</label>
     <select name='category' id='form_category'[% ' onchange="form_category_onchange()"' IF category_extras.size %]>
         [% FOREACH cat_op IN category_options %]
-        <option value='[% cat_op | html %]'[% ' selected' IF report.category == cat_op %]>[% cat_op | html %]</option>
+        [% cat_op_lc = cat_op | lower %]
+        <option value='[% cat_op | html %]'[% ' selected' IF report.category == cat_op || category == cat_op_lc %]>[% cat_op | html %]</option>
         [% END %]
     </select>
 [% END %]

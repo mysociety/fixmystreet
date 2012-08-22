@@ -115,8 +115,6 @@ sub format_problem_for_display : Private {
 
     my $problem = $c->stash->{problem};
 
-    $c->stash->{banner} = $c->cobrand->generate_problem_banner($problem);
-
     ( $c->stash->{short_latitude}, $c->stash->{short_longitude} ) =
       map { Utils::truncate_coordinate($_) }
       ( $problem->latitude, $problem->longitude );
@@ -125,7 +123,7 @@ sub format_problem_for_display : Private {
         $c->stash->{add_alert} = 1;
     }
 
-    $c->stash->{extra_name_info} = $problem->council eq '2482' ? 1 : 0;
+    $c->stash->{extra_name_info} = $problem->council && $problem->council eq '2482' ? 1 : 0;
 
     $c->forward('generate_map_tags');
 

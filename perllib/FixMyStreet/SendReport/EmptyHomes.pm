@@ -6,9 +6,7 @@ use namespace::autoclean;
 BEGIN { extends 'FixMyStreet::SendReport::Email'; }
 
 sub build_recipient_list {
-    my $self = shift;
-    my $row = shift;
-    my $areas_info = shift;
+    my ( $self, $row, $h ) = @_;
     my %recips;
 
     my $all_confirmed = 1;
@@ -21,9 +19,6 @@ sub build_recipient_list {
 
         my ($council_email, $confirmed, $note) = ( $contact->email, $contact->confirmed, $contact->note );
 
-        $council_email = essex_contact($row->latitude, $row->longitude) if $council == 2225;
-        $council_email = oxfordshire_contact($row->latitude, $row->longitude) if $council == 2237 && $council_email eq 'SPECIAL';
-
         unless ($confirmed) {
             $all_confirmed = 0;
             #$note = 'Council ' . $row->council . ' deleted'
@@ -33,10 +28,10 @@ sub build_recipient_list {
             #$note{$council_email}{$row->category} = $note;
         }
 
-        push @{ $self->to }, [ $council_email, $self->councils->{ $council } ];
+        push @{ $self->to }, [ $council_email, $self->councils->{ $council }->{name} ];
         $recips{$council_email} = 1;
 
-        my $country = $areas_info->{$council}->{country};
+        my $country = $self->councils->{$council}->{country};
         if ($country eq 'W') {
             $recips{ 'shelter@' . mySociety::Config::get('EMAIL_DOMAIN') } = 1;
         } else {
@@ -46,6 +41,11 @@ sub build_recipient_list {
 
     return () unless $all_confirmed;
     return keys %recips;
+}
+
+sub get_template {
+    my ( $self, $row ) = @_;
+    return Utils::read_file( FixMyStreet->path_to( "templates", "email", "emptyhomes", $row->lang, "submit.txt" )->stringify );
 }
 
 1;

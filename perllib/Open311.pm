@@ -23,6 +23,7 @@ has error => ( is => 'rw', 'isa' => 'Str', default => '' );
 has always_send_latlong => ( is => 'ro', isa => 'Bool', default => 1 );
 has send_notpinpointed => ( is => 'ro', isa => 'Bool', default => 0 );
 has basic_description => ( is => 'ro', isa => 'Bool', default => 0 );
+has use_service_as_deviceid => ( is => 'ro', isa => 'Bool', default => 0 );
 
 before [
     qw/get_service_list get_service_meta_info get_service_requests get_service_request_updates
@@ -93,7 +94,7 @@ sub _populate_service_request_params {
         );
     }
 
-    my ( $firstname, $lastname ) = ( $problem->user->name =~ /(\w+)\s+(.+)/ );
+    my ( $firstname, $lastname ) = ( $problem->user->name =~ /(\w+)\.?\s+(.+)/ );
 
     my $params = {
         email => $problem->user->email,
@@ -128,6 +129,10 @@ sub _populate_service_request_params {
 
     if ( $extra->{image_url} ) {
         $params->{media_url} = $extra->{image_url};
+    }
+
+    if ( $self->use_service_as_deviceid && $problem->service ) {
+        $params->{deviceid} = $problem->service;
     }
 
     if ( $problem->extra ) {
@@ -263,7 +268,7 @@ sub _populate_service_request_update_params {
     my $comment = shift;
 
     my $name = $comment->name || $comment->user->name;
-    my ( $firstname, $lastname ) = ( $name =~ /(\w+)\s+(.+)/ );
+    my ( $firstname, $lastname ) = ( $name =~ /(\w+)\.?\s+(.+)/ );
 
     my $params = {
         update_id_ext => $comment->id,
@@ -280,7 +285,7 @@ sub _populate_service_request_update_params {
 
     if ( $comment->photo ) {
         my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($comment->cobrand)->new();
-        my $email_base_url = $cobrand->base_url_for_emails($comment->cobrand_data);
+        my $email_base_url = $cobrand->base_url($comment->cobrand_data);
         my $url = $email_base_url . '/photo/c/' . $comment->id . '.full.jpeg';
         $params->{media_url} = $url;
     }

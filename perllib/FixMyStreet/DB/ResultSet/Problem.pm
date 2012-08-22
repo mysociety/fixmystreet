@@ -14,13 +14,11 @@ use mySociety::MaPit;
 use FixMyStreet::App;
 use FixMyStreet::SendReport;
 
-my $site_restriction;
 my $site_key;
 
 sub set_restriction {
-    my ( $rs, $sql, $key, $restriction ) = @_;
+    my ( $rs, $key ) = @_;
     $site_key = $key;
-    $site_restriction = $restriction;
 }
 
 # Front page statistics
@@ -252,13 +250,13 @@ sub send_reports {
         }
 
         # Template variables for the email
-        my $email_base_url = $cobrand->base_url_for_emails($row->cobrand_data);
+        my $email_base_url = $cobrand->base_url_for_report($row);
         my %h = map { $_ => $row->$_ } qw/id title detail name category latitude longitude used_map/;
         map { $h{$_} = $row->user->$_ } qw/email phone/;
         $h{confirmed} = DateTime::Format::Pg->format_datetime( $row->confirmed->truncate (to => 'second' ) );
 
         $h{query} = $row->postcode;
-        $h{url} = $email_base_url . '/report/' . $row->id;
+        $h{url} = $email_base_url . $row->url;
         $h{phone_line} = $h{phone} ? _('Phone:') . " $h{phone}\n\n" : '';
         if ($row->photo) {
             $h{has_photo} = _("This web page also contains a photo of the problem, provided by the user.") . "\n\n";
@@ -289,16 +287,14 @@ sub send_reports {
         }
 
         my %reporters = ();
-        my (@to, @recips, $template, $areas_info, $sender_count );
+        my ( $sender_count );
         if ($site eq 'emptyhomes') {
 
             my $council = $row->council;
-            $areas_info = mySociety::MaPit::call('areas', $council);
-            my $name = $areas_info->{$council}->{name};
+            my $areas_info = mySociety::MaPit::call('areas', $council);
             my $sender = "FixMyStreet::SendReport::EmptyHomes";
             $reporters{ $sender } = $sender->new() unless $reporters{$sender};
-            $reporters{ $sender }->add_council( $council, $name );
-            $template = Utils::read_file("$FindBin::Bin/../templates/email/emptyhomes/" . $row->lang . "/submit.txt");
+            $reporters{ $sender }->add_council( $council, $areas_info->{$council} );
 
         } else {
 
@@ -306,7 +302,7 @@ sub send_reports {
             my @all_councils = split /,|\|/, $row->council;
             my ($councils, $missing) = $row->council =~ /^([\d,]+)(?:\|([\d,]+))?/;
             my @councils = split(/,/, $councils);
-            $areas_info = mySociety::MaPit::call('areas', \@all_councils);
+            my $areas_info = mySociety::MaPit::call('areas', \@all_councils);
             my @dear;
 
             foreach my $council (@councils) {
@@ -326,16 +322,9 @@ sub send_reports {
                         $reporters{ $sender }->skipped;
                 } else {
                     push @dear, $name;
-                    $reporters{ $sender }->add_council( $council, $name );
+                    $reporters{ $sender }->add_council( $council, $areas_info->{$council} );
                 }
             }
-
-            $template = 'submit.txt';
-            $template = 'submit-brent.txt' if $row->council eq 2488 || $row->council eq 2237;
-            my $template_path = FixMyStreet->path_to( "templates", "email", $cobrand->moniker, $template )->stringify;
-            $template_path = FixMyStreet->path_to( "templates", "email", "default", $template )->stringify
-                unless -e $template_path;
-            $template = Utils::read_file( $template_path );
 
             if ($h{category} eq _('Other')) {
                 $h{category_footer} = _('this type of local problem');
@@ -374,9 +363,10 @@ sub send_reports {
             # on a staging server send emails to ourselves rather than the councils
             my @testing_councils = split( '\|', mySociety::Config::get('TESTING_COUNCILS') );
             unless ( grep { $row->council eq $_ } @testing_councils ) {
-                %reporters = (
-                    'FixMyStreet::SendReport::Email' => $reporters{ 'FixMyStreet::SendReport::Email' } || FixMyStreet::SendReport::Email->new()
-                );
+                %reporters = map { $_ => $reporters{$_} } grep { /FixMyStreet::SendReport::(Email|NI)/ } keys %reporters;
+                unless (%reporters) {
+                    %reporters = ( 'FixMyStreet::SendReport::Email' => FixMyStreet::SendReport::Email->new() );
+                }
             }
         }
 
@@ -384,9 +374,18 @@ sub send_reports {
         my $result = -1;
 
         for my $sender ( keys %reporters ) {
-            $result *= $reporters{ $sender }->send(
-                $row, \%h, \@to, $template, \@recips, $nomail, $areas_info
-            );
+            $result *= $reporters{ $sender }->send( $row, \%h );
+            if ( $reporters{ $sender }->unconfirmed_counts) {
+                foreach my $e (keys %{ $reporters{ $sender }->unconfirmed_counts } ) {
+                    foreach my $c (keys %{ $reporters{ $sender }->unconfirmed_counts->{$e} }) {
+                        $notgot{$e}{$c} += $reporters{ $sender }->unconfirmed_counts->{$e}{$c};
+                    }
+                }
+                %note = (
+                    %note,
+                    %{ $reporters{ $sender }->unconfirmed_notes }
+                );
+            }
         }
 
         if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
@@ -409,7 +408,7 @@ sub send_reports {
         print "Council email addresses that need checking:\n" if keys %notgot;
         foreach my $e (keys %notgot) {
             foreach my $c (keys %{$notgot{$e}}) {
-                print $notgot{$e}{$c} . " problem, to $e category $c (" . $note{$e}{$c}. ")\n";
+                print "    " . $notgot{$e}{$c} . " problem, to $e category $c (" . $note{$e}{$c}. ")\n";
             }
         }
         if (keys %sending_skipped_by_method) {

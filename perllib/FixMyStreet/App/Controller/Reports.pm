@@ -34,8 +34,8 @@ sub index : Path : Args(0) {
     # Fetch all areas of the types we're interested in
     my $areas_info;
     eval {
-        my @area_types = $c->cobrand->area_types;
-        $areas_info = mySociety::MaPit::call('areas', \@area_types,
+        my $area_types = $c->cobrand->area_types;
+        $areas_info = mySociety::MaPit::call('areas', $area_types,
             min_generation => $c->cobrand->area_min_generation
         );
     };
@@ -57,6 +57,7 @@ sub index : Path : Args(0) {
 
     $c->stash->{areas_info} = $areas_info;
     my @keys = sort { strcoll($areas_info->{$a}{name}, $areas_info->{$b}{name}) } keys %$areas_info;
+    @keys = $c->cobrand->filter_all_council_ids_list( @keys );
     $c->stash->{areas_info_sorted} = [ map { $areas_info->{$_} } @keys ];
 
     eval {
@@ -68,8 +69,11 @@ sub index : Path : Args(0) {
         $c->stash->{open} = $j->{open};
     };
     if ($@) {
-        $c->stash->{message} = _("There was a problem showing the All Reports page. Please try again later.") . ' ' .
-            sprintf(_('The error was: %s'), $@);
+        $c->stash->{message} = _("There was a problem showing the All Reports page. Please try again later.");
+        if ($c->config->{STAGING_SITE}) {
+            $c->stash->{message} .= '</p><p>Perhaps the bin/update-all-reports script needs running.</p><p>'
+                . sprintf(_('The error was: %s'), $@);
+        }
         $c->stash->{template} = 'errors/generic.html';
         return;
     }
@@ -125,6 +129,8 @@ sub ward : Path : Args(2) {
         pins      => $pins,
         any_zoom  => 1,
     );
+
+    $c->cobrand->tweak_all_reports_map( $c );
 
     # List of wards
     unless ($c->stash->{ward}) {
@@ -211,13 +217,6 @@ sub council_check : Private {
     $q_council =~ s/\+/ /g;
     $q_council =~ s/\.html//;
 
-    # Manual misspelling redirect
-    if ($q_council =~ /^rhondda cynon taff$/i) {
-        my $url = $c->uri_for( '/reports/rhondda+cynon+taf' );
-        $c->res->redirect( $url );
-        $c->detach();
-    }
-
     # Check cobrand specific incantations - e.g. ONS codes for UK,
     # Oslo/ kommunes sharing a name in Norway
     return if $c->cobrand->reports_council_check( $c, $q_council );
@@ -232,9 +231,9 @@ sub council_check : Private {
     }
 
     # We must now have a string to check
-    my @area_types = $c->cobrand->area_types;
+    my $area_types = $c->cobrand->area_types;
     my $areas = mySociety::MaPit::call( 'areas', $q_council,
-        type => \@area_types,
+        type => $area_types,
         min_generation => $c->cobrand->area_min_generation
     );
     if (keys %$areas == 1) {
@@ -351,7 +350,7 @@ sub load_and_group_problems : Private {
                 { photo    => 'photo is not null' },
             ],
             order_by => { -desc => 'lastupdate' },
-            rows => 100,
+            rows => $c->cobrand->reports_per_page,
         }
     )->page( $page );
     $c->stash->{pager} = $problems->pager;

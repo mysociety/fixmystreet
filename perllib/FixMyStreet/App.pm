@@ -153,17 +153,16 @@ sub setup_request {
     my $cobrand = $c->cobrand;
 
     # append the cobrand templates to the include path
-    $c->stash->{additional_template_paths} = $cobrand->path_to_web_templates
-      unless $cobrand->is_default;
+    $c->stash->{additional_template_paths} = $cobrand->path_to_web_templates;
 
     # work out which language to use
     my $lang_override = $c->get_override('lang');
     my $host          = $c->req->uri->host;
     my $lang =
         $lang_override ? $lang_override
-      : $host =~ /^en\./ ? 'en-gb'
-      : $host =~ /cy/    ? 'cy'
-      :                    undef;
+      : $host =~ /^(..)\./ ? $1
+      : undef;
+    $lang = 'en-gb' if $lang && $lang eq 'en';
 
     # set the language and the translation file to use - store it on stash
     my $set_lang = $cobrand->set_lang_and_domain(
@@ -177,11 +176,17 @@ sub setup_request {
     $c->log->debug( sprintf "Set lang to '%s' and cobrand to '%s'",
         $set_lang, $cobrand->moniker );
 
-    $c->model('DB::Problem')->set_restriction( $cobrand->site_restriction() );
+    $c->model('DB::Problem')->set_restriction( $cobrand->site_key() );
 
     Memcached::set_namespace( FixMyStreet->config('FMS_DB_NAME') . ":" );
 
     FixMyStreet::Map::set_map_class( $cobrand->map_type || $c->req->param('map_override') );
+
+    unless ( FixMyStreet->config('MAPIT_URL') ) {
+        my $port = $c->req->uri->port;
+        $host = "$host:$port" unless $port == 80;
+        mySociety::MaPit::configure( "http://$host/fakemapit/" );
+    }
 
     return $c;
 }
@@ -387,11 +392,10 @@ and uses that.
 =cut
 
 sub uri_for_email {
-    my $c    = shift;
-    my @args = @_;
+    my $c = shift;
 
     my $normal_uri = $c->uri_for(@_)->absolute;
-    my $base       = $c->cobrand->base_url_with_lang( 1 );
+    my $base       = $c->cobrand->base_url_with_lang;
 
     my $email_uri = $base . $normal_uri->path_query;
 
@@ -418,7 +422,7 @@ call), use this method.
 sub render_fragment {
     my ($c, $template, $vars) = @_;
     $vars->{additional_template_paths} = $c->cobrand->path_to_web_templates
-        if $vars && !$c->cobrand->is_default;
+        if $vars;
     $c->view('Web')->render($c, $template, $vars);
 }
 

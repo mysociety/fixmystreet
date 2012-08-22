@@ -11,14 +11,34 @@ use Carp;
 use mySociety::MaPit;
 use mySociety::PostcodeUtil;
 
+=head1 path_to_web_templates
+
+    $path = $cobrand->path_to_web_templates(  );
+
+Returns the path to the templates for this cobrand - by default
+"templates/web/$moniker" and "templates/web/fixmystreet"
+
+=cut
+
+sub path_to_web_templates {
+    my $self = shift;
+    my $paths = [];
+    push @$paths, FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify
+        unless $self->is_default;
+    push @$paths, FixMyStreet->path_to( 'templates/web/fixmystreet' )->stringify;
+    return $paths;
+}
+
 =head1 country
 
 Returns the country that this cobrand operates in, as an ISO3166-alpha2 code.
+Default is none. This is not really used for anything important (minor GB only
+things involving eastings/northings mostly).
 
 =cut
 
 sub country {
-    return 'GB';
+    return '';
 }
 
 =head1 problems_clause
@@ -44,13 +64,14 @@ sub problems {
 
 =head1 site_restriction
 
-Return a site restriction clause and a site key if the cobrand uses a subset of
-the FixMyStreet data. Parameter is any extra data the cobrand needs. Returns an
-empty string and site key 0 if the cobrand uses all the data.
+Return a site key and a hash of extra query parameters if the cobrand uses a
+subset of the FixMyStreet data. Parameter is any extra data the cobrand needs.
+Returns a site key of 0 and an empty hash if the cobrand uses all the data.
 
 =cut
 
-sub site_restriction { return ( "", 0, {} ) }
+sub site_restriction { return {}; }
+sub site_key { return 0; }
 
 =head2 restriction
 
@@ -64,31 +85,13 @@ sub restriction {
     return $self->moniker ? { cobrand => $self->moniker } : {};
 }
 
-=head2 base_url_for_emails
-
-Return the base url to use in links in emails for the cobranded version of the
-site, parameter is extra data.
-
-=cut
-
-sub base_url_for_emails {
-    my $self = shift;
-    return $self->base_url;
-}
-
 =head2 base_url_with_lang 
 
 =cut
 
 sub base_url_with_lang {
     my $self = shift;
-    my $email = shift;
-
-    if ($email) {
-        return $self->base_url_for_emails;
-    } else {
-        return $self->base_url;
-    }
+    return $self->base_url;
 }
 
 =head2 admin_base_url
@@ -97,15 +100,7 @@ Base URL for the admin interface.
 
 =cut
 
-sub admin_base_url { '' }
-
-=head2 writetothem_url
-
-URL for writetothem; parameter is COBRAND_DATA.
-
-=cut
-
-sub writetothem_url { 0 }
+sub admin_base_url { FixMyStreet->config('ADMIN_BASE_URL') || '' }
 
 =head2 base_url
 
@@ -113,7 +108,19 @@ Return the base url for the cobranded version of the site
 
 =cut
 
-sub base_url { mySociety::Config::get('BASE_URL') }
+sub base_url { FixMyStreet->config('BASE_URL') }
+
+=head2 base_url_for_report
+
+Return the base url for a report (might be different in a two-tier county, but
+most of the time will be same as base_url).
+
+=cut
+
+sub base_url_for_report {
+    my ( $self, $report ) = @_;
+    return $self->base_url;
+}
 
 =head2 base_host
 
@@ -129,21 +136,12 @@ sub base_host {
 
 =head2 enter_postcode_text
 
-Return the text that prompts the user to enter their postcode/place name.
-Parameter is QUERY
+Return override text that prompts the user to enter their postcode/place name.
+Can be specified in template.
 
 =cut
 
-sub enter_postcode_text { _('Enter a nearby street name and area') }
-
-=head2 all_reports_style
-
-Return the type of problem information to display on the all reports
-pages for councils. Can be either simple or detailed.
-
-=cut
-
-sub all_reports_style { return 'simple'; }
+sub enter_postcode_text { }
 
 =head2 set_lang_and_domain
 
@@ -155,13 +153,19 @@ Set the language and domain of the site based on the cobrand and host.
 
 sub set_lang_and_domain {
     my ( $self, $lang, $unicode, $dir ) = @_;
-    my $set_lang = mySociety::Locale::negotiate_language(
-        'en-gb,English,en_GB', $lang
-    );
-    mySociety::Locale::gettext_domain( 'FixMyStreet', $unicode, $dir );
+
+    my $languages = join('|', @{$self->languages});
+    my $lang_override = $self->language_override || $lang;
+    my $lang_domain = $self->language_domain || 'FixMyStreet';
+
+    my $set_lang = mySociety::Locale::negotiate_language( $languages, $lang_override );
+    mySociety::Locale::gettext_domain( $lang_domain, $unicode, $dir );
     mySociety::Locale::change();
     return $set_lang;
 }
+sub languages { FixMyStreet->config('LANGUAGES') || [ 'en-gb,English,en_GB' ] }
+sub language_domain { }
+sub language_override { }
 
 =head2 alert_list_options
 
@@ -242,17 +246,11 @@ sub front_stats_data {
 
 =head2 disambiguate_location
 
-Returns disambiguating information available
+Returns any disambiguating information available. Defaults to none.
 
 =cut 
 
-sub disambiguate_location {
-    return {
-        country => 'uk',
-        bing_culture => 'en-GB',
-        bing_country => 'United Kingdom'
-    };
-}
+sub disambiguate_location { FixMyStreet->config('GEOCODING_DISAMBIGUATION') or {}; }
 
 =head2 cobrand_data_for_generic_update
 
@@ -271,54 +269,6 @@ Return cobrand extra data for the problem
 =cut
 
 sub cobrand_data_for_generic_problem { '' }
-
-=head2 extra_problem_data
-
-Parameter is QUERY. Return a string of extra data to be stored with a problem
-
-=cut
-
-sub extra_problem_data { '' }
-
-=head2 extra_update_data
-
-Parameter is QUERY. Return a string of extra data to be stored with an update
-
-=cut 
-
-sub extra_update_data { '' }
-
-=head2 extra_alert_data
-
-Parameter is QUERY. Return a string of extra data to be stored with an alert
-
-=cut 
-
-sub extra_alert_data { '' }
-
-=head2 extra_data
-
-Given a QUERY, extract any extra data required by the cobrand
-
-=cut
-
-sub extra_data { '' }
-
-=head2 extra_problem_meta_text
-
-Returns any extra text to be displayed with a PROBLEM.
-
-=cut
-
-sub extra_problem_meta_text { '' }
-
-=head2 extra_update_meta_text
-
-Returns any extra text to be displayed with an UPDATE.
-
-=cut 
-
-sub extra_update_meta_text { '' }
 
 =head2 uri
 
@@ -352,24 +302,6 @@ Return any params to be added to responses
 
 sub header_params { return {} }
 
-=head2 site_title
-
-Return the title to be used in page heads.
-
-=cut
-
-sub site_title { 'FixMyStreet' }
-
-=head2 site_name
-
-Return short name for use in emails.
-
-=cut
-sub site_name {
-    my $self = shift;
-    $self->site_title;
-}
-
 =head2 map_type
 
 Return an override type of map if necessary.
@@ -379,6 +311,16 @@ sub map_type {
     my $self = shift;
     return 'OSM' if $self->{c}->req->uri->host =~ /^osm\./;
     return;
+}
+
+=head2 reports_per_page
+
+The number of reports to show per page on all reports page.
+
+=cut
+
+sub reports_per_page {
+    return FixMyStreet->config('ALL_REPORTS_PER_PAGE') || 100;
 }
 
 =head2 on_map_list_limit
@@ -405,15 +347,6 @@ Return a boolean indicating whether the cobrand allows photo uploads
 
 sub allow_photo_upload { return 1; }
 
-=head2 allow_crosssell_adverts
-
-Return a boolean indicating whether the cobrand allows the display of crosssell
-adverts
-
-=cut
-
-sub allow_crosssell_adverts { return 1; }
-
 =head2 allow_photo_display
 
 Return a boolean indicating whether the cobrand allows photo display
@@ -439,35 +372,6 @@ Given a QUERY, return LAT/LON and/or ERROR.
 
 sub geocode_postcode {
     my ( $self, $s ) = @_;
-
-    if ($s =~ /^\d+$/) {
-        return {
-            error => 'FixMyStreet is a UK-based website that currently works in England, Scotland, and Wales. Please enter either a postcode, or a Great British street name and area.'
-        };
-    } elsif (mySociety::PostcodeUtil::is_valid_postcode($s)) {
-        my $location = mySociety::MaPit::call('postcode', $s);
-        if ($location->{error}) {
-            return {
-                error => $location->{code} =~ /^4/
-                    ? _('That postcode was not recognised, sorry.')
-                    : $location->{error}
-            };
-        }
-        my $island = $location->{coordsyst};
-        if (!$island) {
-            return {
-                error => _("Sorry, that appears to be a Crown dependency postcode, which we don't cover.")
-            };
-        } elsif ($island eq 'I') {
-            return {
-                error => _("We do not currently cover Northern Ireland, I'm afraid.")
-            };
-        }
-        return {
-            latitude  => $location->{wgs84_lat},
-            longitude => $location->{wgs84_lon},
-        };
-    }
     return {};
 }
 
@@ -499,17 +403,6 @@ sub find_closest {
         if ($j->{resourceSets}[0]{resources}[0]{name}) {
             $str .= sprintf(_("Nearest road to the pin placed on the map (automatically generated by Bing Maps): %s"),
                 $j->{resourceSets}[0]{resources}[0]{name}) . "\n\n";
-        }
-    }
-
-    # Get nearest postcode from Matthew's random gazetteer (put in MaPit? Or elsewhere?)
-    my $url = "http://gazetteer.dracos.vm.bytemark.co.uk/point/$latitude,$longitude.json";
-    my $j = LWP::Simple::get($url);
-    if ($j) {
-        $j = JSON->new->utf8->allow_nonref->decode($j);
-        if ($j->{postcode}) {
-            $str .= sprintf(_("Nearest postcode to the pin placed on the map (automatically generated): %s (%sm away)"),
-                $j->{postcode}[0], $j->{postcode}[1]) . "\n\n";
         }
     }
 
@@ -581,14 +474,6 @@ COUNCILS pass any extra checks. CONTEXT is where we are on the site.
 
 sub council_check { return ( 1, '' ); }
 
-=head2 feed_xsl
-
-Return an XSL to be used in rendering feeds
-
-=cut
-
-sub feed_xsl { '/xsl.xsl' }
-
 =head2 all_councils_report
 
 Return a boolean indicating whether the cobrand displays a report of all
@@ -636,7 +521,8 @@ The MaPit types this site handles
 
 =cut
 
-sub area_types          { qw(ZZZ) }
+sub area_types          { FixMyStreet->config('MAPIT_TYPES') || [ 'ZZZ' ] }
+sub area_types_children { FixMyStreet->config('MAPIT_TYPES_CHILDREN') || [] }
 sub area_min_generation { '' }
 
 =head2 contact_name, contact_email
@@ -646,42 +532,8 @@ used in emails).
 
 =cut
 
-sub contact_name  { $_[0]->get_cobrand_conf('CONTACT_NAME') }
-sub contact_email { $_[0]->get_cobrand_conf('CONTACT_EMAIL') }
-
-=head2 get_cobrand_conf COBRAND KEY
-
-Get the value for KEY from the config file for COBRAND
-
-=cut
-
-sub get_cobrand_conf {
-    my ( $self, $key ) = @_;
-    my $value           = undef;
-    my $cobrand_moniker = $self->moniker;
-
-    my $cobrand_config_file =
-      FixMyStreet->path_to("conf/cobrands/$cobrand_moniker/general");
-    my $normal_config_file = FixMyStreet->path_to('conf/general');
-
-    if ( -e $cobrand_config_file ) {
-
-        # FIXME - don't rely on the config file name - should
-        # change mySociety::Config so that it can return values from a
-        # particular config file instead
-        mySociety::Config::set_file("$cobrand_config_file");
-        my $config_key = $key . "_" . uc($cobrand_moniker);
-        $value = mySociety::Config::get( $config_key, undef );
-        mySociety::Config::set_file("$normal_config_file");
-    }
-
-    # If we didn't find a value use one from normal config
-    if ( !defined($value) ) {
-        $value = mySociety::Config::get($key);
-    }
-
-    return $value;
-}
+sub contact_name  { FixMyStreet->config('CONTACT_NAME') }
+sub contact_email { FixMyStreet->config('CONTACT_EMAIL') }
 
 =item email_host
 
@@ -702,16 +554,6 @@ Remove councils whose reports go to another council
 sub remove_redundant_councils {
   my $self = shift;
   my $all_councils = shift;
-
-  # Ipswich & St Edmundsbury are responsible for everything in their
-  # areas, not Suffolk
-  delete $all_councils->{2241}
-    if $all_councils->{2446}    #
-        || $all_councils->{2443};
-
-  # Norwich is responsible for everything in its areas, not Norfolk
-  delete $all_councils->{2233}    #
-    if $all_councils->{2391};
 }
 
 =item filter_all_council_ids_list
@@ -733,22 +575,20 @@ Remove extra information from council names for tidy URIs
 =cut
 
 sub short_name {
-  my $self = shift;
-  my ($area, $info) = @_;
-  # Special case Durham as it's the only place with two councils of the same name
-  return 'Durham+County' if $area->{name} eq 'Durham County Council';
-  return 'Durham+City' if $area->{name} eq 'Durham City Council';
-
-  my $name = $area->{name};
-  $name =~ s/ (Borough|City|District|County) Council$//;
-  $name =~ s/ Council$//;
-  $name =~ s/ & / and /;
-  $name =~ s{/}{_}g;
-  $name = URI::Escape::uri_escape_utf8($name);
-  $name =~ s/%20/+/g;
-  return $name;
-
+    my $self = shift;
+    my ($area, $info) = @_;
+    my $name = $area->{name};
+    $name = URI::Escape::uri_escape_utf8($name);
+    $name =~ s/%20/+/g;
+    return $name;
 }
+
+=item is_council
+
+For UK sub-cobrands, to specify various alternations needed for them.
+
+=cut
+sub is_council { 0; }
 
 =item council_rss_alert_options
 
@@ -757,187 +597,34 @@ Generate a set of options for council rss alerts.
 =cut
 
 sub council_rss_alert_options {
-  my $self = shift;
-  my $all_councils = shift;
-  my $c            = shift;
+    my ( $self, $all_councils, $c ) = @_;
 
-  my %councils = map { $_ => 1 } $self->area_types();
-
-  my $num_councils = scalar keys %$all_councils;
-
-  my ( @options, @reported_to_options );
-  if ( $num_councils == 1 or $num_councils == 2 ) {
-    my ($council, $ward);
+    my ( @options, @reported_to_options );
     foreach (values %$all_councils) {
-        if ($councils{$_->{type}}) {
-            $council = $_;
-            $council->{short_name} = $self->short_name( $council );
-            ( $council->{id_name} = $council->{short_name} ) =~ tr/+/_/;
-        } else {
-            $ward = $_;
-            $ward->{short_name} = $self->short_name( $ward );
-            ( $ward->{id_name} = $ward->{short_name} ) =~ tr/+/_/;
-        }
-    }
-    $council->{name} = 'London Borough of Bromley'
-        if $council->{name} eq 'Bromley Council';
-
-    push @options,
-      {
-        type      => 'council',
-        id        => sprintf( 'council:%s:%s', $council->{id}, $council->{id_name} ),
-        text      => sprintf( _('Problems within %s'), $council->{name}),
-        rss_text  => sprintf( _('RSS feed of problems within %s'), $council->{name}),
-        uri       => $c->uri_for( '/rss/reports/' . $council->{short_name} ),
-      };
-    push @options,
-      {
-        type     => 'ward',
-        id       => sprintf( 'ward:%s:%s:%s:%s', $council->{id}, $ward->{id}, $council->{id_name}, $ward->{id_name} ),
-        rss_text => sprintf( _('RSS feed of problems within %s ward'), $ward->{name}),
-        text     => sprintf( _('Problems within %s ward'), $ward->{name}),
-        uri      => $c->uri_for( '/rss/reports/' . $council->{short_name} . '/' . $ward->{short_name} ),
-      } if $ward;
-    } elsif ( $num_councils == 4 ) {
-#        # Two-tier council
-      my ($county, $district, $c_ward, $d_ward);
-      foreach (values %$all_councils) {
-          $_->{short_name} = $self->short_name( $_ );
-          ( $_->{id_name} = $_->{short_name} ) =~ tr/+/_/;
-         if ($_->{type} eq 'CTY') {
-             $county = $_;
-         } elsif ($_->{type} eq 'DIS') {
-             $district = $_;
-         } elsif ($_->{type} eq 'CED') {
-             $c_ward = $_;
-         } elsif ($_->{type} eq 'DIW') {
-             $d_ward = $_;
-         }
-      }
-      my $district_name = $district->{name};
-      my $d_ward_name = $d_ward->{name};
-      my $county_name = $county->{name};
-      my $c_ward_name = $c_ward->{name};
-
-      push @options,
-        {
-          type  => 'area',
-          id    => sprintf( 'area:%s:%s', $district->{id}, $district->{id_name} ),
-          text  => $district_name,
-          rss_text => sprintf( _('RSS feed for %s'), $district_name ),
-          uri => $c->uri_for( '/rss/area/' . $district->{short_name}  )
-        },
-        {
-          type      => 'area',
-          id        => sprintf( 'area:%s:%s:%s:%s', $district->{id}, $d_ward->{id}, $district->{id_name}, $d_ward->{id_name} ),
-          text      => sprintf( _('%s ward, %s'), $d_ward_name, $district_name ),
-          rss_text  => sprintf( _('RSS feed for %s ward, %s'), $d_ward_name, $district_name ),
-          uri       => $c->uri_for( '/rss/area/' . $district->{short_name} . '/' . $d_ward->{short_name} )
-        },
-        {
-          type  => 'area',
-          id    => sprintf( 'area:%s:%s', $county->{id}, $county->{id_name} ),
-          text  => $county_name,
-          rss_text => sprintf( _('RSS feed for %s'), $county_name ),
-          uri => $c->uri_for( '/rss/area/' . $county->{short_name}  )
-        },
-        {
-          type      => 'area',
-          id        => sprintf( 'area:%s:%s:%s:%s', $county->{id}, $c_ward->{id}, $county->{id_name}, $c_ward->{id_name} ),
-          text      => sprintf( _('%s ward, %s'), $c_ward_name, $county_name ),
-          rss_text  => sprintf( _('RSS feed for %s ward, %s'), $c_ward_name, $county_name ),
-          uri       => $c->uri_for( '/rss/area/' . $county->{short_name} . '/' . $c_ward->{short_name} )
+        $_->{short_name} = $self->short_name( $_ );
+        ( $_->{id_name} = $_->{short_name} ) =~ tr/+/_/;
+        push @options, {
+            type      => 'council',
+            id        => sprintf( 'council:%s:%s', $_->{id}, $_->{id_name} ),
+            text      => sprintf( _('Problems within %s'), $_->{name}),
+            rss_text  => sprintf( _('RSS feed of problems within %s'), $_->{name}),
+            uri       => $c->uri_for( '/rss/reports/' . $_->{short_name} ),
         };
-
-        push @reported_to_options,
-          {
-            type      => 'council',
-            id        => sprintf( 'council:%s:%s', $district->{id}, $district->{id_name} ),
-            text      => $district->{name},
-            rss_text  => sprintf( _('RSS feed of %s'), $district->{name}),
-            uri       => $c->uri_for( '/rss/reports/' . $district->{short_name} ),
-          },
-          {
-            type     => 'ward',
-            id       => sprintf( 'ward:%s:%s:%s:%s', $district->{id}, $d_ward->{id}, $district->{id_name}, $d_ward->{id_name} ),
-            rss_text => sprintf( _('RSS feed of %s, within %s ward'), $district->{name}, $d_ward->{name}),
-            text     => sprintf( _('%s, within %s ward'), $district->{name}, $d_ward->{name}),
-            uri      => $c->uri_for( '/rss/reports/' . $district->{short_name} . '/' . $d_ward->{short_name} ),
-          },
-          {
-            type      => 'council',
-            id        => sprintf( 'council:%s:%s', $county->{id}, $county->{id_name} ),
-            text      => $county->{name},
-            rss_text  => sprintf( _('RSS feed of %s'), $county->{name}),
-            uri       => $c->uri_for( '/rss/reports/' . $county->{short_name} ),
-          },
-          {
-            type     => 'ward',
-            id       => sprintf( 'ward:%s:%s:%s:%s', $county->{id}, $c_ward->{id}, $county->{id_name}, $c_ward->{id_name} ),
-            rss_text => sprintf( _('RSS feed of %s, within %s ward'), $county->{name}, $c_ward->{name}),
-            text     => sprintf( _('%s, within %s ward'), $county->{name}, $c_ward->{name}),
-            uri      => $c->uri_for( '/rss/reports/' . $county->{short_name} . '/' . $c_ward->{short_name} ),
-          };
-
-
-    } else {
-        throw Error::Simple('An area with three tiers of council? Impossible! '. join('|',keys %$all_councils));
     }
 
     return ( \@options, @reported_to_options ? \@reported_to_options : undef );
 }
 
-=head2 generate_problem_banner
+=head2 reports_council_check
 
-    my $banner = $c->cobrand->generate_problem_banner;
-
-    <p id="[% banner.id %]:>[% banner.text %]</p>
-
-Generate id and text for banner that appears at top of problem page.
+This function is called by the All Reports page, and lets you do some cobrand
+specific checking on the URL passed to try and match to a relevant area.
 
 =cut
 
-sub generate_problem_banner {
-    my ( $self, $problem ) = @_;
-
-    my $banner = {};
-    if ( $problem->is_open && time() - $problem->lastupdate_local->epoch > 8 * 7 * 24 * 60 * 60 )
-    {
-        $banner->{id}   = 'unknown';
-        $banner->{text} = _('This problem is old and of unknown status.');
-    }
-    if ($problem->is_fixed) {
-        $banner->{id} = 'fixed';
-        $banner->{text} = _('This problem has been fixed') . '.';
-    }
-    if ($problem->is_closed) {
-        $banner->{id} = 'closed';
-        $banner->{text} = _('This problem has been closed') . '.';
-    }
-
-    if ( grep { $problem->state eq $_ } ( 'investigating', 'in progress', 'planned' ) ) {
-        $banner->{id} = 'progress';
-        $banner->{text} = _('This problem is in progress') . '.';
-    }
-
-    return $banner;
-}
-
 sub reports_council_check {
     my ( $self, $c, $code ) = @_;
-
-    if ($code =~ /^(\d\d)([a-z]{2})?([a-z]{2})?$/i) {
-        my $area = mySociety::MaPit::call( 'area', uc $code );
-        $c->detach( 'redirect_index' ) if $area->{error}; # Given a bad/old ONS code
-        if (length($code) == 6) {
-            my $council = mySociety::MaPit::call( 'area', $area->{parent_area} );
-            $c->stash->{ward} = $area;
-            $c->stash->{council} = $council;
-        } else {
-            $c->stash->{council} = $area;
-        }
-        $c->detach( 'redirect_area' );
-    }
+    return 0;
 }
 
 =head2 default_photo_resize
@@ -960,7 +647,7 @@ sub get_report_stats { return 0; }
 sub get_council_sender { return 'Email' };
 
 sub example_places {
-    return [ 'B2 4QA', 'Tib St, Manchester' ];
+    return FixMyStreet->config('EXAMPLE_PLACES') || [ 'High Street', 'Main Street' ];
 }
 
 =head2 only_authed_can_create
@@ -995,6 +682,16 @@ sub pin_colour {
     return 'yellow' if $context eq 'around';
     return $p->is_fixed ? 'green' : 'red';
 }
+
+=head2 tweak_all_reports_map
+
+Used to tweak the display settings of the map on the all reports pages.
+
+Used in some cobrands to improve the intial display for Internet Explorer.
+
+=cut
+
+sub tweak_all_reports_map {}
 
 1;
 

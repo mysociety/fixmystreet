@@ -104,7 +104,7 @@ sub check_location : Private {
         eval { Utils::convert_latlon_to_en( $c->stash->{latitude}, $c->stash->{longitude} ); };
         if (my $error = $@) {
             mySociety::Locale::pop(); # We threw exception, so it won't have happened.
-            $error = _('That location does not appear to be in Britain; please try again.')
+            $error = _('That location does not appear to be in the UK; please try again.')
                 if $error =~ /of the area covered/;
             $c->stash->{location_error} = $error;
             return;

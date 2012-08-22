@@ -41,9 +41,3 @@ MAILTO=!!(*= $user *)!!@mysociety.org
 39 2 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/problems-filed-graph
 43 2 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/problem-creation-graph
 00 8 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/check-for-zombies !!(*= $user *)!!
-
-
-!!(* if ($vhost eq 'www.fixmystreet.com') { *)!!
-10 * * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/fixmystreet-virtualenv/bin/python /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/kasabi
-!!(* } *)!!
-

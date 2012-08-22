@@ -16,6 +16,7 @@ Modernizr.load({
 </script>
 [% END %]
 
+<<<<<<< HEAD
 [% pre_container_extra = BLOCK %]
 <div id="front-main">
     <div id="front-main-container">
@@ -49,9 +50,14 @@ Modernizr.load({
         </form>
     </div>
 </div>
-[% END %]
-
+=======
+[% pre_container_extra = PROCESS 'around/postcode_form.html' %]
 [% INCLUDE 'header.html', title = '', bodyclass = 'frontpage fullwidthpage' %]
+
+[% IF error %]
+    <p class="form-error">[% error %]</p>
+>>>>>>> origin/master
+[% END %]
 
 [% IF c.cobrand.moniker == 'bromley' %]
 <p>This is primarily for reporting physical problems that can be fixed
@@ -99,18 +105,9 @@ kinds of problems like missed bins use our
 
         <section class="full-width">
             <ul class="issue-list-a">
-            [% FOREACH p IN recent_photos %]
-                <li>
-                    <a href="/report/[% p.id %]">
-                        <div class="text">
-                            <h4>[% p.title | html %]</h4>
-                            <small>[% prettify_epoch( p.confirmed_local.epoch, 1 ) %]</small>
-                        </div>
-                        <div class="img">
-                            <img alt="[% p.title | html %]" title="[% p.title | html %]" height="60" width="90" src="/photo/[% p.id %].fp.jpeg">
-                        </div>
-                    </a>
-                </li>    
+            [% FOREACH problem IN recent_photos %]
+            [%  problem.photo = 1; # Definitely is
+                INCLUDE 'report/_item.html', no_fixed = 1 %]
             [% END %]
             </ul>
         </section>
