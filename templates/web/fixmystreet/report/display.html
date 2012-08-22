@@ -7,7 +7,7 @@
         title = problem_title
         rss = [ loc('Updates to this problem, FixMyStreet'), "/rss/$problem.id" ]
         robots = 'index, nofollow'
-        bodyclass = 'mappage'
+        bodyclass = 'mappage';
 
     allow_creation = !c.cobrand.only_authed_can_create || (c.user && c.user.from_council);
 %]
