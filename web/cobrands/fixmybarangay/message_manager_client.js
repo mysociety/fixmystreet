@@ -280,12 +280,16 @@ var message_manager = (function() {
 
     var assign_fms_id = function(msg_id, fms_id, options) {
         var check_li_exists = false;
+        var is_async = true;
         if (options) {
             if (typeof(options.callback) === 'function') {
                 callback = options.callback;
             }
             if (typeof(options.check_li_exists) !== undefined && options.check_li_exists !== undefined) {
                 check_li_exists = true; // MM dummy
+            }
+            if (typeof(options.is_async) !== undefined && options.is_async !== undefined) {
+                is_async = options.is_async;
             }
         }
         var $li = $('#' + _msg_prefix + msg_id);
@@ -301,6 +305,7 @@ var message_manager = (function() {
         }
         $li.addClass('msg-is-busy');
         $.ajax({
+            async:is_async,
             dataType:"json", 
             type:"post", 
             data: {fms_id: fms_id},
