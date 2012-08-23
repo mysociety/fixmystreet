@@ -95,6 +95,8 @@ __PACKAGE__->add_columns(
   "external_source",
   { data_type => "text", is_nullable => 1 },
   "external_source_id",
+  { data_type => "text", is_nullable => 1 },
+  "interest_count",
   { data_type => "integer", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
@@ -118,8 +120,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-07-12 11:05:48
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:sOVQRjsQJUtpzElZvuCp8Q
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-08-23 12:14:00
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:05LIWlb0CUWAR7bN5RAhOA
 
 # Add fake relationship to stored procedure table
 __PACKAGE__->has_one(

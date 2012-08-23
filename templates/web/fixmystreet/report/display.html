@@ -17,7 +17,15 @@
 </div>
 
 [% INCLUDE 'report/banner.html' %]
+
+[% IF c.cobrand.can_support_problems && c.user && c.user.from_council %]
+<p style="float: right">
+<a href="[% c.uri_for( '/report/support', problem.id ) %]">Support</a> ( [% problem.interest_count %] supports )
+</p>
+[% END %]
+
 [% INCLUDE 'report/_main.html' %]
+
 
 <div class="shadow-wrap">
     <ul id="key-tools">

@@ -53,5 +53,9 @@ sub areas_on_around {
     return [ 1, 2 ];
 }
 
+sub can_support_problems {
+    return 1;
+}
+
 1;
 

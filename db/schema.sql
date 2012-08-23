@@ -202,7 +202,10 @@ create table problem (
 
     -- record details about messages from external sources, eg. message manager
     external_source text,
-    external_source_id text
+    external_source_id text,
+
+    -- number of me toos
+    interest_count integer
 );
 create index problem_state_latitude_longitude_idx on problem(state, latitude, longitude);
 create index problem_user_id_idx on problem ( user_id );

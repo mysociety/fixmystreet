@@ -693,5 +693,7 @@ Used in some cobrands to improve the intial display for Internet Explorer.
 
 sub tweak_all_reports_map {}
 
+sub can_support_problems { return 0; }
+
 1;
 

@@ -56,6 +56,17 @@ sub display : Path('') : Args(1) {
     $c->forward( 'format_problem_for_display' );
 }
 
+sub support : Path('support') : Args(1) {
+    my ( $self, $c, $id ) = @_;
+
+    if ( $c->cobrand->can_support_problems && $c->user && $c->user->from_council ) {
+        $c->forward( 'load_problem_or_display_error', [ $id ] );
+        $c->stash->{problem}->interest_count( $c->stash->{problem}->interest_count + 1 );
+        $c->stash->{problem}->update;
+    }
+    $c->res->redirect( $c->uri_for( '', $id ) );
+}
+
 sub load_problem_or_display_error : Private {
     my ( $self, $c, $id ) = @_;
 
