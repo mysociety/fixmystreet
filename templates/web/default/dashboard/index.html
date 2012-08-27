@@ -17,7 +17,7 @@
 </hgroup>
 
 <div class="filters">
-    [% IF c.cobrand == 'fixmybarangay' %]
+    [% IF c.cobrand != 'fixmybarangay' %]
     <p>
         <label for="ward">Ward:</label>
         <select name="ward"><option value=''>All</option>
