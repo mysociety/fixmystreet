@@ -1,0 +1,11 @@
+[% IF c.cobrand.can_support_problems %]
+<p id="supporter"><small>
+    [% IF !problem.interest_count %][% text=loc('No supporters') %][% ELSIF problem.interest_count == 1 %][% text = loc('1 supporter') %][% ELSE %][% text = tprintf( loc('%d supporters' ), problem.interest_count ) %][% END %]
+    [% IF c.user && c.user.from_council %]<form action="[% c.uri_for( '/report/support' ) %]">
+        [% text %] <input type="hidden" name="id" value="[% problem.id %]"><input type="submit" class="green-btn" value="Add support">
+    </form>
+    [% ELSE %]
+        [% text %]
+    [% END %]
+</small></p>
+[% END %]

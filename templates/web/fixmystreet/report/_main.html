@@ -13,6 +13,7 @@
 	<br><small>[% loc('Not reported to council') %]</small>
 	[% END %]
 	</em></p>
+[% TRY %][% INCLUDE 'report/_support.html' %][% CATCH file %][% END %]
 
 	[% INCLUDE 'report/photo.html' object=problem center=1 %]
 

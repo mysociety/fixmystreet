@@ -18,12 +18,6 @@
 
 [% INCLUDE 'report/banner.html' %]
 
-[% IF c.cobrand.can_support_problems && c.user && c.user.from_council %]
-<p style="float: right">
-<a href="[% c.uri_for( '/report/support', problem.id ) %]">Support</a> ( [% IF !problem.interest_count %]No supporters[% ELSIF problem.interest_count == 1 %]1 supporter[% ELSE %][% problem.interest_count %] supporters[% END %] )
-</p>
-[% END %]
-
 [% INCLUDE 'report/_main.html' %]
 [% TRY %][% INCLUDE 'report/_message_manager.html' %][% CATCH file %][% END %]
 
