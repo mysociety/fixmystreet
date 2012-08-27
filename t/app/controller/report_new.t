@@ -1015,8 +1015,16 @@ SKIP: {
     $report->discard_changes;
     is $report->state, 'confirmed', "Report is now confirmed";
 
-    # Shouldn't be found, as it was a county problem
-    is $mech->get( '/report/' . $report->id )->code, 404, "report not found";
+    # County problems are redirected to the main site
+    $mech->get_ok( '/report/' . $report->id );
+    $mech->title_like(
+        qr/Test Report - Viewing a problem :: FixMyStreet/,
+        'county problems redirected to main FMS site'
+    );
+    $mech->content_lacks(
+        'Lichfield District',
+        'Not on Lichfield cobrand'
+    );
 
     # But should be on the main site
     $mech->host( 'www.fixmystreet.com' );
