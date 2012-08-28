@@ -970,6 +970,7 @@ SKIP: {
     $mech->log_out_ok;
 
     $mech->get_ok('/around');
+    $mech->content_contains( "Lichfield District Council FixMyStreet" );
     $mech->submit_form_ok( { with_fields => { pc => 'WS13 7RD' } }, "submit location" );
     $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
     $mech->submit_form_ok(
