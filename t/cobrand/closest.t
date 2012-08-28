@@ -54,7 +54,7 @@ ok $report, "created test report - $report_id";
 
 $report->geocode( undef );
 
-ok !$report->geocode, 'no gecode entry for report';
+ok !$report->geocode, 'no geocode entry for report';
 
 my $near = $c->find_closest( $report->latitude, $report->longitude, $report );
 
