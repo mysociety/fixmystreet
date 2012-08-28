@@ -1,3 +1,4 @@
+[% IF c.user && c.user.from_council %]
 
 <input type="button" class="green-btn" value="Show Messages" id="show_messages">
 <ul id="message_manager" class="issue-list-a tab" style="display: none">
@@ -91,3 +92,4 @@ $(document).ready(function() {
 });
 
 </script>
+[% END %]
