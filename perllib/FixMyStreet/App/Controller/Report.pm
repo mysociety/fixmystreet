@@ -68,8 +68,7 @@ sub support : Path('support') : Args(0) {
 
     if ( $id && $c->cobrand->can_support_problems && $c->user && $c->user->from_council ) {
         $c->forward( 'load_problem_or_display_error', [ $id ] );
-        $c->stash->{problem}->interest_count( $c->stash->{problem}->interest_count + 1 );
-        $c->stash->{problem}->update;
+        $c->stash->{problem}->update( { interest_count => \'interest_count +1' } );
     }
     $c->res->redirect( $uri );
 }
