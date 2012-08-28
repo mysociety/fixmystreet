@@ -3,9 +3,7 @@
 <h1>[% loc('Local RSS feeds and email alerts') %]</h1>
 
 <p>
-FixMyBarangay has a variety of RSS feeds and email alerts for local problems, including
-alerts for all problems within a particular ward, or all problems
-within a certain distance of a particular location.
+FixMyBarangay has a RSS feeds and email alerts for local problems.
 </p>
 
 [% IF location_error %]
@@ -14,17 +12,19 @@ within a certain distance of a particular location.
   [% INCLUDE 'errors.html' %]
 [% END %]
 
-<p>
-[% loc('To find out what local alerts we have for you, please enter your postcode or street name and area' ) %]
-</p>
-<form method="get" action="/alert/list" class="full-width">
-  <fieldset>
-    <div class="form-txt-submit-box">
-      <input type="text" name="pc" value="[% pc | html %]" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]">
-      <input class="green-btn" type="submit" value="[% loc('Go') %]">
-    </div>
-  </fieldset>
-</form>
+[% options = [ {
+        id => 'council:1:Luz',
+        text => 'Luz',
+        uri => '/rss/reports/Luz'
+    },
+    {
+        id => 'council:2:Basak_San_Nicolas',
+        text => 'Basak San Nicolas'
+        uri => '/rss/reports/Basak+San_Nicolas'
+    } ];
+%]
+
+<form id="alerts" name="alerts" method="post" action="/alert/subscribe">
 
 [% IF photos.size %]
 <div class="sticky-sidebar" id="alert_recent">
@@ -37,5 +37,9 @@ within a certain distance of a particular location.
   </aside>
 </div>
 [% END %]
+
+[% INCLUDE 'alert/_list.html' %]
+
+</form>
 
 [% INCLUDE 'footer.html' %]
