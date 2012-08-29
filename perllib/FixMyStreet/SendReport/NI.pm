@@ -23,7 +23,7 @@ sub build_recipient_list {
             $email = 'N/A' unless $email;
         }
 
-        my $name = $self->councils->{$council}->{name};
+        my $name = $self->councils->{$council}->{info}->{name};
         if ( $email =~ /^roads.([^@]*)\@drdni/ ) {
             $name = "Roads Service (\u$1)";
             $h->{councils_name} = $name;

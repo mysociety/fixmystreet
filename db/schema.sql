@@ -82,6 +82,12 @@ create table contacts (
 
     -- extra fields required for open311
     extra text
+
+    -- per contact endpoint configuration
+    endpoint     text,
+    jurisdiction text default '',
+    api_key      text default '',
+    send_method  text
 );
 create unique index contacts_area_id_category_idx on contacts(area_id, category);
 
@@ -445,5 +451,6 @@ create table open311conf (
     send_method  text,
     send_comments boolean not null default 'f',
     comment_user_id int references users(id),
-    suppress_alerts boolean not null default 'f'
+    suppress_alerts boolean not null default 'f',
+    can_be_devolved boolean not null default 'f'
 );

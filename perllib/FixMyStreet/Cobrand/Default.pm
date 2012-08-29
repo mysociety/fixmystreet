@@ -644,7 +644,34 @@ Get stats to display on the council reports page
 
 sub get_report_stats { return 0; }
 
-sub get_council_sender { return 'Email' };
+sub get_council_sender {
+    my ( $self, $area_id, $area_info, $category ) = @_;
+
+    my $send_method;
+
+    my $council_config = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $area_id } )->first;
+    $send_method = $council_config->send_method if $council_config;
+
+    if ( $council_config && $council_config->can_be_devolved ) {
+        # look up via category
+        my $config = FixMyStreet::App->model("DB::Contact")->search( { area_id => $area_id, category => $category } )->first;
+        if ( $config->send_method ) {
+            return { method => $config->send_method, config => $config };
+        } else {
+            return { method => $send_method, config => $council_config };
+        }
+    } elsif ( $send_method ) {
+        return { method => $send_method, config => $council_config };
+    }
+
+    return $self->_fallback_council_sender( $area_id, $area_info, $category );
+}
+
+sub _fallback_council_sender {
+    my ( $self, $area_id, $area_info, $category ) = @_;
+
+    return { method => 'Email' };
+};
 
 sub example_places {
     return FixMyStreet->config('EXAMPLE_PLACES') || [ 'High Street', 'Main Street' ];

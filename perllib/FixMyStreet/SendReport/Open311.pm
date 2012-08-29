@@ -28,7 +28,7 @@ sub send {
     my $result = -1;
 
     foreach my $council ( keys %{ $self->councils } ) {
-        my $conf = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $council, endpoint => { '!=', '' } } )->first;
+        my $conf = $self->councils->{$council}->{config};
 
         my $always_send_latlong = 1;
         my $send_notpinpointed  = 0;

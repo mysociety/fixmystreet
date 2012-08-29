@@ -36,13 +36,21 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 0 },
   "extra",
   { data_type => "text", is_nullable => 1 },
+  "endpoint",
+  { data_type => "text", is_nullable => 1 },
+  "jurisdiction",
+  { data_type => "text", default_value => "", is_nullable => 1 },
+  "api_key",
+  { data_type => "text", default_value => "", is_nullable => 1 },
+  "send_method",
+  { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("contacts_area_id_category_idx", ["area_id", "category"]);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-08 17:19:55
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:hyvU0bMWSFxEPAJT7wqM/Q
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-08-29 17:34:28
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:getDAgTeXkAYQTcxHWflmA
 
 __PACKAGE__->filter_column(
     extra => {

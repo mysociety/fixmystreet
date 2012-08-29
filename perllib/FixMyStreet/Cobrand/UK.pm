@@ -31,16 +31,8 @@ sub disambiguate_location {
     };
 }
 
-sub get_council_sender {
-    my ( $self, $area_id, $area_info ) = @_;
-
-    my $send_method;
-
-    my $council_config = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $area_id } )->first;
-    $send_method = $council_config->send_method if $council_config;
-
-    return $send_method if $send_method;
-
+sub _fallback_council_sender {
+    my ( $self, $area_id, $area_info, $category ) = @_;
     return 'London' if $area_info->{type} eq 'LBO';
     return 'NI' if $area_info->{type} eq 'LGD';
     return 'Email';
