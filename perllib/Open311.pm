@@ -65,7 +65,11 @@ sub send_service_request {
 
         if ( $obj ) {
             if ( $obj->{ request }->{ service_request_id } ) {
-                return $obj->{ request }->{ service_request_id };
+                my $request_id = $obj->{request}->{service_request_id};
+
+                unless ( ref $request_id ) {
+                    return $request_id;
+                }
             } else {
                 my $token = $obj->{ request }->{ token };
                 if ( $token ) {

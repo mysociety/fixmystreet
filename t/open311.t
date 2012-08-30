@@ -410,20 +410,48 @@ for my $test (
     };
 }
 
+subtest 'No request id in reponse' => sub {
+    my $results;
+    warning_like {
+        $results = make_service_req(
+            $problem,
+            { url => 'http://example.com/report/1' },
+            $problem->category,
+            '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id></service_request_id></request></service_requests>' 
+        );
+    } qr/Failed to submit problem \d+ over Open311/, 'correct error message for missing request_id';
+
+    is $results->{ res }, 0, 'No request_id is a failure';
+};
+
+subtest 'Bad data in request_id element in reponse' => sub {
+    my $results;
+    warning_like {
+        $results = make_service_req(
+            $problem,
+            { url => 'http://example.com/report/1' },
+            $problem->category,
+            '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id><bad_data>BAD</bad_data></service_request_id></request></service_requests>' 
+        );
+    } qr/Failed to submit problem \d+ over Open311/, 'correct error message for bad data in request_id';
+
+    is $results->{ res }, 0, 'No request_id is a failure';
+};
+
 subtest 'No update id in reponse' => sub {
     my $results;
     warning_like {
         $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id></update_id></request_update></service_request_updates>' )
-    } qr/Failed to submit comment \d+ over Open311/, 'correct error message';
+    } qr/Failed to submit comment \d+ over Open311/, 'correct error message for missing update_id';
 
     is $results->{ res }, 0, 'No update_id is a failure';
 };
 
-subtest 'error reponse' => sub {
+subtest 'error response' => sub {
     my $results;
     warning_like {
         $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><errors><error><code>400</code><description>There was an error</description</error></errors>' )
-    } qr/Failed to submit comment \d+ over Open311.*There was an error/, 'correct error messages';
+    } qr/Failed to submit comment \d+ over Open311.*There was an error/, 'correct error messages for general error';
 
     is $results->{ res }, 0, 'error in response is a failure';
 };
