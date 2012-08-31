@@ -16,6 +16,11 @@ my $user =
   ->find_or_create( { email => 'test@example.com', name => 'Test User' } );
 ok $user, "created test user";
 
+my $user2 =
+  FixMyStreet::App->model('DB::User')
+  ->find_or_create( { email => 'test2@example.com', name => 'Other User' } );
+ok $user2, "created test user";
+
 my $dt = DateTime->new(
     year   => 2011,
     month  => 04,
@@ -104,6 +109,23 @@ subtest "change report to non_public and check for 403 status" => sub {
     is $mech->res->code, 403, "access denied";
     is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
     $mech->content_contains('That report cannot be viewed on FixMyStreet.');
+    ok $report->update( { non_public => 0 } ), 'make report public';
+};
+
+subtest "check owner of report can view non public reports" => sub {
+    ok $report->update( { non_public => 1 } ), 'make report non public';
+    $mech->log_in_ok( $report->user->email );
+    ok $mech->get("/report/$report_id"), "get '/report/$report_id'";
+    is $mech->res->code, 200, "report can be viewed";
+    is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
+    $mech->log_out_ok;
+
+    $mech->log_in_ok( $user2->email );
+    ok $mech->get("/report/$report_id"), "get '/report/$report_id'";
+    is $mech->res->code, 403, "access denied to user who is not report creator";
+    is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
+    $mech->content_contains('That report cannot be viewed on FixMyStreet.');
+    $mech->log_out_ok;
     ok $report->update( { non_public => 0 } ), 'make report public';
 };
 

@@ -75,10 +75,12 @@ sub load_problem_or_display_error : Private {
             [ _('That report has been removed from FixMyStreet.') ]    #
         );
     } elsif ( $problem->non_public ) {
-        $c->detach(
-            '/page_error_403_access_denied',
-            [ _('That report cannot be viewed on FixMyStreet.') ]    #
-        );
+        if ( !$c->user || $c->user->id != $problem->user->id ) {
+            $c->detach(
+                '/page_error_403_access_denied',
+                [ _('That report cannot be viewed on FixMyStreet.') ]    #
+            );
+        }
     }
 
     $c->stash->{problem} = $problem;
