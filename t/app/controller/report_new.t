@@ -788,6 +788,75 @@ foreach my $test (
 
 }
 
+subtest "test report creation for a category that is non public" => sub {
+    $mech->log_out_ok;
+    $mech->clear_emails_ok;
+
+    # check that the user does not exist
+    my $test_email = 'test-2@example.com';
+
+    my $user = FixMyStreet::App->model('DB::User')->find_or_create( { email => $test_email } );
+    ok $user, "test user does exist";
+
+    $contact1->update( { non_public => 1 } );
+
+    # submit initial pc form
+    $mech->get_ok('/around');
+    $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } },
+        "submit location" );
+
+    # click through to the report page
+    $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
+        "follow 'skip this step' link" );
+
+    $mech->submit_form_ok(
+        {
+            button      => 'submit_register',
+            with_fields => {
+                title         => 'Test Report',
+                detail        => 'Test report details.',
+                photo         => '',
+                email         => 'test-2@example.com',
+                name          => 'Joe Bloggs',
+                category      => 'Street lighting',
+            }
+        },
+        "submit good details"
+    );
+
+    # find the report
+    my $report = $user->problems->first;
+    ok $report, "Found the report";
+
+    # Check the report is not public
+    ok $report->non_public, 'report is not public';
+
+    my $email = $mech->get_email;
+    ok $email, "got an email";
+    like $email->body, qr/confirm the problem/i, "confirm the problem";
+
+    my ($url) = $email->body =~ m{(http://\S+)};
+    ok $url, "extracted confirm url '$url'";
+
+    # confirm token
+    $mech->get_ok($url);
+    $report->discard_changes;
+    is $report->state, 'confirmed', "Report is now confirmed";
+
+    $mech->get_ok( '/report/' . $report->id );
+
+    # user is logged in
+    $mech->logged_in_ok;
+
+    $mech->log_out_ok;
+    ok $mech->get("/report/" . $report->id), "fetched report";
+    is $mech->res->code, 403, "access denied to report";
+
+    # cleanup
+    $mech->delete_user($user);
+    $contact1->update( { non_public => 0 } );
+};
+
 $contact2->category( "Pothol\xc3\xa9s" );
 $contact2->update;
 $mech->get_ok( '/report/new/ajax?latitude=' . $saved_lat . '&longitude=' . $saved_lon );
