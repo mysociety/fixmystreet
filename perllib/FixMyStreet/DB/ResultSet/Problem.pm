@@ -85,7 +85,8 @@ sub _recent {
     $key .= ":$site_key:$num";
 
     my $query = {
-        state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+        non_public => 0,
+        state      => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     };
     $query->{photo} = { '!=', undef } if $photos;
 
