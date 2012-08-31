@@ -186,10 +186,12 @@ HASHREF.
 
 sub open_states {
     my $states = {
-        'confirmed'     => 1,
-        'investigating' => 1,
-        'planned'       => 1,
-        'in progress'   => 1,
+        'confirmed'        => 1,
+        'investigating'    => 1,
+        'planned'          => 1,
+        'in progress'      => 1,
+        'in progress'      => 1,
+        'action scheduled' => 1,
     };
 
     return wantarray ? keys %{$states} : $states;
@@ -227,7 +229,10 @@ HASHREF.
 
 sub closed_states {
     my $states = {
-        'closed'          => 1,
+        'closed'                      => 1,
+        'unable to fix'               => 1,
+        'not councils responsibility' => 1,
+        'duplicate'                   => 1,
     };
 
     return wantarray ? keys %{$states} : $states;
@@ -246,14 +251,33 @@ HASHREF.
 
 sub visible_states {
     my $states = {
-        'confirmed'       => 1,
-        'planned'         => 1,
-        'investigating'   => 1,
-        'in progress'     => 1,
-        'fixed'           => 1,
-        'fixed - council' => 1,
-        'fixed - user'    => 1,
-        'closed'          => 1,
+        'confirmed'                   => 1,
+        'planned'                     => 1,
+        'investigating'               => 1,
+        'in progress'                 => 1,
+        'action scheduled'            => 1,
+        'fixed'                       => 1,
+        'fixed - council'             => 1,
+        'fixed - user'                => 1,
+        'unable to fix'               => 1,
+        'not councils responsibility' => 1,
+        'duplicate'                   => 1,
+        'closed'                      => 1,
+    };
+
+    return wantarray ? keys %{$states} : $states;
+}
+
+sub council_states {
+    my $states = {
+        'planned'                     => 1,
+        'investigating'               => 1,
+        'in progress'                 => 1,
+        'action scheduled'            => 1,
+        'fixed - council'             => 1,
+        'unable to fix'               => 1,
+        'not councils responsibility' => 1,
+        'duplicate'                   => 1,
     };
 
     return wantarray ? keys %{$states} : $states;

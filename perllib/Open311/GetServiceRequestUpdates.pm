@@ -96,12 +96,22 @@ sub update_comments {
                 # do not change the status of the problem as it's
                 # tricky to determine the right thing to do.
                 if ( $comment->created_local > $p->lastupdate_local ) {
-                    if ( $p->is_open and lc($request->{status}) eq 'closed' ) {
+                    my $incoming_status = lc( $request->{status} );
+                    my $internal_status = $incoming_status;
+                    $internal_status =~ s/_/ /g;
+                    if ( $p->is_open and ( $incoming_status eq 'closed' or $incoming_status eq 'fixed' ) ) {
                         $p->state( 'fixed - council' );
                         $comment->problem_state( 'fixed - council' );
-                    } elsif ( ( $p->is_closed || $p->is_fixed ) and lc($request->{status}) eq 'open' ) {
+                    } elsif ( ( $p->is_closed || $p->is_fixed ) and (
+                            $incoming_status eq 'open' or FixMyStreet::DB::Result::Problem->open_states()->{ $internal_status }
+                        ) ) {
                         $p->state( 'confirmed' );
                         $comment->problem_state( 'confirmed' );
+                    } else {
+                        if ( FixMyStreet::DB::Result::Problem->council_states()->{ $internal_status } ) {
+                            $p->state( $internal_status );
+                            $comment->problem_state( $internal_status );
+                        }
                     }
                 }
 

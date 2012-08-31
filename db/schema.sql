@@ -180,6 +180,10 @@ create table problem (
         or state = 'fixed - user'
         or state = 'hidden'
         or state = 'partial'
+        or state = 'action scheduled'
+        or state = 'unable to fix'
+        or state = 'not councils responsibility'
+        or state = 'duplicate'
     ),
     lang text not null default 'en-gb',
     service text not null default '',
@@ -312,6 +316,10 @@ create table comment (
         or problem_state = 'fixed'
         or problem_state = 'fixed - council'
         or problem_state = 'fixed - user'
+        or problem_state = 'action scheduled'
+        or problem_state = 'unable to fix'
+        or problem_state = 'not councils responsibility'
+        or problem_state = 'duplicate'
     ),
     -- other fields? one to indicate whether this was written by the council
     -- and should be highlighted in the display?
