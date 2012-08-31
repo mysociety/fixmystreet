@@ -15,7 +15,7 @@ use Digest::MD5 qw(md5_hex);
 use Encode;
 use File::Slurp;
 use File::Path ();
-use LWP::Simple;
+use LWP::Simple qw($ua);
 use Memcached;
 use XML::Simple;
 
@@ -49,6 +49,7 @@ sub string {
     if (-s $cache_file) {
         $js = File::Slurp::read_file($cache_file);
     } else {
+        $ua->timeout(15);
         $js = LWP::Simple::get($url);
         $js = encode_utf8($js) if utf8::is_utf8($js);
         File::Path::mkpath($cache_dir);

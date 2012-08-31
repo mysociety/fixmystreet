@@ -19,7 +19,6 @@ package CrossSell;
 
 use strict;
 use LWP::Simple qw($ua get);
-$ua->timeout(5);
 use URI::Escape;
 use mySociety::AuthToken;
 use mySociety::Web qw(ent);
@@ -168,6 +167,8 @@ sub display_advert ($$;$%) {
     my ($c, $email, $name, %data) = @_;
 
     return '' unless $c->cobrand->moniker eq 'fixmystreet';
+
+    $ua->timeout(5);
 
     #if (defined $data{council} && $data{council} eq '2326') {
     #    my ($out, $ad) = display_hfyc_cheltenham_advert($email, $name);
