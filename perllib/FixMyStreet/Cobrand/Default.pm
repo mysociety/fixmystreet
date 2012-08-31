@@ -4,6 +4,7 @@ use base 'FixMyStreet::Cobrand::Base';
 use strict;
 use warnings;
 use FixMyStreet;
+use Encode;
 use URI;
 use Digest::MD5 qw(md5_hex);
 
@@ -647,7 +648,9 @@ sub get_report_stats { return 0; }
 sub get_council_sender { return 'Email' };
 
 sub example_places {
-    return FixMyStreet->config('EXAMPLE_PLACES') || [ 'High Street', 'Main Street' ];
+    my $e = FixMyStreet->config('EXAMPLE_PLACES') || [ 'High Street', 'Main Street' ];
+    $e = [ map { Encode::decode('UTF-8', $_) } @$e ];
+    return $e;
 }
 
 sub process_extras {}
