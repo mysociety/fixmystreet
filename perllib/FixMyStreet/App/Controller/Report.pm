@@ -74,6 +74,11 @@ sub load_problem_or_display_error : Private {
             '/page_error_410_gone',
             [ _('That report has been removed from FixMyStreet.') ]    #
         );
+    } elsif ( $problem->non_public ) {
+        $c->detach(
+            '/page_error_403_access_denied',
+            [ _('That report cannot be viewed on FixMyStreet.') ]    #
+        );
     }
 
     $c->stash->{problem} = $problem;

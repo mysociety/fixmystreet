@@ -98,6 +98,15 @@ subtest "change report to hidden and check for 410 status" => sub {
     ok $report->update( { state => 'confirmed' } ), 'confirm report again';
 };
 
+subtest "change report to non_public and check for 403 status" => sub {
+    ok $report->update( { non_public => 1 } ), 'make report non public';
+    ok $mech->get("/report/$report_id"), "get '/report/$report_id'";
+    is $mech->res->code, 403, "access denied";
+    is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
+    $mech->content_contains('That report cannot be viewed on FixMyStreet.');
+    ok $report->update( { non_public => 0 } ), 'make report public';
+};
+
 subtest "test a good report" => sub {
     $mech->get_ok("/report/$report_id");
     is $mech->uri->path, "/report/$report_id", "at /report/$report_id";

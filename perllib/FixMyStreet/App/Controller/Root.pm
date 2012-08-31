@@ -94,6 +94,13 @@ sub page_error_410_gone : Private {
     $c->response->status(410);
 }
 
+sub page_error_403_access_denied : Private {
+    my ( $self, $c, $error_msg ) = @_;
+    $c->stash->{template}  = 'index.html';
+    $c->stash->{error} = $error_msg;
+    $c->response->status(403);
+}
+
 =head2 end
 
 Attempt to render a view, if needed.
