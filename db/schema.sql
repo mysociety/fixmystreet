@@ -81,7 +81,10 @@ create table contacts (
     note text not null,
 
     -- extra fields required for open311
-    extra text
+    extra text,
+
+    -- for things like missed bin collections
+    non_public boolean default 'f'
 );
 create unique index contacts_area_id_category_idx on contacts(area_id, category);
 
@@ -198,7 +201,10 @@ create table problem (
     send_fail_timestamp timestamp,
     
     -- record send_method used, which can be used to infer usefulness of external_id
-    send_method_used text
+    send_method_used text,
+
+    -- for things like missed bin collections
+    non_public BOOLEAN default 'f'
 );
 create index problem_state_latitude_longitude_idx on problem(state, latitude, longitude);
 create index problem_user_id_idx on problem ( user_id );
