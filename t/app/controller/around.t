@@ -96,6 +96,7 @@ subtest 'check non public reports are not displayed on around page' => sub {
     my $private = $edinburgh_problems[2];
     ok $private->update( { non_public => 1 } ), 'problem marked non public';
 
+    $mech->get_ok('/');
     $mech->submit_form_ok( { with_fields => { pc => 'EH99 1SP' } },
         "good location" );
     $mech->content_lacks( 'Around page Test 3 for 2651',

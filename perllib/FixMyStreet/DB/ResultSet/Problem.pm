@@ -142,6 +142,7 @@ sub around_map {
     $attr->{rows} = $limit if $limit;
 
     my $q = {
+            non_public => 0,
             state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
             latitude => { '>=', $min_lat, '<', $max_lat },
             longitude => { '>=', $min_lon, '<', $max_lon },
