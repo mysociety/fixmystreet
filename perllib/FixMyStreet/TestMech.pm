@@ -378,6 +378,49 @@ sub extract_update_metas {
     return \@metas;
 }
 
+=head2 extract_problem_list
+
+    $problems = $mech->extract_problem_list
+
+Returns an array ref of all problem titles on a page featuring standard issue lists
+
+=cut
+
+sub extract_problem_list {
+    my $mech = shift;
+
+    my $result = scraper {
+        process 'ul.issue-list-a li a h4', 'problems[]', 'TEXT';
+    }->scrape( $mech->response );
+
+    return $result->{ problems } || [];
+}
+
+=head2 extract_report_stats
+
+    $stats = $mech->extract_report_stats
+
+Returns a hash ref keyed by council name of all the council stats from the all reports
+page. Each value is an array ref with the first element being the council name and the
+rest being the stats in the order the appear in each row.
+
+=cut
+
+sub extract_report_stats {
+    my $mech = shift;
+
+    my $result = scraper {
+        process 'tr[align=center]', 'councils[]' => scraper {
+            process 'td.title a', 'council', 'TEXT',
+            process 'td', 'stats[]', 'TEXT'
+        }
+    }->scrape( $mech->response );
+
+    my %councils = map { $_->{council} => $_->{stats} } @{ $result->{councils} };
+
+    return \%councils;
+}
+
 =head2 visible_form_values
 
     $hashref = $mech->visible_form_values(  );

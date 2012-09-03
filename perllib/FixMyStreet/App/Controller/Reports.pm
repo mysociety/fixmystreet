@@ -236,6 +236,7 @@ sub council_check : Private {
         type => $area_types,
         min_generation => $c->cobrand->area_min_generation
     );
+
     if (keys %$areas == 1) {
         ($c->stash->{council}) = values %$areas;
         return;
@@ -318,7 +319,8 @@ sub load_and_group_problems : Private {
     my $page = $c->req->params->{p} || 1;
 
     my $where = {
-        state => [ FixMyStreet::DB::Result::Problem->visible_states() ]
+        non_public => 0,
+        state      => [ FixMyStreet::DB::Result::Problem->visible_states() ]
     };
     if ($c->stash->{ward}) {
         $where->{areas} = { 'like', '%,' . $c->stash->{ward}->{id} . ',%' };
