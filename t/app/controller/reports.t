@@ -8,11 +8,11 @@ use DateTime;
 
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
-delete_problems( 2504 );
-delete_problems( 2651 );
+$mech->delete_problems_for_council( 2504 );
+$mech->delete_problems_for_council( 2651 );
 
-my @westminster_problems = create_problems(5, 2504);
-my @edinburgh_problems = create_problems(3, 2651);
+my @edinburgh_problems = $mech->create_problems_for_council(3, 2651, 'All reports');
+my @westminster_problems = $mech->create_problems_for_council(5, 2504, 'All reports');
 
 is scalar @westminster_problems, 5, 'correct number of westminster problems created';
 is scalar @edinburgh_problems, 3, 'correct number of edinburgh problems created';
@@ -69,61 +69,6 @@ SKIP: {
     # There should only be one Oslo
     $mech->content_contains('Oslo');
     $mech->content_unlike(qr{Oslo">Oslo.*Oslo}s);
-}
-
-sub create_problems {
-    my $count = shift;
-    my $area_id = shift;
-
-    my @problems;
-
-    my $dt = DateTime->now;
-
-    my $user =
-      FixMyStreet::App->model('DB::User')
-      ->find_or_create( { email => 'test@example.com', name => 'Test User' } );
-
-    while ( $count ) {
-        my $problem = FixMyStreet::App->model('DB::Problem')->create( {
-            postcode           => 'SW1A 1AA',
-            council            => $area_id,
-            areas              => ',105255,11806,11828,2247,2504,',
-            category           => 'Other',
-            title              => "All reports Test $count for $area_id",
-            detail             => "All reports Test $count for $area_id Detail",
-            used_map           => 't',
-            name               => 'Test User',
-            anonymous          => 'f',
-            state              => 'confirmed',
-            confirmed          => $dt->ymd . ' ' . $dt->hms,
-            lang               => 'en-gb',
-            service            => '',
-            cobrand            => 'default',
-            cobrand_data       => '',
-            send_questionnaire => 't',
-            latitude           => '51.5016605453401',
-            longitude          => '-0.142497580865087',
-            user_id            => $user->id,
-        } );
-
-        push @problems, $problem;
-        $count--;
-    }
-
-
-    return @problems;
-}
-
-sub delete_problems {
-    my $area_id = shift;
-
-    my $reports = FixMyStreet::App->model('DB::Problem')->search( { council => $area_id } );
-    if ( $reports ) {
-        for my $r ( $reports->all ) {
-            $r->comments->delete;
-        }
-        $reports->delete;
-    }
 }
 
 done_testing();

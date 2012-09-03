@@ -518,4 +518,60 @@ sub get_ok_json {
     return decode_json( $res->content );
 }
 
+sub delete_problems_for_council {
+    my $mech = shift;
+    my $council = shift;
+
+    my $reports = FixMyStreet::App->model('DB::Problem')->search( { council => $council } );
+    if ( $reports ) {
+        for my $r ( $reports->all ) {
+            $r->comments->delete;
+        }
+        $reports->delete;
+    }
+}
+
+sub create_problems_for_council {
+    my ( $mech, $count, $council, $title, $dt, $user ) = @_;
+
+    $dt = DateTime->now() unless $dt;
+
+    my @problems;
+
+    $user =
+      FixMyStreet::App->model('DB::User')
+      ->find_or_create( { email => 'test@example.com', name => 'Test User' } )
+    unless $user;;
+
+    while ( $count ) {
+        my $problem = FixMyStreet::App->model('DB::Problem')->create( {
+            postcode           => 'SW1A 1AA',
+            council            => $council,
+            areas              => ',105255,11806,11828,2247,2504,',
+            category           => 'Other',
+            title              => "$title Test $count for $council",
+            detail             => "$title Test $count for $council Detail",
+            used_map           => 't',
+            name               => 'Test User',
+            anonymous          => 'f',
+            state              => 'confirmed',
+            confirmed          => $dt->ymd . ' ' . $dt->hms,
+            lang               => 'en-gb',
+            service            => '',
+            cobrand            => 'default',
+            cobrand_data       => '',
+            send_questionnaire => 't',
+            latitude           => '51.5016605453401',
+            longitude          => '-0.142497580865087',
+            user_id            => $user->id,
+            photo              => 1,
+        } );
+
+        push @problems, $problem;
+        $count--;
+    }
+
+    return @problems;
+}
+
 1;
