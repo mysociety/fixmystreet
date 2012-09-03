@@ -532,19 +532,22 @@ sub delete_problems_for_council {
 }
 
 sub create_problems_for_council {
-    my ( $mech, $count, $council, $title, $dt, $user ) = @_;
+    my ( $mech, $count, $council, $title, $params ) = @_;
 
-    $dt = DateTime->now() unless $dt;
+    my $dt = DateTime->now() || $params->{dt};
+
+    my $user =
+      FixMyStreet::App->model('DB::User')
+      ->find_or_create( { email => 'test@example.com', name => 'Test User' } )
+      or $params->{user};
+
+    delete $params->{user};
+    delete $params->{dt};
 
     my @problems;
 
-    $user =
-      FixMyStreet::App->model('DB::User')
-      ->find_or_create( { email => 'test@example.com', name => 'Test User' } )
-    unless $user;;
-
-    while ( $count ) {
-        my $problem = FixMyStreet::App->model('DB::Problem')->create( {
+    while ($count) {
+        my $default_params = {
             postcode           => 'SW1A 1AA',
             council            => $council,
             areas              => ',105255,11806,11828,2247,2504,',
@@ -565,7 +568,12 @@ sub create_problems_for_council {
             longitude          => '-0.142497580865087',
             user_id            => $user->id,
             photo              => 1,
-        } );
+        };
+
+        my %report_params = ( %$default_params, %$params );
+
+        my $problem =
+          FixMyStreet::App->model('DB::Problem')->create( \%report_params );
 
         push @problems, $problem;
         $count--;

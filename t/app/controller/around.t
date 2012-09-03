@@ -78,4 +78,29 @@ foreach my $test (
     };
 }
 
+subtest 'check non public reports are not displayed on around page' => sub {
+    my $params = {
+        postcode  => 'EH99 1SP',
+        latitude  => 55.9519637512,
+        longitude => -3.17492254484,
+    };
+    my @edinburgh_problems =
+      $mech->create_problems_for_council( 5, 2651, 'Around page', $params );
+
+    $mech->get_ok('/');
+    $mech->submit_form_ok( { with_fields => { pc => 'EH99 1SP' } },
+        "good location" );
+    $mech->content_contains( 'Around page Test 3 for 2651',
+        'problem to be marked non public visible' );
+
+    my $private = $edinburgh_problems[2];
+    ok $private->update( { non_public => 1 } ), 'problem marked non public';
+
+    $mech->submit_form_ok( { with_fields => { pc => 'EH99 1SP' } },
+        "good location" );
+    $mech->content_lacks( 'Around page Test 3 for 2651',
+        'problem marked non public is not visible' );
+};
+
+
 done_testing();
