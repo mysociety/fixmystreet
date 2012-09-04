@@ -841,12 +841,11 @@ subtest "test report creation for a category that is non public" => sub {
     # confirm token
     $mech->get_ok($url);
     $report->discard_changes;
+
     is $report->state, 'confirmed', "Report is now confirmed";
 
-    $mech->get_ok( '/report/' . $report->id );
-
-    # user is logged in
     $mech->logged_in_ok;
+    $mech->get_ok( '/report/' . $report->id, 'user can see own report' );
 
     $mech->log_out_ok;
     ok $mech->get("/report/" . $report->id), "fetched report";
