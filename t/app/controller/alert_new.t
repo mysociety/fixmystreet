@@ -464,4 +464,194 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
     $mech->delete_user($user2);
 };
 
+for my $test (
+    {
+        desc => 'check non public reports are not included in council problems alerts',
+        alert_params => {
+            alert_type => 'council_problems',
+            parameter => '2651',
+            parameter2 => '2651',
+        }
+    },
+    {
+        desc => 'check non public reports are not included in ward problems alerts',
+        alert_params => {
+            alert_type => 'ward_problems',
+            parameter => '2651',
+            parameter2 => '20728',
+        }
+    },
+    {
+        desc => 'check non public reports are not included in local problems alerts',
+        alert_params => {
+            alert_type => 'local_problems',
+            parameter => '-3.189944',
+            parameter2 => '55.951963',
+        }
+    },
+    {
+        desc => 'check non public reports are not included in area problems alerts',
+        alert_params => {
+            alert_type => 'area_problems',
+            parameter => '20728',
+            parameter2 => '20728',
+        }
+    },
+) {
+    subtest $test->{desc} => sub {
+        my $user1 = FixMyStreet::App->model('DB::User')
+          ->find_or_create( { email => 'reporter@example.com', name => 'Reporter User' } );
+        ok $user1, "created test user";
+        $user1->alerts->delete;
+
+        my $user2 = FixMyStreet::App->model('DB::User')
+          ->find_or_create( { email => 'alerts@example.com', name => 'Alert User' } );
+        ok $user2, "created test user";
+        $user2->alerts->delete;
+
+        my $dt = DateTime->now->add( minutes => -30 );
+        my $r_dt = $dt->clone->add( minutes => 20 );
+
+        my $alert_params = $test->{alert_params};
+        $alert_params->{user} = $user1;
+        $alert_params->{whensubscribed} = $dt;
+        $alert_params->{confirmed} = 1;
+
+        my $alert_user1 = FixMyStreet::App->model('DB::Alert')->create( $alert_params );
+        ok $alert_user1, "alert created";
+
+        my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
+            postcode           => 'EH1 1BB',
+            council            => '2651',
+            areas              => ',11808,135007,14419,134935,2651,20728,',
+            category           => 'Street lighting',
+            title              => 'Alert test for non public reports',
+            detail             => 'Testing Detail',
+            used_map           => 1,
+            name               => $user2->name,
+            anonymous          => 0,
+            state              => 'confirmed',
+            confirmed          => $r_dt,
+            lastupdate         => $r_dt,
+            whensent           => $r_dt->clone->add( minutes => 5 ),
+            lang               => 'en-gb',
+            service            => '',
+            cobrand            => 'default',
+            cobrand_data       => '',
+            send_questionnaire => 1,
+            latitude           => '55.951963',
+            longitude          => '-3.189944',
+            user_id            => $user2->id,
+            non_public         => 1,
+        } );
+
+        $mech->clear_emails_ok;
+        FixMyStreet::App->model('DB::AlertType')->email_alerts();
+        $mech->email_count_is(0);
+
+        $report->update( { non_public => 0 } );
+        FixMyStreet::App->model('DB::AlertType')->email_alerts();
+        $mech->email_count_is(1);
+        my $email = $mech->get_email;
+        like $email->body, qr/Alert test for non public reports/, 'alert contains public report';
+
+        $mech->delete_user( $user1 );
+        $mech->delete_user( $user2 );
+    };
+}
+
+subtest 'check new updates alerts for non public reports only go to report owner' => sub {
+    my $user1 = FixMyStreet::App->model('DB::User')
+      ->find_or_create( { email => 'reporter@example.com', name => 'Reporter User' } );
+    ok $user1, "created test user";
+    $user1->alerts->delete;
+
+    my $user2 = FixMyStreet::App->model('DB::User')
+      ->find_or_create( { email => 'alerts@example.com', name => 'Alert User' } );
+    ok $user2, "created test user";
+    $user2->alerts->delete;
+
+    my $user3 = FixMyStreet::App->model('DB::User')
+      ->find_or_create( { email => 'updates@example.com', name => 'Update User' } );
+    ok $user3, "created test user";
+
+    my $dt = DateTime->now->add( minutes => -30 );
+    my $r_dt = $dt->clone->add( minutes => 20 );
+
+    my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
+        postcode           => 'EH1 1BB',
+        council            => '2651',
+        areas              => ',11808,135007,14419,134935,2651,20728,',
+        category           => 'Street lighting',
+        title              => 'Alert test for non public reports',
+        detail             => 'Testing Detail',
+        used_map           => 1,
+        name               => $user2->name,
+        anonymous          => 0,
+        state              => 'confirmed',
+        confirmed          => $r_dt,
+        lastupdate         => $r_dt,
+        whensent           => $r_dt->clone->add( minutes => 5 ),
+        lang               => 'en-gb',
+        service            => '',
+        cobrand            => 'default',
+        cobrand_data       => '',
+        send_questionnaire => 1,
+        latitude           => '55.951963',
+        longitude          => '-3.189944',
+        user_id            => $user2->id,
+        non_public         => 1,
+    } );
+
+    my $update = FixMyStreet::App->model('DB::Comment')->create( {
+        problem_id => $report->id,
+        user_id    => $user3->id,
+        name       => 'Anonymous User',
+        mark_fixed => 'false',
+        text       => 'This is some more update text',
+        state      => 'confirmed',
+        confirmed  => $r_dt->clone->add( minutes => 8 ),
+        anonymous  => 't',
+    } );
+
+    my $alert_user1 = FixMyStreet::App->model('DB::Alert')->create( {
+            user       => $user1,
+            alert_type => 'new_updates',
+            parameter  => $report->id,
+            confirmed  => 1,
+            whensubscribed => $dt,
+    } );
+    ok $alert_user1, "alert created";
+
+
+    $mech->clear_emails_ok;
+    FixMyStreet::App->model('DB::AlertType')->email_alerts();
+    $mech->email_count_is(0);
+
+    my $alert_user2 = FixMyStreet::App->model('DB::Alert')->create( {
+            user       => $user2,
+            alert_type => 'new_updates',
+            parameter  => $report->id,
+            confirmed  => 1,
+            whensubscribed => $dt,
+    } );
+    ok $alert_user2, "alert created";
+
+    FixMyStreet::App->model('DB::AlertType')->email_alerts();
+    $mech->email_count_is(1);
+    my $email = $mech->get_email;
+    like $email->body, qr/This is some more update text/, 'alert contains update text';
+
+    $mech->clear_emails_ok;
+    $report->update( { non_public => 0 } );
+    FixMyStreet::App->model('DB::AlertType')->email_alerts();
+    $mech->email_count_is(1);
+    $email = $mech->get_email;
+    like $email->body, qr/This is some more update text/, 'alert contains update text';
+
+    $mech->delete_user( $user1 );
+    $mech->delete_user( $user2 );
+    $mech->delete_user( $user3 );
+};
+
 done_testing();
