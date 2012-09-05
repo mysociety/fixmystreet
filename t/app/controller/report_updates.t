@@ -580,6 +580,8 @@ for my $test (
         # setting it to confirmed shouldn't say anything
         if ( $test->{fields}->{state} ne 'confirmed' ) {
             like $update_meta->[0], qr/marked as $test->{fields}->{state}$/, 'update meta includes state change';
+        } else {
+            like $update_meta->[0], qr/reopened$/, 'update meta includes state change';
         }
         like $update_meta->[0], qr{Test User \(Westminster City Council\)}, 'update meta includes council name';
         $mech->content_contains( 'Test User (<strong>Westminster City Council</strong>)', 'council name in bold');
@@ -607,14 +609,12 @@ subtest 'check meta correct for comments marked confirmed but not marked open' =
 
     $mech->get_ok( "/report/" . $report->id );
     my $update_meta = $mech->extract_update_metas;
-    like $update_meta->[0], qr/marked as open$/,
-      'update meta says marked as open';
-    unlike $update_meta->[0], qr/reopened$/,
+    like $update_meta->[0], qr/reopened$/,
       'update meta does not say reopened';
 
-    $comment->update( { mark_open => 1 } );
+    $comment->update( { mark_open => 1, problem_state => undef } );
     $mech->get_ok( "/report/" . $report->id );
-    my $update_meta = $mech->extract_update_metas;
+    $update_meta = $mech->extract_update_metas;
 
     unlike $update_meta->[0], qr/marked as open$/,
       'update meta does not says marked as open';
@@ -622,7 +622,7 @@ subtest 'check meta correct for comments marked confirmed but not marked open' =
 
     $comment->update( { mark_open => 0, problem_state => undef } );
     $mech->get_ok( "/report/" . $report->id );
-    my $update_meta = $mech->extract_update_metas;
+    $update_meta = $mech->extract_update_metas;
 
     unlike $update_meta->[0], qr/marked as open$/,
       'update meta does not says marked as open';
