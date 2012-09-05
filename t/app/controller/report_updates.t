@@ -577,7 +577,10 @@ for my $test (
         is $update->problem_state, $test->{state}, 'problem state set';
 
         my $update_meta = $mech->extract_update_metas;
-        like $update_meta->[0], qr/marked as $test->{fields}->{state}$/, 'update meta includes state change';
+        # setting it to confirmed shouldn't say anything
+        if ( $test->{fields}->{state} ne 'confirmed' ) {
+            like $update_meta->[0], qr/marked as $test->{fields}->{state}$/, 'update meta includes state change';
+        }
         like $update_meta->[0], qr{Test User \(Westminster City Council\)}, 'update meta includes council name';
         $mech->content_contains( 'Test User (<strong>Westminster City Council</strong>)', 'council name in bold');
 

@@ -101,6 +101,7 @@ sub update_comments {
                         $comment->problem_state( 'fixed - council' );
                     } elsif ( ( $p->is_closed || $p->is_fixed ) and lc($request->{status}) eq 'open' ) {
                         $p->state( 'confirmed' );
+                        $comment->mark_open(1);
                         $comment->problem_state( 'confirmed' );
                     }
                 }
