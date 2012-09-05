@@ -38,6 +38,7 @@
             <th>[% loc('Deleted') %]</th>
             <th>[% loc('Last editor') %]</th>
             <th>[% loc('Note') %]</th>
+            <th>[% loc('Public') %]</th>
             <th>[% loc('When edited') %]</th>
             <th>[% loc('Confirm') %]</th>
         </tr>
@@ -49,6 +50,7 @@
                 <td>[% IF contact.deleted %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
                 <td>[% contact.editor %]</td>
                 <td>[% contact.note | html %]</td>
+                <td>[% contact.non_public ? loc('Non Public') : loc('Public') %]</td>
                 <td>[% contact.whenedited.ymd _ ' ' _ contact.whenedited.hms %]</td>
                 <td><input type="checkbox" name="confirmed" value="[% contact.category %]"></td>
             </tr>
@@ -81,12 +83,17 @@
         <input type="checkbox" name="confirmed" value="1" id="confirmed"> 
         <label for="confirmed">[% loc('Confirmed') %]</label>
 
-        <input type="checkbox" name="deleted" value="1"id="deleted"> 
+        <input type="checkbox" name="deleted" value="1" id="deleted"> 
         <label for="deleted">[% loc('Deleted') %]</label>
         </p>
 
         <p>
         <strong>[% loc('Note:') %] </strong> <textarea name="note" rows="3" cols="40"></textarea>
+        </p>
+
+        <p>
+        <input type="checkbox" name="non_public" value="1" id="non_public"> 
+        <label for="non_public">[% loc('Private') %]</label>
         </p>
 
         <p>

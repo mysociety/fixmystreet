@@ -163,19 +163,32 @@ subtest 'check contact creation' => sub {
     $mech->get_ok('/admin/council_contacts/2650');
 
     $mech->submit_form_ok( { with_fields => { 
-        category => 'test category',
-        email    => 'test@example.com',
-        note     => 'test note',
+        category   => 'test category',
+        email      => 'test@example.com',
+        note       => 'test note',
+        non_public => undef,
     } } );
 
     $mech->content_contains( 'test category' );
     $mech->content_contains( '<td>test@example.com' );
     $mech->content_contains( '<td>test note' );
+    $mech->content_contains( '<td>Public' );
+
+    $mech->submit_form_ok( { with_fields => { 
+        category   => 'private category',
+        email      => 'test@example.com',
+        note       => 'test note',
+        non_public => 'on',
+    } } );
+
+    $mech->content_contains( 'private category' );
+    $mech->content_contains( '<td>Non Public' );
 
     $mech->submit_form_ok( { with_fields => {
         category => 'test/category',
         email    => 'test@example.com',
         note     => 'test/note',
+        non_public => 'on',
     } } );
     $mech->get_ok('/admin/council_edit/2650/test/category');
 
@@ -187,11 +200,21 @@ subtest 'check contact editing' => sub {
     $mech->submit_form_ok( { with_fields => { 
         email    => 'test2@example.com',
         note     => 'test2 note',
+        non_public => undef,
     } } );
 
     $mech->content_contains( 'test category' );
     $mech->content_contains( '<td>test2@example.com' );
     $mech->content_contains( '<td>test2 note' );
+    $mech->content_contains( '<td>Public' );
+
+    $mech->submit_form_ok( { with_fields => { 
+        email    => 'test2@example.com',
+        note     => 'test2 note',
+        non_public => 'on',
+    } } );
+
+    $mech->content_contains( '<td>Non Public' );
 
     $mech->get_ok('/admin/council_edit/2650/test%20category');
     $mech->content_contains( '<td><strong>test2@example.com' );

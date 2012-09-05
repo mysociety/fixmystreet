@@ -26,7 +26,8 @@
     <strong>[% loc('Email:') %] </strong>
     <input type="text" name="email" value="[% contact.email | html %]" size="30"> 
     <input type="checkbox" name="confirmed" value="1" id="confirmed"[% ' checked' IF contact.confirmed %]> <label for="confirmed">[% loc('Confirmed' ) %]</label> 
-    <input type="checkbox" name="deleted" value="1" id="deleted"[% ' checked' IF contact.deleted %]> <label for="deleted">[% loc('Deleted') %]</label><br>
+    <input type="checkbox" name="deleted" value="1" id="deleted"[% ' checked' IF contact.deleted %]> <label for="deleted">[% loc('Deleted') %]</label>
+    <input type="checkbox" name="non_public" value="1" id="non_public"[% ' checked' IF contact.non_public %]> <label for="non_public">[% loc('Private') %]</label><br>
 
     <strong>[% loc('Note:') %] </strong><textarea name="note" rows="3" cols="40">[% contact.note | html %]</textarea> <br>
 

@@ -301,6 +301,7 @@ sub update_contacts : Private {
         $contact->email( $email );
         $contact->confirmed( $c->req->param('confirmed') ? 1 : 0 );
         $contact->deleted( $c->req->param('deleted') ? 1 : 0 );
+        $contact->non_public( $c->req->param('non_public') ? 1 : 0 );
         $contact->note( $c->req->param('note') );
         $contact->whenedited( \'ms_current_timestamp()' );
         $contact->editor( $editor );
