@@ -589,6 +589,46 @@ for my $test (
     };
 }
 
+subtest 'check meta correct for comments marked confirmed but not marked open' => sub {
+    $report->comments->delete;
+    my $comment = FixMyStreet::App->model('DB::Comment')->create(
+        {
+            user          => $user,
+            problem_id    => $report->id,
+            text          => 'update text',
+            confirmed     => DateTime->now,
+            problem_state => 'confirmed',
+            anonymous     => 0,
+            mark_open     => 0,
+            mark_fixed    => 0,
+            state         => 'confirmed',
+        }
+    );
+
+    $mech->get_ok( "/report/" . $report->id );
+    my $update_meta = $mech->extract_update_metas;
+    like $update_meta->[0], qr/marked as open$/,
+      'update meta says marked as open';
+    unlike $update_meta->[0], qr/reopened$/,
+      'update meta does not say reopened';
+
+    $comment->update( { mark_open => 1 } );
+    $mech->get_ok( "/report/" . $report->id );
+    my $update_meta = $mech->extract_update_metas;
+
+    unlike $update_meta->[0], qr/marked as open$/,
+      'update meta does not says marked as open';
+    like $update_meta->[0], qr/reopened$/, 'update meta does say reopened';
+
+    $comment->update( { mark_open => 0, problem_state => undef } );
+    $mech->get_ok( "/report/" . $report->id );
+    my $update_meta = $mech->extract_update_metas;
+
+    unlike $update_meta->[0], qr/marked as open$/,
+      'update meta does not says marked as open';
+    unlike $update_meta->[0], qr/reopened$/, 'update meta does not say reopened';
+  };
+
 $user->from_council(0);
 $user->update;
 

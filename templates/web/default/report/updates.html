@@ -27,6 +27,7 @@
     [%- ELSE %]
         [%- ", " _ loc( 'reopened' ) IF update.mark_open %]
         [%- ", " _ tprintf(loc( 'marked as %s' ), update.meta_problem_state) IF update.problem_state AND update.problem_state != 'confirmed' %]
+        [%- ", " _ loc( 'marked as open' ) IF NOT update.mark_open AND update.problem_state == 'confirmed' %]
     [%- END %]
 [% END %]
 
