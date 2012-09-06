@@ -36,13 +36,15 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 0 },
   "extra",
   { data_type => "text", is_nullable => 1 },
+  "non_public",
+  { data_type => "boolean", default_value => \"false", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("contacts_area_id_category_idx", ["area_id", "category"]);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-08 17:19:55
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:hyvU0bMWSFxEPAJT7wqM/Q
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-08-31 10:29:17
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:t6yOPhZmedV/eH6AUvHI6w
 
 __PACKAGE__->filter_column(
     extra => {

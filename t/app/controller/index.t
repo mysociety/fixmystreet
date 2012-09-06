@@ -55,4 +55,20 @@ subtest "does pc, (x,y), (e,n) or (lat,lon) go to /around" => sub {
     }
 };
 
+$mech->delete_problems_for_council( 2651 );
+
+my @edinburgh_problems = $mech->create_problems_for_council(5, 2651, 'Front page');
+is scalar @edinburgh_problems, 5, 'correct number of edinburgh problems created';
+
+$mech->get_ok('/');
+$mech->content_contains('Front page Test 3 for 2651', 'problem to be marked non public visible');
+$mech->content_contains('5</big> reports recently', 'number of recent problems correct');
+
+my $private = $edinburgh_problems[2];
+ok $private->update( { non_public => 1 } ), 'problem marked non public';
+
+$mech->get_ok('/');
+$mech->content_lacks('Front page Test 3 for 2651', 'non public problem is not visible');
+$mech->content_contains('5</big> reports recently', 'non public problems listed in recent problems stats');
+
 done_testing();

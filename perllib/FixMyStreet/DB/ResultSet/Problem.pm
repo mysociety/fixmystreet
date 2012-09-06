@@ -85,7 +85,8 @@ sub _recent {
     $key .= ":$site_key:$num";
 
     my $query = {
-        state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+        non_public => 0,
+        state      => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     };
     $query->{photo} = { '!=', undef } if $photos;
 
@@ -141,6 +142,7 @@ sub around_map {
     $attr->{rows} = $limit if $limit;
 
     my $q = {
+            non_public => 0,
             state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
             latitude => { '>=', $min_lat, '<', $max_lat },
             longitude => { '>=', $min_lon, '<', $max_lon },

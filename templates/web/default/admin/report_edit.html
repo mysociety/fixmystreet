@@ -40,6 +40,7 @@
 <li>[% loc('Extra data:') %] [% problem.extra ? 'Yes' : 'No' %]</li>
 <li>[% loc('Going to send questionnaire?') %] [% IF problem.send_questionnaire %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</li>
 <li><label for="flagged">[% loc('Flagged:') %]</label> <input type="checkbox" name="flagged"[% ' checked' IF problem.flagged %]></li>
+<li><label for="non_public">[% loc('Private:') %]</label> <input type="checkbox" name="non_public"[% ' checked' IF problem.non_public %]></li>
 
 [% IF problem.photo %]
 [% photo = problem.get_photo_params %]

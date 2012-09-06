@@ -595,6 +595,8 @@ sub setup_categories_and_councils : Private {
     my @category_options = ();       # categories to show
     my $category_label   = undef;    # what to call them
     my %category_extras  = ();       # extra fields to fill in for open311
+    my %non_public_categories =
+      ();    # categories for which the reports are not public
 
     # FIXME - implement in cobrand
     if ( $c->cobrand->moniker eq 'emptyhomes' ) {
@@ -646,6 +648,8 @@ sub setup_categories_and_councils : Private {
 
                 $category_extras{ $contact->category } = $contact->extra
                     if $contact->extra;
+
+                $non_public_categories{ $contact->category } = 1 if $contact->non_public;
             }
             $seen{$contact->category} = 1;
         }
@@ -663,6 +667,7 @@ sub setup_categories_and_councils : Private {
     $c->stash->{category_label}   = $category_label;
     $c->stash->{category_options} = \@category_options;
     $c->stash->{category_extras}  = \%category_extras;
+    $c->stash->{non_public_categories}  = \%non_public_categories;
     $c->stash->{category_extras_json}  = encode_json \%category_extras;
     $c->stash->{extra_name_info} = $first_council->{id} == COUNCIL_ID_BROMLEY ? 1 : 0;
 
@@ -870,6 +875,10 @@ sub process_report : Private {
                 description => $field->{description},
                 value => $c->request->param( $field->{code} ) || '',
             };
+        }
+
+        if ( $c->stash->{non_public_categories}->{ $report->category } ) {
+            $report->non_public( 1 );
         }
 
         $c->cobrand->process_extras( $c, $contacts[0]->area_id, \@extra );

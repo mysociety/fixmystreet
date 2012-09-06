@@ -301,6 +301,7 @@ sub update_contacts : Private {
         $contact->email( $email );
         $contact->confirmed( $c->req->param('confirmed') ? 1 : 0 );
         $contact->deleted( $c->req->param('deleted') ? 1 : 0 );
+        $contact->non_public( $c->req->param('non_public') ? 1 : 0 );
         $contact->note( $c->req->param('note') );
         $contact->whenedited( \'ms_current_timestamp()' );
         $contact->editor( $editor );
@@ -640,6 +641,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         }
 
         my $flagged = $c->req->param('flagged') ? 1 : 0;
+        my $non_public = $c->req->param('non_public') ? 1 : 0;
 
         # do this here so before we update the values in problem
         if (   $c->req->param('anonymous') ne $problem->anonymous
@@ -647,8 +649,10 @@ sub report_edit : Path('report_edit') : Args(1) {
             || $c->req->param('email')  ne $problem->user->email
             || $c->req->param('title')  ne $problem->title
             || $c->req->param('detail') ne $problem->detail
-            || $flagged != $problem->flagged )
+            || $flagged != $problem->flagged
+            || $non_public != $problem->non_public )
         {
+            warn "edited";
             $edited = 1;
         }
 
@@ -658,6 +662,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         $problem->state( $c->req->param('state') );
         $problem->name( $c->req->param('name') );
         $problem->flagged( $flagged );
+        $problem->non_public( $non_public );
 
         if ( $c->req->param('email') ne $problem->user->email ) {
             my $user = $c->model('DB::User')->find_or_create(

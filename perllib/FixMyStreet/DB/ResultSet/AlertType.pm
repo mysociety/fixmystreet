@@ -65,6 +65,9 @@ sub email_alerts ($) {
             # call checks if this is the host that sends mail for this cobrand.
             next unless $cobrand->email_host;
 
+            # this is for the new_updates alerts
+            next if $row->{non_public} and $row->{user_id} != $row->{alert_user_id};
+
             my $hashref_restriction = $cobrand->site_restriction( $row->{cobrand_data} );
 
             FixMyStreet::App->model('DB::AlertSent')->create( {
@@ -151,6 +154,7 @@ sub email_alerts ($) {
             where nearby.problem_id = problem.id
             and problem.user_id = users.id
             and problem.state in ($states)
+            and problem.non_public = 'f'
             and problem.confirmed >= ? and problem.confirmed >= ms_current_timestamp() - '7 days'::interval
             and (select whenqueued from alert_sent where alert_sent.alert_id = ? and alert_sent.parameter::integer = problem.id) is null
             and users.email <> ?
