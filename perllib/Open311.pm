@@ -24,6 +24,7 @@ has always_send_latlong => ( is => 'ro', isa => 'Bool', default => 1 );
 has send_notpinpointed => ( is => 'ro', isa => 'Bool', default => 0 );
 has basic_description => ( is => 'ro', isa => 'Bool', default => 0 );
 has use_service_as_deviceid => ( is => 'ro', isa => 'Bool', default => 0 );
+has use_extended_updates => ( is => 'ro', isa => 'Bool', default => 0 );
 
 before [
     qw/get_service_list get_service_meta_info get_service_requests get_service_request_updates
@@ -275,17 +276,22 @@ sub _populate_service_request_update_params {
     my ( $firstname, $lastname ) = ( $name =~ /(\w+)\.?\s+(.+)/ );
 
     my $params = {
-        update_id_ext => $comment->id,
         updated_datetime => DateTime::Format::W3CDTF->format_datetime($comment->confirmed_local->set_nanosecond(0)),
         service_request_id => $comment->problem->external_id,
-        service_request_id_ext => $comment->problem->id,
         status => $comment->problem->is_open ? 'OPEN' : 'CLOSED',
         email => $comment->user->email,
         description => $comment->text,
-        public_anonymity_required => $comment->anonymous ? 'TRUE' : 'FALSE',
         last_name => $lastname,
         first_name => $firstname,
     };
+
+    if ( $self->use_extended_updates ) {
+        $params->{public_anonymity_required} = $comment->anonymous ? 'TRUE' : 'FALSE',
+        $params->{update_id_ext} = $comment->id;
+        $params->{service_request_id_ext} = $comment->problem->id;
+    } else {
+        $params->{update_id} = $comment->id;
+    }
 
     if ( $comment->photo ) {
         my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($comment->cobrand)->new();
