@@ -534,12 +534,11 @@ sub delete_problems_for_council {
 sub create_problems_for_council {
     my ( $mech, $count, $council, $title, $params ) = @_;
 
-    my $dt = DateTime->now() || $params->{dt};
+    my $dt = $params->{dt} || DateTime->now();
 
-    my $user =
+    my $user = $params->{user} ||
       FixMyStreet::App->model('DB::User')
-      ->find_or_create( { email => 'test@example.com', name => 'Test User' } )
-      or $params->{user};
+      ->find_or_create( { email => 'test@example.com', name => 'Test User' } );
 
     delete $params->{user};
     delete $params->{dt};
