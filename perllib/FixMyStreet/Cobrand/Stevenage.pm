@@ -1,4 +1,4 @@
-package FixMyStreet::Cobrand::Barnet;
+package FixMyStreet::Cobrand::Stevenage;
 use parent 'FixMyStreet::Cobrand::UKCouncils';
 
 use strict;
