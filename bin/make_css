@@ -18,10 +18,11 @@ compass compile --output-style compressed $DIRECTORY/cobrands/fixmystreet
 compass compile --output-style compressed $DIRECTORY/cobrands/bromley
 compass compile --output-style compressed $DIRECTORY/cobrands/barnet
 compass compile --output-style compressed $DIRECTORY/cobrands/zurich
+compass compile --output-style compressed $DIRECTORY/cobrands/stevenage
 compass compile --output-style compressed $DIRECTORY/cobrands/default
 
 # The rest are plain sass
-for scss in `find $DIRECTORY -name "*.scss" -exec dirname {} \; | uniq | grep -v "cobrands/\(fixmystreet\|bromley\|barnet\|default\|zurich\)"`
+for scss in `find $DIRECTORY -name "*.scss" -exec dirname {} \; | uniq | grep -v "cobrands/\(fixmystreet\|bromley\|barnet\|stevenage\|default\|zurich\)"`
 do
     sass --scss --update --style compressed $scss
 done
