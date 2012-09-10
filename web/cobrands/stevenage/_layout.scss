@@ -1,0 +1,1047 @@
+@import "compass";
+@import "../fixmystreet/_mixins";
+
+//hacks for desk/mob only stuff
+.desk-only {
+    display: block;
+}
+.mob-only {
+    display: none;
+}
+
+body {
+  background: #1A1A1A url(/cobrands/fixmystreet/images/tile.jpg) 0 0 repeat;
+}
+
+h1 {
+    margin-top: 0;
+}
+
+// Page wrapper and header bits follow
+
+.container{
+  margin: 0 auto;
+  padding: 0em;
+  width: 60em;
+  position: relative;
+  z-index:1;
+}
+
+//z-index stack order gets reset to 0 in ie6/7 if you position anything,
+//so to fix things we give it a high value (don't ask me why)
+//see: http://brenelz.com/blog/squish-the-internet-explorer-z-index-bug/
+//this affects #site-logo
+.ie6, .ie7 {
+  .container {
+    z-index:100;
+  }
+}
+
+.wrapper{
+  display: table;
+  caption-side: top;
+  width: 100%;
+  .table-cell {
+    display:table-cell;
+  }
+}
+
+//pad the top of the wrapper to allow space for the menu to fit in
+//when its positioned absolute below
+.ie6, .ie7 {
+  .wrapper {
+    padding-top:4em;
+  }
+}
+
+.nav-wrapper{
+  display: table-caption;
+  .nav-wrapper-2{
+    width: 100%;
+    min-height: 4em;
+    position: absolute;
+    border-top:4px solid #1a1a1a;
+    @include border-image(url(/cobrands/fixmystreet/images/tile-y-border.jpg) 4 0 0 0);
+    border-left:0;
+    border-right:0;
+    z-index:2;
+  }
+}
+
+//position absolute the menu as ie doesn't like display:table
+.ie6, .ie7 {
+  .nav-wrapper {
+    position: absolute;
+    top:0;
+    left:0;
+    width:100%;
+    .nav-wrapper-2 {
+      // position static as well so we fix lots of the z-index issues
+      position:static;
+    }
+  }   
+}
+
+// Resets a lot of the mobile styling. #site-header only used to help position logo on desktop
+#site-header {
+  height: auto;
+  background: none;
+  border-top: 0px;
+  .container {
+    position: static;//reset position so the nav links become clickable
+  }
+}
+#site-logo {
+  top: 0.9em;
+  position: absolute;
+  z-index: 3;
+}
+.ie6, .ie7 {
+  #site-header {
+    height:3em;
+    .container {
+      //ie broken z-index bug: the site-logo won't appear if we don't do this
+      //doesn't seem to render the nav link unclickable like in other browsers
+      position: relative;
+    }
+  }
+  #site-logo {
+    position: absolute;
+    top:-3.25em;
+  }
+}
+#nav-link {
+  left:-999999px;
+}
+#main-nav{
+  margin: 0 auto;
+  padding: 0em;
+  width: 60em;
+  ul{
+    list-style: none;
+    padding: 0px;
+    margin: 0px;
+    float:right;
+    li{
+      list-style: none;
+      display: inline;
+      margin: 0px;
+      padding: 0px;
+      float:left;
+      a,
+      span {
+        display: block;
+        color:#fff;
+        background: none;  
+        border-bottom: none;      
+      }
+    }
+    &#main-menu{
+      li{
+        a, span{
+          padding: 0.75em;
+          font-size: 0.9em;
+        }
+        a:hover{
+          background:#444;
+          @include background(linear-gradient(#000, #444 10%, #444 95%, #111));
+        }
+        a.report-a-problem-btn {
+          color: $primary_text;
+          background: $primary;
+          padding:0.25em;
+          margin:0.5em;
+          color:#333;
+          @include border-radius(0.25em);
+          &:hover {
+            background:$primary/1.1;
+          }
+        }
+        span {
+          color:$primary;
+        }
+      }
+    }
+    &#mysoc-menu{
+      padding: 0em 0.5em;
+      margin-left: 0.25em;
+      background:$primary url(/cobrands/fixmystreet/images/tile-y.jpg);
+      @include border-radius(0 0 0.375em 0.375em);
+      li{
+        a{
+          background:none;
+          color:#000;
+          text-transform: uppercase;
+          font-size: 0.6875em;
+          padding: 1.3em 0.7em 1em 0.7em;
+          &#mysoc-logo {
+            width:84px;
+            height:16px;
+            background-position: -20px -5px;
+            opacity: 0.8;
+            &:hover {
+              opacity: 1;
+            }
+          }
+          &:hover{
+            color:#fff;
+          }
+        }
+      }
+    }
+  }
+}
+.ie7 #main-nav ul#mysoc-menu li a#mysoc-logo {
+    background-position: -260px -43px;
+}
+
+// .content Is the white box
+
+// The narrow single column box
+.content {
+  width: 27em;
+  margin-top: 3em;
+  margin-bottom: -1em;
+  margin-left: 0.5em;
+  padding: 1em 1em 3em;
+  background: #fff;
+  @include box-shadow(0px 0px 6px 1px #000);
+}
+.ie6, .ie7, .ie8  {
+  .content {
+    // If no box-shadow, just want a boring black border to stand it out from the map.
+    border: 1px solid #666;
+    //take off margins so we line up properly
+    margin: 0 0 0 0.5em;
+  }
+}
+
+// map page - has fixed header and different styling
+body.mappage {
+  .container {
+    width: auto;
+  }
+  .content {
+    float:left;
+  }
+  #main-nav ul#main-menu li a,
+  #main-nav ul#main-menu li span {
+    padding: 1.4em 0.75em 1.35em 0.75em;
+  }
+  #main-nav ul#main-menu li a.report-a-problem-btn {
+    padding: 0.5em;
+    margin:0.9em 0.25em 0.85em 0.25em;
+  }
+  .nav-wrapper{
+    .nav-wrapper-2{
+      position: fixed;
+      background: #222;
+      @include background(linear-gradient(#000, #222 10%, #222 90%, #000));
+    }
+  }
+  #site-logo{
+    position: fixed;
+  }
+}
+.ie6, .ie7 {
+  body.mappage {
+    // The below is *mandatory* to allow pins/zoom to be clickable in IE6/7. Do NOT remove.
+    .container {
+      float: left;
+      width: 27em;
+      margin-left: 0.7em;
+    }
+    .nav-wrapper{
+      z-index:1;
+      .nav-wrapper-2 {
+        position:static;
+      }
+    }
+    #site-logo {
+      position: absolute;
+    }
+  }
+}
+//ie8 needs different stuff on .nav-wrapper so we 
+//have to define all the rest of it again as this resets
+//the z-index base yet again :S
+.ie8 {
+  body.mappage {
+    .nav-wrapper{
+      position: relative;
+      z-index:0;
+      .nav-wrapper-2 {
+        position:static;
+      }
+    }
+    #site-logo {
+      position: absolute;
+    }
+  }
+}
+
+
+
+// full width page
+body.fullwidthpage {
+  .content {
+    width: 57em;
+  }
+  .intro {
+    width:40em;
+  }
+}
+// two thirds width page, also has option for a sidebar which can be sticky or not
+body.twothirdswidthpage {
+  .content {
+    width:40em;
+    position: relative;
+    aside {
+      background:#eee;
+      position:absolute;
+      left:42em;
+      top:0;
+      z-index: -1;
+      width:13em;
+      padding:1em;
+      @include box-shadow(0px 0px 6px 1px #000);
+      h2 {
+        margin-top: 0;
+      }
+      img {
+        margin-bottom: 0.25em;
+      }
+    }
+    .sticky-sidebar {
+      position: absolute;
+      left:42em;
+      z-index: -1;
+      aside {
+        position: fixed;
+        top:7em;
+        left:auto;
+      }
+    }
+  }
+}
+//as ie6 doesn't like 'fixed' we will make it absolute again
+.ie6 body.twothirdswidthpage .content .sticky-sidebar {
+  position:static;
+  aside {
+    position:absolute;
+    left:42em;
+    top:0;
+  }
+}
+
+
+// table wrapper - this enables anything to become a
+// table with div children as table cells
+.tablewrapper {
+  display:table;
+  width:100%;
+  padding:0 0 1em 0;
+  >div {
+    display:table-cell;
+    width:50%;
+  }
+  .full-width {
+    width:auto;
+    margin:0;
+  }
+}
+
+//fix table to be a block for ie, float the children
+.ie6, .ie7 {
+  .tablewrapper {
+    display:block;
+    div {//ie6 doesn't support '>div', so we'll go with the somewhat risker 'div'
+      width:48%;
+      display:block;
+      float: left;
+      border:none !important;
+    }
+  }
+}
+
+// adds border to the top and goes full width
+.bordered {
+  margin:0 -1em;
+  padding:0 1em;
+  width:auto;
+  border-top:0.25em solid $primary;
+}
+
+//footer blocks
+#footer-mobileapps {
+  border-right:1em solid #fff;
+  background:none;
+  padding:0;
+  @include box-shadow(inset rgba(0, 0, 0, 0) 0 0 0);
+  h2 {
+    color:#222;
+    margin-top:0;
+  }
+  ul {
+    @include list-reset;
+    li {
+      border-bottom:none;
+      float:left;
+      margin:0 1em 1em 0;
+      a {
+        color:#222;
+        padding:0;
+        width: 96px;
+        height: 32px;
+        margin:0 auto;
+        text-indent: -999999px;
+        background: url(/cobrands/fixmystreet/images/sprite.png) -12px -3610px no-repeat;
+        opacity: 0.8;
+        &:hover {
+          opacity: 1;
+        }
+        &.m-app-iphone {
+          background-position: -12px -3610px;
+        }
+        &.m-app-droid {
+          background-position: -12px -3756px;
+        }
+        &.m-app-nokia {
+          background-position: -12px -3820px;
+          width:74px;
+        }
+      }
+    }
+  }
+}
+.ie6, .ie7 {
+  #footer-mobileapps {
+      margin:0 0.5em;
+      margin-right:2%;
+  }
+}
+.ie6 #footer-mobileapps ul li a {
+  background:url(/cobrands/fixmystreet/images/ie_mobileapps.gif) -1px -1px no-repeat;
+  &.m-app-droid {
+    background-position: -1px -148px;
+  }
+  &.m-app-nokia {
+    background-position: -1px -212px;
+    width:74px;
+  }
+}
+
+#footer-help {
+  border-left:1em solid #fff;
+  ul {
+    display:table;
+    li {
+      display:table-cell;
+      border-bottom:none;
+      &:last-child {
+        border-left:1.25em solid #fff;
+      }
+    }
+  }
+}
+.ie6, .ie7 {
+  #footer-help {
+    margin-left:2%;
+    ul {
+      width:100%;
+      li {
+        float:left;
+        width:45%
+      }
+    }
+  }
+}
+
+
+// map box (fallback for non js really as most users
+// will have fullscreen map)
+#map_box{
+  position: absolute;
+  height: 29em;
+  width: 29em;
+  right: 1em;
+  top: 3em;
+  z-index:1;
+}
+
+// Pull OpenLayers navigation down a bit
+#fms_pan_zoom {
+  top: 4.75em !important;
+}
+
+// push zoom back over to right
+#fms_pan_zoom_zoomin {
+  left:auto !important;
+  right:30px;
+  top:130px !important;
+}
+#fms_pan_zoom_zoomout {
+  left:auto !important;
+  right:30px;
+  top:174px !important;
+}
+
+.olControlAttribution {
+  bottom:0.5em !important;
+  left: auto !important;
+}
+
+#sub_map_links {
+  left:auto;
+  bottom:auto;
+  bottom:2em;
+  #map_links_toggle {
+    display:block;
+    cursor: pointer;
+    position:absolute;
+    left:-1em;
+    width:1em;
+    height:100%;
+    background:#000 url(/cobrands/fixmystreet/images/sprite.png) right -4119px no-repeat;
+    @include border-radius(0.25em 0 0 0.25em);
+    &:hover {
+      left:-1.5em;
+      //use border so we don't have to redefine the background-position
+      border-right:0.5em solid #000;
+    }
+    &.closed {
+      background-position: right -4159px;
+    }
+  }
+}
+.ie6 #sub_map_links #map_links_toggle {
+  height:1.75em;
+  background:#000 url('images/ie_sub_map_links_sprite.gif') center -143px no-repeat;
+  &.closed {
+    background-position: center -183px;
+  }
+}
+
+// log in bit, pokes above the .content div
+#user-meta{
+  display:block;
+  position: relative;
+  max-width: 57em;
+  margin:0 auto;
+  p {
+    @include inline-block;
+    position:absolute;
+    top:1em;
+    height:2em;
+    padding:0.25em 6em 0.5em 0.5em;
+    @include box-shadow(rgba(0, 0, 0, 0.6) 0px 0px 4px 1px);
+    a {
+      top:0.5em;
+      right:0.5em;
+      font-size:0.6875em;
+      padding:0.5em 0.75em;
+      line-height:1em;
+      &:hover {
+        text-decoration:none;
+        background:#444;
+      }
+    }
+  }
+}
+.ie6, .ie7 {
+  #user-meta {
+    z-index:1;
+    p {
+      top:-2em;
+    }
+  }
+}
+.ie6 #user-meta {
+  width:57em; //ie6 doesn't like max-width
+}
+
+
+
+// Wraps around #key-tools box - sticks to the bottom of the screen on desktop
+.shadow-wrap {
+  position:fixed;
+  z-index:10; //this is just to ensure anythign inside .content that has position set goes sites it
+  bottom: 0;
+  width: 29em;
+  overflow: hidden;
+  padding-top: 3em;
+  ul#key-tools {
+    border-top: 0.25em solid $primary;
+    margin: 0;
+    @include box-shadow(-0em 0px 1em 1em #fff);
+    li {
+      border:none;
+      a, input[type=submit] {
+        font-size: 0.75em;
+        color:#666;
+        padding: 0.5em 1.5em 0.5em 0;
+        text-transform:none;
+        &.abuse {
+          background-image:url(/cobrands/fixmystreet/images/sprite.png);
+          background-position:right -2935px;
+        }
+        &.feed {
+          background-image:url(/cobrands/fixmystreet/images/sprite.png);
+          background-position:right -3074px;
+        }
+        &.chevron {
+          background-image:url(/cobrands/fixmystreet/images/sprite.png);
+          background-position:right -3225px;
+        }
+        &.hover {
+          background-image:url(/cobrands/fixmystreet/images/sprite.png);
+          background-position:right -1876px;
+        }
+      }
+    }
+    &.singleton {
+      li {
+        text-align:right;
+        a {
+          padding-right:3em;
+        }
+      }
+    }
+  }
+  &.static {
+    padding:0 0 1em 0;
+    position: static;
+  }
+}
+// The padding is for the fading out when it's fixed positioned, which it isn't in IE6.
+.ie6 .shadow-wrap {
+  padding-top: 0;
+}
+
+// pokes over the RHS with a little triangle
+.big-green-banner {
+  top:auto;
+  right:-1.25em;
+  margin-left:-2em;
+  font-size:1.375em;
+  padding:1em 3em 1em 1em;
+  background: $contrast1 url(/cobrands/fixmystreet/images/sprite.png) right -2188px no-repeat;
+  &:before {
+    right:0;
+    left:auto;
+    top:-0.5em;
+    position: absolute;
+    border-top: 0.5em solid transparent;
+    border-left: 0.5em solid $contrast1_dark;
+    border-bottom:none;
+  }
+  span {
+    display: block;
+    font-size: 80%;
+    padding-top: 0.5em;
+  }
+}
+.ie6 .big-green-banner {
+  background: $contrast1 url(/cobrands/fixmystreet/images/ie_green_chevron.gif) right center no-repeat;
+}
+
+.banner {
+  // state banners
+  p {
+    top:-2.25em;
+    padding:1em;
+    &:before {
+      left:-0.75em;
+      border-left: 0.75em solid transparent;
+      border-bottom: 0.75em solid #888;
+    }
+    &#fixed {
+      padding-top:5em;
+      background-image:url(/cobrands/fixmystreet/images/sprite.png);
+      background-position:-324px -326px;
+      background-repeat:no-repeat;
+      &:before {
+        border-bottom: 0.75em solid $contrast1_dark;
+      }
+    }
+  }
+}
+.ie6 .banner p {
+  top:-1.5em;
+  &#fixed {
+    background-image:url(/cobrands/fixmystreet/images/ie_fixed.gif);
+    background-position:center 0.75em;
+  }
+}
+
+
+// for pulling elements fullwidth regardless
+// of .contents' padding
+.full-width{
+  margin: 0 0 0em -1em;
+  width: 29em;
+}
+
+/*FORMS*/
+input[type=text],
+input[type=password],
+input[type=email],
+textarea{
+    max-width: 25em;
+}
+
+/* form errors */
+div.form-error,
+p.form-error {
+  display:block;
+}
+
+input.form-error,
+textarea.form-error {
+  @include border-radius(0 0 0.25em 0.25em);
+}
+
+
+// Report a problem sidebar notes
+#report-a-problem-sidebar {
+  position:absolute;
+  z-index:-1;//push behind .content, .container resets z-index for this
+  left:29.5em;
+  top:5em;
+  width:15em;
+  @include box-shadow(rgba(0, 0, 0, 0.6) 0px 0px 4px 1px);
+  .sidebar-tips {
+    background:#eeeeee;
+    padding:1em;
+    font-size:0.75em;
+  }
+  .sidebar-notes {
+    background:#333333;
+    padding:1em;
+    color:#ffffff;
+    font-size:0.75em;
+  }
+}
+.ie6, .ie7 {
+  #report-a-problem-sidebar, .general-sidebar-notes {
+    left: 29em; // 0.5em left margin gone on .content in IE6/7, so reduce this accordingly.
+  }
+}
+
+.no-js .general-sidebar-notes,
+.no-js #report-a-problem-sidebar {
+  position: static;
+  width: auto;
+  @include box-shadow(rgba(0, 0, 0, 0), 0, 0, 0);
+  .sidebar-tips,
+  .sidebar-notes {
+    font-size:1em;
+  }
+}
+
+// More general sidebar notes
+.general-sidebar-notes {
+  position: absolute;
+  left:29.5em;
+  width:15em;
+  z-index: -1; //push behind .content, .container resets z-index for this
+  @include box-shadow(rgba(0, 0, 0, 0.6) 0px 0px 4px 1px);
+  p {
+    background:#eeeeee;
+    font-size:0.75em;
+    padding:0.75em;
+    margin:0;
+    &.dark {
+      background:#333333;
+      color:#ffffff;
+    }
+  }
+}
+
+// Frontpage
+
+body.frontpage {
+  .table-cell {
+    .content {
+      margin: 1em auto 0;
+    }
+  }
+  .nav-wrapper-2{
+    height:6em;
+  }
+  #site-header{
+    height:8em;
+  }
+  #site-logo{
+    top:3em;
+    width: 300px;
+    height: 60px;
+    background: url('/cobrands/fixmystreet/images/sprite.png') -2px -108px no-repeat;
+  }
+  #user-meta {
+    z-index:10;
+    p {
+      top:-4em;
+      right:0;
+      color:$primary;
+      background:none;
+      @include box-shadow(rgba(0, 0, 0, 0) 0 0 0);
+      a {
+        background:#fff;
+        color:#1a1a1a;
+        &:hover {
+          background:#ddd;
+        }
+      }
+    }
+  }
+}
+//logo fix
+.ie6, .ie7, .ie8 {
+  body.frontpage {
+    #site-logo {
+      position:relative;
+      width:60em;
+      margin:0 auto;
+    }
+  }
+}
+.ie6, .ie7 {
+  body.frontpage {
+    #site-header {
+      height:4em;
+    }
+    #site-logo {
+      top:-1em;
+    }
+    #user-meta p {
+      top:-2em;
+    }
+  }
+}
+.ie6 body.frontpage #site-logo {
+  background:url(/cobrands/fixmystreet/images/ie_front_logo.gif) 0 0 no-repeat;
+}
+
+// big yellow bit full screen width
+#front-main {
+  color: $primary_text;
+  background: $primary url(/cobrands/fixmystreet/images/tile-y.jpg);
+  margin: 0;
+  padding: 1em;
+  #front-main-container {
+    max-width: 57em;
+    margin:0 auto;
+  }
+  h2 {
+    font-style:normal;
+    margin:0;
+    color:#222;
+  }
+  #postcodeForm {
+    background:none;
+    overflow:hidden;
+    padding-bottom: 0;
+    margin-right:0.5em;
+    label {
+      margin:0.5em 0;
+    }
+    div {
+      display:block;
+      margin:0 auto;
+      width:20em;
+      overflow:hidden;
+      input#pc {
+        display:block;
+        float:left;
+        padding:0.25em 0.5em;
+        height:2em;
+        width:17em;
+      }
+      input#submit {
+        display:block;
+        float:right;
+        width:3em;
+        height:2.3em;
+        padding-top:0.2em;
+      }
+    }
+  }
+  a {
+    color: $primary_text;
+    text-decoration: underline;
+    &:hover {
+      text-decoration: none;
+    }
+  }
+  a#geolocate_link {
+    background:none;
+    color:#222;
+    text-decoration: none;
+    padding-bottom: 0;
+    &:hover {
+      text-decoration:underline;
+      background:none;
+    }
+  }
+}
+.ie7 #front-main {
+  #postcodeForm {
+    div {
+      input#pc {
+        height:1.5em;
+        width:16em;
+      }
+    }
+  }
+}
+
+#front-howto {
+  border-right:1em solid #fff;
+  #front_stats {
+    background:none;
+    color: #222;
+    border-top:0.25em solid $primary;
+    padding-top:1em;
+    div {
+      big {
+        color:$primary;
+        font-size:3.2308em;
+      }
+    }
+  }
+}
+.ie6, .ie7 {
+  #front_stats {
+    div {
+      width:8em;
+      float:left;
+    }
+  }
+}
+
+#front-recently {
+  border-left:1em solid #fff;
+}
+
+#front-howto h2,
+#front-recently h2 {
+   margin-top:0;
+}
+
+
+.ie6, .ie7 {
+  .tablewrapper {
+    #front-howto {
+      margin-right:2%;
+    }
+    #front-recently {
+      margin-left:2%;
+    }
+  }
+}
+
+
+
+
+/* MEDIA QUERIES */
+@media only screen and (min-width: 48em) and (max-width: 61em) {
+  .container {
+      width: 100%;
+  }
+  /*FORMS*/
+  input[type=text],
+  input[type=password],
+  input[type=email],
+  textarea{
+    width: 95%;
+  }
+
+  // Remove central positioning of mainmenu and float right.
+  // Left padding is to ensure no overlap of the site-logo
+  // Background styling replicates header styling
+
+  #main-nav{
+    width: auto;
+    float:right;
+    padding-left: 180px;
+  }
+  .nav-wrapper {
+  //   width:auto;
+    .nav-wrapper-2 {
+      // width:auto;
+    }
+  }
+
+  //Main menu drops below logo and my-soc menu
+  #main-menu{
+    margin-top: 3em;
+  }
+  //therefore header needs to open up
+  #site-header {
+    height:6em;
+  }
+  // Pull OpenLayers navigation down a bit more
+  #fms_pan_zoom {
+    top: 7em !important;
+  }
+
+  //fix the left margin on login bit
+  #user-meta {
+    p {
+      left:1em;
+    }
+  }
+  body.frontpage {
+    #user-meta {
+      p {
+        left:auto;
+      }
+    }
+  }
+
+  //Map becomes percentage width
+  #map_box{
+    left: 32em;
+    width:auto;
+  }
+
+  //put the RAP notes into the main copy area
+  // Note: Also used for the non-JS case.
+  #report-a-problem-sidebar,
+  .general-sidebar-notes {
+    position: static;
+    width: auto;
+    @include box-shadow(rgba(0, 0, 0, 0), 0, 0, 0);
+    .sidebar-tips,
+    .sidebar-notes {
+      font-size:1em;
+    }
+  }
+
+  //Revert to mobile use of the .full-width class
+  .full-width{
+    width: auto;
+    margin: 0em -1em 0 -1em;
+  }
+
+  //make fullpage auto width
+  body.fullwidthpage .content {
+    width: auto;
+  }
+
+  //make twothirdswidthpage nearly as small as main
+  //.content: just enough to still fit the sidebar in
+  body.twothirdswidthpage {
+    .content {
+      width:30em;
+      .sticky-sidebar {
+        left:32em;
+        top:30em;
+        aside {
+          top:9em;
+        }
+      }
+    }
+  }
+}

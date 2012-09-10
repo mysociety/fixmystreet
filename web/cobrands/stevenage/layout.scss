@@ -1,60 +1,68 @@
+@font-face {
+  font-family: 'MuseoSans';
+  src: url('../fonts/MuseoSans_300-webfont.eot');
+  src: url('../fonts/MuseoSans_300-webfont.eot?#iefix') format('embedded-opentype'),
+       url('../fonts/MuseoSans_300-webfont.woff') format('woff'),
+       url('../fonts/MuseoSans_300-webfont.ttf') format('truetype'),
+       url('../fonts/MuseoSans_300-webfont.svg#MuseoSans300') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'MuseoSans';
+  src: url('../fonts/MuseoSans_300_Italic-webfont.eot');
+  src: url('../fonts/MuseoSans_300_Italic-webfont.eot?#iefix') format('embedded-opentype'),
+       url('../fonts/MuseoSans_300_Italic-webfont.woff') format('woff'),
+       url('../fonts/MuseoSans_300_Italic-webfont.ttf') format('truetype'),
+       url('../fonts/MuseoSans_300_Italic-webfont.svg#MuseoSans300Italic') format('svg');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'MuseoSans';
+  src: url('../fonts/MuseoSans_500-webfont.eot');
+  src: url('../fonts/MuseoSans_500-webfont.eot?#iefix') format('embedded-opentype'),
+       url('../fonts/MuseoSans_500-webfont.woff') format('woff'),
+       url('../fonts/MuseoSans_500-webfont.ttf') format('truetype'),
+       url('../fonts/MuseoSans_500-webfont.svg#MuseoSans500') format('svg');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'MuseoSans';
+  src: url('../fonts/MuseoSans_500_Italic-webfont.eot');
+  src: url('../fonts/MuseoSans_500_Italic-webfont.eot?#iefix') format('embedded-opentype'),
+       url('../fonts/MuseoSans_500_Italic-webfont.woff') format('woff'),
+       url('../fonts/MuseoSans_500_Italic-webfont.ttf') format('truetype'),
+       url('../fonts/MuseoSans_500_Italic-webfont.svg#MuseoSans500Italic') format('svg');
+  font-weight: bold;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Museo300-display';
+  src: url('../fonts/Museo300-Regular-webfont.eot');
+  src: url('../fonts/Museo300-Regular-webfont.eot?#iefix') format('embedded-opentype'),
+       url('../fonts/Museo300-Regular-webfont.woff') format('woff'),
+       url('../fonts/Museo300-Regular-webfont.ttf') format('truetype'),
+       url('../fonts/Museo300-Regular-webfont.svg#Museo300') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Opera has a bug (from around 10.5 upwards to current 11.6) with showing the
+ * table caption *at all* if the header is set to a font-face :( */
+noindex:-o-prefocus, #site-header {
+  font-family: sans-serif;
+}
+
+h3, h4 {
+    font-weight: bold;
+}
+
 @import "_colours";
-@import "../fixmystreet/_layout";
-
-/*
-Note: The fact that the below has to override the CSS, though it is for the
-default template, is a sign that the CSS is not best organised. It needs
-refactoring, and making more maintainable through the use of SMACSS, OOCSS
-and similar.
-*/
-
-body {
-    background: #6688ff;
-}
-
-#front-main {
-    color: $primary_text;
-    background: $primary;
-    // layout sets this because base has it slightly lighter
-    h2 {
-        color: $primary_text;
-    }
-    a#geolocate_link {
-        color: $primary_text;
-    }
-}
-
-.nav-wrapper {
-    .nav-wrapper-2 {
-        border-top: 4px solid $primary;
-        @include border-image(none);
-    }
-}
-body.mappage {
-    .nav-wrapper {
-        .nav-wrapper-2 {
-            background: $contrast1;
-        }
-    }
-}
-
-#main-nav {
-    ul {
-        li {
-            a, span {
-                color: #000;
-            }
-        }
-        &#main-menu {
-            li {
-                a:hover {
-                    background: $primary;
-                }
-            }
-        }
-        &#mysoc-menu {
-            background: $primary;
-        }
-    }
-}
+@import "_layout";
 
