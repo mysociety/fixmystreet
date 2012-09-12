@@ -4,11 +4,18 @@ use strict;
 use warnings;
 use FixMyStreet::App;
 use Open311::PopulateServiceList;
+use Getopt::Long::Descriptive;
 
+my ($opt, $usage) = describe_options(
+    '%c %o',
+    ['verbose|v',  "print out all services as they are found"],
+    ['help',       "print usage message and exit" ],
+);
+print($usage->text), exit if $opt->help;
 
 my $council_list = FixMyStreet::App->model('DB::Open311conf')->search( {
     send_method => 'Open311'
 } );
-my $p = Open311::PopulateServiceList->new( council_list => $council_list );
+my $p = Open311::PopulateServiceList->new( council_list => $council_list, verbose => $opt->verbose? 1:0 );
 
 $p->process_councils;
