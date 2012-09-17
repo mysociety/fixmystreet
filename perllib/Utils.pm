@@ -159,7 +159,6 @@ sub barnet_categories {
         }
     } else {
         return {
-            'Abandoned Vehicle'         => 468,
             'Accumulated Litter'        => 349,
             'Dog Bin'                   => 203,
             'Dog Fouling'               => 288,
