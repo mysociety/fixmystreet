@@ -170,13 +170,6 @@ sub rss_ward : Regex('^rss/(reports|area)$') : Args(2) {
     $url   .= '/' . $c->cobrand->short_name( $c->stash->{ward}    ) if $c->stash->{ward};
     $c->stash->{qs} = "/$url";
 
-    my @params;
-    push @params, $c->stash->{council}->{id} if $rss eq 'reports';
-    push @params, $c->stash->{ward}
-        ? $c->stash->{ward}->{id}
-        : $c->stash->{council}->{id};
-    $c->stash->{db_params} = [ @params ];
-
     if ( $rss eq 'area' && $c->stash->{ward} ) {
         # All problems within a particular ward
         $c->stash->{type}         = 'area_problems';
