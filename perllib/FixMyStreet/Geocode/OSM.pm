@@ -18,6 +18,7 @@ use File::Path ();
 use LWP::Simple qw($ua);
 use Memcached;
 use XML::Simple;
+use mySociety::Locale;
 
 my $osmapibase    = "http://www.openstreetmap.org/api/";
 my $nominatimbase = "http://nominatim.openstreetmap.org/";
