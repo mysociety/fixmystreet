@@ -79,8 +79,10 @@ sub send_service_request {
         }
 
         warn sprintf( "Failed to submit problem %s over Open311, response\n: %s\n%s", $problem->id, $response, $self->debug_details );
-        return 0;
+    } else {
+        warn sprintf( "Failed to submit problem %s over Open311, details:\n%s", $problem->id, $self->error);
     }
+    return 0;
 }
 
 sub _populate_service_request_params {
@@ -263,8 +265,10 @@ sub post_service_request_update {
         }
 
         warn sprintf( "Failed to submit comment %s over Open311, response - %s\n%s\n", $comment->id, $response, $self->debug_details );
-        return 0;
+    } else {
+        warn sprintf( "Failed to submit comment %s over Open311, details\n%s\n", $comment->id, $self->error);
     }
+    return 0;
 }
 
 sub _populate_service_request_update_params {
@@ -383,7 +387,6 @@ sub _post {
             $self->_process_error( $res->decoded_content ),
             $self->debug_details
         ) );
-        warn $self->error;
         return 0;
     }
 }
