@@ -37,9 +37,10 @@ my $p = FixMyStreet::App->model('DB::Problem')->new( {
     title => 'title',
     detail => 'detail',
     user => $u,
+    id => 1,
 } );
 
-my $expected_error = qr{.*request failed: 500 Can.t connect to 192.168.50.1:80 \([^)]*\).*};
+my $expected_error = qr{Failed to submit problem 1 over Open311}ism;
 
 warning_like {$o2->send_service_request( $p, { url => 'http://example.com/' }, 1 )} $expected_error, 'warning generated on failed call';
 
