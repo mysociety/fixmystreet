@@ -24,8 +24,8 @@ SSH.
 When your EC2 instance is launched, you will be able to log in as the
 `ubuntu` user.  This user can `sudo` freely to run commands as root.
 However, the code is actually owned by (and runs as) the `fms` user.
-After creating the instance, you will need edit one configuration file
-to set a couple of parameters in the file
+After creating the instance, you will need to edit a configuration
+file to set a couple of parameters.  That configuration file is
 `/home/fms/fixmystreet/conf/general.yml`.  You can edit the file with:
 
     ubuntu@ip-10-58-191-98:~$ sudo su - fms
