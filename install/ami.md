@@ -14,7 +14,7 @@ If you haven't used Amazon Web Services before, then you can get a
 Micro instance which will be [free for a
 year](http://aws.amazon.com/free/).
 
-The AMI can be found in the *EU West (Ireland)* region, with the ID
+The AMI can be found in the **EU West (Ireland)** region, with the ID
 `ami-73cacb07` and name "Basic FixMyStreet installation".
 
 When you create an EC2 instance based on that AMI, make sure that you
@@ -59,4 +59,4 @@ URL you set as `BASE_URL`.
 
 This basic installation uses the default cobrand, with a
 (deliberately) rather garish colour scheme.  You should then proceed
-to [customise your installation]((/customising/).)
+to [customise your installation](/customising/).
