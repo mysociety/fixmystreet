@@ -1,0 +1,270 @@
+#!/bin/sh
+
+# On a clean Debian squeeze or Ubuntu precise installation you should
+# be able to install FixMyStreet with:
+#
+#     curl https://raw.github.com/mysociety/fixmystreet/install-script/bin/pre-install-as-root | \
+#         sh -s fms whatever.compute.amazonaws.com
+#
+# ... where the first argument is the Unix user who will own the code
+# and the application will run as, and the second argument is the
+# public hostname for the server, which will be used for creating the
+# named virtualhost.
+
+set -e
+
+if [ $# -ne 2 ]
+then
+    echo "Usage: $0 <UNIX-USER> <HOST>"
+    exit 1
+fi
+
+UNIX_USER="$1"
+HOST="$2"
+
+FMS_DIRECTORY="/var/www/$HOST"
+FMS_REPOSITORY="$FMS_DIRECTORY/fixmystreet"
+
+REPOSITORY_URL=git://github.com/mysociety/fixmystreet.git
+BRANCH=install-script
+
+IP_ADDRESS_FOR_HOST="$(dig +short $HOST)"
+
+if [ x = x"$IP_ADDRESS_FOR_HOST" ]
+then
+    echo "The hostname $HOST didn't resolve to an IP address"
+    exit 1
+fi
+
+generate_locales() {
+    # If language-pack-en is present, install that:
+    apt-get install -y language-pack-en || true
+
+    # We get lots of locale errors if the en_GB.UTF-8 locale isn't
+    # present.  (This is from Kagee's script.)
+    if [ "$(locale -a | egrep -i '^en_GB.utf-?8$' | wc -l)" = "1" ]
+    then
+        echo "en_GB.utf8 activated and generated"
+    else
+        echo "en_GB.utf8 not generated"
+        if [ x"$(grep -c '^en_GB.UTF-8 UTF-8' /etc/locale.gen)" = x1 ]
+        then
+            echo "'en_GB.UTF-8 UTF-8' already in /etc/locale.gen we will only generate"
+        else
+            echo "Appending 'en_GB.UTF-8 UTF-8' and 'cy_GB.UTF-8 UTF-8'"
+            echo "to /etc/locale.gen for generation"
+            echo "\nen_GB.UTF-8 UTF-8\ncy_GB.UTF-8 UTF-8" >> /etc/locale.gen
+        fi
+        echo "Generating new locales"
+        locale-gen
+    fi
+}
+
+set_locale() {
+    echo 'LANG="en_GB.UTF-8"' > /etc/default/locale
+    export LANG="en_GB.UTF-8"
+}
+
+move_default_virtualhosts() {
+    # If there are any occurences of /var/www or /var/www/ in
+    # /etc/apache2/sites-available/(default|default-ssl) change them
+    # to /var/www/default and /var/www/default/ respectively:
+    for name in default default-ssl
+    do
+        ORIGINAL=/etc/apache2/sites-available/$name
+        sed -i -r \
+            -e 's,(/var/www/)([^A-Za-z0-9]|$),\1default/\2,g' \
+            -e 's,(/var/www)([^/A-Za-z0-9]|$),\1/default\2,g' \
+            $ORIGINAL
+    done
+    mkdir -p /var/www/default
+    cp /var/www/index.html /var/www/default
+}
+
+add_unix_user() {
+    # Create the required user if it doesn't already exist:
+    if id "$1" 2> /dev/null > /dev/null
+    then
+        echo "The user $1 already exists."
+    else
+        adduser --disabled-password --gecos 'The FixMyStreet User' "$1"
+    fi
+}
+
+add_postgresql_user() {
+    su -c "createuser --createdb --no-createrole --no-superuser '$1'" postgres || true
+}
+
+update_apt_sources() {
+    DISTRIBUTION="$(lsb_release -i -s)"
+    VERSION="$(lsb_release -c -s)"
+    if [ x"$DISTRIBUTION" = x"Ubuntu" ] && [ x"$VERSION" = x"precise" ]
+    then
+        cat > /etc/apt/sources.list.d/mysociety-extra.list <<EOF
+deb http://eu-west-1.ec2.archive.ubuntu.com/ubuntu/ precise multiverse
+deb-src http://eu-west-1.ec2.archive.ubuntu.com/ubuntu/ precise multiverse
+deb http://eu-west-1.ec2.archive.ubuntu.com/ubuntu/ precise-updates multiverse
+deb-src http://eu-west-1.ec2.archive.ubuntu.com/ubuntu/ precise-updates multiverse
+EOF
+    elif [ x"$DISTRIBUTION" = x"Debian" ] && [ x"$VERSION" = x"squeeze" ]
+    then
+        # Install the basic packages we require:
+        cat > /etc/apt/sources.list.d/mysociety-extra.list <<EOF
+# Debian mirror to use, including contrib and non-free:
+deb http://the.earth.li/debian/ squeeze main contrib non-free
+deb-src http://the.earth.li/debian/ squeeze main contrib non-free
+
+# Security Updates:
+deb http://security.debian.org/ squeeze/updates main non-free
+deb-src http://security.debian.org/ squeeze/updates main non-free
+
+# Debian Backports
+deb http://backports.debian.org/debian-backports squeeze-backports main contrib non-free
+deb-src http://backports.debian.org/debian-backports squeeze-backports main contrib non-free
+
+# mySociety repository
+deb http://debian.mysociety.org squeeze main
+EOF
+    else
+        echo Unsupport distribution and version combination $DISTRIBUTION $VERSION
+        exit 1
+    fi
+    apt-get update
+}
+
+clone_or_update_repository() {
+    # Clone the repository into place if the directory isn't already
+    # present:
+    if [ -d $FMS_REPOSITORY ]
+    then
+        echo the directory $FMS_REPOSITORY already exists
+        cd $FMS_REPOSITORY
+        git remote set-url origin "$REPOSITORY_URL"
+        git fetch origin
+        # Check that there are no uncommitted changes before doing a
+        # git reset --hard:
+        git diff --quiet || { echo "There were changes in the working tree in $FMS_REPOSITORY; exiting."; exit 1; }
+        git diff --cached --quiet || { echo "There were staged but uncommitted changes in $FMS_REPOSITORY; exiting."; exit 1; }
+        # If that was fine, carry on:
+        git reset --hard origin/"$BRANCH"
+        git submodule sync
+        git submodule update --recursive
+    else
+        PARENT="$(dirname $FMS_REPOSITORY)"
+        echo creating $PARENT
+        mkdir -p $PARENT
+        git clone --recursive --branch "$BRANCH" "$REPOSITORY_URL" "$FMS_REPOSITORY"
+    fi
+}
+
+install_apache() {
+    # Make sure that Apache is installed:
+    apt-get install -y apache2-mpm-worker libapache2-mod-fastcgi apache2-suexec
+
+    # Actually enable the suexec wrapper:
+    sed -i -r 's/^( *)#( *FastCgiWrapper.*)/\1\2/' /etc/apache2/mods-available/fastcgi.conf
+
+    # Since this may be run on an EC2 instance with very low memory,
+    # limit the number of FastCGI processes to 2:
+    if ! egrep '^ *FastCgiConfig -maxClassProcesses' /etc/apache2/mods-available/fastcgi.conf
+    then
+    sed '/<\/IfModule>/i\
+  FastCgiConfig -maxClassProcesses 2
+
+' /etc/apache2/mods-available/fastcgi.conf
+    fi
+
+    /etc/init.d/apache2 restart
+}
+
+install_website_packages() {
+    PACKAGES_FILE="$1/conf/packages.debian-squeeze"
+    xargs -a "$PACKAGES_FILE" apt-get -y install
+}
+
+add_website_to_apache() {
+    UNIX_USER="$1"
+    HOST="$2"
+    REPOSITORY="$3"
+
+    LOG_DIRECTORY="$(readlink -f $REPOSITORY/../logs)"
+    mkdir -p "$LOG_DIRECTORY"
+    chown -R "$UNIX_USER"."$UNIX_USER" "$LOG_DIRECTORY"
+
+    APACHE_CONFIG_FILE=$REPOSITORY/conf/httpd.conf
+
+    cp $APACHE_CONFIG_FILE-example $APACHE_CONFIG_FILE
+
+    cat > /etc/apache2/sites-available/"$HOST" <<EOF
+<VirtualHost *:80>
+    ServerName $HOST
+    DocumentRoot $REPOSITORY/web/
+
+    # Pull in the specific config
+    Include $APACHE_CONFIG_FILE
+
+    SuexecUserGroup $UNIX_USER $UNIX_USER
+
+    <Directory $REPOSITORY/web>
+        # You also need to enable cgi files to run as CGI scripts.  For example:
+        # on production servers these are run under fastcgi
+        Options +ExecCGI
+        AddHandler fastcgi-script .cgi
+        AllowOverride None
+    </Directory>
+
+    <Location /admin>
+        #
+        #  WARNING - enable auth here on production machine
+        #
+        Options +ExecCGI
+        AddHandler cgi-script .cgi
+    </Location>
+
+    Alias /admin/ $REPOSITORY/web-admin/
+
+    Alias /jslib/ $REPOSITORY/commonlib/jslib/"
+
+    LogLevel info
+    ErrorLog $LOG_DIRECTORY/error.log
+    CustomLog $LOG_DIRECTORY/access.log combined
+
+</VirtualHost>
+EOF
+
+    move_default_virtualhosts
+
+    a2ensite $HOST
+
+    a2enmod rewrite
+    a2enmod proxy_http
+    a2enmod expires
+    a2enmod headers
+    a2enmod suexec
+    a2enmod fastcgi
+
+    /etc/init.d/apache2 restart
+}
+
+generate_locales
+set_locale
+
+add_unix_user "$UNIX_USER"
+
+update_apt_sources
+
+# Install some packages that we will definitely need:
+apt-get install -y git-core lockfile-progs rubygems
+
+clone_or_update_repository $FMS_REPOSITORY
+
+chown -R "$UNIX_USER"."$UNIX_USER" "$FMS_DIRECTORY"
+
+install_apache
+install_website_packages "$FMS_REPOSITORY"
+
+add_postgresql_user "$UNIX_USER"
+
+add_website_to_apache "$UNIX_USER" "$HOST" "$FMS_REPOSITORY"
+
+su -l -c "$FMS_REPOSITORY/bin/install-as-user '$UNIX_USER' '$HOST'" "$UNIX_USER"

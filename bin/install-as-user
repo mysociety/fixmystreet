@@ -1,0 +1,126 @@
+#!/bin/sh
+
+set -e
+
+if [ $# -ne 2 ]
+then
+    echo "Usage: $0 <UNIX-USER> <HOST>"
+    exit 1
+fi
+
+UNIX_USER="$1"
+HOST="$2"
+DB_NAME="fixmystreet"
+
+# Check that the arguments we've been passed are sensible:
+
+IP_ADDRESS_FOR_HOST="$(dig +short $HOST)"
+
+if [ x = x"$IP_ADDRESS_FOR_HOST" ]
+then
+    echo "The hostname $HOST didn't resolve to an IP address"
+    exit 1
+fi
+
+if ! id "$UNIX_USER" 2> /dev/null > /dev/null
+then
+    echo "The user '$UNIX_USER' didn't exist."
+    echo "(You should have run \"sudo pre-install-as-root '$UNIX_USER' '$HOST'\" before this.)"
+    exit 1
+fi
+
+if [ "$(whoami)" != "$UNIX_USER" ]
+then
+    echo "This script should be run by the user '$UNIX_USER'."
+    exit 1
+fi
+
+FMS_DIRECTORY="/var/www/$HOST"
+FMS_REPOSITORY="$FMS_DIRECTORY/fixmystreet"
+FMS_LINK_DESTINATION="$HOME/fixmystreet"
+
+ln -sfn "$FMS_REPOSITORY" $FMS_LINK_DESTINATION
+cd "$FMS_REPOSITORY"
+
+# Add regularly scheduled tasks to cron:
+
+TEMPORARY_CRONTAB=$(mktemp)
+
+echo crontab file is $TEMPORARY_CRONTAB
+
+cat > $TEMPORARY_CRONTAB <<EOF
+# Timed tasks for FixMyStreet.
+#
+# Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
+# Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
+
+PATH=/usr/local/bin:/usr/bin:/bin
+
+5,10,15,20,25,30,35,40,45,50,55 * * * * "$FMS_REPOSITORY/commonlib/bin/run-with-lockfile.sh" -n "$FMS_REPOSITORY/send-reports.lock" "$FMS_REPOSITORY/bin/cron-wrapper send-reports" || echo "stalled?"
+0 0-8,10,11,13,14,16,17,19-23 * * * "$FMS_REPOSITORY/commonlib/bin/run-with-lockfile.sh" -n "$FMS_DIRECTORY/send-reports.lock" "$FMS_REPOSITORY/bin/cron-wrapper send-reports" || echo "stalled?"
+0 9,12,15,18 * * * "$FMS_REPOSITORY/commonlib/bin/run-with-lockfile.sh" -n "$FMS_DIRECTORY/send-reports.lock" "$FMS_REPOSITORY/bin/cron-wrapper send-reports --verbose" || echo "stalled?"
+2 * * * * "$FMS_REPOSITORY/commonlib/bin/run-with-lockfile.sh" -n "$FMS_DIRECTORY/send-alerts.lock" "$FMS_REPOSITORY/bin/cron-wrapper send-alerts" || echo "stalled?"
+0,30 * * * * "$FMS_REPOSITORY/commonlib/bin/run-with-lockfile.sh" -n "$FMS_DIRECTORY/send-questionnaires.lock" "$FMS_REPOSITORY/bin/cron-wrapper send-questionnaires" || echo "stalled?"
+5,10,15,20,25,30,35,40,45,50,55 * * * * "$FMS_REPOSITORY/commonlib/bin/run-with-lockfile.sh" -n "$FMS_DIRECTORY/send-comments.lock" "$FMS_REPOSITORY/bin/cron-wrapper send-comments" || echo "stalled?"
+5,10,15,20,25,30,35,40,45,50,55 * * * * "$FMS_REPOSITORY/commonlib/bin/run-with-lockfile.sh" -n "$FMS_DIRECTORY/fetch-comments.lock" "$FMS_REPOSITORY/bin/cron-wrapper fetch-comments" || echo "stalled?"
+0,30 * * * * "$FMS_REPOSITORY/commonlib/bin/run-with-lockfile.sh" -n "$FMS_DIRECTORY/open311-populate-service-list.lock" "$FMS_REPOSITORY/bin/cron-wrapper open311-populate-service-list" || echo "stalled?"
+
+# Once an hour, update the all reports stats
+13 * * * * "$FMS_REPOSITORY/bin/cron-wrapper" update-all-reports
+
+# Once a day on all servers
+39 2 * * * "$FMS_REPOSITORY/bin/problems-filed-graph"
+43 2 * * * "$FMS_REPOSITORY/bin/problem-creation-graph"
+00 8 * * * "$FMS_REPOSITORY/bin/check-for-zombies" $UNIX_USER
+
+EOF
+
+crontab $TEMPORARY_CRONTAB
+
+# Install the compass gem locally - it's required for generating the
+# CSS:
+
+export GEM_HOME="$FMS_DIRECTORY/gems"
+mkdir -p "$GEM_HOME"
+export GEM_PATH=
+export PATH="$GEM_HOME/bin:$PATH"
+
+gem install --no-ri --no-rdoc compass
+
+# Use compass to generate the CSS, if it doesn't seem to already
+# exist:
+
+if [ ! -f web/cobrands/default/base.css ]
+then
+    bin/make_css
+fi
+
+# Write sensible values into the config file:
+
+sed -r \
+    -e "s,^( *FMS_DB_HOST:).*,\\1 ''," \
+    -e "s,^( *FMS_DB_NAME:).*,\\1 '$DB_NAME'," \
+    -e "s,^( *FMS_DB_USER:).*,\\1 '$UNIX_USER'," \
+    -e "s,^( *BASE_URL:).*,\\1 'http://$HOST'," \
+    -e "s,^( *EMAIL_DOMAIN:).*,\\1 '$HOST'," \
+    -e "s,^( *CONTACT_EMAIL:).*,\\1 'help@$HOST'," \
+    conf/general.yml-example > conf/general.yml
+
+# Install the required Perl modules - this may take a very long time:
+
+cd "$FMS_REPOSITORY"
+bin/install_perl_modules
+
+# Generate po and mo files (these invocations taken from Kagee's script):
+
+./bin/cron-wrapper ./bin/make_emptyhomes_po
+./bin/cron-wrapper ./bin/make_emptyhomes_welsh_po
+
+commonlib/bin/gettext-makemo FixMyStreet
+
+# Tell the user what to do next:
+
+echo Installation complete - you should now be able to view the site at:
+echo   http://$HOST/
+echo Or you can run the tests by switching to the "'$UNIX_USER'" user and
+echo running: $FMS_REPOSITORY/bin/cron-wrapper prove -r t
