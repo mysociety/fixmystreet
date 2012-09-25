@@ -25,7 +25,7 @@ The script to run is `pre-install-as-root`, which takes two parameters:
 For example, if you wish to use a new user called `fms` and the
 hostname `fms.example.org`, you would run the script with:
 
-    curl https://raw.github.com/mysociety/fixmystreet/install-script/bin/pre-install-as-root | \
+    curl https://raw.github.com/mysociety/fixmystreet/master/bin/pre-install-as-root | \
         sudo sh -s fms fms.example.org
 
 Please be aware that the last part of the installation process,
