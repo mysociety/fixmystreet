@@ -223,7 +223,12 @@ add_website_to_apache() {
 
     Alias /admin/ $REPOSITORY/web-admin/
 
-    Alias /jslib/ $REPOSITORY/commonlib/jslib/"
+    # Set up commonlib jslib directory
+    Alias /jslib/ $REPOSITORY/commonlib/jslib/
+    <Location /jslib>
+        AddOutputFilter DEFLATE js
+        Header append Cache-Control "no-transform"
+    </Location>
 
     LogLevel info
     ErrorLog $LOG_DIRECTORY/error.log
