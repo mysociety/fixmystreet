@@ -3,7 +3,7 @@
 # On a clean Debian squeeze or Ubuntu precise installation you should
 # be able to install FixMyStreet with:
 #
-#     curl https://raw.github.com/mysociety/fixmystreet/install-script/bin/pre-install-as-root | \
+#     curl https://raw.github.com/mysociety/fixmystreet/master/bin/pre-install-as-root | \
 #         sh -s fms whatever.compute.amazonaws.com
 #
 # ... where the first argument is the Unix user who will own the code
@@ -26,7 +26,7 @@ FMS_DIRECTORY="/var/www/$HOST"
 FMS_REPOSITORY="$FMS_DIRECTORY/fixmystreet"
 
 REPOSITORY_URL=git://github.com/mysociety/fixmystreet.git
-BRANCH=install-script
+BRANCH=master
 
 IP_ADDRESS_FOR_HOST="$(dig +short $HOST)"
 
