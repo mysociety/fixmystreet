@@ -3,6 +3,19 @@ use strict;
 
 package PoChange;
 
+sub translate($$) {
+    my $file = shift;
+    my $s = shift;
+
+    if ( $file eq 'FixMyStreet-EmptyHomes' ) {
+        return fixmystreet_to_reportemptyhomes( $s );
+    } elsif ( $file eq 'FixMyBarangay' ) {
+        return fixmystreet_to_fixmybarangay( $s );
+    }
+
+    return $s;
+}
+
 # Takes a msgid from the main FixMyStreet .po file and
 # converts it to a msgid for the ReportEmptyHomes .po file
 sub fixmystreet_to_reportemptyhomes($) {
@@ -31,6 +44,16 @@ sub fixmystreet_to_reportemptyhomes($) {
     $s =~ s/All reports/Reports/;
     $s =~ s/Report an empty property/Report a property/;
     $s =~ s/Help/FAQs/;
+
+    return $s;
+}
+
+sub fixmystreet_to_fixmybarangay($) {
+    my $s = shift;
+
+    $s =~ s/FixMyStreet/FixMyBarangay/g;
+    $s =~ s/\bcouncil\b/barangay/g;
+    $s =~ s/\bCouncil\b/Barangay/g;
 
     return $s;
 }
