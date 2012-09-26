@@ -54,6 +54,8 @@ sub fixmystreet_to_fixmybarangay($) {
     $s =~ s/FixMyStreet/FixMyBarangay/g;
     $s =~ s/\bcouncil\b/barangay/g;
     $s =~ s/\bCouncil\b/Barangay/g;
+    $s =~ s/\bcouncils\b/barangays/g;
+    $s =~ s/\bCouncils\b/Barangays/g;
 
     return $s;
 }
