@@ -217,8 +217,6 @@ add_website_to_apache() {
         #
         #  WARNING - enable auth here on production machine
         #
-        Options +ExecCGI
-        AddHandler cgi-script .cgi
     </Location>
 
     Alias /admin/ $REPOSITORY/web-admin/
