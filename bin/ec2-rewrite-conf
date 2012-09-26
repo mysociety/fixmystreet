@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# This is a helper script for writing the current EC2 hostname into
+# the FixMyStreet configuration file.  Its intended usage is for lines
+# like these to be added to /etc/rc.local:
+#
+#   su -l -c /home/fms/fixmystreet/bin/ec2-rewrite-conf fms
+#   /etc/init.d/apache2 restart
+
+set -e
+
+BIN_DIR=$(dirname $(readlink -f $0))
+CONF_DIR=$BIN_DIR/../conf
+
+HOST=`curl -s http://169.254.169.254/latest/meta-data/public-hostname`
+
+sed -i -r \
+    -e "s,^( *BASE_URL:).*,\\1 'http://$HOST'," \
+    -e "s,^( *EMAIL_DOMAIN:).*,\\1 '$HOST'," \
+    $CONF_DIR/general.yml
