@@ -81,7 +81,7 @@ create table contacts (
     note text not null,
 
     -- extra fields required for open311
-    extra text
+    extra text,
 
     -- per contact endpoint configuration
     endpoint     text,
