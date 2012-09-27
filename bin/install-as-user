@@ -1,10 +1,22 @@
 #!/bin/sh
 
 set -e
+set -x
+
+DEFAULT_SERVER=false
+if [ x"$1" = x"--default" ]
+then
+    DEFAULT_SERVER=true
+    shift
+fi
 
 if [ $# -ne 2 ]
 then
-    echo "Usage: $0 <UNIX-USER> <HOST>"
+    cat >&2 <<EOUSAGE
+Usage: $0 [--default] <UNIX-USER> <HOST>
+--default means to install as the default site for this server,
+rather than a virtualhost for HOST.
+EOUSAGE
     exit 1
 fi
 
@@ -35,7 +47,12 @@ then
     exit 1
 fi
 
-FMS_DIRECTORY="/var/www/$HOST"
+if [ $DEFAULT_SERVER = true ]
+then
+    FMS_DIRECTORY="/var/www/fixmystreet"
+else
+    FMS_DIRECTORY="/var/www/$HOST"
+fi
 FMS_REPOSITORY="$FMS_DIRECTORY/fixmystreet"
 FMS_LINK_DESTINATION="$HOME/fixmystreet"
 
@@ -48,32 +65,12 @@ TEMPORARY_CRONTAB=$(mktemp)
 
 echo crontab file is $TEMPORARY_CRONTAB
 
-cat > $TEMPORARY_CRONTAB <<EOF
-# Timed tasks for FixMyStreet.
-#
-# Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
-# Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
+cp "$FMS_REPOSITORY"/conf/crontab.example "$TEMPORARY_CRONTAB"
 
-PATH=/usr/local/bin:/usr/bin:/bin
-
-5,10,15,20,25,30,35,40,45,50,55 * * * * "$FMS_REPOSITORY/commonlib/bin/run-with-lockfile.sh" -n "$FMS_REPOSITORY/send-reports.lock" "$FMS_REPOSITORY/bin/cron-wrapper send-reports" || echo "stalled?"
-0 0-8,10,11,13,14,16,17,19-23 * * * "$FMS_REPOSITORY/commonlib/bin/run-with-lockfile.sh" -n "$FMS_DIRECTORY/send-reports.lock" "$FMS_REPOSITORY/bin/cron-wrapper send-reports" || echo "stalled?"
-0 9,12,15,18 * * * "$FMS_REPOSITORY/commonlib/bin/run-with-lockfile.sh" -n "$FMS_DIRECTORY/send-reports.lock" "$FMS_REPOSITORY/bin/cron-wrapper send-reports --verbose" || echo "stalled?"
-2 * * * * "$FMS_REPOSITORY/commonlib/bin/run-with-lockfile.sh" -n "$FMS_DIRECTORY/send-alerts.lock" "$FMS_REPOSITORY/bin/cron-wrapper send-alerts" || echo "stalled?"
-0,30 * * * * "$FMS_REPOSITORY/commonlib/bin/run-with-lockfile.sh" -n "$FMS_DIRECTORY/send-questionnaires.lock" "$FMS_REPOSITORY/bin/cron-wrapper send-questionnaires" || echo "stalled?"
-5,10,15,20,25,30,35,40,45,50,55 * * * * "$FMS_REPOSITORY/commonlib/bin/run-with-lockfile.sh" -n "$FMS_DIRECTORY/send-comments.lock" "$FMS_REPOSITORY/bin/cron-wrapper send-comments" || echo "stalled?"
-5,10,15,20,25,30,35,40,45,50,55 * * * * "$FMS_REPOSITORY/commonlib/bin/run-with-lockfile.sh" -n "$FMS_DIRECTORY/fetch-comments.lock" "$FMS_REPOSITORY/bin/cron-wrapper fetch-comments" || echo "stalled?"
-0,30 * * * * "$FMS_REPOSITORY/commonlib/bin/run-with-lockfile.sh" -n "$FMS_DIRECTORY/open311-populate-service-list.lock" "$FMS_REPOSITORY/bin/cron-wrapper open311-populate-service-list" || echo "stalled?"
-
-# Once an hour, update the all reports stats
-13 * * * * "$FMS_REPOSITORY/bin/cron-wrapper" update-all-reports
-
-# Once a day on all servers
-39 2 * * * "$FMS_REPOSITORY/bin/problems-filed-graph"
-43 2 * * * "$FMS_REPOSITORY/bin/problem-creation-graph"
-00 8 * * * "$FMS_REPOSITORY/bin/check-for-zombies" $UNIX_USER
-
-EOF
+sed -i \
+    -e 's,$FMS,'"$FMS_REPOSITORY,g" \
+    -e 's,$LOCK_DIR,'"$FMS_DIRECTORY,g" \
+    "$TEMPORARY_CRONTAB"
 
 crontab $TEMPORARY_CRONTAB
 
@@ -105,6 +102,15 @@ sed -r \
     -e "s,^( *EMAIL_DOMAIN:).*,\\1 '$HOST'," \
     -e "s,^( *CONTACT_EMAIL:).*,\\1 'help@$HOST'," \
     conf/general.yml-example > conf/general.yml
+
+# Create the database if it doesn't exist:
+if ! psql -l | egrep "^ *$DB_NAME *\|" > /dev/null
+then
+    createdb --owner "$UNIX_USER" "$DB_NAME"
+    echo 'CREATE LANGUAGE plpgsql;' | psql -U "$UNIX_USER" "$DB_NAME" || true
+    psql -U "$UNIX_USER" "$DB_NAME" < "$FMS_REPOSITORY"/db/schema.sql
+    psql -U "$UNIX_USER" "$DB_NAME" < "$FMS_REPOSITORY"/db/alert_types.sql
+fi
 
 # Install the required Perl modules - this may take a very long time:
 

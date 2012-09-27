@@ -1,41 +1,9 @@
 # Apache configuration for FixMyStreet.
 #
-# Add lines something like this to your /etc/apache2/sites-enabled/fixmystreet -
-# replacing '/home/yourname/fixmystreet' with the path to your install
+# This file should be included in an Apache <VirtualHost> section.  An
+# example of such a virtualhost configuration file can be found in the
+# file apache-vhost.conf.example in this directory.
 #
-# # FixMyStreet
-# <VirtualHost *:80>
-#     ServerName fixmystreet.yourservername
-#     DocumentRoot /home/yourname/fixmystreet/web/
-# 
-#     # Pull in the specific config
-#     Include /home/yourname/fixmystreet/conf/httpd.conf
-# 
-#     <Directory /home/yourname/fixmystreet/web>
-#         # You also need to enable cgi files to run as CGI scripts.  For example:
-#         # on production servers these are run under fastcgi
-#         Options +ExecCGI
-#         AddHandler cgi-script .cgi
-#         AllowOverride None
-#     </Directory>
-# 
-#     <Location /admin>
-#         # 
-#         #  WARNING - enable auth here on production machine
-#         # 
-#     </Location>
-#
-#     Alias /admin/ /home/yourname/fixmystreet/web-admin/
-# 
-#     Alias /jslib/ /home/yourname/fixmystreet/commonlib/jslib/
-#     <Location /jslib>
-#         AddOutputFilter DEFLATE js
-#         Header append Cache-Control "no-transform"
-#     </Location>
-# 
-# </VirtualHost>
-#
-# 
 # Copyright (c) 2011 UK Citizens Online Democracy. All rights reserved.
 # Email: team@mysociety.org
 # WWW: http://www.mysociety.org
