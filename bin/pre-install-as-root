@@ -54,9 +54,9 @@ UNIX_USER="$1"
 
 if [ $DEFAULT_SERVER = true ]
 then
-    FMS_DIRECTORY="/var/www/$HOST"
-else
     FMS_DIRECTORY="/var/www/fixmystreet"
+else
+    FMS_DIRECTORY="/var/www/$HOST"
 fi
 FMS_REPOSITORY="$FMS_DIRECTORY/fixmystreet"
 
