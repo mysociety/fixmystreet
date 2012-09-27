@@ -14,6 +14,9 @@
  *
  *     msg_prefix         all message <li> items have this as their ID prefix
  *
+ *     mm_name            name of Message Manager (used in error messages shown
+ *                        to user, e.g., "please log in to Message Manager"
+ *
  *     *_selector         these are the jQuery selects that will be used to find
  *                        the respective elements:
  *
@@ -28,6 +31,8 @@
  *     message_manager.get_available_messages([options])
  *     message_manager.request_lock(msg_id, [options])  (default use: client code doesn't need to call this explicitly)
  *     message_manager.assign_fms_id(msg_id, fms_id, [options])
+ *     message_manager.hide(msg_id, [options])
+ *     message_manager.reply(msg_id, reply_text, [options])
  *
  *  Note: options are {name:value, ...} hashes and often include "callback" which is a function that is executed on success
  *        but see the docs (request_lock executes callback if the call is successful even if the lock was denied, for example).
@@ -42,7 +47,9 @@ var message_manager = (function() {
     var _want_unique_locks     = true; 
     var _msg_prefix            = "msg-";
     var _username;
-
+    var _mm_name               = "Message Manager";
+    var _use_fancybox          = true; // note: currently *must* have fancybox!
+    
     // cached jQuery elements, populated by the (mandatory) call to config()
     var $message_list_element;
     var $status_element;
@@ -76,6 +83,9 @@ var message_manager = (function() {
                 if (typeof settings[sel] === 'string') {
                     selectors[sel] = settings[sel];
                 }
+            }
+            if (typeof settings.mm_name === 'string') {
+                _mm_name = settings.mm_name;
             }
         }
         $message_list_element = $(selectors.message_list_selector);
@@ -131,6 +141,57 @@ var message_manager = (function() {
         }
     };
 
+    var extract_replies = function(replies, depth) {
+        var $ul = "";
+        if (replies && replies.length > 0) {
+            var indent = new Array( depth + 1 ).join('&nbsp;');
+            $ul = $('<ul class="mm-reply-thread"/>');
+            for (var i=0; i<replies.length; i++) {
+                $ul.append(get_message_li(replies[i], depth));
+            }
+        }
+        return $ul;
+    }
+    
+    var get_message_li = function(message_root, depth) {
+        var msg = message_root.Message; // or use label value
+        var lockkeeper = message_root.Lockkeeper.username;
+        var escaped_text = $('<div/>').text(msg.message).html();
+        var $p = $('<p/>');
+        var $hide_button = $('<span class="mm-msg-action mm-hide" id="mm-hide-' + msg.id + '">X</span>');
+        var $reply_button = $('<a class="mm-msg-action mm-rep" id="mm-rep-' + msg.id + '" href="#reply-form-container">reply</a>');
+        if (_use_fancybox) {
+            $reply_button.fancybox();
+        }
+        if (depth == 0) {
+            var tag = (!msg.tag || msg.tag === 'null')? '&nbsp;' : msg.tag;
+            tag = $('<span class="msg-tag"/>').html(tag);
+            var radio = depth > 0? null : $('<input type="radio"/>').attr({
+                'id': 'mm_text_' + msg.id,
+                'name': 'mm_text',
+                'value': escaped_text
+            }).wrap('<p/>').parent().html();
+            var label = $('<label/>', {
+                'class': 'msg-text',
+                'for': 'mm_text_' + msg.id
+            }).text(escaped_text).wrap('<p/>').parent().html();
+            $p.append(tag).append(radio).append(label);
+        } else {
+            $p.text(escaped_text).addClass('mm-reply mm-reply-' + depth);
+        }
+        var $litem = $('<li id="' + _msg_prefix + msg.id + '" class="mm-msg">').append($p).append($hide_button)
+        if (msg.is_outbound != 1) {
+          $litem.append($reply_button);
+        };
+        if (lockkeeper) {
+            $litem.addClass(lockkeeper == _username? 'msg-is-owned' : 'msg-is-locked'); 
+        }
+        if (message_root.children) {
+            $litem.append(extract_replies(message_root.children, depth+1));
+        }
+        return $litem;
+    }
+    
     var show_available_messages = function(data) {
         var messages = data.messages;
         _username = data.username;
@@ -139,27 +200,9 @@ var message_manager = (function() {
             if (messages.length === 0) {
                 $output.html('<p class="mm-empty">No messages available.</p>');
             } else {
-                var $ul = $('<ul/>');
+                var $ul = $('<ul class="mm-root"/>');
                 for(var i=0; i< messages.length; i++) {
-                    var msg = messages[i].Message; // or use label value
-                    var lockkeeper = messages[i].Lockkeeper.username;
-                    var escaped_text = $('<div/>').text(msg.message).html();
-                    var tag = (!msg.tag || msg.tag === 'null')? '&nbsp;' : msg.tag;
-                    tag = $('<span class="msg-tag"/>').html(tag);
-                    var radio = $('<input type="radio"/>').attr({
-                        'id': 'mm_text_' + msg.id,
-                        'name': 'mm_text',
-                        'value': escaped_text
-                    }).wrap('<p/>').parent().html();
-                    var label = $('<label/>', {
-                        'class': 'msg-text',
-                        'for': 'mm_text_' + msg.id
-                    }).text(escaped_text).wrap('<p/>').parent().html();
-                    var p = $('<p/>').append(tag).append(radio).append(label);
-                    var litem = $('<li id="' + _msg_prefix + msg.id + '" class="mm-msg">').append(p);
-                    if (lockkeeper) {
-                        litem.addClass(lockkeeper == _username? 'msg-is-owned' : 'msg-is-locked'); 
-                    }
+                    var litem = get_message_li(messages[i], 0);
                     $ul.append(litem);
                 }
                 $output.empty().append($ul);
@@ -185,6 +228,10 @@ var message_manager = (function() {
             }
             request_lock(id, options);
         });
+        // clicking the reply button loads the id into the (modal/fancybox) reply form
+        $message_list_element.on('click', '.mm-rep', function(event) {
+            $('#reply_to_msg_id').val($(this).closest('li').attr('id').replace(_msg_prefix, ''));
+        })
     };
 
     // gets messages or else requests login
@@ -217,7 +264,8 @@ var message_manager = (function() {
             error:    function(jqXHR, textStatus, errorThrown) {
                         var st = jqXHR.status; 
                         if (st == 401 || st == 403) {
-                            var msg = (st == 401)? "Invalid username or password" : "Access denied: please log in";
+                            var msg = (st == 401 ? "Invalid username or password for" : "Access denied: please log in to") 
+                                      + " " + _mm_name;
                             say_status(msg);
                             show_login_form();
                         } else {
@@ -333,6 +381,105 @@ var message_manager = (function() {
         });
     };
 
+    var reply = function(msg_id, reply_text, options) {
+        if (_use_fancybox){
+            $.fancybox.close();
+        }
+        var check_li_exists = false;
+        if (options) {
+            if (typeof(options.callback) === 'function') {
+                callback = options.callback;
+            }
+            if (typeof(options.check_li_exists) !== undefined && options.check_li_exists !== undefined) {
+                check_li_exists = true; // MM dummy
+            }
+        }
+        var $li = $('#' + _msg_prefix + msg_id);
+        if (check_li_exists) {
+            if ($li.size() === 0) {
+                say_status("Couldn't find message with ID " + msg_id);
+                return;
+            }
+        }
+        reply_text = $.trim(reply_text);
+        if (reply_text === '') {
+            say_status("won't send empty reply");
+            return;            
+        } 
+        $li.addClass('msg-is-busy');
+        $.ajax({
+            dataType:"json", 
+            type:"post", 
+            data: {reply_text: reply_text},
+            url: _url_root +"messages/reply/" + msg_id + ".json",
+            beforeSend: function (xhr){
+                xhr.setRequestHeader('Authorization', get_current_auth_credentials());
+                xhr.withCredentials = true;
+            },
+            success:function(data, textStatus) {
+                if (data.success) {
+                    $li.removeClass('msg-is-busy msg-is-locked').addClass('msg-is-owned'); // no longer available
+                    say_status("Reply sent OK");
+                    if (typeof(callback) === "function") {
+                        callback.call($(this), data.data); // returned data['data'] is null but may change in future
+                    }
+                } else {
+                    $li.removeClass('msg-is-busy').addClass('msg-is-locked');
+                    say_status("failed: " + data.error);
+                }
+            }, 
+            error: function(jqXHR, textStatus, errorThrown) {
+                say_status("error: " + textStatus + ": " + errorThrown);
+                $li.removeClass('msg-is-busy');
+            }
+        });
+    };
+
+    var hide = function(msg_id, options) {
+        var check_li_exists = false;
+        if (options) {
+            if (typeof(options.callback) === 'function') {
+                callback = options.callback;
+            }
+            if (typeof(options.check_li_exists) !== undefined && options.check_li_exists !== undefined) {
+                check_li_exists = true; // MM dummy
+            }
+        }
+        var $li = $('#' + _msg_prefix + msg_id);
+        if (check_li_exists) {
+            if ($li.size() === 0) {
+                say_status("Couldn't find message with ID " + msg_id);
+                return;
+            }
+        }
+        $li.addClass('msg-is-busy');
+        $.ajax({
+            dataType:"json", 
+            type:"post", 
+            url: _url_root +"messages/hide/" + msg_id + ".json",
+            beforeSend: function (xhr){
+                xhr.setRequestHeader('Authorization', get_current_auth_credentials());
+                xhr.withCredentials = true;
+            },
+            success:function(data, textStatus) {
+                if (data.success) {
+                    $li.removeClass('msg-is-busy msg-is-locked').addClass('msg-is-owned').fadeOut('slow'); // no longer available
+                    say_status("Message hidden");
+                    if (typeof(callback) === "function") {
+                        callback.call($(this), data.data); 
+                    }
+                } else {
+                    $li.removeClass('msg-is-busy').addClass('msg-is-locked');
+                    say_status("failed: " + data.error);
+                }
+            }, 
+            error: function(jqXHR, textStatus, errorThrown) {
+                say_status("error: " + textStatus + ": " + errorThrown);
+                $li.removeClass('msg-is-busy');
+            }
+        });
+    };
+
     // revealed public methods:
     return {
        config: config,
@@ -340,6 +487,8 @@ var message_manager = (function() {
        get_available_messages: get_available_messages,
        request_lock: request_lock,
        assign_fms_id: assign_fms_id,
+       reply: reply,
+       hide: hide,
        sign_out: sign_out
      };
 })();
