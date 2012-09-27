@@ -13,20 +13,56 @@
 
 set -e
 
-if [ $# -ne 2 ]
+DEFAULT_SERVER=false
+if [ x"$1" = x"--default" ]
 then
-    echo "Usage: $0 <UNIX-USER> <HOST>"
+    DEFAULT_SERVER=true
+    shift
+fi
+
+# If we're not running on an EC2 instance, an empty body is returned
+# by this request:
+EC2_HOSTNAME=`curl -s http://169.254.169.254/latest/meta-data/public-hostname`
+
+usage_and_exit() {
+    cat >&2 <<EOUSAGE
+Usage: $0 [--default] <UNIX-USER> [HOST]
+HOST is only optional if you are running this on an EC2 instance.
+--default means to install as the default site for this server,
+rather than a virtualhost for HOST.
+EOUSAGE
     exit 1
+}
+
+if [ $# = 1 ]
+then
+    if [ x = x$EC2_HOSTNAME ]
+    then
+        usage_and_exit
+    else
+	echo "setting host"
+        HOST="$EC2_HOSTNAME"
+    fi
+elif [ $# = 2 ]
+then
+    HOST="$2"
+else
+    usage_and_exit
 fi
 
 UNIX_USER="$1"
-HOST="$2"
 
-FMS_DIRECTORY="/var/www/$HOST"
+if [ $DEFAULT_SERVER = true ]
+then
+    FMS_DIRECTORY="/var/www/$HOST"
+else
+    FMS_DIRECTORY="/var/www/fixmystreet"
+fi
 FMS_REPOSITORY="$FMS_DIRECTORY/fixmystreet"
 
 REPOSITORY_URL=git://github.com/mysociety/fixmystreet.git
-BRANCH=master
+# BRANCH=master
+BRANCH=install-script
 
 IP_ADDRESS_FOR_HOST="$(dig +short $HOST)"
 
@@ -65,21 +101,21 @@ set_locale() {
     export LANG="en_GB.UTF-8"
 }
 
-move_default_virtualhosts() {
-    # If there are any occurences of /var/www or /var/www/ in
-    # /etc/apache2/sites-available/(default|default-ssl) change them
-    # to /var/www/default and /var/www/default/ respectively:
-    for name in default default-ssl
-    do
-        ORIGINAL=/etc/apache2/sites-available/$name
-        sed -i -r \
-            -e 's,(/var/www/)([^A-Za-z0-9]|$),\1default/\2,g' \
-            -e 's,(/var/www)([^/A-Za-z0-9]|$),\1/default\2,g' \
-            $ORIGINAL
-    done
-    mkdir -p /var/www/default
-    cp /var/www/index.html /var/www/default
-}
+# move_default_virtualhosts() {
+#     # If there are any occurences of /var/www or /var/www/ in
+#     # /etc/apache2/sites-available/(default|default-ssl) change them
+#     # to /var/www/default and /var/www/default/ respectively:
+#     for name in default default-ssl
+#     do
+#         ORIGINAL=/etc/apache2/sites-available/$name
+#         sed -i -r \
+#             -e 's,(/var/www/)([^A-Za-z0-9]|$),\1default/\2,g' \
+#             -e 's,(/var/www)([^/A-Za-z0-9]|$),\1/default\2,g' \
+#             $ORIGINAL
+#     done
+#     mkdir -p /var/www/default
+#     cp /var/www/index.html /var/www/default
+# }
 
 add_unix_user() {
     # Create the required user if it doesn't already exist:
@@ -121,9 +157,6 @@ deb-src http://security.debian.org/ squeeze/updates main non-free
 # Debian Backports
 deb http://backports.debian.org/debian-backports squeeze-backports main contrib non-free
 deb-src http://backports.debian.org/debian-backports squeeze-backports main contrib non-free
-
-# mySociety repository
-deb http://debian.mysociety.org squeeze main
 EOF
     else
         echo Unsupport distribution and version combination $DISTRIBUTION $VERSION
@@ -157,96 +190,41 @@ clone_or_update_repository() {
     fi
 }
 
-install_apache() {
-    # Make sure that Apache is installed:
-    apt-get install -y apache2-mpm-worker libapache2-mod-fastcgi apache2-suexec
+install_nginx() {
+    apt-get install -y nginx
+}
 
-    # Actually enable the suexec wrapper:
-    sed -i -r 's/^( *)#( *FastCgiWrapper.*)/\1\2/' /etc/apache2/mods-available/fastcgi.conf
-
-    # Since this may be run on an EC2 instance with very low memory,
-    # limit the number of FastCGI processes to 2:
-    if ! egrep '^ *FastCgiConfig -maxClassProcesses' /etc/apache2/mods-available/fastcgi.conf
+add_website_to_nginx() {
+    SITE="$HOST"
+    if [ $DEFAULT_SERVER = true ]
     then
-    sed '/<\/IfModule>/i\
-  FastCgiConfig -maxClassProcesses 2
-
-' /etc/apache2/mods-available/fastcgi.conf
+        SITE=default
     fi
+    SITE_FILENAME=/etc/nginx/sites-available/"$SITE"
+    cp $FMS_REPOSITORY/conf/nginx.conf.example $SITE_FILENAME
+    sed -i "s,/var/www/fixmystreet,$FMS_DIRECTORY,"
+    if [ $DEFAULT_SERVER = false ]
+    then
+        sed -i 's/listen 80 default_server/listen 80/' $SITE_FILENAME
+        sed "/listen 80/i\
+     server_name $HOST;
+" /etc/apache2/mods-available/fastcgi.conf
+    fi
+    /etc/init.d/nginx restart
+}
 
-    /etc/init.d/apache2 restart
+install_sysvinit_script() {
+    SYSVINIT_NAME=fms-catalyst-fastcgi
+    SYSVINIT_FILENAME=/etc/init.d/$SYSVINIT_NAME
+    cp $FMS_REPOSITORY/conf/sysvinit-catalyst-fastcgi.example $SYSVINIT_FILENAME
+    sed -i "s,/var/www/fixmystreet,$FMS_DIRECTORY,g" $SYSVINIT_FILENAME
+    update-rc.d fms-catalyst-fastcgi start 20 2 3 4 5 . stop 20 0 1 6 .
+    /etc/init.d/$SYSVINIT restart
 }
 
 install_website_packages() {
     PACKAGES_FILE="$1/conf/packages.debian-squeeze"
     xargs -a "$PACKAGES_FILE" apt-get -y install
-}
-
-add_website_to_apache() {
-    UNIX_USER="$1"
-    HOST="$2"
-    REPOSITORY="$3"
-
-    LOG_DIRECTORY="$(readlink -f $REPOSITORY/../logs)"
-    mkdir -p "$LOG_DIRECTORY"
-    chown -R "$UNIX_USER"."$UNIX_USER" "$LOG_DIRECTORY"
-
-    APACHE_CONFIG_FILE=$REPOSITORY/conf/httpd.conf
-
-    cp $APACHE_CONFIG_FILE-example $APACHE_CONFIG_FILE
-
-    cat > /etc/apache2/sites-available/"$HOST" <<EOF
-<VirtualHost *:80>
-    ServerName $HOST
-    DocumentRoot $REPOSITORY/web/
-
-    # Pull in the specific config
-    Include $APACHE_CONFIG_FILE
-
-    SuexecUserGroup $UNIX_USER $UNIX_USER
-
-    <Directory $REPOSITORY/web>
-        # You also need to enable cgi files to run as CGI scripts.  For example:
-        # on production servers these are run under fastcgi
-        Options +ExecCGI
-        AddHandler fastcgi-script .cgi
-        AllowOverride None
-    </Directory>
-
-    <Location /admin>
-        #
-        #  WARNING - enable auth here on production machine
-        #
-    </Location>
-
-    Alias /admin/ $REPOSITORY/web-admin/
-
-    # Set up commonlib jslib directory
-    Alias /jslib/ $REPOSITORY/commonlib/jslib/
-    <Location /jslib>
-        AddOutputFilter DEFLATE js
-        Header append Cache-Control "no-transform"
-    </Location>
-
-    LogLevel info
-    ErrorLog $LOG_DIRECTORY/error.log
-    CustomLog $LOG_DIRECTORY/access.log combined
-
-</VirtualHost>
-EOF
-
-    move_default_virtualhosts
-
-    a2ensite $HOST
-
-    a2enmod rewrite
-    a2enmod proxy_http
-    a2enmod expires
-    a2enmod headers
-    a2enmod suexec
-    a2enmod fastcgi
-
-    /etc/init.d/apache2 restart
 }
 
 generate_locales
@@ -263,11 +241,12 @@ clone_or_update_repository $FMS_REPOSITORY
 
 chown -R "$UNIX_USER"."$UNIX_USER" "$FMS_DIRECTORY"
 
-install_apache
+install_nginx
+
 install_website_packages "$FMS_REPOSITORY"
 
 add_postgresql_user "$UNIX_USER"
 
-add_website_to_apache "$UNIX_USER" "$HOST" "$FMS_REPOSITORY"
-
 su -l -c "$FMS_REPOSITORY/bin/install-as-user '$UNIX_USER' '$HOST'" "$UNIX_USER"
+
+install_sysvinit_script
