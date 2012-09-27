@@ -247,6 +247,12 @@ install_website_packages "$FMS_REPOSITORY"
 
 add_postgresql_user "$UNIX_USER"
 
-su -l -c "$FMS_REPOSITORY/bin/install-as-user '$UNIX_USER' '$HOST'" "$UNIX_USER"
+DEFAULT_PARAMETER=''
+if [ $DEFAULT_SERVER = true ]
+then
+    DEFAULT_PARAMETER='--default'
+fi
+
+su -l -c "$FMS_REPOSITORY/bin/install-as-user $DEFAULT_PARAMETER '$UNIX_USER' '$HOST'" "$UNIX_USER"
 
 install_sysvinit_script
