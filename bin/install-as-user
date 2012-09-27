@@ -48,7 +48,7 @@ fi
 
 if [ $DEFAULT_SERVER = true ]
 then
-    FMS_DIRECTORY="/var/www/default"
+    FMS_DIRECTORY="/var/www/fixmystreet"
 else
     FMS_DIRECTORY="/var/www/$HOST"
 fi
@@ -67,8 +67,8 @@ echo crontab file is $TEMPORARY_CRONTAB
 cp "$FMS_REPOSITORY"/conf/crontab.example "$TEMPORARY_CRONTAB"
 
 sed -i \
-    -e 's/$FMS/'"$FMS_REPOSITORY/g" \
-    -e 's/$LOCK_DIR/'"$FMS_DIRECTORY/g" \
+    -e 's,$FMS,'"$FMS_REPOSITORY,g" \
+    -e 's,$LOCK_DIR,'"$FMS_DIRECTORY,g" \
     "$TEMPORARY_CRONTAB"
 
 crontab $TEMPORARY_CRONTAB
