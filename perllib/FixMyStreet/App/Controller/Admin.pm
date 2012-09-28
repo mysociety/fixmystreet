@@ -304,6 +304,10 @@ sub update_contacts : Private {
         $contact->note( $c->req->param('note') );
         $contact->whenedited( \'ms_current_timestamp()' );
         $contact->editor( $editor );
+        $contact->endpoint( $c->req->param('endpoint') );
+        $contact->jurisdiction( $c->req->param('jurisdiction') );
+        $contact->api_key( $c->req->param('api_key') );
+        $contact->send_method( $c->req->param('send_method') );
 
         if ( $contact->in_storage ) {
             $c->stash->{updated} = _('Values updated');
@@ -462,6 +466,9 @@ sub council_edit : Path('council_edit') : Args(2) {
     );
 
     $c->stash->{history} = $history;
+
+    my @methods = map { $_ =~ s/FixMyStreet::SendReport:://; $_ } keys %{ FixMyStreet::SendReport->get_senders };
+    $c->stash->{send_methods} = \@methods;
 
     return 1;
 }
