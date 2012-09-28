@@ -64,6 +64,8 @@ FMS_REPOSITORY="$FMS_DIRECTORY/fixmystreet"
 REPOSITORY_URL=git://github.com/mysociety/fixmystreet.git
 BRANCH=master
 
+SYSVINIT_NAME=fms-catalyst-fastcgi
+
 IP_ADDRESS_FOR_HOST="$(dig +short $HOST)"
 
 if [ x = x"$IP_ADDRESS_FOR_HOST" ]
@@ -206,7 +208,6 @@ add_website_to_nginx() {
 }
 
 install_sysvinit_script() {
-    SYSVINIT_NAME=fms-catalyst-fastcgi
     SYSVINIT_FILENAME=/etc/init.d/$SYSVINIT_NAME
     cp $FMS_REPOSITORY/conf/sysvinit-catalyst-fastcgi.example $SYSVINIT_FILENAME
     sed -i "s,/var/www/fixmystreet,$FMS_DIRECTORY,g" $SYSVINIT_FILENAME
@@ -219,6 +220,19 @@ install_sysvinit_script() {
 install_website_packages() {
     PACKAGES_FILE="$1/conf/packages.debian-squeeze"
     xargs -a "$PACKAGES_FILE" apt-get -y install
+}
+
+overwrite_rc_local() {
+    cat > /etc/rc.local <<EOF
+#!/bin/sh -e
+
+su -l -c $FMS_REPOSITORY/bin/ec2-rewrite-conf $UNIX_USER
+/etc/init.d/$SYSVINIT_NAME restart
+
+exit 0
+
+EOF
+    chmod a+rx /etc/rc.local
 }
 
 generate_locales
@@ -255,6 +269,14 @@ fi
 su -l -c "$FMS_REPOSITORY/bin/install-as-user $DEFAULT_PARAMETER '$UNIX_USER' '$HOST'" "$UNIX_USER"
 
 install_sysvinit_script
+
+if [ $DEFAULT_SERVER = true ] && [ x != x$EC2_HOSTNAME ]
+then
+    # If we're setting up as the default on an EC2 instance,
+    # make sure the ec2-rewrite-conf script is called from
+    # /etc/rc.local
+    overwrite_rc_local
+fi
 
 # Tell the user what to do next:
 
