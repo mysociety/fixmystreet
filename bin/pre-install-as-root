@@ -198,7 +198,7 @@ add_website_to_nginx() {
         sed -i 's/listen 80/# listen 80/' $SITE_FILENAME
         sed "/listen 80/i\
      server_name $HOST;
-" /etc/apache2/mods-available/fastcgi.conf
+" $SITE_FILENAME
     fi
     ln -nsf "$SITE_FILENAME" "$SITE_LINK"
     LOG_DIRECTORY="$(readlink -f $REPOSITORY/../logs)"
