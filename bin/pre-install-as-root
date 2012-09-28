@@ -231,6 +231,9 @@ update_apt_sources
 # Install some packages that we will definitely need:
 apt-get install -y git-core lockfile-progs rubygems
 
+# And remove one crippling package, if it's installed:
+apt-get remove --purge apt-xapian-index || true
+
 clone_or_update_repository $FMS_REPOSITORY
 
 chown -R "$UNIX_USER"."$UNIX_USER" "$FMS_DIRECTORY"
