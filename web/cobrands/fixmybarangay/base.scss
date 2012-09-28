@@ -7,14 +7,14 @@
 
 #site-logo{
   width: 225px !important;
-  background: url('/cobrands/fixmybarangay/images/sprite.png') -3px -3px no-repeat;
+  background: url('images/sprite.png') -3px -3px no-repeat;
 }
 .ie6 #site-logo {
-  background: url('/cobrands/fixmybarangay/images/ie_logo.gif') 0 -5px no-repeat;
+  background: url('images/ie_logo.gif') 0 -5px no-repeat;
 }
 
 .ie6 body.frontpage #site-logo {
-  background:url(/cobrands/fixmybarangay/images/ie_front_logo.gif) 0 0 no-repeat;
+  background:url(images/ie_front_logo.gif) 0 0 no-repeat;
 }
 
 #barangay_buttons {
@@ -29,4 +29,9 @@ input.yellow-btn{
   &:visited, &:hover {
     color:#300;
   }
+}
+
+body.mappage .nav-wrapper div.nav-wrapper-2 {
+  background: url('images/city6.png') 30% 0% repeat-x;
+  border-bottom: 2px solid #333;
 }

@@ -2,20 +2,29 @@
 @import "../fixmystreet/_layout";
 
 body {
-  background: #1A1A1A;
+  background: #C7B299;
+  background-image: url(images/pat3.png);
 }
 
 
 body.frontpage {
   #site-logo{
     width: 370px !important;
-	  background: url('/cobrands/fixmybarangay/images/sprite.png') -3px -106px no-repeat;
+    height: 70px;
+	  background: url('images/sprite.png') -3px -106px no-repeat;
+  }
+  
+  .wrapper{
+    background: url('images/city6.png') 30% 0% repeat-x;
   }
 }
-
+#main-nav ul#mysoc-menu li a#mysoc-logo {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIkAAAAyCAMAAABf9whNAAAA0lBMVEUAAABAQEBAQEBAQEBNTU1NTU1AQEBNTU1AQEBAQEBAQEBAQEBAQEBAQEBAQEBNTU1NTU1AQEBNTU1AQEBNTU1AQEBAQEBNTU2Mxj9NTU33kx5NTU1NTU1NTU3tHCRmLZEpq+JNTU2TJ4/tHCSTJ4/87iEpq+L3kx5NTU387iH87iHtHCSTJ4/3kx51K5CTJ49mLZGMxj/tHCSx0zVmLZH6wSBmLZFmLZFDdb/zYCFbuZGMxj/3kx5AQEBNTU0pq+LtHCSMxj/3kx787iFmLZGTJ49ns3BGAAAAPXRSTlMAQL+AQIAQECBwMGBQj98gn5/Pr+/vzzC/r79wYI9wv69QcK+vcICfv68QQBAwj0AwMBBggIBQr3BwgEBgSmaQCwAAAflJREFUeF7t1Ndy2zAQhtGfAAX2IpFUseSSOLGd3nt27bT3f6UsQHusRFcKmVxkcGa4wvCG34AQ8V/wPM/zPM8zSaOaxGBHtFpF+IfikqwYO0LmELfiHH/XlLokSBrsiurtPdGkMJJFWFWTSQUZC0RhWMFNRQWuvTw9RS/VOolNEBgAudYpkE5pHqRpEACIZQ4x4RkztxMWd6KWa2DDvFDUBeg9urr6cPAZMIqEDogCmDmJKdwtlbjXOCc1sIRnhyxj0vIMNbeQMUNun5DBOTo6/3oASMhUF6krka3IM1lkikqdGaICMVE2sKSNICkR1sxYyMag5TWQd7bFPH4G8eT8zcOUKIGwJUYuSE7hzoldlZAwM7Dkwg4GQjtmXMtvBZHNiZJ7P+5C3P/2oH9SXyKXo1yJq0sbmmLMkg23h7xCryR1W5L8WqKsmz1BSbqjfNSSiMUGMEB/Bp8ePwdeLF/ZAn1TEssFR1MJIZmyGLUENXNrI8pCK6IMx99fn50tvyyBcuvEKuqKXDcuocgAQ/I7conMGgA5BfD23fvLy4/LT0Ba/v4vphRxR9dnlmIMU4ULO0IgsgPr/rya3H7F4JycoCf3sq0vW5ICiLXO3YtsMC4JqbG3uCFKMSb3nYuwNyLKMK6Q6wj7a7oMY4vwJwwG8TzP8zzP834CEcRJKkEhVogAAAAASUVORK5CYII=");
+}
 #front-main {
   color: $primary_text;
-  background: $primary;
+  background: rgba(255,255,255,0.1);
+  margin-top: 70px;
   
   #postcodeForm {
     margin-left: 0;

@@ -3,71 +3,71 @@ $mm_border_color: #eee;
 
 #message_manager {
 
-	#message-control {
-		#mm-username-container {
-			display: none; // hidden during dev
-			padding: 8px;
-			text-align: right;
-			color: $mm_status_message_color;
-			font-style: italic;
-			span {
-				color: #000;
-				font-style: normal;
-			}
-		}
-		#mm-status-message-container {
-			min-height: 1.4em;
-			margin: 0 0 8px 0.5em;
-			padding: 8px 4px;
-			color: $mm_status_message_color;
-			font-style: italic;
-		}
-		#mm-login-container {
-			display: none; // only shown on/after a 403
-			border: 1px solid $mm_border_color;
-			padding: 0 1em;
-			margin: 1em;
-			input {
-				margin-bottom: 1em;
-			}
-		}
-	}
+  #message-control {
+    #mm-username-container {
+      display: none; // hidden during dev
+      padding: 8px;
+      text-align: right;
+      color: $mm_status_message_color;
+      font-style: italic;
+      span {
+        color: #000;
+        font-style: normal;
+      }
+    }
+    #mm-status-message-container {
+      min-height: 1.4em;
+      margin: 0 0 8px 0.5em;
+      padding: 8px 4px;
+      color: $mm_status_message_color;
+      font-style: italic;
+    }
+    #mm-login-container {
+      display: none; // only shown on/after a 403
+      border: 1px solid $mm_border_color;
+      padding: 0 1em;
+      margin: 1em;
+      input {
+        margin-bottom: 1em;
+      }
+    }
+  }
 
-	#mm-message-list {
-		ul {
-			list-style-type: none;
-			padding: 0;
-			margin: 0;
-			li {
-				clear: both;
-				margin: 4px 0 0 0;
-				padding: 0;
-				cursor: pointer;
-				background-color: #F6F6F6;
-				p {
-					background-color: inherit;
-				}
-				&.msg-is-locked { background-color: #fdd;}
-				&.msg-is-owned { background-color: #dfd;}
-				&.msg-is-busy { background-color: #ffd;}
-				&:hover { background-color: #efe;}
-				span.msg-tag {
-					width: 3em;
-					float:left;
-				}
-				input[type=radio] {
-					display: block;
-					float: left;
-				}
-				label, span.msg-text {
-					display: block;
-					font-weight: normal;
-					margin: 0.1em 0 0.1em 4.5em;
-				}
-			}
-		}
-	}
-	p.mm-empty {
-		margin: 1em;
-	}
+  #mm-message-list {
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+      li {
+        clear: both;
+        margin: 4px 0 0 0;
+        padding: 0;
+        cursor: pointer;
+        background-color: #F6F6F6;
+        p {
+          background-color: inherit;
+        }
+        &.msg-is-locked { background-color: #fdd;}
+        &.msg-is-owned { background-color: #dfd;}
+        &.msg-is-busy { background-color: #ffd;}
+        &:hover { background-color: #efe;}
+        span.msg-tag {
+          width: 3em;
+          float:left;
+        }
+        input[type=radio] {
+          display: block;
+          float: left;
+        }
+        label, span.msg-text {
+          display: block;
+          font-weight: normal;
+          margin: 0.1em 0 0.1em 4.5em;
+        }
+      }
+    }
+  }
+  p.mm-empty {
+    margin: 1em;
+  }
 }
