@@ -123,10 +123,3 @@ bin/install_perl_modules
 ./bin/cron-wrapper ./bin/make_emptyhomes_welsh_po
 
 commonlib/bin/gettext-makemo FixMyStreet
-
-# Tell the user what to do next:
-
-echo Installation complete - you should now be able to view the site at:
-echo   http://$HOST/
-echo Or you can run the tests by switching to the "'$UNIX_USER'" user and
-echo running: $FMS_REPOSITORY/bin/cron-wrapper prove -r t

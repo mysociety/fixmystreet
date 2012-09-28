@@ -255,3 +255,10 @@ fi
 su -l -c "$FMS_REPOSITORY/bin/install-as-user $DEFAULT_PARAMETER '$UNIX_USER' '$HOST'" "$UNIX_USER"
 
 install_sysvinit_script
+
+# Tell the user what to do next:
+
+echo Installation complete - you should now be able to view the site at:
+echo   http://$HOST/
+echo Or you can run the tests by switching to the "'$UNIX_USER'" user and
+echo running: $FMS_REPOSITORY/bin/cron-wrapper prove -r t
