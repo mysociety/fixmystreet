@@ -23,7 +23,7 @@ fi
 
 # If we're not running on an EC2 instance, an empty body is returned
 # by this request:
-EC2_HOSTNAME=`curl -s http://169.254.169.254/latest/meta-data/public-hostname`
+EC2_HOSTNAME=`curl -s http://169.254.169.254/latest/meta-data/public-hostname || true`
 
 usage_and_exit() {
     cat >&2 <<EOUSAGE
