@@ -304,6 +304,10 @@ sub update_contacts : Private {
         $contact->note( $c->req->param('note') );
         $contact->whenedited( \'ms_current_timestamp()' );
         $contact->editor( $editor );
+        $contact->endpoint( $c->req->param('endpoint') );
+        $contact->jurisdiction( $c->req->param('jurisdiction') );
+        $contact->api_key( $c->req->param('api_key') );
+        $contact->send_method( $c->req->param('send_method') );
 
         if ( $contact->in_storage ) {
             $c->stash->{updated} = _('Values updated');
@@ -340,7 +344,7 @@ sub update_contacts : Private {
     } elsif ( $posted eq 'open311' ) {
         $c->forward('check_token');
 
-        my %params = map { $_ => $c->req->param($_) || '' } qw/open311_id endpoint jurisdiction api_key area_id send_method send_comments suppress_alerts comment_user_id/;
+        my %params = map { $_ => $c->req->param($_) || '' } qw/open311_id endpoint jurisdiction api_key area_id send_method send_comments suppress_alerts comment_user_id devolved/;
 
         if ( $params{open311_id} ) {
             my $conf = $c->model('DB::Open311Conf')->find( { id => $params{open311_id} } );
@@ -352,6 +356,7 @@ sub update_contacts : Private {
             $conf->send_comments( $params{send_comments} || 0);
             $conf->suppress_alerts( $params{suppress_alerts} || 0);
             $conf->comment_user_id( $params{comment_user_id} || undef );
+            $conf->can_be_devolved( $params{devolved} || 0 );
 
             $conf->update();
 
@@ -366,6 +371,7 @@ sub update_contacts : Private {
             $conf->send_comments( $params{send_comments} || 0);
             $conf->suppress_alerts( $params{suppress_alerts} || 0);
             $conf->comment_user_id( $params{comment_user_id} || undef );
+            $conf->can_be_devolved( $params{devolved} || 0 );
 
             $conf->insert();
 
@@ -460,6 +466,9 @@ sub council_edit : Path('council_edit') : Args(2) {
     );
 
     $c->stash->{history} = $history;
+
+    my @methods = map { $_ =~ s/FixMyStreet::SendReport:://; $_ } keys %{ FixMyStreet::SendReport->get_senders };
+    $c->stash->{send_methods} = \@methods;
 
     return 1;
 }
