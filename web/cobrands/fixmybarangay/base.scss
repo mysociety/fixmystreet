@@ -9,13 +9,6 @@
   width: 225px !important;
   background: url('images/sprite.png') -3px -3px no-repeat;
 }
-.ie6 #site-logo {
-  background: url('images/ie_logo.gif') 0 -5px no-repeat;
-}
-
-.ie6 body.frontpage #site-logo {
-  background:url(images/ie_front_logo.gif) 0 0 no-repeat;
-}
 
 #barangay_buttons {
     padding: 1em;
@@ -34,4 +27,40 @@ input.yellow-btn{
 body.mappage .nav-wrapper div.nav-wrapper-2 {
   background: url('images/city6.png') 30% 0% repeat-x;
   border-bottom: 2px solid #333;
+}
+
+
+
+// Replace Sprite with cobrand sprite
+
+.ie6 #site-logo {
+  background: url('images/ie_logo.gif') 0 -5px no-repeat;
+}
+.ie7 #site-logo {
+  background: url('images/sprite.png') -3px -3px no-repeat;
+}
+
+.ie6 body.frontpage #site-logo {
+  background:url('images/ie_front_logo.gif') 0 0 no-repeat;
+}
+.ie6 #main-nav ul#mysoc-menu li a#mysoc-logo {
+  background: url('images/ie_mysoc_logo.gif') center no-repeat;
+}
+.ie7 #main-nav ul#mysoc-menu li a#mysoc-logo {
+  background: url('images/sprite.png') -240px -38px no-repeat;
+}
+
+
+.button-right,
+a.button-right,
+:hover.button-right,
+a:hover.button-right {
+  background-image: url('images/sprite.png');
+}
+
+.button-left,
+a.button-left,
+:hover.button-left,
+a:hover.button-left {
+  background-image: url('images/sprite.png');
 }

@@ -1,13 +1,25 @@
 @import "_colours";
 @import "../fixmystreet/_layout";
 
+@mixin box_round($radius) {
+  -webkit-border-radius: $radius; /* Safari 3-4, iOS 1-3.2, Android ≤1.6 */
+          border-radius: $radius; /* Opera 10.5, IE9+, Safari 5, Chrome, Firefox 4+, iOS 4, Android 2.1+ */
+          
+  /* useful if you don't want a bg color from leaking outside the border: */
+  -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
+}
+
 body {
   background: #C7B299;
   background-image: url(images/pat3.png);
+  
+  .wrapper{
+    background: url('images/city7.png') 30% 0% repeat-x;
+  }
 }
 
 
-body.frontpage {
+  body.frontpage {
   #site-logo{
     width: 370px !important;
     height: 70px;
@@ -15,7 +27,7 @@ body.frontpage {
   }
   
   .wrapper{
-    background: url('images/city6.png') 30% 0% repeat-x;
+    background: url('images/city7.png') 30% 0% repeat-x;
   }
 }
 #main-nav ul#mysoc-menu li a#mysoc-logo {
@@ -50,10 +62,52 @@ body.frontpage {
     ul {
         &#mysoc-menu {
             background:$primary;
+            padding: 1px 0.5em;
         }
+        &#main-menu{
+          padding: 3px 0;
+          li{
+            a{
+              //@extend .report-a-problem-btn;
+              color: #fff;
+              padding: 0.7em;
+              background-color: rgba(0,0,0,0);
+              background-image: none;
+              &:hover{
+                background-color: rgba(0,0,0,0.8);
+              }
+            }
+          }
+        }
+        
     }
 }
-
+body.mappage #main-nav ul#main-menu li a, 
+body.mappage #main-nav ul#main-menu li span,
+body #main-nav ul#main-menu li a, 
+body #main-nav ul#main-menu li span
+{
+  color: #fff;
+  padding: 0.7em;
+  background-color: rgba(0,0,0,0);
+  background-image: none;
+  @include box_round(0.35em);
+  margin-left: 3px;
+  
+  &.report-a-problem-btn{
+    color: #fff;
+    padding: 0.7em;
+    background-color: rgba(0,0,0,0);
+    background-image: none;
+    margin: 0;
+  }
+  
+  &:hover{
+    background-color: rgba(0,0,0,0.75);
+    background-image: none;
+  }
+  
+}
 #front-howto {
     #front_stats {
         border-top: 0.25em solid #000;
