@@ -110,7 +110,6 @@ $(document).ready(function() {
 		e.stopPropagation(); // because replies are nested
 		$('.mm-msg-action', $('#mm-message-list')).stop().fadeOut(200);
 		$(this).find('> .mm-msg-action').stop().show();
-		console.log("clicked on: " + $(this).attr('id'));
 	});
 
 	$('#mm-message-list').on('click', '.mm-hide', function(e){
@@ -123,16 +122,11 @@ $(document).ready(function() {
 			    {callback:dummy_hide_cleanup});
 		}
 	});
-
-	$('#mm-message-list').on('click', '.mm-rep', function(e){
-		console.log("call message_manager.reply(" + $(this).parent().attr('id') + ", reply_text)");
-	});
 	
 	$('#reply-submit').click(function(e) {
 		e.preventDefault();
 		if (! dummy_busy) {
 			dummy_busy = true;
-			console.log("sending reply to: " + $('#reply_to_msg_id').val());
 			message_manager.reply(
 			    $('#reply_to_msg_id').val(), 
 			    $('#reply_text').val(), 
