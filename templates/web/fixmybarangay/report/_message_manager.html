@@ -1,7 +1,9 @@
 [% IF c.user && c.user.from_council %]
-<!--
-<input type="button" class="green-btn" value="Show Messages" id="show_messages">
--->
+
+[% IF problem.id %]
+	<input type="button" class="green-btn" value="Show Messages" id="show_messages">
+[% END %]
+
 <ul id="message_manager" class="issue-list-a tab" style="display: none">
 	<li id="message-control">
 		<div id="mm-username-container">username:&nbsp;<span id="mm-received-username"></span></div>
@@ -138,33 +140,34 @@ $(document).ready(function() {
 		}
 	});
     
-    $("a#reply").fancybox({onClosed: function(){dummy_busy=false;}});
+	$("a#reply").fancybox({onClosed: function(){dummy_busy=false;}});
 
-
-
-  // $('<input type="button" value="Copy to update"/>').attr({
-  //     'id': 'add_support',
-  //     'name': 'add_support',
-  //     'class': 'green-btn'
-  //  }).appendTo($('#message_manager'));
+	// only show on problem display page
+	if (problem_id) {
+		$('<input type="button" value="Copy to update"/>').attr({
+			'id': 'add_support',
+			'name': 'add_support',
+			'class': 'green-btn'
+		}).appendTo($('#message_manager'));
+	}
 
 	$('#add_support').click(function(e){
-      e.preventDefault();
-      $('#mm-message-list input:checked').each( function(index) {
-          var id = $(this).attr('id');
-          id = id.replace('mm_text_','');
-          $('#external_source_id').val(id);
-          $('#form_update').val( $(this).val() );
-          $('#form_update_form').on('submit', function(e) {
-              message_manager.assign_fms_id( $('#external_source_id').val(), problem_id, { 'is_async': false } );
-          });
-      });
-  });
+		e.preventDefault();
+		$('#mm-message-list input:checked').each( function(index) {
+			var id = $(this).attr('id');
+			id = id.replace('mm_text_','');
+			$('#external_source_id').val(id);
+			$('#form_update').val( $(this).val() );
+			$('#form_update_form').on('submit', function(e) {
+	 			message_manager.assign_fms_id( $('#external_source_id').val(), problem_id, { 'is_async': false } );
+			});
+		});
+	});
 
-  $('#show_messages').on('click', function(e) {
-      $('#message_manager').toggle();
-      $('#show_messages').val( $('#show_messages').val() == 'Show Messages' ? 'Hide Messages' : 'Show Messages' ); 
-  } );
+	$('#show_messages').on('click', function(e) {
+		$('#message_manager').toggle();
+		$('#show_messages').val( $('#show_messages').val() == 'Show Messages' ? 'Hide Messages' : 'Show Messages' ); 
+	});
 });
 
 </script>
